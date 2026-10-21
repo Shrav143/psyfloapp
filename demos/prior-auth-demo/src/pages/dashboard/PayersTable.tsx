@@ -15,7 +15,7 @@ export function PayersTable({ rows, selected, range, narrowed, onPick, flash }: 
   const total = (pick: (r: PayerRow) => number) => rows.reduce((a, r) => a + pick(r), 0);
   const w = periodWord(range);
   return (
-    <Card className={cn("overflow-hidden outline-2 outline-offset-[3px] outline-transparent transition-[outline-color] duration-500", flash && "outline-forest")} data-flash={flash || undefined}>
+    <Card className={cn("overflow-hidden outline-2 outline-offset-[3px] transition-[outline-color] duration-700", flash ? "outline-forest" : "outline-transparent")} data-flash={flash || undefined}>
       <CardHeader
         title="Payers at a glance"
         subtitle={`Waiting now, how long decisions take, and how often they go your way. Click a row to narrow everything on this page.${narrowed ? " Waiting counts follow your Program and Request type filters." : ""}`}

@@ -1,31 +1,32 @@
 title: Denial Intelligence › Accept the denial
 route: /denials?id=D-3297
-intro: Accepting closes the denial and logs a write-off. A reason goes on the record first. Accepting is always the person's choice and is never the only option.
+intro: Accepting closes the denial and logs a write-off. A reason goes on the record first. Accepting is always the person's choice and is never the only option. It also reaches Case Manager and Analytics.
 dir: TD
-also: Demo only: the write-off and the step-down plan are written as History lines and a notification. Nothing is added to Case Manager's list or to Analytics.
+also: Case Manager adds a step-down plan for the patient, and Analytics counts the write-off. The same steps run when an upheld appeal is accepted from 'Record the payer's decision'.
 ---
 start s1 "Select the 'Accept...' card in 'Your options'"
 click c1 "Click 'Accept the decision and plan the step-down'"
 overlay o1 "Modal 'Accept the decision?'\n'Nothing is regained. This closes the denial.'"
-screen l1 "Three bullets\n'Cadence logs the write-off of $6.2K.'\n'Case Manager starts the step-down plan.'\n'D-3297 leaves Appeal or call on the Dashboard.'"
+screen l1 "Three bullets\n'Analytics counts the write-off of $6.2K.'\n'Case Manager adds a step-down plan.'\n'D-3297 leaves Appeal or call on the Dashboard.'"
 input i1 "'Reason for the record' (required): open the menu and pick one"
 screen l2 "Menu choices\n'The chart does not yet support a challenge' (chosen at first)\n'The clinical team agrees with the payer's reasoning'\n'The member and family chose to step down'\n'The cost of an appeal outweighs the amount'"
 input i2 "Note (optional)\n'Anything the team should know'"
 click c2 "Click 'Accept and close'"
-click c3 "Click 'Cancel', the X, press Esc (this also closes an open menu), or click the dimmed area"
+click c3 "Click 'Cancel', the X, press Esc (this also closes an open menu first), or click the dimmed area"
 endx e1 "Nothing recorded\nThe denial stays open"
 
 store st1 "Accepted: reason (with the note after it) and time saved on the denial"
-store st2 "Request settled: leaves 'Appeal or call' for 'Decided'\nChip 'Accepted', 'Closed. Write-off logged'\nDeadline cleared; held by Cadence"
+store st2 "Request settled: leaves 'Appeal or call' for 'Decided'\nChip 'Accepted', 'Closed. Write-off logged'\nDeadline cleared; held by Cadence\nScheduled lines (a booked call, the daily check) leave the History"
 agent a1 "Cadence logs the write-off of the at-stake amount"
-store st3 "History: 'You accepted the decision' with 'Reason: ...'\n'Cadence logged the write-off of $6.2K and started the step-down plan in Case Manager'"
-toast t1 "'Decision accepted'\n'The write-off is logged. Case Manager has the step-down plan.'"
-toast t2 "Notification 'Denial closed' from Cadence\nOpens Case Manager, Reviews"
-screen sc1 "Denial page now shows banner 'Closed. You accepted the decision'\n'Reason: ... The write-off is logged.'"
+store st3 "History: 'You accepted the decision' with 'Reason: ...'\n'Cadence logged the write-off of $6.2K for Analytics and added a step-down plan to Case Manager'"
+store st4 "Shared with other screens: denial, case, payer and amount\nCase Manager adds a step-down plan\nAnalytics counts the write-off"
+toast t1 "'Decision accepted'\n'Analytics counts the write-off. Case Manager has a step-down plan.'"
+toast t2 "Notification 'Denial closed' from Cadence\nOpens Case Manager, Active cases"
+screen sc1 "Denial page now shows banner 'Closed. You accepted the decision'\n'Reason: ... Analytics counts the write-off.'"
 process p1 "'Your options' card is gone\nDenial moves to 'Closed' in the open denials list with the pill 'Accepted'\nSidebar badge goes down by one"
 click c4 "Click 'Plan the step-down'"
 click c5 "Click 'See on the Dashboard' (top right)"
-goto g1 "Continues in: Case Manager › Reviews"
+goto g1 "Continues in: Case Manager › Active cases › Step-down plans from accepted denials"
 goto g2 "Continues in: Dashboard › Request drawer › Open and read a request"
 process p2 "PRD guardrail: the agents never accept a write-off\nA person gives the reason, and the dollars are shown first"
 
@@ -35,8 +36,8 @@ l1 --> i2
 l2 --> c2
 i2 --> c2
 o1 --> c3 --> e1
-c2 --> st1 --> st2 --> a1 --> st3 --> t1 --> sc1
-st3 --> t2 --> g1
+c2 --> st1 --> st2 --> a1 --> st3 --> st4 --> t1 --> sc1
+st4 --> t2 --> g1
 sc1 --> p1
 sc1 --> c4 --> g1
 sc1 --> c5 --> g2

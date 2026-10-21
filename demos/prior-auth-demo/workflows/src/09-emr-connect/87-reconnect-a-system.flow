@@ -8,7 +8,7 @@ start s1 "Click 'Reconnect'\nOn a Disconnected row, or at the end of the Manage 
 goto g0 "Continues in: EMR Connect › Sync › When an agent is paused or asks first"
 decision q1 "Did it need a quick look when it was disconnected?"
 
-group gFix "Fix first (only if it needed one)"
+group gFix "Fix first, if needed"
   overlay f1 "Fix {name}\nSteps: What happened, Renew access, Test\nThe original problem is shown in an amber box"
   input f2 "Name who approves, tick the read-only box, click 'Renew and test'\nThree checks run"
   click f3 "Click 'Next: test the connection'\nOn the last step, after the checks pass"
@@ -17,7 +17,7 @@ group gFix "Fix first (only if it needed one)"
   toast f6 "'Sign-in renewed'\n'One more test, then {name} is connected.'\nNo toast when Navigator is set to 'Act on its own'"
 endgroup
 
-group gTest "The connection test (same as Connect)"
+group gTest "The connection test"
   overlay t1 "Reconnect {name}\n'Read-only. Nothing is written back until a person approves it.'\n'It is connected again only when the test passes. Until then New case cannot pull a chart from it.'"
   process t2 "Reaching the system\nSigning in with read-only access\nReading one test record\nAbout 0.8 seconds a check"
   toast t3 "'The test passed. Access is read-only, and nothing is written back.'"

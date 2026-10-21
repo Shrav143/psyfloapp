@@ -1,8 +1,8 @@
 title: Denial Intelligence › Hand-offs
 route: /denials
-intro: Every link that leaves Denial Intelligence for the Dashboard or Case Manager, and the links from other screens that arrive here. There is no link from Denial Intelligence to Analytics.
+intro: Every link that leaves Denial Intelligence for the Dashboard or Case Manager, what accepting or deciding an appeal passes on to other screens, and the links from other screens that arrive here. There is no link from Denial Intelligence to Analytics.
 dir: TD
-also: Demo only: accepting a denial says Case Manager starts a step-down plan and Cadence logs a write-off, but the code only writes History lines and a notification. No row is added to Case Manager and Analytics does not change.
+also: Accepting a denial (directly, or after an upheld appeal) adds a step-down plan to Case Manager and counts the write-off in Analytics. Every recorded appeal decision is also logged for other screens.
 ---
 screen sc1 "Denial Intelligence\nA denial is on screen"
 
@@ -13,21 +13,27 @@ click c3 "Click 'Open the Dashboard' (no open denials)"
 click c4 "Click 'Plan the step-down' (banner after accepting)"
 process p1 "Address opens /dashboard?request=D-3318"
 process p2 "Address opens /dashboard"
-process p3 "Address opens /manager?tab=reviews"
+process p3 "Address opens /manager?tab=cases"
 goto g1 "Continues in: Dashboard › Request drawer › Open and read a request"
 goto g2 "Continues in: Dashboard › Arrive › What the page shows"
-goto g3 "Continues in: Case Manager › Reviews"
+goto g3 "Continues in: Case Manager › Active cases › Step-down plans from accepted denials"
+endgroup
+
+group gShare "Shared with other screens"
+  click c6 "Click 'Record the payer's decision' (banner on a filed appeal)"
+  store z1 "On accept: Case Manager gets a step-down plan, Analytics counts the write-off"
+  store z2 "On a recorded appeal decision: the result and next level are logged\nAnalytics reads the appeal rulings"
 endgroup
 
 group gBell "Notifications"
 click c5 "Click the bell 'Notifications', then a row"
-toast n1 "'Appeal filed' or 'Call outcome: ...'\nFrom Navigator or Advocate"
+toast n1 "'Appeal filed', 'Appeal decision: ...' or 'Call outcome: ...'\nFrom Navigator or Advocate"
 toast n2 "'Denial closed'\nFrom Cadence, after an accept"
 toast n3 "'Denial analyzed', 'Denied today', 'Denied' or 'Partly approved'\nFrom Advocate"
 endgroup
 
 group gIn "Links in from other screens"
-start a1 "Analytics: 'Common denial reasons by payer'\nClick a row or its payer name"
+start a1 "Analytics: 'Common denial reasons by payer'\nClick a row or its payer name\n(opens with that payer and reason as filters)"
 start a2 "Authorizations case page: 'This request was denied'\nClick 'Open in Denial Intelligence'"
 start a3 "Dashboard request drawer\nClick 'Open in Denial Intelligence'"
 goto g4 "Continues in: Denial Intelligence › Ways in"
@@ -41,6 +47,8 @@ sc1 --> c1 --> p1 --> g1 --> e1
 sc1 --> c2 --> p1
 sc1 --> c3 --> p2 --> g2
 sc1 --> c4 --> p3 --> g3
+sc1 --> c6 --> z2
+c4 -.-> z1
 sc1 --> c5
 c5 --> n1 --> p1
 c5 --> n2 --> p3

@@ -38,7 +38,7 @@ group gUp "Upheld"
   store st5 "Decision saved: upheld, no next level"
 endgroup
 
-store r1 "Every decision is also logged for other screens\nDenial, request, payer, result and next level"
+store r1 "Every decision is also logged for other screens\nDenial, request, payer, result and next level\nAnalytics reads the appeal rulings"
 click c6 "Click 'See on the Dashboard'"
 
 goto g1 "Continues in: Dashboard › Request drawer › Open and read a request"

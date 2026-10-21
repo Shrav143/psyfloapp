@@ -8,20 +8,21 @@ Source: `src/pages/emr/*`, `src/store/emr.ts`, `src/data/emr.ts`. File numbers a
 |---|---|
 | Sidebar 'EMR Connect' (Connections) | 10 |
 | Header 'Manage mapping' (opens the outpatient site, or the first system; dimmed with no systems) | 10, 80 |
-| Header 'Connect a system' | 10, 40 |
+| Header 'Connect a system' (a paused Reader shows a toast instead) | 10, 40, 52 |
 | Four tiles: Last sync, Charts matched today, Files pulled, Need a mapping (not clickable) | 10, 15 |
 
 ## Connected systems card
 
 | Control | Diagram |
 |---|---|
-| Header 'Sync now' | 50 |
-| Row 'Sync now' (Connected rows only) | 50 |
+| Header 'Sync now' (dimmed while any sync runs; 'Nothing to sync' when no system is Connected) | 50 |
+| Row 'Sync now' (Connected rows only, dimmed while any sync runs) | 50 |
 | Row 'Fix' (Needs a quick look only) | 70 |
-| Row 'Reconnect' (Disconnected only) | 85 |
+| Row 'Reconnect' (Disconnected only) | 85, 87 |
 | Row 'Manage' | 80 |
-| Row text: 'N min ago', 'Syncing', 'Not syncing'; status pills; issue line | 20 |
+| Row text: 'N min ago', 'Syncing', 'Not syncing'; status pills; issue line and 'New case cannot pull a chart from it until it is connected.' | 20 |
 | Empty list text | 10 (dotted, not reachable) |
+| A paused agent, or 'Ask before acting', on Sync now, Connect, Fix and Reconnect: toast, or the 'Not now' pop-up with its link to Settings | 52 |
 
 ## Recent activity and side panels
 
@@ -29,9 +30,9 @@ Source: `src/pages/emr/*`, `src/store/emr.ts`, `src/data/emr.ts`. File numbers a
 |---|---|
 | 'See all N' | 30 |
 | Activity log drawer: X, Escape, click outside | 30 |
-| What adds a log line | 30 |
+| What adds a log line (every level of freedom logs; only 'Act on its own' skips the toast) | 30 |
 | 'What the agents can do here' (static Read / Write back) | 10 |
-| 'Needs a mapping' card: count pill, 'Map' per field, empty text | 60 |
+| 'Needs a mapping' card: subtitle (a chart pulled in New case leaves these fields blank), count pill, 'Map' per field, empty text | 60 |
 
 ## Connect a system pop-up
 
@@ -41,7 +42,7 @@ Source: `src/pages/emr/*`, `src/store/emr.ts`, `src/data/emr.ts`. File numbers a
 | 'Contact at the practice' (required) and its error | 40 |
 | 'Back' (step 2 only), 'Cancel', X, Escape, click outside | 40, 45 |
 | 'Run the connection test' | 40 |
-| Three checks, passed message, dimmed 'Connect {name}', 'Connect {name}' | 45 |
+| Three checks, passed message, dimmed 'Connect {name}', 'Connect {name}' (Reconnect runs the same checks) | 45, 87 |
 | What is saved: row, Files pulled +5, log line, toast | 45 |
 
 ## Sync
@@ -51,14 +52,14 @@ Source: `src/pages/emr/*`, `src/store/emr.ts`, `src/data/emr.ts`. File numbers a
 | Two-second wait, guard while a sync runs, leaving the page mid-sync, no Connected system | 50 |
 | Four rotating results, counters, toast 'Sync finished' | 50 |
 | What a sync pulls and when it runs (schedule is PRD only) | 55 |
-| 'Pull a chart from EMR Connect' in New case and the write-back on the Dashboard | 58 |
+| 'Pull a chart from EMR Connect' in New case (Connected systems only, blank fields while a mapping waits) and the write-back box on the Dashboard (needs a Connected system with the switch on) | 58 |
 
 ## Field mappings
 
 | Control | Diagram |
 |---|---|
 | Map pop-up: dropdown (click, arrows, Enter, Escape), 'Save the mapping', 'Cancel', X, Escape, click outside | 60 |
-| Escape when the pop-up sits on the Manage drawer | 60 |
+| Escape when the pop-up sits on the Manage drawer (closes the pop-up first) | 60 |
 | Manage drawer 'Field mappings' table, 'Map' on a 'Not mapped' row | 60, 65, 80 |
 | Every seeded mapping, who mapped it, the two waiting fields and their choices | 65 |
 
@@ -67,6 +68,7 @@ Source: `src/pages/emr/*`, `src/store/emr.ts`, `src/data/emr.ts`. File numbers a
 | Control | Diagram |
 |---|---|
 | Fix pop-up: 'Next', approver field, read-only checkbox, 'Renew and test', three checks, 'Finish and reconnect', 'Cancel', X, Escape, click outside | 70 |
+| Reconnect pop-ups: Fix first when it had a problem ('Next: test the connection'), then 'Reconnect {name}', 'Cancel', X, Escape | 87 |
 | Every error state and what it needs | 75 |
 
 ## Manage drawer
@@ -75,10 +77,11 @@ Source: `src/pages/emr/*`, `src/store/emr.ts`, `src/data/emr.ts`. File numbers a
 |---|---|
 | Drawer X, Escape, click outside | 80 |
 | Connection details, Permissions read chips | 80 |
-| Write-back switch | 80 |
+| Write-back switch ('The Dashboard offers the approval write-back box for this system') and its toasts | 80 |
+| Read chips by kind of system | 80 |
 | 'Disconnect' | 80, 85 |
-| Confirmation: 'Keep it connected', 'Disconnect', X, click outside, Escape | 85 |
-| 'Reconnect' (row or drawer) | 85 |
+| Confirmation: 'Keep it connected', 'Disconnect', X, click outside, Escape (closes only the confirmation) | 85 |
+| 'Reconnect' (row or drawer) | 85, 87 |
 
 ## Not drawn
 
@@ -89,12 +92,8 @@ Source: `src/pages/emr/*`, `src/store/emr.ts`, `src/data/emr.ts`. File numbers a
 
 ## Looks broken or dead in the demo
 
-- The per-system write-back switch is stored and logged but nothing reads it. The Dashboard 'Approve write-back' works with it on or off.
-- A saved field mapping is not used anywhere else, and a mapped field cannot be unmapped or edited.
-- 'Pull a chart from EMR Connect' in New case uses a fixed list of four charts. It works with every system disconnected, and Sync now adds nothing to it.
-- 'Reconnect' skips Fix and any test, so a system that needed a quick look can be cleared by Disconnect then Reconnect.
-- Escape on the Manage drawer with a Map pop-up open closes the drawer first and leaves the pop-up. Escape with the Disconnect confirmation open closes both and does not disconnect.
-- Header 'Sync now' is not dimmed while a row sync runs. The click is ignored with no message.
-- The Fix log line says it pulled 12 remittances but the Files pulled tile does not change.
-- Manage lists the clinical read chips (Assessments, Progress notes ...) for Lab results and Practice management systems too.
-- The activity drawer says 'Admins can see who and what'. There is no such view.
+- A mapping's chosen value (IOP or PHP, Payer name ...) is not applied anywhere. A mapped field only stops being left blank in New case's pull, and a mapped field cannot be unmapped or edited.
+- The four charts New case can pull are fixed. Sync now adds none, and a new system offers none.
+- Reader's default level is 'Act on its own', so a plain Sync now ends with no toast. The tiles and the new log line show it. Set Reader to 'Act, then report' to see 'Sync finished'.
+- Reader (Sync now, Connect a system) and Navigator (Fix, Reconnect) read the pause. Their freedom applies to Sync now, Fix and Reconnect only: Connect asks nothing beyond its own pop-up. Disconnect, Map and the write-back switch are a person's own choices and are never held back.
+- If the Reconnect test pop-up is cancelled after its Fix steps, the sign-in stays renewed and the next Reconnect goes straight to the test.

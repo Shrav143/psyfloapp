@@ -26,16 +26,16 @@ Source: `src/App.tsx`, `src/routes.ts`, `src/components/layout/*`, `src/store/co
 | 'Demo' button with clock pill | Top bar | 20, 40 |
 | 'Ask FLO' button | Top bar | 20, 21 |
 | 'Notifications' bell and red dot | Top bar | 20, 30 |
-| Dimmed area, 'X', Escape on both drawers | Drawers | 20, 21, 30 |
+| Dimmed area, 'X', Escape on both drawers (Escape closes only the top layer) | Drawers | 20, 21, 30 |
 | Demo menu: 'Time' text | Demo menu | 40 |
 | 'Fast-forward 1 hour', 'Fast-forward 1 day' | Demo menu | 41 |
 | 'Suggested path' steps 1 to 7 | Demo menu | 42 |
 | 'Reset demo data' | Demo menu | 43 |
-| Close by outside click, 'Demo' again; Escape does nothing | Demo menu | 40 |
-| Four suggestion chips | Ask FLO | 21, 22 |
+| Close by outside click, 'Demo' again, or Escape | Demo menu | 40 |
+| Four suggestion chips (shown at the start, and again under a fallback answer) | Ask FLO | 21, 22 |
 | 'Ask a question' box, 'Send', Enter | Ask FLO | 21 |
 | 'FLO is working…', greeting, chat memory | Ask FLO | 21 |
-| Answer rules and the five links under answers | Ask FLO | 22 |
+| Answer rules and the five links under answers (each opens a matching view: Dashboard 'Payers at a glance', the nearest open denial, Payers › Cardinal › Changes, the request to start with, New case) | Ask FLO | 22 |
 | Notification row click (mark read, close, go) | Notifications | 30 |
 | 'Mark all read' | Notifications | 30 |
 | Subtitle '4 unread' / 'You are all caught up' | Notifications | 30 |
@@ -58,7 +58,5 @@ Source: `src/App.tsx`, `src/routes.ts`, `src/components/layout/*`, `src/store/co
 
 ## Things that look broken or odd (for the report)
 
-- Escape does not close the Demo menu, unlike both drawers.
-- Ask FLO fallback reply says 'Try one of the suggestions below', but the chips are gone by then (they show only while the chat has fewer than three messages). It also ends '(Clock: just now.)', which reads '1 h ago' after a fast-forward.
-- Fast-forward changes only the clock. It never makes a payer reply, a referral or a notification happen.
-- The notification 'Drafts updated' says drafts return to Case Manager for a new signature, but Case Manager's lists do not change (the redraft only touches Dashboard requests).
+- Fast-forward changes the clock and what is worked out from it. It never makes a payer reply or a referral arrive. The one thing it can start is Verify's automatic re-check of a patient whose re-check came due, which raises a 'Re-checked automatically' notification.
+- The chat in Ask FLO lives in the page, so 'Reset demo data' does not clear it and its old answers keep the old numbers.

@@ -1,6 +1,6 @@
 title: Global shell › Demo menu › Fast-forward the demo clock
 route: Every page (Demo menu › Time)
-intro: Fast-forward moves the demo clock by an hour or a day. It only changes what is worked out from the clock: ages, countdowns and 'overdue' wording. It never makes anything happen by itself.
+intro: Fast-forward moves the demo clock by an hour or a day. It changes what is worked out from the clock: ages, countdowns and 'overdue' wording. The one thing it can start is Verify's automatic re-check of a patient whose re-check came due.
 dir: TD
 also: The clock starts at Tue 20 Oct 2026, 10:42 am. It has no 'back' button: only 'Reset demo data' returns it.
 ---
@@ -20,17 +20,19 @@ group gMove "What moves with the clock"
   process m3 "Dashboard\nTime in stage, 'late' flags and the 'Outcomes for' date range"
   process m4 "Authorizations, Denial Intelligence\nQueue bands, case clocks, peer-to-peer and appeal deadlines"
   process m5 "Eligibility & Benefits, EMR Connect, New case\nHow long ago a check, a sync or a referral was"
+  agent m6 "Eligibility & Benefits\nVerify re-checks every patient whose re-check time has passed, unless Verify is paused in Settings\nA 'Re-checked automatically' notification follows"
 endgroup
 
 group gStill "What does not change"
   process s2 "No payer replies, no referral arrives, no agent finishes a step"
-  process s3 "No case changes status, no new notification, no badge changes"
+  process s3 "No case changes status and no badge changes\nThe only new notification a Fast-forward can add is Verify's"
   process s4 "Ask FLO answers and Case Manager review statuses stay as they were"
 endgroup
 
 group gHow "How things really arrive in the demo"
   goto g1 "Continues in: Dashboard › Request drawer › Demo controls (payer replies)"
   goto g2 "Continues in: Authorizations › New case › Referral › Start screen"
+goto g3 "Continues in: Global shell › Top bar › Notifications › What creates a notification"
 endgroup
 
 end e1 "Page keeps its place. Click again to move further"
@@ -39,8 +41,9 @@ s1 --> c1 & c2
 c1 --> p1 --> st1
 c2 --> p2 --> st1
 st1 --> p3 --> t1 --> p4 --> e1
-st1 --> m1 & m2 & m3 & m4 & m5
+st1 --> m1 & m2 & m3 & m4 & m5 & m6
 st1 -.-> s2
 s2 --> s3 --> s4
 s2 --> g1
 s2 --> g2
+m6 -.-> g3

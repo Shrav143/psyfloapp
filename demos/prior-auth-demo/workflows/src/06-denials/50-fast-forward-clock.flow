@@ -1,6 +1,6 @@
 title: Denial Intelligence › Deadlines › Fast-forward the clock
 route: /denials
-intro: The demo clock only moves when the Demo menu moves it. Every time-left text, colour and sort order on Denial Intelligence follows the clock; nothing else happens by itself.
+intro: The demo clock only moves when the Demo menu moves it. Every time-left text, colour and sort order on Denial Intelligence follows the clock, and so do the call times offered for booking; nothing else happens by itself.
 dir: TD
 also: Demo only: the Demo menu is not part of the product. In production the clocks run in real time and alert at 14, 7 and 3 days (PRD 04).
 ---
@@ -18,7 +18,7 @@ decision d1 "Which clock does this denial run?"
 screen k1 "Peer-to-peer window\nList 'P2P in 36 h'\nHeader 'Peer-to-peer window closes in 36 h'"
 screen k2 "Written appeal due\nList 'Appeal in 41 d'\nHeader 'Appeal due in 41 d'"
 screen k3 "Resubmission due\nList 'Resubmit in 5 d'\nHeader 'Resubmit within 5 d'"
-screen k4 "Filed appeal\nList 'Decision 11/02'\nHeader 'Appeal filed, decision 11/02'\nNo change at all"
+screen k4 "Filed appeal\nList 'Decision 11/02'\nHeader 'Appeal filed, decision 11/02'\nNo change at all (the person records the payer's decision)"
 decision d2 "How much time is left?"
 screen m1 "Grey: 7 days or more"
 screen m2 "Ochre: 2 to 7 days"
@@ -26,6 +26,8 @@ screen m3 "Red: under 2 days"
 screen m4 "Time is up\nList 'Window closed' (red)\nHeader 'Peer-to-peer window closed', 'Appeal deadline passed' or 'Resubmission window closed'"
 screen m5 "Brief page 'Closes in' follows the same colours and reads 'Closed' when time is up"
 goto g1 "Continues in: Denial Intelligence › Deadlines › Overdue denials"
+process p6 "Call times are offered again from the new clock\nOnly windows that start after the clock and before the payer's window closes\nWhen none is left: 'No call time is left inside the payer's window'"
+goto g3 "Continues in: Denial Intelligence › Peer-to-peer › Book the call"
 goto g2 "Continues in: Dashboard › Arrive › What the page shows"
 process p4 "No notification, status change or hand-off happens when a time runs out (demo)"
 
@@ -54,4 +56,5 @@ d2 -->|None left| m4
 m4 --> m5 --> g1
 m4 -.-> p4
 st1 -.-> g2
+p3 --> p6 --> g3
 o1 --> c3 --> st2 --> t2 --> p5 --> g2

@@ -105,14 +105,14 @@ export function LedgerView({ ledger, filters, onStatus, onClear }: { ledger: Led
                 const update = payerUpdateFor([c.id, c.caseId], updates);
                 const open = () => navigate(paths.case(c.caseId));
                 return (
-                  <Tr key={c.id} onClick={open} data-case={c.id}>
+                  <Tr key={c.id} onClick={(e) => { if (!(e.target as HTMLElement).closest("button")) open(); }} data-case={c.id}>
                     <Td>
                       <IdLink onClick={open}>{c.id}</IdLink>
                       <div className="text-xs text-muted">{c.initials} · {c.age}</div>
                       {c.isNew || update ? (
                         <div className="mt-1 flex flex-col items-start gap-1">
                           {c.isNew ? <Pill tone="good">New today</Pill> : null}
-                          {update ? <Pill tone="neutral">{payerUpdateText(update)}</Pill> : null}
+                          {update ? <span className="max-w-[128px] text-xs leading-snug font-medium whitespace-normal text-ink2">{payerUpdateText(update)}</span> : null}
                         </div>
                       ) : null}
                     </Td>
@@ -133,7 +133,7 @@ export function LedgerView({ ledger, filters, onStatus, onClear }: { ledger: Led
                         </div>
                       )}
                     </Td>
-                    <Td className={cn("font-semibold", clk.urgent && "text-risk-ink")}>{clk.text}</Td>
+                    <Td className={cn("max-w-[150px] font-semibold whitespace-normal", clk.urgent && "text-risk-ink")}>{clk.text}</Td>
                     <Td>
                       <Chance value={c.chance} />
                     </Td>
@@ -141,7 +141,7 @@ export function LedgerView({ ledger, filters, onStatus, onClear }: { ledger: Led
                       <Pill tone={STATUS_TONE[c.status]}>{LEDGER_STATUS_LABEL[c.status]}</Pill>
                     </Td>
                     <Td>
-                      <Button size="sm" aria-label={`Open ${c.id}`} onClick={(e) => { e.stopPropagation(); open(); }}>
+                      <Button size="sm" aria-label={`Open ${c.id}`} onClick={open}>
                         Open
                       </Button>
                     </Td>

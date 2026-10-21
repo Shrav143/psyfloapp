@@ -49,6 +49,7 @@ export default function QueuePage() {
 
   // With no one in Act now the band stays, saying so, so the page never looks as if the urgent requests were hidden.
   const showEmptyNow = urgent === 0 && (filters.urgency === "all" || filters.urgency === "now") && !otherFiltersActive(filters);
+  const bands = BANDS.filter((b) => grouped[b].length > 0 || (b === "now" && showEmptyNow));
   const title = filtered ? `${shown.length} of ${plural(all.count, "open request")} ${shown.length === 1 ? "matches" : "match"} these filters.` : needsToday === 0 ? "Nothing needs action today." : `${needsToday} of ${plural(all.count, "open request")} ${needsToday === 1 ? "needs" : "need"} action today.`;
   const sub = filtered ? undefined : `${urgent === 0 ? "Nothing is urgent." : `${cap(numberWord(urgent))} ${urgent === 1 ? "is" : "are"} urgent.`} ${money(all.dollars)} rides on what is in flight, and the average approval chance is ${all.avg}%.`;
 
@@ -64,12 +65,12 @@ export default function QueuePage() {
         <Card>
           <EmptyState icon={CalendarCheck} title="Nothing needs you today" action={<Button onClick={() => navigate(paths.manager())}>Open Case Manager</Button>}>Every open request has been sent or handled. Case Manager shows what is scheduled next.</EmptyState>
         </Card>
-      ) : shown.length === 0 ? (
+      ) : bands.length === 0 ? (
         <Card>
           <EmptyState icon={SearchX} title="No requests match these filters" action={<Button onClick={clearFilters}>Clear filters</Button>}>The filters hide all {plural(all.count, "open request")}.</EmptyState>
         </Card>
       ) : (
-        BANDS.filter((b) => grouped[b].length > 0 || (b === "now" && showEmptyNow)).map((b) => (
+        bands.map((b) => (
           <BandCard
             key={b} band={b} items={grouped[b]} stats={statsOf(grouped[b], cases, clock)} collapsed={bandView[b].collapsed} showAll={bandView[b].showAll} clock={clock} chances={chances}
             onToggle={() => useStore.getState().toggleBand(b)} onShowAll={(on) => useStore.getState().showAllInBand(b, on)}
