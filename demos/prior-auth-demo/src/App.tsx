@@ -1,0 +1,63 @@
+import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
+import { Shell } from "@/components/layout";
+import { EmptyState, Page, PageHeader } from "@/components/ui";
+import ActiveCasesPage from "@/pages/active/ActiveCasesPage";
+import AnalyticsPage from "@/pages/analytics/AnalyticsPage";
+import CasePage from "@/pages/authorizations/CasePage";
+import QueuePage from "@/pages/authorizations/QueuePage";
+import DashboardPage from "@/pages/dashboard/DashboardPage";
+import BriefPage from "@/pages/denials/BriefPage";
+import DenialsPage from "@/pages/denials/DenialsPage";
+import EligibilityListPage from "@/pages/eligibility/EligibilityListPage";
+import ResultPage from "@/pages/eligibility/ResultPage";
+import VerifyPage from "@/pages/eligibility/VerifyPage";
+import EmrPage from "@/pages/emr/EmrPage";
+import ManagerPage from "@/pages/manager/ManagerPage";
+import NewCasePage from "@/pages/newcase/NewCasePage";
+import PayersPage from "@/pages/payers/PayersPage";
+import ReferralDetailPage from "@/pages/referrals/ReferralDetailPage";
+import ReferralsPage from "@/pages/referrals/ReferralsPage";
+import SettingsPage from "@/pages/settings/SettingsPage";
+import { SearchX } from "lucide-react";
+
+function NotFound() {
+  return (
+    <Page>
+      <PageHeader title="Page not found" sub="That address is not part of the demo." />
+      <EmptyState icon={SearchX} title="Nothing here">Use the sidebar to get back on track.</EmptyState>
+    </Page>
+  );
+}
+
+/** Hash routing keeps the single-file build working when opened straight from disk. */
+export default function App() {
+  return (
+    <HashRouter>
+      <Routes>
+        <Route element={<Shell />}>
+          <Route index element={<Navigate to="/dashboard" replace />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/referrals" element={<ReferralsPage />} />
+          <Route path="/referrals/:id" element={<ReferralDetailPage />} />
+          <Route path="/authorizations" element={<QueuePage />} />
+          <Route path="/authorizations/case/:id" element={<CasePage />} />
+          <Route path="/authorizations/new" element={<NewCasePage />} />
+          <Route path="/authorizations/new/:draftId" element={<NewCasePage />} />
+          <Route path="/authorizations/eligibility" element={<EligibilityListPage />} />
+          <Route path="/authorizations/eligibility/verify" element={<VerifyPage />} />
+          <Route path="/authorizations/eligibility/:id" element={<ResultPage />} />
+          <Route path="/denials" element={<DenialsPage />} />
+          <Route path="/denials/:id/brief" element={<BriefPage />} />
+          <Route path="/active" element={<ActiveCasesPage />} />
+          <Route path="/manager" element={<ManagerPage />} />
+          <Route path="/analytics" element={<AnalyticsPage />} />
+          <Route path="/emr" element={<EmrPage />} />
+          <Route path="/payers" element={<PayersPage />} />
+          <Route path="/payers/:id" element={<PayersPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="*" element={<NotFound />} />
+        </Route>
+      </Routes>
+    </HashRouter>
+  );
+}

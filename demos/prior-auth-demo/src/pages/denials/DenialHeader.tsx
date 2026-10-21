@@ -1,0 +1,58 @@
+import { Card, CardBody, Chip, Pill } from "@/components/ui";
+import { PROGRAM_LABEL, type PsyRequest, type Tone } from "@/data/types";
+import { money } from "@/lib/format";
+import { DAY } from "@/lib/time";
+import { payerById } from "@/data/seed";
+import { cn } from "@/lib/cn";
+import type { DenialView } from "./lib/useDenialView";
+import { capitalize, leftLabel } from "./lib/format";
+
+const READ_TONE: Record<string, string> = { "Worth challenging": "bg-good-bg text-good-ink", Borderline: "bg-mid-bg text-mid-ink", "Probably accept": "bg-risk-bg text-risk-ink" };
+
+/** The deadline chip: how long the window is open, or where the denial stands once it has been filed. */
+function windowChip(r: PsyRequest, clock: number): { text: string; tone: Tone } | null {
+  if (r.stage !== "appeal") return { text: `${r.chip}. ${r.next}`, tone: r.tone };
+  if (r.deadlineAt !== undefined) {
+    const left = r.deadlineAt - clock;
+    const tone: Tone = left < 2 * DAY ? "risk" : left < 7 * DAY ? "mid" : "neutral";
+    if (r.clockSub === "peer-to-peer window") return { text: left > 0 ? `Peer-to-peer window closes in ${leftLabel(left)}` : "Peer-to-peer window closed", tone: left > 0 ? tone : "risk" };
+    if (r.clockSub === "to file") return { text: left > 0 ? `Appeal due in ${leftLabel(left)}` : "Appeal deadline passed", tone: left > 0 ? tone : "risk" };
+    return { text: left > 0 ? `Resubmit within ${leftLabel(left)}` : "Resubmission window closed", tone: left > 0 ? tone : "risk" };
+  }
+  return r.clockNote ? { text: `${r.chip}, ${r.clockNote}`, tone: "neutral" } : null;
+}
+
+export function DenialHeader({ view }: { view: DenialView }) {
+  const { req, meta, analysis, clock } = view;
+  const chip = windowChip(req, clock);
+  return (
+    <Card>
+      <CardBody>
+        <div className="flex items-start gap-5">
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <Chip>{PROGRAM_LABEL[req.program]}</Chip>
+              <span className="font-serif text-[26px] leading-none font-semibold">{req.id}</span>
+              <Pill tone="mid">{meta.type}</Pill>
+              {req.chip !== meta.type ? <Pill tone={req.tone}>{req.chip}</Pill> : null}
+            </div>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <Pill tone="risk">{money(req.atStake)} at stake</Pill>
+              {chip ? <Pill tone={chip.tone} dot>{capitalize(chip.text)}</Pill> : null}
+            </div>
+            <p className="mt-3 text-[13.5px] text-muted">
+              {payerById(req.payerId).name} · case {req.caseId} · {req.patient.initials}, {req.patient.age}
+              {meta.letterName ? ` · letter ${meta.letterName}` : ""}
+            </p>
+            {meta.note ? <p className="mt-1 text-[13.5px] text-ink2">Your note: {meta.note}</p> : null}
+          </div>
+          <div className={cn("flex min-w-[240px] max-w-[300px] flex-col gap-0.5 rounded-2xl px-[18px] py-3.5", READ_TONE[analysis.verdict])}>
+            <span className="text-[11.5px] font-semibold tracking-[0.1em] uppercase">Our read</span>
+            <b className="font-serif text-[20px] leading-tight">{analysis.verdict}</b>
+            <span className="text-sm">{analysis.verdictLine}</span>
+          </div>
+        </div>
+      </CardBody>
+    </Card>
+  );
+}

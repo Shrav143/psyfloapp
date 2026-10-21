@@ -1,0 +1,149 @@
+/* Eligibility and Benefits: the patient rows, the verdict rule and the simulated live check.
+   The wording of each payment check lives in pages/eligibility/checks.ts. */
+import type { PayerId, Program, Tone } from "./types";
+
+export type EligState = "active" | "lapsed" | "ended" | "not_found";
+export type BenefitState = "covered" | "limited" | "not_covered";
+export type AuthState = "not_required" | "on_file" | "in_progress" | "reviewing" | "retro_open" | "required";
+export type Verdict = "cleared" | "auth_first" | "fix";
+
+export const VERDICT_LABEL: Record<Verdict, string> = { cleared: "Cleared to bill", auth_first: "Authorization first", fix: "Fix before billing" };
+export const VERDICT_TONE: Record<Verdict, Tone> = { cleared: "good", auth_first: "mid", fix: "risk" };
+
+export interface EbPatient {
+  id: string; // the case ID, or V-xxxx for a check that has no case yet
+  initials: string | null;
+  age: number | null;
+  payerId: PayerId;
+  program: Program;
+  levelLabel?: string;
+  memberMasked: string;
+  eligibility: { state: EligState; on?: string };
+  benefits: BenefitState;
+  auth: AuthState;
+  limit?: { used: number; of: number; unit: "days" | "units" };
+  noDayLimit?: boolean;
+  inNetwork: boolean;
+  otherInsurance: boolean;
+  dx?: string;
+  dos: string;
+  checkedAt: number; // demo minutes
+  recheckDue: boolean;
+}
+
+/** Cleared: everything passes. Authorization first: only the authorization is missing. Fix: coverage, plan, benefits, network, other insurance or a limit failed. */
+export function verdictOf(p: EbPatient): Verdict {
+  const exhausted = !!p.limit && p.limit.used >= p.limit.of;
+  if (p.eligibility.state !== "active" || p.benefits === "not_covered" || !p.inNetwork || p.otherInsurance || exhausted) return "fix";
+  if (p.auth === "required" || p.auth === "in_progress" || p.auth === "reviewing" || p.auth === "retro_open") return "auth_first";
+  return "cleared";
+}
+
+/** Sort: Fix before billing first, then Authorization first, then the oldest check. */
+export function sortPatients(list: EbPatient[]): EbPatient[] {
+  const rank: Record<Verdict, number> = { fix: 0, auth_first: 1, cleared: 2 };
+  return [...list].sort((a, b) => rank[verdictOf(a)] - rank[verdictOf(b)] || a.checkedAt - b.checkedAt);
+}
+
+/* ------------------------------------------------------------------ the live check (simulated) */
+export interface CheckInput {
+  payerId: PayerId;
+  program: Program;
+  memberId: string;
+  dos: string;
+}
+type Findings = Pick<EbPatient, "eligibility" | "benefits" | "auth" | "noDayLimit" | "inNetwork" | "otherInsurance">;
+
+const NO_AUTH: [PayerId, Program][] = [["beacon", "IOP"], ["beacon", "PHP"]];
+
+/** What the state and the plan "answer". Scripted so the demo is predictable:
+    a member ID ending 1012 is lapsed, 9999 is not found, Evergreen is reached by phone and is not enrolled for detox. */
+export function simulateCheck(i: CheckInput): Findings {
+  const tail = i.memberId.replace(/\D/g, "").slice(-4);
+  return {
+    eligibility: tail === "1012" ? { state: "lapsed", on: "10/12" } : tail === "9999" ? { state: "not_found" } : { state: "active" },
+    benefits: i.payerId === "harborview" && i.program === "PHP" ? "limited" : "covered",
+    auth: NO_AUTH.some(([p, g]) => p === i.payerId && g === i.program) ? "not_required" : "required",
+    noDayLimit: i.payerId === "summit" && i.program === "RES",
+    inNetwork: !(i.payerId === "evergreen" && i.program === "WM"),
+    otherInsurance: false,
+  };
+}
+/** Evergreen is the one payer reached by phone: its system does not answer, so Caller phones. */
+export const needsCaller = (payerId: PayerId): boolean => payerId === "evergreen";
+
+/* ------------------------------------------------------------------ seed rows: 34 patients, 28 cleared, 4 authorization first, 2 fix, 5 re-checks due */
+type Lim = [number, number, "days" | "units"];
+interface Row {
+  id: string;
+  who: string;
+  age: number;
+  payer: PayerId;
+  prog: Program;
+  chk: number; // minutes ago
+  auth?: AuthState;
+  lim?: Lim;
+  o?: Partial<EbPatient>;
+}
+const R = (id: string, who: string, age: number, payer: PayerId, prog: Program, chk: number, auth: AuthState | undefined, lim?: Lim, o?: Partial<EbPatient>): Row => ({ id, who, age, payer, prog, chk, auth, lim, o });
+
+const tailOf = (id: string): string => String(1000 + ((Number(id.replace(/\D/g, "")) * 7919) % 9000)).padStart(4, "0");
+
+const ROWS: Row[] = [
+  /* authorization first (4) */
+  R("R-1042", "J.M.", 34, "summit", "RES", 2, "in_progress", undefined, { noDayLimit: true, memberMasked: "…4821", dx: "F10.20" }),
+  R("I-2262", "S.N.", 31, "lakeshore", "IOP", 35, "in_progress"),
+  R("I-2190", "R.P.", 31, "lakeshore", "IOP", 240, "reviewing"),
+  R("I-2231", "S.B.", 37, "cardinal", "IOP", 310, "reviewing"),
+  /* fix before billing (2) */
+  R("R-1101", "K.W.", 26, "summit", "RES", 6, "retro_open", undefined, { eligibility: { state: "lapsed", on: "10/12" }, levelLabel: "Detox → Residential", memberMasked: "…1012" }),
+  R("R-0975", "B.N.", 53, "evergreen", "RES", 180, "on_file", [9, 14, "days"], { eligibility: { state: "ended", on: "09/30" } }),
+  /* cleared to bill (28) */
+  R("D-3318", "M.C.", 38, "cardinal", "RES", 60, "on_file", [7, 14, "days"]),
+  R("I-2207", "T.R.", 29, "cardinal", "IOP", 4320, "on_file", [38, 48, "units"], { recheckDue: true }),
+  R("R-0988", "D.L.", 41, "beacon", "RES", 1440, "on_file", [10, 21, "days"]),
+  R("P-1573", "A.S.", 51, "harborview", "PHP", 1440, "on_file", [8, 15, "days"]),
+  R("I-2144", "G.N.", 33, "summit", "IOP", 2880, "on_file", [16, 48, "units"], { recheckDue: true }),
+  R("R-1021", "V.P.", 48, "cardinal", "RES", 1900, "on_file", [11, 14, "days"]),
+  R("P-1602", "R.H.", 39, "cardinal", "PHP", 600, "on_file", [9, 15, "days"]),
+  R("I-2236", "B.J.", 30, "cardinal", "IOP", 2200, "on_file", [24, 48, "units"]),
+  R("I-2158", "D.O.", 43, "summit", "IOP", 4000, "on_file", [30, 48, "units"]),
+  R("P-1580", "F.L.", 35, "summit", "PHP", 420, "on_file", [6, 15, "days"]),
+  R("R-0902", "G.W.", 50, "summit", "RES", 900, "on_file", [19, 21, "days"]),
+  R("R-0934", "E.Y.", 38, "beacon", "RES", 1300, "on_file", [14, 21, "days"]),
+  R("P-1590", "Z.T.", 46, "harborview", "PHP", 2500, "on_file", [12, 15, "days"], { benefits: "limited" }),
+  R("R-0912", "C.D.", 44, "evergreen", "RES", 70, "on_file", [12, 14, "days"]),
+  R("P-1499", "E.S.", 42, "harborview", "PHP", 1600, "on_file", [10, 15, "days"], { benefits: "limited" }),
+  R("I-2218", "O.H.", 28, "cardinal", "IOP", 500, "on_file", [33, 48, "units"]),
+  R("R-0951", "F.W.", 47, "evergreen", "RES", 90, "on_file", [2, 14, "days"]),
+  R("R-0944", "M.B.", 40, "beacon", "RES", 200, "on_file", [3, 14, "days"]),
+  R("I-2171", "Q.Z.", 25, "lakeshore", "IOP", 150, "on_file", [4, 30, "units"]),
+  R("R-0960", "H.V.", 39, "summit", "RES", 200, "on_file", [5, 14, "days"]),
+  R("I-2102", "W.H.", 36, "summit", "IOP", 5000, "on_file", [22, 48, "units"], { recheckDue: true }),
+  R("P-1519", "C.M.", 41, "beacon", "PHP", 3000, "not_required"),
+  R("R-0866", "T.S.", 29, "summit", "RES", 3600, "on_file", [12, 21, "days"], { recheckDue: true }),
+  R("I-2120", "J.B.", 33, "lakeshore", "IOP", 1700, "on_file", [30, 60, "units"]),
+  R("P-1550", "N.D.", 47, "harborview", "PHP", 2600, "on_file", [5, 15, "days"], { benefits: "limited" }),
+  R("R-0889", "P.K.", 52, "evergreen", "RES", 800, "on_file", [6, 14, "days"]),
+  R("I-2133", "L.O.", 27, "cardinal", "IOP", 1200, "on_file", [20, 48, "units"]),
+  R("R-0871", "V.A.", 35, "summit", "RES", 3900, "on_file", [9, 14, "days"], { recheckDue: true }),
+];
+
+export const SEED_EB_PATIENTS: EbPatient[] = ROWS.map((r) => ({
+  id: r.id,
+  initials: r.who,
+  age: r.age,
+  payerId: r.payer,
+  program: r.prog,
+  memberMasked: `…${tailOf(r.id)}`,
+  eligibility: { state: "active" },
+  benefits: "covered",
+  auth: r.auth ?? "on_file",
+  limit: r.lim ? { used: r.lim[0], of: r.lim[1], unit: r.lim[2] } : undefined,
+  inNetwork: true,
+  otherInsurance: false,
+  dos: "10/21/2026",
+  checkedAt: -r.chk,
+  recheckDue: false,
+  ...r.o,
+}));
