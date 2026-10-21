@@ -1,0 +1,49 @@
+title: Authorizations › Eligibility & Benefits › Re-check on its own
+route: /authorizations/eligibility
+intro: Five patients have a re-check booked this week. Verify runs each one by itself when the Demo clock passes its time, wherever the person is in the app. If Verify is paused in Settings it waits, and catches up when Verify is resumed.
+dir: TD
+also: Demo only: the Demo clock moves only from the Demo menu. A re-check never changes the verdict. Booked times from the start: I-2207 Tue 11:32 am, I-2144 Tue 3:42 pm, I-2102 Wed 1:42 pm, R-0866 Thu 10:42 am, R-0871 Sat 10:42 am.
+---
+start s1 "On the list, five rows read 'Re-check due Tue 11:32 am' and so on\nTile 'Re-check due' counts 5"
+click c1 "Open 'Demo' (top right) and click 'Fast-forward 1 hour' or 'Fast-forward 1 day'"
+process p1 "The Demo clock moves\nToast 'Clock moved forward 1 hour'"
+decision q1 "Has a booked re-check time passed?"
+endx e0 "Nothing is due yet\nRows keep 'Re-check due Tue 11:32 am'"
+decision q2 "Is Verify paused in Settings?"
+
+group gRun "Verify re-checks"
+  agent a1 "Verify re-checks every patient that came due\nAsks the state and the plan again (demo: simulated, same answer as before)"
+  store st1 "Each row updated\nChecked time is the booked time, booking cleared\nVerdict unchanged, sidebar badge unchanged"
+  process r1 "List: second line reads 'Re-checked automatically at 11:32 am'\nTile 'Re-check due' goes down by the rows done"
+  process r2 "Result: pill reads 'Re-checked automatically at 11:32 am'\n'Next checks' no longer starts with the re-check line"
+  decision q3 "How many came due at once?"
+  toast n1 "Bell: 'Re-checked automatically'\n'I-2207 is still Cleared to bill. Verify re-checked it at 11:32 am.'\nClick opens that result"
+  toast n2 "Bell: 'Re-checked 2 patients automatically'\n'I-2144, I-2102 came due. None of the verdicts changed.'\nClick opens the list"
+endgroup
+
+group gPaused "Verify is paused"
+  process w1 "Nothing runs\nRow reads 'Not re-checked: Verify is paused in Settings'\nTile 'Re-check due' keeps its count"
+  screen w2 "Result shows a banner 'Not re-checked: Verify is paused in Settings'\n'The re-check was due Tue 11:32 am. It runs as soon as Verify is resumed.'"
+  click c2 "In Settings, switch Verify back on, or click 'Resume all agents'"
+  process w3 "Verify catches up at once\nChecked time is now, then the same rows and bell messages as above"
+endgroup
+
+click m1 "Meanwhile the person clicks 'Re-check' on a row or 'Check again' on a result"
+process m2 "That booking is cleared: the person got there first"
+goto g1 "Continues in: Authorizations › Eligibility & Benefits › Re-verify a patient"
+goto g2 "Continues in: Settings › Pause › What the rest of the app shows"
+goto g3 "Continues in: Global shell › Demo menu › Fast-forward the demo clock"
+end e1 "Rows and tile are up to date"
+
+s1 --> c1 --> p1 --> q1
+c1 -.-> g3
+q1 -->|No| e0
+q1 -->|Yes| q2
+q2 -->|No| a1 --> st1 --> r1 & r2
+st1 --> q3
+q3 -->|One| n1 --> e1
+q3 -->|Several| n2 --> e1
+r1 & r2 -.-> e1
+q2 -->|Yes| w1 --> w2 --> c2 --> w3 --> a1
+w1 -.-> g2
+s1 -.-> m1 --> m2 --> g1

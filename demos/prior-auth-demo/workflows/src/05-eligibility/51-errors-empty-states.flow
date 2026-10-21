@@ -11,7 +11,7 @@ goto g1 "Continues in: Authorizations › Eligibility & Benefits › List › Wh
 
 start s2 "Open 'Verify a patient' with a referral that does not exist"
 toast t1 "'Referral not found'\n'We could not find RF-9999. Type the details instead.'"
-process p1 "The form stays empty"
+process p1 "The form stays empty\nNo 'Back to referral' link either"
 
 start s3 "Open 'Verify a patient' with a case that is neither on the list nor in the queue"
 process p2 "The form stays empty\nNo message appears"
@@ -23,12 +23,12 @@ click c2 "Click 'Check now'"
 goto g2 "Continues in: Authorizations › Eligibility & Benefits › Verify › The live check"
 
 start s5 "Search or filters on the list match nobody"
-screen e3 "'No patients match these filters'\n'The filters hide every row. Clear them to see all 34 patients.'"
+screen e3 "'No patients match these filters'\n'The filters hide every row. Clear them to see all 37 patients.'"
 click c3 "Click 'Clear filters'"
 end e4 "All patients are back"
 
-start s6 "The check finds a coverage problem\nMember ID ends 1012 or 9999, Evergreen with Detox"
-screen e5 "A normal result page with a red verdict 'Fix before billing'\nIf coverage is not found, headline 'We could not find coverage.' and six grey 'Not checked' rows"
+start s6 "The check finds a coverage problem\nMember ID ends 1012, 9999, 3030, 6060 or 9090, or Evergreen with Detox"
+screen e5 "A normal result page with a red verdict 'Fix before billing'\nIf coverage is not found, headline 'We could not find coverage.', one grey row 'Nothing else could be checked' and no payment lines"
 goto g3 "Continues in: Authorizations › Eligibility & Benefits › Result › Next actions"
 
 start s7 "Leave 'Verify a patient' while the live check runs"

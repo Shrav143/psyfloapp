@@ -2,7 +2,7 @@ title: Authorizations › Case page › Ways in
 route: /authorizations/case/R-1042
 intro: Every link that opens a case page, and what the page does with the ID it is given: find the request, load your earlier work, pick the tab.
 dir: TD
-also: Demo only: R-1042 is the one hand-written case. Every other case page is generated from its queue row or Dashboard request, so the numbers are consistent but the wording is a template. Many Case Manager ledger IDs (for example R-0903 under 'Ready to step down?') have no queue row or Dashboard request, so they end at 'Request not found'.
+also: Demo only: R-1042 is the one hand-written case. Every other case page is generated from its queue row or Dashboard request, so the numbers are consistent but the wording is a template. An ID that has no queue row and no Dashboard request ends at 'Request not found'.
 ---
 group gIn "Links that open a case page"
   start a1 "Queue: click the request ID"

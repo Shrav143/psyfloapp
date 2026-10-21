@@ -1,0 +1,53 @@
+title: Analytics › Denial outcomes and dismissed recommendations
+route: /analytics
+intro: What other screens write back to Analytics. Two figures sit under the denial table and move when a denial is accepted or an appeal is ruled on. A card of dismissal reasons appears once a recommendation has been dismissed. Each event moves the numbers only a little.
+dir: TD
+also: Demo only: the starting figures (96 rulings, 56% overturned, 17 accepted denials, $88.7K) are invented. Everything recorded in the demo counts in 'This quarter' and 'Last 12 months', never in 'Last quarter', and follows the payer menu.
+---
+start s1 "Scroll to the foot of 'Common denial reasons by payer'"
+screen sc "Two figures under the table\n'Appeals overturned'  56%, '54 of 96 rulings this quarter'\n'Written off after accepted denials'  $88.7K, '17 denials this quarter'"
+
+group gApp "Appeals overturned"
+  ext x1 "The payer rules on an appeal\n(demo: the person logs the ruling)"
+  store st1 "Denial Intelligence records the ruling\nOverturned, partly restored or upheld"
+  process p1 "Rulings go up by one\nOverturned and partly restored also add to 'overturned'\nUpheld only adds to the rulings"
+  decision q1 "Fewer than 20 rulings in this view?"
+  screen o1 "For example 57%, '55 of 97 rulings this quarter'"
+  screen o2 "'-' and 'Not enough decisions yet'\nA single payer with few rulings, for example Lakeshore"
+endgroup
+
+group gOff "Written off"
+  click k1 "In Denial Intelligence the person accepts a denial"
+  store st2 "Denial Intelligence records the write-off\nWith the payer and the dollars at stake"
+  process p2 "Denials go up by one\nThe amount is added, for example $22.4K makes $88.7K into $111.1K"
+  screen o3 "'$111.1K', '18 denials this quarter'"
+endgroup
+
+group gDis "Why recommendations were dismissed"
+  click k2 "On a case, the person dismisses a recommendation and gives a reason"
+  store st3 "Authorizations records the reason\nWith the request, so Analytics can find its payer"
+  decision q2 "Any dismissal in this view?"
+  screen d1 "Card 'Why recommendations were dismissed'\n'The reason given each time someone dismissed a recommendation, this quarter'\nOne row per reason, biggest first, '2 times' or '1 time'"
+  screen d2 "No card at all\nNothing was dismissed, or the period is 'Last quarter', or the payer has none"
+endgroup
+
+process m1 "The monthly report and its printout carry the same figures\n'Denial outcomes' always, 'Why recommendations were dismissed' when the card shows"
+process m2 "Pick another period or payer\nThe figures are worked out again from the recorded events"
+goto g1 "Continues in: Denial Intelligence › Written appeal › Record the payer's decision"
+goto g2 "Continues in: Denial Intelligence › Accept the denial"
+goto g3 "Continues in: Authorizations › Case page › Recommended actions › Dismiss and bring back"
+goto g4 "Continues in: Analytics › Monthly report › What the files contain"
+end e1 "Page matches what was recorded"
+
+s1 --> sc
+sc -.-> g1 & g2 & g3
+x1 --> st1 --> p1 --> q1
+q1 -->|No| o1 --> e1
+q1 -->|Yes| o2 --> e1
+k1 --> st2 --> p2 --> o3 --> e1
+k2 --> st3 --> q2
+q2 -->|Yes| d1 --> e1
+q2 -->|No| d2 --> e1
+sc --> x1 & k1 & k2
+e1 -.-> m1 --> g4
+e1 -.-> m2

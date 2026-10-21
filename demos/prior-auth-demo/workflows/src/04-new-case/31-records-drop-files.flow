@@ -29,14 +29,15 @@ group gSlot "3 · Slots"
   decision dName "Does the name match a document?\nThe longest matching word wins"
   decision dTaken "Did an earlier file in this drop already take that slot?"
   process pDup "Second file: 'Could not place'"
-  process pPlace "File goes into its slot\nIt replaces any file already in that slot"
+  process pPlace "File goes into its slot\nIt replaces any file already in that slot\nand clears a 'marked not available' on it"
   decision dOpen "No match: is a required slot still open?"
-  process pGuess "Takes the first open required slot, referral last\n'Reader guessed this one. Check it.'"
+  process pGuess "Takes the first open required slot on the payer's list, referral last\nSkips a document marked 'not available'\n'Reader guessed this one. Check it.'"
   process pNone "'Could not place'\nAny file type is taken, but there is no slot left"
 endgroup
 
 store st1 "Draft updated once\nEach filled row remembers its file: 'Read from FILE by Reader. Check it.'"
 process pReset "If the agents had already run, the run restarts\nBecause the documents changed"
+toast tStale "'Records changed after the agents ran'\n'Their work was cleared. The agents check again when you continue.'"
 agent a3 "Reader reads each placed file\nAbout 1 second each, one after another\nRow shows 'Reader is reading'"
 decision dFind "Does the file get a finding?\nSample files are scripted\nOther files: about 1 case in 5"
 process pOk "Row: 'N checks passed'"
@@ -50,7 +51,7 @@ group gSample "Use sample chart"
   decision dHas "Does the case already have a patient?\nFrom a referral, an EMR pull or typed initials"
   store stAll "Fills J.M., 34 · Summit Medicaid HMO · …4821\nResidential 3.5 · Admission · F10.20, F33.2 · reason"
   store stKeep "Keeps that patient and request\nAdds only a blank member ID, start date or type"
-  store stDocs "Adds 8 of the 9 Summit documents\n'Therapy note from the last 14 days' is left out on purpose"
+  store stDocs "Adds a sample file for each document on the payer's saved list\nSummit: 8 of 9. 'Therapy note from the last 14 days' is left out on purpose"
   toast t2 "'Sample chart loaded'\n'J.M., 34. 8 of 9 documents are added and being checked.'"
 endgroup
 
@@ -73,6 +74,7 @@ dTaken -->|No| pPlace --> st1
 dOpen -->|Yes| pGuess --> st1
 dOpen -->|No| pNone --> st1
 st1 --> pReset --> a3 --> dFind
+pReset -.-> tStale
 dFind -->|No| pOk --> t1
 dFind -->|Yes| pWarn --> t1
 t1 --> pTick --> g30

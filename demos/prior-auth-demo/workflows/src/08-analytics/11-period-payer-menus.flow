@@ -26,6 +26,7 @@ process p1 "Menu closes, value unchanged"
 
 process r1 "Page recomputes at once from the period and the payer"
 process r2 "Subtitles use the period: 'this quarter', 'last quarter' or 'the last 12 months'\nCounts scale: last quarter about 0.96, last 12 months about 3.9 times"
+process r4 "The denial outcomes follow the menus too\nRulings, accepted denials and dismissals recorded in this demo count in 'This quarter' and 'Last 12 months', not in 'Last quarter'\nOne payer: only that payer's"
 process r3 "One payer: the bars show that payer against 'All payers'\nThe denial table lists all of that payer's reasons\n'What helps most' is re-weighted for that payer"
 decision q1 "Is a figure built on 20 or more decisions?"
 screen ok "The number shows, for example 86%"
@@ -43,6 +44,7 @@ o1 & o2 --> k1
 o1 & o2 --> k2 --> p1
 k1 --> r1
 r1 --> r2 --> q1
+r1 --> r4 --> q1
 r1 --> r3
 r3 --> q1
 q1 -->|Yes| ok --> e1

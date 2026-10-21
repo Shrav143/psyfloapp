@@ -1,6 +1,6 @@
 title: Authorizations › New case › Medical records › Patient and insurance rows
 route: /authorizations/new/:draftId (step 2, Patient and Insurance lists)
-intro: Each field row says where its value came from, and its button opens a small editor under the row. Edits go straight into the draft. This diagram also covers 'Pull a chart from EMR Connect'. The Coverage row has its own diagram.
+intro: Each field row says where its value came from, and its button opens a small editor under the row. Edits go straight into the draft. Pulling a chart from a records system and the Coverage row have their own diagrams.
 dir: TD
 ---
 start s1 "On step 2, read the Patient and Insurance rows"
@@ -13,7 +13,8 @@ group gState "What a row can say"
   process r4 "From EMR Connect\n'From EMR Connect'"
   process r2 "Typed by a person\nThe detail shows the value with no source note"
   process r5 "Missing\n'Not found yet. Drop a chart above or add it here.'\nRow shaded, button 'Add'"
-  process r6 "Half filled\n'Found initials J.M.. The age is still needed.'"
+  process r6 "Half filled\n'Found initials J.M. The age is still needed.'"
+  process r7 "Left blank by a chart pull\n'Left blank. “Level of care” in the outpatient record needs a mapping. Map it, then pull the chart again.'\nLink 'Open EMR Connect'"
   process rNote "A source note goes quiet as soon as the value is edited"
 endgroup
 
@@ -42,20 +43,10 @@ endgroup
 click cDone "Click 'Done', or press Escape in a text box"
 store stLive "Every keystroke is written to the draft\nNothing to save"
 process pStale "If the agents had already run, the run restarts\nAnswers and summary edits are cleared"
+toast tStale "'Records changed after the agents ran'\n'Their work was cleared. The agents check again when you continue.'"
 goto g40 "Continues in: Medical records › The Coverage row"
 
-group gEmr "EMR pull"
-  click cPull "Click 'Pull a chart from EMR Connect'\nClicking again closes the picker"
-  overlay oPick "Chart from EMR Connect\nPicker with a chart list, 'Pull' and 'Cancel'"
-  input iChart "Pick a chart\nJ.M., 34 · Summit · Residential 3.5 · A.R. · S.T. · L.G."
-  click cPullGo "Click 'Pull'"
-  process pPulling "Button reads 'Pulling' for about 1 second\nThe list and 'Cancel' switch off"
-  ext xEmr "EMR Connect (demo: simulated)\nThe chart's patient, payer, member ID, level of care, type, diagnoses and reason"
-  store stEmr "Draft filled, replacing those fields\nNo documents come with it"
-  toast tEmr "'Pulled J.M., 34 from EMR Connect'\n'Everything below was filled in from the chart. You can still change it.'"
-  click cCancelEmr "Click 'Cancel'"
-  process pCancelEmr "Picker closes; nothing changes"
-endgroup
+goto g44 "Continues in: Medical records › Pull a chart from EMR Connect"
 
 s1 --> sc --> dSrc
 dSrc -->|Read by Reader| r1
@@ -64,6 +55,7 @@ dSrc -->|From the EMR| r4
 dSrc -->|Typed| r2
 dSrc -->|No| r5
 dSrc -->|Only one of two| r6
+dSrc -->|Blank because EMR Connect has no mapping yet| r7
 r1 --> rNote
 r3 --> rNote
 r4 --> rNote
@@ -75,14 +67,13 @@ oEd --> iPayer --> pPlan --> iPlan
 oEd --> iMember --> pMask
 r5 --> cEdit
 r6 --> cEdit
+r7 --> cEdit
+r7 -.-> g44
 pName --> cDone
 iPlan --> cDone
 pMask --> cDone
-cDone --> stLive --> pStale
+cDone --> stLive --> pStale --> tStale
 oEd --> cAgain --> pClose
 cDone --> pClose
 sc --> g40
 
-sc --> cPull --> oPick --> iChart --> cPullGo --> pPulling --> xEmr --> stEmr --> tEmr
-oPick --> cCancelEmr --> pCancelEmr
-stEmr -.-> pStale

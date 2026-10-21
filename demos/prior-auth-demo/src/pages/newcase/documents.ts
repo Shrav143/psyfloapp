@@ -174,8 +174,9 @@ export function docEntries(payerId: PayerId | null, program: Program | null, ite
   }
   return out;
 }
-/** Required documents first, as the checklist and the validation summary list them. */
-export const requiredFirst = (list: DocEntry[]): DocEntry[] => [...list].sort((a, b) => Number(b.required) - Number(a.required));
+/** The referral first, then the required documents, then the recommended ones, each in the payer's own order. This is how the checklist and the validation summary list them. */
+const rank = (e: DocEntry): number => (e.slot === "referral" ? 0 : e.required ? 1 : 2);
+export const requiredFirst = (list: DocEntry[]): DocEntry[] => [...list].sort((a, b) => rank(a) - rank(b));
 
 /* ------------------------------------------------------------------ validation findings */
 const hash = (s: string): number => Array.from(s).reduce((a, c) => a + c.charCodeAt(0), 0);

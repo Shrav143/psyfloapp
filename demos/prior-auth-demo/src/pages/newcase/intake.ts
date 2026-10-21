@@ -125,7 +125,7 @@ export function pullFromEmr(id: string, c: EmrChart): void {
   const left = gaps.map((u) => `“${u.field}”`);
   st.toast({
     title: `Pulled ${c.initials}, ${c.age} from EMR Connect`,
-    body: left.length ? `${left.join(" and ")} needs a mapping, so ${left.length === 1 ? "that field was" : "those fields were"} left blank. You can still fill ${left.length === 1 ? "it" : "them"} in.` : "Everything below was filled in from the chart. You can still change it.",
+    body: left.length ? `${left.join(" and ")} ${left.length === 1 ? "needs" : "need"} a mapping, so ${left.length === 1 ? "that field was" : "those fields were"} left blank. You can still fill ${left.length === 1 ? "it" : "them"} in.` : "Everything below was filled in from the chart. You can still change it.",
     tone: left.length ? "mid" : "good",
   });
 }

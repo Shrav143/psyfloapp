@@ -1,14 +1,19 @@
 title: Analytics › Monthly report › Download the files
 route: /analytics
-intro: When the report is ready the window offers two real files, a written report and the figures as a table. In the hosted preview, where the host page blocks downloads, both buttons only explain why nothing happens. There is no Print and no PDF.
+intro: When the report is ready the window offers two real files, a written report and the figures as a table, and a Print button. In the hosted preview, where the host page blocks downloads and printing, the buttons only explain why nothing happens. There is no PDF file: Print hands the page to the browser's own print window.
 dir: TD
 also: Demo only: the files hold exactly the figures on the page, and are named from the period and payer, for example psyflo-monthly-report-quarter-all.md.
 ---
 start s1 "Window shows 'Your report is ready'"
-screen sc "Two buttons side by side\n'Download report' (dark)\n'Download data (CSV)'\nFooter button 'Done'"
+screen sc "Three buttons\n'Download report' (dark)\n'Download data (CSV)'\n'Print'\nFooter button 'Done'"
 
 click c1 "Click 'Download report'"
 click c2 "Click 'Download data (CSV)'"
+click c3 "Click 'Print'"
+decision q2 "Is this the hosted preview?"
+toast t3 "'Print is off in this preview'\n'Open the single-file version of the demo to use it.'"
+process pp "The browser's print window opens\nIt prints a plain page of the report: title, period, scope and every section\nNot the sidebar, the menus or the window"
+process pq "Cancel or Print in the browser window\nThe report window stays open"
 decision q1 "Is this the hosted preview?\n(the host page blocks downloads and printing)"
 toast t1 "'Download is off in this preview'\n'Open the single-file version of the demo to use it.'"
 process p0 "No file is made and no second toast\nThe window stays open"
@@ -22,14 +27,17 @@ group gFile "In the single-file demo"
 endgroup
 
 process n1 "Name pattern: psyflo-monthly-report, then the period (quarter, last_quarter, year), then the payer (all or cardinal, summit ...)"
-doc d1 "Production, not in the demo\nOne PDF monthly pack, aggregate only, drafted on the first business day\nThe operator approves it before it is sent"
+doc d1 "Production, not in the demo\nOne PDF monthly pack, aggregate only, drafted on the first business day\nThe operator approves it before it is sent\nThe demo prints through the browser instead"
 
 click k1 "Click 'Done', press Escape, click the X or click outside"
 end e1 "Window closes, back on Analytics"
 goto g1 "Continues in: Analytics › Monthly report › What the files contain"
 
 s1 --> sc
-sc --> c1 & c2
+sc --> c1 & c2 & c3
+c3 --> q2
+q2 -->|Yes| t3 --> k1
+q2 -->|No| pp --> pq --> k1
 c1 & c2 --> q1
 q1 -->|Yes| t1 --> p0 --> k1
 q1 -->|No| p1 --> t2 --> p2 --> k1

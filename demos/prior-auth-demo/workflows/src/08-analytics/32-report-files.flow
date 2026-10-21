@@ -1,8 +1,8 @@
 title: Analytics › Monthly report › What the files contain
 route: /analytics
-intro: The two downloaded files are built from the same numbers as the page, for the period and payer chosen when the window opened. A figure behind fewer than 20 decisions is written as 'Not enough decisions yet', never as a number.
+intro: The two downloaded files and the printed page are built from the same numbers as the page, for the period and payer chosen when the window opened. A figure behind fewer than 20 decisions is written as 'Not enough decisions yet', never as a number.
 dir: TD
-also: Demo only: the real monthly pack in the product requirements is one PDF, aggregate only, approved by the operator before it is sent. The demo has no PDF and no Print.
+also: Demo only: the real monthly pack in the product requirements is one PDF, aggregate only, approved by the operator before it is sent. The demo has no PDF file. The printed page holds the same sections as the written report.
 ---
 start s1 "A download button is clicked in the report window"
 
@@ -12,12 +12,14 @@ group gMd "Written report (.md)"
   doc m3 "'## Approval rate by payer'\nOne bullet per bar with its decisions"
   doc m4 "'## How people edit agent drafts'\nThree bullets, then 'Drafts counted'"
   doc m5 "'## Common denial reasons'\nTable: Reason, Payer, Count, Share of denials"
+  doc m7 "'## Denial outcomes'\n'Appeals overturned: 56% (54 of 96 rulings, partly restored counts as overturned)'\n'Written off after accepted denials: $88.7K (17 denials)'"
   doc m6 "'## What helps most'\nNumbered list: step, times applied, percent approved"
+  doc m8 "'## Why recommendations were dismissed'\nOne bullet per reason with its count\nLeft out when nobody dismissed one"
 endgroup
 
 group gCsv "Figures as a table (.csv)"
   doc v1 "One header row\nperiod, scope, section, label, value_percent, count"
-  doc v2 "Rows by section\nheadline, approval by payer, draft edits, denial reasons, what helps most"
+  doc v2 "Rows by section\nheadline, approval by payer, draft edits, denial reasons, denial outcomes, what helps most\nand 'dismissed recommendations' when there are any"
   doc v3 "Commas and quotes inside a value are wrapped in quotes\nOpens in a spreadsheet"
 endgroup
 
@@ -28,9 +30,9 @@ process p3 "Same view as the page: the same period and payer, the same hidden fi
 end e1 "File matches the screen"
 
 s1 --> m1 & v1
-m1 --> m2 --> m3 --> m4 --> m5 --> m6
+m1 --> m2 --> m3 --> m4 --> m5 --> m7 --> m6 --> m8
 v1 --> v2 --> v3
-m6 --> q1
+m8 --> q1
 v3 --> q1
 q1 -->|Yes| p1 --> e1
 q1 -->|No| p2 --> e1

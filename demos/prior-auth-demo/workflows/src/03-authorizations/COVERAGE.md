@@ -127,16 +127,14 @@ File names below are in `src/03-authorizations/`. Short names: 10 queue-overview
 
 ## Still limited in the demo
 
-- 'Open in review and sign' and 'Send to payer' only reach 'Review and sign' for requests with a seeded New case draft. Every other request opens a new draft pre-filled from the request (26). 'Open in review and sign' stays on even for a request already with the payer.
-- Edits and applied actions on the Draft tab are not carried into the New case summary that is signed (74).
-- 'Send back to Scribe' only shows a toast (72).
-- About 27 Case Manager IDs (for example R-0903 in 'Ready to step down?') open 'Request not found' until Case Manager fixes its rows (20).
-- Clinical context is saved in the shared list. The draft on the Draft tab and in New case reads it in their own diagrams (70, New case); this page does not rewrite the draft text.
+- The routing of 'Open in review and sign' and 'Send to payer' into New case, 'Send back to Scribe' on the Draft tab, and what the Draft tab carries into the signed summary belong to the Draft tab and New case; they are drawn in 26, 72 and 74 and not repeated here. 'Open in review and sign' stays on even for a request already with the payer.
+- Clinical context is saved in the shared list. The Draft tab and New case read it themselves; this page does not rewrite the draft text.
 - Each of the first three notes of clinical context adds a point to the approval chance, whatever it says. A refinement is a fixed re-order plus one fixed card per focus, not a new reading of the chart.
+- An ID with no queue row and no Dashboard request still ends at 'Request not found' (20).
 
 ## Fixed since the first mapping
 
-- After a request is signed and sent, its case page shows the new status chip and line, a greyed-out 'Sent to payer' and 'Open on the Dashboard' (22, 30, 74).
+- After a request is signed and sent, its case page shows the new status chip and line, a greyed-out 'Sent to payer' and 'Open on the Dashboard' (22, 30, 82).
 - 'Refine recommendations' opens a panel and re-orders the cards, adds one card and moves the preview (38).
 - 'Add clinical context' is saved in the shared list, shown on the page and nudges the approval chance by a point (39).
 - The dismiss reason is written to the list Analytics reads (36).

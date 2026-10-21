@@ -1,10 +1,10 @@
 title: Analytics › Common denial reasons: open Denial Intelligence
 route: /analytics
-intro: The table of common denial reasons. Every row is a link to Denial Intelligence, by the row or by the reason text. The link opens the plain denial list. It does not carry the payer or the reason across.
+intro: The table of common denial reasons. Every row is a link to Denial Intelligence, by the row or by the reason text. The link carries the row's payer and its reason, so the denial list opens already narrowed to those denials.
 dir: TD
 ---
 start s1 "Scroll to 'Common denial reasons by payer'"
-screen sc "Card 'Common denial reasons by payer'\n'This quarter · 311 denials in the reasons listed. Select a row to open Denial Intelligence.'"
+screen sc "Card 'Common denial reasons by payer'\n'This quarter · 311 denials in the reasons listed. Select a row to open those denials in Denial Intelligence.'"
 screen th "Columns\n'Reason', 'Payer', 'Count', 'Share of denials' (a red bar and the percent)"
 
 decision q1 "Which payer is chosen in the menu?"
@@ -21,7 +21,7 @@ screen nd "'Not enough decisions yet. Figures based on fewer than 20 decisions s
 group gClick "Open a row"
   click c1 "Click anywhere on a row"
   click c2 "Click the reason text, for example 'Recertification filed too late'"
-  process p4 "Opens /denials with no payer or reason chosen\nRow hover tint shows it is a link"
+  process p4 "Opens /denials?payer=harborview&reason=Recertification filed too late\nThe row's own payer and reason go along (spaces become plus signs)\nRow hover tint shows it is a link"
 endgroup
 
 goto g1 "Continues in: Denial Intelligence › Open denials list"
