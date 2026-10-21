@@ -1,0 +1,50 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  c1@{ shape: curv-trap, label: "<b>Coverage</b><br/>Knows who pays and files with them" }
+  verify@{ shape: hex, label: "<b>Verify</b><br/>New case run step 2 and the referral Coverage tab<br/>Eligibility & Benefits live check<br/>EMR Connect: re-checks coverage" }
+  caller@{ shape: hex, label: "<b>Caller</b><br/>Eligibility & Benefits: phones when a system does not answer<br/>Dashboard: phones if a request is still pending<br/>Payers process steps: follow-up calls" }
+  navigator@{ shape: hex, label: "<b>Navigator</b><br/>Dashboard: sends signed requests, checks status<br/>Denial Intelligence: files the appeal after a signature<br/>Eligibility: clinic enrolled to bill<br/>EMR Connect: sign-ins, disconnect, write-back switch" }
+  c2@{ shape: curv-trap, label: "<b>Documentation</b><br/>Reads the chart, writes the case" }
+  reader@{ shape: hex, label: "<b>Reader</b><br/>New case: referral and files, run step 1<br/>Denial Intelligence: reads the letter<br/>Eligibility, EMR Connect: pulls files, maps fields" }
+  criteria@{ shape: hex, label: "<b>Criteria</b><br/>New case run step 3<br/>Eligibility: is authorization required<br/>Case page: Criteria tab<br/>Referral decline reasons" }
+  placement@{ shape: hex, label: "<b>Placement</b><br/>New case run step 5<br/>Referral Fit tab" }
+  scribe@{ shape: hex, label: "<b>Scribe</b><br/>New case run step 7 and its questions<br/>Case page: redraft after actions<br/>Case Manager reviews<br/>Payers: Update drafts" }
+  integrity@{ shape: hex, label: "<b>Integrity</b><br/>New case run step 8<br/>Dashboard: review and sign<br/>Denial Intelligence: appeal and call prep<br/>Payers: Update drafts" }
+  c3@{ shape: curv-trap, label: "<b>Intelligence</b><br/>Knows how each payer behaves" }
+  historian@{ shape: hex, label: "<b>Historian</b><br/>New case run step 4<br/>Denial Intelligence: similar decisions<br/>Payers Changes: proposals" }
+  forecaster@{ shape: hex, label: "<b>Forecaster</b><br/>New case run step 6<br/>Case page: re-scores the approval chance" }
+  sentinel@{ shape: hex, label: "<b>Sentinel</b><br/>No screen runs it<br/>Only the notification 'Payer rule changed', which links to Payers › Changes" }
+  analyst@{ shape: hex, label: "<b>Analyst</b><br/>Analytics: builds the monthly report" }
+  c4@{ shape: curv-trap, label: "<b>Case work</b><br/>Moves each case to done" }
+  packet@{ shape: hex, label: "<b>Packet</b><br/>New case run step 9 and a question<br/>Dashboard: drafts the answer to an information request<br/>Payers process steps" }
+  scrubber@{ shape: hex, label: "<b>Scrubber</b><br/>New case run step 10: 'Request has no errors'" }
+  cadence@{ shape: hex, label: "<b>Cadence</b><br/>Dashboard: ledger, next review, write-back<br/>Denial Intelligence: books the peer-to-peer<br/>Case Manager reviews" }
+  advocate@{ shape: hex, label: "<b>Advocate</b><br/>Denial Intelligence: checks the notice, drafts the appeal, finishes the brief<br/>Payers process steps" }
+  g1@{ shape: subproc, label: "Continues in: Settings › Agent map › Which agents work in which flow" }
+  c1 --> verify & caller & navigator
+  navigator -.->|"Next crew"| c2
+  c2 --> reader & criteria & placement & scribe & integrity
+  integrity -.->|"Next crew"| c3
+  c3 --> historian & forecaster & sentinel & analyst
+  analyst -.->|"Next crew"| c4
+  c4 --> packet & scrubber & cadence & advocate
+  advocate -.-> g1
+  class c1,c2,c3,c4 k_screen
+  class verify,caller,navigator,reader,criteria,placement,scribe,integrity,historian,forecaster,sentinel,analyst,packet,scrubber,cadence,advocate k_agent
+  class g1 k_goto

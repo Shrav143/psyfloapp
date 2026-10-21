@@ -1,0 +1,66 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Scroll to 'Demo controls' at the end of the drawer</b><br/>Six small buttons in a dashed box" }
+  d1@{ shape: diam, label: "Is the stage Preparing? (not sent yet)" }
+  d2@{ shape: diam, label: "Is it a denial? (ID starts with D-)" }
+  m1@{ shape: odd, label: "'It has not been sent yet. Sign and send it from Case Manager first.'" }
+  m2@{ shape: odd, label: "'A denial follows its own route in Denial Intelligence.'" }
+  m3@{ shape: odd, label: "'Pretend the payer answered this request. Nothing is sent anywhere.'" }
+  x1@{ shape: stadium, label: "All six buttons are disabled" }
+  p0@{ shape: rect, label: "<b>Six buttons enabled:</b><br/>'Payer received it', 'Under review', 'Asks for information', 'Approves', 'Approves part', 'Denies'" }
+  x2@{ shape: st-rect, label: "<b>Payer replies through its portal, fax or phone</b><br/>(demo: simulated by these buttons)" }
+  c1@{ shape: trap-t, label: "Click 'Payer received it'" }
+  w1@{ shape: cyl, label: "<b>Stage Received, bars at Received</b><br/>Navigator holds it; next step 'Navigator checks again in 30 minutes'<br/>Time in stage restarts; history 'Navigator checked: received'" }
+  c2@{ shape: trap-t, label: "Click 'Under review'" }
+  w2@{ shape: cyl, label: "<b>Stage Under review, bars at In review</b><br/>History 'Navigator checked: under review' and a dashed 'Caller will phone the payer if it is still pending'" }
+  c3@{ shape: trap-t, label: "Click 'Asks for information'" }
+  w3@{ shape: cyl, label: "<b>Stage Info requested (amber), needs you</b><br/>Packet holds it; next step 'Packet drafted the answer. Waiting for your review'<br/>History 'The payer asked for more information'" }
+  n1@{ shape: odd, label: "<b>Notification 'Payer asked for info'</b><br/>'The payer wants more on R-1021. Packet drafted the answer.'" }
+  t0@{ shape: odd, label: "<b>'Demo: payer payer received it'</b><br/>'The stage counts, the table and the notifications updated.'<br/>The word 'payer' shows twice on screen" }
+  t1@{ shape: odd, label: "<b>'Demo: payer under review' or 'Demo: payer asks for information'</b><br/>'The stage counts, the table and the notifications updated.'" }
+  sc@{ shape: curv-trap, label: "<b>Dashboard behind the drawer</b><br/>The tile counts, the row and its chip, bars and clock update at once<br/>In a filtered list the row may drop out; the drawer stays open" }
+  sd@{ shape: curv-trap, label: "<b>Drawer updates in place</b><br/>Chip, action box, history and banner follow the new stage" }
+  c4@{ shape: trap-t, label: "Click 'Approves', 'Approves part' or 'Denies'" }
+  g1@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Demo controls: approve, approve part or deny" }
+  g2@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Answer a payer information request" }
+  g3@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Needs you and write-back boxes" }
+  s1 --> d1
+  d1 -->|"Yes"| m1 --> x1
+  d1 -->|"No"| d2
+  d2 -->|"Yes"| m2 --> x1
+  d2 -->|"No"| m3 --> p0 --> x2
+  x2 --> c1 --> w1 --> t0
+  x2 --> c2 --> w2 --> t1
+  x2 --> c3 --> w3 --> n1 --> t1
+  x2 --> c4 --> g1
+  t0 --> sc
+  t1 --> sc
+  sc --> sd
+  w3 -.-> g2
+  sd -.-> g3
+  class s1 k_start
+  class d1,d2 k_decision
+  class m1,m2,m3,n1,t0,t1 k_toast
+  class x1 k_endx
+  class p0 k_process
+  class x2 k_ext
+  class c1,c2,c3,c4 k_click
+  class w1,w2,w3 k_store
+  class sc,sd k_screen
+  class g1,g2,g3 k_goto

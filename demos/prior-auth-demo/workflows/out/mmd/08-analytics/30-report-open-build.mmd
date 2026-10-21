@@ -1,0 +1,69 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Click 'Monthly report' (top right)" }
+  o1@{ shape: win-pane, label: "<b>Window 'Monthly report'</b><br/>Subtitle 'This quarter · All payers'<br/>'Built by' Analyst<br/>Button 'Cancel' in the footer" }
+  p0@{ shape: rect, label: "<b>Page behind is dimmed</b><br/>The menus cannot be used until the window closes" }
+  subgraph gSteps ["Four steps"]
+  a1@{ shape: hex, label: "<b>Analyst</b><br/>'Collecting the decisions for this quarter'" }
+  w1@{ shape: delay, label: "0.75 seconds" }
+  a2@{ shape: hex, label: "<b>Analyst</b><br/>'Dropping any figure with fewer than 20 decisions'" }
+  w2@{ shape: delay, label: "0.75 seconds" }
+  a3@{ shape: hex, label: "<b>Analyst</b><br/>'Writing the summary'" }
+  w3@{ shape: delay, label: "0.75 seconds" }
+  a4@{ shape: hex, label: "<b>Analyst</b><br/>'Laying out the report'" }
+  w4@{ shape: delay, label: "0.75 seconds" }
+  end
+  p1@{ shape: rect, label: "<b>Each step shows a spinner while it runs, then a green tick</b><br/>Steps still to come have a grey dot and grey text" }
+  r1@{ shape: curv-trap, label: "<b>Panel 'Your report is ready'</b><br/>'It uses the same figures as this page. Pick the file you want.'<br/>Footer button now reads 'Done'" }
+  subgraph gClose ["Close it at any moment"]
+  c1@{ shape: trap-t, label: "Click 'Cancel' (while building) or 'Done' (when ready)" }
+  c2@{ shape: trap-t, label: "Click the X ('Close')" }
+  k1@{ shape: lean-r, label: "Press Escape" }
+  c3@{ shape: trap-t, label: "Click the dimmed area outside the window" }
+  end
+  p2@{ shape: rect, label: "<b>Window closes at once</b><br/>Nothing is downloaded and the page is unchanged" }
+  p3@{ shape: rect, label: "Opening it again starts again from step 1" }
+  q1@{ shape: diam, label: "Was the build still running?" }
+  e1@{ shape: stadium, label: "Build abandoned if it was still running" }
+  e2@{ shape: stadium, label: "Back on Analytics" }
+  g1@{ shape: subproc, label: "Continues in: Analytics › Monthly report › Download the files" }
+  s1 --> o1 --> p0
+  o1 --> a1 --> w1 --> a2 --> w2 --> a3 --> w3 --> a4 --> w4 --> r1
+  a1 -.-> p1
+  r1 --> g1
+  o1 --> c1 & c2 & k1 & c3
+  r1 --> c1
+  c1 & c2 & k1 & c3 --> p2 --> q1
+  p2 -.-> p3
+  q1 -->|"Yes"| e1
+  q1 -->|"No"| e2
+  class s1 k_start
+  class o1 k_overlay
+  class p0,p1,p2,p3 k_process
+  class a1,a2,a3,a4 k_agent
+  class w1,w2,w3,w4 k_wait
+  class r1 k_screen
+  class c1,c2,c3 k_click
+  class k1 k_input
+  class q1 k_decision
+  class e1 k_endx
+  class e2 k_end
+  class g1 k_goto
+  style gSteps fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gClose fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

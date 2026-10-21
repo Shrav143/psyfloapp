@@ -1,0 +1,69 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  sc1@{ shape: curv-trap, label: "<b>Denial Intelligence</b><br/>A denial is on screen" }
+  subgraph gOut ["Links out"]
+  c1@{ shape: trap-t, label: "Click 'See on the Dashboard' (top right of the page)" }
+  c2@{ shape: trap-t, label: "Click 'See on the Dashboard' (banner on a call that was overturned or partly restored)" }
+  c3@{ shape: trap-t, label: "Click 'Open the Dashboard' (no open denials)" }
+  c4@{ shape: trap-t, label: "Click 'Plan the step-down' (banner after accepting)" }
+  p1@{ shape: rect, label: "Address opens /dashboard?request=D-3318" }
+  p2@{ shape: rect, label: "Address opens /dashboard" }
+  p3@{ shape: rect, label: "Address opens /manager?tab=reviews" }
+  g1@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
+  g2@{ shape: subproc, label: "Continues in: Dashboard › Arrive › What the page shows" }
+  g3@{ shape: subproc, label: "Continues in: Case Manager › Reviews" }
+  end
+  subgraph gBell ["Notifications"]
+  c5@{ shape: trap-t, label: "Click the bell 'Notifications', then a row" }
+  n1@{ shape: odd, label: "<b>'Appeal filed' or 'Call outcome: ...'</b><br/>From Navigator or Advocate" }
+  n2@{ shape: odd, label: "<b>'Denial closed'</b><br/>From Cadence, after an accept" }
+  n3@{ shape: odd, label: "<b>'Denial analyzed', 'Denied today', 'Denied' or 'Partly approved'</b><br/>From Advocate" }
+  end
+  subgraph gIn ["Links in from other screens"]
+  a1@{ shape: stadium, label: "<b>Analytics: 'Common denial reasons by payer'</b><br/>Click a row or its payer name" }
+  a2@{ shape: stadium, label: "<b>Authorizations case page: 'This request was denied'</b><br/>Click 'Open in Denial Intelligence'" }
+  a3@{ shape: stadium, label: "<b>Dashboard request drawer</b><br/>Click 'Open in Denial Intelligence'" }
+  g4@{ shape: subproc, label: "Continues in: Denial Intelligence › Ways in" }
+  end
+  p4@{ shape: rect, label: "<b>The timeline says 'Every step is also on the Dashboard'</b><br/>This is text, not a link" }
+  p5@{ shape: rect, label: "No link to Analytics from this screen" }
+  e1@{ shape: stadium, label: "Person is on the other screen" }
+  sc1 --> c1 --> p1 --> g1 --> e1
+  sc1 --> c2 --> p1
+  sc1 --> c3 --> p2 --> g2
+  sc1 --> c4 --> p3 --> g3
+  sc1 --> c5
+  c5 --> n1 --> p1
+  c5 --> n2 --> p3
+  c5 --> n3 --> g4
+  sc1 -.-> p4
+  sc1 -.-> p5
+  a1 --> g4
+  a2 --> g4
+  a3 --> g4
+  class sc1 k_screen
+  class c1,c2,c3,c4,c5 k_click
+  class p1,p2,p3,p4,p5 k_process
+  class g1,g2,g3,g4 k_goto
+  class n1,n2,n3 k_toast
+  class a1,a2,a3 k_start
+  class e1 k_end
+  style gOut fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gBell fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gIn fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

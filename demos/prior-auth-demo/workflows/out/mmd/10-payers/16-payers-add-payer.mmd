@@ -1,0 +1,75 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Click 'Add a payer'</b><br/>top right of Payers" }
+  m@{ shape: win-pane, label: "<b>Add a payer</b><br/>The agents start with a standard workflow<br/>and learn the rest from decisions." }
+  subgraph gF ["Fields in the modal"]
+  i1@{ shape: lean-r, label: "<b>Type 'Payer name' (required)</b><br/>Example: Riverbend Health" }
+  i2@{ shape: lean-r, label: "<b>Pick 'Plan type'</b><br/>Managed care plan, PPO,<br/>Medicare Advantage, Carve-out" }
+  i3@{ shape: lean-r, label: "<b>Pick 'Group'</b><br/>Ohio Medicaid, Commercial,<br/>Medicare Advantage, Behavioral carve-out" }
+  i4@{ shape: lean-r, label: "<b>Tick 'How it is reached'</b><br/>Portal (ticked), Phone, Fax" }
+  i5@{ shape: lean-r, label: "<b>Tick 'Programs it covers'</b><br/>Residential 3.5, IOP, PHP ticked<br/>Detox not ticked" }
+  end
+  clr@{ shape: rect, label: "Typing or ticking clears any red message" }
+  ca@{ shape: trap-t, label: "Click 'Add payer'" }
+  v1@{ shape: diam, label: "Is the payer name empty?" }
+  v2@{ shape: diam, label: "Is no way of reaching ticked?" }
+  v3@{ shape: diam, label: "Is no program ticked?" }
+  e1@{ shape: odd, label: "Add the payer's name." }
+  e2@{ shape: odd, label: "Choose at least one way to reach the payer." }
+  e3@{ shape: odd, label: "Choose at least one program." }
+  st@{ shape: cyl, label: "<b>Payer saved with a starter set</b><br/>Workflow v1 (six steps for how it is reached)<br/>Standard rules and document lists<br/>Figures marked as benchmark estimates" }
+  lg@{ shape: cyl, label: "<b>Edit log gets 'Added a payer'</b><br/>Reason 'Payer added'" }
+  tt@{ shape: odd, label: "<b>'Riverbend Health was added'</b><br/>Starter workflow, rules and documents are ready.<br/>Figures are benchmark estimates." }
+  nav@{ shape: rect, label: "<b>Modal closes</b><br/>Opens /payers/custom-riverbend-health?tab=process" }
+  pg@{ shape: curv-trap, label: "<b>New payer's Process tab</b><br/>Title now counts 7 payers<br/>Row in its group, green dot<br/>Header: 'Not enough' for both figures" }
+  dup@{ shape: rect, label: "<b>Demo gap: no check for a name already in use.</b><br/>a second 'Riverbend Health' makes a second row<br/>and replaces the first one's starter set" }
+  other@{ shape: rect, label: "<b>Demo gap: a payer added here appears only on Payers.</b><br/>New case, Dashboard and Authorizations<br/>keep their own payer lists" }
+  cx@{ shape: trap-t, label: "Click 'Cancel'" }
+  cesc@{ shape: trap-t, label: "<b>Press Escape, click the X</b><br/>or click the dimmed area" }
+  x1@{ shape: stadium, label: "<b>Modal closes</b><br/>Nothing was added" }
+  e@{ shape: stadium, label: "New payer is ready to edit" }
+  g1@{ shape: subproc, label: "Continues in: Payers › Process › Read the workflow" }
+  s1 --> m --> i1 --> i2 --> i3 --> i4 --> i5 --> ca
+  i1 -.-> clr
+  i4 -.-> clr
+  ca --> v1
+  v1 -->|"Yes"| e1 --> i1
+  v1 -->|"No"| v2
+  v2 -->|"Yes"| e2 --> i4
+  v2 -->|"No"| v3
+  v3 -->|"Yes"| e3 --> i5
+  v3 -->|"No"| st --> lg --> tt --> nav --> pg --> g1
+  st -.-> dup
+  st -.-> other
+  pg --> e
+  m --> cx --> x1
+  m --> cesc --> x1
+  class s1 k_start
+  class m k_overlay
+  class i1,i2,i3,i4,i5 k_input
+  class clr,nav,dup,other k_process
+  class ca,cx,cesc k_click
+  class v1,v2,v3 k_decision
+  class e1,e2,e3,tt k_toast
+  class st,lg k_store
+  class pg k_screen
+  class x1 k_endx
+  class e k_end
+  class g1 k_goto
+  style gF fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

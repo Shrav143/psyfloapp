@@ -1,0 +1,87 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart LR
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "A person or a demo control does something in the app" }
+  subgraph gPay ["Payers"]
+  c10@{ shape: trap-t, label: "<b>Click 'Update drafts' on a payer's change</b><br/>(after 'Acknowledge change', which only raises a toast)" }
+  n10@{ shape: cyl, label: "<b>The change's agent or Scribe · 'Drafts updated'</b><br/>→ Case Manager" }
+  end
+  subgraph gRef ["Referrals (New case)"]
+  c9@{ shape: trap-t, label: "<b>Click 'Use sample referral'</b><br/>(or drop referral documents)" }
+  n9@{ shape: cyl, label: "<b>Reader · 'New referral read'</b><br/>→ that referral" }
+  c9b@{ shape: trap-t, label: "'Demo: simulate the referrer's reply'" }
+  n9b@{ shape: cyl, label: "<b>Reader · 'The referrer replied'</b><br/>→ that referral" }
+  end
+  subgraph gDen ["Denial Intelligence"]
+  c8@{ shape: trap-t, label: "Click 'Analyze the denial' on an uploaded letter" }
+  n8@{ shape: cyl, label: "<b>Advocate · 'Denial analyzed'</b><br/>→ that denial" }
+  c8b@{ shape: trap-t, label: "Sign and file an appeal" }
+  n8b@{ shape: cyl, label: "<b>Navigator · 'Appeal filed'</b><br/>→ Dashboard, that request" }
+  c8c@{ shape: trap-t, label: "Click 'Accept and close'" }
+  n8c@{ shape: cyl, label: "<b>Cadence · 'Denial closed'</b><br/>→ Case Manager, Reviews this week" }
+  c8d@{ shape: trap-t, label: "Click 'Log the outcome'" }
+  n8d@{ shape: cyl, label: "<b>Advocate · 'Call outcome: ...'</b><br/>→ Dashboard, that request" }
+  end
+  subgraph gAuth ["Authorizations"]
+  c7@{ shape: trap-t, label: "<b>Apply recommendations on a case</b><br/>(Actions tab)" }
+  n7@{ shape: cyl, label: "<b>Forecaster · 'Approval chance updated'</b><br/>→ that case" }
+  end
+  subgraph gDash ["Dashboard › Demo controls on a request"]
+  c4@{ shape: trap-t, label: "'Asks for information'" }
+  n4@{ shape: cyl, label: "<b>Packet · 'Payer asked for info'</b><br/>→ Dashboard, that request" }
+  c5@{ shape: trap-t, label: "'Approves'" }
+  n5@{ shape: cyl, label: "<b>Cadence · 'Approved'</b><br/>→ Dashboard, that request" }
+  c6@{ shape: trap-t, label: "'Approves part' or 'Denies'" }
+  n6@{ shape: cyl, label: "<b>Advocate · 'Partly approved' or 'Denied'</b><br/>→ Denial Intelligence, new D- number" }
+  end
+  subgraph gSend ["New case"]
+  c1@{ shape: trap-t, label: "Click 'Sign and send'" }
+  n1@{ shape: cyl, label: "<b>Navigator · 'Sent to the payer'</b><br/>→ Dashboard, that request" }
+  end
+  p1@{ shape: rect, label: "<b>Notification is added at the top of the list</b><br/>Unread, 'just now'" }
+  p2@{ shape: rect, label: "<b>Red dot appears on the bell</b><br/>Drawer subtitle counts it ('5 unread')" }
+  g1@{ shape: subproc, label: "Continues in: Global shell › Top bar › Notifications › Open, read, click through" }
+  e1@{ shape: stadium, label: "Nothing else creates one: no timers, no Fast-forward, no payer or referrer replies on their own" }
+  s1 --> c1 & c4 & c5 & c6 & c7 & c8 & c8b & c8c & c8d & c9 & c9b & c10
+  c1 --> n1
+  c4 --> n4
+  c5 --> n5
+  c6 --> n6
+  c7 --> n7
+  c8 --> n8
+  c8b --> n8b
+  c8c --> n8c
+  c8d --> n8d
+  c9 --> n9
+  c9b --> n9b
+  c10 --> n10
+  n1 & n4 & n5 & n6 & n7 & n8 & n8b & n8c & n8d & n9 & n9b & n10 --> p1
+  p1 --> p2 --> g1
+  s1 -.-> e1
+  class s1 k_start
+  class c10,c9,c9b,c8,c8b,c8c,c8d,c7,c4,c5,c6,c1 k_click
+  class n10,n9,n9b,n8,n8b,n8c,n8d,n7,n4,n5,n6,n1 k_store
+  class p1,p2 k_process
+  class g1 k_goto
+  class e1 k_endx
+  style gPay fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gRef fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gDen fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gAuth fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gDash fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gSend fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

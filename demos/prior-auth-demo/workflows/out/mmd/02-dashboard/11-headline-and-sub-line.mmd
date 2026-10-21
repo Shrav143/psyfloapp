@@ -1,0 +1,58 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "A filter, a tile click or a payer reply changes the list" }
+  p1@{ shape: rect, label: "<b>Headline is rebuilt</b><br/>Counts use Payer, Program and Request type, but not Stage" }
+  d1@{ shape: diam, label: "Does any request match the filters?" }
+  n0@{ shape: curv-trap, label: "<b>'No requests match these filters.'</b><br/>'The filters hide everything. Clear them to see every request again.'" }
+  g1@{ shape: subproc, label: "Continues in: Dashboard › Filters › Clear filters and empty states" }
+  d2@{ shape: diam, label: "Which Stage is set?" }
+  a1@{ shape: curv-trap, label: "<b>Appeal or call</b><br/>'7 denials are on their route. $62.4K is at stake.'<br/>'Each one is a call, an appeal, an external review or a resubmission.'" }
+  a2@{ shape: curv-trap, label: "<b>Info requested</b><br/>'3 requests are waiting on you.'<br/>'The payer asked for more information. Packet drafts each answer for you to review.'" }
+  a3@{ shape: curv-trap, label: "<b>Preparing</b><br/>'5 requests are being prepared.'<br/>'They are in Case Manager. Nothing has been sent to a payer yet.'" }
+  a4@{ shape: curv-trap, label: "<b>Received</b><br/>'4 requests have been received.'<br/>'The payer confirmed receipt. Navigator checks each one again every few minutes.'" }
+  a5@{ shape: curv-trap, label: "<b>Under review</b><br/>'14 requests are under review.'<br/>'Payers usually take about 2.2 days to decide. Caller phones when one runs late.'" }
+  a6@{ shape: curv-trap, label: "<b>Decided today</b><br/>'8 requests were decided today. 6 approved, 2 not as asked.'<br/>'Approvals update the ledger. Write-back to the EMR waits for you.'" }
+  d3@{ shape: diam, label: "Is a Payer set?" }
+  b1@{ shape: curv-trap, label: "<b>'Cardinal Health Plan: 5 waiting, taking 2.8 days.'</b><br/>'Decisions usually take 2 days at this payer. 3 denials are open.'<br/>With Program or Type set, they lead the sub line: 'IOP. Decisions usually...'" }
+  d4@{ shape: diam, label: "Is Program or Request type set?" }
+  c1@{ shape: curv-trap, label: "<b>'7 requests are waiting on payers. 1 is waiting on you.'</b><br/>'Showing Residential 3.5 only. Everything below follows that filter.'" }
+  c2@{ shape: curv-trap, label: "<b>'18 requests are waiting on payers. 3 are waiting on you.'</b><br/>'Where every request stands, from preparing to decided, without a phone call.'" }
+  p2@{ shape: rect, label: "<b>Payer, Program and Request type set are added in front of the sub line</b><br/>Example: 'Summit Medicaid HMO. Payers usually take about 1.4 days...'" }
+  e1@{ shape: stadium, label: "Headline and sub line shown" }
+  s1 --> p1 --> d1
+  d1 -->|"No"| n0 --> g1
+  d1 -->|"Yes"| d2
+  d2 -->|"Appeal or call"| a1
+  d2 -->|"Info requested"| a2
+  d2 -->|"Preparing"| a3
+  d2 -->|"Received"| a4
+  d2 -->|"Under review"| a5
+  d2 -->|"Decided today"| a6
+  d2 -->|"All stages"| d3
+  a1 & a2 & a3 & a4 & a5 & a6 --> p2 --> e1
+  d3 -->|"Yes"| b1 --> e1
+  d3 -->|"No"| d4
+  d4 -->|"Yes"| c1 --> e1
+  d4 -->|"No"| c2 --> e1
+  class s1 k_start
+  class p1,p2 k_process
+  class d1,d2,d3,d4 k_decision
+  class n0,a1,a2,a3,a4,a5,a6,b1,c1,c2 k_screen
+  class g1 k_goto
+  class e1 k_end

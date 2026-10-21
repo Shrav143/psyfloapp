@@ -1,0 +1,74 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Result page, card 'Payment checks', rows 4 to 7" }
+  subgraph gA ["Row 4 · Authorization"]
+  a0@{ shape: diam, label: "What is the authorization state?" }
+  a1@{ shape: rect, label: "<b>Chip 'Not required' (green)</b><br/>'Beacon does not require one for IOP.'" }
+  a2@{ shape: rect, label: "<b>Chip 'On file' (green)</b><br/>'On file with Summit. 9 of 14 days used'" }
+  a3@{ shape: rect, label: "<b>Chip 'Required' (amber)</b><br/>'Required before the first day. Not on file yet. A request is being drafted'" }
+  a4@{ shape: rect, label: "<b>Chip 'Under review' (amber)</b><br/>'Required. A request is with Cardinal and under review'" }
+  a5@{ shape: rect, label: "<b>Chip 'Retro request open' (amber)</b><br/>'A retro-authorization request is open. It covers days already delivered'" }
+  a6@{ shape: rect, label: "<b>Chip 'Required' (amber)</b><br/>'Required before the first day. Not on file yet. Start an authorization'" }
+  end
+  subgraph gB ["Row 5 · Can the clinic bill?"]
+  b0@{ shape: diam, label: "Is the clinic enrolled with this payer for this level of care?" }
+  b1@{ shape: rect, label: "<b>Title 'The clinic can bill', chip 'In network' (green)</b><br/>'The clinic is enrolled and in network with Summit for residential 3.5'" }
+  b2@{ shape: rect, label: "<b>Title 'The clinic cannot bill yet', chip 'Not enrolled' (red)</b><br/>'Claims would be rejected. Navigator can start the enrollment.'" }
+  end
+  subgraph gC ["Row 6 · Limits"]
+  c0@{ shape: diam, label: "Is there a day or unit limit?" }
+  c1@{ shape: rect, label: "<b>Chip '5 days left' (green), or amber at 3 or fewer</b><br/>'9 of 14 days used in this authorization period'" }
+  c2@{ shape: rect, label: "<b>Chip 'Limit reached' (red)</b><br/>'Nothing is left' (no demo patient)" }
+  c3@{ shape: rect, label: "<b>Chip 'No limit' (green)</b><br/>'No annual day limit for residential care. The authorization sets the days'<br/>or 'No visit or day limit applies to this program'" }
+  end
+  subgraph gD ["Row 7 · Other insurance"]
+  d0@{ shape: diam, label: "Did the check find another plan?" }
+  d1@{ shape: rect, label: "<b>Title 'No other insurance', chip 'None' (green)</b><br/>'None found. Medicaid pays last, so we checked for another payer'" }
+  d2@{ shape: rect, label: "<b>Title 'Another plan pays first', chip 'Other plan' (red)</b><br/>'It must be billed before this one.' (no demo patient)" }
+  end
+  subgraph gP ["Last line"]
+  p1@{ shape: rect, label: "<b>'What the patient pays:'</b><br/>Medicaid '$0 copay, no deductible, no coinsurance.'<br/>Harborview '20% coinsurance after a deductible with $85 left.'<br/>Beacon and Lakeshore '$40 copay per day, $350 left on the deductible, 20% coinsurance after.'" }
+  p2@{ shape: odd, label: "'This does not change what the clinic is paid. A $0 copay does not mean the clinic is paid.'" }
+  end
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Medical records › Patient and insurance rows" }
+  s1 --> a0
+  a0 -->|"Not required"| a1 --> b0
+  a0 -->|"On file"| a2 --> b0
+  a0 -->|"Being drafted"| a3 --> b0
+  a0 -->|"With the payer"| a4 --> b0
+  a0 -->|"Retro request"| a5 --> b0
+  a0 -->|"Required, not started"| a6 --> b0
+  b0 -->|"Yes"| b1 --> c0
+  b0 -->|"No"| b2 --> c0
+  c0 -->|"Limit, room left"| c1 --> d0
+  c0 -->|"Limit, none left"| c2 --> d0
+  c0 -->|"No limit"| c3 --> d0
+  d0 -->|"No"| d1 --> p1
+  d0 -->|"Yes"| d2 --> p1
+  p1 --> p2 --> g1
+  class s1 k_start
+  class a0,b0,c0,d0 k_decision
+  class a1,a2,a3,a4,a5,a6,b1,b2,c1,c2,c3,d1,d2,p1 k_process
+  class p2 k_toast
+  class g1 k_goto
+  style gA fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gB fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gC fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gD fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gP fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

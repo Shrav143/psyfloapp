@@ -1,0 +1,71 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "On the Draft tab, look at the right column" }
+  ck@{ shape: curv-trap, label: "<b>Card 'Checks'</b><br/>'Integrity's four checks'<br/>Pill 'All clear' or '2 open'" }
+  c1@{ shape: rect, label: "'Every sentence matches the chart'" }
+  c2@{ shape: rect, label: "'Payer criteria are covered'" }
+  c3@{ shape: rect, label: "'Dates are consistent'" }
+  c4@{ shape: rect, label: "'Identifiers are protected'" }
+  dok@{ shape: diam, label: "Does each check pass?" }
+  pass@{ shape: rect, label: "Green tick and 'Pass'" }
+  warn@{ shape: rect, label: "<b>Amber triangle, 'Warn' and a note</b><br/>e.g. 'Sertraline start is 9/14 in the medication list and 9/21 in the psychiatric evaluation.'" }
+  why@{ shape: rect, label: "<b>A warning clears when the matching action is applied</b><br/>(criteria and dates), or on 'Re-check' after an edit (chart)" }
+  rc@{ shape: trap-t, label: "Click 'Re-check'" }
+  ig@{ shape: hex, label: "<b>Integrity reads the draft again</b><br/>Spinner on the button for about 1.6 seconds<br/>(demo: simulated)" }
+  mr@{ shape: cyl, label: "<b>Edit flag cleared</b><br/>Log: 'Integrity read the draft again'" }
+  dst@{ shape: diam, label: "Do other checks still warn?" }
+  t1@{ shape: odd, label: "<b>'All four checks passed'</b><br/>'Integrity read every sentence against the chart again.'" }
+  t2@{ shape: odd, label: "<b>'1 check needs an action'</b><br/>'Apply the matching recommendation, then check again.'" }
+  vs@{ shape: curv-trap, label: "<b>Card 'Versions'</b><br/>Newest first: 'Version 3', time, author, note" }
+  cu@{ shape: rect, label: "<b>Newest row carries a 'Current' pill</b><br/>Older rows have 'View'" }
+  vw@{ shape: trap-t, label: "Click 'View' on an older version" }
+  vm@{ shape: win-pane, label: "<b>Dialog 'Version 2'</b><br/>Time and author. 'Read only.' Then the text" }
+  vc@{ shape: trap-t, label: "Click 'Close', the X, the dimmed area, or press Esc" }
+  vn@{ shape: rect, label: "<b>A new version appears after every Apply</b><br/>('Scribe', 'Added 6 recommendations')<br/>and every saved edit ('You', 'Edited by you')" }
+  sb@{ shape: curv-trap, label: "<b>Bottom card</b><br/>'Send to payer', 'Send back to Scribe', and a note" }
+  sk@{ shape: trap-t, label: "Click 'Send back to Scribe'" }
+  bz@{ shape: rect, label: "Spinner for about 1.4 seconds" }
+  lg@{ shape: cyl, label: "Log: 'You sent the draft back to Scribe'" }
+  tb@{ shape: odd, label: "<b>'Sent back to Scribe'</b><br/>'Scribe will redraft the summary and Integrity will check it again.'" }
+  gS@{ shape: subproc, label: "Continues in: Authorizations › Case page › Draft › Review, sign and what happens next" }
+  s1 --> ck --> c1 & c2 & c3 & c4
+  c1 --> dok
+  c2 --> dok
+  c3 --> dok
+  c4 --> dok
+  dok -->|"Yes"| pass
+  dok -->|"No"| warn --> why
+  ck --> rc --> ig --> mr --> dst
+  dst -->|"No"| t1
+  dst -->|"Yes"| t2
+  s1 --> vs --> cu
+  cu --> vw --> vm --> vc
+  vs --> vn
+  s1 --> sb --> sk --> bz --> lg --> tb
+  sb --> gS
+  class s1 k_start
+  class ck,vs,sb k_screen
+  class c1,c2,c3,c4,pass,warn,why,cu,vn,bz k_process
+  class dok,dst k_decision
+  class rc,vw,vc,sk k_click
+  class ig k_agent
+  class mr,lg k_store
+  class t1,t2,tb k_toast
+  class vm k_overlay
+  class gS k_goto

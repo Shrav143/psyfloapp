@@ -1,0 +1,67 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Scroll below the workflow card</b><br/>on the Process tab" }
+  rc@{ shape: curv-trap, label: "<b>'How to reach Summit'</b><br/>Three rows: Portal, Phone, Fax" }
+  rows@{ shape: rect, label: "<b>Each row has an icon, a title and a line</b><br/>Portal: Provider portal, sign-in saved by Navigator<br/>Phone: Provider line, weekdays 8 am to 6 pm<br/>Fax: Not used" }
+  ro@{ shape: odd, label: "<b>No edit button on this card</b><br/>Change the lines with 'Edit' in the header" }
+  cc@{ shape: curv-trap, label: "<b>'Instructions for Caller'</b><br/>The script in a tinted box<br/>'Used by the Phone steps. Confirmed 10/12.'" }
+  script@{ shape: rect, label: "<b>Script: ask for the provider line, give member ID and date of birth,</b><br/>ask if the request arrived, never agree to a change,<br/>log the call" }
+  ce@{ shape: trap-t, label: "<b>Click 'Edit'</b><br/>on the Caller card" }
+  m@{ shape: win-pane, label: "<b>Edit the instructions for Caller</b><br/>Caller follows this on every Phone step and never agrees to a change." }
+  i1@{ shape: lean-r, label: "<b>Type in 'Script'</b><br/>The box starts with the saved script" }
+  i2@{ shape: lean-r, label: "Type 'Reason for the edit' (required)" }
+  cs@{ shape: trap-t, label: "Click 'Save and log the edit'" }
+  d1@{ shape: diam, label: "Is the reason empty?" }
+  er@{ shape: odd, label: "Add a reason. It goes in the edit log." }
+  d2@{ shape: diam, label: "Is the script the same as the saved one?" }
+  t0@{ shape: odd, label: "'Nothing changed'" }
+  gap@{ shape: rect, label: "<b>Demo gap: a blank script is accepted</b><br/>Phone steps would then have no instructions" }
+  st@{ shape: cyl, label: "<b>Script saved</b><br/>'Confirmed' date becomes today" }
+  lg@{ shape: cyl, label: "<b>Edit log entry</b><br/>Area 'Caller instructions'<br/>'Instructions for Caller', before and after" }
+  t1@{ shape: odd, label: "<b>'Instructions for Caller saved'</b><br/>Phone steps use them from the next call.<br/>The edit is logged." }
+  nb@{ shape: rect, label: "<b>No 'edit applies to new drafts only' banner</b><br/>The script is used on the next call, not by drafts" }
+  e1@{ shape: stadium, label: "Card shows the new script" }
+  cx@{ shape: trap-t, label: "Click 'Cancel'" }
+  cesc@{ shape: trap-t, label: "<b>Press Escape, click the X</b><br/>or click the dimmed area" }
+  x1@{ shape: stadium, label: "<b>Modal closes</b><br/>Nothing saved<br/>Reopening starts from the saved script" }
+  g1@{ shape: subproc, label: "Continues in: Payers › Edit payer details" }
+  g2@{ shape: subproc, label: "Continues in: Payers › Edit log" }
+  s1 --> rc --> rows --> ro
+  ro -.-> g1
+  s1 --> cc --> script --> ce --> m --> i1 --> i2 --> cs --> d1
+  d1 -->|"Yes"| er --> i2
+  d1 -->|"No"| d2
+  d2 -->|"Yes"| t0 --> x1
+  d2 -->|"No"| st --> lg --> t1 --> nb --> e1
+  i1 -.-> gap
+  lg -.-> g2
+  m --> cx --> x1
+  m --> cesc --> x1
+  class s1 k_start
+  class rc,cc k_screen
+  class rows,script,gap,nb k_process
+  class ro,er,t0,t1 k_toast
+  class ce,cs,cx,cesc k_click
+  class m k_overlay
+  class i1,i2 k_input
+  class d1,d2 k_decision
+  class st,lg k_store
+  class e1 k_end
+  class x1 k_endx
+  class g1,g2 k_goto

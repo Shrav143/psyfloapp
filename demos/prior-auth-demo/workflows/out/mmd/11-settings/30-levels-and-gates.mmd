@@ -1,0 +1,74 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "An agent is about to take a step" }
+  q0@{ shape: diam, label: "Is it clinical content or a clinical decision?" }
+  x1@{ shape: stadium, label: "<b>Never done by an agent at any level</b><br/>Writing or editing assessments, plans, diagnoses or scores<br/>Choosing units, frequency or dates<br/>Answering a payer's clinical questions<br/>Pausing, discharging or continuing a patient" }
+  q1@{ shape: diam, label: "Is the step one of the five gates?" }
+  q3@{ shape: diam, label: "Which level is set on the agent's row?" }
+  subgraph gGate ["The five gates (the Gates card), above every level"]
+  g1@{ shape: trap-t, label: "<b>Sign-off</b><br/>A licensed clinician signs every request and appeal" }
+  g2@{ shape: trap-t, label: "<b>Confirm</b><br/>The case owner confirms before agents start, before a next step on a denial, and before any write-back" }
+  g3@{ shape: lean-r, label: "<b>Answer</b><br/>A person answers when an agent asks a question" }
+  g4@{ shape: trap-t, label: "<b>Acknowledge</b><br/>A person acknowledges a payer rule change before drafts are updated" }
+  g5@{ shape: trap-t, label: "<b>Pause</b><br/>An operator can pause one agent or all of them" }
+  end
+  subgraph gLev ["The three levels (Freedom dropdown)"]
+  l1@{ shape: rect, label: "<b>Ask before acting</b><br/>The agent prepares it and a person confirms before it lands<br/>(PRD: Stage or Draft)" }
+  l2@{ shape: rect, label: "<b>Act, then report</b><br/>The agent does it and the result shows afterwards in the feed<br/>(PRD: Auto + notify)" }
+  l3@{ shape: rect, label: "<b>Act on its own</b><br/>The agent does it without a prompt<br/>(PRD: Auto)" }
+  end
+  p1@{ shape: rect, label: "<b>The signature is bound to the exact packet</b><br/>Nothing addressed to a payer leaves without it. PRD: an invariant, not a setting" }
+  p2@{ shape: rect, label: "The step goes ahead" }
+  n1@{ shape: subproc, label: "Continues in: New case › Review and sign" }
+  n2@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Approve the write-back" }
+  n3@{ shape: subproc, label: "Continues in: New case › Agents work › Answer a question" }
+  n4@{ shape: subproc, label: "Continues in: Payers › Changes › Acknowledge a change" }
+  n5@{ shape: subproc, label: "Continues in: Settings › Pause › Pause all agents" }
+  n6@{ shape: subproc, label: "Continues in: Settings › Agents › Which steps need a person" }
+  s1 --> q0
+  q0 -->|"Yes"| x1
+  q0 -->|"No"| q1
+  q1 -->|"Yes"| g1 & g2 & g3 & g4 & g5
+  q1 -->|"No"| q3
+  q3 -->|"Ask before acting"| l1
+  q3 -->|"Act, then report"| l2
+  q3 -->|"Act on its own"| l3
+  g1 --> p1 --> p2
+  g2 --> p2
+  g3 --> p2
+  g4 --> p2
+  g5 --> p2
+  l1 --> p2
+  l2 --> p2
+  l3 --> p2
+  g1 -.-> n1
+  g2 -.-> n2
+  g3 -.-> n3
+  g4 -.-> n4
+  g5 -.-> n5
+  q3 -.-> n6
+  class s1 k_start
+  class q0,q1,q3 k_decision
+  class x1 k_endx
+  class g1,g2,g4,g5 k_click
+  class g3 k_input
+  class l1,l2,l3,p1,p2 k_process
+  class n1,n2,n3,n4,n5,n6 k_goto
+  style gGate fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gLev fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

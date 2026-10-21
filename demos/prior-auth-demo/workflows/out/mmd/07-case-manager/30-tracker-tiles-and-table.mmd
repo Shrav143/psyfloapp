@@ -1,0 +1,59 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Scroll below 'Being prepared' on Active cases" }
+  t0@{ shape: curv-trap, label: "<b>Four status tiles in a row</b><br/>11 'Needs action' (act today)<br/>14 'Review due' (review or recertify soon)<br/>15 'Awaiting payer' (the payer has it)<br/>16 'On track' (nothing needed)" }
+  p0@{ shape: rect, label: "<b>Tile numbers follow search, level of care and payer</b><br/>They do not follow the status filter, so they always add up to the cases in view" }
+  t1@{ shape: curv-trap, label: "<b>Table card</b><br/>Columns: Case, Level of care, Payer, Units used, Clock, Approval chance, Status, Open" }
+  p1@{ shape: rect, label: "<b>Rows are sorted by Clock, soonest first (overdue rows lead)</b><br/>Ten rows a page, 'Showing 1 to 10 of 56'" }
+  t2@{ shape: curv-trap, label: "<b>Note under the table</b><br/>'Approval chance estimates how well the paperwork fits the payer's past decisions ... Strong is 80 and above, Moderate 55 to 79, At risk below 55. It never blocks a request.'" }
+  c1@{ shape: trap-t, label: "Click a tile, for example 'Needs action'" }
+  d1@{ shape: diam, label: "Was that tile already selected?" }
+  p2@{ shape: rect, label: "<b>Tile gets a green outline</b><br/>The 'Any status' dropdown shows the same status<br/>Table keeps only that status, and goes back to page 1" }
+  p3@{ shape: rect, label: "<b>Outline goes</b><br/>Status filter is cleared: all cases again" }
+  c2@{ shape: trap-t, label: "Pick a status in the 'Any status' dropdown" }
+  p4@{ shape: rect, label: "Same effect as clicking that tile" }
+  c3@{ shape: trap-t, label: "Click a sortable header or 'Previous' / 'Next'" }
+  g1@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Sort and page the tracker" }
+  c4@{ shape: rect, label: "Look at a row's Units used, Clock and Status cells" }
+  g2@{ shape: subproc, label: "Continues in: Case Manager › Active cases › What each tracker cell means" }
+  c5@{ shape: trap-t, label: "Click a row, its case ID or 'Open'" }
+  g3@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Open a case from the tracker" }
+  d2@{ shape: diam, label: "Does any row match?" }
+  g4@{ shape: subproc, label: "Continues in: Case Manager › Empty states › Nothing to show" }
+  e1@{ shape: stadium, label: "Table shows the matching cases" }
+  s1 --> t0 --> p0 --> t1 --> p1 --> t2
+  t0 --> c1 --> d1
+  d1 -->|"No"| p2
+  d1 -->|"Yes, clicking again"| p3
+  t0 --> c2 --> p4
+  p2 --> d2
+  p3 --> d2
+  p4 --> d2
+  d2 -->|"Yes"| e1
+  d2 -->|"No"| g4
+  t1 --> c3 --> g1
+  t1 --> c4 --> g2
+  t1 --> c5 --> g3
+  class s1 k_start
+  class t0,t1,t2 k_screen
+  class p0,p1,p2,p3,p4,c4 k_process
+  class c1,c2,c3,c5 k_click
+  class d1,d2 k_decision
+  class g1,g2,g3,g4 k_goto
+  class e1 k_end

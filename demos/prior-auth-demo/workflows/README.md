@@ -26,4 +26,8 @@ node tools/check.mjs src/02-dashboard         # draw one folder to PNGs in /tmp/
 node tools/build.mjs                          # everything: out/Psyflo-workflow-diagrams.html, out/mmd/*.mmd, out/svg/*.svg
 ```
 
-`out/Psyflo-workflow-diagrams.html` is one self-contained page (menu tree, search, zoom, full screen, click-through between diagrams). `out/mmd/` holds the compiled Mermaid text for each diagram, which pastes into Mermaid Live, Notion, Miro, draw.io or any Mermaid-aware tool. How to write a `.flow` file: `AUTHORING.md`.
+Also `node tools/pdf.mjs` (after a build) writes `out/Psyflo-workflow-diagrams.pdf`, one page per diagram sized to the diagram. It needs `pdfunite` (poppler-utils) and is about 35 MB, so it is not committed.
+
+`DEMO-GAPS.md` lists what the mapping found in the demo itself: controls that go nowhere, screens that disagree, states that cannot be reached.
+
+`out/Psyflo-workflow-diagrams.html` is one self-contained page (menu tree, search, zoom, full screen, click-through between diagrams). `out/mmd/` holds the compiled Mermaid text for each diagram, which pastes into Mermaid Live, Notion, Miro, draw.io or any Mermaid-aware tool, and `out/md/` has one Markdown page per menu tab with the diagrams as Mermaid blocks (how they look depends on the Mermaid version your Markdown viewer ships). The HTML, `out/mmd/` and `out/md/` are committed; `out/svg/` and the PDF are rebuilt on demand. How to write a `.flow` file: `AUTHORING.md`.

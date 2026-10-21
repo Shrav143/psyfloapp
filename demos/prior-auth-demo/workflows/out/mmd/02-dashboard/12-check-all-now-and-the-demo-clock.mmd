@@ -1,0 +1,55 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Click 'Check all now'</b><br/>Top right of the headline card" }
+  p1@{ shape: rect, label: "Button shows a spinner and is disabled for 1.2 seconds" }
+  a1@{ shape: hex, label: "<b>Navigator looks at every open request</b><br/>Received and Under review, whatever the filters say" }
+  w1@{ shape: cyl, label: "<b>Each open request gets a history line</b><br/>'Navigator checked: received' or 'Navigator checked: under review'" }
+  t1@{ shape: odd, label: "<b>'Navigator checked 18 open requests'</b><br/>'No new answers yet. It checks again in 30 minutes.'" }
+  e1@{ shape: stadium, label: "<b>Button is ready again</b><br/>No request changes stage" }
+  s2@{ shape: stadium, label: "Demo menu › Click 'Fast-forward 1 hour' or 'Fast-forward 1 day'" }
+  c1@{ shape: cyl, label: "<b>Demo clock moves forward</b><br/>Nothing else moves time" }
+  t2@{ shape: odd, label: "<b>'Clock moved forward 1 hour' or '1 day'</b><br/>'Times in stage and deadlines updated.'" }
+  p2@{ shape: rect, label: "Dashboard recomputes from the new time" }
+  subgraph gClock ["What the clock changes on the Dashboard"]
+  r1@{ shape: rect, label: "<b>Table: time in stage grows</b><br/>Over 1.5 × typical shows 'late'; over 2 × shows 'very late'" }
+  r2@{ shape: rect, label: "<b>Table: open denials count down</b><br/>'36 h left', '3 days left', then 'window closed'" }
+  r3@{ shape: rect, label: "Table order: very late and late rows move up" }
+  r4@{ shape: rect, label: "Stage strip: 'Appeal or call' counts 'deadlines this week' from the new time" }
+  r5@{ shape: rect, label: "Calendar: today moves, so the last pickable day and the shortcuts end on the new day" }
+  end
+  p3@{ shape: rect, label: "Not changed: the default range Sep 21 – Oct 20, 2026, the stage counts and the payers figures" }
+  g1@{ shape: subproc, label: "Continues in: Global shell › Demo menu" }
+  g2@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Read a row: bars, clock and what happens next" }
+  g3@{ shape: subproc, label: "Continues in: Dashboard › Filters › Date range shortcuts, keys and the address" }
+  s1 --> p1 --> a1 --> w1 --> t1 --> e1
+  s2 --> c1 --> t2 --> p2
+  p2 --> r1 & r2 & r3 & r4 & r5
+  r1 --> g2
+  r2 --> g2
+  r5 --> g3
+  p2 -.-> p3
+  s2 -.-> g1
+  class s1,s2 k_start
+  class p1,p2,r1,r2,r3,r4,r5,p3 k_process
+  class a1 k_agent
+  class w1,c1 k_store
+  class t1,t2 k_toast
+  class e1 k_end
+  class g1,g2,g3 k_goto
+  style gClock fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

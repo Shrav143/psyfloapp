@@ -175,11 +175,19 @@ const legendRows = Object.entries(KINDS)
   .map(([k, v]) => `<div class="kind"><div class="sw paper">${swatches[k]}</div><div class="txt"><b>${esc(v.name)}</b><p>${esc(v.means)}</p></div></div>`)
   .join("");
 
+/* In the menu, drop the leading words the section heading already says: "Authorizations › New case › Referral › Start screen" reads "Referral › Start screen". */
+const navLabel = (d, m) => {
+  const segs = d.meta.title.split(" › ").map((x) => x.trim());
+  const mod = MODULES[m][0].split(" › ");
+  let i = 0;
+  while (i < segs.length - 1 && i < mod.length && segs[i].toLowerCase() === mod[i].toLowerCase()) i++;
+  return segs.slice(i).join(" › ");
+};
 const nav = mods
   .map((m) => {
     const items = diagrams
       .filter((d) => d.dir === m)
-      .map((d) => `<a href="#${d.id}" data-d="${d.id}">${esc(d.meta.title.split("›").pop().trim())}</a>`)
+      .map((d) => `<a href="#${d.id}" data-d="${d.id}" title="${esc(d.meta.title)}">${esc(navLabel(d, m))}</a>`)
       .join("");
     return `<div class="ng" data-m="${m}"><a class="nh" href="#m-${m}">${esc(MODULES[m][0])}<span>${diagrams.filter((d) => d.dir === m).length}</span></a>${items}</div>`;
   })

@@ -1,0 +1,69 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Click 'Denial Intelligence' in the sidebar" }
+  s2@{ shape: stadium, label: "<b>Demo menu, Suggested path</b><br/>'Denial Intelligence: D-3318'" }
+  s3@{ shape: stadium, label: "<b>Click a notification</b><br/>'Denied today', 'Denied', 'Partly approved' or 'Denial analyzed'" }
+  s4@{ shape: stadium, label: "<b>Ask FLO about denials or money</b><br/>Click 'Open Denial Intelligence'" }
+  s5@{ shape: stadium, label: "<b>Analytics: 'Common denial reasons by payer'</b><br/>Click a row or its payer name" }
+  s6@{ shape: stadium, label: "<b>Dashboard request drawer</b><br/>Click 'Open in Denial Intelligence'" }
+  s7@{ shape: stadium, label: "<b>Authorizations case page, banner 'This request was denied'</b><br/>Click 'Open in Denial Intelligence'" }
+  p1@{ shape: rect, label: "Address is /denials or /denials?id=D-xxxx" }
+  d1@{ shape: diam, label: "Is there an ?id= in the address?" }
+  d2@{ shape: diam, label: "Is it an open denial, or one closed on this screen?" }
+  d3@{ shape: diam, label: "Are there any open denials?" }
+  p2@{ shape: rect, label: "Pick the open denial with the nearest deadline" }
+  p3@{ shape: rect, label: "Show the denial named in the address" }
+  t1@{ shape: odd, label: "<b>'We could not find D-xxxx among the open denials'</b><br/>'Showing D-3318 instead.'" }
+  sc1@{ shape: curv-trap, label: "<b>Denial Intelligence</b><br/>Header, 'Add a denial letter', the denial, 'Open denials' list" }
+  sc2@{ shape: curv-trap, label: "<b>'No open denials'</b><br/>'Everything sent is approved or waiting. Add a denial letter above to analyze a new one.'" }
+  c1@{ shape: trap-t, label: "Click 'Open the Dashboard'" }
+  g1@{ shape: subproc, label: "Continues in: Denial Intelligence › Open denials list" }
+  g2@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
+  g3@{ shape: subproc, label: "Continues in: Denial Intelligence › Add a denial letter" }
+  g4@{ shape: subproc, label: "Continues in: Dashboard › Arrive › What the page shows" }
+  s8@{ shape: stadium, label: "Look at the badge beside 'Denial Intelligence' in the sidebar" }
+  b1@{ shape: rect, label: "<b>Badge = requests in the Dashboard's 'Appeal or call' stage</b><br/>7 at the start" }
+  b2@{ shape: rect, label: "Goes up by one: a letter is analyzed, or the Dashboard demo control 'Denies' or 'Approves part' is used" }
+  b3@{ shape: rect, label: "Goes down by one: the denial is accepted, or a call outcome 'Overturned' or 'Partly restored' is logged" }
+  s1 --> p1
+  s2 --> p1
+  s3 --> p1
+  s4 --> p1
+  s5 --> p1
+  s6 --> p1
+  s7 --> p1
+  p1 --> d1
+  d1 -->|"No"| d3
+  d1 -->|"Yes"| d2
+  d2 -->|"Yes"| p3 --> sc1
+  d2 -->|"No, unknown id"| d3
+  d3 -->|"Yes"| p2 --> sc1
+  p2 -.->|"if the id was unknown"| t1 -.-> sc1
+  d3 -->|"No"| sc2
+  sc2 --> c1 --> g4
+  sc2 --> g3
+  sc1 --> g1 & g2
+  s8 --> b1 --> b2 & b3
+  class s1,s2,s3,s4,s5,s6,s7,s8 k_start
+  class p1,p2,p3,b1,b2,b3 k_process
+  class d1,d2,d3 k_decision
+  class t1 k_toast
+  class sc1,sc2 k_screen
+  class c1 k_click
+  class g1,g2,g3,g4 k_goto

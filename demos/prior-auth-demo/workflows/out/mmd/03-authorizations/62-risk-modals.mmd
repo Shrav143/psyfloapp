@@ -1,0 +1,51 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  subgraph gA ["See all"]
+  sa@{ shape: trap-t, label: "Click 'See all' on 'Comparable decisions'" }
+  m1@{ shape: win-pane, label: "<b>Dialog 'Comparable decisions'</b><br/>'6 of the closest matches from your own and the network's history'" }
+  rw@{ shape: rect, label: "<b>Six rows, each with who, match and an outcome pill</b><br/>The three from the card, then three more" }
+  mr@{ shape: rect, label: "<b>The extra rows</b><br/>'Same payer, plan named, scores falling' (Network, close match)<br/>'Earlier attempt not documented' (Yours, close match)<br/>'Recent relapse, no step-down named' (Network, partial match)" }
+  dy@{ shape: rect, label: "<b>Outcomes use the request's own days</b><br/>e.g. 'Approved 14/14' or 'Approved 7/14' for a 14-day request" }
+  c1@{ shape: trap-t, label: "Click 'Close'" }
+  end
+  subgraph gB ["How it is calculated"]
+  hc@{ shape: trap-t, label: "Click 'How it is calculated'" }
+  m2@{ shape: win-pane, label: "<b>Dialog 'How the approval chance is calculated'</b><br/>'In plain words. Updated nightly.'" }
+  s1@{ shape: hex, label: "<b>1 Historian finds similar decisions</b><br/>Same payer and plan, level of care, diagnosis cluster, review type and documentation signals" }
+  s2@{ shape: hex, label: "<b>2 Forecaster starts from the base rate</b><br/>How often the payer approved those requests as asked" }
+  s3@{ shape: rect, label: "<b>3 It adds and takes away points</b><br/>Each row is something the draft shows, or does not show yet" }
+  s4@{ shape: rect, label: "<b>4 The range says how sure it is</b><br/>With little history it says 'Benchmark estimate'" }
+  s5@{ shape: hex, label: "<b>5 It is checked every night</b><br/>Forecaster compares what it said with what payers decided" }
+  nt@{ shape: rect, label: "Footer: 'It estimates how well the paperwork fits the payer's past decisions. It does not decide care, never blocks a request, and is never shown to payers or patients.'" }
+  c2@{ shape: trap-t, label: "Click 'Got it'" }
+  end
+  cx@{ shape: trap-t, label: "Click the X, click the dimmed area, or press Esc" }
+  e@{ shape: stadium, label: "<b>Dialog closes</b><br/>You are back on Risk analysis, nothing changed" }
+  sa --> m1 --> rw --> mr --> dy --> c1 --> e
+  m1 --> cx
+  hc --> m2 --> s1 --> s2 --> s3 --> s4 --> s5 --> nt --> c2 --> e
+  m2 --> cx
+  cx --> e
+  class sa,c1,hc,c2,cx k_click
+  class m1,m2 k_overlay
+  class rw,mr,dy,s3,s4,nt k_process
+  class s1,s2,s5 k_agent
+  class e k_end
+  style gA fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gB fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

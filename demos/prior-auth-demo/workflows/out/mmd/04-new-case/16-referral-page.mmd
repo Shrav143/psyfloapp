@@ -1,0 +1,90 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Click 'Open the full referral'</b><br/>on the referral checklist" }
+  s2@{ shape: stadium, label: "<b>Click 'View' on the 'Referral or admission order' row</b><br/>on the Medical records step" }
+  s3@{ shape: stadium, label: "<b>Open an old link such as /referrals/RF-2053</b><br/>(no case in the address)" }
+  p1@{ shape: rect, label: "<b>Address is /authorizations/new/referral/RF-2053?draft=…</b><br/>The case id rides along so the page can lead back to it" }
+  d1@{ shape: diam, label: "Is that referral in the demo?" }
+  sc0@{ shape: curv-trap, label: "<b>Crumbs 'New case › Referral › RF-9999'</b><br/>'That referral is not in the demo'<br/>'Referral RF-9999 does not exist. Go back to the referral step to drop the documents or pick one that arrived.'" }
+  cBack@{ shape: trap-t, label: "Click 'Back to the referral step'" }
+  gStart@{ shape: subproc, label: "Continues in: New case › Referral › Start screen" }
+  st1@{ shape: cyl, label: "<b>Referral is marked opened</b><br/>Sidebar badge on 'New case' drops" }
+  sc1@{ shape: curv-trap, label: "<b>Referral page</b><br/>Crumbs 'New case › Referral › RF-2053'<br/>Stepper: 'Referral' is current, nothing in it is clickable" }
+  sH@{ shape: curv-trap, label: "<b>Header card</b><br/>Pill '{Program} requested', big RF number, status pill, urgency pill<br/>Patient · source · channel · received · payer<br/>Small stepper Received, Reviewed, Decided, Admitted" }
+  pSla@{ shape: rect, label: "<b>Red pill 'Past response target' while New or In review</b><br/>after 1 hour (emergent), 4 hours (urgent) or 24 hours (routine)" }
+  gHead@{ shape: subproc, label: "Continues in: New case › Referral › Header actions" }
+  gBan@{ shape: subproc, label: "Continues in: New case › Referral › Decision banners" }
+  sBan@{ shape: curv-trap, label: "<b>Banners under the header</b><br/>One per situation: declined, accepted, waiting on the referrer,<br/>Reader found N things to check, coverage lapsed" }
+  subgraph gCr ["Breadcrumb"]
+  cC1@{ shape: trap-t, label: "Click the crumb 'New case'" }
+  cC2@{ shape: trap-t, label: "Click the crumb 'Referral'" }
+  dC@{ shape: diam, label: "Was a case in the address?" }
+  dD@{ shape: diam, label: "Was a case in the address?" }
+  pC1@{ shape: rect, label: "Opens that case (its current step)" }
+  pC2@{ shape: rect, label: "Opens the checklist for this referral: ?ref=RF-2053" }
+  pC3@{ shape: rect, label: "<b>Opens New case with no case id</b><br/>A new blank case starts" }
+  pC4@{ shape: rect, label: "'RF-2053' is plain text, not a link" }
+  end
+  gOv@{ shape: subproc, label: "Continues in: New case › How a case starts and resumes" }
+  gChk@{ shape: subproc, label: "Continues in: New case › Referral › Referral checklist" }
+  subgraph gTwo ["Two columns"]
+  sDoc@{ shape: curv-trap, label: "<b>Left: 'Source document' card (stays in view while you scroll)</b><br/>'Fax from {referrer}, Mon 2:10 pm'<br/>'Referral form' and 'Face sheet', print, page buttons" }
+  sTab@{ shape: curv-trap, label: "<b>Right: tabs</b><br/>Extracted · Validation (with the count of open findings) · Coverage · Fit · Activity" }
+  end
+  cT1@{ shape: trap-t, label: "Click 'Extracted' (the tab it opens on)" }
+  cT2@{ shape: trap-t, label: "Click 'Validation'" }
+  cT3@{ shape: trap-t, label: "Click 'Coverage'" }
+  cT4@{ shape: trap-t, label: "Click 'Fit'" }
+  cT5@{ shape: trap-t, label: "Click 'Activity'" }
+  gT1@{ shape: subproc, label: "Continues in: New case › Referral › Full page: Extracted tab and document" }
+  gT2@{ shape: subproc, label: "Continues in: New case › Referral › Full page: Validation tab" }
+  gT3@{ shape: subproc, label: "Continues in: New case › Referral › Check coverage" }
+  gT4@{ shape: subproc, label: "Continues in: New case › Referral › Full page: Fit, Activity and notes" }
+  s1 --> p1
+  s2 --> p1
+  s3 --> p1
+  p1 --> d1
+  d1 -->|"No"| sc0 --> cBack --> gStart
+  d1 -->|"Yes"| st1 --> sc1 --> sH --> pSla
+  sH --> gHead
+  sc1 --> sBan --> gBan
+  sc1 --> cC1 --> dC
+  sc1 --> cC2 --> dD
+  dC -->|"Yes"| pC1 --> gOv
+  dC -->|"No"| pC3 --> gOv
+  dD -->|"Yes"| pC2 --> gChk
+  dD -->|"No"| pC3
+  sc1 -.-> pC4
+  sc1 --> sDoc
+  sc1 --> sTab
+  sTab --> cT1 --> gT1
+  sTab --> cT2 --> gT2
+  sTab --> cT3 --> gT3
+  sTab --> cT4 --> gT4
+  sTab --> cT5 --> gT4
+  sDoc -.-> gT1
+  class s1,s2,s3 k_start
+  class p1,pSla,pC1,pC2,pC3,pC4 k_process
+  class d1,dC,dD k_decision
+  class sc0,sc1,sH,sBan,sDoc,sTab k_screen
+  class cBack,cC1,cC2,cT1,cT2,cT3,cT4,cT5 k_click
+  class gStart,gHead,gBan,gOv,gChk,gT1,gT2,gT3,gT4 k_goto
+  class st1 k_store
+  style gCr fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gTwo fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

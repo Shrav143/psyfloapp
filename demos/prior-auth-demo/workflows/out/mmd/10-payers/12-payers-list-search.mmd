@@ -1,0 +1,59 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Look at the 'Payers' card</b><br/>on the left of the page" }
+  list@{ shape: curv-trap, label: "<b>Payers card</b><br/>'Search payers' box, then four groups, then a legend" }
+  grp@{ shape: rect, label: "<b>Rows sit under four group headings</b><br/>Ohio Medicaid, Commercial,<br/>Medicare Advantage, Behavioral carve-out<br/>A payer added later joins its group" }
+  row@{ shape: rect, label: "<b>Each row shows the payer name,</b><br/>its plan type and a dot<br/>Selected row is pale green" }
+  dot@{ shape: diam, label: "Does this payer have a change waiting?" }
+  green@{ shape: rect, label: "<b>Green dot</b><br/>Up to date" }
+  ochre@{ shape: rect, label: "<b>Ochre dot</b><br/>Change waiting" }
+  tnote@{ shape: odd, label: "<b>A proposal from Historian alone</b><br/>does not turn the dot ochre.<br/>Only the 'Changes' tab badge counts it" }
+  leg@{ shape: curv-trap, label: "<b>Legend at the foot of the card</b><br/>'up to date' and 'change waiting'" }
+  i1@{ shape: lean-r, label: "Type in 'Search payers'" }
+  filt@{ shape: rect, label: "<b>List narrows as you type</b><br/>Matches name, plan type or group,<br/>any capitals" }
+  any@{ shape: diam, label: "Does any payer still match?" }
+  empty@{ shape: odd, label: "No payer matches 'text you typed'." }
+  clr@{ shape: trap-t, label: "Click 'Clear search'" }
+  clr2@{ shape: rect, label: "<b>Search box empties</b><br/>Every payer shows again" }
+  pick@{ shape: trap-t, label: "Click a payer row" }
+  nav@{ shape: rect, label: "<b>Address becomes /payers/the-payer?tab=</b><br/>Same tab as before. Process if none" }
+  swap@{ shape: rect, label: "<b>Header, tab bar and tab content</b><br/>switch to the new payer" }
+  fresh@{ shape: rect, label: "<b>Tab content starts fresh</b><br/>No editor, search text or result carries over" }
+  keep@{ shape: rect, label: "Search text in the list stays" }
+  same@{ shape: trap-t, label: "Click the payer that is already selected" }
+  nochg@{ shape: rect, label: "Nothing changes on screen" }
+  e1@{ shape: stadium, label: "The chosen payer's page is showing" }
+  s1 --> list --> grp --> row --> dot
+  dot -->|"No"| green --> leg
+  dot -->|"Yes"| ochre --> leg
+  ochre -.-> tnote
+  list --> i1 --> filt --> any
+  any -->|"No"| empty --> clr --> clr2 --> list
+  any -->|"Yes"| pick
+  list --> pick
+  pick --> nav --> swap --> fresh --> keep --> e1
+  list --> same --> nochg --> e1
+  class s1 k_start
+  class list,leg k_screen
+  class grp,row,green,ochre,filt,clr2,nav,swap,fresh,keep,nochg k_process
+  class dot,any k_decision
+  class tnote,empty k_toast
+  class i1 k_input
+  class clr,pick,same k_click
+  class e1 k_end

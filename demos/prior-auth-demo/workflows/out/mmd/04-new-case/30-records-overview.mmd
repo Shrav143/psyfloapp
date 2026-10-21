@@ -1,0 +1,101 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>From step 1 'Referral'</b><br/>Continue, or 'No referral? Continue without one'" }
+  s2@{ shape: stadium, label: "<b>From an Eligibility result</b><br/>Click 'Start authorization'" }
+  s3@{ shape: stadium, label: "<b>From Case Manager › Being prepared</b><br/>Click 'Continue' on an intake case" }
+  p1@{ shape: rect, label: "<b>A draft opens on step 2 'Medical records'</b><br/>Payer, level of care and member ID arrive filled in when they came from Eligibility" }
+  sc@{ shape: curv-trap, label: "<b>New case</b><br/>Sub line: 'Drop what you have. Reader sorts the files and lists what is still missing...'<br/>Stepper: 'Referral' done, 'Medical records' current, later steps greyed out<br/>Header button 'Use sample chart'" }
+  subgraph gPage ["The page"]
+  dz@{ shape: curv-trap, label: "<b>Drop zone</b><br/>'Drop everything you have for this patient'<br/>Privacy mode note and 'Pull a chart from EMR Connect'" }
+  pr@{ shape: curv-trap, label: "<b>Progress line</b><br/>'N of M ready' with a bar and 'N to go'<br/>'Ready to continue' shows when nothing blocks" }
+  gp@{ shape: curv-trap, label: "<b>Patient</b><br/>Patient initials and age" }
+  gi@{ shape: curv-trap, label: "<b>Insurance</b><br/>Payer and plan, Member ID, Coverage" }
+  gr@{ shape: curv-trap, label: "<b>Request</b><br/>Level of care, Request type, Start date, Diagnoses (ICD-10), Reason for the request" }
+  gd@{ shape: curv-trap, label: "<b>Documents</b><br/>One row for each document the payer asks for" }
+  ft@{ shape: curv-trap, label: "<b>Footer bar, always in view</b><br/>'Back', 'Save as draft', 'Continue' and a hint line" }
+  end
+  g31@{ shape: subproc, label: "Continues in: Medical records › Drop files and let Reader sort them" }
+  g32@{ shape: subproc, label: "Continues in: Medical records › Patient and insurance rows" }
+  g40@{ shape: subproc, label: "Continues in: Medical records › The Coverage row" }
+  g33@{ shape: subproc, label: "Continues in: Medical records › Request and document rows" }
+  subgraph gBlock ["Switched off while any is true"]
+  b1@{ shape: rect, label: "Patient initials and age are not both filled in" }
+  b2@{ shape: rect, label: "No payer is chosen ('Payer and plan')" }
+  b3@{ shape: rect, label: "No 'Level of care'" }
+  b4@{ shape: rect, label: "No 'Request type'" }
+  b5@{ shape: rect, label: "<b>A required document is not added</b><br/>Three or more show as 'N required documents'" }
+  b6@{ shape: rect, label: "<b>Reader is still reading a file</b><br/>'Reader to finish reading'" }
+  b7@{ shape: rect, label: "<b>Verify says coverage needs a fix</b><br/>'Coverage, or another payer' (not on a Retro-authorization)" }
+  end
+  free@{ shape: rect, label: "<b>These never block Continue</b><br/>Member ID, Start date, Diagnoses, Reason, recommended documents, a 'Check this' finding" }
+  pc@{ shape: rect, label: "The footer and the rows read the same list, so they always agree" }
+  dq@{ shape: diam, label: "Anything still blocking?" }
+  tHint@{ shape: odd, label: "Footer hint: 'Still needed: Patient initials and age, Payer and plan, Level of care and 3 more.'" }
+  eOff@{ shape: stadium, label: "'Continue' stays switched off; clicking does nothing" }
+  tReady@{ shape: odd, label: "<b>Progress shows 'Ready to continue'</b><br/>Hint: 'Nothing is sent to the payer until a clinician signs.'" }
+  cBack@{ shape: trap-t, label: "Click 'Back'" }
+  cStep@{ shape: trap-t, label: "Click 'Referral' in the stepper" }
+  pBack@{ shape: rect, label: "The draft is kept; the page goes back to step 1 'Referral'" }
+  gRef@{ shape: subproc, label: "Continues in: New case › Referral step" }
+  cSave@{ shape: trap-t, label: "Click 'Save as draft'" }
+  gSave@{ shape: subproc, label: "Continues in: Authorizations › New case › Save as draft and leave" }
+  cCont@{ shape: trap-t, label: "Click 'Continue'" }
+  dRan@{ shape: diam, label: "Have the agents already run on this case?" }
+  pDirect@{ shape: rect, label: "<b>Goes straight to step 3 'Agents work'</b><br/>No question is asked" }
+  oConf@{ shape: win-pane, label: "<b>Start the agents?</b><br/>J.M., Residential 3.5 · Summit Medicaid HMO<br/>'Nothing is sent to the payer until a clinician signs.'" }
+  gAgents@{ shape: subproc, label: "Continues in: Agents work › Start the run" }
+  s1 --> p1
+  s2 --> p1
+  s3 --> p1
+  p1 --> sc --> dz --> pr --> gp --> gi --> gr --> gd --> ft
+  dz --> g31
+  sc --> cStep
+  gp --> g32
+  gi --> g32
+  gi --> g40
+  gr --> g33
+  gd --> g33
+  b1 ~~~ b2 ~~~ b3 ~~~ b4 ~~~ b5 ~~~ b6 ~~~ b7
+  b1 & b2 & b3 & b4 & b5 & b6 & b7 --> pc
+  free -.-> pc
+  pr --> pc
+  pc --> dq
+  dq -->|"Yes"| tHint --> eOff
+  dq -->|"No"| tReady --> cCont
+  ft --> cBack
+  ft --> cSave
+  cBack --> pBack
+  cStep --> pBack
+  pBack --> gRef
+  cSave --> gSave
+  cCont --> dRan
+  dRan -->|"Yes"| pDirect --> gAgents
+  dRan -->|"No"| oConf
+  oConf --> gAgents
+  class s1,s2,s3 k_start
+  class p1,b1,b2,b3,b4,b5,b6,b7,free,pc,pBack,pDirect k_process
+  class sc,dz,pr,gp,gi,gr,gd,ft k_screen
+  class g31,g32,g40,g33,gRef,gSave,gAgents k_goto
+  class dq,dRan k_decision
+  class tHint,tReady k_toast
+  class eOff k_endx
+  class cBack,cStep,cSave,cCont k_click
+  class oConf k_overlay
+  style gPage fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gBlock fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

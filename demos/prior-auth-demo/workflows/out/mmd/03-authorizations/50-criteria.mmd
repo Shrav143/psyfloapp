@@ -1,0 +1,68 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Click 'Payer criteria'" }
+  pc@{ shape: curv-trap, label: "Payer criteria" }
+  hd@{ shape: curv-trap, label: "<b>Header card: 'Summit Medicaid HMO · Residential 3.5 · Alcohol use disorder, severe ...'</b><br/>'What this payer asks for, read by the Criteria agent from the current policy and past decisions'" }
+  ch@{ shape: rect, label: "<b>Four source chips</b><br/>'Published payer policy v2026.3', 'Past decisions', 'Denial patterns', 'Ohio rules'" }
+  dO@{ shape: diam, label: "Could any requirement be stronger?" }
+  p1@{ shape: odd, label: "Pill: '1 item could be stronger before sending'" }
+  p2@{ shape: odd, label: "Pill: 'Everything Summit asks for is covered'" }
+  fc@{ shape: rect, label: "<b>Four facts</b><br/>'Approved as asked 74%' (Summit, Residential 3.5, last 90 days)<br/>'Chart-to-criteria match 9 / 9'<br/>'Time to read the policy < 10 s'<br/>'Required tool'" }
+  tb@{ shape: curv-trap, label: "<b>Table 'What Summit requires for approval'</b><br/>'8 of 9 are backed directly by the chart, 1 could be stronger'<br/>Columns: Criterion, Status, Evidence, 'Criteria says'" }
+  dR@{ shape: diam, label: "For each row: backed directly by the chart?" }
+  met@{ shape: rect, label: "Status 'Met' with a green tick" }
+  weak@{ shape: rect, label: "Status 'Could be stronger' with an amber icon" }
+  ga@{ shape: trap-t, label: "Click 'Go to the action'" }
+  dl@{ shape: rect, label: "Recommended actions opens with that card outlined" }
+  ev@{ shape: trap-t, label: "Click the source chip in the 'Evidence' column" }
+  rc@{ shape: trap-t, label: "Click 'Re-check criteria'" }
+  bz@{ shape: rect, label: "Button shows a spinner for about 1.6 seconds" }
+  cr@{ shape: hex, label: "<b>Criteria reads the payer's policy again</b><br/>(demo: simulated, nothing changes)" }
+  tr@{ shape: odd, label: "<b>'Criteria re-checked'</b><br/>'Criteria read Summit's policy v2026.3 again. 9 of 9 are covered in the draft, 1 could be stronger.'" }
+  kh@{ shape: curv-trap, label: "<b>Card 'To keep the approval chance high'</b><br/>Banner 'Why it matters for Summit. ...'<br/>Label 'Include in the request'" }
+  dN@{ shape: diam, label: "Any row 'Could be stronger'?" }
+  li@{ shape: rect, label: "<b>Numbered list: the action's title</b><br/>'Meets the requirement that is thin today: ...'" }
+  oa@{ shape: trap-t, label: "Click 'Open the action'" }
+  no@{ shape: rect, label: "'Nothing to add. The draft already covers every requirement.'" }
+  ap@{ shape: cyl, label: "<b>When an action that fixes a row is applied</b><br/>Row turns 'Met': 'Closed by the action you applied. Criteria checked the draft again.'<br/>If you typed an answer: 'Added by Scribe from your answer: ...'" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Case page › Source chip" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Case page › Recommended actions › The tab" }
+  s1 --> pc --> hd --> ch
+  pc --> dO
+  dO -->|"Yes"| p1
+  dO -->|"No"| p2
+  pc --> fc
+  pc --> tb --> dR
+  dR -->|"Yes"| met
+  dR -->|"No"| weak --> ga --> dl --> g2
+  tb --> ev --> g1
+  pc --> rc --> bz --> cr --> tr
+  pc --> kh --> dN
+  dN -->|"Yes"| li --> oa --> dl
+  dN -->|"No"| no
+  dl -.-> ap
+  class s1 k_start
+  class pc,hd,tb,kh k_screen
+  class ch,fc,met,weak,dl,bz,li,no k_process
+  class dO,dR,dN k_decision
+  class p1,p2,tr k_toast
+  class ga,ev,rc,oa k_click
+  class cr k_agent
+  class ap k_store
+  class g1,g2 k_goto

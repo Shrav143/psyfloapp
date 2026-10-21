@@ -1,0 +1,68 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Arrive on Denial Intelligence" }
+  sc1@{ shape: curv-trap, label: "<b>'Open denials' card, right of the page</b><br/>Count pill, then one row per open denial" }
+  p1@{ shape: rect, label: "Open denial = a request in the Dashboard's 'Appeal or call' stage" }
+  d1@{ shape: diam, label: "Any open denials?" }
+  t1@{ shape: odd, label: "'No open denials. Everything sent is approved or waiting.'" }
+  p2@{ shape: rect, label: "<b>Count pill shows the number</b><br/>Red pill when there are open denials, green at 0" }
+  p3@{ shape: rect, label: "<b>Sorted by time left on the deadline, nearest first</b><br/>Overdue denials go to the top" }
+  p4@{ shape: rect, label: "Filed appeals have no deadline of ours, so they come last, in id order" }
+  p5@{ shape: rect, label: "At the start: D-3318, D-3297, D-3290, D-3301, then D-3272, D-3279, D-3284" }
+  r1@{ shape: curv-trap, label: "<b>One row</b><br/>D-id (underlined), program chip, one-line summary<br/>'$ at stake · N% win chance'" }
+  p6@{ shape: rect, label: "<b>Program chip: Res., IOP, PHP or Detox</b><br/>Summary example: 'Units cut 48 to 30'" }
+  d2@{ shape: diam, label: "What does the route pill say?" }
+  rp1@{ shape: curv-trap, label: "Call booked with a time: 'Call Wed 10/21 1 pm'" }
+  rp2@{ shape: curv-trap, label: "Peer-to-peer window: 'P2P in 36 h'" }
+  rp3@{ shape: curv-trap, label: "<b>Written appeal: 'Appeal in 41 d'</b><br/>Resubmission: 'Resubmit in 5 d'" }
+  rp4@{ shape: curv-trap, label: "Filed: 'Decision 11/02' (grey, no count-down)" }
+  rp5@{ shape: curv-trap, label: "Time is up: 'Window closed' (red)" }
+  p7@{ shape: rect, label: "Colour of a count-down: red under 2 days, ochre under 7 days, grey otherwise" }
+  cl1@{ shape: curv-trap, label: "<b>'Closed' section under the open rows</b><br/>Only when a denial was accepted, overturned or partly restored here" }
+  p8@{ shape: rect, label: "Closed rows show the result as the pill: 'Accepted', 'Overturned' or 'Partly restored'" }
+  c1@{ shape: trap-t, label: "Click a row (a button: Tab to it, then Enter or Space)" }
+  p9@{ shape: rect, label: "<b>Address becomes ?id=D-xxxx</b><br/>Row is highlighted" }
+  p10@{ shape: rect, label: "Left side loads that denial: title, header, banner, analysis, options, history" }
+  c2@{ shape: trap-t, label: "Click 'See on the Dashboard' (top right of the page)" }
+  g1@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
+  g2@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
+  e1@{ shape: stadium, label: "The chosen denial is on screen" }
+  s1 --> p1 --> sc1 --> d1
+  d1 -->|"No"| t1
+  d1 -->|"Yes"| p2 --> p3 --> p4 --> p5
+  p5 --> r1 --> p6 --> d2
+  d2 -->|"Call booked"| rp1
+  d2 -->|"Call window open"| rp2
+  d2 -->|"Appeal or resubmit"| rp3
+  d2 -->|"Filed"| rp4
+  d2 -->|"Time is up"| rp5
+  rp2 --> p7
+  rp3 --> p7
+  sc1 --> cl1 --> p8
+  r1 --> c1 --> p9 --> p10 --> e1
+  e1 --> g1
+  sc1 --> c2 --> g2
+  class s1 k_start
+  class sc1,r1,rp1,rp2,rp3,rp4,rp5,cl1 k_screen
+  class p1,p2,p3,p4,p5,p6,p7,p8,p9,p10 k_process
+  class d1,d2 k_decision
+  class t1 k_toast
+  class c1,c2 k_click
+  class g1,g2 k_goto
+  class e1 k_end

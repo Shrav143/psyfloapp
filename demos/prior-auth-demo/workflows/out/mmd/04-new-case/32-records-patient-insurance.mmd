@@ -1,0 +1,107 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "On step 2, read the Patient and Insurance rows" }
+  sc@{ shape: curv-trap, label: "<b>Patient: 'Patient initials and age'</b><br/>Insurance: 'Payer and plan', 'Member ID', 'Coverage'<br/>Each row: a box, a label, a detail line and one button" }
+  subgraph gState ["What a row can say"]
+  dSrc@{ shape: diam, label: "Does the row have a value?" }
+  r1@{ shape: rect, label: "<b>Read from a file</b><br/>'Read from chart.pdf by Reader. Check it.'" }
+  r3@{ shape: rect, label: "<b>From a referral</b><br/>'From referral RF-2054'" }
+  r4@{ shape: rect, label: "<b>From EMR Connect</b><br/>'From EMR Connect'" }
+  r2@{ shape: rect, label: "<b>Typed by a person</b><br/>The detail shows the value with no source note" }
+  r5@{ shape: rect, label: "<b>Missing</b><br/>'Not found yet. Drop a chart above or add it here.'<br/>Row shaded, button 'Add'" }
+  r6@{ shape: rect, label: "<b>Half filled</b><br/>'Found initials J.M.. The age is still needed.'" }
+  rNote@{ shape: rect, label: "A source note goes quiet as soon as the value is edited" }
+  end
+  cEdit@{ shape: trap-t, label: "Click 'Add' (empty row) or 'Edit' (filled row)" }
+  oEd@{ shape: win-pane, label: "<b>Editor opens under the row</b><br/>First box takes focus<br/>Only one editor is open at a time" }
+  cAgain@{ shape: trap-t, label: "Click the same row button again" }
+  pClose@{ shape: rect, label: "Editor closes" }
+  subgraph gPatient ["Patient initials and age"]
+  iInit@{ shape: lean-r, label: "<b>Type 'Patient initials'</b><br/>Up to 8 letters, shown in capitals, e.g. J.M." }
+  iAge@{ shape: lean-r, label: "Type 'Age' (1 to 110)" }
+  pName@{ shape: rect, label: "Hint: 'Initials and age only. A name never enters the app.'" }
+  end
+  subgraph gPayer ["Payer and plan"]
+  iPayer@{ shape: lean-r, label: "<b>Pick 'Payer' (Choose a payer)</b><br/>Six payers" }
+  pPlan@{ shape: rect, label: "<b>'Plan type' fills in for that payer</b><br/>HMO, PPO, Medicare Advantage..." }
+  iPlan@{ shape: lean-r, label: "Optional: pick another 'Plan type'" }
+  end
+  subgraph gMember ["Member ID"]
+  iMember@{ shape: lean-r, label: "Type 'Member ID'" }
+  pMask@{ shape: rect, label: "<b>Detail shows only the last four, e.g. …4821</b><br/>'agents see only the last four'" }
+  end
+  cDone@{ shape: trap-t, label: "Click 'Done', or press Escape in a text box" }
+  stLive@{ shape: cyl, label: "<b>Every keystroke is written to the draft</b><br/>Nothing to save" }
+  pStale@{ shape: rect, label: "<b>If the agents had already run, the run restarts</b><br/>Answers and summary edits are cleared" }
+  g40@{ shape: subproc, label: "Continues in: Medical records › The Coverage row" }
+  subgraph gEmr ["EMR pull"]
+  cPull@{ shape: trap-t, label: "<b>Click 'Pull a chart from EMR Connect'</b><br/>Clicking again closes the picker" }
+  oPick@{ shape: win-pane, label: "<b>Chart from EMR Connect</b><br/>Picker with a chart list, 'Pull' and 'Cancel'" }
+  iChart@{ shape: lean-r, label: "<b>Pick a chart</b><br/>J.M., 34 · Summit · Residential 3.5 · A.R. · S.T. · L.G." }
+  cPullGo@{ shape: trap-t, label: "Click 'Pull'" }
+  pPulling@{ shape: rect, label: "<b>Button reads 'Pulling' for about 1 second</b><br/>The list and 'Cancel' switch off" }
+  xEmr@{ shape: st-rect, label: "<b>EMR Connect (demo: simulated)</b><br/>The chart's patient, payer, member ID, level of care, type, diagnoses and reason" }
+  stEmr@{ shape: cyl, label: "<b>Draft filled, replacing those fields</b><br/>No documents come with it" }
+  tEmr@{ shape: odd, label: "<b>'Pulled J.M., 34 from EMR Connect'</b><br/>'Everything below was filled in from the chart. You can still change it.'" }
+  cCancelEmr@{ shape: trap-t, label: "Click 'Cancel'" }
+  pCancelEmr@{ shape: rect, label: "Picker closes; nothing changes" }
+  end
+  s1 --> sc --> dSrc
+  dSrc -->|"Read by Reader"| r1
+  dSrc -->|"From a referral"| r3
+  dSrc -->|"From the EMR"| r4
+  dSrc -->|"Typed"| r2
+  dSrc -->|"No"| r5
+  dSrc -->|"Only one of two"| r6
+  r1 --> rNote
+  r3 --> rNote
+  r4 --> rNote
+  sc --> cEdit --> oEd
+  oEd --> iInit
+  iInit --> iAge --> pName
+  oEd --> iPayer --> pPlan --> iPlan
+  oEd --> iMember --> pMask
+  r5 --> cEdit
+  r6 --> cEdit
+  pName --> cDone
+  iPlan --> cDone
+  pMask --> cDone
+  cDone --> stLive --> pStale
+  oEd --> cAgain --> pClose
+  cDone --> pClose
+  sc --> g40
+  sc --> cPull --> oPick --> iChart --> cPullGo --> pPulling --> xEmr --> stEmr --> tEmr
+  oPick --> cCancelEmr --> pCancelEmr
+  stEmr -.-> pStale
+  class s1 k_start
+  class sc k_screen
+  class dSrc k_decision
+  class r1,r3,r4,r2,r5,r6,rNote,pClose,pName,pPlan,pMask,pStale,pPulling,pCancelEmr k_process
+  class cEdit,cAgain,cDone,cPull,cPullGo,cCancelEmr k_click
+  class oEd,oPick k_overlay
+  class iInit,iAge,iPayer,iPlan,iMember,iChart k_input
+  class stLive,stEmr k_store
+  class g40 k_goto
+  class xEmr k_ext
+  class tEmr k_toast
+  style gState fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gPatient fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gPayer fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gMember fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gEmr fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

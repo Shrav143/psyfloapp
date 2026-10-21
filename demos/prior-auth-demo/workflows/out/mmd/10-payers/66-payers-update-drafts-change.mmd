@@ -1,0 +1,86 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Click 'Update 4 drafts'</b><br/>(ready after 'Acknowledge change')" }
+  m@{ shape: win-pane, label: "<b>Update 4 drafts?</b><br/>Confirm gate. Nothing is redrafted until you say so.<br/>Reason: criteria changed, version 2026.3." }
+  rows@{ shape: curv-trap, label: "<b>One row per affected request</b><br/>Request id, patient initials and age · payer,<br/>level of care chip, status" }
+  subgraph gR ["Cardinal's four rows, as seeded"]
+  r1@{ shape: rect, label: "<b>R-1042 · J.M., 34 · Summit · Residential 3.5</b><br/>Draft, not yet sent" }
+  r2@{ shape: rect, label: "<b>I-2207 · T.R., 29 · Cardinal · IOP</b><br/>Draft, not yet sent" }
+  r3@{ shape: rect, label: "<b>R-0988 · D.L., 41 · Beacon · Residential 3.5</b><br/>Draft, not yet sent" }
+  r4@{ shape: rect, label: "<b>I-2231 · S.B., 37 · Cardinal · IOP</b><br/>Already sent. Gets an addendum" }
+  end
+  st@{ shape: rect, label: "<b>Status by stage</b><br/>Preparing: 'Draft, not yet sent'<br/>Info requested: 'Answer drafted, not yet sent'<br/>Anything later: 'Already sent. Gets an addendum'" }
+  fn@{ shape: odd, label: "<b>'Each redrafted case returns to Case Manager for a new signature.</b><br/>A request that is already sent is never rewritten.<br/>It gets an addendum instead.'" }
+  cs@{ shape: trap-t, label: "Click 'Update 4 drafts'" }
+  lock@{ shape: rect, label: "<b>Cancel greys out and the button spins</b><br/>Escape, X and dimmed area do nothing" }
+  a1@{ shape: hex, label: "<b>Scribe is redrafting 4 drafts</b><br/>(demo: 1.5 seconds)" }
+  a2@{ shape: hex, label: "<b>Integrity is checking every sentence</b><br/>against the chart (demo: 1.5 seconds)" }
+  lv@{ shape: diam, label: "Still on Payers after 3 seconds?" }
+  drop@{ shape: stadium, label: "<b>Update dropped</b><br/>Change stays waiting, acknowledged" }
+  subgraph gU ["What the update does"]
+  u1@{ shape: cyl, label: "<b>Each draft or answer-in-draft needs a person again</b><br/>'Redrafted after Cardinal's change (criteria changed, version 2026.3).<br/>Waiting for a new signature'<br/>Timeline event by Scribe" }
+  u2@{ shape: cyl, label: "<b>Each sent request gets a timeline event</b><br/>'Scribe prepared an addendum after ...'<br/>Its status does not change" }
+  u3@{ shape: cyl, label: "<b>Payer's change cleared</b><br/>Checked date becomes today" }
+  u4@{ shape: cyl, label: "<b>Document lists gain the change's new rows</b><br/>Remaining treatment goals: Named in the latest progress note<br/>in Residential 3.5, IOP and PHP" }
+  u5@{ shape: cyl, label: "<b>Edit log: 3 'Documents' entries</b><br/>'Added to the Residential 3.5 list' and so on<br/>Reason 'After criteria changed, version 2026.3'" }
+  u6@{ shape: cyl, label: "<b>'What changed' gets a new top row</b><br/>'Criteria changed, version 2026.3: acknowledged and applied'<br/>Acknowledged by Jordan Perez, ...<br/>Scribe and Integrity updated 4 drafts ..." }
+  end
+  nt@{ shape: cyl, label: "<b>Bell notification 'Drafts updated' from Scribe</b><br/>4 drafts were redrafted after Cardinal's change.<br/>Each needs a new signature in Case Manager." }
+  t1@{ shape: odd, label: "<b>'4 drafts updated'</b><br/>Cardinal is up to date. Each draft returned to Case Manager<br/>for a new signature." }
+  out@{ shape: curv-trap, label: "<b>Changes tab flips to green</b><br/>'This payer's rules are up to date', last checked today<br/>Sidebar badge drops, dot turns green" }
+  cx@{ shape: trap-t, label: "Click 'Cancel'" }
+  cesc@{ shape: trap-t, label: "<b>Press Escape, click the X</b><br/>or click the dimmed area" }
+  x1@{ shape: stadium, label: "<b>Modal closes</b><br/>Nothing redrafted, still acknowledged" }
+  odd@{ shape: rect, label: "<b>Demo oddity: two rows belong to other payers (Summit, Beacon)</b><br/>and the banner says 'not yet sent' for all four" }
+  g1@{ shape: subproc, label: "Continues in: Dashboard › Requests table" }
+  cb@{ shape: trap-t, label: "<b>Click the bell notification</b><br/>'Drafts updated'" }
+  g2@{ shape: subproc, label: "Continues in: Case Manager › Cases" }
+  g3@{ shape: subproc, label: "Continues in: Payers › Documents › Try it on a case" }
+  g4@{ shape: subproc, label: "Continues in: Payers › Edit log" }
+  s1 --> m --> rows
+  rows --> r1 & r2 & r3 & r4
+  r1 --> st
+  r2 --> st
+  r3 --> st
+  r4 --> st
+  st --> fn --> cs --> lock --> a1 --> a2 --> lv
+  lv -->|"No"| drop
+  lv -->|"Yes"| u1
+  u1 --> u2
+  u2 --> u3 --> u4 --> u5 --> u6 --> nt --> t1 --> out
+  out --> g1
+  nt -.-> cb --> g2
+  u4 -.-> g3
+  u5 -.-> g4
+  rows -.-> odd
+  m --> cx --> x1
+  m --> cesc --> x1
+  class s1 k_start
+  class m k_overlay
+  class rows,out k_screen
+  class r1,r2,r3,r4,st,lock,odd k_process
+  class fn,t1 k_toast
+  class cs,cx,cesc,cb k_click
+  class a1,a2 k_agent
+  class lv k_decision
+  class drop,x1 k_endx
+  class u1,u2,u3,u4,u5,u6,nt k_store
+  class g1,g2,g3,g4 k_goto
+  style gR fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gU fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

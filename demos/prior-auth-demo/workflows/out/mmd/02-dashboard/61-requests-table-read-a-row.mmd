@@ -1,0 +1,70 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "A row in the Requests table" }
+  c1@{ shape: curv-trap, label: "<b>Case</b><br/>Underlined ID, e.g. 'R-1042', and the request type, e.g. 'Admission'" }
+  c2@{ shape: curv-trap, label: "<b>Payer</b><br/>Short name: 'Summit Medicaid', 'Cardinal', 'Beacon PPO', 'Harborview MA', 'Lakeshore', 'Evergreen'<br/>Program under it: 'Residential 3.5', 'IOP', 'PHP', 'Detox'" }
+  d1@{ shape: diam, label: "Is it a denial? (ID starts with D-)" }
+  w1@{ shape: curv-trap, label: "<b>Where it is</b><br/>Chip such as 'Info requested' and four bars<br/>'Prepared, Received, In review, Decided'" }
+  w2@{ shape: curv-trap, label: "<b>Where it is</b><br/>Chip such as 'Call booked' and four bars<br/>'Call, Appeal 1, Appeal 2, External'" }
+  w3@{ shape: rect, label: "<b>Bars: done are green, the current one is dark green (ochre when the chip is amber), later ones are grey</b><br/>Hover shows 'Progress: Prepared, Received, In review, Decided. Now at In review.' or 'Route: Call, Appeal 1, Appeal 2, External. Now at Call.'" }
+  subgraph gClock ["Clock column"]
+  k1@{ shape: diam, label: "Does the row carry a fixed note?" }
+  k2@{ shape: curv-trap, label: "<b>Note, e.g. 'decision 11/02'</b><br/>Under it 'filed 10/05'" }
+  k3@{ shape: diam, label: "Is there a deadline (an open denial)?" }
+  k4@{ shape: diam, label: "How much time is left?" }
+  k5@{ shape: curv-trap, label: "'window closed'" }
+  k6@{ shape: curv-trap, label: "<b>'36 h left' in red</b><br/>Under 2 days; under it e.g. 'peer-to-peer window'" }
+  k7@{ shape: curv-trap, label: "<b>'3 days left' in ochre</b><br/>Under 7 days; under it 'to resubmit' or 'to file'" }
+  k8@{ shape: curv-trap, label: "'12 days left' in plain text" }
+  k9@{ shape: diam, label: "Is the stage Decided? (an approval)" }
+  k10@{ shape: curv-trap, label: "<b>'today'</b><br/>Under it 'approved 1 h 30 m ago'" }
+  k11@{ shape: diam, label: "How long in this stage compared with typical?" }
+  k12@{ shape: curv-trap, label: "<b>'1 d 14 h' and 'typical 1 d'</b><br/>Over 1.5 × typical adds ochre 'late'" }
+  k13@{ shape: curv-trap, label: "<b>'4 d 12 h' and 'typical 2 d'</b><br/>Over 2 × typical adds red 'very late'" }
+  k14@{ shape: curv-trap, label: "<b>'1 h 12 m' and 'typical 2 h'</b><br/>Within typical, plain text" }
+  end
+  a1@{ shape: curv-trap, label: "<b>At stake</b><br/>Money asked for, e.g. '$22.4K'" }
+  n1@{ shape: curv-trap, label: "<b>What happens next</b><br/>Agent badge and a line, e.g. 'Needs your input. Scribe has a question' or 'Navigator checks again in 5 minutes'" }
+  g1@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Order, rows and paging" }
+  g2@{ shape: subproc, label: "Continues in: Dashboard › Header › Check all now and the demo clock" }
+  s1 --> c1 --> c2 --> d1
+  d1 -->|"No"| w1 --> w3
+  d1 -->|"Yes"| w2 --> w3
+  w3 --> k1
+  k1 -->|"Yes"| k2 --> a1
+  k1 -->|"No"| k3
+  k3 -->|"Yes"| k4
+  k4 -->|"Zero or less"| k5 --> a1
+  k4 -->|"Under 2 days"| k6 --> a1
+  k4 -->|"2 to 7 days"| k7 --> a1
+  k4 -->|"7 days or more"| k8 --> a1
+  k3 -->|"No"| k9
+  k9 -->|"Yes"| k10 --> a1
+  k9 -->|"No"| k11
+  k11 -->|"Over 1.5 times"| k12 --> a1
+  k11 -->|"Over 2 times"| k13 --> a1
+  k11 -->|"Within typical"| k14 --> a1
+  a1 --> n1 --> g1
+  k11 -.-> g2
+  class s1 k_start
+  class c1,c2,w1,w2,k2,k5,k6,k7,k8,k10,k12,k13,k14,a1,n1 k_screen
+  class d1,k1,k3,k4,k9,k11 k_decision
+  class w3 k_process
+  class g1,g2 k_goto
+  style gClock fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

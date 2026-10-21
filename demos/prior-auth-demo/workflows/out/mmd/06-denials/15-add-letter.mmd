@@ -1,0 +1,77 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Look at 'Add a denial letter' at the top of the page" }
+  sc1@{ shape: curv-trap, label: "<b>'Add a denial letter'</b><br/>'The agents read it, check it against your chart and past appeals, and lay out your options'<br/>Two columns: letter, then note and button" }
+  i1@{ shape: lean-r, label: "<b>Drop a file on the area, or click it (or press Enter or Space) to choose a file</b><br/>'Drop the denial letter here, or click to choose a PDF or DOCX'" }
+  c1@{ shape: trap-t, label: "Click 'Use sample letter'" }
+  p1@{ shape: rect, label: "Next sample letter in turn: Beacon, Summit, then Harborview" }
+  fr@{ shape: curv-trap, label: "<b>File row: file name and size</b><br/>A small X removes it" }
+  c2@{ shape: trap-t, label: "Click the X on the file row" }
+  p2@{ shape: rect, label: "<b>Drop area comes back</b><br/>The note is kept" }
+  p3@{ shape: rect, label: "'Identifiers are removed on upload.' is shown beside the area" }
+  i2@{ shape: lean-r, label: "<b>Type a note (optional)</b><br/>'Add anything not in the letter, such as a payer call note'" }
+  c3@{ shape: trap-t, label: "Click 'Analyze the denial'" }
+  d1@{ shape: diam, label: "Is a letter chosen?" }
+  t1@{ shape: odd, label: "'Add the letter first, or use the sample letter.'" }
+  sc2@{ shape: curv-trap, label: "<b>Progress list replaces the form</b><br/>One line per agent, a spinner on the one working, a tick when done" }
+  a1@{ shape: hex, label: "Reader is reading the letter and removing identifiers" }
+  a2@{ shape: hex, label: "Advocate is checking the notice, the deadline and the payer's own criteria" }
+  a3@{ shape: hex, label: "Historian is comparing similar decisions and appeals" }
+  a4@{ shape: hex, label: "Integrity is checking every statement against the chart" }
+  w1@{ shape: delay, label: "About 1.25 seconds per step, 5 seconds in all (demo: simulated)" }
+  d2@{ shape: diam, label: "Is the person still on this page?" }
+  e1@{ shape: stadium, label: "Work is dropped and no denial is added" }
+  p4@{ shape: rect, label: "Facts of the sample fill the denial: initials, age, payer, program, '$ at stake', win chance, denial type, similar decisions, call window" }
+  st1@{ shape: cyl, label: "<b>New open denial created, the next free number from D-3340</b><br/>Chip 'Analyzed', route 'Peer-to-peer', file name and note saved" }
+  st2@{ shape: cyl, label: "History lines: Reader read the letter and removed identifiers; Advocate checked the notice, the deadline and how the payer applied its own criteria; Historian compared N similar decisions" }
+  t2@{ shape: odd, label: "<b>'The analysis is ready'</b><br/>'D-3340 was added to Open denials.'" }
+  t3@{ shape: odd, label: "<b>Notification 'Denial analyzed' from Advocate</b><br/>Links to the new denial" }
+  p5@{ shape: rect, label: "<b>Form clears: file, sample and note</b><br/>New denial is selected, address becomes ?id=D-3340<br/>Badge goes up by one" }
+  g1@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
+  g2@{ shape: subproc, label: "Continues in: Denial Intelligence › Your options" }
+  g3@{ shape: subproc, label: "Continues in: Dashboard › Arrive › What the page shows" }
+  s1 --> sc1
+  sc1 --> i1 --> fr
+  sc1 --> c1 --> p1 --> fr
+  fr --> c2 --> p2 --> i1
+  sc1 --> p3
+  sc1 --> i2 --> c3
+  fr --> c3
+  c3 --> d1
+  d1 -->|"No"| t1 --> sc1
+  d1 -->|"Yes"| sc2 --> a1 --> a2 --> a3 --> a4
+  sc2 --> w1
+  a4 --> d2
+  d2 -->|"No, left the page"| e1
+  d2 -->|"Yes"| p4 --> st1 --> st2 --> t2 --> p5
+  st1 --> t3
+  p5 --> g1 & g2
+  st1 --> g3
+  class s1 k_start
+  class sc1,fr,sc2 k_screen
+  class i1,i2 k_input
+  class c1,c2,c3 k_click
+  class p1,p2,p3,p4,p5 k_process
+  class d1,d2 k_decision
+  class t1,t2,t3 k_toast
+  class a1,a2,a3,a4 k_agent
+  class w1 k_wait
+  class e1 k_endx
+  class st1,st2 k_store
+  class g1,g2,g3 k_goto

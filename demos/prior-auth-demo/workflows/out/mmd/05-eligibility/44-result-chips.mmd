@@ -1,0 +1,63 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart LR
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "A coloured chip on the list or the result page" }
+  subgraph gE ["Column 'Eligibility'"]
+  e0@{ shape: curv-trap, label: "'Eligibility' chip" }
+  e1@{ shape: rect, label: "<b>'Active' (green)</b><br/>The state or plan says coverage is on for the date of service" }
+  e2@{ shape: rect, label: "<b>'Lapsed 10/12' (red)</b><br/>Coverage dropped on that date. Later days are not payable until it is restored" }
+  e3@{ shape: rect, label: "<b>'Ended 09/30' (red)</b><br/>Coverage ended. The patient may have a new plan: ask the payer" }
+  e4@{ shape: rect, label: "<b>'Not found' (red)</b><br/>No member matched the ID and date of birth" }
+  end
+  subgraph gB ["Column 'Benefits'"]
+  b0@{ shape: curv-trap, label: "'Benefits' chip" }
+  b1@{ shape: rect, label: "<b>'Covered' (green)</b><br/>The plan pays for this level of care" }
+  b2@{ shape: rect, label: "<b>'Limited' (amber)</b><br/>Paid with conditions: diagnosis on the plan's list, each day authorized" }
+  b3@{ shape: rect, label: "<b>'Not covered' (red)</b><br/>The plan does not pay for this level of care (no demo patient)" }
+  end
+  subgraph gA ["Column 'Authorization'"]
+  a0@{ shape: curv-trap, label: "'Authorization' chip, sometimes with usage under it" }
+  a1@{ shape: rect, label: "<b>'Not required' (grey)</b><br/>The payer needs none for this level of care" }
+  a2@{ shape: rect, label: "<b>'On file' (green) with '9 of 14 days' or '22 of 48 units'</b><br/>Approved, with days or units used so far" }
+  a3@{ shape: rect, label: "<b>'In progress' (grey)</b><br/>A request is being drafted" }
+  a4@{ shape: rect, label: "<b>'Payer reviewing' (grey)</b><br/>A request is with the payer" }
+  a5@{ shape: rect, label: "<b>'Retro request open' (amber)</b><br/>A request for days already delivered is open" }
+  a6@{ shape: rect, label: "<b>'Required, not on file' (amber)</b><br/>Needed before the first day. Not started" }
+  end
+  subgraph gV ["Column 'Verdict'"]
+  v0@{ shape: curv-trap, label: "'Verdict' chip, with 'Checked 3 h ago' under it" }
+  v1@{ shape: rect, label: "<b>'Cleared to bill' (green)</b><br/>Everything passes" }
+  v2@{ shape: rect, label: "<b>'Authorization first' (amber)</b><br/>Only the authorization is missing" }
+  v3@{ shape: rect, label: "<b>'Fix before billing' (red)</b><br/>Coverage, plan, network or a limit failed" }
+  v4@{ shape: rect, label: "<b>'Checked 3 h ago' or 'Checking now'</b><br/>Time since the last check, or a re-check running" }
+  end
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › Which verdict and why" }
+  s1 --> e0 & b0 & a0 & v0
+  e0 --> e1 & e2 & e3 & e4
+  b0 --> b1 & b2 & b3
+  a0 --> a1 & a2 & a3 & a4 & a5 & a6
+  v0 --> v1 & v2 & v3 & v4
+  v1 & v2 & v3 --> g1
+  class s1 k_start
+  class e0,b0,a0,v0 k_screen
+  class e1,e2,e3,e4,b1,b2,b3,a1,a2,a3,a4,a5,a6,v1,v2,v3,v4 k_process
+  class g1 k_goto
+  style gE fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gB fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gA fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gV fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

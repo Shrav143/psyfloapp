@@ -1,0 +1,54 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "On the list, look at the patient rows" }
+  sc@{ shape: curv-trap, label: "<b>Patients table</b><br/>Row tints on hover, pointer cursor" }
+  subgraph gOpen ["Open the result"]
+  c1@{ shape: trap-t, label: "Click anywhere on a row" }
+  c2@{ shape: trap-t, label: "Click the patient ID, for example 'R-1042'" }
+  p1@{ shape: rect, label: "<b>Opens /authorizations/eligibility/R-1042</b><br/>The browser Back button returns here with search and filters cleared" }
+  end
+  subgraph gRe ["Re-check in place"]
+  c3@{ shape: trap-t, label: "Click 'Re-check' on a row" }
+  p2@{ shape: rect, label: "<b>The click stays on the row and does not open the result</b><br/>Button turns to a spinner and 'Checking'; Verdict cell says 'Checking now'" }
+  end
+  subgraph gNew ["A new patient"]
+  c4@{ shape: trap-t, label: "Click 'Verify a patient' (top right)" }
+  p3@{ shape: rect, label: "<b>Opens /authorizations/eligibility/verify</b><br/>with an empty form" }
+  end
+  res@{ shape: curv-trap, label: "Result page for that patient" }
+  ver@{ shape: curv-trap, label: "<b>Verify a patient</b><br/>Empty form" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › What the page shows" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Re-verify a patient" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › Fill in the form" }
+  t1@{ shape: rect, label: "<b>About 1 second later the row reads 'Checked just now'</b><br/>A toast reports the answer" }
+  s1 --> sc
+  sc --> c1 & c2 & c3 & c4
+  c1 --> p1
+  c2 --> p1
+  p1 --> res --> g1
+  c3 --> p2 --> t1 --> g2
+  c4 --> p3 --> ver --> g3
+  class s1 k_start
+  class sc,res,ver k_screen
+  class c1,c2,c3,c4 k_click
+  class p1,p2,p3,t1 k_process
+  class g1,g2,g3 k_goto
+  style gOpen fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gRe fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gNew fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

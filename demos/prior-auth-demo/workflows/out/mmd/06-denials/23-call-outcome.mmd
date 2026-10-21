@@ -1,0 +1,74 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Click 'Record the call outcome' on the brief page" }
+  x1@{ shape: st-rect, label: "Clinician holds the peer-to-peer call with the payer's reviewer" }
+  o1@{ shape: win-pane, label: "<b>Modal 'Record the call outcome'</b><br/>D-3318 · Cardinal Health Plan" }
+  i1@{ shape: lean-r, label: "<b>Pick one (radio cards)</b><br/>'Overturned' (chosen at first), 'Partly restored' or 'Upheld'" }
+  p1@{ shape: rect, label: "<b>Card texts</b><br/>Overturned: the payer restored the requested days, the denial closes<br/>Partly restored: closes with a new end date<br/>Upheld: Advocate starts a written appeal from your call notes" }
+  i2@{ shape: lean-r, label: "<b>Note (optional)</b><br/>'Who you spoke to and what was agreed.'" }
+  c1@{ shape: trap-t, label: "Click 'Log the outcome'" }
+  c2@{ shape: trap-t, label: "Click 'Cancel', the X, press Esc, or click the dimmed area" }
+  e1@{ shape: stadium, label: "Nothing is logged" }
+  st0@{ shape: cyl, label: "<b>Outcome saved on the denial: kind, note, time</b><br/>History: 'You logged the call outcome: ...' with the note" }
+  d1@{ shape: diam, label: "Which outcome?" }
+  st1@{ shape: cyl, label: "<b>Request settled: leaves 'Appeal or call' (Dashboard stage 'Decided')</b><br/>Chip 'Overturned' or 'Partly restored'<br/>Ledger result approved or partly approved" }
+  x2@{ shape: st-rect, label: "Payer restores the requested days, or part of them, on the call" }
+  a1@{ shape: hex, label: "Cadence updates the ledger and books the next review" }
+  t1@{ shape: odd, label: "<b>'Overturned' or 'Partly restored'</b><br/>'The ledger is updated and the next review is booked.'" }
+  p2@{ shape: rect, label: "<b>Sidebar badge goes down by one</b><br/>The denial moves to 'Closed' in the open denials list<br/>Banner 'Overturned on the call' or 'Partly restored on the call'" }
+  st2@{ shape: cyl, label: "<b>Chip 'Appeal drafting'</b><br/>Clock becomes 'to file': 60 days from the denial date" }
+  a2@{ shape: hex, label: "Advocate starts a written appeal from the call notes" }
+  t2@{ shape: odd, label: "<b>'Outcome logged: upheld'</b><br/>'Advocate started the written appeal. Open it from the denial.'" }
+  p3@{ shape: rect, label: "Denial page shows 'Advocate is drafting the appeal' with 'Open the draft'" }
+  t3@{ shape: odd, label: "Brief page banner 'Outcome logged: overturned, partly restored or upheld' with 'Back to the denial'" }
+  t4@{ shape: odd, label: "<b>Notification 'Call outcome: ...' from Advocate</b><br/>Opens the request on the Dashboard" }
+  c3@{ shape: trap-t, label: "Click 'Back to the denial'" }
+  p4@{ shape: rect, label: "<b>The button 'Record the call outcome' stays on the brief</b><br/>Logging again runs these steps again (demo does not stop it)" }
+  g1@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
+  g2@{ shape: subproc, label: "Continues in: Denial Intelligence › Written appeal › Confirm and draft" }
+  g3@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
+  e2@{ shape: stadium, label: "Denial is closed with the call result" }
+  e3@{ shape: stadium, label: "Written appeal is under way" }
+  s1 --> x1 --> o1
+  o1 --> i1 --> p1
+  o1 --> i2
+  p1 --> c1
+  i2 --> c1
+  o1 --> c2 --> e1
+  c1 --> st0 --> d1
+  d1 -->|"Overturned or Partly restored"| x2 --> st1 --> a1 --> t1 --> p2 --> e2
+  d1 -->|"Upheld"| st2 --> a2 --> t2 --> p3 --> e3
+  st0 --> t3 --> c3 --> g1
+  st0 --> t4 --> g3
+  e3 --> g2
+  e2 --> g1
+  t3 --> p4
+  class s1 k_start
+  class x1,x2 k_ext
+  class o1 k_overlay
+  class i1,i2 k_input
+  class p1,p2,p3,p4 k_process
+  class c1,c2,c3 k_click
+  class e1 k_endx
+  class st0,st1,st2 k_store
+  class d1 k_decision
+  class a1,a2 k_agent
+  class t1,t2,t3,t4 k_toast
+  class g1,g2,g3 k_goto
+  class e2,e3 k_end

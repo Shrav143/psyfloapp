@@ -1,0 +1,86 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Click 'Payers' in the sidebar</b><br/>under Connections" }
+  s2@{ shape: stadium, label: "<b>Open a link to one payer's Changes tab</b><br/>Bell notification, FLO answer, Demo menu" }
+  p1@{ shape: rect, label: "<b>Address is /payers</b><br/>No payer, no tab" }
+  p2@{ shape: rect, label: "Address is /payers/cardinal?tab=changes" }
+  d1@{ shape: diam, label: "Does the address name a known payer?" }
+  p3@{ shape: rect, label: "<b>Use the first payer in the list</b><br/>Summit Medicaid HMO" }
+  p4@{ shape: rect, label: "Use the payer named in the address" }
+  d2@{ shape: diam, label: "<b>Is ?tab one of process,</b><br/>rules, documents, changes?" }
+  p5@{ shape: rect, label: "Show the Process tab" }
+  p6@{ shape: rect, label: "Show the tab named in the address" }
+  pg@{ shape: curv-trap, label: "<b>Payers</b><br/>'N payers. The agents know how each one works.'<br/>Workflow, rules and documents for every payer. Change a rule and open drafts can follow." }
+  subgraph gL ["Left column"]
+  list@{ shape: curv-trap, label: "<b>Payer list card</b><br/>'Payers', 'Search payers', four groups, a dot per payer, legend" }
+  c_pick@{ shape: trap-t, label: "Click a payer in the list" }
+  c_search@{ shape: trap-t, label: "Type in 'Search payers'" }
+  end
+  subgraph gR ["Right column"]
+  head@{ shape: curv-trap, label: "<b>Payer header</b><br/>Name, plan line, 'Edit log', 'Edit', four facts" }
+  tabs@{ shape: curv-trap, label: "<b>Tab bar</b><br/>Process, Rules, Documents, Changes" }
+  c_edit@{ shape: trap-t, label: "Click 'Edit'" }
+  c_log@{ shape: trap-t, label: "Click 'Edit log'" }
+  c_tab@{ shape: trap-t, label: "Click a tab" }
+  end
+  c_add@{ shape: trap-t, label: "<b>Click 'Add a payer'</b><br/>top right of the page" }
+  subgraph gB ["What the badges count"]
+  b1@{ shape: rect, label: "<b>Sidebar 'Payers' badge</b><br/>Payers with a change waiting<br/>2 at the start: Cardinal and Harborview<br/>Falls when a change is updated" }
+  b2@{ shape: rect, label: "<b>'Changes' tab badge</b><br/>The waiting change plus each Historian proposal<br/>Falls as each is handled" }
+  end
+  g_list@{ shape: subproc, label: "Continues in: Payers › List › Search and pick a payer" }
+  g_head@{ shape: subproc, label: "Continues in: Payers › Header › What the facts mean" }
+  g_edit@{ shape: subproc, label: "Continues in: Payers › Edit payer details" }
+  g_log@{ shape: subproc, label: "Continues in: Payers › Edit log" }
+  g_add@{ shape: subproc, label: "Continues in: Payers › Add a payer" }
+  g_proc@{ shape: subproc, label: "Continues in: Payers › Process › Read the workflow" }
+  g_rules@{ shape: subproc, label: "Continues in: Payers › Rules › Read the rules" }
+  g_docs@{ shape: subproc, label: "Continues in: Payers › Documents › Read the document list" }
+  g_chg@{ shape: subproc, label: "Continues in: Payers › Changes › Read what changed" }
+  s1 --> p1 --> d1
+  s2 --> p2 --> d1
+  d1 -->|"No, or an unknown id"| p3 --> d2
+  d1 -->|"Yes"| p4 --> d2
+  d2 -->|"No, or missing"| p5 --> pg
+  d2 -->|"Yes"| p6 --> pg
+  pg --> list & head & tabs & c_add
+  pg -.-> b1
+  tabs -.-> b2
+  list --> c_pick & c_search
+  c_pick --> g_list
+  c_search --> g_list
+  head --> c_edit & c_log
+  head --> g_head
+  c_edit --> g_edit
+  c_log --> g_log
+  c_add --> g_add
+  tabs --> c_tab
+  c_tab -->|"Process"| g_proc
+  c_tab -->|"Rules"| g_rules
+  c_tab -->|"Documents"| g_docs
+  c_tab -->|"Changes"| g_chg
+  class s1,s2 k_start
+  class p1,p2,p3,p4,p5,p6,b1,b2 k_process
+  class d1,d2 k_decision
+  class pg,list,head,tabs k_screen
+  class c_pick,c_search,c_edit,c_log,c_tab,c_add k_click
+  class g_list,g_head,g_edit,g_log,g_add,g_proc,g_rules,g_docs,g_chg k_goto
+  style gL fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gR fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gB fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

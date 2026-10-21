@@ -1,0 +1,72 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Click the 'Process' tab</b><br/>(the tab shown when none is named)" }
+  tab@{ shape: curv-trap, label: "<b>Process tab</b><br/>Banners, workflow card, two small cards, a note" }
+  subgraph gB ["Banners at the top (only when they apply)"]
+  dU@{ shape: diam, label: "<b>Edits saved but</b><br/>not yet applied to open drafts?" }
+  bU@{ shape: odd, label: "<b>'1 edit applies to new drafts only'</b><br/>New drafts for Summit use your edits already.<br/>Open drafts (R-1042, R-1101) follow when you update them." }
+  dP@{ shape: diam, label: "Did Historian propose changes?" }
+  bP@{ shape: odd, label: "<b>'Historian proposed 1 change'</b><br/>It never edits the workflow on its own.<br/>'Review in Changes'" }
+  end
+  card@{ shape: curv-trap, label: "<b>Workflow card</b><br/>'How an authorization works with Summit'<br/>The workflow the agents follow, in order.<br/>Version 7, edited 10/12." }
+  legend@{ shape: rect, label: "<b>'Step types' row</b><br/>Checklist step, File step, Portal step,<br/>Phone step, Condition" }
+  subgraph gS ["One numbered step"]
+  st@{ shape: curv-trap, label: "<b>Number, step title, step-type chip, agent chips</b><br/>For example: 'Give notice'  Portal step  Navigator" }
+  stx@{ shape: rect, label: "<b>Plain sentence on what happens</b><br/>and a 'Typical' time on the right<br/>'same day', '2 minutes', '1.5 days'" }
+  dc@{ shape: diam, label: "Does the step have conditions?" }
+  br@{ shape: curv-trap, label: "<b>Condition rows under the step</b><br/>'If portal is down' leads to<br/>'Phone step' and what happens" }
+  end
+  six@{ shape: rect, label: "<b>Summit's six steps: Check coverage,</b><br/>Gather the documents, Give notice,<br/>Send the request, Follow up,<br/>Decision and next review" }
+  diff@{ shape: rect, label: "<b>Other payers differ in how they are reached</b><br/>Evergreen: phone steps<br/>Lakeshore: file steps by fax<br/>Harborview: portal with fax for large files" }
+  two@{ shape: curv-trap, label: "<b>'How to reach Summit' and</b><br/>'Instructions for Caller' side by side" }
+  note@{ shape: odd, label: "<b>'Change a step or a condition and open drafts can follow.</b><br/>Admins can edit; every edit is logged.'" }
+  cE@{ shape: trap-t, label: "Click 'Edit workflow'" }
+  cR@{ shape: trap-t, label: "Click 'Re-learn from decisions'" }
+  cRev@{ shape: trap-t, label: "Click 'Review in Changes'" }
+  cUp@{ shape: trap-t, label: "Click 'Update 2 drafts'" }
+  g_ed@{ shape: subproc, label: "Continues in: Payers › Process › Edit the workflow" }
+  g_rl@{ shape: subproc, label: "Continues in: Payers › Process › Re-learn from decisions" }
+  g_ch@{ shape: subproc, label: "Continues in: Payers › Changes › Read what changed" }
+  g_up@{ shape: subproc, label: "Continues in: Payers › Edits waiting › Update drafts" }
+  g_rc@{ shape: subproc, label: "Continues in: Payers › Process › Reach and Caller instructions" }
+  s1 --> tab --> dU
+  dU -->|"Yes"| bU --> dP
+  dU -->|"No"| dP
+  dP -->|"Yes"| bP --> card
+  dP -->|"No"| card
+  card --> legend --> st --> stx --> dc
+  dc -->|"Yes"| br
+  dc -->|"No"| six
+  br --> six
+  six -.-> diff
+  six --> two --> note
+  card --> cE --> g_ed
+  card --> cR --> g_rl
+  bP --> cRev --> g_ch
+  bU --> cUp --> g_up
+  two -.-> g_rc
+  class s1 k_start
+  class tab,card,st,br,two k_screen
+  class dU,dP,dc k_decision
+  class bU,bP,note k_toast
+  class legend,stx,six,diff k_process
+  class cE,cR,cRev,cUp k_click
+  class g_ed,g_rl,g_ch,g_up,g_rc k_goto
+  style gB fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gS fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

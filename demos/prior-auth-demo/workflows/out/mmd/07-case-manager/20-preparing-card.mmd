@@ -1,0 +1,63 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Open Case Manager (Active cases tab)" }
+  sc@{ shape: curv-trap, label: "<b>Card 'Being prepared'</b><br/>'Most urgent first. Each case moves through eight steps; the agents do all but Ask and Sign.'" }
+  p1@{ shape: rect, label: "<b>Rows are the drafts that were saved and not yet sent</b><br/>5 at the start: R-1042, R-0988, I-2207, R-1101, I-2262" }
+  p2@{ shape: rect, label: "<b>Search, level of care and payer from the filter bar narrow the rows</b><br/>The tracker's status filter does not apply here" }
+  sh@{ shape: curv-trap, label: "<b>Top right of the card</b><br/>Ghost button '4 sent today', then the chips 'All', 'Agents working', 'Needs your input', 'Ready to sign'" }
+  c1@{ shape: trap-t, label: "Click '4 sent today'" }
+  p3@{ shape: rect, label: "Go to /dashboard?stage=received" }
+  g1@{ shape: subproc, label: "Continues in: Dashboard › Stage strip › Click a stage tile" }
+  c2@{ shape: trap-t, label: "Click a chip" }
+  d1@{ shape: diam, label: "Which chip?" }
+  k1@{ shape: rect, label: "'All': every row" }
+  k2@{ shape: rect, label: "'Agents working': rows where agents are still running" }
+  k3@{ shape: rect, label: "<b>'Needs your input': rows with an open question, or intake not finished</b><br/>Badge shows how many (2 at the start)" }
+  k4@{ shape: rect, label: "<b>'Ready to sign': rows where every check passed</b><br/>Badge shows how many (1 at the start)" }
+  p4@{ shape: rect, label: "<b>Rows narrow to that chip</b><br/>The badge counts follow the page filters but not the chip itself" }
+  o1@{ shape: rect, label: "<b>Order: rows that need a person come first (questions, signatures, unfinished intake)</b><br/>Then the earliest due date" }
+  o2@{ shape: rect, label: "At the start: R-1042, R-0988, I-2207, then R-1101, I-2262" }
+  d2@{ shape: diam, label: "Are there rows to show?" }
+  r1@{ shape: curv-trap, label: "A column of case rows" }
+  g2@{ shape: subproc, label: "Continues in: Case Manager › Active cases › One row and its button" }
+  g3@{ shape: subproc, label: "Continues in: Case Manager › Empty states › Nothing to show" }
+  e1@{ shape: stadium, label: "Rows are on screen" }
+  p5@{ shape: rect, label: "After a case is signed and sent in New case it leaves this list and 'sent today' counts one more" }
+  s2@{ shape: stadium, label: "Later: a case is signed and sent in New case › Review and sign" }
+  s1 --> sc --> p1 --> p2 --> sh
+  sh --> c1 --> p3 --> g1
+  sh --> c2 --> d1
+  d1 -->|"All"| k1 --> p4
+  d1 -->|"Working"| k2 --> p4
+  d1 -->|"Needs input"| k3 --> p4
+  d1 -->|"Ready"| k4 --> p4
+  p4 --> o1
+  p2 --> o1
+  o1 --> o2 --> d2
+  d2 -->|"Yes"| r1 --> g2
+  d2 -->|"No"| g3
+  r1 --> e1
+  s2 --> p5 --> p1
+  class s1,s2 k_start
+  class sc,sh,r1 k_screen
+  class p1,p2,p3,k1,k2,k3,k4,p4,o1,o2,p5 k_process
+  class c1,c2 k_click
+  class g1,g2,g3 k_goto
+  class d1,d2 k_decision
+  class e1 k_end

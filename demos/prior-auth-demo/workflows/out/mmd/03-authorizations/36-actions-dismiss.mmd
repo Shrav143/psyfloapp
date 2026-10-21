@@ -1,0 +1,72 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  d1@{ shape: trap-t, label: "Click 'Dismiss' on one card" }
+  d2@{ shape: trap-t, label: "<b>Click 'Dismiss recommendations' in the side panel</b><br/>(all included cards at once)" }
+  m@{ shape: win-pane, label: "<b>Dialog 'Dismiss this recommendation?' or 'Dismiss 3 recommendations?'</b><br/>'Say why. The reason is logged and helps the agents learn what is useful.'" }
+  li@{ shape: rect, label: "Bullet list of the card titles" }
+  dg@{ shape: diam, label: "Does a title clear a check that gates 'Send to payer'?" }
+  wb@{ shape: odd, label: "Warning: '... clears a check that gates Send to payer. Dismissing it leaves that check open. You can bring it back later.'" }
+  subgraph gR ["Reason (pick one)"]
+  r1@{ shape: trap-t, label: "Pick 'Already handled outside Psyflo'" }
+  r2@{ shape: trap-t, label: "Pick 'Not relevant to this request'" }
+  r3@{ shape: trap-t, label: "Pick 'The chart does not support it'" }
+  r4@{ shape: trap-t, label: "Pick 'Other'" }
+  end
+  ot@{ shape: lean-r, label: "Type in 'Tell us in a few words'" }
+  dok@{ shape: diam, label: "Is a reason picked, and text typed if it is 'Other'?" }
+  dis@{ shape: rect, label: "'Dismiss and log' stays off" }
+  cf@{ shape: trap-t, label: "Click 'Dismiss and log'" }
+  cx@{ shape: trap-t, label: "Click 'Cancel', the X or the dimmed area, or press Esc" }
+  ce@{ shape: stadium, label: "<b>Dialog closes</b><br/>Nothing changes" }
+  st@{ shape: cyl, label: "<b>Each card saved as dismissed with the reason and the time</b><br/>Log: You dismissed '(title)'. Reason: ..." }
+  dsh@{ shape: cyl, label: "<b>If the request is on the Dashboard: an event on its history</b><br/>'You dismissed ... Reason: ...'" }
+  tt@{ shape: odd, label: "<b>'Recommendation dismissed' or '3 recommendations dismissed'</b><br/>'The reason is logged and feeds Analytics.'" }
+  mv@{ shape: rect, label: "<b>Cards leave the open list</b><br/>Header line 'up to N%' drops their points<br/>'Dismissed (1)' appears: struck-through title, 'Reason logged: ...'" }
+  gt@{ shape: rect, label: "<b>If the card gated a check, that check stays open</b><br/>'Send to payer' stays off" }
+  bb@{ shape: trap-t, label: "Click 'Bring back' on a dismissed card" }
+  rs@{ shape: cyl, label: "<b>Card returns to the open list</b><br/>Log: 'You brought back a dismissed recommendation'" }
+  nt@{ shape: rect, label: "No toast; the points count again" }
+  d1 --> m
+  d2 --> m
+  m --> li --> dg
+  dg -->|"Yes"| wb
+  dg -->|"No"| r1
+  wb --> r1
+  m --> r1 & r2 & r3 & r4
+  r4 --> ot
+  r1 --> dok
+  r2 --> dok
+  r3 --> dok
+  ot --> dok
+  dok -->|"No"| dis
+  dok -->|"Yes"| cf
+  m --> cx --> ce
+  cf --> st --> dsh
+  st --> tt
+  st --> mv --> gt
+  mv --> bb --> rs --> nt
+  class d1,d2,r1,r2,r3,r4,cf,cx,bb k_click
+  class m k_overlay
+  class li,dis,mv,gt,nt k_process
+  class dg,dok k_decision
+  class wb,tt k_toast
+  class ot k_input
+  class ce k_endx
+  class st,dsh,rs k_store
+  style gR fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

@@ -1,0 +1,73 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Open the full referral page</b><br/>Tab 'Extracted' is the one it opens on" }
+  sc1@{ shape: curv-trap, label: "<b>Extracted tab</b><br/>'Reader read 3 pages and found 13 fields. Click a field to see the evidence in the document.'" }
+  t0@{ shape: odd, label: "<b>Amber banner when a field is missing</b><br/>'Reader could not find every field. Add them by hand with the pencil, or ask the referrer.'" }
+  sc2@{ shape: curv-trap, label: "<b>Field rows</b><br/>Patient, Age, Referring clinician, Credentials, NPI, Reason, Diagnoses, Requested service, Urgency, Order date, Insurance, Member ID, Contact" }
+  pRow@{ shape: rect, label: "<b>Each row shows a dot, the value and who set it</b><br/>Dot: green at 90% and up, amber 75 to 89, red below 75 or not found<br/>'Extracted by Reader' or 'Edited by you', '95% sure' or 'Not found'" }
+  subgraph gRow ["A field"]
+  c1@{ shape: trap-t, label: "<b>Click a field row,</b><br/>or its eye button 'Show … in the document'" }
+  p1@{ shape: rect, label: "<b>Row is outlined in green</b><br/>Document switches to the right page<br/>Evidence block is boxed in red" }
+  c2@{ shape: trap-t, label: "Click 'Why this value?'" }
+  p2@{ shape: rect, label: "<b>Reader found this on page 2 of the Referral form, in the section '…' with a quote</b><br/>Not found: 'Reader looked through every page and did not find …'<br/>Also 'Confidence 95%. Nobody has edited it.'" }
+  c3@{ shape: trap-t, label: "Click the pencil 'Edit …'" }
+  i1@{ shape: lean-r, label: "<b>Edit the value</b><br/>Text box, big text box (reason, diagnoses), or a list for Urgency, Requested service and Insurance" }
+  d1@{ shape: diam, label: "Changed and not empty?" }
+  p3@{ shape: rect, label: "'Save' is disabled" }
+  c4@{ shape: trap-t, label: "Click 'Save' (Enter also saves a short text field)" }
+  c5@{ shape: trap-t, label: "Click 'Cancel'" }
+  st1@{ shape: cyl, label: "<b>Value is saved and marked 'Edited by you'</b><br/>Reader's first reading is kept ('Reader first read … You changed it to …')<br/>Checks that depend on it run again" }
+  p4@{ shape: rect, label: "<b>What a saved change also does</b><br/>Insurance: the coverage result is cleared<br/>Requested service: the program changes<br/>Patient or Age: the card header changes" }
+  t1@{ shape: odd, label: "<b>'Saved'</b><br/>'The field is now marked as edited by you.'<br/>Timeline 'You corrected Insurance'" }
+  end
+  subgraph gDoc ["Source document panel"]
+  sd@{ shape: curv-trap, label: "<b>'Source document'</b><br/>'Fax from Northfield Counseling Associates, Mon 2:10 pm'" }
+  c6@{ shape: trap-t, label: "Click 'Referral form' or 'Face sheet'" }
+  p5@{ shape: rect, label: "Switches document, back to page 1, no highlight" }
+  c7@{ shape: trap-t, label: "<b>Click 'Previous' or 'Next'</b><br/>(two-page documents only)" }
+  p6@{ shape: rect, label: "<b>'Page 1 of 2' changes</b><br/>A single page reads 'Page 1 of 1' with no buttons" }
+  c8@{ shape: trap-t, label: "Click a block of the document" }
+  p7@{ shape: rect, label: "<b>Block is boxed in red</b><br/>If it matches a field, the Extracted tab opens on that row" }
+  c9@{ shape: trap-t, label: "Click the print button 'Print the source document'" }
+  t2@{ shape: odd, label: "<b>'Printing the original'</b><br/>'This is a demo. The faxed pages would open in your print dialog.'" }
+  end
+  s1 --> sc1 --> sc2 --> pRow
+  sc1 -.-> t0
+  sc2 --> c1 --> p1
+  sc2 --> c2 --> p2
+  sc2 --> c3 --> i1 --> d1
+  d1 -->|"No"| p3 --> c5
+  d1 -->|"Yes"| c4 --> st1 --> p4 --> t1
+  i1 --> c5
+  sc1 --> sd
+  sd --> c6 --> p5
+  sd --> c7 --> p6
+  sd --> c8 --> p7
+  sd --> c9 --> t2
+  c1 -.-> sd
+  class s1 k_start
+  class sc1,sc2,sd k_screen
+  class t0,t1,t2 k_toast
+  class pRow,p1,p2,p3,p4,p5,p6,p7 k_process
+  class c1,c2,c3,c4,c5,c6,c7,c8,c9 k_click
+  class i1 k_input
+  class d1 k_decision
+  class st1 k_store
+  style gRow fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gDoc fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

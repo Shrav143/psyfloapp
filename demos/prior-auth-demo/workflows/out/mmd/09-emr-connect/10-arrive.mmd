@@ -1,0 +1,97 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Click 'EMR Connect' in the sidebar</b><br/>Under Connections" }
+  p1@{ shape: curv-trap, label: "<b>EMR Connect</b><br/>Charts arrive on their own. Nothing is written back until a person approves it." }
+  subgraph gHead ["Header buttons"]
+  hb1@{ shape: trap-t, label: "Click 'Manage mapping'" }
+  hq@{ shape: diam, label: "Any system on the list?" }
+  ho@{ shape: win-pane, label: "<b>Manage drawer opens</b><br/>for the outpatient site, or the first system" }
+  hx@{ shape: stadium, label: "<b>Button is dimmed</b><br/>Nothing to open" }
+  hb2@{ shape: trap-t, label: "Click 'Connect a system'" }
+  end
+  hg1@{ shape: subproc, label: "Continues in: EMR Connect › Manage › Open the Manage drawer" }
+  hg2@{ shape: subproc, label: "Continues in: EMR Connect › Connect a system › Choose the system and contact" }
+  subgraph gTiles ["Four tiles (they are not buttons)"]
+  t1@{ shape: rect, label: "<b>Last sync</b><br/>Time since the newest sync. Green, amber or red" }
+  t2@{ shape: rect, label: "<b>Charts matched today</b><br/>23 'to open cases'" }
+  t3@{ shape: rect, label: "<b>Files pulled</b><br/>142 'this week'" }
+  t4@{ shape: rect, label: "<b>Need a mapping</b><br/>2 'fields the agents could not place'" }
+  end
+  tg@{ shape: subproc, label: "Continues in: EMR Connect › Page › What each tile shows" }
+  subgraph gSys ["Connected systems"]
+  c1@{ shape: curv-trap, label: "<b>Connected systems</b><br/>Read access for charts, insurance details and medications" }
+  c2@{ shape: rect, label: "One row per system: name, what it holds, last sync, status pill, buttons" }
+  c3@{ shape: trap-t, label: "Click 'Sync now' in the card header" }
+  c4@{ shape: trap-t, label: "Click 'Sync now', 'Fix', 'Reconnect' or 'Manage' on a row" }
+  c5@{ shape: odd, label: "<b>'Connect your record system to let charts arrive on their own.'</b><br/>Empty list. Not reachable in the demo: a system can be disconnected, never removed" }
+  end
+  cg1@{ shape: subproc, label: "Continues in: EMR Connect › Sync › Sync now" }
+  cg2@{ shape: subproc, label: "Continues in: EMR Connect › Connected systems › What each status means" }
+  cg3@{ shape: subproc, label: "Continues in: EMR Connect › Problems › Every error state and what it needs" }
+  subgraph gAct ["Recent activity"]
+  a1@{ shape: curv-trap, label: "<b>Recent activity</b><br/>Every read and write is logged. Newest six lines" }
+  a2@{ shape: trap-t, label: "<b>Click 'See all 8'</b><br/>Only shown when there are more than six lines" }
+  end
+  ag@{ shape: subproc, label: "Continues in: EMR Connect › Recent activity › Read the activity log" }
+  subgraph gSide ["Right-hand panels"]
+  r1@{ shape: curv-trap, label: "<b>What the agents can do here</b><br/>Read: assessments, notes, labs, medications, insurance card" }
+  r2@{ shape: rect, label: "Write back: only the approval number and dates, and only after a person approves" }
+  r3@{ shape: curv-trap, label: "<b>Needs a mapping</b><br/>Pill with the count, then one row per field with a 'Map' button" }
+  r4@{ shape: trap-t, label: "Click 'Map' on a row" }
+  end
+  rg@{ shape: subproc, label: "Continues in: EMR Connect › Needs a mapping › Map a field" }
+  s1 --> p1
+  p1 --> hb1 & hb2
+  hb1 --> hq
+  hq -->|"Yes"| ho
+  hq -->|"No"| hx
+  ho --> hg1
+  hb2 --> hg2
+  p1 --> t1 & t2 & t3 & t4
+  t1 --> tg
+  t2 --> tg
+  t3 --> tg
+  t4 --> tg
+  p1 --> c1
+  c1 --> c2
+  c2 --> c3 & c4
+  c1 -.-> c5
+  c3 --> cg1
+  c4 --> cg2
+  c4 -.-> cg3
+  p1 --> a1
+  a1 --> a2 --> ag
+  p1 --> r1
+  r1 --> r2
+  p1 --> r3
+  r3 --> r4 --> rg
+  class s1 k_start
+  class p1,c1,a1,r1,r3 k_screen
+  class hb1,hb2,c3,c4,a2,r4 k_click
+  class hq k_decision
+  class ho k_overlay
+  class hx k_endx
+  class hg1,hg2,tg,cg1,cg2,cg3,ag,rg k_goto
+  class t1,t2,t3,t4,c2,r2 k_process
+  class c5 k_toast
+  style gHead fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gTiles fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gSys fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gAct fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gSide fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

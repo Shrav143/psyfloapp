@@ -1,0 +1,59 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  subgraph gW ["Where chips appear"]
+  w1@{ shape: curv-trap, label: "<b>Clinical picture</b><br/>One chip beside each of Diagnosis, Status, Trajectory, Readiness" }
+  w2@{ shape: curv-trap, label: "<b>Payer criteria</b><br/>One chip in the 'Evidence' column of each requirement" }
+  w3@{ shape: curv-trap, label: "<b>Draft</b><br/>Chips after each section<br/>Each sentence from an applied action adds its own" }
+  end
+  c@{ shape: trap-t, label: "<b>Click a source chip</b><br/>e.g. 'Psychiatric eval p.1'" }
+  m@{ shape: win-pane, label: "<b>Dialog titled with the source name</b><br/>'Source for J.M., 34. Privacy mode is on.'" }
+  d1@{ shape: doc, label: "<b>Sheet 'Source document'</b><br/>'Names, dates of birth and member IDs are masked'" }
+  d2@{ shape: doc, label: "<b>Facts on the sheet</b><br/>Patient, Payer, Level of care, Request" }
+  d3@{ shape: doc, label: "<b>'What the agents used'</b><br/>The quoted sentence, boxed and highlighted" }
+  ft@{ shape: rect, label: "'The full document stays in the chart system. Reader read it and Integrity checked every sentence against it.'" }
+  rd@{ shape: hex, label: "<b>Reader read the chart</b><br/>Integrity checked each sentence against it<br/>(demo: the quote is stored text)" }
+  dY@{ shape: diam, label: "Is it a chip for an answer you typed?" }
+  yo@{ shape: rect, label: "<b>Chip reads 'Your answer'</b><br/>Quote: 'Typed by you for Scribe on this request.'" }
+  cl@{ shape: trap-t, label: "Click 'Close'" }
+  x@{ shape: trap-t, label: "Click the X" }
+  dim@{ shape: trap-t, label: "Click the dimmed area" }
+  esc@{ shape: trap-t, label: "Press Esc" }
+  e@{ shape: stadium, label: "<b>Dialog closes</b><br/>You are back on the same tab, nothing changed" }
+  w1 --> c
+  w2 --> c
+  w3 --> c
+  c --> m --> d1 --> d2 --> d3 --> ft
+  d3 -.-> rd
+  c --> dY
+  dY -->|"Yes"| yo --> d3
+  dY -->|"No"| d3
+  m --> cl & x & dim & esc
+  cl --> e
+  x --> e
+  dim --> e
+  esc --> e
+  class w1,w2,w3 k_screen
+  class c,cl,x,dim,esc k_click
+  class m k_overlay
+  class d1,d2,d3 k_doc
+  class ft,yo k_process
+  class rd k_agent
+  class dY k_decision
+  class e k_end
+  style gW fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

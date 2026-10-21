@@ -1,0 +1,76 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  cp@{ shape: curv-trap, label: "<b>Case page</b><br/>'Send to payer' appears in the header, the Recommended actions side panel and the Draft tab" }
+  d1@{ shape: diam, label: "Does the request already have a result (decided)?" }
+  r1@{ shape: rect, label: "<b>Greyed out. Reason: 'Approved. Nothing is left to send.'</b><br/>(the result word comes from the request)" }
+  d2@{ shape: diam, label: "Is it already with the payer?" }
+  r2@{ shape: rect, label: "Greyed out. Reason: 'Already with the payer. Navigator is tracking it.'" }
+  d3@{ shape: diam, label: "Is it a denial?" }
+  r3@{ shape: rect, label: "Greyed out. Reason: 'This request was denied. Advocate owns the next step.'" }
+  d4@{ shape: diam, label: "Do all four Integrity checks pass?" }
+  r4@{ shape: rect, label: "Greyed out. Reason: 'Integrity has 2 open checks. Apply the matching actions first.'" }
+  on@{ shape: rect, label: "<b>'Send to payer' is on</b><br/>'Sending opens review and sign. Nothing goes to the payer until a clinician signs.'" }
+  subgraph gChk ["What keeps a check open"]
+  k1@{ shape: rect, label: "<b>'Every sentence matches the chart'</b><br/>open after you edit the draft, until 'Re-check'" }
+  k2@{ shape: rect, label: "<b>'Payer criteria are covered'</b><br/>open until its action is applied (e.g. 'Name the step-down provider')" }
+  k3@{ shape: rect, label: "<b>'Dates are consistent'</b><br/>open until its action is applied (e.g. 'Settle the sertraline start date')" }
+  k4@{ shape: rect, label: "<b>'Identifiers are protected'</b><br/>always passes in the demo" }
+  end
+  dm@{ shape: rect, label: "<b>Dismissing the action does not clear its check</b><br/>The dismiss dialog warns about this" }
+  b1@{ shape: trap-t, label: "<b>Click 'Open in review and sign'</b><br/>(always on)" }
+  b2@{ shape: trap-t, label: "<b>Click 'Send to payer'</b><br/>(only when on)" }
+  rp@{ shape: rect, label: "<b>Look for this request's draft in New case</b><br/>The draft named like 'draft-r1042', or any draft with this case ID" }
+  d5@{ shape: diam, label: "Does a draft exist?" }
+  mk@{ shape: rect, label: "<b>A draft is created and filled from the request</b><br/>Patient, payer, level of care, request type and reason" }
+  d6@{ shape: diam, label: "Where does the draft stand?" }
+  g1@{ shape: subproc, label: "Continues in: New case › Agents work" }
+  g2@{ shape: subproc, label: "Continues in: New case › Review and sign" }
+  g3@{ shape: subproc, label: "Continues in: New case › Referral step" }
+  ns@{ shape: rect, label: "<b>Nothing has been sent</b><br/>A licensed clinician signs in New case" }
+  cp --> d1
+  d1 -->|"Yes"| r1
+  d1 -->|"No"| d2
+  d2 -->|"Yes"| r2
+  d2 -->|"No"| d3
+  d3 -->|"Yes"| r3
+  d3 -->|"No"| d4
+  d4 -->|"No"| r4
+  d4 -->|"Yes"| on
+  r4 -.-> k1
+  r4 -.-> k2
+  r4 -.-> k3
+  r4 -.-> k4
+  k2 --> dm
+  k3 --> dm
+  cp --> b1
+  on --> b2
+  b1 --> rp
+  b2 --> rp
+  rp --> d5
+  d5 -->|"No"| mk --> g3
+  d5 -->|"Yes"| d6
+  d6 -->|"Agents are still working, e.g. R-1042"| g1
+  d6 -->|"All four checks passed, e.g. R-0988"| g2
+  rp -.-> ns
+  class cp k_screen
+  class d1,d2,d3,d4,d5,d6 k_decision
+  class r1,r2,r3,r4,on,k1,k2,k3,k4,dm,rp,mk,ns k_process
+  class b1,b2 k_click
+  class g1,g2,g3 k_goto
+  style gChk fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

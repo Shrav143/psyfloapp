@@ -1,0 +1,76 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>A workflow, rule or document-list</b><br/>edit was just saved" }
+  un@{ shape: cyl, label: "<b>'Edits waiting' for this payer goes up by one</b><br/>Payer details and Caller script edits do not count" }
+  bn@{ shape: curv-trap, label: "<b>Ochre banner on Process, Rules and Documents</b><br/>'1 edit applies to new drafts only'<br/>'2 edits apply...' after a second edit" }
+  dr@{ shape: diam, label: "Does this payer have drafts in 'Preparing'?" }
+  b1@{ shape: odd, label: "<b>New drafts for Summit use your edits already.</b><br/>Open drafts (R-1042, R-1101) follow when you update them.<br/>Button: 'Update 2 drafts'" }
+  b0@{ shape: odd, label: "<b>New drafts for Evergreen use your edits already.</b><br/>There are no open drafts for this payer right now.<br/>Button: 'Update drafts'" }
+  info@{ shape: rect, label: "<b>Drafts waiting for information (like P-1499) are not counted</b><br/>Only drafts in 'Preparing' are" }
+  cu@{ shape: trap-t, label: "Click the banner button" }
+  m@{ shape: win-pane, label: "<b>Update 2 drafts?</b><br/>Confirm gate. Nothing is redrafted until you say so.<br/>Reason: your edits to Summit." }
+  dl@{ shape: diam, label: "Any drafts to list?" }
+  rows@{ shape: rect, label: "<b>One row per draft</b><br/>R-1042, 'J.M., 34 · Summit', Residential 3.5, 'Draft, not yet sent'" }
+  fn@{ shape: odd, label: "<b>'Each redrafted case returns to Case Manager for a new signature.</b><br/>A request that is already sent is never rewritten.<br/>It gets an addendum instead.'" }
+  m0@{ shape: odd, label: "<b>Title reads 'Apply to new drafts?'</b><br/>'No open drafts are affected. Evergreen will use<br/>the change for every new draft from now on.'" }
+  cs@{ shape: trap-t, label: "<b>Click 'Update 2 drafts'</b><br/>or 'Apply to new drafts'" }
+  cx@{ shape: trap-t, label: "Click 'Cancel'" }
+  cesc@{ shape: trap-t, label: "<b>Press Escape, click the X</b><br/>or click the dimmed area" }
+  x1@{ shape: stadium, label: "<b>Modal closes</b><br/>Banner stays, nothing redrafted" }
+  lock@{ shape: rect, label: "Cancel greys out. Escape, X and dimmed area do nothing" }
+  a1@{ shape: hex, label: "<b>Scribe is redrafting 2 drafts</b><br/>(demo: 1.5 seconds, spinner then tick)" }
+  a2@{ shape: hex, label: "<b>Integrity is checking every sentence</b><br/>against the chart (demo: 1.5 seconds)" }
+  lv@{ shape: diam, label: "Still on Payers after 3 seconds?" }
+  drop@{ shape: stadium, label: "<b>Redraft is dropped</b><br/>Banner stays, nothing changes" }
+  dd@{ shape: diam, label: "Were there drafts?" }
+  rd@{ shape: cyl, label: "<b>Each draft needs a person again</b><br/>'Redrafted after your edits to Summit's workflow, rules and documents.<br/>Waiting for a new signature'<br/>Timeline event by Scribe" }
+  z@{ shape: cyl, label: "<b>'Edits waiting' resets to zero</b><br/>Banner disappears" }
+  nt@{ shape: cyl, label: "<b>Bell notification 'Drafts updated'</b><br/>2 drafts were redrafted after your edits to Summit.<br/>Each needs a new signature." }
+  t1@{ shape: odd, label: "<b>'2 drafts updated'</b><br/>Each returned to Case Manager for a new signature." }
+  z0@{ shape: cyl, label: "<b>'Edits waiting' resets to zero</b><br/>Banner disappears<br/>No bell notification" }
+  t0@{ shape: odd, label: "<b>'No open drafts to update'</b><br/>New drafts for Evergreen already use your edits." }
+  g1@{ shape: subproc, label: "Continues in: Dashboard › Requests table" }
+  cb@{ shape: trap-t, label: "<b>Click the bell notification</b><br/>'Drafts updated'" }
+  g2@{ shape: subproc, label: "Continues in: Case Manager › Cases" }
+  s1 --> un --> bn --> dr
+  dr -->|"Yes"| b1 --> cu
+  dr -->|"No"| b0 --> cu
+  b1 -.-> info
+  cu --> m --> dl
+  dl -->|"Yes"| rows --> fn --> cs
+  dl -->|"No"| m0 --> cs
+  m --> cx --> x1
+  m --> cesc --> x1
+  cs --> lock --> a1 --> a2 --> lv
+  lv -->|"No"| drop
+  lv -->|"Yes"| dd
+  dd -->|"Yes"| rd --> z --> nt --> t1 --> g1
+  dd -->|"No"| z0 --> t0
+  nt -.-> cb --> g2
+  class s1 k_start
+  class un,rd,z,nt,z0 k_store
+  class bn k_screen
+  class dr,dl,lv,dd k_decision
+  class b1,b0,fn,m0,t1,t0 k_toast
+  class info,rows,lock k_process
+  class cu,cs,cx,cesc,cb k_click
+  class m k_overlay
+  class x1,drop k_endx
+  class a1,a2 k_agent
+  class g1,g2 k_goto

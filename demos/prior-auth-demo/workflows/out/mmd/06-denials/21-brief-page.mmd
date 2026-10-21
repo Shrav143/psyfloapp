@@ -1,0 +1,66 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Click 'Open the brief' in the call-booked banner" }
+  s2@{ shape: stadium, label: "A call is booked from 'Your options'; the app opens the brief" }
+  s3@{ shape: stadium, label: "Open /denials/D-xxxx/brief by its address" }
+  d1@{ shape: diam, label: "Does a request with that id exist?" }
+  e1@{ shape: curv-trap, label: "<b>'We could not find that denial'</b><br/>'It may have been closed or the address is wrong.'" }
+  c0@{ shape: trap-t, label: "Click 'Back to Denial Intelligence'" }
+  g0@{ shape: subproc, label: "Continues in: Denial Intelligence › Ways in" }
+  sc1@{ shape: curv-trap, label: "<b>'Peer-to-peer brief · D-3318'</b><br/>'Talking points for your call with Cardinal's reviewer. Every point links to the chart.'<br/>Crumbs: 'Denial Intelligence' › 'Brief D-3318'" }
+  c1@{ shape: trap-t, label: "Click the crumb 'Denial Intelligence'" }
+  g1@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
+  b1@{ shape: odd, label: "<b>'Outcome logged: ...' banner</b><br/>Shows once an outcome is logged, with 'Back to the denial'" }
+  c2@{ shape: trap-t, label: "Click 'Back to the denial'" }
+  l1@{ shape: curv-trap, label: "<b>'Your opening'</b><br/>'About 30 seconds. Written by Advocate, checked by Integrity.'" }
+  l2@{ shape: curv-trap, label: "<b>'Three points to make'</b><br/>'Each one links to the chart'<br/>Numbered, each with a source chip" }
+  l3@{ shape: curv-trap, label: "<b>'What they may say'</b><br/>'And a short answer to each'" }
+  l4@{ shape: curv-trap, label: "'The ask.' (green banner)" }
+  l5@{ shape: curv-trap, label: "<b>'Key dates and numbers'</b><br/>Denial received, Call booked, Peer-to-peer window closes, Written appeal due<br/>Days or units, At stake, Chance, Similar decisions" }
+  r1@{ shape: curv-trap, label: "<b>'Call details'</b><br/>Payer, Who to call, Reviewer, Window, Closes in, Dial-in" }
+  p1@{ shape: rect, label: "<b>'Window' reads 'Not booked yet' before a call is booked</b><br/>'Closes in' is red under 2 days, ochre under 7, 'Closed' when over" }
+  r2@{ shape: curv-trap, label: "<b>'Chance of overturning'</b><br/>64%, 'likely 55–72%', a word (Moderate), and 'A written appeal is 58%.'" }
+  r3@{ shape: curv-trap, label: "<b>'Have these open'</b><br/>One tick box per chart source, plus fixes added to the evidence" }
+  c3@{ shape: trap-t, label: "Tick or untick a document" }
+  st1@{ shape: cyl, label: "Tick saved on the denial (kept when you leave and return)" }
+  r4@{ shape: curv-trap, label: "Three buttons: 'Copy brief', 'Print', 'Record the call outcome'" }
+  g2@{ shape: subproc, label: "Continues in: Denial Intelligence › Peer-to-peer › Brief buttons" }
+  g3@{ shape: subproc, label: "Continues in: Denial Intelligence › Peer-to-peer › Record the call outcome" }
+  p0@{ shape: rect, label: "<b>Text of the brief comes from the denial type, payer and numbers</b><br/>D-3318 is written out in full" }
+  s1 --> d1
+  s2 --> d1
+  s3 --> d1
+  d1 -->|"No"| e1 --> c0 --> g0
+  d1 -->|"Yes"| sc1
+  sc1 --> p0
+  sc1 --> c1 --> g1
+  sc1 -.-> b1 --> c2 --> g1
+  sc1 --> l1 --> l2 --> l3 --> l4 --> l5
+  sc1 --> r1 --> p1
+  r1 --> r2 --> r3 --> c3 --> st1
+  r3 --> r4 --> g2
+  r4 --> g3
+  class s1,s2,s3 k_start
+  class d1 k_decision
+  class e1,sc1,l1,l2,l3,l4,l5,r1,r2,r3,r4 k_screen
+  class c0,c1,c2,c3 k_click
+  class g0,g1,g2,g3 k_goto
+  class b1 k_toast
+  class p1,p0 k_process
+  class st1 k_store

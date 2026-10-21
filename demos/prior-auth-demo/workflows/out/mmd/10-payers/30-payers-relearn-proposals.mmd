@@ -1,0 +1,67 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Click 'Re-learn from decisions'</b><br/>on the workflow card" }
+  busy@{ shape: rect, label: "Button shows a spinner" }
+  st@{ shape: odd, label: "<b>Historian is reviewing how Summit</b><br/>ruled over the last 90 days." }
+  h1@{ shape: hex, label: "<b>Historian reviews the last 90 days</b><br/>(demo: about 3 seconds, scripted)" }
+  lv@{ shape: diam, label: "<b>Is the person still on Payers</b><br/>when the 3 seconds end?" }
+  dropped@{ shape: stadium, label: "<b>Result dropped</b><br/>No toast, no proposal" }
+  nx@{ shape: diam, label: "<b>Is there a proposal not yet in</b><br/>the workflow, the proposals or the dismissed list?" }
+  tn@{ shape: odd, label: "<b>'Nothing new to propose'</b><br/>The workflow already matches how Summit ruled in the last 90 days." }
+  pr@{ shape: cyl, label: "Proposal added to the payer" }
+  tp@{ shape: odd, label: "<b>'Historian has a proposal'</b><br/>Review it on the Changes tab. The workflow has not changed." }
+  bn@{ shape: curv-trap, label: "<b>Process tab banner</b><br/>'Historian proposed 1 change'<br/>It never edits the workflow on its own." }
+  badge@{ shape: rect, label: "<b>'Changes' tab badge goes up by one</b><br/>List dot and sidebar badge do not change" }
+  rv@{ shape: trap-t, label: "Click 'Review in Changes'" }
+  cp@{ shape: curv-trap, label: "<b>Changes tab, proposal card</b><br/>Historian chip: 'Proposal: Ask for a therapy note on continued stays'<br/>Under 'Gather the documents': If request is a continued-stay request, File step" }
+  ca@{ shape: trap-t, label: "Click 'Accept proposal'" }
+  cd@{ shape: trap-t, label: "Click 'Dismiss'" }
+  ac@{ shape: cyl, label: "<b>Condition added under that step</b><br/>Workflow becomes the next version<br/>Proposal removed" }
+  lg@{ shape: cyl, label: "<b>Edit log entry, area 'Workflow'</b><br/>Reason 'Accepted Historian's proposal: ...'" }
+  un@{ shape: cyl, label: "'Edits waiting' count goes up by one" }
+  ta@{ shape: odd, label: "<b>'Proposal accepted'</b><br/>Added under 'Gather the documents' and logged as version 8." }
+  dm@{ shape: cyl, label: "<b>Proposal removed and remembered as dismissed</b><br/>Historian will not offer it again" }
+  td@{ shape: odd, label: "<b>'Proposal dismissed'</b><br/>The workflow did not change." }
+  nr@{ shape: rect, label: "<b>No reason asked, no confirmation</b><br/>No way to bring a dismissed proposal back" }
+  e1@{ shape: stadium, label: "<b>Run 'Re-learn' again for the next proposal</b><br/>Summit has two; Beacon has none left to offer" }
+  g1@{ shape: subproc, label: "Continues in: Payers › Edits waiting › Update drafts" }
+  g2@{ shape: subproc, label: "Continues in: Payers › Edit log" }
+  s1 --> busy --> st --> h1 --> lv
+  lv -->|"No"| dropped
+  lv -->|"Yes"| nx
+  nx -->|"No"| tn --> e1
+  nx -->|"Yes"| pr --> tp --> bn --> badge
+  bn --> rv --> cp
+  cp --> ca --> ac --> lg --> un --> ta --> g1
+  lg -.-> g2
+  cp --> cd --> dm --> td --> e1
+  ca -.-> nr
+  cd -.-> nr
+  ta --> e1
+  class s1 k_start
+  class busy,badge,nr k_process
+  class st,tn,tp,ta,td k_toast
+  class h1 k_agent
+  class lv,nx k_decision
+  class dropped k_endx
+  class pr,ac,lg,un,dm k_store
+  class bn,cp k_screen
+  class rv,ca,cd k_click
+  class e1 k_end
+  class g1,g2 k_goto

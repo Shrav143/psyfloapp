@@ -1,0 +1,72 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Open 'Verify a patient'" }
+  sc@{ shape: curv-trap, label: "<b>Verify a patient</b><br/>'The agents check coverage and benefits live, so you know whether the clinic will be paid.'<br/>Card 'The patient and the service' with the pill 'Privacy mode on'" }
+  b1@{ shape: trap-t, label: "Click '← Eligibility & Benefits' (back link)" }
+  g0@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows" }
+  subgraph gCard ["Add the insurance card"]
+  f1@{ shape: lean-r, label: "<b>Drop a file, or click the drop zone</b><br/>'Drag and drop the insurance card, or click to select a file'" }
+  f2@{ shape: trap-t, label: "Click 'Use sample file'" }
+  f3@{ shape: trap-t, label: "Click 'Use sample card' (top right)" }
+  a1@{ shape: hex, label: "<b>Reader reads the card</b><br/>'Reader is reading the card' for about 1 second" }
+  p1@{ shape: rect, label: "<b>Fills payer from the file name (else Summit) and a member ID</b><br/>Date of birth stays empty" }
+  p2@{ shape: rect, label: "<b>Fills Summit, 'SM7403964821', 03/14/1992, Residential 3.5, 10/21/2026</b><br/>Remembers J.M., 34" }
+  t1@{ shape: odd, label: "<b>'Sample card loaded'</b><br/>'Reader filled in the details for J.M., 34. The check can start when you are ready.'" }
+  cs@{ shape: curv-trap, label: "<b>Card strip 'Card read just now'</b><br/>'Payer, member ID and plan type are filled in below'" }
+  f4@{ shape: trap-t, label: "Click 'Replace'" }
+  p3@{ shape: rect, label: "<b>Strip goes, drop zone returns</b><br/>The typed values stay" }
+  end
+  subgraph gFields ["Type the details"]
+  i1@{ shape: lean-r, label: "<b>'Payer' menu: 'Choose a payer', six payers</b><br/>(label reads 'Payer (read from card)' after a card)" }
+  i2@{ shape: lean-r, label: "'State': the only choice is 'Ohio'" }
+  i3@{ shape: lean-r, label: "<b>'Member ID (removed before analysis)'</b><br/>Hint 'Agents see …4821 only'" }
+  i4@{ shape: lean-r, label: "'Date of birth' as MM/DD/YYYY" }
+  i5@{ shape: lean-r, label: "'Program': 'Residential 3.5', 'IOP', 'PHP', 'Detox'" }
+  i6@{ shape: lean-r, label: "'Date of service' as MM/DD/YYYY, starts as 10/21/2026" }
+  end
+  q1@{ shape: diam, label: "Payer chosen, member ID has 4 or more letters or digits, both dates shaped MM/DD/YYYY?" }
+  p4@{ shape: rect, label: "<b>'Check now' is off</b><br/>Hint 'Add the payer, member ID, date of birth and date of service to check.'" }
+  p5@{ shape: rect, label: "Only the shape of a date is checked, not whether it is a real day" }
+  p6@{ shape: rect, label: "<b>'Check now' is on</b><br/>Hint 'Takes about 10 seconds. Nothing is changed at the payer or in the record.'" }
+  c1@{ shape: trap-t, label: "Click 'Check now'" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › The live check" }
+  s1 --> sc
+  sc --> b1 --> g0
+  sc --> f1 --> a1
+  sc --> f2 --> a1
+  a1 --> p1 --> cs
+  sc --> f3 --> p2 --> t1 --> cs
+  cs --> f4 --> p3
+  sc --> i1 --> i2 --> i3 --> i4 --> i5 --> i6 --> q1
+  cs --> q1
+  p3 --> q1
+  q1 -->|"No"| p4 -.-> p5
+  p4 --> q1
+  q1 -->|"Yes"| p6 --> c1 --> g1
+  class s1 k_start
+  class sc,cs k_screen
+  class b1,f2,f3,f4,c1 k_click
+  class g0,g1 k_goto
+  class f1,i1,i2,i3,i4,i5,i6 k_input
+  class a1 k_agent
+  class p1,p2,p3,p4,p5,p6 k_process
+  class t1 k_toast
+  class q1 k_decision
+  style gCard fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gFields fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

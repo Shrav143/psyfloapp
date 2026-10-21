@@ -1,0 +1,80 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Calendar pop-up is open</b><br/>Shortcuts at the left" }
+  subgraph gPre ["Shortcuts (each ends today and applies at once)"]
+  c1@{ shape: trap-t, label: "<b>Click 'Last 7 days'</b><br/>Oct 14 – Oct 20, 2026" }
+  c2@{ shape: trap-t, label: "<b>Click 'Last 30 days'</b><br/>Sep 21 – Oct 20, 2026 (the default)" }
+  c3@{ shape: trap-t, label: "<b>Click 'Last 90 days'</b><br/>Jul 23 – Oct 20, 2026" }
+  c4@{ shape: trap-t, label: "<b>Click 'This month'</b><br/>Oct 1 – Oct 20, 2026" }
+  end
+  p1@{ shape: rect, label: "<b>Range saved and the calendar closes</b><br/>No Apply needed" }
+  subgraph gNav ["Moving around the calendar"]
+  n1@{ shape: trap-t, label: "<b>Click the left arrow 'Earlier months'</b><br/>The two months move back one" }
+  n2@{ shape: trap-t, label: "<b>Click the right arrow 'Later months'</b><br/>The two months move forward one" }
+  nd@{ shape: diam, label: "Does the month after the right one start after today?" }
+  n3@{ shape: rect, label: "Right arrow is dimmed and disabled" }
+  n4@{ shape: rect, label: "Months move" }
+  k1@{ shape: trap-t, label: "<b>Press ArrowLeft, ArrowRight, ArrowUp or ArrowDown on a day</b><br/>Moves the focus by 1 or 7 days" }
+  k2@{ shape: rect, label: "Focus stops at today; the months scroll to keep the day in view" }
+  k3@{ shape: trap-t, label: "<b>Press Enter or Space on the focused day</b><br/>Same as clicking it" }
+  end
+  subgraph gUrl ["The address"]
+  u1@{ shape: diam, label: "Is the applied range the default Sep 21 – Oct 20?" }
+  u2@{ shape: rect, label: "No from or to in the address" }
+  u3@{ shape: rect, label: "?from=2026-10-14&to=2026-10-20 added" }
+  u4@{ shape: stadium, label: "Open a link that has from and to" }
+  u5@{ shape: diam, label: "Are from and to real dates, with from not after to?" }
+  u6@{ shape: rect, label: "Range applied from the link" }
+  u7@{ shape: rect, label: "Ignored: the remembered range stays" }
+  u8@{ shape: stadium, label: "Open an old link with ?period=7d, 30d or quarter" }
+  u9@{ shape: rect, label: "Mapped to the last 7, 30 or 90 days ending Oct 20" }
+  end
+  w1@{ shape: cyl, label: "Filter 'range'" }
+  sc@{ shape: curv-trap, label: "<b>Date button shows the range</b><br/>Green and bold when it is not the default<br/>One day shows as 'Oct 10, 2026'" }
+  p2@{ shape: rect, label: "Payers at a glance rescales: 'Denied (N d)' and 'Info asks (N d)' use N days, N = days in the range" }
+  g1@{ shape: subproc, label: "Continues in: Dashboard › Filters › Pick a date range" }
+  g2@{ shape: subproc, label: "Continues in: Dashboard › Filters › Clear filters and empty states" }
+  s1 --> c4 & c3 & c2 & c1
+  c4 & c3 & c2 & c1 --> p1 --> w1
+  s1 --> n1 & n2 & k1
+  n1 --> n4
+  n2 --> nd
+  nd -->|"Yes"| n3
+  nd -->|"No"| n4
+  k1 --> k2 --> k3
+  k3 -.-> g1
+  w1 --> u1
+  u1 -->|"Yes"| u2 --> sc
+  u1 -->|"No"| u3 --> sc
+  u4 --> u5
+  u5 -->|"Yes"| u6 --> w1
+  u5 -->|"No"| u7 --> sc
+  u8 --> u9 --> w1
+  sc --> p2
+  sc -.-> g2
+  class s1,u4,u8 k_start
+  class c1,c2,c3,c4,n1,n2,k1,k3 k_click
+  class p1,n3,n4,k2,u2,u3,u6,u7,u9,p2 k_process
+  class nd,u1,u5 k_decision
+  class w1 k_store
+  class sc k_screen
+  class g1,g2 k_goto
+  style gPre fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gNav fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gUrl fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

@@ -1,0 +1,74 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "A case is open on any step" }
+  sc1@{ shape: curv-trap, label: "<b>Stepper under the title</b><br/>1 Referral · 2 Medical records · 3 Agents work · 4 Review and sign" }
+  p1@{ shape: rect, label: "<b>Current step: dark circle with its number</b><br/>Earlier steps: green circle with a tick<br/>Later steps: grey circle" }
+  d1@{ shape: diam, label: "Which step did the person click?" }
+  pNo@{ shape: rect, label: "<b>Current step and later steps are disabled</b><br/>Nothing happens" }
+  c1@{ shape: trap-t, label: "<b>Click an earlier step</b><br/>'Referral', 'Medical records' or 'Agents work'" }
+  p2@{ shape: rect, label: "<b>Case moves to that step</b><br/>What was entered and what the agents did is kept" }
+  sc2@{ shape: curv-trap, label: "<b>Page shows that step</b><br/>Title and sentence change with it" }
+  subgraph gSub ["The sentence under the title"]
+  t1@{ shape: curv-trap, label: "Referral: 'Start with the referral. Drop the documents and Reader lists anything that is missing.'" }
+  t2@{ shape: curv-trap, label: "<b>Medical records: 'Drop what you have. Reader sorts the files and lists what is still missing, then the agents check the payer's rules.'</b><br/>Top right: 'Use sample chart'" }
+  t3@{ shape: curv-trap, label: "Agents work: 'The agents are reading the chart and checking Summit's rules. Questions come to you only when they must.'" }
+  t4@{ shape: curv-trap, label: "<b>Review and sign: 'Nothing goes to the payer until a clinician signs.'</b><br/>Title 'Ready for your signature'" }
+  end
+  subgraph gFwd ["Moving forward and back: each step's own buttons"]
+  b1@{ shape: trap-t, label: "Referral: 'Accept referral and continue', 'Continue to medical records' or 'No referral? Continue without one'" }
+  b2@{ shape: trap-t, label: "Medical records: 'Back', 'Save as draft', 'Continue'" }
+  b3@{ shape: trap-t, label: "Agents work: 'Back', 'Pause all agents', 'Skip ahead', 'Review and sign'" }
+  b4@{ shape: trap-t, label: "Review and sign: 'Back', 'Save as draft', 'Sign and send'" }
+  end
+  pBack@{ shape: rect, label: "<b>'Back' goes one step back</b><br/>Medical records to Referral; Agents work to Medical records; Review and sign to Agents work" }
+  pNext@{ shape: rect, label: "<b>Forward buttons stay disabled until the step is ready</b><br/>'Continue' waits for nothing missing; 'Review and sign' waits for the agents" }
+  cLink@{ shape: trap-t, label: "Click the link 'Case Manager' above the title" }
+  gCm@{ shape: subproc, label: "Continues in: Case Manager" }
+  sFull@{ shape: curv-trap, label: "<b>Stepper on the full referral page</b><br/>'Referral' is current and no step is clickable" }
+  gFull@{ shape: subproc, label: "Continues in: New case › Referral › The full referral page" }
+  g1@{ shape: subproc, label: "Continues in: New case › Referral › Start screen" }
+  g2@{ shape: subproc, label: "Continues in: New case › Medical records › The checklist and Continue" }
+  g3@{ shape: subproc, label: "Continues in: New case › Agents work › Start the run and watch it" }
+  g4@{ shape: subproc, label: "Continues in: New case › Review and sign › The draft and the summary" }
+  s1 --> sc1 --> p1 --> d1
+  d1 -->|"Current or later step"| pNo
+  d1 -->|"Earlier step"| c1 --> p2 --> sc2
+  sc2 --> t1
+  sc2 --> t2
+  sc2 --> t3
+  sc2 --> t4
+  t1 --> b1 --> g1
+  t2 --> b2 --> g2
+  t3 --> b3 --> g3
+  t4 --> b4 --> g4
+  b2 --> pBack
+  b3 --> pBack
+  b4 --> pBack
+  b2 -.-> pNext
+  b3 -.-> pNext
+  sc1 --> cLink --> gCm
+  sc1 -.-> sFull --> gFull
+  class s1 k_start
+  class sc1,sc2,t1,t2,t3,t4,sFull k_screen
+  class p1,pNo,p2,pBack,pNext k_process
+  class d1 k_decision
+  class c1,b1,b2,b3,b4,cLink k_click
+  class gCm,gFull,g1,g2,g3,g4 k_goto
+  style gSub fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gFwd fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

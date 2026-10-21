@@ -1,0 +1,60 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "An agent wants to take a step" }
+  q1@{ shape: diam, label: "What kind of step is it?" }
+  a1@{ shape: rect, label: "<b>Auto + notify</b><br/>A person acts only on exceptions" }
+  a2@{ shape: rect, label: "<b>Stage</b><br/>Intake confirms before the coverage change lands" }
+  a3@{ shape: rect, label: "<b>Auto when the reading is sure</b><br/>Stage when it is not, and always for a partial approval<br/>The coordinator checks against the letter" }
+  a4@{ shape: rect, label: "<b>Stage</b><br/>The coordinator confirms before the EMR is written" }
+  a5@{ shape: rect, label: "<b>Draft</b><br/>The clinician edits the clinical content and signs" }
+  a6@{ shape: rect, label: "<b>Human-initiated, after a signature</b><br/>The clinician's signature is bound to the packet hash" }
+  a7@{ shape: rect, label: "<b>Auto + notify, a later phase</b><br/>The coordinator reviews the outcome" }
+  a8@{ shape: rect, label: "<b>Human-initiated</b><br/>The coordinator schedules, a clinician attends the peer-to-peer" }
+  a9@{ shape: rect, label: "<b>Auto + notify</b><br/>The operator acknowledges the proposed rule" }
+  x1@{ shape: stadium, label: "<b>Never</b><br/>The clinician authors clinical content and sets units, frequency and dates<br/>Callers never answer clinical questions" }
+  h1@{ shape: trap-t, label: "<b>Clinician signs</b><br/>A licensed clinician signs every request and appeal" }
+  h2@{ shape: trap-t, label: "Case owner confirms the write-back" }
+  g1@{ shape: subproc, label: "Continues in: New case › Review and sign" }
+  g2@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Approve the write-back" }
+  g3@{ shape: subproc, label: "Continues in: Payers › Changes › Acknowledge a change" }
+  g4@{ shape: subproc, label: "Continues in: Denial Intelligence › Written appeal › Edit, sign and file" }
+  s1 --> q1
+  q1 -->|"Read, poll or check: eligibility, packet completeness, status, decision letters"| a1
+  q1 -->|"Change coverage on the chart: Verify"| a2
+  q1 -->|"Put units, window and reason in the ledger: Navigator"| a3
+  q1 -->|"Write the approval number and dates to the EMR: Navigator"| a4
+  q1 -->|"Draft a cover sheet or an appeal letter: Packet, Advocate"| a5
+  q1 -->|"Submit, fax, email an appeal or message a payer: Navigator"| a6
+  q1 -->|"Call a payer for receipt or status: Caller"| a7
+  q1 -->|"Call a payer for denial criteria or a peer-to-peer: Caller"| a8
+  q1 -->|"Propose a payer rule from a bulletin: Sentinel, Packet, Advocate"| a9
+  q1 -->|"Write clinical content, choose units or dates, answer clinical questions"| x1
+  a5 --> h1
+  a6 --> h1
+  a4 --> h2
+  h1 --> g1
+  h1 -.-> g4
+  h2 --> g2
+  a9 -.-> g3
+  class s1 k_start
+  class q1 k_decision
+  class a1,a2,a3,a4,a5,a6,a7,a8,a9 k_process
+  class x1 k_endx
+  class h1,h2 k_click
+  class g1,g2,g3,g4 k_goto
