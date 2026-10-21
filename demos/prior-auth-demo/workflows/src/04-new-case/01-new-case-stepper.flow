@@ -35,9 +35,9 @@ screen sFull "Stepper on the full referral page\n'Referral' is current and no st
 goto gFull "Continues in: New case › Referral › The full referral page"
 
 goto g1 "Continues in: New case › Referral › Start screen"
-goto g2 "Continues in: New case › Medical records"
-goto g3 "Continues in: New case › Agents work"
-goto g4 "Continues in: New case › Review and sign"
+goto g2 "Continues in: New case › Medical records › The checklist and Continue"
+goto g3 "Continues in: New case › Agents work › Start the run and watch it"
+goto g4 "Continues in: New case › Review and sign › The draft and the summary"
 
 s1 --> sc1 --> p1 --> d1
 d1 -->|Current or later step| pNo

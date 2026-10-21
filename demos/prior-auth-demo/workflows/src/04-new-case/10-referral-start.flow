@@ -45,7 +45,7 @@ group gNone "No referral"
   click c6 "Click 'No referral? Continue without one'"
   process p9 "Step moves to Medical records\nNo referral is attached"
 endgroup
-goto g2 "Continues in: New case › Medical records"
+goto g2 "Continues in: New case › Medical records › The checklist and Continue"
 
 s1 --> sc1
 s2 --> sc1

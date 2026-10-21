@@ -23,7 +23,7 @@ store st2 "Referral is Admitted\nTimeline 'Marked admitted'"
 toast t2 "'Marked admitted'\n'RF-2053 counts as admitted in the funnel.'"
 screen sc2 "Green banner 'Admitted into IOP'\nHeader has no decision buttons"
 click c5 "Click 'Continue to medical records' on the banner\nor on the checklist"
-goto g1 "Continues in: New case › Medical records"
+goto g1 "Continues in: New case › Medical records › The checklist and Continue"
 
 s1 --> c1 --> o1 --> i1 --> i2 --> d1
 d1 -->|No| p1 --> cX

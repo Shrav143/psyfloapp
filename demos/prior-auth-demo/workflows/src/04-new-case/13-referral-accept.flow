@@ -36,7 +36,7 @@ group gCl "Referral goes in"
   process p6 "Agents' results are cleared\nBecause the patient and documents changed\nNo warning is shown"
   toast t4 "'Referral RF-2048 is in this case'\n'A.P., 45. Next, add the medical records.'"
 endgroup
-goto g1 "Continues in: New case › Medical records"
+goto g1 "Continues in: New case › Medical records › The checklist and Continue"
 
 group gPg "From the full referral page"
   screen sc1 "Page stays open\nGreen banner 'Accepted into IOP'\n'Target admission 10/21/2026. Owner Taylor Brooks.'"

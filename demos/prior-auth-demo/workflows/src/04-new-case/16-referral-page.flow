@@ -18,7 +18,7 @@ screen sc1 "Referral page\nCrumbs 'New case › Referral › RF-2053'\nStepper: 
 screen sH "Header card\nPill '{Program} requested', big RF number, status pill, urgency pill\nPatient · source · channel · received · payer\nSmall stepper Received, Reviewed, Decided, Admitted"
 process pSla "Red pill 'Past response target' while New or In review\nafter 1 hour (emergent), 4 hours (urgent) or 24 hours (routine)"
 goto gHead "Continues in: New case › Referral › Header actions"
-goto gBan "Continues in: New case › Referral › Referral statuses"
+goto gBan "Continues in: New case › Referral › Decision banners"
 screen sBan "Banners under the header\nOne per situation: declined, accepted, waiting on the referrer,\nReader found N things to check, coverage lapsed"
 
 group gCr "Breadcrumb"

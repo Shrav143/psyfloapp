@@ -31,7 +31,7 @@ goto gAcc "Continues in: New case › Referral › Accept a referral"
 goto gDec "Continues in: New case › Referral › Mark OK or decline"
 goto gSch "Continues in: New case › Referral › Schedule intake"
 goto gBan "Continues in: New case › Referral › Decision banners"
-goto gMed "Continues in: New case › Medical records"
+goto gMed "Continues in: New case › Medical records › The checklist and Continue"
 
 click cCont "Click 'Continue to medical records'"
 decision dReq "Did this referral start a request?"

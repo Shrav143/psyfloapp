@@ -1,0 +1,47 @@
+title: Settings › Pause › What the rest of the app shows
+route: /settings
+intro: Pausing on Settings stops nothing in the demo. The only other pause button is on the New case Agents work step, and it is separate. This shows what each place does and what the real product must do.
+dir: TD
+also: Found by searching the code for the pause state and by testing both screens. Settings and New case do not share it.
+---
+start s1 "Click 'Pause all agents' on Settings, then 'Pause all'"
+process p1 "Settings keeps the pause in the page only\nNo store, no setting that other screens read"
+toast t1 "The banner says it: 'In this demo the pause does not change the other screens.'"
+
+group gOther "Screens that do not change"
+  process o1 "Dashboard\nRequests, 'Held by' agents and next steps stay as they are"
+  process o2 "Case Manager, Authorizations, Denial Intelligence, Eligibility, Payers, EMR Connect\nNo pause shown"
+  process o3 "New case › Agents work\nThe agents keep working unless that screen's own button is used"
+endgroup
+
+group gNew "New case › Agents work has its own pause"
+  screen n1 "Agents work\nTen agents in a row, then 'Back', 'Pause all agents', 'Skip ahead', 'Review and sign'"
+  click n2 "Click 'Pause all agents'\nIn the step footer, red outline"
+  process n3 "The running agent's row shows a 'Paused' pill\nThe clock chip stops"
+  toast n4 "Banner 'All agents are paused'\n'Nothing is read, checked or drafted until you resume them. Nothing has been sent to the payer.'"
+  process n5 "'Skip ahead' is dimmed, the hint reads 'Paused.'\nThe button becomes 'Resume agents'"
+  click n6 "Click 'Resume agents'"
+  end n7 "Agents carry on from where they stopped"
+endgroup
+
+process n8 "Leaving New case drops that pause\nProgress is kept on the case, so the agents resume when the person returns"
+
+group gReal "Production: the kill switch (PRD FR-25)"
+  ext r1 "The operator can pause one agent, one payer channel or all outbound actions at once"
+  ext r2 "A pause takes effect before the next step of any running job\nSteps already going out finish, or roll back to the manual queue"
+endgroup
+
+goto g1 "Continues in: New case › Agents work › Pause and resume"
+goto g2 "Continues in: Dashboard › Request drawer"
+goto g3 "Continues in: Settings › Pause › Pause all agents"
+
+s1 --> p1 --> t1
+p1 --> o1 & o2 & o3
+o1 --> g2
+o3 --> n1
+n1 --> n2 --> n3 --> n4 --> n5 --> n6 --> n7
+n7 --> n8
+n2 -.-> g1
+t1 -.-> r1
+r1 --> r2
+r2 -.-> g3

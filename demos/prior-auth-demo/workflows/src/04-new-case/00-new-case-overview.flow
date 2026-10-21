@@ -43,9 +43,9 @@ goto gDash "Continues in: Dashboard\nOpens the request"
 goto gStep "Continues in: New case › The stepper and the four steps"
 goto g1 "Continues in: New case › Referral › Start screen"
 goto g1b "Continues in: New case › Referral › Referral checklist"
-goto g2 "Continues in: New case › Medical records"
-goto g3 "Continues in: New case › Agents work"
-goto g4 "Continues in: New case › Review and sign"
+goto g2 "Continues in: New case › Medical records › The checklist and Continue"
+goto g3 "Continues in: New case › Agents work › Start the run and watch it"
+goto g4 "Continues in: New case › Review and sign › The draft and the summary"
 
 s1 --> p1
 s2 --> p1

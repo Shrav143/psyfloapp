@@ -14,8 +14,10 @@ endgroup
 goto gAcc "Continues in: New case › Referral › Accept a referral"
 goto gAsk "Continues in: New case › Referral › Ask the referrer"
 goto gOk "Continues in: New case › Referral › Mark OK or decline"
-click cSt "Click 'Schedule intake', 'Mark admitted',\n'Change intake' or 'Reopen referral'"
-goto gSt "Continues in: New case › Referral › Referral statuses"
+click cSt "Click 'Schedule intake', 'Mark admitted'\nor 'Change intake'\nAccepted and Scheduled only"
+goto gSt "Continues in: New case › Referral › Schedule intake"
+click cRe "Click 'Reopen referral'\nDeclined only"
+store stRe "Referral is In review again\nTimeline 'You reopened the referral'\nToast 'Referral reopened'"
 
 group gOwn "Owner"
   click cOwn "Open 'Owner' and pick a person\nJordan Perez, Taylor Brooks, Morgan Lee or Unassigned"
@@ -44,6 +46,7 @@ s1 --> cAcc --> gAcc
 s1 --> cReq --> gAsk
 s1 --> cDec --> gOk
 s1 --> cSt --> gSt
+s1 --> cRe --> stRe
 s1 --> cOwn --> stOwn --> tOwn
 s1 --> cNote --> gNote
 s1 --> cMore --> oMore

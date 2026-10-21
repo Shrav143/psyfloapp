@@ -2,7 +2,7 @@ title: Authorizations › New case › Referral › Check coverage
 route: /authorizations/new/:draftId?ref=RF-2053 (checklist) and /authorizations/new/referral/RF-2053 (Coverage tab)
 intro: Verify can check a referral's coverage from the checklist row or from the Coverage tab on the full page. For the full check, the Coverage tab hands off to Eligibility & Benefits.
 dir: TD
-also: Demo only: Verify's answer is fixed for each referral (covered, authorization first, lapsed, or no insurance) and takes about three seconds.
+also: Demo only: Verify's answer is fixed for each referral (covered, authorization first, lapsed, or no insurance) and takes about three seconds. Real world (PRD 02): coverage is verified before the first appointment, and intakes without a card get insurance discovery.
 ---
 start s1 "Checklist, Coverage section:\n'Verify checked coverage' row"
 start s2 "Full page: open the 'Coverage' tab"

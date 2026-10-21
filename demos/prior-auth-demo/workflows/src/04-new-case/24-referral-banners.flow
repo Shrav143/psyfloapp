@@ -12,7 +12,7 @@ group gDec "Declined"
   store st1 "Referral is In review again"
 endgroup
 
-group gAcc "Accepted, Scheduled or Admitted"
+group gAcc "Decided and moving on"
   toast t2 "Green banner 'Accepted into IOP' (or 'Admitted into IOP')\n'Target admission 10/21/2026. Owner Taylor Brooks.'\nScheduled adds 'Intake visit Thu 9:00 am'"
   decision d2 "Did this referral start a request?"
   toast t3 "'Linked request R-1042' with its status chip\nbutton 'Open R-1042'"
@@ -34,9 +34,9 @@ endgroup
 
 goto g1 "Continues in: New case › Referral › Full page: Validation tab"
 goto g2 "Continues in: New case › Referral › Check coverage"
-goto g3 "Continues in: New case › Medical records"
+goto g3 "Continues in: New case › Medical records › The checklist and Continue"
 goto g4 "Continues in: Dashboard\nOpens request R-1042"
-endx e1 "No banner\nA New or In review referral with no open findings and no lapsed coverage"
+end e1 "No banner\nA New or In review referral with no open findings and no lapsed coverage"
 
 s1 --> d1
 d1 -->|Declined| t1 --> c1 --> st1

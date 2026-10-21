@@ -111,11 +111,11 @@ File names below are in `src/03-authorizations/`. Short names: 10 queue-overview
 
 ## Not drawn
 
-- Animations: the ring counting up (10 and 23 mention it), the fade-in of a tab, the chevron turn. Reduced-motion users get the value at once; no diagram of that.
+- Animations: the ring counting up (23 mentions it), the fade-in of a tab, the chevron turn. Reduced-motion users get the value at once; no diagram of that.
 - Hover states and the `title` hint on the greyed-out 'Send to payer' (shown as 'a hover hint' in 22 only).
 - Chart and donut hover: the charts have no interaction in the code.
 - Sidebar sub links ('New case', 'Eligibility & Benefits') and the global top bar: Global shell module.
-- The Demo menu 'Fast-forward' and 'Reset demo data' only appear as notes (12, 16, 18): their own diagram is in Global shell.
+- The Demo menu 'Fast-forward' and 'Reset demo data' only appear as a note in 12; their own diagram is in Global shell.
 - The 'Nothing needs you today' message is drawn (16) but cannot appear with the seed data, so it was not run in the app.
 
 ## Looks broken or dead in the demo

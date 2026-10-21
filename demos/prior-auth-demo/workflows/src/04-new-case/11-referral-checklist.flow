@@ -2,7 +2,7 @@ title: Authorizations › New case › Referral › Referral checklist
 route: /authorizations/new/:draftId?ref=RF-2053
 intro: One referral as a checklist of 11 items in four sections. Reader found each item or did not. This diagram covers the rows and their buttons; the buttons around the card are in 'Checklist buttons'.
 dir: TD
-also: Demo only: Reader's findings are invented. The same sample always reads the same.
+also: Demo only: Reader's findings are invented. Real world (PRD 03): a referral comes from a primary care home or hospital and intake collects the releases, signatures and records.
 ---
 start s1 "Click 'Check' on an arrived referral\nor Reader finishes reading dropped files"
 start s2 "Click the crumb 'Referral'\non the full referral page"

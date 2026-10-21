@@ -1,0 +1,35 @@
+title: Settings › Pause › Pause one agent, resume all
+route: /settings
+intro: Each row has its own switch. The header button and banner follow the switches: they show 'paused' only when all sixteen are off. This is how the page behaves for one, a few, or all switches.
+dir: TD
+also: Tested in the built demo. The switch has no label and no toast. The only sign of a single pause is the switch itself.
+---
+screen s1 "Settings\nAll sixteen switches on. Header button reads 'Pause all agents'"
+click c1 "Click a row's switch\nNo label, no confirmation"
+decision q1 "Was the switch on?"
+store a1 "That agent is paused\nSwitch goes grey, no toast, the row text does not change"
+store a2 "That agent is active again\nSwitch goes green, no toast"
+decision q2 "Are all sixteen switches now off?"
+process b1 "Header button stays 'Pause all agents'\nNo banner"
+process b2 "Header button becomes 'Resume all agents'\nAmber banner 'All agents are paused' appears"
+decision q3 "Were all sixteen off before this click?"
+process b3 "Banner goes and the button returns to 'Pause all agents'\nThe other fifteen stay paused"
+toast m1 "With one to fifteen off there is no 'Resume all agents' button\nTurn each switch on, or use 'Pause all agents' then 'Resume all agents'"
+click c2 "Click 'Pause all agents' while some are off"
+goto g1 "Continues in: Settings › Pause › Pause all agents"
+click c3 "Click 'Resume all agents'\nOnly shown when all sixteen are off"
+store d1 "All sixteen switches go on"
+toast d2 "'Agents resumed'\nGreen toast"
+end e1 "Page is back to normal"
+
+s1 --> c1 --> q1
+q1 -->|Yes| a1 --> q2
+q1 -->|No| a2 --> q3
+q2 -->|No| b1 --> m1
+q2 -->|Yes| b2
+q3 -->|Yes| b3 --> m1
+q3 -->|No| b1
+m1 --> c2 --> g1
+b2 --> c3 --> d1 & d2
+d1 --> e1
+d2 --> e1

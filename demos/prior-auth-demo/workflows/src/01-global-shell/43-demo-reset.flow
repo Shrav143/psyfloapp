@@ -10,7 +10,7 @@ process p1 "The demo data is replaced by its starting copy, all at once"
 
 group gR "What goes back to the start"
   store r1 "Clock: Tue 20 Oct 2026, 10:42 am\n('Demo' pill reads 'Tue 10:42 am')"
-  store r2 "Dashboard: the 39 requests and denials, and all filters"
+  store r2 "Dashboard: all requests and denials, and all filters"
   store r3 "Notifications: the original six, four unread. Open toasts are cleared"
   store r4 "Authorizations: answers, applied actions, dismissals, draft edits"
   store r5 "New case: the five drafts in progress, '4 sent today', referrals, referral badge"
