@@ -25,18 +25,19 @@ flowchart TD
   g0@{ shape: hex, label: "Verify and the other agents ask again" }
   x1@{ shape: st-rect, label: "<b>The state and the plan</b><br/>(demo: simulated, same answer as before)" }
   w1@{ shape: delay, label: "About 1.1 seconds" }
-  st1@{ shape: cyl, label: "<b>Row updated</b><br/>Checked time is now, 're-check due' flag cleared, verdict unchanged" }
+  st1@{ shape: cyl, label: "<b>Row updated</b><br/>Checked time is now, any booked re-check cleared, verdict unchanged" }
   q2@{ shape: diam, label: "Does the payer need a phone call? (Evergreen)" }
   t1@{ shape: odd, label: "<b>'R-1042 re-checked'</b><br/>'Still Authorization first.'" }
   t2@{ shape: odd, label: "<b>'R-0975 re-checked'</b><br/>'The plan's system did not answer, so Caller phoned. Still Fix before billing.'" }
   subgraph gAfter ["What changes on screen"]
   r1@{ shape: rect, label: "List: 'Checked 3 h ago' becomes 'Checked just now'" }
-  r2@{ shape: rect, label: "List: tile 'Re-check due' goes down by one if this row was due" }
+  r2@{ shape: rect, label: "List: tile 'Re-check due' goes down by one if this row had a re-check booked" }
   r3@{ shape: rect, label: "Result: pill 'Last checked 10:40 am, 3 d ago' becomes 'Checked live at 10:42 am'" }
   r4@{ shape: rect, label: "Verdict, sidebar badge and the other tiles do not change" }
   end
   v1@{ shape: rect, label: "<b>Opens the verify form pre-filled from the case</b><br/>Then the full live check (about 10 seconds)" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › The check finishes and is saved" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Re-check on its own" }
   e1@{ shape: stadium, label: "Patient is up to date" }
   a1 --> q1
   a2 --> q1
@@ -49,6 +50,7 @@ flowchart TD
   r1 --> r2 --> e1
   r3 --> e1
   r4 --> e1
+  r2 -.-> g2
   a3 --> v1 --> g1
   class a1,a2,a3 k_start
   class q1,q2 k_decision
@@ -58,6 +60,6 @@ flowchart TD
   class w1 k_wait
   class st1 k_store
   class t1,t2 k_toast
-  class g1 k_goto
+  class g1,g2 k_goto
   class e1 k_end
   style gAfter fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

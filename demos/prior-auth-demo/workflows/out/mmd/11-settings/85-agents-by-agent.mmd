@@ -19,7 +19,7 @@ flowchart TD
   c1@{ shape: curv-trap, label: "<b>Coverage</b><br/>Knows who pays and files with them" }
   verify@{ shape: hex, label: "<b>Verify</b><br/>New case run step 2 and the referral Coverage tab<br/>Eligibility & Benefits live check<br/>EMR Connect: re-checks coverage" }
   caller@{ shape: hex, label: "<b>Caller</b><br/>Eligibility & Benefits: phones when a system does not answer<br/>Dashboard: phones if a request is still pending<br/>Payers process steps: follow-up calls" }
-  navigator@{ shape: hex, label: "<b>Navigator</b><br/>Dashboard: sends signed requests, checks status<br/>Denial Intelligence: files the appeal after a signature<br/>Eligibility: clinic enrolled to bill<br/>EMR Connect: sign-ins, disconnect, write-back switch" }
+  navigator@{ shape: hex, label: "<b>Navigator</b><br/>Dashboard: sends signed requests, checks status<br/>Denial Intelligence: files the appeal after a signature<br/>Eligibility: clinic enrolled to bill<br/>EMR Connect: sign-ins, reconnect, disconnect, write-back switch" }
   c2@{ shape: curv-trap, label: "<b>Documentation</b><br/>Reads the chart, writes the case" }
   reader@{ shape: hex, label: "<b>Reader</b><br/>New case: referral and files, run step 1<br/>Denial Intelligence: reads the letter<br/>Eligibility, EMR Connect: pulls files, maps fields" }
   criteria@{ shape: hex, label: "<b>Criteria</b><br/>New case run step 3<br/>Eligibility: is authorization required<br/>Case page: Criteria tab<br/>Referral decline reasons" }

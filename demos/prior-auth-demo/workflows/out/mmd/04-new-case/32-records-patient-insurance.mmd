@@ -25,7 +25,8 @@ flowchart TD
   r4@{ shape: rect, label: "<b>From EMR Connect</b><br/>'From EMR Connect'" }
   r2@{ shape: rect, label: "<b>Typed by a person</b><br/>The detail shows the value with no source note" }
   r5@{ shape: rect, label: "<b>Missing</b><br/>'Not found yet. Drop a chart above or add it here.'<br/>Row shaded, button 'Add'" }
-  r6@{ shape: rect, label: "<b>Half filled</b><br/>'Found initials J.M.. The age is still needed.'" }
+  r6@{ shape: rect, label: "<b>Half filled</b><br/>'Found initials J.M. The age is still needed.'" }
+  r7@{ shape: rect, label: "<b>Left blank by a chart pull</b><br/>'Left blank. “Level of care” in the outpatient record needs a mapping. Map it, then pull the chart again.'<br/>Link 'Open EMR Connect'" }
   rNote@{ shape: rect, label: "A source note goes quiet as soon as the value is edited" }
   end
   cEdit@{ shape: trap-t, label: "Click 'Add' (empty row) or 'Edit' (filled row)" }
@@ -49,19 +50,9 @@ flowchart TD
   cDone@{ shape: trap-t, label: "Click 'Done', or press Escape in a text box" }
   stLive@{ shape: cyl, label: "<b>Every keystroke is written to the draft</b><br/>Nothing to save" }
   pStale@{ shape: rect, label: "<b>If the agents had already run, the run restarts</b><br/>Answers and summary edits are cleared" }
+  tStale@{ shape: odd, label: "<b>'Records changed after the agents ran'</b><br/>'Their work was cleared. The agents check again when you continue.'" }
   g40@{ shape: subproc, label: "Continues in: Medical records › The Coverage row" }
-  subgraph gEmr ["EMR pull"]
-  cPull@{ shape: trap-t, label: "<b>Click 'Pull a chart from EMR Connect'</b><br/>Clicking again closes the picker" }
-  oPick@{ shape: win-pane, label: "<b>Chart from EMR Connect</b><br/>Picker with a chart list, 'Pull' and 'Cancel'" }
-  iChart@{ shape: lean-r, label: "<b>Pick a chart</b><br/>J.M., 34 · Summit · Residential 3.5 · A.R. · S.T. · L.G." }
-  cPullGo@{ shape: trap-t, label: "Click 'Pull'" }
-  pPulling@{ shape: rect, label: "<b>Button reads 'Pulling' for about 1 second</b><br/>The list and 'Cancel' switch off" }
-  xEmr@{ shape: st-rect, label: "<b>EMR Connect (demo: simulated)</b><br/>The chart's patient, payer, member ID, level of care, type, diagnoses and reason" }
-  stEmr@{ shape: cyl, label: "<b>Draft filled, replacing those fields</b><br/>No documents come with it" }
-  tEmr@{ shape: odd, label: "<b>'Pulled J.M., 34 from EMR Connect'</b><br/>'Everything below was filled in from the chart. You can still change it.'" }
-  cCancelEmr@{ shape: trap-t, label: "Click 'Cancel'" }
-  pCancelEmr@{ shape: rect, label: "Picker closes; nothing changes" }
-  end
+  g44@{ shape: subproc, label: "Continues in: Medical records › Pull a chart from EMR Connect" }
   s1 --> sc --> dSrc
   dSrc -->|"Read by Reader"| r1
   dSrc -->|"From a referral"| r3
@@ -69,6 +60,7 @@ flowchart TD
   dSrc -->|"Typed"| r2
   dSrc -->|"No"| r5
   dSrc -->|"Only one of two"| r6
+  dSrc -->|"Blank because EMR Connect has no mapping yet"| r7
   r1 --> rNote
   r3 --> rNote
   r4 --> rNote
@@ -79,29 +71,26 @@ flowchart TD
   oEd --> iMember --> pMask
   r5 --> cEdit
   r6 --> cEdit
+  r7 --> cEdit
+  r7 -.-> g44
   pName --> cDone
   iPlan --> cDone
   pMask --> cDone
-  cDone --> stLive --> pStale
+  cDone --> stLive --> pStale --> tStale
   oEd --> cAgain --> pClose
   cDone --> pClose
   sc --> g40
-  sc --> cPull --> oPick --> iChart --> cPullGo --> pPulling --> xEmr --> stEmr --> tEmr
-  oPick --> cCancelEmr --> pCancelEmr
-  stEmr -.-> pStale
   class s1 k_start
   class sc k_screen
   class dSrc k_decision
-  class r1,r3,r4,r2,r5,r6,rNote,pClose,pName,pPlan,pMask,pStale,pPulling,pCancelEmr k_process
-  class cEdit,cAgain,cDone,cPull,cPullGo,cCancelEmr k_click
-  class oEd,oPick k_overlay
-  class iInit,iAge,iPayer,iPlan,iMember,iChart k_input
-  class stLive,stEmr k_store
-  class g40 k_goto
-  class xEmr k_ext
-  class tEmr k_toast
+  class r1,r3,r4,r2,r5,r6,r7,rNote,pClose,pName,pPlan,pMask,pStale k_process
+  class cEdit,cAgain,cDone k_click
+  class oEd k_overlay
+  class iInit,iAge,iPayer,iPlan,iMember k_input
+  class stLive k_store
+  class tStale k_toast
+  class g40,g44 k_goto
   style gState fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gPatient fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gPayer fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gMember fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
-  style gEmr fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

@@ -19,24 +19,25 @@ flowchart TD
   s1@{ shape: stadium, label: "Select the 'Accept...' card in 'Your options'" }
   c1@{ shape: trap-t, label: "Click 'Accept the decision and plan the step-down'" }
   o1@{ shape: win-pane, label: "<b>Modal 'Accept the decision?'</b><br/>'Nothing is regained. This closes the denial.'" }
-  l1@{ shape: curv-trap, label: "<b>Three bullets</b><br/>'Cadence logs the write-off of $6.2K.'<br/>'Case Manager starts the step-down plan.'<br/>'D-3297 leaves Appeal or call on the Dashboard.'" }
+  l1@{ shape: curv-trap, label: "<b>Three bullets</b><br/>'Analytics counts the write-off of $6.2K.'<br/>'Case Manager adds a step-down plan.'<br/>'D-3297 leaves Appeal or call on the Dashboard.'" }
   i1@{ shape: lean-r, label: "'Reason for the record' (required): open the menu and pick one" }
   l2@{ shape: curv-trap, label: "<b>Menu choices</b><br/>'The chart does not yet support a challenge' (chosen at first)<br/>'The clinical team agrees with the payer's reasoning'<br/>'The member and family chose to step down'<br/>'The cost of an appeal outweighs the amount'" }
   i2@{ shape: lean-r, label: "<b>Note (optional)</b><br/>'Anything the team should know'" }
   c2@{ shape: trap-t, label: "Click 'Accept and close'" }
-  c3@{ shape: trap-t, label: "Click 'Cancel', the X, press Esc (this also closes an open menu), or click the dimmed area" }
+  c3@{ shape: trap-t, label: "Click 'Cancel', the X, press Esc (this also closes an open menu first), or click the dimmed area" }
   e1@{ shape: stadium, label: "<b>Nothing recorded</b><br/>The denial stays open" }
   st1@{ shape: cyl, label: "Accepted: reason (with the note after it) and time saved on the denial" }
-  st2@{ shape: cyl, label: "<b>Request settled: leaves 'Appeal or call' for 'Decided'</b><br/>Chip 'Accepted', 'Closed. Write-off logged'<br/>Deadline cleared; held by Cadence" }
+  st2@{ shape: cyl, label: "<b>Request settled: leaves 'Appeal or call' for 'Decided'</b><br/>Chip 'Accepted', 'Closed. Write-off logged'<br/>Deadline cleared; held by Cadence<br/>Scheduled lines (a booked call, the daily check) leave the History" }
   a1@{ shape: hex, label: "Cadence logs the write-off of the at-stake amount" }
-  st3@{ shape: cyl, label: "<b>History: 'You accepted the decision' with 'Reason: ...'</b><br/>'Cadence logged the write-off of $6.2K and started the step-down plan in Case Manager'" }
-  t1@{ shape: odd, label: "<b>'Decision accepted'</b><br/>'The write-off is logged. Case Manager has the step-down plan.'" }
-  t2@{ shape: odd, label: "<b>Notification 'Denial closed' from Cadence</b><br/>Opens Case Manager, Reviews" }
-  sc1@{ shape: curv-trap, label: "<b>Denial page now shows banner 'Closed. You accepted the decision'</b><br/>'Reason: ... The write-off is logged.'" }
+  st3@{ shape: cyl, label: "<b>History: 'You accepted the decision' with 'Reason: ...'</b><br/>'Cadence logged the write-off of $6.2K for Analytics and added a step-down plan to Case Manager'" }
+  st4@{ shape: cyl, label: "<b>Shared with other screens: denial, case, payer and amount</b><br/>Case Manager adds a step-down plan<br/>Analytics counts the write-off" }
+  t1@{ shape: odd, label: "<b>'Decision accepted'</b><br/>'Analytics counts the write-off. Case Manager has a step-down plan.'" }
+  t2@{ shape: odd, label: "<b>Notification 'Denial closed' from Cadence</b><br/>Opens Case Manager, Active cases" }
+  sc1@{ shape: curv-trap, label: "<b>Denial page now shows banner 'Closed. You accepted the decision'</b><br/>'Reason: ... Analytics counts the write-off.'" }
   p1@{ shape: rect, label: "<b>'Your options' card is gone</b><br/>Denial moves to 'Closed' in the open denials list with the pill 'Accepted'<br/>Sidebar badge goes down by one" }
   c4@{ shape: trap-t, label: "Click 'Plan the step-down'" }
   c5@{ shape: trap-t, label: "Click 'See on the Dashboard' (top right)" }
-  g1@{ shape: subproc, label: "Continues in: Case Manager › Reviews" }
+  g1@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Step-down plans from accepted denials" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   p2@{ shape: rect, label: "<b>PRD guardrail: the agents never accept a write-off</b><br/>A person gives the reason, and the dollars are shown first" }
   s1 --> c1 --> o1 --> l1
@@ -45,8 +46,8 @@ flowchart TD
   l2 --> c2
   i2 --> c2
   o1 --> c3 --> e1
-  c2 --> st1 --> st2 --> a1 --> st3 --> t1 --> sc1
-  st3 --> t2 --> g1
+  c2 --> st1 --> st2 --> a1 --> st3 --> st4 --> t1 --> sc1
+  st4 --> t2 --> g1
   sc1 --> p1
   sc1 --> c4 --> g1
   sc1 --> c5 --> g2
@@ -57,7 +58,7 @@ flowchart TD
   class l1,l2,sc1 k_screen
   class i1,i2 k_input
   class e1 k_endx
-  class st1,st2,st3 k_store
+  class st1,st2,st3,st4 k_store
   class a1 k_agent
   class t1,t2 k_toast
   class p1,p2 k_process

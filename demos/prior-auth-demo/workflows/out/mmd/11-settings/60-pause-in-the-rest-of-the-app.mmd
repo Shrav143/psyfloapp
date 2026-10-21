@@ -16,48 +16,66 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "Click 'Pause all agents' on Settings, then 'Pause all'" }
-  p1@{ shape: rect, label: "<b>Settings keeps the pause in the page only</b><br/>No store, no setting that other screens read" }
-  t1@{ shape: odd, label: "The banner says it: 'In this demo the pause does not change the other screens.'" }
-  subgraph gOther ["Screens that do not change"]
-  o1@{ shape: rect, label: "<b>Dashboard</b><br/>Requests, 'Held by' agents and next steps stay as they are" }
-  o2@{ shape: rect, label: "<b>Case Manager, Authorizations, Denial Intelligence, Eligibility, Payers, EMR Connect</b><br/>No pause shown" }
-  o3@{ shape: rect, label: "<b>New case › Agents work</b><br/>The agents keep working unless that screen's own button is used" }
-  end
-  subgraph gNew ["New case › Agents work has its own pause"]
+  s1@{ shape: stadium, label: "<b>Pause an agent on Settings</b><br/>Its switch, or 'Pause all agents' then 'Pause all'" }
+  p1@{ shape: cyl, label: "<b>The pause is saved in the app</b><br/>Every screen reads the same switch" }
+  t1@{ shape: odd, label: "<b>The banner on Settings says what is held back, agent by agent</b><br/>For example 'Paused: Verify and Reader.' then one sentence for each screen" }
+  subgraph gNew ["New case › Agents work"]
   n1@{ shape: curv-trap, label: "<b>Agents work</b><br/>Ten agents in a row, then 'Back', 'Pause all agents', 'Skip ahead', 'Review and sign'" }
-  n2@{ shape: trap-t, label: "<b>Click 'Pause all agents'</b><br/>In the step footer, red outline" }
-  n3@{ shape: rect, label: "<b>The running agent's row shows a 'Paused' pill</b><br/>The clock chip stops" }
-  n4@{ shape: odd, label: "<b>Banner 'All agents are paused'</b><br/>'Nothing is read, checked or drafted until you resume them. Nothing has been sent to the payer.'" }
-  n5@{ shape: rect, label: "<b>'Skip ahead' is dimmed, the hint reads 'Paused.'</b><br/>The button becomes 'Resume agents'" }
-  n6@{ shape: trap-t, label: "Click 'Resume agents'" }
+  n3@{ shape: rect, label: "<b>The run holds when it reaches a paused agent</b><br/>Its row shows a 'Paused' pill, the clock chip stops and 'Skip ahead' is dimmed" }
+  n4@{ shape: odd, label: "<b>Banner 'Agents are paused in Settings' or '{Agent} is paused in Settings'</b><br/>'Nothing is read, checked or drafted until it is resumed. Nothing has been sent to the payer.'" }
+  n6@{ shape: trap-t, label: "Click 'Resume agents' or 'Resume {Agent}'" }
   n7@{ shape: stadium, label: "Agents carry on from where they stopped" }
+  n2@{ shape: trap-t, label: "<b>Click 'Pause all agents' in the step footer</b><br/>The same pause as on Settings, so Settings shows it too" }
   end
-  n8@{ shape: rect, label: "<b>Leaving New case drops that pause</b><br/>Progress is kept on the case, so the agents resume when the person returns" }
+  subgraph gDash ["Dashboard"]
+  o1@{ shape: rect, label: "<b>Navigator paused: 'Check all now' is dimmed</b><br/>A link under it reads 'Navigator is paused in Settings'" }
+  end
+  subgraph gMgr ["Case Manager"]
+  m1@{ shape: rect, label: "<b>Cadence paused: 'Draft all due reviews' drafts nothing</b><br/>Toast 'Cadence is paused in Settings'<br/>'It drafts no reviews until you resume it there.'" }
+  end
+  subgraph gElig ["Eligibility & Benefits"]
+  e1@{ shape: rect, label: "<b>Verify paused: the automatic re-checks do not run</b><br/>Rows read 'Not re-checked: Verify is paused in Settings'" }
+  e2@{ shape: rect, label: "Verify resumed: it catches up with every re-check that came due" }
+  end
+  subgraph gEmr ["EMR Connect"]
+  x1@{ shape: rect, label: "<b>Reader paused: 'Sync now' and 'Connect a system' show 'Reader is paused'</b><br/>Navigator paused: 'Fix' and 'Reconnect' show 'Navigator is paused'<br/>Map and Disconnect still work" }
+  end
+  n8@{ shape: rect, label: "<b>Screens that do not read the pause</b><br/>Authorizations queue and case page, Denial Intelligence, Analytics, Payers, Ask FLO" }
   subgraph gReal ["Production (PRD FR-25)"]
   r1@{ shape: rect, label: "Production: the operator can pause one agent, one payer channel or all outbound actions at once" }
   r2@{ shape: rect, label: "<b>Production: a pause takes effect before the next step of any running job</b><br/>Steps already going out finish, or roll back to the manual queue" }
   end
   g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Agents work › Finished, paused or left" }
-  g2@{ shape: subproc, label: "Continues in: Dashboard › Request drawer" }
-  g3@{ shape: subproc, label: "Continues in: Settings › Pause › Pause all agents" }
+  g2@{ shape: subproc, label: "Continues in: Dashboard › Header › Check all now and the demo clock" }
+  g3@{ shape: subproc, label: "Continues in: Case Manager › Reviews this week › Draft all due reviews and sign all clean drafts" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows" }
+  g5@{ shape: subproc, label: "Continues in: EMR Connect › Sync › When an agent is paused or asks first" }
+  g6@{ shape: subproc, label: "Continues in: Settings › Pause › Pause all agents" }
   s1 --> p1 --> t1
-  p1 --> o1 & o2 & o3
-  o1 --> g2
-  o3 --> n1
-  n1 --> n2 --> n3 --> n4 --> n5 --> n6 --> n7
-  n7 --> n8
-  n2 -.-> g1
+  p1 --> n1 & o1 & m1 & e1 & x1
+  p1 -.-> n8
+  n1 --> n3 --> n4 --> n6 --> n7
+  n2 --> p1
+  n3 -.-> g1
+  o1 -.-> g2
+  m1 -.-> g3
+  e1 --> e2
+  e1 -.-> g4
+  x1 -.-> g5
   t1 -.-> r1
   r1 --> r2
-  r2 -.-> g3
+  r2 -.-> g6
   class s1 k_start
-  class p1,o1,o2,o3,n3,n5,n8,r1,r2 k_process
+  class p1 k_store
   class t1,n4 k_toast
   class n1 k_screen
-  class n2,n6 k_click
+  class n3,o1,m1,e1,e2,x1,n8,r1,r2 k_process
+  class n6,n2 k_click
   class n7 k_end
-  class g1,g2,g3 k_goto
-  style gOther fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  class g1,g2,g3,g4,g5,g6 k_goto
   style gNew fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gDash fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gMgr fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gElig fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gEmr fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gReal fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

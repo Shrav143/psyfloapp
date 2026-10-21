@@ -24,9 +24,9 @@ flowchart TD
   end
   gStart@{ shape: subproc, label: "Continues in: New case › Referral › Start screen" }
   subgraph gFoot ["Under the sections"]
-  dAsk@{ shape: diam, label: "<b>Open, not waiting, and something to ask?</b><br/>(age is never counted)" }
+  dAsk@{ shape: diam, label: "<b>Open, not waiting, and something to ask?</b><br/>(a failed age check is never counted)" }
   cFoot@{ shape: trap-t, label: "<b>Click 'Ask the referrer for the missing item'</b><br/>or '…for the 4 missing items'" }
-  cDec@{ shape: trap-t, label: "<b>Click 'Decline'</b><br/>(only while open)" }
+  cDec@{ shape: trap-t, label: "<b>Click 'Decline'</b><br/>(only while open; never disabled)" }
   dWait@{ shape: diam, label: "Awaiting info?" }
   cDemo@{ shape: trap-t, label: "Click 'Demo: the referrer replies'" }
   cFull@{ shape: trap-t, label: "Click 'Open the full referral'" }
@@ -35,19 +35,25 @@ flowchart TD
   gOk@{ shape: subproc, label: "Continues in: New case › Referral › Mark OK or decline" }
   gFull@{ shape: subproc, label: "Continues in: New case › Referral › The full referral page" }
   dSt@{ shape: diam, label: "Referral status?" }
-  cAcc@{ shape: trap-t, label: "<b>Click 'Accept referral and continue'</b><br/>Never disabled while the referral is open" }
-  pAcc@{ shape: rect, label: "<b>Open items are only listed in the Accept dialog</b><br/>You can accept anyway" }
+  dReq@{ shape: diam, label: "<b>Is a required item still open?</b><br/>Patient age, credentials, signature,<br/>diagnosis code, level of care, insurance and member ID" }
+  tDis@{ shape: odd, label: "<b>'Accept referral and continue' is disabled</b><br/>Line under it: 'Resolve 4 items first: clinician credentials, clinician signature, diagnosis code, insurance and member ID.'" }
+  pLift@{ shape: rect, label: "<b>Each item is lifted by 'Mark OK', by the referrer's reply,</b><br/>or once it has been asked of the referrer (a failed age: only 'Mark OK')<br/>The line shortens, then disappears" }
+  cAcc@{ shape: trap-t, label: "Click 'Accept referral and continue'" }
+  pAcc@{ shape: rect, label: "<b>Advisory findings are only listed in the Accept dialog</b><br/>You can accept anyway" }
   gAcc@{ shape: subproc, label: "Continues in: New case › Referral › Accept a referral" }
   tAcc@{ shape: odd, label: "<b>Green banner</b><br/>'Accepted into IOP. Target admission 10/21/2026.'" }
   cCont@{ shape: trap-t, label: "Click 'Continue to medical records'" }
-  pCont@{ shape: rect, label: "<b>Referral goes into the case</b><br/>Patient, payer, level of care, diagnoses, reason<br/>Referral becomes the first document" }
-  tCont@{ shape: odd, label: "<b>'Referral RF-2054 is in this case'</b><br/>'V.C., 30. Next, add the medical records.'" }
-  gMed@{ shape: subproc, label: "Continues in: New case › Medical records › The checklist and Continue" }
+  gCont@{ shape: subproc, label: "<b>Continues in: New case › Referral › Accept a referral</b><br/>(attach the referral to the case; asks first when the agents ran)" }
   tDec@{ shape: odd, label: "<b>Red banner</b><br/>'Declined: Needs a higher level of care.'" }
   cRe@{ shape: trap-t, label: "Click 'Reopen referral'" }
   stRe@{ shape: cyl, label: "<b>Referral is In review again</b><br/>Decision cleared" }
   tRe@{ shape: odd, label: "<b>'Referral reopened'</b><br/>'RF-2048 is back In review.'" }
-  eAdm@{ shape: stadium, label: "Admitted: the card has no main button" }
+  dCase@{ shape: diam, label: "Did this referral start a case or a draft?" }
+  cOpen@{ shape: trap-t, label: "Click 'Open the case'" }
+  pOpen@{ shape: rect, label: "<b>Opens its request on the case page,</b><br/>or its draft at its current step<br/>If the draft is the one on screen: goes on to Medical records" }
+  tAdm@{ shape: odd, label: "<b>Calm note 'Admitted'</b><br/>Link 'See the full referral'" }
+  gCase@{ shape: subproc, label: "Continues in: Authorizations › Case page › Ways in" }
+  gMed@{ shape: subproc, label: "Continues in: New case › Medical records › The checklist and Continue" }
   s1 --> sc1
   sc1 --> cDiff --> pDiff --> gStart
   sc1 --> dAsk
@@ -59,18 +65,24 @@ flowchart TD
   dWait -->|"No"| cFull
   sc1 --> cFull --> gFull
   sc1 --> dSt
-  dSt -->|"New, In review, Awaiting info"| cAcc --> pAcc --> gAcc
-  dSt -->|"Accepted or Scheduled"| tAcc --> cCont --> pCont --> tCont --> gMed
+  dSt -->|"New, In review, Awaiting info"| dReq
+  dReq -->|"Yes"| tDis --> pLift
+  dReq -->|"No"| cAcc --> pAcc --> gAcc
+  pLift -.-> cAcc
+  dSt -->|"Accepted or Scheduled"| tAcc --> cCont --> gCont
   dSt -->|"Declined"| tDec --> cRe --> stRe --> tRe
-  dSt -->|"Admitted"| eAdm
+  dSt -->|"Admitted"| dCase
+  dCase -->|"Yes"| cOpen --> pOpen
+  pOpen --> gCase
+  pOpen -.-> gMed
+  dCase -->|"No"| tAdm --> gFull
   class s1 k_start
   class sc1 k_screen
-  class cDiff,cFoot,cDec,cDemo,cFull,cAcc,cCont,cRe k_click
-  class pDiff,pAcc,pCont k_process
-  class gStart,gAsk,gOk,gFull,gAcc,gMed k_goto
-  class dAsk,dWait,dSt k_decision
-  class tAcc,tCont,tDec,tRe k_toast
+  class cDiff,cFoot,cDec,cDemo,cFull,cAcc,cCont,cRe,cOpen k_click
+  class pDiff,pLift,pAcc,pOpen k_process
+  class gStart,gAsk,gOk,gFull,gAcc,gCont,gCase,gMed k_goto
+  class dAsk,dWait,dSt,dReq,dCase k_decision
+  class tDis,tAcc,tDec,tRe,tAdm k_toast
   class stRe k_store
-  class eAdm k_endx
   style gTop fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gFoot fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

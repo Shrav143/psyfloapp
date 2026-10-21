@@ -31,32 +31,36 @@ flowchart TD
   m3@{ shape: rect, label: "<b>Dashboard</b><br/>Time in stage, 'late' flags and the 'Outcomes for' date range" }
   m4@{ shape: rect, label: "<b>Authorizations, Denial Intelligence</b><br/>Queue bands, case clocks, peer-to-peer and appeal deadlines" }
   m5@{ shape: rect, label: "<b>Eligibility & Benefits, EMR Connect, New case</b><br/>How long ago a check, a sync or a referral was" }
+  m6@{ shape: hex, label: "<b>Eligibility & Benefits</b><br/>Verify re-checks every patient whose re-check time has passed, unless Verify is paused in Settings<br/>A 'Re-checked automatically' notification follows" }
   end
   subgraph gStill ["What does not change"]
   s2@{ shape: rect, label: "No payer replies, no referral arrives, no agent finishes a step" }
-  s3@{ shape: rect, label: "No case changes status, no new notification, no badge changes" }
+  s3@{ shape: rect, label: "<b>No case changes status and no badge changes</b><br/>The only new notification a Fast-forward can add is Verify's" }
   s4@{ shape: rect, label: "Ask FLO answers and Case Manager review statuses stay as they were" }
   end
   subgraph gHow ["How things really arrive in the demo"]
   g1@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Demo controls (payer replies)" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › Start screen" }
+  g3@{ shape: subproc, label: "Continues in: Global shell › Top bar › Notifications › What creates a notification" }
   end
   e1@{ shape: stadium, label: "Page keeps its place. Click again to move further" }
   s1 --> c1 & c2
   c1 --> p1 --> st1
   c2 --> p2 --> st1
   st1 --> p3 --> t1 --> p4 --> e1
-  st1 --> m1 & m2 & m3 & m4 & m5
+  st1 --> m1 & m2 & m3 & m4 & m5 & m6
   st1 -.-> s2
   s2 --> s3 --> s4
   s2 --> g1
   s2 --> g2
+  m6 -.-> g3
   class s1 k_start
   class c1,c2 k_click
   class p1,p2,p3,p4,m1,m2,m3,m4,m5,s2,s3,s4 k_process
   class st1 k_store
   class t1 k_toast
-  class g1,g2 k_goto
+  class m6 k_agent
+  class g1,g2,g3 k_goto
   class e1 k_end
   style gMove fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gStill fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

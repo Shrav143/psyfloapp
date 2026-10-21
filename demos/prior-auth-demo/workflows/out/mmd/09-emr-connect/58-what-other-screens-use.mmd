@@ -18,18 +18,25 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   p1@{ shape: curv-trap, label: "<b>EMR Connect</b><br/>Systems, sync, mappings and the write-back switch" }
   subgraph gPull ["New case: pull a chart"]
-  a1@{ shape: trap-t, label: "Click 'Pull a chart from EMR Connect'" }
-  a2@{ shape: win-pane, label: "<b>Chart from EMR Connect</b><br/>Dropdown with four charts, a hint under each" }
-  a3@{ shape: lean-r, label: "<b>Pick a chart</b><br/>J.M., 34 · Summit · Residential 3.5 (Admitted yesterday)<br/>A.R., 45 · Beacon · IOP (Intake on Thursday)<br/>S.T., 38 · Harborview · PHP (In program, day 9)<br/>L.G., 29 · Cardinal · Residential 3.5 (Admission tomorrow)" }
+  a1@{ shape: trap-t, label: "<b>Click 'Pull a chart from EMR Connect'</b><br/>Medical records step" }
+  a0@{ shape: diam, label: "Is any system Connected?" }
+  a8@{ shape: odd, label: "<b>'No records system is connected. Connect one in EMR Connect to pull a chart, or drop the files above.'</b><br/>With a link to EMR Connect" }
+  a2@{ shape: win-pane, label: "<b>Chart from EMR Connect</b><br/>Dropdown with the charts that live in a Connected system<br/>A hint under each names the system" }
+  a2b@{ shape: rect, label: "<b>Residential site: J.M., 34 · Summit · Residential 3.5 and L.G., 29 · Cardinal · Residential 3.5</b><br/>Outpatient site: A.R., 45 · Beacon · IOP and S.T., 38 · Harborview · PHP<br/>A system that is Disconnected or Needs a quick look offers none" }
+  a3@{ shape: lean-r, label: "Pick a chart" }
+  a9@{ shape: diam, label: "<b>Does that system still have a field waiting for a mapping?</b><br/>'Level of care' or 'Referral source'" }
+  a10@{ shape: rect, label: "<b>Line under the picker</b><br/>'Level of care still needs a mapping there, so that field is left blank.' with 'Open EMR Connect'" }
   a4@{ shape: trap-t, label: "<b>Click 'Pull'</b><br/>Or 'Cancel'" }
   a5@{ shape: rect, label: "Button reads 'Pulling' for one second" }
-  a6@{ shape: cyl, label: "<b>Case draft is filled in</b><br/>Patient, payer, member ID, level of care, request type, diagnoses, reason" }
-  a7@{ shape: odd, label: "<b>'Pulled J.M., 34 from EMR Connect'</b><br/>'Everything below was filled in from the chart. You can still change it.'" }
+  a6@{ shape: cyl, label: "<b>Case draft is filled in</b><br/>Patient, payer, member ID, level of care, request type, diagnoses, reason<br/>A field that waits for a mapping stays blank" }
+  a7@{ shape: odd, label: "<b>'Pulled J.M., 34 from EMR Connect'</b><br/>'Everything below was filled in from the chart. You can still change it.'<br/>Or, amber: 'Level of care needs a mapping, so that field was left blank. You can still fill it in.'" }
   end
-  n1@{ shape: rect, label: "<b>The four charts are a fixed list</b><br/>Not read from the systems on this page, and not changed by Sync now or by Disconnect" }
+  n1@{ shape: rect, label: "<b>Sync now does not add charts to the picker</b><br/>The four charts are fixed. Connect, Disconnect, Fix and Reconnect decide which systems offer them, and Map decides which fields a pull leaves blank" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Medical records › Patient and insurance rows" }
   subgraph gWrite ["Dashboard: write back"]
   b1@{ shape: curv-trap, label: "Dashboard request: 'Approved. Write-back waits for you'" }
+  b0@{ shape: diam, label: "Does at least one Connected system have its write-back switch on?" }
+  b8@{ shape: odd, label: "<b>'Write-back is off for your records system.' with 'Turn it on in EMR Connect.'</b><br/>Instead of the box. The link opens this page" }
   b2@{ shape: trap-t, label: "Click 'Approve write-back'" }
   b3@{ shape: win-pane, label: "<b>Approve the write-back</b><br/>'EMR Connect will write only these three things to the chart. No notes, diagnoses or identifiers are written.'" }
   b4@{ shape: rect, label: "Approval number, approved amount and dates are listed" }
@@ -37,23 +44,29 @@ flowchart TD
   b6@{ shape: st-rect, label: "<b>The record system receives the three values</b><br/>Demo: simulated, about one second" }
   b7@{ shape: cyl, label: "<b>Request gets 'You confirmed the write-back' and a Cadence event</b><br/>Toast: 'Written to the EMR'" }
   end
-  n2@{ shape: rect, label: "<b>The per-system write-back switch in Manage is not checked here</b><br/>The modal opens whether it is on or off" }
+  n2@{ shape: rect, label: "<b>The switch on a Disconnected or Needs a quick look system does not count</b><br/>Reconnect it, and the box comes back if its switch is on" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Approve the write-back" }
   p1 -.-> a1
-  a1 --> a2 --> a3 --> a4 --> a5 --> a6 --> a7
+  a1 --> a0
+  a0 -->|"No"| a8
+  a0 -->|"Yes"| a2 --> a2b --> a3 --> a9
+  a9 -->|"Yes"| a10 --> a4
+  a9 -->|"No"| a4
+  a4 --> a5 --> a6 --> a7 --> g1
   a2 -.-> n1
-  n1 --> g1
   p1 -.-> b1
-  b1 --> b2 --> b3 --> b4 --> b5 --> b6 --> b7
-  b3 -.-> n2
-  n2 --> g2
+  b1 --> b0
+  b0 -->|"No"| b8
+  b0 -->|"Yes"| b2 --> b3 --> b4 --> b5 --> b6 --> b7 --> g2
+  b8 -.-> n2
   class p1,b1 k_screen
   class a1,a4,b2,b5 k_click
+  class a0,a9,b0 k_decision
+  class a8,a7,b8 k_toast
   class a2,b3 k_overlay
+  class a2b,a10,a5,n1,b4,n2 k_process
   class a3 k_input
-  class a5,n1,b4,n2 k_process
   class a6,b7 k_store
-  class a7 k_toast
   class g1,g2 k_goto
   class b6 k_ext
   style gPull fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

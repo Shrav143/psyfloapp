@@ -10,7 +10,7 @@ How a person reaches the queue, what the header line says, and what the five sum
 
 Route: `/authorizations`
 
-Demo only: the numbers (56 open, 19 due today, $538K, 79%) are seed data. They move when actions are applied on a case page or a request is signed and sent.
+Demo only: the numbers (56 open, 19 due today, $538K, 79%) are seed data. They move when actions are applied on a case page, and a request leaves the queue once it is signed and sent, decided by the payer, or settled in Denial Intelligence.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -36,23 +36,23 @@ flowchart TD
   s3@{ shape: stadium, label: "On a case page: click 'Back to queue' or the 'Authorizations' crumb" }
   q1@{ shape: curv-trap, label: "<b>Authorizations queue</b><br/>Header, payer signal, five tiles, filters, priority bands" }
   sb@{ shape: rect, label: "<b>Sidebar badge on 'Authorizations'</b><br/>Open requests in Act now plus Due within 24 hours (19)" }
-  p1@{ shape: rect, label: "<b>The page counts the open requests</b><br/>A request already signed and sent no longer counts" }
+  p1@{ shape: rect, label: "<b>The page counts the open requests</b><br/>A request that was sent, decided by the payer or settled no longer counts" }
   p2@{ shape: rect, label: "<b>Money and average use each request's current chance</b><br/>Including actions applied on its case page" }
   d1@{ shape: diam, label: "Is any filter on?" }
-  h1@{ shape: curv-trap, label: "<b>Header: '19 of 56 open requests need action today.'</b><br/>The 19 are Act now plus Due within 24 hours" }
-  h2@{ shape: curv-trap, label: "Sub line: 'Five are urgent. $538K rides on what is in flight, and the average approval chance is 79%.'" }
+  h1@{ shape: curv-trap, label: "<b>Header: '19 of 56 open requests need action today.'</b><br/>The 19 are Act now plus Due within 24 hours<br/>With none left: 'Nothing needs action today.'" }
+  h2@{ shape: curv-trap, label: "<b>Sub line: 'Five are urgent. $538K rides on what is in flight, and the average approval chance is 79%.'</b><br/>With none in Act now: 'Nothing is urgent. ...'" }
   h3@{ shape: curv-trap, label: "<b>Header: 'X of 56 open requests match these filters.'</b><br/>No sub line" }
   nb@{ shape: trap-t, label: "Click 'New case' (top right button)" }
   g1@{ shape: subproc, label: "Continues in: New case › Referral step" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Queue › Cardinal payer signal" }
   tl@{ shape: curv-trap, label: "<b>Five summary tiles under the header</b><br/>Always count the whole queue, not the filtered list" }
   t1@{ shape: curv-trap, label: "<b>'Approval chance' 79%</b><br/>'average · likely 74–84%'<br/>Not clickable" }
-  t2@{ shape: trap-t, label: "<b>Click the 'Urgent' tile</b><br/>5 · 'the Act now band'" }
+  t2@{ shape: trap-t, label: "<b>Click the 'Urgent' tile</b><br/>5 · 'the Act now band'<br/>(0 once all five are sent or handled)" }
   t3@{ shape: trap-t, label: "<b>Click the 'In flight' tile</b><br/>56 · '$538K at stake'" }
   t4@{ shape: curv-trap, label: "<b>'Approved' 112</b><br/>'last 30 days'<br/>Not clickable" }
   t5@{ shape: curv-trap, label: "<b>'Denied' 46</b><br/>'last 30 days'<br/>Not clickable" }
   u1@{ shape: rect, label: "All filters are cleared, then Urgency is set to 'Act now'" }
-  u2@{ shape: curv-trap, label: "<b>Only the Act now band is listed</b><br/>Header uses the 'match these filters' wording" }
+  u2@{ shape: curv-trap, label: "<b>Only the Act now band is listed</b><br/>Header uses the 'match these filters' wording<br/>With none left, the band says 'Nothing needs you today'" }
   a1@{ shape: rect, label: "All filters are cleared" }
   a2@{ shape: curv-trap, label: "<b>Every band is listed again</b><br/>Header returns to 'need action today'" }
   g3@{ shape: subproc, label: "Continues in: Authorizations › Queue › Search and filter" }
@@ -83,7 +83,7 @@ flowchart TD
 
 ## Authorizations › Queue › Bands and ranking
 
-How open requests are split into three bands, how they are ranked inside a band by money and time, and how a band opens, closes and shows more.
+How open requests are split into three bands, when a request leaves its band, how they are ranked inside a band by money and time, and how a band opens, closes and shows more.
 
 Route: `/authorizations`
 
@@ -110,12 +110,15 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   q@{ shape: curv-trap, label: "<b>Queue</b><br/>Priority bands, most urgent first" }
   b1@{ shape: rect, label: "Each open request sits in exactly one band" }
+  lv@{ shape: rect, label: "<b>A request leaves its band once nothing is left for a person</b><br/>Preparing or ready: it was signed and sent in New case<br/>With the payer: the payer approved or denied it<br/>Denial route: accepted, settled on the call, or the appeal is filed" }
   subgraph gB ["Three bands"]
   bn@{ shape: rect, label: "<b>Act now</b><br/>Red dot, tiles tinted red" }
   bd@{ shape: rect, label: "<b>Due within 24 hours</b><br/>Amber dot" }
   bw@{ shape: rect, label: "<b>Due this week</b><br/>Sage dot" }
   end
   dE@{ shape: diam, label: "Does the band have any request after filters?" }
+  dZ@{ shape: diam, label: "Is it Act now, with no request open at all, and no search, payer or status filter on?" }
+  em@{ shape: curv-trap, label: "<b>Band card stays</b><br/>'Act now (0 requests)'<br/>'Nothing needs you today'<br/>'Everything in Act now has been sent or handled.'" }
   hide@{ shape: rect, label: "The band card is left out" }
   bc@{ shape: curv-trap, label: "<b>Band card</b><br/>'Act now (5 requests)'<br/>Name, count, chevron" }
   r1@{ shape: rect, label: "<b>Inside a band, requests waiting on a person come first</b><br/>Preparing, Ready to sign, Denial route, or Needs your input" }
@@ -136,11 +139,14 @@ flowchart TD
   back@{ shape: rect, label: "Back to the top five" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Queue › Read and open a request tile" }
   q --> b1
+  b1 --> lv
   b1 --> bn & bd & bw
   bn --> dE
   bd --> dE
   bw --> dE
-  dE -->|"No"| hide
+  dE -->|"No"| dZ
+  dZ -->|"Yes"| em
+  dZ -->|"No"| hide
   dE -->|"Yes"| bc
   bc --> r1 --> r2 --> wt
   r2 -.-> ex
@@ -151,9 +157,9 @@ flowchart TD
   dM -->|"No"| all5
   dM -->|"Yes"| top5 --> sm --> allm --> sf --> back
   top5 --> g1
-  class q,bc k_screen
-  class b1,bn,bd,bw,hide,r1,r2,wt,col,exp,all5,top5,allm,back k_process
-  class dE,dC,dM k_decision
+  class q,em,bc k_screen
+  class b1,lv,bn,bd,bw,hide,r1,r2,wt,col,exp,all5,top5,allm,back k_process
+  class dE,dZ,dC,dM k_decision
   class ex k_doc
   class hd,sm,sf k_click
   class keep k_store
@@ -249,11 +255,11 @@ flowchart TD
 
 ## Authorizations › Queue › Search and filter
 
-The search box and the three menus (Payer, Status, Urgency), how they combine, what the page says when nothing matches, and the empty message that cannot appear in the demo data.
+The search box and the three menus (Payer, Status, Urgency), how they combine, what the page says when nothing matches, and the 'Nothing needs you today' messages that appear once requests have been sent or handled.
 
 Route: `/authorizations`
 
-Demo only: filters are kept while you move around the app (not in the web address) and are cleared by Reset demo data. 'Nothing needs you today' cannot appear with the seed data, because requests waiting on a payer always stay open.
+Demo only: filters are kept while you move around the app (not in the web address) and are cleared by Reset demo data. 'Nothing needs you today' shows in the Act now band once all five of its requests are sent or handled, and for the whole queue only when no request is left open at all.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -309,7 +315,9 @@ flowchart TD
   rs@{ shape: rect, label: "Search empty, All payers, All statuses, All urgency, payer-signal filter off" }
   dOpen@{ shape: diam, label: "Are there any open requests at all?" }
   e1@{ shape: stadium, label: "Every band is listed again" }
-  none@{ shape: curv-trap, label: "<b>'Nothing needs you today'</b><br/>'Every open request has been sent. Case Manager shows what is scheduled next.'" }
+  none@{ shape: curv-trap, label: "<b>'Nothing needs you today'</b><br/>'Every open request has been sent or handled. Case Manager shows what is scheduled next.'" }
+  dNow@{ shape: diam, label: "Is Act now empty, with no search, payer or status filter on?" }
+  nowE@{ shape: curv-trap, label: "<b>Act now band stays, '(0 requests)'</b><br/>'Nothing needs you today'<br/>'Everything in Act now has been sent or handled.'<br/>Header sub line: 'Nothing is urgent. ...'" }
   ocm@{ shape: trap-t, label: "Click 'Open Case Manager'" }
   gCM@{ shape: subproc, label: "Continues in: Case Manager › Active cases" }
   gSig@{ shape: subproc, label: "Continues in: Authorizations › Queue › Cardinal payer signal" }
@@ -329,16 +337,18 @@ flowchart TD
   dOpen -->|"Yes"| dAny
   dOpen -->|"No"| none --> ocm --> gCM
   dAny -->|"Yes"| res
+  res -.-> dNow
+  dNow -->|"Yes"| nowE
   dAny -->|"No"| emp --> ce --> rs
   rs --> e1
   fb --> gSig
-  class fb,hd,res,emp,none k_screen
+  class fb,hd,res,emp,none,nowE k_screen
   class sk,p1,st1,u1,clr,ce,ocm k_click
   class sf,sm,st4,kb,ap,rs k_process
   class s1,p3,st3,u3 k_input
   class p2,st2,u2 k_overlay
   class keep k_store
-  class dAny,dOpen k_decision
+  class dAny,dOpen,dNow k_decision
   class e1 k_end
   class gCM,gSig k_goto
   style gS fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
@@ -423,7 +433,7 @@ Every link that opens a case page, and what the page does with the ID it is give
 
 Route: `/authorizations/case/R-1042`
 
-Demo only: R-1042 is the one hand-written case. Every other case page is generated from its queue row or Dashboard request, so the numbers are consistent but the wording is a template. Many Case Manager ledger IDs (for example R-0903 under 'Ready to step down?') have no queue row or Dashboard request, so they end at 'Request not found'.
+Demo only: R-1042 is the one hand-written case. Every other case page is generated from its queue row or Dashboard request, so the numbers are consistent but the wording is a template. An ID that is in the Case Manager ledger but not in the queue opens the Ledger case page. An ID in neither ends at 'Request not found'.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -463,10 +473,12 @@ flowchart TD
   d3@{ shape: diam, label: "Is there a Dashboard request with this ID or this case ID?" }
   fr@{ shape: rect, label: "<b>Page is built from the Dashboard request</b><br/>Decided ones show their result and have nothing left to send" }
   gen@{ shape: rect, label: "<b>Chance, actions, criteria, draft and checks are generated</b><br/>from the payer, level of care and chance" }
+  d5@{ shape: diam, label: "Is the ID in the Case Manager ledger?" }
+  gL@{ shape: subproc, label: "Continues in: Case Manager › Ledger case › Open and read" }
   nf@{ shape: curv-trap, label: "<b>'Request not found'</b><br/>'There is no request with the ID X.'<br/>'Nothing to show here' · 'Check the ID, or open a request from the queue.'" }
   bq@{ shape: trap-t, label: "Click 'Back to queue' or the 'Authorizations' crumb" }
   gQ@{ shape: subproc, label: "Continues in: Authorizations › Queue › Open the queue and read the top" }
-  ld@{ shape: cyl, label: "<b>Your earlier work on this case is loaded</b><br/>Answers, applied and dismissed actions, draft edits, log" }
+  ld@{ shape: cyl, label: "<b>Your earlier work on this case is loaded</b><br/>Answers, applied and dismissed actions, focus, clinical context, draft edits, log" }
   d4@{ shape: diam, label: "Does ?tab= name one of the five tabs?" }
   tab1@{ shape: curv-trap, label: "<b>That tab opens</b><br/>e.g. a review drawer opens '?tab=draft'" }
   tab0@{ shape: curv-trap, label: "'Recommended actions' opens" }
@@ -486,7 +498,9 @@ flowchart TD
   d2 -->|"Yes"| fq --> gen
   d2 -->|"No"| d3
   d3 -->|"Yes"| fr --> gen
-  d3 -->|"No"| nf
+  d3 -->|"No"| d5
+  d5 -->|"Yes"| gL
+  d5 -->|"No"| nf
   nf --> bq --> gQ
   gen --> ld
   ld --> d4
@@ -494,19 +508,21 @@ flowchart TD
   d4 -->|"No or missing"| tab0 --> gH
   class a1,a2,a3,a4,a5,a6,a7,a8,a9 k_start
   class r0,hand,fq,fr,gen k_process
-  class d1,d2,d3,d4 k_decision
+  class d1,d2,d3,d5,d4 k_decision
+  class gL,gQ,gH k_goto
   class nf,tab1,tab0 k_screen
   class bq k_click
-  class gQ,gH k_goto
   class ld k_store
   style gIn fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```
 
 ## Authorizations › Case page › Header and buttons
 
-The title block above the tabs and its three buttons. It stays the same on all five tabs. The three number tiles and the notes under it are in the next diagram.
+The title block above the tabs and its three buttons. It stays the same on all five tabs, and it follows the request: once the request is sent or decided the header shows its new status. The three number tiles and the notes under it are in the next diagram.
 
 Route: `/authorizations/case/R-1042`
+
+Demo only: the header reads the request's current stage from the Dashboard, so signing and sending in New case, or a payer reply made with the Dashboard demo controls, shows here at once.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -531,18 +547,24 @@ flowchart TD
   cr@{ shape: trap-t, label: "Click the 'Authorizations' crumb" }
   gQ@{ shape: subproc, label: "Continues in: Authorizations › Queue › Open the queue and read the top" }
   hd@{ shape: curv-trap, label: "<b>Header title</b><br/>Level chip, ID, request type chip, then one pill" }
-  dCh@{ shape: diam, label: "Does the request have a result (decided)?" }
-  pc@{ shape: odd, label: "Pill shows the result, e.g. 'Approved'" }
+  dCh@{ shape: diam, label: "Has the request been sent, decided or settled since this page was written, or does it already have a result?" }
+  pc@{ shape: odd, label: "Pill shows the request's current status, e.g. 'Received', 'Approved'" }
   pd@{ shape: rect, label: "<b>Pill shows the due text, e.g. 'Notice due in 5 h'</b><br/>Red under 6 h, amber under 24 h, grey later" }
   sub@{ shape: rect, label: "<b>Sub line: 'J.M., 34 · Summit Medicaid HMO · Residential 3.5 · 14 days requested'</b><br/>Then the diagnosis and the scores" }
   dRd@{ shape: diam, label: "Ready: all four checks pass and still preparing?" }
   ag1@{ shape: hex, label: "<b>Integrity badge</b><br/>'Ready to sign. Integrity passed all four checks'" }
+  ag3@{ shape: hex, label: "<b>The request's own agent and line</b><br/>e.g. Navigator: 'Navigator checks again in 30 minutes'" }
   ag2@{ shape: hex, label: "<b>Agent badge and status line</b><br/>e.g. Scribe: 'Scribe is drafting the case'" }
+  dDb@{ shape: diam, label: "Is the request on the Dashboard past Preparing?" }
+  od@{ shape: trap-t, label: "Click 'Open on the Dashboard' (next to the status line)" }
+  gDb@{ shape: subproc, label: "Continues in: Dashboard › Request drawer" }
   subgraph gBt ["Header buttons"]
   b1@{ shape: trap-t, label: "Click 'Open in review and sign'" }
   b2@{ shape: trap-t, label: "Click 'Send to payer'" }
   b3@{ shape: trap-t, label: "Click 'Back to queue'" }
   end
+  dSn@{ shape: diam, label: "Is it already with the payer or decided?" }
+  sn@{ shape: rect, label: "<b>'Send to payer' is replaced by a greyed-out 'Sent to payer'</b><br/>The note gives the reason, e.g. 'Already with the payer. Navigator is tracking it.'" }
   dEn@{ shape: diam, label: "Can it be sent?" }
   on@{ shape: rect, label: "<b>'Send to payer' is on</b><br/>Note: 'Sending opens review and sign. Nothing goes to the payer until a clinician signs.'" }
   off@{ shape: rect, label: "<b>'Send to payer' is greyed out, a click does nothing</b><br/>The note and a hover hint give the reason" }
@@ -557,19 +579,26 @@ flowchart TD
   sub --> dRd
   dRd -->|"Yes"| ag1
   dRd -->|"No"| ag2
+  dCh -.->|"Yes"| ag3
+  ag1 --> dDb
+  ag2 --> dDb
+  ag3 --> dDb
+  dDb -->|"Yes"| od --> gDb
   pg --> b1 --> gS
-  pg --> b2 --> dEn
+  pg --> b2 --> dSn
+  dSn -->|"Yes"| sn
+  dSn -->|"No"| dEn
   dEn -->|"Yes"| on --> gS
   dEn -->|"No"| off
   pg --> b3 --> gQ
   pg --> gN
   class pg,hd k_screen
-  class cr,b1,b2,b3 k_click
-  class gQ,gS,gN k_goto
-  class dCh,dRd,dEn k_decision
+  class cr,od,b1,b2,b3 k_click
+  class gQ,gDb,gS,gN k_goto
+  class dCh,dRd,dDb,dSn,dEn k_decision
   class pc k_toast
-  class pd,sub,on,off k_process
-  class ag1,ag2 k_agent
+  class pd,sub,sn,on,off k_process
+  class ag1,ag3,ag2 k_agent
   style gBt fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```
 
@@ -624,7 +653,7 @@ flowchart TD
   n1@{ shape: odd, label: "Note: 'The approval chance estimates how well the paperwork fits this payer's past decisions. It never blocks a request and is never shown to payers or patients.'" }
   n2@{ shape: odd, label: "Note: 'Decision support for documentation and workflow only. It does not recommend or decide care.'" }
   gT@{ shape: subproc, label: "Continues in: Authorizations › Case page › Tabs and deep links" }
-  ap@{ shape: cyl, label: "<b>Applying actions on the first tab moves tile 1 and tile 3 and the range</b><br/>See Recommended actions › Apply selected" }
+  ap@{ shape: cyl, label: "<b>Applying actions on the first tab moves tile 1 and tile 3 and the range</b><br/>See Recommended actions › Apply selected<br/>Adding clinical context moves them by a point each (up to three)<br/>Refining the recommendations moves the number after the arrow" }
   pg --> t1 --> t1a --> t1b
   pg --> t2 --> dBm
   dBm -->|"No"| t2a
@@ -738,7 +767,7 @@ When the 'Send to payer' button is on or greyed out, what both header buttons do
 
 Route: `/authorizations/case/R-1042`
 
-Demo only: only five requests have a draft ready in New case (R-1042, I-2207, R-0988, R-1101, I-2262). Any other request gets a new draft pre-filled from the request, which opens at the Referral step. 'Open in review and sign' is always on, even for a request already with the payer.
+Every request gets a draft in New case, made from its own data when it has none (five requests have one already: R-1042, I-2207, R-0988, R-1101, I-2262). It never opens blank at the Referral step. 'Open in review and sign' is always on, even for a request already with the payer.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -761,9 +790,9 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   cp@{ shape: curv-trap, label: "<b>Case page</b><br/>'Send to payer' appears in the header, the Recommended actions side panel and the Draft tab" }
   d1@{ shape: diam, label: "Does the request already have a result (decided)?" }
-  r1@{ shape: rect, label: "<b>Greyed out. Reason: 'Approved. Nothing is left to send.'</b><br/>(the result word comes from the request)" }
+  r1@{ shape: rect, label: "<b>The button becomes a disabled 'Sent to payer'</b><br/>Tooltip: 'Approved. Nothing is left to send.'<br/>(the result word comes from the request)" }
   d2@{ shape: diam, label: "Is it already with the payer?" }
-  r2@{ shape: rect, label: "Greyed out. Reason: 'Already with the payer. Navigator is tracking it.'" }
+  r2@{ shape: rect, label: "<b>The button becomes a disabled 'Sent to payer'</b><br/>Tooltip: 'Already with the payer. Navigator is tracking it.'" }
   d3@{ shape: diam, label: "Is it a denial?" }
   r3@{ shape: rect, label: "Greyed out. Reason: 'This request was denied. Advocate owns the next step.'" }
   d4@{ shape: diam, label: "Do all four Integrity checks pass?" }
@@ -778,13 +807,15 @@ flowchart TD
   dm@{ shape: rect, label: "<b>Dismissing the action does not clear its check</b><br/>The dismiss dialog warns about this" }
   b1@{ shape: trap-t, label: "<b>Click 'Open in review and sign'</b><br/>(always on)" }
   b2@{ shape: trap-t, label: "<b>Click 'Send to payer'</b><br/>(only when on)" }
-  rp@{ shape: rect, label: "<b>Look for this request's draft in New case</b><br/>The draft named like 'draft-r1042', or any draft with this case ID" }
-  d5@{ shape: diam, label: "Does a draft exist?" }
-  mk@{ shape: rect, label: "<b>A draft is created and filled from the request</b><br/>Patient, payer, level of care, request type and reason" }
-  d6@{ shape: diam, label: "Where does the draft stand?" }
+  rp@{ shape: rect, label: "<b>Find this request's draft in New case</b><br/>The draft named like 'draft-r1042', or any draft with this case ID<br/>Or make one: draftFromRequest" }
+  d5@{ shape: diam, label: "Does the request already have a draft?" }
+  mk@{ shape: rect, label: "<b>A draft is created from the request</b><br/>Patient, payer, level of care, request type, a reason and diagnoses from the case page<br/>The documents the payer's saved list asks for, as sample files<br/>Not saved, so Case Manager does not list it" }
+  up@{ shape: rect, label: "<b>A draft that exists is brought up to date</b><br/>Answers from applied actions (sertraline date, step-down provider) are added<br/>The therapy note is added when that action was applied<br/>When every check passes the run is marked finished" }
+  d6@{ shape: diam, label: "Where does the request stand?" }
   g1@{ shape: subproc, label: "Continues in: New case › Agents work" }
   g2@{ shape: subproc, label: "Continues in: New case › Review and sign" }
-  g3@{ shape: subproc, label: "Continues in: New case › Referral step" }
+  g3@{ shape: subproc, label: "Continues in: Review and sign › After sending" }
+  sent@{ shape: stadium, label: "<b>New case shows 'R-0912 was sent'</b><br/>'Open it on the Dashboard' and 'Back to Case Manager'<br/>The draft is marked sent, so it cannot be signed again" }
   ns@{ shape: rect, label: "<b>Nothing has been sent</b><br/>A licensed clinician signs in New case" }
   cp --> d1
   d1 -->|"Yes"| r1
@@ -806,22 +837,25 @@ flowchart TD
   b1 --> rp
   b2 --> rp
   rp --> d5
-  d5 -->|"No"| mk --> g3
-  d5 -->|"Yes"| d6
-  d6 -->|"Agents are still working, e.g. R-1042"| g1
-  d6 -->|"All four checks passed, e.g. R-0988"| g2
+  d5 -->|"No"| mk --> d6
+  d5 -->|"Yes"| up --> d6
+  d6 -->|"Agents still have work, e.g. R-1042 before its actions are applied"| g1
+  d6 -->|"Ready or all four checks passed, e.g. R-0988, R-1142, R-1042 after its actions"| g2
+  d6 -->|"Already with the payer or decided"| sent
   rp -.-> ns
+  sent --> g3
   class cp k_screen
   class d1,d2,d3,d4,d5,d6 k_decision
-  class r1,r2,r3,r4,on,k1,k2,k3,k4,dm,rp,mk,ns k_process
+  class r1,r2,r3,r4,on,k1,k2,k3,k4,dm,rp,mk,up,ns k_process
   class b1,b2 k_click
   class g1,g2,g3 k_goto
+  class sent k_endx
   style gChk fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```
 
 ## Authorizations › Case page › Recommended actions › The tab
 
-The layout of the first tab: the cards on the left, the five buttons and the decision log on the right, and when each button is on or off. Each card and each button has its own diagram.
+The layout of the first tab: the cards on the left, the five buttons, the context you added and the decision log on the right, and when each button is on or off. Each card and each button has its own diagram.
 
 Route: `/authorizations/case/R-1042?tab=actions`
 
@@ -848,7 +882,8 @@ flowchart TD
   at@{ shape: curv-trap, label: "<b>Recommended actions</b><br/>Cards on the left, side panel on the right" }
   in@{ shape: rect, label: "<b>Intro line</b><br/>'Each card shows what the agents will add to the draft and how much it tends to help. Applied together, they take the chance from 62% to 88%.'" }
   subgraph gL ["Left: the cards"]
-  oc@{ shape: curv-trap, label: "<b>Open cards</b><br/>One card per recommendation that is not yet applied or dismissed" }
+  fb@{ shape: curv-trap, label: "<b>Banner 'Focus: ...' with 'Clear focus'</b><br/>Only after 'Refine recommendations'" }
+  oc@{ shape: curv-trap, label: "<b>Open cards</b><br/>One card per recommendation that is not yet applied or dismissed<br/>After a refinement: in the new order, plus one card marked 'Added for your focus'" }
   ap@{ shape: curv-trap, label: "<b>'Applied (6)' (only when something is applied)</b><br/>One line each with a green tick and '+11 pts · applied'<br/>Click a line to open its bullets" }
   dm@{ shape: curv-trap, label: "<b>'Dismissed (1)' (only when something is dismissed)</b><br/>Title struck through, 'Reason logged: ...', 'Bring back'" }
   ban@{ shape: odd, label: "<b>Banner 'Every recommendation is applied'</b><br/>'The draft is up to date. Open the Draft tab to read it, or send it to the payer.'" }
@@ -856,13 +891,14 @@ flowchart TD
   subgraph gR ["Right: the side panel"]
   cnt@{ shape: rect, label: "<b>Count line</b><br/>'6 of 6 recommendations will be included in the draft.'<br/>When none are open: 'No open recommendations. Applied ones are listed on the left.'" }
   b1@{ shape: trap-t, label: "Click 'Apply selected (6)'" }
-  b2@{ shape: trap-t, label: "Click 'Send to payer'" }
+  b2@{ shape: trap-t, label: "<b>Click 'Send to payer'</b><br/>(a greyed-out 'Sent to payer' once the request is with the payer)" }
   b3@{ shape: trap-t, label: "Click 'Refine recommendations'" }
   b4@{ shape: trap-t, label: "Click 'Add clinical context'" }
   b5@{ shape: trap-t, label: "Click 'Dismiss recommendations'" }
+  cx@{ shape: curv-trap, label: "<b>'Context you added'</b><br/>Each note with '+1 pt'<br/>Only once a note is added" }
   lg@{ shape: curv-trap, label: "<b>'Logged decisions'</b><br/>Newest six entries, each with the time" }
   end
-  off@{ shape: rect, label: "<b>Why a button is off</b><br/>Apply and Dismiss: no card is included<br/>Send to payer: checks open, or the request is not sendable<br/>All five: while the agents are updating the draft" }
+  off@{ shape: rect, label: "<b>Why a button is off</b><br/>Apply and Dismiss: no card is included<br/>Send to payer: checks open, or the request is not sendable, or it was already sent<br/>All five: while the agents are updating the draft" }
   tk@{ shape: trap-t, label: "Click a card's checkbox or title to leave it out or put it back" }
   up@{ shape: rect, label: "<b>Count line and 'Apply selected (N)' follow</b><br/>Nothing is logged" }
   dAll@{ shape: diam, label: "Is anything open?" }
@@ -871,9 +907,11 @@ flowchart TD
   g2@{ shape: subproc, label: "Continues in: Authorizations › Case page › Recommended actions › Apply selected" }
   g3@{ shape: subproc, label: "Continues in: Authorizations › Case page › Send to payer and review and sign" }
   g4@{ shape: subproc, label: "Continues in: Authorizations › Case page › Recommended actions › Refine and add clinical context" }
+  g6@{ shape: subproc, label: "Continues in: Authorizations › Case page › Recommended actions › Add clinical context" }
   g5@{ shape: subproc, label: "Continues in: Authorizations › Case page › Recommended actions › Dismiss and bring back" }
   s1 --> at --> in
   at --> dAll
+  at --> fb
   dAll -->|"Yes"| oc --> g1
   dAll -->|"No"| dApp
   dApp -->|"Yes"| ban
@@ -885,17 +923,18 @@ flowchart TD
   cnt --> b1 --> g2
   cnt --> b2 --> g3
   cnt --> b3 --> g4
-  cnt --> b4 --> g4
+  cnt --> b4 --> g6
   cnt --> b5 --> g5
   cnt --> off
+  at --> cx
   at --> lg
   class s1 k_start
-  class at,oc,ap,dm,lg k_screen
+  class at,fb,oc,ap,dm,cx,lg k_screen
   class in,cnt,off,up k_process
   class ban k_toast
   class b1,b2,b3,b4,b5,tk k_click
   class dAll,dApp k_decision
-  class g1,g2,g3,g4,g5 k_goto
+  class g1,g2,g3,g4,g6,g5 k_goto
   style gL fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gR fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```
@@ -928,7 +967,7 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   cd@{ shape: curv-trap, label: "<b>Recommendation card</b><br/>Checkbox, title, pills, bullets, 'Why this matters', agent line, buttons" }
-  pl@{ shape: rect, label: "<b>Pills</b><br/>'+11 pts' on every card<br/>'Needs your input' or 'Answer added' on cards that ask a question" }
+  pl@{ shape: rect, label: "<b>Pills</b><br/>'+11 pts' on every card ('+1 pt' for one point)<br/>'Needs your input' or 'Answer added' on cards that ask a question<br/>'Added for your focus' on the card that Refine recommendations added" }
   bl@{ shape: rect, label: "Up to three bullets say what the agent will add" }
   tk@{ shape: trap-t, label: "Click the checkbox or the title" }
   tg@{ shape: rect, label: "<b>Card is included in, or left out of, the draft</b><br/>Side-panel count follows<br/>Nothing is logged" }
@@ -998,7 +1037,7 @@ What 'Apply selected' does: the check for missing answers, the eight-second work
 
 Route: `/authorizations/case/R-1042?tab=actions`
 
-Demo only: the eight seconds are a simulated wait. The new chance is the old chance plus the points on the cards you included, worked out on the page. The run belongs to the app, so it still finishes if you leave the page.
+Demo only: the eight seconds are a simulated wait. The new chance is the old chance plus the points on the cards you included (and any clinical context), worked out on the page. The run belongs to the app, so it still finishes if you leave the page.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -1084,7 +1123,7 @@ Dismissing one card or every included card, why the dialog asks for a reason, wh
 
 Route: `/authorizations/case/R-1042?tab=actions`
 
-Demo only: the toast says the reason 'feeds Analytics', but no Analytics screen reads it. The reason shows in 'Logged decisions', on the dismissed card and in the Dashboard request's history.
+The reason is written to the shared list of dismissals that Analytics reads, one line for each time 'Dismiss and log' is confirmed (not one per card). It also shows in 'Logged decisions', on the dismissed card and in the Dashboard request's history.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -1125,6 +1164,8 @@ flowchart TD
   ce@{ shape: stadium, label: "<b>Dialog closes</b><br/>Nothing changes" }
   st@{ shape: cyl, label: "<b>Each card saved as dismissed with the reason and the time</b><br/>Log: You dismissed '(title)'. Reason: ..." }
   dsh@{ shape: cyl, label: "<b>If the request is on the Dashboard: an event on its history</b><br/>'You dismissed ... Reason: ...'" }
+  an@{ shape: cyl, label: "<b>Dismissal recorded for Analytics</b><br/>The request and the reason" }
+  gA@{ shape: subproc, label: "Continues in: Analytics › Arrive and read the page" }
   tt@{ shape: odd, label: "<b>'Recommendation dismissed' or '3 recommendations dismissed'</b><br/>'The reason is logged and feeds Analytics.'" }
   mv@{ shape: rect, label: "<b>Cards leave the open list</b><br/>Header line 'up to N%' drops their points<br/>'Dismissed (1)' appears: struck-through title, 'Reason logged: ...'" }
   gt@{ shape: rect, label: "<b>If the card gated a check, that check stays open</b><br/>'Send to payer' stays off" }
@@ -1147,6 +1188,7 @@ flowchart TD
   dok -->|"Yes"| cf
   m --> cx --> ce
   cf --> st --> dsh
+  st --> an --> gA
   st --> tt
   st --> mv --> gt
   mv --> bb --> rs --> nt
@@ -1157,17 +1199,18 @@ flowchart TD
   class wb,tt k_toast
   class ot k_input
   class ce k_endx
-  class st,dsh,rs k_store
+  class st,dsh,an,rs k_store
+  class gA k_goto
   style gR fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```
 
 ## Authorizations › Case page › Recommended actions › Refine and add clinical context
 
-The two side-panel buttons that do not apply anything: 'Refine recommendations' and 'Add clinical context', and the 'Logged decisions' list where their trace appears.
+'Refine recommendations' re-orders the cards and may add one that fits, so the approval chance preview moves. 'Add clinical context' has its own diagram; the 'Logged decisions' list shows the trace of both.
 
 Route: `/authorizations/case/R-1042?tab=actions`
 
-Demo only: 'Refine recommendations' is a short simulated wait and changes nothing. The clinical context is kept and logged, but the draft text is not rewritten from it.
+Demo only: the refinement is a short simulated wait with a fixed result. The same focus on the same request always gives the same order and the same added card.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -1188,51 +1231,114 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  subgraph gRf ["Refine recommendations"]
   rf@{ shape: trap-t, label: "Click 'Refine recommendations'" }
-  sp@{ shape: rect, label: "Button shows a spinner for about 1.5 seconds" }
-  hs@{ shape: hex, label: "<b>Historian and Scribe 'read the chart again'</b><br/>(demo: simulated)" }
-  tr@{ shape: odd, label: "<b>'Recommendations refreshed'</b><br/>'Historian and Scribe read the chart again. The same actions still rank highest.'" }
-  end
-  subgraph gCx ["Add clinical context"]
+  rm@{ shape: win-pane, label: "<b>Panel 'Refine recommendations'</b><br/>'Pick what matters most for this request. Historian and Scribe put the matching cards first and may add one.'" }
+  rp@{ shape: lean-r, label: "<b>Pick one focus</b><br/>'Strengthen medical necessity' · 'Meet payer criteria' · 'Reduce denial risk'" }
+  rd@{ shape: rect, label: "<b>'Apply focus' stays off until a focus is picked</b><br/>and while that focus is the one already set" }
+  ra@{ shape: trap-t, label: "Click 'Apply focus'" }
+  rx@{ shape: trap-t, label: "<b>Click 'Cancel', the X or the dimmed area, or press Esc</b><br/>(Esc closes only the panel)" }
+  re@{ shape: stadium, label: "<b>Panel closes</b><br/>Nothing changes" }
+  sp@{ shape: rect, label: "Button shows a spinner for about 1.2 seconds" }
+  hs@{ shape: hex, label: "<b>Historian and Scribe re-rank the cards</b><br/>(demo: simulated)" }
+  fs@{ shape: cyl, label: "<b>Focus saved on the case</b><br/>Log: 'You refined the recommendations: ...'" }
+  ro@{ shape: rect, label: "<b>Cards that move that part of the number come first</b><br/>One more card that fits the focus is added at the top, worth up to 2 points<br/>(no card when the request is already too strong to add one)" }
+  fb@{ shape: curv-trap, label: "<b>Banner 'Focus: Meet payer criteria. The cards are in that order, and one card was added.'</b><br/>The added card has the pill 'Added for your focus'" }
+  pv@{ shape: rect, label: "<b>Approval chance preview moves</b><br/>Header '62% → 90%', the intro line and 'Apply selected (7)' follow" }
+  tr@{ shape: odd, label: "<b>'Recommendations refined'</b><br/>'Cards are in the order for ... and one was added. With every action applied the chance is 90%.'" }
+  cf@{ shape: trap-t, label: "Click 'Clear focus' in the banner" }
+  cr@{ shape: rect, label: "<b>Original order is back and the added card goes</b><br/>Unless it was already applied or dismissed: then it stays, with its points" }
+  lk@{ shape: rect, label: "<b>While the agents are updating the draft</b><br/>both buttons are off" }
   cc@{ shape: trap-t, label: "Click 'Add clinical context'" }
-  m@{ shape: win-pane, label: "<b>Dialog 'Add clinical context'</b><br/>'Something the chart does not show. Scribe uses it in the next draft. Nothing goes to the payer.'" }
-  ta@{ shape: lean-r, label: "<b>Type in the box</b><br/>e.g. 'He called the program himself on 10/19 and asked for a bed.'" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Case page › Recommended actions › Add clinical context" }
+  lg@{ shape: curv-trap, label: "<b>Card 'Logged decisions'</b><br/>Newest six entries, each with the time<br/>Shown once there is at least one entry" }
+  en@{ shape: rect, label: "<b>Entries come from</b><br/>applied actions, dismissals, bring back, notes sent, focus, clinical context, draft edits, re-check, send back to Scribe" }
+  rf --> rm --> rp --> rd --> ra
+  rm --> rx --> re
+  ra --> sp --> hs --> fs --> ro --> fb --> pv
+  fs --> tr
+  fs --> lg
+  fb --> cf --> cr
+  lg --> en
+  rf -.-> lk
+  cc -.-> lk
+  cc --> g1
+  class rf,ra,rx,cf,cc k_click
+  class rm k_overlay
+  class rp k_input
+  class rd,sp,ro,pv,cr,lk,en k_process
+  class re k_endx
+  class hs k_agent
+  class fs k_store
+  class fb,lg k_screen
+  class tr k_toast
+  class g1 k_goto
+```
+
+## Authorizations › Case page › Recommended actions › Add clinical context
+
+Adding a note the chart does not show. It is kept in the list the Draft tab and New case read, shown on the case page, and it nudges the approval chance by a point.
+
+Route: `/authorizations/case/R-1042?tab=actions`
+
+Demo only: each of the first three notes adds one point to the approval chance, whatever it says. The draft text on this page is not rewritten here; the Draft tab and New case read the list themselves.
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  cc@{ shape: trap-t, label: "Click 'Add clinical context'" }
+  m@{ shape: win-pane, label: "<b>Dialog 'Add clinical context'</b><br/>'Something the chart does not show. Scribe folds it into the draft. Nothing goes to the payer.'" }
+  ta@{ shape: lean-r, label: "<b>Type in the box</b><br/>e.g. 'He called the program himself on 10/19 and asked for a bed.'<br/>Hint: 'Each note adds a point to the approval chance, up to 3.'" }
   d@{ shape: diam, label: "Is anything typed?" }
   dis@{ shape: rect, label: "'Add context' stays off" }
   ad@{ shape: trap-t, label: "Click 'Add context'" }
   cn@{ shape: trap-t, label: "Click 'Cancel', the X or the dimmed area, or press Esc" }
-  cl@{ shape: rect, label: "<b>Dialog closes</b><br/>What you typed stays in the box for next time" }
-  sv@{ shape: cyl, label: "<b>Context saved on the case</b><br/>Log: 'You added clinical context: ...'" }
-  tc@{ shape: odd, label: "<b>'Clinical context added'</b><br/>'Scribe will use it in the next draft. Nothing is sent to the payer.'" }
-  nu@{ shape: rect, label: "<b>Dialog closes and the box empties</b><br/>The draft text does not change" }
-  end
-  lk@{ shape: rect, label: "<b>While the agents are updating the draft</b><br/>both buttons are off" }
-  subgraph gLg ["Logged decisions"]
-  lg@{ shape: curv-trap, label: "<b>Card 'Logged decisions'</b><br/>Newest six entries, each with the time<br/>Shown once there is at least one entry" }
-  en@{ shape: rect, label: "<b>Entries come from</b><br/>applied actions, dismissals, bring back, notes sent, clinical context, draft edits, re-check, send back to Scribe" }
-  end
-  rf --> sp --> hs --> tr
+  cl@{ shape: stadium, label: "<b>Dialog closes</b><br/>Nothing is added<br/>What you typed stays in the box for next time" }
+  lk@{ shape: rect, label: "<b>While the agents are updating the draft</b><br/>the button is off" }
+  sv@{ shape: cyl, label: "<b>Note added to the shared list for this request</b><br/>Log: 'You added clinical context: ...'" }
+  nu@{ shape: rect, label: "<b>Approval chance goes up by 1 point for each of the first three notes</b><br/>The fourth and later notes are kept and listed, with no points" }
+  ls@{ shape: curv-trap, label: "<b>Card 'Context you added' in the side panel</b><br/>Each note with '+1 pt' (no pill after the third)" }
+  rk@{ shape: curv-trap, label: "<b>Risk analysis › Why this number gets a row</b><br/>'Clinical context you added'<br/>The rows still add up to the chance" }
+  dQ@{ shape: diam, label: "Is it a queue request that also has a Dashboard entry?" }
+  db@{ shape: cyl, label: "<b>Dashboard request gets the new chance</b><br/>Timeline: 'You added clinical context. Approval chance is now 63%'" }
+  qu@{ shape: rect, label: "Queue tile shows the new chance" }
+  tc@{ shape: odd, label: "<b>'Clinical context added'</b><br/>'Scribe will fold it into the draft. Nothing goes to the payer.'" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Case page › Draft › Read and edit" }
   cc --> m --> ta --> d
   d -->|"No"| dis
-  d -->|"Yes"| ad --> sv --> tc --> nu
+  d -->|"Yes"| ad --> sv --> nu --> ls
+  nu --> rk
+  sv --> dQ
+  dQ -->|"Yes"| db --> qu
+  dQ -->|"No"| qu
+  sv --> tc --> g1
   m --> cn --> cl
-  sv --> lg
-  lg --> en
-  rf -.-> lk
   cc -.-> lk
-  class rf,cc,ad,cn k_click
-  class sp,dis,cl,nu,lk,en k_process
-  class hs k_agent
-  class tr,tc k_toast
+  class cc,ad,cn k_click
   class m k_overlay
   class ta k_input
-  class d k_decision
-  class sv k_store
-  class lg k_screen
-  style gRf fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
-  style gCx fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
-  style gLg fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  class d,dQ k_decision
+  class dis,lk,nu,qu k_process
+  class cl k_endx
+  class sv,db k_store
+  class ls,rk k_screen
+  class tc k_toast
+  class g1 k_goto
 ```
 
 ## Authorizations › Case page › Clinical picture
@@ -1494,7 +1600,7 @@ flowchart TD
   bg@{ shape: curv-trap, label: "<b>Red card 'Biggest driver of a short approval'</b><br/>'No named step-down provider' and how often it was seen" }
   cm@{ shape: curv-trap, label: "<b>Green card 'What the approved cases had in common'</b><br/>Four ticked lines" }
   wn@{ shape: curv-trap, label: "<b>Card 'Why this number'</b><br/>Formula such as '58 + 4 + 6 + 2 + 0 + 0 − 8 = 62'<br/>Pill 'Moderate · 62%'" }
-  bars@{ shape: rect, label: "<b>Bars: the starting point, six rows, then 'Approval chance now'</b><br/>Green to the right adds points, terracotta to the left takes them away<br/>Dashed outline: what is still to come" }
+  bars@{ shape: rect, label: "<b>Bars: the starting point, six rows, then 'Approval chance now'</b><br/>Green to the right adds points, terracotta to the left takes them away<br/>Dashed outline: what is still to come<br/>A seventh row 'Clinical context you added' appears once a note is added" }
   lo@{ shape: curv-trap, label: "<b>Card 'Likely outcomes'</b><br/>Donut and list: 'Approved as asked' 62%, 'Partly approved' 25%, 'Denied' 13%" }
   hs@{ shape: curv-trap, label: "<b>Card 'How sure are we'</b><br/>Likely range '57–66%' and a bar of yours, network and benchmark cases" }
   cd@{ shape: curv-trap, label: "<b>Card 'Comparable decisions'</b><br/>Three rows: 'Yours' or 'Network', match, outcome pill" }
@@ -1502,7 +1608,7 @@ flowchart TD
   ct@{ shape: curv-trap, label: "<b>Card 'Can you trust it?' with pill 'Calibrated'</b><br/>'Forecaster said 80 to 90% for similar Summit requests. 86% were approved in full, across 214 decisions.'<br/>'Checked every night against what payers actually decided.'" }
   hc@{ shape: trap-t, label: "Click 'How it is calculated'" }
   dOp@{ shape: diam, label: "Are any actions still open?" }
-  b1@{ shape: odd, label: "Banner 'Where this stands: moderate, with 6 steps left. The biggest single step is to name the step-down provider (+11 pts).'" }
+  b1@{ shape: odd, label: "Banner 'Where this stands: moderate, with 6 steps left. The biggest single step is to name the step-down provider (+11 pts).' ('+1 pt' for a one-point step)" }
   b2@{ shape: odd, label: "Banner 'Where this stands: every recommended action is applied. The draft is as strong as the chart allows.'" }
   cl@{ shape: rect, label: "Banner is green at 80+ and amber below" }
   fc@{ shape: hex, label: "<b>Forecaster re-scores whenever an action is applied</b><br/>(demo: the sums are done on the page)" }
@@ -1593,7 +1699,7 @@ flowchart TD
 
 ## Authorizations › Case page › Draft › Read and edit
 
-The fifth tab, left side: the medical-necessity summary Scribe wrote, how sentences from applied actions appear, and how a person edits and saves it.
+The fifth tab, left side: the medical-necessity summary Scribe wrote, how sentences from applied actions and added clinical context appear, and how a person edits and saves it. It is the same summary Review and sign shows in New case: one text for each request, so an edit made in either place is read in the other.
 
 Route: `/authorizations/case/R-1042?tab=draft`
 
@@ -1619,7 +1725,8 @@ flowchart TD
   s1@{ shape: stadium, label: "Click 'Draft'" }
   dr@{ shape: curv-trap, label: "<b>Draft</b><br/>Left: 'Medical-necessity summary'. Right: 'Checks', 'Versions', send buttons" }
   hd@{ shape: rect, label: "<b>Card subtitle</b><br/>'Version 3 · written by Scribe, checked by Integrity · every statement links to the chart'" }
-  sec@{ shape: rect, label: "<b>Four sections in a row, each with its source chips</b><br/>'Clinical picture.', 'Why a lower level of care is not safe.', 'Current severity.', 'Plan.'" }
+  sec@{ shape: rect, label: "<b>Four sections in a row, each with its source chips</b><br/>'Clinical picture.', 'Why a lower level of care is not safe.', 'Current severity.', 'Plan.'<br/>The text is the request's draft in New case (before it has one, the text that draft would have)" }
+  cx@{ shape: rect, label: "<b>A fifth paragraph 'Context added.' when notes were added with 'Add clinical context'</b><br/>The notes in the person's own words, no chips<br/>Shown but not edited here: Edit has no box for it" }
   nw@{ shape: rect, label: "<b>Sentences from applied actions follow in a green mark with a 'New' tag</b><br/>Each adds its own chip, e.g. 'Your answer'" }
   ch@{ shape: trap-t, label: "Click a source chip" }
   gC@{ shape: subproc, label: "Continues in: Authorizations › Case page › Source chip" }
@@ -1631,14 +1738,16 @@ flowchart TD
   sv@{ shape: trap-t, label: "Click 'Save changes'" }
   dCh@{ shape: diam, label: "Did any box change?" }
   tn@{ shape: odd, label: "'No changes to save'" }
-  sd@{ shape: cyl, label: "<b>Edited sections saved</b><br/>The edit keeps the sentences already added by applied actions<br/>New version: 'Version 4', 'You', 'Edited by you'<br/>Log: 'You edited the draft. Integrity will read it again before it can be signed'" }
+  sd@{ shape: cyl, label: "<b>Edited sections saved</b><br/>The edit keeps the sentences already added by applied actions<br/>New version: 'Version 4', 'You', 'Edited by you'<br/>Log: 'You edited the draft. Integrity will read it again before it can be signed'<br/>The same text is saved on the request's draft in New case, so Review and sign reads it" }
   ts@{ shape: odd, label: "<b>'Draft saved'</b><br/>'Integrity needs to read it again before it can be signed. Use Re-check.'" }
   dy@{ shape: rect, label: "<b>'Every sentence matches the chart' now warns</b><br/>'You edited the draft. Integrity has not read it again yet.'<br/>'Send to payer' goes off" }
   bd@{ shape: rect, label: "Badge on the Draft tab goes up by one" }
   lt@{ shape: rect, label: "Actions applied later add their sentences after the edited text" }
   gK@{ shape: subproc, label: "Continues in: Authorizations › Case page › Draft › Checks, versions and send back" }
+  gR@{ shape: subproc, label: "Continues in: Review and sign › The draft and the summary" }
   s1 --> dr --> hd --> sec --> nw
   sec --> ch --> gC
+  sec --> cx
   dr --> ed --> em --> ty
   em --> cn --> cd
   em --> sv --> dCh
@@ -1647,11 +1756,12 @@ flowchart TD
   sd --> dy --> bd
   dy --> gK
   sd -.-> lt
+  sd --> gR
   class s1 k_start
   class dr,em k_screen
-  class hd,sec,nw,cd,dy,bd,lt k_process
+  class hd,sec,cx,nw,cd,dy,bd,lt k_process
   class ch,ed,cn,sv k_click
-  class gC,gK k_goto
+  class gC,gK,gR k_goto
   class ty k_input
   class dCh k_decision
   class tn,ts k_toast
@@ -1707,7 +1817,7 @@ flowchart TD
   vm@{ shape: win-pane, label: "<b>Dialog 'Version 2'</b><br/>Time and author. 'Read only.' Then the text" }
   vc@{ shape: trap-t, label: "Click 'Close', the X, the dimmed area, or press Esc" }
   vn@{ shape: rect, label: "<b>A new version appears after every Apply</b><br/>('Scribe', 'Added 6 recommendations')<br/>and every saved edit ('You', 'Edited by you')" }
-  sb@{ shape: curv-trap, label: "<b>Bottom card</b><br/>'Send to payer', 'Send back to Scribe', and a note" }
+  sb@{ shape: curv-trap, label: "<b>Bottom card</b><br/>'Send to payer' (a disabled 'Sent to payer' once the payer has it), 'Send back to Scribe', and a note" }
   sk@{ shape: trap-t, label: "Click 'Send back to Scribe'" }
   bz@{ shape: rect, label: "Spinner for about 1.4 seconds" }
   lg@{ shape: cyl, label: "Log: 'You sent the draft back to Scribe'" }
@@ -1746,7 +1856,7 @@ What happens when a person leaves the Draft tab to send the request: the gate, t
 
 Route: `/authorizations/case/R-1042?tab=draft`
 
-Demo only: the case page and New case keep separate drafts. Edits and applied actions made on this tab are not copied into the summary signed in New case. The payer receiving the request is simulated.
+Demo only: the payer receiving the request is simulated. The summary signed in New case is the one on this tab: edits, applied actions and added clinical context are all in it.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -1772,7 +1882,7 @@ flowchart TD
   off@{ shape: rect, label: "<b>'Send to payer' is off</b><br/>The reason sits under the button, e.g. 'Integrity has 2 open checks. Apply the matching actions first.'" }
   sp@{ shape: trap-t, label: "Click 'Send to payer' (large button)" }
   os@{ shape: trap-t, label: "Click 'Open in review and sign' (header button)" }
-  rp@{ shape: rect, label: "The case page finds this request's draft in New case, or makes one" }
+  rp@{ shape: rect, label: "<b>The case page finds this request's draft in New case, or makes one from the request</b><br/>The draft opens at Review and sign when the request is ready, at Agents work when agents still have work" }
   ns@{ shape: rect, label: "<b>Nothing is sent yet</b><br/>'Nothing goes to the payer until a clinician signs.'" }
   gR@{ shape: subproc, label: "Continues in: New case › Review and sign" }
   subgraph gSign ["In New case (summary only, drawn in its own diagram)"]
@@ -1785,7 +1895,7 @@ flowchart TD
   nt@{ shape: odd, label: "<b>Notification from Navigator: 'Sent to the payer'</b><br/>'R-0988 was sent. It now shows as Received on the Dashboard.'" }
   db@{ shape: curv-trap, label: "<b>Dashboard opens on that request</b><br/>Stage 'Received'" }
   qg@{ shape: rect, label: "<b>Back in the queue the request is gone</b><br/>The open count drops by one<br/>The sidebar badge too, if it was in Act now or Due within 24 hours" }
-  cp@{ shape: rect, label: "<b>Demo: the case page of a sent request still shows its old status line</b><br/>and an enabled 'Send to payer'" }
+  cp@{ shape: rect, label: "<b>The case page of a sent request shows the request's own status</b><br/>and a disabled 'Sent to payer' in place of 'Send to payer'" }
   gD@{ shape: subproc, label: "Continues in: Dashboard › Request drawer" }
   gQ@{ shape: subproc, label: "Continues in: Authorizations › Queue › Open the queue and read the top" }
   s1 --> dc
@@ -1819,7 +1929,7 @@ Every click that takes a person from the queue or a case page into another part 
 
 Route: `/authorizations`
 
-Case Manager has links into the case page, but the case page has no link back to Case Manager. The only link from this module to Case Manager is the queue's empty message, which cannot appear with the seed data.
+Case Manager has links into the case page, but the case page has no link back to Case Manager. The only link from this module to Case Manager is the queue's empty message, which shows once every open request has been sent or handled.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -1849,12 +1959,14 @@ flowchart LR
   l4@{ shape: trap-t, label: "On a denied request: click 'Open in Denial Intelligence'" }
   l5@{ shape: trap-t, label: "Click 'Open in review and sign' or 'Send to payer'" }
   l7@{ shape: trap-t, label: "Click 'Back to queue' or the 'Authorizations' crumb" }
+  l8@{ shape: trap-t, label: "<b>Click 'Open on the Dashboard'</b><br/>(once the request is past Preparing)" }
   g1@{ shape: subproc, label: "Continues in: New case › Referral step" }
   g2@{ shape: subproc, label: "Continues in: Eligibility & Benefits › Verify a patient" }
   g5@{ shape: subproc, label: "Continues in: Case Manager › Active cases" }
   g3@{ shape: subproc, label: "Continues in: Denial Intelligence › Open a denial" }
   g4@{ shape: subproc, label: "Continues in: Authorizations › Case page › Send to payer and review and sign" }
   g6@{ shape: subproc, label: "Continues in: Authorizations › Queue › Open the queue and read the top" }
+  g7@{ shape: subproc, label: "Continues in: Dashboard › Request drawer" }
   q --> l1 --> g1
   q --> l2 --> g2
   q --> l6 --> g5
@@ -1862,14 +1974,15 @@ flowchart LR
   cp --> l4 --> g3
   cp --> l5 --> g4
   cp --> l7 --> g6
+  cp --> l8 --> g7
   class q,cp k_screen
-  class l1,l2,l6,l3,l4,l5,l7 k_click
-  class g1,g2,g5,g3,g4,g6 k_goto
+  class l1,l2,l6,l3,l4,l5,l7,l8 k_click
+  class g1,g2,g5,g3,g4,g6,g7 k_goto
 ```
 
 ## Authorizations › Case page › What it writes to other screens
 
-What a case page changes outside itself: the Dashboard request's chance and history, the notification, and the queue. Nothing here is a link; each happens as a side effect of a click.
+What a case page changes outside itself: the Dashboard request's chance and history, the notification, the shared lists that Analytics and the Draft tab read, and the queue. Nothing here is a link; each happens as a side effect of a click.
 
 Route: `/authorizations/case/R-1042`
 
@@ -1908,9 +2021,18 @@ flowchart TD
   d2@{ shape: diam, label: "Is the request on the Dashboard?" }
   w3@{ shape: cyl, label: "<b>Dashboard request history</b><br/>'You dismissed ... Reason: ...'" }
   w4@{ shape: rect, label: "<b>Only the case page log changes</b><br/>'Logged decisions'" }
+  w7@{ shape: cyl, label: "<b>Dismissal recorded: the request and the reason</b><br/>Analytics reads it" }
+  s4@{ shape: stadium, label: "Click 'Add context' on a case page" }
+  w8@{ shape: cyl, label: "<b>Clinical context added to the shared list for the request</b><br/>The Draft tab and New case read it" }
+  d4@{ shape: diam, label: "Is it a queue request that also has a Dashboard entry?" }
+  w9@{ shape: cyl, label: "<b>Dashboard request gets the new chance</b><br/>Timeline: 'You added clinical context. ...'" }
+  w10@{ shape: rect, label: "<b>Queue tile shows the new chance</b><br/>The approval chance is one point higher for each of the first three notes" }
   s3@{ shape: stadium, label: "A request is signed and sent in New case" }
   w5@{ shape: cyl, label: "Dashboard stage 'Received'" }
   w6@{ shape: rect, label: "<b>Queue drops the request</b><br/>The open count drops by one<br/>The sidebar badge too, if it was in Act now or Due within 24 hours" }
+  w11@{ shape: rect, label: "<b>Its case page reads the new stage</b><br/>Chip 'Received', the request's own status line, a greyed-out 'Sent to payer' and 'Open on the Dashboard'" }
+  s5@{ shape: stadium, label: "The payer decides, or a denial is settled or its appeal is filed" }
+  w12@{ shape: rect, label: "<b>Queue drops the request from its band</b><br/>When Act now is empty the band says 'Nothing needs you today'" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Request drawer" }
   s1 --> d1
   d1 -->|"Yes"| w1 --> w2
@@ -1921,12 +2043,18 @@ flowchart TD
   s2 --> d2
   d2 -->|"Yes"| w3 --> g2
   d2 -->|"No"| w4
+  s2 --> w7
+  s4 --> w8 --> d4
+  d4 -->|"Yes"| w9 --> w10
+  d4 -->|"No"| w10
   s3 --> w5 --> w6
+  w5 --> w11
   w5 --> g2
-  class s1,s2,s3 k_start
-  class d1,d2 k_decision
-  class w1,w2,w3,w5 k_store
-  class w0,q1,n3,w4,w6 k_process
+  s5 --> w12
+  class s1,s2,s4,s3,s5 k_start
+  class d1,d2,d4 k_decision
+  class w1,w2,w3,w7,w8,w9,w5 k_store
+  class w0,q1,n3,w4,w10,w6,w11,w12 k_process
   class n1 k_toast
   class n2 k_click
   class g1,g2 k_goto

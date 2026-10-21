@@ -37,6 +37,10 @@ flowchart LR
   c8d@{ shape: trap-t, label: "Click 'Log the outcome'" }
   n8d@{ shape: cyl, label: "<b>Advocate · 'Call outcome: ...'</b><br/>→ Dashboard, that request" }
   end
+  subgraph gElig ["Eligibility & Benefits"]
+  c11@{ shape: trap-t, label: "<b>Demo menu, 'Fast-forward 1 hour' or 'Fast-forward 1 day', past a patient's re-check time</b><br/>Or resume Verify in Settings after a pause" }
+  n11@{ shape: cyl, label: "<b>Verify · 'Re-checked automatically' or 'Re-checked N patients automatically'</b><br/>→ Eligibility & Benefits, that patient or the list<br/>Not while Verify is paused" }
+  end
   subgraph gAuth ["Authorizations"]
   c7@{ shape: trap-t, label: "<b>Apply recommendations on a case</b><br/>(Actions tab)" }
   n7@{ shape: cyl, label: "<b>Forecaster · 'Approval chance updated'</b><br/>→ that case" }
@@ -56,8 +60,8 @@ flowchart LR
   p1@{ shape: rect, label: "<b>Notification is added at the top of the list</b><br/>Unread, 'just now'" }
   p2@{ shape: rect, label: "<b>Red dot appears on the bell</b><br/>Drawer subtitle counts it ('5 unread')" }
   g1@{ shape: subproc, label: "Continues in: Global shell › Top bar › Notifications › Open, read, click through" }
-  e1@{ shape: stadium, label: "Nothing else creates one: no timers, no Fast-forward, no payer or referrer replies on their own" }
-  s1 --> c1 & c4 & c5 & c6 & c7 & c8 & c8b & c8c & c8d & c9 & c9b & c10
+  e1@{ shape: stadium, label: "Nothing else creates one: no timers, no payer or referrer replies on their own" }
+  s1 --> c1 & c4 & c5 & c6 & c7 & c8 & c8b & c8c & c8d & c9 & c9b & c10 & c11
   c1 --> n1
   c4 --> n4
   c5 --> n5
@@ -70,18 +74,20 @@ flowchart LR
   c9 --> n9
   c9b --> n9b
   c10 --> n10
-  n1 & n4 & n5 & n6 & n7 & n8 & n8b & n8c & n8d & n9 & n9b & n10 --> p1
+  c11 --> n11
+  n1 & n4 & n5 & n6 & n7 & n8 & n8b & n8c & n8d & n9 & n9b & n10 & n11 --> p1
   p1 --> p2 --> g1
   s1 -.-> e1
   class s1 k_start
-  class c10,c9,c9b,c8,c8b,c8c,c8d,c7,c4,c5,c6,c1 k_click
-  class n10,n9,n9b,n8,n8b,n8c,n8d,n7,n4,n5,n6,n1 k_store
+  class c10,c9,c9b,c8,c8b,c8c,c8d,c11,c7,c4,c5,c6,c1 k_click
+  class n10,n9,n9b,n8,n8b,n8c,n8d,n11,n7,n4,n5,n6,n1 k_store
   class p1,p2 k_process
   class g1 k_goto
   class e1 k_endx
   style gPay fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gRef fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gDen fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gElig fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gAuth fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gDash fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gSend fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

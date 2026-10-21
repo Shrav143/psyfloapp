@@ -17,7 +17,7 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Click 'Edit' on a rule card</b><br/>Example: 'Edit Backdating'" }
-  m@{ shape: win-pane, label: "<b>Edit backdating</b><br/>One rule per line. It applies to new drafts at once,<br/>and to open drafts when you click Update drafts." }
+  m@{ shape: win-pane, label: "<b>Edit backdating</b><br/>One rule per line. New drafts use this at once.<br/>Sent requests keep what they were sent with.<br/>Click Update drafts to redraft open ones." }
   i1@{ shape: lean-r, label: "<b>Type in 'Rules'</b><br/>One line per rule, starting from the saved lines" }
   i2@{ shape: lean-r, label: "<b>Type 'Reason for the edit' (required)</b><br/>Example: Summit confirmed the new window on a call" }
   cs@{ shape: trap-t, label: "Click 'Save and log the edit'" }
@@ -30,9 +30,10 @@ flowchart TD
   st@{ shape: cyl, label: "<b>Rule lines replaced</b><br/>'Confirmed' date becomes today" }
   lg@{ shape: cyl, label: "<b>Edit log entry, area 'Rules'</b><br/>Rule name, before and after (lines joined with semicolons), reason" }
   un@{ shape: cyl, label: "'Edits waiting' goes up by one" }
-  t1@{ shape: odd, label: "<b>'Backdating saved'</b><br/>New drafts use it now. Open drafts follow when you click Update drafts." }
+  nt@{ shape: cyl, label: "<b>Bell notification 'Summit rule edited'</b><br/>opens the payer's Rules tab" }
+  t1@{ shape: odd, label: "<b>'Backdating saved'</b><br/>New drafts use it at once.<br/>Click Update drafts to redraft open ones." }
   bn@{ shape: curv-trap, label: "<b>Rule card shows the new lines</b><br/>Banner '1 edit applies to new drafts only'" }
-  e1@{ shape: stadium, label: "New drafts use the rule from now on" }
+  e1@{ shape: stadium, label: "<b>New drafts use the rule from now on</b><br/>New case reads it the next time it draws" }
   cx@{ shape: trap-t, label: "Click 'Cancel'" }
   cesc@{ shape: trap-t, label: "<b>Press Escape, click the X</b><br/>or click the dimmed area" }
   x1@{ shape: stadium, label: "<b>Modal closes</b><br/>Nothing saved, typed text discarded" }
@@ -43,7 +44,7 @@ flowchart TD
   d1 -->|"Yes"| er --> i2
   d1 -->|"No"| tr --> d2
   d2 -->|"No"| t0 --> x0
-  d2 -->|"Yes"| st --> lg --> un --> t1 --> bn --> e1
+  d2 -->|"Yes"| st --> lg --> un --> nt --> t1 --> bn --> e1
   bn --> g1
   e1 -.-> g2
   lg -.-> g3
@@ -57,7 +58,7 @@ flowchart TD
   class er,t0,t1 k_toast
   class tr k_process
   class x0,x1 k_endx
-  class st,lg,un k_store
+  class st,lg,un,nt k_store
   class bn k_screen
   class e1 k_end
   class g1,g2,g3 k_goto

@@ -17,6 +17,8 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Result page, card 'Payment checks', rows 4 to 7" }
+  q9@{ shape: diam, label: "Was coverage found?" }
+  x9@{ shape: stadium, label: "<b>Coverage not found</b><br/>Rows 2 to 7 and the line 'What the patient pays:' are not shown<br/>One grey row says nothing else could be checked" }
   subgraph gA ["Row 4 · Authorization"]
   a0@{ shape: diam, label: "What is the authorization state?" }
   a1@{ shape: rect, label: "<b>Chip 'Not required' (green)</b><br/>'Beacon does not require one for IOP.'" }
@@ -34,20 +36,22 @@ flowchart TD
   subgraph gC ["Row 6 · Limits"]
   c0@{ shape: diam, label: "Is there a day or unit limit?" }
   c1@{ shape: rect, label: "<b>Chip '5 days left' (green), or amber at 3 or fewer</b><br/>'9 of 14 days used in this authorization period'" }
-  c2@{ shape: rect, label: "<b>Chip 'Limit reached' (red)</b><br/>'Nothing is left' (no demo patient)" }
+  c2@{ shape: rect, label: "<b>Title 'Every authorized day is used' (or unit)</b><br/>Chip 'Limit reached' (red)<br/>'14 of 14 days used in this authorization period. Nothing is left. Ask Cardinal for more days before the next day of service'" }
   c3@{ shape: rect, label: "<b>Chip 'No limit' (green)</b><br/>'No annual day limit for residential care. The authorization sets the days'<br/>or 'No visit or day limit applies to this program'" }
   end
   subgraph gD ["Row 7 · Other insurance"]
   d0@{ shape: diam, label: "Did the check find another plan?" }
   d1@{ shape: rect, label: "<b>Title 'No other insurance', chip 'None' (green)</b><br/>'None found. Medicaid pays last, so we checked for another payer'" }
-  d2@{ shape: rect, label: "<b>Title 'Another plan pays first', chip 'Other plan' (red)</b><br/>'It must be billed before this one.' (no demo patient)" }
+  d2@{ shape: rect, label: "<b>Title 'Another plan pays first', chip 'Other plan' (red)</b><br/>'A second plan was found. It must be billed before this one.'" }
   end
   subgraph gP ["Last line"]
   p1@{ shape: rect, label: "<b>'What the patient pays:'</b><br/>Medicaid '$0 copay, no deductible, no coinsurance.'<br/>Harborview '20% coinsurance after a deductible with $85 left.'<br/>Beacon and Lakeshore '$40 copay per day, $350 left on the deductible, 20% coinsurance after.'" }
   p2@{ shape: odd, label: "'This does not change what the clinic is paid. A $0 copay does not mean the clinic is paid.'" }
   end
   g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Medical records › Patient and insurance rows" }
-  s1 --> a0
+  s1 --> q9
+  q9 -->|"No"| x9
+  q9 -->|"Yes"| a0
   a0 -->|"Not required"| a1 --> b0
   a0 -->|"On file"| a2 --> b0
   a0 -->|"Being drafted"| a3 --> b0
@@ -63,7 +67,8 @@ flowchart TD
   d0 -->|"Yes"| d2 --> p1
   p1 --> p2 --> g1
   class s1 k_start
-  class a0,b0,c0,d0 k_decision
+  class q9,a0,b0,c0,d0 k_decision
+  class x9 k_endx
   class a1,a2,a3,a4,a5,a6,b1,b2,c1,c2,c3,d1,d2,p1 k_process
   class p2 k_toast
   class g1 k_goto

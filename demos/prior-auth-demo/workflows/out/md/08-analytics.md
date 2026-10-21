@@ -6,7 +6,7 @@ Shapes and colours: see `00-overview.md`. Source: `workflows/src/08-analytics/`.
 
 ## Analytics › Arrive and read the page
 
-One page with two menus and a report button on top, four tiles, then four cards. It opens on 'This quarter' and 'All payers'. Everything is read-only except the menus, the 'Monthly report' button and the rows of the denial table.
+One page with two menus and a report button on top, four tiles, then four cards, and a fifth when recommendations were dismissed. It opens on 'This quarter' and 'All payers'. Everything is read-only except the menus, the 'Monthly report' button and the rows of the denial table.
 
 Route: `/analytics`
 
@@ -36,7 +36,7 @@ flowchart TD
   subgraph gTop ["Top right of the header"]
   m1@{ shape: curv-trap, label: "<b>Menu 'This quarter'</b><br/>(period)" }
   m2@{ shape: curv-trap, label: "<b>Menu 'All payers'</b><br/>(payer)" }
-  m3@{ shape: curv-trap, label: "Button 'Monthly report' with a download icon" }
+  m3@{ shape: curv-trap, label: "<b>Button 'Monthly report' with a document icon</b><br/>It opens a window, where the files and Print are" }
   end
   subgraph gTiles ["Row of four tiles"]
   t1@{ shape: curv-trap, label: "<b>'Approved as asked'</b><br/>71% · '▲ 6 pts vs last quarter'<br/>'1,070 decisions · this quarter'" }
@@ -47,35 +47,40 @@ flowchart TD
   subgraph gCards ["Cards below"]
   c1@{ shape: curv-trap, label: "<b>Card 'Approval rate by payer'</b><br/>Six bars, best first" }
   c2@{ shape: curv-trap, label: "<b>Card 'How people edit agent drafts'</b><br/>Donut and three-line legend" }
-  c3@{ shape: curv-trap, label: "<b>Card 'Common denial reasons by payer'</b><br/>Table, one row per payer" }
+  c3@{ shape: curv-trap, label: "<b>Card 'Common denial reasons by payer'</b><br/>Table, one row per payer<br/>Under it 'Appeals overturned' and 'Written off after accepted denials'" }
   c4@{ shape: curv-trap, label: "<b>Card 'What helps most'</b><br/>Four ranked steps" }
+  c5@{ shape: curv-trap, label: "<b>Card 'Why recommendations were dismissed'</b><br/>Shown only when someone dismissed a recommendation" }
   end
   hub2@{ shape: curv-trap, label: "Under the header, a row of four tiles" }
-  hub@{ shape: curv-trap, label: "Below the tiles, four cards" }
+  hub@{ shape: curv-trap, label: "Below the tiles, four cards and sometimes a fifth" }
   p1@{ shape: rect, label: "<b>All figures come from the chosen period and payer</b><br/>A figure behind fewer than 20 decisions is hidden" }
   p2@{ shape: rect, label: "<b>Nothing is stored: the address stays /analytics</b><br/>Leaving the page resets the menus" }
+  p3@{ shape: rect, label: "<b>Other screens feed this page</b><br/>Appeal rulings and accepted denials from Denial Intelligence<br/>Dismissed recommendations from Authorizations" }
   g1@{ shape: subproc, label: "Continues in: Analytics › Period and payer menus" }
   g2@{ shape: subproc, label: "Continues in: Analytics › The four tiles" }
   g3@{ shape: subproc, label: "Continues in: Analytics › Read-only cards: payers, draft edits, what helps most" }
   g4@{ shape: subproc, label: "Continues in: Analytics › Common denial reasons: open Denial Intelligence" }
   g5@{ shape: subproc, label: "Continues in: Analytics › Monthly report › Open and build" }
+  g6@{ shape: subproc, label: "Continues in: Analytics › Denial outcomes and dismissed recommendations" }
   s1 --> sc
   sc --> m1 & m2 & m3
   m1 & m2 & m3 --> hub2
   hub2 --> t1 & t2 & t3 & t4
   t1 & t2 & t3 & t4 --> hub
-  hub --> c1 & c2 & c3 & c4
+  hub --> c1 & c2 & c3 & c4 & c5
   sc -.-> p1
   sc -.-> p2
+  sc -.-> p3
+  p3 --> g6
   m1 & m2 --> g1
   t1 & t2 & t3 & t4 --> g2
   c1 & c2 & c4 --> g3
   c3 --> g4
   m3 --> g5
   class s1 k_start
-  class sc,m1,m2,m3,t1,t2,t3,t4,c1,c2,c3,c4,hub2,hub k_screen
-  class p1,p2 k_process
-  class g1,g2,g3,g4,g5 k_goto
+  class sc,m1,m2,m3,t1,t2,t3,t4,c1,c2,c3,c4,c5,hub2,hub k_screen
+  class p1,p2,p3 k_process
+  class g1,g2,g3,g4,g5,g6 k_goto
   style gTop fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gTiles fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gCards fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
@@ -126,6 +131,7 @@ flowchart TD
   p1@{ shape: rect, label: "Menu closes, value unchanged" }
   r1@{ shape: rect, label: "Page recomputes at once from the period and the payer" }
   r2@{ shape: rect, label: "<b>Subtitles use the period: 'this quarter', 'last quarter' or 'the last 12 months'</b><br/>Counts scale: last quarter about 0.96, last 12 months about 3.9 times" }
+  r4@{ shape: rect, label: "<b>The denial outcomes follow the menus too</b><br/>Rulings, accepted denials and dismissals recorded in this demo count in 'This quarter' and 'Last 12 months', not in 'Last quarter'<br/>One payer: only that payer's" }
   r3@{ shape: rect, label: "<b>One payer: the bars show that payer against 'All payers'</b><br/>The denial table lists all of that payer's reasons<br/>'What helps most' is re-weighted for that payer" }
   q1@{ shape: diam, label: "Is a figure built on 20 or more decisions?" }
   ok@{ shape: curv-trap, label: "The number shows, for example 86%" }
@@ -142,6 +148,7 @@ flowchart TD
   o1 & o2 --> k2 --> p1
   k1 --> r1
   r1 --> r2 --> q1
+  r1 --> r4 --> q1
   r1 --> r3
   r3 --> q1
   q1 -->|"Yes"| ok --> e1
@@ -153,7 +160,7 @@ flowchart TD
   class c1,c2,k2 k_click
   class o1,o2 k_overlay
   class i1,i2,k1 k_input
-  class p2,p1,r1,r2,r3,p3 k_process
+  class p2,p1,r1,r2,r4,r3,p3 k_process
   class q1 k_decision
   class ex k_toast
   class g1 k_goto
@@ -324,7 +331,7 @@ flowchart TD
 
 ## Analytics › Common denial reasons: open Denial Intelligence
 
-The table of common denial reasons. Every row is a link to Denial Intelligence, by the row or by the reason text. The link opens the plain denial list. It does not carry the payer or the reason across.
+The table of common denial reasons. Every row is a link to Denial Intelligence, by the row or by the reason text. The link carries the row's payer and its reason, so the denial list opens already narrowed to those denials.
 
 Route: `/analytics`
 
@@ -348,7 +355,7 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Scroll to 'Common denial reasons by payer'" }
-  sc@{ shape: curv-trap, label: "<b>Card 'Common denial reasons by payer'</b><br/>'This quarter · 311 denials in the reasons listed. Select a row to open Denial Intelligence.'" }
+  sc@{ shape: curv-trap, label: "<b>Card 'Common denial reasons by payer'</b><br/>'This quarter · 311 denials in the reasons listed. Select a row to open those denials in Denial Intelligence.'" }
   th@{ shape: curv-trap, label: "<b>Columns</b><br/>'Reason', 'Payer', 'Count', 'Share of denials' (a red bar and the percent)" }
   q1@{ shape: diam, label: "Which payer is chosen in the menu?" }
   p1@{ shape: rect, label: "<b>'All payers': one row per payer, its most common reason</b><br/>Biggest first" }
@@ -363,7 +370,7 @@ flowchart TD
   subgraph gClick ["Open a row"]
   c1@{ shape: trap-t, label: "Click anywhere on a row" }
   c2@{ shape: trap-t, label: "Click the reason text, for example 'Recertification filed too late'" }
-  p4@{ shape: rect, label: "<b>Opens /denials with no payer or reason chosen</b><br/>Row hover tint shows it is a link" }
+  p4@{ shape: rect, label: "<b>Opens /denials?payer=harborview&reason=Recertification filed too late</b><br/>The row's own payer and reason go along (spaces become plus signs)<br/>Row hover tint shows it is a link" }
   end
   g1@{ shape: subproc, label: "Continues in: Denial Intelligence › Open denials list" }
   p5@{ shape: rect, label: "Browser Back returns to Analytics with the menus reset" }
@@ -390,13 +397,96 @@ flowchart TD
   style gClick fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```
 
+## Analytics › Denial outcomes and dismissed recommendations
+
+What other screens write back to Analytics. Two figures sit under the denial table and move when a denial is accepted or an appeal is ruled on. A card of dismissal reasons appears once a recommendation has been dismissed. Each event moves the numbers only a little.
+
+Route: `/analytics`
+
+Demo only: the starting figures (96 rulings, 56% overturned, 17 accepted denials, $88.7K) are invented. Everything recorded in the demo counts in 'This quarter' and 'Last 12 months', never in 'Last quarter', and follows the payer menu.
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Scroll to the foot of 'Common denial reasons by payer'" }
+  sc@{ shape: curv-trap, label: "<b>Two figures under the table</b><br/>'Appeals overturned'  56%, '54 of 96 rulings this quarter'<br/>'Written off after accepted denials'  $88.7K, '17 denials this quarter'" }
+  subgraph gApp ["Appeals overturned"]
+  x1@{ shape: st-rect, label: "<b>The payer rules on an appeal</b><br/>(demo: the person logs the ruling)" }
+  st1@{ shape: cyl, label: "<b>Denial Intelligence records the ruling</b><br/>Overturned, partly restored or upheld" }
+  p1@{ shape: rect, label: "<b>Rulings go up by one</b><br/>Overturned and partly restored also add to 'overturned'<br/>Upheld only adds to the rulings" }
+  q1@{ shape: diam, label: "Fewer than 20 rulings in this view?" }
+  o1@{ shape: curv-trap, label: "For example 57%, '55 of 97 rulings this quarter'" }
+  o2@{ shape: curv-trap, label: "<b>'-' and 'Not enough decisions yet'</b><br/>A single payer with few rulings, for example Lakeshore" }
+  end
+  subgraph gOff ["Written off"]
+  k1@{ shape: trap-t, label: "In Denial Intelligence the person accepts a denial" }
+  st2@{ shape: cyl, label: "<b>Denial Intelligence records the write-off</b><br/>With the payer and the dollars at stake" }
+  p2@{ shape: rect, label: "<b>Denials go up by one</b><br/>The amount is added, for example $22.4K makes $88.7K into $111.1K" }
+  o3@{ shape: curv-trap, label: "'$111.1K', '18 denials this quarter'" }
+  end
+  subgraph gDis ["Why recommendations were dismissed"]
+  k2@{ shape: trap-t, label: "On a case, the person dismisses a recommendation and gives a reason" }
+  st3@{ shape: cyl, label: "<b>Authorizations records the reason</b><br/>With the request, so Analytics can find its payer" }
+  q2@{ shape: diam, label: "Any dismissal in this view?" }
+  d1@{ shape: curv-trap, label: "<b>Card 'Why recommendations were dismissed'</b><br/>'The reason given each time someone dismissed a recommendation, this quarter'<br/>One row per reason, biggest first, '2 times' or '1 time'" }
+  d2@{ shape: curv-trap, label: "<b>No card at all</b><br/>Nothing was dismissed, or the period is 'Last quarter', or the payer has none" }
+  end
+  m1@{ shape: rect, label: "<b>The monthly report and its printout carry the same figures</b><br/>'Denial outcomes' always, 'Why recommendations were dismissed' when the card shows" }
+  m2@{ shape: rect, label: "<b>Pick another period or payer</b><br/>The figures are worked out again from the recorded events" }
+  g1@{ shape: subproc, label: "Continues in: Denial Intelligence › Written appeal › Record the payer's decision" }
+  g2@{ shape: subproc, label: "Continues in: Denial Intelligence › Accept the denial" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › Case page › Recommended actions › Dismiss and bring back" }
+  g4@{ shape: subproc, label: "Continues in: Analytics › Monthly report › What the files contain" }
+  e1@{ shape: stadium, label: "Page matches what was recorded" }
+  s1 --> sc
+  sc -.-> g1 & g2 & g3
+  x1 --> st1 --> p1 --> q1
+  q1 -->|"No"| o1 --> e1
+  q1 -->|"Yes"| o2 --> e1
+  k1 --> st2 --> p2 --> o3 --> e1
+  k2 --> st3 --> q2
+  q2 -->|"Yes"| d1 --> e1
+  q2 -->|"No"| d2 --> e1
+  sc --> x1 & k1 & k2
+  e1 -.-> m1 --> g4
+  e1 -.-> m2
+  class s1 k_start
+  class sc,o1,o2,o3,d1,d2 k_screen
+  class x1 k_ext
+  class st1,st2,st3 k_store
+  class p1,p2,m1,m2 k_process
+  class q1,q2 k_decision
+  class k1,k2 k_click
+  class g1,g2,g3,g4 k_goto
+  class e1 k_end
+  style gApp fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gOff fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gDis fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+```
+
 ## Analytics › Monthly report › Open and build
 
 'Monthly report' opens a small window where the Analyst agent builds the report in four short steps, about 3 seconds. Cancel, Close, Escape and a click outside all stop it. Closing throws the build away.
 
 Route: `/analytics`
 
-Demo only: the steps are a timer, 0.75 seconds each. The report is built from the period and payer chosen when the window opened.
+Demo only: the steps are a timer, 0.75 seconds each. The report is built from the period and payer chosen when the window opened. Escape closes the window, and a menu opened beforehand closes first, one press each.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -431,7 +521,7 @@ flowchart TD
   w4@{ shape: delay, label: "0.75 seconds" }
   end
   p1@{ shape: rect, label: "<b>Each step shows a spinner while it runs, then a green tick</b><br/>Steps still to come have a grey dot and grey text" }
-  r1@{ shape: curv-trap, label: "<b>Panel 'Your report is ready'</b><br/>'It uses the same figures as this page. Pick the file you want.'<br/>Footer button now reads 'Done'" }
+  r1@{ shape: curv-trap, label: "<b>Panel 'Your report is ready'</b><br/>'Same figures as this page. Save a file or print it.'<br/>Buttons 'Download report', 'Download data (CSV)' and 'Print'<br/>Footer button now reads 'Done'" }
   subgraph gClose ["Close it at any moment"]
   c1@{ shape: trap-t, label: "Click 'Cancel' (while building) or 'Done' (when ready)" }
   c2@{ shape: trap-t, label: "Click the X ('Close')" }
@@ -472,7 +562,7 @@ flowchart TD
 
 ## Analytics › Monthly report › Download the files
 
-When the report is ready the window offers two real files, a written report and the figures as a table. In the hosted preview, where the host page blocks downloads, both buttons only explain why nothing happens. There is no Print and no PDF.
+When the report is ready the window offers two real files, a written report and the figures as a table, and a Print button. In the hosted preview, where the host page blocks downloads and printing, the buttons only explain why nothing happens. There is no PDF file: Print hands the page to the browser's own print window.
 
 Route: `/analytics`
 
@@ -498,9 +588,14 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Window shows 'Your report is ready'" }
-  sc@{ shape: curv-trap, label: "<b>Two buttons side by side</b><br/>'Download report' (dark)<br/>'Download data (CSV)'<br/>Footer button 'Done'" }
+  sc@{ shape: curv-trap, label: "<b>Three buttons</b><br/>'Download report' (dark)<br/>'Download data (CSV)'<br/>'Print'<br/>Footer button 'Done'" }
   c1@{ shape: trap-t, label: "Click 'Download report'" }
   c2@{ shape: trap-t, label: "Click 'Download data (CSV)'" }
+  c3@{ shape: trap-t, label: "Click 'Print'" }
+  q2@{ shape: diam, label: "Is this the hosted preview?" }
+  t3@{ shape: odd, label: "<b>'Print is off in this preview'</b><br/>'Open the single-file version of the demo to use it.'" }
+  pp@{ shape: rect, label: "<b>The browser's print window opens</b><br/>It prints a plain page of the report: title, period, scope and every section<br/>Not the sidebar, the menus or the window" }
+  pq@{ shape: rect, label: "<b>Cancel or Print in the browser window</b><br/>The report window stays open" }
   q1@{ shape: diam, label: "<b>Is this the hosted preview?</b><br/>(the host page blocks downloads and printing)" }
   t1@{ shape: odd, label: "<b>'Download is off in this preview'</b><br/>'Open the single-file version of the demo to use it.'" }
   p0@{ shape: rect, label: "<b>No file is made and no second toast</b><br/>The window stays open" }
@@ -512,12 +607,15 @@ flowchart TD
   p2@{ shape: rect, label: "Window stays open, so the other file can be saved too" }
   end
   n1@{ shape: rect, label: "Name pattern: psyflo-monthly-report, then the period (quarter, last_quarter, year), then the payer (all or cardinal, summit ...)" }
-  d1@{ shape: doc, label: "<b>Production, not in the demo</b><br/>One PDF monthly pack, aggregate only, drafted on the first business day<br/>The operator approves it before it is sent" }
+  d1@{ shape: doc, label: "<b>Production, not in the demo</b><br/>One PDF monthly pack, aggregate only, drafted on the first business day<br/>The operator approves it before it is sent<br/>The demo prints through the browser instead" }
   k1@{ shape: trap-t, label: "Click 'Done', press Escape, click the X or click outside" }
   e1@{ shape: stadium, label: "Window closes, back on Analytics" }
   g1@{ shape: subproc, label: "Continues in: Analytics › Monthly report › What the files contain" }
   s1 --> sc
-  sc --> c1 & c2
+  sc --> c1 & c2 & c3
+  c3 --> q2
+  q2 -->|"Yes"| t3 --> k1
+  q2 -->|"No"| pp --> pq --> k1
   c1 & c2 --> q1
   q1 -->|"Yes"| t1 --> p0 --> k1
   q1 -->|"No"| p1 --> t2 --> p2 --> k1
@@ -529,10 +627,10 @@ flowchart TD
   sc -.-> d1
   class s1 k_start
   class sc k_screen
-  class c1,c2,k1 k_click
-  class q1 k_decision
-  class t1,t2 k_toast
-  class p0,p1,p2,n1 k_process
+  class c1,c2,c3,k1 k_click
+  class q2,q1 k_decision
+  class t3,t1,t2 k_toast
+  class pp,pq,p0,p1,p2,n1 k_process
   class f1,f2,d1 k_doc
   class e1 k_end
   class g1 k_goto
@@ -541,11 +639,11 @@ flowchart TD
 
 ## Analytics › Monthly report › What the files contain
 
-The two downloaded files are built from the same numbers as the page, for the period and payer chosen when the window opened. A figure behind fewer than 20 decisions is written as 'Not enough decisions yet', never as a number.
+The two downloaded files and the printed page are built from the same numbers as the page, for the period and payer chosen when the window opened. A figure behind fewer than 20 decisions is written as 'Not enough decisions yet', never as a number.
 
 Route: `/analytics`
 
-Demo only: the real monthly pack in the product requirements is one PDF, aggregate only, approved by the operator before it is sent. The demo has no PDF and no Print.
+Demo only: the real monthly pack in the product requirements is one PDF, aggregate only, approved by the operator before it is sent. The demo has no PDF file. The printed page holds the same sections as the written report.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -573,11 +671,13 @@ flowchart TD
   m3@{ shape: doc, label: "<b>'## Approval rate by payer'</b><br/>One bullet per bar with its decisions" }
   m4@{ shape: doc, label: "<b>'## How people edit agent drafts'</b><br/>Three bullets, then 'Drafts counted'" }
   m5@{ shape: doc, label: "<b>'## Common denial reasons'</b><br/>Table: Reason, Payer, Count, Share of denials" }
+  m7@{ shape: doc, label: "<b>'## Denial outcomes'</b><br/>'Appeals overturned: 56% (54 of 96 rulings, partly restored counts as overturned)'<br/>'Written off after accepted denials: $88.7K (17 denials)'" }
   m6@{ shape: doc, label: "<b>'## What helps most'</b><br/>Numbered list: step, times applied, percent approved" }
+  m8@{ shape: doc, label: "<b>'## Why recommendations were dismissed'</b><br/>One bullet per reason with its count<br/>Left out when nobody dismissed one" }
   end
   subgraph gCsv ["Figures as a table (.csv)"]
   v1@{ shape: doc, label: "<b>One header row</b><br/>period, scope, section, label, value_percent, count" }
-  v2@{ shape: doc, label: "<b>Rows by section</b><br/>headline, approval by payer, draft edits, denial reasons, what helps most" }
+  v2@{ shape: doc, label: "<b>Rows by section</b><br/>headline, approval by payer, draft edits, denial reasons, denial outcomes, what helps most<br/>and 'dismissed recommendations' when there are any" }
   v3@{ shape: doc, label: "<b>Commas and quotes inside a value are wrapped in quotes</b><br/>Opens in a spreadsheet" }
   end
   q1@{ shape: diam, label: "Is the figure behind 20 or more decisions?" }
@@ -586,16 +686,16 @@ flowchart TD
   p3@{ shape: rect, label: "Same view as the page: the same period and payer, the same hidden figures" }
   e1@{ shape: stadium, label: "File matches the screen" }
   s1 --> m1 & v1
-  m1 --> m2 --> m3 --> m4 --> m5 --> m6
+  m1 --> m2 --> m3 --> m4 --> m5 --> m7 --> m6 --> m8
   v1 --> v2 --> v3
-  m6 --> q1
+  m8 --> q1
   v3 --> q1
   q1 -->|"Yes"| p1 --> e1
   q1 -->|"No"| p2 --> e1
   s1 -.-> p3
   p3 -.-> e1
   class s1 k_start
-  class m1,m2,m3,m4,m5,m6,v1,v2,v3 k_doc
+  class m1,m2,m3,m4,m5,m7,m6,m8,v1,v2,v3 k_doc
   class q1 k_decision
   class p1,p2,p3 k_process
   class e1 k_end

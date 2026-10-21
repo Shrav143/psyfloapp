@@ -18,13 +18,13 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>A referral arrives</b><br/>Or Reader reads dropped files" }
   subgraph gOpen ["Open: listed in 'Already arrived'"]
-  stNew@{ shape: cyl, label: "<b>NEW</b><br/>Checklist: Accept, Ask, Mark OK, Run coverage, Decline<br/>Full page: Accept, Request information, Decline<br/>Banner 'Reader found N things to check'" }
+  stNew@{ shape: cyl, label: "<b>NEW</b><br/>Checklist: Accept, Ask, Mark OK, Run coverage, Decline<br/>Full page: Accept, Request information, Decline, Start a case from this referral<br/>Accept is disabled while a required item is open<br/>Banner 'Reader found N things to check'" }
   stRev@{ shape: cyl, label: "<b>IN REVIEW</b><br/>Same buttons as New<br/>Set when someone gets an owner, or after a reply or a reopen" }
-  stAwait@{ shape: cyl, label: "<b>AWAITING INFO</b><br/>Pill 'Waiting on the referrer'<br/>Checklist: Accept, Decline, Mark OK; no 'Ask'<br/>Full page: Accept, Decline; no 'Request information'<br/>Banner 'Waiting on the referrer'" }
+  stAwait@{ shape: cyl, label: "<b>AWAITING INFO</b><br/>Pill 'Waiting on the referrer'<br/>Checklist: Accept, Decline, Mark OK; no 'Ask'<br/>Full page: Accept, Decline; no 'Request information'<br/>Asked rows no longer block Accept<br/>Banner 'Waiting on the referrer'" }
   end
   stAcc@{ shape: cyl, label: "<b>ACCEPTED</b><br/>Not in 'Already arrived'<br/>Checklist: 'Continue to medical records'<br/>Full page: 'Schedule intake'<br/>Green banner with 'Continue to medical records'" }
   stSch@{ shape: cyl, label: "<b>SCHEDULED</b><br/>Checklist: 'Continue to medical records'<br/>Full page: 'Mark admitted', 'Change intake'<br/>Banner adds 'Intake visit Thu 9:00 am'" }
-  stAdm@{ shape: cyl, label: "<b>ADMITTED</b><br/>Checklist: no main button<br/>Full page: no decision buttons<br/>Banner 'Admitted into IOP'" }
+  stAdm@{ shape: cyl, label: "<b>ADMITTED</b><br/>Checklist: 'Open the case' when a case or draft exists,<br/>else the note 'Admitted' with 'See the full referral'<br/>Full page: no decision buttons<br/>Banner 'Admitted into IOP'" }
   stDec@{ shape: cyl, label: "<b>DECLINED</b><br/>Checklist and full page: 'Reopen referral'<br/>Red banner 'Declined: reason' with 'Reopen'<br/>'A courtesy reply went to the referrer.'" }
   c1@{ shape: trap-t, label: "Pick an 'Owner' on the full page" }
   c2@{ shape: trap-t, label: "Click 'Send request'" }
@@ -44,6 +44,8 @@ flowchart TD
   cCont@{ shape: trap-t, label: "Click 'Continue to medical records'" }
   dReq@{ shape: diam, label: "Did this referral start a request?" }
   cOpen@{ shape: trap-t, label: "<b>Click 'Open R-1042'</b><br/>(banner also says 'Linked request R-1042' with its chip)" }
+  cOC@{ shape: trap-t, label: "<b>Click 'Open the case'</b><br/>(checklist of an admitted referral)" }
+  gCase@{ shape: subproc, label: "Continues in: Authorizations › Case page › Ways in" }
   gDash@{ shape: subproc, label: "<b>Continues in: Dashboard</b><br/>Opens request R-1042" }
   s1 --> stNew
   stNew --> c1 --> stRev
@@ -69,12 +71,13 @@ flowchart TD
   stAcc --> dReq
   stSch --> dReq
   stAdm -.-> cOpen
+  stAdm --> cOC --> gCase
   dReq -->|"Yes"| cOpen --> gDash
   dReq -->|"No"| cCont
   stNew -.-> gBan
   class s1 k_start
   class stNew,stRev,stAwait,stAcc,stSch,stAdm,stDec k_store
-  class c1,c2,c3,c4,c5,c6,c7,c8,cCont,cOpen k_click
-  class gAsk,gReply,gAcc,gDec,gSch,gBan,gMed,gDash k_goto
+  class c1,c2,c3,c4,c5,c6,c7,c8,cCont,cOpen,cOC k_click
+  class gAsk,gReply,gAcc,gDec,gSch,gBan,gMed,gCase,gDash k_goto
   class dReq k_decision
   style gOpen fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

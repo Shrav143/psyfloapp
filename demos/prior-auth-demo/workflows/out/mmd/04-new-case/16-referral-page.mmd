@@ -19,13 +19,13 @@ flowchart TD
   s1@{ shape: stadium, label: "<b>Click 'Open the full referral'</b><br/>on the referral checklist" }
   s2@{ shape: stadium, label: "<b>Click 'View' on the 'Referral or admission order' row</b><br/>on the Medical records step" }
   s3@{ shape: stadium, label: "<b>Open an old link such as /referrals/RF-2053</b><br/>(no case in the address)" }
-  p1@{ shape: rect, label: "<b>Address is /authorizations/new/referral/RF-2053?draft=…</b><br/>The case id rides along so the page can lead back to it" }
+  p1@{ shape: rect, label: "<b>Address is /authorizations/new/referral/RF-2053?draft=…</b><br/>The case id rides along so the page can lead back to it<br/>Without it, a draft that already holds this referral is used" }
   d1@{ shape: diam, label: "Is that referral in the demo?" }
   sc0@{ shape: curv-trap, label: "<b>Crumbs 'New case › Referral › RF-9999'</b><br/>'That referral is not in the demo'<br/>'Referral RF-9999 does not exist. Go back to the referral step to drop the documents or pick one that arrived.'" }
   cBack@{ shape: trap-t, label: "Click 'Back to the referral step'" }
   gStart@{ shape: subproc, label: "Continues in: New case › Referral › Start screen" }
   st1@{ shape: cyl, label: "<b>Referral is marked opened</b><br/>Sidebar badge on 'New case' drops" }
-  sc1@{ shape: curv-trap, label: "<b>Referral page</b><br/>Crumbs 'New case › Referral › RF-2053'<br/>Stepper: 'Referral' is current, nothing in it is clickable" }
+  sc1@{ shape: curv-trap, label: "<b>Referral page</b><br/>Crumbs 'New case › Referral › RF-2053' and, at the right, the button 'Back to the case'<br/>Stepper: 'Referral' is current, nothing in it is clickable" }
   sH@{ shape: curv-trap, label: "<b>Header card</b><br/>Pill '{Program} requested', big RF number, status pill, urgency pill<br/>Patient · source · channel · received · payer<br/>Small stepper Received, Reviewed, Decided, Admitted" }
   pSla@{ shape: rect, label: "<b>Red pill 'Past response target' while New or In review</b><br/>after 1 hour (emergent), 4 hours (urgent) or 24 hours (routine)" }
   gHead@{ shape: subproc, label: "Continues in: New case › Referral › Header actions" }
@@ -34,12 +34,18 @@ flowchart TD
   subgraph gCr ["Breadcrumb"]
   cC1@{ shape: trap-t, label: "Click the crumb 'New case'" }
   cC2@{ shape: trap-t, label: "Click the crumb 'Referral'" }
-  dC@{ shape: diam, label: "Was a case in the address?" }
-  dD@{ shape: diam, label: "Was a case in the address?" }
+  dC@{ shape: diam, label: "Is there a case?" }
+  dD@{ shape: diam, label: "Is there a case?" }
   pC1@{ shape: rect, label: "Opens that case (its current step)" }
   pC2@{ shape: rect, label: "Opens the checklist for this referral: ?ref=RF-2053" }
   pC3@{ shape: rect, label: "<b>Opens New case with no case id</b><br/>A new blank case starts" }
   pC4@{ shape: rect, label: "'RF-2053' is plain text, not a link" }
+  end
+  subgraph gBk ["Back to the case"]
+  cBk@{ shape: trap-t, label: "<b>Click 'Back to the case'</b><br/>(beside the crumbs)" }
+  dBk@{ shape: diam, label: "<b>Is there a case?</b><br/>(?draft= in the address, or a draft that holds this referral)" }
+  pBk1@{ shape: rect, label: "Opens that case (its current step)" }
+  pBk2@{ shape: rect, label: "<b>Opens New case with no case id</b><br/>A new blank case starts" }
   end
   gOv@{ shape: subproc, label: "Continues in: New case › How a case starts and resumes" }
   gChk@{ shape: subproc, label: "Continues in: New case › Referral › Referral checklist" }
@@ -65,6 +71,9 @@ flowchart TD
   sH --> gHead
   sc1 --> sBan --> gBan
   sc1 --> cC1 --> dC
+  sc1 --> cBk --> dBk
+  dBk -->|"Yes"| pBk1 --> gOv
+  dBk -->|"No"| pBk2 --> gOv
   sc1 --> cC2 --> dD
   dC -->|"Yes"| pC1 --> gOv
   dC -->|"No"| pC3 --> gOv
@@ -80,11 +89,12 @@ flowchart TD
   sTab --> cT5 --> gT4
   sDoc -.-> gT1
   class s1,s2,s3 k_start
-  class p1,pSla,pC1,pC2,pC3,pC4 k_process
-  class d1,dC,dD k_decision
+  class p1,pSla,pC1,pC2,pC3,pC4,pBk1,pBk2 k_process
+  class d1,dC,dD,dBk k_decision
   class sc0,sc1,sH,sBan,sDoc,sTab k_screen
-  class cBack,cC1,cC2,cT1,cT2,cT3,cT4,cT5 k_click
+  class cBack,cC1,cC2,cBk,cT1,cT2,cT3,cT4,cT5 k_click
   class gStart,gHead,gBan,gOv,gChk,gT1,gT2,gT3,gT4 k_goto
   class st1 k_store
   style gCr fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gBk fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gTwo fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

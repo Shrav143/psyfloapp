@@ -23,7 +23,7 @@ flowchart TD
   hq@{ shape: diam, label: "Any system on the list?" }
   ho@{ shape: win-pane, label: "<b>Manage drawer opens</b><br/>for the outpatient site, or the first system" }
   hx@{ shape: stadium, label: "<b>Button is dimmed</b><br/>Nothing to open" }
-  hb2@{ shape: trap-t, label: "Click 'Connect a system'" }
+  hb2@{ shape: trap-t, label: "<b>Click 'Connect a system'</b><br/>A paused Reader shows a toast instead" }
   end
   hg1@{ shape: subproc, label: "Continues in: EMR Connect › Manage › Open the Manage drawer" }
   hg2@{ shape: subproc, label: "Continues in: EMR Connect › Connect a system › Choose the system and contact" }
@@ -38,9 +38,10 @@ flowchart TD
   c1@{ shape: curv-trap, label: "<b>Connected systems</b><br/>Read access for charts, insurance details and medications" }
   c2@{ shape: rect, label: "One row per system: name, what it holds, last sync, status pill, buttons" }
   c3@{ shape: trap-t, label: "Click 'Sync now' in the card header" }
-  c4@{ shape: trap-t, label: "Click 'Sync now', 'Fix', 'Reconnect' or 'Manage' on a row" }
+  c4@{ shape: trap-t, label: "<b>Click 'Sync now', 'Fix', 'Reconnect' or 'Manage' on a row</b><br/>A row that is not Connected also says that New case cannot pull a chart from it" }
   c5@{ shape: odd, label: "<b>'Connect your record system to let charts arrive on their own.'</b><br/>Empty list. Not reachable in the demo: a system can be disconnected, never removed" }
   end
+  cg0@{ shape: subproc, label: "Continues in: EMR Connect › Sync › When an agent is paused or asks first" }
   cg1@{ shape: subproc, label: "Continues in: EMR Connect › Sync › Sync now" }
   cg2@{ shape: subproc, label: "Continues in: EMR Connect › Connected systems › What each status means" }
   cg3@{ shape: subproc, label: "Continues in: EMR Connect › Problems › Every error state and what it needs" }
@@ -51,8 +52,8 @@ flowchart TD
   ag@{ shape: subproc, label: "Continues in: EMR Connect › Recent activity › Read the activity log" }
   subgraph gSide ["Right-hand panels"]
   r1@{ shape: curv-trap, label: "<b>What the agents can do here</b><br/>Read: assessments, notes, labs, medications, insurance card" }
-  r2@{ shape: rect, label: "Write back: only the approval number and dates, and only after a person approves" }
-  r3@{ shape: curv-trap, label: "<b>Needs a mapping</b><br/>Pill with the count, then one row per field with a 'Map' button" }
+  r2@{ shape: rect, label: "<b>Write back: only the approval number and dates, and only after a person approves</b><br/>A system's write-back switch in Manage decides whether the Dashboard offers it" }
+  r3@{ shape: curv-trap, label: "<b>Needs a mapping</b><br/>'A chart pulled in New case leaves these fields blank until you map them.'<br/>Pill with the count, then one row per field with a 'Map' button" }
   r4@{ shape: trap-t, label: "Click 'Map' on a row" }
   end
   rg@{ shape: subproc, label: "Continues in: EMR Connect › Needs a mapping › Map a field" }
@@ -73,6 +74,8 @@ flowchart TD
   c2 --> c3 & c4
   c1 -.-> c5
   c3 --> cg1
+  c3 -.-> cg0
+  c4 -.-> cg0
   c4 --> cg2
   c4 -.-> cg3
   p1 --> a1
@@ -87,7 +90,7 @@ flowchart TD
   class hq k_decision
   class ho k_overlay
   class hx k_endx
-  class hg1,hg2,tg,cg1,cg2,cg3,ag,rg k_goto
+  class hg1,hg2,tg,cg0,cg1,cg2,cg3,ag,rg k_goto
   class t1,t2,t3,t4,c2,r2 k_process
   class c5 k_toast
   style gHead fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

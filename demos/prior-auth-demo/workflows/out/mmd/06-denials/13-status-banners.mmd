@@ -18,17 +18,22 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "A denial is on screen" }
   d1@{ shape: diam, label: "Accepted?" }
-  t1@{ shape: odd, label: "<b>'Closed. You accepted the decision'</b><br/>'Reason: ... The write-off is logged.'" }
+  t1@{ shape: odd, label: "<b>'Closed. You accepted the decision'</b><br/>'Reason: ... Analytics counts the write-off.'" }
   c1@{ shape: trap-t, label: "Click 'Plan the step-down'" }
-  g1@{ shape: subproc, label: "Continues in: Case Manager › Reviews" }
+  g1@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Step-down plans from accepted denials" }
+  d2a@{ shape: diam, label: "Payer's decision on the appeal recorded as Overturned or Partly overturned?" }
+  t2a@{ shape: odd, label: "<b>'Overturned on appeal' or 'Partly overturned on appeal'</b><br/>Your note, or 'The ledger is updated and the next review is booked.'" }
+  c2a@{ shape: trap-t, label: "Click 'See on the Dashboard'" }
   d2@{ shape: diam, label: "Call outcome logged as Overturned or Partly restored?" }
   t2@{ shape: odd, label: "<b>'Overturned on the call' or 'Partly restored on the call'</b><br/>Your note, or 'The ledger is updated and the next review is booked.'" }
   c2@{ shape: trap-t, label: "Click 'See on the Dashboard'" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
-  d3@{ shape: diam, label: "Chip is 'Appeal filed' or 'External review'?" }
-  t3@{ shape: odd, label: "<b>'Appeal filed. Waiting on the payer'</b><br/>'filed 10/05, decision 11/02. Navigator checks every day and saves the answer to the case.'" }
+  d3@{ shape: diam, label: "Chip is 'Appeal filed', 'Second-level appeal filed' or 'External review'?" }
+  t3@{ shape: odd, label: "<b>'Appeal filed. Waiting on the payer' (or 'Second-level appeal filed', 'External review')</b><br/>'Filed 10/05, decision 11/02. Navigator checks every day. When the payer answers, record the decision here.'" }
   c3@{ shape: trap-t, label: "Click 'View the appeal'" }
+  c3a@{ shape: trap-t, label: "Click 'Record the payer's decision'" }
   g3@{ shape: subproc, label: "Continues in: Denial Intelligence › Written appeal › After filing" }
+  g3a@{ shape: subproc, label: "Continues in: Denial Intelligence › Written appeal › Record the payer's decision" }
   d4@{ shape: diam, label: "Chip is 'Appeal drafting'?" }
   d5@{ shape: diam, label: "Has a draft been saved?" }
   t4@{ shape: odd, label: "<b>'The appeal is drafted and waiting for a clinician's signature'</b><br/>'Review the letter, change anything you like, then sign and file.'" }
@@ -46,10 +51,13 @@ flowchart TD
   p2@{ shape: rect, label: "<b>Calls booked at the start show the time from the denial's data</b><br/>Later ones show the time that was picked" }
   s1 --> d1
   d1 -->|"Yes"| t1 --> c1 --> g1
-  d1 -->|"No"| d2
+  d1 -->|"No"| d2a
+  d2a -->|"Yes"| t2a --> c2a --> g2
+  d2a -->|"No"| d2
   d2 -->|"Yes"| t2 --> c2 --> g2
   d2 -->|"No"| d3
   d3 -->|"Yes"| t3 --> c3 --> g3
+  t3 --> c3a --> g3a
   d3 -->|"No"| d4
   d4 -->|"Yes"| d5
   d5 -->|"Yes"| t4 --> c4
@@ -61,9 +69,9 @@ flowchart TD
   t6 -.-> p2
   d6 -->|"No"| p1 --> sc1
   class s1 k_start
-  class d1,d2,d3,d4,d5,d6 k_decision
-  class t1,t2,t3,t4,t5,t6 k_toast
-  class c1,c2,c3,c4,c5,c6 k_click
-  class g1,g2,g3,g4,g5,g6 k_goto
+  class d1,d2a,d2,d3,d4,d5,d6 k_decision
+  class t1,t2a,t2,t3,t4,t5,t6 k_toast
+  class c1,c2a,c2,c3,c3a,c4,c5,c6 k_click
+  class g1,g2,g3,g3a,g4,g5,g6 k_goto
   class p1,p2 k_process
   class sc1 k_screen

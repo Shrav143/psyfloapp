@@ -21,15 +21,21 @@ flowchart LR
   u0@{ shape: diam, label: "Units used: is the case approved yet?" }
   u1@{ shape: rect, label: "<b>'not yet approved' in grey</b><br/>(admissions, retro-authorizations and first requests: 9 cases)" }
   u2@{ shape: rect, label: "<b>A bar and '10 of 21 days' (or 'units' for IOP)</b><br/>Bar turns terracotta at 75 percent used or more" }
+  a0@{ shape: diam, label: "Clock: did the clinic accept this denial?" }
+  k11@{ shape: rect, label: "<b>'Step-down plan open'</b><br/>The plan is on Active cases, in 'Step-down plans'<br/>Status is unchanged" }
+  b0@{ shape: diam, label: "Clock: did a signature book a next review for this case?" }
+  q0@{ shape: diam, label: "Is the case also a request that has a due time on its case page?" }
+  q1@{ shape: rect, label: "<b>Same words and hours as the case header</b><br/>'Notice due in 5 h', 'Answer due in 9 h', 'Review due in 3 h', 'Decision expected Thu'<br/>P-1499 reads 9 h here and on its case page, and both tick together with Fast-forward<br/>Red under 1 day (a payer decision: only when overdue)<br/>An approved case has no due time on its page, so it keeps its own clock below" }
   k0@{ shape: diam, label: "Clock: what is the next event that binds?" }
   k1@{ shape: rect, label: "<b>Notice</b><br/>'Notice due in 5 h' or 'Notice overdue'<br/>Red under 2 days" }
   k2@{ shape: rect, label: "<b>Retro window</b><br/>'Window closes 18 h' or 'Window closed'<br/>Red under 2 days" }
   k3@{ shape: rect, label: "<b>Peer-to-peer</b><br/>'P2P in 36 h' or 'P2P window closed'<br/>Red under 2 days" }
-  k4@{ shape: rect, label: "<b>Payer question</b><br/>'Answer due in 20 h' or 'Answer overdue'<br/>Red under 1 day" }
+  k4@{ shape: rect, label: "<b>Payer question</b><br/>'Answer due in 6 h' or 'Answer overdue'<br/>Red under 1 day" }
   k5@{ shape: rect, label: "<b>Approval ends</b><br/>'3 days left', '14 h left' or 'Approval ended'<br/>Red under 1 day" }
   k6@{ shape: rect, label: "<b>Clinical review</b><br/>'Review in 2 days', 'Review tomorrow', 'Review today', 'Review due'<br/>Red only when overdue" }
   k7@{ shape: rect, label: "<b>Decision from the payer</b><br/>'Decision Thu', 'Decision in 5 h' or 'Decision overdue'<br/>Red only when overdue" }
   k8@{ shape: rect, label: "<b>Units only</b><br/>'32 units left'<br/>Never red" }
+  k10@{ shape: rect, label: "<b>Next review booked after a signature</b><br/>'Next review Tue 10/27', then 'Review due' when the day comes<br/>Status becomes 'On track' (or stays 'Awaiting payer')" }
   k9@{ shape: rect, label: "Times under two days show hours ('5 h'). Longer ones show days ('3 days')" }
   s1p@{ shape: rect, label: "<b>Approval chance: percent with a bar, coloured by band</b><br/>Strong 80 and above, Moderate 55 to 79, At risk below 55" }
   s2p@{ shape: rect, label: "<b>Status pill: 'Needs action' (red), 'Review due' (amber), 'Awaiting payer' (grey), 'On track' (green)</b><br/>The four tiles count these" }
@@ -39,8 +45,14 @@ flowchart LR
   s1 --> r1 --> u0
   u0 -->|"No"| u1
   u0 -->|"Yes"| u2
-  u1 --> k0
-  u2 --> k0
+  u1 --> a0
+  u2 --> a0
+  a0 -->|"Yes"| k11 --> s1p
+  a0 -->|"No"| b0
+  b0 -->|"Yes"| k10 --> s1p
+  b0 -->|"No"| q0
+  q0 -->|"Yes"| q1 --> s1p
+  q0 -->|"No"| k0
   k0 -->|"Notice"| k1
   k0 -->|"Retro window"| k2
   k0 -->|"P2P call"| k3
@@ -54,7 +66,7 @@ flowchart LR
   s3p -.-> e1
   class s1 k_start
   class r1 k_screen
-  class u0,k0 k_decision
-  class u1,u2,k1,k2,k3,k4,k5,k6,k7,k8,k9,s1p,s2p,s3p k_process
+  class u0,a0,b0,q0,k0 k_decision
+  class u1,u2,k11,q1,k1,k2,k3,k4,k5,k6,k7,k8,k10,k9,s1p,s2p,s3p k_process
   class g1 k_goto
   class e1 k_end

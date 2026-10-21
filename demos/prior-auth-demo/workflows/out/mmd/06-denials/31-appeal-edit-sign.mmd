@@ -33,14 +33,16 @@ flowchart TD
   st2@{ shape: cyl, label: "<b>Appeal filed: letter, evidence, who signed, time, decision date</b><br/>History: 'You signed the appeal as Medical director' with 'Attested that the letter was reviewed against the chart.'" }
   x1@{ shape: st-rect, label: "Payer's portal takes the appeal (demo: simulated)" }
   a1@{ shape: hex, label: "Navigator files it through the payer's portal and saves the receipt" }
-  st3@{ shape: cyl, label: "<b>Request: chip 'Appeal filed', 'Waiting on the payer'</b><br/>Deadline cleared; 'filed 10/20', 'decision 11/19'" }
+  st3@{ shape: cyl, label: "<b>Request: chip 'Appeal filed' ('Second-level appeal filed' or 'External review' on a later level), 'Waiting on the payer'</b><br/>Deadline cleared; 'filed 10/20', 'decision 11/19'" }
   t2@{ shape: odd, label: "<b>'Appeal filed'</b><br/>'Cardinal decides by 11/19. It shows on the Dashboard.'" }
   t3@{ shape: odd, label: "<b>Notification 'Appeal filed' from Navigator</b><br/>Opens the request on the Dashboard" }
   p2@{ shape: rect, label: "<b>Drawer closes</b><br/>Banner 'Appeal filed. Waiting on the payer'<br/>'Your options' card is gone" }
   c4@{ shape: trap-t, label: "Click 'Cancel' or the X in the modal" }
   p3@{ shape: rect, label: "Back to the open drawer, nothing filed" }
   c5@{ shape: trap-t, label: "Press Esc while the modal is open" }
-  e1@{ shape: stadium, label: "<b>Both modal and drawer close</b><br/>Edits since the last 'Save draft' are lost" }
+  p4@{ shape: rect, label: "<b>Only the modal closes (one layer per press)</b><br/>The drawer stays open and the letter keeps its unsaved edits" }
+  c6@{ shape: trap-t, label: "Press Esc again, or click X in the drawer" }
+  e1@{ shape: stadium, label: "<b>Drawer closes</b><br/>Edits since the last 'Save draft' are lost" }
   g1@{ shape: subproc, label: "Continues in: Denial Intelligence › Written appeal › After filing" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   s1 --> i1 --> c1
@@ -55,15 +57,16 @@ flowchart TD
   st3 --> t3 --> g2
   p2 --> g1
   o1 --> c4 --> p3
-  o1 --> c5 --> e1
+  o1 --> c5 --> p4 --> c6 --> e1
+  p3 --> c6
   class s1 k_start
   class i1,i2,i3,i4 k_input
-  class c1,c2,c3,c4,c5 k_click
+  class c1,c2,c3,c4,c5,c6 k_click
   class st1,st2,st3 k_store
   class t1,t2,t3 k_toast
   class o1 k_overlay
   class d1 k_decision
-  class p1,p2,p3 k_process
+  class p1,p2,p3,p4 k_process
   class w1 k_wait
   class x1 k_ext
   class a1 k_agent

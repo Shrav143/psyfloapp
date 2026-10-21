@@ -17,10 +17,10 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Dashboard is open</b><br/>'Requests' card under the stage strip" }
-  sc1@{ shape: curv-trap, label: "<b>Card header</b><br/>'Requests' and 'Bars show progress: Prepared, Received, In review, Decided...'<br/>Right side: 'Showing 8 of 39'" }
+  sc1@{ shape: curv-trap, label: "<b>Card header</b><br/>'Requests' and 'Bars show progress: Prepared, Received, In review, Decided...'<br/>Right side: 'Showing 8 of 40'" }
   sc2@{ shape: curv-trap, label: "<b>Seven columns</b><br/>Case, Payer, Where it is, Clock, At stake, What happens next, and an unnamed column with 'Open'" }
-  p1@{ shape: rect, label: "No column heading can be clicked: there is no sort control" }
-  p2@{ shape: rect, label: "<b>Rows are ordered by the app</b><br/>1 needs you, 2 very late, 3 late, 4 denial with under 2 days left, 5 the rest<br/>Same group: longest time in stage first" }
+  p1@{ shape: rect, label: "<b>The headings Case, Payer, Where it is, Clock and At stake are buttons that sort the rows</b><br/>'What happens next' and the Open column do not sort" }
+  p2@{ shape: rect, label: "<b>Rows start in the app's order</b><br/>1 needs you, 2 very late, 3 late, 4 denial with under 2 days left, 5 the rest<br/>Same group: longest time in stage first" }
   d0@{ shape: diam, label: "Do any rows match the filters?" }
   em@{ shape: curv-trap, label: "<b>'No requests match'</b><br/>with 'Clear filters'" }
   subgraph gRow ["One row (example: P-1499)"]
@@ -29,40 +29,44 @@ flowchart TD
   c2@{ shape: trap-t, label: "Click the underlined case ID, e.g. 'P-1499'" }
   c3@{ shape: trap-t, label: "Click 'Open' on the row" }
   end
-  p3@{ shape: rect, label: "<b>Address gets ?request=P-1499</b><br/>A new history entry, so the browser Back button closes the drawer" }
-  p4@{ shape: rect, label: "<b>Case ID click opens it twice, so the address is added twice</b><br/>Back must be pressed twice (demo quirk)" }
+  p3@{ shape: rect, label: "<b>Address gets ?request=P-1499</b><br/>One new history entry, so one press of the browser Back button closes the drawer" }
   o1@{ shape: win-pane, label: "Request drawer opens on the right" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Read a row: bars, clock and what happens next" }
   g3@{ shape: subproc, label: "Continues in: Dashboard › Filters › Clear filters and empty states" }
+  g4@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Sort the rows" }
+  g5@{ shape: subproc, label: "Continues in: Dashboard › Stage strip › Click a stage tile" }
   d1@{ shape: diam, label: "Are there more rows than are shown?" }
-  sc3@{ shape: curv-trap, label: "<b>Under the table</b><br/>'Show 8 more' and '31 not shown'" }
+  sc3@{ shape: curv-trap, label: "<b>Under the table</b><br/>'Show 8 more' and '32 not shown'" }
   c4@{ shape: trap-t, label: "Click 'Show 8 more'" }
-  p5@{ shape: rect, label: "<b>Eight more rows are added</b><br/>The button says 'Show 7 more' when 7 are left" }
-  e1@{ shape: stadium, label: "<b>All rows shown</b><br/>'Showing 39 of 39'; no button" }
-  p6@{ shape: rect, label: "Changing any filter or the date range goes back to the first 8 rows" }
-  t1@{ shape: odd, label: "<b>Count text 'Showing 8 of 39'</b><br/>With Appeal or call: 'Showing 7 of 7 · $62.4K at stake'" }
+  p5@{ shape: rect, label: "<b>Eight more rows are added</b><br/>With fewer than 8 left the button shows that number, e.g. 'Show 5 more'" }
+  e1@{ shape: stadium, label: "<b>All rows shown</b><br/>'Showing 40 of 40'; no button" }
+  p6@{ shape: rect, label: "Changing any filter, the date range or the sort goes back to the first 8 rows" }
+  t1@{ shape: odd, label: "<b>Count text 'Showing 8 of 40'</b><br/>With Appeal or call: 'Showing 8 of 8 · $67.8K at stake'" }
+  sc4@{ shape: curv-trap, label: "<b>With the Preparing tile chosen</b><br/>A line under the table: '2 more are being prepared in New case.' and 'Open Active cases'" }
   s1 --> sc1 --> sc2 --> p1 --> p2 --> d0
   d0 -->|"No"| em --> g3
   d0 -->|"Yes"| r1
   r1 --> c1 & c2 & c3
   c1 --> p3
   c3 --> p3
-  c2 --> p4 --> p3
+  c2 --> p3
   p3 --> o1 --> g1
   r1 -.-> g2
+  p1 -.-> g4
   d0 -->|"Yes"| d1
   sc1 -.-> t1
   d1 -->|"Yes"| sc3 --> c4 --> p5 --> d1
   d1 -->|"No"| e1
   sc3 -.-> p6
+  d1 -.-> sc4 -.-> g5
   class s1 k_start
-  class sc1,sc2,em,r1,sc3 k_screen
-  class p1,p2,p3,p4,p5,p6 k_process
+  class sc1,sc2,em,r1,sc3,sc4 k_screen
+  class p1,p2,p3,p5,p6 k_process
   class d0,d1 k_decision
   class c1,c2,c3,c4 k_click
   class o1 k_overlay
-  class g1,g2,g3 k_goto
+  class g1,g2,g3,g4,g5 k_goto
   class e1 k_end
   class t1 k_toast
   style gRow fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

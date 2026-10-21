@@ -39,13 +39,14 @@ flowchart TD
   dName@{ shape: diam, label: "<b>Does the name match a document?</b><br/>The longest matching word wins" }
   dTaken@{ shape: diam, label: "Did an earlier file in this drop already take that slot?" }
   pDup@{ shape: rect, label: "Second file: 'Could not place'" }
-  pPlace@{ shape: rect, label: "<b>File goes into its slot</b><br/>It replaces any file already in that slot" }
+  pPlace@{ shape: rect, label: "<b>File goes into its slot</b><br/>It replaces any file already in that slot<br/>and clears a 'marked not available' on it" }
   dOpen@{ shape: diam, label: "No match: is a required slot still open?" }
-  pGuess@{ shape: rect, label: "<b>Takes the first open required slot, referral last</b><br/>'Reader guessed this one. Check it.'" }
+  pGuess@{ shape: rect, label: "<b>Takes the first open required slot on the payer's list, referral last</b><br/>Skips a document marked 'not available'<br/>'Reader guessed this one. Check it.'" }
   pNone@{ shape: rect, label: "<b>'Could not place'</b><br/>Any file type is taken, but there is no slot left" }
   end
   st1@{ shape: cyl, label: "<b>Draft updated once</b><br/>Each filled row remembers its file: 'Read from FILE by Reader. Check it.'" }
   pReset@{ shape: rect, label: "<b>If the agents had already run, the run restarts</b><br/>Because the documents changed" }
+  tStale@{ shape: odd, label: "<b>'Records changed after the agents ran'</b><br/>'Their work was cleared. The agents check again when you continue.'" }
   a3@{ shape: hex, label: "<b>Reader reads each placed file</b><br/>About 1 second each, one after another<br/>Row shows 'Reader is reading'" }
   dFind@{ shape: diam, label: "<b>Does the file get a finding?</b><br/>Sample files are scripted<br/>Other files: about 1 case in 5" }
   pOk@{ shape: rect, label: "Row: 'N checks passed'" }
@@ -58,7 +59,7 @@ flowchart TD
   dHas@{ shape: diam, label: "<b>Does the case already have a patient?</b><br/>From a referral, an EMR pull or typed initials" }
   stAll@{ shape: cyl, label: "<b>Fills J.M., 34 · Summit Medicaid HMO · …4821</b><br/>Residential 3.5 · Admission · F10.20, F33.2 · reason" }
   stKeep@{ shape: cyl, label: "<b>Keeps that patient and request</b><br/>Adds only a blank member ID, start date or type" }
-  stDocs@{ shape: cyl, label: "<b>Adds 8 of the 9 Summit documents</b><br/>'Therapy note from the last 14 days' is left out on purpose" }
+  stDocs@{ shape: cyl, label: "<b>Adds a sample file for each document on the payer's saved list</b><br/>Summit: 8 of 9. 'Therapy note from the last 14 days' is left out on purpose" }
   t2@{ shape: odd, label: "<b>'Sample chart loaded'</b><br/>'J.M., 34. 8 of 9 documents are added and being checked.'" }
   end
   s1 --> i1
@@ -80,6 +81,7 @@ flowchart TD
   dOpen -->|"Yes"| pGuess --> st1
   dOpen -->|"No"| pNone --> st1
   st1 --> pReset --> a3 --> dFind
+  pReset -.-> tStale
   dFind -->|"No"| pOk --> t1
   dFind -->|"Yes"| pWarn --> t1
   t1 --> pTick --> g30
@@ -96,7 +98,7 @@ flowchart TD
   class eNone k_endx
   class a1,a2,a3 k_agent
   class st1,stAll,stKeep,stDocs k_store
-  class t1,t2 k_toast
+  class tStale,t1,t2 k_toast
   class g30 k_goto
   style gCard fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gChart fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

@@ -43,7 +43,7 @@ flowchart TD
   sv@{ shape: trap-t, label: "Click 'Save workflow'" }
   gs@{ shape: subproc, label: "Continues in: Payers › Process › Save the workflow" }
   cx@{ shape: trap-t, label: "Click 'Cancel'" }
-  cesc@{ shape: trap-t, label: "<b>Press Escape, click the X</b><br/>or click the dimmed area" }
+  cesc@{ shape: trap-t, label: "<b>Press Escape, click the X</b><br/>or click the dimmed area<br/>Escape with a step menu open<br/>closes only the menu" }
   x1@{ shape: stadium, label: "<b>Drawer closes</b><br/>Every unsaved change is dropped<br/>No 'are you sure'" }
   s1 --> dr --> bn --> sc --> copy
   sc --> i1 & i2 & i3 & i4

@@ -21,26 +21,28 @@ flowchart TD
   q1@{ shape: diam, label: "More than six lines?" }
   b1@{ shape: trap-t, label: "Click 'See all 8'" }
   nb@{ shape: rect, label: "No button. The card shows every line" }
-  o1@{ shape: win-pane, label: "<b>Activity log drawer</b><br/>Every read and write, newest first. Admins can see who and what." }
+  o1@{ shape: win-pane, label: "<b>Activity log drawer</b><br/>Every read and write, newest first." }
   o2@{ shape: rect, label: "<b>All lines in one list</b><br/>Same icon, text and time as the card" }
   x1@{ shape: trap-t, label: "Click the X, press Escape, or click the dimmed area" }
   e1@{ shape: stadium, label: "<b>Drawer closes</b><br/>Back on the page" }
   subgraph gAdds ["What adds a line (newest goes on top)"]
   l1@{ shape: hex, label: "<b>Reader or Verify</b><br/>Sync now: one of four results in turn, for example 'Pulled 6 new files for 3 open cases and matched the insurance cards'" }
   l2@{ shape: hex, label: "<b>Reader</b><br/>Connect: 'Tested the read-only connection to {name} and found 5 files to pull'" }
-  l3@{ shape: hex, label: "<b>Reader</b><br/>Map: 'Mapped 'Level of care' to IOP. It applies to every future pull'<br/>Reconnect: 'Reconnected {name} and read-only access passed its test'" }
-  l4@{ shape: hex, label: "<b>Navigator</b><br/>Fix: 'Renewed the read-only sign-in for billing system and pulled 12 remittances'<br/>Disconnect and write-back switch lines" }
+  l3@{ shape: hex, label: "<b>Reader</b><br/>Map: 'Mapped 'Level of care' to IOP. It applies to every future pull'" }
+  l4@{ shape: hex, label: "<b>Navigator</b><br/>Fix: 'Renewed the read-only sign-in for billing system and pulled 12 remittances'<br/>Reconnect: 'Renewed the read-only sign-in for {name}' (only when it needed a fix first), then 'Reconnected {name} and read-only access passed its test'<br/>Disconnect and write-back switch lines" }
   end
   st@{ shape: cyl, label: "<b>Activity log</b><br/>Seed: eight lines from Reader, Verify and Navigator" }
   nt@{ shape: odd, label: "<b>Dashboard 'Write to the EMR' adds no line here</b><br/>It adds an event to that request instead" }
+  fz@{ shape: rect, label: "<b>Every line is written at every freedom level</b><br/>The agent's Freedom in Settings only decides whether a toast follows" }
   p1 --> r1 --> q1
   q1 -->|"Yes"| b1 --> o1 --> o2 --> x1 --> e1
   q1 -->|"No"| nb
   l1 & l2 & l3 & l4 --> st
   st --> r1
   p1 -.-> nt
+  st -.-> fz
   class p1 k_screen
-  class r1,nb,o2 k_process
+  class r1,nb,o2,fz k_process
   class q1 k_decision
   class b1,x1 k_click
   class o1 k_overlay

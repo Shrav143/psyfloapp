@@ -10,7 +10,7 @@ The first page of Eligibility & Benefits. A headline count, four tiles, a filter
 
 Route: `/authorizations/eligibility`
 
-Demo only: the 34 patients are invented and every check is simulated.
+Demo only: the 37 patients are invented and every check is simulated. Re-check dates run on the Demo clock.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -32,20 +32,21 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Click 'Eligibility & Benefits' under 'Authorizations' in the sidebar" }
-  sc@{ shape: curv-trap, label: "<b>Eligibility & Benefits</b><br/>Title '28 of 34 patients are cleared to bill.'<br/>'Coverage and benefits are checked live, so you know the clinic will be paid before the first day.'" }
-  p1@{ shape: rect, label: "<b>Sidebar badge counts patients not 'Cleared to bill'</b><br/>Demo start: 6 = 4 'Authorization first' + 2 'Fix before billing'" }
+  sc@{ shape: curv-trap, label: "<b>Eligibility & Benefits</b><br/>Title '28 of 37 patients are cleared to bill.'<br/>'Coverage and benefits are checked live, so you know the clinic will be paid before the first day.'" }
+  p1@{ shape: rect, label: "<b>Sidebar badge counts patients not 'Cleared to bill'</b><br/>Demo start: 9 = 4 'Authorization first' + 5 'Fix before billing'" }
   subgraph gTop ["Top of the page"]
   hd@{ shape: curv-trap, label: "<b>Header button</b><br/>'Verify a patient'" }
-  tl@{ shape: curv-trap, label: "<b>Four tiles, left to right</b><br/>'Cleared to bill' 28 · 'Authorization first' 4<br/>'Fix before billing' 2 · 'Re-check due' 5" }
-  cnt@{ shape: rect, label: "<b>Counts follow each row's verdict</b><br/>'Re-check due' counts rows flagged for a re-check this week" }
+  tl@{ shape: curv-trap, label: "<b>Four tiles, left to right</b><br/>'Cleared to bill' 28 · 'Authorization first' 4<br/>'Fix before billing' 5 · 'Re-check due' 5" }
+  cnt@{ shape: rect, label: "<b>Counts follow each row's verdict</b><br/>'Re-check due' counts rows with a re-check still to come this week<br/>Verify runs each one on its own when the Demo clock passes its time" }
   bn@{ shape: curv-trap, label: "<b>Banner 'Why we check twice.'</b><br/>Eligibility says the patient is covered. Benefits say the service is payable." }
   end
   subgraph gBar ["Filter bar"]
   fl@{ shape: curv-trap, label: "<b>'Search by case ID or initials'</b><br/>Menus 'All payers', 'All programs', 'All verdicts'" }
   end
   subgraph gCard ["Card 'Patients'"]
-  cd@{ shape: curv-trap, label: "<b>Card 'Patients'</b><br/>'Checked live against the state and the plan, then re-checked on a schedule'<br/>'Showing 12 of 34'" }
+  cd@{ shape: curv-trap, label: "<b>Card 'Patients'</b><br/>'Checked live against the state and the plan, then re-checked on a schedule'<br/>'Showing 12 of 37'" }
   so@{ shape: rect, label: "<b>Fixed sort order</b><br/>'Fix before billing' first, then 'Authorization first', then oldest check" }
+  sd@{ shape: rect, label: "<b>The five 'Fix before billing' rows show five reasons</b><br/>Coverage lapsed, coverage ended, service not covered, another plan pays first, every authorized day used" }
   pg@{ shape: rect, label: "<b>No filter: the first 12 rows</b><br/>A filter shows every match" }
   cols@{ shape: curv-trap, label: "<b>Columns</b><br/>Patient, Program, Eligibility, Benefits, Authorization, Verdict, Re-check<br/>Headers do not sort" }
   end
@@ -54,26 +55,30 @@ flowchart TD
   r2@{ shape: curv-trap, label: "<b>Program chip</b><br/>'Residential 3.5', 'IOP', 'PHP', 'Detox'<br/>or a label such as 'Detox → Residential'" }
   r3@{ shape: curv-trap, label: "<b>Eligibility and Benefits chips</b><br/>'Active', 'Lapsed 10/12', 'Ended 09/30', 'Not found'<br/>'Covered', 'Limited', 'Not covered'" }
   r4@{ shape: curv-trap, label: "<b>Authorization chip</b><br/>'On file' with '9 of 14 days'<br/>'Not required', 'Required, not on file'" }
-  r5@{ shape: curv-trap, label: "<b>Verdict chip</b><br/>'Cleared to bill', 'Authorization first', 'Fix before billing'<br/>Under it 'Checked 3 h ago'" }
+  r5@{ shape: curv-trap, label: "<b>Verdict chip</b><br/>'Cleared to bill', 'Authorization first', 'Fix before billing'<br/>Under it 'Checked 3 h ago'<br/>A row due for a re-check adds 'Re-check due Tue 11:32 am'<br/>After Verify's own re-check 'Re-checked automatically at 11:32 am'<br/>If Verify is paused 'Not re-checked: Verify is paused in Settings'" }
   r6@{ shape: curv-trap, label: "Button 'Re-check'" }
   end
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › List › Search, filter and page" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › List › Open a patient or start a check" }
   g3@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › What each chip means" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Re-check on its own" }
   s1 --> sc
   sc --> hd --> tl --> bn --> fl --> cd
   sc -.-> p1
   tl --> cnt
-  cd --> so --> pg --> cols
+  cd --> so --> sd
+  so --> pg --> cols
   cols --> r1 & r2 & r3 & r4 & r5 & r6
   fl --> g1
   hd --> g2
   r6 --> g2
   r3 & r4 & r5 --> g3
+  cnt -.-> g4
+  r5 -.-> g4
   class s1 k_start
   class sc,hd,tl,bn,fl,cd,cols,r1,r2,r3,r4,r5,r6 k_screen
-  class p1,cnt,so,pg k_process
-  class g1,g2,g3 k_goto
+  class p1,cnt,so,sd,pg k_process
+  class g1,g2,g3,g4 k_goto
   style gTop fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gBar fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gCard fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
@@ -106,7 +111,7 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "On the list, narrow the patients" }
-  sc0@{ shape: curv-trap, label: "<b>Table shows every patient, first 12 rows</b><br/>'Showing 12 of 34'" }
+  sc0@{ shape: curv-trap, label: "<b>Table shows every patient, first 12 rows</b><br/>'Showing 12 of 37'" }
   subgraph gSearch ["Search"]
   i1@{ shape: lean-r, label: "<b>Type in 'Search by case ID or initials'</b><br/>for example 'R-1042' or 'J.M.'" }
   p1@{ shape: rect, label: "<b>Matches the case ID or the patient label</b><br/>(initials and age, or 'Member …4821'). Capitals do not matter" }
@@ -132,10 +137,10 @@ flowchart TD
   p6@{ shape: rect, label: "Only the first 12 rows" }
   c5@{ shape: trap-t, label: "Click 'Show 12 more'" }
   p7@{ shape: rect, label: "<b>Twelve more rows join the table</b><br/>The last click reads 'Show 10 more'" }
-  sc1@{ shape: curv-trap, label: "<b>Table with the matches</b><br/>'Showing 5 of 34'" }
+  sc1@{ shape: curv-trap, label: "<b>Table with the matches</b><br/>'Showing 5 of 37'" }
   t0@{ shape: odd, label: "'Clear filters' button appears beside the menus" }
   q3@{ shape: diam, label: "Any rows left?" }
-  em@{ shape: curv-trap, label: "<b>'No patients match these filters'</b><br/>'The filters hide every row. Clear them to see all 34 patients.'" }
+  em@{ shape: curv-trap, label: "<b>'No patients match these filters'</b><br/>'The filters hide every row. Clear them to see all 37 patients.'" }
   c6@{ shape: trap-t, label: "Click 'Clear filters' (bar or empty state)" }
   p8@{ shape: rect, label: "<b>Search emptied</b><br/>Payer, program and verdict back to 'All'" }
   e1@{ shape: stadium, label: "Full list again, button gone" }
@@ -237,7 +242,7 @@ flowchart TD
 
 ## Authorizations › Eligibility & Benefits › Verify › Ways in and pre-fill
 
-Five places lead to 'Verify a patient'. Two open an empty form. Three carry a referral or a case in the address, and the form fills itself from it.
+Five places lead to 'Verify a patient'. Two open an empty form. Three carry a referral or a case in the address, and the form fills itself from it. A referral also gives a link back to where the person came from.
 
 Route: `/authorizations/eligibility/verify?referral=RF-2040 or ?case=R-1101`
 
@@ -284,7 +289,12 @@ flowchart TD
   p4@{ shape: rect, label: "Nothing is filled and no message appears" }
   p5@{ shape: rect, label: "<b>Date of birth made up from the age, for example age 26 gives 01/15/2000</b><br/>Anything the source lacks stays empty" }
   sc@{ shape: curv-trap, label: "<b>Verify a patient</b><br/>Form on the left, 'Live check' on the right" }
+  bk@{ shape: rect, label: "<b>Back links above the title</b><br/>'Eligibility & Benefits' always<br/>'Back to referral RF-2040' when ?referral= names a referral that exists<br/>With ?case= as well, 'Back to case R-1042' takes its place" }
+  nb@{ shape: rect, label: "<b>A referral that does not exist gives no back link</b><br/>Only the toast" }
+  cy@{ shape: rect, label: "<b>Both addresses are carried to the result page</b><br/>so the way back is still there after the check" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › Fill in the form" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › The full referral page" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › Case page › Ways in" }
   a1 --> p0
   a2 --> p0
   a3 --> p0
@@ -293,7 +303,7 @@ flowchart TD
   p0 --> q1
   q1 -->|"Yes"| q2
   q2 -->|"Yes"| p1 --> p5 --> sc
-  q2 -->|"No"| t1 --> sc
+  q2 -->|"No"| t1 --> nb --> sc
   q1 -->|"No"| q3
   q3 -->|"No: empty form"| sc
   q3 -->|"Yes"| q4
@@ -302,19 +312,22 @@ flowchart TD
   q5 -->|"Yes"| p3 --> p5
   q5 -->|"No"| p4 --> sc
   sc --> g1
+  sc --> bk
+  bk --> g2 & g3
+  bk -.-> cy
   class a1,a2,a3,a4,a5 k_start
-  class p0,p1,p2,p3,p4,p5 k_process
+  class p0,p1,p2,p3,p4,p5,bk,nb,cy k_process
   class q1,q2,q3,q4,q5 k_decision
   class t1 k_toast
   class sc k_screen
-  class g1 k_goto
+  class g1,g2,g3 k_goto
   style gBlank fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gLinked fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```
 
 ## Authorizations › Eligibility & Benefits › Verify › Fill in the form
 
-The form on the left of 'Verify a patient'. Add an insurance card or type the details. 'Check now' stays off until the four required answers look complete.
+The form on the left of 'Verify a patient'. Add an insurance card, pick a sample, or type the details. 'Check now' stays off until the four required answers look complete.
 
 Route: `/authorizations/eligibility/verify`
 
@@ -342,7 +355,13 @@ flowchart TD
   s1@{ shape: stadium, label: "Open 'Verify a patient'" }
   sc@{ shape: curv-trap, label: "<b>Verify a patient</b><br/>'The agents check coverage and benefits live, so you know whether the clinic will be paid.'<br/>Card 'The patient and the service' with the pill 'Privacy mode on'" }
   b1@{ shape: trap-t, label: "Click '← Eligibility & Benefits' (back link)" }
+  b2@{ shape: trap-t, label: "<b>Click '← Back to referral RF-2040' or '← Back to case R-1042'</b><br/>Shown only when the address names a referral (see 'Ways in and pre-fill')" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › The full referral page" }
   g0@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows" }
+  subgraph gSample ["Try a sample"]
+  f5@{ shape: trap-t, label: "<b>Click a chip in the row 'Try a sample'</b><br/>'Cleared to bill', 'Coverage lapsed', 'Not found',<br/>'Not covered', 'Another plan pays first', 'Limit reached'" }
+  p7@{ shape: rect, label: "<b>Fills the whole form with a made-up member who ends that way</b><br/>The chip turns green. Initials and age are remembered for the result" }
+  end
   subgraph gCard ["Add the insurance card"]
   f1@{ shape: lean-r, label: "<b>Drop a file, or click the drop zone</b><br/>'Drag and drop the insurance card, or click to select a file'" }
   f2@{ shape: trap-t, label: "Click 'Use sample file'" }
@@ -369,8 +388,12 @@ flowchart TD
   p6@{ shape: rect, label: "<b>'Check now' is on</b><br/>Hint 'Takes about 10 seconds. Nothing is changed at the payer or in the record.'" }
   c1@{ shape: trap-t, label: "Click 'Check now'" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › The live check" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › Try a sample" }
   s1 --> sc
   sc --> b1 --> g0
+  sc --> b2 --> g3
+  sc --> f5 --> p7 --> q1
+  f5 -.-> g2
   sc --> f1 --> a1
   sc --> f2 --> a1
   a1 --> p1 --> cs
@@ -384,15 +407,94 @@ flowchart TD
   q1 -->|"Yes"| p6 --> c1 --> g1
   class s1 k_start
   class sc,cs k_screen
-  class b1,f2,f3,f4,c1 k_click
-  class g0,g1 k_goto
+  class b1,b2,f5,f2,f3,f4,c1 k_click
+  class g3,g0,g1,g2 k_goto
+  class p7,p1,p2,p3,p4,p5,p6 k_process
   class f1,i1,i2,i3,i4,i5,i6 k_input
   class a1 k_agent
-  class p1,p2,p3,p4,p5,p6 k_process
   class t1 k_toast
   class q1 k_decision
+  style gSample fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gCard fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gFields fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+```
+
+## Authorizations › Eligibility & Benefits › Verify › Try a sample
+
+Six chips fill the form with a made-up member who ends in a different answer, so every verdict can be seen without a trick. The last four digits of the member ID script the answer. 'Use sample card' (top right) gives 'Authorization first'.
+
+Route: `/authorizations/eligibility/verify`
+
+Demo only: the endings are scripted. Typing the same ending by hand gives the same answer, on Verify and on the Coverage row in New case.
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Open 'Verify a patient'" }
+  sc@{ shape: curv-trap, label: "<b>Card 'The patient and the service'</b><br/>Row 'Try a sample' with six chips, then the card drop zone and the fields" }
+  q1@{ shape: diam, label: "Click which chip?" }
+  subgraph gPick ["What each chip fills in"]
+  p1@{ shape: rect, label: "<b>'Cleared to bill'</b><br/>Beacon PPO, IOP, member ending 2468<br/>Beacon asks for no authorization for IOP" }
+  p2@{ shape: rect, label: "<b>'Coverage lapsed'</b><br/>Summit Medicaid HMO, Residential 3.5, member ending 1012" }
+  p3@{ shape: rect, label: "<b>'Not found'</b><br/>Lakeshore Behavioral, IOP, member ending 9999" }
+  p4@{ shape: rect, label: "<b>'Not covered'</b><br/>Beacon PPO, Residential 3.5, member ending 3030" }
+  p5@{ shape: rect, label: "<b>'Another plan pays first'</b><br/>Summit Medicaid HMO, IOP, member ending 6060" }
+  p6@{ shape: rect, label: "<b>'Limit reached'</b><br/>Cardinal Health Plan, Residential 3.5, member ending 9090" }
+  end
+  pf@{ shape: rect, label: "<b>Payer, member ID, date of birth, program and date of service are all filled</b><br/>The chip turns green. 'Check now' is on" }
+  c1@{ shape: trap-t, label: "Click 'Check now'" }
+  ck@{ shape: rect, label: "<b>Live check runs about 10 seconds</b><br/>Chips and fields lock. 'Skip ahead' speeds it up<br/>The member ID ending decides the answer" }
+  subgraph gRes ["Result"]
+  r1@{ shape: curv-trap, label: "<b>'Cleared to bill: the clinic will be paid.'</b><br/>Green verdict" }
+  r2@{ shape: curv-trap, label: "<b>'Fix before billing: coverage lapsed 10/12.'</b><br/>Button 'Request retro-eligibility'" }
+  r3@{ shape: curv-trap, label: "<b>'We could not find coverage.'</b><br/>One grey row 'Nothing else could be checked'<br/>No 'What the patient pays' line" }
+  r4@{ shape: curv-trap, label: "<b>'Fix before billing: the service is not covered.'</b><br/>Row 'The service is not covered', chip 'Not covered'" }
+  r5@{ shape: curv-trap, label: "<b>'Fix before billing: another plan pays first.'</b><br/>Row 'Another plan pays first', chip 'Other plan'" }
+  r6@{ shape: curv-trap, label: "<b>'Fix before billing: every authorized day is used.'</b><br/>Row 'Every authorized day is used'<br/>Chip 'Limit reached', '14 of 14 days used'" }
+  end
+  sd@{ shape: rect, label: "<b>The list already holds a patient for each reason</b><br/>R-1101 lapsed, R-0975 ended, R-1118 not covered<br/>I-2275 another plan pays first, R-0921 limit reached" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › Which verdict and why" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows" }
+  s1 --> sc --> q1
+  q1 -->|"Cleared to bill"| p1 --> pf
+  q1 -->|"Coverage lapsed"| p2 --> pf
+  q1 -->|"Not found"| p3 --> pf
+  q1 -->|"Not covered"| p4 --> pf
+  q1 -->|"Another plan pays first"| p5 --> pf
+  q1 -->|"Limit reached"| p6 --> pf
+  pf --> c1 --> ck
+  ck -->|"Ends 2468"| r1
+  ck -->|"Ends 1012"| r2
+  ck -->|"Ends 9999"| r3
+  ck -->|"Ends 3030"| r4
+  ck -->|"Ends 6060"| r5
+  ck -->|"Ends 9090"| r6
+  r1 & r2 & r3 & r4 & r5 & r6 --> g1
+  sc -.-> sd --> g2
+  class s1 k_start
+  class sc,r1,r2,r3,r4,r5,r6 k_screen
+  class q1 k_decision
+  class p1,p2,p3,p4,p5,p6,pf,ck,sd k_process
+  class c1 k_click
+  class g1,g2 k_goto
+  style gPick fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gRes fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```
 
 ## Authorizations › Eligibility & Benefits › Verify › The live check
@@ -423,7 +525,7 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Click 'Check now'" }
-  p1@{ shape: rect, label: "<b>Form fields, 'Use sample card' and the card drop lock</b><br/>The button reads 'Checking' with a spinner" }
+  p1@{ shape: rect, label: "<b>Form fields, 'Use sample card', the 'Try a sample' chips and the card drop lock</b><br/>The button reads 'Checking' with a spinner" }
   sc@{ shape: curv-trap, label: "<b>Card 'Live check'</b><br/>'Each agent asks the right source and reports back'" }
   subgraph gRows ["Agent rows"]
   r1@{ shape: curv-trap, label: "<b>Waiting</b><br/>Agent name, grey text 'Will ask Ohio Medicaid whether coverage is active', clock and 'Waiting', dimmed" }
@@ -466,7 +568,7 @@ The five questions, in order, and who answers each. Reader, Verify, Verify, Crit
 
 Route: `/authorizations/eligibility/verify`
 
-Demo only: the answers are scripted. Before a payer is chosen the card says 'the state' and 'the payer' instead of names.
+Demo only: the answers are scripted by the member ID ending (see 'Try a sample'). Before a payer is chosen the card says 'the state' and 'the payer' instead of names.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -494,19 +596,19 @@ flowchart TD
   a2@{ shape: hex, label: "<b>2 Verify</b><br/>'Asking Ohio Medicaid whether coverage is active on 10/21/2026'" }
   x2@{ shape: st-rect, label: "<b>Ohio Medicaid, or the plan for Beacon, Harborview, Lakeshore</b><br/>Real step: eligibility inquiry (demo: simulated)" }
   w2@{ shape: delay, label: "About 2.4 seconds" }
-  d2@{ shape: rect, label: "<b>Row ticks</b><br/>'Asked Ohio Medicaid: coverage is active on 10/21/2026'<br/>or 'coverage lapsed 10/12' or 'no coverage found for these details'" }
+  d2@{ shape: rect, label: "<b>Row ticks</b><br/>'Asked Ohio Medicaid: coverage is active on 10/21/2026'<br/>or 'coverage lapsed 10/12' or 'no coverage found for these details'<br/>Ending 6060 adds '. Another plan pays first'" }
   a3@{ shape: hex, label: "<b>3 Verify</b><br/>'Asking Summit what Residential 3.5 covers'" }
   x3@{ shape: st-rect, label: "<b>The plan answers for the service codes</b><br/>Real step: benefit detail (demo: simulated)" }
   w3@{ shape: delay, label: "About 2.6 seconds" }
-  d3@{ shape: rect, label: "<b>Row ticks</b><br/>'Summit covers Residential 3.5 (H0018 and H0019)'" }
+  d3@{ shape: rect, label: "<b>Row ticks</b><br/>'Summit covers Residential 3.5 (H0018 and H0019)'<br/>Ending 3030 'Summit does not cover Residential 3.5'<br/>Ending 9090 adds '. All 14 days are used'<br/>No coverage found: 'Not asked: no coverage was found'" }
   q1@{ shape: diam, label: "Is the payer Evergreen?" }
   a4@{ shape: hex, label: "<b>Caller</b><br/>'Evergreen did not answer online. Caller is phoning'" }
   a5@{ shape: hex, label: "<b>4 Criteria</b><br/>'Checking whether an authorization is required'" }
   w5@{ shape: delay, label: "About 1.6 seconds" }
-  d5@{ shape: rect, label: "<b>Row ticks</b><br/>'An authorization is required before the first day'<br/>or 'Beacon does not require an authorization'" }
+  d5@{ shape: rect, label: "<b>Row ticks</b><br/>'An authorization is required before the first day'<br/>or 'Beacon does not require an authorization'<br/>or 'An authorization is on file with Cardinal' (ending 9090)<br/>No coverage found: 'Not asked: no coverage was found'" }
   a6@{ shape: hex, label: "<b>5 Navigator</b><br/>'Checking that the clinic is enrolled to bill Summit'" }
   w6@{ shape: delay, label: "About 1.8 seconds" }
-  d6@{ shape: rect, label: "<b>Row ticks</b><br/>'The clinic is enrolled and in network'<br/>or 'The clinic is not enrolled for this program'" }
+  d6@{ shape: rect, label: "<b>Row ticks</b><br/>'The clinic is enrolled and in network'<br/>or 'The clinic is not enrolled for this program'<br/>No coverage found: 'Not asked: no coverage was found'" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › When a system does not answer" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › The check finishes and is saved" }
   s1 --> a1
@@ -584,6 +686,9 @@ flowchart TD
   b2@{ shape: rect, label: "<b>Member ID ends 1012</b><br/>'coverage lapsed 10/12'" }
   b3@{ shape: rect, label: "<b>Member ID ends 9999</b><br/>'no coverage found for these details'" }
   b4@{ shape: rect, label: "<b>Evergreen with Detox</b><br/>'The clinic is not enrolled for this program'" }
+  b6@{ shape: rect, label: "<b>Member ID ends 3030</b><br/>'does not cover Residential 3.5'" }
+  b7@{ shape: rect, label: "<b>Member ID ends 6060</b><br/>'Another plan pays first'" }
+  b8@{ shape: rect, label: "<b>Member ID ends 9090</b><br/>'All 14 days are used'" }
   b5@{ shape: rect, label: "<b>The check still runs to the end and opens a result</b><br/>Verdict 'Fix before billing'" }
   end
   s2@{ shape: stadium, label: "<b>While the check runs, leave the page</b><br/>(sidebar, back link or browser Back)" }
@@ -597,6 +702,9 @@ flowchart TD
   b1 -->|"Lapsed"| b2 --> b5
   b1 -->|"Not found"| b3 --> b5
   b1 -->|"Not enrolled"| b4 --> b5
+  b1 -->|"Not covered"| b6 --> b5
+  b1 -->|"Other plan"| b7 --> b5
+  b1 -->|"Limit reached"| b8 --> b5
   b5 --> g1
   s1 -.-> r1
   r1 --> r2
@@ -608,7 +716,7 @@ flowchart TD
   s2 --> e1
   class s1,s2 k_start
   class d1,r2,r5,b1 k_decision
-  class p1,p2,p3,p4,r7,r8,b2,b3,b4,b5 k_process
+  class p1,p2,p3,p4,r7,r8,b2,b3,b4,b6,b7,b8,b5 k_process
   class a1,r6 k_agent
   class w1,r3 k_wait
   class r1,r4 k_ext
@@ -650,7 +758,7 @@ flowchart TD
   w1@{ shape: delay, label: "Half a second" }
   q1@{ shape: diam, label: "Opened from a case that is a row on the list?" }
   q2@{ shape: diam, label: "Sample card: Summit, Residential 3.5, member ID ending 4821?" }
-  st1@{ shape: cyl, label: "<b>Existing row updated</b><br/>'Checked just now', 're-check due' cleared, date of service as typed" }
+  st1@{ shape: cyl, label: "<b>Existing row updated</b><br/>'Checked just now', its re-check time cleared, date of service as typed" }
   p1@{ shape: rect, label: "The sample card matches J.M., case R-1042" }
   p2@{ shape: rect, label: "<b>Answers are not asked again</b><br/>The row keeps its verdict" }
   subgraph gNew ["A new patient"]
@@ -662,6 +770,9 @@ flowchart TD
   n6@{ shape: rect, label: "<b>Evergreen with Detox</b><br/>Clinic not enrolled" }
   n7@{ shape: rect, label: "<b>Beacon with IOP or PHP</b><br/>Authorization 'Not required'" }
   n8@{ shape: rect, label: "<b>Harborview with PHP</b><br/>Benefits 'Limited'" }
+  n10@{ shape: rect, label: "<b>ID ends 3030</b><br/>Benefits 'Not covered', authorization 'Not required'" }
+  n11@{ shape: rect, label: "<b>ID ends 6060</b><br/>Another plan found: it pays first" }
+  n12@{ shape: rect, label: "<b>ID ends 9090</b><br/>Authorization 'On file' with every day or unit used<br/>for example '14 of 14 days'" }
   n9@{ shape: rect, label: "<b>Anything else</b><br/>Active, covered, authorization 'Required'" }
   st2@{ shape: cyl, label: "New row added at the top of the Eligibility list" }
   end
@@ -670,7 +781,7 @@ flowchart TD
   q3@{ shape: diam, label: "Is the verdict 'Cleared to bill'?" }
   p4@{ shape: rect, label: "Badge unchanged" }
   p5@{ shape: rect, label: "Badge goes up by one" }
-  p6@{ shape: rect, label: "<b>Opens /authorizations/eligibility/V-1001</b><br/>or the existing case ID" }
+  p6@{ shape: rect, label: "<b>Opens /authorizations/eligibility/V-1001</b><br/>or the existing case ID<br/>If the check began from a referral, ?referral= (and ?case=) go along, so the result has its back link" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › What the page shows" }
   s1 --> w1 --> q1
   q1 -->|"Yes"| st1
@@ -683,6 +794,9 @@ flowchart TD
   n3 -->|"Not enrolled"| n6 --> st2
   n3 -->|"No authorization"| n7 --> st2
   n3 -->|"Limited"| n8 --> st2
+  n3 -->|"Not covered"| n10 --> st2
+  n3 -->|"Other plan"| n11 --> st2
+  n3 -->|"Limit reached"| n12 --> st2
   n3 -->|"Otherwise"| n9 --> st2
   st2 --> p3
   p3 --> q3
@@ -693,14 +807,14 @@ flowchart TD
   class w1 k_wait
   class q1,q2,n3,q3 k_decision
   class st1,st2 k_store
-  class p1,p2,n1,n2,n4,n5,n6,n7,n8,n9,p3,p7,p4,p5,p6 k_process
+  class p1,p2,n1,n2,n4,n5,n6,n7,n8,n10,n11,n12,n9,p3,p7,p4,p5,p6 k_process
   class g1 k_goto
   style gNew fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```
 
 ## Authorizations › Eligibility & Benefits › Result › What the page shows
 
-One verdict and the seven checks behind it. Reached by a row on the list, or when a live check finishes. The verdict banner holds the next-action buttons.
+One verdict and the checks behind it. Reached by a row on the list, or when a live check finishes. The verdict banner holds the next-action buttons. When the check began from a referral, a link leads back to it.
 
 Route: `/authorizations/eligibility/R-1042`
 
@@ -727,19 +841,23 @@ flowchart TD
   sc@{ shape: curv-trap, label: "<b>Eligibility & Benefits</b><br/>Title is the headline, for example 'Covered, but you need an authorization first.'<br/>Sub 'R-1042 · J.M., 34 · Summit Medicaid HMO · Residential 3.5 · Date of service 10/21/2026'" }
   b1@{ shape: trap-t, label: "Click '← Eligibility & Benefits' (back link, top left)" }
   g0@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows" }
+  b2@{ shape: trap-t, label: "<b>Click '← Back to referral RF-2040' beside it</b><br/>With ?case= in the address it reads '← Back to case R-1042'<br/>Shown only when ?referral= names a referral that exists" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › The full referral page" }
   subgraph gVer ["Verdict banner"]
   vb@{ shape: curv-trap, label: "<b>Small caps 'Verdict'</b><br/>Big words: 'Cleared to bill', 'Authorization first' or 'Fix before billing'<br/>One sentence why. Green, amber or red box" }
   bt@{ shape: curv-trap, label: "<b>Buttons on the right of the banner</b><br/>'Start authorization', 'Open case', 'Request retro-eligibility' ... 'Check again'" }
   end
   subgraph gPay ["Payment checks card"]
-  pc@{ shape: curv-trap, label: "<b>'Every line has to pass for the clinic to be reimbursed'</b><br/>Seven rows, one chip each, then a line 'What the patient pays:'" }
-  q1@{ shape: diam, label: "Checked within the last hour?" }
+  pc@{ shape: curv-trap, label: "<b>'Every line has to pass for the clinic to be reimbursed'</b><br/>Seven rows, one chip each, then a line 'What the patient pays:'<br/>Coverage not found: the first row and one grey row 'Nothing else could be checked'<br/>No 'What the patient pays:' line" }
+  q1@{ shape: diam, label: "Which check does the pill describe?" }
   p1@{ shape: rect, label: "Pill reads 'Checked live at 10:42 am'" }
-  p2@{ shape: rect, label: "Pill reads 'Last checked 10:40 am, 3 d ago'" }
+  p2@{ shape: rect, label: "<b>Pill reads 'Last checked 10:40 am, 3 d ago'</b><br/>(or '5 h ago')" }
+  p7@{ shape: rect, label: "<b>Verify re-checked it on its own</b><br/>Pill reads 'Re-checked automatically at 11:32 am'" }
+  t1@{ shape: odd, label: "<b>Banner 'Not re-checked: Verify is paused in Settings'</b><br/>'The re-check was due Tue 11:32 am. It runs as soon as Verify is resumed.'" }
   end
   subgraph gAg ["Agents card"]
   ag@{ shape: curv-trap, label: "<b>One row per agent</b><br/>Verify 'Eligibility with Ohio Medicaid' 0:03, Verify 'Benefits with Summit' 0:05<br/>Criteria 'Authorization rule' 0:02, Navigator 'Provider enrollment' 0:02" }
-  p3@{ shape: rect, label: "Evergreen adds a row 'Phone call to Evergreen' 1:34" }
+  p3@{ shape: rect, label: "<b>Evergreen adds a row 'Phone call to Evergreen' 1:34</b><br/>Coverage not found: only the row 'Eligibility with ...' (the others were not asked)" }
   k1@{ shape: trap-t, label: "Click an agent row" }
   q2@{ shape: diam, label: "Was that row already open?" }
   p4@{ shape: rect, label: "Row closes" }
@@ -747,20 +865,23 @@ flowchart TD
   end
   subgraph gNext ["Next checks card"]
   nx@{ shape: curv-trap, label: "<b>'Coverage again on 11/01, then every month'</b><br/>'Before each recertification'<br/>'3 days before the first claim'" }
-  p6@{ shape: rect, label: "<b>Same three lines for every patient</b><br/>Nothing here is clickable" }
+  p6@{ shape: rect, label: "<b>The same three lines for every patient with coverage</b><br/>A row with a re-check to come starts with 'Re-check due Tue 11:32 am, done by Verify on its own'<br/>Coverage not found: 'Check again once the member ID or date of birth is fixed'<br/>Nothing here is clickable" }
   end
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › Which verdict and why" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › Payment checks: coverage, plan, service" }
   g3@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › Next actions" }
   s1 --> sc
   sc --> b1 --> g0
+  sc --> b2 --> g4
   sc --> vb --> bt
   vb -.-> g1
   bt --> g3
   sc --> pc
   pc --> q1
-  q1 -->|"Yes"| p1
-  q1 -->|"No"| p2
+  q1 -->|"Within the last hour"| p1
+  q1 -->|"Older"| p2
+  q1 -->|"Verify's own re-check"| p7
+  q1 -->|"Re-check due, Verify paused"| t1
   pc -.-> g2
   sc --> ag --> p3
   ag --> k1 --> q2
@@ -769,10 +890,11 @@ flowchart TD
   sc --> nx --> p6
   class s1 k_start
   class sc,vb,bt,pc,ag,nx k_screen
-  class b1,k1 k_click
-  class g0,g1,g2,g3 k_goto
+  class b1,b2,k1 k_click
+  class g0,g4,g1,g2,g3 k_goto
   class q1,q2 k_decision
-  class p1,p2,p3,p4,p5,p6 k_process
+  class p1,p2,p7,p3,p4,p5,p6 k_process
+  class t1 k_toast
   style gVer fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gPay fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gAg fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
@@ -785,7 +907,7 @@ The verdict is worked out from the patient's row, top question first. Any failed
 
 Route: `/authorizations/eligibility/R-1042`
 
-Three of the failures (service not covered, another plan pays first, limit used up) are written into the page but no demo patient reaches them.
+Demo only: every failure has a seeded patient on the list (R-1101, R-0975, R-1118, I-2275, R-0921) and a chip under 'Try a sample' on Verify.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -810,15 +932,17 @@ flowchart TD
   q1@{ shape: diam, label: "Coverage active on the service date?" }
   q2@{ shape: diam, label: "Service covered by the plan?" }
   q3@{ shape: diam, label: "Clinic enrolled and in network?" }
-  q4@{ shape: diam, label: "Another plan pays first?" }
-  q5@{ shape: diam, label: "Every day or unit limit still has room?" }
+  q4@{ shape: diam, label: "Every day or unit limit still has room?" }
+  q5@{ shape: diam, label: "Another plan pays first?" }
   q6@{ shape: diam, label: "<b>Authorization needed but not approved?</b><br/>(required, in progress, under review, retro request open)" }
   subgraph gFix ["Fix before billing (red)"]
   f0@{ shape: curv-trap, label: "Verdict 'Fix before billing'" }
   f1@{ shape: rect, label: "<b>Coverage lapsed or ended</b><br/>Headline 'Fix before billing: coverage lapsed 10/12.'" }
-  f2@{ shape: rect, label: "<b>Coverage not found</b><br/>Headline 'We could not find coverage.'" }
+  f2@{ shape: rect, label: "<b>Coverage not found</b><br/>Headline 'We could not find coverage.'<br/>Nothing else is checked and no payment line is shown" }
   f3@{ shape: rect, label: "<b>Clinic not enrolled</b><br/>Headline 'Fix before billing: the clinic cannot bill yet.'" }
-  f4@{ shape: rect, label: "<b>Service not covered, other plan, limit reached (no demo patient)</b><br/>Headline starts 'Fix before billing:' then names the first failed check" }
+  f4@{ shape: rect, label: "<b>Service not covered</b><br/>Headline 'Fix before billing: the service is not covered.'" }
+  f6@{ shape: rect, label: "<b>Another plan pays first</b><br/>Headline 'Fix before billing: another plan pays first.'" }
+  f7@{ shape: rect, label: "<b>Limit reached</b><br/>Headline 'Fix before billing: every authorized day is used.'<br/>(or unit, for IOP)" }
   f5@{ shape: rect, label: "Reason sentence is the detail of the first failed check" }
   end
   subgraph gAuth ["Authorization first (amber)"]
@@ -838,17 +962,17 @@ flowchart TD
   q2 -->|"Yes"| q3
   q3 -->|"No"| f3 --> f0
   q3 -->|"Yes"| q4
-  q4 -->|"Yes"| f4
-  q4 -->|"No"| q5
-  q5 -->|"No"| f4
-  q5 -->|"Yes"| q6
+  q4 -->|"No"| f7 --> f0
+  q4 -->|"Yes"| q5
+  q5 -->|"Yes"| f6 --> f0
+  q5 -->|"No"| q6
   q6 -->|"Yes"| a0 --> a1 --> g1
   q6 -->|"No"| o0 --> o1 --> g1
   f0 --> f5 --> g1
   class s1 k_start
   class q1,q2,q3,q4,q5,q6 k_decision
   class f0,a0,o0 k_screen
-  class f1,f2,f3,f4,f5 k_process
+  class f1,f2,f3,f4,f6,f7,f5 k_process
   class a1,o1 k_toast
   class g1 k_goto
   style gFix fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
@@ -858,11 +982,11 @@ flowchart TD
 
 ## Authorizations › Eligibility & Benefits › Result › Payment checks: coverage, plan, service
 
-The first three of the seven rows in 'Payment checks'. Each row has a title, one line of detail and a coloured chip. If coverage is not found, every row after the first turns grey 'Not checked'.
+The first three of the seven rows in 'Payment checks'. Each row has a title, one line of detail and a coloured chip. If coverage is not found, the other six rows give way to one grey row, 'Nothing else could be checked'.
 
 Route: `/authorizations/eligibility/R-1042`
 
-'The service is not covered' is written into the page but no demo patient reaches it.
+Demo only: 'The service is not covered' has a seeded patient (R-1118, Beacon PPO) and a chip under 'Try a sample' on Verify.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -891,7 +1015,7 @@ flowchart TD
   a3@{ shape: rect, label: "<b>Title 'Coverage is not active on the service date'</b><br/>Chip 'Ended 09/30' (red)<br/>'The patient may have a new plan, so ask the payer.'" }
   a4@{ shape: rect, label: "<b>Title 'Coverage was not found'</b><br/>Chip 'Not found' (red)<br/>'Check the member ID and date of birth, or read the card again.'" }
   end
-  g0@{ shape: rect, label: "<b>Rows 2 to 7 become grey 'Not checked'</b><br/>'Not checked. The plan could not be identified from these details.'" }
+  g0@{ shape: rect, label: "<b>Rows 2 to 7 are replaced by one grey row</b><br/>'Nothing else could be checked', chip 'Not checked'<br/>'Fix the member ID or date of birth, then check again.'<br/>No 'What the patient pays:' line either" }
   subgraph gB ["Row 2 · The plan"]
   b0@{ shape: diam, label: "Which kind of plan?" }
   b1@{ shape: rect, label: "<b>Title 'It is the right plan', chip 'Summit' (green)</b><br/>'Managed by Summit Medicaid HMO. Claims go to Summit, not to the state'" }
@@ -903,7 +1027,7 @@ flowchart TD
   c0@{ shape: diam, label: "What do the benefits say for this level of care?" }
   c1@{ shape: rect, label: "<b>Title 'The service is covered'</b><br/>Chip 'Covered' (green)<br/>'Residential 3.5 is payable for substance use disorder (F10.20 on the chart). Codes H0018 and H0019'" }
   c2@{ shape: rect, label: "<b>Title 'The service is covered with conditions'</b><br/>Chip 'Limited' (amber)<br/>'The diagnosis must be on the plan's list and each day needs an authorization.'" }
-  c3@{ shape: rect, label: "<b>Title 'The service is not covered'</b><br/>Chip 'Not covered' (red)<br/>'Ask Summit which program it pays for.' (no demo patient)" }
+  c3@{ shape: rect, label: "<b>Title 'The service is not covered'</b><br/>Chip 'Not covered' (red)<br/>'Ask Beacon which program it pays for.'<br/>The verdict is 'Fix before billing'" }
   c4@{ shape: rect, label: "<b>Codes by level of care</b><br/>Residential 3.5 H0018 and H0019 · IOP H0015 · PHP H0035 · Detox H0010 and H0011" }
   end
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › Payment checks: authorization to other insurance" }
@@ -936,7 +1060,7 @@ Rows 4 to 7 of 'Payment checks', then the last line about what the patient pays.
 
 Route: `/authorizations/eligibility/R-1042`
 
-'Limit reached' and 'Another plan pays first' are written into the page but no demo patient reaches them.
+Demo only: 'Limit reached' has a seeded patient (R-0921) and 'Another plan pays first' has one (I-2275). Both have a chip under 'Try a sample' on Verify.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -958,6 +1082,8 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Result page, card 'Payment checks', rows 4 to 7" }
+  q9@{ shape: diam, label: "Was coverage found?" }
+  x9@{ shape: stadium, label: "<b>Coverage not found</b><br/>Rows 2 to 7 and the line 'What the patient pays:' are not shown<br/>One grey row says nothing else could be checked" }
   subgraph gA ["Row 4 · Authorization"]
   a0@{ shape: diam, label: "What is the authorization state?" }
   a1@{ shape: rect, label: "<b>Chip 'Not required' (green)</b><br/>'Beacon does not require one for IOP.'" }
@@ -975,20 +1101,22 @@ flowchart TD
   subgraph gC ["Row 6 · Limits"]
   c0@{ shape: diam, label: "Is there a day or unit limit?" }
   c1@{ shape: rect, label: "<b>Chip '5 days left' (green), or amber at 3 or fewer</b><br/>'9 of 14 days used in this authorization period'" }
-  c2@{ shape: rect, label: "<b>Chip 'Limit reached' (red)</b><br/>'Nothing is left' (no demo patient)" }
+  c2@{ shape: rect, label: "<b>Title 'Every authorized day is used' (or unit)</b><br/>Chip 'Limit reached' (red)<br/>'14 of 14 days used in this authorization period. Nothing is left. Ask Cardinal for more days before the next day of service'" }
   c3@{ shape: rect, label: "<b>Chip 'No limit' (green)</b><br/>'No annual day limit for residential care. The authorization sets the days'<br/>or 'No visit or day limit applies to this program'" }
   end
   subgraph gD ["Row 7 · Other insurance"]
   d0@{ shape: diam, label: "Did the check find another plan?" }
   d1@{ shape: rect, label: "<b>Title 'No other insurance', chip 'None' (green)</b><br/>'None found. Medicaid pays last, so we checked for another payer'" }
-  d2@{ shape: rect, label: "<b>Title 'Another plan pays first', chip 'Other plan' (red)</b><br/>'It must be billed before this one.' (no demo patient)" }
+  d2@{ shape: rect, label: "<b>Title 'Another plan pays first', chip 'Other plan' (red)</b><br/>'A second plan was found. It must be billed before this one.'" }
   end
   subgraph gP ["Last line"]
   p1@{ shape: rect, label: "<b>'What the patient pays:'</b><br/>Medicaid '$0 copay, no deductible, no coinsurance.'<br/>Harborview '20% coinsurance after a deductible with $85 left.'<br/>Beacon and Lakeshore '$40 copay per day, $350 left on the deductible, 20% coinsurance after.'" }
   p2@{ shape: odd, label: "'This does not change what the clinic is paid. A $0 copay does not mean the clinic is paid.'" }
   end
   g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Medical records › Patient and insurance rows" }
-  s1 --> a0
+  s1 --> q9
+  q9 -->|"No"| x9
+  q9 -->|"Yes"| a0
   a0 -->|"Not required"| a1 --> b0
   a0 -->|"On file"| a2 --> b0
   a0 -->|"Being drafted"| a3 --> b0
@@ -1004,7 +1132,8 @@ flowchart TD
   d0 -->|"Yes"| d2 --> p1
   p1 --> p2 --> g1
   class s1 k_start
-  class a0,b0,c0,d0 k_decision
+  class q9,a0,b0,c0,d0 k_decision
+  class x9 k_endx
   class a1,a2,a3,a4,a5,a6,b1,b2,c1,c2,c3,d1,d2,p1 k_process
   class p2 k_toast
   class g1 k_goto
@@ -1052,7 +1181,7 @@ flowchart LR
   b0@{ shape: curv-trap, label: "'Benefits' chip" }
   b1@{ shape: rect, label: "<b>'Covered' (green)</b><br/>The plan pays for this level of care" }
   b2@{ shape: rect, label: "<b>'Limited' (amber)</b><br/>Paid with conditions: diagnosis on the plan's list, each day authorized" }
-  b3@{ shape: rect, label: "<b>'Not covered' (red)</b><br/>The plan does not pay for this level of care (no demo patient)" }
+  b3@{ shape: rect, label: "<b>'Not covered' (red)</b><br/>The plan does not pay for this level of care<br/>For example R-1118" }
   end
   subgraph gA ["Column 'Authorization'"]
   a0@{ shape: curv-trap, label: "'Authorization' chip, sometimes with usage under it" }
@@ -1067,8 +1196,8 @@ flowchart LR
   v0@{ shape: curv-trap, label: "'Verdict' chip, with 'Checked 3 h ago' under it" }
   v1@{ shape: rect, label: "<b>'Cleared to bill' (green)</b><br/>Everything passes" }
   v2@{ shape: rect, label: "<b>'Authorization first' (amber)</b><br/>Only the authorization is missing" }
-  v3@{ shape: rect, label: "<b>'Fix before billing' (red)</b><br/>Coverage, plan, network or a limit failed" }
-  v4@{ shape: rect, label: "<b>'Checked 3 h ago' or 'Checking now'</b><br/>Time since the last check, or a re-check running" }
+  v3@{ shape: rect, label: "<b>'Fix before billing' (red)</b><br/>Coverage, plan, network, another plan or a limit failed" }
+  v4@{ shape: rect, label: "<b>'Checked 3 h ago' or 'Checking now'</b><br/>Time since the last check, or a re-check running<br/>'Re-check due Tue 11:32 am': Verify will run it<br/>'Re-checked automatically at 11:32 am': it did<br/>'Not re-checked: Verify is paused in Settings'" }
   end
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › Which verdict and why" }
   s1 --> e0 & b0 & a0 & v0
@@ -1139,7 +1268,10 @@ flowchart TD
   g4@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Re-verify a patient" }
   c7@{ shape: trap-t, label: "Click '← Eligibility & Benefits'" }
   g5@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows" }
-  s1 --> q1 & q2 & q4 & c6 & c7
+  c8@{ shape: trap-t, label: "<b>Click '← Back to referral RF-2040'</b><br/>With ?case= in the address it reads '← Back to case R-1042'<br/>Shown only when the check began from a referral" }
+  g6@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › The full referral page" }
+  s1 --> q1 & q2 & q4 & c6 & c7 & c8
+  c8 --> g6
   q1 -->|"Yes"| c1 --> p1 --> g1
   q1 -->|"No"| n1
   q2 -->|"Yes"| c2 --> g2
@@ -1153,9 +1285,9 @@ flowchart TD
   c7 --> g5
   class s1 k_start
   class q1,q2,q3,q4 k_decision
-  class c1,c2,c3,c4,c5,c6,c7 k_click
+  class c1,c2,c3,c4,c5,c6,c7,c8 k_click
   class p1,n1,p2 k_process
-  class g1,g2,g3,g4,g5 k_goto
+  class g1,g2,g3,g4,g5,g6 k_goto
   class t1,t2 k_toast
   class x1,x2 k_ext
   class e1 k_endx
@@ -1167,7 +1299,7 @@ Three ways to check a patient again. A row's 'Re-check' and the result's 'Check 
 
 Route: `/authorizations/eligibility (and /authorizations/eligibility/R-1042)`
 
-Demo only: a re-check never changes the answer. R-1101 stays lapsed. 'Re-check due this week, done automatically' is a label: nothing in the demo runs on its own, not even when the Demo clock moves.
+Demo only: a re-check never changes the answer. R-1101 stays lapsed. The re-checks Verify runs on its own, when the Demo clock passes a booked time, are in 'Re-check on its own'.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -1197,18 +1329,19 @@ flowchart TD
   g0@{ shape: hex, label: "Verify and the other agents ask again" }
   x1@{ shape: st-rect, label: "<b>The state and the plan</b><br/>(demo: simulated, same answer as before)" }
   w1@{ shape: delay, label: "About 1.1 seconds" }
-  st1@{ shape: cyl, label: "<b>Row updated</b><br/>Checked time is now, 're-check due' flag cleared, verdict unchanged" }
+  st1@{ shape: cyl, label: "<b>Row updated</b><br/>Checked time is now, any booked re-check cleared, verdict unchanged" }
   q2@{ shape: diam, label: "Does the payer need a phone call? (Evergreen)" }
   t1@{ shape: odd, label: "<b>'R-1042 re-checked'</b><br/>'Still Authorization first.'" }
   t2@{ shape: odd, label: "<b>'R-0975 re-checked'</b><br/>'The plan's system did not answer, so Caller phoned. Still Fix before billing.'" }
   subgraph gAfter ["What changes on screen"]
   r1@{ shape: rect, label: "List: 'Checked 3 h ago' becomes 'Checked just now'" }
-  r2@{ shape: rect, label: "List: tile 'Re-check due' goes down by one if this row was due" }
+  r2@{ shape: rect, label: "List: tile 'Re-check due' goes down by one if this row had a re-check booked" }
   r3@{ shape: rect, label: "Result: pill 'Last checked 10:40 am, 3 d ago' becomes 'Checked live at 10:42 am'" }
   r4@{ shape: rect, label: "Verdict, sidebar badge and the other tiles do not change" }
   end
   v1@{ shape: rect, label: "<b>Opens the verify form pre-filled from the case</b><br/>Then the full live check (about 10 seconds)" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › The check finishes and is saved" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Re-check on its own" }
   e1@{ shape: stadium, label: "Patient is up to date" }
   a1 --> q1
   a2 --> q1
@@ -1221,6 +1354,7 @@ flowchart TD
   r1 --> r2 --> e1
   r3 --> e1
   r4 --> e1
+  r2 -.-> g2
   a3 --> v1 --> g1
   class a1,a2,a3 k_start
   class q1,q2 k_decision
@@ -1230,7 +1364,7 @@ flowchart TD
   class w1 k_wait
   class st1 k_store
   class t1,t2 k_toast
-  class g1 k_goto
+  class g1,g2 k_goto
   class e1 k_end
   style gAfter fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```
@@ -1267,7 +1401,7 @@ flowchart TD
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows" }
   s2@{ shape: stadium, label: "Open 'Verify a patient' with a referral that does not exist" }
   t1@{ shape: odd, label: "<b>'Referral not found'</b><br/>'We could not find RF-9999. Type the details instead.'" }
-  p1@{ shape: rect, label: "The form stays empty" }
+  p1@{ shape: rect, label: "<b>The form stays empty</b><br/>No 'Back to referral' link either" }
   s3@{ shape: stadium, label: "Open 'Verify a patient' with a case that is neither on the list nor in the queue" }
   p2@{ shape: rect, label: "<b>The form stays empty</b><br/>No message appears" }
   s4@{ shape: stadium, label: "Type in the form but leave something out or in the wrong shape" }
@@ -1276,11 +1410,11 @@ flowchart TD
   c2@{ shape: trap-t, label: "Click 'Check now'" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › The live check" }
   s5@{ shape: stadium, label: "Search or filters on the list match nobody" }
-  e3@{ shape: curv-trap, label: "<b>'No patients match these filters'</b><br/>'The filters hide every row. Clear them to see all 34 patients.'" }
+  e3@{ shape: curv-trap, label: "<b>'No patients match these filters'</b><br/>'The filters hide every row. Clear them to see all 37 patients.'" }
   c3@{ shape: trap-t, label: "Click 'Clear filters'" }
   e4@{ shape: stadium, label: "All patients are back" }
-  s6@{ shape: stadium, label: "<b>The check finds a coverage problem</b><br/>Member ID ends 1012 or 9999, Evergreen with Detox" }
-  e5@{ shape: curv-trap, label: "<b>A normal result page with a red verdict 'Fix before billing'</b><br/>If coverage is not found, headline 'We could not find coverage.' and six grey 'Not checked' rows" }
+  s6@{ shape: stadium, label: "<b>The check finds a coverage problem</b><br/>Member ID ends 1012, 9999, 3030, 6060 or 9090, or Evergreen with Detox" }
+  e5@{ shape: curv-trap, label: "<b>A normal result page with a red verdict 'Fix before billing'</b><br/>If coverage is not found, headline 'We could not find coverage.', one grey row 'Nothing else could be checked' and no payment lines" }
   g3@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › Next actions" }
   s7@{ shape: stadium, label: "Leave 'Verify a patient' while the live check runs" }
   e6@{ shape: stadium, label: "<b>The check is dropped</b><br/>Nothing is saved and no row is added" }
@@ -1303,4 +1437,85 @@ flowchart TD
   class q1 k_decision
   class e4 k_end
   class e6 k_endx
+```
+
+## Authorizations › Eligibility & Benefits › Re-check on its own
+
+Five patients have a re-check booked this week. Verify runs each one by itself when the Demo clock passes its time, wherever the person is in the app. If Verify is paused in Settings it waits, and catches up when Verify is resumed.
+
+Route: `/authorizations/eligibility`
+
+Demo only: the Demo clock moves only from the Demo menu. A re-check never changes the verdict. Booked times from the start: I-2207 Tue 11:32 am, I-2144 Tue 3:42 pm, I-2102 Wed 1:42 pm, R-0866 Thu 10:42 am, R-0871 Sat 10:42 am.
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>On the list, five rows read 'Re-check due Tue 11:32 am' and so on</b><br/>Tile 'Re-check due' counts 5" }
+  c1@{ shape: trap-t, label: "Open 'Demo' (top right) and click 'Fast-forward 1 hour' or 'Fast-forward 1 day'" }
+  p1@{ shape: rect, label: "<b>The Demo clock moves</b><br/>Toast 'Clock moved forward 1 hour'" }
+  q1@{ shape: diam, label: "Has a booked re-check time passed?" }
+  e0@{ shape: stadium, label: "<b>Nothing is due yet</b><br/>Rows keep 'Re-check due Tue 11:32 am'" }
+  q2@{ shape: diam, label: "Is Verify paused in Settings?" }
+  subgraph gRun ["Verify re-checks"]
+  a1@{ shape: hex, label: "<b>Verify re-checks every patient that came due</b><br/>Asks the state and the plan again (demo: simulated, same answer as before)" }
+  st1@{ shape: cyl, label: "<b>Each row updated</b><br/>Checked time is the booked time, booking cleared<br/>Verdict unchanged, sidebar badge unchanged" }
+  r1@{ shape: rect, label: "<b>List: second line reads 'Re-checked automatically at 11:32 am'</b><br/>Tile 'Re-check due' goes down by the rows done" }
+  r2@{ shape: rect, label: "<b>Result: pill reads 'Re-checked automatically at 11:32 am'</b><br/>'Next checks' no longer starts with the re-check line" }
+  q3@{ shape: diam, label: "How many came due at once?" }
+  n1@{ shape: odd, label: "<b>Bell: 'Re-checked automatically'</b><br/>'I-2207 is still Cleared to bill. Verify re-checked it at 11:32 am.'<br/>Click opens that result" }
+  n2@{ shape: odd, label: "<b>Bell: 'Re-checked 2 patients automatically'</b><br/>'I-2144, I-2102 came due. None of the verdicts changed.'<br/>Click opens the list" }
+  end
+  subgraph gPaused ["Verify is paused"]
+  w1@{ shape: rect, label: "<b>Nothing runs</b><br/>Row reads 'Not re-checked: Verify is paused in Settings'<br/>Tile 'Re-check due' keeps its count" }
+  w2@{ shape: curv-trap, label: "<b>Result shows a banner 'Not re-checked: Verify is paused in Settings'</b><br/>'The re-check was due Tue 11:32 am. It runs as soon as Verify is resumed.'" }
+  c2@{ shape: trap-t, label: "In Settings, switch Verify back on, or click 'Resume all agents'" }
+  w3@{ shape: rect, label: "<b>Verify catches up at once</b><br/>Checked time is now, then the same rows and bell messages as above" }
+  end
+  m1@{ shape: trap-t, label: "Meanwhile the person clicks 'Re-check' on a row or 'Check again' on a result" }
+  m2@{ shape: rect, label: "That booking is cleared: the person got there first" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Re-verify a patient" }
+  g2@{ shape: subproc, label: "Continues in: Settings › Pause › What the rest of the app shows" }
+  g3@{ shape: subproc, label: "Continues in: Global shell › Demo menu › Fast-forward the demo clock" }
+  e1@{ shape: stadium, label: "Rows and tile are up to date" }
+  s1 --> c1 --> p1 --> q1
+  c1 -.-> g3
+  q1 -->|"No"| e0
+  q1 -->|"Yes"| q2
+  q2 -->|"No"| a1 --> st1 --> r1 & r2
+  st1 --> q3
+  q3 -->|"One"| n1 --> e1
+  q3 -->|"Several"| n2 --> e1
+  r1 & r2 -.-> e1
+  q2 -->|"Yes"| w1 --> w2 --> c2 --> w3 --> a1
+  w1 -.-> g2
+  s1 -.-> m1 --> m2 --> g1
+  class s1 k_start
+  class c1,c2,m1 k_click
+  class p1,r1,r2,w1,w3,m2 k_process
+  class q1,q2,q3 k_decision
+  class e0 k_endx
+  class a1 k_agent
+  class st1 k_store
+  class n1,n2 k_toast
+  class w2 k_screen
+  class g1,g2,g3 k_goto
+  class e1 k_end
+  style gRun fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gPaused fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```

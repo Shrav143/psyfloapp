@@ -20,18 +20,18 @@ flowchart TD
   c1@{ shape: trap-t, label: "Click anywhere on the row" }
   c2@{ shape: trap-t, label: "Click the case ID (underlined)" }
   c3@{ shape: trap-t, label: "Click 'Open' at the end of the row" }
-  p0@{ shape: rect, label: "The 'Open' button stops the click from reaching the row, so the case opens once" }
+  p0@{ shape: rect, label: "The row ignores a click that starts on the ID or the 'Open' button, so the case opens once and Back needs one press" }
   p1@{ shape: rect, label: "<b>Case Manager works out the address</b><br/>/authorizations/case/ followed by the case code" }
   d1@{ shape: diam, label: "Is the row a denial?" }
   p2@{ shape: rect, label: "<b>Uses the case the denial came from</b><br/>D-3318 opens R-0997, the original case" }
-  p3@{ shape: rect, label: "<b>Uses the row's own ID</b><br/>for example R-1042 or I-2207" }
-  d2@{ shape: diam, label: "Does the case page know this case?" }
+  p3@{ shape: rect, label: "<b>Uses the row's own ID</b><br/>for example R-1042, I-2207 or R-0856" }
+  d2@{ shape: diam, label: "<b>Is the case a request in the queue or on the Dashboard?</b><br/>(30 of the 56 rows, and every case signed and sent today)" }
   s2@{ shape: curv-trap, label: "<b>Case page</b><br/>Header with the case ID, level of care and the request clock<br/>Tabs for the case" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Case" }
-  s3@{ shape: curv-trap, label: "<b>'Request not found'</b><br/>'There is no request with the ID R-0856.'<br/>'Nothing to show here'" }
-  p4@{ shape: rect, label: "<b>The demo has case pages for about half the tracker (30 of 56)</b><br/>The other 26 rows (cases that exist only in the tracker) land here" }
-  c4@{ shape: trap-t, label: "Click 'Back to the queue'" }
-  g2@{ shape: subproc, label: "Continues in: Authorizations › Queue" }
+  d3@{ shape: diam, label: "<b>Is the case in the Case Manager ledger?</b><br/>(the other 26 rows)" }
+  s3@{ shape: curv-trap, label: "<b>Ledger case page</b><br/>Summary from the ledger record, next step and history<br/>Buttons 'Open the review' (when one is due) and 'Back to Case Manager'" }
+  g3@{ shape: subproc, label: "Continues in: Case Manager › Ledger case › Open and read" }
+  s5@{ shape: curv-trap, label: "<b>'Request not found'</b><br/>'There is no request with the ID R-9999.'<br/>(only for an address typed by hand)" }
   c5@{ shape: trap-t, label: "Click the browser Back button" }
   s4@{ shape: curv-trap, label: "<b>Case Manager again</b><br/>Same tab, but search, filters, sort and page are back to their defaults" }
   p5@{ shape: rect, label: "These live in the page, not in the address, so they are not remembered" }
@@ -44,15 +44,16 @@ flowchart TD
   d1 -->|"Yes"| p2 --> d2
   d1 -->|"No"| p3 --> d2
   d2 -->|"Yes"| s2 --> g1
-  d2 -->|"No"| s3 --> p4
-  s3 --> c4 --> g2
+  d2 -->|"No"| d3
+  d3 -->|"Yes"| s3 --> g3
+  d3 -.->|"No"| s5
   s2 --> c5
   s3 --> c5
   c5 --> s4 --> p5 --> e1
   class s1 k_start
-  class c1,c2,c3,c4,c5 k_click
-  class p0,p1,p2,p3,p4,p5 k_process
-  class d1,d2 k_decision
-  class s2,s3,s4 k_screen
-  class g1,g2 k_goto
+  class c1,c2,c3,c5 k_click
+  class p0,p1,p2,p3,p5 k_process
+  class d1,d2,d3 k_decision
+  class s2,s3,s5,s4 k_screen
+  class g1,g3 k_goto
   class e1 k_end

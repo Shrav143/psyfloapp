@@ -1,0 +1,51 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Denial Intelligence › the clinic accepts a denial" }
+  st1@{ shape: cyl, label: "<b>The accepted denial is recorded</b><br/>Which denial (for example D-3318), its request, the payer and the demo-clock time" }
+  g1@{ shape: subproc, label: "Continues in: Denial Intelligence › Accept the denial" }
+  s2@{ shape: stadium, label: "Open Case Manager (Active cases tab)" }
+  d1@{ shape: diam, label: "Has any denial been accepted?" }
+  p0@{ shape: rect, label: "<b>No card</b><br/>Active cases shows 'Being prepared', then the tracker" }
+  c1@{ shape: curv-trap, label: "<b>Card 'Step-down plans'</b><br/>'Started when Denial Intelligence accepts a denial. Choose the next level of care and book the first visit.'<br/>One row for each accepted denial, newest first" }
+  r1@{ shape: curv-trap, label: "<b>A row</b><br/>Level chip ('Residential 3.5')<br/>'Step-down plan'<br/>Case ID, 'M.C., 38', payer name<br/>'From denial D-3318 · accepted 10/20'<br/>Button 'Open case'" }
+  p1@{ shape: rect, label: "<b>Search, level of care and payer from the filter bar narrow the plans</b><br/>The tracker's status filter does not apply<br/>When nothing matches, the whole card is hidden" }
+  c2@{ shape: trap-t, label: "Click the case ID or 'Open case'" }
+  p2@{ shape: rect, label: "Go to /authorizations/case/ and the case code of the denial's request (R-0997)" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Case" }
+  p3@{ shape: rect, label: "The tracker row of that denial (D-3318) reads 'Step-down plan open' in Clock; its status is unchanged" }
+  st2@{ shape: cyl, label: "'Reset demo data' clears the plans" }
+  e1@{ shape: stadium, label: "Plans are on screen" }
+  e2@{ shape: stadium, label: "Active cases as before" }
+  s1 --> st1 --> g1
+  st1 --> d1
+  s2 --> d1
+  d1 -->|"No"| p0 --> e2
+  d1 -->|"Yes"| c1 --> r1 --> p1
+  r1 --> c2 --> p2 --> g2
+  p1 --> e1
+  st1 --> p3
+  st1 -.-> st2
+  class s1,s2 k_start
+  class st1,st2 k_store
+  class g1,g2 k_goto
+  class d1 k_decision
+  class p0,p1,p2,p3 k_process
+  class c1,r1 k_screen
+  class c2 k_click
+  class e1,e2 k_end

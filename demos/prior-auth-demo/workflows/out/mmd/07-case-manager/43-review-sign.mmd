@@ -27,9 +27,9 @@ flowchart TD
   d2@{ shape: diam, label: "Are the attestation (and the acceptance, if shown) ticked?" }
   x1@{ shape: rect, label: "Button 'Sign review' stays greyed" }
   c1@{ shape: trap-t, label: "Click 'Sign review' in the dialog" }
-  st1@{ shape: cyl, label: "<b>Review is saved as 'Signed'</b><br/>Signed by the chosen clinician, stamped with the demo clock<br/>The draft text, with any edits made in the drawer, is kept" }
-  t1@{ shape: odd, label: "<b>'Review signed'</b><br/>'R-0856 was signed by Heather K., LISW-S. Cadence books the next review.'" }
-  p1@{ shape: rect, label: "Dialog closes. The drawer stays open and now shows 'Signed by Heather K., LISW-S' with a read-only draft" }
+  st1@{ shape: cyl, label: "<b>Review is saved as 'Signed'</b><br/>Signed by the chosen clinician, stamped with the demo clock<br/>The draft text, with any edits made in the drawer, is kept<br/>Cadence books the next review (see the next diagram)" }
+  t1@{ shape: odd, label: "<b>'Review signed'</b><br/>'R-0856 was signed by Heather K., LISW-S. Cadence booked the next review for Tue 10/27, 9:00 am.'" }
+  p1@{ shape: rect, label: "Dialog closes. The drawer stays open and now shows 'Signed by Heather K., LISW-S' with a read-only draft and the banner 'Next review: Tue 10/27, 9:00 am'" }
   g1@{ shape: subproc, label: "Continues in: Case Manager › Reviews this week › After a review is signed" }
   c2@{ shape: trap-t, label: "Click 'Cancel', the X, the dimmed area, or press Escape" }
   p2@{ shape: rect, label: "<b>Only the dialog closes. The drawer and the draft stay as they were</b><br/>Nothing is signed" }

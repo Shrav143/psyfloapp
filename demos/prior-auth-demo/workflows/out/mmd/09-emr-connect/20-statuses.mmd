@@ -21,18 +21,18 @@ flowchart TD
   n2@{ shape: st-rect, label: "<b>Production: the read-only sign-in expires or the EMR changes its screens</b><br/>Demo: only the seeded Billing system starts here" }
   subgraph gC ["Connected"]
   sc@{ shape: cyl, label: "<b>Connected</b><br/>Green pill" }
-  c1@{ shape: rect, label: "<b>Row: '6 min ago' or 'Syncing'</b><br/>Buttons: Sync now, Manage" }
+  c1@{ shape: rect, label: "<b>Row: '6 min ago' or 'Syncing'</b><br/>Buttons: Sync now (dimmed while any sync runs), Manage<br/>New case can pull a chart from it" }
   c2@{ shape: rect, label: "<b>Synced by 'Sync now' in the card header</b><br/>Counts in the Last sync tile" }
   end
   subgraph gA ["Needs a quick look"]
   sa@{ shape: cyl, label: "<b>Needs a quick look</b><br/>Amber pill" }
-  a1@{ shape: rect, label: "<b>Row: the issue, then 'First step: renew the sign-in with Fix.'</b><br/>Buttons: Fix, Manage" }
+  a1@{ shape: rect, label: "<b>Row: the issue, 'First step: renew the sign-in with Fix.' and 'New case cannot pull a chart from it until it is connected.'</b><br/>Buttons: Fix, Manage" }
   a2@{ shape: rect, label: "<b>Skipped by 'Sync now'</b><br/>Still counts in the Last sync tile" }
   end
   subgraph gD ["Disconnected"]
   sd@{ shape: cyl, label: "<b>Disconnected</b><br/>Red pill" }
-  d1@{ shape: rect, label: "<b>Row: 'Not syncing' and 'Charts from this system are not arriving.'</b><br/>Buttons: Reconnect, Manage" }
-  d2@{ shape: rect, label: "<b>Skipped by 'Sync now'</b><br/>Ignored by the Last sync tile<br/>The Manage drawer ends with 'Reconnect'" }
+  d1@{ shape: rect, label: "<b>Row: 'Not syncing', 'Charts from this system are not arriving.' and 'New case cannot pull a chart from it until it is connected.'</b><br/>Buttons: Reconnect, Manage" }
+  d2@{ shape: rect, label: "<b>Skipped by 'Sync now'</b><br/>Ignored by the Last sync tile<br/>The Manage drawer ends with 'Reconnect'<br/>If it was disconnected while it needed a look, the row adds 'Reconnect starts with a fix.'" }
   end
   g1@{ shape: subproc, label: "Continues in: EMR Connect › Connect a system › Choose the system and contact" }
   g2@{ shape: subproc, label: "Continues in: EMR Connect › Problems › Fix a system that needs a quick look" }
@@ -48,7 +48,7 @@ flowchart TD
   sa -.-> g2
   sc -->|"Manage, then 'Disconnect', then 'Disconnect'"| sd
   sa -->|"Manage, then 'Disconnect', then 'Disconnect'"| sd
-  sd -->|"Click 'Reconnect'. No test is shown"| sc
+  sd -->|"Click 'Reconnect', fix first if it needed one, then the connection test passes"| sc
   sd -.-> g3
   class s0 k_start
   class n1 k_click

@@ -21,29 +21,32 @@ flowchart TD
   o1@{ shape: win-pane, label: "<b>Drawer: {system name}</b><br/>'{kind} · {what it holds}'<br/>Status pill on the right, X at the top" }
   subgraph gDet ["Card: Connection details"]
   d1@{ shape: rect, label: "<b>Type, Connected since, Contact at the practice</b><br/>Last sync: 'N min ago' or 'Not syncing'<br/>Access: 'Secure, read-only connection'" }
-  d2@{ shape: odd, label: "<b>The issue text, if there is one</b><br/>For example the expired sign-in" }
+  d2@{ shape: odd, label: "<b>Only when it is not Connected</b><br/>The issue text, for example the expired sign-in, then 'New case cannot pull a chart from it until it is connected.'" }
   end
   subgraph gPerm ["Card: Permissions"]
-  r1@{ shape: rect, label: "<b>Read chips</b><br/>Assessments, Progress notes, Labs, Medications, Insurance card<br/>Billing system: Claims, Remittances, Payment dates" }
-  w1@{ shape: trap-t, label: "<b>Click the switch</b><br/>'Write back the approval number and dates, only after a person approves'" }
+  r1@{ shape: rect, label: "<b>Read chips depend on the kind</b><br/>Clinical record: Assessments, Progress notes, Labs, Medications, Insurance card<br/>Billing system: Claims, Remittances, Payment dates<br/>Practice management: Schedules, Admissions, Insurance card<br/>Lab results: Lab orders, Lab results" }
+  w1@{ shape: trap-t, label: "<b>Click the switch</b><br/>'The Dashboard offers the approval write-back box for this system'<br/>Under it: only the approval number and dates, only after a person approves, and it shows while at least one connected system has this on" }
   wq@{ shape: diam, label: "Switch is now?" }
   w2@{ shape: cyl, label: "Write-back on for this system" }
   w3@{ shape: cyl, label: "Write-back off for this system" }
   w4@{ shape: hex, label: "<b>Navigator logs 'Write-back is on for {name}, approval number and dates only, after a person approves'</b><br/>Or 'Write-back is off for {name}'" }
-  w5@{ shape: odd, label: "<b>'Write-back is on'</b><br/>'Only the approval number and dates, and only after a person approves.'<br/>Or 'Write-back is off': 'The agents only read from this system.'" }
+  w5@{ shape: odd, label: "<b>On: 'Write-back is on'</b><br/>'The Dashboard offers the approval write-back box. Only the approval number and dates, and only after a person approves.'<br/>On but not Connected: 'The Dashboard offers the box once this system is connected.'" }
+  w6@{ shape: odd, label: "<b>Off: 'Write-back is off'</b><br/>'The Dashboard still offers the box, because another connected system has write-back on.'<br/>Or 'The Dashboard no longer offers the approval write-back box.'" }
   end
+  n1@{ shape: rect, label: "<b>The Dashboard reads the switches</b><br/>It offers the approval write-back box only while at least one Connected system has the switch on<br/>A switch on a Disconnected or Needs a quick look system does not count" }
+  g3@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Approve the write-back" }
   subgraph gMap ["Card: Field mappings"]
-  m1@{ shape: rect, label: "<b>'{n} mapped, {m} waiting'</b><br/>Table: Their field, Fills, Mapped by" }
+  m1@{ shape: rect, label: "<b>'{n} mapped, {m} waiting. New case reads them when it pulls a chart.'</b><br/>Table: Their field, Fills, Mapped by" }
   m2@{ shape: trap-t, label: "Click 'Map' on a 'Not mapped' row" }
   end
   bq@{ shape: diam, label: "Is the system Disconnected?" }
   b1@{ shape: trap-t, label: "<b>Click 'Disconnect'</b><br/>Red outline button" }
   b2@{ shape: trap-t, label: "<b>Click 'Reconnect'</b><br/>Green button" }
-  cx@{ shape: trap-t, label: "Click the X, press Escape, or click the dimmed area" }
+  cx@{ shape: trap-t, label: "<b>Click the X, press Escape, or click the dimmed area</b><br/>A pop-up on top closes first" }
   e1@{ shape: stadium, label: "<b>Drawer closes</b><br/>Back on the page" }
-  n1@{ shape: rect, label: "<b>The switch is saved but nothing else in the demo reads it</b><br/>The Dashboard write-back approval opens whether it is on or off" }
   g1@{ shape: subproc, label: "Continues in: EMR Connect › Needs a mapping › Map a field" }
   g2@{ shape: subproc, label: "Continues in: EMR Connect › Manage › Disconnect and reconnect" }
+  g4@{ shape: subproc, label: "Continues in: EMR Connect › Manage › Reconnect a system" }
   s1 --> o1
   s1 -.-> p0
   p0 --> o1
@@ -54,23 +57,25 @@ flowchart TD
   wq -->|"Off"| w3
   w2 --> w4
   w3 --> w4
-  w4 --> w5
+  w4 --> w5 & w6
   w5 -.-> n1
+  w6 -.-> n1
+  n1 --> g3
   m1 --> m2 --> g1
   m1 --> bq
   bq -->|"No"| b1 --> g2
-  bq -->|"Yes"| b2 --> g2
+  bq -->|"Yes"| b2 --> g4
   o1 -.-> cx --> e1
   class s1 k_start
-  class p0,d1,r1,m1,n1 k_process
+  class p0,d1,r1,n1,m1 k_process
   class o1 k_overlay
-  class d2,w5 k_toast
+  class d2,w5,w6 k_toast
   class w1,m2,b1,b2,cx k_click
   class wq,bq k_decision
   class w2,w3 k_store
   class w4 k_agent
+  class g3,g1,g2,g4 k_goto
   class e1 k_end
-  class g1,g2 k_goto
   style gDet fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gPerm fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gMap fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

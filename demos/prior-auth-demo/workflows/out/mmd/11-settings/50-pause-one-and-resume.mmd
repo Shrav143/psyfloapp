@@ -17,38 +17,46 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: curv-trap, label: "<b>Settings</b><br/>All sixteen switches on. Header button reads 'Pause all agents'" }
-  c1@{ shape: trap-t, label: "<b>Click a row's switch</b><br/>No label, no confirmation" }
+  c1@{ shape: trap-t, label: "<b>Click a row's switch</b><br/>No confirmation" }
   q1@{ shape: diam, label: "Was the switch on?" }
-  a1@{ shape: cyl, label: "<b>That agent is paused</b><br/>Switch goes grey, no toast, the row text does not change" }
-  a2@{ shape: cyl, label: "<b>That agent is active again</b><br/>Switch goes green, no toast" }
-  q2@{ shape: diam, label: "Are all sixteen switches now off?" }
-  b1@{ shape: rect, label: "<b>Header button stays 'Pause all agents'</b><br/>No banner" }
-  b2@{ shape: rect, label: "<b>Header button becomes 'Resume all agents'</b><br/>Amber banner 'All agents are paused' appears" }
-  q3@{ shape: diam, label: "Were all sixteen off before this click?" }
-  b3@{ shape: rect, label: "<b>Banner goes and the button returns to 'Pause all agents'</b><br/>The other fifteen stay paused" }
-  m1@{ shape: odd, label: "<b>With one to fifteen off there is no 'Resume all agents' button</b><br/>Turn each switch on, or use 'Pause all agents' then 'Resume all agents'" }
-  c2@{ shape: trap-t, label: "Click 'Pause all agents' while some are off" }
+  a1@{ shape: cyl, label: "<b>That agent is paused</b><br/>Switch goes grey, 'Paused' tag beside its name" }
+  a4@{ shape: odd, label: "<b>'{Agent} paused'</b><br/>Amber toast" }
+  a2@{ shape: cyl, label: "<b>That agent is working again</b><br/>Switch goes green, the tag goes" }
+  a5@{ shape: odd, label: "<b>'{Agent} resumed'</b><br/>Green toast" }
+  q2@{ shape: diam, label: "Are all sixteen now paused?" }
+  b1@{ shape: rect, label: "<b>Header button stays 'Pause all agents'</b><br/>Amber banner '{Agent} is paused' or 'N agents are paused'<br/>'Paused: Verify and Reader.' then what each one holds back" }
+  b2@{ shape: rect, label: "<b>Header button becomes 'Resume all agents'</b><br/>Banner reads 'All agents are paused'" }
+  q3@{ shape: diam, label: "Is any agent still paused?" }
+  b3@{ shape: rect, label: "<b>No banner</b><br/>Header button reads 'Pause all agents'" }
+  b4@{ shape: rect, label: "Banner shrinks to the agents still paused" }
+  c2@{ shape: trap-t, label: "Click 'Pause all agents' while some are paused" }
   g1@{ shape: subproc, label: "Continues in: Settings › Pause › Pause all agents" }
-  c3@{ shape: trap-t, label: "<b>Click 'Resume all agents'</b><br/>Only shown when all sixteen are off" }
-  d1@{ shape: cyl, label: "All sixteen switches go on" }
+  c3@{ shape: trap-t, label: "<b>Click 'Resume all agents'</b><br/>In the banner, or in the header when all sixteen are paused" }
+  d1@{ shape: cyl, label: "All sixteen agents are active again" }
   d2@{ shape: odd, label: "<b>'Agents resumed'</b><br/>Green toast" }
   e1@{ shape: stadium, label: "Page is back to normal" }
+  g2@{ shape: subproc, label: "Continues in: Settings › Pause › What the rest of the app shows" }
   s1 --> c1 --> q1
-  q1 -->|"Yes"| a1 --> q2
-  q1 -->|"No"| a2 --> q3
-  q2 -->|"No"| b1 --> m1
+  q1 -->|"Yes"| a1 --> a4 --> q2
+  q1 -->|"No"| a2 --> a5 --> q3
+  q2 -->|"No"| b1
   q2 -->|"Yes"| b2
-  q3 -->|"Yes"| b3 --> m1
-  q3 -->|"No"| b1
-  m1 --> c2 --> g1
-  b2 --> c3 --> d1 & d2
+  q3 -->|"No"| b3
+  q3 -->|"Yes"| b4
+  b1 --> c2 --> g1
+  b1 --> c3
+  b4 --> c3
+  b2 --> c3
+  c3 --> d1 & d2
   d1 --> e1
   d2 --> e1
+  b1 -.-> g2
+  b3 --> e1
   class s1 k_screen
   class c1,c2,c3 k_click
   class q1,q2,q3 k_decision
   class a1,a2,d1 k_store
-  class b1,b2,b3 k_process
-  class m1,d2 k_toast
-  class g1 k_goto
+  class a4,a5,d2 k_toast
+  class b1,b2,b3,b4 k_process
+  class g1,g2 k_goto
   class e1 k_end

@@ -24,23 +24,21 @@ flowchart TD
   x3@{ shape: trap-t, label: "Press Escape" }
   x4@{ shape: trap-t, label: "Click the dimmed area outside" }
   end
-  cl@{ shape: rect, label: "The pop-up is asked to close" }
+  cl@{ shape: rect, label: "<b>The top layer is asked to close</b><br/>Escape only ever reaches the top layer" }
   dk@{ shape: diam, label: "Which pop-up is it?" }
   pl@{ shape: rect, label: "<b>Plain pop-up (everything except the cases below)</b><br/>Closes. Typed text and picks are discarded<br/>Nothing is saved or logged" }
   rd@{ shape: rect, label: "<b>Edit log</b><br/>Read only, nothing to save or discard" }
-  sv@{ shape: rect, label: "'Save the workflow?' over the Edit workflow drawer" }
-  ek@{ shape: diam, label: "Which way was it closed?" }
-  one@{ shape: rect, label: "<b>Cancel, X or dimmed area</b><br/>Only the reason modal closes<br/>The drawer keeps every edit" }
-  both@{ shape: rect, label: "<b>Escape closes the reason modal AND the drawer</b><br/>Every unsaved workflow edit is lost" }
+  sv@{ shape: rect, label: "<b>'Save the workflow?' over the Edit workflow drawer</b><br/>Cancel, X, Escape or the dimmed area:<br/>only this reason modal closes" }
+  dr@{ shape: rect, label: "<b>The drawer is still open with every edit in it</b><br/>A second Escape, Cancel, X or dimmed area closes it:<br/>every unsaved workflow edit is lost, no 'are you sure'" }
   bz@{ shape: rect, label: "<b>'Update drafts?' while the agents work (about 3 seconds)</b><br/>Cancel is greyed, Escape, X and dimmed area do nothing<br/>Wait for it to finish" }
-  mn@{ shape: rect, label: "<b>A menu open inside a pop-up</b><br/>(Plan type, Group, Reached by, Level of care, Case, step type)<br/>Escape closes the menu and also the pop-up" }
+  mn@{ shape: rect, label: "<b>A menu open inside a pop-up</b><br/>(Plan type, Group, Reached by, Level of care, Case, step type)<br/>Escape closes only the menu<br/>The next Escape closes the pop-up" }
   subgraph gS ["Ways to save (the primary button)"]
-  sa@{ shape: rect, label: "<b>'Save and log the edit' needs a reason</b><br/>Empty reason: 'Add a reason. It goes in the edit log.'" }
-  sb@{ shape: rect, label: "'Add payer' needs a name, a way to reach and a program" }
+  sa@{ shape: rect, label: "<b>'Save and log the edit' needs a reason</b><br/>Empty reason: 'Add a reason. It goes in the edit log.'<br/>'Edit payer details' also needs a listed 'Reached by'" }
+  sb@{ shape: rect, label: "<b>'Add payer' needs a name no other payer has,</b><br/>a way to reach and a program" }
   sc@{ shape: rect, label: "<b>'Acknowledge change' and 'Update N drafts' are confirm buttons</b><br/>they need no typing" }
   sd@{ shape: rect, label: "<b>If nothing differs from what is saved:</b><br/>'Nothing changed' (or 'Nothing to save' in the workflow drawer)" }
   end
-  sv1@{ shape: cyl, label: "<b>Saved: the change is in force for new drafts</b><br/>One edit log entry per change" }
+  sv1@{ shape: cyl, label: "<b>Saved: the change is in force for new drafts</b><br/>One edit log entry per change<br/>One bell notification" }
   undo@{ shape: rect, label: "<b>No undo, revert or 'restore previous' button</b><br/>To go back: edit again. Edit log shows the before text" }
   e1@{ shape: stadium, label: "Back on the page, nothing half saved" }
   x0@{ shape: stadium, label: "Closed without saving" }
@@ -53,9 +51,7 @@ flowchart TD
   cl --> dk
   dk -->|"Plain"| pl --> x0
   dk -->|"Edit log"| rd --> x0
-  dk -->|"Save the workflow?"| sv --> ek
-  ek -->|"Cancel, X, dimmed area"| one --> x0
-  ek -->|"Escape"| both --> x0
+  dk -->|"Save the workflow?"| sv --> dr --> x0
   dk -->|"Update drafts?, busy"| bz --> e1
   dk -->|"Menu open"| mn --> x0
   ov --> sa --> sv1
@@ -67,8 +63,8 @@ flowchart TD
   class s1 k_start
   class ov k_overlay
   class x1,x2,x3,x4 k_click
-  class cl,pl,rd,sv,one,both,bz,mn,sa,sb,sc,sd,undo k_process
-  class dk,ek k_decision
+  class cl,pl,rd,sv,dr,bz,mn,sa,sb,sc,sd,undo k_process
+  class dk k_decision
   class sv1 k_store
   class e1 k_end
   class x0 k_endx

@@ -37,10 +37,10 @@ flowchart TD
   b4@{ shape: trap-t, label: "Review and sign: 'Back', 'Save as draft', 'Sign and send'" }
   end
   pBack@{ shape: rect, label: "<b>'Back' goes one step back</b><br/>Medical records to Referral; Agents work to Medical records; Review and sign to Agents work" }
-  pNext@{ shape: rect, label: "<b>Forward buttons stay disabled until the step is ready</b><br/>'Continue' waits for nothing missing; 'Review and sign' waits for the agents" }
+  pNext@{ shape: rect, label: "<b>Forward buttons stay disabled until the step is ready</b><br/>'Accept referral and continue' waits for the required referral items;<br/>'Continue' waits for nothing missing; 'Review and sign' waits for the agents" }
   cLink@{ shape: trap-t, label: "Click the link 'Case Manager' above the title" }
   gCm@{ shape: subproc, label: "Continues in: Case Manager" }
-  sFull@{ shape: curv-trap, label: "<b>Stepper on the full referral page</b><br/>'Referral' is current and no step is clickable" }
+  sFull@{ shape: curv-trap, label: "<b>Stepper on the full referral page</b><br/>'Referral' is current and no step is clickable<br/>The button 'Back to the case' sits beside the crumbs" }
   gFull@{ shape: subproc, label: "Continues in: New case › Referral › The full referral page" }
   g1@{ shape: subproc, label: "Continues in: New case › Referral › Start screen" }
   g2@{ shape: subproc, label: "Continues in: New case › Medical records › The checklist and Continue" }
@@ -60,6 +60,7 @@ flowchart TD
   b2 --> pBack
   b3 --> pBack
   b4 --> pBack
+  b1 -.-> pNext
   b2 -.-> pNext
   b3 -.-> pNext
   sc1 --> cLink --> gCm

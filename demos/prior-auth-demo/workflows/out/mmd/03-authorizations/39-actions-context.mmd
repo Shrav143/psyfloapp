@@ -1,0 +1,56 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  cc@{ shape: trap-t, label: "Click 'Add clinical context'" }
+  m@{ shape: win-pane, label: "<b>Dialog 'Add clinical context'</b><br/>'Something the chart does not show. Scribe folds it into the draft. Nothing goes to the payer.'" }
+  ta@{ shape: lean-r, label: "<b>Type in the box</b><br/>e.g. 'He called the program himself on 10/19 and asked for a bed.'<br/>Hint: 'Each note adds a point to the approval chance, up to 3.'" }
+  d@{ shape: diam, label: "Is anything typed?" }
+  dis@{ shape: rect, label: "'Add context' stays off" }
+  ad@{ shape: trap-t, label: "Click 'Add context'" }
+  cn@{ shape: trap-t, label: "Click 'Cancel', the X or the dimmed area, or press Esc" }
+  cl@{ shape: stadium, label: "<b>Dialog closes</b><br/>Nothing is added<br/>What you typed stays in the box for next time" }
+  lk@{ shape: rect, label: "<b>While the agents are updating the draft</b><br/>the button is off" }
+  sv@{ shape: cyl, label: "<b>Note added to the shared list for this request</b><br/>Log: 'You added clinical context: ...'" }
+  nu@{ shape: rect, label: "<b>Approval chance goes up by 1 point for each of the first three notes</b><br/>The fourth and later notes are kept and listed, with no points" }
+  ls@{ shape: curv-trap, label: "<b>Card 'Context you added' in the side panel</b><br/>Each note with '+1 pt' (no pill after the third)" }
+  rk@{ shape: curv-trap, label: "<b>Risk analysis › Why this number gets a row</b><br/>'Clinical context you added'<br/>The rows still add up to the chance" }
+  dQ@{ shape: diam, label: "Is it a queue request that also has a Dashboard entry?" }
+  db@{ shape: cyl, label: "<b>Dashboard request gets the new chance</b><br/>Timeline: 'You added clinical context. Approval chance is now 63%'" }
+  qu@{ shape: rect, label: "Queue tile shows the new chance" }
+  tc@{ shape: odd, label: "<b>'Clinical context added'</b><br/>'Scribe will fold it into the draft. Nothing goes to the payer.'" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Case page › Draft › Read and edit" }
+  cc --> m --> ta --> d
+  d -->|"No"| dis
+  d -->|"Yes"| ad --> sv --> nu --> ls
+  nu --> rk
+  sv --> dQ
+  dQ -->|"Yes"| db --> qu
+  dQ -->|"No"| qu
+  sv --> tc --> g1
+  m --> cn --> cl
+  cc -.-> lk
+  class cc,ad,cn k_click
+  class m k_overlay
+  class ta k_input
+  class d,dQ k_decision
+  class dis,lk,nu,qu k_process
+  class cl k_endx
+  class sv,db k_store
+  class ls,rk k_screen
+  class tc k_toast
+  class g1 k_goto

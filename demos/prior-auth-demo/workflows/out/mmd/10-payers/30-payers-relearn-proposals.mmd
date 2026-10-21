@@ -35,6 +35,7 @@ flowchart TD
   ac@{ shape: cyl, label: "<b>Condition added under that step</b><br/>Workflow becomes the next version<br/>Proposal removed" }
   lg@{ shape: cyl, label: "<b>Edit log entry, area 'Workflow'</b><br/>Reason 'Accepted Historian's proposal: ...'" }
   un@{ shape: cyl, label: "'Edits waiting' count goes up by one" }
+  nt@{ shape: cyl, label: "<b>Bell notification 'Summit workflow edited'</b><br/>Historian's proposal was accepted, saved as a new version" }
   ta@{ shape: odd, label: "<b>'Proposal accepted'</b><br/>Added under 'Gather the documents' and logged as version 8." }
   dm@{ shape: cyl, label: "<b>Proposal removed and remembered as dismissed</b><br/>Historian will not offer it again" }
   td@{ shape: odd, label: "<b>'Proposal dismissed'</b><br/>The workflow did not change." }
@@ -48,7 +49,7 @@ flowchart TD
   nx -->|"No"| tn --> e1
   nx -->|"Yes"| pr --> tp --> bn --> badge
   bn --> rv --> cp
-  cp --> ca --> ac --> lg --> un --> ta --> g1
+  cp --> ca --> ac --> lg --> un --> nt --> ta --> g1
   lg -.-> g2
   cp --> cd --> dm --> td --> e1
   ca -.-> nr
@@ -60,7 +61,7 @@ flowchart TD
   class h1 k_agent
   class lv,nx k_decision
   class dropped k_endx
-  class pr,ac,lg,un,dm k_store
+  class pr,ac,lg,un,nt,dm k_store
   class bn,cp k_screen
   class rv,ca,cd k_click
   class e1 k_end

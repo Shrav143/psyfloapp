@@ -19,7 +19,7 @@ flowchart TD
   s1@{ shape: stadium, label: "<b>Click the 'Changes' tab</b><br/>(the badge shows how many wait)" }
   tab@{ shape: curv-trap, label: "Changes tab" }
   dp@{ shape: diam, label: "Is a payer change waiting?" }
-  bw@{ shape: curv-trap, label: "<b>Ochre banner with a megaphone</b><br/>Title: 'Criteria changed, version 2026.3'<br/>What changed in one sentence<br/>Who can redraft which drafts, then two buttons" }
+  bw@{ shape: curv-trap, label: "<b>Ochre banner with a megaphone</b><br/>Title: 'Criteria changed, version 2026.3'<br/>What changed in one sentence<br/>Who can redraft which of this payer's unsent drafts,<br/>then two buttons" }
   bg@{ shape: odd, label: "<b>Green banner</b><br/>'This payer's rules are up to date'<br/>Last checked 10/12. Sentinel keeps watching Beacon's policy and portal." }
   dq@{ shape: diam, label: "Any proposals from Historian?" }
   pc@{ shape: curv-trap, label: "<b>One card per proposal</b><br/>Historian chip, 'Proposal: ...', text,<br/>'Under Follow up: If ... leads to Phone step'<br/>'Accept proposal', 'Dismiss'" }
@@ -29,12 +29,13 @@ flowchart TD
   ro@{ shape: rect, label: "<b>History is read only</b><br/>No search, filter or reopen" }
   add@{ shape: rect, label: "<b>New rows are added at the top</b><br/>when a change is updated" }
   ca@{ shape: trap-t, label: "Click 'Acknowledge change'" }
-  cu@{ shape: trap-t, label: "Click 'Update 4 drafts'" }
+  cu@{ shape: trap-t, label: "Click 'Update 1 draft'" }
   cac@{ shape: trap-t, label: "Click 'Accept proposal' or 'Dismiss'" }
   g1@{ shape: subproc, label: "Continues in: Payers › Changes › Acknowledge a change" }
   g2@{ shape: subproc, label: "Continues in: Payers › Changes › Update drafts after a change" }
   g3@{ shape: subproc, label: "Continues in: Payers › Process › Re-learn from decisions" }
   g4@{ shape: subproc, label: "Continues in: Payers › Changes › A change with no drafts" }
+  dl@{ shape: rect, label: "<b>The drafts it names are read live</b><br/>This payer's requests in 'Preparing' and saved New case drafts<br/>Cardinal: I-2207. Requests already sent are never named" }
   e1@{ shape: stadium, label: "Person knows what changed and what is waiting" }
   s1 --> tab --> dp
   dp -->|"Yes"| bw --> dq
@@ -46,12 +47,13 @@ flowchart TD
   pc --> cac --> g3
   pc -.-> pn
   hist --> ex --> ro --> add --> e1
-  bw -.-> g4
+  bw --> dl
+  dl -.-> g4
   class s1 k_start
   class tab,bw,pc,hist k_screen
   class dp,dq k_decision
   class bg k_toast
-  class pn,ex,ro,add k_process
+  class pn,ex,ro,add,dl k_process
   class ca,cu,cac k_click
   class g1,g2,g3,g4 k_goto
   class e1 k_end

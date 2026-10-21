@@ -19,7 +19,7 @@ flowchart TD
   s1@{ shape: stadium, label: "The request is signed and sent" }
   subgraph gDash ["Dashboard"]
   sDash@{ shape: curv-trap, label: "<b>Dashboard</b><br/>The request is open in the side drawer<br/>Chip 'Received', held by Navigator" }
-  pCount@{ shape: rect, label: "<b>In the stage strip 'Received' goes up by one</b><br/>A brand-new case was never counted under 'Preparing'" }
+  pCount@{ shape: rect, label: "<b>In the stage strip 'Received' goes up by one</b><br/>The 'Preparing' count goes down by one: a saved draft was counted there until now" }
   tToast@{ shape: odd, label: "<b>Toast: 'Sent to the payer'</b><br/>Bell notification: 'Sent to the payer'" }
   end
   gOpen@{ shape: subproc, label: "Continues in: Dashboard › Open a request" }
@@ -31,12 +31,12 @@ flowchart TD
   cBackCM@{ shape: trap-t, label: "Click 'Back to Case Manager'" }
   end
   subgraph gCM ["Case Manager › Active cases"]
-  sCM@{ shape: curv-trap, label: "<b>Case Manager</b><br/>'56 active cases.' and 'N are still being prepared.'" }
+  sCM@{ shape: curv-trap, label: "<b>Case Manager</b><br/>'57 active cases.' and 'N are still being prepared.'" }
   pGone@{ shape: rect, label: "<b>The case leaves the 'Being prepared' card</b><br/>The 'still being prepared' count goes down by one" }
   pBadge@{ shape: rect, label: "The sidebar badge on 'Case Manager' no longer counts it" }
   cSent@{ shape: trap-t, label: "Click the 'N sent today' button" }
   pSentN@{ shape: rect, label: "The count is one higher (4 becomes 5)" }
-  pLedger@{ shape: rect, label: "<b>The table of active cases gains no row</b><br/>The header still says '56 active cases.'" }
+  pLedger@{ shape: rect, label: "<b>The table of active cases gains a row for the request</b><br/>The header goes from '56 active cases.' to '57 active cases.'" }
   end
   gDash2@{ shape: subproc, label: "Continues in: Dashboard › Stage strip and requests" }
   gCM2@{ shape: subproc, label: "Continues in: Case Manager › Active cases" }

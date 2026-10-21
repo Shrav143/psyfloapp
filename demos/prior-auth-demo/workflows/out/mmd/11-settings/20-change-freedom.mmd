@@ -26,23 +26,25 @@ flowchart TD
   x1@{ shape: stadium, label: "<b>Menu closes</b><br/>Nothing changes, no toast" }
   q2@{ shape: diam, label: "Is it the level already set?" }
   a1@{ shape: rect, label: "The dropdown shows the new level" }
-  a2@{ shape: cyl, label: "<b>That agent's freedom is kept for this visit</b><br/>Other agents are not touched" }
-  a3@{ shape: rect, label: "Same level picked again: nothing changes" }
+  a2@{ shape: cyl, label: "<b>That agent's freedom is saved in the app</b><br/>Other agents are not touched" }
+  a3@{ shape: rect, label: "Same level picked again: nothing changes and no toast" }
   t1@{ shape: odd, label: "<b>'{Agent}: {level}'</b><br/>For example 'Reader: Ask before acting'. A plain toast" }
-  n1@{ shape: rect, label: "<b>Leave Settings or reload and every agent goes back to its starting level</b><br/>Verify and Reader 'Act on its own', Navigator and Cadence 'Act, then report', Caller and the other nine 'Ask before acting'" }
-  n2@{ shape: rect, label: "<b>No other screen reads the level</b><br/>Nothing in New case, the Dashboard or Case Manager changes" }
+  n1@{ shape: rect, label: "<b>Starting levels</b><br/>Verify and Reader 'Act on its own', Navigator and Cadence 'Act, then report', Caller and the other nine 'Ask before acting'<br/>Leaving Settings keeps the choice. Reset demo data restores these" }
+  n2@{ shape: rect, label: "<b>EMR Connect reads the levels of Reader and Navigator</b><br/>The other agents' levels are saved but no screen acts on them yet" }
   e1@{ shape: stadium, label: "Row shows the chosen level" }
   g1@{ shape: subproc, label: "Continues in: Settings › Agents › What each freedom level allows and the gates it never skips" }
+  g2@{ shape: subproc, label: "Continues in: EMR Connect › Sync › When an agent is paused or asks first" }
   s1 --> c1 --> o1 --> q1
   c1 -.-> k1
   k1 --> q1
   q1 -->|"Picks a level"| p1 --> q2
   q1 -->|"Leaves"| p2 --> x1
   q2 -->|"No"| a1 --> a2 --> t1
-  q2 -->|"Yes"| a3 --> t1
+  q2 -->|"Yes"| a3 --> e1
   t1 --> e1
   e1 --> n1 & n2
   e1 --> g1
+  n2 --> g2
   class s1 k_screen
   class c1,p1,p2 k_click
   class o1 k_overlay
@@ -53,4 +55,4 @@ flowchart TD
   class a2 k_store
   class t1 k_toast
   class e1 k_end
-  class g1 k_goto
+  class g1,g2 k_goto

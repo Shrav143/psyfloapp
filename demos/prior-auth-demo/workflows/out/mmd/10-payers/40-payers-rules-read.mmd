@@ -19,7 +19,7 @@ flowchart TD
   s1@{ shape: stadium, label: "Click the 'Rules' tab" }
   tab@{ shape: curv-trap, label: "<b>Rules tab</b><br/>Banner if edits wait, four cards in two columns, a note" }
   dU@{ shape: diam, label: "<b>Edits saved but not yet</b><br/>applied to open drafts?" }
-  bU@{ shape: odd, label: "<b>'1 edit applies to new drafts only'</b><br/>with 'Update 2 drafts'" }
+  bU@{ shape: odd, label: "<b>'1 edit applies to new drafts only'</b><br/>with 'Update 2 drafts'<br/>Sent requests keep what they were sent with" }
   gU@{ shape: subproc, label: "Continues in: Payers › Edits waiting › Update drafts" }
   subgraph gC ["Each card"]
   c1@{ shape: curv-trap, label: "<b>Submission windows</b><br/>Notice within 24 hours of admission (72 for Harborview, by phone for Evergreen, by fax for Lakeshore)<br/>Recertification filed 72 hours before the unit limit<br/>A continued-stay review every 7 days after the first 7" }
@@ -30,8 +30,8 @@ flowchart TD
   ub@{ shape: rect, label: "<b>Foot of each card</b><br/>'Used by Cadence and Navigator · confirmed 10/12'" }
   who@{ shape: rect, label: "<b>Used by</b><br/>Windows: Cadence, Navigator<br/>Backdating: Cadence, Scrubber<br/>No authorization needed: Verify, Criteria<br/>Peer-to-peer and appeals: Advocate, Cadence" }
   cf@{ shape: rect, label: "<b>'Confirmed' is a date</b><br/>Evergreen shows 10/09, the others 10/12<br/>It moves to today when a rule is edited" }
-  note@{ shape: odd, label: "<b>'Rules are learned from past decisions and confirmed against</b><br/>Summit's published policy. An edit applies to new drafts at once,<br/>and to open drafts when you click Update drafts.'" }
-  noeff@{ shape: rect, label: "<b>Demo: no screen shows a rule changing an approval chance.</b><br/>The rules are text on this tab and a reason to redraft" }
+  note@{ shape: odd, label: "<b>'Rules are learned from past decisions and confirmed against</b><br/>Summit's published policy. New drafts use a saved edit at once.<br/>Sent requests keep what they were sent with.<br/>Click Update drafts to redraft open ones.'" }
+  noeff@{ shape: rect, label: "<b>New case reads the saved lines for the payer</b><br/>and level of care of each draft<br/>See the New case diagrams for what it checks" }
   ce@{ shape: trap-t, label: "<b>Click 'Edit' on a card</b><br/>(the button is named 'Edit Backdating' and so on)" }
   gE@{ shape: subproc, label: "Continues in: Payers › Rules › Edit a rule" }
   gF@{ shape: subproc, label: "Continues in: Payers › Configuration feeds the rest of the app" }

@@ -17,6 +17,9 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: trap-t, label: "<b>Click 'Connect a system'</b><br/>Primary button, top right of the page" }
+  qp@{ shape: diam, label: "Is Reader paused in Settings?" }
+  tp@{ shape: odd, label: "<b>'Reader is paused'</b><br/>'Resume it in Settings to connect a system.'" }
+  xp@{ shape: stadium, label: "Nothing opens" }
   o1@{ shape: win-pane, label: "<b>Connect a system</b><br/>Read-only. Nothing is written back until a person approves it.<br/>Steps: System, Contact, Test" }
   subgraph gS1 ["Step 1 of 3: System"]
   i1@{ shape: lean-r, label: "<b>Pick one System type</b><br/>Clinical record (default), Billing system, Practice management or Lab results" }
@@ -37,7 +40,9 @@ flowchart TD
   cx@{ shape: trap-t, label: "<b>Click 'Cancel' or the X, press Escape, or click the dimmed area</b><br/>On any step" }
   e1@{ shape: stadium, label: "<b>Pop-up closes</b><br/>Nothing is saved. Typed answers are lost" }
   g1@{ shape: subproc, label: "Continues in: EMR Connect › Connect a system › Run the connection test and save" }
-  s1 --> o1 --> i1
+  s1 --> qp
+  qp -->|"Yes"| tp --> xp
+  qp -->|"No"| o1 --> i1
   i1 --> p1 --> i2 --> p2 --> c1
   c1 --> i3
   i3 --> p3
@@ -50,13 +55,13 @@ flowchart TD
   o1 -.-> cx
   cx --> e1
   class s1,c1,c2,c3,cx k_click
+  class qp,q1 k_decision
+  class tp,t1 k_toast
+  class xp,e1 k_endx
   class o1 k_overlay
   class i1,i2,i3 k_input
   class p1,p2,p3 k_process
   class x1 k_ext
-  class q1 k_decision
-  class t1 k_toast
-  class e1 k_endx
   class g1 k_goto
   style gS1 fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gS2 fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

@@ -20,6 +20,9 @@ flowchart TD
   s2@{ shape: stadium, label: "<b>Open the app at /</b><br/>The address / goes to /dashboard" }
   s3@{ shape: stadium, label: "<b>Follow a link with a request or a filter</b><br/>A notification, or a button on another page" }
   s4@{ shape: stadium, label: "Demo menu › Click 'Reset demo data'" }
+  s5@{ shape: stadium, label: "<b>Follow 'Open Dashboard, By payer' in Ask FLO</b><br/>The address is /dashboard?focus=payers" }
+  d4@{ shape: diam, label: "Does the address hold ?focus=payers?" }
+  pf@{ shape: rect, label: "<b>Payers at a glance scrolls into view and is outlined for about 2 seconds</b><br/>The ?focus part is then removed from the address" }
   t1@{ shape: odd, label: "<b>'Demo data reset'</b><br/>'Everything is back to the starting point.'" }
   p1@{ shape: rect, label: "Page opens and reads the address" }
   d1@{ shape: diam, label: "Does the address hold payer, program, type, stage, from or to?" }
@@ -34,11 +37,11 @@ flowchart TD
   e1@{ shape: stadium, label: "Page shown with no drawer" }
   subgraph gPage ["On the page, from the top down"]
   h1@{ shape: curv-trap, label: "<b>Headline and sub line</b><br/>'18 requests are waiting on payers. 3 are waiting on you.'" }
-  ca@{ shape: trap-t, label: "Click 'Check all now'" }
+  ca@{ shape: trap-t, label: "<b>Click 'Check all now'</b><br/>Disabled while Navigator is paused in Settings" }
   f1@{ shape: curv-trap, label: "<b>Filter bar</b><br/>'All payers', 'All programs', 'All request types', 'All stages'<br/>'Outcomes for' and the date range 'Sep 21 – Oct 20, 2026'" }
-  st@{ shape: curv-trap, label: "<b>Stage strip, six tiles</b><br/>Preparing 5, Received 4, Under review 14, Info requested 3, Decided today 8, Appeal or call 7" }
-  rq@{ shape: curv-trap, label: "<b>Requests</b><br/>'Showing 8 of 39', seven columns, 'Show 8 more'" }
-  py@{ shape: curv-trap, label: "<b>Payers at a glance</b><br/>Six payers and an 'All payers' total row" }
+  st@{ shape: curv-trap, label: "<b>Stage strip, six tiles</b><br/>Preparing 5 (plus cases saved in New case), Received 4, Under review 14, Info requested 3, Decided today 8, Appeal or call 8" }
+  rq@{ shape: curv-trap, label: "<b>Requests</b><br/>'Showing 8 of 40', seven columns, five sortable headings, 'Show 8 more'" }
+  py@{ shape: curv-trap, label: "<b>Payers at a glance</b><br/>Six payers and an 'All payers' total row<br/>'Open Payers' link; each payer name opens that payer" }
   end
   g1@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Headline › What the headline and sub line say" }
@@ -52,11 +55,14 @@ flowchart TD
   s1 --> p1
   s2 --> p1
   s3 --> p1
+  s5 --> p1
   s4 --> t1 --> p1
   p1 --> d1
   d1 -->|"Yes"| p2 --> w1
   d1 -->|"No"| p3 --> w1
   w1 --> sc
+  sc --> d4
+  d4 -->|"Yes"| pf --> py
   sc --> d2
   d2 -->|"No"| e1
   d2 -->|"Yes"| d3
@@ -71,10 +77,10 @@ flowchart TD
   st --> g5
   rq --> g6
   py --> g7
-  class s1,s2,s3,s4 k_start
+  class s1,s2,s3,s4,s5 k_start
+  class d4,d1,d2,d3 k_decision
+  class pf,p1,p2,p3,p4 k_process
   class t1 k_toast
-  class p1,p2,p3,p4 k_process
-  class d1,d2,d3 k_decision
   class w1 k_store
   class sc,h1,f1,st,rq,py k_screen
   class o1 k_overlay

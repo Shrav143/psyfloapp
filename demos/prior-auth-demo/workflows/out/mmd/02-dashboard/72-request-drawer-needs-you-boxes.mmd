@@ -32,14 +32,19 @@ flowchart TD
   w2@{ shape: cyl, label: "History gets 'Packet drafted the answer. Waiting for your review'" }
   t1@{ shape: odd, label: "<b>'The draft is ready'</b><br/>'Packet finished the answer for I-2218. Review it, then sign and send.'" }
   p2@{ shape: rect, label: "<b>Box switches to 'Needs your input'</b><br/>The table row shows the new next step" }
+  d4@{ shape: diam, label: "Is write-back on for a connected system in EMR Connect?" }
   b3@{ shape: win-pane, label: "<b>Green box 'Approved. Write-back waits for you'</b><br/>'Cadence updated the ledger. The approval number and dates go to the EMR only after you confirm.'" }
   c3@{ shape: trap-t, label: "Click 'Approve write-back'" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Approve the write-back" }
+  b4@{ shape: win-pane, label: "<b>Calm line, no button</b><br/>'Write-back is off for your records system. Turn it on in EMR Connect.'" }
+  c4@{ shape: trap-t, label: "Click 'Turn it on in EMR Connect.'" }
+  g3@{ shape: subproc, label: "Continues in: EMR Connect › Manage › Open the Manage drawer" }
+  p3@{ shape: rect, label: "<b>The row's 'What happens next' and 'Held by' say 'Write-back is off in EMR Connect'</b><br/>Turning it on in EMR Connect brings the green box back" }
   subgraph gSeed ["Demo examples"]
   e1@{ shape: rect, label: "<b>P-1499: draft ready</b><br/>Needs your input" }
   e2@{ shape: rect, label: "<b>I-2218 and R-0975: still drafting</b><br/>Use 'Check on the draft'" }
   e3@{ shape: rect, label: "R-0951: approved, write-back waiting" }
-  e4@{ shape: rect, label: "Any request: 'Asks for information' in Demo controls gives 'Needs your input' at once" }
+  e4@{ shape: rect, label: "A Received or Under review request: 'Asks for information' in Demo controls gives 'Needs your input' at once" }
   end
   s1 --> d1
   d1 -->|"Yes"| d2
@@ -47,19 +52,22 @@ flowchart TD
   d2 -->|"Yes"| b1 --> c1 --> g1
   d2 -->|"No"| b2 --> c2 --> p1 --> a1 --> w1 --> w2 --> t1 --> p2
   p2 --> b1
-  d3 -->|"Yes"| b3 --> c3 --> g2
+  d3 -->|"Yes"| d4
+  d4 -->|"Yes"| b3 --> c3 --> g2
+  d4 -->|"No"| b4 --> c4 --> g3
+  b4 -.-> p3
   d3 -->|"No"| x1
   d2 -.-> e1
   b2 -.-> e2
   b3 -.-> e3
   b1 -.-> e4
   class s1 k_start
-  class d1,d2,d3 k_decision
+  class d1,d2,d3,d4 k_decision
   class x1 k_endx
-  class b1,b2,b3 k_overlay
-  class c1,c2,c3 k_click
-  class g1,g2 k_goto
-  class p1,p2,e1,e2,e3,e4 k_process
+  class b1,b2,b3,b4 k_overlay
+  class c1,c2,c3,c4 k_click
+  class g1,g2,g3 k_goto
+  class p1,p2,p3,e1,e2,e3,e4 k_process
   class a1 k_agent
   class w1,w2 k_store
   class t1 k_toast

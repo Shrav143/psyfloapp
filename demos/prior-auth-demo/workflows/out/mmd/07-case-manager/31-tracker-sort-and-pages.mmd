@@ -27,7 +27,7 @@ flowchart TD
   s1a@{ shape: rect, label: "'Case': case ID, A to Z" }
   s2a@{ shape: rect, label: "'Payer': payer key A to Z (Beacon, Cardinal, Evergreen, Harborview, Lakeshore, Summit)" }
   s3a@{ shape: rect, label: "<b>'Units used': share of the approval used, lowest first</b><br/>'not yet approved' rows count as lowest" }
-  s4a@{ shape: rect, label: "'Clock': soonest binding event first; overdue first of all" }
+  s4a@{ shape: rect, label: "<b>'Clock': soonest binding event first; overdue first of all</b><br/>A case that is also a request sorts by the case page's own due time" }
   s5a@{ shape: rect, label: "'Approval chance': highest first on the first click" }
   s6a@{ shape: rect, label: "'Status': Needs action, Review due, Awaiting payer, On track" }
   p2@{ shape: rect, label: "<b>Ties are broken by the soonest due time</b><br/>The table goes back to page 1" }

@@ -41,6 +41,9 @@ flowchart TD
   b2@{ shape: rect, label: "<b>Member ID ends 1012</b><br/>'coverage lapsed 10/12'" }
   b3@{ shape: rect, label: "<b>Member ID ends 9999</b><br/>'no coverage found for these details'" }
   b4@{ shape: rect, label: "<b>Evergreen with Detox</b><br/>'The clinic is not enrolled for this program'" }
+  b6@{ shape: rect, label: "<b>Member ID ends 3030</b><br/>'does not cover Residential 3.5'" }
+  b7@{ shape: rect, label: "<b>Member ID ends 6060</b><br/>'Another plan pays first'" }
+  b8@{ shape: rect, label: "<b>Member ID ends 9090</b><br/>'All 14 days are used'" }
   b5@{ shape: rect, label: "<b>The check still runs to the end and opens a result</b><br/>Verdict 'Fix before billing'" }
   end
   s2@{ shape: stadium, label: "<b>While the check runs, leave the page</b><br/>(sidebar, back link or browser Back)" }
@@ -54,6 +57,9 @@ flowchart TD
   b1 -->|"Lapsed"| b2 --> b5
   b1 -->|"Not found"| b3 --> b5
   b1 -->|"Not enrolled"| b4 --> b5
+  b1 -->|"Not covered"| b6 --> b5
+  b1 -->|"Other plan"| b7 --> b5
+  b1 -->|"Limit reached"| b8 --> b5
   b5 --> g1
   s1 -.-> r1
   r1 --> r2
@@ -65,7 +71,7 @@ flowchart TD
   s2 --> e1
   class s1,s2 k_start
   class d1,r2,r5,b1 k_decision
-  class p1,p2,p3,p4,r7,r8,b2,b3,b4,b5 k_process
+  class p1,p2,p3,p4,r7,r8,b2,b3,b4,b6,b7,b8,b5 k_process
   class a1,r6 k_agent
   class w1,r3 k_wait
   class r1,r4 k_ext

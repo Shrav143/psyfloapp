@@ -51,7 +51,9 @@ flowchart TD
   rs@{ shape: rect, label: "Search empty, All payers, All statuses, All urgency, payer-signal filter off" }
   dOpen@{ shape: diam, label: "Are there any open requests at all?" }
   e1@{ shape: stadium, label: "Every band is listed again" }
-  none@{ shape: curv-trap, label: "<b>'Nothing needs you today'</b><br/>'Every open request has been sent. Case Manager shows what is scheduled next.'" }
+  none@{ shape: curv-trap, label: "<b>'Nothing needs you today'</b><br/>'Every open request has been sent or handled. Case Manager shows what is scheduled next.'" }
+  dNow@{ shape: diam, label: "Is Act now empty, with no search, payer or status filter on?" }
+  nowE@{ shape: curv-trap, label: "<b>Act now band stays, '(0 requests)'</b><br/>'Nothing needs you today'<br/>'Everything in Act now has been sent or handled.'<br/>Header sub line: 'Nothing is urgent. ...'" }
   ocm@{ shape: trap-t, label: "Click 'Open Case Manager'" }
   gCM@{ shape: subproc, label: "Continues in: Case Manager › Active cases" }
   gSig@{ shape: subproc, label: "Continues in: Authorizations › Queue › Cardinal payer signal" }
@@ -71,16 +73,18 @@ flowchart TD
   dOpen -->|"Yes"| dAny
   dOpen -->|"No"| none --> ocm --> gCM
   dAny -->|"Yes"| res
+  res -.-> dNow
+  dNow -->|"Yes"| nowE
   dAny -->|"No"| emp --> ce --> rs
   rs --> e1
   fb --> gSig
-  class fb,hd,res,emp,none k_screen
+  class fb,hd,res,emp,none,nowE k_screen
   class sk,p1,st1,u1,clr,ce,ocm k_click
   class sf,sm,st4,kb,ap,rs k_process
   class s1,p3,st3,u3 k_input
   class p2,st2,u2 k_overlay
   class keep k_store
-  class dAny,dOpen k_decision
+  class dAny,dOpen,dNow k_decision
   class e1 k_end
   class gCM,gSig k_goto
   style gS fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

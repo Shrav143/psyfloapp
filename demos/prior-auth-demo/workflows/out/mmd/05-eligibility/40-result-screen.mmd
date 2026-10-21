@@ -20,19 +20,23 @@ flowchart TD
   sc@{ shape: curv-trap, label: "<b>Eligibility & Benefits</b><br/>Title is the headline, for example 'Covered, but you need an authorization first.'<br/>Sub 'R-1042 · J.M., 34 · Summit Medicaid HMO · Residential 3.5 · Date of service 10/21/2026'" }
   b1@{ shape: trap-t, label: "Click '← Eligibility & Benefits' (back link, top left)" }
   g0@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows" }
+  b2@{ shape: trap-t, label: "<b>Click '← Back to referral RF-2040' beside it</b><br/>With ?case= in the address it reads '← Back to case R-1042'<br/>Shown only when ?referral= names a referral that exists" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › The full referral page" }
   subgraph gVer ["Verdict banner"]
   vb@{ shape: curv-trap, label: "<b>Small caps 'Verdict'</b><br/>Big words: 'Cleared to bill', 'Authorization first' or 'Fix before billing'<br/>One sentence why. Green, amber or red box" }
   bt@{ shape: curv-trap, label: "<b>Buttons on the right of the banner</b><br/>'Start authorization', 'Open case', 'Request retro-eligibility' ... 'Check again'" }
   end
   subgraph gPay ["Payment checks card"]
-  pc@{ shape: curv-trap, label: "<b>'Every line has to pass for the clinic to be reimbursed'</b><br/>Seven rows, one chip each, then a line 'What the patient pays:'" }
-  q1@{ shape: diam, label: "Checked within the last hour?" }
+  pc@{ shape: curv-trap, label: "<b>'Every line has to pass for the clinic to be reimbursed'</b><br/>Seven rows, one chip each, then a line 'What the patient pays:'<br/>Coverage not found: the first row and one grey row 'Nothing else could be checked'<br/>No 'What the patient pays:' line" }
+  q1@{ shape: diam, label: "Which check does the pill describe?" }
   p1@{ shape: rect, label: "Pill reads 'Checked live at 10:42 am'" }
-  p2@{ shape: rect, label: "Pill reads 'Last checked 10:40 am, 3 d ago'" }
+  p2@{ shape: rect, label: "<b>Pill reads 'Last checked 10:40 am, 3 d ago'</b><br/>(or '5 h ago')" }
+  p7@{ shape: rect, label: "<b>Verify re-checked it on its own</b><br/>Pill reads 'Re-checked automatically at 11:32 am'" }
+  t1@{ shape: odd, label: "<b>Banner 'Not re-checked: Verify is paused in Settings'</b><br/>'The re-check was due Tue 11:32 am. It runs as soon as Verify is resumed.'" }
   end
   subgraph gAg ["Agents card"]
   ag@{ shape: curv-trap, label: "<b>One row per agent</b><br/>Verify 'Eligibility with Ohio Medicaid' 0:03, Verify 'Benefits with Summit' 0:05<br/>Criteria 'Authorization rule' 0:02, Navigator 'Provider enrollment' 0:02" }
-  p3@{ shape: rect, label: "Evergreen adds a row 'Phone call to Evergreen' 1:34" }
+  p3@{ shape: rect, label: "<b>Evergreen adds a row 'Phone call to Evergreen' 1:34</b><br/>Coverage not found: only the row 'Eligibility with ...' (the others were not asked)" }
   k1@{ shape: trap-t, label: "Click an agent row" }
   q2@{ shape: diam, label: "Was that row already open?" }
   p4@{ shape: rect, label: "Row closes" }
@@ -40,20 +44,23 @@ flowchart TD
   end
   subgraph gNext ["Next checks card"]
   nx@{ shape: curv-trap, label: "<b>'Coverage again on 11/01, then every month'</b><br/>'Before each recertification'<br/>'3 days before the first claim'" }
-  p6@{ shape: rect, label: "<b>Same three lines for every patient</b><br/>Nothing here is clickable" }
+  p6@{ shape: rect, label: "<b>The same three lines for every patient with coverage</b><br/>A row with a re-check to come starts with 'Re-check due Tue 11:32 am, done by Verify on its own'<br/>Coverage not found: 'Check again once the member ID or date of birth is fixed'<br/>Nothing here is clickable" }
   end
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › Which verdict and why" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › Payment checks: coverage, plan, service" }
   g3@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › Next actions" }
   s1 --> sc
   sc --> b1 --> g0
+  sc --> b2 --> g4
   sc --> vb --> bt
   vb -.-> g1
   bt --> g3
   sc --> pc
   pc --> q1
-  q1 -->|"Yes"| p1
-  q1 -->|"No"| p2
+  q1 -->|"Within the last hour"| p1
+  q1 -->|"Older"| p2
+  q1 -->|"Verify's own re-check"| p7
+  q1 -->|"Re-check due, Verify paused"| t1
   pc -.-> g2
   sc --> ag --> p3
   ag --> k1 --> q2
@@ -62,10 +69,11 @@ flowchart TD
   sc --> nx --> p6
   class s1 k_start
   class sc,vb,bt,pc,ag,nx k_screen
-  class b1,k1 k_click
-  class g0,g1,g2,g3 k_goto
+  class b1,b2,k1 k_click
+  class g0,g4,g1,g2,g3 k_goto
   class q1,q2 k_decision
-  class p1,p2,p3,p4,p5,p6 k_process
+  class p1,p2,p7,p3,p4,p5,p6 k_process
+  class t1 k_toast
   style gVer fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gPay fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gAg fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

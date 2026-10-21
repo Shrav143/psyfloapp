@@ -1,0 +1,72 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Click 'Reconnect'</b><br/>On a Disconnected row, or at the end of the Manage drawer" }
+  g0@{ shape: subproc, label: "Continues in: EMR Connect › Sync › When an agent is paused or asks first" }
+  q1@{ shape: diam, label: "Did it need a quick look when it was disconnected?" }
+  subgraph gFix ["Fix first, if needed"]
+  f1@{ shape: win-pane, label: "<b>Fix {name}</b><br/>Steps: What happened, Renew access, Test<br/>The original problem is shown in an amber box" }
+  f2@{ shape: lean-r, label: "<b>Name who approves, tick the read-only box, click 'Renew and test'</b><br/>Three checks run" }
+  f3@{ shape: trap-t, label: "<b>Click 'Next: test the connection'</b><br/>On the last step, after the checks pass" }
+  f4@{ shape: cyl, label: "<b>The sign-in is renewed, the problem is cleared</b><br/>Still Disconnected" }
+  f5@{ shape: hex, label: "Navigator logs 'Renewed the read-only sign-in for {name}'" }
+  f6@{ shape: odd, label: "<b>'Sign-in renewed'</b><br/>'One more test, then {name} is connected.'<br/>No toast when Navigator is set to 'Act on its own'" }
+  end
+  subgraph gTest ["The connection test"]
+  t1@{ shape: win-pane, label: "<b>Reconnect {name}</b><br/>'Read-only. Nothing is written back until a person approves it.'<br/>'It is connected again only when the test passes. Until then New case cannot pull a chart from it.'" }
+  t2@{ shape: rect, label: "<b>Reaching the system</b><br/>Signing in with read-only access<br/>Reading one test record<br/>About 0.8 seconds a check" }
+  t3@{ shape: odd, label: "'The test passed. Access is read-only, and nothing is written back.'" }
+  t4@{ shape: trap-t, label: "<b>'Reconnect {name}' is dimmed until the last check passes</b><br/>Then click it" }
+  end
+  subgraph gSave ["What reconnecting does"]
+  v1@{ shape: cyl, label: "<b>Status becomes Connected</b><br/>Last sync now, issue text cleared" }
+  v2@{ shape: hex, label: "Navigator logs 'Reconnected {name} and read-only access passed its test'" }
+  v3@{ shape: odd, label: "<b>'{name} is connected'</b><br/>No toast when Navigator is set to 'Act on its own'" }
+  end
+  cx@{ shape: trap-t, label: "<b>Click 'Cancel', the X, press Escape, or click the dimmed area</b><br/>On either pop-up" }
+  x1@{ shape: stadium, label: "<b>Pop-up closes</b><br/>The system stays Disconnected<br/>A renewed sign-in stays renewed, so the next Reconnect goes straight to the test" }
+  e1@{ shape: stadium, label: "<b>Row shows 'just now', a green pill and 'Sync now'</b><br/>New case can pull a chart from it again" }
+  g1@{ shape: subproc, label: "Continues in: EMR Connect › Sync › What other screens use from EMR Connect" }
+  s1 --> g0 --> q1
+  q1 -->|"Yes"| f1 --> f2 --> f3 --> f4
+  f4 --> f5 & f6
+  f4 --> t1
+  q1 -->|"No"| t1
+  t1 --> t2 --> t3 --> t4
+  t4 --> v1 & v2 & v3
+  v1 --> e1
+  v3 --> e1
+  f1 -.-> cx
+  t1 -.-> cx
+  cx --> x1
+  e1 -.-> g1
+  class s1 k_start
+  class g0,g1 k_goto
+  class q1 k_decision
+  class f1,t1 k_overlay
+  class f2 k_input
+  class f3,t4,cx k_click
+  class f4,v1 k_store
+  class f5,v2 k_agent
+  class f6,t3,v3 k_toast
+  class t2 k_process
+  class x1 k_endx
+  class e1 k_end
+  style gFix fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gTest fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gSave fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

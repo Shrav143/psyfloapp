@@ -18,12 +18,12 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Dashboard is open</b><br/>Stage strip under the filter bar" }
   subgraph gTiles ["The six tiles, left to right"]
-  t1@{ shape: curv-trap, label: "<b>Preparing 5</b><br/>'in Case Manager'<br/>'2 need you, 1 ready to sign'" }
+  t1@{ shape: curv-trap, label: "<b>Preparing 5</b><br/>'in Case Manager'<br/>'2 need you, 1 ready to sign'<br/>Counts the five rows plus every case saved in New case that has no row yet" }
   t2@{ shape: curv-trap, label: "<b>Received 4</b><br/>'payer has it'<br/>'about 25 min on average'" }
   t3@{ shape: curv-trap, label: "<b>Under review 14</b><br/>'with the payer'<br/>'about 2.2 days on average'" }
   t4@{ shape: curv-trap, label: "<b>Info requested 3 (amber)</b><br/>'the payer wants more'<br/>'1 draft ready, 2 in progress'" }
   t5@{ shape: curv-trap, label: "<b>Decided today 8 (green)</b><br/>'6 approved · 2 denied'<br/>'ledger updated'" }
-  t6@{ shape: curv-trap, label: "<b>Appeal or call 7 (red)</b><br/>'open denials'<br/>'3 deadlines this week'" }
+  t6@{ shape: curv-trap, label: "<b>Appeal or call 8 (red)</b><br/>'open denials'<br/>'4 deadlines this week'" }
   end
   p0@{ shape: rect, label: "<b>Today's denials count twice</b><br/>A request denied today is in Decided today and in Appeal or call" }
   c1@{ shape: trap-t, label: "<b>Click a tile that is not outlined</b><br/>e.g. 'Under review'" }
@@ -37,6 +37,10 @@ flowchart TD
   sc@{ shape: curv-trap, label: "<b>Requests</b><br/>'Showing 8 of 14' under the headline '14 requests are under review.'" }
   d2@{ shape: diam, label: "Does the tile show 0?" }
   em@{ shape: curv-trap, label: "<b>Empty state: 'No requests match'</b><br/>With 'Clear filters'" }
+  d3@{ shape: diam, label: "Is Stage 'Preparing', with cases in New case that have no row?" }
+  ml@{ shape: curv-trap, label: "<b>One line under the table</b><br/>'2 more are being prepared in New case.'<br/>Headline counts them too: '7 requests are being prepared.'" }
+  c3@{ shape: trap-t, label: "Click 'Open Active cases'" }
+  g5@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Being prepared card" }
   m1@{ shape: trap-t, label: "Pick a stage in the 'All stages' menu instead" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Headline › What the headline and sub line say" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Filters › Clear filters and empty states" }
@@ -56,11 +60,13 @@ flowchart TD
   p5 --> d2
   d2 -->|"No"| sc --> g3
   d2 -->|"Yes"| em --> g2
+  sc --> d3
+  d3 -->|"Yes"| ml --> c3 --> g5
   class s1 k_start
-  class t1,t2,t3,t4,t5,t6,sc,em k_screen
+  class t1,t2,t3,t4,t5,t6,sc,em,ml k_screen
   class p0,p1,p2,p3,p4,p5 k_process
-  class c1,c2,m1 k_click
+  class c1,c2,c3,m1 k_click
   class w1 k_store
-  class d2 k_decision
-  class g1,g2,g3,g4 k_goto
+  class d2,d3 k_decision
+  class g5,g1,g2,g3,g4 k_goto
   style gTiles fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

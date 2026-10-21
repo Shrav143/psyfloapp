@@ -18,12 +18,15 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   q@{ shape: curv-trap, label: "<b>Queue</b><br/>Priority bands, most urgent first" }
   b1@{ shape: rect, label: "Each open request sits in exactly one band" }
+  lv@{ shape: rect, label: "<b>A request leaves its band once nothing is left for a person</b><br/>Preparing or ready: it was signed and sent in New case<br/>With the payer: the payer approved or denied it<br/>Denial route: accepted, settled on the call, or the appeal is filed" }
   subgraph gB ["Three bands"]
   bn@{ shape: rect, label: "<b>Act now</b><br/>Red dot, tiles tinted red" }
   bd@{ shape: rect, label: "<b>Due within 24 hours</b><br/>Amber dot" }
   bw@{ shape: rect, label: "<b>Due this week</b><br/>Sage dot" }
   end
   dE@{ shape: diam, label: "Does the band have any request after filters?" }
+  dZ@{ shape: diam, label: "Is it Act now, with no request open at all, and no search, payer or status filter on?" }
+  em@{ shape: curv-trap, label: "<b>Band card stays</b><br/>'Act now (0 requests)'<br/>'Nothing needs you today'<br/>'Everything in Act now has been sent or handled.'" }
   hide@{ shape: rect, label: "The band card is left out" }
   bc@{ shape: curv-trap, label: "<b>Band card</b><br/>'Act now (5 requests)'<br/>Name, count, chevron" }
   r1@{ shape: rect, label: "<b>Inside a band, requests waiting on a person come first</b><br/>Preparing, Ready to sign, Denial route, or Needs your input" }
@@ -44,11 +47,14 @@ flowchart TD
   back@{ shape: rect, label: "Back to the top five" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Queue › Read and open a request tile" }
   q --> b1
+  b1 --> lv
   b1 --> bn & bd & bw
   bn --> dE
   bd --> dE
   bw --> dE
-  dE -->|"No"| hide
+  dE -->|"No"| dZ
+  dZ -->|"Yes"| em
+  dZ -->|"No"| hide
   dE -->|"Yes"| bc
   bc --> r1 --> r2 --> wt
   r2 -.-> ex
@@ -59,9 +65,9 @@ flowchart TD
   dM -->|"No"| all5
   dM -->|"Yes"| top5 --> sm --> allm --> sf --> back
   top5 --> g1
-  class q,bc k_screen
-  class b1,bn,bd,bw,hide,r1,r2,wt,col,exp,all5,top5,allm,back k_process
-  class dE,dC,dM k_decision
+  class q,em,bc k_screen
+  class b1,lv,bn,bd,bw,hide,r1,r2,wt,col,exp,all5,top5,allm,back k_process
+  class dE,dZ,dC,dM k_decision
   class ex k_doc
   class hd,sm,sf k_click
   class keep k_store

@@ -18,6 +18,8 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>On the full referral page</b><br/>header card" }
   subgraph gDec ["Decision buttons (left)"]
+  dReq@{ shape: diam, label: "<b>Is a required finding still open?</b><br/>Same six as the checklist" }
+  tDis@{ shape: odd, label: "<b>'Accept referral' is disabled</b><br/>Line under the buttons: 'Resolve 4 items first: …'<br/>'Mark OK', a reply or 'Request information' lifts an item" }
   cAcc@{ shape: trap-t, label: "<b>Click 'Accept referral'</b><br/>While open" }
   cReq@{ shape: trap-t, label: "<b>Click 'Request information'</b><br/>Only while New or In review" }
   cDec@{ shape: trap-t, label: "<b>Click 'Decline'</b><br/>While open" }
@@ -28,11 +30,14 @@ flowchart TD
   cSt@{ shape: trap-t, label: "<b>Click 'Schedule intake', 'Mark admitted'</b><br/>or 'Change intake'<br/>Accepted and Scheduled only" }
   gSt@{ shape: subproc, label: "Continues in: New case › Referral › Schedule intake" }
   cRe@{ shape: trap-t, label: "<b>Click 'Reopen referral'</b><br/>Declined only" }
+  cStart@{ shape: trap-t, label: "<b>Click 'Start a case from this referral'</b><br/>Shown unless the referral is declined or already has a case" }
+  pStart@{ shape: rect, label: "<b>Opens /authorizations/new?referral=RF-2053</b><br/>A new case is made from the referral and opens on Medical records" }
+  gNew@{ shape: subproc, label: "Continues in: New case › How a case starts and resumes" }
   stRe@{ shape: cyl, label: "<b>Referral is In review again</b><br/>Timeline 'You reopened the referral'<br/>Toast 'Referral reopened'" }
   subgraph gOwn ["Owner"]
   cOwn@{ shape: trap-t, label: "<b>Open 'Owner' and pick a person</b><br/>Jordan Perez, Taylor Brooks, Morgan Lee or Unassigned" }
   stOwn@{ shape: cyl, label: "<b>Owner is saved</b><br/>A New referral moves to In review when it gets an owner<br/>Timeline 'Assigned to Taylor Brooks'" }
-  tOwn@{ shape: odd, label: "<b>'Assigned to Taylor Brooks'</b><br/>'1 referral'<br/>Unassigned: 'Owner removed'" }
+  tOwn@{ shape: odd, label: "<b>'Assigned to Taylor Brooks'</b><br/>'RF-2053'<br/>Unassigned: 'Owner removed'" }
   end
   cNote@{ shape: trap-t, label: "Click 'Add note'" }
   gNote@{ shape: subproc, label: "Continues in: New case › Referral › Full page: Fit, Activity and notes" }
@@ -49,11 +54,14 @@ flowchart TD
   tDown@{ shape: odd, label: "<b>'Downloading the original'</b><br/>'RF-2053.pdf, 2 pages. This is a demo, so no file is saved.'" }
   end
   gReply@{ shape: subproc, label: "Continues in: New case › Referral › The referrer replies" }
-  s1 --> cAcc --> gAcc
+  s1 --> dReq
+  dReq -->|"Yes"| tDis
+  dReq -->|"No"| cAcc --> gAcc
   s1 --> cReq --> gAsk
   s1 --> cDec --> gOk
   s1 --> cSt --> gSt
   s1 --> cRe --> stRe
+  s1 --> cStart --> pStart --> gNew
   s1 --> cOwn --> stOwn --> tOwn
   s1 --> cNote --> gNote
   s1 --> cMore --> oMore
@@ -63,13 +71,13 @@ flowchart TD
   dHost -->|"Yes"| tHost
   dHost -->|"No"| pCopy --> tCopy
   class s1 k_start
-  class cAcc,cReq,cDec,cSt,cRe,cOwn,cNote,cMore,cReply,cDown,cCopy k_click
-  class gAcc,gAsk,gOk,gSt,gNote,gReply k_goto
+  class dReq,dHost k_decision
+  class tDis,tOwn,tHost,tCopy,tDown k_toast
+  class cAcc,cReq,cDec,cSt,cRe,cStart,cOwn,cNote,cMore,cReply,cDown,cCopy k_click
+  class gAcc,gAsk,gOk,gSt,gNew,gNote,gReply k_goto
+  class pStart,pCopy k_process
   class stRe,stOwn k_store
-  class tOwn,tHost,tCopy,tDown k_toast
   class oMore k_overlay
-  class dHost k_decision
-  class pCopy k_process
   style gDec fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gOwn fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gMore fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

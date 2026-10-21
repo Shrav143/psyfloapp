@@ -23,11 +23,13 @@ flowchart TD
   m3@{ shape: doc, label: "<b>'## Approval rate by payer'</b><br/>One bullet per bar with its decisions" }
   m4@{ shape: doc, label: "<b>'## How people edit agent drafts'</b><br/>Three bullets, then 'Drafts counted'" }
   m5@{ shape: doc, label: "<b>'## Common denial reasons'</b><br/>Table: Reason, Payer, Count, Share of denials" }
+  m7@{ shape: doc, label: "<b>'## Denial outcomes'</b><br/>'Appeals overturned: 56% (54 of 96 rulings, partly restored counts as overturned)'<br/>'Written off after accepted denials: $88.7K (17 denials)'" }
   m6@{ shape: doc, label: "<b>'## What helps most'</b><br/>Numbered list: step, times applied, percent approved" }
+  m8@{ shape: doc, label: "<b>'## Why recommendations were dismissed'</b><br/>One bullet per reason with its count<br/>Left out when nobody dismissed one" }
   end
   subgraph gCsv ["Figures as a table (.csv)"]
   v1@{ shape: doc, label: "<b>One header row</b><br/>period, scope, section, label, value_percent, count" }
-  v2@{ shape: doc, label: "<b>Rows by section</b><br/>headline, approval by payer, draft edits, denial reasons, what helps most" }
+  v2@{ shape: doc, label: "<b>Rows by section</b><br/>headline, approval by payer, draft edits, denial reasons, denial outcomes, what helps most<br/>and 'dismissed recommendations' when there are any" }
   v3@{ shape: doc, label: "<b>Commas and quotes inside a value are wrapped in quotes</b><br/>Opens in a spreadsheet" }
   end
   q1@{ shape: diam, label: "Is the figure behind 20 or more decisions?" }
@@ -36,16 +38,16 @@ flowchart TD
   p3@{ shape: rect, label: "Same view as the page: the same period and payer, the same hidden figures" }
   e1@{ shape: stadium, label: "File matches the screen" }
   s1 --> m1 & v1
-  m1 --> m2 --> m3 --> m4 --> m5 --> m6
+  m1 --> m2 --> m3 --> m4 --> m5 --> m7 --> m6 --> m8
   v1 --> v2 --> v3
-  m6 --> q1
+  m8 --> q1
   v3 --> q1
   q1 -->|"Yes"| p1 --> e1
   q1 -->|"No"| p2 --> e1
   s1 -.-> p3
   p3 -.-> e1
   class s1 k_start
-  class m1,m2,m3,m4,m5,m6,v1,v2,v3 k_doc
+  class m1,m2,m3,m4,m5,m7,m6,m8,v1,v2,v3 k_doc
   class q1 k_decision
   class p1,p2,p3 k_process
   class e1 k_end

@@ -23,7 +23,7 @@ flowchart TD
   f1@{ shape: curv-trap, label: "<b>'Level of care'</b><br/>'Placement reads the referral against the six ASAM dimensions'<br/>'The referral supports' PHP, 92% confident · 'Next best' IOP, 63%" }
   f2@{ shape: odd, label: "<b>Amber banner when Placement suggests another program</b><br/>'The referral asks for IOP. Placement suggests PHP.'<br/>'You choose the program when you accept. Placement only reads the referral. A clinician decides the level of care.'" }
   f3@{ shape: curv-trap, label: "<b>Six dimensions, each with a note and four bars</b><br/>Intoxication and withdrawal · Medical conditions · Mood, behavior and thinking · Readiness to change · Relapse and continued use · Recovery environment" }
-  f4@{ shape: curv-trap, label: "<b>'Capacity'</b><br/>'Open this week. Accepting a referral takes one'<br/>One row per program: 'PHP: 5 slots open this week', chips 'Requested' and 'Suggested', '19 of 24 full'<br/>Red 'no beds open this week' at zero" }
+  f4@{ shape: curv-trap, label: "<b>'Capacity'</b><br/>'Open this week. Accepting a referral takes one bed or slot.'<br/>One row per program: 'PHP: 5 slots open this week', chips 'Requested' and 'Suggested', '19 of 24 full'<br/>Red 'no beds open this week' at zero" }
   f5@{ shape: rect, label: "Read only: nothing on the Fit tab can be clicked" }
   end
   subgraph gAct ["Activity tab"]

@@ -34,12 +34,13 @@ flowchart TD
   gap@{ shape: rect, label: "<b>Demo gap: a blank script is accepted</b><br/>Phone steps would then have no instructions" }
   st@{ shape: cyl, label: "<b>Script saved</b><br/>'Confirmed' date becomes today" }
   lg@{ shape: cyl, label: "<b>Edit log entry</b><br/>Area 'Caller instructions'<br/>'Instructions for Caller', before and after" }
-  t1@{ shape: odd, label: "<b>'Instructions for Caller saved'</b><br/>Phone steps use them from the next call.<br/>The edit is logged." }
+  nt@{ shape: cyl, label: "<b>Bell notification</b><br/>'Summit caller instructions edited'<br/>opens the payer's Process tab" }
+  t1@{ shape: odd, label: "<b>'Instructions for Caller saved'</b><br/>Caller follows them on its next call.<br/>The edit is logged." }
   nb@{ shape: rect, label: "<b>No 'edit applies to new drafts only' banner</b><br/>The script is used on the next call, not by drafts" }
   e1@{ shape: stadium, label: "Card shows the new script" }
   cx@{ shape: trap-t, label: "Click 'Cancel'" }
   cesc@{ shape: trap-t, label: "<b>Press Escape, click the X</b><br/>or click the dimmed area" }
-  x1@{ shape: stadium, label: "<b>Modal closes</b><br/>Nothing saved<br/>Reopening starts from the saved script" }
+  x1@{ shape: stadium, label: "<b>Modal closes</b><br/>Nothing saved, typed text discarded<br/>Reopening starts from the saved script" }
   g1@{ shape: subproc, label: "Continues in: Payers › Edit payer details" }
   g2@{ shape: subproc, label: "Continues in: Payers › Edit log" }
   s1 --> rc --> rows --> ro
@@ -48,7 +49,7 @@ flowchart TD
   d1 -->|"Yes"| er --> i2
   d1 -->|"No"| d2
   d2 -->|"Yes"| t0 --> x1
-  d2 -->|"No"| st --> lg --> t1 --> nb --> e1
+  d2 -->|"No"| st --> lg --> nt --> t1 --> nb --> e1
   i1 -.-> gap
   lg -.-> g2
   m --> cx --> x1
@@ -61,7 +62,7 @@ flowchart TD
   class m k_overlay
   class i1,i2 k_input
   class d1,d2 k_decision
-  class st,lg k_store
+  class st,lg,nt k_store
   class e1 k_end
   class x1 k_endx
   class g1,g2 k_goto

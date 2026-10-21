@@ -16,16 +16,16 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  px@{ shape: st-rect, label: "<b>Payer publishes new criteria or a portal form change</b><br/>Cardinal: criteria version 2026.3, effective 10/15<br/>Harborview: new portal form, old one closes 10/31<br/>(demo: already seeded)" }
+  px@{ shape: st-rect, label: "<b>Payer publishes new criteria or a portal form change</b><br/>Cardinal: criteria version 2026.3, effective 10/15<br/>Harborview: new portal form, old one closes 10/31<br/>Evergreen: a reference number on phone notice, effective 10/22<br/>(demo: already seeded)" }
   sn@{ shape: hex, label: "<b>Sentinel watches the payer's policy and portal</b><br/>Fetches, compares with the last version, keeps only parts<br/>that touch this clinic's programs, notes what changed" }
-  mp@{ shape: hex, label: "<b>Sentinel maps the impact on open work</b><br/>Cardinal: 4 drafts. Harborview: 1 draft" }
-  pc@{ shape: cyl, label: "<b>Change opened for the payer: 'waiting for a person'</b><br/>Title, one sentence, effective date,<br/>drafts affected, agents that will redraft" }
+  mp@{ shape: hex, label: "<b>Sentinel maps the impact on open work</b><br/>Only this payer's unsent drafts count<br/>Cardinal: I-2207. Harborview and Evergreen: none right now" }
+  pc@{ shape: cyl, label: "<b>Change opened for the payer: 'waiting for a person'</b><br/>Title, one sentence, effective date,<br/>agents that will redraft<br/>The drafts it affects are read live, not stored" }
   subgraph gS ["Where a person sees it"]
-  s1@{ shape: rect, label: "Sidebar 'Payers' badge counts it (2 at the start)" }
+  s1@{ shape: rect, label: "Sidebar 'Payers' badge counts it (3 at the start)" }
   s2@{ shape: rect, label: "Payer row in the list: ochre dot" }
   s3@{ shape: rect, label: "Header plan line ends 'change waiting'" }
   s4@{ shape: rect, label: "'Changes' tab badge shows 1" }
-  s5@{ shape: odd, label: "<b>Bell notification from Sentinel, unread</b><br/>'Payer rule changed'<br/>Cardinal updated its criteria (version 2026.3). 4 drafts are affected.<br/>(Harborview's change has the badge and dots but no notification)" }
+  s5@{ shape: odd, label: "<b>Bell notification from Sentinel, unread</b><br/>'Payer rule changed'<br/>Cardinal updated its criteria (version 2026.3). 4 drafts are affected.<br/>This text is fixed and still says 4; the Changes tab counts live<br/>(Harborview's and Evergreen's changes have the badge and dots but no notification)" }
   end
   st1@{ shape: stadium, label: "Click the bell, then the notification" }
   cn@{ shape: trap-t, label: "Click 'Payer rule changed'" }
@@ -34,7 +34,7 @@ flowchart TD
   cl@{ shape: trap-t, label: "Click 'Open Payers, Cardinal, Changes'" }
   st3@{ shape: stadium, label: "<b>Demo menu, suggested path</b><br/>'Payers: Cardinal, Changes'" }
   st4@{ shape: stadium, label: "<b>Click 'Payers', pick the payer with an ochre dot,</b><br/>click the 'Changes' tab" }
-  ch@{ shape: curv-trap, label: "<b>Changes tab</b><br/>Ochre banner 'Criteria changed, version 2026.3'<br/>'Progress evidence must now include the remaining treatment goals.<br/>Scribe can redraft the 4 drafts that are not yet sent: R-1042, I-2207, R-0988 and I-2231.'" }
+  ch@{ shape: curv-trap, label: "<b>Changes tab</b><br/>Ochre banner 'Criteria changed, version 2026.3'<br/>'Progress evidence must now include the remaining treatment goals.<br/>Scribe can redraft the 1 draft that is not yet sent: I-2207.<br/>Requests already sent keep what they were sent with.'" }
   rj@{ shape: rect, label: "<b>Production also allows rejecting or deferring a change.</b><br/>The demo offers only Acknowledge, then Update" }
   g1@{ shape: subproc, label: "Continues in: Payers › Changes › Acknowledge a change" }
   g2@{ shape: subproc, label: "Continues in: Payers › Changes › Read what changed" }

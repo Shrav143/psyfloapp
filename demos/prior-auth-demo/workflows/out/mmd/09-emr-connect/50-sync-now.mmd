@@ -17,16 +17,17 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Click 'Sync now'</b><br/>In the Connected systems header, or on a Connected row" }
-  q1@{ shape: diam, label: "Is a sync already running?" }
-  x1@{ shape: stadium, label: "<b>Click does nothing</b><br/>No message. Only the running buttons show a spinner" }
+  q0@{ shape: diam, label: "<b>Is any system Connected?</b><br/>(header button only)" }
+  x0@{ shape: odd, label: "<b>'Nothing to sync'</b><br/>'No system is connected. Fix or reconnect one first.'<br/>Amber. No spinner" }
+  gg@{ shape: subproc, label: "Continues in: EMR Connect › Sync › When an agent is paused or asks first" }
   q2@{ shape: diam, label: "Which button?" }
-  p1@{ shape: rect, label: "<b>Header button spins</b><br/>Every Connected row shows 'Syncing'" }
-  p2@{ shape: rect, label: "<b>That row's button spins</b><br/>Its row shows 'Syncing'" }
+  p1@{ shape: rect, label: "<b>Header button spins</b><br/>Every Connected row shows 'Syncing'<br/>All Sync now buttons are dimmed" }
+  p2@{ shape: rect, label: "<b>That row's button spins</b><br/>Its row shows 'Syncing'<br/>All Sync now buttons are dimmed" }
   e1@{ shape: st-rect, label: "<b>The EMR answers</b><br/>Demo: simulated, two seconds" }
   q4@{ shape: diam, label: "Did the person leave EMR Connect meanwhile?" }
   x3@{ shape: stadium, label: "<b>Sync is dropped</b><br/>Nothing is recorded" }
-  q3@{ shape: diam, label: "Is any system in the batch Connected?" }
-  x2@{ shape: stadium, label: "<b>Spinner stops</b><br/>No toast, no log line, tiles unchanged<br/>Only possible when every system is Disconnected or needs a look" }
+  q3@{ shape: diam, label: "<b>Is the system still Connected?</b><br/>(it could have been disconnected in Manage meanwhile)" }
+  x2@{ shape: stadium, label: "<b>Spinner stops</b><br/>No toast, no log line, tiles unchanged" }
   n1@{ shape: rect, label: "<b>Take the next result from a list of four</b><br/>The next sync takes the one after, then round again" }
   subgraph gRes ["The four results, in order"]
   r1@{ shape: hex, label: "<b>Reader</b><br/>'Pulled 6 new files for 3 open cases and matched the insurance cards'" }
@@ -40,13 +41,16 @@ flowchart TD
   d2@{ shape: cyl, label: "<b>Charts matched today and Files pulled go up</b><br/>About half when only some of the Connected systems are synced" }
   d3@{ shape: cyl, label: "<b>Recent activity gets the result as its newest line</b><br/>For one system: '... from {system name}'" }
   end
+  q5@{ shape: diam, label: "Is Reader set to 'Act on its own'?" }
   t1@{ shape: odd, label: "<b>'Sync finished'</b><br/>The result text. Green" }
+  n2@{ shape: rect, label: "<b>No toast</b><br/>The tiles and the new log line show it" }
   z1@{ shape: stadium, label: "Last sync tile reads 'Just now'" }
   g1@{ shape: subproc, label: "Continues in: EMR Connect › Sync › What a sync pulls and when it runs" }
   g2@{ shape: subproc, label: "Continues in: EMR Connect › Recent activity › Read the activity log" }
-  s1 --> q1
-  q1 -->|"Yes"| x1
-  q1 -->|"No"| q2
+  s1 --> q0
+  q0 -->|"No"| x0
+  q0 -->|"Yes, or a row button"| gg
+  gg --> q2
   q2 -->|"Header"| p1
   q2 -->|"A row"| p2
   p1 --> e1
@@ -59,19 +63,22 @@ flowchart TD
   n1 --> r1 & r2 & r3 & r4
   r1 & r2 & r3 & r4 --> ap
   ap --> d1 & d2 & d3
-  d1 & d2 & d3 --> t1
+  d1 & d2 & d3 --> q5
+  q5 -->|"No"| t1
+  q5 -->|"Yes"| n2
   t1 --> z1
+  n2 --> z1
   z1 --> g1
   d3 -.-> g2
   class s1 k_start
-  class q1,q2,q4,q3 k_decision
-  class x1,x3,x2 k_endx
-  class p1,p2,n1,ap k_process
+  class q0,q2,q4,q3,q5 k_decision
+  class x0,t1 k_toast
+  class gg,g1,g2 k_goto
+  class p1,p2,n1,ap,n2 k_process
   class e1 k_ext
+  class x3,x2 k_endx
   class r1,r2,r3,r4 k_agent
   class d1,d2,d3 k_store
-  class t1 k_toast
   class z1 k_end
-  class g1,g2 k_goto
   style gRes fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gSaved fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

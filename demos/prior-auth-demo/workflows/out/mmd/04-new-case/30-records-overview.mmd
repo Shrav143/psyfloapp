@@ -27,23 +27,26 @@ flowchart TD
   gp@{ shape: curv-trap, label: "<b>Patient</b><br/>Patient initials and age" }
   gi@{ shape: curv-trap, label: "<b>Insurance</b><br/>Payer and plan, Member ID, Coverage" }
   gr@{ shape: curv-trap, label: "<b>Request</b><br/>Level of care, Request type, Start date, Diagnoses (ICD-10), Reason for the request" }
-  gd@{ shape: curv-trap, label: "<b>Documents</b><br/>One row for each document the payer asks for" }
+  gd@{ shape: curv-trap, label: "<b>Documents</b><br/>One row for each document on the payer's saved list (Payers › Documents)<br/>Required ones first" }
+  pPay@{ shape: rect, label: "<b>A draft that Payers redrafted after a payer change</b><br/>shows one line: 'Updated for a payer change on 10/20'" }
   ft@{ shape: curv-trap, label: "<b>Footer bar, always in view</b><br/>'Back', 'Save as draft', 'Continue' and a hint line" }
   end
   g31@{ shape: subproc, label: "Continues in: Medical records › Drop files and let Reader sort them" }
   g32@{ shape: subproc, label: "Continues in: Medical records › Patient and insurance rows" }
   g40@{ shape: subproc, label: "Continues in: Medical records › The Coverage row" }
   g33@{ shape: subproc, label: "Continues in: Medical records › Request and document rows" }
+  g45@{ shape: subproc, label: "Continues in: Medical records › Replace a document or mark it not available" }
+  g44@{ shape: subproc, label: "Continues in: Medical records › Pull a chart from EMR Connect" }
   subgraph gBlock ["Switched off while any is true"]
   b1@{ shape: rect, label: "Patient initials and age are not both filled in" }
   b2@{ shape: rect, label: "No payer is chosen ('Payer and plan')" }
   b3@{ shape: rect, label: "No 'Level of care'" }
   b4@{ shape: rect, label: "No 'Request type'" }
-  b5@{ shape: rect, label: "<b>A required document is not added</b><br/>Three or more show as 'N required documents'" }
+  b5@{ shape: rect, label: "<b>A required document is neither added nor marked 'not available'</b><br/>Three or more show as 'N required documents'" }
   b6@{ shape: rect, label: "<b>Reader is still reading a file</b><br/>'Reader to finish reading'" }
   b7@{ shape: rect, label: "<b>Verify says coverage needs a fix</b><br/>'Coverage, or another payer' (not on a Retro-authorization)" }
   end
-  free@{ shape: rect, label: "<b>These never block Continue</b><br/>Member ID, Start date, Diagnoses, Reason, recommended documents, a 'Check this' finding" }
+  free@{ shape: rect, label: "<b>These never block Continue</b><br/>Member ID, Start date, Diagnoses, Reason, recommended documents, a 'Check this' finding<br/>A document marked 'not available' counts as handled and as ready" }
   pc@{ shape: rect, label: "The footer and the rows read the same list, so they always agree" }
   dq@{ shape: diam, label: "Anything still blocking?" }
   tHint@{ shape: odd, label: "Footer hint: 'Still needed: Patient initials and age, Payer and plan, Level of care and 3 more.'" }
@@ -58,13 +61,16 @@ flowchart TD
   cCont@{ shape: trap-t, label: "Click 'Continue'" }
   dRan@{ shape: diam, label: "Have the agents already run on this case?" }
   pDirect@{ shape: rect, label: "<b>Goes straight to step 3 'Agents work'</b><br/>No question is asked" }
-  oConf@{ shape: win-pane, label: "<b>Start the agents?</b><br/>J.M., Residential 3.5 · Summit Medicaid HMO<br/>'Nothing is sent to the payer until a clinician signs.'" }
+  oConf@{ shape: win-pane, label: "<b>Start the agents?</b><br/>J.M., Residential 3.5 · Summit Medicaid HMO<br/>'Scribe drafts the case and may ask you a question or two.'<br/>'Nothing is sent to the payer until a clinician signs.'" }
   gAgents@{ shape: subproc, label: "Continues in: Agents work › Start the run" }
   s1 --> p1
   s2 --> p1
   s3 --> p1
   p1 --> sc --> dz --> pr --> gp --> gi --> gr --> gd --> ft
+  sc --> pPay
   dz --> g31
+  dz --> g44
+  gd --> g45
   sc --> cStep
   gp --> g32
   gi --> g32
@@ -89,9 +95,9 @@ flowchart TD
   dRan -->|"No"| oConf
   oConf --> gAgents
   class s1,s2,s3 k_start
-  class p1,b1,b2,b3,b4,b5,b6,b7,free,pc,pBack,pDirect k_process
+  class p1,pPay,b1,b2,b3,b4,b5,b6,b7,free,pc,pBack,pDirect k_process
   class sc,dz,pr,gp,gi,gr,gd,ft k_screen
-  class g31,g32,g40,g33,gRef,gSave,gAgents k_goto
+  class g31,g32,g40,g33,g45,g44,gRef,gSave,gAgents k_goto
   class dq,dRan k_decision
   class tHint,tReady k_toast
   class eOff k_endx

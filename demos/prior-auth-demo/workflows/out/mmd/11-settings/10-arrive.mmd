@@ -18,10 +18,12 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Click 'Settings' in the sidebar</b><br/>Above 'Help', below the 'Demo data' tag" }
   p1@{ shape: curv-trap, label: "<b>Settings</b><br/>Who the agents are, how much freedom each one has, and a way to pause them." }
-  hb@{ shape: trap-t, label: "<b>Click 'Pause all agents'</b><br/>Red outline button, top right" }
+  hb@{ shape: trap-t, label: "<b>Click 'Pause all agents'</b><br/>Red outline button, top right<br/>'Resume all agents' when all sixteen are paused" }
   g1@{ shape: subproc, label: "Continues in: Settings › Pause › Pause all agents" }
   bn@{ shape: odd, label: "<b>'Privacy mode is always on'</b><br/>Names, dates and IDs are swapped for codes before an agent reads a chart, and mapped back only on your screen." }
   gates@{ shape: curv-trap, label: "<b>Gates</b><br/>Agents never pass these without a person" }
+  lv@{ shape: curv-trap, label: "<b>What each level changes</b><br/>One plain line for each of the three levels<br/>Subtitle: 'Set per agent. Applied in EMR Connect'" }
+  g6@{ shape: subproc, label: "Continues in: Settings › Agents › What each freedom level allows and the gates it never skips" }
   g2@{ shape: subproc, label: "Continues in: Settings › Page › Other controls and notices" }
   subgraph gCov ["Coverage"]
   c0@{ shape: curv-trap, label: "<b>Coverage card</b><br/>Knows who pays and files with them" }
@@ -51,7 +53,7 @@ flowchart TD
   k3@{ shape: rect, label: "<b>Cadence: Schedules concurrent reviews</b><br/>Starts at 'Act, then report'" }
   k4@{ shape: rect, label: "Advocate: Handles denials, P2P and appeals" }
   end
-  row@{ shape: rect, label: "<b>Each row shows</b><br/>The agent's round icon, its name, its role on one line, a Freedom dropdown and an on/off switch" }
+  row@{ shape: rect, label: "<b>Each row shows</b><br/>The agent's round icon, its name, its role on one line, a Freedom dropdown and an on/off switch<br/>A 'Paused' tag beside the name while its switch is off" }
   st@{ shape: rect, label: "<b>Every other agent starts at 'Ask before acting'</b><br/>All sixteen switches start on" }
   fz@{ shape: trap-t, label: "Click a Freedom dropdown" }
   sw@{ shape: trap-t, label: "Click a switch" }
@@ -78,11 +80,12 @@ flowchart TD
   row --> fz --> g3
   row --> sw --> g4
   p1 --> gates --> g2
+  p1 --> lv --> g6
   c1 -.-> g5
   class s1 k_start
-  class p1,gates,c0,d0,i0,k0 k_screen
+  class p1,gates,lv,c0,d0,i0,k0 k_screen
   class hb,fz,sw k_click
-  class g1,g2,g3,g4,g5 k_goto
+  class g1,g6,g2,g3,g4,g5 k_goto
   class bn k_toast
   class c1,c2,c3,d1,d2,d3,d4,d5,i1,i2,i3,i4,k1,k2,k3,k4,row,st k_process
   style gCov fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

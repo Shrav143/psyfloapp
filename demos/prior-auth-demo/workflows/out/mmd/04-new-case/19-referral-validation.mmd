@@ -17,17 +17,19 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Click 'Validation'</b><br/>(or 'Review findings' on the banner)" }
-  sc1@{ shape: curv-trap, label: "<b>Summary card</b><br/>'6 of 9 checks passed'<br/>'3 need your attention before you accept.' (or 'Everything Reader checked is clear.')<br/>Progress bar, Reader chip" }
+  sc1@{ shape: curv-trap, label: "<b>Summary card</b><br/>'6 of 9 checks passed'<br/>'3 need your attention.' (or 'Everything Reader checked is clear.')<br/>Progress bar, Reader chip" }
   sc2@{ shape: curv-trap, label: "<b>Two lists</b><br/>'Referral form' '4 of 7 passed': signature, order not expired, credentials, clinical components, diagnosis, service, urgent criteria<br/>'Face sheet' '2 of 2 passed': age, contact" }
-  d1@{ shape: diam, label: "<b>Open and something to ask?</b><br/>(age is never counted)" }
+  d1@{ shape: diam, label: "<b>Open and something to ask?</b><br/>(a failed age check is never counted)" }
   c1@{ shape: trap-t, label: "Click 'Request information for all open findings'" }
   g1@{ shape: subproc, label: "Continues in: New case › Referral › Ask the referrer" }
   d2@{ shape: diam, label: "State of one check?" }
   r1@{ shape: rect, label: "<b>Passed</b><br/>Green tick, check name, what Reader found" }
   r2@{ shape: rect, label: "<b>Needs attention</b><br/>Amber triangle, the problem in a sentence<br/>'The clinician signature is missing'" }
-  r3@{ shape: rect, label: "<b>Failed</b><br/>Red cross (patient under 18)" }
+  r3@{ shape: rect, label: "<b>Failed</b><br/>Red cross (patient under 18)<br/>No 'Resolve' menu and no 'Request information': a reply cannot change an age" }
   r4@{ shape: rect, label: "<b>Resolved</b><br/>Green tick; pill 'Marked OK' with the reason, or 'Fixed by reply' with what it was before" }
   d3@{ shape: diam, label: "Referral still open?" }
+  d4@{ shape: diam, label: "Referral still open?" }
+  c6@{ shape: trap-t, label: "<b>Click 'Mark OK with reason'</b><br/>(the only button on a failed row)" }
   r5@{ shape: rect, label: "<b>Pill 'Warning' or 'Failed'</b><br/>No buttons: the decision is made" }
   c2@{ shape: trap-t, label: "Click 'Show in document'" }
   p1@{ shape: rect, label: "<b>Document switches to the page and boxes the evidence</b><br/>The tab stays on Validation" }
@@ -46,7 +48,9 @@ flowchart TD
   d2 -->|"Fail"| r3
   d2 -->|"Overridden or replied"| r4
   r2 --> d3
-  r3 --> d3
+  r3 --> d4
+  d4 -->|"Yes"| c6 --> g2
+  d4 -->|"No"| r5
   d3 -->|"Yes"| c3 --> o1
   d3 -->|"No"| r5
   o1 --> c4 --> g1
@@ -54,8 +58,8 @@ flowchart TD
   sc2 --> c2 --> p1
   class s1 k_start
   class sc1,sc2 k_screen
-  class d1,d2,d3 k_decision
-  class c1,c2,c3,c4,c5 k_click
+  class d1,d2,d3,d4 k_decision
+  class c1,c6,c2,c3,c4,c5 k_click
   class g1,g2 k_goto
   class r1,r2,r3,r4,r5,p1 k_process
   class o1 k_overlay

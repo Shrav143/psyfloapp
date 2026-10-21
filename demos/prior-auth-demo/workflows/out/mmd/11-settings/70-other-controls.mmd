@@ -20,7 +20,11 @@ flowchart TD
   p1@{ shape: curv-trap, label: "<b>Settings</b><br/>The sidebar item turns forest green while the page is open" }
   subgraph gBan ["Notices"]
   b1@{ shape: odd, label: "<b>'Privacy mode is always on'</b><br/>Names, dates and IDs are swapped for codes before an agent reads a chart, and mapped back only on your screen.<br/>No switch: it cannot be turned off" }
-  b2@{ shape: odd, label: "<b>'All agents are paused'</b><br/>Only while all sixteen switches are off" }
+  b2@{ shape: odd, label: "<b>'All agents are paused', or '{Agent} is paused' and 'N agents are paused'</b><br/>Amber, while any agent is paused<br/>Says what is held back, then 'Requests already with a payer stay where they are.'" }
+  end
+  subgraph gLev ["Levels card: 'What each level changes'"]
+  v1@{ shape: rect, label: "Subtitle 'Set per agent. Applied in EMR Connect'" }
+  v2@{ shape: rect, label: "<b>Ask before acting, Act, then report and Act on its own</b><br/>One plain line for each" }
   end
   subgraph gGate ["Gates card: 'Agents never pass these without a person'"]
   g1@{ shape: rect, label: "Sign-off: A licensed clinician signs every request and appeal." }
@@ -33,28 +37,30 @@ flowchart TD
   h2@{ shape: rect, label: "<b>Tooltip shows the agent and its role</b><br/>For example 'Reader: Reads the chart, protects identifiers'" }
   h3@{ shape: rect, label: "A long role is cut short with an ellipsis on the row" }
   subgraph gToast ["Toasts on this page"]
-  t1@{ shape: odd, label: "<b>'{Agent}: {level}'</b><br/>When a Freedom level is picked" }
+  t1@{ shape: odd, label: "<b>'{Agent}: {level}'</b><br/>When a different Freedom level is picked" }
   t2@{ shape: odd, label: "<b>'All agents paused'</b><br/>When 'Pause all' is confirmed" }
   t3@{ shape: odd, label: "<b>'Agents resumed'</b><br/>When 'Resume all agents' is clicked" }
+  t5@{ shape: odd, label: "<b>'{Agent} paused' or '{Agent} resumed'</b><br/>When one switch is turned" }
   t4@{ shape: delay, label: "<b>A toast stays about four seconds</b><br/>Click it to dismiss it sooner" }
   end
   subgraph gNone ["What the page does not have"]
   n1@{ shape: stadium, label: "<b>No Save, Apply or Reset button</b><br/>No way to change the Gates or the privacy notice" }
-  n2@{ shape: stadium, label: "<b>Choices are lost on leaving or reloading</b><br/>Every agent returns to its starting level and switch" }
+  n2@{ shape: stadium, label: "<b>Choices are lost on a reload</b><br/>Every agent returns to its starting level and switch. Leaving the page keeps them" }
   end
   d1@{ shape: trap-t, label: "<b>Demo menu, then 'Reset demo data'</b><br/>Top bar, any page" }
-  d2@{ shape: rect, label: "<b>Goes to the Dashboard with the toast 'Demo data reset'</b><br/>Settings had nothing saved to reset" }
+  d2@{ shape: rect, label: "<b>Goes to the Dashboard with the toast 'Demo data reset'</b><br/>Every agent is back at its starting level with its switch on" }
   x1@{ shape: subproc, label: "Continues in: Settings › Agents › Change an agent's freedom" }
   x2@{ shape: subproc, label: "Continues in: Settings › Pause › Pause all agents" }
   x3@{ shape: subproc, label: "Continues in: Global shell › Demo menu › Reset demo data" }
   s1 --> p1
   p1 --> b1 & b2
   b2 -.-> x2
+  p1 --> v1 --> v2
   p1 --> g1 --> g2 --> g3 --> g4 --> g5
   g5 -.-> x2
   p1 --> h1 --> h2 --> h3
   p1 --> t1
-  t1 --> t2 --> t3 --> t4
+  t1 --> t2 --> t3 --> t5 --> t4
   t1 -.-> x1
   p1 -.-> n1
   n1 --> n2
@@ -62,13 +68,14 @@ flowchart TD
   d1 --> d2 --> x3
   class s1 k_start
   class p1 k_screen
-  class b1,b2,t1,t2,t3 k_toast
-  class g1,g2,g3,g4,g5,h2,h3,d2 k_process
+  class b1,b2,t1,t2,t3,t5 k_toast
+  class v1,v2,g1,g2,g3,g4,g5,h2,h3,d2 k_process
   class h1,d1 k_click
   class t4 k_wait
   class n1,n2 k_endx
   class x1,x2,x3 k_goto
   style gBan fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gLev fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gGate fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gToast fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gNone fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

@@ -24,8 +24,11 @@ flowchart TD
   sF@{ shape: curv-trap, label: "<b>Footer bar</b><br/>'Back', 'Save as draft'" }
   end
   sNarr@{ shape: curv-trap, label: "<b>Medical-necessity summary</b><br/>'What Summit will read · every statement links to the chart'<br/>Four sections: Clinical picture, level of care reason, Current severity, Plan" }
+  pCtx@{ shape: rect, label: "<b>A fifth paragraph 'Context added.' shows when notes were added on the case page</b><br/>(Add clinical context, Recommended actions)<br/>It is shown here but not edited here" }
+  pApplied@{ shape: rect, label: "<b>Sentences from actions applied on the case page are part of their sections</b><br/>e.g. 'Step-down plan: ...' and 'Sertraline was started on 9/21.'" }
+  pNote@{ shape: rect, label: "<b>A draft Payers redrafted after a payer change shows one line above the summary</b><br/>'Updated for a payer change on 10/20'" }
   pHead@{ shape: rect, label: "<b>The second heading follows the level of care</b><br/>'Why a lower level of care is not safe' (Residential 3.5, PHP)<br/>'Why weekly outpatient care is not enough' (IOP)<br/>'Why withdrawal needs medical monitoring' (Detox)" }
-  sChance@{ shape: curv-trap, label: "<b>Approval chance card</b><br/>Ring and 'Strong · likely 83-92%'<br/>'Summit usually decides in about 1.5 days. Based on 1,248 similar cases.'" }
+  sChance@{ shape: curv-trap, label: "<b>Approval chance card</b><br/>Ring and 'Strong · likely 83-92%'<br/>'Summit usually decides in about 1.5 days. Based on 1,248 similar cases.'<br/>When the case does not meet what the payer asks for: 'Held back 3 points: 1 thing the payer asks for is not met.'" }
   subgraph gChip ["Source chips"]
   cChip@{ shape: trap-t, label: "<b>Click a chip under a section</b><br/>For example 'Psychiatric eval p.3'" }
   pChips@{ shape: rect, label: "<b>Chips appear only for documents that are in the case</b><br/>The 'Medication list' chip needs a sertraline answer" }
@@ -39,7 +42,7 @@ flowchart TD
   cCancel@{ shape: trap-t, label: "Click 'Cancel'" }
   pCancel@{ shape: rect, label: "Edits dropped; the summary is shown again" }
   cSave@{ shape: trap-t, label: "Click 'Save changes'" }
-  stNarr@{ shape: cyl, label: "Summary saved on the draft as edited" }
+  stNarr@{ shape: cyl, label: "<b>Summary saved on the draft as edited</b><br/>The case page's Draft tab now reads this text" }
   aInt@{ shape: hex, label: "<b>Integrity re-checks the edits (demo: simulated)</b><br/>Checks show 'Re-checking' for about 1 second<br/>'Sign and send' is off meanwhile" }
   dEmpty@{ shape: diam, label: "Is any section empty?" }
   tOk@{ shape: odd, label: "<b>'Integrity re-checked your edits'</b><br/>'Every sentence still traces to the chart.'" }
@@ -52,9 +55,10 @@ flowchart TD
   cSaveD@{ shape: trap-t, label: "Click 'Save as draft'" }
   tSaved@{ shape: odd, label: "<b>'Draft saved'</b><br/>'R-1701 is in Case Manager, ready to sign.'" }
   gVal@{ shape: subproc, label: "Continues in: Review and sign › Validation summary and checks" }
-  gSign@{ shape: subproc, label: "Continues in: Review and sign › Sign and send" }
+  gSign@{ shape: subproc, label: "Continues in: New case › Review and sign › Sign and send" }
   g36@{ shape: subproc, label: "Continues in: Agents work › Finished, paused or left" }
   g39@{ shape: subproc, label: "Continues in: New case › Save as draft and leave" }
+  gDraft@{ shape: subproc, label: "Continues in: Authorizations › Case page › Draft › Read and edit" }
   s1 --> sc
   sc --> sL & sR & sF
   sL --> sNarr --> pHead
@@ -62,6 +66,10 @@ flowchart TD
   sR --> sChance
   sR --> gVal
   sR --> gSign
+  sNarr --> pCtx
+  sNarr --> pApplied
+  sL --> pNote
+  sNarr -.-> gDraft
   sNarr --> cChip --> pChips --> oSrc --> cCloseSrc
   sNarr --> cEdit --> oEdit --> iText
   iText --> cCancel --> pCancel
@@ -73,7 +81,7 @@ flowchart TD
   sF --> cSaveD --> tSaved --> g39
   class s1 k_start
   class sc,sL,sR,sF,sNarr,sChance k_screen
-  class pHead,pChips,pCancel,pEmpty,pLost,pBack k_process
+  class pCtx,pApplied,pNote,pHead,pChips,pCancel,pEmpty,pLost,pBack k_process
   class cChip,cCloseSrc,cEdit,cCancel,cSave,cBack,cSaveD k_click
   class oSrc,oEdit k_overlay
   class iText k_input
@@ -81,7 +89,7 @@ flowchart TD
   class aInt k_agent
   class dEmpty k_decision
   class tOk,tEmpty,tSaved k_toast
-  class gVal,gSign,g36,g39 k_goto
+  class gVal,gSign,g36,g39,gDraft k_goto
   style gLayout fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gChip fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gEdit fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

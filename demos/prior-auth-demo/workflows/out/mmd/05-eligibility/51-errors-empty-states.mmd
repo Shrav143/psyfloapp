@@ -23,7 +23,7 @@ flowchart TD
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows" }
   s2@{ shape: stadium, label: "Open 'Verify a patient' with a referral that does not exist" }
   t1@{ shape: odd, label: "<b>'Referral not found'</b><br/>'We could not find RF-9999. Type the details instead.'" }
-  p1@{ shape: rect, label: "The form stays empty" }
+  p1@{ shape: rect, label: "<b>The form stays empty</b><br/>No 'Back to referral' link either" }
   s3@{ shape: stadium, label: "Open 'Verify a patient' with a case that is neither on the list nor in the queue" }
   p2@{ shape: rect, label: "<b>The form stays empty</b><br/>No message appears" }
   s4@{ shape: stadium, label: "Type in the form but leave something out or in the wrong shape" }
@@ -32,11 +32,11 @@ flowchart TD
   c2@{ shape: trap-t, label: "Click 'Check now'" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › The live check" }
   s5@{ shape: stadium, label: "Search or filters on the list match nobody" }
-  e3@{ shape: curv-trap, label: "<b>'No patients match these filters'</b><br/>'The filters hide every row. Clear them to see all 34 patients.'" }
+  e3@{ shape: curv-trap, label: "<b>'No patients match these filters'</b><br/>'The filters hide every row. Clear them to see all 37 patients.'" }
   c3@{ shape: trap-t, label: "Click 'Clear filters'" }
   e4@{ shape: stadium, label: "All patients are back" }
-  s6@{ shape: stadium, label: "<b>The check finds a coverage problem</b><br/>Member ID ends 1012 or 9999, Evergreen with Detox" }
-  e5@{ shape: curv-trap, label: "<b>A normal result page with a red verdict 'Fix before billing'</b><br/>If coverage is not found, headline 'We could not find coverage.' and six grey 'Not checked' rows" }
+  s6@{ shape: stadium, label: "<b>The check finds a coverage problem</b><br/>Member ID ends 1012, 9999, 3030, 6060 or 9090, or Evergreen with Detox" }
+  e5@{ shape: curv-trap, label: "<b>A normal result page with a red verdict 'Fix before billing'</b><br/>If coverage is not found, headline 'We could not find coverage.', one grey row 'Nothing else could be checked' and no payment lines" }
   g3@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › Next actions" }
   s7@{ shape: stadium, label: "Leave 'Verify a patient' while the live check runs" }
   e6@{ shape: stadium, label: "<b>The check is dropped</b><br/>Nothing is saved and no row is added" }

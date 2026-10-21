@@ -18,53 +18,63 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>A payer's workflow, rule, document list</b><br/>or payer change is saved or updated" }
   dk@{ shape: diam, label: "Which kind of save?" }
-  cfg@{ shape: cyl, label: "<b>Saved on the payer</b><br/>New drafts use it from now on" }
-  nw@{ shape: rect, label: "<b>Page says: new drafts use it at once.</b><br/>In the demo only the Payers page reads the saved lists back" }
-  subgraph gW ["Wired in the demo: redrafting"]
+  cfg@{ shape: cyl, label: "<b>Saved on the payer</b><br/>One edit log entry per change<br/>One bell notification<br/>New drafts use it from now on" }
+  subgraph gR ["Read live by other screens (no Update drafts needed)"]
+  p1@{ shape: rect, label: "<b>New case: the document list</b><br/>The Medical records checklist, the file sorting and the<br/>Review and sign checks use the payer's saved list<br/>for the draft's level of care" }
+  p2@{ shape: rect, label: "<b>New case: the rules</b><br/>Backdating: a start date that reaches back further<br/>than the rule allows is flagged<br/>No authorization needed: a level of care the payer names there" }
+  p3@{ shape: rect, label: "<b>New case: the approval chance</b><br/>Each thing the payer asks for that a draft does not meet<br/>(a required document, an early start date)<br/>holds the chance back, up to 12 points" }
+  p4@{ shape: rect, label: "<b>Case Manager: the next review</b><br/>The 'Submission windows' rule sets the days<br/>before the next review is booked, when it names a number" }
+  p5@{ shape: rect, label: "<b>Payers added with 'Add a payer'</b><br/>have a full saved set like any payer<br/>and are offered wherever a payer is picked:<br/>New case, Eligibility & Benefits and the queue's Payer menu" }
+  end
+  subgraph gW ["Wired: redrafting after a payer change or edits"]
   up@{ shape: trap-t, label: "<b>'Update N drafts' (after a payer change,</b><br/>or from the edits-waiting banner)" }
-  rq@{ shape: cyl, label: "<b>Matching requests change</b><br/>needs a person: yes<br/>Status line 'Redrafted after ... Waiting for a new signature'<br/>Timeline event from Scribe, Packet or Integrity" }
+  rq@{ shape: cyl, label: "<b>Each unsent draft of this payer changes</b><br/>needs a person: yes<br/>Status line 'Redrafted after ... Waiting for a new signature'<br/>Timeline event from Scribe or the change's agent" }
+  rp@{ shape: cyl, label: "<b>Update recorded</b><br/>Change (or 'edits-summit'), payer and the IDs of the drafts redrafted" }
   nf@{ shape: cyl, label: "<b>Bell notification 'Drafts updated'</b><br/>links to Case Manager" }
   dsh@{ shape: rect, label: "<b>Dashboard shows the new status line</b><br/>and lists the request among those needing you" }
+  cmt@{ shape: rect, label: "<b>Case Manager and New case tag those drafts</b><br/>'Updated for a payer change'" }
   end
-  subgraph gC ["Wired in the demo: links out of Payers"]
+  sent@{ shape: rect, label: "<b>Requests already sent are never changed</b><br/>They keep what they were sent with" }
+  subgraph gC ["Wired: links out of Payers"]
   oc@{ shape: trap-t, label: "<b>Click 'Open the request'</b><br/>in 'Try it on a case'" }
   od@{ shape: rect, label: "Opens Dashboard with that request's drawer" }
   end
-  subgraph gP ["Said on the page, not wired in the demo"]
-  p1@{ shape: rect, label: "<b>Documents tab: 'Reader uses this same list on the intake screen'</b><br/>New case keeps its own required-document table,<br/>so an edited list does not change New case" }
-  p2@{ shape: rect, label: "<b>Rules tab: agents 'use' each rule</b><br/>No approval chance, queue order or New case check<br/>reads a rule, so editing one never moves a number" }
-  p3@{ shape: rect, label: "<b>Header 'Approved as asked' (74% for Summit) is the figure</b><br/>New case uses for the approval chance: it ends 14 points higher<br/>and starts 26 below that. It comes from decision history,<br/>so editing a rule or list does not move it" }
-  p4@{ shape: rect, label: "<b>Authorizations queue and Case Manager lists</b><br/>do not change when drafts are redrafted" }
+  subgraph gP ["Not read by any edit"]
+  n1@{ shape: rect, label: "<b>Header 'Approved as asked' (74% for Summit) is where New case</b><br/>starts the approval chance: it ends 14 points higher.<br/>It comes from decision history, so no rule or list edit moves it" }
+  n2@{ shape: rect, label: "<b>Authorizations queue order and the case page</b><br/>do not read the saved configuration" }
   end
   prd@{ shape: rect, label: "<b>In the product (PRD 06)</b><br/>A rule version is stamped on every authorization;<br/>Packet reads the channel, form and documents; Cadence reads windows and caps;<br/>Advocate reads peer-to-peer and appeal windows" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Requests table" }
-  g2@{ shape: subproc, label: "Continues in: Case Manager › Cases" }
+  g2@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Updated for a payer change" }
   g3@{ shape: subproc, label: "Continues in: Dashboard › Open a request" }
   g4@{ shape: subproc, label: "Continues in: Authorizations › New case › Medical records › The checklist and Continue" }
-  g5@{ shape: subproc, label: "Continues in: Authorizations › Case › Risk" }
+  g5@{ shape: subproc, label: "Continues in: Authorizations › New case › Review and sign › Validation summary and checks" }
   g7@{ shape: subproc, label: "Continues in: Authorizations › New case › Agents work › Start the run and watch it" }
-  g6@{ shape: subproc, label: "Continues in: Authorizations › Queue" }
+  g6@{ shape: subproc, label: "Continues in: Authorizations › Queue › Open the queue and read the top" }
   s1 --> dk
-  dk -->|"Workflow, rule or documents"| cfg --> nw
-  dk -->|"Payer change or edits update"| up --> rq --> dsh --> g1
-  rq --> nf --> g2
-  nw -.-> p1
-  nw -.-> p2
-  nw -.-> p3
-  nw -.-> p4
+  dk -->|"Workflow, rule or documents"| cfg
+  dk -->|"Payer change or edits update"| up --> rq --> rp --> nf
+  rq --> dsh --> g1
+  rq --> cmt --> g2
+  up -.-> sent
+  cfg --> p1 & p2 & p4
   p1 --> g4
-  p2 --> g5
-  p3 --> g7
-  p4 --> g6
+  p1 -.-> g5
+  p2 --> p3 --> g7
+  cfg -.-> p5
+  cfg -.-> n1
+  cfg -.-> n2
+  n2 -.-> g6
   oc --> od --> g3
   dk -->|"Chart check"| oc
   p2 -.-> prd
   class s1 k_start
   class dk k_decision
-  class cfg,rq,nf k_store
-  class nw,dsh,od,p1,p2,p3,p4,prd k_process
+  class cfg,rq,rp,nf k_store
+  class p1,p2,p3,p4,p5,dsh,cmt,sent,od,n1,n2,prd k_process
   class up,oc k_click
   class g1,g2,g3,g4,g5,g7,g6 k_goto
+  style gR fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gW fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gC fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gP fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

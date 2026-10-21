@@ -38,6 +38,8 @@ flowchart LR
   r8@{ shape: rect, label: "Go to /manager?tab=reviews" }
   c9@{ shape: trap-t, label: "A saved or typed old address /active" }
   r9@{ shape: rect, label: "Replaced by /manager (any ?tab= on it is lost)" }
+  c11@{ shape: trap-t, label: "Ledger case page › 'Open the review'" }
+  r11@{ shape: rect, label: "<b>Go to /manager?tab=reviews&review= and the review ID</b><br/>The drawer opens over the list; the address keeps ?tab=reviews" }
   end
   d1@{ shape: diam, label: "Does the address say ?tab=reviews?" }
   sR@{ shape: curv-trap, label: "<b>Reviews this week tab opens</b><br/>Switch shows 'Reviews this week' selected" }
@@ -48,7 +50,7 @@ flowchart LR
   g1@{ shape: subproc, label: "Continues in: Case Manager › Reviews this week › The list" }
   g2@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Being prepared card" }
   e1@{ shape: stadium, label: "Case Manager is open on the right tab" }
-  s1 --> c1 & c2 & c3 & c4 & c5 & c6 & c7 & c8 & c9
+  s1 --> c1 & c2 & c3 & c4 & c5 & c6 & c7 & c8 & c9 & c11
   c1 --> r1
   c2 --> r2
   c3 --> r3
@@ -58,7 +60,8 @@ flowchart LR
   c7 --> r7
   c8 --> r8
   c9 --> r9
-  r1 & r2 & r3 & r4 & r5 & r6 & r7 & r8 & r9 --> d1
+  c11 --> r11
+  r1 & r2 & r3 & r4 & r5 & r6 & r7 & r8 & r9 & r11 --> d1
   d1 -->|"Yes"| sR --> p1
   d1 -->|"No"| sA --> p1
   p1 --> e1
@@ -67,8 +70,8 @@ flowchart LR
   sR --> c10 --> p2
   sA --> c10
   class s1 k_start
-  class c1,c2,c3,c4,c5,c6,c7,c8,c9,c10 k_click
-  class r1,r2,r3,r4,r5,r6,r7,r8,r9,p1,p2 k_process
+  class c1,c2,c3,c4,c5,c6,c7,c8,c9,c11,c10 k_click
+  class r1,r2,r3,r4,r5,r6,r7,r8,r9,r11,p1,p2 k_process
   class d1 k_decision
   class sR,sA k_screen
   class g1,g2 k_goto

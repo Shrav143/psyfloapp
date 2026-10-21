@@ -31,12 +31,12 @@ flowchart TD
   d2@{ shape: diam, label: "Did the referral have no insurance?" }
   p2@{ shape: rect, label: "<b>An insurance card arrives: Summit Medicaid HMO, member ID …4410</b><br/>Coverage has not been checked yet" }
   d3@{ shape: diam, label: "Is the patient under 18?" }
-  p3@{ shape: rect, label: "<b>Age is not fixed by a reply</b><br/>The row stays 'Check this'" }
+  p3@{ shape: rect, label: "<b>Age is not fixed by a reply</b><br/>The row stays 'Check this' and only 'Mark OK' lifts it" }
   st1@{ shape: cyl, label: "<b>Referral is In review again</b><br/>Fixed rows read 'Resolved by the referrer's reply'" }
   p4@{ shape: rect, label: "<b>Timeline: 'Reply received from … by email'</b><br/>'Reader read the reply and updated the extracted fields'<br/>'Validation ran again: 3 findings resolved, 9 of 9 checks passed' (fewer if age failed)" }
   t2@{ shape: odd, label: "<b>'The referrer replied'</b><br/>'3 findings resolved. RF-2053 is back In review.'" }
   t3@{ shape: odd, label: "<b>Bell 'The referrer replied'</b><br/>'Crisis line 988 follow-up answered RF-2053. Reader read the reply and 3 findings are resolved.'" }
-  sc2@{ shape: curv-trap, label: "<b>Checklist after the reply</b><br/>'11 of 11 ready', 'Nothing is missing'<br/>'Run coverage check' is available" }
+  sc2@{ shape: curv-trap, label: "<b>Checklist after the reply</b><br/>'11 of 11 ready', 'Nothing is missing'<br/>'Run coverage check' is available<br/>'Accept referral and continue' is enabled (unless the age failed)" }
   g1@{ shape: subproc, label: "Continues in: New case › Referral › Accept a referral" }
   s1 --> sc1 --> w1 --> x1
   x1 --> c1 --> d1

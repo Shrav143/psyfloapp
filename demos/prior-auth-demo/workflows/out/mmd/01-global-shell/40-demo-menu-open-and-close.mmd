@@ -40,10 +40,9 @@ flowchart TD
   x1@{ shape: trap-t, label: "Click anywhere outside the menu" }
   x2@{ shape: trap-t, label: "Click 'Demo' again" }
   x3@{ shape: trap-t, label: "Press Escape" }
-  k4@{ shape: rect, label: "Menu closes (the click still reaches whatever was clicked)" }
-  k5@{ shape: rect, label: "Nothing happens: the menu stays open" }
+  k4@{ shape: rect, label: "Menu closes (an outside click still reaches whatever was clicked)" }
+  k5@{ shape: rect, label: "<b>Menu closes</b><br/>The page underneath is as it was" }
   e1@{ shape: stadium, label: "Menu is closed" }
-  e2@{ shape: stadium, label: "Menu still open" }
   s1 --> o1
   o1 --> t1 & f1 & f2 & sp & f4
   f1 --> g1
@@ -59,7 +58,7 @@ flowchart TD
   d1 -->|"Keyboard"| x3
   x1 --> k4
   x2 --> k4
-  x3 --> k5 --> e2
+  x3 --> k5 --> e1
   k2 --> e1
   k3 --> e1
   k4 --> e1
@@ -71,7 +70,6 @@ flowchart TD
   class g1,g2,g3 k_goto
   class d1 k_decision
   class e1 k_end
-  class e2 k_endx
   style gT fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gP fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gR fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

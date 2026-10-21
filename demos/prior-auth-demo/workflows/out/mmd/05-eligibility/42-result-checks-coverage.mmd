@@ -24,7 +24,7 @@ flowchart TD
   a3@{ shape: rect, label: "<b>Title 'Coverage is not active on the service date'</b><br/>Chip 'Ended 09/30' (red)<br/>'The patient may have a new plan, so ask the payer.'" }
   a4@{ shape: rect, label: "<b>Title 'Coverage was not found'</b><br/>Chip 'Not found' (red)<br/>'Check the member ID and date of birth, or read the card again.'" }
   end
-  g0@{ shape: rect, label: "<b>Rows 2 to 7 become grey 'Not checked'</b><br/>'Not checked. The plan could not be identified from these details.'" }
+  g0@{ shape: rect, label: "<b>Rows 2 to 7 are replaced by one grey row</b><br/>'Nothing else could be checked', chip 'Not checked'<br/>'Fix the member ID or date of birth, then check again.'<br/>No 'What the patient pays:' line either" }
   subgraph gB ["Row 2 · The plan"]
   b0@{ shape: diam, label: "Which kind of plan?" }
   b1@{ shape: rect, label: "<b>Title 'It is the right plan', chip 'Summit' (green)</b><br/>'Managed by Summit Medicaid HMO. Claims go to Summit, not to the state'" }
@@ -36,7 +36,7 @@ flowchart TD
   c0@{ shape: diam, label: "What do the benefits say for this level of care?" }
   c1@{ shape: rect, label: "<b>Title 'The service is covered'</b><br/>Chip 'Covered' (green)<br/>'Residential 3.5 is payable for substance use disorder (F10.20 on the chart). Codes H0018 and H0019'" }
   c2@{ shape: rect, label: "<b>Title 'The service is covered with conditions'</b><br/>Chip 'Limited' (amber)<br/>'The diagnosis must be on the plan's list and each day needs an authorization.'" }
-  c3@{ shape: rect, label: "<b>Title 'The service is not covered'</b><br/>Chip 'Not covered' (red)<br/>'Ask Summit which program it pays for.' (no demo patient)" }
+  c3@{ shape: rect, label: "<b>Title 'The service is not covered'</b><br/>Chip 'Not covered' (red)<br/>'Ask Beacon which program it pays for.'<br/>The verdict is 'Fix before billing'" }
   c4@{ shape: rect, label: "<b>Codes by level of care</b><br/>Residential 3.5 H0018 and H0019 · IOP H0015 · PHP H0035 · Detox H0010 and H0011" }
   end
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › Payment checks: authorization to other insurance" }

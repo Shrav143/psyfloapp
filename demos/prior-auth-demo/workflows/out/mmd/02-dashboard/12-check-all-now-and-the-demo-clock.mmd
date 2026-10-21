@@ -16,7 +16,13 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Click 'Check all now'</b><br/>Top right of the headline card" }
+  s0@{ shape: stadium, label: "<b>Look at the header</b><br/>'Check all now' sits top right of the headline card" }
+  dp@{ shape: diam, label: "Is Navigator paused in Settings?" }
+  sp@{ shape: curv-trap, label: "<b>'Check all now' is disabled</b><br/>Under it a link: 'Navigator is paused in Settings'" }
+  cs@{ shape: trap-t, label: "Click 'Navigator is paused in Settings'" }
+  gs@{ shape: subproc, label: "Continues in: Settings › Pause › What the rest of the app shows" }
+  xs@{ shape: stadium, label: "<b>Nothing runs</b><br/>Resume Navigator in Settings and the button works again" }
+  s1@{ shape: trap-t, label: "Click 'Check all now'" }
   p1@{ shape: rect, label: "Button shows a spinner and is disabled for 1.2 seconds" }
   a1@{ shape: hex, label: "<b>Navigator looks at every open request</b><br/>Received and Under review, whatever the filters say" }
   w1@{ shape: cyl, label: "<b>Each open request gets a history line</b><br/>'Navigator checked: received' or 'Navigator checked: under review'" }
@@ -37,7 +43,10 @@ flowchart TD
   g1@{ shape: subproc, label: "Continues in: Global shell › Demo menu" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Read a row: bars, clock and what happens next" }
   g3@{ shape: subproc, label: "Continues in: Dashboard › Filters › Date range shortcuts, keys and the address" }
-  s1 --> p1 --> a1 --> w1 --> t1 --> e1
+  s0 --> dp
+  dp -->|"No"| s1 --> p1 --> a1 --> w1 --> t1 --> e1
+  dp -->|"Yes"| sp --> cs --> gs
+  sp -.-> xs
   s2 --> c1 --> t2 --> p2
   p2 --> r1 & r2 & r3 & r4 & r5
   r1 --> g2
@@ -45,11 +54,15 @@ flowchart TD
   r5 --> g3
   p2 -.-> p3
   s2 -.-> g1
-  class s1,s2 k_start
+  class s0,s2 k_start
+  class dp k_decision
+  class sp k_screen
+  class cs,s1 k_click
+  class gs,g1,g2,g3 k_goto
+  class xs k_endx
   class p1,p2,r1,r2,r3,r4,r5,p3 k_process
   class a1 k_agent
   class w1,c1 k_store
   class t1,t2 k_toast
   class e1 k_end
-  class g1,g2,g3 k_goto
   style gClock fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

@@ -19,7 +19,13 @@ flowchart TD
   s1@{ shape: stadium, label: "Open 'Verify a patient'" }
   sc@{ shape: curv-trap, label: "<b>Verify a patient</b><br/>'The agents check coverage and benefits live, so you know whether the clinic will be paid.'<br/>Card 'The patient and the service' with the pill 'Privacy mode on'" }
   b1@{ shape: trap-t, label: "Click '← Eligibility & Benefits' (back link)" }
+  b2@{ shape: trap-t, label: "<b>Click '← Back to referral RF-2040' or '← Back to case R-1042'</b><br/>Shown only when the address names a referral (see 'Ways in and pre-fill')" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › The full referral page" }
   g0@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows" }
+  subgraph gSample ["Try a sample"]
+  f5@{ shape: trap-t, label: "<b>Click a chip in the row 'Try a sample'</b><br/>'Cleared to bill', 'Coverage lapsed', 'Not found',<br/>'Not covered', 'Another plan pays first', 'Limit reached'" }
+  p7@{ shape: rect, label: "<b>Fills the whole form with a made-up member who ends that way</b><br/>The chip turns green. Initials and age are remembered for the result" }
+  end
   subgraph gCard ["Add the insurance card"]
   f1@{ shape: lean-r, label: "<b>Drop a file, or click the drop zone</b><br/>'Drag and drop the insurance card, or click to select a file'" }
   f2@{ shape: trap-t, label: "Click 'Use sample file'" }
@@ -46,8 +52,12 @@ flowchart TD
   p6@{ shape: rect, label: "<b>'Check now' is on</b><br/>Hint 'Takes about 10 seconds. Nothing is changed at the payer or in the record.'" }
   c1@{ shape: trap-t, label: "Click 'Check now'" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › The live check" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › Try a sample" }
   s1 --> sc
   sc --> b1 --> g0
+  sc --> b2 --> g3
+  sc --> f5 --> p7 --> q1
+  f5 -.-> g2
   sc --> f1 --> a1
   sc --> f2 --> a1
   a1 --> p1 --> cs
@@ -61,12 +71,13 @@ flowchart TD
   q1 -->|"Yes"| p6 --> c1 --> g1
   class s1 k_start
   class sc,cs k_screen
-  class b1,f2,f3,f4,c1 k_click
-  class g0,g1 k_goto
+  class b1,b2,f5,f2,f3,f4,c1 k_click
+  class g3,g0,g1,g2 k_goto
+  class p7,p1,p2,p3,p4,p5,p6 k_process
   class f1,i1,i2,i3,i4,i5,i6 k_input
   class a1 k_agent
-  class p1,p2,p3,p4,p5,p6 k_process
   class t1 k_toast
   class q1 k_decision
+  style gSample fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gCard fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gFields fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

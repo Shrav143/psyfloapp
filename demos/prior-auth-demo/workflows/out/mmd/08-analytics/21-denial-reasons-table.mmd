@@ -17,7 +17,7 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Scroll to 'Common denial reasons by payer'" }
-  sc@{ shape: curv-trap, label: "<b>Card 'Common denial reasons by payer'</b><br/>'This quarter · 311 denials in the reasons listed. Select a row to open Denial Intelligence.'" }
+  sc@{ shape: curv-trap, label: "<b>Card 'Common denial reasons by payer'</b><br/>'This quarter · 311 denials in the reasons listed. Select a row to open those denials in Denial Intelligence.'" }
   th@{ shape: curv-trap, label: "<b>Columns</b><br/>'Reason', 'Payer', 'Count', 'Share of denials' (a red bar and the percent)" }
   q1@{ shape: diam, label: "Which payer is chosen in the menu?" }
   p1@{ shape: rect, label: "<b>'All payers': one row per payer, its most common reason</b><br/>Biggest first" }
@@ -32,7 +32,7 @@ flowchart TD
   subgraph gClick ["Open a row"]
   c1@{ shape: trap-t, label: "Click anywhere on a row" }
   c2@{ shape: trap-t, label: "Click the reason text, for example 'Recertification filed too late'" }
-  p4@{ shape: rect, label: "<b>Opens /denials with no payer or reason chosen</b><br/>Row hover tint shows it is a link" }
+  p4@{ shape: rect, label: "<b>Opens /denials?payer=harborview&reason=Recertification filed too late</b><br/>The row's own payer and reason go along (spaces become plus signs)<br/>Row hover tint shows it is a link" }
   end
   g1@{ shape: subproc, label: "Continues in: Denial Intelligence › Open denials list" }
   p5@{ shape: rect, label: "Browser Back returns to Analytics with the menus reset" }

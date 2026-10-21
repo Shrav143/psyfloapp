@@ -39,8 +39,10 @@ flowchart TD
   e2@{ shape: stadium, label: "<b>Test stops, nothing is saved</b><br/>There is no 'Back' on this step" }
   g1@{ shape: subproc, label: "Continues in: EMR Connect › Sync › Sync now" }
   g2@{ shape: subproc, label: "Continues in: EMR Connect › Manage › Open the Manage drawer" }
+  g3@{ shape: subproc, label: "Continues in: EMR Connect › Manage › Reconnect a system" }
   o1 --> k1 --> k2 --> k3 --> t1
   k1 -.-> x1
+  k3 -.-> g3
   t1 --> q1
   q1 -->|"Demo: never"| b0 --> b1
   q1 -->|"Production"| f1
@@ -59,6 +61,6 @@ flowchart TD
   class s1,s2 k_store
   class a1 k_agent
   class e1 k_end
-  class g1,g2 k_goto
+  class g1,g2,g3 k_goto
   style gTest fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gSave fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

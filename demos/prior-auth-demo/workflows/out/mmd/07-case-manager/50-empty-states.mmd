@@ -43,6 +43,7 @@ flowchart TD
   g1@{ shape: subproc, label: "Continues in: Case Manager › Filters › Search and filter both tabs" }
   g2@{ shape: subproc, label: "Continues in: New case › Referral step" }
   p4@{ shape: rect, label: "<b>How drafts run out: sign and send every case in 'Being prepared' (5 at the start)</b><br/>The header then reads '0 are still being prepared'" }
+  p5@{ shape: rect, label: "<b>'Step-down plans' has no empty state</b><br/>The card is simply not shown when no denial was accepted or the filters hide every plan" }
   e1@{ shape: stadium, label: "Lists show rows again" }
   s1 --> i1 --> p1
   p1 --> d1
@@ -61,9 +62,10 @@ flowchart TD
   s1 -.-> p4
   p4 -.-> d1
   s1 -.-> e5s
+  d3 -.-> p5
   class s1 k_start
   class i1 k_input
-  class p1,p2,p3,p4 k_process
+  class p1,p2,p3,p4,p5 k_process
   class d1,d2,d3,d4 k_decision
   class e1s,e2s,e3s,e4s,e5s k_screen
   class c1,c2,c3,c4 k_click

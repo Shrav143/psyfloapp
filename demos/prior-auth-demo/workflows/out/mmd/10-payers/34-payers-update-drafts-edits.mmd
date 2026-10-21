@@ -19,16 +19,16 @@ flowchart TD
   s1@{ shape: stadium, label: "<b>A workflow, rule or document-list</b><br/>edit was just saved" }
   un@{ shape: cyl, label: "<b>'Edits waiting' for this payer goes up by one</b><br/>Payer details and Caller script edits do not count" }
   bn@{ shape: curv-trap, label: "<b>Ochre banner on Process, Rules and Documents</b><br/>'1 edit applies to new drafts only'<br/>'2 edits apply...' after a second edit" }
-  dr@{ shape: diam, label: "Does this payer have drafts in 'Preparing'?" }
-  b1@{ shape: odd, label: "<b>New drafts for Summit use your edits already.</b><br/>Open drafts (R-1042, R-1101) follow when you update them.<br/>Button: 'Update 2 drafts'" }
-  b0@{ shape: odd, label: "<b>New drafts for Evergreen use your edits already.</b><br/>There are no open drafts for this payer right now.<br/>Button: 'Update drafts'" }
-  info@{ shape: rect, label: "<b>Drafts waiting for information (like P-1499) are not counted</b><br/>Only drafts in 'Preparing' are" }
+  dr@{ shape: diam, label: "<b>Does this payer have an unsent draft?</b><br/>A request in 'Preparing', or a New case draft<br/>that is saved and not sent" }
+  b1@{ shape: odd, label: "<b>New drafts for Summit use this at once.</b><br/>Sent requests keep what they were sent with.<br/>Click Update drafts to redraft the open ones (R-1042, R-1101).<br/>Button: 'Update 2 drafts'" }
+  b0@{ shape: odd, label: "<b>New drafts for Evergreen use this at once.</b><br/>Sent requests keep what they were sent with.<br/>There are no open drafts for this payer right now.<br/>Button: 'Update drafts'" }
+  info@{ shape: rect, label: "<b>Not counted: a request the payer already has</b><br/>(Received and later), and the answer to a payer's<br/>question on an 'Info requested' request, like P-1499" }
   cu@{ shape: trap-t, label: "Click the banner button" }
-  m@{ shape: win-pane, label: "<b>Update 2 drafts?</b><br/>Confirm gate. Nothing is redrafted until you say so.<br/>Reason: your edits to Summit." }
+  m@{ shape: win-pane, label: "<b>Update 2 drafts?</b><br/>Nothing is redrafted until you confirm.<br/>Reason: your edits to Summit." }
   dl@{ shape: diam, label: "Any drafts to list?" }
-  rows@{ shape: rect, label: "<b>One row per draft</b><br/>R-1042, 'J.M., 34 · Summit', Residential 3.5, 'Draft, not yet sent'" }
-  fn@{ shape: odd, label: "<b>'Each redrafted case returns to Case Manager for a new signature.</b><br/>A request that is already sent is never rewritten.<br/>It gets an addendum instead.'" }
-  m0@{ shape: odd, label: "<b>Title reads 'Apply to new drafts?'</b><br/>'No open drafts are affected. Evergreen will use<br/>the change for every new draft from now on.'" }
+  rows@{ shape: rect, label: "<b>One row per draft, read now</b><br/>R-1042, 'J.M., 34 · Summit', Residential 3.5, 'Draft, not yet sent'" }
+  fn@{ shape: odd, label: "<b>'Each redrafted case returns to Case Manager for a new signature.</b><br/>Requests already sent keep what they were sent with.'" }
+  m0@{ shape: odd, label: "<b>Title reads 'Apply to new drafts?'</b><br/>'No open drafts are affected. New drafts for Evergreen<br/>already use your edits.'" }
   cs@{ shape: trap-t, label: "<b>Click 'Update 2 drafts'</b><br/>or 'Apply to new drafts'" }
   cx@{ shape: trap-t, label: "Click 'Cancel'" }
   cesc@{ shape: trap-t, label: "<b>Press Escape, click the X</b><br/>or click the dimmed area" }
@@ -40,14 +40,15 @@ flowchart TD
   drop@{ shape: stadium, label: "<b>Redraft is dropped</b><br/>Banner stays, nothing changes" }
   dd@{ shape: diam, label: "Were there drafts?" }
   rd@{ shape: cyl, label: "<b>Each draft needs a person again</b><br/>'Redrafted after your edits to Summit's workflow, rules and documents.<br/>Waiting for a new signature'<br/>Timeline event by Scribe" }
+  rp@{ shape: cyl, label: "<b>Update recorded for Case Manager and New case</b><br/>Change 'edits-summit', payer, and the IDs of the drafts redrafted<br/>R-1042, R-1101" }
   z@{ shape: cyl, label: "<b>'Edits waiting' resets to zero</b><br/>Banner disappears" }
   nt@{ shape: cyl, label: "<b>Bell notification 'Drafts updated'</b><br/>2 drafts were redrafted after your edits to Summit.<br/>Each needs a new signature." }
   t1@{ shape: odd, label: "<b>'2 drafts updated'</b><br/>Each returned to Case Manager for a new signature." }
-  z0@{ shape: cyl, label: "<b>'Edits waiting' resets to zero</b><br/>Banner disappears<br/>No bell notification" }
+  z0@{ shape: cyl, label: "<b>'Edits waiting' resets to zero</b><br/>Banner disappears<br/>No update recorded, no bell notification" }
   t0@{ shape: odd, label: "<b>'No open drafts to update'</b><br/>New drafts for Evergreen already use your edits." }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Requests table" }
   cb@{ shape: trap-t, label: "<b>Click the bell notification</b><br/>'Drafts updated'" }
-  g2@{ shape: subproc, label: "Continues in: Case Manager › Cases" }
+  g2@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Updated for a payer change" }
   s1 --> un --> bn --> dr
   dr -->|"Yes"| b1 --> cu
   dr -->|"No"| b0 --> cu
@@ -60,11 +61,11 @@ flowchart TD
   cs --> lock --> a1 --> a2 --> lv
   lv -->|"No"| drop
   lv -->|"Yes"| dd
-  dd -->|"Yes"| rd --> z --> nt --> t1 --> g1
+  dd -->|"Yes"| rd --> rp --> z --> nt --> t1 --> g1
   dd -->|"No"| z0 --> t0
   nt -.-> cb --> g2
   class s1 k_start
-  class un,rd,z,nt,z0 k_store
+  class un,rd,rp,z,nt,z0 k_store
   class bn k_screen
   class dr,dl,lv,dd k_decision
   class b1,b0,fn,m0,t1,t0 k_toast

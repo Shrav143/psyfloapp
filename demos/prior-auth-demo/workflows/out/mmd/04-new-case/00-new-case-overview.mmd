@@ -18,7 +18,7 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Open New case</b><br/>Sidebar, a 'New case' button, the Demo menu, FLO's link or the old /referrals address" }
   s2@{ shape: stadium, label: "<b>Click 'Start authorization'</b><br/>on a coverage result" }
-  s3@{ shape: stadium, label: "<b>Type /authorizations/new?referral=RF-2051</b><br/>(no button links to it now)" }
+  s3@{ shape: stadium, label: "<b>Click 'Start a case from this referral'</b><br/>on the full referral page (or type /authorizations/new?referral=RF-2051)" }
   s4@{ shape: stadium, label: "<b>Open a case that already exists</b><br/>A Case Manager row button, a bell link, or 'Open in review and sign'" }
   subgraph gMake ["No case id in the address: make one"]
   p1@{ shape: rect, label: "<b>Page makes a case, then opens /authorizations/new/draft-ID</b><br/>It replaces the address, so Back does not loop" }

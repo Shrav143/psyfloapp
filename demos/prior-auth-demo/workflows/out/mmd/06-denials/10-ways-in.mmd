@@ -20,16 +20,16 @@ flowchart TD
   s2@{ shape: stadium, label: "<b>Demo menu, Suggested path</b><br/>'Denial Intelligence: D-3318'" }
   s3@{ shape: stadium, label: "<b>Click a notification</b><br/>'Denied today', 'Denied', 'Partly approved' or 'Denial analyzed'" }
   s4@{ shape: stadium, label: "<b>Ask FLO about denials or money</b><br/>Click 'Open Denial Intelligence'" }
-  s5@{ shape: stadium, label: "<b>Analytics: 'Common denial reasons by payer'</b><br/>Click a row or its payer name" }
+  s5@{ shape: stadium, label: "<b>Analytics: 'Common denial reasons by payer'</b><br/>Click a row or its payer name<br/>(the address carries that payer and reason)" }
   s6@{ shape: stadium, label: "<b>Dashboard request drawer</b><br/>Click 'Open in Denial Intelligence'" }
   s7@{ shape: stadium, label: "<b>Authorizations case page, banner 'This request was denied'</b><br/>Click 'Open in Denial Intelligence'" }
   p1@{ shape: rect, label: "Address is /denials or /denials?id=D-xxxx" }
   d1@{ shape: diam, label: "Is there an ?id= in the address?" }
   d2@{ shape: diam, label: "Is it an open denial, or one closed on this screen?" }
   d3@{ shape: diam, label: "Are there any open denials?" }
-  p2@{ shape: rect, label: "Pick the open denial with the nearest deadline" }
+  p2@{ shape: rect, label: "<b>Pick the first denial in the list: the nearest deadline</b><br/>(among the matches, when filters are on)" }
   p3@{ shape: rect, label: "Show the denial named in the address" }
-  t1@{ shape: odd, label: "<b>'We could not find D-xxxx among the open denials'</b><br/>'Showing D-3318 instead.'" }
+  t1@{ shape: odd, label: "<b>'We could not find D-xxxx among the open denials'</b><br/>'Showing D-3318 instead.' (the first in the list)" }
   sc1@{ shape: curv-trap, label: "<b>Denial Intelligence</b><br/>Header, 'Add a denial letter', the denial, 'Open denials' list" }
   sc2@{ shape: curv-trap, label: "<b>'No open denials'</b><br/>'Everything sent is approved or waiting. Add a denial letter above to analyze a new one.'" }
   c1@{ shape: trap-t, label: "Click 'Open the Dashboard'" }
@@ -37,11 +37,16 @@ flowchart TD
   g2@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
   g3@{ shape: subproc, label: "Continues in: Denial Intelligence › Add a denial letter" }
   g4@{ shape: subproc, label: "Continues in: Dashboard › Arrive › What the page shows" }
+  pf@{ shape: rect, label: "<b>The address may also carry ?payer= and ?reason=</b><br/>They narrow the 'Open denials' list only; ?id= still works" }
+  g5@{ shape: subproc, label: "Continues in: Denial Intelligence › Open denials list › Filter by payer and reason" }
+  sc3@{ shape: curv-trap, label: "<b>'No open denials match these filters'</b><br/>button 'Clear filters'" }
   s8@{ shape: stadium, label: "Look at the badge beside 'Denial Intelligence' in the sidebar" }
-  b1@{ shape: rect, label: "<b>Badge = requests in the Dashboard's 'Appeal or call' stage</b><br/>7 at the start" }
+  b1@{ shape: rect, label: "<b>Badge = requests in the Dashboard's 'Appeal or call' stage</b><br/>8 at the start" }
   b2@{ shape: rect, label: "Goes up by one: a letter is analyzed, or the Dashboard demo control 'Denies' or 'Approves part' is used" }
-  b3@{ shape: rect, label: "Goes down by one: the denial is accepted, or a call outcome 'Overturned' or 'Partly restored' is logged" }
+  b3@{ shape: rect, label: "Goes down by one: the denial is accepted, a call outcome 'Overturned' or 'Partly restored' is logged, or the payer's decision on an appeal is 'Overturned' or 'Partly overturned'" }
   s1 --> p1
+  p1 -.-> pf --> g5
+  pf -.->|"Nothing matches"| sc3
   s2 --> p1
   s3 --> p1
   s4 --> p1
@@ -61,9 +66,9 @@ flowchart TD
   sc1 --> g1 & g2
   s8 --> b1 --> b2 & b3
   class s1,s2,s3,s4,s5,s6,s7,s8 k_start
-  class p1,p2,p3,b1,b2,b3 k_process
+  class p1,p2,p3,pf,b1,b2,b3 k_process
   class d1,d2,d3 k_decision
   class t1 k_toast
-  class sc1,sc2 k_screen
+  class sc1,sc2,sc3 k_screen
   class c1 k_click
-  class g1,g2,g3,g4 k_goto
+  class g1,g2,g3,g4,g5 k_goto

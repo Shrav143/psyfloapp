@@ -35,10 +35,12 @@ flowchart TD
   d3@{ shape: diam, label: "Is there a Dashboard request with this ID or this case ID?" }
   fr@{ shape: rect, label: "<b>Page is built from the Dashboard request</b><br/>Decided ones show their result and have nothing left to send" }
   gen@{ shape: rect, label: "<b>Chance, actions, criteria, draft and checks are generated</b><br/>from the payer, level of care and chance" }
+  d5@{ shape: diam, label: "Is the ID in the Case Manager ledger?" }
+  gL@{ shape: subproc, label: "Continues in: Case Manager › Ledger case › Open and read" }
   nf@{ shape: curv-trap, label: "<b>'Request not found'</b><br/>'There is no request with the ID X.'<br/>'Nothing to show here' · 'Check the ID, or open a request from the queue.'" }
   bq@{ shape: trap-t, label: "Click 'Back to queue' or the 'Authorizations' crumb" }
   gQ@{ shape: subproc, label: "Continues in: Authorizations › Queue › Open the queue and read the top" }
-  ld@{ shape: cyl, label: "<b>Your earlier work on this case is loaded</b><br/>Answers, applied and dismissed actions, draft edits, log" }
+  ld@{ shape: cyl, label: "<b>Your earlier work on this case is loaded</b><br/>Answers, applied and dismissed actions, focus, clinical context, draft edits, log" }
   d4@{ shape: diam, label: "Does ?tab= name one of the five tabs?" }
   tab1@{ shape: curv-trap, label: "<b>That tab opens</b><br/>e.g. a review drawer opens '?tab=draft'" }
   tab0@{ shape: curv-trap, label: "'Recommended actions' opens" }
@@ -58,7 +60,9 @@ flowchart TD
   d2 -->|"Yes"| fq --> gen
   d2 -->|"No"| d3
   d3 -->|"Yes"| fr --> gen
-  d3 -->|"No"| nf
+  d3 -->|"No"| d5
+  d5 -->|"Yes"| gL
+  d5 -->|"No"| nf
   nf --> bq --> gQ
   gen --> ld
   ld --> d4
@@ -66,9 +70,9 @@ flowchart TD
   d4 -->|"No or missing"| tab0 --> gH
   class a1,a2,a3,a4,a5,a6,a7,a8,a9 k_start
   class r0,hand,fq,fr,gen k_process
-  class d1,d2,d3,d4 k_decision
+  class d1,d2,d3,d5,d4 k_decision
+  class gL,gQ,gH k_goto
   class nf,tab1,tab0 k_screen
   class bq k_click
-  class gQ,gH k_goto
   class ld k_store
   style gIn fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

@@ -21,7 +21,7 @@ flowchart TD
   off@{ shape: rect, label: "<b>'Send to payer' is off</b><br/>The reason sits under the button, e.g. 'Integrity has 2 open checks. Apply the matching actions first.'" }
   sp@{ shape: trap-t, label: "Click 'Send to payer' (large button)" }
   os@{ shape: trap-t, label: "Click 'Open in review and sign' (header button)" }
-  rp@{ shape: rect, label: "The case page finds this request's draft in New case, or makes one" }
+  rp@{ shape: rect, label: "<b>The case page finds this request's draft in New case, or makes one from the request</b><br/>The draft opens at Review and sign when the request is ready, at Agents work when agents still have work" }
   ns@{ shape: rect, label: "<b>Nothing is sent yet</b><br/>'Nothing goes to the payer until a clinician signs.'" }
   gR@{ shape: subproc, label: "Continues in: New case › Review and sign" }
   subgraph gSign ["In New case (summary only, drawn in its own diagram)"]
@@ -34,7 +34,7 @@ flowchart TD
   nt@{ shape: odd, label: "<b>Notification from Navigator: 'Sent to the payer'</b><br/>'R-0988 was sent. It now shows as Received on the Dashboard.'" }
   db@{ shape: curv-trap, label: "<b>Dashboard opens on that request</b><br/>Stage 'Received'" }
   qg@{ shape: rect, label: "<b>Back in the queue the request is gone</b><br/>The open count drops by one<br/>The sidebar badge too, if it was in Act now or Due within 24 hours" }
-  cp@{ shape: rect, label: "<b>Demo: the case page of a sent request still shows its old status line</b><br/>and an enabled 'Send to payer'" }
+  cp@{ shape: rect, label: "<b>The case page of a sent request shows the request's own status</b><br/>and a disabled 'Sent to payer' in place of 'Send to payer'" }
   gD@{ shape: subproc, label: "Continues in: Dashboard › Request drawer" }
   gQ@{ shape: subproc, label: "Continues in: Authorizations › Queue › Open the queue and read the top" }
   s1 --> dc

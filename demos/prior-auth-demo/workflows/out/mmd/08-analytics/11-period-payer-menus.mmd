@@ -34,6 +34,7 @@ flowchart TD
   p1@{ shape: rect, label: "Menu closes, value unchanged" }
   r1@{ shape: rect, label: "Page recomputes at once from the period and the payer" }
   r2@{ shape: rect, label: "<b>Subtitles use the period: 'this quarter', 'last quarter' or 'the last 12 months'</b><br/>Counts scale: last quarter about 0.96, last 12 months about 3.9 times" }
+  r4@{ shape: rect, label: "<b>The denial outcomes follow the menus too</b><br/>Rulings, accepted denials and dismissals recorded in this demo count in 'This quarter' and 'Last 12 months', not in 'Last quarter'<br/>One payer: only that payer's" }
   r3@{ shape: rect, label: "<b>One payer: the bars show that payer against 'All payers'</b><br/>The denial table lists all of that payer's reasons<br/>'What helps most' is re-weighted for that payer" }
   q1@{ shape: diam, label: "Is a figure built on 20 or more decisions?" }
   ok@{ shape: curv-trap, label: "The number shows, for example 86%" }
@@ -50,6 +51,7 @@ flowchart TD
   o1 & o2 --> k2 --> p1
   k1 --> r1
   r1 --> r2 --> q1
+  r1 --> r4 --> q1
   r1 --> r3
   r3 --> q1
   q1 -->|"Yes"| ok --> e1
@@ -61,7 +63,7 @@ flowchart TD
   class c1,c2,k2 k_click
   class o1,o2 k_overlay
   class i1,i2,k1 k_input
-  class p2,p1,r1,r2,r3,p3 k_process
+  class p2,p1,r1,r2,r4,r3,p3 k_process
   class q1 k_decision
   class ex k_toast
   class g1 k_goto

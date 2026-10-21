@@ -20,7 +20,7 @@ flowchart TD
   w1@{ shape: delay, label: "Half a second" }
   q1@{ shape: diam, label: "Opened from a case that is a row on the list?" }
   q2@{ shape: diam, label: "Sample card: Summit, Residential 3.5, member ID ending 4821?" }
-  st1@{ shape: cyl, label: "<b>Existing row updated</b><br/>'Checked just now', 're-check due' cleared, date of service as typed" }
+  st1@{ shape: cyl, label: "<b>Existing row updated</b><br/>'Checked just now', its re-check time cleared, date of service as typed" }
   p1@{ shape: rect, label: "The sample card matches J.M., case R-1042" }
   p2@{ shape: rect, label: "<b>Answers are not asked again</b><br/>The row keeps its verdict" }
   subgraph gNew ["A new patient"]
@@ -32,6 +32,9 @@ flowchart TD
   n6@{ shape: rect, label: "<b>Evergreen with Detox</b><br/>Clinic not enrolled" }
   n7@{ shape: rect, label: "<b>Beacon with IOP or PHP</b><br/>Authorization 'Not required'" }
   n8@{ shape: rect, label: "<b>Harborview with PHP</b><br/>Benefits 'Limited'" }
+  n10@{ shape: rect, label: "<b>ID ends 3030</b><br/>Benefits 'Not covered', authorization 'Not required'" }
+  n11@{ shape: rect, label: "<b>ID ends 6060</b><br/>Another plan found: it pays first" }
+  n12@{ shape: rect, label: "<b>ID ends 9090</b><br/>Authorization 'On file' with every day or unit used<br/>for example '14 of 14 days'" }
   n9@{ shape: rect, label: "<b>Anything else</b><br/>Active, covered, authorization 'Required'" }
   st2@{ shape: cyl, label: "New row added at the top of the Eligibility list" }
   end
@@ -40,7 +43,7 @@ flowchart TD
   q3@{ shape: diam, label: "Is the verdict 'Cleared to bill'?" }
   p4@{ shape: rect, label: "Badge unchanged" }
   p5@{ shape: rect, label: "Badge goes up by one" }
-  p6@{ shape: rect, label: "<b>Opens /authorizations/eligibility/V-1001</b><br/>or the existing case ID" }
+  p6@{ shape: rect, label: "<b>Opens /authorizations/eligibility/V-1001</b><br/>or the existing case ID<br/>If the check began from a referral, ?referral= (and ?case=) go along, so the result has its back link" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › What the page shows" }
   s1 --> w1 --> q1
   q1 -->|"Yes"| st1
@@ -53,6 +56,9 @@ flowchart TD
   n3 -->|"Not enrolled"| n6 --> st2
   n3 -->|"No authorization"| n7 --> st2
   n3 -->|"Limited"| n8 --> st2
+  n3 -->|"Not covered"| n10 --> st2
+  n3 -->|"Other plan"| n11 --> st2
+  n3 -->|"Limit reached"| n12 --> st2
   n3 -->|"Otherwise"| n9 --> st2
   st2 --> p3
   p3 --> q3
@@ -63,6 +69,6 @@ flowchart TD
   class w1 k_wait
   class q1,q2,n3,q3 k_decision
   class st1,st2 k_store
-  class p1,p2,n1,n2,n4,n5,n6,n7,n8,n9,p3,p7,p4,p5,p6 k_process
+  class p1,p2,n1,n2,n4,n5,n6,n7,n8,n10,n11,n12,n9,p3,p7,p4,p5,p6 k_process
   class g1 k_goto
   style gNew fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

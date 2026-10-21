@@ -18,9 +18,9 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   cp@{ shape: curv-trap, label: "<b>Case page</b><br/>'Send to payer' appears in the header, the Recommended actions side panel and the Draft tab" }
   d1@{ shape: diam, label: "Does the request already have a result (decided)?" }
-  r1@{ shape: rect, label: "<b>Greyed out. Reason: 'Approved. Nothing is left to send.'</b><br/>(the result word comes from the request)" }
+  r1@{ shape: rect, label: "<b>The button becomes a disabled 'Sent to payer'</b><br/>Tooltip: 'Approved. Nothing is left to send.'<br/>(the result word comes from the request)" }
   d2@{ shape: diam, label: "Is it already with the payer?" }
-  r2@{ shape: rect, label: "Greyed out. Reason: 'Already with the payer. Navigator is tracking it.'" }
+  r2@{ shape: rect, label: "<b>The button becomes a disabled 'Sent to payer'</b><br/>Tooltip: 'Already with the payer. Navigator is tracking it.'" }
   d3@{ shape: diam, label: "Is it a denial?" }
   r3@{ shape: rect, label: "Greyed out. Reason: 'This request was denied. Advocate owns the next step.'" }
   d4@{ shape: diam, label: "Do all four Integrity checks pass?" }
@@ -35,13 +35,15 @@ flowchart TD
   dm@{ shape: rect, label: "<b>Dismissing the action does not clear its check</b><br/>The dismiss dialog warns about this" }
   b1@{ shape: trap-t, label: "<b>Click 'Open in review and sign'</b><br/>(always on)" }
   b2@{ shape: trap-t, label: "<b>Click 'Send to payer'</b><br/>(only when on)" }
-  rp@{ shape: rect, label: "<b>Look for this request's draft in New case</b><br/>The draft named like 'draft-r1042', or any draft with this case ID" }
-  d5@{ shape: diam, label: "Does a draft exist?" }
-  mk@{ shape: rect, label: "<b>A draft is created and filled from the request</b><br/>Patient, payer, level of care, request type and reason" }
-  d6@{ shape: diam, label: "Where does the draft stand?" }
+  rp@{ shape: rect, label: "<b>Find this request's draft in New case</b><br/>The draft named like 'draft-r1042', or any draft with this case ID<br/>Or make one: draftFromRequest" }
+  d5@{ shape: diam, label: "Does the request already have a draft?" }
+  mk@{ shape: rect, label: "<b>A draft is created from the request</b><br/>Patient, payer, level of care, request type, a reason and diagnoses from the case page<br/>The documents the payer's saved list asks for, as sample files<br/>Not saved, so Case Manager does not list it" }
+  up@{ shape: rect, label: "<b>A draft that exists is brought up to date</b><br/>Answers from applied actions (sertraline date, step-down provider) are added<br/>The therapy note is added when that action was applied<br/>When every check passes the run is marked finished" }
+  d6@{ shape: diam, label: "Where does the request stand?" }
   g1@{ shape: subproc, label: "Continues in: New case › Agents work" }
   g2@{ shape: subproc, label: "Continues in: New case › Review and sign" }
-  g3@{ shape: subproc, label: "Continues in: New case › Referral step" }
+  g3@{ shape: subproc, label: "Continues in: Review and sign › After sending" }
+  sent@{ shape: stadium, label: "<b>New case shows 'R-0912 was sent'</b><br/>'Open it on the Dashboard' and 'Back to Case Manager'<br/>The draft is marked sent, so it cannot be signed again" }
   ns@{ shape: rect, label: "<b>Nothing has been sent</b><br/>A licensed clinician signs in New case" }
   cp --> d1
   d1 -->|"Yes"| r1
@@ -63,14 +65,17 @@ flowchart TD
   b1 --> rp
   b2 --> rp
   rp --> d5
-  d5 -->|"No"| mk --> g3
-  d5 -->|"Yes"| d6
-  d6 -->|"Agents are still working, e.g. R-1042"| g1
-  d6 -->|"All four checks passed, e.g. R-0988"| g2
+  d5 -->|"No"| mk --> d6
+  d5 -->|"Yes"| up --> d6
+  d6 -->|"Agents still have work, e.g. R-1042 before its actions are applied"| g1
+  d6 -->|"Ready or all four checks passed, e.g. R-0988, R-1142, R-1042 after its actions"| g2
+  d6 -->|"Already with the payer or decided"| sent
   rp -.-> ns
+  sent --> g3
   class cp k_screen
   class d1,d2,d3,d4,d5,d6 k_decision
-  class r1,r2,r3,r4,on,k1,k2,k3,k4,dm,rp,mk,ns k_process
+  class r1,r2,r3,r4,on,k1,k2,k3,k4,dm,rp,mk,up,ns k_process
   class b1,b2 k_click
   class g1,g2,g3 k_goto
+  class sent k_endx
   style gChk fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

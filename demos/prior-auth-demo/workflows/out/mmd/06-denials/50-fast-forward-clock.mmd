@@ -29,7 +29,7 @@ flowchart TD
   k1@{ shape: curv-trap, label: "<b>Peer-to-peer window</b><br/>List 'P2P in 36 h'<br/>Header 'Peer-to-peer window closes in 36 h'" }
   k2@{ shape: curv-trap, label: "<b>Written appeal due</b><br/>List 'Appeal in 41 d'<br/>Header 'Appeal due in 41 d'" }
   k3@{ shape: curv-trap, label: "<b>Resubmission due</b><br/>List 'Resubmit in 5 d'<br/>Header 'Resubmit within 5 d'" }
-  k4@{ shape: curv-trap, label: "<b>Filed appeal</b><br/>List 'Decision 11/02'<br/>Header 'Appeal filed, decision 11/02'<br/>No change at all" }
+  k4@{ shape: curv-trap, label: "<b>Filed appeal</b><br/>List 'Decision 11/02'<br/>Header 'Appeal filed, decision 11/02'<br/>No change at all (the person records the payer's decision)" }
   d2@{ shape: diam, label: "How much time is left?" }
   m1@{ shape: curv-trap, label: "Grey: 7 days or more" }
   m2@{ shape: curv-trap, label: "Ochre: 2 to 7 days" }
@@ -37,6 +37,8 @@ flowchart TD
   m4@{ shape: curv-trap, label: "<b>Time is up</b><br/>List 'Window closed' (red)<br/>Header 'Peer-to-peer window closed', 'Appeal deadline passed' or 'Resubmission window closed'" }
   m5@{ shape: curv-trap, label: "Brief page 'Closes in' follows the same colours and reads 'Closed' when time is up" }
   g1@{ shape: subproc, label: "Continues in: Denial Intelligence › Deadlines › Overdue denials" }
+  p6@{ shape: rect, label: "<b>Call times are offered again from the new clock</b><br/>Only windows that start after the clock and before the payer's window closes<br/>When none is left: 'No call time is left inside the payer's window'" }
+  g3@{ shape: subproc, label: "Continues in: Denial Intelligence › Peer-to-peer › Book the call" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Arrive › What the page shows" }
   p4@{ shape: rect, label: "No notification, status change or hand-off happens when a time runs out (demo)" }
   c3@{ shape: trap-t, label: "Click 'Reset demo data'" }
@@ -63,13 +65,14 @@ flowchart TD
   m4 --> m5 --> g1
   m4 -.-> p4
   st1 -.-> g2
+  p3 --> p6 --> g3
   o1 --> c3 --> st2 --> t2 --> p5 --> g2
   class s1 k_start
   class o1 k_overlay
   class c1,c2,c3 k_click
   class st1,st2 k_store
   class t1,t2 k_toast
-  class p1,p2,p3,p4,p5 k_process
+  class p1,p2,p3,p6,p4,p5 k_process
   class d1,d2 k_decision
   class k1,k2,k3,k4,m1,m2,m3,m4,m5 k_screen
-  class g1,g2 k_goto
+  class g1,g3,g2 k_goto

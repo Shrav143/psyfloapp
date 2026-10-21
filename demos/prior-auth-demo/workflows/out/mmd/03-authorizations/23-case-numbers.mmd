@@ -40,7 +40,7 @@ flowchart TD
   n1@{ shape: odd, label: "Note: 'The approval chance estimates how well the paperwork fits this payer's past decisions. It never blocks a request and is never shown to payers or patients.'" }
   n2@{ shape: odd, label: "Note: 'Decision support for documentation and workflow only. It does not recommend or decide care.'" }
   gT@{ shape: subproc, label: "Continues in: Authorizations › Case page › Tabs and deep links" }
-  ap@{ shape: cyl, label: "<b>Applying actions on the first tab moves tile 1 and tile 3 and the range</b><br/>See Recommended actions › Apply selected" }
+  ap@{ shape: cyl, label: "<b>Applying actions on the first tab moves tile 1 and tile 3 and the range</b><br/>See Recommended actions › Apply selected<br/>Adding clinical context moves them by a point each (up to three)<br/>Refining the recommendations moves the number after the arrow" }
   pg --> t1 --> t1a --> t1b
   pg --> t2 --> dBm
   dBm -->|"No"| t2a

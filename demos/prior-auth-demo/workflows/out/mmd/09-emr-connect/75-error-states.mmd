@@ -25,9 +25,10 @@ flowchart TD
   a4@{ shape: stadium, label: "Re-test: three checks. Row turns Connected" }
   end
   subgraph gR ["Red pill: 'Disconnected'"]
-  r1@{ shape: rect, label: "<b>Someone disconnected it</b><br/>Row: 'Not syncing'. Charts from this system are not arriving." }
-  r2@{ shape: trap-t, label: "<b>Click 'Reconnect' on the row or in the Manage drawer</b><br/>Needs: nothing else" }
-  r3@{ shape: stadium, label: "<b>Re-test: none is shown</b><br/>Row turns Connected at once. Any earlier issue text is cleared" }
+  r1@{ shape: rect, label: "<b>Someone disconnected it</b><br/>Row: 'Not syncing'. Charts from this system are not arriving. New case cannot pull a chart from it until it is connected." }
+  r2@{ shape: trap-t, label: "<b>Click 'Reconnect' on the row or in the Manage drawer</b><br/>Needs: a passed connection test, and the Fix steps first if it was on 'Needs a quick look'" }
+  r4@{ shape: subproc, label: "Continues in: EMR Connect › Manage › Reconnect a system" }
+  r3@{ shape: stadium, label: "<b>Re-test: the same three checks as Connect</b><br/>Row turns Connected only after they pass. Any earlier issue text is cleared" }
   end
   subgraph gT ["Last sync tile"]
   t1@{ shape: rect, label: "<b>Red 'None': every system is Disconnected</b><br/>Amber: 'N systems are disconnected'" }
@@ -37,9 +38,9 @@ flowchart TD
   m1@{ shape: rect, label: "'fields the agents could not place'" }
   m2@{ shape: trap-t, label: "<b>Click 'Map'</b><br/>Needs: a value picked for each field" }
   end
-  subgraph gQ ["Quiet dead ends"]
-  d1@{ shape: stadium, label: "<b>'Sync now' while another sync runs</b><br/>Click is ignored, no message" }
-  d2@{ shape: stadium, label: "<b>'Sync now' with no Connected system</b><br/>Spins two seconds, then nothing" }
+  subgraph gQ ["Clicks that stop with a message"]
+  d1@{ shape: odd, label: "<b>'Sync now' with no Connected system</b><br/>'Nothing to sync'<br/>'No system is connected. Fix or reconnect one first.'" }
+  d5@{ shape: odd, label: "<b>An agent is paused in Settings</b><br/>'Reader is paused' or 'Navigator is paused'<br/>'Resume it in Settings to sync.' (or to connect a system, fix it, reconnect it)" }
   d3@{ shape: stadium, label: "<b>Contact left blank while connecting</b><br/>'Add the person at the practice who can approve read-only access.'" }
   d4@{ shape: stadium, label: "<b>Fix form incomplete</b><br/>'Name the person who approves and confirm read-only access.'" }
   end
@@ -51,12 +52,12 @@ flowchart TD
   s1 --> q1
   q1 -->|"Amber pill on a row"| a1 --> a2 --> a3
   a3 --> a4
-  q1 -->|"Red pill on a row"| r1 --> r2 --> r3
+  q1 -->|"Red pill on a row"| r1 --> r2 --> r4 --> r3
   q1 -->|"Last sync tile is red or amber"| t1 --> t2
   t2 --> r2
   q1 -->|"Need a mapping tile is amber"| m1 --> m2
-  q1 -->|"Nothing happens after a click"| d1
-  q1 -->|"Nothing happens after a click"| d2
+  q1 -->|"A toast after a click"| d1
+  q1 -->|"A toast after a click"| d5
   q1 -.->|"A message under a field"| d3
   q1 -.->|"A message under a field"| d4
   q1 -.->|"Not in the demo"| p1
@@ -65,11 +66,11 @@ flowchart TD
   class q1 k_decision
   class a1,r1,t1,t2,m1 k_process
   class a2,r2,m2 k_click
-  class a3 k_goto
+  class a3,r4 k_goto
   class a4,r3 k_end
-  class d1,d2,d3,d4 k_endx
+  class d1,d5,p3 k_toast
+  class d3,d4 k_endx
   class p1,p2 k_ext
-  class p3 k_toast
   style gA fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gR fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gT fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

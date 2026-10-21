@@ -26,7 +26,7 @@ flowchart TD
   iType@{ shape: lean-r, label: "<b>Pick 'Request type'</b><br/>Initial request, Admission, Continued stay, Recertification, Retro-authorization" }
   pType@{ shape: rect, label: "<b>Editor closes at once</b><br/>Admission adds 'notice due in about 5 hours', Retro-authorization 'window closes in about 18 hours'" }
   cStart@{ shape: trap-t, label: "Click 'Edit' on 'Start date' (Recommended)" }
-  iStart@{ shape: lean-r, label: "<b>Pick the 'Requested start date'</b><br/>Starts as today, Tue Oct 20, 2026" }
+  iStart@{ shape: lean-r, label: "<b>Pick the 'Requested start date'</b><br/>Starts as today, Tue Oct 20, 2026<br/>Never blocks Continue; the review checks it against the payer's backdating rule" }
   cDx@{ shape: trap-t, label: "Click 'Add' on 'Diagnoses (ICD-10)' (Recommended)" }
   iDx@{ shape: lean-r, label: "<b>Type in 'Add a diagnosis'</b><br/>Example: F10 or alcohol" }
   pDx@{ shape: rect, label: "<b>Up to six matches from 13 codes</b><br/>Codes already added are hidden" }
@@ -37,14 +37,16 @@ flowchart TD
   iReason@{ shape: lean-r, label: "<b>Type one or two plain sentences</b><br/>'Scribe uses it in the summary.'" }
   cDone@{ shape: trap-t, label: "Click 'Done', or press Escape in a text box" }
   stReq@{ shape: cyl, label: "<b>Draft updated as you type</b><br/>If the agents had already run, the run restarts" }
+  tStale@{ shape: odd, label: "<b>'Records changed after the agents ran'</b><br/>'Their work was cleared. The agents check again when you continue.'" }
   end
   subgraph gDocs ["Document rows"]
-  pList@{ shape: rect, label: "<b>The payer and level of care decide the list</b><br/>Summit Residential 3.5: 9 documents, 7 required<br/>No payer yet: only the referral and the diagnosis report" }
+  pList@{ shape: rect, label: "<b>The list saved on Payers › Documents for the payer and level of care decides the rows</b><br/>Summit Residential 3.5: 9 documents, 7 required<br/>A line that fits no standard document is its own required row<br/>No payer yet: only the referral and the diagnosis report" }
   dRow@{ shape: diam, label: "What does the row hold?" }
-  rMiss@{ shape: rect, label: "<b>Required, empty: 'Not found yet. Drop it above or add it here.'</b><br/>Buttons 'Add file' and 'Use sample file'" }
-  rOpt@{ shape: rect, label: "<b>Recommended, empty: 'You can continue without it.'</b><br/>Same two buttons" }
+  rMiss@{ shape: rect, label: "<b>Required, empty: 'Not found yet. Drop it above or add it here.'</b><br/>Buttons 'Add file', 'Use sample file' and 'Mark not available'" }
+  rOpt@{ shape: rect, label: "<b>Recommended, empty: 'You can continue without it.'</b><br/>Same three buttons" }
+  rMarked@{ shape: rect, label: "<b>Marked not available: 'Marked not available: REASON · Summit asks for it, so the review will warn.'</b><br/>Counts as ready. Buttons 'Add file' and 'Undo'" }
   rRef@{ shape: rect, label: "Referral row, empty: also 'Add a referral'" }
-  rFile@{ shape: rect, label: "File in place: name, then 'N checks passed' or 'Check this' with the finding" }
+  rFile@{ shape: rect, label: "<b>File in place: name, then 'N checks passed' or 'Check this' with the finding</b><br/>Buttons: the eye, 'Replace' and the x" }
   rExtra@{ shape: rect, label: "File the payer does not ask for: tagged 'Not on the list'" }
   cAdd@{ shape: trap-t, label: "Click 'Add file'" }
   iFile@{ shape: lean-r, label: "Choose one file in the picker" }
@@ -55,7 +57,7 @@ flowchart TD
   cClose@{ shape: trap-t, label: "Press Escape or click the drawer's close button" }
   cX@{ shape: trap-t, label: "Click the x ('Remove FILE NAME')" }
   stDrop@{ shape: cyl, label: "<b>Document taken out</b><br/>The row goes back to missing or recommended" }
-  pSwap@{ shape: rect, label: "<b>To swap a file: remove it and 'Add file'</b><br/>Or drop a file whose name fits the same slot, which replaces it" }
+  gAct@{ shape: subproc, label: "Continues in: Medical records › Replace a document or mark it not available" }
   cView@{ shape: trap-t, label: "Click 'View' on the referral that came with the case" }
   gRef@{ shape: subproc, label: "Continues in: New case › Referral step" }
   cAddRef@{ shape: trap-t, label: "Click 'Add a referral'" }
@@ -77,28 +79,34 @@ flowchart TD
   dRow -->|"Required, no file"| rMiss
   dRow -->|"Recommended, no file"| rOpt
   dRow -->|"Referral, no file"| rRef
+  dRow -->|"Marked not available"| rMarked
   dRow -->|"File in place"| rFile
   dRow -->|"Not on the payer's list"| rExtra
   rMiss --> cAdd
   rMiss --> cSample
+  rMiss --> gAct
+  rMarked --> gAct
   rOpt --> cAdd
   rRef --> cAddRef --> gRef
   cAdd --> iFile --> aRead
   cSample --> aRead
   aRead --> rFile
   rFile --> cEye --> oView --> cClose
-  rFile --> cX --> stDrop --> pSwap
+  rFile --> gAct
+  rFile --> cX --> stDrop --> gAct
   rFile --> cView --> gRef
   stDrop -.-> stReq
+  stReq -.-> tStale
   class s1 k_start
   class sc k_screen
   class cLvl,cType,cStart,cDx,cPickDx,cRemDx,cReason,cDone,cAdd,cSample,cEye,cClose,cX,cView,cAddRef k_click
   class iLvl,iType,iStart,iDx,iReason,iFile k_input
-  class pLvl,pType,pDx,pChip,pList,rMiss,rOpt,rRef,rFile,rExtra,pSwap k_process
+  class pLvl,pType,pDx,pChip,pList,rMiss,rOpt,rMarked,rRef,rFile,rExtra k_process
   class stReq,stDrop k_store
+  class tStale k_toast
   class dRow k_decision
   class aRead k_agent
   class oView k_overlay
-  class gRef k_goto
+  class gAct,gRef k_goto
   style gReq fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gDocs fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

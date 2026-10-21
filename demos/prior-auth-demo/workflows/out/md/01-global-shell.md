@@ -138,10 +138,10 @@ flowchart TD
   b1@{ shape: rect, label: "<b>'Dashboard'  3</b><br/>Requests at stage 'Info requested'<br/>Falls when an answer is sent" }
   b2@{ shape: rect, label: "<b>'Authorizations'  19</b><br/>Open queue items in 'Act now' (5) and 'Due within 24 hours' (14)<br/>'Due this week' is not counted" }
   b3@{ shape: rect, label: "<b>'New case'  4  (listed under Authorizations)</b><br/>Referrals that are New or In review and not yet opened<br/>Falls when a referral is opened" }
-  b4@{ shape: rect, label: "<b>'Eligibility & Benefits'  6  (listed under Authorizations)</b><br/>Patients not cleared: 4 'Authorization first', 2 'Fix before billing'" }
-  b5@{ shape: rect, label: "<b>'Denial Intelligence'  7</b><br/>Requests at stage 'Appeal' (open denials)<br/>Falls when a denial is settled" }
+  b4@{ shape: rect, label: "<b>'Eligibility & Benefits'  9  (listed under Authorizations)</b><br/>Patients not cleared: 4 'Authorization first', 5 'Fix before billing'" }
+  b5@{ shape: rect, label: "<b>'Denial Intelligence'  8</b><br/>Requests at stage 'Appeal' (open denials)<br/>Falls when a denial is settled" }
   b6@{ shape: rect, label: "<b>'Case Manager'  11</b><br/>3 cases that need a person (2 questions, 1 signature)<br/>plus 8 reviews that 'Need your update'" }
-  b7@{ shape: rect, label: "<b>'Payers'  2</b><br/>Payers with a rule change waiting for a person<br/>Falls when the change is acknowledged" }
+  b7@{ shape: rect, label: "<b>'Payers'  3</b><br/>Payers with a rule change waiting for a person: Cardinal, Evergreen and Harborview<br/>Falls when the change is acknowledged" }
   end
   g1@{ shape: subproc, label: "Continues in: Case Manager › Reviews this week › Add your update to a review" }
   e1@{ shape: stadium, label: "Badges always match the pages they point to" }
@@ -352,10 +352,12 @@ flowchart TD
   c3@{ shape: trap-t, label: "Click the underlined link under the answer" }
   p3@{ shape: rect, label: "Drawer closes and the app opens that page" }
   g2@{ shape: subproc, label: "Continues in: Global shell › Top bar › Ask FLO › What FLO answers" }
-  p4@{ shape: rect, label: "The chips are gone for good: they show only while the chat has fewer than three messages" }
+  d4@{ shape: diam, label: "<b>Was the answer the fallback?</b><br/>('I did not find an answer...')" }
+  p4@{ shape: rect, label: "<b>The chips are gone</b><br/>They show only while the chat has fewer than three messages, and while FLO is not working" }
+  p7@{ shape: rect, label: "<b>The four chips stay under the fallback answer</b><br/>A second miss keeps them. Any real answer takes them away" }
   c4@{ shape: trap-t, label: "Press Escape, click 'X' or click the dimmed area" }
   p5@{ shape: rect, label: "<b>Drawer closes</b><br/>The chat and any unsent text are kept" }
-  p6@{ shape: rect, label: "<b>Open it again, on any page: the same chat is there</b><br/>Typed questions still work; the chips do not come back" }
+  p6@{ shape: rect, label: "<b>Open it again, on any page: the same chat is there</b><br/>Typed questions still work; the chips come back only under a fallback answer" }
   e1@{ shape: stadium, label: "Back on the page" }
   e2@{ shape: stadium, label: "No question sent" }
   s1 --> o1 --> a1 --> o2 --> d1
@@ -364,7 +366,9 @@ flowchart TD
   d2 -->|"No"| x1 --> e2
   d2 -->|"Yes"| c2 --> p1
   p1 --> p2 --> w1 --> a2 --> g1
-  a2 --> p4 --> d3
+  a2 --> d4
+  d4 -->|"No"| p4 --> d3
+  d4 -->|"Yes"| p7 --> c1
   d3 -->|"Yes"| c3 --> p3 --> g2
   d3 -->|"No"| c4
   c4 --> p5 --> p6 --> e1
@@ -372,10 +376,10 @@ flowchart TD
   class s1 k_start
   class o1,o2 k_overlay
   class a1,a2 k_agent
-  class d1,d2,d3 k_decision
+  class d1,d2,d3,d4 k_decision
   class c1,c2,c3,c4 k_click
   class i1 k_input
-  class x1,p1,p2,p3,p4,p5,p6 k_process
+  class x1,p1,p2,p3,p4,p7,p5,p6 k_process
   class w1 k_wait
   class g1,g2 k_goto
   class e1 k_end
@@ -384,11 +388,11 @@ flowchart TD
 
 ## Global shell › Top bar › Ask FLO › What FLO answers
 
-FLO lowercases the question and tries five rules in order. The first rule that matches answers, so a question with two key words gets the earlier answer. Counts and names come from the live demo data. Sentences about D-3318, Cardinal and P-1499 are fixed text.
+FLO lowercases the question and tries five rules in order. The first rule that matches answers, so a question with two key words gets the earlier answer. Counts, names and the request or denial it points to come from the live demo data. Only the Cardinal answer is fixed text.
 
 Route: `Every page (Ask FLO drawer)`
 
-Typed questions use the same rules as the suggestion chips. FLO does not look at which page is open. PRD 08 describes row-level citations, thumbs and an escalate action on each answer; the demo gives one paragraph and one link instead.
+Typed questions use the same rules as the suggestion chips. FLO does not look at which page is open. Every link opens a view that matches the answer. PRD 08 describes row-level citations, thumbs and an escalate action on each answer; the demo gives one paragraph and one link instead.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -411,34 +415,38 @@ flowchart LR
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>A question is sent</b><br/>(a chip or typed text)" }
   d1@{ shape: diam, label: "Contains 'slow', or both 'payer' and 'late'?" }
-  a1@{ shape: hex, label: "<b>FLO lists every payer slower than its typical time, worst first:</b><br/>'Evergreen is averaging 3.4 days against 2 typical. Cardinal is averaging 2.8 days against 2 typical. Beacon ... Lakeshore ... Harborview ...<br/>Caller phones when a payer passes twice its typical time.'" }
+  a1@{ shape: hex, label: "<b>FLO lists every payer slower than its typical time, worst first:</b><br/>'Evergreen is averaging 3.4 days against 2 typical. Cardinal is averaging 2.8 days against 2 typical. Beacon ... Lakeshore ... Harborview ...<br/>Caller phones when a payer passes twice its typical time.'<br/>If none is slower: 'Every payer is deciding within its typical time right now.'" }
   l1@{ shape: trap-t, label: "Click 'Open Dashboard, By payer'" }
-  g1@{ shape: subproc, label: "Continues in: Dashboard" }
+  r1@{ shape: rect, label: "<b>Opens /dashboard?focus=payers</b><br/>The Dashboard scrolls to Payers at a glance" }
+  g1@{ shape: subproc, label: "Continues in: Dashboard › Payers at a glance › Read the table and pick a payer" }
   d2@{ shape: diam, label: "Contains 'denial', 'stake' or 'money'?" }
-  a2@{ shape: hex, label: "<b>'7 denials are open, with $62.4K at stake. The nearest deadline is D-3318 (Cardinal), a peer-to-peer call Wednesday 9 to 11 am, where the chance of winning is 64%.'</b><br/>The count and total are live" }
+  a2@{ shape: hex, label: "<b>'7 denials are open, with $62.4K at stake. The nearest deadline is D-3318 (Cardinal). Call booked Wed 9 to 11 am. The brief is ready. The chance of winning is 64%.'</b><br/>The count, the total and the nearest open denial are live, so the sentence follows the data" }
   l2@{ shape: trap-t, label: "Click 'Open Denial Intelligence'" }
+  r2@{ shape: rect, label: "<b>Opens /denials?id=D-3318, the nearest denial</b><br/>With no deadline left to name, it opens the list" }
   g2@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
   d3@{ shape: diam, label: "Contains 'cardinal' or 'approval rate'?" }
-  a3@{ shape: hex, label: "'Cardinal approved 63% as asked over the last 90 days, down 11 points. Historian links most of the drop to continued-stay evidence. Cardinal also published criteria version 2026.3, which affects 4 drafts you have not sent.'" }
+  a3@{ shape: hex, label: "<b>'Cardinal approved 63% as asked over the last 90 days, down 11 points. Historian links most of the drop to continued-stay evidence. Cardinal also published criteria version 2026.3, which affects 4 drafts you have not sent.'</b><br/>Fixed text" }
   l3@{ shape: trap-t, label: "Click 'Open Payers, Cardinal, Changes'" }
   g3@{ shape: subproc, label: "Continues in: Payers › Changes › Read what changed" }
   d4@{ shape: diam, label: "Contains 'need', 'today' or 'first'?" }
-  a4@{ shape: hex, label: "<b>'3 requests need you: R-1042, I-2207, P-1499. 3 payers asked for more information, and 5 cases are being prepared. Start with P-1499. Harborview is waiting and its clock is past typical.'</b><br/>The three counts and the IDs are live" }
-  l4@{ shape: trap-t, label: "Click 'Open Dashboard'" }
+  a4@{ shape: hex, label: "<b>'3 requests need you: R-1042, I-2207, P-1499. 3 payers asked for more information, and 5 cases are being prepared. Start with P-1499 (Harborview). Packet drafted the answer. Waiting for your review.'</b><br/>The counts, the IDs and the request to start with are live: a payer's question comes first<br/>Nothing waiting: 'Nothing needs you right now.' with 'Open Dashboard'" }
+  l4@{ shape: trap-t, label: "Click 'Open P-1499 on the Dashboard'" }
+  r4@{ shape: rect, label: "<b>Opens /dashboard?request=P-1499</b><br/>The request drawer opens on that request" }
+  g4@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   d5@{ shape: diam, label: "Contains 'referral'?" }
   a5@{ shape: hex, label: "'New referrals are waiting for review. Reader has already checked each document, and Verify has run coverage for the ones with an insurance card.'" }
   l5@{ shape: trap-t, label: "Click 'Start a case from a referral'" }
-  g5@{ shape: subproc, label: "Continues in: New case › Referral step" }
-  a6@{ shape: hex, label: "<b>'I did not find an answer to that in the demo data. Try one of the suggestions below. (Clock: just now.)'</b><br/>No link. The chips are already gone by then, and the clock reads '1 h ago' after a fast-forward" }
+  g5@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › Start screen" }
+  a6@{ shape: hex, label: "<b>'I did not find an answer to that in the demo data. Try one of the suggestions below.'</b><br/>No link. The four suggestion chips stay right under this answer, so the sentence is true" }
   e1@{ shape: stadium, label: "Answer stays in the chat" }
   s1 --> d1
-  d1 -->|"Yes"| a1 --> l1 --> g1
+  d1 -->|"Yes"| a1 --> l1 --> r1 --> g1
   d1 -->|"No"| d2
-  d2 -->|"Yes"| a2 --> l2 --> g2
+  d2 -->|"Yes"| a2 --> l2 --> r2 --> g2
   d2 -->|"No"| d3
   d3 -->|"Yes"| a3 --> l3 --> g3
   d3 -->|"No"| d4
-  d4 -->|"Yes"| a4 --> l4 --> g1
+  d4 -->|"Yes"| a4 --> l4 --> r4 --> g4
   d4 -->|"No"| d5
   d5 -->|"Yes"| a5 --> l5 --> g5
   d5 -->|"No"| a6 --> e1
@@ -446,7 +454,8 @@ flowchart LR
   class d1,d2,d3,d4,d5 k_decision
   class a1,a2,a3,a4,a5,a6 k_agent
   class l1,l2,l3,l4,l5 k_click
-  class g1,g2,g3,g5 k_goto
+  class r1,r2,r4 k_process
+  class g1,g2,g3,g4,g5 k_goto
   class e1 k_end
 ```
 
@@ -530,7 +539,7 @@ flowchart TD
 
 ## Global shell › Top bar › Notifications › What creates a notification
 
-A notification is created only when a person or a demo control does something. Nothing arrives on a timer, and Fast-forward never creates one. Each row below is one action, the notification it adds and the page that notification opens.
+A notification is created only when a person or a demo control does something. Nothing arrives on a timer. The one exception is the demo clock: moving it past a patient's re-check time makes Verify re-check them. Each row below is one action, the notification it adds and the page that notification opens.
 
 Route: `Every page (the bell)`
 
@@ -576,6 +585,10 @@ flowchart LR
   c8d@{ shape: trap-t, label: "Click 'Log the outcome'" }
   n8d@{ shape: cyl, label: "<b>Advocate · 'Call outcome: ...'</b><br/>→ Dashboard, that request" }
   end
+  subgraph gElig ["Eligibility & Benefits"]
+  c11@{ shape: trap-t, label: "<b>Demo menu, 'Fast-forward 1 hour' or 'Fast-forward 1 day', past a patient's re-check time</b><br/>Or resume Verify in Settings after a pause" }
+  n11@{ shape: cyl, label: "<b>Verify · 'Re-checked automatically' or 'Re-checked N patients automatically'</b><br/>→ Eligibility & Benefits, that patient or the list<br/>Not while Verify is paused" }
+  end
   subgraph gAuth ["Authorizations"]
   c7@{ shape: trap-t, label: "<b>Apply recommendations on a case</b><br/>(Actions tab)" }
   n7@{ shape: cyl, label: "<b>Forecaster · 'Approval chance updated'</b><br/>→ that case" }
@@ -595,8 +608,8 @@ flowchart LR
   p1@{ shape: rect, label: "<b>Notification is added at the top of the list</b><br/>Unread, 'just now'" }
   p2@{ shape: rect, label: "<b>Red dot appears on the bell</b><br/>Drawer subtitle counts it ('5 unread')" }
   g1@{ shape: subproc, label: "Continues in: Global shell › Top bar › Notifications › Open, read, click through" }
-  e1@{ shape: stadium, label: "Nothing else creates one: no timers, no Fast-forward, no payer or referrer replies on their own" }
-  s1 --> c1 & c4 & c5 & c6 & c7 & c8 & c8b & c8c & c8d & c9 & c9b & c10
+  e1@{ shape: stadium, label: "Nothing else creates one: no timers, no payer or referrer replies on their own" }
+  s1 --> c1 & c4 & c5 & c6 & c7 & c8 & c8b & c8c & c8d & c9 & c9b & c10 & c11
   c1 --> n1
   c4 --> n4
   c5 --> n5
@@ -609,18 +622,20 @@ flowchart LR
   c9 --> n9
   c9b --> n9b
   c10 --> n10
-  n1 & n4 & n5 & n6 & n7 & n8 & n8b & n8c & n8d & n9 & n9b & n10 --> p1
+  c11 --> n11
+  n1 & n4 & n5 & n6 & n7 & n8 & n8b & n8c & n8d & n9 & n9b & n10 & n11 --> p1
   p1 --> p2 --> g1
   s1 -.-> e1
   class s1 k_start
-  class c10,c9,c9b,c8,c8b,c8c,c8d,c7,c4,c5,c6,c1 k_click
-  class n10,n9,n9b,n8,n8b,n8c,n8d,n7,n4,n5,n6,n1 k_store
+  class c10,c9,c9b,c8,c8b,c8c,c8d,c11,c7,c4,c5,c6,c1 k_click
+  class n10,n9,n9b,n8,n8b,n8c,n8d,n11,n7,n4,n5,n6,n1 k_store
   class p1,p2 k_process
   class g1 k_goto
   class e1 k_endx
   style gPay fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gRef fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gDen fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gElig fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gAuth fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gDash fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gSend fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
@@ -632,7 +647,7 @@ The Demo menu is the presenter's control panel. It is not part of the product. I
 
 Route: `Every page (top bar, 'Demo' button)`
 
-There is no privacy-mode switch here: privacy mode is always on (see Settings). Escape does not close this menu, unlike the two drawers.
+There is no privacy-mode switch here: privacy mode is always on (see Settings). Escape closes this menu, like the two drawers, one layer at a time.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -677,10 +692,9 @@ flowchart TD
   x1@{ shape: trap-t, label: "Click anywhere outside the menu" }
   x2@{ shape: trap-t, label: "Click 'Demo' again" }
   x3@{ shape: trap-t, label: "Press Escape" }
-  k4@{ shape: rect, label: "Menu closes (the click still reaches whatever was clicked)" }
-  k5@{ shape: rect, label: "Nothing happens: the menu stays open" }
+  k4@{ shape: rect, label: "Menu closes (an outside click still reaches whatever was clicked)" }
+  k5@{ shape: rect, label: "<b>Menu closes</b><br/>The page underneath is as it was" }
   e1@{ shape: stadium, label: "Menu is closed" }
-  e2@{ shape: stadium, label: "Menu still open" }
   s1 --> o1
   o1 --> t1 & f1 & f2 & sp & f4
   f1 --> g1
@@ -696,7 +710,7 @@ flowchart TD
   d1 -->|"Keyboard"| x3
   x1 --> k4
   x2 --> k4
-  x3 --> k5 --> e2
+  x3 --> k5 --> e1
   k2 --> e1
   k3 --> e1
   k4 --> e1
@@ -708,7 +722,6 @@ flowchart TD
   class g1,g2,g3 k_goto
   class d1 k_decision
   class e1 k_end
-  class e2 k_endx
   style gT fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gP fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gR fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
@@ -716,7 +729,7 @@ flowchart TD
 
 ## Global shell › Demo menu › Fast-forward the demo clock
 
-Fast-forward moves the demo clock by an hour or a day. It only changes what is worked out from the clock: ages, countdowns and 'overdue' wording. It never makes anything happen by itself.
+Fast-forward moves the demo clock by an hour or a day. It changes what is worked out from the clock: ages, countdowns and 'overdue' wording. The one thing it can start is Verify's automatic re-check of a patient whose re-check came due.
 
 Route: `Every page (Demo menu › Time)`
 
@@ -756,32 +769,36 @@ flowchart TD
   m3@{ shape: rect, label: "<b>Dashboard</b><br/>Time in stage, 'late' flags and the 'Outcomes for' date range" }
   m4@{ shape: rect, label: "<b>Authorizations, Denial Intelligence</b><br/>Queue bands, case clocks, peer-to-peer and appeal deadlines" }
   m5@{ shape: rect, label: "<b>Eligibility & Benefits, EMR Connect, New case</b><br/>How long ago a check, a sync or a referral was" }
+  m6@{ shape: hex, label: "<b>Eligibility & Benefits</b><br/>Verify re-checks every patient whose re-check time has passed, unless Verify is paused in Settings<br/>A 'Re-checked automatically' notification follows" }
   end
   subgraph gStill ["What does not change"]
   s2@{ shape: rect, label: "No payer replies, no referral arrives, no agent finishes a step" }
-  s3@{ shape: rect, label: "No case changes status, no new notification, no badge changes" }
+  s3@{ shape: rect, label: "<b>No case changes status and no badge changes</b><br/>The only new notification a Fast-forward can add is Verify's" }
   s4@{ shape: rect, label: "Ask FLO answers and Case Manager review statuses stay as they were" }
   end
   subgraph gHow ["How things really arrive in the demo"]
   g1@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Demo controls (payer replies)" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › Start screen" }
+  g3@{ shape: subproc, label: "Continues in: Global shell › Top bar › Notifications › What creates a notification" }
   end
   e1@{ shape: stadium, label: "Page keeps its place. Click again to move further" }
   s1 --> c1 & c2
   c1 --> p1 --> st1
   c2 --> p2 --> st1
   st1 --> p3 --> t1 --> p4 --> e1
-  st1 --> m1 & m2 & m3 & m4 & m5
+  st1 --> m1 & m2 & m3 & m4 & m5 & m6
   st1 -.-> s2
   s2 --> s3 --> s4
   s2 --> g1
   s2 --> g2
+  m6 -.-> g3
   class s1 k_start
   class c1,c2 k_click
   class p1,p2,p3,p4,m1,m2,m3,m4,m5,s2,s3,s4 k_process
   class st1 k_store
   class t1 k_toast
-  class g1,g2 k_goto
+  class m6 k_agent
+  class g1,g2,g3 k_goto
   class e1 k_end
   style gMove fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gStill fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
@@ -890,24 +907,25 @@ flowchart TD
   r4@{ shape: cyl, label: "Authorizations: answers, applied actions, dismissals, draft edits" }
   r5@{ shape: cyl, label: "New case: the five drafts in progress, '4 sent today', referrals, referral badge" }
   r6@{ shape: cyl, label: "Eligibility & Benefits, Denial Intelligence, Payers, EMR Connect: all work done in them" }
+  r9@{ shape: cyl, label: "Settings: every agent back at its starting level, every switch on, no pause" }
   r7@{ shape: cyl, label: "Case Manager: the 56 tracker rows and the 47 reviews. Signed reviews are unsigned, updates added are removed" }
   r8@{ shape: cyl, label: "Next denial number starts again at D-3319" }
   end
   p2@{ shape: rect, label: "Menu closes" }
   p3@{ shape: rect, label: "<b>App goes to /dashboard</b><br/>(even when already there, and from any other page)" }
   t1@{ shape: odd, label: "<b>'Demo data reset'</b><br/>'Everything is back to the starting point.'" }
-  p4@{ shape: rect, label: "<b>Sidebar badges return to their starting numbers</b><br/>3, 19, 4, 6, 7, 11, 2" }
+  p4@{ shape: rect, label: "<b>Sidebar badges return to their starting numbers</b><br/>3, 19, 4, 9, 8, 11, 3" }
   p5@{ shape: rect, label: "Page-only state is lost as the page changes: Case Manager filters, open drawers, typed text" }
   p6@{ shape: rect, label: "Ask FLO chat stays: reset does not touch it" }
   e1@{ shape: stadium, label: "Demo is at its first screen again" }
   s1 --> c1 --> p1
-  p1 --> r1 & r2 & r3 & r4 & r5 & r6 & r7 & r8
-  r1 & r2 & r3 & r4 & r5 & r6 & r7 & r8 --> p2
+  p1 --> r1 & r2 & r3 & r4 & r5 & r6 & r7 & r8 & r9
+  r1 & r2 & r3 & r4 & r5 & r6 & r7 & r8 & r9 --> p2
   p2 --> p3 --> t1 --> p4 --> p5 --> p6 --> e1
   class s1 k_start
   class c1 k_click
   class p1,p2,p3,p4,p5,p6 k_process
-  class r1,r2,r3,r4,r5,r6,r7,r8 k_store
+  class r1,r2,r3,r4,r5,r6,r9,r7,r8 k_store
   class t1 k_toast
   class e1 k_end
   style gR fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

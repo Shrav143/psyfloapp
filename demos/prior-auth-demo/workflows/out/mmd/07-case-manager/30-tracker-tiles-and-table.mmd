@@ -19,8 +19,8 @@ flowchart TD
   s1@{ shape: stadium, label: "Scroll below 'Being prepared' on Active cases" }
   t0@{ shape: curv-trap, label: "<b>Four status tiles in a row</b><br/>11 'Needs action' (act today)<br/>14 'Review due' (review or recertify soon)<br/>15 'Awaiting payer' (the payer has it)<br/>16 'On track' (nothing needed)" }
   p0@{ shape: rect, label: "<b>Tile numbers follow search, level of care and payer</b><br/>They do not follow the status filter, so they always add up to the cases in view" }
-  t1@{ shape: curv-trap, label: "<b>Table card</b><br/>Columns: Case, Level of care, Payer, Units used, Clock, Approval chance, Status, Open" }
-  p1@{ shape: rect, label: "<b>Rows are sorted by Clock, soonest first (overdue rows lead)</b><br/>Ten rows a page, 'Showing 1 to 10 of 56'" }
+  t1@{ shape: curv-trap, label: "<b>Table card</b><br/>Columns: Case, Level of care, Payer, Units used, Clock, Approval chance, Status, Open<br/>Under a case ID, small tags when they apply: green 'New today', grey 'Updated for a payer change · 10/20'" }
+  p1@{ shape: rect, label: "<b>Rows are sorted by Clock, soonest first (overdue rows lead)</b><br/>Ten rows a page, 'Showing 1 to 10 of 56'<br/>The header count, the four tiles and this line are one list, so they always agree ('57' with a new case)" }
   t2@{ shape: curv-trap, label: "<b>Note under the table</b><br/>'Approval chance estimates how well the paperwork fits the payer's past decisions ... Strong is 80 and above, Moderate 55 to 79, At risk below 55. It never blocks a request.'" }
   c1@{ shape: trap-t, label: "Click a tile, for example 'Needs action'" }
   d1@{ shape: diam, label: "Was that tile already selected?" }
@@ -36,6 +36,8 @@ flowchart TD
   g3@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Open a case from the tracker" }
   d2@{ shape: diam, label: "Does any row match?" }
   g4@{ shape: subproc, label: "Continues in: Case Manager › Empty states › Nothing to show" }
+  g5@{ shape: subproc, label: "Continues in: Case Manager › Active cases › A new case joins the tracker" }
+  g6@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Updated for a payer change" }
   e1@{ shape: stadium, label: "Table shows the matching cases" }
   s1 --> t0 --> p0 --> t1 --> p1 --> t2
   t0 --> c1 --> d1
@@ -50,10 +52,12 @@ flowchart TD
   t1 --> c3 --> g1
   t1 --> c4 --> g2
   t1 --> c5 --> g3
+  t1 -.-> g5
+  t1 -.-> g6
   class s1 k_start
   class t0,t1,t2 k_screen
   class p0,p1,p2,p3,p4,c4 k_process
   class c1,c2,c3,c5 k_click
   class d1,d2 k_decision
-  class g1,g2,g3,g4 k_goto
+  class g1,g2,g3,g4,g5,g6 k_goto
   class e1 k_end

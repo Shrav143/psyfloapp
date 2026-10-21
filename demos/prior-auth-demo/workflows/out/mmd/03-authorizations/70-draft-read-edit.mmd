@@ -19,7 +19,8 @@ flowchart TD
   s1@{ shape: stadium, label: "Click 'Draft'" }
   dr@{ shape: curv-trap, label: "<b>Draft</b><br/>Left: 'Medical-necessity summary'. Right: 'Checks', 'Versions', send buttons" }
   hd@{ shape: rect, label: "<b>Card subtitle</b><br/>'Version 3 · written by Scribe, checked by Integrity · every statement links to the chart'" }
-  sec@{ shape: rect, label: "<b>Four sections in a row, each with its source chips</b><br/>'Clinical picture.', 'Why a lower level of care is not safe.', 'Current severity.', 'Plan.'" }
+  sec@{ shape: rect, label: "<b>Four sections in a row, each with its source chips</b><br/>'Clinical picture.', 'Why a lower level of care is not safe.', 'Current severity.', 'Plan.'<br/>The text is the request's draft in New case (before it has one, the text that draft would have)" }
+  cx@{ shape: rect, label: "<b>A fifth paragraph 'Context added.' when notes were added with 'Add clinical context'</b><br/>The notes in the person's own words, no chips<br/>Shown but not edited here: Edit has no box for it" }
   nw@{ shape: rect, label: "<b>Sentences from applied actions follow in a green mark with a 'New' tag</b><br/>Each adds its own chip, e.g. 'Your answer'" }
   ch@{ shape: trap-t, label: "Click a source chip" }
   gC@{ shape: subproc, label: "Continues in: Authorizations › Case page › Source chip" }
@@ -31,14 +32,16 @@ flowchart TD
   sv@{ shape: trap-t, label: "Click 'Save changes'" }
   dCh@{ shape: diam, label: "Did any box change?" }
   tn@{ shape: odd, label: "'No changes to save'" }
-  sd@{ shape: cyl, label: "<b>Edited sections saved</b><br/>The edit keeps the sentences already added by applied actions<br/>New version: 'Version 4', 'You', 'Edited by you'<br/>Log: 'You edited the draft. Integrity will read it again before it can be signed'" }
+  sd@{ shape: cyl, label: "<b>Edited sections saved</b><br/>The edit keeps the sentences already added by applied actions<br/>New version: 'Version 4', 'You', 'Edited by you'<br/>Log: 'You edited the draft. Integrity will read it again before it can be signed'<br/>The same text is saved on the request's draft in New case, so Review and sign reads it" }
   ts@{ shape: odd, label: "<b>'Draft saved'</b><br/>'Integrity needs to read it again before it can be signed. Use Re-check.'" }
   dy@{ shape: rect, label: "<b>'Every sentence matches the chart' now warns</b><br/>'You edited the draft. Integrity has not read it again yet.'<br/>'Send to payer' goes off" }
   bd@{ shape: rect, label: "Badge on the Draft tab goes up by one" }
   lt@{ shape: rect, label: "Actions applied later add their sentences after the edited text" }
   gK@{ shape: subproc, label: "Continues in: Authorizations › Case page › Draft › Checks, versions and send back" }
+  gR@{ shape: subproc, label: "Continues in: Review and sign › The draft and the summary" }
   s1 --> dr --> hd --> sec --> nw
   sec --> ch --> gC
+  sec --> cx
   dr --> ed --> em --> ty
   em --> cn --> cd
   em --> sv --> dCh
@@ -47,11 +50,12 @@ flowchart TD
   sd --> dy --> bd
   dy --> gK
   sd -.-> lt
+  sd --> gR
   class s1 k_start
   class dr,em k_screen
-  class hd,sec,nw,cd,dy,bd,lt k_process
+  class hd,sec,cx,nw,cd,dy,bd,lt k_process
   class ch,ed,cn,sv k_click
-  class gC,gK k_goto
+  class gC,gK,gR k_goto
   class ty k_input
   class dCh k_decision
   class tn,ts k_toast

@@ -16,51 +16,69 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Look at the card 'Try it on a case'</b><br/>right of the document list<br/>Check a real chart against this list" }
+  s1@{ shape: stadium, label: "<b>Look at the card 'Try it on a case'</b><br/>right of the document list<br/>Check a chart against this list" }
   hc@{ shape: diam, label: "Is any case in 'Preparing'?" }
-  nc@{ shape: odd, label: "<b>Menu shows 'No cases to check'</b><br/>'Check this chart' is greyed out" }
-  xnc@{ shape: stadium, label: "Nothing to check until a case is being prepared" }
+  nc@{ shape: odd, label: "Menu shows 'No cases to check'" }
   df@{ shape: rect, label: "<b>Case starts as the first 'Preparing' case for this payer,</b><br/>else the first 'Preparing' case at all<br/>Cardinal: I-2207" }
   pk@{ shape: lean-r, label: "<b>Pick a 'Case'</b><br/>R-1042 · J.M., 34 (Residential 3.5)<br/>I-2207 · T.R., 29 (IOP)<br/>R-0988, R-1101, I-2262" }
-  clr@{ shape: rect, label: "Picking a case clears any earlier result" }
+  pt@{ shape: lean-r, label: "<b>Type or paste in 'Paste chart text' (optional)</b><br/>Hint: with text here, Reader checks it against the level<br/>of care list on the left instead of the case's chart" }
+  clr@{ shape: rect, label: "<b>Picking a case or changing the text</b><br/>clears any earlier result" }
+  dt@{ shape: diam, label: "<b>Is there pasted text?</b><br/>Blank or spaces only counts as none" }
+  dg@{ shape: diam, label: "Is there a case or pasted text?" }
+  xnc@{ shape: stadium, label: "<b>'Check this chart' stays greyed out</b><br/>Paste text, or wait for a case to be prepared" }
   ck@{ shape: trap-t, label: "Click 'Check this chart'" }
   busy@{ shape: rect, label: "Button reads 'Reader is reading the chart' with a spinner" }
   rd@{ shape: hex, label: "<b>Reader reads the chart</b><br/>(demo: about 2 seconds, scripted)" }
   lv@{ shape: diam, label: "Still on Payers after 2 seconds?" }
   drop@{ shape: stadium, label: "Result dropped" }
+  subgraph gC ["A case's sample chart"]
   lc@{ shape: rect, label: "<b>'Level of care' switches to the case's program</b><br/>and the list on the left shows that list" }
   mt@{ shape: rect, label: "<b>Match the chart's known gaps against this payer's list</b><br/>A gap counts only if a list title contains it<br/>The case's own payer does not matter" }
   gp@{ shape: rect, label: "<b>Sample charts lack</b><br/>R-1042: therapy note<br/>I-2207: attendance record, remaining treatment goals<br/>R-1101: urine drug screen, nursing note with withdrawal scale<br/>R-0988 and I-2262: nothing" }
+  end
+  subgraph gT ["Pasted text"]
+  pl@{ shape: rect, label: "<b>Uses the level of care shown on the left</b><br/>The chosen case is not used" }
+  kw@{ shape: rect, label: "<b>Keyword check, the same text always gives the same answer</b><br/>A document is found when the text uses its name or a usual word<br/>for it: CIWA or COWS for the withdrawal scale, UDS for the urine screen, h&p<br/>A document someone added is found when all its own words appear" }
+  end
   dn@{ shape: diam, label: "Is anything still needed?" }
-  r1@{ shape: odd, label: "<b>Ochre banner '5 of 6 ready'</b><br/>Still needed: an attendance record for the last 14 days.<br/>Cardinal usually asks for it." }
-  r0@{ shape: odd, label: "<b>Green banner '9 of 9 ready'</b><br/>Nothing is missing. Reader found every document in the chart." }
-  ft@{ shape: odd, label: "<b>'Checked I-2207 against Cardinal's IOP list.'</b><br/>Link 'Open the request'" }
+  r1@{ shape: odd, label: "<b>Ochre banner '5 of 6 ready'</b><br/>Still needed: an attendance record for the last 14 days.<br/>Cardinal usually asks for it.<br/>A long list shows four, then 'and N more'" }
+  r0@{ shape: odd, label: "<b>Green banner '9 of 9 ready'</b><br/>Nothing is missing. Reader found every document<br/>in the chart (or 'in the text')." }
+  ft1@{ shape: odd, label: "<b>'Checked I-2207 against Cardinal's IOP list.'</b><br/>Link 'Open the request'" }
+  ft2@{ shape: odd, label: "<b>'Checked the pasted text against Cardinal's IOP list, by keyword.'</b><br/>No link: no case was used" }
   ol@{ shape: trap-t, label: "Click 'Open the request'" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Open a request" }
   why@{ shape: rect, label: "<b>Edit the list and check again to see it change</b><br/>Cardinal's list asks for 'Remaining treatment goals' only after<br/>its criteria change is updated, so I-2207 then reads '5 of 7 ready'" }
-  info@{ shape: odd, label: "<b>'This is the same list Reader uses on the intake screen,</b><br/>so the warning there and the result here always match.'" }
-  gap@{ shape: rect, label: "<b>Demo gap: New case intake keeps its own required-document</b><br/>table, so this list and the intake warning can differ" }
+  info@{ shape: odd, label: "<b>'New case checks documents against this same list.</b><br/>Pasted text is matched by keyword, so a document that<br/>is named differently can be missed.'" }
   g2@{ shape: subproc, label: "Continues in: Payers › Documents › Edit the list" }
   g3@{ shape: subproc, label: "Continues in: Authorizations › New case › Medical records › The checklist and Continue" }
   s1 --> hc
-  hc -->|"No"| nc --> xnc
-  hc -->|"Yes"| df --> pk --> clr --> ck --> busy --> rd --> lv
+  hc -->|"No"| nc --> pt
+  hc -->|"Yes"| df --> pk --> pt
+  pt --> clr --> dg
+  dg -->|"No"| xnc
+  dg -->|"Yes"| ck --> busy --> rd --> lv
   lv -->|"No"| drop
-  lv -->|"Yes"| lc --> mt --> dn
+  lv -->|"Yes"| dt
+  dt -->|"Yes, the text is read"| pl --> kw --> dn
+  dt -->|"No, the case's chart is read"| lc --> mt --> dn
   mt -.-> gp
-  dn -->|"Yes"| r1 --> ft
-  dn -->|"No"| r0 --> ft
-  ft --> ol --> g1
-  ft --> why --> g2
+  dn -->|"Yes"| r1
+  dn -->|"No"| r0
+  r1 --> ft1
+  r0 --> ft1
+  kw -.-> ft2
+  ft1 --> ol --> g1
+  ft1 --> why --> g2
   s1 -.-> info
-  info -.-> gap
-  gap -.-> g3
+  info -.-> g3
   class s1 k_start
-  class hc,lv,dn k_decision
-  class nc,r1,r0,ft,info k_toast
+  class hc,dt,dg,lv,dn k_decision
+  class nc,r1,r0,ft1,ft2,info k_toast
+  class df,clr,busy,lc,mt,gp,pl,kw,why k_process
+  class pk,pt k_input
   class xnc,drop k_endx
-  class df,clr,busy,lc,mt,gp,why,gap k_process
-  class pk k_input
   class ck,ol k_click
   class rd k_agent
   class g1,g2,g3 k_goto
+  style gC fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gT fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

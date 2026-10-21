@@ -28,7 +28,7 @@ flowchart LR
   b0@{ shape: curv-trap, label: "'Benefits' chip" }
   b1@{ shape: rect, label: "<b>'Covered' (green)</b><br/>The plan pays for this level of care" }
   b2@{ shape: rect, label: "<b>'Limited' (amber)</b><br/>Paid with conditions: diagnosis on the plan's list, each day authorized" }
-  b3@{ shape: rect, label: "<b>'Not covered' (red)</b><br/>The plan does not pay for this level of care (no demo patient)" }
+  b3@{ shape: rect, label: "<b>'Not covered' (red)</b><br/>The plan does not pay for this level of care<br/>For example R-1118" }
   end
   subgraph gA ["Column 'Authorization'"]
   a0@{ shape: curv-trap, label: "'Authorization' chip, sometimes with usage under it" }
@@ -43,8 +43,8 @@ flowchart LR
   v0@{ shape: curv-trap, label: "'Verdict' chip, with 'Checked 3 h ago' under it" }
   v1@{ shape: rect, label: "<b>'Cleared to bill' (green)</b><br/>Everything passes" }
   v2@{ shape: rect, label: "<b>'Authorization first' (amber)</b><br/>Only the authorization is missing" }
-  v3@{ shape: rect, label: "<b>'Fix before billing' (red)</b><br/>Coverage, plan, network or a limit failed" }
-  v4@{ shape: rect, label: "<b>'Checked 3 h ago' or 'Checking now'</b><br/>Time since the last check, or a re-check running" }
+  v3@{ shape: rect, label: "<b>'Fix before billing' (red)</b><br/>Coverage, plan, network, another plan or a limit failed" }
+  v4@{ shape: rect, label: "<b>'Checked 3 h ago' or 'Checking now'</b><br/>Time since the last check, or a re-check running<br/>'Re-check due Tue 11:32 am': Verify will run it<br/>'Re-checked automatically at 11:32 am': it did<br/>'Not re-checked: Verify is paused in Settings'" }
   end
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › Which verdict and why" }
   s1 --> e0 & b0 & a0 & v0

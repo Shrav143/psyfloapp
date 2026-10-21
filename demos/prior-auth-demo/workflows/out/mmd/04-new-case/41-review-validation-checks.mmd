@@ -19,23 +19,28 @@ flowchart TD
   s1@{ shape: stadium, label: "On step 4, read the Validation summary and the Checks" }
   subgraph gVal ["Validation summary"]
   sV@{ shape: curv-trap, label: "<b>Validation summary</b><br/>'Reader checked every document against the payer's guidelines. Review the findings before you sign.'<br/>Pill: 'N to look at' or 'Nothing to look at'" }
-  pRows@{ shape: rect, label: "One row for 'Start date', then one for each document on the payer's list, required or recommended" }
-  pStart@{ shape: rect, label: "<b>'Start date' always shows a green tick</b><br/>'The start date 10/20/2026 is inside the notice window'" }
+  pRows@{ shape: rect, label: "One row for 'Start date', then the referral, the required documents and the recommended ones, from the payer's saved list" }
+  dStart@{ shape: diam, label: "<b>Is there a start date, and is it inside the payer's backdating rule?</b><br/>Summit: none back. Beacon: 2 days. Evergreen: 3 days. A retro-authorization uses the payer's retro line (Summit: 72 hours)" }
+  pStartOk@{ shape: rect, label: "<b>Green tick</b><br/>'The start date 10/20/2026 is inside what Summit allows'" }
+  pStartBad@{ shape: rect, label: "<b>Amber icon, row open</b><br/>'The start date 10/10/2026 is 10 days back. Summit does not backdate an authorization.'<br/>Or 'No start date. Summit will count from the day it receives the request.'" }
   dMiss@{ shape: diam, label: "Is the document in the case?" }
-  pNotAdded@{ shape: rect, label: "<b>Required: 'This document was not added.'</b><br/>Recommended: 'Not added. Summit usually asks for one. You can sign without it.'" }
+  dMark@{ shape: diam, label: "Was it marked not available?" }
+  pMarkReq@{ shape: rect, label: "<b>Required: amber</b><br/>'Marked not available: REASON. Summit requires it, so it may ask for it.'" }
+  pMarkRec@{ shape: rect, label: "<b>Recommended: green</b><br/>'Marked not available: REASON. You can sign without it.'" }
+  pNotAdded@{ shape: rect, label: "<b>Required: 'This document was not added.'</b><br/>Recommended: 'Not added. Summit lists it. You can sign without it.'" }
   dRow@{ shape: diam, label: "Does the document have an open finding?" }
   pAmber@{ shape: rect, label: "<b>Amber icon, row open</b><br/>Green ticks for checks passed, an amber line for the finding" }
   pGreen@{ shape: rect, label: "Green tick, row closed" }
   pSettled@{ shape: rect, label: "<b>A finding settled by an answer turns green</b><br/>'Sertraline start date confirmed by you: 9/14'" }
-  cRow@{ shape: trap-t, label: "Click a document row" }
+  cRow@{ shape: trap-t, label: "Click a row" }
   pToggle@{ shape: rect, label: "Its findings open or close (the arrow turns)" }
   end
   subgraph gChecks ["Checks card"]
-  sC@{ shape: curv-trap, label: "<b>Checks</b><br/>Pill: 'All clear', '1 warning', '2 warnings', 'Re-checking' or 'Blocked'" }
+  sC@{ shape: curv-trap, label: "<b>Checks</b><br/>Pill: 'All clear', '1 warning', '2 warnings', 'Re-checking' or 'Blocked'<br/>Each check lists one line for each thing it found" }
   c1@{ shape: hex, label: "<b>Integrity: 'Every sentence traced to the chart'</b><br/>Blocked when a section is empty<br/>Re-checking while edits are read" }
-  c2@{ shape: hex, label: "<b>Scrubber: 'Request has no errors'</b><br/>Warning if coverage is not active, or a required document has an open finding" }
-  c3@{ shape: hex, label: "<b>Criteria: 'All 9 Summit requirements covered'</b><br/>Always passes (7 for IOP, 8 for PHP, 6 for Detox)" }
-  c4@{ shape: hex, label: "<b>Placement: 'Level of care matches the request'</b><br/>Always passes" }
+  c2@{ shape: hex, label: "<b>Scrubber: 'Request has no errors'</b><br/>Warns on: coverage that needs a fix, a skipped Verify, a required document with an open finding, a start date outside the rule or missing, a notice or retro window that has passed" }
+  c3@{ shape: hex, label: "<b>Criteria: 'All 9 Summit requirements covered'</b><br/>'8 of 9 ... covered' when a required document is marked not available or the step-down answer was 'Not yet'<br/>Blocked when a required document is not in the case at all (7 requirements for IOP, 8 for PHP, 6 for Detox)" }
+  c4@{ shape: hex, label: "<b>Placement: 'Level of care matches the request'</b><br/>Warns when there is no ASAM assessment, the ASAM assessment has a finding, or the payer's no-authorization rule names this level of care" }
   end
   dKind@{ shape: diam, label: "What state is a check in?" }
   kPass@{ shape: rect, label: "<b>Pass</b><br/>Green tick, nothing to do" }
@@ -44,37 +49,54 @@ flowchart TD
   kCheck@{ shape: rect, label: "<b>Re-checking</b><br/>Spinner for about 1 second<br/>Cannot be signed yet" }
   tW1@{ shape: odd, label: "'Coverage lapsed 10/12. A retro-eligibility request is needed before billing.'" }
   tW2@{ shape: odd, label: "<b>'1 required document has an open finding. See the validation summary.'</b><br/>A recommended document never raises it" }
+  tW3@{ shape: odd, label: "'Verify could not reach Cardinal's portal, so coverage was not confirmed. You skipped it and noted it.'" }
+  tW4@{ shape: odd, label: "'Psychosocial history is marked not available, so Summit has no evidence for it.'" }
   tB1@{ shape: odd, label: "<b>'The Current severity section is empty. Add the text or send the draft back to Scribe.'</b><br/>The quoted heading is the empty section's" }
+  tB2@{ shape: odd, label: "'1 required document is not in the case: Discharge summary. Add it on Medical records, or mark it not available.'" }
+  pHeld@{ shape: rect, label: "<b>The approval chance is held back 3 points for each required document that is not in the case and for a start date the rule does not allow, up to 12</b><br/>'Held back 3 points: 1 thing the payer asks for is not met.'" }
   pHover@{ shape: rect, label: "Hover an agent badge to see the agent's name" }
-  gSign@{ shape: subproc, label: "Continues in: Review and sign › Sign and send" }
-  s1 --> sV --> pRows --> pStart
+  gSign@{ shape: subproc, label: "Continues in: New case › Review and sign › Sign and send" }
+  gDocs@{ shape: subproc, label: "Continues in: Medical records › Replace a document or mark it not available" }
+  gRules@{ shape: subproc, label: "Continues in: Payers › Rules › Edit a rule" }
+  s1 --> sV --> pRows --> dStart
+  dStart -->|"Yes"| pStartOk
+  dStart -->|"No"| pStartBad
   pRows --> dMiss
-  dMiss -->|"No"| pNotAdded
+  dMiss -->|"No"| dMark
+  dMark -->|"Yes, required"| pMarkReq
+  dMark -->|"Yes, recommended"| pMarkRec
+  dMark -->|"No"| pNotAdded
   dMiss -->|"Yes"| dRow
   dRow -->|"Yes"| pAmber
   dRow -->|"No"| pGreen
   pAmber -.-> pSettled
   pRows --> cRow --> pToggle
+  pMarkReq -.-> gDocs
+  pStartBad -.-> gRules
   s1 --> sC
   sC --> c1 & c2 & c3 & c4
   c1 & c2 & c3 & c4 --> dKind
   dKind -->|"Pass"| kPass
-  dKind -->|"Open finding or lapsed coverage"| kWarn
-  dKind -->|"Empty section"| kBlock
+  dKind -->|"Anything found"| kWarn
+  dKind -->|"Empty section, or a required document missing"| kBlock
   dKind -->|"Edits being read"| kCheck
   c2 --> tW1
   c2 --> tW2
+  c2 --> tW3
+  c3 --> tW4
   c1 --> tB1
+  c3 --> tB2
+  c3 -.-> pHeld
   sC -.-> pHover
   kWarn --> gSign
   kBlock --> gSign
   class s1 k_start
   class sV,sC k_screen
-  class pRows,pStart,pNotAdded,pAmber,pGreen,pSettled,pToggle,kPass,kWarn,kBlock,kCheck,pHover k_process
-  class dMiss,dRow,dKind k_decision
+  class pRows,pStartOk,pStartBad,pMarkReq,pMarkRec,pNotAdded,pAmber,pGreen,pSettled,pToggle,kPass,kWarn,kBlock,kCheck,pHeld,pHover k_process
+  class dStart,dMiss,dMark,dRow,dKind k_decision
   class cRow k_click
   class c1,c2,c3,c4 k_agent
-  class tW1,tW2,tB1 k_toast
-  class gSign k_goto
+  class tW1,tW2,tW3,tW4,tB1,tB2 k_toast
+  class gSign,gDocs,gRules k_goto
   style gVal fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gChecks fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

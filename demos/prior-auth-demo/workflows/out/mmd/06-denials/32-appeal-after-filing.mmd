@@ -17,44 +17,40 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "A filed appeal is on screen (after 'Sign and file', or a seeded one)" }
-  b1@{ shape: curv-trap, label: "<b>Banner 'Appeal filed. Waiting on the payer' (or 'External review. Waiting on the payer')</b><br/>'filed 10/20, decision 11/19. Navigator checks every day and saves the answer to the case.'" }
+  b1@{ shape: curv-trap, label: "<b>Banner 'Appeal filed. Waiting on the payer'</b><br/>'Filed 10/20, decision 11/19. Navigator checks every day. When the payer answers, record the decision here.'" }
+  b2@{ shape: curv-trap, label: "<b>Buttons 'View the appeal' and 'Record the payer's decision'</b><br/>Other chips: 'Second-level appeal filed', 'External review'<br/>Seeded appeals read 'Filed 10/05, decision 11/02'" }
   h1@{ shape: curv-trap, label: "<b>Header pill 'Appeal filed, decision 11/19'</b><br/>List pill 'Decision 11/19'<br/>No count-down: the payer has the clock" }
   p0@{ shape: rect, label: "'Your options' card is hidden" }
   c1@{ shape: trap-t, label: "Click 'View the appeal'" }
-  o1@{ shape: win-pane, label: "<b>Drawer 'Appeal letter · D-3318' (read only)</b><br/>'Filed by Medical director. decision 11/19'<br/>Seeded appeals read 'Filed. decision 11/02'" }
+  o1@{ shape: win-pane, label: "<b>Drawer 'Appeal letter · D-3318' (read only)</b><br/>'Filed by Medical director. Decision 11/19.'<br/>Seeded appeals read 'Filed 10/05. Decision 11/02.'" }
   dc1@{ shape: doc, label: "<b>Letter as filed</b><br/>'This is the letter that was filed.'<br/>Evidence list with greyed tick boxes" }
   c2@{ shape: trap-t, label: "Click 'Close', the X, press Esc, or click the dimmed area" }
   w1@{ shape: delay, label: "<b>Decision clock runs: 30 days from filing</b><br/>(PRD: from confirmed receipt; 72 hours when expedited)" }
   w2@{ shape: delay, label: "<b>Navigator checks for the decision each day</b><br/>Shown in History as a scheduled step" }
   x1@{ shape: st-rect, label: "<b>PRD: receipt call 3 business days after sending</b><br/>'Not on file' means resend or a dispute file (not in the demo)" }
-  p1@{ shape: rect, label: "Fast-forward moves the clock, but no status, pill or notification changes" }
-  d1@{ shape: diam, label: "Does the payer decide? (PRD)" }
-  x2@{ shape: st-rect, label: "Payer overturns the appeal" }
-  x3@{ shape: st-rect, label: "Payer upholds, or restores only part" }
-  e1@{ shape: stadium, label: "PRD: approval is added to the case, the ledger and the next review are updated" }
-  p2@{ shape: rect, label: "<b>PRD: next level is offered with its window: payer second level where it exists, then external review or state fair hearing</b><br/>Opens only when an operator confirms" }
-  e2@{ shape: stadium, label: "Demo stops here: nothing records the decision of a filed appeal" }
+  p1@{ shape: rect, label: "Fast-forward moves the clock, but no status, pill or notification changes on its own" }
+  x2@{ shape: st-rect, label: "<b>Payer decides: overturns, partly overturns or upholds</b><br/>(demo: nobody plays this)" }
+  c3@{ shape: trap-t, label: "Click 'Record the payer's decision'" }
   e3@{ shape: stadium, label: "Back on the page, nothing changed" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Check now, Open case and closing" }
+  g2@{ shape: subproc, label: "Continues in: Denial Intelligence › Written appeal › Record the payer's decision" }
   s1 --> b1 --> h1
   b1 --> p0
-  b1 --> c1 --> o1 --> dc1 --> c2
-  c2 --> e3
-  b1 --> w1 --> w2
-  w2 --> x1 --> d1
-  w2 --> p1 --> e2
-  d1 -->|"Overturned"| x2 --> e1
-  d1 -->|"Upheld or part"| x3 --> p2
+  b1 --> b2
+  b2 --> c1 --> o1 --> dc1 --> c2 --> e3
+  b1 --> w1 --> w2 --> x2
+  w2 --> x1
+  w2 -.-> p1
+  x2 --> c3
+  b2 --> c3 --> g2
   h1 --> g1
   class s1 k_start
-  class b1,h1 k_screen
-  class p0,p1,p2 k_process
-  class c1,c2 k_click
+  class b1,b2,h1 k_screen
+  class p0,p1 k_process
+  class c1,c2,c3 k_click
   class o1 k_overlay
   class dc1 k_doc
   class w1,w2 k_wait
-  class x1,x2,x3 k_ext
-  class d1 k_decision
-  class e1,e3 k_end
-  class e2 k_endx
-  class g1 k_goto
+  class x1,x2 k_ext
+  class e3 k_end
+  class g1,g2 k_goto

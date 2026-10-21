@@ -36,6 +36,8 @@ flowchart TD
   ce@{ shape: stadium, label: "<b>Dialog closes</b><br/>Nothing changes" }
   st@{ shape: cyl, label: "<b>Each card saved as dismissed with the reason and the time</b><br/>Log: You dismissed '(title)'. Reason: ..." }
   dsh@{ shape: cyl, label: "<b>If the request is on the Dashboard: an event on its history</b><br/>'You dismissed ... Reason: ...'" }
+  an@{ shape: cyl, label: "<b>Dismissal recorded for Analytics</b><br/>The request and the reason" }
+  gA@{ shape: subproc, label: "Continues in: Analytics › Arrive and read the page" }
   tt@{ shape: odd, label: "<b>'Recommendation dismissed' or '3 recommendations dismissed'</b><br/>'The reason is logged and feeds Analytics.'" }
   mv@{ shape: rect, label: "<b>Cards leave the open list</b><br/>Header line 'up to N%' drops their points<br/>'Dismissed (1)' appears: struck-through title, 'Reason logged: ...'" }
   gt@{ shape: rect, label: "<b>If the card gated a check, that check stays open</b><br/>'Send to payer' stays off" }
@@ -58,6 +60,7 @@ flowchart TD
   dok -->|"Yes"| cf
   m --> cx --> ce
   cf --> st --> dsh
+  st --> an --> gA
   st --> tt
   st --> mv --> gt
   mv --> bb --> rs --> nt
@@ -68,5 +71,6 @@ flowchart TD
   class wb,tt k_toast
   class ot k_input
   class ce k_endx
-  class st,dsh,rs k_store
+  class st,dsh,an,rs k_store
+  class gA k_goto
   style gR fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

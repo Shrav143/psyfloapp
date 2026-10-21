@@ -25,12 +25,14 @@ flowchart LR
   l4@{ shape: trap-t, label: "On a denied request: click 'Open in Denial Intelligence'" }
   l5@{ shape: trap-t, label: "Click 'Open in review and sign' or 'Send to payer'" }
   l7@{ shape: trap-t, label: "Click 'Back to queue' or the 'Authorizations' crumb" }
+  l8@{ shape: trap-t, label: "<b>Click 'Open on the Dashboard'</b><br/>(once the request is past Preparing)" }
   g1@{ shape: subproc, label: "Continues in: New case › Referral step" }
   g2@{ shape: subproc, label: "Continues in: Eligibility & Benefits › Verify a patient" }
   g5@{ shape: subproc, label: "Continues in: Case Manager › Active cases" }
   g3@{ shape: subproc, label: "Continues in: Denial Intelligence › Open a denial" }
   g4@{ shape: subproc, label: "Continues in: Authorizations › Case page › Send to payer and review and sign" }
   g6@{ shape: subproc, label: "Continues in: Authorizations › Queue › Open the queue and read the top" }
+  g7@{ shape: subproc, label: "Continues in: Dashboard › Request drawer" }
   q --> l1 --> g1
   q --> l2 --> g2
   q --> l6 --> g5
@@ -38,6 +40,7 @@ flowchart LR
   cp --> l4 --> g3
   cp --> l5 --> g4
   cp --> l7 --> g6
+  cp --> l8 --> g7
   class q,cp k_screen
-  class l1,l2,l6,l3,l4,l5,l7 k_click
-  class g1,g2,g5,g3,g4,g6 k_goto
+  class l1,l2,l6,l3,l4,l5,l7,l8 k_click
+  class g1,g2,g5,g3,g4,g6,g7 k_goto

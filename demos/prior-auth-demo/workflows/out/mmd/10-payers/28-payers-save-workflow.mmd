@@ -19,7 +19,7 @@ flowchart TD
   s1@{ shape: stadium, label: "<b>In the 'Edit workflow' drawer,</b><br/>click 'Save workflow'" }
   d1@{ shape: diam, label: "<b>Is there at least one change</b><br/>against the saved workflow?" }
   t0@{ shape: odd, label: "<b>'Nothing to save'</b><br/>Change a step or a condition first." }
-  m@{ shape: win-pane, label: "<b>Save the workflow?</b><br/>This becomes version 8. New drafts use it at once.<br/>Open drafts follow when you update them." }
+  m@{ shape: win-pane, label: "<b>Save the workflow?</b><br/>This becomes version 8. New drafts use it at once.<br/>Sent requests keep what they were sent with.<br/>Click Update drafts to redraft open ones." }
   lst@{ shape: rect, label: "<b>List of changes, one line each</b><br/>Example: Step 1, 'Check coverage': title<br/>Added step, Removed step, Step order,<br/>added, changed or removed a condition" }
   i1@{ shape: lean-r, label: "<b>Type 'Reason for the edit' (required)</b><br/>Example: Summit confirmed the new window on a call" }
   cs@{ shape: trap-t, label: "Click 'Save and log the edit'" }
@@ -28,16 +28,17 @@ flowchart TD
   v@{ shape: cyl, label: "<b>Workflow replaced</b><br/>Version 7 becomes 8, 'edited' date is today" }
   lg@{ shape: cyl, label: "<b>One edit log entry per change</b><br/>Area 'Workflow', with before, after and reason" }
   un@{ shape: cyl, label: "'Edits waiting' count goes up by one" }
-  t1@{ shape: odd, label: "<b>'Workflow saved as version 8'</b><br/>2 changes logged. New drafts use it now.<br/>Open drafts follow when you update them." }
+  nt@{ shape: cyl, label: "<b>Bell notification 'Summit workflow edited'</b><br/>Saved version 8, changes logged,<br/>opens the payer's Process tab" }
+  t1@{ shape: odd, label: "<b>'Workflow saved as version 8'</b><br/>2 changes logged. New drafts use it at once.<br/>Click Update drafts to redraft open ones." }
   cl@{ shape: rect, label: "Reason modal and drawer both close" }
   pg@{ shape: curv-trap, label: "<b>Process tab</b><br/>'Version 8, edited 10/20'<br/>Banner '1 edit applies to new drafts only'" }
   g1@{ shape: subproc, label: "Continues in: Payers › Edits waiting › Update drafts" }
   g2@{ shape: subproc, label: "Continues in: Payers › Edit log" }
   cx@{ shape: trap-t, label: "Click 'Cancel' on the reason modal" }
-  cesc1@{ shape: trap-t, label: "<b>Click the X or the dimmed area</b><br/>of the reason modal" }
-  back@{ shape: rect, label: "<b>Reason modal closes</b><br/>Drawer stays open with every edit still in it" }
-  cesc2@{ shape: trap-t, label: "Press Escape" }
-  both@{ shape: rect, label: "<b>Reason modal AND drawer close</b><br/>Every unsaved edit is lost" }
+  cesc1@{ shape: trap-t, label: "<b>Press Escape, click the X or</b><br/>the dimmed area of the reason modal" }
+  back@{ shape: rect, label: "<b>Only the reason modal closes</b><br/>Drawer stays open with every edit still in it" }
+  cesc2@{ shape: trap-t, label: "<b>Press Escape again, or Cancel, the X</b><br/>or the dimmed area of the drawer" }
+  both@{ shape: rect, label: "<b>Drawer closes</b><br/>Every unsaved edit is lost<br/>No 'are you sure'" }
   x1@{ shape: stadium, label: "<b>Back on the Process tab</b><br/>Workflow unchanged" }
   e1@{ shape: stadium, label: "New version is live for new drafts" }
   undo@{ shape: rect, label: "<b>No undo button anywhere</b><br/>To go back, edit again.<br/>Edit log keeps the before text of every change" }
@@ -45,13 +46,13 @@ flowchart TD
   d1 -->|"No"| t0 --> s1
   d1 -->|"Yes"| m --> lst --> i1 --> cs --> d2
   d2 -->|"Yes"| er --> i1
-  d2 -->|"No"| v --> lg --> un --> t1 --> cl --> pg --> e1
+  d2 -->|"No"| v --> lg --> un --> nt --> t1 --> cl --> pg --> e1
   lg -.-> g2
   pg -.-> g1
   m --> cx --> back
   m --> cesc1 --> back
   back -.-> m
-  m --> cesc2 --> both --> x1
+  back --> cesc2 --> both --> x1
   e1 -.-> undo
   class s1 k_start
   class d1,d2 k_decision
@@ -60,7 +61,7 @@ flowchart TD
   class lst,cl,back,both,undo k_process
   class i1 k_input
   class cs,cx,cesc1,cesc2 k_click
-  class v,lg,un k_store
+  class v,lg,un,nt k_store
   class pg k_screen
   class g1,g2 k_goto
   class x1 k_endx

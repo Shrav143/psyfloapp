@@ -42,7 +42,7 @@ flowchart TD
   end
   p2@{ shape: rect, label: "<b>?request is removed from the address</b><br/>Filters and paging stay as they were" }
   e2@{ shape: stadium, label: "Drawer closed, table as before" }
-  p3@{ shape: rect, label: "Escape also closes any pop-up opened from the drawer, in the same press" }
+  p3@{ shape: rect, label: "<b>Escape closes one layer at a time</b><br/>A pop-up opened from the drawer closes first; the next Escape closes the drawer" }
   s1 --> d1
   d1 -->|"Yes"| f1
   d1 -->|"No"| f2

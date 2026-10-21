@@ -21,7 +21,7 @@ flowchart TD
   subgraph gTop ["Top right of the header"]
   m1@{ shape: curv-trap, label: "<b>Menu 'This quarter'</b><br/>(period)" }
   m2@{ shape: curv-trap, label: "<b>Menu 'All payers'</b><br/>(payer)" }
-  m3@{ shape: curv-trap, label: "Button 'Monthly report' with a download icon" }
+  m3@{ shape: curv-trap, label: "<b>Button 'Monthly report' with a document icon</b><br/>It opens a window, where the files and Print are" }
   end
   subgraph gTiles ["Row of four tiles"]
   t1@{ shape: curv-trap, label: "<b>'Approved as asked'</b><br/>71% · '▲ 6 pts vs last quarter'<br/>'1,070 decisions · this quarter'" }
@@ -32,35 +32,40 @@ flowchart TD
   subgraph gCards ["Cards below"]
   c1@{ shape: curv-trap, label: "<b>Card 'Approval rate by payer'</b><br/>Six bars, best first" }
   c2@{ shape: curv-trap, label: "<b>Card 'How people edit agent drafts'</b><br/>Donut and three-line legend" }
-  c3@{ shape: curv-trap, label: "<b>Card 'Common denial reasons by payer'</b><br/>Table, one row per payer" }
+  c3@{ shape: curv-trap, label: "<b>Card 'Common denial reasons by payer'</b><br/>Table, one row per payer<br/>Under it 'Appeals overturned' and 'Written off after accepted denials'" }
   c4@{ shape: curv-trap, label: "<b>Card 'What helps most'</b><br/>Four ranked steps" }
+  c5@{ shape: curv-trap, label: "<b>Card 'Why recommendations were dismissed'</b><br/>Shown only when someone dismissed a recommendation" }
   end
   hub2@{ shape: curv-trap, label: "Under the header, a row of four tiles" }
-  hub@{ shape: curv-trap, label: "Below the tiles, four cards" }
+  hub@{ shape: curv-trap, label: "Below the tiles, four cards and sometimes a fifth" }
   p1@{ shape: rect, label: "<b>All figures come from the chosen period and payer</b><br/>A figure behind fewer than 20 decisions is hidden" }
   p2@{ shape: rect, label: "<b>Nothing is stored: the address stays /analytics</b><br/>Leaving the page resets the menus" }
+  p3@{ shape: rect, label: "<b>Other screens feed this page</b><br/>Appeal rulings and accepted denials from Denial Intelligence<br/>Dismissed recommendations from Authorizations" }
   g1@{ shape: subproc, label: "Continues in: Analytics › Period and payer menus" }
   g2@{ shape: subproc, label: "Continues in: Analytics › The four tiles" }
   g3@{ shape: subproc, label: "Continues in: Analytics › Read-only cards: payers, draft edits, what helps most" }
   g4@{ shape: subproc, label: "Continues in: Analytics › Common denial reasons: open Denial Intelligence" }
   g5@{ shape: subproc, label: "Continues in: Analytics › Monthly report › Open and build" }
+  g6@{ shape: subproc, label: "Continues in: Analytics › Denial outcomes and dismissed recommendations" }
   s1 --> sc
   sc --> m1 & m2 & m3
   m1 & m2 & m3 --> hub2
   hub2 --> t1 & t2 & t3 & t4
   t1 & t2 & t3 & t4 --> hub
-  hub --> c1 & c2 & c3 & c4
+  hub --> c1 & c2 & c3 & c4 & c5
   sc -.-> p1
   sc -.-> p2
+  sc -.-> p3
+  p3 --> g6
   m1 & m2 --> g1
   t1 & t2 & t3 & t4 --> g2
   c1 & c2 & c4 --> g3
   c3 --> g4
   m3 --> g5
   class s1 k_start
-  class sc,m1,m2,m3,t1,t2,t3,t4,c1,c2,c3,c4,hub2,hub k_screen
-  class p1,p2 k_process
-  class g1,g2,g3,g4,g5 k_goto
+  class sc,m1,m2,m3,t1,t2,t3,t4,c1,c2,c3,c4,c5,hub2,hub k_screen
+  class p1,p2,p3 k_process
+  class g1,g2,g3,g4,g5,g6 k_goto
   style gTop fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gTiles fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gCards fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

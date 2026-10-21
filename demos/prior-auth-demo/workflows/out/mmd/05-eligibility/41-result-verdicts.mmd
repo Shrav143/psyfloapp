@@ -20,15 +20,17 @@ flowchart TD
   q1@{ shape: diam, label: "Coverage active on the service date?" }
   q2@{ shape: diam, label: "Service covered by the plan?" }
   q3@{ shape: diam, label: "Clinic enrolled and in network?" }
-  q4@{ shape: diam, label: "Another plan pays first?" }
-  q5@{ shape: diam, label: "Every day or unit limit still has room?" }
+  q4@{ shape: diam, label: "Every day or unit limit still has room?" }
+  q5@{ shape: diam, label: "Another plan pays first?" }
   q6@{ shape: diam, label: "<b>Authorization needed but not approved?</b><br/>(required, in progress, under review, retro request open)" }
   subgraph gFix ["Fix before billing (red)"]
   f0@{ shape: curv-trap, label: "Verdict 'Fix before billing'" }
   f1@{ shape: rect, label: "<b>Coverage lapsed or ended</b><br/>Headline 'Fix before billing: coverage lapsed 10/12.'" }
-  f2@{ shape: rect, label: "<b>Coverage not found</b><br/>Headline 'We could not find coverage.'" }
+  f2@{ shape: rect, label: "<b>Coverage not found</b><br/>Headline 'We could not find coverage.'<br/>Nothing else is checked and no payment line is shown" }
   f3@{ shape: rect, label: "<b>Clinic not enrolled</b><br/>Headline 'Fix before billing: the clinic cannot bill yet.'" }
-  f4@{ shape: rect, label: "<b>Service not covered, other plan, limit reached (no demo patient)</b><br/>Headline starts 'Fix before billing:' then names the first failed check" }
+  f4@{ shape: rect, label: "<b>Service not covered</b><br/>Headline 'Fix before billing: the service is not covered.'" }
+  f6@{ shape: rect, label: "<b>Another plan pays first</b><br/>Headline 'Fix before billing: another plan pays first.'" }
+  f7@{ shape: rect, label: "<b>Limit reached</b><br/>Headline 'Fix before billing: every authorized day is used.'<br/>(or unit, for IOP)" }
   f5@{ shape: rect, label: "Reason sentence is the detail of the first failed check" }
   end
   subgraph gAuth ["Authorization first (amber)"]
@@ -48,17 +50,17 @@ flowchart TD
   q2 -->|"Yes"| q3
   q3 -->|"No"| f3 --> f0
   q3 -->|"Yes"| q4
-  q4 -->|"Yes"| f4
-  q4 -->|"No"| q5
-  q5 -->|"No"| f4
-  q5 -->|"Yes"| q6
+  q4 -->|"No"| f7 --> f0
+  q4 -->|"Yes"| q5
+  q5 -->|"Yes"| f6 --> f0
+  q5 -->|"No"| q6
   q6 -->|"Yes"| a0 --> a1 --> g1
   q6 -->|"No"| o0 --> o1 --> g1
   f0 --> f5 --> g1
   class s1 k_start
   class q1,q2,q3,q4,q5,q6 k_decision
   class f0,a0,o0 k_screen
-  class f1,f2,f3,f4,f5 k_process
+  class f1,f2,f3,f4,f6,f7,f5 k_process
   class a1,o1 k_toast
   class g1 k_goto
   style gFix fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

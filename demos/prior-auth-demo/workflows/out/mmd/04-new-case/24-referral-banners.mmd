@@ -30,7 +30,7 @@ flowchart TD
   c2@{ shape: trap-t, label: "Click 'Open R-1042' or the link 'R-1042'" }
   t4@{ shape: odd, label: "'No request is linked yet. Continue to the medical records to build the authorization for this patient.'" }
   c3@{ shape: trap-t, label: "<b>Click 'Continue to medical records'</b><br/>(not shown once Admitted)" }
-  p1@{ shape: rect, label: "<b>Uses the case in the address, or starts a new one</b><br/>Referral goes into the case" }
+  p1@{ shape: rect, label: "<b>Uses the case in the address, or starts a new one</b><br/>Referral goes into the case<br/>Asks 'Attach this referral?' first when the agents already ran" }
   end
   subgraph gOpen ["Open referral"]
   t5@{ shape: odd, label: "<b>Amber banner 'Waiting on the referrer'</b><br/>'You asked … by fax Mon 2:10 pm. Reader reads the reply as soon as it arrives. For the demo, open More and choose 'Demo: simulate the referrer's reply'.'" }
@@ -43,7 +43,7 @@ flowchart TD
   end
   g1@{ shape: subproc, label: "Continues in: New case › Referral › Full page: Validation tab" }
   g2@{ shape: subproc, label: "Continues in: New case › Referral › Check coverage" }
-  g3@{ shape: subproc, label: "Continues in: New case › Medical records › The checklist and Continue" }
+  g3@{ shape: subproc, label: "<b>Continues in: New case › Referral › Accept a referral</b><br/>(attach the referral, then Medical records)" }
   g4@{ shape: subproc, label: "<b>Continues in: Dashboard</b><br/>Opens request R-1042" }
   e1@{ shape: stadium, label: "<b>No banner</b><br/>A New or In review referral with no open findings and no lapsed coverage" }
   s1 --> d1

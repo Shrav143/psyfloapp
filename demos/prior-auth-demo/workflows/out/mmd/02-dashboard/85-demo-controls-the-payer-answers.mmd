@@ -16,26 +16,30 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Scroll to 'Demo controls' at the end of the drawer</b><br/>Six small buttons in a dashed box" }
+  s1@{ shape: stadium, label: "<b>Scroll to 'Demo controls' at the end of the drawer</b><br/>A dashed box" }
   d1@{ shape: diam, label: "Is the stage Preparing? (not sent yet)" }
   d2@{ shape: diam, label: "Is it a denial? (ID starts with D-)" }
+  d3@{ shape: diam, label: "Which stage is the request in?" }
   m1@{ shape: odd, label: "'It has not been sent yet. Sign and send it from Case Manager first.'" }
   m2@{ shape: odd, label: "'A denial follows its own route in Denial Intelligence.'" }
-  m3@{ shape: odd, label: "'Pretend the payer answered this request. Nothing is sent anywhere.'" }
-  x1@{ shape: stadium, label: "All six buttons are disabled" }
-  p0@{ shape: rect, label: "<b>Six buttons enabled:</b><br/>'Payer received it', 'Under review', 'Asks for information', 'Approves', 'Approves part', 'Denies'" }
+  m3@{ shape: odd, label: "'The payer has already decided this request.'" }
+  m4@{ shape: odd, label: "'Pretend the payer answered this request. Nothing is sent anywhere.'" }
+  x1@{ shape: stadium, label: "All six buttons are shown but disabled" }
+  x3@{ shape: stadium, label: "No buttons are shown" }
+  p1@{ shape: rect, label: "<b>Received</b><br/>'Under review', 'Asks for information', 'Approves', 'Approves part', 'Denies'" }
+  p2@{ shape: rect, label: "<b>Under review</b><br/>'Asks for information', 'Approves', 'Approves part', 'Denies'" }
+  p3@{ shape: rect, label: "<b>Info requested</b><br/>'Approves', 'Approves part', 'Denies'" }
+  p0@{ shape: rect, label: "<b>'Payer received it' is never shown</b><br/>Every sent request is already Received, and a reply never moves a request backward" }
   x2@{ shape: st-rect, label: "<b>Payer replies through its portal, fax or phone</b><br/>(demo: simulated by these buttons)" }
-  c1@{ shape: trap-t, label: "Click 'Payer received it'" }
-  w1@{ shape: cyl, label: "<b>Stage Received, bars at Received</b><br/>Navigator holds it; next step 'Navigator checks again in 30 minutes'<br/>Time in stage restarts; history 'Navigator checked: received'" }
   c2@{ shape: trap-t, label: "Click 'Under review'" }
-  w2@{ shape: cyl, label: "<b>Stage Under review, bars at In review</b><br/>History 'Navigator checked: under review' and a dashed 'Caller will phone the payer if it is still pending'" }
+  w2@{ shape: cyl, label: "<b>Stage Under review, bars at In review</b><br/>Time in stage restarts<br/>History 'Navigator checked: under review' and a dashed 'Caller will phone the payer if it is still pending'" }
+  t2@{ shape: odd, label: "<b>'Demo: Cardinal has it under review'</b><br/>'The stage counts and the table updated.'<br/>The payer's short name, here Cardinal" }
   c3@{ shape: trap-t, label: "Click 'Asks for information'" }
   w3@{ shape: cyl, label: "<b>Stage Info requested (amber), needs you</b><br/>Packet holds it; next step 'Packet drafted the answer. Waiting for your review'<br/>History 'The payer asked for more information'" }
   n1@{ shape: odd, label: "<b>Notification 'Payer asked for info'</b><br/>'The payer wants more on R-1021. Packet drafted the answer.'" }
-  t0@{ shape: odd, label: "<b>'Demo: payer payer received it'</b><br/>'The stage counts, the table and the notifications updated.'<br/>The word 'payer' shows twice on screen" }
-  t1@{ shape: odd, label: "<b>'Demo: payer under review' or 'Demo: payer asks for information'</b><br/>'The stage counts, the table and the notifications updated.'" }
+  t3@{ shape: odd, label: "<b>'Demo: Cardinal asks for information'</b><br/>'The stage counts, the table and the notifications updated.'" }
   sc@{ shape: curv-trap, label: "<b>Dashboard behind the drawer</b><br/>The tile counts, the row and its chip, bars and clock update at once<br/>In a filtered list the row may drop out; the drawer stays open" }
-  sd@{ shape: curv-trap, label: "<b>Drawer updates in place</b><br/>Chip, action box, history and banner follow the new stage" }
+  sd@{ shape: curv-trap, label: "<b>Drawer updates in place</b><br/>Chip, action box, history, banner and the offered buttons follow the new stage" }
   c4@{ shape: trap-t, label: "Click 'Approves', 'Approves part' or 'Denies'" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Demo controls: approve, approve part or deny" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Answer a payer information request" }
@@ -44,23 +48,27 @@ flowchart TD
   d1 -->|"Yes"| m1 --> x1
   d1 -->|"No"| d2
   d2 -->|"Yes"| m2 --> x1
-  d2 -->|"No"| m3 --> p0 --> x2
-  x2 --> c1 --> w1 --> t0
-  x2 --> c2 --> w2 --> t1
-  x2 --> c3 --> w3 --> n1 --> t1
-  x2 --> c4 --> g1
-  t0 --> sc
-  t1 --> sc
+  d2 -->|"No"| d3
+  d3 -->|"Decided"| m3 --> x3
+  d3 -->|"Received"| m4
+  d3 -->|"Under review"| m4
+  d3 -->|"Info requested"| m4
+  m4 --> x2
+  x2 --> p1 & p2 & p3
+  p1 -.-> p0
+  p1 --> c2 --> w2 --> t2 --> sc
+  p1 & p2 --> c3 --> w3 --> n1 --> t3 --> sc
+  p1 & p2 & p3 --> c4 --> g1
   sc --> sd
   w3 -.-> g2
   sd -.-> g3
   class s1 k_start
-  class d1,d2 k_decision
-  class m1,m2,m3,n1,t0,t1 k_toast
-  class x1 k_endx
-  class p0 k_process
+  class d1,d2,d3 k_decision
+  class m1,m2,m3,m4,t2,n1,t3 k_toast
+  class x1,x3 k_endx
+  class p1,p2,p3,p0 k_process
   class x2 k_ext
-  class c1,c2,c3,c4 k_click
-  class w1,w2,w3 k_store
+  class c2,c3,c4 k_click
+  class w2,w3 k_store
   class sc,sd k_screen
   class g1,g2,g3 k_goto

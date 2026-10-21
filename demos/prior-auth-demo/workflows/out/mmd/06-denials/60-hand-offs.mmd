@@ -24,19 +24,24 @@ flowchart TD
   c4@{ shape: trap-t, label: "Click 'Plan the step-down' (banner after accepting)" }
   p1@{ shape: rect, label: "Address opens /dashboard?request=D-3318" }
   p2@{ shape: rect, label: "Address opens /dashboard" }
-  p3@{ shape: rect, label: "Address opens /manager?tab=reviews" }
+  p3@{ shape: rect, label: "Address opens /manager?tab=cases" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Arrive › What the page shows" }
-  g3@{ shape: subproc, label: "Continues in: Case Manager › Reviews" }
+  g3@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Step-down plans from accepted denials" }
+  end
+  subgraph gShare ["Shared with other screens"]
+  c6@{ shape: trap-t, label: "Click 'Record the payer's decision' (banner on a filed appeal)" }
+  z1@{ shape: cyl, label: "On accept: Case Manager gets a step-down plan, Analytics counts the write-off" }
+  z2@{ shape: cyl, label: "<b>On a recorded appeal decision: the result and next level are logged</b><br/>Analytics reads the appeal rulings" }
   end
   subgraph gBell ["Notifications"]
   c5@{ shape: trap-t, label: "Click the bell 'Notifications', then a row" }
-  n1@{ shape: odd, label: "<b>'Appeal filed' or 'Call outcome: ...'</b><br/>From Navigator or Advocate" }
+  n1@{ shape: odd, label: "<b>'Appeal filed', 'Appeal decision: ...' or 'Call outcome: ...'</b><br/>From Navigator or Advocate" }
   n2@{ shape: odd, label: "<b>'Denial closed'</b><br/>From Cadence, after an accept" }
   n3@{ shape: odd, label: "<b>'Denial analyzed', 'Denied today', 'Denied' or 'Partly approved'</b><br/>From Advocate" }
   end
   subgraph gIn ["Links in from other screens"]
-  a1@{ shape: stadium, label: "<b>Analytics: 'Common denial reasons by payer'</b><br/>Click a row or its payer name" }
+  a1@{ shape: stadium, label: "<b>Analytics: 'Common denial reasons by payer'</b><br/>Click a row or its payer name<br/>(opens with that payer and reason as filters)" }
   a2@{ shape: stadium, label: "<b>Authorizations case page: 'This request was denied'</b><br/>Click 'Open in Denial Intelligence'" }
   a3@{ shape: stadium, label: "<b>Dashboard request drawer</b><br/>Click 'Open in Denial Intelligence'" }
   g4@{ shape: subproc, label: "Continues in: Denial Intelligence › Ways in" }
@@ -48,6 +53,8 @@ flowchart TD
   sc1 --> c2 --> p1
   sc1 --> c3 --> p2 --> g2
   sc1 --> c4 --> p3 --> g3
+  sc1 --> c6 --> z2
+  c4 -.-> z1
   sc1 --> c5
   c5 --> n1 --> p1
   c5 --> n2 --> p3
@@ -58,12 +65,14 @@ flowchart TD
   a2 --> g4
   a3 --> g4
   class sc1 k_screen
-  class c1,c2,c3,c4,c5 k_click
+  class c1,c2,c3,c4,c6,c5 k_click
   class p1,p2,p3,p4,p5 k_process
   class g1,g2,g3,g4 k_goto
+  class z1,z2 k_store
   class n1,n2,n3 k_toast
   class a1,a2,a3 k_start
   class e1 k_end
   style gOut fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gShare fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gBell fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gIn fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

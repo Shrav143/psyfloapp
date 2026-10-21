@@ -17,11 +17,13 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Scroll to 'Payers at a glance'" }
-  sc1@{ shape: curv-trap, label: "<b>Card header</b><br/>'Payers at a glance'<br/>'Waiting now, how long decisions take, and how often they go your way. Pick a payer to narrow everything on this page.'" }
+  s2@{ shape: stadium, label: "<b>Follow 'Open Dashboard, By payer' in Ask FLO</b><br/>The address is /dashboard?focus=payers" }
+  f1@{ shape: rect, label: "<b>Page scrolls to the card</b><br/>The card is outlined in green for about 2 seconds<br/>The ?focus part is then removed from the address" }
+  sc1@{ shape: curv-trap, label: "<b>Card header</b><br/>'Payers at a glance'<br/>'Waiting now, how long decisions take, and how often they go your way. Click a row to narrow everything on this page.'<br/>On the right: 'Open Payers'" }
   d0@{ shape: diam, label: "Is Program or Request type set?" }
   t0@{ shape: odd, label: "<b>Sentence added to the header</b><br/>'Waiting counts follow your Program and Request type filters.'" }
   subgraph gCols ["Columns and rows"]
-  r1@{ shape: curv-trap, label: "<b>Payer</b><br/>Name, e.g. 'Cardinal Health Plan', and its kind: 'Medicaid plan', 'Commercial', 'Medicare Advantage', 'Carve-out'" }
+  r1@{ shape: curv-trap, label: "<b>Payer</b><br/>Name, e.g. 'Cardinal Health Plan', as a link, and its kind: 'Medicaid plan', 'Commercial', 'Medicare Advantage', 'Carve-out'" }
   r2@{ shape: curv-trap, label: "<b>Waiting</b><br/>Requests Received or Under review at that payer<br/>Follows Program and Request type, not Payer, Stage or dates" }
   r3@{ shape: curv-trap, label: "<b>Decision time</b><br/>'2.8 d' and 'typical 2 d'<br/>Ochre when the average is over 15 percent above typical" }
   r4@{ shape: curv-trap, label: "<b>Approved as asked</b><br/>'63%' with a small bar<br/>Green at 80 and above, ochre below" }
@@ -30,19 +32,26 @@ flowchart TD
   r7@{ shape: curv-trap, label: "<b>Row order</b><br/>Cardinal Health Plan, Summit Medicaid HMO, Beacon PPO, Harborview MA, Lakeshore Behavioral, Evergreen" }
   r8@{ shape: curv-trap, label: "<b>Last row 'All payers'</b><br/>Sums of Waiting, Denied and Info asks; '-' elsewhere; not clickable" }
   end
-  c1@{ shape: trap-t, label: "Click a payer row, or the payer name in it" }
+  c1@{ shape: trap-t, label: "<b>Click a payer row (not its name)</b><br/>Or Tab to the row and press Enter or Space" }
   d1@{ shape: diam, label: "Is that payer already selected? (row tinted green)" }
   p1@{ shape: rect, label: "Payer filter set to that payer" }
   p2@{ shape: rect, label: "Payer filter goes back to 'All payers'" }
   w1@{ shape: cyl, label: "Filter 'payer'" }
   p3@{ shape: rect, label: "<b>Address gets ?payer=harborview, or loses it</b><br/>Table goes back to its first 8 rows" }
   sc2@{ shape: curv-trap, label: "<b>Page follows the payer</b><br/>Headline 'Harborview MA: 3 waiting, taking 3.1 days.'<br/>Tile counts and the requests table follow it; the Payer menu shows its name" }
-  sc3@{ shape: curv-trap, label: "<b>Payers table keeps all six rows</b><br/>The chosen row is tinted green and its name is marked pressed<br/>Waiting counts do not change" }
-  nl@{ shape: stadium, label: "<b>No link to the Payers page from this table</b><br/>Use 'Payers' in the sidebar" }
+  sc3@{ shape: curv-trap, label: "<b>Payers table keeps all six rows</b><br/>The chosen row is tinted green and marked selected<br/>Waiting counts do not change" }
+  c2@{ shape: trap-t, label: "<b>Click the payer's name, e.g. 'Harborview MA'</b><br/>The filter does not change" }
+  c3@{ shape: trap-t, label: "Click 'Open Payers'" }
+  n2@{ shape: rect, label: "<b>Address becomes /payers/harborview</b><br/>A new history entry, so Back returns here" }
+  n3@{ shape: rect, label: "Address becomes /payers" }
+  g4@{ shape: subproc, label: "Continues in: Payers › Arrive on the page" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Headline › What the headline and sub line say" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Filters › Date range shortcuts, keys and the address" }
   g3@{ shape: subproc, label: "Continues in: Dashboard › Filters › Payer, Program, Request type and Stage" }
+  g5@{ shape: subproc, label: "Continues in: Global shell › Top bar › Ask FLO › What FLO answers" }
   s1 --> sc1 --> d0
+  s2 --> f1 --> sc1
+  s2 -.-> g5
   d0 -->|"Yes"| t0 --> r1
   d0 -->|"No"| r1
   r1 --> r2 --> r3 --> r4 --> r5 --> r6 --> r7 --> r8
@@ -55,14 +64,14 @@ flowchart TD
   p3 --> sc2 --> g1
   p3 --> sc3
   sc3 -.-> g3
-  r8 -.-> nl
-  class s1 k_start
+  r1 --> c2 --> n2 --> g4
+  sc1 --> c3 --> n3 --> g4
+  class s1,s2 k_start
+  class f1,p1,p2,p3,n2,n3 k_process
   class sc1,r1,r2,r3,r4,r5,r6,r7,r8,sc2,sc3 k_screen
   class d0,d1 k_decision
   class t0 k_toast
-  class c1 k_click
-  class p1,p2,p3 k_process
+  class c1,c2,c3 k_click
   class w1 k_store
-  class nl k_endx
-  class g1,g2,g3 k_goto
+  class g4,g1,g2,g3,g5 k_goto
   style gCols fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

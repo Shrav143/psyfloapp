@@ -18,34 +18,38 @@ flowchart LR
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>A question is sent</b><br/>(a chip or typed text)" }
   d1@{ shape: diam, label: "Contains 'slow', or both 'payer' and 'late'?" }
-  a1@{ shape: hex, label: "<b>FLO lists every payer slower than its typical time, worst first:</b><br/>'Evergreen is averaging 3.4 days against 2 typical. Cardinal is averaging 2.8 days against 2 typical. Beacon ... Lakeshore ... Harborview ...<br/>Caller phones when a payer passes twice its typical time.'" }
+  a1@{ shape: hex, label: "<b>FLO lists every payer slower than its typical time, worst first:</b><br/>'Evergreen is averaging 3.4 days against 2 typical. Cardinal is averaging 2.8 days against 2 typical. Beacon ... Lakeshore ... Harborview ...<br/>Caller phones when a payer passes twice its typical time.'<br/>If none is slower: 'Every payer is deciding within its typical time right now.'" }
   l1@{ shape: trap-t, label: "Click 'Open Dashboard, By payer'" }
-  g1@{ shape: subproc, label: "Continues in: Dashboard" }
+  r1@{ shape: rect, label: "<b>Opens /dashboard?focus=payers</b><br/>The Dashboard scrolls to Payers at a glance" }
+  g1@{ shape: subproc, label: "Continues in: Dashboard › Payers at a glance › Read the table and pick a payer" }
   d2@{ shape: diam, label: "Contains 'denial', 'stake' or 'money'?" }
-  a2@{ shape: hex, label: "<b>'7 denials are open, with $62.4K at stake. The nearest deadline is D-3318 (Cardinal), a peer-to-peer call Wednesday 9 to 11 am, where the chance of winning is 64%.'</b><br/>The count and total are live" }
+  a2@{ shape: hex, label: "<b>'7 denials are open, with $62.4K at stake. The nearest deadline is D-3318 (Cardinal). Call booked Wed 9 to 11 am. The brief is ready. The chance of winning is 64%.'</b><br/>The count, the total and the nearest open denial are live, so the sentence follows the data" }
   l2@{ shape: trap-t, label: "Click 'Open Denial Intelligence'" }
+  r2@{ shape: rect, label: "<b>Opens /denials?id=D-3318, the nearest denial</b><br/>With no deadline left to name, it opens the list" }
   g2@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
   d3@{ shape: diam, label: "Contains 'cardinal' or 'approval rate'?" }
-  a3@{ shape: hex, label: "'Cardinal approved 63% as asked over the last 90 days, down 11 points. Historian links most of the drop to continued-stay evidence. Cardinal also published criteria version 2026.3, which affects 4 drafts you have not sent.'" }
+  a3@{ shape: hex, label: "<b>'Cardinal approved 63% as asked over the last 90 days, down 11 points. Historian links most of the drop to continued-stay evidence. Cardinal also published criteria version 2026.3, which affects 4 drafts you have not sent.'</b><br/>Fixed text" }
   l3@{ shape: trap-t, label: "Click 'Open Payers, Cardinal, Changes'" }
   g3@{ shape: subproc, label: "Continues in: Payers › Changes › Read what changed" }
   d4@{ shape: diam, label: "Contains 'need', 'today' or 'first'?" }
-  a4@{ shape: hex, label: "<b>'3 requests need you: R-1042, I-2207, P-1499. 3 payers asked for more information, and 5 cases are being prepared. Start with P-1499. Harborview is waiting and its clock is past typical.'</b><br/>The three counts and the IDs are live" }
-  l4@{ shape: trap-t, label: "Click 'Open Dashboard'" }
+  a4@{ shape: hex, label: "<b>'3 requests need you: R-1042, I-2207, P-1499. 3 payers asked for more information, and 5 cases are being prepared. Start with P-1499 (Harborview). Packet drafted the answer. Waiting for your review.'</b><br/>The counts, the IDs and the request to start with are live: a payer's question comes first<br/>Nothing waiting: 'Nothing needs you right now.' with 'Open Dashboard'" }
+  l4@{ shape: trap-t, label: "Click 'Open P-1499 on the Dashboard'" }
+  r4@{ shape: rect, label: "<b>Opens /dashboard?request=P-1499</b><br/>The request drawer opens on that request" }
+  g4@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   d5@{ shape: diam, label: "Contains 'referral'?" }
   a5@{ shape: hex, label: "'New referrals are waiting for review. Reader has already checked each document, and Verify has run coverage for the ones with an insurance card.'" }
   l5@{ shape: trap-t, label: "Click 'Start a case from a referral'" }
-  g5@{ shape: subproc, label: "Continues in: New case › Referral step" }
-  a6@{ shape: hex, label: "<b>'I did not find an answer to that in the demo data. Try one of the suggestions below. (Clock: just now.)'</b><br/>No link. The chips are already gone by then, and the clock reads '1 h ago' after a fast-forward" }
+  g5@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › Start screen" }
+  a6@{ shape: hex, label: "<b>'I did not find an answer to that in the demo data. Try one of the suggestions below.'</b><br/>No link. The four suggestion chips stay right under this answer, so the sentence is true" }
   e1@{ shape: stadium, label: "Answer stays in the chat" }
   s1 --> d1
-  d1 -->|"Yes"| a1 --> l1 --> g1
+  d1 -->|"Yes"| a1 --> l1 --> r1 --> g1
   d1 -->|"No"| d2
-  d2 -->|"Yes"| a2 --> l2 --> g2
+  d2 -->|"Yes"| a2 --> l2 --> r2 --> g2
   d2 -->|"No"| d3
   d3 -->|"Yes"| a3 --> l3 --> g3
   d3 -->|"No"| d4
-  d4 -->|"Yes"| a4 --> l4 --> g1
+  d4 -->|"Yes"| a4 --> l4 --> r4 --> g4
   d4 -->|"No"| d5
   d5 -->|"Yes"| a5 --> l5 --> g5
   d5 -->|"No"| a6 --> e1
@@ -53,5 +57,6 @@ flowchart LR
   class d1,d2,d3,d4,d5 k_decision
   class a1,a2,a3,a4,a5,a6 k_agent
   class l1,l2,l3,l4,l5 k_click
-  class g1,g2,g3,g5 k_goto
+  class r1,r2,r4 k_process
+  class g1,g2,g3,g4,g5 k_goto
   class e1 k_end

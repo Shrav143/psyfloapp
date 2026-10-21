@@ -18,12 +18,14 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>The run reaches Scribe</b><br/>(Packet for IOP and PHP)" }
   p1@{ shape: rect, label: "The agent works about 45% of its step, then stops" }
-  dKey@{ shape: diam, label: "Which question was picked when the agents started?" }
+  dKey@{ shape: diam, label: "<b>Which questions were planned when the agents started?</b><br/>The first one is asked now, a second right after the first answer" }
   q1@{ shape: rect, label: "<b>Sertraline</b><br/>'Sertraline starts 9/14 on the medication list and 9/21 in the psychiatric evaluation. Which is right?'<br/>Choices: '9/14 (the medication list)', '9/21 (the psychiatric evaluation)'" }
   q2@{ shape: rect, label: "<b>Step-down provider</b><br/>'Is a named step-down provider on file? Summit asks for one in residential continued stays.'<br/>Choices: 'Yes, a named provider is on file', 'Not yet. One will be named before day 10', 'Not applicable for this request'" }
+  q4@{ shape: rect, label: "<b>Diagnosis duration (Scribe)</b><br/>'How long has the patient had this diagnosis? The psychiatric evaluation is not in the case, so Scribe cannot read it from there.'<br/>Choices: 'Less than a year', 'One to five years', 'More than five years'" }
+  q5@{ shape: rect, label: "<b>Why a lower level is not enough (Scribe)</b><br/>'Why is a lower level of care not enough? The chart does not say, and the payer will ask.'<br/>Choices: 'A lower level was tried and did not hold', 'Home is not safe or supportive enough', 'Symptoms are too severe for a lower level'" }
   q3@{ shape: rect, label: "<b>Discharge date (Packet)</b><br/>'Is a discharge or step-down date planned in the next 30 days? The payer's form asks for it.'<br/>Choices: 'Yes, within 2 weeks', 'Yes, within 30 days', 'Not decided yet'" }
-  sc@{ shape: curv-trap, label: "<b>Step 3 shows the question</b><br/>The asking row: 'Needs your answer' and a button 'Answer'<br/>Green banner: 'One question from Scribe.' and the text<br/>Hint: 'The agents are waiting for your answer.'" }
-  oM@{ shape: win-pane, label: "<b>Scribe has a question</b><br/>'Question 1 of at most 3 for this case. The agents wait for you.'<br/>Choice cards, then 'Or add a note in your own words'" }
+  sc@{ shape: curv-trap, label: "<b>Step 3 shows the question</b><br/>The asking row: 'Needs your answer' and a button 'Answer'<br/>Green banner: 'Question 1 of 2 from Scribe.' and the text<br/>Hint: 'The agents are waiting for your answer.'" }
+  oM@{ shape: win-pane, label: "<b>Scribe has a question</b><br/>'Question 1 of 2 for this case. The agents wait for you.'<br/>Choice cards, then 'Or add a note in your own words'" }
   pNoSkip@{ shape: rect, label: "'Pause all agents' and 'Skip ahead' do not get past the question" }
   iChoice@{ shape: lean-r, label: "<b>Click one choice card</b><br/>It highlights" }
   iNote@{ shape: lean-r, label: "<b>Type a note</b><br/>'Optional with a button above, or use it on its own.'" }
@@ -33,8 +35,9 @@ flowchart TD
   stAns@{ shape: cyl, label: "<b>Answer saved on the draft</b><br/>The choice's words without the bracket, or the typed note<br/>A note typed with a choice is kept beside it" }
   stClear@{ shape: cyl, label: "The summary draft is cleared so Scribe rebuilds it" }
   tYou@{ shape: odd, label: "<b>'You answered Scribe: ANSWER. It is in the draft.'</b><br/>With a typed note: 'ANSWER · NOTE. It is in the draft.'" }
+  dMore@{ shape: diam, label: "Is a second question planned for this agent?" }
   aGo@{ shape: hex, label: "<b>The agent finishes the other 55% of its step</b><br/>Then the remaining agents run" }
-  pEffect@{ shape: rect, label: "<b>Sertraline answer: the Medication list finding becomes 'Sertraline start date confirmed by you: 9/14'</b><br/>Step-down 'Yes': the tick-box 'Name the step-down provider' disappears" }
+  pEffect@{ shape: rect, label: "<b>Sertraline answer: the Medication list finding becomes 'Sertraline start date confirmed by you: 9/14'</b><br/>Step-down 'Yes': the tick-box 'Name the step-down provider' disappears<br/>A duration or lower-level answer becomes a sentence in the summary" }
   pSum@{ shape: rect, label: "<b>The draft summary uses the answer</b><br/>Clinical picture: 'Sertraline was started on 9/14.'<br/>Plan: 'A named step-down provider is on file.'" }
   cLater@{ shape: trap-t, label: "Click 'Answer later', press Escape, or click outside" }
   pLater@{ shape: rect, label: "<b>Pop-up closes; the agents stay stopped</b><br/>Banner stays; the row keeps 'Needs your answer'" }
@@ -46,20 +49,26 @@ flowchart TD
   dKey -->|"Medication list has the sertraline finding"| q1
   dKey -->|"Residential 3.5 or Detox"| q2
   dKey -->|"IOP or PHP"| q3
+  dKey -->|"Second question: no psychiatric evaluation in the case"| q4
+  dKey -->|"Second question: no psychosocial, treatment plan, ASAM or nursing document for the level of care, or no reason"| q5
   q1 --> sc
   q2 --> sc
   q3 --> sc
+  q4 --> sc
+  q5 --> sc
   sc --> oM --> pNoSkip
   oM --> iChoice --> dReady
   oM --> iNote --> dReady
   dReady -->|"No"| pOff --> iChoice
-  dReady -->|"Yes"| cSend --> stAns --> stClear --> tYou --> aGo --> pEffect --> pSum --> g36
+  dReady -->|"Yes"| cSend --> stAns --> stClear --> tYou --> dMore
+  dMore -->|"Yes"| p1
+  dMore -->|"No"| aGo --> pEffect --> pSum --> g36
   oM --> cLater --> pLater --> cAnswer --> oM
   pLater --> pLeave --> oM
   sc --> gCM
   class s1 k_start
-  class p1,q1,q2,q3,pNoSkip,pOff,pEffect,pSum,pLater,pLeave k_process
-  class dKey,dReady k_decision
+  class p1,q1,q2,q4,q5,q3,pNoSkip,pOff,pEffect,pSum,pLater,pLeave k_process
+  class dKey,dReady,dMore k_decision
   class sc k_screen
   class oM k_overlay
   class iChoice,iNote k_input

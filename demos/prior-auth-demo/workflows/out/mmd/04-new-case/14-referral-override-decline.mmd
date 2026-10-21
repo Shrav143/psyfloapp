@@ -18,7 +18,7 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Click 'Mark OK' on a checklist row" }
   s2@{ shape: stadium, label: "<b>Full page, Validation tab:</b><br/>Resolve › 'Mark OK with reason'" }
-  s3@{ shape: stadium, label: "<b>Click 'Decline'</b><br/>Checklist, or the full page header" }
+  s3@{ shape: stadium, label: "<b>Click 'Decline'</b><br/>Checklist, or the full page header<br/>Stays available while 'Accept' is disabled" }
   subgraph gOk ["Mark OK"]
   o1@{ shape: win-pane, label: "<b>'Mark OK with a reason'</b><br/>Subtitle: the check, e.g. 'Clinician signature is present'<br/>'Reader found: The signature line is empty. Reader cannot confirm who ordered this.'" }
   i1@{ shape: lean-r, label: "<b>Type a 'Reason' (required)</b><br/>Hint 'Logged with your name on the activity timeline.'<br/>Placeholder 'Why is it fine to go ahead?'" }
@@ -28,7 +28,7 @@ flowchart TD
   st1@{ shape: cyl, label: "<b>Finding is marked resolved with your reason</b><br/>The source document itself does not change" }
   p2@{ shape: rect, label: "Timeline 'You overrode: Clinician signature is present' with the reason" }
   t1@{ shape: odd, label: "<b>'Marked OK'</b><br/>'Your reason is on the activity timeline.'" }
-  sc1@{ shape: curv-trap, label: "<b>Row turns Done</b><br/>'Marked OK by Jordan Perez: …'<br/>Progress goes up by one; Validation tab shows pill 'Marked OK'" }
+  sc1@{ shape: curv-trap, label: "<b>Row turns Done</b><br/>'Marked OK by Jordan Perez: …'<br/>Progress goes up by one; Validation tab shows pill 'Marked OK'<br/>A required row no longer blocks 'Accept referral and continue'" }
   end
   cX1@{ shape: trap-t, label: "<b>Click 'Cancel' or 'Close', press Escape,</b><br/>or click outside the dialog" }
   e1@{ shape: stadium, label: "Nothing changes" }

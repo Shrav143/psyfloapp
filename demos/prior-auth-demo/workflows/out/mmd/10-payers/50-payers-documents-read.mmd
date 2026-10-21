@@ -29,12 +29,12 @@ flowchart TD
   pdiff@{ shape: rect, label: "<b>Payers differ a little</b><br/>Lakeshore adds 'Fax cover sheet' to every list<br/>Harborview adds a Part D medication list and a Medicare eligibility check<br/>Evergreen adds a call log with the reviewer" }
   one@{ shape: rect, label: "<b>One document reads 'One document.'</b><br/>Numbers up to fifteen are spelled out" }
   dU@{ shape: diam, label: "Edits saved but not yet applied?" }
-  bU@{ shape: odd, label: "'1 edit applies to new drafts only'" }
+  bU@{ shape: odd, label: "<b>'1 edit applies to new drafts only'</b><br/>New drafts use this at once. Sent requests keep<br/>what they were sent with." }
   ce@{ shape: trap-t, label: "Click 'Edit list'" }
   gE@{ shape: subproc, label: "Continues in: Payers › Documents › Edit the list" }
   gC@{ shape: subproc, label: "Continues in: Payers › Documents › Try it on a case" }
   gU@{ shape: subproc, label: "Continues in: Payers › Edits waiting › Update drafts" }
-  aft@{ shape: rect, label: "<b>A payer change can add rows</b><br/>Cardinal's 2026.3 change adds 'Remaining treatment goals'<br/>(Named in the latest progress note) to Residential 3.5,<br/>IOP and PHP once its drafts are updated" }
+  aft@{ shape: rect, label: "<b>A payer change can add rows</b><br/>Cardinal's 2026.3 change adds 'Remaining treatment goals'<br/>(Named in the latest progress note) to Residential 3.5,<br/>IOP and PHP when the change is updated.<br/>Evergreen's change adds 'Notice call reference number'" }
   gA@{ shape: subproc, label: "Continues in: Payers › Changes › Update drafts after a change" }
   s1 --> tab --> dU
   dU -->|"Yes"| bU --> gU

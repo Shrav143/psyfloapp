@@ -41,13 +41,13 @@ flowchart TD
   sc2@{ shape: curv-trap, label: "<b>Coverage tab result</b><br/>Banner with the headline, 'Check again'<br/>Card 'Payment checks' with six lines and 'Checked live at 10:42 am'" }
   c3@{ shape: trap-t, label: "Click 'Check again'" }
   c4@{ shape: trap-t, label: "Click 'Open full Eligibility & Benefits check'" }
-  p6@{ shape: rect, label: "<b>Opens Verify a patient with the referral's payer,</b><br/>member ID, level of care and a made-up birth date filled in" }
+  p6@{ shape: rect, label: "<b>Opens Verify a patient with the referral's payer,</b><br/>member ID, level of care and a made-up birth date filled in<br/>The address keeps ?referral=RF-2053 (and ?case= once the referral is a request)" }
   g2@{ shape: subproc, label: "Continues in: Eligibility & Benefits › Verify a patient" }
   s3@{ shape: stadium, label: "<b>Coming back: 'Start authorization'</b><br/>on the coverage result (authorization first)" }
   p7@{ shape: rect, label: "<b>Opens a NEW case with payer, level of care, member ID, initials and age</b><br/>It is not tied to the referral or its case" }
   g3@{ shape: subproc, label: "Continues in: New case › How a case starts and resumes" }
-  s4@{ shape: stadium, label: "<b>Press the browser Back button</b><br/>on Verify a patient or its result" }
-  p8@{ shape: rect, label: "<b>Returns to the referral page</b><br/>No button in Eligibility leads back to the referral" }
+  s4@{ shape: stadium, label: "<b>Click 'Back to referral RF-2053'</b><br/>on Verify a patient or its result<br/>(shown when the address has ?referral=)" }
+  p8@{ shape: rect, label: "<b>Opens the full referral page for RF-2053</b><br/>Once the referral is a request the link reads 'Back to case R-1042'<br/>The full page finds the case that holds the referral, so 'Back to the case' still works" }
   s1 --> d1
   d1 -->|"No"| p1 --> g1
   d1 -->|"Yes"| p2 --> c1

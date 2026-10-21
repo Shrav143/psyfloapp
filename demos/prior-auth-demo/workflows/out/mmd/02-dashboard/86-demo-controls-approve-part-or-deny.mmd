@@ -23,12 +23,12 @@ flowchart TD
   c3@{ shape: trap-t, label: "Click 'Denies'" }
   subgraph gA ["Approved"]
   a1@{ shape: cyl, label: "<b>Stage Decided today, chip 'Approved' (green), bars full</b><br/>Cadence holds it; next step 'Next review booked. Write-back waits for you'<br/>History 'The payer approved the request' and 'Cadence updated the ledger and booked the next review'" }
-  an@{ shape: odd, label: "<b>Notification 'Approved': 'R-1021 was approved. Write-back waits for you.'</b><br/>Toast 'Demo: payer approves'" }
+  an@{ shape: odd, label: "<b>Notification 'Approved': 'R-1021 was approved. Write-back waits for you.'</b><br/>Toast 'Demo: Cardinal approved it'<br/>'The stage counts, the table and the notifications updated.'" }
   as@{ shape: curv-trap, label: "<b>Dashboard after an approval</b><br/>'Decided today' goes up by one, 'Under review' goes down<br/>The Decided today headline counts it as approved" }
-  ab@{ shape: win-pane, label: "Drawer shows the green box 'Approved. Write-back waits for you'" }
+  ab@{ shape: win-pane, label: "<b>Drawer shows the green box 'Approved. Write-back waits for you'</b><br/>With write-back off in EMR Connect, a calm line instead" }
+  qk@{ shape: rect, label: "<b>No reply is offered any more</b><br/>Demo controls say 'The payer has already decided this request.'<br/>So the request cannot be pushed back and stay counted in Decided today" }
   end
   g1@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Approve the write-back" }
-  qk@{ shape: rect, label: "Quirk: 'Payer received it' on an approved request puts it back in Received but it still counts as Decided today" }
   subgraph gD ["Denied or partly approved"]
   d1@{ shape: rect, label: "<b>Request gets a new number: D-3319, then D-3320 and so on</b><br/>The old number R-1021 is gone; the case stays the same" }
   d2@{ shape: cyl, label: "<b>Stage Appeal or call, type 'Peer-to-peer', chip 'Call booked'</b><br/>Advocate holds it; chance 61%; 3 days to the call window<br/>Next step 'Denied today. Advocate booked a peer-to-peer call'" }
@@ -43,7 +43,7 @@ flowchart TD
   g3@{ shape: subproc, label: "<b>Continues in: Authorizations › Case page</b><br/>The case number is unchanged" }
   s1 --> x1 --> c1 & c2 & c3
   c1 --> a1 --> an --> as --> ab --> g1
-  a1 -.-> qk
+  ab --> qk
   c2 --> d1
   c3 --> d1
   d1 --> d2 --> d3 --> dn --> dt --> d4
@@ -58,7 +58,7 @@ flowchart TD
   class an,dn,dt k_toast
   class as,ds,dd k_screen
   class ab k_overlay
-  class g1,g2,g3 k_goto
   class qk,d1,d4 k_process
+  class g1,g2,g3 k_goto
   style gA fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gD fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

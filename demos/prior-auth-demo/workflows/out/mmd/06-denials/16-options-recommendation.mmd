@@ -24,10 +24,10 @@ flowchart TD
   v1@{ shape: rect, label: "<b>'Worth challenging'</b><br/>50 and over" }
   v2@{ shape: rect, label: "<b>'Borderline'</b><br/>35 to 49" }
   v3@{ shape: rect, label: "<b>'Probably accept'</b><br/>under 35" }
-  p2@{ shape: rect, label: "Seed denials sit between 38 and 64, so 'Probably accept' does not show at the start" }
+  p2@{ shape: rect, label: "<b>Seed denials sit between 27 and 64</b><br/>D-3306 (27%) reads 'Probably accept' and recommends 'Accept' at the start" }
   o1@{ shape: curv-trap, label: "<b>Card 'Peer-to-peer call'</b><br/>'30 to 45 minutes of clinician time · 5 to 7 days regained'<br/>Chance = the win chance" }
   o2@{ shape: curv-trap, label: "<b>Card 'Written appeal'</b><br/>'60 days to file · 5 to 7 days regained'<br/>Chance = win chance minus 6, never under 5" }
-  o3@{ shape: curv-trap, label: "<b>Card 'Accept the decision and plan the next step'</b><br/>'Accept 7 days and plan the step-down' on a partial approval<br/>'Fastest. Nothing regained.' No chance shown" }
+  o3@{ shape: curv-trap, label: "<b>Card 'Accept the decision and plan the next step'</b><br/>'Accept 7 days and plan the step-down' on a partial approval<br/>'Fastest. Nothing regained.' No chance shown<br/>Needs: a reason for the record, Analytics counts the write-off, Case Manager adds a step-down plan" }
   p3@{ shape: rect, label: "Each chance reads 'likely 55–72%' (9 below to 8 above) and '312 similar decisions' or 'Benchmark estimate'" }
   p4@{ shape: rect, label: "Each card ends with 'Needs: ...' (who, what, and the evidence that would be attached)" }
   r1@{ shape: diam, label: "Which card is 'Recommended'?" }

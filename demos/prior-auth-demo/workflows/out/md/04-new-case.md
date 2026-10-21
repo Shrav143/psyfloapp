@@ -10,7 +10,7 @@ New case is a page that makes or reopens a case (a 'draft') and shows the step i
 
 Route: `/authorizations/new`
 
-Demo only: the hosted preview keeps the address in memory, so the typed ?referral= entry cannot be used there.
+Demo only: the hosted preview keeps the address in memory, so ?referral= cannot be typed there. The button 'Start a case from this referral' still works in it.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -33,7 +33,7 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Open New case</b><br/>Sidebar, a 'New case' button, the Demo menu, FLO's link or the old /referrals address" }
   s2@{ shape: stadium, label: "<b>Click 'Start authorization'</b><br/>on a coverage result" }
-  s3@{ shape: stadium, label: "<b>Type /authorizations/new?referral=RF-2051</b><br/>(no button links to it now)" }
+  s3@{ shape: stadium, label: "<b>Click 'Start a case from this referral'</b><br/>on the full referral page (or type /authorizations/new?referral=RF-2051)" }
   s4@{ shape: stadium, label: "<b>Open a case that already exists</b><br/>A Case Manager row button, a bell link, or 'Open in review and sign'" }
   subgraph gMake ["No case id in the address: make one"]
   p1@{ shape: rect, label: "<b>Page makes a case, then opens /authorizations/new/draft-ID</b><br/>It replaces the address, so Back does not loop" }
@@ -158,10 +158,10 @@ flowchart TD
   b4@{ shape: trap-t, label: "Review and sign: 'Back', 'Save as draft', 'Sign and send'" }
   end
   pBack@{ shape: rect, label: "<b>'Back' goes one step back</b><br/>Medical records to Referral; Agents work to Medical records; Review and sign to Agents work" }
-  pNext@{ shape: rect, label: "<b>Forward buttons stay disabled until the step is ready</b><br/>'Continue' waits for nothing missing; 'Review and sign' waits for the agents" }
+  pNext@{ shape: rect, label: "<b>Forward buttons stay disabled until the step is ready</b><br/>'Accept referral and continue' waits for the required referral items;<br/>'Continue' waits for nothing missing; 'Review and sign' waits for the agents" }
   cLink@{ shape: trap-t, label: "Click the link 'Case Manager' above the title" }
   gCm@{ shape: subproc, label: "Continues in: Case Manager" }
-  sFull@{ shape: curv-trap, label: "<b>Stepper on the full referral page</b><br/>'Referral' is current and no step is clickable" }
+  sFull@{ shape: curv-trap, label: "<b>Stepper on the full referral page</b><br/>'Referral' is current and no step is clickable<br/>The button 'Back to the case' sits beside the crumbs" }
   gFull@{ shape: subproc, label: "Continues in: New case › Referral › The full referral page" }
   g1@{ shape: subproc, label: "Continues in: New case › Referral › Start screen" }
   g2@{ shape: subproc, label: "Continues in: New case › Medical records › The checklist and Continue" }
@@ -181,6 +181,7 @@ flowchart TD
   b2 --> pBack
   b3 --> pBack
   b4 --> pBack
+  b1 -.-> pNext
   b2 -.-> pNext
   b3 -.-> pNext
   sc1 --> cLink --> gCm
@@ -329,17 +330,19 @@ flowchart TD
   subgraph gSec ["Four sections, each with 'x of y'"]
   sA@{ shape: curv-trap, label: "<b>PATIENT</b><br/>Patient initials and age<br/>Patient contact information is present<br/>Patient age is within the program's range" }
   sB@{ shape: curv-trap, label: "<b>REFERRER</b><br/>Clinician credentials are accepted<br/>Clinician signature is present<br/>The order has not expired" }
-  sC@{ shape: curv-trap, label: "<b>CLINICAL</b><br/>A valid diagnosis code is present<br/>Required clinical components are present<br/>Requested service matches the program<br/>Urgent criteria are documented" }
+  sC@{ shape: curv-trap, label: "<b>CLINICAL</b><br/>A valid diagnosis code is present<br/>Required clinical components are present<br/>Requested service matches what the program offers<br/>Urgent criteria are documented" }
   sD@{ shape: curv-trap, label: "<b>COVERAGE</b><br/>Insurance and member ID are found<br/>Verify checked coverage (Optional until it has run)" }
   end
   dRow@{ shape: diam, label: "State of a row?" }
   rDone@{ shape: rect, label: "<b>Done</b><br/>'Found: F10.20 · Referral form, page 1'<br/>No buttons" }
   rMiss@{ shape: rect, label: "<b>Missing: nothing was found</b><br/>No signature, components, urgent criteria, contact, diagnosis or insurance" }
-  rWarn@{ shape: rect, label: "<b>Check this: found, but wrong</b><br/>Credentials, expired order, level of care, short ICD-10 code, age under 18, lapsed coverage" }
-  rWait@{ shape: rect, label: "<b>Waiting on the referrer</b><br/>'Asked by fax, 1 d ago.'<br/>No 'Ask' button, 'Mark OK' stays" }
-  cAsk@{ shape: trap-t, label: "<b>Click 'Ask the referrer' on a row</b><br/>(the insurance row has no 'Mark OK')" }
+  rWarn@{ shape: rect, label: "<b>Check this: found, but wrong</b><br/>Credentials, expired order, level of care, short ICD-10 code, lapsed coverage" }
+  rAge@{ shape: rect, label: "<b>Check this: age under 18 (failed)</b><br/>Only 'Mark OK' on the row<br/>No 'Ask the referrer': a reply cannot change a patient's age" }
+  rWait@{ shape: rect, label: "<b>Waiting on the referrer</b><br/>'Asked by fax, 1 d ago.'<br/>No 'Ask' button, 'Mark OK' stays<br/>Counts as handled for 'Accept referral and continue'" }
+  cAsk@{ shape: trap-t, label: "<b>Click 'Ask the referrer' on a row</b><br/>(not on a failed age row; the insurance row has no 'Mark OK')" }
   cOk@{ shape: trap-t, label: "Click 'Mark OK' on a row" }
   cCov@{ shape: trap-t, label: "<b>Click 'Run coverage check'</b><br/>or 'Check again' on the coverage row" }
+  pReq@{ shape: rect, label: "<b>Six rows are required before the referral can be accepted</b><br/>Patient age, clinician credentials, clinician signature, diagnosis code, level of care, insurance and member ID<br/>The other rows are advisory: the Accept dialog lists them" }
   gAsk@{ shape: subproc, label: "Continues in: New case › Referral › Ask the referrer" }
   gOk@{ shape: subproc, label: "Continues in: New case › Referral › Mark OK or decline" }
   gCov@{ shape: subproc, label: "Continues in: New case › Referral › Check coverage" }
@@ -353,19 +356,22 @@ flowchart TD
   dRow -->|"Found"| rDone
   dRow -->|"Nothing found"| rMiss
   dRow -->|"Found, wrong"| rWarn
+  dRow -->|"Age failed"| rAge
   dRow -->|"Question sent"| rWait
   rMiss --> cAsk
   rWarn --> cAsk
   rMiss --> cOk
   rWarn --> cOk
+  rAge --> cOk
   rWait --> cOk
   sD -.-> cCov
+  sD -.-> pReq -.-> gBtn
   cAsk --> gAsk
   cOk --> gOk
   cCov --> gCov
   class s1,s2,s3 k_start
   class sc1,sc2,sA,sB,sC,sD k_screen
-  class p0,pr,rDone,rMiss,rWarn,rWait k_process
+  class p0,pr,rDone,rMiss,rWarn,rAge,rWait,pReq k_process
   class dRow k_decision
   class cAsk,cOk,cCov k_click
   class gAsk,gOk,gCov,gBtn k_goto
@@ -402,7 +408,7 @@ flowchart TD
   s1@{ shape: stadium, label: "<b>Click 'Ask the referrer' on a row,</b><br/>or 'Ask the referrer for the 4 missing items'" }
   s2@{ shape: stadium, label: "<b>Full page: click 'Request information',</b><br/>'Request information for all open findings',<br/>or Resolve › 'Request information'" }
   o1@{ shape: win-pane, label: "<b>'Request more information'</b><br/>'To Crisis line 988 follow-up, fax (614) 555-0100'<br/>'The message comes from the 4 open items. The referral moves to Awaiting info until they reply.'" }
-  p1@{ shape: rect, label: "<b>Message is written from the open items</b><br/>One numbered line each: signed copy, current order, credentials or cosigner, form parts, ICD-10 code, level of care, risk screening, phone number, insurance card" }
+  p1@{ shape: rect, label: "<b>Message is written from the open items</b><br/>One numbered line each: signed copy, current order, credentials or cosigner, form parts, ICD-10 code, level of care, risk screening, phone number, insurance card<br/>A failed age check is never listed" }
   p1b@{ shape: rect, label: "<b>No open items: 'The message comes from this referral'</b><br/>One line: 'Anything you can add that supports the request'" }
   i1@{ shape: lean-r, label: "<b>Pick 'Send by': Fax, E-referral, Email or Phone call</b><br/>Starts at the referral's own channel; phone and portal start at Email" }
   d1@{ shape: diam, label: "Message edited by hand?" }
@@ -418,7 +424,7 @@ flowchart TD
   p5@{ shape: rect, label: "<b>Timeline gets 'You asked Crisis line 988 follow-up for more information by email'</b><br/>and a pending 'Reader will read the reply when it arrives'" }
   x1@{ shape: st-rect, label: "<b>Referrer receives the request</b><br/>(demo: simulated, nothing is sent)" }
   t1@{ shape: odd, label: "<b>'Request sent'</b><br/>'Crisis line 988 follow-up was asked for more information. RF-2053 is Awaiting info.'" }
-  sc1@{ shape: curv-trap, label: "<b>Checklist after sending</b><br/>Asked rows read 'Waiting on the referrer. Asked by email, just now.'<br/>No 'Ask' buttons, 'Mark OK' stays, button 'Demo: the referrer replies' appears" }
+  sc1@{ shape: curv-trap, label: "<b>Checklist after sending</b><br/>Asked rows read 'Waiting on the referrer. Asked by email, just now.'<br/>No 'Ask' buttons, 'Mark OK' stays, button 'Demo: the referrer replies' appears<br/>Asked rows no longer block 'Accept referral and continue'" }
   g1@{ shape: subproc, label: "Continues in: New case › Referral › The referrer replies" }
   s1 --> o1
   s2 --> o1
@@ -448,7 +454,7 @@ flowchart TD
 
 ## Authorizations › New case › Referral › Accept a referral
 
-Accepting a referral takes a bed or slot, records who owns it, and moves the case on to the medical records. Open findings never block it; they are listed and kept on the timeline.
+Accepting a referral takes a bed or slot, records who owns it, and moves the case on to the medical records. Six findings must be dealt with first. The other open findings are listed in the dialog and do not stop it.
 
 Route: `/authorizations/new/:draftId?ref=RF-2048`
 
@@ -473,6 +479,10 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Click 'Accept referral and continue'</b><br/>on the checklist" }
   s2@{ shape: stadium, label: "<b>Click 'Accept referral'</b><br/>on the full referral page" }
+  s3@{ shape: stadium, label: "<b>Click 'Continue to medical records'</b><br/>on the checklist or on the green banner of the full page" }
+  dB@{ shape: diam, label: "<b>Is a required finding still open?</b><br/>Patient age, clinician credentials, clinician signature,<br/>diagnosis code, level of care, insurance and member ID" }
+  tB@{ shape: odd, label: "<b>The button is disabled</b><br/>One line under it: 'Resolve 4 items first: clinician credentials, clinician signature, diagnosis code, insurance and member ID.'" }
+  eB@{ shape: stadium, label: "<b>Nothing opens</b><br/>'Mark OK', the referrer's reply or 'Ask the referrer' lifts an item (a failed age: only 'Mark OK')<br/>'Decline' stays available" }
   o1@{ shape: win-pane, label: "<b>'Accept this referral?'</b><br/>'RF-2048 · A.P., 45 · Dr. Lindqvist, Family Medicine'" }
   d1@{ shape: diam, label: "Anything still open?" }
   t1@{ shape: odd, label: "<b>Amber banner '3 things are still open'</b><br/>Each open finding, 'Coverage has not been checked yet.' or the lapsed coverage<br/>'You can accept anyway. Each open item stays on the timeline.'" }
@@ -485,7 +495,7 @@ flowchart TD
   end
   d2@{ shape: diam, label: "Is the date valid?" }
   p2@{ shape: rect, label: "'Accept referral' is disabled" }
-  cX@{ shape: trap-t, label: "<b>Click 'Cancel' or 'Close', press Escape,</b><br/>or click outside the dialog" }
+  cX@{ shape: trap-t, label: "<b>Click 'Cancel' or 'Close', press Escape,</b><br/>or click outside the dialog<br/>(Escape closes an open Owner or Program menu first)" }
   e1@{ shape: stadium, label: "Nothing changes" }
   c1@{ shape: trap-t, label: "Click 'Accept referral'" }
   st1@{ shape: cyl, label: "<b>Referral is Accepted</b><br/>Owner, program, target date saved<br/>Timeline 'Accepted into IOP' with any open findings counted" }
@@ -493,21 +503,28 @@ flowchart TD
   t3@{ shape: odd, label: "<b>'Referral accepted'</b><br/>'RF-2048 is accepted into IOP.'" }
   p3@{ shape: rect, label: "<b>Referral leaves 'Already arrived'</b><br/>(only open referrals are listed)" }
   d3@{ shape: diam, label: "Accepted from where?" }
-  subgraph gCl ["Referral goes in"]
-  p4@{ shape: rect, label: "<b>Copied into the case: patient, payer, member ID,</b><br/>level of care (the accepted program), diagnoses, reason<br/>Request type: Initial request if routine, else Admission" }
-  p5@{ shape: rect, label: "<b>Referral becomes the first document</b><br/>'RF-2048 referral.pdf'" }
-  d4@{ shape: diam, label: "Had the agents already run on this case?" }
-  p6@{ shape: rect, label: "<b>Agents' results are cleared</b><br/>Because the patient and documents changed<br/>No warning is shown" }
-  t4@{ shape: odd, label: "<b>'Referral RF-2048 is in this case'</b><br/>'A.P., 45. Next, add the medical records.'" }
-  end
-  g1@{ shape: subproc, label: "Continues in: New case › Medical records › The checklist and Continue" }
   subgraph gPg ["From the full referral page"]
   sc1@{ shape: curv-trap, label: "<b>Page stays open</b><br/>Green banner 'Accepted into IOP'<br/>'Target admission 10/21/2026. Owner Taylor Brooks.'" }
   c2@{ shape: trap-t, label: "<b>Click 'Continue to medical records'</b><br/>(or 'Open R-1042' when a request is linked)" }
   p7@{ shape: rect, label: "<b>Uses the case in the address (?draft=)</b><br/>Without one, a new blank case is made first" }
   end
-  s1 --> o1
-  s2 --> o1
+  subgraph gAsk ["Attach the referral to the case"]
+  d4@{ shape: diam, label: "Have the agents already run on this case?" }
+  oA@{ shape: win-pane, label: "<b>'Attach this referral?'</b><br/>'Attaching this referral makes the agents re-check the case. Continue?'<br/>'Their finished work is cleared. You start them again after the medical records.'" }
+  cCancel@{ shape: trap-t, label: "<b>Click 'Cancel' or 'Close', press Escape,</b><br/>or click outside the dialog" }
+  eA@{ shape: stadium, label: "<b>Nothing is attached and the agents' work stays</b><br/>A referral just accepted stays accepted:<br/>the button now reads 'Continue to medical records'" }
+  cCont@{ shape: trap-t, label: "Click 'Continue'" }
+  p6@{ shape: rect, label: "<b>Agents' results and answers are cleared</b><br/>Because the patient and documents changed<br/>The case goes back to Medical records" }
+  tR@{ shape: odd, label: "<b>'The agents will re-check this case'</b><br/>'RF-2048 changed the case, so the agents' earlier work was cleared.'" }
+  p4@{ shape: rect, label: "<b>Copied into the case: patient, payer, member ID,</b><br/>level of care (the accepted program), diagnoses, reason<br/>Request type: Initial request if routine, else Admission" }
+  p5@{ shape: rect, label: "<b>Referral becomes the first document</b><br/>'RF-2048 referral.pdf'" }
+  t4@{ shape: odd, label: "<b>'Referral RF-2048 is in this case'</b><br/>'A.P., 45. Next, add the medical records.'" }
+  end
+  g1@{ shape: subproc, label: "Continues in: New case › Medical records › The checklist and Continue" }
+  s1 --> dB
+  s2 --> dB
+  dB -->|"Yes"| tB --> eB
+  dB -->|"No"| o1
   o1 --> d1
   d1 -->|"Yes"| t1 --> i1
   d1 -->|"No"| t2 --> i1
@@ -516,25 +533,29 @@ flowchart TD
   d2 -->|"Yes"| c1
   o1 --> cX --> e1
   c1 --> st1 --> st2 --> t3 --> p3 --> d3
-  d3 -->|"Checklist, at once"| p4 --> p5 --> d4
-  d4 -->|"Yes"| p6 --> t4
-  d4 -->|"No"| t4
-  t4 --> g1
-  d3 -->|"Full page, later"| sc1 --> c2 --> p7 --> p4
-  class s1,s2 k_start
-  class o1 k_overlay
-  class d1,d2,d3,d4 k_decision
-  class t1,t2,t3,t4 k_toast
+  d3 -->|"Checklist, at once"| d4
+  d3 -->|"Full page, later"| sc1 --> c2 --> p7 --> d4
+  s3 --> d4
+  d4 -->|"No"| p4
+  d4 -->|"Yes"| oA
+  oA --> cCancel --> eA
+  oA --> cCont --> p6 --> p4
+  p6 -.-> tR
+  p4 --> p5 --> t4 --> g1
+  class s1,s2,s3 k_start
+  class dB,d1,d2,d3,d4 k_decision
+  class tB,t1,t2,t3,tR,t4 k_toast
+  class eB,e1,eA k_endx
+  class o1,oA k_overlay
   class i1,i2,i3 k_input
-  class p1,p2,p3,p4,p5,p6,p7 k_process
-  class cX,c1,c2 k_click
-  class e1 k_endx
+  class p1,p2,p3,p7,p6,p4,p5 k_process
+  class cX,c1,c2,cCancel,cCont k_click
   class st1,st2 k_store
-  class g1 k_goto
   class sc1 k_screen
+  class g1 k_goto
   style gForm fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
-  style gCl fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gPg fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gAsk fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```
 
 ## Authorizations › New case › Referral › Mark OK or decline
@@ -564,7 +585,7 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Click 'Mark OK' on a checklist row" }
   s2@{ shape: stadium, label: "<b>Full page, Validation tab:</b><br/>Resolve › 'Mark OK with reason'" }
-  s3@{ shape: stadium, label: "<b>Click 'Decline'</b><br/>Checklist, or the full page header" }
+  s3@{ shape: stadium, label: "<b>Click 'Decline'</b><br/>Checklist, or the full page header<br/>Stays available while 'Accept' is disabled" }
   subgraph gOk ["Mark OK"]
   o1@{ shape: win-pane, label: "<b>'Mark OK with a reason'</b><br/>Subtitle: the check, e.g. 'Clinician signature is present'<br/>'Reader found: The signature line is empty. Reader cannot confirm who ordered this.'" }
   i1@{ shape: lean-r, label: "<b>Type a 'Reason' (required)</b><br/>Hint 'Logged with your name on the activity timeline.'<br/>Placeholder 'Why is it fine to go ahead?'" }
@@ -574,7 +595,7 @@ flowchart TD
   st1@{ shape: cyl, label: "<b>Finding is marked resolved with your reason</b><br/>The source document itself does not change" }
   p2@{ shape: rect, label: "Timeline 'You overrode: Clinician signature is present' with the reason" }
   t1@{ shape: odd, label: "<b>'Marked OK'</b><br/>'Your reason is on the activity timeline.'" }
-  sc1@{ shape: curv-trap, label: "<b>Row turns Done</b><br/>'Marked OK by Jordan Perez: …'<br/>Progress goes up by one; Validation tab shows pill 'Marked OK'" }
+  sc1@{ shape: curv-trap, label: "<b>Row turns Done</b><br/>'Marked OK by Jordan Perez: …'<br/>Progress goes up by one; Validation tab shows pill 'Marked OK'<br/>A required row no longer blocks 'Accept referral and continue'" }
   end
   cX1@{ shape: trap-t, label: "<b>Click 'Cancel' or 'Close', press Escape,</b><br/>or click outside the dialog" }
   e1@{ shape: stadium, label: "Nothing changes" }
@@ -678,13 +699,13 @@ flowchart TD
   sc2@{ shape: curv-trap, label: "<b>Coverage tab result</b><br/>Banner with the headline, 'Check again'<br/>Card 'Payment checks' with six lines and 'Checked live at 10:42 am'" }
   c3@{ shape: trap-t, label: "Click 'Check again'" }
   c4@{ shape: trap-t, label: "Click 'Open full Eligibility & Benefits check'" }
-  p6@{ shape: rect, label: "<b>Opens Verify a patient with the referral's payer,</b><br/>member ID, level of care and a made-up birth date filled in" }
+  p6@{ shape: rect, label: "<b>Opens Verify a patient with the referral's payer,</b><br/>member ID, level of care and a made-up birth date filled in<br/>The address keeps ?referral=RF-2053 (and ?case= once the referral is a request)" }
   g2@{ shape: subproc, label: "Continues in: Eligibility & Benefits › Verify a patient" }
   s3@{ shape: stadium, label: "<b>Coming back: 'Start authorization'</b><br/>on the coverage result (authorization first)" }
   p7@{ shape: rect, label: "<b>Opens a NEW case with payer, level of care, member ID, initials and age</b><br/>It is not tied to the referral or its case" }
   g3@{ shape: subproc, label: "Continues in: New case › How a case starts and resumes" }
-  s4@{ shape: stadium, label: "<b>Press the browser Back button</b><br/>on Verify a patient or its result" }
-  p8@{ shape: rect, label: "<b>Returns to the referral page</b><br/>No button in Eligibility leads back to the referral" }
+  s4@{ shape: stadium, label: "<b>Click 'Back to referral RF-2053'</b><br/>on Verify a patient or its result<br/>(shown when the address has ?referral=)" }
+  p8@{ shape: rect, label: "<b>Opens the full referral page for RF-2053</b><br/>Once the referral is a request the link reads 'Back to case R-1042'<br/>The full page finds the case that holds the referral, so 'Back to the case' still works" }
   s1 --> d1
   d1 -->|"No"| p1 --> g1
   d1 -->|"Yes"| p2 --> c1
@@ -722,7 +743,7 @@ flowchart TD
 
 ## Authorizations › New case › Referral › The full referral page
 
-One referral in full: the header, the decision banners, the source document on the left and five tabs on the right. It is a page inside New case, so the breadcrumb leads back to the case.
+One referral in full: the header, the decision banners, the source document on the left and five tabs on the right. It is a page inside New case, so 'Back to the case' and the breadcrumb lead back to the case.
 
 Route: `/authorizations/new/referral/RF-2053?draft=draft-1001`
 
@@ -748,13 +769,13 @@ flowchart TD
   s1@{ shape: stadium, label: "<b>Click 'Open the full referral'</b><br/>on the referral checklist" }
   s2@{ shape: stadium, label: "<b>Click 'View' on the 'Referral or admission order' row</b><br/>on the Medical records step" }
   s3@{ shape: stadium, label: "<b>Open an old link such as /referrals/RF-2053</b><br/>(no case in the address)" }
-  p1@{ shape: rect, label: "<b>Address is /authorizations/new/referral/RF-2053?draft=…</b><br/>The case id rides along so the page can lead back to it" }
+  p1@{ shape: rect, label: "<b>Address is /authorizations/new/referral/RF-2053?draft=…</b><br/>The case id rides along so the page can lead back to it<br/>Without it, a draft that already holds this referral is used" }
   d1@{ shape: diam, label: "Is that referral in the demo?" }
   sc0@{ shape: curv-trap, label: "<b>Crumbs 'New case › Referral › RF-9999'</b><br/>'That referral is not in the demo'<br/>'Referral RF-9999 does not exist. Go back to the referral step to drop the documents or pick one that arrived.'" }
   cBack@{ shape: trap-t, label: "Click 'Back to the referral step'" }
   gStart@{ shape: subproc, label: "Continues in: New case › Referral › Start screen" }
   st1@{ shape: cyl, label: "<b>Referral is marked opened</b><br/>Sidebar badge on 'New case' drops" }
-  sc1@{ shape: curv-trap, label: "<b>Referral page</b><br/>Crumbs 'New case › Referral › RF-2053'<br/>Stepper: 'Referral' is current, nothing in it is clickable" }
+  sc1@{ shape: curv-trap, label: "<b>Referral page</b><br/>Crumbs 'New case › Referral › RF-2053' and, at the right, the button 'Back to the case'<br/>Stepper: 'Referral' is current, nothing in it is clickable" }
   sH@{ shape: curv-trap, label: "<b>Header card</b><br/>Pill '{Program} requested', big RF number, status pill, urgency pill<br/>Patient · source · channel · received · payer<br/>Small stepper Received, Reviewed, Decided, Admitted" }
   pSla@{ shape: rect, label: "<b>Red pill 'Past response target' while New or In review</b><br/>after 1 hour (emergent), 4 hours (urgent) or 24 hours (routine)" }
   gHead@{ shape: subproc, label: "Continues in: New case › Referral › Header actions" }
@@ -763,12 +784,18 @@ flowchart TD
   subgraph gCr ["Breadcrumb"]
   cC1@{ shape: trap-t, label: "Click the crumb 'New case'" }
   cC2@{ shape: trap-t, label: "Click the crumb 'Referral'" }
-  dC@{ shape: diam, label: "Was a case in the address?" }
-  dD@{ shape: diam, label: "Was a case in the address?" }
+  dC@{ shape: diam, label: "Is there a case?" }
+  dD@{ shape: diam, label: "Is there a case?" }
   pC1@{ shape: rect, label: "Opens that case (its current step)" }
   pC2@{ shape: rect, label: "Opens the checklist for this referral: ?ref=RF-2053" }
   pC3@{ shape: rect, label: "<b>Opens New case with no case id</b><br/>A new blank case starts" }
   pC4@{ shape: rect, label: "'RF-2053' is plain text, not a link" }
+  end
+  subgraph gBk ["Back to the case"]
+  cBk@{ shape: trap-t, label: "<b>Click 'Back to the case'</b><br/>(beside the crumbs)" }
+  dBk@{ shape: diam, label: "<b>Is there a case?</b><br/>(?draft= in the address, or a draft that holds this referral)" }
+  pBk1@{ shape: rect, label: "Opens that case (its current step)" }
+  pBk2@{ shape: rect, label: "<b>Opens New case with no case id</b><br/>A new blank case starts" }
   end
   gOv@{ shape: subproc, label: "Continues in: New case › How a case starts and resumes" }
   gChk@{ shape: subproc, label: "Continues in: New case › Referral › Referral checklist" }
@@ -794,6 +821,9 @@ flowchart TD
   sH --> gHead
   sc1 --> sBan --> gBan
   sc1 --> cC1 --> dC
+  sc1 --> cBk --> dBk
+  dBk -->|"Yes"| pBk1 --> gOv
+  dBk -->|"No"| pBk2 --> gOv
   sc1 --> cC2 --> dD
   dC -->|"Yes"| pC1 --> gOv
   dC -->|"No"| pC3 --> gOv
@@ -809,13 +839,14 @@ flowchart TD
   sTab --> cT5 --> gT4
   sDoc -.-> gT1
   class s1,s2,s3 k_start
-  class p1,pSla,pC1,pC2,pC3,pC4 k_process
-  class d1,dC,dD k_decision
+  class p1,pSla,pC1,pC2,pC3,pC4,pBk1,pBk2 k_process
+  class d1,dC,dD,dBk k_decision
   class sc0,sc1,sH,sBan,sDoc,sTab k_screen
-  class cBack,cC1,cC2,cT1,cT2,cT3,cT4,cT5 k_click
+  class cBack,cC1,cC2,cBk,cT1,cT2,cT3,cT4,cT5 k_click
   class gStart,gHead,gBan,gOv,gChk,gT1,gT2,gT3,gT4 k_goto
   class st1 k_store
   style gCr fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gBk fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gTwo fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```
 
@@ -846,13 +877,13 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>A referral arrives</b><br/>Or Reader reads dropped files" }
   subgraph gOpen ["Open: listed in 'Already arrived'"]
-  stNew@{ shape: cyl, label: "<b>NEW</b><br/>Checklist: Accept, Ask, Mark OK, Run coverage, Decline<br/>Full page: Accept, Request information, Decline<br/>Banner 'Reader found N things to check'" }
+  stNew@{ shape: cyl, label: "<b>NEW</b><br/>Checklist: Accept, Ask, Mark OK, Run coverage, Decline<br/>Full page: Accept, Request information, Decline, Start a case from this referral<br/>Accept is disabled while a required item is open<br/>Banner 'Reader found N things to check'" }
   stRev@{ shape: cyl, label: "<b>IN REVIEW</b><br/>Same buttons as New<br/>Set when someone gets an owner, or after a reply or a reopen" }
-  stAwait@{ shape: cyl, label: "<b>AWAITING INFO</b><br/>Pill 'Waiting on the referrer'<br/>Checklist: Accept, Decline, Mark OK; no 'Ask'<br/>Full page: Accept, Decline; no 'Request information'<br/>Banner 'Waiting on the referrer'" }
+  stAwait@{ shape: cyl, label: "<b>AWAITING INFO</b><br/>Pill 'Waiting on the referrer'<br/>Checklist: Accept, Decline, Mark OK; no 'Ask'<br/>Full page: Accept, Decline; no 'Request information'<br/>Asked rows no longer block Accept<br/>Banner 'Waiting on the referrer'" }
   end
   stAcc@{ shape: cyl, label: "<b>ACCEPTED</b><br/>Not in 'Already arrived'<br/>Checklist: 'Continue to medical records'<br/>Full page: 'Schedule intake'<br/>Green banner with 'Continue to medical records'" }
   stSch@{ shape: cyl, label: "<b>SCHEDULED</b><br/>Checklist: 'Continue to medical records'<br/>Full page: 'Mark admitted', 'Change intake'<br/>Banner adds 'Intake visit Thu 9:00 am'" }
-  stAdm@{ shape: cyl, label: "<b>ADMITTED</b><br/>Checklist: no main button<br/>Full page: no decision buttons<br/>Banner 'Admitted into IOP'" }
+  stAdm@{ shape: cyl, label: "<b>ADMITTED</b><br/>Checklist: 'Open the case' when a case or draft exists,<br/>else the note 'Admitted' with 'See the full referral'<br/>Full page: no decision buttons<br/>Banner 'Admitted into IOP'" }
   stDec@{ shape: cyl, label: "<b>DECLINED</b><br/>Checklist and full page: 'Reopen referral'<br/>Red banner 'Declined: reason' with 'Reopen'<br/>'A courtesy reply went to the referrer.'" }
   c1@{ shape: trap-t, label: "Pick an 'Owner' on the full page" }
   c2@{ shape: trap-t, label: "Click 'Send request'" }
@@ -872,6 +903,8 @@ flowchart TD
   cCont@{ shape: trap-t, label: "Click 'Continue to medical records'" }
   dReq@{ shape: diam, label: "Did this referral start a request?" }
   cOpen@{ shape: trap-t, label: "<b>Click 'Open R-1042'</b><br/>(banner also says 'Linked request R-1042' with its chip)" }
+  cOC@{ shape: trap-t, label: "<b>Click 'Open the case'</b><br/>(checklist of an admitted referral)" }
+  gCase@{ shape: subproc, label: "Continues in: Authorizations › Case page › Ways in" }
   gDash@{ shape: subproc, label: "<b>Continues in: Dashboard</b><br/>Opens request R-1042" }
   s1 --> stNew
   stNew --> c1 --> stRev
@@ -897,13 +930,14 @@ flowchart TD
   stAcc --> dReq
   stSch --> dReq
   stAdm -.-> cOpen
+  stAdm --> cOC --> gCase
   dReq -->|"Yes"| cOpen --> gDash
   dReq -->|"No"| cCont
   stNew -.-> gBan
   class s1 k_start
   class stNew,stRev,stAwait,stAcc,stSch,stAdm,stDec k_store
-  class c1,c2,c3,c4,c5,c6,c7,c8,cCont,cOpen k_click
-  class gAsk,gReply,gAcc,gDec,gSch,gBan,gMed,gDash k_goto
+  class c1,c2,c3,c4,c5,c6,c7,c8,cCont,cOpen,cOC k_click
+  class gAsk,gReply,gAcc,gDec,gSch,gBan,gMed,gCase,gDash k_goto
   class dReq k_decision
   style gOpen fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```
@@ -1018,17 +1052,19 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Click 'Validation'</b><br/>(or 'Review findings' on the banner)" }
-  sc1@{ shape: curv-trap, label: "<b>Summary card</b><br/>'6 of 9 checks passed'<br/>'3 need your attention before you accept.' (or 'Everything Reader checked is clear.')<br/>Progress bar, Reader chip" }
+  sc1@{ shape: curv-trap, label: "<b>Summary card</b><br/>'6 of 9 checks passed'<br/>'3 need your attention.' (or 'Everything Reader checked is clear.')<br/>Progress bar, Reader chip" }
   sc2@{ shape: curv-trap, label: "<b>Two lists</b><br/>'Referral form' '4 of 7 passed': signature, order not expired, credentials, clinical components, diagnosis, service, urgent criteria<br/>'Face sheet' '2 of 2 passed': age, contact" }
-  d1@{ shape: diam, label: "<b>Open and something to ask?</b><br/>(age is never counted)" }
+  d1@{ shape: diam, label: "<b>Open and something to ask?</b><br/>(a failed age check is never counted)" }
   c1@{ shape: trap-t, label: "Click 'Request information for all open findings'" }
   g1@{ shape: subproc, label: "Continues in: New case › Referral › Ask the referrer" }
   d2@{ shape: diam, label: "State of one check?" }
   r1@{ shape: rect, label: "<b>Passed</b><br/>Green tick, check name, what Reader found" }
   r2@{ shape: rect, label: "<b>Needs attention</b><br/>Amber triangle, the problem in a sentence<br/>'The clinician signature is missing'" }
-  r3@{ shape: rect, label: "<b>Failed</b><br/>Red cross (patient under 18)" }
+  r3@{ shape: rect, label: "<b>Failed</b><br/>Red cross (patient under 18)<br/>No 'Resolve' menu and no 'Request information': a reply cannot change an age" }
   r4@{ shape: rect, label: "<b>Resolved</b><br/>Green tick; pill 'Marked OK' with the reason, or 'Fixed by reply' with what it was before" }
   d3@{ shape: diam, label: "Referral still open?" }
+  d4@{ shape: diam, label: "Referral still open?" }
+  c6@{ shape: trap-t, label: "<b>Click 'Mark OK with reason'</b><br/>(the only button on a failed row)" }
   r5@{ shape: rect, label: "<b>Pill 'Warning' or 'Failed'</b><br/>No buttons: the decision is made" }
   c2@{ shape: trap-t, label: "Click 'Show in document'" }
   p1@{ shape: rect, label: "<b>Document switches to the page and boxes the evidence</b><br/>The tab stays on Validation" }
@@ -1047,7 +1083,9 @@ flowchart TD
   d2 -->|"Fail"| r3
   d2 -->|"Overridden or replied"| r4
   r2 --> d3
-  r3 --> d3
+  r3 --> d4
+  d4 -->|"Yes"| c6 --> g2
+  d4 -->|"No"| r5
   d3 -->|"Yes"| c3 --> o1
   d3 -->|"No"| r5
   o1 --> c4 --> g1
@@ -1055,8 +1093,8 @@ flowchart TD
   sc2 --> c2 --> p1
   class s1 k_start
   class sc1,sc2 k_screen
-  class d1,d2,d3 k_decision
-  class c1,c2,c3,c4,c5 k_click
+  class d1,d2,d3,d4 k_decision
+  class c1,c6,c2,c3,c4,c5 k_click
   class g1,g2 k_goto
   class r1,r2,r3,r4,r5,p1 k_process
   class o1 k_overlay
@@ -1094,7 +1132,7 @@ flowchart TD
   f1@{ shape: curv-trap, label: "<b>'Level of care'</b><br/>'Placement reads the referral against the six ASAM dimensions'<br/>'The referral supports' PHP, 92% confident · 'Next best' IOP, 63%" }
   f2@{ shape: odd, label: "<b>Amber banner when Placement suggests another program</b><br/>'The referral asks for IOP. Placement suggests PHP.'<br/>'You choose the program when you accept. Placement only reads the referral. A clinician decides the level of care.'" }
   f3@{ shape: curv-trap, label: "<b>Six dimensions, each with a note and four bars</b><br/>Intoxication and withdrawal · Medical conditions · Mood, behavior and thinking · Readiness to change · Relapse and continued use · Recovery environment" }
-  f4@{ shape: curv-trap, label: "<b>'Capacity'</b><br/>'Open this week. Accepting a referral takes one'<br/>One row per program: 'PHP: 5 slots open this week', chips 'Requested' and 'Suggested', '19 of 24 full'<br/>Red 'no beds open this week' at zero" }
+  f4@{ shape: curv-trap, label: "<b>'Capacity'</b><br/>'Open this week. Accepting a referral takes one bed or slot.'<br/>One row per program: 'PHP: 5 slots open this week', chips 'Requested' and 'Suggested', '19 of 24 full'<br/>Red 'no beds open this week' at zero" }
   f5@{ shape: rect, label: "Read only: nothing on the Fit tab can be clicked" }
   end
   subgraph gAct ["Activity tab"]
@@ -1143,7 +1181,7 @@ flowchart TD
 
 ## Authorizations › New case › Referral › Checklist buttons
 
-The buttons around the referral checklist: replace the documents, ask the referrer, decline, open the full page, and the main button, which changes with the referral's status.
+The buttons around the referral checklist: replace the documents, ask the referrer, decline, open the full page, and the main button, which changes with the referral's status and is disabled while a required item is open.
 
 Route: `/authorizations/new/:draftId?ref=RF-2053`
 
@@ -1176,9 +1214,9 @@ flowchart TD
   end
   gStart@{ shape: subproc, label: "Continues in: New case › Referral › Start screen" }
   subgraph gFoot ["Under the sections"]
-  dAsk@{ shape: diam, label: "<b>Open, not waiting, and something to ask?</b><br/>(age is never counted)" }
+  dAsk@{ shape: diam, label: "<b>Open, not waiting, and something to ask?</b><br/>(a failed age check is never counted)" }
   cFoot@{ shape: trap-t, label: "<b>Click 'Ask the referrer for the missing item'</b><br/>or '…for the 4 missing items'" }
-  cDec@{ shape: trap-t, label: "<b>Click 'Decline'</b><br/>(only while open)" }
+  cDec@{ shape: trap-t, label: "<b>Click 'Decline'</b><br/>(only while open; never disabled)" }
   dWait@{ shape: diam, label: "Awaiting info?" }
   cDemo@{ shape: trap-t, label: "Click 'Demo: the referrer replies'" }
   cFull@{ shape: trap-t, label: "Click 'Open the full referral'" }
@@ -1187,19 +1225,25 @@ flowchart TD
   gOk@{ shape: subproc, label: "Continues in: New case › Referral › Mark OK or decline" }
   gFull@{ shape: subproc, label: "Continues in: New case › Referral › The full referral page" }
   dSt@{ shape: diam, label: "Referral status?" }
-  cAcc@{ shape: trap-t, label: "<b>Click 'Accept referral and continue'</b><br/>Never disabled while the referral is open" }
-  pAcc@{ shape: rect, label: "<b>Open items are only listed in the Accept dialog</b><br/>You can accept anyway" }
+  dReq@{ shape: diam, label: "<b>Is a required item still open?</b><br/>Patient age, credentials, signature,<br/>diagnosis code, level of care, insurance and member ID" }
+  tDis@{ shape: odd, label: "<b>'Accept referral and continue' is disabled</b><br/>Line under it: 'Resolve 4 items first: clinician credentials, clinician signature, diagnosis code, insurance and member ID.'" }
+  pLift@{ shape: rect, label: "<b>Each item is lifted by 'Mark OK', by the referrer's reply,</b><br/>or once it has been asked of the referrer (a failed age: only 'Mark OK')<br/>The line shortens, then disappears" }
+  cAcc@{ shape: trap-t, label: "Click 'Accept referral and continue'" }
+  pAcc@{ shape: rect, label: "<b>Advisory findings are only listed in the Accept dialog</b><br/>You can accept anyway" }
   gAcc@{ shape: subproc, label: "Continues in: New case › Referral › Accept a referral" }
   tAcc@{ shape: odd, label: "<b>Green banner</b><br/>'Accepted into IOP. Target admission 10/21/2026.'" }
   cCont@{ shape: trap-t, label: "Click 'Continue to medical records'" }
-  pCont@{ shape: rect, label: "<b>Referral goes into the case</b><br/>Patient, payer, level of care, diagnoses, reason<br/>Referral becomes the first document" }
-  tCont@{ shape: odd, label: "<b>'Referral RF-2054 is in this case'</b><br/>'V.C., 30. Next, add the medical records.'" }
-  gMed@{ shape: subproc, label: "Continues in: New case › Medical records › The checklist and Continue" }
+  gCont@{ shape: subproc, label: "<b>Continues in: New case › Referral › Accept a referral</b><br/>(attach the referral to the case; asks first when the agents ran)" }
   tDec@{ shape: odd, label: "<b>Red banner</b><br/>'Declined: Needs a higher level of care.'" }
   cRe@{ shape: trap-t, label: "Click 'Reopen referral'" }
   stRe@{ shape: cyl, label: "<b>Referral is In review again</b><br/>Decision cleared" }
   tRe@{ shape: odd, label: "<b>'Referral reopened'</b><br/>'RF-2048 is back In review.'" }
-  eAdm@{ shape: stadium, label: "Admitted: the card has no main button" }
+  dCase@{ shape: diam, label: "Did this referral start a case or a draft?" }
+  cOpen@{ shape: trap-t, label: "Click 'Open the case'" }
+  pOpen@{ shape: rect, label: "<b>Opens its request on the case page,</b><br/>or its draft at its current step<br/>If the draft is the one on screen: goes on to Medical records" }
+  tAdm@{ shape: odd, label: "<b>Calm note 'Admitted'</b><br/>Link 'See the full referral'" }
+  gCase@{ shape: subproc, label: "Continues in: Authorizations › Case page › Ways in" }
+  gMed@{ shape: subproc, label: "Continues in: New case › Medical records › The checklist and Continue" }
   s1 --> sc1
   sc1 --> cDiff --> pDiff --> gStart
   sc1 --> dAsk
@@ -1211,19 +1255,25 @@ flowchart TD
   dWait -->|"No"| cFull
   sc1 --> cFull --> gFull
   sc1 --> dSt
-  dSt -->|"New, In review, Awaiting info"| cAcc --> pAcc --> gAcc
-  dSt -->|"Accepted or Scheduled"| tAcc --> cCont --> pCont --> tCont --> gMed
+  dSt -->|"New, In review, Awaiting info"| dReq
+  dReq -->|"Yes"| tDis --> pLift
+  dReq -->|"No"| cAcc --> pAcc --> gAcc
+  pLift -.-> cAcc
+  dSt -->|"Accepted or Scheduled"| tAcc --> cCont --> gCont
   dSt -->|"Declined"| tDec --> cRe --> stRe --> tRe
-  dSt -->|"Admitted"| eAdm
+  dSt -->|"Admitted"| dCase
+  dCase -->|"Yes"| cOpen --> pOpen
+  pOpen --> gCase
+  pOpen -.-> gMed
+  dCase -->|"No"| tAdm --> gFull
   class s1 k_start
   class sc1 k_screen
-  class cDiff,cFoot,cDec,cDemo,cFull,cAcc,cCont,cRe k_click
-  class pDiff,pAcc,pCont k_process
-  class gStart,gAsk,gOk,gFull,gAcc,gMed k_goto
-  class dAsk,dWait,dSt k_decision
-  class tAcc,tCont,tDec,tRe k_toast
+  class cDiff,cFoot,cDec,cDemo,cFull,cAcc,cCont,cRe,cOpen k_click
+  class pDiff,pLift,pAcc,pOpen k_process
+  class gStart,gAsk,gOk,gFull,gAcc,gCont,gCase,gMed k_goto
+  class dAsk,dWait,dSt,dReq,dCase k_decision
+  class tDis,tAcc,tDec,tRe,tAdm k_toast
   class stRe k_store
-  class eAdm k_endx
   style gTop fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gFoot fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```
@@ -1270,12 +1320,12 @@ flowchart TD
   d2@{ shape: diam, label: "Did the referral have no insurance?" }
   p2@{ shape: rect, label: "<b>An insurance card arrives: Summit Medicaid HMO, member ID …4410</b><br/>Coverage has not been checked yet" }
   d3@{ shape: diam, label: "Is the patient under 18?" }
-  p3@{ shape: rect, label: "<b>Age is not fixed by a reply</b><br/>The row stays 'Check this'" }
+  p3@{ shape: rect, label: "<b>Age is not fixed by a reply</b><br/>The row stays 'Check this' and only 'Mark OK' lifts it" }
   st1@{ shape: cyl, label: "<b>Referral is In review again</b><br/>Fixed rows read 'Resolved by the referrer's reply'" }
   p4@{ shape: rect, label: "<b>Timeline: 'Reply received from … by email'</b><br/>'Reader read the reply and updated the extracted fields'<br/>'Validation ran again: 3 findings resolved, 9 of 9 checks passed' (fewer if age failed)" }
   t2@{ shape: odd, label: "<b>'The referrer replied'</b><br/>'3 findings resolved. RF-2053 is back In review.'" }
   t3@{ shape: odd, label: "<b>Bell 'The referrer replied'</b><br/>'Crisis line 988 follow-up answered RF-2053. Reader read the reply and 3 findings are resolved.'" }
-  sc2@{ shape: curv-trap, label: "<b>Checklist after the reply</b><br/>'11 of 11 ready', 'Nothing is missing'<br/>'Run coverage check' is available" }
+  sc2@{ shape: curv-trap, label: "<b>Checklist after the reply</b><br/>'11 of 11 ready', 'Nothing is missing'<br/>'Run coverage check' is available<br/>'Accept referral and continue' is enabled (unless the age failed)" }
   g1@{ shape: subproc, label: "Continues in: New case › Referral › Accept a referral" }
   s1 --> sc1 --> w1 --> x1
   x1 --> c1 --> d1
@@ -1304,7 +1354,7 @@ flowchart TD
 
 ## Authorizations › New case › Referral › Header actions
 
-The buttons in the header card of the full referral page. The decision buttons open the same dialogs as the checklist. 'Owner', 'Add note' and 'More' are only here.
+The buttons in the header card of the full referral page. The decision buttons open the same dialogs as the checklist, and 'Accept referral' is disabled in the same way. 'Start a case from this referral', 'Owner', 'Add note' and 'More' are only here.
 
 Route: `/authorizations/new/referral/RF-2053?draft=draft-1001`
 
@@ -1331,6 +1381,8 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>On the full referral page</b><br/>header card" }
   subgraph gDec ["Decision buttons (left)"]
+  dReq@{ shape: diam, label: "<b>Is a required finding still open?</b><br/>Same six as the checklist" }
+  tDis@{ shape: odd, label: "<b>'Accept referral' is disabled</b><br/>Line under the buttons: 'Resolve 4 items first: …'<br/>'Mark OK', a reply or 'Request information' lifts an item" }
   cAcc@{ shape: trap-t, label: "<b>Click 'Accept referral'</b><br/>While open" }
   cReq@{ shape: trap-t, label: "<b>Click 'Request information'</b><br/>Only while New or In review" }
   cDec@{ shape: trap-t, label: "<b>Click 'Decline'</b><br/>While open" }
@@ -1341,11 +1393,14 @@ flowchart TD
   cSt@{ shape: trap-t, label: "<b>Click 'Schedule intake', 'Mark admitted'</b><br/>or 'Change intake'<br/>Accepted and Scheduled only" }
   gSt@{ shape: subproc, label: "Continues in: New case › Referral › Schedule intake" }
   cRe@{ shape: trap-t, label: "<b>Click 'Reopen referral'</b><br/>Declined only" }
+  cStart@{ shape: trap-t, label: "<b>Click 'Start a case from this referral'</b><br/>Shown unless the referral is declined or already has a case" }
+  pStart@{ shape: rect, label: "<b>Opens /authorizations/new?referral=RF-2053</b><br/>A new case is made from the referral and opens on Medical records" }
+  gNew@{ shape: subproc, label: "Continues in: New case › How a case starts and resumes" }
   stRe@{ shape: cyl, label: "<b>Referral is In review again</b><br/>Timeline 'You reopened the referral'<br/>Toast 'Referral reopened'" }
   subgraph gOwn ["Owner"]
   cOwn@{ shape: trap-t, label: "<b>Open 'Owner' and pick a person</b><br/>Jordan Perez, Taylor Brooks, Morgan Lee or Unassigned" }
   stOwn@{ shape: cyl, label: "<b>Owner is saved</b><br/>A New referral moves to In review when it gets an owner<br/>Timeline 'Assigned to Taylor Brooks'" }
-  tOwn@{ shape: odd, label: "<b>'Assigned to Taylor Brooks'</b><br/>'1 referral'<br/>Unassigned: 'Owner removed'" }
+  tOwn@{ shape: odd, label: "<b>'Assigned to Taylor Brooks'</b><br/>'RF-2053'<br/>Unassigned: 'Owner removed'" }
   end
   cNote@{ shape: trap-t, label: "Click 'Add note'" }
   gNote@{ shape: subproc, label: "Continues in: New case › Referral › Full page: Fit, Activity and notes" }
@@ -1362,11 +1417,14 @@ flowchart TD
   tDown@{ shape: odd, label: "<b>'Downloading the original'</b><br/>'RF-2053.pdf, 2 pages. This is a demo, so no file is saved.'" }
   end
   gReply@{ shape: subproc, label: "Continues in: New case › Referral › The referrer replies" }
-  s1 --> cAcc --> gAcc
+  s1 --> dReq
+  dReq -->|"Yes"| tDis
+  dReq -->|"No"| cAcc --> gAcc
   s1 --> cReq --> gAsk
   s1 --> cDec --> gOk
   s1 --> cSt --> gSt
   s1 --> cRe --> stRe
+  s1 --> cStart --> pStart --> gNew
   s1 --> cOwn --> stOwn --> tOwn
   s1 --> cNote --> gNote
   s1 --> cMore --> oMore
@@ -1376,13 +1434,13 @@ flowchart TD
   dHost -->|"Yes"| tHost
   dHost -->|"No"| pCopy --> tCopy
   class s1 k_start
-  class cAcc,cReq,cDec,cSt,cRe,cOwn,cNote,cMore,cReply,cDown,cCopy k_click
-  class gAcc,gAsk,gOk,gSt,gNote,gReply k_goto
+  class dReq,dHost k_decision
+  class tDis,tOwn,tHost,tCopy,tDown k_toast
+  class cAcc,cReq,cDec,cSt,cRe,cStart,cOwn,cNote,cMore,cReply,cDown,cCopy k_click
+  class gAcc,gAsk,gOk,gSt,gNew,gNote,gReply k_goto
+  class pStart,pCopy k_process
   class stRe,stOwn k_store
-  class tOwn,tHost,tCopy,tDown k_toast
   class oMore k_overlay
-  class dHost k_decision
-  class pCopy k_process
   style gDec fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gOwn fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gMore fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
@@ -1427,7 +1485,7 @@ flowchart TD
   c2@{ shape: trap-t, label: "Click 'Open R-1042' or the link 'R-1042'" }
   t4@{ shape: odd, label: "'No request is linked yet. Continue to the medical records to build the authorization for this patient.'" }
   c3@{ shape: trap-t, label: "<b>Click 'Continue to medical records'</b><br/>(not shown once Admitted)" }
-  p1@{ shape: rect, label: "<b>Uses the case in the address, or starts a new one</b><br/>Referral goes into the case" }
+  p1@{ shape: rect, label: "<b>Uses the case in the address, or starts a new one</b><br/>Referral goes into the case<br/>Asks 'Attach this referral?' first when the agents already ran" }
   end
   subgraph gOpen ["Open referral"]
   t5@{ shape: odd, label: "<b>Amber banner 'Waiting on the referrer'</b><br/>'You asked … by fax Mon 2:10 pm. Reader reads the reply as soon as it arrives. For the demo, open More and choose 'Demo: simulate the referrer's reply'.'" }
@@ -1440,7 +1498,7 @@ flowchart TD
   end
   g1@{ shape: subproc, label: "Continues in: New case › Referral › Full page: Validation tab" }
   g2@{ shape: subproc, label: "Continues in: New case › Referral › Check coverage" }
-  g3@{ shape: subproc, label: "Continues in: New case › Medical records › The checklist and Continue" }
+  g3@{ shape: subproc, label: "<b>Continues in: New case › Referral › Accept a referral</b><br/>(attach the referral, then Medical records)" }
   g4@{ shape: subproc, label: "<b>Continues in: Dashboard</b><br/>Opens request R-1042" }
   e1@{ shape: stadium, label: "<b>No banner</b><br/>A New or In review referral with no open findings and no lapsed coverage" }
   s1 --> d1
@@ -1501,7 +1559,7 @@ flowchart TD
   cX@{ shape: trap-t, label: "<b>Click 'Cancel' or 'Close', press Escape,</b><br/>or click outside the dialog" }
   e1@{ shape: stadium, label: "Nothing changes" }
   st1@{ shape: cyl, label: "<b>Referral is Scheduled</b><br/>Intake time saved<br/>Timeline 'You scheduled the intake visit' and a dashed 'Intake visit' entry" }
-  t1@{ shape: odd, label: "<b>'Intake scheduled'</b><br/>'RF-2053 is now Intake scheduled.'" }
+  t1@{ shape: odd, label: "<b>'Intake scheduled'</b><br/>'RF-2053 is Scheduled. Intake visit Thu 9:00 am.'" }
   sc1@{ shape: curv-trap, label: "<b>Header now shows 'Mark admitted' and 'Change intake'</b><br/>Banner 'Intake visit Thu 9:00 am'" }
   c3@{ shape: trap-t, label: "Click 'Change intake'" }
   o2@{ shape: win-pane, label: "<b>'Change the intake visit'</b><br/>Same Date and Time, starting at the booked visit" }
@@ -1533,7 +1591,7 @@ flowchart TD
 
 ## Authorizations › New case › Medical records › The checklist and Continue
 
-Step 2 is one page: a drop zone and one checklist card with four short lists. This diagram shows what is on it, what keeps 'Continue' switched off, and what each footer button does. The other diagrams in this step zoom into each part.
+Step 2 is one page: a drop zone and one checklist card with four short lists. This diagram shows what is on it, what keeps 'Continue' switched off, and what each footer button does. The other diagrams in this step zoom into each part. The documents listed are the ones saved on Payers › Documents for the payer and level of care.
 
 Route: `/authorizations/new/:draftId (step 2 of 4, 'Medical records')`
 
@@ -1567,23 +1625,26 @@ flowchart TD
   gp@{ shape: curv-trap, label: "<b>Patient</b><br/>Patient initials and age" }
   gi@{ shape: curv-trap, label: "<b>Insurance</b><br/>Payer and plan, Member ID, Coverage" }
   gr@{ shape: curv-trap, label: "<b>Request</b><br/>Level of care, Request type, Start date, Diagnoses (ICD-10), Reason for the request" }
-  gd@{ shape: curv-trap, label: "<b>Documents</b><br/>One row for each document the payer asks for" }
+  gd@{ shape: curv-trap, label: "<b>Documents</b><br/>One row for each document on the payer's saved list (Payers › Documents)<br/>Required ones first" }
+  pPay@{ shape: rect, label: "<b>A draft that Payers redrafted after a payer change</b><br/>shows one line: 'Updated for a payer change on 10/20'" }
   ft@{ shape: curv-trap, label: "<b>Footer bar, always in view</b><br/>'Back', 'Save as draft', 'Continue' and a hint line" }
   end
   g31@{ shape: subproc, label: "Continues in: Medical records › Drop files and let Reader sort them" }
   g32@{ shape: subproc, label: "Continues in: Medical records › Patient and insurance rows" }
   g40@{ shape: subproc, label: "Continues in: Medical records › The Coverage row" }
   g33@{ shape: subproc, label: "Continues in: Medical records › Request and document rows" }
+  g45@{ shape: subproc, label: "Continues in: Medical records › Replace a document or mark it not available" }
+  g44@{ shape: subproc, label: "Continues in: Medical records › Pull a chart from EMR Connect" }
   subgraph gBlock ["Switched off while any is true"]
   b1@{ shape: rect, label: "Patient initials and age are not both filled in" }
   b2@{ shape: rect, label: "No payer is chosen ('Payer and plan')" }
   b3@{ shape: rect, label: "No 'Level of care'" }
   b4@{ shape: rect, label: "No 'Request type'" }
-  b5@{ shape: rect, label: "<b>A required document is not added</b><br/>Three or more show as 'N required documents'" }
+  b5@{ shape: rect, label: "<b>A required document is neither added nor marked 'not available'</b><br/>Three or more show as 'N required documents'" }
   b6@{ shape: rect, label: "<b>Reader is still reading a file</b><br/>'Reader to finish reading'" }
   b7@{ shape: rect, label: "<b>Verify says coverage needs a fix</b><br/>'Coverage, or another payer' (not on a Retro-authorization)" }
   end
-  free@{ shape: rect, label: "<b>These never block Continue</b><br/>Member ID, Start date, Diagnoses, Reason, recommended documents, a 'Check this' finding" }
+  free@{ shape: rect, label: "<b>These never block Continue</b><br/>Member ID, Start date, Diagnoses, Reason, recommended documents, a 'Check this' finding<br/>A document marked 'not available' counts as handled and as ready" }
   pc@{ shape: rect, label: "The footer and the rows read the same list, so they always agree" }
   dq@{ shape: diam, label: "Anything still blocking?" }
   tHint@{ shape: odd, label: "Footer hint: 'Still needed: Patient initials and age, Payer and plan, Level of care and 3 more.'" }
@@ -1598,13 +1659,16 @@ flowchart TD
   cCont@{ shape: trap-t, label: "Click 'Continue'" }
   dRan@{ shape: diam, label: "Have the agents already run on this case?" }
   pDirect@{ shape: rect, label: "<b>Goes straight to step 3 'Agents work'</b><br/>No question is asked" }
-  oConf@{ shape: win-pane, label: "<b>Start the agents?</b><br/>J.M., Residential 3.5 · Summit Medicaid HMO<br/>'Nothing is sent to the payer until a clinician signs.'" }
+  oConf@{ shape: win-pane, label: "<b>Start the agents?</b><br/>J.M., Residential 3.5 · Summit Medicaid HMO<br/>'Scribe drafts the case and may ask you a question or two.'<br/>'Nothing is sent to the payer until a clinician signs.'" }
   gAgents@{ shape: subproc, label: "Continues in: Agents work › Start the run" }
   s1 --> p1
   s2 --> p1
   s3 --> p1
   p1 --> sc --> dz --> pr --> gp --> gi --> gr --> gd --> ft
+  sc --> pPay
   dz --> g31
+  dz --> g44
+  gd --> g45
   sc --> cStep
   gp --> g32
   gi --> g32
@@ -1629,9 +1693,9 @@ flowchart TD
   dRan -->|"No"| oConf
   oConf --> gAgents
   class s1,s2,s3 k_start
-  class p1,b1,b2,b3,b4,b5,b6,b7,free,pc,pBack,pDirect k_process
+  class p1,pPay,b1,b2,b3,b4,b5,b6,b7,free,pc,pBack,pDirect k_process
   class sc,dz,pr,gp,gi,gr,gd,ft k_screen
-  class g31,g32,g40,g33,gRef,gSave,gAgents k_goto
+  class g31,g32,g40,g33,g45,g44,gRef,gSave,gAgents k_goto
   class dq,dRan k_decision
   class tHint,tReady k_toast
   class eOff k_endx
@@ -1689,13 +1753,14 @@ flowchart TD
   dName@{ shape: diam, label: "<b>Does the name match a document?</b><br/>The longest matching word wins" }
   dTaken@{ shape: diam, label: "Did an earlier file in this drop already take that slot?" }
   pDup@{ shape: rect, label: "Second file: 'Could not place'" }
-  pPlace@{ shape: rect, label: "<b>File goes into its slot</b><br/>It replaces any file already in that slot" }
+  pPlace@{ shape: rect, label: "<b>File goes into its slot</b><br/>It replaces any file already in that slot<br/>and clears a 'marked not available' on it" }
   dOpen@{ shape: diam, label: "No match: is a required slot still open?" }
-  pGuess@{ shape: rect, label: "<b>Takes the first open required slot, referral last</b><br/>'Reader guessed this one. Check it.'" }
+  pGuess@{ shape: rect, label: "<b>Takes the first open required slot on the payer's list, referral last</b><br/>Skips a document marked 'not available'<br/>'Reader guessed this one. Check it.'" }
   pNone@{ shape: rect, label: "<b>'Could not place'</b><br/>Any file type is taken, but there is no slot left" }
   end
   st1@{ shape: cyl, label: "<b>Draft updated once</b><br/>Each filled row remembers its file: 'Read from FILE by Reader. Check it.'" }
   pReset@{ shape: rect, label: "<b>If the agents had already run, the run restarts</b><br/>Because the documents changed" }
+  tStale@{ shape: odd, label: "<b>'Records changed after the agents ran'</b><br/>'Their work was cleared. The agents check again when you continue.'" }
   a3@{ shape: hex, label: "<b>Reader reads each placed file</b><br/>About 1 second each, one after another<br/>Row shows 'Reader is reading'" }
   dFind@{ shape: diam, label: "<b>Does the file get a finding?</b><br/>Sample files are scripted<br/>Other files: about 1 case in 5" }
   pOk@{ shape: rect, label: "Row: 'N checks passed'" }
@@ -1708,7 +1773,7 @@ flowchart TD
   dHas@{ shape: diam, label: "<b>Does the case already have a patient?</b><br/>From a referral, an EMR pull or typed initials" }
   stAll@{ shape: cyl, label: "<b>Fills J.M., 34 · Summit Medicaid HMO · …4821</b><br/>Residential 3.5 · Admission · F10.20, F33.2 · reason" }
   stKeep@{ shape: cyl, label: "<b>Keeps that patient and request</b><br/>Adds only a blank member ID, start date or type" }
-  stDocs@{ shape: cyl, label: "<b>Adds 8 of the 9 Summit documents</b><br/>'Therapy note from the last 14 days' is left out on purpose" }
+  stDocs@{ shape: cyl, label: "<b>Adds a sample file for each document on the payer's saved list</b><br/>Summit: 8 of 9. 'Therapy note from the last 14 days' is left out on purpose" }
   t2@{ shape: odd, label: "<b>'Sample chart loaded'</b><br/>'J.M., 34. 8 of 9 documents are added and being checked.'" }
   end
   s1 --> i1
@@ -1730,6 +1795,7 @@ flowchart TD
   dOpen -->|"Yes"| pGuess --> st1
   dOpen -->|"No"| pNone --> st1
   st1 --> pReset --> a3 --> dFind
+  pReset -.-> tStale
   dFind -->|"No"| pOk --> t1
   dFind -->|"Yes"| pWarn --> t1
   t1 --> pTick --> g30
@@ -1746,7 +1812,7 @@ flowchart TD
   class eNone k_endx
   class a1,a2,a3 k_agent
   class st1,stAll,stKeep,stDocs k_store
-  class t1,t2 k_toast
+  class tStale,t1,t2 k_toast
   class g30 k_goto
   style gCard fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gChart fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
@@ -1756,7 +1822,7 @@ flowchart TD
 
 ## Authorizations › New case › Medical records › Patient and insurance rows
 
-Each field row says where its value came from, and its button opens a small editor under the row. Edits go straight into the draft. This diagram also covers 'Pull a chart from EMR Connect'. The Coverage row has its own diagram.
+Each field row says where its value came from, and its button opens a small editor under the row. Edits go straight into the draft. Pulling a chart from a records system and the Coverage row have their own diagrams.
 
 Route: `/authorizations/new/:draftId (step 2, Patient and Insurance lists)`
 
@@ -1788,7 +1854,8 @@ flowchart TD
   r4@{ shape: rect, label: "<b>From EMR Connect</b><br/>'From EMR Connect'" }
   r2@{ shape: rect, label: "<b>Typed by a person</b><br/>The detail shows the value with no source note" }
   r5@{ shape: rect, label: "<b>Missing</b><br/>'Not found yet. Drop a chart above or add it here.'<br/>Row shaded, button 'Add'" }
-  r6@{ shape: rect, label: "<b>Half filled</b><br/>'Found initials J.M.. The age is still needed.'" }
+  r6@{ shape: rect, label: "<b>Half filled</b><br/>'Found initials J.M. The age is still needed.'" }
+  r7@{ shape: rect, label: "<b>Left blank by a chart pull</b><br/>'Left blank. “Level of care” in the outpatient record needs a mapping. Map it, then pull the chart again.'<br/>Link 'Open EMR Connect'" }
   rNote@{ shape: rect, label: "A source note goes quiet as soon as the value is edited" }
   end
   cEdit@{ shape: trap-t, label: "Click 'Add' (empty row) or 'Edit' (filled row)" }
@@ -1812,19 +1879,9 @@ flowchart TD
   cDone@{ shape: trap-t, label: "Click 'Done', or press Escape in a text box" }
   stLive@{ shape: cyl, label: "<b>Every keystroke is written to the draft</b><br/>Nothing to save" }
   pStale@{ shape: rect, label: "<b>If the agents had already run, the run restarts</b><br/>Answers and summary edits are cleared" }
+  tStale@{ shape: odd, label: "<b>'Records changed after the agents ran'</b><br/>'Their work was cleared. The agents check again when you continue.'" }
   g40@{ shape: subproc, label: "Continues in: Medical records › The Coverage row" }
-  subgraph gEmr ["EMR pull"]
-  cPull@{ shape: trap-t, label: "<b>Click 'Pull a chart from EMR Connect'</b><br/>Clicking again closes the picker" }
-  oPick@{ shape: win-pane, label: "<b>Chart from EMR Connect</b><br/>Picker with a chart list, 'Pull' and 'Cancel'" }
-  iChart@{ shape: lean-r, label: "<b>Pick a chart</b><br/>J.M., 34 · Summit · Residential 3.5 · A.R. · S.T. · L.G." }
-  cPullGo@{ shape: trap-t, label: "Click 'Pull'" }
-  pPulling@{ shape: rect, label: "<b>Button reads 'Pulling' for about 1 second</b><br/>The list and 'Cancel' switch off" }
-  xEmr@{ shape: st-rect, label: "<b>EMR Connect (demo: simulated)</b><br/>The chart's patient, payer, member ID, level of care, type, diagnoses and reason" }
-  stEmr@{ shape: cyl, label: "<b>Draft filled, replacing those fields</b><br/>No documents come with it" }
-  tEmr@{ shape: odd, label: "<b>'Pulled J.M., 34 from EMR Connect'</b><br/>'Everything below was filled in from the chart. You can still change it.'" }
-  cCancelEmr@{ shape: trap-t, label: "Click 'Cancel'" }
-  pCancelEmr@{ shape: rect, label: "Picker closes; nothing changes" }
-  end
+  g44@{ shape: subproc, label: "Continues in: Medical records › Pull a chart from EMR Connect" }
   s1 --> sc --> dSrc
   dSrc -->|"Read by Reader"| r1
   dSrc -->|"From a referral"| r3
@@ -1832,6 +1889,7 @@ flowchart TD
   dSrc -->|"Typed"| r2
   dSrc -->|"No"| r5
   dSrc -->|"Only one of two"| r6
+  dSrc -->|"Blank because EMR Connect has no mapping yet"| r7
   r1 --> rNote
   r3 --> rNote
   r4 --> rNote
@@ -1842,37 +1900,34 @@ flowchart TD
   oEd --> iMember --> pMask
   r5 --> cEdit
   r6 --> cEdit
+  r7 --> cEdit
+  r7 -.-> g44
   pName --> cDone
   iPlan --> cDone
   pMask --> cDone
-  cDone --> stLive --> pStale
+  cDone --> stLive --> pStale --> tStale
   oEd --> cAgain --> pClose
   cDone --> pClose
   sc --> g40
-  sc --> cPull --> oPick --> iChart --> cPullGo --> pPulling --> xEmr --> stEmr --> tEmr
-  oPick --> cCancelEmr --> pCancelEmr
-  stEmr -.-> pStale
   class s1 k_start
   class sc k_screen
   class dSrc k_decision
-  class r1,r3,r4,r2,r5,r6,rNote,pClose,pName,pPlan,pMask,pStale,pPulling,pCancelEmr k_process
-  class cEdit,cAgain,cDone,cPull,cPullGo,cCancelEmr k_click
-  class oEd,oPick k_overlay
-  class iInit,iAge,iPayer,iPlan,iMember,iChart k_input
-  class stLive,stEmr k_store
-  class g40 k_goto
-  class xEmr k_ext
-  class tEmr k_toast
+  class r1,r3,r4,r2,r5,r6,r7,rNote,pClose,pName,pPlan,pMask,pStale k_process
+  class cEdit,cAgain,cDone k_click
+  class oEd k_overlay
+  class iInit,iAge,iPayer,iPlan,iMember k_input
+  class stLive k_store
+  class tStale k_toast
+  class g40,g44 k_goto
   style gState fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gPatient fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gPayer fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gMember fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
-  style gEmr fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```
 
 ## Authorizations › New case › Medical records › Request and document rows
 
-Request rows are typed or picked in a small editor. Document rows list what the payer asks for, and each one is added, looked at or taken out with the buttons on the row. There is no 'Replace' or 'Mark not available' button in the demo.
+Request rows are typed or picked in a small editor. Document rows list what the payer's saved list asks for, and each one is added, looked at, replaced, marked not available or taken out with the buttons on the row. Replace and Mark not available have their own diagram.
 
 Route: `/authorizations/new/:draftId (step 2, Request and Documents lists)`
 
@@ -1905,7 +1960,7 @@ flowchart TD
   iType@{ shape: lean-r, label: "<b>Pick 'Request type'</b><br/>Initial request, Admission, Continued stay, Recertification, Retro-authorization" }
   pType@{ shape: rect, label: "<b>Editor closes at once</b><br/>Admission adds 'notice due in about 5 hours', Retro-authorization 'window closes in about 18 hours'" }
   cStart@{ shape: trap-t, label: "Click 'Edit' on 'Start date' (Recommended)" }
-  iStart@{ shape: lean-r, label: "<b>Pick the 'Requested start date'</b><br/>Starts as today, Tue Oct 20, 2026" }
+  iStart@{ shape: lean-r, label: "<b>Pick the 'Requested start date'</b><br/>Starts as today, Tue Oct 20, 2026<br/>Never blocks Continue; the review checks it against the payer's backdating rule" }
   cDx@{ shape: trap-t, label: "Click 'Add' on 'Diagnoses (ICD-10)' (Recommended)" }
   iDx@{ shape: lean-r, label: "<b>Type in 'Add a diagnosis'</b><br/>Example: F10 or alcohol" }
   pDx@{ shape: rect, label: "<b>Up to six matches from 13 codes</b><br/>Codes already added are hidden" }
@@ -1916,14 +1971,16 @@ flowchart TD
   iReason@{ shape: lean-r, label: "<b>Type one or two plain sentences</b><br/>'Scribe uses it in the summary.'" }
   cDone@{ shape: trap-t, label: "Click 'Done', or press Escape in a text box" }
   stReq@{ shape: cyl, label: "<b>Draft updated as you type</b><br/>If the agents had already run, the run restarts" }
+  tStale@{ shape: odd, label: "<b>'Records changed after the agents ran'</b><br/>'Their work was cleared. The agents check again when you continue.'" }
   end
   subgraph gDocs ["Document rows"]
-  pList@{ shape: rect, label: "<b>The payer and level of care decide the list</b><br/>Summit Residential 3.5: 9 documents, 7 required<br/>No payer yet: only the referral and the diagnosis report" }
+  pList@{ shape: rect, label: "<b>The list saved on Payers › Documents for the payer and level of care decides the rows</b><br/>Summit Residential 3.5: 9 documents, 7 required<br/>A line that fits no standard document is its own required row<br/>No payer yet: only the referral and the diagnosis report" }
   dRow@{ shape: diam, label: "What does the row hold?" }
-  rMiss@{ shape: rect, label: "<b>Required, empty: 'Not found yet. Drop it above or add it here.'</b><br/>Buttons 'Add file' and 'Use sample file'" }
-  rOpt@{ shape: rect, label: "<b>Recommended, empty: 'You can continue without it.'</b><br/>Same two buttons" }
+  rMiss@{ shape: rect, label: "<b>Required, empty: 'Not found yet. Drop it above or add it here.'</b><br/>Buttons 'Add file', 'Use sample file' and 'Mark not available'" }
+  rOpt@{ shape: rect, label: "<b>Recommended, empty: 'You can continue without it.'</b><br/>Same three buttons" }
+  rMarked@{ shape: rect, label: "<b>Marked not available: 'Marked not available: REASON · Summit asks for it, so the review will warn.'</b><br/>Counts as ready. Buttons 'Add file' and 'Undo'" }
   rRef@{ shape: rect, label: "Referral row, empty: also 'Add a referral'" }
-  rFile@{ shape: rect, label: "File in place: name, then 'N checks passed' or 'Check this' with the finding" }
+  rFile@{ shape: rect, label: "<b>File in place: name, then 'N checks passed' or 'Check this' with the finding</b><br/>Buttons: the eye, 'Replace' and the x" }
   rExtra@{ shape: rect, label: "File the payer does not ask for: tagged 'Not on the list'" }
   cAdd@{ shape: trap-t, label: "Click 'Add file'" }
   iFile@{ shape: lean-r, label: "Choose one file in the picker" }
@@ -1934,7 +1991,7 @@ flowchart TD
   cClose@{ shape: trap-t, label: "Press Escape or click the drawer's close button" }
   cX@{ shape: trap-t, label: "Click the x ('Remove FILE NAME')" }
   stDrop@{ shape: cyl, label: "<b>Document taken out</b><br/>The row goes back to missing or recommended" }
-  pSwap@{ shape: rect, label: "<b>To swap a file: remove it and 'Add file'</b><br/>Or drop a file whose name fits the same slot, which replaces it" }
+  gAct@{ shape: subproc, label: "Continues in: Medical records › Replace a document or mark it not available" }
   cView@{ shape: trap-t, label: "Click 'View' on the referral that came with the case" }
   gRef@{ shape: subproc, label: "Continues in: New case › Referral step" }
   cAddRef@{ shape: trap-t, label: "Click 'Add a referral'" }
@@ -1956,36 +2013,42 @@ flowchart TD
   dRow -->|"Required, no file"| rMiss
   dRow -->|"Recommended, no file"| rOpt
   dRow -->|"Referral, no file"| rRef
+  dRow -->|"Marked not available"| rMarked
   dRow -->|"File in place"| rFile
   dRow -->|"Not on the payer's list"| rExtra
   rMiss --> cAdd
   rMiss --> cSample
+  rMiss --> gAct
+  rMarked --> gAct
   rOpt --> cAdd
   rRef --> cAddRef --> gRef
   cAdd --> iFile --> aRead
   cSample --> aRead
   aRead --> rFile
   rFile --> cEye --> oView --> cClose
-  rFile --> cX --> stDrop --> pSwap
+  rFile --> gAct
+  rFile --> cX --> stDrop --> gAct
   rFile --> cView --> gRef
   stDrop -.-> stReq
+  stReq -.-> tStale
   class s1 k_start
   class sc k_screen
   class cLvl,cType,cStart,cDx,cPickDx,cRemDx,cReason,cDone,cAdd,cSample,cEye,cClose,cX,cView,cAddRef k_click
   class iLvl,iType,iStart,iDx,iReason,iFile k_input
-  class pLvl,pType,pDx,pChip,pList,rMiss,rOpt,rRef,rFile,rExtra,pSwap k_process
+  class pLvl,pType,pDx,pChip,pList,rMiss,rOpt,rMarked,rRef,rFile,rExtra k_process
   class stReq,stDrop k_store
+  class tStale k_toast
   class dRow k_decision
   class aRead k_agent
   class oView k_overlay
-  class gRef k_goto
+  class gAct,gRef k_goto
   style gReq fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gDocs fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```
 
 ## Authorizations › New case › Agents work › Start the run and watch it
 
-'Continue' on step 2 asks once, then ten agents work in order for about 13 seconds. The page shows each agent's line, the approval chance climbing, two ways to raise it, and Pause and Skip ahead. All progress is written to the draft.
+'Continue' on step 2 asks once, then ten agents work in order for about 13 seconds. The page shows each agent's line, the approval chance climbing, two ways to raise it, and Pause and Skip ahead. A paused agent holds the run, and Verify can fail to reach a payer's portal. All progress is written to the draft.
 
 Route: `/authorizations/new/:draftId (step 3 of 4, 'Agents work')`
 
@@ -2009,22 +2072,22 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>On step 2, click 'Continue'</b><br/>Every required item is in" }
-  o1@{ shape: win-pane, label: "<b>Start the agents?</b><br/>J.M., Residential 3.5 · Summit Medicaid HMO<br/>'Scribe drafts the case and may ask you up to three questions.'<br/>'Nothing is sent to the payer until a clinician signs.'" }
+  o1@{ shape: win-pane, label: "<b>Start the agents?</b><br/>J.M., Residential 3.5 · Summit Medicaid HMO<br/>'Scribe drafts the case and may ask you a question or two.'<br/>'Nothing is sent to the payer until a clinician signs.'" }
   cCancel@{ shape: trap-t, label: "Click 'Cancel', press Escape, or click outside" }
   eCancel@{ shape: stadium, label: "Back on step 2; nothing started" }
   cStart@{ shape: trap-t, label: "Click 'Start the agents'" }
   st1@{ shape: cyl, label: "<b>Draft saved as a case with an ID such as R-1701</b><br/>It now shows in Case Manager › Being prepared" }
-  st2@{ shape: cyl, label: "<b>Run set up</b><br/>Chance range from the payer: 62% to 88% for Summit<br/>One question picked<br/>Clock set from the request type" }
+  st2@{ shape: cyl, label: "<b>Run set up</b><br/>Chance range from the payer: 62% to 88% for Summit<br/>Questions planned: one, or two when the chart leaves a gap<br/>Clock set from the request type" }
   sc@{ shape: curv-trap, label: "<b>Step 3 'Agents work'</b><br/>'Agents at work on R-1701'<br/>'Residential 3.5 admission · Summit Medicaid HMO' and a clock chip that counts up" }
   pRow@{ shape: rect, label: "Each agent row goes 'Waiting', then 'Working' with a spinner, then a green tick with its time" }
   subgraph gRun ["Ten agents, in this order"]
   a1@{ shape: hex, label: "<b>Reader · 1.3 s</b><br/>'Read 8 files and found 214 facts. Identifiers are now codes'" }
-  a2@{ shape: hex, label: "<b>Verify · 1.0 s</b><br/>'Coverage is active and prior authorization is required'" }
+  a2@{ shape: hex, label: "<b>Verify · 1.0 s</b><br/>'Coverage is active and prior authorization is required'<br/>First run for Cardinal: it cannot reach the portal and stops" }
   a3@{ shape: hex, label: "<b>Criteria · 1.4 s</b><br/>'Matched the chart to Summit's criteria: 9 of 9 requirements met'" }
   a4@{ shape: hex, label: "<b>Historian · 1.3 s</b><br/>'Reviewed 1,248 similar Summit decisions: 212 your own, 806 network, 230 benchmark'" }
   a5@{ shape: hex, label: "<b>Placement · 1.0 s</b><br/>'The chart supports Residential 3.5 (ASAM 3.5)'" }
   a6@{ shape: hex, label: "<b>Forecaster · 1.1 s</b><br/>'Approval chance 88%, likely 83-92%'" }
-  a7@{ shape: hex, label: "<b>Scribe · 2.2 s</b><br/>Stops to ask one question, then 'Drafted the medical-necessity summary'" }
+  a7@{ shape: hex, label: "<b>Scribe · 2.2 s</b><br/>Stops to ask its question (two when the chart leaves a gap), then 'Drafted the medical-necessity summary'" }
   a8@{ shape: hex, label: "<b>Integrity · 1.4 s</b><br/>'Every sentence traces to the chart'" }
   a9@{ shape: hex, label: "<b>Packet · 1.3 s</b><br/>'Assembled Summit's form with 8 attachments'" }
   a10@{ shape: hex, label: "<b>Scrubber · 1.0 s</b><br/>'Checked the request for errors. None found'" }
@@ -2033,6 +2096,7 @@ flowchart TD
   pRing@{ shape: rect, label: "<b>Ring starts at 62% ('started at 62%')</b><br/>It climbs as Verify, Criteria, Historian and Placement finish: 65, 72, 78, 83" }
   pPill@{ shape: rect, label: "Pill: 'Moderate so far · likely 53-70%'" }
   pSettle@{ shape: rect, label: "<b>After Forecaster: 88%</b><br/>Pill: 'Strong · likely 83-92%'<br/>'Based on 1,248 similar cases'" }
+  pHeld@{ shape: rect, label: "<b>Below the pill: 'Held back 3 points: 1 thing the payer asks for is not met.'</b><br/>Three points for each required document that is not in the case, and for a start date the payer's backdating rule does not allow, up to 12" }
   end
   subgraph gRaise ["To raise it further"]
   cTick1@{ shape: trap-t, label: "<b>Tick 'Name the step-down provider'</b><br/>+2-4" }
@@ -2041,14 +2105,17 @@ flowchart TD
   cUntick@{ shape: trap-t, label: "<b>Untick a box</b><br/>The points come off" }
   end
   subgraph gFoot ["Footer buttons"]
-  cPause@{ shape: trap-t, label: "Click 'Pause all agents'" }
-  tPause@{ shape: odd, label: "<b>'All agents are paused'</b><br/>'Nothing is read, checked or drafted until you resume them. Nothing has been sent to the payer.'" }
-  cResume@{ shape: trap-t, label: "Click 'Resume agents'" }
+  cPause@{ shape: trap-t, label: "<b>Click 'Pause all agents'</b><br/>Same as 'Pause all agents' in Settings: the whole app is paused" }
+  tPause@{ shape: odd, label: "<b>Banner 'Agents are paused in Settings'</b><br/>Row: 'Paused in Settings'<br/>The run holds at the agent it was on" }
+  cResume@{ shape: trap-t, label: "<b>Click 'Resume agents'</b><br/>Settings shows them resumed too" }
   cSkip@{ shape: trap-t, label: "Click 'Skip ahead'" }
   pFast@{ shape: rect, label: "<b>Each step now takes about 0.14 s</b><br/>The button switches off<br/>A question still stops the run" }
   cBack@{ shape: trap-t, label: "Click 'Back'" }
   end
+  tRec@{ shape: odd, label: "<b>Banner 'Records changed after the last run. The agents re-checked.'</b><br/>Shown when the medical records changed after an earlier run" }
   pAway@{ shape: rect, label: "<b>Leave the page and progress is kept in the draft</b><br/>But the agents only move while this page is open<br/>Hint: 'The agents work on their own. You can leave and come back.'" }
+  g46@{ shape: subproc, label: "Continues in: Agents work › An agent could not finish" }
+  g47@{ shape: subproc, label: "Continues in: Agents work › Paused in Settings" }
   g35@{ shape: subproc, label: "Continues in: Agents work › An agent asks a question" }
   g36@{ shape: subproc, label: "Continues in: Agents work › Finished, paused or left" }
   s1 --> o1
@@ -2056,12 +2123,15 @@ flowchart TD
   o1 --> cStart --> st1 --> st2 --> sc --> pRow --> a1
   a1 --> a2 --> a3 --> a4 --> a5 --> a6 --> a7 --> a8 --> a9 --> a10 --> g36
   a7 -.->|"Stops once"| g35
-  sc --> pRing --> pPill --> pSettle
+  sc --> pRing --> pPill --> pSettle --> pHeld
   a6 -.-> pSettle
+  sc --> tRec
+  a2 -.->|"Cardinal, first run"| g46
   sc --> cTick1 --> pBoost
   sc --> cTick2 --> pBoost
   pBoost --> cUntick
   sc --> cPause --> tPause --> cResume
+  tPause --> g47
   sc --> cSkip --> pFast
   sc --> cBack --> g36
   sc --> pAway --> g36
@@ -2071,10 +2141,10 @@ flowchart TD
   class eCancel k_endx
   class st1,st2 k_store
   class sc k_screen
-  class pRow,pRing,pPill,pSettle,pBoost,pFast,pAway k_process
+  class pRow,pRing,pPill,pSettle,pHeld,pBoost,pFast,pAway k_process
   class a1,a2,a3,a4,a5,a6,a7,a8,a9,a10 k_agent
-  class tPause k_toast
-  class g35,g36 k_goto
+  class tPause,tRec k_toast
+  class g46,g47,g35,g36 k_goto
   style gRun fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gChance fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gRaise fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
@@ -2083,7 +2153,7 @@ flowchart TD
 
 ## Authorizations › New case › Agents work › An agent asks a question
 
-Scribe (or Packet) stops once to ask what the chart cannot say, and the agents wait. A question cannot be skipped: 'Answer later' only closes the pop-up. The answer goes into the draft and into the summary.
+Scribe (or Packet) stops to ask what the chart cannot say, and the agents wait. A run has one question, or two when the chart leaves a gap, and the pop-up says 'Question 1 of N' with the true N. A question cannot be skipped: 'Answer later' only closes the pop-up. Each answer goes into the draft and into the summary.
 
 Route: `/authorizations/new/:draftId (step 3 of 4, the question pop-up)`
 
@@ -2108,12 +2178,14 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>The run reaches Scribe</b><br/>(Packet for IOP and PHP)" }
   p1@{ shape: rect, label: "The agent works about 45% of its step, then stops" }
-  dKey@{ shape: diam, label: "Which question was picked when the agents started?" }
+  dKey@{ shape: diam, label: "<b>Which questions were planned when the agents started?</b><br/>The first one is asked now, a second right after the first answer" }
   q1@{ shape: rect, label: "<b>Sertraline</b><br/>'Sertraline starts 9/14 on the medication list and 9/21 in the psychiatric evaluation. Which is right?'<br/>Choices: '9/14 (the medication list)', '9/21 (the psychiatric evaluation)'" }
   q2@{ shape: rect, label: "<b>Step-down provider</b><br/>'Is a named step-down provider on file? Summit asks for one in residential continued stays.'<br/>Choices: 'Yes, a named provider is on file', 'Not yet. One will be named before day 10', 'Not applicable for this request'" }
+  q4@{ shape: rect, label: "<b>Diagnosis duration (Scribe)</b><br/>'How long has the patient had this diagnosis? The psychiatric evaluation is not in the case, so Scribe cannot read it from there.'<br/>Choices: 'Less than a year', 'One to five years', 'More than five years'" }
+  q5@{ shape: rect, label: "<b>Why a lower level is not enough (Scribe)</b><br/>'Why is a lower level of care not enough? The chart does not say, and the payer will ask.'<br/>Choices: 'A lower level was tried and did not hold', 'Home is not safe or supportive enough', 'Symptoms are too severe for a lower level'" }
   q3@{ shape: rect, label: "<b>Discharge date (Packet)</b><br/>'Is a discharge or step-down date planned in the next 30 days? The payer's form asks for it.'<br/>Choices: 'Yes, within 2 weeks', 'Yes, within 30 days', 'Not decided yet'" }
-  sc@{ shape: curv-trap, label: "<b>Step 3 shows the question</b><br/>The asking row: 'Needs your answer' and a button 'Answer'<br/>Green banner: 'One question from Scribe.' and the text<br/>Hint: 'The agents are waiting for your answer.'" }
-  oM@{ shape: win-pane, label: "<b>Scribe has a question</b><br/>'Question 1 of at most 3 for this case. The agents wait for you.'<br/>Choice cards, then 'Or add a note in your own words'" }
+  sc@{ shape: curv-trap, label: "<b>Step 3 shows the question</b><br/>The asking row: 'Needs your answer' and a button 'Answer'<br/>Green banner: 'Question 1 of 2 from Scribe.' and the text<br/>Hint: 'The agents are waiting for your answer.'" }
+  oM@{ shape: win-pane, label: "<b>Scribe has a question</b><br/>'Question 1 of 2 for this case. The agents wait for you.'<br/>Choice cards, then 'Or add a note in your own words'" }
   pNoSkip@{ shape: rect, label: "'Pause all agents' and 'Skip ahead' do not get past the question" }
   iChoice@{ shape: lean-r, label: "<b>Click one choice card</b><br/>It highlights" }
   iNote@{ shape: lean-r, label: "<b>Type a note</b><br/>'Optional with a button above, or use it on its own.'" }
@@ -2123,8 +2195,9 @@ flowchart TD
   stAns@{ shape: cyl, label: "<b>Answer saved on the draft</b><br/>The choice's words without the bracket, or the typed note<br/>A note typed with a choice is kept beside it" }
   stClear@{ shape: cyl, label: "The summary draft is cleared so Scribe rebuilds it" }
   tYou@{ shape: odd, label: "<b>'You answered Scribe: ANSWER. It is in the draft.'</b><br/>With a typed note: 'ANSWER · NOTE. It is in the draft.'" }
+  dMore@{ shape: diam, label: "Is a second question planned for this agent?" }
   aGo@{ shape: hex, label: "<b>The agent finishes the other 55% of its step</b><br/>Then the remaining agents run" }
-  pEffect@{ shape: rect, label: "<b>Sertraline answer: the Medication list finding becomes 'Sertraline start date confirmed by you: 9/14'</b><br/>Step-down 'Yes': the tick-box 'Name the step-down provider' disappears" }
+  pEffect@{ shape: rect, label: "<b>Sertraline answer: the Medication list finding becomes 'Sertraline start date confirmed by you: 9/14'</b><br/>Step-down 'Yes': the tick-box 'Name the step-down provider' disappears<br/>A duration or lower-level answer becomes a sentence in the summary" }
   pSum@{ shape: rect, label: "<b>The draft summary uses the answer</b><br/>Clinical picture: 'Sertraline was started on 9/14.'<br/>Plan: 'A named step-down provider is on file.'" }
   cLater@{ shape: trap-t, label: "Click 'Answer later', press Escape, or click outside" }
   pLater@{ shape: rect, label: "<b>Pop-up closes; the agents stay stopped</b><br/>Banner stays; the row keeps 'Needs your answer'" }
@@ -2136,20 +2209,26 @@ flowchart TD
   dKey -->|"Medication list has the sertraline finding"| q1
   dKey -->|"Residential 3.5 or Detox"| q2
   dKey -->|"IOP or PHP"| q3
+  dKey -->|"Second question: no psychiatric evaluation in the case"| q4
+  dKey -->|"Second question: no psychosocial, treatment plan, ASAM or nursing document for the level of care, or no reason"| q5
   q1 --> sc
   q2 --> sc
   q3 --> sc
+  q4 --> sc
+  q5 --> sc
   sc --> oM --> pNoSkip
   oM --> iChoice --> dReady
   oM --> iNote --> dReady
   dReady -->|"No"| pOff --> iChoice
-  dReady -->|"Yes"| cSend --> stAns --> stClear --> tYou --> aGo --> pEffect --> pSum --> g36
+  dReady -->|"Yes"| cSend --> stAns --> stClear --> tYou --> dMore
+  dMore -->|"Yes"| p1
+  dMore -->|"No"| aGo --> pEffect --> pSum --> g36
   oM --> cLater --> pLater --> cAnswer --> oM
   pLater --> pLeave --> oM
   sc --> gCM
   class s1 k_start
-  class p1,q1,q2,q3,pNoSkip,pOff,pEffect,pSum,pLater,pLeave k_process
-  class dKey,dReady k_decision
+  class p1,q1,q2,q4,q5,q3,pNoSkip,pOff,pEffect,pSum,pLater,pLeave k_process
+  class dKey,dReady,dMore k_decision
   class sc k_screen
   class oM k_overlay
   class iChoice,iNote k_input
@@ -2162,7 +2241,7 @@ flowchart TD
 
 ## Authorizations › New case › Agents work › Finished, paused or left
 
-What the person can do when the ten agents are done, when the run stops, when they go Back, and when they reopen a draft that already ran. Changing the medical records after the agents ran throws their work away. The demo has no agent error or retry state.
+What the person can do when the ten agents are done, when the run stops, when they go Back, and when they reopen a draft that already ran. Changing the medical records after the agents ran starts the run over: a toast on the records step says so and a banner on this step says it again. An agent that cannot finish waits for Retry or Skip, and an agent paused in Settings holds the run.
 
 Route: `/authorizations/new/:draftId (step 3 of 4, after the run)`
 
@@ -2189,7 +2268,9 @@ flowchart TD
   s2@{ shape: stadium, label: "<b>Click 'Back' on step 4</b><br/>'Review and sign'" }
   t1@{ shape: odd, label: "<b>Banner: 'All ten agents are done'</b><br/>'The draft and the four checks are ready. Nothing has been sent to the payer.'" }
   p1@{ shape: rect, label: "<b>Hint: 'Read the draft and sign it on the next step.'</b><br/>'Review and sign' switches on<br/>'Pause all agents' and 'Skip ahead' switch off" }
-  pStop@{ shape: rect, label: "<b>The run only stops for a question, a pause, or when the page is closed</b><br/>There is no error or retry state" }
+  pStop@{ shape: rect, label: "The run stops for a question, an agent that could not finish, a pause in Settings, or when the page is closed" }
+  gFail@{ shape: subproc, label: "Continues in: Agents work › An agent could not finish" }
+  gPause@{ shape: subproc, label: "Continues in: Agents work › Paused in Settings" }
   dWhat@{ shape: diam, label: "What does the person do?" }
   cTick@{ shape: trap-t, label: "Tick or untick a 'To raise it further' box" }
   pTick@{ shape: rect, label: "Chance moves; the summary is rebuilt on the next step" }
@@ -2204,7 +2285,9 @@ flowchart TD
   cCont@{ shape: trap-t, label: "Click 'Continue'" }
   pDirect@{ shape: rect, label: "<b>Straight back to step 3 'Agents work'</b><br/>No 'Start the agents?' question" }
   stStale@{ shape: cyl, label: "<b>A change to the patient, payer, member ID, level of care, request type, start date, diagnoses, reason</b><br/>Or a document added, removed or replaced" }
-  pReset@{ shape: rect, label: "<b>The run starts over: all ten agents back to 'Waiting'</b><br/>Answers, ticked boxes, summary edits and a send-back note are cleared<br/>No message is shown" }
+  pReset@{ shape: rect, label: "<b>The run starts over: all ten agents back to 'Waiting'</b><br/>Answers, ticked boxes, summary edits and a send-back note are cleared" }
+  tToast@{ shape: odd, label: "<b>Toast on the records step: 'Records changed after the agents ran'</b><br/>'Their work was cleared. The agents check again when you continue.'" }
+  tBanner@{ shape: odd, label: "<b>On step 3 once the agents start again: 'Records changed after the last run. The agents re-checked.'</b><br/>It goes away when all ten are done" }
   cCont2@{ shape: trap-t, label: "Click 'Continue'" }
   oConf@{ shape: win-pane, label: "Start the agents?" }
   gStart@{ shape: subproc, label: "Continues in: Agents work › Start the run and watch it" }
@@ -2221,6 +2304,8 @@ flowchart TD
   end
   s1 --> t1 --> p1 --> pStop --> dWhat
   s2 --> p1
+  pStop -.-> gFail
+  pStop -.-> gPause
   dWhat --> cTick --> pTick
   dWhat --> cReview --> gReview
   dWhat --> cBack --> sRec
@@ -2228,7 +2313,8 @@ flowchart TD
   cStep -.-> pLock
   sRec --> dEdit
   dEdit -->|"No"| pSame --> cCont --> pDirect --> eBack
-  dEdit -->|"Yes"| stStale --> pReset --> cCont2 --> oConf --> gStart
+  dEdit -->|"Yes"| stStale --> pReset --> tToast --> cCont2 --> oConf --> gStart
+  oConf --> tBanner
   s3 --> pOpen --> dFar
   dFar -->|"0 of 10"| rNone
   dFar -->|"1 to 9, no question"| rMid
@@ -2238,11 +2324,11 @@ flowchart TD
   rAsk --> gQ
   rAll --> gReview
   class s1,s2,s3 k_start
-  class t1 k_toast
+  class t1,tToast,tBanner k_toast
   class p1,pStop,pTick,pLock,pSame,pDirect,pReset,pOpen,rNone,rMid,rAsk,rAll k_process
+  class gFail,gPause,gReview,gStart,gQ k_goto
   class dWhat,dEdit,dFar k_decision
   class cTick,cReview,cBack,cStep,cCont,cCont2 k_click
-  class gReview,gStart,gQ k_goto
   class sRec k_screen
   class stStale k_store
   class oConf k_overlay
@@ -2252,7 +2338,7 @@ flowchart TD
 
 ## Authorizations › New case › Review and sign › The draft and the summary
 
-Step 4 shows what the payer will read: the medical-necessity summary Scribe drafted, which can be edited, with a chip for every chart page it came from. The validation summary, the checks and the signing card are in the next two diagrams.
+Step 4 shows what the payer will read: the medical-necessity summary Scribe drafted, which can be edited, with a chip for every chart page it came from. It is the same summary the case page's Draft tab shows: an edit made in either place is read in the other. The validation summary, the checks and the signing card are in the next two diagrams.
 
 Route: `/authorizations/new/:draftId (step 4 of 4, 'Ready for your signature')`
 
@@ -2283,8 +2369,11 @@ flowchart TD
   sF@{ shape: curv-trap, label: "<b>Footer bar</b><br/>'Back', 'Save as draft'" }
   end
   sNarr@{ shape: curv-trap, label: "<b>Medical-necessity summary</b><br/>'What Summit will read · every statement links to the chart'<br/>Four sections: Clinical picture, level of care reason, Current severity, Plan" }
+  pCtx@{ shape: rect, label: "<b>A fifth paragraph 'Context added.' shows when notes were added on the case page</b><br/>(Add clinical context, Recommended actions)<br/>It is shown here but not edited here" }
+  pApplied@{ shape: rect, label: "<b>Sentences from actions applied on the case page are part of their sections</b><br/>e.g. 'Step-down plan: ...' and 'Sertraline was started on 9/21.'" }
+  pNote@{ shape: rect, label: "<b>A draft Payers redrafted after a payer change shows one line above the summary</b><br/>'Updated for a payer change on 10/20'" }
   pHead@{ shape: rect, label: "<b>The second heading follows the level of care</b><br/>'Why a lower level of care is not safe' (Residential 3.5, PHP)<br/>'Why weekly outpatient care is not enough' (IOP)<br/>'Why withdrawal needs medical monitoring' (Detox)" }
-  sChance@{ shape: curv-trap, label: "<b>Approval chance card</b><br/>Ring and 'Strong · likely 83-92%'<br/>'Summit usually decides in about 1.5 days. Based on 1,248 similar cases.'" }
+  sChance@{ shape: curv-trap, label: "<b>Approval chance card</b><br/>Ring and 'Strong · likely 83-92%'<br/>'Summit usually decides in about 1.5 days. Based on 1,248 similar cases.'<br/>When the case does not meet what the payer asks for: 'Held back 3 points: 1 thing the payer asks for is not met.'" }
   subgraph gChip ["Source chips"]
   cChip@{ shape: trap-t, label: "<b>Click a chip under a section</b><br/>For example 'Psychiatric eval p.3'" }
   pChips@{ shape: rect, label: "<b>Chips appear only for documents that are in the case</b><br/>The 'Medication list' chip needs a sertraline answer" }
@@ -2298,7 +2387,7 @@ flowchart TD
   cCancel@{ shape: trap-t, label: "Click 'Cancel'" }
   pCancel@{ shape: rect, label: "Edits dropped; the summary is shown again" }
   cSave@{ shape: trap-t, label: "Click 'Save changes'" }
-  stNarr@{ shape: cyl, label: "Summary saved on the draft as edited" }
+  stNarr@{ shape: cyl, label: "<b>Summary saved on the draft as edited</b><br/>The case page's Draft tab now reads this text" }
   aInt@{ shape: hex, label: "<b>Integrity re-checks the edits (demo: simulated)</b><br/>Checks show 'Re-checking' for about 1 second<br/>'Sign and send' is off meanwhile" }
   dEmpty@{ shape: diam, label: "Is any section empty?" }
   tOk@{ shape: odd, label: "<b>'Integrity re-checked your edits'</b><br/>'Every sentence still traces to the chart.'" }
@@ -2311,9 +2400,10 @@ flowchart TD
   cSaveD@{ shape: trap-t, label: "Click 'Save as draft'" }
   tSaved@{ shape: odd, label: "<b>'Draft saved'</b><br/>'R-1701 is in Case Manager, ready to sign.'" }
   gVal@{ shape: subproc, label: "Continues in: Review and sign › Validation summary and checks" }
-  gSign@{ shape: subproc, label: "Continues in: Review and sign › Sign and send" }
+  gSign@{ shape: subproc, label: "Continues in: New case › Review and sign › Sign and send" }
   g36@{ shape: subproc, label: "Continues in: Agents work › Finished, paused or left" }
   g39@{ shape: subproc, label: "Continues in: New case › Save as draft and leave" }
+  gDraft@{ shape: subproc, label: "Continues in: Authorizations › Case page › Draft › Read and edit" }
   s1 --> sc
   sc --> sL & sR & sF
   sL --> sNarr --> pHead
@@ -2321,6 +2411,10 @@ flowchart TD
   sR --> sChance
   sR --> gVal
   sR --> gSign
+  sNarr --> pCtx
+  sNarr --> pApplied
+  sL --> pNote
+  sNarr -.-> gDraft
   sNarr --> cChip --> pChips --> oSrc --> cCloseSrc
   sNarr --> cEdit --> oEdit --> iText
   iText --> cCancel --> pCancel
@@ -2332,7 +2426,7 @@ flowchart TD
   sF --> cSaveD --> tSaved --> g39
   class s1 k_start
   class sc,sL,sR,sF,sNarr,sChance k_screen
-  class pHead,pChips,pCancel,pEmpty,pLost,pBack k_process
+  class pCtx,pApplied,pNote,pHead,pChips,pCancel,pEmpty,pLost,pBack k_process
   class cChip,cCloseSrc,cEdit,cCancel,cSave,cBack,cSaveD k_click
   class oSrc,oEdit k_overlay
   class iText k_input
@@ -2340,7 +2434,7 @@ flowchart TD
   class aInt k_agent
   class dEmpty k_decision
   class tOk,tEmpty,tSaved k_toast
-  class gVal,gSign,g36,g39 k_goto
+  class gVal,gSign,g36,g39,gDraft k_goto
   style gLayout fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gChip fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gEdit fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
@@ -2377,7 +2471,7 @@ flowchart TD
   dWho@{ shape: diam, label: "Who is chosen?" }
   tUR@{ shape: odd, label: "'Jordan Perez is a UR coordinator. Only a licensed clinician can sign. Switch to Dr. Rivera to sign.'" }
   iRiv@{ shape: lean-r, label: "<b>Pick 'Dr. Rivera (clinician)'</b><br/>The card now reads 'Dr. Rivera, clinician'" }
-  dWarn@{ shape: diam, label: "Does any check show a warning?" }
+  dWarn@{ shape: diam, label: "<b>Does any check show a warning?</b><br/>Open finding, document marked not available, start date outside the payer's backdating rule, a skipped Verify, a late notice" }
   iAck@{ shape: lean-r, label: "Tick 'I reviewed the warning above and want to sign anyway.'" }
   iAtt@{ shape: lean-r, label: "Tick 'I reviewed this summary and it reflects the record. The level of care is my clinical judgment.'" }
   dCan@{ shape: diam, label: "Clinician chosen, attestation ticked, no block or re-check, warnings acknowledged?" }
@@ -2394,7 +2488,7 @@ flowchart TD
   stMove@{ shape: cyl, label: "<b>That request moves from Preparing to Received</b><br/>The same ID is kept" }
   aNav@{ shape: hex, label: "Navigator files the request through the payer's portal (demo: simulated)" }
   xPortal@{ shape: st-rect, label: "<b>Payer portal</b><br/>Receives the request and gives a receipt" }
-  stEv@{ shape: cyl, label: "<b>History: 'You signed and sent the request'</b><br/>'Navigator sent the request through the payer's portal'<br/>'Navigator saved the receipt to the case'<br/>Next: 'Navigator checks again' in 30 minutes" }
+  stEv@{ shape: cyl, label: "<b>History: 'You signed and sent the request'</b><br/>'Navigator sent the request through the payer's portal'<br/>'Navigator saved the receipt to the case'<br/>If Verify was skipped: 'Verify could not reach Cardinal's portal before signing'<br/>Next: 'Navigator checks again' in 30 minutes" }
   stDraft@{ shape: cyl, label: "<b>The draft is marked sent</b><br/>'sent today' in Case Manager goes up by one" }
   tNotif@{ shape: odd, label: "<b>Notification: 'Sent to the payer'</b><br/>'R-1701 was sent. It now shows as Received on the Dashboard.'" }
   tSent@{ shape: odd, label: "<b>'Sent to the payer'</b><br/>'R-1701 is on the Dashboard as Received.'" }
@@ -2463,6 +2557,9 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Working on a new case" }
+  s2@{ shape: stadium, label: "On a case page, click 'Open in review and sign' or 'Send to payer'" }
+  pReq@{ shape: rect, label: "<b>A draft is made from the request, or the one it already has is brought up to date</b><br/>It opens at Review and sign when the request is ready, at Agents work when agents still have work<br/>It is not saved, so Case Manager does not list it" }
+  gCase@{ shape: subproc, label: "Continues in: Authorizations › Case page › Send to payer and review and sign" }
   subgraph gSave ["Ways a draft gets saved"]
   c1@{ shape: trap-t, label: "Click 'Save as draft' on step 2 'Medical records'" }
   c2@{ shape: trap-t, label: "Click 'Save as draft' on step 4 'Review and sign'" }
@@ -2477,7 +2574,7 @@ flowchart TD
   cLeave@{ shape: trap-t, label: "Click 'Case Manager' at the top, a sidebar item, or close the tab" }
   dSaved@{ shape: diam, label: "Was the case saved?" }
   pUnsaved@{ shape: rect, label: "<b>Nothing appears in Case Manager</b><br/>The draft stays in this session and its address still opens it<br/>Opening New case again starts another blank draft" }
-  pAway@{ shape: rect, label: "<b>A running case stops moving while the page is closed</b><br/>The row shows the agent that was working" }
+  pAway@{ shape: rect, label: "<b>A running case stops moving while the page is closed</b><br/>The row shows the agent that was working<br/>Or, when an agent could not finish: 'Verify could not reach Cardinal's portal. Retry it or skip it'" }
   sCM@{ shape: curv-trap, label: "<b>Case Manager › Active cases › Being prepared</b><br/>'Most urgent first. Each case moves through eight steps; the agents do all but Ask and Sign.'<br/>Filter: 'All', 'Agents working', 'Needs your input', 'Ready to sign'" }
   sRow@{ shape: curv-trap, label: "<b>A row for the draft</b><br/>Level of care chip, case ID, 'J.M., 34 · Summit Medicaid HMO', request<br/>Eight-step bar: Read, Rules, Match, Ask, Draft, Check, Sign, Send<br/>Who has it, due chip, status pill, approval chance, one button" }
   dState@{ shape: diam, label: "What state is the draft in?" }
@@ -2486,7 +2583,7 @@ flowchart TD
   rAsk@{ shape: rect, label: "<b>'Needs your input'</b><br/>Button 'Answer'" }
   rReady@{ shape: rect, label: "<b>'Ready to sign'</b><br/>Button 'Review and sign'" }
   pBadge@{ shape: rect, label: "<b>The sidebar badge on 'Case Manager' counts drafts that need a person</b><br/>Intake not finished, a question, or ready to sign" }
-  pDash@{ shape: rect, label: "<b>The Dashboard shows nothing for a new draft until it is signed and sent</b><br/>Seeded cases such as R-1042 do show under 'Preparing'" }
+  pDash@{ shape: rect, label: "<b>The Dashboard counts a saved draft under 'Preparing' ('N in Case Manager')</b><br/>A draft that was never saved is not counted<br/>Seeded cases such as R-1042 are counted as requests" }
   cOpen@{ shape: trap-t, label: "Click the case ID, or the row's button" }
   pResume@{ shape: rect, label: "<b>Opens /authorizations/new/DRAFT</b><br/>The page resumes where the draft was" }
   gResume@{ shape: subproc, label: "Continues in: Agents work › Finished, paused or left" }
@@ -2495,6 +2592,7 @@ flowchart TD
   cNew@{ shape: trap-t, label: "Click 'Start a new case'" }
   pNew@{ shape: rect, label: "A new blank draft opens on step 1" }
   gRef@{ shape: subproc, label: "Continues in: New case › Referral step" }
+  s2 --> pReq --> gCase
   s1 --> c1
   s1 --> c2
   s1 --> c3
@@ -2527,14 +2625,14 @@ flowchart TD
   pResume --> gResume
   pResume --> gStep2
   sNF --> cNew --> pNew --> gRef
-  class s1 k_start
+  class s1,s2 k_start
+  class pReq,pNo3,pNoop,pUnsaved,pAway,rIntake,rWork,rAsk,rReady,pBadge,pDash,pResume,pNew k_process
+  class gCase,gResume,gStep2,gRef k_goto
   class c1,c2,c3,cLeave,cOpen,cNew k_click
-  class pNo3,pNoop,pUnsaved,pAway,rIntake,rWork,rAsk,rReady,pBadge,pDash,pResume,pNew k_process
   class dAlready,dSaved,dState k_decision
   class st1 k_store
   class t1,t2 k_toast
   class sCM,sRow,sNF k_screen
-  class gResume,gStep2,gRef k_goto
   style gSave fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```
 
@@ -2619,7 +2717,7 @@ flowchart TD
 
 ## Authorizations › New case › Review and sign › Validation summary and checks
 
-The validation summary lists what Reader found in every document. The Checks card has four checks from four agents. A warning can be signed after an acknowledgement; a block or a re-check cannot be signed.
+The validation summary lists the start date and what Reader found in every document the payer asks for. The Checks card has four checks from four agents. Every row and check is worked out from the case, the payer's saved documents (Payers › Documents) and rules (Payers › Rules). A warning can be signed after an acknowledgement; a block or a re-check cannot be signed.
 
 Route: `/authorizations/new/:draftId (step 4 of 4, Validation summary and Checks)`
 
@@ -2645,23 +2743,28 @@ flowchart TD
   s1@{ shape: stadium, label: "On step 4, read the Validation summary and the Checks" }
   subgraph gVal ["Validation summary"]
   sV@{ shape: curv-trap, label: "<b>Validation summary</b><br/>'Reader checked every document against the payer's guidelines. Review the findings before you sign.'<br/>Pill: 'N to look at' or 'Nothing to look at'" }
-  pRows@{ shape: rect, label: "One row for 'Start date', then one for each document on the payer's list, required or recommended" }
-  pStart@{ shape: rect, label: "<b>'Start date' always shows a green tick</b><br/>'The start date 10/20/2026 is inside the notice window'" }
+  pRows@{ shape: rect, label: "One row for 'Start date', then the referral, the required documents and the recommended ones, from the payer's saved list" }
+  dStart@{ shape: diam, label: "<b>Is there a start date, and is it inside the payer's backdating rule?</b><br/>Summit: none back. Beacon: 2 days. Evergreen: 3 days. A retro-authorization uses the payer's retro line (Summit: 72 hours)" }
+  pStartOk@{ shape: rect, label: "<b>Green tick</b><br/>'The start date 10/20/2026 is inside what Summit allows'" }
+  pStartBad@{ shape: rect, label: "<b>Amber icon, row open</b><br/>'The start date 10/10/2026 is 10 days back. Summit does not backdate an authorization.'<br/>Or 'No start date. Summit will count from the day it receives the request.'" }
   dMiss@{ shape: diam, label: "Is the document in the case?" }
-  pNotAdded@{ shape: rect, label: "<b>Required: 'This document was not added.'</b><br/>Recommended: 'Not added. Summit usually asks for one. You can sign without it.'" }
+  dMark@{ shape: diam, label: "Was it marked not available?" }
+  pMarkReq@{ shape: rect, label: "<b>Required: amber</b><br/>'Marked not available: REASON. Summit requires it, so it may ask for it.'" }
+  pMarkRec@{ shape: rect, label: "<b>Recommended: green</b><br/>'Marked not available: REASON. You can sign without it.'" }
+  pNotAdded@{ shape: rect, label: "<b>Required: 'This document was not added.'</b><br/>Recommended: 'Not added. Summit lists it. You can sign without it.'" }
   dRow@{ shape: diam, label: "Does the document have an open finding?" }
   pAmber@{ shape: rect, label: "<b>Amber icon, row open</b><br/>Green ticks for checks passed, an amber line for the finding" }
   pGreen@{ shape: rect, label: "Green tick, row closed" }
   pSettled@{ shape: rect, label: "<b>A finding settled by an answer turns green</b><br/>'Sertraline start date confirmed by you: 9/14'" }
-  cRow@{ shape: trap-t, label: "Click a document row" }
+  cRow@{ shape: trap-t, label: "Click a row" }
   pToggle@{ shape: rect, label: "Its findings open or close (the arrow turns)" }
   end
   subgraph gChecks ["Checks card"]
-  sC@{ shape: curv-trap, label: "<b>Checks</b><br/>Pill: 'All clear', '1 warning', '2 warnings', 'Re-checking' or 'Blocked'" }
+  sC@{ shape: curv-trap, label: "<b>Checks</b><br/>Pill: 'All clear', '1 warning', '2 warnings', 'Re-checking' or 'Blocked'<br/>Each check lists one line for each thing it found" }
   c1@{ shape: hex, label: "<b>Integrity: 'Every sentence traced to the chart'</b><br/>Blocked when a section is empty<br/>Re-checking while edits are read" }
-  c2@{ shape: hex, label: "<b>Scrubber: 'Request has no errors'</b><br/>Warning if coverage is not active, or a required document has an open finding" }
-  c3@{ shape: hex, label: "<b>Criteria: 'All 9 Summit requirements covered'</b><br/>Always passes (7 for IOP, 8 for PHP, 6 for Detox)" }
-  c4@{ shape: hex, label: "<b>Placement: 'Level of care matches the request'</b><br/>Always passes" }
+  c2@{ shape: hex, label: "<b>Scrubber: 'Request has no errors'</b><br/>Warns on: coverage that needs a fix, a skipped Verify, a required document with an open finding, a start date outside the rule or missing, a notice or retro window that has passed" }
+  c3@{ shape: hex, label: "<b>Criteria: 'All 9 Summit requirements covered'</b><br/>'8 of 9 ... covered' when a required document is marked not available or the step-down answer was 'Not yet'<br/>Blocked when a required document is not in the case at all (7 requirements for IOP, 8 for PHP, 6 for Detox)" }
+  c4@{ shape: hex, label: "<b>Placement: 'Level of care matches the request'</b><br/>Warns when there is no ASAM assessment, the ASAM assessment has a finding, or the payer's no-authorization rule names this level of care" }
   end
   dKind@{ shape: diam, label: "What state is a check in?" }
   kPass@{ shape: rect, label: "<b>Pass</b><br/>Green tick, nothing to do" }
@@ -2670,38 +2773,55 @@ flowchart TD
   kCheck@{ shape: rect, label: "<b>Re-checking</b><br/>Spinner for about 1 second<br/>Cannot be signed yet" }
   tW1@{ shape: odd, label: "'Coverage lapsed 10/12. A retro-eligibility request is needed before billing.'" }
   tW2@{ shape: odd, label: "<b>'1 required document has an open finding. See the validation summary.'</b><br/>A recommended document never raises it" }
+  tW3@{ shape: odd, label: "'Verify could not reach Cardinal's portal, so coverage was not confirmed. You skipped it and noted it.'" }
+  tW4@{ shape: odd, label: "'Psychosocial history is marked not available, so Summit has no evidence for it.'" }
   tB1@{ shape: odd, label: "<b>'The Current severity section is empty. Add the text or send the draft back to Scribe.'</b><br/>The quoted heading is the empty section's" }
+  tB2@{ shape: odd, label: "'1 required document is not in the case: Discharge summary. Add it on Medical records, or mark it not available.'" }
+  pHeld@{ shape: rect, label: "<b>The approval chance is held back 3 points for each required document that is not in the case and for a start date the rule does not allow, up to 12</b><br/>'Held back 3 points: 1 thing the payer asks for is not met.'" }
   pHover@{ shape: rect, label: "Hover an agent badge to see the agent's name" }
-  gSign@{ shape: subproc, label: "Continues in: Review and sign › Sign and send" }
-  s1 --> sV --> pRows --> pStart
+  gSign@{ shape: subproc, label: "Continues in: New case › Review and sign › Sign and send" }
+  gDocs@{ shape: subproc, label: "Continues in: Medical records › Replace a document or mark it not available" }
+  gRules@{ shape: subproc, label: "Continues in: Payers › Rules › Edit a rule" }
+  s1 --> sV --> pRows --> dStart
+  dStart -->|"Yes"| pStartOk
+  dStart -->|"No"| pStartBad
   pRows --> dMiss
-  dMiss -->|"No"| pNotAdded
+  dMiss -->|"No"| dMark
+  dMark -->|"Yes, required"| pMarkReq
+  dMark -->|"Yes, recommended"| pMarkRec
+  dMark -->|"No"| pNotAdded
   dMiss -->|"Yes"| dRow
   dRow -->|"Yes"| pAmber
   dRow -->|"No"| pGreen
   pAmber -.-> pSettled
   pRows --> cRow --> pToggle
+  pMarkReq -.-> gDocs
+  pStartBad -.-> gRules
   s1 --> sC
   sC --> c1 & c2 & c3 & c4
   c1 & c2 & c3 & c4 --> dKind
   dKind -->|"Pass"| kPass
-  dKind -->|"Open finding or lapsed coverage"| kWarn
-  dKind -->|"Empty section"| kBlock
+  dKind -->|"Anything found"| kWarn
+  dKind -->|"Empty section, or a required document missing"| kBlock
   dKind -->|"Edits being read"| kCheck
   c2 --> tW1
   c2 --> tW2
+  c2 --> tW3
+  c3 --> tW4
   c1 --> tB1
+  c3 --> tB2
+  c3 -.-> pHeld
   sC -.-> pHover
   kWarn --> gSign
   kBlock --> gSign
   class s1 k_start
   class sV,sC k_screen
-  class pRows,pStart,pNotAdded,pAmber,pGreen,pSettled,pToggle,kPass,kWarn,kBlock,kCheck,pHover k_process
-  class dMiss,dRow,dKind k_decision
+  class pRows,pStartOk,pStartBad,pMarkReq,pMarkRec,pNotAdded,pAmber,pGreen,pSettled,pToggle,kPass,kWarn,kBlock,kCheck,pHeld,pHover k_process
+  class dStart,dMiss,dMark,dRow,dKind k_decision
   class cRow k_click
   class c1,c2,c3,c4 k_agent
-  class tW1,tW2,tB1 k_toast
-  class gSign k_goto
+  class tW1,tW2,tW3,tW4,tB1,tB2 k_toast
+  class gSign,gDocs,gRules k_goto
   style gVal fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gChecks fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```
@@ -2734,7 +2854,7 @@ flowchart TD
   s1@{ shape: stadium, label: "The request is signed and sent" }
   subgraph gDash ["Dashboard"]
   sDash@{ shape: curv-trap, label: "<b>Dashboard</b><br/>The request is open in the side drawer<br/>Chip 'Received', held by Navigator" }
-  pCount@{ shape: rect, label: "<b>In the stage strip 'Received' goes up by one</b><br/>A brand-new case was never counted under 'Preparing'" }
+  pCount@{ shape: rect, label: "<b>In the stage strip 'Received' goes up by one</b><br/>The 'Preparing' count goes down by one: a saved draft was counted there until now" }
   tToast@{ shape: odd, label: "<b>Toast: 'Sent to the payer'</b><br/>Bell notification: 'Sent to the payer'" }
   end
   gOpen@{ shape: subproc, label: "Continues in: Dashboard › Open a request" }
@@ -2746,12 +2866,12 @@ flowchart TD
   cBackCM@{ shape: trap-t, label: "Click 'Back to Case Manager'" }
   end
   subgraph gCM ["Case Manager › Active cases"]
-  sCM@{ shape: curv-trap, label: "<b>Case Manager</b><br/>'56 active cases.' and 'N are still being prepared.'" }
+  sCM@{ shape: curv-trap, label: "<b>Case Manager</b><br/>'57 active cases.' and 'N are still being prepared.'" }
   pGone@{ shape: rect, label: "<b>The case leaves the 'Being prepared' card</b><br/>The 'still being prepared' count goes down by one" }
   pBadge@{ shape: rect, label: "The sidebar badge on 'Case Manager' no longer counts it" }
   cSent@{ shape: trap-t, label: "Click the 'N sent today' button" }
   pSentN@{ shape: rect, label: "The count is one higher (4 becomes 5)" }
-  pLedger@{ shape: rect, label: "<b>The table of active cases gains no row</b><br/>The header still says '56 active cases.'" }
+  pLedger@{ shape: rect, label: "<b>The table of active cases gains a row for the request</b><br/>The header goes from '56 active cases.' to '57 active cases.'" }
   end
   gDash2@{ shape: subproc, label: "Continues in: Dashboard › Stage strip and requests" }
   gCM2@{ shape: subproc, label: "Continues in: Case Manager › Active cases" }
@@ -2827,7 +2947,7 @@ flowchart TD
   sRev@{ shape: curv-trap, label: "<b>Step 4 again</b><br/>The Plan section ends: 'Reviewer's note, addressed: YOUR NOTE'" }
   cStay@{ shape: trap-t, label: "Click the browser's Back, or leave" }
   pAway@{ shape: rect, label: "The run only moves while step 3 is open" }
-  gSign@{ shape: subproc, label: "Continues in: Review and sign › Sign and send" }
+  gSign@{ shape: subproc, label: "Continues in: New case › Review and sign › Sign and send" }
   s1 --> o1
   o1 --> iNote
   o1 --> cQ1 & cQ2 & cQ3 --> pFill --> iNote
@@ -2846,4 +2966,311 @@ flowchart TD
   class a1,a2,a3,a4 k_agent
   class gSign k_goto
   style gRerun fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+```
+
+## Authorizations › New case › Medical records › Pull a chart from EMR Connect
+
+The button reads EMR Connect's connected systems. With none connected it says so and links to EMR Connect. Otherwise the picker lists charts by system, names the system, and leaves blank any field whose system still needs a mapping.
+
+Route: `/authorizations/new/:draftId (step 2, 'Pull a chart from EMR Connect')`
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>On step 2, click 'Pull a chart from EMR Connect'</b><br/>Clicking again closes it" }
+  dSys@{ shape: diam, label: "<b>Is any records system connected in EMR Connect?</b><br/>Status 'Connected'. 'Needs a quick look' and disconnected systems do not count" }
+  tNone@{ shape: odd, label: "<b>'No records system is connected.'</b><br/>'Connect one in EMR Connect to pull a chart, or drop the files above.'<br/>Link 'EMR Connect' and a 'Close' button" }
+  cLink@{ shape: trap-t, label: "Click 'EMR Connect' in the message" }
+  gEmr@{ shape: subproc, label: "Continues in: EMR Connect › Connect a system › Choose the system and contact" }
+  gMap@{ shape: subproc, label: "Continues in: EMR Connect › Needs a mapping › Map a field" }
+  cClose@{ shape: trap-t, label: "Click 'Close'" }
+  eClose@{ shape: stadium, label: "Message closes; nothing changes" }
+  oPick@{ shape: win-pane, label: "<b>Chart from EMR Connect</b><br/>Picker with a chart list, 'Pull' and 'Cancel'<br/>Only charts from connected systems are listed" }
+  iChart@{ shape: lean-r, label: "<b>Pick a chart</b><br/>Each option names its system, e.g. 'J.M., 34 · Summit · Residential 3.5'<br/>'Clinical record · residential site. Admitted yesterday'" }
+  dMap@{ shape: diam, label: "<b>Does the chart's system still have a field waiting for a mapping?</b><br/>Residential site: none. Outpatient site: 'Level of care' and 'Referral source'" }
+  tGap@{ shape: odd, label: "<b>Under the picker: 'From Clinical record · outpatient site.'</b><br/>'“Level of care” and “Referral source” still need a mapping there, so those fields are left blank.'<br/>Link 'Open EMR Connect'" }
+  tFrom@{ shape: odd, label: "Under the picker: 'From Clinical record · residential site.'" }
+  cPull@{ shape: trap-t, label: "Click 'Pull'" }
+  pPulling@{ shape: rect, label: "<b>Button reads 'Pulling' for about 1 second</b><br/>The list and 'Cancel' switch off" }
+  xEmr@{ shape: st-rect, label: "<b>EMR Connect (demo: simulated)</b><br/>The chart's patient, member ID, request type, diagnoses and reason<br/>Payer and level of care only when their field is mapped" }
+  stEmr@{ shape: cyl, label: "<b>Draft filled, replacing those fields</b><br/>A field that needs a mapping is set blank<br/>No documents come with it" }
+  dBlank@{ shape: diam, label: "Were any fields left blank?" }
+  tMid@{ shape: odd, label: "<b>'Pulled A.R., 45 from EMR Connect'</b><br/>'“Level of care” and “Referral source” need a mapping, so those fields were left blank. You can still fill them in.'" }
+  tGood@{ shape: odd, label: "<b>'Pulled J.M., 34 from EMR Connect'</b><br/>'Everything below was filled in from the chart. You can still change it.'" }
+  pRows@{ shape: rect, label: "<b>The rows that stayed blank say 'Left blank. ... needs a mapping' and link to EMR Connect</b><br/>Once the field is mapped there, pull the chart again" }
+  pStale@{ shape: rect, label: "<b>If the agents had already run, the run restarts</b><br/>Because the records changed" }
+  tStale@{ shape: odd, label: "<b>'Records changed after the agents ran'</b><br/>'Their work was cleared. The agents check again when you continue.'" }
+  cCancel@{ shape: trap-t, label: "Click 'Cancel'" }
+  pCancel@{ shape: rect, label: "Picker closes; nothing changes" }
+  gRows@{ shape: subproc, label: "Continues in: Medical records › Patient and insurance rows" }
+  gRec@{ shape: subproc, label: "Continues in: Medical records › The checklist and Continue" }
+  s1 --> dSys
+  dSys -->|"No"| tNone
+  tNone --> cLink --> gEmr
+  tNone --> cClose --> eClose
+  dSys -->|"Yes"| oPick --> iChart --> dMap
+  dMap -->|"Yes"| tGap
+  dMap -->|"No"| tFrom
+  tGap --> cPull
+  tFrom --> cPull
+  cPull --> pPulling --> xEmr --> stEmr --> dBlank
+  dBlank -->|"Yes"| tMid --> pRows --> gRows
+  pRows -.-> gMap
+  dBlank -->|"No"| tGood --> gRec
+  stEmr -.-> pStale -.-> tStale
+  oPick --> cCancel --> pCancel
+  class s1 k_start
+  class dSys,dMap,dBlank k_decision
+  class tNone,tGap,tFrom,tMid,tGood,tStale k_toast
+  class cLink,cClose,cPull,cCancel k_click
+  class gEmr,gMap,gRows,gRec k_goto
+  class eClose k_endx
+  class oPick k_overlay
+  class iChart k_input
+  class pPulling,pRows,pStale,pCancel k_process
+  class xEmr k_ext
+  class stEmr k_store
+```
+
+## Authorizations › New case › Medical records › Replace a document or mark it not available
+
+Two more buttons on a document row. 'Replace' swaps a file for another one and Reader reads it again. 'Mark not available' says the document does not exist, with a short reason. The checklist counts it as handled, and the review warns when the payer requires it.
+
+Route: `/authorizations/new/:draftId (step 2, Documents list)`
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "On step 2, look at a document row" }
+  dRow@{ shape: diam, label: "Does the row have a file?" }
+  subgraph gReplace ["Replace"]
+  cRep@{ shape: trap-t, label: "Click 'Replace' (next to the eye and the x)" }
+  iFile@{ shape: lean-r, label: "Choose one file in the picker" }
+  pSwap@{ shape: rect, label: "The new file takes the old file's place in that slot" }
+  aRead@{ shape: hex, label: "<b>Reader reads the new file for about 1 second</b><br/>Row shows 'Reader is reading'" }
+  pClean@{ shape: rect, label: "<b>Demo: a replacement is read clean</b><br/>Row shows 'NEW FILE · N checks passed'" }
+  dAfter@{ shape: diam, label: "Had the agents already run?" }
+  tStale@{ shape: odd, label: "<b>'Records changed after the agents ran'</b><br/>'Their work was cleared. The agents check again when you continue.'" }
+  end
+  subgraph gMark ["Mark not available"]
+  cMark@{ shape: trap-t, label: "<b>Click 'Mark not available'</b><br/>(on an empty row, next to 'Add file' and 'Use sample file')" }
+  oWhy@{ shape: win-pane, label: "<b>Editor opens under the row</b><br/>'Why is it not available?' with a box, 'Mark not available' and 'Cancel'" }
+  iWhy@{ shape: lean-r, label: "<b>Type a few words, up to 80 characters</b><br/>'For example: the patient has not had one done yet'" }
+  dText@{ shape: diam, label: "Is there a reason?" }
+  pOff@{ shape: rect, label: "'Mark not available' stays switched off" }
+  cDo@{ shape: trap-t, label: "Click 'Mark not available', or press Enter" }
+  cEsc@{ shape: trap-t, label: "Click 'Cancel', or press Escape in the box" }
+  pNo@{ shape: rect, label: "Editor closes; nothing changes" }
+  stMark@{ shape: cyl, label: "<b>The reason is saved with the case</b><br/>Any file in that slot is taken out" }
+  end
+  subgraph gRow ["What the row and the page say"]
+  dReq@{ shape: diam, label: "Does the payer's list require the document?" }
+  rReq@{ shape: rect, label: "<b>Row shows an amber box</b><br/>'Marked not available: REASON · Summit asks for it, so the review will warn.'" }
+  rRec@{ shape: rect, label: "<b>Row shows a ticked box</b><br/>'Marked not available: REASON · You can sign without it.'" }
+  pReady@{ shape: rect, label: "<b>Counts as ready in 'N of M ready'</b><br/>It is not 'Still needed' in the footer, so 'Continue' can switch on" }
+  cUndo@{ shape: trap-t, label: "Click 'Undo'" }
+  pUndo@{ shape: rect, label: "<b>The mark is removed</b><br/>The row is missing again" }
+  cAdd@{ shape: trap-t, label: "<b>Click 'Add file'</b><br/>The file replaces the mark" }
+  end
+  gRev@{ shape: subproc, label: "Continues in: Review and sign › Validation summary and checks" }
+  gQ@{ shape: subproc, label: "Continues in: Agents work › An agent asks a question" }
+  gRec@{ shape: subproc, label: "Continues in: Medical records › Request and document rows" }
+  s1 --> dRow
+  dRow -->|"Yes"| cRep --> iFile --> pSwap --> aRead --> pClean --> dAfter
+  dAfter -->|"Yes"| tStale
+  dAfter -->|"No"| gRec
+  tStale --> gRec
+  dRow -->|"No"| cMark --> oWhy --> iWhy --> dText
+  dText -->|"No"| pOff --> iWhy
+  dText -->|"Yes"| cDo --> stMark --> dReq
+  oWhy --> cEsc --> pNo
+  dReq -->|"Yes"| rReq --> pReady
+  dReq -->|"No, recommended"| rRec --> pReady
+  pReady --> cUndo --> pUndo --> dRow
+  pReady --> cAdd --> pSwap
+  rReq --> gRev
+  pReady -.->|"No psychiatric evaluation, or no document for the lower-level reason"| gQ
+  class s1 k_start
+  class dRow,dAfter,dText,dReq k_decision
+  class cRep,cMark,cDo,cEsc,cUndo,cAdd k_click
+  class iFile,iWhy k_input
+  class pSwap,pClean,pOff,pNo,rReq,rRec,pReady,pUndo k_process
+  class aRead k_agent
+  class tStale k_toast
+  class oWhy k_overlay
+  class stMark k_store
+  class gRev,gQ,gRec k_goto
+  style gReplace fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gMark fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gRow fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+```
+
+## Authorizations › New case › Agents work › An agent could not finish
+
+Verify cannot reach Cardinal's portal the first time a case for Cardinal runs. The row says 'Could not finish' and the run holds until the person chooses 'Retry' or 'Skip and note'. Retry works. Skip adds a warning to Review and sign and a note to the request's history.
+
+Route: `/authorizations/new/:draftId (step 3 of 4, 'Agents work')`
+
+Trigger, no hidden step: any new case whose payer is Cardinal Health Plan. Pull the EMR Connect chart L.G., 29 (Cardinal), or pick Cardinal under 'Payer and plan', then Continue and 'Start the agents'. Other payers never fail. Cases opened from a request on the case page never fail either.
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Verify's turn, second of ten</b><br/>The run has reached the coverage check" }
+  dPay@{ shape: diam, label: "<b>Is the payer Cardinal Health Plan?</b><br/>And has this case never had a Retry or a Skip" }
+  pOk@{ shape: rect, label: "Verify answers: 'Coverage is active and prior authorization is required'" }
+  xPortal@{ shape: st-rect, label: "<b>Cardinal's provider portal (demo: simulated)</b><br/>Does not answer" }
+  aV@{ shape: hex, label: "Verify tries for about 0.6 seconds, then stops" }
+  sFail@{ shape: curv-trap, label: "<b>Row 'Verify': pill 'Could not finish'</b><br/>'Could not reach Cardinal's portal. Coverage is not confirmed yet'<br/>Buttons 'Retry' and 'Skip and note'<br/>The nine agents behind it show 'Waiting'" }
+  pHold@{ shape: rect, label: "<b>The run holds</b><br/>Footer hint: 'Verify could not finish. Retry it, or skip it and note it.'<br/>Case Manager row and the Dashboard note: 'Verify could not reach Cardinal's portal. Retry it or skip it'<br/>The case counts as needing a person" }
+  cRetry@{ shape: trap-t, label: "Click 'Retry'" }
+  stRetry@{ shape: cyl, label: "<b>Failure cleared</b><br/>The draft remembers that Verify has been retried, so a later run of this case does not fail again" }
+  aV2@{ shape: hex, label: "Verify runs its step again and answers" }
+  gRun@{ shape: subproc, label: "Continues in: Agents work › Start the run and watch it" }
+  cSkip@{ shape: trap-t, label: "Click 'Skip and note'" }
+  stSkip@{ shape: cyl, label: "<b>Verify counts as done and is marked skipped</b><br/>Row: pill 'Skipped and noted'<br/>'Skipped. Cardinal's portal could not be reached, so coverage is not confirmed'" }
+  pAfter@{ shape: rect, label: "The other nine agents run as usual" }
+  gReview@{ shape: subproc, label: "Continues in: Review and sign › Validation summary and checks" }
+  tWarn@{ shape: odd, label: "<b>Review and sign, Checks: 'Request has no errors' warns</b><br/>'Verify could not reach Cardinal's portal, so coverage was not confirmed. You skipped it and noted it.'<br/>Signing needs the acknowledgement tick-box" }
+  stNote@{ shape: cyl, label: "<b>After Sign and send, the request's history says</b><br/>'Verify could not reach Cardinal's portal before signing'<br/>'Coverage was not confirmed. You skipped it and noted it.'" }
+  gSign@{ shape: subproc, label: "Continues in: New case › Review and sign › Sign and send" }
+  cLeave@{ shape: trap-t, label: "Leave the page, or click 'Back'" }
+  pStay@{ shape: rect, label: "<b>The draft keeps the failure</b><br/>Opening it again shows the same row" }
+  cOther@{ shape: trap-t, label: "Records change before Retry (any intake edit)" }
+  pReset@{ shape: rect, label: "<b>The run starts over</b><br/>The failure is gone and Verify tries again; if Retry was already used it passes" }
+  gRec@{ shape: subproc, label: "Continues in: Medical records › The checklist and Continue" }
+  s1 --> dPay
+  dPay -->|"No"| pOk --> gRun
+  dPay -->|"Yes"| xPortal --> aV --> sFail --> pHold
+  pHold --> cRetry --> stRetry --> aV2 --> gRun
+  pHold --> cSkip --> stSkip --> pAfter --> tWarn --> stNote --> gSign
+  pAfter --> gReview
+  pHold --> cLeave --> pStay
+  pHold --> cOther --> pReset --> gRec
+  class s1 k_start
+  class dPay k_decision
+  class pOk,pHold,pAfter,pStay,pReset k_process
+  class xPortal k_ext
+  class aV,aV2 k_agent
+  class sFail k_screen
+  class cRetry,cSkip,cLeave,cOther k_click
+  class stRetry,stSkip,stNote k_store
+  class gRun,gReview,gSign,gRec k_goto
+  class tWarn k_toast
+```
+
+## Authorizations › New case › Agents work › Paused in Settings
+
+The run reads the same pause switches as Settings. An agent paused there does not take its turn, whether it was paused in Settings or with 'Pause all agents' on this page. The run holds at that agent until someone resumes it.
+
+Route: `/authorizations/new/:draftId (step 3 of 4, 'Agents work')`
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>An agent is paused</b><br/>In Settings (one agent or all), or by 'Pause all agents' in the footer here" }
+  cPause@{ shape: trap-t, label: "Click 'Pause all agents' in the footer" }
+  pAll@{ shape: rect, label: "<b>All sixteen agents are paused</b><br/>Settings shows 'All agents are paused'" }
+  dTurn@{ shape: diam, label: "Is the agent whose turn it is paused?" }
+  pGo@{ shape: rect, label: "<b>The run carries on</b><br/>A later agent that is paused stops it when its turn comes" }
+  pHold@{ shape: rect, label: "<b>That agent does not advance</b><br/>Its row shows 'Paused in Settings'<br/>The agents before it keep their ticks, the ones after it show 'Waiting'<br/>'Skip ahead' is switched off and the clock chip stops" }
+  dAll@{ shape: diam, label: "Are all agents paused?" }
+  sAll@{ shape: curv-trap, label: "<b>Banner 'Agents are paused in Settings'</b><br/>'Nothing is read, checked or drafted until it is resumed. Nothing has been sent to the payer.'<br/>Button 'Resume agents'" }
+  sOne@{ shape: curv-trap, label: "<b>Banner 'Verify is paused in Settings' (the paused agent's name)</b><br/>Same text<br/>Button 'Resume Verify'" }
+  pFoot@{ shape: rect, label: "<b>Footer: the button reads 'Resume agents' while any agent is paused, 'Pause all agents' otherwise</b><br/>Hint: 'Paused in Settings.'" }
+  cAll@{ shape: trap-t, label: "Click 'Resume agents' (banner or footer)" }
+  rAll@{ shape: rect, label: "All agents are resumed, here and in Settings" }
+  cOne@{ shape: trap-t, label: "Click 'Resume Verify'" }
+  rOne@{ shape: rect, label: "<b>Only that agent is resumed</b><br/>Others stay paused in Settings" }
+  cSet@{ shape: trap-t, label: "Resume in Settings instead" }
+  aGo@{ shape: hex, label: "<b>The run carries on from the agent it held at</b><br/>It does not start over" }
+  gSettings@{ shape: subproc, label: "Continues in: Settings › Pause › What the rest of the app shows" }
+  gRun@{ shape: subproc, label: "Continues in: Agents work › Start the run and watch it" }
+  gAsk@{ shape: subproc, label: "Continues in: Agents work › An agent asks a question" }
+  pAsk@{ shape: rect, label: "<b>A question still waits for an answer</b><br/>Pausing does not answer it, and neither does Skip ahead" }
+  s1 --> dTurn
+  s1 --> gSettings
+  cPause --> pAll --> dTurn
+  dTurn -->|"No"| pGo --> gRun
+  dTurn -->|"Yes"| pHold --> dAll
+  dAll -->|"Yes"| sAll
+  dAll -->|"No"| sOne
+  pHold --> pFoot
+  sAll --> cAll --> rAll --> aGo
+  sOne --> cOne --> rOne --> aGo
+  pHold --> cSet --> aGo
+  aGo --> gRun
+  pHold -.-> pAsk -.-> gAsk
+  s1 --> cPause
+  class s1 k_start
+  class cPause,cAll,cOne,cSet k_click
+  class pAll,pGo,pHold,pFoot,rAll,rOne,pAsk k_process
+  class dTurn,dAll k_decision
+  class sAll,sOne k_screen
+  class aGo k_agent
+  class gSettings,gRun,gAsk k_goto
 ```

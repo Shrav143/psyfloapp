@@ -20,18 +20,24 @@ flowchart TD
   cr@{ shape: trap-t, label: "Click the 'Authorizations' crumb" }
   gQ@{ shape: subproc, label: "Continues in: Authorizations › Queue › Open the queue and read the top" }
   hd@{ shape: curv-trap, label: "<b>Header title</b><br/>Level chip, ID, request type chip, then one pill" }
-  dCh@{ shape: diam, label: "Does the request have a result (decided)?" }
-  pc@{ shape: odd, label: "Pill shows the result, e.g. 'Approved'" }
+  dCh@{ shape: diam, label: "Has the request been sent, decided or settled since this page was written, or does it already have a result?" }
+  pc@{ shape: odd, label: "Pill shows the request's current status, e.g. 'Received', 'Approved'" }
   pd@{ shape: rect, label: "<b>Pill shows the due text, e.g. 'Notice due in 5 h'</b><br/>Red under 6 h, amber under 24 h, grey later" }
   sub@{ shape: rect, label: "<b>Sub line: 'J.M., 34 · Summit Medicaid HMO · Residential 3.5 · 14 days requested'</b><br/>Then the diagnosis and the scores" }
   dRd@{ shape: diam, label: "Ready: all four checks pass and still preparing?" }
   ag1@{ shape: hex, label: "<b>Integrity badge</b><br/>'Ready to sign. Integrity passed all four checks'" }
+  ag3@{ shape: hex, label: "<b>The request's own agent and line</b><br/>e.g. Navigator: 'Navigator checks again in 30 minutes'" }
   ag2@{ shape: hex, label: "<b>Agent badge and status line</b><br/>e.g. Scribe: 'Scribe is drafting the case'" }
+  dDb@{ shape: diam, label: "Is the request on the Dashboard past Preparing?" }
+  od@{ shape: trap-t, label: "Click 'Open on the Dashboard' (next to the status line)" }
+  gDb@{ shape: subproc, label: "Continues in: Dashboard › Request drawer" }
   subgraph gBt ["Header buttons"]
   b1@{ shape: trap-t, label: "Click 'Open in review and sign'" }
   b2@{ shape: trap-t, label: "Click 'Send to payer'" }
   b3@{ shape: trap-t, label: "Click 'Back to queue'" }
   end
+  dSn@{ shape: diam, label: "Is it already with the payer or decided?" }
+  sn@{ shape: rect, label: "<b>'Send to payer' is replaced by a greyed-out 'Sent to payer'</b><br/>The note gives the reason, e.g. 'Already with the payer. Navigator is tracking it.'" }
   dEn@{ shape: diam, label: "Can it be sent?" }
   on@{ shape: rect, label: "<b>'Send to payer' is on</b><br/>Note: 'Sending opens review and sign. Nothing goes to the payer until a clinician signs.'" }
   off@{ shape: rect, label: "<b>'Send to payer' is greyed out, a click does nothing</b><br/>The note and a hover hint give the reason" }
@@ -46,17 +52,24 @@ flowchart TD
   sub --> dRd
   dRd -->|"Yes"| ag1
   dRd -->|"No"| ag2
+  dCh -.->|"Yes"| ag3
+  ag1 --> dDb
+  ag2 --> dDb
+  ag3 --> dDb
+  dDb -->|"Yes"| od --> gDb
   pg --> b1 --> gS
-  pg --> b2 --> dEn
+  pg --> b2 --> dSn
+  dSn -->|"Yes"| sn
+  dSn -->|"No"| dEn
   dEn -->|"Yes"| on --> gS
   dEn -->|"No"| off
   pg --> b3 --> gQ
   pg --> gN
   class pg,hd k_screen
-  class cr,b1,b2,b3 k_click
-  class gQ,gS,gN k_goto
-  class dCh,dRd,dEn k_decision
+  class cr,od,b1,b2,b3 k_click
+  class gQ,gDb,gS,gN k_goto
+  class dCh,dRd,dDb,dSn,dEn k_decision
   class pc k_toast
-  class pd,sub,on,off k_process
-  class ag1,ag2 k_agent
+  class pd,sub,sn,on,off k_process
+  class ag1,ag3,ag2 k_agent
   style gBt fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

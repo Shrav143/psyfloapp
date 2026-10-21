@@ -38,7 +38,12 @@ flowchart TD
   p4@{ shape: rect, label: "Nothing is filled and no message appears" }
   p5@{ shape: rect, label: "<b>Date of birth made up from the age, for example age 26 gives 01/15/2000</b><br/>Anything the source lacks stays empty" }
   sc@{ shape: curv-trap, label: "<b>Verify a patient</b><br/>Form on the left, 'Live check' on the right" }
+  bk@{ shape: rect, label: "<b>Back links above the title</b><br/>'Eligibility & Benefits' always<br/>'Back to referral RF-2040' when ?referral= names a referral that exists<br/>With ?case= as well, 'Back to case R-1042' takes its place" }
+  nb@{ shape: rect, label: "<b>A referral that does not exist gives no back link</b><br/>Only the toast" }
+  cy@{ shape: rect, label: "<b>Both addresses are carried to the result page</b><br/>so the way back is still there after the check" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › Fill in the form" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › The full referral page" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › Case page › Ways in" }
   a1 --> p0
   a2 --> p0
   a3 --> p0
@@ -47,7 +52,7 @@ flowchart TD
   p0 --> q1
   q1 -->|"Yes"| q2
   q2 -->|"Yes"| p1 --> p5 --> sc
-  q2 -->|"No"| t1 --> sc
+  q2 -->|"No"| t1 --> nb --> sc
   q1 -->|"No"| q3
   q3 -->|"No: empty form"| sc
   q3 -->|"Yes"| q4
@@ -56,11 +61,14 @@ flowchart TD
   q5 -->|"Yes"| p3 --> p5
   q5 -->|"No"| p4 --> sc
   sc --> g1
+  sc --> bk
+  bk --> g2 & g3
+  bk -.-> cy
   class a1,a2,a3,a4,a5 k_start
-  class p0,p1,p2,p3,p4,p5 k_process
+  class p0,p1,p2,p3,p4,p5,bk,nb,cy k_process
   class q1,q2,q3,q4,q5 k_decision
   class t1 k_toast
   class sc k_screen
-  class g1 k_goto
+  class g1,g2,g3 k_goto
   style gBlank fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gLinked fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

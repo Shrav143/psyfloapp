@@ -10,7 +10,7 @@ The Settings page is one screen about the agents: who they are, how much freedom
 
 Route: `/settings`
 
-Everything on this page is kept in the page itself. Leave Settings and every agent goes back to its starting level and switch.
+Every level and switch is kept in the app, not in the page. Leave Settings and come back and nothing has changed. 'Reset demo data' puts every agent back to its starting level with its switch on.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -33,10 +33,12 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Click 'Settings' in the sidebar</b><br/>Above 'Help', below the 'Demo data' tag" }
   p1@{ shape: curv-trap, label: "<b>Settings</b><br/>Who the agents are, how much freedom each one has, and a way to pause them." }
-  hb@{ shape: trap-t, label: "<b>Click 'Pause all agents'</b><br/>Red outline button, top right" }
+  hb@{ shape: trap-t, label: "<b>Click 'Pause all agents'</b><br/>Red outline button, top right<br/>'Resume all agents' when all sixteen are paused" }
   g1@{ shape: subproc, label: "Continues in: Settings › Pause › Pause all agents" }
   bn@{ shape: odd, label: "<b>'Privacy mode is always on'</b><br/>Names, dates and IDs are swapped for codes before an agent reads a chart, and mapped back only on your screen." }
   gates@{ shape: curv-trap, label: "<b>Gates</b><br/>Agents never pass these without a person" }
+  lv@{ shape: curv-trap, label: "<b>What each level changes</b><br/>One plain line for each of the three levels<br/>Subtitle: 'Set per agent. Applied in EMR Connect'" }
+  g6@{ shape: subproc, label: "Continues in: Settings › Agents › What each freedom level allows and the gates it never skips" }
   g2@{ shape: subproc, label: "Continues in: Settings › Page › Other controls and notices" }
   subgraph gCov ["Coverage"]
   c0@{ shape: curv-trap, label: "<b>Coverage card</b><br/>Knows who pays and files with them" }
@@ -66,7 +68,7 @@ flowchart TD
   k3@{ shape: rect, label: "<b>Cadence: Schedules concurrent reviews</b><br/>Starts at 'Act, then report'" }
   k4@{ shape: rect, label: "Advocate: Handles denials, P2P and appeals" }
   end
-  row@{ shape: rect, label: "<b>Each row shows</b><br/>The agent's round icon, its name, its role on one line, a Freedom dropdown and an on/off switch" }
+  row@{ shape: rect, label: "<b>Each row shows</b><br/>The agent's round icon, its name, its role on one line, a Freedom dropdown and an on/off switch<br/>A 'Paused' tag beside the name while its switch is off" }
   st@{ shape: rect, label: "<b>Every other agent starts at 'Ask before acting'</b><br/>All sixteen switches start on" }
   fz@{ shape: trap-t, label: "Click a Freedom dropdown" }
   sw@{ shape: trap-t, label: "Click a switch" }
@@ -93,11 +95,12 @@ flowchart TD
   row --> fz --> g3
   row --> sw --> g4
   p1 --> gates --> g2
+  p1 --> lv --> g6
   c1 -.-> g5
   class s1 k_start
-  class p1,gates,c0,d0,i0,k0 k_screen
+  class p1,gates,lv,c0,d0,i0,k0 k_screen
   class hb,fz,sw k_click
-  class g1,g2,g3,g4,g5 k_goto
+  class g1,g6,g2,g3,g4,g5 k_goto
   class bn k_toast
   class c1,c2,c3,d1,d2,d3,d4,d5,i1,i2,i3,i4,k1,k2,k3,k4,row,st k_process
   style gCov fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
@@ -108,11 +111,11 @@ flowchart TD
 
 ## Settings › Agents › Change an agent's freedom
 
-Each of the sixteen rows has a Freedom dropdown with three levels. Picking one changes the label and shows a toast. In the demo the choice is kept only while the person stays on Settings.
+Each of the sixteen rows has a Freedom dropdown with three levels. Picking one saves it for that agent and shows a toast. EMR Connect reads it: 'Ask before acting' makes Sync now, Fix and Reconnect ask first, and 'Act on its own' logs without a toast.
 
 Route: `/settings`
 
-Nothing else in the app reads this choice. Checked by searching the code and by leaving the page and coming back.
+The level is kept in the app, so it is still there after leaving Settings. Only 'Reset demo data' puts the starting levels back. The 'What each level changes' card on the page says where a level applies.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -143,23 +146,25 @@ flowchart TD
   x1@{ shape: stadium, label: "<b>Menu closes</b><br/>Nothing changes, no toast" }
   q2@{ shape: diam, label: "Is it the level already set?" }
   a1@{ shape: rect, label: "The dropdown shows the new level" }
-  a2@{ shape: cyl, label: "<b>That agent's freedom is kept for this visit</b><br/>Other agents are not touched" }
-  a3@{ shape: rect, label: "Same level picked again: nothing changes" }
+  a2@{ shape: cyl, label: "<b>That agent's freedom is saved in the app</b><br/>Other agents are not touched" }
+  a3@{ shape: rect, label: "Same level picked again: nothing changes and no toast" }
   t1@{ shape: odd, label: "<b>'{Agent}: {level}'</b><br/>For example 'Reader: Ask before acting'. A plain toast" }
-  n1@{ shape: rect, label: "<b>Leave Settings or reload and every agent goes back to its starting level</b><br/>Verify and Reader 'Act on its own', Navigator and Cadence 'Act, then report', Caller and the other nine 'Ask before acting'" }
-  n2@{ shape: rect, label: "<b>No other screen reads the level</b><br/>Nothing in New case, the Dashboard or Case Manager changes" }
+  n1@{ shape: rect, label: "<b>Starting levels</b><br/>Verify and Reader 'Act on its own', Navigator and Cadence 'Act, then report', Caller and the other nine 'Ask before acting'<br/>Leaving Settings keeps the choice. Reset demo data restores these" }
+  n2@{ shape: rect, label: "<b>EMR Connect reads the levels of Reader and Navigator</b><br/>The other agents' levels are saved but no screen acts on them yet" }
   e1@{ shape: stadium, label: "Row shows the chosen level" }
   g1@{ shape: subproc, label: "Continues in: Settings › Agents › What each freedom level allows and the gates it never skips" }
+  g2@{ shape: subproc, label: "Continues in: EMR Connect › Sync › When an agent is paused or asks first" }
   s1 --> c1 --> o1 --> q1
   c1 -.-> k1
   k1 --> q1
   q1 -->|"Picks a level"| p1 --> q2
   q1 -->|"Leaves"| p2 --> x1
   q2 -->|"No"| a1 --> a2 --> t1
-  q2 -->|"Yes"| a3 --> t1
+  q2 -->|"Yes"| a3 --> e1
   t1 --> e1
   e1 --> n1 & n2
   e1 --> g1
+  n2 --> g2
   class s1 k_screen
   class c1,p1,p2 k_click
   class o1 k_overlay
@@ -170,16 +175,16 @@ flowchart TD
   class a2 k_store
   class t1 k_toast
   class e1 k_end
-  class g1 k_goto
+  class g1,g2 k_goto
 ```
 
 ## Settings › Agents › What each freedom level allows and the gates it never skips
 
-The three levels set how much an agent does before a person looks. Five gates sit above every level. The demo shows only the level names and the Gates card, so the meaning of each level comes from the PRD guardrail matrix.
+The three levels set how much an agent does before a person looks. Five gates sit above every level. The page names the levels, says in one line what each changes (the 'What each level changes' card) and shows the Gates card. The PRD guardrail matrix gives the wider meaning.
 
 Route: `/settings`
 
-The mapping from the three demo labels to the PRD words (Stage or Draft, Auto + notify, Auto) is our reading. The PRD sets autonomy per action, not per agent.
+The mapping from the three demo labels to the PRD words (Stage or Draft, Auto + notify, Auto) is our reading. The PRD sets autonomy per action, not per agent. In the demo the levels are applied in EMR Connect only.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -213,18 +218,19 @@ flowchart TD
   g5@{ shape: trap-t, label: "<b>Pause</b><br/>An operator can pause one agent or all of them" }
   end
   subgraph gLev ["The three levels (Freedom dropdown)"]
-  l1@{ shape: rect, label: "<b>Ask before acting</b><br/>The agent prepares it and a person confirms before it lands<br/>(PRD: Stage or Draft)" }
-  l2@{ shape: rect, label: "<b>Act, then report</b><br/>The agent does it and the result shows afterwards in the feed<br/>(PRD: Auto + notify)" }
-  l3@{ shape: rect, label: "<b>Act on its own</b><br/>The agent does it without a prompt<br/>(PRD: Auto)" }
+  l1@{ shape: rect, label: "<b>Ask before acting</b><br/>On the page: 'Waits for your OK. Reader asks before it syncs, and Navigator before it fixes or reconnects a system.'<br/>(PRD: Stage or Draft)" }
+  l2@{ shape: rect, label: "<b>Act, then report</b><br/>On the page: 'Goes ahead, then reports what it did in a toast and in Recent activity.'<br/>(PRD: Auto + notify)" }
+  l3@{ shape: rect, label: "<b>Act on its own</b><br/>On the page: 'Goes ahead and only logs what it did in Recent activity, with no toast.'<br/>(PRD: Auto)" }
   end
   p1@{ shape: rect, label: "<b>The signature is bound to the exact packet</b><br/>Nothing addressed to a payer leaves without it. PRD: an invariant, not a setting" }
   p2@{ shape: rect, label: "The step goes ahead" }
-  n1@{ shape: subproc, label: "Continues in: New case › Review and sign" }
+  n1@{ shape: subproc, label: "Continues in: Authorizations › New case › Review and sign › Sign and send" }
   n2@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Approve the write-back" }
-  n3@{ shape: subproc, label: "Continues in: New case › Agents work › Answer a question" }
+  n3@{ shape: subproc, label: "Continues in: Authorizations › New case › Agents work › An agent asks a question" }
   n4@{ shape: subproc, label: "Continues in: Payers › Changes › Acknowledge a change" }
   n5@{ shape: subproc, label: "Continues in: Settings › Pause › Pause all agents" }
   n6@{ shape: subproc, label: "Continues in: Settings › Agents › Which steps need a person" }
+  n7@{ shape: subproc, label: "Continues in: EMR Connect › Sync › When an agent is paused or asks first" }
   s1 --> q0
   q0 -->|"Yes"| x1
   q0 -->|"No"| q1
@@ -247,13 +253,14 @@ flowchart TD
   g4 -.-> n4
   g5 -.-> n5
   q3 -.-> n6
+  l1 -.-> n7
   class s1 k_start
   class q0,q1,q3 k_decision
   class x1 k_endx
   class g1,g2,g4,g5 k_click
   class g3 k_input
   class l1,l2,l3,p1,p2 k_process
-  class n1,n2,n3,n4,n5,n6 k_goto
+  class n1,n2,n3,n4,n5,n6,n7 k_goto
   style gGate fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gLev fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```
@@ -299,7 +306,7 @@ flowchart TD
   x1@{ shape: stadium, label: "<b>Never</b><br/>The clinician authors clinical content and sets units, frequency and dates<br/>Callers never answer clinical questions" }
   h1@{ shape: trap-t, label: "<b>Clinician signs</b><br/>A licensed clinician signs every request and appeal" }
   h2@{ shape: trap-t, label: "Case owner confirms the write-back" }
-  g1@{ shape: subproc, label: "Continues in: New case › Review and sign" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Review and sign › Sign and send" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Approve the write-back" }
   g3@{ shape: subproc, label: "Continues in: Payers › Changes › Acknowledge a change" }
   g4@{ shape: subproc, label: "Continues in: Denial Intelligence › Written appeal › Edit, sign and file" }
@@ -331,11 +338,11 @@ flowchart TD
 
 ## Settings › Pause › Pause all agents
 
-One red button stops all sixteen agents, after one question. The page then shows an amber banner and a green 'Resume all agents' button. In the demo, nothing outside this page changes.
+One red button stops all sixteen agents, after one question. The page then shows an amber banner that says what is held back, a 'Paused' tag on every row and a green 'Resume all agents' button. Other screens read the pause.
 
 Route: `/settings`
 
-Demo only: the pause lives in the page and is lost when the person leaves Settings. The real rules for a pause (PRD FR-25) are shown in orange.
+The pause is kept in the app, so it stays after leaving Settings. 'Reset demo data' lifts it. The real rules for a pause (PRD FR-25) are shown in orange.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -358,29 +365,29 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: curv-trap, label: "<b>Settings</b><br/>Header button 'Pause all agents', red outline, with a pause icon" }
   c1@{ shape: trap-t, label: "Click 'Pause all agents'" }
-  o1@{ shape: win-pane, label: "<b>Pause all agents?</b><br/>'No checks, calls or drafts will run until you resume.'" }
-  p1@{ shape: rect, label: "'Requests already with a payer stay where they are. You can resume at any time.'" }
+  o1@{ shape: win-pane, label: "<b>Pause all agents?</b><br/>'No agent starts new work until you resume.'" }
+  p1@{ shape: rect, label: "'New case stops running agents. Check all now on the Dashboard waits. Draft all due reviews in Case Manager waits. Eligibility & Benefits stops its automatic re-checks. EMR Connect will not sync, connect, fix or reconnect a system. Requests already with a payer stay where they are. You can resume at any time.'" }
   q1@{ shape: diam, label: "Which button?" }
   k1@{ shape: trap-t, label: "Click 'Cancel', click the X, press Escape, or click the dimmed area" }
   x1@{ shape: stadium, label: "<b>Pop-up closes</b><br/>Nothing changes and no toast" }
   k2@{ shape: trap-t, label: "<b>Click 'Pause all'</b><br/>Red outline button" }
   subgraph gDo ["What 'Pause all' does"]
-  a1@{ shape: cyl, label: "<b>All sixteen agent switches go off</b><br/>Even the ones already off" }
+  a1@{ shape: cyl, label: "<b>All sixteen agents are paused in the app</b><br/>Even the ones already paused" }
   a2@{ shape: rect, label: "Pop-up closes" }
   a3@{ shape: odd, label: "<b>'All agents paused'</b><br/>Amber toast" }
-  a4@{ shape: odd, label: "<b>Banner under the header, amber</b><br/>'All agents are paused'<br/>'Nothing is being checked, drafted or sent until you resume them. In this demo the pause does not change the other screens.'" }
-  a5@{ shape: rect, label: "<b>Header button becomes 'Resume all agents'</b><br/>Green, filled, with a play-pause icon" }
+  a4@{ shape: odd, label: "<b>Banner under the header, amber</b><br/>'All agents are paused'<br/>The same sentences as in the pop-up, then 'Requests already with a payer stay where they are.'" }
+  a5@{ shape: rect, label: "<b>Header button becomes 'Resume all agents'</b><br/>Green, filled, with a play-pause icon<br/>Every row shows a 'Paused' tag" }
   end
   n1@{ shape: rect, label: "<b>Freedom levels are not touched</b><br/>Each agent keeps the level it had" }
+  g3@{ shape: subproc, label: "Continues in: Settings › Pause › What the rest of the app shows" }
   subgraph gReal ["Production (PRD FR-25)"]
   r1@{ shape: rect, label: "Production: a pause takes effect before the next step of any running job" }
   r2@{ shape: rect, label: "<b>Production: outbound steps already running finish, or roll back to the manual queue</b><br/>Never half-submitted" }
   end
   k3@{ shape: trap-t, label: "Click 'Resume all agents'" }
-  b1@{ shape: cyl, label: "All sixteen switches go back on" }
-  b2@{ shape: odd, label: "<b>'Agents resumed'</b><br/>Green toast. The banner goes and the red button returns" }
+  b1@{ shape: cyl, label: "All sixteen agents are active again" }
+  b2@{ shape: odd, label: "<b>'Agents resumed'</b><br/>Green toast. The banner and the tags go and the red button returns" }
   e1@{ shape: stadium, label: "<b>Page is back to normal</b><br/>Freedom levels are as they were" }
-  g1@{ shape: subproc, label: "Continues in: Settings › Pause › What the rest of the app shows" }
   g2@{ shape: subproc, label: "Continues in: Settings › Pause › Pause one agent, resume all" }
   s1 --> c1 --> o1 --> p1 --> q1
   q1 -->|"Leave"| k1 --> x1
@@ -392,7 +399,7 @@ flowchart TD
   b2 --> e1
   a5 -.-> r1
   r1 --> r2
-  a4 -.-> g1
+  a4 -.-> g3
   a5 -.-> g2
   class s1 k_screen
   class c1,k1,k2,k3 k_click
@@ -402,19 +409,19 @@ flowchart TD
   class x1 k_endx
   class a1,b1 k_store
   class a3,a4,b2 k_toast
+  class g3,g2 k_goto
   class e1 k_end
-  class g1,g2 k_goto
   style gDo fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gReal fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```
 
 ## Settings › Pause › Pause one agent, resume all
 
-Each row has its own switch. The header button and banner follow the switches: they show 'paused' only when all sixteen are off. This is how the page behaves for one, a few, or all switches.
+Each row has its own switch. Turning one off pauses that agent: its row gets a 'Paused' tag and an amber banner names it and says what it holds back. The banner carries a 'Resume all agents' button.
 
 Route: `/settings`
 
-Tested in the built demo. The switch has no label and no toast. The only sign of a single pause is the switch itself.
+The header button follows the count. It reads 'Resume all agents' only when all sixteen are paused. The switch's accessible name is the agent's name and whether it is paused or working.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -436,50 +443,58 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: curv-trap, label: "<b>Settings</b><br/>All sixteen switches on. Header button reads 'Pause all agents'" }
-  c1@{ shape: trap-t, label: "<b>Click a row's switch</b><br/>No label, no confirmation" }
+  c1@{ shape: trap-t, label: "<b>Click a row's switch</b><br/>No confirmation" }
   q1@{ shape: diam, label: "Was the switch on?" }
-  a1@{ shape: cyl, label: "<b>That agent is paused</b><br/>Switch goes grey, no toast, the row text does not change" }
-  a2@{ shape: cyl, label: "<b>That agent is active again</b><br/>Switch goes green, no toast" }
-  q2@{ shape: diam, label: "Are all sixteen switches now off?" }
-  b1@{ shape: rect, label: "<b>Header button stays 'Pause all agents'</b><br/>No banner" }
-  b2@{ shape: rect, label: "<b>Header button becomes 'Resume all agents'</b><br/>Amber banner 'All agents are paused' appears" }
-  q3@{ shape: diam, label: "Were all sixteen off before this click?" }
-  b3@{ shape: rect, label: "<b>Banner goes and the button returns to 'Pause all agents'</b><br/>The other fifteen stay paused" }
-  m1@{ shape: odd, label: "<b>With one to fifteen off there is no 'Resume all agents' button</b><br/>Turn each switch on, or use 'Pause all agents' then 'Resume all agents'" }
-  c2@{ shape: trap-t, label: "Click 'Pause all agents' while some are off" }
+  a1@{ shape: cyl, label: "<b>That agent is paused</b><br/>Switch goes grey, 'Paused' tag beside its name" }
+  a4@{ shape: odd, label: "<b>'{Agent} paused'</b><br/>Amber toast" }
+  a2@{ shape: cyl, label: "<b>That agent is working again</b><br/>Switch goes green, the tag goes" }
+  a5@{ shape: odd, label: "<b>'{Agent} resumed'</b><br/>Green toast" }
+  q2@{ shape: diam, label: "Are all sixteen now paused?" }
+  b1@{ shape: rect, label: "<b>Header button stays 'Pause all agents'</b><br/>Amber banner '{Agent} is paused' or 'N agents are paused'<br/>'Paused: Verify and Reader.' then what each one holds back" }
+  b2@{ shape: rect, label: "<b>Header button becomes 'Resume all agents'</b><br/>Banner reads 'All agents are paused'" }
+  q3@{ shape: diam, label: "Is any agent still paused?" }
+  b3@{ shape: rect, label: "<b>No banner</b><br/>Header button reads 'Pause all agents'" }
+  b4@{ shape: rect, label: "Banner shrinks to the agents still paused" }
+  c2@{ shape: trap-t, label: "Click 'Pause all agents' while some are paused" }
   g1@{ shape: subproc, label: "Continues in: Settings › Pause › Pause all agents" }
-  c3@{ shape: trap-t, label: "<b>Click 'Resume all agents'</b><br/>Only shown when all sixteen are off" }
-  d1@{ shape: cyl, label: "All sixteen switches go on" }
+  c3@{ shape: trap-t, label: "<b>Click 'Resume all agents'</b><br/>In the banner, or in the header when all sixteen are paused" }
+  d1@{ shape: cyl, label: "All sixteen agents are active again" }
   d2@{ shape: odd, label: "<b>'Agents resumed'</b><br/>Green toast" }
   e1@{ shape: stadium, label: "Page is back to normal" }
+  g2@{ shape: subproc, label: "Continues in: Settings › Pause › What the rest of the app shows" }
   s1 --> c1 --> q1
-  q1 -->|"Yes"| a1 --> q2
-  q1 -->|"No"| a2 --> q3
-  q2 -->|"No"| b1 --> m1
+  q1 -->|"Yes"| a1 --> a4 --> q2
+  q1 -->|"No"| a2 --> a5 --> q3
+  q2 -->|"No"| b1
   q2 -->|"Yes"| b2
-  q3 -->|"Yes"| b3 --> m1
-  q3 -->|"No"| b1
-  m1 --> c2 --> g1
-  b2 --> c3 --> d1 & d2
+  q3 -->|"No"| b3
+  q3 -->|"Yes"| b4
+  b1 --> c2 --> g1
+  b1 --> c3
+  b4 --> c3
+  b2 --> c3
+  c3 --> d1 & d2
   d1 --> e1
   d2 --> e1
+  b1 -.-> g2
+  b3 --> e1
   class s1 k_screen
   class c1,c2,c3 k_click
   class q1,q2,q3 k_decision
   class a1,a2,d1 k_store
-  class b1,b2,b3 k_process
-  class m1,d2 k_toast
-  class g1 k_goto
+  class a4,a5,d2 k_toast
+  class b1,b2,b3,b4 k_process
+  class g1,g2 k_goto
   class e1 k_end
 ```
 
 ## Settings › Pause › What the rest of the app shows
 
-Pausing on Settings stops nothing in the demo. The only other pause button is on the New case Agents work step, and it is separate. This shows what each place does and what the real product must do.
+Pausing on Settings is shared with the rest of the app. Each screen that uses a paused agent holds that work and says so, and the pause shows on Settings too. This lists what each place does.
 
 Route: `/settings`
 
-Found by searching the code for the pause state and by testing both screens. Settings and New case do not share it.
+Found by reading the code and testing the built demo. There is one pause for the whole app: the 'Pause all agents' button on New case is the same switch as Settings. 'Reset demo data' lifts it.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -500,60 +515,78 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "Click 'Pause all agents' on Settings, then 'Pause all'" }
-  p1@{ shape: rect, label: "<b>Settings keeps the pause in the page only</b><br/>No store, no setting that other screens read" }
-  t1@{ shape: odd, label: "The banner says it: 'In this demo the pause does not change the other screens.'" }
-  subgraph gOther ["Screens that do not change"]
-  o1@{ shape: rect, label: "<b>Dashboard</b><br/>Requests, 'Held by' agents and next steps stay as they are" }
-  o2@{ shape: rect, label: "<b>Case Manager, Authorizations, Denial Intelligence, Eligibility, Payers, EMR Connect</b><br/>No pause shown" }
-  o3@{ shape: rect, label: "<b>New case › Agents work</b><br/>The agents keep working unless that screen's own button is used" }
-  end
-  subgraph gNew ["New case › Agents work has its own pause"]
+  s1@{ shape: stadium, label: "<b>Pause an agent on Settings</b><br/>Its switch, or 'Pause all agents' then 'Pause all'" }
+  p1@{ shape: cyl, label: "<b>The pause is saved in the app</b><br/>Every screen reads the same switch" }
+  t1@{ shape: odd, label: "<b>The banner on Settings says what is held back, agent by agent</b><br/>For example 'Paused: Verify and Reader.' then one sentence for each screen" }
+  subgraph gNew ["New case › Agents work"]
   n1@{ shape: curv-trap, label: "<b>Agents work</b><br/>Ten agents in a row, then 'Back', 'Pause all agents', 'Skip ahead', 'Review and sign'" }
-  n2@{ shape: trap-t, label: "<b>Click 'Pause all agents'</b><br/>In the step footer, red outline" }
-  n3@{ shape: rect, label: "<b>The running agent's row shows a 'Paused' pill</b><br/>The clock chip stops" }
-  n4@{ shape: odd, label: "<b>Banner 'All agents are paused'</b><br/>'Nothing is read, checked or drafted until you resume them. Nothing has been sent to the payer.'" }
-  n5@{ shape: rect, label: "<b>'Skip ahead' is dimmed, the hint reads 'Paused.'</b><br/>The button becomes 'Resume agents'" }
-  n6@{ shape: trap-t, label: "Click 'Resume agents'" }
+  n3@{ shape: rect, label: "<b>The run holds when it reaches a paused agent</b><br/>Its row shows a 'Paused' pill, the clock chip stops and 'Skip ahead' is dimmed" }
+  n4@{ shape: odd, label: "<b>Banner 'Agents are paused in Settings' or '{Agent} is paused in Settings'</b><br/>'Nothing is read, checked or drafted until it is resumed. Nothing has been sent to the payer.'" }
+  n6@{ shape: trap-t, label: "Click 'Resume agents' or 'Resume {Agent}'" }
   n7@{ shape: stadium, label: "Agents carry on from where they stopped" }
+  n2@{ shape: trap-t, label: "<b>Click 'Pause all agents' in the step footer</b><br/>The same pause as on Settings, so Settings shows it too" }
   end
-  n8@{ shape: rect, label: "<b>Leaving New case drops that pause</b><br/>Progress is kept on the case, so the agents resume when the person returns" }
+  subgraph gDash ["Dashboard"]
+  o1@{ shape: rect, label: "<b>Navigator paused: 'Check all now' is dimmed</b><br/>A link under it reads 'Navigator is paused in Settings'" }
+  end
+  subgraph gMgr ["Case Manager"]
+  m1@{ shape: rect, label: "<b>Cadence paused: 'Draft all due reviews' drafts nothing</b><br/>Toast 'Cadence is paused in Settings'<br/>'It drafts no reviews until you resume it there.'" }
+  end
+  subgraph gElig ["Eligibility & Benefits"]
+  e1@{ shape: rect, label: "<b>Verify paused: the automatic re-checks do not run</b><br/>Rows read 'Not re-checked: Verify is paused in Settings'" }
+  e2@{ shape: rect, label: "Verify resumed: it catches up with every re-check that came due" }
+  end
+  subgraph gEmr ["EMR Connect"]
+  x1@{ shape: rect, label: "<b>Reader paused: 'Sync now' and 'Connect a system' show 'Reader is paused'</b><br/>Navigator paused: 'Fix' and 'Reconnect' show 'Navigator is paused'<br/>Map and Disconnect still work" }
+  end
+  n8@{ shape: rect, label: "<b>Screens that do not read the pause</b><br/>Authorizations queue and case page, Denial Intelligence, Analytics, Payers, Ask FLO" }
   subgraph gReal ["Production (PRD FR-25)"]
   r1@{ shape: rect, label: "Production: the operator can pause one agent, one payer channel or all outbound actions at once" }
   r2@{ shape: rect, label: "<b>Production: a pause takes effect before the next step of any running job</b><br/>Steps already going out finish, or roll back to the manual queue" }
   end
   g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Agents work › Finished, paused or left" }
-  g2@{ shape: subproc, label: "Continues in: Dashboard › Request drawer" }
-  g3@{ shape: subproc, label: "Continues in: Settings › Pause › Pause all agents" }
+  g2@{ shape: subproc, label: "Continues in: Dashboard › Header › Check all now and the demo clock" }
+  g3@{ shape: subproc, label: "Continues in: Case Manager › Reviews this week › Draft all due reviews and sign all clean drafts" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows" }
+  g5@{ shape: subproc, label: "Continues in: EMR Connect › Sync › When an agent is paused or asks first" }
+  g6@{ shape: subproc, label: "Continues in: Settings › Pause › Pause all agents" }
   s1 --> p1 --> t1
-  p1 --> o1 & o2 & o3
-  o1 --> g2
-  o3 --> n1
-  n1 --> n2 --> n3 --> n4 --> n5 --> n6 --> n7
-  n7 --> n8
-  n2 -.-> g1
+  p1 --> n1 & o1 & m1 & e1 & x1
+  p1 -.-> n8
+  n1 --> n3 --> n4 --> n6 --> n7
+  n2 --> p1
+  n3 -.-> g1
+  o1 -.-> g2
+  m1 -.-> g3
+  e1 --> e2
+  e1 -.-> g4
+  x1 -.-> g5
   t1 -.-> r1
   r1 --> r2
-  r2 -.-> g3
+  r2 -.-> g6
   class s1 k_start
-  class p1,o1,o2,o3,n3,n5,n8,r1,r2 k_process
+  class p1 k_store
   class t1,n4 k_toast
   class n1 k_screen
-  class n2,n6 k_click
+  class n3,o1,m1,e1,e2,x1,n8,r1,r2 k_process
+  class n6,n2 k_click
   class n7 k_end
-  class g1,g2,g3 k_goto
-  style gOther fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  class g1,g2,g3,g4,g5,g6 k_goto
   style gNew fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gDash fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gMgr fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gElig fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gEmr fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gReal fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```
 
 ## Settings › Page › Other controls and notices
 
-Everything on the Settings page that is not an agent row or the pause button: the sidebar item, the always-on notices, the Gates card, tooltips, toasts and the things the page does not have.
+Everything on the Settings page that is not an agent row or the pause button: the sidebar item, the always-on notices, the Gates card, the levels card, tooltips, toasts and the things the page does not have.
 
 Route: `/settings`
 
-Found by reading the page and testing it. There is no Save, Apply or Reset button anywhere on the page.
+Found by reading the page and testing it. There is no Save, Apply or Reset button anywhere on the page: every change is kept at once.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -578,7 +611,11 @@ flowchart TD
   p1@{ shape: curv-trap, label: "<b>Settings</b><br/>The sidebar item turns forest green while the page is open" }
   subgraph gBan ["Notices"]
   b1@{ shape: odd, label: "<b>'Privacy mode is always on'</b><br/>Names, dates and IDs are swapped for codes before an agent reads a chart, and mapped back only on your screen.<br/>No switch: it cannot be turned off" }
-  b2@{ shape: odd, label: "<b>'All agents are paused'</b><br/>Only while all sixteen switches are off" }
+  b2@{ shape: odd, label: "<b>'All agents are paused', or '{Agent} is paused' and 'N agents are paused'</b><br/>Amber, while any agent is paused<br/>Says what is held back, then 'Requests already with a payer stay where they are.'" }
+  end
+  subgraph gLev ["Levels card: 'What each level changes'"]
+  v1@{ shape: rect, label: "Subtitle 'Set per agent. Applied in EMR Connect'" }
+  v2@{ shape: rect, label: "<b>Ask before acting, Act, then report and Act on its own</b><br/>One plain line for each" }
   end
   subgraph gGate ["Gates card: 'Agents never pass these without a person'"]
   g1@{ shape: rect, label: "Sign-off: A licensed clinician signs every request and appeal." }
@@ -591,28 +628,30 @@ flowchart TD
   h2@{ shape: rect, label: "<b>Tooltip shows the agent and its role</b><br/>For example 'Reader: Reads the chart, protects identifiers'" }
   h3@{ shape: rect, label: "A long role is cut short with an ellipsis on the row" }
   subgraph gToast ["Toasts on this page"]
-  t1@{ shape: odd, label: "<b>'{Agent}: {level}'</b><br/>When a Freedom level is picked" }
+  t1@{ shape: odd, label: "<b>'{Agent}: {level}'</b><br/>When a different Freedom level is picked" }
   t2@{ shape: odd, label: "<b>'All agents paused'</b><br/>When 'Pause all' is confirmed" }
   t3@{ shape: odd, label: "<b>'Agents resumed'</b><br/>When 'Resume all agents' is clicked" }
+  t5@{ shape: odd, label: "<b>'{Agent} paused' or '{Agent} resumed'</b><br/>When one switch is turned" }
   t4@{ shape: delay, label: "<b>A toast stays about four seconds</b><br/>Click it to dismiss it sooner" }
   end
   subgraph gNone ["What the page does not have"]
   n1@{ shape: stadium, label: "<b>No Save, Apply or Reset button</b><br/>No way to change the Gates or the privacy notice" }
-  n2@{ shape: stadium, label: "<b>Choices are lost on leaving or reloading</b><br/>Every agent returns to its starting level and switch" }
+  n2@{ shape: stadium, label: "<b>Choices are lost on a reload</b><br/>Every agent returns to its starting level and switch. Leaving the page keeps them" }
   end
   d1@{ shape: trap-t, label: "<b>Demo menu, then 'Reset demo data'</b><br/>Top bar, any page" }
-  d2@{ shape: rect, label: "<b>Goes to the Dashboard with the toast 'Demo data reset'</b><br/>Settings had nothing saved to reset" }
+  d2@{ shape: rect, label: "<b>Goes to the Dashboard with the toast 'Demo data reset'</b><br/>Every agent is back at its starting level with its switch on" }
   x1@{ shape: subproc, label: "Continues in: Settings › Agents › Change an agent's freedom" }
   x2@{ shape: subproc, label: "Continues in: Settings › Pause › Pause all agents" }
   x3@{ shape: subproc, label: "Continues in: Global shell › Demo menu › Reset demo data" }
   s1 --> p1
   p1 --> b1 & b2
   b2 -.-> x2
+  p1 --> v1 --> v2
   p1 --> g1 --> g2 --> g3 --> g4 --> g5
   g5 -.-> x2
   p1 --> h1 --> h2 --> h3
   p1 --> t1
-  t1 --> t2 --> t3 --> t4
+  t1 --> t2 --> t3 --> t5 --> t4
   t1 -.-> x1
   p1 -.-> n1
   n1 --> n2
@@ -620,13 +659,14 @@ flowchart TD
   d1 --> d2 --> x3
   class s1 k_start
   class p1 k_screen
-  class b1,b2,t1,t2,t3 k_toast
-  class g1,g2,g3,g4,g5,h2,h3,d2 k_process
+  class b1,b2,t1,t2,t3,t5 k_toast
+  class v1,v2,g1,g2,g3,g4,g5,h2,h3,d2 k_process
   class h1,d1 k_click
   class t4 k_wait
   class n1,n2 k_endx
   class x1,x2,x3 k_goto
   style gBan fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gLev fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gGate fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gToast fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gNone fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
@@ -661,7 +701,7 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "A case's journey down the sidebar" }
   flo@{ shape: rect, label: "<b>FLO is not one of the sixteen</b><br/>Ask FLO, in the top bar, answers a question from your data" }
-  emr@{ shape: curv-trap, label: "<b>EMR Connect</b><br/>Reader: pulls files, matches charts, maps fields<br/>Verify: re-checks coverage<br/>Navigator: renews sign-ins, write-back, disconnects" }
+  emr@{ shape: curv-trap, label: "<b>EMR Connect</b><br/>Reader: pulls files, matches charts, maps fields<br/>Verify: re-checks coverage<br/>Navigator: renews sign-ins, reconnects, write-back, disconnects" }
   elig@{ shape: curv-trap, label: "<b>Authorizations › Eligibility & Benefits</b><br/>Reader, Verify: ask each source<br/>Caller: phones if a system does not answer<br/>Criteria: is authorization required<br/>Navigator: is the clinic enrolled to bill" }
   ref@{ shape: curv-trap, label: "<b>Authorizations › New case › Referral and Medical records</b><br/>Reader: reads each file and the referral<br/>Verify: Coverage tab<br/>Placement: Fit tab<br/>Criteria: Decline reasons" }
   run@{ shape: curv-trap, label: "<b>Authorizations › New case › Agents work</b><br/>Ten in order: Reader, Verify, Criteria, Historian, Placement, Forecaster, Scribe, Integrity, Packet, Scrubber<br/>Scribe and Packet may ask one question" }
@@ -727,7 +767,7 @@ flowchart TD
   c1@{ shape: curv-trap, label: "<b>Coverage</b><br/>Knows who pays and files with them" }
   verify@{ shape: hex, label: "<b>Verify</b><br/>New case run step 2 and the referral Coverage tab<br/>Eligibility & Benefits live check<br/>EMR Connect: re-checks coverage" }
   caller@{ shape: hex, label: "<b>Caller</b><br/>Eligibility & Benefits: phones when a system does not answer<br/>Dashboard: phones if a request is still pending<br/>Payers process steps: follow-up calls" }
-  navigator@{ shape: hex, label: "<b>Navigator</b><br/>Dashboard: sends signed requests, checks status<br/>Denial Intelligence: files the appeal after a signature<br/>Eligibility: clinic enrolled to bill<br/>EMR Connect: sign-ins, disconnect, write-back switch" }
+  navigator@{ shape: hex, label: "<b>Navigator</b><br/>Dashboard: sends signed requests, checks status<br/>Denial Intelligence: files the appeal after a signature<br/>Eligibility: clinic enrolled to bill<br/>EMR Connect: sign-ins, reconnect, disconnect, write-back switch" }
   c2@{ shape: curv-trap, label: "<b>Documentation</b><br/>Reads the chart, writes the case" }
   reader@{ shape: hex, label: "<b>Reader</b><br/>New case: referral and files, run step 1<br/>Denial Intelligence: reads the letter<br/>Eligibility, EMR Connect: pulls files, maps fields" }
   criteria@{ shape: hex, label: "<b>Criteria</b><br/>New case run step 3<br/>Eligibility: is authorization required<br/>Case page: Criteria tab<br/>Referral decline reasons" }

@@ -17,7 +17,7 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "On the list, narrow the patients" }
-  sc0@{ shape: curv-trap, label: "<b>Table shows every patient, first 12 rows</b><br/>'Showing 12 of 34'" }
+  sc0@{ shape: curv-trap, label: "<b>Table shows every patient, first 12 rows</b><br/>'Showing 12 of 37'" }
   subgraph gSearch ["Search"]
   i1@{ shape: lean-r, label: "<b>Type in 'Search by case ID or initials'</b><br/>for example 'R-1042' or 'J.M.'" }
   p1@{ shape: rect, label: "<b>Matches the case ID or the patient label</b><br/>(initials and age, or 'Member …4821'). Capitals do not matter" }
@@ -43,10 +43,10 @@ flowchart TD
   p6@{ shape: rect, label: "Only the first 12 rows" }
   c5@{ shape: trap-t, label: "Click 'Show 12 more'" }
   p7@{ shape: rect, label: "<b>Twelve more rows join the table</b><br/>The last click reads 'Show 10 more'" }
-  sc1@{ shape: curv-trap, label: "<b>Table with the matches</b><br/>'Showing 5 of 34'" }
+  sc1@{ shape: curv-trap, label: "<b>Table with the matches</b><br/>'Showing 5 of 37'" }
   t0@{ shape: odd, label: "'Clear filters' button appears beside the menus" }
   q3@{ shape: diam, label: "Any rows left?" }
-  em@{ shape: curv-trap, label: "<b>'No patients match these filters'</b><br/>'The filters hide every row. Clear them to see all 34 patients.'" }
+  em@{ shape: curv-trap, label: "<b>'No patients match these filters'</b><br/>'The filters hide every row. Clear them to see all 37 patients.'" }
   c6@{ shape: trap-t, label: "Click 'Clear filters' (bar or empty state)" }
   p8@{ shape: rect, label: "<b>Search emptied</b><br/>Payer, program and verdict back to 'All'" }
   e1@{ shape: stadium, label: "Full list again, button gone" }

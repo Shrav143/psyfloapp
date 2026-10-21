@@ -16,12 +16,12 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "Click 'Approve write-back' in the green box" }
+  s1@{ shape: stadium, label: "<b>Click 'Approve write-back' in the green box</b><br/>The box shows only while write-back is on in EMR Connect" }
   o1@{ shape: win-pane, label: "<b>Pop-up 'Approve the write-back'</b><br/>'R-0951 · Evergreen'<br/>'EMR Connect will write only these three things to the chart. No notes, diagnoses or identifiers are written.'" }
   sc@{ shape: curv-trap, label: "<b>Three facts</b><br/>Approval number 'PA-26-102944'<br/>Approved '14 days'<br/>Dates '10/20 to 11/3'" }
   p0@{ shape: rect, label: "Amount by program: Residential 3.5 14 days, PHP 10 days, Detox 5 days, IOP 24 units over 14 days" }
   c1@{ shape: trap-t, label: "Click 'Write to the EMR'" }
-  p1@{ shape: rect, label: "<b>Button shows a spinner for 1.1 seconds</b><br/>'Cancel' is disabled; the X and a click on the dimmed area do nothing" }
+  p1@{ shape: rect, label: "<b>Button shows a spinner for 1.1 seconds</b><br/>'Cancel' is disabled; the X, the dimmed area and Escape do nothing" }
   x1@{ shape: st-rect, label: "<b>EMR receives the approval number and dates</b><br/>(demo: simulated)" }
   w1@{ shape: cyl, label: "What happens next becomes 'Next review booked. Written to the EMR'" }
   w2@{ shape: cyl, label: "<b>History gets 'You confirmed the write-back'</b><br/>and 'Cadence wrote the approval number (PA-26-102944) and the dates to the EMR'" }
@@ -33,9 +33,9 @@ flowchart TD
   c4@{ shape: trap-t, label: "Click the dimmed area" }
   e2@{ shape: stadium, label: "<b>Pop-up closes</b><br/>Nothing is written; the green box stays" }
   c5@{ shape: trap-t, label: "Press Escape" }
-  p3@{ shape: rect, label: "Escape closes the pop-up and the drawer together, because each one listens for it" }
-  e3@{ shape: stadium, label: "<b>Back on the table</b><br/>The request still has its green box when reopened" }
-  p4@{ shape: rect, label: "Escape while writing: the drawer closes, but the write still finishes and the toast appears" }
+  p3@{ shape: rect, label: "<b>Escape closes only the pop-up</b><br/>The drawer stays open; a second Escape closes it" }
+  e3@{ shape: stadium, label: "<b>Back in the drawer</b><br/>Nothing is written; the green box stays" }
+  p4@{ shape: rect, label: "<b>A write that has started always finishes and its toast appears</b><br/>Even if the drawer is closed in the meantime (browser Back)" }
   s1 --> o1 --> sc --> p0
   sc --> c1 --> p1 --> x1 --> w1 --> w2 --> t1 --> p2 --> e1
   sc --> c2 & c3 & c4

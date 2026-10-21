@@ -26,7 +26,7 @@ flowchart TD
   d2@{ shape: diam, label: "<b>Is ?tab one of process,</b><br/>rules, documents, changes?" }
   p5@{ shape: rect, label: "Show the Process tab" }
   p6@{ shape: rect, label: "Show the tab named in the address" }
-  pg@{ shape: curv-trap, label: "<b>Payers</b><br/>'N payers. The agents know how each one works.'<br/>Workflow, rules and documents for every payer. Change a rule and open drafts can follow." }
+  pg@{ shape: curv-trap, label: "<b>Payers</b><br/>'N payers. The agents know how each one works.'<br/>Workflow, rules and documents for every payer. Every edit is logged with your reason." }
   subgraph gL ["Left column"]
   list@{ shape: curv-trap, label: "<b>Payer list card</b><br/>'Payers', 'Search payers', four groups, a dot per payer, legend" }
   c_pick@{ shape: trap-t, label: "Click a payer in the list" }
@@ -41,7 +41,7 @@ flowchart TD
   end
   c_add@{ shape: trap-t, label: "<b>Click 'Add a payer'</b><br/>top right of the page" }
   subgraph gB ["What the badges count"]
-  b1@{ shape: rect, label: "<b>Sidebar 'Payers' badge</b><br/>Payers with a change waiting<br/>2 at the start: Cardinal and Harborview<br/>Falls when a change is updated" }
+  b1@{ shape: rect, label: "<b>Sidebar 'Payers' badge</b><br/>Payers with a change waiting<br/>3 at the start: Cardinal, Evergreen<br/>and Harborview. Falls when a change is updated" }
   b2@{ shape: rect, label: "<b>'Changes' tab badge</b><br/>The waiting change plus each Historian proposal<br/>Falls as each is handled" }
   end
   g_list@{ shape: subproc, label: "Continues in: Payers › List › Search and pick a payer" }

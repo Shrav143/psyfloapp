@@ -31,7 +31,7 @@ flowchart TD
   end
   subgraph gFiles ["Tile 3: Files pulled"]
   c1@{ shape: rect, label: "<b>142 'this week'</b><br/>Starts at 142 on reset" }
-  c2@{ shape: cyl, label: "<b>Each finished sync adds its files</b><br/>A new system adds 5" }
+  c2@{ shape: cyl, label: "<b>Each finished sync adds its files</b><br/>A new system adds 5, and a finished Fix adds 12 remittances" }
   end
   subgraph gMap ["Tile 4: Need a mapping"]
   d1@{ shape: diam, label: "Any field waiting for a mapping?" }
@@ -43,6 +43,7 @@ flowchart TD
   g2@{ shape: subproc, label: "Continues in: EMR Connect › Connect a system › Run the connection test and save" }
   g3@{ shape: subproc, label: "Continues in: EMR Connect › Needs a mapping › Map a field" }
   g4@{ shape: subproc, label: "Continues in: EMR Connect › Manage › Disconnect and reconnect" }
+  g5@{ shape: subproc, label: "Continues in: EMR Connect › Problems › Fix a system that needs a quick look" }
   p1 --> q1 & b1 & c1 & d1
   q1 -->|"No"| a1
   q1 -->|"Yes"| a2 --> q2
@@ -55,13 +56,14 @@ flowchart TD
   c1 --> c2
   c2 --> g1
   c2 --> g2
+  c2 --> g5
   d1 -->|"Yes"| d2 --> g3
   d1 -->|"No"| d3
   class p1 k_screen
   class q1,q2,d1 k_decision
   class a1,a2,a3,a4,b1,c1,d2,d3,n1 k_process
   class b2,c2 k_store
-  class g1,g2,g3,g4 k_goto
+  class g1,g2,g3,g4,g5 k_goto
   style gSync fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gCharts fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gFiles fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

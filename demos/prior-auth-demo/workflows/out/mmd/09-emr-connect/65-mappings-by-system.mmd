@@ -17,7 +17,7 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Click 'Manage' on a system</b><br/>Then read the Field mappings card" }
-  t0@{ shape: curv-trap, label: "<b>Field mappings</b><br/>'{n} mapped, {m} waiting'<br/>Columns: Their field, Fills, Mapped by" }
+  t0@{ shape: curv-trap, label: "<b>Field mappings</b><br/>'{n} mapped, {m} waiting. A chart pulled in New case leaves the waiting fields blank.'<br/>With none waiting: '{n} mapped'<br/>Columns: Their field, Fills, Mapped by" }
   subgraph gRes ["Residential site: 5 mapped"]
   r1@{ shape: cyl, label: "<b>Admit date fills 'Admission date'</b><br/>Reader, 03/14" }
   r2@{ shape: cyl, label: "<b>Primary payer fills 'Payer'</b><br/>Reader, 03/14" }
@@ -42,6 +42,7 @@ flowchart TD
   c1@{ shape: rect, label: "<b>A row mapped by a person goes at the end of that system's list</b><br/>'Mapped by' reads 'You, 10/20'" }
   d1@{ shape: doc, label: "<b>Production: a versioned field map per record system, stored as data</b><br/>Every canonical field shows its source. Changes carry a date and an author" }
   g1@{ shape: subproc, label: "Continues in: EMR Connect › Needs a mapping › Map a field" }
+  g2@{ shape: subproc, label: "Continues in: EMR Connect › Sync › What other screens use from EMR Connect" }
   s1 --> t0
   t0 --> r1 & o1 & b1 & n1
   r1 --> r2 --> r3 --> r4 --> r5
@@ -50,6 +51,7 @@ flowchart TD
   w1 --> c1
   w2 --> c1
   c1 --> g1
+  w1 -.-> g2
   t0 -.-> d1
   class s1 k_start
   class t0 k_screen
@@ -57,7 +59,7 @@ flowchart TD
   class w1,w2 k_input
   class c1 k_process
   class d1 k_doc
-  class g1 k_goto
+  class g1,g2 k_goto
   style gRes fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gOut fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gBill fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

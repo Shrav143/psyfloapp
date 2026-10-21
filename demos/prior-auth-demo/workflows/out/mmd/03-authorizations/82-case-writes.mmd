@@ -30,9 +30,18 @@ flowchart TD
   d2@{ shape: diam, label: "Is the request on the Dashboard?" }
   w3@{ shape: cyl, label: "<b>Dashboard request history</b><br/>'You dismissed ... Reason: ...'" }
   w4@{ shape: rect, label: "<b>Only the case page log changes</b><br/>'Logged decisions'" }
+  w7@{ shape: cyl, label: "<b>Dismissal recorded: the request and the reason</b><br/>Analytics reads it" }
+  s4@{ shape: stadium, label: "Click 'Add context' on a case page" }
+  w8@{ shape: cyl, label: "<b>Clinical context added to the shared list for the request</b><br/>The Draft tab and New case read it" }
+  d4@{ shape: diam, label: "Is it a queue request that also has a Dashboard entry?" }
+  w9@{ shape: cyl, label: "<b>Dashboard request gets the new chance</b><br/>Timeline: 'You added clinical context. ...'" }
+  w10@{ shape: rect, label: "<b>Queue tile shows the new chance</b><br/>The approval chance is one point higher for each of the first three notes" }
   s3@{ shape: stadium, label: "A request is signed and sent in New case" }
   w5@{ shape: cyl, label: "Dashboard stage 'Received'" }
   w6@{ shape: rect, label: "<b>Queue drops the request</b><br/>The open count drops by one<br/>The sidebar badge too, if it was in Act now or Due within 24 hours" }
+  w11@{ shape: rect, label: "<b>Its case page reads the new stage</b><br/>Chip 'Received', the request's own status line, a greyed-out 'Sent to payer' and 'Open on the Dashboard'" }
+  s5@{ shape: stadium, label: "The payer decides, or a denial is settled or its appeal is filed" }
+  w12@{ shape: rect, label: "<b>Queue drops the request from its band</b><br/>When Act now is empty the band says 'Nothing needs you today'" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Request drawer" }
   s1 --> d1
   d1 -->|"Yes"| w1 --> w2
@@ -43,12 +52,18 @@ flowchart TD
   s2 --> d2
   d2 -->|"Yes"| w3 --> g2
   d2 -->|"No"| w4
+  s2 --> w7
+  s4 --> w8 --> d4
+  d4 -->|"Yes"| w9 --> w10
+  d4 -->|"No"| w10
   s3 --> w5 --> w6
+  w5 --> w11
   w5 --> g2
-  class s1,s2,s3 k_start
-  class d1,d2 k_decision
-  class w1,w2,w3,w5 k_store
-  class w0,q1,n3,w4,w6 k_process
+  s5 --> w12
+  class s1,s2,s4,s3,s5 k_start
+  class d1,d2,d4 k_decision
+  class w1,w2,w3,w7,w8,w9,w5 k_store
+  class w0,q1,n3,w4,w10,w6,w11,w12 k_process
   class n1 k_toast
   class n2 k_click
   class g1,g2 k_goto

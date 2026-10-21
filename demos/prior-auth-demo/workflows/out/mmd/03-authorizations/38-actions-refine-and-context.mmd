@@ -16,48 +16,44 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  subgraph gRf ["Refine recommendations"]
   rf@{ shape: trap-t, label: "Click 'Refine recommendations'" }
-  sp@{ shape: rect, label: "Button shows a spinner for about 1.5 seconds" }
-  hs@{ shape: hex, label: "<b>Historian and Scribe 'read the chart again'</b><br/>(demo: simulated)" }
-  tr@{ shape: odd, label: "<b>'Recommendations refreshed'</b><br/>'Historian and Scribe read the chart again. The same actions still rank highest.'" }
-  end
-  subgraph gCx ["Add clinical context"]
-  cc@{ shape: trap-t, label: "Click 'Add clinical context'" }
-  m@{ shape: win-pane, label: "<b>Dialog 'Add clinical context'</b><br/>'Something the chart does not show. Scribe uses it in the next draft. Nothing goes to the payer.'" }
-  ta@{ shape: lean-r, label: "<b>Type in the box</b><br/>e.g. 'He called the program himself on 10/19 and asked for a bed.'" }
-  d@{ shape: diam, label: "Is anything typed?" }
-  dis@{ shape: rect, label: "'Add context' stays off" }
-  ad@{ shape: trap-t, label: "Click 'Add context'" }
-  cn@{ shape: trap-t, label: "Click 'Cancel', the X or the dimmed area, or press Esc" }
-  cl@{ shape: rect, label: "<b>Dialog closes</b><br/>What you typed stays in the box for next time" }
-  sv@{ shape: cyl, label: "<b>Context saved on the case</b><br/>Log: 'You added clinical context: ...'" }
-  tc@{ shape: odd, label: "<b>'Clinical context added'</b><br/>'Scribe will use it in the next draft. Nothing is sent to the payer.'" }
-  nu@{ shape: rect, label: "<b>Dialog closes and the box empties</b><br/>The draft text does not change" }
-  end
+  rm@{ shape: win-pane, label: "<b>Panel 'Refine recommendations'</b><br/>'Pick what matters most for this request. Historian and Scribe put the matching cards first and may add one.'" }
+  rp@{ shape: lean-r, label: "<b>Pick one focus</b><br/>'Strengthen medical necessity' · 'Meet payer criteria' · 'Reduce denial risk'" }
+  rd@{ shape: rect, label: "<b>'Apply focus' stays off until a focus is picked</b><br/>and while that focus is the one already set" }
+  ra@{ shape: trap-t, label: "Click 'Apply focus'" }
+  rx@{ shape: trap-t, label: "<b>Click 'Cancel', the X or the dimmed area, or press Esc</b><br/>(Esc closes only the panel)" }
+  re@{ shape: stadium, label: "<b>Panel closes</b><br/>Nothing changes" }
+  sp@{ shape: rect, label: "Button shows a spinner for about 1.2 seconds" }
+  hs@{ shape: hex, label: "<b>Historian and Scribe re-rank the cards</b><br/>(demo: simulated)" }
+  fs@{ shape: cyl, label: "<b>Focus saved on the case</b><br/>Log: 'You refined the recommendations: ...'" }
+  ro@{ shape: rect, label: "<b>Cards that move that part of the number come first</b><br/>One more card that fits the focus is added at the top, worth up to 2 points<br/>(no card when the request is already too strong to add one)" }
+  fb@{ shape: curv-trap, label: "<b>Banner 'Focus: Meet payer criteria. The cards are in that order, and one card was added.'</b><br/>The added card has the pill 'Added for your focus'" }
+  pv@{ shape: rect, label: "<b>Approval chance preview moves</b><br/>Header '62% → 90%', the intro line and 'Apply selected (7)' follow" }
+  tr@{ shape: odd, label: "<b>'Recommendations refined'</b><br/>'Cards are in the order for ... and one was added. With every action applied the chance is 90%.'" }
+  cf@{ shape: trap-t, label: "Click 'Clear focus' in the banner" }
+  cr@{ shape: rect, label: "<b>Original order is back and the added card goes</b><br/>Unless it was already applied or dismissed: then it stays, with its points" }
   lk@{ shape: rect, label: "<b>While the agents are updating the draft</b><br/>both buttons are off" }
-  subgraph gLg ["Logged decisions"]
+  cc@{ shape: trap-t, label: "Click 'Add clinical context'" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Case page › Recommended actions › Add clinical context" }
   lg@{ shape: curv-trap, label: "<b>Card 'Logged decisions'</b><br/>Newest six entries, each with the time<br/>Shown once there is at least one entry" }
-  en@{ shape: rect, label: "<b>Entries come from</b><br/>applied actions, dismissals, bring back, notes sent, clinical context, draft edits, re-check, send back to Scribe" }
-  end
-  rf --> sp --> hs --> tr
-  cc --> m --> ta --> d
-  d -->|"No"| dis
-  d -->|"Yes"| ad --> sv --> tc --> nu
-  m --> cn --> cl
-  sv --> lg
+  en@{ shape: rect, label: "<b>Entries come from</b><br/>applied actions, dismissals, bring back, notes sent, focus, clinical context, draft edits, re-check, send back to Scribe" }
+  rf --> rm --> rp --> rd --> ra
+  rm --> rx --> re
+  ra --> sp --> hs --> fs --> ro --> fb --> pv
+  fs --> tr
+  fs --> lg
+  fb --> cf --> cr
   lg --> en
   rf -.-> lk
   cc -.-> lk
-  class rf,cc,ad,cn k_click
-  class sp,dis,cl,nu,lk,en k_process
+  cc --> g1
+  class rf,ra,rx,cf,cc k_click
+  class rm k_overlay
+  class rp k_input
+  class rd,sp,ro,pv,cr,lk,en k_process
+  class re k_endx
   class hs k_agent
-  class tr,tc k_toast
-  class m k_overlay
-  class ta k_input
-  class d k_decision
-  class sv k_store
-  class lg k_screen
-  style gRf fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
-  style gCx fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
-  style gLg fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  class fs k_store
+  class fb,lg k_screen
+  class tr k_toast
+  class g1 k_goto
