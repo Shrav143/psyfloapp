@@ -5,6 +5,8 @@ dir: TD
 also: Demo only: 'Limit reached' has a seeded patient (R-0921) and 'Another plan pays first' has one (I-2275). Both have a chip under 'Try a sample' on Verify.
 ---
 start s1 "Result page, card 'Payment checks', rows 4 to 7"
+decision q9 "Was coverage found?"
+endx x9 "Coverage not found\nRows 2 to 7 and the line 'What the patient pays:' are not shown\nOne grey row says nothing else could be checked"
 
 group gA "Row 4 · Authorization"
   decision a0 "What is the authorization state?"
@@ -36,14 +38,14 @@ group gD "Row 7 · Other insurance"
 endgroup
 
 group gP "Last line"
-  decision q9 "Was coverage found?"
   process p1 "'What the patient pays:'\nMedicaid '$0 copay, no deductible, no coinsurance.'\nHarborview '20% coinsurance after a deductible with $85 left.'\nBeacon and Lakeshore '$40 copay per day, $350 left on the deductible, 20% coinsurance after.'"
-  endx x9 "Coverage not found: this rows 4 to 7 and the line are not shown at all"
   toast p2 "'This does not change what the clinic is paid. A $0 copay does not mean the clinic is paid.'"
 endgroup
 
 goto g1 "Continues in: Authorizations › New case › Medical records › Patient and insurance rows"
-s1 --> a0
+s1 --> q9
+q9 -->|No| x9
+q9 -->|Yes| a0
 a0 -->|Not required| a1 --> b0
 a0 -->|On file| a2 --> b0
 a0 -->|Being drafted| a3 --> b0

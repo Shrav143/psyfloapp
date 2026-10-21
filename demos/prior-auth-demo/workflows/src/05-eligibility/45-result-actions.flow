@@ -33,8 +33,11 @@ click c6 "Click 'Check again'"
 goto g4 "Continues in: Authorizations › Eligibility & Benefits › Re-verify a patient"
 click c7 "Click '← Eligibility & Benefits'"
 goto g5 "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows"
+click c8 "Click '← Back to referral RF-2040'\nWith ?case= in the address it reads '← Back to case R-1042'\nShown only when the check began from a referral"
+goto g6 "Continues in: Authorizations › New case › Referral › The full referral page"
 
-s1 --> q1 & q2 & q4 & c6 & c7
+s1 --> q1 & q2 & q4 & c6 & c7 & c8
+c8 --> g6
 q1 -->|Yes| c1 --> p1 --> g1
 q1 -->|No| n1
 q2 -->|Yes| c2 --> g2

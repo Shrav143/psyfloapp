@@ -17,7 +17,7 @@ group gB "Column 'Benefits'"
   screen b0 "'Benefits' chip"
   process b1 "'Covered' (green)\nThe plan pays for this level of care"
   process b2 "'Limited' (amber)\nPaid with conditions: diagnosis on the plan's list, each day authorized"
-  process b3 "'Not covered' (red)\nThe plan does not pay for this level of care (no demo patient)"
+  process b3 "'Not covered' (red)\nThe plan does not pay for this level of care\nFor example R-1118"
 endgroup
 
 group gA "Column 'Authorization'"
@@ -34,8 +34,8 @@ group gV "Column 'Verdict'"
   screen v0 "'Verdict' chip, with 'Checked 3 h ago' under it"
   process v1 "'Cleared to bill' (green)\nEverything passes"
   process v2 "'Authorization first' (amber)\nOnly the authorization is missing"
-  process v3 "'Fix before billing' (red)\nCoverage, plan, network or a limit failed"
-  process v4 "'Checked 3 h ago' or 'Checking now'\nTime since the last check, or a re-check running"
+  process v3 "'Fix before billing' (red)\nCoverage, plan, network, another plan or a limit failed"
+  process v4 "'Checked 3 h ago' or 'Checking now'\nTime since the last check, or a re-check running\n'Re-check due Tue 11:32 am': Verify will run it\n'Re-checked automatically at 11:32 am': it did\n'Not re-checked: Verify is paused in Settings'"
 endgroup
 
 goto g1 "Continues in: Authorizations › Eligibility & Benefits › Result › Which verdict and why"
