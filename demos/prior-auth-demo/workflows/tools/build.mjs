@@ -11,6 +11,7 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const SRC = join(ROOT, "src");
 const OUT = join(ROOT, "out");
 const STRICT = process.argv.includes("--strict");
+const LENIENT = process.argv.includes("--lenient"); // skip a file that does not compile, to build while others are still writing
 
 /** Folder → the name on the sidebar of the app (or the area), shown in the viewer. */
 const MODULES = {
@@ -51,7 +52,8 @@ for (const dir of folders) {
 }
 if (errors.length) {
   console.error(errors.join("\n\n"));
-  process.exit(1);
+  if (!LENIENT) process.exit(1);
+  console.error(`\n(--lenient: skipped ${errors.length} file(s))\n`);
 }
 
 /* 2. Draw them. */
@@ -135,12 +137,23 @@ if (unresolved.length) {
   if (STRICT) process.exit(1);
 }
 
+/* GitHub draws Mermaid fences in Markdown, so each menu tab also gets a page that reads in the repository. */
+mkdirSync(join(OUT, "md"), { recursive: true });
+for (const m of Object.keys(MODULES)) {
+  const ds = diagrams.filter((d) => d.dir === m);
+  if (!ds.length) continue;
+  const body = ds.map((d) => `## ${d.meta.title}\n\n${d.meta.intro}\n\nRoute: \`${d.meta.route}\`${d.meta.also ? `\n\n${d.meta.also}` : ""}\n\n\`\`\`mermaid\n${d.mermaid}\n\`\`\`\n`).join("\n");
+  writeFileSync(join(OUT, "md", `${m}.md`), `# ${MODULES[m][0]}\n\n${MODULES[m][1]}\n\nShapes and colours: see \`00-overview.md\`. Source: \`workflows/src/${m}/\`.\n\n${body}`);
+}
+
+writeFileSync(join(OUT, "index.json"), JSON.stringify(diagrams.map((d) => ({ dir: d.dir, module: MODULES[d.dir][0], name: d.name, id: d.id, title: d.meta.title, route: d.meta.route, intro: d.meta.intro, steps: d.nodes })), null, 1));
+
 /* 4. The viewer. */
 const mods = Object.keys(MODULES).filter((m) => diagrams.some((d) => d.dir === m));
 const stat = { diagrams: diagrams.length, steps: diagrams.reduce((a, d) => a + d.nodes, 0), modules: mods.length };
 
 const legendRows = Object.entries(KINDS)
-  .map(([k, v]) => `<tr><td class="sw">${swatches[k]}</td><td><b>${esc(v.name)}</b></td><td>${esc(v.means)}</td></tr>`)
+  .map(([k, v]) => `<div class="kind"><div class="sw paper">${swatches[k]}</div><div class="txt"><b>${esc(v.name)}</b><p>${esc(v.means)}</p></div></div>`)
   .join("");
 
 const nav = mods
@@ -188,7 +201,7 @@ const sections = mods
 <section class="mod" id="m-${m}">
   <h2>${esc(MODULES[m][0])}</h2>
   <p class="lede">${esc(MODULES[m][1])}</p>
-  ${m === "00-overview" ? `<article class="card" id="legend"><header><div><h3>The sixteen shapes</h3><p class="intro">The shape says what kind of step it is. The colour says who does it. Every diagram in this document uses only these.</p></div></header><table class="legend"><tbody>${legendRows}</tbody></table><div class="by"><span><i style="background:#DCEBFA"></i>Blue: a person</span><span><i style="background:#EEE5FA"></i>Purple: FLO and the agents</span><span><i style="background:#EEF0EE"></i>Grey: the app</span><span><i style="background:#FFE6D2"></i>Orange: outside party</span><span><i style="background:#FFF0CC"></i>Amber: decision</span><span><i style="background:#D5F0EA"></i>Teal: data saved</span><span><i style="background:#FFFDF8;border:2px solid #1F5C4B"></i>Cream: screen</span><span><i style="background:#DDEFE3"></i>Green and red: the ends</span></div></article>` : ""}
+  ${m === "00-overview" ? `<article class="card" id="legend"><header><div><h3>The sixteen shapes</h3><p class="intro">The shape says what kind of step it is. The colour says who does it. Every diagram in this document uses only these.</p></div></header><div class="kinds">${legendRows}</div><div class="by"><span><i style="background:#DCEBFA"></i>Blue: a person</span><span><i style="background:#EEE5FA"></i>Purple: FLO and the agents</span><span><i style="background:#EEF0EE"></i>Grey: the app</span><span><i style="background:#FFE6D2"></i>Orange: outside party</span><span><i style="background:#FFF0CC"></i>Amber: decision</span><span><i style="background:#D5F0EA"></i>Teal: data saved</span><span><i style="background:#FFFDF8;border:2px solid #1F5C4B"></i>Cream: screen</span><span><i style="background:#DDEFE3"></i>Green and red: the ends</span></div></article>` : ""}
   ${cards(m)}
 </section>`,
   )

@@ -102,6 +102,13 @@ export async function openRenderer() {
       }
       return files;
     },
+    /** Print a local HTML file to PDF, honouring the page sizes it sets with @page. */
+    async pdf(htmlPath, pdfPath, size) {
+      const pg = await browser.newPage();
+      await pg.goto(`file://${htmlPath}`);
+      await pg.pdf({ path: pdfPath, printBackground: true, ...(size ?? { preferCSSPageSize: true }) });
+      await pg.close();
+    },
     close: () => browser.close(),
   };
 }

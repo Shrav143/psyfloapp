@@ -104,10 +104,11 @@ main { min-width: 0; }
 .hit :is(rect, polygon, path, circle, ellipse) { stroke: #D1242F !important; stroke-width: 3.5px !important; }
 .empty { display: none; padding: 40px 0; color: var(--muted); }
 
-table.legend { width: 100%; border-collapse: collapse; margin-top: 14px; }
-.legend td { padding: 7px 10px; border-top: 1px solid var(--line); vertical-align: middle; font-size: 14px; }
-.legend td.sw { width: 190px; background: var(--paper); }
-.legend td.sw svg { display: block; max-width: 100%; height: auto; margin: 2px auto; }
+.kinds { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 10px 16px; margin-top: 16px; }
+.kind { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 14px; align-items: center; border: 1px solid var(--line); border-radius: 14px; padding: 8px; }
+.kind .sw { border-radius: 10px; padding: 8px; min-height: 62px; display: grid; place-items: center; }
+.kind .sw svg { display: block; max-width: 100%; height: auto; }
+.kind .txt p { margin: 2px 0 0; color: var(--ink2); font-size: 13.5px; line-height: 1.4; }
 .by { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 14px; color: var(--ink2); font-size: 13px; }
 .by span { display: inline-flex; align-items: center; gap: 7px; }
 .by i { width: 18px; height: 12px; border-radius: 4px; border: 1px solid rgba(0, 0, 0, .25); display: inline-block; }
@@ -132,7 +133,7 @@ footer { color: var(--muted); font-size: 13px; padding-bottom: 24px; }
   .find { width: auto; flex: 1; }
   .card { padding: 16px; }
   .meta { align-items: flex-start; }
-  .legend td.sw { width: 120px; }
+  .kind { grid-template-columns: 120px minmax(0, 1fr); }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .card.flash { animation: none; } }
 </style>
@@ -265,7 +266,7 @@ footer { color: var(--muted); font-size: 13px; padding-bottom: 24px; }
   var full = $("#full"), fvp = $("#fvp"), fcard = null, fscale = 1, home = null;
   function fsvg() { return $("svg", fvp); }
   function fset(s) { fscale = Math.min(3, Math.max(0.2, s)); apply(fsvg(), fscale); $("#fpct").textContent = Math.round(fscale * 100) + "%"; }
-  function ffit() { var svg = fsvg(), d = dims(svg); fset(Math.min(1.2, Math.max(0.25, Math.min((fvp.clientWidth - 50) / d.w, (fvp.clientHeight - 50) / d.h)))); fvp.scrollTo(0, 0); }
+  function ffit() { var svg = fsvg(), d = dims(svg); fset(Math.min(1.2, Math.max(0.4, (fvp.clientWidth - 50) / d.w))); fvp.scrollTo(0, 0); }
   function openFull(card) {
     fcard = card; var vp = $(".vp", card), svg = $("svg", vp);
     home = vp; fvp.innerHTML = ""; fvp.appendChild(svg);

@@ -40,6 +40,10 @@ Top right: **Ask FLO** (Psyflo's assistant, answers from the data), **Notificati
 6. Denial Intelligence: D-3318, choose the peer-to-peer call, read the brief.
 7. Payers: Cardinal, Changes, Acknowledge change, Update drafts. Summit, Process, Edit workflow.
 
+## Workflow diagrams
+
+`workflows/` maps every screen, click and decision of the demo as flow diagrams, one menu tab and sub tab at a time, with one set of shapes and colours. Open `workflows/out/Psyflo-workflow-diagrams.html`, or read `workflows/README.md`.
+
 ## Code map
 
 ```
