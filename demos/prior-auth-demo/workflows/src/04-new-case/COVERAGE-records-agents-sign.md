@@ -120,7 +120,7 @@ On the case page (drawn in `03-authorizations`): 26 (Send to payer and Open in r
 
 - **Step 1 Referral, the referral page, and the Eligibility result page**: other writers. Linked with `goto`.
 - **The Dashboard request drawer and the whole Case Manager page**: other writers. Linked with `goto`. Only the parts about drafts are drawn here (39, 42).
-- **Custom payers** (added on Payers with 'Add a payer'): New case's payer list is the six seeded payers, so a payer added there cannot be chosen on step 2 yet.
+- **Custom payers** (added on Payers with 'Add a payer') are offered in the payer pickers of New case, Eligibility & Benefits and the queue. They start with benchmark figures and the starter workflow, rules and documents.
 - **Title text of other writers' diagrams** in my `goto` labels is matched by words, so a renamed diagram may need its label changed.
 
 ## Things in the demo that still look hollow or odd

@@ -1,7 +1,7 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { Hash } from "lucide-react";
 import { Button, Dropdown, Field, TextArea, TextInput } from "@/components/ui";
-import { maskMember, NEW_REQUEST_TYPES, PLAN_TYPE, PLAN_TYPES, type CaseDraft } from "@/data/cases";
+import { maskMember, NEW_REQUEST_TYPES, planTypeOf, PLAN_TYPES, type CaseDraft } from "@/data/cases";
 import { PAYERS } from "@/data/seed";
 import { PROGRAM_LABEL, PROGRAMS, type PayerId, type Program, type RequestType } from "@/data/types";
 import { useStore } from "@/store";
@@ -58,7 +58,7 @@ export function FieldEditor({ id, draft, close }: { id: FieldId; draft: CaseDraf
         <Frame onClose={close}>
           <div className="grid grid-cols-2 gap-3.5">
             <Field label="Payer">
-              <Dropdown<PayerId | ""> variant="field" value={draft.payerId ?? ""} placeholder="Choose a payer" ariaLabel="Payer" onChange={(v) => v && edit({ payerId: v, planType: PLAN_TYPE[v] })} options={PAYERS.map((p) => ({ value: p.id, label: p.name }))} />
+              <Dropdown<PayerId | ""> variant="field" value={draft.payerId ?? ""} placeholder="Choose a payer" ariaLabel="Payer" onChange={(v) => v && edit({ payerId: v, planType: planTypeOf(v) })} options={PAYERS.map((p) => ({ value: p.id, label: p.name }))} />
             </Field>
             <Field label="Plan type">
               <Dropdown<string> variant="field" value={draft.planType} placeholder="Plan type" ariaLabel="Plan type" onChange={(v) => edit({ planType: v })} options={PLAN_TYPES.map((p) => ({ value: p, label: p }))} />

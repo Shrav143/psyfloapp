@@ -130,7 +130,7 @@ File names below are in `src/03-authorizations/`. Short names: 10 queue-overview
 - The routing of 'Open in review and sign' and 'Send to payer' into New case, 'Send back to Scribe' on the Draft tab, and what the Draft tab carries into the signed summary belong to the Draft tab and New case; they are drawn in 26, 72 and 74 and not repeated here. 'Open in review and sign' stays on even for a request already with the payer.
 - Clinical context is saved in the shared list. The Draft tab and New case read it themselves; this page does not rewrite the draft text.
 - Each of the first three notes of clinical context adds a point to the approval chance, whatever it says. A refinement is a fixed re-order plus one fixed card per focus, not a new reading of the chart.
-- An ID with no queue row and no Dashboard request still ends at 'Request not found' (20).
+- An ID with no queue row and no Dashboard request opens the Ledger case page when it is in the Case Manager ledger, and ends at 'Request not found' only when it is in neither (20).
 
 ## Fixed since the first mapping
 

@@ -2,7 +2,7 @@
    and goes into the document slot its name says, or the next missing required one, so any file name works in the demo.
    Nothing the person typed, and nothing a referral or EMR Connect supplied, is ever overwritten. */
 import type { DemoFile } from "@/components/ui";
-import { PLAN_TYPE, type CaseDraft, type DocSlotId, type DraftDocument, type ReadKey, type ReadNote } from "@/data/cases";
+import { planTypeOf, type CaseDraft, type DocSlotId, type DraftDocument, type ReadKey, type ReadNote } from "@/data/cases";
 import type { DocItem } from "@/data/payerConfig";
 import { PAYERS } from "@/data/seed";
 import { plural } from "@/lib/format";
@@ -42,8 +42,8 @@ function planSort(d: CaseDraft, files: DemoFile[], items: (payerId: CaseDraft["p
   if (card) {
     if (!next.payerId) {
       const id = PAYERS.find((p) => card.name.toLowerCase().includes(p.shortName.toLowerCase()))?.id ?? SAMPLE_CHART.payerId;
-      apply({ payerId: id, planType: next.planType || PLAN_TYPE[id] }, "payer", card.name);
-    } else if (!next.planType) apply({ planType: PLAN_TYPE[next.payerId] });
+      apply({ payerId: id, planType: next.planType || planTypeOf(id) }, "payer", card.name);
+    } else if (!next.planType) apply({ planType: planTypeOf(next.payerId) });
     if (!next.memberId) apply({ memberId: SAMPLE_CHART.memberId }, "member", card.name);
     apply({ cardRead: true });
   }

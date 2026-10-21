@@ -2,7 +2,7 @@ title: Authorizations › Case page › Ways in
 route: /authorizations/case/R-1042
 intro: Every link that opens a case page, and what the page does with the ID it is given: find the request, load your earlier work, pick the tab.
 dir: TD
-also: Demo only: R-1042 is the one hand-written case. Every other case page is generated from its queue row or Dashboard request, so the numbers are consistent but the wording is a template. An ID that has no queue row and no Dashboard request ends at 'Request not found'.
+also: Demo only: R-1042 is the one hand-written case. Every other case page is generated from its queue row or Dashboard request, so the numbers are consistent but the wording is a template. An ID that is in the Case Manager ledger but not in the queue opens the Ledger case page. An ID in neither ends at 'Request not found'.
 ---
 group gIn "Links that open a case page"
   start a1 "Queue: click the request ID"
@@ -25,6 +25,8 @@ decision d3 "Is there a Dashboard request with this ID or this case ID?"
 process fr "Page is built from the Dashboard request\nDecided ones show their result and have nothing left to send"
 process gen "Chance, actions, criteria, draft and checks are generated\nfrom the payer, level of care and chance"
 
+decision d5 "Is the ID in the Case Manager ledger?"
+goto gL "Continues in: Case Manager › Ledger case › Open and read"
 screen nf "'Request not found'\n'There is no request with the ID X.'\n'Nothing to show here' · 'Check the ID, or open a request from the queue.'"
 click bq "Click 'Back to queue' or the 'Authorizations' crumb"
 goto gQ "Continues in: Authorizations › Queue › Open the queue and read the top"
@@ -50,7 +52,9 @@ d1 -->|No| d2
 d2 -->|Yes| fq --> gen
 d2 -->|No| d3
 d3 -->|Yes| fr --> gen
-d3 -->|No| nf
+d3 -->|No| d5
+d5 -->|Yes| gL
+d5 -->|No| nf
 nf --> bq --> gQ
 gen --> ld
 ld --> d4

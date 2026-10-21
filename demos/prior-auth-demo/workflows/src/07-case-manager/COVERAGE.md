@@ -35,7 +35,7 @@ Source: `src/pages/manager/*`, `src/store/manager.ts`, `src/store/cases.ts`, `sr
 | Sort buttons: Case, Payer, Units used, Clock, Approval chance, Status | Tracker headers | 31 |
 | 'Level of care' and 'Open' headers (not sortable) | Tracker headers | 31 |
 | 'Previous', 'Next', 'Page N of M' | Tracker pager | 31 |
-| Cells: Units used, Clock (eight kinds, the case page's own words for a request, 'Next review <date>'), Approval chance, Status | Tracker rows | 32 |
+| Cells: Units used, Clock (eight kinds, the case page's own words for a request, 'Next review <date>', 'Step-down plan open'), Approval chance, Status | Tracker rows | 32 |
 | Row click, case ID, 'Open' button | Tracker rows | 33 |
 | Ledger case page: header, 'Case summary', 'Next step', 'History', 'Open the review', 'Back to Case Manager', crumb | Case page for a ledger-only case | 60 |
 | 'Request not found' (an address typed by hand only) | Hand-off | 33, 60 |
@@ -78,5 +78,5 @@ Fixed since the first pass: every tracker row, every review's 'Open case' and ev
 
 - 'Ready to step down?' still lists two fixed IDs (R-0873, P-1522). It is a prompt and is not worked out from the ledger.
 - A new case sent today has no review this week, even when the payer approves it: its first review falls after Sunday.
-- The tracker's Status and Approval chance are stored on the ledger row. They do not follow the case page, the Dashboard or a reply from the payer (only the Clock does), apart from 'On track' after a signature.
+- The tracker's Status and Approval chance on the 56 seed rows are stored on the ledger row. They do not follow the case page, the Dashboard or a reply from the payer (only the Clock does), apart from 'On track' after a signature. A row for a case sent today does follow its request.
 - The next review is booked from an interval alone. The demo does not send the signed review to the payer.

@@ -12,7 +12,7 @@ group gR "Read live by other screens (no Update drafts needed)"
   process p2 "New case: the rules\nBackdating: a start date that reaches back further\nthan the rule allows is flagged\nNo authorization needed: a level of care the payer names there"
   process p3 "New case: the approval chance\nEach thing the payer asks for that a draft does not meet\n(a required document, an early start date)\nholds the chance back, up to 12 points"
   process p4 "Case Manager: the next review\nThe 'Submission windows' rule sets the days\nbefore the next review is booked, when it names a number"
-  process p5 "Payers added with 'Add a payer'\nhave a full saved set like any payer\nand are kept for New case to offer when a payer is picked"
+  process p5 "Payers added with 'Add a payer'\nhave a full saved set like any payer\nand are offered wherever a payer is picked:\nNew case, Eligibility & Benefits and the queue's Payer menu"
 endgroup
 
 group gW "Wired: redrafting after a payer change or edits"

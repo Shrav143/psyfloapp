@@ -4,7 +4,7 @@
 import type { CaseDetail, Evidence } from "@/data/caseDetail";
 import { withFocus } from "@/data/caseDetailFocus";
 import { canSend, projectedChance, type CaseWork } from "@/data/caseModel";
-import { chanceBounds, DUE_FOR, freshRun, PLAN_TYPE, QUESTIONS, RUN_STEPS, type Answer, type CaseDraft, type Diagnosis } from "@/data/cases";
+import { chanceBounds, DUE_FOR, freshRun, planTypeOf, QUESTIONS, RUN_STEPS, type Answer, type CaseDraft, type Diagnosis } from "@/data/cases";
 import { verdictOf } from "@/data/eligibility";
 import { PAYERS } from "@/data/seed";
 import { PROGRAM_LABEL } from "@/data/types";
@@ -77,7 +77,7 @@ export function requestDraft(base: CaseDetail, work: CaseWork, clock: number, ct
     phase: "records",
     patient: { initials: detail.initials, age: detail.age },
     payerId,
-    planType: PLAN_TYPE[payerId],
+    planType: planTypeOf(payerId),
     memberId: memberFor(detail.requestId),
     cardRead: true,
     program,

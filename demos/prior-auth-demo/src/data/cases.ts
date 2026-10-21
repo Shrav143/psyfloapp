@@ -316,7 +316,9 @@ export const maskMember = (id: string): string => (!id ? "" : id.startsWith("…
 export const caseCode = (program: Program | null, n: number): string => `${program === "IOP" ? "I" : program === "PHP" ? "P" : "R"}-${n}`;
 
 /** Plan type the intake fills in once the payer is known. */
-export const PLAN_TYPE: Record<PayerId, string> = { summit: "HMO", cardinal: "HMO", evergreen: "HMO", beacon: "PPO", harborview: "Medicare Advantage", lakeshore: "Behavioral carve-out" };
+const PLAN_TYPE_OF: Record<string, string> = { summit: "HMO", cardinal: "HMO", evergreen: "HMO", beacon: "PPO", harborview: "Medicare Advantage", lakeshore: "Behavioral carve-out" };
+/** The plan type to pre-fill for a payer. A payer added on Payers maps its own type onto the same list. */
+export const planTypeOf = (id: PayerId): string => PLAN_TYPE_OF[id] ?? ({ "Managed care plan": "HMO", PPO: "PPO", "Medicare Advantage": "Medicare Advantage", "Carve-out": "Behavioral carve-out" } as Record<string, string>)[payerById(id)?.type ?? ""] ?? "";
 export const PLAN_TYPES = ["HMO", "PPO", "Medicare Advantage", "Behavioral carve-out", "Fee-for-service"];
 export const NEW_REQUEST_TYPES: RequestType[] = ["Initial request", "Admission", "Continued stay", "Recertification", "Retro-authorization"];
 

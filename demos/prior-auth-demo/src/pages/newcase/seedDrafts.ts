@@ -1,5 +1,5 @@
 /* The five Dashboard "Preparing" requests as drafts, each at the step it is on, plus the blank draft a new case starts from. */
-import { freshRun, PLAN_TYPE, QUESTIONS, type Answer, type CaseDraft, type DocSlotId, type QuestionKey, type RunState } from "@/data/cases";
+import { freshRun, planTypeOf, QUESTIONS, type Answer, type CaseDraft, type DocSlotId, type QuestionKey, type RunState } from "@/data/cases";
 import { seedPayerConfig } from "@/data/payerConfigSeed";
 import type { PayerId, Program } from "@/data/types";
 import { docEntries, makeDocument, sampleFile } from "./documents";
@@ -58,7 +58,7 @@ const answer = (key: QuestionKey, choice: string, label: string, payerShort: str
 
 function seed(id: string, over: Partial<CaseDraft>): CaseDraft {
   const payerId = over.payerId as PayerId;
-  return blankDraft({ id: `draft-${id.toLowerCase().replace("-", "")}`, caseId: id, saved: true, step: 1, phase: "records", planType: PLAN_TYPE[payerId], cardRead: true, ...over });
+  return blankDraft({ id: `draft-${id.toLowerCase().replace("-", "")}`, caseId: id, saved: true, step: 1, phase: "records", planType: planTypeOf(payerId), cardRead: true, ...over });
 }
 
 export const SEED_DRAFTS: CaseDraft[] = [

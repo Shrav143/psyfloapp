@@ -1,5 +1,5 @@
 /* Intake logic that has no screen of its own: where a draft starts from, the sample chart, the EMR pull, attaching a referral. */
-import { PLAN_TYPE, type CaseDraft } from "@/data/cases";
+import { planTypeOf, type CaseDraft } from "@/data/cases";
 import { PAYERS } from "@/data/seed";
 import { PROGRAM_LABEL, PROGRAMS, type NewCasePrefill, type PayerId, type Program, type RequestType } from "@/data/types";
 import { useStore } from "@/store";
@@ -18,7 +18,7 @@ export function fromPrefill(p: NewCasePrefill): Partial<CaseDraft> {
   return {
     patient: { initials: p.patientInitials, age: p.age },
     payerId: p.payerId,
-    planType: p.payerId ? PLAN_TYPE[p.payerId] : "",
+    planType: p.payerId ? planTypeOf(p.payerId) : "",
     memberId: p.memberIdMasked,
     program: p.program,
     type: defaultType(p.urgency),
@@ -35,7 +35,7 @@ export function fromQuery(q: URLSearchParams): Partial<CaseDraft> {
   const program = PROGRAMS.find((p) => p === q.get("program")) as Program | undefined;
   if (!payer && !program) return {};
   const age = Number(q.get("age")) || null;
-  return { payerId: payer ?? null, planType: payer ? PLAN_TYPE[payer] : "", program: program ?? null, memberId: q.get("member") ?? "", patient: { initials: q.get("initials") ?? "", age }, type: "Admission", phase: "records" };
+  return { payerId: payer ?? null, planType: payer ? planTypeOf(payer) : "", program: program ?? null, memberId: q.get("member") ?? "", patient: { initials: q.get("initials") ?? "", age }, type: "Admission", phase: "records" };
 }
 
 export function initialDraft(q: URLSearchParams, st: AppState): { init: Partial<CaseDraft>; missingReferral?: string } {
@@ -82,7 +82,7 @@ export function applySampleChart(id: string): void {
     st.patchCaseDraft(id, {
       patient: { ...SAMPLE_CHART.patient },
       payerId: SAMPLE_CHART.payerId,
-      planType: PLAN_TYPE[SAMPLE_CHART.payerId],
+      planType: planTypeOf(SAMPLE_CHART.payerId),
       memberId: SAMPLE_CHART.memberId,
       cardRead: true,
       phase: "records",
@@ -113,7 +113,7 @@ export function pullFromEmr(id: string, c: EmrChart): void {
   st.patchCaseDraft(id, {
     patient: { initials: c.initials, age: c.age },
     payerId,
-    planType: payerId ? PLAN_TYPE[payerId] : "",
+    planType: payerId ? planTypeOf(payerId) : "",
     memberId: c.memberId,
     program: blank.has("program") ? null : c.program,
     type: c.type,
