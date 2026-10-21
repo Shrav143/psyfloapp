@@ -143,7 +143,7 @@ footer { color: var(--muted); font-size: 13px; padding-bottom: 24px; }
   <h1>Workflow diagrams</h1>
   <div class="stats">__DIAGRAMS__ diagrams · __STEPS__ steps · __MODULES__ areas</div>
   <div class="find">
-    <input id="q" type="search" placeholder="Find a button, screen or step" aria-label="Find a button, screen or step" autocomplete="off">
+    <input id="q" type="text" inputmode="search" placeholder="Find a button, screen or step" aria-label="Find a button, screen or step" autocomplete="off">
     <span class="cnt" id="cnt" aria-live="polite"></span>
   </div>
 </div>
@@ -190,7 +190,7 @@ footer { color: var(--muted); font-size: 13px; padding-bottom: 24px; }
   function fitScale(vp, svg) {
     var d = dims(svg), cw = vp.clientWidth - 34;
     if (cw <= 0) return 1;
-    return Math.min(1, Math.max(0.4, cw / d.w));
+    return Math.min(1, Math.max(0.5, cw / d.w));
   }
   function setScale(card, s, manual) {
     var st = Z.get(card), svg = $("svg", $(".vp", card));

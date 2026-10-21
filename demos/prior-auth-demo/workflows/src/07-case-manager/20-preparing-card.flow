@@ -1,0 +1,49 @@
+title: Case Manager › Active cases › Being prepared card
+route: /manager
+intro: The card at the top of Active cases lists the cases the agents are still preparing, most urgent first. Four chips narrow it by who has the next move, and 'sent today' jumps to the Dashboard. Each row is explained in the next diagram.
+dir: TD
+---
+start s1 "Open Case Manager (Active cases tab)"
+screen sc "Card 'Being prepared'\n'Most urgent first. Each case moves through eight steps; the agents do all but Ask and Sign.'"
+process p1 "Rows are the drafts that were saved and not yet sent\n5 at the start: R-1042, R-0988, I-2207, R-1101, I-2262"
+process p2 "Search, level of care and payer from the filter bar narrow the rows\nThe tracker's status filter does not apply here"
+screen sh "Top right of the card\nGhost button '4 sent today', then the chips 'All', 'Agents working', 'Needs your input', 'Ready to sign'"
+
+click c1 "Click '4 sent today'"
+process p3 "Go to /dashboard?stage=received"
+goto g1 "Continues in: Dashboard › Stage strip and requests table"
+
+click c2 "Click a chip"
+decision d1 "Which chip?"
+process k1 "'All': every row"
+process k2 "'Agents working': rows where agents are still running"
+process k3 "'Needs your input': rows with an open question, or intake not finished\nBadge shows how many (2 at the start)"
+process k4 "'Ready to sign': rows where every check passed\nBadge shows how many (1 at the start)"
+process p4 "Rows narrow to that chip\nThe badge counts follow the page filters but not the chip itself"
+
+process o1 "Order: rows that need a person come first (questions, signatures, unfinished intake)\nThen the earliest due date"
+process o2 "At the start: R-1042, R-0988, I-2207, then R-1101, I-2262"
+
+decision d2 "Are there rows to show?"
+screen r1 "A column of case rows"
+goto g2 "Continues in: Case Manager › Active cases › One row and its button"
+goto g3 "Continues in: Case Manager › Empty states › No cases or reviews match"
+end e1 "Rows are on screen"
+
+process p5 "After a case is signed and sent in New case it leaves this list and 'sent today' counts one more"
+start s2 "Later: a case is signed and sent in New case › Review and sign"
+
+s1 --> sc --> p1 --> p2 --> sh
+sh --> c1 --> p3 --> g1
+sh --> c2 --> d1
+d1 -->|All| k1 --> p4
+d1 -->|Working| k2 --> p4
+d1 -->|Needs input| k3 --> p4
+d1 -->|Ready| k4 --> p4
+p4 --> o1
+p2 --> o1
+o1 --> o2 --> d2
+d2 -->|Yes| r1 --> g2
+d2 -->|No| g3
+r1 --> e1
+s2 --> p5 --> p1

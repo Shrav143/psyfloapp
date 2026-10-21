@@ -1,0 +1,47 @@
+title: Case Manager › Active cases › One row and its button
+route: /manager
+intro: One row of 'Being prepared' shows a case, where it is on the eight steps, who has it and the one thing to do next. Only the case ID and the button on the right are clickable, and both lead to the same place in New case. The button's wording depends on the row's state.
+dir: TD
+---
+start s1 "Look at one row in 'Being prepared'"
+screen r1 "Row, left to right\nLevel chip (for example 'Residential 3.5', 'Detox → Residential', or 'Level not set')\nCase ID (or 'New case'), patient initials and age, payer\nWhat is asked ('Admission request')"
+screen r2 "Eight-step bar\nRead, Rules, Match, Ask, Draft, Check, Sign, Send\nDone steps green, current step sage and bold, the rest grey"
+screen r3 "Agent line\nA badge for the agent who has the case, then one sentence, for example 'Scribe is waiting on one answer: the sertraline start date'"
+screen r4 "Right side\nDue pill (for example 'Notice due in 5 h'), status pill, approval chance with a bar (or 'Not started'), then the button"
+process p0 "A due pill in red tone tints the whole row red-cream"
+
+decision d1 "What state is the case in?"
+process t1 "'Intake not finished'\nButton 'Continue' (green)"
+process t2 "'Needs your input'\nButton 'Answer' (green)"
+process t3 "'Agents working'\nButton 'Watch' (outlined)"
+process t4 "'Ready to sign'\nButton 'Review and sign' (green)"
+
+click c1 "Click the case ID or the button"
+process p1 "Go to /authorizations/new/ followed by the draft's code"
+decision d2 "Which step does New case open on?"
+goto g1 "Continues in: New case › Medical records (intake)"
+goto g2 "Continues in: New case › Agents work › Answer an agent's question"
+goto g3 "Continues in: New case › Agents work › Watch the agents"
+goto g4 "Continues in: New case › Review and sign › Sign and send"
+
+click c2 "Click anywhere else on the row"
+process p2 "Nothing happens: the row itself is not a link"
+endx e1 "Stays on Case Manager"
+
+process p3 "Once signed and sent, the case disappears from this list, the header count drops by one and the sidebar bubble drops if it needed a person"
+end e2 "The request now shows as 'Received' on the Dashboard"
+goto g5 "Continues in: Dashboard › Open a request"
+
+s1 --> r1 --> r2 --> r3 --> r4 --> p0 --> d1
+d1 -->|Unfinished intake| t1
+d1 -->|An agent asked| t2
+d1 -->|Running| t3
+d1 -->|All checks passed| t4
+t1 & t2 & t3 & t4 --> c1 --> p1 --> d2
+d2 -->|Intake not finished| g1
+d2 -->|Question open| g2
+d2 -->|Agents working| g3
+d2 -->|Ready to sign| g4
+g4 -.-> p3
+r4 --> c2 --> p2 --> e1
+p3 --> e2 --> g5

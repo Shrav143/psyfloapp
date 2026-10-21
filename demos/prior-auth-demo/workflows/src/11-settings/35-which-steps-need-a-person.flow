@@ -2,7 +2,7 @@ title: Settings › Agents › Which steps need a person
 route: /settings
 intro: The PRD guardrail matrix, step by step: what each kind of agent action may do on its own and which human step it still needs. The Settings page only hints at this in its Gates card.
 dir: TD
-also: From docs/prior-auth/prd/07-ai-agents-and-automation.md, section 7. The demo does not enforce any of it from this page.
+also: From the PRD on agents and automation (07), section 7, the guardrail matrix. The demo does not enforce any of it from this page.
 ---
 start s1 "An agent wants to take a step"
 decision q1 "What kind of step is it?"

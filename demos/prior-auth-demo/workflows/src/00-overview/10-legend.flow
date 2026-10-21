@@ -1,7 +1,7 @@
 title: How to read these diagrams
 route: Every diagram uses the same sixteen shapes and colours
 intro: One example flow that uses every shape once. The shape tells you what kind of step it is; the colour tells you who does it.
-dir: LR
+dir: TD
 ---
 start s1 "Start\nA sidebar click or a link"
 screen sc1 "Screen\nA page the person sees"

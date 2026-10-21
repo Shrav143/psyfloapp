@@ -6,8 +6,8 @@ also: Production failures below come from the PRD (09 integrations) and are not 
 ---
 overlay o1 "Connect a system, step 3 of 3: Test\nRead-only. Nothing is written back until a person approves it."
 
-group gTest "Connection test: about 0.8 seconds a check, spinner then green tick"
-  process k1 "Reaching the system"
+group gTest "Connection test"
+  process k1 "Reaching the system\nAbout 0.8 seconds a check: spinner, then a green tick"
   process k2 "Signing in with read-only access"
   process k3 "Reading one test record"
   toast t1 "'The test passed. Access is read-only, and nothing is written back.'"

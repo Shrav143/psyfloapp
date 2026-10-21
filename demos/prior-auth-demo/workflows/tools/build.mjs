@@ -150,6 +150,20 @@ writeFileSync(join(OUT, "index.json"), JSON.stringify(diagrams.map((d) => ({ dir
 
 /* 4. The viewer. */
 const mods = Object.keys(MODULES).filter((m) => diagrams.some((d) => d.dir === m));
+/* Every drawing carries the same 7 KB of CSS; keep one copy of each distinct stylesheet and point the drawings at it by class. */
+const sheets = new Map();
+const lean = (svg) => {
+  const m = svg.match(/<svg[^>]*\sid="([^"]+)"[^>]*>\s*<style>([\s\S]*?)<\/style>/);
+  if (!m) return svg;
+  const css = m[2].split(`#${m[1]}`).join(".WF");
+  if (!sheets.has(css)) sheets.set(css, `wf${sheets.size}`);
+  const cls = sheets.get(css);
+  return svg.replace(/<style>[\s\S]*?<\/style>/, "").replace(/<svg([^>]*?)\sclass="([^"]*)"/, `<svg$1 class="$2 ${cls}"`);
+};
+for (const d of diagrams) d.view = lean(d.svg);
+for (const k of Object.keys(swatches)) swatches[k] = lean(swatches[k]);
+const sheetCss = [...sheets].map(([css, cls]) => css.split(".WF").join(`svg.${cls}`)).join("\n");
+
 const stat = { diagrams: diagrams.length, steps: diagrams.reduce((a, d) => a + d.nodes, 0), modules: mods.length };
 
 const legendRows = Object.entries(KINDS)
@@ -189,7 +203,7 @@ const cards = (m) =>
     <button type="button" data-act="src" aria-expanded="false">Mermaid source</button>
     <button type="button" data-act="copy" hidden>Copy source</button>
   </div>
-  <div class="vp paper" tabindex="0" aria-label="Diagram: ${esc(d.meta.title)}">${d.svg}</div>
+  <div class="vp paper" tabindex="0" aria-label="Diagram: ${esc(d.meta.title)}">${d.view}</div>
   <pre class="src" hidden>${esc(d.mermaid)}</pre>
 </article>`,
     )
@@ -210,6 +224,7 @@ const sections = mods
 const links = Object.assign({}, ...diagrams.map((d) => d.links));
 const tpl = readFileSync(join(ROOT, "tools/viewer.template.html"), "utf8");
 const html = tpl
+  .replace("</style>", () => `${sheetCss}\n</style>`)
   .replace("<!--NAV-->", nav)
   .replace("<!--SECTIONS-->", sections)
   .replace("/*LINKS*/{}", JSON.stringify(links))
