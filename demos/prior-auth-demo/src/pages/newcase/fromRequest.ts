@@ -2,6 +2,7 @@
    the patient, the payer, the level of care, the documents the payer asks for and, when the request is ready, a finished run.
    Pure, so the case page's Draft tab can show the same summary before the draft is first opened. */
 import type { CaseDetail, Evidence } from "@/data/caseDetail";
+import { withFocus } from "@/data/caseDetailFocus";
 import { canSend, projectedChance, type CaseWork } from "@/data/caseModel";
 import { chanceBounds, DUE_FOR, freshRun, PLAN_TYPE, QUESTIONS, RUN_STEPS, type Answer, type CaseDraft, type Diagnosis } from "@/data/cases";
 import { verdictOf } from "@/data/eligibility";
@@ -19,7 +20,7 @@ export type RequestState = "ready" | "preparing" | "sent";
 /** "sent": the payer has it or it was decided. "ready": nothing is open, so a clinician can sign. "preparing": agents still have work to do. */
 export function requestState(detail: CaseDetail, work: CaseWork): RequestState {
   if (detail.phase === "payer" || detail.phase === "denial" || detail.chip) return "sent";
-  return detail.phase === "ready" || canSend(detail, work) ? "ready" : "preparing";
+  return detail.phase === "ready" || canSend(withFocus(detail, work), work) ? "ready" : "preparing";
 }
 
 /** The flow names its drafts "draft-r1042" (the notification links use it); a draft that was signed carries the request's ID as its case ID. */
@@ -36,9 +37,9 @@ export interface RecAdd {
   text: string;
   source?: Evidence;
 }
-/** The sentences the case page's applied actions add to the summary. */
+/** The sentences the case page's applied actions add to the summary. The cards a "Refine recommendations" focus added count too, so the case is read as the page shows it. */
 export const appliedAdds = (detail: CaseDetail, work: CaseWork): RecAdd[] =>
-  detail.recs.flatMap((r) => (r.add && work.applied.includes(r.id) ? [{ recId: r.id, section: SECTION_OF[r.add.section] ?? r.add.section, text: r.add.text(work.inputs[r.id] ?? ""), source: r.add.source }] : []));
+  withFocus(detail, work).recs.flatMap((r) => (r.add && work.applied.includes(r.id) ? [{ recId: r.id, section: SECTION_OF[r.add.section] ?? r.add.section, text: r.add.text(work.inputs[r.id] ?? ""), source: r.add.source }] : []));
 
 const DX_FOR: [RegExp, string][] = [[/alcohol/i, "F10.20"], [/opioid/i, "F11.20"], [/stimulant/i, "F15.20"], [/cannabis/i, "F12.20"], [/depress/i, "F33.1"], [/anxiety/i, "F41.1"]];
 const diagnosesOf = (text: string): Diagnosis[] => ICD_CODES.filter((c) => DX_FOR.some(([re, code]) => re.test(text) && code === c.code));
@@ -51,7 +52,8 @@ const memberFor = (requestId: string): string => {
 const ELAPSED = [12, 8, 17, 18, 12, 11, 22, 13, 11, 9];
 
 /** The draft the request would have: finished agents when it is ready, the agent that is working when it is not. `id` is left empty for the store to give. */
-export function requestDraft(detail: CaseDetail, work: CaseWork, clock: number, ctx: PayerContext): CaseDraft {
+export function requestDraft(base: CaseDetail, work: CaseWork, clock: number, ctx: PayerContext): CaseDraft {
+  const detail = withFocus(base, work);
   const state = requestState(detail, work);
   const { payerId, program } = detail;
   const short = PAYERS.find((p) => p.id === payerId)?.shortName ?? "the payer";
