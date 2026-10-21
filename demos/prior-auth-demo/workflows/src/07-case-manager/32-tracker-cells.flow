@@ -11,6 +11,8 @@ decision u0 "Units used: is the case approved yet?"
 process u1 "'not yet approved' in grey\n(admissions, retro-authorizations and first requests: 9 cases)"
 process u2 "A bar and '10 of 21 days' (or 'units' for IOP)\nBar turns terracotta at 75 percent used or more"
 
+decision a0 "Clock: did the clinic accept this denial?"
+process k11 "'Step-down plan open'\nThe plan is on Active cases, in 'Step-down plans'\nStatus is unchanged"
 decision b0 "Clock: did a signature book a next review for this case?"
 decision q0 "Is the case also a request that has a due time on its case page?"
 process q1 "Same words and hours as the case header\n'Notice due in 5 h', 'Answer due in 9 h', 'Review due in 3 h', 'Decision expected Thu'\nP-1499 reads 9 h here and on its case page, and both tick together with Fast-forward\nRed under 1 day (a payer decision: only when overdue)\nAn approved case has no due time on its page, so it keeps its own clock below"
@@ -35,8 +37,10 @@ end e1 "Row is read"
 s1 --> r1 --> u0
 u0 -->|No| u1
 u0 -->|Yes| u2
-u1 --> b0
-u2 --> b0
+u1 --> a0
+u2 --> a0
+a0 -->|Yes| k11 --> s1p
+a0 -->|No| b0
 b0 -->|Yes| k10 --> s1p
 b0 -->|No| q0
 q0 -->|Yes| q1 --> s1p

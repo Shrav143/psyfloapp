@@ -23,7 +23,7 @@ process pAfter "The other nine agents run as usual"
 goto gReview "Continues in: Review and sign › Validation summary and checks"
 toast tWarn "Review and sign, Checks: 'Request has no errors' warns\n'Verify could not reach Cardinal's portal, so coverage was not confirmed. You skipped it and noted it.'\nSigning needs the acknowledgement tick-box"
 store stNote "After Sign and send, the request's history says\n'Verify could not reach Cardinal's portal before signing'\n'Coverage was not confirmed. You skipped it and noted it.'"
-goto gSign "Continues in: Review and sign › Sign and send"
+goto gSign "Continues in: New case › Review and sign › Sign and send"
 
 click cLeave "Leave the page, or click 'Back'"
 process pStay "The draft keeps the failure\nOpening it again shows the same row"

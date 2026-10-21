@@ -7,7 +7,7 @@ start s1 "The request is signed and sent"
 
 group gDash "Dashboard"
   screen sDash "Dashboard\nThe request is open in the side drawer\nChip 'Received', held by Navigator"
-  process pCount "In the stage strip 'Received' goes up by one\nA brand-new case was never counted under 'Preparing'"
+  process pCount "In the stage strip 'Received' goes up by one\nThe 'Preparing' count goes down by one: a saved draft was counted there until now"
   toast tToast "Toast: 'Sent to the payer'\nBell notification: 'Sent to the payer'"
 endgroup
 goto gOpen "Continues in: Dashboard › Open a request"
@@ -21,12 +21,12 @@ group gWas "The draft's own address"
 endgroup
 
 group gCM "Case Manager › Active cases"
-  screen sCM "Case Manager\n'56 active cases.' and 'N are still being prepared.'"
+  screen sCM "Case Manager\n'57 active cases.' and 'N are still being prepared.'"
   process pGone "The case leaves the 'Being prepared' card\nThe 'still being prepared' count goes down by one"
   process pBadge "The sidebar badge on 'Case Manager' no longer counts it"
   click cSent "Click the 'N sent today' button"
   process pSentN "The count is one higher (4 becomes 5)"
-  process pLedger "The table of active cases gains no row\nThe header still says '56 active cases.'"
+  process pLedger "The table of active cases gains a row for the request\nThe header goes from '56 active cases.' to '57 active cases.'"
 endgroup
 goto gDash2 "Continues in: Dashboard › Stage strip and requests"
 goto gCM2 "Continues in: Case Manager › Active cases"

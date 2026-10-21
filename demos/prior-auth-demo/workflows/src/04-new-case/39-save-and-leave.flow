@@ -4,6 +4,9 @@ intro: A case becomes a draft in Case Manager once it is saved, which happens on
 dir: TD
 ---
 start s1 "Working on a new case"
+start s2 "On a case page, click 'Open in review and sign' or 'Send to payer'"
+process pReq "A draft is made from the request, or the one it already has is brought up to date\nIt opens at Review and sign when the request is ready, at Agents work when agents still have work\nIt is not saved, so Case Manager does not list it"
+goto gCase "Continues in: Authorizations › Case page › Send to payer and review and sign"
 
 group gSave "Ways a draft gets saved"
   click c1 "Click 'Save as draft' on step 2 'Medical records'"
@@ -21,7 +24,7 @@ toast t2 "Step 4: 'Draft saved'\n'R-1701 is in Case Manager, ready to sign.'"
 click cLeave "Click 'Case Manager' at the top, a sidebar item, or close the tab"
 decision dSaved "Was the case saved?"
 process pUnsaved "Nothing appears in Case Manager\nThe draft stays in this session and its address still opens it\nOpening New case again starts another blank draft"
-process pAway "A running case stops moving while the page is closed\nThe row shows the agent that was working"
+process pAway "A running case stops moving while the page is closed\nThe row shows the agent that was working\nOr, when an agent could not finish: 'Verify could not reach Cardinal's portal. Retry it or skip it'"
 
 screen sCM "Case Manager › Active cases › Being prepared\n'Most urgent first. Each case moves through eight steps; the agents do all but Ask and Sign.'\nFilter: 'All', 'Agents working', 'Needs your input', 'Ready to sign'"
 screen sRow "A row for the draft\nLevel of care chip, case ID, 'J.M., 34 · Summit Medicaid HMO', request\nEight-step bar: Read, Rules, Match, Ask, Draft, Check, Sign, Send\nWho has it, due chip, status pill, approval chance, one button"
@@ -31,7 +34,7 @@ process rWork "'Agents working'\nButton 'Watch'"
 process rAsk "'Needs your input'\nButton 'Answer'"
 process rReady "'Ready to sign'\nButton 'Review and sign'"
 process pBadge "The sidebar badge on 'Case Manager' counts drafts that need a person\nIntake not finished, a question, or ready to sign"
-process pDash "The Dashboard shows nothing for a new draft until it is signed and sent\nSeeded cases such as R-1042 do show under 'Preparing'"
+process pDash "The Dashboard counts a saved draft under 'Preparing' ('N in Case Manager')\nA draft that was never saved is not counted\nSeeded cases such as R-1042 are counted as requests"
 click cOpen "Click the case ID, or the row's button"
 process pResume "Opens /authorizations/new/DRAFT\nThe page resumes where the draft was"
 goto gResume "Continues in: Agents work › Finished, paused or left"
@@ -42,6 +45,7 @@ click cNew "Click 'Start a new case'"
 process pNew "A new blank draft opens on step 1"
 goto gRef "Continues in: New case › Referral step"
 
+s2 --> pReq --> gCase
 s1 --> c1
 s1 --> c2
 s1 --> c3

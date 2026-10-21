@@ -8,7 +8,7 @@ export type LedgerStatus = "needs_action" | "review_due" | "awaiting" | "on_trac
 export const LEDGER_STATUS_LABEL: Record<LedgerStatus, string> = { needs_action: "Needs action", review_due: "Review due", awaiting: "Awaiting payer", on_track: "On track" };
 
 /** The next event that binds. The clock text is built from the kind and the due time, so it moves with the demo clock. */
-export type ClockKind = "notice" | "window" | "p2p" | "answer" | "expiry" | "review" | "decision" | "units" | "next";
+export type ClockKind = "notice" | "window" | "p2p" | "answer" | "expiry" | "review" | "decision" | "units" | "next" | "stepdown";
 
 export interface LedgerCase {
   id: string;

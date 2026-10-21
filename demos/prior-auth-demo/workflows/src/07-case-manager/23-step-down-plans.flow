@@ -2,7 +2,7 @@ title: Case Manager › Active cases › Step-down plans from accepted denials
 route: /manager
 intro: When the clinic accepts a denial in Denial Intelligence, Active cases gets a 'Step-down plan' for it, between 'Being prepared' and the tracker. The card is there only while at least one plan exists. Each plan names the case, the denial it came from and one button that opens the case.
 dir: TD
-also: Reset demo data clears the plans.
+also: Reset demo data clears the plans. Denial Intelligence's 'Plan the step-down' link and its 'Denial closed' notification open Active cases.
 ---
 start s1 "Denial Intelligence › the clinic accepts a denial"
 store st1 "The accepted denial is recorded\nWhich denial (for example D-3318), its request, the payer and the demo-clock time"
@@ -16,6 +16,7 @@ process p1 "Search, level of care and payer from the filter bar narrow the plans
 click c2 "Click the case ID or 'Open case'"
 process p2 "Go to /authorizations/case/ and the case code of the denial's request (R-0997)"
 goto g2 "Continues in: Authorizations › Case"
+process p3 "The tracker row of that denial (D-3318) reads 'Step-down plan open' in Clock; its status is unchanged"
 store st2 "'Reset demo data' clears the plans"
 end e1 "Plans are on screen"
 end e2 "Active cases as before"
@@ -27,4 +28,5 @@ d1 -->|No| p0 --> e2
 d1 -->|Yes| c1 --> r1 --> p1
 r1 --> c2 --> p2 --> g2
 p1 --> e1
+st1 --> p3
 st1 -.-> st2

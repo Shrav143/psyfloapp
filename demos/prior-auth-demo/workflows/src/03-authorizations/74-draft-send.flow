@@ -2,14 +2,14 @@ title: Authorizations › Case page › Draft › Review, sign and what happens 
 route: /authorizations/case/R-1042?tab=draft
 intro: What happens when a person leaves the Draft tab to send the request: the gate, the hand-off to New case where a clinician signs, and where the request appears once it is sent.
 dir: TD
-also: Demo only: the case page and New case keep separate drafts. Edits and applied actions made on this tab are not copied into the summary signed in New case. The payer receiving the request is simulated.
+also: Demo only: the payer receiving the request is simulated. The summary signed in New case is the one on this tab: edits, applied actions and added clinical context are all in it.
 ---
 start s1 "On the Draft tab: read the summary and the four checks"
 decision dc "Do all four checks pass, and is the request still preparing?"
 process off "'Send to payer' is off\nThe reason sits under the button, e.g. 'Integrity has 2 open checks. Apply the matching actions first.'"
 click sp "Click 'Send to payer' (large button)"
 click os "Click 'Open in review and sign' (header button)"
-process rp "The case page finds this request's draft in New case, or makes one"
+process rp "The case page finds this request's draft in New case, or makes one from the request\nThe draft opens at Review and sign when the request is ready, at Agents work when agents still have work"
 process ns "Nothing is sent yet\n'Nothing goes to the payer until a clinician signs.'"
 goto gR "Continues in: New case › Review and sign"
 
@@ -24,7 +24,7 @@ toast tt "Toast 'Sent to the payer'\n'R-0988 is on the Dashboard as Received.'"
 toast nt "Notification from Navigator: 'Sent to the payer'\n'R-0988 was sent. It now shows as Received on the Dashboard.'"
 screen db "Dashboard opens on that request\nStage 'Received'"
 process qg "Back in the queue the request is gone\nThe open count drops by one\nThe sidebar badge too, if it was in Act now or Due within 24 hours"
-process cp "Demo: the case page of a sent request still shows its old status line\nand an enabled 'Send to payer'"
+process cp "The case page of a sent request shows the request's own status\nand a disabled 'Sent to payer' in place of 'Send to payer'"
 goto gD "Continues in: Dashboard › Request drawer"
 goto gQ "Continues in: Authorizations › Queue › Open the queue and read the top"
 

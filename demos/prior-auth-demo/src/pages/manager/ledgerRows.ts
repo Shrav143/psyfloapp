@@ -6,6 +6,7 @@ import { payerById, SEED_REQUESTS } from "@/data/seed";
 import type { Program, PsyRequest } from "@/data/types";
 import { DAY } from "@/lib/time";
 import { useStore } from "@/store";
+import type { DenialAccepted } from "@/store/ripples";
 
 /** A tracker row: the ledger record with the clock, status and new-today rows the screen needs. */
 export interface LedgerRow extends LedgerCase {
@@ -47,10 +48,11 @@ function fromRequest(id: string, r: PsyRequest): LedgerCase {
 /**
  * The tracker's rows, in one place so the header count, the tiles and the table agree:
  * the seed ledger, then every case signed and sent in New case today (they became requests in the core store).
- * A case with a next review booked reads that date. Any other case that is also a request reads the case page's
- * own due time, so the two screens show the same hours and tick together with the demo clock.
+ * A denial the clinic accepted reads "Step-down plan open" (the plan is on Active cases). A case with a next review
+ * booked reads that date. Any other case that is also a request reads the case page's own due time, so the two
+ * screens show the same hours and tick together with the demo clock.
  */
-export function buildLedgerRows(ledger: LedgerCase[], requests: PsyRequest[], sentToday: string[], reviews: Review[], clock: number): LedgerRow[] {
+export function buildLedgerRows(ledger: LedgerCase[], requests: PsyRequest[], sentToday: string[], reviews: Review[], accepted: DenialAccepted[], clock: number): LedgerRow[] {
   const known = new Set(ledger.flatMap((c) => [c.id, c.caseId]));
   const fresh: LedgerCase[] = [];
   for (const id of sentToday) {
@@ -62,6 +64,8 @@ export function buildLedgerRows(ledger: LedgerCase[], requests: PsyRequest[], se
   for (const r of reviews) if (r.scheduled && r.status !== "signed" && (next.get(r.ledgerId)?.dueAt ?? 0) < r.dueAt) next.set(r.ledgerId, r);
 
   return [...ledger, ...fresh].map((c): LedgerRow => {
+    const closed = accepted.find((a) => a.denialId === c.id || a.requestId === c.caseId);
+    if (closed) return { ...c, clockKind: "stepdown", dueAt: closed.at };
     const booked = next.get(c.id);
     if (booked) return { ...c, clockKind: "next", dueAt: booked.dueAt, status: booked.dueAt <= clock ? "review_due" : c.status === "awaiting" ? "awaiting" : "on_track" };
     const page = resolveCase(c.caseId, requests);
@@ -74,6 +78,7 @@ export function useLedgerRows(): LedgerRow[] {
   const requests = useStore((s) => s.requests);
   const sentToday = useStore((s) => s.caseSentToday);
   const reviews = useStore((s) => s.reviews);
+  const accepted = useStore((s) => s.deniesAccepted);
   const clock = useStore((s) => s.clock);
-  return useMemo(() => buildLedgerRows(ledger, requests, sentToday, reviews, clock), [ledger, requests, sentToday, reviews, clock]);
+  return useMemo(() => buildLedgerRows(ledger, requests, sentToday, reviews, accepted, clock), [ledger, requests, sentToday, reviews, accepted, clock]);
 }

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { CircleCheck, PenLine, RefreshCw, Send, TriangleAlert } from "lucide-react";
+import { Check, CircleCheck, PenLine, RefreshCw, Send, TriangleAlert } from "lucide-react";
 import { Button, Card, CardBody, CardHeader, Label, Modal, Pill, TextArea } from "@/components/ui";
 import type { Evidence } from "@/data/caseDetail";
 import { checkViews, versionViews, type VersionView } from "@/data/caseModel";
@@ -33,7 +33,7 @@ const sectionText = (s: Section): string => [s.text, ...s.added.map((a) => a.tex
 
 /** The Draft tab reads the same summary as Review and sign in New case: one narrative per request, with the context added on this page. */
 export function DraftTab({ ctx }: { ctx: CaseCtx }) {
-  const { detail, work, key, canSend, sendReason, send } = ctx;
+  const { detail, work, key, canSend, sendReason, sent, send } = ctx;
   const clock = useStore((s) => s.clock);
   const shared = useStore((s) => draftForRequest(s.caseDrafts, detail.requestId, detail.id));
   const context = useStore((s) => s.clinicalContext[detail.requestId]) ?? NO_CONTEXT;
@@ -153,7 +153,9 @@ export function DraftTab({ ctx }: { ctx: CaseCtx }) {
         </Card>
         <Card className="px-5 py-5">
           <div className="flex flex-col gap-2.5">
-            <Button variant="primary" size="lg" icon={Send} disabled={!canSend} title={canSend ? undefined : sendReason} onClick={send}>Send to payer</Button>
+            {sent
+              ? <Button variant="primary" size="lg" icon={Check} disabled title={sendReason}>Sent to payer</Button>
+              : <Button variant="primary" size="lg" icon={Send} disabled={!canSend} title={canSend ? undefined : sendReason} onClick={send}>Send to payer</Button>}
             <Button loading={sendingBack} onClick={sendBack}>Send back to Scribe</Button>
             <div className="text-xs text-muted">{canSend ? "Sending opens review and sign. Nothing goes to the payer until a clinician signs." : sendReason}</div>
           </div>

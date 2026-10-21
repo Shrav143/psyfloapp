@@ -15,7 +15,7 @@ process t1 "'Drafted', all four checks green ticks\nDraft can be edited\nBanner:
 process t2 "'Drafted' with 'Check to look at'\nOne check is amber with Integrity's note, for example 'The draft asks for 7 days. Beacon's usual limit at this level of care is 5.'\nDraft can be edited"
 process t3 "'Needs your update'\nAmber panel names what is missing; 'All payer requirements covered' is red\nDraft is locked: 'The draft is locked until your update is added.'\n'Sign review' is greyed, hover text 'Add your update first'"
 process t4 "'Signed'\nDraft is read-only\nFooter shows 'Signed by Heather K., LISW-S' in place of the button\nGreen banner 'Next review: Tue 10/27, 9:00 am' with 'Cadence booked it.' and either 'It is on this week's list.' or 'It falls after this week, so it is not on the list yet.'"
-process t5 "'Not drafted yet'\nGrey panel 'Not drafted yet': 'Cadence drafts each review a few days ahead. This one is not due until Sat 10/24, 9:00 am, so it has no draft and no Integrity checks yet.'\nNo draft box and no checks\n'Sign review' is greyed, hover text 'Draft the review first'"
+process t5 "'Not drafted yet'\nGrey panel 'Not drafted yet': 'Cadence drafts each review a few days ahead. This one is not due until Sat 10/24, 9:00 am, so it has no draft and no Integrity checks yet.'\nThe line above reads 'To be drafted by' Cadence\nNo draft box and no checks\n'Sign review' is greyed, hover text 'Draft the review first'"
 click c4 "Click 'Draft this review'"
 decision dp "Is Cadence paused in Settings?"
 toast tp "'Cadence is paused in Settings'\n'It drafts no reviews until you resume it there.'"

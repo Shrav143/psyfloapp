@@ -31,7 +31,7 @@ click cReview "Click 'Review and sign'"
 screen sRev "Step 4 again\nThe Plan section ends: 'Reviewer's note, addressed: YOUR NOTE'"
 click cStay "Click the browser's Back, or leave"
 process pAway "The run only moves while step 3 is open"
-goto gSign "Continues in: Review and sign › Sign and send"
+goto gSign "Continues in: New case › Review and sign › Sign and send"
 
 s1 --> o1
 o1 --> iNote

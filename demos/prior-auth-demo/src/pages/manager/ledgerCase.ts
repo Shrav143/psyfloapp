@@ -4,6 +4,7 @@ import { WEEK_END, reviewStamp, type Review } from "@/data/managerReviews";
 import { payerById } from "@/data/seed";
 import type { RequestEvent } from "@/data/types";
 import { DAY, HOUR } from "@/lib/time";
+import { unitCount } from "./helpers";
 import type { LedgerRow } from "./ledgerRows";
 
 /* What the Ledger case page says about a case that is in the Case Manager ledger but is not a request in the queue.
@@ -42,8 +43,9 @@ export function nextStep(c: LedgerRow, r: ReturnType<typeof reviewsOf>): string 
     case "expiry": return "Ask for more days, or plan the step-down, before the approval ends.";
     case "review": return "Sign the review that is due. Cadence then books the next one.";
     case "decision": return `Wait for ${payer}. Navigator keeps checking and tells you when it answers.`;
-    case "units": return `Nothing is needed now. ${(c.total ?? 0) - (c.used ?? 0)} ${c.unit} are left.`;
+    case "units": { const left = (c.total ?? 0) - (c.used ?? 0); return `Nothing is needed now. ${unitCount(left, c.unit)} ${left === 1 ? "is" : "are"} left.`; }
     case "next": return "Nothing is needed until the next review. Cadence drafts it ahead of time.";
+    case "stepdown": return "Choose the next level of care and book the first visit. The denial was accepted.";
   }
 }
 
@@ -58,6 +60,7 @@ const EVENT: Record<ClockKind, string | null> = {
   decision: "Decision expected",
   units: null,
   next: null,
+  stepdown: null,
 };
 
 /** A short history: the approval, the review work so far, and what comes next (dashed). */

@@ -60,6 +60,8 @@ export const hasAnyFilter = (f: ManagerFilters, tab: "cases" | "reviews"): boole
 
 /* ------------------------------------------------------------------ ledger clock */
 const WD = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+/** "1 day", "2 days", "1 unit", "32 units": the noun for a count. */
+export const unitCount = (n: number, unit: "days" | "units"): string => `${n} ${n === 1 ? unit.slice(0, -1) : unit}`;
 /** "5 h" under two days, then "3 days". */
 const span = (min: number): string => (min < 2 * DAY ? `${Math.max(1, Math.round(min / HOUR))} h` : `${Math.round(min / DAY)} days`);
 
@@ -84,9 +86,11 @@ export function clockText(c: LedgerRow, clock: number): { text: string; urgent: 
     case "decision":
       return { text: left <= 0 ? "Decision overdue" : left < DAY ? `Decision in ${span(left)}` : `Decision ${WD[toDate(c.dueAt).getDay()]}`, urgent: left <= 0 };
     case "units":
-      return { text: `${(c.total ?? 0) - (c.used ?? 0)} ${c.unit} left`, urgent: false };
+      return { text: `${unitCount((c.total ?? 0) - (c.used ?? 0), c.unit)} left`, urgent: false };
     case "next":
       return { text: left <= 0 ? "Review due" : `Next review ${reviewDate(c.dueAt)}`, urgent: left <= 0 };
+    case "stepdown":
+      return { text: "Step-down plan open", urgent: false };
   }
 }
 

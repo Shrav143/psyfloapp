@@ -1,6 +1,6 @@
 title: Authorizations › New case › Review and sign › The draft and the summary
 route: /authorizations/new/:draftId (step 4 of 4, 'Ready for your signature')
-intro: Step 4 shows what the payer will read: the medical-necessity summary Scribe drafted, which can be edited, with a chip for every chart page it came from. The validation summary, the checks and the signing card are in the next two diagrams.
+intro: Step 4 shows what the payer will read: the medical-necessity summary Scribe drafted, which can be edited, with a chip for every chart page it came from. It is the same summary the case page's Draft tab shows: an edit made in either place is read in the other. The validation summary, the checks and the signing card are in the next two diagrams.
 dir: TD
 ---
 start s1 "Click 'Review and sign' on step 3\nOr 'Review and sign' on a ready case in Case Manager"
@@ -13,8 +13,11 @@ group gLayout "Layout"
 endgroup
 
 screen sNarr "Medical-necessity summary\n'What Summit will read · every statement links to the chart'\nFour sections: Clinical picture, level of care reason, Current severity, Plan"
+process pCtx "A fifth paragraph 'Context added.' shows when notes were added on the case page\n(Add clinical context, Recommended actions)\nIt is shown here but not edited here"
+process pApplied "Sentences from actions applied on the case page are part of their sections\ne.g. 'Step-down plan: ...' and 'Sertraline was started on 9/21.'"
+process pNote "A draft Payers redrafted after a payer change shows one line above the summary\n'Updated for a payer change on 10/20'"
 process pHead "The second heading follows the level of care\n'Why a lower level of care is not safe' (Residential 3.5, PHP)\n'Why weekly outpatient care is not enough' (IOP)\n'Why withdrawal needs medical monitoring' (Detox)"
-screen sChance "Approval chance card\nRing and 'Strong · likely 83-92%'\n'Summit usually decides in about 1.5 days. Based on 1,248 similar cases.'"
+screen sChance "Approval chance card\nRing and 'Strong · likely 83-92%'\n'Summit usually decides in about 1.5 days. Based on 1,248 similar cases.'\nWhen the case does not meet what the payer asks for: 'Held back 3 points: 1 thing the payer asks for is not met.'"
 
 group gChip "Source chips"
   click cChip "Click a chip under a section\nFor example 'Psychiatric eval p.3'"
@@ -30,7 +33,7 @@ group gEdit "Edit the summary"
   click cCancel "Click 'Cancel'"
   process pCancel "Edits dropped; the summary is shown again"
   click cSave "Click 'Save changes'"
-  store stNarr "Summary saved on the draft as edited"
+  store stNarr "Summary saved on the draft as edited\nThe case page's Draft tab now reads this text"
   agent aInt "Integrity re-checks the edits (demo: simulated)\nChecks show 'Re-checking' for about 1 second\n'Sign and send' is off meanwhile"
   decision dEmpty "Is any section empty?"
   toast tOk "'Integrity re-checked your edits'\n'Every sentence still traces to the chart.'"
@@ -46,9 +49,10 @@ click cSaveD "Click 'Save as draft'"
 toast tSaved "'Draft saved'\n'R-1701 is in Case Manager, ready to sign.'"
 
 goto gVal "Continues in: Review and sign › Validation summary and checks"
-goto gSign "Continues in: Review and sign › Sign and send"
+goto gSign "Continues in: New case › Review and sign › Sign and send"
 goto g36 "Continues in: Agents work › Finished, paused or left"
 goto g39 "Continues in: New case › Save as draft and leave"
+goto gDraft "Continues in: Authorizations › Case page › Draft › Read and edit"
 
 s1 --> sc
 sc --> sL & sR & sF
@@ -58,6 +62,10 @@ sR --> sChance
 sR --> gVal
 sR --> gSign
 
+sNarr --> pCtx
+sNarr --> pApplied
+sL --> pNote
+sNarr -.-> gDraft
 sNarr --> cChip --> pChips --> oSrc --> cCloseSrc
 sNarr --> cEdit --> oEdit --> iText
 iText --> cCancel --> pCancel

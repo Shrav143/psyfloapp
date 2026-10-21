@@ -29,7 +29,7 @@ overlay vm "Dialog 'Version 2'\nTime and author. 'Read only.' Then the text"
 click vc "Click 'Close', the X, the dimmed area, or press Esc"
 process vn "A new version appears after every Apply\n('Scribe', 'Added 6 recommendations')\nand every saved edit ('You', 'Edited by you')"
 
-screen sb "Bottom card\n'Send to payer', 'Send back to Scribe', and a note"
+screen sb "Bottom card\n'Send to payer' (a disabled 'Sent to payer' once the payer has it), 'Send back to Scribe', and a note"
 click sk "Click 'Send back to Scribe'"
 process bz "Spinner for about 1.4 seconds"
 store lg "Log: 'You sent the draft back to Scribe'"

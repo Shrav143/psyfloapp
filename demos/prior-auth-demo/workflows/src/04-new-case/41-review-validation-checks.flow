@@ -1,30 +1,35 @@
 title: Authorizations › New case › Review and sign › Validation summary and checks
 route: /authorizations/new/:draftId (step 4 of 4, Validation summary and Checks)
-intro: The validation summary lists what Reader found in every document. The Checks card has four checks from four agents. A warning can be signed after an acknowledgement; a block or a re-check cannot be signed.
+intro: The validation summary lists the start date and what Reader found in every document the payer asks for. The Checks card has four checks from four agents. Every row and check is worked out from the case, the payer's saved documents (Payers › Documents) and rules (Payers › Rules). A warning can be signed after an acknowledgement; a block or a re-check cannot be signed.
 dir: TD
 ---
 start s1 "On step 4, read the Validation summary and the Checks"
 
 group gVal "Validation summary"
   screen sV "Validation summary\n'Reader checked every document against the payer's guidelines. Review the findings before you sign.'\nPill: 'N to look at' or 'Nothing to look at'"
-  process pRows "One row for 'Start date', then one for each document on the payer's list, required or recommended"
-  process pStart "'Start date' always shows a green tick\n'The start date 10/20/2026 is inside the notice window'"
+  process pRows "One row for 'Start date', then the referral, the required documents and the recommended ones, from the payer's saved list"
+  decision dStart "Is there a start date, and is it inside the payer's backdating rule?\nSummit: none back. Beacon: 2 days. Evergreen: 3 days. A retro-authorization uses the payer's retro line (Summit: 72 hours)"
+  process pStartOk "Green tick\n'The start date 10/20/2026 is inside what Summit allows'"
+  process pStartBad "Amber icon, row open\n'The start date 10/10/2026 is 10 days back. Summit does not backdate an authorization.'\nOr 'No start date. Summit will count from the day it receives the request.'"
   decision dMiss "Is the document in the case?"
-  process pNotAdded "Required: 'This document was not added.'\nRecommended: 'Not added. Summit usually asks for one. You can sign without it.'"
+  decision dMark "Was it marked not available?"
+  process pMarkReq "Required: amber\n'Marked not available: REASON. Summit requires it, so it may ask for it.'"
+  process pMarkRec "Recommended: green\n'Marked not available: REASON. You can sign without it.'"
+  process pNotAdded "Required: 'This document was not added.'\nRecommended: 'Not added. Summit lists it. You can sign without it.'"
   decision dRow "Does the document have an open finding?"
   process pAmber "Amber icon, row open\nGreen ticks for checks passed, an amber line for the finding"
   process pGreen "Green tick, row closed"
   process pSettled "A finding settled by an answer turns green\n'Sertraline start date confirmed by you: 9/14'"
-  click cRow "Click a document row"
+  click cRow "Click a row"
   process pToggle "Its findings open or close (the arrow turns)"
 endgroup
 
 group gChecks "Checks card"
-  screen sC "Checks\nPill: 'All clear', '1 warning', '2 warnings', 'Re-checking' or 'Blocked'"
+  screen sC "Checks\nPill: 'All clear', '1 warning', '2 warnings', 'Re-checking' or 'Blocked'\nEach check lists one line for each thing it found"
   agent c1 "Integrity: 'Every sentence traced to the chart'\nBlocked when a section is empty\nRe-checking while edits are read"
-  agent c2 "Scrubber: 'Request has no errors'\nWarning if coverage is not active, or a required document has an open finding"
-  agent c3 "Criteria: 'All 9 Summit requirements covered'\nAlways passes (7 for IOP, 8 for PHP, 6 for Detox)"
-  agent c4 "Placement: 'Level of care matches the request'\nAlways passes"
+  agent c2 "Scrubber: 'Request has no errors'\nWarns on: coverage that needs a fix, a skipped Verify, a required document with an open finding, a start date outside the rule or missing, a notice or retro window that has passed"
+  agent c3 "Criteria: 'All 9 Summit requirements covered'\n'8 of 9 ... covered' when a required document is marked not available or the step-down answer was 'Not yet'\nBlocked when a required document is not in the case at all (7 requirements for IOP, 8 for PHP, 6 for Detox)"
+  agent c4 "Placement: 'Level of care matches the request'\nWarns when there is no ASAM assessment, the ASAM assessment has a finding, or the payer's no-authorization rule names this level of care"
 endgroup
 
 decision dKind "What state is a check in?"
@@ -34,29 +39,46 @@ process kBlock "Blocked\nRed cross, with a line of detail\nCannot be signed unti
 process kCheck "Re-checking\nSpinner for about 1 second\nCannot be signed yet"
 toast tW1 "'Coverage lapsed 10/12. A retro-eligibility request is needed before billing.'"
 toast tW2 "'1 required document has an open finding. See the validation summary.'\nA recommended document never raises it"
+toast tW3 "'Verify could not reach Cardinal's portal, so coverage was not confirmed. You skipped it and noted it.'"
+toast tW4 "'Psychosocial history is marked not available, so Summit has no evidence for it.'"
 toast tB1 "'The Current severity section is empty. Add the text or send the draft back to Scribe.'\nThe quoted heading is the empty section's"
+toast tB2 "'1 required document is not in the case: Discharge summary. Add it on Medical records, or mark it not available.'"
+process pHeld "The approval chance is held back 3 points for each required document that is not in the case and for a start date the rule does not allow, up to 12\n'Held back 3 points: 1 thing the payer asks for is not met.'"
 process pHover "Hover an agent badge to see the agent's name"
-goto gSign "Continues in: Review and sign › Sign and send"
+goto gSign "Continues in: New case › Review and sign › Sign and send"
+goto gDocs "Continues in: Medical records › Replace a document or mark it not available"
+goto gRules "Continues in: Payers › Rules › Edit a rule"
 
-s1 --> sV --> pRows --> pStart
+s1 --> sV --> pRows --> dStart
+dStart -->|Yes| pStartOk
+dStart -->|No| pStartBad
 pRows --> dMiss
-dMiss -->|No| pNotAdded
+dMiss -->|No| dMark
+dMark -->|Yes, required| pMarkReq
+dMark -->|Yes, recommended| pMarkRec
+dMark -->|No| pNotAdded
 dMiss -->|Yes| dRow
 dRow -->|Yes| pAmber
 dRow -->|No| pGreen
 pAmber -.-> pSettled
 pRows --> cRow --> pToggle
+pMarkReq -.-> gDocs
+pStartBad -.-> gRules
 
 s1 --> sC
 sC --> c1 & c2 & c3 & c4
 c1 & c2 & c3 & c4 --> dKind
 dKind -->|Pass| kPass
-dKind -->|Open finding or lapsed coverage| kWarn
-dKind -->|Empty section| kBlock
+dKind -->|Anything found| kWarn
+dKind -->|Empty section, or a required document missing| kBlock
 dKind -->|Edits being read| kCheck
 c2 --> tW1
 c2 --> tW2
+c2 --> tW3
+c3 --> tW4
 c1 --> tB1
+c3 --> tB2
+c3 -.-> pHeld
 sC -.-> pHover
 kWarn --> gSign
 kBlock --> gSign
