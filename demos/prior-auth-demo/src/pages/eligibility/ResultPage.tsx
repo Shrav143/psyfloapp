@@ -1,12 +1,12 @@
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { CalendarClock, ChevronDown, FolderOpen, Phone, RefreshCw, ScanText, SearchX, ShieldPlus } from "lucide-react";
-import { AgentBadge, Button, Card, CardHeader, EmptyState, Page, PageHeader, Pill } from "@/components/ui";
+import { CalendarClock, ChevronDown, FolderOpen, PauseCircle, Phone, RefreshCw, ScanText, SearchX, ShieldPlus } from "lucide-react";
+import { AgentBadge, Banner, Button, Card, CardHeader, EmptyState, Page, PageHeader, Pill } from "@/components/ui";
 import { VERDICT_LABEL, type EbPatient, type Verdict } from "@/data/eligibility";
 import { payerById } from "@/data/seed";
 import { PROGRAM_LABEL, type Tone } from "@/data/types";
 import { cn } from "@/lib/cn";
-import { ago, clockTime, toDate } from "@/lib/time";
+import { ago, clockTime, stamp, toDate } from "@/lib/time";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
 import { buildResult, type AgentLine } from "./checks";
@@ -86,7 +86,7 @@ export default function ResultPage() {
   const live = clock - patient.checkedAt <= 60;
   const checkedClock = clockTime(toDate(patient.checkedAt));
   const stampText = auto?.kind === "done" ? RE_CHECKED(auto.at) : live ? `Checked live at ${checkedClock}` : `Last checked ${checkedClock}, ${ago(patient.checkedAt, clock)}`;
-  const next = auto && auto.kind !== "done" ? [auto.kind === "paused" ? `${DUE_AT(auto.at)}. Verify runs it when it is resumed in Settings` : `${DUE_AT(auto.at)}. Verify runs it on its own`, ...result.next] : result.next;
+  const next = auto && auto.kind !== "done" ? [auto.kind === "paused" ? `${DUE_AT(auto.at)}, waiting for Verify to be resumed` : `${DUE_AT(auto.at)}, done by Verify on its own`, ...result.next] : result.next;
   const state = patient.eligibility.state;
 
   return (
@@ -129,9 +129,14 @@ export default function ResultPage() {
           </Button>
         </div>
       </div>
+      {auto?.kind === "paused" ? (
+        <Banner tone="mid" icon={PauseCircle} title={NOT_RECHECKED}>
+          The re-check was due {stamp(auto.at)}. It runs as soon as Verify is resumed.
+        </Banner>
+      ) : null}
       <div className="grid grid-cols-[minmax(0,1fr)_380px] items-start gap-5">
         <Card>
-          <CardHeader title="Payment checks" subtitle="Every line has to pass for the clinic to be reimbursed" right={<>{auto?.kind === "paused" ? <Pill tone="mid" dot>{NOT_RECHECKED}</Pill> : null}<Pill tone="neutral" dot>{stampText}</Pill></>} />
+          <CardHeader title="Payment checks" subtitle="Every line has to pass for the clinic to be reimbursed" right={<Pill tone="neutral" dot>{stampText}</Pill>} />
           <PaymentChecks result={result} />
         </Card>
         <div className="flex flex-col gap-4">

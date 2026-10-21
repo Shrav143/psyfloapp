@@ -38,7 +38,6 @@ export function ReportModal({ view, onClose }: { view: View; onClose: () => void
     <Modal
       open
       onClose={onClose}
-      size="sm"
       title="Monthly report"
       subtitle={`${view.period.label} · ${view.scope}`}
       footer={<Button onClick={onClose}>{finished ? "Done" : "Cancel"}</Button>}
@@ -59,7 +58,7 @@ export function ReportModal({ view, onClose }: { view: View; onClose: () => void
       {finished ? (
         <div className="psy-fade-up mt-5 rounded-2xl border border-good-edge bg-good-bg px-4 py-3.5">
           <div className="font-semibold text-good-ink">Your report is ready</div>
-          <p className="mt-0.5 text-[13.5px] text-good-ink">It uses the same figures as this page. Pick a file, or print it.</p>
+          <p className="mt-0.5 text-[13.5px] text-good-ink">Same figures as this page. Save a file or print it.</p>
           <div className="mt-3 flex flex-wrap gap-2">
             <Button variant="primary" icon={FileDown} onClick={() => save("md")}>
               Download report

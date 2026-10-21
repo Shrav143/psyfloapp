@@ -2,7 +2,7 @@ title: Global shell › Demo menu › Open, close and what is inside
 route: Every page (top bar, 'Demo' button)
 intro: The Demo menu is the presenter's control panel. It is not part of the product. It moves the demo clock, jumps along a suggested path and resets the data. This diagram shows what is in it and how it closes.
 dir: TD
-also: There is no privacy-mode switch here: privacy mode is always on (see Settings). Escape does not close this menu, unlike the two drawers.
+also: There is no privacy-mode switch here: privacy mode is always on (see Settings). Escape closes this menu, like the two drawers, one layer at a time.
 ---
 start s1 "Click 'Demo' in the top bar\n(pill shows the clock, 'Tue 10:42 am')"
 overlay o1 "Demo menu opens under the button (320 px)"
@@ -32,10 +32,9 @@ process k3 "Menu closes, the app goes to /dashboard"
 click x1 "Click anywhere outside the menu"
 click x2 "Click 'Demo' again"
 click x3 "Press Escape"
-process k4 "Menu closes (the click still reaches whatever was clicked)"
-process k5 "Nothing happens: the menu stays open"
+process k4 "Menu closes (an outside click still reaches whatever was clicked)"
+process k5 "Menu closes\nThe page underneath is as it was"
 end e1 "Menu is closed"
-endx e2 "Menu still open"
 
 s1 --> o1
 o1 --> t1 & f1 & f2 & sp & f4
@@ -52,7 +51,7 @@ d1 -->|Mouse| x2
 d1 -->|Keyboard| x3
 x1 --> k4
 x2 --> k4
-x3 --> k5 --> e2
+x3 --> k5 --> e1
 k2 --> e1
 k3 --> e1
 k4 --> e1

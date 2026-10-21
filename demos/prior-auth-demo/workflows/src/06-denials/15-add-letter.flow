@@ -34,7 +34,7 @@ store st1 "New open denial created, the next free number from D-3340\nChip 'Anal
 store st2 "History lines: Reader read the letter and removed identifiers; Advocate checked the notice, the deadline and how the payer applied its own criteria; Historian compared N similar decisions"
 toast t2 "'The analysis is ready'\n'D-3340 was added to Open denials.'"
 toast t3 "Notification 'Denial analyzed' from Advocate\nLinks to the new denial"
-process p5 "Form clears: file, sample and note\nNew denial is selected, address becomes ?id=D-3340\nBadge goes up by one"
+process p5 "Form clears: file, sample and note\nNew denial is selected, address becomes ?id=D-3340 only (any ?payer= or ?reason= filter is cleared so it shows in the list)\nBadge goes up by one"
 goto g1 "Continues in: Denial Intelligence › A denial opened"
 goto g2 "Continues in: Denial Intelligence › Your options"
 goto g3 "Continues in: Dashboard › Arrive › What the page shows"

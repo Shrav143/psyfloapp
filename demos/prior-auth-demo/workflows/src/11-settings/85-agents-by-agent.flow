@@ -7,7 +7,7 @@ also: Taken from the code. An agent that appears only in a notification (Sentine
 screen c1 "Coverage\nKnows who pays and files with them"
 agent verify "Verify\nNew case run step 2 and the referral Coverage tab\nEligibility & Benefits live check\nEMR Connect: re-checks coverage"
 agent caller "Caller\nEligibility & Benefits: phones when a system does not answer\nDashboard: phones if a request is still pending\nPayers process steps: follow-up calls"
-agent navigator "Navigator\nDashboard: sends signed requests, checks status\nDenial Intelligence: files the appeal after a signature\nEligibility: clinic enrolled to bill\nEMR Connect: sign-ins, disconnect, write-back switch"
+agent navigator "Navigator\nDashboard: sends signed requests, checks status\nDenial Intelligence: files the appeal after a signature\nEligibility: clinic enrolled to bill\nEMR Connect: sign-ins, reconnect, disconnect, write-back switch"
 
 screen c2 "Documentation\nReads the chart, writes the case"
 agent reader "Reader\nNew case: referral and files, run step 1\nDenial Intelligence: reads the letter\nEligibility, EMR Connect: pulls files, maps fields"

@@ -19,7 +19,7 @@ export interface CaseWork {
   run: RunState | null;
   edits: Record<string, DraftEdit>;
   dirty: boolean; // the draft was edited and Integrity has not read it again
-  context: string[]; // the clinical context added for this request. The case page fills it from the shared list, so it is never stored here
+  context: string[]; // the clinical context added on this page (the same notes are in the shared list the draft reads)
   focus: FocusId | null; // what "Refine recommendations" put first
   versions: VersionEntry[];
   log: LogEntry[];

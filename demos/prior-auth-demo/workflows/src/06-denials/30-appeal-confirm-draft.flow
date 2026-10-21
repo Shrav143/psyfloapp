@@ -1,11 +1,12 @@
 title: Denial Intelligence › Written appeal › Confirm and draft
 route: /denials?id=D-3318
-intro: The written-appeal route starts with a confirm gate, then Advocate drafts the letter in a side drawer. The same drawer opens straight away when the appeal is already being drafted (for example after a call was upheld).
+intro: The written-appeal route starts with a confirm gate, then Advocate drafts the letter in a side drawer. The same drawer opens straight away when the appeal is already being drafted (for example after a call was upheld, or after the payer upheld an appeal and the next level was chosen).
 dir: TD
 also: Demo only: the drafting takes about two seconds and is simulated. The letter is built from the findings of the denial.
 ---
 start s1 "Select 'Written appeal' and click 'Draft the appeal letter' (Your options)"
 start s2 "Click 'Open the draft' (banner: 'Advocate is drafting the appeal')"
+start s3 "Next level chosen after an upheld decision\n('Record and start the second-level appeal')"
 decision d1 "Is the chip already 'Appeal drafting'?"
 
 overlay o1 "Modal 'Confirm the next step: written appeal'\n'The agents stop here until you say go.'"
@@ -25,16 +26,17 @@ overlay o2 "Drawer 'Appeal letter · D-3318' (wide, right side)\nSub line: 'Card
 decision d3 "Is a draft already saved?"
 wait w1 "Spinner: 'Advocate is drafting the letter from the findings. Integrity is checking each sentence.'\nAbout 2 seconds; 'Save draft' and 'Sign and file' are greyed out"
 agent a1 "Advocate drafts the letter and Integrity checks every sentence (demo: simulated)"
-doc dc1 "Letter text\nPayer, 'Appeals Department', date, Re: line, the payer's words, what the chart shows, numbered reasons with evidence, the ask, availability for the reviewing physician"
+doc dc1 "Letter text\nPayer, 'Appeals Department', date, Re: line (reconsideration, second-level appeal or external review), the payer's words, what the chart shows, numbered reasons with evidence, the ask, availability for the reviewing physician"
 screen l3 "'Evidence to attach'\nOne ticked box per chart source, plus fixes added to the evidence"
 store st4 "First draft saved on the denial\n'Appeal drafted. Waiting for a clinician's signature'\nHistory: 'Advocate drafted the appeal and Integrity checked every sentence against the chart'"
 screen l4 "Banner 'Drafted by Advocate, checked by Integrity'\n'Edit anything. A clinician signs before it is filed.'"
-click c3 "Close the drawer: click X, press Esc, or click the dimmed area"
+click c3 "Close the drawer: click X, press Esc, or click the dimmed area\n(Esc closes only the top layer: see the sign step)"
 process p2 "Edits not saved with 'Save draft' are lost\nThe saved draft loads again next time"
 goto g1 "Continues in: Denial Intelligence › Written appeal › Edit, sign and file"
 
 s1 --> d1
 s2 --> o2
+s3 --> o2
 d1 -->|No| o1 --> l1 --> l2
 l2 --> c1
 l2 --> c2 --> e1

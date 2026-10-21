@@ -14,7 +14,7 @@ click c1 "Click 'Log the outcome'"
 click c2 "Click 'Cancel', the X, press Esc, or click the dimmed area"
 endx e1 "Nothing is logged"
 
-store st0 "Outcome saved on the denial: kind, note, time\nHistory: 'You logged the call outcome: ...' with the note"
+store st0 "Outcome saved on the denial: kind, note, time\nThe scheduled 'Peer-to-peer call' line leaves the History\nHistory: 'You logged the call outcome: ...' with the note"
 decision d1 "Which outcome?"
 
 store st1 "Request settled: leaves 'Appeal or call' (Dashboard stage 'Decided')\nChip 'Overturned' or 'Partly restored'\nLedger result approved or partly approved"

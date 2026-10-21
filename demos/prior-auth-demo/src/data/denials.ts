@@ -40,7 +40,7 @@ export const REASON_TERMS: Record<DenialType, string[]> = {
   "Partial approval": ["partial", "continued-stay", "continued stay", "evidence", "therapy note", "step-down"],
   "Level-of-care downgrade": ["level of care", "level-of-care", "asam", "mood severity"],
   "Units cut": ["units"],
-  "Late notice": ["late notice", "filed too late", "filed late", "phone confirmation"],
+  "Late notice": ["late notice", "filed too late", "filed late", "window missed", "phone confirmation"],
   "Retro-authorization denied": ["retro"],
   "Full denial": ["missing", "documentation", "incomplete", "certification", "fax", "duplicate"],
 };

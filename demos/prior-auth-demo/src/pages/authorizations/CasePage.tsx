@@ -60,9 +60,7 @@ export default function CasePage() {
   const requests = useStore((s) => s.requests);
   const base = useMemo(() => resolveCase(id, requests), [id, requests]);
   const stored = useStore((s) => (base ? s.queueCases[base.requestId] : undefined));
-  const notes = useStore((s) => (base ? s.clinicalContext[base.requestId] : undefined));
-  // The clinical context lives in the shared list (the draft reads it too), so it is laid over the case's own work here.
-  const work = useMemo<CaseWork>(() => ({ ...(stored ?? EMPTY_WORK), context: notes ?? EMPTY_WORK.context }), [stored, notes]);
+  const work = stored ?? EMPTY_WORK;
   const detail = useMemo(() => (base ? withFocus(base, work) : null), [base, work]);
   const live = useMemo(() => (base ? liveView(base, requests) : null), [base, requests]);
   if (!detail) {

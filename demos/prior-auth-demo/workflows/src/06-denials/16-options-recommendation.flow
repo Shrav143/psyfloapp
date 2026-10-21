@@ -12,11 +12,11 @@ decision d1 "What is the win chance?"
 process v1 "'Worth challenging'\n50 and over"
 process v2 "'Borderline'\n35 to 49"
 process v3 "'Probably accept'\nunder 35"
-process p2 "Seed denials sit between 38 and 64, so 'Probably accept' does not show at the start"
+process p2 "Seed denials sit between 27 and 64\nD-3306 (27%) reads 'Probably accept' and recommends 'Accept' at the start"
 
 screen o1 "Card 'Peer-to-peer call'\n'30 to 45 minutes of clinician time · 5 to 7 days regained'\nChance = the win chance"
 screen o2 "Card 'Written appeal'\n'60 days to file · 5 to 7 days regained'\nChance = win chance minus 6, never under 5"
-screen o3 "Card 'Accept the decision and plan the next step'\n'Accept 7 days and plan the step-down' on a partial approval\n'Fastest. Nothing regained.' No chance shown"
+screen o3 "Card 'Accept the decision and plan the next step'\n'Accept 7 days and plan the step-down' on a partial approval\n'Fastest. Nothing regained.' No chance shown\nNeeds: a reason for the record, Analytics counts the write-off, Case Manager adds a step-down plan"
 process p3 "Each chance reads 'likely 55–72%' (9 below to 8 above) and '312 similar decisions' or 'Benchmark estimate'"
 process p4 "Each card ends with 'Needs: ...' (who, what, and the evidence that would be attached)"
 

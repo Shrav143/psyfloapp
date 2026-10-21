@@ -51,18 +51,6 @@ export function AgentsStep({ draft }: { draft: CaseDraft }) {
     <>
       <div className="grid grid-cols-[minmax(0,1fr)_380px] items-start gap-5">
         <div className="flex flex-col gap-4">
-          <Card>
-            <CardHeader
-              title={`Agents at work on ${draft.caseId ?? "this case"}`}
-              subtitle={`${draft.levelLabel ?? (draft.program ? PROGRAM_LABEL[draft.program] : "")} ${draft.type?.toLowerCase() ?? ""} · ${payer?.name ?? ""}`}
-              right={<Pill tone="neutral">{clockText(secs)}</Pill>}
-            />
-            <ul>
-              {RUN_STEPS.map((s, i) => (
-                <AgentRow key={s.agent} agent={s.agent} state={stateOf(i)} text={rowText(s.agent, draft)} elapsed={draft.run.elapsed[i]} skipped={draft.run.skipped.includes(s.agent)} onAnswer={() => setDismissed(false)} onRetry={() => retry(draft.id)} onSkip={() => skip(draft.id)} />
-              ))}
-            </ul>
-          </Card>
           <PayerChangeNote draft={draft} />
           {draft.recordsChanged ? <Banner tone="neutral">Records changed after the last run. The agents re-checked.</Banner> : null}
           {holding && now ? (
@@ -79,6 +67,18 @@ export function AgentsStep({ draft }: { draft: CaseDraft }) {
               Nothing is read, checked or drafted until it is resumed. Nothing has been sent to the payer.
             </Banner>
           ) : null}
+          <Card>
+            <CardHeader
+              title={`Agents at work on ${draft.caseId ?? "this case"}`}
+              subtitle={`${draft.levelLabel ?? (draft.program ? PROGRAM_LABEL[draft.program] : "")} ${draft.type?.toLowerCase() ?? ""} · ${payer?.name ?? ""}`}
+              right={<Pill tone="neutral">{clockText(secs)}</Pill>}
+            />
+            <ul>
+              {RUN_STEPS.map((s, i) => (
+                <AgentRow key={s.agent} agent={s.agent} state={stateOf(i)} text={rowText(s.agent, draft)} elapsed={draft.run.elapsed[i]} skipped={draft.run.skipped.includes(s.agent)} onAnswer={() => setDismissed(false)} onRetry={() => retry(draft.id)} onSkip={() => skip(draft.id)} />
+              ))}
+            </ul>
+          </Card>
           {question ? (
             <div className="flex items-center gap-3.5 rounded-2xl border border-good-edge bg-good-bg px-[18px] py-3.5">
               <AgentBadge agent={QUESTIONS[question].agent} size={36} />

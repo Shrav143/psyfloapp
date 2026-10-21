@@ -1,23 +1,29 @@
 title: Denial Intelligence › A denial opened › Status banner
 route: /denials?id=D-3318
-intro: One banner under the header says where the denial stands. The code checks the statuses in this order and shows the first that fits.
+intro: One banner under the header says where the denial stands. The code checks the statuses in this order and shows the first that fits. A filed appeal has a button to record the payer's decision.
 dir: TD
 ---
 start s1 "A denial is on screen"
 decision d1 "Accepted?"
-toast t1 "'Closed. You accepted the decision'\n'Reason: ... The write-off is logged.'"
+toast t1 "'Closed. You accepted the decision'\n'Reason: ... Analytics counts the write-off.'"
 click c1 "Click 'Plan the step-down'"
-goto g1 "Continues in: Case Manager › Reviews"
+goto g1 "Continues in: Case Manager › Active cases › Step-down plans from accepted denials"
+
+decision d2a "Payer's decision on the appeal recorded as Overturned or Partly overturned?"
+toast t2a "'Overturned on appeal' or 'Partly overturned on appeal'\nYour note, or 'The ledger is updated and the next review is booked.'"
+click c2a "Click 'See on the Dashboard'"
 
 decision d2 "Call outcome logged as Overturned or Partly restored?"
 toast t2 "'Overturned on the call' or 'Partly restored on the call'\nYour note, or 'The ledger is updated and the next review is booked.'"
 click c2 "Click 'See on the Dashboard'"
 goto g2 "Continues in: Dashboard › Request drawer › Open and read a request"
 
-decision d3 "Chip is 'Appeal filed' or 'External review'?"
-toast t3 "'Appeal filed. Waiting on the payer'\n'filed 10/05, decision 11/02. Navigator checks every day and saves the answer to the case.'"
+decision d3 "Chip is 'Appeal filed', 'Second-level appeal filed' or 'External review'?"
+toast t3 "'Appeal filed. Waiting on the payer' (or 'Second-level appeal filed', 'External review')\n'Filed 10/05, decision 11/02. Navigator checks every day. When the payer answers, record the decision here.'"
 click c3 "Click 'View the appeal'"
+click c3a "Click 'Record the payer's decision'"
 goto g3 "Continues in: Denial Intelligence › Written appeal › After filing"
+goto g3a "Continues in: Denial Intelligence › Written appeal › Record the payer's decision"
 
 decision d4 "Chip is 'Appeal drafting'?"
 decision d5 "Has a draft been saved?"
@@ -39,10 +45,13 @@ process p2 "Calls booked at the start show the time from the denial's data\nLate
 
 s1 --> d1
 d1 -->|Yes| t1 --> c1 --> g1
-d1 -->|No| d2
+d1 -->|No| d2a
+d2a -->|Yes| t2a --> c2a --> g2
+d2a -->|No| d2
 d2 -->|Yes| t2 --> c2 --> g2
 d2 -->|No| d3
 d3 -->|Yes| t3 --> c3 --> g3
+t3 --> c3a --> g3a
 d3 -->|No| d4
 d4 -->|Yes| d5
 d5 -->|Yes| t4 --> c4

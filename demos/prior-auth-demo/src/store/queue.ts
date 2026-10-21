@@ -104,7 +104,7 @@ export const createQueueSlice: StateCreator<AppState, [], [], QueueSlice> = (set
 
   addContext: (a) => {
     get().addClinicalContext(a.requestId, a.text);
-    set((s) => patchCase(s, a.caseId, (w) => ({ chance: a.chance, liftLeft: a.liftLeft, log: [...w.log, { at: s.clock, text: `You added clinical context: "${a.text}"` }] })));
+    set((s) => patchCase(s, a.caseId, (w) => ({ context: [...w.context, a.text], chance: a.chance, liftLeft: a.liftLeft, log: [...w.log, { at: s.clock, text: `You added clinical context: "${a.text}"` }] })));
     if (a.syncDashboard && get().requests.some((r) => r.id === a.requestId)) {
       get().updateRequest(a.requestId, { chance: a.chance });
       get().addEvent(a.requestId, { actor: "you", text: `You added clinical context. Approval chance is now ${a.chance}%` });

@@ -39,7 +39,7 @@ export const TEMPLATES: Record<DenialType, AnalysisText> = {
     chartShows: "Withdrawal scores are stable, but mood, craving and home-setting dimensions still meet the criteria for {program}. The letter applies only the withdrawal dimension.",
     findings: [
       { sev: "Critical", title: "The criteria were applied to one dimension only", detail: "The letter cites stable withdrawal scores. The other five dimensions are not addressed.", source: "ASAM assessment {noteDate}", excerpt: "All six dimensions rated. D3, D5 and D6 at the level that supports {program}. D1 stable.", fix: "Add the ASAM assessment dated {noteDate}" },
-      { sev: "Critical", title: "{payer}'s own policy asks for all six dimensions", detail: "The policy Criteria reviewed lists every dimension, not withdrawal alone.", source: "{payer} criteria", excerpt: "Level-of-care determinations are made on the multidimensional assessment. Withdrawal alone is not a basis to step down.", fix: "Cite the payer's section on multidimensional review" },
+      { sev: "Critical", title: "{payer}'s own policy asks for all six dimensions", detail: "The policy that Criteria reviewed lists every dimension, not withdrawal alone.", source: "{payer} criteria", excerpt: "Level-of-care determinations are made on the multidimensional assessment. Withdrawal alone is not a basis to step down.", fix: "Cite the payer's section on multidimensional review" },
       { sev: "Strong", title: "The lower level of care has no opening", detail: "The program the letter points to has a waitlist this week.", source: "Referral log", excerpt: "Step-down referral sent. Waitlist, no opening this week.", fix: "Attach the referral log showing the waitlist" },
     ],
     dimsSub: "Most recent review",

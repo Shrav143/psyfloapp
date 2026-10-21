@@ -6,7 +6,7 @@ also: Built by searching the code for where each agent appears. Sentinel has no 
 ---
 start s1 "A case's journey down the sidebar"
 process flo "FLO is not one of the sixteen\nAsk FLO, in the top bar, answers a question from your data"
-screen emr "EMR Connect\nReader: pulls files, matches charts, maps fields\nVerify: re-checks coverage\nNavigator: renews sign-ins, write-back, disconnects"
+screen emr "EMR Connect\nReader: pulls files, matches charts, maps fields\nVerify: re-checks coverage\nNavigator: renews sign-ins, reconnects, write-back, disconnects"
 screen elig "Authorizations › Eligibility & Benefits\nReader, Verify: ask each source\nCaller: phones if a system does not answer\nCriteria: is authorization required\nNavigator: is the clinic enrolled to bill"
 screen ref "Authorizations › New case › Referral and Medical records\nReader: reads each file and the referral\nVerify: Coverage tab\nPlacement: Fit tab\nCriteria: Decline reasons"
 screen run "Authorizations › New case › Agents work\nTen in order: Reader, Verify, Criteria, Historian, Placement, Forecaster, Scribe, Integrity, Packet, Scrubber\nScribe and Packet may ask one question"

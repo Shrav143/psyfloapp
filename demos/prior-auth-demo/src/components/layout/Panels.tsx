@@ -90,7 +90,7 @@ export function AskPanel() {
     if (s.includes("slow") || s.includes("payer") && s.includes("late")) {
       const slow = [...PAYERS].filter((p) => p.avgDecisionDays > p.typicalDecisionDays).sort((a, b) => b.avgDecisionDays / b.typicalDecisionDays - a.avgDecisionDays / a.typicalDecisionDays);
       const text = slow.length ? `${slow.map((p) => `${p.shortName} is averaging ${p.avgDecisionDays} days against ${p.typicalDecisionDays} typical`).join(". ")}. Caller phones when a payer passes twice its typical time.` : "Every payer is deciding within its typical time right now.";
-      return { from: "flo", text, link: { label: "Open Dashboard, Payers at a glance", to: paths.dashboard({ focus: "payers" }) } };
+      return { from: "flo", text, link: { label: "Open Dashboard, By payer", to: paths.dashboard({ focus: "payers" }) } };
     }
     if (s.includes("denial") || s.includes("stake") || s.includes("money")) {
       const d = requests.filter((r) => r.stage === "appeal");

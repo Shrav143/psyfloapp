@@ -1,44 +1,48 @@
 title: Global shell › Top bar › Ask FLO › What FLO answers
 route: Every page (Ask FLO drawer)
-intro: FLO lowercases the question and tries five rules in order. The first rule that matches answers, so a question with two key words gets the earlier answer. Counts and names come from the live demo data. Sentences about D-3318, Cardinal and P-1499 are fixed text.
+intro: FLO lowercases the question and tries five rules in order. The first rule that matches answers, so a question with two key words gets the earlier answer. Counts, names and the request or denial it points to come from the live demo data. Only the Cardinal answer is fixed text.
 dir: LR
-also: Typed questions use the same rules as the suggestion chips. FLO does not look at which page is open. PRD 08 describes row-level citations, thumbs and an escalate action on each answer; the demo gives one paragraph and one link instead.
+also: Typed questions use the same rules as the suggestion chips. FLO does not look at which page is open. Every link opens a view that matches the answer. PRD 08 describes row-level citations, thumbs and an escalate action on each answer; the demo gives one paragraph and one link instead.
 ---
 start s1 "A question is sent\n(a chip or typed text)"
 
 decision d1 "Contains 'slow', or both 'payer' and 'late'?"
-agent a1 "FLO lists every payer slower than its typical time, worst first:\n'Evergreen is averaging 3.4 days against 2 typical. Cardinal is averaging 2.8 days against 2 typical. Beacon ... Lakeshore ... Harborview ...\nCaller phones when a payer passes twice its typical time.'"
+agent a1 "FLO lists every payer slower than its typical time, worst first:\n'Evergreen is averaging 3.4 days against 2 typical. Cardinal is averaging 2.8 days against 2 typical. Beacon ... Lakeshore ... Harborview ...\nCaller phones when a payer passes twice its typical time.'\nIf none is slower: 'Every payer is deciding within its typical time right now.'"
 click l1 "Click 'Open Dashboard, By payer'"
-goto g1 "Continues in: Dashboard"
+process r1 "Opens /dashboard?focus=payers\nThe Dashboard scrolls to Payers at a glance"
+goto g1 "Continues in: Dashboard › Payers at a glance › Read the table and pick a payer"
 
 decision d2 "Contains 'denial', 'stake' or 'money'?"
-agent a2 "'7 denials are open, with $62.4K at stake. The nearest deadline is D-3318 (Cardinal), a peer-to-peer call Wednesday 9 to 11 am, where the chance of winning is 64%.'\nThe count and total are live"
+agent a2 "'7 denials are open, with $62.4K at stake. The nearest deadline is D-3318 (Cardinal). Call booked Wed 9 to 11 am. The brief is ready. The chance of winning is 64%.'\nThe count, the total and the nearest open denial are live, so the sentence follows the data"
 click l2 "Click 'Open Denial Intelligence'"
+process r2 "Opens /denials?id=D-3318, the nearest denial\nWith no deadline left to name, it opens the list"
 goto g2 "Continues in: Denial Intelligence › A denial opened"
 decision d3 "Contains 'cardinal' or 'approval rate'?"
-agent a3 "'Cardinal approved 63% as asked over the last 90 days, down 11 points. Historian links most of the drop to continued-stay evidence. Cardinal also published criteria version 2026.3, which affects 4 drafts you have not sent.'"
+agent a3 "'Cardinal approved 63% as asked over the last 90 days, down 11 points. Historian links most of the drop to continued-stay evidence. Cardinal also published criteria version 2026.3, which affects 4 drafts you have not sent.'\nFixed text"
 click l3 "Click 'Open Payers, Cardinal, Changes'"
 goto g3 "Continues in: Payers › Changes › Read what changed"
 decision d4 "Contains 'need', 'today' or 'first'?"
-agent a4 "'3 requests need you: R-1042, I-2207, P-1499. 3 payers asked for more information, and 5 cases are being prepared. Start with P-1499. Harborview is waiting and its clock is past typical.'\nThe three counts and the IDs are live"
-click l4 "Click 'Open Dashboard'"
+agent a4 "'3 requests need you: R-1042, I-2207, P-1499. 3 payers asked for more information, and 5 cases are being prepared. Start with P-1499 (Harborview). Packet drafted the answer. Waiting for your review.'\nThe counts, the IDs and the request to start with are live: a payer's question comes first\nNothing waiting: 'Nothing needs you right now.' with 'Open Dashboard'"
+click l4 "Click 'Open P-1499 on the Dashboard'"
+process r4 "Opens /dashboard?request=P-1499\nThe request drawer opens on that request"
+goto g4 "Continues in: Dashboard › Request drawer › Open and read a request"
 
 decision d5 "Contains 'referral'?"
 agent a5 "'New referrals are waiting for review. Reader has already checked each document, and Verify has run coverage for the ones with an insurance card.'"
 click l5 "Click 'Start a case from a referral'"
-goto g5 "Continues in: New case › Referral step"
+goto g5 "Continues in: Authorizations › New case › Referral › Start screen"
 
-agent a6 "'I did not find an answer to that in the demo data. Try one of the suggestions below. (Clock: just now.)'\nNo link. The chips are already gone by then, and the clock reads '1 h ago' after a fast-forward"
+agent a6 "'I did not find an answer to that in the demo data. Try one of the suggestions below.'\nNo link. The four suggestion chips stay right under this answer, so the sentence is true"
 end e1 "Answer stays in the chat"
 
 s1 --> d1
-d1 -->|Yes| a1 --> l1 --> g1
+d1 -->|Yes| a1 --> l1 --> r1 --> g1
 d1 -->|No| d2
-d2 -->|Yes| a2 --> l2 --> g2
+d2 -->|Yes| a2 --> l2 --> r2 --> g2
 d2 -->|No| d3
 d3 -->|Yes| a3 --> l3 --> g3
 d3 -->|No| d4
-d4 -->|Yes| a4 --> l4 --> g1
+d4 -->|Yes| a4 --> l4 --> r4 --> g4
 d4 -->|No| d5
 d5 -->|Yes| a5 --> l5 --> g5
 d5 -->|No| a6 --> e1

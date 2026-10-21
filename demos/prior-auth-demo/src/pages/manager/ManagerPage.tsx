@@ -23,7 +23,7 @@ export default function ManagerPage() {
   const [params, setParams] = useSearchParams();
   const tab: Tab = params.get("tab") === "reviews" ? "reviews" : "cases";
   const [filters, setFilters] = useState<ManagerFilters>(NO_FILTERS);
-  const [openId, setOpenId] = useState<string | null>(() => params.get("review"));
+  const [openId, setOpenId] = useState<string | null>(null);
   const [signAll, setSignAll] = useState(false);
   const [drafting, setDrafting] = useState(false);
 
@@ -38,10 +38,13 @@ export default function ManagerPage() {
   const needs = reviews.filter((r) => r.status === "needs_update").length;
   const waiting = reviews.filter((r) => r.status === "due").length;
 
-  // The link carries the review only to open it. Keep the address to the tab so a reload does not reopen the drawer.
+  // A link carries the review only to open it. Keep the address to the tab so a reload does not reopen the drawer.
+  const linked = params.get("review");
   useEffect(() => {
-    if (params.has("review")) setParams((p) => { const n = new URLSearchParams(p); n.delete("review"); return n; }, { replace: true });
-  }, []);
+    if (!linked) return;
+    setOpenId(linked);
+    setParams((p) => { const n = new URLSearchParams(p); n.delete("review"); return n; }, { replace: true });
+  }, [linked, setParams]);
 
   const set = <K extends keyof ManagerFilters>(k: K, v: ManagerFilters[K]) => setFilters((f) => ({ ...f, [k]: v }));
   const clear = () => setFilters(NO_FILTERS);

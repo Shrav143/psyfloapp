@@ -10,7 +10,7 @@ screen sub1 "Sub line: initials, age · program · payer name\n'The agents read 
 screen h1 "Header card\nProgram chip, D-id, type pill, status pill, '$22.4K at stake', deadline pill"
 screen h2 "Line under the pills\nPayer · case id · initials, age · letter file name\n'Your note: ...' when a note was added"
 screen v1 "'Our read' tile, right of the header\nWorth challenging, Borderline or Probably accept, with one sentence"
-process pv "Verdict comes from the win chance: 50 and over, 35 to 49, under 35"
+process pv "Verdict comes from the win chance: 50 and over, 35 to 49, under 35\nD-3306 (27%) reads 'Probably accept'"
 screen bn "Status banner (only for some statuses)"
 goto g1 "Continues in: Denial Intelligence › A denial opened › Status banner"
 
@@ -21,7 +21,7 @@ goto g2 "Continues in: Denial Intelligence › A denial opened › Where the den
 decision d1 "Is it an administrative denial?\n'Late notice' or 'Retro-authorization denied'"
 screen c4 "'The six ASAM dimensions'\nSix tiles D1 to D6, each with a green, ochre or red dot"
 process p2 "The card is left out"
-decision d2 "Still open: not filed, not accepted, not closed on a call?"
+decision d2 "Still open: not filed, and not closed (accepted, or won on a call or an appeal)?"
 screen c5 "'Your options' card"
 goto g3 "Continues in: Denial Intelligence › Your options"
 process p3 "No options card"
