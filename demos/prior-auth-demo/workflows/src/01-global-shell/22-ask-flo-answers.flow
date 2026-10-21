@@ -2,7 +2,7 @@ title: Global shell › Top bar › Ask FLO › What FLO answers
 route: Every page (Ask FLO drawer)
 intro: FLO lowercases the question and tries five rules in order. The first rule that matches answers, so a question with two key words gets the earlier answer. Counts and names come from the live demo data. Sentences about D-3318, Cardinal and P-1499 are fixed text.
 dir: LR
-also: Typed questions use the same rules as the suggestion chips. FLO does not look at which page is open.
+also: Typed questions use the same rules as the suggestion chips. FLO does not look at which page is open. PRD 08 describes row-level citations, thumbs and an escalate action on each answer; the demo gives one paragraph and one link instead.
 ---
 start s1 "A question is sent\n(a chip or typed text)"
 

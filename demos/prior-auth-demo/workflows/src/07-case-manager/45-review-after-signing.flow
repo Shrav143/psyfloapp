@@ -1,0 +1,42 @@
+title: Case Manager › Reviews this week › After a review is signed
+route: /manager?tab=reviews
+intro: What the demo does once a clinician signs, and what the real product would do next. In the demo a signature changes the review's status and a few counts. The next review is only announced in the toast: no new row is added.
+dir: TD
+also: The PRD (03, Prior Authorization Lifecycle) treats each signed request as a version that is kept, and times renewals from the binding date and the payer's lead time. The demo shows only the signature and the counts.
+---
+start s1 "A clinician signature is saved\n(one review, or 'Sign all clean drafts')"
+store st1 "The review keeps: status 'Signed', who signed, the demo-clock time, and the draft text as signed"
+
+group gScreen "What changes on screen"
+  process a1 "Row pill changes from 'Drafted' to 'Signed'\n'Check to look at' goes away on a signed row"
+  process a2 "Drawer, if open: footer reads 'Signed by Heather K., LISW-S', draft is read-only, the banner is gone"
+  process a3 "Tile 'Reviews due this week' sub line counts up: '1 signed so far'"
+  process a4 "Tile 'Drafted by agents' sub line counts down: '32 clean, ready to sign'\nThe tile number itself still counts signed ones"
+  process a5 "'Sign all clean drafts' is greyed out once none are left"
+  process a6 "Filter 'Signed' in 'Any review status' now lists it"
+  process a7 "Sidebar 'Case Manager' bubble does not change: it counts reviews that need an update, not drafts waiting to be signed"
+endgroup
+
+group gNext "The next review"
+  toast t1 "Toast says 'Cadence books the next review.'"
+  agent g1 "Cadence books the next continued-stay review from the payer's lead time (real product)"
+  process n1 "Demo: no new row, no new date and no new notification appears\nThe week's list keeps its 47 reviews"
+  ext x1 "Payer receives the signed review through its portal or by fax (real product, not drawn in the demo)"
+endgroup
+
+group gCase "Case record"
+  click c1 "Click 'Open case' in the drawer"
+  goto g2 "Continues in: Authorizations › Case › Draft tab"
+endgroup
+
+store st2 "'Reset demo data' puts every review back to its starting state and clears signatures"
+end e1 "Review is signed and counted"
+
+s1 --> st1
+st1 --> a1 & a2 & a3 & a4 & a5 & a6 & a7
+st1 --> t1 --> n1
+t1 -.-> g1 -.-> x1
+a2 --> c1 --> g2
+a1 & a3 & a4 & a5 & a6 & a7 --> e1
+n1 --> e1
+e1 -.-> st2

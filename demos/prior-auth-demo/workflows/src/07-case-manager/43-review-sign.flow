@@ -1,0 +1,35 @@
+title: Case Manager › Reviews this week › Sign a review
+route: /manager?tab=reviews (review drawer › sign dialog)
+intro: Signing is the gate where agents stop. Only a licensed clinician signs, so the coordinator picks who is signing and ticks an attestation. When Integrity left one amber check, the signer must also read and accept it. Signing is one review at a time.
+dir: TD
+also: PRD 03 (sign-off gate) says nothing goes out without a clinician signature carrying signer identity and a timestamp. The demo records the signer and the demo-clock time.
+---
+start s1 "Open a drafted review, then click 'Sign review'"
+overlay o1 "Dialog 'Sign this review'\nSubtitle 'R-0856 · Summit Medicaid HMO · Residential 3.5'"
+screen b1 "Banner 'Only a licensed clinician signs'\n'You are signed in as Jordan Perez, a UR coordinator. Choose the clinician who is signing. Agents never sign for a person.'"
+input i1 "'Signing clinician' dropdown\n'Heather K., LISW-S' (Clinical director)\n'Dr. R. Lindqvist, MD' (Medical director)"
+decision d1 "Did Integrity leave one amber check?"
+screen w1 "Amber box 'One check needs a look'\nIntegrity's note, for example 'The draft asks for 7 days. Beacon's usual limit at this level of care is 5.'\nTick box 'I read this and I accept it'"
+input i2 "Tick 'I read this and I accept it'"
+input i3 "Tick the attestation\n'I reviewed this continued-stay review and it reflects the record. The level of care is my clinical judgment.'"
+decision d2 "Are the attestation (and the acceptance, if shown) ticked?"
+process x1 "Button 'Sign review' stays greyed"
+click c1 "Click 'Sign review' in the dialog"
+store st1 "Review is saved as 'Signed'\nSigned by the chosen clinician, stamped with the demo clock\nThe draft text, with any edits made in the drawer, is kept"
+toast t1 "'Review signed'\n'R-0856 was signed by Heather K., LISW-S. Cadence books the next review.'"
+process p1 "Dialog closes. The drawer stays open and now shows 'Signed by Heather K., LISW-S' with a read-only draft"
+goto g1 "Continues in: Case Manager › Reviews this week › After a review is signed"
+
+click c2 "Click 'Cancel', the X, the dimmed area, or press Escape"
+process p2 "Only the dialog closes. The drawer and the draft stay as they were\nNothing is signed"
+endx e1 "Not signed"
+end e2 "Review signed"
+
+s1 --> o1 --> b1 --> i1 --> d1
+d1 -->|Yes| w1 --> i2 --> i3
+d1 -->|No| i3
+i3 --> d2
+d2 -->|No| x1 -.-> i3
+d2 -->|Yes| c1 --> st1 --> t1 --> p1 --> e2
+p1 --> g1
+o1 --> c2 --> p2 --> e1

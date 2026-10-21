@@ -27,7 +27,7 @@ process o2 "At the start: R-1042, R-0988, I-2207, then R-1101, I-2262"
 decision d2 "Are there rows to show?"
 screen r1 "A column of case rows"
 goto g2 "Continues in: Case Manager › Active cases › One row and its button"
-goto g3 "Continues in: Case Manager › Empty states › No cases or reviews match"
+goto g3 "Continues in: Case Manager › Empty states › Nothing to show"
 end e1 "Rows are on screen"
 
 process p5 "After a case is signed and sent in New case it leaves this list and 'sent today' counts one more"
