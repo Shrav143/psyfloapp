@@ -189,10 +189,8 @@ export const selectPayersBadge = (s: AppState): number => Object.values(s.payerC
 export const selectPayerDocs = (s: AppState, payerId: string, program: Program): DocItem[] => s.payerConfig[payerId]?.docs[program] ?? [];
 
 
-/* What other modules read from a payer's saved configuration. Edits on Payers apply to new drafts at once. */
+/* More of what other modules read from a payer's saved configuration (selectPayerDocs is above). Edits on Payers apply to new drafts at once. */
 
-/** The documents a payer asks for on one program, as saved on Payers › Documents. */
-export const selectPayerDocs = (s: AppState, payerId: string, program: Program): DocItem[] => s.payerConfig[payerId]?.docs[program] ?? [];
 /** The payer's rules as saved on Payers › Rules (submission windows, backdating, no authorization needed, peer-to-peer and appeals). */
 export const selectPayerRules = (s: AppState, payerId: string): Rule[] => s.payerConfig[payerId]?.rules ?? [];
 /** Payers added with "Add a payer", so pickers elsewhere can offer them. */
