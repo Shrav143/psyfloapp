@@ -23,7 +23,9 @@ export const KINDS = {
 const NODE_RE = new RegExp(`^(${Object.keys(KINDS).join("|")})\\s+([A-Za-z][A-Za-z0-9_]*)\\s+"(.*)"\\s*$`);
 const ARROW_RE = /(-->|-\.->|==>|---|-\.-|~~~)/;
 
-const esc = (s) => s.replace(/"/g, "#quot;").replace(/\\n/g, "<br/>").replace(/\*\*(.+?)\*\*/g, "<b>$1</b>");
+const esc = (s) => s.replace(/"/g, "#quot;").replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/\\n/g, "<br/>");
+/** A two-line label gets a bold first line: the screen or step name, then its detail. */
+const boldFirst = (s) => (/\\n/.test(s) && !s.includes("**") ? s.replace(/^(.*?)\\n/, "**$1**\\n") : s);
 
 /** Mermaid's own init block, shared by every diagram. */
 export const INIT = {
@@ -72,7 +74,7 @@ export function compileFlow(text, file = "flow") {
       if (nodes.has(id)) fail(i, `node id "${id}" is declared twice`);
       if (/["`]/.test(label.replace(/\\"/g, ""))) fail(i, "labels cannot contain double quotes; use single quotes");
       nodes.set(id, { kind, label });
-      out.push(`  ${id}@{ shape: ${KINDS[kind].shape}, label: "${esc(label)}" }`);
+      out.push(`  ${id}@{ shape: ${KINDS[kind].shape}, label: "${esc(boldFirst(label))}" }`);
       return;
     }
     m = line.match(/^group\s+([A-Za-z][A-Za-z0-9_]*)\s+"(.*)"\s*$/);

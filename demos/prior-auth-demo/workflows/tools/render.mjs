@@ -12,6 +12,41 @@ const CHROME = ["/opt/pw-browsers/chromium-1194/chrome-linux/chrome", "/opt/pw-b
 
 /** Give the SVG its real pixel size (Mermaid leaves it at 100% width, which squeezes wide diagrams). */
 function sized(svg) {
+  /* Mermaid draws curved shapes as paths with 15 decimal places. One decimal is enough for a screen and cuts the file by about 80%. */
+  svg = svg.replace(/\b(d|points)="([^"]*)"/g, (_, a, v) => `${a}="${v.replace(/(\d+\.\d)\d+/g, "$1")}"`);
+  /* Curved node shapes (the screen's rounded end, the cylinder, the document) come as hundreds of tiny cubic pieces, each stroked twice.
+     Re-draw them as plain lines through the same points: identical to the eye at these sizes, about a tenth of the bytes. */
+  svg = svg.replace(/<path\b[^>]*>/g, (tag) => {
+    if (!/\b(fill|stroke)="none"/.test(tag)) return tag;
+    return tag.replace(/\bd="([^"]*)"/, (all, d) => {
+      if ((d.match(/C/g) ?? []).length < 6) return all;
+      /* Read the path as a list of segments, drop a segment that repeats the one before it, and chain the rest. */
+      const segs = [];
+      let cur = null;
+      for (const [, cmd, rest] of d.matchAll(/([MLC])([^MLC]*)/g)) {
+        const n = rest.match(/-?\d+(?:\.\d+)?/g).map(Number);
+        const p = [n.at(-2), n.at(-1)];
+        if (cmd !== "M" && cur) segs.push({ a: cur, b: p });
+        cur = p;
+      }
+      const near = (u, v, t) => Math.abs(u[0] - v[0]) <= t && Math.abs(u[1] - v[1]) <= t;
+      const kept = [];
+      for (const g of segs) {
+        const last = kept.at(-1);
+        if (last && near(last.a, g.a, 0.06) && near(last.b, g.b, 1.5)) continue;
+        if (near(g.a, g.b, 0.06)) continue;
+        kept.push(g);
+      }
+      const out = [];
+      let end = null;
+      for (const g of kept) {
+        if (!end || !near(end, g.a, 0.06)) out.push(`M${g.a[0]} ${g.a[1]}`);
+        out.push(`L${g.b[0]} ${g.b[1]}`);
+        end = g.b;
+      }
+      return `d="${out.join(" ")}"`;
+    });
+  });
   const m = svg.match(/viewBox="[\d.\-]+ [\d.\-]+ ([\d.]+) ([\d.]+)"/);
   if (!m) return svg;
   const w = Math.ceil(+m[1]), h = Math.ceil(+m[2]);

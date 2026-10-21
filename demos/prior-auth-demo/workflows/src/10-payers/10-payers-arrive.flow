@@ -1,0 +1,71 @@
+title: Payers › Arrive on the page
+route: /payers
+intro: How a person lands on Payers, which payer and tab they see first, what the badges count, and where each control on the page leads. Every other Payers diagram starts from one of the hand offs at the bottom.
+dir: TD
+---
+start s1 "Click 'Payers' in the sidebar\nunder Connections"
+start s2 "Open a link to one payer's Changes tab\nBell notification, FLO answer, Demo menu"
+process p1 "Address is /payers\nNo payer, no tab"
+process p2 "Address is /payers/cardinal?tab=changes"
+decision d1 "Does the address name a known payer?"
+process p3 "Use the first payer in the list\nSummit Medicaid HMO"
+process p4 "Use the payer named in the address"
+decision d2 "Is ?tab one of process,\nrules, documents, changes?"
+process p5 "Show the Process tab"
+process p6 "Show the tab named in the address"
+
+screen pg "Payers\n'N payers. The agents know how each one works.'\nWorkflow, rules and documents for every payer. Change a rule and open drafts can follow."
+
+group gL "Left column"
+  screen list "Payer list card\n'Payers', 'Search payers', four groups, a dot per payer, legend"
+  click c_pick "Click a payer in the list"
+  click c_search "Type in 'Search payers'"
+endgroup
+
+group gR "Right column"
+  screen head "Payer header\nName, plan line, 'Edit log', 'Edit', four facts"
+  screen tabs "Tab bar\nProcess, Rules, Documents, Changes"
+  click c_edit "Click 'Edit'"
+  click c_log "Click 'Edit log'"
+  click c_tab "Click a tab"
+endgroup
+
+click c_add "Click 'Add a payer'\ntop right of the page"
+
+group gB "What the badges count"
+  process b1 "Sidebar 'Payers' badge\nPayers with a change waiting\n2 at the start: Cardinal and Harborview\nFalls when a change is updated"
+  process b2 "'Changes' tab badge\nThe waiting change plus each Historian proposal\nFalls as each is handled"
+endgroup
+
+goto g_list "Continues in: Payers › List › Search and pick a payer"
+goto g_head "Continues in: Payers › Header › What the facts mean"
+goto g_edit "Continues in: Payers › Edit payer details"
+goto g_log "Continues in: Payers › Edit log"
+goto g_add "Continues in: Payers › Add a payer"
+goto g_proc "Continues in: Payers › Process tab › Read the workflow"
+goto g_rules "Continues in: Payers › Rules tab › Read the rules"
+goto g_docs "Continues in: Payers › Documents tab › Read the document list"
+goto g_chg "Continues in: Payers › Changes tab › Read what changed"
+
+s1 --> p1 --> d1
+s2 --> p2 --> d1
+d1 -->|No, or an unknown id| p3 --> d2
+d1 -->|Yes| p4 --> d2
+d2 -->|No, or missing| p5 --> pg
+d2 -->|Yes| p6 --> pg
+pg --> list & head & tabs & c_add
+pg -.-> b1
+tabs -.-> b2
+list --> c_pick & c_search
+c_pick --> g_list
+c_search --> g_list
+head --> c_edit & c_log
+head --> g_head
+c_edit --> g_edit
+c_log --> g_log
+c_add --> g_add
+tabs --> c_tab
+c_tab -->|Process| g_proc
+c_tab -->|Rules| g_rules
+c_tab -->|Documents| g_docs
+c_tab -->|Changes| g_chg
