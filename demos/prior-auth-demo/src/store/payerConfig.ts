@@ -1,6 +1,6 @@
 import type { StateCreator } from "zustand";
 import { AGENTS } from "@/data/agents";
-import { conditionText, RULE_TITLE, USER_NAME, type AddPayerFields, type CustomPayer, type DocItem, type EditArea, type EditLogEntry, type LogChange, type PayerConfig, type RuleId, type WorkflowStep } from "@/data/payerConfig";
+import { conditionText, RULE_TITLE, USER_NAME, type AddPayerFields, type CustomPayer, type DocItem, type EditArea, type EditLogEntry, type LogChange, type PayerConfig, type Rule, type RuleId, type WorkflowStep } from "@/data/payerConfig";
 import { proposalsFor, seedPayerConfig, starterConfig } from "@/data/payerConfigSeed";
 import { PAYERS } from "@/data/seed";
 import { PROGRAM_LABEL, type AgentKey, type Program } from "@/data/types";
@@ -188,3 +188,12 @@ export const selectPayersBadge = (s: AppState): number => Object.values(s.payerC
 /** The document list for one payer and program. Reader reads this on the intake screen, so the warning there and the checker here always match. */
 export const selectPayerDocs = (s: AppState, payerId: string, program: Program): DocItem[] => s.payerConfig[payerId]?.docs[program] ?? [];
 
+
+/* What other modules read from a payer's saved configuration. Edits on Payers apply to new drafts at once. */
+
+/** The documents a payer asks for on one program, as saved on Payers › Documents. */
+export const selectPayerDocs = (s: AppState, payerId: string, program: Program): DocItem[] => s.payerConfig[payerId]?.docs[program] ?? [];
+/** The payer's rules as saved on Payers › Rules (submission windows, backdating, no authorization needed, peer-to-peer and appeals). */
+export const selectPayerRules = (s: AppState, payerId: string): Rule[] => s.payerConfig[payerId]?.rules ?? [];
+/** Payers added with "Add a payer", so pickers elsewhere can offer them. */
+export const selectCustomPayers = (s: AppState): CustomPayer[] => s.customPayers;
