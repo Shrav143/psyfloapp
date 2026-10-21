@@ -14,6 +14,7 @@ screen mgr "Case Manager\nEach case shows the agent working on it\nReviews this 
 screen dash "Dashboard\nNavigator: sends signed requests, checks status\nCaller: phones if still pending\nPacket: drafts the answer to an information request\nIntegrity: checks it\nCadence: ledger, next review, write-back"
 screen den "Denial Intelligence\nReader: reads the letter\nAdvocate: checks the notice, drafts the appeal\nHistorian: compares similar decisions\nIntegrity: checks every statement\nCadence: books the peer-to-peer\nNavigator: files the appeal after a signature"
 screen pay "Payers\nHistorian: proposals on Changes\nScribe, Integrity: redraft open drafts\nProcess tab names Navigator, Caller, Packet and others on each step\nSentinel: only the 'Payer rule changed' notification"
+screen note "Top bar › Notifications\nEvery item carries the agent that raised it\nAdvocate, Cadence, Caller, Navigator, Packet, Reader, Scribe, Forecaster, Sentinel"
 screen ana "Analytics\nAnalyst: builds the monthly report"
 goto g1 "Continues in: Settings › Agent map › Where each of the sixteen agents works"
 
@@ -28,4 +29,7 @@ dash -->|Denied or partly approved| den
 pay -.->|Rule change updates drafts| run
 dash --> ana
 den --> ana
+dash -.-> note
+den -.-> note
+pay -.-> note
 ana --> g1

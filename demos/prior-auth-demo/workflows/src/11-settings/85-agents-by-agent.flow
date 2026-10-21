@@ -31,7 +31,10 @@ agent advocate "Advocate\nDenial Intelligence: checks the notice, drafts the app
 goto g1 "Continues in: Settings › Agent map › Which agents work in which flow"
 
 c1 --> verify & caller & navigator
+navigator -.->|Next crew| c2
 c2 --> reader & criteria & placement & scribe & integrity
+integrity -.->|Next crew| c3
 c3 --> historian & forecaster & sentinel & analyst
+analyst -.->|Next crew| c4
 c4 --> packet & scrubber & cadence & advocate
-verify -.-> g1
+advocate -.-> g1

@@ -14,7 +14,7 @@ export const KINDS = {
   decision: { shape: "diam", fill: "#FFF0CC", stroke: "#D9962B", color: "#5C3B00", name: "Decision", means: "A yes/no or multi-way branch; every exit is labelled" },
   store: { shape: "cyl", fill: "#D5F0EA", stroke: "#1C8E7B", color: "#0B4A3F", name: "Data saved", means: "A record is created or changed (case, request, referral, mapping, rule)" },
   doc: { shape: "doc", fill: "#F6E9DC", stroke: "#B07A4C", color: "#4A2E14", name: "Document", means: "A letter, brief, report, appeal, form or file produced or read" },
-  ext: { shape: "div-rect", fill: "#FFE6D2", stroke: "#E07B39", color: "#6B2F06", name: "Outside party", means: "Payer, referrer, EMR or portal: something outside Psyflo acts" },
+  ext: { shape: "st-rect", fill: "#FFE6D2", stroke: "#E07B39", color: "#6B2F06", name: "Outside party", means: "Payer, referrer, EMR or portal: something outside Psyflo acts" },
   wait: { shape: "delay", fill: "#E4E8EE", stroke: "#6B7C93", color: "#26303D", name: "Wait", means: "Time passes or the flow waits on someone" },
   toast: { shape: "odd", fill: "#FFF9DB", stroke: "#C9A400", color: "#5A4A00", name: "Message", means: "A toast, banner or notification the person sees" },
   goto: { shape: "subproc", fill: "#FFFFFF", stroke: "#1F5C4B", color: "#1F5C4B", dash: "5 3", name: "Continues elsewhere", means: "Jumps to another diagram; the label names it" },

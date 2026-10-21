@@ -1,0 +1,50 @@
+title: Case Manager › Page › Arrive and read the header
+route: /manager (Active cases) and /manager?tab=reviews
+intro: Case Manager has two tabs, 'Active cases' and 'Reviews this week'. The address decides which one opens. Each tab has its own header with live counts, and both share one filter bar.
+dir: TD
+also: The tab is the only thing kept in the address. Search text and filters are not, so a reload or leaving the page clears them.
+---
+start s1 "Click 'Case Manager' in the sidebar"
+start s2 "Demo menu › '7 Case Manager: reviews this week'"
+start s3 "Old link /active"
+start s4 "A link from another page\n(see 'Links in and the tab address')"
+process p0 "/active is replaced by /manager"
+process p1 "Page opens at the top\nSidebar 'Case Manager' turns green; its bubble reads 11"
+decision d1 "Is the address ?tab=reviews?"
+
+screen sA "Active cases tab\nHeader '56 active cases.'\n'5 are still being prepared. Units, clocks and status for every case, across every level of care.'\nButton 'New case'"
+process cA "56 is the number of rows in the tracker and never changes in the demo\n5 is the drafts saved and not yet sent: it falls when a case is signed and sent ('1 is still being prepared' when one is left)"
+screen sR "Reviews this week tab\nHeader '47 clinical reviews due this week.'\n'Agents draft each review ahead of time. You update only what they ask about.'\nButtons 'Draft all due reviews' and 'Sign all clean drafts'"
+process cR "47 is one review for each approved case (9 cases are not yet approved and have none)"
+
+screen sF "Filter bar under the header (both tabs)\nSearch box, 'All levels of care', 'All payers', then 'Any status' (Active cases) or 'Any review status' (Reviews)\nOn the right the switch 'Active cases' | 'Reviews this week'"
+
+click c1 "Click 'Reviews this week'"
+click c2 "Click 'Active cases'"
+process p2 "Address becomes ?tab=reviews or ?tab=cases\nNo new history entry, so Back does not walk through tab clicks\nHeader and body swap; search, level of care and payer filters stay"
+click c3 "Click 'New case'"
+
+goto g1 "Continues in: Case Manager › Filters › Search and filter both tabs"
+goto g2 "Continues in: Case Manager › Active cases › Being prepared card"
+goto g3 "Continues in: Case Manager › Active cases › Tracker of every active case"
+goto g4 "Continues in: Case Manager › Reviews this week › The list"
+goto g5 "Continues in: New case › Referral step"
+
+s1 --> p1
+s2 --> p1
+s3 --> p0 --> p1
+s4 --> p1
+p1 --> d1
+d1 -->|Yes| sR --> cR
+d1 -->|No: no tab, ?tab=cases, or anything else| sA --> cA
+sA --> sF
+sR --> sF
+sF --> g1
+sA --> c3 --> g5
+sA --> c1 --> p2
+sR --> c2 --> p2
+p2 -.-> sA
+p2 -.-> sR
+cA --> g2
+cA --> g3
+cR --> g4
