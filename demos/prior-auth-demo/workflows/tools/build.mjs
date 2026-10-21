@@ -31,7 +31,7 @@ const MODULES = {
 
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const slug = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-const words = (s) => new Set(s.toLowerCase().replace(/continues in:?/g, "").replace(/[^a-z0-9& ]+/g, " ").split(/\s+/).filter((w) => w && !["the", "a", "of", "to", "and", "in", "on", "for", "an"].includes(w)));
+const words = (s) => new Set(s.toLowerCase().replace(/continues in:?/g, "").replace(/[^a-z0-9& ]+/g, " ").split(/\s+/).filter((w) => w && !["the", "a", "of", "to", "and", "in", "on", "for", "an", "tab", "page", "step", "screen"].includes(w)));
 
 /* 1. Read and compile every .flow. */
 const folders = readdirSync(SRC).filter((d) => /^\d\d-/.test(d)).sort();
@@ -93,7 +93,13 @@ if (drawErr) process.exit(1);
 const byTitle = diagrams.map((d) => ({ d, w: words(`${d.meta.title}`) }));
 const modWords = Object.entries(MODULES).map(([dir, [name]]) => ({ dir, w: words(name) }));
 const unresolved = [];
+const SHOW_LINKS = process.argv.includes("--links");
 const linkOf = (d, id, label) => {
+  const t = linkOf0(d, id, label);
+  if (SHOW_LINKS) console.log(`${d.dir}/${d.name}: "${label.replace(/\\n/g, " / ")}"  ->  ${t ?? "UNRESOLVED"}`);
+  return t;
+};
+const linkOf0 = (d, id, label) => {
   const asked = words(label);
   if (!asked.size) return null;
   const exactDiagram = byTitle.find((t) => t.d !== d && [...asked].every((w) => t.w.has(w)) && [...t.w].every((w) => asked.has(w)));
@@ -104,9 +110,8 @@ const linkOf = (d, id, label) => {
   for (const t of byTitle) {
     if (t.d === d) continue;
     const hit = [...asked].filter((w) => t.w.has(w)).length / asked.size;
-    const extra = [...t.w].filter((w) => !asked.has(w)).length;
-    const score = hit - extra * 0.01;
-    if (hit >= 0.75 && (!best || score > best.score)) best = { score, d: t.d };
+    /* The best share of words wins; among equals the first diagram in reading order is the entry to that area. */
+    if (hit >= 0.75 && (!best || hit > best.score)) best = { score: hit, d: t.d };
   }
   if (best) return `#${best.d.id}`;
   const asModule = modWords.filter((m) => m.dir !== d.dir && [...asked].every((w) => m.w.has(w)));

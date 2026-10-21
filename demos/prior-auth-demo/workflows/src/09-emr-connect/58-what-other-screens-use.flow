@@ -16,8 +16,7 @@ group gPull "New case: pull a chart"
   toast a7 "'Pulled J.M., 34 from EMR Connect'\n'Everything below was filled in from the chart. You can still change it.'"
 endgroup
 process n1 "The four charts are a fixed list\nNot read from the systems on this page, and not changed by Sync now or by Disconnect"
-goto g1 "Continues in: New case › Medical records › Pull a chart from EMR Connect"
-
+goto g1 "Continues in: Authorizations › New case › Medical records › Patient and insurance rows"
 group gWrite "Dashboard: write back"
   screen b1 "Dashboard request: 'Approved. Write-back waits for you'"
   click b2 "Click 'Approve write-back'"

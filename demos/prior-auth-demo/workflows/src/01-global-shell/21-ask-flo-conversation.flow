@@ -22,7 +22,7 @@ goto g1 "Continues in: Global shell › Top bar › Ask FLO › What FLO answers
 decision d3 "Does the answer carry a link?"
 click c3 "Click the underlined link under the answer"
 process p3 "Drawer closes and the app opens that page"
-goto g2 "Continues in: the page the link names (Dashboard, Denial Intelligence, Payers or New case)"
+goto g2 "Continues in: Global shell › Top bar › Ask FLO › What FLO answers"
 process p4 "The chips are gone for good: they show only while the chat has fewer than three messages"
 click c4 "Press Escape, click 'X' or click the dimmed area"
 process p5 "Drawer closes\nThe chat and any unsent text are kept"

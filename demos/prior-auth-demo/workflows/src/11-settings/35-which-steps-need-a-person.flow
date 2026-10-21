@@ -23,8 +23,7 @@ click h2 "Case owner confirms the write-back"
 goto g1 "Continues in: New case › Review and sign"
 goto g2 "Continues in: Dashboard › Request drawer › Approve the write-back"
 goto g3 "Continues in: Payers › Changes › Acknowledge a change"
-goto g4 "Continues in: Denial Intelligence › Appeal drawer › Sign and send"
-
+goto g4 "Continues in: Denial Intelligence › Written appeal › Edit, sign and file"
 s1 --> q1
 q1 -->|Read, poll or check: eligibility, packet completeness, status, decision letters| a1
 q1 -->|Change coverage on the chart: Verify| a2

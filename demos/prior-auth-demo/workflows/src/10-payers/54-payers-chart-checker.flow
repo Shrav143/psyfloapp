@@ -28,7 +28,7 @@ process why "Edit the list and check again to see it change\nCardinal's list ask
 toast info "'This is the same list Reader uses on the intake screen,\nso the warning there and the result here always match.'"
 process gap "Demo gap: New case intake keeps its own required-document\ntable, so this list and the intake warning can differ"
 goto g2 "Continues in: Payers › Documents › Edit the list"
-goto g3 "Continues in: New case › Intake step"
+goto g3 "Continues in: Authorizations › New case › Medical records › The checklist and Continue"
 
 s1 --> hc
 hc -->|No| nc --> xnc

@@ -37,7 +37,7 @@ endgroup
 group gOwn "Known page, unknown record (the page answers)"
   process o1 "/authorizations/case/XYZ shows 'Request not found' with 'Back to the queue'"
   process o2 "/authorizations/new/XYZ shows 'We could not find that draft' with 'Start a new case'"
-  goto g7 "Continues in: Authorizations › Case, New case and Denial Intelligence (their own not-found screens)"
+  goto g7 "Continues in: Authorizations › New case › How a case starts and resumes"
 endgroup
 
 s1 --> p0 --> d1

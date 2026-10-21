@@ -43,9 +43,9 @@ endgroup
 
 goto g1 "Continues in: Global shell"
 goto g2 "Continues in: Dashboard"
-goto g3 "Continues in: Authorizations queue and case"
-goto g4 "Continues in: New case"
-goto g5 "Continues in: Eligibility & Benefits"
+goto g3 "Continues in: Authorizations › Queue and case page"
+goto g4 "Continues in: Authorizations › New case"
+goto g5 "Continues in: Authorizations › Eligibility & Benefits"
 goto g6 "Continues in: Denial Intelligence"
 goto g7 "Continues in: Case Manager"
 goto g8 "Continues in: Analytics"

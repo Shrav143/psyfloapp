@@ -32,9 +32,9 @@ process prd "In the product (PRD 06)\nA rule version is stamped on every authori
 goto g1 "Continues in: Dashboard › Requests table"
 goto g2 "Continues in: Case Manager › Cases"
 goto g3 "Continues in: Dashboard › Open a request"
-goto g4 "Continues in: New case › Intake step"
+goto g4 "Continues in: Authorizations › New case › Medical records › The checklist and Continue"
 goto g5 "Continues in: Authorizations › Case › Risk"
-goto g7 "Continues in: New case › Agents step"
+goto g7 "Continues in: Authorizations › New case › Agents work › Start the run and watch it"
 goto g6 "Continues in: Authorizations › Queue"
 
 s1 --> dk

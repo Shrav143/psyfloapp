@@ -33,7 +33,7 @@ group gSign "Sign all clean drafts"
 endgroup
 
 goto g1 "Continues in: Case Manager › Reviews this week › After a review is signed"
-goto g2 "Continues in: Case Manager › Reviews this week › Sign a review (for the 6 with a check to look at)"
+goto g2 "Continues in: Case Manager › Reviews this week › Sign a review"
 end e1 "Week's clean reviews are signed"
 endx e2 "Nothing signed"
 end e3 "Nothing was missing, so nothing was drafted"

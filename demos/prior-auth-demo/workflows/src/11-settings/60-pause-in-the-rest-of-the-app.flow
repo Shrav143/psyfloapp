@@ -31,7 +31,7 @@ group gReal "Production (PRD FR-25)"
   process r2 "Production: a pause takes effect before the next step of any running job\nSteps already going out finish, or roll back to the manual queue"
 endgroup
 
-goto g1 "Continues in: New case › Agents work › Pause and resume"
+goto g1 "Continues in: Authorizations › New case › Agents work › Finished, paused or left"
 goto g2 "Continues in: Dashboard › Request drawer"
 goto g3 "Continues in: Settings › Pause › Pause all agents"
 

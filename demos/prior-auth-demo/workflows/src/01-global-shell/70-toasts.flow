@@ -34,8 +34,7 @@ group gMgr "Toasts raised in Case Manager"
   goto g1 "Continues in: Case Manager › Reviews this week › Sign a review"
 endgroup
 
-goto g2 "Other modules list their own toasts in their own diagrams"
-
+goto g2 "Continues in: Site map › Every menu tab and sub tab"
 s1 --> p1 --> d1
 d1 -->|Done| t1
 d1 -->|Caution| t2

@@ -16,7 +16,7 @@ doc dc1 "Document\nLetter, brief, report"
 toast t1 "Message\nA toast or banner"
 ext x1 "Outside party\nPayer, referrer, EMR"
 wait w1 "Wait\nTime passes"
-goto g1 "Continues elsewhere\nNames the other diagram"
+goto g1 "Continues in: Site map › Every menu tab and sub tab"
 end e1 "End (done)"
 endx e2 "End (stopped)"
 s1 --> sc1 --> c1 --> i1 --> o1 --> p1 --> a1 --> d1

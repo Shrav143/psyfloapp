@@ -11,8 +11,7 @@ screen sh "Top right of the card\nGhost button '4 sent today', then the chips 'A
 
 click c1 "Click '4 sent today'"
 process p3 "Go to /dashboard?stage=received"
-goto g1 "Continues in: Dashboard › Stage strip and requests table"
-
+goto g1 "Continues in: Dashboard › Stage strip › Click a stage tile"
 click c2 "Click a chip"
 decision d1 "Which chip?"
 process k1 "'All': every row"

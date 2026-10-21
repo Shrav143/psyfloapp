@@ -30,7 +30,7 @@ endgroup
 
 group gHow "How things really arrive in the demo"
   goto g1 "Continues in: Dashboard › Request drawer › Demo controls (payer replies)"
-  goto g2 "Continues in: New case › Referral step (sample referrals)"
+  goto g2 "Continues in: Authorizations › New case › Referral › Start screen"
 endgroup
 
 end e1 "Page keeps its place. Click again to move further"
