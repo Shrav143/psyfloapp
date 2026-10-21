@@ -1,6 +1,7 @@
 import type { StateCreator } from "zustand";
 import { SEED_NOTIFICATIONS, SEED_REQUESTS } from "@/data/seed";
 import type { AgentKey, AppNotification, PayerId, Program, PsyRequest, RequestEvent, RequestType, StageKey, Toast, Tone } from "@/data/types";
+import type { DateRange } from "@/lib/dates";
 import { uid } from "@/lib/format";
 import { DAY, HOUR } from "@/lib/time";
 import type { AppState } from "./index";
@@ -11,9 +12,12 @@ export interface DashFilters {
   program: Program | "all";
   type: RequestType | "all";
   stage: StageKey | "all";
-  period: "7d" | "30d" | "quarter";
+  /** The days outcome figures are counted over. Picked on a calendar. */
+  range: DateRange;
 }
-export const DEFAULT_FILTERS: DashFilters = { payer: "all", program: "all", type: "all", stage: "all", period: "30d" };
+/** Last 30 days up to the demo's first day, Tue 20 Oct 2026. */
+export const DEFAULT_RANGE: DateRange = { from: "2026-09-21", to: "2026-10-20" };
+export const DEFAULT_FILTERS: DashFilters = { payer: "all", program: "all", type: "all", stage: "all", range: DEFAULT_RANGE };
 
 export interface SubmitCasePayload {
   caseId?: string; // reuse the id of a case that was being prepared
@@ -74,7 +78,7 @@ export const createCoreSlice: StateCreator<AppState, [], [], CoreSlice> = (set, 
 
   setFilter: (key, value) => set((s) => ({ filters: { ...s.filters, [key]: value } })),
   setFilters: (patch) => set((s) => ({ filters: { ...s.filters, ...patch } })),
-  clearFilters: () => set((s) => ({ filters: { ...DEFAULT_FILTERS, period: s.filters.period } })),
+  clearFilters: () => set((s) => ({ filters: { ...DEFAULT_FILTERS, range: s.filters.range } })),
   advanceClock: (minutes) => {
     set((s) => ({ clock: s.clock + minutes }));
     get().toast({ title: `Clock moved forward ${minutes >= DAY ? `${Math.round(minutes / DAY)} day` : `${Math.round(minutes / HOUR)} hour`}`, body: "Times in stage and deadlines updated.", tone: "neutral" });

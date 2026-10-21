@@ -27,6 +27,13 @@ export interface DraftDocument {
 }
 
 /* ------------------------------------------------------------------ the draft */
+/** A field of the intake, or a document slot, that Reader filled in from a file. */
+export type ReadKey = "patient" | "payer" | "member" | "program" | "type" | "diagnoses" | "reason" | `doc:${DocSlotId}`;
+/** `value` is what the field held when Reader filled it, so the "read from" note goes quiet once the person changes it. */
+export interface ReadNote {
+  file: string;
+  value: string;
+}
 export interface Diagnosis {
   code: string;
   label: string;
@@ -84,6 +91,8 @@ export interface CaseDraft {
   documents: DraftDocument[];
   referralId?: string;
   emrChart?: string;
+  /** What Reader filled in from dropped files, for the note under each checklist row. */
+  read?: Partial<Record<ReadKey, ReadNote>>;
   coverage: CoverageSummary | null;
   run: RunState;
   answers: Answer[];

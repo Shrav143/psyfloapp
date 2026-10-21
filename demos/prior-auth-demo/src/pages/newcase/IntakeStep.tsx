@@ -1,22 +1,17 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft, ArrowRight, Inbox, Save, ShieldCheck } from "lucide-react";
-import { Banner, Button, Modal } from "@/components/ui";
+import { ArrowLeft, ArrowRight, Save } from "lucide-react";
+import { Button, Modal } from "@/components/ui";
 import type { CaseDraft } from "@/data/cases";
 import { payerById } from "@/data/seed";
 import { PROGRAM_LABEL } from "@/data/types";
-import { paths } from "@/routes";
 import { useStore } from "@/store";
-import { DocumentsCard } from "./DocumentsCard";
-import { InsuranceCard } from "./InsuranceCard";
+import { DropPanel } from "./DropPanel";
 import { intakeMissing } from "./intake";
-import { PatientCard } from "./PatientCard";
-import { RequestCard } from "./RequestCard";
+import { RecordsChecklist } from "./RecordsChecklist";
 import { StepFooter } from "./StepFooter";
 
-/** Step 2, Medical records: the patient, the insurance, the request and the chart. Continue starts the agents after a confirm. */
+/** Step 2, Medical records: drop what you have, watch the list tick off, add what is missing. Continue starts the agents after a confirm. */
 export function IntakeStep({ draft }: { draft: CaseDraft }) {
-  const nav = useNavigate();
   const toast = useStore((s) => s.toast);
   const save = useStore((s) => s.saveCaseDraft);
   const start = useStore((s) => s.startCaseRun);
@@ -34,31 +29,12 @@ export function IntakeStep({ draft }: { draft: CaseDraft }) {
     const id = useStore.getState().caseDrafts.find((d) => d.id === draft.id)?.caseId;
     toast({ title: "Draft saved", body: `${id ?? "The draft"} is in Case Manager. Pick it up whenever you like.`, tone: "good" });
   };
+  const needed = missing.slice(0, 3).join(", ") + (missing.length > 3 ? ` and ${missing.length - 3} more` : "");
 
   return (
-    <>
-      {draft.referralId ? (
-        <Banner tone="good" icon={Inbox} title={`Started from referral ${draft.referralId}`} action={<Button size="sm" onClick={() => nav(paths.referral(draft.referralId ?? "", draft.id))}>View referral</Button>}>
-          Patient, payer, program, diagnoses and the reason were filled in from the referral, and the referral is the first document. Check them, then add the rest of the chart.
-        </Banner>
-      ) : (
-        <Banner icon={Inbox} title="No referral in this case" action={<Button size="sm" onClick={() => patch(draft.id, { phase: "referral" })}>Add a referral</Button>}>
-          You are adding the patient yourself. You can still go back and attach a referral.
-        </Banner>
-      )}
-      <Banner icon={ShieldCheck}>
-        <b>Privacy mode is on.</b> Names, dates and IDs are swapped for codes before any agent reads the chart.
-      </Banner>
-      <div className="grid grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] items-start gap-5">
-        <div className="flex flex-col gap-5">
-          <PatientCard draft={draft} />
-          <DocumentsCard draft={draft} />
-        </div>
-        <div className="flex flex-col gap-5">
-          <InsuranceCard draft={draft} />
-          <RequestCard draft={draft} />
-        </div>
-      </div>
+    <div className="mx-auto flex w-full max-w-[960px] flex-col gap-5">
+      <DropPanel draft={draft} />
+      <RecordsChecklist draft={draft} />
       <StepFooter
         actions={
           <>
@@ -73,7 +49,7 @@ export function IntakeStep({ draft }: { draft: CaseDraft }) {
             </Button>
           </>
         }
-        hint={missing.length ? `Still needed: ${missing.join(", ")}.` : "Nothing is sent to the payer until a clinician signs."}
+        hint={missing.length ? `Still needed: ${needed}.` : "Nothing is sent to the payer until a clinician signs."}
       />
       <Modal
         open={confirm}
@@ -99,6 +75,6 @@ export function IntakeStep({ draft }: { draft: CaseDraft }) {
         <p className="text-sm text-ink2">Reader swaps names, dates and IDs for codes and reads the chart. Verify, Criteria, Historian and Placement check coverage, rules and how {payer?.shortName ?? "the payer"} has ruled. Scribe drafts the case and may ask you up to three questions.</p>
         <p className="mt-3 text-sm font-medium">Nothing is sent to the payer until a clinician signs.</p>
       </Modal>
-    </>
+    </div>
   );
 }

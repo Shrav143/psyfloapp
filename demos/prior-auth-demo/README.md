@@ -17,9 +17,9 @@ bun run build          # typecheck + build to dist/index.html (open it by double
 
 | Sidebar | Route | What you can do |
 |---|---|---|
-| Dashboard | `/dashboard` | One page, five filters (Payer, Program, Request type, Stage, Period). Six-stage strip, requests table with progress bars and clocks, payers at a glance, a request drawer with history, and demo controls to make the payer answer |
+| Dashboard | `/dashboard` | One page: four filters (Payer, Program, Request type, Stage) and a separate calendar where you pick a start and an end day (with shortcuts) for the outcome figures. Six-stage strip, requests table with progress bars and clocks, payers at a glance, a request drawer with history, and demo controls to make the payer answer |
 | Authorizations | `/authorizations`, `/authorizations/case/:id` | Queue ranked by money and time, case page with five tabs (recommended actions, clinical picture, payer criteria, risk analysis, draft) |
-| Authorizations > New case | `/authorizations/new`, `/authorizations/new/:draftId`, `/authorizations/new/referral/:id` | Four steps: **Referral** (upload one, pick it from the referral inbox, or go on without one), **Medical records** (the patient, payer, request and chart, with the referral as the first document), **Agents work** (Scribe asks a question), **Review and sign**. Sign and send puts the request on the Dashboard. The referral inbox is the dashboard of every referral (funnel, sources, weekly volume, filters, status tabs); a referral opens to the source document, extracted fields with evidence, validation, coverage and fit checks, and accept / request information / decline |
+| Authorizations > New case | `/authorizations/new`, `/authorizations/new/:draftId`, `/authorizations/new/referral/:id` | Four steps: **Referral** (drop the referral documents and Reader lists what is missing, or check one that already arrived, or go on without one), **Medical records** (one checklist: drop the whole chart and Reader ticks off the patient, insurance, request and documents, and names what is missing), **Agents work** (Scribe asks a question), **Review and sign**. Sign and send puts the request on the Dashboard. A referral can also be opened in full: the source document, extracted fields with evidence, validation, coverage and fit checks, and accept / request information / decline |
 | Authorizations > Eligibility & Benefits | `/authorizations/eligibility` | Live-looking coverage check: list, verify a patient, verdict |
 | Denial Intelligence | `/denials`, `/denials/:id/brief` | Where a denial is weak, options with chances, peer-to-peer brief, written appeal, accept |
 | Case Manager | `/manager` | **Active cases**: the cases the agents are preparing (with the next action for you), then the tracker of every active case. **Reviews this week**: clinical reviews to sign |
@@ -28,12 +28,12 @@ bun run build          # typecheck + build to dist/index.html (open it by double
 | Payers | `/payers` | Each payer's workflow with conditions, rules, documents with a chart checker, and changes to acknowledge |
 | Settings | `/settings` | The sixteen agents, how much freedom each has, Pause all |
 
-Top right: **Ask Psyflo** (answers from the data), **Notifications**, and **Demo** (reset data, fast-forward the demo clock, a suggested path through the product).
+Top right: **Ask FLO** (Psyflo's assistant, answers from the data), **Notifications**, and **Demo** (reset data, fast-forward the demo clock, a suggested path through the product).
 
 ## Suggested walk-through (about 9 minutes)
 
 1. Dashboard: read the headline, set Stage to Appeal or call, pick Cardinal in Payer, open a row, use the demo controls to have the payer answer.
-2. Authorizations > New case, Referral step: open the Referral inbox, open the clean urgent referral, run the coverage check, accept it, Continue to medical records. Or upload a sample referral and watch Reader validate it.
+2. Authorizations > New case, Referral step: check the clean urgent referral from "Already arrived", run the coverage check, accept it and continue. Or drop the sample referral and watch Reader build the checklist.
 3. Medical records and onward: use the sample chart, Continue, start the agents, answer Scribe's question, sign as the clinician, Sign and send, find it on the Dashboard. Case Manager shows it while it is being prepared.
 4. Eligibility & Benefits: verify a patient.
 5. Authorizations: open R-1042, apply the recommended actions and watch the chance climb.

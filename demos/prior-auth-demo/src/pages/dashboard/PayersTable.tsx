@@ -1,15 +1,15 @@
 import { Card, CardHeader, Meter, Table, Td, Th, Tr } from "@/components/ui";
 import type { PayerId, PayerSummary } from "@/data/types";
 import { cn } from "@/lib/cn";
-import type { DashFilters } from "@/store/core";
+import type { DateRange } from "@/lib/dates";
 import { periodWord, type PayerRow } from "./helpers";
 
 const GROUP_LABEL: Record<PayerSummary["group"], string> = { "Ohio Medicaid": "Medicaid plan", Commercial: "Commercial", "Medicare Advantage": "Medicare Advantage", "Behavioral carve-out": "Carve-out" };
 
 /** One row per payer. A click sets the Payer filter, a second click clears it. Totals are the sums of the rows. */
-export function PayersTable({ rows, selected, period, narrowed, onPick }: { rows: PayerRow[]; selected: PayerId | "all"; period: DashFilters["period"]; narrowed: boolean; onPick: (id: PayerId | "all") => void }) {
+export function PayersTable({ rows, selected, range, narrowed, onPick }: { rows: PayerRow[]; selected: PayerId | "all"; range: DateRange; narrowed: boolean; onPick: (id: PayerId | "all") => void }) {
   const total = (pick: (r: PayerRow) => number) => rows.reduce((a, r) => a + pick(r), 0);
-  const w = periodWord(period);
+  const w = periodWord(range);
   return (
     <Card className="overflow-hidden">
       <CardHeader

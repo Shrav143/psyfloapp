@@ -115,7 +115,7 @@ export function Sidebar() {
           <Settings size={17} className="ico" />
           Settings
         </NavLink>
-        <button type="button" onClick={() => toast({ title: "Help", body: "Press Ask Psyflo (top right) to ask a question. Use Demo, top right, to reset or move time forward.", tone: "neutral" })} className="flex h-[34px] items-center gap-2.5 rounded-[10px] px-3 text-sm font-medium text-ink2 hover:bg-[#EADFD0]">
+        <button type="button" onClick={() => toast({ title: "Help", body: "Press Ask FLO (top right) to ask a question. Use Demo, top right, to reset or move time forward.", tone: "neutral" })} className="flex h-[34px] items-center gap-2.5 rounded-[10px] px-3 text-sm font-medium text-ink2 hover:bg-[#EADFD0]">
           <HelpCircle size={17} className="ico" />
           Help
         </button>

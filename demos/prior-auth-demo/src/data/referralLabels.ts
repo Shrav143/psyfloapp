@@ -1,5 +1,5 @@
 import type { Program, Tone, Urgency } from "./types";
-import type { Channel, CheckKey, DeclineReason, DocId, ReferralStatus, ReplyVia, SourceKind, StaffId } from "./referralTypes";
+import type { Channel, CheckKey, DeclineReason, DocId, ReferralStatus, ReplyVia, StaffId } from "./referralTypes";
 
 export const STAFF: { id: StaffId; name: string; initials: string; color: string }[] = [
   { id: "jp", name: "Jordan Perez", initials: "JP", color: "#1D4F43" },
@@ -7,18 +7,6 @@ export const STAFF: { id: StaffId; name: string; initials: string; color: string
   { id: "ml", name: "Morgan Lee", initials: "ML", color: "#5E8A7B" },
 ];
 export const staffById = (id: StaffId): (typeof STAFF)[number] => STAFF.find((s) => s.id === id) as (typeof STAFF)[number];
-
-export const SOURCE_KINDS: SourceKind[] = ["hospital", "ed", "court", "primary", "clinic", "crisis", "school", "self"];
-export const SOURCE_KIND_LABEL: Record<SourceKind, string> = {
-  hospital: "Hospital",
-  ed: "Emergency department",
-  court: "Court or probation",
-  primary: "Primary care",
-  clinic: "Other clinic",
-  crisis: "Crisis line",
-  school: "School",
-  self: "Self",
-};
 
 export const CHANNEL_LABEL: Record<Channel, string> = { fax: "Fax", eReferral: "E-referral", portal: "Portal", phone: "Phone", email: "Email" };
 export const REPLY_VIA_LABEL: Record<ReplyVia, string> = { fax: "Fax", eReferral: "E-referral", email: "Email", phone: "Phone call" };

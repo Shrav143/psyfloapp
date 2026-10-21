@@ -1,5 +1,5 @@
 import { PAYERS } from "@/data/seed";
-import { PROGRAM_LABEL, PROGRAMS, type Program, type RequestEvent, type Urgency } from "@/data/types";
+import { PROGRAM_LABEL, PROGRAMS, type PayerId, type Program, type RequestEvent, type Urgency } from "@/data/types";
 import { authRequired, buildCoverage, buildFields, evaluateChecks, KNOWN_ICD, URGENCY_LABEL, staffById, CHANNEL_LABEL, DECLINE_LABEL, REPLY_VIA_LABEL, PROGRAM_ASAM, ACCEPTED_CREDENTIALS, CHECK_LABEL, CHECK_PROBLEM, type CheckKey, type DeclineReason, type DocPlan, type FieldKey, type Referral, type ReferralCheck, type ReplyVia, type StaffId } from "@/data/referrals";
 import { uid } from "@/lib/format";
 import { DAY, HOUR, longDate } from "@/lib/time";
@@ -93,6 +93,8 @@ export function reopen(r: Referral, clock: number): Referral {
 }
 
 /* ------------------------------------------------------------------ the referrer's reply (demo) */
+const REPLY_PAYER: { payerId: PayerId; memberIdMasked: string } = { payerId: "summit", memberIdMasked: "…4410" };
+
 function fixPlan(p: DocPlan, program: Program, clock: number): DocPlan {
   const expired = p.expiresAt < 0;
   return {
@@ -112,11 +114,14 @@ function fixPlan(p: DocPlan, program: Program, clock: number): DocPlan {
   };
 }
 
-/** Demo control: the referrer answers. Fixable findings flip to pass. Returns the new referral and how many were fixed. */
+/** Demo control: the referrer answers. Fixable findings flip to pass, and an insurance card arrives if there was none. Returns the new referral and how many were fixed. */
 export function simulateReply(r: Referral, clock: number): { next: Referral; fixed: number } {
   const before = unresolved(r).filter((c) => c.state === "warn").map((c) => c.key);
-  const plan = fixPlan(r.plan, r.program, clock);
-  const core: Referral = { ...r, plan };
+  const noInsurance = r.payerId === null;
+  const plan: DocPlan = { ...fixPlan(r.plan, r.program, clock), ...(noInsurance ? REPLY_PAYER : {}) };
+  const core: Referral = noInsurance
+    ? { ...r, plan, ...REPLY_PAYER, coverage: null, coverageOutcome: authRequired(REPLY_PAYER.payerId, r.program) ? "auth_first" : "cleared" }
+    : { ...r, plan };
   const rechecked = evaluateChecks(core, r.checks).map((c) => (before.includes(c.key) && c.state === "pass" ? { ...c, resolved: { how: "reply" as const, at: clock } } : c));
   const fixed = rechecked.filter((c) => c.resolved?.how === "reply").length;
   const next: Referral = { ...noScheduled(core), status: "in_review", plan, checks: rechecked, fields: buildFields(core, r.fields) };
@@ -128,20 +133,28 @@ export function simulateReply(r: Referral, clock: number): { next: Referral; fix
 }
 
 /* ------------------------------------------------------------------ message to the referrer */
-const NEED: Record<CheckKey, (r: Referral, c: ReferralCheck) => string> = {
+/** What can be asked of the referrer: any of the nine checks, plus the insurance, which is not one of them. */
+export type AskKey = CheckKey | "insurance";
+
+/** What is still missing and the referrer can supply. The age check is left out: nobody can change a patient's age by replying. */
+export const askable = (r: Referral): AskKey[] => [...unresolved(r).filter((c) => c.key !== "age").map((c) => c.key), ...(r.payerId === null ? (["insurance"] as const) : [])];
+
+const detailOf = (r: Referral, key: CheckKey): string => r.checks.find((c) => c.key === key)?.detail ?? "";
+const NEED: Record<AskKey, (r: Referral) => string> = {
   signature: () => "A signed copy of the referral from the ordering clinician",
   expiry: (r) => `A current order. The one on file expired on ${longDate(r.plan.expiresAt)}`,
   credentials: () => "The ordering clinician's credentials, or a cosignature from an MD, DO, NP, PA, PhD or LCSW",
-  components: (_r, c) => `The missing parts of the form (${c.detail.replace(/^Missing: /, "").replace(/\.$/, "")})`,
+  components: (r) => `The missing parts of the form (${detailOf(r, "components").replace(/^Missing: /, "").replace(/\.$/, "")})`,
   diagnosis: () => "The diagnosis with its full ICD-10 code",
   service: (r) => `Confirmation of the level of care: ${PROGRAM_LABEL[r.program]} delivers ASAM level ${PROGRAM_ASAM[r.program]}`,
   urgent: () => "A risk screening that supports the urgent priority",
   age: () => "Confirmation of the patient's age",
   contact: () => "A phone number or another way to reach the patient",
+  insurance: () => "The patient's insurance and member ID, or a copy of the insurance card",
 };
 
-export function composeRequest(r: Referral, checks: ReferralCheck[], via: ReplyVia): string {
-  const lines = checks.map((c, i) => `${i + 1}. ${NEED[c.key](r, c)}`);
+export function composeRequest(r: Referral, keys: AskKey[], via: ReplyVia): string {
+  const lines = keys.map((k, i) => `${i + 1}. ${NEED[k](r)}`);
   const list = lines.length ? lines.join("\n") : "1. Anything you can add that supports the request";
   return `Hello,\n\nThank you for referring ${r.patient.initials} (${r.patient.age}). To finish our review we still need:\n\n${list}\n\nPlease reply by ${REPLY_VIA_LABEL[via].toLowerCase()} and Reader will pick it up as soon as it arrives.\n\nAdmissions team`;
 }

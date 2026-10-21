@@ -1,5 +1,5 @@
 import { buildReferral } from "./referralBuild";
-import { historySpecs, SAMPLE_SPECS } from "./referralHistory";
+import { SAMPLE_SPECS } from "./referralSamples";
 import { HAND_SPECS } from "./referralSpecs";
 import type { Referral } from "./referralTypes";
 
@@ -9,8 +9,8 @@ export { authRequired, buildFields, evaluateChecks, hasFail, issueCount, parseDi
 export { buildCoverage, hash } from "./referralInsight";
 export { buildDocs, locate, type Evidence, type ReferralDoc } from "./referralDoc";
 
-/** 56 closed referrals from the last two months plus the sixteen on the dashboard (RF-2038 to RF-2053). Never mutate. */
-export const SEED_REFERRALS: Referral[] = [...historySpecs(), ...HAND_SPECS].map((s) => buildReferral(s));
+/** The sixteen referrals RF-2038 to RF-2053, eight of them still open. Never mutate. */
+export const SEED_REFERRALS: Referral[] = HAND_SPECS.map((s) => buildReferral(s));
 
 export const SAMPLE_COUNT = SAMPLE_SPECS.length;
 

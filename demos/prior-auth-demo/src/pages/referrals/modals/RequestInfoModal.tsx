@@ -1,22 +1,21 @@
 import { useState } from "react";
 import { Banner, Button, Dropdown, Field, Modal, TextArea } from "@/components/ui";
-import { REPLY_VIA_LABEL, type CheckKey, type Referral, type ReplyVia } from "@/data/referrals";
+import { REPLY_VIA_LABEL, type Referral, type ReplyVia } from "@/data/referrals";
 import { useStore } from "@/store";
-import { composeRequest } from "@/store/referralsLogic";
+import { composeRequest, type AskKey } from "@/store/referralsLogic";
 
 const VIA: ReplyVia[] = ["fax", "eReferral", "email", "phone"];
 
 /** Gate: a person asks the referrer for more. The message is composed from the open findings and stays editable. */
-export function RequestInfoModal({ r, keys, onClose }: { r: Referral; keys: CheckKey[]; onClose: () => void }) {
+export function RequestInfoModal({ r, keys, onClose }: { r: Referral; keys: AskKey[]; onClose: () => void }) {
   const send = useStore((s) => s.requestReferralInfo);
   const initialVia: ReplyVia = r.channel === "phone" || r.channel === "portal" ? "email" : r.channel;
-  const checks = r.checks.filter((c) => keys.includes(c.key));
   const [via, setVia] = useState<ReplyVia>(initialVia);
-  const [message, setMessage] = useState(() => composeRequest(r, checks, initialVia));
+  const [message, setMessage] = useState(() => composeRequest(r, keys, initialVia));
   const [touched, setTouched] = useState(false);
   const pickVia = (v: ReplyVia) => {
     setVia(v);
-    if (!touched) setMessage(composeRequest(r, checks, v));
+    if (!touched) setMessage(composeRequest(r, keys, v));
   };
   const confirm = () => {
     send(r.id, { via, message: message.trim() });
@@ -36,7 +35,7 @@ export function RequestInfoModal({ r, keys, onClose }: { r: Referral; keys: Chec
       }
     >
       <div className="flex flex-col gap-4">
-        <Banner tone="neutral">The message comes from {checks.length ? `the ${checks.length} open ${checks.length === 1 ? "finding" : "findings"}` : "this referral"}. The referral moves to Awaiting info until they reply.</Banner>
+        <Banner tone="neutral">The message comes from {keys.length ? `the ${keys.length} open ${keys.length === 1 ? "item" : "items"}` : "this referral"}. The referral moves to Awaiting info until they reply.</Banner>
         <Field label="Send by">
           <Dropdown variant="field" ariaLabel="Send by" value={via} options={VIA.map((v) => ({ value: v, label: REPLY_VIA_LABEL[v] }))} onChange={pickVia} />
         </Field>

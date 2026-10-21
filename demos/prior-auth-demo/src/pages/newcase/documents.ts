@@ -24,7 +24,7 @@ export const DOC_SLOTS: Record<DocSlotId, DocSlotDef> = {
     label: "Referral or admission order",
     hint: "Needs to be a referral or an admission order",
     sampleName: "Referral (J.M.).pdf",
-    keywords: ["referral", "admission order"],
+    keywords: ["referral", "admission order", "admit order"],
     checks: ["The clinician signature is present", "The document has not expired", "The clinician credentials include an MD, NP, DO, PA or PhD", "The patient's age or date of birth is on the document", "Diagnosis codes are listed (F10.20)"],
     warn: { at: 0, text: "The clinician signature is missing from the document" },
   },
@@ -33,7 +33,7 @@ export const DOC_SLOTS: Record<DocSlotId, DocSlotDef> = {
     label: "Diagnosis report (psychiatric evaluation)",
     hint: "The latest evaluation with diagnoses and severity scores",
     sampleName: "Psychiatric evaluation and H&P.pdf",
-    keywords: ["psychiatric", "evaluation", "h&p", "diagnos"],
+    keywords: ["psychiatric", "psych", "eval", "h&p", "diagnos"],
     checks: ["The evaluation date is within 12 months", "The clinician signature is present", "Diagnosis codes are listed (F10.20, F33.2)", "Symptom severity scores are present (depression 17, anxiety 14)", "The patient's age or date of birth is on the document"],
     warn: { at: 3, text: "Symptom severity scores are missing from the evaluation" },
   },
@@ -51,7 +51,7 @@ export const DOC_SLOTS: Record<DocSlotId, DocSlotDef> = {
     label: "Psychosocial history",
     hint: "Housing, supports and earlier treatment",
     sampleName: "Psychosocial history.pdf",
-    keywords: ["psychosocial", "social history"],
+    keywords: ["psychosocial", "social"],
     checks: ["Housing and supports are described", "Earlier treatment episodes are listed", "The history is dated and signed"],
     warn: { at: 2, text: "The history has no signature date" },
   },
@@ -60,7 +60,7 @@ export const DOC_SLOTS: Record<DocSlotId, DocSlotDef> = {
     label: "Nursing note with withdrawal scale",
     hint: "A withdrawal scale score from the last 72 hours",
     sampleName: "Nursing notes and withdrawal scale.pdf",
-    keywords: ["nursing", "withdrawal", "ciwa", "cows"],
+    keywords: ["nursing", "nurse", "withdrawal", "ciwa", "cows"],
     checks: ["A withdrawal scale is present (CIWA-Ar)", "The latest score is within 72 hours (4 on 10/18)", "Vital signs are recorded with each score", "The note is signed by a nurse"],
     warn: { at: 1, text: "The latest withdrawal score is more than 72 hours old" },
   },
@@ -78,7 +78,7 @@ export const DOC_SLOTS: Record<DocSlotId, DocSlotDef> = {
     label: "Medication list",
     hint: "Current medications with doses and start dates",
     sampleName: "Medication list.pdf",
-    keywords: ["medication", "med list"],
+    keywords: ["medication", "med list", "meds"],
     checks: ["Doses and routes are listed", "A start date is listed for each medication", "Allergies are recorded", "Dates match the psychiatric evaluation"],
     warn: { at: 3, text: "Sertraline starts 9/14 here and 9/21 in the psychiatric evaluation", resolvedBy: "sertraline", resolvedText: "Sertraline start date confirmed by you: {answer}" },
   },
@@ -87,7 +87,7 @@ export const DOC_SLOTS: Record<DocSlotId, DocSlotDef> = {
     label: "Treatment plan",
     hint: "A signed plan strengthens the request",
     sampleName: "Treatment plan (draft).pdf",
-    keywords: ["treatment plan", "plan of care"],
+    keywords: ["treatment plan", "plan of care", "tx plan"],
     checks: ["Goals are measurable", "The plan names a step-down level of care", "The plan is dated", "The clinician signature is present"],
     warn: { at: 3, text: "The clinician signature is missing. The plan is marked draft" },
     sampleWarn: true,
@@ -143,10 +143,11 @@ export function requiredDocs(payerId: PayerId | null, program: Program | null): 
 /* ------------------------------------------------------------------ validation findings */
 const hash = (s: string): number => Array.from(s).reduce((a, c) => a + c.charCodeAt(0), 0);
 
-/** Findings for one file. The sample files are scripted. Any other file gets one amber finding in about one case in five. */
-export function makeFindings(slot: DocSlotId, sample: boolean, fileName: string, sertralineConflict = false): DocFinding[] {
+/** Findings for one file. The sample files are scripted. Any other file gets one amber finding in about one case in five.
+    A document that came in with a referral was already checked there, so it is never flagged. */
+export function makeFindings(slot: DocSlotId, sample: boolean, fileName: string, sertralineConflict = false, clean = false): DocFinding[] {
   const def = DOC_SLOTS[slot];
-  const flawed = sample ? !!def.sampleWarn || (sertralineConflict && slot === "meds") : hash(fileName) % 5 === 0;
+  const flawed = !clean && (sample ? !!def.sampleWarn || (sertralineConflict && slot === "meds") : hash(fileName) % 5 === 0);
   return def.checks.map((text, i) =>
     i === def.warn.at && flawed
       ? { id: `${slot}-${i}`, ok: false, text: def.warn.text, resolvedBy: def.warn.resolvedBy, resolvedText: def.warn.resolvedText }
@@ -155,8 +156,10 @@ export function makeFindings(slot: DocSlotId, sample: boolean, fileName: string,
 }
 export function makeDocument(slot: DocSlotId, file: DemoFile, sertralineConflict = false, status: DraftDocument["status"] = "validating"): DraftDocument {
   const sample = file.name === DOC_SLOTS[slot].sampleName;
-  return { slot, file, sample, status, findings: makeFindings(slot, sample, file.name, sertralineConflict) };
+  return { slot, file, sample, status, findings: makeFindings(slot, sample, file.name, sertralineConflict, file.id.startsWith("ref-")) };
 }
+/** The document that came in with the attached referral: attachReferral gives its file the id `ref-<referral id>`. */
+export const isReferralDoc = (referralId: string | undefined, doc: DraftDocument | undefined): boolean => !!referralId && doc?.file.id === `ref-${referralId}`;
 export const sampleFile = (slot: DocSlotId): DemoFile => ({ id: `sample-${slot}`, name: DOC_SLOTS[slot].sampleName, sizeKb: 120 + ((hash(slot) * 7) % 260) });
 
 /** A finding is open until the person answers the question that settles it. */
@@ -167,11 +170,22 @@ export function findingText(f: DocFinding, answers: Answer[]): string {
 }
 export const openFindings = (doc: DraftDocument, answers: Answer[]): number => doc.findings.filter((f) => isOpen(f, answers)).length;
 
-/** Reader sorts a pile of files into the slots by what the file name says. */
-export function slotForFile(name: string, taken: Set<DocSlotId>): DocSlotId | null {
+/** The order a tie between two slots is settled in: the specific documents first, the general ones last. */
+const MATCH_ORDER: DocSlotId[] = ["referral", "asam", "uds", "nursing", "meds", "treatment_plan", "therapy_note", "attendance", "psychosocial", "psych_eval"];
+
+/** Reader sorts a file into a slot by what its name says. The longest matching word wins, so "psychosocial" beats "psych". Null when the name says nothing. */
+export function slotForFile(name: string): DocSlotId | null {
   const n = name.toLowerCase();
-  const hit = (Object.values(DOC_SLOTS) as DocSlotDef[]).find((d) => !taken.has(d.id) && d.keywords.some((k) => n.includes(k)));
-  return hit?.id ?? null;
+  let best: DocSlotId | null = null;
+  let bestLen = 0;
+  for (const id of MATCH_ORDER) {
+    const len = Math.max(0, ...DOC_SLOTS[id].keywords.filter((k) => n.includes(k)).map((k) => k.length));
+    if (len > bestLen) {
+      best = id;
+      bestLen = len;
+    }
+  }
+  return best;
 }
 
 /* ------------------------------------------------------------------ previews (the eye icon and the source chips) */

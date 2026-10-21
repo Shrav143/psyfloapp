@@ -11,7 +11,7 @@ export interface DemoFile {
 }
 
 /** A drop zone. Accepts real files (only the name and size are kept) or a one-click sample file for demos. */
-export function FileDrop({ onFiles, sampleName, hint = "Drag and drop files here, or click to select files", disabled, className }: { onFiles: (files: DemoFile[]) => void; sampleName?: string; hint?: string; disabled?: boolean; className?: string }) {
+export function FileDrop({ onFiles, sampleName, hint = "Drag and drop files here, or click to select files", title, variant = "bar", disabled, className }: { onFiles: (files: DemoFile[]) => void; sampleName?: string; hint?: string; /** The big panel's headline. */ title?: string; /** "panel" is the large zone for dumping a whole pile of files at once. */ variant?: "bar" | "panel"; disabled?: boolean; className?: string }) {
   const input = useRef<HTMLInputElement>(null);
   const [over, setOver] = useState(false);
   const take = (list: FileList | null) => {
@@ -36,10 +36,20 @@ export function FileDrop({ onFiles, sampleName, hint = "Drag and drop files here
           setOver(false);
           if (!disabled) take(e.dataTransfer.files);
         }}
-        className={cn("flex h-[52px] cursor-pointer items-center justify-center gap-2.5 rounded-xl border border-dashed text-[13px] text-muted transition-colors", over ? "border-forest bg-[#F3F7F4]" : "border-field bg-white hover:bg-tile", disabled && "pointer-events-none opacity-50")}
+        className={cn("flex cursor-pointer items-center justify-center border border-dashed text-muted transition-colors", variant === "panel" ? "min-h-[168px] flex-col gap-2 rounded-2xl px-6 text-center" : "h-[52px] gap-2.5 rounded-xl text-[13px]", over ? "border-forest bg-[#F3F7F4]" : variant === "panel" ? "border-field bg-tile hover:bg-[#F3EDE4]" : "border-field bg-white hover:bg-tile", disabled && "pointer-events-none opacity-50")}
       >
-        <UploadCloud size={16} className="ico" />
-        {hint}
+        {variant === "panel" ? (
+          <>
+            <span className="grid h-12 w-12 place-items-center rounded-full bg-white text-forest"><UploadCloud size={24} className="ico" /></span>
+            {title ? <span className="font-serif text-[20px] font-semibold text-ink">{title}</span> : null}
+            <span className="max-w-[560px] text-[13.5px]">{hint}</span>
+          </>
+        ) : (
+          <>
+            <UploadCloud size={16} className="ico" />
+            {hint}
+          </>
+        )}
       </div>
       <input ref={input} type="file" multiple hidden onChange={(e) => take(e.target.files)} />
       {sampleName ? (

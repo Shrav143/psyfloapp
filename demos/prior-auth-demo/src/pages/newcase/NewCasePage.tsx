@@ -34,8 +34,7 @@ export default function NewCasePage() {
     if (missingReferral) st.toast({ title: "Referral not found", body: `We could not find ${missingReferral}. Start from a blank case instead.`, tone: "mid" });
     const id = st.createCaseDraft(init);
     if (init.referralId) attachReferral(id, init.referralId);
-    const view = params.get("view");
-    nav(paths.newCase({ draft: id, view: view === "inbox" || view === "none" || view === "upload" ? view : undefined }), { replace: true });
+    nav(paths.newCase({ draft: id }), { replace: true });
   }, [draftId, params, nav]);
 
   /* A draft whose agents already ran reopens on the agents step, not on intake. */
@@ -86,8 +85,8 @@ export default function NewCasePage() {
   const at = stepIndex(draft);
   const title = at === 3 ? "Ready for your signature" : "New case";
   const SUBS = [
-    "Start with the referral. Upload the one that came in, or pick it from the inbox.",
-    "Add the medical records. The agents read them and check the payer's rules, and you review and sign.",
+    "Start with the referral. Drop the documents and Reader lists anything that is missing.",
+    "Drop what you have. Reader sorts the files and lists what is still missing, then the agents check the payer's rules.",
     `The agents are reading the chart and checking ${payer?.shortName ?? "the payer"}'s rules. Questions come to you only when they must.`,
     "Nothing goes to the payer until a clinician signs.",
   ];

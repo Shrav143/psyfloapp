@@ -1,5 +1,5 @@
 /* Intake logic that has no screen of its own: what is missing, where a draft starts from, the sample chart, the EMR pull. */
-import { maskMember, PLAN_TYPE, type CaseDraft } from "@/data/cases";
+import { maskMember, PLAN_TYPE, type CaseDraft, type DocSlotId } from "@/data/cases";
 import { simulateCheck, type EbPatient } from "@/data/eligibility";
 import { PAYERS } from "@/data/seed";
 import { PROGRAM_LABEL, PROGRAMS, type NewCasePrefill, type PayerId, type Program, type RequestType } from "@/data/types";
@@ -7,7 +7,7 @@ import { useStore } from "@/store";
 import type { AppState } from "@/store";
 import { referralPrefill } from "@/store/referrals";
 import { paths } from "@/routes";
-import { makeDocument, requiredDocs, sampleFile } from "./documents";
+import { DOC_SLOTS, makeDocument, requiredDocs, sampleFile } from "./documents";
 import { ICD_CODES, type EmrChart } from "./lookups";
 
 export const memberReady = (id: string): boolean => id.replace(/\W/g, "").length >= 4;
@@ -32,18 +32,29 @@ export function coverageFor(d: CaseDraft, clock: number): EbPatient | null {
 }
 export const coverageKey = (d: CaseDraft): string | null => (d.payerId && d.program && memberReady(d.memberId) ? `${d.payerId}|${d.program}|${d.memberId.replace(/\W/g, "").slice(-4)}|${d.startDate}` : null);
 
-/** What still stops Continue, in words. Empty means the intake is complete. */
+/* What stops Continue. The checklist rows and the footer hint both read these, so they always agree. */
+export const patientReady = (d: CaseDraft): boolean => !!d.patient.initials.trim() && !!d.patient.age;
+/** Required documents that are not in yet. */
+function missingRequired(d: CaseDraft): DocSlotId[] {
+  const have = new Set(d.documents.map((x) => x.slot));
+  return requiredDocs(d.payerId, d.program).filter((r) => r.required && !have.has(r.slot)).map((r) => r.slot);
+}
+const stillReading = (d: CaseDraft): boolean => d.documents.some((x) => x.status === "validating");
+/** A coverage problem stops Continue, except on a retro-authorization, which exists to cover a gap. */
+const coverageBlocks = (d: CaseDraft): boolean => d.coverage?.verdict === "fix" && d.type !== "Retro-authorization";
+
+/** What still stops Continue, in the checklist's own words. Empty means the intake is complete. */
 export function intakeMissing(d: CaseDraft): string[] {
   const out: string[] = [];
-  if (!d.patient.initials.trim() || !d.patient.age) out.push("the patient's initials and age");
-  if (!d.payerId) out.push("the payer");
-  if (!d.program) out.push("the level of care");
-  if (!d.type) out.push("the request type");
-  const slots = new Set(d.documents.map((x) => x.slot));
-  const lacking = requiredDocs(d.payerId, d.program).filter((r) => r.required && !slots.has(r.slot)).length;
-  if (lacking) out.push(`${lacking} required ${lacking === 1 ? "document" : "documents"}`);
-  if (d.documents.some((x) => x.status === "validating")) out.push("the document checks to finish");
-  if (d.coverage?.verdict === "fix" && d.type !== "Retro-authorization") out.push("coverage fixed, or another payer");
+  if (!patientReady(d)) out.push("Patient initials and age");
+  if (!d.payerId) out.push("Payer and plan");
+  if (!d.program) out.push("Level of care");
+  if (!d.type) out.push("Request type");
+  const lacking = missingRequired(d);
+  if (lacking.length > 2) out.push(`${lacking.length} required documents`);
+  else out.push(...lacking.map((slot) => DOC_SLOTS[slot].label));
+  if (stillReading(d)) out.push("Reader to finish reading");
+  if (coverageBlocks(d)) out.push("Coverage, or another payer");
   return out;
 }
 
@@ -84,7 +95,19 @@ export function initialDraft(q: URLSearchParams, st: AppState): { init: Partial<
 }
 
 /* ------------------------------------------------------------------ one-click helpers (event handlers only) */
-const dx = (...codes: string[]) => ICD_CODES.filter((c) => codes.includes(c.code));
+export const dx = (...codes: string[]) => ICD_CODES.filter((c) => codes.includes(c.code));
+
+/** J.M.'s chart: what the sample chart fills in, and what Reader fills in when it reads a file that is not an insurance card. */
+export const SAMPLE_CHART = {
+  patient: { initials: "J.M.", age: 34 },
+  payerId: "summit" as PayerId,
+  memberId: "SM7403964821",
+  program: "RES" as Program,
+  type: "Admission" as RequestType,
+  startDate: "2026-10-20",
+  reason: "Relapse on 9/28 after eleven months of abstinence, with worsening depression.",
+  diagnoses: ["F10.20", "F33.2"],
+};
 
 /** Everything for J.M. in one click: patient, insurance, request, diagnoses and 8 of the 9 Summit documents. The therapy note is left out so the caution shows.
     A case that already has a patient (started from a referral or an EMR pull) keeps that patient and request: the sample chart only adds the documents. */
@@ -92,29 +115,29 @@ export function applySampleChart(id: string): void {
   const st = useStore.getState();
   const draft = st.caseDrafts.find((d) => d.id === id);
   const keep = !!draft && (!!draft.referralId || !!draft.emrChart || !!draft.patient.initials.trim());
-  const payerId = keep && draft?.payerId ? draft.payerId : "summit";
-  const program = keep && draft?.program ? draft.program : "RES";
+  const payerId = keep && draft?.payerId ? draft.payerId : SAMPLE_CHART.payerId;
+  const program = keep && draft?.program ? draft.program : SAMPLE_CHART.program;
   if (keep && draft) {
     st.patchCaseDraft(id, {
       cardRead: true,
       phase: "records",
-      memberId: draft.memberId || "SM7403964821",
-      startDate: draft.startDate || "2026-10-20",
-      type: draft.type ?? "Admission",
+      memberId: draft.memberId || SAMPLE_CHART.memberId,
+      startDate: draft.startDate || SAMPLE_CHART.startDate,
+      type: draft.type ?? SAMPLE_CHART.type,
     });
   } else {
     st.patchCaseDraft(id, {
-      patient: { initials: "J.M.", age: 34 },
-      payerId: "summit",
-      planType: PLAN_TYPE.summit,
-      memberId: "SM7403964821",
+      patient: { ...SAMPLE_CHART.patient },
+      payerId: SAMPLE_CHART.payerId,
+      planType: PLAN_TYPE[SAMPLE_CHART.payerId],
+      memberId: SAMPLE_CHART.memberId,
       cardRead: true,
       phase: "records",
-      program: "RES",
-      type: "Admission",
-      startDate: "2026-10-20",
-      reason: "Relapse on 9/28 after eleven months of abstinence, with worsening depression.",
-      diagnoses: dx("F10.20", "F33.2"),
+      program: SAMPLE_CHART.program,
+      type: SAMPLE_CHART.type,
+      startDate: SAMPLE_CHART.startDate,
+      reason: SAMPLE_CHART.reason,
+      diagnoses: dx(...SAMPLE_CHART.diagnoses),
       emrChart: undefined,
     });
   }

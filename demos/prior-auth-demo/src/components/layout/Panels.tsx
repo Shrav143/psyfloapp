@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowUp, CheckCheck } from "lucide-react";
+import { ArrowUp, CheckCheck, Sparkles } from "lucide-react";
 import { ActorBadge, AgentBadge, Button, Drawer } from "@/components/ui";
 import { PAYERS } from "@/data/seed";
 import { cn } from "@/lib/cn";
@@ -51,11 +51,20 @@ export function NotificationsPanel() {
   );
 }
 
-/* ------------------------------------------------------------------ Ask Psyflo */
+/* ------------------------------------------------------------------ Ask FLO: Psyflo's assistant is called FLO */
 interface Msg {
-  from: "you" | "psyflo";
+  from: "you" | "flo";
   text: string;
   link?: { label: string; to: string };
+}
+
+/** FLO has no agent badge of its own: it is the assistant that sits on top of the sixteen agents. */
+function FloBadge({ size = 30 }: { size?: number }) {
+  return (
+    <span aria-label="FLO" role="img" className="grid shrink-0 place-items-center rounded-full bg-forest text-white" style={{ width: size, height: size }}>
+      <Sparkles size={Math.round(size * 0.5)} className="ico" />
+    </span>
+  );
 }
 
 const SUGGEST = ["What needs me today?", "Which payers are slowest right now?", "How much money is at stake in denials?", "Why is Cardinal's approval rate down?"];
@@ -64,7 +73,7 @@ export function AskPanel() {
   const open = useStore((s) => s.askOpen);
   const setOpen = useStore((s) => s.setAskOpen);
   const nav = useNavigate();
-  const [msgs, setMsgs] = useState<Msg[]>([{ from: "psyflo", text: "Hi Jordan. Ask me about your requests, a payer, or your denials. I answer from the data on your Dashboard." }]);
+  const [msgs, setMsgs] = useState<Msg[]>([{ from: "flo", text: "Hi Jordan, I am FLO. Ask me about your requests, a payer, or your denials. I answer from the data on your Dashboard." }]);
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const end = useRef<HTMLDivElement>(null);
@@ -76,22 +85,22 @@ export function AskPanel() {
     const counts = stageCounts(requests);
     if (s.includes("slow") || s.includes("payer") && s.includes("late")) {
       const slow = [...PAYERS].filter((p) => p.avgDecisionDays > p.typicalDecisionDays).sort((a, b) => b.avgDecisionDays / b.typicalDecisionDays - a.avgDecisionDays / a.typicalDecisionDays);
-      return { from: "psyflo", text: `${slow.map((p) => `${p.shortName} is averaging ${p.avgDecisionDays} days against ${p.typicalDecisionDays} typical`).join(". ")}. Caller phones when a payer passes twice its typical time.`, link: { label: "Open Dashboard, By payer", to: paths.dashboard() } };
+      return { from: "flo", text: `${slow.map((p) => `${p.shortName} is averaging ${p.avgDecisionDays} days against ${p.typicalDecisionDays} typical`).join(". ")}. Caller phones when a payer passes twice its typical time.`, link: { label: "Open Dashboard, By payer", to: paths.dashboard() } };
     }
     if (s.includes("denial") || s.includes("stake") || s.includes("money")) {
       const d = requests.filter((r) => r.stage === "appeal");
       const total = d.reduce((a, r) => a + r.atStake, 0);
-      return { from: "psyflo", text: `${d.length} denials are open, with ${money(total)} at stake. The nearest deadline is D-3318 (Cardinal), a peer-to-peer call Wednesday 9 to 11 am, where the chance of winning is 64%.`, link: { label: "Open Denial Intelligence", to: paths.denials("D-3318") } };
+      return { from: "flo", text: `${d.length} denials are open, with ${money(total)} at stake. The nearest deadline is D-3318 (Cardinal), a peer-to-peer call Wednesday 9 to 11 am, where the chance of winning is 64%.`, link: { label: "Open Denial Intelligence", to: paths.denials("D-3318") } };
     }
     if (s.includes("cardinal") || s.includes("approval rate")) {
-      return { from: "psyflo", text: "Cardinal approved 63% as asked over the last 90 days, down 11 points. Historian links most of the drop to continued-stay evidence. Cardinal also published criteria version 2026.3, which affects 4 drafts you have not sent.", link: { label: "Open Payers, Cardinal, Changes", to: paths.payers("cardinal", "changes") } };
+      return { from: "flo", text: "Cardinal approved 63% as asked over the last 90 days, down 11 points. Historian links most of the drop to continued-stay evidence. Cardinal also published criteria version 2026.3, which affects 4 drafts you have not sent.", link: { label: "Open Payers, Cardinal, Changes", to: paths.payers("cardinal", "changes") } };
     }
     if (s.includes("need") || s.includes("today") || s.includes("first")) {
       const needs = requests.filter((r) => r.needsYou);
-      return { from: "psyflo", text: `${needs.length} requests need you: ${needs.map((r) => r.id).join(", ")}. ${counts.info_requested} payer${counts.info_requested === 1 ? "" : "s"} asked for more information, and ${counts.preparing} cases are being prepared. Start with P-1499. Harborview is waiting and its clock is past typical.`, link: { label: "Open Dashboard", to: paths.dashboard() } };
+      return { from: "flo", text: `${needs.length} requests need you: ${needs.map((r) => r.id).join(", ")}. ${counts.info_requested} payer${counts.info_requested === 1 ? "" : "s"} asked for more information, and ${counts.preparing} cases are being prepared. Start with P-1499. Harborview is waiting and its clock is past typical.`, link: { label: "Open Dashboard", to: paths.dashboard() } };
     }
-    if (s.includes("referral")) return { from: "psyflo", text: "New referrals are waiting for review. Reader has already checked each document, and Verify has run coverage for the ones with an insurance card.", link: { label: "Open the referral inbox", to: paths.referrals() } };
-    return { from: "psyflo", text: `I did not find an answer to that in the demo data. Try one of the suggestions below. (Clock: ${ago(0, clock)}.)` };
+    if (s.includes("referral")) return { from: "flo", text: "New referrals are waiting for review. Reader has already checked each document, and Verify has run coverage for the ones with an insurance card.", link: { label: "Start a case from a referral", to: paths.referrals() } };
+    return { from: "flo", text: `I did not find an answer to that in the demo data. Try one of the suggestions below. (Clock: ${ago(0, clock)}.)` };
   };
 
   const send = (q: string) => {
@@ -106,7 +115,7 @@ export function AskPanel() {
   };
 
   return (
-    <Drawer open={open} onClose={() => setOpen(false)} width={460} title="Ask Psyflo" subtitle="Analyst answers from your data" footer={
+    <Drawer open={open} onClose={() => setOpen(false)} width={460} title="Ask FLO" subtitle="Your assistant, answering from your data" footer={
       <form onSubmit={(e) => { e.preventDefault(); send(text); }} className="flex items-center gap-2">
         <input value={text} onChange={(e) => setText(e.target.value)} placeholder="Ask a question" aria-label="Ask a question" className="h-[42px] flex-1 rounded-xl border border-field bg-white px-3.5 text-sm focus:border-forest focus:outline-none" />
         <Button type="submit" variant="primary" icon={ArrowUp} disabled={!text.trim() || busy}>Send</Button>
@@ -115,7 +124,7 @@ export function AskPanel() {
       <div className="flex flex-col gap-3">
         {msgs.map((m, i) => (
           <div key={i} className={cn("flex gap-2.5", m.from === "you" && "flex-row-reverse")}>
-            {m.from === "psyflo" ? <AgentBadge agent="analyst" size={30} /> : <ActorBadge actor="you" size={30} />}
+            {m.from === "flo" ? <FloBadge /> : <ActorBadge actor="you" size={30} />}
             <div className={cn("max-w-[330px] rounded-2xl px-3.5 py-2.5 text-sm", m.from === "you" ? "bg-forest text-white" : "border border-edge bg-white")}>
               {m.text}
               {m.link ? (
@@ -124,7 +133,7 @@ export function AskPanel() {
             </div>
           </div>
         ))}
-        {busy ? <div className="flex items-center gap-2 text-sm text-muted"><AgentBadge agent="analyst" size={30} /><span className="psy-pulse">Analyst is working…</span></div> : null}
+        {busy ? <div className="flex items-center gap-2 text-sm text-muted"><FloBadge /><span className="psy-pulse">FLO is working…</span></div> : null}
         <div ref={end} />
       </div>
       {msgs.length < 3 ? (

@@ -6,8 +6,9 @@ import { buildDocs, issueCount, locate, type CheckKey, type DocId } from "@/data
 import { NEW_CASE_STEPS } from "@/pages/newcase/steps";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
-import { unresolved } from "@/store/referralsLogic";
+import { askable, type AskKey } from "@/store/referralsLogic";
 import { ActivityTab } from "./ActivityTab";
+import { checklistPath } from "./checklist";
 import { CoverageTab } from "./CoverageTab";
 import { DecisionBanners, type DetailTab } from "./DecisionBanners";
 import { DocumentPanel } from "./DocumentPanel";
@@ -22,7 +23,7 @@ import { ScheduleModal } from "./modals/ScheduleModal";
 import { ReferralHeader } from "./ReferralHeader";
 import { ValidationTab } from "./ValidationTab";
 
-type ModalState = { kind: "accept" } | { kind: "info"; keys: CheckKey[] } | { kind: "decline" } | { kind: "override"; key: CheckKey } | { kind: "schedule" } | { kind: "note" } | null;
+type ModalState = { kind: "accept" } | { kind: "info"; keys: AskKey[] } | { kind: "decline" } | { kind: "override"; key: CheckKey } | { kind: "schedule" } | { kind: "note" } | null;
 
 /** One referral: the document on the left, what the agents made of it on the right, and the decision. */
 export default function ReferralDetailPage() {
@@ -56,9 +57,9 @@ export default function ReferralDetailPage() {
   if (!r) {
     return (
       <Page>
-        <Crumbs items={[{ label: "New case", to: paths.newCase({ draft: draftId }) }, { label: "Referral inbox", to: paths.newCase({ draft: draftId, view: "inbox" }) }, { label: id }]} />
-        <EmptyState icon={SearchX} title="That referral is not in the demo" action={<Link to={paths.newCase({ draft: draftId, view: "inbox" })}><Button>Back to the referral inbox</Button></Link>}>
-          Referral {id} does not exist. Go back to the inbox to pick one.
+        <Crumbs items={[{ label: "New case", to: paths.newCase({ draft: draftId }) }, { label: "Referral", to: paths.newCase({ draft: draftId }) }, { label: id }]} />
+        <EmptyState icon={SearchX} title="That referral is not in the demo" action={<Link to={paths.newCase({ draft: draftId })}><Button>Back to the referral step</Button></Link>}>
+          Referral {id} does not exist. Go back to the referral step to drop the documents or pick one that arrived.
         </EmptyState>
       </Page>
     );
@@ -83,14 +84,13 @@ export default function ReferralDetailPage() {
     { id: "fit", label: "Fit" },
     { id: "activity", label: "Activity" },
   ];
-  const askable = unresolved(r).filter((c) => c.key !== "age").map((c) => c.key);
   const overriding = modal?.kind === "override" ? r.checks.find((c) => c.key === modal.key) : undefined;
 
   return (
     <Page>
-      <Crumbs items={[{ label: "New case", to: paths.newCase({ draft: draftId }) }, { label: "Referral inbox", to: paths.newCase({ draft: draftId, view: "inbox" }) }, { label: r.id }]} />
+      <Crumbs items={[{ label: "New case", to: paths.newCase({ draft: draftId }) }, { label: "Referral", to: draftId ? checklistPath(draftId, r.id) : paths.newCase() }, { label: r.id }]} />
       <Stepper steps={NEW_CASE_STEPS} current={0} />
-      <ReferralHeader r={r} onAccept={() => setModal({ kind: "accept" })} onInfo={() => setModal({ kind: "info", keys: askable })} onDecline={() => setModal({ kind: "decline" })} onNote={() => setModal({ kind: "note" })} onSchedule={() => setModal({ kind: "schedule" })} />
+      <ReferralHeader r={r} onAccept={() => setModal({ kind: "accept" })} onInfo={() => setModal({ kind: "info", keys: askable(r) })} onDecline={() => setModal({ kind: "decline" })} onNote={() => setModal({ kind: "note" })} onSchedule={() => setModal({ kind: "schedule" })} />
       <DecisionBanners r={r} onTab={setTab} draftId={draftId} />
       <div className="grid grid-cols-1 items-start gap-[22px] min-[1100px]:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
         <div className="min-[1100px]:sticky min-[1100px]:top-[78px]">

@@ -1,9 +1,11 @@
 import type { Option } from "@/components/ui";
 import { PAYERS, payerById } from "@/data/seed";
 import { PROGRAMS, PROGRAM_LABEL, REQUEST_TYPES, STAGES, STAGE_LABEL, type PayerId, type PayerSummary, type PsyRequest, type StageKey, type Tone } from "@/data/types";
+import { addDays, daysIn, fromISO, isISO, toISO, type DateRange } from "@/lib/dates";
 import { money, plural } from "@/lib/format";
-import { DAY, HOUR, duration, typical } from "@/lib/time";
-import { DEFAULT_FILTERS, type DashFilters } from "@/store/core";
+import { DAY, HOUR, duration, toDate, typical } from "@/lib/time";
+import type { RangePreset } from "@/components/ui";
+import { DEFAULT_FILTERS, DEFAULT_RANGE, type DashFilters } from "@/store/core";
 import { applyBaseFilters, lateness, minutesInStage, minutesLeft, stageCounts } from "@/store/selectors";
 
 /* ------------------------------------------------------------------ labels and options */
@@ -27,11 +29,19 @@ export const PAYER_OPTIONS: Option<DashFilters["payer"]>[] = [{ value: "all", la
 export const PROGRAM_OPTIONS: Option<DashFilters["program"]>[] = [{ value: "all", label: "All programs" }, ...PROGRAMS.map((p) => ({ value: p, label: PROGRAM_LABEL[p] }))];
 export const TYPE_OPTIONS: Option<DashFilters["type"]>[] = [{ value: "all", label: "All request types" }, ...REQUEST_TYPES.map((t) => ({ value: t, label: typeLabel(t) }))];
 export const STAGE_OPTIONS: Option<DashFilters["stage"]>[] = [{ value: "all", label: "All stages" }, ...STAGES.map((s) => ({ value: s, label: STAGE_LABEL[s] }))];
-export const PERIOD_OPTIONS: Option<DashFilters["period"]>[] = [
-  { value: "7d", label: "Last 7 days" },
-  { value: "30d", label: "Last 30 days" },
-  { value: "quarter", label: "This quarter" },
-];
+
+/** The demo's "today" as a calendar day. It moves when the clock is fast-forwarded. */
+export const todayOf = (clock: number): string => toISO(toDate(clock));
+/** Shortcuts in the calendar. Each ends today. */
+export function rangePresets(today: string): RangePreset[] {
+  const to = today;
+  return [
+    { label: "Last 7 days", range: { from: addDays(to, -6), to } },
+    { label: "Last 30 days", range: { from: addDays(to, -29), to } },
+    { label: "Last 90 days", range: { from: addDays(to, -89), to } },
+    { label: "This month", range: { from: `${to.slice(0, 7)}-01`, to } },
+  ];
+}
 
 /** True when any of the four narrowing filters is set (the period alone does not count). */
 export const hasNarrowingFilter = (f: DashFilters): boolean => f.payer !== "all" || f.program !== "all" || f.type !== "all" || f.stage !== "all";
@@ -39,7 +49,7 @@ export const hasNarrowingFilter = (f: DashFilters): boolean => f.payer !== "all"
 /* ------------------------------------------------------------------ URL <-> filters */
 
 const slug = (s: string): string => s.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-const FILTER_KEYS = ["payer", "program", "type", "stage", "period"] as const;
+const FILTER_KEYS = ["payer", "program", "type", "stage", "from", "to"] as const;
 
 /** Only non-default filters are written to the address, so a clean dashboard has a clean URL. */
 export function filtersToEntries(f: Partial<DashFilters>): [string, string][] {
@@ -48,7 +58,7 @@ export function filtersToEntries(f: Partial<DashFilters>): [string, string][] {
   if (f.program && f.program !== "all") out.push(["program", f.program.toLowerCase()]);
   if (f.type && f.type !== "all") out.push(["type", slug(f.type)]);
   if (f.stage && f.stage !== "all") out.push(["stage", f.stage]);
-  if (f.period && f.period !== DEFAULT_FILTERS.period) out.push(["period", f.period]);
+  if (f.range && (f.range.from !== DEFAULT_RANGE.from || f.range.to !== DEFAULT_RANGE.to)) out.push(["from", f.range.from], ["to", f.range.to]);
   return out;
 }
 export const filterKey = (f: Partial<DashFilters>): string => filtersToEntries(f).map(([k, v]) => `${k}=${v}`).join("&");
@@ -65,8 +75,12 @@ export function paramsToFilters(p: URLSearchParams): Partial<DashFilters> {
   if (matchedType) out.type = matchedType;
   const stage = p.get("stage");
   if (stage && STAGES.some((s) => s === stage)) out.stage = stage as StageKey;
-  const period = p.get("period");
-  if (period === "7d" || period === "30d" || period === "quarter") out.period = period;
+  const from = p.get("from");
+  const to = p.get("to");
+  if (isISO(from) && isISO(to) && from <= to) out.range = { from, to };
+  /* Links from before the calendar used a named period. */
+  const old = p.get("period");
+  if (!out.range && (old === "7d" || old === "30d" || old === "quarter")) out.range = { from: addDays(DEFAULT_RANGE.to, old === "7d" ? -6 : old === "30d" ? -29 : -89), to: DEFAULT_RANGE.to };
   return out;
 }
 
@@ -229,10 +243,11 @@ export const isDenial = (r: PsyRequest): boolean => r.track === "denial" || r.id
 
 /* ------------------------------------------------------------------ payers at a glance */
 
-const PERIOD_FACTOR: Record<DashFilters["period"], number> = { "7d": 7 / 30, "30d": 1, quarter: 3 };
-const PERIOD_WORD: Record<DashFilters["period"], string> = { "7d": "7 d", "30d": "30 d", quarter: "quarter" };
-// Small deterministic shifts so another period looks like a different window, not a rescaled one.
-const SHIFT: Record<DashFilters["period"], number[]> = { "7d": [-3, 2, 1, -2, 3, -1], "30d": [0, 0, 0, 0, 0, 0], quarter: [2, -1, 0, 1, -2, 1] };
+/* The seed holds 30 days of figures. A shorter or longer range scales them, and a small shift per range makes it look like another window rather than a rescale. */
+const SHIFTS = [-3, 2, 1, -2, 3, -1];
+const isDefault = (r: DateRange): boolean => r.from === DEFAULT_RANGE.from && r.to === DEFAULT_RANGE.to;
+const factorOf = (r: DateRange): number => daysIn(r) / 30;
+const shiftOf = (r: DateRange, i: number): number => (isDefault(r) ? 0 : SHIFTS[(i + daysIn(r) + fromISO(r.from).getDate()) % SHIFTS.length]);
 
 export interface PayerRow {
   payer: PayerSummary;
@@ -244,7 +259,8 @@ export interface PayerRow {
   over: boolean;
 }
 
-export const periodWord = (p: DashFilters["period"]): string => PERIOD_WORD[p];
+/** "30 d", "7 d" or "12 d": the length of the range, for column titles. */
+export const periodWord = (r: DateRange): string => `${daysIn(r)} d`;
 
 /** Waiting counts follow Program and Request type; the payer rows themselves are never filtered away. */
 export function payerRows(requests: PsyRequest[], f: DashFilters): PayerRow[] {
@@ -255,9 +271,9 @@ export function payerRows(requests: PsyRequest[], f: DashFilters): PayerRow[] {
     return {
       payer,
       waiting,
-      approved: payer.approvedAsAsked + SHIFT[f.period][i],
-      denied: Math.round(payer.denied30d * PERIOD_FACTOR[f.period]),
-      infoAsks: Math.round(payer.infoAsks30d * PERIOD_FACTOR[f.period]),
+      approved: Math.min(100, payer.approvedAsAsked + shiftOf(f.range, i)),
+      denied: Math.round(payer.denied30d * factorOf(f.range)),
+      infoAsks: Math.round(payer.infoAsks30d * factorOf(f.range)),
       over: payer.avgDecisionDays > payer.typicalDecisionDays * 1.15,
     };
   });

@@ -64,19 +64,19 @@ export function ValidationTab({ r, onView, onRequest, onOverride }: Props) {
                   <Icon c={c} />
                   <div className="min-w-0 flex-1">
                     <div className="font-medium">{c.state === "pass" ? c.label : CHECK_PROBLEM[c.key]}</div>
-                    <div className="text-[13px] text-muted">{c.resolved?.how === "override" ? `Overridden: ${c.resolved.reason}` : c.resolved?.how === "reply" ? `Fixed by the referrer's reply. Before: ${c.detail}` : c.detail}</div>
+                    <div className="text-[13px] text-muted">{c.resolved?.how === "override" ? `Marked OK: ${c.resolved.reason}` : c.resolved?.how === "reply" ? `Fixed by the referrer's reply. Before: ${c.detail}` : c.detail}</div>
                     <button type="button" onClick={() => onView(CHECK_EVIDENCE[c.key])} className="mt-1 text-[13px] font-medium text-forest hover:underline">Show in document</button>
                   </div>
                   <div className="shrink-0">
                     {c.resolved ? (
-                      <Pill tone="good">{c.resolved.how === "override" ? "Overridden" : "Fixed by reply"}</Pill>
+                      <Pill tone="good">{c.resolved.how === "override" ? "Marked OK" : "Fixed by reply"}</Pill>
                     ) : c.state !== "pass" && canAct ? (
                       <Dropdown<ResolveChoice>
                         ariaLabel={`Resolve: ${CHECK_PROBLEM[c.key]}`}
                         value=""
                         placeholder="Resolve"
                         menuWidth={210}
-                        options={[{ value: "info", label: "Request information" }, { value: "override", label: "Override with reason" }]}
+                        options={[{ value: "info", label: "Request information" }, { value: "override", label: "Mark OK with reason" }]}
                         onChange={(v) => (v === "info" ? onRequest([c.key]) : v === "override" ? onOverride(c.key) : undefined)}
                       />
                     ) : c.state !== "pass" ? (

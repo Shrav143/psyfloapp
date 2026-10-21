@@ -1,10 +1,8 @@
 import { Globe, Mail, Phone, Printer, Send, type LucideIcon } from "lucide-react";
-import { Chip, Pill } from "@/components/ui";
-import { CHANNEL_LABEL, STATUS_LABEL, STATUS_TONE, URGENCY_LABEL, URGENCY_TONE, issueCount, hasFail, staffById, type Channel, type ReferralStatus, type Referral, type StaffId } from "@/data/referrals";
-import { payerById } from "@/data/seed";
-import { PROGRAM_LABEL, type Urgency } from "@/data/types";
+import { Pill } from "@/components/ui";
+import { CHANNEL_LABEL, STATUS_LABEL, STATUS_TONE, URGENCY_LABEL, URGENCY_TONE, staffById, type Channel, type ReferralStatus, type StaffId } from "@/data/referrals";
+import type { Urgency } from "@/data/types";
 import { cn } from "@/lib/cn";
-import { clockInfo, coverageVerdict } from "./metrics";
 
 const CHANNEL_ICON: Record<Channel, LucideIcon> = { fax: Printer, eReferral: Send, portal: Globe, phone: Phone, email: Mail };
 
@@ -26,8 +24,6 @@ export function ChannelTag({ channel, className }: { channel: Channel; className
   );
 }
 
-export const ProgramChip = ({ program }: { program: Referral["program"] }) => <Chip>{PROGRAM_LABEL[program]}</Chip>;
-
 export function OwnerAvatar({ owner, showName }: { owner: StaffId | null; showName?: boolean }) {
   if (!owner) return <span className="text-[13px] text-muted">Unassigned</span>;
   const s = staffById(owner);
@@ -38,38 +34,5 @@ export function OwnerAvatar({ owner, showName }: { owner: StaffId | null; showNa
       </span>
       {showName ? <span className="text-sm">{s.name}</span> : null}
     </span>
-  );
-}
-
-/** "2 issues" in ochre, terracotta when one is a hard fail, "All clear" in green. */
-export function DocCheckPill({ r }: { r: Referral }) {
-  const n = issueCount(r.checks);
-  if (!n) return <Pill tone="good">All clear</Pill>;
-  return <Pill tone={hasFail(r.checks) ? "risk" : "mid"}>{n === 1 ? "1 issue" : `${n} issues`}</Pill>;
-}
-
-export function CoverageCell({ r }: { r: Referral }) {
-  const v = coverageVerdict(r);
-  return (
-    <div>
-      <div className="whitespace-nowrap text-[13px] font-medium">{r.payerId ? payerById(r.payerId).shortName : "No payer listed"}</div>
-      <Pill tone={v.tone} className="mt-1">
-        {v.label}
-      </Pill>
-    </div>
-  );
-}
-
-const TONE_TEXT = { ok: "text-ink", late: "text-mid", very: "text-risk", quiet: "text-ink" } as const;
-export function ClockCell({ r, clock }: { r: Referral; clock: number }) {
-  const c = clockInfo(r, clock);
-  return (
-    <div>
-      <div>
-        <b className={cn("font-semibold", TONE_TEXT[c.tone])}>{c.main}</b>
-        {c.of ? <span className="text-muted"> {c.of}</span> : null}
-      </div>
-      {c.note ? <div className={cn("text-xs", c.tone === "late" ? "text-mid" : c.tone === "very" ? "text-risk" : "text-muted")}>{c.note}</div> : null}
-    </div>
   );
 }

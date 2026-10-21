@@ -7,7 +7,7 @@ import { blockedInHosted } from "@/lib/hosted";
 import { ago, stamp } from "@/lib/time";
 import { useStore } from "@/store";
 import { ChannelTag, StatusPill, UrgencyPill } from "./Chips";
-import { pastTarget } from "./metrics";
+import { pastTarget } from "./arrived";
 
 type MoreChoice = "" | "reply" | "download" | "copy";
 type OwnerChoice = StaffId | "none";

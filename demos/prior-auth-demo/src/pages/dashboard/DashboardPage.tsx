@@ -77,7 +77,7 @@ export default function DashboardPage() {
         onClear={clearFilters}
         canClear={hasNarrowingFilter(filters)}
       />
-      <PayersTable rows={payers} selected={filters.payer} period={filters.period} narrowed={filters.program !== "all" || filters.type !== "all"} onPick={(id) => setFilter("payer", id)} />
+      <PayersTable rows={payers} selected={filters.payer} range={filters.range} narrowed={filters.program !== "all" || filters.type !== "all"} onPick={(id) => setFilter("payer", id)} />
       {current ? <RequestDrawer request={current} onClose={close} onSwitch={swap} /> : null}
     </Page>
   );

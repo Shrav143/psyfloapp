@@ -1,28 +1,14 @@
 import type { StateCreator } from "zustand";
-import { CAPACITY_SEED, SAMPLE_COUNT, SEED_REFERRALS, sampleReferral, staffById, DECLINE_LABEL, parseDiagnoses, type CheckKey, type DeclineReason, type FieldKey, type Referral, type ReplyVia, type SourceKind, type StaffId } from "@/data/referrals";
-import { PROGRAM_LABEL, PROGRAMS, type NewCasePrefill, type PayerId, type Program, type Urgency } from "@/data/types";
+import { CAPACITY_SEED, SAMPLE_COUNT, SEED_REFERRALS, sampleReferral, staffById, DECLINE_LABEL, isOpen, parseDiagnoses, type CheckKey, type DeclineReason, type FieldKey, type Referral, type ReplyVia, type StaffId } from "@/data/referrals";
+import { PROGRAM_LABEL, PROGRAMS, type NewCasePrefill, type Program } from "@/data/types";
 import { plural } from "@/lib/format";
 import { paths } from "@/routes";
 import type { AppState } from "./index";
 import * as T from "./referralsLogic";
 
-/* Referrals (owner: referrals module). The pipeline, the dashboard filters, bed capacity and the demo
-   controls. Every transition is in referralsLogic.ts; this file wires them to toasts and notifications. */
+/* Referrals (owner: referrals module). The pipeline, bed capacity and the demo controls. Every transition
+   is in referralsLogic.ts; this file wires them to toasts and notifications. */
 
-export type StatusView = "review" | "new" | "in_review" | "awaiting" | "accepted" | "admitted" | "declined" | "all";
-export interface ReferralFilters {
-  source: SourceKind | "all";
-  payer: PayerId | "none" | "all";
-  program: Program | "all";
-  urgency: Urgency | "all";
-  docCheck: "all" | "issues" | "clear";
-  period: "7d" | "30d" | "quarter";
-  /** Only referrals past their response target. Set by the "past target" card. */
-  late: boolean;
-  /** The tab or tile: which status group the table shows. Tiles and charts ignore it. */
-  view: StatusView;
-}
-export const DEFAULT_REFERRAL_FILTERS: ReferralFilters = { source: "all", payer: "all", program: "all", urgency: "all", docCheck: "all", period: "30d", late: false, view: "review" };
 export interface Capacity {
   total: number;
   open: number;
@@ -31,15 +17,12 @@ export interface Capacity {
 
 export interface ReferralsSlice {
   referrals: Referral[];
-  referralFilters: ReferralFilters;
   capacity: Record<Program, Capacity>;
   /** Referral ids whose coverage check is running, with the real time it started (for the progress steps). */
   coverageRunning: Record<string, number>;
 
-  setReferralFilter: <K extends keyof ReferralFilters>(key: K, value: ReferralFilters[K]) => void;
-  clearReferralFilters: () => void;
   markReferralOpened: (id: string) => void;
-  /** Adds a referral read from a dropped file (or the sample). Returns its id. */
+  /** Adds a referral read from the dropped documents (or the sample). Returns its id. */
   addReferral: (sampleIndex: number) => string;
   /** Sets the owner. A New referral moves to In review. Returns how many changed. */
   assignReferrals: (ids: string[], owner: StaffId | null) => number;
@@ -59,7 +42,6 @@ export interface ReferralsSlice {
 
 const COVERAGE_MS = 3000;
 const seedCapacity = (): Record<Program, Capacity> => Object.fromEntries(PROGRAMS.map((p) => [p, { ...CAPACITY_SEED[p] }])) as Record<Program, Capacity>;
-const isOpenStatus = (r: Referral): boolean => r.status === "new" || r.status === "in_review" || r.status === "awaiting_info";
 
 export const createReferralsSlice: StateCreator<AppState, [], [], ReferralsSlice> = (set, get) => {
   const update = (id: string, fn: (r: Referral) => Referral): void => set((s) => ({ referrals: s.referrals.map((r) => (r.id === id ? fn(r) : r)) }));
@@ -68,12 +50,9 @@ export const createReferralsSlice: StateCreator<AppState, [], [], ReferralsSlice
 
   return {
     referrals: SEED_REFERRALS,
-    referralFilters: DEFAULT_REFERRAL_FILTERS,
     capacity: seedCapacity(),
     coverageRunning: {},
 
-    setReferralFilter: (key, value) => set((s) => ({ referralFilters: { ...s.referralFilters, [key]: value } })),
-    clearReferralFilters: () => set((s) => ({ referralFilters: { ...DEFAULT_REFERRAL_FILTERS, period: s.referralFilters.period } })),
     markReferralOpened: (id) => {
       if (find(id)?.opened === false) update(id, (r) => ({ ...r, opened: true }));
     },
@@ -83,8 +62,8 @@ export const createReferralsSlice: StateCreator<AppState, [], [], ReferralsSlice
       const id = `RF-${Math.max(...referrals.map((r) => Number(r.id.slice(3)) || 0)) + 1}`;
       const created = sampleReferral(sampleIndex % SAMPLE_COUNT, id, clock);
       set({ referrals: [created, ...referrals] });
-      get().notify({ agent: "reader", title: "New referral read", body: `${id} from ${created.source.name} is in the referral inbox as New.`, to: link(id), tone: "neutral" });
-      get().toast({ title: "Referral added", body: `${id} is in the referral inbox as New.`, tone: "good" });
+      get().notify({ agent: "reader", title: "New referral read", body: `${id} from ${created.source.name} is on your checklist in New case.`, to: link(id), tone: "neutral" });
+      get().toast({ title: "Reader read the documents", body: `${id} is ready. The checklist shows what is missing.`, tone: "good" });
       return id;
     },
 
@@ -126,7 +105,7 @@ export const createReferralsSlice: StateCreator<AppState, [], [], ReferralsSlice
       update(id, (x) => T.accept(x, o, get().clock));
       const cap = get().capacity[o.program];
       set((s) => ({ capacity: { ...s.capacity, [o.program]: { ...cap, open: Math.max(0, cap.open - 1) } } }));
-      get().toast({ title: "Referral accepted", body: `${id} is accepted into ${PROGRAM_LABEL[o.program]}. Continue to the medical records when you are ready.`, tone: "good" });
+      get().toast({ title: "Referral accepted", body: `${id} is accepted into ${PROGRAM_LABEL[o.program]}.`, tone: "good" });
     },
 
     requestReferralInfo: (id, o) => {
@@ -147,7 +126,7 @@ export const createReferralsSlice: StateCreator<AppState, [], [], ReferralsSlice
 
     declineReferrals: (ids, o) => {
       const clock = get().clock;
-      const targets = get().referrals.filter((r) => ids.includes(r.id) && isOpenStatus(r));
+      const targets = get().referrals.filter((r) => ids.includes(r.id) && isOpen(r.status));
       set((s) => ({ referrals: s.referrals.map((r) => (targets.some((t) => t.id === r.id) ? T.decline(r, o, clock) : r)) }));
       get().toast({ title: targets.length ? `Declined: ${DECLINE_LABEL[o.reason]}` : "Nothing to decline", body: targets.length ? plural(targets.length, "referral") + (o.courtesy ? ". Courtesy replies were sent." : ".") : "Only referrals that are still open can be declined.", tone: targets.length ? "neutral" : "mid" });
       return targets.length;
@@ -155,7 +134,7 @@ export const createReferralsSlice: StateCreator<AppState, [], [], ReferralsSlice
 
     overrideReferralCheck: (id, key, reason) => {
       update(id, (r) => T.override(r, key, reason, get().clock));
-      get().toast({ title: "Override logged", body: "The reason is on the activity timeline.", tone: "neutral" });
+      get().toast({ title: "Marked OK", body: "Your reason is on the activity timeline.", tone: "neutral" });
     },
 
     scheduleIntake: (id, at) => {

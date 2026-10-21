@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bell, FastForward, FlaskConical, Footprints, RotateCcw, Sparkles } from "lucide-react";
+import { Bell, FastForward, FlaskConical, RotateCcw, Sparkles } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { DAY, HOUR, clockTime, stamp, toDate } from "@/lib/time";
 import { paths } from "@/routes";
@@ -68,14 +68,10 @@ export function Topbar() {
   const notifOpen = useStore((s) => s.notifOpen);
   const btn = "relative grid h-9 w-9 place-items-center rounded-xl border border-field bg-white text-ink2 hover:bg-tile";
   return (
-    <div className="sticky top-0 z-30 flex h-[60px] items-center justify-between border-b border-[#EFE6DA] bg-canvas/90 px-7 backdrop-blur">
-      <div className="flex items-center gap-2 text-[13px] text-muted">
-        <Footprints size={15} className="ico" />
-        Demo with invented data. Nothing is sent to a payer.
-      </div>
-      <div className="flex items-center gap-3.5">
+    <div className="sticky top-0 z-30 flex h-[60px] items-center border-b border-[#EFE6DA] bg-canvas/90 px-7 backdrop-blur">
+      <div className="ml-auto flex items-center gap-3.5">
         <DemoMenu />
-        <button type="button" aria-label="Ask Psyflo" title="Ask Psyflo" onClick={() => setAsk(!askOpen)} className={btn}>
+        <button type="button" aria-label="Ask FLO" title="Ask FLO" onClick={() => setAsk(!askOpen)} className={btn}>
           <Sparkles size={18} className="ico" />
         </button>
         <button type="button" aria-label="Notifications" title="Notifications" onClick={() => setNotif(!notifOpen)} className={btn}>

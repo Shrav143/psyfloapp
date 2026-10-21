@@ -2,7 +2,7 @@ import type { PayerId, Program, RequestEvent, Urgency } from "./types";
 
 export type ReferralStatus = "new" | "in_review" | "awaiting_info" | "accepted" | "scheduled" | "admitted" | "declined";
 export type Channel = "fax" | "eReferral" | "portal" | "phone" | "email";
-export type SourceKind = "hospital" | "ed" | "court" | "primary" | "clinic" | "crisis" | "school" | "self";
+type SourceKind = "hospital" | "ed" | "court" | "primary" | "clinic" | "crisis" | "school" | "self";
 export type StaffId = "jp" | "tb" | "ml";
 export type CheckState = "pass" | "warn" | "fail";
 export type CheckKey = "signature" | "expiry" | "credentials" | "components" | "diagnosis" | "service" | "urgent" | "age" | "contact";

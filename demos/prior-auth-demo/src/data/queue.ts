@@ -40,7 +40,7 @@ export interface QueueItem {
 }
 
 export const BAND_META: Record<Band, { name: string; dot: string }> = {
-  now: { name: "Act now: most money at risk", dot: "#B5553A" },
+  now: { name: "Act now", dot: "#B5553A" },
   day: { name: "Due within 24 hours", dot: "#A87A26" },
   week: { name: "Due this week", dot: "#739C8E" },
 };

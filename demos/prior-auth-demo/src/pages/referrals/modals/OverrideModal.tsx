@@ -3,7 +3,7 @@ import { Button, Field, Modal, TextArea } from "@/components/ui";
 import type { ReferralCheck } from "@/data/referrals";
 import { useStore } from "@/store";
 
-/** Gate: a person accepts a finding as it is. The reason is required and goes on the timeline. */
+/** Gate: a person marks a finding as OK. The reason is required and goes on the timeline. */
 export function OverrideModal({ id, check, onClose }: { id: string; check: ReferralCheck; onClose: () => void }) {
   const override = useStore((s) => s.overrideReferralCheck);
   const [reason, setReason] = useState("");
@@ -12,12 +12,12 @@ export function OverrideModal({ id, check, onClose }: { id: string; check: Refer
     <Modal
       open
       onClose={onClose}
-      title="Override with a reason"
+      title="Mark OK with a reason"
       subtitle={check.label}
       footer={
         <>
           <Button onClick={onClose}>Cancel</Button>
-          <Button variant="primary" disabled={!ok} onClick={() => { override(id, check.key, reason.trim()); onClose(); }}>Override finding</Button>
+          <Button variant="primary" disabled={!ok} onClick={() => { override(id, check.key, reason.trim()); onClose(); }}>Mark OK</Button>
         </>
       }
     >

@@ -7,8 +7,9 @@ import { useStore } from "@/store";
 import { acceptWarnings } from "@/store/referralsLogic";
 import { fromInput, toInputDate } from "../dates";
 
-/** Gate: a person accepts. Lists what is still open, takes an owner, a program and a target date. Mounted only while open. */
-export function AcceptModal({ r, onClose }: { r: Referral; onClose: () => void }) {
+/** Gate: a person accepts. Lists what is still open, takes an owner, a program and a target date. Mounted only while open.
+    `onAccepted` runs after the referral is accepted, for a caller that moves on right away. */
+export function AcceptModal({ r, onClose, onAccepted }: { r: Referral; onClose: () => void; onAccepted?: () => void }) {
   const clock = useStore((s) => s.clock);
   const capacity = useStore((s) => s.capacity);
   const accept = useStore((s) => s.acceptReferral);
@@ -22,6 +23,7 @@ export function AcceptModal({ r, onClose }: { r: Referral; onClose: () => void }
     if (admitBy === null) return;
     accept(r.id, { owner, program, admitBy });
     onClose();
+    onAccepted?.();
   };
   return (
     <Modal

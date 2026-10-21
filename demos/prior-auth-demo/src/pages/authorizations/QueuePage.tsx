@@ -41,7 +41,6 @@ export default function QueuePage() {
   const shown = useMemo(() => filterItems(open, filters), [open, filters]);
   const grouped = useMemo(() => byBand(shown), [shown]);
   const all = useMemo(() => statsOf(open, cases, clock), [open, cases, clock]);
-  const view = useMemo(() => statsOf(shown, cases, clock), [shown, cases, clock]);
   const chances = useMemo(() => Object.fromEntries(shown.map((i) => [i.id, { chance: chanceOf(i, cases), lift: liftOf(i, cases), ready: !!cases[i.id]?.ready }])), [shown, cases]);
   const urgent = open.filter((i) => i.band === "now").length;
   const needsToday = open.filter((i) => i.band !== "week").length;
@@ -49,9 +48,7 @@ export default function QueuePage() {
   const filtered = filtersActive(filters);
 
   const title = filtered ? `${shown.length} of ${all.count} open requests match these filters.` : `${needsToday} of ${all.count} open requests need action today.`;
-  const sub = filtered
-    ? `${money(view.dollars)} is at stake in this view. The tiles below still show the whole queue.`
-    : `${cap(numberWord(urgent))} ${urgent === 1 ? "is" : "are"} urgent. ${money(all.dollars)} rides on what is in flight, and the average approval chance is ${all.avg}%.`;
+  const sub = filtered ? undefined : `${cap(numberWord(urgent))} ${urgent === 1 ? "is" : "are"} urgent. ${money(all.dollars)} rides on what is in flight, and the average approval chance is ${all.avg}%.`;
 
   return (
     <Page>
