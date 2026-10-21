@@ -20,7 +20,7 @@ process p4 "Same effect as clicking that tile"
 
 click c3 "Click a sortable header or 'Previous' / 'Next'"
 goto g1 "Continues in: Case Manager › Active cases › Sort and page the tracker"
-click c4 "Read a row's cells"
+process c4 "Look at a row's Units used, Clock and Status cells"
 goto g2 "Continues in: Case Manager › Active cases › What each tracker cell means"
 click c5 "Click a row, its case ID or 'Open'"
 goto g3 "Continues in: Case Manager › Active cases › Open a case from the tracker"

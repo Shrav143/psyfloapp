@@ -1,0 +1,50 @@
+title: Case Manager › Active cases › Sort and page the tracker
+route: /manager
+intro: Six of the eight table headers sort. A second click on the same header flips the order. The table shows ten rows at a time with 'Previous' and 'Next'. Changing a sort or any filter always returns to page 1.
+dir: TD
+---
+start s1 "Tracker table is on screen\n(sorted by Clock, soonest first)"
+screen h1 "Headers\nCase, Level of care, Payer, Units used, Clock, Approval chance, Status, and a hidden 'Open' column\nSortable ones show an up-and-down arrow button 'Sort by ...'"
+click c0 "Click 'Level of care' or the empty 'Open' header"
+process p0 "Nothing happens: those two do not sort"
+click c1 "Click a sortable header\n('Case', 'Payer', 'Units used', 'Clock', 'Approval chance', 'Status')"
+decision d1 "Is it the header already used for sorting?"
+process p1 "Order flips: ascending becomes descending and back\nThe arrow points up or down"
+decision d2 "Which header is it?"
+process s1a "'Case': case ID, A to Z"
+process s2a "'Payer': payer key A to Z (Beacon, Cardinal, Evergreen, Harborview, Lakeshore, Summit)"
+process s3a "'Units used': share of the approval used, lowest first\n'not yet approved' rows count as lowest"
+process s4a "'Clock': soonest binding event first; overdue first of all"
+process s5a "'Approval chance': highest first on the first click"
+process s6a "'Status': Needs action, Review due, Awaiting payer, On track"
+process p2 "Ties are broken by the soonest due time\nThe table goes back to page 1"
+
+group gPage "Pager under the table"
+  screen pg "'Showing 1 to 10 of 56'    'Previous'   'Page 1 of 6'   'Next'"
+  click n1 "Click 'Next'"
+  click n2 "Click 'Previous'"
+  decision d3 "Is there another page that way?"
+  process g1 "Next ten rows, text updates ('Showing 11 to 20 of 56', 'Page 2 of 6')"
+  process g2 "Button is greyed out: 'Previous' on page 1, 'Next' on the last page"
+endgroup
+process p3 "The page count follows the filters: with fewer than eleven matches there is one page"
+end e1 "Rows are in the new order"
+
+s1 --> h1
+h1 --> c0 --> p0
+h1 --> c1 --> d1
+d1 -->|Yes| p1 --> p2
+d1 -->|No: a new column| d2
+d2 -->|Case| s1a --> p2
+d2 -->|Payer| s2a --> p2
+d2 -->|Units used| s3a --> p2
+d2 -->|Clock| s4a --> p2
+d2 -->|Approval chance| s5a --> p2
+d2 -->|Status| s6a --> p2
+p2 --> e1
+h1 --> pg
+pg --> n1 --> d3
+pg --> n2 --> d3
+d3 -->|Yes| g1 --> e1
+d3 -->|No| g2
+g2 -.-> p3
