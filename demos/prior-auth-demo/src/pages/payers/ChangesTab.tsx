@@ -38,7 +38,7 @@ function PendingBanner({ id, name, pending }: { id: string; name: string; pendin
             <Button variant="primary" icon={Check} onClick={() => setDialog("ack")}>Acknowledge change</Button>
           )}
           <Button icon={WandSparkles} disabled={!ack} title={ack ? undefined : "Acknowledge the change first"} onClick={() => setDialog("update")}>{n ? `Update ${n} ${n === 1 ? "draft" : "drafts"}` : "Apply to new drafts"}</Button>
-          <span className="max-w-[420px] text-xs">Acknowledging records who saw it. Updating redrafts, and each draft returns to Active Cases for a new signature.</span>
+          <span className="max-w-[420px] text-xs">Acknowledging records who saw it. Updating redrafts, and each draft returns to Case Manager for a new signature.</span>
         </div>
       </Banner>
       {dialog === "ack" ? <AcknowledgeModal id={id} pending={pending} onClose={() => setDialog(null)} /> : null}

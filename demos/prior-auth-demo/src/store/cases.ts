@@ -8,7 +8,7 @@ import { uid } from "@/lib/format";
 import { blankDraft, SEED_DRAFTS } from "@/pages/newcase/seedDrafts";
 import type { AppState } from "./index";
 
-/* New case drafts and Active Cases (owner: new-case agent).
+/* New case drafts and Case Manager (owner: new-case agent).
    A draft is everything about one case being prepared: the intake, the documents, the agents' run, the answers, the summary.
    The pages never keep this in component state, so Back, Save as draft and "Resume" all work, and Reset demo data restores it. */
 export interface CasesSlice {
@@ -22,7 +22,7 @@ export interface CasesSlice {
   dropCaseDoc: (id: string, slot: DocSlotId) => void;
   finishCaseDoc: (id: string, slot: DocSlotId) => void;
   setCaseCoverage: (id: string, coverage: CoverageSummary | null) => void;
-  /** Save as draft: the case appears in Active Cases with its own ID. */
+  /** Save as draft: the case appears in Case Manager with its own ID. */
   saveCaseDraft: (id: string) => void;
   /** Start the agents (after the confirm). Sets the chance bounds, the clock for the request and which question Scribe may ask. */
   startCaseRun: (id: string) => void;

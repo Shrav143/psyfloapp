@@ -14,6 +14,8 @@ const PAGE_SIZE = 10;
 type TabId = "review" | "awaiting" | "accepted" | "admitted" | "declined" | "all";
 
 interface Props {
+  /** The case this inbox sits in, passed on when a referral is opened. */
+  draftId?: string;
   rows: Referral[];
   counts: Record<StatusView, number>;
   view: StatusView;
@@ -24,7 +26,7 @@ interface Props {
 }
 
 /** Silna-style tabs with counts, a bulk bar, the table and its pager. */
-export function ReferralsTable({ rows, counts, view, onView, query, onQuery, onClear }: Props) {
+export function ReferralsTable({ draftId, rows, counts, view, onView, query, onQuery, onClear }: Props) {
   const nav = useNavigate();
   const clock = useStore((s) => s.clock);
   const assign = useStore((s) => s.assignReferrals);
@@ -103,7 +105,7 @@ export function ReferralsTable({ rows, counts, view, onView, query, onQuery, onC
             </thead>
             <tbody>
               {slice.map((r) => (
-                <Tr key={r.id} selected={selected.includes(r.id)} onClick={() => nav(paths.referral(r.id))}>
+                <Tr key={r.id} selected={selected.includes(r.id)} onClick={() => nav(paths.referral(r.id, draftId))}>
                   <Td onClick={(e) => e.stopPropagation()}>
                     <Checkbox checked={selected.includes(r.id)} onChange={() => toggle(r.id)} label={<span className="sr-only">Select {r.id}</span>} />
                   </Td>
@@ -129,7 +131,7 @@ export function ReferralsTable({ rows, counts, view, onView, query, onQuery, onC
                   <Td className="whitespace-nowrap"><ClockCell r={r} clock={clock} /></Td>
                   <Td><OwnerAvatar owner={r.owner} /></Td>
                   <Td className="whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
-                    <Button size="sm" onClick={() => nav(paths.referral(r.id))} aria-label={`Open ${r.id}`}>Open</Button>
+                    <Button size="sm" onClick={() => nav(paths.referral(r.id, draftId))} aria-label={`Open ${r.id}`}>Open</Button>
                   </Td>
                 </Tr>
               ))}

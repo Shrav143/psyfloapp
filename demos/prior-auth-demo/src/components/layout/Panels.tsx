@@ -90,7 +90,7 @@ export function AskPanel() {
       const needs = requests.filter((r) => r.needsYou);
       return { from: "psyflo", text: `${needs.length} requests need you: ${needs.map((r) => r.id).join(", ")}. ${counts.info_requested} payer${counts.info_requested === 1 ? "" : "s"} asked for more information, and ${counts.preparing} cases are being prepared. Start with P-1499. Harborview is waiting and its clock is past typical.`, link: { label: "Open Dashboard", to: paths.dashboard() } };
     }
-    if (s.includes("referral")) return { from: "psyflo", text: "New referrals are waiting for review. Reader has already checked each document, and Verify has run coverage for the ones with an insurance card.", link: { label: "Open Referrals", to: paths.referrals() } };
+    if (s.includes("referral")) return { from: "psyflo", text: "New referrals are waiting for review. Reader has already checked each document, and Verify has run coverage for the ones with an insurance card.", link: { label: "Open the referral inbox", to: paths.referrals() } };
     return { from: "psyflo", text: `I did not find an answer to that in the demo data. Try one of the suggestions below. (Clock: ${ago(0, clock)}.)` };
   };
 

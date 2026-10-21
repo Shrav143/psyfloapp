@@ -57,9 +57,9 @@ export const createPayerConfigSlice: StateCreator<AppState, [], [], PayerConfigS
       if (!r) continue;
       if (r.stage === "preparing" || r.stage === "info_requested") {
         updateRequest(rid, { needsYou: true, agent, next: `Redrafted after ${why}. Waiting for a new signature` });
-        addEvent(rid, { actor: agent, text: `${name} redrafted the case after ${why}`, detail: "It returns to Active Cases for a new signature." });
+        addEvent(rid, { actor: agent, text: `${name} redrafted the case after ${why}`, detail: "It returns to Case Manager for a new signature." });
       } else {
-        addEvent(rid, { actor: agent, text: `${name} prepared an addendum after ${why}`, detail: "It returns to Active Cases for a new signature before anything is sent." });
+        addEvent(rid, { actor: agent, text: `${name} prepared an addendum after ${why}`, detail: "It returns to Case Manager for a new signature before anything is sent." });
       }
     }
   };
@@ -164,11 +164,11 @@ export const createPayerConfigSlice: StateCreator<AppState, [], [], PayerConfigS
         pending: null,
         checkedOn: shortDate(clock),
         docs: pending.docAdds.reduce((d, a) => ({ ...d, [a.program]: d[a.program].some((x) => x.title === a.item.title) ? d[a.program] : [...d[a.program], a.item] }), c.docs),
-        changes: [{ id: uid("ch"), date: shortDate(clock), title: `${pending.title}: acknowledged and applied`, text: `Acknowledged by ${pending.acknowledged?.by}, ${stamp(pending.acknowledged?.at ?? clock)}. ${pending.agents.map((a) => AGENTS[a].name).join(" and ")} updated ${pending.affects.length} ${pending.affects.length === 1 ? "draft" : "drafts"}, and each returned to Active Cases for a new signature.` }, ...c.changes],
+        changes: [{ id: uid("ch"), date: shortDate(clock), title: `${pending.title}: acknowledged and applied`, text: `Acknowledged by ${pending.acknowledged?.by}, ${stamp(pending.acknowledged?.at ?? clock)}. ${pending.agents.map((a) => AGENTS[a].name).join(" and ")} updated ${pending.affects.length} ${pending.affects.length === 1 ? "draft" : "drafts"}, and each returned to Case Manager for a new signature.` }, ...c.changes],
       }));
       if (pending.docAdds.length) logEdits(id, "Documents", `After ${lowerFirst(pending.title)}`, pending.docAdds.map((a) => ({ what: `Added to the ${PROGRAM_LABEL[a.program]} list`, before: "", after: `${a.item.title}. ${a.item.requirement}` })));
-      get().notify({ agent: pending.agents[0], title: "Drafts updated", body: `${pending.affects.length} ${pending.affects.length === 1 ? "draft was" : "drafts were"} redrafted after ${name}'s change. Each needs a new signature in Active Cases.`, to: paths.active(), tone: "mid" });
-      get().toast({ title: `${pending.affects.length} ${pending.affects.length === 1 ? "draft" : "drafts"} updated`, body: `${name} is up to date. Each draft returned to Active Cases for a new signature.`, tone: "good" });
+      get().notify({ agent: pending.agents[0], title: "Drafts updated", body: `${pending.affects.length} ${pending.affects.length === 1 ? "draft was" : "drafts were"} redrafted after ${name}'s change. Each needs a new signature in Case Manager.`, to: paths.manager(), tone: "mid" });
+      get().toast({ title: `${pending.affects.length} ${pending.affects.length === 1 ? "draft" : "drafts"} updated`, body: `${name} is up to date. Each draft returned to Case Manager for a new signature.`, tone: "good" });
     },
 
     updateOpenDrafts: (id) => {
@@ -176,8 +176,8 @@ export const createPayerConfigSlice: StateCreator<AppState, [], [], PayerConfigS
       const name = shortOf(id);
       redraft(ids, `your edits to ${name}'s workflow, rules and documents`, "scribe");
       patchConfig(id, (c) => ({ ...c, unapplied: 0 }));
-      if (ids.length) get().notify({ agent: "scribe", title: "Drafts updated", body: `${ids.length} ${ids.length === 1 ? "draft was" : "drafts were"} redrafted after your edits to ${name}. Each needs a new signature.`, to: paths.active(), tone: "mid" });
-      get().toast({ title: ids.length ? `${ids.length} ${ids.length === 1 ? "draft" : "drafts"} updated` : "No open drafts to update", body: ids.length ? "Each returned to Active Cases for a new signature." : `New drafts for ${name} already use your edits.`, tone: ids.length ? "good" : "neutral" });
+      if (ids.length) get().notify({ agent: "scribe", title: "Drafts updated", body: `${ids.length} ${ids.length === 1 ? "draft was" : "drafts were"} redrafted after your edits to ${name}. Each needs a new signature.`, to: paths.manager(), tone: "mid" });
+      get().toast({ title: ids.length ? `${ids.length} ${ids.length === 1 ? "draft" : "drafts"} updated` : "No open drafts to update", body: ids.length ? "Each returned to Case Manager for a new signature." : `New drafts for ${name} already use your edits.`, tone: ids.length ? "good" : "neutral" });
     },
   };
 };

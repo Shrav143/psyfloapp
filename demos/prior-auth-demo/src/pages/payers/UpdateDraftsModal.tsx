@@ -66,7 +66,7 @@ export function UpdateDraftsModal({ id, name, mode = "edits", draftIds, agents =
             ))}
           </ol>
         ) : (
-          <p className="text-[13px] text-muted">Each redrafted case returns to Active Cases for a new signature. A request that is already sent is never rewritten. It gets an addendum instead.</p>
+          <p className="text-[13px] text-muted">Each redrafted case returns to Case Manager for a new signature. A request that is already sent is never rewritten. It gets an addendum instead.</p>
         )}
       </div>
     </Modal>

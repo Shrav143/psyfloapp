@@ -6,24 +6,26 @@ import { isClean } from "@/data/managerReviews";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
 import { LedgerView } from "./LedgerView";
+import { PreparingCard } from "./PreparingCard";
 import { ReviewDrawer } from "./ReviewDrawer";
 import { ReviewsView } from "./ReviewsView";
 import { SignDialog } from "./SignDialog";
 import { LEVEL_OPTIONS, NO_FILTERS, PAYER_FILTER_OPTIONS, REVIEW_STATUS_OPTIONS, STATUS_OPTIONS, hasAnyFilter, type ManagerFilters } from "./helpers";
 
-type Tab = "ledger" | "reviews";
+type Tab = "cases" | "reviews";
 
-/** Case Manager: the ledger of every case, and the week's clinical reviews. The tab is remembered in ?tab=. */
+/** Case Manager: every active case (the ones still being prepared, then the tracker of the rest) and the week's clinical reviews. The tab is remembered in ?tab=. */
 export default function ManagerPage() {
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
-  const tab: Tab = params.get("tab") === "reviews" ? "reviews" : "ledger";
+  const tab: Tab = params.get("tab") === "reviews" ? "reviews" : "cases";
   const [filters, setFilters] = useState<ManagerFilters>(NO_FILTERS);
   const [openId, setOpenId] = useState<string | null>(null);
   const [signAll, setSignAll] = useState(false);
   const [drafting, setDrafting] = useState(false);
 
   const ledgerCount = useStore((s) => s.ledger.length);
+  const preparing = useStore((s) => s.caseDrafts.filter((d) => d.saved && !d.sent).length);
   const reviews = useStore((s) => s.reviews);
   const review = reviews.find((r) => r.id === openId);
   const clean = reviews.filter(isClean);
@@ -44,10 +46,10 @@ export default function ManagerPage() {
 
   return (
     <Page>
-      {tab === "ledger" ? (
+      {tab === "cases" ? (
         <PageHeader
           title={`${ledgerCount} active cases.`}
-          sub="Units, clocks and status for every case, across every level of care."
+          sub={`${preparing} ${preparing === 1 ? "is" : "are"} still being prepared. Units, clocks and status for every case, across every level of care.`}
           actions={<Button variant="primary" icon={Plus} onClick={() => navigate(paths.newCase())}>New case</Button>}
         />
       ) : (
@@ -67,7 +69,7 @@ export default function ManagerPage() {
         <SearchInput value={filters.q} onChange={(v) => set("q", v)} placeholder="Search by case ID or initials" className="w-[280px]" />
         <Dropdown ariaLabel="Level of care" value={filters.program} defaultValue="all" options={LEVEL_OPTIONS} onChange={(v) => set("program", v)} />
         <Dropdown ariaLabel="Payer" value={filters.payer} defaultValue="all" options={PAYER_FILTER_OPTIONS} onChange={(v) => set("payer", v)} menuWidth={250} />
-        {tab === "ledger" ? (
+        {tab === "cases" ? (
           <Dropdown ariaLabel="Status" value={filters.status} defaultValue="all" options={STATUS_OPTIONS} onChange={(v) => set("status", v)} />
         ) : (
           <Dropdown ariaLabel="Review status" value={filters.reviewStatus} defaultValue="all" options={REVIEW_STATUS_OPTIONS} onChange={(v) => set("reviewStatus", v)} />
@@ -78,13 +80,20 @@ export default function ManagerPage() {
           value={tab}
           onChange={setTab}
           items={[
-            { id: "ledger", label: "Ledger" },
+            { id: "cases", label: "Active cases" },
             { id: "reviews", label: "Reviews this week" },
           ]}
         />
       </div>
 
-      {tab === "ledger" ? <LedgerView filters={filters} onStatus={(s) => set("status", s)} onClear={clear} /> : <ReviewsView filters={filters} onOpen={setOpenId} onClear={clear} />}
+      {tab === "cases" ? (
+        <>
+          <PreparingCard filters={filters} onClear={clear} />
+          <LedgerView filters={filters} onStatus={(s) => set("status", s)} onClear={clear} />
+        </>
+      ) : (
+        <ReviewsView filters={filters} onOpen={setOpenId} onClear={clear} />
+      )}
 
       {review ? <ReviewDrawer key={review.id} review={review} onClose={() => setOpenId(null)} /> : null}
       {signAll ? (

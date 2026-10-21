@@ -6,6 +6,7 @@ import { PROGRAM_LABEL, PROGRAMS, type NewCasePrefill, type PayerId, type Progra
 import { useStore } from "@/store";
 import type { AppState } from "@/store";
 import { referralPrefill } from "@/store/referrals";
+import { paths } from "@/routes";
 import { makeDocument, requiredDocs, sampleFile } from "./documents";
 import { ICD_CODES, type EmrChart } from "./lookups";
 
@@ -60,6 +61,7 @@ export function fromPrefill(p: NewCasePrefill): Partial<CaseDraft> {
     diagnoses: p.diagnoses,
     reason: p.reason,
     referralId: p.referralId,
+    phase: "records",
   };
 }
 
@@ -69,7 +71,7 @@ export function fromQuery(q: URLSearchParams): Partial<CaseDraft> {
   const program = PROGRAMS.find((p) => p === q.get("program")) as Program | undefined;
   if (!payer && !program) return {};
   const age = Number(q.get("age")) || null;
-  return { payerId: payer ?? null, planType: payer ? PLAN_TYPE[payer] : "", program: program ?? null, memberId: q.get("member") ?? "", patient: { initials: q.get("initials") ?? "", age }, type: "Admission" };
+  return { payerId: payer ?? null, planType: payer ? PLAN_TYPE[payer] : "", program: program ?? null, memberId: q.get("member") ?? "", patient: { initials: q.get("initials") ?? "", age }, type: "Admission", phase: "records" };
 }
 
 export function initialDraft(q: URLSearchParams, st: AppState): { init: Partial<CaseDraft>; missingReferral?: string } {
@@ -95,6 +97,7 @@ export function applySampleChart(id: string): void {
   if (keep && draft) {
     st.patchCaseDraft(id, {
       cardRead: true,
+      phase: "records",
       memberId: draft.memberId || "SM7403964821",
       startDate: draft.startDate || "2026-10-20",
       type: draft.type ?? "Admission",
@@ -106,6 +109,7 @@ export function applySampleChart(id: string): void {
       planType: PLAN_TYPE.summit,
       memberId: "SM7403964821",
       cardRead: true,
+      phase: "records",
       program: "RES",
       type: "Admission",
       startDate: "2026-10-20",
@@ -122,8 +126,31 @@ export function applySampleChart(id: string): void {
 
 export function pullFromEmr(id: string, c: EmrChart): void {
   const st = useStore.getState();
-  st.patchCaseDraft(id, { patient: { initials: c.initials, age: c.age }, payerId: c.payerId, planType: PLAN_TYPE[c.payerId], memberId: c.memberId, program: c.program, type: c.type, diagnoses: dx(...c.diagnoses), reason: c.reason, emrChart: c.id });
+  st.patchCaseDraft(id, { patient: { initials: c.initials, age: c.age }, payerId: c.payerId, planType: PLAN_TYPE[c.payerId], memberId: c.memberId, program: c.program, type: c.type, diagnoses: dx(...c.diagnoses), reason: c.reason, emrChart: c.id, phase: "records" });
   st.toast({ title: `Pulled ${c.initials}, ${c.age} from EMR Connect`, body: "Everything below was filled in from the chart. You can still change it.", tone: "good" });
 }
 
 export const emrLabel = (c: EmrChart): string => `${c.initials}, ${c.age} · ${PAYERS.find((p) => p.id === c.payerId)?.shortName} · ${PROGRAM_LABEL[c.program]}`;
+
+/* ------------------------------------------------------------------ the referral comes first */
+/** Puts a referral into a case: the patient, payer, level of care and diagnoses come from it, and the referral itself counts as the first document.
+    Returns false when the referral or the case is missing. */
+export function attachReferral(draftId: string, referralId: string): boolean {
+  const st = useStore.getState();
+  const prefill = referralPrefill(st, referralId);
+  const draft = st.caseDrafts.find((d) => d.id === draftId);
+  const r = st.referrals.find((x) => x.id === referralId);
+  if (!prefill || !draft || !r) return false;
+  const file = { id: `ref-${referralId}`, name: `${referralId} referral.pdf`, sizeKb: 190 + r.plan.pages * 12 };
+  const rest = draft.documents.filter((d) => d.slot !== "referral");
+  st.patchCaseDraft(draftId, { ...fromPrefill(prefill), documents: [makeDocument("referral", file, false, "done"), ...rest] });
+  st.toast({ title: `Referral ${referralId} is in this case`, body: `${prefill.patientInitials}, ${prefill.age}. Next, add the medical records.`, tone: "good" });
+  return true;
+}
+
+/** Where a referral's button leads: back into the case it was opened from, or into a new one. */
+export function continueWithReferral(referralId: string, draftId: string | null | undefined): string | null {
+  const st = useStore.getState();
+  const into = draftId && st.caseDrafts.some((d) => d.id === draftId) ? draftId : st.createCaseDraft({});
+  return attachReferral(into, referralId) ? paths.newCase({ draft: into }) : null;
+}

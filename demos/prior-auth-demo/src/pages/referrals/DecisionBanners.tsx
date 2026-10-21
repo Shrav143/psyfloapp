@@ -1,16 +1,17 @@
 import { Link, useNavigate } from "react-router-dom";
-import { AlertTriangle, ShieldAlert } from "lucide-react";
+import { AlertTriangle, ArrowRight, ShieldAlert } from "lucide-react";
 import { Banner, Button, Pill } from "@/components/ui";
 import { CHECK_PROBLEM, DECLINE_LABEL, REPLY_VIA_LABEL, issueCount, staffById, type Referral } from "@/data/referrals";
 import { PROGRAM_LABEL } from "@/data/types";
 import { longDate, stamp } from "@/lib/time";
+import { continueWithReferral } from "@/pages/newcase/intake";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
 
 export type DetailTab = "extracted" | "validation" | "coverage" | "fit" | "activity";
 
 /** The state of the referral in words, with the next step as a button. */
-export function DecisionBanners({ r, onTab }: { r: Referral; onTab: (t: DetailTab) => void }) {
+export function DecisionBanners({ r, onTab, draftId }: { r: Referral; onTab: (t: DetailTab) => void; draftId?: string }) {
   const nav = useNavigate();
   const reopen = useStore((s) => s.reopenReferral);
   const requests = useStore((s) => s.requests);
@@ -38,7 +39,7 @@ export function DecisionBanners({ r, onTab }: { r: Referral; onTab: (t: DetailTa
           linked ? (
             <Button size="sm" onClick={() => nav(paths.dashboard({ request: linked.id }))}>Open {linked.id}</Button>
           ) : r.status !== "admitted" ? (
-            <Button variant="primary" onClick={() => nav(paths.newCase({ referral: r.id }))}>Start the authorization</Button>
+            <Button variant="primary" trailing={ArrowRight} onClick={() => { const to = continueWithReferral(r.id, draftId); if (to) nav(to); }}>Continue to medical records</Button>
           ) : undefined
         }
       >
@@ -50,7 +51,7 @@ export function DecisionBanners({ r, onTab }: { r: Referral; onTab: (t: DetailTa
             <Pill tone={linked.tone}>{linked.chip}</Pill>
           </span>
         ) : r.status !== "admitted" ? (
-          <span className="block">No request is linked yet. Start the authorization to send this patient's case to the payer.</span>
+          <span className="block">No request is linked yet. Continue to the medical records to build the authorization for this patient.</span>
         ) : null}
       </Banner>,
     );

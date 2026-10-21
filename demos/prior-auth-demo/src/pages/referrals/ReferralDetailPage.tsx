@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { SearchX } from "lucide-react";
-import { Link, useParams } from "react-router-dom";
-import { Button, Crumbs, EmptyState, Page, UnderlineTabs, type TabItem } from "@/components/ui";
+import { Link, useParams, useSearchParams } from "react-router-dom";
+import { Button, Crumbs, EmptyState, Page, Stepper, UnderlineTabs, type TabItem } from "@/components/ui";
 import { buildDocs, issueCount, locate, type CheckKey, type DocId } from "@/data/referrals";
+import { NEW_CASE_STEPS } from "@/pages/newcase/steps";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
 import { unresolved } from "@/store/referralsLogic";
@@ -26,6 +27,8 @@ type ModalState = { kind: "accept" } | { kind: "info"; keys: CheckKey[] } | { ki
 /** One referral: the document on the left, what the agents made of it on the right, and the decision. */
 export default function ReferralDetailPage() {
   const { id = "" } = useParams();
+  const [params] = useSearchParams();
+  const draftId = params.get("draft") ?? undefined;
   const r = useStore((s) => s.referrals.find((x) => x.id === id));
   const markOpened = useStore((s) => s.markReferralOpened);
   const [tab, setTab] = useState<DetailTab>("extracted");
@@ -53,9 +56,9 @@ export default function ReferralDetailPage() {
   if (!r) {
     return (
       <Page>
-        <Crumbs items={[{ label: "Referrals", to: paths.referrals() }, { label: id }]} />
-        <EmptyState icon={SearchX} title="That referral is not in the demo" action={<Link to={paths.referrals()}><Button>Back to Referrals</Button></Link>}>
-          Referral {id} does not exist. Go back to the list to pick one.
+        <Crumbs items={[{ label: "New case", to: paths.newCase({ draft: draftId }) }, { label: "Referral inbox", to: paths.newCase({ draft: draftId, view: "inbox" }) }, { label: id }]} />
+        <EmptyState icon={SearchX} title="That referral is not in the demo" action={<Link to={paths.newCase({ draft: draftId, view: "inbox" })}><Button>Back to the referral inbox</Button></Link>}>
+          Referral {id} does not exist. Go back to the inbox to pick one.
         </EmptyState>
       </Page>
     );
@@ -85,9 +88,10 @@ export default function ReferralDetailPage() {
 
   return (
     <Page>
-      <Crumbs items={[{ label: "Referrals", to: paths.referrals() }, { label: r.id }]} />
+      <Crumbs items={[{ label: "New case", to: paths.newCase({ draft: draftId }) }, { label: "Referral inbox", to: paths.newCase({ draft: draftId, view: "inbox" }) }, { label: r.id }]} />
+      <Stepper steps={NEW_CASE_STEPS} current={0} />
       <ReferralHeader r={r} onAccept={() => setModal({ kind: "accept" })} onInfo={() => setModal({ kind: "info", keys: askable })} onDecline={() => setModal({ kind: "decline" })} onNote={() => setModal({ kind: "note" })} onSchedule={() => setModal({ kind: "schedule" })} />
-      <DecisionBanners r={r} onTab={setTab} />
+      <DecisionBanners r={r} onTab={setTab} draftId={draftId} />
       <div className="grid grid-cols-1 items-start gap-[22px] min-[1100px]:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
         <div className="min-[1100px]:sticky min-[1100px]:top-[78px]">
           <DocumentPanel r={r} docs={docs} docId={docId} page={page} highlightId={hl} onDoc={(d) => { setDocId(d); setPage(1); setHl(null); }} onPage={setPage} onBlock={fromDocument} />

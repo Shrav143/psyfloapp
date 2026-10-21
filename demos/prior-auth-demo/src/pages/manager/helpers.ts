@@ -40,7 +40,7 @@ export function matchesBase(r: { id: string; initials: string; program: Program;
   if (!q) return true;
   return r.id.toLowerCase().replace(/-/g, "").includes(q.replace(/-/g, "")) || r.initials.toLowerCase().replace(/\./g, "").includes(q);
 }
-export const hasAnyFilter = (f: ManagerFilters, tab: "ledger" | "reviews"): boolean => !!f.q || f.program !== "all" || f.payer !== "all" || (tab === "ledger" ? f.status !== "all" : f.reviewStatus !== "all");
+export const hasAnyFilter = (f: ManagerFilters, tab: "cases" | "reviews"): boolean => !!f.q || f.program !== "all" || f.payer !== "all" || (tab === "cases" ? f.status !== "all" : f.reviewStatus !== "all");
 
 /* ------------------------------------------------------------------ ledger clock */
 const WD = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];

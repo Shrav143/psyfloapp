@@ -1,4 +1,4 @@
-import { BarChart3, Building2, CalendarCheck, ChevronDown, ChevronRight, ClipboardList, FolderOpen, HelpCircle, LayoutDashboard, LogOut, RefreshCw, Scale, Settings, ShieldCheck, Inbox, PlusCircle, FlaskConical, type LucideIcon } from "lucide-react";
+import { BarChart3, Building2, ChevronDown, ChevronRight, ClipboardList, FolderOpen, HelpCircle, LayoutDashboard, LogOut, RefreshCw, Scale, Settings, ShieldCheck, PlusCircle, FlaskConical, type LucideIcon } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { Count } from "@/components/ui";
 import { cn } from "@/lib/cn";
@@ -72,17 +72,15 @@ export function Sidebar() {
 
   const main: Item[] = [
     { to: paths.dashboard(), label: "Dashboard", icon: LayoutDashboard, badge: dash, match: ["/dashboard"] },
-    { to: paths.referrals(), label: "Referrals", icon: Inbox, badge: referrals, match: ["/referrals"] },
     {
       to: paths.authorizations(), label: "Authorizations", icon: ClipboardList, badge: queue,
       subs: [
-        { to: "/authorizations/new", label: "New case", icon: PlusCircle },
+        { to: "/authorizations/new", label: "New case", icon: PlusCircle, badge: referrals },
         { to: paths.eligibility(), label: "Eligibility & Benefits", icon: ShieldCheck, badge: eb },
       ],
     },
     { to: paths.denials(), label: "Denial Intelligence", icon: Scale, badge: denials, match: ["/denials"] },
-    { to: paths.active(), label: "Active Cases", icon: FolderOpen, badge: active, match: ["/active"] },
-    { to: paths.manager(), label: "Case Manager", icon: CalendarCheck, badge: manager, match: ["/manager"] },
+    { to: paths.manager(), label: "Case Manager", icon: FolderOpen, badge: active + manager, match: ["/manager", "/active"] },
     { to: paths.analytics(), label: "Analytics", icon: BarChart3, match: ["/analytics"] },
   ];
   const conn: Item[] = [

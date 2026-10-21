@@ -79,7 +79,7 @@ export function ReferralHeader({ r, onAccept, onInfo, onDecline, onNote, onSched
 
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-5" role="group" aria-label={`Actions, status ${STATUS_LABEL[r.status]}`}>
         <div className="flex flex-wrap items-center gap-2.5">
-          {open ? <Button variant="primary" icon={Check} onClick={onAccept}>Accept and start a case</Button> : null}
+          {open ? <Button variant="primary" icon={Check} onClick={onAccept}>Accept referral</Button> : null}
           {r.status === "new" || r.status === "in_review" ? <Button icon={Send} onClick={onInfo}>Request information</Button> : null}
           {open ? <Button variant="danger" onClick={onDecline}>Decline</Button> : null}
           {r.status === "accepted" ? <Button variant="primary" icon={CalendarPlus} onClick={onSchedule}>Schedule intake</Button> : null}

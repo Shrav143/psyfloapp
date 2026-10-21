@@ -14,7 +14,7 @@ import { PatientCard } from "./PatientCard";
 import { RequestCard } from "./RequestCard";
 import { StepFooter } from "./StepFooter";
 
-/** Step 1: the patient, the insurance, the request and the chart. Continue starts the agents after a confirm. */
+/** Step 2, Medical records: the patient, the insurance, the request and the chart. Continue starts the agents after a confirm. */
 export function IntakeStep({ draft }: { draft: CaseDraft }) {
   const nav = useNavigate();
   const toast = useStore((s) => s.toast);
@@ -32,16 +32,20 @@ export function IntakeStep({ draft }: { draft: CaseDraft }) {
   const saveDraft = () => {
     save(draft.id);
     const id = useStore.getState().caseDrafts.find((d) => d.id === draft.id)?.caseId;
-    toast({ title: "Draft saved", body: `${id ?? "The draft"} is in Active Cases. Pick it up whenever you like.`, tone: "good" });
+    toast({ title: "Draft saved", body: `${id ?? "The draft"} is in Case Manager. Pick it up whenever you like.`, tone: "good" });
   };
 
   return (
     <>
       {draft.referralId ? (
-        <Banner tone="good" icon={Inbox} title={`Started from referral ${draft.referralId}`}>
-          Patient, payer, program, diagnoses and the reason were filled in from the referral. Check them, then add the chart.
+        <Banner tone="good" icon={Inbox} title={`Started from referral ${draft.referralId}`} action={<Button size="sm" onClick={() => nav(paths.referral(draft.referralId ?? "", draft.id))}>View referral</Button>}>
+          Patient, payer, program, diagnoses and the reason were filled in from the referral, and the referral is the first document. Check them, then add the rest of the chart.
         </Banner>
-      ) : null}
+      ) : (
+        <Banner icon={Inbox} title="No referral in this case" action={<Button size="sm" onClick={() => patch(draft.id, { phase: "referral" })}>Add a referral</Button>}>
+          You are adding the patient yourself. You can still go back and attach a referral.
+        </Banner>
+      )}
       <Banner icon={ShieldCheck}>
         <b>Privacy mode is on.</b> Names, dates and IDs are swapped for codes before any agent reads the chart.
       </Banner>
@@ -58,7 +62,7 @@ export function IntakeStep({ draft }: { draft: CaseDraft }) {
       <StepFooter
         actions={
           <>
-            <Button icon={ArrowLeft} onClick={() => nav(paths.active())}>
+            <Button icon={ArrowLeft} onClick={() => patch(draft.id, { phase: "referral" })}>
               Back
             </Button>
             <Button icon={Save} onClick={saveDraft}>

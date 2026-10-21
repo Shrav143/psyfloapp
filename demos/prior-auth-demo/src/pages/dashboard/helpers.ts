@@ -118,7 +118,7 @@ export function pageHeadline(f: DashFilters, base: PsyRequest[], shown: PsyReque
     case "info_requested":
       return { title: `${n} ${are(n, "request is", "requests are")} waiting on you.`, sub: `${lead}The payer asked for more information. Packet drafts each answer for you to review.` };
     case "preparing":
-      return { title: `${n} ${are(n, "request is", "requests are")} being prepared.`, sub: `${lead}They are in Active Cases. Nothing has been sent to a payer yet.` };
+      return { title: `${n} ${are(n, "request is", "requests are")} being prepared.`, sub: `${lead}They are in Case Manager. Nothing has been sent to a payer yet.` };
     case "received":
       return { title: `${n} ${are(n, "request has", "requests have")} been received.`, sub: `${lead}The payer confirmed receipt. Navigator checks each one again every few minutes.` };
     case "under_review":
@@ -180,7 +180,7 @@ export function stripCells(base: PsyRequest[], clock: number): StripCell[] {
 
   const cell = (stage: StageKey, desc: string, note: string): StripCell => ({ stage, label: STAGE_LABEL[stage], value: c[stage], desc, note, tone: STRIP_TONE[stage] });
   return [
-    cell("preparing", "in Active Cases", prepNote),
+    cell("preparing", "in Case Manager", prepNote),
     cell("received", "payer has it", received.length ? `about ${typical(avgTypical)} on average` : "nothing waiting on receipt"),
     cell("under_review", "with the payer", review.length ? `about ${days(averageDecisionDays(review))} on average` : "nothing with the payer"),
     cell("info_requested", "the payer wants more", info.length ? (ready2 === info.length ? "drafts ready for you" : `${ready2} ${are(ready2, "draft", "drafts")} ready, ${info.length - ready2} in progress`) : "nothing waiting on you"),

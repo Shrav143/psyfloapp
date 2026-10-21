@@ -1,4 +1,4 @@
-/* Types, constants and pure helpers for the New case flow and Active Cases.
+/* Types, constants and pure helpers for the New case flow and Case Manager.
    The store slice (store/cases.ts) and every page under pages/newcase and pages/active read from here. */
 import type { DemoFile } from "@/components/ui";
 import { payerById } from "./seed";
@@ -65,6 +65,8 @@ export interface CaseDraft {
   saved: boolean;
   sent: boolean;
   step: 0 | 1 | 2;
+  /** While step is 0: the referral comes first, then the medical records. */
+  phase: "referral" | "records";
   patient: { initials: string; age: number | null };
   reference: string;
   payerId: PayerId | null;
@@ -126,7 +128,7 @@ export const MAX_QUESTIONS = 3;
 export interface QuestionDef {
   key: QuestionKey;
   agent: AgentKey;
-  line: string; // one line for the Active Cases row
+  line: string; // one line for the Case Manager row
   text: (payerShort: string) => string;
   choices: { id: string; label: string }[];
 }

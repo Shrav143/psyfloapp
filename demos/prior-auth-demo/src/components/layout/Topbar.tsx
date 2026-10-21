@@ -9,9 +9,8 @@ import { UnreadDot } from "./Panels";
 
 const PATH: [string, string][] = [
   ["Dashboard: where every request stands", paths.dashboard()],
-  ["Referrals: review a new referral", paths.referrals()],
   ["Authorizations: the queue", paths.authorizations()],
-  ["New case: start one and sign it", paths.newCase()],
+  ["New case: start from a referral", paths.referrals()],
   ["Eligibility & Benefits: verify a patient", paths.eligibilityVerify()],
   ["Denial Intelligence: D-3318", paths.denials("D-3318")],
   ["Payers: Cardinal, Changes", paths.payers("cardinal", "changes")],

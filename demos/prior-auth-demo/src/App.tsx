@@ -1,8 +1,8 @@
-import { HashRouter, MemoryRouter, Navigate, Route, Routes } from "react-router-dom";
+import { HashRouter, MemoryRouter, Navigate, Route, Routes, useParams } from "react-router-dom";
 import { Shell } from "@/components/layout";
 import { EmptyState, Page, PageHeader } from "@/components/ui";
 import { HOSTED } from "@/lib/hosted";
-import ActiveCasesPage from "@/pages/active/ActiveCasesPage";
+import { paths } from "@/routes";
 import AnalyticsPage from "@/pages/analytics/AnalyticsPage";
 import CasePage from "@/pages/authorizations/CasePage";
 import QueuePage from "@/pages/authorizations/QueuePage";
@@ -17,7 +17,6 @@ import ManagerPage from "@/pages/manager/ManagerPage";
 import NewCasePage from "@/pages/newcase/NewCasePage";
 import PayersPage from "@/pages/payers/PayersPage";
 import ReferralDetailPage from "@/pages/referrals/ReferralDetailPage";
-import ReferralsPage from "@/pages/referrals/ReferralsPage";
 import SettingsPage from "@/pages/settings/SettingsPage";
 import { SearchX } from "lucide-react";
 
@@ -30,6 +29,12 @@ function NotFound() {
   );
 }
 
+/** Referrals used to have their own tab. Old links land on the referral inside New case. */
+function OldReferralLink() {
+  const { id = "" } = useParams();
+  return <Navigate to={paths.referral(id)} replace />;
+}
+
 /** Hash routing keeps the single-file build working when opened straight from disk. The hosted preview runs in a frame that has no address bar of its own, so it keeps the route in memory. */
 const Router = HOSTED ? MemoryRouter : HashRouter;
 
@@ -40,18 +45,19 @@ export default function App() {
         <Route element={<Shell />}>
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/referrals" element={<ReferralsPage />} />
-          <Route path="/referrals/:id" element={<ReferralDetailPage />} />
+          <Route path="/referrals" element={<Navigate to={paths.referrals()} replace />} />
+          <Route path="/referrals/:id" element={<OldReferralLink />} />
           <Route path="/authorizations" element={<QueuePage />} />
           <Route path="/authorizations/case/:id" element={<CasePage />} />
           <Route path="/authorizations/new" element={<NewCasePage />} />
+          <Route path="/authorizations/new/referral/:id" element={<ReferralDetailPage />} />
           <Route path="/authorizations/new/:draftId" element={<NewCasePage />} />
           <Route path="/authorizations/eligibility" element={<EligibilityListPage />} />
           <Route path="/authorizations/eligibility/verify" element={<VerifyPage />} />
           <Route path="/authorizations/eligibility/:id" element={<ResultPage />} />
           <Route path="/denials" element={<DenialsPage />} />
           <Route path="/denials/:id/brief" element={<BriefPage />} />
-          <Route path="/active" element={<ActiveCasesPage />} />
+          <Route path="/active" element={<Navigate to="/manager" replace />} />
           <Route path="/manager" element={<ManagerPage />} />
           <Route path="/analytics" element={<AnalyticsPage />} />
           <Route path="/emr" element={<EmrPage />} />

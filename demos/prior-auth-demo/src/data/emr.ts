@@ -73,7 +73,7 @@ export const SEED_UNMAPPED: UnmappedField[] = [
 /** Each Sync now takes the next result in this list, so the activity log reads differently every time. */
 export const SYNC_RESULTS: { agent: AgentKey; text: string; files: number; charts: number }[] = [
   { agent: "reader", text: "Pulled 6 new files for 3 open cases and matched the insurance cards", files: 6, charts: 3 },
-  { agent: "reader", text: "Read 2 new admissions and proposed cases in Active Cases", files: 7, charts: 2 },
+  { agent: "reader", text: "Read 2 new admissions and proposed cases in Case Manager", files: 7, charts: 2 },
   { agent: "verify", text: "Re-checked coverage for 4 members after the sync", files: 3, charts: 1 },
   { agent: "reader", text: "Pulled the latest progress notes for 9 active stays", files: 9, charts: 2 },
 ];

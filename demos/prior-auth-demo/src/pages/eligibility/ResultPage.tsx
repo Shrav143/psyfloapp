@@ -106,7 +106,7 @@ export default function ResultPage() {
               Open case
             </Button>
           ) : !id.startsWith("V-") ? (
-            <Button icon={FolderOpen} onClick={() => nav(paths.manager("ledger"))}>
+            <Button icon={FolderOpen} onClick={() => nav(paths.manager("cases"))}>
               Open in Case Manager
             </Button>
           ) : null}

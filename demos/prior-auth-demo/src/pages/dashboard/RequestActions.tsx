@@ -97,7 +97,7 @@ const REPLIES: { reply: Reply; label: string }[] = [
 
 /** A clearly marked demo-only section: pretend the payer answered. After a denial the request gets a D- number. */
 export function DemoControls({ request: r, onNewId }: { request: PsyRequest; onNewId: (id: string) => void }) {
-  const blocked = r.stage === "preparing" ? "It has not been sent yet. Sign and send it from Active Cases first." : isDenial(r) ? "A denial follows its own route in Denial Intelligence." : undefined;
+  const blocked = r.stage === "preparing" ? "It has not been sent yet. Sign and send it from Case Manager first." : isDenial(r) ? "A denial follows its own route in Denial Intelligence." : undefined;
   const reply = (x: { reply: Reply; label: string }) => {
     const id = useStore.getState().simulateReply(r.id, x.reply);
     if (id && id !== r.id) onNewId(id);

@@ -7,10 +7,10 @@ import { paths } from "@/routes";
 import { useStore } from "@/store";
 import { AgentsStep } from "./AgentsStep";
 import { IntakeStep } from "./IntakeStep";
-import { applySampleChart, initialDraft } from "./intake";
+import { applySampleChart, attachReferral, initialDraft } from "./intake";
+import { ReferralStep } from "./ReferralStep";
 import { ReviewStep } from "./ReviewStep";
-
-const STEPS = ["Intake", "Agents work", "Review and sign"];
+import { NEW_CASE_STEPS, stepIndex, stepPatch } from "./steps";
 
 /** New case. /authorizations/new starts a draft and moves to /authorizations/new/:draftId, which resumes one. */
 export default function NewCasePage() {
@@ -32,7 +32,10 @@ export default function NewCasePage() {
     const st = useStore.getState();
     const { init, missingReferral } = initialDraft(params, st);
     if (missingReferral) st.toast({ title: "Referral not found", body: `We could not find ${missingReferral}. Start from a blank case instead.`, tone: "mid" });
-    nav(paths.newCase({ draft: st.createCaseDraft(init) }), { replace: true });
+    const id = st.createCaseDraft(init);
+    if (init.referralId) attachReferral(id, init.referralId);
+    const view = params.get("view");
+    nav(paths.newCase({ draft: id, view: view === "inbox" || view === "none" || view === "upload" ? view : undefined }), { replace: true });
   }, [draftId, params, nav]);
 
   /* A draft whose agents already ran reopens on the agents step, not on intake. */
@@ -68,7 +71,7 @@ export default function NewCasePage() {
             action={
               <div className="flex gap-2.5">
                 <Button variant="primary" onClick={() => nav(paths.dashboard({ request: sentId }))}>Open it on the Dashboard</Button>
-                <Button onClick={() => nav(paths.active())}>Back to Active Cases</Button>
+                <Button onClick={() => nav(paths.manager())}>Back to Case Manager</Button>
               </div>
             }
           >
@@ -80,33 +83,35 @@ export default function NewCasePage() {
   }
 
   const payer = draft.payerId ? payerById(draft.payerId) : null;
-  const title = draft.step === 2 ? "Ready for your signature" : "New case";
-  const sub =
-    draft.step === 0
-      ? "Add the patient, the payer and the chart. The agents do the research and drafting, and you review and sign."
-      : draft.step === 1
-        ? `The agents are reading the chart and checking ${payer?.shortName ?? "the payer"}'s rules. Questions come to you only when they must.`
-        : "Nothing goes to the payer until a clinician signs.";
+  const at = stepIndex(draft);
+  const title = at === 3 ? "Ready for your signature" : "New case";
+  const SUBS = [
+    "Start with the referral. Upload the one that came in, or pick it from the inbox.",
+    "Add the medical records. The agents read them and check the payer's rules, and you review and sign.",
+    `The agents are reading the chart and checking ${payer?.shortName ?? "the payer"}'s rules. Questions come to you only when they must.`,
+    "Nothing goes to the payer until a clinician signs.",
+  ];
+  const sub = SUBS[at];
 
   return (
     <Page>
-      <Link to={paths.active()} className="-mb-1.5 flex w-fit items-center gap-1.5 text-muted hover:text-ink">
+      <Link to={paths.manager()} className="-mb-1.5 flex w-fit items-center gap-1.5 text-muted hover:text-ink">
         <ArrowLeft size={14} className="ico" />
-        Active Cases
+        Case Manager
       </Link>
       <PageHeader
         title={title}
         sub={sub}
         actions={
-          draft.step === 0 ? (
+          at === 1 ? (
             <Button icon={Sparkles} onClick={() => applySampleChart(draft.id)}>
               Use sample chart
             </Button>
           ) : null
         }
       />
-      <Stepper steps={STEPS} current={draft.step} onGo={(i) => patch(draft.id, { step: i as 0 | 1 | 2 })} />
-      {draft.step === 0 ? <IntakeStep draft={draft} /> : draft.step === 1 ? <AgentsStep draft={draft} /> : <ReviewStep draft={draft} />}
+      <Stepper steps={NEW_CASE_STEPS} current={at} onGo={(i) => patch(draft.id, stepPatch(i))} />
+      {at === 0 ? <ReferralStep draft={draft} /> : at === 1 ? <IntakeStep draft={draft} /> : at === 2 ? <AgentsStep draft={draft} /> : <ReviewStep draft={draft} />}
     </Page>
   );
 }

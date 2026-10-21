@@ -83,8 +83,8 @@ export const createReferralsSlice: StateCreator<AppState, [], [], ReferralsSlice
       const id = `RF-${Math.max(...referrals.map((r) => Number(r.id.slice(3)) || 0)) + 1}`;
       const created = sampleReferral(sampleIndex % SAMPLE_COUNT, id, clock);
       set({ referrals: [created, ...referrals] });
-      get().notify({ agent: "reader", title: "New referral read", body: `${id} from ${created.source.name} is in Referrals as New.`, to: link(id), tone: "neutral" });
-      get().toast({ title: "Referral added", body: `${id} is in Referrals as New.`, tone: "good" });
+      get().notify({ agent: "reader", title: "New referral read", body: `${id} from ${created.source.name} is in the referral inbox as New.`, to: link(id), tone: "neutral" });
+      get().toast({ title: "Referral added", body: `${id} is in the referral inbox as New.`, tone: "good" });
       return id;
     },
 
@@ -126,7 +126,7 @@ export const createReferralsSlice: StateCreator<AppState, [], [], ReferralsSlice
       update(id, (x) => T.accept(x, o, get().clock));
       const cap = get().capacity[o.program];
       set((s) => ({ capacity: { ...s.capacity, [o.program]: { ...cap, open: Math.max(0, cap.open - 1) } } }));
-      get().toast({ title: "Referral accepted", body: `${id} is accepted into ${PROGRAM_LABEL[o.program]}. Start the authorization when you are ready.`, tone: "good" });
+      get().toast({ title: "Referral accepted", body: `${id} is accepted into ${PROGRAM_LABEL[o.program]}. Continue to the medical records when you are ready.`, tone: "good" });
     },
 
     requestReferralInfo: (id, o) => {

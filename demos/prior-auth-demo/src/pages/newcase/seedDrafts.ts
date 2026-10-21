@@ -11,6 +11,7 @@ export function blankDraft(over: Partial<CaseDraft> = {}): CaseDraft {
     saved: false,
     sent: false,
     step: 0,
+    phase: "referral",
     patient: { initials: "", age: null },
     reference: "",
     payerId: null,
@@ -51,7 +52,7 @@ const answer = (key: QuestionKey, choice: string, label: string, payerShort: str
 
 function seed(id: string, over: Partial<CaseDraft>): CaseDraft {
   const payerId = over.payerId as PayerId;
-  return blankDraft({ id: `draft-${id.toLowerCase().replace("-", "")}`, caseId: id, saved: true, step: 1, planType: PLAN_TYPE[payerId], cardRead: true, ...over });
+  return blankDraft({ id: `draft-${id.toLowerCase().replace("-", "")}`, caseId: id, saved: true, step: 1, phase: "records", planType: PLAN_TYPE[payerId], cardRead: true, ...over });
 }
 
 export const SEED_DRAFTS: CaseDraft[] = [

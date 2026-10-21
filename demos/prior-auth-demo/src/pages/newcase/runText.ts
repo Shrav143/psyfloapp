@@ -1,4 +1,4 @@
-/* What each agent says it is doing and what it found, for the run page, the Active Cases rows and the Dashboard note. */
+/* What each agent says it is doing and what it found, for the run page, the Case Manager rows and the Dashboard note. */
 import { AGENTS } from "@/data/agents";
 import { chanceRange, currentChance, draftState, QUESTIONS, RUN_STEPS, similarCases, type CaseDraft } from "@/data/cases";
 import { simulateCheck } from "@/data/eligibility";
@@ -73,7 +73,7 @@ const LINE: Partial<Record<AgentKey, (d: CaseDraft, who: string) => string>> = {
   scrubber: () => "is checking the request for errors",
 };
 
-/** One line for the Active Cases row. */
+/** One line for the Case Manager row. */
 export function runLine(d: CaseDraft): string {
   const s = draftState(d);
   if (s === "question" && d.run.question) return d.type === "Recertification" ? QUESTIONS[d.run.question].line : QUESTIONS[d.run.question].line.replace("the recertification", "the request");
