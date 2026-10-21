@@ -40,7 +40,7 @@ endgroup
 group gP "Production only, from the PRD"
   ext p1 "The record system changes its screens\nThe feed pauses and falls back to file upload"
   ext p2 "A sign-in challenge or lockout\nThe run pauses and a task goes to the credential owner"
-  ext p3 "A feed goes stale\nA banner and a task after the stale limit, 36 hours for attendance"
+  toast p3 "A feed goes stale\nA banner and a task after the stale limit, 36 hours for attendance"
 endgroup
 
 s1 --> q1

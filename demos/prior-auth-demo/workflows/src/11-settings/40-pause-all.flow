@@ -23,9 +23,9 @@ endgroup
 
 process n1 "Freedom levels are not touched\nEach agent keeps the level it had"
 
-group gReal "Production: what a pause must do (PRD FR-25)"
-  ext r1 "Takes effect before the next step of any running job"
-  ext r2 "Outbound steps already running finish, or roll back to the manual queue\nNever half-submitted"
+group gReal "Production (PRD FR-25)"
+  process r1 "Production: a pause takes effect before the next step of any running job"
+  process r2 "Production: outbound steps already running finish, or roll back to the manual queue\nNever half-submitted"
 endgroup
 
 click k3 "Click 'Resume all agents'"

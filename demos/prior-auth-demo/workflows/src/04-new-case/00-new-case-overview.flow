@@ -4,7 +4,7 @@ intro: New case is a page that makes or reopens a case (a 'draft') and shows the
 dir: TD
 also: Demo only: the hosted preview keeps the address in memory, so the typed ?referral= entry cannot be used there.
 ---
-start s1 "Open New case\nSidebar, a 'New case' button, the Demo menu or FLO's link"
+start s1 "Open New case\nSidebar, a 'New case' button, the Demo menu, FLO's link or the old /referrals address"
 start s2 "Click 'Start authorization'\non a coverage result"
 start s3 "Type /authorizations/new?referral=RF-2051\n(no button links to it now)"
 start s4 "Open a case that already exists\nA Case Manager row button, a bell link, or 'Open in review and sign'"
@@ -31,7 +31,7 @@ group gOpen "A case id is in the address: reopen it"
   screen sc2 "'R-1234 was sent'\n'It was signed and sent to the payer. The agents are following it from the Dashboard.'\n'This case is no longer being prepared'"
   click c2 "Click 'Open it on the Dashboard'"
   click c3 "Click 'Back to Case Manager'"
-  decision d5 "On the Referral step, and have agents already run?"
+  decision d5 "On Referral or Medical records, and have agents already run?"
   process p5 "Moves on when the case is opened\nAgents work if fewer than 10 agents are done, else Review and sign\nA later click on 'Referral' in the stepper is not undone"
 endgroup
 

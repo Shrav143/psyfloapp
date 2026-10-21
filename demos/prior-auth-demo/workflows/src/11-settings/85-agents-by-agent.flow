@@ -1,0 +1,37 @@
+title: Settings › Agent map › Where each of the sixteen agents works
+route: /settings
+intro: The sixteen agents, four crews as on the Settings page, and every screen where the demo shows each one acting. Read it with the flow-by-flow map.
+dir: TD
+also: Taken from the code. An agent that appears only in a notification (Sentinel) is marked as such.
+---
+screen c1 "Coverage\nKnows who pays and files with them"
+agent verify "Verify\nNew case run step 2 and the referral Coverage tab\nEligibility & Benefits live check\nEMR Connect: re-checks coverage"
+agent caller "Caller\nEligibility & Benefits: phones when a system does not answer\nDashboard: phones if a request is still pending\nPayers process steps: follow-up calls"
+agent navigator "Navigator\nDashboard: sends signed requests, checks status\nDenial Intelligence: files the appeal after a signature\nEligibility: clinic enrolled to bill\nEMR Connect: sign-ins, disconnect, write-back switch"
+
+screen c2 "Documentation\nReads the chart, writes the case"
+agent reader "Reader\nNew case: referral and files, run step 1\nDenial Intelligence: reads the letter\nEligibility, EMR Connect: pulls files, maps fields"
+agent criteria "Criteria\nNew case run step 3\nEligibility: is authorization required\nCase page: Criteria tab\nReferral decline reasons"
+agent placement "Placement\nNew case run step 5\nReferral Fit tab"
+agent scribe "Scribe\nNew case run step 7 and its questions\nCase page: redraft after actions\nCase Manager reviews\nPayers: Update drafts"
+agent integrity "Integrity\nNew case run step 8\nDashboard: review and sign\nDenial Intelligence: appeal and call prep\nPayers: Update drafts"
+
+screen c3 "Intelligence\nKnows how each payer behaves"
+agent historian "Historian\nNew case run step 4\nDenial Intelligence: similar decisions\nPayers Changes: proposals"
+agent forecaster "Forecaster\nNew case run step 6\nCase page: re-scores the approval chance"
+agent sentinel "Sentinel\nNo screen runs it\nOnly the notification 'Payer rule changed', which links to Payers › Changes"
+agent analyst "Analyst\nAnalytics: builds the monthly report"
+
+screen c4 "Case work\nMoves each case to done"
+agent packet "Packet\nNew case run step 9 and a question\nDashboard: drafts the answer to an information request\nPayers process steps"
+agent scrubber "Scrubber\nNew case run step 10: 'Request has no errors'"
+agent cadence "Cadence\nDashboard: ledger, next review, write-back\nDenial Intelligence: books the peer-to-peer\nCase Manager reviews"
+agent advocate "Advocate\nDenial Intelligence: checks the notice, drafts the appeal, finishes the brief\nPayers process steps"
+
+goto g1 "Continues in: Settings › Agent map › Which agents work in which flow"
+
+c1 --> verify & caller & navigator
+c2 --> reader & criteria & placement & scribe & integrity
+c3 --> historian & forecaster & sentinel & analyst
+c4 --> packet & scrubber & cadence & advocate
+verify -.-> g1

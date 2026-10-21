@@ -26,9 +26,9 @@ endgroup
 
 process n8 "Leaving New case drops that pause\nProgress is kept on the case, so the agents resume when the person returns"
 
-group gReal "Production: the kill switch (PRD FR-25)"
-  ext r1 "The operator can pause one agent, one payer channel or all outbound actions at once"
-  ext r2 "A pause takes effect before the next step of any running job\nSteps already going out finish, or roll back to the manual queue"
+group gReal "Production (PRD FR-25)"
+  process r1 "Production: the operator can pause one agent, one payer channel or all outbound actions at once"
+  process r2 "Production: a pause takes effect before the next step of any running job\nSteps already going out finish, or roll back to the manual queue"
 endgroup
 
 goto g1 "Continues in: New case › Agents work › Pause and resume"
