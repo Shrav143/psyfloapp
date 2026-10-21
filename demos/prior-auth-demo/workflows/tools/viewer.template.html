@@ -102,6 +102,7 @@ main { min-width: 0; }
 .jump { cursor: pointer; }
 .jump:hover :is(rect, polygon, path) { stroke-width: 3px !important; }
 .hit :is(rect, polygon, path, circle, ellipse) { stroke: #D1242F !important; stroke-width: 3.5px !important; }
+.ph { margin: 0 auto; display: grid; place-items: center; color: #66716B; font-size: 14px; background: repeating-linear-gradient(135deg, #FBF8F3, #FBF8F3 12px, #F6F1E7 12px, #F6F1E7 24px); border-radius: 10px; }
 .empty { display: none; padding: 40px 0; color: var(--muted); }
 
 .kinds { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 10px 16px; margin-top: 16px; }
@@ -177,37 +178,79 @@ footer { color: var(--muted); font-size: 13px; padding-bottom: 24px; }
   <div class="vp paper" id="fvp" tabindex="0"></div>
 </div>
 
+<!--DATA-->
 <script>
 (function () {
-  var LINKS = /*LINKS*/{};
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  var DATA = JSON.parse($("#d").textContent);
   var cards = $$(".card[data-q]");
   var Z = new WeakMap();
+  var query = "";
+  var canUnpack = typeof DecompressionStream === "function" && typeof Blob === "function";
 
-  function dims(svg) { return { w: parseFloat(svg.getAttribute("width")) || 800, h: parseFloat(svg.getAttribute("height")) || 600 }; }
-  function apply(svg, s) { var d = dims(svg); svg.style.width = d.w * s + "px"; svg.style.height = d.h * s + "px"; }
-  function fitScale(vp, svg) {
-    var d = dims(svg), cw = vp.clientWidth - 34;
-    if (cw <= 0) return 1;
-    return Math.min(1, Math.max(0.5, cw / d.w));
-  }
-  function setScale(card, s, manual) {
-    var st = Z.get(card), svg = $("svg", $(".vp", card));
-    st.s = Math.min(2.5, Math.max(0.25, s));
-    if (manual) st.manual = true;
-    apply(svg, st.s);
+  /* Diagrams travel as compressed text. A card unpacks its drawing when it is about to scroll into view. */
+  function bytes(b64) { var bin = atob(b64), u = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return u; }
+  function unpack(b64) { return new Response(new Blob([bytes(b64)]).stream().pipeThrough(new DecompressionStream("gzip"))).text(); }
+
+  function dimsOf(card) { var vp = $(".vp", card); return { w: +vp.getAttribute("data-w") || 800, h: +vp.getAttribute("data-h") || 600 }; }
+  function svgOf(card) { return $("svg", $(".vp", card)); }
+  function paint(card) {
+    var st = Z.get(card), d = dimsOf(card), w = d.w * st.s, h = d.h * st.s, svg = svgOf(card);
+    if (svg) { svg.style.width = w + "px"; svg.style.height = h + "px"; }
+    else { var ph = $(".ph", card); if (ph) { ph.style.width = w + "px"; ph.style.height = h + "px"; } }
     $(".pct", card).textContent = Math.round(st.s * 100) + "%";
   }
+  function setScale(card, s, manual) {
+    var st = Z.get(card);
+    st.s = Math.min(2.5, Math.max(0.25, s));
+    if (manual) st.manual = true;
+    paint(card);
+  }
   function fit(card) {
-    var vp = $(".vp", card);
-    if (!vp.clientWidth) return;
-    setScale(card, fitScale(vp, $("svg", vp)), false);
+    var cw = $(".vp", card).clientWidth - 34;
+    if (cw <= 0) return;
+    setScale(card, Math.min(1, Math.max(0.5, cw / dimsOf(card).w)), false);
     Z.get(card).manual = false;
   }
 
+  function markHits(card) {
+    $$(".hit", card).forEach(function (n) { n.classList.remove("hit"); });
+    if (!query) return;
+    $$(".node", card).forEach(function (n) { if (n.textContent.toLowerCase().indexOf(query) > -1) n.classList.add("hit"); });
+  }
+  /* Dashed "Continues in" boxes jump to their diagram. */
+  function wireLinks(card, list) {
+    (list || []).forEach(function (pair) {
+      var el = $('[id^="flowchart-' + pair[0] + '-"]', card); if (!el) return;
+      var go = function () {
+        var t = document.getElementById(pair[1].slice(1)); if (!t) return;
+        closeFull();
+        t.scrollIntoView(); t.classList.remove("flash"); void t.offsetWidth; t.classList.add("flash");
+      };
+      el.classList.add("jump"); el.setAttribute("role", "link"); el.setAttribute("tabindex", "0");
+      el.addEventListener("click", go);
+      el.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
+    });
+  }
+  function load(card) {
+    var st = Z.get(card);
+    if (st.loaded) return Promise.resolve();
+    if (st.loading) return st.loading;
+    if (!canUnpack) { $(".ph", card).textContent = "This browser cannot open the compressed diagrams. Use the PDF instead."; return Promise.resolve(); }
+    st.loading = unpack(DATA[card.id].z).then(function (svg) {
+      $(".vp", card).innerHTML = svg;
+      st.loaded = true;
+      paint(card); wireLinks(card, DATA[card.id].l); markHits(card);
+    }).catch(function () { var ph = $(".ph", card); if (ph) ph.textContent = "This diagram could not be loaded. Use the PDF instead."; });
+    return st.loading;
+  }
+  var lazy = "IntersectionObserver" in window ? new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (e.isIntersecting) { lazy.unobserve(e.target); load(e.target); } });
+  }, { rootMargin: "1600px 0px" }) : null;
+
   cards.forEach(function (card) {
-    Z.set(card, { s: 1, manual: false });
+    Z.set(card, { s: 1, manual: false, loaded: false, loading: null });
     fit(card);
     var vp = $(".vp", card);
     $(".bar", card).addEventListener("click", function (e) {
@@ -219,6 +262,7 @@ footer { color: var(--muted); font-size: 13px; padding-bottom: 24px; }
       else if (a === "full") openFull(card);
       else if (a === "src") {
         var pre = $(".src", card), open = pre.hidden;
+        if (open && !pre.textContent) { pre.textContent = "Unpacking..."; unpack(DATA[card.id].m).then(function (t) { pre.textContent = t; }).catch(function () { pre.textContent = "The source could not be unpacked in this browser."; }); }
         pre.hidden = !open; b.setAttribute("aria-expanded", String(open));
         $('[data-act="copy"]', card).hidden = !open;
       } else if (a === "copy") {
@@ -229,6 +273,7 @@ footer { color: var(--muted); font-size: 13px; padding-bottom: 24px; }
       }
     });
     drag(vp);
+    if (lazy) lazy.observe(card); else load(card);
   });
 
   /* Drag to pan. A drag never counts as a click on a jump box. */
@@ -248,35 +293,23 @@ footer { color: var(--muted); font-size: 13px; padding-bottom: 24px; }
     vp.addEventListener("click", function (e) { if (vp._moved) { e.stopPropagation(); e.preventDefault(); vp._moved = false; } }, true);
   }
 
-  /* Dashed "Continues in" boxes jump to their diagram. */
-  Object.keys(LINKS).forEach(function (id) {
-    var el = document.getElementById(id); if (!el) return;
-    var target = LINKS[id];
-    el.classList.add("jump"); el.setAttribute("role", "link"); el.setAttribute("tabindex", "0");
-    var go = function () {
-      var t = document.getElementById(target.slice(1)); if (!t) return;
-      closeFull();
-      t.scrollIntoView(); t.classList.remove("flash"); void t.offsetWidth; t.classList.add("flash");
-    };
-    el.addEventListener("click", go);
-    el.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
-  });
-
   /* Full screen: the same SVG moves into the overlay and comes back on close. */
   var full = $("#full"), fvp = $("#fvp"), fcard = null, fscale = 1, home = null;
   function fsvg() { return $("svg", fvp); }
-  function fset(s) { fscale = Math.min(3, Math.max(0.2, s)); apply(fsvg(), fscale); $("#fpct").textContent = Math.round(fscale * 100) + "%"; }
-  function ffit() { var svg = fsvg(), d = dims(svg); fset(Math.min(1.2, Math.max(0.4, (fvp.clientWidth - 50) / d.w))); fvp.scrollTo(0, 0); }
+  function fset(s) { fscale = Math.min(3, Math.max(0.2, s)); var svg = fsvg(), d = dimsOf(fcard); if (svg) { svg.style.width = d.w * fscale + "px"; svg.style.height = d.h * fscale + "px"; } $("#fpct").textContent = Math.round(fscale * 100) + "%"; }
+  function ffit() { fset(Math.min(1.2, Math.max(0.4, (fvp.clientWidth - 50) / dimsOf(fcard).w))); fvp.scrollTo(0, 0); }
   function openFull(card) {
-    fcard = card; var vp = $(".vp", card), svg = $("svg", vp);
-    home = vp; fvp.innerHTML = ""; fvp.appendChild(svg);
-    $("#ftitle").textContent = $("h3", card).textContent;
-    full.hidden = false; document.body.style.overflow = "hidden";
-    ffit(); fvp.focus();
+    load(card).then(function () {
+      var svg = svgOf(card); if (!svg) return;
+      fcard = card; home = $(".vp", card); fvp.innerHTML = ""; fvp.appendChild(svg);
+      $("#ftitle").textContent = $("h3", card).textContent;
+      full.hidden = false; document.body.style.overflow = "hidden";
+      ffit(); fvp.focus();
+    });
   }
   function closeFull() {
     if (full.hidden) return;
-    var svg = fsvg(); if (svg && home) { home.appendChild(svg); setScale(fcard, Z.get(fcard).s, false); }
+    var svg = fsvg(); if (svg && home) { home.appendChild(svg); paint(fcard); }
     full.hidden = true; document.body.style.overflow = "";
   }
   full.addEventListener("click", function (e) {
@@ -296,11 +329,11 @@ footer { color: var(--muted); font-size: 13px; padding-bottom: 24px; }
   var q = $("#q"), cnt = $("#cnt"), timer;
   function filter() {
     var v = q.value.trim().toLowerCase(), shown = 0;
-    $$(".hit").forEach(function (n) { n.classList.remove("hit"); });
+    query = v;
     cards.forEach(function (c) {
       var ok = !v || c.getAttribute("data-q").indexOf(v) > -1;
       c.hidden = !ok;
-      if (ok) { shown++; if (v) $$(".node", c).forEach(function (n) { if (n.textContent.toLowerCase().indexOf(v) > -1) n.classList.add("hit"); }); }
+      if (ok) { shown++; if (Z.get(c).loaded) markHits(c); }
     });
     $$("#legend").forEach(function (l) { l.hidden = !!v; });
     $$(".mod").forEach(function (m) { m.hidden = !!v && !$$(".card[data-q]:not([hidden])", m).length; });

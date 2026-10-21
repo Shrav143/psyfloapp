@@ -2,6 +2,7 @@
      node tools/build.mjs            -> out/Psyflo-workflow-diagrams.html, out/svg/, out/mmd/
      node tools/build.mjs --strict   -> also fail on goto nodes that do not resolve to a diagram */
 import { mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync, existsSync } from "node:fs";
+import { gzipSync } from "node:zlib";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { compileFlow, KINDS } from "./compile.mjs";
@@ -123,7 +124,7 @@ const linkOf0 = (d, id, label) => {
 for (const d of diagrams) {
   const text = readFileSync(join(SRC, d.dir, d.file), "utf8");
   d.labels = [];
-  d.links = {};
+  d.links = [];
   for (const line of text.split(/\r?\n/)) {
     const m = line.trim().match(/^(\w+)\s+([A-Za-z][A-Za-z0-9_]*)\s+"(.*)"\s*$/);
     if (!m || !KINDS[m[1]]) continue;
@@ -131,8 +132,7 @@ for (const d of diagrams) {
     if (m[1] === "goto") {
       const t = linkOf(d, m[2], m[3].split("\\n")[0]);
       if (t) {
-        const dom = d.svg.match(new RegExp(`id="([^"]*flowchart-${m[2]}-\\d+)"`));
-        if (dom) d.links[dom[1]] = t;
+        if (!d.links.some(([id]) => id === m[2])) d.links.push([m[2], t]);
       }
     }
   }
@@ -165,7 +165,12 @@ const lean = (svg) => {
   const cls = sheets.get(css);
   return svg.replace(/<style>[\s\S]*?<\/style>/, "").replace(/<svg([^>]*?)\sclass="([^"]*)"/, `<svg$1 class="$2 ${cls}"`);
 };
-for (const d of diagrams) d.view = lean(d.svg);
+for (const d of diagrams) {
+  d.view = lean(d.svg);
+  const dm = d.view.match(/<svg[^>]*\swidth="(\d+)"[^>]*\sheight="(\d+)"/);
+  d.w = dm ? +dm[1] : 800;
+  d.h = dm ? +dm[2] : 600;
+}
 for (const k of Object.keys(swatches)) swatches[k] = lean(swatches[k]);
 const sheetCss = [...sheets].map(([css, cls]) => css.split(".WF").join(`svg.${cls}`)).join("\n");
 
@@ -216,8 +221,8 @@ const cards = (m) =>
     <button type="button" data-act="src" aria-expanded="false">Mermaid source</button>
     <button type="button" data-act="copy" hidden>Copy source</button>
   </div>
-  <div class="vp paper" tabindex="0" aria-label="Diagram: ${esc(d.meta.title)}">${d.view}</div>
-  <pre class="src" hidden>${esc(d.mermaid)}</pre>
+  <div class="vp paper" tabindex="0" aria-label="Diagram: ${esc(d.meta.title)}" data-w="${d.w}" data-h="${d.h}"><div class="ph">Loading the diagram...</div></div>
+  <pre class="src" hidden></pre>
 </article>`,
     )
     .join("");
@@ -234,13 +239,15 @@ const sections = mods
   )
   .join("");
 
-const links = Object.assign({}, ...diagrams.map((d) => d.links));
+/* The drawings travel compressed and are unpacked as they scroll into view, so the page opens fast on a phone. */
+const gz = (text) => gzipSync(Buffer.from(text, "utf8"), { level: 9 }).toString("base64");
+const data = Object.fromEntries(diagrams.map((d) => [d.id, { z: gz(d.view), m: gz(d.mermaid), l: d.links }]));
 const tpl = readFileSync(join(ROOT, "tools/viewer.template.html"), "utf8");
 const html = tpl
   .replace("</style>", () => `${sheetCss}\n</style>`)
   .replace("<!--NAV-->", nav)
   .replace("<!--SECTIONS-->", sections)
-  .replace("/*LINKS*/{}", JSON.stringify(links))
+  .replace("<!--DATA-->", () => `<script type="application/json" id="d">${JSON.stringify(data)}</script>`)
   .replace(/__DIAGRAMS__/g, String(stat.diagrams))
   .replace(/__STEPS__/g, String(stat.steps))
   .replace(/__MODULES__/g, String(stat.modules));
