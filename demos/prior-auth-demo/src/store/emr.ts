@@ -106,3 +106,10 @@ export const createEmrSlice: StateCreator<AppState, [], [], EmrSlice> = (set, ge
     },
   };
 };
+
+/** Systems the agents can read from right now. "Pull from EMR" in New case needs at least one. */
+export const selectConnectedEmr = (s: AppState): EmrSystem[] => s.emrSystems.filter((x) => x.status === "connected");
+/** True when at least one connected system has write-back on. The Dashboard's write-back box only shows then. */
+export const selectWriteBackOn = (s: AppState): boolean => s.emrSystems.some((x) => x.status === "connected" && x.writeBack);
+/** Fields still waiting for a mapping on a system that is connected. A pull leaves these blank. */
+export const selectUnmappedForConnected = (s: AppState): UnmappedField[] => s.emrUnmapped.filter((u) => s.emrSystems.find((x) => x.id === u.systemId)?.status === "connected");

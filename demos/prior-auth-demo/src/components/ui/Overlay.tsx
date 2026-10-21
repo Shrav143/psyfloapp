@@ -1,15 +1,7 @@
-import { useEffect, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import { X } from "lucide-react";
 import { cn } from "@/lib/cn";
-
-function useEscape(open: boolean, onClose: () => void) {
-  useEffect(() => {
-    if (!open) return;
-    const h = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    window.addEventListener("keydown", h);
-    return () => window.removeEventListener("keydown", h);
-  }, [open, onClose]);
-}
+import { useEscape } from "./escape";
 
 /** Right-hand slide-over. Closes on Esc or a click on the dimmed area. */
 export function Drawer({ open, onClose, title, subtitle, right, width = 640, children, footer }: { open: boolean; onClose: () => void; title: ReactNode; subtitle?: ReactNode; right?: ReactNode; width?: number; children: ReactNode; footer?: ReactNode }) {

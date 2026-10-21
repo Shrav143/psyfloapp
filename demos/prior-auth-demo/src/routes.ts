@@ -1,6 +1,7 @@
 /* Every link in the app goes through here, so modules never hard-code each other's URLs. */
 export const paths = {
-  dashboard: (q?: { request?: string; payer?: string; stage?: string }) => {
+  /** `focus=payers` scrolls to Payers at a glance. */
+  dashboard: (q?: { request?: string; payer?: string; stage?: string; focus?: "payers" }) => {
     const s = new URLSearchParams(q as Record<string, string> | undefined).toString();
     return `/dashboard${s ? `?${s}` : ""}`;
   },
@@ -21,7 +22,11 @@ export const paths = {
     return `/authorizations/eligibility/verify${s ? `?${s}` : ""}`;
   },
   eligibilityResult: (id: string) => `/authorizations/eligibility/${id}`,
-  denials: (id?: string) => (id ? `/denials?id=${id}` : "/denials"),
+  /** `payer` and `reason` narrow the open-denials list (Analytics rows link here). */
+  denials: (id?: string, filter?: { payer?: string; reason?: string }) => {
+    const s = new URLSearchParams({ ...(id ? { id } : {}), ...(filter?.payer ? { payer: filter.payer } : {}), ...(filter?.reason ? { reason: filter.reason } : {}) }).toString();
+    return `/denials${s ? `?${s}` : ""}`;
+  },
   brief: (id: string) => `/denials/${id}/brief`,
   manager: (tab?: "cases" | "reviews") => `/manager${tab ? `?tab=${tab}` : ""}`,
   analytics: () => "/analytics",

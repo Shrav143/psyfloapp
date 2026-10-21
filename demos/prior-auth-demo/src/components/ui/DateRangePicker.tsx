@@ -3,6 +3,7 @@ import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
 import { addDays, addMonths, daysInMonth, firstOfMonth, fullDate, monthTitle, rangeLabel, shortDay, weekdayOf, type DateRange } from "@/lib/dates";
 import { cn } from "@/lib/cn";
 import { Button } from "./Button";
+import { useEscape } from "./escape";
 
 export interface RangePreset {
   label: string;
@@ -97,14 +98,10 @@ export function DateRangePicker({ value, onChange, defaultValue, min, max, prese
     const down = (e: MouseEvent) => {
       if (!ref.current?.contains(e.target as Node)) setOpen(false);
     };
-    const esc = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
     document.addEventListener("mousedown", down);
-    document.addEventListener("keydown", esc);
-    return () => {
-      document.removeEventListener("mousedown", down);
-      document.removeEventListener("keydown", esc);
-    };
+    return () => document.removeEventListener("mousedown", down);
   }, [open]);
+  useEscape(open, () => setOpen(false));
 
   const right = addMonths(left, 1);
   const tabDay = focus >= left && focus < addMonths(left, 2) ? focus : firstOfMonth(left);

@@ -6,6 +6,7 @@ export * from "./Checklist";
 export * from "./DateRangePicker";
 export * from "./DocumentSheet";
 export * from "./Dropdown";
+export { useEscape } from "./escape";
 export * from "./FileDrop";
 export * from "./Inputs";
 export * from "./Misc";

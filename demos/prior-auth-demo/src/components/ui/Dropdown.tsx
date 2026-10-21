@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Check, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { useEscape } from "./escape";
 
 export interface Option<T extends string> {
   value: T;
@@ -32,6 +33,7 @@ export function Dropdown<T extends string>({ value, options, onChange, defaultVa
   const current = options.find((o) => o.value === value);
   const active = defaultValue !== undefined && value !== defaultValue;
 
+  useEscape(open, () => setOpen(false));
   useEffect(() => {
     if (!open) return;
     const down = (e: MouseEvent) => {
@@ -46,8 +48,7 @@ export function Dropdown<T extends string>({ value, options, onChange, defaultVa
     setOpen(false);
   };
   const onKey = (e: React.KeyboardEvent) => {
-    if (e.key === "Escape") setOpen(false);
-    else if (e.key === "ArrowDown") {
+    if (e.key === "ArrowDown") {
       e.preventDefault();
       setOpen(true);
       setCursor((c) => Math.min(options.length - 1, c + 1));

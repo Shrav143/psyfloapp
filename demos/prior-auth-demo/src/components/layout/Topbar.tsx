@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Bell, FastForward, FlaskConical, RotateCcw, Sparkles } from "lucide-react";
+import { useEscape } from "@/components/ui";
 import { cn } from "@/lib/cn";
 import { DAY, HOUR, clockTime, stamp, toDate } from "@/lib/time";
 import { paths } from "@/routes";
@@ -25,6 +26,7 @@ function DemoMenu() {
   const advance = useStore((s) => s.advanceClock);
   const toast = useStore((s) => s.toast);
   const nav = useNavigate();
+  useEscape(open, () => setOpen(false));
   useEffect(() => {
     if (!open) return;
     const h = (e: MouseEvent) => !ref.current?.contains(e.target as Node) && setOpen(false);
