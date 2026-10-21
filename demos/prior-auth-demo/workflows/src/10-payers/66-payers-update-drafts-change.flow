@@ -1,63 +1,52 @@
 title: Payers › Changes › Update drafts after a change
 route: /payers/cardinal?tab=changes
-intro: The second gate. Once a payer's change is acknowledged, 'Update 4 drafts' lists exactly which requests are affected, then two agents redraft for about three seconds. Drafts return to Case Manager for a new signature; a request that was already sent is never rewritten and gets an addendum instead.
+intro: The second gate. Once a payer's change is acknowledged, 'Update 1 draft' lists exactly this payer's unsent drafts, read live from the Dashboard requests and the saved New case drafts, then two agents redraft for about three seconds. Drafts return to Case Manager for a new signature. A request that was already sent is never listed or rewritten.
 dir: TD
 ---
-start s1 "Click 'Update 4 drafts'\n(ready after 'Acknowledge change')"
-overlay m "Update 4 drafts?\nConfirm gate. Nothing is redrafted until you say so.\nReason: criteria changed, version 2026.3."
-screen rows "One row per affected request\nRequest id, patient initials and age · payer,\nlevel of care chip, status"
-
-group gR "Cardinal's four rows, as seeded"
-  process r1 "R-1042 · J.M., 34 · Summit · Residential 3.5\nDraft, not yet sent"
-  process r2 "I-2207 · T.R., 29 · Cardinal · IOP\nDraft, not yet sent"
-  process r3 "R-0988 · D.L., 41 · Beacon · Residential 3.5\nDraft, not yet sent"
-  process r4 "I-2231 · S.B., 37 · Cardinal · IOP\nAlready sent. Gets an addendum"
-endgroup
-process st "Status by stage\nPreparing: 'Draft, not yet sent'\nInfo requested: 'Answer drafted, not yet sent'\nAnything later: 'Already sent. Gets an addendum'"
-toast fn "'Each redrafted case returns to Case Manager for a new signature.\nA request that is already sent is never rewritten.\nIt gets an addendum instead.'"
-click cs "Click 'Update 4 drafts'"
+start s1 "Click 'Update 1 draft'\n(ready after 'Acknowledge change')"
+overlay m "Update 1 draft?\nNothing is redrafted until you confirm.\nReason: criteria changed, version 2026.3."
+screen rows "One row per unsent draft of this payer\nRequest id, patient initials and age · payer,\nlevel of care chip, status"
+process r1 "Cardinal's row, read now\nI-2207 · T.R., 29 · Cardinal · IOP\nDraft, not yet sent"
+process who "Who is listed\nThis payer's requests in 'Preparing'\nand its saved New case drafts that are not sent\nNot listed: Summit's R-1042, Beacon's R-0988,\nsent I-2231, I-2218 (a reply on a request the payer has)"
+toast fn "'Each redrafted case returns to Case Manager for a new signature.\nRequests already sent keep what they were sent with.'"
+click cs "Click 'Update 1 draft'"
 process lock "Cancel greys out and the button spins\nEscape, X and dimmed area do nothing"
-agent a1 "Scribe is redrafting 4 drafts\n(demo: 1.5 seconds)"
+agent a1 "Scribe is redrafting 1 draft\n(demo: 1.5 seconds)"
 agent a2 "Integrity is checking every sentence\nagainst the chart (demo: 1.5 seconds)"
 decision lv "Still on Payers after 3 seconds?"
 endx drop "Update dropped\nChange stays waiting, acknowledged"
 
 group gU "What the update does"
-  store u1 "Each draft or answer-in-draft needs a person again\n'Redrafted after Cardinal's change (criteria changed, version 2026.3).\nWaiting for a new signature'\nTimeline event by Scribe"
-  store u2 "Each sent request gets a timeline event\n'Scribe prepared an addendum after ...'\nIts status does not change"
+  store u1 "Each listed draft needs a person again\n'Redrafted after Cardinal's change (criteria changed, version 2026.3).\nWaiting for a new signature'\nTimeline event by Scribe"
+  store u2 "Update recorded for Case Manager and New case\nWhich change, which payer, and the IDs\nof the drafts redrafted: I-2207"
   store u3 "Payer's change cleared\nChecked date becomes today"
   store u4 "Document lists gain the change's new rows\nRemaining treatment goals: Named in the latest progress note\nin Residential 3.5, IOP and PHP"
   store u5 "Edit log: 3 'Documents' entries\n'Added to the Residential 3.5 list' and so on\nReason 'After criteria changed, version 2026.3'"
-  store u6 "'What changed' gets a new top row\n'Criteria changed, version 2026.3: acknowledged and applied'\nAcknowledged by Jordan Perez, ...\nScribe and Integrity updated 4 drafts ..."
+  store u6 "'What changed' gets a new top row\n'Criteria changed, version 2026.3: acknowledged and applied'\nAcknowledged by Jordan Perez, ...\nScribe and Integrity updated 1 draft ..."
 endgroup
-store nt "Bell notification 'Drafts updated' from Scribe\n4 drafts were redrafted after Cardinal's change.\nEach needs a new signature in Case Manager."
-toast t1 "'4 drafts updated'\nCardinal is up to date. Each draft returned to Case Manager\nfor a new signature."
+store nt "Bell notification 'Drafts updated' from Scribe\n1 draft was redrafted after Cardinal's change.\nEach needs a new signature in Case Manager."
+toast t1 "'1 draft updated'\nCardinal is up to date. Each draft returned to Case Manager\nfor a new signature."
 screen out "Changes tab flips to green\n'This payer's rules are up to date', last checked today\nSidebar badge drops, dot turns green"
 click cx "Click 'Cancel'"
 click cesc "Press Escape, click the X\nor click the dimmed area"
 endx x1 "Modal closes\nNothing redrafted, still acknowledged"
-process odd "Demo oddity: two rows belong to other payers (Summit, Beacon)\nand the banner says 'not yet sent' for all four"
 goto g1 "Continues in: Dashboard › Requests table"
 click cb "Click the bell notification\n'Drafts updated'"
-goto g2 "Continues in: Case Manager › Cases"
+goto g2 "Continues in: Case Manager › Active cases › Updated for a payer change"
 goto g3 "Continues in: Payers › Documents › Try it on a case"
 goto g4 "Continues in: Payers › Edit log"
+goto g5 "Continues in: Payers › Changes › A change with no drafts"
 
 s1 --> m --> rows
-rows --> r1 & r2 & r3 & r4
-r1 --> st
-r2 --> st
-r3 --> st
-r4 --> st
-st --> fn --> cs --> lock --> a1 --> a2 --> lv
+rows --> r1 --> fn --> cs --> lock --> a1 --> a2 --> lv
+rows -.-> who
 lv -->|No| drop
 lv -->|Yes| u1
-u1 --> u2
-u2 --> u3 --> u4 --> u5 --> u6 --> nt --> t1 --> out
+u1 --> u2 --> u3 --> u4 --> u5 --> u6 --> nt --> t1 --> out
 out --> g1
 nt -.-> cb --> g2
 u4 -.-> g3
 u5 -.-> g4
-rows -.-> odd
+rows -.-> g5
 m --> cx --> x1
 m --> cesc --> x1

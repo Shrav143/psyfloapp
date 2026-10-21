@@ -14,7 +14,7 @@ decision d2 "Is ?tab one of process,\nrules, documents, changes?"
 process p5 "Show the Process tab"
 process p6 "Show the tab named in the address"
 
-screen pg "Payers\n'N payers. The agents know how each one works.'\nWorkflow, rules and documents for every payer. Change a rule and open drafts can follow."
+screen pg "Payers\n'N payers. The agents know how each one works.'\nWorkflow, rules and documents for every payer. Every edit is logged with your reason."
 
 group gL "Left column"
   screen list "Payer list card\n'Payers', 'Search payers', four groups, a dot per payer, legend"
@@ -33,7 +33,7 @@ endgroup
 click c_add "Click 'Add a payer'\ntop right of the page"
 
 group gB "What the badges count"
-  process b1 "Sidebar 'Payers' badge\nPayers with a change waiting\n2 at the start: Cardinal and Harborview\nFalls when a change is updated"
+  process b1 "Sidebar 'Payers' badge\nPayers with a change waiting\n3 at the start: Cardinal, Evergreen\nand Harborview. Falls when a change is updated"
   process b2 "'Changes' tab badge\nThe waiting change plus each Historian proposal\nFalls as each is handled"
 endgroup
 

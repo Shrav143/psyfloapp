@@ -1,8 +1,8 @@
 title: Case Manager › Page › Links in and the tab address
 route: /manager, /manager?tab=cases, /manager?tab=reviews, /active
-intro: Nine routes lead to Case Manager. Four of them name a tab in the address. Anything that is not '?tab=reviews' opens Active cases. This diagram lists each source, the address it uses and which tab opens.
+intro: Ten routes lead to Case Manager. Five of them name a tab in the address. Anything that is not '?tab=reviews' opens Active cases. This diagram lists each source, the address it uses and which tab opens.
 dir: LR
-also: Links never carry a case, a filter or a page number. Case Manager always opens at the top with filters cleared.
+also: Links never carry a filter or a page number. The one extra is '?review=' from the Ledger case page: it opens that review's drawer and is dropped from the address at once. Case Manager always opens at the top with filters cleared.
 ---
 start s1 "A person is somewhere else in the demo"
 
@@ -28,6 +28,8 @@ group gShell "Links from the shell"
   process r8 "Go to /manager?tab=reviews"
   click c9 "A saved or typed old address /active"
   process r9 "Replaced by /manager (any ?tab= on it is lost)"
+  click c11 "Ledger case page › 'Open the review'"
+  process r11 "Go to /manager?tab=reviews&review= and the review ID\nThe drawer opens over the list; the address keeps ?tab=reviews"
 endgroup
 
 decision d1 "Does the address say ?tab=reviews?"
@@ -40,7 +42,7 @@ goto g1 "Continues in: Case Manager › Reviews this week › The list"
 goto g2 "Continues in: Case Manager › Active cases › Being prepared card"
 end e1 "Case Manager is open on the right tab"
 
-s1 --> c1 & c2 & c3 & c4 & c5 & c6 & c7 & c8 & c9
+s1 --> c1 & c2 & c3 & c4 & c5 & c6 & c7 & c8 & c9 & c11
 c1 --> r1
 c2 --> r2
 c3 --> r3
@@ -50,7 +52,8 @@ c6 --> r6
 c7 --> r7
 c8 --> r8
 c9 --> r9
-r1 & r2 & r3 & r4 & r5 & r6 & r7 & r8 & r9 --> d1
+c11 --> r11
+r1 & r2 & r3 & r4 & r5 & r6 & r7 & r8 & r9 & r11 --> d1
 d1 -->|Yes| sR --> p1
 d1 -->|No| sA --> p1
 p1 --> e1

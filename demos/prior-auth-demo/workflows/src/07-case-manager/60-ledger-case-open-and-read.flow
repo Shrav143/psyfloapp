@@ -1,0 +1,45 @@
+title: Case Manager › Ledger case › Open and read
+route: /authorizations/case/ID (a case that is in the Case Manager ledger and has no request in the queue)
+intro: 26 of the 56 tracker cases have no request in the queue or on the Dashboard. Their ID opens a calm summary built from the ledger record, so the tracker, the reviews and the 'Ready to step down?' card never end at 'Request not found'. It says who, which payer and service, how much of the approval is used, what is due and the next step.
+dir: TD
+also: Patient shows initials and age only, with a 'Privacy mode on' pill, as everywhere in the demo. Authorization dates are worked out from the units used and the demo clock, or taken from the ledger's own end date when it has one.
+---
+start s1 "Click a tracker row, a case ID or 'Open'\nor 'Open case' in a review drawer\nor an ID in 'Ready to step down?'"
+process p1 "Go to /authorizations/case/ and the case code"
+decision d1 "Is the ID a request in the queue or on the Dashboard?"
+goto g1 "Continues in: Authorizations › Case"
+decision d2 "Is the ID in the Case Manager ledger?"
+screen n1 "'Request not found'\n'There is no request with the ID R-9999.'\nButton 'Back to the queue'\n(only for an address typed by hand)"
+endx e2 "Nothing to show for that ID"
+
+group gPage "Ledger case page"
+  screen h1 "Header\nCrumb 'Case Manager › R-0856'\nLevel chip, case ID, review type ('Continued stay 2'), status pill ('Review due')\n'J.S., 51 · Summit Medicaid HMO · Residential 3.5'"
+  screen m1 "Card 'Case summary', pill 'Privacy mode on'\nPatient, Payer, Service\nAuthorization: 'Mon 10/8 to Mon 10/22'\nUnits used: a bar and '12 of 14 days · 2 left'\nReviews due: 'Review 2, Tue 9:00 am' with its status pill\nNext on the clock, Status\nApproval chance with its band, range and number of similar decisions"
+  screen r1 "Right side\n'Next step': one sentence, for example 'Review 2 is drafted. Read it, then sign it. Cadence books the next one.'\n'History': approval, drafts, signatures, and what comes next (dashed)"
+  process u1 "Case not approved yet: Authorization and Units used say 'Not approved yet'\nReviews due says 'None until the request is approved'"
+  process u2 "After a signature: a 'Next review' line shows the date Cadence booked"
+endgroup
+
+decision d3 "Is a review due this week and not yet signed?"
+click c1 "Click 'Open the review'"
+process p2 "Go to /manager?tab=reviews&review= and the review ID\nThe address then keeps only ?tab=reviews"
+goto g2 "Continues in: Case Manager › Reviews this week › The review drawer"
+process p3 "No 'Open the review' button\n(the review is signed, or none is due)"
+click c2 "Click 'Back to Case Manager' or the crumb 'Case Manager'"
+process p4 "Go to /manager\nActive cases opens at the top"
+goto g3 "Continues in: Case Manager › Page › Arrive and read the header"
+end e1 "Case is read"
+
+s1 --> p1 --> d1
+d1 -->|Yes| g1
+d1 -->|No| d2
+d2 -->|No| n1 --> e2
+d2 -->|Yes| h1 --> m1 --> r1
+m1 -.-> u1
+m1 -.-> u2
+r1 --> d3
+d3 -->|Yes| c1 --> p2 --> g2
+d3 -->|No| p3
+r1 --> c2 --> p4 --> g3
+p3 --> e1
+c2 -.-> e1

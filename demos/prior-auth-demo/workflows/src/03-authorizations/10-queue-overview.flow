@@ -2,7 +2,7 @@ title: Authorizations › Queue › Open the queue and read the top
 route: /authorizations
 intro: How a person reaches the queue, what the header line says, and what the five summary tiles show and do. Bands, request tiles, filters and the payer signal each have their own diagram.
 dir: TD
-also: Demo only: the numbers (56 open, 19 due today, $538K, 79%) are seed data. They move when actions are applied on a case page or a request is signed and sent.
+also: Demo only: the numbers (56 open, 19 due today, $538K, 79%) are seed data. They move when actions are applied on a case page, and a request leaves the queue once it is signed and sent, decided by the payer, or settled in Denial Intelligence.
 ---
 start s1 "Click 'Authorizations' in the sidebar"
 start s2 "Demo menu › 'Authorizations: the queue'"
@@ -10,12 +10,12 @@ start s3 "On a case page: click 'Back to queue' or the 'Authorizations' crumb"
 
 screen q1 "Authorizations queue\nHeader, payer signal, five tiles, filters, priority bands"
 process sb "Sidebar badge on 'Authorizations'\nOpen requests in Act now plus Due within 24 hours (19)"
-process p1 "The page counts the open requests\nA request already signed and sent no longer counts"
+process p1 "The page counts the open requests\nA request that was sent, decided by the payer or settled no longer counts"
 process p2 "Money and average use each request's current chance\nIncluding actions applied on its case page"
 decision d1 "Is any filter on?"
 
-screen h1 "Header: '19 of 56 open requests need action today.'\nThe 19 are Act now plus Due within 24 hours"
-screen h2 "Sub line: 'Five are urgent. $538K rides on what is in flight, and the average approval chance is 79%.'"
+screen h1 "Header: '19 of 56 open requests need action today.'\nThe 19 are Act now plus Due within 24 hours\nWith none left: 'Nothing needs action today.'"
+screen h2 "Sub line: 'Five are urgent. $538K rides on what is in flight, and the average approval chance is 79%.'\nWith none in Act now: 'Nothing is urgent. ...'"
 screen h3 "Header: 'X of 56 open requests match these filters.'\nNo sub line"
 
 click nb "Click 'New case' (top right button)"
@@ -24,13 +24,13 @@ goto g2 "Continues in: Authorizations › Queue › Cardinal payer signal"
 
 screen tl "Five summary tiles under the header\nAlways count the whole queue, not the filtered list"
 screen t1 "'Approval chance' 79%\n'average · likely 74–84%'\nNot clickable"
-click t2 "Click the 'Urgent' tile\n5 · 'the Act now band'"
+click t2 "Click the 'Urgent' tile\n5 · 'the Act now band'\n(0 once all five are sent or handled)"
 click t3 "Click the 'In flight' tile\n56 · '$538K at stake'"
 screen t4 "'Approved' 112\n'last 30 days'\nNot clickable"
 screen t5 "'Denied' 46\n'last 30 days'\nNot clickable"
 
 process u1 "All filters are cleared, then Urgency is set to 'Act now'"
-screen u2 "Only the Act now band is listed\nHeader uses the 'match these filters' wording"
+screen u2 "Only the Act now band is listed\nHeader uses the 'match these filters' wording\nWith none left, the band says 'Nothing needs you today'"
 process a1 "All filters are cleared"
 screen a2 "Every band is listed again\nHeader returns to 'need action today'"
 

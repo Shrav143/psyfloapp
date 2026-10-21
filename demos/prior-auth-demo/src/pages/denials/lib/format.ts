@@ -1,6 +1,6 @@
+import { APPEAL_LEVELS, type DenialWork } from "@/data/denials";
 import type { PsyRequest, Tone } from "@/data/types";
 import { DAY, HOUR } from "@/lib/time";
-import type { DenialWork } from "@/data/denials";
 
 /** "36 h", "3 d", "20 min". Under three days reads better in hours. */
 export function leftLabel(min: number): string {
@@ -11,9 +11,10 @@ export function leftLabel(min: number): string {
 
 export const capitalize = (s: string): string => (s ? s[0].toUpperCase() + s.slice(1) : s);
 
-/** Closed means the denial is settled: accepted, or the call overturned or partly restored it. */
+/** Closed means the denial is settled: accepted, or the call or the payer's decision on the appeal overturned or partly overturned it. */
 export function isClosed(work: DenialWork | undefined): boolean {
-  return !!work?.accepted || work?.outcome?.kind === "overturned" || work?.outcome?.kind === "partly";
+  const won = (kind: string | undefined) => kind === "overturned" || kind === "partly";
+  return !!work?.accepted || won(work?.outcome?.kind) || won(work?.decision?.result);
 }
 
 /** The chip in the Open denials list: the route and the time left, or where it stands. */
@@ -35,7 +36,7 @@ export function sortOpen(list: PsyRequest[], clock: number): PsyRequest[] {
   return [...list].sort((a, b) => key(a) - key(b) || a.id.localeCompare(b.id));
 }
 
-/** Appeal or external review already sent: the payer has it and we wait. */
-export const isFiled = (r: PsyRequest): boolean => r.chip === "Appeal filed" || r.chip === "External review";
+/** An appeal, second-level appeal or external review already sent: the payer has it and we wait. */
+export const isFiled = (r: PsyRequest): boolean => APPEAL_LEVELS.some((l) => l.filedChip === r.chip);
 
 export const PROGRAM_SHORT: Record<string, string> = { RES: "Res.", IOP: "IOP", PHP: "PHP", WM: "Detox" };

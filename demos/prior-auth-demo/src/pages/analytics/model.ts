@@ -1,7 +1,8 @@
-import { ACTIONS, ALL, APPROVED, APPROVED_PREV, BASE, MIN_DECISIONS, PAYER_ORDER, PERIODS, REASONS, type PayerFilter, type PeriodId, type PeriodInfo } from "@/data/analytics";
+import { ACTIONS, ALL, APPEALS, APPROVED, APPROVED_PREV, BASE, MIN_DECISIONS, OVERTURN_SHIFT, PAYER_ORDER, PERIODS, REASONS, WRITTEN_OFF, type PayerFilter, type PeriodId, type PeriodInfo } from "@/data/analytics";
 import { payerById } from "@/data/seed";
 import type { PayerId } from "@/data/types";
 import { PAYER_ROW_LABEL } from "@/pages/dashboard/helpers";
+import type { AppealDecision, DenialAccepted } from "@/store/ripples";
 
 /* Pure model for the Performance page. A figure based on fewer than 20 decisions is null, never a number. */
 
@@ -35,6 +36,14 @@ export interface HelpRow {
   applied: number;
   approved: number;
 }
+/** What other screens have recorded since the demo opened: appeal rulings, accepted denials, dismissed recommendations (with the payer, when known). */
+export interface Ripples {
+  appeals: AppealDecision[];
+  accepted: DenialAccepted[];
+  dismissals: { reason: string; payerId?: string }[];
+}
+export const NO_RIPPLES: Ripples = { appeals: [], accepted: [], dismissals: [] };
+
 export interface View {
   period: PeriodInfo;
   payer: PayerFilter;
@@ -48,6 +57,11 @@ export interface View {
   edits: { n: number; parts: EditPart[] } | null;
   reasons: { rows: ReasonRow[]; total: number } | null;
   helps: HelpRow[] | null;
+  /** Appeals the payer ruled on. `overturned` counts partly restored ones too. Hidden under 20 rulings. */
+  appeals: Tile & { overturned: number };
+  writtenOff: { amount: number; n: number };
+  /** Reasons given when a recommendation was dismissed. Null when nobody dismissed one. */
+  dismissed: { reason: string; count: number }[] | null;
 }
 
 const enough = (n: number): boolean => n >= MIN_DECISIONS;
@@ -83,7 +97,7 @@ function topReasons(scope: PayerFilter, p: PeriodInfo): { rows: ReasonRow[]; tot
   };
 }
 
-export function buildView(periodId: PeriodId, scope: PayerFilter): View {
+export function buildView(periodId: PeriodId, scope: PayerFilter, ripples: Ripples = NO_RIPPLES): View {
   const period = periodInfo(periodId);
   const all = ALL[periodId];
   const ids = scope === "all" ? PAYER_ORDER : [scope];
@@ -136,6 +150,19 @@ export function buildView(periodId: PeriodId, scope: PayerFilter): View {
     .sort((a, b) => b.applied - a.applied)
     .slice(0, 4);
 
+  // denial outcomes: the seeded quarter, plus what Denial Intelligence and Authorizations have recorded. Everything recorded happened this quarter.
+  const recorded = periodId !== "last_quarter";
+  const mine = <T extends { payerId?: string }>(xs: T[]): T[] => (recorded ? xs.filter((x) => scope === "all" || x.payerId === scope) : []);
+  const rulings = mine(ripples.appeals);
+  const decided = sum(ids.map((id) => scaled(APPEALS[id].decided, period))) + rulings.length;
+  const overturned = sum(ids.map((id) => Math.round((scaled(APPEALS[id].decided, period) * (APPEALS[id].rate + OVERTURN_SHIFT[periodId])) / 100))) + rulings.filter((r) => r.result !== "upheld").length;
+  const appeals = { value: enough(decided) ? Math.round((overturned / decided) * 100) : null, n: decided, unit: "rulings", overturned };
+  const accepted = mine(ripples.accepted);
+  const writtenOff = { n: sum(ids.map((id) => scaled(WRITTEN_OFF[id].n, period))) + accepted.length, amount: sum(ids.map((id) => scaled(WRITTEN_OFF[id].amount, period))) + sum(accepted.map((a) => a.amount ?? 0)) };
+  const reasonCounts = new Map<string, number>();
+  for (const d of mine(ripples.dismissals)) reasonCounts.set(d.reason, (reasonCounts.get(d.reason) ?? 0) + 1);
+  const dismissed = reasonCounts.size ? [...reasonCounts].map(([reason, count]) => ({ reason, count })).sort((a, b) => b.count - a.count || a.reason.localeCompare(b.reason)) : null;
+
   return {
     period,
     payer: scope,
@@ -149,6 +176,9 @@ export function buildView(periodId: PeriodId, scope: PayerFilter): View {
     edits,
     reasons,
     helps: helpRows.length ? helpRows : null,
+    appeals,
+    writtenOff,
+    dismissed,
   };
 }
 

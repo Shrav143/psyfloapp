@@ -2,7 +2,7 @@ title: EMR Connect › Connected systems › What each status means
 route: /emr
 intro: Every system on the list is in one of three states. Each state shows different buttons and text, and a system moves between them by the clicks on the arrows.
 dir: TD
-also: In the demo only the seeded Billing system starts in 'Needs a quick look'. Nothing in the demo moves a Connected system into it.
+also: In the demo only the seeded Billing system starts in 'Needs a quick look'. Nothing in the demo moves a Connected system into it. A system that is not Connected also says that New case cannot pull a chart from it.
 ---
 start s0 "Open EMR Connect\nThe two clinical record sites start Connected, the Billing system starts amber"
 click n1 "Click 'Connect a system', pass the test, click 'Connect {name}'"
@@ -10,20 +10,20 @@ ext n2 "Production: the read-only sign-in expires or the EMR changes its screens
 
 group gC "Connected"
   store sc "Connected\nGreen pill"
-  process c1 "Row: '6 min ago' or 'Syncing'\nButtons: Sync now, Manage"
+  process c1 "Row: '6 min ago' or 'Syncing'\nButtons: Sync now (dimmed while any sync runs), Manage\nNew case can pull a chart from it"
   process c2 "Synced by 'Sync now' in the card header\nCounts in the Last sync tile"
 endgroup
 
 group gA "Needs a quick look"
   store sa "Needs a quick look\nAmber pill"
-  process a1 "Row: the issue, then 'First step: renew the sign-in with Fix.'\nButtons: Fix, Manage"
+  process a1 "Row: the issue, 'First step: renew the sign-in with Fix.' and 'New case cannot pull a chart from it until it is connected.'\nButtons: Fix, Manage"
   process a2 "Skipped by 'Sync now'\nStill counts in the Last sync tile"
 endgroup
 
 group gD "Disconnected"
   store sd "Disconnected\nRed pill"
-  process d1 "Row: 'Not syncing' and 'Charts from this system are not arriving.'\nButtons: Reconnect, Manage"
-  process d2 "Skipped by 'Sync now'\nIgnored by the Last sync tile\nThe Manage drawer ends with 'Reconnect'"
+  process d1 "Row: 'Not syncing', 'Charts from this system are not arriving.' and 'New case cannot pull a chart from it until it is connected.'\nButtons: Reconnect, Manage"
+  process d2 "Skipped by 'Sync now'\nIgnored by the Last sync tile\nThe Manage drawer ends with 'Reconnect'\nIf it was disconnected while it needed a look, the row adds 'Reconnect starts with a fix.'"
 endgroup
 
 goto g1 "Continues in: EMR Connect › Connect a system › Choose the system and contact"
@@ -41,5 +41,5 @@ sa -->|Click 'Fix', then 'Finish and reconnect'| sc
 sa -.-> g2
 sc -->|Manage, then 'Disconnect', then 'Disconnect'| sd
 sa -->|Manage, then 'Disconnect', then 'Disconnect'| sd
-sd -->|Click 'Reconnect'. No test is shown| sc
+sd -->|Click 'Reconnect', fix first if it needed one, then the connection test passes| sc
 sd -.-> g3

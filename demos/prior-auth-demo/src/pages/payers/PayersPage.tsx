@@ -42,7 +42,7 @@ export default function PayersPage() {
 
   return (
     <Page>
-      <PageHeader title={`${rows.length} payers. The agents know how each one works.`} sub="Workflow, rules and documents for every payer. Change a rule and open drafts can follow." actions={<Button variant="primary" icon={Plus} onClick={() => setDialog("add")}>Add a payer</Button>} />
+      <PageHeader title={`${rows.length} payers. The agents know how each one works.`} sub="Workflow, rules and documents for every payer. Every edit is logged with your reason." actions={<Button variant="primary" icon={Plus} onClick={() => setDialog("add")}>Add a payer</Button>} />
       <div className="grid grid-cols-[300px_minmax(0,1fr)] items-start gap-5">
         <PayerList rows={rows} config={config} selectedId={row.id} onSelect={(pid) => nav(paths.payers(pid, tab))} />
         <div className="flex flex-col gap-4">

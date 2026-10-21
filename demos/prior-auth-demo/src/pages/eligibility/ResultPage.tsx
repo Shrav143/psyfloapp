@@ -1,17 +1,19 @@
 import { useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, CalendarClock, ChevronDown, FolderOpen, Phone, RefreshCw, ScanText, SearchX, ShieldPlus } from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
+import { CalendarClock, ChevronDown, FolderOpen, Phone, RefreshCw, ScanText, SearchX, ShieldPlus } from "lucide-react";
 import { AgentBadge, Button, Card, CardHeader, EmptyState, Page, PageHeader, Pill } from "@/components/ui";
 import { VERDICT_LABEL, type EbPatient, type Verdict } from "@/data/eligibility";
 import { payerById } from "@/data/seed";
 import { PROGRAM_LABEL, type Tone } from "@/data/types";
 import { cn } from "@/lib/cn";
-import { clockTime, toDate } from "@/lib/time";
+import { ago, clockTime, toDate } from "@/lib/time";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
 import { buildResult, type AgentLine } from "./checks";
 import { patientLabel } from "./chips";
+import { BackLinks, useOrigin } from "./origin";
 import { PaymentChecks } from "./PaymentChecks";
+import { autoState, DUE_AT, NOT_RECHECKED, RE_CHECKED } from "./recheck";
 
 const BANNER: Record<Verdict, { box: string; tone: Tone }> = {
   cleared: { box: "border-good-edge bg-good-bg text-good-ink", tone: "good" },
@@ -61,6 +63,8 @@ export default function ResultPage() {
   const recheck = useStore((s) => s.ebRecheck);
   const toast = useStore((s) => s.toast);
   const clock = useStore((s) => s.clock);
+  const paused = useStore((s) => s.agentPaused.verify);
+  const origin = useOrigin();
   const result = useMemo(() => (patient ? buildResult(patient) : null), [patient]);
 
   if (!patient || !result) {
@@ -78,16 +82,16 @@ export default function ResultPage() {
 
   const payer = payerById(patient.payerId);
   const v = result.verdict;
+  const auto = autoState(patient, clock, paused);
   const live = clock - patient.checkedAt <= 60;
-  const stampText = live ? `Checked live at ${clockTime(toDate(patient.checkedAt))}` : `Last checked ${clockTime(toDate(patient.checkedAt))}, ${Math.round((clock - patient.checkedAt) / 1440)} d ago`;
+  const checkedClock = clockTime(toDate(patient.checkedAt));
+  const stampText = auto?.kind === "done" ? RE_CHECKED(auto.at) : live ? `Checked live at ${checkedClock}` : `Last checked ${checkedClock}, ${ago(patient.checkedAt, clock)}`;
+  const next = auto && auto.kind !== "done" ? [auto.kind === "paused" ? `${DUE_AT(auto.at)}. Verify runs it when it is resumed in Settings` : `${DUE_AT(auto.at)}. Verify runs it on its own`, ...result.next] : result.next;
   const state = patient.eligibility.state;
 
   return (
     <Page>
-      <Link to={paths.eligibility()} className="-mb-1.5 flex w-fit items-center gap-1.5 text-muted hover:text-ink">
-        <ArrowLeft size={14} className="ico" />
-        Eligibility &amp; Benefits
-      </Link>
+      <BackLinks back={origin.back} />
       <PageHeader title={result.headline} sub={`${patient.id} · ${patientLabel(patient)} · ${payer.name} · ${patient.levelLabel ?? PROGRAM_LABEL[patient.program]} · Date of service ${patient.dos}`} />
       <div className={cn("flex items-center gap-5 rounded-[20px] border px-7 py-5", BANNER[v].box)} role="status">
         <div className="min-w-0 flex-1">
@@ -127,7 +131,7 @@ export default function ResultPage() {
       </div>
       <div className="grid grid-cols-[minmax(0,1fr)_380px] items-start gap-5">
         <Card>
-          <CardHeader title="Payment checks" subtitle="Every line has to pass for the clinic to be reimbursed" right={<Pill tone="neutral" dot>{stampText}</Pill>} />
+          <CardHeader title="Payment checks" subtitle="Every line has to pass for the clinic to be reimbursed" right={<>{auto?.kind === "paused" ? <Pill tone="mid" dot>{NOT_RECHECKED}</Pill> : null}<Pill tone="neutral" dot>{stampText}</Pill></>} />
           <PaymentChecks result={result} />
         </Card>
         <div className="flex flex-col gap-4">
@@ -135,7 +139,7 @@ export default function ResultPage() {
           <Card>
             <CardHeader title="Next checks" />
             <ul className="flex flex-col gap-2.5 px-6 py-[18px]">
-              {result.next.map((n) => (
+              {next.map((n) => (
                 <li key={n} className="flex items-center gap-2.5 text-sm">
                   <CalendarClock size={16} className="ico text-muted" />
                   {n}

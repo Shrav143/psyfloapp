@@ -34,7 +34,7 @@ process cnt "Footer counts changes against the saved workflow\n'No changes yet' 
 click sv "Click 'Save workflow'"
 goto gs "Continues in: Payers › Process › Save the workflow"
 click cx "Click 'Cancel'"
-click cesc "Press Escape, click the X\nor click the dimmed area"
+click cesc "Press Escape, click the X\nor click the dimmed area\nEscape with a step menu open\ncloses only the menu"
 endx x1 "Drawer closes\nEvery unsaved change is dropped\nNo 'are you sure'"
 
 s1 --> dr --> bn --> sc --> copy

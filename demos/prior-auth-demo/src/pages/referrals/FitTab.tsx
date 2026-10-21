@@ -57,7 +57,7 @@ export function FitTab({ r }: { r: Referral }) {
       </Card>
 
       <Card>
-        <CardHeader title="Capacity" subtitle="Open this week. Accepting a referral takes one" />
+        <CardHeader title="Capacity" subtitle="Open this week. Accepting a referral takes one bed or slot." />
         <ul>
           {PROGRAMS.map((p) => {
             const c = capacity[p];

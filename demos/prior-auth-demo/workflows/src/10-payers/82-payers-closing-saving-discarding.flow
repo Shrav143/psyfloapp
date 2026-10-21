@@ -1,6 +1,6 @@
 title: Payers › Every pop-up › Save, discard, close
 route: /payers/:id
-intro: One page for how every Payers pop-up closes. Nothing is saved by closing: Cancel, the X, Escape and a click on the dimmed area all throw away what was typed, with no 'are you sure'. There is no undo; a saved edit is reversed by editing again, and the edit log keeps the old text.
+intro: One page for how every Payers pop-up closes. Nothing is saved by closing: Cancel, the X, Escape and a click on the dimmed area all throw away what was typed, with no 'are you sure'. Escape closes only the top layer, so a menu, then the pop-up over a drawer, then the drawer each take one press. There is no undo; a saved edit is reversed by editing again, and the edit log keeps the old text.
 dir: TD
 ---
 start s1 "Any Payers pop-up is open"
@@ -13,25 +13,23 @@ group gX "Ways to close"
   click x4 "Click the dimmed area outside"
 endgroup
 
-process cl "The pop-up is asked to close"
+process cl "The top layer is asked to close\nEscape only ever reaches the top layer"
 decision dk "Which pop-up is it?"
 process pl "Plain pop-up (everything except the cases below)\nCloses. Typed text and picks are discarded\nNothing is saved or logged"
 process rd "Edit log\nRead only, nothing to save or discard"
-process sv "'Save the workflow?' over the Edit workflow drawer"
-decision ek "Which way was it closed?"
-process one "Cancel, X or dimmed area\nOnly the reason modal closes\nThe drawer keeps every edit"
-process both "Escape closes the reason modal AND the drawer\nEvery unsaved workflow edit is lost"
+process sv "'Save the workflow?' over the Edit workflow drawer\nCancel, X, Escape or the dimmed area:\nonly this reason modal closes"
+process dr "The drawer is still open with every edit in it\nA second Escape, Cancel, X or dimmed area closes it:\nevery unsaved workflow edit is lost, no 'are you sure'"
 process bz "'Update drafts?' while the agents work (about 3 seconds)\nCancel is greyed, Escape, X and dimmed area do nothing\nWait for it to finish"
-process mn "A menu open inside a pop-up\n(Plan type, Group, Reached by, Level of care, Case, step type)\nEscape closes the menu and also the pop-up"
+process mn "A menu open inside a pop-up\n(Plan type, Group, Reached by, Level of care, Case, step type)\nEscape closes only the menu\nThe next Escape closes the pop-up"
 
 group gS "Ways to save (the primary button)"
-  process sa "'Save and log the edit' needs a reason\nEmpty reason: 'Add a reason. It goes in the edit log.'"
-  process sb "'Add payer' needs a name, a way to reach and a program"
+  process sa "'Save and log the edit' needs a reason\nEmpty reason: 'Add a reason. It goes in the edit log.'\n'Edit payer details' also needs a listed 'Reached by'"
+  process sb "'Add payer' needs a name no other payer has,\na way to reach and a program"
   process sc "'Acknowledge change' and 'Update N drafts' are confirm buttons\nthey need no typing"
   process sd "If nothing differs from what is saved:\n'Nothing changed' (or 'Nothing to save' in the workflow drawer)"
 endgroup
 
-store sv1 "Saved: the change is in force for new drafts\nOne edit log entry per change"
+store sv1 "Saved: the change is in force for new drafts\nOne edit log entry per change\nOne bell notification"
 process undo "No undo, revert or 'restore previous' button\nTo go back: edit again. Edit log shows the before text"
 end e1 "Back on the page, nothing half saved"
 endx x0 "Closed without saving"
@@ -45,9 +43,7 @@ x4 --> cl
 cl --> dk
 dk -->|Plain| pl --> x0
 dk -->|Edit log| rd --> x0
-dk -->|Save the workflow?| sv --> ek
-ek -->|Cancel, X, dimmed area| one --> x0
-ek -->|Escape| both --> x0
+dk -->|Save the workflow?| sv --> dr --> x0
 dk -->|Update drafts?, busy| bz --> e1
 dk -->|Menu open| mn --> x0
 ov --> sa --> sv1

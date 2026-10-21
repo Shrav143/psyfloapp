@@ -1,62 +1,17 @@
 /* Intake logic that has no screen of its own: what is missing, where a draft starts from, the sample chart, the EMR pull. */
-import { maskMember, PLAN_TYPE, type CaseDraft, type DocSlotId } from "@/data/cases";
-import { simulateCheck, type EbPatient } from "@/data/eligibility";
+import { PLAN_TYPE, type CaseDraft } from "@/data/cases";
 import { PAYERS } from "@/data/seed";
 import { PROGRAM_LABEL, PROGRAMS, type NewCasePrefill, type PayerId, type Program, type RequestType } from "@/data/types";
 import { useStore } from "@/store";
 import type { AppState } from "@/store";
+import { selectUnmappedForConnected } from "@/store/emr";
 import { referralPrefill } from "@/store/referrals";
 import { paths } from "@/routes";
-import { DOC_SLOTS, makeDocument, requiredDocs, sampleFile } from "./documents";
+import { docEntries, makeDocument, sampleFile } from "./documents";
 import { ICD_CODES, type EmrChart } from "./lookups";
+import { payerContextOf } from "./payerContext";
 
-export const memberReady = (id: string): boolean => id.replace(/\W/g, "").length >= 4;
-
-/** The Verify result for what is typed on the intake, or null until payer, level of care and member ID are set. */
-export function coverageFor(d: CaseDraft, clock: number): EbPatient | null {
-  if (!d.payerId || !d.program || !memberReady(d.memberId)) return null;
-  const [y, m, day] = d.startDate.split("-");
-  const dos = y ? `${m}/${day}/${y}` : "10/21/2026";
-  return {
-    id: "intake",
-    initials: d.patient.initials || null,
-    age: d.patient.age,
-    payerId: d.payerId,
-    program: d.program,
-    memberMasked: maskMember(d.memberId),
-    ...simulateCheck({ payerId: d.payerId, program: d.program, memberId: d.memberId, dos }),
-    dos,
-    checkedAt: clock,
-    recheckDue: false,
-  };
-}
-export const coverageKey = (d: CaseDraft): string | null => (d.payerId && d.program && memberReady(d.memberId) ? `${d.payerId}|${d.program}|${d.memberId.replace(/\W/g, "").slice(-4)}|${d.startDate}` : null);
-
-/* What stops Continue. The checklist rows and the footer hint both read these, so they always agree. */
-export const patientReady = (d: CaseDraft): boolean => !!d.patient.initials.trim() && !!d.patient.age;
-/** Required documents that are not in yet. */
-function missingRequired(d: CaseDraft): DocSlotId[] {
-  const have = new Set(d.documents.map((x) => x.slot));
-  return requiredDocs(d.payerId, d.program).filter((r) => r.required && !have.has(r.slot)).map((r) => r.slot);
-}
-const stillReading = (d: CaseDraft): boolean => d.documents.some((x) => x.status === "validating");
-/** A coverage problem stops Continue, except on a retro-authorization, which exists to cover a gap. */
-const coverageBlocks = (d: CaseDraft): boolean => d.coverage?.verdict === "fix" && d.type !== "Retro-authorization";
-
-/** What still stops Continue, in the checklist's own words. Empty means the intake is complete. */
-export function intakeMissing(d: CaseDraft): string[] {
-  const out: string[] = [];
-  if (!patientReady(d)) out.push("Patient initials and age");
-  if (!d.payerId) out.push("Payer and plan");
-  if (!d.program) out.push("Level of care");
-  if (!d.type) out.push("Request type");
-  const lacking = missingRequired(d);
-  if (lacking.length > 2) out.push(`${lacking.length} required documents`);
-  else out.push(...lacking.map((slot) => DOC_SLOTS[slot].label));
-  if (stillReading(d)) out.push("Reader to finish reading");
-  if (coverageBlocks(d)) out.push("Coverage, or another payer");
-  return out;
-}
+export { coverageFor, coverageKey, intakeMissing, memberReady, patientReady } from "./intakeRules";
 
 /* ------------------------------------------------------------------ where a draft starts */
 const defaultType = (u: NewCasePrefill["urgency"]): RequestType => (u === "routine" ? "Initial request" : "Admission");
@@ -141,16 +96,40 @@ export function applySampleChart(id: string): void {
       emrChart: undefined,
     });
   }
-  const docs = requiredDocs(payerId, program).filter((r) => r.slot !== "therapy_note");
+  const docs = docEntries(payerId, program, payerContextOf(st, { payerId, program }).items).filter((r) => r.slot !== "therapy_note");
   st.putCaseDocs(id, docs.map((r) => makeDocument(r.slot, sampleFile(r.slot))));
   const who = keep && draft ? `${draft.patient.initials}, ${draft.patient.age ?? ""}` : "J.M., 34";
   st.toast({ title: "Sample chart loaded", body: `${who}. ${docs.length} of ${docs.length + 1} documents are added and being checked.`, tone: "neutral" });
 }
 
+/** The EMR fields that name a Psyflo field on the checklist. While one still needs a mapping in EMR Connect, a pull leaves that field blank. */
+const MAPPED_FIELD: Record<string, "payer" | "program"> = { "Level of care": "program", "Referral source": "payer" };
+/** The fields of the chart's own system that still wait for a mapping and would have filled something on the checklist. */
+export const unmappedFor = (st: AppState, c: EmrChart) => selectUnmappedForConnected(st).filter((u) => u.systemId === c.systemId && u.field in MAPPED_FIELD);
+
 export function pullFromEmr(id: string, c: EmrChart): void {
   const st = useStore.getState();
-  st.patchCaseDraft(id, { patient: { initials: c.initials, age: c.age }, payerId: c.payerId, planType: PLAN_TYPE[c.payerId], memberId: c.memberId, program: c.program, type: c.type, diagnoses: dx(...c.diagnoses), reason: c.reason, emrChart: c.id, phase: "records" });
-  st.toast({ title: `Pulled ${c.initials}, ${c.age} from EMR Connect`, body: "Everything below was filled in from the chart. You can still change it.", tone: "good" });
+  const gaps = unmappedFor(st, c);
+  const blank = new Set(gaps.map((u) => MAPPED_FIELD[u.field]));
+  const payerId = blank.has("payer") ? null : c.payerId;
+  st.patchCaseDraft(id, {
+    patient: { initials: c.initials, age: c.age },
+    payerId,
+    planType: payerId ? PLAN_TYPE[payerId] : "",
+    memberId: c.memberId,
+    program: blank.has("program") ? null : c.program,
+    type: c.type,
+    diagnoses: dx(...c.diagnoses),
+    reason: c.reason,
+    emrChart: c.id,
+    phase: "records",
+  });
+  const left = gaps.map((u) => `“${u.field}”`);
+  st.toast({
+    title: `Pulled ${c.initials}, ${c.age} from EMR Connect`,
+    body: left.length ? `${left.join(" and ")} needs a mapping, so ${left.length === 1 ? "that field was" : "those fields were"} left blank. You can still fill ${left.length === 1 ? "it" : "them"} in.` : "Everything below was filled in from the chart. You can still change it.",
+    tone: left.length ? "mid" : "good",
+  });
 }
 
 export const emrLabel = (c: EmrChart): string => `${c.initials}, ${c.age} · ${PAYERS.find((p) => p.id === c.payerId)?.shortName} · ${PROGRAM_LABEL[c.program]}`;

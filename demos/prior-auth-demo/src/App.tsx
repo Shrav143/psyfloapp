@@ -4,7 +4,6 @@ import { EmptyState, Page, PageHeader } from "@/components/ui";
 import { HOSTED } from "@/lib/hosted";
 import { paths } from "@/routes";
 import AnalyticsPage from "@/pages/analytics/AnalyticsPage";
-import CasePage from "@/pages/authorizations/CasePage";
 import QueuePage from "@/pages/authorizations/QueuePage";
 import DashboardPage from "@/pages/dashboard/DashboardPage";
 import BriefPage from "@/pages/denials/BriefPage";
@@ -13,6 +12,7 @@ import EligibilityListPage from "@/pages/eligibility/EligibilityListPage";
 import ResultPage from "@/pages/eligibility/ResultPage";
 import VerifyPage from "@/pages/eligibility/VerifyPage";
 import EmrPage from "@/pages/emr/EmrPage";
+import CaseRoute from "@/pages/manager/CaseRoute";
 import ManagerPage from "@/pages/manager/ManagerPage";
 import NewCasePage from "@/pages/newcase/NewCasePage";
 import PayersPage from "@/pages/payers/PayersPage";
@@ -48,7 +48,7 @@ export default function App() {
           <Route path="/referrals" element={<Navigate to={paths.referrals()} replace />} />
           <Route path="/referrals/:id" element={<OldReferralLink />} />
           <Route path="/authorizations" element={<QueuePage />} />
-          <Route path="/authorizations/case/:id" element={<CasePage />} />
+          <Route path="/authorizations/case/:id" element={<CaseRoute />} />
           <Route path="/authorizations/new" element={<NewCasePage />} />
           <Route path="/authorizations/new/referral/:id" element={<ReferralDetailPage />} />
           <Route path="/authorizations/new/:draftId" element={<NewCasePage />} />

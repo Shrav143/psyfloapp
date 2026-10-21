@@ -1,11 +1,12 @@
 title: Authorizations › Queue › Bands and ranking
 route: /authorizations
-intro: How open requests are split into three bands, how they are ranked inside a band by money and time, and how a band opens, closes and shows more.
+intro: How open requests are split into three bands, when a request leaves its band, how they are ranked inside a band by money and time, and how a band opens, closes and shows more.
 dir: TD
 also: Demo only: which band a request sits in is fixed in the seed data. Moving the demo clock changes the due text on each tile ('in 5 h', 'now') but never moves a request to another band.
 ---
 screen q "Queue\nPriority bands, most urgent first"
 process b1 "Each open request sits in exactly one band"
+process lv "A request leaves its band once nothing is left for a person\nPreparing or ready: it was signed and sent in New case\nWith the payer: the payer approved or denied it\nDenial route: accepted, settled on the call, or the appeal is filed"
 
 group gB "Three bands"
   process bn "**Act now**\nRed dot, tiles tinted red"
@@ -14,6 +15,8 @@ group gB "Three bands"
 endgroup
 
 decision dE "Does the band have any request after filters?"
+decision dZ "Is it Act now, with no request open at all, and no search, payer or status filter on?"
+screen em "Band card stays\n'Act now (0 requests)'\n'Nothing needs you today'\n'Everything in Act now has been sent or handled.'"
 process hide "The band card is left out"
 screen bc "Band card\n'Act now (5 requests)'\nName, count, chevron"
 
@@ -39,11 +42,14 @@ process back "Back to the top five"
 goto g1 "Continues in: Authorizations › Queue › Read and open a request tile"
 
 q --> b1
+b1 --> lv
 b1 --> bn & bd & bw
 bn --> dE
 bd --> dE
 bw --> dE
-dE -->|No| hide
+dE -->|No| dZ
+dZ -->|Yes| em
+dZ -->|No| hide
 dE -->|Yes| bc
 bc --> r1 --> r2 --> wt
 r2 -.-> ex

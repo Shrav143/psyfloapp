@@ -1,30 +1,40 @@
 title: Settings › Pause › What the rest of the app shows
 route: /settings
-intro: Pausing on Settings stops nothing in the demo. The only other pause button is on the New case Agents work step, and it is separate. This shows what each place does and what the real product must do.
+intro: Pausing on Settings is shared with the rest of the app. Each screen that uses a paused agent holds that work and says so, and the pause shows on Settings too. This lists what each place does.
 dir: TD
-also: Found by searching the code for the pause state and by testing both screens. Settings and New case do not share it.
+also: Found by reading the code and testing the built demo. There is one pause for the whole app: the 'Pause all agents' button on New case is the same switch as Settings. 'Reset demo data' lifts it.
 ---
-start s1 "Click 'Pause all agents' on Settings, then 'Pause all'"
-process p1 "Settings keeps the pause in the page only\nNo store, no setting that other screens read"
-toast t1 "The banner says it: 'In this demo the pause does not change the other screens.'"
+start s1 "Pause an agent on Settings\nIts switch, or 'Pause all agents' then 'Pause all'"
+store p1 "The pause is saved in the app\nEvery screen reads the same switch"
+toast t1 "The banner on Settings says what is held back, agent by agent\nFor example 'Paused: Verify and Reader.' then one sentence for each screen"
 
-group gOther "Screens that do not change"
-  process o1 "Dashboard\nRequests, 'Held by' agents and next steps stay as they are"
-  process o2 "Case Manager, Authorizations, Denial Intelligence, Eligibility, Payers, EMR Connect\nNo pause shown"
-  process o3 "New case › Agents work\nThe agents keep working unless that screen's own button is used"
-endgroup
-
-group gNew "New case › Agents work has its own pause"
+group gNew "New case › Agents work"
   screen n1 "Agents work\nTen agents in a row, then 'Back', 'Pause all agents', 'Skip ahead', 'Review and sign'"
-  click n2 "Click 'Pause all agents'\nIn the step footer, red outline"
-  process n3 "The running agent's row shows a 'Paused' pill\nThe clock chip stops"
-  toast n4 "Banner 'All agents are paused'\n'Nothing is read, checked or drafted until you resume them. Nothing has been sent to the payer.'"
-  process n5 "'Skip ahead' is dimmed, the hint reads 'Paused.'\nThe button becomes 'Resume agents'"
-  click n6 "Click 'Resume agents'"
+  process n3 "The run holds when it reaches a paused agent\nIts row shows a 'Paused' pill, the clock chip stops and 'Skip ahead' is dimmed"
+  toast n4 "Banner 'Agents are paused in Settings' or '{Agent} is paused in Settings'\n'Nothing is read, checked or drafted until it is resumed. Nothing has been sent to the payer.'"
+  click n6 "Click 'Resume agents' or 'Resume {Agent}'"
   end n7 "Agents carry on from where they stopped"
+  click n2 "Click 'Pause all agents' in the step footer\nThe same pause as on Settings, so Settings shows it too"
 endgroup
 
-process n8 "Leaving New case drops that pause\nProgress is kept on the case, so the agents resume when the person returns"
+group gDash "Dashboard"
+  process o1 "Navigator paused: 'Check all now' is dimmed\nA link under it reads 'Navigator is paused in Settings'"
+endgroup
+
+group gMgr "Case Manager"
+  process m1 "Cadence paused: 'Draft all due reviews' drafts nothing\nToast 'Cadence is paused in Settings'\n'It drafts no reviews until you resume it there.'"
+endgroup
+
+group gElig "Eligibility & Benefits"
+  process e1 "Verify paused: the automatic re-checks do not run\nRows read 'Not re-checked: Verify is paused in Settings'"
+  process e2 "Verify resumed: it catches up with every re-check that came due"
+endgroup
+
+group gEmr "EMR Connect"
+  process x1 "Reader paused: 'Sync now' and 'Connect a system' show 'Reader is paused'\nNavigator paused: 'Fix' and 'Reconnect' show 'Navigator is paused'\nMap and Disconnect still work"
+endgroup
+
+process n8 "Screens that do not read the pause\nAuthorizations queue and case page, Denial Intelligence, Analytics, Payers, Ask FLO"
 
 group gReal "Production (PRD FR-25)"
   process r1 "Production: the operator can pause one agent, one payer channel or all outbound actions at once"
@@ -32,16 +42,23 @@ group gReal "Production (PRD FR-25)"
 endgroup
 
 goto g1 "Continues in: Authorizations › New case › Agents work › Finished, paused or left"
-goto g2 "Continues in: Dashboard › Request drawer"
-goto g3 "Continues in: Settings › Pause › Pause all agents"
+goto g2 "Continues in: Dashboard › Header › Check all now and the demo clock"
+goto g3 "Continues in: Case Manager › Reviews this week › Draft all due reviews and sign all clean drafts"
+goto g4 "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows"
+goto g5 "Continues in: EMR Connect › Sync › When an agent is paused or asks first"
+goto g6 "Continues in: Settings › Pause › Pause all agents"
 
 s1 --> p1 --> t1
-p1 --> o1 & o2 & o3
-o1 --> g2
-o3 --> n1
-n1 --> n2 --> n3 --> n4 --> n5 --> n6 --> n7
-n7 --> n8
-n2 -.-> g1
+p1 --> n1 & o1 & m1 & e1 & x1
+p1 -.-> n8
+n1 --> n3 --> n4 --> n6 --> n7
+n2 --> p1
+n3 -.-> g1
+o1 -.-> g2
+m1 -.-> g3
+e1 --> e2
+e1 -.-> g4
+x1 -.-> g5
 t1 -.-> r1
 r1 --> r2
-r2 -.-> g3
+r2 -.-> g6

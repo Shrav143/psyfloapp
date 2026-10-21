@@ -16,19 +16,21 @@ process pr "'8 of 11 ready' with a bar, and '3 to go'\nAll done: 'Nothing is mis
 group gSec "Four sections, each with 'x of y'"
   screen sA "PATIENT\nPatient initials and age\nPatient contact information is present\nPatient age is within the program's range"
   screen sB "REFERRER\nClinician credentials are accepted\nClinician signature is present\nThe order has not expired"
-  screen sC "CLINICAL\nA valid diagnosis code is present\nRequired clinical components are present\nRequested service matches the program\nUrgent criteria are documented"
+  screen sC "CLINICAL\nA valid diagnosis code is present\nRequired clinical components are present\nRequested service matches what the program offers\nUrgent criteria are documented"
   screen sD "COVERAGE\nInsurance and member ID are found\nVerify checked coverage (Optional until it has run)"
 endgroup
 
 decision dRow "State of a row?"
 process rDone "Done\n'Found: F10.20 · Referral form, page 1'\nNo buttons"
 process rMiss "Missing: nothing was found\nNo signature, components, urgent criteria, contact, diagnosis or insurance"
-process rWarn "Check this: found, but wrong\nCredentials, expired order, level of care, short ICD-10 code, age under 18, lapsed coverage"
-process rWait "Waiting on the referrer\n'Asked by fax, 1 d ago.'\nNo 'Ask' button, 'Mark OK' stays"
+process rWarn "Check this: found, but wrong\nCredentials, expired order, level of care, short ICD-10 code, lapsed coverage"
+process rAge "Check this: age under 18 (failed)\nOnly 'Mark OK' on the row\nNo 'Ask the referrer': a reply cannot change a patient's age"
+process rWait "Waiting on the referrer\n'Asked by fax, 1 d ago.'\nNo 'Ask' button, 'Mark OK' stays\nCounts as handled for 'Accept referral and continue'"
 
-click cAsk "Click 'Ask the referrer' on a row\n(the insurance row has no 'Mark OK')"
+click cAsk "Click 'Ask the referrer' on a row\n(not on a failed age row; the insurance row has no 'Mark OK')"
 click cOk "Click 'Mark OK' on a row"
 click cCov "Click 'Run coverage check'\nor 'Check again' on the coverage row"
+process pReq "Six rows are required before the referral can be accepted\nPatient age, clinician credentials, clinician signature, diagnosis code, level of care, insurance and member ID\nThe other rows are advisory: the Accept dialog lists them"
 goto gAsk "Continues in: New case › Referral › Ask the referrer"
 goto gOk "Continues in: New case › Referral › Mark OK or decline"
 goto gCov "Continues in: New case › Referral › Check coverage"
@@ -44,13 +46,16 @@ sD --> dRow
 dRow -->|Found| rDone
 dRow -->|Nothing found| rMiss
 dRow -->|Found, wrong| rWarn
+dRow -->|Age failed| rAge
 dRow -->|Question sent| rWait
 rMiss --> cAsk
 rWarn --> cAsk
 rMiss --> cOk
 rWarn --> cOk
+rAge --> cOk
 rWait --> cOk
 sD -.-> cCov
+sD -.-> pReq -.-> gBtn
 cAsk --> gAsk
 cOk --> gOk
 cCov --> gCov

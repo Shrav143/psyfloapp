@@ -1,6 +1,8 @@
 import { useId } from "react";
+import { Link } from "react-router-dom";
 import { Button, ChecklistItem } from "@/components/ui";
 import type { CaseDraft } from "@/data/cases";
+import { paths } from "@/routes";
 import { FieldEditor } from "./RecordEditors";
 import type { FieldId, Row } from "./recordsModel";
 
@@ -13,7 +15,20 @@ export function FieldRow({ row, field, draft, open, onToggle }: { row: Row; fiel
       state={row.state}
       label={<span id={labelId}>{row.label}</span>}
       tag={row.tag}
-      detail={row.quiet ? <span className="text-muted">{row.detail}</span> : row.detail}
+      detail={
+        row.mapping ? (
+          <>
+            {row.detail}{" "}
+            <Link to={paths.emr()} className="font-medium text-forest underline underline-offset-2">
+              Open EMR Connect
+            </Link>
+          </>
+        ) : row.quiet ? (
+          <span className="text-muted">{row.detail}</span>
+        ) : (
+          row.detail
+        )
+      }
       action={
         <Button size="sm" variant={has ? "ghost" : "outline"} aria-expanded={open} aria-describedby={labelId} onClick={onToggle}>
           {has ? "Edit" : "Add"}

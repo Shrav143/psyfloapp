@@ -3,6 +3,7 @@ import type { PayerId } from "./types";
 /* Analytics > Performance. "This quarter" with all payers is the canonical set: 71% approved as asked,
    29% top denial cause, 84% advice taken works, 75% sent without edits; approval by payer Lakeshore 86,
    Beacon 81, Harborview 77, Summit 74, Evergreen 69, Cardinal 63; edits 68 / 27 / 5.
+   Appeals overturned 56% of 96 decided, $88.7K written off over 17 accepted denials.
    Every other view (another period, one payer) is derived from the tables below. */
 
 export const MIN_DECISIONS = 20;
@@ -128,3 +129,25 @@ export const ACTIONS: HelpAction[] = [
   { label: "Attach the last 14 days of therapy notes", base: 164, approved: 80, affinity: { cardinal: 1.8, summit: 0.9, evergreen: 0.7, beacon: 0.6, harborview: 0.8, lakeshore: 0.5 } },
   { label: "Answer an information request within 24 hours", base: 141, approved: 79, affinity: { cardinal: 1.0, summit: 1.2, evergreen: 1.1, beacon: 0.7, harborview: 1.3, lakeshore: 0.6 } },
 ];
+
+/** Appeals a payer has ruled on in a quarter, and the share overturned or partly restored (percent). What Denial Intelligence records is added on top. */
+export const APPEALS: Record<PayerId, { decided: number; rate: number }> = {
+  cardinal: { decided: 38, rate: 55 },
+  summit: { decided: 21, rate: 57 },
+  evergreen: { decided: 12, rate: 50 },
+  harborview: { decided: 14, rate: 57 },
+  beacon: { decided: 8, rate: 63 },
+  lakeshore: { decided: 3, rate: 67 },
+};
+/** Other periods drift a little from this quarter, in percentage points. */
+export const OVERTURN_SHIFT: Record<PeriodId, number> = { quarter: 0, last_quarter: -3, year: -4 };
+
+/** Denials the clinic accepted in a quarter, and the money written off. Each denial accepted in Denial Intelligence is added on top. */
+export const WRITTEN_OFF: Record<PayerId, { n: number; amount: number }> = {
+  cardinal: { n: 6, amount: 41_300 },
+  summit: { n: 4, amount: 18_900 },
+  evergreen: { n: 2, amount: 9_800 },
+  harborview: { n: 3, amount: 12_400 },
+  beacon: { n: 1, amount: 4_200 },
+  lakeshore: { n: 1, amount: 2_100 },
+};

@@ -1,10 +1,14 @@
 import { useState, type ReactNode } from "react";
+import { Link } from "react-router-dom";
 import { FlaskConical } from "lucide-react";
-import { AgentBadge, Button } from "@/components/ui";
+import { AgentBadge, Banner, Button } from "@/components/ui";
+import { payerById } from "@/data/seed";
 import type { PsyRequest, Tone } from "@/data/types";
 import { cn } from "@/lib/cn";
+import { paths } from "@/routes";
 import { useStore } from "@/store";
-import type { Reply } from "@/store/core";
+import { allowedReplies, type Reply } from "@/store/core";
+import { selectWriteBackOn } from "@/store/emr";
 import { isDenial } from "./helpers";
 import { approvalFacts } from "./requestFacts";
 import { InfoAnswerModal, WritebackModal } from "./RequestModals";
@@ -31,6 +35,7 @@ function ActionBox({ tone, agent, title, children, action }: { tone: Tone; agent
 
 /** What this request needs from a person, if anything: the answer gate or the write-back confirm gate. */
 export function StateActions({ request: r }: { request: PsyRequest }) {
+  const writeBackOn = useStore(selectWriteBackOn);
   const [answerOpen, setAnswerOpen] = useState(false);
   const [writeOpen, setWriteOpen] = useState(false);
   const [drafting, setDrafting] = useState(false);
@@ -74,6 +79,17 @@ export function StateActions({ request: r }: { request: PsyRequest }) {
     );
   }
   if (r.stage === "decided" && r.outcome === "approved" && r.next.includes("Write-back")) {
+    // EMR Connect decides whether anything is written back at all.
+    if (!writeBackOn) {
+      return (
+        <Banner>
+          Write-back is off for your records system.{" "}
+          <Link to={paths.emr()} className="font-semibold underline underline-offset-[3px]">
+            Turn it on in EMR Connect.
+          </Link>
+        </Banner>
+      );
+    }
     return (
       <>
         <ActionBox tone="good" agent="cadence" title="Approved. Write-back waits for you" action={<Button variant="primary" onClick={() => setWriteOpen(true)}>Approve write-back</Button>}>
@@ -95,13 +111,26 @@ const REPLIES: { reply: Reply; label: string }[] = [
   { reply: "deny", label: "Denies" },
 ];
 
-/** A clearly marked demo-only section: pretend the payer answered. After a denial the request gets a D- number. */
+/** The demo toast names the payer. A denial or part approval also gets its own toast from the store, because the request changes number. */
+const REPLY_TOAST: Record<Reply, (payer: string) => string> = {
+  received: (p) => `${p} received it`,
+  review: (p) => `${p} has it under review`,
+  info: (p) => `${p} asks for information`,
+  approve: (p) => `${p} approved it`,
+  partial: (p) => `${p} approved part of it`,
+  deny: (p) => `${p} denied it`,
+};
+
+/** A clearly marked demo-only section: pretend the payer answered. Only the answers still ahead of the request are offered. After a denial the request gets a D- number. */
 export function DemoControls({ request: r, onNewId }: { request: PsyRequest; onNewId: (id: string) => void }) {
+  const offered = allowedReplies(r);
   const blocked = r.stage === "preparing" ? "It has not been sent yet. Sign and send it from Case Manager first." : isDenial(r) ? "A denial follows its own route in Denial Intelligence." : undefined;
+  const decided = !blocked && offered.length === 0;
   const reply = (x: { reply: Reply; label: string }) => {
     const id = useStore.getState().simulateReply(r.id, x.reply);
-    if (id && id !== r.id) onNewId(id);
-    else useStore.getState().toast({ title: `Demo: payer ${x.label.toLowerCase()}`, body: "The stage counts, the table and the notifications updated.", tone: "neutral" });
+    if (!id) return;
+    if (id !== r.id) onNewId(id);
+    else useStore.getState().toast({ title: `Demo: ${REPLY_TOAST[x.reply](payerById(r.payerId).shortName)}`, body: x.reply === "info" || x.reply === "approve" ? "The stage counts, the table and the notifications updated." : "The stage counts and the table updated.", tone: "neutral" });
   };
   return (
     <section aria-label="Demo controls" className="rounded-2xl border border-dashed border-faint bg-white/60 px-4 py-3.5">
@@ -109,14 +138,16 @@ export function DemoControls({ request: r, onNewId }: { request: PsyRequest; onN
         <FlaskConical size={14} className="ico" />
         Demo controls
       </div>
-      <p className="mt-1 text-[13px] text-muted">{blocked ?? "Pretend the payer answered this request. Nothing is sent anywhere."}</p>
-      <div className="mt-2.5 flex flex-wrap gap-2">
-        {REPLIES.map((x) => (
-          <Button key={x.reply} size="sm" disabled={!!blocked} onClick={() => reply(x)}>
-            {x.label}
-          </Button>
-        ))}
-      </div>
+      <p className="mt-1 text-[13px] text-muted">{blocked ?? (decided ? "The payer has already decided this request." : "Pretend the payer answered this request. Nothing is sent anywhere.")}</p>
+      {decided ? null : (
+        <div className="mt-2.5 flex flex-wrap gap-2">
+          {REPLIES.filter((x) => !!blocked || offered.includes(x.reply)).map((x) => (
+            <Button key={x.reply} size="sm" disabled={!!blocked} onClick={() => reply(x)}>
+              {x.label}
+            </Button>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

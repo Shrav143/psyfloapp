@@ -2,8 +2,9 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { SearchX } from "lucide-react";
 import { Button, Card, CardHeader, Chip, EmptyState, IdLink, Pill, Stat } from "@/components/ui";
-import { isClean, type Review } from "@/data/managerReviews";
+import { inWeek, isClean, type Review } from "@/data/managerReviews";
 import { PROGRAM_LABEL } from "@/data/types";
+import { plural } from "@/lib/format";
 import { clockTime, toDate } from "@/lib/time";
 import { PAYER_ROW_LABEL } from "@/pages/dashboard/helpers";
 import { paths } from "@/routes";
@@ -12,9 +13,9 @@ import { REVIEW_STATUS_LABEL, REVIEW_STATUS_TONE, groupByDay, matchesBase, type 
 
 const PER_DAY = 5;
 
-/** Cases the team may want to look at for a lower level of care. A prompt, never a decision. */
+/** Cases the team may want to look at for a lower level of care. A prompt, never a decision. R-0873 is a tracker case and P-1522 is in the queue, so both open. */
 const STEP_DOWN = [
-  { id: "R-0903", head: "Day 14 of 21", note: "Aftercare visit not booked yet" },
+  { id: "R-0873", head: "Day 18 of 21", note: "Aftercare visit not booked yet" },
   { id: "P-1522", head: "Day 11", note: "IOP starts Monday" },
 ];
 
@@ -42,13 +43,16 @@ function ReviewRow({ r, onOpen }: { r: Review; onOpen: (id: string) => void }) {
 
 /** A week of continued-stay reviews, mostly already written. */
 export function ReviewsView({ filters, onOpen, onClear }: { filters: ManagerFilters; onOpen: (id: string) => void; onClear: () => void }) {
-  const reviews = useStore((s) => s.reviews);
+  const all = useStore((s) => s.reviews);
   const clock = useStore((s) => s.clock);
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
+  // A next review booked for after this week is not on the list; the case row and the signed review show its date.
+  const reviews = useMemo(() => all.filter(inWeek), [all]);
   const total = reviews.length;
   const signed = reviews.filter((r) => r.status === "signed").length;
   const needs = reviews.filter((r) => r.status === "needs_update").length;
+  const waiting = reviews.filter((r) => r.status === "due").length;
   const clean = reviews.filter(isClean).length;
   const shown = useMemo(() => reviews.filter((r) => matchesBase({ id: r.ledgerId, initials: r.initials, program: r.program, payerId: r.payerId }, filters) && (filters.reviewStatus === "all" || r.status === filters.reviewStatus)), [reviews, filters]);
   const days = useMemo(() => groupByDay(shown, clock), [shown, clock]);
@@ -56,13 +60,13 @@ export function ReviewsView({ filters, onOpen, onClear }: { filters: ManagerFilt
   return (
     <>
       <div className="grid grid-cols-3 gap-4">
-        <Stat tone="neutral" value={total} label="Reviews due this week" sub={`${signed} signed so far`} />
-        <Stat tone="good" value={total - needs} label="Drafted by agents" sub={`${clean} clean, ready to sign`} />
+        <Stat tone="neutral" value={total} label="Reviews due this week" sub={`${signed} signed so far${waiting ? `, ${waiting} not drafted yet` : ""}`} />
+        <Stat tone="good" value={total - needs - waiting} label="Drafted by agents" sub={`${clean} clean, ready to sign`} />
         <Stat tone="mid" value={needs} label="Need a clinician update" sub={needs ? "what is missing is listed" : "nothing waiting on you"} />
       </div>
       <div className="grid grid-cols-[minmax(0,1fr)_320px] items-start gap-5">
         <div className="flex flex-col gap-4">
-          {shown.length !== total ? <p className="text-sm text-muted" aria-live="polite">Showing {shown.length} of {total} reviews. The tiles count all {total}.</p> : null}
+          {shown.length !== total ? <p className="text-sm text-muted" aria-live="polite">Showing {shown.length} of {plural(total, "review")}. The tiles count {total === 1 ? "it" : `all ${total}`}.</p> : null}
           {days.length === 0 ? (
             <Card>
               <EmptyState icon={SearchX} title="No reviews match" action={<Button onClick={onClear}>Clear filters</Button>}>
@@ -75,7 +79,7 @@ export function ReviewsView({ filters, onOpen, onClear }: { filters: ManagerFilt
               const rows = open ? g.reviews : g.reviews.slice(0, PER_DAY);
               return (
                 <Card key={g.key} className="overflow-hidden" data-day={g.label}>
-                  <CardHeader title={g.label} subtitle={g.date} right={<span className="text-muted">{g.reviews.length} reviews</span>} />
+                  <CardHeader title={g.label} subtitle={g.date} right={<span className="text-muted">{plural(g.reviews.length, "review")}</span>} />
                   {rows.map((r) => (
                     <ReviewRow key={r.id} r={r} onOpen={onOpen} />
                   ))}

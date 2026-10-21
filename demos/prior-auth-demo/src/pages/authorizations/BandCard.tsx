@@ -19,7 +19,8 @@ interface Props {
   onShowAll: (on: boolean) => void;
 }
 
-/** A priority band: click the header to collapse it. Shows the five top requests, with a link for the rest. */
+/** A priority band: click the header to collapse it. Shows the five top requests, with a link for the rest.
+    A band with no request left says so instead of vanishing. */
 export function BandCard({ band, items, stats, collapsed, showAll, clock, chances, onToggle, onShowAll }: Props) {
   const meta = BAND_META[band];
   const visible = showAll ? items : items.slice(0, SHOWN);
@@ -35,6 +36,12 @@ export function BandCard({ band, items, stats, collapsed, showAll, clock, chance
       </h3>
       {collapsed ? null : (
         <div className="flex flex-col gap-3 border-t border-line px-5 py-5">
+          {items.length === 0 ? (
+            <div className="px-4 py-6 text-center">
+              <div className="font-serif text-xl font-semibold">Nothing needs you today</div>
+              <div className="mt-1 text-sm text-muted">Everything in {meta.name} has been sent or handled.</div>
+            </div>
+          ) : null}
           {visible.map((i) => (
             <RequestTile key={i.id} item={i} clock={clock} chance={chances[i.id].chance} lift={chances[i.id].lift} ready={chances[i.id].ready} />
           ))}

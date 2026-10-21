@@ -1,0 +1,25 @@
+title: Case Manager › Active cases › Updated for a payer change
+route: /manager
+intro: When Payers updates open drafts after a rule change, the cases it redrafted carry a small tag 'Updated for a payer change' with the date, on their 'Being prepared' row and on their tracker row. The tag shows the latest update for a case. Cases that no update lists carry no tag.
+dir: TD
+also: A case that was already sent (I-2231) has no 'Being prepared' row, so it is tagged in the tracker only. Reset demo data clears the tags.
+---
+start s1 "Payers › a change is acknowledged and 'Update drafts' is confirmed"
+store st1 "Payers records the update\nWhich change, which payer, the IDs of the drafts and the demo-clock time"
+goto g1 "Continues in: Payers › Changes › Update drafts after a change"
+start s2 "Open Case Manager (Active cases tab)"
+decision d1 "Does an update list this case?\n(match on the case ID or draft ID, any letter case)"
+process p1 "The newest update for the case is used"
+screen t1 "'Being prepared' row\nGrey tag 'Updated for a payer change · 10/20' beside the request line, for example 'Admission request'"
+screen t2 "Tracker row\nGrey tag under 'J.M. · 34' in the Case column"
+process n1 "No tag"
+end e1 "Rows are tagged"
+end e2 "Rows as before"
+
+s1 --> st1 --> g1
+st1 --> d1
+s2 --> d1
+d1 -->|Yes| p1 --> t1 & t2
+t1 --> e1
+t2 --> e1
+d1 -->|No| n1 --> e2

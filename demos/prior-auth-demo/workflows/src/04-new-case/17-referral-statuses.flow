@@ -6,14 +6,14 @@ dir: TD
 start s1 "A referral arrives\nOr Reader reads dropped files"
 
 group gOpen "Open: listed in 'Already arrived'"
-  store stNew "NEW\nChecklist: Accept, Ask, Mark OK, Run coverage, Decline\nFull page: Accept, Request information, Decline\nBanner 'Reader found N things to check'"
+  store stNew "NEW\nChecklist: Accept, Ask, Mark OK, Run coverage, Decline\nFull page: Accept, Request information, Decline, Start a case from this referral\nAccept is disabled while a required item is open\nBanner 'Reader found N things to check'"
   store stRev "IN REVIEW\nSame buttons as New\nSet when someone gets an owner, or after a reply or a reopen"
-  store stAwait "AWAITING INFO\nPill 'Waiting on the referrer'\nChecklist: Accept, Decline, Mark OK; no 'Ask'\nFull page: Accept, Decline; no 'Request information'\nBanner 'Waiting on the referrer'"
+  store stAwait "AWAITING INFO\nPill 'Waiting on the referrer'\nChecklist: Accept, Decline, Mark OK; no 'Ask'\nFull page: Accept, Decline; no 'Request information'\nAsked rows no longer block Accept\nBanner 'Waiting on the referrer'"
 endgroup
 
 store stAcc "ACCEPTED\nNot in 'Already arrived'\nChecklist: 'Continue to medical records'\nFull page: 'Schedule intake'\nGreen banner with 'Continue to medical records'"
 store stSch "SCHEDULED\nChecklist: 'Continue to medical records'\nFull page: 'Mark admitted', 'Change intake'\nBanner adds 'Intake visit Thu 9:00 am'"
-store stAdm "ADMITTED\nChecklist: no main button\nFull page: no decision buttons\nBanner 'Admitted into IOP'"
+store stAdm "ADMITTED\nChecklist: 'Open the case' when a case or draft exists,\nelse the note 'Admitted' with 'See the full referral'\nFull page: no decision buttons\nBanner 'Admitted into IOP'"
 store stDec "DECLINED\nChecklist and full page: 'Reopen referral'\nRed banner 'Declined: reason' with 'Reopen'\n'A courtesy reply went to the referrer.'"
 
 click c1 "Pick an 'Owner' on the full page"
@@ -36,6 +36,8 @@ goto gMed "Continues in: New case › Medical records › The checklist and Cont
 click cCont "Click 'Continue to medical records'"
 decision dReq "Did this referral start a request?"
 click cOpen "Click 'Open R-1042'\n(banner also says 'Linked request R-1042' with its chip)"
+click cOC "Click 'Open the case'\n(checklist of an admitted referral)"
+goto gCase "Continues in: Authorizations › Case page › Ways in"
 goto gDash "Continues in: Dashboard\nOpens request R-1042"
 
 s1 --> stNew
@@ -62,6 +64,7 @@ cCont --> gMed
 stAcc --> dReq
 stSch --> dReq
 stAdm -.-> cOpen
+stAdm --> cOC --> gCase
 dReq -->|Yes| cOpen --> gDash
 dReq -->|No| cCont
 stNew -.-> gBan

@@ -2,10 +2,10 @@ title: EMR Connect › Field mappings › Every mapping by system
 route: /emr
 intro: The Field mappings table in the Manage drawer, system by system: what each of their fields fills in Psyflo, who mapped it, and which fields still wait. A newly connected system starts with none.
 dir: TD
-also: Seed data. 'Mapped by' reads 'Reader, 03/14' for the agents and 'You, {date}' for a person. Dates come from the Demo clock.
+also: Seed data. 'Mapped by' reads 'Reader, 03/14' for the agents and 'You, {date}' for a person. Dates come from the Demo clock. A chart pulled in New case leaves a waiting field blank (Level of care, Referral source) and fills a mapped one.
 ---
 start s1 "Click 'Manage' on a system\nThen read the Field mappings card"
-screen t0 "Field mappings\n'{n} mapped, {m} waiting'\nColumns: Their field, Fills, Mapped by"
+screen t0 "Field mappings\n'{n} mapped, {m} waiting. A chart pulled in New case leaves the waiting fields blank.'\nWith none waiting: '{n} mapped'\nColumns: Their field, Fills, Mapped by"
 
 group gRes "Residential site: 5 mapped"
   store r1 "Admit date fills 'Admission date'\nReader, 03/14"
@@ -35,6 +35,7 @@ endgroup
 process c1 "A row mapped by a person goes at the end of that system's list\n'Mapped by' reads 'You, 10/20'"
 doc d1 "Production: a versioned field map per record system, stored as data\nEvery canonical field shows its source. Changes carry a date and an author"
 goto g1 "Continues in: EMR Connect › Needs a mapping › Map a field"
+goto g2 "Continues in: EMR Connect › Sync › What other screens use from EMR Connect"
 
 s1 --> t0
 t0 --> r1 & o1 & b1 & n1
@@ -44,4 +45,5 @@ b1 --> b2
 w1 --> c1
 w2 --> c1
 c1 --> g1
+w1 -.-> g2
 t0 -.-> d1

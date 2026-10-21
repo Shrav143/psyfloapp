@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { ArrowLeft, Sparkles } from "lucide-react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Sparkles } from "lucide-react";
 import { Button, Page, PageHeader, type DemoFile } from "@/components/ui";
 import { PAYERS } from "@/data/seed";
 import type { PayerId } from "@/data/types";
@@ -8,16 +8,16 @@ import { paths } from "@/routes";
 import { useStore } from "@/store";
 import { referralPrefill } from "@/store/referrals";
 import { LiveCheck, useLiveCheck } from "./LiveCheck";
+import { BackLinks, useOrigin } from "./origin";
+import type { Sample } from "./samples";
 import { SAMPLE_CARD, VerifyForm } from "./VerifyForm";
-import { verifySteps, type VerifyForm as Form } from "./verifySteps";
+import { dobFor, verifySteps, type VerifyForm as Form } from "./verifySteps";
 
 const EMPTY: Form = { payerId: "", member: "", dob: "", program: "RES", dos: "10/21/2026", cardName: null };
 /** The sample card belongs to J.M., whose check is already on the list. */
 const SAMPLE: Form = { payerId: "summit", member: "SM7403964821", dob: "03/14/1992", program: "RES", dos: "10/21/2026", cardName: SAMPLE_CARD };
 const READ_MS = 1100;
 
-/** A birth date that matches the age, so a case or referral pre-fills the whole form. The date is never shown elsewhere. */
-const dobFor = (age: number | null | undefined): string => (age ? `01/15/${2026 - age}` : "");
 const hashDigits = (s: string): string => String(1000 + (Array.from(s).reduce((a, c) => a + c.charCodeAt(0), 0) * 31) % 9000);
 
 /** Verify a patient: a short form on the left, the live check on the right. Opens the result when the check finishes. */
@@ -29,6 +29,7 @@ export default function VerifyPage() {
   const [reading, setReading] = useState(false);
   const who = useRef<{ caseId?: string; initials?: string | null; age?: number | null }>({});
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const origin = useOrigin();
 
   /* Pre-fill from ?referral=ID or ?case=ID once. */
   useEffect(() => {
@@ -58,7 +59,7 @@ export default function VerifyPage() {
   const check = useLiveCheck(steps, () => {
     if (!form.payerId) return;
     const id = useStore.getState().ebApplyCheck({ payerId: form.payerId, program: form.program, memberId: form.member, dos: form.dos, ...who.current });
-    nav(paths.eligibilityResult(id));
+    nav(`${paths.eligibilityResult(id)}${origin.query}`);
   });
   const locked = check.started;
 
@@ -73,12 +74,14 @@ export default function VerifyPage() {
     }, READ_MS);
   };
 
+  const pickSample = (s: Sample) => {
+    who.current = { initials: s.initials, age: s.age };
+    setForm(s.form);
+  };
+
   return (
     <Page>
-      <Link to={paths.eligibility()} className="-mb-1.5 flex w-fit items-center gap-1.5 text-muted hover:text-ink">
-        <ArrowLeft size={14} className="ico" />
-        Eligibility &amp; Benefits
-      </Link>
+      <BackLinks back={origin.back} />
       <PageHeader
         title="Verify a patient"
         sub="The agents check coverage and benefits live, so you know whether the clinic will be paid."
@@ -97,7 +100,7 @@ export default function VerifyPage() {
         }
       />
       <div className="grid grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] items-start gap-5">
-        <VerifyForm form={form} onChange={(p) => setForm((f) => ({ ...f, ...p }))} onCard={readCard} reading={reading} locked={locked} onCheck={check.start} />
+        <VerifyForm form={form} onChange={(p) => setForm((f) => ({ ...f, ...p }))} onCard={readCard} onSample={pickSample} reading={reading} locked={locked} onCheck={check.start} />
         <LiveCheck steps={steps} idx={check.idx} secs={check.secs} running={check.running} finished={check.finished} onSkip={check.skip} />
       </div>
     </Page>

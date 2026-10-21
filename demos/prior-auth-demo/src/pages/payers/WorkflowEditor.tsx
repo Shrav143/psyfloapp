@@ -34,7 +34,7 @@ export function WorkflowEditor({ id, name, cfg, onClose }: { id: string; name: s
         </div>
       </Drawer>
       {saving ? (
-        <ReasonModal title="Save the workflow?" subtitle={`This becomes version ${cfg.workflow.version + 1}. New drafts use it at once. Open drafts follow when you update them.`} onClose={() => setSaving(false)} onSave={(reason) => {
+        <ReasonModal title="Save the workflow?" subtitle={`This becomes version ${cfg.workflow.version + 1}. New drafts use it at once. Sent requests keep what they were sent with. Click Update drafts to redraft open ones.`} onClose={() => setSaving(false)} onSave={(reason) => {
           useStore.getState().saveWorkflow(id, steps, reason, changes);
           setSaving(false);
           onClose();

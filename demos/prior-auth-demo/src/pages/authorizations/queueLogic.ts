@@ -1,6 +1,7 @@
 import type { CaseWork } from "@/data/caseModel";
 import type { Band, QueueItem } from "@/data/queue";
 import { BANDS } from "@/data/queue";
+import { plural } from "@/lib/format";
 import { HOUR, toDate } from "@/lib/time";
 import type { QueueFilters } from "@/store/queue";
 
@@ -27,7 +28,7 @@ export const chanceOf = (i: QueueItem, cases: Record<string, CaseWork>): number 
 export function liftOf(i: QueueItem, cases: Record<string, CaseWork>): string {
   const w = cases[i.id];
   if (w?.chance === undefined) return i.liftLabel;
-  return (w.liftLeft ?? 0) > 0 ? `+${w.liftLeft} pts possible` : "on track";
+  return (w.liftLeft ?? 0) > 0 ? `+${plural(w.liftLeft ?? 0, "pt")} possible` : "on track";
 }
 
 const norm = (s: string): string => s.toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -44,7 +45,9 @@ export function filterItems(items: QueueItem[], f: QueueFilters): QueueItem[] {
     return true;
   });
 }
-export const filtersActive = (f: QueueFilters): boolean => !!f.q.trim() || f.payer !== "all" || f.status !== "all" || f.urgency !== "all" || f.signalOnly;
+/** Every filter except Urgency. */
+export const otherFiltersActive = (f: QueueFilters): boolean => !!f.q.trim() || f.payer !== "all" || f.status !== "all" || f.signalOnly;
+export const filtersActive = (f: QueueFilters): boolean => otherFiltersActive(f) || f.urgency !== "all";
 
 export interface Stats { count: number; dollars: number; avg: number; firstDue: number | null }
 export function statsOf(items: QueueItem[], cases: Record<string, CaseWork>, clock: number): Stats {

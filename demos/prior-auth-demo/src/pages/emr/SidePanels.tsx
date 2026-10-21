@@ -14,18 +14,18 @@ export function AgentsCanCard() {
         </div>
         <div className="flex items-start gap-3">
           <PenLine size={18} className="ico mt-0.5 text-mid" />
-          <div><div className="font-semibold">Write back</div><div className="text-[13px] text-muted">Only the approval number and dates, and only after a person approves</div></div>
+          <div><div className="font-semibold">Write back</div><div className="text-[13px] text-muted">Only the approval number and dates, and only after a person approves. A system's write-back switch in Manage decides whether the Dashboard offers it.</div></div>
         </div>
       </CardBody>
     </Card>
   );
 }
 
-/** Fields the agents could not place. Map opens a small picker and removes the row. */
+/** Fields the agents could not place. Map opens a small picker and removes the row. New case leaves these blank when it pulls a chart. */
 export function NeedsMappingCard({ fields, onMap }: { fields: UnmappedField[]; onMap: (f: UnmappedField) => void }) {
   return (
     <Card>
-      <CardHeader title="Needs a mapping" right={<Pill tone={fields.length ? "mid" : "good"}>{fields.length}</Pill>} />
+      <CardHeader title="Needs a mapping" subtitle="A chart pulled in New case leaves these fields blank until you map them." right={<Pill tone={fields.length ? "mid" : "good"}>{fields.length}</Pill>} />
       {fields.map((f) => (
         <div key={f.id} className="flex items-start gap-3 border-b border-line px-6 py-3.5 last:border-b-0">
           <div className="min-w-0 flex-1">

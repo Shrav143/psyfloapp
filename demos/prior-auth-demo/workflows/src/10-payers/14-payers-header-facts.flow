@@ -14,7 +14,7 @@ group gF "Four facts under the name"
   screen f1 "'Approved as asked'\n74% for Summit\nNote: 'last 90 days'\nCardinal says 'down 11 points'"
   screen f2 "'Typical decision'\n1.5 days for Summit\nNote: 'for residential'\nCardinal says 'now taking 2.8'"
   screen f3 "'Notice due'\n24 hours\nNote: 'after admission'\nHarborview is 72 hours"
-  screen f4 "'Reached by'\nPortal, Phone, Fax, or a mix\nNote: the backup route\n'phone as backup'"
+  screen f4 "'Reached by'\nOne of seven: Portal, Phone, Fax,\nor a mix such as 'Portal and fax'\nNote: the backup route\n'phone as backup'"
 endgroup
 
 decision hist "Does the payer have\n90 days of decisions?"

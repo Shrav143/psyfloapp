@@ -22,7 +22,7 @@ endgroup
 
 group gFiles "Tile 3: Files pulled"
   process c1 "142 'this week'\nStarts at 142 on reset"
-  store c2 "Each finished sync adds its files\nA new system adds 5"
+  store c2 "Each finished sync adds its files\nA new system adds 5, and a finished Fix adds 12 remittances"
 endgroup
 
 group gMap "Tile 4: Need a mapping"
@@ -36,6 +36,7 @@ goto g1 "Continues in: EMR Connect › Sync › Sync now"
 goto g2 "Continues in: EMR Connect › Connect a system › Run the connection test and save"
 goto g3 "Continues in: EMR Connect › Needs a mapping › Map a field"
 goto g4 "Continues in: EMR Connect › Manage › Disconnect and reconnect"
+goto g5 "Continues in: EMR Connect › Problems › Fix a system that needs a quick look"
 
 p1 --> q1 & b1 & c1 & d1
 q1 -->|No| a1
@@ -49,5 +50,6 @@ b1 --> b2 --> g1
 c1 --> c2
 c2 --> g1
 c2 --> g2
+c2 --> g5
 d1 -->|Yes| d2 --> g3
 d1 -->|No| d3

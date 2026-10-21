@@ -96,14 +96,14 @@ export function seedWorkflow(id: PayerId): Workflow {
 }
 
 /** A new payer starts with the same six steps, written for how it is reached. */
-export function starterWorkflow(reach: string[]): Workflow {
+export function starterWorkflow(reach: string[], on: string): Workflow {
   const portal = reach.includes("Portal");
   const phone = reach.includes("Phone");
   const how: StepKind = portal ? "portal" : phone ? "phone" : "file";
   const via = portal ? "through the provider portal" : phone ? "by phone" : "by fax";
   return {
     version: 1,
-    editedOn: "10/20",
+    editedOn: on,
     steps: [
       checkCoverage(),
       docsStep("The list for residential, read from the chart", "The list for IOP or PHP"),

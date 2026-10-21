@@ -9,7 +9,7 @@ process r1 "Each line: the agent's round icon, the text, and how long ago\nNewes
 decision q1 "More than six lines?"
 click b1 "Click 'See all 8'"
 process nb "No button. The card shows every line"
-overlay o1 "Activity log drawer\nEvery read and write, newest first. Admins can see who and what."
+overlay o1 "Activity log drawer\nEvery read and write, newest first."
 process o2 "All lines in one list\nSame icon, text and time as the card"
 click x1 "Click the X, press Escape, or click the dimmed area"
 end e1 "Drawer closes\nBack on the page"
@@ -17,11 +17,12 @@ end e1 "Drawer closes\nBack on the page"
 group gAdds "What adds a line (newest goes on top)"
   agent l1 "Reader or Verify\nSync now: one of four results in turn, for example 'Pulled 6 new files for 3 open cases and matched the insurance cards'"
   agent l2 "Reader\nConnect: 'Tested the read-only connection to {name} and found 5 files to pull'"
-  agent l3 "Reader\nMap: 'Mapped 'Level of care' to IOP. It applies to every future pull'\nReconnect: 'Reconnected {name} and read-only access passed its test'"
-  agent l4 "Navigator\nFix: 'Renewed the read-only sign-in for billing system and pulled 12 remittances'\nDisconnect and write-back switch lines"
+  agent l3 "Reader\nMap: 'Mapped 'Level of care' to IOP. It applies to every future pull'"
+  agent l4 "Navigator\nFix: 'Renewed the read-only sign-in for billing system and pulled 12 remittances'\nReconnect: 'Renewed the read-only sign-in for {name}' (only when it needed a fix first), then 'Reconnected {name} and read-only access passed its test'\nDisconnect and write-back switch lines"
 endgroup
 store st "Activity log\nSeed: eight lines from Reader, Verify and Navigator"
 toast nt "Dashboard 'Write to the EMR' adds no line here\nIt adds an event to that request instead"
+process fz "Every line is written at every freedom level\nThe agent's Freedom in Settings only decides whether a toast follows"
 
 p1 --> r1 --> q1
 q1 -->|Yes| b1 --> o1 --> o2 --> x1 --> e1
@@ -29,3 +30,4 @@ q1 -->|No| nb
 l1 & l2 & l3 & l4 --> st
 st --> r1
 p1 -.-> nt
+st -.-> fz

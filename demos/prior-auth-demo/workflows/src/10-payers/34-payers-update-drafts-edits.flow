@@ -1,21 +1,21 @@
 title: Payers › Edits waiting › Update drafts
 route: /payers/summit?tab=process
-intro: After a workflow, rule or document-list edit is saved, new drafts use it at once but open drafts do not. An ochre banner on the Process, Rules and Documents tabs offers 'Update drafts'. A confirm step lists the drafts, two agents redraft for about three seconds, and each draft goes back for a new signature.
+intro: After a workflow, rule or document-list edit is saved, new drafts use it at once, sent requests keep what they were sent with, and open drafts wait. An ochre banner on the Process, Rules and Documents tabs offers 'Update drafts'. A confirm step lists the payer's unsent drafts, two agents redraft for about three seconds, and each draft goes back for a new signature. Which drafts are open is read live from the Dashboard requests and the saved New case drafts.
 dir: TD
 ---
 start s1 "A workflow, rule or document-list\nedit was just saved"
 store un "'Edits waiting' for this payer goes up by one\nPayer details and Caller script edits do not count"
 screen bn "Ochre banner on Process, Rules and Documents\n'1 edit applies to new drafts only'\n'2 edits apply...' after a second edit"
-decision dr "Does this payer have drafts in 'Preparing'?"
-toast b1 "New drafts for Summit use your edits already.\nOpen drafts (R-1042, R-1101) follow when you update them.\nButton: 'Update 2 drafts'"
-toast b0 "New drafts for Evergreen use your edits already.\nThere are no open drafts for this payer right now.\nButton: 'Update drafts'"
-process info "Drafts waiting for information (like P-1499) are not counted\nOnly drafts in 'Preparing' are"
+decision dr "Does this payer have an unsent draft?\nA request in 'Preparing', or a New case draft\nthat is saved and not sent"
+toast b1 "New drafts for Summit use this at once.\nSent requests keep what they were sent with.\nClick Update drafts to redraft the open ones (R-1042, R-1101).\nButton: 'Update 2 drafts'"
+toast b0 "New drafts for Evergreen use this at once.\nSent requests keep what they were sent with.\nThere are no open drafts for this payer right now.\nButton: 'Update drafts'"
+process info "Not counted: a request the payer already has\n(Received and later), and the answer to a payer's\nquestion on an 'Info requested' request, like P-1499"
 click cu "Click the banner button"
-overlay m "Update 2 drafts?\nConfirm gate. Nothing is redrafted until you say so.\nReason: your edits to Summit."
+overlay m "Update 2 drafts?\nNothing is redrafted until you confirm.\nReason: your edits to Summit."
 decision dl "Any drafts to list?"
-process rows "One row per draft\nR-1042, 'J.M., 34 · Summit', Residential 3.5, 'Draft, not yet sent'"
-toast fn "'Each redrafted case returns to Case Manager for a new signature.\nA request that is already sent is never rewritten.\nIt gets an addendum instead.'"
-toast m0 "Title reads 'Apply to new drafts?'\n'No open drafts are affected. Evergreen will use\nthe change for every new draft from now on.'"
+process rows "One row per draft, read now\nR-1042, 'J.M., 34 · Summit', Residential 3.5, 'Draft, not yet sent'"
+toast fn "'Each redrafted case returns to Case Manager for a new signature.\nRequests already sent keep what they were sent with.'"
+toast m0 "Title reads 'Apply to new drafts?'\n'No open drafts are affected. New drafts for Evergreen\nalready use your edits.'"
 click cs "Click 'Update 2 drafts'\nor 'Apply to new drafts'"
 click cx "Click 'Cancel'"
 click cesc "Press Escape, click the X\nor click the dimmed area"
@@ -27,14 +27,15 @@ decision lv "Still on Payers after 3 seconds?"
 endx drop "Redraft is dropped\nBanner stays, nothing changes"
 decision dd "Were there drafts?"
 store rd "Each draft needs a person again\n'Redrafted after your edits to Summit's workflow, rules and documents.\nWaiting for a new signature'\nTimeline event by Scribe"
+store rp "Update recorded for Case Manager and New case\nChange 'edits-summit', payer, and the IDs of the drafts redrafted\nR-1042, R-1101"
 store z "'Edits waiting' resets to zero\nBanner disappears"
 store nt "Bell notification 'Drafts updated'\n2 drafts were redrafted after your edits to Summit.\nEach needs a new signature."
 toast t1 "'2 drafts updated'\nEach returned to Case Manager for a new signature."
-store z0 "'Edits waiting' resets to zero\nBanner disappears\nNo bell notification"
+store z0 "'Edits waiting' resets to zero\nBanner disappears\nNo update recorded, no bell notification"
 toast t0 "'No open drafts to update'\nNew drafts for Evergreen already use your edits."
 goto g1 "Continues in: Dashboard › Requests table"
 click cb "Click the bell notification\n'Drafts updated'"
-goto g2 "Continues in: Case Manager › Cases"
+goto g2 "Continues in: Case Manager › Active cases › Updated for a payer change"
 
 s1 --> un --> bn --> dr
 dr -->|Yes| b1 --> cu
@@ -48,6 +49,6 @@ m --> cesc --> x1
 cs --> lock --> a1 --> a2 --> lv
 lv -->|No| drop
 lv -->|Yes| dd
-dd -->|Yes| rd --> z --> nt --> t1 --> g1
+dd -->|Yes| rd --> rp --> z --> nt --> t1 --> g1
 dd -->|No| z0 --> t0
 nt -.-> cb --> g2

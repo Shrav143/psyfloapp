@@ -1,12 +1,12 @@
 title: Payers › Rules › Read the rules
 route: /payers/summit?tab=rules
-intro: Four rule cards for one payer, each a few plain lines, with the agents that use them and the date they were last confirmed. In the demo the rules are text the agents are said to follow; editing them is the next diagram. In the product, each field would carry a source and a confidence (published, payer-confirmed, observed, staff-reported, unconfirmed).
+intro: Four rule cards for one payer, each a few plain lines, with the agents that use them and the date they were last confirmed. The saved lines are what New case reads for this payer; editing them is the next diagram. In the product, each field would carry a source and a confidence (published, payer-confirmed, observed, staff-reported, unconfirmed).
 dir: TD
 ---
 start s1 "Click the 'Rules' tab"
 screen tab "Rules tab\nBanner if edits wait, four cards in two columns, a note"
 decision dU "Edits saved but not yet\napplied to open drafts?"
-toast bU "'1 edit applies to new drafts only'\nwith 'Update 2 drafts'"
+toast bU "'1 edit applies to new drafts only'\nwith 'Update 2 drafts'\nSent requests keep what they were sent with"
 goto gU "Continues in: Payers › Edits waiting › Update drafts"
 
 group gC "Each card"
@@ -19,8 +19,8 @@ endgroup
 process ub "Foot of each card\n'Used by Cadence and Navigator · confirmed 10/12'"
 process who "Used by\nWindows: Cadence, Navigator\nBackdating: Cadence, Scrubber\nNo authorization needed: Verify, Criteria\nPeer-to-peer and appeals: Advocate, Cadence"
 process cf "'Confirmed' is a date\nEvergreen shows 10/09, the others 10/12\nIt moves to today when a rule is edited"
-toast note "'Rules are learned from past decisions and confirmed against\nSummit's published policy. An edit applies to new drafts at once,\nand to open drafts when you click Update drafts.'"
-process noeff "Demo: no screen shows a rule changing an approval chance.\nThe rules are text on this tab and a reason to redraft"
+toast note "'Rules are learned from past decisions and confirmed against\nSummit's published policy. New drafts use a saved edit at once.\nSent requests keep what they were sent with.\nClick Update drafts to redraft open ones.'"
+process noeff "New case reads the saved lines for the payer\nand level of care of each draft\nSee the New case diagrams for what it checks"
 click ce "Click 'Edit' on a card\n(the button is named 'Edit Backdating' and so on)"
 goto gE "Continues in: Payers › Rules › Edit a rule"
 goto gF "Continues in: Payers › Configuration feeds the rest of the app"

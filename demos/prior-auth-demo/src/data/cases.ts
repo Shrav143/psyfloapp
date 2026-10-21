@@ -7,8 +7,10 @@ import type { Verdict } from "./eligibility";
 import { clockTime, toDate } from "@/lib/time";
 
 /* ------------------------------------------------------------------ documents */
-export type DocSlotId = "referral" | "psych_eval" | "asam" | "psychosocial" | "nursing" | "uds" | "meds" | "treatment_plan" | "therapy_note" | "attendance";
-export type QuestionKey = "stepdown" | "sertraline" | "recert";
+export type FixedDocSlot = "referral" | "psych_eval" | "asam" | "psychosocial" | "nursing" | "uds" | "meds" | "treatment_plan" | "therapy_note" | "attendance";
+/** A document a payer asks for that no fixed slot fits (a line added on Payers): the title follows `item:`. */
+export type DocSlotId = FixedDocSlot | `item:${string}`;
+export type QuestionKey = "stepdown" | "sertraline" | "recert" | "duration" | "lowerlevel";
 
 /** One thing the document validation looked at. `resolvedBy` means an answer to that question settles it. */
 export interface DocFinding {
@@ -45,19 +47,28 @@ export interface Answer {
   choice: string; // the id of the chosen button, empty when only a note was typed
   answer: string; // what was chosen, in words
   note?: string;
+  /** Given on the case page's Recommended actions. The action adds its own sentence to the summary, so the summary does not repeat it. */
+  fromCase?: boolean;
 }
-/** `done` counts finished agents. `question` is set while an agent waits for a person. */
+/** `done` counts finished agents. `question` is set while an agent waits for a person.
+    `asked` is true once the current agent has stopped for a question. `failed` is the agent that could not finish and waits for Retry or Skip;
+    `retried` stays true after a Retry, so a second run does not fail again; `skipped` lists agents the person skipped and noted. */
 export interface RunState {
   done: number;
   asked: boolean;
   question: QuestionKey | null;
   elapsed: number[];
+  failed: AgentKey | null;
+  retried: boolean;
+  skipped: AgentKey[];
 }
 export interface NarrativeSection {
   id: string;
   heading: string;
   text: string;
   sources: string[];
+  /** Comes from somewhere else (clinical context added on the case page), so it is shown but not edited here. */
+  fixed?: boolean;
 }
 export interface CoverageSummary {
   key: string;
@@ -89,6 +100,8 @@ export interface CaseDraft {
   reason: string;
   diagnoses: Diagnosis[];
   documents: DraftDocument[];
+  /** Documents the person marked not available, with the reason they gave. */
+  unavailable: Partial<Record<DocSlotId, string>>;
   referralId?: string;
   emrChart?: string;
   /** What Reader filled in from dropped files, for the note under each checklist row. */
@@ -96,10 +109,17 @@ export interface CaseDraft {
   coverage: CoverageSummary | null;
   run: RunState;
   answers: Answer[];
-  questionKey: QuestionKey | null;
+  /** The questions the agents will ask in this run, in the order they come up. */
+  questions: QuestionKey[];
   suggestions: string[];
   narrative: NarrativeSection[] | null;
+  /** The case page's applied actions whose sentences the edited summary already holds. Read only while `narrative` is set. */
+  narrativeIncludes?: string[];
   revision: number;
+  /** The records changed after the agents ran, so the run started over. Shown on Agents work until the run ends. */
+  recordsChanged?: boolean;
+  /** Things the payer asks for that the case does not meet (required documents, backdating). Each holds the approval chance back a little. */
+  unmet: number;
   sendBackNote?: string;
   startChance: number;
   finalChance: number;
@@ -108,7 +128,7 @@ export interface CaseDraft {
   updatedAt: number;
 }
 
-export const freshRun = (): RunState => ({ done: 0, asked: false, question: null, elapsed: [] });
+export const freshRun = (): RunState => ({ done: 0, asked: false, question: null, elapsed: [], failed: null, retried: false, skipped: [] });
 
 /* ------------------------------------------------------------------ the agents' run */
 export interface RunStep {
@@ -131,7 +151,8 @@ export const RUN_STEPS: RunStep[] = [
 ];
 export const SCRIBE_STEP = 6;
 export const FORECAST_STEP = 6; // the approval chance is settled once this many agents are done
-export const MAX_QUESTIONS = 3;
+/** The payer whose portal Verify cannot reach on the first run of a case. Cardinal's portal is down on Sundays and often shows no status (Payers › Cardinal). */
+export const FLAKY_PORTAL: PayerId = "cardinal";
 
 /* ------------------------------------------------------------------ questions an agent can ask */
 export interface QuestionDef {
@@ -174,6 +195,28 @@ export const QUESTIONS: Record<QuestionKey, QuestionDef> = {
       { id: "open", label: "Not decided yet" },
     ],
   },
+  duration: {
+    key: "duration",
+    agent: "scribe",
+    line: "Scribe is waiting on one answer: how long the diagnosis has been present",
+    text: () => "How long has the patient had this diagnosis? The psychiatric evaluation is not in the case, so Scribe cannot read it from there.",
+    choices: [
+      { id: "short", label: "Less than a year" },
+      { id: "mid", label: "One to five years" },
+      { id: "long", label: "More than five years" },
+    ],
+  },
+  lowerlevel: {
+    key: "lowerlevel",
+    agent: "scribe",
+    line: "Scribe is waiting on one answer: why a lower level of care is not enough",
+    text: () => "Why is a lower level of care not enough? The chart does not say, and the payer will ask.",
+    choices: [
+      { id: "tried", label: "A lower level was tried and did not hold" },
+      { id: "home", label: "Home is not safe or supportive enough" },
+      { id: "severe", label: "Symptoms are too severe for a lower level" },
+    ],
+  },
 };
 export const defaultQuestion = (program: Program | null): QuestionKey => (program === "RES" || program === "WM" ? "stepdown" : "recert");
 
@@ -192,8 +235,8 @@ export function draftState(d: CaseDraft): DraftState {
   if (d.run.done > 0 || d.step >= 1) return "working";
   return "intake";
 }
-/** A draft needs a person when intake is unfinished, an agent asked something, or it waits for a signature. */
-export const needsPerson = (d: CaseDraft): boolean => draftState(d) !== "working";
+/** A draft needs a person when intake is unfinished, an agent asked something, an agent could not finish, or it waits for a signature. */
+export const needsPerson = (d: CaseDraft): boolean => draftState(d) !== "working" || !!d.run.failed;
 
 /** The eight-step bar: which step is current. -1 while intake is unfinished. */
 export function barIndex(d: CaseDraft): number {
@@ -210,9 +253,11 @@ export function baseChance(d: Pick<CaseDraft, "startChance" | "finalChance" | "r
   const share = CLIMB[Math.min(d.run.done, CLIMB.length - 1)] / 26;
   return d.startChance + (d.finalChance - d.startChance) * share;
 }
+/** Each thing the payer asks for that the case does not meet holds the chance back by 3 points, up to 12. */
+export const unmetPenalty = (unmet: number): number => Math.min(12, Math.max(0, unmet) * 3);
 export function currentChance(d: CaseDraft): number {
   const boost = SUGGESTIONS.filter((s) => d.suggestions.includes(s.id)).reduce((a, s) => a + s.boost, 0);
-  return Math.min(97, Math.round(baseChance(d) + boost));
+  return Math.max(1, Math.min(97, Math.round(baseChance(d) + boost) - unmetPenalty(d.unmet)));
 }
 /** "likely 83-92%". The range is wider until the forecast settles. */
 export function chanceRange(chance: number, settled: boolean): { lo: number; hi: number } {

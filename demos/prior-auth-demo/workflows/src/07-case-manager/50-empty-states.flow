@@ -34,6 +34,7 @@ process p3 "Filters go back to their first options\nSearch box is emptied, lists
 goto g1 "Continues in: Case Manager › Filters › Search and filter both tabs"
 goto g2 "Continues in: New case › Referral step"
 process p4 "How drafts run out: sign and send every case in 'Being prepared' (5 at the start)\nThe header then reads '0 are still being prepared'"
+process p5 "'Step-down plans' has no empty state\nThe card is simply not shown when no denial was accepted or the filters hide every plan"
 end e1 "Lists show rows again"
 
 s1 --> i1 --> p1
@@ -53,3 +54,4 @@ p3 -.-> g1
 s1 -.-> p4
 p4 -.-> d1
 s1 -.-> e5s
+d3 -.-> p5

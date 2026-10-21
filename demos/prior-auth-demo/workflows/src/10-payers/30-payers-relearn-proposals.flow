@@ -22,6 +22,7 @@ click cd "Click 'Dismiss'"
 store ac "Condition added under that step\nWorkflow becomes the next version\nProposal removed"
 store lg "Edit log entry, area 'Workflow'\nReason 'Accepted Historian's proposal: ...'"
 store un "'Edits waiting' count goes up by one"
+store nt "Bell notification 'Summit workflow edited'\nHistorian's proposal was accepted, saved as a new version"
 toast ta "'Proposal accepted'\nAdded under 'Gather the documents' and logged as version 8."
 store dm "Proposal removed and remembered as dismissed\nHistorian will not offer it again"
 toast td "'Proposal dismissed'\nThe workflow did not change."
@@ -36,7 +37,7 @@ lv -->|Yes| nx
 nx -->|No| tn --> e1
 nx -->|Yes| pr --> tp --> bn --> badge
 bn --> rv --> cp
-cp --> ca --> ac --> lg --> un --> ta --> g1
+cp --> ca --> ac --> lg --> un --> nt --> ta --> g1
 lg -.-> g2
 cp --> cd --> dm --> td --> e1
 ca -.-> nr

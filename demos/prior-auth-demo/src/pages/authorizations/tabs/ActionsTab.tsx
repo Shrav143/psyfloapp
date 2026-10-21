@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { Banner } from "@/components/ui";
+import { WandSparkles } from "lucide-react";
+import { Banner, Button } from "@/components/ui";
+import type { FocusId } from "@/data/caseDetail";
+import { FOCUS, withFocus } from "@/data/caseDetailFocus";
 import { canSend, draftView, groupRecs, plainText, projectedChance, currentChance, similarTotal, versionViews } from "@/data/caseModel";
 import { useStore } from "@/store";
 import type { CaseCtx } from "../caseTypes";
@@ -42,7 +45,21 @@ export function ActionsTab({ ctx }: { ctx: CaseCtx }) {
       versionN: versionViews(detail, work).length + 1, snapshot: plainText(draftView(detail, next)),
     });
   };
-  const refine = () => runRefine(1500, () => useStore.getState().toast({ title: "Recommendations refreshed", body: "Historian and Scribe read the chart again. The same actions still rank highest.", tone: "neutral" }));
+  // Setting a focus re-orders the cards and may add one, so the chance preview can move. Clearing it puts them back.
+  const setFocus = (focus: FocusId | null) => {
+    const next = withFocus(detail, { ...work, focus });
+    useStore.getState().setFocus(key, focus, projectedChance(next, work) - currentChance(next, work));
+    if (focus) {
+      const added = next.recs.some((r) => r.focus === focus);
+      useStore.getState().toast({ title: "Recommendations refined", body: `Cards are in the order for "${FOCUS[focus].label}"${added ? ", and one was added" : ""}. With every action applied the chance is ${projectedChance(next, work)}%.`, tone: "good" });
+    }
+  };
+  const refine = (focus: FocusId) => runRefine(1200, () => setFocus(focus));
+  const addContext = (text: string) => {
+    const next = { ...work, context: [...work.context, text] };
+    const after = currentChance(detail, next);
+    useStore.getState().addContext({ caseId: key, requestId: detail.requestId, text, syncDashboard: detail.fromQueue, chance: after, liftLeft: projectedChance(detail, next) - after });
+  };
   const gating = (ids: string[]) => detail.checks.filter((c) => c.blockedBy.some((b) => ids.includes(b))).length > 0;
   const sections = new Set(included.map((r) => r.add?.section).filter(Boolean)).size;
 
@@ -51,6 +68,11 @@ export function ActionsTab({ ctx }: { ctx: CaseCtx }) {
       <div className="flex flex-col gap-3.5">
         {work.run ? <WorkStrip run={work.run} sections={Math.max(1, sections)} similar={similarTotal(detail)} /> : null}
         <p className="text-sm text-muted">Each card shows what the agents will add to the draft and how much it tends to help. Applied together, they take the chance from {detail.baseChance}% to {projectedChance(detail, { ...work, applied: [], dismissed: [] }) }%.</p>
+        {work.focus ? (
+          <Banner icon={WandSparkles} action={<Button size="sm" variant="ghost" onClick={() => setFocus(null)}>Clear focus</Button>}>
+            <b className="font-semibold">Focus: {FOCUS[work.focus].label}.</b> The cards are in that order{detail.recs.some((r) => r.focus === work.focus) ? ", and one card was added" : ""}.
+          </Banner>
+        ) : null}
         {groups.open.length === 0 && groups.applied.length > 0 ? <Banner tone="good" title="Every recommendation is applied">The draft is up to date. Open the Draft tab to read it, or send it to the payer.</Banner> : null}
         {groups.open.map((r) => (
           <RecCard
@@ -63,8 +85,8 @@ export function ActionsTab({ ctx }: { ctx: CaseCtx }) {
         {groups.dismissed.length > 0 ? <DismissedList items={groups.dismissed} onRestore={(id) => useStore.getState().restoreRec(key, id)} /> : null}
       </div>
       <ActionsSide
-        included={included.length} openCount={groups.open.length} running={running} canSend={ctx.canSend} sendReason={ctx.sendReason} refining={refining} work={work}
-        onApply={apply} onSend={ctx.send} onRefine={refine} onContext={(t) => useStore.getState().addContext(key, t)} onDismiss={() => setDismissing(included.map((r) => ({ id: r.id, title: r.title })))}
+        included={included.length} openCount={groups.open.length} running={running} canSend={ctx.canSend} sent={ctx.sent} sendReason={ctx.sendReason} refining={refining} work={work}
+        onApply={apply} onSend={ctx.send} onRefine={refine} onContext={addContext} onDismiss={() => setDismissing(included.map((r) => ({ id: r.id, title: r.title })))}
       />
       {dismissing ? (
         <DismissModal

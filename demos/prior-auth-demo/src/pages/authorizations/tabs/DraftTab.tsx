@@ -1,16 +1,54 @@
 import { useMemo, useState } from "react";
 import { CircleCheck, PenLine, RefreshCw, Send, TriangleAlert } from "lucide-react";
 import { Button, Card, CardBody, CardHeader, Label, Modal, Pill, TextArea } from "@/components/ui";
-import { checkViews, draftView, plainText, sectionText, versionViews, type VersionView } from "@/data/caseModel";
+import type { Evidence } from "@/data/caseDetail";
+import { checkViews, versionViews, type VersionView } from "@/data/caseModel";
 import { stamp } from "@/lib/time";
+import { appliedAdds, draftForRequest, requestDraft } from "@/pages/newcase/fromRequest";
+import { narrativeOf, unfoldedAdds } from "@/pages/newcase/narrative";
+import { usePayerContext } from "@/pages/newcase/payerContext";
 import { useStore } from "@/store";
 import type { CaseCtx } from "../caseTypes";
 import { EvidenceChip, uniqueEvidence } from "../EvidenceChip";
 import { useBusy } from "../useBusy";
 
+const NO_CONTEXT: string[] = [];
+/** The case page keeps its own names for two sections; its saved edits and test ids still use them. */
+const OWN_ID: Record<string, string> = { level: "lower", severity: "current" };
+
+interface Section {
+  id: string;
+  title: string;
+  text: string;
+  /** The chips of the chart pages the text came from (kept by the case page), then the ones the applied actions added. */
+  sources: Evidence[];
+  /** What the New case summary lists as this section's chips. */
+  summarySources: string[];
+  /** Sentences from applied actions that the summary does not hold yet. They follow the text in a green mark. */
+  added: { recId: string; text: string }[];
+  /** Comes from the case page's Add clinical context: shown here, not edited here. */
+  fixed: boolean;
+}
+const sectionText = (s: Section): string => [s.text, ...s.added.map((a) => a.text)].join(" ");
+
+/** The Draft tab reads the same summary as Review and sign in New case: one narrative per request, with the context added on this page. */
 export function DraftTab({ ctx }: { ctx: CaseCtx }) {
   const { detail, work, key, canSend, sendReason, send } = ctx;
-  const sections = useMemo(() => draftView(detail, work), [detail, work]);
+  const clock = useStore((s) => s.clock);
+  const shared = useStore((s) => draftForRequest(s.caseDrafts, detail.requestId, detail.id));
+  const context = useStore((s) => s.clinicalContext[detail.requestId]) ?? NO_CONTEXT;
+  const payerCtx = usePayerContext(detail);
+  /* Before the request has a draft, show the summary its draft would have, so opening Review and sign changes nothing. */
+  const basis = useMemo(() => shared ?? requestDraft(detail, work, clock, payerCtx), [shared, detail, work, clock, payerCtx]);
+  const adds = useMemo(() => appliedAdds(detail, work), [detail, work]);
+  const sections = useMemo<Section[]>(() => {
+    const open = unfoldedAdds(basis, adds);
+    return narrativeOf(basis, context).map((n, i) => ({
+      id: n.id, title: n.heading, text: n.text, fixed: !!n.fixed, summarySources: n.sources,
+      sources: [...(detail.draft[i]?.sources ?? []), ...adds.filter((a) => a.section === n.id).flatMap((a) => (a.source ? [a.source] : []))],
+      added: open.filter((a) => a.section === n.id).map(({ recId, text }) => ({ recId, text })),
+    }));
+  }, [basis, context, adds, detail]);
   const checks = checkViews(detail, work);
   const versions = versionViews(detail, work);
   const failing = checks.filter((c) => !c.ok).length;
@@ -22,19 +60,23 @@ export function DraftTab({ ctx }: { ctx: CaseCtx }) {
   const store = useStore.getState;
 
   const startEdit = () => {
-    setValues(Object.fromEntries(sections.map((s) => [s.id, sectionText(s)])));
+    setValues(Object.fromEntries(sections.filter((s) => !s.fixed).map((s) => [s.id, sectionText(s)])));
     setEditing(true);
   };
   const save = () => {
-    const changed = sections.filter((s) => (values[s.id] ?? "").trim() !== sectionText(s));
+    const own = sections.filter((s) => !s.fixed);
+    const changed = own.filter((s) => (values[s.id] ?? "").trim() !== sectionText(s));
     setEditing(false);
     if (changed.length === 0) {
       store().toast({ title: "No changes to save", tone: "neutral" });
       return;
     }
-    const edits = Object.fromEntries(changed.map((s) => [s.id, { text: values[s.id].trim(), includes: work.applied }]));
-    const next = { ...work, edits: { ...work.edits, ...edits }, dirty: true };
-    store().saveDraft(key, edits, { n: versions.length + 1, snapshot: plainText(draftView(detail, next)) });
+    const edits = Object.fromEntries(changed.map((s) => [OWN_ID[s.id] ?? s.id, { text: values[s.id].trim(), includes: work.applied }]));
+    const text = (s: Section) => (values[s.id] ?? sectionText(s)).trim();
+    store().saveDraft(key, edits, { n: versions.length + 1, snapshot: own.map((s) => `${s.title}. ${text(s)}`).join("\n\n") });
+    /* The edited text goes to the draft in New case, so Review and sign reads it too. Every applied action's sentence is in it from now on. */
+    const id = store().draftFromRequest(detail.requestId);
+    store().patchCaseDraft(id, { narrative: own.map((s) => ({ id: s.id, heading: s.title, text: text(s), sources: s.summarySources })), narrativeIncludes: adds.map((a) => a.recId) });
     store().toast({ title: "Draft saved", body: "Integrity needs to read it again before it can be signed. Use Re-check.", tone: "mid" });
   };
   const recheck = () =>
@@ -57,24 +99,24 @@ export function DraftTab({ ctx }: { ctx: CaseCtx }) {
           right={editing ? <><Button size="sm" onClick={() => setEditing(false)}>Cancel</Button><Button size="sm" variant="primary" onClick={save}>Save changes</Button></> : <Button size="sm" icon={PenLine} onClick={startEdit}>Edit</Button>}
         />
         <CardBody className="flex flex-col gap-4 text-[15px] leading-[1.75]">
-          {editing
-            ? sections.map((s) => (
-                <div key={s.id}>
-                  <Label className="mb-1.5">{s.title}</Label>
-                  <TextArea rows={4} aria-label={`Edit ${s.title}`} value={values[s.id] ?? ""} onChange={(e) => setValues({ ...values, [s.id]: e.target.value })} />
-                </div>
-              ))
-            : sections.map((s) => (
-                <p key={s.id} data-testid={`draft-${s.id}`}>
-                  <b>{s.title}.</b> {s.text}{" "}
-                  {s.added.map((a) => (
-                    <mark key={a.recId} className="rounded bg-good-bg px-1 text-ink">{a.text}<span className="ml-1.5 rounded-full bg-white px-1.5 text-[10px] font-semibold tracking-wide text-good-ink uppercase">New</span></mark>
-                  ))}{" "}
-                  <span className="inline-flex flex-wrap gap-1.5 align-middle">
-                    {uniqueEvidence(s.sources).map((src) => <EvidenceChip key={src.label} evidence={src} detail={detail} />)}
-                  </span>
-                </p>
-              ))}
+          {sections.map((s) =>
+            editing && !s.fixed ? (
+              <div key={s.id}>
+                <Label className="mb-1.5">{s.title}</Label>
+                <TextArea rows={4} aria-label={`Edit ${s.title}`} value={values[s.id] ?? ""} onChange={(e) => setValues({ ...values, [s.id]: e.target.value })} />
+              </div>
+            ) : (
+              <p key={s.id} data-testid={`draft-${OWN_ID[s.id] ?? s.id}`}>
+                <b>{s.title}.</b> {s.text}{" "}
+                {s.added.map((a) => (
+                  <mark key={a.recId} className="rounded bg-good-bg px-1 text-ink">{a.text}<span className="ml-1.5 rounded-full bg-white px-1.5 text-[10px] font-semibold tracking-wide text-good-ink uppercase">New</span></mark>
+                ))}{" "}
+                <span className="inline-flex flex-wrap gap-1.5 align-middle">
+                  {uniqueEvidence(s.sources).map((src) => <EvidenceChip key={src.label} evidence={src} detail={detail} />)}
+                </span>
+              </p>
+            ),
+          )}
         </CardBody>
       </Card>
 

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowUp, CheckCheck, Sparkles } from "lucide-react";
 import { ActorBadge, AgentBadge, Button, Drawer } from "@/components/ui";
-import { PAYERS } from "@/data/seed";
+import { PAYERS, payerById } from "@/data/seed";
 import { cn } from "@/lib/cn";
 import { money } from "@/lib/format";
 import { ago } from "@/lib/time";
@@ -56,6 +56,8 @@ interface Msg {
   from: "you" | "flo";
   text: string;
   link?: { label: string; to: string };
+  /** FLO found no answer, so the suggestion chips stay under this message. */
+  fallback?: boolean;
 }
 
 /** FLO has no agent badge of its own: it is the assistant that sits on top of the sixteen agents. */
@@ -66,6 +68,8 @@ function FloBadge({ size = 30 }: { size?: number }) {
     </span>
   );
 }
+
+const sentence = (t: string) => (/[.!?]$/.test(t) ? t : `${t}.`);
 
 const SUGGEST = ["What needs me today?", "Which payers are slowest right now?", "How much money is at stake in denials?", "Why is Cardinal's approval rate down?"];
 
@@ -85,22 +89,29 @@ export function AskPanel() {
     const counts = stageCounts(requests);
     if (s.includes("slow") || s.includes("payer") && s.includes("late")) {
       const slow = [...PAYERS].filter((p) => p.avgDecisionDays > p.typicalDecisionDays).sort((a, b) => b.avgDecisionDays / b.typicalDecisionDays - a.avgDecisionDays / a.typicalDecisionDays);
-      return { from: "flo", text: `${slow.map((p) => `${p.shortName} is averaging ${p.avgDecisionDays} days against ${p.typicalDecisionDays} typical`).join(". ")}. Caller phones when a payer passes twice its typical time.`, link: { label: "Open Dashboard, By payer", to: paths.dashboard() } };
+      const text = slow.length ? `${slow.map((p) => `${p.shortName} is averaging ${p.avgDecisionDays} days against ${p.typicalDecisionDays} typical`).join(". ")}. Caller phones when a payer passes twice its typical time.` : "Every payer is deciding within its typical time right now.";
+      return { from: "flo", text, link: { label: "Open Dashboard, Payers at a glance", to: paths.dashboard({ focus: "payers" }) } };
     }
     if (s.includes("denial") || s.includes("stake") || s.includes("money")) {
       const d = requests.filter((r) => r.stage === "appeal");
       const total = d.reduce((a, r) => a + r.atStake, 0);
-      return { from: "flo", text: `${d.length} denials are open, with ${money(total)} at stake. The nearest deadline is D-3318 (Cardinal), a peer-to-peer call Wednesday 9 to 11 am, where the chance of winning is 64%.`, link: { label: "Open Denial Intelligence", to: paths.denials("D-3318") } };
+      // The nearest deadline is read from the open denials, so the answer stays true after one is settled or the clock moves.
+      const near = d.filter((r) => r.deadlineAt !== undefined && r.deadlineAt >= clock).sort((a, b) => (a.deadlineAt ?? 0) - (b.deadlineAt ?? 0))[0];
+      const nearest = near ? ` The nearest deadline is ${near.id} (${payerById(near.payerId).shortName}). ${sentence(near.next)}${near.chance !== undefined ? ` The chance of winning is ${near.chance}%.` : ""}` : "";
+      return { from: "flo", text: `${d.length} ${d.length === 1 ? "denial is" : "denials are"} open, with ${money(total)} at stake.${nearest}`, link: { label: "Open Denial Intelligence", to: paths.denials(near?.id) } };
     }
     if (s.includes("cardinal") || s.includes("approval rate")) {
       return { from: "flo", text: "Cardinal approved 63% as asked over the last 90 days, down 11 points. Historian links most of the drop to continued-stay evidence. Cardinal also published criteria version 2026.3, which affects 4 drafts you have not sent.", link: { label: "Open Payers, Cardinal, Changes", to: paths.payers("cardinal", "changes") } };
     }
     if (s.includes("need") || s.includes("today") || s.includes("first")) {
       const needs = requests.filter((r) => r.needsYou);
-      return { from: "flo", text: `${needs.length} requests need you: ${needs.map((r) => r.id).join(", ")}. ${counts.info_requested} payer${counts.info_requested === 1 ? "" : "s"} asked for more information, and ${counts.preparing} cases are being prepared. Start with P-1499. Harborview is waiting and its clock is past typical.`, link: { label: "Open Dashboard", to: paths.dashboard() } };
+      // Start with a payer's question: that clock is already running.
+      const first = needs.find((r) => r.stage === "info_requested") ?? needs[0];
+      if (!first) return { from: "flo", text: "Nothing needs you right now. Every request is with a payer or with the agents.", link: { label: "Open Dashboard", to: paths.dashboard() } };
+      return { from: "flo", text: `${needs.length} ${needs.length === 1 ? "request needs" : "requests need"} you: ${needs.map((r) => r.id).join(", ")}. ${counts.info_requested} payer${counts.info_requested === 1 ? "" : "s"} asked for more information, and ${counts.preparing} cases are being prepared. Start with ${first.id} (${payerById(first.payerId).shortName}). ${sentence(first.next)}`, link: { label: `Open ${first.id} on the Dashboard`, to: paths.dashboard({ request: first.id }) } };
     }
     if (s.includes("referral")) return { from: "flo", text: "New referrals are waiting for review. Reader has already checked each document, and Verify has run coverage for the ones with an insurance card.", link: { label: "Start a case from a referral", to: paths.referrals() } };
-    return { from: "flo", text: `I did not find an answer to that in the demo data. Try one of the suggestions below. (Clock: ${ago(0, clock)}.)` };
+    return { from: "flo", text: "I did not find an answer to that in the demo data. Try one of the suggestions below.", fallback: true };
   };
 
   const send = (q: string) => {
@@ -134,15 +145,15 @@ export function AskPanel() {
           </div>
         ))}
         {busy ? <div className="flex items-center gap-2 text-sm text-muted"><FloBadge /><span className="psy-pulse">FLO is working…</span></div> : null}
+        {!busy && (msgs.length < 3 || msgs[msgs.length - 1].fallback) ? (
+          <div className="mt-2 flex flex-wrap gap-2">
+            {SUGGEST.map((q) => (
+              <button key={q} type="button" onClick={() => send(q)} className="rounded-full border border-field bg-white px-3.5 py-1.5 text-[13px] hover:bg-tile">{q}</button>
+            ))}
+          </div>
+        ) : null}
         <div ref={end} />
       </div>
-      {msgs.length < 3 ? (
-        <div className="mt-5 flex flex-wrap gap-2">
-          {SUGGEST.map((q) => (
-            <button key={q} type="button" onClick={() => send(q)} className="rounded-full border border-field bg-white px-3.5 py-1.5 text-[13px] hover:bg-tile">{q}</button>
-          ))}
-        </div>
-      ) : null}
     </Drawer>
   );
 }

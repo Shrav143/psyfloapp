@@ -3,6 +3,7 @@ import { Button, Card, CardBody, CardHeader, Dropdown, Field, FileDrop, Pill, Sp
 import { PAYERS, payerById } from "@/data/seed";
 import { PROGRAM_LABEL, PROGRAMS, type PayerId, type Program } from "@/data/types";
 import { maskMember } from "@/data/cases";
+import { SAMPLES, type Sample } from "./samples";
 import { formReady, type VerifyForm as Form } from "./verifySteps";
 
 export const SAMPLE_CARD = "Insurance card (front).jpg";
@@ -36,14 +37,30 @@ function CardStrip({ form, reading, locked, onReplace }: { form: Form; reading: 
   );
 }
 
+/** One chip per way a check can end. Each fills the form with a member who ends that way. */
+function SampleRow({ form, onSample, disabled }: { form: Form; onSample: (s: Sample) => void; disabled: boolean }) {
+  const active = SAMPLES.find((s) => s.form.payerId === form.payerId && s.form.member === form.member && s.form.program === form.program);
+  return (
+    <div role="group" aria-label="Try a sample" className="flex flex-wrap items-center gap-2">
+      <span className="mr-1 text-[13px] font-medium text-muted">Try a sample</span>
+      {SAMPLES.map((s) => (
+        <Button key={s.id} size="sm" variant={active?.id === s.id ? "primary" : "outline"} aria-pressed={active?.id === s.id} disabled={disabled} onClick={() => onSample(s)}>
+          {s.label}
+        </Button>
+      ))}
+    </div>
+  );
+}
+
 /** The short form on the left. Fields lock while the check runs. */
-export function VerifyForm({ form, onChange, onCard, reading, locked, onCheck }: { form: Form; onChange: (p: Partial<Form>) => void; onCard: (files: DemoFile[]) => void; reading: boolean; locked: boolean; onCheck: () => void }) {
+export function VerifyForm({ form, onChange, onCard, onSample, reading, locked, onCheck }: { form: Form; onChange: (p: Partial<Form>) => void; onCard: (files: DemoFile[]) => void; onSample: (s: Sample) => void; reading: boolean; locked: boolean; onCheck: () => void }) {
   const ready = formReady(form);
   const hint = ready ? "Takes about 10 seconds. Nothing is changed at the payer or in the record." : "Add the payer, member ID, date of birth and date of service to check.";
   return (
     <Card>
       <CardHeader title="The patient and the service" subtitle="Add the card, or type the member details" right={<Pill tone="neutral" dot>Privacy mode on</Pill>} />
       <CardBody className="flex flex-col gap-4">
+        <SampleRow form={form} onSample={onSample} disabled={locked || reading} />
         {form.cardName || reading ? <CardStrip form={form} reading={reading} locked={locked} onReplace={() => onChange({ cardName: null })} /> : <FileDrop onFiles={onCard} sampleName={SAMPLE_CARD} hint="Drag and drop the insurance card, or click to select a file" disabled={locked} />}
         <div className="grid grid-cols-2 gap-3.5">
           <Field label={form.cardName ? "Payer (read from card)" : "Payer"} required>

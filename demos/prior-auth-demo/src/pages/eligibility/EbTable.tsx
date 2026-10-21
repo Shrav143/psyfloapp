@@ -6,6 +6,7 @@ import { PROGRAM_LABEL } from "@/data/types";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
 import { AuthChip, BenefitsChip, EligibilityChip, patientLabel, VerdictChip } from "./chips";
+import { autoState, DUE_AT, NOT_RECHECKED, RE_CHECKED, type AutoState } from "./recheck";
 
 const when = (at: number, now: number): string => {
   const m = Math.max(0, now - at);
@@ -16,10 +17,24 @@ const when = (at: number, now: number): string => {
   return d === 1 ? "1 day ago" : `${d} days ago`;
 };
 
+/** The small line under the verdict: when it was checked, and what Verify's automatic re-check is doing. */
+function checkedLine(at: number, now: number, busy: boolean, auto: AutoState | null) {
+  if (busy) return "Checking now";
+  if (auto?.kind === "done") return RE_CHECKED(auto.at);
+  if (auto?.kind === "paused") return <span className="text-mid-ink">{NOT_RECHECKED}</span>;
+  return (
+    <>
+      Checked {when(at, now)}
+      {auto ? <div>{DUE_AT(auto.at)}</div> : null}
+    </>
+  );
+}
+
 /** One row per patient. The ID and the row open the result; Re-check runs a live check and updates the row in place. */
 export function EbTable({ rows }: { rows: EbPatient[] }) {
   const nav = useNavigate();
   const clock = useStore((s) => s.clock);
+  const paused = useStore((s) => s.agentPaused.verify);
   const rechecking = useStore((s) => s.ebRechecking);
   const recheck = useStore((s) => s.ebRecheck);
   return (
@@ -62,7 +77,7 @@ export function EbTable({ rows }: { rows: EbPatient[] }) {
               </Td>
               <Td>
                 <VerdictChip v={verdictOf(p)} />
-                <div className="mt-1 text-xs text-muted">{busy ? "Checking now" : `Checked ${when(p.checkedAt, clock)}`}</div>
+                <div className="mt-1 max-w-[190px] whitespace-normal text-xs text-muted">{checkedLine(p.checkedAt, clock, busy, autoState(p, clock, paused))}</div>
               </Td>
               <Td className="text-right">
                 <Button

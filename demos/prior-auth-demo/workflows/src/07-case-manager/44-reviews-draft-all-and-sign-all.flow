@@ -1,31 +1,37 @@
 title: Case Manager › Reviews this week › Draft all due reviews and sign all clean drafts
 route: /manager?tab=reviews (the two header buttons)
-intro: Two buttons in the header work on the whole week. 'Draft all due reviews' asks Cadence to check for missing drafts. 'Sign all clean drafts' signs every draft whose four Integrity checks passed, in one step, and leaves out anything that needs a closer look.
+intro: Two buttons in the header work on the whole week. 'Draft all due reviews' makes Cadence draft every review that has no draft yet, unless Cadence is paused in Settings. 'Sign all clean drafts' signs every draft whose four Integrity checks passed, in one step, and leaves out anything that needs a closer look.
 dir: TD
 ---
 start s1 "Reviews this week tab is open"
 
 group gDraft "Draft all due reviews"
   click c1 "Click 'Draft all due reviews'"
+  decision dp "Is Cadence paused in Settings?"
+  toast tp "'Cadence is paused in Settings'\n'It drafts no reviews until you resume it there.'\n(the button also says so on hover)"
+  process pp "Nothing changes: no spinner, no drafts"
   process p1 "Button shows a spinner and is disabled for about 1.3 seconds"
-  agent a1 "Cadence checks the next 3 days for reviews with no draft"
-  toast t1 "'Cadence checked the next 3 days'\n'All 47 reviews due this week already have a draft or a question for you. Nothing is left to draft.'"
-  process p2 "Nothing changes in the list: every review already has a draft or is waiting on a clinician"
+  agent a1 "Cadence drafts every review due this week that has no draft\n4 at the start: the weekend reviews I-2150, I-2170, I-2144 and I-2157"
+  decision dn "Was any review waiting for a draft?"
+  store sd "Each one moves from 'Not drafted yet' to 'Drafted'\nIts seven-part text and four green Integrity checks are added"
+  toast t1 "'Cadence drafted 4 reviews'\n'They are marked Drafted in the list. Integrity checked each one and all four checks passed.'"
+  toast t0 "'Nothing to draft'\n'Every review due this week already has a draft or a question for you.'"
+  process p2 "Tiles: 'Drafted by agents' goes from 35 to 39, '29 clean' to '33 clean', and 'not drafted yet' leaves the first tile"
 endgroup
 
 group gSign "Sign all clean drafts"
   decision d1 "Is any draft clean?\n(drafted, and all four checks passed)"
-  process x1 "Button 'Sign all clean drafts' is greyed out\n(33 are clean at the start)"
+  process x1 "Button 'Sign all clean drafts' is greyed out\n(29 are clean at the start, 33 after 'Draft all due reviews')"
   click c2 "Click 'Sign all clean drafts'"
-  overlay o1 "Dialog 'Sign all clean drafts'\nSubtitle '33 reviews with all four checks passed'"
-  screen b1 "Text: 'Only drafts whose four Integrity checks all passed are signed. 6 drafts with a check to look at are left out. 8 reviews that need your update are left out too.'"
+  overlay o1 "Dialog 'Sign all clean drafts'\nSubtitle '33 reviews with all four checks passed'\n(29 if 'Draft all due reviews' has not run)"
+  screen b1 "Text: 'Only drafts whose four Integrity checks all passed are signed. 6 drafts with a check to look at are left out. 8 reviews that need your update are left out.' and, when any have no draft yet, '4 reviews have no draft yet and are left out too.'"
   screen b2 "Banner 'Only a licensed clinician signs'\nDropdown 'Signing clinician' (Heather K., LISW-S or Dr. R. Lindqvist, MD)"
   input i1 "Tick 'I reviewed these 33 drafts and they reflect the record. The level of care in each is my clinical judgment.'"
   decision d2 "Is the box ticked?"
   process x2 "Button 'Sign 33 reviews' stays greyed"
   click c3 "Click 'Sign 33 reviews'"
-  store st1 "Every clean draft is saved as 'Signed' by the chosen clinician, stamped with the demo clock\nDrafts with an amber check and reviews needing an update stay as they were"
-  toast t2 "'33 reviews signed'\n'Heather K., LISW-S signed every draft whose four checks passed. The others wait for a closer look.'"
+  store st1 "Every clean draft is saved as 'Signed' by the chosen clinician, stamped with the demo clock\nCadence books a next review for each\nDrafts with an amber check, reviews needing an update and reviews with no draft stay as they were"
+  toast t2 "'33 reviews signed'\n'Heather K., LISW-S signed every draft whose four checks passed. Cadence booked the next review for each. The others wait for a closer look.'"
   process p3 "Dialog closes\nTile 'Reviews due this week' reads '33 signed so far'; 'Drafted by agents' reads '0 clean, ready to sign'\nThe header button is greyed out\nSidebar bubble is unchanged (still 11)"
   click c4 "Click 'Cancel', the X, the dimmed area, or press Escape"
   process p4 "Dialog closes, nothing is signed"
@@ -36,9 +42,14 @@ goto g1 "Continues in: Case Manager › Reviews this week › After a review is 
 goto g2 "Continues in: Case Manager › Reviews this week › Sign a review"
 end e1 "Week's clean reviews are signed"
 endx e2 "Nothing signed"
-end e3 "Nothing was missing, so nothing was drafted"
+end e3 "Due reviews are drafted"
+endx e4 "Nothing was drafted"
 
-s1 --> c1 --> p1 --> a1 --> t1 --> p2 --> e3
+s1 --> c1 --> dp
+dp -->|Yes| tp --> pp --> e4
+dp -->|No| p1 --> a1 --> dn
+dn -->|Yes| sd --> t1 --> p2 --> e3
+dn -->|No| t0 --> e4
 s1 --> d1
 d1 -->|No| x1 --> e2
 d1 -->|Yes| c2 --> o1 --> b1 --> b2 --> i1 --> d2

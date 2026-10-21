@@ -27,7 +27,8 @@ export function ValidationTab({ r, onView, onRequest, onOverride }: Props) {
   const ok = r.checks.filter(passed).length;
   const open = unresolved(r);
   const canAct = isOpen(r.status);
-  const askable = open.filter((c) => c.key !== "age").map((c) => c.key);
+  // A failed age check has no "Request information": nobody can change a patient's age by replying.
+  const askable = open.filter((c) => c.state !== "fail").map((c) => c.key);
   return (
     <div className="flex flex-col gap-4">
       <Card className="bg-tile">
@@ -35,7 +36,7 @@ export function ValidationTab({ r, onView, onRequest, onOverride }: Props) {
           <div className="flex items-center justify-between gap-3">
             <div>
               <div className="font-serif text-[22px] font-semibold">{ok} of {total} checks passed</div>
-              <div className="text-sm text-muted">{open.length ? `${open.length} ${open.length === 1 ? "needs" : "need"} your attention before you accept.` : "Everything Reader checked is clear."}</div>
+              <div className="text-sm text-muted">{open.length ? `${open.length} ${open.length === 1 ? "needs" : "need"} your attention.` : "Everything Reader checked is clear."}</div>
             </div>
             <AgentChip agent="reader" />
           </div>
@@ -70,6 +71,8 @@ export function ValidationTab({ r, onView, onRequest, onOverride }: Props) {
                   <div className="shrink-0">
                     {c.resolved ? (
                       <Pill tone="good">{c.resolved.how === "override" ? "Marked OK" : "Fixed by reply"}</Pill>
+                    ) : c.state === "fail" && canAct ? (
+                      <Button size="sm" aria-label={`Mark OK with reason: ${CHECK_PROBLEM[c.key]}`} onClick={() => onOverride(c.key)}>Mark OK with reason</Button>
                     ) : c.state !== "pass" && canAct ? (
                       <Dropdown<ResolveChoice>
                         ariaLabel={`Resolve: ${CHECK_PROBLEM[c.key]}`}

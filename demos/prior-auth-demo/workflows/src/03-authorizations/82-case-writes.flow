@@ -1,6 +1,6 @@
 title: Authorizations › Case page › What it writes to other screens
 route: /authorizations/case/R-1042
-intro: What a case page changes outside itself: the Dashboard request's chance and history, the notification, and the queue. Nothing here is a link; each happens as a side effect of a click.
+intro: What a case page changes outside itself: the Dashboard request's chance and history, the notification, the shared lists that Analytics and the Draft tab read, and the queue. Nothing here is a link; each happens as a side effect of a click.
 dir: TD
 also: Demo only: a case page only writes to the Dashboard for requests that are on both the queue and the Dashboard. Other requests keep their work on the case page alone.
 ---
@@ -19,10 +19,20 @@ start s2 "Click 'Dismiss and log' on a case page"
 decision d2 "Is the request on the Dashboard?"
 store w3 "Dashboard request history\n'You dismissed ... Reason: ...'"
 process w4 "Only the case page log changes\n'Logged decisions'"
+store w7 "Dismissal recorded: the request and the reason\nAnalytics reads it"
+
+start s4 "Click 'Add context' on a case page"
+store w8 "Clinical context added to the shared list for the request\nThe Draft tab and New case read it"
+decision d4 "Is it a queue request that also has a Dashboard entry?"
+store w9 "Dashboard request gets the new chance\nTimeline: 'You added clinical context. ...'"
+process w10 "Queue tile shows the new chance\nThe approval chance is one point higher for each of the first three notes"
 
 start s3 "A request is signed and sent in New case"
 store w5 "Dashboard stage 'Received'"
 process w6 "Queue drops the request\nThe open count drops by one\nThe sidebar badge too, if it was in Act now or Due within 24 hours"
+process w11 "Its case page reads the new stage\nChip 'Received', the request's own status line, a greyed-out 'Sent to payer' and 'Open on the Dashboard'"
+start s5 "The payer decides, or a denial is settled or its appeal is filed"
+process w12 "Queue drops the request from its band\nWhen Act now is empty the band says 'Nothing needs you today'"
 goto g2 "Continues in: Dashboard › Request drawer"
 
 s1 --> d1
@@ -34,5 +44,11 @@ w2 --> g2
 s2 --> d2
 d2 -->|Yes| w3 --> g2
 d2 -->|No| w4
+s2 --> w7
+s4 --> w8 --> d4
+d4 -->|Yes| w9 --> w10
+d4 -->|No| w10
 s3 --> w5 --> w6
+w5 --> w11
 w5 --> g2
+s5 --> w12

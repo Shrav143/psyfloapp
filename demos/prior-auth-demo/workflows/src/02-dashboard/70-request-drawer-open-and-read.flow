@@ -14,14 +14,14 @@ group gHead "Header"
 endgroup
 
 group gBody "Body, from the top down"
-  screen b1 "Action box (only some requests)\n'Needs your input', 'Packet is drafting the answer' or 'Approved. Write-back waits for you'"
+  screen b1 "Action box (only some requests)\n'Needs your input', 'Packet is drafting the answer' or 'Approved. Write-back waits for you'\nThe last one shows only while write-back is on in EMR Connect; otherwise a calm line says it is off"
   screen b2 "Facts\nPatient 'E.S., 42', At stake '$8.2K', Held by (agent and next step)"
   decision d1 "Does the request have a chance figure?"
   screen b3 "'Approval chance' or, for a denial, 'Chance of winning'\n'74% · Moderate · likely 66 to 82% · 219 similar cases'"
   screen b4 "Sent\n'Not yet', 'through the payer's portal', 'by fax' or 'by phone'"
   screen b5 "History\nEvery event, oldest first, or 'No events yet.'\nGreen dot with the time; dashed dot with 'Scheduled · time'"
   screen b6 "Clock banner\nOne line on when the next check happens"
-  overlay b7 "Demo controls\nDashed box: pretend the payer answered"
+  overlay b7 "Demo controls\nDashed box: pretend the payer answered\nOnly the replies still ahead of the request show"
 endgroup
 
 decision d2 "Which message does the banner show?"

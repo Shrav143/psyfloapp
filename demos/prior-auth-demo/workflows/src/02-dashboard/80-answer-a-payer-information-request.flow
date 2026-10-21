@@ -31,7 +31,7 @@ decision d2 "Does the person send it?"
 click c2 "Click 'Not yet'"
 click c3 "Click the X, click the dimmed area, or press Escape"
 process p0 "Pop-up closes\nThe request is unchanged and still needs you"
-process p1 "Escape also closes the drawer behind the pop-up"
+process p1 "Escape closes only the pop-up\nThe drawer stays; a second Escape closes it"
 end e1 "Back to the drawer or the table\nStill 'Needs your input'"
 
 click c4 "Click 'Sign and send answer'"

@@ -4,7 +4,7 @@ import { payerById } from "@/data/seed";
 import { PROGRAM_LABEL } from "@/data/types";
 import { ago, longDate } from "@/lib/time";
 import { paths } from "@/routes";
-import { unresolved, type AskKey } from "@/store/referralsLogic";
+import { isWaiting, unresolved, type AskKey } from "@/store/referralsLogic";
 
 /* The referral as a checklist: what Reader found, and what is still missing. Pure, so the list of arrived referrals
    can count the open items without drawing a card. */
@@ -14,7 +14,7 @@ export interface ChecklistRow {
   label: string;
   state: BoxState;
   detail: string;
-  /** What "Ask the referrer" sends for this row. None when the referrer cannot supply it. */
+  /** What "Ask the referrer" sends for this row. None when the referrer cannot supply it: a failed age check has only "Mark OK". */
   ask: AskKey | null;
   /** The finding "Mark OK" accepts. None for rows that are not one of the nine checks. */
   markable: CheckKey | null;
@@ -110,10 +110,9 @@ function checkRow(c: Ctx, check: ReferralCheck): ChecklistRow {
   if (check.resolved?.how === "override") return { ...row, detail: `Marked OK by ${staffById("jp").name}: ${check.resolved.reason ?? ""}` };
   if (check.resolved?.how === "reply") return { ...row, detail: `Resolved by the referrer's reply. ${evidence}` };
   if (check.state === "pass") return { ...row, detail: evidence };
-  // The referrer's reply fixes warnings. A failed age check is not something a reply can change.
-  const waiting = c.r.status === "awaiting_info" && check.state === "warn";
+  const waiting = isWaiting(c.r, check);
   const nothing = NOTHING_FOUND.includes(key) || (key === "diagnosis" && c.r.plan.dx.length === 0);
-  return { ...row, state: nothing ? "missing" : "warn", detail: waiting ? waitingText(c) : check.detail, ask: key, markable: key, waiting };
+  return { ...row, state: nothing ? "missing" : "warn", detail: waiting ? waitingText(c) : check.detail, ask: check.state === "fail" ? null : key, markable: key, waiting };
 }
 
 function insuranceRow(c: Ctx): ChecklistRow {

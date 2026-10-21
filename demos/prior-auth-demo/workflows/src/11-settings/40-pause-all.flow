@@ -1,27 +1,28 @@
 title: Settings › Pause › Pause all agents
 route: /settings
-intro: One red button stops all sixteen agents, after one question. The page then shows an amber banner and a green 'Resume all agents' button. In the demo, nothing outside this page changes.
+intro: One red button stops all sixteen agents, after one question. The page then shows an amber banner that says what is held back, a 'Paused' tag on every row and a green 'Resume all agents' button. Other screens read the pause.
 dir: TD
-also: Demo only: the pause lives in the page and is lost when the person leaves Settings. The real rules for a pause (PRD FR-25) are shown in orange.
+also: The pause is kept in the app, so it stays after leaving Settings. 'Reset demo data' lifts it. The real rules for a pause (PRD FR-25) are shown in orange.
 ---
 screen s1 "Settings\nHeader button 'Pause all agents', red outline, with a pause icon"
 click c1 "Click 'Pause all agents'"
-overlay o1 "Pause all agents?\n'No checks, calls or drafts will run until you resume.'"
-process p1 "'Requests already with a payer stay where they are. You can resume at any time.'"
+overlay o1 "Pause all agents?\n'No agent starts new work until you resume.'"
+process p1 "'New case stops running agents. Check all now on the Dashboard waits. Draft all due reviews in Case Manager waits. Eligibility & Benefits stops its automatic re-checks. EMR Connect will not sync, connect, fix or reconnect a system. Requests already with a payer stay where they are. You can resume at any time.'"
 decision q1 "Which button?"
 click k1 "Click 'Cancel', click the X, press Escape, or click the dimmed area"
 endx x1 "Pop-up closes\nNothing changes and no toast"
 click k2 "Click 'Pause all'\nRed outline button"
 
 group gDo "What 'Pause all' does"
-  store a1 "All sixteen agent switches go off\nEven the ones already off"
+  store a1 "All sixteen agents are paused in the app\nEven the ones already paused"
   process a2 "Pop-up closes"
   toast a3 "'All agents paused'\nAmber toast"
-  toast a4 "Banner under the header, amber\n'All agents are paused'\n'Nothing is being checked, drafted or sent until you resume them. In this demo the pause does not change the other screens.'"
-  process a5 "Header button becomes 'Resume all agents'\nGreen, filled, with a play-pause icon"
+  toast a4 "Banner under the header, amber\n'All agents are paused'\nThe same sentences as in the pop-up, then 'Requests already with a payer stay where they are.'"
+  process a5 "Header button becomes 'Resume all agents'\nGreen, filled, with a play-pause icon\nEvery row shows a 'Paused' tag"
 endgroup
 
 process n1 "Freedom levels are not touched\nEach agent keeps the level it had"
+goto g3 "Continues in: Settings › Pause › What the rest of the app shows"
 
 group gReal "Production (PRD FR-25)"
   process r1 "Production: a pause takes effect before the next step of any running job"
@@ -29,10 +30,9 @@ group gReal "Production (PRD FR-25)"
 endgroup
 
 click k3 "Click 'Resume all agents'"
-store b1 "All sixteen switches go back on"
-toast b2 "'Agents resumed'\nGreen toast. The banner goes and the red button returns"
+store b1 "All sixteen agents are active again"
+toast b2 "'Agents resumed'\nGreen toast. The banner and the tags go and the red button returns"
 end e1 "Page is back to normal\nFreedom levels are as they were"
-goto g1 "Continues in: Settings › Pause › What the rest of the app shows"
 goto g2 "Continues in: Settings › Pause › Pause one agent, resume all"
 
 s1 --> c1 --> o1 --> p1 --> q1
@@ -45,5 +45,5 @@ b1 --> e1
 b2 --> e1
 a5 -.-> r1
 r1 --> r2
-a4 -.-> g1
+a4 -.-> g3
 a5 -.-> g2

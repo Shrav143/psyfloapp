@@ -1,10 +1,16 @@
 title: Dashboard › Header › Check all now and the demo clock
 route: /dashboard
-intro: The one button in the page header, and what the Demo menu's clock does to the numbers on this page. Time in the demo only moves when someone moves it.
+intro: The one button in the page header, which Settings can switch off by pausing Navigator, and what the Demo menu's clock does to the numbers on this page. Time in the demo only moves when someone moves it.
 dir: TD
 also: Real world: Navigator checks every open request at least daily, and a request past the payer's time gets a call-the-payer task. Demo only: the button and the clock are simulated.
 ---
-start s1 "Click 'Check all now'\nTop right of the headline card"
+start s0 "Look at the header\n'Check all now' sits top right of the headline card"
+decision dp "Is Navigator paused in Settings?"
+screen sp "'Check all now' is disabled\nUnder it a link: 'Navigator is paused in Settings'"
+click cs "Click 'Navigator is paused in Settings'"
+goto gs "Continues in: Settings › Pause › What the rest of the app shows"
+endx xs "Nothing runs\nResume Navigator in Settings and the button works again"
+click s1 "Click 'Check all now'"
 process p1 "Button shows a spinner and is disabled for 1.2 seconds"
 agent a1 "Navigator looks at every open request\nReceived and Under review, whatever the filters say"
 store w1 "Each open request gets a history line\n'Navigator checked: received' or 'Navigator checked: under review'"
@@ -28,7 +34,10 @@ goto g1 "Continues in: Global shell › Demo menu"
 goto g2 "Continues in: Dashboard › Requests table › Read a row: bars, clock and what happens next"
 goto g3 "Continues in: Dashboard › Filters › Date range shortcuts, keys and the address"
 
-s1 --> p1 --> a1 --> w1 --> t1 --> e1
+s0 --> dp
+dp -->|No| s1 --> p1 --> a1 --> w1 --> t1 --> e1
+dp -->|Yes| sp --> cs --> gs
+sp -.-> xs
 s2 --> c1 --> t2 --> p2
 p2 --> r1 & r2 & r3 & r4 & r5
 r1 --> g2

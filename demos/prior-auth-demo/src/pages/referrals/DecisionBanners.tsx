@@ -4,9 +4,9 @@ import { Banner, Button, Pill } from "@/components/ui";
 import { CHECK_PROBLEM, DECLINE_LABEL, REPLY_VIA_LABEL, issueCount, staffById, type Referral } from "@/data/referrals";
 import { PROGRAM_LABEL } from "@/data/types";
 import { longDate, stamp } from "@/lib/time";
-import { continueWithReferral } from "@/pages/newcase/intake";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
+import { useContinueWithReferral } from "./useContinue";
 
 export type DetailTab = "extracted" | "validation" | "coverage" | "fit" | "activity";
 
@@ -15,6 +15,7 @@ export function DecisionBanners({ r, onTab, draftId }: { r: Referral; onTab: (t:
   const nav = useNavigate();
   const reopen = useStore((s) => s.reopenReferral);
   const requests = useStore((s) => s.requests);
+  const { go: goOn, dialog } = useContinueWithReferral(r.id, draftId);
   const linked = requests.find((x) => x.referralId === r.id) ?? (r.requestId ? requests.find((x) => x.id === r.requestId) : undefined);
   const issues = issueCount(r.checks);
   const out: React.ReactNode[] = [];
@@ -39,7 +40,7 @@ export function DecisionBanners({ r, onTab, draftId }: { r: Referral; onTab: (t:
           linked ? (
             <Button size="sm" onClick={() => nav(paths.dashboard({ request: linked.id }))}>Open {linked.id}</Button>
           ) : r.status !== "admitted" ? (
-            <Button variant="primary" trailing={ArrowRight} onClick={() => { const to = continueWithReferral(r.id, draftId); if (to) nav(to); }}>Continue to medical records</Button>
+            <Button variant="primary" trailing={ArrowRight} onClick={goOn}>Continue to medical records</Button>
           ) : undefined
         }
       >
@@ -82,5 +83,10 @@ export function DecisionBanners({ r, onTab, draftId }: { r: Referral; onTab: (t:
     );
   }
 
-  return out.length ? <div className="flex flex-col gap-3">{out}</div> : null;
+  return (
+    <>
+      {out.length ? <div className="flex flex-col gap-3">{out}</div> : null}
+      {dialog}
+    </>
+  );
 }

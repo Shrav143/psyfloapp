@@ -1,4 +1,6 @@
-import type { AgentKey, PayerSummary, Program } from "./types";
+import type { CaseDraft } from "./cases";
+import { PAYERS } from "./seed";
+import type { AgentKey, PayerSummary, Program, PsyRequest } from "./types";
 
 /* Payers: the shapes behind the Process, Rules, Documents and Changes tabs. Seed content is in payerConfigSeed.ts. */
 
@@ -51,14 +53,12 @@ export type DocLists = Record<Program, DocItem[]>;
 
 export interface ChangeEntry { id: string; date: string; title: string; text: string }
 
-/** A payer change waiting for a person: acknowledge first, then update the drafts it affects. */
+/** A payer change waiting for a person: acknowledge first, then update the payer's open drafts (read live, see openDrafts). */
 export interface PendingChange {
   id: string;
   title: string;
   text: string;
   effective: string;
-  /** Request ids of the drafts it affects. */
-  affects: string[];
   /** The agents that redraft. */
   agents: AgentKey[];
   /** Documents the change adds to the payer's list once drafts are updated. */
@@ -122,3 +122,48 @@ export const PAYER_GROUPS: PayerSummary["group"][] = ["Ohio Medicaid", "Commerci
 export const USER_NAME = "Jordan Perez";
 
 export interface AddPayerFields { name: string; type: string; group: PayerSummary["group"]; reach: string[]; programs: Program[] }
+
+/** The ways a payer is reached, in the order they are written. */
+export const REACH_ROUTES = ["Portal", "Phone", "Fax"];
+/** Every value "Reached by" can hold: each combination of the three routes. The edit form and Add a payer both stay inside this list. */
+export const REACHED_BY: string[] = ["Portal", "Phone", "Fax", "Portal and phone", "Portal and fax", "Phone and fax", "Portal, phone and fax"];
+/** "Portal and fax" from ["Fax", "Portal"]: always in REACH_ROUTES order, so the result is always one of REACHED_BY. */
+export function reachedByOf(reach: string[]): string {
+  const list = REACH_ROUTES.filter((r) => reach.includes(r)).map((r, i) => (i ? r.toLowerCase() : r));
+  if (list.length <= 1) return list[0] ?? "Phone";
+  return `${list.slice(0, -1).join(", ")} and ${list[list.length - 1]}`;
+}
+
+const squash = (s: string): string => s.trim().replace(/\s+/g, " ").toLowerCase();
+/** The payer a new name would duplicate, ignoring capitals and extra spaces. Short names count too, because the Dashboard shows them. */
+export function payerWithName(name: string, custom: CustomPayer[]): { id: string; name: string } | undefined {
+  const n = squash(name);
+  return [...PAYERS, ...custom].find((p) => squash(p.name) === n || squash(p.shortName) === n);
+}
+
+/** A draft for one payer that has not been sent yet: what an edit or a payer change can redraft. */
+export interface OpenDraft {
+  /** The case id, such as R-1042. */
+  id: string;
+  /** "J.M., 34" */
+  patient: string;
+  program: Program | null;
+  /** False for a case saved in New case that has no Dashboard row yet. */
+  onDashboard: boolean;
+}
+export const OPEN_DRAFT_STATUS = "Draft, not yet sent";
+
+/** Read from the live Dashboard requests and New case drafts, never from a fixed list.
+    A draft is a request still in Preparing, or a New case draft that is saved and not sent. A request the payer already has (Received and later, and an answer to the payer's
+    question on an Info requested one) is left out: sent requests keep what they were sent with. */
+export function openDrafts(requests: PsyRequest[], caseDrafts: CaseDraft[], payerId: string): OpenDraft[] {
+  const out: OpenDraft[] = requests
+    .filter((r) => r.payerId === payerId && r.stage === "preparing")
+    .map((r) => ({ id: r.id, patient: `${r.patient.initials}, ${r.patient.age}`, program: r.program, onDashboard: true }));
+  for (const d of caseDrafts) {
+    if (d.payerId !== payerId || !d.saved || d.sent || !d.caseId) continue;
+    if (requests.some((r) => r.id === d.caseId)) continue;
+    out.push({ id: d.caseId, patient: d.patient.age ? `${d.patient.initials}, ${d.patient.age}` : d.patient.initials, program: d.program, onDashboard: false });
+  }
+  return out;
+}

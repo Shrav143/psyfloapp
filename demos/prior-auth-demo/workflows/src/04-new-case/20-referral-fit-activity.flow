@@ -11,7 +11,7 @@ group gFit "Fit tab"
   screen f1 "'Level of care'\n'Placement reads the referral against the six ASAM dimensions'\n'The referral supports' PHP, 92% confident · 'Next best' IOP, 63%"
   toast f2 "Amber banner when Placement suggests another program\n'The referral asks for IOP. Placement suggests PHP.'\n'You choose the program when you accept. Placement only reads the referral. A clinician decides the level of care.'"
   screen f3 "Six dimensions, each with a note and four bars\nIntoxication and withdrawal · Medical conditions · Mood, behavior and thinking · Readiness to change · Relapse and continued use · Recovery environment"
-  screen f4 "'Capacity'\n'Open this week. Accepting a referral takes one'\nOne row per program: 'PHP: 5 slots open this week', chips 'Requested' and 'Suggested', '19 of 24 full'\nRed 'no beds open this week' at zero"
+  screen f4 "'Capacity'\n'Open this week. Accepting a referral takes one bed or slot.'\nOne row per program: 'PHP: 5 slots open this week', chips 'Requested' and 'Suggested', '19 of 24 full'\nRed 'no beds open this week' at zero"
   process f5 "Read only: nothing on the Fit tab can be clicked"
 endgroup
 

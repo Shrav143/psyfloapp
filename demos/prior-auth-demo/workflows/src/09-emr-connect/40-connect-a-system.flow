@@ -5,6 +5,9 @@ dir: TD
 also: The demo asks for no password, key or scope. Access is always read-only. In production the clinic provides a service account that lives in a credential vault and is never typed into the screen.
 ---
 click s1 "Click 'Connect a system'\nPrimary button, top right of the page"
+decision qp "Is Reader paused in Settings?"
+toast tp "'Reader is paused'\n'Resume it in Settings to connect a system.'"
+endx xp "Nothing opens"
 overlay o1 "Connect a system\nRead-only. Nothing is written back until a person approves it.\nSteps: System, Contact, Test"
 
 group gS1 "Step 1 of 3: System"
@@ -29,7 +32,9 @@ click cx "Click 'Cancel' or the X, press Escape, or click the dimmed area\nOn an
 endx e1 "Pop-up closes\nNothing is saved. Typed answers are lost"
 goto g1 "Continues in: EMR Connect › Connect a system › Run the connection test and save"
 
-s1 --> o1 --> i1
+s1 --> qp
+qp -->|Yes| tp --> xp
+qp -->|No| o1 --> i1
 i1 --> p1 --> i2 --> p2 --> c1
 c1 --> i3
 i3 --> p3

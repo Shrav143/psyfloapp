@@ -12,6 +12,8 @@ export interface RowText {
   wait: string;
   doing: string;
   done: string;
+  /** What the row says when the agent could not finish. Only Verify can fail. */
+  failed?: string;
 }
 
 export function rowText(agent: AgentKey, d: CaseDraft): RowText {
@@ -31,7 +33,10 @@ export function rowText(agent: AgentKey, d: CaseDraft): RowText {
     verify: {
       wait: "Will check coverage and benefits",
       doing: `Checking coverage and benefits with ${who}`,
-      done: `Coverage is ${sim?.eligibility.state === "active" || !sim ? "active" : "not active"} and ${sim?.auth === "not_required" ? "no authorization is needed" : "prior authorization is required"}`,
+      done: d.run.skipped.includes("verify")
+        ? `Skipped. ${who}'s portal could not be reached, so coverage is not confirmed`
+        : `Coverage is ${sim?.eligibility.state === "active" || !sim ? "active" : "not active"} and ${sim?.auth === "not_required" ? "no authorization is needed" : "prior authorization is required"}`,
+      failed: `Could not reach ${who}'s portal. Coverage is not confirmed yet`,
     },
     criteria: { wait: `Will read ${who}'s criteria and match the chart`, doing: `Reading ${who}'s current criteria and matching the chart`, done: `Matched the chart to ${who}'s criteria: ${n} of ${n} requirements met` },
     historian: { wait: `Will review how ${who} ruled on similar requests`, doing: `Reviewing how ${who} ruled on similar requests`, done: `Reviewed ${sc.total.toLocaleString("en-US")} similar ${who} decisions: ${sc.own} your own, ${sc.network} network, ${sc.benchmark} benchmark` },
@@ -76,6 +81,7 @@ const LINE: Partial<Record<AgentKey, (d: CaseDraft, who: string) => string>> = {
 /** One line for the Case Manager row. */
 export function runLine(d: CaseDraft): string {
   const s = draftState(d);
+  if (d.run.failed) return `${AGENTS[d.run.failed].name} could not reach ${d.payerId ? payerById(d.payerId).shortName : "the payer"}'s portal. Retry it or skip it`;
   if (s === "question" && d.run.question) return d.type === "Recertification" ? QUESTIONS[d.run.question].line : QUESTIONS[d.run.question].line.replace("the recertification", "the request");
   if (s === "ready") return "Integrity and Scrubber passed. Waiting for a clinician to sign";
   if (s === "intake") return "Intake is not finished. Add the chart and the payer to start the agents";
@@ -87,6 +93,7 @@ export function runLine(d: CaseDraft): string {
 /** The note the Dashboard shows under a Preparing request, in the same words the seed data uses. */
 export function dashboardNote(d: CaseDraft): string {
   const s = draftState(d);
+  if (d.run.failed) return `Needs your input. ${AGENTS[d.run.failed].name} could not finish`;
   if (s === "question" && d.run.question) return `Needs your input. ${AGENTS[QUESTIONS[d.run.question].agent].name} has a question`;
   if (s === "ready") return "Ready to sign. All four checks passed";
   return runLine(d);

@@ -4,7 +4,9 @@ import { Card, CardHeader, Pill } from "@/components/ui";
 import type { CaseDraft } from "@/data/cases";
 import { payerById } from "@/data/seed";
 import { cn } from "@/lib/cn";
-import { DOC_SLOTS, findingText, isOpen, openFindings, requiredDocs } from "./documents";
+import { docEntries, findingText, isOpen, openFindings, requiredFirst } from "./documents";
+import type { PayerContext } from "./payerContext";
+import { startDateIssue } from "./payerRules";
 
 interface Row {
   id: string;
@@ -13,15 +15,18 @@ interface Row {
   findings: { id: string; ok: boolean; text: string }[];
 }
 
-/** Every document with what Reader found: green for what checks out, amber for what to look at. Open by default when amber. */
-export function ValidationSummary({ draft }: { draft: CaseDraft }) {
+/** The start date, then every document the payer asks for with what Reader found: green for what checks out, amber for what to look at. Open by default when amber. */
+export function ValidationSummary({ draft, clock, ctx }: { draft: CaseDraft; clock: number; ctx: PayerContext }) {
   const payer = draft.payerId ? payerById(draft.payerId).shortName : "The payer";
+  const issue = startDateIssue(draft, ctx.rules, clock, payer);
   const [dateMm, dateDd, dateYy] = [draft.startDate.slice(5, 7), draft.startDate.slice(8, 10), draft.startDate.slice(0, 4)];
-  const rows: Row[] = [{ id: "start", label: "Start date", warn: false, findings: [{ id: "start-1", ok: true, text: `The start date ${dateMm}/${dateDd}/${dateYy} is inside the notice window` }] }];
-  for (const r of requiredDocs(draft.payerId, draft.program)) {
+  const rows: Row[] = [{ id: "start", label: "Start date", warn: !!issue, findings: [{ id: "start-1", ok: !issue, text: issue?.text ?? `The start date ${dateMm}/${dateDd}/${dateYy} is inside what ${payer} allows` }] }];
+  for (const r of requiredFirst(docEntries(draft.payerId, draft.program, ctx.items))) {
     const doc = draft.documents.find((d) => d.slot === r.slot);
-    if (doc) rows.push({ id: r.slot, label: DOC_SLOTS[r.slot].label, warn: openFindings(doc, draft.answers) > 0, findings: doc.findings.map((f) => ({ id: f.id, ok: !isOpen(f, draft.answers), text: findingText(f, draft.answers) })) });
-    else rows.push({ id: r.slot, label: DOC_SLOTS[r.slot].label, warn: true, findings: [{ id: `${r.slot}-none`, ok: false, text: r.required ? "This document was not added." : `Not added. ${payer} usually asks for one. You can sign without it.` }] });
+    const reason = draft.unavailable[r.slot];
+    if (doc) rows.push({ id: r.slot, label: r.label, warn: openFindings(doc, draft.answers) > 0, findings: doc.findings.map((f) => ({ id: f.id, ok: !isOpen(f, draft.answers), text: findingText(f, draft.answers) })) });
+    else if (reason !== undefined) rows.push({ id: r.slot, label: r.label, warn: r.required, findings: [{ id: `${r.slot}-na`, ok: !r.required, text: r.required ? `Marked not available: ${reason}. ${payer} requires it, so it may ask for it.` : `Marked not available: ${reason}. You can sign without it.` }] });
+    else rows.push({ id: r.slot, label: r.label, warn: true, findings: [{ id: `${r.slot}-none`, ok: false, text: r.required ? "This document was not added." : `Not added. ${payer} lists it. You can sign without it.` }] });
   }
   const flagged = rows.filter((r) => r.warn).length;
   const [open, setOpen] = useState<Set<string>>(() => new Set(rows.filter((r) => r.warn).map((r) => r.id)));

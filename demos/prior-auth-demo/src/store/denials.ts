@@ -1,6 +1,6 @@
 import type { StateCreator } from "zustand";
-import { APPEAL_WINDOW_DAYS, SEED_DENIAL_META, type CallSlot, type DenialMeta, type DenialWork, type OutcomeKind } from "@/data/denials";
-import { payerById } from "@/data/seed";
+import { APPEAL_LEVELS, APPEAL_WINDOW_DAYS, SEED_ACCEPT_DENIAL, SEED_DENIAL_META, levelOf, type CallSlot, type DenialMeta, type DenialWork, type OutcomeKind } from "@/data/denials";
+import { SEED_REQUESTS, payerById } from "@/data/seed";
 import type { PayerId, Program, PsyRequest } from "@/data/types";
 import { money, uid } from "@/lib/format";
 import { DAY, shortDate } from "@/lib/time";
@@ -23,7 +23,15 @@ export interface NewDenialInput {
   meta: DenialMeta;
 }
 
+/** What the person records when the payer answers a filed appeal. An upheld decision goes on to the next level or is accepted, with the reason for the record. */
+export type PayerDecisionInput =
+  | { result: "overturned" | "partly"; note: string }
+  | { result: "upheld"; note: string; next: "level" }
+  | { result: "upheld"; note: string; next: "accept"; reason: string };
+
 export interface DenialsSlice {
+  /** The Dashboard's seed plus the one extra open denial where accepting is the better choice (see SEED_ACCEPT_DENIAL). Built here because this slice starts after core. */
+  requests: PsyRequest[];
   denialMeta: Record<string, DenialMeta>;
   denialWork: Record<string, DenialWork>;
   /** Adds the analysed letter as a new open denial (also on the Dashboard). Returns its id. */
@@ -38,6 +46,8 @@ export interface DenialsSlice {
   fileAppeal: (id: string, input: { text: string; evidence: string[]; role: string }) => void;
   acceptDecision: (id: string, reason: string) => void;
   logOutcome: (id: string, kind: OutcomeKind, note: string) => void;
+  /** The payer answered a filed appeal. Overturned and partly overturned close the denial; upheld starts the next level or accepts. */
+  recordDecision: (id: string, input: PayerDecisionInput) => void;
 }
 
 const EMPTY: DenialWork = { fixes: [], ticked: [] };
@@ -49,7 +59,11 @@ export const createDenialsSlice: StateCreator<AppState, [], [], DenialsSlice> = 
   /** What a request looks like when it leaves "Appeal or call" because the denial is settled. */
   const settled = (clock: number): Partial<PsyRequest> => ({ stage: "decided", progress: 3, stageSince: clock, decidedToday: true, needsYou: false, deadlineAt: undefined, clockNote: undefined, clockSub: undefined, agent: "cadence" });
 
+  /** The daily check and a booked call are over once the answer is in, so their scheduled lines leave the history. */
+  const dropScheduled = (id: string) => get().updateRequest(id, { events: (request(id)?.events ?? []).filter((e) => e.done) });
+
   return {
+    requests: [...SEED_REQUESTS, SEED_ACCEPT_DENIAL],
     denialMeta: { ...SEED_DENIAL_META },
     denialWork: {},
 
@@ -121,13 +135,14 @@ export const createDenialsSlice: StateCreator<AppState, [], [], DenialsSlice> = 
       if (!r) return;
       const clock = get().clock;
       const decisionAt = clock + 30 * DAY;
-      patchWork(id, { appealDraft: { text: input.text, evidence: input.evidence, draftedAt: clock }, appealFiled: { at: clock, role: input.role, decisionBy: shortDate(decisionAt) } });
-      get().updateRequest(id, { chip: "Appeal filed", tone: "neutral", progress: 1, agent: "navigator", needsYou: false, next: "Waiting on the payer", deadlineAt: undefined, clockNote: `decision ${shortDate(decisionAt)}`, clockSub: `filed ${shortDate(clock)}` });
+      const level = levelOf(r.chip, get().denialWork[id]);
+      patchWork(id, { level, appealDraft: { text: input.text, evidence: input.evidence, draftedAt: clock }, appealFiled: { at: clock, role: input.role, decisionBy: shortDate(decisionAt) } });
+      get().updateRequest(id, { chip: APPEAL_LEVELS[level].filedChip, tone: "neutral", progress: 1, agent: "navigator", needsYou: false, next: "Waiting on the payer", deadlineAt: undefined, clockNote: `decision ${shortDate(decisionAt)}`, clockSub: `filed ${shortDate(clock)}` });
       get().addEvent(id, { actor: "you", text: `You signed the appeal as ${input.role}`, detail: "Attested that the letter was reviewed against the chart." });
       get().addEvent(id, { actor: "navigator", text: "Navigator filed the appeal through the payer's portal and saved the receipt" });
       get().addEvent(id, { actor: "navigator", text: "Navigator checks for the decision each day", at: clock + DAY, done: false });
-      get().notify({ agent: "navigator", title: "Appeal filed", body: `${id} was filed with ${payerShort(r)}. The decision is expected ${shortDate(decisionAt)}.`, to: paths.dashboard({ request: id }), tone: "good" });
-      get().toast({ title: "Appeal filed", body: `${payerShort(r)} decides by ${shortDate(decisionAt)}. It shows on the Dashboard.`, tone: "good" });
+      get().notify({ agent: "navigator", title: level ? `${APPEAL_LEVELS[level].name} filed` : "Appeal filed", body: `${id} was filed with ${payerShort(r)}. The decision is expected ${shortDate(decisionAt)}.`, to: paths.dashboard({ request: id }), tone: "good" });
+      get().toast({ title: level ? `${APPEAL_LEVELS[level].name} filed` : "Appeal filed", body: `${payerShort(r)} decides by ${shortDate(decisionAt)}. It shows on the Dashboard.`, tone: "good" });
     },
 
     acceptDecision: (id, reason) => {
@@ -136,10 +151,12 @@ export const createDenialsSlice: StateCreator<AppState, [], [], DenialsSlice> = 
       const clock = get().clock;
       patchWork(id, { accepted: { reason, at: clock } });
       get().updateRequest(id, { ...settled(clock), chip: "Accepted", tone: "neutral", outcome: "denied", next: "Closed. Write-off logged" });
+      dropScheduled(id);
       get().addEvent(id, { actor: "you", text: "You accepted the decision", detail: `Reason: ${reason}` });
-      get().addEvent(id, { actor: "cadence", text: `Cadence logged the write-off of ${money(r.atStake)} and started the step-down plan in Case Manager` });
-      get().notify({ agent: "cadence", title: "Denial closed", body: `${id} was accepted. The write-off is logged and the step-down plan is started.`, to: paths.manager("reviews"), tone: "neutral" });
-      get().toast({ title: "Decision accepted", body: "The write-off is logged. Case Manager has the step-down plan.", tone: "neutral" });
+      get().addEvent(id, { actor: "cadence", text: `Cadence logged the write-off of ${money(r.atStake)} for Analytics and added a step-down plan to Case Manager` });
+      get().recordDenialAccepted({ denialId: id, requestId: r.caseId, payerId: r.payerId, amount: r.atStake });
+      get().notify({ agent: "cadence", title: "Denial closed", body: `${id} was accepted. Analytics counts the write-off and Case Manager has a step-down plan.`, to: paths.manager("cases"), tone: "neutral" });
+      get().toast({ title: "Decision accepted", body: "Analytics counts the write-off. Case Manager has a step-down plan.", tone: "neutral" });
     },
 
     logOutcome: (id, kind, note) => {
@@ -148,6 +165,7 @@ export const createDenialsSlice: StateCreator<AppState, [], [], DenialsSlice> = 
       const clock = get().clock;
       const word = kind === "overturned" ? "overturned" : kind === "partly" ? "partly restored" : "upheld";
       patchWork(id, { outcome: { kind, note, at: clock } });
+      dropScheduled(id);
       get().addEvent(id, { actor: "you", text: `You logged the call outcome: ${word}`, detail: note || undefined });
       if (kind === "upheld") {
         get().updateRequest(id, { chip: "Appeal drafting", tone: "mid", progress: 1, agent: "advocate", needsYou: false, next: "Call upheld. Advocate is drafting the appeal", clockNote: undefined, clockSub: "to file", deadlineAt: r.stageSince + APPEAL_WINDOW_DAYS * DAY });
@@ -161,6 +179,35 @@ export const createDenialsSlice: StateCreator<AppState, [], [], DenialsSlice> = 
         get().toast({ title: full ? "Overturned" : "Partly restored", body: "The ledger is updated and the next review is booked.", tone: "good" });
       }
       get().notify({ agent: "advocate", title: `Call outcome: ${word}`, body: `${id} was logged as ${word}.`, to: paths.dashboard({ request: id }), tone: kind === "upheld" ? "risk" : "good" });
+    },
+
+    recordDecision: (id, input) => {
+      const r = request(id);
+      if (!r) return;
+      const clock = get().clock;
+      const level = levelOf(r.chip, get().denialWork[id]);
+      const further = input.result === "upheld" && input.next === "level" ? APPEAL_LEVELS[level + 1] : undefined;
+      const word = input.result === "overturned" ? "overturned" : input.result === "partly" ? "partly overturned" : "upheld";
+      const said = input.result === "overturned" ? "overturned the denial" : input.result === "partly" ? "partly overturned the denial" : "upheld its decision";
+      patchWork(id, { decision: { result: input.result, note: input.note, at: clock, nextLevel: further?.name } });
+      dropScheduled(id);
+      get().addEvent(id, { actor: "you", text: `You recorded the payer's decision: ${word}`, detail: input.note || undefined });
+      get().addEvent(id, { actor: "payer", text: `${payerShort(r)} ${said} on the ${APPEAL_LEVELS[level].name.toLowerCase()}` });
+      get().recordAppealDecision({ denialId: id, requestId: r.caseId, payerId: r.payerId, result: input.result, nextLevel: further?.name });
+      get().notify({ agent: "navigator", title: `Appeal decision: ${word}`, body: `${id}: ${payerShort(r)} ${said}.`, to: paths.dashboard({ request: id }), tone: input.result === "upheld" ? "risk" : "good" });
+      if (input.result !== "upheld") {
+        const full = input.result === "overturned";
+        get().updateRequest(id, { ...settled(clock), chip: full ? "Overturned" : "Partly overturned", tone: full ? "good" : "mid", outcome: full ? "approved" : "partly_approved", next: full ? "Overturned on appeal. Next review booked" : "Partly overturned on appeal. Next review booked" });
+        get().addEvent(id, { actor: "cadence", text: "Cadence updated the ledger and booked the next review" });
+        get().toast({ title: full ? "Overturned" : "Partly overturned", body: "The ledger is updated and the next review is booked.", tone: "good" });
+      } else if (input.next === "accept") {
+        get().acceptDecision(id, input.reason);
+      } else if (further) {
+        patchWork(id, { level: level + 1, appealFiled: undefined, appealDraft: undefined });
+        get().updateRequest(id, { chip: "Appeal drafting", tone: "mid", progress: 1, agent: "advocate", needsYou: false, next: `${payerShort(r)} upheld its decision. Advocate is drafting the ${further.name.toLowerCase()}`, deadlineAt: clock + further.days * DAY, clockSub: "to file", clockNote: undefined });
+        get().addEvent(id, { actor: "advocate", text: `Advocate started the ${further.name.toLowerCase()} letter` });
+        get().toast({ title: "Decision recorded: upheld", body: `Advocate started the ${further.name.toLowerCase()}. Open it from the denial.`, tone: "mid" });
+      }
     },
   };
 };

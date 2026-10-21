@@ -7,22 +7,35 @@ import { payerById } from "@/data/seed";
 import { PROGRAM_LABEL } from "@/data/types";
 import { clockText } from "@/pages/eligibility/verifySteps";
 import { useStore } from "@/store";
+import { selectAllAgentsPaused, selectAnyAgentPaused } from "@/store/agentSettings";
 import { AgentRow, type RowState } from "./AgentRow";
 import { ChancePanel, RaiseFurther } from "./ChancePanel";
+import { PayerChangeNote } from "./PayerChangeNote";
 import { QuestionModal } from "./QuestionModal";
+import { questionCount } from "./questions";
 import { rowText } from "./runText";
 import { StepFooter } from "./StepFooter";
 import { useAgentRun } from "./useAgentRun";
+import { useUnmetSync } from "./useUnmetSync";
 
-/** Step 2: the agents work in order, about 13 seconds. They stop for a question, and a person can pause them all or skip ahead. */
+/** Step 3: the agents work in order, about 13 seconds. They stop for a question, hold while an agent is paused in Settings, and a person can pause them all or skip ahead. */
 export function AgentsStep({ draft }: { draft: CaseDraft }) {
   const patch = useStore((s) => s.patchCaseDraft);
-  const [paused, setPaused] = useState(false);
+  const retry = useStore((s) => s.retryCaseStep);
+  const skip = useStore((s) => s.skipCaseStep);
+  const pauseAll = useStore((s) => s.pauseAllAgents);
+  const resumeAll = useStore((s) => s.resumeAllAgents);
+  const setPaused = useStore((s) => s.setAgentPaused);
+  const anyPaused = useStore(selectAnyAgentPaused);
+  const allPaused = useStore(selectAllAgentsPaused);
   const [fast, setFast] = useState(false);
   const [dismissed, setDismissed] = useState(false);
-  const { finished, secs } = useAgentRun(draft, paused, fast);
-  const { done, question } = draft.run;
+  const { finished, secs, holding } = useAgentRun(draft, fast);
+  const { done, question, failed } = draft.run;
   const payer = draft.payerId ? payerById(draft.payerId) : null;
+  const now = RUN_STEPS[done]?.agent;
+  const q = questionCount(draft);
+  useUnmetSync(draft);
 
   useEffect(() => setDismissed(false), [question]);
 
@@ -30,7 +43,8 @@ export function AgentsStep({ draft }: { draft: CaseDraft }) {
     if (i < done) return "done";
     if (i > done) return "waiting";
     if (question) return "asking";
-    return paused ? "paused" : "working";
+    if (failed) return "failed";
+    return holding ? "paused" : "working";
   };
 
   return (
@@ -45,20 +59,31 @@ export function AgentsStep({ draft }: { draft: CaseDraft }) {
             />
             <ul>
               {RUN_STEPS.map((s, i) => (
-                <AgentRow key={s.agent} agent={s.agent} state={stateOf(i)} text={rowText(s.agent, draft)} elapsed={draft.run.elapsed[i]} onAnswer={() => setDismissed(false)} />
+                <AgentRow key={s.agent} agent={s.agent} state={stateOf(i)} text={rowText(s.agent, draft)} elapsed={draft.run.elapsed[i]} skipped={draft.run.skipped.includes(s.agent)} onAnswer={() => setDismissed(false)} onRetry={() => retry(draft.id)} onSkip={() => skip(draft.id)} />
               ))}
             </ul>
           </Card>
-          {paused ? (
-            <Banner tone="mid" icon={PauseCircle} title="All agents are paused">
-              Nothing is read, checked or drafted until you resume them. Nothing has been sent to the payer.
+          <PayerChangeNote draft={draft} />
+          {draft.recordsChanged ? <Banner tone="neutral">Records changed after the last run. The agents re-checked.</Banner> : null}
+          {holding && now ? (
+            <Banner
+              tone="mid"
+              icon={PauseCircle}
+              title={allPaused ? "Agents are paused in Settings" : `${AGENTS[now].name} is paused in Settings`}
+              action={
+                <Button size="sm" icon={PlayCircle} onClick={allPaused ? resumeAll : () => setPaused(now, false)}>
+                  {allPaused ? "Resume agents" : `Resume ${AGENTS[now].name}`}
+                </Button>
+              }
+            >
+              Nothing is read, checked or drafted until it is resumed. Nothing has been sent to the payer.
             </Banner>
           ) : null}
           {question ? (
             <div className="flex items-center gap-3.5 rounded-2xl border border-good-edge bg-good-bg px-[18px] py-3.5">
               <AgentBadge agent={QUESTIONS[question].agent} size={36} />
               <div className="flex-1 text-sm">
-                <b>One question from {AGENTS[QUESTIONS[question].agent].name}.</b> {QUESTIONS[question].text(payer?.shortName ?? "the payer")}
+                <b>Question {q.n} of {q.of} from {AGENTS[QUESTIONS[question].agent].name}.</b> {QUESTIONS[question].text(payer?.shortName ?? "the payer")}
               </div>
             </div>
           ) : null}
@@ -88,10 +113,10 @@ export function AgentsStep({ draft }: { draft: CaseDraft }) {
             <Button icon={ArrowLeft} onClick={() => patch(draft.id, { step: 0 })}>
               Back
             </Button>
-            <Button icon={paused ? PlayCircle : PauseCircle} variant={paused ? "primary" : "danger"} disabled={finished} onClick={() => setPaused((p) => !p)}>
-              {paused ? "Resume agents" : "Pause all agents"}
+            <Button icon={anyPaused ? PlayCircle : PauseCircle} variant={anyPaused ? "primary" : "danger"} disabled={finished} onClick={anyPaused ? resumeAll : pauseAll}>
+              {anyPaused ? "Resume agents" : "Pause all agents"}
             </Button>
-            <Button icon={FastForward} disabled={finished || paused || fast} onClick={() => setFast(true)}>
+            <Button icon={FastForward} disabled={finished || holding || fast} onClick={() => setFast(true)}>
               Skip ahead
             </Button>
             <Button variant="primary" trailing={ArrowRight} disabled={!finished} onClick={() => patch(draft.id, { step: 2 })}>
@@ -99,7 +124,7 @@ export function AgentsStep({ draft }: { draft: CaseDraft }) {
             </Button>
           </>
         }
-        hint={finished ? "Read the draft and sign it on the next step." : question ? "The agents are waiting for your answer." : paused ? "Paused." : "The agents work on their own. You can leave and come back."}
+        hint={finished ? "Read the draft and sign it on the next step." : question ? "The agents are waiting for your answer." : failed ? `${AGENTS[failed].name} could not finish. Retry it, or skip it and note it.` : holding ? "Paused in Settings." : "The agents work on their own. You can leave and come back."}
       />
       <QuestionModal draft={draft} open={!!question && !dismissed} onClose={() => setDismissed(true)} />
     </>

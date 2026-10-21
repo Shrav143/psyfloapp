@@ -2,14 +2,16 @@
    The screen only draws this. What blocks Continue comes from the same predicates intakeMissing uses (intake.ts), so rows and footer agree. */
 import type { CheckState } from "@/components/ui";
 import { maskMember, type CaseDraft, type DocSlotId, type DraftDocument } from "@/data/cases";
+import type { UnmappedField } from "@/data/emr";
 import { payerById } from "@/data/seed";
 import { PROGRAM_LABEL, type NewCasePrefill } from "@/data/types";
 import { plural } from "@/lib/format";
 import { toDate } from "@/lib/time";
 import { buildResult } from "@/pages/eligibility/checks";
-import { DOC_SLOTS, findingText, isOpen, isReferralDoc, requiredDocs } from "./documents";
-import { coverageFor, coverageKey, patientReady } from "./intake";
+import { docEntries, findingText, isOpen, isReferralDoc, requiredFirst, slotLabel, type DocEntry } from "./documents";
+import { coverageFor, coverageKey, patientReady } from "./intakeRules";
 import { EMR_CHARTS } from "./lookups";
+import type { PayerContext } from "./payerContext";
 import { sourceNote, type FieldKey } from "./provenance";
 
 export type FieldId = FieldKey | "coverage" | "start";
@@ -24,6 +26,10 @@ export interface Row {
   tag?: string;
   /** A brand-new case: the detail says what the row is for, in muted text, instead of "Not found yet". */
   quiet?: boolean;
+  /** A document marked not available: the person dealt with it, so it counts as ready even though the payer may still want it. */
+  handled?: boolean;
+  /** The EMR field that would have filled this row but still needs a mapping. The row links to EMR Connect. */
+  mapping?: string;
 }
 export interface Group {
   id: "patient" | "insurance" | "request" | "documents";
@@ -45,39 +51,50 @@ const fmtDate = (iso: string, today: string): string => {
 const isoOf = (date: Date): string => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 
 /** Nothing has been dropped, typed or attached yet. */
-const isBlank = (d: CaseDraft): boolean => !d.patient.initials && !d.patient.age && !d.payerId && !d.program && !d.type && !d.memberId && !d.diagnoses.length && !d.reason && !d.documents.length && !d.referralId;
+const isBlank = (d: CaseDraft): boolean => !d.patient.initials && !d.patient.age && !d.payerId && !d.program && !d.type && !d.memberId && !d.diagnoses.length && !d.reason && !d.documents.length && !Object.keys(d.unavailable).length && !d.referralId;
 
 /* ------------------------------------------------------------------ one row at a time */
-function documentRow(d: CaseDraft, slot: DocSlotId, need: "required" | "recommended" | "extra", doc: DraftDocument | undefined, quiet: boolean): Row {
-  const def = DOC_SLOTS[slot];
+function documentRow(d: CaseDraft, entry: DocEntry, need: "required" | "recommended" | "extra", doc: DraftDocument | undefined, quiet: boolean): Row {
+  const { slot } = entry;
   const id = `doc:${slot}` as const;
   const tag = need === "recommended" ? REC : need === "extra" ? "Not on the list" : undefined;
+  const label = entry.label;
+  const reason = d.unavailable[slot];
+  if (!doc && reason !== undefined) {
+    const payer = d.payerId ? payerById(d.payerId).shortName : "The payer";
+    const note = need === "required" ? `${payer} asks for it, so the review will warn.` : "You can sign without it.";
+    return { id, label, state: need === "required" ? "warn" : "done", detail: join(`Marked not available: ${reason}`, note), tag, handled: true };
+  }
   if (!doc) {
-    const detail = quiet ? def.hint : need === "required" ? (slot === "referral" ? "No referral attached. Drop a referral or an admission order, or add a referral." : "Not found yet. Drop it above or add it here.") : `${def.hint}. You can continue without it.`;
-    return { id, label: def.label, state: need === "required" ? "missing" : "optional", detail, tag, quiet: quiet && need === "required" };
+    const detail = quiet ? entry.hint : need === "required" ? (slot === "referral" ? "No referral attached. Drop a referral or an admission order, or add a referral." : "Not found yet. Drop it above or add it here.") : `${entry.hint}. You can continue without it.`;
+    return { id, label, state: need === "required" ? "missing" : "optional", detail, tag, quiet: quiet && need === "required" };
   }
   const name = doc.file.name;
-  if (doc.status === "validating") return { id, label: def.label, state: "working", detail: join(name, "Reader is reading"), tag };
+  if (doc.status === "validating") return { id, label, state: "working", detail: join(name, "Reader is reading"), tag };
   const guessed = d.read?.[`doc:${slot}`]?.value === doc.file.id ? "Reader guessed this one. Check it." : undefined;
-  if (isReferralDoc(d.referralId, doc)) return { id, label: def.label, state: "done", detail: join(name, `from referral ${d.referralId}`), tag };
+  if (isReferralDoc(d.referralId, doc)) return { id, label, state: "done", detail: join(name, `from referral ${d.referralId}`), tag };
   const open = doc.findings.filter((f) => isOpen(f, d.answers));
   if (open.length) {
     const ask = open.some((f) => f.resolvedBy) ? "Scribe will ask you to confirm it." : undefined;
-    return { id, label: def.label, state: "warn", detail: join(name, open.map((f) => findingText(f, d.answers)).join(". "), ask, guessed), tag };
+    return { id, label, state: "warn", detail: join(name, open.map((f) => findingText(f, d.answers)).join(". "), ask, guessed), tag };
   }
-  return { id, label: def.label, state: "done", detail: join(name, `${plural(doc.findings.length, "check")} passed`, guessed), tag };
+  return { id, label, state: "done", detail: join(name, `${plural(doc.findings.length, "check")} passed`, guessed), tag };
 }
 
-function documentGroup(d: CaseDraft, quiet: boolean): Group {
-  const list = requiredDocs(d.payerId, d.program);
+function documentGroup(d: CaseDraft, quiet: boolean, ctx: PayerContext): Group {
+  const list = docEntries(d.payerId, d.program, ctx.items);
   const listed = new Set(list.map((r) => r.slot));
   const rows = [
-    ...[...list].sort((a, b) => Number(b.required) - Number(a.required)).map((r) => ({ slot: r.slot, need: r.required ? ("required" as const) : ("recommended" as const) })),
+    ...requiredFirst(list).map((r) => ({ entry: r, need: r.required ? ("required" as const) : ("recommended" as const) })),
     /* A file Reader placed that the payer does not ask for still shows, so nothing dropped ever disappears. */
-    ...d.documents.filter((x) => !listed.has(x.slot)).map((x) => ({ slot: x.slot, need: "extra" as const })),
-  ].map(({ slot, need }) => documentRow(d, slot, need, d.documents.find((x) => x.slot === slot), quiet));
+    ...d.documents.filter((x) => !listed.has(x.slot)).map((x) => ({ entry: { slot: x.slot, label: slotLabel(x.slot), hint: "", required: false }, need: "extra" as const })),
+  ].map(({ entry, need }) => documentRow(d, entry, need, d.documents.find((x) => x.slot === entry.slot), quiet));
   const required = list.filter((r) => r.required).length;
-  const note = d.payerId && d.program ? `${payerById(d.payerId).shortName} asks for ${list.length} documents for ${PROGRAM_LABEL[d.program]}. ${required} are required.` : "These are the documents every payer asks for. The list grows once the payer and level of care are known.";
+  const note = !d.payerId || !d.program
+    ? "These are the documents every payer asks for. The list grows once the payer and level of care are known."
+    : list.length
+      ? `${payerById(d.payerId).shortName} asks for ${plural(list.length, "document")} for ${PROGRAM_LABEL[d.program]}. ${required} ${required === 1 ? "is" : "are"} required.`
+      : `${payerById(d.payerId).shortName} has no documents on its list for ${PROGRAM_LABEL[d.program]}.`;
   return { id: "documents", title: "Documents", note, rows };
 }
 
@@ -93,13 +110,23 @@ function coverageRow(d: CaseDraft, clock: number): Row {
   return { ...base, state: "done", detail: `Coverage checked by Verify. Active, service covered, ${d.coverage.verdict === "cleared" ? "no authorization needed" : "authorization required"}.` };
 }
 
-/** Every row of the checklist, in four groups. `referral` is what the attached referral supplied, for the "from referral" notes. */
-export function buildChecklist(d: CaseDraft, clock: number, referral: NewCasePrefill | null): Group[] {
+/** What an EMR field that still needs a mapping would have filled on the checklist. */
+const MAPS_TO: Record<string, "payer" | "program"> = { "Level of care": "program", "Referral source": "payer" };
+
+/** Every row of the checklist, in four groups. `referral` is what the attached referral supplied, for the "from referral" notes.
+    `unmapped` are the fields of the system the chart was pulled from that still need a mapping: the rows they would have filled say so. */
+export function buildChecklist(d: CaseDraft, clock: number, referral: NewCasePrefill | null, ctx: PayerContext, unmapped: UnmappedField[]): Group[] {
   const quiet = isBlank(d);
   const chart = EMR_CHARTS.find((c) => c.id === d.emrChart);
   const note = (key: FieldKey): string => sourceNote(d, key, referral, chart);
   const gap = (hint: string, found: string): string => (quiet ? hint : found);
-  const missing = (id: FieldId, label: string, hint: string, found: string): Row => ({ id, label, state: "missing", detail: gap(hint, found), quiet });
+  /** Left blank on purpose when the chart's system has not mapped the field that would fill it. */
+  const pending = (id: FieldId): UnmappedField | undefined => (d.emrChart ? unmapped.find((u) => MAPS_TO[u.field] === id) : undefined);
+  const unmappedRow = (id: FieldId, label: string, u: UnmappedField): Row => ({ id, label, state: "missing", detail: `Left blank. “${u.field}” in ${u.where} needs a mapping. Map it, then pull the chart again.`, mapping: u.field });
+  const missing = (id: FieldId, label: string, hint: string, found: string): Row => {
+    const u = pending(id);
+    return u ? unmappedRow(id, label, u) : { id, label, state: "missing", detail: gap(hint, found), quiet };
+  };
   const maybe = (id: FieldId, label: string, hint: string, found: string): Row => ({ id, label, state: "optional", detail: gap(hint, found), tag: REC });
 
   const patient: Row = patientReady(d)
@@ -135,11 +162,11 @@ export function buildChecklist(d: CaseDraft, clock: number, referral: NewCasePre
     { id: "patient", title: "Patient", rows: [patient] },
     { id: "insurance", title: "Insurance", rows: [payer, member, coverageRow(d, clock)] },
     { id: "request", title: "Request", rows: [program, type, start, diagnoses, reason] },
-    documentGroup(d, quiet),
+    documentGroup(d, quiet, ctx),
   ];
 }
 
 export const tally = (groups: Group[]): { done: number; total: number } => {
   const rows = groups.flatMap((g) => g.rows);
-  return { done: rows.filter((r) => r.state === "done").length, total: rows.length };
+  return { done: rows.filter((r) => r.state === "done" || r.handled).length, total: rows.length };
 };

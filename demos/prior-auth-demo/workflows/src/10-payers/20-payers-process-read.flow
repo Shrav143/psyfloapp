@@ -8,7 +8,7 @@ screen tab "Process tab\nBanners, workflow card, two small cards, a note"
 
 group gB "Banners at the top (only when they apply)"
   decision dU "Edits saved but\nnot yet applied to open drafts?"
-  toast bU "'1 edit applies to new drafts only'\nNew drafts for Summit use your edits already.\nOpen drafts (R-1042, R-1101) follow when you update them."
+  toast bU "'1 edit applies to new drafts only'\nNew drafts for Summit use this at once.\nSent requests keep what they were sent with.\nClick Update drafts to redraft the open ones (R-1042, R-1101)."
   decision dP "Did Historian propose changes?"
   toast bP "'Historian proposed 1 change'\nIt never edits the workflow on its own.\n'Review in Changes'"
 endgroup
@@ -26,7 +26,7 @@ endgroup
 process six "Summit's six steps: Check coverage,\nGather the documents, Give notice,\nSend the request, Follow up,\nDecision and next review"
 process diff "Other payers differ in how they are reached\nEvergreen: phone steps\nLakeshore: file steps by fax\nHarborview: portal with fax for large files"
 screen two "'How to reach Summit' and\n'Instructions for Caller' side by side"
-toast note "'Change a step or a condition and open drafts can follow.\nAdmins can edit; every edit is logged.'"
+toast note "'Admins can edit; every edit is logged. New drafts use a saved edit at once.\nSent requests keep what they were sent with.\nClick Update drafts to redraft open ones.'"
 
 click cE "Click 'Edit workflow'"
 click cR "Click 'Re-learn from decisions'"

@@ -1,6 +1,6 @@
 title: Case Manager › Filters › Search and filter both tabs
 route: /manager and /manager?tab=reviews
-intro: One filter bar serves both tabs. Search, level of care and payer apply to the 'Being prepared' list, the tracker and the review list. The last dropdown changes with the tab. Every filter narrows the list at once and all of them combine.
+intro: One filter bar serves both tabs. Search, level of care and payer apply to the 'Being prepared' list, the 'Step-down plans' card, the tracker and the review list. The last dropdown changes with the tab. Every filter narrows the list at once and all of them combine.
 dir: TD
 also: Filters are not kept in the address. They survive switching tabs, and are cleared by leaving the page or reloading.
 ---
@@ -28,7 +28,7 @@ group gStatus "Last dropdown (depends on the tab)"
   click c4 "Active cases: click 'Any status'"
   overlay o4 "Menu: 'Any status', 'Needs action', 'Review due', 'Awaiting payer', 'On track'\nTracker only: 'Being prepared' is not filtered by it"
   click c5 "Reviews this week: click 'Any review status'"
-  overlay o5 "Menu: 'Any review status', 'Needs your update', 'Drafted', 'Signed'"
+  overlay o5 "Menu: 'Any review status', 'Needs your update', 'Not drafted yet', 'Drafted', 'Signed'"
   input i4 "Pick one"
 endgroup
 

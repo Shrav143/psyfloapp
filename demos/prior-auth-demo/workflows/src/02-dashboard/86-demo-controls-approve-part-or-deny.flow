@@ -1,6 +1,6 @@
 title: Dashboard › Request drawer › Demo controls: approve, approve part or deny
 route: /dashboard?request=R-1021
-intro: The three final payer answers and what the Dashboard shows afterwards. An approval stays on the Dashboard with a write-back waiting. A partial approval or a denial turns the request into a new D- number and hands it to Denial Intelligence.
+intro: The three final payer answers and what the Dashboard shows afterwards. They are offered on a Received, Under review or Info requested request, and after one of them no more replies are offered. An approval stays on the Dashboard with a write-back waiting. A partial approval or a denial turns the request into a new D- number and hands it to Denial Intelligence.
 dir: TD
 also: Demo only: the payer's decision is simulated. Real rules: a decision is due in 7 days (72 hours when expedited), and a partial approval or denial goes to the denial route, starting with a peer-to-peer call.
 ---
@@ -12,12 +12,12 @@ click c3 "Click 'Denies'"
 
 group gA "Approved"
   store a1 "Stage Decided today, chip 'Approved' (green), bars full\nCadence holds it; next step 'Next review booked. Write-back waits for you'\nHistory 'The payer approved the request' and 'Cadence updated the ledger and booked the next review'"
-  toast an "Notification 'Approved': 'R-1021 was approved. Write-back waits for you.'\nToast 'Demo: payer approves'"
+  toast an "Notification 'Approved': 'R-1021 was approved. Write-back waits for you.'\nToast 'Demo: Cardinal approved it'\n'The stage counts, the table and the notifications updated.'"
   screen as "Dashboard after an approval\n'Decided today' goes up by one, 'Under review' goes down\nThe Decided today headline counts it as approved"
-  overlay ab "Drawer shows the green box 'Approved. Write-back waits for you'"
+  overlay ab "Drawer shows the green box 'Approved. Write-back waits for you'\nWith write-back off in EMR Connect, a calm line instead"
+  process qk "No reply is offered any more\nDemo controls say 'The payer has already decided this request.'\nSo the request cannot be pushed back and stay counted in Decided today"
 endgroup
 goto g1 "Continues in: Dashboard › Request drawer › Approve the write-back"
-process qk "Quirk: 'Payer received it' on an approved request puts it back in Received but it still counts as Decided today"
 
 group gD "Denied or partly approved"
   process d1 "Request gets a new number: D-3319, then D-3320 and so on\nThe old number R-1021 is gone; the case stays the same"
@@ -34,7 +34,7 @@ goto g3 "Continues in: Authorizations › Case page\nThe case number is unchange
 
 s1 --> x1 --> c1 & c2 & c3
 c1 --> a1 --> an --> as --> ab --> g1
-a1 -.-> qk
+ab --> qk
 c2 --> d1
 c3 --> d1
 d1 --> d2 --> d3 --> dn --> dt --> d4

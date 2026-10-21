@@ -160,7 +160,7 @@ const PENDING: Partial<Record<PayerId, PendingChange>> = {
   cardinal: {
     id: "pc-cardinal", title: "Criteria changed, version 2026.3", effective: "10/15",
     text: "Progress evidence must now include the remaining treatment goals.",
-    affects: ["R-1042", "I-2207", "R-0988", "I-2231"], agents: ["scribe", "integrity"],
+    agents: ["scribe", "integrity"],
     docAdds: [
       { program: "RES", item: doc("cd-new-res", "Remaining treatment goals", "Named in the latest progress note") },
       { program: "IOP", item: doc("cd-new-iop", "Remaining treatment goals", "Named in the latest progress note") },
@@ -170,7 +170,14 @@ const PENDING: Partial<Record<PayerId, PendingChange>> = {
   harborview: {
     id: "pc-harborview", title: "Portal form change", effective: "10/18",
     text: "The request form now asks for the expected length of stay and a second contact. The old form closes 10/31.",
-    affects: ["P-1499"], agents: ["packet", "integrity"], docAdds: [],
+    agents: ["packet", "integrity"], docAdds: [],
+  },
+  /* Evergreen has no unsent draft (R-0975 is already with the payer), so its change takes the "no drafts" path: Acknowledge, then Apply to new drafts. */
+  evergreen: {
+    id: "pc-evergreen", title: "Reference number on notice calls", effective: "10/22",
+    text: "Evergreen's reviewers now give a reference number when notice is given by phone. Caller saves it with the call log.",
+    agents: ["caller", "integrity"],
+    docAdds: [{ program: "RES", item: doc("ev-new-res", "Notice call reference number", "Given by the reviewer on the call") }],
   },
 };
 
@@ -225,25 +232,25 @@ export function seedPayerConfig(): Record<string, PayerConfig> {
 }
 
 /** What "Add a payer" creates: the six steps for how the payer is reached, standard rules and documents, and benchmark figures. */
-export function starterConfig(p: CustomPayer, reachList: string[]): PayerConfig {
+export function starterConfig(p: CustomPayer, reachList: string[], on: string): PayerConfig {
   const has = (r: string) => reachList.includes(r);
   return {
-    planLine: `${p.type} · ${p.group.toLowerCase()} · ${p.programs.length} programs`,
+    planLine: `${p.type} · ${p.group} · ${p.programs.length} ${p.programs.length === 1 ? "program" : "programs"}`,
     rulesVersion: "benchmark",
-    checkedOn: "10/20",
+    checkedOn: on,
     reachedBy: p.reachedBy,
     facts: { approvedNote: "Not enough decisions yet", typicalNote: "benchmark estimate", noticeDue: "24 hours", noticeNote: "benchmark, after admission", backup: has("Phone") && has("Portal") ? "phone as backup" : "no backup yet" },
     reach: reach(has("Portal") ? "Provider portal. Navigator saves the sign-in once you add it" : "Not used", has("Phone") ? "Provider line. Add the hours" : "Not used", has("Fax") ? "Add the fax number" : "Not used"),
-    caller: { text: CALLER(p.shortName), confirmed: "10/20" },
-    workflow: starterWorkflow(reachList),
+    caller: { text: CALLER(p.shortName), confirmed: on },
+    workflow: starterWorkflow(reachList, on),
     rules: [
-      rule("windows", ["Notice within 24 hours of admission", "Recertification filed 72 hours before the unit limit", "A continued-stay review every 7 days after the first 7"], ["cadence", "navigator"], "10/20"),
-      rule("backdating", ["The agents assume no backdating until the first retro request is decided", "They flag any request that could fall outside a 72-hour window"], ["cadence", "scrubber"], "10/20"),
-      rule("noauth", NOAUTH, ["verify", "criteria"], "10/20"),
-      rule("p2p", ["Peer-to-peer call within 3 business days of a denial", "Written appeal within 60 days", "Then external review"], ["advocate", "cadence"], "10/20"),
+      rule("windows", ["Notice within 24 hours of admission", "Recertification filed 72 hours before the unit limit", "A continued-stay review every 7 days after the first 7"], ["cadence", "navigator"], on),
+      rule("backdating", ["The agents assume no backdating until the first retro request is decided", "They flag any request that could fall outside a 72-hour window"], ["cadence", "scrubber"], on),
+      rule("noauth", NOAUTH, ["verify", "criteria"], on),
+      rule("p2p", ["Peer-to-peer call within 3 business days of a denial", "Written appeal within 60 days", "Then external review"], ["advocate", "cadence"], on),
     ],
     docs: docsFor(p.id),
-    changes: [chg(`${p.id}-1`, "10/20", `${p.name} added`, "Starter workflow, rules and documents were created from the benchmark. Historian refines them as decisions arrive.")],
+    changes: [chg(`${p.id}-1`, on, `${p.name} added`, "Starter workflow, rules and documents were created from the benchmark. Historian refines them as decisions arrive.")],
     pending: null,
     proposals: [],
     dismissed: [],

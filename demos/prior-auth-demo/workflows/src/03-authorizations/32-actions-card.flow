@@ -5,7 +5,7 @@ dir: TD
 also: Demo only: the note box saves your words on the case and logs them. The agent does not read them again until the next Apply.
 ---
 screen cd "Recommendation card\nCheckbox, title, pills, bullets, 'Why this matters', agent line, buttons"
-process pl "Pills\n'+11 pts' on every card\n'Needs your input' or 'Answer added' on cards that ask a question"
+process pl "Pills\n'+11 pts' on every card ('+1 pt' for one point)\n'Needs your input' or 'Answer added' on cards that ask a question\n'Added for your focus' on the card that Refine recommendations added"
 process bl "Up to three bullets say what the agent will add"
 click tk "Click the checkbox or the title"
 process tg "Card is included in, or left out of, the draft\nSide-panel count follows\nNothing is logged"

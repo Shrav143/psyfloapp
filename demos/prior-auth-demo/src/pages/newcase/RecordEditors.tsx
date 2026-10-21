@@ -9,7 +9,7 @@ import { DiagnosisPicker } from "./DiagnosisPicker";
 import type { FieldId } from "./recordsModel";
 
 /** The editor that opens under a row. It focuses its first control, closes on Done, and Esc closes it from a text box. */
-function Frame({ onClose, done = true, children }: { onClose: () => void; done?: boolean; children: ReactNode }) {
+export function Frame({ onClose, done = true, children }: { onClose: () => void; done?: boolean; children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     ref.current?.querySelector<HTMLElement>("input, textarea, button")?.focus();

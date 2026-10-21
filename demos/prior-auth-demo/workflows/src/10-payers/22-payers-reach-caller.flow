@@ -21,12 +21,13 @@ toast t0 "'Nothing changed'"
 process gap "Demo gap: a blank script is accepted\nPhone steps would then have no instructions"
 store st "Script saved\n'Confirmed' date becomes today"
 store lg "Edit log entry\nArea 'Caller instructions'\n'Instructions for Caller', before and after"
-toast t1 "'Instructions for Caller saved'\nPhone steps use them from the next call.\nThe edit is logged."
+store nt "Bell notification\n'Summit caller instructions edited'\nopens the payer's Process tab"
+toast t1 "'Instructions for Caller saved'\nCaller follows them on its next call.\nThe edit is logged."
 process nb "No 'edit applies to new drafts only' banner\nThe script is used on the next call, not by drafts"
 end e1 "Card shows the new script"
 click cx "Click 'Cancel'"
 click cesc "Press Escape, click the X\nor click the dimmed area"
-endx x1 "Modal closes\nNothing saved\nReopening starts from the saved script"
+endx x1 "Modal closes\nNothing saved, typed text discarded\nReopening starts from the saved script"
 goto g1 "Continues in: Payers › Edit payer details"
 goto g2 "Continues in: Payers › Edit log"
 
@@ -36,7 +37,7 @@ s1 --> cc --> script --> ce --> m --> i1 --> i2 --> cs --> d1
 d1 -->|Yes| er --> i2
 d1 -->|No| d2
 d2 -->|Yes| t0 --> x1
-d2 -->|No| st --> lg --> t1 --> nb --> e1
+d2 -->|No| st --> lg --> nt --> t1 --> nb --> e1
 i1 -.-> gap
 lg -.-> g2
 m --> cx --> x1

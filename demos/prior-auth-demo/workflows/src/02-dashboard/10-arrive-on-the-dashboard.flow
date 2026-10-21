@@ -1,12 +1,15 @@
 title: Dashboard › Arrive › What the page shows
 route: /dashboard
-intro: Four ways to land on the Dashboard, how filters in the address are read, and the parts of the page from from the top down. Each part continues in its own diagram.
+intro: Five ways to land on the Dashboard, how filters in the address are read, and the parts of the page from the top down. Each part continues in its own diagram.
 dir: TD
 ---
 start s1 "Click 'Dashboard' in the sidebar\nThe badge counts Info requested"
 start s2 "Open the app at /\nThe address / goes to /dashboard"
 start s3 "Follow a link with a request or a filter\nA notification, or a button on another page"
 start s4 "Demo menu › Click 'Reset demo data'"
+start s5 "Follow 'Open Dashboard, By payer' in Ask FLO\nThe address is /dashboard?focus=payers"
+decision d4 "Does the address hold ?focus=payers?"
+process pf "Payers at a glance scrolls into view and is outlined for about 2 seconds\nThe ?focus part is then removed from the address"
 toast t1 "'Demo data reset'\n'Everything is back to the starting point.'"
 
 process p1 "Page opens and reads the address"
@@ -24,11 +27,11 @@ end e1 "Page shown with no drawer"
 
 group gPage "On the page, from the top down"
   screen h1 "Headline and sub line\n'18 requests are waiting on payers. 3 are waiting on you.'"
-  click ca "Click 'Check all now'"
+  click ca "Click 'Check all now'\nDisabled while Navigator is paused in Settings"
   screen f1 "Filter bar\n'All payers', 'All programs', 'All request types', 'All stages'\n'Outcomes for' and the date range 'Sep 21 – Oct 20, 2026'"
-  screen st "Stage strip, six tiles\nPreparing 5, Received 4, Under review 14, Info requested 3, Decided today 8, Appeal or call 7"
-  screen rq "Requests\n'Showing 8 of 39', seven columns, 'Show 8 more'"
-  screen py "Payers at a glance\nSix payers and an 'All payers' total row"
+  screen st "Stage strip, six tiles\nPreparing 5 (plus cases saved in New case), Received 4, Under review 14, Info requested 3, Decided today 8, Appeal or call 7"
+  screen rq "Requests\n'Showing 8 of 39', seven columns, five sortable headings, 'Show 8 more'"
+  screen py "Payers at a glance\nSix payers and an 'All payers' total row\n'Open Payers' link; each payer name opens that payer"
 endgroup
 
 goto g1 "Continues in: Dashboard › Request drawer › Open and read a request"
@@ -44,11 +47,14 @@ goto g9 "Continues in: Dashboard › Filters › Clear filters and empty states"
 s1 --> p1
 s2 --> p1
 s3 --> p1
+s5 --> p1
 s4 --> t1 --> p1
 p1 --> d1
 d1 -->|Yes| p2 --> w1
 d1 -->|No| p3 --> w1
 w1 --> sc
+sc --> d4
+d4 -->|Yes| pf --> py
 sc --> d2
 d2 -->|No| e1
 d2 -->|Yes| d3

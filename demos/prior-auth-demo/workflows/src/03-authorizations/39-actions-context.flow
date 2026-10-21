@@ -1,0 +1,36 @@
+title: Authorizations › Case page › Recommended actions › Add clinical context
+route: /authorizations/case/R-1042?tab=actions
+intro: Adding a note the chart does not show. It is kept in the list the Draft tab and New case read, shown on the case page, and it nudges the approval chance by a point.
+dir: TD
+also: Demo only: each of the first three notes adds one point to the approval chance, whatever it says. The draft text on this page is not rewritten here; the Draft tab and New case read the list themselves.
+---
+click cc "Click 'Add clinical context'"
+overlay m "Dialog 'Add clinical context'\n'Something the chart does not show. Scribe folds it into the draft. Nothing goes to the payer.'"
+input ta "Type in the box\ne.g. 'He called the program himself on 10/19 and asked for a bed.'\nHint: 'Each note adds a point to the approval chance, up to 3.'"
+decision d "Is anything typed?"
+process dis "'Add context' stays off"
+click ad "Click 'Add context'"
+click cn "Click 'Cancel', the X or the dimmed area, or press Esc"
+endx cl "Dialog closes\nNothing is added\nWhat you typed stays in the box for next time"
+process lk "While the agents are updating the draft\nthe button is off"
+
+store sv "Note added to the shared list for this request\nLog: 'You added clinical context: ...'"
+process nu "Approval chance goes up by 1 point for each of the first three notes\nThe fourth and later notes are kept and listed, with no points"
+screen ls "Card 'Context you added' in the side panel\nEach note with '+1 pt' (no pill after the third)"
+screen rk "Risk analysis › Why this number gets a row\n'Clinical context you added'\nThe rows still add up to the chance"
+decision dQ "Is it a queue request that also has a Dashboard entry?"
+store db "Dashboard request gets the new chance\nTimeline: 'You added clinical context. Approval chance is now 63%'"
+process qu "Queue tile shows the new chance"
+toast tc "'Clinical context added'\n'Scribe will fold it into the draft. Nothing goes to the payer.'"
+goto g1 "Continues in: Authorizations › Case page › Draft › Read and edit"
+
+cc --> m --> ta --> d
+d -->|No| dis
+d -->|Yes| ad --> sv --> nu --> ls
+nu --> rk
+sv --> dQ
+dQ -->|Yes| db --> qu
+dQ -->|No| qu
+sv --> tc --> g1
+m --> cn --> cl
+cc -.-> lk

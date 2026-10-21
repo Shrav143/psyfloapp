@@ -3,11 +3,13 @@
    Nothing the person typed, and nothing a referral or EMR Connect supplied, is ever overwritten. */
 import type { DemoFile } from "@/components/ui";
 import { PLAN_TYPE, type CaseDraft, type DocSlotId, type DraftDocument, type ReadKey, type ReadNote } from "@/data/cases";
+import type { DocItem } from "@/data/payerConfig";
 import { PAYERS } from "@/data/seed";
 import { plural } from "@/lib/format";
 import { useStore } from "@/store";
-import { makeDocument, openFindings, requiredDocs, slotForFile } from "./documents";
+import { docEntries, makeDocument, openFindings, slotForFile } from "./documents";
 import { dx, SAMPLE_CHART } from "./intake";
+import { payerContextOf } from "./payerContext";
 import { fieldSnap, type FieldKey } from "./provenance";
 
 const CARD_WORDS = /\b(insurance|card|member|id)\b/;
@@ -24,7 +26,7 @@ interface SortPlan {
   unplaced: string[];
 }
 
-function planSort(d: CaseDraft, files: DemoFile[]): SortPlan {
+function planSort(d: CaseDraft, files: DemoFile[], items: (payerId: CaseDraft["payerId"], program: CaseDraft["program"]) => DocItem[] | null): SortPlan {
   let next = d;
   let patch: Partial<CaseDraft> = {};
   const fills: { key: FieldKey; file: string }[] = [];
@@ -56,7 +58,7 @@ function planSort(d: CaseDraft, files: DemoFile[]): SortPlan {
   }
 
   /* The list depends on the payer and level of care, which the files above may just have filled in. */
-  const list = requiredDocs(next.payerId, next.program);
+  const list = docEntries(next.payerId, next.program, items(next.payerId, next.program));
   const have = new Set(d.documents.map((x) => x.slot));
   const claimed = new Map<DocSlotId, DraftDocument>();
   const guessed: string[] = [];
@@ -79,7 +81,7 @@ function planSort(d: CaseDraft, files: DemoFile[]): SortPlan {
   const reads: Partial<Record<ReadKey, ReadNote>> = {};
   for (const f of later) {
     /* A file with no telling name is a clinical document more often than an order, so the referral slot is the last resort. */
-    const open = list.filter((r) => r.required && !have.has(r.slot) && !claimed.has(r.slot));
+    const open = list.filter((r) => r.required && !have.has(r.slot) && !claimed.has(r.slot) && !(r.slot in d.unavailable));
     const free = open.find((r) => r.slot !== "referral") ?? open[0];
     if (!free) {
       unplaced.push(f.name);
@@ -112,7 +114,7 @@ export function sortFiles(id: string, files: DemoFile[]): void {
   const st = useStore.getState();
   const draft = st.caseDrafts.find((x) => x.id === id);
   if (!draft || !files.length) return;
-  const plan = planSort(draft, files);
+  const plan = planSort(draft, files, (payerId, program) => payerContextOf(st, { payerId, program }).items);
   if (Object.keys(plan.patch).length) st.patchCaseDraft(id, plan.patch);
   if (plan.docs.length) st.putCaseDocs(id, plan.docs);
   st.toast(toastFor(files.length, plan));

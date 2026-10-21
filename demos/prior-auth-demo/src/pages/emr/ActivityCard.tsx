@@ -22,7 +22,7 @@ export function ActivityCard({ activity, clock }: { activity: EmrActivity[]; clo
     <Card>
       <CardHeader title="Recent activity" subtitle="Every read and write is logged" right={activity.length > SHOWN ? <Button size="sm" variant="ghost" onClick={() => setAll(true)}>See all {activity.length}</Button> : null} />
       {activity.slice(0, SHOWN).map((a) => <Row key={a.id} a={a} clock={clock} />)}
-      <Drawer open={all} onClose={() => setAll(false)} width={640} title="Activity log" subtitle="Every read and write, newest first. Admins can see who and what.">
+      <Drawer open={all} onClose={() => setAll(false)} width={640} title="Activity log" subtitle="Every read and write, newest first.">
         <div className="overflow-hidden rounded-2xl border border-edge bg-white">{activity.map((a) => <Row key={a.id} a={a} clock={clock} />)}</div>
       </Drawer>
     </Card>

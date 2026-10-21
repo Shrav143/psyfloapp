@@ -1,6 +1,6 @@
 title: EMR Connect › Problems › Every error state and what it needs
 route: /emr
-intro: A way to read the page when something looks wrong. Start from what the page shows, find what the person has to do, and see how the page recovers. The demo has two real problem states and a few quiet dead ends.
+intro: A way to read the page when something looks wrong. Start from what the page shows, find what the person has to do, and see how the page recovers. The demo has two real problem states, and every click that cannot go ahead says why.
 dir: TD
 also: Production-only problems (from the PRD) are shown in orange. The demo cannot reach them.
 ---
@@ -15,9 +15,10 @@ group gA "Amber pill: 'Needs a quick look'"
 endgroup
 
 group gR "Red pill: 'Disconnected'"
-  process r1 "Someone disconnected it\nRow: 'Not syncing'. Charts from this system are not arriving."
-  click r2 "Click 'Reconnect' on the row or in the Manage drawer\nNeeds: nothing else"
-  end r3 "Re-test: none is shown\nRow turns Connected at once. Any earlier issue text is cleared"
+  process r1 "Someone disconnected it\nRow: 'Not syncing'. Charts from this system are not arriving. New case cannot pull a chart from it until it is connected."
+  click r2 "Click 'Reconnect' on the row or in the Manage drawer\nNeeds: a passed connection test, and the Fix steps first if it was on 'Needs a quick look'"
+  goto r4 "Continues in: EMR Connect › Manage › Reconnect a system"
+  end r3 "Re-test: the same three checks as Connect\nRow turns Connected only after they pass. Any earlier issue text is cleared"
 endgroup
 
 group gT "Last sync tile"
@@ -30,9 +31,9 @@ group gM "Amber tile: 'Need a mapping'"
   click m2 "Click 'Map'\nNeeds: a value picked for each field"
 endgroup
 
-group gQ "Quiet dead ends"
-  endx d1 "'Sync now' while another sync runs\nClick is ignored, no message"
-  endx d2 "'Sync now' with no Connected system\nSpins two seconds, then nothing"
+group gQ "Clicks that stop with a message"
+  toast d1 "'Sync now' with no Connected system\n'Nothing to sync'\n'No system is connected. Fix or reconnect one first.'"
+  toast d5 "An agent is paused in Settings\n'Reader is paused' or 'Navigator is paused'\n'Resume it in Settings to sync.' (or to connect a system, fix it, reconnect it)"
   endx d3 "Contact left blank while connecting\n'Add the person at the practice who can approve read-only access.'"
   endx d4 "Fix form incomplete\n'Name the person who approves and confirm read-only access.'"
 endgroup
@@ -46,12 +47,12 @@ endgroup
 s1 --> q1
 q1 -->|Amber pill on a row| a1 --> a2 --> a3
 a3 --> a4
-q1 -->|Red pill on a row| r1 --> r2 --> r3
+q1 -->|Red pill on a row| r1 --> r2 --> r4 --> r3
 q1 -->|Last sync tile is red or amber| t1 --> t2
 t2 --> r2
 q1 -->|Need a mapping tile is amber| m1 --> m2
-q1 -->|Nothing happens after a click| d1
-q1 -->|Nothing happens after a click| d2
+q1 -->|A toast after a click| d1
+q1 -->|A toast after a click| d5
 q1 -.->|A message under a field| d3
 q1 -.->|A message under a field| d4
 q1 -.->|Not in the demo| p1

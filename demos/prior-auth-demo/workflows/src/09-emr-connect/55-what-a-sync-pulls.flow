@@ -2,7 +2,7 @@ title: EMR Connect › Sync › What a sync pulls and when it runs
 route: /emr
 intro: What the agents bring in from a connected system, and when. The demo shows this with counters and one log line per sync. The schedule and the real pull come from the PRD.
 dir: TD
-also: In the demo only 'Sync now' runs a sync. Demo, Fast-forward changes the 'ago' times and never starts one. No new chart, case or file appears anywhere else in the app.
+also: In the demo only 'Sync now' runs a sync. Demo, Fast-forward changes the 'ago' times and never starts one. No new chart, case or file appears anywhere else in the app. A sync waits while Reader is paused, and asks first when Reader is set to 'Ask before acting'.
 ---
 start s1 "A sync runs"
 
@@ -26,7 +26,7 @@ process p1 "Fields it cannot place go to 'Needs a mapping'"
 store s2 "Charts matched today\nGoes up by the number of charts matched to open cases"
 store s3 "Files pulled this week\nGoes up by the number of files saved to those cases"
 store s4 "Recent activity\nOne line per sync"
-process p2 "Demo: nothing else changes\nNo new case in Case Manager, and the New case chart list stays the same four charts"
+process p2 "Demo: nothing else changes\nNo new case in Case Manager. New case offers the same four charts, from Connected systems only"
 process e1 "Last sync tile reads 'Just now'"
 goto g1 "Continues in: EMR Connect › Sync › Sync now"
 goto g2 "Continues in: EMR Connect › Needs a mapping › Map a field"

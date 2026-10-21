@@ -5,7 +5,7 @@ dir: TD
 ---
 start s1 "Click 'Mark OK' on a checklist row"
 start s2 "Full page, Validation tab:\nResolve › 'Mark OK with reason'"
-start s3 "Click 'Decline'\nChecklist, or the full page header"
+start s3 "Click 'Decline'\nChecklist, or the full page header\nStays available while 'Accept' is disabled"
 
 group gOk "Mark OK"
   overlay o1 "'Mark OK with a reason'\nSubtitle: the check, e.g. 'Clinician signature is present'\n'Reader found: The signature line is empty. Reader cannot confirm who ordered this.'"
@@ -16,7 +16,7 @@ group gOk "Mark OK"
   store st1 "Finding is marked resolved with your reason\nThe source document itself does not change"
   process p2 "Timeline 'You overrode: Clinician signature is present' with the reason"
   toast t1 "'Marked OK'\n'Your reason is on the activity timeline.'"
-  screen sc1 "Row turns Done\n'Marked OK by Jordan Perez: …'\nProgress goes up by one; Validation tab shows pill 'Marked OK'"
+  screen sc1 "Row turns Done\n'Marked OK by Jordan Perez: …'\nProgress goes up by one; Validation tab shows pill 'Marked OK'\nA required row no longer blocks 'Accept referral and continue'"
 endgroup
 click cX1 "Click 'Cancel' or 'Close', press Escape,\nor click outside the dialog"
 endx e1 "Nothing changes"

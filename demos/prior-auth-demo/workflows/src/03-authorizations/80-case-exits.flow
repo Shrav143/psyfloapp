@@ -2,7 +2,7 @@ title: Authorizations › Case page › Where the queue and the case page lead
 route: /authorizations
 intro: Every click that takes a person from the queue or a case page into another part of the product. What the case page writes to other screens is in the next diagram.
 dir: LR
-also: Case Manager has links into the case page, but the case page has no link back to Case Manager. The only link from this module to Case Manager is the queue's empty message, which cannot appear with the seed data.
+also: Case Manager has links into the case page, but the case page has no link back to Case Manager. The only link from this module to Case Manager is the queue's empty message, which shows once every open request has been sent or handled.
 ---
 screen q "Authorizations queue"
 screen cp "A case page (any tab)"
@@ -14,6 +14,7 @@ click l3 "On the coverage card: click 'Open Eligibility & Benefits'"
 click l4 "On a denied request: click 'Open in Denial Intelligence'"
 click l5 "Click 'Open in review and sign' or 'Send to payer'"
 click l7 "Click 'Back to queue' or the 'Authorizations' crumb"
+click l8 "Click 'Open on the Dashboard'\n(once the request is past Preparing)"
 
 goto g1 "Continues in: New case › Referral step"
 goto g2 "Continues in: Eligibility & Benefits › Verify a patient"
@@ -21,6 +22,7 @@ goto g5 "Continues in: Case Manager › Active cases"
 goto g3 "Continues in: Denial Intelligence › Open a denial"
 goto g4 "Continues in: Authorizations › Case page › Send to payer and review and sign"
 goto g6 "Continues in: Authorizations › Queue › Open the queue and read the top"
+goto g7 "Continues in: Dashboard › Request drawer"
 
 q --> l1 --> g1
 q --> l2 --> g2
@@ -29,3 +31,4 @@ cp --> l3 --> g2
 cp --> l4 --> g3
 cp --> l5 --> g4
 cp --> l7 --> g6
+cp --> l8 --> g7

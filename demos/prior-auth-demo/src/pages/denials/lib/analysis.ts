@@ -102,7 +102,7 @@ export function buildAnalysis(r: PsyRequest, m: DenialMeta, clock: number): Deni
   const appeal = chanceOf(Math.max(5, base - 6));
   const left = r.deadlineAt === undefined ? undefined : r.deadlineAt - clock;
   const toFile = r.clockSub === "to file" || r.clockSub === "to resubmit";
-  const appealTime = toFile && left !== undefined ? `${leftLabel(Math.max(left, 0))} to ${r.clockSub === "to resubmit" ? "resubmit" : "file"}` : `${APPEAL_WINDOW_DAYS} days to file`;
+  const appealTime = toFile && left !== undefined ? (left > 0 ? `${leftLabel(left)} to ${r.clockSub === "to resubmit" ? "resubmit" : "file"}` : "Deadline passed") : `${APPEAL_WINDOW_DAYS} days to file`;
   const regained = fill(text.regained, ctx);
   const sources = text.findings.map((f) => fill(f.source, ctx));
   const windowClosed = left !== undefined && left <= 0 && !toFile;
@@ -126,7 +126,7 @@ export function buildAnalysis(r: PsyRequest, m: DenialMeta, clock: number): Deni
     options: [
       { id: "p2p", title: "Peer-to-peer call", summary: `30 to 45 minutes of clinician time · ${regained}`, chance: p2p, needs: ["A clinician on the call", "The brief, written by Advocate and checked by Integrity", "A call time inside the payer's window"] },
       { id: "appeal", title: "Written appeal", summary: `${appealTime} · ${regained}`, chance: appeal, needs: ["A clinician's signature on the letter", "The letter, drafted by Advocate and checked by Integrity", `Evidence attached: ${sources.slice(0, 3).join(", ")}`] },
-      { id: "accept", title: accept, summary: "Fastest. Nothing regained.", needs: ["A reason for the record", "Cadence logs the write-off", "Case Manager plans the step-down"] },
+      { id: "accept", title: accept, summary: "Fastest. Nothing regained.", needs: ["A reason for the record", "Analytics counts the write-off", "Case Manager adds a step-down plan"] },
     ],
     recommended,
     regained,

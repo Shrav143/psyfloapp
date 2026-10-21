@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { FileSignature, Save } from "lucide-react";
 import { AgentChip, Banner, Button, Checkbox, Drawer, Label, Spinner, TextArea } from "@/components/ui";
+import { levelOf } from "@/data/denials";
 import { shortDate } from "@/lib/time";
 import { useStore } from "@/store";
 import { buildAppealLetter, defaultEvidence } from "./lib/appeal";
-import { isFiled } from "./lib/format";
+import { capitalize, isFiled } from "./lib/format";
 import { SignModal } from "./SignModal";
 import type { DenialView } from "./lib/useDenialView";
 
@@ -13,9 +14,10 @@ export function AppealDrawer({ view, onClose }: { view: DenialView; onClose: () 
   const { req, analysis, work, clock } = view;
   const store = useStore.getState;
   const readOnly = !!work.appealFiled || isFiled(req);
+  const level = levelOf(req.chip, work);
   const stored = work.appealDraft;
   const [drafting, setDrafting] = useState(!stored && !readOnly);
-  const [text, setText] = useState(stored?.text ?? (readOnly ? buildAppealLetter(req, analysis, clock) : ""));
+  const [text, setText] = useState(stored?.text ?? (readOnly ? buildAppealLetter(req, analysis, clock, level) : ""));
   const [evidence, setEvidence] = useState<string[]>(stored?.evidence ?? defaultEvidence(analysis, work.fixes));
   const [signing, setSigning] = useState(false);
   const available = Array.from(new Set([...defaultEvidence(analysis, work.fixes), ...evidence]));
@@ -25,7 +27,7 @@ export function AppealDrawer({ view, onClose }: { view: DenialView; onClose: () 
     let live = true;
     const t = setTimeout(() => {
       if (!live) return;
-      const letter = buildAppealLetter(req, analysis, clock);
+      const letter = buildAppealLetter(req, analysis, clock, level);
       const items = defaultEvidence(analysis, work.fixes);
       store().saveAppealDraft(req.id, letter, items);
       setText(letter);
@@ -36,7 +38,7 @@ export function AppealDrawer({ view, onClose }: { view: DenialView; onClose: () 
       live = false;
       clearTimeout(t);
     };
-  }, [drafting, req, analysis, clock, work.fixes, store]);
+  }, [drafting, req, analysis, clock, level, work.fixes, store]);
 
   const toggle = (item: string) => setEvidence((e) => (e.includes(item) ? e.filter((x) => x !== item) : [...e, item]));
   const save = () => {
@@ -52,7 +54,7 @@ export function AppealDrawer({ view, onClose }: { view: DenialView; onClose: () 
         onClose={onClose}
         width={720}
         title={`Appeal letter · ${req.id}`}
-        subtitle={readOnly ? `Filed${work.appealFiled ? ` by ${work.appealFiled.role}` : ""}. ${req.clockNote ?? ""}` : `${analysis.ctx.payerName}${dueBy ? `. Due ${dueBy}.` : ""}`}
+        subtitle={readOnly ? `${work.appealFiled ? `Filed by ${work.appealFiled.role}.` : `${capitalize(req.clockSub ?? "filed")}.`}${req.clockNote ? ` ${capitalize(req.clockNote)}.` : ""}` : `${analysis.ctx.payerName}${dueBy ? `. Due ${dueBy}.` : ""}`}
         footer={readOnly ? <div className="flex justify-end"><Button onClick={onClose}>Close</Button></div> : <div className="flex justify-end gap-2.5"><Button icon={Save} onClick={save} disabled={drafting}>Save draft</Button><Button variant="primary" icon={FileSignature} onClick={() => setSigning(true)} disabled={drafting}>Sign and file</Button></div>}
       >
         {drafting ? (

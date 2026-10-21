@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { AgentBadge, Button, ChoiceCard, Field, Modal, TextArea } from "@/components/ui";
 import { AGENTS } from "@/data/agents";
-import { MAX_QUESTIONS, QUESTIONS, type CaseDraft } from "@/data/cases";
+import { QUESTIONS, type CaseDraft } from "@/data/cases";
 import { payerById } from "@/data/seed";
 import { useStore } from "@/store";
+import { questionCount } from "./questions";
 
 /** The "answer" gate: an agent stopped to ask one thing. Pick a button or type a note; the agents carry on at once. */
 export function QuestionModal({ draft, open, onClose }: { draft: CaseDraft; open: boolean; onClose: () => void }) {
@@ -17,6 +18,7 @@ export function QuestionModal({ draft, open, onClose }: { draft: CaseDraft; open
   const payer = draft.payerId ? payerById(draft.payerId).shortName : "the payer";
   const chosen = def.choices.find((c) => c.id === choice);
   const text = note.trim();
+  const q = questionCount(draft);
   const ready = !!chosen || text.length > 0;
 
   const send = () => {
@@ -30,7 +32,7 @@ export function QuestionModal({ draft, open, onClose }: { draft: CaseDraft; open
       open={open}
       onClose={onClose}
       title={`${agent} has a question`}
-      subtitle={`Question ${draft.answers.length + 1} of at most ${MAX_QUESTIONS} for this case. The agents wait for you.`}
+      subtitle={`Question ${q.n} of ${q.of} for this case. The agents wait for you.`}
       footer={
         <>
           <Button onClick={onClose}>Answer later</Button>

@@ -33,13 +33,13 @@ screen sc2 "Coverage tab result\nBanner with the headline, 'Check again'\nCard '
 click c3 "Click 'Check again'"
 
 click c4 "Click 'Open full Eligibility & Benefits check'"
-process p6 "Opens Verify a patient with the referral's payer,\nmember ID, level of care and a made-up birth date filled in"
+process p6 "Opens Verify a patient with the referral's payer,\nmember ID, level of care and a made-up birth date filled in\nThe address keeps ?referral=RF-2053 (and ?case= once the referral is a request)"
 goto g2 "Continues in: Eligibility & Benefits › Verify a patient"
 start s3 "Coming back: 'Start authorization'\non the coverage result (authorization first)"
 process p7 "Opens a NEW case with payer, level of care, member ID, initials and age\nIt is not tied to the referral or its case"
 goto g3 "Continues in: New case › How a case starts and resumes"
-start s4 "Press the browser Back button\non Verify a patient or its result"
-process p8 "Returns to the referral page\nNo button in Eligibility leads back to the referral"
+start s4 "Click 'Back to referral RF-2053'\non Verify a patient or its result\n(shown when the address has ?referral=)"
+process p8 "Opens the full referral page for RF-2053\nOnce the referral is a request the link reads 'Back to case R-1042'\nThe full page finds the case that holds the referral, so 'Back to the case' still works"
 
 s1 --> d1
 d1 -->|No| p1 --> g1

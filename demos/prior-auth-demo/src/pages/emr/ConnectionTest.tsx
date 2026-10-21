@@ -3,6 +3,8 @@ import { CheckCircle2 } from "lucide-react";
 import { Spinner } from "@/components/ui";
 
 const STEP_MS = 800;
+/** The checks Connect and Reconnect both run. */
+export const CONNECT_CHECKS = ["Reaching the system", "Signing in with read-only access", "Reading one test record"];
 
 /** A read-only connection test: three checks run one after the other. Calls onPassed when the last one finishes. */
 export function ConnectionTest({ checks, onPassed }: { checks: string[]; onPassed: () => void }) {

@@ -32,7 +32,7 @@ goto gD "Continues in: Denial Intelligence › Open a denial"
 toast n1 "Note: 'The approval chance estimates how well the paperwork fits this payer's past decisions. It never blocks a request and is never shown to payers or patients.'"
 toast n2 "Note: 'Decision support for documentation and workflow only. It does not recommend or decide care.'"
 goto gT "Continues in: Authorizations › Case page › Tabs and deep links"
-store ap "Applying actions on the first tab moves tile 1 and tile 3 and the range\nSee Recommended actions › Apply selected"
+store ap "Applying actions on the first tab moves tile 1 and tile 3 and the range\nSee Recommended actions › Apply selected\nAdding clinical context moves them by a point each (up to three)\nRefining the recommendations moves the number after the arrow"
 
 pg --> t1 --> t1a --> t1b
 pg --> t2 --> dBm

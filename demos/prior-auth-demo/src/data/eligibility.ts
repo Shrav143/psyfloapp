@@ -1,5 +1,6 @@
 /* Eligibility and Benefits: the patient rows, the verdict rule and the simulated live check.
    The wording of each payment check lives in pages/eligibility/checks.ts. */
+import { DAY, HOUR } from "@/lib/time";
 import type { PayerId, Program, Tone } from "./types";
 
 export type EligState = "active" | "lapsed" | "ended" | "not_found";
@@ -28,7 +29,11 @@ export interface EbPatient {
   dx?: string;
   dos: string;
   checkedAt: number; // demo minutes
+  /** A re-check is scheduled this week. Verify runs it on its own when the demo clock reaches `recheckAt`. */
   recheckDue: boolean;
+  recheckAt?: number; // demo minutes
+  /** Set when the last check was one of those automatic re-checks: the time it ran. */
+  autoAt?: number;
 }
 
 /** Cleared: everything passes. Authorization first: only the authorization is missing. Fix: coverage, plan, benefits, network, other insurance or a limit failed. */
@@ -52,27 +57,37 @@ export interface CheckInput {
   memberId: string;
   dos: string;
 }
-type Findings = Pick<EbPatient, "eligibility" | "benefits" | "auth" | "noDayLimit" | "inNetwork" | "otherInsurance">;
+type Findings = Pick<EbPatient, "eligibility" | "benefits" | "auth" | "limit" | "noDayLimit" | "inNetwork" | "otherInsurance">;
 
 const NO_AUTH: [PayerId, Program][] = [["beacon", "IOP"], ["beacon", "PHP"]];
+/** The days or units one authorization allows, by level of care. */
+const LIMIT_OF: Record<Program, [number, "days" | "units"]> = { RES: [14, "days"], IOP: [48, "units"], PHP: [15, "days"], WM: [5, "days"] };
 
-/** What the state and the plan "answer". Scripted so the demo is predictable:
-    a member ID ending 1012 is lapsed, 9999 is not found, Evergreen is reached by phone and is not enrolled for detox. */
+/** Member ID endings that script a result. The Verify page's sample chips fill them in, so nothing is hidden. */
+export const TAIL = { lapsed: "1012", notFound: "9999", notCovered: "3030", otherPlan: "6060", limitReached: "9090" } as const;
+
+/** What the state and the plan "answer". Scripted so the demo is predictable: a member ID ending 1012 is lapsed, 9999 is not found,
+    3030 is a plan that does not cover the service, 6060 has another plan that pays first and 9090 has used every authorized day.
+    Evergreen is reached by phone and is not enrolled for detox. */
 export function simulateCheck(i: CheckInput): Findings {
   const tail = i.memberId.replace(/\D/g, "").slice(-4);
+  const [of, unit] = LIMIT_OF[i.program];
+  const exhausted = tail === TAIL.limitReached;
   return {
-    eligibility: tail === "1012" ? { state: "lapsed", on: "10/12" } : tail === "9999" ? { state: "not_found" } : { state: "active" },
-    benefits: i.payerId === "harborview" && i.program === "PHP" ? "limited" : "covered",
-    auth: NO_AUTH.some(([p, g]) => p === i.payerId && g === i.program) ? "not_required" : "required",
+    eligibility: tail === TAIL.lapsed ? { state: "lapsed", on: "10/12" } : tail === TAIL.notFound ? { state: "not_found" } : { state: "active" },
+    benefits: tail === TAIL.notCovered ? "not_covered" : i.payerId === "harborview" && i.program === "PHP" ? "limited" : "covered",
+    auth: exhausted ? "on_file" : tail === TAIL.notCovered || NO_AUTH.some(([p, g]) => p === i.payerId && g === i.program) ? "not_required" : "required",
+    limit: exhausted ? { used: of, of, unit } : undefined,
     noDayLimit: i.payerId === "summit" && i.program === "RES",
     inNetwork: !(i.payerId === "evergreen" && i.program === "WM"),
-    otherInsurance: false,
+    otherInsurance: tail === TAIL.otherPlan,
   };
 }
 /** Evergreen is the one payer reached by phone: its system does not answer, so Caller phones. */
 export const needsCaller = (payerId: PayerId): boolean => payerId === "evergreen";
 
-/* ------------------------------------------------------------------ seed rows: 34 patients, 28 cleared, 4 authorization first, 2 fix, 5 re-checks due */
+/* ------------------------------------------------------------------ seed rows: 37 patients, 28 cleared, 4 authorization first, 5 fix, 5 re-checks due.
+   The five "fix" rows show every reason: lapsed, ended, not covered, another plan pays first, limit reached. */
 type Lim = [number, number, "days" | "units"];
 interface Row {
   id: string;
@@ -95,15 +110,18 @@ const ROWS: Row[] = [
   R("I-2262", "S.N.", 31, "lakeshore", "IOP", 35, "in_progress"),
   R("I-2190", "R.P.", 31, "lakeshore", "IOP", 240, "reviewing"),
   R("I-2231", "S.B.", 37, "cardinal", "IOP", 310, "reviewing"),
-  /* fix before billing (2) */
+  /* fix before billing (5) */
   R("R-1101", "K.W.", 26, "summit", "RES", 6, "retro_open", undefined, { eligibility: { state: "lapsed", on: "10/12" }, levelLabel: "Detox → Residential", memberMasked: "…1012" }),
   R("R-0975", "B.N.", 53, "evergreen", "RES", 180, "on_file", [9, 14, "days"], { eligibility: { state: "ended", on: "09/30" } }),
+  R("R-1118", "A.F.", 42, "beacon", "RES", 50, "not_required", undefined, { benefits: "not_covered", memberMasked: `…${TAIL.notCovered}` }),
+  R("I-2275", "E.K.", 27, "summit", "IOP", 120, "required", undefined, { otherInsurance: true, memberMasked: `…${TAIL.otherPlan}` }),
+  R("R-0921", "J.D.", 45, "cardinal", "RES", 300, "on_file", [14, 14, "days"], { memberMasked: `…${TAIL.limitReached}` }),
   /* cleared to bill (28) */
   R("D-3318", "M.C.", 38, "cardinal", "RES", 60, "on_file", [7, 14, "days"]),
-  R("I-2207", "T.R.", 29, "cardinal", "IOP", 4320, "on_file", [38, 48, "units"], { recheckDue: true }),
+  R("I-2207", "T.R.", 29, "cardinal", "IOP", 4320, "on_file", [38, 48, "units"], { recheckDue: true, recheckAt: 50 }),
   R("R-0988", "D.L.", 41, "beacon", "RES", 1440, "on_file", [10, 21, "days"]),
   R("P-1573", "A.S.", 51, "harborview", "PHP", 1440, "on_file", [8, 15, "days"]),
-  R("I-2144", "G.N.", 33, "summit", "IOP", 2880, "on_file", [16, 48, "units"], { recheckDue: true }),
+  R("I-2144", "G.N.", 33, "summit", "IOP", 2880, "on_file", [16, 48, "units"], { recheckDue: true, recheckAt: 5 * HOUR }),
   R("R-1021", "V.P.", 48, "cardinal", "RES", 1900, "on_file", [11, 14, "days"]),
   R("P-1602", "R.H.", 39, "cardinal", "PHP", 600, "on_file", [9, 15, "days"]),
   R("I-2236", "B.J.", 30, "cardinal", "IOP", 2200, "on_file", [24, 48, "units"]),
@@ -119,14 +137,14 @@ const ROWS: Row[] = [
   R("R-0944", "M.B.", 40, "beacon", "RES", 200, "on_file", [3, 14, "days"]),
   R("I-2171", "Q.Z.", 25, "lakeshore", "IOP", 150, "on_file", [4, 30, "units"]),
   R("R-0960", "H.V.", 39, "summit", "RES", 200, "on_file", [5, 14, "days"]),
-  R("I-2102", "W.H.", 36, "summit", "IOP", 5000, "on_file", [22, 48, "units"], { recheckDue: true }),
+  R("I-2102", "W.H.", 36, "summit", "IOP", 5000, "on_file", [22, 48, "units"], { recheckDue: true, recheckAt: DAY + 3 * HOUR }),
   R("P-1519", "C.M.", 41, "beacon", "PHP", 3000, "not_required"),
-  R("R-0866", "T.S.", 29, "summit", "RES", 3600, "on_file", [12, 21, "days"], { recheckDue: true }),
+  R("R-0866", "T.S.", 29, "summit", "RES", 3600, "on_file", [12, 21, "days"], { recheckDue: true, recheckAt: 2 * DAY }),
   R("I-2120", "J.B.", 33, "lakeshore", "IOP", 1700, "on_file", [30, 60, "units"]),
   R("P-1550", "N.D.", 47, "harborview", "PHP", 2600, "on_file", [5, 15, "days"], { benefits: "limited" }),
   R("R-0889", "P.K.", 52, "evergreen", "RES", 800, "on_file", [6, 14, "days"]),
   R("I-2133", "L.O.", 27, "cardinal", "IOP", 1200, "on_file", [20, 48, "units"]),
-  R("R-0871", "V.A.", 35, "summit", "RES", 3900, "on_file", [9, 14, "days"], { recheckDue: true }),
+  R("R-0871", "V.A.", 35, "summit", "RES", 3900, "on_file", [9, 14, "days"], { recheckDue: true, recheckAt: 4 * DAY }),
 ];
 
 export const SEED_EB_PATIENTS: EbPatient[] = ROWS.map((r) => ({

@@ -1,6 +1,6 @@
 title: Payers › Add a payer
 route: /payers
-intro: The 'Add a payer' modal. A new payer starts with a standard workflow, rules and document lists and benchmark figures; the agents learn the rest from decisions. Nothing is saved until 'Add payer' passes its three checks.
+intro: The 'Add a payer' modal. A new payer gets a full starter set (workflow, rules and document lists) and benchmark figures; the agents learn the rest from decisions. Nothing is saved until 'Add payer' passes its four checks, and a name that another payer already has is refused. The new payer is also offered wherever New case picks a payer.
 dir: TD
 ---
 start s1 "Click 'Add a payer'\ntop right of Payers"
@@ -17,38 +17,43 @@ endgroup
 process clr "Typing or ticking clears any red message"
 click ca "Click 'Add payer'"
 decision v1 "Is the payer name empty?"
+decision v1b "Does the name match another payer?\nAny capitals, extra spaces ignored.\nA short name counts: 'Cardinal', 'Beacon'"
 decision v2 "Is no way of reaching ticked?"
 decision v3 "Is no program ticked?"
-toast e1 "Add the payer's name."
+toast e1 "Under the name box:\n'Add the payer's name.'"
+toast e1b "Under the name box:\n'There is already a payer called\nBeacon PPO. Use a different name.'"
 toast e2 "Choose at least one way to reach the payer."
 toast e3 "Choose at least one program."
 
-store st "Payer saved with a starter set\nWorkflow v1 (six steps for how it is reached)\nStandard rules and document lists\nFigures marked as benchmark estimates"
+store st "Payer saved with a full starter set\nWorkflow v1 (six steps for how it is reached)\nFour rules, document lists for all four levels of care\nFigures marked as benchmark estimates"
+process rb "'Reached by' is written in a fixed order\nPortal, phone, fax: 'Portal, phone and fax'\nso it is always one of the seven listed values"
 store lg "Edit log gets 'Added a payer'\nReason 'Payer added'"
 toast tt "'Riverbend Health was added'\nStarter workflow, rules and documents are ready.\nFigures are benchmark estimates."
 process nav "Modal closes\nOpens /payers/custom-riverbend-health?tab=process"
 screen pg "New payer's Process tab\nTitle now counts 7 payers\nRow in its group, green dot\nHeader: 'Not enough' for both figures"
-process dup "Demo gap: no check for a name already in use.\na second 'Riverbend Health' makes a second row\nand replaces the first one's starter set"
-process other "Demo gap: a payer added here appears only on Payers.\nNew case, Dashboard and Authorizations\nkeep their own payer lists"
+process other "The payer is also saved where other screens read it\nNew case offers it wherever a payer is picked,\nand reads its document list and rules like any payer"
 
 click cx "Click 'Cancel'"
-click cesc "Press Escape, click the X\nor click the dimmed area"
+click cesc "Press Escape, click the X\nor click the dimmed area\nEscape with a menu open closes the menu first"
 endx x1 "Modal closes\nNothing was added"
 end e "New payer is ready to edit"
 goto g1 "Continues in: Payers › Process › Read the workflow"
+goto g2 "Continues in: Authorizations › New case › Medical records › Patient and insurance rows"
 
 s1 --> m --> i1 --> i2 --> i3 --> i4 --> i5 --> ca
 i1 -.-> clr
 i4 -.-> clr
 ca --> v1
 v1 -->|Yes| e1 --> i1
-v1 -->|No| v2
+v1 -->|No| v1b
+v1b -->|Yes| e1b --> i1
+v1b -->|No| v2
 v2 -->|Yes| e2 --> i4
 v2 -->|No| v3
 v3 -->|Yes| e3 --> i5
-v3 -->|No| st --> lg --> tt --> nav --> pg --> g1
-st -.-> dup
+v3 -->|No| st --> rb --> lg --> tt --> nav --> pg --> g1
 st -.-> other
+other -.-> g2
 pg --> e
 m --> cx --> x1
 m --> cesc --> x1

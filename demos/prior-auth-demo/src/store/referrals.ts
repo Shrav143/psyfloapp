@@ -2,6 +2,7 @@ import type { StateCreator } from "zustand";
 import { CAPACITY_SEED, SAMPLE_COUNT, SEED_REFERRALS, sampleReferral, staffById, DECLINE_LABEL, isOpen, parseDiagnoses, type CheckKey, type DeclineReason, type FieldKey, type Referral, type ReplyVia, type StaffId } from "@/data/referrals";
 import { PROGRAM_LABEL, PROGRAMS, type NewCasePrefill, type Program } from "@/data/types";
 import { plural } from "@/lib/format";
+import { stamp } from "@/lib/time";
 import { paths } from "@/routes";
 import type { AppState } from "./index";
 import * as T from "./referralsLogic";
@@ -71,7 +72,7 @@ export const createReferralsSlice: StateCreator<AppState, [], [], ReferralsSlice
       const clock = get().clock;
       const targets = get().referrals.filter((r) => ids.includes(r.id));
       set((s) => ({ referrals: s.referrals.map((r) => (ids.includes(r.id) ? T.assign(r, owner, clock) : r)) }));
-      get().toast({ title: owner ? `Assigned to ${staffById(owner).name}` : "Owner removed", body: plural(targets.length, "referral"), tone: "good" });
+      get().toast({ title: owner ? `Assigned to ${staffById(owner).name}` : "Owner removed", body: targets.length === 1 ? targets[0].id : plural(targets.length, "referral"), tone: "good" });
       return targets.length;
     },
 
@@ -128,7 +129,9 @@ export const createReferralsSlice: StateCreator<AppState, [], [], ReferralsSlice
       const clock = get().clock;
       const targets = get().referrals.filter((r) => ids.includes(r.id) && isOpen(r.status));
       set((s) => ({ referrals: s.referrals.map((r) => (targets.some((t) => t.id === r.id) ? T.decline(r, o, clock) : r)) }));
-      get().toast({ title: targets.length ? `Declined: ${DECLINE_LABEL[o.reason]}` : "Nothing to decline", body: targets.length ? plural(targets.length, "referral") + (o.courtesy ? ". Courtesy replies were sent." : ".") : "Only referrals that are still open can be declined.", tone: targets.length ? "neutral" : "mid" });
+      const who = targets.length === 1 ? targets[0].id : plural(targets.length, "referral");
+      const sent = targets.length === 1 ? "A courtesy reply was sent." : "Courtesy replies were sent.";
+      get().toast({ title: targets.length ? `Declined: ${DECLINE_LABEL[o.reason]}` : "Nothing to decline", body: targets.length ? `${who}.${o.courtesy ? ` ${sent}` : ""}` : "Only referrals that are still open can be declined.", tone: targets.length ? "neutral" : "mid" });
       return targets.length;
     },
 
@@ -139,7 +142,7 @@ export const createReferralsSlice: StateCreator<AppState, [], [], ReferralsSlice
 
     scheduleIntake: (id, at) => {
       update(id, (r) => T.scheduleIntake(r, at, get().clock));
-      get().toast({ title: "Intake scheduled", body: `${id} is now Intake scheduled.`, tone: "good" });
+      get().toast({ title: "Intake scheduled", body: `${id} is Scheduled. Intake visit ${stamp(at)}.`, tone: "good" });
     },
 
     markAdmitted: (id) => {

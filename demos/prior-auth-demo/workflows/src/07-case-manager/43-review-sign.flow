@@ -15,9 +15,9 @@ input i3 "Tick the attestation\n'I reviewed this continued-stay review and it re
 decision d2 "Are the attestation (and the acceptance, if shown) ticked?"
 process x1 "Button 'Sign review' stays greyed"
 click c1 "Click 'Sign review' in the dialog"
-store st1 "Review is saved as 'Signed'\nSigned by the chosen clinician, stamped with the demo clock\nThe draft text, with any edits made in the drawer, is kept"
-toast t1 "'Review signed'\n'R-0856 was signed by Heather K., LISW-S. Cadence books the next review.'"
-process p1 "Dialog closes. The drawer stays open and now shows 'Signed by Heather K., LISW-S' with a read-only draft"
+store st1 "Review is saved as 'Signed'\nSigned by the chosen clinician, stamped with the demo clock\nThe draft text, with any edits made in the drawer, is kept\nCadence books the next review (see the next diagram)"
+toast t1 "'Review signed'\n'R-0856 was signed by Heather K., LISW-S. Cadence booked the next review for Tue 10/27, 9:00 am.'"
+process p1 "Dialog closes. The drawer stays open and now shows 'Signed by Heather K., LISW-S' with a read-only draft and the banner 'Next review: Tue 10/27, 9:00 am'"
 goto g1 "Continues in: Case Manager › Reviews this week › After a review is signed"
 
 click c2 "Click 'Cancel', the X, the dimmed area, or press Escape"

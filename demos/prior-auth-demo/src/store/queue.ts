@@ -1,4 +1,6 @@
 import type { StateCreator } from "zustand";
+import type { FocusId } from "@/data/caseDetail";
+import { FOCUS } from "@/data/caseDetailFocus";
 import { EMPTY_WORK, RUN_END, RUN_STEPS, type CaseWork, type DraftEdit } from "@/data/caseModel";
 import { QUEUE_ITEMS, openItems, type Band, type QueueItem, type StatusFilter } from "@/data/queue";
 import type { AgentKey, PayerId } from "@/data/types";
@@ -25,6 +27,15 @@ export interface ApplyArgs {
   snapshot: string;
 }
 
+export interface ContextArgs {
+  caseId: string;
+  requestId: string; // where the shared list of clinical context keeps it
+  text: string;
+  syncDashboard: boolean; // the Dashboard request's chance is fixed seed data, so the new chance can be written back without counting twice
+  chance: number; // the approval chance with this note counted
+  liftLeft: number;
+}
+
 export interface QueueSlice {
   queueItems: QueueItem[];
   queueFilters: QueueFilters;
@@ -43,7 +54,8 @@ export interface QueueSlice {
   sendNote: (caseId: string, recId: string, text: string, agent: AgentKey) => void;
   dismissRecs: (caseId: string, requestId: string, recs: { id: string; title: string }[], reason: string) => void;
   restoreRec: (caseId: string, recId: string) => void;
-  addContext: (caseId: string, text: string) => void;
+  addContext: (a: ContextArgs) => void;
+  setFocus: (caseId: string, focus: FocusId | null, liftLeft: number) => void;
   applyRecs: (a: ApplyArgs) => void;
   saveDraft: (caseId: string, edits: Record<string, DraftEdit>, version: { n: number; snapshot: string }) => void;
   markRechecked: (caseId: string) => void;
@@ -84,14 +96,25 @@ export const createQueueSlice: StateCreator<AppState, [], [], QueueSlice> = (set
       log: [...w.log, ...recs.map((r) => ({ at: clock, text: `You dismissed "${r.title}". Reason: ${reason}` }))],
     })));
     if (get().requests.some((r) => r.id === requestId)) for (const r of recs) get().addEvent(requestId, { actor: "you", text: `You dismissed "${r.title}". Reason: ${reason}` });
+    get().recordDismissal({ requestId, reason });
     get().toast({ title: recs.length === 1 ? "Recommendation dismissed" : `${recs.length} recommendations dismissed`, body: "The reason is logged and feeds Analytics.", tone: "neutral" });
   },
 
   restoreRec: (id, recId) => set((s) => patchCase(s, id, (w) => ({ dismissed: w.dismissed.filter((x) => x.id !== recId), log: [...w.log, { at: s.clock, text: "You brought back a dismissed recommendation" }] }))),
 
-  addContext: (id, text) => {
-    set((s) => patchCase(s, id, (w) => ({ context: [...w.context, text], log: [...w.log, { at: s.clock, text: `You added clinical context: "${text}"` }] })));
-    get().toast({ title: "Clinical context added", body: "Scribe will use it in the next draft. Nothing is sent to the payer.", tone: "good" });
+  addContext: (a) => {
+    get().addClinicalContext(a.requestId, a.text);
+    set((s) => patchCase(s, a.caseId, (w) => ({ chance: a.chance, liftLeft: a.liftLeft, log: [...w.log, { at: s.clock, text: `You added clinical context: "${a.text}"` }] })));
+    if (a.syncDashboard && get().requests.some((r) => r.id === a.requestId)) {
+      get().updateRequest(a.requestId, { chance: a.chance });
+      get().addEvent(a.requestId, { actor: "you", text: `You added clinical context. Approval chance is now ${a.chance}%` });
+    }
+    get().toast({ title: "Clinical context added", body: "Scribe will fold it into the draft. Nothing is sent to the payer.", tone: "good" });
+  },
+
+  setFocus: (id, focus, liftLeft) => {
+    // Once the queue shows a saved chance for this request, its "points possible" line has to follow the cards too.
+    set((s) => patchCase(s, id, (w) => ({ focus, liftLeft: w.chance === undefined ? w.liftLeft : liftLeft, log: [...w.log, { at: s.clock, text: focus ? `You refined the recommendations: ${FOCUS[focus].label}` : "You cleared the focus on the recommendations" }] })));
   },
 
   applyRecs: (a) => {

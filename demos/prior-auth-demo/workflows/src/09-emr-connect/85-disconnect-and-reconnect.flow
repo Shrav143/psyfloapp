@@ -1,50 +1,40 @@
 title: EMR Connect › Manage › Disconnect and reconnect
 route: /emr
-intro: Stop a system, or bring a stopped one back. Disconnect asks first. Reconnect does not. Nothing is deleted, and the Dashboard is not touched.
+intro: Stop a system, or bring a stopped one back. Disconnect asks first. Reconnect runs the connection test, and Fix first if the system had a problem. Nothing is deleted, and the Dashboard is not touched.
 dir: TD
-also: Found by testing the built demo. Escape closes the drawer under the confirmation too. Reconnect skips 'Fix' and shows no test.
+also: Escape closes one layer at a time: the confirmation first, then the drawer. Disconnect is a person's own decision, so it is never held back by an agent's pause or freedom.
 ---
 start s1 "Manage drawer is open\nThe system is Connected or Needs a quick look"
 click c1 "Click 'Disconnect'"
 overlay o1 "Disconnect {name}?\n'Charts from it stop arriving. Nothing is deleted.'"
 process p1 "'Requests already on the Dashboard stay where they are. You can reconnect this system at any time.'"
 decision q1 "Which action?"
-click k1 "Click 'Keep it connected'\nOr the X, or the dimmed area"
-click k2 "Press Escape"
+click k1 "Click 'Keep it connected', the X, the dimmed area, or press Escape"
 click k3 "Click 'Disconnect' in the confirmation"
-end e1 "Confirmation closes\nThe drawer stays open and nothing changes"
-endx e2 "Confirmation and drawer both close\nNothing changes"
+end e1 "Confirmation closes\nThe drawer stays open and nothing changes\nA second Escape closes the drawer"
 
 group gOff "What disconnecting does"
   store a1 "Status becomes Disconnected\nIssue text: 'Charts from this system are not arriving.'"
+  store a6 "If it was on 'Needs a quick look', the problem is remembered\nReconnect will start with Fix"
   agent a2 "Navigator logs 'Disconnected {name}. Charts from it stop arriving'"
   toast a3 "'{name} is disconnected'\n'Reconnect it any time from this page.' Amber"
-  process a4 "Row: 'Not syncing', red pill, 'Reconnect' and 'Manage'\nDrawer pill turns red, the bottom button reads 'Reconnect'"
-  process a5 "Skipped by 'Sync now'\nLast sync tile ignores it, or reads 'None' if every system is off"
+  process a4 "Row: 'Not syncing', red pill, 'Reconnect' and 'Manage'\n'New case cannot pull a chart from it until it is connected.'\nDrawer pill turns red, the bottom button reads 'Reconnect'"
+  process a5 "Skipped by 'Sync now'\nLast sync tile ignores it, or reads 'None' if every system is off\nIts write-back switch no longer counts on the Dashboard"
 endgroup
 
-group gOn "What reconnecting does"
-  click r1 "Click 'Reconnect'\nOn the row or at the end of the drawer"
-  process r2 "No test is shown and no pop-up opens\nA system that Needed a quick look skips 'Fix' this way"
-  store r3 "Status becomes Connected\nLast sync now, issue text cleared"
-  agent r4 "Reader logs 'Reconnected {name} and read-only access passed its test'"
-  toast r5 "'{name} is connected'"
-endgroup
+click r1 "Click 'Reconnect'\nOn the row or at the end of the drawer"
+process r2 "Nothing is connected yet\nThe system stays Disconnected until a test passes"
+goto g2 "Continues in: EMR Connect › Manage › Reconnect a system"
 
-end e3 "Row shows 'just now', a green pill and 'Sync now'"
 process n1 "No pause, edit or delete\nThere is nothing to confirm when removing a system, because a system cannot be removed"
-goto g1 "Continues in: EMR Connect › Problems › Fix a system that needs a quick look"
 
 s1 --> c1 --> o1 --> p1 --> q1
 q1 -->|Keep it| k1 --> e1
-q1 -->|Escape| k2 --> e2
 q1 -->|Disconnect| k3
 k3 --> a1 & a2 & a3
+a1 --> a6
 a1 --> a4 --> a5
 a5 --> r1
 a4 --> r1
-r1 --> r2 --> r3 & r4 & r5
-r3 --> e3
-r5 --> e3
-r2 -.-> g1
+r1 --> r2 --> g2
 a1 -.-> n1

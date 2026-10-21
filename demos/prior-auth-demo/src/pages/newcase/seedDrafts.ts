@@ -1,7 +1,8 @@
 /* The five Dashboard "Preparing" requests as drafts, each at the step it is on, plus the blank draft a new case starts from. */
-import { freshRun, PLAN_TYPE, QUESTIONS, type Answer, type CaseDraft, type DocSlotId, type QuestionKey } from "@/data/cases";
+import { freshRun, PLAN_TYPE, QUESTIONS, type Answer, type CaseDraft, type DocSlotId, type QuestionKey, type RunState } from "@/data/cases";
+import { seedPayerConfig } from "@/data/payerConfigSeed";
 import type { PayerId, Program } from "@/data/types";
-import { makeDocument, requiredDocs, sampleFile } from "./documents";
+import { docEntries, makeDocument, sampleFile } from "./documents";
 import { ICD_CODES } from "./lookups";
 
 export function blankDraft(over: Partial<CaseDraft> = {}): CaseDraft {
@@ -25,13 +26,15 @@ export function blankDraft(over: Partial<CaseDraft> = {}): CaseDraft {
     reason: "",
     diagnoses: [],
     documents: [],
+    unavailable: {},
     coverage: null,
     run: freshRun(),
     answers: [],
-    questionKey: null,
+    questions: [],
     suggestions: [],
     narrative: null,
     revision: 0,
+    unmet: 0,
     startChance: 62,
     finalChance: 88,
     dueKind: null,
@@ -42,12 +45,15 @@ export function blankDraft(over: Partial<CaseDraft> = {}): CaseDraft {
 }
 
 const dx = (...codes: string[]) => ICD_CODES.filter((c) => codes.includes(c.code));
-/** The sample documents for a payer and level of care, minus the ones the chart does not have. */
+const PAYER_CONFIG = seedPayerConfig();
+/** The sample documents for what the payer asks for at this level of care, minus the ones the chart does not have. */
 function docs(payer: PayerId, program: Program, skip: DocSlotId[] = [], sertralineConflict = false) {
-  return requiredDocs(payer, program)
+  return docEntries(payer, program, PAYER_CONFIG[payer]?.docs[program] ?? null)
     .filter((r) => !skip.includes(r.slot))
     .map((r) => makeDocument(r.slot, sampleFile(r.slot), sertralineConflict, "done"));
 }
+/** A run that has not failed, retried or skipped anything. */
+const run = (r: Pick<RunState, "done" | "asked" | "question" | "elapsed">): RunState => ({ ...freshRun(), ...r });
 const answer = (key: QuestionKey, choice: string, label: string, payerShort: string): Answer => ({ key, agent: QUESTIONS[key].agent, question: QUESTIONS[key].text(payerShort), choice, answer: label });
 
 function seed(id: string, over: Partial<CaseDraft>): CaseDraft {
@@ -68,8 +74,8 @@ export const SEED_DRAFTS: CaseDraft[] = [
     diagnoses: dx("F10.20", "F33.2"),
     documents: docs("summit", "RES", ["therapy_note"], true),
     coverage: { key: "summit|RES|4821|2026-10-20", verdict: "auth_first", at: -2 },
-    run: { done: 6, asked: true, question: "sertraline", elapsed: [14, 9, 21, 26, 18, 12] },
-    questionKey: "sertraline",
+    run: run({ done: 6, asked: true, question: "sertraline", elapsed: [14, 9, 21, 26, 18, 12] }),
+    questions: ["sertraline", "stepdown"],
     startChance: 62,
     finalChance: 88,
     dueKind: "notice",
@@ -87,8 +93,8 @@ export const SEED_DRAFTS: CaseDraft[] = [
     diagnoses: dx("F11.20", "F41.1"),
     documents: docs("cardinal", "IOP"),
     coverage: { key: "cardinal|IOP|7305|2026-10-20", verdict: "cleared", at: -4320 },
-    run: { done: 8, asked: false, question: "recert", elapsed: [11, 8, 17, 19, 13, 10, 26, 15] },
-    questionKey: "recert",
+    run: run({ done: 8, asked: false, question: "recert", elapsed: [11, 8, 17, 19, 13, 10, 26, 15] }),
+    questions: ["recert"],
     startChance: 59,
     finalChance: 72,
     dueKind: "expires",
@@ -107,9 +113,9 @@ export const SEED_DRAFTS: CaseDraft[] = [
     diagnoses: dx("F10.20", "F41.1"),
     documents: docs("beacon", "RES"),
     coverage: { key: "beacon|RES|2096|2026-10-20", verdict: "cleared", at: -1440 },
-    run: { done: 10, asked: true, question: null, elapsed: [13, 9, 18, 21, 14, 16, 29, 17, 15, 11] },
+    run: run({ done: 10, asked: true, question: null, elapsed: [13, 9, 18, 21, 14, 16, 29, 17, 15, 11] }),
     answers: [answer("stepdown", "named", "Yes, a named provider is on file", "Beacon")],
-    questionKey: "stepdown",
+    questions: ["stepdown"],
     startChance: 69,
     finalChance: 79,
     dueKind: "review",
@@ -127,7 +133,8 @@ export const SEED_DRAFTS: CaseDraft[] = [
     diagnoses: dx("F11.23", "F11.20"),
     documents: docs("summit", "RES", ["therapy_note"]),
     coverage: { key: "summit|RES|1012|2026-10-20", verdict: "fix", at: -6 },
-    run: { done: 8, asked: false, question: null, elapsed: [12, 8, 19, 18, 12, 11, 24, 14] },
+    run: run({ done: 8, asked: false, question: null, elapsed: [12, 8, 19, 18, 12, 11, 24, 14] }),
+    questions: [],
     startChance: 38,
     finalChance: 47,
     dueKind: "window",
@@ -144,8 +151,8 @@ export const SEED_DRAFTS: CaseDraft[] = [
     diagnoses: dx("F14.20"),
     documents: docs("lakeshore", "IOP", ["attendance"]),
     coverage: { key: "lakeshore|IOP|2290|2026-10-20", verdict: "auth_first", at: -35 },
-    run: { done: 0, asked: false, question: null, elapsed: [] },
-    questionKey: "recert",
+    run: freshRun(),
+    questions: ["recert"],
     startChance: 84,
     finalChance: 90,
     dueKind: "packet",

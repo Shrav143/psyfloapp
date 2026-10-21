@@ -1,11 +1,14 @@
-import { CalendarPlus, Check, MessageSquarePlus, Send, RotateCcw } from "lucide-react";
+import { CalendarPlus, Check, FilePlus2, MessageSquarePlus, Send, RotateCcw } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button, Dropdown, Pill, Stepper } from "@/components/ui";
 import { PROGRAM_LABEL } from "@/data/types";
 import { STAFF, STATUS_LABEL, isOpen, type Referral, type StaffId } from "@/data/referrals";
 import { payerById } from "@/data/seed";
 import { blockedInHosted } from "@/lib/hosted";
 import { ago, stamp } from "@/lib/time";
+import { paths } from "@/routes";
 import { useStore } from "@/store";
+import { acceptBlockers, blockersLine } from "@/store/referralsLogic";
 import { ChannelTag, StatusPill, UrgencyPill } from "./Chips";
 import { pastTarget } from "./arrived";
 
@@ -14,6 +17,8 @@ type OwnerChoice = StaffId | "none";
 
 interface Props {
   r: Referral;
+  /** A case already holds this referral (a draft, or the request it became). */
+  hasCase: boolean;
   onAccept: () => void;
   onInfo: () => void;
   onDecline: () => void;
@@ -30,7 +35,8 @@ function stepsFor(r: Referral): { steps: string[]; current: number } {
 }
 
 /** The top card: who, where it came from, where it stands, and what a person can do next. */
-export function ReferralHeader({ r, onAccept, onInfo, onDecline, onNote, onSchedule }: Props) {
+export function ReferralHeader({ r, hasCase, onAccept, onInfo, onDecline, onNote, onSchedule }: Props) {
+  const nav = useNavigate();
   const clock = useStore((s) => s.clock);
   const assign = useStore((s) => s.assignReferrals);
   const admit = useStore((s) => s.markAdmitted);
@@ -39,6 +45,7 @@ export function ReferralHeader({ r, onAccept, onInfo, onDecline, onNote, onSched
   const toast = useStore((s) => s.toast);
   const open = isOpen(r.status);
   const { steps, current } = stepsFor(r);
+  const blockers = open ? acceptBlockers(r) : [];
 
   const more = (v: MoreChoice) => {
     if (v === "reply") {
@@ -77,24 +84,28 @@ export function ReferralHeader({ r, onAccept, onInfo, onDecline, onNote, onSched
         <Stepper steps={steps} current={current} className="shrink-0 pt-1" />
       </div>
 
-      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-5" role="group" aria-label={`Actions, status ${STATUS_LABEL[r.status]}`}>
-        <div className="flex flex-wrap items-center gap-2.5">
-          {open ? <Button variant="primary" icon={Check} onClick={onAccept}>Accept referral</Button> : null}
-          {r.status === "new" || r.status === "in_review" ? <Button icon={Send} onClick={onInfo}>Request information</Button> : null}
-          {open ? <Button variant="danger" onClick={onDecline}>Decline</Button> : null}
-          {r.status === "accepted" ? <Button variant="primary" icon={CalendarPlus} onClick={onSchedule}>Schedule intake</Button> : null}
-          {r.status === "scheduled" ? (
-            <>
-              <Button variant="primary" icon={Check} onClick={() => admit(r.id)}>Mark admitted</Button>
-              <Button icon={CalendarPlus} onClick={onSchedule}>Change intake</Button>
-            </>
-          ) : null}
-          {r.status === "declined" ? <Button icon={RotateCcw} onClick={() => reopen(r.id)}>Reopen referral</Button> : null}
+      <div className="mt-5 flex flex-wrap items-start justify-between gap-3 border-t border-line pt-5" role="group" aria-label={`Actions, status ${STATUS_LABEL[r.status]}`}>
+        <div className="flex min-w-0 flex-col gap-2">
+          <div className="flex flex-wrap items-center gap-2.5">
+            {open ? <Button variant="primary" icon={Check} disabled={blockers.length > 0} aria-describedby={blockers.length ? "accept-why" : undefined} onClick={onAccept}>Accept referral</Button> : null}
+            {r.status === "new" || r.status === "in_review" ? <Button icon={Send} onClick={onInfo}>Request information</Button> : null}
+            {open ? <Button variant="danger" onClick={onDecline}>Decline</Button> : null}
+            {r.status === "accepted" ? <Button variant="primary" icon={CalendarPlus} onClick={onSchedule}>Schedule intake</Button> : null}
+            {r.status === "scheduled" ? (
+              <>
+                <Button variant="primary" icon={Check} onClick={() => admit(r.id)}>Mark admitted</Button>
+                <Button icon={CalendarPlus} onClick={onSchedule}>Change intake</Button>
+              </>
+            ) : null}
+            {r.status === "declined" ? <Button icon={RotateCcw} onClick={() => reopen(r.id)}>Reopen referral</Button> : null}
+            {!hasCase && r.status !== "declined" ? <Button icon={FilePlus2} onClick={() => nav(paths.newCase({ referral: r.id }))}>Start a case from this referral</Button> : null}
+          </div>
+          {blockers.length ? <p id="accept-why" className="text-[13px] text-mid-ink">{blockersLine(blockers)}</p> : null}
         </div>
         <div className="flex flex-wrap items-center gap-2.5">
           <span className="text-[13px] text-muted">Owner</span>
           <Dropdown<OwnerChoice>
-            ariaLabel="Assign"
+            ariaLabel="Owner"
             value={r.owner ?? "none"}
             options={[...STAFF.map((s) => ({ value: s.id as OwnerChoice, label: s.name })), { value: "none", label: "Unassigned" }]}
             onChange={(v) => assign([r.id], v === "none" ? null : v)}

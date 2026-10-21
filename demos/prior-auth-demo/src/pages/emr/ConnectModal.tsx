@@ -2,10 +2,9 @@ import { useState } from "react";
 import { Button, ChoiceCard, Field, Modal, Stepper, TextInput } from "@/components/ui";
 import { SYSTEM_KINDS, type SystemKind } from "@/data/emr";
 import { useStore } from "@/store";
-import { ConnectionTest } from "./ConnectionTest";
+import { CONNECT_CHECKS, ConnectionTest } from "./ConnectionTest";
 
 const STEPS = ["System", "Contact", "Test"];
-const CHECKS = ["Reaching the system", "Signing in with read-only access", "Reading one test record"];
 
 /** Guided set-up in three steps: what kind of system, who at the practice can approve it, then a read-only test. Mounted only while open. */
 export function ConnectModal({ onClose }: { onClose: () => void }) {
@@ -52,7 +51,7 @@ export function ConnectModal({ onClose }: { onClose: () => void }) {
             <p className="text-[13px] text-muted">We email them a read-only access request. Until they approve it, the test below uses a demo record.</p>
           </div>
         ) : null}
-        {step === 2 ? <ConnectionTest checks={CHECKS} onPassed={() => setPassed(true)} /> : null}
+        {step === 2 ? <ConnectionTest checks={CONNECT_CHECKS} onPassed={() => setPassed(true)} /> : null}
       </div>
     </Modal>
   );

@@ -1,12 +1,13 @@
 import { payerById } from "./seed";
 import { PROGRAM_LABEL, type Program } from "./types";
-import { DAY } from "@/lib/time";
+import { clockTime, DAY, toDate } from "@/lib/time";
 import type { LedgerCase } from "./manager";
 
-/* The week's clinical reviews: one per approved case, so 47 from the 56-case ledger. 39 are drafted
-   (33 clean, 6 with one check to look at) and 8 need a clinician's update. */
+/* The week's clinical reviews: one per approved case, so 47 from the 56-case ledger. Cadence drafts four days ahead,
+   so the 4 reviews due on the weekend still wait for a draft ("due"). 35 are drafted (29 clean, 6 with one check
+   to look at) and 8 need a clinician's update. Drafting the 4 makes it 39 drafted and 33 clean. Signing a review books the next one. */
 
-export type ReviewStatus = "drafted" | "needs_update" | "signed";
+export type ReviewStatus = "due" | "drafted" | "needs_update" | "signed";
 export interface ReviewCheck {
   label: string;
   passed: boolean;
@@ -34,6 +35,10 @@ export interface Review {
   note?: string;
   signedBy?: string;
   signedAt?: number;
+  /** Booked by Cadence when the review before it was signed. It may fall after this week, so it is not always on the list. */
+  scheduled?: boolean;
+  /** On a signed review: when its next review is due. */
+  nextAt?: number;
 }
 
 export const CHECK_LABELS = ["Every sentence traced to the chart", "Review has no errors", "All payer requirements covered", "Level of care matches the request"] as const;
@@ -69,6 +74,20 @@ const SLOTS: number[][] = [
   [570, 780],
 ];
 const NOW_MINUTES = 10 * 60 + 42;
+/** Cadence drafts reviews up to this many days ahead (days 0 to 3, Tuesday to Friday), so later ones are still "due" with no draft. */
+const DRAFT_AHEAD_DAYS = 4;
+/** The week ends with Sunday night. Reviews after this are booked but not on this week's list. */
+export const WEEK_END = 6 * DAY - NOW_MINUTES;
+export const inWeek = (r: Review): boolean => r.dueAt < WEEK_END;
+
+const WD = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+/** "Tue 10/27" */
+export const reviewDate = (m: number): string => {
+  const d = toDate(m);
+  return `${WD[d.getDay()]} ${d.getMonth() + 1}/${d.getDate()}`;
+};
+/** "Tue 10/27, 9:00 am" */
+export const reviewStamp = (m: number): string => `${reviewDate(m)}, ${clockTime(toDate(m))}`;
 /** Reviews the mockup places at a set time today. */
 const PINNED: Record<string, number> = { "R-0988": 960, "P-1499": 900 };
 
@@ -144,6 +163,8 @@ export function buildReviews(ledger: LedgerCase[]): Review[] {
     .map((c): Review => {
       const missing = MISSING[c.id];
       const no = Number(/Continued stay (\d)/.exec(c.note)?.[1] ?? 2);
+      const slot = slots[taken.get(c.id) ?? 0];
+      const undrafted = !missing && slot.day >= DRAFT_AHEAD_DAYS;
       return {
         id: `rv-${c.id}`,
         caseId: c.caseId,
@@ -153,15 +174,47 @@ export function buildReviews(ledger: LedgerCase[]): Review[] {
         program: c.program,
         payerId: c.payerId,
         reviewNo: no,
-        dueAt: slots[taken.get(c.id) ?? 0].at,
-        status: missing ? "needs_update" : "drafted",
+        dueAt: slot.at,
+        status: missing ? "needs_update" : undrafted ? "due" : "drafted",
         missing,
-        checks: checksFor(c.id, missing),
-        draft: draftText(c, no),
+        checks: undrafted ? [] : checksFor(c.id, missing),
+        draft: undrafted ? "" : draftText(c, no),
         agent: c.program === "RES" || c.program === "WM" ? "scribe" : "cadence",
       };
     })
     .sort((a, b) => a.dueAt - b.dueAt);
+}
+
+/** What Cadence adds to a review it drafts: the text and the four Integrity checks. */
+export const draftedFrom = (c: LedgerCase, r: Review): Pick<Review, "status" | "draft" | "checks"> => ({ status: "drafted", draft: draftText(c, r.reviewNo), checks: checksFor(c.id) });
+
+/** Days to the next review when the payer names none: residential and partial hospital weekly, IOP every two weeks, detox every three days. */
+const REVIEW_EVERY: Record<Program, number> = { RES: 7, PHP: 7, IOP: 14, WM: 3 };
+
+/** The payer's own rule ("A continued-stay review every 7 days after the first 7") wins when it asks for sooner. */
+export function reviewIntervalDays(program: Program, ruleLines: string[]): number {
+  const named = ruleLines.map((l) => /review every (\d+) days/i.exec(l)?.[1]).find(Boolean);
+  return named ? Math.min(REVIEW_EVERY[program], Number(named)) : REVIEW_EVERY[program];
+}
+
+/** The review that follows a signed one: the same time of day, `days` later. A review signed long after it was due books from now. */
+export function nextReviewAfter(r: Review, days: number, clock: number): Review {
+  const due = r.dueAt + days * DAY;
+  return {
+    ...r,
+    id: `rv-${r.ledgerId}-${r.reviewNo + 1}`,
+    reviewNo: r.reviewNo + 1,
+    dueAt: due > clock ? due : clock + days * DAY,
+    status: "due",
+    missing: undefined,
+    checks: [],
+    draft: "",
+    note: undefined,
+    signedBy: undefined,
+    signedAt: undefined,
+    nextAt: undefined,
+    scheduled: true,
+  };
 }
 
 /** A draft is clean when no review is waiting on a person and every check passed. */

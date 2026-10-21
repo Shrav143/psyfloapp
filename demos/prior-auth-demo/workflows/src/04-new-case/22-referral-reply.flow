@@ -21,13 +21,13 @@ process p1 "Fixed by the reply: signed order, current dates, a cosigning clinici
 decision d2 "Did the referral have no insurance?"
 process p2 "An insurance card arrives: Summit Medicaid HMO, member ID …4410\nCoverage has not been checked yet"
 decision d3 "Is the patient under 18?"
-process p3 "Age is not fixed by a reply\nThe row stays 'Check this'"
+process p3 "Age is not fixed by a reply\nThe row stays 'Check this' and only 'Mark OK' lifts it"
 
 store st1 "Referral is In review again\nFixed rows read 'Resolved by the referrer's reply'"
 process p4 "Timeline: 'Reply received from … by email'\n'Reader read the reply and updated the extracted fields'\n'Validation ran again: 3 findings resolved, 9 of 9 checks passed' (fewer if age failed)"
 toast t2 "'The referrer replied'\n'3 findings resolved. RF-2053 is back In review.'"
 toast t3 "Bell 'The referrer replied'\n'Crisis line 988 follow-up answered RF-2053. Reader read the reply and 3 findings are resolved.'"
-screen sc2 "Checklist after the reply\n'11 of 11 ready', 'Nothing is missing'\n'Run coverage check' is available"
+screen sc2 "Checklist after the reply\n'11 of 11 ready', 'Nothing is missing'\n'Run coverage check' is available\n'Accept referral and continue' is enabled (unless the age failed)"
 goto g1 "Continues in: New case › Referral › Accept a referral"
 
 s1 --> sc1 --> w1 --> x1

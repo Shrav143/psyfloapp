@@ -1,0 +1,23 @@
+title: Case Manager › Active cases › A new case joins the tracker
+route: /manager
+intro: A case signed and sent in New case becomes a request on the Dashboard. The tracker adds it as a row marked 'New today', so the header count, the four status tiles, the pager and the rows always agree. A case that was already a row in the ledger (for example R-1042) keeps its row and gets no second one.
+dir: TD
+also: The new row follows the request. Fast-forward moves its clock. Reset demo data removes the row.
+---
+start s1 "New case › Review and sign › 'Sign and send'"
+store st1 "A request is created on the Dashboard as Received\nIts ID is added to 'sent today'"
+goto g1 "Continues in: Authorizations › New case › Review and sign › Sign and send"
+decision d1 "Is the ID already a row in the tracker?\n(R-1042, R-0988, I-2207, R-1101, I-2262 are)"
+process p1 "The row stays as it is"
+process p2 "A tracker row is added\nCase ID with a green 'New today' tag, initials and age\nLevel of care and request type\n'not yet approved', payer, approval chance from the draft"
+process p3 "Clock and status follow the request\nReceived or under review: 'Decision expected in 2 h', 'Awaiting payer'\nInfo requested: 'Answer due in 24 h', 'Needs action'\nApproved: '0 of 14 days', '14 days left' (IOP counts units), 'On track'\nDenied: 'Window closes in 72 h', 'Needs action'"
+process p4 "Header reads '57 active cases.'\nThe four tiles, 'Showing 1 to 10 of 57' and 'Clear them to see all 57' count it too\n'5 are still being prepared' drops by one"
+click c1 "Click the row, the case ID or 'Open'"
+goto g2 "Continues in: Authorizations › Case"
+end e1 "Count, tiles and rows agree"
+
+s1 --> st1 --> g1
+st1 --> d1
+d1 -->|Yes| p1 --> e1
+d1 -->|No| p2 --> p3 --> p4 --> e1
+p2 --> c1 --> g2

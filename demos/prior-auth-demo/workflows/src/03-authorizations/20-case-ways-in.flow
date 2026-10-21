@@ -29,7 +29,7 @@ screen nf "'Request not found'\n'There is no request with the ID X.'\n'Nothing t
 click bq "Click 'Back to queue' or the 'Authorizations' crumb"
 goto gQ "Continues in: Authorizations › Queue › Open the queue and read the top"
 
-store ld "Your earlier work on this case is loaded\nAnswers, applied and dismissed actions, draft edits, log"
+store ld "Your earlier work on this case is loaded\nAnswers, applied and dismissed actions, focus, clinical context, draft edits, log"
 decision d4 "Does ?tab= name one of the five tabs?"
 screen tab1 "That tab opens\ne.g. a review drawer opens '?tab=draft'"
 screen tab0 "'Recommended actions' opens"

@@ -1,8 +1,8 @@
 title: Case Manager › Active cases › Open a case from the tracker
 route: /manager → /authorizations/case/ID
-intro: A tracker row opens the case page in Authorizations. Three clicks do the same thing: the row, the case ID and the 'Open' button. Not every tracker case has a case page in the demo: some rows land on 'Request not found'.
+intro: A tracker row opens the case page. Three clicks do the same thing: the row, the case ID and the 'Open' button. A case that is a request gets the Authorizations case page; a case that only the ledger has gets the Ledger case page. Neither dead-ends.
 dir: TD
-also: Reviews have the same issue: 'Open case' in the review drawer uses the same case pages.
+also: Reviews work the same way: 'Open case' in the review drawer uses the same pages.
 ---
 start s1 "Tracker row is on screen"
 click c1 "Click anywhere on the row"
@@ -12,14 +12,14 @@ process p0 "The 'Open' button stops the click from reaching the row, so the case
 process p1 "Case Manager works out the address\n/authorizations/case/ followed by the case code"
 decision d1 "Is the row a denial?"
 process p2 "Uses the case the denial came from\nD-3318 opens R-0997, the original case"
-process p3 "Uses the row's own ID\nfor example R-1042 or I-2207"
-decision d2 "Does the case page know this case?"
+process p3 "Uses the row's own ID\nfor example R-1042, I-2207 or R-0856"
+decision d2 "Is the case a request in the queue or on the Dashboard?\n(30 of the 56 rows, and every case signed and sent today)"
 screen s2 "Case page\nHeader with the case ID, level of care and the request clock\nTabs for the case"
 goto g1 "Continues in: Authorizations › Case"
-screen s3 "'Request not found'\n'There is no request with the ID R-0856.'\n'Nothing to show here'"
-process p4 "The demo has case pages for about half the tracker (30 of 56)\nThe other 26 rows (cases that exist only in the tracker) land here"
-click c4 "Click 'Back to the queue'"
-goto g2 "Continues in: Authorizations › Queue"
+decision d3 "Is the case in the Case Manager ledger?\n(the other 26 rows)"
+screen s3 "Ledger case page\nSummary from the ledger record, next step and history\nButtons 'Open the review' (when one is due) and 'Back to Case Manager'"
+goto g3 "Continues in: Case Manager › Ledger case › Open and read"
+screen s5 "'Request not found'\n'There is no request with the ID R-9999.'\n(only for an address typed by hand)"
 click c5 "Click the browser Back button"
 screen s4 "Case Manager again\nSame tab, but search, filters, sort and page are back to their defaults"
 process p5 "These live in the page, not in the address, so they are not remembered"
@@ -33,8 +33,9 @@ p1 --> d1
 d1 -->|Yes| p2 --> d2
 d1 -->|No| p3 --> d2
 d2 -->|Yes| s2 --> g1
-d2 -->|No| s3 --> p4
-s3 --> c4 --> g2
+d2 -->|No| d3
+d3 -->|Yes| s3 --> g3
+d3 -.->|No| s5
 s2 --> c5
 s3 --> c5
 c5 --> s4 --> p5 --> e1

@@ -49,9 +49,11 @@ export function CoverageTab({ r }: { r: Referral }) {
   const nav = useNavigate();
   const run = useStore((s) => s.runCoverageCheck);
   const started = useStore((s) => s.coverageRunning[r.id]);
+  // Once the referral is a request, Eligibility can lead back to the request as well as to the referral.
+  const requestId = useStore((s) => s.requests.find((x) => x.referralId === r.id)?.id ?? r.requestId);
   const payerName = r.payerId ? payerById(r.payerId).name : "the payer";
   const full = (
-    <Button trailing={ArrowRight} onClick={() => nav(paths.eligibilityVerify({ referral: r.id }))}>Open full Eligibility &amp; Benefits check</Button>
+    <Button trailing={ArrowRight} onClick={() => nav(paths.eligibilityVerify({ referral: r.id, ...(requestId ? { case: requestId } : {}) }))}>Open full Eligibility &amp; Benefits check</Button>
   );
 
   if (started !== undefined) return <Running started={started} payerName={payerName} />;

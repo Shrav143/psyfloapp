@@ -31,6 +31,15 @@ export interface SubmitCasePayload {
 }
 export type Reply = "received" | "review" | "info" | "approve" | "partial" | "deny";
 
+/* A payer answers in order: it has the request, it reviews it, it may ask for more, then it decides. A request only moves forward,
+   so a reply is offered only while it is still ahead of where the request is. A request that is not sent yet or already decided gets none. */
+const REPLY_STEP: Record<Reply, number> = { received: 1, review: 2, info: 3, approve: 4, partial: 4, deny: 4 };
+const STAGE_STEP: Partial<Record<StageKey, number>> = { received: 1, under_review: 2, info_requested: 3 };
+export const allowedReplies = (r: PsyRequest): Reply[] => {
+  const at = STAGE_STEP[r.stage];
+  return at === undefined ? [] : (Object.keys(REPLY_STEP) as Reply[]).filter((x) => REPLY_STEP[x] > at);
+};
+
 export interface CoreSlice {
   /** Demo clock in minutes since 10:42 am on 20 Oct 2026. Only Fast-forward moves it. */
   clock: number;
@@ -51,7 +60,7 @@ export interface CoreSlice {
   addEvent: (id: string, event: Omit<RequestEvent, "id" | "at" | "done"> & { at?: number; done?: boolean }) => void;
   /** Sign and send: puts a request on the Dashboard as Received. Returns its id. */
   submitCase: (p: SubmitCasePayload) => string;
-  /** Demo control: make the payer answer. */
+  /** Demo control: make the payer answer. A reply that is not ahead of the request (see allowedReplies) is ignored and returns undefined. */
   simulateReply: (id: string, reply: Reply) => string | undefined;
   /** The user reviewed Packet's answer to an information request and sent it. */
   answerInfoRequest: (id: string) => void;
@@ -120,10 +129,10 @@ export const createCoreSlice: StateCreator<AppState, [], [], CoreSlice> = (set, 
 
   simulateReply: (id, reply) => {
     const r = get().requests.find((x) => x.id === id);
-    if (!r) return undefined;
+    if (!r || !allowedReplies(r).includes(reply)) return undefined;
     const clock = get().clock;
     const keep = r.events.filter((e) => e.done);
-    const base = { stageSince: clock, needsYou: false };
+    const base = { stageSince: clock, needsYou: false, decidedToday: false, outcome: undefined };
     if (reply === "received") {
       set((s) => ({ requests: s.requests.map((x) => (x.id === id ? { ...x, ...base, stage: "received", chip: "Received", tone: "neutral", progress: 1, agent: "navigator", next: "Navigator checks again in 30 minutes", events: [...keep, ev("navigator", "Navigator checked: received", clock)] } : x)) }));
     } else if (reply === "review") {

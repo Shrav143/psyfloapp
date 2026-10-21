@@ -1,4 +1,4 @@
-import { ArrowLeft, PenLine, Send } from "lucide-react";
+import { ArrowLeft, Check, LayoutDashboard, PenLine, Send } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { AgentBadge, Banner, Button, Card, Chip, Label, PageHeader, Pill, Ring } from "@/components/ui";
 import { confidenceWord, daysLikely, isBenchmarkOnly, rangeOf, similarTotal } from "@/data/caseModel";
@@ -17,7 +17,8 @@ import { useAnimatedNumber } from "./useAnimatedNumber";
 export function CaseHeader({ ctx }: { ctx: CaseCtx }) {
   const navigate = useNavigate();
   const clock = useStore((s) => s.clock);
-  const { detail, work, chance, projected, canSend, sendReason, send } = ctx;
+  const { detail, work, chance, projected, canSend, sendReason, sent, live, send } = ctx;
+  const moved = live?.moved ? live : null; // the request is past where this page's own wording stops: show its own chip and line
   const payer = payerById(detail.payerId);
   const shown = useAnimatedNumber(chance);
   const b = chanceBand(chance);
@@ -38,7 +39,7 @@ export function CaseHeader({ ctx }: { ctx: CaseCtx }) {
             <Chip className="font-sans tracking-normal">{detail.levelLabel}</Chip>
             <span>{detail.id}</span>
             <Chip className="font-sans tracking-normal">{detail.type}</Chip>
-            {detail.chip ? <Pill tone={detail.chip.tone} dot className="font-sans tracking-normal">{detail.chip.text}</Pill> : left !== null ? <Pill tone={dueTone} dot className="font-sans tracking-normal">{dueText(detail.dueVerb, detail.dueAt ?? 0, clock)}</Pill> : null}
+            {moved ? <Pill tone={moved.tone} dot className="font-sans tracking-normal">{moved.chip}</Pill> : detail.chip ? <Pill tone={detail.chip.tone} dot className="font-sans tracking-normal">{detail.chip.text}</Pill> : left !== null ? <Pill tone={dueTone} dot className="font-sans tracking-normal">{dueText(detail.dueVerb, detail.dueAt ?? 0, clock)}</Pill> : null}
           </span>
         }
         sub={
@@ -47,8 +48,9 @@ export function CaseHeader({ ctx }: { ctx: CaseCtx }) {
             <span className="text-base text-ink">{detail.dx}</span>
             <Scores scores={detail.scores} />
             <span className="mt-1 flex items-center gap-2 text-[13px] text-ink2">
-              <AgentBadge agent={ready ? "integrity" : detail.agent} size={22} />
-              {ready ? "Ready to sign. Integrity passed all four checks" : detail.statusLine}
+              <AgentBadge agent={ready ? "integrity" : moved ? moved.agent : detail.agent} size={22} />
+              {ready ? "Ready to sign. Integrity passed all four checks" : moved ? moved.line : detail.statusLine}
+              {live ? <Button size="sm" variant="ghost" icon={LayoutDashboard} onClick={() => navigate(paths.dashboard({ request: live.requestId }))}>Open on the Dashboard</Button> : null}
             </span>
           </div>
         }
@@ -56,7 +58,11 @@ export function CaseHeader({ ctx }: { ctx: CaseCtx }) {
           <div className="flex flex-col items-end gap-2">
             <div className="flex items-center gap-3">
               <Button icon={PenLine} onClick={send}>Open in review and sign</Button>
-              <Button variant="primary" icon={Send} disabled={!canSend} title={canSend ? undefined : sendReason} onClick={send}>Send to payer</Button>
+              {sent ? (
+                <Button variant="primary" icon={Check} disabled title={sendReason}>Sent to payer</Button>
+              ) : (
+                <Button variant="primary" icon={Send} disabled={!canSend} title={canSend ? undefined : sendReason} onClick={send}>Send to payer</Button>
+              )}
               <Button variant="ghost" icon={ArrowLeft} onClick={() => navigate(paths.authorizations())}>Back to queue</Button>
             </div>
             <span className="max-w-[420px] text-right text-xs text-muted">{canSend ? "Sending opens review and sign. Nothing goes to the payer until a clinician signs." : sendReason}</span>

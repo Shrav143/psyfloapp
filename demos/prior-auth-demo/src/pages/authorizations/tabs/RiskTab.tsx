@@ -3,7 +3,7 @@ import { CircleCheck, CircleHelp, Check, TriangleAlert } from "lucide-react";
 import { Banner, Button, Card, CardBody, CardHeader, Chip, Donut, Label, Pill } from "@/components/ui";
 import { confidenceWord, driverView, groupRecs, gainOf, isBenchmarkOnly, outcomeSplit, rangeOf, similarTotal } from "@/data/caseModel";
 import { payerById } from "@/data/seed";
-import { band as chanceBand } from "@/lib/format";
+import { band as chanceBand, plural } from "@/lib/format";
 import type { CaseCtx } from "../caseTypes";
 import { DriverBars, formulaOf } from "./DriverBars";
 import { HowCalculatedModal, SeeAllModal } from "./RiskModals";
@@ -115,7 +115,7 @@ export function RiskTab({ ctx }: { ctx: CaseCtx }) {
 
       <Banner tone={chance >= 80 ? "good" : "mid"} icon={chance >= 80 ? CircleCheck : TriangleAlert}>
         <b className="font-semibold">Where this stands:</b>{" "}
-        {top ? `${b.word.toLowerCase()}, with ${open.length} ${open.length === 1 ? "step" : "steps"} left. The biggest single step is to ${top.title[0].toLowerCase()}${top.title.slice(1)} (+${gainOf(top)} pts).` : "every recommended action is applied. The draft is as strong as the chart allows."}
+        {top ? `${b.word.toLowerCase()}, with ${open.length} ${open.length === 1 ? "step" : "steps"} left. The biggest single step is to ${top.title[0].toLowerCase()}${top.title.slice(1)} (+${plural(gainOf(top), "pt")}).` : "every recommended action is applied. The draft is as strong as the chart allows."}
       </Banner>
       {how ? <HowCalculatedModal detail={detail} onClose={() => setHow(false)} /> : null}
       {all ? <SeeAllModal detail={detail} onClose={() => setAll(false)} /> : null}

@@ -19,6 +19,8 @@ export interface EmrSystem {
   writeBack: boolean;
   /** Plain words about what needs a look. */
   issue?: string;
+  /** The problem it had when it was disconnected. While this is set, Reconnect starts with Fix. */
+  fixIssue?: string;
 }
 
 export interface EmrActivity { id: string; at: number; agent: AgentKey; text: string }
@@ -84,6 +86,14 @@ export const SYSTEM_KINDS: { value: SystemKind; holds: string }[] = [
   { value: "Practice management", holds: "Schedules and admissions" },
   { value: "Lab results", holds: "Lab orders and results" },
 ];
+
+/** What the agents may read, by kind of system. */
+export const SYSTEM_READS: Record<SystemKind, string[]> = {
+  "Clinical record": ["Assessments", "Progress notes", "Labs", "Medications", "Insurance card"],
+  "Billing system": ["Claims", "Remittances", "Payment dates"],
+  "Practice management": ["Schedules", "Admissions", "Insurance card"],
+  "Lab results": ["Lab orders", "Lab results"],
+};
 
 export const BASE_CHARTS = 23;
 export const BASE_FILES = 142;

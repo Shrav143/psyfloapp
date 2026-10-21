@@ -32,7 +32,7 @@ group gClose "Closing the drawer"
 endgroup
 process p2 "?request is removed from the address\nFilters and paging stay as they were"
 end e2 "Drawer closed, table as before"
-process p3 "Escape also closes any pop-up opened from the drawer, in the same press"
+process p3 "Escape closes one layer at a time\nA pop-up opened from the drawer closes first; the next Escape closes the drawer"
 
 s1 --> d1
 d1 -->|Yes| f1

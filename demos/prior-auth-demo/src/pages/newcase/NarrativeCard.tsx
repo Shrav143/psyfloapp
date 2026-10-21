@@ -13,8 +13,9 @@ export function NarrativeCard({ sections, payer, onSave, onSource }: { sections:
     setText(Object.fromEntries(sections.map((s) => [s.id, s.text])));
     setEditing(true);
   };
+  /* A section that comes from the case page (Context added) is shown here but never part of the edit. */
   const save = () => {
-    onSave(sections.map((s) => ({ ...s, text: text[s.id] ?? s.text })));
+    onSave(sections.filter((s) => !s.fixed).map((s) => ({ ...s, text: text[s.id] ?? s.text })));
     setEditing(false);
   };
 
@@ -42,7 +43,7 @@ export function NarrativeCard({ sections, payer, onSave, onSource }: { sections:
       />
       <CardBody className="flex flex-col gap-4 text-[15px] leading-[1.75]">
         {sections.map((s) =>
-          editing ? (
+          editing && !s.fixed ? (
             <div key={s.id}>
               <label htmlFor={`sec-${s.id}`} className="mb-1.5 block text-[13px] font-semibold">
                 {s.heading}

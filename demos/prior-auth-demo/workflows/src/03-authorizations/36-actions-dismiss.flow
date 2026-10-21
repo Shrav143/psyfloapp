@@ -2,7 +2,7 @@ title: Authorizations › Case page › Recommended actions › Dismiss and brin
 route: /authorizations/case/R-1042?tab=actions
 intro: Dismissing one card or every included card, why the dialog asks for a reason, what it warns about when a card gates 'Send to payer', and how to bring a card back.
 dir: TD
-also: Demo only: the toast says the reason 'feeds Analytics', but no Analytics screen reads it. The reason shows in 'Logged decisions', on the dismissed card and in the Dashboard request's history.
+also: The reason is written to the shared list of dismissals that Analytics reads, one line for each time 'Dismiss and log' is confirmed (not one per card). It also shows in 'Logged decisions', on the dismissed card and in the Dashboard request's history.
 ---
 click d1 "Click 'Dismiss' on one card"
 click d2 "Click 'Dismiss recommendations' in the side panel\n(all included cards at once)"
@@ -26,6 +26,8 @@ endx ce "Dialog closes\nNothing changes"
 
 store st "Each card saved as dismissed with the reason and the time\nLog: You dismissed '(title)'. Reason: ..."
 store dsh "If the request is on the Dashboard: an event on its history\n'You dismissed ... Reason: ...'"
+store an "Dismissal recorded for Analytics\nThe request and the reason"
+goto gA "Continues in: Analytics › Arrive and read the page"
 toast tt "'Recommendation dismissed' or '3 recommendations dismissed'\n'The reason is logged and feeds Analytics.'"
 process mv "Cards leave the open list\nHeader line 'up to N%' drops their points\n'Dismissed (1)' appears: struck-through title, 'Reason logged: ...'"
 process gt "If the card gated a check, that check stays open\n'Send to payer' stays off"
@@ -50,6 +52,7 @@ dok -->|No| dis
 dok -->|Yes| cf
 m --> cx --> ce
 cf --> st --> dsh
+st --> an --> gA
 st --> tt
 st --> mv --> gt
 mv --> bb --> rs --> nt

@@ -1,4 +1,5 @@
 import type { Option } from "@/components/ui";
+import type { CaseDraft } from "@/data/cases";
 import { PAYERS, payerById } from "@/data/seed";
 import { PROGRAMS, PROGRAM_LABEL, REQUEST_TYPES, STAGES, STAGE_LABEL, type PayerId, type PayerSummary, type PsyRequest, type StageKey, type Tone } from "@/data/types";
 import { addDays, daysIn, fromISO, isISO, toISO, type DateRange } from "@/lib/dates";
@@ -7,6 +8,7 @@ import { DAY, HOUR, duration, toDate, typical } from "@/lib/time";
 import type { RangePreset } from "@/components/ui";
 import { DEFAULT_FILTERS, DEFAULT_RANGE, type DashFilters } from "@/store/core";
 import { applyBaseFilters, lateness, minutesInStage, minutesLeft, stageCounts } from "@/store/selectors";
+import { draftNeeds } from "./preparing-drafts";
 
 /* ------------------------------------------------------------------ labels and options */
 
@@ -116,15 +118,16 @@ const days = (n: number): string => `${+n.toFixed(1)} days`;
 /**
  * The page headline and its muted line. Unfiltered it counts what waits on payers and on you.
  * A filtered page says what it is about, never a filtered number posing as the total.
+ * `more` is how many cases are being prepared in New case without a row yet; the Preparing count includes them.
  */
-export function pageHeadline(f: DashFilters, base: PsyRequest[], shown: PsyRequest[]): { title: string; sub: string } {
+export function pageHeadline(f: DashFilters, base: PsyRequest[], shown: PsyRequest[], more: number): { title: string; sub: string } {
   const c = stageCounts(base);
   const waiting = c.received + c.under_review;
   const onYou = c.info_requested;
   const n = shown.length;
   const scope = scopeText(f);
   const lead = scope ? `${scope}. ` : "";
-  if (n === 0) return { title: "No requests match these filters.", sub: "The filters hide everything. Clear them to see every request again." };
+  if (n + (f.stage === "preparing" ? more : 0) === 0) return { title: "No requests match these filters.", sub: "The filters hide everything. Clear them to see every request again." };
 
   switch (f.stage) {
     case "appeal":
@@ -132,7 +135,7 @@ export function pageHeadline(f: DashFilters, base: PsyRequest[], shown: PsyReque
     case "info_requested":
       return { title: `${n} ${are(n, "request is", "requests are")} waiting on you.`, sub: `${lead}The payer asked for more information. Packet drafts each answer for you to review.` };
     case "preparing":
-      return { title: `${n} ${are(n, "request is", "requests are")} being prepared.`, sub: `${lead}They are in Case Manager. Nothing has been sent to a payer yet.` };
+      return { title: `${n + more} ${are(n + more, "request is", "requests are")} being prepared.`, sub: `${lead}They are in Case Manager. Nothing has been sent to a payer yet.` };
     case "received":
       return { title: `${n} ${are(n, "request has", "requests have")} been received.`, sub: `${lead}The payer confirmed receipt. Navigator checks each one again every few minutes.` };
     case "under_review":
@@ -170,14 +173,15 @@ export interface StripCell {
 
 const STRIP_TONE: Record<StageKey, Tone> = { preparing: "neutral", received: "neutral", under_review: "neutral", info_requested: "mid", decided: "good", appeal: "risk" };
 
-/** Six tiles. Counts follow every filter except Stage; each line is computed from the requests. */
-export function stripCells(base: PsyRequest[], clock: number): StripCell[] {
+/** Six tiles. Counts follow every filter except Stage; each line is computed from the requests. `more` are the cases being prepared in New case that have no row yet. */
+export function stripCells(base: PsyRequest[], clock: number, more: CaseDraft[]): StripCell[] {
   const c = stageCounts(base);
   const inS = (s: StageKey) => base.filter((r) => (s === "decided" ? r.decidedToday : r.stage === s));
   const prep = inS("preparing");
-  const needYou = prep.filter((r) => r.needsYou).length;
-  const ready = prep.filter((r) => r.next.startsWith("Ready to sign")).length;
-  const prepNote = [needYou ? `${needYou} need you` : "", ready ? `${ready} ready to sign` : ""].filter(Boolean).join(", ") || (prep.length ? "agents are working on them" : "nothing in preparation");
+  const drafts = draftNeeds(more);
+  const needYou = prep.filter((r) => r.needsYou).length + drafts.needYou;
+  const ready = prep.filter((r) => r.next.startsWith("Ready to sign")).length + drafts.ready;
+  const prepNote = [needYou ? `${needYou} need you` : "", ready ? `${ready} ready to sign` : ""].filter(Boolean).join(", ") || (prep.length + more.length ? "agents are working on them" : "nothing in preparation");
 
   const received = inS("received");
   const avgTypical = received.length ? received.reduce((a, r) => a + (r.typicalMin ?? 25), 0) / received.length : 0;
@@ -192,7 +196,7 @@ export function stripCells(base: PsyRequest[], clock: number): StripCell[] {
   const open = inS("appeal");
   const soon = open.filter((r) => (minutesLeft(r, clock) ?? Infinity) < 7 * DAY).length;
 
-  const cell = (stage: StageKey, desc: string, note: string): StripCell => ({ stage, label: STAGE_LABEL[stage], value: c[stage], desc, note, tone: STRIP_TONE[stage] });
+  const cell = (stage: StageKey, desc: string, note: string): StripCell => ({ stage, label: STAGE_LABEL[stage], value: c[stage] + (stage === "preparing" ? more.length : 0), desc, note, tone: STRIP_TONE[stage] });
   return [
     cell("preparing", "in Case Manager", prepNote),
     cell("received", "payer has it", received.length ? `about ${typical(avgTypical)} on average` : "nothing waiting on receipt"),
@@ -236,6 +240,9 @@ export function clockView(r: PsyRequest, clock: number): ClockView {
     word: late === "very" ? "very late" : late === "late" ? "late" : undefined,
   };
 }
+
+/** "What happens next". An approval says its write-back waits for you only while write-back is on in EMR Connect. */
+export const nextLine = (r: PsyRequest, writeBackOn: boolean): string => (writeBackOn ? r.next : r.next.replace("Write-back waits for you", "Write-back is off in EMR Connect"));
 
 export const DENIAL_ROUTE = ["Call", "Appeal 1", "Appeal 2", "External"] as const;
 export const AUTH_TRACK = ["Prepared", "Received", "In review", "Decided"] as const;

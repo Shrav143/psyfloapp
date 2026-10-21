@@ -23,21 +23,24 @@ function CheckRow({ c }: { c: PaymentCheck }) {
   );
 }
 
-/** The seven payment checks, one row each, and the patient's cost as a small last line. Used on the result page and in the intake drawer. */
+/** The payment checks, one row each, and the patient's cost as a small last line. Used on the result page and in the intake drawer.
+    When no coverage was found there is no cost line: nothing was checked that could say what the patient pays. */
 export function PaymentChecks({ result }: { result: Pick<CheckResult, "checks" | "patientPays"> }) {
   return (
     <>
-      <ol aria-label="Payment checks">
+      <ol aria-label="Payment checks" className={result.patientPays === null ? "[&>li:last-child]:border-b-0" : undefined}>
         {result.checks.map((c) => (
           <CheckRow key={c.id} c={c} />
         ))}
       </ol>
-      <div className="flex items-start gap-3.5 rounded-b-[20px] bg-tile px-6 py-4">
-        <Receipt size={18} className="ico mt-0.5 text-muted" aria-hidden="true" />
-        <div className="text-[13.5px]">
-          <span className="font-semibold">What the patient pays:</span> <span className="text-muted">{result.patientPays} This does not change what the clinic is paid. A $0 copay does not mean the clinic is paid.</span>
+      {result.patientPays !== null ? (
+        <div className="flex items-start gap-3.5 rounded-b-[20px] bg-tile px-6 py-4">
+          <Receipt size={18} className="ico mt-0.5 text-muted" aria-hidden="true" />
+          <div className="text-[13.5px]">
+            <span className="font-semibold">What the patient pays:</span> <span className="text-muted">{result.patientPays} This does not change what the clinic is paid. A $0 copay does not mean the clinic is paid.</span>
+          </div>
         </div>
-      </div>
+      ) : null}
     </>
   );
 }

@@ -9,6 +9,8 @@ import { PROGRAM_SHORT, routeChip } from "./lib/format";
 interface Props {
   open: PsyRequest[];
   closed: PsyRequest[];
+  /** How many denials are open before any filter from the address. */
+  openTotal: number;
   selectedId: string | undefined;
   clock: number;
   meta: Record<string, DenialMeta>;
@@ -35,11 +37,12 @@ function Row({ r, selected, clock, meta, onSelect }: { r: PsyRequest; selected: 
 }
 
 /** Every open denial from the Dashboard's Appeal or call stage, nearest deadline first. Click one to load it on the left. */
-export function OpenDenialsCard({ open, closed, selectedId, clock, meta, onSelect }: Props) {
+export function OpenDenialsCard({ open, closed, openTotal, selectedId, clock, meta, onSelect }: Props) {
+  const filtered = open.length < openTotal;
   return (
     <Card className="overflow-hidden">
-      <CardHeader title="Open denials" right={<Pill tone={open.length ? "risk" : "good"}>{open.length}</Pill>} />
-      {open.length ? open.map((r) => <Row key={r.id} r={r} selected={r.id === selectedId} clock={clock} meta={meta[r.id]} onSelect={onSelect} />) : <div className="px-6 py-5 text-sm text-muted">No open denials. Everything sent is approved or waiting.</div>}
+      <CardHeader title="Open denials" subtitle={filtered ? `${open.length} of ${openTotal} match the filters` : undefined} right={<Pill tone={open.length ? "risk" : "good"}>{open.length}</Pill>} />
+      {open.length ? open.map((r) => <Row key={r.id} r={r} selected={r.id === selectedId} clock={clock} meta={meta[r.id]} onSelect={onSelect} />) : <div className="px-6 py-5 text-sm text-muted">{openTotal ? "No open denials match the filters." : "No open denials. Everything sent is approved or waiting."}</div>}
       {closed.length ? (
         <div className={cn("border-t border-line")}>
           <div className="px-5 pt-3.5 pb-1 text-[11.5px] font-medium tracking-[0.1em] text-muted uppercase">Closed</div>

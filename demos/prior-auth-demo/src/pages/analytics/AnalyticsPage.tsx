@@ -1,13 +1,14 @@
 import { useMemo, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
-import { AlertTriangle, Bot, CheckCircle2, Download, ThumbsUp } from "lucide-react";
-import { Button, Card, CardBody, CardHeader, Donut, Dropdown, HBars, ListRow, Page, PageHeader, Stat, Table, Td, Th, Tr } from "@/components/ui";
+import { AlertTriangle, CheckCircle2, FileCheck, FileText, ThumbsUp } from "lucide-react";
+import { Button, Card, CardBody, CardHeader, Donut, Dropdown, HBars, Label, ListRow, Page, PageHeader, Stat, Table, Td, Th, Tr } from "@/components/ui";
 import { PERIODS, type PayerFilter, type PeriodId } from "@/data/analytics";
-import { band } from "@/lib/format";
+import { band, money } from "@/lib/format";
 import { PAYER_OPTIONS } from "@/pages/dashboard/helpers";
 import { paths } from "@/routes";
 import { ReportModal } from "./ReportModal";
-import { buildView, fmt, trendLine, type Tile } from "./model";
+import { buildView, fmt, trendLine, type Tile, type View } from "./model";
+import { useRipples } from "./useRipples";
 
 const NOT_ENOUGH = "Not enough decisions yet";
 const PERIOD_OPTIONS = PERIODS.map((p) => ({ value: p.id, label: p.label }));
@@ -25,6 +26,31 @@ function sub(tile: Tile, context: string, period: string): ReactNode {
 }
 const hidden = (t: Tile): string => (t.value === null ? "-" : `${t.value}%`);
 
+/** Under the denial table: how appeals ended and what was given up. Both move when Denial Intelligence records a ruling or an accepted denial. */
+function DenialOutcomes({ v }: { v: View }) {
+  const { appeals, writtenOff, period } = v;
+  return (
+    <div className="grid grid-cols-2 gap-6 border-t border-line px-6 py-4">
+      <div>
+        <Label>Appeals overturned</Label>
+        <div className="mt-1 flex items-baseline gap-2">
+          <b className="text-xl">{hidden(appeals)}</b>
+          <span className="text-[13px] text-muted">{appeals.value === null ? NOT_ENOUGH : `${fmt(appeals.overturned)} of ${fmt(appeals.n)} rulings ${period.phrase}`}</span>
+        </div>
+      </div>
+      <div>
+        <Label>Written off after accepted denials</Label>
+        <div className="mt-1 flex items-baseline gap-2">
+          <b className="text-xl">{money(writtenOff.amount)}</b>
+          <span className="text-[13px] text-muted">
+            {fmt(writtenOff.n)} {writtenOff.n === 1 ? "denial" : "denials"} {period.phrase}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function NotEnough() {
   return <div className="px-6 py-10 text-center text-sm text-muted">{NOT_ENOUGH}. Figures based on fewer than 20 decisions stay hidden.</div>;
 }
@@ -35,7 +61,8 @@ export default function AnalyticsPage() {
   const [period, setPeriod] = useState<PeriodId>("quarter");
   const [payer, setPayer] = useState<PayerFilter>("all");
   const [report, setReport] = useState(false);
-  const v = useMemo(() => buildView(period, payer), [period, payer]);
+  const ripples = useRipples();
+  const v = useMemo(() => buildView(period, payer, ripples), [period, payer, ripples]);
   const phrase = v.period.phrase;
   const hiddenBars = v.bars.filter((b) => b.value === null);
 
@@ -48,7 +75,7 @@ export default function AnalyticsPage() {
           <>
             <Dropdown ariaLabel="Period" value={period} options={PERIOD_OPTIONS} onChange={setPeriod} />
             <Dropdown ariaLabel="Payer" value={payer} defaultValue="all" options={PAYER_OPTIONS} onChange={setPayer} menuWidth={250} />
-            <Button icon={Download} onClick={() => setReport(true)}>
+            <Button icon={FileText} onClick={() => setReport(true)}>
               Monthly report
             </Button>
           </>
@@ -59,7 +86,7 @@ export default function AnalyticsPage() {
         <Stat tone="good" icon={CheckCircle2} value={hidden(v.approved)} label="Approved as asked" sub={sub(v.approved, trendLine(v.approved.delta, v.period.prev), phrase)} />
         <Stat tone="risk" icon={AlertTriangle} value={hidden(v.topCause)} label="Top denial cause" sub={sub(v.topCause, v.topCause.label, phrase)} />
         <Stat tone="mid" icon={ThumbsUp} value={hidden(v.advice)} label="Advice taken works" sub={sub(v.advice, "Approved when applied", phrase)} />
-        <Stat tone="neutral" icon={Bot} value={hidden(v.noEdits)} label="Sent without edits" sub={sub(v.noEdits, "As written, or a typo fixed", phrase)} />
+        <Stat tone="neutral" icon={FileCheck} value={hidden(v.noEdits)} label="Sent without edits" sub={sub(v.noEdits, "As written, or a typo fixed", phrase)} />
       </div>
 
       <div className="grid grid-cols-2 items-start gap-5">
@@ -113,7 +140,7 @@ export default function AnalyticsPage() {
       </div>
 
       <Card className="overflow-hidden">
-        <CardHeader title="Common denial reasons by payer" subtitle={v.reasons ? `${v.period.label} · ${fmt(v.reasons.total)} denials in the reasons listed. Select a row to open Denial Intelligence.` : v.period.label} />
+        <CardHeader title="Common denial reasons by payer" subtitle={v.reasons ? `${v.period.label} · ${fmt(v.reasons.total)} denials in the reasons listed. Select a row to open those denials in Denial Intelligence.` : v.period.label} />
         {v.reasons ? (
           <Table>
             <thead>
@@ -126,9 +153,9 @@ export default function AnalyticsPage() {
             </thead>
             <tbody>
               {v.reasons.rows.map((r) => (
-                <Tr key={`${r.payerId}-${r.reason}`} onClick={() => navigate(paths.denials())} data-reason={r.reason}>
+                <Tr key={`${r.payerId}-${r.reason}`} onClick={() => navigate(paths.denials(undefined, { payer: r.payerId, reason: r.reason }))} data-reason={r.reason}>
                   <Td>
-                    <button type="button" onClick={(e) => { e.stopPropagation(); navigate(paths.denials()); }} className="text-left hover:underline">
+                    <button type="button" onClick={(e) => { e.stopPropagation(); navigate(paths.denials(undefined, { payer: r.payerId, reason: r.reason })); }} className="text-left hover:underline">
                       {r.reason}
                     </button>
                   </Td>
@@ -149,6 +176,7 @@ export default function AnalyticsPage() {
         ) : (
           <NotEnough />
         )}
+        <DenialOutcomes v={v} />
       </Card>
 
       <Card className="overflow-hidden">
@@ -168,6 +196,18 @@ export default function AnalyticsPage() {
           <NotEnough />
         )}
       </Card>
+
+      {v.dismissed ? (
+        <Card className="overflow-hidden">
+          <CardHeader title="Why recommendations were dismissed" subtitle={`The reason given each time someone dismissed a recommendation, ${phrase}`} />
+          {v.dismissed.map((d) => (
+            <ListRow key={d.reason}>
+              <div className="min-w-0 flex-1 font-semibold">{d.reason}</div>
+              <b>{d.count === 1 ? "1 time" : `${d.count} times`}</b>
+            </ListRow>
+          ))}
+        </Card>
+      ) : null}
 
       {report ? <ReportModal view={v} onClose={() => setReport(false)} /> : null}
     </Page>

@@ -1,7 +1,17 @@
 import { Card, CardBody, CardHeader, Checkbox, Label, Pill, Ring } from "@/components/ui";
-import { chanceRange, currentChance, FORECAST_STEP, similarCases, SUGGESTIONS, type CaseDraft } from "@/data/cases";
-import { band } from "@/lib/format";
+import { chanceRange, currentChance, FORECAST_STEP, similarCases, SUGGESTIONS, unmetPenalty, type CaseDraft } from "@/data/cases";
+import { band, plural } from "@/lib/format";
 import { useStore } from "@/store";
+
+/** What holds the chance back: things the payer asks for that this case does not meet. Nothing when there are none. */
+export function UnmetLine({ draft }: { draft: CaseDraft }) {
+  if (draft.unmet <= 0) return null;
+  return (
+    <p className="text-xs text-mid-ink">
+      Held back {unmetPenalty(draft.unmet)} points: {plural(draft.unmet, "thing")} the payer asks for {draft.unmet === 1 ? "is" : "are"} not met.
+    </p>
+  );
+}
 
 /** The approval chance: a ring that climbs as agents finish, where it started, the likely range and how many similar cases it rests on. */
 export function ChancePanel({ draft }: { draft: CaseDraft }) {
@@ -24,6 +34,7 @@ export function ChancePanel({ draft }: { draft: CaseDraft }) {
         <Pill tone={b.tone} dot>
           {b.word}{settled ? "" : " so far"} · likely {range.lo}-{range.hi}%
         </Pill>
+        <UnmetLine draft={draft} />
         <p className="text-xs text-muted">
           {sc ? `Based on ${sc.total.toLocaleString("en-US")} similar cases (${sc.own} your own, ${sc.network} network, ${sc.benchmark} benchmark). ` : ""}It estimates how well the paperwork fits this payer's past decisions. It never decides care.
         </p>

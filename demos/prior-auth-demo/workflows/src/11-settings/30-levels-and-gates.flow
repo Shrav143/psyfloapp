@@ -1,8 +1,8 @@
 title: Settings › Agents › What each freedom level allows and the gates it never skips
 route: /settings
-intro: The three levels set how much an agent does before a person looks. Five gates sit above every level. The demo shows only the level names and the Gates card, so the meaning of each level comes from the PRD guardrail matrix.
+intro: The three levels set how much an agent does before a person looks. Five gates sit above every level. The page names the levels, says in one line what each changes (the 'What each level changes' card) and shows the Gates card. The PRD guardrail matrix gives the wider meaning.
 dir: TD
-also: The mapping from the three demo labels to the PRD words (Stage or Draft, Auto + notify, Auto) is our reading. The PRD sets autonomy per action, not per agent.
+also: The mapping from the three demo labels to the PRD words (Stage or Draft, Auto + notify, Auto) is our reading. The PRD sets autonomy per action, not per agent. In the demo the levels are applied in EMR Connect only.
 ---
 start s1 "An agent is about to take a step"
 decision q0 "Is it clinical content or a clinical decision?"
@@ -19,9 +19,9 @@ group gGate "The five gates (the Gates card), above every level"
 endgroup
 
 group gLev "The three levels (Freedom dropdown)"
-  process l1 "Ask before acting\nThe agent prepares it and a person confirms before it lands\n(PRD: Stage or Draft)"
-  process l2 "Act, then report\nThe agent does it and the result shows afterwards in the feed\n(PRD: Auto + notify)"
-  process l3 "Act on its own\nThe agent does it without a prompt\n(PRD: Auto)"
+  process l1 "Ask before acting\nOn the page: 'Waits for your OK. Reader asks before it syncs, and Navigator before it fixes or reconnects a system.'\n(PRD: Stage or Draft)"
+  process l2 "Act, then report\nOn the page: 'Goes ahead, then reports what it did in a toast and in Recent activity.'\n(PRD: Auto + notify)"
+  process l3 "Act on its own\nOn the page: 'Goes ahead and only logs what it did in Recent activity, with no toast.'\n(PRD: Auto)"
 endgroup
 
 process p1 "The signature is bound to the exact packet\nNothing addressed to a payer leaves without it. PRD: an invariant, not a setting"
@@ -32,6 +32,7 @@ goto n3 "Continues in: New case › Agents work › Answer a question"
 goto n4 "Continues in: Payers › Changes › Acknowledge a change"
 goto n5 "Continues in: Settings › Pause › Pause all agents"
 goto n6 "Continues in: Settings › Agents › Which steps need a person"
+goto n7 "Continues in: EMR Connect › Sync › When an agent is paused or asks first"
 
 s1 --> q0
 q0 -->|Yes| x1
@@ -55,3 +56,4 @@ g3 -.-> n3
 g4 -.-> n4
 g5 -.-> n5
 q3 -.-> n6
+l1 -.-> n7

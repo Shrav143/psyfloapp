@@ -1,11 +1,13 @@
 import { useState, type ReactNode } from "react";
 import { Button, Field, Modal, TextInput } from "@/components/ui";
 
-/** Every payer edit asks for a reason before it is saved and logged. Mounted only while open. */
-export function ReasonModal({ title, subtitle, children, saveLabel = "Save and log the edit", size = "md", onClose, onSave }: { title: string; subtitle?: string; children?: ReactNode; saveLabel?: string; size?: "sm" | "md" | "lg"; onClose: () => void; onSave: (reason: string) => void }) {
+/** Every payer edit asks for a reason before it is saved and logged. Mounted only while open.
+    `valid` lets the form keep a save from going through while one of its own fields shows an error. */
+export function ReasonModal({ title, subtitle, children, saveLabel = "Save and log the edit", size = "md", valid = true, onClose, onSave }: { title: string; subtitle?: string; children?: ReactNode; saveLabel?: string; size?: "sm" | "md" | "lg"; valid?: boolean; onClose: () => void; onSave: (reason: string) => void }) {
   const [reason, setReason] = useState("");
   const [missing, setMissing] = useState(false);
   const save = () => {
+    if (!valid) return;
     if (!reason.trim()) {
       setMissing(true);
       return;

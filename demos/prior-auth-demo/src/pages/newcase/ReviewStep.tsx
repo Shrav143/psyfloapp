@@ -7,19 +7,25 @@ import { payerById } from "@/data/seed";
 import { band } from "@/lib/format";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
+import { UnmetLine } from "./ChancePanel";
 import { ChecksCard } from "./ChecksCard";
 import { integrityChecks } from "./checks";
 import { DocPreviewDrawer } from "./DocPreviewDrawer";
 import { slotOfSource } from "./documents";
 import { NarrativeCard } from "./NarrativeCard";
-import { buildNarrative } from "./narrative";
+import { narrativeOf } from "./narrative";
+import { PayerChangeNote } from "./PayerChangeNote";
+import { usePayerContext } from "./payerContext";
 import { SignCard } from "./SignCard";
 import { StepFooter } from "./StepFooter";
+import { useRecAdds } from "./useRecAdds";
+import { useUnmetSync } from "./useUnmetSync";
 import { ValidationSummary } from "./ValidationSummary";
 
 const RECHECK_MS = 1200;
+const NO_CONTEXT: string[] = [];
 
-/** Step 3: the draft on the left, the checks and the sign-off on the right. Only a clinician can sign. */
+/** Step 4: the draft on the left, the checks and the sign-off on the right. Only a clinician can sign. */
 export function ReviewStep({ draft }: { draft: CaseDraft }) {
   const nav = useNavigate();
   const patch = useStore((s) => s.patchCaseDraft);
@@ -31,8 +37,15 @@ export function ReviewStep({ draft }: { draft: CaseDraft }) {
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
   useEffect(() => () => clearTimeout(timer.current), []);
 
-  const sections = useMemo(() => draft.narrative ?? buildNarrative(draft), [draft]);
-  const checks = integrityChecks(draft, sections, rechecking);
+  const clock = useStore((s) => s.clock);
+  const ctx = usePayerContext(draft);
+  const context = useStore((s) => (draft.caseId ? s.clinicalContext[draft.caseId] : undefined)) ?? NO_CONTEXT;
+  const adds = useRecAdds(draft);
+  useUnmetSync(draft);
+
+  /* The same summary the case page's Draft tab reads: the edited text or Scribe's, the actions applied there, and the context added there. */
+  const sections = useMemo(() => narrativeOf(draft, context, adds), [draft, context, adds]);
+  const checks = integrityChecks(draft, sections, rechecking, { clock, ctx });
   const chance = currentChance(draft);
   const range = chanceRange(chance, true);
   const b = band(chance);
@@ -40,7 +53,7 @@ export function ReviewStep({ draft }: { draft: CaseDraft }) {
   const sc = draft.payerId && draft.program ? similarCases(draft.payerId, draft.program) : null;
 
   const edited = (next: NarrativeSection[]) => {
-    patch(draft.id, { narrative: next });
+    patch(draft.id, { narrative: next, narrativeIncludes: adds.map((a) => a.recId) });
     setRechecking(true);
     timer.current = setTimeout(() => {
       setRechecking(false);
@@ -58,8 +71,9 @@ export function ReviewStep({ draft }: { draft: CaseDraft }) {
     <>
       <div className="grid grid-cols-[minmax(0,1fr)_380px] items-start gap-5">
         <div className="flex flex-col gap-5">
+          <PayerChangeNote draft={draft} />
           <NarrativeCard sections={sections} payer={payer?.shortName ?? "the payer"} onSave={edited} onSource={(label) => setSource(slotOfSource(label))} />
-          <ValidationSummary draft={draft} />
+          <ValidationSummary draft={draft} clock={clock} ctx={ctx} />
         </div>
         <div className="flex flex-col gap-4">
           <ChecksCard checks={checks} />
@@ -75,6 +89,7 @@ export function ReviewStep({ draft }: { draft: CaseDraft }) {
                   {payer ? `${payer.shortName} usually decides in about ${payer.typicalDecisionDays === 1 ? "1 day" : `${payer.typicalDecisionDays} days`}. ` : ""}
                   {sc ? `Based on ${sc.total.toLocaleString("en-US")} similar cases.` : ""}
                 </div>
+                <UnmetLine draft={draft} />
               </div>
             </CardBody>
           </Card>

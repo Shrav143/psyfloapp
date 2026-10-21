@@ -8,6 +8,9 @@ import { buildFromSeed, seedFromItem, seedFromRequest } from "./caseDetailTempla
 
 export interface Evidence { label: string; quote: string }
 
+/** What "Refine recommendations" can put first (see caseDetailFocus.ts). */
+export type FocusId = "necessity" | "criteria" | "denial";
+
 /** One recommendation. `moves` says how many points it adds to which row of "Why this number". Its gain is their sum. */
 export interface Rec {
   id: string;
@@ -19,6 +22,7 @@ export interface Rec {
   moves: Record<string, number>;
   link?: { label: string; to: string };
   add?: { section: string; text: (answer: string) => string; source?: Evidence };
+  focus?: FocusId; // set on the one card that "Refine recommendations" adds for that focus
 }
 export interface DriverRow { id: string; label: string; base: number } // base = points already earned before any action
 export interface Criterion { id: string; text: string; evidence: string; source: Evidence; note: string; metNow: boolean; fixRec?: string }

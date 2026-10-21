@@ -1,5 +1,5 @@
 import type { CaseDetail } from "@/data/caseDetail";
-import type { CaseWork } from "@/data/caseModel";
+import type { CaseWork, LiveView } from "@/data/caseModel";
 
 export type TabId = "actions" | "picture" | "criteria" | "risk" | "draft";
 export const TABS: { id: TabId; label: string }[] = [
@@ -15,6 +15,8 @@ export interface CaseCtx {
   projected: number; // with every open action applied
   canSend: boolean;
   sendReason: string;
+  sent: boolean; // already with the payer or decided: "Send to payer" is replaced by a disabled "Sent to payer"
+  live: LiveView | null; // the Dashboard request's current stage, once it has left Preparing
   send: () => void;
   goTab: (tab: TabId, rec?: string) => void;
   focusRec: string | null;

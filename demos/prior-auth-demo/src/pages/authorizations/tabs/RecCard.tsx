@@ -6,6 +6,7 @@ import type { Rec } from "@/data/caseDetail";
 import { gainOf } from "@/data/caseModel";
 import { AGENTS } from "@/data/agents";
 import { cn } from "@/lib/cn";
+import { plural } from "@/lib/format";
 
 /** A checkbox without the kit's label wrapper: with the wrapper, a click on the tick icon fires twice and cancels itself. */
 function Tick({ checked, disabled, onChange, title }: { checked: boolean; disabled: boolean; onChange: () => void; title: string }) {
@@ -48,7 +49,8 @@ export function RecCard({ rec, selected, answer, note, focus, showError, disable
       <div className="flex items-start gap-3">
         <Tick checked={selected} disabled={disabled} onChange={onToggle} title={rec.title} />
         {rec.input ? (answered ? <Pill tone="good">Answer added</Pill> : <Pill tone="mid">Needs your input</Pill>) : null}
-        <Pill tone="good">+{gainOf(rec)} pts</Pill>
+        {rec.focus ? <Pill tone="neutral">Added for your focus</Pill> : null}
+        <Pill tone="good">+{plural(gainOf(rec), "pt")}</Pill>
       </div>
       <ul className="mt-2.5 ml-[30px] flex flex-col gap-1.5">
         {rec.bullets.map((b) => (

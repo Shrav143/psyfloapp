@@ -2,11 +2,11 @@ title: Authorizations › New case › How a case starts and resumes
 route: /authorizations/new
 intro: New case is a page that makes or reopens a case (a 'draft') and shows the step it is on. This diagram covers every way in, how the case is made, and the three special pages. The four steps continue in their own diagrams.
 dir: TD
-also: Demo only: the hosted preview keeps the address in memory, so the typed ?referral= entry cannot be used there.
+also: Demo only: the hosted preview keeps the address in memory, so ?referral= cannot be typed there. The button 'Start a case from this referral' still works in it.
 ---
 start s1 "Open New case\nSidebar, a 'New case' button, the Demo menu, FLO's link or the old /referrals address"
 start s2 "Click 'Start authorization'\non a coverage result"
-start s3 "Type /authorizations/new?referral=RF-2051\n(no button links to it now)"
+start s3 "Click 'Start a case from this referral'\non the full referral page (or type /authorizations/new?referral=RF-2051)"
 start s4 "Open a case that already exists\nA Case Manager row button, a bell link, or 'Open in review and sign'"
 
 group gMake "No case id in the address: make one"

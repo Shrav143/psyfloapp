@@ -1,6 +1,6 @@
 title: Dashboard › Request drawer › Needs you and write-back boxes
 route: /dashboard?request=I-2218
-intro: The coloured box at the top of the drawer appears only when a person has something to do. There are three kinds: review a drafted answer, wait for the draft, and approve a write-back. Any other request shows no box.
+intro: The coloured box at the top of the drawer appears only when a person has something to do. There are three kinds: review a drafted answer, wait for the draft, and approve a write-back. The write-back box shows only while write-back is on in EMR Connect; when it is off, one calm line takes its place. Any other request shows no box.
 dir: TD
 ---
 start s1 "Request drawer opens"
@@ -22,9 +22,14 @@ store w2 "History gets 'Packet drafted the answer. Waiting for your review'"
 toast t1 "'The draft is ready'\n'Packet finished the answer for I-2218. Review it, then sign and send.'"
 process p2 "Box switches to 'Needs your input'\nThe table row shows the new next step"
 
+decision d4 "Is write-back on for a connected system in EMR Connect?"
 overlay b3 "Green box 'Approved. Write-back waits for you'\n'Cadence updated the ledger. The approval number and dates go to the EMR only after you confirm.'"
 click c3 "Click 'Approve write-back'"
 goto g2 "Continues in: Dashboard › Request drawer › Approve the write-back"
+overlay b4 "Calm line, no button\n'Write-back is off for your records system. Turn it on in EMR Connect.'"
+click c4 "Click 'Turn it on in EMR Connect.'"
+goto g3 "Continues in: EMR Connect › Manage › Open the Manage drawer"
+process p3 "The row's 'What happens next' and 'Held by' say 'Write-back is off in EMR Connect'\nTurning it on in EMR Connect brings the green box back"
 
 group gSeed "Demo examples"
   process e1 "P-1499: draft ready\nNeeds your input"
@@ -39,7 +44,10 @@ d1 -->|No| d3
 d2 -->|Yes| b1 --> c1 --> g1
 d2 -->|No| b2 --> c2 --> p1 --> a1 --> w1 --> w2 --> t1 --> p2
 p2 --> b1
-d3 -->|Yes| b3 --> c3 --> g2
+d3 -->|Yes| d4
+d4 -->|Yes| b3 --> c3 --> g2
+d4 -->|No| b4 --> c4 --> g3
+b4 -.-> p3
 d3 -->|No| x1
 d2 -.-> e1
 b2 -.-> e2

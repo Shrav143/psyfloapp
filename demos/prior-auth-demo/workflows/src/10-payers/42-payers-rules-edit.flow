@@ -1,10 +1,10 @@
 title: Payers › Rules › Edit a rule
 route: /payers/summit?tab=rules
-intro: A rule is edited as plain text, one rule per line, with a reason. The change applies to new drafts at once and to open drafts only after 'Update drafts'. Blank lines are dropped, and a rule cannot be emptied.
+intro: A rule is edited as plain text, one rule per line, with a reason. New drafts use the saved rule at once, sent requests keep what they were sent with, and open drafts follow only after 'Update drafts'. Blank lines are dropped, and a rule cannot be emptied.
 dir: TD
 ---
 start s1 "Click 'Edit' on a rule card\nExample: 'Edit Backdating'"
-overlay m "Edit backdating\nOne rule per line. It applies to new drafts at once,\nand to open drafts when you click Update drafts."
+overlay m "Edit backdating\nOne rule per line. New drafts use this at once.\nSent requests keep what they were sent with.\nClick Update drafts to redraft open ones."
 input i1 "Type in 'Rules'\nOne line per rule, starting from the saved lines"
 input i2 "Type 'Reason for the edit' (required)\nExample: Summit confirmed the new window on a call"
 click cs "Click 'Save and log the edit'"
@@ -17,9 +17,10 @@ endx x0 "Modal closes\nNothing saved"
 store st "Rule lines replaced\n'Confirmed' date becomes today"
 store lg "Edit log entry, area 'Rules'\nRule name, before and after (lines joined with semicolons), reason"
 store un "'Edits waiting' goes up by one"
-toast t1 "'Backdating saved'\nNew drafts use it now. Open drafts follow when you click Update drafts."
+store nt "Bell notification 'Summit rule edited'\nopens the payer's Rules tab"
+toast t1 "'Backdating saved'\nNew drafts use it at once.\nClick Update drafts to redraft open ones."
 screen bn "Rule card shows the new lines\nBanner '1 edit applies to new drafts only'"
-end e1 "New drafts use the rule from now on"
+end e1 "New drafts use the rule from now on\nNew case reads it the next time it draws"
 click cx "Click 'Cancel'"
 click cesc "Press Escape, click the X\nor click the dimmed area"
 endx x1 "Modal closes\nNothing saved, typed text discarded"
@@ -31,7 +32,7 @@ s1 --> m --> i1 --> i2 --> cs --> d1
 d1 -->|Yes| er --> i2
 d1 -->|No| tr --> d2
 d2 -->|No| t0 --> x0
-d2 -->|Yes| st --> lg --> un --> t1 --> bn --> e1
+d2 -->|Yes| st --> lg --> un --> nt --> t1 --> bn --> e1
 bn --> g1
 e1 -.-> g2
 lg -.-> g3

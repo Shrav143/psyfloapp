@@ -4,18 +4,20 @@ intro: The nine checks Reader ran on the referral, split by document. Each open 
 dir: TD
 ---
 start s1 "Click 'Validation'\n(or 'Review findings' on the banner)"
-screen sc1 "Summary card\n'6 of 9 checks passed'\n'3 need your attention before you accept.' (or 'Everything Reader checked is clear.')\nProgress bar, Reader chip"
+screen sc1 "Summary card\n'6 of 9 checks passed'\n'3 need your attention.' (or 'Everything Reader checked is clear.')\nProgress bar, Reader chip"
 screen sc2 "Two lists\n'Referral form' '4 of 7 passed': signature, order not expired, credentials, clinical components, diagnosis, service, urgent criteria\n'Face sheet' '2 of 2 passed': age, contact"
-decision d1 "Open and something to ask?\n(age is never counted)"
+decision d1 "Open and something to ask?\n(a failed age check is never counted)"
 click c1 "Click 'Request information for all open findings'"
 goto g1 "Continues in: New case › Referral › Ask the referrer"
 
 decision d2 "State of one check?"
 process r1 "Passed\nGreen tick, check name, what Reader found"
 process r2 "Needs attention\nAmber triangle, the problem in a sentence\n'The clinician signature is missing'"
-process r3 "Failed\nRed cross (patient under 18)"
+process r3 "Failed\nRed cross (patient under 18)\nNo 'Resolve' menu and no 'Request information': a reply cannot change an age"
 process r4 "Resolved\nGreen tick; pill 'Marked OK' with the reason, or 'Fixed by reply' with what it was before"
 decision d3 "Referral still open?"
+decision d4 "Referral still open?"
+click c6 "Click 'Mark OK with reason'\n(the only button on a failed row)"
 process r5 "Pill 'Warning' or 'Failed'\nNo buttons: the decision is made"
 
 click c2 "Click 'Show in document'"
@@ -36,7 +38,9 @@ d2 -->|Warning| r2
 d2 -->|Fail| r3
 d2 -->|Overridden or replied| r4
 r2 --> d3
-r3 --> d3
+r3 --> d4
+d4 -->|Yes| c6 --> g2
+d4 -->|No| r5
 d3 -->|Yes| c3 --> o1
 d3 -->|No| r5
 o1 --> c4 --> g1

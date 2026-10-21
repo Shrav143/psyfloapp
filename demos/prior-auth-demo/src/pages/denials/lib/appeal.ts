@@ -2,17 +2,19 @@ import type { PsyRequest } from "@/data/types";
 import { longDate } from "@/lib/time";
 import type { DenialAnalysis } from "./analysis";
 
-/** The appeal letter Advocate drafts. Every sentence comes from the findings, so Integrity can check it against the chart. */
-export function buildAppealLetter(r: PsyRequest, a: DenialAnalysis, clock: number): string {
+const SUBJECT = ["Request for reconsideration of", "Second-level appeal of", "Request for external review of"];
+
+/** The appeal letter Advocate drafts for a rung of the appeal ladder. Every sentence comes from the findings, so Integrity can check it against the chart. */
+export function buildAppealLetter(r: PsyRequest, a: DenialAnalysis, clock: number, level: number): string {
   const reasons = a.findings.map((f, i) => `${i + 1}. ${f.title}. ${f.detail} (Evidence: ${f.source}.)`).join("\n\n");
   return [
     `${a.ctx.payerName}`,
     "Appeals Department",
     "",
     `Date: ${longDate(clock)}`,
-    `Re: Request for reconsideration of ${r.id}. ${a.ctx.who}, ${a.ctx.program}.`,
+    `Re: ${SUBJECT[level]} ${r.id}. ${a.ctx.who}, ${a.ctx.program}.`,
     "",
-    `I am writing to appeal the decision on ${r.id}. ${a.quote}`,
+    `I am writing to appeal the decision on ${r.id}.${level ? ` ${a.ctx.payer} upheld its decision at the level before this one.` : ""} ${a.quote}`,
     "",
     `The chart supports a different reading. ${a.chartShows}`,
     "",

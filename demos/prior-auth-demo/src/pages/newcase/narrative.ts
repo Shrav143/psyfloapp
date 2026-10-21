@@ -2,6 +2,7 @@
    Each section lists the chart documents it came from; those become the source chips. */
 import type { CaseDraft, DocSlotId, NarrativeSection } from "@/data/cases";
 import type { Program } from "@/data/types";
+import type { RecAdd } from "./fromRequest";
 
 const LEVEL_HEADING: Record<Program, string> = {
   RES: "Why a lower level of care is not safe",
@@ -15,11 +16,18 @@ const LEVEL_TEXT: Record<Program, string> = {
   PHP: "Symptoms still limit daily function outside program hours. The chart supports daily structure with medical oversight.",
   WM: "Withdrawal scores need to be taken several times a day and treated as they change. The chart supports a medically monitored setting.",
 };
-const LEVEL_SOURCES: Record<Program, [DocSlotId, string][]> = {
+/** The chart documents the "lower level of care" section rests on. Without the first one Scribe has to ask. */
+export const LEVEL_SOURCES: Record<Program, [DocSlotId, string][]> = {
   RES: [["psychosocial", "Psychosocial p.2"], ["psychosocial", "Psychosocial p.4"]],
   IOP: [["treatment_plan", "Treatment plan p.2"]],
   PHP: [["asam", "ASAM assessment"]],
   WM: [["nursing", "Nursing notes"]],
+};
+const DURATION: Record<string, string> = { short: "less than a year", mid: "one to five years", long: "more than five years" };
+const LOWER_LEVEL: Record<string, string> = {
+  tried: "A lower level of care was tried and did not hold.",
+  home: "Home is not safe or supportive enough for a lower level of care.",
+  severe: "Symptoms are too severe to manage at a lower level of care.",
 };
 const ANSWER_LINE: Record<string, string> = {
   named: "A named step-down provider is on file.",
@@ -39,24 +47,51 @@ function planText(d: CaseDraft): string {
   return "Five days of medically monitored withdrawal management, then a transfer to residential care.";
 }
 
+/** The "Context added" paragraph: what a person added on the case page's Recommended actions, in their own words. */
+function contextSection(context: string[]): NarrativeSection {
+  return { id: "context", heading: "Context added", text: context.map((c) => (/[.!?]$/.test(c.trim()) ? c.trim() : `${c.trim()}.`)).join(" "), sources: [], fixed: true };
+}
+
+/** The one summary of a case, read by Review and sign and by the case page's Draft tab: the edited text when there is one, else what Scribe writes
+    from the draft, then the context added for the request. */
+export function narrativeOf(d: CaseDraft, context: string[] = [], adds: RecAdd[] = []): NarrativeSection[] {
+  const folded = d.narrative ? d.narrativeIncludes ?? [] : [];
+  const more = adds.filter((a) => !folded.includes(a.recId));
+  const base = (d.narrative ?? buildNarrative(d)).filter((s) => !s.fixed).map((s) => {
+    const own = more.filter((a) => a.section === s.id);
+    return own.length ? { ...s, text: [s.text, ...own.map((a) => a.text)].join(" ") } : s;
+  });
+  const added = context.filter((c) => c.trim());
+  return added.length ? [...base, contextSection(added)] : base;
+}
+/** Applied actions whose sentence the summary does not hold yet: the case page marks them "New". */
+export const unfoldedAdds = (d: CaseDraft, adds: RecAdd[]): RecAdd[] => adds.filter((a) => !(d.narrative ? d.narrativeIncludes ?? [] : []).includes(a.recId));
+
 export function buildNarrative(d: CaseDraft): NarrativeSection[] {
   const has = (slot: DocSlotId): boolean => d.documents.some((x) => x.slot === slot);
   const chips = (pairs: [DocSlotId, string][]): string[] => pairs.filter(([slot]) => has(slot)).map(([, label]) => label);
-  const answerOf = (key: string) => d.answers.find((a) => a.key === key);
+  const answerOf = (key: string) => d.answers.find((a) => a.key === key && !a.fromCase);
   const prog = d.program ?? "RES";
   const dx = d.diagnoses.map((x) => `${x.label.toLowerCase()} (${x.code})`).join(" and ");
   const who = d.patient.initials || "The patient";
   const sertraline = answerOf("sertraline");
+  const duration = answerOf("duration");
+  const lower = answerOf("lowerlevel");
   const next = answerOf("stepdown") ?? answerOf("recert");
 
   const clinical = [
     `${who} is ${d.patient.age ?? "an adult"}${dx ? ` and has ${dx}` : ""}.`,
+    duration ? `The diagnosis has been present for ${DURATION[duration.choice] ?? duration.answer.toLowerCase()}.` : "",
     d.reason.trim() || "The chart records active symptoms and a recent change in status.",
     has("nursing") ? "Withdrawal scores peaked at 14 on 10/17 and fell to 4 by 10/18 with medication." : "",
     sertraline ? `Sertraline was started on ${sertraline.answer}.` : "",
   ].filter(Boolean).join(" ");
 
-  const level = [LEVEL_TEXT[prog], d.suggestions.includes("iop") ? "A 2025 IOP discharge summary shows the lower level was tried." : ""].filter(Boolean).join(" ");
+  const level = [
+    has(LEVEL_SOURCES[prog][0][0]) ? LEVEL_TEXT[prog] : lower ? "" : "The chart does not yet say why a lower level of care is not enough.",
+    lower ? LOWER_LEVEL[lower.choice] ?? `Clinician note: ${lower.answer}` : "",
+    d.suggestions.includes("iop") ? "A 2025 IOP discharge summary shows the lower level was tried." : "",
+  ].filter(Boolean).join(" ");
 
   const plan = [
     planText(d),

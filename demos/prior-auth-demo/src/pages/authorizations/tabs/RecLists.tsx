@@ -2,6 +2,7 @@ import { CheckCircle2, Undo2 } from "lucide-react";
 import { Button, Pill } from "@/components/ui";
 import type { Rec } from "@/data/caseDetail";
 import { gainOf } from "@/data/caseModel";
+import { plural } from "@/lib/format";
 
 /** Applied recommendations collapse to one line with a green tick. Open one to see what the agents did. */
 export function AppliedList({ recs }: { recs: Rec[] }) {
@@ -13,7 +14,7 @@ export function AppliedList({ recs }: { recs: Rec[] }) {
           <summary className="flex cursor-pointer list-none items-center gap-3">
             <CheckCircle2 size={18} className="ico text-good" aria-label="Applied" />
             <span className="flex-1 font-semibold">{r.title}</span>
-            <Pill tone="good">+{gainOf(r)} pts · applied</Pill>
+            <Pill tone="good">+{plural(gainOf(r), "pt")} · applied</Pill>
           </summary>
           <ul className="mt-2 ml-[30px] list-disc pl-4 text-[13.5px] text-ink2">
             {r.bullets.map((b) => <li key={b}>{b}</li>)}

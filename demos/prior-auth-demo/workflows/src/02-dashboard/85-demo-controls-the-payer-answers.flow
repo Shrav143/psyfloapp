@@ -1,31 +1,34 @@
 title: Dashboard › Request drawer › Demo controls: the payer answers
 route: /dashboard?request=R-1021
-intro: A dashed 'Demo controls' box at the end of every drawer lets the presenter pretend the payer replied. Nothing is sent anywhere. This diagram covers when the buttons work and the three replies that keep a request alive; approve, approve part and deny are in the next diagram.
+intro: A dashed 'Demo controls' box at the end of every drawer lets the presenter pretend the payer replied. Nothing is sent anywhere. A request only moves forward, so the box offers only the replies still ahead of it. This diagram covers when buttons show and the replies that keep a request alive; approve, approve part and deny are in the next diagram.
 dir: TD
 also: Demo only: in real life the payer answers through its portal, fax or phone and Navigator finds out by checking. These buttons fake that answer; nothing is sent.
 ---
-start s1 "Scroll to 'Demo controls' at the end of the drawer\nSix small buttons in a dashed box"
+start s1 "Scroll to 'Demo controls' at the end of the drawer\nA dashed box"
 decision d1 "Is the stage Preparing? (not sent yet)"
 decision d2 "Is it a denial? (ID starts with D-)"
+decision d3 "Which stage is the request in?"
 toast m1 "'It has not been sent yet. Sign and send it from Case Manager first.'"
 toast m2 "'A denial follows its own route in Denial Intelligence.'"
-toast m3 "'Pretend the payer answered this request. Nothing is sent anywhere.'"
-endx x1 "All six buttons are disabled"
-process p0 "Six buttons enabled:\n'Payer received it', 'Under review', 'Asks for information', 'Approves', 'Approves part', 'Denies'"
+toast m3 "'The payer has already decided this request.'"
+toast m4 "'Pretend the payer answered this request. Nothing is sent anywhere.'"
+endx x1 "All six buttons are shown but disabled"
+endx x3 "No buttons are shown"
+process p1 "Received\n'Under review', 'Asks for information', 'Approves', 'Approves part', 'Denies'"
+process p2 "Under review\n'Asks for information', 'Approves', 'Approves part', 'Denies'"
+process p3 "Info requested\n'Approves', 'Approves part', 'Denies'"
+process p0 "'Payer received it' is never shown\nEvery sent request is already Received, and a reply never moves a request backward"
 ext x2 "Payer replies through its portal, fax or phone\n(demo: simulated by these buttons)"
 
-click c1 "Click 'Payer received it'"
-store w1 "Stage Received, bars at Received\nNavigator holds it; next step 'Navigator checks again in 30 minutes'\nTime in stage restarts; history 'Navigator checked: received'"
 click c2 "Click 'Under review'"
-store w2 "Stage Under review, bars at In review\nHistory 'Navigator checked: under review' and a dashed 'Caller will phone the payer if it is still pending'"
+store w2 "Stage Under review, bars at In review\nTime in stage restarts\nHistory 'Navigator checked: under review' and a dashed 'Caller will phone the payer if it is still pending'"
+toast t2 "'Demo: Cardinal has it under review'\n'The stage counts and the table updated.'\nThe payer's short name, here Cardinal"
 click c3 "Click 'Asks for information'"
 store w3 "Stage Info requested (amber), needs you\nPacket holds it; next step 'Packet drafted the answer. Waiting for your review'\nHistory 'The payer asked for more information'"
 toast n1 "Notification 'Payer asked for info'\n'The payer wants more on R-1021. Packet drafted the answer.'"
-
-toast t0 "'Demo: payer payer received it'\n'The stage counts, the table and the notifications updated.'\nThe word 'payer' shows twice on screen"
-toast t1 "'Demo: payer under review' or 'Demo: payer asks for information'\n'The stage counts, the table and the notifications updated.'"
+toast t3 "'Demo: Cardinal asks for information'\n'The stage counts, the table and the notifications updated.'"
 screen sc "Dashboard behind the drawer\nThe tile counts, the row and its chip, bars and clock update at once\nIn a filtered list the row may drop out; the drawer stays open"
-screen sd "Drawer updates in place\nChip, action box, history and banner follow the new stage"
+screen sd "Drawer updates in place\nChip, action box, history, banner and the offered buttons follow the new stage"
 
 click c4 "Click 'Approves', 'Approves part' or 'Denies'"
 goto g1 "Continues in: Dashboard › Request drawer › Demo controls: approve, approve part or deny"
@@ -36,13 +39,17 @@ s1 --> d1
 d1 -->|Yes| m1 --> x1
 d1 -->|No| d2
 d2 -->|Yes| m2 --> x1
-d2 -->|No| m3 --> p0 --> x2
-x2 --> c1 --> w1 --> t0
-x2 --> c2 --> w2 --> t1
-x2 --> c3 --> w3 --> n1 --> t1
+d2 -->|No| d3
+d3 -->|Decided| m3 --> x3
+d3 -->|Received| m4
+d3 -->|Under review| m4
+d3 -->|Info requested| m4
+m4 --> p1 & p2 & p3
+p1 & p2 & p3 --> x2
+p1 -.-> p0
+x2 --> c2 --> w2 --> t2 --> sc
+x2 --> c3 --> w3 --> n1 --> t3 --> sc
 x2 --> c4 --> g1
-t0 --> sc
-t1 --> sc
 sc --> sd
 w3 -.-> g2
 sd -.-> g3

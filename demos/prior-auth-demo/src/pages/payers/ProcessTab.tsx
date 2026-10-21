@@ -36,7 +36,7 @@ export function ProcessTab({ id, name, cfg, onReview }: { id: string; name: stri
         <ReachCard name={name} cfg={cfg} />
         <CallerCard id={id} cfg={cfg} />
       </div>
-      <Banner tone="neutral" icon={Info}>Change a step or a condition and open drafts can follow. Admins can edit; every edit is logged.</Banner>
+      <Banner tone="neutral" icon={Info}>Admins can edit; every edit is logged. New drafts use a saved edit at once. Sent requests keep what they were sent with. Click Update drafts to redraft open ones.</Banner>
       {editing ? <WorkflowEditor id={id} name={name} cfg={cfg} onClose={() => setEditing(false)} /> : null}
     </div>
   );

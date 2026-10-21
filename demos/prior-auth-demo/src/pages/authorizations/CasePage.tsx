@@ -3,7 +3,8 @@ import { SearchX } from "lucide-react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Card, Crumbs, EmptyState, Page, PageHeader, UnderlineTabs } from "@/components/ui";
 import { resolveCase, type CaseDetail } from "@/data/caseDetail";
-import { EMPTY_WORK, canSend, checkViews, currentChance, groupRecs, projectedChance, sendBlockedReason, type CaseWork } from "@/data/caseModel";
+import { withFocus } from "@/data/caseDetailFocus";
+import { EMPTY_WORK, canSend, checkViews, currentChance, groupRecs, isWithPayer, liveView, projectedChance, sendBlockedReason, type CaseWork, type LiveView } from "@/data/caseModel";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
 import { CaseHeader } from "./CaseHeader";
@@ -15,7 +16,7 @@ import { DraftTab } from "./tabs/DraftTab";
 import { PictureTab } from "./tabs/PictureTab";
 import { RiskTab } from "./tabs/RiskTab";
 
-function CaseView({ detail, work }: { detail: CaseDetail; work: CaseWork }) {
+function CaseView({ detail, work, live }: { detail: CaseDetail; work: CaseWork; live: LiveView | null }) {
   const navigate = useNavigate();
   const [sp, setSp] = useSearchParams();
   const param = sp.get("tab");
@@ -29,8 +30,11 @@ function CaseView({ detail, work }: { detail: CaseDetail; work: CaseWork }) {
       else n.delete("rec");
       return n;
     });
+  // A request that already left Preparing has nothing to send, whatever its checks say.
+  const sent = live?.sent === true || detail.phase === "payer";
+  const sendReason = live?.sent ? (isWithPayer(live.stage) ? "Already with the payer. Navigator is tracking it." : `${live.chip}. Nothing is left to send.`) : sendBlockedReason(detail, work);
   const ctx: CaseCtx = {
-    detail, work, key: detail.requestId, chance: currentChance(detail, work), projected: projectedChance(detail, work), canSend: canSend(detail, work), sendReason: sendBlockedReason(detail, work),
+    detail, work, key: detail.requestId, chance: currentChance(detail, work), projected: projectedChance(detail, work), canSend: !sent && canSend(detail, work), sendReason, sent, live,
     send: () => navigate(reviewPath(detail)), goTab, focusRec: tab === "actions" ? sp.get("rec") : null,
   };
   const openRecs = groupRecs(detail, work).open.length;
@@ -54,8 +58,13 @@ function CaseView({ detail, work }: { detail: CaseDetail; work: CaseWork }) {
 export default function CasePage() {
   const { id = "" } = useParams();
   const requests = useStore((s) => s.requests);
-  const detail = useMemo(() => resolveCase(id, requests), [id, requests]);
-  const stored = useStore((s) => (detail ? s.queueCases[detail.requestId] : undefined));
+  const base = useMemo(() => resolveCase(id, requests), [id, requests]);
+  const stored = useStore((s) => (base ? s.queueCases[base.requestId] : undefined));
+  const notes = useStore((s) => (base ? s.clinicalContext[base.requestId] : undefined));
+  // The clinical context lives in the shared list (the draft reads it too), so it is laid over the case's own work here.
+  const work = useMemo<CaseWork>(() => ({ ...(stored ?? EMPTY_WORK), context: notes ?? EMPTY_WORK.context }), [stored, notes]);
+  const detail = useMemo(() => (base ? withFocus(base, work) : null), [base, work]);
+  const live = useMemo(() => (base ? liveView(base, requests) : null), [base, requests]);
   if (!detail) {
     return (
       <Page>
@@ -64,7 +73,7 @@ export default function CasePage() {
         <Card>
           <EmptyState
             icon={SearchX} title="Nothing to show here"
-            action={<Link to={paths.authorizations()} className="inline-flex h-[38px] items-center rounded-xl bg-forest px-4 text-sm font-medium text-white hover:bg-forest-dark">Back to the queue</Link>}
+            action={<Link to={paths.authorizations()} className="inline-flex h-[38px] items-center rounded-xl bg-forest px-4 text-sm font-medium text-white hover:bg-forest-dark">Back to queue</Link>}
           >
             Check the ID, or open a request from the queue.
           </EmptyState>
@@ -72,5 +81,5 @@ export default function CasePage() {
       </Page>
     );
   }
-  return <CaseView detail={detail} work={stored ?? EMPTY_WORK} />;
+  return <CaseView detail={detail} work={work} live={live} />;
 }

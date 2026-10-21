@@ -1,4 +1,4 @@
-import type { Tone } from "./types";
+import type { PsyRequest, Tone } from "./types";
 import { DAY, HOUR } from "@/lib/time";
 
 /* Denial Intelligence data: what we know about each denial beyond the core request.
@@ -31,6 +31,32 @@ export const SEED_DENIAL_META: Record<string, DenialMeta> = {
   "D-3284": { type: "Retro-authorization denied", summary: "Retro-auth denied", similar: 71 },
   "D-3279": { type: "Full denial", summary: "Full denial", similar: 143 },
   "D-3272": { type: "Partial approval", summary: "Partial approval", daysRequested: 10, daysApproved: 5, similar: 58 },
+  "D-3306": { type: "Retro-authorization denied", summary: "Retro-auth denied", similar: 119 },
+};
+
+/** Words that tie a denial type to the reason texts Analytics uses ("Missing recent therapy notes"). A reason filter matches a denial
+    when the reason and one of these words (or the type itself) contain each other. */
+export const REASON_TERMS: Record<DenialType, string[]> = {
+  "Partial approval": ["partial", "continued-stay", "continued stay", "evidence", "therapy note", "step-down"],
+  "Level-of-care downgrade": ["level of care", "level-of-care", "asam", "mood severity"],
+  "Units cut": ["units"],
+  "Late notice": ["late notice", "filed too late", "filed late", "phone confirmation"],
+  "Retro-authorization denied": ["retro"],
+  "Full denial": ["missing", "documentation", "incomplete", "certification", "fax", "duplicate"],
+};
+
+/** The one seeded denial where the best option is to accept. It is added to the Dashboard's requests when the store starts (see store/denials.ts). */
+const logged = (at: number, actor: PsyRequest["events"][number]["actor"], text: string): PsyRequest["events"][number] => ({ id: `D-3306@${at}`, at, actor, text, done: true });
+export const SEED_ACCEPT_DENIAL: PsyRequest = {
+  id: "D-3306", caseId: "I-2127", patient: { initials: "S.K.", age: 41 }, payerId: "summit", program: "IOP", type: "Peer-to-peer",
+  stage: "appeal", chip: "Analyzed", tone: "mid", track: "denial", progress: 0, stageSince: -(3 * DAY + 4 * HOUR), deadlineAt: 4 * DAY, clockSub: "peer-to-peer window",
+  atStake: 5400, agent: "advocate", next: "Advocate laid out the options. Accepting may be the better use of time", chance: 27, outcome: "denied", sentVia: "portal",
+  events: [
+    logged(-(3 * DAY + 4 * HOUR), "payer", "The payer denied the retro-authorization request"),
+    logged(-(3 * DAY + 4 * HOUR) + 6, "reader", "Reader read the denial letter and removed identifiers"),
+    logged(-(3 * DAY + 4 * HOUR) + 9, "advocate", "Advocate checked the notice, the deadline and how the payer applied its own criteria"),
+    logged(-(3 * DAY + 4 * HOUR) + 12, "historian", "Historian compared 119 similar Summit decisions"),
+  ],
 };
 
 /** Sample letters for the "Use sample letter" button. Each one becomes a new denial. */
@@ -89,7 +115,8 @@ const DIMS: DimText[] = [
 ];
 export const GENERIC_DIMS = DIMS;
 
-/** D-3318 is written out in full, as in the mockup. Every other denial is generated from a template. */
+/** D-3318 is written out in full, as in the mockup, and so is D-3306, whose findings are thin on purpose: it is the denial where accepting is the better choice.
+    Every other denial is generated from a template. */
 export const AUTHORED_TEXT: Record<string, AnalysisText> = {
   "D-3318": {
     short: "Cardinal approved 7 of 14 days",
@@ -123,9 +150,46 @@ export const AUTHORED_TEXT: Record<string, AnalysisText> = {
     ask: "Restore days 8 to 14, with a review on day 14 and the step-down provider named at that review.",
     regained: "5 to 7 days regained",
   },
+  "D-3306": {
+    short: "{payer} denied the retro-authorization",
+    quote: "{payer} denied the retro-authorization request because it was received 9 days after admission, outside the 72-hour window, and coverage was not pending on the admission date.",
+    chartShows: "The chart confirms the admission date and the date the request was sent. No eligibility check from the day of admission is on file, so nothing shows that coverage was pending.",
+    findings: [
+      { sev: "Strong", title: "Coverage became effective 3 days after admission", detail: "The payer's eligibility update covers the later days of the stay, but not the first three.", source: "Eligibility update", excerpt: "Member coverage effective from 3 days after the admission date. No pending status is recorded for the admission date.", fix: "Attach the eligibility update for the days after the effective date" },
+      { sev: "Strong", title: "The 72-hour rule has one exception, and the chart does not meet it", detail: "A late retro request is accepted when coverage was pending on the admission date and the check is on file.", source: "Payer rules, Backdating", excerpt: "A retro request is accepted within 72 hours of admission, or later when coverage was pending on the admission date and the eligibility check is on file.", fix: "Find the eligibility check from the admission date" },
+    ],
+    dimsSub: "",
+    dims: [],
+    opening: "I am calling about a retro-authorization denial for a {age}-year-old in {program} care. The request reached {payer} on day 9. I would like to ask whether the days after the coverage effective date can be approved.",
+    points: [
+      { title: "Coverage became effective 3 days after admission", detail: "The days after the effective date can be asked for, even if the first three cannot.", source: "Eligibility update" },
+      { title: "The receipt shows the send date", detail: "The ask is limited to what the rule allows.", source: "Portal receipt" },
+      { title: "The rule allows a late request when coverage was pending", detail: "The admission-date check is not on file yet, so this point is not ready to use.", source: "Payer rules, Backdating" },
+    ],
+    pushback: [
+      ["“The request came outside the 72 hours.”", "Agreed for the first days. The ask is limited to the days after coverage became effective."],
+      ["“Coverage was not pending at admission.”", "No check from that day is on file, so this is not an argument we can make yet."],
+    ],
+    ask: "Approve the days after the coverage effective date, and treat the first 3 days as not covered.",
+    regained: "Part of the retro days at most",
+  },
 };
 
 export const APPEAL_WINDOW_DAYS = 60;
+
+/** The ladder after a peer-to-peer call: a first appeal, a payer second level, then external review. Each level has its own window to file. */
+export interface AppealLevel {
+  name: string;
+  /** The chip on the request once a letter for this level is filed. */
+  filedChip: string;
+  /** Days to file once the level before it was upheld. */
+  days: number;
+}
+export const APPEAL_LEVELS: AppealLevel[] = [
+  { name: "Appeal", filedChip: "Appeal filed", days: APPEAL_WINDOW_DAYS },
+  { name: "Second-level appeal", filedChip: "Second-level appeal filed", days: 60 },
+  { name: "External review", filedChip: "External review", days: 120 },
+];
 
 /* ---------- work the user has done on a denial (kept in the denials slice) ---------- */
 export interface CallSlot {
@@ -146,5 +210,12 @@ export interface DenialWork {
   appealDraft?: { text: string; evidence: string[]; draftedAt: number };
   appealFiled?: { at: number; role: string; decisionBy: string };
   outcome?: { kind: OutcomeKind; note: string; at: number };
+  /** The payer's decision on a filed appeal, recorded by the user. `nextLevel` is set when an upheld decision went on to the next level. */
+  decision?: { result: OutcomeKind; note: string; at: number; nextLevel?: string };
+  /** Which rung of APPEAL_LEVELS the current or last appeal is on. Not set until a next level starts. */
+  level?: number;
   accepted?: { reason: string; at: number };
 }
+
+/** Rung of the appeal ladder for a denial: set once a next level starts, otherwise read from the chip (seeded external reviews). */
+export const levelOf = (chip: string, work: DenialWork | undefined): number => work?.level ?? (chip === "External review" ? 2 : 0);

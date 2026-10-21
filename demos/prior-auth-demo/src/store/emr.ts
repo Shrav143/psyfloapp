@@ -6,7 +6,8 @@ import { shortDate } from "@/lib/time";
 import type { AppState } from "./index";
 
 /* EMR Connect (owner: denials agent). Lives beside the payer slice because the foundation store has no slot for it.
-   Every action adds a line to the activity log, so the page reads as an audit trail. */
+   Every action adds a line to the activity log, so the page reads as an audit trail. The agent's freedom (Settings) decides
+   whether a finished step also says so in a toast: "Act on its own" only logs it. */
 
 export interface NewSystemInput { kind: SystemKind; name: string; holds: string; contact: string }
 
@@ -24,14 +25,21 @@ export interface EmrSlice {
   mapField: (fieldId: string, value: string) => void;
   /** The guided fix for a system that needs a look finished. */
   fixSystem: (id: string) => void;
+  /** The fix inside Reconnect finished: the sign-in is renewed, but the system is not connected until the test passes. */
+  renewSignIn: (id: string) => void;
   connectSystem: (input: NewSystemInput) => string;
   disconnectSystem: (id: string) => void;
+  /** The connection test passed. A system that still has a problem to fix is not reconnected. */
   reconnectSystem: (id: string) => void;
   setWriteBack: (id: string, on: boolean) => void;
 }
 
 export const createEmrSlice: StateCreator<AppState, [], [], EmrSlice> = (set, get) => {
   const log = (agent: AgentKey, text: string) => set((s) => ({ emrActivity: [{ id: uid("ea"), at: s.clock, agent, text }, ...s.emrActivity] }));
+  /** The log line is always written. A toast follows unless the agent is set to "Act on its own". */
+  const report = (agent: AgentKey, t: Parameters<AppState["toast"]>[0]) => {
+    if (get().agentFreedom[agent] !== "auto") get().toast(t);
+  };
   const patchSystem = (id: string, patch: Partial<EmrSystem>) => set((s) => ({ emrSystems: s.emrSystems.map((x) => (x.id === id ? { ...x, ...patch } : x)) }));
   const nameOf = (id: string) => get().emrSystems.find((x) => x.id === id)?.name ?? "the system";
 
@@ -53,7 +61,7 @@ export const createEmrSlice: StateCreator<AppState, [], [], EmrSlice> = (set, ge
       set((s) => ({ emrSystems: s.emrSystems.map((x) => (live.includes(x.id) ? { ...x, lastSyncAt: clock } : x)), emrCharts: s.emrCharts + Math.max(1, Math.round(r.charts * share)), emrFiles: s.emrFiles + Math.max(1, Math.round(r.files * share)), emrSyncs: s.emrSyncs + 1 }));
       log(r.agent, live.length === 1 ? `${r.text} from ${nameOf(live[0]).toLowerCase()}` : r.text);
       const skipped = ids.length - live.length;
-      get().toast({ title: "Sync finished", body: skipped ? `${live.length} synced. ${skipped} needs a quick look first.` : r.text, tone: skipped ? "mid" : "good" });
+      report("reader", { title: "Sync finished", body: skipped ? `${live.length} synced. ${skipped} needs a quick look first.` : r.text, tone: skipped ? "mid" : "good" });
     },
 
     mapField: (fieldId, value) => {
@@ -70,9 +78,17 @@ export const createEmrSlice: StateCreator<AppState, [], [], EmrSlice> = (set, ge
 
     fixSystem: (id) => {
       const name = nameOf(id);
-      patchSystem(id, { status: "connected", lastSyncAt: get().clock, issue: undefined });
+      patchSystem(id, { status: "connected", lastSyncAt: get().clock, issue: undefined, fixIssue: undefined });
+      set((s) => ({ emrFiles: s.emrFiles + 12 }));
       log("navigator", `Renewed the read-only sign-in for ${name.toLowerCase()} and pulled 12 remittances`);
-      get().toast({ title: `${name} is connected`, body: "Remittances are arriving again.", tone: "good" });
+      report("navigator", { title: `${name} is connected`, body: "Remittances are arriving again.", tone: "good" });
+    },
+
+    renewSignIn: (id) => {
+      const name = nameOf(id);
+      patchSystem(id, { fixIssue: undefined });
+      log("navigator", `Renewed the read-only sign-in for ${name.toLowerCase()}`);
+      report("navigator", { title: "Sign-in renewed", body: `One more test, then ${name} is connected.`, tone: "good" });
     },
 
     connectSystem: (input) => {
@@ -87,22 +103,29 @@ export const createEmrSlice: StateCreator<AppState, [], [], EmrSlice> = (set, ge
 
     disconnectSystem: (id) => {
       const name = nameOf(id);
-      patchSystem(id, { status: "disconnected", issue: "Charts from this system are not arriving." });
+      const was = get().emrSystems.find((x) => x.id === id);
+      // Remember what needed a look, so Reconnect starts with Fix instead of skipping it.
+      patchSystem(id, { status: "disconnected", issue: "Charts from this system are not arriving.", fixIssue: was?.status === "attention" ? was.issue : was?.fixIssue });
       log("navigator", `Disconnected ${name.toLowerCase()}. Charts from it stop arriving`);
       get().toast({ title: `${name} is disconnected`, body: "Reconnect it any time from this page.", tone: "mid" });
     },
 
     reconnectSystem: (id) => {
-      const name = nameOf(id);
+      const sys = get().emrSystems.find((x) => x.id === id);
+      if (!sys || sys.status !== "disconnected" || sys.fixIssue) return;
       patchSystem(id, { status: "connected", lastSyncAt: get().clock, issue: undefined });
-      log("reader", `Reconnected ${name.toLowerCase()} and read-only access passed its test`);
-      get().toast({ title: `${name} is connected`, tone: "good" });
+      log("navigator", `Reconnected ${sys.name.toLowerCase()} and read-only access passed its test`);
+      report("navigator", { title: `${sys.name} is connected`, tone: "good" });
     },
 
     setWriteBack: (id, on) => {
       patchSystem(id, { writeBack: on });
       log("navigator", on ? `Write-back is on for ${nameOf(id).toLowerCase()}, approval number and dates only, after a person approves` : `Write-back is off for ${nameOf(id).toLowerCase()}`);
-      get().toast({ title: on ? "Write-back is on" : "Write-back is off", body: on ? "Only the approval number and dates, and only after a person approves." : "The agents only read from this system.", tone: on ? "good" : "neutral" });
+      const counts = selectWriteBackOn(get());
+      const connected = get().emrSystems.find((x) => x.id === id)?.status === "connected";
+      get().toast(on
+        ? { title: "Write-back is on", body: connected ? "The Dashboard offers the approval write-back box. Only the approval number and dates, and only after a person approves." : "The Dashboard offers the box once this system is connected.", tone: "good" }
+        : { title: "Write-back is off", body: counts ? "The Dashboard still offers the box, because another connected system has write-back on." : "The Dashboard no longer offers the approval write-back box.", tone: "neutral" });
     },
   };
 };

@@ -1,9 +1,13 @@
 import type { Option } from "@/components/ui";
-import { LEDGER_STATUS_LABEL, type LedgerCase, type LedgerStatus } from "@/data/manager";
-import type { Review, ReviewStatus } from "@/data/managerReviews";
+import { LEDGER_STATUS_LABEL, type LedgerStatus } from "@/data/manager";
+import { reviewDate, type Review, type ReviewStatus } from "@/data/managerReviews";
 import { PROGRAMS, PROGRAM_LABEL, type PayerId, type Program, type Tone } from "@/data/types";
-import { DAY, HOUR, toDate } from "@/lib/time";
+import { shortDate, DAY, HOUR, toDate } from "@/lib/time";
+import { dueText } from "@/pages/authorizations/queueLogic";
 import { PAYER_OPTIONS } from "@/pages/dashboard/helpers";
+import { paths } from "@/routes";
+import type { PayerChangeUpdate } from "@/store/ripples";
+import type { LedgerRow } from "./ledgerRows";
 
 /* ------------------------------------------------------------------ filters shared by both tabs */
 export interface ManagerFilters {
@@ -24,13 +28,25 @@ export const STATUS_OPTIONS: Option<ManagerFilters["status"]>[] = [
 export const REVIEW_STATUS_OPTIONS: Option<ManagerFilters["reviewStatus"]>[] = [
   { value: "all", label: "Any review status" },
   { value: "needs_update", label: "Needs your update" },
+  { value: "due", label: "Not drafted yet" },
   { value: "drafted", label: "Drafted" },
   { value: "signed", label: "Signed" },
 ];
 
 export const STATUS_TONE: Record<LedgerStatus, Tone> = { needs_action: "risk", review_due: "mid", awaiting: "neutral", on_track: "good" };
-export const REVIEW_STATUS_LABEL: Record<ReviewStatus, string> = { drafted: "Drafted", needs_update: "Needs your update", signed: "Signed" };
-export const REVIEW_STATUS_TONE: Record<ReviewStatus, Tone> = { drafted: "good", needs_update: "mid", signed: "neutral" };
+export const REVIEW_STATUS_LABEL: Record<ReviewStatus, string> = { due: "Not drafted yet", drafted: "Drafted", needs_update: "Needs your update", signed: "Signed" };
+export const REVIEW_STATUS_TONE: Record<ReviewStatus, Tone> = { due: "neutral", drafted: "good", needs_update: "mid", signed: "neutral" };
+
+/** The Reviews tab with a review's drawer open. The case page's "Open the review" uses it. */
+export const reviewLink = (id: string): string => `${paths.manager("reviews")}&review=${encodeURIComponent(id)}`;
+
+/** The latest payer change that updated this case's draft, if any. Matches the draft id, the case id or the ledger id. */
+export function payerUpdateFor(ids: (string | null | undefined)[], updates: PayerChangeUpdate[]): PayerChangeUpdate | undefined {
+  const keys = ids.filter((i): i is string => !!i).map((i) => i.toLowerCase());
+  return updates.filter((u) => u.draftIds.some((d) => keys.includes(d.toLowerCase()))).sort((a, b) => b.at - a.at)[0];
+}
+/** "Updated for a payer change · 10/20" */
+export const payerUpdateText = (u: PayerChangeUpdate): string => `Updated for a payer change · ${shortDate(u.at)}`;
 
 /** Search by case id or initials; level of care and payer apply to both tabs. */
 export function matchesBase(r: { id: string; initials: string; program: Program; payerId: PayerId }, f: ManagerFilters): boolean {
@@ -47,9 +63,11 @@ const WD = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 /** "5 h" under two days, then "3 days". */
 const span = (min: number): string => (min < 2 * DAY ? `${Math.max(1, Math.round(min / HOUR))} h` : `${Math.round(min / DAY)} days`);
 
-/** Clock text for the next event that binds. Terracotta when a hard deadline is under two days or anything is overdue. */
-export function clockText(c: LedgerCase, clock: number): { text: string; urgent: boolean } {
+/** Clock text for the next event that binds. Terracotta when a hard deadline is under two days or anything is overdue.
+    A case that is also a request says what its case page says ("Answer due in 9 h"), from the same due time. */
+export function clockText(c: LedgerRow, clock: number): { text: string; urgent: boolean } {
   const left = c.dueAt - clock;
+  if (c.verb) return { text: dueText(c.verb, c.dueAt, clock), urgent: c.verb.startsWith("Decision") ? left <= 0 : left < DAY };
   switch (c.clockKind) {
     case "notice":
       return { text: left <= 0 ? "Notice overdue" : `Notice due in ${span(left)}`, urgent: left < 2 * DAY };
@@ -67,18 +85,20 @@ export function clockText(c: LedgerCase, clock: number): { text: string; urgent:
       return { text: left <= 0 ? "Decision overdue" : left < DAY ? `Decision in ${span(left)}` : `Decision ${WD[toDate(c.dueAt).getDay()]}`, urgent: left <= 0 };
     case "units":
       return { text: `${(c.total ?? 0) - (c.used ?? 0)} ${c.unit} left`, urgent: false };
+    case "next":
+      return { text: left <= 0 ? "Review due" : `Next review ${reviewDate(c.dueAt)}`, urgent: left <= 0 };
   }
 }
 
 /** Share of the approval used; unknown until the case is approved. */
-export const usedShare = (c: LedgerCase): number | null => (c.used === null || !c.total ? null : c.used / c.total);
+export const usedShare = (c: LedgerRow): number | null => (c.used === null || !c.total ? null : c.used / c.total);
 
 /* ------------------------------------------------------------------ sorting */
 export type SortKey = "case" | "payer" | "used" | "clock" | "chance" | "status";
 const STATUS_RANK: Record<LedgerStatus, number> = { needs_action: 0, review_due: 1, awaiting: 2, on_track: 3 };
 
-export function sortLedger(rows: LedgerCase[], key: SortKey, dir: 1 | -1): LedgerCase[] {
-  const val = (c: LedgerCase): number | string => {
+export function sortLedger(rows: LedgerRow[], key: SortKey, dir: 1 | -1): LedgerRow[] {
+  const val = (c: LedgerRow): number | string => {
     switch (key) {
       case "case": return c.id;
       case "payer": return c.payerId;

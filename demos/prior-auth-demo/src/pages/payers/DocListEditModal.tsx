@@ -13,7 +13,7 @@ export function DocListEditModal({ id, name, program, items, onClose }: { id: st
   const [list, setList] = useState<DocItem[]>(items.map((d) => ({ ...d })));
   const patch = (docId: string, p: Partial<DocItem>) => setList((l) => l.map((d) => (d.id === docId ? { ...d, ...p } : d)));
   return (
-    <ReasonModal size="lg" title={`Edit what ${name} wants for ${PROGRAM_LABEL[program]}`} subtitle="Reader uses this same list on the intake screen." onClose={onClose} onSave={(reason) => {
+    <ReasonModal size="lg" title={`Edit what ${name} wants for ${PROGRAM_LABEL[program]}`} subtitle="New drafts use this list at once. Sent requests keep what they were sent with. Click Update drafts to redraft open ones." onClose={onClose} onSave={(reason) => {
       const clean = list.filter((d) => d.title.trim()).map((d) => ({ ...d, title: d.title.trim(), requirement: d.requirement.trim() }));
       const changes = docsChanges(items, clean);
       if (!changes.length) useStore.getState().toast({ title: "Nothing changed", tone: "neutral" });

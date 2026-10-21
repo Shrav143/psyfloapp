@@ -7,6 +7,7 @@ import { cn } from "@/lib/cn";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
 import { agentNow, runLine } from "@/pages/newcase/runText";
+import { payerUpdateFor, payerUpdateText } from "./helpers";
 import { StepBar } from "./StepBar";
 
 const STATUS: Record<DraftState, { text: string; tone: Tone; cta: string; primary: boolean }> = {
@@ -20,6 +21,8 @@ const STATUS: Record<DraftState, { text: string; tone: Tone; cta: string; primar
 export function CaseRow({ draft }: { draft: CaseDraft }) {
   const nav = useNavigate();
   const clock = useStore((s) => s.clock);
+  const updates = useStore((s) => s.payerChangeUpdates);
+  const update = payerUpdateFor([draft.id, draft.caseId], updates);
   const state = draftState(draft);
   const status = STATUS[state];
   const due = dueChip(draft, clock);
@@ -37,7 +40,10 @@ export function CaseRow({ draft }: { draft: CaseDraft }) {
           <IdLink onClick={open}>{idLabel}</IdLink>
           <span className="text-muted"> · {draft.patient.initials ? `${draft.patient.initials}${draft.patient.age ? `, ${draft.patient.age}` : ""}` : "No patient yet"} · {payer?.name ?? "No payer yet"}</span>
         </div>
-        <div className="mt-0.5">{describeRequest(draft)}</div>
+        <div className="mt-0.5 flex flex-wrap items-center gap-2">
+          {describeRequest(draft)}
+          {update ? <Pill tone="neutral">{payerUpdateText(update)}</Pill> : null}
+        </div>
         <StepBar current={barIndex(draft)} />
         <div className="flex items-center gap-2.5">
           <AgentBadge agent={agentNow(draft)} size={24} />

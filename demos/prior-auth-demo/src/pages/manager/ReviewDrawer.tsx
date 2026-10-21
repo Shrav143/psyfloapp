@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AlertTriangle, Check, ShieldCheck } from "lucide-react";
+import { AlertTriangle, CalendarCheck, Check, ShieldCheck, Wand2 } from "lucide-react";
 import { AgentChip, Banner, Button, Drawer, Field, Pill, TextArea } from "@/components/ui";
-import type { Review } from "@/data/managerReviews";
+import { WEEK_END, reviewStamp, type Review } from "@/data/managerReviews";
 import { payerById } from "@/data/seed";
 import { PROGRAM_LABEL } from "@/data/types";
 import { cn } from "@/lib/cn";
-import { stamp } from "@/lib/time";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
 import { REVIEW_STATUS_LABEL, REVIEW_STATUS_TONE } from "./helpers";
@@ -31,7 +30,7 @@ function Checks({ review: r }: { review: Review }) {
   );
 }
 
-/** A drafted continued-stay review: edit it, see the four Integrity checks, then sign. A review that needs an update asks for a note first. */
+/** A drafted continued-stay review: edit it, see the four Integrity checks, then sign. A review that needs an update asks for a note first, and one with no draft yet asks Cadence for it. */
 export function ReviewDrawer({ review: r, onClose }: { review: Review; onClose: () => void }) {
   const navigate = useNavigate();
   const [text, setText] = useState(r.draft);
@@ -43,10 +42,12 @@ export function ReviewDrawer({ review: r, onClose }: { review: Review; onClose: 
   }
   const [note, setNote] = useState("");
   const [checking, setChecking] = useState(false);
+  const [drafting, setDrafting] = useState(false);
   const [signing, setSigning] = useState(false);
 
   const payer = payerById(r.payerId);
   const needsUpdate = r.status === "needs_update";
+  const undrafted = r.status === "due";
   const signed = r.status === "signed";
   const warning = r.checks.find((c) => !c.passed)?.problem;
 
@@ -61,6 +62,18 @@ export function ReviewDrawer({ review: r, onClose }: { review: Review; onClose: 
       setChecking(false);
     }, 1300);
   };
+  /** Cadence drafts this one review. A paused Cadence says so at once. */
+  const draftNow = () => {
+    if (useStore.getState().agentPaused.cadence) {
+      useStore.getState().draftDueReviews([r.id]);
+      return;
+    }
+    setDrafting(true);
+    setTimeout(() => {
+      useStore.getState().draftDueReviews([r.id]);
+      setDrafting(false);
+    }, 1300);
+  };
   const sign = (by: string) => {
     useStore.getState().signReview(r.id, by, text);
     setSigning(false);
@@ -72,7 +85,7 @@ export function ReviewDrawer({ review: r, onClose }: { review: Review; onClose: 
       onClose={close}
       width={640}
       title={`${r.ledgerId} · ${payer.shortName}`}
-      subtitle={`Continued-stay review ${r.reviewNo} · ${PROGRAM_LABEL[r.program]} · due ${stamp(r.dueAt)}`}
+      subtitle={`Continued-stay review ${r.reviewNo} · ${PROGRAM_LABEL[r.program]} · due ${reviewStamp(r.dueAt)}`}
       right={<Pill tone={REVIEW_STATUS_TONE[r.status]} dot>{REVIEW_STATUS_LABEL[r.status]}</Pill>}
       footer={
         <div className="flex flex-wrap items-center gap-2.5">
@@ -82,7 +95,7 @@ export function ReviewDrawer({ review: r, onClose }: { review: Review; onClose: 
               Signed by {r.signedBy}
             </span>
           ) : (
-            <Button variant="primary" icon={ShieldCheck} disabled={needsUpdate} title={needsUpdate ? "Add your update first" : undefined} onClick={() => setSigning(true)}>
+            <Button variant="primary" icon={ShieldCheck} disabled={needsUpdate || undrafted} title={needsUpdate ? "Add your update first" : undrafted ? "Draft the review first" : undefined} onClick={() => setSigning(true)}>
               Sign review
             </Button>
           )}
@@ -117,16 +130,37 @@ export function ReviewDrawer({ review: r, onClose }: { review: Review; onClose: 
           </div>
         ) : null}
 
-        <Field label="The draft">
-          <TextArea value={text} onChange={(e) => setText(e.target.value)} readOnly={needsUpdate || signed} rows={16} className={cn("min-h-[300px] text-[13.5px] leading-relaxed", (needsUpdate || signed) && "bg-tile text-ink2")} />
-        </Field>
-        {needsUpdate ? <p className="-mt-3 text-xs text-muted">The draft is locked until your update is added.</p> : null}
+        {undrafted ? (
+          <div className="flex flex-col gap-3 rounded-2xl border border-edge bg-tile px-4 py-4">
+            <div>
+              <div className="font-semibold">Not drafted yet</div>
+              <p className="mt-0.5 text-sm text-ink2">Cadence drafts each review a few days ahead. This one is not due until {reviewStamp(r.dueAt)}, so it has no draft and no Integrity checks yet.</p>
+            </div>
+            <div>
+              <Button variant="primary" icon={Wand2} loading={drafting} onClick={draftNow}>
+                Draft this review
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <>
+            <Field label="The draft">
+              <TextArea value={text} onChange={(e) => setText(e.target.value)} readOnly={needsUpdate || signed} rows={16} className={cn("min-h-[300px] text-[13.5px] leading-relaxed", (needsUpdate || signed) && "bg-tile text-ink2")} />
+            </Field>
+            {needsUpdate ? <p className="-mt-3 text-xs text-muted">The draft is locked until your update is added.</p> : null}
 
-        <div>
-          <h3 className="mb-2.5 font-serif text-xl font-semibold">Integrity checks</h3>
-          <Checks review={r} />
-        </div>
-        {!needsUpdate && !signed ? <Banner icon={ShieldCheck}>Signing is one review at a time. Your edits to the draft are saved with the signature.</Banner> : null}
+            <div>
+              <h3 className="mb-2.5 font-serif text-xl font-semibold">Integrity checks</h3>
+              <Checks review={r} />
+            </div>
+          </>
+        )}
+        {!needsUpdate && !undrafted && !signed ? <Banner icon={ShieldCheck}>Signing is one review at a time. Your edits to the draft are saved with the signature.</Banner> : null}
+        {signed && r.nextAt !== undefined ? (
+          <Banner tone="good" icon={CalendarCheck} title={`Next review: ${reviewStamp(r.nextAt)}`}>
+            Cadence booked it. {r.nextAt < WEEK_END ? "It is on this week's list." : "It falls after this week, so it is not on the list yet."}
+          </Banner>
+        ) : null}
       </div>
       {signing ? (
         <SignDialog

@@ -6,9 +6,12 @@ import { payerById } from "@/data/seed";
 import { PROGRAM_LABEL } from "@/data/types";
 import { useStore } from "@/store";
 import { DropPanel } from "./DropPanel";
-import { intakeMissing } from "./intake";
+import { intakeMissing } from "./intakeRules";
+import { PayerChangeNote } from "./PayerChangeNote";
+import { usePayerContext } from "./payerContext";
 import { RecordsChecklist } from "./RecordsChecklist";
 import { StepFooter } from "./StepFooter";
+import { useUnmetSync } from "./useUnmetSync";
 
 /** Step 2, Medical records: drop what you have, watch the list tick off, add what is missing. Continue starts the agents after a confirm. */
 export function IntakeStep({ draft }: { draft: CaseDraft }) {
@@ -17,7 +20,9 @@ export function IntakeStep({ draft }: { draft: CaseDraft }) {
   const start = useStore((s) => s.startCaseRun);
   const patch = useStore((s) => s.patchCaseDraft);
   const [confirm, setConfirm] = useState(false);
-  const missing = intakeMissing(draft);
+  const ctx = usePayerContext(draft);
+  const missing = intakeMissing(draft, ctx.items);
+  useUnmetSync(draft);
   const payer = draft.payerId ? payerById(draft.payerId) : null;
 
   const onContinue = () => {
@@ -33,6 +38,7 @@ export function IntakeStep({ draft }: { draft: CaseDraft }) {
 
   return (
     <div className="mx-auto flex w-full max-w-[960px] flex-col gap-5">
+      <PayerChangeNote draft={draft} />
       <DropPanel draft={draft} />
       <RecordsChecklist draft={draft} />
       <StepFooter
@@ -72,7 +78,7 @@ export function IntakeStep({ draft }: { draft: CaseDraft }) {
           </>
         }
       >
-        <p className="text-sm text-ink2">Reader swaps names, dates and IDs for codes and reads the chart. Verify, Criteria, Historian and Placement check coverage, rules and how {payer?.shortName ?? "the payer"} has ruled. Scribe drafts the case and may ask you up to three questions.</p>
+        <p className="text-sm text-ink2">Reader swaps names, dates and IDs for codes and reads the chart. Verify, Criteria, Historian and Placement check coverage, rules and how {payer?.shortName ?? "the payer"} has ruled. Scribe drafts the case and may ask you a question or two.</p>
         <p className="mt-3 text-sm font-medium">Nothing is sent to the payer until a clinician signs.</p>
       </Modal>
     </div>

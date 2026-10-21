@@ -41,7 +41,7 @@ export function DocumentsTab({ id, name, cfg }: { id: string; name: string; cfg:
             {!items.length ? <li className="px-6 py-8 text-sm text-muted">This list is empty. Add the documents {name} asks for.</li> : null}
           </ol>
         </Card>
-        <ChartChecker payerId={id} name={name} lists={cfg.docs} onProgram={setProgram} />
+        <ChartChecker payerId={id} name={name} lists={cfg.docs} program={program} onProgram={setProgram} />
       </div>
       {editing ? <DocListEditModal key={program} id={id} name={name} program={program} items={items} onClose={() => setEditing(false)} /> : null}
     </div>

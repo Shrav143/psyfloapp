@@ -6,16 +6,18 @@ import { DECLINE_LABEL, buildDocs, isOpen, type CheckKey, type Referral } from "
 import { PROGRAM_LABEL } from "@/data/types";
 import { plural } from "@/lib/format";
 import { ago, longDate } from "@/lib/time";
-import { continueWithReferral } from "@/pages/newcase/intake";
+import { stepPatch } from "@/pages/newcase/steps";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
-import { askable, type AskKey } from "@/store/referralsLogic";
+import { acceptBlockers, askable, blockersLine, type AskKey } from "@/store/referralsLogic";
 import { buildChecklist, type ChecklistRow } from "./checklist";
 import { ChannelTag, StatusPill, UrgencyPill } from "./Chips";
 import { AcceptModal } from "./modals/AcceptModal";
 import { DeclineModal } from "./modals/DeclineModal";
 import { OverrideModal } from "./modals/OverrideModal";
 import { RequestInfoModal } from "./modals/RequestInfoModal";
+import { caseOf, caseTo } from "./referralCase";
+import { useContinueWithReferral } from "./useContinue";
 
 type ModalState = { kind: "accept" } | { kind: "ask"; keys: AskKey[] } | { kind: "decline" } | { kind: "ok"; key: CheckKey } | null;
 
@@ -30,7 +32,11 @@ export function ReferralChecklist({ r, draftId, onReplace }: { r: Referral; draf
   const runCoverage = useStore((s) => s.runCoverageCheck);
   const reply = useStore((s) => s.simulateReferrerReply);
   const reopen = useStore((s) => s.reopenReferral);
+  const requests = useStore((s) => s.requests);
+  const drafts = useStore((s) => s.caseDrafts);
+  const patch = useStore((s) => s.patchCaseDraft);
   const [modal, setModal] = useState<ModalState>(null);
+  const { go: goOn, dialog: attachDialog } = useContinueWithReferral(r.id, draftId);
 
   useEffect(() => markOpened(r.id), [r.id, markOpened]);
 
@@ -41,10 +47,10 @@ export function ReferralChecklist({ r, draftId, onReplace }: { r: Referral; draf
   const keys = askable(r);
   const marking = modal?.kind === "ok" ? r.checks.find((c) => c.key === modal.key) : undefined;
   const close = () => setModal(null);
-  const goOn = () => {
-    const to = continueWithReferral(r.id, draftId);
-    if (to) nav(to);
-  };
+  const blockers = open ? acceptBlockers(r) : [];
+  const started = caseOf(r, requests, drafts);
+  // This case is the one on screen: opening it means moving on to its medical records.
+  const openCase = () => (started?.kind === "draft" && started.id === draftId ? patch(draftId, stepPatch(1)) : started ? nav(caseTo(started)) : undefined);
 
   const actions = (row: ChecklistRow) => {
     const { ask, markable } = row;
@@ -74,12 +80,21 @@ export function ReferralChecklist({ r, draftId, onReplace }: { r: Referral; draf
   };
 
   const onward = open ? (
-    <Button variant="primary" trailing={ArrowRight} onClick={() => setModal({ kind: "accept" })}>Accept referral and continue</Button>
+    <Button variant="primary" trailing={ArrowRight} disabled={blockers.length > 0} aria-describedby={blockers.length ? "accept-why" : undefined} onClick={() => setModal({ kind: "accept" })}>
+      Accept referral and continue
+    </Button>
   ) : r.status === "accepted" || r.status === "scheduled" ? (
     <Button variant="primary" trailing={ArrowRight} onClick={goOn}>Continue to medical records</Button>
   ) : r.status === "declined" ? (
     <Button icon={RotateCcw} onClick={() => reopen(r.id)}>Reopen referral</Button>
-  ) : undefined;
+  ) : started ? (
+    <Button variant="primary" trailing={ArrowRight} onClick={openCase}>Open the case</Button>
+  ) : (
+    <div className="text-right text-[13px] text-muted">
+      <div className="font-semibold text-good-ink">Admitted</div>
+      <Link to={paths.referral(r.id, draftId)} className="text-forest hover:underline">See the full referral</Link>
+    </div>
+  );
 
   return (
     <>
@@ -114,6 +129,7 @@ export function ReferralChecklist({ r, draftId, onReplace }: { r: Referral; draf
         </div>
         <div className="px-6 pt-4 pb-5">
           <ChecklistProgress done={list.done} total={list.total} right={onward} />
+          {blockers.length ? <p id="accept-why" className="mt-2.5 text-right text-[13px] text-mid-ink">{blockersLine(blockers)}</p> : null}
         </div>
 
         {r.accepted && r.status !== "declined" ? (
@@ -159,6 +175,7 @@ export function ReferralChecklist({ r, draftId, onReplace }: { r: Referral; draf
       {modal?.kind === "ask" ? <RequestInfoModal r={r} keys={modal.keys} onClose={close} /> : null}
       {modal?.kind === "decline" ? <DeclineModal ids={[r.id]} onClose={close} /> : null}
       {modal?.kind === "ok" && marking ? <OverrideModal id={r.id} check={marking} onClose={close} /> : null}
+      {attachDialog}
     </>
   );
 }

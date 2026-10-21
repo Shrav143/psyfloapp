@@ -1,12 +1,12 @@
 title: Payers › Process › Save the workflow
 route: /payers/summit?tab=process
-intro: 'Save workflow' asks for a reason, then makes the edited steps the payer's next version. New drafts use the new version at once; open drafts wait for 'Update drafts'. There is no undo: a change is reversed by editing again, and the edit log keeps the old text.
+intro: 'Save workflow' asks for a reason, then makes the edited steps the payer's next version. New drafts use the new version at once; sent requests keep what they were sent with; open drafts wait for 'Update drafts'. Escape closes one pop-up at a time, so it never throws away the editor's edits by accident. There is no undo: a change is reversed by editing again, and the edit log keeps the old text.
 dir: TD
 ---
 start s1 "In the 'Edit workflow' drawer,\nclick 'Save workflow'"
 decision d1 "Is there at least one change\nagainst the saved workflow?"
 toast t0 "'Nothing to save'\nChange a step or a condition first."
-overlay m "Save the workflow?\nThis becomes version 8. New drafts use it at once.\nOpen drafts follow when you update them."
+overlay m "Save the workflow?\nThis becomes version 8. New drafts use it at once.\nSent requests keep what they were sent with.\nClick Update drafts to redraft open ones."
 process lst "List of changes, one line each\nExample: Step 1, 'Check coverage': title\nAdded step, Removed step, Step order,\nadded, changed or removed a condition"
 input i1 "Type 'Reason for the edit' (required)\nExample: Summit confirmed the new window on a call"
 click cs "Click 'Save and log the edit'"
@@ -15,17 +15,18 @@ toast er "Add a reason. It goes in the edit log."
 store v "Workflow replaced\nVersion 7 becomes 8, 'edited' date is today"
 store lg "One edit log entry per change\nArea 'Workflow', with before, after and reason"
 store un "'Edits waiting' count goes up by one"
-toast t1 "'Workflow saved as version 8'\n2 changes logged. New drafts use it now.\nOpen drafts follow when you update them."
+store nt "Bell notification 'Summit workflow edited'\nSaved version 8, changes logged,\nopens the payer's Process tab"
+toast t1 "'Workflow saved as version 8'\n2 changes logged. New drafts use it at once.\nClick Update drafts to redraft open ones."
 process cl "Reason modal and drawer both close"
 screen pg "Process tab\n'Version 8, edited 10/20'\nBanner '1 edit applies to new drafts only'"
 goto g1 "Continues in: Payers › Edits waiting › Update drafts"
 goto g2 "Continues in: Payers › Edit log"
 
 click cx "Click 'Cancel' on the reason modal"
-click cesc1 "Click the X or the dimmed area\nof the reason modal"
-process back "Reason modal closes\nDrawer stays open with every edit still in it"
-click cesc2 "Press Escape"
-process both "Reason modal AND drawer close\nEvery unsaved edit is lost"
+click cesc1 "Press Escape, click the X or\nthe dimmed area of the reason modal"
+process back "Only the reason modal closes\nDrawer stays open with every edit still in it"
+click cesc2 "Press Escape again, or Cancel, the X\nor the dimmed area of the drawer"
+process both "Drawer closes\nEvery unsaved edit is lost\nNo 'are you sure'"
 endx x1 "Back on the Process tab\nWorkflow unchanged"
 end e1 "New version is live for new drafts"
 process undo "No undo button anywhere\nTo go back, edit again.\nEdit log keeps the before text of every change"
@@ -34,11 +35,11 @@ s1 --> d1
 d1 -->|No| t0 --> s1
 d1 -->|Yes| m --> lst --> i1 --> cs --> d2
 d2 -->|Yes| er --> i1
-d2 -->|No| v --> lg --> un --> t1 --> cl --> pg --> e1
+d2 -->|No| v --> lg --> un --> nt --> t1 --> cl --> pg --> e1
 lg -.-> g2
 pg -.-> g1
 m --> cx --> back
 m --> cesc1 --> back
 back -.-> m
-m --> cesc2 --> both --> x1
+back --> cesc2 --> both --> x1
 e1 -.-> undo

@@ -1,54 +1,65 @@
 title: Payers › Configuration feeds the rest of the app
 route: /payers/:id
-intro: What a payer's workflow, rules and document lists reach outside the Payers page. In the demo the working link is redrafting: updating drafts changes the matching requests on the Dashboard and sends a bell notification. The page text also says its document list is the one Reader uses on New case, and the rules feed the agents' decisions and the approval chance; the demo does not wire those, and this diagram marks them.
+intro: What a payer's workflow, rules and document lists reach outside the Payers page. New drafts use a saved edit at once: New case reads the saved document list and rules every time it draws, and Case Manager reads the submission windows. Updating drafts changes the matching requests on the Dashboard, tags them in Case Manager and sends a bell notification. Requests already sent keep what they were sent with. The diagram also marks what no edit reaches.
 dir: TD
 ---
 start s1 "A payer's workflow, rule, document list\nor payer change is saved or updated"
 decision dk "Which kind of save?"
-store cfg "Saved on the payer\nNew drafts use it from now on"
-process nw "Page says: new drafts use it at once.\nIn the demo only the Payers page reads the saved lists back"
+store cfg "Saved on the payer\nOne edit log entry per change\nOne bell notification\nNew drafts use it from now on"
 
-group gW "Wired in the demo: redrafting"
-  click up "'Update N drafts' (after a payer change,\nor from the edits-waiting banner)"
-  store rq "Matching requests change\nneeds a person: yes\nStatus line 'Redrafted after ... Waiting for a new signature'\nTimeline event from Scribe, Packet or Integrity"
-  store nf "Bell notification 'Drafts updated'\nlinks to Case Manager"
-  process dsh "Dashboard shows the new status line\nand lists the request among those needing you"
+group gR "Read live by other screens (no Update drafts needed)"
+  process p1 "New case: the document list\nThe Medical records checklist, the file sorting and the\nReview and sign checks use the payer's saved list\nfor the draft's level of care"
+  process p2 "New case: the rules\nBackdating: a start date that reaches back further\nthan the rule allows is flagged\nNo authorization needed: a level of care the payer names there"
+  process p3 "New case: the approval chance\nEach thing the payer asks for that a draft does not meet\n(a required document, an early start date)\nholds the chance back, up to 12 points"
+  process p4 "Case Manager: the next review\nThe 'Submission windows' rule sets the days\nbefore the next review is booked, when it names a number"
+  process p5 "Payers added with 'Add a payer'\nhave a full saved set like any payer\nand are kept for New case to offer when a payer is picked"
 endgroup
 
-group gC "Wired in the demo: links out of Payers"
+group gW "Wired: redrafting after a payer change or edits"
+  click up "'Update N drafts' (after a payer change,\nor from the edits-waiting banner)"
+  store rq "Each unsent draft of this payer changes\nneeds a person: yes\nStatus line 'Redrafted after ... Waiting for a new signature'\nTimeline event from Scribe or the change's agent"
+  store rp "Update recorded\nChange (or 'edits-summit'), payer and the IDs of the drafts redrafted"
+  store nf "Bell notification 'Drafts updated'\nlinks to Case Manager"
+  process dsh "Dashboard shows the new status line\nand lists the request among those needing you"
+  process cmt "Case Manager and New case tag those drafts\n'Updated for a payer change'"
+endgroup
+
+process sent "Requests already sent are never changed\nThey keep what they were sent with"
+
+group gC "Wired: links out of Payers"
   click oc "Click 'Open the request'\nin 'Try it on a case'"
   process od "Opens Dashboard with that request's drawer"
 endgroup
 
-group gP "Said on the page, not wired in the demo"
-  process p1 "Documents tab: 'Reader uses this same list on the intake screen'\nNew case keeps its own required-document table,\nso an edited list does not change New case"
-  process p2 "Rules tab: agents 'use' each rule\nNo approval chance, queue order or New case check\nreads a rule, so editing one never moves a number"
-  process p3 "Header 'Approved as asked' (74% for Summit) is the figure\nNew case uses for the approval chance: it ends 14 points higher\nand starts 26 below that. It comes from decision history,\nso editing a rule or list does not move it"
-  process p4 "Authorizations queue and Case Manager lists\ndo not change when drafts are redrafted"
+group gP "Not read by any edit"
+  process n1 "Header 'Approved as asked' (74% for Summit) is where New case\nstarts the approval chance: it ends 14 points higher.\nIt comes from decision history, so no rule or list edit moves it"
+  process n2 "Authorizations queue order and the case page\ndo not read the saved configuration"
 endgroup
 
 process prd "In the product (PRD 06)\nA rule version is stamped on every authorization;\nPacket reads the channel, form and documents; Cadence reads windows and caps;\nAdvocate reads peer-to-peer and appeal windows"
 
 goto g1 "Continues in: Dashboard › Requests table"
-goto g2 "Continues in: Case Manager › Cases"
+goto g2 "Continues in: Case Manager › Active cases › Updated for a payer change"
 goto g3 "Continues in: Dashboard › Open a request"
 goto g4 "Continues in: Authorizations › New case › Medical records › The checklist and Continue"
-goto g5 "Continues in: Authorizations › Case › Risk"
+goto g5 "Continues in: Authorizations › New case › Review and sign › Validation summary and checks"
 goto g7 "Continues in: Authorizations › New case › Agents work › Start the run and watch it"
-goto g6 "Continues in: Authorizations › Queue"
+goto g6 "Continues in: Authorizations › Queue › Open the queue and read the top"
 
 s1 --> dk
-dk -->|Workflow, rule or documents| cfg --> nw
-dk -->|Payer change or edits update| up --> rq --> dsh --> g1
-rq --> nf --> g2
-nw -.-> p1
-nw -.-> p2
-nw -.-> p3
-nw -.-> p4
+dk -->|Workflow, rule or documents| cfg
+dk -->|Payer change or edits update| up --> rq --> rp --> nf
+rq --> dsh --> g1
+rq --> cmt --> g2
+up -.-> sent
+cfg --> p1 & p2 & p4
 p1 --> g4
-p2 --> g5
-p3 --> g7
-p4 --> g6
+p1 -.-> g5
+p2 --> p3 --> g7
+cfg -.-> p5
+cfg -.-> n1
+cfg -.-> n2
+n2 -.-> g6
 oc --> od --> g3
 dk -->|Chart check| oc
 p2 -.-> prd

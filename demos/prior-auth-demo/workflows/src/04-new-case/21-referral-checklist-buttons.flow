@@ -1,6 +1,6 @@
 title: Authorizations › New case › Referral › Checklist buttons
 route: /authorizations/new/:draftId?ref=RF-2053
-intro: The buttons around the referral checklist: replace the documents, ask the referrer, decline, open the full page, and the main button, which changes with the referral's status.
+intro: The buttons around the referral checklist: replace the documents, ask the referrer, decline, open the full page, and the main button, which changes with the referral's status and is disabled while a required item is open.
 dir: TD
 also: Demo only: 'Demo: the referrer replies' stands in for the referrer answering.
 ---
@@ -14,9 +14,9 @@ endgroup
 goto gStart "Continues in: New case › Referral › Start screen"
 
 group gFoot "Under the sections"
-  decision dAsk "Open, not waiting, and something to ask?\n(age is never counted)"
+  decision dAsk "Open, not waiting, and something to ask?\n(a failed age check is never counted)"
   click cFoot "Click 'Ask the referrer for the missing item'\nor '…for the 4 missing items'"
-  click cDec "Click 'Decline'\n(only while open)"
+  click cDec "Click 'Decline'\n(only while open; never disabled)"
   decision dWait "Awaiting info?"
   click cDemo "Click 'Demo: the referrer replies'"
   click cFull "Click 'Open the full referral'"
@@ -26,19 +26,26 @@ goto gOk "Continues in: New case › Referral › Mark OK or decline"
 goto gFull "Continues in: New case › Referral › The full referral page"
 
 decision dSt "Referral status?"
-click cAcc "Click 'Accept referral and continue'\nNever disabled while the referral is open"
-process pAcc "Open items are only listed in the Accept dialog\nYou can accept anyway"
+decision dReq "Is a required item still open?\nPatient age, credentials, signature,\ndiagnosis code, level of care, insurance and member ID"
+toast tDis "'Accept referral and continue' is disabled\nLine under it: 'Resolve 4 items first: clinician credentials, clinician signature, diagnosis code, insurance and member ID.'"
+process pLift "Each item is lifted by 'Mark OK', by the referrer's reply,\nor once it has been asked of the referrer (a failed age: only 'Mark OK')\nThe line shortens, then disappears"
+click cAcc "Click 'Accept referral and continue'"
+process pAcc "Advisory findings are only listed in the Accept dialog\nYou can accept anyway"
 goto gAcc "Continues in: New case › Referral › Accept a referral"
 toast tAcc "Green banner\n'Accepted into IOP. Target admission 10/21/2026.'"
 click cCont "Click 'Continue to medical records'"
-process pCont "Referral goes into the case\nPatient, payer, level of care, diagnoses, reason\nReferral becomes the first document"
-toast tCont "'Referral RF-2054 is in this case'\n'V.C., 30. Next, add the medical records.'"
-goto gMed "Continues in: New case › Medical records › The checklist and Continue"
+goto gCont "Continues in: New case › Referral › Accept a referral\n(attach the referral to the case; asks first when the agents ran)"
 toast tDec "Red banner\n'Declined: Needs a higher level of care.'"
 click cRe "Click 'Reopen referral'"
 store stRe "Referral is In review again\nDecision cleared"
 toast tRe "'Referral reopened'\n'RF-2048 is back In review.'"
-endx eAdm "Admitted: the card has no main button"
+
+decision dCase "Did this referral start a case or a draft?"
+click cOpen "Click 'Open the case'"
+process pOpen "Opens its request on the case page,\nor its draft at its current step\nIf the draft is the one on screen: goes on to Medical records"
+toast tAdm "Calm note 'Admitted'\nLink 'See the full referral'"
+goto gCase "Continues in: Authorizations › Case page › Ways in"
+goto gMed "Continues in: New case › Medical records › The checklist and Continue"
 
 s1 --> sc1
 sc1 --> cDiff --> pDiff --> gStart
@@ -53,7 +60,14 @@ dWait -->|No| cFull
 sc1 --> cFull --> gFull
 
 sc1 --> dSt
-dSt -->|New, In review, Awaiting info| cAcc --> pAcc --> gAcc
-dSt -->|Accepted or Scheduled| tAcc --> cCont --> pCont --> tCont --> gMed
+dSt -->|New, In review, Awaiting info| dReq
+dReq -->|Yes| tDis --> pLift
+dReq -->|No| cAcc --> pAcc --> gAcc
+pLift -.-> cAcc
+dSt -->|Accepted or Scheduled| tAcc --> cCont --> gCont
 dSt -->|Declined| tDec --> cRe --> stRe --> tRe
-dSt -->|Admitted| eAdm
+dSt -->|Admitted| dCase
+dCase -->|Yes| cOpen --> pOpen
+pOpen --> gCase
+pOpen -.-> gMed
+dCase -->|No| tAdm --> gFull

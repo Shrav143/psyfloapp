@@ -1,26 +1,33 @@
 title: Authorizations › Case page › Header and buttons
 route: /authorizations/case/R-1042
-intro: The title block above the tabs and its three buttons. It stays the same on all five tabs. The three number tiles and the notes under it are in the next diagram.
+intro: The title block above the tabs and its three buttons. It stays the same on all five tabs, and it follows the request: once the request is sent or decided the header shows its new status. The three number tiles and the notes under it are in the next diagram.
 dir: TD
+also: Demo only: the header reads the request's current stage from the Dashboard, so signing and sending in New case, or a payer reply made with the Dashboard demo controls, shows here at once.
 ---
 screen pg "Case page\nCrumbs, header, three tiles, notes, five tabs"
 click cr "Click the 'Authorizations' crumb"
 goto gQ "Continues in: Authorizations › Queue › Open the queue and read the top"
 
 screen hd "Header title\nLevel chip, ID, request type chip, then one pill"
-decision dCh "Does the request have a result (decided)?"
-toast pc "Pill shows the result, e.g. 'Approved'"
+decision dCh "Has the request been sent, decided or settled since this page was written, or does it already have a result?"
+toast pc "Pill shows the request's current status, e.g. 'Received', 'Approved'"
 process pd "Pill shows the due text, e.g. 'Notice due in 5 h'\nRed under 6 h, amber under 24 h, grey later"
 process sub "Sub line: 'J.M., 34 · Summit Medicaid HMO · Residential 3.5 · 14 days requested'\nThen the diagnosis and the scores"
 decision dRd "Ready: all four checks pass and still preparing?"
 agent ag1 "Integrity badge\n'Ready to sign. Integrity passed all four checks'"
+agent ag3 "The request's own agent and line\ne.g. Navigator: 'Navigator checks again in 30 minutes'"
 agent ag2 "Agent badge and status line\ne.g. Scribe: 'Scribe is drafting the case'"
+decision dDb "Is the request on the Dashboard past Preparing?"
+click od "Click 'Open on the Dashboard' (next to the status line)"
+goto gDb "Continues in: Dashboard › Request drawer"
 
 group gBt "Header buttons"
   click b1 "Click 'Open in review and sign'"
   click b2 "Click 'Send to payer'"
   click b3 "Click 'Back to queue'"
 endgroup
+decision dSn "Is it already with the payer or decided?"
+process sn "'Send to payer' is replaced by a greyed-out 'Sent to payer'\nThe note gives the reason, e.g. 'Already with the payer. Navigator is tracking it.'"
 decision dEn "Can it be sent?"
 process on "'Send to payer' is on\nNote: 'Sending opens review and sign. Nothing goes to the payer until a clinician signs.'"
 process off "'Send to payer' is greyed out, a click does nothing\nThe note and a hover hint give the reason"
@@ -36,8 +43,15 @@ pd --> sub
 sub --> dRd
 dRd -->|Yes| ag1
 dRd -->|No| ag2
+dCh -.->|Yes| ag3
+ag1 --> dDb
+ag2 --> dDb
+ag3 --> dDb
+dDb -->|Yes| od --> gDb
 pg --> b1 --> gS
-pg --> b2 --> dEn
+pg --> b2 --> dSn
+dSn -->|Yes| sn
+dSn -->|No| dEn
 dEn -->|Yes| on --> gS
 dEn -->|No| off
 pg --> b3 --> gQ

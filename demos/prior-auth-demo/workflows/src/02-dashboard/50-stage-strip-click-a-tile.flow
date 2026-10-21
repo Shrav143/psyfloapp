@@ -1,12 +1,12 @@
 title: Dashboard › Stage strip › Click a stage tile
 route: /dashboard?stage=under_review
-intro: Six tinted tiles, left to right, with chevrons between them. A tile is a filter button: one click sets Stage, a second click on the same tile clears it. The chevrons are decoration and do nothing. Tile counts follow Payer, Program and Request type but ignore Stage.
+intro: Six tinted tiles, left to right, with chevrons between them. A tile is a filter button: one click sets Stage, a second click on the same tile clears it. The chevrons are decoration and do nothing. Tile counts follow Payer, Program and Request type but ignore Stage. Preparing also counts cases saved in New case.
 dir: TD
 ---
 start s1 "Dashboard is open\nStage strip under the filter bar"
 
 group gTiles "The six tiles, left to right"
-  screen t1 "Preparing 5\n'in Case Manager'\n'2 need you, 1 ready to sign'"
+  screen t1 "Preparing 5\n'in Case Manager'\n'2 need you, 1 ready to sign'\nCounts the five rows plus every case saved in New case that has no row yet"
   screen t2 "Received 4\n'payer has it'\n'about 25 min on average'"
   screen t3 "Under review 14\n'with the payer'\n'about 2.2 days on average'"
   screen t4 "Info requested 3 (amber)\n'the payer wants more'\n'1 draft ready, 2 in progress'"
@@ -26,6 +26,11 @@ process p5 "Tile counts stay the same\nHeadline, sub line and table rows follow 
 screen sc "Requests\n'Showing 8 of 14' under the headline '14 requests are under review.'"
 decision d2 "Does the tile show 0?"
 screen em "Empty state: 'No requests match'\nWith 'Clear filters'"
+
+decision d3 "Is Stage 'Preparing', with cases in New case that have no row?"
+screen ml "One line under the table\n'2 more are being prepared in New case.'\nHeadline counts them too: '7 requests are being prepared.'"
+click c3 "Click 'Open Active cases'"
+goto g5 "Continues in: Case Manager › Active cases › Being prepared card"
 
 click m1 "Pick a stage in the 'All stages' menu instead"
 goto g1 "Continues in: Dashboard › Headline › What the headline and sub line say"
@@ -47,3 +52,5 @@ p5 --> g1
 p5 --> d2
 d2 -->|No| sc --> g3
 d2 -->|Yes| em --> g2
+sc --> d3
+d3 -->|Yes| ml --> c3 --> g5

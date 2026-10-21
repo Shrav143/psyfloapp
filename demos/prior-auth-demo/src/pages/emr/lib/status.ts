@@ -19,3 +19,10 @@ export function lastSyncTile(systems: EmrSystem[], clock: number): { value: stri
   const value = clock - newest < 1 ? "Just now" : duration(clock - newest).replace(" m", " min");
   return { value, sub, tone: off === 0 ? "good" : "mid" };
 }
+
+/** What a system that is not connected means for New case, and what to do about it. Empty for a connected system. */
+export function pullNote(s: EmrSystem): string {
+  if (s.status === "connected") return "";
+  const next = s.status === "attention" ? " First step: renew the sign-in with Fix." : s.fixIssue ? " Reconnect starts with a fix." : "";
+  return `${s.issue ?? ""}${next} New case cannot pull a chart from it until it is connected.`;
+}

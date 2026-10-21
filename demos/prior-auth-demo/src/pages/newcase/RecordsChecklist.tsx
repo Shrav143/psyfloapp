@@ -3,13 +3,16 @@ import { Card, ChecklistGroup, ChecklistProgress, Pill } from "@/components/ui";
 import type { CaseDraft, DocSlotId } from "@/data/cases";
 import { uid } from "@/lib/format";
 import { useStore } from "@/store";
+import { selectUnmappedForConnected } from "@/store/emr";
 import { referralPrefill } from "@/store/referrals";
 import { CoverageRow } from "./CoverageRow";
 import { DocPreviewDrawer } from "./DocPreviewDrawer";
 import { DocRow } from "./DocRow";
 import { makeDocument } from "./documents";
 import { FieldRow } from "./FieldRow";
-import { intakeMissing } from "./intake";
+import { intakeMissing } from "./intakeRules";
+import { EMR_CHARTS } from "./lookups";
+import { usePayerContext } from "./payerContext";
 import { buildChecklist, isDocRow, slotOf, tally, type RowId } from "./recordsModel";
 import { useCoverageCheck, useReading } from "./useRecordsTimers";
 
@@ -21,23 +24,34 @@ export function RecordsChecklist({ draft }: { draft: CaseDraft }) {
   const [open, setOpen] = useState<RowId | null>(null);
   const [preview, setPreview] = useState<DocSlotId | null>(null);
   const picker = useRef<HTMLInputElement>(null);
-  const pickFor = useRef<DocSlotId | null>(null);
+  const pickFor = useRef<{ slot: DocSlotId; replace: boolean } | null>(null);
+  const ctx = usePayerContext(draft);
   useReading(draft);
   useCoverageCheck(draft, clock);
 
+  /* The fields of the system the chart came from that still wait for a mapping in EMR Connect. */
+  const emrUnmapped = useStore((s) => s.emrUnmapped);
+  const emrSystems = useStore((s) => s.emrSystems);
+  const unmapped = useMemo(() => {
+    const system = EMR_CHARTS.find((c) => c.id === draft.emrChart)?.systemId;
+    return selectUnmappedForConnected(useStore.getState()).filter((u) => u.systemId === system);
+    // The selector reads these two lists; the store is read directly so it can stay a plain function of the state.
+  }, [emrUnmapped, emrSystems, draft.emrChart]);
   const referral = useMemo(() => (draft.referralId ? referralPrefill(useStore.getState(), draft.referralId) : null), [referrals, draft.referralId]);
-  const groups = useMemo(() => buildChecklist(draft, clock, referral), [draft, clock, referral]);
+  const groups = useMemo(() => buildChecklist(draft, clock, referral, ctx, unmapped), [draft, clock, referral, ctx, unmapped]);
   const all = tally(groups);
-  const ready = intakeMissing(draft).length === 0;
+  const ready = intakeMissing(draft, ctx.items).length === 0;
   const toggle = (id: RowId) => setOpen((cur) => (cur === id ? null : id));
 
-  const pick = (slot: DocSlotId) => {
-    pickFor.current = slot;
+  const pick = (slot: DocSlotId, replace = false) => {
+    pickFor.current = { slot, replace };
     picker.current?.click();
   };
+  /** A file chosen for a row. When it replaces one, Reader reads it again and the demo reads it clean. */
   const took = (list: FileList | null) => {
     const file = list?.[0];
-    if (file && pickFor.current) put(draft.id, [makeDocument(pickFor.current, { id: uid("f"), name: file.name, sizeKb: Math.max(1, Math.round(file.size / 1024)) })]);
+    const target = pickFor.current;
+    if (file && target) put(draft.id, [makeDocument(target.slot, { id: uid("f"), name: file.name, sizeKb: Math.max(1, Math.round(file.size / 1024)) }, false, "validating", target.replace)]);
     if (picker.current) picker.current.value = "";
   };
 
@@ -52,7 +66,10 @@ export function RecordsChecklist({ draft }: { draft: CaseDraft }) {
           <ChecklistGroup key={g.id} title={g.title} done={count.done} total={count.total}>
             {g.note ? <li className="px-6 pb-1.5 text-[13px] text-muted">{g.note}</li> : null}
             {g.rows.map((row) => {
-              if (isDocRow(row.id)) return <DocRow key={row.id} row={row} slot={slotOf(row.id)} draft={draft} onPick={pick} onPreview={setPreview} />;
+              if (isDocRow(row.id)) {
+                const id = row.id;
+                return <DocRow key={id} row={row} slot={slotOf(id)} draft={draft} open={open === id} onToggle={() => toggle(id)} onPick={pick} onPreview={setPreview} />;
+              }
               if (row.id === "coverage") return <CoverageRow key={row.id} row={row} draft={draft} clock={clock} />;
               const field = row.id;
               return <FieldRow key={field} row={row} field={field} draft={draft} open={open === field} onToggle={() => toggle(field)} />;

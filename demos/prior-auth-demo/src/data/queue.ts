@@ -1,5 +1,6 @@
 import type { AgentKey, PayerId, Program, PsyRequest, RequestType } from "./types";
 import { PROGRAM_LABEL } from "./types";
+import { plural } from "@/lib/format";
 
 /* The Authorizations queue: 56 open requests in three priority bands. The band totals shown on the
    page are computed from these rows, so the amounts and chances below add up to the canonical numbers:
@@ -114,7 +115,7 @@ function make(band: Band, [id, initials, age, payerId, program, type, dueHours, 
   return {
     id, initials, age, payerId, program, type, levelLabel: x.level ?? PROGRAM_LABEL[program], dxKey,
     dx: x.dx ?? dxLine(id, dxKey, type, program), scores: x.scores ?? scoresFor(id, dxKey), band, dueAt: dueHours * 60, dueVerb: x.verb ?? DEFAULT_VERB[phase](type),
-    atStake, chance, liftPts, liftLabel: x.liftLabel ?? (liftPts > 0 ? `+${liftPts} pts possible` : phase === "payer" ? "waiting on the payer" : phase === "denial" ? "chance to overturn" : "on track"),
+    atStake, chance, liftPts, liftLabel: x.liftLabel ?? (liftPts > 0 ? `+${plural(liftPts, "pt")} possible` : phase === "payer" ? "waiting on the payer" : phase === "denial" ? "chance to overturn" : "on track"),
     phase, agent: x.agent ?? pool[0], status: x.status ?? pool[1], needsInput: !!x.needs, coverageFix: !!x.cov, signal: !!x.signal, rule: x.rule, days: daysRequested(program),
   };
 }
@@ -194,12 +195,16 @@ export const QUEUE_ITEMS: QueueItem[] = [
   ...NOW_ROWS.map((r) => make("now", r)), ...DAY_ROWS.map((r) => make("day", r)), ...WEEK_ROWS.map((r) => make("week", r)),
 ].sort((a, b) => BANDS.indexOf(a.band) - BANDS.indexOf(b.band) || waitingOnYou(b) - waitingOnYou(a) || riskScore(b) - riskScore(a));
 
-/** Ready-to-sign and preparing requests leave the queue once they are sent (they then show as Received on the Dashboard). */
-export const isSendable = (i: QueueItem): boolean => i.phase === "preparing" || i.phase === "ready";
-export function openItems(items: QueueItem[], requests: PsyRequest[]): QueueItem[] {
-  return items.filter((i) => {
-    if (!isSendable(i)) return true;
-    const r = requests.find((x) => x.id === i.id);
-    return !r || r.stage === "preparing";
-  });
+/** The Dashboard request behind a queue row. A request the payer denied is renamed D-xxxx but keeps its case ID. */
+const requestFor = (i: QueueItem, requests: PsyRequest[]): PsyRequest | undefined => requests.find((r) => r.id === i.id) ?? requests.find((r) => r.caseId === i.id);
+
+/** A request leaves the queue once nothing is left for a person to do on it: it was sent (preparing and ready ones),
+    the payer decided it (ones waiting on a payer), or the denial is settled or has an appeal filed (denial route). */
+function isHandled(i: QueueItem, requests: PsyRequest[]): boolean {
+  const r = requestFor(i, requests);
+  if (!r) return false;
+  if (i.phase === "payer") return r.stage === "decided" || r.stage === "appeal";
+  if (i.phase === "denial") return r.stage !== "appeal" || r.deadlineAt === undefined; // an appeal that is filed has no clock left on us
+  return r.stage !== "preparing";
 }
+export const openItems = (items: QueueItem[], requests: PsyRequest[]): QueueItem[] => items.filter((i) => !isHandled(i, requests));

@@ -3,13 +3,13 @@ import { SearchX, Plus, CalendarCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button, Card, EmptyState, Page, PageHeader } from "@/components/ui";
 import { BANDS, openItems } from "@/data/queue";
-import { money } from "@/lib/format";
+import { money, plural } from "@/lib/format";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
 import { BandCard } from "./BandCard";
 import { QueueFilterBar } from "./QueueFilterBar";
 import { QueueTiles, SignalBanner, numberWord } from "./QueueTop";
-import { byBand, chanceOf, filterItems, filtersActive, liftOf, statsOf } from "./queueLogic";
+import { byBand, chanceOf, filterItems, filtersActive, liftOf, otherFiltersActive, statsOf } from "./queueLogic";
 
 const cap = (s: string): string => s[0].toUpperCase() + s.slice(1);
 
@@ -47,8 +47,10 @@ export default function QueuePage() {
   const affected = open.filter((i) => i.signal).length;
   const filtered = filtersActive(filters);
 
-  const title = filtered ? `${shown.length} of ${all.count} open requests match these filters.` : `${needsToday} of ${all.count} open requests need action today.`;
-  const sub = filtered ? undefined : `${cap(numberWord(urgent))} ${urgent === 1 ? "is" : "are"} urgent. ${money(all.dollars)} rides on what is in flight, and the average approval chance is ${all.avg}%.`;
+  // With no one in Act now the band stays, saying so, so the page never looks as if the urgent requests were hidden.
+  const showEmptyNow = urgent === 0 && (filters.urgency === "all" || filters.urgency === "now") && !otherFiltersActive(filters);
+  const title = filtered ? `${shown.length} of ${plural(all.count, "open request")} ${shown.length === 1 ? "matches" : "match"} these filters.` : needsToday === 0 ? "Nothing needs action today." : `${needsToday} of ${plural(all.count, "open request")} ${needsToday === 1 ? "needs" : "need"} action today.`;
+  const sub = filtered ? undefined : `${urgent === 0 ? "Nothing is urgent." : `${cap(numberWord(urgent))} ${urgent === 1 ? "is" : "are"} urgent.`} ${money(all.dollars)} rides on what is in flight, and the average approval chance is ${all.avg}%.`;
 
   return (
     <Page>
@@ -60,14 +62,14 @@ export default function QueuePage() {
       <QueueFilterBar filters={filters} set={setFilter} clear={clearFilters} affected={affected} />
       {open.length === 0 ? (
         <Card>
-          <EmptyState icon={CalendarCheck} title="Nothing needs you today" action={<Button onClick={() => navigate(paths.manager())}>Open Case Manager</Button>}>Every open request has been sent. Case Manager shows what is scheduled next.</EmptyState>
+          <EmptyState icon={CalendarCheck} title="Nothing needs you today" action={<Button onClick={() => navigate(paths.manager())}>Open Case Manager</Button>}>Every open request has been sent or handled. Case Manager shows what is scheduled next.</EmptyState>
         </Card>
       ) : shown.length === 0 ? (
         <Card>
-          <EmptyState icon={SearchX} title="No requests match these filters" action={<Button onClick={clearFilters}>Clear filters</Button>}>The filters hide all {all.count} open requests.</EmptyState>
+          <EmptyState icon={SearchX} title="No requests match these filters" action={<Button onClick={clearFilters}>Clear filters</Button>}>The filters hide all {plural(all.count, "open request")}.</EmptyState>
         </Card>
       ) : (
-        BANDS.filter((b) => grouped[b].length > 0).map((b) => (
+        BANDS.filter((b) => grouped[b].length > 0 || (b === "now" && showEmptyNow)).map((b) => (
           <BandCard
             key={b} band={b} items={grouped[b]} stats={statsOf(grouped[b], cases, clock)} collapsed={bandView[b].collapsed} showAll={bandView[b].showAll} clock={clock} chances={chances}
             onToggle={() => useStore.getState().toggleBand(b)} onShowAll={(on) => useStore.getState().showAllInBand(b, on)}

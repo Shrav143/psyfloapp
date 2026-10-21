@@ -1,7 +1,7 @@
 import { PAYERS } from "@/data/seed";
 import { PROGRAM_LABEL, PROGRAMS, type PayerId, type Program, type RequestEvent, type Urgency } from "@/data/types";
 import { authRequired, buildCoverage, buildFields, evaluateChecks, KNOWN_ICD, URGENCY_LABEL, staffById, CHANNEL_LABEL, DECLINE_LABEL, REPLY_VIA_LABEL, PROGRAM_ASAM, ACCEPTED_CREDENTIALS, CHECK_LABEL, CHECK_PROBLEM, type CheckKey, type DeclineReason, type DocPlan, type FieldKey, type Referral, type ReferralCheck, type ReplyVia, type StaffId } from "@/data/referrals";
-import { uid } from "@/lib/format";
+import { plural, uid } from "@/lib/format";
 import { DAY, HOUR, longDate } from "@/lib/time";
 
 /* Pure transitions: each takes a referral and returns a new one with timeline events added.
@@ -12,6 +12,9 @@ const withEvents = (r: Referral, ...e: RequestEvent[]): Referral => ({ ...r, eve
 const noScheduled = (r: Referral): Referral => ({ ...r, events: r.events.filter((e) => e.done) });
 
 export const unresolved = (r: Referral): ReferralCheck[] => r.checks.filter((c) => c.state !== "pass" && !c.resolved);
+
+/** The question went out and the answer has not come back. A failed age check never waits: nobody can change a patient's age by replying. */
+export const isWaiting = (r: Referral, c: ReferralCheck): boolean => r.status === "awaiting_info" && c.state === "warn";
 
 export function assign(r: Referral, owner: StaffId | null, clock: number): Referral {
   const status = r.status === "new" && owner ? "in_review" : r.status;
@@ -51,9 +54,31 @@ export function applyCoverage(r: Referral, clock: number): Referral {
 export function acceptWarnings(r: Referral): string[] {
   const out = unresolved(r).map((c) => `${CHECK_PROBLEM[c.key]}. ${c.detail}`);
   if (!r.coverage) out.push("Coverage has not been checked yet.");
-  else if (r.coverage.kind === "lapsed" || r.coverage.kind === "unconfirmed") out.push(`Coverage: ${r.coverage.headline}.`);
+  else if (r.coverage.kind === "lapsed" || r.coverage.kind === "unconfirmed") out.push(`${r.coverage.headline}.`);
   return out;
 }
+
+/* What cannot be accepted without: who ordered it and signed it, who the patient is, what is asked for, a diagnosis and how it is paid.
+   Every other open finding is advisory. The Accept dialog lists those and the person can go ahead. */
+const BLOCKING = ["age", "credentials", "signature", "diagnosis", "service", "insurance"] as const;
+const BLOCKER_NAME: Record<(typeof BLOCKING)[number], string> = {
+  age: "patient age",
+  credentials: "clinician credentials",
+  signature: "clinician signature",
+  diagnosis: "diagnosis code",
+  service: "level of care",
+  insurance: "insurance and member ID",
+};
+
+/** Blocking findings still open, in checklist order. "Mark OK", the referrer's reply, or asking the referrer lifts one; a failed age check only "Mark OK". */
+export function acceptBlockers(r: Referral): string[] {
+  const open = new Set<string>(unresolved(r).filter((c) => !isWaiting(r, c)).map((c) => c.key));
+  if (r.payerId === null && r.status !== "awaiting_info") open.add("insurance");
+  return BLOCKING.filter((k) => open.has(k)).map((k) => BLOCKER_NAME[k]);
+}
+
+/** The line under a disabled "Accept referral". */
+export const blockersLine = (names: string[]): string => `Resolve ${plural(names.length, "item")} first: ${names.join(", ")}.`;
 
 export function accept(r: Referral, o: { owner: StaffId; program: Program; admitBy: number }, clock: number): Referral {
   const warn = unresolved(r).length;
@@ -136,8 +161,8 @@ export function simulateReply(r: Referral, clock: number): { next: Referral; fix
 /** What can be asked of the referrer: any of the nine checks, plus the insurance, which is not one of them. */
 export type AskKey = CheckKey | "insurance";
 
-/** What is still missing and the referrer can supply. The age check is left out: nobody can change a patient's age by replying. */
-export const askable = (r: Referral): AskKey[] => [...unresolved(r).filter((c) => c.key !== "age").map((c) => c.key), ...(r.payerId === null ? (["insurance"] as const) : [])];
+/** What is still missing and the referrer can supply. A failed age check is left out: nobody can change a patient's age by replying. */
+export const askable = (r: Referral): AskKey[] => [...unresolved(r).filter((c) => c.state !== "fail").map((c) => c.key), ...(r.payerId === null ? (["insurance"] as const) : [])];
 
 const detailOf = (r: Referral, key: CheckKey): string => r.checks.find((c) => c.key === key)?.detail ?? "";
 const NEED: Record<AskKey, (r: Referral) => string> = {

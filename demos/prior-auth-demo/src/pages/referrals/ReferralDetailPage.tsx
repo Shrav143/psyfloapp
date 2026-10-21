@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { SearchX } from "lucide-react";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import { ArrowLeft, SearchX } from "lucide-react";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Button, Crumbs, EmptyState, Page, Stepper, UnderlineTabs, type TabItem } from "@/components/ui";
 import { buildDocs, issueCount, locate, type CheckKey, type DocId } from "@/data/referrals";
 import { NEW_CASE_STEPS } from "@/pages/newcase/steps";
@@ -9,6 +9,7 @@ import { useStore } from "@/store";
 import { askable, type AskKey } from "@/store/referralsLogic";
 import { ActivityTab } from "./ActivityTab";
 import { checklistPath } from "./checklist";
+import { caseOf } from "./referralCase";
 import { CoverageTab } from "./CoverageTab";
 import { DecisionBanners, type DetailTab } from "./DecisionBanners";
 import { DocumentPanel } from "./DocumentPanel";
@@ -28,10 +29,14 @@ type ModalState = { kind: "accept" } | { kind: "info"; keys: AskKey[] } | { kind
 /** One referral: the document on the left, what the agents made of it on the right, and the decision. */
 export default function ReferralDetailPage() {
   const { id = "" } = useParams();
+  const nav = useNavigate();
   const [params] = useSearchParams();
-  const draftId = params.get("draft") ?? undefined;
   const r = useStore((s) => s.referrals.find((x) => x.id === id));
   const markOpened = useStore((s) => s.markReferralOpened);
+  const requests = useStore((s) => s.requests);
+  const drafts = useStore((s) => s.caseDrafts);
+  // A link without a case (the bell, or back from Eligibility) still leads back to the draft that holds this referral.
+  const draftId = params.get("draft") ?? drafts.find((d) => d.referralId === id && !d.sent)?.id;
   const [tab, setTab] = useState<DetailTab>("extracted");
   const [hl, setHl] = useState<string | null>(null);
   const [docId, setDocId] = useState<DocId>("form");
@@ -88,9 +93,12 @@ export default function ReferralDetailPage() {
 
   return (
     <Page>
-      <Crumbs items={[{ label: "New case", to: paths.newCase({ draft: draftId }) }, { label: "Referral", to: draftId ? checklistPath(draftId, r.id) : paths.newCase() }, { label: r.id }]} />
+      <div className="-mb-1.5 flex flex-wrap items-center justify-between gap-3">
+        <Crumbs items={[{ label: "New case", to: paths.newCase({ draft: draftId }) }, { label: "Referral", to: draftId ? checklistPath(draftId, r.id) : paths.newCase() }, { label: r.id }]} />
+        <Button size="sm" icon={ArrowLeft} onClick={() => nav(paths.newCase({ draft: draftId }))}>Back to the case</Button>
+      </div>
       <Stepper steps={NEW_CASE_STEPS} current={0} />
-      <ReferralHeader r={r} onAccept={() => setModal({ kind: "accept" })} onInfo={() => setModal({ kind: "info", keys: askable(r) })} onDecline={() => setModal({ kind: "decline" })} onNote={() => setModal({ kind: "note" })} onSchedule={() => setModal({ kind: "schedule" })} />
+      <ReferralHeader r={r} hasCase={!!caseOf(r, requests, drafts)} onAccept={() => setModal({ kind: "accept" })} onInfo={() => setModal({ kind: "info", keys: askable(r) })} onDecline={() => setModal({ kind: "decline" })} onNote={() => setModal({ kind: "note" })} onSchedule={() => setModal({ kind: "schedule" })} />
       <DecisionBanners r={r} onTab={setTab} draftId={draftId} />
       <div className="grid grid-cols-1 items-start gap-[22px] min-[1100px]:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
         <div className="min-[1100px]:sticky min-[1100px]:top-[78px]">

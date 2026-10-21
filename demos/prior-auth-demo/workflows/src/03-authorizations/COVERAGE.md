@@ -2,14 +2,14 @@
 
 Every control on `/authorizations` and `/authorizations/case/:id` and the diagram that shows it. New case and Eligibility & Benefits are other modules; this module only hands off to them.
 
-File names below are in `src/03-authorizations/`. Short names: 10 queue-overview, 12 bands, 14 tile, 16 filters, 18 signal, 20 ways-in, 22 header, 23 numbers, 24 tabs, 26 send-gates, 30 actions-tab, 32 card, 34 apply, 36 dismiss, 38 refine-and-context, 40 picture, 42 chip, 50 criteria, 60 risk, 62 modals, 70 draft-read-edit, 72 checks-versions, 74 send, 80 exits, 82 writes.
+File names below are in `src/03-authorizations/`. Short names: 10 queue-overview, 12 bands, 14 tile, 16 filters, 18 signal, 20 ways-in, 22 header, 23 numbers, 24 tabs, 26 send-gates, 30 actions-tab, 32 card, 34 apply, 36 dismiss, 38 refine, 39 context, 40 picture, 42 chip, 50 criteria, 60 risk, 62 modals, 70 draft-read-edit, 72 checks-versions, 74 send, 80 exits, 82 writes.
 
 ## Queue (`/authorizations`)
 
 | Control | Diagram |
 |---|---|
 | Sidebar 'Authorizations' (and its badge), Demo menu 'Authorizations: the queue' | 10, 12 |
-| Header line and sub line (filtered and unfiltered wording) | 10 |
+| Header line and sub line (filtered, unfiltered and 'Nothing needs action today' / 'Nothing is urgent' wording) | 10, 16 |
 | 'New case' button | 10, 80 |
 | Payer signal banner: 'Review the four' / 'Show all requests' | 18 |
 | Payer signal banner: X 'Dismiss signal' | 18 |
@@ -26,7 +26,9 @@ File names below are in `src/03-authorizations/`. Short names: 10 queue-overview
 | Menu keys: Up, Down, Enter, Esc, click outside | 16 |
 | 'Clear filters' (next to the menus) | 16, 18 |
 | Empty result: 'No requests match these filters' + 'Clear filters' | 16 |
-| Empty queue: 'Nothing needs you today' + 'Open Case Manager' | 16, 80 |
+| Empty queue: 'Nothing needs you today' + 'Open Case Manager' (shown once no request is left open) | 16, 80 |
+| Empty Act now band: 'Nothing needs you today' (the band stays, '0 requests') | 12, 16 |
+| A request leaving its band (sent, decided by the payer, denial settled or appeal filed) | 12, 82 |
 | Band header (collapse and expand) | 12 |
 | 'Show N more' / 'Show fewer' | 12 |
 | Ranking inside a band, band colours, band counts | 12 |
@@ -44,8 +46,10 @@ File names below are in `src/03-authorizations/`. Short names: 10 queue-overview
 | Crumb 'Authorizations' | 22, 80 |
 | 'Open in review and sign' | 22, 26, 74 |
 | 'Send to payer' (header, actions side panel, Draft tab), on and off states and reasons | 22, 26, 30, 74 |
+| Greyed-out 'Sent to payer' (header and actions side panel) once the request is with the payer or decided | 22, 30 |
+| 'Open on the Dashboard' (next to the header status line, once the request is past Preparing) | 22, 80 |
 | 'Back to queue' | 22, 80 |
-| Header title chips, due pill, status line, Integrity badge | 22 |
+| Header title chips, due pill or the request's current status chip, status line, Integrity badge | 22 |
 | Tile 'Approval chance' / 'Chance to overturn' | 23 |
 | Tile 'How sure are we' | 23 |
 | Tile 'Days likely granted' / 'Days in question' | 23 |
@@ -69,12 +73,15 @@ File names below are in `src/03-authorizations/`. Short names: 10 queue-overview
 | 'Dismissed (N)' list and 'Bring back' | 30, 36 |
 | Banner 'Every recommendation is applied' | 30 |
 | 'Apply selected (N)': missing answers, work strip, results | 34 |
-| 'Refine recommendations' | 38 |
-| 'Add clinical context' dialog: box, 'Add context', 'Cancel', X, Esc | 38 |
+| 'Refine recommendations' panel: three focuses, 'Apply focus', 'Cancel', X, Esc | 38 |
+| Banner 'Focus: ...' and 'Clear focus'; card pill 'Added for your focus' | 30, 32, 38 |
+| 'Add clinical context' dialog: box, 'Add context', 'Cancel', X, Esc | 39 |
+| Side-panel card 'Context you added' (notes, '+1 pt') | 30, 39 |
 | 'Dismiss recommendations' | 30, 36 |
 | Dismiss dialog: four reasons, 'Tell us in a few words', 'Dismiss and log', 'Cancel', X, Esc, dimmed area, gating warning | 36 |
-| 'Logged decisions' | 30, 38 |
-| Controls locked while the agents work | 30, 32, 34, 38 |
+| Dismissal written to the list Analytics reads | 36, 82 |
+| 'Logged decisions' | 30, 38, 39 |
+| Controls locked while the agents work | 30, 32, 34, 38, 39 |
 
 ## Clinical picture, Payer criteria, Risk analysis
 
@@ -86,7 +93,7 @@ File names below are in `src/03-authorizations/`. Short names: 10 queue-overview
 | 'Go to the action', 'Open the action' | 50 |
 | 'Re-check criteria' | 50 |
 | Criteria table, facts, 'To keep the approval chance high' | 50 |
-| Risk cards, 'Why this number' bars, 'Likely outcomes', 'How sure are we', 'Can you trust it?' (read only) | 60 |
+| Risk cards, 'Why this number' bars (with the 'Clinical context you added' row), 'Likely outcomes', 'How sure are we', 'Can you trust it?' (read only) | 60 |
 | 'See all' and its dialog ('Close', X, dimmed area, Esc) | 60, 62 |
 | 'How it is calculated' and its dialog ('Got it', X, dimmed area, Esc) | 60, 62 |
 | 'Where this stands' banner | 60 |
@@ -107,7 +114,7 @@ File names below are in `src/03-authorizations/`. Short names: 10 queue-overview
 | Item | Diagram |
 |---|---|
 | All links out of the queue and the case page | 80 |
-| Dashboard chance and history written by Apply and Dismiss, notification 'Approval chance updated', queue after a request is sent | 82, 34, 74 |
+| Dashboard chance and history written by Apply, Add context and Dismiss, notification 'Approval chance updated', clinical context list, dismissal list, queue after a request is sent or decided | 82, 34, 39, 74 |
 
 ## Not drawn
 
@@ -116,16 +123,22 @@ File names below are in `src/03-authorizations/`. Short names: 10 queue-overview
 - Chart and donut hover: the charts have no interaction in the code.
 - Sidebar sub links ('New case', 'Eligibility & Benefits') and the global top bar: Global shell module.
 - The Demo menu 'Fast-forward' and 'Reset demo data' only appear as a note in 12; their own diagram is in Global shell.
-- The 'Nothing needs you today' message is drawn (16) but cannot appear with the seed data, so it was not run in the app.
+- The whole-queue 'Nothing needs you today' message needs every one of the 56 requests to be sent or handled, so it was checked in the app only for the Act now band (all five requests cleared by signing, a payer reply and settling the denial).
 
-## Looks broken or dead in the demo
+## Still limited in the demo
 
-- After a request is signed and sent in New case, its case page still shows the old status line and due pill, and 'Send to payer' stays on (74).
-- 'Open in review and sign' and 'Send to payer' only reach 'Review and sign' for requests with a seeded New case draft (R-0988). R-1042 opens at 'Agents work'. Every other request (even a ready one such as R-1142) opens a new draft at the 'Referral' step (26).
-- 'Open in review and sign' is on even for requests already with the payer or denied (26).
+- 'Open in review and sign' and 'Send to payer' only reach 'Review and sign' for requests with a seeded New case draft. Every other request opens a new draft pre-filled from the request (26). 'Open in review and sign' stays on even for a request already with the payer.
 - Edits and applied actions on the Draft tab are not carried into the New case summary that is signed (74).
-- The dismiss toast says the reason 'feeds Analytics'; no Analytics screen reads it (36).
-- 'Add clinical context' says Scribe will use it in the next draft; the draft text never changes (38).
-- 'Refine recommendations' and 'Send back to Scribe' only show a toast (38, 72).
-- About 27 Case Manager IDs (for example R-0903 in 'Ready to step down?') open 'Request not found' (20).
-- Small copy slip: '+1 pts' on a one-point card (32).
+- 'Send back to Scribe' only shows a toast (72).
+- About 27 Case Manager IDs (for example R-0903 in 'Ready to step down?') open 'Request not found' until Case Manager fixes its rows (20).
+- Clinical context is saved in the shared list. The draft on the Draft tab and in New case reads it in their own diagrams (70, New case); this page does not rewrite the draft text.
+- Each of the first three notes of clinical context adds a point to the approval chance, whatever it says. A refinement is a fixed re-order plus one fixed card per focus, not a new reading of the chart.
+
+## Fixed since the first mapping
+
+- After a request is signed and sent, its case page shows the new status chip and line, a greyed-out 'Sent to payer' and 'Open on the Dashboard' (22, 30, 74).
+- 'Refine recommendations' opens a panel and re-orders the cards, adds one card and moves the preview (38).
+- 'Add clinical context' is saved in the shared list, shown on the page and nudges the approval chance by a point (39).
+- The dismiss reason is written to the list Analytics reads (36).
+- 'Nothing needs you today' can be reached: requests leave the queue when sent, decided or settled (12, 16).
+- Small copy: '+1 pt' (not '+1 pts'), 'Nothing is urgent', '1 of 56 ... matches', 'Back to queue' on the not-found page.

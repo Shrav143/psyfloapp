@@ -8,7 +8,8 @@ import { cn } from "@/lib/cn";
 import { PAYER_ROW_LABEL } from "@/pages/dashboard/helpers";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
-import { STATUS_TONE, matchesBase, clockText, sortLedger, usedShare, type ManagerFilters, type SortKey } from "./helpers";
+import type { LedgerRow } from "./ledgerRows";
+import { STATUS_TONE, matchesBase, clockText, payerUpdateFor, payerUpdateText, sortLedger, usedShare, type ManagerFilters, type SortKey } from "./helpers";
 
 const PAGE = 10;
 const TILES: { status: LedgerStatus; sub: string }[] = [
@@ -53,10 +54,10 @@ function Pager({ page, pages, from, to, total, onPage }: { page: number; pages: 
 }
 
 /** Every case on one page, with the two things that matter most: how much is left and how much time. */
-export function LedgerView({ filters, onStatus, onClear }: { filters: ManagerFilters; onStatus: (s: LedgerStatus | "all") => void; onClear: () => void }) {
+export function LedgerView({ ledger, filters, onStatus, onClear }: { ledger: LedgerRow[]; filters: ManagerFilters; onStatus: (s: LedgerStatus | "all") => void; onClear: () => void }) {
   const navigate = useNavigate();
-  const ledger = useStore((s) => s.ledger);
   const clock = useStore((s) => s.clock);
+  const updates = useStore((s) => s.payerChangeUpdates);
   const [sort, setSort] = useState<{ key: SortKey; dir: 1 | -1 }>({ key: "clock", dir: 1 });
   const [paging, setPaging] = useState({ key: "", page: 0 });
 
@@ -79,7 +80,7 @@ export function LedgerView({ filters, onStatus, onClear }: { filters: ManagerFil
       <Card className="overflow-hidden">
         {rows.length === 0 ? (
           <EmptyState icon={SearchX} title="No cases match" action={<Button onClick={onClear}>Clear filters</Button>}>
-            The filters hide every case. Clear them to see all {ledger.length}.
+            The filters hide every case. Clear them to see {ledger.length === 1 ? "it" : `all ${ledger.length}`}.
           </EmptyState>
         ) : (
           <Table nowrap>
@@ -101,12 +102,19 @@ export function LedgerView({ filters, onStatus, onClear }: { filters: ManagerFil
               {shown.map((c) => {
                 const share = usedShare(c);
                 const clk = clockText(c, clock);
+                const update = payerUpdateFor([c.id, c.caseId], updates);
                 const open = () => navigate(paths.case(c.caseId));
                 return (
                   <Tr key={c.id} onClick={open} data-case={c.id}>
                     <Td>
                       <IdLink onClick={open}>{c.id}</IdLink>
                       <div className="text-xs text-muted">{c.initials} · {c.age}</div>
+                      {c.isNew || update ? (
+                        <div className="mt-1 flex flex-col items-start gap-1">
+                          {c.isNew ? <Pill tone="good">New today</Pill> : null}
+                          {update ? <Pill tone="neutral">{payerUpdateText(update)}</Pill> : null}
+                        </div>
+                      ) : null}
                     </Td>
                     <Td>
                       <Chip>{PROGRAM_LABEL[c.program]}</Chip>

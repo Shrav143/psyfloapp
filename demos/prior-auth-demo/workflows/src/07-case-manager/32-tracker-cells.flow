@@ -1,8 +1,8 @@
 title: Case Manager › Active cases › What each tracker cell means
 route: /manager
-intro: Every tracker row answers two questions: how much of the approval is left (Units used) and how long until the next thing that binds (Clock). The Clock wording depends on what kind of event is next, and it turns red when time is short. All of it moves with the demo clock.
+intro: Every tracker row answers two questions: how much of the approval is left (Units used) and how long until the next thing that binds (Clock). When the case is also a request, the Clock says exactly what its case page says, from the same due time. Otherwise the wording depends on what kind of event is next. It turns red when time is short, and all of it moves with the demo clock.
 dir: LR
-also: The dates and hours are measured from the demo clock, so Fast-forward changes them. Status and Approval chance are stored on the row and do not move.
+also: The dates and hours are measured from the demo clock, so Fast-forward changes them. Approval chance is stored on the row and does not move. Status is stored too, except that a booked next review sets 'On track'.
 ---
 start s1 "Read one tracker row"
 screen r1 "Case: ID, then initials and age\nLevel of care: chip, then a short note ('Continued stay 3', 'Recertification')\nPayer: short name ('Summit Medicaid', 'Cardinal')"
@@ -11,15 +11,19 @@ decision u0 "Units used: is the case approved yet?"
 process u1 "'not yet approved' in grey\n(admissions, retro-authorizations and first requests: 9 cases)"
 process u2 "A bar and '10 of 21 days' (or 'units' for IOP)\nBar turns terracotta at 75 percent used or more"
 
+decision b0 "Clock: did a signature book a next review for this case?"
+decision q0 "Is the case also a request that has a due time on its case page?"
+process q1 "Same words and hours as the case header\n'Notice due in 5 h', 'Answer due in 9 h', 'Review due in 3 h', 'Decision expected Thu'\nP-1499 reads 9 h here and on its case page, and both tick together with Fast-forward\nRed under 1 day (a payer decision: only when overdue)\nAn approved case has no due time on its page, so it keeps its own clock below"
 decision k0 "Clock: what is the next event that binds?"
 process k1 "Notice\n'Notice due in 5 h' or 'Notice overdue'\nRed under 2 days"
 process k2 "Retro window\n'Window closes 18 h' or 'Window closed'\nRed under 2 days"
 process k3 "Peer-to-peer\n'P2P in 36 h' or 'P2P window closed'\nRed under 2 days"
-process k4 "Payer question\n'Answer due in 20 h' or 'Answer overdue'\nRed under 1 day"
+process k4 "Payer question\n'Answer due in 6 h' or 'Answer overdue'\nRed under 1 day"
 process k5 "Approval ends\n'3 days left', '14 h left' or 'Approval ended'\nRed under 1 day"
 process k6 "Clinical review\n'Review in 2 days', 'Review tomorrow', 'Review today', 'Review due'\nRed only when overdue"
 process k7 "Decision from the payer\n'Decision Thu', 'Decision in 5 h' or 'Decision overdue'\nRed only when overdue"
 process k8 "Units only\n'32 units left'\nNever red"
+process k10 "Next review booked after a signature\n'Next review Tue 10/27', then 'Review due' when the day comes\nStatus becomes 'On track' (or stays 'Awaiting payer')"
 process k9 "Times under two days show hours ('5 h'). Longer ones show days ('3 days')"
 
 process s1p "Approval chance: percent with a bar, coloured by band\nStrong 80 and above, Moderate 55 to 79, At risk below 55"
@@ -31,8 +35,12 @@ end e1 "Row is read"
 s1 --> r1 --> u0
 u0 -->|No| u1
 u0 -->|Yes| u2
-u1 --> k0
-u2 --> k0
+u1 --> b0
+u2 --> b0
+b0 -->|Yes| k10 --> s1p
+b0 -->|No| q0
+q0 -->|Yes| q1 --> s1p
+q0 -->|No| k0
 k0 -->|Notice| k1
 k0 -->|Retro window| k2
 k0 -->|P2P call| k3

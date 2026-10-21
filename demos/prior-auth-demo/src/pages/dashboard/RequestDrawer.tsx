@@ -8,7 +8,8 @@ import { band, money } from "@/lib/format";
 import { stamp } from "@/lib/time";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
-import { PAYER_ROW_LABEL, isDenial } from "./helpers";
+import { selectWriteBackOn } from "@/store/emr";
+import { PAYER_ROW_LABEL, isDenial, nextLine } from "./helpers";
 import { chanceFacts, nextCheckIn, sentAt } from "./requestFacts";
 import { DemoControls, StateActions } from "./RequestActions";
 
@@ -33,6 +34,7 @@ function checkBanner(r: PsyRequest): ReactNode {
 /** Everything the agents did on one request, in order, plus the buttons that act on it. */
 export function RequestDrawer({ request: r, onClose, onSwitch }: { request: PsyRequest; onClose: () => void; onSwitch: (id: string) => void }) {
   const navigate = useNavigate();
+  const writeBackOn = useStore(selectWriteBackOn);
   const [checking, setChecking] = useState(false);
 
   const payer = payerById(r.payerId);
@@ -86,7 +88,7 @@ export function RequestDrawer({ request: r, onClose, onSwitch }: { request: PsyR
           items={[
             ["Patient", `${r.patient.initials}, ${r.patient.age}`],
             ["At stake", money(r.atStake)],
-            ["Held by", <span key="a" className="inline-flex flex-wrap items-center gap-2"><AgentChip agent={r.agent} /><span className="font-normal">{r.next}</span></span>],
+            ["Held by", <span key="a" className="inline-flex flex-wrap items-center gap-2"><AgentChip agent={r.agent} /><span className="font-normal">{nextLine(r, writeBackOn)}</span></span>],
             ...(facts ? [[denial ? "Chance of winning" : "Approval chance", `${facts.chance}% · ${band(facts.chance).word} · likely ${facts.low} to ${facts.high}% · ${facts.similar.toLocaleString("en-US")} similar cases`] as [string, ReactNode]] : []),
             ["Sent", sent === undefined ? "Not yet" : VIA[r.sentVia]],
           ]}

@@ -14,7 +14,7 @@ screen bg "Red card 'Biggest driver of a short approval'\n'No named step-down pr
 screen cm "Green card 'What the approved cases had in common'\nFour ticked lines"
 
 screen wn "Card 'Why this number'\nFormula such as '58 + 4 + 6 + 2 + 0 + 0 − 8 = 62'\nPill 'Moderate · 62%'"
-process bars "Bars: the starting point, six rows, then 'Approval chance now'\nGreen to the right adds points, terracotta to the left takes them away\nDashed outline: what is still to come"
+process bars "Bars: the starting point, six rows, then 'Approval chance now'\nGreen to the right adds points, terracotta to the left takes them away\nDashed outline: what is still to come\nA seventh row 'Clinical context you added' appears once a note is added"
 screen lo "Card 'Likely outcomes'\nDonut and list: 'Approved as asked' 62%, 'Partly approved' 25%, 'Denied' 13%"
 screen hs "Card 'How sure are we'\nLikely range '57–66%' and a bar of yours, network and benchmark cases"
 screen cd "Card 'Comparable decisions'\nThree rows: 'Yours' or 'Network', match, outcome pill"
@@ -23,7 +23,7 @@ screen ct "Card 'Can you trust it?' with pill 'Calibrated'\n'Forecaster said 80 
 click hc "Click 'How it is calculated'"
 
 decision dOp "Are any actions still open?"
-toast b1 "Banner 'Where this stands: moderate, with 6 steps left. The biggest single step is to name the step-down provider (+11 pts).'"
+toast b1 "Banner 'Where this stands: moderate, with 6 steps left. The biggest single step is to name the step-down provider (+11 pts).' ('+1 pt' for a one-point step)"
 toast b2 "Banner 'Where this stands: every recommended action is applied. The draft is as strong as the chart allows.'"
 process cl "Banner is green at 80+ and amber below"
 agent fc "Forecaster re-scores whenever an action is applied\n(demo: the sums are done on the page)"

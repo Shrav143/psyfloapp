@@ -6,11 +6,12 @@ import { conditionText, STEP_KIND_LABEL, USER_NAME, type PayerConfig, type Pendi
 import { stamp } from "@/lib/time";
 import { useStore } from "@/store";
 import { joinWords } from "./lib/checker";
+import { useOpenDrafts } from "./lib/drafts";
 import { UpdateDraftsModal } from "./UpdateDraftsModal";
 
 function AcknowledgeModal({ id, pending, onClose }: { id: string; pending: PendingChange; onClose: () => void }) {
   return (
-    <Modal open size="sm" onClose={onClose} title="Acknowledge this change?" subtitle="Acknowledge gate. It records who saw the change and when." footer={<><Button onClick={onClose}>Cancel</Button><Button variant="primary" icon={Check} onClick={() => { useStore.getState().acknowledgeChange(id); onClose(); }}>Acknowledge change</Button></>}>
+    <Modal open size="sm" onClose={onClose} title="Acknowledge this change?" subtitle="It records who saw the change and when." footer={<><Button onClick={onClose}>Cancel</Button><Button variant="primary" icon={Check} onClick={() => { useStore.getState().acknowledgeChange(id); onClose(); }}>Acknowledge change</Button></>}>
       <div className="flex flex-col gap-3 text-sm">
         <div className="rounded-2xl bg-tile px-4 py-3"><b>{pending.title}</b><div className="mt-0.5 text-ink2">{pending.text} Effective {pending.effective}.</div></div>
         <p className="text-ink2">You are acknowledging as {USER_NAME}. This does not change any draft. Updating the drafts is a separate step.</p>
@@ -19,17 +20,19 @@ function AcknowledgeModal({ id, pending, onClose }: { id: string; pending: Pendi
   );
 }
 
-/** The ochre banner: Acknowledge change records a person, Update drafts redrafts. Update stays off until the change is acknowledged. */
+/** The ochre banner: Acknowledge change records a person, Update drafts redrafts. Update stays off until the change is acknowledged.
+    The drafts it names are the payer's own unsent drafts, read live. */
 function PendingBanner({ id, name, pending }: { id: string; name: string; pending: PendingChange }) {
   const [dialog, setDialog] = useState<"ack" | "update" | null>(null);
-  const n = pending.affects.length;
+  const drafts = useOpenDrafts(id);
+  const n = drafts.length;
   const ack = pending.acknowledged;
   return (
     <>
       <Banner tone="mid" icon={Megaphone} title={pending.title}>
         <p>
           {pending.text}{" "}
-          {n ? `${joinWords(pending.agents.slice(0, 1).map((a) => AGENTS[a].name))} can redraft the ${n} ${n === 1 ? "draft" : "drafts"} that ${n === 1 ? "is" : "are"} not yet sent: ${joinWords(pending.affects)}.` : "No open drafts are affected."}
+          {n ? `${AGENTS[pending.agents[0]].name} can redraft the ${n} ${n === 1 ? "draft" : "drafts"} that ${n === 1 ? "is" : "are"} not yet sent: ${joinWords(drafts.map((d) => d.id))}. Requests already sent keep what they were sent with.` : `No open drafts are affected. New drafts for ${name} use the change once you apply it.`}
         </p>
         <div className="mt-3 flex flex-wrap items-center gap-2.5">
           {ack ? (
@@ -38,11 +41,11 @@ function PendingBanner({ id, name, pending }: { id: string; name: string; pendin
             <Button variant="primary" icon={Check} onClick={() => setDialog("ack")}>Acknowledge change</Button>
           )}
           <Button icon={WandSparkles} disabled={!ack} title={ack ? undefined : "Acknowledge the change first"} onClick={() => setDialog("update")}>{n ? `Update ${n} ${n === 1 ? "draft" : "drafts"}` : "Apply to new drafts"}</Button>
-          <span className="max-w-[420px] text-xs">Acknowledging records who saw it. Updating redrafts, and each draft returns to Case Manager for a new signature.</span>
+          <span className="max-w-[420px] text-xs">{n ? "Acknowledging records who saw it. Updating redrafts, and each draft returns to Case Manager for a new signature." : "Acknowledging records who saw it. Applying makes new drafts use the change."}</span>
         </div>
       </Banner>
       {dialog === "ack" ? <AcknowledgeModal id={id} pending={pending} onClose={() => setDialog(null)} /> : null}
-      {dialog === "update" ? <UpdateDraftsModal id={id} name={name} mode="change" draftIds={pending.affects} agents={pending.agents} reason={pending.title.toLowerCase()} onClose={() => setDialog(null)} /> : null}
+      {dialog === "update" ? <UpdateDraftsModal id={id} name={name} mode="change" agents={pending.agents} reason={pending.title.toLowerCase()} onClose={() => setDialog(null)} /> : null}
     </>
   );
 }

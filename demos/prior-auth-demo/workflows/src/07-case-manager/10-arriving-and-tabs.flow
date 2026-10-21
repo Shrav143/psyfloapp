@@ -13,9 +13,9 @@ process p1 "Page opens at the top\nSidebar 'Case Manager' turns green; its bubbl
 decision d1 "Is the address ?tab=reviews?"
 
 screen sA "Active cases tab\nHeader '56 active cases.'\n'5 are still being prepared. Units, clocks and status for every case, across every level of care.'\nButton 'New case'"
-process cA "56 is the number of rows in the tracker and never changes in the demo\n5 is the drafts saved and not yet sent: it falls when a case is signed and sent ('1 is still being prepared' when one is left)"
+process cA "56 is the number of rows in the tracker\nA case signed and sent in New case adds a row ('57 active cases.'), and '1 active case.' reads in the singular\n5 is the drafts saved and not yet sent: it falls when a case is signed and sent ('1 is still being prepared' when one is left)"
 screen sR "Reviews this week tab\nHeader '47 clinical reviews due this week.'\n'Agents draft each review ahead of time. You update only what they ask about.'\nButtons 'Draft all due reviews' and 'Sign all clean drafts'"
-process cR "47 is one review for each approved case (9 cases are not yet approved and have none)"
+process cR "47 is one review for each approved case (9 cases are not yet approved and have none)\nOnly reviews due before the end of Sunday are counted: a next review booked for Friday makes it '48', one booked for next week does not\n'1 clinical review due this week.' reads in the singular"
 
 screen sF "Filter bar under the header (both tabs)\nSearch box, 'All levels of care', 'All payers', then 'Any status' (Active cases) or 'Any review status' (Reviews)\nOn the right the switch 'Active cases' | 'Reviews this week'"
 
@@ -29,6 +29,8 @@ goto g2 "Continues in: Case Manager › Active cases › Being prepared card"
 goto g3 "Continues in: Case Manager › Active cases › Tracker of every active case"
 goto g4 "Continues in: Case Manager › Reviews this week › The list"
 goto g5 "Continues in: New case › Referral step"
+goto g6 "Continues in: Case Manager › Active cases › Step-down plans from accepted denials"
+goto g7 "Continues in: Case Manager › Active cases › A new case joins the tracker"
 
 s1 --> p1
 s2 --> p1
@@ -47,4 +49,6 @@ p2 -.-> sA
 p2 -.-> sR
 cA --> g2
 cA --> g3
+cA --> g6
+cA --> g7
 cR --> g4
