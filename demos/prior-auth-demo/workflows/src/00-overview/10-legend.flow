@@ -1,0 +1,25 @@
+title: How to read these diagrams
+route: Every diagram uses the same sixteen shapes and colours
+intro: One example flow that uses every shape once. The shape tells you what kind of step it is; the colour tells you who does it.
+dir: LR
+---
+start s1 "Start\nA sidebar click or a link"
+screen sc1 "Screen\nA page the person sees"
+click c1 "Person clicks\nA button, row or key"
+input i1 "Person enters\nTypes, picks, drops a file"
+overlay o1 "Pop-up\nDrawer, modal or menu"
+process p1 "System step\nThe app validates or updates"
+agent a1 "FLO / agent\nAutomated work (Reader, Scribe...)"
+decision d1 "Decision\nEvery exit is labelled"
+store st1 "Data saved\nA record is created or changed"
+doc dc1 "Document\nLetter, brief, report"
+toast t1 "Message\nA toast or banner"
+ext x1 "Outside party\nPayer, referrer, EMR"
+wait w1 "Wait\nTime passes"
+goto g1 "Continues elsewhere\nNames the other diagram"
+end e1 "End (done)"
+endx e2 "End (stopped)"
+s1 --> sc1 --> c1 --> i1 --> o1 --> p1 --> a1 --> d1
+d1 -->|Yes| st1 --> dc1 --> t1 --> x1 --> w1 --> g1
+d1 -->|No| e2
+g1 --> e1

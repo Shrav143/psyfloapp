@@ -1,0 +1,12 @@
+{
+  "name": "psyflo-workflows",
+  "private": true,
+  "type": "module",
+  "description": "Workflow diagrams for the Psyflo prior-auth demo. Sources are .flow files; build.mjs compiles them to Mermaid, renders SVG and writes one HTML viewer.",
+  "scripts": {
+    "build": "node tools/build.mjs"
+  },
+  "dependencies": {
+    "mermaid": "11.4.1"
+  }
+}
