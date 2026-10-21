@@ -1,0 +1,55 @@
+title: Denial Intelligence › Ways in
+route: /denials
+intro: Every way a person lands on Denial Intelligence, how the address picks the denial that opens first, and how the sidebar badge counts open denials.
+dir: TD
+---
+start s1 "Click 'Denial Intelligence' in the sidebar"
+start s2 "Demo menu, Suggested path\n'Denial Intelligence: D-3318'"
+start s3 "Click a notification\n'Denied today', 'Denied', 'Partly approved' or 'Denial analyzed'"
+start s4 "Ask FLO about denials or money\nClick 'Open Denial Intelligence'"
+start s5 "Analytics: 'Common denial reasons by payer'\nClick a row or its payer name"
+start s6 "Dashboard request drawer\nClick 'Open in Denial Intelligence'"
+start s7 "Authorizations case page, banner 'This request was denied'\nClick 'Open in Denial Intelligence'"
+
+process p1 "Address is /denials or /denials?id=D-xxxx"
+decision d1 "Is there an ?id= in the address?"
+decision d2 "Is it an open denial, or one closed on this screen?"
+decision d3 "Are there any open denials?"
+process p2 "Pick the open denial with the nearest deadline"
+process p3 "Show the denial named in the address"
+toast t1 "'We could not find D-xxxx among the open denials'\n'Showing D-3318 instead.'"
+
+screen sc1 "Denial Intelligence\nHeader, 'Add a denial letter', the denial, 'Open denials' list"
+screen sc2 "'No open denials'\n'Everything sent is approved or waiting. Add a denial letter above to analyze a new one.'"
+click c1 "Click 'Open the Dashboard'"
+
+goto g1 "Continues in: Denial Intelligence › Open denials list"
+goto g2 "Continues in: Denial Intelligence › A denial opened"
+goto g3 "Continues in: Denial Intelligence › Add a denial letter"
+goto g4 "Continues in: Dashboard"
+
+start s8 "Look at the badge beside 'Denial Intelligence' in the sidebar"
+process b1 "Badge = requests in the Dashboard's 'Appeal or call' stage\n7 at the start"
+process b2 "Goes up by one: a letter is analyzed, or the Dashboard demo control 'Denies' or 'Approves part' is used"
+process b3 "Goes down by one: the denial is accepted, or a call outcome 'Overturned' or 'Partly restored' is logged"
+
+s1 --> p1
+s2 --> p1
+s3 --> p1
+s4 --> p1
+s5 --> p1
+s6 --> p1
+s7 --> p1
+p1 --> d1
+d1 -->|No| d3
+d1 -->|Yes| d2
+d2 -->|Yes| p3 --> sc1
+d2 -->|No, unknown id| d3
+d3 -->|Yes| p2 --> sc1
+p2 -.->|if the id was unknown| t1 -.-> sc1
+d3 -->|No| sc2
+sc2 --> c1 --> g4
+sc2 --> g3
+sc1 --> g1 & g2
+
+s8 --> b1 --> b2 & b3

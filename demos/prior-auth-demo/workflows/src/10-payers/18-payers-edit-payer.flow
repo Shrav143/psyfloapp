@@ -1,0 +1,47 @@
+title: Payers › Edit payer details
+route: /payers/:id
+intro: The 'Edit' button in the header opens one modal for the plan line, how the payer is reached, the notice rule, the backup route and the three 'How to reach' lines. Every edit needs a reason and is written to the edit log. Unlike workflow, rule and document edits, it does not wait for 'Update drafts'.
+dir: TD
+---
+start s1 "Click 'Edit'\nin the payer header"
+overlay m "Edit payer details\nAdmins can edit. Every edit is logged."
+
+group gF "Fields"
+  input i1 "Type 'Plan line'"
+  input i2 "Pick 'Reached by'\nPortal, Portal and fax,\nPortal and phone, Phone, Fax"
+  input i3 "Type 'Notice due'\nExample: 24 hours"
+  input i4 "Type 'Backup route'\nExample: phone as backup"
+  input i5 "Type the 'Portal', 'Phone' and 'Fax' lines\nThey feed 'How to reach' on the Process tab"
+  input i6 "Type 'Reason for the edit' (required)\nSaved with your name, the time,\nthe old text and the new text"
+endgroup
+
+process odd "Demo gap: a payer whose 'Reached by' is not one of the five\n(for example 'Phone, Fax and portal') shows 'Portal' here.\nSaving then logs a change to 'Portal' even if untouched"
+
+click cs "Click 'Save and log the edit'"
+decision d1 "Is the reason empty?"
+toast er "Add a reason. It goes in the edit log."
+process diff "Compare each field with what is saved\nPlan line, Reached by, Notice due, Backup route,\nand each 'How to reach' line"
+decision d2 "Did anything change?"
+toast t0 "'Nothing changed'"
+store st "Payer details saved\nHeader, plan line and 'How to reach' update"
+store lg "One edit log entry per changed field\nArea 'Payer details', with before, after and reason"
+toast t1 "'Payer details saved'\nThe edit is in the log with your reason."
+process nb "No 'edit applies to new drafts only' banner\nPayer details are not part of a draft"
+end e1 "Modal closes\nHeader shows the new values"
+endx x1 "Modal closes\nNothing saved"
+click cx "Click 'Cancel'"
+click cesc "Press Escape, click the X\nor click the dimmed area"
+goto g1 "Continues in: Payers › Edit log"
+goto g2 "Continues in: Payers › Process › Reach and Caller instructions"
+
+s1 --> m --> i1 --> i2 --> i3 --> i4 --> i5 --> i6 --> cs
+i2 -.-> odd
+cs --> d1
+d1 -->|Yes| er --> i6
+d1 -->|No| diff --> d2
+d2 -->|No| t0 --> x1
+d2 -->|Yes| st --> lg --> t1 --> nb --> e1
+lg -.-> g1
+i5 -.-> g2
+m --> cx --> x1
+m --> cesc --> x1

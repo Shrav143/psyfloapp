@@ -1,0 +1,41 @@
+title: Payers › List › Search and pick a payer
+route: /payers/:id?tab=process
+intro: The 'Payers' card on the left: how the rows are grouped, what the dot means, how search narrows the list and what happens when a payer is picked. The tab that was open stays open.
+dir: TD
+---
+start s1 "Look at the 'Payers' card\non the left of the page"
+screen list "Payers card\n'Search payers' box, then four groups, then a legend"
+process grp "Rows sit under four group headings\nOhio Medicaid, Commercial,\nMedicare Advantage, Behavioral carve-out\nA payer added later joins its group"
+process row "Each row shows the payer name,\nits plan type and a dot\nSelected row is pale green"
+decision dot "Does this payer have a change waiting?"
+process green "Green dot\nUp to date"
+process ochre "Ochre dot\nChange waiting"
+toast tnote "A proposal from Historian alone\ndoes not turn the dot ochre.\nOnly the 'Changes' tab badge counts it"
+screen leg "Legend at the foot of the card\n'up to date' and 'change waiting'"
+
+input i1 "Type in 'Search payers'"
+process filt "List narrows as you type\nMatches name, plan type or group,\nany capitals"
+decision any "Does any payer still match?"
+toast empty "No payer matches 'text you typed'."
+click clr "Click 'Clear search'"
+process clr2 "Search box empties\nEvery payer shows again"
+
+click pick "Click a payer row"
+process nav "Address becomes /payers/the-payer?tab=\nSame tab as before. Process if none"
+process swap "Header, tab bar and tab content\nswitch to the new payer"
+process fresh "Tab content starts fresh\nNo editor, search text or result carries over"
+process keep "Search text in the list stays"
+click same "Click the payer that is already selected"
+process nochg "Nothing changes on screen"
+end e1 "The chosen payer's page is showing"
+
+s1 --> list --> grp --> row --> dot
+dot -->|No| green --> leg
+dot -->|Yes| ochre --> leg
+ochre -.-> tnote
+list --> i1 --> filt --> any
+any -->|No| empty --> clr --> clr2 --> list
+any -->|Yes| pick
+list --> pick
+pick --> nav --> swap --> fresh --> keep --> e1
+list --> same --> nochg --> e1

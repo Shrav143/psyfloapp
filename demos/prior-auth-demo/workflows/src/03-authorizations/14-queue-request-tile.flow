@@ -1,0 +1,61 @@
+title: Authorizations › Queue › Read and open a request tile
+route: /authorizations
+intro: What each part of a request tile says, which parts are links, and where the chance, status and due text come from.
+dir: TD
+also: Only the request ID, the 'Open' button and the 'Coverage needs a fix' pill are clickable. The rest of the tile does nothing.
+---
+screen t "Request tile\nOne open request inside a band"
+
+group gL "Left and middle"
+  process lv "Level chip\nResidential 3.5, PHP, IOP, or 'Detox → Residential'"
+  process id "'R-1042 · J.M., 34 · Summit Medicaid HMO'"
+  process dx "Diagnosis and review type\n'Alcohol use disorder, severe ... · admission'"
+  process sc "Scores with a trend arrow\n'AUDIT-C 11 · PHQ-9 17 ↑'\nRising, falling or unchanged"
+endgroup
+
+decision dR "Has every check passed after actions applied on the case page?"
+agent ag1 "Integrity badge\n'Ready to sign. Integrity passed all four checks'"
+agent ag2 "The agent on the request, e.g. Scribe\n'Scribe is drafting the case'"
+decision dN "Needs your input, and not ready?"
+toast pn "Pill 'Needs your input'"
+decision dC "Does coverage need a fix?"
+click cl "Click the 'Coverage needs a fix' pill"
+goto gE "Continues in: Eligibility & Benefits › Verify a patient"
+decision dRule "Rule note on the request, and not ready?"
+process rule "Green note under the status\ne.g. 'Summit expects a named step-down provider with the first request.'"
+
+group gR "Right side"
+  process due "Due pill, e.g. 'Notice due in 5 h'\nUnder 48 h: 'in 40 min' or 'in 5 h'. Later: 'Decision Thu'. Past: '... now'"
+  process risk "Pill '$22.4K at risk'"
+  process ch "Approval chance bar and number\nStrong 80+, Moderate 55–79, At risk below 55"
+  process lift "Line under the word\n'+26 pts once drafted', 'waiting on the payer', 'chance to overturn', 'on track'"
+endgroup
+
+decision dA "Were actions applied on the case page?"
+process ch2 "Bar shows the new chance\nLine reads '+N pts possible' or 'on track'"
+process ch3 "Bar shows the request's own chance and line"
+process nr "No note line"
+process tint "Tiles in Act now have a red tint\nOther bands are neutral"
+
+click idl "Click the request ID (underlined)"
+click ob "Click 'Open'"
+goto gC "Continues in: Authorizations › Case page › Ways in"
+
+t --> lv & id & dx & sc
+t --> dR
+dR -->|Yes| ag1
+dR -->|No| ag2 --> dN
+dN -->|Yes| pn
+dN -->|No| dC
+pn --> dC
+dC -->|Yes| cl --> gE
+dC -->|No| dRule
+dRule -->|Yes| rule
+dRule -->|No| nr
+t --> due & risk & ch & lift
+ch --> dA
+dA -->|Yes| ch2
+dA -->|No| ch3
+t --> tint
+t --> idl --> gC
+t --> ob --> gC

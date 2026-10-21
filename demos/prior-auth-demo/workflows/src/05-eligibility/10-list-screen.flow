@@ -1,0 +1,51 @@
+title: Authorizations › Eligibility & Benefits › List › What the screen shows
+route: /authorizations/eligibility
+intro: The first page of Eligibility & Benefits. A headline count, four tiles, a filter bar and one row per patient. The sidebar badge counts the patients who are not cleared to bill.
+dir: TD
+also: Demo only: the 34 patients are invented and every check is simulated.
+---
+start s1 "Click 'Eligibility & Benefits' under 'Authorizations' in the sidebar"
+screen sc "Eligibility & Benefits\nTitle '28 of 34 patients are cleared to bill.'\n'Coverage and benefits are checked live, so you know the clinic will be paid before the first day.'"
+process p1 "Sidebar badge counts patients not 'Cleared to bill'\nDemo start: 6 = 4 'Authorization first' + 2 'Fix before billing'"
+
+group gTop "Top of the page"
+  screen hd "Header button\n'Verify a patient'"
+  screen tl "Four tiles, left to right\n'Cleared to bill' 28 · 'Authorization first' 4\n'Fix before billing' 2 · 'Re-check due' 5"
+  process cnt "Counts follow each row's verdict\n'Re-check due' counts rows flagged for a re-check this week"
+  screen bn "Banner 'Why we check twice.'\nEligibility says the patient is covered. Benefits say the service is payable."
+endgroup
+
+group gBar "Filter bar"
+  screen fl "'Search by case ID or initials'\nMenus 'All payers', 'All programs', 'All verdicts'"
+endgroup
+
+group gCard "Card 'Patients'"
+  screen cd "Card 'Patients'\n'Checked live against the state and the plan, then re-checked on a schedule'\n'Showing 12 of 34'"
+  process so "Fixed sort order\n'Fix before billing' first, then 'Authorization first', then oldest check"
+  process pg "No filter: the first 12 rows\nA filter shows every match"
+  screen cols "Columns\nPatient, Program, Eligibility, Benefits, Authorization, Verdict, Re-check\nHeaders do not sort"
+endgroup
+
+group gRow "One row"
+  screen r1 "Patient\n'R-1042 · J.M., 34' with the payer name under it\nNo initials: 'Member …4821'"
+  screen r2 "Program chip\n'Residential 3.5', 'IOP', 'PHP', 'Detox'\nor a label such as 'Detox → Residential'"
+  screen r3 "Eligibility and Benefits chips\n'Active', 'Lapsed 10/12', 'Ended 09/30', 'Not found'\n'Covered', 'Limited', 'Not covered'"
+  screen r4 "Authorization chip\n'On file' with '9 of 14 days'\n'Not required', 'Required, not on file'"
+  screen r5 "Verdict chip\n'Cleared to bill', 'Authorization first', 'Fix before billing'\nUnder it 'Checked 3 h ago'"
+  screen r6 "Button 'Re-check'"
+endgroup
+
+goto g1 "Continues in: Authorizations › Eligibility & Benefits › List › Search, filter and page"
+goto g2 "Continues in: Authorizations › Eligibility & Benefits › List › Open a patient or start a check"
+goto g3 "Continues in: Authorizations › Eligibility & Benefits › Result › What each chip means"
+
+s1 --> sc
+sc --> hd --> tl --> bn --> fl --> cd
+sc -.-> p1
+tl --> cnt
+cd --> so --> pg --> cols
+cols --> r1 & r2 & r3 & r4 & r5 & r6
+fl --> g1
+hd --> g2
+r6 --> g2
+r3 & r4 & r5 --> g3

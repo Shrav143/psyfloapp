@@ -1,0 +1,62 @@
+title: Dashboard › Arrive › What the page shows
+route: /dashboard
+intro: Four ways to land on the Dashboard, how filters in the address are read, and the parts of the page from top to bottom. Each part continues in its own diagram.
+dir: TD
+---
+start s1 "Click 'Dashboard' in the sidebar\nThe badge counts Info requested"
+start s2 "Open the app at /\nThe address / goes to /dashboard"
+start s3 "Follow a link with a request or a filter\nA notification, or a button on another page"
+start s4 "Demo menu › Click 'Reset demo data'"
+toast t1 "'Demo data reset'\n'Everything is back to the starting point.'"
+
+process p1 "Page opens and reads the address"
+decision d1 "Does the address hold payer, program, type, stage, from or to?"
+process p2 "The address wins\nFour menus go back to All, then the address values apply\nUnknown values are ignored"
+process p3 "The remembered filters are written back to the address\nFirst visit: no filters, last 30 days"
+store w1 "Filters\nPayer, Program, Request type, Stage, date range"
+
+screen sc "Dashboard\nOne page; the filters decide what it shows"
+decision d2 "Does the address hold ?request=ID?"
+decision d3 "Is there a request with that ID?"
+overlay o1 "Request drawer opens over the page"
+process p4 "Nothing opens\nThe ?request part is removed after 0.2 seconds"
+end e1 "Page shown with no drawer"
+
+group gPage "On the page, top to bottom"
+  screen h1 "Headline and sub line\n'18 requests are waiting on payers. 3 are waiting on you.'"
+  click ca "Click 'Check all now'"
+  screen f1 "Filter bar\n'All payers', 'All programs', 'All request types', 'All stages'\n'Outcomes for' and the date range 'Sep 21 – Oct 20, 2026'"
+  screen st "Stage strip, six tiles\nPreparing 5, Received 4, Under review 14, Info requested 3, Decided today 8, Appeal or call 7"
+  screen rq "Requests\n'Showing 8 of 39', seven columns, 'Show 8 more'"
+  screen py "Payers at a glance\nSix payers and an 'All payers' total row"
+endgroup
+
+goto g1 "Continues in: Dashboard › Request drawer › Open and read a request"
+goto g2 "Continues in: Dashboard › Headline › What the headline and sub line say"
+goto g3 "Continues in: Dashboard › Header › Check all now and the demo clock"
+goto g4 "Continues in: Dashboard › Filters › Payer, Program, Request type and Stage"
+goto g5 "Continues in: Dashboard › Stage strip › Click a stage tile"
+goto g6 "Continues in: Dashboard › Requests table › Order, rows and paging"
+goto g7 "Continues in: Dashboard › Payers at a glance › Read the table and pick a payer"
+
+s1 --> p1
+s2 --> p1
+s3 --> p1
+s4 --> t1 --> p1
+p1 --> d1
+d1 -->|Yes| p2 --> w1
+d1 -->|No| p3 --> w1
+w1 --> sc
+sc --> d2
+d2 -->|No| e1
+d2 -->|Yes| d3
+d3 -->|Yes| o1 --> g1
+d3 -->|No| p4 --> e1
+
+sc --> h1 & f1 & st & rq & py
+h1 --> g2
+h1 --> ca --> g3
+f1 --> g4
+st --> g5
+rq --> g6
+py --> g7

@@ -1,0 +1,56 @@
+title: Authorizations › Queue › Bands and ranking
+route: /authorizations
+intro: How open requests are split into three bands, how they are ranked inside a band by money and time, and how a band opens, closes and shows more.
+dir: TD
+also: Demo only: which band a request sits in is fixed in the seed data. Moving the demo clock changes the due text on each tile ('in 5 h', 'now') but never moves a request to another band.
+---
+screen q "Queue\nPriority bands, most urgent first"
+process b1 "Each open request sits in exactly one band"
+
+group gB "The three bands, in this order"
+  process bn "**Act now**\nRed dot, tiles tinted red"
+  process bd "**Due within 24 hours**\nAmber dot"
+  process bw "**Due this week**\nSage dot"
+endgroup
+
+decision dE "Does the band have any request after filters?"
+process hide "The band card is left out"
+screen bc "Band card\n'Act now (5 requests)'\nName, count, chevron"
+
+process r1 "Inside a band, requests waiting on a person come first\nPreparing, Ready to sign, Denial route, or Needs your input"
+process r2 "Then money at risk times a time weight, biggest first"
+process wt "Time weight by time left\nunder 6 h ×3 · under 24 h ×2 · under 3 days ×1.5 · later ×1"
+doc ex "Example in Act now\nR-1042 ($22.4K, due in 5 h) ranks above R-0912 (payer already reviewing)"
+
+click hd "Click the band header"
+decision dC "Is the band open now?"
+process col "Tiles are hidden\nChevron turns sideways"
+process exp "Tiles are shown\nChevron points down"
+store keep "Open or closed is remembered for each band\nuntil the demo data is reset"
+
+decision dM "More than five requests in the band?"
+process all5 "All requests are shown"
+process top5 "Top five are shown\nButton under them: 'Show 9 more'"
+click sm "Click 'Show 9 more'"
+process allm "Every request is shown\nButton now reads 'Show fewer'"
+click sf "Click 'Show fewer'"
+process back "Back to the top five"
+
+goto g1 "Continues in: Authorizations › Queue › Read and open a request tile"
+
+q --> b1
+b1 --> bn & bd & bw
+bn --> dE
+bd --> dE
+bw --> dE
+dE -->|No| hide
+dE -->|Yes| bc
+bc --> r1 --> r2 --> wt
+r2 -.-> ex
+bc --> hd --> dC
+dC -->|Yes| col --> keep
+dC -->|No| exp --> keep
+bc --> dM
+dM -->|No| all5
+dM -->|Yes| top5 --> sm --> allm --> sf --> back
+top5 --> g1

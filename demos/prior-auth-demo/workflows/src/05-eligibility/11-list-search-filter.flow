@@ -1,0 +1,62 @@
+title: Authorizations › Eligibility & Benefits › List › Search, filter and page
+route: /authorizations/eligibility
+intro: Search, three menus and the four tiles all narrow the same table, and they work together. Nothing is kept in the address, so leaving the page clears them.
+dir: TD
+---
+start s1 "On the list, narrow the patients"
+screen sc0 "Table shows every patient, first 12 rows\n'Showing 12 of 34'"
+
+group gSearch "Search"
+  input i1 "Type in 'Search by case ID or initials'\nfor example 'R-1042' or 'J.M.'"
+  process p1 "Matches the case ID or the patient label\n(initials and age, or 'Member …4821'). Capitals do not matter"
+endgroup
+
+group gMenus "Menus"
+  click c1 "Click 'All payers'"
+  overlay o1 "'All payers', then each payer\nSummit Medicaid HMO, Cardinal Health Plan, Evergreen, Beacon PPO, Harborview MA, Lakeshore Behavioral"
+  click c2 "Click 'All programs'"
+  overlay o2 "'All programs', 'Residential 3.5', 'IOP', 'PHP', 'Detox'"
+  click c3 "Click 'All verdicts'"
+  overlay o3 "'All verdicts', 'Cleared to bill', 'Authorization first', 'Fix before billing', 'Re-check due'"
+  input i2 "Pick an option, or use the arrow keys and Enter\nEsc or a click outside closes the menu"
+endgroup
+
+group gTiles "Tiles"
+  click c4 "Click a tile\n'Cleared to bill', 'Authorization first', 'Fix before billing' or 'Re-check due'"
+  decision q1 "Was that tile already selected?"
+  process p2 "Verdict menu set to that tile\nThe tile gets an outline"
+  process p3 "Verdict menu back to 'All verdicts'"
+endgroup
+
+process p4 "Rows recompute: every active filter must match\nA menu that is not 'All ...' is highlighted"
+decision q2 "Any filter active?"
+process p5 "Every match is shown\nNo 'Show more' button"
+process p6 "Only the first 12 rows"
+click c5 "Click 'Show 12 more'"
+process p7 "Twelve more rows join the table\nThe last click reads 'Show 10 more'"
+screen sc1 "Table with the matches\n'Showing 5 of 34'"
+toast t0 "'Clear filters' button appears beside the menus"
+decision q3 "Any rows left?"
+screen em "'No patients match these filters'\n'The filters hide every row. Clear them to see all 34 patients.'"
+click c6 "Click 'Clear filters' (bar or empty state)"
+process p8 "Search emptied\nPayer, program and verdict back to 'All'"
+end e1 "Full list again, button gone"
+goto g1 "Continues in: Authorizations › Eligibility & Benefits › List › Open a patient or start a check"
+
+s1 --> sc0
+sc0 --> i1 --> p1 --> p4
+sc0 --> c1 --> o1 --> i2
+sc0 --> c2 --> o2 --> i2
+sc0 --> c3 --> o3 --> i2
+i2 --> p4
+sc0 --> c4 --> q1
+q1 -->|No| p2 --> p4
+q1 -->|Yes| p3 --> p4
+p4 --> q2
+q2 -->|No| p6 --> c5 --> p7 --> sc0
+q2 -->|Yes| p5 --> q3
+p4 -.-> t0
+q3 -->|Yes| sc1 --> g1
+q3 -->|No| em --> c6
+t0 --> c6
+c6 --> p8 --> e1

@@ -1,0 +1,45 @@
+title: Payers › Header › What the facts mean
+route: /payers/:id
+intro: The card above the tabs. It names the payer, says whether a change is waiting, and shows four facts. Two come from the last 90 days of decisions; two are the payer's configuration and change when someone edits the payer.
+dir: TD
+---
+start s1 "Pick a payer\n(or arrive on Payers)"
+screen head "Payer header\nPayer name in large type\nPlan line under it\n'Edit log' and 'Edit' on the right"
+process plan "Plan line = plan text\n+ 'rules version 2026.3'\n+ the state of the rules"
+decision pend "Is a change waiting\nfor this payer?"
+toast waiting "'... rules version 2026.3, change waiting'"
+toast checked "'... rules version 2026.3, checked 10/12'\nDate Sentinel last checked the policy"
+
+group gF "Four facts under the name"
+  screen f1 "'Approved as asked'\n74% for Summit\nNote: 'last 90 days'\nCardinal says 'down 11 points'"
+  screen f2 "'Typical decision'\n1.5 days for Summit\nNote: 'for residential'\nCardinal says 'now taking 2.8'"
+  screen f3 "'Notice due'\n24 hours\nNote: 'after admission'\nHarborview is 72 hours"
+  screen f4 "'Reached by'\nPortal, Phone, Fax, or a mix\nNote: the backup route\n'phone as backup'"
+endgroup
+
+decision hist "Does the payer have\n90 days of decisions?"
+toast few "'Not enough' in both figures\nNotes: 'Not enough decisions yet'\nand 'benchmark estimate'\nTrue of a payer added with 'Add a payer'"
+process real "Figures come from decisions\nalready seen for this payer"
+process cfg "'Notice due' and 'Reached by' come\nfrom the payer's saved details\nthe 'Edit' button changes them"
+
+decision logn "Any edits logged for this payer?"
+screen logb1 "Button reads 'Edit log (3)'\nthe count is edits for this payer"
+screen logb0 "Button reads 'Edit log'"
+click ce "Click 'Edit'"
+click cl "Click 'Edit log'"
+goto g_edit "Continues in: Payers › Edit payer details"
+goto g_log "Continues in: Payers › Edit log"
+end e1 "Header shows the payer's current state"
+
+s1 --> head --> plan --> pend
+pend -->|Yes| waiting --> hist
+pend -->|No| checked --> hist
+head --> f1 & f2 & f3 & f4
+hist -->|No| few --> logn
+hist -->|Yes| real --> logn
+f3 -.-> cfg
+f4 -.-> cfg
+logn -->|Yes| logb1 --> e1
+logn -->|No| logb0 --> e1
+head --> ce --> g_edit
+head --> cl --> g_log
