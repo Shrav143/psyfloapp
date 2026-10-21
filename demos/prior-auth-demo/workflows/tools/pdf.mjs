@@ -1,42 +1,54 @@
-/* One PDF with a page per diagram, each page sized to its diagram so nothing is cut or shrunk.
+/* One PDF with a page per diagram. Four page shapes (wide, landscape, portrait, tall) are picked by each diagram's proportions and the
+   diagram is scaled to fill its page, so nothing is cut. Text stays vector: zoom in a PDF viewer for detail. Printing everything in one
+   job lets the pages share their fonts, which keeps the file small enough to email.
      node tools/build.mjs && node tools/pdf.mjs      -> out/Psyflo-workflow-diagrams.pdf */
-import { execFileSync } from "node:child_process";
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { readFileSync, rmSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import { openRenderer, ROOT } from "./render.mjs";
 
 const OUT = join(ROOT, "out");
 const idx = JSON.parse(readFileSync(join(OUT, "index.json"), "utf8"));
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-const PAD = 40, HEAD = 96;
-const tmp = join(OUT, "_pdf");
-mkdirSync(tmp, { recursive: true });
-const r = await openRenderer();
-const files = [];
-for (const [i, d] of idx.entries()) {
-  const svg = readFileSync(join(OUT, "svg", d.dir, `${d.name}.svg`), "utf8").replace(/^<\?xml[^>]*>\s*/, "");
-  const w = +svg.match(/<svg[^>]*\swidth="(\d+)"/)[1], h = +svg.match(/<svg[^>]*\sheight="(\d+)"/)[1];
-  const pw = Math.max(w + PAD * 2, 900), ph = h + PAD * 2 + HEAD;
-  const html = `<!doctype html><meta charset="utf-8"><style>
-@page{size:${pw}px ${ph}px;margin:0}
+const SIZES = { land: [2400, 1700], port: [1700, 2400], tall: [1700, 3800], wide: [3800, 1700] };
+const M = 48;
+const HEAD = 120;
+const kindOf = (w, h) => (w / h > 2 ? "wide" : w / h > 1 ? "land" : w / h < 0.5 ? "tall" : "port");
+
+const pages = idx.map((d) => {
+  let svg = readFileSync(join(OUT, "svg", d.dir, `${d.name}.svg`), "utf8").replace(/^<\?xml[^>]*>\s*/, "");
+  const w = +svg.match(/<svg[^>]*\swidth="(\d+)"/)[1];
+  const h = +svg.match(/<svg[^>]*\sheight="(\d+)"/)[1];
+  const kind = kindOf(w, h);
+  const [pw, ph] = SIZES[kind];
+  const sc = Math.min(1.2, (pw - 2 * M) / w, (ph - 2 * M - HEAD) / h);
+  svg = svg.replace(/(<svg[^>]*\swidth=")\d+(")/, `$1${Math.round(w * sc)}$2`).replace(/(<svg[^>]*\sheight=")\d+(")/, `$1${Math.round(h * sc)}$2`);
+  return { d, svg, kind, sw: Math.round(w * sc), sh: Math.round(h * sc) };
+});
+
+const css = Object.entries(SIZES)
+  .map(([k, [w, h]]) => `@page ${k}{size:${w}px ${h}px;margin:0} .${k}{page:${k};width:${w}px;height:${h - 2}px}`)
+  .join("\n");
+const html = `<!doctype html><meta charset="utf-8"><style>
 html,body{margin:0;background:#fff}
-body{font:14px/1.45 'DM Sans','Segoe UI',system-ui,sans-serif;color:#1C2B25;width:${pw}px;height:${ph}px;overflow:hidden;padding:${PAD}px;box-sizing:border-box}
-.k{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#6B756F;margin:0 0 4px}
-h1{font:600 26px/1.2 Georgia,serif;margin:0 0 4px}
-.r{color:#4a5650;margin:0}
-.r code{background:#F3ECE0;border-radius:6px;padding:1px 6px;font-size:12px}
+body{font:14px/1.45 'DM Sans','Segoe UI',system-ui,sans-serif;color:#1C2B25}
+section{box-sizing:border-box;padding:${M}px;break-before:page;overflow:hidden}
+section:first-of-type{break-before:auto}
+.k{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:#6B756F;margin:0 0 4px}
+h1{font:600 30px/1.2 Georgia,serif;margin:0 0 6px}
+.r{color:#4a5650;margin:0;font-size:15px}
+.r code{background:#F3ECE0;border-radius:6px;padding:1px 6px;font-size:13px}
 svg{display:block;max-width:none!important}
-</style><body><div style="height:${HEAD - 8}px"><p class="k">${esc(d.module)} · ${d.steps} steps</p><h1>${esc(d.title)}</h1><p class="r">${esc(d.intro)} <code>${esc(d.route)}</code></p></div>${svg}</body>`;
-  const f = join(tmp, `${String(i).padStart(3, "0")}.html`);
-  writeFileSync(f, html);
-  const out = join(tmp, `${String(i).padStart(3, "0")}.pdf`);
-  await r.pdf(f, out, { width: `${pw}px`, height: `${ph}px` });
-  files.push(out);
-}
-await r.close();
+${css}
+</style><body>${pages
+  .map((p) => `<section class="${p.kind}"><div style="height:${HEAD - 8}px"><p class="k">${esc(p.d.module)} · ${p.d.steps} steps</p><h1>${esc(p.d.title)}</h1><p class="r">${esc(p.d.intro)} <code>${esc(p.d.route)}</code></p></div><div style="width:${p.sw}px;height:${p.sh}px;overflow:hidden;contain:paint">${p.svg}</div></section>`)
+  .join("")}</body>`;
+
+const tmp = join(OUT, "_pdf.html");
+writeFileSync(tmp, html);
+const r = await openRenderer();
 const target = join(OUT, "Psyflo-workflow-diagrams.pdf");
-execFileSync("pdfunite", [...files, target]);
-rmSync(tmp, { recursive: true, force: true });
-console.log(`PDF: ${idx.length} pages -> ${target}`);
+await r.pdf(tmp, target);
+await r.close();
+rmSync(tmp);
+console.log(`PDF: ${idx.length} diagrams -> ${target}`);
