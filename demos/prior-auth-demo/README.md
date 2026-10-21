@@ -18,15 +18,15 @@ bun run build          # typecheck + build to dist/index.html (open it by double
 | Sidebar | Route | What you can do |
 |---|---|---|
 | Dashboard | `/dashboard` | One page: four filters (Payer, Program, Request type, Stage) and a separate calendar where you pick a start and an end day (with shortcuts) for the outcome figures. Six-stage strip, requests table with progress bars and clocks, payers at a glance, a request drawer with history, and demo controls to make the payer answer |
-| Authorizations | `/authorizations`, `/authorizations/case/:id` | Queue ranked by money and time, case page with five tabs (recommended actions, clinical picture, payer criteria, risk analysis, draft) |
+| Authorizations | `/authorizations`, `/authorizations/case/:id` | Queue ranked by money and time, case page with five tabs (recommended actions, clinical picture, payer criteria, risk analysis, draft). Refine recommendations and clinical context change the case; a sent request shows as sent |
 | Authorizations > New case | `/authorizations/new`, `/authorizations/new/:draftId`, `/authorizations/new/referral/:id` | Four steps: **Referral** (drop the referral documents and Reader lists what is missing, or check one that already arrived, or go on without one), **Medical records** (one checklist: drop the whole chart and Reader ticks off the patient, insurance, request and documents, and names what is missing), **Agents work** (Scribe asks a question), **Review and sign**. Sign and send puts the request on the Dashboard. A referral can also be opened in full: the source document, extracted fields with evidence, validation, coverage and fit checks, and accept / request information / decline |
 | Authorizations > Eligibility & Benefits | `/authorizations/eligibility` | Live-looking coverage check: list, verify a patient, verdict |
 | Denial Intelligence | `/denials`, `/denials/:id/brief` | Where a denial is weak, options with chances, peer-to-peer brief, written appeal, accept |
-| Case Manager | `/manager` | **Active cases**: the cases the agents are preparing (with the next action for you), then the tracker of every active case. **Reviews this week**: clinical reviews to sign |
+| Case Manager | `/manager` | **Active cases**: the cases the agents are preparing (with the next action for you), then the tracker of every active case; every tracker row opens a case page. **Reviews this week**: draft all due reviews, sign, and the next review is booked |
 | Analytics | `/analytics` | Performance: approval by payer, edits to drafts, denial reasons, what helps most, monthly report |
 | EMR Connect | `/emr` | Connected systems, sync, field mappings, connect a system |
 | Payers | `/payers` | Each payer's workflow with conditions, rules, documents with a chart checker, and changes to acknowledge |
-| Settings | `/settings` | The sixteen agents, how much freedom each has, Pause all |
+| Settings | `/settings` | The sixteen agents, how much freedom each has, Pause all. A pause is felt by New case, Check all now, Draft all due reviews and Verify |
 
 Top right: **Ask FLO** (Psyflo's assistant, answers from the data), **Notifications**, and **Demo** (reset data, fast-forward the demo clock, a suggested path through the product).
 
@@ -41,6 +41,8 @@ Top right: **Ask FLO** (Psyflo's assistant, answers from the data), **Notificati
 7. Payers: Cardinal, Changes, Acknowledge change, Update drafts. Summit, Process, Edit workflow.
 
 ## Workflow diagrams
+
+The diagrams also found places where the demo did less than its screens suggested. Those were fixed, and `workflows/DEMO-GAPS.md` lists each one and what it does now.
 
 `workflows/` maps every screen, click and decision of the demo as flow diagrams, one menu tab and sub tab at a time, with one set of shapes and colours. Open `workflows/out/Psyflo-workflow-diagrams.html`, or read `workflows/README.md`.
 
