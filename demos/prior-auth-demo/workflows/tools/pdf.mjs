@@ -35,13 +35,14 @@ body{font:14px/1.45 'DM Sans','Segoe UI',system-ui,sans-serif;color:#1C2B25}
 section{box-sizing:border-box;padding:${M}px;break-before:page;overflow:hidden}
 section:first-of-type{break-before:auto}
 .k{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:#6B756F;margin:0 0 4px}
-h1{font:600 30px/1.2 Georgia,serif;margin:0 0 6px}
+h1.k{font-weight:400;font-size:13px;margin:0 0 4px}
+h2{font:600 30px/1.2 Georgia,serif;margin:0 0 6px}
 .r{color:#4a5650;margin:0;font-size:15px}
 .r code{background:#F3ECE0;border-radius:6px;padding:1px 6px;font-size:13px}
 svg{display:block;max-width:none!important}
 ${css}
 </style><body>${pages
-  .map((p) => `<section class="${p.kind}"><div style="height:${HEAD - 8}px"><p class="k">${esc(p.d.module)} · ${p.d.steps} steps</p><h1>${esc(p.d.title)}</h1><p class="r">${esc(p.d.intro)} <code>${esc(p.d.route)}</code></p></div><div style="width:${p.sw}px;height:${p.sh}px;overflow:hidden;contain:paint">${p.svg}</div></section>`)
+  .map((p, i) => `<section class="${p.kind}"><div style="height:${HEAD - 8}px">${i === 0 || pages[i - 1].d.dir !== p.d.dir ? `<h1 class="k">${esc(p.d.module)}</h1><p class="k">${p.d.steps} steps</p>` : `<p class="k">${esc(p.d.module)} · ${p.d.steps} steps</p>`}<h2>${esc(p.d.title)}</h2><p class="r">${esc(p.d.intro)} <code>${esc(p.d.route)}</code></p></div><div style="width:${p.sw}px;height:${p.sh}px;overflow:hidden;contain:paint">${p.svg}</div></section>`)
   .join("")}</body>`;
 
 const tmp = join(OUT, "_pdf.html");

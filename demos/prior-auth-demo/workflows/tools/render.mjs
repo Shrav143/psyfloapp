@@ -106,7 +106,7 @@ export async function openRenderer() {
     async pdf(htmlPath, pdfPath, size) {
       const pg = await browser.newPage();
       await pg.goto(`file://${htmlPath}`);
-      await pg.pdf({ path: pdfPath, printBackground: true, ...(size ?? { preferCSSPageSize: true }) });
+      await pg.pdf({ path: pdfPath, printBackground: true, outline: true, tagged: true, ...(size ?? { preferCSSPageSize: true }) });
       await pg.close();
     },
     close: () => browser.close(),
