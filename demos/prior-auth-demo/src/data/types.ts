@@ -4,7 +4,9 @@ export type Program = "RES" | "IOP" | "PHP" | "WM";
 export const PROGRAM_LABEL: Record<Program, string> = { RES: "Residential 3.5", IOP: "IOP", PHP: "PHP", WM: "Detox" };
 export const PROGRAMS: Program[] = ["RES", "IOP", "PHP", "WM"];
 
-export type PayerId = "summit" | "cardinal" | "beacon" | "harborview" | "lakeshore" | "evergreen";
+export type BuiltInPayerId = "summit" | "cardinal" | "beacon" | "harborview" | "lakeshore" | "evergreen";
+/** A built-in payer, or one added on Payers (its id is made up when it is added). */
+export type PayerId = BuiltInPayerId | (string & {});
 
 export interface PayerSummary {
   id: PayerId;

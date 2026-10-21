@@ -1,5 +1,5 @@
 import { PAYER_GROUPS, type CustomPayer, type PayerConfig } from "@/data/payerConfig";
-import { PAYERS } from "@/data/seed";
+import { builtInPayers } from "@/data/seed";
 
 /** One row of the payer list: the six core payers, then any the user added. */
 export interface PayerRow {
@@ -14,7 +14,7 @@ export interface PayerRow {
 
 export function payerRows(custom: CustomPayer[]): PayerRow[] {
   return [
-    ...PAYERS.map((p) => ({ id: p.id as string, name: p.name, shortName: p.shortName, type: p.type, group: p.group as string, approved: p.approvedAsAsked as number | null, typicalDays: p.typicalDecisionDays as number | null })),
+    ...builtInPayers().map((p) => ({ id: p.id as string, name: p.name, shortName: p.shortName, type: p.type, group: p.group as string, approved: p.approvedAsAsked as number | null, typicalDays: p.typicalDecisionDays as number | null })),
     ...custom.map((c) => ({ id: c.id, name: c.name, shortName: c.shortName, type: c.type, group: c.group as string, approved: null, typicalDays: null })),
   ];
 }

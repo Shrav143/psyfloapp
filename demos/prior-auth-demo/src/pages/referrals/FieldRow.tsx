@@ -8,7 +8,7 @@ import { cn } from "@/lib/cn";
 
 const URGENCY_OPTIONS = Object.values(URGENCY_LABEL).map((l) => ({ value: l, label: l }));
 const PROGRAM_OPTIONS = PROGRAMS.map((p) => ({ value: `${PROGRAM_LABEL[p]} (ASAM ${PROGRAM_ASAM[p]})`, label: `${PROGRAM_LABEL[p]} (ASAM ${PROGRAM_ASAM[p]})` }));
-const PAYER_OPTIONS = [...PAYERS.map((p) => ({ value: p.name, label: p.name })), { value: "None listed", label: "None listed" }];
+const payerOptions = () => [...PAYERS.map((p) => ({ value: p.name, label: p.name })), { value: "None listed", label: "None listed" }];
 
 interface Props {
   field: ReferralField;
@@ -38,7 +38,7 @@ export function FieldRow({ field, evidence, selected, onSelect, onSave }: Props)
     field.kind === "long" ? <TextArea aria-label={field.label} autoFocus value={draft} onChange={(e) => setDraft(e.target.value)} />
     : field.kind === "urgency" ? <Dropdown variant="field" ariaLabel={field.label} value={draft} options={URGENCY_OPTIONS} onChange={setDraft} />
     : field.kind === "program" ? <Dropdown variant="field" ariaLabel={field.label} value={draft} options={PROGRAM_OPTIONS} onChange={setDraft} />
-    : field.kind === "payer" ? <Dropdown variant="field" ariaLabel={field.label} value={draft} options={PAYER_OPTIONS} onChange={setDraft} />
+    : field.kind === "payer" ? <Dropdown variant="field" ariaLabel={field.label} value={draft} options={payerOptions()} onChange={setDraft} />
     : <TextInput aria-label={field.label} autoFocus value={draft} onChange={(e) => setDraft(e.target.value)} onKeyDown={(e) => e.key === "Enter" && draft.trim() && save()} />;
 
   return (

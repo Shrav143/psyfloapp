@@ -118,6 +118,9 @@ export interface CustomPayer {
   programs: Program[];
 }
 
+/** What the rest of the app shows for an added payer: it has no history yet, so the figures are benchmark estimates. */
+export const customToSummary = (c: CustomPayer): PayerSummary => ({ id: c.id, name: c.name, shortName: c.shortName, type: c.type, group: c.group, reachedBy: c.reachedBy, approvedAsAsked: 70, avgDecisionDays: 2.5, typicalDecisionDays: 2.5, denied30d: 0, infoAsks30d: 0 });
+
 export const PAYER_GROUPS: PayerSummary["group"][] = ["Ohio Medicaid", "Commercial", "Medicare Advantage", "Behavioral carve-out"];
 export const USER_NAME = "Jordan Perez";
 

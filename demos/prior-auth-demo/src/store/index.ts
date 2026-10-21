@@ -1,4 +1,6 @@
 import { create } from "zustand";
+import { customToSummary } from "@/data/payerConfig";
+import { syncCustomPayers } from "@/data/seed";
 import { createAgentSettingsSlice, type AgentSettingsSlice } from "./agentSettings";
 import { createCasesSlice, type CasesSlice } from "./cases";
 import { createCoreSlice, resetCoreCounters, type CoreSlice } from "./core";
@@ -25,6 +27,11 @@ export const useStore = create<AppState>()((...a) => ({
   ...createAgentSettingsSlice(...a),
   ...createRipplesSlice(...a),
 }));
+
+/* Payers added on Payers join the shared payer list, so New case, Eligibility and the queue offer them too. */
+useStore.subscribe((s, prev) => {
+  if (s.customPayers !== prev.customPayers) syncCustomPayers(s.customPayers.map(customToSummary));
+});
 
 /** Put every slice back to its seed data. Wired to Demo, Reset. */
 export function resetDemo(): void {

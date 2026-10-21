@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowUp, CheckCheck, Sparkles } from "lucide-react";
 import { ActorBadge, AgentBadge, Button, Drawer } from "@/components/ui";
+import { openDrafts } from "@/data/payerConfig";
 import { PAYERS, payerById } from "@/data/seed";
 import { cn } from "@/lib/cn";
 import { money } from "@/lib/format";
@@ -84,7 +85,7 @@ export function AskPanel() {
   useEffect(() => end.current?.scrollIntoView({ behavior: "smooth" }), [msgs, busy]);
 
   const answer = (q: string): Msg => {
-    const { requests, clock } = useStore.getState();
+    const { requests, caseDrafts, clock } = useStore.getState();
     const s = q.toLowerCase();
     const counts = stageCounts(requests);
     if (s.includes("slow") || s.includes("payer") && s.includes("late")) {
@@ -101,7 +102,9 @@ export function AskPanel() {
       return { from: "flo", text: `${d.length} ${d.length === 1 ? "denial is" : "denials are"} open, with ${money(total)} at stake.${nearest}`, link: { label: "Open Denial Intelligence", to: paths.denials(near?.id) } };
     }
     if (s.includes("cardinal") || s.includes("approval rate")) {
-      return { from: "flo", text: "Cardinal approved 63% as asked over the last 90 days, down 11 points. Historian links most of the drop to continued-stay evidence. Cardinal also published criteria version 2026.3, which affects 4 drafts you have not sent.", link: { label: "Open Payers, Cardinal, Changes", to: paths.payers("cardinal", "changes") } };
+      const open = openDrafts(requests, caseDrafts, "cardinal").length;
+      const affects = open ? `, which affects ${open} ${open === 1 ? "draft" : "drafts"} you have not sent` : "";
+      return { from: "flo", text: `Cardinal approved 63% as asked over the last 90 days, down 11 points. Historian links most of the drop to continued-stay evidence. Cardinal also published criteria version 2026.3${affects}.`, link: { label: "Open Payers, Cardinal, Changes", to: paths.payers("cardinal", "changes") } };
     }
     if (s.includes("need") || s.includes("today") || s.includes("first")) {
       const needs = requests.filter((r) => r.needsYou);

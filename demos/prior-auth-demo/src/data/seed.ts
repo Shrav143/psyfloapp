@@ -12,6 +12,15 @@ export const PAYERS: PayerSummary[] = [
 ];
 export const payerById = (id: PayerId): PayerSummary => PAYERS.find((p) => p.id === id) as PayerSummary;
 
+/** The six payers every clinic starts with. A payer added on Payers joins PAYERS after them, so every picker offers it. */
+const BUILT_IN = PAYERS.length;
+export const builtInPayers = (): PayerSummary[] => PAYERS.slice(0, BUILT_IN);
+/** Kept in step with the store by `store/index.ts`; "Reset demo data" empties it. */
+export function syncCustomPayers(added: PayerSummary[]): void {
+  PAYERS.length = BUILT_IN;
+  PAYERS.push(...added);
+}
+
 /* ------------------------------------------------------------------ requests (39 distinct) */
 type Track = "auth" | "denial";
 interface Spec {
@@ -158,6 +167,6 @@ export const SEED_NOTIFICATIONS: AppNotification[] = [
   { id: "n2", at: -38, agent: "scribe", title: "Scribe has a question", body: "R-1042 needs one answer before the draft can finish.", to: "/authorizations/new/draft-r1042", read: false, tone: "mid" },
   { id: "n3", at: -80, agent: "advocate", title: "Denied today", body: "Cardinal denied D-3297 (units cut 48 to 30). A call is booked.", to: "/denials?id=D-3297", read: false, tone: "risk" },
   { id: "n4", at: -90, agent: "cadence", title: "Approved", body: "Evergreen approved R-0951 for 14 days. Write-back waits for you.", to: "/dashboard?request=R-0951", read: true, tone: "good" },
-  { id: "n5", at: -240, agent: "sentinel", title: "Payer rule changed", body: "Cardinal updated its criteria (version 2026.3). 4 drafts are affected.", to: "/payers/cardinal?tab=changes", read: false, tone: "mid" },
+  { id: "n5", at: -240, agent: "sentinel", title: "Payer rule changed", body: "Cardinal updated its criteria (version 2026.3). Your open Cardinal drafts are affected.", to: "/payers/cardinal?tab=changes", read: false, tone: "mid" },
   { id: "n6", at: -300, agent: "caller", title: "Very late", body: "Evergreen has had R-0912 for 4 days. Caller is phoning.", to: "/dashboard?request=R-0912", read: true, tone: "risk" },
 ];
