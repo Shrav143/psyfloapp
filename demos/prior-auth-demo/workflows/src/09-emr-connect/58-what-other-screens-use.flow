@@ -6,7 +6,7 @@ also: Found by reading the code and testing the built demo. Disconnect every sys
 ---
 screen p1 "EMR Connect\nSystems, sync, mappings and the write-back switch"
 
-group gPull "New case › Medical records: pull a chart"
+group gPull "New case: pull a chart"
   click a1 "Click 'Pull a chart from EMR Connect'"
   overlay a2 "Chart from EMR Connect\nDropdown with four charts, a hint under each"
   input a3 "Pick a chart\nJ.M., 34 · Summit · Residential 3.5 (Admitted yesterday)\nA.R., 45 · Beacon · IOP (Intake on Thursday)\nS.T., 38 · Harborview · PHP (In program, day 9)\nL.G., 29 · Cardinal · Residential 3.5 (Admission tomorrow)"
@@ -18,7 +18,7 @@ endgroup
 process n1 "The four charts are a fixed list\nNot read from the systems on this page, and not changed by Sync now or by Disconnect"
 goto g1 "Continues in: New case › Medical records › Pull a chart from EMR Connect"
 
-group gWrite "Dashboard: write the approval back"
+group gWrite "Dashboard: write back"
   screen b1 "Dashboard request: 'Approved. Write-back waits for you'"
   click b2 "Click 'Approve write-back'"
   overlay b3 "Approve the write-back\n'EMR Connect will write only these three things to the chart. No notes, diagnoses or identifiers are written.'"

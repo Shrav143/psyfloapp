@@ -1,0 +1,79 @@
+title: Authorizations › New case › How a case starts and resumes
+route: /authorizations/new
+intro: New case is a page that makes or reopens a case (a 'draft') and shows the step it is on. This diagram covers every way in, how the case is made, and the three special pages. The four steps continue in their own diagrams.
+dir: TD
+also: Demo only: the hosted preview keeps the address in memory, so the typed ?referral= entry cannot be used there.
+---
+start s1 "Open New case\nSidebar, a 'New case' button, the Demo menu or FLO's link"
+start s2 "Click 'Start authorization'\non a coverage result"
+start s3 "Type /authorizations/new?referral=RF-2051\n(no button links to it now)"
+start s4 "Open a case that already exists\nA Case Manager row button, a bell link, or 'Open in review and sign'"
+
+group gMake "No case id in the address: make one"
+  process p1 "Page makes a case, then opens /authorizations/new/draft-ID\nIt replaces the address, so Back does not loop"
+  decision d1 "What is in the address?"
+  decision d2 "Is RF-2051 in the demo?"
+  process p2 "Case is filled from the referral\nPatient, payer, member ID, level of care, diagnoses, reason\nRequest type: Initial request if routine, else Admission"
+  store st1 "Case created on Medical records\nThe referral is the first document"
+  toast t1 "'Referral RF-2051 is in this case'\n'K.R., 29. Next, add the medical records.'"
+  toast t2 "Amber toast 'Referral not found'\n'We could not find RF-9999. Start from a blank case instead.'"
+  process p3 "Filled from ?payer=, ?program=, ?member=, ?initials=, ?age=\nRequest type: Admission\nAn unknown payer or program is ignored"
+  store st2 "Case created on Medical records"
+  store st3 "Blank case created, step 'Referral'\nEvery click on sidebar 'New case' makes a new one\nNot in Case Manager until 'Save as draft'"
+endgroup
+process p4 "Case opens at /authorizations/new/draft-ID"
+
+group gOpen "A case id is in the address: reopen it"
+  decision d3 "Is there a case with that id?"
+  screen sc1 "New case\n'That draft is not in the demo.'\n'We could not find that draft'\n'It may have been cleared when the demo data was reset.'"
+  click c1 "Click 'Start a new case'"
+  decision d4 "Was it signed and sent?"
+  screen sc2 "'R-1234 was sent'\n'It was signed and sent to the payer. The agents are following it from the Dashboard.'\n'This case is no longer being prepared'"
+  click c2 "Click 'Open it on the Dashboard'"
+  click c3 "Click 'Back to Case Manager'"
+  decision d5 "On the Referral step, and have agents already run?"
+  process p5 "Moves on when the case is opened\nAgents work if fewer than 10 agents are done, else Review and sign\nA later click on 'Referral' in the stepper is not undone"
+endgroup
+
+screen sc3 "New case\nLink 'Case Manager', title, one sentence, stepper, the step\nTitle becomes 'Ready for your signature' on the last step"
+click c4 "Click the link 'Case Manager'"
+decision d6 "Which step is the case on?"
+goto gCm "Continues in: Case Manager"
+goto gDash "Continues in: Dashboard\nOpens the request"
+goto gStep "Continues in: New case › The stepper and the four steps"
+goto g1 "Continues in: New case › Referral › Start screen"
+goto g1b "Continues in: New case › Referral › Referral checklist"
+goto g2 "Continues in: New case › Medical records"
+goto g3 "Continues in: New case › Agents work"
+goto g4 "Continues in: New case › Review and sign"
+
+s1 --> p1
+s2 --> p1
+s3 --> p1
+p1 --> d1
+d1 -->|?referral=ID| d2
+d1 -->|payer or program valid| p3 --> st2
+d1 -->|Nothing usable| st3
+d2 -->|Yes| p2 --> st1 --> t1
+d2 -->|No| t2 --> st3
+t1 --> p4
+st2 --> p4
+st3 --> p4
+s4 --> d3
+p4 --> d3
+d3 -->|No| sc1 --> c1 --> p1
+d3 -->|Yes| d4
+d4 -->|Yes| sc2
+sc2 --> c2 --> gDash
+sc2 --> c3 --> gCm
+d4 -->|No| d5
+d5 -->|Yes| p5 --> sc3
+d5 -->|No| sc3
+sc3 --> c4 --> gCm
+sc3 --> d6
+sc3 -.-> gStep
+d6 -->|Referral, nothing loaded| g1
+d6 -->|Referral, one loaded| g1b
+d6 -->|Medical records| g2
+d6 -->|Agents work| g3
+d6 -->|Review and sign| g4

@@ -1,0 +1,49 @@
+title: Authorizations › New case › Referral › Decision banners
+route: /authorizations/new/referral/RF-2053?draft=draft-1001
+intro: The banners between the header and the document. Each one says where the referral stands in words and offers the next step as a button. Several can show at once.
+dir: TD
+---
+start s1 "Open the full referral page"
+decision d1 "Which banners apply?"
+
+group gDec "Declined"
+  toast t1 "Red banner 'Declined: Needs a higher level of care'\nThe note, then 'A courtesy reply went to the referrer.'\nor 'No reply was sent to the referrer.'"
+  click c1 "Click 'Reopen'"
+  store st1 "Referral is In review again"
+endgroup
+
+group gAcc "Accepted, Scheduled or Admitted"
+  toast t2 "Green banner 'Accepted into IOP' (or 'Admitted into IOP')\n'Target admission 10/21/2026. Owner Taylor Brooks.'\nScheduled adds 'Intake visit Thu 9:00 am'"
+  decision d2 "Did this referral start a request?"
+  toast t3 "'Linked request R-1042' with its status chip\nbutton 'Open R-1042'"
+  click c2 "Click 'Open R-1042' or the link 'R-1042'"
+  toast t4 "'No request is linked yet. Continue to the medical records to build the authorization for this patient.'"
+  click c3 "Click 'Continue to medical records'\n(not shown once Admitted)"
+  process p1 "Uses the case in the address, or starts a new one\nReferral goes into the case"
+endgroup
+
+group gOpen "Open referral"
+  toast t5 "Amber banner 'Waiting on the referrer'\n'You asked … by fax Mon 2:10 pm. Reader reads the reply as soon as it arrives. For the demo, open More and choose 'Demo: simulate the referrer's reply'.'"
+  toast t6 "Amber banner 'Reader found 3 things to check'\nThe problems in a sentence. Only while New or In review"
+  click c4 "Click 'Review findings'"
+  process p2 "Validation tab opens"
+  toast t7 "Red banner 'Verify found that coverage has lapsed'\n'Fix this before billing. Ask the referrer about a renewal or a new plan.'"
+  click c5 "Click 'Open coverage'"
+  process p3 "Coverage tab opens"
+endgroup
+
+goto g1 "Continues in: New case › Referral › Full page: Validation tab"
+goto g2 "Continues in: New case › Referral › Check coverage"
+goto g3 "Continues in: New case › Medical records"
+goto g4 "Continues in: Dashboard\nOpens request R-1042"
+endx e1 "No banner\nA New or In review referral with no open findings and no lapsed coverage"
+
+s1 --> d1
+d1 -->|Declined| t1 --> c1 --> st1
+d1 -->|Accepted, Scheduled, Admitted| t2 --> d2
+d2 -->|Yes| t3 --> c2 --> g4
+d2 -->|No| t4 --> c3 --> p1 --> g3
+d1 -->|Awaiting info| t5
+d1 -->|Open findings| t6 --> c4 --> p2 --> g1
+d1 -->|Coverage lapsed| t7 --> c5 --> p3 --> g2
+d1 -->|Nothing to say| e1

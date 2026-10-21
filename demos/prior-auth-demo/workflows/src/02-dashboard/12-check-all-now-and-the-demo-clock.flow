@@ -2,6 +2,7 @@ title: Dashboard › Header › Check all now and the demo clock
 route: /dashboard
 intro: The one button in the page header, and what the Demo menu's clock does to the numbers on this page. Time in the demo only moves when someone moves it.
 dir: TD
+also: Real world: Navigator checks every open request at least daily, and a request past the payer's time gets a call-the-payer task. Demo only: the button and the clock are simulated.
 ---
 start s1 "Click 'Check all now'\nTop right of the headline card"
 process p1 "Button shows a spinner and is disabled for 1.2 seconds"

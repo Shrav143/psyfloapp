@@ -9,7 +9,7 @@ start s1 "On a result page, read the buttons on the verdict banner"
 decision q1 "Verdict is 'Authorization first'?"
 click c1 "Click 'Start authorization'"
 process p1 "Opens New case with payer, level of care, member ID, initials and age filled in\nRequest type is 'Admission'"
-goto g1 "Continues in: Authorizations › New case"
+goto g1 "Continues in: Authorizations › New case › Medical records › The checklist and Continue"
 
 decision q2 "Is there a request with this ID?"
 click c2 "Click 'Open case'\n(dark button, or outlined beside 'Start authorization')"

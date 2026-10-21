@@ -1,0 +1,43 @@
+title: Authorizations › New case › Review and sign › After sending
+route: /dashboard?request=R-1701, then /authorizations/new/:draftId and /manager
+intro: What changes once the request is signed and sent: the Dashboard shows it, the draft's own address turns into a 'was sent' page, and Case Manager stops listing it under Being prepared.
+dir: TD
+---
+start s1 "The request is signed and sent"
+
+group gDash "Dashboard"
+  screen sDash "Dashboard\nThe request is open in the side drawer\nChip 'Received', held by Navigator"
+  process pCount "In the stage strip 'Received' goes up by one\nA brand-new case was never counted under 'Preparing'"
+  toast tToast "Toast: 'Sent to the payer'\nBell notification: 'Sent to the payer'"
+endgroup
+goto gOpen "Continues in: Dashboard › Open a request"
+
+group gWas "The draft's own address"
+  click cBr "Press the browser's Back button, or reopen the case's address"
+  screen sWas "R-1701 was sent\n'It was signed and sent to the payer. The agents are following it from the Dashboard.'"
+  process pNoSign "'This case is no longer being prepared'\n'Nothing more is needed here.'\nIt cannot be signed a second time"
+  click cOpenDash "Click 'Open it on the Dashboard'"
+  click cBackCM "Click 'Back to Case Manager'"
+endgroup
+
+group gCM "Case Manager › Active cases"
+  screen sCM "Case Manager\n'56 active cases.' and 'N are still being prepared.'"
+  process pGone "The case leaves the 'Being prepared' card\nThe 'still being prepared' count goes down by one"
+  process pBadge "The sidebar badge on 'Case Manager' no longer counts it"
+  click cSent "Click the 'N sent today' button"
+  process pSentN "The count is one higher (4 becomes 5)"
+  process pLedger "The table of active cases gains no row\nThe header still says '56 active cases.'"
+endgroup
+goto gDash2 "Continues in: Dashboard › Stage strip and requests"
+goto gCM2 "Continues in: Case Manager › Active cases"
+
+s1 --> sDash --> pCount
+sDash --> tToast
+sDash --> gOpen
+s1 --> cBr --> sWas --> pNoSign
+pNoSign --> cOpenDash --> sDash
+pNoSign --> cBackCM --> sCM
+s1 --> sCM --> pGone --> pBadge
+sCM --> cSent --> pSentN --> gDash2
+sCM --> pLedger
+pLedger -.-> gCM2

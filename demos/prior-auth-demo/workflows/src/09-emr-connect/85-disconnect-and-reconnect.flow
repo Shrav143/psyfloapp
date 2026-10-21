@@ -11,7 +11,7 @@ process p1 "'Requests already on the Dashboard stay where they are. You can reco
 decision q1 "Which action?"
 click k1 "Click 'Keep it connected'\nOr the X, or the dimmed area"
 click k2 "Press Escape"
-click k3 "Click 'Disconnect'"
+click k3 "Click 'Disconnect' in the confirmation"
 end e1 "Confirmation closes\nThe drawer stays open and nothing changes"
 endx e2 "Confirmation and drawer both close\nNothing changes"
 

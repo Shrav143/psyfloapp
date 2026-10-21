@@ -1,0 +1,59 @@
+title: Authorizations › New case › The stepper and the four steps
+route: /authorizations/new/:draftId
+intro: The strip at the top of New case: Referral, Medical records, Agents work, Review and sign. Earlier steps can be clicked to go back; later ones open only through the step's own button.
+dir: TD
+---
+start s1 "A case is open on any step"
+screen sc1 "Stepper under the title\n1 Referral · 2 Medical records · 3 Agents work · 4 Review and sign"
+process p1 "Current step: dark circle with its number\nEarlier steps: green circle with a tick\nLater steps: grey circle"
+decision d1 "Which step did the person click?"
+process pNo "Current step and later steps are disabled\nNothing happens"
+click c1 "Click an earlier step\n'Referral', 'Medical records' or 'Agents work'"
+process p2 "Case moves to that step\nWhat was entered and what the agents did is kept"
+screen sc2 "Page shows that step\nTitle and sentence change with it"
+
+group gSub "The sentence under the title"
+  screen t1 "Referral: 'Start with the referral. Drop the documents and Reader lists anything that is missing.'"
+  screen t2 "Medical records: 'Drop what you have. Reader sorts the files and lists what is still missing, then the agents check the payer's rules.'\nTop right: 'Use sample chart'"
+  screen t3 "Agents work: 'The agents are reading the chart and checking Summit's rules. Questions come to you only when they must.'"
+  screen t4 "Review and sign: 'Nothing goes to the payer until a clinician signs.'\nTitle 'Ready for your signature'"
+endgroup
+
+group gFwd "Moving forward and back: each step's own buttons"
+  click b1 "Referral: 'Accept referral and continue', 'Continue to medical records' or 'No referral? Continue without one'"
+  click b2 "Medical records: 'Back', 'Save as draft', 'Continue'"
+  click b3 "Agents work: 'Back', 'Pause all agents', 'Skip ahead', 'Review and sign'"
+  click b4 "Review and sign: 'Back', 'Save as draft', 'Sign and send'"
+endgroup
+process pBack "'Back' goes one step back\nMedical records to Referral; Agents work to Medical records; Review and sign to Agents work"
+process pNext "Forward buttons stay disabled until the step is ready\n'Continue' waits for nothing missing; 'Review and sign' waits for the agents"
+
+click cLink "Click the link 'Case Manager' above the title"
+goto gCm "Continues in: Case Manager"
+
+screen sFull "Stepper on the full referral page\n'Referral' is current and no step is clickable"
+goto gFull "Continues in: New case › Referral › The full referral page"
+
+goto g1 "Continues in: New case › Referral › Start screen"
+goto g2 "Continues in: New case › Medical records"
+goto g3 "Continues in: New case › Agents work"
+goto g4 "Continues in: New case › Review and sign"
+
+s1 --> sc1 --> p1 --> d1
+d1 -->|Current or later step| pNo
+d1 -->|Earlier step| c1 --> p2 --> sc2
+sc2 --> t1
+sc2 --> t2
+sc2 --> t3
+sc2 --> t4
+t1 --> b1 --> g1
+t2 --> b2 --> g2
+t3 --> b3 --> g3
+t4 --> b4 --> g4
+b2 --> pBack
+b3 --> pBack
+b4 --> pBack
+b2 -.-> pNext
+b3 -.-> pNext
+sc1 --> cLink --> gCm
+sc1 -.-> sFull --> gFull

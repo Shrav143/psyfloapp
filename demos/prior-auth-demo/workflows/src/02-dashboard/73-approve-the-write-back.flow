@@ -2,6 +2,7 @@ title: Dashboard › Request drawer › Approve the write-back
 route: /dashboard?request=R-0951
 intro: After a payer approves, the approval number and dates go to the EMR only when a person confirms. The pop-up shows exactly three things. In the demo the EMR write is simulated and changes only the request's history.
 dir: TD
+also: Real world: writing the reference number, units and dates back to the EMR is a confirmed step. Demo only: the EMR write is simulated.
 ---
 start s1 "Click 'Approve write-back' in the green box"
 overlay o1 "Pop-up 'Approve the write-back'\n'R-0951 · Evergreen'\n'EMR Connect will write only these three things to the chart. No notes, diagnoses or identifiers are written.'"
@@ -22,7 +23,7 @@ click c3 "Click the X 'Close'"
 click c4 "Click the dimmed area"
 end e2 "Pop-up closes\nNothing is written; the green box stays"
 click c5 "Press Escape"
-process p3 "Escape closes the pop-up and the drawer together, because both listen for it"
+process p3 "Escape closes the pop-up and the drawer together, because each one listens for it"
 end e3 "Back on the table\nThe request still has its green box when reopened"
 process p4 "Escape while writing: the drawer closes, but the write still finishes and the toast appears"
 

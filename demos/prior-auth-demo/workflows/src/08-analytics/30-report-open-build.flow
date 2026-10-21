@@ -8,7 +8,7 @@ start s1 "Click 'Monthly report' (top right)"
 overlay o1 "Window 'Monthly report'\nSubtitle 'This quarter · All payers'\n'Built by' Analyst\nButton 'Cancel' in the footer"
 process p0 "Page behind is dimmed\nThe menus cannot be used until the window closes"
 
-group gSteps "Four steps, one after another"
+group gSteps "Four steps"
   agent a1 "Analyst\n'Collecting the decisions for this quarter'"
   wait w1 "0.75 seconds"
   agent a2 "Analyst\n'Dropping any figure with fewer than 20 decisions'"

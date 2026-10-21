@@ -2,6 +2,7 @@ title: Dashboard › Request drawer › Demo controls: approve, approve part or 
 route: /dashboard?request=R-1021
 intro: The three final payer answers and what the Dashboard shows afterwards. An approval stays on the Dashboard with a write-back waiting. A partial approval or a denial turns the request into a new D- number and hands it to Denial Intelligence.
 dir: TD
+also: Demo only: the payer's decision is simulated. Real rules: a decision is due in 7 days (72 hours when expedited), and a partial approval or denial goes to the denial route, starting with a peer-to-peer call.
 ---
 start s1 "Payer decides (demo: the presenter clicks a Demo control)"
 ext x1 "Payer decides through its portal, fax or phone\n(demo: simulated)"
@@ -25,8 +26,8 @@ group gD "Denied or partly approved"
   toast dn "Notification 'Denied' or 'Partly approved'\n'R-1021 became D-3319. Advocate booked a call.'"
   toast dt "Toast 'The payer denied it' or 'The payer approved part of it'\n'It is now D-3319 in Denial Intelligence.'"
   process d4 "Drawer switches to D-3319 in place (the address is replaced)\nOpening R-1021 again closes quietly: that number no longer exists"
-  screen ds "Dashboard after a denial\n'Appeal or call' and 'Decided today' both go up by one; 'Under review' goes down\nSidebar badge on Denial Intelligence goes up\nA row hidden by the old stage filter leaves the table; the drawer stays open"
-  screen dd "Drawer for D-3319\nChip 'Call booked', 'Chance of winning 61%', '3 days left'\nDemo controls disabled: 'A denial follows its own route in Denial Intelligence.'\nFooter gains 'Open in Denial Intelligence'"
+  screen ds "Dashboard after a denial\n'Appeal or call' and 'Decided today' each go up by one; 'Under review' goes down\nSidebar badge on Denial Intelligence goes up\nIts row shows 'Call booked' and '3 days left'\nA row hidden by the old stage filter leaves the table; the drawer stays open"
+  screen dd "Drawer for D-3319\nChip 'Call booked', 'Chance of winning 61%'\nDemo controls disabled: 'A denial follows its own route in Denial Intelligence.'\nFooter gains 'Open in Denial Intelligence'"
 endgroup
 goto g2 "Continues in: Denial Intelligence › Open denials\n/denials?id=D-3319"
 goto g3 "Continues in: Authorizations › Case page\nThe case number is unchanged"

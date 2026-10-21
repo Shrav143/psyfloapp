@@ -8,7 +8,7 @@ screen sc1 "Card header\n'Payers at a glance'\n'Waiting now, how long decisions 
 decision d0 "Is Program or Request type set?"
 toast t0 "Sentence added to the header\n'Waiting counts follow your Program and Request type filters.'"
 
-group gCols "Seven columns, six rows"
+group gCols "Columns and rows"
   screen r1 "Payer\nName, e.g. 'Cardinal Health Plan', and its kind: 'Medicaid plan', 'Commercial', 'Medicare Advantage', 'Carve-out'"
   screen r2 "Waiting\nRequests Received or Under review at that payer\nFollows Program and Request type, not Payer, Stage or dates"
   screen r3 "Decision time\n'2.8 d' and 'typical 2 d'\nOchre when the average is over 15 percent above typical"

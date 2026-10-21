@@ -2,6 +2,7 @@ title: Dashboard › Request drawer › Answer a payer information request
 route: /dashboard?request=P-1499
 intro: When a payer asks for more information, Packet drafts the answer from the chart, Integrity checks it, and a person reads it and signs. Nothing leaves before the signature. In the demo the payer's ask is seeded or triggered by a Demo control, and the send is simulated.
 dir: TD
+also: Real world: an information request is tracked, and a clinical supplement passes the clinician sign-off gate before it goes out. Demo only: one click on 'Sign and send answer' stands in for that, and the send is simulated.
 ---
 start s0 "A payer wants more information on a request"
 ext x1 "Payer asks for more information\nthrough its portal, fax or phone (demo: seeded for P-1499, or the Demo control 'Asks for information')"
@@ -14,7 +15,7 @@ start s1 "Click the row, or the notification, then the amber box 'Needs your inp
 click c1 "Click 'Review the answer'"
 overlay o1 "Pop-up 'Packet's answer for P-1499'\n'Harborview MA asked for more information · PHP'\nDrafted by Packet and checked by Integrity"
 
-group gModal "Inside the pop-up, top to bottom"
+group gModal "Inside the pop-up, from the top down"
   screen m1 "'What the payer asked for'\nNumbered list of the items asked"
   decision d1 "Which program is the request for?"
   doc r1 "Residential 3.5\nLast 14 days of therapy notes, ASAM ratings, medication changes, step-down plan"

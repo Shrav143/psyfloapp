@@ -1,0 +1,38 @@
+title: Authorizations › Case page › What it writes to other screens
+route: /authorizations/case/R-1042
+intro: What a case page changes outside itself: the Dashboard request's chance and history, the notification, and the queue. Nothing here is a link; each happens as a side effect of a click.
+dir: TD
+also: Demo only: a case page only writes to the Dashboard for requests that are on both the queue and the Dashboard. Other requests keep their work on the case page alone.
+---
+start s1 "Apply selected finishes on a case page"
+decision d1 "Is it a queue request that also has a Dashboard entry?"
+store w1 "Dashboard request gets the new chance"
+store w2 "Dashboard request history\n'Scribe added 6 items to the draft. Approval chance is now 88%'"
+process w0 "Only this case page and the queue change"
+process q1 "Queue tile shows the new chance\nLine reads '+N pts possible' or 'on track'\nQueue average moves too"
+toast n1 "Notification from Forecaster: 'Approval chance updated'\n'R-1042 is now 88% after 6 actions.'"
+click n2 "Open Notifications and click 'Approval chance updated'"
+process n3 "The case page of that request opens"
+goto g1 "Continues in: Authorizations › Case page › Ways in"
+
+start s2 "Click 'Dismiss and log' on a case page"
+decision d2 "Is the request on the Dashboard?"
+store w3 "Dashboard request history\n'You dismissed ... Reason: ...'"
+process w4 "Only the case page log changes\n'Logged decisions'"
+
+start s3 "A request is signed and sent in New case"
+store w5 "Dashboard stage 'Received'"
+process w6 "Queue drops the request\nThe open count drops by one\nThe sidebar badge too, if it was in Act now or Due within 24 hours"
+goto g2 "Continues in: Dashboard › Request drawer"
+
+s1 --> d1
+d1 -->|Yes| w1 --> w2
+d1 -->|No| w0
+s1 --> q1
+s1 --> n1 --> n2 --> n3 --> g1
+w2 --> g2
+s2 --> d2
+d2 -->|Yes| w3 --> g2
+d2 -->|No| w4
+s3 --> w5 --> w6
+w5 --> g2

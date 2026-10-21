@@ -18,7 +18,7 @@ decision d1 "Is the second day on or after the first?"
 process p4 "That day becomes the new first day\nStill waiting for an end day"
 process p5 "That day becomes the last day"
 toast t2 "Footer: 'Oct 5, 2026 to Oct 12, 2026'\n'Apply' is ready"
-click c4 "Click a day when both days are already set"
+click c4 "Click a day when a first and last day are already set"
 process p6 "Starts again: the day becomes the first day and the last day is cleared"
 
 click c5 "Click 'Apply'"

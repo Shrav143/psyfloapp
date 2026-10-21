@@ -27,6 +27,8 @@ group gCards "Cards below"
   screen c4 "Card 'What helps most'\nFour ranked steps"
 endgroup
 
+screen hub2 "Under the header, a row of four tiles"
+screen hub "Below the tiles, four cards"
 process p1 "All figures come from the chosen period and payer\nA figure behind fewer than 20 decisions is hidden"
 process p2 "Nothing is stored: the address stays /analytics\nLeaving the page resets the menus"
 
@@ -38,8 +40,10 @@ goto g5 "Continues in: Analytics › Monthly report › Open and build"
 
 s1 --> sc
 sc --> m1 & m2 & m3
-sc --> t1 & t2 & t3 & t4
-sc --> c1 & c2 & c3 & c4
+m1 & m2 & m3 --> hub2
+hub2 --> t1 & t2 & t3 & t4
+t1 & t2 & t3 & t4 --> hub
+hub --> c1 & c2 & c3 & c4
 sc -.-> p1
 sc -.-> p2
 m1 & m2 --> g1

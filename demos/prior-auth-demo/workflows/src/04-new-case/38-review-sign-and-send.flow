@@ -1,0 +1,58 @@
+title: Authorizations › New case › Review and sign › Sign and send
+route: /authorizations/new/:draftId (step 4 of 4, the 'Sign and send' card)
+intro: Only a licensed clinician can sign. The card opens signed in as Jordan Perez, a UR coordinator, so the first step is to switch to Dr. Rivera. Signing needs an attestation, and an acknowledgement when a check warns. After the confirm, Navigator sends the request and it lands on the Dashboard as Received.
+dir: TD
+---
+start s1 "On step 4, find the 'Sign and send' card\n'Jordan Perez, UR coordinator · approval chance 88%'"
+click cWho "Click the 'Signing as' dropdown"
+overlay oWho "Two names\n'Jordan Perez (UR coordinator)'\n'Dr. Rivera (clinician)'"
+decision dWho "Who is chosen?"
+toast tUR "'Jordan Perez is a UR coordinator. Only a licensed clinician can sign. Switch to Dr. Rivera to sign.'"
+input iRiv "Pick 'Dr. Rivera (clinician)'\nThe card now reads 'Dr. Rivera, clinician'"
+decision dWarn "Does any check show a warning?"
+input iAck "Tick 'I reviewed the warning above and want to sign anyway.'"
+input iAtt "Tick 'I reviewed this summary and it reflects the record. The level of care is my clinical judgment.'"
+decision dCan "Clinician chosen, attestation ticked, no block or re-check, warnings acknowledged?"
+endx eOff "'Sign and send' stays switched off"
+click cSign "Click 'Sign and send'"
+overlay oConf "Sign and send?\n'Signing as Dr. Rivera, clinician'\nPatient, Payer, Level of care, Approval chance, Attachments\n'Navigator sends this to Summit through its portal and saves the receipt to the case. Nothing was sent before this.'"
+click cCancel "Click 'Cancel', press Escape, or click outside"
+endx eCancel "Pop-up closes; nothing is sent"
+click cConfirm "Click 'Sign and send' in the pop-up"
+decision dReady "Are all ten agents done?"
+toast tCould "'Could not sign yet'\n'All agents must finish before the request can be signed.'"
+decision dOn "Is the case already on the Dashboard as Preparing?"
+store stNew "A new request is added to the Dashboard\nStage 'Received', held by Navigator"
+store stMove "That request moves from Preparing to Received\nThe same ID is kept"
+agent aNav "Navigator files the request through the payer's portal (demo: simulated)"
+ext xPortal "Payer portal\nReceives the request and gives a receipt"
+store stEv "History: 'You signed and sent the request'\n'Navigator sent the request through the payer's portal'\n'Navigator saved the receipt to the case'\nNext: 'Navigator checks again' in 30 minutes"
+store stDraft "The draft is marked sent\n'sent today' in Case Manager goes up by one"
+toast tNotif "Notification: 'Sent to the payer'\n'R-1701 was sent. It now shows as Received on the Dashboard.'"
+toast tSent "'Sent to the payer'\n'R-1701 is on the Dashboard as Received.'"
+process pNav "The page moves to the Dashboard with that request open"
+endx eStay "Stays on step 4; nothing is sent"
+goto gDash "Continues in: Dashboard › Open a request"
+goto gAfter "Continues in: Review and sign › After sending"
+click cBack "Click 'Send back to Scribe'"
+goto gSB "Continues in: Review and sign › Send back to Scribe"
+
+s1 --> cWho --> oWho --> dWho
+dWho -->|Jordan Perez| tUR --> eOff
+dWho -->|Dr. Rivera| iRiv --> dWarn
+dWarn -->|Yes| iAck --> iAtt
+dWarn -->|No| iAtt
+iAtt --> dCan
+dCan -->|No| eOff
+dCan -->|Yes| cSign --> oConf
+oConf --> cCancel --> eCancel
+oConf --> cConfirm --> dReady
+dReady -->|No| tCould --> eStay
+dReady -->|Yes| dOn
+dOn -->|No| stNew
+dOn -->|Yes| stMove
+stNew --> aNav
+stMove --> aNav
+aNav --> xPortal --> stEv --> stDraft --> tNotif --> tSent --> pNav --> gDash
+pNav --> gAfter
+s1 --> cBack --> gSB

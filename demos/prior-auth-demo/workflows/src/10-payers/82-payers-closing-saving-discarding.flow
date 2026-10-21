@@ -13,6 +13,7 @@ group gX "Ways to close"
   click x4 "Click the dimmed area outside"
 endgroup
 
+process cl "The pop-up is asked to close"
 decision dk "Which pop-up is it?"
 process pl "Plain pop-up (everything except the cases below)\nCloses. Typed text and picks are discarded\nNothing is saved or logged"
 process rd "Edit log\nRead only, nothing to save or discard"
@@ -35,8 +36,13 @@ process undo "No undo, revert or 'restore previous' button\nTo go back: edit aga
 end e1 "Back on the page, nothing half saved"
 endx x0 "Closed without saving"
 
-s1 --> ov --> dk
+s1 --> ov
 ov --> x1 & x2 & x3 & x4
+x1 --> cl
+x2 --> cl
+x3 --> cl
+x4 --> cl
+cl --> dk
 dk -->|Plain| pl --> x0
 dk -->|Edit log| rd --> x0
 dk -->|Save the workflow?| sv --> ek

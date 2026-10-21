@@ -36,7 +36,7 @@ goto gMed "Continues in: New case › Medical records"
 click cCont "Click 'Continue to medical records'"
 decision dReq "Did this referral start a request?"
 click cOpen "Click 'Open R-1042'\n(banner also says 'Linked request R-1042' with its chip)"
-goto gDash "Continues in: Dashboard › Open a request"
+goto gDash "Continues in: Dashboard\nOpens request R-1042"
 
 s1 --> stNew
 stNew --> c1 --> stRev
@@ -61,7 +61,7 @@ stSch --> cCont
 cCont --> gMed
 stAcc --> dReq
 stSch --> dReq
-stAdm --> dReq
+stAdm -.-> cOpen
 dReq -->|Yes| cOpen --> gDash
 dReq -->|No| cCont
 stNew -.-> gBan

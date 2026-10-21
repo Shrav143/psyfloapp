@@ -1,0 +1,75 @@
+title: Settings › Agents › Arrive and read the sixteen agents
+route: /settings
+intro: The Settings page is one screen about the agents: who they are, how much freedom each one has, a switch for each, and a button to pause them all. This shows what the person sees and what each row says.
+dir: TD
+also: Everything on this page is kept in the page itself. Leave Settings and every agent goes back to its starting level and switch.
+---
+start s1 "Click 'Settings' in the sidebar\nAbove 'Help', below the 'Demo data' tag"
+screen p1 "Settings\nWho the agents are, how much freedom each one has, and a way to pause them."
+click hb "Click 'Pause all agents'\nRed outline button, top right"
+goto g1 "Continues in: Settings › Pause › Pause all agents"
+toast bn "'Privacy mode is always on'\nNames, dates and IDs are swapped for codes before an agent reads a chart, and mapped back only on your screen."
+screen gates "Gates\nAgents never pass these without a person"
+goto g2 "Continues in: Settings › Page › Other controls and notices"
+
+group gCov "Coverage"
+  screen c0 "Coverage card\nKnows who pays and files with them"
+  process c1 "Verify: Checks coverage and benefits\nStarts at 'Act on its own'"
+  process c2 "Caller: Makes payer calls\nStarts at 'Ask before acting'"
+  process c3 "Navigator: Files and tracks requests\nStarts at 'Act, then report'"
+endgroup
+
+group gDoc "Documentation"
+  screen d0 "Documentation card\nReads the chart, writes the case"
+  process d1 "Reader: Reads the chart, protects identifiers\nStarts at 'Act on its own'"
+  process d2 "Criteria: Reviews payer policy"
+  process d3 "Placement: Maps the chart to ASAM levels"
+  process d4 "Scribe: Drafts the medical-necessity case"
+  process d5 "Integrity: Checks every sentence against the chart"
+endgroup
+
+group gInt "Intelligence"
+  screen i0 "Intelligence card\nKnows how each payer behaves"
+  process i1 "Historian: Reviews how this payer has ruled"
+  process i2 "Forecaster: Estimates the approval chance"
+  process i3 "Sentinel: Watches for policy changes"
+  process i4 "Analyst: Answers questions, builds reports"
+endgroup
+
+group gCase "Case work"
+  screen k0 "Case work card\nMoves each case to done"
+  process k1 "Packet: Assembles forms and attachments"
+  process k2 "Scrubber: Scrubs requests and claims"
+  process k3 "Cadence: Schedules concurrent reviews\nStarts at 'Act, then report'"
+  process k4 "Advocate: Handles denials, P2P and appeals"
+endgroup
+
+process row "Each row shows\nThe agent's round icon, its name, its role on one line, a Freedom dropdown and an on/off switch"
+process st "Every other agent starts at 'Ask before acting'\nAll sixteen switches start on"
+click fz "Click a Freedom dropdown"
+click sw "Click a switch"
+goto g3 "Continues in: Settings › Agents › Change an agent's freedom"
+goto g4 "Continues in: Settings › Pause › Pause one agent, resume all"
+goto g5 "Continues in: Settings › Agent map › Where each of the sixteen agents works"
+
+s1 --> p1
+p1 --> hb --> g1
+p1 --> bn
+p1 --> c0 & d0 & i0 & k0
+c0 --> c1
+d0 --> d1
+i0 --> i1
+k0 --> k1
+c1 --> c2 --> c3
+d1 --> d2 --> d3 --> d4 --> d5
+i1 --> i2 --> i3 --> i4
+k1 --> k2 --> k3 --> k4
+c3 --> row
+d5 --> row
+i4 --> row
+k4 --> row
+row --> st
+row --> fz --> g3
+row --> sw --> g4
+p1 --> gates --> g2
+c1 -.-> g5

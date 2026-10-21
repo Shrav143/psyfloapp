@@ -8,6 +8,7 @@ start s1 "Click 'Risk analysis'"
 screen rk "Risk analysis\nHistorical outcomes of similar requests"
 screen h "Card 'Historical outcomes'\n'Summit Medicaid HMO · Residential 3.5 admission'\n'Matched on' chips: Payer and plan, Level of care, Diagnosis cluster, Review type, Documentation signals"
 decision dB "Fewer than 100 similar cases from you and the network?"
+process nb "No pill on the card"
 toast bp "Pill 'Benchmark estimate' on the card"
 screen bg "Red card 'Biggest driver of a short approval'\n'No named step-down provider' and how often it was seen"
 screen cm "Green card 'What the approved cases had in common'\nFour ticked lines"
@@ -32,14 +33,12 @@ goto g1 "Continues in: Authorizations › Case page › Risk analysis › Pop-up
 
 s1 --> rk --> h --> dB
 dB -->|Yes| bp
-rk --> bg
-rk --> cm
-rk --> wn --> bars
-rk --> lo
-rk --> hs
-rk --> cd --> sa --> g1
-rk --> ct --> hc --> g1
-rk --> dOp
+dB -->|No| nb
+h --> bg --> cm
+cm --> wn --> bars --> lo --> dOp
+cm --> hs --> cd --> ct
+cd --> sa --> g1
+ct --> hc --> g1
 dOp -->|Yes| b1 --> cl
 dOp -->|No| b2 --> cl
 fc -.-> ap

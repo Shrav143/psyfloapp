@@ -23,7 +23,7 @@ store rq "Dashboard: the request is created, or moves to 'Received'\nHistory: 'Y
 toast tt "Toast 'Sent to the payer'\n'R-0988 is on the Dashboard as Received.'"
 toast nt "Notification from Navigator: 'Sent to the payer'\n'R-0988 was sent. It now shows as Received on the Dashboard.'"
 screen db "Dashboard opens on that request\nStage 'Received'"
-process qg "Back in the queue the request is gone\nThe header count and the sidebar badge drop by one"
+process qg "Back in the queue the request is gone\nThe open count drops by one\nThe sidebar badge too, if it was in Act now or Due within 24 hours"
 process cp "Demo: the case page of a sent request still shows its old status line\nand an enabled 'Send to payer'"
 goto gD "Continues in: Dashboard › Request drawer"
 goto gQ "Continues in: Authorizations › Queue › Open the queue and read the top"

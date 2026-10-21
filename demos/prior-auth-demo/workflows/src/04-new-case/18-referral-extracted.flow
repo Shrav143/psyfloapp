@@ -1,0 +1,54 @@
+title: Authorizations › New case › Referral › Full page: Extracted tab and document
+route: /authorizations/new/referral/RF-2053?draft=draft-1001
+intro: What Reader pulled out of the documents, field by field, next to the source document. A person can see the evidence for each field, correct a value, and page through the original.
+dir: TD
+also: Demo only: Print and the page buttons act on an invented document; nothing prints.
+---
+start s1 "Open the full referral page\nTab 'Extracted' is the one it opens on"
+screen sc1 "Extracted tab\n'Reader read 3 pages and found 13 fields. Click a field to see the evidence in the document.'"
+toast t0 "Amber banner when a field is missing\n'Reader could not find every field. Add them by hand with the pencil, or ask the referrer.'"
+screen sc2 "Field rows\nPatient, Age, Referring clinician, Credentials, NPI, Reason, Diagnoses, Requested service, Urgency, Order date, Insurance, Member ID, Contact"
+process pRow "Each row shows a dot, the value and who set it\nDot: green at 90% and up, amber 75 to 89, red below 75 or not found\n'Extracted by Reader' or 'Edited by you', '95% sure' or 'Not found'"
+
+group gRow "A field"
+  click c1 "Click a field row,\nor its eye button 'Show … in the document'"
+  process p1 "Row is outlined in green\nDocument switches to the right page\nEvidence block is boxed in red"
+  click c2 "Click 'Why this value?'"
+  process p2 "Reader found this on page 2 of the Referral form, in the section '…' with a quote\nNot found: 'Reader looked through every page and did not find …'\nAlso 'Confidence 95%. Nobody has edited it.'"
+  click c3 "Click the pencil 'Edit …'"
+  input i1 "Edit the value\nText box, big text box (reason, diagnoses), or a list for Urgency, Requested service and Insurance"
+  decision d1 "Changed and not empty?"
+  process p3 "'Save' is disabled"
+  click c4 "Click 'Save' (Enter also saves a short text field)"
+  click c5 "Click 'Cancel'"
+  store st1 "Value is saved and marked 'Edited by you'\nReader's first reading is kept ('Reader first read … You changed it to …')\nChecks that depend on it run again"
+  process p4 "What a saved change also does\nInsurance: the coverage result is cleared\nRequested service: the program changes\nPatient or Age: the card header changes"
+  toast t1 "'Saved'\n'The field is now marked as edited by you.'\nTimeline 'You corrected Insurance'"
+endgroup
+
+group gDoc "Source document panel"
+  screen sd "'Source document'\n'Fax from Northfield Counseling Associates, Mon 2:10 pm'"
+  click c6 "Click 'Referral form' or 'Face sheet'"
+  process p5 "Switches document, back to page 1, no highlight"
+  click c7 "Click 'Previous' or 'Next'\n(two-page documents only)"
+  process p6 "'Page 1 of 2' changes\nA single page reads 'Page 1 of 1' with no buttons"
+  click c8 "Click a block of the document"
+  process p7 "Block is boxed in red\nIf it matches a field, the Extracted tab opens on that row"
+  click c9 "Click the print button 'Print the source document'"
+  toast t2 "'Printing the original'\n'This is a demo. The faxed pages would open in your print dialog.'"
+endgroup
+
+s1 --> sc1 --> sc2 --> pRow
+sc1 -.-> t0
+sc2 --> c1 --> p1
+sc2 --> c2 --> p2
+sc2 --> c3 --> i1 --> d1
+d1 -->|No| p3 --> c5
+d1 -->|Yes| c4 --> st1 --> p4 --> t1
+i1 --> c5
+sc1 --> sd
+sd --> c6 --> p5
+sd --> c7 --> p6
+sd --> c8 --> p7
+sd --> c9 --> t2
+c1 -.-> sd

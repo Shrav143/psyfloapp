@@ -1,0 +1,50 @@
+title: Global shell › Top bar › Notifications › Open, read, click through
+route: Every page (Notifications drawer)
+intro: The bell opens a drawer with every notification, newest first. A click on a row marks it read, closes the drawer and opens the page it points to. 'Mark all read' clears the rest in one click.
+dir: TD
+also: Read and unread marks live in the demo data, so 'Reset demo data' brings back the four unread ones from the start.
+---
+start s1 "Click 'Notifications' (the bell) in the top bar"
+screen bell "Bell shows a red dot while any notification is unread\n(4 unread at the start)"
+overlay o1 "Notifications drawer opens (440 px)\nSubtitle '4 unread', or 'You are all caught up' when none are left\nButton 'Mark all read'"
+screen l1 "List, newest first\nEach row: agent badge, bold title, age ('16 min ago'), one line of text\nUnread rows are cream with a red dot"
+process p0 "Ages follow the demo clock: after 'Fast-forward 1 hour' '16 min ago' reads '1 h ago'"
+
+group gRows "The six notifications at the start"
+  process n1 "Packet · 'Payer asked for info' (unread)\n→ Dashboard, request P-1499"
+  process n2 "Scribe · 'Scribe has a question' (unread)\n→ New case, draft of R-1042"
+  process n3 "Advocate · 'Denied today' (unread)\n→ Denial Intelligence, D-3297"
+  process n4 "Cadence · 'Approved' (read)\n→ Dashboard, request R-0951"
+  process n5 "Sentinel · 'Payer rule changed' (unread)\n→ Payers, Cardinal, Changes"
+  process n6 "Caller · 'Very late' (read)\n→ Dashboard, request R-0912"
+endgroup
+
+click c1 "Click a notification row"
+store st1 "That notification is saved as read\n(cream tint and red dot go)"
+process p1 "Drawer closes"
+decision d1 "Does the notification have a destination?"
+process p2 "App goes to that page"
+goto g1 "Continues in: Dashboard › Open a request"
+goto g2 "Continues in: New case › Agents work (the question window)"
+goto g3 "Continues in: Denial Intelligence › Open a denial"
+goto g4 "Continues in: Payers › Cardinal › Changes"
+end e0 "Stays on the page"
+
+click c2 "Click 'Mark all read'"
+store st2 "Every notification is saved as read"
+process p3 "Drawer stays open\nSubtitle becomes 'You are all caught up'\nThe bell's red dot goes"
+
+click c3 "Press Escape, click 'X' or click the dimmed area"
+process p4 "Drawer closes. Read marks are kept"
+end e1 "Back on the page"
+
+s1 --> bell --> o1 --> l1
+l1 --> p0
+l1 --> n1 & n2 & n3 & n4 & n5 & n6
+n1 & n2 & n3 & n4 & n5 & n6 --> c1
+c1 --> st1 --> p1 --> d1
+d1 -->|Yes: all six do| p2
+d1 -.->|No (none today)| e0
+p2 --> g1 & g2 & g3 & g4
+o1 --> c2 --> st2 --> p3 --> e1
+o1 --> c3 --> p4 --> e1

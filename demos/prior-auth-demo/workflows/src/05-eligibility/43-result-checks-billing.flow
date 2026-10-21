@@ -40,7 +40,7 @@ group gP "Last line"
   toast p2 "'This does not change what the clinic is paid. A $0 copay does not mean the clinic is paid.'"
 endgroup
 
-goto g1 "Continues in: Authorizations › New case › Medical records (the same rows appear as 'Coverage checked')"
+goto g1 "Continues in: Authorizations › New case › Medical records › Patient and insurance rows (the same rows open as 'Coverage checked')"
 
 s1 --> a0
 a0 -->|Not required| a1 --> b0

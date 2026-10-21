@@ -34,6 +34,7 @@ group gSys "Connected systems"
 endgroup
 goto cg1 "Continues in: EMR Connect › Sync › Sync now"
 goto cg2 "Continues in: EMR Connect › Connected systems › What each status means"
+goto cg3 "Continues in: EMR Connect › Problems › Every error state and what it needs"
 
 group gAct "Recent activity"
   screen a1 "Recent activity\nEvery read and write is logged. Newest six lines"
@@ -67,6 +68,7 @@ c2 --> c3 & c4
 c1 -.-> c5
 c3 --> cg1
 c4 --> cg2
+c4 -.-> cg3
 p1 --> a1
 a1 --> a2 --> ag
 p1 --> r1

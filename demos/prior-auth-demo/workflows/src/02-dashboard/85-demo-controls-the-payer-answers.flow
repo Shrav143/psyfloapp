@@ -1,9 +1,10 @@
 title: Dashboard › Request drawer › Demo controls: the payer answers
 route: /dashboard?request=R-1021
-intro: A dashed 'Demo controls' box at the bottom of every drawer lets the presenter pretend the payer replied. Nothing is sent anywhere. This diagram covers when the buttons work and the three replies that keep a request alive; approve, approve part and deny are in the next diagram.
+intro: A dashed 'Demo controls' box at the end of every drawer lets the presenter pretend the payer replied. Nothing is sent anywhere. This diagram covers when the buttons work and the three replies that keep a request alive; approve, approve part and deny are in the next diagram.
 dir: TD
+also: Demo only: in real life the payer answers through its portal, fax or phone and Navigator finds out by checking. These buttons fake that answer; nothing is sent.
 ---
-start s1 "Scroll to 'Demo controls' at the bottom of the drawer\nSix small buttons in a dashed box"
+start s1 "Scroll to 'Demo controls' at the end of the drawer\nSix small buttons in a dashed box"
 decision d1 "Is the stage Preparing? (not sent yet)"
 decision d2 "Is it a denial? (ID starts with D-)"
 toast m1 "'It has not been sent yet. Sign and send it from Case Manager first.'"

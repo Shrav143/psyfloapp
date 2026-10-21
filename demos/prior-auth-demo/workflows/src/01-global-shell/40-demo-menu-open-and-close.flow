@@ -1,0 +1,59 @@
+title: Global shell › Demo menu › Open, close and what is inside
+route: Every page (top bar, 'Demo' button)
+intro: The Demo menu is the presenter's control panel. It is not part of the product. It moves the demo clock, jumps along a suggested path and resets the data. This diagram shows what is in it and how it closes.
+dir: TD
+also: There is no privacy-mode switch here: privacy mode is always on (see Settings). Escape does not close this menu, unlike the two drawers.
+---
+start s1 "Click 'Demo' in the top bar\n(pill shows the clock, 'Tue 10:42 am')"
+overlay o1 "Demo menu opens under the button (320 px)"
+
+group gT "Section 'Time'"
+  process t1 "Text: 'The demo clock is Tue Oct 20 2026, 10:42 am. It only moves when you move it.'\n(the date and time follow the clock)"
+  click f1 "Click 'Fast-forward 1 hour'"
+  click f2 "Click 'Fast-forward 1 day'"
+  goto g1 "Continues in: Global shell › Demo menu › Fast-forward the demo clock"
+endgroup
+
+group gP "Section 'Suggested path'"
+  process sp "Seven numbered steps, 1 to 7"
+  click f3 "Click a step, for example '7 Case Manager: reviews this week'"
+  goto g2 "Continues in: Global shell › Demo menu › Suggested path"
+endgroup
+
+group gR "Below a divider (red text)"
+  click f4 "Click 'Reset demo data'"
+  goto g3 "Continues in: Global shell › Demo menu › Reset demo data"
+endgroup
+
+decision d1 "What happens to the open menu?"
+process k1 "Menu stays open after a Fast-forward\n(the pill changes, so more clicks are possible)"
+process k2 "Menu closes, then the app opens the step's page"
+process k3 "Menu closes, the app goes to /dashboard"
+click x1 "Click anywhere outside the menu"
+click x2 "Click 'Demo' again"
+click x3 "Press Escape"
+process k4 "Menu closes (the click still reaches whatever was clicked)"
+process k5 "Nothing happens: the menu stays open"
+end e1 "Menu is closed"
+endx e2 "Menu still open"
+
+s1 --> o1
+o1 --> t1 & f1 & f2 & sp & f4
+f1 --> g1
+f2 --> g1
+sp --> f3 --> g2
+f4 --> g3
+o1 --> d1
+d1 -->|After Fast-forward| k1
+d1 -->|After a path step| k2
+d1 -->|After Reset| k3
+d1 -->|Mouse| x1
+d1 -->|Mouse| x2
+d1 -->|Keyboard| x3
+x1 --> k4
+x2 --> k4
+x3 --> k5 --> e2
+k2 --> e1
+k3 --> e1
+k4 --> e1
+k1 -.-> o1

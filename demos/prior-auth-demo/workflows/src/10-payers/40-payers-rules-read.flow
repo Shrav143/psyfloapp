@@ -13,7 +13,7 @@ group gC "Each card"
   screen c1 "Submission windows\nNotice within 24 hours of admission (72 for Harborview, by phone for Evergreen, by fax for Lakeshore)\nRecertification filed 72 hours before the unit limit\nA continued-stay review every 7 days after the first 7"
   screen c2 "Backdating\nDiffers by payer: Summit and Cardinal do not backdate,\nBeacon backdates within 2 business days,\nEvergreen up to 3 days with a call log, Lakeshore to the fax receipt date"
   screen c3 "No authorization needed\nIndividual therapy, Medication management,\nInitial assessment, Crisis stabilization first 24 hours\n(Evergreen has no crisis line). Shown with green ticks"
-  screen c4 "Peer-to-peer and appeals\nPeer-to-peer call within 3 business days (Cardinal: 2)\nWritten appeal within 60 days, expedited 72 hours,\nthen external review (Evergreen: state hearing)"
+  screen c4 "Peer-to-peer and appeals\nSummit: peer-to-peer call within 3 business days (Cardinal 2),\nwritten appeal within 60 days, expedited 72 hours,\nthen external review (Evergreen: state hearing)"
 endgroup
 
 process ub "Foot of each card\n'Used by Cadence and Navigator · confirmed 10/12'"

@@ -12,19 +12,19 @@ endx eNone "Nothing happens"
 process p1 "Each file becomes a name and a size in KB\nNothing is uploaded (demo)"
 agent a1 "Reader sorts the pile\nInsurance cards first, then everything else"
 
-group gCard "1 · An insurance card"
+group gCard "1 · Card"
   decision dCard "Is a file named like a card?\nWhole words: insurance, card, member, id"
   process pCard "The first card fills only what is blank:\nPayer and plan, Member ID"
   process pPayer "Payer comes from a payer name in the file name\nOtherwise Summit Medicaid HMO"
 endgroup
 
-group gChart "2 · The first other file"
+group gChart "2 · Chart"
   decision dChart "Is there a file that is not a card?"
   process pFill "Fills only what is blank, from J.M.'s chart:\nPatient, Level of care, Request type, Diagnoses, Reason"
   process pKeep "Never overwrites what was typed\nor what a referral or EMR Connect gave"
 endgroup
 
-group gSlot "3 · Put each file in a document slot"
+group gSlot "3 · Slots"
   agent a2 "Reader looks for document words in the file name\nasam, urine, nursing, medication, psychosocial, therapy..."
   decision dName "Does the name match a document?\nThe longest matching word wins"
   decision dTaken "Did an earlier file in this drop already take that slot?"

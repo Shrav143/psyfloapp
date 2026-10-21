@@ -1,0 +1,34 @@
+title: Authorizations › New case › Referral › Schedule intake
+route: /authorizations/new/referral/RF-2053?draft=draft-1001
+intro: After a referral is accepted, the full page books the intake visit and then marks the patient admitted. These two steps move a referral through Scheduled to Admitted.
+dir: TD
+---
+start s1 "Referral is Accepted\nFull page header"
+click c1 "Click 'Schedule intake'"
+overlay o1 "'Schedule intake'\n'RF-2053 · O.D., 33'"
+input i1 "Pick a 'Date'\nStarts two days after the demo clock"
+input i2 "Pick a 'Time'\nStarts at 9:00 am"
+decision d1 "Is the date valid?"
+process p1 "'Schedule intake' is disabled"
+click c2 "Click 'Schedule intake'"
+click cX "Click 'Cancel' or 'Close', press Escape,\nor click outside the dialog"
+endx e1 "Nothing changes"
+store st1 "Referral is Scheduled\nIntake time saved\nTimeline 'You scheduled the intake visit' and a dashed 'Intake visit' entry"
+toast t1 "'Intake scheduled'\n'RF-2053 is now Intake scheduled.'"
+screen sc1 "Header now shows 'Mark admitted' and 'Change intake'\nBanner 'Intake visit Thu 9:00 am'"
+click c3 "Click 'Change intake'"
+overlay o2 "'Change the intake visit'\nSame Date and Time, starting at the booked visit"
+click c4 "Click 'Mark admitted'"
+store st2 "Referral is Admitted\nTimeline 'Marked admitted'"
+toast t2 "'Marked admitted'\n'RF-2053 counts as admitted in the funnel.'"
+screen sc2 "Green banner 'Admitted into IOP'\nHeader has no decision buttons"
+click c5 "Click 'Continue to medical records' on the banner\nor on the checklist"
+goto g1 "Continues in: New case › Medical records"
+
+s1 --> c1 --> o1 --> i1 --> i2 --> d1
+d1 -->|No| p1 --> cX
+d1 -->|Yes| c2 --> st1 --> t1 --> sc1
+o1 --> cX --> e1
+sc1 --> c3 --> o2 --> c2
+sc1 --> c4 --> st2 --> t2 --> sc2
+sc1 --> c5 --> g1

@@ -23,7 +23,7 @@ store hh "'What changed' gets a new top row\n'Portal form change: acknowledged a
 store hh0 "'What changed' gets a new top row\n'... acknowledged and applied'\nsaying 0 drafts were updated"
 toast t1 "'1 draft updated'\nHarborview is up to date. Each draft returned to Case Manager\nfor a new signature."
 toast t0 "'0 drafts updated'\n(the wording is not adjusted for none)"
-process bd "Sidebar badge drops from 2 to 1\nPayer dot turns green"
+process bd "Sidebar badge drops by one\nPayer dot turns green"
 click cx "Click 'Cancel', press Escape,\nclick the X or the dimmed area"
 endx x1 "Modal closes, change stays waiting"
 end e1 "Payer is up to date"
