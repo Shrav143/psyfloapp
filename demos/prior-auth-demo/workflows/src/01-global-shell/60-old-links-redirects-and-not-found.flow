@@ -1,0 +1,55 @@
+title: Global shell › Addresses › Old links, redirects and pages that do not exist
+route: /  /active  /referrals  /referrals/:id  and any unknown address
+intro: A few old or short addresses are sent on to the page that replaced them, and anything the demo does not know opens a 'Page not found' screen inside the normal sidebar and top bar. Redirects replace the address, so the Back button skips over the old one.
+dir: LR
+also: In the single-file build the address lives after a '#'. The hosted preview has no address bar, so it keeps the route in memory and the same rules apply.
+---
+start s1 "An address is opened\n(typed, a saved link, or a click)"
+process p0 "The app matches the address against its list of pages"
+decision d1 "Which address is it?"
+
+group gRed "Redirects (the old address is replaced)"
+  process r1 "'/' goes to /dashboard"
+  goto g1 "Continues in: Dashboard"
+  process r2 "'/active' goes to /manager\nAny '?tab=' on /active is dropped, so the Active cases tab opens"
+  goto g2 "Continues in: Case Manager › Page › Arrive and read the header"
+  process r3 "'/referrals' goes to /authorizations/new\nReferrals no longer have a tab: they are step 1 of New case"
+  process r3b "New case starts a blank draft and the address becomes /authorizations/new/draft-..."
+  goto g3 "Continues in: New case › Referral step"
+  process r4 "'/referrals/RF-1234' goes to /authorizations/new/referral/RF-1234"
+  goto g4 "Continues in: New case › Referral › Open a referral"
+endgroup
+
+group gKnown "Pages that exist"
+  process k1 "/dashboard, /authorizations..., /denials..., /manager, /analytics, /emr, /payers..., /settings\nThe page opens and starts at the top"
+  goto g5 "Continues in: Global shell › Sidebar › Where every item goes"
+endgroup
+
+group gNo "Anything else"
+  screen n1 "Page not found\n'That address is not part of the demo.'\nEmpty card: 'Nothing here'\n'Use the sidebar to get back on track.'"
+  process n2 "Sidebar and top bar stay as normal. No sidebar row is green. There is no button on the card"
+  click n3 "Click any row in the sidebar"
+  goto g6 "Continues in: Global shell › Sidebar › Where every item goes"
+  click n4 "Click the browser Back button"
+  end n5 "Back on the page before the bad address"
+endgroup
+
+group gOwn "Known page, unknown record (the page answers)"
+  process o1 "/authorizations/case/XYZ shows 'Request not found' with 'Back to the queue'"
+  process o2 "/authorizations/new/XYZ shows 'We could not find that draft' with 'Start a new case'"
+  goto g7 "Continues in: Authorizations › Case, New case and Denial Intelligence (their own not-found screens)"
+endgroup
+
+s1 --> p0 --> d1
+d1 -->|/| r1 --> g1
+d1 -->|/active| r2 --> g2
+d1 -->|/referrals| r3 --> r3b --> g3
+d1 -->|/referrals/id| r4 --> g4
+d1 -->|A page above| k1 --> g5
+d1 -->|Anything else| n1 --> n2
+n2 --> n3 --> g6
+n2 --> n4 --> n5
+d1 -->|Page exists, record does not| o1
+o1 --> g7
+o2 --> g7
+d1 -.-> o2

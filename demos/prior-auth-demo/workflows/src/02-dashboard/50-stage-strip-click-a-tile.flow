@@ -33,9 +33,9 @@ goto g2 "Continues in: Dashboard › Filters › Clear filters and empty states"
 goto g3 "Continues in: Dashboard › Requests table › Order, rows and paging"
 goto g4 "Continues in: Dashboard › Filters › Payer, Program, Request type and Stage"
 
-s1 --> t1 & t2 & t3 & t4 & t5 & t6
+s1 --> t6 & t5 & t4 & t3 & t2 & t1
 c1 -.-> p0
-t1 & t2 & t3 & t4 & t5 & t6 --> c1
+t6 & t5 & t4 & t3 & t2 & t1 --> c1
 p4 -.-> c2
 c1 --> p1
 c2 --> p2
