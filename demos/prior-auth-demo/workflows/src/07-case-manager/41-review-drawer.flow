@@ -1,0 +1,51 @@
+title: Case Manager › Reviews this week › The review drawer
+route: /manager?tab=reviews (drawer over the list)
+intro: Opening a review shows the draft an agent wrote, the four Integrity checks and the buttons to sign or open the case. What the clinician can do depends on the review's status: a clean draft, a draft with one check to look at, a review that needs an update, or one already signed.
+dir: TD
+---
+start s1 "Click the case ID or 'Open' on a review row"
+overlay o1 "Drawer slides in from the right (640 px)\nTitle 'R-0856 · Summit'\nSubtitle 'Continued-stay review 2 · Residential 3.5 · due Tue 9:00 am'\nStatus pill at the top right"
+screen b1 "Top of the body\n'J.S., 51 · privacy mode'   'Drafted by' Scribe (Residential, Detox) or Cadence (PHP, IOP)"
+screen b2 "'The draft'\nLarge text box with seven parts: title and payer lines, Clinical status, Treatment progress, Risk and safety, Why this level of care still fits, Request"
+screen b3 "'Integrity checks'\n'Every sentence traced to the chart'\n'Review has no errors'\n'All payer requirements covered'\n'Level of care matches the request'"
+screen b4 "Footer\n'Sign review' (green), 'Open case', 'Close'"
+
+decision d1 "What is the review's status?"
+process t1 "'Drafted', all four checks green ticks\nDraft can be edited\nBanner: 'Signing is one review at a time. Your edits to the draft are saved with the signature.'"
+process t2 "'Drafted' with 'Check to look at'\nOne check is amber with Integrity's note, for example 'The draft asks for 7 days. Beacon's usual limit at this level of care is 5.'\nDraft can be edited"
+process t3 "'Needs your update'\nAmber panel names what is missing; 'All payer requirements covered' is red\nDraft is locked: 'The draft is locked until your update is added.'\n'Sign review' is greyed, hover text 'Add your update first'"
+process t4 "'Signed'\nDraft is read-only\nFooter shows 'Signed by Heather K., LISW-S' in place of the button"
+
+input i1 "Edit the draft text"
+click c1 "Click 'Sign review'"
+goto g1 "Continues in: Case Manager › Reviews this week › Sign a review"
+goto g2 "Continues in: Case Manager › Reviews this week › Add your update to a review"
+
+click c2 "Click 'Open case'"
+process p1 "Go to /authorizations/case/ and the case ID, with ?tab=draft\nThe drawer is gone with the page"
+goto g3 "Continues in: Authorizations › Case › Draft tab"
+screen n1 "Some cases show 'Request not found' (see 'Open a case from the tracker')"
+
+click c3 "Click 'Close', the X, the dimmed area, or press Escape"
+decision d2 "Was the review a draft?"
+store st1 "Edits to the draft are saved on the review\nOpen it again and the edited text is there"
+process p2 "Nothing to save"
+end e1 "Back on the list, same place"
+
+s1 --> o1 --> b1 --> b2 --> b3 --> b4 --> d1
+d1 -->|Clean draft| t1
+d1 -->|One check to look at| t2
+d1 -->|Missing item| t3
+d1 -->|Already signed| t4
+t1 --> i1
+t2 --> i1
+t1 --> c1 --> g1
+t2 --> c1
+t3 --> g2
+t4 --> c2
+t1 --> c2
+c2 --> p1 --> g3
+p1 -.-> n1
+b4 --> c3 --> d2
+d2 -->|Yes: Drafted| st1 --> e1
+d2 -->|No| p2 --> e1

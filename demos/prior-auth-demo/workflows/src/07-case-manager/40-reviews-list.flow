@@ -1,0 +1,46 @@
+title: Case Manager › Reviews this week › The list
+route: /manager?tab=reviews
+intro: The second tab lists every clinical review due this week, one card per day, with three tiles on top. Agents have already drafted most of them. A row opens the review drawer. A side card nudges the team to look at cases that may be ready for a lower level of care.
+dir: TD
+---
+start s1 "Click 'Reviews this week'"
+screen t0 "Three tiles (not clickable)\n47 'Reviews due this week', '0 signed so far'\n39 'Drafted by agents', '33 clean, ready to sign'\n8 'Need a clinician update', 'what is missing is listed'"
+process p0 "Tiles count all reviews and ignore the filters\nWhen filters hide some: 'Showing 8 of 47 reviews. The tiles count all 47.'\nWith no updates left the third tile says 'nothing waiting on you'"
+process p1 "One review exists for each approved case (47 of 56)\nTimes run from today to Sunday"
+
+group gDays "Day cards, in date order"
+  screen d1 "Card for one day\nTitle 'Today' (the demo day) or the weekday, date 'Tue 10/20', and '13 reviews'"
+  screen d2 "Row: time ('8:30 am'), level chip, case ID, payer and 'C.D., 44'\nFor a review that needs an update: the missing item in amber under the ID\nPills: 'Check to look at' (amber), then 'Drafted', 'Needs your update' or 'Signed'\nButton 'Open'"
+  decision d3 "More than five reviews that day?"
+  click c3 "Click 'Show 8 more'"
+  click c4 "Click 'Show fewer'"
+  process p3 "First five rows show, then the button\nThe rest open under it, and the button changes to 'Show fewer'"
+endgroup
+
+click c1 "Click the case ID or 'Open' on a row"
+goto g1 "Continues in: Case Manager › Reviews this week › The review drawer"
+
+group gSide "Right side card 'Ready to step down?'"
+  screen s2 "'A prompt for your team. It is never a decision.'\nR-0903: 'Day 14 of 21', 'Aftercare visit not booked yet'\nP-1522: 'Day 11', 'IOP starts Monday'"
+  click c2 "Click R-0903 or P-1522"
+  process p4 "Go to /authorizations/case/ and the ID"
+  decision d4 "Does that case page exist?"
+  goto g2 "Continues in: Authorizations › Case"
+  screen s3 "R-0903 shows 'Request not found'\n(P-1522 opens its case page)"
+endgroup
+
+process p5 "After Fast-forward 1 day the card for the new day is called 'Today'\nThe old day keeps its reviews and statuses and is named by its weekday"
+goto g3 "Continues in: Case Manager › Empty states › Nothing to show"
+end e1 "List is on screen"
+
+s1 --> t0 --> p0 --> p1 --> d1 --> d2
+d2 --> d3
+d3 -->|Yes| c3 --> p3
+d3 -->|No| e1
+p3 --> c4 --> e1
+d2 --> c1 --> g1
+p1 --> s2 --> c2 --> p4 --> d4
+d4 -->|Yes| g2
+d4 -->|No| s3
+p1 -.-> p5
+p0 -.->|No review matches| g3
