@@ -1,0 +1,56 @@
+title: Payers › Process › Read the workflow
+route: /payers/summit?tab=process
+intro: The Process tab shows how an authorization works with one payer: numbered steps in order, with the condition drawn next to the step it leads to. It also holds the reach card, the script for Caller, and any banner about edits or proposals waiting.
+dir: TD
+---
+start s1 "Click the 'Process' tab\n(the tab shown when none is named)"
+screen tab "Process tab\nBanners, workflow card, two small cards, a note"
+
+group gB "Banners at the top (only when they apply)"
+  decision dU "Edits saved but\nnot yet applied to open drafts?"
+  toast bU "'1 edit applies to new drafts only'\nNew drafts for Summit use your edits already.\nOpen drafts (R-1042, R-1101) follow when you update them."
+  decision dP "Did Historian propose changes?"
+  toast bP "'Historian proposed 1 change'\nIt never edits the workflow on its own.\n'Review in Changes'"
+endgroup
+
+screen card "Workflow card\n'How an authorization works with Summit'\nThe workflow the agents follow, in order.\nVersion 7, edited 10/12."
+process legend "'Step types' row\nChecklist step, File step, Portal step,\nPhone step, Condition"
+
+group gS "One numbered step"
+  screen st "Number, step title, step-type chip, agent chips\nFor example: 'Give notice'  Portal step  Navigator"
+  process stx "Plain sentence on what happens\nand a 'Typical' time on the right\n'same day', '2 minutes', '1.5 days'"
+  decision dc "Does the step have conditions?"
+  screen br "Condition rows under the step\n'If portal is down' leads to\n'Phone step' and what happens"
+endgroup
+
+process six "Summit's six steps: Check coverage,\nGather the documents, Give notice,\nSend the request, Follow up,\nDecision and next review"
+process diff "Other payers differ in how they are reached\nEvergreen: phone steps\nLakeshore: file steps by fax\nHarborview: portal with fax for large files"
+screen two "'How to reach Summit' and\n'Instructions for Caller' side by side"
+toast note "'Change a step or a condition and open drafts can follow.\nAdmins can edit; every edit is logged.'"
+
+click cE "Click 'Edit workflow'"
+click cR "Click 'Re-learn from decisions'"
+click cRev "Click 'Review in Changes'"
+click cUp "Click 'Update 2 drafts'"
+goto g_ed "Continues in: Payers › Process › Edit the workflow"
+goto g_rl "Continues in: Payers › Process › Re-learn from decisions"
+goto g_ch "Continues in: Payers › Changes › Read what changed"
+goto g_up "Continues in: Payers › Edits waiting › Update drafts"
+goto g_rc "Continues in: Payers › Process › Reach and Caller instructions"
+
+s1 --> tab --> dU
+dU -->|Yes| bU --> dP
+dU -->|No| dP
+dP -->|Yes| bP --> card
+dP -->|No| card
+card --> legend --> st --> stx --> dc
+dc -->|Yes| br
+dc -->|No| six
+br --> six
+six -.-> diff
+six --> two --> note
+card --> cE --> g_ed
+card --> cR --> g_rl
+bP --> cRev --> g_ch
+bU --> cUp --> g_up
+two -.-> g_rc

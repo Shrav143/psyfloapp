@@ -7,7 +7,7 @@ also: Demo only: which band a request sits in is fixed in the seed data. Moving 
 screen q "Queue\nPriority bands, most urgent first"
 process b1 "Each open request sits in exactly one band"
 
-group gB "The three bands, in this order"
+group gB "Three bands"
   process bn "**Act now**\nRed dot, tiles tinted red"
   process bd "**Due within 24 hours**\nAmber dot"
   process bw "**Due this week**\nSage dot"

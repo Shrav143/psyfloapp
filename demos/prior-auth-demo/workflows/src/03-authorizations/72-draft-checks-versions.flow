@@ -1,0 +1,53 @@
+title: Authorizations › Case page › Draft › Checks, versions and send back
+route: /authorizations/case/R-1042?tab=draft
+intro: The right column of the Draft tab: Integrity's four checks and 'Re-check', the version list and its read-only viewer, and 'Send back to Scribe'.
+dir: TD
+also: Demo only: 'Re-check' and 'Send back to Scribe' are simulated waits. Sending back logs the request and shows a toast but does not redraft the text.
+---
+start s1 "On the Draft tab, look at the right column"
+screen ck "Card 'Checks'\n'Integrity's four checks'\nPill 'All clear' or '2 open'"
+process c1 "'Every sentence matches the chart'"
+process c2 "'Payer criteria are covered'"
+process c3 "'Dates are consistent'"
+process c4 "'Identifiers are protected'"
+decision dok "Does each check pass?"
+process pass "Green tick and 'Pass'"
+process warn "Amber triangle, 'Warn' and a note\ne.g. 'Sertraline start is 9/14 in the medication list and 9/21 in the psychiatric evaluation.'"
+process why "A warning clears when the matching action is applied\n(criteria and dates), or on 'Re-check' after an edit (chart)"
+
+click rc "Click 'Re-check'"
+agent ig "Integrity reads the draft again\nSpinner on the button for about 1.6 seconds\n(demo: simulated)"
+store mr "Edit flag cleared\nLog: 'Integrity read the draft again'"
+decision dst "Do other checks still warn?"
+toast t1 "'All four checks passed'\n'Integrity read every sentence against the chart again.'"
+toast t2 "'1 check needs an action'\n'Apply the matching recommendation, then check again.'"
+
+screen vs "Card 'Versions'\nNewest first: 'Version 3', time, author, note"
+process cu "Newest row carries a 'Current' pill\nOlder rows have 'View'"
+click vw "Click 'View' on an older version"
+overlay vm "Dialog 'Version 2'\nTime and author. 'Read only.' Then the text"
+click vc "Click 'Close', the X, the dimmed area, or press Esc"
+process vn "A new version appears after every Apply\n('Scribe', 'Added 6 recommendations')\nand every saved edit ('You', 'Edited by you')"
+
+screen sb "Bottom card\n'Send to payer', 'Send back to Scribe', and a note"
+click sk "Click 'Send back to Scribe'"
+process bz "Spinner for about 1.4 seconds"
+store lg "Log: 'You sent the draft back to Scribe'"
+toast tb "'Sent back to Scribe'\n'Scribe will redraft the summary and Integrity will check it again.'"
+goto gS "Continues in: Authorizations › Case page › Draft › Review, sign and what happens next"
+
+s1 --> ck --> c1 & c2 & c3 & c4
+c1 --> dok
+c2 --> dok
+c3 --> dok
+c4 --> dok
+dok -->|Yes| pass
+dok -->|No| warn --> why
+ck --> rc --> ig --> mr --> dst
+dst -->|No| t1
+dst -->|Yes| t2
+s1 --> vs --> cu
+cu --> vw --> vm --> vc
+vs --> vn
+s1 --> sb --> sk --> bz --> lg --> tb
+sb --> gS

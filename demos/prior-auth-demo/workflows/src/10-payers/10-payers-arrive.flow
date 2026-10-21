@@ -42,10 +42,10 @@ goto g_head "Continues in: Payers › Header › What the facts mean"
 goto g_edit "Continues in: Payers › Edit payer details"
 goto g_log "Continues in: Payers › Edit log"
 goto g_add "Continues in: Payers › Add a payer"
-goto g_proc "Continues in: Payers › Process tab › Read the workflow"
-goto g_rules "Continues in: Payers › Rules tab › Read the rules"
-goto g_docs "Continues in: Payers › Documents tab › Read the document list"
-goto g_chg "Continues in: Payers › Changes tab › Read what changed"
+goto g_proc "Continues in: Payers › Process › Read the workflow"
+goto g_rules "Continues in: Payers › Rules › Read the rules"
+goto g_docs "Continues in: Payers › Documents › Read the document list"
+goto g_chg "Continues in: Payers › Changes › Read what changed"
 
 s1 --> p1 --> d1
 s2 --> p2 --> d1

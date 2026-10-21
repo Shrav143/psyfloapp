@@ -1,0 +1,48 @@
+title: Global shell › Sidebar › Authorizations group and green highlight
+route: Any address (the sidebar reads the address after every change)
+intro: Two rules decide what the sidebar looks like. First, whether the Authorizations group shows its two sub rows. Second, which single row turns green. There is no collapse button: the group follows the address.
+dir: LR
+---
+start s1 "The address changes\n(a click, a link, a redirect or the browser Back button)"
+decision d1 "Does the address start with /authorizations?"
+process open "Group is open\n'New case' and 'Eligibility & Benefits' are listed under 'Authorizations'\nChevron points down"
+process shut "Group is closed\nThe two sub rows are hidden\nChevron points right"
+
+group gHi "Which row is green"
+  decision d2 "Which address is it?"
+  process h1 "'Authorizations' turns green\nAddress is exactly /authorizations, or a case: /authorizations/case/..."
+  process h2 "'New case' turns green, 'Authorizations' stays plain\n/authorizations/new, a draft, or a referral"
+  process h3 "'Eligibility & Benefits' turns green, 'Authorizations' stays plain\n/authorizations/eligibility, /verify or a result"
+  process h4 "'Dashboard' turns green\n/dashboard (also when the address has ?request=)"
+  process h5 "'Denial Intelligence' turns green\n/denials and a brief under it"
+  process h6 "'Case Manager' turns green\n/manager, either tab (the old /active also lands here)"
+  process h7 "'Analytics', 'EMR Connect' or 'Payers' turns green\n/analytics, /emr, /payers and a payer under it"
+  process h8 "'Settings' in the footer turns green\n/settings"
+  process h9 "No row is green\nAn address that is not part of the demo"
+endgroup
+
+group gClick "Clicks that change the group"
+  click c1 "Click 'Authorizations' while on a sub page"
+  process r1 "Go to /authorizations\nGroup stays open, 'Authorizations' turns green"
+  click c2 "Click any row outside the group\n(for example 'Dashboard')"
+  process r2 "Group closes: the address no longer starts with /authorizations"
+endgroup
+
+end e1 "Exactly one row is green at a time"
+
+s1 --> d1
+d1 -->|Yes| open
+d1 -->|No| shut
+open & shut --> d2
+d2 -->|/authorizations or a case| h1
+d2 -->|New case pages| h2
+d2 -->|Eligibility pages| h3
+d2 -->|/dashboard| h4
+d2 -->|/denials| h5
+d2 -->|/manager| h6
+d2 -->|Analytics, EMR, Payers| h7
+d2 -->|/settings| h8
+d2 -->|Anything else| h9
+h1 & h2 & h3 & h4 & h5 & h6 & h7 & h8 & h9 --> e1
+open --> c1 --> r1 --> e1
+open --> c2 --> r2 --> e1

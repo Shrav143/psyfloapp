@@ -1,0 +1,52 @@
+title: Denial Intelligence › A denial opened
+route: /denials?id=D-3318
+intro: The page for one denial, top to bottom: title, header card with 'Our read', the status banner, the analysis cards, the options and the history. Each card is described once here and detailed in its own diagram.
+dir: TD
+---
+start s1 "A denial is selected (from the list or ?id=)"
+process p1 "Title comes from the denial\n'D-3318: Cardinal approved 7 of 14 days. The chart supports challenging it.'"
+screen sub1 "Sub line: initials, age · program · payer name\n'The agents read the denial against the chart, and you choose the next step.'"
+
+screen h1 "Header card\nProgram chip, D-id, type pill, status pill, '$22.4K at stake', deadline pill"
+screen h2 "Line under the pills\nPayer · case id · initials, age · letter file name\n'Your note: ...' when a note was added"
+screen v1 "'Our read' tile, right of the header\nWorth challenging, Borderline or Probably accept, with one sentence"
+process pv "Verdict comes from the win chance: 50 and over, 35 to 49, under 35"
+screen bn "Status banner (only for some statuses)"
+goto g1 "Continues in: Denial Intelligence › A denial opened › Status banner"
+
+screen c1 "'What the agents did'\nReader, Advocate and Historian steps, 'Done in 0:48'"
+screen c2 "'What Cardinal said': the payer's words\n'What the chart shows': two or three sentences"
+screen c3 "'Where the denial is weak'\n'Each finding links to the chart, with a suggested fix'"
+goto g2 "Continues in: Denial Intelligence › A denial opened › Where the denial is weak"
+decision d1 "Is it an administrative denial?\n'Late notice' or 'Retro-authorization denied'"
+screen c4 "'The six ASAM dimensions'\nSix tiles D1 to D6, each with a green, ochre or red dot"
+process p2 "The card is left out"
+decision d2 "Still open: not filed, not accepted, not closed on a call?"
+screen c5 "'Your options' card"
+goto g3 "Continues in: Denial Intelligence › Your options"
+process p3 "No options card"
+screen c6 "'What has happened'\n'Every step is also on the Dashboard'\nTimeline of events"
+process p4 "Done events have a green dot\nScheduled events (dashed dot) read 'Scheduled · Wed 1:00 pm'"
+screen r1 "'Open denials' list, right of the page"
+goto g4 "Continues in: Denial Intelligence › Open denials list"
+click b1 "Click 'See on the Dashboard' (top right)"
+goto g5 "Continues in: Dashboard › Request drawer › Open and read a request"
+end e1 "Person reads the denial and chooses a next step"
+
+s1 --> p1 --> sub1 --> h1
+h1 --> h2
+h1 --> v1 --> pv
+h1 --> bn --> g1
+h1 --> c1 --> c2 --> c3 --> g2
+c3 --> d1
+d1 -->|No| c4
+d1 -->|Yes| p2
+c4 --> d2
+p2 --> d2
+d2 -->|Yes| c5 --> g3
+d2 -->|No| p3
+c5 --> c6
+p3 --> c6
+c6 --> p4 --> e1
+sub1 --> r1 --> g4
+sub1 --> b1 --> g5

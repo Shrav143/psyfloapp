@@ -1,0 +1,75 @@
+title: EMR Connect › Page › Arrive and read the page
+route: /emr
+intro: What a person sees on arrival: two header buttons, four tiles, the Connected systems list, Recent activity and two side panels. Each region hands off to its own diagram.
+dir: TD
+also: Demo data. Three systems start on the list: two clinical record sites (Connected) and a Billing system (Needs a quick look).
+---
+start s1 "Click 'EMR Connect' in the sidebar\nUnder Connections"
+screen p1 "EMR Connect\nCharts arrive on their own. Nothing is written back until a person approves it."
+
+group gHead "Header buttons"
+  click hb1 "Click 'Manage mapping'"
+  decision hq "Any system on the list?"
+  overlay ho "Manage drawer opens\nfor the outpatient site, or the first system"
+  endx hx "Button is dimmed\nNothing to open"
+  click hb2 "Click 'Connect a system'"
+endgroup
+goto hg1 "Continues in: EMR Connect › Manage › Open the Manage drawer"
+goto hg2 "Continues in: EMR Connect › Connect a system › Choose the system and contact"
+
+group gTiles "Four tiles (they are not buttons)"
+  process t1 "Last sync\nTime since the newest sync. Green, amber or red"
+  process t2 "Charts matched today\n23 'to open cases'"
+  process t3 "Files pulled\n142 'this week'"
+  process t4 "Need a mapping\n2 'fields the agents could not place'"
+endgroup
+goto tg "Continues in: EMR Connect › Page › What each tile shows"
+
+group gSys "Connected systems"
+  screen c1 "Connected systems\nRead access for charts, insurance details and medications"
+  process c2 "One row per system: name, what it holds, last sync, status pill, buttons"
+  click c3 "Click 'Sync now' in the card header"
+  click c4 "Click 'Sync now', 'Fix', 'Reconnect' or 'Manage' on a row"
+  toast c5 "'Connect your record system to let charts arrive on their own.'\nEmpty list. Not reachable in the demo: a system can be disconnected, never removed"
+endgroup
+goto cg1 "Continues in: EMR Connect › Sync › Sync now"
+goto cg2 "Continues in: EMR Connect › Connected systems › What each status means"
+
+group gAct "Recent activity"
+  screen a1 "Recent activity\nEvery read and write is logged. Newest six lines"
+  click a2 "Click 'See all 8'\nOnly shown when there are more than six lines"
+endgroup
+goto ag "Continues in: EMR Connect › Recent activity › Read the activity log"
+
+group gSide "Right-hand panels"
+  screen r1 "What the agents can do here\nRead: assessments, notes, labs, medications, insurance card"
+  process r2 "Write back: only the approval number and dates, and only after a person approves"
+  screen r3 "Needs a mapping\nPill with the count, then one row per field with a 'Map' button"
+  click r4 "Click 'Map' on a row"
+endgroup
+goto rg "Continues in: EMR Connect › Needs a mapping › Map a field"
+
+s1 --> p1
+p1 --> hb1 & hb2
+hb1 --> hq
+hq -->|Yes| ho
+hq -->|No| hx
+ho --> hg1
+hb2 --> hg2
+p1 --> t1 & t2 & t3 & t4
+t1 --> tg
+t2 --> tg
+t3 --> tg
+t4 --> tg
+p1 --> c1
+c1 --> c2
+c2 --> c3 & c4
+c1 -.-> c5
+c3 --> cg1
+c4 --> cg2
+p1 --> a1
+a1 --> a2 --> ag
+p1 --> r1
+r1 --> r2
+p1 --> r3
+r3 --> r4 --> rg

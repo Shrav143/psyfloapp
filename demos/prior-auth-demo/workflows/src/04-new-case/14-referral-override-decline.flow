@@ -1,0 +1,58 @@
+title: Authorizations › New case › Referral › Mark OK or decline
+route: /authorizations/new/:draftId?ref=RF-2048
+intro: Two ways to decide a referral without waiting for the referrer. 'Mark OK' accepts one finding with a written reason. 'Decline' closes the referral with a reason, and can be undone with 'Reopen referral'.
+dir: TD
+---
+start s1 "Click 'Mark OK' on a checklist row"
+start s2 "Full page, Validation tab:\nResolve › 'Mark OK with reason'"
+start s3 "Click 'Decline'\nChecklist, or the full page header"
+
+group gOk "Mark OK"
+  overlay o1 "'Mark OK with a reason'\nSubtitle: the check, e.g. 'Clinician signature is present'\n'Reader found: The signature line is empty. Reader cannot confirm who ordered this.'"
+  input i1 "Type a 'Reason' (required)\nHint 'Logged with your name on the activity timeline.'\nPlaceholder 'Why is it fine to go ahead?'"
+  decision d1 "At least 5 characters?"
+  process p1 "'Mark OK' stays disabled"
+  click c1 "Click 'Mark OK'"
+  store st1 "Finding is marked resolved with your reason\nThe source document itself does not change"
+  process p2 "Timeline 'You overrode: Clinician signature is present' with the reason"
+  toast t1 "'Marked OK'\n'Your reason is on the activity timeline.'"
+  screen sc1 "Row turns Done\n'Marked OK by Jordan Perez: …'\nProgress goes up by one; Validation tab shows pill 'Marked OK'"
+endgroup
+click cX1 "Click 'Cancel' or 'Close', press Escape,\nor click outside the dialog"
+endx e1 "Nothing changes"
+
+group gDec "Decline"
+  overlay o2 "'Decline RF-2048?'\n'The reason goes on the activity timeline. You can reopen a declined referral later.'"
+  process p3 "'Reason' starts as the likely one\nOutside age range if age failed; Coverage cannot be confirmed if coverage lapsed;\nClinical criteria not met if a check failed; else Needs a higher level of care"
+  input i2 "Pick a 'Reason'\nOutside age range, Outside service area, Needs a higher level of care, No bed available, Coverage cannot be confirmed, Clinical criteria not met, Referrer withdrew"
+  input i3 "Type a 'Note' (optional)\n'Only your team sees this.'"
+  input i4 "Switch 'Send a courtesy reply to the referrer (by fax)'\nOn to start with"
+  click c2 "Click 'Decline referral'"
+  store st2 "Referral is Declined\nReason, note and courtesy choice saved\nTimeline 'Declined: Needs a higher level of care'"
+  decision d2 "Courtesy reply on?"
+  ext x1 "Referrer gets a courtesy reply by fax, email or e-referral\n(demo: simulated)"
+  process p4 "Timeline 'Courtesy reply sent to Dr. Lindqvist, Family Medicine by fax'"
+  toast t2 "'Declined: Needs a higher level of care'\n'1 referral. Courtesy replies were sent.'"
+  screen sc2 "Checklist after declining\nRed banner 'Declined: …'\nMain button is 'Reopen referral'; no Accept, no Decline"
+endgroup
+click cX2 "Click 'Cancel' or 'Close', press Escape,\nor click outside the dialog"
+endx e2 "Nothing changes"
+
+group gRe "Undo"
+  click c3 "Click 'Reopen referral'\nChecklist, header, or 'Reopen' on the red banner"
+  store st3 "Referral is In review again\nDecline cleared; timeline 'You reopened the referral'"
+  toast t3 "'Referral reopened'\n'RF-2048 is back In review.'"
+endgroup
+
+s1 --> o1
+s2 --> o1
+o1 --> i1 --> d1
+d1 -->|No| p1 --> cX1
+d1 -->|Yes| c1 --> st1 --> p2 --> t1 --> sc1
+o1 --> cX1 --> e1
+
+s3 --> o2 --> p3 --> i2 --> i3 --> i4 --> c2 --> st2 --> d2
+d2 -->|Yes| x1 --> p4 --> t2
+d2 -->|No| t2
+t2 --> sc2 --> c3 --> st3 --> t3
+o2 --> cX2 --> e2

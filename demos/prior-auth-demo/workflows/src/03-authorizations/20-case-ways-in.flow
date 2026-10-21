@@ -1,0 +1,58 @@
+title: Authorizations › Case page › Ways in
+route: /authorizations/case/R-1042
+intro: Every link that opens a case page, and what the page does with the ID it is given: find the request, load your earlier work, pick the tab.
+dir: TD
+also: Demo only: R-1042 is the one hand-written case. Every other case page is generated from its queue row or Dashboard request, so the numbers are consistent but the wording is a template. Many Case Manager ledger IDs (for example R-0903 under 'Ready to step down?') have no queue row or Dashboard request, so they end at 'Request not found'.
+---
+group gIn "Links that open a case page"
+  start a1 "Queue: click the request ID"
+  start a2 "Queue: click 'Open'"
+  start a3 "Dashboard: click 'Open case' in a request drawer"
+  start a4 "Case Manager › Active cases: click a row or its ID"
+  start a5 "Case Manager › Reviews this week: click an ID under 'Ready to step down?'"
+  start a6 "Case Manager › Reviews this week: click 'Open case' in a review drawer"
+  start a7 "Eligibility & Benefits result: click 'Open case'"
+  start a8 "Notification 'Approval chance updated'"
+  start a9 "Type the address /authorizations/case/ID"
+endgroup
+
+process r0 "Case page reads the ID from the address"
+decision d1 "Is the ID R-1042?"
+process hand "Hand-written case\n9 requirements, 6 actions, chance 62% rising to 88%"
+decision d2 "Is there a queue row for this ID, or for the Dashboard request it belongs to?"
+process fq "Page is built from the queue row\nand from its Dashboard request when there is one"
+decision d3 "Is there a Dashboard request with this ID or this case ID?"
+process fr "Page is built from the Dashboard request\nDecided ones show their result and have nothing left to send"
+process gen "Chance, actions, criteria, draft and checks are generated\nfrom the payer, level of care and chance"
+
+screen nf "'Request not found'\n'There is no request with the ID X.'\n'Nothing to show here' · 'Check the ID, or open a request from the queue.'"
+click bq "Click 'Back to queue' or the 'Authorizations' crumb"
+goto gQ "Continues in: Authorizations › Queue › Open the queue and read the top"
+
+store ld "Your earlier work on this case is loaded\nAnswers, applied and dismissed actions, draft edits, log"
+decision d4 "Does ?tab= name one of the five tabs?"
+screen tab1 "That tab opens\ne.g. a review drawer opens '?tab=draft'"
+screen tab0 "'Recommended actions' opens"
+goto gH "Continues in: Authorizations › Case page › Header and numbers"
+
+a1 --> r0
+a2 --> r0
+a3 --> r0
+a4 --> r0
+a5 --> r0
+a6 --> r0
+a7 --> r0
+a8 --> r0
+a9 --> r0
+r0 --> d1
+d1 -->|Yes| hand --> ld
+d1 -->|No| d2
+d2 -->|Yes| fq --> gen
+d2 -->|No| d3
+d3 -->|Yes| fr --> gen
+d3 -->|No| nf
+nf --> bq --> gQ
+gen --> ld
+ld --> d4
+d4 -->|Yes| tab1 --> gH
+d4 -->|No or missing| tab0 --> gH

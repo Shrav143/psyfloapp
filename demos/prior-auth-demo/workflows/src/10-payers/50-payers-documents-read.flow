@@ -1,0 +1,39 @@
+title: Payers › Documents › Read the document list
+route: /payers/summit?tab=documents
+intro: What the payer wants to see for each level of care, as a plain numbered list with no status on any row. The list is chosen with 'Level of care'. In the demo the lists are per level of care (Residential 3.5, IOP, PHP, Detox); request type only changes the workflow, not this list.
+dir: TD
+---
+start s1 "Click the 'Documents' tab"
+screen tab "Documents tab\nBanner if edits wait. Left: the list card.\nRight: 'Try it on a case'"
+screen card "'What Summit wants for Residential 3.5'\n'Nine documents. The agents ask for each one\nbefore they write a word.'\n'Edit list' button on the right"
+process dflt "Opens on Residential 3.5 every time\nthe tab or the payer changes"
+input lc "Pick 'Level of care'\nResidential 3.5, IOP, PHP, Detox"
+process sw "Title, count and list switch to that level\nFor Summit: Residential 9, IOP 6, PHP 7, Detox 8"
+screen ol "Numbered list\nNumber, document name in bold,\nwhat it must show in grey"
+process ex "Example row\nASAM multidimensional assessment\nEvery dimension, dated within 7 days"
+decision any "Is the list empty?"
+toast em "'This list is empty. Add the documents Summit asks for.'"
+process pdiff "Payers differ a little\nLakeshore adds 'Fax cover sheet' to every list\nHarborview adds a Part D medication list and a Medicare eligibility check\nEvergreen adds a call log with the reviewer"
+process one "One document reads 'One document.'\nNumbers up to fifteen are spelled out"
+decision dU "Edits saved but not yet applied?"
+toast bU "'1 edit applies to new drafts only'"
+click ce "Click 'Edit list'"
+goto gE "Continues in: Payers › Documents › Edit the list"
+goto gC "Continues in: Payers › Documents › Try it on a case"
+goto gU "Continues in: Payers › Edits waiting › Update drafts"
+process aft "A payer change can add rows\nCardinal's 2026.3 change adds 'Remaining treatment goals'\n(Named in the latest progress note) to Residential 3.5,\nIOP and PHP once its drafts are updated"
+goto gA "Continues in: Payers › Changes › Update drafts after a change"
+
+s1 --> tab --> dU
+dU -->|Yes| bU --> gU
+dU -->|No| card
+bU --> card
+card --> dflt --> lc --> sw --> ol
+ol --> ex --> any
+any -->|Yes| em
+any -->|No| pdiff
+em -.-> ce
+pdiff -.-> one
+pdiff --> aft --> gA
+card --> ce --> gE
+tab --> gC

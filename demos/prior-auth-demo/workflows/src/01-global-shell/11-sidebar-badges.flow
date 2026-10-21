@@ -1,0 +1,42 @@
+title: Global shell › Sidebar › Badges and what they count
+route: Every page (sidebar on the left)
+intro: Seven sidebar rows carry a number bubble. Each number is counted live from the demo data, so it changes the moment something happens on any page. Analytics and EMR Connect never have a bubble.
+dir: TD
+also: Numbers shown are the values when the demo starts or after 'Reset demo data'.
+---
+start s1 "Any page is open"
+screen sb "Sidebar rows with a number bubble"
+process p1 "Every number is recounted from the demo data each time the data changes (no reload)"
+
+group gDraw "How a bubble is drawn"
+  decision d1 "Is the count above zero?"
+  process z "No bubble on that row"
+  process nz "A round bubble shows the number"
+  decision d2 "Is that row the green (current) one?"
+  process on "Bubble is translucent white on green"
+  process off "Bubble is tan with dark text"
+endgroup
+
+group gB "What each badge counts, and what moves it"
+  process b1 "'Dashboard'  3\nRequests at stage 'Info requested'\nFalls when an answer is sent"
+  process b2 "'Authorizations'  19\nOpen queue items in 'Act now' (5) and 'Due within 24 hours' (14)\n'Due this week' is not counted"
+  process b3 "'New case'  4  (listed under Authorizations)\nReferrals that are New or In review and not yet opened\nFalls when a referral is opened"
+  process b4 "'Eligibility & Benefits'  6  (listed under Authorizations)\nPatients not cleared: 4 'Authorization first', 2 'Fix before billing'"
+  process b5 "'Denial Intelligence'  7\nRequests at stage 'Appeal' (open denials)\nFalls when a denial is settled"
+  process b6 "'Case Manager'  11\n3 cases that need a person (2 questions, 1 signature)\nplus 8 reviews that 'Need your update'"
+  process b7 "'Payers'  2\nPayers with a rule change waiting for a person\nFalls when the change is acknowledged"
+endgroup
+
+goto g1 "Continues in: Case Manager › Reviews this week › Add your update to a review"
+end e1 "Badges always match the pages they point to"
+
+s1 --> sb --> p1
+p1 --> d1
+d1 -->|No| z
+d1 -->|Yes| nz --> d2
+d2 -->|Yes| on
+d2 -->|No| off
+z & on & off --> e1
+p1 --> b1
+b1 ~~~ b2 ~~~ b3 ~~~ b4 ~~~ b5 ~~~ b6 ~~~ b7
+b6 --> g1

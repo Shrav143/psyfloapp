@@ -15,7 +15,7 @@ group gLinked "Opens a pre-filled form"
   start a5 "On a case's actions, click 'Open Eligibility & Benefits' in the coverage recommendation"
 endgroup
 
-process p0 "Address opens /authorizations/eligibility/verify\nwith ?referral=ID (from a referral) or ?case=ID (from a case)"
+process p0 "Address opens /authorizations/eligibility/verify\nwith ?referral=ID (from a referral), ?case=ID (from a case) or nothing"
 decision q1 "Address has ?referral= ?"
 decision q2 "Referral found?"
 process p1 "Fills payer, member ID (masked), program from the referral\nInitials and age remembered for the result"
@@ -30,8 +30,8 @@ process p5 "Date of birth made up from the age, for example age 26 gives 01/15/2
 screen sc "Verify a patient\nForm on the left, 'Live check' on the right"
 goto g1 "Continues in: Authorizations › Eligibility & Benefits › Verify › Fill in the form"
 
-a1 --> sc
-a2 --> sc
+a1 --> p0
+a2 --> p0
 a3 --> p0
 a4 --> p0
 a5 --> p0
@@ -40,7 +40,7 @@ q1 -->|Yes| q2
 q2 -->|Yes| p1 --> p5 --> sc
 q2 -->|No| t1 --> sc
 q1 -->|No| q3
-q3 -->|No| sc
+q3 -->|No: empty form| sc
 q3 -->|Yes| q4
 q4 -->|Yes| p2 --> p5
 q4 -->|No| q5

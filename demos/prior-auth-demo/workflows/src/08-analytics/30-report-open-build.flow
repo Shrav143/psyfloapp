@@ -1,0 +1,49 @@
+title: Analytics › Monthly report › Open and build
+route: /analytics
+intro: 'Monthly report' opens a small window where the Analyst agent builds the report in four short steps, about 3 seconds. Cancel, Close, Escape and a click outside all stop it. Closing throws the build away.
+dir: TD
+also: Demo only: the steps are a timer, 0.75 seconds each. The report is built from the period and payer chosen when the window opened.
+---
+start s1 "Click 'Monthly report' (top right)"
+overlay o1 "Window 'Monthly report'\nSubtitle 'This quarter · All payers'\n'Built by' Analyst\nButton 'Cancel' in the footer"
+process p0 "Page behind is dimmed\nThe menus cannot be used until the window closes"
+
+group gSteps "Four steps, one after another"
+  agent a1 "Analyst\n'Collecting the decisions for this quarter'"
+  wait w1 "0.75 seconds"
+  agent a2 "Analyst\n'Dropping any figure with fewer than 20 decisions'"
+  wait w2 "0.75 seconds"
+  agent a3 "Analyst\n'Writing the summary'"
+  wait w3 "0.75 seconds"
+  agent a4 "Analyst\n'Laying out the report'"
+  wait w4 "0.75 seconds"
+endgroup
+
+process p1 "Each step shows a spinner while it runs, then a green tick\nSteps still to come have a grey dot and grey text"
+
+screen r1 "Panel 'Your report is ready'\n'It uses the same figures as this page. Pick the file you want.'\nFooter button now reads 'Done'"
+
+group gClose "Close it at any moment"
+  click c1 "Click 'Cancel' (while building) or 'Done' (when ready)"
+  click c2 "Click the X ('Close')"
+  input k1 "Press Escape"
+  click c3 "Click the dimmed area outside the window"
+endgroup
+
+process p2 "Window closes at once\nNothing is downloaded and the page is unchanged"
+process p3 "Opening it again starts again from step 1"
+decision q1 "Was the build still running?"
+endx e1 "Build abandoned if it was still running"
+end e2 "Back on Analytics"
+goto g1 "Continues in: Analytics › Monthly report › Download the files"
+
+s1 --> o1 --> p0
+o1 --> a1 --> w1 --> a2 --> w2 --> a3 --> w3 --> a4 --> w4 --> r1
+a1 -.-> p1
+r1 --> g1
+o1 --> c1 & c2 & k1 & c3
+r1 --> c1
+c1 & c2 & k1 & c3 --> p2 --> q1
+p2 -.-> p3
+q1 -->|Yes| e1
+q1 -->|No| e2

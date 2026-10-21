@@ -1,0 +1,37 @@
+title: Payers › Rules › Read the rules
+route: /payers/summit?tab=rules
+intro: Four rule cards for one payer, each a few plain lines, with the agents that use them and the date they were last confirmed. In the demo the rules are text the agents are said to follow; editing them is the next diagram. In the product, each field would carry a source and a confidence (published, payer-confirmed, observed, staff-reported, unconfirmed).
+dir: TD
+---
+start s1 "Click the 'Rules' tab"
+screen tab "Rules tab\nBanner if edits wait, four cards in two columns, a note"
+decision dU "Edits saved but not yet\napplied to open drafts?"
+toast bU "'1 edit applies to new drafts only'\nwith 'Update 2 drafts'"
+goto gU "Continues in: Payers › Edits waiting › Update drafts"
+
+group gC "Each card"
+  screen c1 "Submission windows\nNotice within 24 hours of admission (72 for Harborview, by phone for Evergreen, by fax for Lakeshore)\nRecertification filed 72 hours before the unit limit\nA continued-stay review every 7 days after the first 7"
+  screen c2 "Backdating\nDiffers by payer: Summit and Cardinal do not backdate,\nBeacon backdates within 2 business days,\nEvergreen up to 3 days with a call log, Lakeshore to the fax receipt date"
+  screen c3 "No authorization needed\nIndividual therapy, Medication management,\nInitial assessment, Crisis stabilization first 24 hours\n(Evergreen has no crisis line). Shown with green ticks"
+  screen c4 "Peer-to-peer and appeals\nPeer-to-peer call within 3 business days (Cardinal: 2)\nWritten appeal within 60 days, expedited 72 hours,\nthen external review (Evergreen: state hearing)"
+endgroup
+
+process ub "Foot of each card\n'Used by Cadence and Navigator · confirmed 10/12'"
+process who "Used by\nWindows: Cadence, Navigator\nBackdating: Cadence, Scrubber\nNo authorization needed: Verify, Criteria\nPeer-to-peer and appeals: Advocate, Cadence"
+process cf "'Confirmed' is a date\nEvergreen shows 10/09, the others 10/12\nIt moves to today when a rule is edited"
+toast note "'Rules are learned from past decisions and confirmed against\nSummit's published policy. An edit applies to new drafts at once,\nand to open drafts when you click Update drafts.'"
+process noeff "Demo: no screen shows a rule changing an approval chance.\nThe rules are text on this tab and a reason to redraft"
+click ce "Click 'Edit' on a card\n(the button is named 'Edit Backdating' and so on)"
+goto gE "Continues in: Payers › Rules › Edit a rule"
+goto gF "Continues in: Payers › Configuration feeds the rest of the app"
+
+s1 --> tab --> dU
+dU -->|Yes| bU --> gU
+dU -->|No| c1
+bU --> c1
+c1 --> c2 --> c3 --> c4
+c1 --> ub --> who --> cf
+c4 --> note
+c4 --> ce --> gE
+note -.-> noeff
+noeff -.-> gF

@@ -1,0 +1,88 @@
+title: Authorizations › New case › Medical records › Patient and insurance rows
+route: /authorizations/new/:draftId (step 2, Patient and Insurance lists)
+intro: Each field row says where its value came from, and its button opens a small editor under the row. Edits go straight into the draft. This diagram also covers 'Pull a chart from EMR Connect'. The Coverage row has its own diagram.
+dir: TD
+---
+start s1 "On step 2, read the Patient and Insurance rows"
+screen sc "Patient: 'Patient initials and age'\nInsurance: 'Payer and plan', 'Member ID', 'Coverage'\nEach row: a box, a label, a detail line and one button"
+
+group gState "What a row can say"
+  decision dSrc "Does the row have a value?"
+  process r1 "Read from a file\n'Read from chart.pdf by Reader. Check it.'"
+  process r3 "From a referral\n'From referral RF-2054'"
+  process r4 "From EMR Connect\n'From EMR Connect'"
+  process r2 "Typed by a person\nThe detail shows the value with no source note"
+  process r5 "Missing\n'Not found yet. Drop a chart above or add it here.'\nRow shaded, button 'Add'"
+  process r6 "Half filled\n'Found initials J.M.. The age is still needed.'"
+  process rNote "A source note goes quiet as soon as the value is edited"
+endgroup
+
+click cEdit "Click 'Add' (empty row) or 'Edit' (filled row)"
+overlay oEd "Editor opens under the row\nFirst box takes focus\nOnly one editor is open at a time"
+click cAgain "Click the same row button again"
+process pClose "Editor closes"
+
+group gPatient "Patient initials and age"
+  input iInit "Type 'Patient initials'\nUp to 8 letters, shown in capitals, e.g. J.M."
+  input iAge "Type 'Age' (1 to 110)"
+  process pName "Hint: 'Initials and age only. A name never enters the app.'"
+endgroup
+
+group gPayer "Payer and plan"
+  input iPayer "Pick 'Payer' (Choose a payer)\nSix payers"
+  process pPlan "'Plan type' fills in for that payer\nHMO, PPO, Medicare Advantage..."
+  input iPlan "Optional: pick another 'Plan type'"
+endgroup
+
+group gMember "Member ID"
+  input iMember "Type 'Member ID'"
+  process pMask "Detail shows only the last four, e.g. …4821\n'agents see only the last four'"
+endgroup
+
+click cDone "Click 'Done', or press Escape in a text box"
+store stLive "Every keystroke is written to the draft\nNothing to save"
+process pStale "If the agents had already run, the run restarts\nAnswers and summary edits are cleared"
+goto g40 "Continues in: Medical records › The Coverage row"
+
+group gEmr "Pull a chart from EMR Connect"
+  click cPull "Click 'Pull a chart from EMR Connect'\nClicking again closes the picker"
+  overlay oPick "Chart from EMR Connect\nPicker with a chart list, 'Pull' and 'Cancel'"
+  input iChart "Pick a chart\nJ.M., 34 · Summit · Residential 3.5 · A.R. · S.T. · L.G."
+  click cPullGo "Click 'Pull'"
+  process pPulling "Button reads 'Pulling' for about 1 second\nThe list and 'Cancel' switch off"
+  ext xEmr "EMR Connect (demo: simulated)\nThe chart's patient, payer, member ID, level of care, type, diagnoses and reason"
+  store stEmr "Draft filled, replacing those fields\nNo documents come with it"
+  toast tEmr "'Pulled J.M., 34 from EMR Connect'\n'Everything below was filled in from the chart. You can still change it.'"
+  click cCancelEmr "Click 'Cancel'"
+  process pCancelEmr "Picker closes; nothing changes"
+endgroup
+
+s1 --> sc --> dSrc
+dSrc -->|Read by Reader| r1
+dSrc -->|From a referral| r3
+dSrc -->|From the EMR| r4
+dSrc -->|Typed| r2
+dSrc -->|No| r5
+dSrc -->|Only one of two| r6
+r1 --> rNote
+r3 --> rNote
+r4 --> rNote
+
+sc --> cEdit --> oEd
+oEd --> iInit
+iInit --> iAge --> pName
+oEd --> iPayer --> pPlan --> iPlan
+oEd --> iMember --> pMask
+r5 --> cEdit
+r6 --> cEdit
+pName --> cDone
+iPlan --> cDone
+pMask --> cDone
+cDone --> stLive --> pStale
+oEd --> cAgain --> pClose
+cDone --> pClose
+sc --> g40
+
+sc --> cPull --> oPick --> iChart --> cPullGo --> pPulling --> xEmr --> stEmr --> tEmr
+oPick --> cCancelEmr --> pCancelEmr
+stEmr -.-> pStale

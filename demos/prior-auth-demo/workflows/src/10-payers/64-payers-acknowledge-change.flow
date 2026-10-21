@@ -1,0 +1,31 @@
+title: Payers › Changes › Acknowledge a change
+route: /payers/cardinal?tab=changes
+intro: Acknowledging is the first of two gates. It records who saw the payer's change and when, and changes nothing else. 'Update drafts' stays locked until it is done, so a person has always read the change before any draft is redrafted. There is no way to take an acknowledgement back.
+dir: TD
+---
+start s1 "Open the Changes tab\nof a payer with a waiting change"
+screen bn "Ochre banner\n'Acknowledge change' (blue, ready)\n'Update 4 drafts' (greyed out)\nNote: Acknowledging records who saw it.\nUpdating redrafts, and each draft returns to Case Manager for a new signature."
+click hv "Hover or click the greyed 'Update 4 drafts'"
+toast tip "Tooltip: 'Acknowledge the change first'\nNothing happens on click"
+click ca "Click 'Acknowledge change'"
+overlay m "Acknowledge this change?\nAcknowledge gate. It records who saw the change and when."
+screen bd "Change shown in a tinted box\n'Criteria changed, version 2026.3'\nProgress evidence must now include the remaining treatment goals.\nEffective 10/15."
+process who "'You are acknowledging as Jordan Perez.\nThis does not change any draft.\nUpdating the drafts is a separate step.'"
+click ok "Click 'Acknowledge change'\nin the modal"
+store st "Acknowledgement recorded on the change\nWho: Jordan Perez. When: the demo clock"
+toast t1 "'Change acknowledged'\nRecorded for Jordan Perez, Tue 10:42 am.\nDrafts are not changed until you update them."
+screen bn2 "Banner now shows a green pill\n'Acknowledged by Jordan Perez, Tue 10:42 am'\nin place of the blue button\n'Update 4 drafts' is ready"
+process nb "No change to the sidebar badge, the dot or the drafts\nNo edit log entry. No undo"
+click cx "Click 'Cancel'"
+click cesc "Press Escape, click the X\nor click the dimmed area"
+endx x1 "Modal closes\nNothing recorded\nBanner as before"
+end e1 "Ready for the second gate"
+goto g1 "Continues in: Payers › Changes › Update drafts after a change"
+
+s1 --> bn
+bn --> hv --> tip --> ca
+bn --> ca --> m --> bd --> who --> ok --> st --> t1 --> bn2 --> e1
+bn2 -.-> nb
+e1 --> g1
+m --> cx --> x1
+m --> cesc --> x1

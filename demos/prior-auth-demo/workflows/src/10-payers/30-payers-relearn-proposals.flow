@@ -1,0 +1,44 @@
+title: Payers › Process › Re-learn from decisions
+route: /payers/summit?tab=process
+intro: Historian looks at how the payer has ruled over the last 90 days and may propose one more condition for the workflow. It never edits the workflow itself. A person accepts or dismisses the proposal on the Changes tab.
+dir: TD
+---
+start s1 "Click 'Re-learn from decisions'\non the workflow card"
+process busy "Button shows a spinner"
+toast st "Historian is reviewing how Summit\nruled over the last 90 days."
+agent h1 "Historian reviews the last 90 days\n(demo: about 3 seconds, scripted)"
+decision lv "Is the person still on Payers\nwhen the 3 seconds end?"
+endx dropped "Result dropped\nNo toast, no proposal"
+decision nx "Is there a proposal not yet in\nthe workflow, the proposals or the dismissed list?"
+toast tn "'Nothing new to propose'\nThe workflow already matches how Summit ruled in the last 90 days."
+store pr "Proposal added to the payer"
+toast tp "'Historian has a proposal'\nReview it on the Changes tab. The workflow has not changed."
+screen bn "Process tab banner\n'Historian proposed 1 change'\nIt never edits the workflow on its own."
+process badge "'Changes' tab badge goes up by one\nList dot and sidebar badge do not change"
+click rv "Click 'Review in Changes'"
+screen cp "Changes tab, proposal card\nHistorian chip: 'Proposal: Ask for a therapy note on continued stays'\nUnder 'Gather the documents': If request is a continued-stay request, File step"
+click ca "Click 'Accept proposal'"
+click cd "Click 'Dismiss'"
+store ac "Condition added under that step\nWorkflow becomes the next version\nProposal removed"
+store lg "Edit log entry, area 'Workflow'\nReason 'Accepted Historian's proposal: ...'"
+store un "'Edits waiting' count goes up by one"
+toast ta "'Proposal accepted'\nAdded under 'Gather the documents' and logged as version 8."
+store dm "Proposal removed and remembered as dismissed\nHistorian will not offer it again"
+toast td "'Proposal dismissed'\nThe workflow did not change."
+process nr "No reason asked, no confirmation\nNo way to bring a dismissed proposal back"
+end e1 "Run 'Re-learn' again for the next proposal\nSummit has two; Beacon has none left to offer"
+goto g1 "Continues in: Payers › Edits waiting › Update drafts"
+goto g2 "Continues in: Payers › Edit log"
+
+s1 --> busy --> st --> h1 --> lv
+lv -->|No| dropped
+lv -->|Yes| nx
+nx -->|No| tn --> e1
+nx -->|Yes| pr --> tp --> bn --> badge
+bn --> rv --> cp
+cp --> ca --> ac --> lg --> un --> ta --> g1
+lg -.-> g2
+cp --> cd --> dm --> td --> e1
+ca -.-> nr
+cd -.-> nr
+ta --> e1

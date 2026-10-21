@@ -1,0 +1,55 @@
+title: Denial Intelligence › A denial opened › Status banner
+route: /denials?id=D-3318
+intro: One banner under the header says where the denial stands. The code checks the statuses in this order and shows the first that fits.
+dir: TD
+---
+start s1 "A denial is on screen"
+decision d1 "Accepted?"
+toast t1 "'Closed. You accepted the decision'\n'Reason: ... The write-off is logged.'"
+click c1 "Click 'Plan the step-down'"
+goto g1 "Continues in: Case Manager › Reviews"
+
+decision d2 "Call outcome logged as Overturned or Partly restored?"
+toast t2 "'Overturned on the call' or 'Partly restored on the call'\nYour note, or 'The ledger is updated and the next review is booked.'"
+click c2 "Click 'See on the Dashboard'"
+goto g2 "Continues in: Dashboard › Request drawer › Open and read a request"
+
+decision d3 "Chip is 'Appeal filed' or 'External review'?"
+toast t3 "'Appeal filed. Waiting on the payer'\n'filed 10/05, decision 11/02. Navigator checks every day and saves the answer to the case.'"
+click c3 "Click 'View the appeal'"
+goto g3 "Continues in: Denial Intelligence › Written appeal › After filing"
+
+decision d4 "Chip is 'Appeal drafting'?"
+decision d5 "Has a draft been saved?"
+toast t4 "'The appeal is drafted and waiting for a clinician's signature'\n'Review the letter, change anything you like, then sign and file.'"
+toast t5 "'Advocate is drafting the appeal'\n'Open the draft to see it come together.'"
+click c4 "Click 'Open the draft'"
+goto g4 "Continues in: Denial Intelligence › Written appeal › Confirm and draft"
+
+decision d6 "Chip is 'Call booked'?"
+toast t6 "'Call booked: Wed 10/21, 9–11 am'\n'Cadence booked the window with Cardinal. The brief is ready, written by Advocate and checked by Integrity.'"
+click c5 "Click 'Change the time'"
+click c6 "Click 'Open the brief'"
+goto g5 "Continues in: Denial Intelligence › Peer-to-peer › Book the call"
+goto g6 "Continues in: Denial Intelligence › Peer-to-peer › The brief"
+
+process p1 "No banner\nChips 'Analyzed' and 'Resubmitting' have none"
+screen sc1 "'Your options' card shows when the denial is still open"
+process p2 "Calls booked at the start show the time from the denial's data\nLater ones show the time that was picked"
+
+s1 --> d1
+d1 -->|Yes| t1 --> c1 --> g1
+d1 -->|No| d2
+d2 -->|Yes| t2 --> c2 --> g2
+d2 -->|No| d3
+d3 -->|Yes| t3 --> c3 --> g3
+d3 -->|No| d4
+d4 -->|Yes| d5
+d5 -->|Yes| t4 --> c4
+d5 -->|No| t5 --> c4
+c4 --> g4
+d4 -->|No| d6
+d6 -->|Yes| t6 --> c5 --> g5
+t6 --> c6 --> g6
+t6 -.-> p2
+d6 -->|No| p1 --> sc1

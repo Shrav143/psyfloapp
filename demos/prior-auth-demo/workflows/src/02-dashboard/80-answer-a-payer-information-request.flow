@@ -1,0 +1,59 @@
+title: Dashboard › Request drawer › Answer a payer information request
+route: /dashboard?request=P-1499
+intro: When a payer asks for more information, Packet drafts the answer from the chart, Integrity checks it, and a person reads it and signs. Nothing leaves before the signature. In the demo the payer's ask is seeded or triggered by a Demo control, and the send is simulated.
+dir: TD
+---
+start s0 "A payer wants more information on a request"
+ext x1 "Payer asks for more information\nthrough its portal, fax or phone (demo: seeded for P-1499, or the Demo control 'Asks for information')"
+agent a1 "Packet drafts the answer from the chart\nIntegrity checks every sentence against it"
+store w1 "Request becomes Info requested (amber)\nNeeds you; next step 'Packet drafted the answer. Waiting for your review'"
+toast t1 "Notification 'Payer asked for info'\n'Harborview MA wants more on P-1499. Packet drafted the answer.'"
+screen sc "Dashboard\n'Info requested' tile goes up and the sidebar Dashboard badge counts it\nThe row floats to the top: it needs you"
+
+start s1 "Click the row, or the notification, then the amber box 'Needs your input'"
+click c1 "Click 'Review the answer'"
+overlay o1 "Pop-up 'Packet's answer for P-1499'\n'Harborview MA asked for more information · PHP'\nDrafted by Packet and checked by Integrity"
+
+group gModal "Inside the pop-up, top to bottom"
+  screen m1 "'What the payer asked for'\nNumbered list of the items asked"
+  decision d1 "Which program is the request for?"
+  doc r1 "Residential 3.5\nLast 14 days of therapy notes, ASAM ratings, medication changes, step-down plan"
+  doc r2 "PHP\nDaily attendance for 10 program days, latest psychiatric note, depression and anxiety scores, step-down plan to IOP"
+  doc r3 "IOP\nAttendance for 4 weeks, urine screens, scale scores, work or school schedule"
+  doc r4 "Detox\nWithdrawal scores for 72 hours, vital signs and medication, plan for the next level of care"
+  doc m2 "'The drafted answer'\nOne paragraph per item, each pointing to an entry in the chart, then a closing line"
+  doc m3 "'Attached from the chart'\nFile names with page counts"
+  toast m4 "'Integrity checked every sentence against the chart'\n'4 of 4 checks passed. Navigator sends the answer through the payer's portal as soon as you sign. Nothing leaves before then.'"
+endgroup
+
+decision d2 "Does the person send it?"
+click c2 "Click 'Not yet'"
+click c3 "Click the X, click the dimmed area, or press Escape"
+process p0 "Pop-up closes\nThe request is unchanged and still needs you"
+process p1 "Escape also closes the drawer behind the pop-up"
+end e1 "Back to the drawer or the table\nStill 'Needs your input'"
+
+click c4 "Click 'Sign and send answer'"
+process p2 "Pop-up closes"
+store w2 "Request becomes Under review\nNo longer needs you; Navigator holds it; next step 'Navigator checks again in 30 minutes'"
+store w3 "History gets 'You reviewed the answer and sent it' and 'Navigator sent the answer through the payer's portal'\nand a dashed 'Navigator checks again'"
+toast t2 "'Answer sent'\n'P-1499 is back under review.'"
+ext x2 "Payer receives the answer (demo: simulated)"
+wait wt "Payer reviews again"
+end e2 "Drawer shows Under review\nBanner: 'Next automatic check in 30 minutes.'"
+goto g1 "Continues in: Dashboard › Request drawer › Demo controls: the payer answers"
+
+s0 --> x1 --> a1 --> w1 --> t1 --> sc
+s1 --> c1 --> o1 --> m1 --> d1
+d1 -->|Residential 3.5| r1 --> m2
+d1 -->|PHP| r2 --> m2
+d1 -->|IOP| r3 --> m2
+d1 -->|Detox| r4 --> m2
+m2 --> m3 --> m4 --> d2
+d2 -->|No, not yet| c2 --> p0
+d2 -->|No, close it| c3 --> p0
+c3 -.-> p1
+p0 --> e1
+d2 -->|Yes| c4 --> p2 --> w2 --> w3 --> t2 --> x2 --> wt --> e2
+wt -.-> g1
+sc -.-> s1

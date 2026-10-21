@@ -1,0 +1,48 @@
+title: Authorizations › Eligibility & Benefits › Result › Next actions
+route: /authorizations/eligibility/R-1042
+intro: The buttons on the verdict banner and where each one leads. Which buttons show depends on the verdict, on whether the patient has a case, and on why coverage failed.
+dir: TD
+also: Demo only: 'Request retro-eligibility' and 'Ask Caller to phone the payer' raise a message and change nothing. No call is made and no request is sent.
+---
+start s1 "On a result page, read the buttons on the verdict banner"
+
+decision q1 "Verdict is 'Authorization first'?"
+click c1 "Click 'Start authorization'"
+process p1 "Opens New case with payer, level of care, member ID, initials and age filled in\nRequest type is 'Admission'"
+goto g1 "Continues in: Authorizations › New case"
+
+decision q2 "Is there a request with this ID?"
+click c2 "Click 'Open case'\n(dark button, or outlined beside 'Start authorization')"
+goto g2 "Continues in: Authorizations › Case page › Ways in"
+decision q3 "ID starts with 'V-' (a new check, no case yet)?"
+click c3 "Click 'Open in Case Manager'"
+goto g3 "Continues in: Case Manager"
+process n1 "No 'Start authorization' button"
+process p2 "No case button is shown\nThe check has no case yet"
+
+decision q4 "What is the coverage state?"
+click c4 "Click 'Request retro-eligibility'"
+toast t1 "'Retro-eligibility requested'\n'Navigator will ask Ohio Medicaid to restore coverage from 10/12. You will be told when it answers.'"
+ext x1 "Ohio Medicaid restores the dates\n(demo: simulated, nothing is sent)"
+click c5 "Click 'Ask Caller to phone the payer'"
+toast t2 "'Caller will phone the payer'\n'Caller will ask Evergreen about this member and log the call to the case.'"
+ext x2 "The payer's provider line\n(demo: simulated, nothing is dialled)"
+endx e1 "Coverage is active: no extra button\nOther failures are fixed in the case or by 'Check again'"
+
+click c6 "Click 'Check again'"
+goto g4 "Continues in: Authorizations › Eligibility & Benefits › Re-verify a patient"
+click c7 "Click '← Eligibility & Benefits'"
+goto g5 "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows"
+
+s1 --> q1 & q2 & q4 & c6 & c7
+q1 -->|Yes| c1 --> p1 --> g1
+q1 -->|No| n1
+q2 -->|Yes| c2 --> g2
+q2 -->|No| q3
+q3 -->|Yes| p2
+q3 -->|No| c3 --> g3
+q4 -->|Lapsed| c4 --> t1 --> x1
+q4 -->|Ended or not found| c5 --> t2 --> x2
+q4 -->|Active| e1
+c6 --> g4
+c7 --> g5

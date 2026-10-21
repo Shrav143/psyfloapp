@@ -1,0 +1,58 @@
+title: Authorizations › Eligibility & Benefits › Verify › When a system does not answer
+route: /authorizations/eligibility/verify
+intro: In real life a payer's system can be down, slow or silent. The demo shows one fallback only: for Evergreen, Caller phones the payer. It has no error screen, no retry button and no failed check. Bad answers become a 'Fix before billing' result.
+dir: TD
+also: Demo only: the retry ladder on the right is how production works (from the product requirements). None of it is drawn on screen.
+---
+start s1 "Verify reaches the benefits question for the chosen payer"
+
+group gDemo "In the demo"
+  decision d1 "Is the payer Evergreen?"
+  process p1 "Benefits row ticks\n'Evergreen's system did not answer'"
+  agent a1 "Caller\n'Evergreen did not answer online. Caller is phoning'"
+  wait w1 "About 2.6 seconds"
+  process p2 "Row ticks 'Caller phoned Evergreen, confirmed the answers and logged the call'"
+  process p3 "Result lists the call under 'What the agents checked'\n'Phone call to Evergreen' 1:34, reference C-4471"
+  process p4 "Every other payer\nThe plan answers at once and the check goes on"
+endgroup
+
+group gReal "Production, simulated here"
+  ext r1 "Clearinghouse 270/271 inquiry for the plan and the service types"
+  decision r2 "Payer answers with the benefit detail?"
+  wait r3 "Payer unable to respond: retry after 30 minutes, then 2 hours"
+  ext r4 "Verify checks the payer portal with the clinic's saved sign-in"
+  decision r5 "Portal answers?"
+  agent r6 "Caller phones provider services\nCall logged with a transcript and a result"
+  process r7 "Row marked as old, not as lapsed\nNo alert until the third failure"
+  process r8 "Answer read, the check goes on"
+endgroup
+
+group gBad "When the answer is bad, not missing"
+  decision b1 "What did the checks find?"
+  process b2 "Member ID ends 1012\n'coverage lapsed 10/12'"
+  process b3 "Member ID ends 9999\n'no coverage found for these details'"
+  process b4 "Evergreen with Detox\n'The clinic is not enrolled for this program'"
+  process b5 "The check still runs to the end and opens a result\nVerdict 'Fix before billing'"
+endgroup
+
+start s2 "While the check runs, leave the page\n(sidebar, back link or browser Back)"
+endx e1 "The check is dropped\nNothing is saved: no row, no badge change\nOpen 'Verify a patient' and start again"
+goto g1 "Continues in: Authorizations › Eligibility & Benefits › Result › Next actions"
+goto g2 "Continues in: Authorizations › Eligibility & Benefits › Verify › The check finishes and is saved"
+
+s1 --> d1
+d1 -->|Yes| p1 --> a1 --> w1 --> p2 --> p3 --> b1
+d1 -->|No| p4 --> b1
+b1 -->|All clear| g2
+b1 -->|Lapsed| b2 --> b5
+b1 -->|Not found| b3 --> b5
+b1 -->|Not enrolled| b4 --> b5
+b5 --> g1
+s1 -.-> r1
+r1 --> r2
+r2 -->|Yes| r8
+r2 -->|No| r3 --> r4 --> r5
+r3 -.-> r7
+r5 -->|Yes| r8
+r5 -->|No| r6 --> r8
+s2 --> e1

@@ -26,7 +26,7 @@ click c1 "Click 'Open the Dashboard'"
 goto g1 "Continues in: Denial Intelligence › Open denials list"
 goto g2 "Continues in: Denial Intelligence › A denial opened"
 goto g3 "Continues in: Denial Intelligence › Add a denial letter"
-goto g4 "Continues in: Dashboard"
+goto g4 "Continues in: Dashboard › Arrive › What the page shows"
 
 start s8 "Look at the badge beside 'Denial Intelligence' in the sidebar"
 process b1 "Badge = requests in the Dashboard's 'Appeal or call' stage\n7 at the start"

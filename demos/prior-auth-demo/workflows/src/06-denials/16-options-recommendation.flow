@@ -1,0 +1,71 @@
+title: Denial Intelligence › Your options
+route: /denials?id=D-3318
+intro: The 'Your options' card: three next steps as radio cards, how each chance is worked out, how 'Recommended' is chosen, and what the button under the cards opens.
+dir: TD
+---
+start s1 "A denial that is not filed, accepted or closed is on screen"
+screen sc1 "'Your options'\n'Chance of overturning, from 312 similar Cardinal decisions'\nThree radio cards, then one button"
+process p0 "Subtitle reads ', a benchmark estimate' instead when fewer than 60 similar decisions"
+
+process p1 "Starting point: the denial's win chance (55 when none is set)"
+decision d1 "What is the win chance?"
+process v1 "'Worth challenging'\n50 and over"
+process v2 "'Borderline'\n35 to 49"
+process v3 "'Probably accept'\nunder 35"
+process p2 "Seed denials sit between 38 and 64, so 'Probably accept' does not show at the start"
+
+screen o1 "Card 'Peer-to-peer call'\n'30 to 45 minutes of clinician time · 5 to 7 days regained'\nChance = the win chance"
+screen o2 "Card 'Written appeal'\n'60 days to file · 5 to 7 days regained'\nChance = win chance minus 6, never under 5"
+screen o3 "Card 'Accept the decision and plan the next step'\n'Accept 7 days and plan the step-down' on a partial approval\n'Fastest. Nothing regained.' No chance shown"
+process p3 "Each chance reads 'likely 55–72%' (9 below to 8 above) and '312 similar decisions' or 'Benchmark estimate'"
+process p4 "Each card ends with 'Needs: ...' (who, what, and the evidence that would be attached)"
+
+decision r1 "Which card is 'Recommended'?"
+screen rec1 "'Accept...' card gets the green 'Recommended' pill"
+screen rec2 "'Written appeal' gets the pill"
+screen rec3 "'Peer-to-peer call' gets the pill"
+process p5 "That card is selected when the page opens"
+
+click c1 "Click a card (it is a radio button)"
+decision d2 "Is it 'Peer-to-peer call' and the call window has closed?"
+toast t1 "'The peer-to-peer window has closed'\n'A written appeal is still open.'"
+process p6 "Card is selected\nThe button label changes to match"
+screen b1 "Button under the cards\n'Choose a time and prepare the brief', 'Draft the appeal letter' or 'Accept the decision and plan the step-down'"
+toast t2 "'A call is already booked. Choosing again changes it.' (when the chip is 'Call booked')"
+click c2 "Click the button"
+decision d3 "Which card is selected?"
+decision d4 "Is the chip already 'Appeal drafting'?"
+goto g1 "Continues in: Denial Intelligence › Peer-to-peer › Book the call"
+goto g2 "Continues in: Denial Intelligence › Written appeal › Confirm and draft"
+goto g3 "Continues in: Denial Intelligence › Accept the denial"
+process p7 "Selection resets to the recommended card whenever the chip changes"
+
+s1 --> sc1 --> p0
+sc1 --> p1 --> d1
+d1 -->|50 and over| v1
+d1 -->|35 to 49| v2
+d1 -->|Under 35| v3
+v1 --> p2
+v2 --> p2
+v3 --> p2
+sc1 --> o1 --> o2 --> o3
+o3 --> p3 --> p4
+p4 --> r1
+r1 -->|Verdict is 'Probably accept'| rec1
+r1 -->|Deadline is to file or resubmit, window closed, or 'Late notice'| rec2
+r1 -->|Anything else| rec3
+rec1 --> p5
+rec2 --> p5
+rec3 --> p5
+p5 --> c1
+c1 --> d2
+d2 -->|Yes| t1
+d2 -->|No| p6 --> b1
+b1 -.-> t2
+b1 --> c2 --> d3
+d3 -->|Peer-to-peer call| g1
+d3 -->|Written appeal| d4
+d4 -->|Yes: drawer opens at once| g2
+d4 -->|No: confirm first| g2
+d3 -->|Accept| g3
+c1 -.-> p7

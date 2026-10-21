@@ -1,0 +1,45 @@
+title: EMR Connect › Connected systems › What each status means
+route: /emr
+intro: Every system on the list is in one of three states. Each state shows different buttons and text, and a system moves between them by the clicks on the arrows.
+dir: TD
+also: In the demo only the seeded Billing system starts in 'Needs a quick look'. Nothing in the demo moves a Connected system into it.
+---
+start s0 "Open EMR Connect\nThe two clinical record sites start Connected, the Billing system starts amber"
+click n1 "Click 'Connect a system', pass the test, click 'Connect {name}'"
+ext n2 "Production: the read-only sign-in expires or the EMR changes its screens\nDemo: only the seeded Billing system starts here"
+
+group gC "Connected"
+  store sc "Connected\nGreen pill"
+  process c1 "Row: '6 min ago' or 'Syncing'\nButtons: Sync now, Manage"
+  process c2 "Synced by 'Sync now' in the card header\nCounts in the Last sync tile"
+endgroup
+
+group gA "Needs a quick look"
+  store sa "Needs a quick look\nAmber pill"
+  process a1 "Row: the issue, then 'First step: renew the sign-in with Fix.'\nButtons: Fix, Manage"
+  process a2 "Skipped by 'Sync now'\nStill counts in the Last sync tile"
+endgroup
+
+group gD "Disconnected"
+  store sd "Disconnected\nRed pill"
+  process d1 "Row: 'Not syncing' and 'Charts from this system are not arriving.'\nButtons: Reconnect, Manage"
+  process d2 "Skipped by 'Sync now'\nIgnored by the Last sync tile\nThe Manage drawer ends with 'Reconnect'"
+endgroup
+
+goto g1 "Continues in: EMR Connect › Connect a system › Choose the system and contact"
+goto g2 "Continues in: EMR Connect › Problems › Fix a system that needs a quick look"
+goto g3 "Continues in: EMR Connect › Manage › Disconnect and reconnect"
+
+s0 --> sc & sa
+n1 --> sc
+n1 -.-> g1
+n2 -.-> sa
+sc --> c1 --> c2
+sa --> a1 --> a2
+sd --> d1 --> d2
+sa -->|Click 'Fix', then 'Finish and reconnect'| sc
+sa -.-> g2
+sc -->|Manage, then 'Disconnect', then 'Disconnect'| sd
+sa -->|Manage, then 'Disconnect', then 'Disconnect'| sd
+sd -->|Click 'Reconnect'. No test is shown| sc
+sd -.-> g3

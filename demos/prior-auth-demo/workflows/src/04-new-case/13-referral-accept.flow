@@ -1,0 +1,61 @@
+title: Authorizations › New case › Referral › Accept a referral
+route: /authorizations/new/:draftId?ref=RF-2048
+intro: Accepting a referral takes a bed or slot, records who owns it, and moves the case on to the medical records. Open findings never block it; they are listed and kept on the timeline.
+dir: TD
+---
+start s1 "Click 'Accept referral and continue'\non the checklist"
+start s2 "Click 'Accept referral'\non the full referral page"
+
+overlay o1 "'Accept this referral?'\n'RF-2048 · A.P., 45 · Dr. Lindqvist, Family Medicine'"
+decision d1 "Anything still open?"
+toast t1 "Amber banner '3 things are still open'\nEach open finding, 'Coverage has not been checked yet.' or the lapsed coverage\n'You can accept anyway. Each open item stays on the timeline.'"
+toast t2 "Green banner\n'All 9 checks are clear and coverage is confirmed.'"
+
+group gForm "Three fields"
+  input i1 "Pick 'Owner'\nJordan Perez, Taylor Brooks or Morgan Lee\nStarts as the referral's owner, else Jordan Perez"
+  input i2 "Pick 'Program'\nResidential 3.5, IOP, PHP or Detox, each with '2 open'\nStarts as the program requested"
+  process p1 "Hint under the date reads the program's room\n'Residential 3.5: 2 beds open this week, 1 after this.'\nNone left: 'Accepting puts the referral on the waiting list.'"
+  input i3 "Set 'Target admission date'\nStarts at tomorrow"
+endgroup
+decision d2 "Is the date valid?"
+process p2 "'Accept referral' is disabled"
+click cX "Click 'Cancel' or 'Close', press Escape,\nor click outside the dialog"
+endx e1 "Nothing changes"
+click c1 "Click 'Accept referral'"
+
+store st1 "Referral is Accepted\nOwner, program, target date saved\nTimeline 'Accepted into IOP' with any open findings counted"
+store st2 "Program capacity drops by one bed or slot\n(never below zero)"
+toast t3 "'Referral accepted'\n'RF-2048 is accepted into IOP.'"
+process p3 "Referral leaves 'Already arrived'\n(only open referrals are listed)"
+decision d3 "Accepted from where?"
+
+group gCl "Referral goes in"
+  process p4 "Copied into the case: patient, payer, member ID,\nlevel of care (the accepted program), diagnoses, reason\nRequest type: Initial request if routine, else Admission"
+  process p5 "Referral becomes the first document\n'RF-2048 referral.pdf'"
+  decision d4 "Had the agents already run on this case?"
+  process p6 "Agents' results are cleared\nBecause the patient and documents changed\nNo warning is shown"
+  toast t4 "'Referral RF-2048 is in this case'\n'A.P., 45. Next, add the medical records.'"
+endgroup
+goto g1 "Continues in: New case › Medical records"
+
+group gPg "From the full referral page"
+  screen sc1 "Page stays open\nGreen banner 'Accepted into IOP'\n'Target admission 10/21/2026. Owner Taylor Brooks.'"
+  click c2 "Click 'Continue to medical records'\n(or 'Open R-1042' when a request is linked)"
+  process p7 "Uses the case in the address (?draft=)\nWithout one, a new blank case is made first"
+endgroup
+
+s1 --> o1
+s2 --> o1
+o1 --> d1
+d1 -->|Yes| t1 --> i1
+d1 -->|No| t2 --> i1
+i1 --> i2 --> p1 --> i3 --> d2
+d2 -->|No| p2 --> cX
+d2 -->|Yes| c1
+o1 --> cX --> e1
+c1 --> st1 --> st2 --> t3 --> p3 --> d3
+d3 -->|Checklist, at once| p4 --> p5 --> d4
+d4 -->|Yes| p6 --> t4
+d4 -->|No| t4
+t4 --> g1
+d3 -->|Full page, later| sc1 --> c2 --> p7 --> p4

@@ -1,0 +1,41 @@
+title: Dashboard › Filters › Clear filters and empty states
+route: /dashboard?payer=cardinal&program=iop&type=recertification&stage=appeal
+intro: When 'Clear filters' appears, what it resets, and what the page shows when the filters match nothing. The date range never empties the table and Clear filters never resets it.
+dir: TD
+---
+start s1 "Pick Payer, Program, Request type or Stage\nAny one that is not 'All'"
+decision d1 "Is at least one of the four menus not 'All'?"
+screen sc1 "Filter bar\nGhost button 'Clear filters' appears after the four menus"
+screen sc0 "Filter bar\nNo 'Clear filters' button\nThe date range alone does not count"
+click c1 "Click 'Clear filters' on the filter bar"
+process p1 "Payer, Program, Request type and Stage go back to 'All'\nThe date range is kept"
+store w1 "Filters"
+process p2 "Address loses payer, program, type and stage\nfrom and to stay if they are not the default"
+process p3 "Table goes back to its first 8 rows"
+screen sc2 "Dashboard shows every request again\n'Showing 8 of 39'"
+end e1 "Back to the full list"
+
+decision d2 "Do any requests match the filters?"
+process p4 "Example: Cardinal, IOP, Recertification, Appeal or call"
+screen em1 "Headline\n'No requests match these filters.'\n'The filters hide everything. Clear them to see every request again.'"
+screen em2 "Stage strip\nTiles still show their own counts: 'nothing waiting on receipt', 'nothing with the payer', 'nothing waiting on you', 'none yet today', 'no open denials'"
+screen em3 "Requests card\n'Showing 0 of 0'\nWith Appeal or call it adds ' · $0 at stake'"
+overlay em4 "Empty state in the card\n'No requests match'\n'The filters hide everything. Clear them to see every request again.'"
+decision d3 "Is a narrowing filter set?"
+click c2 "Click 'Clear filters' in the empty state"
+screen em5 "Payers at a glance\nStill lists all six payers\nWaiting counts follow Program and Request type"
+endx x1 "No 'Clear filters' button\nOnly possible if there were no requests at all"
+goto g1 "Continues in: Dashboard › Filters › Payer, Program, Request type and Stage"
+goto g2 "Continues in: Dashboard › Filters › Pick a date range"
+
+s1 --> d1
+d1 -->|Yes| sc1 --> c1 --> p1 --> w1 --> p2 --> p3 --> sc2 --> e1
+d1 -->|No| sc0 -.-> g2
+w1 --> d2
+d2 -->|Yes| sc2
+d2 -->|No| p4
+p4 --> em1 & em2 & em3 & em4 & em5
+em4 --> d3
+d3 -->|Yes| c2 --> p1
+d3 -->|No| x1
+sc1 -.-> g1

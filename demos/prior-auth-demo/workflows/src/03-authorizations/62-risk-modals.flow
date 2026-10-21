@@ -1,0 +1,34 @@
+title: Authorizations › Case page › Risk analysis › Pop-ups
+route: /authorizations/case/R-1042?tab=risk
+intro: The two dialogs on the Risk analysis tab: the full list of comparable decisions, and the plain-words explanation of how the approval chance is calculated.
+dir: TD
+---
+group gA "See all"
+  click sa "Click 'See all' on 'Comparable decisions'"
+  overlay m1 "Dialog 'Comparable decisions'\n'6 of the closest matches from your own and the network's history'"
+  process rw "Six rows, each with who, match and an outcome pill\nThe three from the card, then three more"
+  process mr "The extra rows\n'Same payer, plan named, scores falling' (Network, close match)\n'Earlier attempt not documented' (Yours, close match)\n'Recent relapse, no step-down named' (Network, partial match)"
+  process dy "Outcomes use the request's own days\ne.g. 'Approved 14/14' or 'Approved 7/14' for a 14-day request"
+  click c1 "Click 'Close'"
+endgroup
+
+group gB "How it is calculated"
+  click hc "Click 'How it is calculated'"
+  overlay m2 "Dialog 'How the approval chance is calculated'\n'In plain words. Updated nightly.'"
+  agent s1 "1 Historian finds similar decisions\nSame payer and plan, level of care, diagnosis cluster, review type and documentation signals"
+  agent s2 "2 Forecaster starts from the base rate\nHow often the payer approved those requests as asked"
+  process s3 "3 It adds and takes away points\nEach row is something the draft shows, or does not show yet"
+  process s4 "4 The range says how sure it is\nWith little history it says 'Benchmark estimate'"
+  agent s5 "5 It is checked every night\nForecaster compares what it said with what payers decided"
+  process nt "Footer: 'It estimates how well the paperwork fits the payer's past decisions. It does not decide care, never blocks a request, and is never shown to payers or patients.'"
+  click c2 "Click 'Got it'"
+endgroup
+
+click cx "Click the X, click the dimmed area, or press Esc"
+end e "Dialog closes\nYou are back on Risk analysis, nothing changed"
+
+sa --> m1 --> rw --> mr --> dy --> c1 --> e
+m1 --> cx
+hc --> m2 --> s1 --> s2 --> s3 --> s4 --> s5 --> nt --> c2 --> e
+m2 --> cx
+cx --> e

@@ -1,0 +1,37 @@
+title: Dashboard › Header › Check all now and the demo clock
+route: /dashboard
+intro: The one button in the page header, and what the Demo menu's clock does to the numbers on this page. Time in the demo only moves when someone moves it.
+dir: TD
+---
+start s1 "Click 'Check all now'\nTop right of the headline card"
+process p1 "Button shows a spinner and is disabled for 1.2 seconds"
+agent a1 "Navigator looks at every open request\nReceived and Under review, whatever the filters say"
+store w1 "Each open request gets a history line\n'Navigator checked: received' or 'Navigator checked: under review'"
+toast t1 "'Navigator checked 18 open requests'\n'No new answers yet. It checks again in 30 minutes.'"
+end e1 "Button is ready again\nNo request changes stage"
+
+start s2 "Demo menu › Click 'Fast-forward 1 hour' or 'Fast-forward 1 day'"
+store c1 "Demo clock moves forward\nNothing else moves time"
+toast t2 "'Clock moved forward 1 hour' or '1 day'\n'Times in stage and deadlines updated.'"
+process p2 "Dashboard recomputes from the new time"
+
+group gClock "What the clock changes on the Dashboard"
+  process r1 "Table: time in stage grows\nOver 1.5 × typical shows 'late'; over 2 × shows 'very late'"
+  process r2 "Table: open denials count down\n'36 h left', '3 days left', then 'window closed'"
+  process r3 "Table order: very late and late rows move up"
+  process r4 "Stage strip: 'Appeal or call' counts 'deadlines this week' from the new time"
+  process r5 "Calendar: today moves, so the last pickable day and the shortcuts end on the new day"
+endgroup
+process p3 "Not changed: the default range Sep 21 – Oct 20, 2026, the stage counts and the payers figures"
+goto g1 "Continues in: Global shell › Demo menu"
+goto g2 "Continues in: Dashboard › Requests table › Read a row: bars, clock and what happens next"
+goto g3 "Continues in: Dashboard › Filters › Date range shortcuts, keys and the address"
+
+s1 --> p1 --> a1 --> w1 --> t1 --> e1
+s2 --> c1 --> t2 --> p2
+p2 --> r1 & r2 & r3 & r4 & r5
+r1 --> g2
+r2 --> g2
+r5 --> g3
+p2 -.-> p3
+s2 -.-> g1

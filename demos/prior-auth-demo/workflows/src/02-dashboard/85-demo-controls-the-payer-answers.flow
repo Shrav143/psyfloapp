@@ -1,0 +1,47 @@
+title: Dashboard › Request drawer › Demo controls: the payer answers
+route: /dashboard?request=R-1021
+intro: A dashed 'Demo controls' box at the bottom of every drawer lets the presenter pretend the payer replied. Nothing is sent anywhere. This diagram covers when the buttons work and the three replies that keep a request alive; approve, approve part and deny are in the next diagram.
+dir: TD
+---
+start s1 "Scroll to 'Demo controls' at the bottom of the drawer\nSix small buttons in a dashed box"
+decision d1 "Is the stage Preparing? (not sent yet)"
+decision d2 "Is it a denial? (ID starts with D-)"
+toast m1 "'It has not been sent yet. Sign and send it from Case Manager first.'"
+toast m2 "'A denial follows its own route in Denial Intelligence.'"
+toast m3 "'Pretend the payer answered this request. Nothing is sent anywhere.'"
+endx x1 "All six buttons are disabled"
+process p0 "Six buttons enabled:\n'Payer received it', 'Under review', 'Asks for information', 'Approves', 'Approves part', 'Denies'"
+ext x2 "Payer replies through its portal, fax or phone\n(demo: simulated by these buttons)"
+
+click c1 "Click 'Payer received it'"
+store w1 "Stage Received, bars at Received\nNavigator holds it; next step 'Navigator checks again in 30 minutes'\nTime in stage restarts; history 'Navigator checked: received'"
+click c2 "Click 'Under review'"
+store w2 "Stage Under review, bars at In review\nHistory 'Navigator checked: under review' and a dashed 'Caller will phone the payer if it is still pending'"
+click c3 "Click 'Asks for information'"
+store w3 "Stage Info requested (amber), needs you\nPacket holds it; next step 'Packet drafted the answer. Waiting for your review'\nHistory 'The payer asked for more information'"
+toast n1 "Notification 'Payer asked for info'\n'The payer wants more on R-1021. Packet drafted the answer.'"
+
+toast t0 "'Demo: payer payer received it'\n'The stage counts, the table and the notifications updated.'\nThe word 'payer' shows twice on screen"
+toast t1 "'Demo: payer under review' or 'Demo: payer asks for information'\n'The stage counts, the table and the notifications updated.'"
+screen sc "Dashboard behind the drawer\nThe tile counts, the row and its chip, bars and clock update at once\nIn a filtered list the row may drop out; the drawer stays open"
+screen sd "Drawer updates in place\nChip, action box, history and banner follow the new stage"
+
+click c4 "Click 'Approves', 'Approves part' or 'Denies'"
+goto g1 "Continues in: Dashboard › Request drawer › Demo controls: approve, approve part or deny"
+goto g2 "Continues in: Dashboard › Request drawer › Answer a payer information request"
+goto g3 "Continues in: Dashboard › Request drawer › Needs you and write-back boxes"
+
+s1 --> d1
+d1 -->|Yes| m1 --> x1
+d1 -->|No| d2
+d2 -->|Yes| m2 --> x1
+d2 -->|No| m3 --> p0 --> x2
+x2 --> c1 --> w1 --> t0
+x2 --> c2 --> w2 --> t1
+x2 --> c3 --> w3 --> n1 --> t1
+x2 --> c4 --> g1
+t0 --> sc
+t1 --> sc
+sc --> sd
+w3 -.-> g2
+sd -.-> g3

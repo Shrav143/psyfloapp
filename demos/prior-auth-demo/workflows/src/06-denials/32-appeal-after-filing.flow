@@ -1,0 +1,39 @@
+title: Denial Intelligence › Written appeal › After filing
+route: /denials?id=D-3318
+intro: A filed appeal (new, or seeded like D-3279, D-3284 and D-3272) shows a waiting banner and a read-only letter. The demo has no control that records the payer's decision; the boxes marked PRD show what happens in production.
+dir: TD
+also: Demo only: the 30-day decision date is fixed, the receipt is saved at filing, and fast-forwarding changes nothing on a filed appeal.
+---
+start s1 "A filed appeal is on screen (after 'Sign and file', or a seeded one)"
+screen b1 "Banner 'Appeal filed. Waiting on the payer' (or 'External review. Waiting on the payer')\n'filed 10/20, decision 11/19. Navigator checks every day and saves the answer to the case.'"
+screen h1 "Header pill 'Appeal filed, decision 11/19'\nList pill 'Decision 11/19'\nNo count-down: the payer has the clock"
+process p0 "'Your options' card is hidden"
+
+click c1 "Click 'View the appeal'"
+overlay o1 "Drawer 'Appeal letter · D-3318' (read only)\n'Filed by Medical director. decision 11/19'\nSeeded appeals read 'Filed. decision 11/02'"
+doc dc1 "Letter as filed\n'This is the letter that was filed.'\nEvidence list with greyed tick boxes"
+click c2 "Click 'Close', the X, press Esc, or click the dimmed area"
+
+wait w1 "Decision clock runs: 30 days from filing\n(PRD: from confirmed receipt; 72 hours when expedited)"
+wait w2 "Navigator checks for the decision each day\nShown in History as a scheduled step"
+ext x1 "PRD: receipt call 3 business days after sending\n'Not on file' means resend or a dispute file (not in the demo)"
+process p1 "Fast-forward moves the clock, but no status, pill or notification changes"
+decision d1 "Does the payer decide? (PRD)"
+ext x2 "Payer overturns the appeal"
+ext x3 "Payer upholds, or restores only part"
+end e1 "PRD: approval is added to the case, the ledger and the next review are updated"
+process p2 "PRD: next level is offered with its window: payer second level where it exists, then external review or state fair hearing\nOpens only when an operator confirms"
+endx e2 "Demo stops here: nothing records the decision of a filed appeal"
+end e3 "Back on the page, nothing changed"
+goto g1 "Continues in: Dashboard › Request drawer › Check now, Open case and closing"
+
+s1 --> b1 --> h1
+b1 --> p0
+b1 --> c1 --> o1 --> dc1 --> c2
+c2 --> e3
+b1 --> w1 --> w2
+w2 --> x1 --> d1
+w2 --> p1 --> e2
+d1 -->|Overturned| x2 --> e1
+d1 -->|Upheld or part| x3 --> p2
+h1 --> g1

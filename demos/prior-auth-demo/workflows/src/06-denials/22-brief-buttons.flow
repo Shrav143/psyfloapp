@@ -1,0 +1,48 @@
+title: Denial Intelligence › Peer-to-peer › Brief buttons
+route: /denials/D-3318/brief
+intro: The buttons on the brief page: 'Copy brief' and 'Print' (off in the hosted preview), and the call-time button. Recording the outcome has its own diagram.
+dir: TD
+---
+start s1 "The brief page is open"
+
+click c1 "Click 'Copy brief'"
+process p1 "The whole brief becomes plain text\nOpening, points, what they may say, the ask, dates, numbers, documents"
+decision d1 "Does the browser allow copying?"
+process p2 "Fallback: a hidden text box and the copy command, for pages opened as files"
+decision d2 "Did the fallback work?"
+toast t1 "'Brief copied'\n'Paste it into your notes before the call.'"
+toast t2 "'Could not copy'\n'Select the text on the page and copy it instead.'"
+
+click c2 "Click 'Print'"
+decision d3 "Is this the hosted preview?"
+toast t3 "'Print is off in this preview'\n'Open the single-file version of the demo to use it.'"
+process p3 "The browser print dialog opens"
+process p4 "Print layout hides the sidebar, top bar and buttons; only the brief is printed"
+doc dc1 "Paper or PDF copy of the brief"
+
+click c3 "Click 'Book the call' (or 'Change the call time' once booked)"
+goto g1 "Continues in: Denial Intelligence › Peer-to-peer › Book the call"
+click c4 "Click 'Record the call outcome'"
+goto g2 "Continues in: Denial Intelligence › Peer-to-peer › Record the call outcome"
+click c5 "Tick a box under 'Have these open'"
+store st1 "Tick saved on the denial\nThe box stays ticked next time"
+click c6 "Click the crumb 'Denial Intelligence'"
+goto g3 "Continues in: Denial Intelligence › A denial opened"
+end e1 "Notes are in the clipboard"
+end e2 "Brief is on paper"
+endx e3 "Nothing was copied"
+endx e4 "Nothing was printed"
+
+s1 --> c1 & c2 & c3 & c4 & c5 & c6
+c1 --> p1 --> d1
+d1 -->|Yes| t1 --> e1
+d1 -->|No| p2 --> d2
+d2 -->|Yes| t1
+d2 -->|No| t2 --> e3
+c2 --> d3
+d3 -->|Yes| t3 --> e4
+d3 -->|No| p3 --> p4 --> dc1 --> e2
+c3 --> g1
+c4 --> g2
+c5 --> st1
+c6 --> g3

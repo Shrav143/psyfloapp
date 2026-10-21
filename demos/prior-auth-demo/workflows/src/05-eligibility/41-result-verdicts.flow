@@ -1,0 +1,50 @@
+title: Authorizations › Eligibility & Benefits › Result › Which verdict and why
+route: /authorizations/eligibility/R-1042
+intro: The verdict is worked out from the patient's row, top question first. Any failed question gives 'Fix before billing'. If all pass, a missing authorization gives 'Authorization first'. Otherwise 'Cleared to bill'.
+dir: TD
+also: Three of the failures (service not covered, another plan pays first, limit used up) are written into the page but no demo patient reaches them.
+---
+start s1 "A result opens for a patient"
+decision q1 "Coverage active on the service date?"
+decision q2 "Service covered by the plan?"
+decision q3 "Clinic enrolled and in network?"
+decision q4 "Another plan pays first?"
+decision q5 "Every day or unit limit still has room?"
+decision q6 "Authorization needed but not approved?\n(required, in progress, under review, retro request open)"
+
+group gFix "Fix before billing (red)"
+  screen f0 "Verdict 'Fix before billing'"
+  process f1 "Coverage lapsed or ended\nHeadline 'Fix before billing: coverage lapsed 10/12.'"
+  process f2 "Coverage not found\nHeadline 'We could not find coverage.'"
+  process f3 "Clinic not enrolled\nHeadline 'Fix before billing: the clinic cannot bill yet.'"
+  process f4 "Service not covered, other plan, limit reached (no demo patient)\nHeadline starts 'Fix before billing:' then names the first failed check"
+  process f5 "Reason sentence is the detail of the first failed check"
+endgroup
+
+group gAuth "Authorization first (amber)"
+  screen a0 "Verdict 'Authorization first'"
+  toast a1 "Headline 'Covered, but you need an authorization first.'\n'Everything checks out except the authorization. Billing is safe as soon as Summit approves.'"
+endgroup
+
+group gOk "Cleared to bill (green)"
+  screen o0 "Verdict 'Cleared to bill'"
+  toast o1 "Headline 'Cleared to bill: the clinic will be paid.'\n'Coverage, benefits, authorization and enrollment all check out. The clinic can bill Summit for Residential 3.5 on 10/21/2026.'"
+endgroup
+
+goto g1 "Continues in: Authorizations › Eligibility & Benefits › Result › Next actions"
+
+s1 --> q1
+q1 -->|No: lapsed, ended| f1 --> f0
+q1 -->|No: not found| f2 --> f0
+q1 -->|Yes| q2
+q2 -->|No| f4 --> f0
+q2 -->|Yes| q3
+q3 -->|No| f3 --> f0
+q3 -->|Yes| q4
+q4 -->|Yes| f4
+q4 -->|No| q5
+q5 -->|No| f4
+q5 -->|Yes| q6
+q6 -->|Yes| a0 --> a1 --> g1
+q6 -->|No| o0 --> o1 --> g1
+f0 --> f5 --> g1

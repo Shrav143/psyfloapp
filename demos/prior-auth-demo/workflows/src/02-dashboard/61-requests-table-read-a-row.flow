@@ -1,0 +1,55 @@
+title: Dashboard › Requests table › Read a row: bars, clock and what happens next
+route: /dashboard
+intro: What each cell of a row means. The bars and the clock follow different rules for a normal request and for a denial (an ID that starts with D-). Nothing in these cells is a button except the case ID and Open.
+dir: TD
+---
+start s1 "A row in the Requests table"
+screen c1 "Case\nUnderlined ID, e.g. 'R-1042', and the request type, e.g. 'Admission'"
+screen c2 "Payer\nShort name: 'Summit Medicaid', 'Cardinal', 'Beacon PPO', 'Harborview MA', 'Lakeshore', 'Evergreen'\nProgram under it: 'Residential 3.5', 'IOP', 'PHP', 'Detox'"
+
+decision d1 "Is it a denial? (ID starts with D-)"
+screen w1 "Where it is\nChip such as 'Info requested' and four bars\n'Prepared, Received, In review, Decided'"
+screen w2 "Where it is\nChip such as 'Call booked' and four bars\n'Call, Appeal 1, Appeal 2, External'"
+process w3 "Bars: done are green, the current one is dark green (ochre when the chip is amber), later ones are grey\nHover shows 'Progress: Prepared, Received, In review, Decided. Now at In review.' or 'Route: Call, Appeal 1, Appeal 2, External. Now at Call.'"
+
+group gClock "Clock column"
+  decision k1 "Does the row carry a fixed note?"
+  screen k2 "Note, e.g. 'decision 11/02'\nUnder it 'filed 10/05'"
+  decision k3 "Is there a deadline (an open denial)?"
+  decision k4 "How much time is left?"
+  screen k5 "'window closed'"
+  screen k6 "'36 h left' in red\nUnder 2 days; under it e.g. 'peer-to-peer window'"
+  screen k7 "'3 days left' in ochre\nUnder 7 days; under it 'to resubmit' or 'to file'"
+  screen k8 "'12 days left' in plain text"
+  decision k9 "Is the stage Decided? (an approval)"
+  screen k10 "'today'\nUnder it 'approved 1 h 30 m ago'"
+  decision k11 "How long in this stage compared with typical?"
+  screen k12 "'1 d 14 h' and 'typical 1 d'\nOver 1.5 × typical adds ochre 'late'"
+  screen k13 "'4 d 12 h' and 'typical 2 d'\nOver 2 × typical adds red 'very late'"
+  screen k14 "'1 h 12 m' and 'typical 2 h'\nWithin typical, plain text"
+endgroup
+
+screen a1 "At stake\nMoney asked for, e.g. '$22.4K'"
+screen n1 "What happens next\nAgent badge and a line, e.g. 'Needs your input. Scribe has a question' or 'Navigator checks again in 5 minutes'"
+goto g1 "Continues in: Dashboard › Requests table › Order, rows and paging"
+goto g2 "Continues in: Dashboard › Header › Check all now and the demo clock"
+
+s1 --> c1 --> c2 --> d1
+d1 -->|No| w1 --> w3
+d1 -->|Yes| w2 --> w3
+w3 --> k1
+k1 -->|Yes| k2 --> a1
+k1 -->|No| k3
+k3 -->|Yes| k4
+k4 -->|Zero or less| k5 --> a1
+k4 -->|Under 2 days| k6 --> a1
+k4 -->|2 to 7 days| k7 --> a1
+k4 -->|7 days or more| k8 --> a1
+k3 -->|No| k9
+k9 -->|Yes| k10 --> a1
+k9 -->|No| k11
+k11 -->|Over 1.5 times| k12 --> a1
+k11 -->|Over 2 times| k13 --> a1
+k11 -->|Within typical| k14 --> a1
+a1 --> n1 --> g1
+k11 -.-> g2

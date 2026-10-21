@@ -1,0 +1,43 @@
+title: Global shell › Top bar › Three controls and how drawers close
+route: Every page (top bar, right side)
+intro: The top bar holds three controls: the Demo menu, the 'Ask FLO' button and the 'Notifications' bell. The two drawers close the same three ways. There is no search box and no page title in the bar.
+dir: TD
+also: Privacy mode is not a control. It is always on and is explained on the Settings page. The Demo menu is for the demo only and is not part of the product.
+---
+start s1 "Any page is open"
+screen tb "Top bar (stays at the top while the page scrolls)\n'Demo' with the clock, 'Ask FLO' sparkle button, 'Notifications' bell"
+
+click cDemo "Click 'Demo'\n(the pill shows the clock, for example 'Tue 10:42 am')"
+overlay oDemo "Demo menu opens under the button"
+goto gDemo "Continues in: Global shell › Demo menu › Open, close and what is inside"
+
+click cAsk "Click 'Ask FLO'"
+overlay oAsk "Ask FLO drawer slides in from the right (460 px)"
+goto gAsk "Continues in: Global shell › Top bar › Ask FLO › Ask a question"
+
+click cBell "Click 'Notifications'\n(red dot on the bell when anything is unread)"
+overlay oNot "Notifications drawer slides in from the right (440 px)"
+goto gNot "Continues in: Global shell › Top bar › Notifications › Open, read, click through"
+
+process dim "The page behind is dimmed. The dimmed area covers the top bar, so the three buttons cannot be clicked while a drawer is open"
+process one "Only one drawer is open at a time: the app keeps Ask FLO and Notifications exclusive"
+
+decision dClose "How does the person close a drawer?"
+click kEsc "Press Escape\n(works wherever the cursor is)"
+click kX "Click 'X' (Close) in the drawer header"
+click kScrim "Click the dimmed area"
+process closed "Drawer closes. The page underneath is exactly as it was, including scroll and filters"
+process keep "Nothing typed is lost: the Ask FLO chat and any unsent question stay for the next time it opens"
+end e1 "Back on the page"
+
+s1 --> tb
+tb --> cDemo --> oDemo --> gDemo
+tb --> cAsk --> oAsk --> gAsk
+tb --> cBell --> oNot --> gNot
+oAsk --> dim
+oNot --> dim
+dim --> one --> dClose
+dClose -->|Keyboard| kEsc
+dClose -->|Mouse| kX
+dClose -->|Mouse| kScrim
+kEsc & kX & kScrim --> closed --> keep --> e1

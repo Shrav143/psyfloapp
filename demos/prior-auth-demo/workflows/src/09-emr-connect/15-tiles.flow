@@ -1,0 +1,53 @@
+title: EMR Connect › Page › What each tile shows
+route: /emr
+intro: The four tiles at the top follow the state below them. They are not buttons. This diagram shows what each one says and what moves it.
+dir: TD
+also: Times follow the Demo clock. Demo, Fast-forward ages the 'ago' labels but never runs a sync.
+---
+screen p1 "EMR Connect\nFour tinted tiles above Connected systems"
+
+group gSync "Tile 1: Last sync"
+  decision q1 "Is any system not disconnected?"
+  process a1 "'None' in red\nSmall line: 'no system connected' (empty list) or 'N systems are disconnected'"
+  process a2 "Value is the time since the newest sync\n'Just now', '6 min', '1 h 6 min'"
+  decision q2 "Is any system disconnected?"
+  process a3 "Green tile\n'all systems answering'"
+  process a4 "Amber tile\n'1 system is disconnected' or 'N systems are disconnected'"
+endgroup
+
+group gCharts "Tile 2: Charts matched today"
+  process b1 "23 'to open cases'\nStarts at 23 on reset"
+  store b2 "Each finished sync adds its charts\n1 to 3, at least 1 per system"
+endgroup
+
+group gFiles "Tile 3: Files pulled"
+  process c1 "142 'this week'\nStarts at 142 on reset"
+  store c2 "Each finished sync adds its files\nA new system adds 5"
+endgroup
+
+group gMap "Tile 4: Need a mapping"
+  decision d1 "Any field waiting for a mapping?"
+  process d2 "Number in amber\n'fields the agents could not place'"
+  process d3 "0 in green\n'every field is mapped'"
+endgroup
+
+process n1 "A system that Needs a quick look still counts as answering\nOnly Disconnected systems change this tile"
+goto g1 "Continues in: EMR Connect › Sync › Sync now"
+goto g2 "Continues in: EMR Connect › Connect a system › Run the connection test and save"
+goto g3 "Continues in: EMR Connect › Needs a mapping › Map a field"
+goto g4 "Continues in: EMR Connect › Manage › Disconnect and reconnect"
+
+p1 --> q1 & b1 & c1 & d1
+q1 -->|No| a1
+q1 -->|Yes| a2 --> q2
+q2 -->|No| a3
+q2 -->|Yes| a4
+a2 -.-> n1
+a1 --> g4
+a4 --> g4
+b1 --> b2 --> g1
+c1 --> c2
+c2 --> g1
+c2 --> g2
+d1 -->|Yes| d2 --> g3
+d1 -->|No| d3

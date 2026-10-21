@@ -1,0 +1,43 @@
+title: Authorizations › New case › Referral › The referrer replies
+route: /authorizations/new/:draftId?ref=RF-2053
+intro: After a request goes out the referral waits. In the demo one button plays the referrer's answer; Reader reads it and the checklist updates.
+dir: TD
+also: Demo only: the real referrer's answer (fax, e-referral, email or call) is simulated by 'Demo: the referrer replies' or More › 'Demo: simulate the referrer's reply'.
+---
+start s1 "Referral is Awaiting info\nafter 'Send request'"
+screen sc1 "Checklist while waiting\nAsked rows read 'Waiting on the referrer. Asked by email, just now.'\nOnly 'Mark OK' stays on those rows"
+wait w1 "Time passes\nThe referral stays Awaiting info"
+ext x1 "Referrer answers by fax, e-referral, email or phone\n(demo: simulated)"
+
+group gBtn "The demo button"
+  click c1 "Checklist: click 'Demo: the referrer replies'"
+  click c2 "Full page: click More › 'Demo: simulate the referrer's reply'"
+  decision d1 "Is the referral Awaiting info?"
+  toast t1 "'Nothing to answer yet'\n'Use Request information first. The demo reply answers an open request.'"
+endgroup
+
+agent a1 "Reader reads the reply and runs the nine checks again"
+process p1 "Fixed by the reply: signed order, current dates, a cosigning clinician, an ICD-10 code, missing form parts, level of care, phone number"
+decision d2 "Did the referral have no insurance?"
+process p2 "An insurance card arrives: Summit Medicaid HMO, member ID …4410\nCoverage has not been checked yet"
+decision d3 "Is the patient under 18?"
+process p3 "Age is not fixed by a reply\nThe row stays 'Check this'"
+
+store st1 "Referral is In review again\nFixed rows read 'Resolved by the referrer's reply'"
+process p4 "Timeline: 'Reply received from … by email'\n'Reader read the reply and updated the extracted fields'\n'Validation ran again: 3 findings resolved, 9 of 9 checks passed' (fewer if age failed)"
+toast t2 "'The referrer replied'\n'3 findings resolved. RF-2053 is back In review.'"
+toast t3 "Bell 'The referrer replied'\n'Crisis line 988 follow-up answered RF-2053. Reader read the reply and 3 findings are resolved.'"
+screen sc2 "Checklist after the reply\n'11 of 11 ready', 'Nothing is missing'\n'Run coverage check' is available"
+goto g1 "Continues in: New case › Referral › Accept a referral"
+
+s1 --> sc1 --> w1 --> x1
+x1 --> c1 --> d1
+x1 --> c2 --> d1
+d1 -->|No| t1
+d1 -->|Yes| a1 --> p1 --> d2
+d2 -->|Yes| p2 --> d3
+d2 -->|No| d3
+d3 -->|Yes| p3 --> st1
+d3 -->|No| st1
+st1 --> p4 --> t2 --> sc2 --> g1
+p4 -.-> t3

@@ -1,0 +1,37 @@
+title: Payers › Changes › Read what changed
+route: /payers/cardinal?tab=changes
+intro: The Changes tab has three parts from top to bottom: the state of the payer's rules (a waiting change or 'up to date'), any proposals from Historian, and a dated history called 'What changed'. Only the waiting change and the proposals need a person.
+dir: TD
+---
+start s1 "Click the 'Changes' tab\n(the badge shows how many wait)"
+screen tab "Changes tab"
+decision dp "Is a payer change waiting?"
+screen bw "Ochre banner with a megaphone\nTitle: 'Criteria changed, version 2026.3'\nWhat changed in one sentence\nWho can redraft which drafts, then two buttons"
+toast bg "Green banner\n'This payer's rules are up to date'\nLast checked 10/12. Sentinel keeps watching Beacon's policy and portal."
+decision dq "Any proposals from Historian?"
+screen pc "One card per proposal\nHistorian chip, 'Proposal: ...', text,\n'Under Follow up: If ... leads to Phone step'\n'Accept proposal', 'Dismiss'"
+process pn "Proposals do not turn the list dot or the sidebar badge;\nonly the tab badge counts them"
+screen hist "'What changed' card\nOne row per entry, newest first\nDate (10/17), bold title, one grey sentence"
+process ex "Cardinal's history\n10/17 Criteria changed (version 2026.3)\n10/12 IOP continued-stay denials up 31% in 7 days\n09/30 Portal maintenance on Sundays, 2 to 4 am\n09/02 New form for retro requests"
+process ro "History is read only\nNo search, filter or reopen"
+process add "New rows are added at the top\nwhen a change is updated"
+click ca "Click 'Acknowledge change'"
+click cu "Click 'Update 4 drafts'"
+click cac "Click 'Accept proposal' or 'Dismiss'"
+goto g1 "Continues in: Payers › Changes › Acknowledge a change"
+goto g2 "Continues in: Payers › Changes › Update drafts after a change"
+goto g3 "Continues in: Payers › Process › Re-learn from decisions"
+goto g4 "Continues in: Payers › Changes › A change with no drafts"
+end e1 "Person knows what changed and what is waiting"
+
+s1 --> tab --> dp
+dp -->|Yes| bw --> dq
+dp -->|No| bg --> dq
+bw --> ca --> g1
+bw --> cu --> g2
+dq -->|Yes| pc --> hist
+dq -->|No| hist
+pc --> cac --> g3
+pc -.-> pn
+hist --> ex --> ro --> add --> e1
+bw -.-> g4

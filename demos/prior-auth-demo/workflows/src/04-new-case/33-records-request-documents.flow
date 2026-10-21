@@ -1,0 +1,83 @@
+title: Authorizations › New case › Medical records › Request and document rows
+route: /authorizations/new/:draftId (step 2, Request and Documents lists)
+intro: Request rows are typed or picked in a small editor. Document rows list what the payer asks for, and each one is added, looked at or taken out with the buttons on the row. There is no 'Replace' or 'Mark not available' button in the demo.
+dir: TD
+---
+start s1 "On step 2, read the Request and Documents lists"
+screen sc "Request: Level of care, Request type, Start date, Diagnoses (ICD-10), Reason for the request\nDocuments: one row for each document the payer asks for"
+
+group gReq "Request rows"
+  click cLvl "Click 'Add' or 'Edit' on 'Level of care'"
+  input iLvl "Pick 'Level of care'\nResidential 3.5, IOP, PHP or Detox"
+  process pLvl "Editor closes at once, no 'Done'\nThe document list is rebuilt for this payer and level of care"
+  click cType "Click 'Add' or 'Edit' on 'Request type'"
+  input iType "Pick 'Request type'\nInitial request, Admission, Continued stay, Recertification, Retro-authorization"
+  process pType "Editor closes at once\nAdmission adds 'notice due in about 5 hours', Retro-authorization 'window closes in about 18 hours'"
+  click cStart "Click 'Edit' on 'Start date' (Recommended)"
+  input iStart "Pick the 'Requested start date'\nStarts as today, Tue Oct 20, 2026"
+  click cDx "Click 'Add' on 'Diagnoses (ICD-10)' (Recommended)"
+  input iDx "Type in 'Add a diagnosis'\nExample: F10 or alcohol"
+  process pDx "Up to six matches from 13 codes\nCodes already added are hidden"
+  click cPickDx "Click a match"
+  process pChip "A chip with the code is added and the box clears"
+  click cRemDx "Click the x on a chip ('Remove F10.20')"
+  click cReason "Click 'Add' on 'Reason for the request' (Recommended)"
+  input iReason "Type one or two plain sentences\n'Scribe uses it in the summary.'"
+  click cDone "Click 'Done', or press Escape in a text box"
+  store stReq "Draft updated as you type\nIf the agents had already run, the run restarts"
+endgroup
+
+group gDocs "Document rows"
+  process pList "The payer and level of care decide the list\nSummit Residential 3.5: 9 documents, 7 required\nNo payer yet: only the referral and the diagnosis report"
+  decision dRow "What does the row hold?"
+  process rMiss "Required, empty: 'Not found yet. Drop it above or add it here.'\nButtons 'Add file' and 'Use sample file'"
+  process rOpt "Recommended, empty: 'You can continue without it.'\nSame two buttons"
+  process rRef "Referral row, empty: also 'Add a referral'"
+  process rFile "File in place: name, then 'N checks passed' or 'Check this' with the finding"
+  process rExtra "File the payer does not ask for: tagged 'Not on the list'"
+  click cAdd "Click 'Add file'"
+  input iFile "Choose one file in the picker"
+  click cSample "Click 'Use sample file'"
+  agent aRead "Reader reads the file for about 1 second\nRow shows 'Reader is reading'"
+  click cEye "Click the eye ('View FILE NAME')"
+  overlay oView "Drawer: the document name, 'FILE NAME · 186 KB'\nPage 1 of 3 with Evidence and 'What Reader checked'"
+  click cClose "Press Escape or click the drawer's close button"
+  click cX "Click the x ('Remove FILE NAME')"
+  store stDrop "Document taken out\nThe row goes back to missing or recommended"
+  process pSwap "To swap a file: remove it and 'Add file'\nOr drop a file whose name fits the same slot, which replaces it"
+  click cView "Click 'View' on the referral that came with the case"
+  goto gRef "Continues in: New case › Referral step"
+  click cAddRef "Click 'Add a referral'"
+endgroup
+
+s1 --> sc
+sc --> cLvl --> iLvl --> pLvl
+sc --> cType --> iType --> pType
+sc --> cStart --> iStart --> cDone
+sc --> cDx --> iDx --> pDx --> cPickDx --> pChip
+pChip --> cRemDx
+sc --> cReason --> iReason --> cDone
+cRemDx --> stReq
+cDone --> stReq
+pLvl --> stReq
+pType --> stReq
+pChip --> cDone
+pLvl -.-> pList
+
+sc --> pList --> dRow
+dRow -->|Required, no file| rMiss
+dRow -->|Recommended, no file| rOpt
+dRow -->|Referral, no file| rRef
+dRow -->|File in place| rFile
+dRow -->|Not on the payer's list| rExtra
+rMiss --> cAdd
+rMiss --> cSample
+rOpt --> cAdd
+rRef --> cAddRef --> gRef
+cAdd --> iFile --> aRead
+cSample --> aRead
+aRead --> rFile
+rFile --> cEye --> oView --> cClose
+rFile --> cX --> stDrop --> pSwap
+rFile --> cView --> gRef
+stDrop -.-> stReq

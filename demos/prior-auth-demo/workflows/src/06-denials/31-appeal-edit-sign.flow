@@ -1,0 +1,50 @@
+title: Denial Intelligence › Written appeal › Edit, sign and file
+route: /denials?id=D-3318
+intro: With the letter drafted, the person edits it, picks the evidence, saves a draft, and a licensed clinician signs. Navigator files only after the signature.
+dir: TD
+also: Demo only: Navigator's filing through the payer's portal is simulated (about one second).
+---
+start s1 "The appeal drawer is open with the drafted letter"
+input i1 "Edit the letter text\n(box 'Appeal letter')"
+input i2 "Tick or untick items under 'Evidence to attach'"
+click c1 "Click 'Save draft'"
+store st1 "Letter and evidence saved on the denial\nStatus does not change"
+toast t1 "'Draft saved'\n'It stays in Denial Intelligence until a clinician signs.'"
+
+click c2 "Click 'Sign and file'"
+overlay o1 "Modal 'Sign and file the appeal'\n'Sign-off gate. A licensed clinician signs every appeal.'"
+input i3 "'Signing as' (required)\nMedical director (chosen at first), Clinical director, Treating clinician (licensed)"
+input i4 "Tick: 'I reviewed this letter against the chart. Every statement is accurate and supported by the evidence attached.'"
+decision d1 "Is the box ticked?"
+process p1 "'Sign and file' stays greyed out"
+click c3 "Click 'Sign and file' in the modal"
+wait w1 "Button reads 'Navigator is filing' for about a second\n'Cancel' and Esc do nothing meanwhile"
+
+store st2 "Appeal filed: letter, evidence, who signed, time, decision date\nHistory: 'You signed the appeal as Medical director' with 'Attested that the letter was reviewed against the chart.'"
+ext x1 "Payer's portal takes the appeal (demo: simulated)"
+agent a1 "Navigator files it through the payer's portal and saves the receipt"
+store st3 "Request: chip 'Appeal filed', 'Waiting on the payer'\nDeadline cleared; 'filed 10/20', 'decision 11/19'"
+toast t2 "'Appeal filed'\n'Cardinal decides by 11/19. It shows on the Dashboard.'"
+toast t3 "Notification 'Appeal filed' from Navigator\nOpens the request on the Dashboard"
+process p2 "Drawer closes\nBanner 'Appeal filed. Waiting on the payer'\n'Your options' card is gone"
+
+click c4 "Click 'Cancel' or the X in the modal"
+process p3 "Back to the open drawer, nothing filed"
+click c5 "Press Esc while the modal is open"
+endx e1 "Both modal and drawer close\nEdits since the last 'Save draft' are lost"
+goto g1 "Continues in: Denial Intelligence › Written appeal › After filing"
+goto g2 "Continues in: Dashboard › Request drawer › Open and read a request"
+
+s1 --> i1 --> c1
+s1 --> i2 --> c1
+c1 --> st1 --> t1
+s1 --> c2 --> o1
+o1 --> i3 --> d1
+o1 --> i4 --> d1
+d1 -->|No| p1
+d1 -->|Yes| c3 --> w1 --> st2
+st2 --> x1 --> a1 --> st3 --> t2 --> p2
+st3 --> t3 --> g2
+p2 --> g1
+o1 --> c4 --> p3
+o1 --> c5 --> e1

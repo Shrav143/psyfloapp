@@ -1,0 +1,52 @@
+title: Denial Intelligence › Open denials list
+route: /denials?id=D-3318
+intro: The 'Open denials' card on the right of the page: which denials are listed, how they are ordered, what each row says, the 'Closed' section, and what a click on a row does.
+dir: TD
+---
+start s1 "Arrive on Denial Intelligence"
+screen sc1 "'Open denials' card, right of the page\nCount pill, then one row per open denial"
+process p1 "Open denial = a request in the Dashboard's 'Appeal or call' stage"
+decision d1 "Any open denials?"
+toast t1 "'No open denials. Everything sent is approved or waiting.'"
+process p2 "Count pill shows the number\nRed pill when there are open denials, green at 0"
+
+process p3 "Sorted by time left on the deadline, nearest first\nOverdue denials go to the top"
+process p4 "Filed appeals have no deadline of ours, so they come last, in id order"
+process p5 "At the start: D-3318, D-3297, D-3290, D-3301, then D-3272, D-3279, D-3284"
+
+screen r1 "One row\nD-id (underlined), program chip, one-line summary\n'$ at stake · N% win chance'"
+process p6 "Program chip: Res., IOP, PHP or Detox\nSummary example: 'Units cut 48 to 30'"
+decision d2 "What does the route pill say?"
+screen rp1 "Call booked with a time: 'Call Wed 10/21 1 pm'"
+screen rp2 "Peer-to-peer window: 'P2P in 36 h'"
+screen rp3 "Written appeal: 'Appeal in 41 d'\nResubmission: 'Resubmit in 5 d'"
+screen rp4 "Filed: 'Decision 11/02' (grey, no count-down)"
+screen rp5 "Time is up: 'Window closed' (red)"
+process p7 "Colour of a count-down: red under 2 days, ochre under 7 days, grey otherwise"
+
+screen cl1 "'Closed' section under the open rows\nOnly when a denial was accepted, overturned or partly restored here"
+process p8 "Closed rows show the result as the pill: 'Accepted', 'Overturned' or 'Partly restored'"
+
+click c1 "Click a row (a button: Tab to it, then Enter or Space)"
+process p9 "Address becomes ?id=D-xxxx\nRow is highlighted"
+process p10 "Left side loads that denial: title, header, banner, analysis, options, history"
+click c2 "Click 'See on the Dashboard' (top right of the page)"
+goto g1 "Continues in: Denial Intelligence › A denial opened"
+goto g2 "Continues in: Dashboard › Request drawer › Open and read a request"
+end e1 "The chosen denial is on screen"
+
+s1 --> p1 --> sc1 --> d1
+d1 -->|No| t1
+d1 -->|Yes| p2 --> p3 --> p4 --> p5
+p5 --> r1 --> p6 --> d2
+d2 -->|Call booked| rp1
+d2 -->|Call window open| rp2
+d2 -->|Appeal or resubmit| rp3
+d2 -->|Filed| rp4
+d2 -->|Time is up| rp5
+rp2 --> p7
+rp3 --> p7
+sc1 --> cl1 --> p8
+r1 --> c1 --> p9 --> p10 --> e1
+e1 --> g1
+sc1 --> c2 --> g2

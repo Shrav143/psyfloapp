@@ -1,0 +1,43 @@
+title: Payers › Edit log
+route: /payers/:id
+intro: The 'Edit log' button opens a read-only drawer listing every edit to this payer, newest first, with who, when, why and the old and new text. It is the only record of a change: there is no undo or revert button.
+dir: TD
+---
+start s1 "Click 'Edit log'\nin the payer header"
+overlay dr "Edit log drawer\n'Every edit to Summit Medicaid HMO, newest first'"
+decision any "Has anything been edited for this payer?"
+screen em "'No edits yet'\nEvery edit to a workflow, rules, script or document list is logged here\nwith your name, the time and your reason."
+screen ent "One card per edit\nArea chip, bold 'what changed'"
+process who "Line under it: 'Jordan Perez · Tue 10:42 am · Reason: ...'"
+screen ba "Two boxes with an arrow\nRed 'Before' (or 'Nothing' for an addition)\nGreen 'After' (or 'Removed' for a removal)"
+
+group gA "Where entries come from (area chip)"
+  store a1 "Workflow\nSave workflow, Accept proposal"
+  store a2 "Rules\nSave a rule"
+  store a3 "Documents\nSave a document list,\nand documents added by a payer change"
+  store a4 "Caller instructions\nSave the script"
+  store a5 "Payer details\nEdit payer, Add a payer"
+endgroup
+
+process cnt "Header button count 'Edit log (3)'\ncounts entries for this payer only\nEach changed field is its own entry"
+process ro "Read only\nNo search, filter, revert or export"
+click cc "Click the X ('Close'),\npress Escape or click the dimmed area"
+end e1 "Drawer closes\nPage underneath unchanged"
+goto g1 "Continues in: Payers › Process › Save the workflow"
+goto g2 "Continues in: Payers › Rules › Edit a rule"
+goto g3 "Continues in: Payers › Documents › Edit the list"
+
+s1 --> dr --> any
+any -->|No| em --> cc
+any -->|Yes| ent --> who --> ba --> cc
+ent --> cnt
+dr -.-> ro
+cc --> e1
+a1 --> ent
+a2 --> ent
+a3 --> ent
+a4 --> ent
+a5 --> ent
+a1 -.-> g1
+a2 -.-> g2
+a3 -.-> g3

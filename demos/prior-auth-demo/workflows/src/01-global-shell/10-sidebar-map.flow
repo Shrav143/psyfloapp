@@ -1,0 +1,74 @@
+title: Global shell › Sidebar › Where every item goes
+route: Every page (sidebar on the left)
+intro: The sidebar is on every page. Each row below is one click and the page it opens. Number bubbles, the Authorizations group and the green highlight have their own diagrams.
+dir: LR
+also: The logo 'psyflo.', the caption 'Prior auth & UR', the captions 'Main' and 'Connections' and the 'Demo data' tile are labels only. Nothing happens when they are clicked.
+---
+start s1 "Any page is open"
+screen sb "Sidebar\nLogo, then Main, Connections and the footer"
+
+group gFoot "Footer"
+  click cSet "Click 'Settings'"
+  process pSet "Go to /settings"
+  goto gSet "Continues in: Settings"
+
+  click cHelp "Click 'Help'"
+  click cOut "Click 'Sign out'"
+  goto gFoot2 "Continues in: Global shell › Sidebar footer › Settings, Help, Sign out, user card"
+endgroup
+
+group gConn "Connections"
+  click cEmr "Click 'EMR Connect'"
+  process pEmr "Go to /emr"
+  goto gEmr "Continues in: EMR Connect"
+
+  click cPay "Click 'Payers'"
+  process pPay "Go to /payers"
+  goto gPay "Continues in: Payers"
+endgroup
+
+group gMain "Main"
+  click cDash "Click 'Dashboard'"
+  process pDash "Go to /dashboard"
+  goto gDash "Continues in: Dashboard"
+
+  click cAuth "Click 'Authorizations'"
+  process pAuth "Go to /authorizations\nThe group opens under it"
+  goto gAuth "Continues in: Authorizations › Queue"
+
+  click cNew "Click 'New case'\n(listed under Authorizations)"
+  process pNew "Go to /authorizations/new\nA blank draft is started"
+  goto gNew "Continues in: New case"
+
+  click cElig "Click 'Eligibility & Benefits'\n(listed under Authorizations)"
+  process pElig "Go to /authorizations/eligibility"
+  goto gElig "Continues in: Eligibility & Benefits"
+
+  click cDen "Click 'Denial Intelligence'"
+  process pDen "Go to /denials"
+  goto gDen "Continues in: Denial Intelligence"
+
+  click cMgr "Click 'Case Manager'"
+  process pMgr "Go to /manager\nActive cases tab"
+  goto gMgr "Continues in: Case Manager"
+
+  click cAna "Click 'Analytics'"
+  process pAna "Go to /analytics"
+  goto gAna "Continues in: Analytics"
+endgroup
+
+
+s1 --> sb
+sb --> cDash & cAuth & cNew & cElig & cDen & cMgr & cAna & cEmr & cPay & cSet & cHelp & cOut
+cDash --> pDash --> gDash
+cAuth --> pAuth --> gAuth
+cNew --> pNew --> gNew
+cElig --> pElig --> gElig
+cDen --> pDen --> gDen
+cMgr --> pMgr --> gMgr
+cAna --> pAna --> gAna
+cEmr --> pEmr --> gEmr
+cPay --> pPay --> gPay
+cSet --> pSet --> gSet
+cHelp --> gFoot2
+cOut --> gFoot2

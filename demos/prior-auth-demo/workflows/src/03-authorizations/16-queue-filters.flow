@@ -1,0 +1,71 @@
+title: Authorizations › Queue › Search and filter
+route: /authorizations
+intro: The search box and the three menus (Payer, Status, Urgency), how they combine, what the page says when nothing matches, and the empty message that cannot appear in the demo data.
+dir: TD
+also: Demo only: filters are kept while you move around the app (not in the web address) and are cleared by Reset demo data. 'Nothing needs you today' cannot appear with the seed data, because requests waiting on a payer always stay open.
+---
+screen fb "Filter bar under the tiles\nSearch box, Payer, Status, Urgency"
+
+group gS "Search"
+  click sk "Press '/' anywhere\n(not while typing in a field)"
+  process sf "Cursor jumps to the search box"
+  input s1 "Type in 'Search by case ID or initials'"
+  process sm "Matches the ID or the initials\nIgnores case, dots, dashes and spaces\n'r1042' and 'jm' both find R-1042 (J.M.)"
+endgroup
+
+group gP "Payer"
+  click p1 "Click 'Payer'"
+  overlay p2 "Menu: All payers, Summit Medicaid HMO, Cardinal Health Plan, Evergreen, Beacon PPO, Harborview MA, Lakeshore Behavioral"
+  input p3 "Pick a payer"
+endgroup
+
+group gT "Status"
+  click st1 "Click 'Status'"
+  overlay st2 "Menu: All statuses, Needs your input, Preparing, Ready to sign, With the payer, Denial route"
+  input st3 "Pick a status"
+  process st4 "'Needs your input' = requests flagged as needing you\nThe others = the request's phase"
+endgroup
+
+group gU "Urgency"
+  click u1 "Click 'Urgency'"
+  overlay u2 "Menu: All urgency, Act now, Due within 24 hours, Due this week"
+  input u3 "Pick an urgency"
+endgroup
+
+process kb "In any menu: Up and Down move, Enter picks, Esc or a click outside closes it"
+process ap "Filters stack: a request must pass every one\nA menu that is not on its default turns green"
+store keep "Filters are kept in the app for this session"
+screen hd "Header: 'X of 56 open requests match these filters.'"
+click clr "Click 'Clear filters'\n(appears once any filter is on)"
+decision dAny "Any request left?"
+screen res "Bands show only the matching requests\nBand counts follow"
+screen emp "'No requests match these filters'\n'The filters hide all 56 open requests.'"
+click ce "Click 'Clear filters' in the message"
+process rs "Search empty, All payers, All statuses, All urgency, payer-signal filter off"
+
+decision dOpen "Are there any open requests at all?"
+end e1 "Every band is listed again"
+screen none "'Nothing needs you today'\n'Every open request has been sent. Case Manager shows what is scheduled next.'"
+click ocm "Click 'Open Case Manager'"
+goto gCM "Continues in: Case Manager › Active cases"
+goto gSig "Continues in: Authorizations › Queue › Cardinal payer signal"
+
+fb --> sk --> sf --> s1
+s1 --> sm
+fb --> p1 --> p2 --> p3
+fb --> st1 --> st2 --> st3 --> st4
+fb --> u1 --> u2 --> u3
+p2 -.-> kb
+sm --> ap
+p3 --> ap
+st4 --> ap
+u3 --> ap
+ap --> keep
+ap --> hd --> dOpen
+ap --> clr --> rs
+dOpen -->|Yes| dAny
+dOpen -->|No| none --> ocm --> gCM
+dAny -->|Yes| res
+dAny -->|No| emp --> ce --> rs
+rs --> e1
+fb --> gSig

@@ -1,0 +1,59 @@
+title: Authorizations › New case › Referral › Checklist buttons
+route: /authorizations/new/:draftId?ref=RF-2053
+intro: The buttons around the referral checklist: replace the documents, ask the referrer, decline, open the full page, and the main button, which changes with the referral's status.
+dir: TD
+also: Demo only: 'Demo: the referrer replies' stands in for the referrer answering.
+---
+start s1 "On the referral checklist"
+screen sc1 "Referral checklist\nPatient card, four sections, buttons below"
+
+group gTop "Above the card"
+  click cDiff "Click 'Use different documents'"
+  process pDiff "Address becomes ?ref= (empty), so the start screen shows\nThe case keeps its old referral until you continue"
+endgroup
+goto gStart "Continues in: New case › Referral › Start screen"
+
+group gFoot "Under the sections"
+  decision dAsk "Open, not waiting, and something to ask?\n(age is never counted)"
+  click cFoot "Click 'Ask the referrer for the missing item'\nor '…for the 4 missing items'"
+  click cDec "Click 'Decline'\n(only while open)"
+  decision dWait "Awaiting info?"
+  click cDemo "Click 'Demo: the referrer replies'"
+  click cFull "Click 'Open the full referral'"
+endgroup
+goto gAsk "Continues in: New case › Referral › Ask the referrer"
+goto gOk "Continues in: New case › Referral › Mark OK or decline"
+goto gFull "Continues in: New case › Referral › The full referral page"
+
+decision dSt "Referral status?"
+click cAcc "Click 'Accept referral and continue'\nNever disabled while the referral is open"
+process pAcc "Open items are only listed in the Accept dialog\nYou can accept anyway"
+goto gAcc "Continues in: New case › Referral › Accept a referral"
+toast tAcc "Green banner\n'Accepted into IOP. Target admission 10/21/2026.'"
+click cCont "Click 'Continue to medical records'"
+process pCont "Referral goes into the case\nPatient, payer, level of care, diagnoses, reason\nReferral becomes the first document"
+toast tCont "'Referral RF-2054 is in this case'\n'V.C., 30. Next, add the medical records.'"
+goto gMed "Continues in: New case › Medical records"
+toast tDec "Red banner\n'Declined: Needs a higher level of care.'"
+click cRe "Click 'Reopen referral'"
+store stRe "Referral is In review again\nDecision cleared"
+toast tRe "'Referral reopened'\n'RF-2048 is back In review.'"
+endx eAdm "Admitted: the card has no main button"
+
+s1 --> sc1
+sc1 --> cDiff --> pDiff --> gStart
+
+sc1 --> dAsk
+dAsk -->|Yes| cFoot --> gAsk
+dAsk -->|No| cDec
+sc1 --> cDec --> gOk
+sc1 --> dWait
+dWait -->|Yes| cDemo --> gAsk
+dWait -->|No| cFull
+sc1 --> cFull --> gFull
+
+sc1 --> dSt
+dSt -->|New, In review, Awaiting info| cAcc --> pAcc --> gAcc
+dSt -->|Accepted or Scheduled| tAcc --> cCont --> pCont --> tCont --> gMed
+dSt -->|Declined| tDec --> cRe --> stRe --> tRe
+dSt -->|Admitted| eAdm

@@ -1,0 +1,54 @@
+title: Authorizations › New case › Referral › Header actions
+route: /authorizations/new/referral/RF-2053?draft=draft-1001
+intro: The buttons in the header card of the full referral page. The decision buttons open the same dialogs as the checklist. 'Owner', 'Add note' and 'More' are only here.
+dir: TD
+also: Demo only: 'Demo: simulate the referrer's reply' plays the referrer. 'Download' and the print button save nothing.
+---
+start s1 "On the full referral page\nheader card"
+
+group gDec "Decision buttons (left)"
+  click cAcc "Click 'Accept referral'\nWhile open"
+  click cReq "Click 'Request information'\nOnly while New or In review"
+  click cDec "Click 'Decline'\nWhile open"
+endgroup
+goto gAcc "Continues in: New case › Referral › Accept a referral"
+goto gAsk "Continues in: New case › Referral › Ask the referrer"
+goto gOk "Continues in: New case › Referral › Mark OK or decline"
+click cSt "Click 'Schedule intake', 'Mark admitted',\n'Change intake' or 'Reopen referral'"
+goto gSt "Continues in: New case › Referral › Referral statuses"
+
+group gOwn "Owner"
+  click cOwn "Open 'Owner' and pick a person\nJordan Perez, Taylor Brooks, Morgan Lee or Unassigned"
+  store stOwn "Owner is saved\nA New referral moves to In review when it gets an owner\nTimeline 'Assigned to Taylor Brooks'"
+  toast tOwn "'Assigned to Taylor Brooks'\n'1 referral'\nUnassigned: 'Owner removed'"
+endgroup
+
+click cNote "Click 'Add note'"
+goto gNote "Continues in: New case › Referral › Full page: Fit, Activity and notes"
+
+group gMore "More"
+  click cMore "Click 'More'"
+  overlay oMore "Menu\n'Demo: simulate the referrer's reply'\n'Download the source document'\n'Copy link to this referral'"
+  click cReply "Pick 'Demo: simulate the referrer's reply'"
+  click cDown "Pick 'Download the source document'"
+  click cCopy "Pick 'Copy link to this referral'"
+  decision dHost "Is this the hosted preview?"
+  toast tHost "'Copy link is off in this preview'\n'Open the single-file version of the demo to use it.'"
+  process pCopy "Page address is copied to the clipboard"
+  toast tCopy "'Link copied'\n'It opens this referral for anyone on your team.'"
+  toast tDown "'Downloading the original'\n'RF-2053.pdf, 2 pages. This is a demo, so no file is saved.'"
+endgroup
+goto gReply "Continues in: New case › Referral › The referrer replies"
+
+s1 --> cAcc --> gAcc
+s1 --> cReq --> gAsk
+s1 --> cDec --> gOk
+s1 --> cSt --> gSt
+s1 --> cOwn --> stOwn --> tOwn
+s1 --> cNote --> gNote
+s1 --> cMore --> oMore
+oMore --> cReply --> gReply
+oMore --> cDown --> tDown
+oMore --> cCopy --> dHost
+dHost -->|Yes| tHost
+dHost -->|No| pCopy --> tCopy

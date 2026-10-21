@@ -1,0 +1,56 @@
+title: EMR Connect › Manage › Open the Manage drawer
+route: /emr
+intro: One system's details in a right-hand drawer: connection facts, what the agents may read, the write-back switch, the field mappings and a Disconnect or Reconnect button.
+dir: TD
+also: Drawer buttons that the demo does not have: pause, edit, rename, delete, rotate sign-in. The only way to stop a system is Disconnect, and a system is never removed.
+---
+start s1 "Click 'Manage' on a row\nOr click 'Manage mapping' in the page header"
+process p0 "Header button opens the outpatient site\nOr the first system if there is no outpatient site"
+overlay o1 "Drawer: {system name}\n'{kind} · {what it holds}'\nStatus pill on the right, X at the top"
+
+group gDet "Card: Connection details"
+  process d1 "Type, Connected since, Contact at the practice\nLast sync: 'N min ago' or 'Not syncing'\nAccess: 'Secure, read-only connection'"
+  toast d2 "The issue text, if there is one\nFor example the expired sign-in"
+endgroup
+
+group gPerm "Card: Permissions"
+  process r1 "Read chips\nAssessments, Progress notes, Labs, Medications, Insurance card\nBilling system: Claims, Remittances, Payment dates"
+  click w1 "Click the switch\n'Write back the approval number and dates, only after a person approves'"
+  decision wq "Switch is now?"
+  store w2 "Write-back on for this system"
+  store w3 "Write-back off for this system"
+  agent w4 "Navigator logs 'Write-back is on for {name}, approval number and dates only, after a person approves'\nOr 'Write-back is off for {name}'"
+  toast w5 "'Write-back is on'\n'Only the approval number and dates, and only after a person approves.'\nOr 'Write-back is off': 'The agents only read from this system.'"
+endgroup
+
+group gMap "Card: Field mappings"
+  process m1 "'{n} mapped, {m} waiting'\nTable: Their field, Fills, Mapped by"
+  click m2 "Click 'Map' on a 'Not mapped' row"
+endgroup
+
+decision bq "Is the system Disconnected?"
+click b1 "Click 'Disconnect'\nRed outline button"
+click b2 "Click 'Reconnect'\nGreen button"
+click cx "Click the X, press Escape, or click the dimmed area"
+end e1 "Drawer closes\nBack on the page"
+process n1 "The switch is saved but nothing else in the demo reads it\nThe Dashboard write-back approval opens whether it is on or off"
+goto g1 "Continues in: EMR Connect › Needs a mapping › Map a field"
+goto g2 "Continues in: EMR Connect › Manage › Disconnect and reconnect"
+
+s1 --> o1
+s1 -.-> p0
+p0 --> o1
+o1 --> d1 & r1 & m1
+d1 -.-> d2
+r1 --> w1 --> wq
+wq -->|On| w2
+wq -->|Off| w3
+w2 --> w4
+w3 --> w4
+w4 --> w5
+w5 -.-> n1
+m1 --> m2 --> g1
+m1 --> bq
+bq -->|No| b1 --> g2
+bq -->|Yes| b2 --> g2
+o1 -.-> cx --> e1

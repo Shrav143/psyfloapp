@@ -1,0 +1,46 @@
+title: Authorizations › Eligibility & Benefits › Errors and empty states
+route: /authorizations/eligibility/ZZ-9
+intro: Everything that can go wrong or come up empty in this module. There are no error pages and no retry buttons. A missing check shows an empty state, a bad link shows a toast or nothing, and bad coverage shows up as a result.
+dir: TD
+---
+start s1 "A check cannot be found\nOld link, typed address, or after 'Reset demo data' in the Demo menu"
+screen e1 "Coverage check\n'That check is not in the list.'"
+screen e2 "Empty state 'We could not find that check'\n'It may have been cleared when the demo data was reset.'"
+click c1 "Click 'Back to Eligibility & Benefits'"
+goto g1 "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows"
+
+start s2 "Open 'Verify a patient' with a referral that does not exist"
+toast t1 "'Referral not found'\n'We could not find RF-9999. Type the details instead.'"
+process p1 "The form stays empty"
+
+start s3 "Open 'Verify a patient' with a case that is neither on the list nor in the queue"
+process p2 "The form stays empty\nNo message appears"
+
+start s4 "Type in the form but leave something out or in the wrong shape"
+decision q1 "Payer, a member ID of 4 or more characters and two MM/DD/YYYY dates?"
+process p3 "'Check now' is off and the hint says what is missing\nNo red error text next to the fields"
+click c2 "Click 'Check now'"
+goto g2 "Continues in: Authorizations › Eligibility & Benefits › Verify › The live check"
+
+start s5 "Search or filters on the list match nobody"
+screen e3 "'No patients match these filters'\n'The filters hide every row. Clear them to see all 34 patients.'"
+click c3 "Click 'Clear filters'"
+end e4 "All patients are back"
+
+start s6 "The check finds a coverage problem\nMember ID ends 1012 or 9999, Evergreen with Detox"
+screen e5 "A normal result page with a red verdict 'Fix before billing'\nIf coverage is not found, headline 'We could not find coverage.' and six grey 'Not checked' rows"
+goto g3 "Continues in: Authorizations › Eligibility & Benefits › Result › Next actions"
+
+start s7 "Leave 'Verify a patient' while the live check runs"
+endx e6 "The check is dropped\nNothing is saved and no row is added"
+
+s1 --> e1 --> e2 --> c1 --> g1
+s2 --> t1 --> p1
+s3 --> p2
+s4 --> q1
+q1 -->|No| p3
+q1 -->|Yes| c2 --> g2
+p3 -.-> q1
+s5 --> e3 --> c3 --> e4
+s6 --> e5 --> g3
+s7 --> e6

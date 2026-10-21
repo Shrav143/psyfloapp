@@ -1,0 +1,47 @@
+title: Authorizations › Case page › Clinical picture
+route: /authorizations/case/R-1042?tab=picture
+intro: The second tab: what Reader and Placement built from the chart, the six ASAM dimensions, the trend chart, and the 'Still open' list whose 'Settle it' buttons jump back to a recommendation.
+dir: TD
+also: Demo only: the chart content is generated text for every request except R-1042, which is hand-written.
+---
+start s1 "Click 'Clinical picture'"
+screen pt "Clinical picture\nLeft: summary, ASAM dimensions, trend. Right: what stands out, engagement, still open"
+
+group gL "Left column"
+  screen sm "Card 'Clinical picture'\n'Built by Reader and Placement from the chart. Every line links back to a file.'\nRows: Diagnosis, Status, Trajectory, Readiness"
+  click ch "Click the source chip beside a row"
+  decision dRd "Is anything still open?"
+  process r1 "Readiness reads 'The draft is ready for signature.'"
+  process r2 "Readiness reads 'The request is ready for signature once the open items below are settled.'"
+  screen as "Card 'ASAM dimensions'\nSix cards: number, name, one sentence and a word\nNone, Low, Moderate, High or Severe"
+  screen tr "Card 'Symptom and function trend'\nLine chart by date with a legend\nA missing score is left as a gap"
+  process ks "Two tiles under the chart\ne.g. 'Withdrawal now 4 / 67, peak 14' and 'Depression now 17 / 27'"
+endgroup
+
+group gR "Right column"
+  screen so "Card 'What stands out'\nFour short lines"
+  screen en "Card 'Engagement and behavior'\nPercent and bar, with a word\nStrong 85+, Moderate 70–84, Low below 70\nThen three ticked checks"
+  screen op "Card 'Still open'\nCount pill and one line per open item\nConflict, Missing or Risk"
+  decision dOp "Any open items?"
+  process no "'Nothing is open. Every conflict, document and risk is settled.'"
+  click se "Click 'Settle it' on a line"
+endgroup
+
+process dl "Recommended actions opens with that card outlined"
+process ap "An item leaves 'Still open' when its action is applied\nDismissing the action does not clear it"
+goto g1 "Continues in: Authorizations › Case page › Source chip"
+goto g2 "Continues in: Authorizations › Case page › Recommended actions › The tab"
+
+s1 --> pt
+pt --> sm --> dRd
+dRd -->|Yes| r2
+dRd -->|No| r1
+sm --> ch --> g1
+pt --> as
+pt --> tr --> ks
+pt --> so
+pt --> en
+pt --> op --> dOp
+dOp -->|Yes| se --> dl --> g2
+dOp -->|No| no
+se -.-> ap

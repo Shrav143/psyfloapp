@@ -1,0 +1,57 @@
+title: Denial Intelligence › Deadlines › Fast-forward the clock
+route: /denials
+intro: The demo clock only moves when the Demo menu moves it. Every time-left text, colour and sort order on Denial Intelligence follows the clock; nothing else happens by itself.
+dir: TD
+also: Demo only: the Demo menu is not part of the product. In production the clocks run in real time and alert at 14, 7 and 3 days (PRD 04).
+---
+start s1 "Click 'Demo' in the top bar"
+overlay o1 "Demo menu\n'The demo clock is Tue Oct 20 2026, 10:42 am. It only moves when you move it.'"
+click c1 "Click 'Fast-forward 1 hour'"
+click c2 "Click 'Fast-forward 1 day'"
+store st1 "Demo clock moves forward\nNothing is sent to anyone"
+toast t1 "'Clock moved forward 1 hour' (or '1 day')\n'Times in stage and deadlines updated.'"
+
+process p1 "Every time-left text is worked out again from the clock"
+process p2 "Time left reads 'N min' under an hour, 'N h' under 3 days, 'N d' after that"
+process p3 "Open denials list sorts again, nearest deadline first\nTime that has run out counts as nearest"
+decision d1 "Which clock does this denial run?"
+screen k1 "Peer-to-peer window\nList 'P2P in 36 h'\nHeader 'Peer-to-peer window closes in 36 h'"
+screen k2 "Written appeal due\nList 'Appeal in 41 d'\nHeader 'Appeal due in 41 d'"
+screen k3 "Resubmission due\nList 'Resubmit in 5 d'\nHeader 'Resubmit within 5 d'"
+screen k4 "Filed appeal\nList 'Decision 11/02'\nHeader 'Appeal filed, decision 11/02'\nNo change at all"
+decision d2 "How much time is left?"
+screen m1 "Grey: 7 days or more"
+screen m2 "Ochre: 2 to 7 days"
+screen m3 "Red: under 2 days"
+screen m4 "Time is up\nList 'Window closed' (red)\nHeader 'Peer-to-peer window closed', 'Appeal deadline passed' or 'Resubmission window closed'"
+screen m5 "Brief page 'Closes in' follows the same colours and reads 'Closed' when time is up"
+goto g1 "Continues in: Denial Intelligence › Deadlines › Overdue denials"
+goto g2 "Continues in: Dashboard › Arrive › What the page shows"
+process p4 "No notification, status change or hand-off happens when a time runs out (demo)"
+
+click c3 "Click 'Reset demo data'"
+store st2 "Everything goes back to the start\nLetters, calls, drafts, filed appeals and closed denials are gone"
+toast t2 "'Demo data reset'\n'Everything is back to the starting point.'"
+process p5 "App opens the Dashboard"
+
+s1 --> o1 --> c1
+o1 --> c2
+c1 --> st1
+c2 --> st1
+st1 --> t1 --> p1 --> p2 --> p3
+p3 --> d1
+d1 -->|P2P window| k1
+d1 -->|To file| k2
+d1 -->|To resubmit| k3
+d1 -->|Filed| k4
+k1 --> d2
+k2 --> d2
+k3 --> d2
+d2 -->|7 days or more| m1
+d2 -->|2 to 7 days| m2
+d2 -->|Under 2 days| m3
+d2 -->|None left| m4
+m4 --> m5 --> g1
+m4 -.-> p4
+st1 -.-> g2
+o1 --> c3 --> st2 --> t2 --> p5 --> g2

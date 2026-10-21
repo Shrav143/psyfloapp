@@ -1,0 +1,85 @@
+title: Authorizations › New case › Medical records › The checklist and Continue
+route: /authorizations/new/:draftId (step 2 of 4, 'Medical records')
+intro: Step 2 is one page: a drop zone and one checklist card with four short lists. This diagram shows what is on it, what keeps 'Continue' switched off, and what each footer button does. The other diagrams in this step zoom into each part.
+dir: TD
+---
+start s1 "From step 1 'Referral'\nContinue, or 'No referral? Continue without one'"
+start s2 "From an Eligibility result\nClick 'Start authorization'"
+start s3 "From Case Manager › Being prepared\nClick 'Continue' on an intake case"
+process p1 "A draft opens on step 2 'Medical records'\nPayer, level of care and member ID arrive filled in when they came from Eligibility"
+screen sc "New case\nSub line: 'Drop what you have. Reader sorts the files and lists what is still missing...'\nStepper: 'Referral' done, 'Medical records' current, later steps greyed out\nHeader button 'Use sample chart'"
+
+group gPage "The page"
+  screen dz "Drop zone\n'Drop everything you have for this patient'\nPrivacy mode note and 'Pull a chart from EMR Connect'"
+  screen pr "Progress line\n'N of M ready' with a bar and 'N to go'\n'Ready to continue' shows when nothing blocks"
+  screen gp "Patient\nPatient initials and age"
+  screen gi "Insurance\nPayer and plan, Member ID, Coverage"
+  screen gr "Request\nLevel of care, Request type, Start date, Diagnoses (ICD-10), Reason for the request"
+  screen gd "Documents\nOne row for each document the payer asks for"
+  screen ft "Footer bar, always in view\n'Back', 'Save as draft', 'Continue' and a hint line"
+endgroup
+
+goto g31 "Continues in: Medical records › Drop files and let Reader sort them"
+goto g32 "Continues in: Medical records › Patient and insurance rows"
+goto g40 "Continues in: Medical records › The Coverage row"
+goto g33 "Continues in: Medical records › Request and document rows"
+
+group gBlock "Switched off while any is true"
+  process b1 "Patient initials and age are not both filled in"
+  process b2 "No payer is chosen ('Payer and plan')"
+  process b3 "No 'Level of care'"
+  process b4 "No 'Request type'"
+  process b5 "A required document is not added\nThree or more show as 'N required documents'"
+  process b6 "Reader is still reading a file\n'Reader to finish reading'"
+  process b7 "Verify says coverage needs a fix\n'Coverage, or another payer' (not on a Retro-authorization)"
+endgroup
+
+process free "These never block Continue\nMember ID, Start date, Diagnoses, Reason, recommended documents, a 'Check this' finding"
+process pc "The footer and the rows read the same list, so they always agree"
+decision dq "Anything still blocking?"
+toast tHint "Footer hint: 'Still needed: Patient initials and age, Payer and plan, Level of care and 3 more.'"
+endx eOff "'Continue' stays switched off; clicking does nothing"
+toast tReady "Progress shows 'Ready to continue'\nHint: 'Nothing is sent to the payer until a clinician signs.'"
+
+click cBack "Click 'Back'"
+click cStep "Click 'Referral' in the stepper"
+process pBack "The draft is kept; the page goes back to step 1 'Referral'"
+goto gRef "Continues in: New case › Referral step"
+click cSave "Click 'Save as draft'"
+goto gSave "Continues in: Medical records › Save and leave"
+click cCont "Click 'Continue'"
+decision dRan "Have the agents already run on this case?"
+process pDirect "Goes straight to step 3 'Agents work'\nNo question is asked"
+overlay oConf "Start the agents?\nJ.M., Residential 3.5 · Summit Medicaid HMO\n'Nothing is sent to the payer until a clinician signs.'"
+goto gAgents "Continues in: Agents work › Start the run"
+
+s1 --> p1
+s2 --> p1
+s3 --> p1
+p1 --> sc --> dz --> pr --> gp --> gi --> gr --> gd --> ft
+dz --> g31
+sc --> cStep
+gp --> g32
+gi --> g32
+gi --> g40
+gr --> g33
+gd --> g33
+
+b1 ~~~ b2 ~~~ b3 ~~~ b4 ~~~ b5 ~~~ b6 ~~~ b7
+b1 & b2 & b3 & b4 & b5 & b6 & b7 --> pc
+free -.-> pc
+pr --> pc
+pc --> dq
+dq -->|Yes| tHint --> eOff
+dq -->|No| tReady --> cCont
+
+ft --> cBack
+ft --> cSave
+cBack --> pBack
+cStep --> pBack
+pBack --> gRef
+cSave --> gSave
+cCont --> dRan
+dRan -->|Yes| pDirect --> gAgents
+dRan -->|No| oConf
+oConf --> gAgents

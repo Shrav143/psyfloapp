@@ -1,0 +1,48 @@
+title: Dashboard › Requests table › Order, rows and paging
+route: /dashboard
+intro: The 'Requests' card. Rows come in a fixed order with no sort buttons on the headings. A click on a row, a case ID or 'Open' opens the request drawer. Eight rows show at a time.
+dir: TD
+---
+start s1 "Dashboard is open\n'Requests' card under the stage strip"
+screen sc1 "Card header\n'Requests' and 'Bars show progress: Prepared, Received, In review, Decided...'\nRight side: 'Showing 8 of 39'"
+screen sc2 "Seven columns\nCase, Payer, Where it is, Clock, At stake, What happens next, and an unnamed column with 'Open'"
+process p1 "No column heading can be clicked: there is no sort control"
+process p2 "Rows are ordered by the app\n1 needs you, 2 very late, 3 late, 4 denial with under 2 days left, 5 the rest\nSame group: longest time in stage first"
+decision d0 "Do any rows match the filters?"
+screen em "'No requests match'\nwith 'Clear filters'"
+
+group gRow "One row (example: P-1499)"
+  screen r1 "Row\nCase ID and type, payer and program, chip and bars, clock, At stake, what happens next, 'Open'"
+  click c1 "Click anywhere on the row"
+  click c2 "Click the underlined case ID, e.g. 'P-1499'"
+  click c3 "Click 'Open' on the row"
+endgroup
+process p3 "Address gets ?request=P-1499\nA new history entry, so the browser Back button closes the drawer"
+process p4 "Case ID click opens it twice, so the address is added twice\nBack must be pressed twice (demo quirk)"
+overlay o1 "Request drawer opens on the right"
+goto g1 "Continues in: Dashboard › Request drawer › Open and read a request"
+goto g2 "Continues in: Dashboard › Requests table › Read a row: bars, clock and what happens next"
+goto g3 "Continues in: Dashboard › Filters › Clear filters and empty states"
+
+decision d1 "Are there more rows than are shown?"
+screen sc3 "Under the table\n'Show 8 more' and '31 not shown'"
+click c4 "Click 'Show 8 more'"
+process p5 "Eight more rows are added\nThe button says 'Show 7 more' when 7 are left"
+end e1 "All rows shown\n'Showing 39 of 39'; no button"
+process p6 "Changing any filter or the date range goes back to the first 8 rows"
+toast t1 "Count text 'Showing 8 of 39'\nWith Appeal or call: 'Showing 7 of 7 · $62.4K at stake'"
+
+s1 --> sc1 --> sc2 --> p1 --> p2 --> d0
+d0 -->|No| em --> g3
+d0 -->|Yes| r1
+r1 --> c1 & c2 & c3
+c1 --> p3
+c3 --> p3
+c2 --> p4 --> p3
+p3 --> o1 --> g1
+r1 -.-> g2
+d0 -->|Yes| d1
+sc1 -.-> t1
+d1 -->|Yes| sc3 --> c4 --> p5 --> d1
+d1 -->|No| e1
+sc3 -.-> p6

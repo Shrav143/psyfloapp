@@ -1,0 +1,54 @@
+title: Analytics › Read-only cards: payers, draft edits, what helps most
+route: /analytics
+intro: Three cards you read but cannot click: the payer bars, the draft-edit donut and the ranked list of what helps most. There are no tooltips on hover and nothing opens on a click. They change only with the period and payer menus.
+dir: TD
+also: Demo only: 'not enough decisions' on the bars and the donut cannot happen with the demo's numbers. On 'What helps most' it can, for one payer.
+---
+start s1 "Scroll to the cards"
+
+group gBars "Card 'Approval rate by payer'"
+  screen b1 "'Approved as asked, this quarter'\nBars, best first: Lakeshore 86%, Beacon PPO 81%, Harborview MA 77%, Summit Medicaid 74%, Evergreen 69%, Cardinal 63%"
+  decision b2 "Rate band?"
+  process b3 "80 and above: green bar"
+  process b4 "55 to 79: ochre bar"
+  process b5 "Below 55: terracotta bar"
+  screen b6 "Footnote '1,070 decisions this quarter. Green is 80 and above, ochre 55 to 79, terracotta below 55.'"
+  decision b7 "A payer is chosen in the menu?"
+  process b8 "Two bars: that payer, then 'All payers' for comparison"
+endgroup
+
+group gEdit "Card 'How people edit agent drafts'"
+  screen d1 "'Share of drafts, this quarter'\nDonut with '68%' and 'as written' in the middle"
+  screen d2 "Legend\n'Sent as written' 68% · approved 89% of the time\n'Light edits' 27% · approved 76%\n'Rewritten' 5% · approved 45%"
+  screen d3 "'966 drafts this quarter.'"
+  decision d4 "Fewer than 20 drafts?\n(no demo view gets here)"
+  screen d5 "'Not enough decisions yet. Figures based on fewer than 20 decisions stay hidden.'"
+endgroup
+
+group gHelp "Card 'What helps most'"
+  screen h1 "'Steps taken most often, and how often those requests were approved'"
+  screen h2 "Up to four rows, ranked 1 to 4\nStep name, 'Applied 389 times', '91% approved' in green"
+  process h3 "Top four this quarter: dated depression scores 91%, appeal partial unit approvals 88%, name the step-down provider 85%, file recertification 72 hours early 83%"
+  decision h4 "Any step applied 20 or more times for this payer?"
+  screen h5 "'Not enough decisions yet. Figures based on fewer than 20 decisions stay hidden.'"
+endgroup
+
+process p1 "Hover and click do nothing on bars, donut slices, legend and list rows"
+end e1 "Cards read"
+endx e2 "No drill-down: rows are not links"
+
+s1 --> b1 & d1 & h1
+b1 --> b2
+b2 -->|80 and above| b3 --> b6
+b2 -->|55 to 79| b4 --> b6
+b2 -->|Below 55| b5 --> b6
+b6 --> b7
+b7 -->|Yes| b8 --> e1
+b7 -->|No| e1
+d1 --> d2 --> d3 --> d4
+d4 -->|No| e1
+d4 -->|Yes| d5 --> e1
+h1 --> h2 --> h3 --> h4
+h4 -->|Yes| e1
+h4 -->|No| h5 --> e1
+s1 -.-> p1 --> e2

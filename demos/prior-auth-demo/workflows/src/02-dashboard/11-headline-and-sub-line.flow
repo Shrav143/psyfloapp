@@ -1,0 +1,42 @@
+title: Dashboard › Headline › What the headline and sub line say
+route: /dashboard
+intro: The big sentence at the top and the muted line under it are rebuilt whenever a filter, a tile or a payer reply changes the list. Stage wins over Payer, and Payer wins over the plain count. The numbers below are the demo's opening data.
+dir: TD
+---
+start s1 "A filter, a tile click or a payer reply changes the list"
+process p1 "Headline is rebuilt\nCounts use Payer, Program and Request type, but not Stage"
+decision d1 "Does any request match the filters?"
+screen n0 "'No requests match these filters.'\n'The filters hide everything. Clear them to see every request again.'"
+goto g1 "Continues in: Dashboard › Filters › Clear filters and empty states"
+
+decision d2 "Which Stage is set?"
+screen a1 "Appeal or call\n'7 denials are on their route. $62.4K is at stake.'\n'Each one is a call, an appeal, an external review or a resubmission.'"
+screen a2 "Info requested\n'3 requests are waiting on you.'\n'The payer asked for more information. Packet drafts each answer for you to review.'"
+screen a3 "Preparing\n'5 requests are being prepared.'\n'They are in Case Manager. Nothing has been sent to a payer yet.'"
+screen a4 "Received\n'4 requests have been received.'\n'The payer confirmed receipt. Navigator checks each one again every few minutes.'"
+screen a5 "Under review\n'14 requests are under review.'\n'Payers usually take about 2.2 days to decide. Caller phones when one runs late.'"
+screen a6 "Decided today\n'8 requests were decided today. 6 approved, 2 not as asked.'\n'Approvals update the ledger. Write-back to the EMR waits for you.'"
+
+decision d3 "Is a Payer set?"
+screen b1 "'Cardinal Health Plan: 5 waiting, taking 2.8 days.'\n'Decisions usually take 2 days at this payer. 3 denials are open.'\nWith Program or Type set, they lead the sub line: 'IOP. Decisions usually...'"
+decision d4 "Is Program or Request type set?"
+screen c1 "'7 requests are waiting on payers. 1 is waiting on you.'\n'Showing Residential 3.5 only. Everything below follows that filter.'"
+screen c2 "'18 requests are waiting on payers. 3 are waiting on you.'\n'Where every request stands, from preparing to decided, without a phone call.'"
+process p2 "Payer, Program and Request type set are added in front of the sub line\nExample: 'Summit Medicaid HMO. Payers usually take about 1.4 days...'"
+end e1 "Headline and sub line shown"
+
+s1 --> p1 --> d1
+d1 -->|No| n0 --> g1
+d1 -->|Yes| d2
+d2 -->|Appeal or call| a1
+d2 -->|Info requested| a2
+d2 -->|Preparing| a3
+d2 -->|Received| a4
+d2 -->|Under review| a5
+d2 -->|Decided today| a6
+d2 -->|All stages| d3
+a1 & a2 & a3 & a4 & a5 & a6 --> p2 --> e1
+d3 -->|Yes| b1 --> e1
+d3 -->|No| d4
+d4 -->|Yes| c1 --> e1
+d4 -->|No| c2 --> e1

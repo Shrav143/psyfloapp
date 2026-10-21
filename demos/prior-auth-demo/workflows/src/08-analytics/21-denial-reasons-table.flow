@@ -1,0 +1,43 @@
+title: Analytics › Common denial reasons: open Denial Intelligence
+route: /analytics
+intro: The table of common denial reasons. Every row is a link to Denial Intelligence, by the row or by the reason text. The link opens the plain denial list. It does not carry the payer or the reason across.
+dir: TD
+---
+start s1 "Scroll to 'Common denial reasons by payer'"
+screen sc "Card 'Common denial reasons by payer'\n'This quarter · 311 denials in the reasons listed. Select a row to open Denial Intelligence.'"
+screen th "Columns\n'Reason', 'Payer', 'Count', 'Share of denials' (a red bar and the percent)"
+
+decision q1 "Which payer is chosen in the menu?"
+process p1 "'All payers': one row per payer, its most common reason\nBiggest first"
+screen r1 "Cardinal 89 · 29%\n'Continued-stay evidence incomplete'"
+screen r2 "Harborview MA 74 · 24%\n'Recertification filed too late'"
+screen r3 "Evergreen 61 · 20%\n'Partial approval without a stated reason'"
+screen r4 "Summit Medicaid 48 · 15%\nBeacon PPO 39 · 13%"
+process p2 "A payer with fewer than 20 listed denials is left out\nLakeshore this quarter and last quarter"
+process p3 "One payer: all of that payer's reasons, three or four rows\nShares add up to 100% of the listed denials"
+decision q2 "Fewer than 20 denials listed?"
+screen nd "'Not enough decisions yet. Figures based on fewer than 20 decisions stay hidden.'\nNo table, no link"
+
+group gClick "Open a row"
+  click c1 "Click anywhere on a row"
+  click c2 "Click the reason text, for example 'Recertification filed too late'"
+  process p4 "Opens /denials with no payer or reason chosen\nRow hover tint shows it is a link"
+endgroup
+
+goto g1 "Continues in: Denial Intelligence › Open denials list"
+process p5 "Browser Back returns to Analytics with the menus reset"
+
+s1 --> sc --> th --> q1
+q1 -->|All payers| p1
+p1 --> r1 & r2 & r3 & r4
+p1 -.-> p2
+q1 -->|One payer| p3
+p3 --> q2
+p2 --> q2
+q2 -->|Yes| nd
+q2 -->|No| c1 & c2
+r1 & r2 & r3 & r4 --> c1 & c2
+c1 --> p4
+c2 --> p4
+p4 --> g1
+g1 -.-> p5

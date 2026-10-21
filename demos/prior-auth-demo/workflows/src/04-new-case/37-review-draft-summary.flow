@@ -1,0 +1,70 @@
+title: Authorizations › New case › Review and sign › The draft and the summary
+route: /authorizations/new/:draftId (step 4 of 4, 'Ready for your signature')
+intro: Step 4 shows what the payer will read: the medical-necessity summary Scribe drafted, which can be edited, with a chip for every chart page it came from. The validation summary, the checks and the signing card are in the next two diagrams.
+dir: TD
+---
+start s1 "Click 'Review and sign' on step 3\nOr 'Review and sign' on a ready case in Case Manager"
+screen sc "Ready for your signature\n'Nothing goes to the payer until a clinician signs.'\nStepper: 'Review and sign' current"
+
+group gLayout "Layout"
+  screen sL "Left column\nMedical-necessity summary, then Validation summary"
+  screen sR "Right column\nChecks, Approval chance, Sign and send"
+  screen sF "Footer bar\n'Back', 'Save as draft'"
+endgroup
+
+screen sNarr "Medical-necessity summary\n'What Summit will read · every statement links to the chart'\nFour sections: Clinical picture, level of care reason, Current severity, Plan"
+process pHead "The second heading follows the level of care\n'Why a lower level of care is not safe' (Residential 3.5, PHP)\n'Why weekly outpatient care is not enough' (IOP)\n'Why withdrawal needs medical monitoring' (Detox)"
+screen sChance "Approval chance card\nRing and 'Strong · likely 83-92%'\n'Summit usually decides in about 1.5 days. Based on 1,248 similar cases.'"
+
+group gChip "Source chips"
+  click cChip "Click a chip under a section\nFor example 'Psychiatric eval p.3'"
+  process pChips "Chips appear only for documents that are in the case\nThe 'Medication list' chip needs a sertraline answer"
+  overlay oSrc "Document drawer\nTitle is the document's name, page 1 of 3\nThe cited passage is boxed under 'Evidence'"
+  click cCloseSrc "Press Escape or close the drawer"
+endgroup
+
+group gEdit "Edit the summary"
+  click cEdit "Click 'Edit' on the summary card"
+  overlay oEdit "Each section becomes a text box under its heading\nHeader buttons 'Cancel' and 'Save changes'"
+  input iText "Change the text of any section"
+  click cCancel "Click 'Cancel'"
+  process pCancel "Edits dropped; the summary is shown again"
+  click cSave "Click 'Save changes'"
+  store stNarr "Summary saved on the draft as edited"
+  agent aInt "Integrity re-checks the edits (demo: simulated)\nChecks show 'Re-checking' for about 1 second\n'Sign and send' is off meanwhile"
+  decision dEmpty "Is any section empty?"
+  toast tOk "'Integrity re-checked your edits'\n'Every sentence still traces to the chart.'"
+  toast tEmpty "'Integrity re-checked your edits'\n'One section is empty, so signing is blocked.'"
+  process pEmpty "The empty section reads 'This section is empty.' in red\n'Every sentence traced to the chart' turns Blocked"
+endgroup
+
+process pLost "Edits are lost when the summary is rebuilt\nAfter a new answer, a tick in 'To raise it further', 'Send back to Scribe', or a change to the medical records"
+
+click cBack "Click 'Back'"
+process pBack "Back to step 3 'Agents work'\nThe finished agents are shown again; nothing re-runs"
+click cSaveD "Click 'Save as draft'"
+toast tSaved "'Draft saved'\n'R-1701 is in Case Manager, ready to sign.'"
+
+goto gVal "Continues in: Review and sign › Validation summary and checks"
+goto gSign "Continues in: Review and sign › Sign and send"
+goto g36 "Continues in: Agents work › Finished, paused or left"
+goto g39 "Continues in: New case › Save as draft and leave"
+
+s1 --> sc
+sc --> sL & sR & sF
+sL --> sNarr --> pHead
+sL --> gVal
+sR --> sChance
+sR --> gVal
+sR --> gSign
+
+sNarr --> cChip --> pChips --> oSrc --> cCloseSrc
+sNarr --> cEdit --> oEdit --> iText
+iText --> cCancel --> pCancel
+iText --> cSave --> stNarr --> aInt --> dEmpty
+dEmpty -->|No| tOk
+dEmpty -->|Yes| tEmpty --> pEmpty
+stNarr -.-> pLost
+
+sF --> cBack --> pBack --> g36
+sF --> cSaveD --> tSaved --> g39

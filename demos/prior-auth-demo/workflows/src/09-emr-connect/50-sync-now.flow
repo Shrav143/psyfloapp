@@ -1,0 +1,57 @@
+title: EMR Connect › Sync › Sync now
+route: /emr
+intro: A person starts a sync from the card header or from one row. The demo waits two seconds, then adds a result, updates the counters and the activity log, and shows a toast.
+dir: TD
+also: Demo: simulated. There is no EMR behind the button. Each sync takes the next of four fixed results.
+---
+start s1 "Click 'Sync now'\nIn the Connected systems header, or on a Connected row"
+decision q1 "Is a sync already running?"
+endx x1 "Click does nothing\nNo message. Only the running buttons show a spinner"
+decision q2 "Which button?"
+process p1 "Header button spins\nEvery Connected row shows 'Syncing'"
+process p2 "That row's button spins\nIts row shows 'Syncing'"
+ext e1 "The EMR answers\nDemo: simulated, two seconds"
+decision q4 "Did the person leave EMR Connect meanwhile?"
+endx x3 "Sync is dropped\nNothing is recorded"
+decision q3 "Is any system in the batch Connected?"
+endx x2 "Spinner stops\nNo toast, no log line, tiles unchanged\nOnly possible when every system is Disconnected or needs a look"
+process n1 "Take the next result from a list of four\nThe next sync takes the one after, then round again"
+
+group gRes "The four results, in order"
+  agent r1 "Reader\n'Pulled 6 new files for 3 open cases and matched the insurance cards'"
+  agent r2 "Reader\n'Read 2 new admissions and proposed cases in Case Manager'"
+  agent r3 "Verify\n'Re-checked coverage for 4 members after the sync'"
+  agent r4 "Reader\n'Pulled the latest progress notes for 9 active stays'"
+endgroup
+
+process ap "Apply the result"
+
+group gSaved "What changes"
+  store d1 "Each synced system: last sync is now\nRows read 'just now'"
+  store d2 "Charts matched today and Files pulled go up\nAbout half when only some of the Connected systems are synced"
+  store d3 "Recent activity gets the result as its newest line\nFor one system: '... from {system name}'"
+endgroup
+toast t1 "'Sync finished'\nThe result text. Green"
+end z1 "Last sync tile reads 'Just now'"
+goto g1 "Continues in: EMR Connect › Sync › What a sync pulls and when it runs"
+goto g2 "Continues in: EMR Connect › Recent activity › Read the activity log"
+
+s1 --> q1
+q1 -->|Yes| x1
+q1 -->|No| q2
+q2 -->|Header| p1
+q2 -->|A row| p2
+p1 --> e1
+p2 --> e1
+e1 --> q4
+q4 -->|Yes| x3
+q4 -->|No| q3
+q3 -->|No| x2
+q3 -->|Yes| n1
+n1 --> r1 & r2 & r3 & r4
+r1 & r2 & r3 & r4 --> ap
+ap --> d1 & d2 & d3
+d1 & d2 & d3 --> t1
+t1 --> z1
+z1 --> g1
+d3 -.-> g2

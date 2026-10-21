@@ -1,0 +1,39 @@
+title: Authorizations › Case page › Source chip
+route: /authorizations/case/R-1042?tab=picture
+intro: The small source chips that appear on three tabs. Clicking one opens the page of the chart it points to, with the sentence the agents used boxed.
+dir: TD
+also: Demo only: the 'page' is a short generated sheet with the quoted sentence. The full document stays in the chart system.
+---
+group gW "Where chips appear"
+  screen w1 "Clinical picture\nOne chip beside each of Diagnosis, Status, Trajectory, Readiness"
+  screen w2 "Payer criteria\nOne chip in the 'Evidence' column of each requirement"
+  screen w3 "Draft\nChips after each section\nEach sentence from an applied action adds its own"
+endgroup
+click c "Click a source chip\ne.g. 'Psychiatric eval p.1'"
+overlay m "Dialog titled with the source name\n'Source for J.M., 34. Privacy mode is on.'"
+doc d1 "Sheet 'Source document'\n'Names, dates of birth and member IDs are masked'"
+doc d2 "Facts on the sheet\nPatient, Payer, Level of care, Request"
+doc d3 "'What the agents used'\nThe quoted sentence, boxed and highlighted"
+process ft "'The full document stays in the chart system. Reader read it and Integrity checked every sentence against it.'"
+agent rd "Reader read the chart\nIntegrity checked each sentence against it\n(demo: the quote is stored text)"
+decision dY "Is it a chip for an answer you typed?"
+process yo "Chip reads 'Your answer'\nQuote: 'Typed by you for Scribe on this request.'"
+click cl "Click 'Close'"
+click x "Click the X"
+click dim "Click the dimmed area"
+click esc "Press Esc"
+end e "Dialog closes\nYou are back on the same tab, nothing changed"
+
+w1 --> c
+w2 --> c
+w3 --> c
+c --> m --> d1 --> d2 --> d3 --> ft
+d3 -.-> rd
+c --> dY
+dY -->|Yes| yo --> d3
+dY -->|No| d3
+m --> cl & x & dim & esc
+cl --> e
+x --> e
+dim --> e
+esc --> e

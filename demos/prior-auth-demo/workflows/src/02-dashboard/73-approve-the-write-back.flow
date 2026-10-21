@@ -1,0 +1,34 @@
+title: Dashboard › Request drawer › Approve the write-back
+route: /dashboard?request=R-0951
+intro: After a payer approves, the approval number and dates go to the EMR only when a person confirms. The pop-up shows exactly three things. In the demo the EMR write is simulated and changes only the request's history.
+dir: TD
+---
+start s1 "Click 'Approve write-back' in the green box"
+overlay o1 "Pop-up 'Approve the write-back'\n'R-0951 · Evergreen'\n'EMR Connect will write only these three things to the chart. No notes, diagnoses or identifiers are written.'"
+screen sc "Three facts\nApproval number 'PA-26-102944'\nApproved '14 days'\nDates '10/20 to 11/3'"
+process p0 "Amount by program: Residential 3.5 14 days, PHP 10 days, Detox 5 days, IOP 24 units over 14 days"
+
+click c1 "Click 'Write to the EMR'"
+process p1 "Button shows a spinner for 1.1 seconds\n'Cancel' is disabled; the X and a click on the dimmed area do nothing"
+ext x1 "EMR receives the approval number and dates\n(demo: simulated)"
+store w1 "What happens next becomes 'Next review booked. Written to the EMR'"
+store w2 "History gets 'You confirmed the write-back'\nand 'Cadence wrote the approval number (PA-26-102944) and the dates to the EMR'"
+toast t1 "'Written to the EMR'\n'PA-26-102944 and the approved dates are in the chart. Nothing else was written.'"
+process p2 "Pop-up closes\nThe green box disappears because the next step no longer says Write-back"
+end e1 "Request stays Approved, in Decided today"
+
+click c2 "Click 'Cancel'"
+click c3 "Click the X 'Close'"
+click c4 "Click the dimmed area"
+end e2 "Pop-up closes\nNothing is written; the green box stays"
+click c5 "Press Escape"
+process p3 "Escape closes the pop-up and the drawer together, because both listen for it"
+end e3 "Back on the table\nThe request still has its green box when reopened"
+process p4 "Escape while writing: the drawer closes, but the write still finishes and the toast appears"
+
+s1 --> o1 --> sc --> p0
+sc --> c1 --> p1 --> x1 --> w1 --> w2 --> t1 --> p2 --> e1
+sc --> c2 & c3 & c4
+c2 & c3 & c4 --> e2
+sc --> c5 --> p3 --> e3
+p1 -.-> p4

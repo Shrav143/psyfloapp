@@ -1,0 +1,52 @@
+title: Payers › Every pop-up › Save, discard, close
+route: /payers/:id
+intro: One page for how every Payers pop-up closes. Nothing is saved by closing: Cancel, the X, Escape and a click on the dimmed area all throw away what was typed, with no 'are you sure'. There is no undo; a saved edit is reversed by editing again, and the edit log keeps the old text.
+dir: TD
+---
+start s1 "Any Payers pop-up is open"
+overlay ov "Ten pop-ups\nAdd a payer, Edit payer details, Edit log, Edit workflow,\nSave the workflow?, Edit the instructions for Caller,\nEdit a rule, Edit what a payer wants, Acknowledge this change?,\nUpdate drafts?, plus the menus inside them"
+
+group gX "Ways to close"
+  click x1 "Click 'Cancel'"
+  click x2 "Click the X ('Close')"
+  click x3 "Press Escape"
+  click x4 "Click the dimmed area outside"
+endgroup
+
+decision dk "Which pop-up is it?"
+process pl "Plain pop-up (everything except the cases below)\nCloses. Typed text and picks are discarded\nNothing is saved or logged"
+process rd "Edit log\nRead only, nothing to save or discard"
+process sv "'Save the workflow?' over the Edit workflow drawer"
+decision ek "Which way was it closed?"
+process one "Cancel, X or dimmed area\nOnly the reason modal closes\nThe drawer keeps every edit"
+process both "Escape closes the reason modal AND the drawer\nEvery unsaved workflow edit is lost"
+process bz "'Update drafts?' while the agents work (about 3 seconds)\nCancel is greyed, Escape, X and dimmed area do nothing\nWait for it to finish"
+process mn "A menu open inside a pop-up\n(Plan type, Group, Reached by, Level of care, Case, step type)\nEscape closes the menu and also the pop-up"
+
+group gS "Ways to save (the primary button)"
+  process sa "'Save and log the edit' needs a reason\nEmpty reason: 'Add a reason. It goes in the edit log.'"
+  process sb "'Add payer' needs a name, a way to reach and a program"
+  process sc "'Acknowledge change' and 'Update N drafts' are confirm buttons\nthey need no typing"
+  process sd "If nothing differs from what is saved:\n'Nothing changed' (or 'Nothing to save' in the workflow drawer)"
+endgroup
+
+store sv1 "Saved: the change is in force for new drafts\nOne edit log entry per change"
+process undo "No undo, revert or 'restore previous' button\nTo go back: edit again. Edit log shows the before text"
+end e1 "Back on the page, nothing half saved"
+endx x0 "Closed without saving"
+
+s1 --> ov --> dk
+ov --> x1 & x2 & x3 & x4
+dk -->|Plain| pl --> x0
+dk -->|Edit log| rd --> x0
+dk -->|Save the workflow?| sv --> ek
+ek -->|Cancel, X, dimmed area| one --> x0
+ek -->|Escape| both --> x0
+dk -->|Update drafts?, busy| bz --> e1
+dk -->|Menu open| mn --> x0
+ov --> sa --> sv1
+ov --> sb --> sv1
+ov --> sc --> sv1
+sa --> sd
+sv1 --> e1
+e1 -.-> undo

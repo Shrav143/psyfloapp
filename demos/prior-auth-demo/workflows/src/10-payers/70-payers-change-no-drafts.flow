@@ -1,0 +1,42 @@
+title: Payers › Changes › A change with no drafts
+route: /payers/harborview?tab=changes
+intro: Not every change touches many drafts. Harborview's portal form change affects one draft and adds no documents. A change that affected no drafts would change the wording of the banner, the button and the confirm step; the seed data has none, so that branch is not reachable in the demo. A payer with nothing waiting shows only history.
+dir: TD
+---
+start s1 "Open the 'Changes' tab\nfor a payer"
+decision dp "Is a change waiting?"
+screen up "Green banner\n'This payer's rules are up to date'\nOnly the 'What changed' history below"
+process hv "Harborview's waiting change\n'Portal form change', effective 10/18\nThe request form now asks for the expected length of stay and a second contact.\nThe old form closes 10/31."
+decision dn "How many drafts does the change affect?"
+toast one "'Packet can redraft the 1 draft that is not yet sent: P-1499.'\nButtons: 'Acknowledge change', then 'Update 1 draft'"
+toast none "'No open drafts are affected.'\nButtons: 'Acknowledge change', then 'Apply to new drafts'\n(no seeded change has this)"
+click ca1 "Click 'Acknowledge change' and confirm,\nthen 'Update 1 draft'"
+click ca0 "Click 'Acknowledge change' and confirm,\nthen 'Apply to new drafts'"
+overlay mo "Update 1 draft?\nRow: P-1499 · E.S., 42 · Harborview, PHP,\n'Answer drafted, not yet sent'"
+overlay mn "Apply to new drafts?\nNo open drafts are affected.\nHarborview will use the change for every new draft from now on."
+agent a1 "Packet is redrafting 1 draft\n(its agents are Packet and Integrity)"
+agent a2 "Integrity is checking every sentence against the chart"
+process da "No documents are added to Harborview's lists\nThe change is about a form, not the list"
+store s1d "P-1499 needs a person again\n'Redrafted after Harborview's change (portal form change).\nWaiting for a new signature'"
+store s0 "No drafts touched\nChange cleared, checked date is today\nSame three-second wait"
+store hh "'What changed' gets a new top row\n'Portal form change: acknowledged and applied'"
+store hh0 "'What changed' gets a new top row\n'... acknowledged and applied'\nsaying 0 drafts were updated"
+toast t1 "'1 draft updated'\nHarborview is up to date. Each draft returned to Case Manager\nfor a new signature."
+toast t0 "'0 drafts updated'\n(the wording is not adjusted for none)"
+process bd "Sidebar badge drops from 2 to 1\nPayer dot turns green"
+click cx "Click 'Cancel', press Escape,\nclick the X or the dimmed area"
+endx x1 "Modal closes, change stays waiting"
+end e1 "Payer is up to date"
+goto g1 "Continues in: Payers › Changes › Update drafts after a change"
+
+s1 --> dp
+dp -->|No| up --> e1
+dp -->|Yes| hv --> dn
+dn -->|One draft| one --> ca1 --> mo
+dn -->|No drafts| none --> ca0 --> mn
+mo --> a1 --> a2 --> da --> s1d --> hh
+mn --> s0 --> hh0 --> t0 --> e1
+hh --> t1 --> bd --> e1
+mo --> cx --> x1
+mn --> cx
+mo -.-> g1

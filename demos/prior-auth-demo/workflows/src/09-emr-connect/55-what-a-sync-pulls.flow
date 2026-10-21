@@ -1,0 +1,49 @@
+title: EMR Connect › Sync › What a sync pulls and when it runs
+route: /emr
+intro: What the agents bring in from a connected system, and when. The demo shows this with counters and one log line per sync. The schedule and the real pull come from the PRD.
+dir: TD
+also: In the demo only 'Sync now' runs a sync. Demo, Fast-forward changes the 'ago' times and never starts one. No new chart, case or file appears anywhere else in the app.
+---
+start s1 "A sync runs"
+
+group gWhen "When it runs"
+  click w1 "Person clicks 'Sync now'\nThe only trigger in the demo"
+  wait w2 "Production: on a schedule, nobody clicks\nAttendance twice a day, roster nightly, payments weekly, eligibility on a rolling 7 days, portal status daily"
+  toast w3 "Production: a missed run raises a stale banner\nAttendance after 36 hours, roster after 48 hours"
+endgroup
+
+ext x1 "The record system\nResidential site, outpatient site, Billing system or a newly connected one"
+
+group gPull "What the agents read"
+  doc d1 "Clinical record systems\nAssessments, progress notes, labs, medications, insurance card"
+  doc d2 "Billing system\nClaims, remittances, payment dates"
+  process d3 "New admissions\nA patient who has just arrived at a site"
+endgroup
+
+agent a1 "Reader\nReads each file, swaps names, dates and IDs for codes, matches the chart to an open case"
+agent a2 "Verify\nRe-checks coverage for members whose plans changed"
+process p1 "Fields it cannot place go to 'Needs a mapping'"
+store s2 "Charts matched today\nGoes up by the number of charts matched to open cases"
+store s3 "Files pulled this week\nGoes up by the number of files saved to those cases"
+store s4 "Recent activity\nOne line per sync"
+process p2 "Demo: nothing else changes\nNo new case in Case Manager, and the New case chart list stays the same four charts"
+process e1 "Last sync tile reads 'Just now'"
+goto g1 "Continues in: EMR Connect › Sync › Sync now"
+goto g2 "Continues in: EMR Connect › Needs a mapping › Map a field"
+goto g3 "Continues in: EMR Connect › Sync › What other screens use from EMR Connect"
+
+s1 --> w1 & w2
+w2 -.-> w3
+w1 --> g1
+w1 --> x1
+w2 --> x1
+x1 --> d1 & d2 & d3
+d1 & d2 & d3 --> a1
+a1 --> a2
+a1 --> p1
+p1 --> g2
+a1 --> s2 & s3
+a2 --> s4
+s2 & s3 & s4 --> e1
+e1 --> p2
+p2 --> g3

@@ -38,6 +38,8 @@ goto g4 "Continues in: Dashboard › Filters › Payer, Program, Request type an
 goto g5 "Continues in: Dashboard › Stage strip › Click a stage tile"
 goto g6 "Continues in: Dashboard › Requests table › Order, rows and paging"
 goto g7 "Continues in: Dashboard › Payers at a glance › Read the table and pick a payer"
+goto g8 "Continues in: Dashboard › Filters › Pick a date range"
+goto g9 "Continues in: Dashboard › Filters › Clear filters and empty states"
 
 s1 --> p1
 s2 --> p1
@@ -53,10 +55,12 @@ d2 -->|Yes| d3
 d3 -->|Yes| o1 --> g1
 d3 -->|No| p4 --> e1
 
-sc --> h1 & f1 & st & rq & py
+sc --> h1 --> f1 --> st --> rq --> py
 h1 --> g2
 h1 --> ca --> g3
 f1 --> g4
+f1 --> g8
+f1 --> g9
 st --> g5
 rq --> g6
 py --> g7

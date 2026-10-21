@@ -1,0 +1,55 @@
+title: Dashboard › Request drawer › Open and read a request
+route: /dashboard?request=P-1499
+intro: The drawer is one scroll, with no tabs. It opens from a row, a case ID, 'Open', or a link with ?request=ID, and shows who holds the request, its history and what is next. The sections change with the request's stage.
+dir: TD
+---
+start s1 "Click a row, a case ID or 'Open' in the Requests table"
+start s2 "Follow a link with ?request=ID\nA notification, 'See on the Dashboard', 'Open R-xxxx' on another page"
+process p1 "Address gets ?request=ID\nThe page is dimmed behind the drawer"
+overlay o1 "Request drawer slides in from the right\nHeader, body, footer"
+
+group gHead "Header"
+  screen h1 "Title 'P-1499 · Harborview MA'\nSubtitle 'PHP continued stay · sent Sun 4:36 pm' or '... · not sent yet'"
+  screen h2 "Stage chip on the right\ne.g. 'Info requested'"
+endgroup
+
+group gBody "Body, top to bottom"
+  screen b1 "Action box (only some requests)\n'Needs your input', 'Packet is drafting the answer' or 'Approved. Write-back waits for you'"
+  screen b2 "Facts\nPatient 'E.S., 42', At stake '$8.2K', Held by (agent and next step)"
+  decision d1 "Does the request have a chance figure?"
+  screen b3 "'Approval chance' or, for a denial, 'Chance of winning'\n'74% · Moderate · likely 66 to 82% · 219 similar cases'"
+  screen b4 "Sent\n'Not yet', 'through the payer's portal', 'by fax' or 'by phone'"
+  screen b5 "History\nEvery event, oldest first\nGreen dot with the time; dashed dot with 'Scheduled · time'"
+  screen b6 "Clock banner\nOne line on when the next check happens"
+  overlay b7 "Demo controls\nDashed box: pretend the payer answered"
+endgroup
+
+decision d2 "Which message does the banner show?"
+toast m1 "Received or Under review\n'Next automatic check in 30 minutes.'"
+toast m2 "Preparing\n'Not sent yet. Automatic checks start once the request is signed and sent.'"
+toast m3 "Info requested\n'Waiting on you, not on the payer. Automatic checks resume once the answer is sent.'"
+toast m4 "Decided\n'Decided. Cadence booked the next review, so no more checks are needed.'"
+toast m5 "Appeal or call, next step starts with 'Waiting'\n'Navigator checks again every 2 hours until the decision date.'"
+toast m6 "Appeal or call, any other\n'Advocate has the next step. Open Denial Intelligence for the brief.'"
+
+goto g1 "Continues in: Dashboard › Request drawer › Needs you and write-back boxes"
+goto g2 "Continues in: Dashboard › Request drawer › Demo controls: the payer answers"
+goto g3 "Continues in: Dashboard › Request drawer › Check now, Open case and closing"
+
+s1 --> p1
+s2 --> p1
+p1 --> o1 --> h1 --> h2
+h2 --> b1 --> b2 --> d1
+d1 -->|Yes| b3 --> b4
+d1 -->|No| b4
+b4 --> b5 --> b6 --> d2
+d2 -->|Received, Under review| m1
+d2 -->|Preparing| m2
+d2 -->|Info requested| m3
+d2 -->|Decided| m4
+d2 -->|Appeal or call, next starts with Waiting| m5
+d2 -->|Appeal or call, anything else| m6
+b6 --> b7
+b1 -.-> g1
+b7 --> g2
+h2 -.-> g3

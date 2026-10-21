@@ -1,0 +1,52 @@
+title: Payers › Configuration feeds the rest of the app
+route: /payers/:id
+intro: What a payer's workflow, rules and document lists reach outside the Payers page. In the demo the working link is redrafting: updating drafts changes the matching requests on the Dashboard and sends a bell notification. The page text also says its document list is the one Reader uses on New case, and the rules feed the agents' decisions and the approval chance; the demo does not wire those, and this diagram marks them.
+dir: TD
+---
+start s1 "A payer's workflow, rule, document list\nor payer change is saved or updated"
+decision dk "Which kind of save?"
+store cfg "Saved on the payer\nNew drafts use it from now on"
+process nw "Page says: new drafts use it at once.\nIn the demo only the Payers page reads the saved lists back"
+
+group gW "Wired in the demo: redrafting"
+  click up "'Update N drafts' (after a payer change,\nor from the edits-waiting banner)"
+  store rq "Matching requests change\nneeds a person: yes\nStatus line 'Redrafted after ... Waiting for a new signature'\nTimeline event from Scribe, Packet or Integrity"
+  store nf "Bell notification 'Drafts updated'\nlinks to Case Manager"
+  process dsh "Dashboard shows the new status line\nand lists the request among those needing you"
+endgroup
+
+group gC "Wired in the demo: links out of Payers"
+  click oc "Click 'Open the request'\nin 'Try it on a case'"
+  process od "Opens Dashboard with that request's drawer"
+endgroup
+
+group gP "Said on the page, not wired in the demo"
+  process p1 "Documents tab: 'Reader uses this same list on the intake screen'\nNew case keeps its own required-document table,\nso an edited list does not change New case"
+  process p2 "Rules tab: agents 'use' each rule\nNo approval chance, queue order or New case check\nreads a rule, so editing one never moves a number"
+  process p3 "Header 'Approved as asked' and 'Typical decision'\ncome from the payer's decision history, not from these edits"
+  process p4 "Authorizations queue and Case Manager lists\ndo not change when drafts are redrafted"
+endgroup
+
+process prd "In the product (PRD 06)\nA rule version is stamped on every authorization;\nPacket reads the channel, form and documents; Cadence reads windows and caps;\nAdvocate reads peer-to-peer and appeal windows"
+
+goto g1 "Continues in: Dashboard › Requests table"
+goto g2 "Continues in: Case Manager › Cases"
+goto g3 "Continues in: Dashboard › Open a request"
+goto g4 "Continues in: New case › Intake step"
+goto g5 "Continues in: Authorizations › Case › Risk"
+goto g6 "Continues in: Authorizations › Queue"
+
+s1 --> dk
+dk -->|Workflow, rule or documents| cfg --> nw
+dk -->|Payer change or edits update| up --> rq --> dsh --> g1
+rq --> nf --> g2
+nw -.-> p1
+nw -.-> p2
+nw -.-> p3
+nw -.-> p4
+p1 --> g4
+p2 --> g5
+p4 --> g6
+oc --> od --> g3
+dk -->|Chart check| oc
+p2 -.-> prd

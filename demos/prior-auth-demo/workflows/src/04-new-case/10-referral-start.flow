@@ -1,0 +1,69 @@
+title: Authorizations › New case › Referral › Start screen
+route: /authorizations/new/:draftId (step 'Referral', no referral loaded yet)
+intro: What a person sees on step 1 before a referral is loaded. Drop documents (Reader reads them), use the sample, check a referral that already arrived, or go on without one.
+dir: TD
+also: Demo only: Reader's reading is invented. The same file name always gives the same one of three sample referrals.
+---
+start s1 "Open New case\nBlank draft, step 'Referral'"
+start s2 "Click 'Back' or 'Add a referral'\non the Medical records step"
+start s3 "Click 'Use different documents'\non a referral checklist"
+
+screen sc1 "New case › Referral\n'Start with the referral. Drop the documents and Reader lists anything that is missing.'"
+
+group gDrop "Drop the documents"
+  input i1 "Drop files on 'Drop the referral documents'\nor click it and choose files"
+  process p1 "Reader picks one of three invented referrals\nfrom the first file name"
+  click c2 "Click 'Use sample referral'"
+  process p2 "Takes the next invented referral in turn\n(file: referral.pdf)"
+endgroup
+
+screen sc2 "'Reader is reading 1 document'\nFile names (first three, then 'and N more')"
+agent a1 "Reader reads, about one second each:\nScanning the documents\nChecking the program's requirements\nVerifying required components\nConfirming the data is complete"
+click leave "Leave the page while Reader reads\n(no Cancel button on this screen)"
+endx e1 "Nothing is added"
+store st1 "New referral added, next RF number\nStatus New, received just now"
+toast t1 "'Reader read the documents'\n'RF-2054 is ready. The checklist shows what is missing.'"
+toast t2 "Bell notification 'New referral read'\n'RF-2054 from Eastgate Probation Services is on your checklist in New case.'"
+process p3 "Address gets ?ref=RF-2054\nChecklist opens"
+goto g1 "Continues in: New case › Referral › Referral checklist"
+
+group gArr "Already arrived"
+  screen sc3 "'Already arrived (8)'\n'Referrals that came in by fax, e-referral, the portal or phone. Reader has read each one.'"
+  process p4 "Open referrals only: New, In review, Awaiting info\nEmergent, then urgent, then routine; waiting-on-referrer last"
+  process p5 "Each row: initials and age, RF number, urgency, source, channel, time\nPill: 'n to check', 'Nothing to check' or 'Waiting on the referrer'"
+  decision d1 "More than 6 open referrals?"
+  click c3 "Click 'Show 2 more'"
+  process p6 "All rows show\nButton now reads 'Show fewer'"
+  click c4 "Click 'Show fewer'"
+  click c5 "Click 'Check' on a row"
+  process p7 "Referral marked opened\nSidebar badge on 'New case' drops"
+endgroup
+decision d2 "Any open referral?"
+process p8 "Whole 'Already arrived' section is hidden"
+
+group gNone "No referral"
+  click c6 "Click 'No referral? Continue without one'"
+  process p9 "Step moves to Medical records\nNo referral is attached"
+endgroup
+goto g2 "Continues in: New case › Medical records"
+
+s1 --> sc1
+s2 --> sc1
+s3 --> sc1
+
+sc1 --> i1 --> p1 --> sc2
+sc1 --> c2 --> p2 --> sc2
+sc2 --> a1 --> st1 --> t1 --> p3 --> g1
+st1 -.-> t2
+sc2 --> leave --> e1
+
+sc1 --> d2
+d2 -->|Yes| sc3 --> p4 --> p5 --> d1
+d2 -->|No| p8
+d1 -->|Yes| c3 --> p6 --> c4
+d1 -->|No| c5
+p6 --> c5
+c4 -.-> d1
+c5 --> p7 --> g1
+
+sc1 --> c6 --> p9 --> g2

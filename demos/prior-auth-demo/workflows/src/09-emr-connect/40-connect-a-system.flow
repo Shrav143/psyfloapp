@@ -1,0 +1,43 @@
+title: EMR Connect › Connect a system › Choose the system and contact
+route: /emr
+intro: The first two steps of the three-step 'Connect a system' pop-up: pick the kind of system and name it, then name the person at the practice who can approve read-only access.
+dir: TD
+also: The demo asks for no password, key or scope. Access is always read-only. In production the clinic provides a service account that lives in a credential vault and is never typed into the screen.
+---
+click s1 "Click 'Connect a system'\nPrimary button, top right of the page"
+overlay o1 "Connect a system\nRead-only. Nothing is written back until a person approves it.\nSteps: System, Contact, Test"
+
+group gS1 "Step 1 of 3: System"
+  input i1 "Pick one System type\nClinical record (default), Billing system, Practice management or Lab results"
+  process p1 "Each choice shows what it holds\n'Charts, notes and medications', 'Claims and remittances', 'Schedules and admissions', 'Lab orders and results'"
+  input i2 "Type a 'Name in Psyflo' (optional)\n'Shown on the Connected systems list.'"
+  process p2 "Blank name becomes '{kind} · new site'"
+  click c1 "Click 'Next'"
+endgroup
+
+group gS2 "Step 2 of 3: Contact"
+  input i3 "Type 'Contact at the practice' (required)\nName and role, for example Dana Ruiz, practice manager"
+  process p3 "'We email them a read-only access request. Until they approve it, the test below uses a demo record.'"
+  ext x1 "Contact at the practice approves read-only access\nDemo: simulated, the test uses a demo record"
+  click c2 "Click 'Run the connection test'"
+  decision q1 "Is the contact filled in?"
+  toast t1 "'Add the person at the practice who can approve read-only access.'\nClears when the person types"
+  click c3 "Click 'Back'"
+endgroup
+
+click cx "Click 'Cancel' or the X, press Escape, or click the dimmed area\nOn any step"
+endx e1 "Pop-up closes\nNothing is saved. Typed answers are lost"
+goto g1 "Continues in: EMR Connect › Connect a system › Run the connection test and save"
+
+s1 --> o1 --> i1
+i1 --> p1 --> i2 --> p2 --> c1
+c1 --> i3
+i3 --> p3
+p3 -.-> x1
+i3 --> c2 --> q1
+q1 -->|No| t1 --> i3
+q1 -->|Yes| g1
+i3 -.-> c3
+c3 -->|Choices are kept| i1
+o1 -.-> cx
+cx --> e1

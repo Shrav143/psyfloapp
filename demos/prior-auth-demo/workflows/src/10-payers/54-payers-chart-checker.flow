@@ -1,0 +1,45 @@
+title: Payers › Documents › Try it on a case
+route: /payers/cardinal?tab=documents
+intro: 'Try it on a case' lets Reader read a sample chart against this payer's list for that case's level of care. It is read only and sends nothing. The demo has no paste box: the chart is chosen from the cases still in 'Preparing'. A document only counts as missing when the payer's list actually asks for it.
+dir: TD
+---
+start s1 "Look at the card 'Try it on a case'\nright of the document list\nCheck a real chart against this list"
+decision hc "Is any case in 'Preparing'?"
+toast nc "Menu shows 'No cases to check'\n'Check this chart' is greyed out"
+endx xnc "Nothing to check until a case is being prepared"
+process df "Case starts as the first 'Preparing' case for this payer,\nelse the first 'Preparing' case at all\nCardinal: I-2207"
+input pk "Pick a 'Case'\nR-1042 · J.M., 34 (Residential 3.5)\nI-2207 · T.R., 29 (IOP)\nR-0988, R-1101, I-2262"
+process clr "Picking a case clears any earlier result"
+click ck "Click 'Check this chart'"
+process busy "Button reads 'Reader is reading the chart' with a spinner"
+agent rd "Reader reads the chart\n(demo: about 2 seconds, scripted)"
+decision lv "Still on Payers after 2 seconds?"
+endx drop "Result dropped"
+process lc "'Level of care' switches to the case's program\nand the list on the left shows that list"
+process mt "Match the chart's known gaps against this payer's list\nA gap counts only if a list title contains it\nThe case's own payer does not matter"
+process gp "Sample charts lack\nR-1042: therapy note\nI-2207: attendance record, remaining treatment goals\nR-1101: urine drug screen, nursing note with withdrawal scale\nR-0988 and I-2262: nothing"
+decision dn "Is anything still needed?"
+toast r1 "Ochre banner '5 of 6 ready'\nStill needed: an attendance record for the last 14 days.\nCardinal usually asks for it."
+toast r0 "Green banner '9 of 9 ready'\nNothing is missing. Reader found every document in the chart."
+toast ft "'Checked I-2207 against Cardinal's IOP list.'\nLink 'Open the request'"
+click ol "Click 'Open the request'"
+goto g1 "Continues in: Dashboard › Open a request"
+process why "Edit the list and check again to see it change\nCardinal's list asks for 'Remaining treatment goals' only after\nits criteria change is updated, so I-2207 then reads '5 of 7 ready'"
+toast info "'This is the same list Reader uses on the intake screen,\nso the warning there and the result here always match.'"
+process gap "Demo gap: New case intake keeps its own required-document\ntable, so this list and the intake warning can differ"
+goto g2 "Continues in: Payers › Documents › Edit the list"
+goto g3 "Continues in: New case › Intake step"
+
+s1 --> hc
+hc -->|No| nc --> xnc
+hc -->|Yes| df --> pk --> clr --> ck --> busy --> rd --> lv
+lv -->|No| drop
+lv -->|Yes| lc --> mt --> dn
+mt -.-> gp
+dn -->|Yes| r1 --> ft
+dn -->|No| r0 --> ft
+ft --> ol --> g1
+ft --> why --> g2
+s1 -.-> info
+info -.-> gap
+gap -.-> g3

@@ -1,0 +1,43 @@
+title: Authorizations › Case page › Recommended actions › Refine and add clinical context
+route: /authorizations/case/R-1042?tab=actions
+intro: The two side-panel buttons that do not apply anything: 'Refine recommendations' and 'Add clinical context', and the 'Logged decisions' list where their trace appears.
+dir: TD
+also: Demo only: 'Refine recommendations' is a short simulated wait and changes nothing. The clinical context is kept and logged, but the draft text is not rewritten from it.
+---
+group gRf "Refine recommendations"
+  click rf "Click 'Refine recommendations'"
+  process sp "Button shows a spinner for about 1.5 seconds"
+  agent hs "Historian and Scribe 'read the chart again'\n(demo: simulated)"
+  toast tr "'Recommendations refreshed'\n'Historian and Scribe read the chart again. The same actions still rank highest.'"
+endgroup
+
+group gCx "Add clinical context"
+  click cc "Click 'Add clinical context'"
+  overlay m "Dialog 'Add clinical context'\n'Something the chart does not show. Scribe uses it in the next draft. Nothing goes to the payer.'"
+  input ta "Type in the box\ne.g. 'He called the program himself on 10/19 and asked for a bed.'"
+  decision d "Is anything typed?"
+  process dis "'Add context' stays off"
+  click ad "Click 'Add context'"
+  click cn "Click 'Cancel', the X or the dimmed area, or press Esc"
+  process cl "Dialog closes\nWhat you typed stays in the box for next time"
+  store sv "Context saved on the case\nLog: 'You added clinical context: ...'"
+  toast tc "'Clinical context added'\n'Scribe will use it in the next draft. Nothing is sent to the payer.'"
+  process nu "Dialog closes and the box empties\nThe draft text does not change"
+endgroup
+
+process lk "While the agents are updating the draft\nboth buttons are off"
+
+group gLg "Logged decisions"
+  screen lg "Card 'Logged decisions'\nNewest six entries, each with the time\nShown once there is at least one entry"
+  process en "Entries come from\napplied actions, dismissals, bring back, notes sent, clinical context, draft edits, re-check, send back to Scribe"
+endgroup
+
+rf --> sp --> hs --> tr
+cc --> m --> ta --> d
+d -->|No| dis
+d -->|Yes| ad --> sv --> tc --> nu
+m --> cn --> cl
+sv --> lg
+lg --> en
+rf -.-> lk
+cc -.-> lk

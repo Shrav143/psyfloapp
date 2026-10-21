@@ -6,7 +6,7 @@ also: Only the request ID, the 'Open' button and the 'Coverage needs a fix' pill
 ---
 screen t "Request tile\nOne open request inside a band"
 
-group gL "Left and middle"
+group gL "Left side"
   process lv "Level chip\nResidential 3.5, PHP, IOP, or 'Detox → Residential'"
   process id "'R-1042 · J.M., 34 · Summit Medicaid HMO'"
   process dx "Diagnosis and review type\n'Alcohol use disorder, severe ... · admission'"
@@ -41,7 +41,7 @@ click idl "Click the request ID (underlined)"
 click ob "Click 'Open'"
 goto gC "Continues in: Authorizations › Case page › Ways in"
 
-t --> lv & id & dx & sc
+t --> lv --> id --> dx --> sc
 t --> dR
 dR -->|Yes| ag1
 dR -->|No| ag2 --> dN
@@ -52,8 +52,7 @@ dC -->|Yes| cl --> gE
 dC -->|No| dRule
 dRule -->|Yes| rule
 dRule -->|No| nr
-t --> due & risk & ch & lift
-ch --> dA
+t --> due --> risk --> ch --> lift --> dA
 dA -->|Yes| ch2
 dA -->|No| ch3
 t --> tint

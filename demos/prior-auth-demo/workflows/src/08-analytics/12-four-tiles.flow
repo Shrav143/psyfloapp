@@ -1,0 +1,52 @@
+title: Analytics › The four tiles
+route: /analytics
+intro: Four tinted tiles, each with a big number, a label and two small lines: what the number means, and how many decisions, denials, requests or drafts are behind it. The tiles are not buttons.
+dir: TD
+---
+start s1 "Read the row of four tiles"
+screen sc "Each tile\nBig number, label in capitals, a meaning line, then 'N decisions · this quarter'"
+
+group gA "'Approved as asked' (green)"
+  screen a1 "71%\n'▲ 6 pts vs last quarter'\n'1,070 decisions · this quarter'"
+  process a2 "Share of decisions approved as asked in the period\nOne payer: that payer's own rate"
+  decision a3 "Change against the period before?"
+  toast a4 "'▲ 6 pts vs last quarter' (up, 'pt' for one point)"
+  toast a5 "'▼ 2 pts vs last quarter' (down)"
+  toast a6 "'No change vs last quarter'"
+endgroup
+
+group gB "'Top denial cause' (red)"
+  screen b1 "29%\n'Thin continued-stay evidence'\n'311 denials · this quarter'"
+  process b2 "Share of denials held by the biggest reason listed in the denial table\nThe line is a short name of that reason"
+endgroup
+
+group gC "'Advice taken works' (amber)"
+  screen c1 "84%\n'Approved when applied'\n'828 requests · this quarter'"
+  process c2 "Share approved among requests where the agents' advice was applied"
+endgroup
+
+group gD "'Sent without edits' (grey)"
+  screen d1 "75%\n'As written, or a typo fixed'\n'966 drafts · this quarter'"
+  process d2 "Share of agent drafts sent as written, or with a typo fixed"
+endgroup
+
+decision q1 "Fewer than 20 behind the figure?"
+screen h1 "Number becomes '-'\nMeaning line reads 'Not enough decisions yet'\nThe count line stays, for example '17 requests · this quarter'"
+screen ok "The number and its lines show as usual"
+process p1 "Tiles do nothing when clicked or hovered\nUnlike the Eligibility tiles, they are not filters"
+endx e1 "To change a tile, change the period or payer menu"
+end e2 "Figures read"
+
+s1 --> sc
+sc --> a1 & b1 & c1 & d1
+a1 --> a2 --> a3
+a3 -->|Up| a4
+a3 -->|Down| a5
+a3 -->|Same| a6
+b1 --> b2
+c1 --> c2
+d1 --> d2
+a4 & a5 & a6 & b2 & c2 & d2 --> q1
+q1 -->|Yes| h1 --> e2
+q1 -->|No| ok --> e2
+sc -.-> p1 --> e1

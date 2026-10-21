@@ -1,0 +1,55 @@
+title: Authorizations › Eligibility & Benefits › Result › What the page shows
+route: /authorizations/eligibility/R-1042
+intro: One verdict and the seven checks behind it. Reached by a row on the list, or when a live check finishes. The verdict banner holds the next-action buttons.
+dir: TD
+---
+start s1 "Click a row on the list, or a live check finishes"
+screen sc "Eligibility & Benefits\nTitle is the headline, for example 'Covered, but you need an authorization first.'\nSub 'R-1042 · J.M., 34 · Summit Medicaid HMO · Residential 3.5 · Date of service 10/21/2026'"
+click b1 "Click '← Eligibility & Benefits' (back link, top left)"
+goto g0 "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows"
+
+group gVer "Verdict banner"
+  screen vb "Small caps 'Verdict'\nBig words: 'Cleared to bill', 'Authorization first' or 'Fix before billing'\nOne sentence why. Green, amber or red box"
+  screen bt "Buttons on the right of the banner\n'Start authorization', 'Open case', 'Request retro-eligibility' ... 'Check again'"
+endgroup
+
+group gPay "Payment checks card"
+  screen pc "'Every line has to pass for the clinic to be reimbursed'\nSeven rows, one chip each, then a line 'What the patient pays:'"
+  decision q1 "Checked within the last hour?"
+  process p1 "Pill reads 'Checked live at 10:42 am'"
+  process p2 "Pill reads 'Last checked 10:40 am, 3 d ago'"
+endgroup
+
+group gAg "Agents card"
+  screen ag "One row per agent\nVerify 'Eligibility with Ohio Medicaid' 0:03, Verify 'Benefits with Summit' 0:05\nCriteria 'Authorization rule' 0:02, Navigator 'Provider enrollment' 0:02"
+  process p3 "Evergreen adds a row 'Phone call to Evergreen' 1:34"
+  click k1 "Click an agent row"
+  decision q2 "Was that row already open?"
+  process p4 "Row closes"
+  process p5 "Its answer opens under it, for example 'Coverage active, effective 01/01/2026, no end date'\nAny other open row closes"
+endgroup
+
+group gNext "Next checks card"
+  screen nx "'Coverage again on 11/01, then every month'\n'Before each recertification'\n'3 days before the first claim'"
+  process p6 "Same three lines for every patient\nNothing here is clickable"
+endgroup
+
+goto g1 "Continues in: Authorizations › Eligibility & Benefits › Result › Which verdict and why"
+goto g2 "Continues in: Authorizations › Eligibility & Benefits › Result › Payment checks: coverage, plan, service"
+goto g3 "Continues in: Authorizations › Eligibility & Benefits › Result › Next actions"
+
+s1 --> sc
+sc --> b1 --> g0
+sc --> vb --> bt
+vb -.-> g1
+bt --> g3
+sc --> pc
+pc --> q1
+q1 -->|Yes| p1
+q1 -->|No| p2
+pc -.-> g2
+sc --> ag --> p3
+ag --> k1 --> q2
+q2 -->|Yes| p4
+q2 -->|No| p5
+sc --> nx --> p6

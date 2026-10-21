@@ -1,0 +1,44 @@
+title: Authorizations › Case page › Header and buttons
+route: /authorizations/case/R-1042
+intro: The title block above the tabs and its three buttons. It stays the same on all five tabs. The three number tiles and the notes under it are in the next diagram.
+dir: TD
+---
+screen pg "Case page\nCrumbs, header, three tiles, notes, five tabs"
+click cr "Click the 'Authorizations' crumb"
+goto gQ "Continues in: Authorizations › Queue › Open the queue and read the top"
+
+screen hd "Header title\nLevel chip, ID, request type chip, then one pill"
+decision dCh "Does the request have a result (decided)?"
+toast pc "Pill shows the result, e.g. 'Approved'"
+process pd "Pill shows the due text, e.g. 'Notice due in 5 h'\nRed under 6 h, amber under 24 h, grey later"
+process sub "Sub line: 'J.M., 34 · Summit Medicaid HMO · Residential 3.5 · 14 days requested'\nThen the diagnosis and the scores"
+decision dRd "Ready: all four checks pass and still preparing?"
+agent ag1 "Integrity badge\n'Ready to sign. Integrity passed all four checks'"
+agent ag2 "Agent badge and status line\ne.g. Scribe: 'Scribe is drafting the case'"
+
+group gBt "Header buttons"
+  click b1 "Click 'Open in review and sign'"
+  click b2 "Click 'Send to payer'"
+  click b3 "Click 'Back to queue'"
+endgroup
+decision dEn "Can it be sent?"
+process on "'Send to payer' is on\nNote: 'Sending opens review and sign. Nothing goes to the payer until a clinician signs.'"
+process off "'Send to payer' is greyed out, a click does nothing\nThe note and a hover hint give the reason"
+goto gS "Continues in: Authorizations › Case page › Send to payer and review and sign"
+goto gN "Continues in: Authorizations › Case page › Numbers and notes"
+
+pg --> cr --> gQ
+pg --> hd --> dCh
+dCh -->|Yes| pc
+dCh -->|No| pd
+pc --> sub
+pd --> sub
+sub --> dRd
+dRd -->|Yes| ag1
+dRd -->|No| ag2
+pg --> b1 --> gS
+pg --> b2 --> dEn
+dEn -->|Yes| on --> gS
+dEn -->|No| off
+pg --> b3 --> gQ
+pg --> gN

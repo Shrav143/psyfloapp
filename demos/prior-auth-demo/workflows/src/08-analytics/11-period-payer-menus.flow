@@ -1,0 +1,51 @@
+title: Analytics › Period and payer menus
+route: /analytics
+intro: The two menus at the top right change every figure on the page and in the monthly report. They are the only filters. There is no date picker and no search.
+dir: TD
+also: Demo only: other periods and payers are worked out from the same invented tables, so they drift a little from this quarter.
+---
+start s1 "On Analytics, look at the two menus"
+screen sc "Menus 'This quarter' and 'All payers'\nBoth read as plain pills until you change them"
+
+group gPeriod "Period menu"
+  click c1 "Click 'This quarter'"
+  overlay o1 "'This quarter', 'Last quarter', 'Last 12 months'"
+  input i1 "Pick one"
+endgroup
+
+group gPayer "Payer menu"
+  click c2 "Click 'All payers'"
+  overlay o2 "'All payers', 'Cardinal Health Plan', 'Summit Medicaid HMO', 'Beacon PPO', 'Harborview MA', 'Lakeshore Behavioral', 'Evergreen'"
+  input i2 "Pick one"
+  process p2 "The payer pill turns green-edged and bold while it is not 'All payers'\nThe period pill never does"
+endgroup
+
+input k1 "Keyboard in either menu\nArrow keys move, Enter picks, Esc closes"
+click k2 "Click anywhere outside an open menu"
+process p1 "Menu closes, value unchanged"
+
+process r1 "Page recomputes at once from the period and the payer"
+process r2 "Subtitles use the period: 'this quarter', 'last quarter' or 'the last 12 months'\nCounts scale: last quarter about 0.96, last 12 months about 3.9 times"
+process r3 "One payer: the bars show that payer against 'All payers'\nThe denial table lists all of that payer's reasons\n'What helps most' is re-weighted for that payer"
+decision q1 "Is a figure built on 20 or more decisions?"
+screen ok "The number shows, for example 86%"
+screen hid "Tile shows '-' with 'Not enough decisions yet'\nA card shows 'Not enough decisions yet. Figures based on fewer than 20 decisions stay hidden.'"
+toast ex "Example: 'Lakeshore Behavioral' and 'This quarter'\n'Top denial cause' and 'Advice taken works' are hidden, as are the table and the list"
+process p3 "Nothing goes into the address\nLeaving and returning resets to 'This quarter' and 'All payers'"
+goto g1 "Continues in: Analytics › Monthly report › Open and build"
+end e1 "Page matches the two menus"
+
+s1 --> sc
+sc --> c1 --> o1 --> i1 --> r1
+sc --> c2 --> o2 --> i2 --> r1
+i2 --> p2
+o1 & o2 --> k1
+o1 & o2 --> k2 --> p1
+k1 --> r1
+r1 --> r2 --> q1
+r1 --> r3
+r3 --> q1
+q1 -->|Yes| ok --> e1
+q1 -->|No| hid --> ex --> e1
+r1 -.-> p3
+r1 -.-> g1

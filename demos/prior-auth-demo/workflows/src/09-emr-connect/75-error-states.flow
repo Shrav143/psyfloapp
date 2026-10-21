@@ -1,0 +1,58 @@
+title: EMR Connect › Problems › Every error state and what it needs
+route: /emr
+intro: A way to read the page when something looks wrong. Start from what the page shows, find what the person has to do, and see how the page recovers. The demo has two real problem states and a few quiet dead ends.
+dir: TD
+also: Production-only problems (from the PRD) are shown in orange. The demo cannot reach them.
+---
+start s1 "Something on EMR Connect looks wrong"
+decision q1 "What does the page show?"
+
+group gA "Amber pill: 'Needs a quick look'"
+  process a1 "The read-only sign-in expired\nThe row names the problem and says renew it with Fix"
+  click a2 "Click 'Fix'\nNeeds: a person who approves, and a tick for read-only access"
+  goto a3 "Continues in: EMR Connect › Problems › Fix a system that needs a quick look"
+  end a4 "Re-test: three checks. Row turns Connected"
+endgroup
+
+group gR "Red pill: 'Disconnected'"
+  process r1 "Someone disconnected it\nRow: 'Not syncing'. Charts from this system are not arriving."
+  click r2 "Click 'Reconnect' on the row or in the Manage drawer\nNeeds: nothing else"
+  end r3 "Re-test: none is shown\nRow turns Connected at once. Any earlier issue text is cleared"
+endgroup
+
+group gT "Last sync tile"
+  process t1 "Red 'None': every system is Disconnected\nAmber: 'N systems are disconnected'"
+  process t2 "Needs: every Disconnected row reconnected"
+endgroup
+
+group gM "Amber tile: 'Need a mapping'"
+  process m1 "'fields the agents could not place'"
+  click m2 "Click 'Map'\nNeeds: a value picked for each field"
+endgroup
+
+group gQ "Quiet dead ends"
+  endx d1 "'Sync now' while another sync runs\nClick is ignored, no message"
+  endx d2 "'Sync now' with no Connected system\nSpins two seconds, then nothing"
+  endx d3 "Contact left blank while connecting\n'Add the person at the practice who can approve read-only access.'"
+  endx d4 "Fix form incomplete\n'Name the person who approves and confirm read-only access.'"
+endgroup
+
+group gP "Production only, from the PRD"
+  ext p1 "The record system changes its screens\nThe feed pauses and falls back to file upload"
+  ext p2 "A sign-in challenge or lockout\nThe run pauses and a task goes to the credential owner"
+  ext p3 "A feed goes stale\nA banner and a task after the stale limit, 36 hours for attendance"
+endgroup
+
+s1 --> q1
+q1 -->|Amber pill on a row| a1 --> a2 --> a3
+a3 --> a4
+q1 -->|Red pill on a row| r1 --> r2 --> r3
+q1 -->|Last sync tile is red or amber| t1 --> t2
+t2 --> r2
+q1 -->|Need a mapping tile is amber| m1 --> m2
+q1 -->|Nothing happens after a click| d1
+q1 -->|Nothing happens after a click| d2
+q1 -.->|A message under a field| d3
+q1 -.->|A message under a field| d4
+q1 -.->|Not in the demo| p1
+p1 --> p2 --> p3

@@ -1,0 +1,58 @@
+title: Denial Intelligence › Add a denial letter
+route: /denials
+intro: The 'Add a denial letter' card at the top of the page: drop or pick a letter, add a note, 'Analyze the denial', watch four agents work, and land on the new denial. In the demo the letter is not really read; a sample letter's facts fill the new denial.
+dir: TD
+also: Demo only: any file type is accepted and only its name and size are kept. Which of the three sample letters (Beacon, Summit, Harborview) is used depends on the file name length, or on how many letters were added before when 'Use sample letter' is clicked.
+---
+start s1 "Look at 'Add a denial letter' at the top of the page"
+screen sc1 "'Add a denial letter'\n'The agents read it, check it against your chart and past appeals, and lay out your options'\nTwo columns: letter, then note and button"
+
+input i1 "Drop a file on the area, or click it (or press Enter or Space) to choose a file\n'Drop the denial letter here, or click to choose a PDF or DOCX'"
+click c1 "Click 'Use sample letter'"
+process p1 "Next sample letter in turn: Beacon, Summit, then Harborview"
+screen fr "File row: file name and size\nA small X removes it"
+click c2 "Click the X on the file row"
+process p2 "Drop area comes back\nThe note is kept"
+process p3 "'Identifiers are removed on upload.' is shown beside the area"
+
+input i2 "Type a note (optional)\n'Add anything not in the letter, such as a payer call note'"
+click c3 "Click 'Analyze the denial'"
+decision d1 "Is a letter chosen?"
+toast t1 "'Add the letter first, or use the sample letter.'"
+
+screen sc2 "Progress list replaces the form\nOne line per agent, a spinner on the one working, a tick when done"
+agent a1 "Reader is reading the letter and removing identifiers"
+agent a2 "Advocate is checking the notice, the deadline and the payer's own criteria"
+agent a3 "Historian is comparing similar decisions and appeals"
+agent a4 "Integrity is checking every statement against the chart"
+wait w1 "About 1.25 seconds per step, 5 seconds in all (demo: simulated)"
+decision d2 "Is the person still on this page?"
+endx e1 "Work is dropped and no denial is added"
+
+process p4 "Facts of the sample fill the denial: initials, age, payer, program, '$ at stake', win chance, denial type, similar decisions, call window"
+store st1 "New open denial created, the next free number from D-3340\nChip 'Analyzed', route 'Peer-to-peer', file name and note saved"
+store st2 "History lines: Reader read the letter and removed identifiers; Advocate checked the notice, the deadline and how the payer applied its own criteria; Historian compared N similar decisions"
+toast t2 "'The analysis is ready'\n'D-3340 was added to Open denials.'"
+toast t3 "Notification 'Denial analyzed' from Advocate\nLinks to the new denial"
+process p5 "Form clears: file, sample and note\nNew denial is selected, address becomes ?id=D-3340\nBadge goes up by one"
+goto g1 "Continues in: Denial Intelligence › A denial opened"
+goto g2 "Continues in: Denial Intelligence › Your options"
+goto g3 "Continues in: Dashboard › Arrive › What the page shows"
+
+s1 --> sc1
+sc1 --> i1 --> fr
+sc1 --> c1 --> p1 --> fr
+fr --> c2 --> p2 --> i1
+sc1 --> p3
+sc1 --> i2 --> c3
+fr --> c3
+c3 --> d1
+d1 -->|No| t1 --> sc1
+d1 -->|Yes| sc2 --> a1 --> a2 --> a3 --> a4
+sc2 --> w1
+a4 --> d2
+d2 -->|No, left the page| e1
+d2 -->|Yes| p4 --> st1 --> st2 --> t2 --> p5
+st1 --> t3
+p5 --> g1 & g2
+st1 --> g3

@@ -1,0 +1,38 @@
+title: Analytics › Monthly report › What the files contain
+route: /analytics
+intro: The two downloaded files are built from the same numbers as the page, for the period and payer chosen when the window opened. A figure behind fewer than 20 decisions is written as 'Not enough decisions yet', never as a number.
+dir: TD
+also: Demo only: the real monthly pack in the product requirements is one PDF, aggregate only, approved by the operator before it is sent. The demo has no PDF and no Print.
+---
+start s1 "A download button is clicked in the report window"
+
+group gMd "Written report (.md)"
+  doc m1 "'# Psyflo monthly report'\n'Period: This quarter' and 'Scope: All payers'\n'Built by Analyst from demo data. A figure based on fewer than 20 decisions is left out.'"
+  doc m2 "'## Headline figures'\nFour bullets: approved as asked with the trend line, top denial cause, advice taken works, sent without edits"
+  doc m3 "'## Approval rate by payer'\nOne bullet per bar with its decisions"
+  doc m4 "'## How people edit agent drafts'\nThree bullets, then 'Drafts counted'"
+  doc m5 "'## Common denial reasons'\nTable: Reason, Payer, Count, Share of denials"
+  doc m6 "'## What helps most'\nNumbered list: step, times applied, percent approved"
+endgroup
+
+group gCsv "Figures as a table (.csv)"
+  doc v1 "One header row\nperiod, scope, section, label, value_percent, count"
+  doc v2 "Rows by section\nheadline, approval by payer, draft edits, denial reasons, what helps most"
+  doc v3 "Commas and quotes inside a value are wrapped in quotes\nOpens in a spreadsheet"
+endgroup
+
+decision q1 "Is the figure behind 20 or more decisions?"
+process p1 "The number is written"
+process p2 "'Not enough decisions yet' is written in its place\nThe count is kept"
+process p3 "Same view as the page: the same period and payer, the same hidden figures"
+end e1 "File matches the screen"
+
+s1 --> m1 & v1
+m1 --> m2 --> m3 --> m4 --> m5 --> m6
+v1 --> v2 --> v3
+m6 --> q1
+v3 --> q1
+q1 -->|Yes| p1 --> e1
+q1 -->|No| p2 --> e1
+s1 -.-> p3
+p3 -.-> e1

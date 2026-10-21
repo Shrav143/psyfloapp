@@ -1,0 +1,58 @@
+title: Authorizations › Case page › Tabs and deep links
+route: /authorizations/case/R-1042?tab=actions
+intro: The five tabs under the header, how the address follows them, what the two badges count, and the buttons on other tabs that jump to one recommendation card.
+dir: TD
+---
+start s1 "A case page opens"
+decision d1 "Does the address name a valid tab (tab=...)?"
+process ts "That tab is selected"
+process ta "Recommended actions is selected"
+screen tabs "Tab strip\nRecommended actions · Clinical picture · Payer criteria · Risk analysis · Draft"
+
+group gC "Click a tab"
+  click c1 "Click 'Recommended actions'"
+  click c2 "Click 'Clinical picture'"
+  click c3 "Click 'Payer criteria'"
+  click c4 "Click 'Risk analysis'"
+  click c5 "Click 'Draft'"
+endgroup
+process url "The address changes to tab=actions, picture, criteria, risk or draft\nBrowser Back returns to the previous tab"
+process fd "The tab's panel fades in\nHeader and tiles stay as they were"
+process rec "Any tab click drops rec= from the address"
+
+process b1 "Badge on 'Recommended actions'\nNumber of open recommendations (6)\nGone when none are left"
+process b2 "Badge on 'Draft'\nNumber of checks that need attention (2)\nGone when all four pass"
+
+group gD "Buttons that jump to one card"
+  click l1 "Clinical picture › 'Settle it' on a 'Still open' line"
+  click l2 "Payer criteria › 'Go to the action' under 'Could be stronger'"
+  click l3 "Payer criteria › 'Open the action' in 'To keep the approval chance high'"
+endgroup
+process dl "Recommended actions opens with rec= set to that card's ID"
+process fc "The card scrolls to the middle of the screen\nand gets a green outline"
+decision dEx "Is that card still open?"
+process nofc "Nothing to scroll to\nApplied cards are one-line rows; dismissed ones are in 'Dismissed'"
+
+goto g1 "Continues in: Authorizations › Case page › Recommended actions › The tab"
+goto g2 "Continues in: Authorizations › Case page › Clinical picture"
+goto g3 "Continues in: Authorizations › Case page › Payer criteria"
+goto g4 "Continues in: Authorizations › Case page › Risk analysis"
+goto g5 "Continues in: Authorizations › Case page › Draft › Read and edit"
+
+s1 --> d1
+d1 -->|Yes| ts --> tabs
+d1 -->|No or missing| ta --> tabs
+tabs --> b1 & b2
+tabs --> url --> rec --> fd
+tabs --> c1 & c2 & c3 & c4 & c5
+c1 --> g1
+c2 --> g2
+c3 --> g3
+c4 --> g4
+c5 --> g5
+l1 --> dl
+l2 --> dl
+l3 --> dl
+dl --> dEx
+dEx -->|Yes| fc
+dEx -->|No| nofc

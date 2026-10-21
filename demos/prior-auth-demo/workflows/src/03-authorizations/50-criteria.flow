@@ -1,0 +1,52 @@
+title: Authorizations › Case page › Payer criteria
+route: /authorizations/case/R-1042?tab=criteria
+intro: The third tab: what this payer asks for, read by Criteria from the policy, which requirements the chart backs, which could be stronger, and the buttons that jump to the matching action or re-check.
+dir: TD
+also: Demo only: 'Re-check criteria' is a simulated wait. The 'less than 10 s' and 'usually over an hour' figures are fixed text.
+---
+start s1 "Click 'Payer criteria'"
+screen pc "Payer criteria"
+screen hd "Header card: 'Summit Medicaid HMO · Residential 3.5 · Alcohol use disorder, severe ...'\n'What this payer asks for, read by the Criteria agent from the current policy and past decisions'"
+process ch "Four source chips\n'Published payer policy v2026.3', 'Past decisions', 'Denial patterns', 'Ohio rules'"
+decision dO "Could any requirement be stronger?"
+toast p1 "Pill: '1 item could be stronger before sending'"
+toast p2 "Pill: 'Everything Summit asks for is covered'"
+process fc "Four facts\n'Approved as asked 74%' (Summit, Residential 3.5, last 90 days)\n'Chart-to-criteria match 9 / 9'\n'Time to read the policy < 10 s'\n'Required tool'"
+
+screen tb "Table 'What Summit requires for approval'\n'8 of 9 are backed directly by the chart, 1 could be stronger'\nColumns: Criterion, Status, Evidence, 'Criteria says'"
+decision dR "For each row: backed directly by the chart?"
+process met "Status 'Met' with a green tick"
+process weak "Status 'Could be stronger' with an amber icon"
+click ga "Click 'Go to the action'"
+process dl "Recommended actions opens with that card outlined"
+click ev "Click the source chip in the 'Evidence' column"
+
+click rc "Click 'Re-check criteria'"
+process bz "Button shows a spinner for about 1.6 seconds"
+agent cr "Criteria reads the payer's policy again\n(demo: simulated, nothing changes)"
+toast tr "'Criteria re-checked'\n'Criteria read Summit's policy v2026.3 again. 9 of 9 are covered in the draft, 1 could be stronger.'"
+
+screen kh "Card 'To keep the approval chance high'\nBanner 'Why it matters for Summit. ...'\nLabel 'Include in the request'"
+decision dN "Any row 'Could be stronger'?"
+process li "Numbered list: the action's title\n'Meets the requirement that is thin today: ...'"
+click oa "Click 'Open the action'"
+process no "'Nothing to add. The draft already covers every requirement.'"
+store ap "When an action that fixes a row is applied\nRow turns 'Met': 'Closed by the action you applied. Criteria checked the draft again.'\nIf you typed an answer: 'Added by Scribe from your answer: ...'"
+
+goto g1 "Continues in: Authorizations › Case page › Source chip"
+goto g2 "Continues in: Authorizations › Case page › Recommended actions › The tab"
+
+s1 --> pc --> hd --> ch
+pc --> dO
+dO -->|Yes| p1
+dO -->|No| p2
+pc --> fc
+pc --> tb --> dR
+dR -->|Yes| met
+dR -->|No| weak --> ga --> dl --> g2
+tb --> ev --> g1
+pc --> rc --> bz --> cr --> tr
+pc --> kh --> dN
+dN -->|Yes| li --> oa --> dl
+dN -->|No| no
+dl -.-> ap
