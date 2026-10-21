@@ -2,6 +2,7 @@ import { useState } from "react";
 import { SearchX } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Banner, Button, Card, Crumbs, EmptyState, Page, PageHeader } from "@/components/ui";
+import { blockedInHosted } from "@/lib/hosted";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
 import { AskBanner, DatesCard, OpeningCard, PointsCard, PushbackCard } from "./BriefCards";
@@ -62,7 +63,7 @@ export default function BriefPage() {
           <CallDetailsCard view={view} brief={brief} onBook={() => setDialog("book")} />
           <ChanceCard view={view} />
           <OpenDocsCard view={view} brief={brief} />
-          <BriefActions onCopy={copy} onPrint={() => window.print()} onOutcome={() => setDialog("outcome")} />
+          <BriefActions onCopy={copy} onPrint={() => { if (!blockedInHosted("Print")) window.print(); }} onOutcome={() => setDialog("outcome")} />
         </div>
       </div>
       {dialog === "book" ? <BookCallModal view={view} onClose={() => setDialog(null)} onBooked={() => setDialog(null)} /> : null}

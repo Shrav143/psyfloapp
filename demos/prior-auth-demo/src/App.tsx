@@ -1,6 +1,7 @@
-import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
+import { HashRouter, MemoryRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Shell } from "@/components/layout";
 import { EmptyState, Page, PageHeader } from "@/components/ui";
+import { HOSTED } from "@/lib/hosted";
 import ActiveCasesPage from "@/pages/active/ActiveCasesPage";
 import AnalyticsPage from "@/pages/analytics/AnalyticsPage";
 import CasePage from "@/pages/authorizations/CasePage";
@@ -29,10 +30,12 @@ function NotFound() {
   );
 }
 
-/** Hash routing keeps the single-file build working when opened straight from disk. */
+/** Hash routing keeps the single-file build working when opened straight from disk. The hosted preview runs in a frame that has no address bar of its own, so it keeps the route in memory. */
+const Router = HOSTED ? MemoryRouter : HashRouter;
+
 export default function App() {
   return (
-    <HashRouter>
+    <Router>
       <Routes>
         <Route element={<Shell />}>
           <Route index element={<Navigate to="/dashboard" replace />} />
@@ -58,6 +61,6 @@ export default function App() {
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
-    </HashRouter>
+    </Router>
   );
 }

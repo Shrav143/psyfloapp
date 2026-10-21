@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Check, FileDown, FileSpreadsheet } from "lucide-react";
 import { AgentChip, Button, Modal, Spinner } from "@/components/ui";
+import { blockedInHosted } from "@/lib/hosted";
 import { useStore } from "@/store";
 import type { View } from "./model";
 import { downloadFile, reportCsv, reportMarkdown } from "./report";
@@ -21,6 +22,7 @@ export function ReportModal({ view, onClose }: { view: View; onClose: () => void
 
   const base = `psyflo-monthly-report-${view.period.id}-${view.payer}`;
   const save = (kind: "md" | "csv") => {
+    if (blockedInHosted("Download")) return;
     if (kind === "md") downloadFile(`${base}.md`, "text/markdown;charset=utf-8", reportMarkdown(view, view.period.prev));
     else downloadFile(`${base}.csv`, "text/csv;charset=utf-8", reportCsv(view));
     useStore.getState().toast({ title: "Report downloaded", body: `${base}.${kind} has the figures you see on this page.`, tone: "good" });

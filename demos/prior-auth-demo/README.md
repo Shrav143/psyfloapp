@@ -60,3 +60,7 @@ scripts/shot.mjs            screenshot a route of a build
 ```
 
 State: one store. The Dashboard's requests are the shared spine; other modules create and change them through `submitCase`, `simulateReply`, `updateRequest` and `addEvent`. "Reset demo data" restores every slice.
+
+## Hosted preview
+
+`VITE_HOSTED=1 bun run build` makes a build for hosting inside a page that blocks downloads, printing and an address bar of its own. It keeps the route in memory (no `#/path` in the URL), and Export CSV, Download report, Print and Copy link say they are off in the preview instead of doing nothing. The normal build is unchanged.

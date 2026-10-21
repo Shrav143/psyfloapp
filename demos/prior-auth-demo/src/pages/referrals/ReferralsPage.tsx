@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Download, Plus } from "lucide-react";
 import { Button, Page, PageHeader } from "@/components/ui";
 import { plural } from "@/lib/format";
+import { blockedInHosted } from "@/lib/hosted";
 import { useStore } from "@/store";
 import { FunnelCard, SourceCard, WeeklyCard } from "./Charts";
 import { downloadCsv } from "./csv";
@@ -47,6 +48,7 @@ export default function ReferralsPage() {
   const title = open.length ? `${plural(open.length, "referral")} ${open.length === 1 ? "needs" : "need"} review. ${urgent === 0 ? "None are urgent." : urgent === open.length && open.length > 1 ? "All are urgent." : `${urgent} ${urgent === 1 ? "is" : "are"} urgent.`}` : "Every referral has been looked at.";
 
   const exportCsv = () => {
+    if (blockedInHosted("Export")) return;
     const rows = sortReferrals(m.base.filter((r) => inView(r, f.view) && matchesQuery(r, query)));
     downloadCsv(rows);
     toast({ title: "Exported to CSV", body: `${plural(rows.length, "referral")} in the current view were saved to referrals.csv.`, tone: "good" });

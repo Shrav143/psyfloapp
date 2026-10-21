@@ -3,6 +3,7 @@ import { Button, Dropdown, Pill, Stepper } from "@/components/ui";
 import { PROGRAM_LABEL } from "@/data/types";
 import { STAFF, STATUS_LABEL, isOpen, type Referral, type StaffId } from "@/data/referrals";
 import { payerById } from "@/data/seed";
+import { blockedInHosted } from "@/lib/hosted";
 import { ago, stamp } from "@/lib/time";
 import { useStore } from "@/store";
 import { ChannelTag, StatusPill, UrgencyPill } from "./Chips";
@@ -45,6 +46,7 @@ export function ReferralHeader({ r, onAccept, onInfo, onDecline, onNote, onSched
       else toast({ title: "Nothing to answer yet", body: "Use Request information first. The demo reply answers an open request.", tone: "neutral" });
     } else if (v === "download") toast({ title: "Downloading the original", body: `${r.id}.pdf, ${r.plan.pages + 1} pages. This is a demo, so no file is saved.`, tone: "neutral" });
     else if (v === "copy") {
+      if (blockedInHosted("Copy link")) return;
       void navigator.clipboard?.writeText(window.location.href).catch(() => undefined);
       toast({ title: "Link copied", body: "It opens this referral for anyone on your team.", tone: "good" });
     }
