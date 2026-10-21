@@ -11,7 +11,7 @@ group gTiles "The six tiles, left to right"
   screen t3 "Under review 14\n'with the payer'\n'about 2.2 days on average'"
   screen t4 "Info requested 3 (amber)\n'the payer wants more'\n'1 draft ready, 2 in progress'"
   screen t5 "Decided today 8 (green)\n'6 approved · 2 denied'\n'ledger updated'"
-  screen t6 "Appeal or call 7 (red)\n'open denials'\n'3 deadlines this week'"
+  screen t6 "Appeal or call 8 (red)\n'open denials'\n'4 deadlines this week'"
 endgroup
 
 process p0 "Today's denials count twice\nA request denied today is in Decided today and in Appeal or call"

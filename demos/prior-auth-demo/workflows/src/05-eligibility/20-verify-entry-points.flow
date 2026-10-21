@@ -1,6 +1,6 @@
 title: Authorizations › Eligibility & Benefits › Verify › Ways in and pre-fill
 route: /authorizations/eligibility/verify?referral=RF-2040 or ?case=R-1101
-intro: Five places lead to 'Verify a patient'. Two open an empty form. Three carry a referral or a case in the address, and the form fills itself from it.
+intro: Five places lead to 'Verify a patient'. Two open an empty form. Three carry a referral or a case in the address, and the form fills itself from it. A referral also gives a link back to where the person came from.
 dir: TD
 also: Date of birth is never stored. When only an age is known, the form makes up 01/15 of the matching year so it can be complete.
 ---
@@ -28,7 +28,12 @@ process p3 "Fills payer and program\nMember ID left empty: type it"
 process p4 "Nothing is filled and no message appears"
 process p5 "Date of birth made up from the age, for example age 26 gives 01/15/2000\nAnything the source lacks stays empty"
 screen sc "Verify a patient\nForm on the left, 'Live check' on the right"
+process bk "Back links above the title\n'Eligibility & Benefits' always\n'Back to referral RF-2040' when ?referral= names a referral that exists\nWith ?case= as well, 'Back to case R-1042' takes its place"
+process nb "A referral that does not exist gives no back link\nOnly the toast"
+process cy "Both addresses are carried to the result page\nso the way back is still there after the check"
 goto g1 "Continues in: Authorizations › Eligibility & Benefits › Verify › Fill in the form"
+goto g2 "Continues in: Authorizations › New case › Referral › The full referral page"
+goto g3 "Continues in: Authorizations › Case page › Ways in"
 
 a1 --> p0
 a2 --> p0
@@ -38,7 +43,7 @@ a5 --> p0
 p0 --> q1
 q1 -->|Yes| q2
 q2 -->|Yes| p1 --> p5 --> sc
-q2 -->|No| t1 --> sc
+q2 -->|No| t1 --> nb --> sc
 q1 -->|No| q3
 q3 -->|No: empty form| sc
 q3 -->|Yes| q4
@@ -47,3 +52,6 @@ q4 -->|No| q5
 q5 -->|Yes| p3 --> p5
 q5 -->|No| p4 --> sc
 sc --> g1
+sc --> bk
+bk --> g2 & g3
+bk -.-> cy

@@ -109,7 +109,7 @@ export function ReviewDrawer({ review: r, onClose }: { review: Review; onClose: 
           <span>{r.initials}, {r.age} · privacy mode</span>
           <span aria-hidden="true">·</span>
           <span className="inline-flex items-center gap-1.5">
-            Drafted by <AgentChip agent={r.agent} />
+            {undrafted ? "To be drafted by" : "Drafted by"} <AgentChip agent={r.agent} />
           </span>
         </div>
 

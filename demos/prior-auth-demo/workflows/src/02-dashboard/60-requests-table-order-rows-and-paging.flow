@@ -4,7 +4,7 @@ intro: The 'Requests' card. Rows come in the app's own order until a heading is 
 dir: TD
 ---
 start s1 "Dashboard is open\n'Requests' card under the stage strip"
-screen sc1 "Card header\n'Requests' and 'Bars show progress: Prepared, Received, In review, Decided...'\nRight side: 'Showing 8 of 39'"
+screen sc1 "Card header\n'Requests' and 'Bars show progress: Prepared, Received, In review, Decided...'\nRight side: 'Showing 8 of 40'"
 screen sc2 "Seven columns\nCase, Payer, Where it is, Clock, At stake, What happens next, and an unnamed column with 'Open'"
 process p1 "The headings Case, Payer, Where it is, Clock and At stake are buttons that sort the rows\n'What happens next' and the Open column do not sort"
 process p2 "Rows start in the app's order\n1 needs you, 2 very late, 3 late, 4 denial with under 2 days left, 5 the rest\nSame group: longest time in stage first"
@@ -26,12 +26,12 @@ goto g4 "Continues in: Dashboard › Requests table › Sort the rows"
 goto g5 "Continues in: Dashboard › Stage strip › Click a stage tile"
 
 decision d1 "Are there more rows than are shown?"
-screen sc3 "Under the table\n'Show 8 more' and '31 not shown'"
+screen sc3 "Under the table\n'Show 8 more' and '32 not shown'"
 click c4 "Click 'Show 8 more'"
-process p5 "Eight more rows are added\nThe button says 'Show 7 more' when 7 are left"
-end e1 "All rows shown\n'Showing 39 of 39'; no button"
+process p5 "Eight more rows are added\nWith fewer than 8 left the button shows that number, e.g. 'Show 5 more'"
+end e1 "All rows shown\n'Showing 40 of 40'; no button"
 process p6 "Changing any filter, the date range or the sort goes back to the first 8 rows"
-toast t1 "Count text 'Showing 8 of 39'\nWith Appeal or call: 'Showing 7 of 7 · $62.4K at stake'"
+toast t1 "Count text 'Showing 8 of 40'\nWith Appeal or call: 'Showing 8 of 8 · $67.8K at stake'"
 screen sc4 "With the Preparing tile chosen\nA line under the table: '2 more are being prepared in New case.' and 'Open Active cases'"
 
 s1 --> sc1 --> sc2 --> p1 --> p2 --> d0

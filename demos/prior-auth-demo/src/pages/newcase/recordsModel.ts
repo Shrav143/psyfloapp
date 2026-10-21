@@ -132,7 +132,7 @@ export function buildChecklist(d: CaseDraft, clock: number, referral: NewCasePre
   const patient: Row = patientReady(d)
     ? { id: "patient", label: "Patient initials and age", state: "done", detail: join(`${d.patient.initials}, ${d.patient.age}`, note("patient")) }
     : d.patient.initials.trim() || d.patient.age
-      ? { id: "patient", label: "Patient initials and age", state: "missing", detail: `Found ${d.patient.initials.trim() ? `initials ${d.patient.initials.trim()}` : `age ${d.patient.age}`}. The ${d.patient.initials.trim() ? "age" : "initials"} is still needed.` }
+      ? { id: "patient", label: "Patient initials and age", state: "missing", detail: `Found ${d.patient.initials.trim() ? `initials ${d.patient.initials.trim().replace(/\.$/, "")}` : `age ${d.patient.age}`}. The ${d.patient.initials.trim() ? "age" : "initials"} is still needed.` }
       : missing("patient", "Patient initials and age", "Initials and age only. A name never enters the app.", "Not found yet. Drop a chart above or add it here.");
 
   const payer: Row = d.payerId

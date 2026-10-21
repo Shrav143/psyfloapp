@@ -2,7 +2,7 @@ title: Authorizations › Eligibility & Benefits › Result › Payment checks: 
 route: /authorizations/eligibility/R-1042
 intro: Rows 4 to 7 of 'Payment checks', then the last line about what the patient pays. Authorization is the only row that can turn the verdict amber. The others turn it red.
 dir: TD
-also: 'Limit reached' and 'Another plan pays first' are written into the page but no demo patient reaches them.
+also: Demo only: 'Limit reached' has a seeded patient (R-0921) and 'Another plan pays first' has one (I-2275). Both have a chip under 'Try a sample' on Verify.
 ---
 start s1 "Result page, card 'Payment checks', rows 4 to 7"
 
@@ -25,18 +25,20 @@ endgroup
 group gC "Row 6 · Limits"
   decision c0 "Is there a day or unit limit?"
   process c1 "Chip '5 days left' (green), or amber at 3 or fewer\n'9 of 14 days used in this authorization period'"
-  process c2 "Chip 'Limit reached' (red)\n'Nothing is left' (no demo patient)"
+  process c2 "Title 'Every authorized day is used' (or unit)\nChip 'Limit reached' (red)\n'14 of 14 days used in this authorization period. Nothing is left. Ask Cardinal for more days before the next day of service'"
   process c3 "Chip 'No limit' (green)\n'No annual day limit for residential care. The authorization sets the days'\nor 'No visit or day limit applies to this program'"
 endgroup
 
 group gD "Row 7 · Other insurance"
   decision d0 "Did the check find another plan?"
   process d1 "Title 'No other insurance', chip 'None' (green)\n'None found. Medicaid pays last, so we checked for another payer'"
-  process d2 "Title 'Another plan pays first', chip 'Other plan' (red)\n'It must be billed before this one.' (no demo patient)"
+  process d2 "Title 'Another plan pays first', chip 'Other plan' (red)\n'A second plan was found. It must be billed before this one.'"
 endgroup
 
 group gP "Last line"
+  decision q9 "Was coverage found?"
   process p1 "'What the patient pays:'\nMedicaid '$0 copay, no deductible, no coinsurance.'\nHarborview '20% coinsurance after a deductible with $85 left.'\nBeacon and Lakeshore '$40 copay per day, $350 left on the deductible, 20% coinsurance after.'"
+  endx x9 "Coverage not found: this rows 4 to 7 and the line are not shown at all"
   toast p2 "'This does not change what the clinic is paid. A $0 copay does not mean the clinic is paid.'"
 endgroup
 

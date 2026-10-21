@@ -1,8 +1,10 @@
 /* The four checks shown on the review step. Each one reads the case, the payer's saved documents and rules, and the agents' run:
    pass, warn (can be signed after an acknowledgement) or block (cannot be signed). */
 import type { CaseDraft, NarrativeSection } from "@/data/cases";
+import { verdictOf } from "@/data/eligibility";
 import { payerById } from "@/data/seed";
 import type { AgentKey } from "@/data/types";
+import { buildResult } from "@/pages/eligibility/checks";
 import { docEntries, findingText, isOpen, openFindings, slotLabel } from "./documents";
 import { coverageFor } from "./intakeRules";
 import { noAuthLine, startDateIssue } from "./payerRules";
@@ -36,6 +38,7 @@ export function integrityChecks(d: CaseDraft, narrative: NarrativeSection[], rec
   const unavailable = required.filter((r) => !inCase(r.slot) && r.slot in d.unavailable);
   const flawed = d.documents.filter((x) => required.some((r) => r.slot === x.slot) && openFindings(x, d.answers) > 0);
   const cov = coverageFor(d, 0);
+  const lost = !!cov && (cov.eligibility.state === "lapsed" || cov.eligibility.state === "ended");
   const emptySection = narrative.find((s) => !s.text.trim());
 
   const traced: IntegrityCheck = rechecking
@@ -47,7 +50,8 @@ export function integrityChecks(d: CaseDraft, narrative: NarrativeSection[], rec
   const issue = startDateIssue(d, ctx.rules, clock, payer);
   const late = (d.dueKind === "notice" || d.dueKind === "window") && d.dueAt !== null && d.dueAt <= clock;
   const errors = [
-    ...(cov && cov.eligibility.state !== "active" ? [`Coverage ${cov.eligibility.state} ${cov.eligibility.on ?? ""}. A retro-eligibility request is needed before billing.`] : []),
+    ...(cov && lost ? [`Coverage ${cov.eligibility.state} ${cov.eligibility.on ?? ""}`.trim() + ". A retro-eligibility request is needed before billing."] : []),
+    ...(cov && !lost && verdictOf(cov) === "fix" ? [`Coverage needs a fix. ${buildResult(cov).reason}`] : []),
     ...(d.run.skipped.includes("verify") ? [`Verify could not reach ${payer}'s portal, so coverage was not confirmed. You skipped it and noted it.`] : []),
     ...(flawed.length ? [`${flawed.length} required ${flawed.length === 1 ? "document has" : "documents have"} an open finding. See the validation summary.`] : []),
     ...(issue ? [issue.text] : []),

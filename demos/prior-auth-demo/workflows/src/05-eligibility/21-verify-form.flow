@@ -1,13 +1,20 @@
 title: Authorizations › Eligibility & Benefits › Verify › Fill in the form
 route: /authorizations/eligibility/verify
-intro: The form on the left of 'Verify a patient'. Add an insurance card or type the details. 'Check now' stays off until the four required answers look complete.
+intro: The form on the left of 'Verify a patient'. Add an insurance card, pick a sample, or type the details. 'Check now' stays off until the four required answers look complete.
 dir: TD
 also: Demo only: any file counts as a card. The payer comes from the file name, or Summit if none matches.
 ---
 start s1 "Open 'Verify a patient'"
 screen sc "Verify a patient\n'The agents check coverage and benefits live, so you know whether the clinic will be paid.'\nCard 'The patient and the service' with the pill 'Privacy mode on'"
 click b1 "Click '← Eligibility & Benefits' (back link)"
+click b2 "Click '← Back to referral RF-2040' or '← Back to case R-1042'\nShown only when the address names a referral (see 'Ways in and pre-fill')"
+goto g3 "Continues in: Authorizations › New case › Referral › The full referral page"
 goto g0 "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows"
+
+group gSample "Try a sample"
+  click f5 "Click a chip in the row 'Try a sample'\n'Cleared to bill', 'Coverage lapsed', 'Not found',\n'Not covered', 'Another plan pays first', 'Limit reached'"
+  process p7 "Fills the whole form with a made-up member who ends that way\nThe chip turns green. Initials and age are remembered for the result"
+endgroup
 
 group gCard "Add the insurance card"
   input f1 "Drop a file, or click the drop zone\n'Drag and drop the insurance card, or click to select a file'"
@@ -37,9 +44,13 @@ process p5 "Only the shape of a date is checked, not whether it is a real day"
 process p6 "'Check now' is on\nHint 'Takes about 10 seconds. Nothing is changed at the payer or in the record.'"
 click c1 "Click 'Check now'"
 goto g1 "Continues in: Authorizations › Eligibility & Benefits › Verify › The live check"
+goto g2 "Continues in: Authorizations › Eligibility & Benefits › Verify › Try a sample"
 
 s1 --> sc
 sc --> b1 --> g0
+sc --> b2 --> g3
+sc --> f5 --> p7 --> q1
+f5 -.-> g2
 sc --> f1 --> a1
 sc --> f2 --> a1
 a1 --> p1 --> cs

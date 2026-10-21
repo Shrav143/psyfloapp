@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 import type { CaseDraft } from "@/data/cases";
 import { verdictOf } from "@/data/eligibility";
 import { useStore } from "@/store";
-import { coverageFor, coverageKey } from "./intake";
+import { coverageFor, coverageKey } from "./intakeRules";
 
 const READ_MS = 1000;
 const STAGGER_MS = 150;

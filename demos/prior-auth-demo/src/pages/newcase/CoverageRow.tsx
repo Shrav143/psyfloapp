@@ -6,7 +6,7 @@ import { payerById } from "@/data/seed";
 import { useStore } from "@/store";
 import { buildResult } from "@/pages/eligibility/checks";
 import { PaymentChecks } from "@/pages/eligibility/PaymentChecks";
-import { coverageFor } from "./intake";
+import { coverageFor } from "./intakeRules";
 import type { Row } from "./recordsModel";
 
 /** Verify's answer on coverage. A problem offers another payer; "View checks" opens the same seven checks as the Eligibility tab. */

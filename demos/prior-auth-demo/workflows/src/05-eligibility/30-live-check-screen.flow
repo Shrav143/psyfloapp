@@ -5,7 +5,7 @@ dir: TD
 also: Demo only: the waiting is a timer. Nothing is sent to any payer.
 ---
 start s1 "Click 'Check now'"
-process p1 "Form fields, 'Use sample card' and the card drop lock\nThe button reads 'Checking' with a spinner"
+process p1 "Form fields, 'Use sample card', the 'Try a sample' chips and the card drop lock\nThe button reads 'Checking' with a spinner"
 screen sc "Card 'Live check'\n'Each agent asks the right source and reports back'"
 
 group gRows "Agent rows"

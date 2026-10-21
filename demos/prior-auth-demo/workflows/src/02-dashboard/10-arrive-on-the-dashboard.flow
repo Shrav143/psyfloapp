@@ -29,8 +29,8 @@ group gPage "On the page, from the top down"
   screen h1 "Headline and sub line\n'18 requests are waiting on payers. 3 are waiting on you.'"
   click ca "Click 'Check all now'\nDisabled while Navigator is paused in Settings"
   screen f1 "Filter bar\n'All payers', 'All programs', 'All request types', 'All stages'\n'Outcomes for' and the date range 'Sep 21 – Oct 20, 2026'"
-  screen st "Stage strip, six tiles\nPreparing 5 (plus cases saved in New case), Received 4, Under review 14, Info requested 3, Decided today 8, Appeal or call 7"
-  screen rq "Requests\n'Showing 8 of 39', seven columns, five sortable headings, 'Show 8 more'"
+  screen st "Stage strip, six tiles\nPreparing 5 (plus cases saved in New case), Received 4, Under review 14, Info requested 3, Decided today 8, Appeal or call 8"
+  screen rq "Requests\n'Showing 8 of 40', seven columns, five sortable headings, 'Show 8 more'"
   screen py "Payers at a glance\nSix payers and an 'All payers' total row\n'Open Payers' link; each payer name opens that payer"
 endgroup
 

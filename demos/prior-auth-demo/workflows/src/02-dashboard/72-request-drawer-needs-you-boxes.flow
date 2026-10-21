@@ -35,7 +35,7 @@ group gSeed "Demo examples"
   process e1 "P-1499: draft ready\nNeeds your input"
   process e2 "I-2218 and R-0975: still drafting\nUse 'Check on the draft'"
   process e3 "R-0951: approved, write-back waiting"
-  process e4 "Any request: 'Asks for information' in Demo controls gives 'Needs your input' at once"
+  process e4 "A Received or Under review request: 'Asks for information' in Demo controls gives 'Needs your input' at once"
 endgroup
 
 s1 --> d1

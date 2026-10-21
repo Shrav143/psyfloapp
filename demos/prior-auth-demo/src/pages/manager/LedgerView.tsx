@@ -83,7 +83,7 @@ export function LedgerView({ ledger, filters, onStatus, onClear }: { ledger: Led
             The filters hide every case. Clear them to see {ledger.length === 1 ? "it" : `all ${ledger.length}`}.
           </EmptyState>
         ) : (
-          <Table nowrap>
+          <Table nowrap className="[&_td]:px-3 [&_th]:px-3">
             <thead>
               <tr>
                 <SortTh label="Case" k="case" sort={sort} onSort={onSort} />

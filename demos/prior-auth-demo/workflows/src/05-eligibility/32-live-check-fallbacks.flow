@@ -32,6 +32,9 @@ group gBad "When the answer is bad, not missing"
   process b2 "Member ID ends 1012\n'coverage lapsed 10/12'"
   process b3 "Member ID ends 9999\n'no coverage found for these details'"
   process b4 "Evergreen with Detox\n'The clinic is not enrolled for this program'"
+  process b6 "Member ID ends 3030\n'does not cover Residential 3.5'"
+  process b7 "Member ID ends 6060\n'Another plan pays first'"
+  process b8 "Member ID ends 9090\n'All 14 days are used'"
   process b5 "The check still runs to the end and opens a result\nVerdict 'Fix before billing'"
 endgroup
 
@@ -47,6 +50,9 @@ b1 -->|All clear| g2
 b1 -->|Lapsed| b2 --> b5
 b1 -->|Not found| b3 --> b5
 b1 -->|Not enrolled| b4 --> b5
+b1 -->|Not covered| b6 --> b5
+b1 -->|Other plan| b7 --> b5
+b1 -->|Limit reached| b8 --> b5
 b5 --> g1
 s1 -.-> r1
 r1 --> r2

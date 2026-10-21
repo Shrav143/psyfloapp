@@ -12,7 +12,7 @@ process p1 "Payer, Program, Request type and Stage go back to 'All'\nThe date ra
 store w1 "Filters"
 process p2 "Address loses payer, program, type and stage\nfrom and to stay if they are not the default"
 process p3 "Table goes back to its first 8 rows"
-screen sc2 "Dashboard shows every request again\n'Showing 8 of 39'"
+screen sc2 "Dashboard shows every request again\n'Showing 8 of 40'"
 end e1 "Back to the full list"
 
 decision d2 "Do any requests match the filters?"

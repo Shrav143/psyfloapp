@@ -6,7 +6,7 @@ import { addDays, daysIn, fromISO, isISO, toISO, type DateRange } from "@/lib/da
 import { money, plural } from "@/lib/format";
 import { DAY, HOUR, duration, toDate, typical } from "@/lib/time";
 import type { RangePreset } from "@/components/ui";
-import { DEFAULT_FILTERS, DEFAULT_RANGE, type DashFilters } from "@/store/core";
+import { DEFAULT_RANGE, type DashFilters } from "@/store/core";
 import { applyBaseFilters, lateness, minutesInStage, minutesLeft, stageCounts } from "@/store/selectors";
 import { draftNeeds } from "./preparing-drafts";
 

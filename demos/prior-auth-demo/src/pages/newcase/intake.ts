@@ -1,4 +1,4 @@
-/* Intake logic that has no screen of its own: what is missing, where a draft starts from, the sample chart, the EMR pull. */
+/* Intake logic that has no screen of its own: where a draft starts from, the sample chart, the EMR pull, attaching a referral. */
 import { PLAN_TYPE, type CaseDraft } from "@/data/cases";
 import { PAYERS } from "@/data/seed";
 import { PROGRAM_LABEL, PROGRAMS, type NewCasePrefill, type PayerId, type Program, type RequestType } from "@/data/types";
@@ -10,8 +10,6 @@ import { paths } from "@/routes";
 import { docEntries, makeDocument, sampleFile } from "./documents";
 import { ICD_CODES, type EmrChart } from "./lookups";
 import { payerContextOf } from "./payerContext";
-
-export { coverageFor, coverageKey, intakeMissing, memberReady, patientReady } from "./intakeRules";
 
 /* ------------------------------------------------------------------ where a draft starts */
 const defaultType = (u: NewCasePrefill["urgency"]): RequestType => (u === "routine" ? "Initial request" : "Admission");

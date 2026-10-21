@@ -44,12 +44,12 @@ d3 -->|Decided| m3 --> x3
 d3 -->|Received| m4
 d3 -->|Under review| m4
 d3 -->|Info requested| m4
-m4 --> p1 & p2 & p3
-p1 & p2 & p3 --> x2
+m4 --> x2
+x2 --> p1 & p2 & p3
 p1 -.-> p0
-x2 --> c2 --> w2 --> t2 --> sc
-x2 --> c3 --> w3 --> n1 --> t3 --> sc
-x2 --> c4 --> g1
+p1 --> c2 --> w2 --> t2 --> sc
+p1 & p2 --> c3 --> w3 --> n1 --> t3 --> sc
+p1 & p2 & p3 --> c4 --> g1
 sc --> sd
 w3 -.-> g2
 sd -.-> g3

@@ -4,7 +4,7 @@ intro: Search, three menus and the four tiles all narrow the same table, and the
 dir: TD
 ---
 start s1 "On the list, narrow the patients"
-screen sc0 "Table shows every patient, first 12 rows\n'Showing 12 of 34'"
+screen sc0 "Table shows every patient, first 12 rows\n'Showing 12 of 37'"
 
 group gSearch "Search"
   input i1 "Type in 'Search by case ID or initials'\nfor example 'R-1042' or 'J.M.'"
@@ -34,10 +34,10 @@ process p5 "Every match is shown\nNo 'Show more' button"
 process p6 "Only the first 12 rows"
 click c5 "Click 'Show 12 more'"
 process p7 "Twelve more rows join the table\nThe last click reads 'Show 10 more'"
-screen sc1 "Table with the matches\n'Showing 5 of 34'"
+screen sc1 "Table with the matches\n'Showing 5 of 37'"
 toast t0 "'Clear filters' button appears beside the menus"
 decision q3 "Any rows left?"
-screen em "'No patients match these filters'\n'The filters hide every row. Clear them to see all 34 patients.'"
+screen em "'No patients match these filters'\n'The filters hide every row. Clear them to see all 37 patients.'"
 click c6 "Click 'Clear filters' (bar or empty state)"
 process p8 "Search emptied\nPayer, program and verdict back to 'All'"
 end e1 "Full list again, button gone"

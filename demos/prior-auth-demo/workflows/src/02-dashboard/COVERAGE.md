@@ -22,7 +22,7 @@ Files (all in this folder):
 | 72-request-drawer-needs-you-boxes | 28 |
 | 73-approve-the-write-back | 20 |
 | 80-answer-a-payer-information-request | 33 |
-| 85-demo-controls-the-payer-answers | 27 |
+| 85-demo-controls-the-payer-answers | 28 |
 | 86-demo-controls-approve-part-or-deny | 21 |
 | 88-payers-at-a-glance | 31 |
 
@@ -87,8 +87,8 @@ Files (all in this folder):
 | Row click | 60 |
 | Case ID link (one history entry) | 60 |
 | 'Open' button | 60 |
-| 'Show 8 more', '31 not shown', paging reset | 60 |
-| 'Showing 8 of 39', '$ at stake' with Appeal or call | 60 |
+| 'Show 8 more', '32 not shown', paging reset | 60 |
+| 'Showing 8 of 40', '$ at stake' with Appeal or call | 60 |
 | Chip, four bars, hover text (auth track and denial route) | 61 |
 | Clock: note, time left, 'window closed', today, time in stage, 'late', 'very late' | 61 |
 | At stake, What happens next with agent badge | 61 |

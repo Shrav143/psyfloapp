@@ -8,7 +8,7 @@ start s1 "Last step ticks, banner 'All answers are in. Opening the result.'"
 wait w1 "Half a second"
 decision q1 "Opened from a case that is a row on the list?"
 decision q2 "Sample card: Summit, Residential 3.5, member ID ending 4821?"
-store st1 "Existing row updated\n'Checked just now', 're-check due' cleared, date of service as typed"
+store st1 "Existing row updated\n'Checked just now', its re-check time cleared, date of service as typed"
 process p1 "The sample card matches J.M., case R-1042"
 process p2 "Answers are not asked again\nThe row keeps its verdict"
 
@@ -21,6 +21,9 @@ group gNew "A new patient"
   process n6 "Evergreen with Detox\nClinic not enrolled"
   process n7 "Beacon with IOP or PHP\nAuthorization 'Not required'"
   process n8 "Harborview with PHP\nBenefits 'Limited'"
+  process n10 "ID ends 3030\nBenefits 'Not covered', authorization 'Not required'"
+  process n11 "ID ends 6060\nAnother plan found: it pays first"
+  process n12 "ID ends 9090\nAuthorization 'On file' with every day or unit used\nfor example '14 of 14 days'"
   process n9 "Anything else\nActive, covered, authorization 'Required'"
   store st2 "New row added at the top of the Eligibility list"
 endgroup
@@ -30,7 +33,7 @@ process p7 "Counts, tiles and badge stay as they were\nOnly the check time and d
 decision q3 "Is the verdict 'Cleared to bill'?"
 process p4 "Badge unchanged"
 process p5 "Badge goes up by one"
-process p6 "Opens /authorizations/eligibility/V-1001\nor the existing case ID"
+process p6 "Opens /authorizations/eligibility/V-1001\nor the existing case ID\nIf the check began from a referral, ?referral= (and ?case=) go along, so the result has its back link"
 goto g1 "Continues in: Authorizations › Eligibility & Benefits › Result › What the page shows"
 
 s1 --> w1 --> q1
@@ -44,6 +47,9 @@ n3 -->|Not found| n5 --> st2
 n3 -->|Not enrolled| n6 --> st2
 n3 -->|No authorization| n7 --> st2
 n3 -->|Limited| n8 --> st2
+n3 -->|Not covered| n10 --> st2
+n3 -->|Other plan| n11 --> st2
+n3 -->|Limit reached| n12 --> st2
 n3 -->|Otherwise| n9 --> st2
 st2 --> p3
 p3 --> q3
