@@ -49,7 +49,7 @@ export default function ReportPage() {
     return (
       <Page>
         <div className="print:hidden"><Crumbs items={crumbs} /></div>
-        <ReportGenerating view={view} onDone={() => markReport(id)} />
+        <ReportGenerating key={id} view={view} onDone={() => markReport(id)} />
       </Page>
     );
 

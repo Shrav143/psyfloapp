@@ -1,4 +1,4 @@
-# Coverage: Denial Intelligence (`/denials`, `/denials?id=`, `/denials?payer=&reason=`, `/denials/:id/brief`)
+# Coverage: Denial Intelligence (`/denials`, `/denials?id=`, `/denials?payer=&reason=`, `/denials/:id/brief`, `/denials/:id/report`)
 
 Files are in this folder. A control listed with two files is drawn in the first and continued in the second.
 
@@ -23,18 +23,22 @@ Files are in this folder. A control listed with two files is drawn in the first 
 | Page header button 'See on the Dashboard' | 11, 12, 60 |
 | 'Add a denial letter': drop area (click, Enter, Space, drag), 'Use sample letter', X on the file row, note box, 'Analyze the denial', 'Add the letter first, or use the sample letter.' (a new denial clears the filters) | 15, 17 |
 | Four agent steps (Reader, Advocate, Historian, Integrity), toast 'The analysis is ready', leaving the page mid-way | 15 |
-| Header card: program chip, D-id, type pill, status pill, '$ at stake', deadline pill, payer line, 'Your note' | 12, 50 |
+| Header card: program chip, D-id, type pill, status pill, '64% chance of overturning' pill, deadline pill, payer line, 'Your note' | 12, 50 |
+| Header button 'Appeal analysis report' (under the 'Our read' tile) | 12, 70 |
 | 'Our read' tile (Worth challenging, Borderline, Probably accept) | 12, 16 |
 | Status banner: accepted, closed on an appeal decision, closed on a call, filed (appeal, second-level appeal or external review), drafting (with and without a draft), call booked, none | 13 |
 | Banner buttons 'Plan the step-down', 'See on the Dashboard', 'View the appeal', 'Record the payer's decision', 'Open the draft', 'Change the time', 'Open the brief' | 13, then 32, 33, 30, 20, 21, 60 |
 | 'What the agents did', 'What Cardinal said', 'What the chart shows' | 12 |
 | 'Where the denial is weak': severity pill, source chip, 'Suggested fix', 'Add to the evidence' and 'Added to the evidence' | 14 |
+| 'Full summary' in the card header: pop-up 'Where the denial is weak, full summary', 'Copy all', 'Copy' on each recommendation, 'Close', X, Esc, click outside, 'Copied', 'Select the text and press Ctrl or Cmd C' | 14, 18 |
 | Source drawer: X, Esc, click outside | 14 |
 | 'The six ASAM dimensions' (left out for Late notice and Retro-authorization denied) | 12 |
+| 'Full summary' in that card header: pop-up 'The six ASAM dimensions, full summary', 'Copy all', 'Copy' on each dimension, 'Close', X, Esc, click outside | 19 |
 | 'Your options': three radio cards, 'Recommended', chances, 'Needs', button under the cards, 'A call is already booked...' ('Probably accept' on D-3306 recommends Accept) | 16 |
 | Toast 'The peer-to-peer window has closed' | 16, 51 |
 | 'What has happened' timeline | 12 |
-| 'Open denials' card: count pill, rows (Tab, Enter, Space, click), route pills, order, 'Closed' section, empty text | 11 |
+| 'Open denials' card: count pill, rows (Tab, Enter, Space, click), route pills, 'N% win chance', order, 'Closed' section, empty text | 11 |
+| Link 'Report' on each row of the card | 11, 70 |
 
 ## Peer-to-peer
 
@@ -43,6 +47,7 @@ Files are in this folder. A control listed with two files is drawn in the first 
 | Modal 'Confirm the next step: peer-to-peer call': three time cards (only times after the demo clock and before the payer's window closes), 'Booked now', 'Confirm and book the call', 'Cancel', X, Esc, click outside, 'No call time is left...' | 20, 50, 51 |
 | Brief page: crumbs, 'Your opening', 'Three points to make', 'What they may say', 'The ask.', 'Key dates and numbers', 'Call details', 'Chance of overturning' | 21 |
 | Brief page not-found state and 'Back to Denial Intelligence' | 21 |
+| Brief page link 'Appeal analysis report' (top right) | 21, 22, 70 |
 | 'Have these open' tick boxes | 21, 22 |
 | 'Book the call' and 'Change the call time' | 20, 22 |
 | 'Copy brief' (clipboard, fallback, both toasts) | 22 |
@@ -50,6 +55,20 @@ Files are in this folder. A control listed with two files is drawn in the first 
 | 'Record the call outcome', modal: three outcome cards, note, 'Log the outcome', 'Cancel', X, Esc | 23 |
 | Brief banner 'Outcome logged: ...' and 'Back to the denial' | 21, 23 |
 | What each outcome does (closed, or written appeal started; scheduled call line leaves the History) | 23 |
+
+## Appeal analysis report
+
+| Control | Diagram |
+|---|---|
+| Ways in: header button, row link 'Report', brief link, address `/denials/:id/report`; not-found state and 'Back to Denial Intelligence' | 70 |
+| Panel 'Generating appeal analysis' (Reader, Advocate, Historian), reduced motion, leaving mid-way, saved time, 'Reset demo data' | 70 |
+| 'Regenerate' | 70, 72 |
+| 'Back to the denial' link, crumbs 'Denial Intelligence' and the D-id | 70, 72 |
+| The report: title block, 'Worked example' tag (D-3297), 'Our read', facts, chances, benchmark note | 71 |
+| Every section: reasoning, what the chart shows as a whole, where the denial is weak (with 'Added to the evidence' or 'Not added yet'), the six ASAM dimensions (left out for Late notice and Retro-authorization denied), what we would do, options compared, criteria, documents with ticked fixes, pushback, the ask, outlook, timeline, how it was made | 71 |
+| 'Copy report' ('Copied', clipboard fallback, 'Select the text and press Ctrl or Cmd C') | 72 |
+| 'Download PDF' (jsPDF loaded on click, file name, toast 'PDF downloaded', toast 'Could not make the PDF', 'Download PDF is off in this preview') | 72 |
+| 'Print' ('Print is off in this preview', print layout) | 72 |
 
 ## Written appeal
 
@@ -70,7 +89,7 @@ Files are in this folder. A control listed with two files is drawn in the first 
 | Control | Diagram |
 |---|---|
 | Modal 'Accept the decision?': 'Reason for the record' menu (four reasons), note, 'Accept and close', 'Cancel', X, Esc | 40 |
-| Result: toast, notification, 'Closed. You accepted the decision', 'Closed' list, step-down plan in Case Manager, write-off counted in Analytics | 40, 11, 13, 60 |
+| Result: toast, notification, 'Closed. You accepted the decision', 'Closed' list, step-down plan in Case Manager, accepted denial logged for Analytics | 40, 11, 13, 60 |
 
 ## Deadlines
 
@@ -82,11 +101,13 @@ Files are in this folder. A control listed with two files is drawn in the first 
 
 ## Keyboard
 
-Esc closes one layer per press: a menu, then the modal, then the drawer behind it (20, 23, 30, 31, 33, 40). Enter and Space open the file chooser (15) and a list row (11).
+Esc closes one layer per press: a menu, then the modal, then the drawer behind it (20, 23, 30, 31, 33, 40). Esc closes only the Full summary pop-up (18, 19). Tab stays inside a Full summary pop-up and focus returns to its button when it closes. Enter and Space open the file chooser (15) and a list row (11).
 
 ## Not drawn
 
-- Print dialog contents and the exact print layout: browser behaviour.
+- Print dialog contents and the exact print layout (diagrams 22 and 72 name the rules): browser behaviour.
+- Page layout of the PDF (title band, running header, page numbers): described in 72 in words, not drawn.
+- Dollar amounts: the demo no longer shows any 'at stake', 'at risk' or 'written off' figure on this screen. The amounts stay in the data and are passed to Analytics.
 - Arrow-key use inside the 'Signing as' and 'Reason for the record' menus: shared menu component, owned by another module's diagram if at all.
 - Resubmission path for D-3290 (chip 'Resubmitting', 'Packet is writing the resubmission'): the demo has no screen or button for it. Only the options card applies.
 - PRD 05 steps with no screen in the demo: receipt call after sending, expedited 72-hour clock, deemed exhaustion, the member's signed request for a state fair hearing, argument library. Drawn in 32 only as PRD notes.

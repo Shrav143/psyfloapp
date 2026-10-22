@@ -74,7 +74,19 @@ export async function buildAppealPdf(doc: ReportDoc) {
     { h: 22, draw: (y) => { w.put(text, h2, left, y); rule(y + 21); } },
     w.gap(8),
   ];
-  const section = (title: string, content: Op[]) => w.flow([...heading(title), ...content], 5);
+  /** How many ops must stay with the heading: up to two lines of text, or the first block, with any sub line before it. */
+  const headOps = (content: Op[]): number => {
+    let n = 0;
+    let solid = 0;
+    for (const o of content) {
+      n += 1;
+      if (o.gap) continue;
+      solid += 1;
+      if (o.h >= 30 || solid >= 2) break;
+    }
+    return 3 + n;
+  };
+  const section = (title: string, content: Op[]) => w.flow([...heading(title), ...content], headOps(content));
   const para = (text: string, x = left, width2 = width, s: Style = body): Op[] => w.lines(text, s, x, width2);
   const paras = (list: string[]): Op[] => list.flatMap((t, i) => (i ? [w.gap(7), ...para(t)] : para(t)));
   const bullets = (items: string[], s: Style = body): Op[] =>
@@ -283,7 +295,7 @@ export async function buildAppealPdf(doc: ReportDoc) {
     const h = Math.max(1, rows.length) * 14 + 8;
     return [{ h, draw: (y) => { w.put(k, bodyBold, left, y + 2); rows.forEach((r, i) => w.put(r, body, left + 150, y + 2 + i * 14)); rule(y + h - 1, left, left + width, C.tileEdge); } }];
   });
-  section(H.timeline, tl);
+  section(H.timeline, w.keep(tl));
 
   section(H.method, [
     ...doc.agents.flatMap((a) => w.keep([...w.lines(a.text, body, left + 80, width - 80).map((op, k): Op => (k ? op : { ...op, draw: (y) => { w.put(a.name, bodyBold, left, y); op.draw(y); } })), w.gap(3)])),
