@@ -4,6 +4,7 @@ export * from "./Button";
 export * from "./Card";
 export * from "./Checklist";
 export * from "./DateRangePicker";
+export * from "./Disclosure";
 export * from "./DocumentSheet";
 export * from "./Dropdown";
 export { useEscape } from "./escape";
