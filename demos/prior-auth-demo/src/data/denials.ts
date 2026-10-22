@@ -116,7 +116,7 @@ const DIMS: DimText[] = [
 export const GENERIC_DIMS = DIMS;
 
 /** D-3318 is written out in full, as in the mockup, and so is D-3306, whose findings are thin on purpose: it is the denial where accepting is the better choice.
-    Every other denial is generated from a template. */
+    D-3297 is the worked example of a units cut that the chart contradicts. Every other denial is generated from a template. */
 export const AUTHORED_TEXT: Record<string, AnalysisText> = {
   "D-3318": {
     short: "Cardinal approved 7 of 14 days",
@@ -172,6 +172,39 @@ export const AUTHORED_TEXT: Record<string, AnalysisText> = {
     ],
     ask: "Approve the days after the coverage effective date, and treat the first 3 days as not covered.",
     regained: "Part of the retro days at most",
+  },
+  "D-3297": {
+    short: "{payer} cut {program} units from {unitsRequested} to {unitsApproved}",
+    quote: "{payer} approved {unitsApproved} of the {unitsRequested} units requested and wrote that regular attendance and a first drop in scores show the member is stable, so the remaining units are not supported at this time.",
+    chartShows: "Eight days into treatment, trauma, mood, anxiety and sleep scores are all above their cutoffs, and both medications were raised this week. Prolonged exposure is due to start on the first session after the approved units end.",
+    findings: [
+      { sev: "Critical", title: "Trauma treatment is due to start the day the units end", detail: "The plan puts prolonged exposure at session 11, the first session {payer} did not approve.", source: "Treatment plan", excerpt: "Phase 1, sessions 1 to 10: sleep, alcohol relapse prevention, skills. Phase 2, from session 11 (Wed 10/28): prolonged exposure twice a week. Plan review at session 14.", fix: "Attach the treatment plan page with the two phases" },
+      { sev: "Critical", title: "Scores are far above cutoff and have barely moved", detail: "PTSD score 49 against a cutoff of 31, down 5 points from intake. Attendance is full.", source: "Progress note {noteDate}", excerpt: "Session 5. PCL-5 49 (intake 54, cutoff 31). PHQ-9 16, GAD-7 14, sleep index 21. Craving 5 of 10 by the clinician, 2 by the patient. Drank once on 10/17 to get to sleep. Has attended every session.", fix: "Add the progress note from {noteDate}" },
+      { sev: "Strong", title: "Both medications were raised this week", detail: "Venlafaxine was doubled on 10/19 and gabapentin raised on 10/18. Neither dose has settled.", source: "MAR {rangeDates}", excerpt: "Venlafaxine XR raised from 75 to 150 mg on 10/19. Gabapentin raised from 300 mg at bedtime to 300 mg three times a day on 10/18. Blood pressure in range at both changes. Next dose review 10/26.", fix: "Attach the medication record for {rangeDates}" },
+      { sev: "Strong", title: "No outpatient step-down exists for a first-time patient", detail: "Two in-network clinics offered intake on 11/30 and 12/7. He has no family contact or recovery group.", source: "Referral log", excerpt: "Outpatient trauma therapy referral sent 10/19 to two in-network clinics. Earliest intake offered: 11/30 and 12/7. First treatment of any kind. Lives alone, no family contact, no sponsor or recovery group.", fix: "Attach the referral log with both clinic replies" },
+    ],
+    dimsSub: "Session 5",
+    dims: [
+      { name: "D1 Withdrawal", tone: "mid", text: "No withdrawal signs and breath alcohol 0.000 at every session, but he drank once on 10/17 and craving is 5 of 10 by the clinician." },
+      { name: "D2 Medical", tone: "mid", text: "Venlafaxine and gabapentin were both raised this week. Blood pressure is checked at each change." },
+      { name: "D3 Mood and thinking", tone: "risk", text: "PTSD score 49, depression score 16 and anxiety score 14, all above cutoff. Sleep index 21, with nightmares most nights." },
+      { name: "D4 Readiness", tone: "good", text: "Attends every session and told his clinician about the drinking. He calls it a sleep aid and has not yet linked it to the trauma." },
+      { name: "D5 Relapse risk", tone: "risk", text: "High. He drinks to get to sleep, and exposure work raises distress before it lowers it." },
+      { name: "D6 Home", tone: "risk", text: "Lives alone with no family contact, no sponsor and no one to notice a lapse." },
+    ],
+    opening: "I am calling about a unit reduction for a {age}-year-old man in {program} care for PTSD and alcohol use disorder. {payer} approved {unitsApproved} of {unitsRequested} units, which ends just before his trauma treatment is due to start. I would like to walk through the plan and ask you to restore {unitsDiff} units.",
+    points: [
+      { title: "Prolonged exposure is due to start the day after the units end", detail: "It begins at session 11. Stopping at unit {unitsApproved} ends care before its main part.", source: "Treatment plan" },
+      { title: "Scores are far above cutoff and two doses just changed", detail: "PTSD score 49 against a cutoff of 31. Venlafaxine and gabapentin were both raised this week.", source: "Progress note {noteDate}" },
+      { title: "No outpatient step-down exists", detail: "The earliest intake is 11/30, and he has no therapist, family or recovery group.", source: "Referral log" },
+    ],
+    pushback: [
+      ["“He attends every session and is improving, so he is stable.”", "Attendance is engagement. The PTSD score moved 5 points, half of the 10 that counts as a meaningful change."],
+      ["“He can continue in standard outpatient care.”", "Neither in-network clinic has an intake before 11/30, and he has no therapist, prescriber or support outside the program."],
+      ["“Ask for more units at the next review.”", "The next review falls after exposure should have started. Ask now, and offer a review at unit 42."],
+    ],
+    ask: "Restore the {unitsDiff} units to {unitsRequested}, with a review at unit 42 and an outpatient clinic and a bridge to its first visit named before the last session.",
+    regained: "{unitsDiff} units restored",
   },
 };
 
