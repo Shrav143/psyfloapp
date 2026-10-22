@@ -16,7 +16,6 @@ export interface NewDenialInput {
   age: number;
   payerId: PayerId;
   program: Program;
-  atStake: number;
   chance: number;
   /** Minutes from now until the peer-to-peer window closes. */
   windowMin: number;
@@ -82,7 +81,7 @@ export const createDenialsSlice: StateCreator<AppState, [], [], DenialsSlice> = 
       const created: PsyRequest = {
         id, caseId: id, patient: { initials: input.initials, age: input.age }, payerId: input.payerId, program: input.program, type: "Peer-to-peer",
         stage: "appeal", chip: "Analyzed", tone: "mid", track: "denial", progress: 0, stageSince: clock, deadlineAt: clock + input.windowMin, clockSub: "peer-to-peer window",
-        atStake: input.atStake, agent: "advocate", next: "Advocate laid out the options. Choose a next step", chance: input.chance, decidedToday: true, outcome: "denied", sentVia: "portal",
+        agent: "advocate", next: "Advocate laid out the options. Choose a next step", chance: input.chance, decidedToday: true, outcome: "denied", sentVia: "portal",
         events: [
           e("reader", "Reader read the denial letter and removed identifiers", clock - 3),
           e("advocate", "Advocate checked the notice, the deadline and how the payer applied its own criteria", clock - 2),
@@ -167,7 +166,7 @@ export const createDenialsSlice: StateCreator<AppState, [], [], DenialsSlice> = 
       dropScheduled(id);
       get().addEvent(id, { actor: "you", text: "You accepted the decision", detail: `Reason: ${reason}` });
       get().addEvent(id, { actor: "cadence", text: "Cadence logged the accepted denial for Analytics and added a step-down plan to Case Manager" });
-      get().recordDenialAccepted({ denialId: id, requestId: r.caseId, payerId: r.payerId, amount: r.atStake });
+      get().recordDenialAccepted({ denialId: id, requestId: r.caseId, payerId: r.payerId });
       get().notify({ agent: "cadence", title: "Denial closed", body: `${id} was accepted. Analytics logs it as an accepted denial and Case Manager has a step-down plan.`, to: paths.manager("cases"), tone: "neutral" });
       get().toast({ title: "Decision accepted", body: "Analytics logs it as an accepted denial. Case Manager has a step-down plan.", tone: "neutral" });
     },

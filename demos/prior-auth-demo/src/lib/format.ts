@@ -1,9 +1,3 @@
-/** "$22.4K", "$1.2M", "$900" */
-export function money(n: number): string {
-  if (n >= 1_000_000) return `$${+(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1000) return `$${+(n / 1000).toFixed(1)}K`;
-  return `$${Math.round(n)}`;
-}
 export const pct = (n: number): string => `${Math.round(n)}%`;
 export const plural = (n: number, one: string, many = `${one}s`): string => `${n} ${n === 1 ? one : many}`;
 /** Approval-chance bands used everywhere: Strong 80+, Moderate 55-79, At risk below 55. */

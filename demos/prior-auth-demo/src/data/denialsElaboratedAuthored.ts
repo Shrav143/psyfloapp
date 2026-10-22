@@ -90,7 +90,7 @@ const D_3306: Elaborated = {
     },
     {
       title: "Accept the first three days and record why",
-      text: "The first three days fall before coverage began, and the chart gives nothing to build an argument on. Accepting them is a reasonable choice, and it costs less than a call that cannot be won. Record the reason in the case: coverage effective three days after admission, request sent on day 9, no pending status on file. Before writing the days off, ask billing whether another payer, an earlier plan or the facility's own policy covers them. Analytics counts the write-off, so the reason should be clear enough to read later.",
+      text: "The first three days fall before coverage began, and the chart gives nothing to build an argument on. Accepting them is a reasonable choice, and it costs less than a call that cannot be won. Record the reason in the case: coverage effective three days after admission, request sent on day 9, no pending status on file. Before writing the days off, ask billing whether another payer, an earlier plan or the facility's own policy covers them. Analytics counts it as an accepted denial, so the reason should be clear enough to read later.",
     },
     {
       title: "Set a limit on the effort, then decide",

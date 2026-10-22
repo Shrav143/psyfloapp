@@ -271,7 +271,6 @@ export function similarCases(payerId: PayerId, program: Program): { total: numbe
   const network = Math.round(total * 0.646);
   return { total, own, network, benchmark: total - own - network };
 }
-export const AT_STAKE: Record<Program, number> = { RES: 22400, IOP: 5400, PHP: 6900, WM: 9100 };
 
 const span = (min: number): string => {
   const m = Math.max(0, Math.round(min));

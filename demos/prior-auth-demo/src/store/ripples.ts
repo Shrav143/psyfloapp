@@ -8,7 +8,7 @@ import type { AppState } from "./index";
 export type AppealResult = "overturned" | "partly" | "upheld";
 
 export interface AppealDecision { id: string; denialId: string; requestId?: string; payerId?: string; result: AppealResult; nextLevel?: string; at: number }
-export interface DenialAccepted { id: string; denialId: string; requestId?: string; payerId?: string; amount?: number; at: number }
+export interface DenialAccepted { id: string; denialId: string; requestId?: string; payerId?: string; at: number }
 export interface Dismissal { id: string; requestId: string; reason: string; at: number }
 export interface PayerChangeUpdate { id: string; changeId: string; payerId: string; draftIds: string[]; at: number }
 
@@ -22,7 +22,7 @@ export interface RipplesSlice {
   payerChangeUpdates: PayerChangeUpdate[];
   /** Denial Intelligence: the payer ruled on a filed appeal. */
   recordAppealDecision: (d: Omit<AppealDecision, "id" | "at">) => void;
-  /** Denial Intelligence: the clinic accepted a denial. Case Manager starts a step-down plan; Analytics counts the write-off. */
+  /** Denial Intelligence: the clinic accepted a denial. Case Manager starts a step-down plan; Analytics counts the accepted denial. */
   recordDenialAccepted: (d: Omit<DenialAccepted, "id" | "at">) => void;
   /** Authorizations: a recommendation was dismissed with a reason. Analytics reads the reasons. */
   recordDismissal: (d: Omit<Dismissal, "id" | "at">) => void;

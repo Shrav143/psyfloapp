@@ -50,7 +50,7 @@ const logged = (at: number, actor: PsyRequest["events"][number]["actor"], text: 
 export const SEED_ACCEPT_DENIAL: PsyRequest = {
   id: "D-3306", caseId: "I-2127", patient: { initials: "S.K.", age: 41 }, payerId: "summit", program: "IOP", type: "Peer-to-peer",
   stage: "appeal", chip: "Analyzed", tone: "mid", track: "denial", progress: 0, stageSince: -(3 * DAY + 4 * HOUR), deadlineAt: 4 * DAY, clockSub: "peer-to-peer window",
-  atStake: 5400, agent: "advocate", next: "Advocate laid out the options. Accepting may be the better use of time", chance: 27, outcome: "denied", sentVia: "portal",
+  agent: "advocate", next: "Advocate laid out the options. Accepting may be the better use of time", chance: 27, outcome: "denied", sentVia: "portal",
   events: [
     logged(-(3 * DAY + 4 * HOUR), "payer", "The payer denied the retro-authorization request"),
     logged(-(3 * DAY + 4 * HOUR) + 6, "reader", "Reader read the denial letter and removed identifiers"),
@@ -67,15 +67,14 @@ export interface SampleLetter {
   payerId: "beacon" | "summit" | "harborview" | "lakeshore";
   program: "RES" | "IOP" | "PHP";
   meta: DenialMeta;
-  atStake: number;
   chance: number;
   /** Minutes from now until the peer-to-peer window closes. */
   windowMin: number;
 }
 export const SAMPLE_LETTERS: SampleLetter[] = [
-  { file: "beacon-denial-letter-sample.pdf", initials: "R.V.", age: 44, payerId: "beacon", program: "RES", atStake: 11200, chance: 59, windowMin: 4 * DAY, meta: { type: "Level-of-care downgrade", summary: "Level-of-care downgrade", similar: 167 } },
-  { file: "summit-denial-letter-sample.pdf", initials: "A.G.", age: 31, payerId: "summit", program: "IOP", atStake: 5600, chance: 66, windowMin: 2 * DAY + 6 * HOUR, meta: { type: "Units cut", summary: "Units cut 36 to 24", unitsRequested: 36, unitsApproved: 24, similar: 221 } },
-  { file: "harborview-denial-letter-sample.pdf", initials: "W.S.", age: 58, payerId: "harborview", program: "PHP", atStake: 7800, chance: 48, windowMin: 5 * DAY, meta: { type: "Partial approval", summary: "Partial approval", daysRequested: 12, daysApproved: 6, similar: 84 } },
+  { file: "beacon-denial-letter-sample.pdf", initials: "R.V.", age: 44, payerId: "beacon", program: "RES", chance: 59, windowMin: 4 * DAY, meta: { type: "Level-of-care downgrade", summary: "Level-of-care downgrade", similar: 167 } },
+  { file: "summit-denial-letter-sample.pdf", initials: "A.G.", age: 31, payerId: "summit", program: "IOP", chance: 66, windowMin: 2 * DAY + 6 * HOUR, meta: { type: "Units cut", summary: "Units cut 36 to 24", unitsRequested: 36, unitsApproved: 24, similar: 221 } },
+  { file: "harborview-denial-letter-sample.pdf", initials: "W.S.", age: 58, payerId: "harborview", program: "PHP", chance: 48, windowMin: 5 * DAY, meta: { type: "Partial approval", summary: "Partial approval", daysRequested: 12, daysApproved: 6, similar: 84 } },
 ];
 
 export interface FindingText {

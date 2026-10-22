@@ -82,7 +82,6 @@ export interface PsyRequest {
   deadlineAt?: number; // demo minutes; denials show time left instead of time in stage
   clockNote?: string; // overrides the clock text, e.g. "decision 11/10"
   clockSub?: string; // second line under the clock
-  atStake: number; // dollars. Data only: no screen shows it and nothing sorts or ranks by it
   agent: AgentKey; // who has it
   next: string; // "What happens next"
   needsYou?: boolean;

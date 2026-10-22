@@ -2,7 +2,7 @@ import type { StateCreator } from "zustand";
 import { EMPTY_WORK } from "@/data/caseModel";
 import { resolveCase } from "@/data/caseDetail";
 import {
-  AT_STAKE, caseCode, chanceBounds, currentChance, draftState, DUE_FOR, freshRun, needsPerson, QUESTIONS, RUN_STEPS, SCRIBE_STEP,
+  caseCode, chanceBounds, currentChance, draftState, DUE_FOR, freshRun, needsPerson, QUESTIONS, RUN_STEPS, SCRIBE_STEP,
   type CaseDraft, type CoverageSummary, type DocSlotId, type DraftDocument,
 } from "@/data/cases";
 import { payerById } from "@/data/seed";
@@ -186,7 +186,6 @@ export const createCasesSlice: StateCreator<AppState, [], [], CasesSlice> = (set
         payerId: d.payerId,
         program: d.program,
         type: d.type,
-        atStake: AT_STAKE[d.program],
         chance: currentChance(d),
         referralId: d.referralId,
       });

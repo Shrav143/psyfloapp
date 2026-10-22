@@ -43,7 +43,7 @@ export function AddLetterCard({ onAdded }: { onAdded: (id: string) => void }) {
       await sleep(STEP_MS);
       if (!alive.current) return;
     }
-    const id = useStore.getState().addDenial({ initials: base.initials, age: base.age, payerId: base.payerId, program: base.program, atStake: base.atStake, chance: base.chance, windowMin: base.windowMin, meta: { ...base.meta, letterName: chosenName, note: note.trim() || undefined } });
+    const id = useStore.getState().addDenial({ initials: base.initials, age: base.age, payerId: base.payerId, program: base.program, chance: base.chance, windowMin: base.windowMin, meta: { ...base.meta, letterName: chosenName, note: note.trim() || undefined } });
     setStep(null);
     setFile(null);
     setSample(null);
