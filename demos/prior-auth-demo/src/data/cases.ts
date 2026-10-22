@@ -303,6 +303,7 @@ export const DUE_FOR: Record<RequestType, { kind: DueKind; in: number } | undefi
   "Initial request": { kind: "packet", in: 2 * 1440 },
   "Continued stay": { kind: "review", in: 1440 },
   Recertification: { kind: "expires", in: 3 * 1440 },
+  Modification: { kind: "packet", in: 2 * 1440 },
   "Retro-authorization": { kind: "window", in: 18 * 60 },
   "Peer-to-peer": undefined,
   Appeal: undefined,
@@ -319,7 +320,7 @@ const PLAN_TYPE_OF: Record<string, string> = { summit: "HMO", cardinal: "HMO", e
 /** The plan type to pre-fill for a payer. A payer added on Payers maps its own type onto the same list. */
 export const planTypeOf = (id: PayerId): string => PLAN_TYPE_OF[id] ?? ({ "Managed care plan": "HMO", PPO: "PPO", "Medicare Advantage": "Medicare Advantage", "Carve-out": "Behavioral carve-out" } as Record<string, string>)[payerById(id)?.type ?? ""] ?? "";
 export const PLAN_TYPES = ["HMO", "PPO", "Medicare Advantage", "Behavioral carve-out", "Fee-for-service"];
-export const NEW_REQUEST_TYPES: RequestType[] = ["Initial request", "Admission", "Continued stay", "Recertification", "Retro-authorization"];
+export const NEW_REQUEST_TYPES: RequestType[] = ["Initial request", "Admission", "Continued stay", "Recertification", "Modification", "Retro-authorization"];
 
 /** Where the approval chance starts and ends for a payer: its "approved as asked" rate plus 14 once the agents have worked. Summit: 62 to 88. */
 export function chanceBounds(payerId: PayerId | null): { start: number; final: number } {

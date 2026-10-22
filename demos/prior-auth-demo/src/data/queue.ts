@@ -58,16 +58,17 @@ export const STATUS_HELP: { chip: string; means: string }[] = [
   { chip: "Approved, Completed", means: "These leave the queue. See the Dashboard and Case Manager." },
 ];
 
-/** The four request types people filter by. The demo's own types map onto them; the rest (peer-to-peer, appeal, resubmission) show only under All. */
-export type RequestKind = "initial" | "concurrent" | "reauth" | "retro";
-export const REQUEST_KINDS: RequestKind[] = ["initial", "concurrent", "reauth", "retro"];
-export const REQUEST_KIND_LABEL: Record<RequestKind, string> = { initial: "Initial", concurrent: "Concurrent review", reauth: "Reauthorization", retro: "Retrospective" };
+/** The five request types people filter by. The demo's own types map onto them; the rest (peer-to-peer, appeal, resubmission) show only under All. */
+export type RequestKind = "initial" | "concurrent" | "reauth" | "modify" | "retro";
+export const REQUEST_KINDS: RequestKind[] = ["initial", "concurrent", "reauth", "modify", "retro"];
+export const REQUEST_KIND_LABEL: Record<RequestKind, string> = { initial: "Initial", concurrent: "Concurrent review", reauth: "Reauthorization", modify: "Modification / extension", retro: "Retrospective" };
 export function requestKindOf(type: RequestType): RequestKind | null {
   switch (type) {
     case "Initial request":
     case "Admission": return "initial";
     case "Continued stay": return "concurrent";
     case "Recertification": return "reauth";
+    case "Modification": return "modify";
     case "Retro-authorization": return "retro";
     default: return null;
   }
@@ -103,7 +104,7 @@ export function scoresFor(id: string, key: DxKey): Score[] {
 const PHRASE: Record<RequestType, (n: number, p: Program) => string> = {
   "Initial request": () => "initial authorization", Admission: () => "admission", "Continued stay": (n) => `continued-stay review ${1 + (n % 4)}`,
   Recertification: (n, p) => (p === "IOP" || p === "PHP" ? `recertification at unit ${20 + (n % 20)} of 48` : `recertification at day ${14 + (n % 10)} of 28`),
-  "Retro-authorization": () => "retro-authorization", "Peer-to-peer": () => "peer-to-peer call", Appeal: () => "appeal", Resubmission: () => "resubmission",
+  Modification: () => "authorization modification", "Retro-authorization": () => "retro-authorization", "Peer-to-peer": () => "peer-to-peer call", Appeal: () => "appeal", Resubmission: () => "resubmission",
 };
 export const dxLine = (id: string, key: DxKey, type: RequestType, program: Program): string => `${DX[key].name} · ${PHRASE[type](hashOf(id), program)}`;
 export const daysRequested = (p: Program): number => (p === "RES" ? 14 : p === "PHP" ? 10 : p === "IOP" ? 21 : 5);

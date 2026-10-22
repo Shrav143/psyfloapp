@@ -45,10 +45,10 @@ export const STAGE_LABEL: Record<StageKey, string> = {
 export const STAGES: StageKey[] = ["preparing", "received", "under_review", "info_requested", "decided", "appeal"];
 
 export type RequestType =
-  | "Initial request" | "Admission" | "Continued stay" | "Recertification"
+  | "Initial request" | "Admission" | "Continued stay" | "Recertification" | "Modification"
   | "Retro-authorization" | "Peer-to-peer" | "Appeal" | "Resubmission";
 export const REQUEST_TYPES: RequestType[] = [
-  "Initial request", "Admission", "Continued stay", "Recertification", "Retro-authorization", "Peer-to-peer", "Appeal", "Resubmission",
+  "Initial request", "Admission", "Continued stay", "Recertification", "Modification", "Retro-authorization", "Peer-to-peer", "Appeal", "Resubmission",
 ];
 
 export type Outcome = "approved" | "partly_approved" | "denied";
