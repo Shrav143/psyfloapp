@@ -12,7 +12,7 @@ process hb "When the case does not meet what the payer asks, the subtitle adds\n
 
 group gSev "Three kinds of item, in this order"
   process k1 "**Blocks sending** (red cross)\nNo patient, payer, service or dates\nCoverage confirmed inactive with no documented exception\nA possible duplicate nobody has answered"
-  process k2 "**Acknowledge before signing** (amber)\nA required document that is not in the case or has a finding, or is marked not available\nNo authorization chosen, an empty proposed change, no retro reason\nCoverage that was not checked, a check that could not run, a payer change, a benefit or network the plan did not confirm\nAn empty section of the summary, a late notice or window, a start date outside the payer's rule, a no-authorization rule"
+  process k2 "**Acknowledge before signing** (amber)\nA required document that is not in the case or has a finding, or is marked not available\nNo authorization chosen, an empty proposed change, no retro reason, no last date of service\nCoverage that was not checked, a check that could not run, a payer change, a benefit or network the plan did not confirm\nAn empty section of the summary, a late notice or window, a start date outside the payer's rule, a no-authorization rule"
   process k3 "**Does not stop signing** (grey)\nA recommended document that is not added\nA documented exception, with the reason\nNo Backdating rule on file for a retro-authorization\nAn authorization that is not approved yet"
 endgroup
 

@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { History } from "lucide-react";
 import { Button, Card, Drawer, Label, Pill, Chip } from "@/components/ui";
-import { AUTH_STATUS_LABEL, AUTH_STATUS_TONE, leftText, windowText, type AuthorizationRecord, type Patient, type TreatmentEpisode } from "@/data/patients";
+import { AUTH_STATUS_LABEL, AUTH_STATUS_TONE, leftText, payerNameOf, windowText, type AuthorizationRecord, type Patient, type TreatmentEpisode } from "@/data/patients";
 import { PROGRAM_LABEL } from "@/data/types";
 import { cn } from "@/lib/cn";
 import { stamp, longDate } from "@/lib/time";
-import { payerNameOf } from "@/data/patients";
 
 const ACTOR: Record<AuthorizationRecord["history"][number]["by"], string> = { payer: "The payer", agent: "An agent", person: "A person" };
 

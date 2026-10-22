@@ -1,7 +1,6 @@
 /* Clinical documentation by type. The required documents come from the payer's saved list (Payers › Documents, read in payerContext.ts).
    What a request of this type usually carries on top of that is "typical for a continued stay" and so on. It is advice from the demo, never presented as a payer's rule. */
-import type { AuthKind, CaseDraft } from "@/data/cases";
-import type { DocSlotId } from "@/data/cases";
+import type { AuthKind, CaseDraft, DocSlotId } from "@/data/cases";
 import { authType } from "./authType";
 import { docEntries, isFixedSlot, slotForTitle, slotLabel, type DocEntry } from "./documents";
 import type { PayerContext } from "./payerContext";

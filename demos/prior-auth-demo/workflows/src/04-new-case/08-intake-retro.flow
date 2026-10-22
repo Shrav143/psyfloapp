@@ -21,7 +21,7 @@ screen sDup "'This looks like a request that already exists' only when one match
 goto gDup "Continues in: Authorizations › New case › Intake › Possible duplicate"
 screen sDos "Card 'Dates of service'\n'The first and the last day care was given without an authorization. Verify checks coverage for these dates.'"
 input iFrom "'First date of service' (required)"
-input iTo "'Last date of service' (required)"
+input iTo "'Last date of service'\nWithout it Review & submit asks the person to acknowledge it; the first date is what blocks"
 decision dBad "Is the last date before the first?"
 toast tBad "Field error: 'The end is before the start.'"
 screen sWhy "Card 'Why it was not obtained ahead of time'\n'The payer will ask. Use one of these or write your own. Only what happened goes in the request.'"

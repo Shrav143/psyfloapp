@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { ArrowLeft, ArrowRight, Save } from "lucide-react";
 import { Button, ChecklistProgress, Pill } from "@/components/ui";
-import type { CaseDraft } from "@/data/cases";
-import { runStarted } from "@/data/cases";
+import { runStarted, type CaseDraft } from "@/data/cases";
 import { useStore } from "@/store";
 import type { CaseEnv } from "./caseEnv";
 import { DropPanel } from "./DropPanel";

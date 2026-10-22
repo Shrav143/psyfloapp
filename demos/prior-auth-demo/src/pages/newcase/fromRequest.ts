@@ -14,6 +14,7 @@ import { docEntries, makeDocument, sampleFile } from "./documents";
 import { ICD_CODES } from "./lookups";
 import type { PayerContext } from "./payerContext";
 import { planQuestions } from "./questions";
+import { datesOfService } from "./verificationFor";
 import { blankDraft } from "./seedDrafts";
 
 export type RequestState = "ready" | "preparing" | "sent";
@@ -95,8 +96,11 @@ export function requestDraft(base: CaseDetail, work: CaseWork, clock: number, ct
 
   const done = state === "ready" || state === "sent" ? RUN_STEPS.length : Math.max(0, RUN_STEPS.findIndex((s) => s.agent === detail.agent));
   const due = DUE_FOR[detail.type];
+  /* A retroactive request is asked for its dates of service: a draft made from one that exists has the level of care's usual length, so it is not stopped for a missing last date. */
+  const dos = draft.kind === "retro" ? datesOfService(draft) : null;
   return {
     ...draft,
+    ...(dos ? { endDate: dos.to } : {}),
     /* The portals were reached when the request was opened, so Verify never fails here. */
     run: { ...freshRun(), done, asked: done >= RUN_STEPS.length, elapsed: ELAPSED.slice(0, done), retried: true },
     questions: planQuestions(draft).filter((k) => RUN_STEPS.findIndex((s) => s.agent === QUESTIONS[k].agent) >= done),
