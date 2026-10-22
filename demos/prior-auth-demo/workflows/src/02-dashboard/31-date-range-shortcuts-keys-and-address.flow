@@ -38,7 +38,7 @@ endgroup
 
 store w1 "Filter 'range'"
 screen sc "Date button shows the range\nGreen and bold when it is not the default\nOne day shows as 'Oct 10, 2026'"
-process p2 "Payers at a glance rescales: 'Denied (N d)' and 'Info asks (N d)' use N days, N = days in the range"
+process p2 "Payer performance (when open) rescales: 'Denied (N d)' and 'Info asks (N d)' use N days, N = days in the range"
 goto g1 "Continues in: Dashboard › Filters › Pick a date range"
 goto g2 "Continues in: Dashboard › Filters › Clear filters and empty states"
 

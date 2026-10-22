@@ -1,13 +1,13 @@
 title: Dashboard › Requests table › Order, rows and paging
 route: /dashboard
-intro: The 'Requests' card. Rows come in the app's own order until a heading is clicked. A click on a row, a case ID or 'Open' opens the request drawer and adds one history entry. Eight rows show at a time.
+intro: The 'Requests' card, the one list on the page. Rows come in the list's own order (waiting on you first, then the nearest clock) until a heading is clicked. A click on a row, a case ID or 'Open' opens the request drawer and adds one history entry. Eight rows show at a time.
 dir: TD
 ---
-start s1 "Dashboard is open\n'Requests' card under the stage strip"
-screen sc1 "Card header\n'Requests' and 'Bars show progress: Prepared, Received, In review, Decided...'\nRight side: 'Showing 8 of 40'"
+start s1 "Dashboard is open\n'Requests' card under the filter bar"
+screen sc1 "Card header\n'Requests' and one line: 'Waiting on you first, then the nearest clock.'\nRight side: 'Showing 8 of 40'\nThe note on the progress bars is in 'What the stages mean'"
 screen sc2 "Six columns\nCase, Payer, Where it is, Clock, What happens next, and an unnamed column with 'Open'"
 process p1 "The headings Case, Payer, Where it is and Clock are buttons that sort the rows\n'What happens next' and the Open column do not sort"
-process p2 "Rows start in the app's order\n1 needs you, 2 very late, 3 late, 4 denial with under 2 days left, 5 the rest\nSame group: longest time in stage first"
+process p2 "Rows start in the list's order\n1 requests that wait on a person, 2 everything else\nInside each group the nearest due time first: the time Authorizations ranks by, or a denial's deadline; overdue first\nRows with no due time come last, longest wait first"
 decision d0 "Do any rows match the filters?"
 screen em "'No requests match'\nwith 'Clear filters'"
 
@@ -23,7 +23,8 @@ goto g1 "Continues in: Dashboard › Request drawer › Open and read a request"
 goto g2 "Continues in: Dashboard › Requests table › Read a row: bars, clock and what happens next"
 goto g3 "Continues in: Dashboard › Filters › Clear filters and empty states"
 goto g4 "Continues in: Dashboard › Requests table › Sort the rows"
-goto g5 "Continues in: Dashboard › Stage strip › Click a stage tile"
+goto g5 "Continues in: Dashboard › Key figures › Click a figure to filter the list"
+goto g6 "Continues in: Dashboard › Stage help › What the stages mean"
 
 decision d1 "Are there more rows than are shown?"
 screen sc3 "Under the table\n'Show 8 more' and '32 not shown'"
@@ -32,7 +33,7 @@ process p5 "Eight more rows are added\nWith fewer than 8 left the button shows t
 end e1 "All rows shown\n'Showing 40 of 40'; no button"
 process p6 "Changing any filter, the date range or the sort goes back to the first 8 rows"
 toast t1 "Count text 'Showing 8 of 40'\nWith Appeal or call: 'Showing 8 of 8'"
-screen sc4 "With the Preparing tile chosen\nA line under the table: '2 more are being prepared in New case.' and 'Open Active cases'"
+screen sc4 "With cases saved in New case that have no row yet\nA line under the table with all stages or Preparing: '2 more are being prepared in New case.' and 'Open Active cases'\nWith 'Needs you': '1 more is waiting on you in New case.'"
 
 s1 --> sc1 --> sc2 --> p1 --> p2 --> d0
 d0 -->|No| em --> g3
@@ -50,3 +51,4 @@ d1 -->|Yes| sc3 --> c4 --> p5 --> d1
 d1 -->|No| e1
 sc3 -.-> p6
 d1 -.-> sc4 -.-> g5
+sc1 -.-> g6

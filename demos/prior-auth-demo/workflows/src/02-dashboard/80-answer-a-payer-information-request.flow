@@ -9,7 +9,7 @@ ext x1 "Payer asks for more information\nthrough its portal, fax or phone (demo:
 agent a1 "Packet drafts the answer from the chart\nIntegrity checks every sentence against it"
 store w1 "Request becomes Info requested (amber)\nNeeds you; next step 'Packet drafted the answer. Waiting for your review'"
 toast t1 "Notification 'Payer asked for info'\n'Harborview MA wants more on P-1499. Packet drafted the answer.'"
-screen sc "Dashboard\n'Info requested' tile goes up and the sidebar Dashboard badge counts it\nThe row floats to the top: it needs you"
+screen sc "Dashboard\n'Needs you' goes up by one, the 'Info requested' count in the Stage menu too, and the sidebar Dashboard badge counts it\nThe row floats to the top: it needs you"
 
 start s1 "Click the row, or the notification, then the amber box 'Needs your input'"
 click c1 "Click 'Review the answer'"
@@ -41,7 +41,7 @@ store w3 "History gets 'You reviewed the answer and sent it' and 'Navigator sent
 toast t2 "'Answer sent'\n'P-1499 is back under review.'"
 ext x2 "Payer receives the answer (demo: simulated)"
 wait wt "Payer reviews again"
-end e2 "Drawer shows Under review\nBanner: 'Next automatic check in 30 minutes.'"
+end e2 "Drawer shows Under review\nUnder 'Details': 'Next automatic check in 30 minutes.'"
 goto g1 "Continues in: Dashboard › Request drawer › Demo controls: the payer answers"
 
 s0 --> x1 --> a1 --> w1 --> t1 --> sc

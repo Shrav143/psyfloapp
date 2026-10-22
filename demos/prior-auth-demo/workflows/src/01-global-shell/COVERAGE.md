@@ -32,10 +32,13 @@ Source: `src/App.tsx`, `src/routes.ts`, `src/components/layout/*`, `src/store/co
 | 'Suggested path' steps 1 to 7 | Demo menu | 42 |
 | 'Reset demo data' | Demo menu | 43 |
 | Close by outside click, 'Demo' again, or Escape | Demo menu | 40 |
-| Four suggestion chips (shown at the start, and again under a fallback answer) | Ask FLO | 21, 22 |
+| Suggestion chips that follow the screen: four on the Dashboard and most screens; three on a case page ('What is missing for R-1042?', 'When does this authorization run out?', 'What does Summit require?'); one each on Case Manager, Denial Intelligence and Eligibility & Benefits. Shown at the start, under a fallback answer, and again when the person has moved to another screen | Ask FLO | 21, 23 |
+| Line 'Suggested for R-1042' (or the screen's name) above the chips (label only) | Ask FLO | 21 |
 | 'Ask a question' box, 'Send', Enter | Ask FLO | 21 |
 | 'FLO is working…', greeting, chat memory | Ask FLO | 21 |
-| Answer rules and the five links under answers (each opens a matching view: Dashboard 'Payers at a glance', the nearest open denial, Payers › Cardinal › Changes, the request to start with, New case) | Ask FLO | 22 |
+| Answer rules and the links under answers (each opens a matching view: Dashboard 'Payer performance', the nearest open denial, Payers › Cardinal › Changes, the request to start with, New case) | Ask FLO | 22 |
+| Answers that read a case, a payer or a screen: missing, ends, requires, reviews due, fix before billing; each with its link ('Open R-1042, Recommended actions', 'Open I-2207', 'Open Payers, Cardinal, Documents', 'Open R-0912, review', 'Open R-0921 in Eligibility & Benefits') | Ask FLO | 22, 23 |
+| The line 'This is FLO's reading of the demo data, not a payer confirmation.' (once, under those answers and the denial answer) | Ask FLO | 22, 23 |
 | Notification row click (mark read, close, go) | Notifications | 30 |
 | 'Mark all read' | Notifications | 30 |
 | Subtitle '4 unread' / 'You are all caught up' | Notifications | 30 |

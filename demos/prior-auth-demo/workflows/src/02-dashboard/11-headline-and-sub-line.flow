@@ -1,18 +1,22 @@
 title: Dashboard › Headline › What the headline and sub line say
 route: /dashboard
-intro: The big sentence at the top and the muted line under it are rebuilt whenever a filter, a tile or a payer reply changes the list. Stage wins over Payer, and Payer wins over the plain count. The numbers below are the demo's opening data.
+intro: The big sentence at the top and the muted line under it are rebuilt whenever a filter, a key figure or a payer reply changes the list. A grouping from the key figures wins over Stage, Stage wins over Payer, and Payer wins over the plain count. The numbers below are the demo's opening data.
 dir: TD
 ---
-start s1 "A filter, a tile click or a payer reply changes the list"
+start s1 "A filter, a key figure click or a payer reply changes the list"
 process p1 "Headline is rebuilt\nCounts use Payer, Program and Request type, but not Stage"
 decision d1 "Does any request match the filters?"
 screen n0 "'No requests match these filters.'\n'The filters hide everything. Clear them to see every request again.'"
 goto g1 "Continues in: Dashboard › Filters › Clear filters and empty states"
 
+decision dv "Is Needs you, Due within 24 hours or Waiting on payers chosen?\n(from a key figure or the Stage menu)"
+screen v1 "Needs you\n'3 requests need you.'\nWith 'Nothing needs you right now.' when none do\n'A payer's question, a draft with a question for you, or one ready to sign.'"
+screen v2 "Due within 24 hours\n'12 requests are due within 24 hours.'\n'The soonest first. Some may already be past their time.'"
+screen v3 "Waiting on payers\n'18 requests are waiting on payers.'\n'Received or under review. Payers usually take about 2.2 days to decide.'"
 decision d2 "Which Stage is set?"
 screen a1 "Appeal or call\n'8 denials are on their route.'\n'Each one is a call, an appeal, an external review or a resubmission.'"
 screen a2 "Info requested\n'3 requests are waiting on you.'\n'The payer asked for more information. Packet drafts each answer for you to review.'"
-screen a3 "Preparing\n'5 requests are being prepared.'\nThe count is the same as the Preparing tile: the table rows plus cases saved in New case\n'They are in Case Manager. Nothing has been sent to a payer yet.'"
+screen a3 "Preparing\n'5 requests are being prepared.'\nThe count is the same as the Preparing count in the Stage menu: the table rows plus cases saved in New case\n'They are in Case Manager. Nothing has been sent to a payer yet.'"
 screen a4 "Received\n'4 requests have been received.'\n'The payer confirmed receipt. Navigator checks each one again every few minutes.'"
 screen a5 "Under review\n'14 requests are under review.'\n'Payers usually take about 2.2 days to decide. Caller phones when one runs late.'"
 screen a6 "Decided today\n'8 requests were decided today. 6 approved, 2 not as asked.'\n'Approvals update the ledger. Write-back to the EMR waits for you.'"
@@ -27,7 +31,12 @@ end e1 "Headline and sub line shown"
 
 s1 --> p1 --> d1
 d1 -->|No| n0 --> g1
-d1 -->|Yes| d2
+d1 -->|Yes| dv
+dv -->|Needs you| v1
+dv -->|Due within 24 hours| v2
+dv -->|Waiting on payers| v3
+dv -->|No, a stage or all stages| d2
+v1 & v2 & v3 --> p2
 d2 -->|Appeal or call| a1
 d2 -->|Info requested| a2
 d2 -->|Preparing| a3

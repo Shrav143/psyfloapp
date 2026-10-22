@@ -1,7 +1,7 @@
 import type { KeyboardEvent } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import { Card, CardHeader, Meter, Table, Td, Th, Tr } from "@/components/ui";
+import { Meter, Table, Td, Th, Tr } from "@/components/ui";
 import type { PayerId, PayerSummary } from "@/data/types";
 import { cn } from "@/lib/cn";
 import type { DateRange } from "@/lib/dates";
@@ -10,22 +10,28 @@ import { periodWord, type PayerRow } from "./helpers";
 
 const GROUP_LABEL: Record<PayerSummary["group"], string> = { "Ohio Medicaid": "Medicaid plan", Commercial: "Commercial", "Medicare Advantage": "Medicare Advantage", "Behavioral carve-out": "Carve-out" };
 
-/** One row per payer. A click on the row sets the Payer filter, a second click clears it; the payer's name opens that payer on Payers. Totals are the sums of the rows. */
-export function PayersTable({ rows, selected, range, narrowed, onPick, flash }: { rows: PayerRow[]; selected: PayerId | "all"; range: DateRange; narrowed: boolean; onPick: (id: PayerId | "all") => void; flash: boolean }) {
+/** The body of the Payer performance section: one row per payer. A click on the row sets the Payer filter, a second click clears it; the payer's name opens that payer on Payers. Totals are the sums of the rows. */
+export function PayersTable({ rows, selected, range, narrowed, onPick }: { rows: PayerRow[]; selected: PayerId | "all"; range: DateRange; narrowed: boolean; onPick: (id: PayerId | "all") => void }) {
   const total = (pick: (r: PayerRow) => number) => rows.reduce((a, r) => a + pick(r), 0);
   const w = periodWord(range);
+  const link = "inline-flex items-center gap-1.5 text-[13.5px] font-semibold text-forest hover:underline";
   return (
-    <Card className={cn("overflow-hidden outline-2 outline-offset-[3px] transition-[outline-color] duration-700", flash ? "outline-forest" : "outline-transparent")} data-flash={flash || undefined}>
-      <CardHeader
-        title="Payers at a glance"
-        subtitle={`Waiting now, how long decisions take, and how often they go your way. Click a row to narrow everything on this page.${narrowed ? " Waiting counts follow your Program and Request type filters." : ""}`}
-        right={
-          <Link to={paths.payers()} className="inline-flex items-center gap-1.5 text-[13.5px] font-semibold text-forest hover:underline">
+    <div>
+      <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 px-6 py-4">
+        <p className="min-w-0 flex-1 text-[13.5px] text-muted">
+          Waiting now, how long decisions take, and how often they go your way. Click a row to narrow everything on this page.{narrowed ? " Waiting counts follow your Program and Request type filters." : ""}
+        </p>
+        <div className="flex shrink-0 items-center gap-5">
+          <Link to={paths.analytics()} className={link}>
+            Open Analytics
+            <ArrowRight size={14} className="ico" />
+          </Link>
+          <Link to={paths.payers()} className={link}>
             Open Payers
             <ArrowRight size={14} className="ico" />
           </Link>
-        }
-      />
+        </div>
+      </div>
       <Table>
         <thead>
           <tr>
@@ -83,6 +89,6 @@ export function PayersTable({ rows, selected, range, narrowed, onPick, flash }: 
           </Tr>
         </tbody>
       </Table>
-    </Card>
+    </div>
   );
 }

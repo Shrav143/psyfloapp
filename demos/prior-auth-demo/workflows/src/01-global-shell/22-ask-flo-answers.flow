@@ -1,19 +1,23 @@
 title: Global shell › Top bar › Ask FLO › What FLO answers
 route: Every page (Ask FLO drawer)
-intro: FLO lowercases the question and tries six rules in order. The first rule that matches answers, so a question with two key words gets the earlier answer. Counts, names and the request or denial it points to come from the live demo data. Only the Cardinal answer is fixed text.
+intro: FLO lowercases the question and tries its rules in order. The first rule that matches answers, so a question with two key words gets the earlier answer. Counts, names and the request or denial it points to come from the live demo data. Only the Cardinal answer is fixed text. Five rules read the screen the person is on and are drawn in the next diagram.
 dir: LR
-also: Typed questions use the same rules as the suggestion chips. FLO does not look at which page is open. Every link opens a view that matches the answer. PRD 08 describes row-level citations, thumbs and an escalate action on each answer; the demo gives one paragraph and one link instead.
+also: Typed questions use the same rules as the suggestion chips. Most rules ignore the page; the five on the next diagram use the open case page when the question does not name a case. Every link opens a view that matches the answer. PRD 08 describes row-level citations, thumbs and an escalate action on each answer; the demo gives one paragraph and one link instead.
 ---
 start s1 "A question is sent\n(a chip or typed text)"
 
 decision d1 "Contains 'slow', or both 'payer' and 'late'?"
 agent a1 "FLO lists every payer slower than its typical time, worst first:\n'Evergreen is averaging 3.4 days against 2 typical. Cardinal is averaging 2.8 days against 2 typical. Beacon ... Lakeshore ... Harborview ...\nCaller phones when a payer passes twice its typical time.'\nIf none is slower: 'Every payer is deciding within its typical time right now.'"
-click l1 "Click 'Open Dashboard, By payer'"
-process r1 "Opens /dashboard?focus=payers\nThe Dashboard scrolls to Payers at a glance"
-goto g1 "Continues in: Dashboard › Payers at a glance › Read the table and pick a payer"
+click l1 "Click 'Open Dashboard, Payer performance'"
+process r1 "Opens /dashboard?focus=payers\nThe Dashboard opens Payer performance and scrolls to it"
+goto g1 "Continues in: Dashboard › Payer performance › Read the table and pick a payer"
+
+decision dn "Contains 'billing', 'eligib' or 'fix before'?\nOr 'missing' or 'incomplete'?\nOr 'expir', 'run out', 'units' or 'end' (not with 'denial')?\nOr 'require'?\nOr 'review' (not 'under review')?"
+agent an "FLO answers from the screen you are on or the case you name:\nwhat is missing for a case, when an authorization ends, what a payer requires, which reviews are due, which patients need a fix before billing\nEach names the case, quotes live data, says once that it is FLO's reading, and ends with a link to the exact place"
+goto gn "Continues in: Global shell › Top bar › Ask FLO › Answers that read the screen"
 
 decision d2 "Contains 'denial'?"
-agent a2 "'8 denials are open. The nearest deadline is D-3318 (Cardinal). Call booked Wed 9 to 11 am. The brief is ready. The chance of winning is 64%.'\nThe count and the nearest open denial are live, so the sentence follows the data\nFLO gives no dollar figure: a question that only asks about money gets the fallback answer"
+agent a2 "'8 denials are open. The nearest deadline is D-3318 (Cardinal), peer-to-peer window, 36 h left. Call booked Wed 9 to 11 am. The brief is ready. The chance of winning is 64%. 3 more deadlines fall this week.'\nThe count, the nearest open denial and the time left are live, so the sentence follows the data and the clock\nOne muted line: 'This is FLO's reading of the demo data, not a payer confirmation.'\nFLO gives no dollar figure: a question that only asks about money gets the fallback answer"
 click l2 "Click 'Open Denial Intelligence'"
 process r2 "Opens /denials?id=D-3318, the nearest denial\nWith no deadline left to name, it opens the list"
 goto g2 "Continues in: Denial Intelligence › A denial opened"
@@ -42,7 +46,9 @@ end e1 "Answer stays in the chat"
 
 s1 --> d1
 d1 -->|Yes| a1 --> l1 --> r1 --> g1
-d1 -->|No| d2
+d1 -->|No| dn
+dn -->|Yes| an --> gn
+dn -->|No| d2
 d2 -->|Yes| a2 --> l2 --> r2 --> g2
 d2 -->|No| d2b
 d2b -->|Yes| a2b --> l2b --> r2b --> g2b

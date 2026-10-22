@@ -1,22 +1,31 @@
-import { Button, DateRangePicker, Dropdown } from "@/components/ui";
+import { Button, DateRangePicker, Dropdown, type Option } from "@/components/ui";
 import { useStore } from "@/store";
 import { DEFAULT_RANGE } from "@/store/core";
-import { PAYER_OPTIONS, PROGRAM_OPTIONS, STAGE_OPTIONS, TYPE_OPTIONS, hasNarrowingFilter, rangePresets, todayOf } from "./helpers";
+import { PAYER_OPTIONS, PROGRAM_OPTIONS, TYPE_OPTIONS, rangePresets, todayOf } from "./helpers";
+import type { StageMenuValue } from "./workList";
+
+interface Props {
+  /** What the Stage menu shows: a stage, one of the three groupings from the key figures, or no stage. */
+  stage: StageMenuValue;
+  stageOptions: Option<StageMenuValue>[];
+  onStage: (v: StageMenuValue) => void;
+  canClear: boolean;
+  onClear: () => void;
+}
 
 /** Payer, Program, Request type and Stage are menus. The days are a separate calendar control on the right. All apply as soon as they are picked and write to the shared filters. */
-export function FilterBar() {
+export function FilterBar({ stage, stageOptions, onStage, canClear, onClear }: Props) {
   const filters = useStore((s) => s.filters);
   const setFilter = useStore((s) => s.setFilter);
-  const clearFilters = useStore((s) => s.clearFilters);
   const today = todayOf(useStore((s) => s.clock));
   return (
     <div className="flex flex-wrap items-center gap-3" role="group" aria-label="Dashboard filters">
       <Dropdown ariaLabel="Payer" value={filters.payer} defaultValue="all" options={PAYER_OPTIONS} onChange={(v) => setFilter("payer", v)} menuWidth={250} />
       <Dropdown ariaLabel="Program" value={filters.program} defaultValue="all" options={PROGRAM_OPTIONS} onChange={(v) => setFilter("program", v)} />
       <Dropdown ariaLabel="Request type" value={filters.type} defaultValue="all" options={TYPE_OPTIONS} onChange={(v) => setFilter("type", v)} menuWidth={250} />
-      <Dropdown ariaLabel="Stage" value={filters.stage} defaultValue="all" options={STAGE_OPTIONS} onChange={(v) => setFilter("stage", v)} />
-      {hasNarrowingFilter(filters) ? (
-        <Button variant="ghost" size="sm" onClick={clearFilters}>
+      <Dropdown ariaLabel="Stage" value={stage} defaultValue="all" options={stageOptions} onChange={onStage} menuWidth={250} />
+      {canClear ? (
+        <Button variant="ghost" size="sm" onClick={onClear}>
           Clear filters
         </Button>
       ) : null}

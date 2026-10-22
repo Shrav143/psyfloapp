@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { ArrowDown, ArrowUp, ChevronsUpDown, SearchX } from "lucide-react";
 import { AgentBadge, Button, Card, CardHeader, EmptyState, IdLink, Pill, ProgressBars, Table, Td, Th, Tr } from "@/components/ui";
@@ -89,18 +90,22 @@ interface Props {
   sort: RowSort | null;
   onSort: (key: SortKey) => void;
   writeBackOn: boolean;
-  /** Cases being prepared in New case with no row here. Only passed while Stage is Preparing. */
+  /** Cases saved in New case that have no row here, and what to say about them ("being prepared", "waiting on you"). */
   more: number;
+  moreWhat: string;
+  /** The stage help, under the table. */
+  help: ReactNode;
 }
 
-/** Exactly six columns, always the same. Needs-you first, then the latest, until a heading is clicked. */
-export function RequestsTable({ rows, total, visible, clock, onOpen, onMore, onClear, canClear, sort, onSort, writeBackOn, more }: Props) {
+/** Exactly six columns, always the same. Waiting on you first, then the nearest clock, until a heading is clicked.
+    The table is positioned (relative) because the screen-reader text in its cells is: without a positioned parent that text would sit outside the scrolling area and widen the page. */
+export function RequestsTable({ rows, total, visible, clock, onOpen, onMore, onClear, canClear, sort, onSort, writeBackOn, more, moreWhat, help }: Props) {
   const shown = rows.slice(0, visible);
   return (
     <Card className="overflow-hidden">
       <CardHeader
         title="Requests"
-        subtitle="Bars show progress: Prepared, Received, In review, Decided. A denial shows Call, Appeal 1, Appeal 2, External. Over 1.5 × typical is late; over 2 × is very late."
+        subtitle="Waiting on you first, then the nearest clock."
         right={
           <span className="max-w-[260px] text-right text-sm text-muted" aria-live="polite">
             Showing {shown.length} of {total}
@@ -114,7 +119,7 @@ export function RequestsTable({ rows, total, visible, clock, onOpen, onMore, onC
           </EmptyState>
         ) : null
       ) : (
-        <Table nowrap>
+        <Table nowrap className="relative">
           <thead>
             <tr>
               <SortTh column="case" sort={sort} onSort={onSort} />
@@ -142,12 +147,13 @@ export function RequestsTable({ rows, total, visible, clock, onOpen, onMore, onC
       ) : null}
       {more > 0 ? (
         <p className={cn("px-6 py-3.5 text-sm text-ink2", rows.length > 0 && "border-t border-line")}>
-          {more} {rows.length > 0 ? "more " : ""}{more === 1 ? "is" : "are"} being prepared in New case.{" "}
+          {more} {rows.length > 0 ? "more " : ""}{more === 1 ? "is" : "are"} {moreWhat} in New case.{" "}
           <Link to={paths.manager("cases")} className="font-semibold text-forest hover:underline">
             Open Active cases
           </Link>
         </p>
       ) : null}
+      {help}
     </Card>
   );
 }

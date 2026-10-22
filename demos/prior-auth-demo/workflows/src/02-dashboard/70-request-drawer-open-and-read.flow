@@ -1,6 +1,6 @@
 title: Dashboard › Request drawer › Open and read a request
 route: /dashboard?request=P-1499
-intro: The drawer is one scroll, with no tabs. It opens from a row, a case ID, 'Open', or a link with ?request=ID, and shows who holds the request, its history and what is next. The sections change with the request's stage.
+intro: The drawer is one scroll, with no tabs. It opens from a row, a case ID, 'Open', or a link with ?request=ID, and shows who holds the request, its history and what is next. The sections change with the request's stage. The long lines are folded under 'Details'.
 dir: TD
 ---
 start s1 "Click a row, a case ID or 'Open' in the Requests table"
@@ -18,13 +18,12 @@ group gBody "Body, from the top down"
   screen b2 "Facts\nPatient 'E.S., 42', Held by (agent and next step)"
   decision d1 "Does the request have a chance figure?"
   screen b3 "'Approval chance' or, for a denial, 'Chance of winning'\n'74% · Moderate · likely 66 to 82% · 219 similar cases'"
-  screen b4 "Sent\n'Not yet', 'through the payer's portal', 'by fax' or 'by phone'"
   screen b5 "History\nEvery event, oldest first, or 'No events yet.'\nGreen dot with the time; dashed dot with 'Scheduled · time'"
-  screen b6 "Clock banner\nOne line on when the next check happens"
+  screen b6 "Details, closed\nOne line: 'Sent through the payer's portal · next check in 30 minutes'\nOpen it for 'Sent' ('Not sent yet', 'Signed and sent through the payer's portal', 'by fax' or 'by phone') and 'Checks' (the message below)"
   overlay b7 "Demo controls\nDashed box: pretend the payer answered\nOnly the replies still ahead of the request show"
 endgroup
 
-decision d2 "Which message does the banner show?"
+decision d2 "Which message does Checks show?"
 toast m1 "Received or Under review\n'Next automatic check in 30 minutes.'"
 toast m2 "Preparing\n'Not sent yet. Automatic checks start once the request is signed and sent.'"
 toast m3 "Info requested\n'Waiting on you, not on the payer. Automatic checks resume once the answer is sent.'"
@@ -40,9 +39,9 @@ s1 --> p1
 s2 --> p1
 p1 --> o1 --> h1 --> h2
 h2 --> b1 --> b2 --> d1
-d1 -->|Yes| b3 --> b4
-d1 -->|No| b4
-b4 --> b5 --> b6 --> d2
+d1 -->|Yes| b3 --> b5
+d1 -->|No| b5
+b5 --> b6 --> d2
 d2 -->|Received, Under review| m1
 d2 -->|Preparing| m2
 d2 -->|Info requested| m3

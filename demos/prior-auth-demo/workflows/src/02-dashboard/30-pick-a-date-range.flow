@@ -1,6 +1,6 @@
 title: Dashboard › Filters › Pick a date range
 route: /dashboard?from=2026-10-05&to=2026-10-12
-intro: The calendar at the right end of the filter bar, after 'Outcomes for'. Pick a first day, then a last day, then Apply. The range only changes the figures in Payers at a glance.
+intro: The calendar at the right end of the filter bar, after 'Outcomes for'. Pick a first day, then a last day, then Apply. The range only changes the figures in Payer performance (the section under the requests, closed until opened).
 dir: TD
 ---
 start s1 "Dashboard is open\n'Outcomes for' and a date button, e.g. 'Sep 21 – Oct 20, 2026'"
@@ -26,15 +26,15 @@ store w1 "Filter 'range' saved: Oct 5 to Oct 12"
 process p7 "Calendar closes\nThe date button shows 'Oct 5 – Oct 12, 2026' and turns green and bold"
 process p8 "Address gets ?from=2026-10-05&to=2026-10-12\nThe default last 30 days leaves no from or to"
 process p9 "Table goes back to its first 8 rows"
-screen sc "Payers at a glance\n'Denied (8 d)' and 'Info asks (8 d)' rescale to 8 days\n'Approved as asked' shifts slightly"
-process p10 "Not changed: headline, stage tiles and requests table"
+screen sc "Payer performance, once opened\n'Denied (8 d)' and 'Info asks (8 d)' rescale to 8 days\n'Approved as asked' shifts slightly"
+process p10 "Not changed: headline, Summary from FLO, key figures and requests table"
 
 click c6 "Click 'Cancel'"
 click c7 "Press Escape, click outside, or click the date button again"
 end e1 "Calendar closes\nThe draft is thrown away and the applied range stays"
 end e2 "Range applied"
 goto g1 "Continues in: Dashboard › Filters › Date range shortcuts, keys and the address"
-goto g2 "Continues in: Dashboard › Payers at a glance › Read the table and pick a payer"
+goto g2 "Continues in: Dashboard › Payer performance › Read the table and pick a payer"
 
 s1 --> c1 --> p1 --> o1 --> t0
 o1 --> p2

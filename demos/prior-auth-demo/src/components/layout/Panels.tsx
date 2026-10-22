@@ -1,17 +1,11 @@
-import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { ArrowUp, CheckCheck, Sparkles } from "lucide-react";
 import { ActorBadge, AgentBadge, Button, Drawer } from "@/components/ui";
-import { openDrafts } from "@/data/payerConfig";
-import { openItems } from "@/data/queue";
-import { PAYERS, payerById } from "@/data/seed";
-import { chanceOf, dueText } from "@/pages/authorizations/queueLogic";
 import { cn } from "@/lib/cn";
-import { plural } from "@/lib/format";
+import { answerFor, chipsFor, routeKey, routeOf, type FloAnswer } from "@/lib/floAnswers";
 import { ago } from "@/lib/time";
-import { paths } from "@/routes";
 import { useStore } from "@/store";
-import { stageCounts } from "@/store/selectors";
 
 /* ------------------------------------------------------------------ notifications */
 export function NotificationsPanel() {
@@ -55,12 +49,11 @@ export function NotificationsPanel() {
 }
 
 /* ------------------------------------------------------------------ Ask FLO: Psyflo's assistant is called FLO */
-interface Msg {
+interface Msg extends Partial<FloAnswer> {
   from: "you" | "flo";
   text: string;
-  link?: { label: string; to: string };
-  /** FLO found no answer, so the suggestion chips stay under this message. */
-  fallback?: boolean;
+  /** The screen the person was on when this was said, so the chips are offered again when they move to another one. */
+  route?: string;
 }
 
 /** FLO has no agent badge of its own: it is the assistant that sits on top of the sixteen agents. */
@@ -72,72 +65,34 @@ function FloBadge({ size = 30 }: { size?: number }) {
   );
 }
 
-const sentence = (t: string) => (/[.!?]$/.test(t) ? t : `${t}.`);
-
-/** "Review due in 3 h" reads inside a sentence as "review due in 3 h", but a verb such as "P2P" keeps its capitals. */
-const inline = (t: string): string => (/^[A-Z][a-z]/.test(t) ? t[0].toLowerCase() + t.slice(1) : t);
-
-const SUGGEST = ["What needs me today?", "What is due soonest?", "Which payers are slowest right now?", "Why is Cardinal's approval rate down?"];
-
 export function AskPanel() {
   const open = useStore((s) => s.askOpen);
   const setOpen = useStore((s) => s.setAskOpen);
   const nav = useNavigate();
+  const { pathname } = useLocation();
+  const route = routeOf(pathname);
+  const here = routeKey(route);
   const [msgs, setMsgs] = useState<Msg[]>([{ from: "flo", text: "Hi Jordan, I am FLO. Ask me about your requests, a payer, or your denials. I answer from the data on your Dashboard." }]);
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const end = useRef<HTMLDivElement>(null);
   useEffect(() => end.current?.scrollIntoView({ behavior: "smooth" }), [msgs, busy]);
 
-  const answer = (q: string): Msg => {
-    const { requests, caseDrafts, clock, queueItems, queueCases } = useStore.getState();
-    const s = q.toLowerCase();
-    const counts = stageCounts(requests);
-    if (s.includes("slow") || s.includes("payer") && s.includes("late")) {
-      const slow = [...PAYERS].filter((p) => p.avgDecisionDays > p.typicalDecisionDays).sort((a, b) => b.avgDecisionDays / b.typicalDecisionDays - a.avgDecisionDays / a.typicalDecisionDays);
-      const text = slow.length ? `${slow.map((p) => `${p.shortName} is averaging ${p.avgDecisionDays} days against ${p.typicalDecisionDays} typical`).join(". ")}. Caller phones when a payer passes twice its typical time.` : "Every payer is deciding within its typical time right now.";
-      return { from: "flo", text, link: { label: "Open Dashboard, By payer", to: paths.dashboard({ focus: "payers" }) } };
-    }
-    if (s.includes("denial")) {
-      const d = requests.filter((r) => r.stage === "appeal");
-      // The nearest deadline is read from the open denials, so the answer stays true after one is settled or the clock moves.
-      const near = d.filter((r) => r.deadlineAt !== undefined && r.deadlineAt >= clock).sort((a, b) => (a.deadlineAt ?? 0) - (b.deadlineAt ?? 0))[0];
-      const nearest = near ? ` The nearest deadline is ${near.id} (${payerById(near.payerId).shortName}). ${sentence(near.next)}${near.chance !== undefined ? ` The chance of winning is ${near.chance}%.` : ""}` : "";
-      return { from: "flo", text: `${d.length} ${d.length === 1 ? "denial is" : "denials are"} open.${nearest}`, link: { label: "Open Denial Intelligence", to: paths.denials(near?.id) } };
-    }
-    if (s.includes("due") || s.includes("soon") || s.includes("deadline")) {
-      // The queue's own order: the soonest due first, read from the requests still open so the answer follows what has been sent or decided.
-      const soon = openItems(queueItems, requests).sort((a, b) => a.dueAt - b.dueAt || a.chance - b.chance);
-      const [first, ...rest] = soon;
-      if (!first) return { from: "flo", text: "Nothing is due. Every open request has been sent or handled.", link: { label: "Open Authorizations", to: paths.authorizations() } };
-      const line = (i: typeof first) => `${i.id} (${payerById(i.payerId).shortName}), ${inline(dueText(i.dueVerb, i.dueAt, clock))}`;
-      const next = rest.slice(0, 2);
-      const after = next.length ? ` After it: ${next.map(line).join("; ")}.` : "";
-      return { from: "flo", text: `${first.id} (${payerById(first.payerId).shortName}) is due soonest: ${inline(dueText(first.dueVerb, first.dueAt, clock))}. Its approval chance is ${chanceOf(first, queueCases)}%.${after} ${plural(soon.length, "request")} ${soon.length === 1 ? "is" : "are"} open in Authorizations.`, link: { label: `Open ${first.id}`, to: paths.case(first.id) } };
-    }
-    if (s.includes("cardinal") || s.includes("approval rate")) {
-      const open = openDrafts(requests, caseDrafts, "cardinal").length;
-      const affects = open ? `, which affects ${open} ${open === 1 ? "draft" : "drafts"} you have not sent` : "";
-      return { from: "flo", text: `Cardinal approved 63% as asked over the last 90 days, down 11 points. Historian links most of the drop to continued-stay evidence. Cardinal also published criteria version 2026.3${affects}.`, link: { label: "Open Payers, Cardinal, Changes", to: paths.payers("cardinal", "changes") } };
-    }
-    if (s.includes("need") || s.includes("today") || s.includes("first")) {
-      const needs = requests.filter((r) => r.needsYou);
-      // Start with a payer's question: that clock is already running.
-      const first = needs.find((r) => r.stage === "info_requested") ?? needs[0];
-      if (!first) return { from: "flo", text: "Nothing needs you right now. Every request is with a payer or with the agents.", link: { label: "Open Dashboard", to: paths.dashboard() } };
-      return { from: "flo", text: `${needs.length} ${needs.length === 1 ? "request needs" : "requests need"} you: ${needs.map((r) => r.id).join(", ")}. ${counts.info_requested} payer${counts.info_requested === 1 ? "" : "s"} asked for more information, and ${counts.preparing} cases are being prepared. Start with ${first.id} (${payerById(first.payerId).shortName}). ${sentence(first.next)}`, link: { label: `Open ${first.id} on the Dashboard`, to: paths.dashboard({ request: first.id }) } };
-    }
-    if (s.includes("referral")) return { from: "flo", text: "New referrals are waiting for review. Reader has already checked each document, and Verify has run coverage for the ones with an insurance card.", link: { label: "Start a case from a referral", to: paths.referrals() } };
-    return { from: "flo", text: "I did not find an answer to that in the demo data. Try one of the suggestions below.", fallback: true };
-  };
+  // The suggestions follow the screen. They are worked out from the store when the panel is open, so a case page names the case it is on.
+  const requests = useStore((s) => s.requests);
+  const ledger = useStore((s) => s.ledger);
+  // A case page names its payer, which comes from the requests and the ledger, so those are what the chips depend on.
+  const suggested = useMemo(() => (open ? chipsFor(routeOf(pathname), useStore.getState()) : null), [open, pathname, requests, ledger]);
+  const last = msgs[msgs.length - 1];
+  const showChips = !busy && !!suggested && (msgs.length < 3 || !!last.fallback || (last.route !== undefined && last.route !== here));
 
   const send = (q: string) => {
     if (!q.trim() || busy) return;
-    setMsgs((m) => [...m, { from: "you", text: q }]);
+    setMsgs((m) => [...m, { from: "you", text: q, route: here }]);
     setText("");
     setBusy(true);
     setTimeout(() => {
-      setMsgs((m) => [...m, answer(q)]);
+      setMsgs((m) => [...m, { from: "flo", route: here, ...answerFor(q, useStore.getState(), route) }]);
       setBusy(false);
     }, 700);
   };
@@ -155,18 +110,27 @@ export function AskPanel() {
             {m.from === "flo" ? <FloBadge /> : <ActorBadge actor="you" size={30} />}
             <div className={cn("max-w-[330px] rounded-2xl px-3.5 py-2.5 text-sm", m.from === "you" ? "bg-forest text-white" : "border border-edge bg-white")}>
               {m.text}
+              {m.lines?.length ? (
+                <ul className="mt-2 flex flex-col gap-1 border-t border-line pt-2">
+                  {m.lines.map((l) => <li key={l}>{l}</li>)}
+                </ul>
+              ) : null}
+              {m.note ? <p className="mt-2 text-xs text-muted">{m.note}</p> : null}
               {m.link ? (
-                <button type="button" onClick={() => { setOpen(false); nav(m.link!.to); }} className="mt-2 block font-semibold text-forest underline underline-offset-[3px]">{m.link.label}</button>
+                <button type="button" onClick={() => { setOpen(false); nav(m.link!.to); }} className="mt-2 block text-left font-semibold text-forest underline underline-offset-[3px]">{m.link.label}</button>
               ) : null}
             </div>
           </div>
         ))}
         {busy ? <div className="flex items-center gap-2 text-sm text-muted"><FloBadge /><span className="psy-pulse">FLO is working…</span></div> : null}
-        {!busy && (msgs.length < 3 || msgs[msgs.length - 1].fallback) ? (
-          <div className="mt-2 flex flex-wrap gap-2">
-            {SUGGEST.map((q) => (
-              <button key={q} type="button" onClick={() => send(q)} className="rounded-full border border-field bg-white px-3.5 py-1.5 text-[13px] hover:bg-tile">{q}</button>
-            ))}
+        {showChips && suggested ? (
+          <div className="mt-2 flex flex-col gap-2">
+            {suggested.label ? <p className="text-xs text-muted">Suggested for {suggested.label}</p> : null}
+            <div className="flex flex-wrap gap-2">
+              {suggested.chips.map((q) => (
+                <button key={q} type="button" onClick={() => send(q)} className="rounded-full border border-field bg-white px-3.5 py-1.5 text-[13px] hover:bg-tile">{q}</button>
+              ))}
+            </div>
           </div>
         ) : null}
         <div ref={end} />

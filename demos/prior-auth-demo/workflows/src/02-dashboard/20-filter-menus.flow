@@ -3,7 +3,7 @@ route: /dashboard?payer=cardinal&program=iop&type=recertification&stage=appeal
 intro: Four menus on the filter bar. Each one applies as soon as an option is picked; there is no Apply button. The date range is a separate control (see Pick a date range).
 dir: TD
 ---
-start s1 "Dashboard is open\nFilter bar: four menus, then 'Outcomes for' and the dates"
+start s1 "Dashboard is open\nFilter bar, under the four key figures: four menus, then 'Outcomes for' and the dates"
 click c1 "Click 'All payers'"
 click c2 "Click 'All programs'"
 click c3 "Click 'All request types'"
@@ -12,30 +12,32 @@ click c4 "Click 'All stages'"
 overlay o1 "Payer menu\nAll payers, Cardinal Health Plan, Summit Medicaid HMO, Beacon PPO, Harborview MA, Lakeshore Behavioral, Evergreen"
 overlay o2 "Program menu\nAll programs, Residential 3.5, IOP, PHP, Detox"
 overlay o3 "Request type menu\nAll request types, Initial request, Admission, Continued stay, Recertification, Retro-authorization, Peer-to-peer call, Appeal, Resubmission"
-overlay o4 "Stage menu\nAll stages, Preparing, Received, Under review, Info requested, Decided today, Appeal or call"
+overlay o4 "Stage menu\nAll stages\nThe three groupings from the key figures: Needs you, Due within 24 hours, Waiting on payers\nThe six stages: Preparing, Received, Under review, Info requested, Decided today, Appeal or call\nEach option shows how many requests it holds"
 
 process m1 "Menu is open: the options list, current pick ticked\nSame behaviour in all four menus"
 input i1 "Pick an option\nClick it, or ArrowDown or ArrowUp then Enter"
 click k1 "Press Escape, click outside, or click the menu button again"
 end e0 "Menu closes, nothing changes"
 
+decision dg "Is the pick a grouping (Needs you, Due within 24 hours, Waiting on payers)?"
+process pg "The grouping applies and Stage goes back to 'All stages' in the address\nA grouping and a stage never apply together; the key figure of the same name is outlined"
 process p1 "Menu closes and the pick is saved to Payer, Program, Request type or Stage"
 store w1 "Filters\nA menu that is not 'All' turns green and bold"
 process p2 "Address updated in place, no new history entry\nOnly non-default values appear"
 process p3 "Table goes back to its first 8 rows"
 
 group gFollow "What follows each filter"
-  process f1 "Payer, Program, Request type\nHeadline, all six tile counts and the table follow them"
-  process f2 "Stage\nTable and headline follow it; the tile counts still count every stage and the chosen tile is outlined"
-  process f3 "Payers at a glance\nWaiting follows Program and Request type; the Payer pick highlights its row"
+  process f1 "Payer, Program, Request type\nHeadline, the four key figures, the Stage menu counts and the table follow them"
+  process f2 "Stage or a grouping\nTable and headline follow it; the key figures still count every stage and the matching figure is outlined"
+  process f3 "Payer performance (when open)\nWaiting follows Program and Request type; the Payer pick highlights its row"
 endgroup
 
 decision d1 "Is any request left?"
 screen sc "Dashboard shows the matching rows"
 goto g1 "Continues in: Dashboard › Filters › Clear filters and empty states"
 goto g2 "Continues in: Dashboard › Headline › What the headline and sub line say"
-goto g3 "Continues in: Dashboard › Stage strip › Click a stage tile"
-goto g4 "Continues in: Dashboard › Payers at a glance › Read the table and pick a payer"
+goto g3 "Continues in: Dashboard › Key figures › Click a figure to filter the list"
+goto g4 "Continues in: Dashboard › Payer performance › Read the table and pick a payer"
 
 s1 --> c1 --> o1
 s1 --> c2 --> o2
@@ -45,6 +47,8 @@ o1 & o2 & o3 & o4 --> m1
 m1 --> i1
 m1 -.-> k1 --> e0
 i1 --> p1 --> w1 --> p2 --> p3
+i1 -.-> dg
+dg -->|Yes| pg --> w1
 p3 --> f1 & f2 & f3
 f1 --> g2
 f2 --> g3

@@ -1,14 +1,13 @@
 import type { Option } from "@/components/ui";
-import type { CaseDraft } from "@/data/cases";
 import { PAYERS, payerById } from "@/data/seed";
-import { PROGRAMS, PROGRAM_LABEL, REQUEST_TYPES, STAGES, STAGE_LABEL, type PayerId, type PayerSummary, type PsyRequest, type StageKey, type Tone } from "@/data/types";
+import { PROGRAMS, PROGRAM_LABEL, REQUEST_TYPES, STAGES, type PayerId, type PayerSummary, type PsyRequest, type StageKey } from "@/data/types";
 import { addDays, daysIn, fromISO, isISO, toISO, type DateRange } from "@/lib/dates";
 import { plural } from "@/lib/format";
 import { DAY, HOUR, duration, toDate, typical } from "@/lib/time";
 import type { RangePreset } from "@/components/ui";
 import { DEFAULT_RANGE, type DashFilters } from "@/store/core";
 import { applyBaseFilters, lateness, minutesInStage, minutesLeft, stageCounts } from "@/store/selectors";
-import { draftNeeds } from "./preparing-drafts";
+import type { ViewKey } from "./workList";
 
 /* ------------------------------------------------------------------ labels and options */
 
@@ -30,7 +29,6 @@ const typeLabel = (t: string): string => (t === "Peer-to-peer" ? "Peer-to-peer c
 export const PAYER_OPTIONS: Option<DashFilters["payer"]>[] = [{ value: "all", label: "All payers" }, ...PAYER_ORDER.map((id) => ({ value: id, label: payerById(id).name }))];
 export const PROGRAM_OPTIONS: Option<DashFilters["program"]>[] = [{ value: "all", label: "All programs" }, ...PROGRAMS.map((p) => ({ value: p, label: PROGRAM_LABEL[p] }))];
 export const TYPE_OPTIONS: Option<DashFilters["type"]>[] = [{ value: "all", label: "All request types" }, ...REQUEST_TYPES.map((t) => ({ value: t, label: typeLabel(t) }))];
-export const STAGE_OPTIONS: Option<DashFilters["stage"]>[] = [{ value: "all", label: "All stages" }, ...STAGES.map((s) => ({ value: s, label: STAGE_LABEL[s] }))];
 
 /** The demo's "today" as a calendar day. It moves when the clock is fast-forwarded. */
 export const todayOf = (clock: number): string => toISO(toDate(clock));
@@ -118,14 +116,26 @@ const days = (n: number): string => `${+n.toFixed(1)} days`;
  * A filtered page says what it is about, never a filtered number posing as the total.
  * `more` is how many cases are being prepared in New case without a row yet; the Preparing count includes them.
  */
-export function pageHeadline(f: DashFilters, base: PsyRequest[], shown: PsyRequest[], more: number): { title: string; sub: string } {
+export function pageHeadline(f: DashFilters, base: PsyRequest[], shown: PsyRequest[], more: number, view: ViewKey | null = null, viewMore = 0): { title: string; sub: string } {
   const c = stageCounts(base);
   const waiting = c.received + c.under_review;
   const onYou = c.info_requested;
   const n = shown.length;
   const scope = scopeText(f);
   const lead = scope ? `${scope}. ` : "";
-  if (n + (f.stage === "preparing" ? more : 0) === 0) return { title: "No requests match these filters.", sub: "The filters hide everything. Clear them to see every request again." };
+  if (view === "needs_you" && n + viewMore === 0) return { title: "Nothing needs you right now.", sub: `${lead}Every request is with a payer or with the agents.` };
+  if (n + (f.stage === "preparing" ? more : 0) + (view === "needs_you" ? viewMore : 0) === 0) return { title: "No requests match these filters.", sub: "The filters hide everything. Clear them to see every request again." };
+
+  /* The three groupings from the key figures. They stand in for Stage, so Stage itself is "all" while one is set. */
+  if (view) {
+    const count = n + (view === "needs_you" ? viewMore : 0);
+    const what: Record<ViewKey, { title: string; sub: string }> = {
+      needs_you: { title: `${count} ${are(count, "request needs", "requests need")} you.`, sub: `${lead}A payer's question, a draft with a question for you, or one ready to sign.` },
+      due_24h: { title: `${n} ${are(n, "request is", "requests are")} due within 24 hours.`, sub: `${lead}The soonest first. Some may already be past their time.` },
+      waiting: { title: `${n} ${are(n, "request is", "requests are")} waiting on payers.`, sub: `${lead}Received or under review. Payers usually take about ${days(averageDecisionDays(shown))} to decide.` },
+    };
+    return what[view];
+  }
 
   switch (f.stage) {
     case "appeal":
@@ -156,53 +166,6 @@ export function pageHeadline(f: DashFilters, base: PsyRequest[], shown: PsyReque
   const payers = waiting === 0 ? "Nothing is waiting on a payer." : waiting === 1 ? "1 request is waiting on a payer." : `${waiting} requests are waiting on payers.`;
   const you = onYou === 0 ? "Nothing is waiting on you." : onYou === 1 ? "1 is waiting on you." : `${onYou} are waiting on you.`;
   return { title: `${payers} ${you}`, sub: scope ? `Showing ${scope} only. Everything below follows that filter.` : "Where every request stands, from preparing to decided, without a phone call." };
-}
-
-/* ------------------------------------------------------------------ stage strip */
-
-export interface StripCell {
-  stage: StageKey;
-  label: string;
-  value: number;
-  desc: string;
-  note: string;
-  tone: Tone;
-}
-
-const STRIP_TONE: Record<StageKey, Tone> = { preparing: "neutral", received: "neutral", under_review: "neutral", info_requested: "mid", decided: "good", appeal: "risk" };
-
-/** Six tiles. Counts follow every filter except Stage; each line is computed from the requests. `more` are the cases being prepared in New case that have no row yet. */
-export function stripCells(base: PsyRequest[], clock: number, more: CaseDraft[]): StripCell[] {
-  const c = stageCounts(base);
-  const inS = (s: StageKey) => base.filter((r) => (s === "decided" ? r.decidedToday : r.stage === s));
-  const prep = inS("preparing");
-  const drafts = draftNeeds(more);
-  const needYou = prep.filter((r) => r.needsYou).length + drafts.needYou;
-  const ready = prep.filter((r) => r.next.startsWith("Ready to sign")).length + drafts.ready;
-  const prepNote = [needYou ? `${needYou} need you` : "", ready ? `${ready} ready to sign` : ""].filter(Boolean).join(", ") || (prep.length + more.length ? "agents are working on them" : "nothing in preparation");
-
-  const received = inS("received");
-  const avgTypical = received.length ? received.reduce((a, r) => a + (r.typicalMin ?? 25), 0) / received.length : 0;
-  const review = inS("under_review");
-  const info = inS("info_requested");
-  const ready2 = info.filter((r) => r.needsYou).length;
-  const decided = inS("decided");
-  const approved = decided.filter((r) => r.outcome === "approved").length;
-  const partly = decided.filter((r) => r.outcome === "partly_approved").length;
-  const denied = decided.filter((r) => r.outcome === "denied").length;
-  const decidedDesc = [approved ? `${approved} approved` : "", partly ? `${partly} partly approved` : "", denied ? `${denied} denied` : ""].filter(Boolean).join(" · ") || "none yet today";
-  const open = inS("appeal");
-  const soon = open.filter((r) => (minutesLeft(r, clock) ?? Infinity) < 7 * DAY).length;
-
-  const cell = (stage: StageKey, desc: string, note: string): StripCell => ({ stage, label: STAGE_LABEL[stage], value: c[stage] + (stage === "preparing" ? more.length : 0), desc, note, tone: STRIP_TONE[stage] });
-  return [
-    cell("preparing", "in Case Manager", prepNote),
-    cell("received", "payer has it", received.length ? `about ${typical(avgTypical)} on average` : "nothing waiting on receipt"),
-    cell("under_review", "with the payer", review.length ? `about ${days(averageDecisionDays(review))} on average` : "nothing with the payer"),
-    cell("info_requested", "the payer wants more", info.length ? (ready2 === info.length ? "drafts ready for you" : `${ready2} ${are(ready2, "draft", "drafts")} ready, ${info.length - ready2} in progress`) : "nothing waiting on you"),
-    cell("decided", decidedDesc, approved ? "ledger updated" : denied ? (denied === 1 ? "it has a route" : denied === 2 ? "both have a route" : "all have a route") : "ledger updated"),
-    cell("appeal", "open denials", open.length ? `${soon} ${are(soon, "deadline", "deadlines")} this week` : "no open denials"),
-  ];
 }
 
 /* ------------------------------------------------------------------ table clock */
@@ -266,6 +229,12 @@ export interface PayerRow {
 
 /** "30 d", "7 d" or "12 d": the length of the range, for column titles. */
 export const periodWord = (r: DateRange): string => `${daysIn(r)} d`;
+
+/** The payer furthest over its typical decision time, or nothing when every payer is within it. The same ranking FLO uses for "Which payers are slowest right now?". */
+export function slowestPayer(rows: PayerRow[]): PayerSummary | undefined {
+  const over = rows.map((r) => r.payer).filter((p) => p.avgDecisionDays > p.typicalDecisionDays);
+  return over.sort((a, b) => b.avgDecisionDays / b.typicalDecisionDays - a.avgDecisionDays / a.typicalDecisionDays)[0];
+}
 
 /** Waiting counts follow Program and Request type; the payer rows themselves are never filtered away. */
 export function payerRows(requests: PsyRequest[], f: DashFilters): PayerRow[] {

@@ -1,15 +1,15 @@
 title: Dashboard › Arrive › What the page shows
 route: /dashboard
-intro: Five ways to land on the Dashboard, how filters in the address are read, and the parts of the page from the top down. Each part continues in its own diagram.
+intro: Five ways to land on the Dashboard, how filters in the address are read, and the parts of the page from the top down: one daily work list. Each part continues in its own diagram.
 dir: TD
 ---
 start s1 "Click 'Dashboard' in the sidebar\nThe badge counts Info requested"
 start s2 "Open the app at /\nThe address / goes to /dashboard"
 start s3 "Follow a link with a request or a filter\nA notification, or a button on another page"
 start s4 "Demo menu › Click 'Reset demo data'"
-start s5 "Follow 'Open Dashboard, By payer' in Ask FLO\nThe address is /dashboard?focus=payers"
+start s5 "Follow 'Open Dashboard, Payer performance' in Ask FLO\nThe address is /dashboard?focus=payers"
 decision d4 "Does the address hold ?focus=payers?"
-process pf "Payers at a glance scrolls into view and is outlined for about 2 seconds\nThe ?focus part is then removed from the address"
+process pf "Payer performance opens, scrolls into view and is outlined for about 2 seconds\nThe ?focus part is then removed from the address"
 toast t1 "'Demo data reset'\n'Everything is back to the starting point.'"
 
 process p1 "Page opens and reads the address"
@@ -18,7 +18,7 @@ process p2 "The address wins\nFour menus go back to All, then the address values
 process p3 "The remembered filters are written back to the address\nFirst visit: no filters, last 30 days"
 store w1 "Filters\nPayer, Program, Request type, Stage, date range"
 
-screen sc "Dashboard\nOne page; the filters decide what it shows"
+screen sc "Dashboard\nOne daily work list; the filters decide what it shows"
 decision d2 "Does the address hold ?request=ID?"
 decision d3 "Is there a request with that ID?"
 overlay o1 "Request drawer opens over the page"
@@ -28,19 +28,22 @@ end e1 "Page shown with no drawer"
 group gPage "On the page, from the top down"
   screen h1 "Headline and sub line\n'18 requests are waiting on payers. 3 are waiting on you.'"
   click ca "Click 'Check all now'\nDisabled while Navigator is paused in Settings"
+  screen fs "Summary from FLO\n'From today's demo data'\nThree short lines, each with a link: who needs you and what is due soonest, authorizations that end this week, denial deadlines this week"
+  screen kf "Four key figures\nNeeds you 3, Due within 24 hours 12, Waiting on payers 18, Denials to act on 8\nEach is a button that applies its filter"
   screen f1 "Filter bar\n'All payers', 'All programs', 'All request types', 'All stages'\n'Outcomes for' and the date range 'Sep 21 – Oct 20, 2026'"
-  screen st "Stage strip, six tiles\nPreparing 5 (plus cases saved in New case), Received 4, Under review 14, Info requested 3, Decided today 8, Appeal or call 8"
-  screen rq "Requests\n'Showing 8 of 40', six columns, four sortable headings, 'Show 8 more'"
-  screen py "Payers at a glance\nSix payers and an 'All payers' total row\n'Open Payers' link; each payer name opens that payer"
+  screen rq "Requests, one table\n'Waiting on you first, then the nearest clock.'\n'Showing 8 of 40', six columns, four sortable headings, 'Show 8 more'\nUnder it, closed: 'What the stages mean'"
+  screen py "Payer performance, closed\nOne line: 'Evergreen is slowest: 3.4 days on average against 2 typical.'"
 endgroup
 
 goto g1 "Continues in: Dashboard › Request drawer › Open and read a request"
 goto g2 "Continues in: Dashboard › Headline › What the headline and sub line say"
 goto g3 "Continues in: Dashboard › Header › Check all now and the demo clock"
 goto g4 "Continues in: Dashboard › Filters › Payer, Program, Request type and Stage"
-goto g5 "Continues in: Dashboard › Stage strip › Click a stage tile"
+goto g5 "Continues in: Dashboard › Key figures › Click a figure to filter the list"
+goto g10 "Continues in: Dashboard › Summary from FLO › What the three lines say and where they lead"
+goto g11 "Continues in: Dashboard › Stage help › What the stages mean"
 goto g6 "Continues in: Dashboard › Requests table › Order, rows and paging"
-goto g7 "Continues in: Dashboard › Payers at a glance › Read the table and pick a payer"
+goto g7 "Continues in: Dashboard › Payer performance › Read the table and pick a payer"
 goto g8 "Continues in: Dashboard › Filters › Pick a date range"
 goto g9 "Continues in: Dashboard › Filters › Clear filters and empty states"
 
@@ -61,12 +64,14 @@ d2 -->|Yes| d3
 d3 -->|Yes| o1 --> g1
 d3 -->|No| p4 --> e1
 
-sc --> h1 --> f1 --> st --> rq --> py
+sc --> h1 --> fs --> kf --> f1 --> rq --> py
 h1 --> g2
 h1 --> ca --> g3
+fs --> g10
 f1 --> g4
 f1 --> g8
 f1 --> g9
-st --> g5
+kf --> g5
 rq --> g6
+rq -.-> g11
 py --> g7

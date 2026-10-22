@@ -1,12 +1,15 @@
-title: Dashboard › Payers at a glance › Read the table and pick a payer
+title: Dashboard › Payer performance › Read the table and pick a payer
 route: /dashboard?payer=harborview
-intro: The last card on the page. One row per payer, plus a totals row. A click on a payer row narrows the whole page to that payer; a second click clears it. The payer's name and 'Open Payers' lead to the Payers page. A link from Ask FLO scrolls the card into view.
+intro: The last section on the page, closed until opened. Closed, it is one title and one computed line naming the slowest payer. Open, it shows one row per payer, plus a totals row, and links to Analytics and Payers. A click on a payer row narrows the whole page to that payer; a second click clears it. A link from Ask FLO opens the section and scrolls it into view.
 dir: TD
 ---
-start s1 "Scroll to 'Payers at a glance'"
-start s2 "Follow 'Open Dashboard, By payer' in Ask FLO\nThe address is /dashboard?focus=payers"
-process f1 "Page scrolls to the card\nThe card is outlined in green for about 2 seconds\nThe ?focus part is then removed from the address"
-screen sc1 "Card header\n'Payers at a glance'\n'Waiting now, how long decisions take, and how often they go your way. Click a row to narrow everything on this page.'\nOn the right: 'Open Payers'"
+start s1 "Scroll to 'Payer performance' at the foot of the page"
+start s2 "Follow 'Open Dashboard, Payer performance' in Ask FLO\nThe address is /dashboard?focus=payers"
+process f1 "Section opens\nPage scrolls to it\nIt is outlined in green for about 2 seconds\nThe ?focus part is then removed from the address"
+screen sc0 "Closed section\n'Payer performance'\n'Evergreen is slowest: 3.4 days on average against 2 typical.'\nWith every payer within its typical time: 'Every payer is deciding within its typical time.'"
+click co "Click the title row, or Tab to it and press Enter or Space\nThe row says whether it is expanded"
+screen sc1 "Open section\n'Waiting now, how long decisions take, and how often they go your way. Click a row to narrow everything on this page.'\nOn the right: 'Open Analytics' and 'Open Payers'"
+click cc "Click the title row again\nSection closes; the payer filter stays"
 decision d0 "Is Program or Request type set?"
 toast t0 "Sentence added to the header\n'Waiting counts follow your Program and Request type filters.'"
 
@@ -27,11 +30,14 @@ process p1 "Payer filter set to that payer"
 process p2 "Payer filter goes back to 'All payers'"
 store w1 "Filter 'payer'"
 process p3 "Address gets ?payer=harborview, or loses it\nTable goes back to its first 8 rows"
-screen sc2 "Page follows the payer\nHeadline 'Harborview MA: 3 waiting, taking 3.1 days.'\nTile counts and the requests table follow it; the Payer menu shows its name"
+screen sc2 "Page follows the payer\nHeadline 'Harborview MA: 3 waiting, taking 3.1 days.'\nKey figures and the requests table follow it; the Payer menu shows its name"
 screen sc3 "Payers table keeps all six rows\nThe chosen row is tinted green and marked selected\nWaiting counts do not change"
 
 click c2 "Click the payer's name, e.g. 'Harborview MA'\nThe filter does not change"
 click c3 "Click 'Open Payers'"
+click c4 "Click 'Open Analytics'"
+process n4 "Address becomes /analytics"
+goto g6 "Continues in: Analytics › Arrive and read the page"
 process n2 "Address becomes /payers/harborview\nA new history entry, so Back returns here"
 process n3 "Address becomes /payers"
 goto g4 "Continues in: Payers › Arrive on the page"
@@ -40,7 +46,8 @@ goto g2 "Continues in: Dashboard › Filters › Date range shortcuts, keys and 
 goto g3 "Continues in: Dashboard › Filters › Payer, Program, Request type and Stage"
 goto g5 "Continues in: Global shell › Top bar › Ask FLO › What FLO answers"
 
-s1 --> sc1 --> d0
+s1 --> sc0 --> co --> sc1 --> d0
+sc1 -.-> cc
 s2 --> f1 --> sc1
 s2 -.-> g5
 d0 -->|Yes| t0 --> r1
@@ -57,3 +64,4 @@ p3 --> sc3
 sc3 -.-> g3
 r1 --> c2 --> n2 --> g4
 sc1 --> c3 --> n3 --> g4
+sc1 --> c4 --> n4 --> g6

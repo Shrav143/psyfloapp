@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
-import { Clock, RefreshCw, Scale } from "lucide-react";
-import { AgentChip, Banner, Button, Drawer, KeyValue, Pill, Timeline } from "@/components/ui";
+import { RefreshCw, Scale } from "lucide-react";
+import { AgentChip, Button, Disclosure, Drawer, KeyValue, Pill, Timeline } from "@/components/ui";
 import { payerById } from "@/data/seed";
 import { PROGRAM_LABEL, type PsyRequest } from "@/data/types";
 import { band } from "@/lib/format";
@@ -15,7 +15,7 @@ import { DemoControls, StateActions } from "./RequestActions";
 
 const VIA = { portal: "through the payer's portal", fax: "by fax", phone: "by phone" } as const;
 
-/** The line under the history: when Navigator looks next, or why nothing is scheduled. */
+/** The line under Details: when Navigator looks next, or why nothing is scheduled. */
 function checkBanner(r: PsyRequest): ReactNode {
   const inT = nextCheckIn(r);
   if ((r.stage === "received" || r.stage === "under_review") && inT) {
@@ -41,6 +41,8 @@ export function RequestDrawer({ request: r, onClose, onSwitch }: { request: PsyR
   const sent = sentAt(r);
   const facts = chanceFacts(r);
   const denial = isDenial(r);
+  const nextCheck = r.stage === "received" || r.stage === "under_review" ? nextCheckIn(r) : undefined;
+  const detailsLine = [sent === undefined ? "Not sent yet" : `Sent ${VIA[r.sentVia]}`, nextCheck ? `next check in ${nextCheck}` : ""].filter(Boolean).join(" · ");
 
   const checkNow = () => {
     setChecking(true);
@@ -89,14 +91,15 @@ export function RequestDrawer({ request: r, onClose, onSwitch }: { request: PsyR
             ["Patient", `${r.patient.initials}, ${r.patient.age}`],
             ["Held by", <span key="a" className="inline-flex flex-wrap items-center gap-2"><AgentChip agent={r.agent} /><span className="font-normal">{nextLine(r, writeBackOn)}</span></span>],
             ...(facts ? [[denial ? "Chance of winning" : "Approval chance", `${facts.chance}% · ${band(facts.chance).word} · likely ${facts.low} to ${facts.high}% · ${facts.similar.toLocaleString("en-US")} similar cases`] as [string, ReactNode]] : []),
-            ["Sent", sent === undefined ? "Not yet" : VIA[r.sentVia]],
           ]}
         />
         <div>
           <h3 className="mb-3 font-serif text-xl font-semibold">History</h3>
           <Timeline events={r.events} empty="No events yet." />
         </div>
-        <Banner icon={Clock}>{checkBanner(r)}</Banner>
+        <Disclosure variant="plain" className="-mx-6" title="Details" summary={detailsLine}>
+          <KeyValue className="grid-cols-[130px_1fr] px-6 py-4 text-[14px]" items={[["Sent", sent === undefined ? "Not sent yet" : `Signed and sent ${VIA[r.sentVia]}`], ["Checks", <span key="c" className="font-normal">{checkBanner(r)}</span>]]} />
+        </Disclosure>
         <DemoControls request={r} onNewId={onSwitch} />
       </div>
     </Drawer>
