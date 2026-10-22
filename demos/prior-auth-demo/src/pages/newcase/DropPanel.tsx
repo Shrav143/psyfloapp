@@ -35,7 +35,9 @@ function NoSystem({ onClose }: { onClose: () => void }) {
 function EmrPicker({ draftId, onClose }: { draftId: string; onClose: () => void }) {
   const systems = useStore((s) => s.emrSystems);
   const unmapped = useStore((s) => s.emrUnmapped);
-  const connected = useMemo(() => selectConnectedEmr(useStore.getState()), [systems]);
+  const viewerId = useStore((s) => s.viewerId);
+  const siteScope = useStore((s) => s.siteScope);
+  const connected = useMemo(() => selectConnectedEmr(useStore.getState()), [systems, viewerId, siteScope]);
   const charts = useMemo(() => EMR_CHARTS.filter((c) => connected.some((x) => x.id === c.systemId)), [connected]);
   const [chartId, setChartId] = useState(charts[0]?.id ?? "");
   const [pulling, setPulling] = useState(false);

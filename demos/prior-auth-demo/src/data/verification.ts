@@ -17,6 +17,7 @@ import type { PayerConfig } from "./payerConfig";
 import { seedPayerConfig } from "./payerConfigSeed";
 import { planInfo } from "./payerConfigPlan";
 import { payerById } from "./seed";
+import { buildPatientBook, isoOf as bookIso } from "./patients";
 import { siteOf, type SiteId } from "./sites";
 import type { AgentKey, PayerId, Program } from "./types";
 import { HOUR } from "@/lib/time";
@@ -148,13 +149,15 @@ function existingAuthOf(p: EbPatient, state: VerifyContext): VerificationRecord[
   if (!count) return undefined;
   /* A unit is about one visit, three a week; a day is a day. The window is worked back from the date of service so the numbers agree. */
   const per = count.unit === "units" ? 7 / 3 : 1;
-  const from = shiftDays(isoOf(p.dos), -Math.round(count.used * per));
+  /* When the Case Manager ledger has an approved window for this case, the reference and the dates are the ledger's, so Intake in New case and this check show the same authorization. */
+  const book = led ? buildPatientBook([led], [], state.clock).authorizations.find((a) => a.approvedFrom !== null && a.approvedTo !== null) : undefined;
+  const from = book?.approvedFrom != null ? bookIso(book.approvedFrom) : shiftDays(isoOf(p.dos), -Math.round(count.used * per));
   const digits = p.id.replace(/\D/g, "");
   return {
-    ref: `AU-${digits || "0000"}`,
+    ref: book?.id ?? `AU-${digits || "0000"}`,
     service: p.levelLabel ?? PROGRAM_NAME[p.program],
     from,
-    to: shiftDays(from, Math.round(count.approved * per)),
+    to: book?.approvedTo != null ? bookIso(book.approvedTo) : shiftDays(from, Math.round(count.approved * per)),
     approved: count.approved,
     used: count.used,
     unit: count.unit,
