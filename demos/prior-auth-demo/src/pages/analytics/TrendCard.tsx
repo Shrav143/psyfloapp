@@ -17,6 +17,9 @@ export function TrendCard({ board, onOpen }: { board: Board; onOpen: (q: CaseQue
   const denial = rate((s) => s.notApproved);
   const clinic = clinicMonths ? rate((s) => s.approved, clinicMonths) : null;
   const words = filterWords(filters);
+  const known = [...approval, ...denial, ...(clinic ?? [])].filter((v): v is number => v !== null);
+  const yMin = known.length ? Math.max(0, Math.floor((Math.min(...known) - 8) / 10) * 10) : 0;
+  const yMax = known.length ? Math.min(100, Math.ceil((Math.max(...known) + 8) / 10) * 10) : 100;
   const first = approval.findIndex((v) => v !== null);
   const last = approval.length - 1 - [...approval].reverse().findIndex((v) => v !== null);
   const summary =
@@ -49,7 +52,8 @@ export function TrendCard({ board, onOpen }: { board: Board; onOpen: (q: CaseQue
             details={details}
             height={280}
             format={(v) => `${Math.round(v)}%`}
-            yMax={100}
+            yMin={yMin}
+            yMax={yMax}
             highlight={{ from: period.months[0], to: period.months[1], label: period.label }}
             onPoint={openMonth}
             extra={(i) => `${fmt(months[i].s.n)} decisions in the month`}

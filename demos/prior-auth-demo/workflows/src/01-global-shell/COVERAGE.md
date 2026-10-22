@@ -43,10 +43,14 @@ Source: `src/App.tsx`, `src/routes.ts`, `src/components/layout/*` (including the
 | Suggestion chips that follow the screen: four on the Dashboard and most screens; three on a case page ('What is missing for R-1042?', 'When does this authorization run out?', 'What does Summit require?'); one each on Case Manager, Denial Intelligence and Eligibility & Benefits. Shown at the start, under a fallback answer, and again when the person has moved to another screen | Ask FLO | 21, 23 |
 | Line 'Suggested for R-1042' (or the screen's name) above the chips (label only) | Ask FLO | 21 |
 | 'Ask a question' box, 'Send', Enter | Ask FLO | 21 |
-| 'FLO is working…', greeting, chat memory | Ask FLO | 21 |
+| 'FLO is working…', greeting that names the viewer and the sites it reads ('Hi Dr. Rivera, ... Site A'), chat memory | Ask FLO | 21 |
+| A change of viewer or site starts a new conversation (nothing said about the other view stays on screen) and works the chips out again | Ask FLO | 21 |
+| FLO reads only the cases at the sites in view: counts say 'at Site A', a case at the other site is 'not found among the cases you can see', Both sites = Site A + Site B | Ask FLO | 22, 23 |
+| 'What needs me today?' answers with the Dashboard's Do next list (same rows, same order) and its link 'Open Do next on the Dashboard' | Ask FLO | 22 |
 | Answer rules and the links under answers (each opens a matching view: Analytics for the slow-payers answer, the nearest open denial, Payers › Cardinal › Changes, the request to start with, New case) | Ask FLO | 22 |
 | Answers that read a case, a payer or a screen: missing, ends, requires, reviews due, fix before billing; each with its link ('Open R-1042, Recommended actions', 'Open I-2207', 'Open Payers, Cardinal, Documents', 'Open R-0912, review', 'Open R-0921 in Eligibility & Benefits') | Ask FLO | 22, 23 |
 | The line 'This is FLO's reading of the demo data, not a payer confirmation.' (once, under those answers and the denial answer) | Ask FLO | 22, 23 |
+| Which notifications are listed: the ones about cases at the sites in view and the ones about no case; the bell dot, the unread count and 'Mark all read' use only those | Notifications | 30 |
 | Notification row click (mark read, close, go) | Notifications | 30 |
 | 'Mark all read' | Notifications | 30 |
 | Subtitle '4 unread' / 'You are all caught up' | Notifications | 30 |

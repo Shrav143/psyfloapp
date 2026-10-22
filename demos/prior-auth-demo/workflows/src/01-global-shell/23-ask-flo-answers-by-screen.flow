@@ -1,6 +1,6 @@
 title: Global shell › Top bar › Ask FLO › Answers that read the screen
 route: Every page (Ask FLO drawer)
-intro: Five of FLO's rules read the demo data for one case, one payer or one screen: what is missing, when an authorization ends, what a payer requires, which reviews are due, which patients need a fix before billing. When the question names a case ('R-1042') FLO uses it; otherwise it uses the case page that is open; otherwise the request that needs you first. Each answer names the case, quotes live data and ends with a link to the exact place. They are recommendations, never payer facts.
+intro: Five of FLO's rules read the demo data for one case, one payer or one screen: what is missing, when an authorization ends, what a payer requires, which reviews are due, which patients need a fix before billing. When the question names a case ('R-1042') FLO uses it; otherwise it uses the case page that is open; otherwise the request that needs you first. Each answer names the case, quotes live data and ends with a link to the exact place. They are recommendations, never payer facts. They read only the cases at the sites in view: a case at the other site is 'not found' for a viewer limited to one site, and the review, coverage and denial counts are for the sites in view.
 dir: TD
 also: The short line 'This is FLO's reading of the demo data, not a payer confirmation.' appears once, under the answers that read payer rules, coverage or an authorization. The numbers and the wording are computed when the question is asked.
 ---
@@ -8,7 +8,7 @@ start s1 "A question reaches one of the five rules\n(a chip for the screen, or t
 decision d0 "Which key words?"
 
 group gM "Missing: 'What is missing for R-1042?'"
-  decision m1 "Which case?\nNamed in the question, else the open case page, else the request that needs you first"
+  decision m1 "Which case?\nNamed in the question, else the open case page, else the request that needs you first, among the cases in view"
   agent m2 "FLO reads the case's draft\nOpen items still unresolved, by kind: Missing, To settle, Risk\nThe payer's document count from the saved Payers list"
   decision m3 "Was the request already sent?"
   toast m4 "'Nothing is missing for R-0870 (Summit, Residential 3.5). It was already sent, so it is with Summit and Navigator is tracking it.'"
@@ -43,7 +43,7 @@ group gE "Eligibility: 'Which patients need a fix before billing?'"
   click el "Click 'Open R-0921 in Eligibility & Benefits'"
 endgroup
 
-endx n1 "Nothing to read: 'I did not find R-9999 in the demo data.' or 'Tell me which payer, for example: What does Summit require?'\nThe chips for the screen stay under it"
+endx n1 "Nothing to read: 'I did not find R-9999 among the cases you can see. (the same for a real case at the other site, e.g. I-2207 for Dr. Rivera)' or 'Tell me which payer, for example: What does Summit require?'\nThe chips for the screen stay under it"
 
 goto g1 "Continues in: Authorizations › Case page › Recommended actions › The tab"
 goto g2 "Continues in: Authorizations › Case page › Ways in"

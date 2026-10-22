@@ -63,6 +63,13 @@ export default function ManagerPage() {
   };
   const setTab = (t: Tab) => setParams((p) => { const n = new URLSearchParams(p); n.set("tab", t); return n; }, { replace: true });
 
+  const reviewButtons = (
+    <>
+      <Button icon={Wand2} loading={drafting} onClick={draftAll} title={paused ? "Cadence is paused in Settings" : undefined}>Draft all due reviews</Button>
+      <Button variant="primary" icon={PenLine} disabled={!clean.length} onClick={() => setSignAll(true)}>Sign all clean drafts</Button>
+    </>
+  );
+
   return (
     <Page>
       {tab === "cases" ? (
@@ -74,13 +81,14 @@ export default function ManagerPage() {
       ) : (
         <PageHeader
           title={<>{plural(reviews.length, "clinical review")} due this week.<SiteTag /></>}
-          sub="Agents draft each review ahead of time. You update only what they ask about."
-          actions={
+          sub={
             <>
-              <Button icon={Wand2} loading={drafting} onClick={draftAll} title={paused ? "Cadence is paused in Settings" : undefined}>Draft all due reviews</Button>
-              <Button variant="primary" icon={PenLine} disabled={!clean.length} onClick={() => setSignAll(true)}>Sign all clean drafts</Button>
+              Agents draft each review ahead of time. You update only what they ask about.
+              {/* On a narrow window the buttons sit under the text instead of squeezing the headline. */}
+              <span className="mt-3.5 hidden flex-wrap items-center gap-3 max-[899px]:flex">{reviewButtons}</span>
             </>
           }
+          actions={<span className="flex items-center gap-3 max-[899px]:hidden">{reviewButtons}</span>}
         />
       )}
 

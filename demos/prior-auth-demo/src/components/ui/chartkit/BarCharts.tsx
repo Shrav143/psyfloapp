@@ -63,9 +63,13 @@ export function HBarChart(p: HBarChartProps) {
               <span className="min-w-0 text-left">
                 <span className="block truncate text-[13.5px]" title={r.label}>
                   {r.label}
-                  {r.tag ? <span className="ml-2 rounded-full bg-mid-bg px-2 py-px align-middle text-[10.5px] font-semibold text-mid-ink">{r.tag}</span> : null}
                 </span>
-                {r.sub ? <span className="block truncate text-[11.5px] text-muted">{r.sub}</span> : null}
+                {r.sub || r.tag ? (
+                  <span className="flex items-center gap-1.5 text-[11.5px] text-muted">
+                    {r.tag ? <span className="rounded-full bg-mid-bg px-2 py-px text-[10.5px] font-semibold text-mid-ink">{r.tag}</span> : null}
+                    <span className="truncate">{r.sub}</span>
+                  </span>
+                ) : null}
               </span>
               <svg width="100%" height={h} role="presentation" className="block">
                 <rect x="0" y="0" width="100%" height={two ? 8 : h} rx="4" fill={CHART.track} />

@@ -2,13 +2,14 @@ import type { StateCreator } from "zustand";
 import { EMPTY_WORK } from "@/data/caseModel";
 import { resolveCase } from "@/data/caseDetail";
 import {
-  chanceBounds, currentChance, draftState, DUE_FOR, freshRun, needsPerson, nextCaseCode, planTypeOf, QUESTIONS, RUN_STEPS, SCRIBE_STEP,
+  chanceBounds, currentChance, draftState, DUE_FOR, freshRun, needsPerson, nextCaseCode, planTypeOf, QUESTIONS, queueItemOf, RUN_STEPS, SCRIBE_STEP,
   type AuthKind, type CaseDraft, type DocSlotId, type DocumentedReason, type DraftDocument,
 } from "@/data/cases";
 import { authorizationsOf, episodesOf, isoOf, patientById } from "@/data/patients";
 import { payerById } from "@/data/seed";
 import type { SiteId } from "@/data/sites";
 import { PROGRAM_LABEL, type AgentKey } from "@/data/types";
+import { verify } from "@/data/verification";
 import { viewerById } from "@/data/viewers";
 import { uid } from "@/lib/format";
 import { DAY } from "@/lib/time";
@@ -16,6 +17,7 @@ import { authType, defaultTypeFor } from "@/pages/newcase/authType";
 import { draftForRequest, mergeRequestDraft, requestDraft, requestState } from "@/pages/newcase/fromRequest";
 import { payerContextOf } from "@/pages/newcase/payerContext";
 import { unmetCount } from "@/pages/newcase/payerRules";
+import { verificationKey, wantOf } from "@/pages/newcase/verificationFor";
 import { pendingFor, planQuestions } from "@/pages/newcase/questions";
 import { blankDraft, SEED_DRAFTS } from "@/pages/newcase/seedDrafts";
 import type { AppState } from "./index";
@@ -70,7 +72,7 @@ export interface CasesSlice {
   /** Sign and send. `signedBy` is who the person signed as ("Dr. Rivera, clinician"); the request's history says so. Returns the request ID that now shows on the Dashboard. */
   signCaseDraft: (id: string, signedBy?: string) => string | undefined;
   /** The draft for a request that exists on the case page: made from the request's own data when there is none, brought up to date when there is.
-      It is moved to the step that fits: Review and sign when the request is ready, Agents work when agents still have work to do. Returns its ID. */
+      It is moved to the step that fits: Review & submit when the request is ready, Authorization preparation when agents still have work to do. Returns its ID. */
   draftFromRequest: (requestId: string) => string;
   /** The payer's saved list or rules changed: count again what the case does not meet, so the approval chance follows. */
   refreshCaseUnmet: (id: string) => void;
@@ -106,6 +108,24 @@ export const createCasesSlice: StateCreator<AppState, [], [], CasesSlice> = (set
     const stale = d.run.done > 0 && INTAKE_KEYS.some((k) => k in patch);
     update(id, (x) => ({ ...x, ...patch, ...(stale ? staleReset(x) : {}) }));
     if (stale) get().toast({ title: "Records changed after the agents ran", body: "Their work was cleared. The agents check again when you continue.", tone: "mid" });
+  };
+
+  /** The draft for a request that exists on the case page: made from the request's own data when there is none, brought up to date when there is. */
+  const draftFromRequestId = (requestId: string): string => {
+    const st = get();
+    const detail = resolveCase(requestId, st.requests);
+    const existing = draftForRequest(st.caseDrafts, requestId, detail?.requestId);
+    /* A request the app cannot describe still opens a draft, at Clinical documentation, never a blank one at Intake. */
+    if (!detail) return existing?.id ?? get().createCaseDraft({ caseId: requestId, phase: "records", started: true });
+    const work = st.queueCases[detail.requestId] ?? EMPTY_WORK;
+    const target = requestDraft(detail, work, st.clock, payerContextOf(st, detail));
+    if (!existing) {
+      const id = uid("draft");
+      set((s) => ({ caseDrafts: [...s.caseDrafts, settle({ ...target, id, updatedAt: s.clock })] }));
+      return id;
+    }
+    update(existing.id, (d) => mergeRequestDraft(d, target, requestState(detail, work)));
+    return existing.id;
   };
 
   return {
@@ -186,7 +206,8 @@ export const createCasesSlice: StateCreator<AppState, [], [], CasesSlice> = (set
       if (!d) return;
       const book = selectPatientBook(get());
       const p = patientById(book, pick.patientId);
-      if (!p) return;
+      /* A patient at a site the viewer cannot see does not exist for them, even by a link. */
+      if (!p || !sitesOf(get()).includes(p.site)) return;
       const eps = episodesOf(book, p.id);
       const ep = eps.find((e) => e.id === pick.episodeId) ?? (authType(d.kind).existing && eps.length === 1 ? eps[0] : undefined);
       const auth = (ep ? authorizationsOf(book, ep.id) : []).find((a) => a.id === pick.authorizationId) ?? (ep ? authorizationsOf(book, ep.id)[0] : undefined);
@@ -300,6 +321,9 @@ export const createCasesSlice: StateCreator<AppState, [], [], CasesSlice> = (set
         });
       }
       if (d.run.skipped.includes("verify")) get().addEvent(requestId, { actor: "verify", text: `Verify could not reach ${payerById(d.payerId).shortName}'s portal before signing`, detail: "Coverage was not confirmed. You skipped it and noted it." });
+      /* The Authorizations queue lists it too: it is with the payer now. */
+      const sentRequest = get().requests.find((r) => r.id === requestId);
+      if (sentRequest && !get().queueItems.some((i) => i.id === requestId)) set((s) => ({ queueItems: [...s.queueItems, queueItemOf(sentRequest, s.clock, d.levelLabel)] }));
       /* The request joins its patient, episode, authorization and verification. A new patient is the request itself; an existing one is never copied. */
       const verified = d.verificationId ?? (get().verifications[requestId] ? requestId : null);
       get().updateRequest(requestId, { patientId: d.patientId ?? requestId, episodeId: d.episodeId ?? `EP-${requestId}`, authorizationId: d.authorizationId ?? `AU-${requestId}`, verificationId: verified ?? undefined });
@@ -310,20 +334,13 @@ export const createCasesSlice: StateCreator<AppState, [], [], CasesSlice> = (set
     },
 
     draftFromRequest: (requestId) => {
-      const st = get();
-      const detail = resolveCase(requestId, st.requests);
-      const existing = draftForRequest(st.caseDrafts, requestId, detail?.requestId);
-      /* A request the app cannot describe still opens a draft, at Medical records, never a blank one at Referral. */
-      if (!detail) return existing?.id ?? get().createCaseDraft({ caseId: requestId, phase: "records" });
-      const work = st.queueCases[detail.requestId] ?? EMPTY_WORK;
-      const target = requestDraft(detail, work, st.clock, payerContextOf(st, detail));
-      if (!existing) {
-        const id = uid("draft");
-        set((s) => ({ caseDrafts: [...s.caseDrafts, settle({ ...target, id, updatedAt: s.clock })] }));
-        return id;
-      }
-      update(existing.id, (d) => mergeRequestDraft(d, target, requestState(detail, work)));
-      return existing.id;
+      const id = draftFromRequestId(requestId);
+      /* The request was opened on the case page, which already checked coverage: its draft finds that check, or makes it, so Eligibility & Benefits is never "not checked" for a request that is on the way to the payer. */
+      const d = find(id);
+      const key = d ? verificationKey(d) : null;
+      const want = d && key ? wantOf(d, key) : null;
+      if (d && want && !get().verifications[want.caseId]) get().saveVerification(verify({ ...want, initials: d.patient.initials || null, age: d.patient.age, memberId: d.memberId, site: d.site }, get()));
+      return id;
     },
 
     refreshCaseUnmet: (id) => update(id, (d) => d),

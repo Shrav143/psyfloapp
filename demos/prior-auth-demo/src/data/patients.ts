@@ -177,9 +177,11 @@ export function buildPatientBook(ledger: readonly LedgerCase[], requests: readon
   const rows: LedgerCase[] = [...ledger, ...EXTRA_ROWS.filter((c) => !known.has(c.id))];
   const rowIds = new Set(rows.flatMap((c) => [c.id, c.caseId]));
   const linked: PsyRequest[] = [];
+  /* A request that names no patient, or itself, is a new patient. One that names an earlier patient joins that patient. */
+  const selfPatient = (r: PsyRequest): boolean => !r.patientId || r.patientId === r.id || r.patientId === r.caseId;
   for (const r of requests) {
     if (rowIds.has(r.id) || rowIds.has(r.caseId)) continue;
-    if (r.patientId) {
+    if (!selfPatient(r)) {
       linked.push(r);
       continue;
     }

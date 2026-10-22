@@ -2,9 +2,9 @@
    The store slice (store/cases.ts) and every page under pages/newcase and pages/active read from here. */
 import type { DemoFile } from "@/components/ui";
 import { payerById } from "./seed";
-import type { RequestKind } from "./queue";
+import { daysRequested, dxKeyFor, dxLine, scoresFor, type QueueItem, type RequestKind } from "./queue";
 import { siteOf, type SiteId } from "./sites";
-import type { AgentKey, PayerId, Program, RequestType, Tone } from "./types";
+import { PROGRAM_LABEL, type AgentKey, type PayerId, type Program, type PsyRequest, type RequestType, type Tone } from "./types";
 import { clockTime, toDate } from "@/lib/time";
 
 /* ------------------------------------------------------------------ documents */
@@ -165,7 +165,7 @@ export interface CaseDraft {
   /** The case page's applied actions whose sentences the edited summary already holds. Read only while `narrative` is set. */
   narrativeIncludes?: string[];
   revision: number;
-  /** The records changed after the agents ran, so the run started over. Shown on Agents work until the run ends. */
+  /** The records changed after the agents ran, so the run started over. Shown on Authorization preparation until the run ends. */
   recordsChanged?: boolean;
   /** Things the payer asks for that the case does not meet (required documents, backdating). Each holds the approval chance back a little. */
   unmet: number;
@@ -384,4 +384,15 @@ export const NEW_REQUEST_TYPES: RequestType[] = ["Initial request", "Admission",
 export function chanceBounds(payerId: PayerId | null): { start: number; final: number } {
   const final = Math.min(94, (payerId ? payerById(payerId).approvedAsAsked : 74) + 14);
   return { start: final - 26, final };
+}
+
+/** The Authorizations queue row for a request signed and sent in New case. It is with the payer, so it sits in the band of the payer's usual decision time. */
+export function queueItemOf(r: PsyRequest, clock: number, levelLabel?: string): QueueItem {
+  const dueAt = clock + payerById(r.payerId).typicalDecisionDays * 1440;
+  const dxKey = dxKeyFor(r.id, r.program);
+  return {
+    id: r.id, initials: r.patient.initials, age: r.patient.age, payerId: r.payerId, program: r.program, type: r.type, levelLabel: levelLabel ?? PROGRAM_LABEL[r.program],
+    dxKey, dx: dxLine(r.id, dxKey, r.type, r.program), scores: scoresFor(r.id, dxKey), band: dueAt - clock <= 1440 ? "day" : "week", dueAt, dueVerb: "Decision", chance: r.chance ?? 70, liftPts: 0,
+    phase: "payer", agent: "navigator", status: "Payer has it. Navigator checks again in 30 minutes", needsInput: false, coverageFix: false, signal: false, days: daysRequested(r.program),
+  };
 }

@@ -105,7 +105,7 @@ const SCOPE = (f: DashFilters): string => [f.payer !== "all" ? payerById(f.payer
 
 /** The one quiet sentence under the table's title: what is filtered, then how it is ordered. */
 export function tableSentence(f: DashFilters, needsToday: boolean, sort: RowSort | null): string {
-  const scope = SCOPE(f);
-  const order = sort ? `Sorted by ${SORT_LABEL[sort.key].toLowerCase()}, ${sort.dir === "asc" ? "lowest first" : "highest first"}.` : "Longest in their state first, with what needs you today on top.";
-  return `${needsToday ? "Only what needs you today. " : ""}${scope ? `${scope}. ` : ""}${order}`;
+  const lead = [needsToday ? "Needs you today" : "", SCOPE(f)].filter(Boolean).join(" · ");
+  const order = sort ? `Sorted by ${SORT_LABEL[sort.key].toLowerCase()}, ${sort.dir === "asc" ? "lowest first" : "highest first"}.` : needsToday ? "Longest in their state first." : "Longest in their state first, with what needs you today on top.";
+  return lead ? `${lead}. ${order}` : order;
 }

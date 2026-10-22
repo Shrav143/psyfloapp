@@ -39,7 +39,7 @@ export default function ReportPage() {
   const [saving, setSaving] = useState(false);
   const doc = useMemo(() => (view ? buildReport(view, reportAt) : undefined), [view, reportAt]);
 
-  if (outside) return <Page><OutOfSite id={outside.caseId} what="report" /></Page>;
+  if (outside) return <Page><OutOfSite id={outside} what="report" /></Page>;
   if (!view || !doc || !id)
     return (
       <Page>

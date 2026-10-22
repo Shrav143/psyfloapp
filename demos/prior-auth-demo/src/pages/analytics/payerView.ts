@@ -2,7 +2,7 @@ import { PROGRAM_ORDER } from "@/data/analytics";
 import { DX_GROUPS, KINDS, KIND_LABEL, POPULATIONS, type Decision } from "@/data/decisions";
 import { payerById } from "@/data/seed";
 import { PROGRAM_LABEL, type BuiltInPayerId } from "@/data/types";
-import { buildFigures, buildReasons, byMonth, monthPoints, type Figure, type MonthPoint, type ReasonRow } from "./board";
+import { buildFigures, buildReasons, byMonth, monthPoints, planOf, type Figure, type MonthPoint, type ReasonRow } from "./board";
 import { inMonths, inPeriod, narrow, periodInfo, type Filters } from "./filters";
 import { insightsFor } from "./insights";
 import { pctOf, statsOf, type Stats } from "./stats";
@@ -52,7 +52,7 @@ export function buildPayerView(scoped: readonly Decision[], f: Filters, payer: B
   return {
     payer,
     name: p.name,
-    plan: `${p.type}, ${p.group}`,
+    plan: planOf(payer),
     s: statsOf(cur),
     clinic: statsOf(clinicCur),
     figures: buildFigures(cur, nowRows, beforeRows, byMonth(mineAll), period),

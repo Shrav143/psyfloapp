@@ -1,31 +1,29 @@
-title: Dashboard › Filters › Clear filters and empty states
+title: Dashboard › Table controls › Clear filters and empty states
 route: /dashboard?payer=cardinal&program=iop&type=recertification&stage=appeal
-intro: When 'Clear filters' appears, what it resets, and what the page shows when the filters match nothing.
+intro: When 'Clear filters' appears, what it resets, and what the table shows when the controls match nothing.
 dir: TD
 ---
-start s1 "Pick Payer, Program, Request type or Stage\nAny one that is not 'All'"
-decision d1 "Is at least one of the four menus not 'All'?\nA grouping such as Needs you counts"
-screen sc1 "Filter bar\nGhost button 'Clear filters' appears after the four menus"
-screen sc0 "Filter bar\nNo 'Clear filters' button\nAll four menus show 'All'"
-click c1 "Click 'Clear filters' on the filter bar"
-process p1 "Payer, Program, Request type and Stage (or the grouping) go back to 'All'"
+start s1 "Pick Payer, Program, Request type or Status, press a Lifecycle chip, or turn on 'Needs me today'"
+decision d1 "Is a menu not 'All', a chip pressed, or 'Needs me today' on?"
+screen sc1 "Table header\nGhost button 'Clear filters' after the menus"
+screen sc0 "No 'Clear filters' button\nAll four menus show 'All' and the toggle is off"
+click c1 "Click 'Clear filters'"
+process p1 "Payer, Program, Request type and Status go back to 'All'\n'Needs me today' turns off"
 store w1 "Filters"
 process p2 "Address loses payer, program, type and stage"
 process p3 "Table goes back to its first 8 rows"
-screen sc2 "Dashboard shows every request again\n'Showing 8 of 40'"
+screen sc2 "Every authorization is shown again\n'40 authorizations', 'Showing 8 of 40'"
 end e1 "Back to the full list"
-end e0 "Nothing to clear\nThe button appears as soon as a menu is not 'All'"
+end e0 "Nothing to clear\nThe button appears as soon as a control is set"
 
-decision d2 "Do any requests match the filters?"
-process p4 "Example: Cardinal, IOP, Recertification, Appeal or call"
-screen em1 "Headline\n'No requests match these filters.'\n'The filters hide everything. Clear them to see every request again.'"
-screen em2 "Key figures\nStill count every stage that the Payer, Program and Request type filters leave: '0' with 'nothing is waiting on you' or 'nothing due in the next day'\nThe Stage menu shows the count of each stage beside its name"
-screen em3 "Requests card\n'Showing 0 of 0'"
-overlay em4 "Empty state in the card\n'No requests match'\n'The filters hide everything. Clear them to see every request again.'"
-decision d3 "Is a narrowing filter set?"
+decision d2 "Do any authorizations match?"
+process p4 "Example: Cardinal, IOP, Recertification, Denied / appeal"
+screen em1 "Table title '0 authorizations'\nThe Lifecycle still counts every state that Payer, Program and Request type leave"
+overlay em4 "Empty state in the card\n'No authorizations match'\n'The filters hide everything. Clear them to see every authorization again.'"
+decision d3 "Is only 'Needs me today' on?"
+screen em5 "Empty state 'Nothing needs you today'\n'Every authorization is with a payer or with the agents.'"
 click c2 "Click 'Clear filters' in the empty state"
-endx x1 "No 'Clear filters' button\nOnly possible if there were no requests at all"
-goto g1 "Continues in: Dashboard › Filters › Payer, Program, Request type and Stage"
+goto g1 "Continues in: Dashboard › Table controls › Needs me today, Payer, Program, Status and Request type"
 
 s1 --> d1
 d1 -->|Yes| sc1 --> c1 --> p1 --> w1 --> p2 --> p3 --> sc2 --> e1
@@ -33,8 +31,7 @@ d1 -->|No| sc0 --> e0
 w1 --> d2
 d2 -->|Yes| sc2
 d2 -->|No| p4
-p4 --> em1 & em2 & em3 & em4
-em4 --> d3
-d3 -->|Yes| c2 --> p1
-d3 -->|No| x1
+p4 --> em1 --> d3
+d3 -->|No| em4 --> c2 --> p1
+d3 -->|Yes| em5 --> c2
 sc1 -.-> g1

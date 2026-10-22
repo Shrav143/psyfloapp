@@ -30,7 +30,7 @@ endx e1 "Stays on Case Manager"
 
 process p3 "Once signed and sent, the case disappears from this list, 'are still being prepared' drops by one, the sidebar bubble drops if it needed a person, and the tracker lists it as 'New today' unless it already had a row"
 end e2 "The request now shows as 'Received' on the Dashboard"
-goto g5 "Continues in: Dashboard › Open a request"
+goto g5 "Continues in: Dashboard › Request drawer › Open and read a request"
 goto g6 "Continues in: Case Manager › Active cases › Updated for a payer change"
 
 s1 --> r1 --> r2 --> r3 --> r4 --> p0 --> d1

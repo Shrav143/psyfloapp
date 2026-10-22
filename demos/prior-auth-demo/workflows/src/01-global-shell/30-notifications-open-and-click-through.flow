@@ -1,13 +1,14 @@
 title: Global shell › Top bar › Notifications › Open, read, click through
 route: Every page (Notifications drawer)
-intro: The bell opens a drawer with every notification, newest first. A click on a row marks it read, closes the drawer and opens the page it points to. 'Mark all read' clears the rest in one click.
+intro: The bell opens a drawer with the notifications about the cases the viewer may see, newest first, and those that belong to no case (a payer rule change). A click on a row marks it read, closes the drawer and opens the page it points to. 'Mark all read' clears the ones in the list in one click. A viewer limited to one site never sees, counts or marks the other site's notifications.
 dir: TD
-also: Read and unread marks live in the demo data, so 'Reset demo data' brings back the four unread ones from the start.
+also: Read and unread marks live in the demo data, so 'Reset demo data' brings back the four unread ones from the start. A notification belongs to the site of the case in its link (or named in its words); the bell's dot, the subtitle count and 'Mark all read' use only the notifications in view.
 ---
 start s1 "Click 'Notifications' (the bell) in the top bar"
 screen bell "Bell shows a red dot while any notification is unread\n(4 unread at the start)"
 overlay o1 "Notifications drawer opens (440 px)\nSubtitle '4 unread', or 'You are all caught up' when none are left\nButton 'Mark all read'"
 screen l1 "List, newest first\nEach row: agent badge, bold title, age ('16 min ago'), one line of text\nUnread rows are cream with a red dot"
+process ps "Which notifications are listed\nBoth sites: all six, 4 unread\nSite A (Dr. Rivera): 4 listed (P-1499, R-1042, the Cardinal rule change, R-0912), 3 unread\nSite B (Sam Okafor): 3 listed (D-3297, R-0951, the Cardinal rule change), 2 unread\nThe denial D-3297 and R-0951 are at Site B"
 process p0 "Ages follow the demo clock: after 'Fast-forward 1 hour' '16 min ago' reads '1 h ago'"
 
 group gRows "The six notifications at the start"
@@ -24,14 +25,14 @@ store st1 "That notification is saved as read\n(cream tint and red dot go)"
 process p1 "Drawer closes"
 decision d1 "Does the notification have a destination?"
 process p2 "App goes to that page"
-goto g1 "Continues in: Dashboard › Open a request"
+goto g1 "Continues in: Dashboard › Request drawer › Open and read a request"
 goto g2 "Continues in: New case › Agents work (the question window)"
 goto g3 "Continues in: Denial Intelligence › Open a denial"
 goto g4 "Continues in: Payers › Changes › Read what changed"
 end e0 "Stays on the page"
 
 click c2 "Click 'Mark all read'"
-store st2 "Every notification is saved as read"
+store st2 "Every notification in the list is saved as read\nThe other site's stay unread for the people who can see them"
 process p3 "Drawer stays open\nSubtitle becomes 'You are all caught up'\nThe bell's red dot goes"
 
 click c3 "Press Escape, click 'X' or click the dimmed area"
@@ -40,6 +41,7 @@ end e1 "Back on the page"
 
 s1 --> bell --> o1 --> l1
 l1 --> p0
+o1 --> ps
 l1 --> n1 & n2 & n3 & n4 & n5 & n6
 n1 & n2 & n3 & n4 & n5 & n6 --> c1
 c1 --> st1 --> p1 --> d1

@@ -150,7 +150,7 @@ export function Heatmap(p: HeatmapProps) {
                             {d.rate === null ? "-" : `${d.rate}%`}
                           </text>
                           <text x={x + (cw - 4) / 2} y={y + 40} textAnchor="middle" fontSize="11" fill={color?.text ?? CHART.muted} opacity={0.85} fontFamily="inherit">
-                            {few ? `${d.n} (few)` : `${d.n} decisions`}
+                            {few ? `${d.n} (few)` : `${d.n.toLocaleString("en-US")} decisions`}
                           </text>
                           {d.rate !== null && !few && d.rate < 55 ? (
                             <text x={x + cw - 16} y={y + 14} fontSize="9" fill={color?.text} aria-hidden="true">

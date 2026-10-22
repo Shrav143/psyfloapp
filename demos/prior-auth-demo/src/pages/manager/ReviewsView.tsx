@@ -22,22 +22,25 @@ const STEP_DOWN = [
 
 function ReviewRow({ r, onOpen }: { r: Review; onOpen: (id: string) => void }) {
   const warn = r.status === "drafted" && !isClean(r);
+  // The row wraps on a narrow window: the time and level of care first, then the case, then the status and the button.
   return (
-    <div className="flex items-center gap-3 border-b border-line px-6 py-3 last:border-b-0">
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-line px-6 py-3 last:border-b-0">
       <span className="w-[72px] shrink-0 text-muted">{clockTime(toDate(r.dueAt))}</span>
       <div className="w-[130px] shrink-0">
         <Chip>{PROGRAM_LABEL[r.program]}</Chip>
       </div>
-      <div className="min-w-0 flex-1">
+      <div className="min-w-[200px] flex-1">
         <IdLink onClick={() => onOpen(r.id)}>{r.ledgerId}</IdLink>
         <span className="text-muted"> · {PAYER_ROW_LABEL[r.payerId]} · {r.initials}, {r.age}</span>
         {r.status === "needs_update" ? <div className="truncate text-[13px] text-mid-ink">{r.missing}</div> : null}
       </div>
-      {warn ? <Pill tone="mid">Check to look at</Pill> : null}
-      <Pill tone={REVIEW_STATUS_TONE[r.status]}>{REVIEW_STATUS_LABEL[r.status]}</Pill>
-      <Button size="sm" aria-label={`Open review ${r.ledgerId}`} onClick={() => onOpen(r.id)}>
-        Open
-      </Button>
+      <div className="ml-auto flex shrink-0 flex-wrap items-center justify-end gap-3 max-[899px]:w-full">
+        {warn ? <Pill tone="mid">Check to look at</Pill> : null}
+        <Pill tone={REVIEW_STATUS_TONE[r.status]}>{REVIEW_STATUS_LABEL[r.status]}</Pill>
+        <Button size="sm" aria-label={`Open review ${r.ledgerId}`} onClick={() => onOpen(r.id)}>
+          Open
+        </Button>
+      </div>
     </div>
   );
 }
@@ -67,7 +70,7 @@ export function ReviewsView({ filters, onOpen, onClear }: { filters: ManagerFilt
         <Stat tone="good" value={total - needs - waiting} label="Drafted by agents" sub={`${clean} clean, ready to sign`} />
         <Stat tone="mid" value={needs} label="Need a clinician update" sub={needs ? "what is missing is listed" : "nothing waiting on you"} />
       </div>
-      <div className="grid grid-cols-[minmax(0,1fr)_320px] items-start gap-5">
+      <div className="grid grid-cols-1 items-start gap-5 min-[1180px]:grid-cols-[minmax(0,1fr)_320px]">
         <div className="flex flex-col gap-4">
           {shown.length !== total ? <p className="text-sm text-muted" aria-live="polite">Showing {shown.length} of {plural(total, "review")}. The tiles count {total === 1 ? "it" : `all ${total}`}.</p> : null}
           {days.length === 0 ? (

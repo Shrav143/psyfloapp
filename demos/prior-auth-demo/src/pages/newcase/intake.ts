@@ -5,6 +5,7 @@ import { PAYERS } from "@/data/seed";
 import { siteOf } from "@/data/sites";
 import { PROGRAM_LABEL, PROGRAMS, type NewCasePrefill, type PayerId, type Program, type RequestType } from "@/data/types";
 import { siteOfVerification } from "@/data/verification";
+import { sitesInView } from "@/lib/scope";
 import { useStore } from "@/store";
 import type { AppState } from "@/store";
 import { selectUnmappedForConnected } from "@/store/emr";
@@ -52,7 +53,7 @@ export function fromQuery(q: URLSearchParams): Partial<CaseDraft> {
     The case then uses that same record, so the check made there is the one step 2 shows. The type is still to choose, so the case starts as an initial authorization. */
 export function fromVerification(st: AppState, id: string): Partial<CaseDraft> | null {
   const rec = st.verifications[id];
-  if (!rec) return null;
+  if (!rec || !sitesInView(st).includes(siteOfVerification(rec))) return null;
   return {
     started: true,
     verificationId: rec.id,

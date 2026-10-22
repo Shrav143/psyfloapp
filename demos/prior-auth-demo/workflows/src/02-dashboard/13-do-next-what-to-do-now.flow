@@ -1,0 +1,54 @@
+title: Dashboard › Do next › What to do now and where each button leads
+route: /dashboard
+intro: The Do next card lists the few things a person should do now, each as one plain sentence with one button. FLO works the list out from the live data each time the requests, the queue, the ledger or the clock change. Each button goes to a real place; nothing is sent from the card itself.
+dir: TD
+also: A recommendation for a person to check, never a payer fact. Real world: the same list is what a coordinator would build by hand from the queue.
+---
+start s1 "Look at the Do next card\n'Suggested by FLO from today's demo data'"
+agent a1 "FLO reads the requests, the queue, the ledger and the clock at the sites in view\nOne row per thing to do, at most five"
+screen r0 "Row\nOne sentence in 14 px type, e.g. 'Review and sign R-0988'\nUnder it, quiet: 'D.L., 41 · Beacon · Residential 3.5 · Review due in 3 h'\nTerracotta only when the time is inside 6 hours or past"
+decision d0 "Is there anything to do?"
+screen em "'Nothing needs you right now.'"
+
+group gBtn "The one button on a row, and where it goes"
+  click b1 "Click 'Review and sign'\nSentence 'Review and sign R-0988'"
+  click b2 "Click 'Answer Scribe' or 'Answer Packet'\nSentence 'Answer Scribe's question on R-1042'"
+  click b3 "Click 'Review answer'\nSentence 'Review Packet's answer to Harborview on P-1499'"
+  click b4 "Click 'Open denial'\nSentence 'Open denial D-3318, peer-to-peer in 36 h'"
+  click b5 "Click 'Open request'\nSentence 'Chase Cardinal on R-1021'"
+  click b6 "Click 'Approve write-back'\nSentence 'Approve the write-back for R-0951'"
+  click b7 "Click 'Start renewal'\nSentence 'Start renewal for I-2193'"
+  click b8 "Click 'Open Active cases'\nSentence 'Finish 1 case saved in New case'"
+endgroup
+process p1 "The request gets a draft in New case if it has none, then the draft opens at the step that fits\nAgents work for a question, Review and sign when every check passed"
+process p2 "Address gets ?request=ID\nThe request drawer opens on the Dashboard"
+process p3 "Denial Intelligence opens on that denial"
+process p4 "New case opens as a Reauthorization for that patient"
+process p5 "Case Manager opens on Active cases"
+decision d1 "Are more people-owned rows left than the five shown?"
+screen more "Under the list\n'2 more need you today.' and the button 'Show them in the table'"
+click b9 "Click 'Show them in the table'"
+process p6 "'Needs me today' turns on and the page scrolls to the table"
+goto g1 "Continues in: Authorizations › New case › Agents work › An agent asks a question"
+goto g2 "Continues in: Authorizations › New case › Review and sign › Sign and send"
+goto g3 "Continues in: Dashboard › Request drawer › Open and read a request"
+goto g4 "Continues in: Denial Intelligence › Open denials list"
+goto g5 "Continues in: Case Manager › Active cases › Tracker of every active case"
+goto g6 "Continues in: Dashboard › Do next › How the list is chosen and ordered"
+goto g7 "Continues in: Dashboard › Table controls › Needs me today, Payer, Program, Status and Request type"
+
+s1 --> a1 --> d0
+d0 -->|No| em
+d0 -->|Yes| r0
+r0 --> b1 & b2 & b3 & b4 & b5 & b6 & b7 & b8
+b1 --> p1 --> g2
+b2 --> p1 --> g1
+b3 --> p2 --> g3
+b5 --> p2
+b6 --> p2
+b4 --> p3 --> g4
+b7 --> p4
+b8 --> p5 --> g5
+r0 --> d1
+d1 -->|Yes| more --> b9 --> p6 --> g7
+a1 -.-> g6

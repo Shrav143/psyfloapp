@@ -100,6 +100,35 @@ export const REASONS: Reason[] = [
   { label: "Units above the plan limit", short: "Units above plan limit", payerId: "lakeshore", count: 5, preventable: false },
   { label: "Late notice", short: "Late notice", payerId: "lakeshore", count: 3, preventable: true },
 ];
+/** The four kinds of reason, so denials by diagnosis group read as a story (what is missing, when it was filed, how much was asked, paperwork between the two). */
+export type ReasonCategory = "documentation" | "timing" | "level" | "admin";
+export const REASON_CATEGORIES: { id: ReasonCategory; label: string }[] = [
+  { id: "documentation", label: "Documentation or evidence" },
+  { id: "timing", label: "Timing or notice" },
+  { id: "level", label: "Level of care or days" },
+  { id: "admin", label: "Administrative" },
+];
+export const REASON_CATEGORY: Record<string, ReasonCategory> = {
+  "Continued-stay evidence incomplete": "documentation",
+  "Missing recent therapy notes": "documentation",
+  "Missing ASAM dimension ratings": "documentation",
+  "Missing physician certification": "documentation",
+  "Fax pages unreadable": "documentation",
+  "Missing level-of-care form": "documentation",
+  "Authorization number missing on the claim": "documentation",
+  "Peer-to-peer window missed": "timing",
+  "Recertification filed too late": "timing",
+  "Retro-authorization window missed": "timing",
+  "Late notice": "timing",
+  "Phone confirmation not on file": "timing",
+  "Units requested above criteria": "level",
+  "Level of care does not match mood severity": "level",
+  "Partial approval without a stated reason": "level",
+  "Units above the plan limit": "level",
+  "Step-down plan not named": "level",
+  "Duplicate request": "admin",
+  "Out-of-network flag in error": "admin",
+};
 export const reasonsOf = (payerId: BuiltInPayerId): Reason[] => REASONS.filter((r) => r.payerId === payerId);
 
 /** The steps FLO suggests. `base` is how many requests applied the step in a quarter across all payers, `approved` the share approved

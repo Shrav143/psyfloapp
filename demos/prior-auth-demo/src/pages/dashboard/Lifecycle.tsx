@@ -18,7 +18,7 @@ export function Lifecycle({ chips, ledger, active, onPick }: { chips: StateChip[
           <span className="inline-flex items-center gap-1.5">
             Lifecycle
             <InfoTip label="What the states count">
-              Each state counts the authorizations at that point and filters the table. Active (approved, units left) and Renewal due (review due, or ending within 7 days) count approved authorizations on the Case Manager ledger and open Case Manager.
+              <span className="block font-sans">Each state counts the authorizations at that point and filters the table. Active (approved, units left) and Renewal due (review due, or ending within 7 days) count approved authorizations on the Case Manager ledger and open Case Manager.</span>
             </InfoTip>
           </span>
         }

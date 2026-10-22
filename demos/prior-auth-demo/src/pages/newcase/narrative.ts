@@ -96,7 +96,7 @@ function contextSection(context: string[]): NarrativeSection {
   return { id: "context", heading: "Context added", text: context.map((c) => (/[.!?]$/.test(c.trim()) ? c.trim() : `${c.trim()}.`)).join(" "), sources: [], fixed: true };
 }
 
-/** The one summary of a case, read by Review and sign and by the case page's Draft tab: the edited text when there is one, else what Scribe writes
+/** The one summary of a case, read by Review & submit and by the case page's Draft tab: the edited text when there is one, else what Scribe writes
     from the draft, then the context added for the request. */
 export function narrativeOf(d: CaseDraft, context: string[] = [], adds: RecAdd[] = []): NarrativeSection[] {
   const folded = d.narrative ? d.narrativeIncludes ?? [] : [];

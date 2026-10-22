@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { siteOf, siteName, type SiteId } from "@/data/sites";
-import { viewerById, type Viewer } from "@/data/viewers";
+import { viewerById, type Viewer, type ViewerId } from "@/data/viewers";
 import { useStore } from "@/store";
 import type { SiteScope } from "@/store/session";
 
@@ -47,6 +47,6 @@ export function useScope(): Scope {
 }
 
 /** Non-hook form for store code and selectors: the sites currently in view. */
-export function sitesInView(s: { viewerId: string; siteScope: SiteScope }): SiteId[] {
-  return effectiveSites(viewerById(s.viewerId as never), s.siteScope);
+export function sitesInView(s: { viewerId: ViewerId; siteScope: SiteScope }): SiteId[] {
+  return effectiveSites(viewerById(s.viewerId), s.siteScope);
 }

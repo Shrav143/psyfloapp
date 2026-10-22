@@ -14,7 +14,7 @@ group gTop "Top bar (on every page)"
 endgroup
 
 group gMain "Sidebar › Main"
-  screen dash "Dashboard\nFLO summary, four figures, filters, requests"
+  screen dash "Dashboard\nLifecycle chips, Do next, authorizations table"
   screen auth "Authorizations › Queue\nRequests ranked by how soon each is due"
   screen newc "Authorizations › New case\nReferral, Medical records, Agents work, Review and sign"
   screen elig "Authorizations › Eligibility & Benefits\nList, verify a patient, result"

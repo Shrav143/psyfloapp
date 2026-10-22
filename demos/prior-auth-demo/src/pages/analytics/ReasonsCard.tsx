@@ -1,5 +1,6 @@
-import { Card, CardBody, CardHeader, CHART, DonutChart, ParetoChart, SERIES_COLORS, StackedHBars } from "@/components/ui";
-import { DX_GROUPS, DX_LABEL, type DxId } from "@/data/decisions";
+import { Card, CardBody, CardHeader, CHART, DonutChart, HBarChart, ParetoChart, StackedHBars } from "@/components/ui";
+import { PAYER_ORDER, REASON_CATEGORIES, type ReasonCategory } from "@/data/analytics";
+import { DX_LABEL, type DxId } from "@/data/decisions";
 import { payerById } from "@/data/seed";
 import type { Board } from "./board";
 import type { CaseQuery } from "./query";
@@ -28,7 +29,9 @@ export function ReasonsCard({ board, onOpen }: { board: Board; onOpen: (q: CaseQ
     { key: "preventable", label: "Preventable", value: r.preventable, color: CHART.mid, hatch: true, note: "The team could have fixed it before sending" },
     { key: "not", label: "Not preventable", value: total - r.preventable, color: CHART.umber, note: "The payer read its criteria differently" },
   ];
-  const legend = [...r.topLabels, "Other reasons"].map((label, i) => ({ key: label, label, color: SERIES_COLORS[i] ?? SERIES_COLORS[5] }));
+  const CAT_COLOR: Record<ReasonCategory, string> = { documentation: CHART.forest, timing: CHART.mid, level: CHART.risk, admin: CHART.neutral };
+  const legend = REASON_CATEGORIES.map((c) => ({ key: c.id, label: c.label, color: CAT_COLOR[c.id] }));
+  const prevByPayer = PAYER_ORDER.map((p) => ({ p, n: board.cur.filter((d) => d.payerId === p && d.outcome !== "approved").length, k: board.cur.filter((d) => d.payerId === p && d.outcome !== "approved" && d.preventable).length })).filter((x) => x.n > 0).sort((a, b) => b.k - a.k);
   return (
     <Card data-testid="reasons-card">
       <CardHeader title="Denial reasons" subtitle={`${fmt(total)} denials, ${fmt(r.preventable)} of them preventable (${share}%). Click a reason, a slice or a bar to see its cases.`} />
@@ -63,21 +66,35 @@ export function ReasonsCard({ board, onOpen }: { board: Board; onOpen: (q: CaseQ
               summary={`${r.preventable} of ${total} denials (${share}%) were preventable; ${total - r.preventable} were not.`}
               table={{ caption: "Preventable denials", head: ["Kind", "Denials", "Share"], rows: parts.map((p) => [p.label, p.value, `${pctOf(p.value, total)}%`]) }}
             />
+            {prevByPayer.length > 1 ? (
+              <div className="mt-6">
+                <h4 className="mb-1 text-[15px] font-semibold">Preventable denials by payer</h4>
+                <HBarChart
+                  ariaLabel="Preventable denials by payer"
+                  rows={prevByPayer.map((x) => ({ key: x.p, label: payerById(x.p).shortName, value: x.k, display: String(x.k), sub: `${pctOf(x.k, x.n)}% of ${x.n} denials`, color: CHART.mid }))}
+                  max={Math.max(1, ...prevByPayer.map((x) => x.k))}
+                  labelWidth={120}
+                  valueWidth={36}
+                  onRow={(k) => onOpen({ payer: k as (typeof PAYER_ORDER)[number], flag: "preventable", title: `${payerById(k as (typeof PAYER_ORDER)[number]).name}: preventable denials`, note: "The team could have fixed the documentation or the timing before sending." })}
+                  summary={`Preventable denials by payer: ${prevByPayer.map((x) => `${payerById(x.p).shortName} ${x.k}`).join(", ")}.`}
+                  table={{ caption: "Preventable denials by payer", head: ["Payer", "Preventable", "All denials"], rows: prevByPayer.map((x) => [payerById(x.p).name, x.k, x.n]) }}
+                />
+              </div>
+            ) : null}
           </div>
         </div>
         <div>
           <h4 className="mb-0.5 text-[15px] font-semibold">Reasons by diagnosis group</h4>
-          <p className="mb-3 text-[13px] text-muted">Each bar is the mix of reasons behind that group's denials. The number is how many denials. Click a bar for its cases.</p>
+          <p className="mb-3 text-[13px] text-muted">Each bar is the mix of reasons behind that group's denials, in four kinds. The number is how many denials. Hover a segment for its count; click a bar for its cases.</p>
           <StackedHBars
             ariaLabel="Denial reasons by diagnosis group"
             legend={legend}
-            rows={r.byDx.map((d) => ({ key: d.dx, label: DX_LABEL[d.dx], total: d.total, segments: d.segments.map((s, i) => ({ key: s.label, label: s.label, value: s.count, color: SERIES_COLORS[i] ?? SERIES_COLORS[5] })) }))}
+            rows={r.byDx.map((d) => ({ key: d.dx, label: DX_LABEL[d.dx], total: d.total, segments: d.segments.map((s) => ({ key: s.id, label: s.label, value: s.count, color: CAT_COLOR[s.id] })) }))}
             onRow={(k) => onOpen({ dx: k as DxId, outcome: "notApproved", title: `${DX_LABEL[k as DxId]}: denials`, note: "Every denial for this diagnosis group, denied or approved in part." })}
             summary={`Denials by diagnosis group: ${r.byDx.map((d) => `${DX_LABEL[d.dx]} ${d.total}`).join(", ")}.`}
             table={{ caption: "Denial reasons by diagnosis group", head: ["Diagnosis group", ...legend.map((l) => l.label), "Total"], rows: r.byDx.map((d) => [DX_LABEL[d.dx], ...d.segments.map((s) => s.count), d.total]) }}
           />
         </div>
-        <p className="sr-only">{DX_GROUPS.length} diagnosis groups.</p>
       </CardBody>
     </Card>
   );

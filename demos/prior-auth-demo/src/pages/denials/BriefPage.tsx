@@ -28,7 +28,7 @@ export default function BriefPage() {
   const [dialog, setDialog] = useState<"book" | "outcome" | null>(null);
   const toast = useStore((s) => s.toast);
 
-  if (outside) return <Page><OutOfSite id={outside.caseId} what="brief" /></Page>;
+  if (outside) return <Page><OutOfSite id={outside} what="brief" /></Page>;
   if (!view)
     return (
       <Page>

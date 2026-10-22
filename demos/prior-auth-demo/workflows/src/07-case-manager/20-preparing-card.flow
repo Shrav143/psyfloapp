@@ -18,7 +18,7 @@ screen sh "Top right of the opened row\nGhost button '4 sent today', then the ch
 
 click c1 "Click '4 sent today'"
 process p3 "Go to /dashboard?stage=received"
-goto g1 "Continues in: Dashboard › Key figures › Click a figure to filter the list"
+goto g1 "Continues in: Dashboard › Lifecycle › Click a state to filter the table"
 click c2 "Click a chip"
 decision d1 "Which chip?"
 process k1 "'All': every row"

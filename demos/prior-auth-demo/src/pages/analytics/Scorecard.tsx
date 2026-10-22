@@ -37,7 +37,7 @@ export function Scorecard({ board, onPayer, onCases }: { board: Board; onPayer: 
       <Table>
         <thead>
           <tr>
-            <Th className="px-3 py-3 first:pl-6">Payer</Th>
+            <Th className="min-w-[230px] px-3 py-3 first:pl-6">Payer</Th>
             <Th className={head}>Decisions</Th>
             <Th className={head}>Approval rate</Th>
             <Th className={head}>Denial rate</Th>
@@ -61,7 +61,7 @@ export function Scorecard({ board, onPayer, onCases }: { board: Board; onPayer: 
                       <div className="text-[12px] font-normal text-muted">{r.plan}</div>
                     </div>
                   ) : (
-                    <button type="button" onClick={(e) => (e.stopPropagation(), onPayer(r.payer as BuiltInPayerId))} aria-label={`${r.name}: open the payer analysis`} className="text-left">
+                    <button type="button" onClick={(e) => (e.stopPropagation(), onPayer(r.payer as BuiltInPayerId))} aria-label={`${r.name}: open the payer analysis`} className="text-left whitespace-nowrap">
                       <span className="block font-semibold underline decoration-1 underline-offset-[3px] hover:text-forest">{r.name}</span>
                       <span className="block text-[12px] text-muted">{r.plan}</span>
                     </button>
@@ -99,13 +99,13 @@ export function Scorecard({ board, onPayer, onCases }: { board: Board; onPayer: 
                 </Td>
                 <Td className={cn(cell, "text-right tabular-nums")}>
                   {r.s.rulings > 0 ? (
-                    <button type="button" onClick={figure(r, "appeals ruled on", { flag: "ruled" })} aria-label={`${r.name}: ${r.s.overturned} of ${r.s.rulings} appeals overturned. List the cases.`} className="underline decoration-dotted underline-offset-[3px] hover:text-forest">
-                      {pct(r.overturn)}
+                    <button type="button" onClick={figure(r, "appeals ruled on", { flag: "ruled" })} aria-label={`${r.name}: ${r.s.overturned} of ${r.s.rulings} appeals overturned. List the cases.`} title={r.overturn === null ? "Too few rulings for a percent" : undefined} className="underline decoration-dotted underline-offset-[3px] hover:text-forest">
+                      {r.overturn === null ? `${r.s.overturned} of ${r.s.rulings}` : pct(r.overturn)}
                     </button>
                   ) : (
                     dash
                   )}
-                  {r.s.rulings > 0 ? <span className="ml-1 text-[12px] font-normal text-muted">({r.s.overturned} of {r.s.rulings})</span> : null}
+                  {r.overturn !== null ? <span className="ml-1 text-[12px] font-normal text-muted">({r.s.overturned} of {r.s.rulings})</span> : null}
                 </Td>
                 <Td className={cn(cell, "text-right last:pr-6")}>
                   <Trend delta={r.trend} />

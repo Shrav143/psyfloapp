@@ -98,6 +98,13 @@ export function insightsFor(payer: BuiltInPayerId, payerRows: readonly Decision[
   for (const cand of out.sort((a, b) => b.score - a.score)) if (picked.length < 3 && !picked.some((p) => p.type === cand.type)) picked.push(cand);
   const lines = picked.map((p) => p.text);
   const gap = rate - clinicRate;
-  if (lines.length < 3) lines.push(`Approves ${rate}% as requested, ${gap === 0 ? "level with" : `${Math.abs(gap)} ${Math.abs(gap) === 1 ? "point" : "points"} ${gap > 0 ? "above" : "below"}`} the clinic's payers (${clinicRate}%).`);
+  const cutShare = pctOf(s.partial, s.notApproved);
+  const fallbacks = [
+    `Approves ${rate}% as requested, ${gap === 0 ? "level with" : `${Math.abs(gap)} ${Math.abs(gap) === 1 ? "point" : "points"} ${gap > 0 ? "above" : "below"}`} the clinic's payers (${clinicRate}%).`,
+    days !== null && clinicDays !== null ? `Takes ${days.toFixed(1)} days to decide on average; the clinic's payers average ${clinicDays.toFixed(1)}.` : "",
+    s.notApproved > 0 && cutShare !== null ? `${s.partial} of its ${s.notApproved} denials (${cutShare}%) were approvals in part, with days or units cut; the rest were denied outright.` : "",
+    `Asks for more information on ${infoRate}% of requests (${clinicInfo}% across the clinic's payers).`,
+  ].filter(Boolean);
+  for (const f of fallbacks) if (lines.length < 3) lines.push(f);
   return lines.slice(0, 3);
 }

@@ -10,6 +10,7 @@ import { paths } from "@/routes";
 import { useStore } from "@/store";
 import { selectWriteBackOn } from "@/store/emr";
 import { PAYER_ROW_LABEL, isDenial, nextLine } from "./helpers";
+import { CMS_DAYS, cmsClock } from "@/lib/doNext";
 import { chanceFacts, nextCheckIn, sentAt } from "./requestFacts";
 import { DemoControls, StateActions } from "./RequestActions";
 
@@ -35,6 +36,8 @@ function checkBanner(r: PsyRequest): ReactNode {
 export function RequestDrawer({ request: r, onClose, onSwitch }: { request: PsyRequest; onClose: () => void; onSwitch: (id: string) => void }) {
   const navigate = useNavigate();
   const writeBackOn = useStore(selectWriteBackOn);
+  const clock = useStore((s) => s.clock);
+  const cms = cmsClock(r, clock);
   const [checking, setChecking] = useState(false);
 
   const payer = payerById(r.payerId);
@@ -90,6 +93,7 @@ export function RequestDrawer({ request: r, onClose, onSwitch }: { request: PsyR
           items={[
             ["Patient", `${r.patient.initials}, ${r.patient.age}`],
             ["Held by", <span key="a" className="inline-flex flex-wrap items-center gap-2"><AgentChip agent={r.agent} /><span className="font-normal">{nextLine(r, writeBackOn)}</span></span>],
+            ...(cms && (cms.hint || cms.past) ? [["Decision time", <span key="cms" className="font-normal text-mid-ink">{cms.past ? `Past ${CMS_DAYS} days` : `Day ${cms.day} of ${CMS_DAYS}`} under the CMS rule for Medicaid managed care</span>] as [string, ReactNode]] : []),
             ...(facts ? [[denial ? "Chance of winning" : "Approval chance", `${facts.chance}% · ${band(facts.chance).word} · likely ${facts.low} to ${facts.high}% · ${facts.similar.toLocaleString("en-US")} similar cases`] as [string, ReactNode]] : []),
           ]}
         />

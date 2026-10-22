@@ -7,7 +7,7 @@ import type { MissingItem } from "./missing";
 
 const FIX_LABEL: Record<FixKind, string> = { intake: "Open Intake", eligibility: "Open Eligibility & Benefits", records: "Open Clinical documentation", edit: "Edit the summary", scribe: "Send back to Scribe" };
 
-/** The first thing on Review and sign: what is missing, blocking items first, each with the action that fixes it. This is the page's one alert. */
+/** The first thing on Review & submit: what is missing, blocking items first, each with the action that fixes it. This is the page's one alert. */
 export function MissingCard({ draft, items, onFix }: { draft: CaseDraft; items: MissingItem[]; onFix: (fix: FixKind) => void }) {
   if (items.length === 0) {
     return (

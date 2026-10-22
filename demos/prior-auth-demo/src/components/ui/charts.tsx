@@ -84,8 +84,12 @@ export function Columns({ data, height = 140, color = "#2F6F5C", highlight }: { 
 export function Sparkline({ data, width = 120, height = 32, color = "#2F6F5C", fluid, area, dot, label }: { data: (number | null)[]; width?: number; height?: number; color?: string; fluid?: boolean; area?: boolean; dot?: boolean; label?: string }) {
   const vals = data.filter((v): v is number => v !== null);
   if (vals.length < 2) return null;
-  const min = Math.min(...vals);
-  const max = Math.max(...vals);
+  /* A line over values that barely move should not look like a mountain range: the scale never gets tighter than a fifth of the average. */
+  const mean = vals.reduce((a, v) => a + v, 0) / vals.length;
+  const mid = (Math.min(...vals) + Math.max(...vals)) / 2;
+  const half = Math.max((Math.max(...vals) - Math.min(...vals)) / 2, Math.abs(mean) * 0.1);
+  const min = mid - half;
+  const max = mid + half;
   const pad = 3;
   const x = (i: number): number => pad + (i / (data.length - 1)) * (width - pad * 2);
   const y = (v: number): number => height - pad - ((v - min) / (max - min || 1)) * (height - pad * 2);

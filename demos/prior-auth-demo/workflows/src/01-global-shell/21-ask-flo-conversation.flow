@@ -1,12 +1,12 @@
 title: Global shell › Top bar › Ask FLO › Ask a question
 route: Every page (Ask FLO drawer)
-intro: Open the drawer, pick a suggested question or type one, and read FLO's answer. The suggestions follow the screen the person is on. FLO answers from the demo data after a short pause. What it says for each kind of question is in the next two diagrams.
+intro: Open the drawer, pick a suggested question or type one, and read FLO's answer. The suggestions follow the screen the person is on. FLO answers from the demo data after a short pause, and only from the cases the viewer may see at the sites in view. What it says for each kind of question is in the next two diagrams.
 dir: TD
-also: The chat lives in the page, not in the demo data. It survives closing the drawer and changing pages, and 'Reset demo data' does not clear it. Reloading the browser does. The suggestions are worked out when the drawer opens, so a case page names its own case and payer.
+also: The chat lives in the page, not in the demo data. It survives closing the drawer and changing pages, and 'Reset demo data' does not clear it. Reloading the browser does, and so does a change of viewer or of site (see the last row). The suggestions are worked out when the drawer opens, so a case page names its own case and payer.
 ---
 start s1 "Click 'Ask FLO' in the top bar"
 overlay o1 "Ask FLO drawer opens\nTitle 'Ask FLO', subtitle 'Your assistant, answering from your data'"
-agent a1 "FLO says: 'Hi Jordan, I am FLO. Ask me about your requests, a payer, or your denials. I answer from the data on your Dashboard.'"
+agent a1 "FLO greets the person by name and says which sites it reads:\n'Hi Jordan, I am FLO. Ask me about your requests, a payer, or your denials. I answer from the data you can see: Both sites.'\nFor Dr. Rivera: 'Hi Dr. Rivera, ... I answer from the data you can see: Site A.'"
 decision dr "Which screen is open?"
 overlay o2 "Four suggestion chips under the chat:\n'What needs me today?'\n'What is due soonest?'\n'Which payers are slowest right now?'\n'Why is Cardinal's approval rate down?'\nAny other screen, or a case page that cannot be found"
 overlay oc "Three chips on a case page (/authorizations/case/R-1042):\n'What is missing for R-1042?'\n'When does this authorization run out?'\n'What does Summit require?'\nA line above them: 'Suggested for R-1042'"
@@ -37,7 +37,11 @@ process p6 "Open it again, on any page: the same chat is there\nTyped questions 
 end e1 "Back on the page"
 endx e2 "No question sent"
 
+start s2 "Change the viewer (Demo menu, 'Viewing as') or the site (top bar: Both sites, Site A, Site B)"
+process pv "The conversation starts again with a new greeting\nWhatever FLO said about the other view, including case IDs, does not stay on screen\nThe chips are worked out again for the view"
+
 s1 --> o1 --> a1 --> dr
+s2 --> pv --> a1
 dr -->|Case page| oc --> d1
 dr -->|Case Manager| om --> d1
 dr -->|Denial Intelligence| od --> d1

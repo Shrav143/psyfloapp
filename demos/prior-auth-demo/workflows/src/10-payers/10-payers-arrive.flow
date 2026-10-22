@@ -1,6 +1,6 @@
 title: Payers › Arrive on the page
 route: /payers
-intro: How a person lands on Payers, which payer and tab they see first, what the badges count, and where each control on the page leads. Every other Payers diagram starts from one of the hand offs at the bottom.
+intro: How a person lands on Payers, which payer and tab they see first, what the badges count, and where each control on the page leads. Payers are the same for every viewer and site view; only the drafts an update can redraft follow the site. Every other Payers diagram starts from one of the hand offs at the bottom.
 dir: TD
 ---
 start s1 "Click 'Payers' in the sidebar\nunder Connections"
@@ -47,6 +47,7 @@ goto g_proc "Continues in: Payers › Process › Read the workflow"
 goto g_rules "Continues in: Payers › Rules › Read the rules"
 goto g_docs "Continues in: Payers › Documents › Read the document list"
 goto g_chg "Continues in: Payers › Changes › Read what changed"
+goto g_site "Continues in: Payers › Sites › Clinic-wide payers, drafts in view"
 
 s1 --> p1 --> d1
 s2 --> p2 --> d1
@@ -56,6 +57,7 @@ d2 -->|No, or missing| p5 --> pg
 d2 -->|Yes| p6 --> pg
 pg --> list & head & tabs & c_add
 pg -.-> b1
+pg -.-> g_site
 tabs -.-> b2
 list --> c_pick & c_search
 c_pick --> g_list

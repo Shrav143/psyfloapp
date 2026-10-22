@@ -1,56 +1,46 @@
-title: Dashboard › Requests table › Read a row: bars, clock and what happens next
+title: Dashboard › Requests table › Read a row: units, window, next action and owner
 route: /dashboard
-intro: What each cell of a row means. The bars and the clock follow different rules for a normal request and for a denial (an ID that starts with D-). Nothing in these cells is a button except the case ID and Open. Case, Payer, Where it is and Clock can be sorted from their headings.
+intro: What each cell of a row means. Nothing in a row is a button except the case ID, and a click on the row itself opens the request drawer. Units and Window come from the Case Manager ledger and show a dash when the case has no approval. Next action and Owner come from where the request is. No dollar figures, no progress bars.
 dir: TD
 ---
-start s1 "A row in the Requests table"
-screen c1 "Case\nUnderlined ID, e.g. 'R-1042', and the request type, e.g. 'Admission'"
-screen c2 "Payer\nShort name: 'Summit Medicaid', 'Cardinal', 'Beacon PPO', 'Harborview MA', 'Lakeshore', 'Evergreen'\nProgram under it: 'Residential 3.5', 'IOP', 'PHP', 'Detox'"
+start s1 "A row in the authorizations table"
+screen c1 "Case\nUnderlined ID, e.g. 'R-1042', and the patient under it: initials and age, 'J.M., 34'"
+screen c2 "Payer, then Service\nShort payer name; level of care ('Residential 3.5', 'IOP', 'PHP', 'Detox') with the request type under it"
+screen c3 "Status\nOne plain word: Awaiting sign-off, Submitted, Decision pending, Info requested, or for a decided or denied request its own state ('Approved', 'Call booked', 'Appeal filed')"
+screen c4 "Days in state\nA number such as '3.2 d', '14 h' or '35 m', with 'median 2 d' under it\nA flag when a Medicaid managed care payer is near or past the CMS time"
 
-decision d1 "Is it a denial? (ID starts with D-)"
-screen w1 "Where it is\nChip such as 'Info requested' and four bars\n'Prepared, Received, In review, Decided'"
-screen w2 "Where it is\nChip such as 'Call booked' and four bars\n'Call, Appeal 1, Appeal 2, External'"
-process w3 "Bars: done are green, the current one is dark green (ochre when the chip is amber), later ones are grey\nHover shows 'Progress: Prepared, Received, In review, Decided. Now at In review.' or 'Route: Call, Appeal 1, Appeal 2, External. Now at Call.'"
+decision u1 "Does the Case Manager ledger hold an approval for this case?"
+screen u2 "Units\n'48 → 10' (approved to left) with 'units' or 'days' under it"
+screen u3 "Window\n'Sep 22 – Oct 20'\nThe end is the ledger's expiry clock, or today plus what is left; the start is the end minus the approved length"
+screen u4 "Units and Window show a quiet dash"
 
-group gClock "Clock column"
-  decision k1 "Does the row carry a fixed note?"
-  screen k2 "Note, e.g. 'decision 11/02'\nUnder it 'filed 10/05'"
-  decision k3 "Is there a deadline (an open denial)?"
-  decision k4 "How much time is left?"
-  screen k5 "'window closed'"
-  screen k6 "'36 h left' in red\nUnder 2 days; under it e.g. 'peer-to-peer window'"
-  screen k7 "'3 days left' in ochre\nUnder 7 days; under it 'to resubmit' or 'to file'"
-  screen k8 "'12 days left' in plain text"
-  decision k9 "Is the stage Decided? (an approval)"
-  screen k10 "'today'\nUnder it 'approved 1 h 30 m ago'"
-  decision k11 "How long in this stage compared with typical?"
-  screen k12 "'1 d 14 h' and 'typical 1 d'\nOver 1.5 × typical adds ochre 'late'"
-  screen k13 "'4 d 12 h' and 'typical 2 d'\nOver 2 × typical adds red 'very late'"
-  screen k14 "'1 h 12 m' and 'typical 2 h'\nWithin typical, plain text"
-endgroup
-
-screen n1 "What happens next\nAgent badge and a line, e.g. 'Needs your input. Scribe has a question' or 'Navigator checks again in 5 minutes'\nAn approval says 'Write-back is off in EMR Connect' instead of 'Write-back waits for you' while write-back is off"
+decision n1 "Where is the request?"
+screen n2 "Next action 'Review and sign'\nOwner You: Awaiting sign-off, every check passed"
+screen n3 "'Answer Scribe' or 'Answer Packet'\nOwner You: an agent has a question"
+screen n4 "'Wait for Reader', 'Wait for Packet'\nOwner that agent: agents are still working"
+screen n5 "'Review and send'\nOwner You: Info requested, the draft answer is ready"
+screen n6 "'Chase the payer'\nOwner You, or Caller when Caller is already phoning\nSubmitted or Decision pending, 4 or more hours late, or on day 5 of the CMS clock or later"
+screen n7 "'Wait for the decision'\nOwner the payer, e.g. 'Cardinal'"
+screen n8 "'Approve write-back' (Owner You, only while write-back is on) or 'Start renewal' (Owner You) or 'No action needed' (Owner Cadence)"
+screen n9 "'Prepare the P2P call'\nOwner You, a denial with a peer-to-peer call; otherwise 'Wait for the decision' (the payer) or 'Wait for' an agent"
+screen n10 "A quiet line under the verb\nThe due time, e.g. 'Notice due in 5 h', when it is inside 2 days; terracotta inside 6 hours"
 goto g1 "Continues in: Dashboard › Requests table › Order, rows and paging"
-goto g2 "Continues in: Dashboard › Header › Check all now and the demo clock"
+goto g2 "Continues in: Dashboard › Requests table › Days in state and the CMS decision time"
 goto g3 "Continues in: Dashboard › Requests table › Sort the rows"
+goto g4 "Continues in: Case Manager › Active cases › Units or days left and the run-out flag"
 
-s1 --> c1 --> c2 --> d1
-d1 -->|No| w1 --> w3
-d1 -->|Yes| w2 --> w3
-w3 --> k1
-k1 -->|Yes| k2 --> n1
-k1 -->|No| k3
-k3 -->|Yes| k4
-k4 -->|Zero or less| k5 --> n1
-k4 -->|Under 2 days| k6 --> n1
-k4 -->|2 to 7 days| k7 --> n1
-k4 -->|7 days or more| k8 --> n1
-k3 -->|No| k9
-k9 -->|Yes| k10 --> n1
-k9 -->|No| k11
-k11 -->|Over 1.5 times| k12 --> n1
-k11 -->|Over 2 times| k13 --> n1
-k11 -->|Within typical| k14 --> n1
-n1 --> g1
-k11 -.-> g2
-s1 -.-> g3
+s1 --> c1 --> c2 --> c3 --> c4 --> u1
+u1 -->|Yes| u2 --> u3 --> n1
+u1 -->|No| u4 --> n1
+n1 -->|Awaiting sign-off, ready| n2 --> n10
+n1 -->|Awaiting sign-off, a question| n3 --> n10
+n1 -->|Awaiting sign-off, agents working| n4 --> n10
+n1 -->|Info requested| n5 --> n10
+n1 -->|Submitted or Decision pending, late| n6 --> n10
+n1 -->|Submitted or Decision pending, on time| n7 --> n10
+n1 -->|Decided today, approved| n8 --> n10
+n1 -->|Denial route| n9 --> n10
+n10 --> g1
+c4 -.-> g2
+c1 -.-> g3
+u2 -.-> g4

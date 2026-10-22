@@ -1,9 +1,9 @@
 title: Dashboard › Request drawer › Open and read a request
 route: /dashboard?request=P-1499
-intro: The drawer is one scroll, with no tabs. It opens from a row, a case ID, 'Open', or a link with ?request=ID, and shows who holds the request, its history and what is next. The sections change with the request's stage. The long lines are folded under 'Details'.
+intro: The drawer is one scroll, with no tabs. It opens from a row, a case ID, a Do next button, or a link with ?request=ID, and shows who holds the request, its history and what is next. The sections change with the request's stage. The long lines are folded under 'Details'.
 dir: TD
 ---
-start s1 "Click a row, a case ID or 'Open' in the Requests table"
+start s1 "Click a row or a case ID in the table, or a Do next button such as 'Review answer'"
 start s2 "Follow a link with ?request=ID\nA notification, 'See on the Dashboard', 'Open R-xxxx' on another page"
 process p1 "Address gets ?request=ID\nThe page is dimmed behind the drawer"
 overlay o1 "Request drawer slides in from the right\nHeader, body, footer"
@@ -15,7 +15,7 @@ endgroup
 
 group gBody "Body, from the top down"
   screen b1 "Action box (only some requests)\n'Needs your input', 'Packet is drafting the answer' or 'Approved. Write-back waits for you'\nThe last one shows only while write-back is on in EMR Connect; otherwise a calm line says it is off"
-  screen b2 "Facts\nPatient 'E.S., 42', Held by (agent and next step)"
+  screen b2 "Facts\nPatient 'E.S., 42', Held by (agent and next step)\nFor a Medicaid managed care request on day 5 of the CMS clock or later: 'Decision time: Day 5 of 7 under the CMS rule for Medicaid managed care' (or 'Past 7 days')"
   decision d1 "Does the request have a chance figure?"
   screen b3 "'Approval chance' or, for a denial, 'Chance of winning'\n'74% · Moderate · likely 66 to 82% · 219 similar cases'"
   screen b5 "History\nEvery event, oldest first, or 'No events yet.'\nGreen dot with the time; dashed dot with 'Scheduled · time'"

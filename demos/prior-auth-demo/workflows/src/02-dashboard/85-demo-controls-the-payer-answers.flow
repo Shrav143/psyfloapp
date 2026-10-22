@@ -21,13 +21,13 @@ process p0 "'Payer received it' is never shown\nEvery sent request is already Re
 ext x2 "Payer replies through its portal, fax or phone\n(demo: simulated by these buttons)"
 
 click c2 "Click 'Under review'"
-store w2 "Stage Under review, bars at In review\nTime in stage restarts\nHistory 'Navigator checked: under review' and a dashed 'Caller will phone the payer if it is still pending'"
+store w2 "Status Decision pending\nDays in state restart\nHistory 'Navigator checked: under review' and a dashed 'Caller will phone the payer if it is still pending'"
 toast t2 "'Demo: Cardinal has it under review'\n'The stage counts and the table updated.'\nThe payer's short name, here Cardinal"
 click c3 "Click 'Asks for information'"
 store w3 "Stage Info requested (amber), needs you\nPacket holds it; next step 'Packet drafted the answer. Waiting for your review'\nHistory 'The payer asked for more information'"
 toast n1 "Notification 'Payer asked for info'\n'The payer wants more on R-1021. Packet drafted the answer.'"
 toast t3 "'Demo: Cardinal asks for information'\n'The stage counts, the table and the notifications updated.'"
-screen sc "Dashboard behind the drawer\nThe key figures, the Summary from FLO, the row and its chip, bars and clock update at once\nIn a filtered list the row may drop out; the drawer stays open"
+screen sc "Dashboard behind the drawer\nThe title, the Lifecycle chips, Do next and the row (status, days in state, next action, owner) update at once\nIn a filtered list the row may drop out; the drawer stays open"
 screen sd "Drawer updates in place\nChip, action box, history, the 'Details' lines and the offered buttons follow the new stage"
 
 click c4 "Click 'Approves', 'Approves part' or 'Denies'"

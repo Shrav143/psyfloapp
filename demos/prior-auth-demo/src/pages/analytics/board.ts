@@ -1,4 +1,4 @@
-import { ACTIONS, PAYER_ORDER, PROGRAM_ORDER, type PeriodInfo } from "@/data/analytics";
+import { ACTIONS, PAYER_ORDER, PROGRAM_ORDER, REASON_CATEGORIES, REASON_CATEGORY, type PeriodInfo, type ReasonCategory } from "@/data/analytics";
 import { DX_GROUPS, KINDS, KIND_LABEL, MONTHS, POPULATIONS, cmsApplies, type Decision, type DxId, type MonthInfo, type PopulationId } from "@/data/decisions";
 import type { RequestKind } from "@/data/queue";
 import { payerById } from "@/data/seed";
@@ -126,6 +126,11 @@ export interface ScoreRow {
   trend: number | null;
   spark: (number | null)[];
 }
+/** "Managed care plan, Ohio Medicaid" is longer than a row needs: the plan type and the group, without repeating a word. */
+export const planOf = (payer: BuiltInPayerId): string => {
+  const p = payerById(payer);
+  return p.type === p.group || p.group.toLowerCase().includes(p.type.toLowerCase()) ? p.group : `${p.type} · ${p.group}`;
+};
 function scoreRow(payer: BuiltInPayerId | "all", rows: readonly Decision[], period: PeriodInfo): ScoreRow {
   const cur = rows.filter((d) => inMonths(d, period.months));
   const s = statsOf(cur);
@@ -137,7 +142,7 @@ function scoreRow(payer: BuiltInPayerId | "all", rows: readonly Decision[], peri
   return {
     payer,
     name: payer === "all" ? "All payers" : payerById(payer).name,
-    plan: payer === "all" ? "Every payer in view" : `${payerById(payer).type}, ${payerById(payer).group}`,
+    plan: payer === "all" ? "Every payer in view" : planOf(payer),
     s,
     approval: shownPct(s.approved, s.n),
     denial: shownPct(s.notApproved, s.n),
@@ -225,7 +230,7 @@ export interface ReasonRow {
 export interface DxReasons {
   dx: DxId;
   total: number;
-  segments: { label: string; count: number }[];
+  segments: { id: ReasonCategory; label: string; count: number }[];
 }
 export interface Reasons {
   total: number;
@@ -233,9 +238,8 @@ export interface Reasons {
   preventable: number;
   other: number;
   byDx: DxReasons[];
-  topLabels: string[];
 }
-const TOP_REASONS = 8;
+const TOP_REASONS = 10;
 
 /** Denial reasons across the payers in view, one row per reason as worded (a reason two payers give is one row). */
 export function buildReasons(rows: readonly Decision[]): Reasons {
@@ -258,14 +262,11 @@ export function buildReasons(rows: readonly Decision[]): Reasons {
   const rest = all.slice(TOP_REASONS);
   const otherCount = sum(rest.map((r) => r.count));
   const rows2: ReasonRow[] = [...top, ...(rest.length ? [{ label: `${rest.length} other ${rest.length === 1 ? "reason" : "reasons"}`, count: otherCount, share: pctOf(otherCount, total) ?? 0, cum: 100, preventable: rest.every((r) => r.preventable), payers: [...new Set(rest.flatMap((r) => r.payers))], other: true as const, labels: rest.map((r) => r.label) }] : [])];
-  const topLabels = top.slice(0, 5).map((r) => r.label);
   const byDx: DxReasons[] = DX_GROUPS.map((dx) => {
     const mine = denials.filter((d) => d.dx === dx.id);
-    const segs = topLabels.map((label) => ({ label, count: mine.filter((d) => d.reason === label).length }));
-    const other = mine.length - sum(segs.map((s) => s.count));
-    return { dx: dx.id, total: mine.length, segments: [...segs, { label: "Other reasons", count: other }] };
+    return { dx: dx.id, total: mine.length, segments: REASON_CATEGORIES.map((c) => ({ id: c.id, label: c.label, count: mine.filter((d) => REASON_CATEGORY[d.reason as string] === c.id).length })) };
   });
-  return { total, rows: rows2, preventable: denials.filter((d) => d.preventable).length, other: otherCount, byDx, topLabels };
+  return { total, rows: rows2, preventable: denials.filter((d) => d.preventable).length, other: otherCount, byDx };
 }
 
 /* ------------------------------------------------------------------ length of stay */

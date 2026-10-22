@@ -56,6 +56,8 @@ export default function NewCasePage() {
       return;
     }
     if (created.current) return;
+    const ref = params.get("referral");
+    if (ref && !scope.has(ref)) return;
     created.current = true;
     const st = useStore.getState();
     const { init, missingReferral, patient } = initialDraft(params, st);
@@ -66,7 +68,7 @@ export default function NewCasePage() {
     const step = stepIdOf(params.get("step"));
     if (step) st.patchCaseDraft(id, stepPatchOf(step));
     nav(paths.newCase({ draft: id }), { replace: true });
-  }, [draftId, params, nav]);
+  }, [draftId, params, nav, scope]);
 
   /* A draft whose agents already ran reopens on the agents step, not on intake. */
   useEffect(() => {
@@ -84,10 +86,18 @@ export default function NewCasePage() {
     // Only when the address changes: the person moves between steps with the stepper afterwards.
   }, [draft?.id, params]);
 
+  /* A new case with no patient and no ID yet belongs wherever the person is working: narrowing the view to the other site moves it there, instead of hiding it. */
+  useEffect(() => {
+    if (draft && !draft.caseId && !draft.patientId && !draft.sent && !scope.sites.includes(draft.site)) patch(draft.id, { site: scope.sites[0] });
+  }, [draft?.id, draft?.site, draft?.caseId, draft?.patientId, scope.sites]);
+
   const ready = !!draft && draft.run.done >= RUN_STEPS.length;
   const review = useMemo(() => (env && ready ? reviewModel(env, context, adds) : null), [env, ready, context, adds]);
   const steps = useMemo(() => (env ? stepStates(env, review, holding) : null), [env, review, holding]);
 
+  /* A link that starts a case from a referral at a site the viewer cannot see shows the notice, and no case is made. */
+  const refParam = params.get("referral");
+  if (!draftId && refParam && !scope.has(refParam)) return <OutOfSite id={refParam} what="referral" />;
   if (!draftId) return null;
   if (!draft || !env || !steps) {
     return (

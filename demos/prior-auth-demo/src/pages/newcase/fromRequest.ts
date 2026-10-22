@@ -106,7 +106,7 @@ export function requestDraft(base: CaseDetail, work: CaseWork, clock: number, ct
 }
 
 /** A draft that already exists keeps what the person did there. It takes from the request what the case page changed since: the answers the applied actions gave,
-    the therapy note, and a finished run once every check passes. It moves to the step that fits: Review and sign when ready, Agents work when agents have work left. */
+    the therapy note, and a finished run once every check passes. It moves to the step that fits: Review & submit when ready, Authorization preparation when agents have work left. */
 export function mergeRequestDraft(d: CaseDraft, target: CaseDraft, state: RequestState): CaseDraft {
   if (d.sent) return d;
   const answers = [...d.answers, ...target.answers.filter((a) => !d.answers.some((x) => x.key === a.key))];
@@ -114,7 +114,7 @@ export function mergeRequestDraft(d: CaseDraft, target: CaseDraft, state: Reques
   const documents = therapy && !d.documents.some((x) => x.slot === "therapy_note") && !("therapy_note" in d.unavailable) ? [...d.documents, therapy] : d.documents;
   const open = d.run.question && !answers.some((a) => a.key === d.run.question) ? d.run.question : null;
   if (state === "ready") return { ...d, answers, documents, run: { ...target.run, skipped: d.run.skipped }, step: 2 };
-  /* A run that already finished stays where the person left it: Review and sign. Otherwise the agents still have work to do. */
+  /* A run that already finished stays where the person left it: Review & submit. Otherwise the agents still have work to do. */
   const finished = d.run.done >= RUN_STEPS.length;
   return { ...d, answers, documents, run: { ...d.run, question: open }, step: finished ? d.step : d.run.done > 0 || d.step >= 1 ? 1 : d.step };
 }

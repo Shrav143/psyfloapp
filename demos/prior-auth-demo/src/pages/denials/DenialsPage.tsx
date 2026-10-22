@@ -25,6 +25,7 @@ import { SCOPE_NOTE, isClosed, isFiled, sortOpen } from "./lib/format";
 import { recommendedStep } from "./lib/step";
 import { useDenialView } from "./lib/useDenialView";
 import { useLetter } from "./lib/useLetter";
+import { cardIdOf } from "./lib/useOutOfSite";
 import { OpenDenialsPanel } from "./OpenDenialsPanel";
 import { OptionsSummary } from "./OptionsCard";
 import { OptionsPanel } from "./OptionsPanel";
@@ -99,7 +100,7 @@ export default function DenialsPage() {
     </Button>
   );
 
-  if (wantedReq && !inView(wantedReq)) return <Page><OutOfSite id={wantedReq.caseId} what="denial" /></Page>;
+  if (wantedReq && !inView(wantedReq)) return <Page><OutOfSite id={cardIdOf(wantedReq, meta[wantedReq.id])} what="denial" /></Page>;
   const choosing = view?.req.stage === "appeal" && !isFiled(view.req) && !isClosed(view.work);
 
   return (

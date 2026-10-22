@@ -1,52 +1,50 @@
 title: Dashboard › Requests table › Order, rows and paging
 route: /dashboard
-intro: The 'Requests' card, the one list on the page. Rows come in the list's own order (waiting on you first, then the nearest clock) until a heading is clicked. A click on a row, a case ID or 'Open' opens the request drawer and adds one history entry. Eight rows show at a time.
+intro: The table card, the one list on the page. Rows come in the page's own order (the ones that need you today first, then the longest in their state) until a heading is clicked. A click on a row or its case ID opens the request drawer and adds one history entry. Eight rows show at a time.
 dir: TD
 ---
-start s1 "Dashboard is open\n'Requests' card under the filter bar"
-screen sc1 "Card header\n'Requests' and one line: 'Waiting on you first, then the nearest clock.'\nRight side: 'Showing 8 of 40'"
-screen sc2 "Six columns\nCase, Payer, Where it is, Clock, What happens next, and an unnamed column with 'Open'"
-process p1 "The headings Case, Payer, Where it is and Clock are buttons that sort the rows\n'What happens next' and the Open column do not sort"
-process p2 "Rows start in the list's order\n1 requests that wait on a person, 2 everything else\nInside each group the nearest due time first: the time Authorizations ranks by, or a denial's deadline; overdue first\nRows with no due time come last, longest wait first"
-decision d0 "Do any rows match the filters?"
-screen em "'No requests match'\nwith 'Clear filters'"
+start s1 "Dashboard is open\nThe table card under Do next"
+screen sc1 "Card header\nTitle '40 authorizations' and one quiet sentence\n'Longest in their state first, with what needs you today on top.'\nControls on the right"
+screen sc2 "Nine columns\nCase, Payer, Service, Status, Days in state, Units, Window, Next action, Owner\nNo Open button, no progress bars, no icons on the rows"
+process p1 "Every heading is a button that sorts the rows"
+process p2 "Rows start in the page's own order\n1 the ones that need you today, 2 everyone else\nInside each group the longest in its state first"
+decision d0 "Do any rows match the controls?"
+screen em "'No authorizations match'\nwith 'Clear filters'"
 
 group gRow "One row (example: P-1499)"
-  screen r1 "Row\nCase ID and type, payer and program, chip and bars, clock, what happens next, 'Open'"
+  screen r1 "Row\nCase ID with initials and age under it, payer, service, status, days in state with the median, units, window, next action, owner"
   click c1 "Click anywhere on the row"
   click c2 "Click the underlined case ID, e.g. 'P-1499'"
-  click c3 "Click 'Open' on the row"
 endgroup
 process p3 "Address gets ?request=P-1499\nOne new history entry, so one press of the browser Back button closes the drawer"
 overlay o1 "Request drawer opens on the right"
 goto g1 "Continues in: Dashboard › Request drawer › Open and read a request"
-goto g2 "Continues in: Dashboard › Requests table › Read a row: bars, clock and what happens next"
-goto g3 "Continues in: Dashboard › Filters › Clear filters and empty states"
+goto g2 "Continues in: Dashboard › Requests table › Read a row: units, window, next action and owner"
+goto g3 "Continues in: Dashboard › Table controls › Clear filters and empty states"
 goto g4 "Continues in: Dashboard › Requests table › Sort the rows"
-goto g5 "Continues in: Dashboard › Key figures › Click a figure to filter the list"
+goto g5 "Continues in: Dashboard › Requests table › Days in state and the CMS decision time"
 
 decision d1 "Are there more rows than are shown?"
-screen sc3 "Under the table\n'Show 8 more' and '32 not shown'"
+screen sc3 "Under the table\n'Showing 8 of 40', '32 not shown' and 'Show 8 more'"
 click c4 "Click 'Show 8 more'"
 process p5 "Eight more rows are added\nWith fewer than 8 left the button shows that number, e.g. 'Show 5 more'"
 end e1 "All rows shown\n'Showing 40 of 40'; no button"
-process p6 "Changing any filter or the sort goes back to the first 8 rows"
-toast t1 "Count text 'Showing 8 of 40'\nWith Appeal or call: 'Showing 8 of 8'"
-screen sc4 "With cases saved in New case that have no row yet\nA line under the table with all stages or Preparing: '2 more are being prepared in New case.' and 'Open Active cases'\nWith 'Needs you': '1 more is waiting on you in New case.'"
+process p6 "Changing any menu, chip, toggle or the sort goes back to the first 8 rows"
+screen sc4 "With cases saved in New case that have no row yet\nA line under the table with all statuses or Awaiting sign-off: '2 more are being prepared in New case.' and 'Open Active cases'"
+goto g6 "Continues in: Case Manager › Active cases › Being prepared card"
 
 s1 --> sc1 --> sc2 --> p1 --> p2 --> d0
 d0 -->|No| em --> g3
 d0 -->|Yes| r1
-r1 --> c1 & c2 & c3
+r1 --> c1 & c2
 c1 --> p3
-c3 --> p3
 c2 --> p3
 p3 --> o1 --> g1
 r1 -.-> g2
 p1 -.-> g4
 d0 -->|Yes| d1
-sc1 -.-> t1
 d1 -->|Yes| sc3 --> c4 --> p5 --> d1
 d1 -->|No| e1
 sc3 -.-> p6
-d1 -.-> sc4 -.-> g5
+d1 -.-> sc4 -.-> g6
+r1 -.-> g5
