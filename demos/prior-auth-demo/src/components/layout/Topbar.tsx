@@ -7,6 +7,9 @@ import { DAY, HOUR, clockTime, stamp, toDate } from "@/lib/time";
 import { paths } from "@/routes";
 import { resetDemo, useStore } from "@/store";
 import { UnreadDot } from "./Panels";
+import { SiteSwitcher } from "./SiteSwitcher";
+import { VIEWERS } from "@/data/viewers";
+import { Check } from "lucide-react";
 
 const PATH: [string, string][] = [
   ["Dashboard: where every request stands", paths.dashboard()],
@@ -25,6 +28,8 @@ function DemoMenu() {
   const clock = useStore((s) => s.clock);
   const advance = useStore((s) => s.advanceClock);
   const toast = useStore((s) => s.toast);
+  const viewerId = useStore((s) => s.viewerId);
+  const setViewer = useStore((s) => s.setViewer);
   const nav = useNavigate();
   useEscape(open, () => setOpen(false));
   useEffect(() => {
@@ -47,6 +52,15 @@ function DemoMenu() {
           <div className="px-3 pb-1 text-[13px] text-muted">The demo clock is {toDate(clock).toDateString()}, {clockTime(toDate(clock))}. It only moves when you move it.</div>
           <button type="button" className={item} onClick={() => advance(HOUR)}><FastForward size={16} className="ico" />Fast-forward 1 hour</button>
           <button type="button" className={item} onClick={() => advance(DAY)}><FastForward size={16} className="ico" />Fast-forward 1 day</button>
+          <div className="px-3 pt-2 pb-1 text-[11px] font-medium tracking-[0.1em] text-muted uppercase">Viewing as</div>
+          <div className="px-3 pb-1 text-[13px] text-muted">Staff see only the sites they work at. Try Dr. Rivera (Site A only).</div>
+          {VIEWERS.map((v) => (
+            <button key={v.id} type="button" className={item} aria-pressed={viewerId === v.id} onClick={() => setViewer(v.id)}>
+              <span className="grid h-5 w-5 place-items-center rounded-full bg-neutral-bg text-[10px] font-semibold">{v.initials}</span>
+              <span className="min-w-0 flex-1"><span className="font-medium">{v.name}</span> <span className="text-muted">· {v.role}</span></span>
+              {viewerId === v.id ? <Check size={15} className="ico text-forest" aria-label="Current" /> : null}
+            </button>
+          ))}
           <div className="px-3 pt-2 pb-1 text-[11px] font-medium tracking-[0.1em] text-muted uppercase">Suggested path</div>
           {PATH.map(([label, to], i) => (
             <button key={to} type="button" className={item} onClick={() => { setOpen(false); nav(to); }}>
@@ -71,6 +85,7 @@ export function Topbar() {
   const btn = "relative grid h-9 w-9 place-items-center rounded-xl border border-field bg-white text-ink2 hover:bg-tile";
   return (
     <div className="sticky top-0 z-30 flex h-[60px] items-center border-b border-[#EFE6DA] bg-canvas/90 px-7 backdrop-blur">
+      <SiteSwitcher />
       <div className="ml-auto flex items-center gap-3.5">
         <DemoMenu />
         <button type="button" aria-label="Ask FLO" title="Ask FLO" onClick={() => setAsk(!askOpen)} className={btn}>

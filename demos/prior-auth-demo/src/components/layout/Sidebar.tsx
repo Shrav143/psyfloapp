@@ -1,4 +1,5 @@
 import { BarChart3, Building2, ChevronDown, ChevronRight, ClipboardList, FolderOpen, HelpCircle, LayoutDashboard, LogOut, RefreshCw, Scale, Settings, ShieldCheck, PlusCircle, FlaskConical, type LucideIcon } from "lucide-react";
+import { useScope } from "@/lib/scope";
 import { NavLink, useLocation } from "react-router-dom";
 import { Count } from "@/components/ui";
 import { cn } from "@/lib/cn";
@@ -69,6 +70,7 @@ export function Sidebar() {
   const manager = useStore(selectManagerBadge);
   const payers = useStore(selectPayersBadge);
   const toast = useStore((s) => s.toast);
+  const { viewer } = useScope();
 
   const main: Item[] = [
     { to: paths.dashboard(), label: "Dashboard", icon: LayoutDashboard, badge: dash, match: ["/dashboard"] },
@@ -124,10 +126,10 @@ export function Sidebar() {
           Sign out
         </button>
         <div className="mt-2.5 flex items-center gap-3 border-t border-[#EADFD2] px-2 pt-3.5">
-          <div className="grid h-9 w-9 place-items-center rounded-full bg-forest text-xs font-semibold text-white">JP</div>
+          <div className="grid h-9 w-9 place-items-center rounded-full bg-forest text-xs font-semibold text-white">{viewer.initials}</div>
           <div>
-            <div className="text-[13.5px] font-semibold">Jordan Perez</div>
-            <div className="text-xs text-muted">UR coordinator</div>
+            <div className="text-[13.5px] font-semibold">{viewer.name}</div>
+            <div className="text-xs text-muted">{viewer.role}</div>
           </div>
         </div>
       </div>
