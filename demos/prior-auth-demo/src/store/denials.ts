@@ -1,8 +1,8 @@
 import type { StateCreator } from "zustand";
 import { APPEAL_LEVELS, APPEAL_WINDOW_DAYS, SEED_ACCEPT_DENIAL, SEED_DENIAL_META, levelOf, type CallSlot, type DenialMeta, type DenialWork, type OutcomeKind } from "@/data/denials";
 import { SEED_REQUESTS, payerById } from "@/data/seed";
-import type { PayerId, Program, PsyRequest } from "@/data/types";
-import { money, uid } from "@/lib/format";
+import { PROGRAM_LABEL, type PayerId, type Program, type PsyRequest } from "@/data/types";
+import { uid } from "@/lib/format";
 import { DAY, shortDate } from "@/lib/time";
 import { paths } from "@/routes";
 import type { AppState } from "./index";
@@ -34,10 +34,14 @@ export interface DenialsSlice {
   requests: PsyRequest[];
   denialMeta: Record<string, DenialMeta>;
   denialWork: Record<string, DenialWork>;
+  /** When (demo minutes) the appeal analysis report was generated for a denial. Absent until the person opens it; Regenerate clears it. */
+  denialReportAt: Record<string, number>;
   /** Adds the analysed letter as a new open denial (also on the Dashboard). Returns its id. */
   addDenial: (input: NewDenialInput) => string;
   bookCall: (id: string, slot: CallSlot) => void;
   setFix: (id: string, fixId: string, on: boolean) => void;
+  markReport: (id: string) => void;
+  clearReport: (id: string) => void;
   toggleBriefDoc: (id: string, doc: string) => void;
   /** Confirm gate passed: Advocate starts the appeal letter. */
   startAppeal: (id: string) => void;
@@ -66,6 +70,7 @@ export const createDenialsSlice: StateCreator<AppState, [], [], DenialsSlice> = 
     requests: [...SEED_REQUESTS, SEED_ACCEPT_DENIAL],
     denialMeta: { ...SEED_DENIAL_META },
     denialWork: {},
+    denialReportAt: {},
 
     addDenial: (input) => {
       const { clock, requests } = get();
@@ -85,7 +90,7 @@ export const createDenialsSlice: StateCreator<AppState, [], [], DenialsSlice> = 
         ],
       };
       set((s) => ({ requests: [created, ...s.requests], denialMeta: { ...s.denialMeta, [id]: input.meta } }));
-      get().notify({ agent: "advocate", title: "Denial analyzed", body: `${id} (${payer.shortName}, ${money(input.atStake)}) is in Denial Intelligence with your options.`, to: paths.denials(id), tone: "mid" });
+      get().notify({ agent: "advocate", title: "Denial analyzed", body: `${id} (${payer.shortName}, ${PROGRAM_LABEL[input.program]}) is in Denial Intelligence with your options.`, to: paths.denials(id), tone: "mid" });
       get().toast({ title: "The analysis is ready", body: `${id} was added to Open denials.`, tone: "good" });
       return id;
     },
@@ -105,6 +110,14 @@ export const createDenialsSlice: StateCreator<AppState, [], [], DenialsSlice> = 
       const fixes = (get().denialWork[id] ?? EMPTY).fixes.filter((f) => f !== fixId);
       patchWork(id, { fixes: on ? [...fixes, fixId] : fixes });
     },
+
+    markReport: (id) => set((s) => ({ denialReportAt: { ...s.denialReportAt, [id]: s.clock } })),
+
+    clearReport: (id) =>
+      set((s) => {
+        const { [id]: _gone, ...rest } = s.denialReportAt;
+        return { denialReportAt: rest };
+      }),
 
     toggleBriefDoc: (id, doc) => {
       const ticked = (get().denialWork[id] ?? EMPTY).ticked;
@@ -150,13 +163,13 @@ export const createDenialsSlice: StateCreator<AppState, [], [], DenialsSlice> = 
       if (!r) return;
       const clock = get().clock;
       patchWork(id, { accepted: { reason, at: clock } });
-      get().updateRequest(id, { ...settled(clock), chip: "Accepted", tone: "neutral", outcome: "denied", next: "Closed. Write-off logged" });
+      get().updateRequest(id, { ...settled(clock), chip: "Accepted", tone: "neutral", outcome: "denied", next: "Closed. Logged as an accepted denial" });
       dropScheduled(id);
       get().addEvent(id, { actor: "you", text: "You accepted the decision", detail: `Reason: ${reason}` });
-      get().addEvent(id, { actor: "cadence", text: `Cadence logged the write-off of ${money(r.atStake)} for Analytics and added a step-down plan to Case Manager` });
+      get().addEvent(id, { actor: "cadence", text: "Cadence logged the accepted denial for Analytics and added a step-down plan to Case Manager" });
       get().recordDenialAccepted({ denialId: id, requestId: r.caseId, payerId: r.payerId, amount: r.atStake });
-      get().notify({ agent: "cadence", title: "Denial closed", body: `${id} was accepted. Analytics counts the write-off and Case Manager has a step-down plan.`, to: paths.manager("cases"), tone: "neutral" });
-      get().toast({ title: "Decision accepted", body: "Analytics counts the write-off. Case Manager has a step-down plan.", tone: "neutral" });
+      get().notify({ agent: "cadence", title: "Denial closed", body: `${id} was accepted. Analytics logs it as an accepted denial and Case Manager has a step-down plan.`, to: paths.manager("cases"), tone: "neutral" });
+      get().toast({ title: "Decision accepted", body: "Analytics logs it as an accepted denial. Case Manager has a step-down plan.", tone: "neutral" });
     },
 
     logOutcome: (id, kind, note) => {

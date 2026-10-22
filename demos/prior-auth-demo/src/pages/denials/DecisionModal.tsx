@@ -49,7 +49,7 @@ export function DecisionModal({ view, onClose, onNextLevel }: { view: DenialView
                 </ChoiceCard>
               ) : null}
               <ChoiceCard selected={next === "accept"} onClick={() => setNext("accept")} title="Accept the denial">
-                Nothing is regained. Analytics counts the write-off and Case Manager adds a step-down plan.
+                Nothing is regained. Analytics logs it as an accepted denial and Case Manager adds a step-down plan.
               </ChoiceCard>
             </div>
             {further ? null : <p className="mt-2 text-[13px] text-muted">External review is the last level, so no further appeal is offered.</p>}

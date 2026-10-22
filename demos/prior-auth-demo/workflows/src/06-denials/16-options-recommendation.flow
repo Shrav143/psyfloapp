@@ -16,7 +16,7 @@ process p2 "Seed denials sit between 27 and 64\nD-3306 (27%) reads 'Probably acc
 
 screen o1 "Card 'Peer-to-peer call'\n'30 to 45 minutes of clinician time · 5 to 7 days regained'\nChance = the win chance"
 screen o2 "Card 'Written appeal'\n'60 days to file · 5 to 7 days regained'\nChance = win chance minus 6, never under 5"
-screen o3 "Card 'Accept the decision and plan the next step'\n'Accept 7 days and plan the step-down' on a partial approval\n'Fastest. Nothing regained.' No chance shown\nNeeds: a reason for the record, Analytics counts the write-off, Case Manager adds a step-down plan"
+screen o3 "Card 'Accept the decision and plan the next step'\n'Accept 7 days and plan the step-down' on a partial approval\n'Fastest. Nothing regained.' No chance shown\nNeeds: a reason for the record, Analytics logs the denial as accepted, Case Manager adds a step-down plan"
 process p3 "Each chance reads 'likely 55–72%' (9 below to 8 above) and '312 similar decisions' or 'Benchmark estimate'"
 process p4 "Each card ends with 'Needs: ...' (who, what, and the evidence that would be attached)"
 

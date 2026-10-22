@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { SearchX } from "lucide-react";
+import { FileText, SearchX } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Banner, Button, Card, Crumbs, EmptyState, Page, PageHeader } from "@/components/ui";
 import { blockedInHosted } from "@/lib/hosted";
@@ -45,7 +45,11 @@ export default function BriefPage() {
     <Page>
       <style>{PRINT_CSS}</style>
       <Crumbs items={[{ label: "Denial Intelligence", to: paths.denials(req.id) }, { label: `Brief ${req.id}` }]} />
-      <PageHeader title={`Peer-to-peer brief · ${req.id}`} sub={`Talking points for your call with ${analysis.ctx.payer}'s reviewer. Every point links to the chart.`} />
+      <PageHeader
+        title={`Peer-to-peer brief · ${req.id}`}
+        sub={`Talking points for your call with ${analysis.ctx.payer}'s reviewer. Every point links to the chart.`}
+        actions={<Link to={paths.report(req.id)} className="inline-flex h-[38px] items-center gap-2 rounded-xl border border-field bg-white px-4 text-sm font-medium hover:bg-tile print:hidden"><FileText size={16} className="ico" />Appeal analysis report</Link>}
+      />
       {outcome ? (
         <Banner tone={outcome.kind === "upheld" ? "mid" : "good"} title={`Outcome logged: ${outcome.kind === "overturned" ? "overturned" : outcome.kind === "partly" ? "partly restored" : "upheld"}`} action={<Button size="sm" variant="outline" onClick={() => nav(paths.denials(req.id))}>Back to the denial</Button>}>
           {outcome.kind === "upheld" ? "Advocate started a written appeal from your call notes." : "The ledger is updated and the next review is booked."}{outcome.note ? ` Note: ${outcome.note}` : ""}

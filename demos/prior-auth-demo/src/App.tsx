@@ -8,6 +8,7 @@ import QueuePage from "@/pages/authorizations/QueuePage";
 import DashboardPage from "@/pages/dashboard/DashboardPage";
 import BriefPage from "@/pages/denials/BriefPage";
 import DenialsPage from "@/pages/denials/DenialsPage";
+import ReportPage from "@/pages/denials/ReportPage";
 import EligibilityListPage from "@/pages/eligibility/EligibilityListPage";
 import ResultPage from "@/pages/eligibility/ResultPage";
 import VerifyPage from "@/pages/eligibility/VerifyPage";
@@ -57,6 +58,7 @@ export default function App() {
           <Route path="/authorizations/eligibility/:id" element={<ResultPage />} />
           <Route path="/denials" element={<DenialsPage />} />
           <Route path="/denials/:id/brief" element={<BriefPage />} />
+          <Route path="/denials/:id/report" element={<ReportPage />} />
           <Route path="/active" element={<Navigate to="/manager" replace />} />
           <Route path="/manager" element={<ManagerPage />} />
           <Route path="/analytics" element={<AnalyticsPage />} />

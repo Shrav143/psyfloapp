@@ -27,6 +27,8 @@ process p4 "Appeal letter drawer: the fix is listed under 'Evidence to attach' a
 goto g1 "Continues in: Denial Intelligence › Peer-to-peer › The brief"
 goto g2 "Continues in: Denial Intelligence › Written appeal › Confirm and draft"
 process p5 "Added fixes stay for the session\nThey do not change the win chance"
+click c5 "Click 'Full summary' (card header)"
+goto g3 "Continues in: Denial Intelligence › A denial opened › Full summary: where the denial is weak"
 
 s1 --> sc1
 p0 --> sc1
@@ -36,3 +38,4 @@ f2 --> c3 --> st1 --> p1 --> c4 --> st2 --> p2
 p1 --> p3 --> g1
 p1 --> p4 --> g2
 st1 -.-> p5
+f2 --> c5 --> g3

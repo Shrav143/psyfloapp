@@ -5,7 +5,7 @@ dir: TD
 ---
 start s1 "A denial is on screen"
 decision d1 "Accepted?"
-toast t1 "'Closed. You accepted the decision'\n'Reason: ... Analytics counts the write-off.'"
+toast t1 "'Closed. You accepted the decision'\n'Reason: ... Analytics logs it as an accepted denial.'"
 click c1 "Click 'Plan the step-down'"
 goto g1 "Continues in: Case Manager › Active cases › Step-down plans from accepted denials"
 

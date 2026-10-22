@@ -1,8 +1,11 @@
-import { Card, CardBody, Chip, Pill } from "@/components/ui";
+import { FileText } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Button, Card, CardBody, Chip, Pill } from "@/components/ui";
 import { PROGRAM_LABEL, type PsyRequest, type Tone } from "@/data/types";
-import { money } from "@/lib/format";
+import { band } from "@/lib/format";
 import { DAY } from "@/lib/time";
 import { payerById } from "@/data/seed";
+import { paths } from "@/routes";
 import { cn } from "@/lib/cn";
 import type { DenialView } from "./lib/useDenialView";
 import { capitalize, leftLabel } from "./lib/format";
@@ -25,6 +28,8 @@ function windowChip(r: PsyRequest, clock: number): { text: string; tone: Tone } 
 export function DenialHeader({ view }: { view: DenialView }) {
   const { req, meta, analysis, clock } = view;
   const chip = windowChip(req, clock);
+  const nav = useNavigate();
+  const chance = analysis.options[0].chance;
   return (
     <Card>
       <CardBody>
@@ -37,7 +42,7 @@ export function DenialHeader({ view }: { view: DenialView }) {
               {req.chip !== meta.type ? <Pill tone={req.tone}>{req.chip}</Pill> : null}
             </div>
             <div className="mt-3 flex flex-wrap items-center gap-2">
-              <Pill tone="risk">{money(req.atStake)} at stake</Pill>
+              {chance ? <Pill tone={band(chance.value).tone}>{chance.value}% chance of overturning</Pill> : null}
               {chip ? <Pill tone={chip.tone} dot>{capitalize(chip.text)}</Pill> : null}
             </div>
             <p className="mt-3 text-[13.5px] text-muted">
@@ -46,10 +51,13 @@ export function DenialHeader({ view }: { view: DenialView }) {
             </p>
             {meta.note ? <p className="mt-1 text-[13.5px] text-ink2">Your note: {meta.note}</p> : null}
           </div>
-          <div className={cn("flex min-w-[240px] max-w-[300px] flex-col gap-0.5 rounded-2xl px-[18px] py-3.5", READ_TONE[analysis.verdict])}>
-            <span className="text-[11.5px] font-semibold tracking-[0.1em] uppercase">Our read</span>
-            <b className="font-serif text-[20px] leading-tight">{analysis.verdict}</b>
-            <span className="text-sm">{analysis.verdictLine}</span>
+          <div className="flex min-w-[240px] max-w-[300px] flex-col gap-2.5">
+            <div className={cn("flex flex-col gap-0.5 rounded-2xl px-[18px] py-3.5", READ_TONE[analysis.verdict])}>
+              <span className="text-[11.5px] font-semibold tracking-[0.1em] uppercase">Our read</span>
+              <b className="font-serif text-[20px] leading-tight">{analysis.verdict}</b>
+              <span className="text-sm">{analysis.verdictLine}</span>
+            </div>
+            <Button icon={FileText} onClick={() => nav(paths.report(req.id))}>Appeal analysis report</Button>
           </div>
         </div>
       </CardBody>

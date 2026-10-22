@@ -1,0 +1,36 @@
+title: Denial Intelligence › A denial opened › Full summary: the six ASAM dimensions
+route: /denials?id=D-3318
+intro: The six tiles stay as they are. 'Full summary' in the card header opens one long paragraph for each dimension, with the same Copy all and Copy one controls as the findings pop-up.
+dir: TD
+also: The card, and so the button, is left out for Late notice and Retro-authorization denied, which have no dimensions.
+---
+start s1 "Click 'Full summary' in the header of 'The six ASAM dimensions'"
+decision d0 "Does this kind of denial have dimensions?"
+process p9 "The card is not on the page, so there is no button"
+process p0 "Long text is chosen for each dimension\nHand-written for this denial first, then the text for the dimension's name and colour, then the short tile text"
+overlay o1 "Pop-up 'The six ASAM dimensions, full summary'\n'Select any part to copy it, or use Copy all.'"
+process p1 "Focus moves into the text, Tab stays inside the pop-up"
+screen l1 "Six blocks, D1 Withdrawal to D6 Home\nColoured dot, name, a word (Low concern, Some concern, High concern) and the long paragraph\nA small 'Copy' button on each"
+click c1 "Click 'Copy all' (footer)"
+click c2 "Click 'Copy' on one dimension"
+process p2 "Plain text of all six, or of that dimension (name, word, paragraph)"
+decision d1 "Did the copy work?"
+toast t1 "Button reads 'Copied' for 2 seconds"
+toast t2 "'Select the text and press Ctrl or Cmd C'"
+click c3 "Click 'Close', the X, or the dimmed area"
+click c4 "Press Esc (closes only this pop-up)"
+process p3 "Pop-up closes\nFocus goes back to 'Full summary'"
+end e1 "Back on the denial page, nothing changed"
+endx e2 "Nothing copied"
+
+s1 --> d0
+d0 -->|No| p9
+d0 -->|Yes| p0 --> o1 --> p1 --> l1
+l1 --> c2 --> p2
+o1 --> c1 --> p2
+p2 --> d1
+d1 -->|Yes| t1 --> e1
+d1 -->|No| t2 --> e2
+o1 --> c3 --> p3
+o1 --> c4 --> p3
+p3 --> e1

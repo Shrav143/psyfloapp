@@ -29,7 +29,7 @@ wait w1 "About 1.25 seconds per step, 5 seconds in all (demo: simulated)"
 decision d2 "Is the person still on this page?"
 endx e1 "Work is dropped and no denial is added"
 
-process p4 "Facts of the sample fill the denial: initials, age, payer, program, '$ at stake', win chance, denial type, similar decisions, call window"
+process p4 "Facts of the sample fill the denial: initials, age, payer, program, win chance, denial type, similar decisions, call window"
 store st1 "New open denial created, the next free number from D-3340\nChip 'Analyzed', route 'Peer-to-peer', file name and note saved"
 store st2 "History lines: Reader read the letter and removed identifiers; Advocate checked the notice, the deadline and how the payer applied its own criteria; Historian compared N similar decisions"
 toast t2 "'The analysis is ready'\n'D-3340 was added to Open denials.'"

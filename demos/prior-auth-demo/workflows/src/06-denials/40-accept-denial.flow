@@ -1,34 +1,34 @@
 title: Denial Intelligence › Accept the denial
 route: /denials?id=D-3297
-intro: Accepting closes the denial and logs a write-off. A reason goes on the record first. Accepting is always the person's choice and is never the only option. It also reaches Case Manager and Analytics.
+intro: Accepting closes the denial and logs it as accepted. A reason goes on the record first. Accepting is always the person's choice and is never the only option. It also reaches Case Manager and Analytics.
 dir: TD
-also: Case Manager adds a step-down plan for the patient, and Analytics counts the write-off. The same steps run when an upheld appeal is accepted from 'Record the payer's decision'.
+also: Case Manager adds a step-down plan for the patient, and Analytics logs it as an accepted denial. The same steps run when an upheld appeal is accepted from 'Record the payer's decision'.
 ---
 start s1 "Select the 'Accept...' card in 'Your options'"
 click c1 "Click 'Accept the decision and plan the step-down'"
 overlay o1 "Modal 'Accept the decision?'\n'Nothing is regained. This closes the denial.'"
-screen l1 "Three bullets\n'Analytics counts the write-off of $6.2K.'\n'Case Manager adds a step-down plan.'\n'D-3297 leaves Appeal or call on the Dashboard.'"
+screen l1 "Three bullets\n'Analytics logs D-3297 as an accepted denial.'\n'Case Manager adds a step-down plan.'\n'D-3297 leaves Appeal or call on the Dashboard.'"
 input i1 "'Reason for the record' (required): open the menu and pick one"
-screen l2 "Menu choices\n'The chart does not yet support a challenge' (chosen at first)\n'The clinical team agrees with the payer's reasoning'\n'The member and family chose to step down'\n'The cost of an appeal outweighs the amount'"
+screen l2 "Menu choices\n'The chart does not yet support a challenge' (chosen at first)\n'The clinical team agrees with the payer's reasoning'\n'The member and family chose to step down'\n'The effort of an appeal outweighs the likely gain'"
 input i2 "Note (optional)\n'Anything the team should know'"
 click c2 "Click 'Accept and close'"
 click c3 "Click 'Cancel', the X, press Esc (this also closes an open menu first), or click the dimmed area"
 endx e1 "Nothing recorded\nThe denial stays open"
 
 store st1 "Accepted: reason (with the note after it) and time saved on the denial"
-store st2 "Request settled: leaves 'Appeal or call' for 'Decided'\nChip 'Accepted', 'Closed. Write-off logged'\nDeadline cleared; held by Cadence\nScheduled lines (a booked call, the daily check) leave the History"
-agent a1 "Cadence logs the write-off of the at-stake amount"
-store st3 "History: 'You accepted the decision' with 'Reason: ...'\n'Cadence logged the write-off of $6.2K for Analytics and added a step-down plan to Case Manager'"
-store st4 "Shared with other screens: denial, case, payer and amount\nCase Manager adds a step-down plan\nAnalytics counts the write-off"
-toast t1 "'Decision accepted'\n'Analytics counts the write-off. Case Manager has a step-down plan.'"
+store st2 "Request settled: leaves 'Appeal or call' for 'Decided'\nChip 'Accepted', 'Closed. Logged as an accepted denial'\nDeadline cleared; held by Cadence\nScheduled lines (a booked call, the daily check) leave the History"
+agent a1 "Cadence logs the accepted denial for Analytics"
+store st3 "History: 'You accepted the decision' with 'Reason: ...'\n'Cadence logged the accepted denial for Analytics and added a step-down plan to Case Manager'"
+store st4 "Shared with other screens: denial, case and payer\nCase Manager adds a step-down plan\nAnalytics logs the accepted denial"
+toast t1 "'Decision accepted'\n'Analytics logs it as an accepted denial. Case Manager has a step-down plan.'"
 toast t2 "Notification 'Denial closed' from Cadence\nOpens Case Manager, Active cases"
-screen sc1 "Denial page now shows banner 'Closed. You accepted the decision'\n'Reason: ... Analytics counts the write-off.'"
+screen sc1 "Denial page now shows banner 'Closed. You accepted the decision'\n'Reason: ... Analytics logs it as an accepted denial.'"
 process p1 "'Your options' card is gone\nDenial moves to 'Closed' in the open denials list with the pill 'Accepted'\nSidebar badge goes down by one"
 click c4 "Click 'Plan the step-down'"
 click c5 "Click 'See on the Dashboard' (top right)"
 goto g1 "Continues in: Case Manager › Active cases › Step-down plans from accepted denials"
 goto g2 "Continues in: Dashboard › Request drawer › Open and read a request"
-process p2 "PRD guardrail: the agents never accept a write-off\nA person gives the reason, and the dollars are shown first"
+process p2 "PRD guardrail: the agents never accept a denial\nA person gives the reason first"
 
 s1 --> c1 --> o1 --> l1
 l1 --> i1 --> l2

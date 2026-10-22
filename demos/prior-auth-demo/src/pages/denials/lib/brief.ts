@@ -2,7 +2,6 @@ import type { DenialMeta } from "@/data/denials";
 import { APPEAL_WINDOW_DAYS, type CallSlot } from "@/data/denials";
 import { payerById } from "@/data/seed";
 import type { PayerId, PsyRequest } from "@/data/types";
-import { money } from "@/lib/format";
 import { DAY, shortDate, stamp } from "@/lib/time";
 import type { DenialAnalysis } from "./analysis";
 import { leftLabel } from "./format";
@@ -42,7 +41,7 @@ export function buildBrief(r: PsyRequest, m: DenialMeta, a: DenialAnalysis, slot
   const numbers: [string, string][] = [];
   if (m.daysRequested !== undefined && m.daysApproved !== undefined) numbers.push(["Days requested and approved", `${m.daysRequested} and ${m.daysApproved}`]);
   if (m.unitsRequested !== undefined && m.unitsApproved !== undefined) numbers.push(["Units requested and approved", `${m.unitsRequested} and ${m.unitsApproved}`]);
-  numbers.push(["At stake", money(r.atStake)]);
+  if (left !== undefined && r.clockSub === "peer-to-peer window") numbers.push(["Time left in the window", left <= 0 ? "Closed" : leftLabel(left)]);
   if (p2p) numbers.push(["Chance of overturning", `${p2p.value}% (likely ${p2p.low}–${p2p.high}%)`]);
   if (appeal) numbers.push(["Written appeal", `${appeal.value}% (likely ${appeal.low}–${appeal.high}%)`]);
   numbers.push(["Similar decisions", `${m.similar}${a.benchmark ? " (benchmark estimate)" : ""}`]);

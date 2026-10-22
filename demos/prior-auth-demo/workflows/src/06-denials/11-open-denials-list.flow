@@ -14,7 +14,7 @@ process p3 "Sorted by time left on the deadline, nearest first\nOverdue denials 
 process p4 "Filed appeals have no deadline of ours, so they come last, in id order"
 process p5 "At the start: D-3318, D-3297, D-3306, D-3290, D-3301, then D-3272, D-3279, D-3284"
 
-screen r1 "One row\nD-id (underlined), program chip, one-line summary\n'$ at stake · N% win chance'"
+screen r1 "One row\nD-id (underlined), program chip, one-line summary\n'N% win chance' and a small link 'Report'"
 process p6 "Program chip: Res., IOP, PHP or Detox\nSummary example: 'Units cut 48 to 30'"
 decision d2 "What does the route pill say?"
 screen rp1 "Call booked with a time: 'Call Wed 10/21 1 pm'"
@@ -30,6 +30,8 @@ process p8 "Closed rows show the result as the pill: 'Accepted', 'Overturned', '
 click c1 "Click a row (a button: Tab to it, then Enter or Space)"
 process p9 "Address becomes ?id=D-xxxx and keeps ?payer= and ?reason=\nRow is highlighted"
 process p10 "Left side loads that denial: title, header, banner, analysis, options, history"
+click c3 "Click the link 'Report' on a row (its own Tab stop, does not select the row)"
+goto g4 "Continues in: Denial Intelligence › Appeal analysis report › Open and generate"
 click c2 "Click 'See on the Dashboard' (top right of the page)"
 goto g1 "Continues in: Denial Intelligence › A denial opened"
 goto g2 "Continues in: Dashboard › Request drawer › Open and read a request"
@@ -52,4 +54,5 @@ sc1 --> cl1 --> p8
 r1 --> c1 --> p9 --> p10 --> e1
 e1 --> g1
 sc1 --> c2 --> g2
+r1 --> c3 --> g4
 sc1 -.-> sf --> g3

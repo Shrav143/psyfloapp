@@ -26,6 +26,8 @@ click c4 "Click 'Record the call outcome'"
 goto g2 "Continues in: Denial Intelligence › Peer-to-peer › Record the call outcome"
 click c5 "Tick a box under 'Have these open'"
 store st1 "Tick saved on the denial\nThe box stays ticked next time"
+click c7 "Click the link 'Appeal analysis report' (top right of the header)"
+goto g4 "Continues in: Denial Intelligence › Appeal analysis report › Open and generate"
 click c6 "Click the crumb 'Denial Intelligence'"
 goto g3 "Continues in: Denial Intelligence › A denial opened"
 end e1 "Notes are in the clipboard"
@@ -33,7 +35,7 @@ end e2 "Brief is on paper"
 endx e3 "Nothing was copied"
 endx e4 "Nothing was printed"
 
-s1 --> c1 & c2 & c3 & c4 & c5 & c6
+s1 --> c1 & c2 & c3 & c4 & c5 & c6 & c7
 c1 --> p1 --> d1
 d1 -->|Yes| t1 --> e1
 d1 -->|No| p2 --> d2
@@ -46,3 +48,4 @@ c3 --> g1
 c4 --> g2
 c5 --> st1
 c6 --> g3
+c7 --> g4

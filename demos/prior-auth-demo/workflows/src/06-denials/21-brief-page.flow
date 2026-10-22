@@ -21,7 +21,7 @@ screen l1 "'Your opening'\n'About 30 seconds. Written by Advocate, checked by In
 screen l2 "'Three points to make'\n'Each one links to the chart'\nNumbered, each with a source chip"
 screen l3 "'What they may say'\n'And a short answer to each'"
 screen l4 "'The ask.' (green banner)"
-screen l5 "'Key dates and numbers'\nDenial received, Call booked, Peer-to-peer window closes, Written appeal due\nDays or units, At stake, Chance, Similar decisions"
+screen l5 "'Key dates and numbers'\nDenial received, Call booked, Peer-to-peer window closes, Written appeal due\nDays or units, Time left in the window, Chance, Similar decisions"
 
 screen r1 "'Call details'\nPayer, Who to call, Reviewer, Window, Closes in, Dial-in"
 process p1 "'Window' reads 'Not booked yet' before a call is booked\n'Closes in' is red under 2 days, ochre under 7, 'Closed' when over"
@@ -32,6 +32,8 @@ store st1 "Tick saved on the denial (kept when you leave and return)"
 screen r4 "Three buttons: 'Copy brief', 'Print', 'Record the call outcome'"
 goto g2 "Continues in: Denial Intelligence › Peer-to-peer › Brief buttons"
 goto g3 "Continues in: Denial Intelligence › Peer-to-peer › Record the call outcome"
+click c4 "Click the link 'Appeal analysis report' (top right of the header)"
+goto g4 "Continues in: Denial Intelligence › Appeal analysis report › Open and generate"
 process p0 "Text of the brief comes from the denial type, payer and numbers\nD-3318 is written out in full"
 
 s1 --> d1
@@ -41,6 +43,7 @@ d1 -->|No| e1 --> c0 --> g0
 d1 -->|Yes| sc1
 sc1 --> p0
 sc1 --> c1 --> g1
+sc1 --> c4 --> g4
 sc1 -.-> b1 --> c2 --> g1
 sc1 --> l1 --> l2 --> l3 --> l4 --> l5
 sc1 --> r1 --> p1

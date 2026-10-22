@@ -12,7 +12,7 @@ export function StatusBanner({ view, onOpenAppeal, onChangeTime, onRecordDecisio
   const nav = useNavigate();
   const dash = <Button size="sm" variant="outline" onClick={() => nav(paths.dashboard({ request: req.id }))}>See on the Dashboard</Button>;
   if (work.accepted)
-    return <Banner tone="neutral" icon={CheckCircle2} title="Closed. You accepted the decision" action={<Link to={paths.manager("cases")} className="inline-flex items-center gap-1.5 font-semibold text-forest hover:underline">Plan the step-down<ArrowRight size={14} className="ico" /></Link>}>Reason: {work.accepted.reason}. Analytics counts the write-off.</Banner>;
+    return <Banner tone="neutral" icon={CheckCircle2} title="Closed. You accepted the decision" action={<Link to={paths.manager("cases")} className="inline-flex items-center gap-1.5 font-semibold text-forest hover:underline">Plan the step-down<ArrowRight size={14} className="ico" /></Link>}>Reason: {work.accepted.reason}. Analytics logs it as an accepted denial.</Banner>;
   if (work.decision && work.decision.result !== "upheld") return <Banner tone={work.decision.result === "overturned" ? "good" : "mid"} title={work.decision.result === "overturned" ? "Overturned on appeal" : "Partly overturned on appeal"} action={dash}>{work.decision.note || "The ledger is updated and the next review is booked."}</Banner>;
   if (isClosed(work)) return <Banner tone="good" title={work.outcome?.kind === "overturned" ? "Overturned on the call" : "Partly restored on the call"} action={dash}>{work.outcome?.note || "The ledger is updated and the next review is booked."}</Banner>;
   if (isFiled(req))

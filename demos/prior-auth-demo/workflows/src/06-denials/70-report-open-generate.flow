@@ -1,0 +1,51 @@
+title: Denial Intelligence › Appeal analysis report › Open and generate
+route: /denials/D-3297/report
+intro: Every denial has an appeal analysis report: seeded, added from a letter, or created on the Dashboard. The first time in a session the three agents put it together for a moment, then it opens. Reopening is instant until it is regenerated.
+dir: TD
+also: The report is built for any denial type. D-3297 is the paraphrased worked example and carries a 'Worked example' tag.
+---
+start s1 "Click 'Appeal analysis report' under the 'Our read' tile of a denial"
+start s2 "Click 'Report' on a row of 'Open denials'"
+start s3 "Click 'Appeal analysis report' at the top right of the brief page"
+start s4 "Open /denials/D-xxxx/report by its address"
+decision d1 "Does a request with that id exist?"
+screen e1 "'We could not find that denial'\n'It may have been closed or the address is wrong.'"
+click c0 "Click 'Back to Denial Intelligence'"
+goto g0 "Continues in: Denial Intelligence › Ways in"
+decision d2 "Was the report already generated for this denial in this session?"
+
+screen sc1 "Crumbs: 'Denial Intelligence' › D-id › 'Appeal analysis report'\nPanel 'Generating appeal analysis'\n'D-id · initials, age · payer. A clinician reviews the report before anything is sent.'"
+agent a1 "Reader is reading the letter and the chart, and removing identifiers"
+agent a2 "Advocate is checking the notice, the deadline and how the payer applied its own criteria"
+agent a3 "Historian is comparing N similar decisions and appeals"
+wait w1 "About 2.5 seconds in all: one step per agent, each ticked off in turn\nWith reduced motion the spinner does not turn and the steps are quicker"
+store st1 "Time of the report saved on the denial (this session only)"
+screen sc2 "The report opens\nButtons: 'Copy report', 'Download PDF', 'Print', 'Regenerate'\nLink: 'Back to the denial'"
+goto g1 "Continues in: Denial Intelligence › Appeal analysis report › What the report says"
+goto g2 "Continues in: Denial Intelligence › Appeal analysis report › Copy, PDF and print"
+
+click c1 "Click 'Regenerate'"
+store st2 "Saved time is cleared, so the panel runs again"
+click c2 "Click 'Back to the denial'"
+click c3 "Click the crumb 'Denial Intelligence' or the crumb with the D-id"
+process p1 "Address opens /denials?id=D-xxxx (the crumb 'Denial Intelligence' opens /denials)"
+goto g3 "Continues in: Denial Intelligence › A denial opened"
+process p2 "Leave the page while it is generating: nothing is saved, the next visit generates again"
+process p3 "Demo menu, 'Reset demo data' clears the saved times\nEvery report generates again"
+end e2 "The person reads the report"
+
+s1 --> d1
+s2 --> d1
+s3 --> d1
+s4 --> d1
+d1 -->|No| e1 --> c0 --> g0
+d1 -->|Yes| d2
+d2 -->|No| sc1 --> a1 --> a2 --> a3 --> w1 --> st1 --> sc2
+d2 -->|Yes, opens at once| sc2
+sc1 -.-> p2
+sc2 --> g1 & g2
+sc2 --> e2
+sc2 --> c1 --> st2 --> sc1
+sc2 --> c2 --> p1 --> g3
+sc2 --> c3 --> p1
+sc2 -.-> p3

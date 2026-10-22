@@ -1,0 +1,47 @@
+title: Denial Intelligence › A denial opened › Full summary: where the denial is weak
+route: /denials?id=D-3318
+intro: The short findings stay on the page. 'Full summary' in the card header opens the long version in a pop-up, as plain text that can be selected and copied: the whole thing, or one recommendation at a time.
+dir: TD
+---
+start s1 "Click 'Full summary' in the header of 'Where the denial is weak'"
+process p0 "The long text for this denial is chosen\nHand-written long text when the denial has it (D-3297, D-3318, D-3306), otherwise the text for its denial type\nA line that is missing falls back to the short text"
+overlay o1 "Pop-up 'Where the denial is weak, full summary'\nSub line: D-id · initials, age · payer. 'Select any part to copy it, or use Copy all.'"
+process p1 "Focus moves into the text, Tab stays inside the pop-up\nThe text scrolls inside the pop-up and can be selected"
+
+screen l1 "'What the chart shows as a whole'\nTwo short paragraphs"
+screen l2 "'Findings'\nOne block per finding: severity pill, bold title, the long paragraph, 'Source: ...'"
+screen l3 "'What we would do'\nNumbered 1 to N, each with a bold title and a paragraph\nA small 'Copy' button on each one"
+screen l4 "'Criteria to cite'\n'Documents to attach'\n'If the payer pushes back'"
+
+input i1 "Select text with the mouse or keyboard\nPress Ctrl or Cmd C"
+click c1 "Click 'Copy all' (footer, always in view)"
+process p2 "Plain text is built\nHeadings in capitals, numbered findings and recommendations"
+decision d1 "Does the browser allow copying?"
+process p3 "Fallback: a hidden text box and the copy command (pages opened as files)"
+decision d2 "Did the fallback work?"
+toast t1 "Button reads 'Copied' for 2 seconds\n(announced to screen readers)"
+toast t2 "'Select the text and press Ctrl or Cmd C'"
+doc dc1 "Clipboard holds the whole summary"
+
+click c2 "Click 'Copy' on one recommendation"
+process p4 "That recommendation's title and paragraph are copied\nIts own button reads 'Copied' for 2 seconds"
+
+click c3 "Click 'Close', the X, or the dimmed area"
+click c4 "Press Esc (closes only this pop-up)"
+process p5 "Pop-up closes\nFocus goes back to 'Full summary'"
+end e1 "Back on the denial page, nothing changed"
+endx e2 "Nothing copied"
+
+s1 --> p0 --> o1 --> p1
+p1 --> l1 --> l2 --> l3 --> l4
+l1 -.-> i1
+l3 --> c2 --> p4 --> d1
+o1 --> c1 --> p2 --> d1
+d1 -->|Yes| t1 --> dc1
+d1 -->|No| p3 --> d2
+d2 -->|Yes| t1
+d2 -->|No| t2 --> e2
+o1 --> c3 --> p5
+o1 --> c4 --> p5
+p5 --> e1
+dc1 --> e1

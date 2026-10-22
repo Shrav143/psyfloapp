@@ -2,7 +2,7 @@ title: Denial Intelligence › Hand-offs
 route: /denials
 intro: Every link that leaves Denial Intelligence for the Dashboard or Case Manager, what accepting or deciding an appeal passes on to other screens, and the links from other screens that arrive here. There is no link from Denial Intelligence to Analytics.
 dir: TD
-also: Accepting a denial (directly, or after an upheld appeal) adds a step-down plan to Case Manager and counts the write-off in Analytics. Every recorded appeal decision is also logged for other screens.
+also: Accepting a denial (directly, or after an upheld appeal) adds a step-down plan to Case Manager and logs the accepted denial in Analytics. Every recorded appeal decision is also logged for other screens.
 ---
 screen sc1 "Denial Intelligence\nA denial is on screen"
 
@@ -21,7 +21,7 @@ endgroup
 
 group gShare "Shared with other screens"
   click c6 "Click 'Record the payer's decision' (banner on a filed appeal)"
-  store z1 "On accept: Case Manager gets a step-down plan, Analytics counts the write-off"
+  store z1 "On accept: Case Manager gets a step-down plan, Analytics logs the accepted denial"
   store z2 "On a recorded appeal decision: the result and next level are logged\nAnalytics reads the appeal rulings"
 endgroup
 

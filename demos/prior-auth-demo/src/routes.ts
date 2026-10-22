@@ -28,6 +28,8 @@ export const paths = {
     return `/denials${s ? `?${s}` : ""}`;
   },
   brief: (id: string) => `/denials/${id}/brief`,
+  /** The appeal analysis report for one denial. */
+  report: (id: string) => `/denials/${id}/report`,
   manager: (tab?: "cases" | "reviews") => `/manager${tab ? `?tab=${tab}` : ""}`,
   analytics: () => "/analytics",
   emr: () => "/emr",

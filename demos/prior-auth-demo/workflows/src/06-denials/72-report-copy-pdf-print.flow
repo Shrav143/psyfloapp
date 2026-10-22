@@ -1,0 +1,61 @@
+title: Denial Intelligence › Appeal analysis report › Copy, PDF and print
+route: /denials/D-3297/report
+intro: Three ways to take the report with you. In the hosted preview the PDF and Print are switched off, because the host page blocks downloads and printing; copying still works.
+dir: TD
+also: Demo only: the PDF is made in the browser. In production the report would also be saved to the case.
+---
+start s1 "The report is on screen"
+
+click c1 "Click 'Copy report'"
+process p1 "The whole report becomes plain text\nCapital headings, numbered findings and recommendations"
+decision d1 "Does the browser allow copying?"
+process p2 "Fallback: a hidden text box and the copy command"
+decision d2 "Did the fallback work?"
+toast t1 "Button reads 'Copied' for 2 seconds"
+toast t2 "'Select the text and press Ctrl or Cmd C'"
+end e1 "Report text is in the clipboard"
+endx e2 "Nothing was copied"
+
+click c2 "Click 'Download PDF'"
+decision d3 "Is this the hosted preview?"
+toast t3 "'Download PDF is off in this preview'\n'Open the single-file version of the demo to use it.'"
+process p3 "Button shows a spinner\nThe PDF library loads now, not before"
+process p4 "US Letter, 0.75 inch margins, built-in fonts\nTitle band, facts, every section, numbered recommendations, options table\nHeading never alone at the bottom of a page"
+process p5 "Running header on each page after the first\nFooter: 'Prepared by FLO agents, for clinician review' and 'Page x of y'"
+doc dc1 "Psyflo-appeal-analysis-D-3297.pdf\nTitle, subject and author 'Psyflo' are set"
+decision d4 "Did it work?"
+toast t4 "'PDF downloaded'\n'Psyflo-appeal-analysis-D-3297.pdf has the whole report.'"
+toast t5 "'Could not make the PDF'\n'Copy the report instead and paste it into a document.'"
+end e3 "PDF is in the downloads folder"
+endx e4 "No file"
+
+click c3 "Click 'Print'"
+decision d5 "Is this the hosted preview?"
+toast t6 "'Print is off in this preview'\n'Open the single-file version of the demo to use it.'"
+process p6 "The browser print dialog opens"
+process p7 "Print layout: sidebar, top bar and buttons hidden\n'What we would do' starts a new page\nA heading stays with its text; findings and recommendations are not split"
+doc dc2 "Paper or PDF copy of the report"
+end e5 "Report is on paper"
+endx e6 "Nothing printed"
+
+click c4 "Click 'Back to the denial'"
+goto g1 "Continues in: Denial Intelligence › A denial opened"
+click c5 "Click 'Regenerate'"
+goto g2 "Continues in: Denial Intelligence › Appeal analysis report › Open and generate"
+
+s1 --> c1 & c2 & c3 & c4 & c5
+c1 --> p1 --> d1
+d1 -->|Yes| t1 --> e1
+d1 -->|No| p2 --> d2
+d2 -->|Yes| t1
+d2 -->|No| t2 --> e2
+c2 --> d3
+d3 -->|Yes| t3 --> e4
+d3 -->|No| p3 --> p4 --> p5 --> d4
+d4 -->|Yes| dc1 --> t4 --> e3
+d4 -->|No| t5 --> e4
+c3 --> d5
+d5 -->|Yes| t6 --> e6
+d5 -->|No| p6 --> p7 --> dc2 --> e5
+c4 --> g1
+c5 --> g2

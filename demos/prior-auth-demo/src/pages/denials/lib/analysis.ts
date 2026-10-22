@@ -13,6 +13,10 @@ export interface DenialOption {
   id: OptionId;
   title: string;
   summary: string;
+  /** How long the route takes, on its own: the report compares it across the three options. */
+  time: string;
+  /** What the route gets back. */
+  gain: string;
   chance?: Chance;
   needs: string[];
 }
@@ -40,7 +44,8 @@ export interface DenialAnalysis {
   ctx: Record<string, string>;
 }
 
-const fill = (s: string, ctx: Record<string, string>): string => s.replace(/\{(\w+)\}/g, (m, k: string) => ctx[k] ?? m);
+/** Fills the {placeholders} of the denial text from the values in `ctx`. A placeholder with no value is left as written. */
+export const fill = (s: string, ctx: Record<string, string>): string => s.replace(/\{(\w+)\}/g, (m, k: string) => ctx[k] ?? m);
 
 /** A request that turned into a denial elsewhere (the Dashboard demo control) has no stored meta, so make one up from its core data. */
 export function resolveMeta(r: PsyRequest, stored: DenialMeta | undefined): DenialMeta {
@@ -124,9 +129,9 @@ export function buildAnalysis(r: PsyRequest, m: DenialMeta, clock: number): Deni
     dimsSub: text.dimsSub,
     dims: text.dims.map((d) => ({ ...d, text: fill(d.text, ctx) })),
     options: [
-      { id: "p2p", title: "Peer-to-peer call", summary: `30 to 45 minutes of clinician time · ${regained}`, chance: p2p, needs: ["A clinician on the call", "The brief, written by Advocate and checked by Integrity", "A call time inside the payer's window"] },
-      { id: "appeal", title: "Written appeal", summary: `${appealTime} · ${regained}`, chance: appeal, needs: ["A clinician's signature on the letter", "The letter, drafted by Advocate and checked by Integrity", `Evidence attached: ${sources.slice(0, 3).join(", ")}`] },
-      { id: "accept", title: accept, summary: "Fastest. Nothing regained.", needs: ["A reason for the record", "Analytics counts the write-off", "Case Manager adds a step-down plan"] },
+      { id: "p2p", title: "Peer-to-peer call", summary: `30 to 45 minutes of clinician time · ${regained}`, time: "30 to 45 minutes of clinician time", gain: regained, chance: p2p, needs: ["A clinician on the call", "The brief, written by Advocate and checked by Integrity", "A call time inside the payer's window"] },
+      { id: "appeal", title: "Written appeal", summary: `${appealTime} · ${regained}`, time: appealTime, gain: regained, chance: appeal, needs: ["A clinician's signature on the letter", "The letter, drafted by Advocate and checked by Integrity", `Evidence attached: ${sources.slice(0, 3).join(", ")}`] },
+      { id: "accept", title: accept, summary: "Fastest. Nothing regained.", time: "Fastest, nothing to prepare", gain: "Nothing regained", needs: ["A reason for the record", "Analytics logs the denial as accepted", "Case Manager adds a step-down plan"] },
     ],
     recommended,
     regained,

@@ -4,6 +4,7 @@ import { cn } from "@/lib/cn";
 import type { Finding } from "./lib/analysis";
 import type { DenialView } from "./lib/useDenialView";
 import { useStore } from "@/store";
+import { DimensionsSummary, WeakPointsSummary } from "./FullSummary";
 
 export function AgentsDidCard({ view }: { view: DenialView }) {
   const { analysis } = view;
@@ -41,7 +42,7 @@ export function WeakPointsCard({ view, onSource }: { view: DenialView; onSource:
   const setFix = useStore((s) => s.setFix);
   return (
     <Card>
-      <CardHeader title="Where the denial is weak" subtitle="Each finding links to the chart, with a suggested fix" />
+      <CardHeader title="Where the denial is weak" subtitle="Each finding links to the chart, with a suggested fix" right={<WeakPointsSummary view={view} />} />
       {analysis.findings.map((f) => {
         const added = work.fixes.includes(f.id);
         return (
@@ -78,7 +79,7 @@ export function DimensionsCard({ view }: { view: DenialView }) {
   if (!analysis.dims.length) return null;
   return (
     <Card>
-      <CardHeader title="The six ASAM dimensions" subtitle={`What the chart shows on each one${analysis.dimsSub ? ` · ${analysis.dimsSub}` : ""}`} />
+      <CardHeader title="The six ASAM dimensions" subtitle={`What the chart shows on each one${analysis.dimsSub ? ` · ${analysis.dimsSub}` : ""}`} right={<DimensionsSummary view={view} />} />
       <CardBody className="grid grid-cols-2 gap-3">
         {analysis.dims.map((d) => (
           <div key={d.name} className="rounded-2xl border border-tile-edge bg-tile px-4 py-3.5">
