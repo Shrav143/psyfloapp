@@ -1,10 +1,12 @@
 title: Denial Intelligence › A denial opened
 route: /denials?id=D-3318
-intro: The page for one denial, top to bottom: title and the scope line, the header card with 'Our read' and the one recommended next step, the options, the payer's words, where the denial is weak and the six ASAM dimensions, then two folded sections. 'Add a denial letter' and 'Open denials' sit in the right column. Each part is described once here and detailed in its own diagram.
+intro: The page for one denial, top to bottom, in one column: title with the 'Open denials' button, the scope line, the header card with 'Our read' and the one recommended next step, the options in one short row, the payer's words, where the denial is weak and the six ASAM dimensions, then two folded sections. The list of denials and 'Add a denial letter' are in right-hand panels. Each part is described once here and detailed in its own diagram.
 dir: TD
 ---
 start s1 "A denial is selected (from the list or ?id=)"
-process p1 "Title comes from the denial\n'D-3318: Cardinal approved 7 of 14 days. The chart supports challenging it.'"
+process p1 "Title comes from the denial\n'D-3318: Cardinal approved 7 of 14 days. The chart supports challenging it.'\nA small 'Site A' tag follows it when the view is narrowed to one site"
+screen hb "Button 'Open denials 8' in the page header (under the text on a narrow window)\nWhen the address has a filter: a chip 'Filtered: Cardinal' under the header"
+goto g4 "Continues in: Denial Intelligence › Open denials list"
 screen sub1 "Sub line: initials, age · program · payer name\n'The agents read the denial against the chart, and you choose the next step.'\nUnder it, one quiet line: 'Authorization denials only. Claim denials are handled in billing and are not in this demo.'"
 process pn "No control for claim denials: the demo has no claims feed"
 
@@ -17,7 +19,7 @@ goto g1 "Continues in: Denial Intelligence › A denial opened › Next step and
 goto g1b "Continues in: Denial Intelligence › A denial opened › Recommended next step"
 
 decision d2 "Still open: not filed, and not closed (accepted, or won on a call or an appeal)?"
-screen c5 "'Your options' card\nThree radio cards with their chances"
+screen c5 "'Your options' card, one short row\nThree routes with their chances, 'Recommended' on one\nButton 'Compare the options' in its header"
 goto g3 "Continues in: Denial Intelligence › Your options"
 process p3 "No options card"
 screen c2 "'What Cardinal said': the payer's words\n'What the chart shows': two or three sentences"
@@ -31,11 +33,8 @@ screen fo "Two folded sections at the bottom, closed at first\n'What the agents 
 goto g7 "Continues in: Denial Intelligence › A denial opened › Folded sections"
 process p4 "Opened, 'What has happened' lists the timeline: done events have a green dot\nScheduled events (dashed dot) read 'Scheduled · Wed 1:00 pm'\n'Every step is also on the Dashboard.'"
 
-screen r0 "Right column, top\n'Add a denial letter' (folded)\n'Drop a letter or use a sample'"
+process pw "No right column: the width it used to take goes to the cards\nThe six dimensions sit in three columns on a wide window, two on a medium one, one on a narrow one"
 goto g8 "Continues in: Denial Intelligence › Add a denial letter"
-screen r1 "Right column\n'Open denials' list, soonest deadline first"
-goto g4 "Continues in: Denial Intelligence › Open denials list"
-process pw "Under 1180 px wide the right column drops under the analysis"
 
 click b1 "Click 'See on the Dashboard'"
 goto g5 "Continues in: Dashboard › Request drawer › Open and read a request"
@@ -63,6 +62,6 @@ c4 --> fo
 p2 --> fo
 fo --> g7
 fo --> p4 --> e1
-sub1 --> r0 --> g8
-r0 --> r1 --> g4
-r1 -.-> pw
+sub1 --> hb --> g4
+hb -.-> g8
+c4 -.-> pw

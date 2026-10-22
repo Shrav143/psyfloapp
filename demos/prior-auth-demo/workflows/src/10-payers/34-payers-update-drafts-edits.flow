@@ -6,7 +6,7 @@ dir: TD
 start s1 "A workflow, rule or document-list\nedit was just saved"
 store un "'Edits waiting' for this payer goes up by one\nPayer details and Caller script edits do not count"
 screen bn "Ochre banner on Process, Rules and Documents\n'1 edit applies to new drafts only'\n'2 edits apply...' after a second edit"
-decision dr "Does this payer have an unsent draft?\nA request in 'Preparing', or a New case draft\nthat is saved and not sent"
+decision dr "Does this payer have an unsent draft at a site in view?\nA request in 'Preparing', or a New case draft\nthat is saved and not sent. Summit's two are R-1042 and R-1101: both sites show 2"
 toast b1 "New drafts for Summit use this at once.\nSent requests keep what they were sent with.\nClick Update drafts to redraft the open ones (R-1042, R-1101).\nButton: 'Update 2 drafts'"
 toast b0 "New drafts for Evergreen use this at once.\nSent requests keep what they were sent with.\nThere are no open drafts for this payer right now.\nButton: 'Update drafts'"
 process info "Not counted: a request the payer already has\n(Received and later), and the answer to a payer's\nquestion on an 'Info requested' request, like P-1499"

@@ -4,7 +4,7 @@ intro: 'Try it on a case' lets Reader read a chart against this payer's list. Th
 dir: TD
 ---
 start s1 "Look at the card 'Try it on a case'\nbelow the document list\nCheck a chart against this list\nIts info icon holds the note on keyword matching"
-decision hc "Is any case in 'Preparing'?"
+decision hc "Is any case in 'Preparing' at a site in view?\n(the Case menu lists only those; a case at the other site is never offered)"
 toast nc "Menu shows 'No cases to check'"
 process df "Case starts as the first 'Preparing' case for this payer,\nelse the first 'Preparing' case at all\nCardinal: I-2207"
 input pk "Pick a 'Case'\nR-1042 · J.M., 34 (Residential 3.5)\nI-2207 · T.R., 29 (IOP)\nR-0988, R-1101, I-2262"

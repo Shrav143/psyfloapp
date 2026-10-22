@@ -5,7 +5,9 @@ import type { CaseDraft } from "@/data/cases";
 import { payerById } from "@/data/seed";
 import { PROGRAM_LABEL } from "@/data/types";
 import { useStore } from "@/store";
+import { authType } from "./authType";
 import type { IntegrityCheck } from "./checks";
+import type { MissingItem } from "./missing";
 
 export type Signer = "jordan" | "rivera";
 export const SIGNERS: Record<Signer, { name: string; role: string; clinician: boolean }> = {
@@ -15,8 +17,20 @@ export const SIGNERS: Record<Signer, { name: string; role: string; clinician: bo
 const ATTEST = "I reviewed this summary and it reflects the record. The level of care is my clinical judgment.";
 const QUICK = ["Say more about the risk at home", "Shorten the clinical picture", "Mention the lower levels of care that were tried"];
 
-/** The sign-off gate: only a clinician signs. Needs the attestation, and an acknowledgement when a check warns. */
-export function SignCard({ draft, checks, chance, backSignal, onSign }: { draft: CaseDraft; checks: IntegrityCheck[]; chance: number; /** Counts up when "What is missing" asks to send the draft back to Scribe. */ backSignal: number; onSign: (signedBy: string) => void }) {
+/** The sign-off gate: only a clinician signs. Needs the attestation, an acknowledgement when something warns, and nothing blocking (no patient, payer, service or dates;
+    coverage confirmed inactive with no documented exception; an unanswered duplicate). The send is simulated in the demo and says so. */
+export function SignCard({ draft, checks, missing, chance, ready, backSignal, onSign }: {
+  draft: CaseDraft;
+  checks: IntegrityCheck[];
+  /** What is missing, so the card knows what blocks and what needs an acknowledgement. */
+  missing: MissingItem[];
+  chance: number;
+  /** The agents finished, so there is something to sign. */
+  ready: boolean;
+  /** Counts up when "What is missing" asks to send the draft back to Scribe. */
+  backSignal: number;
+  onSign: (signedBy: string) => void;
+}) {
   const rerun = useStore((s) => s.rerunFromScribe);
   const toast = useStore((s) => s.toast);
   const [signer, setSigner] = useState<Signer>("jordan");
@@ -30,9 +44,11 @@ export function SignCard({ draft, checks, chance, backSignal, onSign }: { draft:
   }, [backSignal]);
   const payer = draft.payerId ? payerById(draft.payerId) : null;
   const who = SIGNERS[signer];
-  const warns = checks.filter((c) => c.state === "warn");
-  const blocked = checks.some((c) => c.state === "block" || c.state === "checking");
-  const canSign = who.clinician && attest && !blocked && (warns.length === 0 || ack);
+  const blocking = missing.filter((m) => m.severity === "block");
+  const warns = missing.filter((m) => m.severity === "ack").length;
+  const rechecking = checks.some((c) => c.state === "checking");
+  const canSign = ready && who.clinician && attest && blocking.length === 0 && !rechecking && (warns === 0 || ack);
+  const why = !ready ? "Authorization preparation has not finished, so there is nothing to sign yet." : blocking.length ? `${blocking.length === 1 ? "One item stops" : `${blocking.length} items stop`} sending: ${blocking.map((b) => b.label.toLowerCase()).join(", ")}. Fix ${blocking.length === 1 ? "it" : "them"} under What is missing.` : !who.clinician ? `${who.name} is a UR coordinator. Only a licensed clinician can sign, so switch to Dr. Rivera.` : null;
 
   return (
     <>
@@ -42,13 +58,14 @@ export function SignCard({ draft, checks, chance, backSignal, onSign }: { draft:
           <Field label="Signing as">
             <Dropdown<Signer> variant="field" value={signer} onChange={setSigner} options={(Object.keys(SIGNERS) as Signer[]).map((k) => ({ value: k, label: `${SIGNERS[k].name} (${SIGNERS[k].role})` }))} menuWidth={300} ariaLabel="Signing as" />
           </Field>
-          {!who.clinician ? <p className="-mt-1 text-[13px] text-muted">{who.name} is a UR coordinator. Only a licensed clinician can sign, so switch to Dr. Rivera.</p> : null}
-          {warns.length ? <Checkbox checked={ack} onChange={setAck} label={`I reviewed ${warns.length === 1 ? "the warning" : "the warnings"} under What is missing and want to sign anyway.`} className="items-start" /> : null}
+          {why ? <p role="status" className="-mt-1 text-[13px] text-muted">{why}</p> : null}
+          {warns > 0 ? <Checkbox checked={ack} onChange={setAck} label={`I reviewed ${warns === 1 ? "the warning" : "the warnings"} under What is missing and want to sign anyway.`} className="items-start" /> : null}
           <Checkbox checked={attest} onChange={setAttest} label={ATTEST} className="items-start" />
           <Button variant="primary" size="lg" icon={PenLine} disabled={!canSign} onClick={() => setConfirm(true)}>
-            Sign and send to payer
+            Sign and send to payer (demo)
           </Button>
-          <Button icon={Undo2} onClick={() => setBack(true)}>
+          <p className="-mt-1.5 text-xs text-muted">Demo: simulated send. Nothing leaves the app.</p>
+          <Button icon={Undo2} disabled={!ready} onClick={() => setBack(true)}>
             Send back to Scribe
           </Button>
           <p className="text-xs text-muted">After you sign, Navigator files it, Caller confirms receipt, and Cadence books the first review.</p>
@@ -59,7 +76,7 @@ export function SignCard({ draft, checks, chance, backSignal, onSign }: { draft:
         open={confirm}
         onClose={() => setConfirm(false)}
         size="sm"
-        title="Sign and send to payer?"
+        title="Sign and send to payer (demo)?"
         subtitle={`Signing as ${who.name}, ${who.role}`}
         footer={
           <>
@@ -72,7 +89,7 @@ export function SignCard({ draft, checks, chance, backSignal, onSign }: { draft:
                 onSign(`${who.name} (${who.role})`);
               }}
             >
-              Sign and send to payer
+              Sign and send to payer (demo)
             </Button>
           </>
         }
@@ -82,14 +99,16 @@ export function SignCard({ draft, checks, chance, backSignal, onSign }: { draft:
           <dd className="font-medium">{draft.patient.initials}, {draft.patient.age}</dd>
           <dt className="text-muted">Payer</dt>
           <dd className="font-medium">{payer?.name}</dd>
+          <dt className="text-muted">Request</dt>
+          <dd className="font-medium">{authType(draft.kind).label} · {draft.type}</dd>
           <dt className="text-muted">Level of care</dt>
-          <dd className="font-medium">{draft.levelLabel ?? (draft.program ? PROGRAM_LABEL[draft.program] : "")} · {draft.type}</dd>
+          <dd className="font-medium">{draft.levelLabel ?? (draft.program ? PROGRAM_LABEL[draft.program] : "")}</dd>
           <dt className="text-muted">Approval chance</dt>
           <dd className="font-medium">{chance}%</dd>
           <dt className="text-muted">Attachments</dt>
           <dd className="font-medium">{draft.documents.length} documents</dd>
         </dl>
-        <p className="mt-4 text-sm text-ink2">Navigator sends this to {payer?.shortName} through its portal and saves the receipt to the case. Nothing was sent before this.</p>
+        <p className="mt-4 text-sm text-ink2">Navigator sends this to {payer?.shortName} through its portal and saves the receipt to the case. In this demo the send is simulated. Nothing was sent before this.</p>
       </Modal>
 
       <Modal

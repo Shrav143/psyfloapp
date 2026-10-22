@@ -94,6 +94,9 @@ export function detailForQueueItem(item: QueueItem): CaseDetail {
   return d;
 }
 
+/** The case an id belongs to. A denial (D-3284) belongs to the case it came from, and that case decides which site it is at. */
+export const caseIdOf = (id: string, requests: PsyRequest[]): string => (requests.find((r) => r.id === id) ?? requests.find((r) => r.caseId === id))?.caseId ?? id;
+
 /** Find what the case page needs for an id: the queue row, a Dashboard request (by id or by the case it belongs to), or nothing. */
 export function resolveCase(id: string, requests: PsyRequest[]): CaseDetail | null {
   if (id === R1042_DETAIL.id) return R1042_DETAIL;

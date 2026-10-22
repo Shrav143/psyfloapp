@@ -16,7 +16,7 @@ group gR "Read live by other screens (no Update drafts needed)"
 endgroup
 
 group gW "Wired: redrafting after a payer change or edits"
-  click up "'Update N drafts' (after a payer change,\nor from the edits-waiting banner)"
+  click up "'Update N drafts' (after a payer change,\nor from the edits-waiting banner)\nN counts only the drafts at the sites in view"
   store rq "Each unsent draft of this payer changes\nneeds a person: yes\nStatus line 'Redrafted after ... Waiting for a new signature'\nTimeline event from Scribe or the change's agent"
   store rp "Update recorded\nChange (or 'edits-summit'), payer and the IDs of the drafts redrafted"
   store nf "Bell notification 'Drafts updated'\nlinks to Case Manager"

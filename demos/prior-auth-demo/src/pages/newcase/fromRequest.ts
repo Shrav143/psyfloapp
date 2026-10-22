@@ -5,11 +5,12 @@ import type { CaseDetail, Evidence } from "@/data/caseDetail";
 import { withFocus } from "@/data/caseDetailFocus";
 import { canSend, projectedChance, type CaseWork } from "@/data/caseModel";
 import { DUE_FOR, freshRun, planTypeOf, QUESTIONS, RUN_STEPS, type Answer, type CaseDraft, type Diagnosis } from "@/data/cases";
-import { verdictOf } from "@/data/eligibility";
+import { memberMaskedOf } from "@/data/patients";
 import { PAYERS } from "@/data/seed";
+import { siteOf } from "@/data/sites";
 import { PROGRAM_LABEL } from "@/data/types";
+import { kindOfType } from "./authType";
 import { docEntries, makeDocument, sampleFile } from "./documents";
-import { coverageFor, coverageKey } from "./intakeRules";
 import { ICD_CODES } from "./lookups";
 import type { PayerContext } from "./payerContext";
 import { planQuestions } from "./questions";
@@ -44,11 +45,6 @@ export const appliedAdds = (detail: CaseDetail, work: CaseWork): RecAdd[] =>
 const DX_FOR: [RegExp, string][] = [[/alcohol/i, "F10.20"], [/opioid/i, "F11.20"], [/stimulant/i, "F15.20"], [/cannabis/i, "F12.20"], [/depress/i, "F33.1"], [/anxiety/i, "F41.1"]];
 const diagnosesOf = (text: string): Diagnosis[] => ICD_CODES.filter((c) => DX_FOR.some(([re, code]) => re.test(text) && code === c.code));
 
-/** The ID of a member the demo has not seen: four digits from the request ID, never one that scripts a coverage result. */
-const memberFor = (requestId: string): string => {
-  const n = 1000 + ((Number(requestId.replace(/\D/g, "")) * 7919) % 9000);
-  return `…${[1012, 9999, 3030, 6060, 9090].includes(n) ? n + 1 : n}`;
-};
 const ELAPSED = [12, 8, 17, 18, 12, 11, 22, 13, 11, 9];
 
 /** The draft the request would have: finished agents when it is ready, the agent that is working when it is not. `id` is left empty for the store to give. */
@@ -75,10 +71,16 @@ export function requestDraft(base: CaseDetail, work: CaseWork, clock: number, ct
     sent: state === "sent",
     step: state === "ready" ? 2 : 1,
     phase: "records",
+    kind: kindOfType(detail.type),
+    site: siteOf(detail.id),
+    started: true,
+    patientId: detail.id,
+    episodeId: `EP-${detail.requestId}`,
+    authorizationId: `AU-${detail.requestId}`,
     patient: { initials: detail.initials, age: detail.age },
     payerId,
     planType: planTypeOf(payerId),
-    memberId: memberFor(detail.requestId),
+    memberId: memberMaskedOf(detail.id),
     cardRead: true,
     program,
     levelLabel: detail.levelLabel === PROGRAM_LABEL[program] ? undefined : detail.levelLabel,
@@ -93,14 +95,11 @@ export function requestDraft(base: CaseDetail, work: CaseWork, clock: number, ct
 
   const done = state === "ready" || state === "sent" ? RUN_STEPS.length : Math.max(0, RUN_STEPS.findIndex((s) => s.agent === detail.agent));
   const due = DUE_FOR[detail.type];
-  const key = coverageKey(draft);
-  const found = coverageFor(draft, clock);
   return {
     ...draft,
     /* The portals were reached when the request was opened, so Verify never fails here. */
     run: { ...freshRun(), done, asked: done >= RUN_STEPS.length, elapsed: ELAPSED.slice(0, done), retried: true },
     questions: planQuestions(draft).filter((k) => RUN_STEPS.findIndex((s) => s.agent === QUESTIONS[k].agent) >= done),
-    coverage: key && found ? { key, verdict: verdictOf(found), at: clock - 60 } : null,
     dueKind: due?.kind ?? null,
     dueAt: detail.dueAt ?? (due ? clock + due.in : null),
   };

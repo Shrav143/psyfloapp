@@ -1,10 +1,10 @@
 title: Dashboard › Header › Check all now and the demo clock
 route: /dashboard
-intro: The one button in the page header, which Settings can switch off by pausing Navigator, and what the Demo menu's clock does to the numbers on this page. Time in the demo only moves when someone moves it.
+intro: The one button beside the title, which Settings can switch off by pausing Navigator, and what the Demo menu's clock does to the page. Time in the demo only moves when someone moves it.
 dir: TD
 also: Real world: Navigator checks every open request at least daily, and a request past the payer's time gets a call-the-payer task. Demo only: the button and the clock are simulated.
 ---
-start s0 "Look at the header\n'Check all now' sits top right of the headline card"
+start s0 "Look at the top of the page\n'Check all now' sits top right, beside the title"
 decision dp "Is Navigator paused in Settings?"
 screen sp "'Check all now' is disabled\nUnder it a link: 'Navigator is paused in Settings'"
 click cs "Click 'Navigator is paused in Settings'"
@@ -12,10 +12,10 @@ goto gs "Continues in: Settings › Pause › What the rest of the app shows"
 endx xs "Nothing runs\nResume Navigator in Settings and the button works again"
 click s1 "Click 'Check all now'"
 process p1 "Button shows a spinner and is disabled for 1.2 seconds"
-agent a1 "Navigator looks at every open request\nReceived and Under review, whatever the filters say"
+agent a1 "Navigator looks at every open request in view\nSubmitted and Decision pending at the sites the viewer can see, whatever the menus say"
 store w1 "Each open request gets a history line\n'Navigator checked: received' or 'Navigator checked: under review'"
-toast t1 "'Navigator checked 18 open requests'\n'No new answers yet. It checks again in 30 minutes.'"
-end e1 "Button is ready again\nNo request changes stage"
+toast t1 "'Navigator checked 18 open requests'\n'No new answers yet. It checks again in 30 minutes.'\nThe count is the open requests in view"
+end e1 "Button is ready again\nNo request changes state"
 
 start s2 "Demo menu › Click 'Fast-forward 1 hour' or 'Fast-forward 1 day'"
 store c1 "Demo clock moves forward\nNothing else moves time"
@@ -23,14 +23,14 @@ toast t2 "'Clock moved forward 1 hour' or '1 day'\n'Times in stage and deadlines
 process p2 "Dashboard recomputes from the new time"
 
 group gClock "What the clock changes on the Dashboard"
-  process r1 "Table: time in stage grows\nOver 1.5 × typical shows 'late'; over 2 × shows 'very late'"
-  process r2 "Table: open denials count down\n'36 h left', '3 days left', then 'window closed'"
-  process r3 "Table order: rows are ordered by their due time, so overdue ones move up\nThe Summary from FLO is worked out again from the new time"
-  process r4 "Key figures: 'Due within 24 hours' and the 'deadlines this week' under 'Denials to act on' count from the new time"
+  process r1 "Table: 'Days in state' grows\nOver 1.5 × the payer's median is ochre, over 2 × is terracotta"
+  process r2 "Table: the CMS clock on Medicaid managed care payers\n'Day 5 of 7' from day 5, then the ochre flag 'Past 7 days'"
+  process r3 "Do next: due times count down, overdue items move up\nA request past the CMS time comes first"
+  process r4 "Lifecycle: 'running late', 'past 7 days' and 'deadlines this week' lines, and the counts of Active and Renewal due, are worked out again\nAn approval whose end date has passed leaves Active"
 endgroup
-process p3 "Not changed: the stage counts"
+process p3 "Not changed: the counts of Awaiting sign-off, Submitted, Decision pending, Info requested, Denied / appeal, and the title"
 goto g1 "Continues in: Global shell › Demo menu"
-goto g2 "Continues in: Dashboard › Requests table › Read a row: bars, clock and what happens next"
+goto g2 "Continues in: Dashboard › Requests table › Days in state and the CMS decision time"
 
 s0 --> dp
 dp -->|No| s1 --> p1 --> a1 --> w1 --> t1 --> e1

@@ -7,6 +7,7 @@ import { paths } from "@/routes";
 import { useStore } from "@/store";
 import { isReferralDoc, makeDocument, sampleFile } from "./documents";
 import { Frame } from "./RecordEditors";
+import { stepPatch } from "./steps";
 import type { Row } from "./recordsModel";
 
 const ICON_BUTTON = "grid h-8 w-8 place-items-center rounded-lg text-ink2 hover:bg-tile";
@@ -66,7 +67,7 @@ export function DocRow({ row, slot, draft, open, onToggle, onPick, onPreview }: 
     action = (
       <div className="flex max-w-[400px] flex-wrap justify-end gap-2">
         {slot === "referral" ? (
-          <Button size="sm" aria-describedby={labelId} onClick={() => patch(draft.id, { phase: "referral" })}>
+          <Button size="sm" aria-describedby={labelId} onClick={() => { patch(draft.id, stepPatch(0)); nav(`${paths.newCase({ draft: draft.id })}?ref=`); }}>
             Add a referral
           </Button>
         ) : null}

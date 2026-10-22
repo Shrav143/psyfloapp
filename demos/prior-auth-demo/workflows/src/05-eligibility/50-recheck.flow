@@ -1,12 +1,13 @@
 title: Authorizations › Eligibility & Benefits › Re-verify a patient
 route: /authorizations/eligibility (and /authorizations/eligibility/R-1042)
-intro: Three ways to check a patient again. A row's 'Re-check' and the result's 'Check again' run the same quick re-check. Opening 'Verify a patient' from a case runs the full live check again.
+intro: Three ways to check a patient again. A row's 'Re-check' and the result's 'Check again' run the same quick re-check, and so does 'Refresh verification' in New case: all three refresh the one shared verification record. Opening 'Verify a patient' from a case runs the full live check again.
 dir: TD
 also: Demo only: a re-check never changes the answer. R-1101 stays lapsed. The re-checks Verify runs on its own, when the Demo clock passes a booked time, are in 'Re-check on its own'.
 ---
 start a1 "On the list, click 'Re-check' on a row"
 start a2 "On a result, click 'Check again'"
 start a3 "Open 'Verify a patient' from a case and click 'Check now'"
+start a4 "In New case, step 2, click 'Refresh verification'"
 
 decision q1 "Is a re-check already running for this patient?"
 process p1 "The click is ignored\nThe button is off with a spinner"
@@ -14,10 +15,13 @@ process p2 "Patient marked as checking\nList: button reads 'Checking' with a spi
 agent g0 "Verify and the other agents ask again"
 ext x1 "The state and the plan\n(demo: simulated, same answer as before)"
 wait w1 "About 1.1 seconds"
-store st1 "Row updated\nChecked time is now, any booked re-check cleared, verdict unchanged"
+decision qv "Is Verify paused in Settings?"
+store st1 "Verification record replaced\nChecked time is now, any booked re-check cleared, verdict unchanged\nA check that never ran ('Not checked') is asked again for real"
+store st3 "Record kept as it was, with the warning\n'Verification service unavailable'\nChecked time unchanged"
+toast t3 "'Could not re-check R-1042'\n'Verify is paused in Settings, so nothing was asked. The last result is still shown.'"
 
 decision q2 "Does the payer need a phone call? (Evergreen)"
-toast t1 "'R-1042 re-checked'\n'Still Authorization first.'"
+toast t1 "'R-1042 re-checked'\n'Still Authorization first.' ('Now Cleared to bill.' when a check that never ran has answered)"
 toast t2 "'R-0975 re-checked'\n'The plan's system did not answer, so Caller phoned. Still Fix before billing.'"
 
 group gAfter "What changes on screen"
@@ -34,8 +38,11 @@ end e1 "Patient is up to date"
 
 a1 --> q1
 a2 --> q1
+a4 --> q1
 q1 -->|Yes| p1
-q1 -->|No| p2 --> g0 --> x1 --> w1 --> st1 --> q2
+q1 -->|No| p2 --> w1 --> qv
+qv -->|No| g0 --> x1 --> st1 --> q2
+qv -->|Yes| st3 --> t3 --> e1
 q2 -->|No| t1
 q2 -->|Yes| t2
 t1 --> r1 & r3 & r4

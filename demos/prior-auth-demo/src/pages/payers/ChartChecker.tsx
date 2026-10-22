@@ -6,6 +6,7 @@ import type { DocItem } from "@/data/payerConfig";
 import { CHART_GAPS } from "@/data/payerConfigSeed";
 import { PROGRAM_LABEL, type Program } from "@/data/types";
 import { sleep } from "@/lib/format";
+import { useScope } from "@/lib/scope";
 import { InfoTip } from "@/components/ui/InfoTip";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
@@ -20,11 +21,15 @@ interface Done { caseId: string | null; program: Program; result: CheckResult }
 export function ChartChecker({ payerId, name, lists, program, onProgram }: { payerId: string; name: string; lists: Record<Program, DocItem[]>; program: Program; onProgram: (p: Program) => void }) {
   const alive = useAlive();
   const requests = useStore((s) => s.requests);
-  const cases = requests.filter((r) => r.stage === "preparing");
-  const [caseId, setCaseId] = useState(() => (cases.find((r) => r.payerId === payerId) ?? cases[0])?.id ?? "");
+  const { has, filter } = useScope();
+  // Only the drafts at the sites in view can be picked: a case at a site the viewer cannot see is not listed.
+  const cases = filter(requests.filter((r) => r.stage === "preparing"), (r) => r.caseId);
+  const [picked, setCaseId] = useState(() => (cases.find((r) => r.payerId === payerId) ?? cases[0])?.id ?? "");
+  const caseId = cases.some((r) => r.id === picked) ? picked : (cases.find((r) => r.payerId === payerId) ?? cases[0])?.id ?? "";
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
-  const [done, setDone] = useState<Done | null>(null);
+  const [shown, setDone] = useState<Done | null>(null);
+  const done = shown?.caseId && !has(shown.caseId) ? null : shown;
   const chosen = cases.find((r) => r.id === caseId);
   const pasted = text.trim().length > 0;
 

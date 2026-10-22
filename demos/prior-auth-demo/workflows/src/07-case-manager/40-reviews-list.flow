@@ -1,6 +1,6 @@
 title: Case Manager › Reviews this week › The list
 route: /manager?tab=reviews
-intro: The second tab lists every clinical review due this week, one card per day, with three tiles on top. Agents have already drafted most of them. A row opens the review drawer. A side card nudges the team to look at cases that may be ready for a lower level of care.
+intro: The second tab lists every clinical review due this week, one card per day, with three tiles on top. Agents have already drafted most of them. A row opens the review drawer. A side card nudges the team to look at cases that may be ready for a lower level of care. Every count and row is for the sites in view (Both sites 47 = Site A 27 plus Site B 20), and the side card lists only its cases at those sites.
 dir: TD
 ---
 start s1 "Click 'Reviews this week'"

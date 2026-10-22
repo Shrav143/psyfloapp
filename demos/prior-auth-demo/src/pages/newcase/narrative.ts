@@ -2,6 +2,7 @@
    Each section lists the chart documents it came from; those become the source chips. */
 import type { CaseDraft, DocSlotId, NarrativeSection } from "@/data/cases";
 import type { Program } from "@/data/types";
+import { CHANGE_LABEL } from "./authType";
 import type { RecAdd } from "./fromRequest";
 
 const LEVEL_HEADING: Record<Program, string> = {
@@ -23,6 +24,7 @@ export const LEVEL_SOURCES: Record<Program, [DocSlotId, string][]> = {
   PHP: [["asam", "ASAM assessment"]],
   WM: [["nursing", "Nursing notes"]],
 };
+const PROGRAM_TEXT: Record<Program, string> = { RES: "residential care", IOP: "intensive outpatient care", PHP: "partial hospitalization", WM: "withdrawal management" };
 const DURATION: Record<string, string> = { short: "less than a year", mid: "one to five years", long: "more than five years" };
 const LOWER_LEVEL: Record<string, string> = {
   tried: "A lower level of care was tried and did not hold.",
@@ -38,7 +40,49 @@ const ANSWER_LINE: Record<string, string> = {
   open: "The discharge date is not decided yet.",
 };
 
+const mdy = (iso: string | null | undefined): string => (iso ? `${iso.slice(5, 7)}/${iso.slice(8, 10)}/${iso.slice(0, 4)}` : "");
+
+/** The one section that differs by type: what the request rests on. Built only from what is in the draft (the authorization as chosen, the change asked for, the reason given, the documents in the case);
+    when the evidence is not there, the section says so instead of filling the gap. Null for an initial request, which has no earlier authorization to point at. */
+function basisSection(d: CaseDraft, has: (slot: DocSlotId) => boolean): NarrativeSection | null {
+  const b = d.basis;
+  const window = b?.from && b.to ? `${mdy(b.from)} to ${mdy(b.to)}` : "";
+  const used = b && b.authorized !== null && b.used !== null ? `${b.used} of ${b.authorized} ${b.unit} of the current authorization have been used${window ? ` (approved ${window})` : ""}.` : "";
+  switch (d.kind) {
+    case "concurrent":
+      return {
+        id: "basis", heading: "Progress since the last review",
+        text: [used, has("therapy_note") ? "The latest therapy note describes engagement in group and individual sessions and lower craving, with a continued need for structure." : "No therapy or progress note is in the case, so progress since the last review is not documented yet."].filter(Boolean).join(" "),
+        sources: has("therapy_note") ? ["Therapy note"] : [],
+      };
+    case "reauth":
+      return {
+        id: "basis", heading: "Progress since the authorization began",
+        text: [used, has("attendance") ? "Attendance for the period is on record." : "No attendance record is in the case, so attendance for the period is not documented yet.", has("treatment_plan") ? "The treatment plan sets out what remains to be done." : ""].filter(Boolean).join(" "),
+        sources: [has("attendance") ? "Attendance record" : "", has("treatment_plan") ? "Treatment plan p.2" : ""].filter(Boolean),
+      };
+    case "modify": {
+      const c = d.change;
+      const what = c ? `${CHANGE_LABEL[c.kind]}${c.amount ? `: ${c.amount} more ${c.kind === "more_units" ? "units" : "days"}` : ""}` : "";
+      return {
+        id: "basis", heading: "What changes and why",
+        text: [what ? `The request is for ${what.toLowerCase()}.` : "", c?.detail.trim() || "The reason for the change has not been added yet.", used, "This is a request. Nothing about the authorization changes until the payer approves it."].filter(Boolean).join(" "),
+        sources: has("treatment_plan") ? ["Treatment plan p.2"] : [],
+      };
+    }
+    case "retro":
+      return {
+        id: "basis", heading: "Dates of service and why no authorization was in place",
+        text: [d.startDate ? `Care was given from ${mdy(d.startDate)}${d.endDate ? ` to ${mdy(d.endDate)}` : ""}.` : "The dates of service have not been added yet.", d.retroReason?.trim() || "The reason an authorization was not in place has not been added yet."].join(" "),
+        sources: has("referral") ? ["Referral or admission order"] : [],
+      };
+    default:
+      return null;
+  }
+}
+
 function planText(d: CaseDraft): string {
+  if (d.kind === "modify") return d.change?.amount ? `${d.change.amount} more ${d.change.kind === "more_units" ? "units" : "days"} of ${PROGRAM_TEXT[d.program ?? "RES"]}, from ${mdy(d.startDate)}.` : "The authorization is changed as described above, from the date asked.";
   const prog = d.program ?? "RES";
   if (d.type === "Retro-authorization") return "The authorization is asked from the first day of care, so it covers the days already delivered.";
   if (prog === "RES") return d.type === "Continued stay" ? "Seven more days of residential care, then a step-down to partial hospitalization." : "Fourteen days of residential care, then a step-down to partial hospitalization.";
@@ -101,9 +145,12 @@ export function buildNarrative(d: CaseDraft): NarrativeSection[] {
     d.sendBackNote ? `Reviewer's note, addressed: ${d.sendBackNote}` : "",
   ].filter(Boolean).join(" ");
 
+  const basis = basisSection(d, has);
+  const levelHeading = d.kind === "concurrent" || d.kind === "reauth" ? "Why this level of care is still needed" : LEVEL_HEADING[prog];
   return [
     { id: "clinical", heading: "Clinical picture", text: clinical, sources: chips([["psych_eval", "Psychiatric eval p.3"], ["nursing", "Nursing notes"], ...(sertraline ? ([["meds", "Medication list"]] as [DocSlotId, string][]) : [])]) },
-    { id: "level", heading: LEVEL_HEADING[prog], text: level, sources: chips(LEVEL_SOURCES[prog]) },
+    ...(basis ? [basis] : []),
+    { id: "level", heading: levelHeading, text: level, sources: chips(LEVEL_SOURCES[prog]) },
     { id: "severity", heading: "Current severity", text: has("psych_eval") ? "Depression score 17 and anxiety score 14. Craving was 7 of 10 on 10/17." : "The chart records current symptoms and day-to-day function.", sources: chips([["psych_eval", "Psychiatric eval p.5"]]) },
     { id: "plan", heading: "Plan", text: plan, sources: chips([["treatment_plan", "Treatment plan p.2"]]) },
   ];

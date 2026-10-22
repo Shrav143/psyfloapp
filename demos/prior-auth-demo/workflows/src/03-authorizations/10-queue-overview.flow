@@ -1,28 +1,28 @@
 title: Authorizations › Queue › Open the queue and read the top
 route: /authorizations
-intro: How a person reaches the queue, what the header line says, and what the four figures show and do. Bands, request rows, filters (with the request type filter) and the payer signal each have their own diagram.
+intro: How a person reaches the queue, what the header line says, and what the four figures show and do. The queue follows the viewer and the site switch in the top bar, so every count here is for the requests at the sites in view. Bands, request rows, the quick view panel, filters (with the request type filter), the payer signal and the site view each have their own diagram.
 dir: TD
-also: Demo only: the numbers (56 open, 19 due today, 79%) are seed data. Approved and denied in the last 30 days are no longer here: they belong to Analytics. They move when actions are applied on a case page, and a request leaves the queue once it is signed and sent, decided by the payer, or settled in Denial Intelligence.
+also: Demo only: the numbers (56 open, 19 due today, 79%) are seed data, and are the ones for Both sites. Approved and denied in the last 30 days are no longer here: they belong to Analytics. They move when actions are applied on a case page, and a request leaves the queue once it is signed and sent, decided by the payer, or settled in Denial Intelligence.
 ---
 start s1 "Click 'Authorizations' in the sidebar"
 start s2 "Demo menu › 'Authorizations: the queue'"
 start s3 "On a case page: click 'Back to queue' or the 'Authorizations' crumb"
 
 screen q1 "Authorizations queue\nHeader, one payer-signal line, four figures, filters, priority bands"
-process sb "Sidebar badge on 'Authorizations'\nOpen requests in Act now plus Due within 24 hours (19)"
-process p1 "The page counts the open requests\nA request that was sent, decided by the payer or settled no longer counts"
+process sb "Sidebar badge on 'Authorizations'\nOpen requests at the sites in view in Act now plus Due within 24 hours\n(19 for Both sites)"
+process p1 "The page counts the open requests at the sites in view\nA request that was sent, decided by the payer or settled no longer counts"
 process p2 "The average and the next due time use each request's current chance and due time\nIncluding actions applied on its case page"
 decision d1 "Is any filter on?"
 
-screen h1 "Header: '19 of 56 open requests need action today.'\nThe 19 are Act now plus Due within 24 hours\nWith none left: 'Nothing needs action today.'"
+screen h1 "Header: '19 of 56 open requests need action today.'\nThe 19 are Act now plus Due within 24 hours\nWith one site in view it names it: '12 of 36 open requests at Site A need action today.'\nWith none left: 'Nothing needs action today.'"
 screen h2 "Sub line: 'Five are urgent, and the average approval chance is 79%.'\nWith none in Act now: 'Nothing is urgent, and ...'"
 screen h3 "Header: 'X of 56 open requests match these filters.'\nNo sub line"
 
 click nb "Click 'New case' (top right button)"
-goto g1 "Continues in: New case › Referral step"
+goto g1 "Continues in: Authorizations › New case › How a case starts and resumes"
 goto g2 "Continues in: Authorizations › Queue › Cardinal payer signal"
 
-screen tl "Four figures under the header\nAlways count the whole queue, not the filtered list"
+screen tl "Four figures under the header\nAlways count the whole queue at the sites in view, not the filtered list"
 click t2 "Click 'Urgent now'\n5 · 'the Act now band'"
 click t3 "Click 'Due within 24 hours'\n14 · 'next due in 3 h'\n(or 'next one is due now', or 'nothing open')"
 click t4 "Click 'Waiting on you'\n'not sent yet, or a question for you'\nCounts the requests the ordering rule puts first"
@@ -36,6 +36,7 @@ doc an "Approved and denied in the last 30 days\nShown in Analytics, not here"
 
 goto g3 "Continues in: Authorizations › Queue › Search and filter"
 goto g4 "Continues in: Authorizations › Queue › Bands and ranking"
+goto g5 "Continues in: Authorizations › Queue › Sites: what each viewer sees"
 
 s1 --> q1
 s2 --> q1
@@ -57,3 +58,4 @@ tl -.-> an
 q1 --> g2
 tl --> g3
 tl --> g4
+q1 --> g5

@@ -6,6 +6,7 @@ import type { AgentKey, CrewKey } from "@/data/types";
 import { useStore } from "@/store";
 import { FREEDOM_LABEL, selectAllAgentsPaused, type Freedom } from "@/store/agentSettings";
 import { nameList, pauseEffects } from "./pauseEffects";
+import { SitesAccess } from "./SitesAccess";
 
 const AGENT_KEYS = Object.keys(AGENTS) as AgentKey[];
 const FREEDOM = (Object.keys(FREEDOM_LABEL) as Freedom[]).map((value) => ({ value, label: FREEDOM_LABEL[value] }));
@@ -36,7 +37,7 @@ export default function SettingsPage() {
     <Page>
       <PageHeader
         title="Settings"
-        sub="Who the agents are, how much freedom each one has, and a way to pause them."
+        sub="Who the agents are, how much freedom each one has, a way to pause them, and who can see which site."
         actions={allPaused ? <Button icon={PauseCircle} variant="primary" onClick={resumeAll}>Resume all agents</Button> : <Button icon={PauseCircle} variant="danger" onClick={() => setConfirm(true)}>Pause all agents</Button>}
       />
       {pausedNames.length ? (
@@ -46,6 +47,7 @@ export default function SettingsPage() {
       ) : null}
       <Banner icon={LockKeyhole} title="Privacy mode is always on">Names, dates and IDs are swapped for codes before an agent reads a chart, and mapped back only on your screen.</Banner>
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+        <SitesAccess />
         {crews.map((c) => (
           <Card key={c.key}>
             <CardHeader title={CREW[c.key].label} subtitle={CREW[c.key].sub} />

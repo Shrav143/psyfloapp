@@ -1,6 +1,6 @@
 title: Case Manager › Reviews this week › Draft all due reviews and sign all clean drafts
 route: /manager?tab=reviews (the two header buttons)
-intro: Two buttons in the header work on the whole week. 'Draft all due reviews' makes Cadence draft every review that has no draft yet, unless Cadence is paused in Settings. 'Sign all clean drafts' signs every draft whose four Integrity checks passed, in one step, and leaves out anything that needs a closer look.
+intro: Two buttons in the header work on the whole week at the sites in view (a one-site viewer never drafts or signs the other site's reviews). 'Draft all due reviews' makes Cadence draft every review that has no draft yet, unless Cadence is paused in Settings. 'Sign all clean drafts' signs every draft whose four Integrity checks passed, in one step, and leaves out anything that needs a closer look.
 dir: TD
 ---
 start s1 "Reviews this week tab is open"

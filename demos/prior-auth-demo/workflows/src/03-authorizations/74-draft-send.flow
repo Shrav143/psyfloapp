@@ -11,7 +11,7 @@ click sp "Click 'Send to payer' (large button)"
 click os "Click 'Open in review and sign' (header button)"
 process rp "The case page finds this request's draft in New case, or makes one from the request\nThe draft opens at Review and sign when the request is ready, at Agents work when agents still have work"
 process ns "Nothing is sent yet\n'Nothing goes to the payer until a clinician signs.'"
-goto gR "Continues in: New case › Review and sign"
+goto gR "Continues in: Authorizations › New case › Review and sign › Sign and send"
 
 group gSign "In New case (summary only, drawn in its own diagram)"
   process sg "A licensed clinician signs with 'Sign and send to payer'\nThe UR coordinator cannot sign; Dr. Rivera can"
@@ -25,7 +25,7 @@ toast nt "Notification from Navigator: 'Sent to the payer'\n'R-0988 was sent. It
 screen db "Dashboard opens on that request\nStage 'Received'"
 process qg "Back in the queue the request is gone\nThe open count drops by one\nThe sidebar badge too, if it was in Act now or Due within 24 hours"
 process cp "The case page of a sent request shows the request's own status\n'Next:' the Dashboard's step, and a disabled 'Sent to payer' in place of 'Send to payer'\nHistory lists the signature and the send"
-goto gD "Continues in: Dashboard › Request drawer"
+goto gD "Continues in: Dashboard › Request drawer › Open and read a request"
 goto gQ "Continues in: Authorizations › Queue › Open the queue and read the top"
 
 s1 --> dc

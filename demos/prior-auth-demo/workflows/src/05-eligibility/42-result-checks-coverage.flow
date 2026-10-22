@@ -1,16 +1,18 @@
 title: Authorizations › Eligibility & Benefits › Result › Payment checks: coverage, plan, service
 route: /authorizations/eligibility/R-1042
-intro: The first three of the seven rows in the closed section 'Payment checks' (click it to open). Each row has a title, one line of detail and a coloured chip. If coverage is not found, the other six rows give way to one grey row, 'Nothing else could be checked'. The summary card above already says eligible, covered and what the service needs.
+intro: The first three of the seven rows in 'Payment checks', in the side panel 'Verification details' (click 'View full verification details' on the result). Each row has a title, one line of detail and a coloured chip. If coverage is not found, the other six rows give way to one grey row, 'Nothing else could be checked'. The summary card above already says eligible, covered and what the service needs.
 dir: TD
 also: Demo only: 'The service is not covered' has a seeded patient (R-1118, Beacon PPO) and a chip under 'Try a sample' on Verify.
 ---
-start s1 "Result page, section 'Payment checks' opened"
+start s1 "Result page, side panel opened, section 'Payment checks'"
 
 group gA "Row 1 · Coverage"
   decision a0 "What did the state or plan say about the date of service?"
   process a1 "Title 'Coverage is active on the service date'\nChip 'Active' (green)\n'Ohio Medicaid, active since 01/01/2026 with no end date'"
   process a2 "Title 'Coverage is not active on the service date'\nChip 'Lapsed 10/12' (red)\n'Days after that are not payable until eligibility is restored. A retro-eligibility request can cover the gap.'"
-  process a3 "Title 'Coverage is not active on the service date'\nChip 'Ended 09/30' (red)\n'The patient may have a new plan, so ask the payer.'"
+  process a3 "Title 'Coverage is not active on the service date'\nChip 'Ended 09/30' (red)\n'The patient may have a new plan, so ask the payer.'\nIf the plan changed: 'Coverage with Evergreen ended 09/30. The member is with Cardinal Health Plan since 10/01.'"
+  process a5 "Title 'Coverage is active, but under another member ID'\nChip 'ID differs' (red)\n'The plan matched this person to the ID ending 5521, not the one given.'"
+  process a6 "Title 'Coverage could not be checked'\nChip 'Not checked' (grey)\n'Verify is paused in Settings, so nothing was asked of the plan.'"
   process a4 "Title 'Coverage was not found'\nChip 'Not found' (red)\n'Check the member ID and date of birth, or read the card again.'"
 endgroup
 
@@ -22,12 +24,14 @@ group gB "Row 2 · The plan"
   process b2 "Chip 'Harborview' (green)\n'A Medicare Advantage plan. Claims go to Harborview MA, not to Medicare'"
   process b3 "Chip 'Lakeshore' (green)\n'Behavioral health is carved out to Lakeshore Behavioral. Claims go to Lakeshore, not to the medical plan'"
   process b4 "Chip 'Beacon' (green)\n'Claims go to Beacon PPO'"
+  process b5 "Title 'The member is with another plan now'\nChip 'Plan changed' (red)\n'Cardinal Health Plan, since 10/01. A claim sent to Evergreen would be rejected'"
 endgroup
 
 group gC "Row 3 · The service"
   decision c0 "What do the benefits say for this level of care?"
   process c1 "Title 'The service is covered'\nChip 'Covered' (green)\n'Residential 3.5 is payable for substance use disorder (F10.20 on the chart). Codes H0018 and H0019'"
   process c2 "Title 'The service is covered with conditions'\nChip 'Limited' (amber)\n'The diagnosis must be on the plan's list and each day needs an authorization.'"
+  process c5 "Title 'The service is not confirmed'\nChip 'Not confirmed' (amber)\n'Harborview answered for coverage but not for PHP. Caller can confirm the benefit by phone.'\nThe verdict is 'Fix before billing'"
   process c3 "Title 'The service is not covered'\nChip 'Not covered' (red)\n'Ask Beacon which program it pays for.'\nThe verdict is 'Fix before billing'"
   process c4 "Codes by level of care\nResidential 3.5 H0018 and H0019 · IOP H0015 · PHP H0035 · Detox H0010 and H0011"
 endgroup
@@ -39,12 +43,16 @@ a0 -->|Active| a1 --> b0
 a0 -->|Lapsed| a2 --> b0
 a0 -->|Ended| a3 --> b0
 a0 -->|Not found| a4 --> g0
+a0 -->|Active, other member ID| a5 --> b0
+a0 -->|Verify paused| a6 --> g0
 b0 -->|Ohio Medicaid plans| b1 --> c0
 b0 -->|Medicare Advantage| b2 --> c0
 b0 -->|Behavioral carve-out| b3 --> c0
 b0 -->|Commercial| b4 --> c0
+b0 -->|The member moved| b5 --> c0
 c0 -->|Covered| c1 --> c4
 c0 -->|Harborview PHP| c2 --> c4
 c0 -->|Not covered| c3 --> c4
+c0 -->|Not confirmed| c5 --> c4
 c4 --> g1
 g0 -.-> g1

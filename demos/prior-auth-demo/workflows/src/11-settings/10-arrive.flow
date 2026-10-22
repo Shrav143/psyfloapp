@@ -1,11 +1,11 @@
 title: Settings › Agents › Arrive and read the sixteen agents
 route: /settings
-intro: The Settings page is one screen about the agents: who they are, how much freedom each one has, a switch for each, and a button to pause them all. This shows what the person sees and what each row says.
+intro: The Settings page is one screen about the agents: who they are, how much freedom each one has, a switch for each, and a button to pause them all, plus a closed card on who can see which site. This shows what the person sees and what each row says.
 dir: TD
 also: Every level and switch is kept in the app, not in the page. Leave Settings and come back and nothing has changed. 'Reset demo data' puts every agent back to its starting level with its switch on.
 ---
 start s1 "Click 'Settings' in the sidebar\nAbove 'Help', below the 'Demo data' tag"
-screen p1 "Settings\nWho the agents are, how much freedom each one has, and a way to pause them."
+screen p1 "Settings\nWho the agents are, how much freedom each one has, a way to pause them, and who can see which site."
 click hb "Click 'Pause all agents'\nRed outline button, top right\n'Resume all agents' when all sixteen are paused"
 goto g1 "Continues in: Settings › Pause › Pause all agents"
 toast bn "'Privacy mode is always on'\nNames, dates and IDs are swapped for codes before an agent reads a chart, and mapped back only on your screen."
@@ -13,6 +13,8 @@ screen gates "Gates\nAgents never pass these without a person"
 screen lv "What each level changes\nOne plain line for each of the three levels\nSubtitle: 'Set per agent. Applied in EMR Connect'"
 goto g6 "Continues in: Settings › Agents › What each freedom level allows and the gates it never skips"
 goto g2 "Continues in: Settings › Page › Other controls and notices"
+screen sa "Sites and access (closed card, first in the grid)\n'Two sites, four roles'"
+goto gsa "Continues in: Settings › Sites and access › Read the roles and switch with View as"
 
 group gCov "Coverage"
   screen c0 "Coverage card\nKnows who pays and files with them"
@@ -73,6 +75,7 @@ k4 --> row
 row --> st
 row --> fz --> g3
 row --> sw --> g4
+p1 --> sa --> gsa
 p1 --> gates --> g2
 p1 --> lv --> g6
 c1 -.-> g5

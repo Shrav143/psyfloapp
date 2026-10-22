@@ -26,7 +26,7 @@ agent a1 "Navigator files it through the payer's portal and saves the receipt"
 store st3 "Request: chip 'Appeal filed' ('Second-level appeal filed' or 'External review' on a later level), 'Waiting on the payer'\nDeadline cleared; 'filed 10/20', 'decision 11/19'"
 toast t2 "'Appeal filed'\n'Cardinal decides by 11/19. It shows on the Dashboard.'"
 toast t3 "Notification 'Appeal filed' from Navigator\nOpens the request on the Dashboard"
-process p2 "Drawer closes\nNext-step block 'Appeal filed. Waiting on the payer'\n'Your options' card is gone"
+process p2 "Drawer closes\nNext-step block 'Appeal filed. Waiting on the payer'\n'Your options' row is gone"
 
 click c4 "Click 'Cancel' or the X in the modal"
 process p3 "Back to the open drawer, nothing filed"

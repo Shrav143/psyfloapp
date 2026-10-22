@@ -23,16 +23,26 @@ click c2 "Click 'Check now'"
 goto g2 "Continues in: Authorizations › Eligibility & Benefits › Verify › The live check"
 
 start s5 "Search or filters on the list match nobody"
-screen e3 "'No patients match these filters'\n'The filters hide every row. Clear them to see all 37 patients.'"
+screen e3 "'No patients match these filters'\n'The filters hide every row. Clear them to see all 37 patients.'\n(the count is the patients in the site view)"
 click c3 "Click 'Clear filters'"
 end e4 "All patients are back"
 
 start s6 "The check finds a coverage problem\nMember ID ends 1012, 9999, 3030, 6060 or 9090, or Evergreen with Detox"
 screen e5 "A normal result page with a red verdict 'Fix before billing'\nIf coverage is not found, headline 'We could not find coverage.', one grey row 'Nothing else could be checked' and no payment lines"
 goto g3 "Continues in: Authorizations › Eligibility & Benefits › Result › Next actions"
+goto g5 "Continues in: Dashboard"
 
 start s7 "Leave 'Verify a patient' while the live check runs"
 endx e6 "The check is dropped\nNothing is saved and no row is added"
+
+start s8 "Open a result at a site the viewer cannot see\nA link, or a sign-in as Dr. Rivera (Site A) or Sam Okafor (Site B)"
+screen e7 "'This coverage check is not available at Site A'\nIt names the case and its site, never a patient or a payer\nStaff who may see both sites also get 'Show Site B'"
+click c4 "Click 'Back to the Dashboard'"
+
+start s9 "Verify is paused in Settings and a check is started or asked again"
+screen e8 "Verify page banner 'Verify is paused in Settings'\nThe check still runs its steps, each saying 'Not asked: Verify is paused in Settings'"
+screen e9 "A result 'Could not verify: Verify is paused in Settings.'\nVerdict 'Not checked', warning 'Verification service unavailable'\n'Open Settings' and 'Check again'"
+goto g4 "Continues in: Authorizations › Eligibility & Benefits › The exceptions"
 
 s1 --> e1 --> e2 --> c1 --> g1
 s2 --> t1 --> p1
@@ -44,3 +54,6 @@ p3 -.-> q1
 s5 --> e3 --> c3 --> e4
 s6 --> e5 --> g3
 s7 --> e6
+s8 --> e7 --> c4
+c4 --> g5
+s9 --> e8 --> e9 --> g4

@@ -8,6 +8,8 @@ import { useStore } from "@/store";
 import { AuthChip, BenefitsChip, EligibilityChip, limitText, patientLabel, VerdictChip } from "./chips";
 import { autoState, DUE_AT, NOT_RECHECKED, RE_CHECKED, type AutoState } from "./recheck";
 
+const NOT_CHECKED_PAUSED = "Could not be checked: Verify is paused in Settings";
+
 const when = (at: number, now: number): string => {
   const m = Math.max(0, now - at);
   if (m < 1) return "just now";
@@ -28,10 +30,15 @@ function quietParts(p: EbPatient, now: number, busy: boolean, auto: AutoState | 
   const parts: Part[] = [{ text: payerById(p.payerId).name }];
   const limit = limitText(p);
   if (limit) parts.push({ text: limit });
+  if (p.payerChanged) parts.push({ text: `Now with ${payerById(p.payerChanged.to)?.shortName ?? "another plan"} since ${p.payerChanged.since}` });
+  if (p.idMismatch) parts.push({ text: `The plan has the ID ending ${p.idMismatch.onFile.replace("…", "")}` });
+  if (p.networkUnresolved && p.eligibility.state !== "unavailable") parts.push({ text: "Enrollment not confirmed" });
+  if (p.eligibility.state === "unavailable") parts.push({ text: NOT_CHECKED_PAUSED, warn: true });
+  else if (p.refreshFailed !== undefined) parts.push({ text: "Last refresh could not run: Verify is paused", warn: true });
   if (busy) parts.push({ text: "Checking now" });
   else if (auto?.kind === "done") parts.push({ text: RE_CHECKED(auto.at) });
   else if (auto?.kind === "paused") parts.push({ text: NOT_RECHECKED, warn: true });
-  else {
+  else if (p.eligibility.state !== "unavailable") {
     parts.push({ text: `Checked ${when(p.checkedAt, now)}` });
     if (auto) parts.push({ text: DUE_AT(auto.at) });
   }

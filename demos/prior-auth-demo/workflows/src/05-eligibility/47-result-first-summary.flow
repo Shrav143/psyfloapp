@@ -1,6 +1,6 @@
 title: Authorizations › Eligibility & Benefits › Result › Result first: eligibility, benefits, what the service needs
 route: /authorizations/eligibility/R-1042
-intro: How the three parts of the summary are worked out from the patient's row and from the saved Payers configuration. Eligibility says eligible, not eligible or needs a fix, with the dates. Benefits says covered or not, with the service limit and, only when the plan has them, copay, deductible and coinsurance. What this service needs says whether an authorization is required, on file or not required, and shows the payer's saved rules, read only.
+intro: How the three parts of the summary are worked out from the patient's row and from the saved Payers configuration. Eligibility says eligible, not eligible or needs a fix, with the dates. Warnings, when the check found something, come right after the three parts. Benefits says covered or not, with the service limit and, only when the plan has them, copay, deductible and coinsurance. What this service needs says whether an authorization is required, on file or not required, and shows the payer's saved rules, read only.
 dir: TD
 also: Demo only: effective dates, limits and cost share are sample data, and the check is simulated.
 ---
@@ -12,15 +12,18 @@ group gE "Eligibility"
   process e2 "Pill 'Not eligible' (red)\n'Effective 01/01/2026, ended 09/30/2026'"
   process e3 "Pill 'Needs a fix' (red)\n'Effective 01/01/2026, lapsed 10/12/2026'\nButton 'Request retro-eligibility'"
   process e4 "Pill 'Needs a fix' (red)\n'No coverage was found for these details. Check the member ID and date of birth, or read the card again.'\nNo dates"
+  process e5 "Pill 'Needs a fix' (red)\n'Active, under the member ID ending 5521'\nThe plan has this member under another ID"
+  process e6 "Pill 'Not checked' (grey)\n'Verify is paused in Settings, so nothing was asked of the plan.'"
 endgroup
 
-process nf "Benefits and What this service needs say 'Not checked' (grey)\n'Needs a plan that knows this member'\nNo limit line, no cost share, no Payers rules"
+process nf "Benefits and What this service needs say 'Not checked' (grey)\n'Needs a plan that knows this member' or 'Not asked while Verify is paused'\nNo limit line, no cost share, no Payers rules"
 
 group gB "Benefits"
   decision b0 "What do the benefits say?"
   process b1 "Pill 'Covered' (green)\n'Residential 3.5 is payable. Codes H0018 and H0019'"
   process b2 "Pill 'Limited' (amber)\n'... is payable with conditions. Codes ...'"
   process b3 "Pill 'Not covered' (red)\n'... is not a covered benefit. Codes ...'"
+  process b10 "Pill 'Not confirmed' (amber)\n'Harborview did not confirm PHP. Codes H0035'"
   decision b4 "Is a service limit on file?"
   process b5 "Quiet line '9 of 14 days used, 5 left'\n(or '38 of 48 units used, 10 left')\n'All 14 days used. Nothing left' when none is left"
   process b6 "Quiet line 'No annual day limit for residential 3.5. The authorization sets the days'\nwhen the program has none (Summit residential)\nOtherwise no limit line"
@@ -31,7 +34,8 @@ endgroup
 
 group gN "What this service needs"
   decision n0 "What is the authorization state?"
-  process n1 "Pill 'Not required' (grey)\n'Beacon does not require one for IOP.'"
+  process n1 "Pill 'Not required' (grey)\n'Beacon does not require one for IOP, for dates of service 10/21/2026 to 10/31/2026.'\nAlso when the payer's saved rule 'No authorization needed' names this level of care"
+  process n7 "Pill 'Requirement unknown' (grey)\n'No rule on file for Beacon and residential 3.5. Check with Beacon.'\nAlso for a payer added on Payers that does not cover this level of care"
   process n2 "Pill 'On file' (green)\n'On file with Summit.'"
   process n3 "Pill 'Required, not on file' (amber)\n'Required before the first day. Not on file yet.'"
   process n4 "Pills 'In progress', 'Payer reviewing' or 'Retro request open' (amber or grey)\nwith what is happening to the request"
@@ -49,14 +53,18 @@ e0 -->|Active| e1 --> b0
 e0 -->|Ended| e2 --> b0
 e0 -->|Lapsed| e3 --> b0
 e0 -->|Not found| e4 --> nf --> note
+e0 -->|Other member ID| e5 --> b0
+e0 -->|Verify paused| e6 --> nf
 b0 -->|Covered| b1 --> b4
 b0 -->|Limited| b2 --> b4
 b0 -->|Not covered| b3 --> b4
+b0 -->|Not confirmed| b10 --> b4
 b4 -->|Yes| b5 --> b7
 b4 -->|No| b6 --> b7
 b7 -->|Yes| b8 --> n0
 b7 -->|No| b9 --> n0
 n0 -->|Not required| n1 --> n5
+n0 -->|Unknown| n7 --> n5
 n0 -->|On file| n2 --> n5
 n0 -->|Required| n3 --> n5
 n0 -->|Drafted, reviewing, retro| n4 --> n5

@@ -1,8 +1,8 @@
 import type { PsyRequest } from "@/data/types";
+import { sentAt } from "@/lib/floFacts";
 import { DAY } from "@/lib/time";
 
-const sentEvent = (r: PsyRequest) => r.events.find((e) => e.done && (e.text.startsWith("Navigator sent") || e.text.startsWith("You signed and sent")));
-export const sentAt = (r: PsyRequest): number | undefined => sentEvent(r)?.at;
+export { sentAt };
 
 /** "22 minutes" read from the request's own next line; stage fallbacks otherwise. */
 export function nextCheckIn(r: PsyRequest): string | undefined {

@@ -10,18 +10,21 @@ import { selectPayerDocs, selectPayerRules } from "@/store/payerConfig";
 export interface PayerContext {
   items: DocItem[] | null;
   rules: Rule[];
+  /** The payer's rules are Psyflo's benchmark, not rules anyone confirmed for this payer (a payer added on Payers). */
+  benchmark: boolean;
 }
 const NO_RULES: Rule[] = [];
 type Key = Pick<CaseDraft, "payerId" | "program">;
 
 export function payerContextOf(s: AppState, d: Key): PayerContext {
-  if (!d.payerId || !s.payerConfig[d.payerId]) return { items: null, rules: NO_RULES };
-  return { items: d.program ? selectPayerDocs(s, d.payerId, d.program) : null, rules: selectPayerRules(s, d.payerId) };
+  if (!d.payerId || !s.payerConfig[d.payerId]) return { items: null, rules: NO_RULES, benchmark: false };
+  return { items: d.program ? selectPayerDocs(s, d.payerId, d.program) : null, rules: selectPayerRules(s, d.payerId), benchmark: s.payerConfig[d.payerId].rulesVersion === "benchmark" };
 }
 
 /** The same, for a component: it draws again when the payer's list or rules are saved. */
 export function usePayerContext(d: Key): PayerContext {
   const items = useStore((s) => payerContextOf(s, d).items);
   const rules = useStore((s) => payerContextOf(s, d).rules);
-  return useMemo(() => ({ items, rules }), [items, rules]);
+  const benchmark = useStore((s) => payerContextOf(s, d).benchmark);
+  return useMemo(() => ({ items, rules, benchmark }), [items, rules, benchmark]);
 }

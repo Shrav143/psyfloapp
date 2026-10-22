@@ -2,18 +2,24 @@ import type { StateCreator } from "zustand";
 import { EMPTY_WORK } from "@/data/caseModel";
 import { resolveCase } from "@/data/caseDetail";
 import {
-  caseCode, chanceBounds, currentChance, draftState, DUE_FOR, freshRun, needsPerson, QUESTIONS, RUN_STEPS, SCRIBE_STEP,
-  type CaseDraft, type CoverageSummary, type DocSlotId, type DraftDocument,
+  chanceBounds, currentChance, draftState, DUE_FOR, freshRun, needsPerson, nextCaseCode, planTypeOf, QUESTIONS, RUN_STEPS, SCRIBE_STEP,
+  type AuthKind, type CaseDraft, type DocSlotId, type DocumentedReason, type DraftDocument,
 } from "@/data/cases";
+import { authorizationsOf, episodesOf, isoOf, patientById } from "@/data/patients";
 import { payerById } from "@/data/seed";
-import type { AgentKey } from "@/data/types";
+import type { SiteId } from "@/data/sites";
+import { PROGRAM_LABEL, type AgentKey } from "@/data/types";
+import { viewerById } from "@/data/viewers";
 import { uid } from "@/lib/format";
+import { DAY } from "@/lib/time";
+import { authType, defaultTypeFor } from "@/pages/newcase/authType";
 import { draftForRequest, mergeRequestDraft, requestDraft, requestState } from "@/pages/newcase/fromRequest";
 import { payerContextOf } from "@/pages/newcase/payerContext";
 import { unmetCount } from "@/pages/newcase/payerRules";
 import { pendingFor, planQuestions } from "@/pages/newcase/questions";
 import { blankDraft, SEED_DRAFTS } from "@/pages/newcase/seedDrafts";
 import type { AppState } from "./index";
+import { selectPatientBook } from "./patients";
 
 /* New case drafts and Case Manager (owner: new-case agent).
    A draft is everything about one case being prepared: the intake, the documents, the agents' run, the answers, the summary.
@@ -31,9 +37,23 @@ export interface CasesSlice {
   markCaseDocUnavailable: (id: string, slot: DocSlotId, reason: string) => void;
   clearCaseDocUnavailable: (id: string, slot: DocSlotId) => void;
   finishCaseDoc: (id: string, slot: DocSlotId) => void;
-  setCaseCoverage: (id: string, coverage: CoverageSummary | null) => void;
   /** Save as draft: the case appears in Case Manager with its own ID. */
   saveCaseDraft: (id: string) => void;
+  /** Gives the draft its case ID now (the verification record is keyed by it) without saving the draft. Returns the ID, or null while the level of care is not chosen. */
+  ensureCaseId: (id: string) => string | null;
+  /** The Authorization type under the page heading. The request type recorded follows it. */
+  setCaseKind: (id: string, kind: AuthKind) => void;
+  /** A new patient's case belongs to one site. A case that already has its ID cannot change site: the ID places it, and the verification is keyed by it. */
+  setCaseSite: (id: string, site: SiteId) => void;
+  /** Picks an existing patient (and optionally the treatment episode and authorization) from the patient book. The patient's own details fill the case; no second patient is ever made. */
+  chooseCasePatient: (id: string, pick: { patientId: string; episodeId?: string; authorizationId?: string }) => void;
+  /** Lets go of the patient, so the person can search again. */
+  clearCasePatient: (id: string) => void;
+  /** The person went on past a warning and said why. One reason per kind of warning; it is written to the request's history when it is signed. */
+  documentReason: (id: string, reason: DocumentedReason) => void;
+  clearDocumentedReason: (id: string, kind: DocumentedReason["kind"]) => void;
+  /** Removes a draft that was never saved ("Return to Case Manager" from a case that needs no authorization). */
+  discardCaseDraft: (id: string) => void;
   /** Start the agents (after the confirm). Sets the chance bounds, the clock for the request and which questions the agents may ask. */
   startCaseRun: (id: string) => void;
   advanceCaseRun: (id: string, seconds: number) => void;
@@ -56,7 +76,17 @@ export interface CasesSlice {
   refreshCaseUnmet: (id: string) => void;
 }
 
-const INTAKE_KEYS: (keyof CaseDraft)[] = ["patient", "payerId", "memberId", "program", "type", "startDate", "reason", "diagnoses", "documents", "unavailable"];
+/** The line History shows when the person went on past a warning. */
+const DOCUMENTED_TEXT: Record<DocumentedReason["kind"], string> = {
+  duplicate: "You sent this request knowing a matching one exists",
+  coverage: "You went on without confirmed coverage and said why",
+  no_auth: "You sent this request although the payer needs no authorization, and said why",
+  unavailable: "You went on without a verification and said why",
+};
+const INTAKE_KEYS: (keyof CaseDraft)[] = ["patient", "payerId", "memberId", "program", "type", "startDate", "endDate", "change", "retroReason", "reason", "diagnoses", "documents", "unavailable"];
+
+/** The sites the viewer is looking at: the chosen one, or every site they may see. The first is where a new case starts. */
+const sitesOf = (s: AppState): SiteId[] => (s.siteScope === "both" ? viewerById(s.viewerId).sites : [s.siteScope]);
 /** Changing the intake after the agents have worked means their work is stale, so the run starts over (the portal stays reached, so Verify does not fail twice). */
 const staleReset = (d: CaseDraft): Partial<CaseDraft> => ({ run: { ...freshRun(), retried: d.run.retried }, answers: [], questions: [], narrative: null, suggestions: [], revision: 0, sendBackNote: undefined, recordsChanged: true });
 
@@ -85,7 +115,7 @@ export const createCasesSlice: StateCreator<AppState, [], [], CasesSlice> = (set
 
     createCaseDraft: (init) => {
       const id = uid("draft");
-      set((s) => ({ caseDrafts: [...s.caseDrafts, settle(blankDraft({ ...init, id, updatedAt: s.clock }))] }));
+      set((s) => ({ caseDrafts: [...s.caseDrafts, settle(blankDraft({ site: sitesOf(s)[0], ...init, id, updatedAt: s.clock }))] }));
       return id;
     },
     patchCaseDraft: (id, patch) => change(id, () => patch),
@@ -104,15 +134,82 @@ export const createCasesSlice: StateCreator<AppState, [], [], CasesSlice> = (set
         return { unavailable };
       }),
     finishCaseDoc: (id, slot) => update(id, (d) => ({ ...d, documents: d.documents.map((x) => (x.slot === slot ? { ...x, status: "done" } : x)) })),
-    setCaseCoverage: (id, coverage) => update(id, (d) => ({ ...d, coverage })),
+
+    ensureCaseId: (id) => {
+      const d = find(id);
+      if (!d) return null;
+      if (d.caseId) return d.caseId;
+      if (!d.program) return null;
+      const next = nextCaseCode(d.program, get().caseSeq, d.site);
+      set({ caseSeq: next.seq });
+      update(id, (x) => ({ ...x, caseId: x.caseId ?? next.code }));
+      return find(id)?.caseId ?? null;
+    },
 
     saveCaseDraft: (id) => {
       const d = find(id);
       if (!d || d.saved) return;
-      const seq = get().caseSeq;
-      set((s) => ({ caseSeq: s.caseSeq + 1 }));
-      update(id, (x) => ({ ...x, saved: true, caseId: x.caseId ?? caseCode(x.program, seq) }));
+      get().ensureCaseId(id);
+      /* A draft with no level of care yet still gets an ID: it falls under R, at its own site. */
+      if (!find(id)?.caseId) {
+        const next = nextCaseCode(null, get().caseSeq, d.site);
+        set({ caseSeq: next.seq });
+        update(id, (x) => ({ ...x, caseId: next.code }));
+      }
+      update(id, (x) => ({ ...x, saved: true }));
     },
+
+    setCaseKind: (id, kind) => {
+      const d = find(id);
+      if (!d || d.kind === kind || d.sent) return;
+      const def = authType(kind);
+      const patch: Partial<CaseDraft> = { kind, type: defaultTypeFor(kind, d.type), what: undefined, documented: (d.documented ?? []).filter((r) => r.kind !== "duplicate") };
+      if (kind !== "modify") patch.change = undefined;
+      if (kind !== "retro") patch.retroReason = undefined;
+      /* A review, renewal or modification follows an existing authorization, so a patient typed in by hand would be a second record: start that search from nothing.
+         Initial and retroactive requests keep the patient. A new stay has no authorization or episode yet. */
+      if (def.existing && !d.patientId) {
+        Object.assign(patch, { patient: { initials: "", age: null }, payerId: null, planType: "", memberId: "", program: null, levelLabel: undefined, referralId: undefined, referrer: undefined, started: false });
+      }
+      if (!def.existing) Object.assign(patch, { episodeId: null, authorizationId: null });
+      change(id, () => patch);
+    },
+
+    setCaseSite: (id, site) => {
+      const d = find(id);
+      if (!d || d.caseId || d.sent || d.site === site || d.patientId) return;
+      update(id, (x) => ({ ...x, site }));
+    },
+
+    chooseCasePatient: (id, pick) => {
+      const d = find(id);
+      if (!d) return;
+      const book = selectPatientBook(get());
+      const p = patientById(book, pick.patientId);
+      if (!p) return;
+      const eps = episodesOf(book, p.id);
+      const ep = eps.find((e) => e.id === pick.episodeId) ?? (authType(d.kind).existing && eps.length === 1 ? eps[0] : undefined);
+      const auth = (ep ? authorizationsOf(book, ep.id) : []).find((a) => a.id === pick.authorizationId) ?? (ep ? authorizationsOf(book, ep.id)[0] : undefined);
+      const payerId = ep?.payerId ?? p.payerId;
+      const today = get().clock;
+      /* A review or a renewal covers the next stretch of care, which starts the day after the approved window ends. Care that has already run out starts today. */
+      const after = auth?.approvedTo != null && auth.approvedTo >= today && d.kind !== "modify" ? isoOf(auth.approvedTo + DAY) : isoOf(today);
+      const patch: Partial<CaseDraft> = {
+        patientId: p.id, episodeId: ep?.id ?? null, authorizationId: auth?.id ?? null, started: true,
+        patient: { initials: p.initials, age: p.age }, payerId, planType: planTypeOf(payerId), memberId: p.memberMasked,
+        program: ep?.program ?? d.program, levelLabel: ep && ep.levelLabel !== PROGRAM_LABEL[ep.program] ? ep.levelLabel : undefined, site: p.site,
+        basis: auth && authType(d.kind).existing ? { label: auth.label, unit: auth.unit, authorized: auth.authorized, used: auth.used, left: auth.left, from: auth.approvedFrom === null ? null : isoOf(auth.approvedFrom), to: auth.approvedTo === null ? null : isoOf(auth.approvedTo) } : undefined,
+        ...(authType(d.kind).existing || !d.startDate ? { startDate: after } : {}),
+        caseId: d.caseId && d.site !== p.site ? null : d.caseId,
+      };
+      change(id, () => patch);
+    },
+
+    clearCasePatient: (id) => change(id, () => ({ basis: undefined, patientId: null, episodeId: null, authorizationId: null, started: false, patient: { initials: "", age: null }, payerId: null, planType: "", memberId: "", program: null, levelLabel: undefined, verificationId: null })),
+
+    documentReason: (id, reason) => update(id, (d) => ({ ...d, documented: [...(d.documented ?? []).filter((r) => r.kind !== reason.kind), reason] })),
+    clearDocumentedReason: (id, kind) => update(id, (d) => ({ ...d, documented: (d.documented ?? []).filter((r) => r.kind !== kind) })),
+    discardCaseDraft: (id) => set((s) => ({ caseDrafts: s.caseDrafts.filter((d) => !(d.id === id && !d.saved)) })),
 
     startCaseRun: (id) => {
       get().saveCaseDraft(id);
@@ -203,6 +300,11 @@ export const createCasesSlice: StateCreator<AppState, [], [], CasesSlice> = (set
         });
       }
       if (d.run.skipped.includes("verify")) get().addEvent(requestId, { actor: "verify", text: `Verify could not reach ${payerById(d.payerId).shortName}'s portal before signing`, detail: "Coverage was not confirmed. You skipped it and noted it." });
+      /* The request joins its patient, episode, authorization and verification. A new patient is the request itself; an existing one is never copied. */
+      const verified = d.verificationId ?? (get().verifications[requestId] ? requestId : null);
+      get().updateRequest(requestId, { patientId: d.patientId ?? requestId, episodeId: d.episodeId ?? `EP-${requestId}`, authorizationId: d.authorizationId ?? `AU-${requestId}`, verificationId: verified ?? undefined });
+      for (const r of d.documented ?? []) get().addEvent(requestId, { actor: "you", text: DOCUMENTED_TEXT[r.kind], detail: `${r.about}. Your reason: ${r.reason}` });
+      if (d.change) get().addEvent(requestId, { actor: "you", text: "You asked for a change to the authorization", detail: `${d.change.detail || "No detail added"}. This is a request, not an approval. Nothing changes until the payer approves it.` });
       set((s) => ({ caseDrafts: s.caseDrafts.map((x) => (x.id === id ? { ...x, sent: true, caseId: requestId } : x)), caseSentToday: [...s.caseSentToday, requestId] }));
       return requestId;
     },
@@ -229,4 +331,7 @@ export const createCasesSlice: StateCreator<AppState, [], [], CasesSlice> = (set
 };
 
 /** Sidebar badge: drafts that need a person. In the seed, two questions and one signature make 3. */
-export const selectActiveBadge = (s: AppState): number => s.caseDrafts.filter((d) => d.saved && !d.sent && needsPerson(d)).length;
+export const selectActiveBadge = (s: AppState): number => {
+  const sites = sitesOf(s);
+  return s.caseDrafts.filter((d) => d.saved && !d.sent && needsPerson(d) && sites.includes(d.site)).length;
+};

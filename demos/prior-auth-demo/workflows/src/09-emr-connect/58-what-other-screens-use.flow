@@ -1,6 +1,6 @@
 title: EMR Connect › Sync › What other screens use from EMR Connect
 route: /emr
-intro: Two other screens lean on EMR Connect. New case can pull a chart only from a Connected system, and leaves a field blank while its mapping waits. The Dashboard offers the approval write-back box only while a Connected system has its write-back switch on.
+intro: Two other screens lean on EMR Connect. New case can pull a chart only from a Connected system at a site in view, and leaves a field blank while its mapping waits. The Dashboard offers the approval write-back box only while a Connected system at a site in view has its write-back switch on.
 dir: TD
 also: Found by reading the code and testing the built demo. Disconnect every system and the pull in New case says no records system is connected. Switch write-back off on every row and the Dashboard shows 'Write-back is off for your records system.'
 ---
@@ -8,10 +8,10 @@ screen p1 "EMR Connect\nConnection health, sync, mappings (in Advanced) and the 
 
 group gPull "New case: pull a chart"
   click a1 "Click 'Pull a chart from EMR Connect'\nMedical records step"
-  decision a0 "Is any system Connected?"
+  decision a0 "Is any system at a site in view Connected?"
   toast a8 "'No records system is connected. Connect one in EMR Connect to pull a chart, or drop the files above.'\nWith a link to EMR Connect"
   overlay a2 "Chart from EMR Connect\nDropdown with the charts that live in a Connected system\nA hint under each names the system"
-  process a2b "Residential site: J.M., 34 · Summit · Residential 3.5 and L.G., 29 · Cardinal · Residential 3.5\nOutpatient site: A.R., 45 · Beacon · IOP and S.T., 38 · Harborview · PHP\nA system that is Disconnected or Needs attention offers none"
+  process a2b "Clinical record · Site A: J.M., 34 · Summit · Residential 3.5 and L.G., 29 · Cardinal · Residential 3.5\nClinical record · Site B: A.R., 45 · Beacon · IOP and S.T., 38 · Harborview · PHP\nA viewer who sees one site is offered only that site's two charts\nA system that is Disconnected or Needs attention offers none"
   input a3 "Pick a chart"
   decision a9 "Does that system still have a field waiting for a mapping?\n'Level of care' or 'Referral source'"
   process a10 "Line under the picker\n'Level of care still needs a mapping there, so that field is left blank.' with 'Open EMR Connect'"
@@ -25,7 +25,7 @@ goto g1 "Continues in: Authorizations › New case › Medical records › Patie
 
 group gWrite "Dashboard: write back"
   screen b1 "Dashboard request: 'Approved. Write-back waits for you'"
-  decision b0 "Does at least one Connected system have its write-back switch on?"
+  decision b0 "Does at least one Connected system at a site in view have its write-back switch on?"
   toast b8 "'Write-back is off for your records system.' with 'Turn it on in EMR Connect.'\nInstead of the box. The link opens this page"
   click b2 "Click 'Approve write-back'"
   overlay b3 "Approve the write-back\n'EMR Connect will write only these three things to the chart. No notes, diagnoses or identifiers are written.'"

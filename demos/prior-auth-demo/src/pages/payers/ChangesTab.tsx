@@ -2,19 +2,21 @@ import { useState } from "react";
 import { Check, Megaphone, WandSparkles } from "lucide-react";
 import { AgentChip, Banner, Button, Card, CardHeader, Modal } from "@/components/ui";
 import { AGENTS } from "@/data/agents";
-import { conditionText, STEP_KIND_LABEL, USER_NAME, type PayerConfig, type PendingChange, type Proposal } from "@/data/payerConfig";
+import { conditionText, STEP_KIND_LABEL, type PayerConfig, type PendingChange, type Proposal } from "@/data/payerConfig";
+import { viewerById } from "@/data/viewers";
 import { stamp } from "@/lib/time";
 import { useStore } from "@/store";
 import { joinWords } from "./lib/checker";
-import { useOpenDrafts } from "./lib/drafts";
+import { useOpenDrafts, useOtherSiteNote } from "./lib/drafts";
 import { UpdateDraftsModal } from "./UpdateDraftsModal";
 
 function AcknowledgeModal({ id, pending, onClose }: { id: string; pending: PendingChange; onClose: () => void }) {
+  const viewerName = viewerById(useStore((s) => s.viewerId)).name;
   return (
     <Modal open size="sm" onClose={onClose} title="Acknowledge this change?" subtitle="It records who saw the change and when." footer={<><Button onClick={onClose}>Cancel</Button><Button variant="primary" icon={Check} onClick={() => { useStore.getState().acknowledgeChange(id); onClose(); }}>Acknowledge change</Button></>}>
       <div className="flex flex-col gap-3 text-sm">
         <div className="rounded-2xl bg-tile px-4 py-3"><b>{pending.title}</b><div className="mt-0.5 text-ink2">{pending.text} Effective {pending.effective}.</div></div>
-        <p className="text-ink2">You are acknowledging as {USER_NAME}. This does not change any draft. Updating the drafts is a separate step.</p>
+        <p className="text-ink2">You are acknowledging as {viewerName}. This does not change any draft. Updating the drafts is a separate step.</p>
       </div>
     </Modal>
   );
@@ -25,6 +27,7 @@ function AcknowledgeModal({ id, pending, onClose }: { id: string; pending: Pendi
 function PendingBanner({ id, name, pending }: { id: string; name: string; pending: PendingChange }) {
   const [dialog, setDialog] = useState<"ack" | "update" | null>(null);
   const drafts = useOpenDrafts(id);
+  const elsewhere = useOtherSiteNote(id);
   const n = drafts.length;
   const ack = pending.acknowledged;
   return (
@@ -41,7 +44,7 @@ function PendingBanner({ id, name, pending }: { id: string; name: string; pendin
             <Button variant="primary" icon={Check} onClick={() => setDialog("ack")}>Acknowledge change</Button>
           )}
           <Button icon={WandSparkles} disabled={!ack} title={ack ? undefined : "Acknowledge the change first"} onClick={() => setDialog("update")}>{n ? `Update ${n} ${n === 1 ? "draft" : "drafts"}` : "Apply to new drafts"}</Button>
-          <span className="max-w-[420px] text-xs">{n ? "Acknowledging records who saw it. Updating redrafts, and each draft returns to Case Manager for a new signature." : "Acknowledging records who saw it. Applying makes new drafts use the change."}</span>
+          <span className="max-w-[420px] text-xs">{n ? "Acknowledging records who saw it. Updating redrafts, and each draft returns to Case Manager for a new signature." : "Acknowledging records who saw it. Applying makes new drafts use the change."}{elsewhere ? ` ${elsewhere}` : ""}</span>
         </div>
       </Banner>
       {dialog === "ack" ? <AcknowledgeModal id={id} pending={pending} onClose={() => setDialog(null)} /> : null}

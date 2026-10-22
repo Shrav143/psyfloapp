@@ -1,6 +1,6 @@
 title: Case Manager › Active cases › Being prepared card
 route: /manager
-intro: Above the tracker, one folded row says how many cases the agents are still preparing and how many need a person, and links to Authorizations. Opening it shows the full list, most urgent first, with four chips that narrow it by who has the next move, and 'sent today' that jumps to the Dashboard. The list is kept so the queue is not repeated on the page. Each row is explained in the next diagram.
+intro: Above the tracker, one folded row says how many cases the agents are still preparing at the sites in view (a case has its own site, chosen in Intake) and how many need a person, and links to Authorizations. Opening it shows the full list, most urgent first, with four chips that narrow it by who has the next move, and 'sent today' that jumps to the Dashboard. The list is kept so the queue is not repeated on the page. Each row is explained in the next diagram.
 dir: TD
 ---
 start s1 "Open Case Manager (Active cases tab)"

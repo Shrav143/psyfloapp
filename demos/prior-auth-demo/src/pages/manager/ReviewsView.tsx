@@ -5,6 +5,7 @@ import { Button, Card, CardHeader, Chip, EmptyState, IdLink, Pill, Stat } from "
 import { inWeek, isClean, type Review } from "@/data/managerReviews";
 import { PROGRAM_LABEL } from "@/data/types";
 import { plural } from "@/lib/format";
+import { useScope } from "@/lib/scope";
 import { clockTime, toDate } from "@/lib/time";
 import { PAYER_ROW_LABEL } from "@/pages/dashboard/helpers";
 import { paths } from "@/routes";
@@ -43,12 +44,14 @@ function ReviewRow({ r, onOpen }: { r: Review; onOpen: (id: string) => void }) {
 
 /** A week of continued-stay reviews, mostly already written. */
 export function ReviewsView({ filters, onOpen, onClear }: { filters: ManagerFilters; onOpen: (id: string) => void; onClear: () => void }) {
+  const scope = useScope();
   const all = useStore((s) => s.reviews);
   const clock = useStore((s) => s.clock);
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
-  // A next review booked for after this week is not on the list; the case row and the signed review show its date.
-  const reviews = useMemo(() => all.filter(inWeek), [all]);
+  // A next review booked for after this week is not on the list; the case row and the signed review show its date. Only the sites in view count.
+  const reviews = useMemo(() => scope.filter(all, (r) => r.caseId).filter(inWeek), [all, scope]);
+  const stepDown = useMemo(() => STEP_DOWN.filter((s) => scope.has(s.id)), [scope]);
   const total = reviews.length;
   const signed = reviews.filter((r) => r.status === "signed").length;
   const needs = reviews.filter((r) => r.status === "needs_update").length;
@@ -97,7 +100,8 @@ export function ReviewsView({ filters, onOpen, onClear }: { filters: ManagerFilt
         </div>
         <Card>
           <CardHeader title="Ready to step down?" subtitle="A prompt for your team. It is never a decision." />
-          {STEP_DOWN.map((s) => (
+          {stepDown.length === 0 ? <p className="px-6 py-4 text-sm text-muted">Nothing to suggest at {scope.label} today.</p> : null}
+          {stepDown.map((s) => (
             <Link key={s.id} to={paths.case(s.id)} className="block border-b border-line px-6 py-3.5 last:border-b-0 hover:bg-[#FBF8F3]">
               <div>
                 <span className="font-semibold underline decoration-1 underline-offset-[3px]">{s.id}</span> <span className="text-muted">· {s.head}</span>

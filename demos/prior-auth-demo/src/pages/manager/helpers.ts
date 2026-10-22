@@ -1,5 +1,6 @@
 import type { Option } from "@/components/ui";
-import { LEDGER_STATUS_LABEL, type LedgerStatus } from "@/data/manager";
+import { LEDGER_STATUS_LABEL, type LedgerCase, type LedgerStatus } from "@/data/manager";
+import { isActiveAuth, isRenewalDue } from "@/lib/ledgerFacts";
 import { reviewDate, type Review, type ReviewStatus } from "@/data/managerReviews";
 import { PROGRAMS, PROGRAM_LABEL, type PayerId, type Program, type Tone } from "@/data/types";
 import { shortDate, DAY, HOUR, toDate } from "@/lib/time";
@@ -16,8 +17,14 @@ export interface ManagerFilters {
   payer: PayerId | "all";
   status: LedgerStatus | "all";
   reviewStatus: ReviewStatus | "all";
+  /** From the Dashboard's Lifecycle chips: only Active (approved, units left) or Renewal due (review due, or ending within 7 days). Tracker tab only. */
+  show: "all" | "active" | "renewal";
 }
-export const NO_FILTERS: ManagerFilters = { q: "", program: "all", payer: "all", status: "all", reviewStatus: "all" };
+export const NO_FILTERS: ManagerFilters = { q: "", program: "all", payer: "all", status: "all", reviewStatus: "all", show: "all" };
+export const SHOW_LABEL: Record<ManagerFilters["show"], string> = { all: "", active: "Active (approved, units left)", renewal: "Renewal due (review due or ending within 7 days)" };
+export const showOf = (v: string | null): ManagerFilters["show"] => (v === "active" || v === "renewal" ? v : "all");
+/** The same two tests the Dashboard's Lifecycle chips count with, so a chip's number is the number of rows here. */
+export const matchesShow = (c: LedgerCase, show: ManagerFilters["show"], clock: number): boolean => show === "all" || (show === "active" ? isActiveAuth(c, clock) : isRenewalDue(c, clock));
 
 export const LEVEL_OPTIONS: Option<ManagerFilters["program"]>[] = [{ value: "all", label: "All levels of care" }, ...PROGRAMS.map((p) => ({ value: p, label: PROGRAM_LABEL[p] }))];
 export const PAYER_FILTER_OPTIONS: Option<ManagerFilters["payer"]>[] = PAYER_OPTIONS;
@@ -56,7 +63,7 @@ export function matchesBase(r: { id: string; initials: string; program: Program;
   if (!q) return true;
   return r.id.toLowerCase().replace(/-/g, "").includes(q.replace(/-/g, "")) || r.initials.toLowerCase().replace(/\./g, "").includes(q);
 }
-export const hasAnyFilter = (f: ManagerFilters, tab: "cases" | "reviews"): boolean => !!f.q || f.program !== "all" || f.payer !== "all" || (tab === "cases" ? f.status !== "all" : f.reviewStatus !== "all");
+export const hasAnyFilter = (f: ManagerFilters, tab: "cases" | "reviews"): boolean => !!f.q || f.program !== "all" || f.payer !== "all" || (tab === "cases" ? f.status !== "all" || f.show !== "all" : f.reviewStatus !== "all");
 
 /* ------------------------------------------------------------------ ledger clock */
 const WD = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];

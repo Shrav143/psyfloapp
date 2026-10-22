@@ -1,6 +1,6 @@
 # Payers: coverage
 
-Source: `src/pages/payers/*`, `src/store/payerConfig.ts`, `src/data/payerConfig*.ts`. PRD: `06-payer-intelligence-and-rules-engine.md` (policy watch, rule versions). File names below are in this folder.
+Source: `src/pages/payers/*`, `src/store/payerConfig.ts`, `src/data/payerConfig*.ts`, `src/lib/scope.ts`, `src/data/viewers.ts`. PRD: `06-payer-intelligence-and-rules-engine.md` (policy watch, rule versions). File names below are in this folder.
 
 ## Arriving on Payers
 
@@ -16,6 +16,16 @@ Source: `src/pages/payers/*`, `src/store/payerConfig.ts`, `src/data/payerConfig*
 | Header 'Edit log (N)' button | 14, 36 |
 | Header 'Edit' button | 14, 18 |
 | Tab bar Process, Rules, Documents, Changes, tab badge | 10, 60 |
+
+## Sites
+
+| Control | Diagram |
+|---|---|
+| Payers are clinic-wide: same six payers, rules, documents and changes for every viewer; the 'Payers' sidebar badge (3) never changes with the site view | 84, 10 |
+| 'Update N drafts' / 'Apply to new drafts' count, list and redraft only the drafts at the sites in view (Cardinal: 1 at Site B; Summit: 2 at Site A); Both sites reads as before | 84, 66, 34, 70 |
+| Hint '1 more draft at Site B is not in this view...' (only a viewer who may see both sites, with one chosen) | 84 |
+| Edit log, 'Acknowledged by', 'You are acknowledging as' and 'Edited in Psyflo by' name the person viewing | 36, 64, 15, 40, 42 |
+| 'Try it on a case' lists only the Preparing cases at the sites in view | 84, 54 |
 
 ## Modals opened from the header
 

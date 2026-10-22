@@ -1,6 +1,8 @@
 import type { StateCreator } from "zustand";
 import { CAPACITY_SEED, SAMPLE_COUNT, SEED_REFERRALS, sampleReferral, staffById, DECLINE_LABEL, isOpen, parseDiagnoses, type CheckKey, type DeclineReason, type FieldKey, type Referral, type ReplyVia, type StaffId } from "@/data/referrals";
+import { siteOf } from "@/data/sites";
 import { PROGRAM_LABEL, PROGRAMS, type NewCasePrefill, type Program } from "@/data/types";
+import { sitesInView } from "@/lib/scope";
 import { plural } from "@/lib/format";
 import { stamp } from "@/lib/time";
 import { paths } from "@/routes";
@@ -157,8 +159,11 @@ export const createReferralsSlice: StateCreator<AppState, [], [], ReferralsSlice
   };
 };
 
-/** Sidebar badge: new and in-review referrals that no one has opened yet. */
-export const selectReferralBadge = (s: AppState): number => s.referrals.filter((r) => (r.status === "new" || r.status === "in_review") && !r.opened).length;
+/** Sidebar badge: new and in-review referrals that no one has opened yet, at the sites in view. */
+export const selectReferralBadge = (s: AppState): number => {
+  const sites = sitesInView(s);
+  return s.referrals.filter((r) => (r.status === "new" || r.status === "in_review") && !r.opened && sites.includes(siteOf(r.id))).length;
+};
 
 /** The New case flow calls this to pre-fill itself from a referral. Built from the extracted fields, so corrections carry over. */
 export function referralPrefill(s: AppState, id: string): NewCasePrefill | null {

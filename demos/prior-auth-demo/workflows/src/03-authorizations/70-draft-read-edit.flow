@@ -26,7 +26,7 @@ process dy "'Every sentence matches the chart' now warns\n'You edited the draft.
 process bd "Badge on the Draft tab goes up by one"
 process lt "Actions applied later add their sentences after the edited text"
 goto gK "Continues in: Authorizations › Case page › Draft › Checks, versions and send back"
-goto gR "Continues in: Review and sign › The draft and the summary"
+goto gR "Continues in: Authorizations › New case › Review and sign › The draft and the summary"
 
 s1 --> dr --> hd --> sec --> nw
 sec --> ch --> gC

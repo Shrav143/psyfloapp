@@ -1,21 +1,23 @@
 title: Denial Intelligence › Open denials list
 route: /denials?id=D-3318
-intro: The 'Open denials' card on the right of the page, under the folded 'Add a denial letter': which denials are listed, how they are ordered (soonest deadline first, said in its subtitle), what each row says, the 'Closed' section, and what a click on a row does. A payer or reason in the address can narrow it.
+intro: The 'Open denials' button in the page header and the right-hand panel it opens. The page itself is one column. The panel lists the open denials at the sites in view, soonest deadline first, with what each row says, a 'Closed' section, keyboard use, and what a click on a row does. A payer or reason in the address narrows it.
 dir: TD
 ---
 start s1 "Arrive on Denial Intelligence"
-screen sc1 "'Open denials' card, right of the page\nSubtitle 'Soonest deadline first', count pill, then one row per open denial"
-process p1 "Open denial = a request in the Dashboard's 'Appeal or call' stage"
+screen sc0 "Page header, right\nButton 'Open denials' with a count pill: 'Open denials 8'\nThe list is not on the page: it is one column\nUnder 900 px wide the button sits under the page text"
+process pc "Count = open denials at the sites in view that match the filters\nBoth sites: 8 (Site A 4, Site B 4)\nA one-site viewer never counts the other site's denials"
+decision da "Does the address carry a payer or reason filter that matches more than one denial, and no ?id=?"
+process pa "The panel opens by itself so the person can pick one\nSidebar arrivals and ?id= links do not open it"
+click c0 "Click 'Open denials', or Tab to it and press Enter or Space"
+overlay ov "Right-hand panel 'Open denials'\nSubtitle 'Both sites. Soonest deadline first. Authorization denials only.'\nCount pill, X, footer button 'Add a denial letter'"
+process pf "Focus goes to the selected row\nTab stays inside the panel\nUp and down arrows move between rows"
+process p1 "Open denial = a request in the Dashboard's 'Appeal or call' stage at a site in view"
 decision d1 "Any open denials?"
 toast t1 "'No open denials. Everything sent is approved or waiting.'\nWith a filter on: 'No open denials match the filters.'"
-process p2 "Count pill shows the number\nRed pill when there are open denials, green at 0"
-
-process p3 "Sorted by time left on the deadline, nearest first\nOverdue denials go to the top"
-process p4 "Filed appeals have no deadline of ours, so they come last, in id order"
+process p3 "Sorted by time left on the deadline, nearest first\nOverdue denials go to the top\nFiled appeals have no deadline of ours, so they come last, in id order"
 process p5 "At the start: D-3318, D-3297, D-3306, D-3290, D-3301, then D-3272, D-3279, D-3284"
 
 screen r1 "One row, three lines\nD-id (underlined), program chip, deadline pill\nSecond line: type summary and the small tag 'Authorization denial'\n'N% win chance' and a small link 'Report'"
-process p6 "Program chip: Res., IOP, PHP or Detox\nSecond line example: 'Units cut 48 to 30 · Authorization denial'"
 decision d2 "What does the route pill say?"
 screen rp1 "Call booked with a time: 'Call Wed 10/21 1 pm'"
 screen rp2 "Peer-to-peer window: 'P2P in 36 h'"
@@ -24,25 +26,31 @@ screen rp4 "Filed: 'Decision 11/02' (grey, no count-down)"
 screen rp5 "Time is up: 'Window closed' (red)"
 process p7 "Colour of a count-down: red under 2 days, ochre under 7 days, grey otherwise"
 
-screen cl1 "'Closed' section under the open rows\nOnly when a denial was accepted, or overturned or partly won (on a call or an appeal) here"
+screen cl1 "'Closed' label and rows under the open ones\nOnly when a denial was accepted, or overturned or partly won (on a call or an appeal) here"
 process p8 "Closed rows show the result as the pill: 'Accepted', 'Overturned', 'Partly restored' (call) or 'Partly overturned' (appeal)"
 
-click c1 "Click a row (a button: Tab to it, then Enter or Space)"
-process p9 "Address becomes ?id=D-xxxx and keeps ?payer= and ?reason=\nRow is highlighted"
-process p10 "Left side loads that denial: title, header card with the next-step block, options, analysis, folded sections"
+click c1 "Click a row (a button: Tab or arrow to it, then Enter or Space)"
+process p9 "Panel closes, focus goes back to 'Open denials'\nAddress becomes ?id=D-xxxx and keeps ?payer= and ?reason=\nThe page switches to that denial: title, header card with the next-step block, options, analysis, folded sections"
+click cx "Press Escape, click the dimmed area or click X"
+process px "Panel closes, nothing else changes\nFocus goes back to 'Open denials'"
 click c3 "Click the link 'Report' on a row (its own Tab stop, does not select the row)"
 goto g4 "Continues in: Denial Intelligence › Appeal analysis report › Open and generate"
+click ca "Click 'Add a denial letter' (panel footer)"
+goto g5 "Continues in: Denial Intelligence › Add a denial letter"
 click c2 "Click 'See on the Dashboard' (ghost button in the header card)"
-goto g1 "Continues in: Denial Intelligence › A denial opened"
 goto g2 "Continues in: Dashboard › Request drawer › Open and read a request"
-screen sf "Filters from the address (?payer=, ?reason=)\nChip row, subtitle 'N of M match the filters', only the matches are listed"
+screen sf "Filters from the address (?payer=, ?reason=)\nChip 'Filtered: Cardinal' with a clear X, in the panel and under the page header\nOnly the matches are listed, subtitle line 'N of M open'"
 goto g3 "Continues in: Denial Intelligence › Open denials list › Filter by payer and reason"
+goto g6 "Continues in: Denial Intelligence › Sites › What each site sees and out-of-site links"
 end e1 "The chosen denial is on screen"
 
-s1 --> p1 --> sc1 --> d1
+s1 --> sc0 --> pc --> da
+da -->|Yes| pa --> ov
+da -->|No| c0 --> ov
+ov --> pf --> p1 --> d1
 d1 -->|No| t1
-d1 -->|Yes| p2 --> p3 --> p4 --> p5
-p5 --> r1 --> p6 --> d2
+d1 -->|Yes| p3 --> p5 --> r1
+r1 --> d2
 d2 -->|Call booked| rp1
 d2 -->|Call window open| rp2
 d2 -->|Appeal or resubmit| rp3
@@ -50,9 +58,11 @@ d2 -->|Filed| rp4
 d2 -->|Time is up| rp5
 rp2 --> p7
 rp3 --> p7
-sc1 --> cl1 --> p8
-r1 --> c1 --> p9 --> p10 --> e1
-e1 --> g1
-sc1 --> c2 --> g2
+ov --> cl1 --> p8
+r1 --> c1 --> p9 --> e1
+ov --> cx --> px
 r1 --> c3 --> g4
-sc1 -.-> sf --> g3
+ov --> ca --> g5
+sc0 --> c2 --> g2
+ov -.-> sf --> g3
+pc -.-> g6

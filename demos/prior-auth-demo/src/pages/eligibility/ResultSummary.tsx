@@ -12,6 +12,7 @@ const BAND: Record<Verdict, string> = {
   cleared: "border-good-edge bg-good-bg text-good-ink",
   auth_first: "border-mid-edge bg-mid-bg text-mid-ink",
   fix: "border-risk-edge bg-risk-bg text-risk-ink",
+  unchecked: "border-tile-edge bg-tile text-ink2",
 };
 
 function Part({ label, chip, tone, unknown, children }: { label: string; chip: string; tone: Tone; unknown?: boolean; children: ReactNode }) {
@@ -37,7 +38,7 @@ export interface Fact {
 
 /** The first thing on a result: the verdict with its actions, then eligibility, benefits and what this service needs, then one facts line and one plain note.
     `need` carries the payer's saved rules, read from Payers, so the line follows an edit made there. */
-export function ResultSummary({ verdict, result, actions, payer, program, rules, docs, facts }: { verdict: Verdict; result: CheckResult; actions: ReactNode; payer: PayerSummary; program: Program; rules: Rule[]; docs: DocItem[]; facts: Fact[] }) {
+export function ResultSummary({ verdict, result, actions, payer, program, rules, docs, facts, warnings }: { verdict: Verdict; result: CheckResult; actions: ReactNode; payer: PayerSummary; program: Program; rules: Rule[]; docs: DocItem[]; facts: Fact[]; warnings?: ReactNode }) {
   const { coverage, benefits, auth } = result.summary;
   const notice = rules.find((r) => r.id === "windows")?.lines[0];
   return (
@@ -71,6 +72,7 @@ export function ResultSummary({ verdict, result, actions, payer, program, rules,
           ) : null}
         </Part>
       </div>
+      {warnings ? <div className="border-t border-line px-7 py-4">{warnings}</div> : null}
       <div className="flex flex-col gap-1.5 border-t border-line px-7 py-4">
         <dl aria-label="About this check" className="flex flex-wrap gap-x-5 gap-y-1 text-[12.5px] text-muted">
           {facts.map((f) => (

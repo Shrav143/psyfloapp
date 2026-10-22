@@ -26,6 +26,7 @@ endgroup
 group gRev "Reviews this week"
   decision d4 "Does any review match?"
   screen e4s "'Showing 0 of 47 reviews. The tiles count all 47.'\n'No reviews match'\n'The filters hide every review this week.'\nButton 'Clear filters'\nThe 'Ready to step down?' card is still there"
+  screen e6s "'Ready to step down?' with no case at the sites in view\n'Nothing to suggest at Site A today.'"
   click c4 "Click 'Clear filters'"
   screen e5s "Third tile reads 'nothing waiting on you'\nwhen no review needs an update"
 endgroup
@@ -51,6 +52,7 @@ d4 -->|No| e4s --> c4 --> p3
 d4 -->|Yes| e1
 p3 --> e1
 p3 -.-> g1
+e4s -.-> e6s
 s1 -.-> p4
 p4 -.-> d1
 s1 -.-> e5s

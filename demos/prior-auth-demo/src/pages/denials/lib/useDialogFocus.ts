@@ -2,14 +2,17 @@ import { useEffect, useRef, useState, type MouseEvent, type RefObject } from "re
 
 const FOCUSABLE = 'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])';
 
-/** The Modal has no focus handling of its own. This puts focus in the dialog when it opens, keeps Tab inside it, and hands focus back to the button that opened it. */
-export function useDialogFocus(returnTo: RefObject<HTMLElement | null>): RefObject<HTMLDivElement | null> {
+/** The Modal and the Drawer have no focus handling of their own. This puts focus in the dialog when it opens (on the first of the `initial` selectors that matches anywhere in the dialog,
+    its footer included, else on the body), keeps Tab inside it, and hands focus back to the button that opened it when it closes.
+    The button is read when the dialog closes, so a panel opened by the page itself can name it late. */
+export function useDialogFocus(returnTo: RefObject<HTMLElement | null>, initial: string[] = []): RefObject<HTMLDivElement | null> {
   const root = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const body = root.current;
     const dialog = body?.closest<HTMLElement>('[role="dialog"]');
     if (!body || !dialog) return;
-    body.focus({ preventScroll: true });
+    const first = initial.map((sel) => dialog.querySelector<HTMLElement>(sel)).find((el) => !!el);
+    (first ?? body).focus({ preventScroll: true });
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Tab") return;
       const items = Array.from(dialog.querySelectorAll<HTMLElement>(FOCUSABLE));
@@ -26,12 +29,11 @@ export function useDialogFocus(returnTo: RefObject<HTMLElement | null>): RefObje
       }
     };
     dialog.addEventListener("keydown", onKey);
-    const back = returnTo.current;
     return () => {
       dialog.removeEventListener("keydown", onKey);
-      back?.focus();
+      returnTo.current?.focus();
     };
-  }, [returnTo]);
+  }, [returnTo, initial.join("|")]);
   return root;
 }
 

@@ -1,10 +1,12 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { Hash } from "lucide-react";
 import { Button, Dropdown, Field, TextArea, TextInput } from "@/components/ui";
-import { maskMember, NEW_REQUEST_TYPES, planTypeOf, PLAN_TYPES, type CaseDraft } from "@/data/cases";
+import { maskMember, planTypeOf, PLAN_TYPES, type CaseDraft } from "@/data/cases";
 import { PAYERS } from "@/data/seed";
 import { PROGRAM_LABEL, PROGRAMS, type PayerId, type Program, type RequestType } from "@/data/types";
 import { useStore } from "@/store";
+import { authType } from "./authType";
+import { DatesFields } from "./DatesFields";
 import { DiagnosisPicker } from "./DiagnosisPicker";
 import type { FieldId } from "./recordsModel";
 
@@ -86,16 +88,14 @@ export function FieldEditor({ id, draft, close }: { id: FieldId; draft: CaseDraf
       return (
         <Frame onClose={close} done={false}>
           <Field label="Request type">
-            <Dropdown<RequestType | ""> variant="field" value={draft.type ?? ""} placeholder="Choose a type" ariaLabel="Request type" onChange={(v) => { if (v) { edit({ type: v, what: undefined }); close(); } }} options={NEW_REQUEST_TYPES.map((t) => ({ value: t, label: t }))} />
+            <Dropdown<RequestType | ""> variant="field" value={draft.type ?? ""} placeholder="Choose a type" ariaLabel="Request type" onChange={(v) => { if (v) { edit({ type: v, what: undefined }); close(); } }} options={authType(draft.kind).types.map((t) => ({ value: t, label: t }))} />
           </Field>
         </Frame>
       );
     case "start":
       return (
         <Frame onClose={close}>
-          <Field label="Requested start date" className="max-w-[220px]">
-            <TextInput type="date" value={draft.startDate} onChange={(e) => edit({ startDate: e.target.value })} />
-          </Field>
+          <DatesFields draft={draft} from={draft.kind === "retro" ? "First date of service" : "Requested start date"} to={draft.kind === "retro" ? "Last date of service" : "Requested end date"} />
         </Frame>
       );
     case "diagnoses":
@@ -112,7 +112,5 @@ export function FieldEditor({ id, draft, close }: { id: FieldId; draft: CaseDraf
           </Field>
         </Frame>
       );
-    case "coverage":
-      return null;
   }
 }

@@ -123,7 +123,6 @@ export interface CustomPayer {
 export const customToSummary = (c: CustomPayer): PayerSummary => ({ id: c.id, name: c.name, shortName: c.shortName, type: c.type, group: c.group, reachedBy: c.reachedBy, approvedAsAsked: 70, avgDecisionDays: 2.5, typicalDecisionDays: 2.5, denied30d: 0, infoAsks30d: 0 });
 
 export const PAYER_GROUPS: PayerSummary["group"][] = ["Ohio Medicaid", "Commercial", "Medicare Advantage", "Behavioral carve-out"];
-export const USER_NAME = "Jordan Perez";
 
 export interface AddPayerFields { name: string; type: string; group: PayerSummary["group"]; reach: string[]; programs: Program[] }
 
@@ -157,15 +156,15 @@ export interface OpenDraft {
 }
 export const OPEN_DRAFT_STATUS = "Draft, not yet sent";
 
-/** Read from the live Dashboard requests and New case drafts, never from a fixed list.
+/** Read from the live Dashboard requests and New case drafts, never from a fixed list. `inView` keeps the drafts at the sites a viewer is looking at (pass the draft's case id); left out, every site counts.
     A draft is a request still in Preparing, or a New case draft that is saved and not sent. A request the payer already has (Received and later, and an answer to the payer's
     question on an Info requested one) is left out: sent requests keep what they were sent with. */
-export function openDrafts(requests: PsyRequest[], caseDrafts: CaseDraft[], payerId: string): OpenDraft[] {
+export function openDrafts(requests: PsyRequest[], caseDrafts: CaseDraft[], payerId: string, inView: (caseId: string) => boolean = () => true): OpenDraft[] {
   const out: OpenDraft[] = requests
-    .filter((r) => r.payerId === payerId && r.stage === "preparing")
+    .filter((r) => r.payerId === payerId && r.stage === "preparing" && inView(r.caseId))
     .map((r) => ({ id: r.id, patient: `${r.patient.initials}, ${r.patient.age}`, program: r.program, onDashboard: true }));
   for (const d of caseDrafts) {
-    if (d.payerId !== payerId || !d.saved || d.sent || !d.caseId) continue;
+    if (d.payerId !== payerId || !d.saved || d.sent || !d.caseId || !inView(d.caseId)) continue;
     if (requests.some((r) => r.id === d.caseId)) continue;
     out.push({ id: d.caseId, patient: d.patient.age ? `${d.patient.initials}, ${d.patient.age}` : d.patient.initials, program: d.program, onDashboard: false });
   }

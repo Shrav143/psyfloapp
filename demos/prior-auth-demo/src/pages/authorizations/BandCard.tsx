@@ -15,13 +15,18 @@ interface Props {
   showAll: boolean;
   clock: number;
   rows: Record<string, RowInfo>;
+  /** The request whose quick view is open, if it is in this band. */
+  quickId: string | null;
+  onQuick: (id: string) => void;
+  /** What an empty band says under "Nothing needs you today": everything was handled, or, at one site, that none is open there. */
+  emptyNote: string;
   onToggle: () => void;
   onShowAll: (on: boolean) => void;
 }
 
 /** A priority band: click the header to collapse it. Shows the five top requests, with a link for the rest.
     A band with no request left says so instead of vanishing. */
-export function BandCard({ band, items, stats, collapsed, showAll, clock, rows, onToggle, onShowAll }: Props) {
+export function BandCard({ band, items, stats, collapsed, showAll, clock, rows, quickId, onQuick, emptyNote, onToggle, onShowAll }: Props) {
   const meta = BAND_META[band];
   const visible = showAll ? items : items.slice(0, SHOWN);
   return (
@@ -39,11 +44,11 @@ export function BandCard({ band, items, stats, collapsed, showAll, clock, rows, 
           {items.length === 0 ? (
             <div className="px-4 py-6 text-center">
               <div className="font-serif text-xl font-semibold">Nothing needs you today</div>
-              <div className="mt-1 text-sm text-muted">Everything in {meta.name} has been sent or handled.</div>
+              <div className="mt-1 text-sm text-muted">{emptyNote}</div>
             </div>
           ) : null}
           {visible.map((i) => (
-            <RequestTile key={i.id} item={i} clock={clock} info={rows[i.id]} />
+            <RequestTile key={i.id} item={i} clock={clock} info={rows[i.id]} quick={quickId === i.id} onQuick={onQuick} />
           ))}
           {items.length > SHOWN ? (
             <div className="flex justify-center">

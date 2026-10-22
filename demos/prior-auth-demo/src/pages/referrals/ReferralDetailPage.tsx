@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, SearchX } from "lucide-react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { OutOfSite } from "@/components/layout/OutOfSite";
 import { Button, Crumbs, EmptyState, Page, Stepper, UnderlineTabs, type TabItem } from "@/components/ui";
 import { buildDocs, issueCount, locate, type CheckKey, type DocId } from "@/data/referrals";
+import { useScope } from "@/lib/scope";
 import { NEW_CASE_STEPS } from "@/pages/newcase/steps";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
@@ -30,6 +32,7 @@ type ModalState = { kind: "accept" } | { kind: "info"; keys: AskKey[] } | { kind
 export default function ReferralDetailPage() {
   const { id = "" } = useParams();
   const nav = useNavigate();
+  const scope = useScope();
   const [params] = useSearchParams();
   const r = useStore((s) => s.referrals.find((x) => x.id === id));
   const markOpened = useStore((s) => s.markReferralOpened);
@@ -44,8 +47,8 @@ export default function ReferralDetailPage() {
   const [modal, setModal] = useState<ModalState>(null);
 
   useEffect(() => {
-    if (r) markOpened(r.id);
-  }, [r?.id, markOpened]);
+    if (r && scope.has(r.id)) markOpened(r.id);
+  }, [r?.id, markOpened, scope]);
   useEffect(() => {
     setTab("extracted");
     setHl(null);
@@ -59,12 +62,14 @@ export default function ReferralDetailPage() {
 
   const docs = useMemo(() => (r ? buildDocs(r) : []), [r]);
 
+  /* A referral at a site the viewer cannot see does not exist for them: no patient, no detail. */
+  if (r && !scope.has(r.id)) return <OutOfSite id={r.id} what="referral" />;
   if (!r) {
     return (
       <Page>
         <Crumbs items={[{ label: "New case", to: paths.newCase({ draft: draftId }) }, { label: "Referral", to: paths.newCase({ draft: draftId }) }, { label: id }]} />
-        <EmptyState icon={SearchX} title="That referral is not in the demo" action={<Link to={paths.newCase({ draft: draftId })}><Button>Back to the referral step</Button></Link>}>
-          Referral {id} does not exist. Go back to the referral step to drop the documents or pick one that arrived.
+        <EmptyState icon={SearchX} title="That referral is not in the demo" action={<Link to={paths.newCase({ draft: draftId })}><Button>Back to Intake</Button></Link>}>
+          Referral {id} does not exist. Go back to Intake to drop the documents or pick one that arrived.
         </EmptyState>
       </Page>
     );

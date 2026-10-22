@@ -1,6 +1,6 @@
 # Settings: coverage
 
-Source: `src/pages/settings/SettingsPage.tsx`, `src/pages/settings/pauseEffects.ts`, `src/store/agentSettings.ts`, `src/data/agents.ts`. PRD: `07-ai-agents-and-automation.md` sections 7 and FR-25. File numbers are in this folder.
+Source: `src/pages/settings/SettingsPage.tsx`, `src/pages/settings/SitesAccess.tsx`, `src/data/viewers.ts`, `src/pages/settings/pauseEffects.ts`, `src/store/agentSettings.ts`, `src/data/agents.ts`. PRD: `07-ai-agents-and-automation.md` sections 7 and FR-25. File numbers are in this folder.
 
 ## Page
 
@@ -20,6 +20,10 @@ Source: `src/pages/settings/SettingsPage.tsx`, `src/pages/settings/pauseEffects.
 | Which actions need a person or a clinician signature (PRD matrix) | 35 |
 | On/off switch on each row (its name is the agent and whether it is paused) | 50 |
 | Gates card: Sign-off, Confirm, Answer, Acknowledge, Pause | 10, 30, 70 |
+| 'Sites and access' card (closed; summary 'Two sites, four roles'; header opens it by click, Enter or Space) | 10, 90 |
+| Its table of the four roles with the sites each can see | 90 |
+| 'View as {name}' on a row (switches the viewer and raises 'Now viewing as ...'); 'Viewing now' tag on the current row | 90 |
+| No edit controls on that card (roles are fixed in the demo) | 70, 90 |
 
 ## Pause
 

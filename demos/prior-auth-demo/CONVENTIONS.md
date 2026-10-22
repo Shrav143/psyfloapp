@@ -73,6 +73,10 @@ TypeScript strict, no `any`, no `console.log`, no unused code. Small components:
 - Payers: 6 payers, 3 with a change waiting (Cardinal criteria v2026.3 affecting 1 unsent draft, I-2207; Harborview and Evergreen have no open drafts), sidebar badge 3. Summit documents for residential 3.5: 9 items; R-1042 has 8 of 9 (missing a therapy note from the last 14 days).
 - EMR Connect: last sync 6 min, 23 charts matched today, 142 files this week, 2 sync failures (Billing system, Needs attention), 2 fields need a mapping (in the Action required line and the Advanced pill).
 
+## Sites
+
+Default viewer Jordan Perez on **Both sites**, so every canonical number above is true by default; site filtering only removes rows, and Both sites is always Site A plus Site B. `siteOf(caseId)` (`src/data/sites.ts`) places every case at a site (hand-placed headline cases, a stable hash for the rest): pass the case id (a denial's `caseId`, a referral's `RF-` id, a draft id) and never store the site on a record. The four viewers are in `src/data/viewers.ts` (Jordan Perez and Alex Morgan see both sites, Dr. Rivera Site A only, Sam Okafor Site B only). Read the view with `useScope()` in components and `sitesInView(state)` in selectors; a one-site viewer must never see, count, search, pick, export or link to the other site, and a direct link to it renders `<OutOfSite id what />`. Show the site next to a page title with `<SiteTag />`. Payers, agents and Settings are clinic-wide; EMR Connect is per site.
+
 ## Verification you must do before you report back
 
 1. `tsc --noEmit` shows no errors in your files.

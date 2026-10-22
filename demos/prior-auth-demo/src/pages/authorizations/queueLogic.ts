@@ -2,8 +2,13 @@ import type { CaseWork } from "@/data/caseModel";
 import type { Band, Phase, QueueItem, StatusFilter } from "@/data/queue";
 import { BANDS, REQUEST_KINDS, STATUS_LABEL, isWaitingOnYou, requestKindOf, type RequestKind } from "@/data/queue";
 import { PAYERS } from "@/data/seed";
+import type { Tone } from "@/data/types";
 import { HOUR, toDate } from "@/lib/time";
 import { DEFAULT_QUEUE_FILTERS, type QueueFilters } from "@/store/queue";
+
+/** Colors of the deadline chip (by band) and the status chip (by phase), on the queue row and in the quick view. */
+export const DUE_TONE: Record<Band, Tone> = { now: "risk", day: "mid", week: "neutral" };
+export const PHASE_TONE: Record<Phase, Tone> = { preparing: "neutral", ready: "good", payer: "neutral", denial: "risk" };
 
 const WEEKDAY = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 

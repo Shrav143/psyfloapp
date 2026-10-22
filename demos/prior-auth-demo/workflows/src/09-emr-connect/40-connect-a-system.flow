@@ -14,7 +14,8 @@ group gS1 "Step 1 of 3: System"
   input i1 "Pick one System type\nClinical record (default), Billing system, Practice management or Lab results"
   process p1 "Each choice shows what it holds\n'Charts, notes and medications', 'Claims and remittances', 'Schedules and admissions', 'Lab orders and results'"
   input i2 "Type a 'Name in Psyflo' (optional)\n'Shown in Connection health.'"
-  process p2 "Blank name becomes '{kind} · new site'"
+  input is "Choose the site the system serves\n'Site A', 'Site B' or 'Both sites' (starts at the sites in view)\nA one-site viewer sees 'It will serve Site B, the only site your role can see.' and no choice"
+  process p2 "Blank name becomes '{kind} · Site A', '{kind} · Site B' or '{kind} · Both sites'"
   click c1 "Click 'Next'"
 endgroup
 
@@ -35,7 +36,7 @@ goto g1 "Continues in: EMR Connect › Connect a system › Run the connection t
 s1 --> qp
 qp -->|Yes| tp --> xp
 qp -->|No| o1 --> i1
-i1 --> p1 --> i2 --> p2 --> c1
+i1 --> p1 --> is --> i2 --> p2 --> c1
 c1 --> i3
 i3 --> p3
 p3 -.-> x1

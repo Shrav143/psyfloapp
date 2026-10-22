@@ -1,14 +1,15 @@
 title: Denial Intelligence › Add a denial letter
 route: /denials
-intro: The folded 'Add a denial letter' section, at the top of the right column (above the empty state when no denial is open): open it, drop or pick a letter, add a note, 'Analyze the denial', watch four agents work, and land on the new denial. In the demo the letter is not really read; a sample letter's facts fill the new denial.
+intro: 'Add a denial letter' is in the footer of the 'Open denials' panel (and a button in the empty state when no denial is open). It opens the same right-hand panel on the letter form: drop or pick a letter, add a note, 'Analyze the denial', watch four agents work, and land on the new denial, which belongs to the site in view. Closing the panel does not stop the agents. In the demo the letter is not really read; a sample letter's facts fill the new denial.
 dir: TD
 also: Demo only: any file type is accepted and only its name and size are kept. Which of the three sample letters (Beacon, Summit, Harborview) is used depends on the file name length, or on how many letters were added before when 'Use sample letter' is clicked.
 ---
-start s1 "Look at 'Add a denial letter' above 'Open denials'"
-screen sc0 "Folded section 'Add a denial letter'\nSummary 'Drop a letter or use a sample'"
-click co "Click the header, or press Enter or Space on it"
-screen sc1 "Opened: 'The agents read it, check it against the chart and past appeals, and lay out your options.'\nOne column: letter, 'Identifiers are removed on upload.', note box, 'Analyze the denial'"
-process pk "The section stays in the page while closed, so a typed note, a chosen file and a running analysis survive closing it"
+start s1 "Open the 'Open denials' panel\nLook at its footer"
+start s1b "No open denial: the empty state\n'No open denials'"
+click co "Click 'Add a denial letter'\n(panel footer, or the empty-state button)"
+overlay sc1 "Right-hand panel 'Add a denial letter'\nSubtitle 'Drop a letter or use a sample'\n'The agents read it, check it against the chart and past appeals, and lay out your options. The new denial belongs to the site you are viewing.'\nLetter area, 'Identifiers are removed on upload.', note box, 'Analyze the denial', footer 'Back to open denials'"
+click cb "Click 'Back to open denials'"
+process pk "The state lives on the page, not in the panel: a typed note, a chosen file and a running analysis survive closing the panel"
 
 input i1 "Drop a file on the area, or click it (or press Enter or Space) to choose a file\n'Drop the denial letter here, or click to choose a PDF or DOCX'"
 click c1 "Click 'Use sample letter'"
@@ -16,7 +17,6 @@ process p1 "Next sample letter in turn: Beacon, Summit, then Harborview"
 screen fr "File row: file name and size\nA small X removes it"
 click c2 "Click the X on the file row"
 process p2 "Drop area comes back\nThe note is kept"
-process p3 "'Identifiers are removed on upload.' is shown beside the area"
 
 input i2 "Type a note (optional)\n'Add anything not in the letter, such as a payer call note'"
 click c3 "Click 'Analyze the denial'"
@@ -29,34 +29,42 @@ agent a2 "Advocate is checking the notice, the deadline and the payer's own crit
 agent a3 "Historian is comparing similar decisions and appeals"
 agent a4 "Integrity is checking every statement against the chart"
 wait w1 "About 1.25 seconds per step, 5 seconds in all (demo: simulated)"
+click cx "Press Escape, click X or the dimmed area while the agents work"
+process px "Panel closes, the agents keep going\nThe page switches to the new denial when they finish"
 decision d2 "Is the person still on this page?"
 endx e1 "Work is dropped and no denial is added"
 
 process p4 "Facts of the sample fill the denial: initials, age, payer, program, win chance, denial type, similar decisions, call window"
-store st1 "New open denial created, the next free number from D-3340\nChip 'Analyzed', route 'Peer-to-peer', file name and note saved"
+store st1 "New open denial created\nSite = the site in view (Site A when both are in view), kept on the denial\nId = the next free number from D-3340 that the site rule places at that site\nChip 'Analyzed', route 'Peer-to-peer', file name and note saved"
 store st2 "History lines: Reader read the letter and removed identifiers; Advocate checked the notice, the deadline and how the payer applied its own criteria; Historian compared N similar decisions"
 toast t2 "'The analysis is ready'\n'D-3340 was added to Open denials.'"
 toast t3 "Notification 'Denial analyzed' from Advocate\nLinks to the new denial"
-process p5 "Form clears: file, sample and note\nNew denial is selected, address becomes ?id=D-3340 only (any ?payer= or ?reason= filter is cleared so it shows in the list)\nBadge goes up by one"
+process p5 "Form clears: file, sample and note\nPanel closes\nNew denial is selected, address becomes ?id=D-3340 only (any ?payer= or ?reason= filter is cleared so it shows in the list)\nBadge and the 'Open denials' count go up by one, for that site and for Both sites"
 goto g1 "Continues in: Denial Intelligence › A denial opened"
 goto g2 "Continues in: Denial Intelligence › A denial opened › Recommended next step"
 goto g3 "Continues in: Dashboard › Arrive › What the page shows"
+goto g4 "Continues in: Denial Intelligence › Sites › What each site sees and out-of-site links"
+goto g5 "Continues in: Denial Intelligence › Open denials list"
 
-s1 --> sc0 --> co --> sc1
+s1 --> co
+s1b --> co
+co --> sc1
+sc1 --> cb --> g5
 sc1 -.-> pk
 sc1 --> i1 --> fr
 sc1 --> c1 --> p1 --> fr
 fr --> c2 --> p2 --> i1
-sc1 --> p3
 sc1 --> i2 --> c3
 fr --> c3
 c3 --> d1
 d1 -->|No| t1 --> sc1
 d1 -->|Yes| sc2 --> a1 --> a2 --> a3 --> a4
 sc2 --> w1
+sc2 --> cx --> px
 a4 --> d2
 d2 -->|No, left the page| e1
 d2 -->|Yes| p4 --> st1 --> st2 --> t2 --> p5
 st1 --> t3
 p5 --> g1 & g2
 st1 --> g3
+st1 -.-> g4

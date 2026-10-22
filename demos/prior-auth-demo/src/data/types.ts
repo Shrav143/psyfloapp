@@ -90,6 +90,11 @@ export interface PsyRequest {
   sentVia: SentVia;
   chance?: number; // approval chance 0-100 (for requests) or chance of winning (for denials)
   referralId?: string; // set when the case was started from a referral
+  /** Set by New case: the patient, the treatment episode, the authorization and the verification the request belongs to (see data/patients.ts). */
+  patientId?: string;
+  episodeId?: string;
+  authorizationId?: string;
+  verificationId?: string;
   events: RequestEvent[];
 }
 

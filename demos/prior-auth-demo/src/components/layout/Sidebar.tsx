@@ -59,9 +59,12 @@ function SubLink({ item }: { item: Item }) {
   );
 }
 
+/** Every badge follows the site view. The slice badges (queue, Eligibility, denials, Case Manager, active, referrals) read the view inside their selectors; the
+    Dashboard badge is counted here with the same rule. Payers is clinic-wide on purpose: a payer's rules and changes are not site data, so its badge never changes with the view. */
 export function Sidebar() {
   const requests = useStore((s) => s.requests);
-  const dash = requests.filter((r) => r.stage === "info_requested").length;
+  const { viewer, filter } = useScope();
+  const dash = filter(requests, (r) => r.caseId).filter((r) => r.stage === "info_requested").length;
   const referrals = useStore(selectReferralBadge);
   const queue = useStore(selectQueueBadge);
   const eb = useStore(selectEbBadge);
@@ -70,7 +73,6 @@ export function Sidebar() {
   const manager = useStore(selectManagerBadge);
   const payers = useStore(selectPayersBadge);
   const toast = useStore((s) => s.toast);
-  const { viewer } = useScope();
 
   const main: Item[] = [
     { to: paths.dashboard(), label: "Dashboard", icon: LayoutDashboard, badge: dash, match: ["/dashboard"] },
@@ -117,7 +119,7 @@ export function Sidebar() {
           <Settings size={17} className="ico" />
           Settings
         </NavLink>
-        <button type="button" onClick={() => toast({ title: "Help", body: "Press Ask FLO (top right) to ask a question. Use Demo, top right, to reset or move time forward.", tone: "neutral" })} className="flex h-[34px] items-center gap-2.5 rounded-[10px] px-3 text-sm font-medium text-ink2 hover:bg-[#EADFD0]">
+        <button type="button" onClick={() => toast({ title: "Help", body: "Press Ask FLO (top right) to ask a question. Use Demo, top right, to reset, move time forward or view as another person.", tone: "neutral" })} className="flex h-[34px] items-center gap-2.5 rounded-[10px] px-3 text-sm font-medium text-ink2 hover:bg-[#EADFD0]">
           <HelpCircle size={17} className="ico" />
           Help
         </button>
@@ -125,11 +127,11 @@ export function Sidebar() {
           <LogOut size={17} className="ico" />
           Sign out
         </button>
-        <div className="mt-2.5 flex items-center gap-3 border-t border-[#EADFD2] px-2 pt-3.5">
-          <div className="grid h-9 w-9 place-items-center rounded-full bg-forest text-xs font-semibold text-white">{viewer.initials}</div>
-          <div>
-            <div className="text-[13.5px] font-semibold">{viewer.name}</div>
-            <div className="text-xs text-muted">{viewer.role}</div>
+        <div className="mt-2.5 flex items-center gap-3 border-t border-[#EADFD2] px-2 pt-3.5" role="group" aria-label={`Signed in as ${viewer.name}, ${viewer.role}`}>
+          <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-forest text-xs font-semibold text-white" aria-hidden="true">{viewer.initials}</div>
+          <div className="min-w-0">
+            <div className="truncate text-[13.5px] font-semibold">{viewer.name}</div>
+            <div className="truncate text-xs text-muted">{viewer.role}</div>
           </div>
         </div>
       </div>

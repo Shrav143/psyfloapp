@@ -4,7 +4,7 @@ intro: The one-page brief a clinician keeps open during the call: opening, three
 dir: TD
 ---
 start s1 "Click 'Open the brief' in the next-step block (call booked)"
-start s2 "A call is booked from the next-step block or 'Your options'; the app opens the brief"
+start s2 "A call is booked from the next-step block or the 'Your options' panel; the app opens the brief"
 start s3 "Open /denials/D-xxxx/brief by its address"
 decision d1 "Does a request with that id exist?"
 screen e1 "'We could not find that denial'\n'It may have been closed or the address is wrong.'"

@@ -1,5 +1,5 @@
-/* The Medical records checklist as plain data: every row, its state and what to say under it.
-   The screen only draws this. What blocks Continue comes from the same predicates intakeMissing uses (intake.ts), so rows and footer agree. */
+/* The checklist rows of Intake and Clinical documentation as plain data: every row, its state and what to say under it.
+   The screens only draw this. Intake shows the patient, insurance and request groups; Clinical documentation shows the clinical and documents groups. */
 import type { CheckState } from "@/components/ui";
 import { maskMember, type CaseDraft, type DocSlotId, type DraftDocument } from "@/data/cases";
 import type { UnmappedField } from "@/data/emr";
@@ -7,14 +7,15 @@ import { payerById } from "@/data/seed";
 import { PROGRAM_LABEL, type NewCasePrefill } from "@/data/types";
 import { plural } from "@/lib/format";
 import { toDate } from "@/lib/time";
-import { buildResult } from "@/pages/eligibility/checks";
+import { authType } from "./authType";
 import { docEntries, findingText, isOpen, isReferralDoc, requiredFirst, slotLabel, type DocEntry } from "./documents";
-import { coverageFor, coverageKey, patientReady } from "./intakeRules";
+import { patientReady } from "./intakeRules";
+import { typicalEntries } from "./typicalDocs";
 import { EMR_CHARTS } from "./lookups";
 import type { PayerContext } from "./payerContext";
 import { sourceNote, type FieldKey } from "./provenance";
 
-export type FieldId = FieldKey | "coverage" | "start";
+export type FieldId = FieldKey | "start";
 export type RowId = FieldId | `doc:${DocSlotId}`;
 export const isDocRow = (id: RowId): id is `doc:${DocSlotId}` => id.startsWith("doc:");
 export const slotOf = (id: `doc:${DocSlotId}`): DocSlotId => id.slice(4) as DocSlotId;
@@ -32,7 +33,7 @@ export interface Row {
   mapping?: string;
 }
 export interface Group {
-  id: "patient" | "insurance" | "request" | "documents";
+  id: "patient" | "insurance" | "request" | "clinical" | "documents";
   title: string;
   note?: string;
   rows: Row[];
@@ -40,6 +41,10 @@ export interface Group {
 
 const REC = "Recommended";
 const NOTICE: Record<string, string> = { Admission: "notice due in about 5 hours", "Retro-authorization": "window closes in about 18 hours" };
+/** The rows each Intake shows: a retro-authorization has its dates and reason on cards of their own, and only an initial request chooses between Admission and an initial request. */
+const INITIAL_ROWS: readonly string[] = ["patient", "payer", "member", "program", "type", "start"];
+const OTHER_ROWS: readonly string[] = ["patient", "payer", "member", "program"];
+export const intakeRowIds = (kind: CaseDraft["kind"]): readonly string[] => (kind === "initial" ? INITIAL_ROWS : OTHER_ROWS);
 /** Parts of one line, with the full stop dropped from every part that is followed by another. */
 const join = (...parts: (string | undefined | false)[]): string => parts.filter((p): p is string => !!p).map((p, i, all) => (i < all.length - 1 ? p.replace(/\.$/, "") : p)).join(" · ");
 
@@ -54,10 +59,10 @@ const isoOf = (date: Date): string => `${date.getFullYear()}-${String(date.getMo
 const isBlank = (d: CaseDraft): boolean => !d.patient.initials && !d.patient.age && !d.payerId && !d.program && !d.type && !d.memberId && !d.diagnoses.length && !d.reason && !d.documents.length && !Object.keys(d.unavailable).length && !d.referralId;
 
 /* ------------------------------------------------------------------ one row at a time */
-function documentRow(d: CaseDraft, entry: DocEntry, need: "required" | "recommended" | "extra", doc: DraftDocument | undefined, quiet: boolean): Row {
+function documentRow(d: CaseDraft, entry: DocEntry, need: "required" | "recommended" | "typical" | "extra", doc: DraftDocument | undefined, quiet: boolean): Row {
   const { slot } = entry;
   const id = `doc:${slot}` as const;
-  const tag = need === "recommended" ? REC : need === "extra" ? "Not on the list" : undefined;
+  const tag = need === "recommended" ? REC : need === "typical" ? `Typical for ${authType(d.kind).typical}` : need === "extra" ? "Not on the list" : undefined;
   const label = entry.label;
   const reason = d.unavailable[slot];
   if (!doc && reason !== undefined) {
@@ -67,7 +72,7 @@ function documentRow(d: CaseDraft, entry: DocEntry, need: "required" | "recommen
   }
   if (!doc) {
     const detail = quiet ? entry.hint : need === "required" ? (slot === "referral" ? "No referral attached. Drop a referral or an admission order, or add a referral." : "Not found yet. Drop it above or add it here.") : `${entry.hint}. You can continue without it.`;
-    return { id, label, state: need === "required" ? "missing" : "optional", detail, tag, quiet: quiet && need === "required" };
+    return { id, label, state: need === "required" ? "missing" : "optional", detail: need === "typical" ? `${entry.hint}. You can continue without it.` : detail, tag, quiet: quiet && need === "required" };
   }
   const name = doc.file.name;
   if (doc.status === "validating") return { id, label, state: "working", detail: join(name, "Reader is reading"), tag };
@@ -83,9 +88,12 @@ function documentRow(d: CaseDraft, entry: DocEntry, need: "required" | "recommen
 
 function documentGroup(d: CaseDraft, quiet: boolean, ctx: PayerContext): Group {
   const list = docEntries(d.payerId, d.program, ctx.items);
-  const listed = new Set(list.map((r) => r.slot));
+  const typical = typicalEntries(d.kind, list);
+  const listed = new Set([...list, ...typical].map((r) => r.slot));
   const rows = [
     ...requiredFirst(list).map((r) => ({ entry: r, need: r.required ? ("required" as const) : ("recommended" as const) })),
+    /* What a request of this type usually carries, labelled "typical for a continued stay" and so on. It is the demo's advice, not a payer's rule. */
+    ...typical.map((r) => ({ entry: r as DocEntry, need: "typical" as const })),
     /* A file Reader placed that the payer does not ask for still shows, so nothing dropped ever disappears. */
     ...d.documents.filter((x) => !listed.has(x.slot)).map((x) => ({ entry: { slot: x.slot, label: slotLabel(x.slot), hint: "", required: false }, need: "extra" as const })),
   ].map(({ entry, need }) => documentRow(d, entry, need, d.documents.find((x) => x.slot === entry.slot), quiet));
@@ -98,22 +106,10 @@ function documentGroup(d: CaseDraft, quiet: boolean, ctx: PayerContext): Group {
   return { id: "documents", title: "Documents", note, rows };
 }
 
-function coverageRow(d: CaseDraft, clock: number): Row {
-  const base = { id: "coverage", label: "Coverage" } as const;
-  const key = coverageKey(d);
-  if (!key) return { ...base, state: "optional", detail: "Verify checks it once the payer, level of care and member ID are in." };
-  const payer = payerById(d.payerId ?? "summit").shortName;
-  if (d.coverage?.key !== key) return { ...base, state: "working", detail: `Verify is checking coverage with ${payer}` };
-  const p = coverageFor(d, clock);
-  if (!p || !d.coverage) return { ...base, state: "optional", detail: "Verify checks it once the payer, level of care and member ID are in." };
-  if (d.coverage.verdict === "fix") return { ...base, state: "warn", detail: `Coverage needs a fix. ${buildResult(p).reason}` };
-  return { ...base, state: "done", detail: `Coverage checked by Verify. Active, service covered, ${d.coverage.verdict === "cleared" ? "no authorization needed" : "authorization required"}.` };
-}
-
 /** What an EMR field that still needs a mapping would have filled on the checklist. */
 const MAPS_TO: Record<string, "payer" | "program"> = { "Level of care": "program", "Referral source": "payer" };
 
-/** Every row of the checklist, in four groups. `referral` is what the attached referral supplied, for the "from referral" notes.
+/** Every row of the two checklists, in five groups. `referral` is what the attached referral supplied, for the "from referral" notes.
     `unmapped` are the fields of the system the chart was pulled from that still need a mapping: the rows they would have filled say so. */
 export function buildChecklist(d: CaseDraft, clock: number, referral: NewCasePrefill | null, ctx: PayerContext, unmapped: UnmappedField[]): Group[] {
   const quiet = isBlank(d);
@@ -133,24 +129,25 @@ export function buildChecklist(d: CaseDraft, clock: number, referral: NewCasePre
     ? { id: "patient", label: "Patient initials and age", state: "done", detail: join(`${d.patient.initials}, ${d.patient.age}`, note("patient")) }
     : d.patient.initials.trim() || d.patient.age
       ? { id: "patient", label: "Patient initials and age", state: "missing", detail: `Found ${d.patient.initials.trim() ? `initials ${d.patient.initials.trim().replace(/\.$/, "")}` : `age ${d.patient.age}`}. The ${d.patient.initials.trim() ? "age" : "initials"} is still needed.` }
-      : missing("patient", "Patient initials and age", "Initials and age only. A name never enters the app.", "Not found yet. Drop a chart above or add it here.");
+      : missing("patient", "Patient initials and age", "Initials and age only. A name never enters the app.", "Not found yet. Add it here, or Reader fills it from the chart.");
 
   const payer: Row = d.payerId
     ? { id: "payer", label: "Payer and plan", state: "done", detail: join(payerById(d.payerId).name, d.planType, note("payer")) }
-    : missing("payer", "Payer and plan", "The carrier and plan type, from the insurance card", "Not found yet. Drop the insurance card above or add it here.");
+    : missing("payer", "Payer and plan", "The carrier and plan type, from the insurance card", "Not found yet. Add it here, or Reader fills it from the insurance card.");
   const member: Row = d.memberId
     ? { id: "member", label: "Member ID", state: "done", detail: join(maskMember(d.memberId), "agents see only the last four", note("member")), tag: REC }
     : maybe("member", "Member ID", "From the insurance card. Agents see only the last four.", "Not found yet. Verify needs it to check coverage.");
 
   const program: Row = d.program
     ? { id: "program", label: "Level of care", state: "done", detail: join(PROGRAM_LABEL[d.program], note("program")) }
-    : missing("program", "Level of care", "Residential 3.5, IOP, PHP or Detox", "Not found yet. Drop the chart above or add it here.");
+    : missing("program", "Level of care", "Residential 3.5, IOP, PHP or Detox", "Not found yet. Add it here, or Reader fills it from the chart.");
   const type: Row = d.type
     ? { id: "type", label: "Request type", state: "done", detail: join(d.type, NOTICE[d.type], note("type")) }
-    : missing("type", "Request type", "Admission, continued stay, recertification and so on", "Not found yet. Drop the chart above or add it here.");
+    : missing("type", "Request type", "Admission or an initial request", "Not found yet. Add it here.");
+  const retro = d.kind === "retro";
   const start: Row = d.startDate
-    ? { id: "start", label: "Start date", state: "done", detail: fmtDate(d.startDate, isoOf(toDate(clock))), tag: REC }
-    : maybe("start", "Start date", "The day the stay would start", "Not set. Add the day the stay would start.");
+    ? { id: "start", label: retro ? "Dates of service" : "Start date", state: "done", detail: `${fmtDate(d.startDate, isoOf(toDate(clock)))}${d.endDate ? ` to ${fmtDate(d.endDate, "")}` : ""}`, tag: REC }
+    : maybe("start", retro ? "Dates of service" : "Start date", retro ? "The first and the last day care was given" : "The day the stay would start", retro ? "Not set. Add the dates of service." : "Not set. Add the day the stay would start.");
   const diagnoses: Row = d.diagnoses.length
     ? { id: "diagnoses", label: "Diagnoses (ICD-10)", state: "done", detail: join(d.diagnoses.map((x) => `${x.code} ${x.label.split(",")[0]}`).join(" · "), note("diagnoses")), tag: REC }
     : maybe("diagnoses", "Diagnoses (ICD-10)", "ICD-10 codes, from the evaluation", "Not found yet. The psychiatric evaluation lists them.");
@@ -158,10 +155,12 @@ export function buildChecklist(d: CaseDraft, clock: number, referral: NewCasePre
     ? { id: "reason", label: "Reason for the request", state: "done", detail: join(d.reason.length > 130 ? `${d.reason.slice(0, 127)}…` : d.reason, note("reason")), tag: REC }
     : maybe("reason", "Reason for the request", "Why this level of care, in a sentence or two", "Not found yet. Scribe uses it in the summary.");
 
+  const by = d.referrer ? `Referred by ${d.referrer.org}${d.referrer.clinician ? `, ${d.referrer.clinician}` : ""}.` : undefined;
   return [
-    { id: "patient", title: "Patient", rows: [patient] },
-    { id: "insurance", title: "Insurance", rows: [payer, member, coverageRow(d, clock)] },
-    { id: "request", title: "Request", rows: [program, type, start, diagnoses, reason] },
+    { id: "patient", title: "Patient", note: by, rows: [patient] },
+    { id: "insurance", title: "Insurance", rows: [payer, member] },
+    { id: "request", title: "Request", rows: [program, type, start] },
+    { id: "clinical", title: "Clinical summary", rows: [diagnoses, reason] },
     documentGroup(d, quiet, ctx),
   ];
 }

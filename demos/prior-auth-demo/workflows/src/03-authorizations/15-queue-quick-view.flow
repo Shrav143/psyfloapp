@@ -1,0 +1,60 @@
+title: Authorizations › Queue › Quick view panel
+route: /authorizations?quick=R-1117
+intro: The right-hand panel that opens from a queue row: a summary first, and a button to open the full case. A request that is also on the Dashboard opens the Dashboard's own request panel; a request that only the queue has opens a lighter panel built from the case. Esc closes it and focus goes back to the row.
+dir: TD
+also: Demo only: the lighter panel's units, window and documents come from the Case Manager ledger and the case's draft where they exist. The panel changes nothing by itself; 'Review and sign' only opens New case, where a clinician signs.
+---
+screen row "Queue row\nCase ID link, a small 'Quick view' icon button beside the patient, 'Open'"
+click c1 "Click the icon button 'Quick view R-1117'"
+click c2 "Click the row away from a link or button"
+click c3 "Keyboard: Tab to the icon button, press Enter or Space"
+store ad "The address gets ?quick=R-1117\nIt replaces the entry, so Back does not walk through panels\nThe row gets a green outline"
+decision d1 "Is the request open and at a site in view?"
+endx e1 "Nothing opens\nAn unknown, finished or other-site ID in ?quick= is dropped from the address"
+decision d2 "Is the request also on the Dashboard?"
+overlay o1 "The Dashboard's request panel\nSame panel, same history, 'Check now', 'Open case' and demo controls"
+goto g1 "Continues in: Dashboard › Request drawer › Open and read a request"
+overlay o2 "Lighter quick view, from the right\nTitle 'R-1117 · Harborview MA', patient, level of care and request type"
+process f1 "Focus moves into the panel (the X)\nTab and Shift+Tab stay inside it"
+
+group gS "What the lighter panel says, in this order"
+  process s1 "'Next:' sentence and why\nThe same sentence as the row and the case page"
+  process s2 "Status chips: Preparing, Ready to sign, With the payer or Denial route\nplus 'Needs your input' and 'Coverage needs a fix' when they apply"
+  process s3 "Deadline chip, e.g. 'Review due in 30 h'\nWaiting on: You, the payer or the agent"
+  process s4 "Approved, used and left; Window; Documents, complete or what is missing\nOnly the ones this request has data for"
+  process s5 "Site (only for a viewer who can see both sites)\nApproval chance, its word and likely range"
+  process s6 "History: the last three events, each labelled person or agent\nor 'Nothing has happened on this request yet'"
+endgroup
+
+click b1 "Click 'Open case'"
+goto g2 "Continues in: Authorizations › Case page › Ways in"
+decision d3 "Is it still being prepared (Preparing or Ready to sign)?"
+click b2 "Click 'Review and sign'"
+goto g3 "Continues in: Authorizations › Case page › Send to payer and review and sign"
+process nb "No 'Review and sign'\nIt is with the payer, or a denial"
+click x "Press Esc, click the X, or click the dimmed area"
+process bk "The panel closes and ?quick= leaves the address\nFocus returns to that row's 'Quick view' button\nEsc closes one layer at a time (a menu or a dialog inside the panel first)"
+process gn "The request leaves the queue while the panel is open\n(for example the payer answers from the Dashboard panel)\nThe panel closes by itself"
+start s0 "Open /authorizations?quick=R-1117 on a fresh load"
+
+row --> c1
+row --> c2
+row --> c3
+c1 --> ad
+c2 --> ad
+c3 --> ad
+s0 --> d1
+ad --> d1
+d1 -->|No| e1
+d1 -->|Yes| d2
+d2 -->|Yes| o1 --> g1
+d2 -->|No| o2 --> f1
+f1 --> s1 --> s2 --> s3 --> s4 --> s5 --> s6
+s6 --> b1 --> g2
+s6 --> d3
+d3 -->|Yes| b2 --> g3
+d3 -->|No| nb
+o2 --> x
+o1 --> x
+x --> bk
+o2 -.-> gn

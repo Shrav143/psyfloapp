@@ -5,7 +5,7 @@ dir: TD
 also: The report is built for any denial type. D-3297 is the paraphrased worked example and carries a 'Worked example' tag.
 ---
 start s1 "Click 'Appeal analysis report' under the 'Our read' tile of a denial"
-start s2 "Click 'Report' on a row of 'Open denials'"
+start s2 "Click 'Report' on a row of the 'Open denials' panel"
 start s3 "Click 'Appeal analysis report' at the top right of the brief page"
 start s4 "Open /denials/D-xxxx/report by its address"
 decision d1 "Does a request with that id exist?"

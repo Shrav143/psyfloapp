@@ -4,7 +4,7 @@ intro: Every system on the list is in one of three states. Each state shows diff
 dir: TD
 also: In the demo only the seeded Billing system starts in 'Needs attention'. Nothing in the demo moves a Connected system into it. A system that is not Connected also says that New case cannot pull a chart from it.
 ---
-start s0 "Open EMR Connect\nThe two clinical record sites start Connected, the Billing system starts amber"
+start s0 "Open EMR Connect\nThe two clinical record systems ('Clinical record · Site A' and 'Clinical record · Site B') start Connected, the Billing system (both sites) starts amber"
 click n1 "Click 'Connect a system', pass the test, click 'Connect {name}'"
 ext n2 "Production: the read-only sign-in expires or the EMR changes its screens\nDemo: only the seeded Billing system starts here"
 

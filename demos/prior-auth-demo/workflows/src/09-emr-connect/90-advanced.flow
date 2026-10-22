@@ -2,7 +2,7 @@ title: EMR Connect › Advanced › Field mappings and the activity log
 route: /emr
 intro: Under the connection health card, a folded section 'Advanced' holds the detail: every field mapping, with the ones still waiting at the top, and the log of every read and write. It starts closed, opens by click, Enter or Space, and shows how many fields wait in a pill.
 dir: TD
-also: Seed data. The section is not kept in the page while closed, so searching the page does not find its text until it is opened. The Map pop-up lives on the page, not in the section, so closing the section never loses a mapping in progress.
+also: Seed data, counts shown for Both sites. For one site the field mappings and the log lines are that site's only (Site A: 7 mappings and 5 lines; Site B: 5 mappings, 2 waiting, and 3 lines). The section is not kept in the page while closed, so searching the page does not find its text until it is opened. The Map pop-up lives on the page, not in the section, so closing the section never loses a mapping in progress.
 ---
 start s1 "Scroll below the Connection health card"
 screen sc "Closed section 'Advanced'\n'10 field mappings, 2 waiting, and the log of every read and write (8 lines).'\nPill '2 to map' (hidden at 0), chevron on the right"
@@ -11,7 +11,7 @@ process p1 "The button says whether it is open (aria-expanded)\nThe chevron turn
 screen o1 "Open: 'Field mappings'\n'10 mapped, 2 waiting. A chart pulled in New case leaves the waiting fields blank until you map them.'"
 
 group gMap "Field mappings list"
-  screen m1 "Waiting fields first, tinted\n'Level of care' with a 'Not mapped' pill, 'Clinical record · outpatient site · Match to IOP or PHP', button 'Map'\n'Referral source' ... 'Match to a payer field', button 'Map'"
+  screen m1 "Waiting fields first, tinted\n'Level of care' with a 'Not mapped' pill, 'Clinical record · Site B · Match to IOP or PHP', button 'Map'\n'Referral source' ... 'Match to a payer field', button 'Map'"
   screen m2 "Then every mapping, with its system and who mapped it\n'Admit date → Admission date', 'Reader, 03/14' ... ten rows at the start\nA mapping made by a person reads 'You, 10/20'"
   click m3 "Click 'Map' on a waiting row"
 endgroup

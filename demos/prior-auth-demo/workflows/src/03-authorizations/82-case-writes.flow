@@ -33,7 +33,7 @@ process w6 "Queue drops the request\nThe open count drops by one\nThe sidebar ba
 process w11 "Its case page reads the new stage\nChip 'Received', the request's own status line, a greyed-out 'Sent to payer' and 'Open on the Dashboard'"
 start s5 "The payer decides, or a denial is settled or its appeal is filed"
 process w12 "Queue drops the request from its band\nWhen Act now is empty the band says 'Nothing needs you today'"
-goto g2 "Continues in: Dashboard › Request drawer"
+goto g2 "Continues in: Dashboard › Request drawer › Open and read a request"
 
 s1 --> d1
 d1 -->|Yes| w1 --> w2

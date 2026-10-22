@@ -2,8 +2,9 @@
    The store slice (store/cases.ts) and every page under pages/newcase and pages/active read from here. */
 import type { DemoFile } from "@/components/ui";
 import { payerById } from "./seed";
+import type { RequestKind } from "./queue";
+import { siteOf, type SiteId } from "./sites";
 import type { AgentKey, PayerId, Program, RequestType, Tone } from "./types";
-import type { Verdict } from "./eligibility";
 import { clockTime, toDate } from "@/lib/time";
 
 /* ------------------------------------------------------------------ documents */
@@ -70,21 +71,70 @@ export interface NarrativeSection {
   /** Comes from somewhere else (clinical context added on the case page), so it is shown but not edited here. */
   fixed?: boolean;
 }
-export interface CoverageSummary {
-  key: string;
-  verdict: Verdict;
-  at: number;
-}
 export type DueKind = "notice" | "window" | "expires" | "review" | "packet";
+
+/** The Authorization type chosen under the page heading. The ids are the request kinds the queue and the Dashboard already filter by. */
+export type AuthKind = RequestKind;
+/** What a modification asks to change. */
+export type ChangeKind = "more_units" | "more_days" | "revised_dates" | "service" | "correction";
+export interface ModificationChange {
+  kind: ChangeKind;
+  /** Days or units asked for, when the change is "more". */
+  amount: number | null;
+  detail: string;
+}
+/** What the authorization being reviewed, renewed or changed looked like when the person chose it. The summary quotes it, so the draft stays readable without the patient book. */
+export interface AuthBasis {
+  label: string;
+  unit: "days" | "units";
+  authorized: number | null;
+  used: number | null;
+  left: number | null;
+  /** yyyy-mm-dd, or null while nothing is approved. */
+  from: string | null;
+  to: string | null;
+}
+/** Why a case went on past a warning: a duplicate, or a verification that cannot confirm coverage. It is written to the request's history. */
+export interface DocumentedReason {
+  kind: "duplicate" | "coverage" | "no_auth" | "unavailable";
+  reason: string;
+  /** What the warning was about: the case id of the duplicate, or the verification's headline. */
+  about: string;
+}
 
 export interface CaseDraft {
   id: string;
   caseId: string | null;
   saved: boolean;
   sent: boolean;
+  /** 0 holds the first three of the five steps, 1 is Authorization preparation (the agents), 2 is Review and submit. */
   step: 0 | 1 | 2;
-  /** While step is 0: the referral comes first, then the medical records. */
-  phase: "referral" | "records";
+  /** While step is 0: Intake, then Eligibility and benefits, then Clinical documentation. */
+  phase: "intake" | "eligibility" | "records";
+  /** The Authorization type. It decides what Intake asks, how Eligibility behaves, which documents are typical and what the justification says. */
+  kind: AuthKind;
+  /** The site the case belongs to. A new patient's site is chosen in Intake; an existing patient's case is at the patient's site. */
+  site: SiteId;
+  /** The existing patient this case is for (a Patient id from data/patients.ts), or null for a new patient. Never a second record for the same person. */
+  patientId: string | null;
+  episodeId: string | null;
+  authorizationId: string | null;
+  /** The verification record this case uses: the same one Eligibility & Benefits shows. */
+  verificationId: string | null;
+  /** Intake has begun: a referral, a patient or "Create case manually" was chosen. */
+  started: boolean;
+  /** Requested last day of the stay, or the last date of service for a retro-authorization. Empty means the level of care's usual length. */
+  endDate?: string;
+  /** The authorization this case reviews, renews or changes, as it stood when chosen. */
+  basis?: AuthBasis;
+  /** Modification: what the request asks to change. */
+  change?: ModificationChange;
+  /** Retro-authorization: why the authorization was not obtained ahead of time. */
+  retroReason?: string;
+  /** The referring organization and clinician, from the referral. */
+  referrer?: { org: string; clinician: string };
+  /** The person went on past a warning and said why. Shown on Review and written to the request's history. */
+  documented?: DocumentedReason[];
   patient: { initials: string; age: number | null };
   reference: string;
   payerId: PayerId | null;
@@ -106,7 +156,6 @@ export interface CaseDraft {
   emrChart?: string;
   /** What Reader filled in from dropped files, for the note under each checklist row. */
   read?: Partial<Record<ReadKey, ReadNote>>;
-  coverage: CoverageSummary | null;
   run: RunState;
   answers: Answer[];
   /** The questions the agents will ask in this run, in the order they come up. */
@@ -229,10 +278,13 @@ export const SUGGESTIONS = [
 /* ------------------------------------------------------------------ pure helpers */
 export type DraftState = "intake" | "question" | "working" | "ready";
 
+/** The agents have been started on this case: some of their work is done, or the plan for the run has been made. Looking at the Authorization preparation step does not start them. */
+export const runStarted = (d: Pick<CaseDraft, "run" | "questions">): boolean => d.run.done > 0 || d.questions.length > 0 || !!d.run.failed;
+
 export function draftState(d: CaseDraft): DraftState {
   if (d.run.question) return "question";
   if (d.run.done >= RUN_STEPS.length) return "ready";
-  if (d.run.done > 0 || d.step >= 1) return "working";
+  if (runStarted(d)) return "working";
   return "intake";
 }
 /** A draft needs a person when intake is unfinished, an agent asked something, an agent could not finish, or it waits for a signature. */
@@ -314,6 +366,12 @@ export const describeRequest = (d: CaseDraft): string => d.what ?? (!d.type ? "N
 /** "…4821": only the last four characters of a member ID are ever shown. */
 export const maskMember = (id: string): string => (!id ? "" : id.startsWith("…") ? id : `…${id.replace(/\W/g, "").slice(-4)}`);
 export const caseCode = (program: Program | null, n: number): string => `${program === "IOP" ? "I" : program === "PHP" ? "P" : "R"}-${n}`;
+/** The next case id for a site. A site is a function of the case id (data/sites.ts), so the id is chosen so the new case lands at the site it was made for. */
+export function nextCaseCode(program: Program | null, seq: number, site: SiteId): { code: string; seq: number } {
+  let n = seq;
+  while (siteOf(caseCode(program, n)) !== site) n += 1;
+  return { code: caseCode(program, n), seq: n + 1 };
+}
 
 /** Plan type the intake fills in once the payer is known. */
 const PLAN_TYPE_OF: Record<string, string> = { summit: "HMO", cardinal: "HMO", evergreen: "HMO", beacon: "PPO", harborview: "Medicare Advantage", lakeshore: "Behavioral carve-out" };

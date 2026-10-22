@@ -37,7 +37,7 @@ toast tn "'Note sent to Scribe'\n'It will be used the next time the draft is upd
 agent ag "Agent line: badge and 'Scribe does this'\nScribe writes the plan, Packet attaches documents, Integrity settles dates, Reader finds chart notes, Verify fixes coverage"
 decision dL "Is it the coverage card?"
 click lk "Click 'Open Eligibility & Benefits'"
-goto gE "Continues in: Eligibility & Benefits › Verify a patient"
+goto gE "Continues in: Authorizations › Eligibility & Benefits › Verify › Ways in and pre-fill"
 click ds "Click 'Dismiss'"
 goto gD "Continues in: Authorizations › Case page › Recommended actions › Dismiss and bring back"
 process lk2 "While the agents are updating the draft\nthe checkbox, answer box, 'Send note' and 'Dismiss' are locked"

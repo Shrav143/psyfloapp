@@ -1,7 +1,9 @@
 import type { StateCreator } from "zustand";
 import { SEED_LEDGER, type LedgerCase } from "@/data/manager";
 import { buildReviews, draftedFrom, inWeek, isClean, nextReviewAfter, reviewIntervalDays, reviewStamp, type Review } from "@/data/managerReviews";
+import { siteOf } from "@/data/sites";
 import { plural } from "@/lib/format";
+import { sitesInView } from "@/lib/scope";
 import type { AppState } from "./index";
 import { selectPayerRules } from "./payerConfig";
 
@@ -23,6 +25,12 @@ export interface ManagerSlice {
 }
 
 const replace = (list: Review[], id: string, patch: (r: Review) => Review): Review[] => list.map((r) => (r.id === id ? patch(r) : r));
+
+/** True for a review whose case is at a site the viewer has in view. A one-site viewer never signs or drafts the other site's reviews, even with "all". */
+const inView = (s: Pick<AppState, "viewerId" | "siteScope">): ((r: Review) => boolean) => {
+  const sites = sitesInView(s);
+  return (r) => sites.includes(siteOf(r.caseId));
+};
 
 export const createManagerSlice: StateCreator<AppState, [], [], ManagerSlice> = (set, get) => {
   /** Marks the review signed and books the one after it. The interval comes from the payer's own rule when it names one, else from the level of care. */
@@ -64,7 +72,8 @@ export const createManagerSlice: StateCreator<AppState, [], [], ManagerSlice> = 
     saveReviewDraft: (id, text) => set((s) => ({ reviews: replace(s.reviews, id, (x) => (x.status === "drafted" && x.draft !== text ? { ...x, draft: text } : x)) })),
 
     signAllClean: (signedBy) => {
-      const clean = get().reviews.filter(isClean);
+      const visible = inView(get());
+      const clean = get().reviews.filter((r) => isClean(r) && visible(r));
       if (!clean.length) {
         get().toast({ title: "No clean drafts to sign", body: "Every draft left has a check that needs a look. Open each one to sign it.", tone: "neutral" });
         return 0;
@@ -79,7 +88,8 @@ export const createManagerSlice: StateCreator<AppState, [], [], ManagerSlice> = 
         get().toast({ title: "Cadence is paused in Settings", body: "It drafts no reviews until you resume it there.", tone: "mid" });
         return 0;
       }
-      const todo = get().reviews.filter((r) => r.status === "due" && inWeek(r) && (!ids || ids.includes(r.id)));
+      const visible = inView(get());
+      const todo = get().reviews.filter((r) => r.status === "due" && inWeek(r) && visible(r) && (!ids || ids.includes(r.id)));
       if (!todo.length) {
         get().toast({ title: "Nothing to draft", body: "Every review due this week already has a draft or a question for you.", tone: "neutral" });
         return 0;
@@ -92,5 +102,8 @@ export const createManagerSlice: StateCreator<AppState, [], [], ManagerSlice> = 
   };
 };
 
-/** Sidebar badge: reviews that need a clinician's update. */
-export const selectManagerBadge = (s: AppState): number => s.reviews.filter((r) => r.status === "needs_update").length;
+/** Sidebar badge: reviews that need a clinician's update, at the sites in view. */
+export const selectManagerBadge = (s: AppState): number => {
+  const visible = inView(s);
+  return s.reviews.filter((r) => r.status === "needs_update" && visible(r)).length;
+};

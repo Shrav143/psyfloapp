@@ -1,6 +1,8 @@
+import { siteOf, type SiteId } from "./sites";
 import type { AgentKey } from "./types";
 
-/* EMR Connect seed data: the connected systems, what the agents did there, and the fields still waiting for a mapping. */
+/* EMR Connect seed data: the connected systems, what the agents did there, and the fields still waiting for a mapping.
+   A clinical record system belongs to one site; the billing system serves both. A viewer sees only the systems of the sites they may see. */
 
 export type SystemKind = "Clinical record" | "Billing system" | "Practice management" | "Lab results";
 export type SystemStatus = "connected" | "attention" | "disconnected";
@@ -10,6 +12,8 @@ export interface EmrSystem {
   name: string;
   kind: SystemKind;
   holds: string;
+  /** The sites this system serves. A clinical record is one site; the billing system serves both. */
+  sites: SiteId[];
   status: SystemStatus;
   /** Demo minutes of the last sync. */
   lastSyncAt: number;
@@ -23,7 +27,8 @@ export interface EmrSystem {
   fixIssue?: string;
 }
 
-export interface EmrActivity { id: string; at: number; agent: AgentKey; text: string }
+/** `sites` are the sites the line is about, so a viewer who cannot see a site never reads its line. */
+export interface EmrActivity { id: string; at: number; agent: AgentKey; text: string; sites: SiteId[] }
 export interface EmrMapping { id: string; systemId: string; source: string; target: string; by: string }
 export interface MapOption { value: string; label: string }
 export interface UnmappedField {
@@ -38,20 +43,21 @@ export interface UnmappedField {
 }
 
 export const SEED_SYSTEMS: EmrSystem[] = [
-  { id: "sys-res", name: "Clinical record · residential site", kind: "Clinical record", holds: "Residential, detox", status: "connected", lastSyncAt: -6, connectedSince: "03/14", contact: "Site administrator, residential", writeBack: true },
-  { id: "sys-out", name: "Clinical record · outpatient site", kind: "Clinical record", holds: "IOP, PHP, outpatient", status: "connected", lastSyncAt: -11, connectedSince: "03/14", contact: "Site administrator, outpatient", writeBack: true },
-  { id: "sys-bill", name: "Billing system", kind: "Billing system", holds: "Claims and remittances", status: "attention", lastSyncAt: -120, connectedSince: "04/02", contact: "Billing lead", writeBack: false, issue: "The read-only sign-in expired 2 hours ago, so remittances are not arriving." },
+  { id: "sys-res", name: "Clinical record · Site A", kind: "Clinical record", holds: "All programs at Site A", sites: ["A"], status: "connected", lastSyncAt: -6, connectedSince: "03/14", contact: "Site administrator, Site A", writeBack: true },
+  { id: "sys-out", name: "Clinical record · Site B", kind: "Clinical record", holds: "All programs at Site B", sites: ["B"], status: "connected", lastSyncAt: -11, connectedSince: "03/14", contact: "Site administrator, Site B", writeBack: true },
+  { id: "sys-bill", name: "Billing system", kind: "Billing system", holds: "Serves both sites", sites: ["A", "B"], status: "attention", lastSyncAt: -120, connectedSince: "04/02", contact: "Billing lead", writeBack: false, issue: "The read-only sign-in expired 2 hours ago, so remittances are not arriving." },
 ];
 
+/** Lines that name a case sit at that case's site; the others are placed by hand, so each site's log reads true on its own. */
 export const SEED_ACTIVITY: EmrActivity[] = [
-  { id: "ea-1", at: -6, agent: "reader", text: "Pulled 8 files for R-1042 and matched the insurance card" },
-  { id: "ea-2", at: -21, agent: "reader", text: "Pulled the latest progress notes for 14 active stays" },
-  { id: "ea-3", at: -60, agent: "verify", text: "Re-checked coverage for 6 members whose plans changed" },
-  { id: "ea-4", at: -180, agent: "navigator", text: "Wrote back the approval for I-2144, after sign-off" },
-  { id: "ea-5", at: -240, agent: "reader", text: "Matched 4 charts to open cases after the morning sync" },
-  { id: "ea-6", at: -420, agent: "reader", text: "Read the new admission for R-1101 and proposed a case" },
-  { id: "ea-7", at: -1500, agent: "verify", text: "Re-checked coverage for 3 members before their reviews" },
-  { id: "ea-8", at: -1560, agent: "navigator", text: "Wrote back the approval for R-0960, after sign-off" },
+  { id: "ea-1", at: -6, agent: "reader", text: "Pulled 8 files for R-1042 and matched the insurance card", sites: [siteOf("R-1042")] },
+  { id: "ea-2", at: -21, agent: "reader", text: "Pulled the latest progress notes for 14 active stays", sites: ["A"] },
+  { id: "ea-3", at: -60, agent: "verify", text: "Re-checked coverage for 6 members whose plans changed", sites: ["B"] },
+  { id: "ea-4", at: -180, agent: "navigator", text: "Wrote back the approval for I-2144, after sign-off", sites: [siteOf("I-2144")] },
+  { id: "ea-5", at: -240, agent: "reader", text: "Matched 4 charts to open cases after the morning sync", sites: ["B"] },
+  { id: "ea-6", at: -420, agent: "reader", text: "Read the new admission for R-1101 and proposed a case", sites: [siteOf("R-1101")] },
+  { id: "ea-7", at: -1500, agent: "verify", text: "Re-checked coverage for 3 members before their reviews", sites: ["B"] },
+  { id: "ea-8", at: -1560, agent: "navigator", text: "Wrote back the approval for R-0960, after sign-off", sites: [siteOf("R-0960")] },
 ];
 
 export const SEED_MAPPINGS: EmrMapping[] = [
@@ -68,7 +74,7 @@ export const SEED_MAPPINGS: EmrMapping[] = [
 ];
 
 export const SEED_UNMAPPED: UnmappedField[] = [
-  { id: "um-1", systemId: "sys-out", field: "Level of care", where: "the outpatient record", hint: "Match to IOP or PHP", question: "The outpatient record writes “Level of care” as free text, such as “Day program”. Which level should the agents read it as?", options: [{ value: "IOP", label: "IOP" }, { value: "PHP", label: "PHP" }] },
+  { id: "um-1", systemId: "sys-out", field: "Level of care", where: "the Site B record", hint: "Match to IOP or PHP", question: "The Site B record writes “Level of care” as free text, such as “Day program”. Which level should the agents read it as?", options: [{ value: "IOP", label: "IOP" }, { value: "PHP", label: "PHP" }] },
   { id: "um-2", systemId: "sys-out", field: "Referral source", where: "intake", hint: "Match to a payer field", question: "“Referral source” on intake holds a name and sometimes a plan. Which Psyflo field should it fill?", options: [{ value: "Payer name", label: "Payer name" }, { value: "Plan type", label: "Plan type" }, { value: "Referring provider", label: "Referring provider" }] },
 ];
 
@@ -95,8 +101,13 @@ export const SYSTEM_READS: Record<SystemKind, string[]> = {
   "Lab results": ["Lab orders", "Lab results"],
 };
 
+/** The systems that serve a site in `view`: a site's record system and the billing system both sites share. */
+export const emrInView = (systems: readonly EmrSystem[], view: readonly SiteId[]): EmrSystem[] => systems.filter((x) => x.sites.some((id) => view.includes(id)));
+
 /** Demo value: how often a connected system is asked for new files. A system that needs attention misses one sync for each interval since its last good one. */
 export const SYNC_EVERY_MIN = 60;
 
-export const BASE_CHARTS = 23;
-export const BASE_FILES = 142;
+/** Demo values for the starting counts, per site. They add up to the 23 charts matched today and 142 files pulled this week that EMR Connect shows for both sites. */
+export const BASE_COUNTS: Record<SiteId, { charts: number; files: number }> = { A: { charts: 13, files: 80 }, B: { charts: 10, files: 62 } };
+export const BASE_CHARTS = BASE_COUNTS.A.charts + BASE_COUNTS.B.charts;
+export const BASE_FILES = BASE_COUNTS.A.files + BASE_COUNTS.B.files;

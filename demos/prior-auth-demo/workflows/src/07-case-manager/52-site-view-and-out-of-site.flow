@@ -1,0 +1,42 @@
+title: Case Manager › Sites › What each site sees and out-of-site links
+route: /manager
+intro: Every case belongs to one site, the same site on every screen. The tracker, its tiles and filters, the header counts, 'Being prepared', the step-down plans, the reviews and the sidebar bubble all follow the site view. A viewer limited to one site never sees, counts, drafts or signs the other site's cases, and a direct link to one shows an out-of-site card. Totals for Both sites equal Site A plus Site B.
+dir: TD
+---
+start s1 "Switch the site in the top bar: Both sites, Site A or Site B\nOr Demo menu, 'Viewing as': Dr. Rivera (Site A only), Sam Okafor (Site B only)"
+screen sc1 "Case Manager follows the view\nHeader count and a small 'Site A' tag after it when the view is narrowed\nTracker rows, the four status tiles, the 'Being prepared' row, 'Step-down plans'\nReviews tab: header count, the three tiles, the day cards, 'Ready to step down?'"
+process p1 "Both sites: 56 active cases = Site A 33 plus Site B 23\nBeing prepared: 5 = 4 plus 1\nReviews due this week: 47 = 27 plus 20\nThe four tiles add up the same way"
+process p2 "Sidebar bubble on 'Case Manager' = cases that need a person (Being prepared) plus reviews that need a clinician's update, at the sites in view\nBoth sites 11 = Site A 6 plus Site B 5"
+decision d1 "Is the viewer limited to one site?"
+process p3 "The other site's cases do not exist for the viewer: not in the tracker, not found by the search, not counted"
+process p4 "A viewer of both sites narrows to one site and widens again; every number on the page changes at once"
+process p5 "'Draft all due reviews' and 'Sign all clean drafts' act only on reviews at the sites in view\nThe toast counts only those"
+process p6 "A step-down plan from an accepted denial is shown at the denial's site"
+
+start s2 "Open a link to a case\n/authorizations/case/ID from the tracker, a review's 'Open case', a notification or a bookmark"
+decision d2 "Is the case at a site in view?"
+screen ok "The case page opens as usual\n(Authorizations case page, or the Ledger case page)"
+screen o1 "Out-of-site card instead of the page\n'This case is not available at Site A'\nNames the site that has it, no patient or detail"
+decision d3 "Can the viewer see both sites?"
+click c1 "Click 'Show Site B'"
+process p7 "The view widens to that site and the case opens"
+click c2 "Click 'Back to the Dashboard'"
+goto g1 "Continues in: Dashboard › Arrive › What the page shows"
+endx e1 "A viewer limited to one site has no way to the other site's case"
+goto g2 "Continues in: Case Manager › Active cases › Tracker of every active case"
+goto g3 "Continues in: Case Manager › Reviews this week › Draft all due reviews and sign all clean drafts"
+
+s1 --> sc1 --> p1
+sc1 --> p2
+sc1 --> d1
+d1 -->|Yes| p3
+d1 -->|No| p4
+sc1 -.-> p5 --> g3
+sc1 -.-> p6
+sc1 --> g2
+s2 --> d2
+d2 -->|Yes| ok
+d2 -->|No| o1 --> d3
+d3 -->|Yes| c1 --> p7 --> ok
+d3 -->|No| e1
+o1 --> c2 --> g1

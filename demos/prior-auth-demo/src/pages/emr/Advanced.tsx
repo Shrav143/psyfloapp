@@ -1,4 +1,7 @@
+import { useMemo } from "react";
 import { Button, Disclosure, Pill } from "@/components/ui";
+import { touchesView } from "@/data/sites";
+import { useScope } from "@/lib/scope";
 import type { EmrMapping, EmrSystem, UnmappedField } from "@/data/emr";
 import { useStore } from "@/store";
 import { ActivityLog } from "./ActivityLog";
@@ -37,9 +40,14 @@ function Mappings({ systems, mappings, waiting, onMap }: { systems: EmrSystem[];
 
 /** Field mappings and the activity log, folded away. A mapping in progress lives in the page's own Map pop-up, so closing this loses nothing and it need not stay mounted. */
 export function Advanced({ systems, clock, onMap }: { systems: EmrSystem[]; clock: number; onMap: (f: UnmappedField) => void }) {
-  const mappings = useStore((s) => s.emrMappings);
-  const waiting = useStore((s) => s.emrUnmapped);
-  const activity = useStore((s) => s.emrActivity);
+  const { sites } = useScope();
+  const allMappings = useStore((s) => s.emrMappings);
+  const allWaiting = useStore((s) => s.emrUnmapped);
+  const allActivity = useStore((s) => s.emrActivity);
+  // `systems` are the ones in view, so mappings follow them, and a log line shows only when it is about a site in view.
+  const mappings = useMemo(() => allMappings.filter((m) => systems.some((x) => x.id === m.systemId)), [allMappings, systems]);
+  const waiting = useMemo(() => allWaiting.filter((u) => systems.some((x) => x.id === u.systemId)), [allWaiting, systems]);
+  const activity = useMemo(() => allActivity.filter((a) => touchesView(a.sites, sites)), [allActivity, sites]);
   return (
     <Disclosure
       title="Advanced"

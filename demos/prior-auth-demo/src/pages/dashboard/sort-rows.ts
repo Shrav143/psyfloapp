@@ -1,47 +1,55 @@
-import { STAGES, type PsyRequest } from "@/data/types";
-import { minutesInStage, minutesLeft } from "@/store/selectors";
-import { PAYER_ROW_LABEL } from "./helpers";
+import { PROGRAM_LABEL } from "@/data/types";
+import { payerRowLabel } from "./helpers";
+import type { CaseRow } from "./caseRows";
 
-export type SortKey = "case" | "payer" | "stage" | "clock";
+export type SortKey = "case" | "payer" | "service" | "status" | "days" | "units" | "window" | "action" | "owner";
 export interface RowSort {
   key: SortKey;
   dir: "asc" | "desc";
 }
 
-/** The headings that sort, with the words the page uses for them. */
-export const SORT_LABEL: Record<SortKey, string> = { case: "Case", payer: "Payer", stage: "Where it is", clock: "Clock" };
+/** The headings, in the words the page uses for them. Every one sorts. */
+export const SORT_LABEL: Record<SortKey, string> = { case: "Case", payer: "Payer", service: "Service", status: "Status", days: "Days in state", units: "Units", window: "Window", action: "Next action", owner: "Owner" };
 
-/** A first click sorts up, the next sorts down, the third goes back to the app's own order. */
+/** A first click sorts up, the next sorts down, the third goes back to the page's own order (the ones that need you, then the longest in state). */
 export function nextSort(current: RowSort | null, key: SortKey): RowSort | null {
   if (current?.key !== key) return { key, dir: "asc" };
   return current.dir === "asc" ? { key, dir: "desc" } : null;
 }
 
-/** What the Clock column shows as a number: minutes left for a denial with a deadline, otherwise minutes in the stage. A fixed note such as "decision 11/02" has none. */
-const clockMinutes = (r: PsyRequest, clock: number): number | undefined => (r.clockNote ? undefined : (minutesLeft(r, clock) ?? minutesInStage(r, clock)));
-
 const words = new Intl.Collator("en", { numeric: true });
 
-function valueOf(r: PsyRequest, key: SortKey, clock: number): string | number | undefined {
+/** What a column sorts by. Units sort by what is left and Window by the end date; a case with no approval has no value and stays at the bottom either way. */
+function valueOf(row: CaseRow, key: SortKey): string | number | undefined {
   switch (key) {
     case "case":
-      return r.id;
+      return row.r.id;
     case "payer":
-      return PAYER_ROW_LABEL[r.payerId];
-    case "stage":
-      return STAGES.indexOf(r.stage);
-    case "clock":
-      return clockMinutes(r, clock);
+      return payerRowLabel(row.r.payerId);
+    case "service":
+      return PROGRAM_LABEL[row.r.program];
+    case "status":
+      return row.status;
+    case "days":
+      return row.minutes;
+    case "units":
+      return row.units?.left;
+    case "window":
+      return row.window?.to;
+    case "action":
+      return row.action.verb;
+    case "owner":
+      return row.action.owner.name;
   }
 }
 
-/** Rows that tie keep the app's own order, and rows with no value for the column stay at the bottom either way. */
-export function sortRows(rows: PsyRequest[], sort: RowSort | null, clock: number): PsyRequest[] {
+/** Rows that tie keep the page's own order. */
+export function sortRows(rows: CaseRow[], sort: RowSort | null): CaseRow[] {
   if (!sort) return rows;
   const sign = sort.dir === "asc" ? 1 : -1;
   return [...rows].sort((a, b) => {
-    const x = valueOf(a, sort.key, clock);
-    const y = valueOf(b, sort.key, clock);
+    const x = valueOf(a, sort.key);
+    const y = valueOf(b, sort.key);
     if (x === undefined || y === undefined) return x === y ? 0 : x === undefined ? 1 : -1;
     return sign * (typeof x === "number" && typeof y === "number" ? x - y : words.compare(String(x), String(y)));
   });

@@ -1,10 +1,13 @@
 import type { StateCreator } from "zustand";
 import { AGENTS } from "@/data/agents";
-import { conditionText, openDrafts, payerWithName, reachedByOf, RULE_TITLE, USER_NAME, type AddPayerFields, type CustomPayer, type DocItem, type EditArea, type EditLogEntry, type LogChange, type OpenDraft, type PayerConfig, type Rule, type RuleId, type WorkflowStep } from "@/data/payerConfig";
+import { conditionText, openDrafts, payerWithName, reachedByOf, RULE_TITLE, type AddPayerFields, type CustomPayer, type DocItem, type EditArea, type EditLogEntry, type LogChange, type OpenDraft, type PayerConfig, type Rule, type RuleId, type WorkflowStep } from "@/data/payerConfig";
 import { proposalsFor, seedPayerConfig, starterConfig } from "@/data/payerConfigSeed";
 import { PAYERS } from "@/data/seed";
+import { siteOf } from "@/data/sites";
 import { PROGRAM_LABEL, type AgentKey, type Program } from "@/data/types";
+import { viewerById } from "@/data/viewers";
 import { uid } from "@/lib/format";
+import { sitesInView } from "@/lib/scope";
 import { shortDate, stamp } from "@/lib/time";
 import { paths } from "@/routes";
 import { createEmrSlice, type EmrSlice } from "./emr";
@@ -43,11 +46,17 @@ const lowerFirst = (s: string): string => (s ? s[0].toLowerCase() + s.slice(1) :
 export const createPayerConfigSlice: StateCreator<AppState, [], [], PayerConfigSlice> = (set, get, api) => {
   const patchConfig = (id: string, fn: (c: PayerConfig) => PayerConfig) => set((s) => (s.payerConfig[id] ? { payerConfig: { ...s.payerConfig, [id]: fn(s.payerConfig[id]) } } : {}));
   const shortOf = (id: string): string => PAYERS.find((p) => p.id === id)?.shortName ?? get().customPayers.find((p) => p.id === id)?.shortName ?? "The payer";
-  const openNow = (id: string): OpenDraft[] => openDrafts(get().requests, get().caseDrafts, id);
+  /** The person signed in right now, read when an edit is saved, so the edit log and "Acknowledged by" name whoever is viewing. */
+  const who = (): string => viewerById(get().viewerId).name;
+  /** The payer's unsent drafts at the sites in view. An update redrafts exactly these, so a viewer never changes, or counts, a draft at a site they are not looking at. */
+  const openNow = (id: string): OpenDraft[] => {
+    const view = sitesInView(get());
+    return openDrafts(get().requests, get().caseDrafts, id, (caseId) => view.includes(siteOf(caseId)));
+  };
   /** A bell notification for a saved edit, linking to the tab it was made on. */
   const told = (id: string, tab: "process" | "rules" | "documents", title: string, body: string) =>
     get().notify({ agent: "system", title: `${shortOf(id)} ${title}`, body, to: paths.payers(id, tab), tone: "neutral" });
-  const logEdits = (id: string, area: EditArea, reason: string, changes: LogChange[], user = USER_NAME) =>
+  const logEdits = (id: string, area: EditArea, reason: string, changes: LogChange[], user = who()) =>
     set((s) => ({ payerEdits: [...changes.map((c) => ({ id: uid("pe"), payerId: id, at: s.clock, user, area, what: c.what, before: c.before, after: c.after, reason })), ...s.payerEdits] }));
   /** An edit was saved: new drafts use it now, and open drafts wait for Update drafts. */
   const edited = (id: string, extra?: (c: PayerConfig) => Partial<PayerConfig>) => patchConfig(id, (c) => ({ ...c, unapplied: c.unapplied + 1, ...extra?.(c) }));
@@ -95,7 +104,7 @@ export const createPayerConfigSlice: StateCreator<AppState, [], [], PayerConfigS
       const reachedBy = top.reachedBy;
       if (reachedBy) set((s) => ({ customPayers: s.customPayers.map((p) => (p.id === id ? { ...p, reachedBy } : p)) }));
       logEdits(id, "Payer details", reason, changes);
-      told(id, "process", "details edited", `${USER_NAME} changed ${changes.map((c) => c.what.toLowerCase()).join(", ")}. The edit is in the log with the reason.`);
+      told(id, "process", "details edited", `${who()} changed ${changes.map((c) => c.what.toLowerCase()).join(", ")}. The edit is in the log with the reason.`);
       get().toast({ title: "Payer details saved", body: "The edit is in the log with your reason.", tone: "good" });
     },
 
@@ -105,7 +114,7 @@ export const createPayerConfigSlice: StateCreator<AppState, [], [], PayerConfigS
       logEdits(id, "Workflow", reason, changes);
       const v = get().payerConfig[id]?.workflow.version;
       const logged = `${changes.length} ${changes.length === 1 ? "change" : "changes"} logged.`;
-      told(id, "process", "workflow edited", `${USER_NAME} saved version ${v}. ${logged} New drafts use it at once. Click Update drafts to redraft open ones.`);
+      told(id, "process", "workflow edited", `${who()} saved version ${v}. ${logged} New drafts use it at once. Click Update drafts to redraft open ones.`);
       get().toast({ title: `Workflow saved as version ${v}`, body: `${logged} New drafts use it at once. Click Update drafts to redraft open ones.`, tone: "good" });
     },
 
@@ -113,23 +122,23 @@ export const createPayerConfigSlice: StateCreator<AppState, [], [], PayerConfigS
       const old = get().payerConfig[id]?.caller.text ?? "";
       patchConfig(id, (c) => ({ ...c, caller: { text, confirmed: shortDate(get().clock) } }));
       logEdits(id, "Caller instructions", reason, [{ what: "Instructions for Caller", before: old, after: text }]);
-      told(id, "process", "caller instructions edited", `${USER_NAME} saved a new script. Caller follows it on its next call.`);
+      told(id, "process", "caller instructions edited", `${who()} saved a new script. Caller follows it on its next call.`);
       get().toast({ title: "Instructions for Caller saved", body: "Caller follows them on its next call. The edit is logged.", tone: "good" });
     },
 
     saveRule: (id, rule, lines, reason) => {
       const old = get().payerConfig[id]?.rules.find((r) => r.id === rule)?.lines ?? [];
       const on = shortDate(get().clock);
-      edited(id, (c) => ({ rules: c.rules.map((r) => (r.id === rule ? { ...r, lines, confirmed: on, source: `Edited in Psyflo by ${USER_NAME}` } : r)) }));
+      edited(id, (c) => ({ rules: c.rules.map((r) => (r.id === rule ? { ...r, lines, confirmed: on, source: `Edited in Psyflo by ${who()}` } : r)) }));
       logEdits(id, "Rules", reason, [{ what: RULE_TITLE[rule], before: old.join("; "), after: lines.join("; ") }]);
-      told(id, "rules", "rule edited", `${USER_NAME} changed “${RULE_TITLE[rule]}”. New drafts use it at once. Click Update drafts to redraft open ones.`);
+      told(id, "rules", "rule edited", `${who()} changed “${RULE_TITLE[rule]}”. New drafts use it at once. Click Update drafts to redraft open ones.`);
       get().toast({ title: `${RULE_TITLE[rule]} saved`, body: "New drafts use it at once. Click Update drafts to redraft open ones.", tone: "good" });
     },
 
     saveDocs: (id, program, items, reason, changes) => {
       edited(id, (c) => ({ docs: { ...c.docs, [program]: items } }));
       logEdits(id, "Documents", reason, changes);
-      told(id, "documents", "document list edited", `${USER_NAME} changed the ${PROGRAM_LABEL[program]} list. New drafts use it at once. Click Update drafts to redraft open ones.`);
+      told(id, "documents", "document list edited", `${who()} changed the ${PROGRAM_LABEL[program]} list. New drafts use it at once. Click Update drafts to redraft open ones.`);
       get().toast({ title: `${PROGRAM_LABEL[program]} list saved`, body: "New drafts use it at once. Click Update drafts to redraft open ones.", tone: "good" });
     },
 
@@ -156,7 +165,7 @@ export const createPayerConfigSlice: StateCreator<AppState, [], [], PayerConfigS
       }));
       logEdits(id, "Workflow", `Accepted Historian's proposal: ${p.title}`, [{ what: `Added a branch under “${target.title}”`, before: "", after: `If ${conditionText(p.cond)}: ${p.result}` }]);
       const v = get().payerConfig[id]?.workflow.version;
-      told(id, "process", "workflow edited", `${USER_NAME} accepted Historian's proposal and saved version ${v}. New drafts use it at once. Click Update drafts to redraft open ones.`);
+      told(id, "process", "workflow edited", `${who()} accepted Historian's proposal and saved version ${v}. New drafts use it at once. Click Update drafts to redraft open ones.`);
       get().toast({ title: "Proposal accepted", body: `Added under “${target.title}” and logged as version ${v}.`, tone: "good" });
     },
 
@@ -167,8 +176,8 @@ export const createPayerConfigSlice: StateCreator<AppState, [], [], PayerConfigS
 
     acknowledgeChange: (id) => {
       const clock = get().clock;
-      patchConfig(id, (c) => (c.pending ? { ...c, pending: { ...c.pending, acknowledged: { by: USER_NAME, at: clock } } } : c));
-      get().toast({ title: "Change acknowledged", body: `Recorded for ${USER_NAME}, ${stamp(clock)}. Drafts are not changed until you update them.`, tone: "good" });
+      patchConfig(id, (c) => (c.pending ? { ...c, pending: { ...c.pending, acknowledged: { by: who(), at: clock } } } : c));
+      get().toast({ title: "Change acknowledged", body: `Recorded for ${who()}, ${stamp(clock)}. Drafts are not changed until you update them.`, tone: "good" });
     },
 
     updateDrafts: (id) => {

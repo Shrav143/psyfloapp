@@ -5,13 +5,19 @@ dir: TD
 also: There is no privacy-mode switch here: privacy mode is always on (see Settings). Escape closes this menu, like the two drawers, one layer at a time.
 ---
 start s1 "Click 'Demo' in the top bar\n(pill shows the clock, 'Tue 10:42 am')"
-overlay o1 "Demo menu opens under the button (320 px)"
+overlay o1 "Demo menu opens under the button (340 px, or the window width minus a margin)\nIt scrolls inside itself when the window is short"
 
 group gT "Section 'Time'"
   process t1 "Text: 'The demo clock is Tue Oct 20 2026, 10:42 am. It only moves when you move it.'\n(the date and time follow the clock)"
   click f1 "Click 'Fast-forward 1 hour'"
   click f2 "Click 'Fast-forward 1 day'"
   goto g1 "Continues in: Global shell › Demo menu › Fast-forward the demo clock"
+endgroup
+
+group gV "Section 'Viewing as'"
+  process vt "Text: 'Access is by site (minimum necessary). Try Dr. Rivera, who sees Site A only.'"
+  click fv "Click a person, for example 'Dr. Rivera'"
+  goto g4 "Continues in: Global shell › Demo menu › Viewing as"
 endgroup
 
 group gP "Section 'Suggested path'"
@@ -26,7 +32,7 @@ group gR "Below a divider (red text)"
 endgroup
 
 decision d1 "What happens to the open menu?"
-process k1 "Menu stays open after a Fast-forward\n(the pill changes, so more clicks are possible)"
+process k1 "Menu stays open after a Fast-forward or a choice in 'Viewing as'\n(the pill or the tick changes, so more clicks are possible)"
 process k2 "Menu closes, then the app opens the step's page"
 process k3 "Menu closes, the app goes to /dashboard"
 click x1 "Click anywhere outside the menu"
@@ -37,13 +43,14 @@ process k5 "Menu closes\nThe page underneath is as it was"
 end e1 "Menu is closed"
 
 s1 --> o1
-o1 --> t1 & f1 & f2 & sp & f4
+o1 --> t1 & f1 & f2 & vt & sp & f4
+vt --> fv --> g4
 f1 --> g1
 f2 --> g1
 sp --> f3 --> g2
 f4 --> g3
 o1 --> d1
-d1 -->|After Fast-forward| k1
+d1 -->|After Fast-forward or Viewing as| k1
 d1 -->|After a path step| k2
 d1 -->|After Reset| k3
 d1 -->|Mouse| x1

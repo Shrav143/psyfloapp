@@ -17,7 +17,7 @@ ext x1 "The system answers\nDemo: simulated with a demo record"
 decision q1 "Can the test fail?"
 endx f1 "Production only: sign-in rejected, a sign-in challenge, or the system unreachable\nThe feed pauses and a person is asked to fix it"
 click b0 "'Connect {name}' is dimmed until the last check passes"
-click b1 "Click 'Connect {name}'\nFor example 'Connect Lab results · new site'"
+click b1 "Click 'Connect {name}'\nFor example 'Connect Lab results · Site B'"
 
 group gSave "What is saved"
   store s1 "New system on the list\nStatus Connected, last sync now, connected since today, the contact, write-back off (its row says 'Read only')"

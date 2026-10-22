@@ -1,15 +1,20 @@
 /* Eligibility and Benefits: the patient rows, the verdict rule and the simulated live check.
    The wording of each payment check lives in pages/eligibility/checks.ts. */
 import { DAY, HOUR } from "@/lib/time";
+import type { SiteId } from "./sites";
 import type { PayerId, PayerSummary, Program, Tone } from "./types";
 
-export type EligState = "active" | "lapsed" | "ended" | "not_found";
-export type BenefitState = "covered" | "limited" | "not_covered";
-export type AuthState = "not_required" | "on_file" | "in_progress" | "reviewing" | "retro_open" | "required";
-export type Verdict = "cleared" | "auth_first" | "fix";
+/** "unavailable": the check could not run (Verify is paused in Settings), so nothing is known about coverage. */
+export type EligState = "active" | "lapsed" | "ended" | "not_found" | "unavailable";
+/** "needs_confirmation": the plan answered for coverage but not for this service, so someone has to confirm the benefit. */
+export type BenefitState = "covered" | "limited" | "not_covered" | "needs_confirmation";
+/** "unknown": no rule on file says whether this service needs an authorization. */
+export type AuthState = "not_required" | "on_file" | "in_progress" | "reviewing" | "retro_open" | "required" | "unknown";
+/** "unchecked": the check did not run, so there is no verdict yet. */
+export type Verdict = "cleared" | "auth_first" | "fix" | "unchecked";
 
-export const VERDICT_LABEL: Record<Verdict, string> = { cleared: "Cleared to bill", auth_first: "Authorization first", fix: "Fix before billing" };
-export const VERDICT_TONE: Record<Verdict, Tone> = { cleared: "good", auth_first: "mid", fix: "risk" };
+export const VERDICT_LABEL: Record<Verdict, string> = { cleared: "Cleared to bill", auth_first: "Authorization first", fix: "Fix before billing", unchecked: "Not checked" };
+export const VERDICT_TONE: Record<Verdict, Tone> = { cleared: "good", auth_first: "mid", fix: "risk", unchecked: "neutral" };
 
 /** The words for an authorization state, on the list and on the result. */
 export const AUTH_LABEL: Record<AuthState, { text: string; tone: Tone }> = {
@@ -19,6 +24,7 @@ export const AUTH_LABEL: Record<AuthState, { text: string; tone: Tone }> = {
   reviewing: { text: "Payer reviewing", tone: "neutral" },
   retro_open: { text: "Retro request open", tone: "mid" },
   required: { text: "Required, not on file", tone: "mid" },
+  unknown: { text: "Requirement unknown", tone: "neutral" },
 };
 
 /** When the sample members' coverage began. A coverage that ended, or lapsed, carries its own end date. */
@@ -30,7 +36,7 @@ export function coverageDates(p: Pick<EbPatient, "eligibility" | "dos">): string
   const on = p.eligibility.on ?? "";
   const year = p.dos.slice(-4);
   if (state === "active") return `Effective ${EFFECTIVE_FROM}, no end date`;
-  if (state === "not_found") return null;
+  if (state === "not_found" || state === "unavailable") return null;
   return `Effective ${EFFECTIVE_FROM}, ${state === "lapsed" ? "lapsed" : "ended"} ${on}/${year}`;
 }
 
@@ -69,9 +75,21 @@ export interface EbPatient {
   limit?: { used: number; of: number; unit: "days" | "units" };
   noDayLimit?: boolean;
   inNetwork: boolean;
+  /** The clinic's enrollment with this plan could not be confirmed. `inNetwork` is not known either way. */
+  networkUnresolved?: boolean;
   otherInsurance: boolean;
+  /** The plan now covering the member, when it is not the plan on the case. Coverage with the plan on the case has ended. */
+  payerChanged?: { to: PayerId; since: string };
+  /** The plan matched this person under another member ID (the one it has on file, masked). */
+  idMismatch?: { onFile: string };
   dx?: string;
   dos: string;
+  /** The last day the check covers (mm/dd/yyyy). Without it a check covers the rest of the month of `dos`. */
+  dosTo?: string;
+  /** A check made at no case yet belongs to one site, the one in view when it was made. A case's rows take the case's site (see data/sites.ts). */
+  site?: SiteId;
+  /** When a refresh was tried and the service was unavailable (Verify paused), so the facts here are older than the last try. */
+  refreshFailed?: number;
   checkedAt: number; // demo minutes
   /** A re-check is scheduled this week. Verify runs it on its own when the demo clock reaches `recheckAt`. */
   recheckDue: boolean;
@@ -82,15 +100,16 @@ export interface EbPatient {
 
 /** Cleared: everything passes. Authorization first: only the authorization is missing. Fix: coverage, plan, benefits, network, other insurance or a limit failed. */
 export function verdictOf(p: EbPatient): Verdict {
+  if (p.eligibility.state === "unavailable") return "unchecked";
   const exhausted = !!p.limit && p.limit.used >= p.limit.of;
-  if (p.eligibility.state !== "active" || p.benefits === "not_covered" || !p.inNetwork || p.otherInsurance || exhausted) return "fix";
-  if (p.auth === "required" || p.auth === "in_progress" || p.auth === "reviewing" || p.auth === "retro_open") return "auth_first";
+  if (p.eligibility.state !== "active" || p.benefits === "not_covered" || p.benefits === "needs_confirmation" || !p.inNetwork || p.networkUnresolved || p.otherInsurance || !!p.idMismatch || exhausted) return "fix";
+  if (p.auth === "required" || p.auth === "in_progress" || p.auth === "reviewing" || p.auth === "retro_open" || p.auth === "unknown") return "auth_first";
   return "cleared";
 }
 
-/** Sort: Fix before billing first, then Authorization first, then the oldest check. */
+/** Sort: Fix before billing first, then Authorization first, then checks that did not run, then the oldest check. */
 export function sortPatients(list: EbPatient[]): EbPatient[] {
-  const rank: Record<Verdict, number> = { fix: 0, auth_first: 1, cleared: 2 };
+  const rank: Record<Verdict, number> = { fix: 0, auth_first: 1, unchecked: 2, cleared: 3 };
   return [...list].sort((a, b) => rank[verdictOf(a)] - rank[verdictOf(b)] || a.checkedAt - b.checkedAt);
 }
 
@@ -101,29 +120,37 @@ export interface CheckInput {
   memberId: string;
   dos: string;
 }
-type Findings = Pick<EbPatient, "eligibility" | "benefits" | "auth" | "limit" | "noDayLimit" | "inNetwork" | "otherInsurance">;
+type Findings = Pick<EbPatient, "eligibility" | "benefits" | "auth" | "limit" | "noDayLimit" | "inNetwork" | "networkUnresolved" | "otherInsurance" | "payerChanged" | "idMismatch">;
 
 const NO_AUTH: [PayerId, Program][] = [["beacon", "IOP"], ["beacon", "PHP"]];
 /** The days or units one authorization allows, by level of care. */
 const LIMIT_OF: Record<Program, [number, "days" | "units"]> = { RES: [14, "days"], IOP: [48, "units"], PHP: [15, "days"], WM: [5, "days"] };
 
 /** Member ID endings that script a result. The Verify page's sample chips fill them in, so nothing is hidden. */
-export const TAIL = { lapsed: "1012", notFound: "9999", notCovered: "3030", otherPlan: "6060", limitReached: "9090" } as const;
+export const TAIL = { lapsed: "1012", notFound: "9999", notCovered: "3030", otherPlan: "6060", limitReached: "9090", payerChanged: "7070", idMismatch: "8080", benefitUnconfirmed: "5050", providerUnresolved: "4040", requirementUnknown: "2020" } as const;
+/** The plan a member moved to, for the "payer changed" answer: any other plan than the one on the case. */
+const MOVED_TO = (from: PayerId): PayerId => (from === "cardinal" ? "summit" : "cardinal");
 
 /** What the state and the plan "answer". Scripted so the demo is predictable: a member ID ending 1012 is lapsed, 9999 is not found,
     3030 is a plan that does not cover the service, 6060 has another plan that pays first and 9090 has used every authorized day.
+    7070 moved to another plan on 10/01, 8080 is known to the plan under another member ID, 5050 is a service the plan did not confirm,
+    4040 is a clinic enrollment nobody could confirm and 2020 is a service with no authorization rule on file.
     Evergreen is reached by phone and is not enrolled for detox. */
 export function simulateCheck(i: CheckInput): Findings {
   const tail = i.memberId.replace(/\D/g, "").slice(-4);
   const [of, unit] = LIMIT_OF[i.program];
   const exhausted = tail === TAIL.limitReached;
+  const moved = tail === TAIL.payerChanged;
   return {
-    eligibility: tail === TAIL.lapsed ? { state: "lapsed", on: "10/12" } : tail === TAIL.notFound ? { state: "not_found" } : { state: "active" },
-    benefits: tail === TAIL.notCovered ? "not_covered" : i.payerId === "harborview" && i.program === "PHP" ? "limited" : "covered",
-    auth: exhausted ? "on_file" : tail === TAIL.notCovered || NO_AUTH.some(([p, g]) => p === i.payerId && g === i.program) ? "not_required" : "required",
+    eligibility: tail === TAIL.lapsed ? { state: "lapsed", on: "10/12" } : tail === TAIL.notFound ? { state: "not_found" } : moved ? { state: "ended", on: "09/30" } : { state: "active" },
+    payerChanged: moved ? { to: MOVED_TO(i.payerId), since: "10/01" } : undefined,
+    idMismatch: tail === TAIL.idMismatch ? { onFile: "…5521" } : undefined,
+    benefits: tail === TAIL.notCovered ? "not_covered" : tail === TAIL.benefitUnconfirmed ? "needs_confirmation" : i.payerId === "harborview" && i.program === "PHP" ? "limited" : "covered",
+    auth: tail === TAIL.requirementUnknown ? "unknown" : exhausted ? "on_file" : tail === TAIL.notCovered || NO_AUTH.some(([p, g]) => p === i.payerId && g === i.program) ? "not_required" : "required",
     limit: exhausted ? { used: of, of, unit } : undefined,
     noDayLimit: i.payerId === "summit" && i.program === "RES",
     inNetwork: !(i.payerId === "evergreen" && i.program === "WM"),
+    networkUnresolved: tail === TAIL.providerUnresolved ? true : undefined,
     otherInsurance: tail === TAIL.otherPlan,
   };
 }
@@ -156,7 +183,7 @@ const ROWS: Row[] = [
   R("I-2231", "S.B.", 37, "cardinal", "IOP", 310, "reviewing"),
   /* fix before billing (5) */
   R("R-1101", "K.W.", 26, "summit", "RES", 6, "retro_open", undefined, { eligibility: { state: "lapsed", on: "10/12" }, levelLabel: "Detox → Residential", memberMasked: "…1012" }),
-  R("R-0975", "B.N.", 53, "evergreen", "RES", 180, "on_file", [9, 14, "days"], { eligibility: { state: "ended", on: "09/30" } }),
+  R("R-0975", "B.N.", 53, "evergreen", "RES", 180, "on_file", [9, 14, "days"], { eligibility: { state: "ended", on: "09/30" }, payerChanged: { to: "cardinal", since: "10/01" } }),
   R("R-1118", "A.F.", 42, "beacon", "RES", 50, "not_required", undefined, { benefits: "not_covered", memberMasked: `…${TAIL.notCovered}` }),
   R("I-2275", "E.K.", 27, "summit", "IOP", 120, "required", undefined, { otherInsurance: true, memberMasked: `…${TAIL.otherPlan}` }),
   R("R-0921", "J.D.", 45, "cardinal", "RES", 300, "on_file", [14, 14, "days"], { memberMasked: `…${TAIL.limitReached}` }),

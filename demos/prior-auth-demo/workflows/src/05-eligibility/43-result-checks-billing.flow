@@ -1,10 +1,10 @@
 title: Authorizations › Eligibility & Benefits › Result › Payment checks: authorization to other insurance
 route: /authorizations/eligibility/R-1042
-intro: Rows 4 to 7 of 'Payment checks' (the closed section on the result page), then, where this list is shown in the New case drawer, a last line about what the patient pays. On the result page the cost share is under Benefits in the summary instead. Authorization is the only row that can turn the verdict amber. The others turn it red.
+intro: Rows 4 to 7 of 'Payment checks' (in the side panel 'Verification details' on the result page), then, where this list is shown in the New case drawer, a last line about what the patient pays. On the result page the cost share is under Benefits in the summary instead. Authorization is the only row that can turn the verdict amber. The others turn it red.
 dir: TD
 also: Demo only: 'Limit reached' has a seeded patient (R-0921) and 'Another plan pays first' has one (I-2275). Both have a chip under 'Try a sample' on Verify.
 ---
-start s1 "Result page, section 'Payment checks' opened, rows 4 to 7"
+start s1 "Result page, side panel opened, 'Payment checks', rows 4 to 7"
 decision q9 "Was coverage found?"
 endx x9 "Coverage not found\nRows 2 to 7 and any cost line are not shown\nOne grey row says nothing else could be checked"
 
@@ -16,12 +16,14 @@ group gA "Row 4 · Authorization"
   process a4 "Chip 'Under review' (amber)\n'Required. A request is with Cardinal and under review'"
   process a5 "Chip 'Retro request open' (amber)\n'A retro-authorization request is open. It covers days already delivered'"
   process a6 "Chip 'Required' (amber)\n'Required before the first day. Not on file yet. Start an authorization'"
+  process a7 "Chip 'Unknown' (grey)\n'No rule on file says whether Beacon requires one for residential 3.5. Check with Beacon. Nothing was assumed'\nThe check could not run, so it is not counted as a failure"
 endgroup
 
 group gB "Row 5 · Can the clinic bill?"
   decision b0 "Is the clinic enrolled with this payer for this level of care?"
   process b1 "Title 'The clinic can bill', chip 'In network' (green)\n'The clinic is enrolled and in network with Summit for residential 3.5'"
   process b2 "Title 'The clinic cannot bill yet', chip 'Not enrolled' (red)\n'Claims would be rejected. Navigator can start the enrollment.'"
+  process b3 "Title 'The clinic's enrollment is not confirmed', chip 'Not confirmed' (amber)\n'Navigator can check the enrollment record'"
 endgroup
 
 group gC "Row 6 · Limits"
@@ -54,8 +56,10 @@ a0 -->|Being drafted| a3 --> b0
 a0 -->|With the payer| a4 --> b0
 a0 -->|Retro request| a5 --> b0
 a0 -->|Required, not started| a6 --> b0
+a0 -->|No rule on file| a7 --> b0
 b0 -->|Yes| b1 --> c0
 b0 -->|No| b2 --> c0
+b0 -->|Could not confirm| b3 --> c0
 c0 -->|Limit, room left| c1 --> d0
 c0 -->|Limit, none left| c2 --> d0
 c0 -->|No limit| c3 --> d0

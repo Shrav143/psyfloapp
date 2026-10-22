@@ -54,6 +54,23 @@ const SECTIONS: { title: string; keys: RowKey[] }[] = [
 
 /** Nothing was found at all, as opposed to something found that is wrong. */
 const NOTHING_FOUND: CheckKey[] = ["signature", "components", "urgent", "contact"];
+const nothingFound = (r: Referral, key: CheckKey): boolean => NOTHING_FOUND.includes(key) || (key === "diagnosis" && r.plan.dx.length === 0);
+
+/** What the Incoming referrals list says about one referral. "missing" counts only what Reader found nothing for (a signature, a diagnosis, an insurance);
+    "review" counts what it found and doubts (an expired order, a lapsed plan). It is the same count the checklist shows as items still to check. */
+export interface IntakeStatus {
+  kind: "waiting" | "complete" | "missing" | "review";
+  n: number;
+}
+export function intakeStatus(r: Referral): IntakeStatus {
+  if (r.status === "awaiting_info") return { kind: "waiting", n: toCheck(r) };
+  const open = unresolved(r);
+  const missing = open.filter((c) => nothingFound(r, c.key)).length + (r.payerId === null ? 1 : 0);
+  const review = open.length - open.filter((c) => nothingFound(r, c.key)).length + (coverageProblem(r) ? 1 : 0);
+  if (missing > 0) return { kind: "missing", n: missing };
+  if (review > 0) return { kind: "review", n: review };
+  return { kind: "complete", n: 0 };
+}
 
 const base = (id: string, label: string, state: BoxState, detail: string): ChecklistRow => ({ id, label, state, detail, ask: null, markable: null, waiting: false, optional: false });
 
@@ -111,7 +128,7 @@ function checkRow(c: Ctx, check: ReferralCheck): ChecklistRow {
   if (check.resolved?.how === "reply") return { ...row, detail: `Resolved by the referrer's reply. ${evidence}` };
   if (check.state === "pass") return { ...row, detail: evidence };
   const waiting = isWaiting(c.r, check);
-  const nothing = NOTHING_FOUND.includes(key) || (key === "diagnosis" && c.r.plan.dx.length === 0);
+  const nothing = nothingFound(c.r, key);
   return { ...row, state: nothing ? "missing" : "warn", detail: waiting ? waitingText(c) : check.detail, ask: check.state === "fail" ? null : key, markable: key, waiting };
 }
 

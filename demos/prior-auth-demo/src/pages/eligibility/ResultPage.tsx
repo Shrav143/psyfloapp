@@ -1,46 +1,46 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { FolderOpen, PauseCircle, Phone, RefreshCw, ScanText, SearchX, ShieldPlus } from "lucide-react";
+import { FilePlus2, FolderOpen, PauseCircle, Phone, RefreshCw, ScanText, SearchX, Settings, ShieldPlus, PanelRightOpen } from "lucide-react";
+import { OutOfSite } from "@/components/layout/OutOfSite";
 import { Banner, Button, Card, EmptyState, Page, PageHeader } from "@/components/ui";
-import { needsCaller, type EbPatient } from "@/data/eligibility";
+import { needsCaller } from "@/data/eligibility";
 import type { DocItem, Rule } from "@/data/payerConfig";
 import { planInfo } from "@/data/payerConfigPlan";
 import { payerById } from "@/data/seed";
 import { PROGRAM_LABEL } from "@/data/types";
+import { dosRangeText } from "@/data/verification";
 import { ago, clockTime, stamp, toDate } from "@/lib/time";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
+import { verificationInView } from "@/store/eligibility";
 import { selectPayerDocs, selectPayerRules } from "@/store/payerConfig";
 import { buildResult } from "./checks";
 import { patientLabel } from "./chips";
 import { BackLinks, useOrigin } from "./origin";
 import { autoState, DUE_AT, NOT_RECHECKED, RE_CHECKED } from "./recheck";
-import { ResultDetails } from "./ResultDetails";
+import { checksSummary } from "./ResultDetails";
 import { ResultSummary, type Fact } from "./ResultSummary";
-
-/** Start authorization opens New case with the payer, member and program already filled in. */
-function startAuthorizationPath(p: EbPatient): string {
-  const q = new URLSearchParams({ payer: p.payerId, program: p.program, member: p.memberMasked });
-  if (p.initials) q.set("initials", p.initials);
-  if (p.age) q.set("age", String(p.age));
-  return `${paths.newCase()}?${q.toString()}`;
-}
+import { VerificationDetailsPanel } from "./VerificationDetailsPanel";
+import { ExceptionList } from "./VerificationSummary";
 
 /* A stable empty list for a payer with no saved configuration, so the selectors below never return a new array on each render. */
 const NO_RULES: Rule[] = [];
 const NO_DOCS: DocItem[] = [];
 
-/** One result: the verdict, eligibility, benefits and what the service needs first; the seven checks and the agents' answers behind a click. */
+/** One result: the verdict, eligibility, benefits and what the service needs first, then the warnings; the payment checks and the agents' answers are in a side panel. */
 export default function ResultPage() {
   const { id = "" } = useParams();
   const nav = useNavigate();
-  const patient = useStore((s) => s.ebPatients.find((p) => p.id === id));
+  const rec = useStore((s) => s.verifications[id]);
+  const inView = useStore((s) => (s.verifications[id] ? verificationInView(s, s.verifications[id]) : false));
   const hasRequest = useStore((s) => s.requests.some((r) => r.id === id));
   const busy = useStore((s) => s.ebRechecking.includes(id));
-  const recheck = useStore((s) => s.ebRecheck);
+  const refresh = useStore((s) => s.refreshVerification);
   const toast = useStore((s) => s.toast);
   const clock = useStore((s) => s.clock);
   const paused = useStore((s) => s.agentPaused.verify);
+  const [panel, setPanel] = useState(false);
+  const patient = rec?.row;
   const payerId = patient?.payerId ?? "";
   const program = patient?.program ?? "RES";
   const rules = useStore((s) => (s.payerConfig[payerId] ? selectPayerRules(s, payerId) : NO_RULES));
@@ -48,7 +48,7 @@ export default function ResultPage() {
   const origin = useOrigin();
   const result = useMemo(() => (patient ? buildResult(patient) : null), [patient]);
 
-  if (!patient || !result) {
+  if (!rec || !patient || !result) {
     return (
       <Page>
         <PageHeader title="Coverage check" sub="That check is not in the list." />
@@ -60,6 +60,7 @@ export default function ResultPage() {
       </Page>
     );
   }
+  if (!inView) return <OutOfSite id={id} what="coverage check" />;
 
   const payer = payerById(patient.payerId);
   const v = result.verdict;
@@ -68,7 +69,7 @@ export default function ResultPage() {
   const checkedClock = clockTime(toDate(patient.checkedAt));
   /* The time checked is on the demo clock. A re-check still to come is said here too, because it is the one thing a person may wait for. */
   const checkedText = auto?.kind === "done" ? RE_CHECKED(auto.at) : live ? `${checkedClock}, live` : `${stamp(patient.checkedAt)}, ${ago(patient.checkedAt, clock)}`;
-  const timeChecked = auto && auto.kind !== "done" ? `${checkedText}. ${DUE_AT(auto.at)}` : checkedText;
+  const timeChecked = patient.eligibility.state === "unavailable" ? "Not checked" : auto && auto.kind !== "done" ? `${checkedText}. ${DUE_AT(auto.at)}` : checkedText;
   const next = auto && auto.kind !== "done" ? [auto.kind === "paused" ? `${DUE_AT(auto.at)}, waiting for Verify to be resumed` : `${DUE_AT(auto.at)}, done by Verify on its own`, ...result.next] : result.next;
   const state = patient.eligibility.state;
   const plan = planInfo(payer);
@@ -77,7 +78,7 @@ export default function ResultPage() {
     { label: "Payer", value: `${payer.name} (${payer.group})` },
     ...(plan ? [{ label: "Plan type and routing", value: `${plan.label}. ${plan.routing}` }] : []),
     { label: "Member", value: patient.memberMasked },
-    { label: "Date of service", value: patient.dos },
+    { label: "Dates of service", value: dosRangeText(patient) },
     { label: "Time checked", value: timeChecked },
     { label: "Source", value: needsCaller(patient.payerId) ? "Simulated check, confirmed by phone" : "Simulated check against the payer portal" },
   ];
@@ -85,12 +86,15 @@ export default function ResultPage() {
   const actions = (
     <>
       {v === "auth_first" ? (
-        <Button variant="primary" icon={ShieldPlus} onClick={() => nav(startAuthorizationPath(patient))}>
+        <Button variant="primary" icon={ShieldPlus} onClick={() => nav(paths.newCase({ verification: id, type: "initial" }))}>
           Start authorization
         </Button>
       ) : null}
+      <Button variant="outline" icon={FilePlus2} onClick={() => nav(paths.newCase({ verification: id }))}>
+        Create authorization from verification
+      </Button>
       {hasRequest ? (
-        <Button variant={v === "auth_first" ? "outline" : "primary"} icon={FolderOpen} onClick={() => nav(paths.case(id))}>
+        <Button variant="outline" icon={FolderOpen} onClick={() => nav(paths.case(id))}>
           Open case
         </Button>
       ) : !id.startsWith("V-") ? (
@@ -108,7 +112,12 @@ export default function ResultPage() {
           Ask Caller to phone the payer
         </Button>
       ) : null}
-      <Button icon={RefreshCw} loading={busy} onClick={() => recheck(id)}>
+      {state === "unavailable" ? (
+        <Button icon={Settings} onClick={() => nav(paths.settings())}>
+          Open Settings
+        </Button>
+      ) : null}
+      <Button icon={RefreshCw} loading={busy} onClick={() => refresh(id)}>
         Check again
       </Button>
     </>
@@ -118,13 +127,22 @@ export default function ResultPage() {
     <Page>
       <BackLinks back={origin.back} />
       <PageHeader title={result.headline} sub={`${patient.id} · ${patientLabel(patient)} · ${patient.levelLabel ?? PROGRAM_LABEL[patient.program]}`} />
-      <ResultSummary verdict={v} result={result} actions={actions} payer={payer} program={patient.program} rules={rules} docs={docs} facts={facts} />
+      <ResultSummary verdict={v} result={result} actions={actions} payer={payer} program={patient.program} rules={rules} docs={docs} facts={facts} warnings={rec.exceptions.length ? <ExceptionList record={rec} /> : undefined} />
       {auto?.kind === "paused" ? (
         <Banner tone="mid" icon={PauseCircle} title={NOT_RECHECKED}>
           The re-check was due {stamp(auto.at)}. It runs as soon as Verify is resumed.
         </Banner>
       ) : null}
-      <ResultDetails result={result} nextLines={next} />
+      <section aria-label="More about this check" className="flex flex-wrap items-center justify-between gap-4 rounded-[20px] border border-edge bg-white px-6 py-4">
+        <div className="min-w-[240px] flex-1">
+          <h2 className="font-serif text-[19px] font-semibold leading-tight">Payment checks and how this was checked</h2>
+          <p className="mt-[3px] text-[13.5px] text-muted">{checksSummary(result)}</p>
+        </div>
+        <Button icon={PanelRightOpen} onClick={() => setPanel(true)}>
+          View full verification details
+        </Button>
+      </section>
+      <VerificationDetailsPanel record={rec} open={panel} onClose={() => setPanel(false)} />
     </Page>
   );
 }

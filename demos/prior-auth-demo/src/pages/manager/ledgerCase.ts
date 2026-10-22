@@ -2,7 +2,7 @@ import { AGENTS } from "@/data/agents";
 import type { ClockKind } from "@/data/manager";
 import { WEEK_END, reviewStamp, type Review } from "@/data/managerReviews";
 import { payerById } from "@/data/seed";
-import type { RequestEvent } from "@/data/types";
+import type { PsyRequest, RequestEvent } from "@/data/types";
 import { DAY, HOUR } from "@/lib/time";
 import { unitCount, unitsPerDay } from "./helpers";
 import type { LedgerRow } from "./ledgerRows";
@@ -79,4 +79,11 @@ export function caseHistory(c: LedgerRow, r: ReturnType<typeof reviewsOf>, clock
   if (r.due) out.push(at("due", r.due.dueAt, "system", `Review ${r.due.reviewNo} is due`, r.due.dueAt <= clock));
   else if (!r.next && EVENT[c.clockKind]) out.push(at("clock", c.dueAt, "system", EVENT[c.clockKind] ?? "", c.dueAt <= clock));
   return out;
+}
+
+/** The newest lines of a case's history, for the quick view. A case that is also a request uses the request's own events (the Dashboard shows the same); any other case uses the ledger history above. Only what has happened. */
+export function latestHistory(c: LedgerRow, requests: PsyRequest[], r: ReturnType<typeof reviewsOf>, clock: number, n = 3): RequestEvent[] {
+  const req = requests.find((x) => x.id === c.id) ?? requests.find((x) => x.caseId === c.caseId);
+  const events = req?.events.length ? req.events : caseHistory(c, r, clock);
+  return events.filter((e) => e.done).sort((a, b) => b.at - a.at).slice(0, n);
 }

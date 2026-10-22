@@ -1,10 +1,10 @@
 title: Denial Intelligence › Your options
 route: /denials?id=D-3318
-intro: The 'Your options' card, under the next-step block: three next steps as radio cards, how each chance is worked out, which card carries 'Recommended', and when the card has a button of its own.
+intro: 'Your options' is one short row under the next-step block: the three routes, their chances and which one is recommended. 'Compare the options' opens a right-hand panel with the three radio cards, what each needs, and the button for the route picked. How each chance is worked out and which route is recommended are the same as before; the recommended route's own button stays in the next-step block, so the main path has no extra click.
 dir: TD
 ---
 start s1 "A denial that is not filed, accepted or closed is on screen"
-screen sc1 "'Your options'\n'Chance of overturning, from 312 similar Cardinal decisions'\nThree radio cards, then a button only when one is needed"
+screen sc1 "'Your options' card, one short row\n'Chance of overturning, from 312 similar Cardinal decisions'\nPeer-to-peer call 64% · likely 55–72% · 5 to 7 days regained, with 'Recommended'\nWritten appeal 58% · likely 49–66%\nAccept 7 days and plan the step-down: Nothing regained\nButton 'Compare the options' in the header"
 process p0 "Subtitle reads ', a benchmark estimate' instead when fewer than 60 similar decisions"
 
 process p1 "Starting point: the denial's win chance (55 when none is set)"
@@ -13,35 +13,32 @@ process v1 "'Worth challenging'\n50 and over"
 process v2 "'Borderline'\n35 to 49"
 process v3 "'Probably accept'\nunder 35"
 process p2 "Seed denials sit between 27 and 64\nD-3306 (27%) reads 'Probably accept' and recommends 'Accept' at the start"
+process p2b "Peer-to-peer chance = the win chance\nWritten appeal = win chance minus 6, never under 5\nAccept has no chance, only 'Nothing regained'\nEach chance reads 'likely 55–72%' (9 below to 8 above)"
 
-screen o1 "Card 'Peer-to-peer call'\n'30 to 45 minutes of clinician time · 5 to 7 days regained'\nChance = the win chance"
-screen o2 "Card 'Written appeal'\n'60 days to file · 5 to 7 days regained'\nChance = win chance minus 6, never under 5"
-screen o3 "Card 'Accept the decision and plan the next step'\n'Accept 7 days and plan the step-down' on a partial approval\n'Fastest. Nothing regained.' No chance shown\nNeeds: a reason for the record, Analytics logs the denial as accepted, Case Manager adds a step-down plan"
-process p3 "Each chance reads 'likely 55–72%' (9 below to 8 above) and '312 similar decisions' or 'Benchmark estimate'"
-process p4 "Each card ends with 'Needs: ...' (who, what, and the evidence that would be attached)"
-
-decision r1 "Which card is 'Recommended'?\n(the route of the recommended next step; none for 'Investigate by hand')"
-screen rec1 "'Accept...' card gets the green 'Recommended' pill"
-screen rec2 "'Written appeal' gets the pill"
-screen rec3 "'Peer-to-peer call' gets the pill"
-process p5 "That card is selected when the page opens\nIts button is the primary button of the next-step block, so the card shows no second one"
+decision r1 "Which route is 'Recommended'?\n(the route of the recommended next step; none for 'Investigate by hand')"
+process rec1 "Verdict is 'Probably accept': Accept"
+process rec2 "Deadline is to file or resubmit, window closed, or 'Late notice': Written appeal"
+process rec3 "Anything else: Peer-to-peer call"
 goto g0 "Continues in: Denial Intelligence › A denial opened › Recommended next step"
 
+click c0 "Click 'Compare the options'\n(a button: Enter or Space)"
+overlay ov "Right-hand panel 'Your options'\nSubtitle 'D-3318. Chance of overturning, from 312 similar Cardinal decisions'\nThree radio cards, each with its summary, chance, 'Likely 55–72%', similar decisions or 'Benchmark estimate', and 'Needs: ...'\nThe recommended route is selected and carries 'Recommended'"
+process pf "Focus goes to the selected card\nTab stays inside the panel"
 click c1 "Click a card (it is a radio button)"
 decision d2 "Is it 'Peer-to-peer call' and the call window has closed?"
 toast t1 "'The peer-to-peer window has closed'\n'A written appeal is still open.'"
-decision d5 "Is it the route the next-step block already has a button for?"
-process p6 "Card is selected\nIf the block above has no button for it, a button appears under the cards with the matching label"
-process p8 "No second button: the one above does the same"
-screen b1 "Button under the cards (only for another route)\n'Choose a time and prepare the brief', 'Draft the appeal letter' or 'Accept the decision and plan the step-down'"
+process p6 "Card is selected\nFooter button matches it: 'Choose a time and prepare the brief', 'Draft the appeal letter' or 'Accept the decision and plan the step-down'"
 toast t2 "'A call is already booked. Choosing again changes it.' (when the chip is 'Call booked')"
-click c2 "Click the button"
+click c2 "Click the footer button"
+process p9 "Panel closes\nThe confirm dialog for that route opens"
 decision d3 "Which card is selected?"
 decision d4 "Is the chip already 'Appeal drafting'?"
 goto g1 "Continues in: Denial Intelligence › Peer-to-peer › Book the call"
 goto g2 "Continues in: Denial Intelligence › Written appeal › Confirm and draft"
 goto g3 "Continues in: Denial Intelligence › Accept the denial"
-process p7 "Selection resets to the recommended card whenever the chip changes"
+click cx "Press Escape, click X or the dimmed area"
+process px "Panel closes, nothing is chosen\nFocus returns to 'Compare the options'"
+process pn "No card is selected for 'Investigate by hand'\nThe footer says 'Pick a route to go on. Nothing is sent until a clinician signs.'"
 
 s1 --> sc1 --> p0
 sc1 --> p1 --> d1
@@ -51,27 +48,24 @@ d1 -->|Under 35| v3
 v1 --> p2
 v2 --> p2
 v3 --> p2
-sc1 --> o1 --> o2 --> o3
-o3 --> p3 --> p4
-p4 --> r1
-r1 -->|Verdict is 'Probably accept'| rec1
-r1 -->|Deadline is to file or resubmit, window closed, or 'Late notice'| rec2
+p2 --> p2b --> r1
+r1 -->|Verdict is Probably accept| rec1
+r1 -->|Clock is to file or window closed| rec2
 r1 -->|Anything else| rec3
-rec1 --> p5
-rec2 --> p5
-rec3 --> p5
-p5 --> c1
+rec1 --> c0
+rec2 --> c0
+rec3 --> c0
+rec3 -.-> g0
+sc1 --> c0 --> ov --> pf --> c1
+ov -.-> pn
 c1 --> d2
 d2 -->|Yes| t1
-d2 -->|No| d5
-d5 -->|No| p6 --> b1
-d5 -->|Yes| p8
-p5 -.-> g0
-b1 -.-> t2
-b1 --> c2 --> d3
+d2 -->|No| p6
+p6 -.-> t2
+p6 --> c2 --> p9 --> d3
 d3 -->|Peer-to-peer call| g1
 d3 -->|Written appeal| d4
 d4 -->|Yes: drawer opens at once| g2
 d4 -->|No: confirm first| g2
 d3 -->|Accept| g3
-c1 -.-> p7
+ov --> cx --> px

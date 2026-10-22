@@ -1,0 +1,48 @@
+title: Authorizations › Queue › Sites: what each viewer sees
+route: /authorizations
+intro: How the queue follows the viewer and the site switch in the top bar. Every row, band, figure, the sidebar badge and the payer-signal count are worked out from the requests at the sites in view, so Site A plus Site B is Both sites. A viewer who may see one site never sees, counts, searches or links to the other site's requests.
+dir: TD
+also: Demo only: the site of a request is fixed by the demo (the case ID decides, see src/data/sites.ts) and the viewer is chosen in the Demo menu under 'Viewing as'. A fresh load always starts as Jordan Perez on Both sites. In today's demo data the 56 open requests are 36 at Site A and 20 at Site B.
+---
+start s1 "Open the queue"
+start s2 "Demo menu › 'Viewing as' › pick a viewer"
+screen q "Authorizations queue"
+decision dV "How many sites may the viewer see?"
+process v1 "Two: Jordan Perez (UR coordinator) or Alex Morgan (clinic owner)"
+process v2 "One: Dr. Rivera sees Site A only, Sam Okafor sees Site B only"
+screen sw "Top bar switch\n'Both sites', 'Site A', 'Site B'"
+screen lk "Top bar shows a locked 'Site A only' (or 'Site B only')\nThere is no 'Both sites' to pick"
+click c1 "Click 'Both sites', 'Site A' or 'Site B'"
+store sc "The sites in view are kept for the session\nA new viewer starts on their only site, or on Both sites"
+
+process p1 "The page keeps only the open requests at the sites in view\nEverything below is worked out from them"
+screen h1 "Header names the site when one site is in view\n'12 of 36 open requests at Site A need action today.'\nBoth sites: no site in the header"
+screen bd "Band cards and their counts, the rows, the four figures\nthe average approval chance and 'next due in ...'"
+process sb "Sidebar badge on 'Authorizations'\nAct now plus Due within 24 hours at the sites in view"
+process sg "Payer signal\nCounts the affected requests in view\nOne affected: 'Review it'. Site A has one, Site B three"
+process fl "Search, every filter, the figures and ?quick= reach only requests in view\nA request at the other site is not found, not counted and does not open"
+doc eq "Totals: Both sites = Site A + Site B\nOpen, Act now, Due within 24 hours, Due this week, Waiting on you, the badge and the signal count all add up\n(An average does not add: it is worked out again)"
+
+click l1 "Open a request at the other site by its address\n/authorizations/case/ID"
+goto g1 "Continues in: Authorizations › Case page › A case at another site"
+goto g2 "Continues in: Authorizations › Queue › Open the queue and read the top"
+goto g3 "Continues in: Authorizations › Queue › Quick view panel"
+
+s1 --> q
+s2 --> sc
+q --> dV
+dV -->|Two| v1 --> sw --> c1 --> sc
+dV -->|One| v2 --> lk
+sc --> p1
+lk --> p1
+p1 --> h1
+p1 --> bd
+p1 --> sb
+p1 --> sg
+p1 --> fl
+bd -.-> eq
+sb -.-> eq
+sg -.-> eq
+fl --> l1 --> g1
+h1 --> g2
+fl --> g3

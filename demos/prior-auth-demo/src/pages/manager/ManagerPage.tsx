@@ -1,11 +1,14 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { PenLine, Plus, Wand2 } from "lucide-react";
 import { Button, Dropdown, Page, PageHeader, SearchInput, Segmented } from "@/components/ui";
+import { SiteTag } from "@/components/layout/SiteTag";
 import { inWeek, isClean } from "@/data/managerReviews";
 import { plural } from "@/lib/format";
+import { useScope } from "@/lib/scope";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
+import { CaseQuickView } from "./CaseQuickView";
 import { LedgerView } from "./LedgerView";
 import { useLedgerRows } from "./ledgerRows";
 import { PreparingCard } from "./PreparingCard";
@@ -13,7 +16,8 @@ import { ReviewDrawer } from "./ReviewDrawer";
 import { ReviewsView } from "./ReviewsView";
 import { SignDialog } from "./SignDialog";
 import { StepDownCard } from "./StepDownCard";
-import { LEVEL_OPTIONS, NO_FILTERS, PAYER_FILTER_OPTIONS, REVIEW_STATUS_OPTIONS, STATUS_OPTIONS, hasAnyFilter, type ManagerFilters } from "./helpers";
+import { useDraftReviews } from "./useDraftReviews";
+import { LEVEL_OPTIONS, NO_FILTERS, PAYER_FILTER_OPTIONS, REVIEW_STATUS_OPTIONS, SHOW_LABEL, STATUS_OPTIONS, hasAnyFilter, showOf, type ManagerFilters } from "./helpers";
 
 type Tab = "cases" | "reviews";
 
@@ -22,17 +26,23 @@ export default function ManagerPage() {
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const tab: Tab = params.get("tab") === "reviews" ? "reviews" : "cases";
-  const [filters, setFilters] = useState<ManagerFilters>(NO_FILTERS);
+  const [filters, setFilters] = useState<ManagerFilters>(() => ({ ...NO_FILTERS, show: showOf(params.get("show")) }));
   const [openId, setOpenId] = useState<string | null>(null);
+  const [quickId, setQuickId] = useState<string | null>(null);
+  const quickFrom = useRef<HTMLElement | null>(null);
   const [signAll, setSignAll] = useState(false);
-  const [drafting, setDrafting] = useState(false);
+  const { drafting, draft: draftAll } = useDraftReviews();
 
+  const scope = useScope();
   const ledger = useLedgerRows();
   const paused = useStore((s) => s.agentPaused.cadence);
-  const preparing = useStore((s) => s.caseDrafts.filter((d) => d.saved && !d.sent).length);
+  const drafts = useStore((s) => s.caseDrafts);
+  const preparing = useMemo(() => drafts.filter((d) => d.saved && !d.sent && scope.sites.includes(d.site)).length, [drafts, scope.sites]);
   const all = useStore((s) => s.reviews);
-  const reviews = useMemo(() => all.filter(inWeek), [all]);
-  const review = all.find((r) => r.id === openId);
+  const visibleReviews = useMemo(() => scope.filter(all, (r) => r.caseId), [all, scope]);
+  const reviews = useMemo(() => visibleReviews.filter(inWeek), [visibleReviews]);
+  const review = visibleReviews.find((r) => r.id === openId);
+  const quick = ledger.find((c) => c.id === quickId);
   const clean = reviews.filter(isClean);
   const flagged = reviews.filter((r) => r.status === "drafted" && !isClean(r)).length;
   const needs = reviews.filter((r) => r.status === "needs_update").length;
@@ -47,33 +57,23 @@ export default function ManagerPage() {
   }, [linked, setParams]);
 
   const set = <K extends keyof ManagerFilters>(k: K, v: ManagerFilters[K]) => setFilters((f) => ({ ...f, [k]: v }));
-  const clear = () => setFilters(NO_FILTERS);
-  const setTab = (t: Tab) => setParams((p) => { const n = new URLSearchParams(p); n.set("tab", t); return n; }, { replace: true });
-
-  /** Cadence drafts every due review with no draft. A paused Cadence says so at once and does nothing. */
-  const draftAll = () => {
-    if (useStore.getState().agentPaused.cadence) {
-      useStore.getState().draftDueReviews();
-      return;
-    }
-    setDrafting(true);
-    setTimeout(() => {
-      useStore.getState().draftDueReviews();
-      setDrafting(false);
-    }, 1300);
+  const clear = () => {
+    setFilters(NO_FILTERS);
+    if (params.has("show")) setParams((p) => { const n = new URLSearchParams(p); n.delete("show"); return n; }, { replace: true });
   };
+  const setTab = (t: Tab) => setParams((p) => { const n = new URLSearchParams(p); n.set("tab", t); return n; }, { replace: true });
 
   return (
     <Page>
       {tab === "cases" ? (
         <PageHeader
-          title={`${plural(ledger.length, "active case")}.`}
+          title={<>{plural(ledger.length, "active case")}.<SiteTag /></>}
           sub={`${preparing} ${preparing === 1 ? "is" : "are"} still being prepared. Units, clocks and status for every case, across every level of care.`}
           actions={<Button variant="primary" icon={Plus} onClick={() => navigate(paths.newCase())}>New case</Button>}
         />
       ) : (
         <PageHeader
-          title={`${plural(reviews.length, "clinical review")} due this week.`}
+          title={<>{plural(reviews.length, "clinical review")} due this week.<SiteTag /></>}
           sub="Agents draft each review ahead of time. You update only what they ask about."
           actions={
             <>
@@ -93,6 +93,7 @@ export default function ManagerPage() {
         ) : (
           <Dropdown ariaLabel="Review status" value={filters.reviewStatus} defaultValue="all" options={REVIEW_STATUS_OPTIONS} onChange={(v) => set("reviewStatus", v)} />
         )}
+        {tab === "cases" && filters.show !== "all" ? <span className="text-sm text-muted">Showing {SHOW_LABEL[filters.show]}</span> : null}
         {hasAnyFilter(filters, tab) ? <Button variant="ghost" size="sm" onClick={clear}>Clear filters</Button> : null}
         <Segmented
           className="ml-auto"
@@ -109,12 +110,13 @@ export default function ManagerPage() {
         <>
           <PreparingCard filters={filters} onClear={clear} />
           <StepDownCard filters={filters} />
-          <LedgerView ledger={ledger} filters={filters} onStatus={(s) => set("status", s)} onClear={clear} />
+          <LedgerView ledger={ledger} filters={filters} onStatus={(s) => set("status", s)} onClear={clear} onQuick={(id, from) => { quickFrom.current = from; setQuickId(id); }} />
         </>
       ) : (
         <ReviewsView filters={filters} onOpen={setOpenId} onClear={clear} />
       )}
 
+      {quick ? <CaseQuickView key={quick.id} row={quick} from={quickFrom} onClose={() => setQuickId(null)} onOpenReview={setOpenId} /> : null}
       {review ? <ReviewDrawer key={review.id} review={review} onClose={() => setOpenId(null)} /> : null}
       {signAll ? (
         <SignDialog

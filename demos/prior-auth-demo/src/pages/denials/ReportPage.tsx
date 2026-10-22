@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { ArrowLeft, Check, Copy, FileDown, Printer, RefreshCw, SearchX } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { Button, Card, Crumbs, EmptyState, Page } from "@/components/ui";
+import { OutOfSite } from "@/components/layout/OutOfSite";
 import { blockedInHosted } from "@/lib/hosted";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
@@ -9,6 +10,7 @@ import { buildReport } from "./lib/report";
 import { reportToText } from "./lib/reportText";
 import { useCopy } from "./lib/useCopy";
 import { useDenialView } from "./lib/useDenialView";
+import { useOutOfSite } from "./lib/useOutOfSite";
 import { ReportGenerating } from "./ReportGenerating";
 import { ReportView } from "./ReportView";
 
@@ -28,6 +30,7 @@ const PRINT_CSS = `@media print {
 export default function ReportPage() {
   const { id } = useParams();
   const view = useDenialView(id);
+  const outside = useOutOfSite(id);
   const reportAt = useStore((s) => (id ? s.denialReportAt[id] : undefined));
   const markReport = useStore((s) => s.markReport);
   const clearReport = useStore((s) => s.clearReport);
@@ -36,6 +39,7 @@ export default function ReportPage() {
   const [saving, setSaving] = useState(false);
   const doc = useMemo(() => (view ? buildReport(view, reportAt) : undefined), [view, reportAt]);
 
+  if (outside) return <Page><OutOfSite id={outside.caseId} what="report" /></Page>;
   if (!view || !doc || !id)
     return (
       <Page>

@@ -1,8 +1,10 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Chip, Disclosure, IdLink } from "@/components/ui";
+import { siteOfDenial } from "@/data/denials";
 import { PAYERS } from "@/data/seed";
 import { PROGRAM_LABEL, type PayerSummary, type Program } from "@/data/types";
+import { useScope } from "@/lib/scope";
 import { shortDate } from "@/lib/time";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
@@ -30,8 +32,10 @@ function fits(p: Plan, f: ManagerFilters): boolean {
 /** One plan for each denial the team accepted in Denial Intelligence: the next level of care still has to be chosen and booked. */
 export function StepDownCard({ filters }: { filters: ManagerFilters }) {
   const nav = useNavigate();
+  const scope = useScope();
   const accepted = useStore((s) => s.deniesAccepted);
   const requests = useStore((s) => s.requests);
+  const meta = useStore((s) => s.denialMeta);
 
   const plans = useMemo(
     () =>
@@ -40,8 +44,8 @@ export function StepDownCard({ filters }: { filters: ManagerFilters }) {
           const r = requests.find((x) => x.id === a.denialId) ?? requests.find((x) => x.id === a.requestId);
           return { key: a.id, denialId: a.denialId, caseId: r?.caseId ?? a.requestId ?? a.denialId, at: a.at, initials: r?.patient.initials, age: r?.patient.age, program: r?.program, payer: PAYERS.find((x) => x.id === (r?.payerId ?? a.payerId)) };
         })
-        .filter((p) => fits(p, filters)),
-    [accepted, requests, filters],
+        .filter((p) => scope.sites.includes(siteOfDenial(meta[p.denialId], p.caseId)) && fits(p, filters)),
+    [accepted, requests, meta, scope.sites, filters],
   );
   if (!plans.length) return null;
 

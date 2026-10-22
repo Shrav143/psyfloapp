@@ -1,6 +1,6 @@
 title: Case Manager › Active cases › Step-down plans from accepted denials
 route: /manager
-intro: When the clinic accepts a denial in Denial Intelligence, Active cases gets a 'Step-down plan' for it, in a folded row between 'Being prepared' and the tracker. The row is there only while at least one plan exists. Each plan names the case, the denial it came from and one button that opens the case.
+intro: When the clinic accepts a denial in Denial Intelligence, Active cases gets a 'Step-down plan' for it, in a folded row between 'Being prepared' and the tracker. The row is there only while at least one plan exists at a site in view: a plan follows the site of the denial it came from, so a one-site viewer never sees the other site's. Each plan names the case, the denial it came from and one button that opens the case.
 dir: TD
 also: Reset demo data clears the plans. Denial Intelligence's 'Plan the step-down' link and its 'Denial closed' notification open Active cases.
 ---

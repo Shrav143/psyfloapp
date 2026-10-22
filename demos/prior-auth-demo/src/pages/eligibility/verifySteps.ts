@@ -20,8 +20,9 @@ export interface VerifyForm {
   cardName: string | null;
 }
 
-/** The ordered questions of one live check, about 10 seconds. Caller joins only when the plan's system does not answer (Evergreen). */
-export function verifySteps(f: VerifyForm): VerifyStep[] {
+/** The ordered questions of one live check, about 10 seconds. Caller joins only when the plan's system does not answer (Evergreen).
+    While Verify is paused in Settings nothing is asked: the check still runs through its steps and says so on each. */
+export function verifySteps(f: VerifyForm, paused = false): VerifyStep[] {
   /* Before a payer is chosen the card shows the questions in general terms, so the page is never empty. */
   const payer = f.payerId ? payerById(f.payerId) : null;
   const who = payer?.shortName ?? "the payer";
@@ -29,7 +30,15 @@ export function verifySteps(f: VerifyForm): VerifyStep[] {
   const prog = PROGRAM_LABEL[f.program];
   const found = simulateCheck({ payerId: f.payerId || "summit", program: f.program, memberId: f.member, dos: f.dos });
   const e = found.eligibility;
-  const coverage = e.state === "active" ? `coverage is active on ${f.dos}` : e.state === "not_found" ? "no coverage found for these details" : `coverage ${e.state} ${e.on}`;
+  const moved = found.payerChanged ? payerById(found.payerChanged.to) : null;
+  const coverage =
+    e.state === "active"
+      ? found.idMismatch
+        ? `coverage is active under the member ID ending ${found.idMismatch.onFile.replace("…", "")}, not the one given`
+        : `coverage is active on ${f.dos}`
+      : e.state === "not_found"
+        ? "no coverage found for these details"
+        : `coverage ${e.state} ${e.on}${moved ? `. The member is with ${moved.name} since ${found.payerChanged?.since}` : ""}`;
   /* With no coverage found there is no plan to ask: the later questions are not asked, as on the result. */
   const noPlan = e.state === "not_found";
   const notAsked = "Not asked: no coverage was found";
@@ -48,7 +57,7 @@ export function verifySteps(f: VerifyForm): VerifyStep[] {
       agent: "verify",
       wait: `Will ask ${who} what ${prog} covers`,
       doing: `Asking ${who} what ${prog} covers`,
-      done: noPlan ? notAsked : f.payerId && needsCaller(f.payerId) ? `${who}'s system did not answer` : found.benefits === "not_covered" ? `${who} does not cover ${prog}` : `${who} covers ${prog} (${PROGRAM_CODES[f.program]})${found.limit ? `. All ${found.limit.of} ${found.limit.unit} are used` : ""}`,
+      done: noPlan ? notAsked : f.payerId && needsCaller(f.payerId) ? `${who}'s system did not answer` : found.benefits === "not_covered" ? `${who} does not cover ${prog}` : found.benefits === "needs_confirmation" ? `${who} answered for coverage but did not confirm ${prog}` : `${who} covers ${prog} (${PROGRAM_CODES[f.program]})${found.limit ? `. All ${found.limit.of} ${found.limit.unit} are used` : ""}`,
       ms: 2600,
     },
   ];
@@ -56,10 +65,11 @@ export function verifySteps(f: VerifyForm): VerifyStep[] {
     steps.push({ id: "caller", agent: "caller", wait: "Will phone the payer if a system does not answer", doing: `${who} did not answer online. Caller is phoning`, done: `Caller phoned ${who}, confirmed the answers and logged the call`, ms: 2600 });
   }
   steps.push(
-    { id: "auth", agent: "criteria", wait: "Will check whether an authorization is required", doing: "Checking whether an authorization is required", done: noPlan ? notAsked : found.auth === "not_required" ? `${who} does not require an authorization` : found.auth === "on_file" ? `An authorization is on file with ${who}` : "An authorization is required before the first day", ms: 1600 },
-    { id: "enroll", agent: "navigator", wait: `Will check that the clinic is enrolled to bill ${who}`, doing: `Checking that the clinic is enrolled to bill ${who}`, done: noPlan ? notAsked : found.inNetwork ? "The clinic is enrolled and in network" : "The clinic is not enrolled for this program", ms: 1800 },
+    { id: "auth", agent: "criteria", wait: "Will check whether an authorization is required", doing: "Checking whether an authorization is required", done: noPlan ? notAsked : found.auth === "unknown" ? `No rule on file for ${who} and ${prog}. Nothing was assumed` : found.auth === "not_required" ? `${who} does not require an authorization` : found.auth === "on_file" ? `An authorization is on file with ${who}` : "An authorization is required before the first day", ms: 1600 },
+    { id: "enroll", agent: "navigator", wait: `Will check that the clinic is enrolled to bill ${who}`, doing: `Checking that the clinic is enrolled to bill ${who}`, done: noPlan ? notAsked : found.networkUnresolved ? "Could not confirm the clinic's enrollment" : found.inNetwork ? "The clinic is enrolled and in network" : "The clinic is not enrolled for this program", ms: 1800 },
   );
-  return steps;
+  /* A paused Verify asks nothing: every question after the card is answered with why it was not asked. */
+  return paused ? steps.map((x) => (x.id === "reader" ? x : { ...x, doing: "Verify is paused in Settings, so nothing is asked", done: "Not asked: Verify is paused in Settings" })) : steps;
 }
 
 /** A birth date that matches the age, so a case, a referral or a sample pre-fills the whole form. The date is never shown elsewhere. */

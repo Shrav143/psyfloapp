@@ -1,10 +1,12 @@
 import { useMemo } from "react";
 import { SearchX } from "lucide-react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { Card, Crumbs, EmptyState, Page, PageHeader, UnderlineTabs } from "@/components/ui";
-import { resolveCase, type CaseDetail } from "@/data/caseDetail";
+import { Button, Card, Crumbs, EmptyState, Page, PageHeader, UnderlineTabs } from "@/components/ui";
+import { OutOfSite } from "@/components/layout/OutOfSite";
+import { caseIdOf, resolveCase, type CaseDetail } from "@/data/caseDetail";
 import { withFocus } from "@/data/caseDetailFocus";
 import { EMPTY_WORK, canSend, checkViews, currentChance, groupRecs, isWithPayer, liveView, projectedChance, sendBlockedReason, type CaseWork, type LiveView } from "@/data/caseModel";
+import { useScope } from "@/lib/scope";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
 import { CaseHeader } from "./CaseHeader";
@@ -59,6 +61,7 @@ function CaseView({ detail, work, live }: { detail: CaseDetail; work: CaseWork; 
 
 export default function CasePage() {
   const { id = "" } = useParams();
+  const scope = useScope();
   const requests = useStore((s) => s.requests);
   const base = useMemo(() => resolveCase(id, requests), [id, requests]);
   const stored = useStore((s) => (base ? s.queueCases[base.requestId] : undefined));
@@ -78,6 +81,20 @@ export default function CasePage() {
             Check the ID, or open a request from the queue.
           </EmptyState>
         </Card>
+      </Page>
+    );
+  }
+  // A request at the other site is not shown, counted or described: the card names no patient, only the site it belongs to.
+  const caseId = caseIdOf(id, requests); // a denial's number can sit at another site than the case it came from; the case decides
+  if (!scope.has(caseId)) {
+    return (
+      <Page>
+        <OutOfSite id={caseId} what="case" />
+        {scope.restricted ? null : (
+          <div className="flex justify-center">
+            <Button onClick={() => useStore.getState().setSiteScope("both")}>Show both sites</Button>
+          </div>
+        )}
       </Page>
     );
   }

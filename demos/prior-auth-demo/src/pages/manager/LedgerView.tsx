@@ -1,6 +1,6 @@
 import { useMemo, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowDown, ArrowUp, ArrowUpDown, SearchX } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, PanelRightOpen, SearchX } from "lucide-react";
 import { Button, Card, EmptyState, IdLink, Meter, Pill, Stat, Table, Td, Th, Tr } from "@/components/ui";
 import { LEDGER_STATUS_LABEL, type LedgerStatus } from "@/data/manager";
 import { PROGRAM_LABEL } from "@/data/types";
@@ -9,7 +9,7 @@ import { PAYER_ROW_LABEL } from "@/pages/dashboard/helpers";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
 import type { LedgerRow } from "./ledgerRows";
-import { STATUS_TONE, matchesBase, clockText, payerUpdateFor, payerUpdateText, runsOutBeforeReview, sortLedger, usedShare, usedText, type ManagerFilters, type SortKey } from "./helpers";
+import { STATUS_TONE, matchesBase, matchesShow, clockText, payerUpdateFor, payerUpdateText, runsOutBeforeReview, sortLedger, usedShare, usedText, type ManagerFilters, type SortKey } from "./helpers";
 
 const PAGE = 10;
 const TILES: { status: LedgerStatus; sub: string }[] = [
@@ -54,7 +54,7 @@ function Pager({ page, pages, from, to, total, onPage }: { page: number; pages: 
 }
 
 /** Every case on one page, with the two things that matter most: how much is left and how much time. */
-export function LedgerView({ ledger, filters, onStatus, onClear }: { ledger: LedgerRow[]; filters: ManagerFilters; onStatus: (s: LedgerStatus | "all") => void; onClear: () => void }) {
+export function LedgerView({ ledger, filters, onStatus, onClear, onQuick }: { ledger: LedgerRow[]; filters: ManagerFilters; onStatus: (s: LedgerStatus | "all") => void; onClear: () => void; /** Opens the quick view of a case. `from` is the control to give focus back to when it closes. */ onQuick: (id: string, from: HTMLElement | null) => void }) {
   const navigate = useNavigate();
   const clock = useStore((s) => s.clock);
   const updates = useStore((s) => s.payerChangeUpdates);
@@ -62,7 +62,7 @@ export function LedgerView({ ledger, filters, onStatus, onClear }: { ledger: Led
   const [sort, setSort] = useState<{ key: SortKey; dir: 1 | -1 }>({ key: "clock", dir: 1 });
   const [paging, setPaging] = useState({ key: "", page: 0 });
 
-  const base = useMemo(() => ledger.filter((c) => matchesBase(c, filters)), [ledger, filters]);
+  const base = useMemo(() => ledger.filter((c) => matchesBase(c, filters) && matchesShow(c, filters.show, clock)), [ledger, filters, clock]);
   const rows = useMemo(() => sortLedger(filters.status === "all" ? base : base.filter((c) => c.status === filters.status), sort.key, sort.dir), [base, filters.status, sort]);
 
   const key = JSON.stringify([filters, sort]);
@@ -107,7 +107,8 @@ export function LedgerView({ ledger, filters, onStatus, onClear }: { ledger: Led
                 const runsOut = runsOutBeforeReview(c, reviews, clock);
                 const open = () => navigate(paths.case(c.caseId));
                 return (
-                  <Tr key={c.id} onClick={(e) => { if (!(e.target as HTMLElement).closest("button")) open(); }} data-case={c.id}>
+                  // A click on the row itself opens the quick view; the case ID, the quick view button and Open are buttons and act on their own.
+                  <Tr key={c.id} onClick={(e) => { if (!(e.target as HTMLElement).closest("button, a")) onQuick(c.id, e.currentTarget.querySelector<HTMLElement>("[data-quick]")); }} data-case={c.id}>
                     <Td>
                       <IdLink onClick={open}>{c.id}</IdLink>
                       <div className="text-xs text-muted">{c.initials} · {c.age}</div>
@@ -138,9 +139,14 @@ export function LedgerView({ ledger, filters, onStatus, onClear }: { ledger: Led
                       <span className="text-sm tabular-nums text-ink2" aria-label={`Approval chance ${Math.round(c.chance)} percent`}>{Math.round(c.chance)}%</span>
                     </Td>
                     <Td>
-                      <Button size="sm" aria-label={`Open ${c.id}`} onClick={open}>
-                        Open
-                      </Button>
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button type="button" data-quick aria-label={`Quick view of ${c.id}`} title="Quick view" onClick={(e) => onQuick(c.id, e.currentTarget)} className="grid h-8 w-8 place-items-center rounded-[10px] text-ink2 hover:bg-tile">
+                          <PanelRightOpen size={16} className="ico" />
+                        </button>
+                        <Button size="sm" aria-label={`Open ${c.id}`} onClick={open}>
+                          Open
+                        </Button>
+                      </div>
                     </Td>
                   </Tr>
                 );
@@ -150,7 +156,7 @@ export function LedgerView({ ledger, filters, onStatus, onClear }: { ledger: Led
         )}
         {rows.length > 0 ? <Pager page={page} pages={pages} from={page * PAGE + 1} to={Math.min(rows.length, page * PAGE + PAGE)} total={rows.length} onPage={(p) => setPaging({ key, page: p })} /> : null}
         <p className="border-t border-line px-6 py-3 text-[12.5px] text-muted">
-          Units or days left are worked out at the usual pace: a day of care a day, about three units a week for IOP. "Runs out before review" appears only when that pace uses the approval up before the next review. Approval chance estimates how well the paperwork fits the payer's past decisions. It is a range of about 6 points either way, drawn from similar decisions in your own cases, the network and benchmarks. Strong is 80 and above, Moderate 55 to 79, At risk below 55. It never blocks a request.
+          Click a row for a quick view, or Open for the full case. Units or days left are worked out at the usual pace: a day of care a day, about three units a week for IOP. "Runs out before review" appears only when that pace uses the approval up before the next review. Approval chance estimates how well the paperwork fits the payer's past decisions. It is a range of about 6 points either way, drawn from similar decisions in your own cases, the network and benchmarks. Strong is 80 and above, Moderate 55 to 79, At risk below 55. It never blocks a request.
         </p>
       </Card>
     </>

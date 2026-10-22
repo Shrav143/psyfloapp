@@ -4,7 +4,7 @@ intro: The written-appeal route starts with a confirm gate, then Advocate drafts
 dir: TD
 also: Demo only: the drafting takes about two seconds and is simulated. The letter is built from the findings of the denial.
 ---
-start s1 "Click 'Draft the appeal letter' (recommended next step), or 'Draft the corrected request' (Correct and resubmit), or select 'Written appeal' in Your options and click its button"
+start s1 "Click 'Draft the appeal letter' (recommended next step), or 'Draft the corrected request' (Correct and resubmit), or open 'Compare the options', select 'Written appeal' and click its button"
 start s2 "Click 'Open the draft' (next-step block: 'Advocate is drafting the appeal')"
 start s3 "Next level chosen after an upheld decision\n('Record and start the second-level appeal')"
 decision d1 "Is the chip already 'Appeal drafting'?"

@@ -38,7 +38,7 @@ group gToast "Toasts on this page"
 endgroup
 
 group gNone "What the page does not have"
-  endx n1 "No Save, Apply or Reset button\nNo way to change the Gates or the privacy notice"
+  endx n1 "No Save, Apply or Reset button\nNo way to change the Gates or the privacy notice\nNo edit control for who can see which site: the roles are fixed, and 'View as' only switches the viewer"
   endx n2 "Choices are lost on a reload\nEvery agent returns to its starting level and switch. Leaving the page keeps them"
 endgroup
 

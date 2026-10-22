@@ -71,3 +71,11 @@ export function unmetCount(d: CaseDraft, ctx: PayerContext, clock: number): numb
   const lacking = docEntries(d.payerId, d.program, ctx.items).filter((r) => r.required && !d.documents.some((x) => x.slot === r.slot)).length;
   return lacking + (startDateIssue(d, ctx.rules, clock, "The payer")?.kind === "early" ? 1 : 0);
 }
+
+/** What New case can say about a retroactive request for this payer. "No rule on file" is said as it is: the demo does not guess a payer's rule.
+    A payer added on Payers has only Psyflo's benchmark, which is not a payer's rule either. */
+export function retroRule(ctx: PayerContext, payer: string): { onFile: boolean; text: string } {
+  const lines = ctx.rules.find((r) => r.id === "backdating")?.lines ?? [];
+  if (!lines.length || ctx.benchmark) return { onFile: false, text: `No rule on file for ${payer}. Check with the payer.` };
+  return { onFile: true, text: `${payer}'s Backdating rule: ${lines[0].replace(/\.$/, "")}.` };
+}

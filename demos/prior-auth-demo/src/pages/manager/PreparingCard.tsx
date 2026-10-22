@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { ArrowUpRight, FolderOpen, Plus, Send, SearchX } from "lucide-react";
 import { Button, Disclosure, EmptyState, Segmented, type TabItem } from "@/components/ui";
 import { draftState, needsPerson, type CaseDraft } from "@/data/cases";
+import { useScope } from "@/lib/scope";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
 import { CaseRow } from "./CaseRow";
@@ -33,9 +34,11 @@ export function PreparingCard({ filters, onClear }: { filters: ManagerFilters; o
   const nav = useNavigate();
   const drafts = useStore((s) => s.caseDrafts);
   const sentToday = useStore((s) => s.caseSentToday);
+  const scope = useScope();
   const [status, setStatus] = useState<Status>("all");
 
-  const active = useMemo(() => drafts.filter((d) => d.saved && !d.sent), [drafts]);
+  // A case being prepared has its own site (chosen in Intake), which the case id follows.
+  const active = useMemo(() => drafts.filter((d) => d.saved && !d.sent && scope.sites.includes(d.site)), [drafts, scope.sites]);
   const visible = useMemo(() => active.filter((d) => fits(d, filters)), [active, filters]);
   const count = (s: Exclude<Status, "all">) => visible.filter((d) => statusOf(d) === s).length;
   const rows = useMemo(() => visible.filter((d) => status === "all" || statusOf(d) === status).sort(byUrgency), [visible, status]);

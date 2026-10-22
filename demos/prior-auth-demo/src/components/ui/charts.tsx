@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
+export * from "./chartkit";
+
 /** Donut with an optional center label. `parts` values are shares (they are normalized). */
 export function Donut({ parts, size = 170, thickness = 26, center }: { parts: { value: number; color: string; label?: string }[]; size?: number; thickness?: number; center?: ReactNode }) {
   const total = parts.reduce((a, p) => a + p.value, 0) || 1;
@@ -77,14 +79,25 @@ export function Columns({ data, height = 140, color = "#2F6F5C", highlight }: { 
   );
 }
 
-export function Sparkline({ data, width = 120, height = 32, color = "#2F6F5C" }: { data: number[]; width?: number; height?: number; color?: string }) {
-  if (data.length < 2) return null;
-  const min = Math.min(...data);
-  const max = Math.max(...data);
-  const pts = data.map((v, i) => `${(i / (data.length - 1)) * width},${height - 3 - ((v - min) / (max - min || 1)) * (height - 6)}`).join(" ");
+/** A small line for a table row or a figure: twelve values and nothing else. Values may be missing (null), which leave a gap. It can fill the width it is given
+    (`fluid`), shade the area under the line, and mark the last point. A screen reader gets `label`, or nothing when the number beside it says the same. */
+export function Sparkline({ data, width = 120, height = 32, color = "#2F6F5C", fluid, area, dot, label }: { data: (number | null)[]; width?: number; height?: number; color?: string; fluid?: boolean; area?: boolean; dot?: boolean; label?: string }) {
+  const vals = data.filter((v): v is number => v !== null);
+  if (vals.length < 2) return null;
+  const min = Math.min(...vals);
+  const max = Math.max(...vals);
+  const pad = 3;
+  const x = (i: number): number => pad + (i / (data.length - 1)) * (width - pad * 2);
+  const y = (v: number): number => height - pad - ((v - min) / (max - min || 1)) * (height - pad * 2);
+  const pts = data.map((v, i) => (v === null ? null : { x: x(i), y: y(v) }));
+  const line = pts.reduce<string>((d, p, i) => (p ? `${d}${pts[i - 1] ? "L" : "M"}${p.x.toFixed(1)},${p.y.toFixed(1)} ` : d), "").trim();
+  const first = pts.find((p) => p !== null);
+  const last = [...pts].reverse().find((p) => p !== null);
   return (
-    <svg width={width} height={height} aria-hidden="true">
-      <polyline points={pts} fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+    <svg width={fluid ? "100%" : width} height={height} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" role={label ? "img" : undefined} aria-label={label} aria-hidden={label ? undefined : true} className="block overflow-visible">
+      {area && first && last ? <path d={`${line} L${last.x.toFixed(1)},${height} L${first.x.toFixed(1)},${height} Z`} fill={color} opacity="0.12" /> : null}
+      <path d={line} fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+      {dot && last && !fluid ? <circle cx={last.x} cy={last.y} r={2.8} fill={color} /> : null}
     </svg>
   );
 }

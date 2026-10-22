@@ -1,8 +1,10 @@
 import type { StateCreator } from "zustand";
-import { APPEAL_LEVELS, APPEAL_WINDOW_DAYS, SEED_ACCEPT_DENIAL, SEED_DENIAL_META, levelOf, type CallSlot, type DenialMeta, type DenialWork, type OutcomeKind } from "@/data/denials";
+import { APPEAL_LEVELS, APPEAL_WINDOW_DAYS, SEED_ACCEPT_DENIAL, SEED_DENIAL_META, levelOf, siteOfDenial, type CallSlot, type DenialMeta, type DenialWork, type OutcomeKind } from "@/data/denials";
 import { SEED_REQUESTS, payerById } from "@/data/seed";
+import { siteOf, type SiteId } from "@/data/sites";
 import { PROGRAM_LABEL, type PayerId, type Program, type PsyRequest } from "@/data/types";
 import { uid } from "@/lib/format";
+import { sitesInView } from "@/lib/scope";
 import { DAY, shortDate } from "@/lib/time";
 import { paths } from "@/routes";
 import type { AppState } from "./index";
@@ -35,7 +37,7 @@ export interface DenialsSlice {
   denialWork: Record<string, DenialWork>;
   /** When (demo minutes) the appeal analysis report was generated for a denial. Absent until the person opens it; Regenerate clears it. */
   denialReportAt: Record<string, number>;
-  /** Adds the analysed letter as a new open denial (also on the Dashboard). Returns its id. */
+  /** Adds the analysed letter as a new open denial (also on the Dashboard). It belongs to the site in view, Site A when both are in view. Returns its id. */
   addDenial: (input: NewDenialInput) => string;
   bookCall: (id: string, slot: CallSlot) => void;
   setFix: (id: string, fixId: string, on: boolean) => void;
@@ -73,8 +75,11 @@ export const createDenialsSlice: StateCreator<AppState, [], [], DenialsSlice> = 
 
     addDenial: (input) => {
       const { clock, requests } = get();
+      const inView = sitesInView(get());
+      const site: SiteId = inView.length === 1 ? inView[0] : "A";
+      // The id is chosen so that siteOf(id) is the denial's site: every screen that only has the request (its caseId is its id) then places it the same way.
       let n = 3340;
-      while (requests.some((r) => r.id === `D-${n}`)) n += 1;
+      while (requests.some((r) => r.id === `D-${n}`) || siteOf(`D-${n}`) !== site) n += 1;
       const id = `D-${n}`;
       const payer = payerById(input.payerId);
       const e = (actor: PsyRequest["events"][number]["actor"], text: string, at: number) => ({ id: uid("ev"), at, actor, text, done: true });
@@ -88,7 +93,7 @@ export const createDenialsSlice: StateCreator<AppState, [], [], DenialsSlice> = 
           e("historian", `Historian compared ${input.meta.similar} similar ${payer.shortName} decisions`, clock - 1),
         ],
       };
-      set((s) => ({ requests: [created, ...s.requests], denialMeta: { ...s.denialMeta, [id]: input.meta } }));
+      set((s) => ({ requests: [created, ...s.requests], denialMeta: { ...s.denialMeta, [id]: { ...input.meta, site } } }));
       get().notify({ agent: "advocate", title: "Denial analyzed", body: `${id} (${payer.shortName}, ${PROGRAM_LABEL[input.program]}) is in Denial Intelligence with your options.`, to: paths.denials(id), tone: "mid" });
       get().toast({ title: "The analysis is ready", body: `${id} was added to Open denials.`, tone: "good" });
       return id;
@@ -224,5 +229,11 @@ export const createDenialsSlice: StateCreator<AppState, [], [], DenialsSlice> = 
   };
 };
 
-/** Sidebar badge: open denials, which are the requests in "Appeal or call". */
-export const selectDenialBadge = (s: AppState): number => s.requests.filter((r) => r.stage === "appeal").length;
+/** The denials open at the sites in view: the requests in "Appeal or call" whose site is one of them. A plain function, not a selector: it builds a new list each time, so a component calls it inside useMemo. */
+export const openDenialsInView = (s: Pick<AppState, "requests" | "denialMeta" | "viewerId" | "siteScope">): PsyRequest[] => {
+  const sites = sitesInView(s);
+  return s.requests.filter((r) => r.stage === "appeal" && sites.includes(siteOfDenial(s.denialMeta[r.id], r.caseId)));
+};
+
+/** Sidebar badge: open denials at the sites in view. For Both sites it is the Dashboard's 8; the two sites add up to it. */
+export const selectDenialBadge = (s: AppState): number => openDenialsInView(s).length;

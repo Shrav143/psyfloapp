@@ -55,7 +55,7 @@ export function SystemRow({ system: s, clock, busy, anySyncing, onSync, onManage
             <span className="font-semibold">{s.name}</span>
             <Pill tone={st.tone} dot>{st.label}</Pill>
           </div>
-          <div className="mt-0.5 text-[13px] text-muted">Reads {SYSTEM_READS[s.kind].join(", ").toLowerCase()}</div>
+          <div className="mt-0.5 text-[13px] text-muted">{s.holds}. Reads {SYSTEM_READS[s.kind].join(", ").toLowerCase()}</div>
         </div>
         <div className="flex flex-col text-[13px] whitespace-nowrap text-muted">
           <span>{s.status === "disconnected" ? "Not syncing" : busy ? "Syncing" : `Last sync ${ago(s.lastSyncAt, clock)}`}</span>

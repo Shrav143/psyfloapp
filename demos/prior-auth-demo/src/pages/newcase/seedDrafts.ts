@@ -1,7 +1,9 @@
 /* The five Dashboard "Preparing" requests as drafts, each at the step it is on, plus the blank draft a new case starts from. */
 import { freshRun, planTypeOf, QUESTIONS, type Answer, type CaseDraft, type DocSlotId, type QuestionKey, type RunState } from "@/data/cases";
 import { seedPayerConfig } from "@/data/payerConfigSeed";
+import { siteOf } from "@/data/sites";
 import type { PayerId, Program } from "@/data/types";
+import { kindOfType } from "./authType";
 import { docEntries, makeDocument, sampleFile } from "./documents";
 import { ICD_CODES } from "./lookups";
 
@@ -12,7 +14,14 @@ export function blankDraft(over: Partial<CaseDraft> = {}): CaseDraft {
     saved: false,
     sent: false,
     step: 0,
-    phase: "referral",
+    phase: "intake",
+    kind: "initial",
+    site: "A",
+    patientId: null,
+    episodeId: null,
+    authorizationId: null,
+    verificationId: null,
+    started: false,
     patient: { initials: "", age: null },
     reference: "",
     payerId: null,
@@ -27,7 +36,6 @@ export function blankDraft(over: Partial<CaseDraft> = {}): CaseDraft {
     diagnoses: [],
     documents: [],
     unavailable: {},
-    coverage: null,
     run: freshRun(),
     answers: [],
     questions: [],
@@ -56,9 +64,13 @@ function docs(payer: PayerId, program: Program, skip: DocSlotId[] = [], sertrali
 const run = (r: Pick<RunState, "done" | "asked" | "question" | "elapsed">): RunState => ({ ...freshRun(), ...r });
 const answer = (key: QuestionKey, choice: string, label: string, payerShort: string): Answer => ({ key, agent: QUESTIONS[key].agent, question: QUESTIONS[key].text(payerShort), choice, answer: label });
 
+/** A seeded draft is a case the ledger already knows: its patient, episode and authorization are the ledger's own (data/patients.ts). */
 function seed(id: string, over: Partial<CaseDraft>): CaseDraft {
   const payerId = over.payerId as PayerId;
-  return blankDraft({ id: `draft-${id.toLowerCase().replace("-", "")}`, caseId: id, saved: true, step: 1, phase: "records", planType: planTypeOf(payerId), cardRead: true, ...over });
+  return blankDraft({
+    id: `draft-${id.toLowerCase().replace("-", "")}`, caseId: id, saved: true, step: 1, phase: "records", planType: planTypeOf(payerId), cardRead: true,
+    site: siteOf(id), kind: kindOfType(over.type ?? null), started: true, patientId: id, episodeId: `EP-${id}`, authorizationId: `AU-${id}`, ...over,
+  });
 }
 
 export const SEED_DRAFTS: CaseDraft[] = [
@@ -73,7 +85,6 @@ export const SEED_DRAFTS: CaseDraft[] = [
     reason: "Relapse on 9/28 after eleven months of abstinence, with worsening depression.",
     diagnoses: dx("F10.20", "F33.2"),
     documents: docs("summit", "RES", ["therapy_note"], true),
-    coverage: { key: "summit|RES|4821|2026-10-20", verdict: "auth_first", at: -2 },
     run: run({ done: 6, asked: true, question: "sertraline", elapsed: [14, 9, 21, 26, 18, 12] }),
     questions: ["sertraline", "stepdown"],
     startChance: 62,
@@ -92,7 +103,6 @@ export const SEED_DRAFTS: CaseDraft[] = [
     reason: "Steady attendance and lower cravings, but evenings are still the highest-risk hours.",
     diagnoses: dx("F11.20", "F41.1"),
     documents: docs("cardinal", "IOP"),
-    coverage: { key: "cardinal|IOP|7305|2026-10-20", verdict: "cleared", at: -4320 },
     run: run({ done: 8, asked: false, question: "recert", elapsed: [11, 8, 17, 19, 13, 10, 26, 15] }),
     questions: ["recert"],
     startChance: 59,
@@ -112,7 +122,6 @@ export const SEED_DRAFTS: CaseDraft[] = [
     reason: "Progress is steady, and the chart still supports a structured setting through the next review.",
     diagnoses: dx("F10.20", "F41.1"),
     documents: docs("beacon", "RES"),
-    coverage: { key: "beacon|RES|2096|2026-10-20", verdict: "cleared", at: -1440 },
     run: run({ done: 10, asked: true, question: null, elapsed: [13, 9, 18, 21, 14, 16, 29, 17, 15, 11] }),
     answers: [answer("stepdown", "named", "Yes, a named provider is on file", "Beacon")],
     questions: ["stepdown"],
@@ -132,7 +141,6 @@ export const SEED_DRAFTS: CaseDraft[] = [
     reason: "Detox days were delivered while coverage was being sorted out. Residential care followed on the same admission.",
     diagnoses: dx("F11.23", "F11.20"),
     documents: docs("summit", "RES", ["therapy_note"]),
-    coverage: { key: "summit|RES|1012|2026-10-20", verdict: "fix", at: -6 },
     run: run({ done: 8, asked: false, question: null, elapsed: [12, 8, 19, 18, 12, 11, 24, 14] }),
     questions: [],
     startChance: 38,
@@ -150,7 +158,6 @@ export const SEED_DRAFTS: CaseDraft[] = [
     reason: "Stimulant use for two years. Two earlier outpatient attempts ended early.",
     diagnoses: dx("F14.20"),
     documents: docs("lakeshore", "IOP", ["attendance"]),
-    coverage: { key: "lakeshore|IOP|2290|2026-10-20", verdict: "auth_first", at: -35 },
     run: freshRun(),
     questions: ["recert"],
     startChance: 84,

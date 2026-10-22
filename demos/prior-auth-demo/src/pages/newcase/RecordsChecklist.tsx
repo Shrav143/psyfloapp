@@ -1,23 +1,21 @@
-import { useMemo, useRef, useState } from "react";
-import { Card, ChecklistGroup, ChecklistProgress, Pill } from "@/components/ui";
+import { useMemo, useRef, useState, type ReactNode } from "react";
+import { Card, ChecklistGroup } from "@/components/ui";
 import type { CaseDraft, DocSlotId } from "@/data/cases";
 import { uid } from "@/lib/format";
 import { useStore } from "@/store";
 import { selectUnmappedForConnected } from "@/store/emr";
 import { referralPrefill } from "@/store/referrals";
-import { CoverageRow } from "./CoverageRow";
 import { DocPreviewDrawer } from "./DocPreviewDrawer";
 import { DocRow } from "./DocRow";
 import { makeDocument } from "./documents";
 import { FieldRow } from "./FieldRow";
-import { intakeMissing } from "./intakeRules";
 import { EMR_CHARTS } from "./lookups";
 import { usePayerContext } from "./payerContext";
-import { buildChecklist, isDocRow, slotOf, tally, type RowId } from "./recordsModel";
-import { useCoverageCheck, useReading } from "./useRecordsTimers";
+import { buildChecklist, isDocRow, slotOf, tally, type Group, type RowId } from "./recordsModel";
 
-/** The whole step in one card: how many things are ready, then four short lists. Only one editor is open at a time. */
-export function RecordsChecklist({ draft }: { draft: CaseDraft }) {
+/** Some groups of the checklist in one card. Intake shows the patient, insurance and request groups; Clinical documentation shows the clinical summary and the documents.
+    Only one editor is open at a time. `rows` can leave rows out of a group (a retro-authorization keeps its dates on a card of its own). */
+export function RecordsChecklist({ draft, groups: ids, rows: keep, header }: { draft: CaseDraft; groups: Group["id"][]; rows?: readonly string[]; /** Sits at the top of the card: the readiness line. */ header?: ReactNode }) {
   const clock = useStore((s) => s.clock);
   const referrals = useStore((s) => s.referrals);
   const put = useStore((s) => s.putCaseDocs);
@@ -26,8 +24,6 @@ export function RecordsChecklist({ draft }: { draft: CaseDraft }) {
   const picker = useRef<HTMLInputElement>(null);
   const pickFor = useRef<{ slot: DocSlotId; replace: boolean } | null>(null);
   const ctx = usePayerContext(draft);
-  useReading(draft);
-  useCoverageCheck(draft, clock);
 
   /* The fields of the system the chart came from that still wait for a mapping in EMR Connect. */
   const emrUnmapped = useStore((s) => s.emrUnmapped);
@@ -38,9 +34,10 @@ export function RecordsChecklist({ draft }: { draft: CaseDraft }) {
     // The selector reads these two lists; the store is read directly so it can stay a plain function of the state.
   }, [emrUnmapped, emrSystems, draft.emrChart]);
   const referral = useMemo(() => (draft.referralId ? referralPrefill(useStore.getState(), draft.referralId) : null), [referrals, draft.referralId]);
-  const groups = useMemo(() => buildChecklist(draft, clock, referral, ctx, unmapped), [draft, clock, referral, ctx, unmapped]);
-  const all = tally(groups);
-  const ready = intakeMissing(draft, ctx.items).length === 0;
+  const groups = useMemo(
+    () => buildChecklist(draft, clock, referral, ctx, unmapped).filter((g) => ids.includes(g.id)).map((g) => (keep ? { ...g, rows: g.rows.filter((r) => keep.includes(r.id)) } : g)),
+    [draft, clock, referral, ctx, unmapped, ids, keep],
+  );
   const toggle = (id: RowId) => setOpen((cur) => (cur === id ? null : id));
 
   const pick = (slot: DocSlotId, replace = false) => {
@@ -57,9 +54,7 @@ export function RecordsChecklist({ draft }: { draft: CaseDraft }) {
 
   return (
     <Card>
-      <div className="px-6 pt-6 pb-5">
-        <ChecklistProgress done={all.done} total={all.total} right={ready ? <Pill tone="good" dot>Ready to continue</Pill> : null} />
-      </div>
+      {header ? <div className="px-6 pt-6 pb-5">{header}</div> : null}
       {groups.map((g) => {
         const count = tally([g]);
         return (
@@ -70,7 +65,6 @@ export function RecordsChecklist({ draft }: { draft: CaseDraft }) {
                 const id = row.id;
                 return <DocRow key={id} row={row} slot={slotOf(id)} draft={draft} open={open === id} onToggle={() => toggle(id)} onPick={pick} onPreview={setPreview} />;
               }
-              if (row.id === "coverage") return <CoverageRow key={row.id} row={row} draft={draft} clock={clock} />;
               const field = row.id;
               return <FieldRow key={field} row={row} field={field} draft={draft} open={open === field} onToggle={() => toggle(field)} />;
             })}

@@ -1,10 +1,10 @@
-import { useState } from "react";
-import { FileText } from "lucide-react";
+import { useState, type ReactNode } from "react";
+import { FileText, PencilLine } from "lucide-react";
 import { Button, FileDrop, type DemoFile } from "@/components/ui";
 import { SAMPLE_COUNT, hash } from "@/data/referrals";
 import { uid } from "@/lib/format";
 import { useStore } from "@/store";
-import { ArrivedList } from "./ArrivedList";
+import { IncomingReferrals } from "./IncomingReferrals";
 import { ReferralReading } from "./ReferralReading";
 
 interface Reading {
@@ -13,11 +13,11 @@ interface Reading {
   sample: number;
 }
 
-/** Nothing loaded yet: drop the documents, or check one that already arrived. `onOpen` shows a referral's checklist. */
-export function ReferralStart({ draftId, onOpen }: { draftId: string; onOpen: (referralId: string) => void }) {
+/** "Start with a referral or patient": drop the referral documents, create the case by hand, or find a patient who is known (`patients`, a search that follows the sites in view).
+    Below it, the incoming referrals. `onOpen` shows a referral's checklist. */
+export function ReferralStart({ onOpen, onManual, patients }: { onOpen: (referralId: string) => void; onManual: () => void; patients: ReactNode }) {
   const known = useStore((s) => s.referrals.length);
   const add = useStore((s) => s.addReferral);
-  const patch = useStore((s) => s.patchCaseDraft);
   const [reading, setReading] = useState<Reading | null>(null);
 
   if (reading) {
@@ -35,7 +35,11 @@ export function ReferralStart({ draftId, onOpen }: { draftId: string; onOpen: (r
 
   return (
     <>
-      <div className="flex flex-col gap-3">
+      <section aria-labelledby="start-title" className="flex flex-col gap-3">
+        <div>
+          <h2 id="start-title" className="font-serif text-[22px] font-semibold tracking-tight">Start with a referral or patient</h2>
+          <p className="mt-0.5 text-[13.5px] text-muted">Drop the referral documents and Reader lists what is missing, pick one that already arrived, find a patient who is known, or create the case by hand.</p>
+        </div>
         <FileDrop
           variant="panel"
           title="Drop the referral documents"
@@ -43,16 +47,15 @@ export function ReferralStart({ draftId, onOpen }: { draftId: string; onOpen: (r
           onFiles={(files) => setReading({ files, sample: hash(files[0].name) % SAMPLE_COUNT })}
         />
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <Button icon={FileText} onClick={() => setReading({ files: [{ id: uid("f"), name: "referral.pdf", sizeKb: 212 }], sample: known % SAMPLE_COUNT })}>Use sample referral</Button>
+          <div className="flex flex-wrap gap-2.5">
+            <Button icon={FileText} onClick={() => setReading({ files: [{ id: uid("f"), name: "referral.pdf", sizeKb: 212 }], sample: known % SAMPLE_COUNT })}>Use sample referral</Button>
+            <Button icon={PencilLine} onClick={onManual}>Create case manually</Button>
+          </div>
           <span className="text-[13px] text-muted">Faxes, PDFs and photos all work.</span>
         </div>
-      </div>
-      <ArrivedList onCheck={onOpen} />
-      <div className="flex justify-center">
-        <button type="button" onClick={() => patch(draftId, { phase: "records" })} className="rounded-lg px-3 py-1.5 text-[13.5px] text-muted underline underline-offset-4 hover:text-ink">
-          No referral? Continue without one
-        </button>
-      </div>
+        {patients}
+      </section>
+      <IncomingReferrals onReview={onOpen} />
     </>
   );
 }

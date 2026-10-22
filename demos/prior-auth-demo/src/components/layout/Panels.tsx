@@ -4,19 +4,30 @@ import { ArrowUp, CheckCheck, Sparkles } from "lucide-react";
 import { ActorBadge, AgentBadge, Button, Drawer } from "@/components/ui";
 import { cn } from "@/lib/cn";
 import { answerFor, chipsFor, routeKey, routeOf, type FloAnswer } from "@/lib/floAnswers";
+import { visibleNotifications } from "@/lib/floScope";
+import { useScope } from "@/lib/scope";
 import { ago } from "@/lib/time";
 import { useStore } from "@/store";
+
+/** The notifications about cases the viewer may see, and the ones that belong to no case (a payer rule change). A one-site viewer never sees the other site's. */
+function useVisibleNotifications() {
+  const all = useStore((s) => s.notifications);
+  const requests = useStore((s) => s.requests);
+  const scope = useScope();
+  return useMemo(() => visibleNotifications(all, requests, scope.has), [all, requests, scope]);
+}
 
 /* ------------------------------------------------------------------ notifications */
 export function NotificationsPanel() {
   const open = useStore((s) => s.notifOpen);
   const setOpen = useStore((s) => s.setNotifOpen);
-  const list = useStore((s) => s.notifications);
+  const list = useVisibleNotifications();
   const clock = useStore((s) => s.clock);
   const markRead = useStore((s) => s.markNotificationRead);
-  const markAll = useStore((s) => s.markAllNotificationsRead);
   const nav = useNavigate();
   const unread = list.filter((n) => !n.read).length;
+  // Only the ones on screen: a notification about the other site stays unread for the people who can see it.
+  const markAll = () => list.forEach((n) => !n.read && markRead(n.id));
   return (
     <Drawer open={open} onClose={() => setOpen(false)} width={440} title="Notifications" subtitle={unread ? `${unread} unread` : "You are all caught up"} right={<Button size="sm" icon={CheckCheck} onClick={markAll}>Mark all read</Button>}>
       <ul className="flex flex-col gap-2.5">
@@ -65,14 +76,27 @@ function FloBadge({ size = 30 }: { size?: number }) {
   );
 }
 
+/** "Jordan" for Jordan Perez, "Dr. Rivera" for Dr. Rivera. */
+const callName = (name: string): string => (name.startsWith("Dr. ") ? name : name.split(" ")[0]);
+
 export function AskPanel() {
   const open = useStore((s) => s.askOpen);
   const setOpen = useStore((s) => s.setAskOpen);
   const nav = useNavigate();
   const { pathname } = useLocation();
+  const scope = useScope();
   const route = routeOf(pathname);
   const here = routeKey(route);
-  const [msgs, setMsgs] = useState<Msg[]>([{ from: "flo", text: "Hi Jordan, I am FLO. Ask me about your requests, a payer, or your denials. I answer from the data on your Dashboard." }]);
+  const greeting = `Hi ${callName(scope.viewer.name)}, I am FLO. Ask me about your requests, a payer, or your denials. I answer from the data you can see: ${scope.label}.`;
+  const [msgs, setMsgs] = useState<Msg[]>([{ from: "flo", text: greeting }]);
+  // An answer holds cases of the sites that were in view when it was given. A new viewer or site starts a new conversation, so nothing from the other view stays on screen.
+  const seen = useRef(`${scope.viewer.id}|${scope.scope}`);
+  useEffect(() => {
+    const now = `${scope.viewer.id}|${scope.scope}`;
+    if (seen.current === now) return;
+    seen.current = now;
+    setMsgs([{ from: "flo", text: greeting }]);
+  }, [scope, greeting]);
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const end = useRef<HTMLDivElement>(null);
@@ -82,7 +106,7 @@ export function AskPanel() {
   const requests = useStore((s) => s.requests);
   const ledger = useStore((s) => s.ledger);
   // A case page names its payer, which comes from the requests and the ledger, so those are what the chips depend on.
-  const suggested = useMemo(() => (open ? chipsFor(routeOf(pathname), useStore.getState()) : null), [open, pathname, requests, ledger]);
+  const suggested = useMemo(() => (open ? chipsFor(routeOf(pathname), useStore.getState()) : null), [open, pathname, requests, ledger, scope]);
   const last = msgs[msgs.length - 1];
   const showChips = !busy && !!suggested && (msgs.length < 3 || !!last.fallback || (last.route !== undefined && last.route !== here));
 
@@ -140,6 +164,6 @@ export function AskPanel() {
 }
 
 export function UnreadDot() {
-  const n = useStore((s) => s.notifications.filter((x) => !x.read).length);
+  const n = useVisibleNotifications().filter((x) => !x.read).length;
   return n ? <span className="absolute top-[7px] right-2 h-2 w-2 rounded-full border-2 border-white bg-risk" /> : null;
 }

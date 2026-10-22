@@ -1,12 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Sparkles } from "lucide-react";
-import { Button, Page, PageHeader, type DemoFile } from "@/components/ui";
+import { Banner, Button, Page, PageHeader, type DemoFile } from "@/components/ui";
 import { PAYERS } from "@/data/seed";
 import type { PayerId } from "@/data/types";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
+import { selectVerificationFor } from "@/store/eligibility";
 import { referralPrefill } from "@/store/referrals";
+import { siteOf } from "@/data/sites";
+import { sitesInView } from "@/lib/scope";
 import { LiveCheck, useLiveCheck } from "./LiveCheck";
 import { BackLinks, useOrigin } from "./origin";
 import type { Sample } from "./samples";
@@ -25,6 +28,7 @@ export default function VerifyPage() {
   const nav = useNavigate();
   const [params] = useSearchParams();
   const toast = useStore((s) => s.toast);
+  const paused = useStore((s) => s.agentPaused.verify);
   const [form, setForm] = useState<Form>(EMPTY);
   const [reading, setReading] = useState(false);
   const who = useRef<{ caseId?: string; initials?: string | null; age?: number | null }>({});
@@ -42,8 +46,8 @@ export default function VerifyPage() {
       who.current = { initials: p.patientInitials, age: p.age };
       setForm({ ...EMPTY, payerId: p.payerId ?? "", member: p.memberIdMasked, dob: dobFor(p.age), program: p.program });
     } else if (caseId) {
-      const row = st.ebPatients.find((x) => x.id === caseId);
-      const req = st.requests.find((r) => r.id === caseId);
+      const row = selectVerificationFor(st, caseId)?.row;
+      const req = st.requests.find((r) => r.id === caseId && sitesInView(st).includes(siteOf(r.caseId)));
       if (row) {
         who.current = { caseId, initials: row.initials, age: row.age };
         setForm({ ...EMPTY, payerId: row.payerId, member: row.memberMasked, dob: dobFor(row.age), program: row.program, dos: row.dos });
@@ -55,7 +59,7 @@ export default function VerifyPage() {
   }, [params]);
   useEffect(() => () => clearTimeout(timer.current), []);
 
-  const steps = useMemo(() => verifySteps(form), [form]);
+  const steps = useMemo(() => verifySteps(form, paused), [form, paused]);
   const check = useLiveCheck(steps, () => {
     if (!form.payerId) return;
     const id = useStore.getState().ebApplyCheck({ payerId: form.payerId, program: form.program, memberId: form.member, dos: form.dos, ...who.current });
@@ -99,7 +103,15 @@ export default function VerifyPage() {
           </Button>
         }
       />
-      <div className="grid grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] items-start gap-5">
+      {paused ? (
+        <Banner tone="mid" title="Verify is paused in Settings">
+          A check cannot ask the plan anything while it is paused. Check now still saves the check, marked as not checked, and Check again works once Verify is resumed.{" "}
+          <Link to={paths.settings()} className="font-semibold underline underline-offset-[3px]">
+            Open Settings
+          </Link>
+        </Banner>
+      ) : null}
+      <div className="grid grid-cols-1 items-start gap-5 min-[1200px]:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
         <VerifyForm form={form} onChange={(p) => setForm((f) => ({ ...f, ...p }))} onCard={readCard} onSample={pickSample} reading={reading} locked={locked} onCheck={check.start} />
         <LiveCheck steps={steps} idx={check.idx} secs={check.secs} running={check.running} finished={check.finished} onSkip={check.skip} />
       </div>

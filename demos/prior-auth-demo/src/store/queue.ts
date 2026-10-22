@@ -2,10 +2,11 @@ import type { StateCreator } from "zustand";
 import type { FocusId } from "@/data/caseDetail";
 import { FOCUS } from "@/data/caseDetailFocus";
 import { EMPTY_WORK, RUN_END, RUN_STEPS, type CaseWork, type DraftEdit } from "@/data/caseModel";
-import { QUEUE_ITEMS, openItems, type Band, type QueueItem, type RequestKind, type StatusFilter } from "@/data/queue";
+import { QUEUE_ITEMS, itemsAtSites, openItems, type Band, type QueueItem, type RequestKind, type StatusFilter } from "@/data/queue";
 import type { AgentKey, PayerId } from "@/data/types";
 import { AGENTS } from "@/data/agents";
 import { uid } from "@/lib/format";
+import { sitesInView } from "@/lib/scope";
 import { paths } from "@/routes";
 import type { AppState } from "./index";
 
@@ -154,5 +155,5 @@ export const createQueueSlice: StateCreator<AppState, [], [], QueueSlice> = (set
   logCase: (id, text, actor = "you") => set((s) => patchCase(s, id, (w) => ({ log: [...w.log, { at: s.clock, actor, text }] }))),
 });
 
-/** Sidebar badge: open requests that need action today (the Act now and Due within 24 hours bands). */
-export const selectQueueBadge = (s: AppState): number => openItems(s.queueItems, s.requests).filter((i) => i.band !== "week").length;
+/** Sidebar badge: open requests at the sites in view that need action today (the Act now and Due within 24 hours bands). */
+export const selectQueueBadge = (s: AppState): number => itemsAtSites(openItems(s.queueItems, s.requests), sitesInView(s)).filter((i) => i.band !== "week").length;

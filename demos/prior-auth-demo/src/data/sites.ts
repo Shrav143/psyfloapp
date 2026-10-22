@@ -9,6 +9,10 @@ export const SITES: { id: SiteId; name: string; sub: string }[] = [
   { id: "B", name: "Site B", sub: "Second campus" },
 ];
 export const siteName = (id: SiteId): string => SITES.find((s) => s.id === id)?.name ?? `Site ${id}`;
+/** "Site A", "Site B" or "Both sites" for the sites a record, system or view covers. */
+export const sitesLabel = (ids: readonly SiteId[]): string => (ids.length > 1 ? "Both sites" : ids.length === 1 ? siteName(ids[0]) : "No site");
+/** True when any of `ids` is inside `view`: a system that serves both sites is in the Site A view and in the Site B view. */
+export const touchesView = (ids: readonly SiteId[], view: readonly SiteId[]): boolean => ids.some((id) => view.includes(id));
 
 /** The demo's headline cases are placed by hand so each site has a good story; every other id is placed by a stable hash (about 55% Site A). */
 const PLACED: Record<string, SiteId> = {

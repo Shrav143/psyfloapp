@@ -5,7 +5,8 @@ import type { LiveView } from "@/data/caseModel";
 import type { DocItem } from "@/data/payerConfig";
 import type { LedgerCase } from "@/data/manager";
 import { payerById } from "@/data/seed";
-import { shortDate, toDate } from "@/lib/time";
+import { SITES, siteName, type SiteId } from "@/data/sites";
+import { DAY, shortDate, toDate } from "@/lib/time";
 import { docEntries } from "@/pages/newcase/documents";
 import { shortSpan } from "./queueLogic";
 
@@ -26,6 +27,13 @@ const count = (n: number, unit: "days" | "units"): string => `${n} ${n === 1 ? u
 /** The Case Manager ledger row for this request, if it has one. A denial belongs to an earlier case, so its case ID is tried too. */
 export function ledgerRowOf(ledger: LedgerCase[], detail: Pick<CaseDetail, "id" | "requestId">): LedgerCase | undefined {
   return ledger.find((c) => c.id === detail.requestId) ?? ledger.find((c) => c.id === detail.id) ?? ledger.find((c) => c.caseId === detail.id);
+}
+
+/** The approved window, from the first day of the stay to the day the approval ends. The ledger records days used and the end date, not a start date,
+    so for the programs counted in days the stay is taken to have begun as many days before the demo's day one as days are used. Units (IOP) have no calendar window. */
+export function windowOf(ledger: LedgerCase | undefined): { from: number; to: number } | null {
+  if (!ledger || ledger.used === null || !ledger.total || ledger.unit !== "days" || ledger.clockKind !== "expiry") return null;
+  return { from: -ledger.used * DAY, to: ledger.dueAt };
 }
 
 /** How many of the documents the payer lists for this level of care are in the case, and which are not. */
@@ -55,18 +63,25 @@ interface Input {
   ledger: LedgerCase | undefined;
   docs: { have: number; total: number; missing: string[] } | null;
   clock: number;
+  /** The case's site, or null when the viewer can see only one site (then a site label tells them nothing). */
+  site?: SiteId | null;
 }
 
-export function authFacts({ detail, live, ledger, docs, clock }: Input): Fact[] {
+export function authFacts({ detail, live, ledger, docs, clock, site }: Input): Fact[] {
   const out: Fact[] = [{ label: "Request type", value: detail.type }];
   const unit = ledger?.unit ?? (detail.program === "IOP" ? "units" : "days");
   out.push({ label: "Requested", value: count(detail.days, unit) });
 
   if (ledger && ledger.used !== null && ledger.total) {
     out.push({ label: "Approved", value: count(ledger.total, ledger.unit), note: `${ledger.used} used · ${ledger.total - ledger.used} left` });
+    const win = windowOf(ledger);
     const kind = ledger.clockKind;
     const label = kind === "expiry" || kind === "units" ? "Approval ends" : kind === "review" || kind === "next" ? "Next review" : null;
-    if (label) {
+    if (win) {
+      // The window already names the end date, so "Approval ends" is not shown a second time.
+      const left = win.to - clock;
+      out.push({ label: "Window", value: `${shortDate(win.from)} to ${shortDate(win.to)}`, note: left <= 0 ? "ended" : `ends in ${shortSpan(left)}` });
+    } else if (label) {
       const left = ledger.dueAt - clock;
       out.push({ label, value: dateText(ledger.dueAt), note: left <= 0 ? "now" : `in ${shortSpan(left)}` });
     }
@@ -79,5 +94,6 @@ export function authFacts({ detail, live, ledger, docs, clock }: Input): Fact[] 
 
   const w = waitingOn(detail, live);
   if (w) out.push({ label: "Waiting on", value: w.who, note: w.note });
+  if (site) out.push({ label: "Site", value: siteName(site), note: SITES.find((x) => x.id === site)?.sub });
   return out;
 }

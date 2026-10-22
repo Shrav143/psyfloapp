@@ -16,6 +16,7 @@ group gR "What goes back to the start"
   store r5 "New case: the five drafts in progress, '4 sent today', referrals, referral badge"
   store r6 "Eligibility & Benefits, Denial Intelligence, Payers, EMR Connect: all work done in them"
   store r9 "Settings: every agent back at its starting level, every switch on, no pause"
+  store r10 "Viewing as: Jordan Perez, UR coordinator, on Both sites\n(the site switch and the user card follow)"
   store r7 "Case Manager: the 56 tracker rows and the 47 reviews. Signed reviews are unsigned, updates added are removed"
   store r8 "Next denial number starts again at D-3319"
 endgroup
@@ -29,6 +30,6 @@ process p6 "Ask FLO chat stays: reset does not touch it"
 end e1 "Demo is at its first screen again"
 
 s1 --> c1 --> p1
-p1 --> r1 & r2 & r3 & r4 & r5 & r6 & r7 & r8 & r9
-r1 & r2 & r3 & r4 & r5 & r6 & r7 & r8 & r9 --> p2
+p1 --> r1 & r2 & r3 & r4 & r5 & r6 & r7 & r8 & r9 & r10
+r1 & r2 & r3 & r4 & r5 & r6 & r7 & r8 & r9 & r10 --> p2
 p2 --> p3 --> t1 --> p4 --> p5 --> p6 --> e1

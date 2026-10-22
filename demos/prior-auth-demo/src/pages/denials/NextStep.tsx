@@ -14,12 +14,6 @@ import { ReviewNote } from "./ReviewNote";
 
 const BG: Record<Tone, string> = { good: "bg-good-bg", mid: "bg-mid-bg", risk: "bg-risk-bg", neutral: "bg-tile" };
 
-/** True while the block recommends a step: nothing is under way yet and the denial is not settled. Then its primary button starts the recommended route. */
-export function isRecommending(view: DenialView): boolean {
-  const { req, work } = view;
-  return !work.accepted && !(work.decision && work.decision.result !== "upheld") && !isClosed(work) && !isFiled(req) && req.chip !== "Appeal drafting" && req.chip !== "Call booked";
-}
-
 interface Props {
   view: DenialView;
   step: RecommendedStep;

@@ -14,19 +14,24 @@ click l3 "On the coverage card: click 'Open Eligibility & Benefits'"
 click l4 "On a denied request: click 'Open in Denial Intelligence'\n(in the 'Next:' block)"
 click l5 "Click 'Open in review and sign' or 'Send to payer'\n('Send to payer' is the 'Next:' block's button once every check passes)"
 click l7 "Click 'Back to queue' or the 'Authorizations' crumb"
+click l9 "In the queue's quick view panel: click 'Review and sign'\n(shown while the request is being prepared)"
+click l10 "On the card for a case at another site: click 'Back to the Dashboard'"
 click l8 "Click 'Open on the Dashboard'\n(in the 'Next:' block or next to the status line, once the request is past Preparing)"
 
-goto g1 "Continues in: New case › Referral step"
-goto g2 "Continues in: Eligibility & Benefits › Verify a patient"
-goto g5 "Continues in: Case Manager › Active cases"
-goto g3 "Continues in: Denial Intelligence › Open a denial"
+goto g1 "Continues in: Authorizations › New case › How a case starts and resumes"
+goto g2 "Continues in: Authorizations › Eligibility & Benefits › Verify › Ways in and pre-fill"
+goto g5 "Continues in: Case Manager › Active cases › Tracker of every active case"
+goto g3 "Continues in: Denial Intelligence › A denial opened"
 goto g4 "Continues in: Authorizations › Case page › Send to payer and review and sign"
 goto g6 "Continues in: Authorizations › Queue › Open the queue and read the top"
-goto g7 "Continues in: Dashboard › Request drawer"
+goto g7 "Continues in: Dashboard › Request drawer › Open and read a request"
+goto g8 "Continues in: Dashboard › Arrive › What the page shows"
 
 q --> l1 --> g1
 q --> l2 --> g2
 q --> l6 --> g5
+q --> l9 --> g4
+q --> l10 --> g8
 cp --> l3 --> g2
 cp --> l4 --> g3
 cp --> l5 --> g4

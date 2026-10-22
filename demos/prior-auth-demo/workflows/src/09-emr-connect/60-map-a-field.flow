@@ -2,19 +2,19 @@ title: EMR Connect › Needs a mapping › Map a field
 route: /emr
 intro: When the agents meet a field they cannot place, it waits for a mapping. It shows in 'Action required' and, with its question, at the top of the field mappings in the folded 'Advanced' section. A person picks which Psyflo value it fills. The picker always has a value, so saving cannot fail.
 dir: TD
-also: Starting fields: 'Level of care' (outpatient record) and 'Referral source' (intake). Until one is mapped, a chart pulled in New case from that system leaves the matching field blank. Mapping is a person's own choice, so a paused Reader does not stop it.
+also: Starting fields: 'Level of care' (the Site B record) and 'Referral source' (intake at Site B). Both belong to Clinical record · Site B, so only a viewer who sees Site B is asked to map them. Until one is mapped, a chart pulled in New case from that system leaves the matching field blank. Mapping is a person's own choice, so a paused Reader does not stop it.
 ---
 start s1 "Open EMR Connect\n'Action required' names the waiting fields, and 'Advanced' shows the pill '2 to map'"
 screen c1 "Advanced › Field mappings\nWaiting fields first, then every mapping"
-process r1 "Row 1: 'Level of care' · Not mapped\n'Clinical record · outpatient site · Match to IOP or PHP'"
+process r1 "Row 1: 'Level of care' · Not mapped\n'Clinical record · Site B · Match to IOP or PHP'"
 process r2 "Row 2: 'Referral source' · Not mapped\n'Match to a payer field'"
 toast em "'10 mapped ... Every field the agents have met is mapped.'\nShown at 0 fields. The pill and the 'Action required' mention go away"
 click b0 "Click 'Advanced', or Tab to it and press Enter or Space"
 click b1 "Click 'Map' on a waiting row"
 click b2 "Click 'Map field' in the 'Action required' line\nOnly when the waiting fields are the first thing that needs a person"
 
-overlay o1 "Map 'Level of care'\nIn the outpatient record"
-process q1 "Question from the agents\n'The outpatient record writes Level of care as free text, such as Day program. Which level should the agents read it as?'"
+overlay o1 "Map 'Level of care'\nIn the Site B record"
+process q1 "Question from the agents\n'The Site B record writes Level of care as free text, such as Day program. Which level should the agents read it as?'"
 input i1 "Pick a value in the dropdown (click, or arrow keys and Enter)\nLevel of care: IOP (first) or PHP\nReferral source: Payer name (first), Plan type or Referring provider"
 process n1 "'Until it is mapped, New case leaves the matching field blank when it pulls a chart from this system. Once it is mapped, every future pull fills it. Files already pulled are not rewritten.'"
 decision d1 "Which button?"
@@ -24,7 +24,7 @@ endx x1 "Pop-up closes\nThe field stays waiting"
 
 group gSave "What saving does"
   store s2 "The field leaves the waiting rows"
-  store s3 "A mapping row is added to the list\n'Level of care → PHP', 'Clinical record · outpatient site', mapped by 'You, 10/20'"
+  store s3 "A mapping row is added to the list\n'Level of care → PHP', 'Clinical record · Site B', mapped by 'You, 10/20'"
   agent a1 "Reader logs 'Mapped 'Level of care' to IOP. It applies to every future pull'\nIn the activity log, in Advanced"
   toast t1 "'Field mapped'\n'Level of care' now fills IOP."
   process p1 "The pill and the 'Action required' mention count down: 2, 1, then none\nAt none the section summary reads '12 field mappings' with no 'waiting'"

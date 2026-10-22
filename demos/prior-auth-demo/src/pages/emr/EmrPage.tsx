@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Plus } from "lucide-react";
+import { SiteTag } from "@/components/layout/SiteTag";
 import { Button, Page, PageHeader } from "@/components/ui";
 import { AGENTS } from "@/data/agents";
-import type { UnmappedField } from "@/data/emr";
+import { emrInView, type UnmappedField } from "@/data/emr";
 import type { AgentKey } from "@/data/types";
 import { sleep } from "@/lib/format";
+import { useScope } from "@/lib/scope";
 import { useStore } from "@/store";
 import { ActionRequired, needsOf } from "./ActionRequired";
 import { Advanced } from "./Advanced";
@@ -20,13 +22,18 @@ import { ReconnectModal } from "./ReconnectModal";
 
 const SYNC_MS = 2000;
 
-/** EMR Connect: is the chart flowing in, and what may the agents write back? A status page, not a settings maze. */
+/** EMR Connect: is the chart flowing in, and what may the agents write back? A status page, not a settings maze.
+    Record systems belong to a site, so everything below follows the site view: a Site A viewer sees Site A's record system and the billing system both sites share, never Site B's. */
 export default function EmrPage() {
   const alive = useAlive();
-  const systems = useStore((s) => s.emrSystems);
-  const unmapped = useStore((s) => s.emrUnmapped);
-  const charts = useStore((s) => s.emrCharts);
-  const files = useStore((s) => s.emrFiles);
+  const { sites } = useScope();
+  const allSystems = useStore((s) => s.emrSystems);
+  const allUnmapped = useStore((s) => s.emrUnmapped);
+  const counts = useStore((s) => s.emrCounts);
+  const systems = useMemo(() => emrInView(allSystems, sites), [allSystems, sites]);
+  const unmapped = useMemo(() => allUnmapped.filter((u) => systems.some((x) => x.id === u.systemId)), [allUnmapped, systems]);
+  const charts = sites.reduce((n, id) => n + counts[id].charts, 0);
+  const files = sites.reduce((n, id) => n + counts[id].files, 0);
   const clock = useStore((s) => s.clock);
   const paused = useStore((s) => s.agentPaused);
   const [syncing, setSyncing] = useState<string[]>([]);
@@ -74,7 +81,7 @@ export default function EmrPage() {
   return (
     <Page>
       <PageHeader
-        title="EMR Connect"
+        title={<>EMR Connect<SiteTag /></>}
         sub={
           <>
             <span>Charts arrive on their own. Nothing is written back until a person approves it.</span>
@@ -86,8 +93,8 @@ export default function EmrPage() {
       <ActionRequired needs={needs} />
       <HealthCard systems={systems} clock={clock} charts={charts} files={files} syncing={syncing} allBusy={allBusy} onSyncAll={syncAll} onSync={syncOne} onManage={setManage} onFix={fix} onReconnect={reconnect} />
       <Advanced systems={systems} clock={clock} onMap={setMapping} />
-      {manage ? <ManageDrawer systemId={manage} clock={clock} onClose={() => setManage(null)} onReconnect={reconnect} /> : null}
-      {mapping ? <MapModal field={mapping} onClose={() => setMapping(null)} /> : null}
+      {manage && systems.some((x) => x.id === manage) ? <ManageDrawer systemId={manage} clock={clock} onClose={() => setManage(null)} onReconnect={reconnect} /> : null}
+      {mapping && unmapped.some((u) => u.id === mapping.id) ? <MapModal field={mapping} onClose={() => setMapping(null)} /> : null}
       {connecting ? <ConnectModal onClose={() => setConnecting(false)} /> : null}
       {fixTarget ? <FixModal system={fixTarget} onClose={() => setFixing(null)} /> : null}
       {reconnectTarget ? <ReconnectModal system={reconnectTarget} onClose={() => setReconnecting(null)} /> : null}

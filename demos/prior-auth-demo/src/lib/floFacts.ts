@@ -1,13 +1,12 @@
 /* What FLO reads from the demo data: who needs a person, what is due, which authorizations end, which denial deadlines are close.
-   The Dashboard's "Summary from FLO" and the Ask FLO answers both come from here, so the two never disagree.
-   Everything is worked out from the store each time it is asked, so it moves with the demo clock and with every request. */
+   The Dashboard's Do next list (lib/doNext.ts) and the Ask FLO answers both come from here, so the two never disagree.
+   Everything is worked out from the data it is given each time it is asked, so it moves with the demo clock and with every request.
+   Callers pass only what the viewer may see (see lib/floScope.ts), so nothing here needs to know about sites. */
 import type { LedgerCase } from "@/data/manager";
 import { openItems, type QueueItem } from "@/data/queue";
 import { payerById } from "@/data/seed";
 import type { PsyRequest } from "@/data/types";
 import { duration, DAY, HOUR, toDate } from "@/lib/time";
-import { plural } from "@/lib/format";
-import { paths } from "@/routes";
 
 const WEEKDAY = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -127,49 +126,7 @@ export function denialDeadlines(requests: PsyRequest[], clock: number, withinDay
 /** "peer-to-peer window, 36 h left" */
 export const deadlineLine = (r: PsyRequest, clock: number): string => `${r.clockSub ?? "deadline"}, ${inSpan((r.deadlineAt ?? clock) - clock)} left`;
 
-/* ------------------------------------------------------------------ the Dashboard summary */
+/* ------------------------------------------------------------------ when a request was sent */
 
-export interface SummaryLine {
-  id: "needs" | "expiry" | "denials";
-  text: string;
-  link: { label: string; to: string };
-}
-
-export interface SummaryInput {
-  requests: PsyRequest[];
-  queueItems: QueueItem[];
-  ledger: LedgerCase[];
-  clock: number;
-}
-
-/** Three short lines: who needs you and what is due soonest, which authorizations end this week, which denial deadlines fall this week. */
-export function summaryLines({ requests, queueItems, ledger, clock }: SummaryInput): SummaryLine[] {
-  const dues = dueByRequest(requests, queueItems);
-  const needs = needsYouList(requests, dues);
-  const soonest = openByDue(queueItems, requests)[0];
-
-  const first = needs[0];
-  const soonText = soonest && soonest.id !== first?.id && soonest.id !== first?.caseId ? ` Due soonest: ${soonest.id} (${payerById(soonest.payerId).shortName}), ${inline(dueText(soonest.dueVerb, soonest.dueAt, clock))}.` : "";
-  const who = first
-    ? `${plural(needs.length, "request")} ${needs.length === 1 ? "needs" : "need"} you. Most urgent: ${first.id} (${shortPayer(first)}), ${dueLine(first, dues, clock)}.${soonText}`
-    : `Nothing needs you right now.${soonText}`;
-  const whoTo = first?.id ?? soonest?.id;
-
-  const { soon, ended } = endingAuthorizations(ledger, clock);
-  const endedText = ended.length ? ` ${plural(ended.length, "authorization")} ${ended.length === 1 ? "has" : "have"} already ended.` : "";
-  const ending = soon.length
-    ? `${soon[0].c.id} has used ${usedOf(soon[0].c)} and ends in ${inSpan(soon[0].left)}.${soon.length > 1 ? ` ${soon.length - 1} more end within 7 days.` : ""}${endedText}`
-    : `No authorization ends in the next 7 days.${endedText}`;
-
-  const { soon: dl, closed } = denialDeadlines(requests, clock);
-  const closedText = closed.length ? ` ${plural(closed.length, "window")} ${closed.length === 1 ? "has" : "have"} already closed.` : "";
-  const denials = dl.length
-    ? `${plural(dl.length, "denial deadline")} ${dl.length === 1 ? "falls" : "fall"} this week. Nearest: ${dl[0].id} (${shortPayer(dl[0])}), ${deadlineLine(dl[0], clock)}.${closedText}`
-    : `No denial deadline falls this week.${closedText}`;
-
-  return [
-    { id: "needs", text: who, link: whoTo ? { label: `Open ${whoTo}`, to: paths.case(whoTo) } : { label: "Open Authorizations", to: paths.authorizations() } },
-    { id: "expiry", text: ending, link: { label: "Open Case Manager", to: paths.manager("cases") } },
-    { id: "denials", text: denials, link: { label: "Open Denial Intelligence", to: paths.denials(dl[0]?.id) } },
-  ];
-}
+/** The time the request went to the payer: the first history line that says it was sent. Undefined while it is still being prepared. */
+export const sentAt = (r: PsyRequest): number | undefined => r.events.find((e) => e.done && (e.text.startsWith("Navigator sent") || e.text.startsWith("You signed and sent")))?.at;

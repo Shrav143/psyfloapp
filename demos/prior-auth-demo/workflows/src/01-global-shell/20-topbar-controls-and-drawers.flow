@@ -1,11 +1,15 @@
-title: Global shell › Top bar › Three controls and how drawers close
+title: Global shell › Top bar › Controls and how drawers close
 route: Every page (top bar, right side)
-intro: The top bar holds three controls: the Demo menu, the 'Ask FLO' button and the 'Notifications' bell. The two drawers close the same three ways. There is no search box and no page title in the bar.
+intro: The top bar holds the site view on the left and three controls on the right: the Demo menu, the 'Ask FLO' button and the 'Notifications' bell. The two drawers close the same three ways. There is no search box and no page title in the bar.
 dir: TD
 also: Privacy mode is not a control. It is always on and is explained on the Settings page. The Demo menu is for the demo only and is not part of the product.
 ---
 start s1 "Any page is open"
-screen tb "Top bar (stays at the top while the page scrolls)\n'Demo' with the clock, 'Ask FLO' sparkle button, 'Notifications' bell"
+screen tb "Top bar (stays at the top while the page scrolls)\nSite view on the left, then 'Demo' with the clock, 'Ask FLO' sparkle button, 'Notifications' bell"
+process nar "On a narrow window (under 1024 px) the 'As of' date and the word 'Demo' are hidden so nothing wraps; the clock pill stays"
+
+screen site "Site view\n'Both sites | Site A | Site B', or a locked 'Site A only' for a one-site viewer"
+goto gSite "Continues in: Global shell › Top bar › Site switcher"
 
 click cDemo "Click 'Demo'\n(the pill shows the clock, for example 'Tue 10:42 am')"
 overlay oDemo "Demo menu opens under the button"
@@ -31,6 +35,8 @@ process keep "Nothing typed is lost: the Ask FLO chat and any unsent question st
 end e1 "Back on the page"
 
 s1 --> tb
+tb --> nar
+tb --> site --> gSite
 tb --> cDemo --> oDemo --> gDemo
 tb --> cAsk --> oAsk --> gAsk
 tb --> cBell --> oNot --> gNot

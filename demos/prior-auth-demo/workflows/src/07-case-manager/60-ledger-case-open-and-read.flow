@@ -1,6 +1,6 @@
 title: Case Manager › Ledger case › Open and read
 route: /authorizations/case/ID (a case that is in the Case Manager ledger and has no request in the queue)
-intro: 26 of the 56 tracker cases have no request in the queue or on the Dashboard. Their ID opens a calm summary built from the ledger record, so the tracker, the reviews and the 'Ready to step down?' card never end at 'Request not found'. It says who, which payer and service, how much of the approval is used, what is due and the next step.
+intro: A case at a site the viewer is not looking at shows an out-of-site card instead (see Case Manager › Sites). 26 of the 56 tracker cases have no request in the queue or on the Dashboard. Their ID opens a calm summary built from the ledger record, so the tracker, the reviews and the 'Ready to step down?' card never end at 'Request not found'. It says who, which payer and service, how much of the approval is used, what is due and the next step.
 dir: TD
 also: Patient shows initials and age only, with a 'Privacy mode on' pill, as everywhere in the demo. Authorization dates are worked out from the units used and the demo clock, or taken from the ledger's own end date when it has one.
 ---

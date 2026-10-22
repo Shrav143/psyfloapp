@@ -4,7 +4,7 @@ intro: The footer has a 'Demo data' tile, three rows (Settings, Help, Sign out) 
 dir: TD
 ---
 start s1 "Look at the bottom of the sidebar"
-screen foot "Footer\n'Demo data' tile, 'Settings', 'Help', 'Sign out', then 'JP  Jordan Perez  UR coordinator'"
+screen foot "Footer\n'Demo data' tile, 'Settings', 'Help', 'Sign out', then the user card, 'JP  Jordan Perez  UR coordinator' until another viewer is chosen"
 
 click cTile "Click the 'Demo data' tile"
 process pTile "Nothing happens: it is a label only"
@@ -16,7 +16,7 @@ process pSetOn "The 'Settings' row turns green while the address starts with /se
 goto gSet "Continues in: Settings"
 
 click cHelp "Click 'Help'"
-toast tHelp "'Help'\n'Press Ask FLO (top right) to ask a question. Use Demo, top right, to reset or move time forward.'"
+toast tHelp "'Help'\n'Press Ask FLO (top right) to ask a question. Use Demo, top right, to reset, move time forward or view as another person.'"
 process pHelp "No page opens and no dialog: the message is the whole of Help"
 decision dHelp "What does the person do next?"
 click cAsk "Click 'Ask FLO'"
@@ -26,12 +26,12 @@ goto gDemo "Continues in: Global shell › Demo menu › Open, close and what is
 
 click cOut "Click 'Sign out'"
 toast tOut "'This is a demo'\n'There is nothing to sign out of.'"
-process pOut "The person stays signed in as Jordan Perez\nThere is no login screen in the demo"
+process pOut "The person stays signed in as whoever is viewing (Jordan Perez at the start)\nThere is no login screen in the demo"
 end eOut "Same page, same data"
 
-click cCard "Click the user card\n('JP', 'Jordan Perez', 'UR coordinator')"
+click cCard "Click the user card\n(initials, name and role of the viewer: 'JP', 'Jordan Perez', 'UR coordinator')"
 process pCard "Nothing happens: no menu, no profile page"
-process pWho "Jordan Perez is the person every action is credited to\nThe Case Manager sign dialog says so: 'You are signed in as Jordan Perez, a UR coordinator'"
+process pWho "The viewer is the person edits and acknowledgements are credited to\nIt changes with 'Viewing as' in the Demo menu: for Dr. Rivera the card reads 'Clinician, Site A'\nThe Case Manager sign dialog says 'You are signed in as Jordan Perez, a UR coordinator'"
 endx eCard "No change"
 
 process pToast "Toasts fade after about 4 seconds, or on a click"
@@ -41,7 +41,7 @@ foot --> cTile --> pTile --> eTile
 foot --> cSet --> pSet --> pSetOn --> gSet
 foot --> cHelp --> tHelp --> pHelp --> dHelp
 dHelp -->|Ask a question| cAsk --> gAsk
-dHelp -->|Move the clock or reset| cDemo --> gDemo
+dHelp -->|Move the clock, reset or view as someone else| cDemo --> gDemo
 foot --> cOut --> tOut --> pOut --> eOut
 foot --> cCard --> pCard --> eCard
 pCard -.-> pWho

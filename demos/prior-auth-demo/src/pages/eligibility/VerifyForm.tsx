@@ -1,9 +1,12 @@
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Calendar, CalendarDays, Hash, Paperclip, ShieldCheck } from "lucide-react";
 import { Button, Card, CardBody, CardHeader, Dropdown, Field, FileDrop, Pill, Spinner, TextInput, type DemoFile } from "@/components/ui";
 import { PAYERS, payerById } from "@/data/seed";
 import { PROGRAM_LABEL, PROGRAMS, type PayerId, type Program } from "@/data/types";
 import { maskMember } from "@/data/cases";
-import { SAMPLES, type Sample } from "./samples";
+import { paths } from "@/routes";
+import { EXCEPTION_SAMPLES, SAMPLES, type Sample } from "./samples";
 import { formReady, type VerifyForm as Form } from "./verifySteps";
 
 export const SAMPLE_CARD = "Insurance card (front).jpg";
@@ -37,17 +40,41 @@ function CardStrip({ form, reading, locked, onReplace }: { form: Form; reading: 
   );
 }
 
-/** One chip per way a check can end. Each fills the form with a member who ends that way. */
+/** One chip per way a check can end. Each fills the form with a member who ends that way. The ones that need a look (a plan change, an ID that differs,
+    a benefit nobody confirmed, an unconfirmed enrollment, no rule on file) are one click further, so the form stays calm. */
 function SampleRow({ form, onSample, disabled }: { form: Form; onSample: (s: Sample) => void; disabled: boolean }) {
-  const active = SAMPLES.find((s) => s.form.payerId === form.payerId && s.form.member === form.member && s.form.program === form.program);
+  const [more, setMore] = useState(false);
+  const active = [...SAMPLES, ...EXCEPTION_SAMPLES].find((s) => s.form.payerId === form.payerId && s.form.member === form.member && s.form.program === form.program);
+  const showMore = more || EXCEPTION_SAMPLES.some((s) => s.id === active?.id);
+  const chip = (s: Sample) => (
+    <Button key={s.id} size="sm" variant={active?.id === s.id ? "primary" : "outline"} aria-pressed={active?.id === s.id} disabled={disabled} onClick={() => onSample(s)}>
+      {s.label}
+    </Button>
+  );
   return (
-    <div role="group" aria-label="Try a sample" className="flex flex-wrap items-center gap-2">
-      <span className="mr-1 text-[13px] font-medium text-muted">Try a sample</span>
-      {SAMPLES.map((s) => (
-        <Button key={s.id} size="sm" variant={active?.id === s.id ? "primary" : "outline"} aria-pressed={active?.id === s.id} disabled={disabled} onClick={() => onSample(s)}>
-          {s.label}
+    <div className="flex flex-col gap-2">
+      <div className="flex flex-wrap items-center gap-2">
+        <div role="group" aria-label="Try a sample" className="flex flex-wrap items-center gap-2">
+          <span className="mr-1 text-[13px] font-medium text-muted">Try a sample</span>
+          {SAMPLES.map(chip)}
+        </div>
+        <Button size="sm" variant="ghost" aria-expanded={showMore} onClick={() => setMore(!showMore)}>
+          {showMore ? "Fewer samples" : "More samples"}
         </Button>
-      ))}
+      </div>
+      {showMore ? (
+        <div role="group" aria-label="Try an exception" className="flex flex-wrap items-center gap-2">
+          <span className="mr-1 text-[13px] font-medium text-muted">Needs a look</span>
+          {EXCEPTION_SAMPLES.map(chip)}
+          <span className="basis-full text-xs text-muted">
+            To see a check that cannot run, pause Verify in{" "}
+            <Link to={paths.settings()} className="font-semibold text-forest hover:underline">
+              Settings
+            </Link>
+            .
+          </span>
+        </div>
+      ) : null}
     </div>
   );
 }

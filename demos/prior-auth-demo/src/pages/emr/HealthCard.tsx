@@ -1,7 +1,8 @@
 import { RefreshCw } from "lucide-react";
-import { Button, Card, CardHeader } from "@/components/ui";
+import { Button, Card, CardHeader, InfoTip } from "@/components/ui";
 import type { EmrSystem } from "@/data/emr";
 import { plural } from "@/lib/format";
+import { useScope } from "@/lib/scope";
 import { lastSyncTile, syncFailures } from "./lib/status";
 import { SystemRow } from "./SystemRow";
 
@@ -35,11 +36,22 @@ export function HealthCard({ systems, clock, charts, files, syncing, allBusy, on
   const sync = lastSyncTile(systems, clock);
   const connected = systems.filter((s) => s.status === "connected").length;
   const failures = systems.reduce((n, s) => n + (syncFailures(s, clock) ?? 0), 0);
+  const { sites, restricted, label } = useScope();
   return (
     <Card>
       <CardHeader
         title="Connection health"
-        subtitle={`${connected} of ${plural(systems.length, "system")} connected. Read access for charts, insurance details and medications.`}
+        subtitle={
+          <>
+            {sites.length === 1 ? `${label}. ` : ""}
+            {connected} of {plural(systems.length, "system")} connected. Read access for charts, insurance details and medications.
+            {restricted ? (
+              <InfoTip label="Why only some systems are shown" className="ml-1">
+                A record system belongs to a site. You see {label}'s record system and the billing system both sites share. The other site's record system is not shown, and you cannot change it.
+              </InfoTip>
+            ) : null}
+          </>
+        }
         right={<Button size="sm" variant="primary" icon={RefreshCw} loading={allBusy} disabled={syncing.length > 0} onClick={onSyncAll}>Sync now</Button>}
       />
       <div className="grid grid-cols-2 gap-x-6 gap-y-4 border-b border-line px-6 py-4 lg:grid-cols-4">

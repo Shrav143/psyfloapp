@@ -1,121 +1,78 @@
-import type { PayerId, Program } from "./types";
+import type { BuiltInPayerId, Program } from "./types";
 
-/* Analytics. "This quarter" with all payers and all programs is the canonical set: 1,070 decisions, 71% approved as asked
-   (so 29% denied, 311 denials), 84% advice taken works, 75% sent without edits; approval by payer Lakeshore 86, Beacon 81,
-   Harborview 77, Summit 74, Evergreen 69, Cardinal 63; edits 68 / 27 / 5. Appeals overturned 56% of 96 decided, 17 denials accepted.
-   Turnaround is the decision-weighted average of each payer's avgDecisionDays in data/seed.ts (2.4 days).
-   Every other view (another period, one payer, one program) is derived from the tables below. */
+/* Analytics calibration. The case-level dataset (data/decisions.ts) is generated to hit these numbers for "this quarter, Both sites":
+   1,070 decisions, 71% approved as asked (so 29% not, 311 denials), per payer Lakeshore 86, Beacon 81, Harborview 77, Summit 74,
+   Evergreen 69, Cardinal 63, the denial reasons below (73 at the top: continued-stay evidence at Cardinal), 207 preventable denials,
+   96 appeal rulings of which 54 were overturned or partly restored (56%), 17 denials accepted, 84% advice taken works, 68 / 27 / 5
+   edits, program shares 40 / 30 / 20 / 10 and a decision-weighted average of 2.4 days. Every figure on the Analytics page is
+   computed from the records, never from these tables, so a chart, its table and its case list cannot disagree. */
 
 export const MIN_DECISIONS = 20;
 
 export type PeriodId = "quarter" | "last_quarter" | "year";
-export type PayerFilter = PayerId | "all";
+export type MonthRange = readonly [first: number, last: number];
 
 export interface PeriodInfo {
   id: PeriodId;
   label: string;
   /** "this quarter", used in sentences. */
   phrase: string;
-  /** What the trend line compares with. */
-  prev: string;
-  /** Volume relative to this quarter. */
-  scale: number;
+  /** Month indexes (0 = Nov 2025 ... 11 = Oct 2026) the period covers, both ends included. */
+  months: MonthRange;
+  /** What the change on a figure compares: the months it looks at now and the months before them. */
+  compare: { now: MonthRange; before: MonthRange; words: string };
 }
 export const PERIODS: PeriodInfo[] = [
-  { id: "quarter", label: "This quarter", phrase: "this quarter", prev: "last quarter", scale: 1 },
-  { id: "last_quarter", label: "Last quarter", phrase: "last quarter", prev: "the quarter before", scale: 0.96 },
-  { id: "year", label: "Last 12 months", phrase: "the last 12 months", prev: "the year before", scale: 3.9 },
+  { id: "quarter", label: "This quarter", phrase: "this quarter", months: [9, 11], compare: { now: [9, 11], before: [6, 8], words: "vs last quarter" } },
+  { id: "last_quarter", label: "Last quarter", phrase: "last quarter", months: [6, 8], compare: { now: [6, 8], before: [3, 5], words: "vs the quarter before" } },
+  { id: "year", label: "Last 12 months", phrase: "the last 12 months", months: [0, 11], compare: { now: [6, 11], before: [0, 5], words: "last 6 months vs the 6 before" } },
 ];
 
-/** The Program filter. The model has no per-program split, so these weights are Demo values. Shares add to 100, and the shifts
-    and multipliers are balanced against those shares, so "All programs" stays the canonical set. */
-export type ProgramFilter = Program | "all";
-export interface ProgramWeights {
-  label: string;
-  /** Share of decisions, in percent. */
-  share: number;
-  /** Points added to every payer's approved-as-asked rate. Weighted by share they add to 0. */
-  approvalShift: number;
-  /** Multiplier on a payer's average decision time. Weighted by share it averages 1. */
-  turnaround: number;
-  /** Points added to "advice taken works". */
-  adviceShift: number;
-  /** Points moved between "sent as written" and "light edits". */
-  writtenShift: number;
-  /** Weight on denial reasons the team can fix before sending, and on the others. Each averages 1 across programs. */
-  preventable: number;
-  other: number;
-}
-export const PROGRAM_WEIGHTS: Record<Program, ProgramWeights> = {
-  RES: { label: "Residential", share: 40, approvalShift: -3, turnaround: 1.1, adviceShift: -2, writtenShift: -3, preventable: 0.9, other: 1.13 },
-  IOP: { label: "IOP", share: 30, approvalShift: 4, turnaround: 0.95, adviceShift: 3, writtenShift: 4, preventable: 1.1, other: 0.86 },
-  PHP: { label: "PHP", share: 20, approvalShift: 2, turnaround: 0.95, adviceShift: 1, writtenShift: 2, preventable: 1.1, other: 0.88 },
-  WM: { label: "Withdrawal management", share: 10, approvalShift: -4, turnaround: 0.85, adviceShift: -3, writtenShift: -4, preventable: 0.9, other: 1.14 },
-};
 export const PROGRAM_ORDER: Program[] = ["RES", "IOP", "PHP", "WM"];
+/** Program shares of this quarter's decisions, in percent (Demo values). */
+export const PROGRAM_SHARE: Record<Program, number> = { RES: 40, IOP: 30, PHP: 20, WM: 10 };
 
-/** Demo values: how decision times drift in other periods (a multiplier on the payer averages), and what each period is compared with. */
-export const TURNAROUND_SCALE: Record<PeriodId, number> = { quarter: 1, last_quarter: 1.06, year: 1.04 };
-export const TURNAROUND_PREV: Record<PeriodId, number> = { quarter: 1.06, last_quarter: 1.12, year: 1.1 };
+export const PAYER_ORDER: BuiltInPayerId[] = ["lakeshore", "beacon", "harborview", "summit", "evergreen", "cardinal"];
 
-export const PAYER_ORDER: PayerId[] = ["lakeshore", "beacon", "harborview", "summit", "evergreen", "cardinal"];
-
+/** One payer in one quarter. `decisions` and `denials` are counts; the approved-as-asked rate each leaves rounds to the canonical percentage. */
 export interface PayerBase {
-  /** Decisions in a quarter. They add up to 1,070. */
   decisions: number;
-  /** Requests in a quarter where advice was applied, and the share approved. */
+  /** Denied outright or approved in part: everything that was not approved as asked. */
+  denials: number;
+  /** The canonical approved-as-asked percentage these counts must round to. */
+  rate: number;
+  /** Requests where FLO's advice was applied. */
   adviceN: number;
-  advice: number;
-  /** Agent drafts in a quarter and how they were edited (percent, adds to 100). */
+  /** Agent drafts, and how they were edited (percent, adds to 100). */
   draftsN: number;
   written: number;
   light: number;
   rewritten: number;
+  /** Appeals ruled on, how many of them were overturned or partly restored, and denials the clinic accepted. */
+  appeals: number;
+  overturned: number;
+  accepted: number;
 }
-export const BASE: Record<PayerId, PayerBase> = {
-  cardinal: { decisions: 380, adviceN: 301, advice: 81, draftsN: 342, written: 64, light: 29, rewritten: 7 },
-  summit: { decisions: 250, adviceN: 205, advice: 85, draftsN: 231, written: 70, light: 25, rewritten: 5 },
-  evergreen: { decisions: 170, adviceN: 133, advice: 82, draftsN: 148, written: 66, light: 28, rewritten: 6 },
-  beacon: { decisions: 110, adviceN: 94, advice: 88, draftsN: 101, written: 72, light: 24, rewritten: 4 },
-  harborview: { decisions: 100, adviceN: 78, advice: 86, draftsN: 90, written: 70, light: 25, rewritten: 5 },
-  lakeshore: { decisions: 60, adviceN: 17, advice: 90, draftsN: 54, written: 75, light: 21, rewritten: 4 },
+export const BASE: Record<BuiltInPayerId, PayerBase> = {
+  cardinal: { decisions: 382, denials: 141, rate: 63, adviceN: 301, draftsN: 342, written: 64, light: 29, rewritten: 7, appeals: 38, overturned: 21, accepted: 6 },
+  summit: { decisions: 250, denials: 65, rate: 74, adviceN: 205, draftsN: 231, written: 70, light: 25, rewritten: 5, appeals: 21, overturned: 12, accepted: 4 },
+  evergreen: { decisions: 170, denials: 53, rate: 69, adviceN: 133, draftsN: 148, written: 66, light: 28, rewritten: 6, appeals: 12, overturned: 6, accepted: 2 },
+  beacon: { decisions: 110, denials: 21, rate: 81, adviceN: 94, draftsN: 101, written: 72, light: 24, rewritten: 4, appeals: 8, overturned: 5, accepted: 1 },
+  harborview: { decisions: 100, denials: 23, rate: 77, adviceN: 78, draftsN: 90, written: 70, light: 25, rewritten: 5, appeals: 14, overturned: 8, accepted: 3 },
+  lakeshore: { decisions: 58, denials: 8, rate: 86, adviceN: 17, draftsN: 54, written: 75, light: 21, rewritten: 4, appeals: 3, overturned: 2, accepted: 1 },
 };
 
-/** Approved as asked, by payer and period. This quarter is the canonical set. */
-export const APPROVED: Record<PeriodId, Record<PayerId, number>> = {
-  quarter: { lakeshore: 86, beacon: 81, harborview: 77, summit: 74, evergreen: 69, cardinal: 63 },
-  last_quarter: { lakeshore: 82, beacon: 77, harborview: 72, summit: 68, evergreen: 62, cardinal: 56 },
-  year: { lakeshore: 84, beacon: 79, harborview: 75, summit: 72, evergreen: 66, cardinal: 60 },
-};
-/** The same payer one period earlier, for the trend line. This quarter compares with the table above. */
-export const APPROVED_PREV: Record<PeriodId, Record<PayerId, number>> = {
-  quarter: APPROVED.last_quarter,
-  last_quarter: { lakeshore: 80, beacon: 75, harborview: 70, summit: 66, evergreen: 60, cardinal: 54 },
-  year: { lakeshore: 77, beacon: 72, harborview: 68, summit: 64, evergreen: 58, cardinal: 52 },
-};
-
-/** Whole-practice figures that are not sums of the payer tables. Approval and denial rates are always summed from the payers. */
-export interface AllFigures {
-  advice: number;
-  noEdits: number;
-  written: number;
-  light: number;
-  rewritten: number;
-  /** Share approved for as written, light edits, rewritten. */
-  editApproval: [number, number, number];
-}
-export const ALL: Record<PeriodId, AllFigures> = {
-  quarter: { advice: 84, noEdits: 75, written: 68, light: 27, rewritten: 5, editApproval: [89, 76, 45] },
-  last_quarter: { advice: 81, noEdits: 71, written: 64, light: 29, rewritten: 7, editApproval: [86, 72, 41] },
-  year: { advice: 79, noEdits: 70, written: 62, light: 31, rewritten: 7, editApproval: [85, 72, 42] },
-};
+/** Share of the drafts that were approved in full or in part, by edit class: sent as written, light edits, rewritten. */
+export const EDIT_APPROVAL: [number, number, number] = [89, 76, 45];
+/** Share of the requests where advice was applied that were approved in full or in part, across all payers. */
+export const ADVICE_WORKS = 84;
 
 export interface Reason {
   label: string;
-  /** One line for the Top denial cause tile. */
+  /** One line for the top-denial-cause figure. */
   short: string;
-  payerId: PayerId;
-  /** How often the reason is cited, relative to the payer's other reasons. A view spreads the payer's denials over its reasons in these proportions. */
+  payerId: BuiltInPayerId;
+  /** How often the reason is cited, relative to the payer's other reasons. A quarter spreads the payer's denials over its reasons in these proportions. */
   count: number;
   /** True when the team can fix it before sending: missing or thin documentation, late notice, incomplete certification, a duplicate request. */
   preventable: boolean;
@@ -143,14 +100,15 @@ export const REASONS: Reason[] = [
   { label: "Units above the plan limit", short: "Units above plan limit", payerId: "lakeshore", count: 5, preventable: false },
   { label: "Late notice", short: "Late notice", payerId: "lakeshore", count: 3, preventable: true },
 ];
+export const reasonsOf = (payerId: BuiltInPayerId): Reason[] => REASONS.filter((r) => r.payerId === payerId);
 
+/** The steps FLO suggests. `base` is how many requests applied the step in a quarter across all payers, `approved` the share approved
+    in full or in part, `affinity` how much more or less the step matters at each payer. */
 export interface HelpAction {
   label: string;
-  /** Times applied in a quarter across all payers, and the share approved. */
   base: number;
   approved: number;
-  /** How much more or less this step matters at each payer. */
-  affinity: Record<PayerId, number>;
+  affinity: Record<BuiltInPayerId, number>;
 }
 export const ACTIONS: HelpAction[] = [
   { label: "Document depression severity with dated scores", base: 389, approved: 91, affinity: { cardinal: 1.25, summit: 1.1, evergreen: 0.9, beacon: 0.8, harborview: 0.8, lakeshore: 0.7 } },
@@ -161,17 +119,19 @@ export const ACTIONS: HelpAction[] = [
   { label: "Answer an information request within 24 hours", base: 141, approved: 79, affinity: { cardinal: 1.0, summit: 1.2, evergreen: 1.1, beacon: 0.7, harborview: 1.3, lakeshore: 0.6 } },
 ];
 
-/** Appeals a payer has ruled on in a quarter, and the share overturned or partly restored (percent). What Denial Intelligence records is added on top. */
-export const APPEALS: Record<PayerId, { decided: number; rate: number }> = {
-  cardinal: { decided: 38, rate: 55 },
-  summit: { decided: 21, rate: 57 },
-  evergreen: { decided: 12, rate: 50 },
-  harborview: { decided: 14, rate: 57 },
-  beacon: { decided: 8, rate: 63 },
-  lakeshore: { decided: 3, rate: 67 },
-};
-/** Other periods drift a little from this quarter, in percentage points. */
-export const OVERTURN_SHIFT: Record<PeriodId, number> = { quarter: 0, last_quarter: -3, year: -4 };
-
-/** Denials the clinic accepted in a quarter. Each denial accepted in Denial Intelligence is added on top. */
-export const ACCEPTED: Record<PayerId, number> = { cardinal: 6, summit: 4, evergreen: 2, harborview: 3, beacon: 1, lakeshore: 1 };
+/** Spreads `total` over `weights` in whole numbers that add up to `total` (largest remainder, ties go to the earlier one). */
+export function apportion(total: number, weights: number[]): number[] {
+  const weight = weights.reduce((a, b) => a + b, 0);
+  if (!total || !weight) return weights.map(() => 0);
+  const raw = weights.map((w) => (total * w) / weight);
+  const out = raw.map(Math.floor);
+  const left = total - out.reduce((a, b) => a + b, 0);
+  raw
+    .map((r, i) => ({ i, f: r - Math.floor(r) }))
+    .sort((a, b) => b.f - a.f || a.i - b.i)
+    .slice(0, left)
+    .forEach(({ i }) => {
+      out[i] += 1;
+    });
+  return out;
+}

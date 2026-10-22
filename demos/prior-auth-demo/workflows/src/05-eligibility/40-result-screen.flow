@@ -1,61 +1,53 @@
 title: Authorizations › Eligibility & Benefits › Result › What the page shows
 route: /authorizations/eligibility/R-1042
-intro: One result, result first. A single summary card holds the verdict with its buttons, then Eligibility, Benefits and What this service needs, then one facts line and one plain note. The seven payment checks and the agents' answers are two closed sections below it. Reached by a row on the list, or when a live check finishes. When the check began from a referral, a link leads back to it.
+intro: One result, result first. A single summary card holds the verdict with its buttons, then Eligibility, Benefits and What this service needs, then any warnings, one facts line and one plain note. The seven payment checks and the agents' answers are behind one button, in a side panel. Reached by a row on the list, or when a live check finishes. When the check began from a referral, a link leads back to it. A check at a site the viewer cannot see shows a notice instead.
 dir: TD
 ---
 start s1 "Click a row on the list, or a live check finishes"
+decision qs "Is this check at a site the viewer can see?"
+screen os "'This coverage check is not available at Site A'\nIt names no patient. Staff who may see both sites get 'Show Site B'"
 screen sc "Eligibility & Benefits\nTitle is the headline, for example 'Covered, but you need an authorization first.'\nSub 'R-1042 · J.M., 34 · Residential 3.5'"
 click b1 "Click '← Eligibility & Benefits' (back link, top left)"
 goto g0 "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows"
 click b2 "Click '← Back to referral RF-2040' beside it\nWith ?case= in the address it reads '← Back to case R-1042'\nShown only when ?referral= names a referral that exists"
 goto g4 "Continues in: Authorizations › New case › Referral › The full referral page"
 
-group gSum "Summary card (one card, nothing else above the closed sections)"
-  screen vb "Top band, green, amber or red\nSmall caps 'Verdict'\nBig words: 'Cleared to bill', 'Authorization first' or 'Fix before billing'\nOne sentence why"
-  screen bt "Buttons on the band\n'Start authorization', 'Open case', 'Request retro-eligibility' ... 'Check again'\nThey wrap under the words on a narrow screen"
+group gSum "Summary card (one card, then one row)"
+  screen vb "Top band, green, amber, red or grey\nSmall caps 'Verdict'\nBig words: 'Cleared to bill', 'Authorization first', 'Fix before billing' or 'Not checked'\nOne sentence why"
+  screen bt "Buttons on the band\n'Start authorization', 'Create authorization from verification', 'Open case', 'Request retro-eligibility' ... 'Check again'\nThey wrap under the words on a narrow screen"
   screen three "Three parts side by side (stacked on a narrow screen)\n'Eligibility', 'Benefits', 'What this service needs'"
-  screen facts "One facts line\nPayer, plan type and routing, member (masked), date of service,\ntime checked, source 'Simulated check against the payer portal'"
+  screen warn "Warnings, only when the check found something\nOne quiet block, one line each, for example\n'The payer changed. The member is with Cardinal Health Plan since 10/01.'"
+  screen facts "One facts line\nPayer, plan type and routing, member (masked), dates of service,\ntime checked, source 'Simulated check against the payer portal'"
   screen note "One small plain note, not a banner\n'Active coverage does not mean this service is covered. Check the benefits and the authorization requirement.'"
 endgroup
 
 toast t1 "Banner 'Not re-checked: Verify is paused in Settings'\n'The re-check was due Tue 11:32 am. It runs as soon as Verify is resumed.'\nThe only banner on the page, and only when it applies"
 
-group gPay "Closed section 'Payment checks'"
-  screen pc "Button with aria-expanded\n'6 of 7 pass, 1 needs a look. Every line has to pass for the clinic to be reimbursed.'\nOpens to seven rows, one chip each\nCoverage not found: the first row and one grey row 'Nothing else could be checked'"
-  click pk "Click 'Payment checks'"
-endgroup
-
-group gAg "Closed section 'How this was checked'"
-  screen ag "Button with aria-expanded\n'Verify, Criteria, Navigator, 0:12 in all. Next check: Coverage again on 11/01, then every month'"
-  click ak "Click 'How this was checked'"
-  screen ar "One row per agent\nVerify 'Eligibility with Ohio Medicaid' 0:03, Verify 'Benefits with Summit' 0:05\nCriteria 'Authorization rule' 0:02, Navigator 'Provider enrollment' 0:02\nThen the list of next checks"
-  process p3 "Evergreen adds a row 'Phone call to Evergreen' 1:34\nCoverage not found: only the row 'Eligibility with ...' (the others were not asked)"
-  click k1 "Click an agent row"
-  decision q2 "Was that row already open?"
-  process p4 "Row closes"
-  process p5 "Its answer opens under it, for example 'Coverage active, effective 01/01/2026, no end date'\nAny other open row closes"
-  process p6 "Next checks\n'Coverage again on 11/01, then every month'\n'Before each recertification'\n'3 days before the first claim'\nA row with a re-check to come starts with 'Re-check due Tue 11:32 am, done by Verify on its own'\nCoverage not found: 'Check again once the member ID or date of birth is fixed'"
+group gRow "One row under the card"
+  screen pc "'Payment checks and how this was checked'\n'6 of 7 pass, 1 needs a look. Every line has to pass for the clinic to be reimbursed.'\nButton 'View full verification details'"
+  click pk "Click 'View full verification details'"
+  overlay ov "Side panel 'Verification details' opens from the right\nPayment checks, How this was checked, About this check\nThe page behind stays where it was"
 endgroup
 
 goto g1 "Continues in: Authorizations › Eligibility & Benefits › Result › Which verdict and why"
-goto g2 "Continues in: Authorizations › Eligibility & Benefits › Result › Payment checks: coverage, plan, service"
+goto g2 "Continues in: Authorizations › Eligibility & Benefits › The details panel"
 goto g3 "Continues in: Authorizations › Eligibility & Benefits › Result › Next actions"
 goto g5 "Continues in: Authorizations › Eligibility & Benefits › Result › Result first: eligibility, benefits, what the service needs"
 goto g6 "Continues in: Authorizations › Eligibility & Benefits › Result › Plan type and routing"
+goto g7 "Continues in: Authorizations › Eligibility & Benefits › The exceptions"
+goto g8 "Continues in: Authorizations › Eligibility & Benefits › Sites"
 
-s1 --> sc
+s1 --> qs
+qs -->|No| os --> g8
+qs -->|Yes| sc
 sc --> b1 --> g0
 sc --> b2 --> g4
 sc --> vb --> bt
 vb -.-> g1
 bt --> g3
-vb --> three --> facts --> note
+vb --> three --> warn --> facts --> note
 three -.-> g5
+warn -.-> g7
 facts -.-> g6
 sc -.-> t1
-sc --> pc --> pk --> g2
-sc --> ag --> ak --> ar --> p3
-ar --> k1 --> q2
-q2 -->|Yes| p4
-q2 -->|No| p5
-ar --> p6
+sc --> pc --> pk --> ov --> g2

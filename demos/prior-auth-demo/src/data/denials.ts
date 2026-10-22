@@ -1,4 +1,5 @@
 import type { PsyRequest, Tone } from "./types";
+import { siteOf, type SiteId } from "./sites";
 import { DAY, HOUR } from "@/lib/time";
 
 /* Denial Intelligence data: what we know about each denial beyond the core request.
@@ -21,7 +22,13 @@ export interface DenialMeta {
   /** Set when the denial came from a letter added on the Denial Intelligence screen. */
   letterName?: string;
   note?: string;
+  /** The site a letter-added denial belongs to: the site in view when the letter was added (Site A when both were in view). Seeded denials have none; they follow their case. */
+  site?: SiteId;
 }
+
+/** The site of a denial: the one recorded on a letter-added denial, otherwise the site of its case (`caseId` of the request).
+    A letter-added denial is also given an id that `siteOf` places at the same site, so a screen that only has the request still agrees. */
+export const siteOfDenial = (meta: DenialMeta | undefined, caseId: string): SiteId => meta?.site ?? siteOf(caseId);
 
 export const SEED_DENIAL_META: Record<string, DenialMeta> = {
   "D-3318": { type: "Partial approval", summary: "Partial approval", daysRequested: 14, daysApproved: 7, similar: 312, bookedWindow: "Wed 10/21, 9–11 am" },

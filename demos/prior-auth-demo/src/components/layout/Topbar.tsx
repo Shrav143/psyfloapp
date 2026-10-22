@@ -41,26 +41,31 @@ function DemoMenu() {
   const item = "flex w-full items-center gap-2.5 rounded-[10px] px-3 py-2 text-left text-sm hover:bg-tile";
   return (
     <div ref={ref} className="relative">
-      <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} className="flex h-9 items-center gap-2 rounded-xl border border-field bg-white px-3 text-[13px] font-medium text-ink2 hover:bg-tile">
+      <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} className="flex h-9 items-center gap-2 rounded-xl border border-field bg-white px-3 text-[13px] font-medium whitespace-nowrap text-ink2 hover:bg-tile">
         <FlaskConical size={16} className="ico" />
-        Demo
+        <span className="max-lg:sr-only">Demo</span>
         <span className="rounded-md bg-neutral-bg px-1.5 py-0.5 text-[11px]">{stamp(clock)}</span>
       </button>
       {open ? (
-        <div className="psy-fade-up absolute top-11 right-0 z-40 w-[320px] rounded-2xl border border-field bg-white p-2 shadow-[0_12px_32px_rgba(40,30,15,0.14)]">
+        <div className="psy-fade-up absolute top-11 right-0 z-40 max-h-[calc(100vh-76px)] w-[min(340px,calc(100vw-32px))] overflow-y-auto overscroll-contain rounded-2xl border border-field bg-white p-2 shadow-[0_12px_32px_rgba(40,30,15,0.14)]">
           <div className="px-3 pt-2 pb-1 text-[11px] font-medium tracking-[0.1em] text-muted uppercase">Time</div>
           <div className="px-3 pb-1 text-[13px] text-muted">The demo clock is {toDate(clock).toDateString()}, {clockTime(toDate(clock))}. It only moves when you move it.</div>
           <button type="button" className={item} onClick={() => advance(HOUR)}><FastForward size={16} className="ico" />Fast-forward 1 hour</button>
           <button type="button" className={item} onClick={() => advance(DAY)}><FastForward size={16} className="ico" />Fast-forward 1 day</button>
           <div className="px-3 pt-2 pb-1 text-[11px] font-medium tracking-[0.1em] text-muted uppercase">Viewing as</div>
-          <div className="px-3 pb-1 text-[13px] text-muted">Staff see only the sites they work at. Try Dr. Rivera (Site A only).</div>
-          {VIEWERS.map((v) => (
-            <button key={v.id} type="button" className={item} aria-pressed={viewerId === v.id} onClick={() => setViewer(v.id)}>
-              <span className="grid h-5 w-5 place-items-center rounded-full bg-neutral-bg text-[10px] font-semibold">{v.initials}</span>
-              <span className="min-w-0 flex-1"><span className="font-medium">{v.name}</span> <span className="text-muted">· {v.role}</span></span>
-              {viewerId === v.id ? <Check size={15} className="ico text-forest" aria-label="Current" /> : null}
-            </button>
-          ))}
+          <div className="px-3 pb-1 text-[13px] text-muted">Access is by site (minimum necessary). Try Dr. Rivera, who sees Site A only.</div>
+          <div role="group" aria-label="Viewing as">
+            {VIEWERS.map((v) => (
+              <button key={v.id} type="button" className={item} aria-pressed={viewerId === v.id} onClick={() => setViewer(v.id)}>
+                <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-neutral-bg text-[10px] font-semibold" aria-hidden="true">{v.initials}</span>
+                <span className="min-w-0 flex-1">
+                  <span className="block font-medium">{v.name}</span>
+                  <span className="block text-[12.5px] text-muted">{v.role}{v.sites.length > 1 ? ", both sites" : ""}</span>
+                </span>
+                {viewerId === v.id ? <Check size={15} className="ico shrink-0 text-forest" aria-label="Current" /> : null}
+              </button>
+            ))}
+          </div>
           <div className="px-3 pt-2 pb-1 text-[11px] font-medium tracking-[0.1em] text-muted uppercase">Suggested path</div>
           {PATH.map(([label, to], i) => (
             <button key={to} type="button" className={item} onClick={() => { setOpen(false); nav(to); }}>
@@ -84,9 +89,9 @@ export function Topbar() {
   const notifOpen = useStore((s) => s.notifOpen);
   const btn = "relative grid h-9 w-9 place-items-center rounded-xl border border-field bg-white text-ink2 hover:bg-tile";
   return (
-    <div className="sticky top-0 z-30 flex h-[60px] items-center border-b border-[#EFE6DA] bg-canvas/90 px-7 backdrop-blur">
+    <div className="sticky top-0 z-30 flex h-[60px] items-center gap-3 border-b border-[#EFE6DA] bg-canvas/90 px-4 backdrop-blur lg:px-7">
       <SiteSwitcher />
-      <div className="ml-auto flex items-center gap-3.5">
+      <div className="ml-auto flex items-center gap-2 lg:gap-3.5">
         <DemoMenu />
         <button type="button" aria-label="Ask FLO" title="Ask FLO" onClick={() => setAsk(!askOpen)} className={btn}>
           <Sparkles size={18} className="ico" />

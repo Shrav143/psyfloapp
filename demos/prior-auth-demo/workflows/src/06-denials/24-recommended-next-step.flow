@@ -23,7 +23,7 @@ process n2 "'File an appeal' when the clock running is the one to file or resubm
 process n3 "'Peer-to-peer review' while the call window is open"
 
 screen blk "Block under the header card\nLabel 'Recommended next step', the word as a title\nOne or two plain sentences worked out from the denial: the chance of overturning, what the route takes, what it gets back"
-screen opt "'Your options' card\nThe 'Recommended' pill sits on the card for the same route\nNone for 'Investigate by hand'"
+screen opt "'Your options' row and its 'Compare the options' panel\nThe 'Recommended' pill sits on the same route in both\nNone for 'Investigate by hand'"
 
 click b1 "Click 'Accept the decision and plan the step-down'"
 click b2 "Click 'Choose a time and prepare the brief'"

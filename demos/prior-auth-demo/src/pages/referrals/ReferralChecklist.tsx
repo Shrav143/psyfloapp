@@ -49,8 +49,8 @@ export function ReferralChecklist({ r, draftId, onReplace }: { r: Referral; draf
   const close = () => setModal(null);
   const blockers = open ? acceptBlockers(r) : [];
   const started = caseOf(r, requests, drafts);
-  // This case is the one on screen: opening it means moving on to its medical records.
-  const openCase = () => (started?.kind === "draft" && started.id === draftId ? patch(draftId, stepPatch(1)) : started ? nav(caseTo(started)) : undefined);
+  // This case is the one on screen: opening it means going back to its Intake, which now holds the referral.
+  const openCase = () => (started?.kind === "draft" && started.id === draftId ? (patch(draftId, stepPatch(0)), nav(paths.newCase({ draft: draftId }))) : started ? nav(caseTo(started)) : undefined);
 
   const actions = (row: ChecklistRow) => {
     const { ask, markable } = row;
@@ -84,7 +84,7 @@ export function ReferralChecklist({ r, draftId, onReplace }: { r: Referral; draf
       Accept referral and continue
     </Button>
   ) : r.status === "accepted" || r.status === "scheduled" ? (
-    <Button variant="primary" trailing={ArrowRight} onClick={goOn}>Continue to medical records</Button>
+    <Button variant="primary" trailing={ArrowRight} onClick={goOn}>Continue with this referral</Button>
   ) : r.status === "declined" ? (
     <Button icon={RotateCcw} onClick={() => reopen(r.id)}>Reopen referral</Button>
   ) : started ? (

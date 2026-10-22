@@ -1,19 +1,16 @@
-import { useMemo } from "react";
 import { ArrowLeft, LayoutDashboard, PenLine } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { AgentBadge, Button, Card, Chip, Label, Pill, Ring } from "@/components/ui";
 import { confidenceWord, daysLikely, isBenchmarkOnly, rangeOf, similarTotal } from "@/data/caseModel";
 import { payerById } from "@/data/seed";
+import { siteName } from "@/data/sites";
 import type { Tone } from "@/data/types";
 import { band as chanceBand } from "@/lib/format";
 import { HOUR } from "@/lib/time";
-import { draftForRequest, requestDraft } from "@/pages/newcase/fromRequest";
-import { usePayerContext } from "@/pages/newcase/payerContext";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
 import { AuthFacts } from "./AuthFacts";
 import type { CaseCtx } from "./caseTypes";
-import { authFacts, documentStatus, ledgerRowOf } from "./facts";
 import { InfoTip } from "@/components/ui/InfoTip";
 import { nextActionOf } from "./nextAction";
 import { NextBlock } from "./NextBlock";
@@ -21,15 +18,13 @@ import { dueText } from "./queueLogic";
 import { Scores } from "./Scores";
 import { StatusHelp } from "./StatusHelp";
 import { useAnimatedNumber } from "./useAnimatedNumber";
+import { useAuthFacts } from "./useAuthFacts";
 
 /** The header card (title, the next action, the authorization facts, the clinical line), the three tiles and one line of notice. They stay the same on all five tabs. */
 export function CaseHeader({ ctx }: { ctx: CaseCtx }) {
   const navigate = useNavigate();
   const clock = useStore((s) => s.clock);
-  const ledger = useStore((s) => s.ledger);
   const note = useStore((s) => s.queueItems.find((i) => i.id === ctx.detail.id)?.rule);
-  const shared = useStore((s) => draftForRequest(s.caseDrafts, ctx.detail.requestId, ctx.detail.id));
-  const payerCtx = usePayerContext(ctx.detail);
   const { detail, work, chance, projected, canSend, live, send } = ctx;
   const moved = live?.moved ? live : null; // the request is past where this page's own wording stops: show its own chip and line
   const payer = payerById(detail.payerId);
@@ -45,10 +40,7 @@ export function CaseHeader({ ctx }: { ctx: CaseCtx }) {
   const ready = canSend && detail.phase === "preparing";
   const statusChip = moved ? { text: moved.chip, tone: moved.tone } : detail.chip ?? null;
 
-  /* Documents: the draft this request has in New case, or the one it would have, so the count never changes when the draft is first opened. */
-  const basis = useMemo(() => shared ?? requestDraft(detail, work, clock, payerCtx), [shared, detail, work, clock, payerCtx]);
-  const docs = useMemo(() => documentStatus(basis, payerCtx.items), [basis, payerCtx.items]);
-  const facts = authFacts({ detail, live, ledger: ledgerRowOf(ledger, detail), docs, clock });
+  const { facts, site } = useAuthFacts(detail, work, live);
   const next = nextActionOf({ detail, work, live, canSend });
   const unit = detail.program === "IOP" ? "units" : "days";
 
@@ -66,7 +58,7 @@ export function CaseHeader({ ctx }: { ctx: CaseCtx }) {
               </h1>
               {statusChip ? <StatusHelp /> : null}
             </div>
-            <div className="mt-2 text-[15px] text-muted">{detail.initials}, {detail.age} · {payer.name} · {detail.levelLabel} · {detail.days} {unit} requested</div>
+            <div className="mt-2 text-[15px] text-muted">{detail.initials}, {detail.age} · {payer.name} · {detail.levelLabel} · {detail.days} {unit} requested{site ? <span data-testid="case-site"> · {siteName(site)}</span> : null}</div>
           </div>
           <div className="flex shrink-0 items-center gap-3">
             <Button icon={PenLine} onClick={send}>Open in review and sign</Button>

@@ -1,9 +1,12 @@
+import { siteOf, type SiteId } from "./sites";
 import type { AgentKey, PayerId, Program, PsyRequest, RequestType } from "./types";
 import { PROGRAM_LABEL } from "./types";
 
 /* The Authorizations queue: 56 open requests in three priority bands. The band totals shown on the
    page are computed from these rows, so the counts and chances below add up to the canonical numbers:
-   Act now 5 / 58% / 5 h, Due within 24 hours 14 / 76% / 3 h, Due this week 37 / 83% / 2 d. */
+   Act now 5 / 58% / 5 h, Due within 24 hours 14 / 76% / 3 h, Due this week 37 / 83% / 2 d.
+   Every row belongs to a site (siteOf, from the case id), so a viewer who sees one site gets that site's rows and the two sites add up to the total.
+   Queue rows are their own data: most have no Dashboard request and no Case Manager ledger row. The three Modification rows below are such rows. */
 
 export type Band = "now" | "day" | "week";
 export type Phase = "preparing" | "ready" | "payer" | "denial";
@@ -162,13 +165,13 @@ const DAY_ROWS: Row[] = [
   ["R-1021", "V.P.", 48, "cardinal", "RES", "Continued stay", 12, 58, "payer", { agent: "navigator", status: "Payer is reviewing. Navigator checks again in 15 minutes" }],
   ["I-2236", "B.J.", 30, "cardinal", "IOP", "Recertification", 16, 72, "payer", { signal: true, agent: "navigator", status: "Payer is reviewing. Navigator checks again in 30 minutes" }],
   ["I-2271", "V.S.", 35, "cardinal", "IOP", "Continued stay", 6, 75, "preparing", { agent: "scribe", status: "Scribe is drafting the continued-stay review", signal: true, verb: "Review due", lift: 8 }],
-  ["R-1131", "H.N.", 45, "beacon", "RES", "Continued stay", 13, 84, "payer"],
+  ["R-1131", "H.N.", 45, "beacon", "RES", "Modification", 13, 84, "payer"],
   ["R-1138", "K.L.", 50, "summit", "RES", "Recertification", 15, 82, "preparing", { lift: 6 }],
   ["R-1142", "W.G.", 32, "lakeshore", "RES", "Admission", 18, 86, "ready"],
   ["R-1146", "Y.D.", 56, "evergreen", "RES", "Continued stay", 21, 78, "payer"],
 ];
 const WEEK_ROWS: Row[] = [
-  ["P-1522", "A.S.", 52, "summit", "PHP", "Continued stay", 72, 86, "payer", { level: "PHP → IOP", dxKey: "mdd", dx: "Step-down request", scores: [down("PHQ-9", "8"), down("AUDIT-C", "5")], agent: "cadence", status: "Cadence is scheduling the review", verb: "Review due" }],
+  ["P-1522", "A.S.", 52, "summit", "PHP", "Modification", 72, 86, "payer", { level: "PHP → IOP", dxKey: "mdd", dx: "Major depressive disorder with alcohol use · change of level of care, PHP to IOP", scores: [down("PHQ-9", "8"), down("AUDIT-C", "5")], agent: "cadence", status: "Cadence is scheduling the review", verb: "Review due" }],
   ["I-2190", "R.P.", 31, "lakeshore", "IOP", "Initial request", 130, 86, "payer", { dxKey: "cann", dx: "Cannabis use disorder · initial authorization", scores: [{ label: "DAST-10", value: "6" }, { label: "PHQ-9", value: "7" }], verb: "Decision" }],
   ["R-1088", "L.T.", 45, "beacon", "RES", "Initial request", 54, 83, "payer"],
   ["P-1611", "A.K.", 33, "summit", "PHP", "Initial request", 66, 81, "payer"],
@@ -200,7 +203,7 @@ const WEEK_ROWS: Row[] = [
   ["P-1652", "D.E.", 61, "evergreen", "PHP", "Continued stay", 95, 86, "payer"],
   ["I-2280", "F.G.", 27, "summit", "IOP", "Initial request", 70, 92, "preparing"],
   ["I-2283", "H.I.", 40, "beacon", "IOP", "Recertification", 85, 85, "payer"],
-  ["I-2286", "J.K.", 32, "harborview", "IOP", "Continued stay", 105, 87, "payer"],
+  ["I-2286", "J.K.", 32, "harborview", "IOP", "Modification", 105, 87, "payer"],
   ["I-2289", "N.S.", 49, "lakeshore", "IOP", "Initial request", 150, 90, "preparing"],
   ["I-2292", "Q.T.", 34, "evergreen", "IOP", "Continued stay", 115, 82, "payer"],
   ["R-1183", "S.W.", 34, "summit", "WM", "Initial request", 55, 80, "payer"],
@@ -216,7 +219,7 @@ export const QUEUE_ITEMS: QueueItem[] = [
 ].sort((a, b) => BANDS.indexOf(a.band) - BANDS.indexOf(b.band) || waitingOnYou(b) - waitingOnYou(a) || a.dueAt - b.dueAt || a.chance - b.chance);
 
 /** The Dashboard request behind a queue row. A request the payer denied is renamed D-xxxx but keeps its case ID. */
-const requestFor = (i: QueueItem, requests: PsyRequest[]): PsyRequest | undefined => requests.find((r) => r.id === i.id) ?? requests.find((r) => r.caseId === i.id);
+export const requestFor = (i: QueueItem, requests: PsyRequest[]): PsyRequest | undefined => requests.find((r) => r.id === i.id) ?? requests.find((r) => r.caseId === i.id);
 
 /** A request leaves the queue once nothing is left for a person to do on it: it was sent (preparing and ready ones),
     the payer decided it (ones waiting on a payer), or the denial is settled or has an appeal filed (denial route). */
@@ -228,3 +231,5 @@ function isHandled(i: QueueItem, requests: PsyRequest[]): boolean {
   return r.stage !== "preparing";
 }
 export const openItems = (items: QueueItem[], requests: PsyRequest[]): QueueItem[] => items.filter((i) => !isHandled(i, requests));
+/** The rows at the sites in view. Pass `sitesInView(state)` in a selector, or `useScope().sites` in a component. */
+export const itemsAtSites = (items: QueueItem[], sites: readonly SiteId[]): QueueItem[] => items.filter((i) => sites.includes(siteOf(i.id)));

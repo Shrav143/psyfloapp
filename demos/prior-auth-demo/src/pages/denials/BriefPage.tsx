@@ -2,6 +2,7 @@ import { useState } from "react";
 import { FileText, SearchX } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Banner, Button, Card, Crumbs, EmptyState, Page, PageHeader } from "@/components/ui";
+import { OutOfSite } from "@/components/layout/OutOfSite";
 import { blockedInHosted } from "@/lib/hosted";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
@@ -11,6 +12,7 @@ import { BookCallModal } from "./BookCallModal";
 import { briefToText, buildBrief } from "./lib/brief";
 import { copyText } from "./lib/clipboard";
 import { useDenialView } from "./lib/useDenialView";
+import { useOutOfSite } from "./lib/useOutOfSite";
 import { OutcomeModal } from "./OutcomeModal";
 import { ReviewNote } from "./ReviewNote";
 
@@ -22,9 +24,11 @@ export default function BriefPage() {
   const { id } = useParams();
   const nav = useNavigate();
   const view = useDenialView(id);
+  const outside = useOutOfSite(id);
   const [dialog, setDialog] = useState<"book" | "outcome" | null>(null);
   const toast = useStore((s) => s.toast);
 
+  if (outside) return <Page><OutOfSite id={outside.caseId} what="brief" /></Page>;
   if (!view)
     return (
       <Page>

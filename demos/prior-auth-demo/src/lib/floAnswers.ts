@@ -1,5 +1,6 @@
 /* What FLO suggests and answers in the Ask FLO panel. The suggestions follow the screen the person is on; every answer is worked out from
-   the store when it is asked, names the case it is about and ends with a link to the exact place. FLO's answers are recommendations, never payer facts. */
+   the store when it is asked, names the case it is about and ends with a link to the exact place. FLO's answers are recommendations, never payer facts.
+   Everything is read from the cases the viewer may see (lib/floScope.ts): a viewer limited to one site is never told about the other site's cases. */
 import { resolveCase } from "@/data/caseDetail";
 import { EMPTY_WORK, canSend, checkViews, liveView, openFor } from "@/data/caseModel";
 import { verdictOf, sortPatients, type EbPatient } from "@/data/eligibility";
@@ -7,13 +8,19 @@ import type { LedgerCase } from "@/data/manager";
 import { inWeek, isClean, reviewStamp } from "@/data/managerReviews";
 import { openDrafts } from "@/data/payerConfig";
 import { PAYERS, payerById } from "@/data/seed";
+import { siteName, siteOf } from "@/data/sites";
 import { PROGRAMS, PROGRAM_LABEL, type PayerId, type Program } from "@/data/types";
 import { plural } from "@/lib/format";
 import { DAY, shortDate, toDate } from "@/lib/time";
 import { paths } from "@/routes";
 import type { AppState } from "@/store";
-import { stageCounts } from "@/store/selectors";
+import { selectWriteBackOn } from "@/store/emr";
+import { DEFAULT_FILTERS } from "@/store/core";
+import { doLine, doNext } from "./doNext";
 import { denialDeadlines, deadlineLine, dueByRequest, dueText, inSpan, inline, needsYouList, openByDue, sentence, shortPayer, usedOf } from "./floFacts";
+import { scopedState } from "./floScope";
+import { sitesInView } from "./scope";
+import { draftNeeds, draftsInPreparation, readyToSignIds } from "./preparing";
 
 export interface FloAnswer {
   text: string;
@@ -54,6 +61,8 @@ interface CaseFacts {
 }
 
 function caseFacts(id: string, s: AppState): CaseFacts | undefined {
+  // The case page knows every case of the demo; FLO may read only the ones in view.
+  if (!sitesInView(s).includes(siteOf(id))) return undefined;
   const detail = resolveCase(id, s.requests);
   const ledger = s.ledger.find((c) => c.id === id || c.caseId === id);
   const request = s.requests.find((r) => r.id === id) ?? s.requests.find((r) => r.caseId === id);
@@ -63,7 +72,8 @@ function caseFacts(id: string, s: AppState): CaseFacts | undefined {
 }
 
 /** The chips for the screen: on a case page what is missing, when the authorization runs out and what the payer requires; on three other screens one question each. */
-export function chipsFor(route: FloRoute, s: AppState): { chips: string[]; label?: string } {
+export function chipsFor(route: FloRoute, all: AppState): { chips: string[]; label?: string } {
+  const s = scopedState(all);
   if (route.kind === "case") {
     const c = caseFacts(route.id, s);
     if (c) return { chips: [`What is missing for ${c.id}?`, "When does this authorization run out?", `What does ${payerById(c.payerId).shortName} require?`], label: c.id };
@@ -86,7 +96,7 @@ function targetCase(q: string, route: FloRoute, s: AppState): { id: string; gues
   return first ? { id: first.id, guessed: true } : undefined;
 }
 
-const notFound = (id: string): FloAnswer => ({ text: `I did not find ${id} in the demo data.`, fallback: true });
+const notFound = (id: string): FloAnswer => ({ text: `I did not find ${id} among the cases you can see.`, fallback: true });
 const ON_PAGE = "You are not on a case page, so I looked at the request that needs you first.";
 
 function missingAnswer(id: string, guessed: boolean, s: AppState): FloAnswer {
@@ -242,10 +252,13 @@ function eligibilityAnswer(s: AppState): FloAnswer {
 }
 
 /** Pick the answer by key words, in this order. The first rule that matches answers. */
-export function answerFor(q: string, s: AppState, route: FloRoute): FloAnswer {
+export function answerFor(q: string, all: AppState, route: FloRoute): FloAnswer {
+  const s = scopedState(all);
   const { requests, caseDrafts, clock, queueItems, queueCases } = s;
   const t = q.toLowerCase();
-  const counts = stageCounts(requests);
+  const sites = sitesInView(all);
+  /** " at Site A" when the viewer sees one site, so the answer says what it covers; nothing for both. */
+  const at = sites.length === 1 ? ` at ${siteName(sites[0])}` : "";
 
   if (t.includes("slow") || (t.includes("payer") && t.includes("late"))) {
     const slow = [...PAYERS].filter((p) => p.avgDecisionDays > p.typicalDecisionDays).sort((a, b) => b.avgDecisionDays / b.typicalDecisionDays - a.avgDecisionDays / a.typicalDecisionDays);
@@ -285,7 +298,7 @@ export function answerFor(q: string, s: AppState, route: FloRoute): FloAnswer {
     const next = rest.slice(0, 2);
     const after = next.length ? ` After it: ${next.map(line).join("; ")}.` : "";
     const chance = queueCases[first.id]?.chance ?? first.chance;
-    return { text: `${first.id} (${payerById(first.payerId).shortName}) is due soonest: ${inline(dueText(first.dueVerb, first.dueAt, clock))}. Its approval chance is ${chance}%.${after} ${plural(soon.length, "request")} ${soon.length === 1 ? "is" : "are"} open in Authorizations.`, link: { label: `Open ${first.id}`, to: paths.case(first.id) } };
+    return { text: `${first.id} (${payerById(first.payerId).shortName}) is due soonest${at}: ${inline(dueText(first.dueVerb, first.dueAt, clock))}. Its approval chance is ${chance}%.${after} ${plural(soon.length, "request")} ${soon.length === 1 ? "is" : "are"} open in Authorizations.`, link: { label: `Open ${first.id}`, to: paths.case(first.id) } };
   }
   if (t.includes("cardinal") || t.includes("approval rate")) {
     const open = openDrafts(requests, caseDrafts, "cardinal").length;
@@ -294,10 +307,18 @@ export function answerFor(q: string, s: AppState, route: FloRoute): FloAnswer {
   }
   if (t.includes("need") || t.includes("today") || t.includes("first")) {
     const needs = requests.filter((r) => r.needsYou);
-    // Start with a payer's question: that clock is already running.
-    const first = needs.find((r) => r.stage === "info_requested") ?? needs[0];
-    if (!first) return { text: "Nothing needs you right now. Every request is with a payer or with the agents.", link: { label: "Open Dashboard", to: paths.dashboard() } };
-    return { text: `${needs.length} ${needs.length === 1 ? "request needs" : "requests need"} you: ${needs.map((r) => r.id).join(", ")}. ${counts.info_requested} payer${counts.info_requested === 1 ? "" : "s"} asked for more information, and ${counts.preparing} cases are being prepared. Start with ${first.id} (${shortPayer(first)}). ${sentence(first.next)}`, link: { label: `Open ${first.id} on the Dashboard`, to: paths.dashboard({ request: first.id }) } };
+    // The same list the Dashboard shows under Do next, so FLO and the page never disagree.
+    const saved = draftNeeds(draftsInPreparation(caseDrafts, requests, DEFAULT_FILTERS, sites));
+    const todo = doNext({ requests, queueItems, ledger: s.ledger, clock, writeBackOn: selectWriteBackOn(s), ready: readyToSignIds(caseDrafts, requests), savedNeedingYou: saved.needYou + saved.ready });
+    if (!todo.items.length) return { text: `Nothing needs you right now${at}. Every request is with a payer or with the agents.`, link: { label: "Open Dashboard", to: paths.dashboard() } };
+    const [first, ...rest] = todo.items;
+    const asked = needs.length ? `${needs.length} ${needs.length === 1 ? "request needs" : "requests need"} you${at}: ${needs.map((r) => r.id).join(", ")}. ` : "";
+    return {
+      text: `${asked}Start with this: ${sentence(doLine(first))}`,
+      lines: rest.map((i) => sentence(doLine(i))),
+      note: "This is the Do next list on the Dashboard, worked out from today's demo data.",
+      link: { label: "Open Do next on the Dashboard", to: paths.dashboard() },
+    };
   }
   if (t.includes("referral")) return { text: "New referrals are waiting for review. Reader has already checked each document, and Verify has run coverage for the ones with an insurance card.", link: { label: "Start a case from a referral", to: paths.referrals() } };
   return { text: "I did not find an answer to that in the demo data. Try one of the suggestions below.", fallback: true };

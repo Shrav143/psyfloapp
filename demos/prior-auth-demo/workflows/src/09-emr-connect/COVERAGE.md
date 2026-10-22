@@ -1,6 +1,6 @@
 # EMR Connect: coverage
 
-Source: `src/pages/emr/*`, `src/store/emr.ts`, `src/data/emr.ts`. File numbers are in this folder.
+Source: `src/pages/emr/*`, `src/store/emr.ts`, `src/data/emr.ts`, `src/data/sites.ts`, `src/lib/scope.ts`, `src/components/layout/SiteTag.tsx`. File numbers are in this folder.
 
 ## Page
 
@@ -10,7 +10,9 @@ Source: `src/pages/emr/*`, `src/store/emr.ts`, `src/data/emr.ts`. File numbers a
 | Line under the description: 'Simulated connection: this demo does not contact a real record system.' (said once on the page) | 10 |
 | Header 'Connect a system' (a paused Reader shows a toast instead) | 10, 40, 52 |
 | Banner 'Action required' (one line, only when something needs a person; its one button is 'Fix', 'Reconnect', 'Map field' or the link 'Open Settings') | 10, 22 |
-| Four figures: Last sync, Charts matched today, Files pulled this week, Sync failures (not clickable) | 10, 15 |
+| Four figures: Last sync, Charts matched today, Files pulled this week, Sync failures (not clickable). They count the systems at the sites in view: Both sites 6 min, 23, 142, 2; Site A 6 min, 13, 80, 2; Site B 11 min, 10, 62, 2 | 10, 15, 12 |
+| Title tag 'Site A' or 'Site B' (viewer with both sites, one site chosen) and the Connection health line that names the site, with its info icon for a one-site viewer | 10, 12 |
+| Which systems are listed: a site's record system and the Billing system that serves both; the other site's system is not listed, and a one-site viewer cannot reach it | 12 |
 
 ## Connection health card
 
@@ -41,7 +43,7 @@ Source: `src/pages/emr/*`, `src/store/emr.ts`, `src/data/emr.ts`. File numbers a
 
 | Control | Diagram |
 |---|---|
-| Four System type cards, 'Name in Psyflo' ('Shown in Connection health.'), 'Next' | 40 |
+| Four System type cards, the site choice ('Site A', 'Site B', 'Both sites', or text for a one-site viewer), 'Name in Psyflo' ('Shown in Connection health.'), 'Next' | 40, 12 |
 | 'Contact at the practice' (required) and its error | 40 |
 | 'Back' (step 2 only), 'Cancel', X, Escape, click outside | 40, 45 |
 | 'Run the connection test' | 40 |
@@ -84,6 +86,16 @@ Source: `src/pages/emr/*`, `src/store/emr.ts`, `src/data/emr.ts`. File numbers a
 | Confirmation: 'Keep it connected', 'Disconnect', X, click outside, Escape (closes only the confirmation) | 85 |
 | 'Reconnect' (row, banner or drawer) | 85, 87 |
 
+## Sites
+
+| Control | Diagram |
+|---|---|
+| Site view from the top bar decides the rows, figures, Action required line, Advanced counts and log lines | 12 |
+| Sync from one site's view pulls and counts only for that site's systems | 12, 50 |
+| A system connected by a one-site viewer serves only that site | 12, 40 |
+| The write-back switches that count for the Dashboard are those of the systems at the sites in view | 25, 58 |
+| New case's 'Pull a chart from EMR Connect' offers the charts of the Connected systems at the sites in view | 58 |
+
 ## Not drawn
 
 - Pause, edit, rename, delete and rotate-sign-in on a connection: the demo has none of them. The PRD lists pause and rotate credential on the integrations screen; a system can only be disconnected, never removed.
@@ -101,6 +113,12 @@ Source: `src/pages/emr/*`, `src/store/emr.ts`, `src/data/emr.ts`. File numbers a
 - The header button 'Manage mapping' is gone: the mappings are in 'Advanced'.
 - Status 'Needs a quick look' is now 'Needs attention' (20, 70, 75).
 - 'Simulated connection' is said once, under the description (10).
+
+## Changed in round 4 (sites)
+
+- 'Clinical record · residential site' and 'Clinical record · outpatient site' are now 'Clinical record · Site A' and 'Clinical record · Site B' (each holds all programs at its site). The Billing system serves both sites. The page, the figures, Action required, Advanced and the log follow the site view (12).
+- Charts matched today and Files pulled this week are kept per site (13 + 10 and 80 + 62), so Site A plus Site B equals the 23 and 142 of Both sites. The 2 fields waiting for a mapping belong to Site B's record. The Billing system's 2 sync failures show in every view because the system is shared.
+- 'Connect a system' asks which site the system serves.
 
 ## Looks broken or dead in the demo
 

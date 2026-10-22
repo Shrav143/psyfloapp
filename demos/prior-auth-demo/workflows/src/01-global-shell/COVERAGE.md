@@ -1,6 +1,6 @@
 # Coverage: Global shell
 
-Source: `src/App.tsx`, `src/routes.ts`, `src/components/layout/*`, `src/store/core.ts`, `src/lib/time.ts`, `src/lib/hosted.ts`, `src/components/ui/Toaster.tsx`.
+Source: `src/App.tsx`, `src/routes.ts`, `src/components/layout/*` (including the site switcher, the Demo menu's Viewing as, `OutOfSite` and `SiteTag`), `src/store/session.ts`, `src/lib/scope.ts`, `src/data/sites.ts`, `src/data/viewers.ts`, `src/store/core.ts`, `src/lib/time.ts`, `src/lib/hosted.ts`, `src/components/ui/Toaster.tsx`.
 
 | Control | Where | Diagram |
 |---|---|---|
@@ -15,22 +15,30 @@ Source: `src/App.tsx`, `src/routes.ts`, `src/components/layout/*`, `src/store/co
 | 'Analytics' (no badge) | Sidebar | 10, 12 |
 | 'EMR Connect' (no badge) | Sidebar | 10, 12 |
 | 'Payers' | Sidebar | 10, 12 |
-| Number bubbles on Dashboard, Authorizations, New case, Eligibility & Benefits, Denial Intelligence, Case Manager, Payers | Sidebar | 11 |
+| Number bubbles on Dashboard, Authorizations, New case, Eligibility & Benefits, Denial Intelligence, Case Manager, Payers. Every one follows the site view except Payers, which is clinic-wide (a payer's rules are not site data) | Sidebar | 11 |
 | Chevron right / down on 'Authorizations' | Sidebar | 12 |
 | Green highlight rules, bubble colour on the green row | Sidebar | 11, 12 |
 | 'Demo data' tile (label only) | Sidebar footer | 10 (note), 50 |
 | 'Settings' | Sidebar footer | 10, 50 |
 | 'Help' (toast) | Sidebar footer | 50 |
 | 'Sign out' (toast) | Sidebar footer | 50 |
-| User card 'JP', 'Jordan Perez', 'UR coordinator' (label only) | Sidebar footer | 50 |
-| 'Demo' button with clock pill | Top bar | 20, 40 |
+| User card: initials, name and role of the viewer ('JP', 'Jordan Perez', 'UR coordinator' until another viewer is chosen) (label only) | Sidebar footer | 50 |
+| Site view: 'Both sites', 'Site A', 'Site B' (a switch for a viewer with both sites; pressed state and a hidden status line announce the choice) | Top bar | 24 |
+| Locked label 'Site A only' or 'Site B only' with its info note (one-site viewer; no switch) | Top bar | 24 |
+| Info icons 'About the site view' and 'Why Dr. Rivera sees one site' (hover, focus or click; Escape closes) | Top bar | 24 |
+| 'As of' date (wide windows only) | Top bar | 24 |
+| Page-title tag 'Site A' or 'Site B' (only when a viewer with both sites has narrowed the view; the page owners place it) | Page titles | 24 |
+| Notice 'This case is not available at Site A' for a record at a site that is not in view, with 'Show Site B' (viewer with both sites) and 'Back to the Dashboard' | Any record page | 00-overview 40 |
+| 'Demo' button with clock pill (the word 'Demo' is hidden under 1024 px) | Top bar | 20, 40 |
 | 'Ask FLO' button | Top bar | 20, 21 |
 | 'Notifications' bell and red dot | Top bar | 20, 30 |
 | Dimmed area, 'X', Escape on both drawers (Escape closes only the top layer) | Drawers | 20, 21, 30 |
 | Demo menu: 'Time' text | Demo menu | 40 |
+| 'Viewing as': the four people, the current one ticked | Demo menu | 40, 44 |
 | 'Fast-forward 1 hour', 'Fast-forward 1 day' | Demo menu | 41 |
 | 'Suggested path' steps 1 to 7 | Demo menu | 42 |
-| 'Reset demo data' | Demo menu | 43 |
+| 'Reset demo data' (also puts the viewer back to Jordan Perez on Both sites) | Demo menu | 43 |
+| Toast 'Now viewing as ...' | Bottom right | 44, 70 |
 | Close by outside click, 'Demo' again, or Escape | Demo menu | 40 |
 | Suggestion chips that follow the screen: four on the Dashboard and most screens; three on a case page ('What is missing for R-1042?', 'When does this authorization run out?', 'What does Summit require?'); one each on Case Manager, Denial Intelligence and Eligibility & Benefits. Shown at the start, under a fallback answer, and again when the person has moved to another screen | Ask FLO | 21, 23 |
 | Line 'Suggested for R-1042' (or the screen's name) above the chips (label only) | Ask FLO | 21 |

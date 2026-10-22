@@ -8,7 +8,7 @@ overlay dr "Edit log drawer\n'Every edit to Summit Medicaid HMO, newest first'"
 decision any "Has anything been edited for this payer?"
 screen em "'No edits yet'\nEvery edit to a workflow, rules, script or document list is logged here\nwith your name, the time and your reason."
 screen ent "One card per edit\nArea chip, bold 'what changed'"
-process who "Line under it: 'Jordan Perez · Tue 10:42 am · Reason: ...'"
+process who "Line under it: '{viewer} · Tue 10:42 am · Reason: ...'\nThe name is the person viewing when the edit was saved (Jordan Perez at the start; Dr. Rivera, Alex Morgan or Sam Okafor after 'Viewing as')"
 screen ba "Two boxes with an arrow\nRed 'Before' (or 'Nothing' for an addition)\nGreen 'After' (or 'Removed' for a removal)"
 
 group gA "Where entries come from (area chip)"

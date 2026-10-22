@@ -2,7 +2,7 @@ title: Authorizations › Queue › Read and open a request row
 route: /authorizations
 intro: What each part of a request row says, which parts are links, and where the status, deadline, next action and chance come from. The clinical scores, the agent activity line and the payer note are not on the row: they are on the case page.
 dir: TD
-also: Only the request ID, the 'Open' button and the 'Coverage needs a fix' pill are clickable. The rest of the row does nothing. At 1280 px and wider the row is one line; below that the same cells sit on two lines.
+also: The request ID, the small 'Quick view' icon button beside the patient, the 'Open' button and the 'Coverage needs a fix' pill are controls. A click on the rest of the row also opens the quick view. At 1280 px and wider the row is one line; below that the same cells sit on two lines.
 ---
 screen t "Request row\nOne open request inside a band"
 
@@ -19,7 +19,7 @@ group gS "Status"
   toast pn "Pill 'Needs your input'"
   decision dC "Does coverage need a fix?"
   click cl "Click the 'Coverage needs a fix' pill"
-  goto gE "Continues in: Eligibility & Benefits › Verify a patient"
+  goto gE "Continues in: Authorizations › Eligibility & Benefits › Verify › Ways in and pre-fill"
 endgroup
 
 group gD "Deadline and next action"
@@ -41,6 +41,9 @@ doc off "Not on the row\nScores (AUDIT-C, PHQ-9, CIWA ...), the agent line and t
 
 click idl "Click the request ID (underlined)"
 click ob "Click 'Open'"
+click qv "Click the 'Quick view' icon button (aria-label 'Quick view R-1042')\nor click the row away from a link or a button"
+process ring "The row whose quick view is open has a green outline"
+goto gQ "Continues in: Authorizations › Queue › Quick view panel"
 goto gC2 "Continues in: Authorizations › Case page › Ways in"
 goto gX "Continues in: Authorizations › Case page › Next action"
 
@@ -61,3 +64,4 @@ t --> tint
 t -.-> off
 t --> idl --> gC2
 t --> ob --> gC2
+t --> qv --> ring --> gQ

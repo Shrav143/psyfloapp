@@ -4,6 +4,7 @@ import type { LedgerCase, LedgerStatus } from "@/data/manager";
 import type { Review } from "@/data/managerReviews";
 import { payerById, SEED_REQUESTS } from "@/data/seed";
 import type { Program, PsyRequest } from "@/data/types";
+import { useScope } from "@/lib/scope";
 import { DAY } from "@/lib/time";
 import { useStore } from "@/store";
 import type { DenialAccepted } from "@/store/ripples";
@@ -73,12 +74,17 @@ export function buildLedgerRows(ledger: LedgerCase[], requests: PsyRequest[], se
   });
 }
 
-export function useLedgerRows(): LedgerRow[] {
+/** The tracker's rows at the sites in view. Pass `false` for every row (the case route needs to know a case exists even when it is at the other site). */
+export function useLedgerRows(inViewOnly = true): LedgerRow[] {
+  const scope = useScope();
   const ledger = useStore((s) => s.ledger);
   const requests = useStore((s) => s.requests);
   const sentToday = useStore((s) => s.caseSentToday);
   const reviews = useStore((s) => s.reviews);
   const accepted = useStore((s) => s.deniesAccepted);
   const clock = useStore((s) => s.clock);
-  return useMemo(() => buildLedgerRows(ledger, requests, sentToday, reviews, accepted, clock), [ledger, requests, sentToday, reviews, accepted, clock]);
+  return useMemo(() => {
+    const rows = buildLedgerRows(ledger, requests, sentToday, reviews, accepted, clock);
+    return inViewOnly ? scope.filter(rows, (r) => r.caseId) : rows;
+  }, [ledger, requests, sentToday, reviews, accepted, clock, inViewOnly, scope]);
 }

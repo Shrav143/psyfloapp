@@ -1,6 +1,6 @@
 title: Site map › Every menu tab and sub tab
 route: / (opens the Dashboard)
-intro: The whole product on one page. Each green screen is a sidebar destination; dashed boxes jump to the diagrams for that tab. Authorizations is the only item with sub tabs; Case Manager has two tabs inside its page.
+intro: The whole product on one page. Each green screen is a sidebar destination; dashed boxes jump to the diagrams for that tab. The top bar (site switcher, Ask FLO, Notifications, Demo menu) is on every page. Authorizations is the only item with sub tabs; Case Manager has two tabs inside its page.
 dir: LR
 ---
 start s0 "Open Psyflo\nThe address / goes to the Dashboard"
@@ -9,7 +9,8 @@ screen shell "App frame\nSidebar on the left, top bar on top, page in the middle
 group gTop "Top bar (on every page)"
   overlay ask "Ask FLO\nDrawer: ask a question, answers from your data"
   overlay notif "Notifications\nList of what needs you"
-  overlay demo "Demo menu\nReset data, move the clock, suggested path"
+  overlay site "Site switcher\nBoth sites, Site A, Site B (a locked 'Site A only' or 'Site B only' for one-site staff)"
+  overlay demo "Demo menu\nReset data, move the clock, Viewing as (four people), suggested path"
 endgroup
 
 group gMain "Sidebar › Main"
@@ -23,12 +24,12 @@ group gMain "Sidebar › Main"
 endgroup
 
 group gConn "Sidebar › Connections"
-  screen emr "EMR Connect\nSystems, sync, mappings"
+  screen emr "EMR Connect\nSystems per site, sync, mappings"
   screen pay "Payers\nProcess, Rules, Documents, Changes"
 endgroup
 
 group gBot "Sidebar › Bottom"
-  screen set "Settings\nThe sixteen agents and Pause all"
+  screen set "Settings\nThe sixteen agents, Pause all and Sites and access"
   toast help "Help\nA toast points to Ask FLO and the Demo menu"
   toast out "Sign out\nA toast: there is nothing to sign out of"
 endgroup
@@ -42,6 +43,7 @@ group gSub "Pages reached from inside a tab"
   screen payer "Payers › One payer\nProcess, Rules, Documents, Changes tabs"
 endgroup
 
+goto g0 "Continues in: Who can see what › Roles, sites and a record at the other site"
 goto g1 "Continues in: Global shell"
 goto g2 "Continues in: Dashboard"
 goto g3 "Continues in: Authorizations › Queue and case page"
@@ -55,7 +57,9 @@ goto g10 "Continues in: Payers"
 goto g11 "Continues in: Settings"
 
 s0 --> shell
-shell --> ask & notif & demo
+shell --> ask & notif & demo & site
+site --> g0
+demo --> g0
 shell --> dash & auth & newc & elig & den & mgr & ana
 shell --> emr & pay
 shell --> set & help & out

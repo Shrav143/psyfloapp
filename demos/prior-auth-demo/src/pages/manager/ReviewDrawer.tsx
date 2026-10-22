@@ -11,6 +11,7 @@ import { paths } from "@/routes";
 import { useStore } from "@/store";
 import { REVIEW_STATUS_LABEL, REVIEW_STATUS_TONE } from "./helpers";
 import { SignDialog } from "./SignDialog";
+import { useDraftReviews } from "./useDraftReviews";
 
 function Checks({ review: r }: { review: Review }) {
   return (
@@ -43,8 +44,8 @@ export function ReviewDrawer({ review: r, onClose }: { review: Review; onClose: 
   }
   const [note, setNote] = useState("");
   const [checking, setChecking] = useState(false);
-  const [drafting, setDrafting] = useState(false);
   const [signing, setSigning] = useState(false);
+  const { drafting, draft: draftNow } = useDraftReviews([r.id]);
 
   const payer = payerById(r.payerId);
   const needsUpdate = r.status === "needs_update";
@@ -61,18 +62,6 @@ export function ReviewDrawer({ review: r, onClose }: { review: Review; onClose: 
     setTimeout(() => {
       useStore.getState().updateReview(r.id, note);
       setChecking(false);
-    }, 1300);
-  };
-  /** Cadence drafts this one review. A paused Cadence says so at once. */
-  const draftNow = () => {
-    if (useStore.getState().agentPaused.cadence) {
-      useStore.getState().draftDueReviews([r.id]);
-      return;
-    }
-    setDrafting(true);
-    setTimeout(() => {
-      useStore.getState().draftDueReviews([r.id]);
-      setDrafting(false);
     }, 1300);
   };
   const sign = (by: string) => {

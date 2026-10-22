@@ -1,18 +1,22 @@
 title: Case Manager › Active cases › Open a case from the tracker
 route: /manager → /authorizations/case/ID
-intro: A tracker row opens the case page. Three clicks do the same thing: the row, the case ID and the 'Open' button. A case that is a request gets the Authorizations case page; a case that only the ledger has gets the Ledger case page. Neither dead-ends.
+intro: The case ID and the 'Open' button open the case page. A click on the row itself opens the quick view instead, and its 'Open case' button reaches the same page. A case that is a request gets the Authorizations case page; a case that only the ledger has gets the Ledger case page; a case at a site the viewer is not looking at gets the out-of-site card. None dead-ends.
 dir: TD
 also: Reviews work the same way: 'Open case' in the review drawer uses the same pages.
 ---
 start s1 "Tracker row is on screen"
-click c1 "Click anywhere on the row"
+click c1 "Click anywhere on the row that is not a button\n(or its quick view button)"
+goto gq "Continues in: Case Manager › Active cases › Quick view of a case"
 click c2 "Click the case ID (underlined)"
 click c3 "Click 'Open' at the end of the row"
-process p0 "The row ignores a click that starts on the ID or the 'Open' button, so the case opens once and Back needs one press"
+process p0 "A click on the ID or on a button acts on its own, and the row ignores it: the case opens once and Back needs one press"
 process p1 "Case Manager works out the address\n/authorizations/case/ followed by the case code"
 decision d1 "Is the row a denial?"
 process p2 "Uses the case the denial came from\nD-3318 opens R-0997, the original case"
 process p3 "Uses the row's own ID\nfor example R-1042, I-2207 or R-0856"
+decision dsite "Is the case at a site the viewer is looking at?"
+screen sos "Out-of-site card\n'This case is not available at Site A'\nNo patient or detail"
+goto gs "Continues in: Case Manager › Sites › What each site sees and out-of-site links"
 decision d2 "Is the case a request in the queue or on the Dashboard?\n(30 of the 56 rows, and every case signed and sent today)"
 screen s2 "Case page\nHeader with the case ID, level of care and the request clock\nTabs for the case"
 goto g1 "Continues in: Authorizations › Case"
@@ -27,11 +31,14 @@ end e1 "Back at the top of the tracker"
 
 s1 --> c1 & c2 & c3
 c3 --> p0 --> p1
-c1 --> p1
+c1 --> gq
 c2 --> p1
+gq -.-> p1
 p1 --> d1
-d1 -->|Yes| p2 --> d2
-d1 -->|No| p3 --> d2
+d1 -->|Yes| p2 --> dsite
+d1 -->|No| p3 --> dsite
+dsite -->|No| sos --> gs
+dsite -->|Yes| d2
 d2 -->|Yes| s2 --> g1
 d2 -->|No| d3
 d3 -->|Yes| s3 --> g3

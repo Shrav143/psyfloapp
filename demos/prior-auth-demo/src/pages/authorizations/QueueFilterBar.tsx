@@ -21,7 +21,7 @@ export function QueueFilterBar({ filters, set, clear, affected }: { filters: Que
       <div className="flex flex-wrap items-center gap-3">
         <SearchInput value={filters.q} onChange={(v) => set("q", v)} placeholder="Search by case ID or initials" className="w-[280px]" />
         <Dropdown value={filters.payer} options={payerOptions()} onChange={(v) => set("payer", v)} defaultValue="all" ariaLabel="Payer" />
-        <Dropdown value={filters.type} options={TYPE_OPTIONS} onChange={(v) => set("type", v)} defaultValue="all" ariaLabel="Request type" />
+        <Dropdown value={filters.type} options={TYPE_OPTIONS} onChange={(v) => set("type", v)} defaultValue="all" ariaLabel="Request type" menuWidth={240} />
         <span className="inline-flex items-center gap-1">
           <Dropdown value={filters.status} options={STATUS_OPTIONS} onChange={(v) => set("status", v)} defaultValue="all" ariaLabel="Status" />
           <StatusHelp />
@@ -38,7 +38,7 @@ export function QueueFilterBar({ filters, set, clear, affected }: { filters: Que
       {filters.signalOnly ? (
         <div className="flex">
           <span className="inline-flex items-center gap-2 rounded-full border border-forest bg-[#F3F7F4] py-1 pr-1.5 pl-3.5 text-[13px] font-semibold text-forest">
-            Showing the {affected} affected by the Cardinal signal
+            {affected === 1 ? "Showing the request affected by the Cardinal signal" : `Showing the ${affected} affected by the Cardinal signal`}
             <button type="button" aria-label="Remove the Cardinal signal filter" onClick={() => set("signalOnly", false)} className="grid h-5 w-5 place-items-center rounded-full hover:bg-forest/10">
               <X size={13} className="ico" />
             </button>

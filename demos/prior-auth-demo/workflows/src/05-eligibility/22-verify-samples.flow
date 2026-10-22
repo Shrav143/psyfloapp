@@ -1,11 +1,11 @@
 title: Authorizations › Eligibility & Benefits › Verify › Try a sample
 route: /authorizations/eligibility/verify
-intro: Six chips fill the form with a made-up member who ends in a different answer, so every verdict can be seen without a trick. The last four digits of the member ID script the answer. 'Use sample card' (top right) gives 'Authorization first'.
+intro: Six chips fill the form with a made-up member who ends in a different answer, so every verdict can be seen without a trick. The last four digits of the member ID script the answer. 'Use sample card' (top right) gives 'Authorization first'. 'More samples' opens five more chips for the checks that need a look (next diagram).
 dir: TD
 also: Demo only: the endings are scripted. Typing the same ending by hand gives the same answer, on Verify and on the Coverage row in New case.
 ---
 start s1 "Open 'Verify a patient'"
-screen sc "Card 'The patient and the service'\nRow 'Try a sample' with six chips, then the card drop zone and the fields"
+screen sc "Card 'The patient and the service'\nRow 'Try a sample' with six chips and a 'More samples' button, then the card drop zone and the fields"
 decision q1 "Click which chip?"
 
 group gPick "What each chip fills in"
@@ -22,17 +22,18 @@ click c1 "Click 'Check now'"
 process ck "Live check runs about 10 seconds\nChips and fields lock. 'Skip ahead' speeds it up\nThe member ID ending decides the answer"
 
 group gRes "Result"
-  screen r1 "'Cleared to bill: the clinic will be paid.'\nGreen verdict, 'Eligible', benefits 'Covered'\nCost share shown: 'Copay $40 per day, ...'"
+  screen r1 "'Cleared to bill: the clinic will be paid.'\nGreen verdict, 'Eligible', benefits 'Covered'\nCost share shown: 'Copay $40 per day, ...'\n'What this service needs' says Beacon does not require one for IOP, for the dates of service"
   screen r2 "'Fix before billing: coverage lapsed 10/12.'\nEligibility 'Needs a fix', 'Effective 01/01/2026, lapsed 10/12/2026'\nButton 'Request retro-eligibility'"
   screen r3 "'We could not find coverage.'\nEligibility 'Needs a fix', benefits and 'What this service needs' say 'Not checked'\nNo 'Patient pays' line, no dates"
-  screen r4 "'Fix before billing: the service is not covered.'\nBenefits 'Not covered'\nRow 'The service is not covered' in 'Payment checks'"
-  screen r5 "'Fix before billing: another plan pays first.'\nRow 'Another plan pays first', chip 'Other plan', in 'Payment checks'"
+  screen r4 "'Fix before billing: the service is not covered.'\nBenefits 'Not covered'\nRow 'The service is not covered' in the side panel's 'Payment checks'"
+  screen r5 "'Fix before billing: another plan pays first.'\nRow 'Another plan pays first', chip 'Other plan', in the side panel's 'Payment checks'"
   screen r6 "'Fix before billing: every authorized day is used.'\nBenefits line 'All 14 days used. Nothing left'\nRow 'Every authorized day is used', chip 'Limit reached'"
 endgroup
 
 process sd "The list already holds a patient for each reason\nR-1101 lapsed, R-0975 ended, R-1118 not covered\nI-2275 another plan pays first, R-0921 limit reached"
 goto g1 "Continues in: Authorizations › Eligibility & Benefits › Result › Which verdict and why"
 goto g2 "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows"
+goto g3 "Continues in: Authorizations › Eligibility & Benefits › Verify › More samples: checks that need a look"
 
 s1 --> sc --> q1
 q1 -->|Cleared to bill| p1 --> pf
@@ -50,3 +51,4 @@ ck -->|Ends 6060| r5
 ck -->|Ends 9090| r6
 r1 & r2 & r3 & r4 & r5 & r6 --> g1
 sc -.-> sd --> g2
+sc -.-> g3

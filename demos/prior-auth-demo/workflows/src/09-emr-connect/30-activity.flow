@@ -1,8 +1,8 @@
 title: EMR Connect › Recent activity › Read the activity log
 route: /emr
-intro: Every read and write the agents make here is logged. The folded section 'Advanced' shows the newest six lines, and a drawer shows all of them. Most actions on this page add a line.
+intro: Every read and write the agents make here is logged. The folded section 'Advanced' shows the newest six lines, and a drawer shows all of them. Most actions on this page add a line. Each line is about one site or both, and a viewer sees only the lines about the sites in view.
 dir: TD
-also: Times follow the Demo clock. Demo, Reset demo data puts back the eight starting lines.
+also: Times follow the Demo clock. Demo, Reset demo data puts back the eight starting lines: all eight for Both sites, five for Site A and three for Site B.
 ---
 click ad "Click 'Advanced', or Tab to it and press Enter or Space"
 screen p1 "Advanced › Recent activity\nEvery read and write is logged"

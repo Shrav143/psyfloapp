@@ -43,9 +43,9 @@ export function PayerSaidCard({ view }: { view: DenialView }) {
     <Card>
       <CardHeader title={`What ${analysis.ctx.payer} said`} />
       <CardBody>
-        <blockquote className="rounded-r-xl border-l-[3px] border-risk bg-risk-bg px-4 py-3 text-risk-ink">{analysis.quote}</blockquote>
+        <blockquote className="max-w-[80ch] rounded-r-xl border-l-[3px] border-risk bg-risk-bg px-4 py-3 text-risk-ink">{analysis.quote}</blockquote>
         <Label className="mt-4 mb-1.5">What the chart shows</Label>
-        <p className="leading-[1.7]">{analysis.chartShows}</p>
+        <p className="max-w-[80ch] leading-[1.7]">{analysis.chartShows}</p>
       </CardBody>
     </Card>
   );
@@ -65,7 +65,7 @@ export function WeakPointsCard({ view, onSource }: { view: DenialView; onSource:
             <Pill tone={f.sev === "Critical" ? "risk" : "mid"} className="mt-0.5">{f.sev}</Pill>
             <div className="min-w-0 flex-1">
               <div className="font-semibold">{f.title}</div>
-              <div className="text-[13.5px] text-muted">{f.detail}</div>
+              <div className="max-w-[80ch] text-[13.5px] text-muted">{f.detail}</div>
               <div className="mt-2 flex flex-wrap items-center gap-2.5">
                 <button type="button" onClick={() => onSource(f)} className="inline-flex items-center gap-1.5 rounded-full bg-neutral-bg px-2.5 py-[3px] text-xs font-semibold text-neutral-ink hover:bg-[#EADFD0]">
                   <Link2 size={12} className="ico" />
@@ -95,7 +95,7 @@ export function DimensionsCard({ view }: { view: DenialView }) {
   return (
     <Card>
       <CardHeader title="The six ASAM dimensions" subtitle={`What the chart shows on each one${analysis.dimsSub ? ` · ${analysis.dimsSub}` : ""}`} right={<DimensionsSummary view={view} />} />
-      <CardBody className="grid grid-cols-2 gap-3">
+      <CardBody className="grid grid-cols-1 gap-3 min-[900px]:grid-cols-2 min-[1400px]:grid-cols-3">
         {analysis.dims.map((d) => (
           <div key={d.name} className="rounded-2xl border border-tile-edge bg-tile px-4 py-3.5">
             <div className="flex items-center gap-2">

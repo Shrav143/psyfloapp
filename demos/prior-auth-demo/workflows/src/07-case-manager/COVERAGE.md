@@ -1,6 +1,6 @@
 # Coverage: Case Manager
 
-Source: `src/pages/manager/*`, `src/store/manager.ts`, `src/store/cases.ts`, `src/store/ripples.ts`, `src/data/manager.ts`, `src/data/managerReviews.ts`, `src/data/cases.ts`, `src/pages/newcase/runText.ts`, and `src/App.tsx` (the case route).
+Source: `src/pages/manager/*` (including `CaseQuickView.tsx` and `useDraftReviews.ts`), `src/store/manager.ts`, `src/store/cases.ts`, `src/store/ripples.ts`, `src/data/manager.ts`, `src/data/managerReviews.ts`, `src/data/cases.ts`, `src/pages/newcase/runText.ts`, and `src/App.tsx` (the case route).
 
 | Control | Where | Diagram |
 |---|---|---|
@@ -32,7 +32,7 @@ Source: `src/pages/manager/*`, `src/store/manager.ts`, `src/store/cases.ts`, `sr
 | Row buttons 'Continue', 'Answer', 'Watch', 'Review and sign' | Being prepared | 21 |
 | Row ID link; clicking elsewhere on the row does nothing | Being prepared | 21 |
 | Status rules (question, ready, working, intake) and due clocks per request type | Being prepared | 22 |
-| Four status tiles 'Needs action', 'Review due', 'Awaiting payer', 'On track' | Tracker | 30 |
+| Four status tiles 'Needs action', 'Review due', 'Awaiting payer', 'On track' (for the sites in view; Both sites 11, 14, 15, 16) | Tracker | 30, 52 |
 | Table columns (Case, Status, Next due, Units or days, Level of care, Payer, Approval chance, Open), default sort by Next due, 'Showing 1 to 10 of 56', footnote | Tracker | 30 |
 | Text 'New today' and the row of a case signed and sent today | Tracker | 34 |
 | Sort buttons: Case, Status, Next due, Units or days, Payer, Approval chance | Tracker headers | 31 |
@@ -40,7 +40,11 @@ Source: `src/pages/manager/*`, `src/store/manager.ts`, `src/store/cases.ts`, `sr
 | 'Previous', 'Next', 'Page N of M' | Tracker pager | 31 |
 | Cells: Units or days ('10 of 21 days used, 11 left', 'none left', 'not yet approved'), Next due (eight kinds, the case page's own words for a request, 'Next review <date>', 'Step-down plan open'), Approval chance (one small number), Status (the one coloured pill) | Tracker rows | 32 |
 | 'Runs out before review' (red text, only when the approval is used up at the usual pace before the next review), and the footnote that explains the pace | Tracker rows, ledger case page | 35, 60 |
-| Row click, case ID, 'Open' button | Tracker rows | 33 |
+| Case ID link and 'Open' button (go straight to the case page) | Tracker rows | 33 |
+| Row click on a part that is not a button, and the small quick view button 'Quick view of R-0988' (Tab, Enter, Space): opens the right-hand quick view | Tracker rows | 36, 33, 30 |
+| Quick view panel: title and status pill, 'Next due' line and the next-step sentence, units or days with the bar and 'Runs out before review', approved window, level of care, payer, site, approval chance, next review with its pill, documents (only for a case with a case page of its own), three newest history lines | Quick view | 36 |
+| Quick view footer: 'Open case', 'Draft review' (next review not drafted yet, due this week; 'Cadence drafted 1 review', or the paused message), 'Open review' (drafted or needs an update; opens the review drawer on top) | Quick view | 36, 41, 44 |
+| Quick view keys: focus lands on 'Open case', Tab stays inside, Escape closes one layer at a time (the review drawer, then the quick view), focus returns to the row's quick view button, the dimmed area and X close it | Quick view | 36 |
 | Ledger case page: header, 'Case summary', 'Next step', 'Open the review', 'Back to Case Manager', crumb | Case page for a ledger-only case | 60 |
 | Ledger case page 'History': folded, summary '4 entries. Latest: ...', opened by click, Enter or Space | Case page for a ledger-only case | 60 |
 | 'Request not found' (an address typed by hand only) | Hand-off | 33, 60 |
@@ -68,6 +72,16 @@ Source: `src/pages/manager/*`, `src/store/manager.ts`, `src/store/cases.ts`, `sr
 | What changes after signing; the next review Cadence books | Reviews, tracker, Ledger case page | 45 |
 | Empty states: 'Nothing is being prepared', 'No cases match these filters' (both inside the opened Being prepared row), 'No cases match', 'No reviews match' (Step-down plans has none: it hides) | Cards and tables | 50 |
 | 'Start a new case' and each 'Clear filters' | Empty states | 50 |
+
+## Sites
+
+| Control | Where | Diagram |
+|---|---|---|
+| Top bar site switcher and Demo menu 'Viewing as': header counts, the small 'Site A' tag after the header, tracker rows, tiles, filters, 'Being prepared', 'Step-down plans', reviews and their tiles, 'Ready to step down?', the sidebar bubble | Both tabs | 52, 10 |
+| Both sites equal Site A plus Site B: 56 = 33 + 23 cases, 5 = 4 + 1 being prepared, 47 = 27 + 20 reviews, bubble 11 = 6 + 5 | Both tabs | 52 |
+| 'Draft all due reviews' and 'Sign all clean drafts' act only on reviews at the sites in view | Reviews header | 52, 44 |
+| Out-of-site card for a case link at a site the viewer is not looking at; 'Show Site B' for a both-sites viewer | Case route | 52, 33, 60 |
+| 'Nothing to suggest at Site A today.' in 'Ready to step down?' | Reviews, right | 50 |
 
 ## Not drawn
 

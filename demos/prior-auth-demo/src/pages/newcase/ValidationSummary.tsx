@@ -14,8 +14,6 @@ export interface ValidationRow {
   warn: boolean;
   /** The payer requires it (the start date always counts). A finding on a required row has to be acknowledged before signing. */
   required: boolean;
-  /** A required document that is not in the case and not marked not available: the request cannot be signed. */
-  blocks: boolean;
   findings: { id: string; ok: boolean; text: string }[];
 }
 
@@ -24,13 +22,13 @@ export function validationRows(draft: CaseDraft, clock: number, ctx: PayerContex
   const payer = draft.payerId ? payerById(draft.payerId).shortName : "The payer";
   const issue = startDateIssue(draft, ctx.rules, clock, payer);
   const [dateMm, dateDd, dateYy] = [draft.startDate.slice(5, 7), draft.startDate.slice(8, 10), draft.startDate.slice(0, 4)];
-  const rows: ValidationRow[] = [{ id: "start", label: "Start date", warn: !!issue, required: true, blocks: false, findings: [{ id: "start-1", ok: !issue, text: issue?.text ?? `The start date ${dateMm}/${dateDd}/${dateYy} is inside what ${payer} allows` }] }];
+  const rows: ValidationRow[] = [{ id: "start", label: "Start date", warn: !!issue, required: true, findings: [{ id: "start-1", ok: !issue, text: issue?.text ?? `The start date ${dateMm}/${dateDd}/${dateYy} is inside what ${payer} allows` }] }];
   for (const r of requiredFirst(docEntries(draft.payerId, draft.program, ctx.items))) {
     const doc = draft.documents.find((d) => d.slot === r.slot);
     const reason = draft.unavailable[r.slot];
-    if (doc) rows.push({ id: r.slot, label: r.label, warn: openFindings(doc, draft.answers) > 0, required: r.required, blocks: false, findings: doc.findings.map((f) => ({ id: f.id, ok: !isOpen(f, draft.answers), text: findingText(f, draft.answers) })) });
-    else if (reason !== undefined) rows.push({ id: r.slot, label: r.label, warn: r.required, required: r.required, blocks: false, findings: [{ id: `${r.slot}-na`, ok: !r.required, text: r.required ? `Marked not available: ${reason}. ${payer} requires it, so it may ask for it.` : `Marked not available: ${reason}. You can sign without it.` }] });
-    else rows.push({ id: r.slot, label: r.label, warn: true, required: r.required, blocks: r.required, findings: [{ id: `${r.slot}-none`, ok: false, text: r.required ? "This document was not added." : `Not added. ${payer} lists it. You can sign without it.` }] });
+    if (doc) rows.push({ id: r.slot, label: r.label, warn: openFindings(doc, draft.answers) > 0, required: r.required, findings: doc.findings.map((f) => ({ id: f.id, ok: !isOpen(f, draft.answers), text: findingText(f, draft.answers) })) });
+    else if (reason !== undefined) rows.push({ id: r.slot, label: r.label, warn: r.required, required: r.required, findings: [{ id: `${r.slot}-na`, ok: !r.required, text: r.required ? `Marked not available: ${reason}. ${payer} requires it, so it may ask for it.` : `Marked not available: ${reason}. You can sign without it.` }] });
+    else rows.push({ id: r.slot, label: r.label, warn: true, required: r.required, findings: [{ id: `${r.slot}-none`, ok: false, text: r.required ? "This document was not added." : `Not added. ${payer} lists it. You can sign without it.` }] });
   }
   return rows;
 }

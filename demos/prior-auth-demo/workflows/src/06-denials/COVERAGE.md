@@ -1,12 +1,14 @@
 # Coverage: Denial Intelligence (`/denials`, `/denials?id=`, `/denials?payer=&reason=`, `/denials/:id/brief`, `/denials/:id/report`)
 
+The page is one column. The list of denials, 'Add a denial letter' and the three options' detail are in right-hand panels (the `Drawer`), and every denial, brief and report follows the site view (diagram 26).
+
 Files are in this folder. A control listed with two files is drawn in the first and continued in the second.
 
 ## Global entries
 
 | Control | Diagram |
 |---|---|
-| Sidebar 'Denial Intelligence' and its badge (8 at the start) | 10 |
+| Sidebar 'Denial Intelligence' and its badge (8 at the start for Both sites, 4 for Site A, 4 for Site B) | 10, 26 |
 | Demo menu, Suggested path 'Denial Intelligence: D-3318' | 10 |
 | Notification rows ('Denied today', 'Denied', 'Partly approved', 'Denial analyzed', 'Appeal filed', 'Appeal decision', 'Call outcome', 'Denial closed') | 10, 60 |
 | Ask FLO link 'Open Denial Intelligence' | 10 |
@@ -17,14 +19,16 @@ Files are in this folder. A control listed with two files is drawn in the first 
 
 | Control | Diagram |
 |---|---|
-| Address `?id=` (known, unknown, closed here, none) and the 'We could not find ... Showing ... instead.' banner | 10, 17 |
-| Address `?payer=` and `?reason=`: chip row 'Showing', chip X ('Remove filter ...'), 'Clear', subtitle 'N of M match the filters', in-list text 'No open denials match the filters.', empty state 'No open denials match these filters' with 'Clear filters', `?id=` kept beside the filters | 11, 17 |
-| Empty state 'No open denials' and its link 'Open the Dashboard' | 10, 60 |
+| Address `?id=` (known, unknown, closed here, at another site, none) and the 'We could not find ... Showing ... instead.' banner | 10, 17, 26 |
+| Direct link to a denial, brief or report at a site the viewer is not looking at: out-of-site card ('This denial is not available at Site A', 'brief', 'report'), 'Show Site B' for a both-sites viewer | 26, 10 |
+| Address `?payer=` and `?reason=`: one chip 'Filtered: Cardinal, Late notice' with a clear X ('Clear filters') under the header and at the top of the panel, line 'N of M open', in-panel text 'No open denials match the filters.', empty state 'No open denials match these filters' with 'Clear filters', `?id=` kept beside the filters; the panel opens by itself when the filter matches more than one denial and the address has no `?id=` | 11, 17 |
+| Empty state 'No open denials' with the buttons 'Add a denial letter' and 'Open the Dashboard' | 10, 15, 60 |
 | Quiet line under the page description 'Authorization denials only. Claim denials are handled in billing and are not in this demo.' (no control for claim denials) | 12 |
 | Ghost button 'See on the Dashboard' (in the header card, under the payer line) | 11, 12, 60 |
-| 'Add a denial letter' folded section (right column, above 'Open denials'; above the empty state when none is open), summary 'Drop a letter or use a sample', opened by click, Enter or Space; kept mounted while closed | 15, 25 |
-| Inside it: drop area (click, Enter, Space, drag), 'Use sample letter', X on the file row, note box, 'Analyze the denial', 'Add the letter first, or use the sample letter.' (a new denial clears the filters) | 15, 17 |
-| Four agent steps (Reader, Advocate, Historian, Integrity), toast 'The analysis is ready', leaving the page mid-way | 15 |
+| Button 'Add a denial letter' (footer of the 'Open denials' panel, and in the empty state): opens the right-hand letter panel 'Add a denial letter' (subtitle 'Drop a letter or use a sample'); 'Back to open denials'; the state lives on the page, so closing the panel mid-analysis keeps it running | 15 |
+| Inside it: drop area (click, Enter, Space, drag), 'Use sample letter', X on the file row, note box, 'Analyze the denial', 'Add the letter first, or use the sample letter.' (a new denial clears the filters, closes the panel and belongs to the site in view) | 15, 17, 26 |
+| Four agent steps (Reader, Advocate, Historian, Integrity), toast 'The analysis is ready', Escape or X mid-way (keeps going), leaving the page mid-way (stops) | 15 |
+| Page header: title, the small 'Site A' tag when the view is narrowed to one site, scope line, button 'Open denials 8' (under the text on a narrow window) | 12, 11, 26 |
 | Header card: small tag 'Authorization denial', program chip, D-id, type pill, '64% chance of overturning' pill, deadline pill, payer line, 'Your note' | 12, 50 |
 | Header button 'Appeal analysis report' (under the 'Our read' tile) | 12, 70 |
 | 'Our read' tile (Worth challenging, Borderline, Probably accept) | 12, 16 |
@@ -41,12 +45,23 @@ Files are in this folder. A control listed with two files is drawn in the first 
 | Source drawer: X, Esc, click outside | 14 |
 | 'The six ASAM dimensions' (left out for Late notice and Retro-authorization denied) | 12 |
 | 'Full summary' in that card header: pop-up 'The six ASAM dimensions, full summary', 'Copy all', 'Copy' on each dimension, 'Close', X, Esc, click outside | 19 |
-| 'Your options': three radio cards, 'Recommended' (the route of the recommended step), chances, 'Needs', a button under the cards only for a route the block above has no button for, 'A call is already booked...' ('Probably accept' on D-3306 recommends Accept) | 16 |
+| 'Your options' row: the three routes with their chances and 'Recommended' (the route of the recommended step); button 'Compare the options' | 16, 12 |
+| 'Your options' panel: three radio cards, chances, 'Needs', the footer button for the route picked ('Choose a time and prepare the brief', 'Draft the appeal letter', 'Accept the decision and plan the step-down'), 'A call is already booked...', 'Pick a route to go on...' ('Probably accept' on D-3306 recommends Accept) | 16 |
 | Toast 'The peer-to-peer window has closed' | 16, 51 |
 | 'What has happened' folded section (summary: step count and the latest step), timeline inside | 12, 25 |
-| Every folded section: a real button with aria-expanded, Enter and Space, closed again when the page is reopened | 25 |
-| 'Open denials' card: subtitle 'Soonest deadline first', count pill, rows (Tab, Enter, Space, click) with id, program chip, deadline pill, type and the tag 'Authorization denial', 'N% win chance', order, 'Closed' section, empty text | 11 |
-| Link 'Report' on each row of the card | 11, 70 |
+| Every folded section: a real button with aria-expanded, Enter and Space, closed again when the page is reopened (the list, the letter form and the options detail are panels, not folded sections) | 25 |
+| Button 'Open denials' (count pill, `aria-expanded`) in the page header: opens the right-hand 'Open denials' panel by click, Enter or Space | 11 |
+| 'Open denials' panel: subtitle 'Both sites. Soonest deadline first. Authorization denials only.', count pill, X, rows (Tab, up and down arrows, Enter, Space, click) with id, program chip, deadline pill, type and the tag 'Authorization denial', 'N% win chance', order, 'Closed' label and rows, empty text; picking a row switches the page and closes the panel | 11 |
+| Link 'Report' on each row of the panel | 11, 70 |
+
+## Sites
+
+| Control | Diagram |
+|---|---|
+| Top bar site switcher (Both sites, Site A, Site B) and Demo menu 'Viewing as' (Jordan Perez, Alex Morgan, Dr. Rivera, Sam Okafor): the page, the panel and its count, the filters, the badge and the first denial follow the view | 26 |
+| A one-site viewer (Dr. Rivera, Site A; Sam Okafor, Site B) never sees, counts or lists the other site's denials; Both sites 8 = Site A 4 plus Site B 4 | 26, 11 |
+| A letter-added denial belongs to the site in view (Site A when both are in view), recorded on the denial, with a D- number the site rule places at that site | 15, 26 |
+| Step-down plan in Case Manager and the accepted denial in Analytics follow the denial's site | 26, 40 |
 
 ## Peer-to-peer
 
@@ -110,7 +125,7 @@ Files are in this folder. A control listed with two files is drawn in the first 
 
 ## Keyboard
 
-Esc closes one layer per press: a menu, then the modal, then the drawer behind it (20, 23, 30, 31, 33, 40). Esc closes only the Full summary pop-up (18, 19). Tab stays inside a Full summary pop-up and focus returns to its button when it closes. Enter and Space open the file chooser (15) and a list row (11). Enter and Space open and close every folded section (25); Esc does not close one.
+Esc closes one layer per press: a menu, then the modal, then the drawer behind it (20, 23, 30, 31, 33, 40); the 'Open denials', 'Your options' and 'Add a denial letter' panels close with Esc, X or a click on the dimmed area, and focus goes back to the button that opened them (11, 15, 16). Inside the 'Open denials' panel Tab stays in the panel and the up and down arrows move between rows (11). Esc closes only the Full summary pop-up (18, 19). Tab stays inside a Full summary pop-up and focus returns to its button when it closes. Enter and Space open the file chooser (15) and a list row (11). Enter and Space open and close every folded section (25); Esc does not close one.
 
 ## Not drawn
 
@@ -120,7 +135,8 @@ Esc closes one layer per press: a menu, then the modal, then the drawer behind i
 - Arrow-key use inside the 'Signing as' and 'Reason for the record' menus: shared menu component, owned by another module's diagram if at all.
 - Resubmission path for D-3290 (chip 'Resubmitting', 'Packet is writing the resubmission'): the recommendation reads 'Correct and resubmit' and its button opens the written-letter flow (24, 30). The demo has no separate resubmission screen, so after the confirm step the drawer, the sign dialog and the chip 'Appeal filed' use the appeal's words.
 - 'Ask for reconsideration' is on the list of six words but no demo denial maps to it: it needs a payer rule that names it, and none is invented (24).
-- The appeal draft area has no inline section to fold: the letter lives in a drawer that opens from 'Open the draft' and closes with Esc (30).
+- The appeal draft area has no inline section to fold: the letter, with its 'Evidence to attach' list, already lives in a right-hand drawer that opens from 'Open the draft' and closes with Esc (30).
+- A keyboard shortcut for 'Open denials' was not added: a single-letter shortcut clashes with typing and screen-reader keys, so the button title says nothing about one.
 - The report's evidence excerpts and reasoning stay open: the report is the document that is copied, saved as a PDF and printed (71, 72).
 - PRD 05 steps with no screen in the demo: receipt call after sending, expedited 72-hour clock, deemed exhaustion, the member's signed request for a state fair hearing, argument library. Drawn in 32 only as PRD notes.
 - PRD 04 items with no screen in the demo: categorisation, reasoning cards and validity, root cause, route override, resubmit corrected, partial review, refused peer-to-peer, escalation dossier, prevention rules, claim denials, continuity decision.

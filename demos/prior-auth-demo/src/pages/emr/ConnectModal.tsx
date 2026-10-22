@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Button, ChoiceCard, Field, Modal, Stepper, TextInput } from "@/components/ui";
 import { SYSTEM_KINDS, type SystemKind } from "@/data/emr";
+import { SITE_IDS, siteName, sitesLabel, type SiteId } from "@/data/sites";
+import { useScope } from "@/lib/scope";
 import { useStore } from "@/store";
 import { CONNECT_CHECKS, ConnectionTest } from "./ConnectionTest";
 
@@ -14,8 +16,12 @@ export function ConnectModal({ onClose }: { onClose: () => void }) {
   const [contact, setContact] = useState("");
   const [passed, setPassed] = useState(false);
   const [error, setError] = useState("");
+  const { sites: inView, viewer } = useScope();
+  // A system serves the sites chosen here, from the sites this viewer may see. The choice starts at the sites in view.
+  const [sites, setSites] = useState<SiteId[]>(inView);
+  const choices: { label: string; sites: SiteId[] }[] = [...viewer.sites.map((id) => ({ label: siteName(id), sites: [id] })), ...(viewer.sites.length > 1 ? [{ label: "Both sites", sites: [...SITE_IDS] }] : [])];
   const holds = SYSTEM_KINDS.find((k) => k.value === kind)?.holds ?? "";
-  const finalName = name.trim() || `${kind} · new site`;
+  const finalName = name.trim() || `${kind} · ${sitesLabel(sites)}`;
 
   const next = () => {
     if (step === 1 && !contact.trim()) return setError("Add the person at the practice who can approve read-only access.");
@@ -23,7 +29,7 @@ export function ConnectModal({ onClose }: { onClose: () => void }) {
     setStep((s) => s + 1);
   };
   const finish = () => {
-    useStore.getState().connectSystem({ kind, name: finalName, holds, contact: contact.trim() });
+    useStore.getState().connectSystem({ kind, name: finalName, holds, contact: contact.trim(), sites });
     onClose();
   };
 
@@ -42,7 +48,14 @@ export function ConnectModal({ onClose }: { onClose: () => void }) {
             <div role="radiogroup" aria-label="System type" className="grid grid-cols-2 gap-2.5">
               {SYSTEM_KINDS.map((k) => <ChoiceCard key={k.value} selected={kind === k.value} onClick={() => setKind(k.value)} title={k.value}>{k.holds}</ChoiceCard>)}
             </div>
-            <Field label="Name in Psyflo" hint="Shown in Connection health."><TextInput value={name} onChange={(e) => setName(e.target.value)} placeholder={`${kind} · second outpatient site`} /></Field>
+            {choices.length > 1 ? (
+              <div role="radiogroup" aria-label="Site" className="grid grid-cols-3 gap-2.5">
+                {choices.map((c) => <ChoiceCard key={c.label} selected={sitesLabel(sites) === c.label} onClick={() => setSites(c.sites)} title={c.label} />)}
+              </div>
+            ) : (
+              <p className="text-[13px] text-muted">It will serve {sitesLabel(viewer.sites)}, the only site your role can see.</p>
+            )}
+            <Field label="Name in Psyflo" hint="Shown in Connection health."><TextInput value={name} onChange={(e) => setName(e.target.value)} placeholder={`${kind} · ${sitesLabel(sites)}`} /></Field>
           </div>
         ) : null}
         {step === 1 ? (

@@ -2,22 +2,25 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FileClock, CircleCheck, Plus, RefreshCw, SearchX, TriangleAlert } from "lucide-react";
 import { Button, Card, CardHeader, Dropdown, EmptyState, Page, PageHeader, SearchInput, Stat } from "@/components/ui";
-import { sortPatients, verdictOf, VERDICT_LABEL } from "@/data/eligibility";
+import { SiteTag } from "@/components/layout/SiteTag";
+import { sortPatients, verdictOf, VERDICT_LABEL, type Verdict } from "@/data/eligibility";
 import { PAYERS } from "@/data/seed";
 import { PROGRAM_LABEL, PROGRAMS, type PayerId, type Program } from "@/data/types";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
+import { selectEbRows } from "@/store/eligibility";
 import { EbTable } from "./EbTable";
 import { patientLabel } from "./chips";
 import { InfoTip } from "@/components/ui/InfoTip";
 
 const PAGE = 12;
-type VerdictFilter = "all" | "cleared" | "auth_first" | "fix" | "recheck";
+type VerdictFilter = "all" | Verdict | "recheck";
 
-/** Eligibility and Benefits: will the clinic be paid for each patient? */
+/** Eligibility and Benefits: will the clinic be paid for each patient? Reads the shared verification records, inside the sites in view,
+    so a check made in New case is a row here and a check made here is the one New case finds. */
 export default function EligibilityListPage() {
   const nav = useNavigate();
-  const patients = useStore((s) => s.ebPatients);
+  const patients = useStore(selectEbRows);
   const [q, setQ] = useState("");
   const [payer, setPayer] = useState<PayerId | "all">("all");
   const [program, setProgram] = useState<Program | "all">("all");
@@ -25,7 +28,7 @@ export default function EligibilityListPage() {
   const [limit, setLimit] = useState(PAGE);
 
   const counts = useMemo(() => {
-    const c = { cleared: 0, auth_first: 0, fix: 0, recheck: patients.filter((p) => p.recheckDue).length };
+    const c = { cleared: 0, auth_first: 0, fix: 0, unchecked: 0, recheck: patients.filter((p) => p.recheckDue).length };
     for (const p of patients) c[verdictOf(p)] += 1;
     return c;
   }, [patients]);
@@ -56,7 +59,8 @@ export default function EligibilityListPage() {
       <PageHeader
         title={
           <>
-            {`${counts.cleared} of ${patients.length} patients are cleared to bill.`}{" "}
+            {`${counts.cleared} of ${patients.length} patients are cleared to bill.`}
+            <SiteTag />{" "}
             <InfoTip label="Why we check twice">
               <b>Why we check twice.</b> Eligibility says the patient is covered. Benefits say the service is payable. For Medicaid programs the second one decides whether the clinic is reimbursed, even when the copay is $0.
             </InfoTip>
@@ -89,6 +93,7 @@ export default function EligibilityListPage() {
             { value: "cleared", label: VERDICT_LABEL.cleared },
             { value: "auth_first", label: VERDICT_LABEL.auth_first },
             { value: "fix", label: VERDICT_LABEL.fix },
+            ...(counts.unchecked ? [{ value: "unchecked" as const, label: VERDICT_LABEL.unchecked }] : []),
             { value: "recheck", label: "Re-check due" },
           ]}
         />

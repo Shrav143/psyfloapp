@@ -1,6 +1,6 @@
 title: Case Manager › Reviews this week › The review drawer
 route: /manager?tab=reviews (drawer over the list)
-intro: Opening a review shows the draft an agent wrote, the four Integrity checks and the buttons to sign or open the case. What the clinician can do depends on the review's status: a clean draft, a draft with one check to look at, a review that needs an update, or one already signed.
+intro: It also opens from the quick view's 'Open review' button, on top of the quick view (Escape closes one layer at a time). Opening a review shows the draft an agent wrote, the four Integrity checks and the buttons to sign or open the case. What the clinician can do depends on the review's status: a clean draft, a draft with one check to look at, a review that needs an update, or one already signed.
 dir: TD
 ---
 start s1 "Click the case ID or 'Open' on a review row"

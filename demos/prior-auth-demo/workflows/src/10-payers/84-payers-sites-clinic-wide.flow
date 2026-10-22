@@ -1,0 +1,54 @@
+title: Payers › Sites › Clinic-wide payers, drafts in view
+route: /payers/:id
+intro: Payers are the clinic's, not a site's: every viewer sees the same six payers, rules, documents and changes, and the Payers badge never changes with the site view. What does follow the site is the list of drafts a payer change or an edit can redraft, because a draft belongs to a case and a case belongs to a site.
+dir: TD
+also: Demo data. Cardinal's change (criteria v2026.3) affects one unsent draft, I-2207, which is at Site B. Summit's two unsent drafts, R-1042 and R-1101, are at Site A. Edits and acknowledgements are logged under the person viewing.
+---
+start s1 "Open Payers\nAs any of the four viewers, on any site view"
+process p1 "The same payers, rules, documents and changes for everyone\nSidebar badge 'Payers' stays 3 for every viewer and site view"
+click cAck "Acknowledge a change, or save an edit"
+store lg "Edit log and 'Acknowledged by' name the person viewing\nJordan Perez at the start; Dr. Rivera, Alex Morgan or Sam Okafor after 'Viewing as'"
+click cUp "Open the Update drafts step\n'Update N drafts' (Changes tab banner) or the edits-waiting banner"
+decision d1 "Which drafts does this payer have at the sites in view?"
+
+group gAll "Both sites"
+  screen a1 "Cardinal: 'Update 1 draft' (I-2207)\nSummit: 'Update 2 drafts' (R-1042, R-1101)\nSame numbers as before sites"
+endgroup
+group gA "Site A"
+  screen b1 "Dr. Rivera, or a viewer with both sites on 'Site A'\nCardinal: 'No open drafts are affected. New drafts for Cardinal use the change once you apply it.' Button 'Apply to new drafts'\nSummit (edits-waiting banner): 'Update 2 drafts' (R-1042, R-1101)"
+endgroup
+group gB "Site B"
+  screen c1 "Sam Okafor, or a viewer with both sites on 'Site B'\nCardinal: 'Update 1 draft' (I-2207)\nSummit (edits-waiting banner): button 'Update drafts', and its pop-up opens as 'Apply to new drafts?'"
+endgroup
+
+decision d2 "Can this viewer see both sites, with one chosen?"
+toast hint "A plain hint under the banner\n'1 more draft at Site B is not in this view, so it is not updated. Choose Both sites to include it.'"
+process nohint "No word about the other site\nA one-site viewer is never told what exists there"
+
+click cConf "Confirm 'Update N drafts'"
+agent ag "Scribe and Integrity redraft exactly the drafts that were listed (demo: 3 seconds)\nA draft at a site the viewer cannot see is never listed, counted or changed"
+store up "Each listed draft needs a person again\nUpdate recorded for Case Manager and New case"
+toast t1 "'N drafts updated'\nOr 'No open drafts to update' when none were in view"
+
+click cChk "Documents tab › 'Try it on a case'"
+process chk "The Case menu lists only 'Preparing' cases at the sites in view\nSwitching the site view changes the list"
+
+goto g1 "Continues in: Payers › Changes › Update drafts after a change"
+goto g2 "Continues in: Payers › Edits waiting › Update drafts"
+goto g3 "Continues in: Payers › Documents › Try it on a case"
+goto g4 "Continues in: Who can see what › Roles, sites and a record at the other site"
+end e1 "Payers stay the clinic's; drafts stay with their site"
+
+s1 --> p1 --> cAck --> lg
+p1 --> cUp --> d1
+d1 -->|Both sites| a1
+d1 -->|Site A| b1
+d1 -->|Site B| c1
+a1 & b1 & c1 --> d2
+d2 -->|Yes, one site chosen and drafts at the other| hint
+d2 -->|No, or nothing at the other site| nohint
+hint & nohint --> cConf --> ag --> up --> t1 --> e1
+p1 --> cChk --> chk --> g3
+cUp -.-> g1
+cUp -.-> g2
+e1 --> g4

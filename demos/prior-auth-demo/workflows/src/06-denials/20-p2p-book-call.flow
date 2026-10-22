@@ -1,10 +1,10 @@
 title: Denial Intelligence › Peer-to-peer › Book the call
 route: /denials?id=D-3318
-intro: The confirm gate for the peer-to-peer route: pick one of three call windows, confirm, and Cadence books it. The same modal opens from the options card, from 'Change the time' and from the brief page.
+intro: The confirm gate for the peer-to-peer route: pick one of three call windows, confirm, and Cadence books it. The same modal opens from the 'Your options' panel, from 'Change the time' and from the brief page.
 dir: TD
 also: Demo only: the payer holding the slot is simulated. Times follow the demo clock: fast-forwarding in the Demo menu uses them up, and with none left the message 'No call time is left' shows.
 ---
-start s1 "Click 'Choose a time and prepare the brief' (the recommended next step, or Your options for another route)"
+start s1 "Click 'Choose a time and prepare the brief' (the recommended next step, or the 'Your options' panel for another route)"
 start s2 "Click 'Change the time' (next-step block, call booked)"
 start s3 "Brief page: click 'Book the call' or 'Change the call time'"
 

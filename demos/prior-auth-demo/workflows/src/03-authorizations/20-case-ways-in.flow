@@ -14,6 +14,7 @@ group gIn "Links that open a case page"
   start a7 "Eligibility & Benefits result: click 'Open case'"
   start a8 "Notification 'Approval chance updated'"
   start a9 "Type the address /authorizations/case/ID"
+  start a10 "Queue: open the quick view panel, then click 'Open case'"
 endgroup
 
 process r0 "Case page reads the ID from the address"
@@ -32,10 +33,13 @@ click bq "Click 'Back to queue' or the 'Authorizations' crumb"
 goto gQ "Continues in: Authorizations › Queue › Open the queue and read the top"
 
 store ld "Your earlier work on this case is loaded\nAnswers, applied and dismissed actions, focus, clinical context, draft edits, log"
+decision dS "Is the case at a site the viewer has in view?"
+screen oos "Card 'This case is not available at Site A'\nNames the site, not the patient"
+goto gO "Continues in: Authorizations › Case page › A case at another site"
 decision d4 "Does ?tab= name one of the five tabs?"
 screen tab1 "That tab opens\ne.g. a review drawer opens '?tab=draft'"
 screen tab0 "'Recommended actions' opens"
-goto gH "Continues in: Authorizations › Case page › Header and numbers"
+goto gH "Continues in: Authorizations › Case page › Header and buttons"
 
 a1 --> r0
 a2 --> r0
@@ -46,8 +50,9 @@ a6 --> r0
 a7 --> r0
 a8 --> r0
 a9 --> r0
+a10 --> r0
 r0 --> d1
-d1 -->|Yes| hand --> ld
+d1 -->|Yes| hand --> dS
 d1 -->|No| d2
 d2 -->|Yes| fq --> gen
 d2 -->|No| d3
@@ -56,7 +61,9 @@ d3 -->|No| d5
 d5 -->|Yes| gL
 d5 -->|No| nf
 nf --> bq --> gQ
-gen --> ld
+gen --> dS
+dS -->|Yes| ld
+dS -->|No| oos --> gO
 ld --> d4
 d4 -->|Yes| tab1 --> gH
 d4 -->|No or missing| tab0 --> gH

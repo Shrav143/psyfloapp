@@ -1,17 +1,18 @@
 import { useMemo } from "react";
 import { ActorBadge, AgentBadge, Disclosure } from "@/components/ui";
 import { AGENTS } from "@/data/agents";
-import { USER_NAME } from "@/data/payerConfig";
+import { viewerById } from "@/data/viewers";
 import { stamp } from "@/lib/time";
 import { useStore } from "@/store";
 import type { CaseCtx } from "./caseTypes";
 import { historyOf, type HistoryLine } from "./history";
 
-const nameOf = (a: HistoryLine["actor"]): string => (a === "you" ? USER_NAME : a === "payer" ? "Payer" : a === "system" ? "Psyflo" : AGENTS[a].name);
+const nameOf = (a: HistoryLine["actor"], you: string): string => (a === "you" ? you : a === "payer" ? "Payer" : a === "system" ? "Psyflo" : AGENTS[a].name);
 
 /** Read-only History, closed by default: the request's events from the store, then what was done on this page. Each line says who did it, a person or a named agent. */
 export function CaseHistory({ ctx }: { ctx: CaseCtx }) {
   const { detail, work } = ctx;
+  const you = viewerById(useStore((s) => s.viewerId)).name;
   const request = useStore((s) => s.requests.find((r) => r.id === detail.requestId));
   const lines = useMemo(() => historyOf(request, work.log), [request, work.log]);
   const last = lines.find((l) => !l.scheduled);
@@ -29,7 +30,7 @@ export function CaseHistory({ ctx }: { ctx: CaseCtx }) {
               {l.actor === "you" || l.actor === "payer" || l.actor === "system" ? <ActorBadge actor={l.actor} size={26} /> : <AgentBadge agent={l.actor} size={26} />}
               <div className="min-w-0 flex-1">
                 <div className="text-xs text-muted">
-                  <b className="font-semibold text-ink2">{nameOf(l.actor)}</b>
+                  <b className="font-semibold text-ink2">{nameOf(l.actor, you)}</b>
                   {l.actor === "you" ? " (you)" : l.actor === "payer" || l.actor === "system" ? "" : " (agent)"} · {l.scheduled ? `Scheduled ${stamp(l.at)}` : stamp(l.at)}
                 </div>
                 <div className={l.scheduled ? "text-[14px] text-muted" : "text-[14px]"}>{l.text}</div>

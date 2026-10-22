@@ -1,6 +1,6 @@
 title: Authorizations › Queue › Search and filter
 route: /authorizations
-intro: The search box and the four menus (Payer, Request type, Status, Urgency), the help for the status names, the note on how the list is ordered, how filters combine and travel in the web address, what the page says when nothing matches, and the 'Nothing needs you today' messages that appear once requests have been sent or handled.
+intro: The search box and the four menus (Payer, Request type, Status, Urgency), the help for the status names, the note on how the list is ordered, how filters combine and travel in the web address, what the page says when nothing matches, and the 'Nothing needs you today' messages that appear once requests have been sent or handled. Search and every filter work on the requests at the sites in view only.
 dir: TD
 also: Demo only: filters are kept while you move around the app, are written to the web address (?payer=, ?type=, ?status=, ?urgency=, ?q=, ?signal=1) and are cleared by Reset demo data. 'Nothing needs you today' shows in the Act now band once all five of its requests are sent or handled, and for the whole queue only when no request is left open at all.
 ---
@@ -10,7 +10,7 @@ group gS "Search"
   click sk "Press '/' anywhere\n(not while typing in a field)"
   process sf "Cursor jumps to the search box"
   input s1 "Type in 'Search by case ID or initials'"
-  process sm "Matches the ID or the initials\nIgnores case, dots, dashes and spaces\n'r1042' and 'jm' both find R-1042 (J.M.)"
+  process sm "Matches the ID or the initials of a request at a site in view\nIgnores case, dots, dashes and spaces\n'r1042' and 'jm' both find R-1042 (J.M.)\nA request at the other site is never found"
 endgroup
 
 group gP "Payer"
@@ -21,7 +21,7 @@ endgroup
 
 group gQ "Request type"
   click ty1 "Click 'Request type'"
-  overlay ty2 "Menu: All request types, Initial, Concurrent review, Reauthorization, Retrospective"
+  overlay ty2 "Menu: All request types, Initial, Concurrent review, Reauthorization, Modification / extension, Retrospective"
   input ty3 "Pick a type"
 endgroup
 
@@ -51,7 +51,7 @@ screen hd "Header: 'X of 56 open requests match these filters.'"
 click clr "Click 'Clear filters'\n(appears once any filter is on)"
 decision dAny "Any request left?"
 screen res "Bands show only the matching requests\nBand counts follow"
-screen emp "'No requests match these filters'\n'The filters hide all 56 open requests.'"
+screen emp "'No requests match these filters'\n'The filters hide all 56 open requests.'\n(the open requests at the sites in view)"
 click ce "Click 'Clear filters' in the message"
 process rs "Search empty, All payers, All request types, All statuses, All urgency, payer-signal filter off\nThe filters leave the web address"
 
@@ -59,9 +59,9 @@ decision dOpen "Are there any open requests at all?"
 end e1 "Every band is listed again"
 screen none "'Nothing needs you today'\n'Every open request has been sent or handled. Case Manager shows what is scheduled next.'"
 decision dNow "Is Act now empty, with no search, payer or status filter on?"
-screen nowE "Act now band stays, '(0 requests)'\n'Nothing needs you today'\n'Everything in Act now has been sent or handled.'\nHeader sub line: 'Nothing is urgent. ...'"
+screen nowE "Act now band stays, '(0 requests)'\n'Nothing needs you today'\n'Everything in Act now has been sent or handled.'\n(with one site in view: 'No open request at Site B is in Act now.')\nHeader sub line: 'Nothing is urgent. ...'"
 click ocm "Click 'Open Case Manager'"
-goto gCM "Continues in: Case Manager › Active cases"
+goto gCM "Continues in: Case Manager › Active cases › Tracker of every active case"
 goto gSig "Continues in: Authorizations › Queue › Cardinal payer signal"
 
 fb --> sk --> sf --> s1
