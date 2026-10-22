@@ -3,7 +3,7 @@ import type { PayerId } from "./types";
 /* Analytics > Performance. "This quarter" with all payers is the canonical set: 71% approved as asked,
    29% top denial cause, 84% advice taken works, 75% sent without edits; approval by payer Lakeshore 86,
    Beacon 81, Harborview 77, Summit 74, Evergreen 69, Cardinal 63; edits 68 / 27 / 5.
-   Appeals overturned 56% of 96 decided, $88.7K written off over 17 accepted denials.
+   Appeals overturned 56% of 96 decided, 17 denials accepted.
    Every other view (another period, one payer) is derived from the tables below. */
 
 export const MIN_DECISIONS = 20;
@@ -142,12 +142,5 @@ export const APPEALS: Record<PayerId, { decided: number; rate: number }> = {
 /** Other periods drift a little from this quarter, in percentage points. */
 export const OVERTURN_SHIFT: Record<PeriodId, number> = { quarter: 0, last_quarter: -3, year: -4 };
 
-/** Denials the clinic accepted in a quarter, and the money written off. Each denial accepted in Denial Intelligence is added on top. */
-export const WRITTEN_OFF: Record<PayerId, { n: number; amount: number }> = {
-  cardinal: { n: 6, amount: 41_300 },
-  summit: { n: 4, amount: 18_900 },
-  evergreen: { n: 2, amount: 9_800 },
-  harborview: { n: 3, amount: 12_400 },
-  beacon: { n: 1, amount: 4_200 },
-  lakeshore: { n: 1, amount: 2_100 },
-};
+/** Denials the clinic accepted in a quarter. Each denial accepted in Denial Intelligence is added on top. */
+export const ACCEPTED: Record<PayerId, number> = { cardinal: 6, summit: 4, evergreen: 2, harborview: 3, beacon: 1, lakeshore: 1 };

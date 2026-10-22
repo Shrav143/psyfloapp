@@ -1,8 +1,7 @@
 import { CircleCheck, CircleX, Clock, Gauge, Radar, TriangleAlert, X } from "lucide-react";
 import { Banner, Button, Stat } from "@/components/ui";
 import { APPROVED_30D, DENIED_30D } from "@/data/queue";
-import { money } from "@/lib/format";
-import type { Stats } from "./queueLogic";
+import { shortSpan, type Stats } from "./queueLogic";
 
 const WORD = ["no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
 export const numberWord = (n: number): string => WORD[n] ?? String(n);
@@ -34,7 +33,7 @@ export function QueueTiles({ all, urgent, onUrgent, onAll }: { all: Stats; urgen
     <div className="grid grid-cols-5 gap-4">
       <Stat tone="mid" icon={Gauge} value={`${all.avg}%`} label="Approval chance" sub={`average · likely ${lo}–${hi}%`} />
       <Stat tone="risk" icon={TriangleAlert} value={urgent} label="Urgent" sub="the Act now band" onClick={onUrgent} />
-      <Stat tone="neutral" icon={Clock} value={all.count} label="In flight" sub={`${money(all.dollars)} at stake`} onClick={onAll} />
+      <Stat tone="neutral" icon={Clock} value={all.count} label="In flight" sub={all.firstDue === null ? "nothing open" : all.firstDue <= 0 ? "next one is due now" : `next due in ${shortSpan(all.firstDue)}`} onClick={onAll} />
       <Stat tone="good" icon={CircleCheck} value={APPROVED_30D} label="Approved" sub="last 30 days" />
       <Stat tone="risk" icon={CircleX} value={DENIED_30D} label="Denied" sub="last 30 days" />
     </div>

@@ -1,4 +1,3 @@
-import { money } from "@/lib/format";
 import { fmt, trendLine, type View } from "./model";
 
 const NOT_ENOUGH = "Not enough decisions yet";
@@ -41,7 +40,7 @@ export function reportDoc(v: View, prevLabel: string): ReportDoc {
       title: "Denial outcomes",
       bullets: [
         `Appeals overturned: ${pct(v.appeals.value)} (${fmt(v.appeals.overturned)} of ${fmt(v.appeals.n)} rulings, partly restored counts as overturned)`,
-        `Written off after accepted denials: ${money(v.writtenOff.amount)} (${fmt(v.writtenOff.n)} denials)`,
+        `Denials accepted: ${fmt(v.accepted.n)}`,
       ],
     },
     v.helps ? { title: "What helps most", numbered: v.helps.map((h) => `${h.label}. Applied ${fmt(h.applied)} times, ${h.approved}% approved.`) } : { title: "What helps most", bullets: [NOT_ENOUGH] },
@@ -82,7 +81,7 @@ export function reportCsv(v: View): string {
   if (v.reasons) for (const r of v.reasons.rows) add("denial reasons", `${r.reason} (${r.payer})`, r.share, r.count);
   else add("denial reasons", "All denial reasons", null, 0);
   add("denial outcomes", `Appeals overturned (${v.appeals.overturned} of ${v.appeals.n} rulings)`, v.appeals.value, v.appeals.n);
-  rows.push([v.period.label, v.scope, "denial outcomes", `Written off after accepted denials (${money(v.writtenOff.amount)})`, "", v.writtenOff.n]);
+  rows.push([v.period.label, v.scope, "denial outcomes", "Denials accepted", "", v.accepted.n]);
   if (v.helps) for (const h of v.helps) add("what helps most", h.label, h.approved, h.applied);
   else add("what helps most", "All steps", null, 0);
   if (v.dismissed) for (const d of v.dismissed) rows.push([v.period.label, v.scope, "dismissed recommendations", d.reason, "", d.count]);

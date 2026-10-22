@@ -8,7 +8,7 @@ Mapping every click showed places where the demo did less than its screen sugges
 | A case ID click pushed two history entries | One entry, so Back is one press |
 | Toast read "Demo: payer payer received it" | Names the payer: "Demo: Cardinal approved it" |
 | "Payer received it" after "Approves" left the request in Decided today | Demo replies only move forward; a decided request says so |
-| No way to sort the requests table | Case, Payer, Where it is, Clock and At stake sort, with a direction mark and keyboard support |
+| No way to sort the requests table | Case, Payer, Where it is and Clock sort, with a direction mark and keyboard support |
 | Payers at a glance had no link to Payers | "Open Payers", and each payer name opens that payer |
 | Ask FLO linked to a Dashboard view that did not exist | `?focus=payers` scrolls to and outlines Payers at a glance |
 | Cases being prepared in New case were not counted under Preparing | The tile and headline count them, with a line linking to Case Manager |
@@ -54,7 +54,7 @@ Mapping every click showed places where the demo did less than its screen sugges
 | No way back to the referral | "Back to referral" or "Back to case" |
 | Analytics denial rows opened plain /denials | They open the list narrowed to that payer and reason |
 | No Print on the monthly report | Print, with a "Print is off in this preview" message when hosted |
-| Analytics ignored what other modules record | Appeal decisions, written-off denials and dismissal reasons feed it |
+| Analytics ignored what other modules record | Appeal decisions, accepted denials and dismissal reasons feed it |
 
 ## Denial Intelligence
 | Found | Now |

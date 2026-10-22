@@ -51,7 +51,6 @@ export interface CaseDetail {
   dueAt?: number;
   dueVerb: string;
   chip?: { text: string; tone: Tone }; // shown instead of the notice-due chip when the request has no clock
-  atStake: number;
   phase: Phase;
   agent: AgentKey;
   statusLine: string;

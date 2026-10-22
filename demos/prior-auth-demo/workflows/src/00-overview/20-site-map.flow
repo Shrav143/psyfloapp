@@ -14,7 +14,7 @@ endgroup
 
 group gMain "Sidebar › Main"
   screen dash "Dashboard\nFilters, calendar, stage strip, requests, payers"
-  screen auth "Authorizations › Queue\nRequests ranked by money and time"
+  screen auth "Authorizations › Queue\nRequests ranked by how soon each is due"
   screen newc "Authorizations › New case\nReferral, Medical records, Agents work, Review and sign"
   screen elig "Authorizations › Eligibility & Benefits\nList, verify a patient, result"
   screen den "Denial Intelligence\nOpen denials, options, brief"

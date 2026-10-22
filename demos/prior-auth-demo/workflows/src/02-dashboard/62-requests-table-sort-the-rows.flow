@@ -1,10 +1,10 @@
 title: Dashboard › Requests table › Sort the rows
 route: /dashboard
-intro: Five headings of the Requests table sort the rows. Each is a button, so the keyboard works too. A heading goes ascending, then descending, then back to the app's own order. The sort is not saved in the address.
+intro: Four headings of the Requests table sort the rows. Each is a button, so the keyboard works too. A heading goes ascending, then descending, then back to the app's own order. The sort is not saved in the address.
 dir: TD
 ---
 start s1 "Dashboard is open\nHeadings of the 'Requests' table"
-screen h1 "Five headings can sort\nCase, Payer, Where it is, Clock, At stake\nEach shows a small up and down arrow"
+screen h1 "Four headings can sort\nCase, Payer, Where it is, Clock\nEach shows a small up and down arrow"
 click c1 "Click a heading\nOr Tab to it and press Enter or Space"
 decision d1 "Is this heading already the sorted one?"
 process p1 "No: the sort starts on this heading, ascending\nThe arrow points up; the heading is marked ascending for a screen reader"
@@ -20,7 +20,6 @@ group gKeys "What each heading sorts by"
   screen k2 "Payer\nThe short name shown in the row, A to Z: Beacon PPO, Cardinal, Evergreen, Harborview MA, Lakeshore, Summit Medicaid"
   screen k3 "Where it is\nThe stage: Preparing, Received, Under review, Info requested, Approved, then Appeal or call"
   screen k4 "Clock\nThe number in the cell: time left for a denial with a deadline, otherwise time in stage\nRows with a fixed note such as 'decision 11/02' stay last either way"
-  screen k5 "At stake\nThe money asked for, smallest first when ascending"
 endgroup
 
 process p6 "Filters, the stage tiles and 'Clear filters' keep the sort\nLeaving the page or reloading clears it"
@@ -34,5 +33,5 @@ d2 -->|Ascending| p2 --> p4
 d2 -->|Descending| p3 --> p5
 p4 --> p5 --> sc
 sc --> p6 --> g1
-h1 --> k1 & k2 & k3 & k4 & k5
+h1 --> k1 & k2 & k3 & k4
 k4 -.-> g2

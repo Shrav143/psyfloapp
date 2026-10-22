@@ -2,10 +2,10 @@ title: Analytics › Denial outcomes and dismissed recommendations
 route: /analytics
 intro: What other screens write back to Analytics. Two figures sit under the denial table and move when a denial is accepted or an appeal is ruled on. A card of dismissal reasons appears once a recommendation has been dismissed. Each event moves the numbers only a little.
 dir: TD
-also: Demo only: the starting figures (96 rulings, 56% overturned, 17 accepted denials, $88.7K) are invented. Everything recorded in the demo counts in 'This quarter' and 'Last 12 months', never in 'Last quarter', and follows the payer menu.
+also: Demo only: the starting figures (96 rulings, 56% overturned, 17 accepted denials) are invented. Everything recorded in the demo counts in 'This quarter' and 'Last 12 months', never in 'Last quarter', and follows the payer menu.
 ---
 start s1 "Scroll to the foot of 'Common denial reasons by payer'"
-screen sc "Two figures under the table\n'Appeals overturned'  56%, '54 of 96 rulings this quarter'\n'Written off after accepted denials'  $88.7K, '17 denials this quarter'"
+screen sc "Two figures under the table\n'Appeals overturned'  56%, '54 of 96 rulings this quarter'\n'Denials accepted'  17, 'denials this quarter'"
 
 group gApp "Appeals overturned"
   ext x1 "The payer rules on an appeal\n(demo: the person logs the ruling)"
@@ -16,11 +16,11 @@ group gApp "Appeals overturned"
   screen o2 "'-' and 'Not enough decisions yet'\nA single payer with few rulings, for example Lakeshore"
 endgroup
 
-group gOff "Written off"
+group gOff "Denials accepted"
   click k1 "In Denial Intelligence the person accepts a denial"
-  store st2 "Denial Intelligence records the write-off\nWith the payer and the dollars at stake"
-  process p2 "Denials go up by one\nThe amount is added, for example $22.4K makes $88.7K into $111.1K"
-  screen o3 "'$111.1K', '18 denials this quarter'"
+  store st2 "Denial Intelligence records the accepted denial\nWith its payer"
+  process p2 "The count goes up by one\nFor example 17 becomes 18, and the payer menu counts it for that payer"
+  screen o3 "'18', 'denials this quarter'"
 endgroup
 
 group gDis "Why recommendations were dismissed"

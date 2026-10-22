@@ -18,7 +18,7 @@ bun run build          # typecheck + build to dist/index.html (open it by double
 | Sidebar | Route | What you can do |
 |---|---|---|
 | Dashboard | `/dashboard` | One page: four filters (Payer, Program, Request type, Stage) and a separate calendar where you pick a start and an end day (with shortcuts) for the outcome figures. Six-stage strip, requests table with progress bars and clocks, payers at a glance, a request drawer with history, and demo controls to make the payer answer |
-| Authorizations | `/authorizations`, `/authorizations/case/:id` | Queue ranked by money and time, case page with five tabs (recommended actions, clinical picture, payer criteria, risk analysis, draft). Refine recommendations and clinical context change the case; a sent request shows as sent |
+| Authorizations | `/authorizations`, `/authorizations/case/:id` | Queue in three bands (Act now, Due within 24 hours, Due this week), each ranked by how soon every request is due, with the ones waiting on you first; case page with five tabs (recommended actions, clinical picture, payer criteria, risk analysis, draft). Refine recommendations and clinical context change the case; a sent request shows as sent |
 | Authorizations > New case | `/authorizations/new`, `/authorizations/new/:draftId`, `/authorizations/new/referral/:id` | Four steps: **Referral** (drop the referral documents and Reader lists what is missing, or check one that already arrived, or go on without one), **Medical records** (one checklist: drop the whole chart and Reader ticks off the patient, insurance, request and documents, and names what is missing), **Agents work** (Scribe asks a question), **Review and sign**. Sign and send puts the request on the Dashboard. A referral can also be opened in full: the source document, extracted fields with evidence, validation, coverage and fit checks, and accept / request information / decline |
 | Authorizations > Eligibility & Benefits | `/authorizations/eligibility` | Live-looking coverage check: list, verify a patient, verdict |
 | Denial Intelligence | `/denials`, `/denials/:id/brief` | Where a denial is weak, options with chances, peer-to-peer brief, written appeal, accept |
@@ -53,7 +53,7 @@ src/
   main.tsx, App.tsx          entry and routes (HashRouter)
   routes.ts                  every link in the app, so modules never hard-code each other's URLs
   index.css                  Tailwind v4 theme tokens (colors, fonts, radii)
-  lib/                       cn, format (money, bands), time (the demo clock)
+  lib/                       cn, format (percent, plurals, bands), time (the demo clock)
   data/                      shared types, agents, seed data; per-module data files
   store/                     one zustand store built from slices (core + one per module)
   components/ui/             the design kit (Button, Card, Dropdown, Drawer, Table, charts, ...)

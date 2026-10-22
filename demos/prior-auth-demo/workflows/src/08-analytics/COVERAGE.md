@@ -21,7 +21,7 @@ Source: `src/pages/analytics/*`, `src/data/analytics.ts`, `src/lib/hosted.ts`. I
 | Card 'Common denial reasons by payer': row click | Opens Denial Intelligence, narrowed to the row's payer and reason | 21 |
 | Same card: reason text button | Same as the row | 21 |
 | Same card: row hover tint, 'Not enough decisions yet' state | Link cue, empty state | 21 |
-| Same card, foot: 'Appeals overturned' and 'Written off after accepted denials' | Read-only; move when Denial Intelligence records a ruling or an accepted denial; '-' under 20 rulings | 22 |
+| Same card, foot: 'Appeals overturned' and 'Denials accepted' (a count) | Read-only; move when Denial Intelligence records a ruling or an accepted denial; '-' under 20 rulings | 22 |
 | Card 'Why recommendations were dismissed' | Read-only; counts by reason; hidden when nobody dismissed a recommendation (and in 'Last quarter') | 22 |
 | Report window: steps by Analyst, spinner, ticks | 4 steps of 0.75 s | 30 |
 | Report window: 'Cancel' / 'Done', X 'Close', Escape, click outside | Close at any time. Escape closes one layer: an open menu first, then the window | 30 |
@@ -45,7 +45,7 @@ Source: `src/pages/analytics/*`, `src/data/analytics.ts`, `src/lib/hosted.ts`. I
 
 - Every denial row now opens Denial Intelligence narrowed to its payer and reason (21).
 - 'Monthly report' has a 'Print' button, and says so in the hosted preview (31).
-- Analytics reads what other screens record: written-off dollars and accepted denials, appeal rulings in the overturn rate, and the reasons recommendations were dismissed (22).
+- Analytics reads what other screens record: the count of accepted denials, appeal rulings in the overturn rate, and the reasons recommendations were dismissed (22).
 
 ## Still open
 

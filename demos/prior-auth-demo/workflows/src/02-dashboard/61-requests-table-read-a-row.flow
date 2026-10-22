@@ -1,6 +1,6 @@
 title: Dashboard › Requests table › Read a row: bars, clock and what happens next
 route: /dashboard
-intro: What each cell of a row means. The bars and the clock follow different rules for a normal request and for a denial (an ID that starts with D-). Nothing in these cells is a button except the case ID and Open. Case, Payer, Where it is, Clock and At stake can be sorted from their headings.
+intro: What each cell of a row means. The bars and the clock follow different rules for a normal request and for a denial (an ID that starts with D-). Nothing in these cells is a button except the case ID and Open. Case, Payer, Where it is and Clock can be sorted from their headings.
 dir: TD
 ---
 start s1 "A row in the Requests table"
@@ -29,7 +29,6 @@ group gClock "Clock column"
   screen k14 "'1 h 12 m' and 'typical 2 h'\nWithin typical, plain text"
 endgroup
 
-screen a1 "At stake\nMoney asked for, e.g. '$22.4K'"
 screen n1 "What happens next\nAgent badge and a line, e.g. 'Needs your input. Scribe has a question' or 'Navigator checks again in 5 minutes'\nAn approval says 'Write-back is off in EMR Connect' instead of 'Write-back waits for you' while write-back is off"
 goto g1 "Continues in: Dashboard › Requests table › Order, rows and paging"
 goto g2 "Continues in: Dashboard › Header › Check all now and the demo clock"
@@ -39,19 +38,19 @@ s1 --> c1 --> c2 --> d1
 d1 -->|No| w1 --> w3
 d1 -->|Yes| w2 --> w3
 w3 --> k1
-k1 -->|Yes| k2 --> a1
+k1 -->|Yes| k2 --> n1
 k1 -->|No| k3
 k3 -->|Yes| k4
-k4 -->|Zero or less| k5 --> a1
-k4 -->|Under 2 days| k6 --> a1
-k4 -->|2 to 7 days| k7 --> a1
-k4 -->|7 days or more| k8 --> a1
+k4 -->|Zero or less| k5 --> n1
+k4 -->|Under 2 days| k6 --> n1
+k4 -->|2 to 7 days| k7 --> n1
+k4 -->|7 days or more| k8 --> n1
 k3 -->|No| k9
-k9 -->|Yes| k10 --> a1
+k9 -->|Yes| k10 --> n1
 k9 -->|No| k11
-k11 -->|Over 1.5 times| k12 --> a1
-k11 -->|Over 2 times| k13 --> a1
-k11 -->|Within typical| k14 --> a1
-a1 --> n1 --> g1
+k11 -->|Over 1.5 times| k12 --> n1
+k11 -->|Over 2 times| k13 --> n1
+k11 -->|Within typical| k14 --> n1
+n1 --> g1
 k11 -.-> g2
 s1 -.-> g3

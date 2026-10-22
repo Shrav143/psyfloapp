@@ -35,7 +35,7 @@ File names below are in `src/03-authorizations/`. Short names: 10 queue-overview
 | Tile: request ID link | 14, 20 |
 | Tile: 'Open' button | 14, 20 |
 | Tile: 'Coverage needs a fix' pill (link) | 14, 80 |
-| Tile: level chip, scores, status, 'Needs your input', rule note, due pill, '$ at risk', chance bar and word | 14 |
+| Tile: level chip, scores, status, 'Needs your input', rule note, due pill, chance bar and word | 14 |
 
 ## Case page (`/authorizations/case/:id`)
 

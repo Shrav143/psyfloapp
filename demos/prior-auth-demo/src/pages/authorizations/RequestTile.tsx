@@ -4,7 +4,7 @@ import type { Band, QueueItem } from "@/data/queue";
 import { payerById } from "@/data/seed";
 import type { Tone } from "@/data/types";
 import { cn } from "@/lib/cn";
-import { band as chanceBand, money } from "@/lib/format";
+import { band as chanceBand } from "@/lib/format";
 import { paths } from "@/routes";
 import { dueText } from "./queueLogic";
 import { Scores } from "./Scores";
@@ -39,9 +39,8 @@ export function RequestTile({ item, clock, chance, lift, ready }: { item: QueueI
         </div>
         {item.rule && !ready ? <div className="mt-1.5 text-[13px] text-forest">{item.rule}</div> : null}
       </div>
-      <div className="flex shrink-0 flex-col items-end gap-2">
+      <div className="shrink-0">
         <Pill tone={DUE_TONE[item.band]} dot={item.band === "now"}>{dueText(item.dueVerb, item.dueAt, clock)}</Pill>
-        <Pill tone="neutral">{money(item.atStake)} at risk</Pill>
       </div>
       <div className="w-[128px] shrink-0">
         <Chance value={chance} className="w-full" />

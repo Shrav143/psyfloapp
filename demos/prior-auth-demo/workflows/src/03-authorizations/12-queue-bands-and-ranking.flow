@@ -1,6 +1,6 @@
 title: Authorizations › Queue › Bands and ranking
 route: /authorizations
-intro: How open requests are split into three bands, when a request leaves its band, how they are ranked inside a band by money and time, and how a band opens, closes and shows more.
+intro: How open requests are split into three bands, when a request leaves its band, how they are ranked inside a band by how soon each is due, and how a band opens, closes and shows more.
 dir: TD
 also: Demo only: which band a request sits in is fixed in the seed data. Moving the demo clock changes the due text on each tile ('in 5 h', 'now') but never moves a request to another band.
 ---
@@ -21,9 +21,9 @@ process hide "The band card is left out"
 screen bc "Band card\n'Act now (5 requests)'\nName, count, chevron"
 
 process r1 "Inside a band, requests waiting on a person come first\nPreparing, Ready to sign, Denial route, or Needs your input"
-process r2 "Then money at risk times a time weight, biggest first"
-process wt "Time weight by time left\nunder 6 h ×3 · under 24 h ×2 · under 3 days ×1.5 · later ×1"
-doc ex "Example in Act now\nR-1042 ($22.4K, due in 5 h) ranks above R-0912 (payer already reviewing)"
+process r2 "Then the soonest due first\nThe due time on the tile, earliest at the top"
+process wt "Two due at the same time\nThe lower approval chance goes first"
+doc ex "Example in Act now\nR-1117 (due in 30 h, needs you) ranks above R-0912 (due in 22 h, payer already reviewing)"
 
 click hd "Click the band header"
 decision dC "Is the band open now?"

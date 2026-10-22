@@ -12,7 +12,7 @@ import { PayersTable } from "./PayersTable";
 import { RequestDrawer } from "./RequestDrawer";
 import { PAGE_SIZE, RequestsTable } from "./RequestsTable";
 import { StageStrip } from "./StageStrip";
-import { hasNarrowingFilter, pageHeadline, payerRows, stripCells, sumAtStake } from "./helpers";
+import { hasNarrowingFilter, pageHeadline, payerRows, stripCells } from "./helpers";
 import { draftsInPreparation } from "./preparing-drafts";
 import { nextSort, sortRows, type RowSort } from "./sort-rows";
 import { useFilterSync, useRequestParam } from "./useDashboardParams";
@@ -114,7 +114,6 @@ export default function DashboardPage() {
       <RequestsTable
         rows={rows}
         total={rows.length}
-        atStake={filters.stage === "appeal" ? sumAtStake(rows) : undefined}
         visible={visible}
         clock={clock}
         onOpen={open}

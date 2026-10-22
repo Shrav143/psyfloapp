@@ -3,9 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { ArrowUp, CheckCheck, Sparkles } from "lucide-react";
 import { ActorBadge, AgentBadge, Button, Drawer } from "@/components/ui";
 import { openDrafts } from "@/data/payerConfig";
+import { openItems } from "@/data/queue";
 import { PAYERS, payerById } from "@/data/seed";
+import { chanceOf, dueText } from "@/pages/authorizations/queueLogic";
 import { cn } from "@/lib/cn";
-import { money } from "@/lib/format";
+import { plural } from "@/lib/format";
 import { ago } from "@/lib/time";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
@@ -72,7 +74,10 @@ function FloBadge({ size = 30 }: { size?: number }) {
 
 const sentence = (t: string) => (/[.!?]$/.test(t) ? t : `${t}.`);
 
-const SUGGEST = ["What needs me today?", "Which payers are slowest right now?", "How much money is at stake in denials?", "Why is Cardinal's approval rate down?"];
+/** "Review due in 3 h" reads inside a sentence as "review due in 3 h", but a verb such as "P2P" keeps its capitals. */
+const inline = (t: string): string => (/^[A-Z][a-z]/.test(t) ? t[0].toLowerCase() + t.slice(1) : t);
+
+const SUGGEST = ["What needs me today?", "What is due soonest?", "Which payers are slowest right now?", "Why is Cardinal's approval rate down?"];
 
 export function AskPanel() {
   const open = useStore((s) => s.askOpen);
@@ -85,7 +90,7 @@ export function AskPanel() {
   useEffect(() => end.current?.scrollIntoView({ behavior: "smooth" }), [msgs, busy]);
 
   const answer = (q: string): Msg => {
-    const { requests, caseDrafts, clock } = useStore.getState();
+    const { requests, caseDrafts, clock, queueItems, queueCases } = useStore.getState();
     const s = q.toLowerCase();
     const counts = stageCounts(requests);
     if (s.includes("slow") || s.includes("payer") && s.includes("late")) {
@@ -93,13 +98,22 @@ export function AskPanel() {
       const text = slow.length ? `${slow.map((p) => `${p.shortName} is averaging ${p.avgDecisionDays} days against ${p.typicalDecisionDays} typical`).join(". ")}. Caller phones when a payer passes twice its typical time.` : "Every payer is deciding within its typical time right now.";
       return { from: "flo", text, link: { label: "Open Dashboard, By payer", to: paths.dashboard({ focus: "payers" }) } };
     }
-    if (s.includes("denial") || s.includes("stake") || s.includes("money")) {
+    if (s.includes("denial")) {
       const d = requests.filter((r) => r.stage === "appeal");
-      const total = d.reduce((a, r) => a + r.atStake, 0);
       // The nearest deadline is read from the open denials, so the answer stays true after one is settled or the clock moves.
       const near = d.filter((r) => r.deadlineAt !== undefined && r.deadlineAt >= clock).sort((a, b) => (a.deadlineAt ?? 0) - (b.deadlineAt ?? 0))[0];
       const nearest = near ? ` The nearest deadline is ${near.id} (${payerById(near.payerId).shortName}). ${sentence(near.next)}${near.chance !== undefined ? ` The chance of winning is ${near.chance}%.` : ""}` : "";
-      return { from: "flo", text: `${d.length} ${d.length === 1 ? "denial is" : "denials are"} open, with ${money(total)} at stake.${nearest}`, link: { label: "Open Denial Intelligence", to: paths.denials(near?.id) } };
+      return { from: "flo", text: `${d.length} ${d.length === 1 ? "denial is" : "denials are"} open.${nearest}`, link: { label: "Open Denial Intelligence", to: paths.denials(near?.id) } };
+    }
+    if (s.includes("due") || s.includes("soon") || s.includes("deadline")) {
+      // The queue's own order: the soonest due first, read from the requests still open so the answer follows what has been sent or decided.
+      const soon = openItems(queueItems, requests).sort((a, b) => a.dueAt - b.dueAt || a.chance - b.chance);
+      const [first, ...rest] = soon;
+      if (!first) return { from: "flo", text: "Nothing is due. Every open request has been sent or handled.", link: { label: "Open Authorizations", to: paths.authorizations() } };
+      const line = (i: typeof first) => `${i.id} (${payerById(i.payerId).shortName}), ${inline(dueText(i.dueVerb, i.dueAt, clock))}`;
+      const next = rest.slice(0, 2);
+      const after = next.length ? ` After it: ${next.map(line).join("; ")}.` : "";
+      return { from: "flo", text: `${first.id} (${payerById(first.payerId).shortName}) is due soonest: ${inline(dueText(first.dueVerb, first.dueAt, clock))}. Its approval chance is ${chanceOf(first, queueCases)}%.${after} ${plural(soon.length, "request")} ${soon.length === 1 ? "is" : "are"} open in Authorizations.`, link: { label: `Open ${first.id}`, to: paths.case(first.id) } };
     }
     if (s.includes("cardinal") || s.includes("approval rate")) {
       const open = openDrafts(requests, caseDrafts, "cardinal").length;

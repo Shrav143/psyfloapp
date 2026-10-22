@@ -4,7 +4,7 @@ import { Clock, RefreshCw, Scale } from "lucide-react";
 import { AgentChip, Banner, Button, Drawer, KeyValue, Pill, Timeline } from "@/components/ui";
 import { payerById } from "@/data/seed";
 import { PROGRAM_LABEL, type PsyRequest } from "@/data/types";
-import { band, money } from "@/lib/format";
+import { band } from "@/lib/format";
 import { stamp } from "@/lib/time";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
@@ -87,7 +87,6 @@ export function RequestDrawer({ request: r, onClose, onSwitch }: { request: PsyR
           className="grid-cols-[130px_1fr] text-[14px]"
           items={[
             ["Patient", `${r.patient.initials}, ${r.patient.age}`],
-            ["At stake", money(r.atStake)],
             ["Held by", <span key="a" className="inline-flex flex-wrap items-center gap-2"><AgentChip agent={r.agent} /><span className="font-normal">{nextLine(r, writeBackOn)}</span></span>],
             ...(facts ? [[denial ? "Chance of winning" : "Approval chance", `${facts.chance}% · ${band(facts.chance).word} · likely ${facts.low} to ${facts.high}% · ${facts.similar.toLocaleString("en-US")} similar cases`] as [string, ReactNode]] : []),
             ["Sent", sent === undefined ? "Not yet" : VIA[r.sentVia]],

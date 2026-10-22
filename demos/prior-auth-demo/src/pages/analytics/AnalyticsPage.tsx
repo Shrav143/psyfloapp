@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { AlertTriangle, CheckCircle2, FileCheck, FileText, ThumbsUp } from "lucide-react";
 import { Button, Card, CardBody, CardHeader, Donut, Dropdown, HBars, Label, ListRow, Page, PageHeader, Stat, Table, Td, Th, Tr } from "@/components/ui";
 import { PERIODS, type PayerFilter, type PeriodId } from "@/data/analytics";
-import { band, money } from "@/lib/format";
+import { band } from "@/lib/format";
 import { PAYER_OPTIONS } from "@/pages/dashboard/helpers";
 import { paths } from "@/routes";
 import { ReportModal } from "./ReportModal";
@@ -26,9 +26,9 @@ function sub(tile: Tile, context: string, period: string): ReactNode {
 }
 const hidden = (t: Tile): string => (t.value === null ? "-" : `${t.value}%`);
 
-/** Under the denial table: how appeals ended and what was given up. Both move when Denial Intelligence records a ruling or an accepted denial. */
+/** Under the denial table: how appeals ended and how many denials were accepted. Both move when Denial Intelligence records a ruling or an accepted denial. */
 function DenialOutcomes({ v }: { v: View }) {
-  const { appeals, writtenOff, period } = v;
+  const { appeals, accepted, period } = v;
   return (
     <div className="grid grid-cols-2 gap-6 border-t border-line px-6 py-4">
       <div>
@@ -39,11 +39,11 @@ function DenialOutcomes({ v }: { v: View }) {
         </div>
       </div>
       <div>
-        <Label>Written off after accepted denials</Label>
+        <Label>Denials accepted</Label>
         <div className="mt-1 flex items-baseline gap-2">
-          <b className="text-xl">{money(writtenOff.amount)}</b>
+          <b className="text-xl">{fmt(accepted.n)}</b>
           <span className="text-[13px] text-muted">
-            {fmt(writtenOff.n)} {writtenOff.n === 1 ? "denial" : "denials"} {period.phrase}
+            {accepted.n === 1 ? "denial" : "denials"} {period.phrase}
           </span>
         </div>
       </div>

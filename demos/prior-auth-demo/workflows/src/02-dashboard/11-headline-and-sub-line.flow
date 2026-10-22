@@ -10,7 +10,7 @@ screen n0 "'No requests match these filters.'\n'The filters hide everything. Cle
 goto g1 "Continues in: Dashboard › Filters › Clear filters and empty states"
 
 decision d2 "Which Stage is set?"
-screen a1 "Appeal or call\n'8 denials are on their route. $67.8K is at stake.'\n'Each one is a call, an appeal, an external review or a resubmission.'"
+screen a1 "Appeal or call\n'8 denials are on their route.'\n'Each one is a call, an appeal, an external review or a resubmission.'"
 screen a2 "Info requested\n'3 requests are waiting on you.'\n'The payer asked for more information. Packet drafts each answer for you to review.'"
 screen a3 "Preparing\n'5 requests are being prepared.'\nThe count is the same as the Preparing tile: the table rows plus cases saved in New case\n'They are in Case Manager. Nothing has been sent to a payer yet.'"
 screen a4 "Received\n'4 requests have been received.'\n'The payer confirmed receipt. Navigator checks each one again every few minutes.'"

@@ -26,7 +26,6 @@ process rule "Green note under the status\ne.g. 'Summit expects a named step-dow
 
 group gR "Right side"
   process due "Due pill, e.g. 'Notice due in 5 h'\nUnder 48 h: 'in 40 min' or 'in 5 h'. Later: 'Decision Thu'. Past: '... now'"
-  process risk "Pill '$22.4K at risk'"
   process ch "Approval chance bar and number\nStrong 80+, Moderate 55–79, At risk below 55"
   process lift "Line under the word\n'+26 pts once drafted', 'waiting on the payer', 'chance to overturn', 'on track'"
 endgroup
@@ -52,7 +51,7 @@ dC -->|Yes| cl --> gE
 dC -->|No| dRule
 dRule -->|Yes| rule
 dRule -->|No| nr
-t --> due --> risk --> ch --> lift --> dA
+t --> due --> ch --> lift --> dA
 dA -->|Yes| ch2
 dA -->|No| ch3
 t --> tint

@@ -82,16 +82,16 @@ Files (all in this folder):
 | Control | Diagram |
 |---|---|
 | Default row order | 60 |
-| Sort headings Case, Payer, Where it is, Clock, At stake (click, Enter, Space; ascending, descending, off) | 62 |
+| Sort headings Case, Payer, Where it is, Clock (click, Enter, Space; ascending, descending, off) | 62 |
 | Headings 'What happens next' and the Open column (not sortable) | 60 |
 | Row click | 60 |
 | Case ID link (one history entry) | 60 |
 | 'Open' button | 60 |
 | 'Show 8 more', '32 not shown', paging reset | 60 |
-| 'Showing 8 of 40', '$ at stake' with Appeal or call | 60 |
+| 'Showing 8 of 40' and 'Showing 8 of 8' with Appeal or call | 60 |
 | Chip, four bars, hover text (auth track and denial route) | 61 |
 | Clock: note, time left, 'window closed', today, time in stage, 'late', 'very late' | 61 |
-| At stake, What happens next with agent badge | 61 |
+| What happens next with agent badge | 61 |
 | Empty state 'No requests match' | 40 |
 
 ## Request drawer

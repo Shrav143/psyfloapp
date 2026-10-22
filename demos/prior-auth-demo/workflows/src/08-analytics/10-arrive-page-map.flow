@@ -23,7 +23,7 @@ endgroup
 group gCards "Cards below"
   screen c1 "Card 'Approval rate by payer'\nSix bars, best first"
   screen c2 "Card 'How people edit agent drafts'\nDonut and three-line legend"
-  screen c3 "Card 'Common denial reasons by payer'\nTable, one row per payer\nUnder it 'Appeals overturned' and 'Written off after accepted denials'"
+  screen c3 "Card 'Common denial reasons by payer'\nTable, one row per payer\nUnder it 'Appeals overturned' and 'Denials accepted'"
   screen c4 "Card 'What helps most'\nFour ranked steps"
   screen c5 "Card 'Why recommendations were dismissed'\nShown only when someone dismissed a recommendation"
 endgroup

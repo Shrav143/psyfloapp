@@ -12,13 +12,13 @@ import { PROGRAM_LABEL } from "./types";
 export interface CaseSeed {
   id: string; requestId: string; fromQueue: boolean; denialId?: string; initials: string; age: number; payerId: PayerId; program: Program; type: RequestType;
   levelLabel: string; dxKey: DxKey; dx: string; scores: Score[]; days: number; dueAt?: number; dueVerb: string; chip?: { text: string; tone: Tone };
-  atStake: number; chance: number; liftPts: number; phase: Phase; agent: AgentKey; statusLine: string; needsInput: boolean; coverageFix: boolean;
+  chance: number; liftPts: number; phase: Phase; agent: AgentKey; statusLine: string; needsInput: boolean; coverageFix: boolean;
 }
 
 export function seedFromItem(i: QueueItem): CaseSeed {
   return {
     id: i.id, requestId: i.id, fromQueue: true, initials: i.initials, age: i.age, payerId: i.payerId, program: i.program, type: i.type, levelLabel: i.levelLabel, dxKey: i.dxKey, dx: i.dx, scores: i.scores,
-    days: i.days, dueAt: i.dueAt, dueVerb: i.dueVerb, atStake: i.atStake, chance: i.chance, liftPts: i.liftPts, phase: i.phase, agent: i.agent, statusLine: i.status, needsInput: i.needsInput, coverageFix: i.coverageFix,
+    days: i.days, dueAt: i.dueAt, dueVerb: i.dueVerb, chance: i.chance, liftPts: i.liftPts, phase: i.phase, agent: i.agent, statusLine: i.status, needsInput: i.needsInput, coverageFix: i.coverageFix,
   };
 }
 
@@ -31,7 +31,7 @@ export function seedFromRequest(r: PsyRequest): CaseSeed {
     id: r.id, requestId: r.id, fromQueue: false, initials: r.patient.initials, age: r.patient.age, payerId: r.payerId, program: r.program, type: r.type, levelLabel: PROGRAM_LABEL[r.program], dxKey, dx: dxLine(r.id, dxKey, r.type, r.program),
     scores: scoresFor(r.id, dxKey), days: daysRequested(r.program), dueAt: decided ? undefined : r.deadlineAt ?? Math.max(120, r.stageSince + (r.typicalMin ?? DAY)),
     dueVerb: r.track === "denial" ? "Window closes" : "Decision expected", chip: decided ? { text: r.chip, tone: r.tone } : undefined,
-    atStake: r.atStake, chance, liftPts: phase === "preparing" && chance < 85 ? 8 : 0, phase, agent: r.agent, statusLine: r.next, needsInput: !!r.needsYou, coverageFix: false,
+    chance, liftPts: phase === "preparing" && chance < 85 ? 8 : 0, phase, agent: r.agent, statusLine: r.next, needsInput: !!r.needsYou, coverageFix: false,
   };
 }
 
@@ -135,7 +135,7 @@ const ASAM_TEXT: string[][] = [
   ["Mood and anxiety are near the clinical cutoff.", "Mood and anxiety scores are above the clinical cutoff.", "Mood and anxiety scores are well above the cutoff and still active."],
   ["Engaged and asking for treatment.", "Engaged, with some doubt about staying.", "Little engagement so far. Motivation is being built."],
   ["Relapse risk is low with current supports.", "Relapse risk is moderate. An earlier attempt did not hold.", "Relapse risk is high. Recent relapse and an earlier attempt that ended early."],
-  ["Home is stable with supports nearby.", "Home is mixed. Supports are present but limited.", "Home puts recovery at risk and visits are hard to reach."],
+  ["Home is stable with supports nearby.", "Home is mixed. Supports are present but limited.", "Home works against recovery and visits are hard to reach."],
 ];
 
 function criteriaFor(seed: CaseSeed, hasDates: boolean, hasStep: boolean, dxName: string): Criterion[] {
@@ -208,7 +208,7 @@ export function buildFromSeed(seed: CaseSeed): CaseDetail {
   const decile = Math.floor(clamp(seed.chance + lift, 10, 99) / 10) * 10;
   return {
     id: seed.id, requestId: seed.requestId, fromQueue: seed.fromQueue, denialId: seed.denialId, initials: seed.initials, age: seed.age, payerId: seed.payerId, program: seed.program, levelLabel: seed.levelLabel, type: seed.type, days: seed.days,
-    dx: seed.dx, scores: seed.scores, dueAt: seed.dueAt, dueVerb: seed.dueVerb, chip: seed.chip, atStake: seed.atStake, phase: seed.phase, agent: seed.agent, statusLine: seed.statusLine,
+    dx: seed.dx, scores: seed.scores, dueAt: seed.dueAt, dueVerb: seed.dueVerb, chip: seed.chip, phase: seed.phase, agent: seed.agent, statusLine: seed.statusLine,
     baseChance: seed.chance, spread: known?.spread ?? (little ? [8, 7] : [5, 5]),
     similar: known?.similar ?? (little ? { own: 6, network: 22, benchmark: 210 } : { own: 40 + (n % 160), network: 300 + (n % 500), benchmark: 120 + (n % 160) }),
     recs, start, rows,

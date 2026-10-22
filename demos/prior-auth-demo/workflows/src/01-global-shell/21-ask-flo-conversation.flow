@@ -7,7 +7,7 @@ also: The chat lives in the page, not in the demo data. It survives closing the 
 start s1 "Click 'Ask FLO' in the top bar"
 overlay o1 "Ask FLO drawer opens\nTitle 'Ask FLO', subtitle 'Your assistant, answering from your data'"
 agent a1 "FLO says: 'Hi Jordan, I am FLO. Ask me about your requests, a payer, or your denials. I answer from the data on your Dashboard.'"
-overlay o2 "Four suggestion chips under the chat:\n'What needs me today?'\n'Which payers are slowest right now?'\n'How much money is at stake in denials?'\n'Why is Cardinal's approval rate down?'"
+overlay o2 "Four suggestion chips under the chat:\n'What needs me today?'\n'What is due soonest?'\n'Which payers are slowest right now?'\n'Why is Cardinal's approval rate down?'"
 decision d1 "How does the person ask?"
 click c1 "Click a suggestion chip"
 input i1 "Type in the box 'Ask a question'"

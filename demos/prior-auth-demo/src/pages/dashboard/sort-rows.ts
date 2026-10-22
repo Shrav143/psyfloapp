@@ -2,14 +2,14 @@ import { STAGES, type PsyRequest } from "@/data/types";
 import { minutesInStage, minutesLeft } from "@/store/selectors";
 import { PAYER_ROW_LABEL } from "./helpers";
 
-export type SortKey = "case" | "payer" | "stage" | "clock" | "stake";
+export type SortKey = "case" | "payer" | "stage" | "clock";
 export interface RowSort {
   key: SortKey;
   dir: "asc" | "desc";
 }
 
 /** The headings that sort, with the words the page uses for them. */
-export const SORT_LABEL: Record<SortKey, string> = { case: "Case", payer: "Payer", stage: "Where it is", clock: "Clock", stake: "At stake" };
+export const SORT_LABEL: Record<SortKey, string> = { case: "Case", payer: "Payer", stage: "Where it is", clock: "Clock" };
 
 /** A first click sorts up, the next sorts down, the third goes back to the app's own order. */
 export function nextSort(current: RowSort | null, key: SortKey): RowSort | null {
@@ -32,8 +32,6 @@ function valueOf(r: PsyRequest, key: SortKey, clock: number): string | number | 
       return STAGES.indexOf(r.stage);
     case "clock":
       return clockMinutes(r, clock);
-    case "stake":
-      return r.atStake;
   }
 }
 

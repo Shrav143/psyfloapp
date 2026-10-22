@@ -3,7 +3,6 @@ import { ArrowDown, ArrowUp, ChevronsUpDown, SearchX } from "lucide-react";
 import { AgentBadge, Button, Card, CardHeader, EmptyState, IdLink, Pill, ProgressBars, Table, Td, Th, Tr } from "@/components/ui";
 import { PROGRAM_LABEL, type PsyRequest } from "@/data/types";
 import { cn } from "@/lib/cn";
-import { money } from "@/lib/format";
 import { paths } from "@/routes";
 import { AUTH_TRACK, DENIAL_ROUTE, PAYER_ROW_LABEL, clockView, isDenial, nextLine } from "./helpers";
 import { SORT_LABEL, type RowSort, type SortKey } from "./sort-rows";
@@ -63,11 +62,10 @@ function Row({ r, clock, writeBackOn, onOpen }: { r: PsyRequest; clock: number; 
         </div>
         {c.sub ? <div className="text-xs text-muted">{c.sub}</div> : null}
       </Td>
-      <Td className="font-semibold">{money(r.atStake)}</Td>
       <Td>
         <div className="flex items-center gap-2">
           <AgentBadge agent={r.agent} size={24} />
-          <span className="max-w-[290px] whitespace-normal text-[13.5px]">{nextLine(r, writeBackOn)}</span>
+          <span className="max-w-[380px] whitespace-normal text-[13.5px]">{nextLine(r, writeBackOn)}</span>
         </div>
       </Td>
       <Td>
@@ -82,7 +80,6 @@ function Row({ r, clock, writeBackOn, onOpen }: { r: PsyRequest; clock: number; 
 interface Props {
   rows: PsyRequest[];
   total: number;
-  atStake?: number;
   visible: number;
   clock: number;
   onOpen: (id: string) => void;
@@ -96,8 +93,8 @@ interface Props {
   more: number;
 }
 
-/** Exactly seven columns, always the same. Needs-you first, then the latest, until a heading is clicked. */
-export function RequestsTable({ rows, total, atStake, visible, clock, onOpen, onMore, onClear, canClear, sort, onSort, writeBackOn, more }: Props) {
+/** Exactly six columns, always the same. Needs-you first, then the latest, until a heading is clicked. */
+export function RequestsTable({ rows, total, visible, clock, onOpen, onMore, onClear, canClear, sort, onSort, writeBackOn, more }: Props) {
   const shown = rows.slice(0, visible);
   return (
     <Card className="overflow-hidden">
@@ -107,7 +104,6 @@ export function RequestsTable({ rows, total, atStake, visible, clock, onOpen, on
         right={
           <span className="max-w-[260px] text-right text-sm text-muted" aria-live="polite">
             Showing {shown.length} of {total}
-            {atStake !== undefined ? ` · ${money(atStake)} at stake` : ""}
           </span>
         }
       />
@@ -125,7 +121,6 @@ export function RequestsTable({ rows, total, atStake, visible, clock, onOpen, on
               <SortTh column="payer" sort={sort} onSort={onSort} />
               <SortTh column="stage" sort={sort} onSort={onSort} />
               <SortTh column="clock" sort={sort} onSort={onSort} />
-              <SortTh column="stake" sort={sort} onSort={onSort} />
               <Th>What happens next</Th>
               <Th>
                 <span className="sr-only">Open</span>

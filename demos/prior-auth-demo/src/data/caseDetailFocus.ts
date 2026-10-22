@@ -16,7 +16,7 @@ type Sources = CaseDetail["summary"]["sources"];
 const EXTRA: Record<FocusId, (src: Sources, gain: number) => Rec> = {
   necessity: (src, gain) => ({
     id: "focus-necessity", focus: "necessity", title: "Add a plain statement of the risk at a lower level of care", agent: "scribe", moves: { severity: gain },
-    bullets: ["Scribe adds one plain sentence on what the chart shows would be at risk at a lower level of care", "It uses only what is already in the chart"],
+    bullets: ["Scribe adds one plain sentence on the risk the chart shows at a lower level of care", "It uses only what is already in the chart"],
     why: "Reviewers look first for a plain statement of the risk. Approved requests usually had one near the top.",
     add: { section: "lower", text: () => "Taken together, the chart shows that outpatient visits alone would not contain the risk of relapse, which is why this level of care is asked for.", source: src.trajectory },
   }),

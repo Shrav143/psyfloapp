@@ -12,7 +12,7 @@ group gMd "Written report (.md)"
   doc m3 "'## Approval rate by payer'\nOne bullet per bar with its decisions"
   doc m4 "'## How people edit agent drafts'\nThree bullets, then 'Drafts counted'"
   doc m5 "'## Common denial reasons'\nTable: Reason, Payer, Count, Share of denials"
-  doc m7 "'## Denial outcomes'\n'Appeals overturned: 56% (54 of 96 rulings, partly restored counts as overturned)'\n'Written off after accepted denials: $88.7K (17 denials)'"
+  doc m7 "'## Denial outcomes'\n'Appeals overturned: 56% (54 of 96 rulings, partly restored counts as overturned)'\n'Denials accepted: 17'"
   doc m6 "'## What helps most'\nNumbered list: step, times applied, percent approved"
   doc m8 "'## Why recommendations were dismissed'\nOne bullet per reason with its count\nLeft out when nobody dismissed one"
 endgroup

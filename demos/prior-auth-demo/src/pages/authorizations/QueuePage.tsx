@@ -3,7 +3,7 @@ import { SearchX, Plus, CalendarCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button, Card, EmptyState, Page, PageHeader } from "@/components/ui";
 import { BANDS, openItems } from "@/data/queue";
-import { money, plural } from "@/lib/format";
+import { plural } from "@/lib/format";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
 import { BandCard } from "./BandCard";
@@ -51,7 +51,7 @@ export default function QueuePage() {
   const showEmptyNow = urgent === 0 && (filters.urgency === "all" || filters.urgency === "now") && !otherFiltersActive(filters);
   const bands = BANDS.filter((b) => grouped[b].length > 0 || (b === "now" && showEmptyNow));
   const title = filtered ? `${shown.length} of ${plural(all.count, "open request")} ${shown.length === 1 ? "matches" : "match"} these filters.` : needsToday === 0 ? "Nothing needs action today." : `${needsToday} of ${plural(all.count, "open request")} ${needsToday === 1 ? "needs" : "need"} action today.`;
-  const sub = filtered ? undefined : `${urgent === 0 ? "Nothing is urgent." : `${cap(numberWord(urgent))} ${urgent === 1 ? "is" : "are"} urgent.`} ${money(all.dollars)} rides on what is in flight, and the average approval chance is ${all.avg}%.`;
+  const sub = filtered ? undefined : `${urgent === 0 ? "Nothing is urgent" : `${cap(numberWord(urgent))} ${urgent === 1 ? "is" : "are"} urgent`}, and the average approval chance is ${all.avg}%.`;
 
   return (
     <Page>

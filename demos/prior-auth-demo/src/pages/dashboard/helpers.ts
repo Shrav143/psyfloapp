@@ -3,7 +3,7 @@ import type { CaseDraft } from "@/data/cases";
 import { PAYERS, payerById } from "@/data/seed";
 import { PROGRAMS, PROGRAM_LABEL, REQUEST_TYPES, STAGES, STAGE_LABEL, type PayerId, type PayerSummary, type PsyRequest, type StageKey, type Tone } from "@/data/types";
 import { addDays, daysIn, fromISO, isISO, toISO, type DateRange } from "@/lib/dates";
-import { money, plural } from "@/lib/format";
+import { plural } from "@/lib/format";
 import { DAY, HOUR, duration, toDate, typical } from "@/lib/time";
 import type { RangePreset } from "@/components/ui";
 import { DEFAULT_RANGE, type DashFilters } from "@/store/core";
@@ -104,8 +104,6 @@ const scopeText = (f: DashFilters, skip?: "payer" | "stage"): string => {
   return parts.join(" · ");
 };
 
-export const sumAtStake = (rs: PsyRequest[]): number => rs.reduce((a, r) => a + r.atStake, 0);
-
 const are = (n: number, one: string, many: string): string => (n === 1 ? one : many);
 
 /** Weighted average of the payers' usual decision times over the requests in a list, in days. */
@@ -131,7 +129,7 @@ export function pageHeadline(f: DashFilters, base: PsyRequest[], shown: PsyReque
 
   switch (f.stage) {
     case "appeal":
-      return { title: `${plural(n, "denial")} ${are(n, "is", "are")} on their route. ${money(sumAtStake(shown))} is at stake.`, sub: `${lead}Each one is a call, an appeal, an external review or a resubmission.` };
+      return { title: `${plural(n, "denial")} ${are(n, "is", "are")} on their route.`, sub: `${lead}Each one is a call, an appeal, an external review or a resubmission.` };
     case "info_requested":
       return { title: `${n} ${are(n, "request is", "requests are")} waiting on you.`, sub: `${lead}The payer asked for more information. Packet drafts each answer for you to review.` };
     case "preparing":

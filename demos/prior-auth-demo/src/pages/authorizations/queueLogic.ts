@@ -49,12 +49,11 @@ export function filterItems(items: QueueItem[], f: QueueFilters): QueueItem[] {
 export const otherFiltersActive = (f: QueueFilters): boolean => !!f.q.trim() || f.payer !== "all" || f.status !== "all" || f.signalOnly;
 export const filtersActive = (f: QueueFilters): boolean => otherFiltersActive(f) || f.urgency !== "all";
 
-export interface Stats { count: number; dollars: number; avg: number; firstDue: number | null }
+export interface Stats { count: number; avg: number; firstDue: number | null }
 export function statsOf(items: QueueItem[], cases: Record<string, CaseWork>, clock: number): Stats {
   const n = items.length;
   return {
     count: n,
-    dollars: items.reduce((a, i) => a + i.atStake, 0),
     avg: n ? Math.round(items.reduce((a, i) => a + chanceOf(i, cases), 0) / n) : 0,
     firstDue: n ? Math.min(...items.map((i) => i.dueAt)) - clock : null,
   };

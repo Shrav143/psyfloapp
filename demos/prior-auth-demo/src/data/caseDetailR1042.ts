@@ -19,7 +19,7 @@ export const R1042_DETAIL: CaseDetail = {
   id: "R-1042", requestId: "R-1042", fromQueue: true, initials: "J.M.", age: 34, payerId: "summit", program: "RES", levelLabel: "Residential 3.5", type: "Admission", days: 14,
   dx: "Alcohol use disorder, severe, with recurrent depression",
   scores: [{ label: "AUDIT-C", value: "11" }, { label: "PHQ-9", value: "17", trend: "up" }, { label: "CIWA", value: "14 → 4" }],
-  dueAt: 5 * 60, dueVerb: "Notice due", atStake: 22400, phase: "preparing", agent: "scribe", statusLine: "Scribe is drafting the case",
+  dueAt: 5 * 60, dueVerb: "Notice due", phase: "preparing", agent: "scribe", statusLine: "Scribe is drafting the case",
   baseChance: 62, spread: [5, 4], similar: { own: 212, network: 806, benchmark: 230 },
   start: 58,
   rows: [

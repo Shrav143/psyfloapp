@@ -1,4 +1,4 @@
-import { ACTIONS, ALL, APPEALS, APPROVED, APPROVED_PREV, BASE, MIN_DECISIONS, OVERTURN_SHIFT, PAYER_ORDER, PERIODS, REASONS, WRITTEN_OFF, type PayerFilter, type PeriodId, type PeriodInfo } from "@/data/analytics";
+import { ACTIONS, ALL, APPEALS, APPROVED, APPROVED_PREV, BASE, MIN_DECISIONS, OVERTURN_SHIFT, PAYER_ORDER, PERIODS, REASONS, ACCEPTED, type PayerFilter, type PeriodId, type PeriodInfo } from "@/data/analytics";
 import { payerById } from "@/data/seed";
 import type { PayerId } from "@/data/types";
 import { PAYER_ROW_LABEL } from "@/pages/dashboard/helpers";
@@ -59,7 +59,8 @@ export interface View {
   helps: HelpRow[] | null;
   /** Appeals the payer ruled on. `overturned` counts partly restored ones too. Hidden under 20 rulings. */
   appeals: Tile & { overturned: number };
-  writtenOff: { amount: number; n: number };
+  /** Denials the clinic accepted, counted. Shown under the denial reasons. */
+  accepted: { n: number };
   /** Reasons given when a recommendation was dismissed. Null when nobody dismissed one. */
   dismissed: { reason: string; count: number }[] | null;
 }
@@ -157,8 +158,7 @@ export function buildView(periodId: PeriodId, scope: PayerFilter, ripples: Rippl
   const decided = sum(ids.map((id) => scaled(APPEALS[id].decided, period))) + rulings.length;
   const overturned = sum(ids.map((id) => Math.round((scaled(APPEALS[id].decided, period) * (APPEALS[id].rate + OVERTURN_SHIFT[periodId])) / 100))) + rulings.filter((r) => r.result !== "upheld").length;
   const appeals = { value: enough(decided) ? Math.round((overturned / decided) * 100) : null, n: decided, unit: "rulings", overturned };
-  const accepted = mine(ripples.accepted);
-  const writtenOff = { n: sum(ids.map((id) => scaled(WRITTEN_OFF[id].n, period))) + accepted.length, amount: sum(ids.map((id) => scaled(WRITTEN_OFF[id].amount, period))) + sum(accepted.map((a) => a.amount ?? 0)) };
+  const accepted = { n: sum(ids.map((id) => scaled(ACCEPTED[id], period))) + mine(ripples.accepted).length };
   const reasonCounts = new Map<string, number>();
   for (const d of mine(ripples.dismissals)) reasonCounts.set(d.reason, (reasonCounts.get(d.reason) ?? 0) + 1);
   const dismissed = reasonCounts.size ? [...reasonCounts].map(([reason, count]) => ({ reason, count })).sort((a, b) => b.count - a.count || a.reason.localeCompare(b.reason)) : null;
@@ -177,7 +177,7 @@ export function buildView(periodId: PeriodId, scope: PayerFilter, ripples: Rippl
     reasons,
     helps: helpRows.length ? helpRows : null,
     appeals,
-    writtenOff,
+    accepted,
     dismissed,
   };
 }
