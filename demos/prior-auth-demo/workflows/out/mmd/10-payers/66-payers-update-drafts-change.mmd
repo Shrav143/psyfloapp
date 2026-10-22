@@ -20,7 +20,7 @@ flowchart TD
   m@{ shape: win-pane, label: "<b>Update 1 draft?</b><br/>Nothing is redrafted until you confirm.<br/>Reason: criteria changed, version 2026.3." }
   rows@{ shape: curv-trap, label: "<b>One row per unsent draft of this payer</b><br/>Request id, patient initials and age · payer,<br/>level of care chip, status" }
   r1@{ shape: rect, label: "<b>Cardinal's row, read now</b><br/>I-2207 · T.R., 29 · Cardinal · IOP<br/>Draft, not yet sent" }
-  who@{ shape: rect, label: "<b>Who is listed</b><br/>This payer's requests in 'Preparing'<br/>and its saved New case drafts that are not sent<br/>Not listed: Summit's R-1042, Beacon's R-0988,<br/>sent I-2231, I-2218 (a reply on a request the payer has)" }
+  who@{ shape: rect, label: "<b>Who is listed</b><br/>Only drafts at the sites in view (Cardinal's I-2207 is at Site B, so Dr. Rivera and a Site A view see none; Both sites and Site B read 'Update 1 draft')<br/>This payer's requests in 'Preparing'<br/>and its saved New case drafts that are not sent<br/>Not listed: Summit's R-1042, Beacon's R-0988,<br/>sent I-2231, I-2218 (a reply on a request the payer has)" }
   fn@{ shape: odd, label: "<b>'Each redrafted case returns to Case Manager for a new signature.</b><br/>Requests already sent keep what they were sent with.'" }
   cs@{ shape: trap-t, label: "Click 'Update 1 draft'" }
   lock@{ shape: rect, label: "<b>Cancel greys out and the button spins</b><br/>Escape, X and dimmed area do nothing" }
@@ -34,7 +34,7 @@ flowchart TD
   u3@{ shape: cyl, label: "<b>Payer's change cleared</b><br/>No 'checked' date is written: nothing was checked against the payer" }
   u4@{ shape: cyl, label: "<b>Document lists gain the change's new rows</b><br/>Remaining treatment goals: Named in the latest progress note<br/>in Residential 3.5, IOP and PHP" }
   u5@{ shape: cyl, label: "<b>Edit log: 3 'Documents' entries</b><br/>'Added to the Residential 3.5 list' and so on<br/>Reason 'After criteria changed, version 2026.3'" }
-  u6@{ shape: cyl, label: "<b>'What changed' gets a new top row</b><br/>'Criteria changed, version 2026.3: acknowledged and applied'<br/>Acknowledged by Jordan Perez, ...<br/>Scribe and Integrity updated 1 draft ..." }
+  u6@{ shape: cyl, label: "<b>'What changed' gets a new top row</b><br/>'Criteria changed, version 2026.3: acknowledged and applied'<br/>Acknowledged by {viewer}, ...<br/>Scribe and Integrity updated 1 draft ..." }
   end
   nt@{ shape: cyl, label: "<b>Bell notification 'Drafts updated' from Scribe</b><br/>1 draft was redrafted after Cardinal's change.<br/>Each needs a new signature in Case Manager." }
   t1@{ shape: odd, label: "<b>'1 draft updated'</b><br/>The change is applied for Cardinal. Each draft returned to<br/>Case Manager for a new signature." }

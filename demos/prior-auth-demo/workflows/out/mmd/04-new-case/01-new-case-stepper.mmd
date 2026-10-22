@@ -17,59 +17,66 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "A case is open on any step" }
-  sc1@{ shape: curv-trap, label: "<b>Stepper under the title</b><br/>1 Referral · 2 Medical records · 3 Agents work · 4 Review and sign" }
-  p1@{ shape: rect, label: "<b>Current step: dark circle with its number</b><br/>Earlier steps: green circle with a tick<br/>Later steps: grey circle" }
+  sc1@{ shape: curv-trap, label: "<b>Stepper under the title and the 'Authorization type' dropdown</b><br/>Five steps, each a button with its name and one state label under it" }
+  p1@{ shape: rect, label: "<b>The current step: dark circle with its number</b><br/>Complete: a tick. Needs attention: a warning triangle. Blocked: a cross<br/>Not applicable: a dashed circle with a dash. Pending: the step number" }
   d1@{ shape: diam, label: "Which step did the person click?" }
-  pNo@{ shape: rect, label: "<b>Current step and later steps are disabled</b><br/>Nothing happens" }
-  c1@{ shape: trap-t, label: "<b>Click an earlier step</b><br/>'Referral', 'Medical records' or 'Agents work'" }
-  p2@{ shape: rect, label: "<b>Case moves to that step</b><br/>What was entered and what the agents did is kept" }
-  sc2@{ shape: curv-trap, label: "<b>Page shows that step</b><br/>Title and sentence change with it" }
+  c1@{ shape: trap-t, label: "Click any step, including a later one" }
+  p2@{ shape: rect, label: "<b>The draft's position moves to that step</b><br/>Nothing typed and nothing the agents did is lost" }
+  sc2@{ shape: curv-trap, label: "<b>Page shows that step</b><br/>Sentence under the title and the step header change with it" }
+  sH@{ shape: curv-trap, label: "<b>Step header</b><br/>'STEP 2 OF 5' · step name · state pill · one reason, e.g. 'Coverage and benefits checked'" }
+  pTip@{ shape: rect, label: "<b>Hover a step: its one-line reason</b><br/>'Needs the payer, member ID and dates', '2 warnings', 'The draft is ready'" }
+  pNoStart@{ shape: rect, label: "<b>Opening Authorization preparation never starts the agents</b><br/>It says 'The agents have not started' with one button, 'Start the agents'" }
   subgraph gSub ["The sentence under the title"]
-  t1@{ shape: curv-trap, label: "Referral: 'Start with the referral. Drop the documents and Reader lists anything that is missing.'" }
-  t2@{ shape: curv-trap, label: "<b>Medical records: 'Drop what you have. Reader sorts the files and lists what is still missing, then the agents check the payer's rules.'</b><br/>Top right: 'Use sample chart'" }
-  t3@{ shape: curv-trap, label: "Agents work: 'The agents are reading the chart and checking Summit's rules. Questions come to you only when they must.'" }
-  t4@{ shape: curv-trap, label: "<b>Review and sign: 'Nothing is sent to the payer until a person signs. See what is missing first, then read the summary.'</b><br/>Title 'Review and sign'" }
+  t1@{ shape: curv-trap, label: "<b>Intake: the type's own line</b><br/>Initial: 'Start with a referral or a patient. Everything is editable.'<br/>Review, renewal, modification: 'Find the patient, then the authorization ...'<br/>Retroactive: 'Care was delivered before an authorization was in place. Say what, when and why.'" }
+  t2@{ shape: curv-trap, label: "Eligibility & Benefits: 'Verify checks coverage and benefits for the dates asked. A warning says what to do next and never traps you.'" }
+  t3@{ shape: curv-trap, label: "<b>Clinical documentation: 'Drop what you have. Reader sorts the files and lists what is still missing. The required items come from the payer's saved list.'</b><br/>Top right: 'Use sample chart'" }
+  t4@{ shape: curv-trap, label: "Authorization preparation: 'The agents are reading the chart and checking Summit's rules. Questions come to you only when they must.'" }
+  t5@{ shape: curv-trap, label: "Review & submit: 'Nothing is sent to the payer until a person signs. See what is missing first, then read the summary.'" }
   end
-  subgraph gFwd ["Moving forward and back: each step's own buttons"]
-  b1@{ shape: trap-t, label: "Referral: 'Accept referral and continue', 'Continue to medical records' or 'No referral? Continue without one'" }
-  b2@{ shape: trap-t, label: "Medical records: 'Back', 'Save as draft', 'Continue'" }
-  b3@{ shape: trap-t, label: "Agents work: 'Back', 'Pause all agents', 'Skip ahead', 'Review and sign'" }
-  b4@{ shape: trap-t, label: "Review and sign: 'Back', 'Save as draft' (the button that signs is 'Sign and send to payer' in the card on the right)" }
+  subgraph gFwd ["Each step's own buttons"]
+  b1@{ shape: trap-t, label: "Intake: 'Save as draft', 'Continue to Eligibility & Benefits'" }
+  b2@{ shape: trap-t, label: "Eligibility & Benefits: 'Back', 'Save as draft', 'Continue to Clinical documentation'" }
+  b3@{ shape: trap-t, label: "Clinical documentation: 'Back', 'Save as draft', 'Continue'" }
+  b4@{ shape: trap-t, label: "Authorization preparation: 'Back', 'Pause all agents', 'Skip ahead', 'Review & submit'" }
+  b5@{ shape: trap-t, label: "<b>Review & submit: 'Back', 'Save as draft'</b><br/>The button that signs is in the Sign card on the right" }
   end
-  pBack@{ shape: rect, label: "<b>'Back' goes one step back</b><br/>Medical records to Referral; Agents work to Medical records; Review and sign to Agents work" }
-  pNext@{ shape: rect, label: "<b>Forward buttons stay disabled until the step is ready</b><br/>'Accept referral and continue' waits for the required referral items;<br/>'Continue' waits for nothing missing; 'Review and sign' waits for the agents" }
+  pBack@{ shape: rect, label: "<b>'Back' goes one step back</b><br/>In the step bar at the bottom, always in view while a long step scrolls" }
+  pHint@{ shape: rect, label: "<b>The footer's hint line says what is still open, never that the person cannot go on</b><br/>e.g. 'Still to add: patient, payer. You can go on; Review & submit lists what is missing.'" }
   cLink@{ shape: trap-t, label: "Click the link 'Case Manager' above the title" }
   gCm@{ shape: subproc, label: "Continues in: Case Manager" }
-  sFull@{ shape: curv-trap, label: "<b>Stepper on the full referral page</b><br/>'Referral' is current and no step is clickable<br/>The button 'Back to the case' sits beside the crumbs" }
-  gFull@{ shape: subproc, label: "Continues in: New case › Referral › The full referral page" }
-  g1@{ shape: subproc, label: "Continues in: New case › Referral › Start screen" }
-  g2@{ shape: subproc, label: "Continues in: New case › Medical records › The checklist and Continue" }
-  g3@{ shape: subproc, label: "Continues in: New case › Agents work › Start the run and watch it" }
-  g4@{ shape: subproc, label: "Continues in: New case › Review and sign › The draft and the summary" }
+  sFull@{ shape: curv-trap, label: "<b>Stepper on the full referral page</b><br/>'Intake' is current<br/>The button 'Back to the case' sits beside the crumbs" }
+  gFull@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › The full referral page" }
+  gStates@{ shape: subproc, label: "Continues in: Authorizations › New case › Step states" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Initial authorization" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Eligibility & Benefits › Initial authorization" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › The checklist and Continue" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › Start the run and watch it" }
+  g5@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › The draft and the summary" }
   s1 --> sc1 --> p1 --> d1
-  d1 -->|"Current or later step"| pNo
-  d1 -->|"Earlier step"| c1 --> p2 --> sc2
-  sc2 --> t1
-  sc2 --> t2
-  sc2 --> t3
-  sc2 --> t4
+  sc1 --> pTip
+  d1 --> c1 --> p2 --> sc2 --> sH
+  sc2 -.-> pNoStart
+  sc2 --> t1 & t2 & t3 & t4 & t5
   t1 --> b1 --> g1
   t2 --> b2 --> g2
   t3 --> b3 --> g3
   t4 --> b4 --> g4
+  t5 --> b5 --> g5
   b2 --> pBack
   b3 --> pBack
   b4 --> pBack
-  b1 -.-> pNext
-  b2 -.-> pNext
-  b3 -.-> pNext
+  b5 --> pBack
+  b1 -.-> pHint
+  b2 -.-> pHint
+  b3 -.-> pHint
+  sH -.-> gStates
   sc1 --> cLink --> gCm
   sc1 -.-> sFull --> gFull
   class s1 k_start
-  class sc1,sc2,t1,t2,t3,t4,sFull k_screen
-  class p1,pNo,p2,pBack,pNext k_process
+  class sc1,sc2,sH,t1,t2,t3,t4,t5,sFull k_screen
+  class p1,p2,pTip,pNoStart,pBack,pHint k_process
   class d1 k_decision
-  class c1,b1,b2,b3,b4,cLink k_click
-  class gCm,gFull,g1,g2,g3,g4 k_goto
+  class c1,b1,b2,b3,b4,b5,cLink k_click
+  class gCm,gFull,gStates,g1,g2,g3,g4,g5 k_goto
   style gSub fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gFwd fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

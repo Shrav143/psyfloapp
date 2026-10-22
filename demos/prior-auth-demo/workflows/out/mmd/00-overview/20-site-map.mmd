@@ -21,23 +21,24 @@ flowchart LR
   subgraph gTop ["Top bar (on every page)"]
   ask@{ shape: win-pane, label: "<b>Ask FLO</b><br/>Drawer: ask a question, answers from your data" }
   notif@{ shape: win-pane, label: "<b>Notifications</b><br/>List of what needs you" }
-  demo@{ shape: win-pane, label: "<b>Demo menu</b><br/>Reset data, move the clock, suggested path" }
+  site@{ shape: win-pane, label: "<b>Site switcher</b><br/>Both sites, Site A, Site B (a locked 'Site A only' or 'Site B only' for one-site staff)" }
+  demo@{ shape: win-pane, label: "<b>Demo menu</b><br/>Reset data, move the clock, Viewing as (four people), suggested path" }
   end
   subgraph gMain ["Sidebar › Main"]
-  dash@{ shape: curv-trap, label: "<b>Dashboard</b><br/>FLO summary, four figures, filters, requests" }
+  dash@{ shape: curv-trap, label: "<b>Dashboard</b><br/>Lifecycle chips, Do next, authorizations table" }
   auth@{ shape: curv-trap, label: "<b>Authorizations › Queue</b><br/>Requests ranked by how soon each is due" }
-  newc@{ shape: curv-trap, label: "<b>Authorizations › New case</b><br/>Referral, Medical records, Agents work, Review and sign" }
+  newc@{ shape: curv-trap, label: "<b>Authorizations › New case</b><br/>Intake, Eligibility & Benefits, Clinical documentation, Authorization preparation, Review & submit" }
   elig@{ shape: curv-trap, label: "<b>Authorizations › Eligibility & Benefits</b><br/>List, verify a patient, result" }
   den@{ shape: curv-trap, label: "<b>Denial Intelligence</b><br/>Open denials, options, brief" }
   mgr@{ shape: curv-trap, label: "<b>Case Manager</b><br/>Tabs: Active cases and Reviews this week" }
   ana@{ shape: curv-trap, label: "<b>Analytics</b><br/>Performance and the monthly report" }
   end
   subgraph gConn ["Sidebar › Connections"]
-  emr@{ shape: curv-trap, label: "<b>EMR Connect</b><br/>Systems, sync, mappings" }
+  emr@{ shape: curv-trap, label: "<b>EMR Connect</b><br/>Systems per site, sync, mappings" }
   pay@{ shape: curv-trap, label: "<b>Payers</b><br/>Process, Rules, Documents, Changes" }
   end
   subgraph gBot ["Sidebar › Bottom"]
-  set@{ shape: curv-trap, label: "<b>Settings</b><br/>The sixteen agents and Pause all" }
+  set@{ shape: curv-trap, label: "<b>Settings</b><br/>The sixteen agents, Pause all and Sites and access" }
   help@{ shape: odd, label: "<b>Help</b><br/>A toast points to Ask FLO and the Demo menu" }
   out@{ shape: odd, label: "<b>Sign out</b><br/>A toast: there is nothing to sign out of" }
   end
@@ -49,6 +50,7 @@ flowchart LR
   rep@{ shape: curv-trap, label: "<b>Denial Intelligence › Appeal analysis report</b><br/>For every denial, copy or download as PDF" }
   payer@{ shape: curv-trap, label: "<b>Payers › One payer</b><br/>Process, Rules, Documents, Changes tabs" }
   end
+  g0@{ shape: subproc, label: "Continues in: Who can see what › Roles, sites and a record at the other site" }
   g1@{ shape: subproc, label: "Continues in: Global shell" }
   g2@{ shape: subproc, label: "Continues in: Dashboard" }
   g3@{ shape: subproc, label: "Continues in: Authorizations › Queue and case page" }
@@ -61,7 +63,9 @@ flowchart LR
   g10@{ shape: subproc, label: "Continues in: Payers" }
   g11@{ shape: subproc, label: "Continues in: Settings" }
   s0 --> shell
-  shell --> ask & notif & demo
+  shell --> ask & notif & demo & site
+  site --> g0
+  demo --> g0
   shell --> dash & auth & newc & elig & den & mgr & ana
   shell --> emr & pay
   shell --> set & help & out
@@ -83,9 +87,9 @@ flowchart LR
   set --> g11
   class s0 k_start
   class shell,dash,auth,newc,elig,den,mgr,ana,emr,pay,set,case,ref,ver,brief,rep,payer k_screen
-  class ask,notif,demo k_overlay
+  class ask,notif,site,demo k_overlay
   class help,out k_toast
-  class g1,g2,g3,g4,g5,g6,g7,g8,g9,g10,g11 k_goto
+  class g0,g1,g2,g3,g4,g5,g6,g7,g8,g9,g10,g11 k_goto
   style gTop fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gMain fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gConn fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

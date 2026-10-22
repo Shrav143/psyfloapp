@@ -16,7 +16,7 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "Result page, section 'Payment checks' opened, rows 4 to 7" }
+  s1@{ shape: stadium, label: "Result page, side panel opened, 'Payment checks', rows 4 to 7" }
   q9@{ shape: diam, label: "Was coverage found?" }
   x9@{ shape: stadium, label: "<b>Coverage not found</b><br/>Rows 2 to 7 and any cost line are not shown<br/>One grey row says nothing else could be checked" }
   subgraph gA ["Row 4 · Authorization"]
@@ -27,11 +27,13 @@ flowchart TD
   a4@{ shape: rect, label: "<b>Chip 'Under review' (amber)</b><br/>'Required. A request is with Cardinal and under review'" }
   a5@{ shape: rect, label: "<b>Chip 'Retro request open' (amber)</b><br/>'A retro-authorization request is open. It covers days already delivered'" }
   a6@{ shape: rect, label: "<b>Chip 'Required' (amber)</b><br/>'Required before the first day. Not on file yet. Start an authorization'" }
+  a7@{ shape: rect, label: "<b>Chip 'Unknown' (grey)</b><br/>'No rule on file says whether Beacon requires one for residential 3.5. Check with Beacon. Nothing was assumed'<br/>The check could not run, so it is not counted as a failure" }
   end
   subgraph gB ["Row 5 · Can the clinic bill?"]
   b0@{ shape: diam, label: "Is the clinic enrolled with this payer for this level of care?" }
   b1@{ shape: rect, label: "<b>Title 'The clinic can bill', chip 'In network' (green)</b><br/>'The clinic is enrolled and in network with Summit for residential 3.5'" }
   b2@{ shape: rect, label: "<b>Title 'The clinic cannot bill yet', chip 'Not enrolled' (red)</b><br/>'Claims would be rejected. Navigator can start the enrollment.'" }
+  b3@{ shape: rect, label: "<b>Title 'The clinic's enrollment is not confirmed', chip 'Not confirmed' (amber)</b><br/>'Navigator can check the enrollment record'" }
   end
   subgraph gC ["Row 6 · Limits"]
   c0@{ shape: diam, label: "Is there a day or unit limit?" }
@@ -50,7 +52,7 @@ flowchart TD
   p2@{ shape: odd, label: "'This does not change what the clinic is paid.'" }
   p3@{ shape: rect, label: "<b>Ohio Medicaid: no line at all</b><br/>No '$0 copay' text, because members usually pay none" }
   end
-  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Medical records › Patient and insurance rows" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Patient, insurance and request rows" }
   s1 --> q9
   q9 -->|"No"| x9
   q9 -->|"Yes"| a0
@@ -60,8 +62,10 @@ flowchart TD
   a0 -->|"With the payer"| a4 --> b0
   a0 -->|"Retro request"| a5 --> b0
   a0 -->|"Required, not started"| a6 --> b0
+  a0 -->|"No rule on file"| a7 --> b0
   b0 -->|"Yes"| b1 --> c0
   b0 -->|"No"| b2 --> c0
+  b0 -->|"Could not confirm"| b3 --> c0
   c0 -->|"Limit, room left"| c1 --> d0
   c0 -->|"Limit, none left"| c2 --> d0
   c0 -->|"No limit"| c3 --> d0
@@ -72,7 +76,7 @@ flowchart TD
   class s1 k_start
   class q9,a0,b0,c0,d0,p0 k_decision
   class x9 k_endx
-  class a1,a2,a3,a4,a5,a6,b1,b2,c1,c2,c3,d1,d2,p1,p3 k_process
+  class a1,a2,a3,a4,a5,a6,a7,b1,b2,b3,c1,c2,c3,d1,d2,p1,p3 k_process
   class p2 k_toast
   class g1 k_goto
   style gA fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

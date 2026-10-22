@@ -17,64 +17,59 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Click 'Analytics' in the sidebar" }
-  sc@{ shape: curv-trap, label: "<b>Analytics</b><br/>'Where approvals are won and lost, and whether FLO's advice is working.'<br/>One quiet note: 'Modeled: ... Demo values: ... Workload and accepted denials are live.'" }
+  sc@{ shape: curv-trap, label: "<b>Analytics</b><br/>'Where approvals are won and lost, by payer and by kind of case.'<br/>One quiet note: 'Demo values: this is sample data. ...'" }
   subgraph gTop ["Header and filters"]
-  m3@{ shape: curv-trap, label: "<b>Button 'Monthly report' with a document icon</b><br/>It opens a window, where the files and Print are" }
-  m1@{ shape: curv-trap, label: "<b>Menu 'This quarter'</b><br/>(period)" }
-  m2@{ shape: curv-trap, label: "<b>Menu 'All payers'</b><br/>(payer)" }
-  m4@{ shape: curv-trap, label: "<b>Menu 'All programs'</b><br/>(program)<br/>'Clear filters' appears once a payer or program is picked" }
+  m3@{ shape: curv-trap, label: "Button 'Monthly report'" }
+  m1@{ shape: curv-trap, label: "<b>Four menus: 'This quarter', 'All payers', 'All programs', 'All diagnosis groups'</b><br/>'Clear filters' once one is picked<br/>'Site view: Both sites' follows the top bar switch" }
   end
-  subgraph gTiles ["Four key figures"]
-  t1@{ shape: curv-trap, label: "<b>'Approval rate'</b><br/>71% · '▲ 6 pts vs last quarter'<br/>'1,070 decisions · this quarter'" }
-  t2@{ shape: curv-trap, label: "<b>'Denial rate'</b><br/>29% · '311 denials · 17 accepted'<br/>'▼ 6 pts vs last quarter'" }
-  t3@{ shape: curv-trap, label: "<b>'Turnaround'</b><br/>2.4 days · 'Sent to decision · typical 1.9 days'<br/>'▼ 0.1 days vs last quarter'" }
-  t4@{ shape: curv-trap, label: "<b>'Preventable denials'</b><br/>207 · '67% of 311 denials'<br/>'Fixable before sending'" }
+  subgraph gFig ["Six headline figures, each with 12 months beside it"]
+  t1@{ shape: curv-trap, label: "<b>'Approval rate' 71% · 'First-pass approval'</b><br/>'Denial rate' 29% · 'Preventable denials' 207" }
+  t2@{ shape: curv-trap, label: "<b>'Average decision time' 2.4 days, with the share past the CMS time</b><br/>'Appeals overturned' 56%" }
   end
-  subgraph gCards ["Cards below the figures"]
-  c1@{ shape: curv-trap, label: "<b>Chart 'Approval rate by payer'</b><br/>Six bars, best first" }
-  c2@{ shape: curv-trap, label: "<b>Chart 'Preventable denials by reason'</b><br/>Five reasons and one 'other' row, adding up to the figure" }
-  c3@{ shape: curv-trap, label: "<b>Chart 'How people edit agent drafts'</b><br/>Donut and three-line legend" }
-  c4@{ shape: curv-trap, label: "<b>Card 'Workload'</b><br/>'8 handled', '32 still open', live from the Dashboard" }
+  subgraph gCards ["Cards, top to bottom"]
+  c1@{ shape: curv-trap, label: "<b>'Approvals and denials by month'</b><br/>Rate or Count" }
+  c2@{ shape: curv-trap, label: "<b>'Payer scorecard'</b><br/>One row per payer and an 'All payers' row" }
+  c3@{ shape: curv-trap, label: "<b>'Payer by case mix'</b><br/>A grid of approval rates, with four tabs" }
+  c4@{ shape: curv-trap, label: "<b>'Denial reasons'</b><br/>Pareto, preventable donut, reasons by diagnosis group" }
+  c5@{ shape: curv-trap, label: "<b>'Site A and Site B'</b><br/>Only for someone who sees both sites" }
   end
-  subgraph gDetail ["Heading 'Detailed breakdowns' (all folded)"]
-  d1@{ shape: curv-trap, label: "<b>'Common denial reasons by payer'</b><br/>One summary line<br/>Opens to the table, 'Appeals overturned' and 'Denials accepted'" }
-  d2@{ shape: curv-trap, label: "<b>'How FLO's advice and drafts perform'</b><br/>One summary line<br/>Opens to four facts, and why recommendations were dismissed" }
-  d3@{ shape: curv-trap, label: "<b>'What helps most'</b><br/>One summary line<br/>Opens to four ranked steps" }
+  subgraph gDetail ["'Detailed breakdowns' (all folded, one summary line each)"]
+  d1@{ shape: curv-trap, label: "<b>'Length of stay and units'</b><br/>'Process health'" }
+  d2@{ shape: curv-trap, label: "<b>'Common denial reasons by payer'</b><br/>'How FLO's advice and drafts perform'<br/>'What helps most'" }
   end
-  p1@{ shape: rect, label: "<b>All figures come from the chosen period, payer and program</b><br/>A figure behind fewer than 20 decisions (or denials) is hidden" }
-  p2@{ shape: rect, label: "<b>Nothing is stored: the address stays /analytics</b><br/>Leaving the page resets the filters" }
-  p3@{ shape: rect, label: "<b>Other screens feed this page</b><br/>Appeal rulings and accepted denials from Denial Intelligence<br/>Dismissed recommendations from Authorizations<br/>Open requests from the Dashboard (Workload)" }
-  g1@{ shape: subproc, label: "Continues in: Analytics › Period, payer and program menus" }
-  g2@{ shape: subproc, label: "Continues in: Analytics › The four tiles" }
-  g3@{ shape: subproc, label: "Continues in: Analytics › Charts: payers, draft edits and workload" }
-  g4@{ shape: subproc, label: "Continues in: Analytics › Common denial reasons: open Denial Intelligence" }
-  g5@{ shape: subproc, label: "Continues in: Analytics › Monthly report › Open and build" }
-  g6@{ shape: subproc, label: "Continues in: Analytics › Denial outcomes and dismissed recommendations" }
-  g7@{ shape: subproc, label: "Continues in: Analytics › Preventable denials chart" }
+  p1@{ shape: rect, label: "<b>Every figure, chart, table and list is worked out from one set of case records</b><br/>So a number and the cases behind it always agree<br/>A figure behind fewer than 20 decisions shows a dash" }
+  p2@{ shape: rect, label: "<b>Every number follows the site view</b><br/>A one-site viewer such as Dr. Rivera sees only that site, and no comparison card<br/>Site A plus Site B always equals Both sites" }
+  p3@{ shape: rect, label: "<b>Other screens feed this page</b><br/>Appeal rulings and accepted denials from Denial Intelligence<br/>Dismissed recommendations from Authorizations<br/>Open requests on the Dashboard (the live workload)" }
+  g1@{ shape: subproc, label: "Continues in: Analytics › Filters and the site view" }
+  g2@{ shape: subproc, label: "Continues in: Analytics › Headline figures" }
+  g3@{ shape: subproc, label: "Continues in: Analytics › Trend by month" }
+  g4@{ shape: subproc, label: "Continues in: Analytics › Payer scorecard" }
+  g5@{ shape: subproc, label: "Continues in: Analytics › Payer by case mix" }
+  g6@{ shape: subproc, label: "Continues in: Analytics › Denial reasons" }
+  g7@{ shape: subproc, label: "Continues in: Analytics › Site comparison" }
   g8@{ shape: subproc, label: "Continues in: Analytics › Detailed breakdowns" }
-  g9@{ shape: subproc, label: "Continues in: Analytics › Program filter" }
+  g9@{ shape: subproc, label: "Continues in: Analytics › Monthly report › Open and build" }
   s1 --> sc
-  sc --> m3 & m1 & m2 & m4
-  m1 & m2 & m4 --> t1 & t2 & t3 & t4
-  t1 & t2 & t3 & t4 --> c1 & c2 & c3 & c4
-  c1 & c2 & c3 & c4 --> d1 & d2 & d3
+  sc --> m3 & m1
+  m1 --> t1 & t2
+  t1 & t2 --> c1 --> c2 --> c3 --> c4 --> c5 --> d1 & d2
   sc -.-> p1
   sc -.-> p2
   sc -.-> p3
-  p3 --> g6
-  m1 & m2 --> g1
-  m4 --> g9
-  t1 & t2 & t3 & t4 --> g2
-  c1 & c3 & c4 --> g3
-  c2 --> g7
-  d1 --> g4
-  d1 & d2 & d3 --> g8
-  m3 --> g5
+  m1 --> g1
+  t1 & t2 --> g2
+  c1 --> g3
+  c2 --> g4
+  c3 --> g5
+  c4 --> g6
+  c5 --> g7
+  d1 & d2 --> g8
+  m3 --> g9
   class s1 k_start
-  class sc,m3,m1,m2,m4,t1,t2,t3,t4,c1,c2,c3,c4,d1,d2,d3 k_screen
+  class sc,m3,m1,t1,t2,c1,c2,c3,c4,c5,d1,d2 k_screen
   class p1,p2,p3 k_process
   class g1,g2,g3,g4,g5,g6,g7,g8,g9 k_goto
   style gTop fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
-  style gTiles fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gFig fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gCards fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gDetail fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

@@ -20,17 +20,17 @@ flowchart TD
   s2@{ shape: stadium, label: "Demo menu › 'Authorizations: the queue'" }
   s3@{ shape: stadium, label: "On a case page: click 'Back to queue' or the 'Authorizations' crumb" }
   q1@{ shape: curv-trap, label: "<b>Authorizations queue</b><br/>Header, one payer-signal line, four figures, filters, priority bands" }
-  sb@{ shape: rect, label: "<b>Sidebar badge on 'Authorizations'</b><br/>Open requests in Act now plus Due within 24 hours (19)" }
-  p1@{ shape: rect, label: "<b>The page counts the open requests</b><br/>A request that was sent, decided by the payer or settled no longer counts" }
+  sb@{ shape: rect, label: "<b>Sidebar badge on 'Authorizations'</b><br/>Open requests at the sites in view in Act now plus Due within 24 hours<br/>(19 for Both sites)" }
+  p1@{ shape: rect, label: "<b>The page counts the open requests at the sites in view</b><br/>A request that was sent, decided by the payer or settled no longer counts" }
   p2@{ shape: rect, label: "<b>The average and the next due time use each request's current chance and due time</b><br/>Including actions applied on its case page" }
   d1@{ shape: diam, label: "Is any filter on?" }
-  h1@{ shape: curv-trap, label: "<b>Header: '19 of 56 open requests need action today.'</b><br/>The 19 are Act now plus Due within 24 hours<br/>With none left: 'Nothing needs action today.'" }
+  h1@{ shape: curv-trap, label: "<b>Header: '19 of 56 open requests need action today.'</b><br/>The 19 are Act now plus Due within 24 hours<br/>With one site in view it names it: '12 of 36 open requests at Site A need action today.'<br/>With none left: 'Nothing needs action today.'" }
   h2@{ shape: curv-trap, label: "<b>Sub line: 'Five are urgent, and the average approval chance is 79%.'</b><br/>With none in Act now: 'Nothing is urgent, and ...'" }
   h3@{ shape: curv-trap, label: "<b>Header: 'X of 56 open requests match these filters.'</b><br/>No sub line" }
   nb@{ shape: trap-t, label: "Click 'New case' (top right button)" }
-  g1@{ shape: subproc, label: "Continues in: New case › Referral step" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › How a case starts and resumes" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Queue › Cardinal payer signal" }
-  tl@{ shape: curv-trap, label: "<b>Four figures under the header</b><br/>Always count the whole queue, not the filtered list" }
+  tl@{ shape: curv-trap, label: "<b>Four figures under the header</b><br/>Always count the whole queue at the sites in view, not the filtered list" }
   t2@{ shape: trap-t, label: "<b>Click 'Urgent now'</b><br/>5 · 'the Act now band'" }
   t3@{ shape: trap-t, label: "<b>Click 'Due within 24 hours'</b><br/>14 · 'next due in 3 h'<br/>(or 'next one is due now', or 'nothing open')" }
   t4@{ shape: trap-t, label: "<b>Click 'Waiting on you'</b><br/>'not sent yet, or a question for you'<br/>Counts the requests the ordering rule puts first" }
@@ -43,6 +43,7 @@ flowchart TD
   an@{ shape: doc, label: "<b>Approved and denied in the last 30 days</b><br/>Shown in Analytics, not here" }
   g3@{ shape: subproc, label: "Continues in: Authorizations › Queue › Search and filter" }
   g4@{ shape: subproc, label: "Continues in: Authorizations › Queue › Bands and ranking" }
+  g5@{ shape: subproc, label: "Continues in: Authorizations › Queue › Sites: what each viewer sees" }
   s1 --> q1
   s2 --> q1
   s3 --> q1
@@ -63,10 +64,11 @@ flowchart TD
   q1 --> g2
   tl --> g3
   tl --> g4
+  q1 --> g5
   class s1,s2,s3 k_start
   class q1,h1,h2,h3,tl,t1,u2,a2 k_screen
   class sb,p1,p2,u1,a1 k_process
   class d1,dSel k_decision
   class nb,t2,t3,t4 k_click
-  class g1,g2,g3,g4 k_goto
+  class g1,g2,g3,g4,g5 k_goto
   class an k_doc

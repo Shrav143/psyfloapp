@@ -17,39 +17,39 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "A denial is on screen (or its brief)" }
-  f1@{ shape: curv-trap, label: "<b>Folded at first, each with a title, one summary line and a chevron</b><br/>'What the agents did': 'Reader, Advocate and Historian read the letter and the chart...' and the pill 'Done in 0:48'<br/>'What has happened': '6 steps. Latest, Mon 4:46 pm: ...'<br/>'Add a denial letter': 'Drop a letter or use a sample'<br/>'Why FLO suggests this': 'The reasons, from the chart and the clock. A recommendation, not a payer rule.'" }
+  f1@{ shape: curv-trap, label: "<b>Folded at first, each with a title, one summary line and a chevron</b><br/>'What the agents did': 'Reader, Advocate and Historian read the letter and the chart...' and the pill 'Done in 0:48'<br/>'What has happened': '6 steps. Latest, Mon 4:46 pm: ...'<br/>'Why FLO suggests this': 'The reasons, from the chart and the clock. A recommendation, not a payer rule.'" }
   f2@{ shape: curv-trap, label: "<b>On the brief page</b><br/>'Key dates and numbers': 'Call: Wed 10/21, 9–11 am · Window: 36 h'<br/>'Have these open': '0 of 3 ticked' (and '1 of 3 ticked' after a tick)" }
   pa@{ shape: rect, label: "<b>Each header is a real button with aria-expanded=false</b><br/>Summary lines are worked out from the denial, so they change when it does" }
+  pn@{ shape: curv-trap, label: "<b>Not folded: right-hand panels</b><br/>'Open denials' (header button), 'Compare the options' (Your options), 'Add a denial letter' (panel footer)<br/>Each closes with Escape, X or the dimmed area" }
+  g1@{ shape: subproc, label: "Continues in: Denial Intelligence › Open denials list" }
+  g4@{ shape: subproc, label: "Continues in: Denial Intelligence › Your options" }
   c1@{ shape: trap-t, label: "Click a header, or Tab to it and press Enter or Space" }
   p1@{ shape: rect, label: "<b>aria-expanded becomes true</b><br/>Chevron turns over, a rule appears, the detail shows below" }
   d1@{ shape: curv-trap, label: "<b>'What the agents did': one line per agent with a tick</b><br/>'What has happened': 'Every step is also on the Dashboard.' and the timeline<br/>'Why FLO suggests this': the reasons<br/>'Key dates and numbers': two columns<br/>'Have these open': one tick box per source" }
-  d2@{ shape: curv-trap, label: "'Add a denial letter': drop area, 'Use sample letter', note box, 'Analyze the denial'" }
-  g1@{ shape: subproc, label: "Continues in: Denial Intelligence › Add a denial letter" }
   g2@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Recommended next step" }
   g3@{ shape: subproc, label: "Continues in: Denial Intelligence › Peer-to-peer › The brief" }
   c2@{ shape: trap-t, label: "Click the header again, or press Enter or Space" }
   p2@{ shape: rect, label: "<b>aria-expanded becomes false</b><br/>The detail hides" }
-  p3@{ shape: rect, label: "<b>'Add a denial letter' stays in the page while closed</b><br/>A typed note, a chosen file and a running analysis survive closing it" }
-  p4@{ shape: rect, label: "<b>On the brief, 'Key dates and numbers' and 'Have these open' also stay in the page while closed</b><br/>Print opens both on paper and drops the chevron" }
+  p4@{ shape: rect, label: "<b>On the brief, 'Key dates and numbers' and 'Have these open' stay in the page while closed</b><br/>Print opens both on paper and drops the chevron" }
   p5@{ shape: rect, label: "Esc closes menus, dialogs and drawers, not a folded section" }
   p6@{ shape: rect, label: "<b>Opening one does not close another</b><br/>A section starts closed again each time the page is opened" }
   e1@{ shape: stadium, label: "Section is closed again" }
   s1 --> f1 --> pa
   s1 --> f2 --> pa
+  s1 -.-> pn
+  pn --> g1
+  pn --> g4
   pa --> c1 --> p1
   p1 --> d1
-  p1 --> d2 --> g1
   d1 --> g2
   d1 --> g3
   d1 --> c2 --> p2 --> e1
-  d2 --> c2
-  p2 -.-> p3
   p2 -.-> p4
   p1 -.-> p6
   c1 -.-> p5
   class s1 k_start
-  class f1,f2,d1,d2 k_screen
-  class pa,p1,p2,p3,p4,p5,p6 k_process
+  class f1,f2,pn,d1 k_screen
+  class pa,p1,p2,p4,p5,p6 k_process
+  class g1,g4,g2,g3 k_goto
   class c1,c2 k_click
-  class g1,g2,g3 k_goto
   class e1 k_end

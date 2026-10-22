@@ -42,7 +42,7 @@ flowchart TD
   w11@{ shape: rect, label: "<b>Its case page reads the new stage</b><br/>Chip 'Received', the request's own status line, a greyed-out 'Sent to payer' and 'Open on the Dashboard'" }
   s5@{ shape: stadium, label: "The payer decides, or a denial is settled or its appeal is filed" }
   w12@{ shape: rect, label: "<b>Queue drops the request from its band</b><br/>When Act now is empty the band says 'Nothing needs you today'" }
-  g2@{ shape: subproc, label: "Continues in: Dashboard › Request drawer" }
+  g2@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   s1 --> d1
   d1 -->|"Yes"| w1 --> w2
   d1 -->|"No"| w0

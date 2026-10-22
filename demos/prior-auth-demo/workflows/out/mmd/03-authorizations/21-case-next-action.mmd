@@ -36,9 +36,9 @@ flowchart TD
   c2@{ shape: trap-t, label: "Click 'Send to payer'" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Case page › Send to payer and review and sign" }
   c3@{ shape: trap-t, label: "Click 'Open on the Dashboard'" }
-  g3@{ shape: subproc, label: "Continues in: Dashboard › Request drawer" }
+  g3@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   c4@{ shape: trap-t, label: "Click 'Open in Denial Intelligence'" }
-  g4@{ shape: subproc, label: "Continues in: Denial Intelligence › Open a denial" }
+  g4@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
   fl@{ shape: cyl, label: "<b>The sentence follows the case as work is done</b><br/>Apply or dismiss an action: the next open one is named<br/>Refine recommendations: its re-ordered first card<br/>After signing: the Dashboard's step" }
   q@{ shape: rect, label: "The queue row shows the same sentence after 'Next:'" }
   nb --> d1

@@ -25,7 +25,8 @@ flowchart TD
   i1@{ shape: lean-r, label: "<b>Pick one System type</b><br/>Clinical record (default), Billing system, Practice management or Lab results" }
   p1@{ shape: rect, label: "<b>Each choice shows what it holds</b><br/>'Charts, notes and medications', 'Claims and remittances', 'Schedules and admissions', 'Lab orders and results'" }
   i2@{ shape: lean-r, label: "<b>Type a 'Name in Psyflo' (optional)</b><br/>'Shown in Connection health.'" }
-  p2@{ shape: rect, label: "Blank name becomes '{kind} · new site'" }
+  is@{ shape: lean-r, label: "<b>Choose the site the system serves</b><br/>'Site A', 'Site B' or 'Both sites' (starts at the sites in view)<br/>A one-site viewer sees 'It will serve Site B, the only site your role can see.' and no choice" }
+  p2@{ shape: rect, label: "Blank name becomes '{kind} · Site A', '{kind} · Site B' or '{kind} · Both sites'" }
   c1@{ shape: trap-t, label: "Click 'Next'" }
   end
   subgraph gS2 ["Step 2 of 3: Contact"]
@@ -43,7 +44,7 @@ flowchart TD
   s1 --> qp
   qp -->|"Yes"| tp --> xp
   qp -->|"No"| o1 --> i1
-  i1 --> p1 --> i2 --> p2 --> c1
+  i1 --> p1 --> is --> i2 --> p2 --> c1
   c1 --> i3
   i3 --> p3
   p3 -.-> x1
@@ -59,7 +60,7 @@ flowchart TD
   class tp,t1 k_toast
   class xp,e1 k_endx
   class o1 k_overlay
-  class i1,i2,i3 k_input
+  class i1,i2,is,i3 k_input
   class p1,p2,p3 k_process
   class x1 k_ext
   class g1 k_goto

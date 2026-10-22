@@ -22,7 +22,7 @@ flowchart TD
   w2@{ shape: delay, label: "<b>Production: on a schedule, nobody clicks</b><br/>Attendance twice a day, roster nightly, payments weekly, eligibility on a rolling 7 days, portal status daily" }
   w3@{ shape: odd, label: "<b>Production: a missed run raises a stale banner</b><br/>Attendance after 36 hours, roster after 48 hours" }
   end
-  x1@{ shape: st-rect, label: "<b>The record system</b><br/>Residential site, outpatient site, Billing system or a newly connected one" }
+  x1@{ shape: st-rect, label: "<b>The record system</b><br/>'Clinical record · Site A', 'Clinical record · Site B', the Billing system (both sites) or a newly connected one" }
   subgraph gPull ["What the agents read"]
   d1@{ shape: doc, label: "<b>Clinical record systems</b><br/>Assessments, progress notes, labs, medications, insurance card" }
   d2@{ shape: doc, label: "<b>Billing system</b><br/>Claims, remittances, payment dates" }
@@ -31,10 +31,10 @@ flowchart TD
   a1@{ shape: hex, label: "<b>Reader</b><br/>Reads each file, swaps names, dates and IDs for codes, matches the chart to an open case" }
   a2@{ shape: hex, label: "<b>Verify</b><br/>Re-checks coverage for members whose plans changed" }
   p1@{ shape: rect, label: "Fields it cannot place wait in 'Advanced', and 'Action required' names them" }
-  s2@{ shape: cyl, label: "<b>Charts matched today</b><br/>Goes up by the number of charts matched to open cases" }
-  s3@{ shape: cyl, label: "<b>Files pulled this week</b><br/>Goes up by the number of files saved to those cases" }
+  s2@{ shape: cyl, label: "<b>Charts matched today</b><br/>Goes up, for the sites the sync pulled from, by the number of charts matched to open cases" }
+  s3@{ shape: cyl, label: "<b>Files pulled this week</b><br/>Goes up, for those sites, by the number of files saved to those cases" }
   s4@{ shape: cyl, label: "<b>Recent activity (in Advanced)</b><br/>One line per sync" }
-  p2@{ shape: rect, label: "<b>Demo: nothing else changes</b><br/>No new case in Case Manager. New case offers the same four charts, from Connected systems only" }
+  p2@{ shape: rect, label: "<b>Demo: nothing else changes</b><br/>No new case in Case Manager. New case offers the same four charts, from Connected systems at the sites in view only" }
   e1@{ shape: rect, label: "Last sync figure reads 'Just now'" }
   g1@{ shape: subproc, label: "Continues in: EMR Connect › Sync › Sync now" }
   g2@{ shape: subproc, label: "Continues in: EMR Connect › Needs a mapping › Map a field" }

@@ -16,56 +16,45 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "A row in the Requests table" }
-  c1@{ shape: curv-trap, label: "<b>Case</b><br/>Underlined ID, e.g. 'R-1042', and the request type, e.g. 'Admission'" }
-  c2@{ shape: curv-trap, label: "<b>Payer</b><br/>Short name: 'Summit Medicaid', 'Cardinal', 'Beacon PPO', 'Harborview MA', 'Lakeshore', 'Evergreen'<br/>Program under it: 'Residential 3.5', 'IOP', 'PHP', 'Detox'" }
-  d1@{ shape: diam, label: "Is it a denial? (ID starts with D-)" }
-  w1@{ shape: curv-trap, label: "<b>Where it is</b><br/>Chip such as 'Info requested' and four bars<br/>'Prepared, Received, In review, Decided'" }
-  w2@{ shape: curv-trap, label: "<b>Where it is</b><br/>Chip such as 'Call booked' and four bars<br/>'Call, Appeal 1, Appeal 2, External'" }
-  w3@{ shape: rect, label: "<b>Bars: done are green, the current one is dark green (ochre when the chip is amber), later ones are grey</b><br/>Hover shows 'Progress: Prepared, Received, In review, Decided. Now at In review.' or 'Route: Call, Appeal 1, Appeal 2, External. Now at Call.'" }
-  subgraph gClock ["Clock column"]
-  k1@{ shape: diam, label: "Does the row carry a fixed note?" }
-  k2@{ shape: curv-trap, label: "<b>Note, e.g. 'decision 11/02'</b><br/>Under it 'filed 10/05'" }
-  k3@{ shape: diam, label: "Is there a deadline (an open denial)?" }
-  k4@{ shape: diam, label: "How much time is left?" }
-  k5@{ shape: curv-trap, label: "'window closed'" }
-  k6@{ shape: curv-trap, label: "<b>'36 h left' in red</b><br/>Under 2 days; under it e.g. 'peer-to-peer window'" }
-  k7@{ shape: curv-trap, label: "<b>'3 days left' in ochre</b><br/>Under 7 days; under it 'to resubmit' or 'to file'" }
-  k8@{ shape: curv-trap, label: "'12 days left' in plain text" }
-  k9@{ shape: diam, label: "Is the stage Decided? (an approval)" }
-  k10@{ shape: curv-trap, label: "<b>'today'</b><br/>Under it 'approved 1 h 30 m ago'" }
-  k11@{ shape: diam, label: "How long in this stage compared with typical?" }
-  k12@{ shape: curv-trap, label: "<b>'1 d 14 h' and 'typical 1 d'</b><br/>Over 1.5 × typical adds ochre 'late'" }
-  k13@{ shape: curv-trap, label: "<b>'4 d 12 h' and 'typical 2 d'</b><br/>Over 2 × typical adds red 'very late'" }
-  k14@{ shape: curv-trap, label: "<b>'1 h 12 m' and 'typical 2 h'</b><br/>Within typical, plain text" }
-  end
-  n1@{ shape: curv-trap, label: "<b>What happens next</b><br/>Agent badge and a line, e.g. 'Needs your input. Scribe has a question' or 'Navigator checks again in 5 minutes'<br/>An approval says 'Write-back is off in EMR Connect' instead of 'Write-back waits for you' while write-back is off" }
+  s1@{ shape: stadium, label: "A row in the authorizations table" }
+  c1@{ shape: curv-trap, label: "<b>Case</b><br/>Underlined ID, e.g. 'R-1042', and the patient under it: initials and age, 'J.M., 34'" }
+  c2@{ shape: curv-trap, label: "<b>Payer, then Service</b><br/>Short payer name; level of care ('Residential 3.5', 'IOP', 'PHP', 'Detox') with the request type under it" }
+  c3@{ shape: curv-trap, label: "<b>Status</b><br/>One plain word: Awaiting sign-off, Submitted, Decision pending, Info requested, or for a decided or denied request its own state ('Approved', 'Call booked', 'Appeal filed')" }
+  c4@{ shape: curv-trap, label: "<b>Days in state</b><br/>A number such as '3.2 d', '14 h' or '35 m', with 'median 2 d' under it<br/>A flag when a Medicaid managed care payer is near or past the CMS time" }
+  u1@{ shape: diam, label: "Does the Case Manager ledger hold an approval for this case?" }
+  u2@{ shape: curv-trap, label: "<b>Units</b><br/>'48 → 10' (approved to left) with 'units' or 'days' under it" }
+  u3@{ shape: curv-trap, label: "<b>Window</b><br/>'Sep 22 – Oct 20'<br/>The end is the ledger's expiry clock, or today plus what is left; the start is the end minus the approved length" }
+  u4@{ shape: curv-trap, label: "Units and Window show a quiet dash" }
+  n1@{ shape: diam, label: "Where is the request?" }
+  n2@{ shape: curv-trap, label: "<b>Next action 'Review and sign'</b><br/>Owner You: Awaiting sign-off, every check passed" }
+  n3@{ shape: curv-trap, label: "<b>'Answer Scribe' or 'Answer Packet'</b><br/>Owner You: an agent has a question" }
+  n4@{ shape: curv-trap, label: "<b>'Wait for Reader', 'Wait for Packet'</b><br/>Owner that agent: agents are still working" }
+  n5@{ shape: curv-trap, label: "<b>'Review and send'</b><br/>Owner You: Info requested, the draft answer is ready" }
+  n6@{ shape: curv-trap, label: "<b>'Chase the payer'</b><br/>Owner You, or Caller when Caller is already phoning<br/>Submitted or Decision pending, 4 or more hours late, or on day 5 of the CMS clock or later" }
+  n7@{ shape: curv-trap, label: "<b>'Wait for the decision'</b><br/>Owner the payer, e.g. 'Cardinal'" }
+  n8@{ shape: curv-trap, label: "'Approve write-back' (Owner You, only while write-back is on) or 'Start renewal' (Owner You) or 'No action needed' (Owner Cadence)" }
+  n9@{ shape: curv-trap, label: "<b>'Prepare the P2P call'</b><br/>Owner You, a denial with a peer-to-peer call; otherwise 'Wait for the decision' (the payer) or 'Wait for' an agent" }
+  n10@{ shape: curv-trap, label: "<b>A quiet line under the verb</b><br/>The due time, e.g. 'Notice due in 5 h', when it is inside 2 days; terracotta inside 6 hours" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Order, rows and paging" }
-  g2@{ shape: subproc, label: "Continues in: Dashboard › Header › Check all now and the demo clock" }
+  g2@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Days in state and the CMS decision time" }
   g3@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Sort the rows" }
-  s1 --> c1 --> c2 --> d1
-  d1 -->|"No"| w1 --> w3
-  d1 -->|"Yes"| w2 --> w3
-  w3 --> k1
-  k1 -->|"Yes"| k2 --> n1
-  k1 -->|"No"| k3
-  k3 -->|"Yes"| k4
-  k4 -->|"Zero or less"| k5 --> n1
-  k4 -->|"Under 2 days"| k6 --> n1
-  k4 -->|"2 to 7 days"| k7 --> n1
-  k4 -->|"7 days or more"| k8 --> n1
-  k3 -->|"No"| k9
-  k9 -->|"Yes"| k10 --> n1
-  k9 -->|"No"| k11
-  k11 -->|"Over 1.5 times"| k12 --> n1
-  k11 -->|"Over 2 times"| k13 --> n1
-  k11 -->|"Within typical"| k14 --> n1
-  n1 --> g1
-  k11 -.-> g2
-  s1 -.-> g3
+  g4@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Units or days left and the run-out flag" }
+  s1 --> c1 --> c2 --> c3 --> c4 --> u1
+  u1 -->|"Yes"| u2 --> u3 --> n1
+  u1 -->|"No"| u4 --> n1
+  n1 -->|"Awaiting sign-off, ready"| n2 --> n10
+  n1 -->|"Awaiting sign-off, a question"| n3 --> n10
+  n1 -->|"Awaiting sign-off, agents working"| n4 --> n10
+  n1 -->|"Info requested"| n5 --> n10
+  n1 -->|"Submitted or Decision pending, late"| n6 --> n10
+  n1 -->|"Submitted or Decision pending, on time"| n7 --> n10
+  n1 -->|"Decided today, approved"| n8 --> n10
+  n1 -->|"Denial route"| n9 --> n10
+  n10 --> g1
+  c4 -.-> g2
+  c1 -.-> g3
+  u2 -.-> g4
   class s1 k_start
-  class c1,c2,w1,w2,k2,k5,k6,k7,k8,k10,k12,k13,k14,n1 k_screen
-  class d1,k1,k3,k4,k9,k11 k_decision
-  class w3 k_process
-  class g1,g2,g3 k_goto
-  style gClock fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  class c1,c2,c3,c4,u2,u3,u4,n2,n3,n4,n5,n6,n7,n8,n9,n10 k_screen
+  class u1,n1 k_decision
+  class g1,g2,g3,g4 k_goto

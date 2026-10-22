@@ -1,0 +1,81 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "A case id is in the address" }
+  s2@{ shape: stadium, label: "<b>Click a button on a case in Case Manager</b><br/>'Continue', 'Watch', 'Answer' or 'Review and sign'" }
+  s3@{ shape: stadium, label: "<b>Click 'Open in review and sign' or 'Send to payer' on a case page</b><br/>A draft is made from the request, or the one it has is brought up to date" }
+  pReq@{ shape: rect, label: "<b>Draft opens on Review & submit when the request is ready</b><br/>on Authorization preparation when agents still have work<br/>Never a blank draft" }
+  d3@{ shape: diam, label: "Is there a case with that id?" }
+  sc1@{ shape: curv-trap, label: "<b>New case</b><br/>'That draft is not in the demo.'<br/>'We could not find that draft'<br/>'It may have been cleared when the demo data was reset.'" }
+  c1@{ shape: trap-t, label: "Click 'Start a new case'" }
+  gNew@{ shape: subproc, label: "Continues in: Authorizations › New case › How a case starts and resumes" }
+  dSite@{ shape: diam, label: "Is the case at a site in view?" }
+  scOut@{ shape: curv-trap, label: "<b>'This case is not available at Site B'</b><br/>'R-0975 belongs to Site B. Dr. Rivera can see Site A only.'<br/>No patient, payer or dates are shown" }
+  cShow@{ shape: trap-t, label: "<b>Click 'Show Site B'</b><br/>Only for a viewer who may see both sites" }
+  pShow@{ shape: rect, label: "<b>The site view switches to Site B</b><br/>The case opens" }
+  d4@{ shape: diam, label: "Was it signed and sent?" }
+  sc2@{ shape: curv-trap, label: "<b>'R-1234 was sent'</b><br/>'It was signed and sent to the payer (demo). The agents are following it from the Dashboard.'<br/>'This case is no longer being prepared'" }
+  c2@{ shape: trap-t, label: "Click 'Open the case', or 'Open it on the Dashboard'" }
+  c3@{ shape: trap-t, label: "Click 'Back to Case Manager'" }
+  d5@{ shape: diam, label: "Did the agents already run, with the case still on an earlier step?" }
+  p9@{ shape: rect, label: "<b>Opens on Authorization preparation when fewer than ten agents are done</b><br/>else on Review & submit<br/>A later click in the stepper is not undone" }
+  sc3@{ shape: curv-trap, label: "<b>New case</b><br/>Link 'Case Manager', title 'New case', one sentence, 'Authorization type' dropdown<br/>The stepper with each step's state, then the step header and the step" }
+  c4@{ shape: trap-t, label: "Click the link 'Case Manager'" }
+  d6@{ shape: diam, label: "Which step is the case on?" }
+  pNarrow@{ shape: rect, label: "<b>Narrowing the site view while a blank case is open</b><br/>A case with no patient and no ID moves to the site in view; one with an ID or a patient stays at its own site" }
+  gCm@{ shape: subproc, label: "Continues in: Case Manager" }
+  gDash@{ shape: subproc, label: "<b>Continues in: Dashboard</b><br/>Opens the request" }
+  gCase@{ shape: subproc, label: "Continues in: Authorizations › Case page › Send to payer and review and sign" }
+  gSites@{ shape: subproc, label: "Continues in: Authorizations › New case › Sites and scope" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Initial authorization" }
+  g1b@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Find a patient and the authorization" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Eligibility & Benefits › Initial authorization" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › The checklist and Continue" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › Start the run and watch it" }
+  g5@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › The draft and the summary" }
+  s3 --> pReq --> d3
+  s1 --> d3
+  s2 --> d3
+  d3 -->|"No"| sc1 --> c1 --> gNew
+  d3 -->|"Yes"| dSite
+  dSite -->|"No"| scOut
+  scOut --> cShow --> pShow --> d4
+  scOut -.-> gSites
+  dSite -->|"Yes"| d4
+  d4 -->|"Yes"| sc2
+  sc2 --> c2 --> gDash
+  sc2 --> c3 --> gCm
+  d4 -->|"No"| d5
+  d5 -->|"Yes"| p9 --> sc3
+  d5 -->|"No"| sc3
+  sc3 --> c4 --> gCm
+  sc3 --> d6
+  sc3 -.-> pNarrow
+  s3 -.-> gCase
+  d6 -->|"Intake, initial or retroactive"| g1
+  d6 -->|"Intake, review, renewal or modification"| g1b
+  d6 -->|"Eligibility & Benefits"| g2
+  d6 -->|"Clinical documentation"| g3
+  d6 -->|"Authorization preparation"| g4
+  d6 -->|"Review & submit"| g5
+  class s1,s2,s3 k_start
+  class pReq,pShow,p9,pNarrow k_process
+  class d3,dSite,d4,d5,d6 k_decision
+  class sc1,scOut,sc2,sc3 k_screen
+  class c1,cShow,c2,c3,c4 k_click
+  class gNew,gCm,gDash,gCase,gSites,g1,g1b,g2,g3,g4,g5 k_goto

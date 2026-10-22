@@ -18,11 +18,11 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   p1@{ shape: curv-trap, label: "<b>EMR Connect</b><br/>Connection health, sync, mappings (in Advanced) and the Write back switch on each row" }
   subgraph gPull ["New case: pull a chart"]
-  a1@{ shape: trap-t, label: "<b>Click 'Pull a chart from EMR Connect'</b><br/>Medical records step" }
-  a0@{ shape: diam, label: "Is any system Connected?" }
+  a1@{ shape: trap-t, label: "<b>Click 'Pull a chart from EMR Connect'</b><br/>Clinical documentation step" }
+  a0@{ shape: diam, label: "Is any system at a site in view Connected?" }
   a8@{ shape: odd, label: "<b>'No records system is connected. Connect one in EMR Connect to pull a chart, or drop the files above.'</b><br/>With a link to EMR Connect" }
   a2@{ shape: win-pane, label: "<b>Chart from EMR Connect</b><br/>Dropdown with the charts that live in a Connected system<br/>A hint under each names the system" }
-  a2b@{ shape: rect, label: "<b>Residential site: J.M., 34 · Summit · Residential 3.5 and L.G., 29 · Cardinal · Residential 3.5</b><br/>Outpatient site: A.R., 45 · Beacon · IOP and S.T., 38 · Harborview · PHP<br/>A system that is Disconnected or Needs attention offers none" }
+  a2b@{ shape: rect, label: "<b>Clinical record · Site A: J.M., 34 · Summit · Residential 3.5 and L.G., 29 · Cardinal · Residential 3.5</b><br/>Clinical record · Site B: A.R., 45 · Beacon · IOP and S.T., 38 · Harborview · PHP<br/>A viewer who sees one site is offered only that site's two charts<br/>A system that is Disconnected or Needs attention offers none" }
   a3@{ shape: lean-r, label: "Pick a chart" }
   a9@{ shape: diam, label: "<b>Does that system still have a field waiting for a mapping?</b><br/>'Level of care' or 'Referral source'" }
   a10@{ shape: rect, label: "<b>Line under the picker</b><br/>'Level of care still needs a mapping there, so that field is left blank.' with 'Open EMR Connect'" }
@@ -32,10 +32,10 @@ flowchart TD
   a7@{ shape: odd, label: "<b>'Pulled J.M., 34 from EMR Connect'</b><br/>'Everything below was filled in from the chart. You can still change it.'<br/>Or, amber: 'Level of care needs a mapping, so that field was left blank. You can still fill it in.'" }
   end
   n1@{ shape: rect, label: "<b>Sync now does not add charts to the picker</b><br/>The four charts are fixed. Connect, Disconnect, Fix and Reconnect decide which systems offer them, and Map decides which fields a pull leaves blank" }
-  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Medical records › Patient and insurance rows" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Patient, insurance and request rows" }
   subgraph gWrite ["Dashboard: write back"]
   b1@{ shape: curv-trap, label: "Dashboard request: 'Approved. Write-back waits for you'" }
-  b0@{ shape: diam, label: "Does at least one Connected system have its write-back switch on?" }
+  b0@{ shape: diam, label: "Does at least one Connected system at a site in view have its write-back switch on?" }
   b8@{ shape: odd, label: "<b>'Write-back is off for your records system.' with 'Turn it on in EMR Connect.'</b><br/>Instead of the box. The link opens this page" }
   b2@{ shape: trap-t, label: "Click 'Approve write-back'" }
   b3@{ shape: win-pane, label: "<b>Approve the write-back</b><br/>'EMR Connect will write only these three things to the chart. No notes, diagnoses or identifiers are written.'" }

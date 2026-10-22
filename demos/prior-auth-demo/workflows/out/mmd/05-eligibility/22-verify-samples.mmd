@@ -17,7 +17,7 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Open 'Verify a patient'" }
-  sc@{ shape: curv-trap, label: "<b>Card 'The patient and the service'</b><br/>Row 'Try a sample' with six chips, then the card drop zone and the fields" }
+  sc@{ shape: curv-trap, label: "<b>Card 'The patient and the service'</b><br/>Row 'Try a sample' with six chips and a 'More samples' button, then the card drop zone and the fields" }
   q1@{ shape: diam, label: "Click which chip?" }
   subgraph gPick ["What each chip fills in"]
   p1@{ shape: rect, label: "<b>'Cleared to bill'</b><br/>Beacon PPO, IOP, member ending 2468<br/>Beacon asks for no authorization for IOP" }
@@ -31,16 +31,17 @@ flowchart TD
   c1@{ shape: trap-t, label: "Click 'Check now'" }
   ck@{ shape: rect, label: "<b>Live check runs about 10 seconds</b><br/>Chips and fields lock. 'Skip ahead' speeds it up<br/>The member ID ending decides the answer" }
   subgraph gRes ["Result"]
-  r1@{ shape: curv-trap, label: "<b>'Cleared to bill: the clinic will be paid.'</b><br/>Green verdict, 'Eligible', benefits 'Covered'<br/>Cost share shown: 'Copay $40 per day, ...'" }
+  r1@{ shape: curv-trap, label: "<b>'Cleared to bill: the clinic will be paid.'</b><br/>Green verdict, 'Eligible', benefits 'Covered'<br/>Cost share shown: 'Copay $40 per day, ...'<br/>'What this service needs' says Beacon does not require one for IOP, for the dates of service" }
   r2@{ shape: curv-trap, label: "<b>'Fix before billing: coverage lapsed 10/12.'</b><br/>Eligibility 'Needs a fix', 'Effective 01/01/2026, lapsed 10/12/2026'<br/>Button 'Request retro-eligibility'" }
   r3@{ shape: curv-trap, label: "<b>'We could not find coverage.'</b><br/>Eligibility 'Needs a fix', benefits and 'What this service needs' say 'Not checked'<br/>No 'Patient pays' line, no dates" }
-  r4@{ shape: curv-trap, label: "<b>'Fix before billing: the service is not covered.'</b><br/>Benefits 'Not covered'<br/>Row 'The service is not covered' in 'Payment checks'" }
-  r5@{ shape: curv-trap, label: "<b>'Fix before billing: another plan pays first.'</b><br/>Row 'Another plan pays first', chip 'Other plan', in 'Payment checks'" }
+  r4@{ shape: curv-trap, label: "<b>'Fix before billing: the service is not covered.'</b><br/>Benefits 'Not covered'<br/>Row 'The service is not covered' in the side panel's 'Payment checks'" }
+  r5@{ shape: curv-trap, label: "<b>'Fix before billing: another plan pays first.'</b><br/>Row 'Another plan pays first', chip 'Other plan', in the side panel's 'Payment checks'" }
   r6@{ shape: curv-trap, label: "<b>'Fix before billing: every authorized day is used.'</b><br/>Benefits line 'All 14 days used. Nothing left'<br/>Row 'Every authorized day is used', chip 'Limit reached'" }
   end
   sd@{ shape: rect, label: "<b>The list already holds a patient for each reason</b><br/>R-1101 lapsed, R-0975 ended, R-1118 not covered<br/>I-2275 another plan pays first, R-0921 limit reached" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › Which verdict and why" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › More samples: checks that need a look" }
   s1 --> sc --> q1
   q1 -->|"Cleared to bill"| p1 --> pf
   q1 -->|"Coverage lapsed"| p2 --> pf
@@ -57,11 +58,12 @@ flowchart TD
   ck -->|"Ends 9090"| r6
   r1 & r2 & r3 & r4 & r5 & r6 --> g1
   sc -.-> sd --> g2
+  sc -.-> g3
   class s1 k_start
   class sc,r1,r2,r3,r4,r5,r6 k_screen
   class q1 k_decision
   class p1,p2,p3,p4,p5,p6,pf,ck,sd k_process
   class c1 k_click
-  class g1,g2 k_goto
+  class g1,g2,g3 k_goto
   style gPick fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gRes fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

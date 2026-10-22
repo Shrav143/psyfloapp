@@ -1,0 +1,103 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Working on a new case" }
+  s2@{ shape: stadium, label: "On a case page, click 'Open in review and sign' or 'Send to payer'" }
+  pReq@{ shape: rect, label: "<b>A draft is made from the request, or the one it already has is brought up to date</b><br/>It opens on Review & submit when the request is ready, on Authorization preparation when agents still have work<br/>It is not saved, so Case Manager does not list it" }
+  gCase@{ shape: subproc, label: "Continues in: Authorizations › Case page › Send to payer and review and sign" }
+  subgraph gSave ["Ways a draft gets saved"]
+  c1@{ shape: trap-t, label: "Click 'Save as draft' on Intake, Eligibility & Benefits or Clinical documentation" }
+  c2@{ shape: trap-t, label: "Click 'Save as draft' on Review & submit" }
+  c3@{ shape: trap-t, label: "<b>Click 'Start the agents'</b><br/>No toast is shown" }
+  pNo3@{ shape: rect, label: "<b>Authorization preparation has no 'Save as draft' button</b><br/>The run itself saved the case" }
+  end
+  stId@{ shape: cyl, label: "<b>A case id may already exist</b><br/>The first check on Eligibility & Benefits and a first save both assign it<br/>It falls at the case's site" }
+  dAlready@{ shape: diam, label: "Is the case already saved?" }
+  st1@{ shape: cyl, label: "<b>Draft marked saved and given a case ID</b><br/>R- for Residential 3.5 and Detox, I- for IOP, P- for PHP<br/>A draft with no level of care yet falls under R<br/>Numbered from 1701" }
+  pNoop@{ shape: rect, label: "Nothing changes; the toast still shows" }
+  t1@{ shape: odd, label: "<b>Steps 1 to 3: 'Draft saved'</b><br/>'R-1701 is in Case Manager. Pick it up whenever you like.'" }
+  t2@{ shape: odd, label: "<b>Step 5: 'Draft saved'</b><br/>'R-1701 is in Case Manager, ready to sign.'" }
+  stPos@{ shape: cyl, label: "<b>The draft keeps its step</b><br/>Intake, Eligibility & Benefits, Clinical documentation, Authorization preparation or Review & submit<br/>And what was typed, picked, answered and documented" }
+  cLeave@{ shape: trap-t, label: "Click 'Case Manager' at the top, a sidebar item, or close the tab" }
+  dSaved@{ shape: diam, label: "Was the case saved?" }
+  pUnsaved@{ shape: rect, label: "<b>Nothing appears in Case Manager</b><br/>The draft stays in this session and its address still opens it<br/>Opening New case again starts another blank draft" }
+  pAway@{ shape: rect, label: "<b>A running case stops moving while the page is closed</b><br/>The row shows the agent that was working<br/>Or, when an agent could not finish: 'Verify could not reach Cardinal's portal. Retry it or skip it'" }
+  sCM@{ shape: curv-trap, label: "<b>Case Manager › Active cases › Being prepared</b><br/>'Most urgent first. Each case moves through eight steps; the agents do all but Ask and Sign.'<br/>Filter: 'All', 'Agents working', 'Needs your input', 'Ready to sign'<br/>Only cases at the sites in view" }
+  sRow@{ shape: curv-trap, label: "<b>A row for the draft</b><br/>Level of care chip, case ID, 'J.M., 34 · Summit Medicaid HMO', request<br/>Eight-step bar: Read, Rules, Match, Ask, Draft, Check, Sign, Send<br/>Who has it, due chip, status pill, approval chance, one button" }
+  dState@{ shape: diam, label: "What state is the draft in?" }
+  rIntake@{ shape: rect, label: "<b>'Intake not finished'</b><br/>Button 'Continue'; chance shows 'Not started'" }
+  rWork@{ shape: rect, label: "<b>'Agents working'</b><br/>Button 'Watch'" }
+  rAsk@{ shape: rect, label: "<b>'Needs your input'</b><br/>Button 'Answer'" }
+  rReady@{ shape: rect, label: "<b>'Ready to sign'</b><br/>Button 'Review and sign'" }
+  pBadge@{ shape: rect, label: "<b>The sidebar badge on 'Case Manager' counts drafts that need a person</b><br/>Intake not finished, a question, or ready to sign" }
+  pDash@{ shape: rect, label: "<b>The Dashboard counts a saved draft under 'Preparing' ('N in Case Manager')</b><br/>A draft that was never saved is not counted<br/>Seeded cases such as R-1042 are counted as requests" }
+  cOpen@{ shape: trap-t, label: "Click the case ID, or the row's button" }
+  pResume@{ shape: rect, label: "<b>Opens /authorizations/new/DRAFT</b><br/>The page resumes where the draft was<br/>A draft whose agents already ran opens on Authorization preparation or Review & submit, never on Intake" }
+  gResume@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › Finished, paused or left" }
+  gStep3@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › The checklist and Continue" }
+  gOpen@{ shape: subproc, label: "Continues in: Authorizations › New case › Reopen and resume a case" }
+  gCM@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Being prepared card" }
+  sNF@{ shape: curv-trap, label: "<b>New case</b><br/>'That draft is not in the demo.'<br/>'We could not find that draft'<br/>'It may have been cleared when the demo data was reset.'" }
+  cNew@{ shape: trap-t, label: "Click 'Start a new case'" }
+  pNew@{ shape: rect, label: "A new blank draft opens on Intake" }
+  gRef@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Start with a referral or patient" }
+  s2 --> pReq --> gCase
+  s1 --> c1
+  s1 --> c2
+  s1 --> c3
+  s1 --> pNo3
+  s1 -.-> stId
+  c1 --> dAlready
+  c2 --> dAlready
+  c3 --> dAlready
+  dAlready -->|"No"| st1 --> stPos
+  dAlready -->|"Yes"| pNoop
+  c1 --> t1
+  c2 --> t2
+  stPos --> sCM
+  s1 --> cLeave --> dSaved
+  dSaved -->|"No"| pUnsaved
+  dSaved -->|"Yes"| sCM
+  dSaved -->|"Yes, running"| pAway --> sCM
+  pUnsaved -.-> sNF
+  sCM --> sRow --> dState
+  dState -->|"Intake not finished"| rIntake
+  dState -->|"Agents working"| rWork
+  dState -->|"Question open"| rAsk
+  dState -->|"Signature needed"| rReady
+  sCM --> pBadge
+  sCM --> pDash
+  sCM -.-> gCM
+  rIntake --> cOpen
+  rWork --> cOpen
+  rAsk --> cOpen
+  rReady --> cOpen
+  cOpen --> pResume
+  pResume --> gResume
+  pResume --> gStep3
+  pResume -.-> gOpen
+  sNF --> cNew --> pNew --> gRef
+  class s1,s2 k_start
+  class pReq,pNo3,pNoop,pUnsaved,pAway,rIntake,rWork,rAsk,rReady,pBadge,pDash,pResume,pNew k_process
+  class gCase,gResume,gStep3,gOpen,gCM,gRef k_goto
+  class c1,c2,c3,cLeave,cOpen,cNew k_click
+  class stId,st1,stPos k_store
+  class dAlready,dSaved,dState k_decision
+  class t1,t2 k_toast
+  class sCM,sRow,sNF k_screen
+  style gSave fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

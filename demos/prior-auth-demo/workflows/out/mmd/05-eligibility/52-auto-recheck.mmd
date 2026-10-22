@@ -26,7 +26,7 @@ flowchart TD
   a1@{ shape: hex, label: "<b>Verify re-checks every patient that came due</b><br/>Asks the state and the plan again (demo: simulated, same answer as before)" }
   st1@{ shape: cyl, label: "<b>Each row updated</b><br/>Checked time is the booked time, booking cleared<br/>Verdict unchanged, sidebar badge unchanged" }
   r1@{ shape: rect, label: "<b>List: second line reads 'Re-checked automatically at 11:32 am'</b><br/>Tile 'Re-check due' goes down by the rows done" }
-  r2@{ shape: rect, label: "<b>Result: 'Time checked' reads 'Re-checked automatically at 11:32 am'</b><br/>'Next checks' (inside 'How this was checked') no longer starts with the re-check line" }
+  r2@{ shape: rect, label: "<b>Result: 'Time checked' reads 'Re-checked automatically at 11:32 am'</b><br/>'Next checks' (inside 'How this was checked') no longer starts with the re-check line (it is in the side panel, under 'How this was checked')" }
   q3@{ shape: diam, label: "How many came due at once?" }
   n1@{ shape: odd, label: "<b>Bell: 'Re-checked automatically'</b><br/>'I-2207 is still Cleared to bill. Verify re-checked it at 11:32 am.'<br/>Click opens that result" }
   n2@{ shape: odd, label: "<b>Bell: 'Re-checked 2 patients automatically'</b><br/>'I-2144, I-2102 came due. None of the verdicts changed.'<br/>Click opens the list" }

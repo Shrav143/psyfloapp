@@ -19,10 +19,10 @@ flowchart TD
   s1@{ shape: stadium, label: "On a result page, read the buttons on the verdict band" }
   q1@{ shape: diam, label: "Verdict is 'Authorization first'?" }
   c1@{ shape: trap-t, label: "Click 'Start authorization'" }
-  p1@{ shape: rect, label: "<b>Opens New case with payer, level of care, member ID, initials and age filled in</b><br/>Request type is 'Admission'" }
-  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Medical records › The checklist and Continue" }
+  p1@{ shape: rect, label: "<b>Opens /authorizations/new?verification=R-1042&type=initial</b><br/>New case reads the stored verification: payer, level of care, member, initials, age and the check itself<br/>Authorization type is already 'Initial'" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › The checklist and Continue" }
   q2@{ shape: diam, label: "Is there a request with this ID?" }
-  c2@{ shape: trap-t, label: "<b>Click 'Open case'</b><br/>(dark button, or outlined beside 'Start authorization')" }
+  c2@{ shape: trap-t, label: "<b>Click 'Open case'</b><br/>(outlined button)" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Case page › Ways in" }
   q3@{ shape: diam, label: "ID starts with 'V-' (a new check, no case yet)?" }
   c3@{ shape: trap-t, label: "Click 'Open in Case Manager'" }
@@ -37,13 +37,19 @@ flowchart TD
   t2@{ shape: odd, label: "<b>'Caller will phone the payer'</b><br/>'Caller will ask Evergreen about this member and log the call to the case.'" }
   x2@{ shape: st-rect, label: "<b>The payer's provider line</b><br/>(demo: simulated, nothing is dialled)" }
   e1@{ shape: stadium, label: "<b>Coverage is active: no extra button</b><br/>Other failures are fixed in the case or by 'Check again'" }
+  cv@{ shape: trap-t, label: "<b>Click 'Create authorization from verification'</b><br/>(every result, every verdict)" }
+  gv@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Create an authorization from a verification" }
+  ce@{ shape: trap-t, label: "<b>Click 'Open Settings'</b><br/>(only when the check did not run)" }
+  ge@{ shape: subproc, label: "Continues in: Settings" }
   c6@{ shape: trap-t, label: "Click 'Check again'" }
   g4@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Re-verify a patient" }
   c7@{ shape: trap-t, label: "Click '← Eligibility & Benefits'" }
   g5@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows" }
   c8@{ shape: trap-t, label: "<b>Click '← Back to referral RF-2040'</b><br/>With ?case= in the address it reads '← Back to case R-1042'<br/>Shown only when the check began from a referral" }
   g6@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › The full referral page" }
-  s1 --> q1 & q2 & q4 & c6 & c7 & c8
+  s1 --> q1 & q2 & q4 & c6 & c7 & c8 & cv & ce
+  cv --> gv
+  ce --> ge
   c8 --> g6
   q1 -->|"Yes"| c1 --> p1 --> g1
   q1 -->|"No"| n1
@@ -58,9 +64,9 @@ flowchart TD
   c7 --> g5
   class s1 k_start
   class q1,q2,q3,q4 k_decision
-  class c1,c2,c3,c4,c5,c6,c7,c8 k_click
+  class c1,c2,c3,c4,c5,cv,ce,c6,c7,c8 k_click
   class p1,n1,p2 k_process
-  class g1,g2,g3,g4,g5,g6 k_goto
+  class g1,g2,g3,gv,ge,g4,g5,g6 k_goto
   class t1,t2 k_toast
   class x1,x2 k_ext
   class e1 k_endx

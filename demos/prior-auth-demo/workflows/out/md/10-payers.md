@@ -6,7 +6,7 @@ Shapes and colours: see `00-overview.md`. Source: `workflows/src/10-payers/`.
 
 ## Payers › Arrive on the page
 
-How a person lands on Payers, which payer and tab they see first, what the badges count, and where each control on the page leads. Every other Payers diagram starts from one of the hand offs at the bottom.
+How a person lands on Payers, which payer and tab they see first, what the badges count, and where each control on the page leads. Payers are the same for every viewer and site view; only the drafts an update can redraft follow the site. Every other Payers diagram starts from one of the hand offs at the bottom.
 
 Route: `/payers`
 
@@ -67,6 +67,7 @@ flowchart TD
   g_rules@{ shape: subproc, label: "Continues in: Payers › Rules › Read the rules" }
   g_docs@{ shape: subproc, label: "Continues in: Payers › Documents › Read the document list" }
   g_chg@{ shape: subproc, label: "Continues in: Payers › Changes › Read what changed" }
+  g_site@{ shape: subproc, label: "Continues in: Payers › Sites › Clinic-wide payers, drafts in view" }
   s1 --> p1 --> d1
   s2 --> p2 --> d1
   d1 -->|"No, or an unknown id"| p3 --> d2
@@ -75,6 +76,7 @@ flowchart TD
   d2 -->|"Yes"| p6 --> pg
   pg --> list & head & tabs & c_add
   pg -.-> b1
+  pg -.-> g_site
   tabs -.-> b2
   list --> c_pick & c_search
   c_pick --> g_list
@@ -95,7 +97,7 @@ flowchart TD
   class d1,d2 k_decision
   class pg,list,head,tabs k_screen
   class c_pick,c_search,c_edit,c_log,c_tab,c_add k_click
-  class g_list,g_head,g_ps,g_edit,g_log,g_add,g_proc,g_rules,g_docs,g_chg k_goto
+  class g_list,g_head,g_ps,g_edit,g_log,g_add,g_proc,g_rules,g_docs,g_chg,g_site k_goto
   style gL fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gR fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gB fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
@@ -287,7 +289,7 @@ flowchart TD
   s1t@{ shape: rect, label: "'Source: Psyflo benchmark, not a payer's policy'" }
   s2t@{ shape: rect, label: "'Source: Demo sample rules, version 2026.3'" }
   nov@{ shape: rect, label: "<b>Not shown anywhere on Payers</b><br/>No 'checked' or 'confirmed' date, no 'published policy', no 'Sentinel keeps watching'" }
-  rl@{ shape: rect, label: "<b>Rules tab: each rule shows 'saved 10/12'</b><br/>Only a rule edited in Psyflo adds 'Source: Edited in Psyflo by Jordan Perez'" }
+  rl@{ shape: rect, label: "<b>Rules tab: each rule shows 'saved 10/12'</b><br/>Only a rule edited in Psyflo adds 'Source: Edited in Psyflo by {viewer}' (the person viewing when it was saved; Jordan Perez at the start)" }
   e1@{ shape: stadium, label: "The header says where the rules come from and what is waiting" }
   g1@{ shape: subproc, label: "Continues in: Payers › Changes › Acknowledge a change" }
   g2@{ shape: subproc, label: "Continues in: Payers › Rules › Read the rules" }
@@ -370,7 +372,7 @@ flowchart TD
   x1@{ shape: stadium, label: "<b>Modal closes</b><br/>Nothing was added" }
   e@{ shape: stadium, label: "New payer is ready to edit" }
   g1@{ shape: subproc, label: "Continues in: Payers › Process › Read the workflow" }
-  g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Medical records › Patient and insurance rows" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Patient, insurance and request rows" }
   s1 --> m --> i1 --> i2 --> i3 --> i4 --> i5 --> ca
   i1 -.-> clr
   i4 -.-> clr
@@ -977,7 +979,7 @@ flowchart TD
   s1@{ shape: stadium, label: "<b>A workflow, rule or document-list</b><br/>edit was just saved" }
   un@{ shape: cyl, label: "<b>'Edits waiting' for this payer goes up by one</b><br/>Payer details and Caller script edits do not count" }
   bn@{ shape: curv-trap, label: "<b>Ochre banner on Process, Rules and Documents</b><br/>'1 edit applies to new drafts only'<br/>'2 edits apply...' after a second edit" }
-  dr@{ shape: diam, label: "<b>Does this payer have an unsent draft?</b><br/>A request in 'Preparing', or a New case draft<br/>that is saved and not sent" }
+  dr@{ shape: diam, label: "<b>Does this payer have an unsent draft at a site in view?</b><br/>A request in 'Preparing', or a New case draft<br/>that is saved and not sent. Summit's two are R-1042 and R-1101: both sites show 2" }
   b1@{ shape: odd, label: "<b>New drafts for Summit use this at once.</b><br/>Sent requests keep what they were sent with.<br/>Click Update drafts to redraft the open ones (R-1042, R-1101).<br/>Button: 'Update 2 drafts'" }
   b0@{ shape: odd, label: "<b>New drafts for Evergreen use this at once.</b><br/>Sent requests keep what they were sent with.<br/>There are no open drafts for this payer right now.<br/>Button: 'Update drafts'" }
   info@{ shape: rect, label: "<b>Not counted: a request the payer already has</b><br/>(Received and later), and the answer to a payer's<br/>question on an 'Info requested' request, like P-1499" }
@@ -1065,7 +1067,7 @@ flowchart TD
   any@{ shape: diam, label: "Has anything been edited for this payer?" }
   em@{ shape: curv-trap, label: "<b>'No edits yet'</b><br/>Every edit to a workflow, rules, script or document list is logged here<br/>with your name, the time and your reason." }
   ent@{ shape: curv-trap, label: "<b>One card per edit</b><br/>Area chip, bold 'what changed'" }
-  who@{ shape: rect, label: "Line under it: 'Jordan Perez · Tue 10:42 am · Reason: ...'" }
+  who@{ shape: rect, label: "<b>Line under it: '{viewer} · Tue 10:42 am · Reason: ...'</b><br/>The name is the person viewing when the edit was saved (Jordan Perez at the start; Dr. Rivera, Alex Morgan or Sam Okafor after 'Viewing as')" }
   ba@{ shape: curv-trap, label: "<b>Two boxes with an arrow</b><br/>Red 'Before' (or 'Nothing' for an addition)<br/>Green 'After' (or 'Removed' for a removal)" }
   subgraph gA ["Where entries come from (area chip)"]
   a1@{ shape: cyl, label: "<b>Workflow</b><br/>Save workflow, Accept proposal" }
@@ -1150,7 +1152,7 @@ flowchart TD
   ub@{ shape: rect, label: "<b>Foot line</b><br/>'Used by Cadence and Scrubber · saved 10/12'" }
   who@{ shape: rect, label: "<b>Used by</b><br/>Windows: Cadence, Navigator<br/>Backdating: Cadence, Scrubber<br/>No authorization needed: Verify, Criteria<br/>Peer-to-peer and appeals: Advocate, Cadence" }
   cf@{ shape: rect, label: "<b>'Saved' is the date the rule was last saved in Psyflo</b><br/>Evergreen shows 10/09, the others 10/12<br/>It moves to today when a rule is edited<br/>It is never a date the payer confirmed anything" }
-  src@{ shape: rect, label: "<b>A rule edited here adds</b><br/>'Source: Edited in Psyflo by Jordan Perez'<br/>A rule that was not edited shows no source of its own:<br/>the header says 'Source: Demo sample rules, version 2026.3'" }
+  src@{ shape: rect, label: "<b>A rule edited here adds</b><br/>'Source: Edited in Psyflo by {viewer}' (the person viewing when it was saved; Jordan Perez at the start)<br/>A rule that was not edited shows no source of its own:<br/>the header says 'Source: Demo sample rules, version 2026.3'" }
   noeff@{ shape: rect, label: "<b>New case reads the saved lines for the payer</b><br/>and level of care of each draft<br/>See the New case diagrams for what it checks" }
   ce@{ shape: trap-t, label: "<b>Click 'Edit' inside an open rule</b><br/>(the button is named 'Edit Backdating' and so on)" }
   gE@{ shape: subproc, label: "Continues in: Payers › Rules › Edit a rule" }
@@ -1214,7 +1216,7 @@ flowchart TD
   d2@{ shape: diam, label: "<b>Are there lines left, and</b><br/>do they differ from the saved ones?" }
   t0@{ shape: odd, label: "<b>'Nothing changed'</b><br/>Edit at least one line, and keep at least one rule." }
   x0@{ shape: stadium, label: "<b>Modal closes</b><br/>Nothing saved" }
-  st@{ shape: cyl, label: "<b>Rule lines replaced</b><br/>'Saved' date becomes today<br/>The rule gets 'Source: Edited in Psyflo by Jordan Perez'" }
+  st@{ shape: cyl, label: "<b>Rule lines replaced</b><br/>'Saved' date becomes today<br/>The rule gets 'Source: Edited in Psyflo by {viewer}' (the person viewing, Jordan Perez at the start)" }
   lg@{ shape: cyl, label: "<b>Edit log entry, area 'Rules'</b><br/>Rule name, before and after (lines joined with semicolons), reason" }
   un@{ shape: cyl, label: "'Edits waiting' goes up by one" }
   nt@{ shape: cyl, label: "<b>Bell notification 'Summit rule edited'</b><br/>opens the payer's Rules tab" }
@@ -1433,7 +1435,7 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Look at the card 'Try it on a case'</b><br/>below the document list<br/>Check a chart against this list<br/>Its info icon holds the note on keyword matching" }
-  hc@{ shape: diam, label: "Is any case in 'Preparing'?" }
+  hc@{ shape: diam, label: "<b>Is any case in 'Preparing' at a site in view?</b><br/>(the Case menu lists only those; a case at the other site is never offered)" }
   nc@{ shape: odd, label: "Menu shows 'No cases to check'" }
   df@{ shape: rect, label: "<b>Case starts as the first 'Preparing' case for this payer,</b><br/>else the first 'Preparing' case at all<br/>Cardinal: I-2207" }
   pk@{ shape: lean-r, label: "<b>Pick a 'Case'</b><br/>R-1042 · J.M., 34 (Residential 3.5)<br/>I-2207 · T.R., 29 (IOP)<br/>R-0988, R-1101, I-2262" }
@@ -1466,7 +1468,7 @@ flowchart TD
   why@{ shape: rect, label: "<b>Edit the list and check again to see it change</b><br/>Cardinal's list asks for 'Remaining treatment goals' only after<br/>its criteria change is updated, so I-2207 then reads '5 of 7 ready'" }
   info@{ shape: odd, label: "<b>'New case checks documents against this same list.</b><br/>Pasted text is matched by keyword, so a document that<br/>is named differently can be missed.'" }
   g2@{ shape: subproc, label: "Continues in: Payers › Documents › Edit the list" }
-  g3@{ shape: subproc, label: "Continues in: Authorizations › New case › Medical records › The checklist and Continue" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › The checklist and Continue" }
   s1 --> hc
   hc -->|"No"| nc --> pt
   hc -->|"Yes"| df --> pk --> pt
@@ -1669,11 +1671,11 @@ flowchart TD
   ca@{ shape: trap-t, label: "Click 'Acknowledge change'" }
   m@{ shape: win-pane, label: "<b>Acknowledge this change?</b><br/>It records who saw the change and when." }
   bd@{ shape: curv-trap, label: "<b>Change shown in a tinted box</b><br/>'Criteria changed, version 2026.3'<br/>Progress evidence must now include the remaining treatment goals.<br/>Effective 10/15." }
-  who@{ shape: rect, label: "<b>'You are acknowledging as Jordan Perez.</b><br/>This does not change any draft.<br/>Updating the drafts is a separate step.'" }
+  who@{ shape: rect, label: "<b>'You are acknowledging as {viewer}.</b><br/>This does not change any draft.<br/>Updating the drafts is a separate step.'" }
   ok@{ shape: trap-t, label: "<b>Click 'Acknowledge change'</b><br/>in the modal" }
-  st@{ shape: cyl, label: "<b>Acknowledgement recorded on the change</b><br/>Who: Jordan Perez. When: the demo clock" }
-  t1@{ shape: odd, label: "<b>'Change acknowledged'</b><br/>Recorded for Jordan Perez, Tue 10:42 am.<br/>Drafts are not changed until you update them." }
-  bn2@{ shape: curv-trap, label: "<b>Banner now shows a green pill</b><br/>'Acknowledged by Jordan Perez, Tue 10:42 am'<br/>in place of the blue button<br/>'Update 1 draft' is ready" }
+  st@{ shape: cyl, label: "<b>Acknowledgement recorded on the change</b><br/>Who: the person viewing (Jordan Perez at the start). When: the demo clock" }
+  t1@{ shape: odd, label: "<b>'Change acknowledged'</b><br/>Recorded for {viewer}, Tue 10:42 am.<br/>Drafts are not changed until you update them." }
+  bn2@{ shape: curv-trap, label: "<b>Banner now shows a green pill</b><br/>'Acknowledged by {viewer}, Tue 10:42 am'<br/>in place of the blue button<br/>'Update 1 draft' is ready" }
   nb@{ shape: rect, label: "<b>No change to the sidebar badge, the dot or the drafts</b><br/>No edit log entry. No undo" }
   cx@{ shape: trap-t, label: "Click 'Cancel'" }
   cesc@{ shape: trap-t, label: "<b>Press Escape, click the X</b><br/>or click the dimmed area" }
@@ -1728,7 +1730,7 @@ flowchart TD
   m@{ shape: win-pane, label: "<b>Update 1 draft?</b><br/>Nothing is redrafted until you confirm.<br/>Reason: criteria changed, version 2026.3." }
   rows@{ shape: curv-trap, label: "<b>One row per unsent draft of this payer</b><br/>Request id, patient initials and age · payer,<br/>level of care chip, status" }
   r1@{ shape: rect, label: "<b>Cardinal's row, read now</b><br/>I-2207 · T.R., 29 · Cardinal · IOP<br/>Draft, not yet sent" }
-  who@{ shape: rect, label: "<b>Who is listed</b><br/>This payer's requests in 'Preparing'<br/>and its saved New case drafts that are not sent<br/>Not listed: Summit's R-1042, Beacon's R-0988,<br/>sent I-2231, I-2218 (a reply on a request the payer has)" }
+  who@{ shape: rect, label: "<b>Who is listed</b><br/>Only drafts at the sites in view (Cardinal's I-2207 is at Site B, so Dr. Rivera and a Site A view see none; Both sites and Site B read 'Update 1 draft')<br/>This payer's requests in 'Preparing'<br/>and its saved New case drafts that are not sent<br/>Not listed: Summit's R-1042, Beacon's R-0988,<br/>sent I-2231, I-2218 (a reply on a request the payer has)" }
   fn@{ shape: odd, label: "<b>'Each redrafted case returns to Case Manager for a new signature.</b><br/>Requests already sent keep what they were sent with.'" }
   cs@{ shape: trap-t, label: "Click 'Update 1 draft'" }
   lock@{ shape: rect, label: "<b>Cancel greys out and the button spins</b><br/>Escape, X and dimmed area do nothing" }
@@ -1742,7 +1744,7 @@ flowchart TD
   u3@{ shape: cyl, label: "<b>Payer's change cleared</b><br/>No 'checked' date is written: nothing was checked against the payer" }
   u4@{ shape: cyl, label: "<b>Document lists gain the change's new rows</b><br/>Remaining treatment goals: Named in the latest progress note<br/>in Residential 3.5, IOP and PHP" }
   u5@{ shape: cyl, label: "<b>Edit log: 3 'Documents' entries</b><br/>'Added to the Residential 3.5 list' and so on<br/>Reason 'After criteria changed, version 2026.3'" }
-  u6@{ shape: cyl, label: "<b>'What changed' gets a new top row</b><br/>'Criteria changed, version 2026.3: acknowledged and applied'<br/>Acknowledged by Jordan Perez, ...<br/>Scribe and Integrity updated 1 draft ..." }
+  u6@{ shape: cyl, label: "<b>'What changed' gets a new top row</b><br/>'Criteria changed, version 2026.3: acknowledged and applied'<br/>Acknowledged by {viewer}, ...<br/>Scribe and Integrity updated 1 draft ..." }
   end
   nt@{ shape: cyl, label: "<b>Bell notification 'Drafts updated' from Scribe</b><br/>1 draft was redrafted after Cardinal's change.<br/>Each needs a new signature in Case Manager." }
   t1@{ shape: odd, label: "<b>'1 draft updated'</b><br/>The change is applied for Cardinal. Each draft returned to<br/>Case Manager for a new signature." }
@@ -1813,7 +1815,7 @@ flowchart TD
   up@{ shape: curv-trap, label: "<b>One quiet line</b><br/>'Nothing is waiting for you. Changes here are demo data...'<br/>Only the 'What changed' history below" }
   hv@{ shape: rect, label: "<b>Harborview's waiting change</b><br/>'Portal form change', effective 10/18<br/>The request form now asks for the expected length of stay and a second contact.<br/>The old form closes 10/31." }
   ev@{ shape: rect, label: "<b>Evergreen's waiting change</b><br/>'Reference number on notice calls', effective 10/22<br/>It adds 'Notice call reference number' to the Residential 3.5 list" }
-  dn@{ shape: diam, label: "<b>Does the payer have an unsent draft?</b><br/>Read live: requests in 'Preparing'<br/>and saved New case drafts not sent" }
+  dn@{ shape: diam, label: "<b>Does the payer have an unsent draft at a site in view?</b><br/>Read live: requests in 'Preparing'<br/>and saved New case drafts not sent, at the sites in view" }
   none@{ shape: odd, label: "<b>'No open drafts are affected.</b><br/>New drafts for Harborview use the change once you apply it.'<br/>Buttons: 'Acknowledge change', then 'Apply to new drafts'<br/>Note: 'Acknowledging records who saw it. Applying makes new drafts use the change.'" }
   why0@{ shape: rect, label: "<b>P-1499 is not listed: it is an answer on a request</b><br/>Harborview already has. R-0975 is the same for Evergreen" }
   one@{ shape: odd, label: "<b>'Scribe can redraft the 1 draft that is not yet sent: I-2207.'</b><br/>Buttons: 'Acknowledge change', then 'Update 1 draft'" }
@@ -1889,14 +1891,14 @@ flowchart TD
   dk@{ shape: diam, label: "Which kind of save?" }
   cfg@{ shape: cyl, label: "<b>Saved on the payer</b><br/>One edit log entry per change<br/>One bell notification<br/>New drafts use it from now on" }
   subgraph gR ["Read live by other screens (no Update drafts needed)"]
-  p1@{ shape: rect, label: "<b>New case: the document list</b><br/>The Medical records checklist, the file sorting and the<br/>Review and sign checks use the payer's saved list<br/>for the draft's level of care" }
+  p1@{ shape: rect, label: "<b>New case: the document list</b><br/>The Clinical documentation checklist, the file sorting and the<br/>Review & submit checks use the payer's saved list<br/>for the draft's level of care" }
   p2@{ shape: rect, label: "<b>New case: the rules</b><br/>Backdating: a start date that reaches back further<br/>than the rule allows is flagged<br/>No authorization needed: a level of care the payer names there" }
   p3@{ shape: rect, label: "<b>New case: the approval chance</b><br/>Each thing the payer asks for that a draft does not meet<br/>(a required document, an early start date)<br/>holds the chance back, up to 12 points" }
   p4@{ shape: rect, label: "<b>Case Manager: the next review</b><br/>The 'Submission windows' rule sets the days<br/>before the next review is booked, when it names a number" }
   p5@{ shape: rect, label: "<b>Payers added with 'Add a payer'</b><br/>have a full saved set like any payer<br/>and are offered wherever a payer is picked:<br/>New case, Eligibility & Benefits and the queue's Payer menu" }
   end
   subgraph gW ["Wired: redrafting after a payer change or edits"]
-  up@{ shape: trap-t, label: "<b>'Update N drafts' (after a payer change,</b><br/>or from the edits-waiting banner)" }
+  up@{ shape: trap-t, label: "<b>'Update N drafts' (after a payer change,</b><br/>or from the edits-waiting banner)<br/>N counts only the drafts at the sites in view" }
   rq@{ shape: cyl, label: "<b>Each unsent draft of this payer changes</b><br/>needs a person: yes<br/>Status line 'Redrafted after ... Waiting for a new signature'<br/>Timeline event from Scribe or the change's agent" }
   rp@{ shape: cyl, label: "<b>Update recorded</b><br/>Change (or 'edits-summit'), payer and the IDs of the drafts redrafted" }
   nf@{ shape: cyl, label: "<b>Bell notification 'Drafts updated'</b><br/>links to Case Manager" }
@@ -1916,9 +1918,9 @@ flowchart TD
   g1@{ shape: subproc, label: "Continues in: Dashboard › Requests table" }
   g2@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Updated for a payer change" }
   g3@{ shape: subproc, label: "Continues in: Dashboard › Open a request" }
-  g4@{ shape: subproc, label: "Continues in: Authorizations › New case › Medical records › The checklist and Continue" }
-  g5@{ shape: subproc, label: "Continues in: Authorizations › New case › Review and sign › Validation summary and checks" }
-  g7@{ shape: subproc, label: "Continues in: Authorizations › New case › Agents work › Start the run and watch it" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › The checklist and Continue" }
+  g5@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Validation summary and checks" }
+  g7@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › Start the run and watch it" }
   g6@{ shape: subproc, label: "Continues in: Authorizations › Queue › Open the queue and read the top" }
   s1 --> dk
   dk -->|"Workflow, rule or documents"| cfg
@@ -2028,4 +2030,88 @@ flowchart TD
   class x0 k_endx
   style gX fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gS fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+```
+
+## Payers › Sites › Clinic-wide payers, drafts in view
+
+Payers are the clinic's, not a site's: every viewer sees the same six payers, rules, documents and changes, and the Payers badge never changes with the site view. What does follow the site is the list of drafts a payer change or an edit can redraft, because a draft belongs to a case and a case belongs to a site.
+
+Route: `/payers/:id`
+
+Demo data. Cardinal's change (criteria v2026.3) affects one unsent draft, I-2207, which is at Site B. Summit's two unsent drafts, R-1042 and R-1101, are at Site A. Edits and acknowledgements are logged under the person viewing.
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Open Payers</b><br/>As any of the four viewers, on any site view" }
+  p1@{ shape: rect, label: "<b>The same payers, rules, documents and changes for everyone</b><br/>Sidebar badge 'Payers' stays 3 for every viewer and site view" }
+  cAck@{ shape: trap-t, label: "Acknowledge a change, or save an edit" }
+  lg@{ shape: cyl, label: "<b>Edit log and 'Acknowledged by' name the person viewing</b><br/>Jordan Perez at the start; Dr. Rivera, Alex Morgan or Sam Okafor after 'Viewing as'" }
+  cUp@{ shape: trap-t, label: "<b>Open the Update drafts step</b><br/>'Update N drafts' (Changes tab banner) or the edits-waiting banner" }
+  d1@{ shape: diam, label: "Which drafts does this payer have at the sites in view?" }
+  subgraph gAll ["Both sites"]
+  a1@{ shape: curv-trap, label: "<b>Cardinal: 'Update 1 draft' (I-2207)</b><br/>Summit: 'Update 2 drafts' (R-1042, R-1101)<br/>Same numbers as before sites" }
+  end
+  subgraph gA ["Site A"]
+  b1@{ shape: curv-trap, label: "<b>Dr. Rivera, or a viewer with both sites on 'Site A'</b><br/>Cardinal: 'No open drafts are affected. New drafts for Cardinal use the change once you apply it.' Button 'Apply to new drafts'<br/>Summit (edits-waiting banner): 'Update 2 drafts' (R-1042, R-1101)" }
+  end
+  subgraph gB ["Site B"]
+  c1@{ shape: curv-trap, label: "<b>Sam Okafor, or a viewer with both sites on 'Site B'</b><br/>Cardinal: 'Update 1 draft' (I-2207)<br/>Summit (edits-waiting banner): button 'Update drafts', and its pop-up opens as 'Apply to new drafts?'" }
+  end
+  d2@{ shape: diam, label: "Can this viewer see both sites, with one chosen?" }
+  hint@{ shape: odd, label: "<b>A plain hint under the banner</b><br/>'1 more draft at Site B is not in this view, so it is not updated. Choose Both sites to include it.'" }
+  nohint@{ shape: rect, label: "<b>No word about the other site</b><br/>A one-site viewer is never told what exists there" }
+  cConf@{ shape: trap-t, label: "Confirm 'Update N drafts'" }
+  ag@{ shape: hex, label: "<b>Scribe and Integrity redraft exactly the drafts that were listed (demo: 3 seconds)</b><br/>A draft at a site the viewer cannot see is never listed, counted or changed" }
+  up@{ shape: cyl, label: "<b>Each listed draft needs a person again</b><br/>Update recorded for Case Manager and New case" }
+  t1@{ shape: odd, label: "<b>'N drafts updated'</b><br/>Or 'No open drafts to update' when none were in view" }
+  cChk@{ shape: trap-t, label: "Documents tab › 'Try it on a case'" }
+  chk@{ shape: rect, label: "<b>The Case menu lists only 'Preparing' cases at the sites in view</b><br/>Switching the site view changes the list" }
+  g1@{ shape: subproc, label: "Continues in: Payers › Changes › Update drafts after a change" }
+  g2@{ shape: subproc, label: "Continues in: Payers › Edits waiting › Update drafts" }
+  g3@{ shape: subproc, label: "Continues in: Payers › Documents › Try it on a case" }
+  g4@{ shape: subproc, label: "Continues in: Who can see what › Roles, sites and a record at the other site" }
+  e1@{ shape: stadium, label: "Payers stay the clinic's; drafts stay with their site" }
+  s1 --> p1 --> cAck --> lg
+  p1 --> cUp --> d1
+  d1 -->|"Both sites"| a1
+  d1 -->|"Site A"| b1
+  d1 -->|"Site B"| c1
+  a1 & b1 & c1 --> d2
+  d2 -->|"Yes, one site chosen and drafts at the other"| hint
+  d2 -->|"No, or nothing at the other site"| nohint
+  hint & nohint --> cConf --> ag --> up --> t1 --> e1
+  p1 --> cChk --> chk --> g3
+  cUp -.-> g1
+  cUp -.-> g2
+  e1 --> g4
+  class s1 k_start
+  class p1,nohint,chk k_process
+  class cAck,cUp,cConf,cChk k_click
+  class lg,up k_store
+  class d1,d2 k_decision
+  class a1,b1,c1 k_screen
+  class hint,t1 k_toast
+  class ag k_agent
+  class g1,g2,g3,g4 k_goto
+  class e1 k_end
+  style gAll fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gA fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gB fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```

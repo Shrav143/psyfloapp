@@ -1,0 +1,67 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Tracker row is on screen" }
+  c1@{ shape: trap-t, label: "Click the row (any part that is not a button)" }
+  c2@{ shape: trap-t, label: "<b>Click the small quick view button 'Quick view of R-0988' at the end of the row</b><br/>(Tab to it, then Enter or Space)" }
+  ov@{ shape: win-pane, label: "<b>Right-hand panel 'R-0988 · Beacon'</b><br/>Subtitle 'D.L., 41 · Residential 3.5 · Continued stay 3', status pill at the right<br/>Big line 'Next due': 'Review due in 3 h', red when urgent, and one sentence on what to do next" }
+  pf@{ shape: rect, label: "<b>Focus goes to 'Open case'</b><br/>Tab stays inside the panel" }
+  kv@{ shape: curv-trap, label: "<b>Facts, one line each</b><br/>Units or days: '10 of 21 days used, 11 left' with a bar, and 'Runs out before review' when it applies<br/>Approved window: 'Sat 10/10 to Sat 10/31'<br/>Level of care, Payer, Site ('Site A · Main campus')<br/>Approval chance with its band and range, and how many similar decisions" }
+  kr@{ shape: curv-trap, label: "<b>Next review: 'Review 3, Tue 10/20, 4:00 pm' with its pill (Not drafted yet, Drafted, Needs your update)</b><br/>A case not approved yet says 'Not approved yet' and 'None until the request is approved'" }
+  dd@{ shape: diam, label: "Does the case have a case page of its own (a request in the queue or on the Dashboard)?" }
+  dc@{ shape: curv-trap, label: "<b>Documents: 'Complete, all 9 in the packet' or '8 of 9. Missing: Therapy note from the last 14 days'</b><br/>Counted the way the case page counts them" }
+  dn@{ shape: rect, label: "No Documents line: the ledger has no document list for the case" }
+  hh@{ shape: curv-trap, label: "<b>Latest history: the three newest lines that happened, each with who did it (a person or a named agent) and the time</b><br/>A case that is also a request shows the request's own events" }
+  dr@{ shape: diam, label: "What state is the next review in?" }
+  cd@{ shape: trap-t, label: "Click 'Draft review'" }
+  ag@{ shape: hex, label: "<b>Cadence drafts the review (demo: simulated, about 1.3 seconds)</b><br/>A paused Cadence says so at once: toast 'Cadence is paused in Settings'" }
+  tg@{ shape: odd, label: "'Cadence drafted 1 review'" }
+  pu@{ shape: rect, label: "The panel updates in place: the pill reads 'Drafted' and 'Draft review' becomes 'Open review'" }
+  co@{ shape: trap-t, label: "Click 'Open review'" }
+  rv@{ shape: win-pane, label: "The review drawer opens on top of the quick view" }
+  g3@{ shape: subproc, label: "Continues in: Case Manager › Reviews this week › The review drawer" }
+  pn2@{ shape: rect, label: "No review button: the next review is not due this week, or the case is not approved" }
+  cc@{ shape: trap-t, label: "Click 'Open case'" }
+  g1@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Open a case from the tracker" }
+  cx@{ shape: trap-t, label: "Press Escape, click X or the dimmed area" }
+  px@{ shape: rect, label: "<b>Escape closes one layer at a time: the review drawer first, then the quick view</b><br/>Focus returns to the quick view button of that row" }
+  ps@{ shape: rect, label: "<b>The panel shows only cases at the sites in view</b><br/>If the view changes so the case is out of site, the panel closes" }
+  e1@{ shape: stadium, label: "Back on the tracker" }
+  s1 --> c1 --> ov
+  s1 --> c2 --> ov
+  ov --> pf --> kv --> kr --> dd
+  dd -->|"Yes"| dc --> hh
+  dd -->|"No"| dn --> hh
+  hh --> dr
+  dr -->|"Not drafted yet, due this week"| cd --> ag --> tg --> pu --> co
+  dr -->|"Drafted or needs your update"| co
+  dr -->|"None, or later than this week"| pn2
+  co --> rv --> g3
+  ov --> cc --> g1
+  ov --> cx --> px --> e1
+  ov -.-> ps
+  class s1 k_start
+  class c1,c2,cd,co,cc,cx k_click
+  class ov,rv k_overlay
+  class pf,dn,pu,pn2,px,ps k_process
+  class kv,kr,dc,hh k_screen
+  class dd,dr k_decision
+  class ag k_agent
+  class tg k_toast
+  class g3,g1 k_goto
+  class e1 k_end

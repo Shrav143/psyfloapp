@@ -25,23 +25,26 @@ flowchart TD
   s7@{ shape: stadium, label: "<b>Authorizations case page, banner 'This request was denied'</b><br/>Click 'Open in Denial Intelligence'" }
   p1@{ shape: rect, label: "Address is /denials or /denials?id=D-xxxx" }
   d1@{ shape: diam, label: "Is there an ?id= in the address?" }
+  dsite@{ shape: diam, label: "Does that denial belong to a site the viewer is looking at?" }
+  sos@{ shape: curv-trap, label: "<b>Out-of-site card</b><br/>'This denial is not available at Site A'<br/>Names the site, no patient or detail" }
+  gs@{ shape: subproc, label: "Continues in: Denial Intelligence › Sites › What each site sees and out-of-site links" }
   d2@{ shape: diam, label: "Is it an open denial, or one closed on this screen?" }
   d3@{ shape: diam, label: "Are there any open denials?" }
   p2@{ shape: rect, label: "<b>Pick the first denial in the list: the nearest deadline</b><br/>(among the matches, when filters are on)" }
   p3@{ shape: rect, label: "Show the denial named in the address" }
   t1@{ shape: odd, label: "<b>'We could not find D-xxxx among the open denials'</b><br/>'Showing D-3318 instead.' (the first in the list)" }
-  sc1@{ shape: curv-trap, label: "<b>Denial Intelligence</b><br/>Title and scope line, the denial with its recommended next step, folded 'Add a denial letter' and the 'Open denials' list" }
-  sc2@{ shape: curv-trap, label: "<b>'No open denials'</b><br/>'Everything sent is approved or waiting. Add a denial letter above to analyze a new one.'<br/>The folded 'Add a denial letter' sits above it" }
+  sc1@{ shape: curv-trap, label: "<b>Denial Intelligence, one column</b><br/>Title with the button 'Open denials 8', scope line, the denial with its recommended next step, options in one row, analysis<br/>The panel is closed" }
+  sc2@{ shape: curv-trap, label: "<b>'No open denials'</b><br/>'Everything sent is approved or waiting. Add a denial letter to analyze a new one.'<br/>Buttons 'Add a denial letter' and 'Open the Dashboard'" }
   c1@{ shape: trap-t, label: "Click 'Open the Dashboard'" }
   g1@{ shape: subproc, label: "Continues in: Denial Intelligence › Open denials list" }
   g2@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
   g3@{ shape: subproc, label: "Continues in: Denial Intelligence › Add a denial letter" }
   g4@{ shape: subproc, label: "Continues in: Dashboard › Arrive › What the page shows" }
-  pf@{ shape: rect, label: "<b>The address may also carry ?payer= and ?reason=</b><br/>They narrow the 'Open denials' list only; ?id= still works" }
+  pf@{ shape: rect, label: "<b>The address may also carry ?payer= and ?reason=</b><br/>They narrow the 'Open denials' panel only; ?id= still works<br/>With more than one match and no ?id= the panel opens by itself so the person picks one" }
   g5@{ shape: subproc, label: "Continues in: Denial Intelligence › Open denials list › Filter by payer and reason" }
   sc3@{ shape: curv-trap, label: "<b>'No open denials match these filters'</b><br/>button 'Clear filters'" }
   s8@{ shape: stadium, label: "Look at the badge beside 'Denial Intelligence' in the sidebar" }
-  b1@{ shape: rect, label: "<b>Badge = requests in the Dashboard's 'Appeal or call' stage</b><br/>8 at the start" }
+  b1@{ shape: rect, label: "<b>Badge = requests in the Dashboard's 'Appeal or call' stage at the sites in view</b><br/>8 for Both sites at the start (Site A 4, Site B 4)" }
   b2@{ shape: rect, label: "Goes up by one: a letter is analyzed, or the Dashboard demo control 'Denies' or 'Approves part' is used" }
   b3@{ shape: rect, label: "Goes down by one: the denial is accepted, a call outcome 'Overturned' or 'Partly restored' is logged, or the payer's decision on an appeal is 'Overturned' or 'Partly overturned'" }
   s1 --> p1
@@ -55,7 +58,9 @@ flowchart TD
   s7 --> p1
   p1 --> d1
   d1 -->|"No"| d3
-  d1 -->|"Yes"| d2
+  d1 -->|"Yes"| dsite
+  dsite -->|"No"| sos --> gs
+  dsite -->|"Yes"| d2
   d2 -->|"Yes"| p3 --> sc1
   d2 -->|"No, unknown id"| d3
   d3 -->|"Yes"| p2 --> sc1
@@ -64,11 +69,12 @@ flowchart TD
   sc2 --> c1 --> g4
   sc2 --> g3
   sc1 --> g1 & g2
+  sc1 -.-> g3
   s8 --> b1 --> b2 & b3
   class s1,s2,s3,s4,s5,s6,s7,s8 k_start
   class p1,p2,p3,pf,b1,b2,b3 k_process
-  class d1,d2,d3 k_decision
+  class d1,dsite,d2,d3 k_decision
+  class sos,sc1,sc2,sc3 k_screen
+  class gs,g1,g2,g3,g4,g5 k_goto
   class t1 k_toast
-  class sc1,sc2,sc3 k_screen
   class c1 k_click
-  class g1,g2,g3,g4,g5 k_goto

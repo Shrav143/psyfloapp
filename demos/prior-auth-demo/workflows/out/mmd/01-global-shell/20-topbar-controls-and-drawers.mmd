@@ -17,7 +17,10 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Any page is open" }
-  tb@{ shape: curv-trap, label: "<b>Top bar (stays at the top while the page scrolls)</b><br/>'Demo' with the clock, 'Ask FLO' sparkle button, 'Notifications' bell" }
+  tb@{ shape: curv-trap, label: "<b>Top bar (stays at the top while the page scrolls)</b><br/>Site view on the left, then 'Demo' with the clock, 'Ask FLO' sparkle button, 'Notifications' bell" }
+  nar@{ shape: rect, label: "On a narrow window (under 1024 px) the 'As of' date and the word 'Demo' are hidden so nothing wraps; the clock pill stays" }
+  site@{ shape: curv-trap, label: "<b>Site view</b><br/>'Both sites | Site A | Site B', or a locked 'Site A only' for a one-site viewer" }
+  gSite@{ shape: subproc, label: "Continues in: Global shell › Top bar › Site switcher" }
   cDemo@{ shape: trap-t, label: "<b>Click 'Demo'</b><br/>(the pill shows the clock, for example 'Tue 10:42 am')" }
   oDemo@{ shape: win-pane, label: "Demo menu opens under the button" }
   gDemo@{ shape: subproc, label: "Continues in: Global shell › Demo menu › Open, close and what is inside" }
@@ -37,6 +40,8 @@ flowchart TD
   keep@{ shape: rect, label: "Nothing typed is lost: the Ask FLO chat and any unsent question stay for the next time it opens" }
   e1@{ shape: stadium, label: "Back on the page" }
   s1 --> tb
+  tb --> nar
+  tb --> site --> gSite
   tb --> cDemo --> oDemo --> gDemo
   tb --> cAsk --> oAsk --> gAsk
   tb --> cBell --> oNot --> gNot
@@ -48,10 +53,10 @@ flowchart TD
   dClose -->|"Mouse"| kScrim
   kEsc & kX & kScrim --> closed --> keep --> e1
   class s1 k_start
-  class tb k_screen
+  class tb,site k_screen
+  class nar,dim,one,closed,keep k_process
+  class gSite,gDemo,gAsk,gNot k_goto
   class cDemo,cAsk,cBell,kEsc,kX,kScrim k_click
   class oDemo,oAsk,oNot k_overlay
-  class gDemo,gAsk,gNot k_goto
-  class dim,one,closed,keep k_process
   class dClose k_decision
   class e1 k_end

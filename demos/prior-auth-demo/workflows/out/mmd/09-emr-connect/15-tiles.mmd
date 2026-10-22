@@ -18,7 +18,7 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   p1@{ shape: curv-trap, label: "<b>EMR Connect</b><br/>Four figures at the top of the Connection health card" }
   subgraph gSync ["Figure 1: Last sync"]
-  q1@{ shape: diam, label: "Is any system not disconnected?" }
+  q1@{ shape: diam, label: "<b>Is any system in the site view not disconnected?</b><br/>(only the systems that serve a site in view are counted)" }
   a1@{ shape: rect, label: "<b>'None'</b><br/>Small line: 'no system connected' (empty list) or 'N systems are disconnected'" }
   a2@{ shape: rect, label: "<b>Value is the time since the newest sync</b><br/>'Just now', '6 min', '1 h 6 min'" }
   q2@{ shape: diam, label: "Is any system disconnected?" }
@@ -26,15 +26,15 @@ flowchart TD
   a4@{ shape: rect, label: "Small line '1 system is disconnected' or 'N systems are disconnected'" }
   end
   subgraph gCharts ["Figure 2: Charts matched today"]
-  b1@{ shape: rect, label: "<b>23</b><br/>Starts at 23 on reset" }
-  b2@{ shape: cyl, label: "<b>Each finished sync adds its charts</b><br/>1 to 3, at least 1 per system" }
+  b1@{ shape: rect, label: "<b>23 for Both sites, from 13 at Site A and 10 at Site B</b><br/>Starts there on reset. One site shows its own count" }
+  b2@{ shape: cyl, label: "<b>Each finished sync adds its charts to the sites of the systems it pulled from</b><br/>1 to 3, at least 1 per sync. Site A plus Site B is always Both sites" }
   end
   subgraph gFiles ["Figure 3: Files pulled this week"]
-  c1@{ shape: rect, label: "<b>142</b><br/>Starts at 142 on reset" }
-  c2@{ shape: cyl, label: "<b>Each finished sync adds its files</b><br/>A new system adds 5, and a finished Fix adds 12 remittances" }
+  c1@{ shape: rect, label: "<b>142 for Both sites, from 80 at Site A and 62 at Site B</b><br/>Starts there on reset. One site shows its own count" }
+  c2@{ shape: cyl, label: "<b>Each finished sync adds its files to the sites it pulled from</b><br/>A new system adds 5 and a finished Fix adds 12 remittances, split across the sites the system serves" }
   end
   subgraph gFail ["Figure 4: Sync failures"]
-  d1@{ shape: rect, label: "<b>The missed syncs of every system, added up</b><br/>A Connected system has 0<br/>A system that Needs attention misses one each hour since its last good sync: 2 at the start<br/>A Disconnected system is not asked, so it shows 'Sync paused' and adds nothing" }
+  d1@{ shape: rect, label: "<b>The missed syncs of every system in the site view, added up. The Billing system serves both sites, so it counts once in Both sites and in each site's view</b><br/>A Connected system has 0<br/>A system that Needs attention misses one each hour since its last good sync: 2 at the start<br/>A Disconnected system is not asked, so it shows 'Sync paused' and adds nothing" }
   d2@{ shape: rect, label: "<b>Fix and Reconnect bring it back to 0</b><br/>Fast-forward adds one per hour while the problem stays" }
   end
   n1@{ shape: rect, label: "<b>A system that Needs attention still counts as answering</b><br/>Only Disconnected systems change the Last sync figure" }

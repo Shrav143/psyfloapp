@@ -16,46 +16,42 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Pick Payer, Program, Request type or Stage</b><br/>Any one that is not 'All'" }
-  d1@{ shape: diam, label: "<b>Is at least one of the four menus not 'All'?</b><br/>A grouping such as Needs you counts" }
-  sc1@{ shape: curv-trap, label: "<b>Filter bar</b><br/>Ghost button 'Clear filters' appears after the four menus" }
-  sc0@{ shape: curv-trap, label: "<b>Filter bar</b><br/>No 'Clear filters' button<br/>All four menus show 'All'" }
-  c1@{ shape: trap-t, label: "Click 'Clear filters' on the filter bar" }
-  p1@{ shape: rect, label: "Payer, Program, Request type and Stage (or the grouping) go back to 'All'" }
+  s1@{ shape: stadium, label: "Pick Payer, Program, Request type or Status, press a Lifecycle chip, or turn on 'Needs me today'" }
+  d1@{ shape: diam, label: "Is a menu not 'All', a chip pressed, or 'Needs me today' on?" }
+  sc1@{ shape: curv-trap, label: "<b>Table header</b><br/>Ghost button 'Clear filters' after the menus" }
+  sc0@{ shape: curv-trap, label: "<b>No 'Clear filters' button</b><br/>All four menus show 'All' and the toggle is off" }
+  c1@{ shape: trap-t, label: "Click 'Clear filters'" }
+  p1@{ shape: rect, label: "<b>Payer, Program, Request type and Status go back to 'All'</b><br/>'Needs me today' turns off" }
   w1@{ shape: cyl, label: "Filters" }
   p2@{ shape: rect, label: "Address loses payer, program, type and stage" }
   p3@{ shape: rect, label: "Table goes back to its first 8 rows" }
-  sc2@{ shape: curv-trap, label: "<b>Dashboard shows every request again</b><br/>'Showing 8 of 40'" }
+  sc2@{ shape: curv-trap, label: "<b>Every authorization is shown again</b><br/>'40 authorizations', 'Showing 8 of 40'" }
   e1@{ shape: stadium, label: "Back to the full list" }
-  e0@{ shape: stadium, label: "<b>Nothing to clear</b><br/>The button appears as soon as a menu is not 'All'" }
-  d2@{ shape: diam, label: "Do any requests match the filters?" }
-  p4@{ shape: rect, label: "Example: Cardinal, IOP, Recertification, Appeal or call" }
-  em1@{ shape: curv-trap, label: "<b>Headline</b><br/>'No requests match these filters.'<br/>'The filters hide everything. Clear them to see every request again.'" }
-  em2@{ shape: curv-trap, label: "<b>Key figures</b><br/>Still count every stage that the Payer, Program and Request type filters leave: '0' with 'nothing is waiting on you' or 'nothing due in the next day'<br/>The Stage menu shows the count of each stage beside its name" }
-  em3@{ shape: curv-trap, label: "<b>Requests card</b><br/>'Showing 0 of 0'" }
-  em4@{ shape: win-pane, label: "<b>Empty state in the card</b><br/>'No requests match'<br/>'The filters hide everything. Clear them to see every request again.'" }
-  d3@{ shape: diam, label: "Is a narrowing filter set?" }
+  e0@{ shape: stadium, label: "<b>Nothing to clear</b><br/>The button appears as soon as a control is set" }
+  d2@{ shape: diam, label: "Do any authorizations match?" }
+  p4@{ shape: rect, label: "Example: Cardinal, IOP, Recertification, Denied / appeal" }
+  em1@{ shape: curv-trap, label: "<b>Table title '0 authorizations'</b><br/>The Lifecycle still counts every state that Payer, Program and Request type leave" }
+  em4@{ shape: win-pane, label: "<b>Empty state in the card</b><br/>'No authorizations match'<br/>'The filters hide everything. Clear them to see every authorization again.'" }
+  d3@{ shape: diam, label: "Is only 'Needs me today' on?" }
+  em5@{ shape: curv-trap, label: "<b>Empty state 'Nothing needs you today'</b><br/>'Every authorization is with a payer or with the agents.'" }
   c2@{ shape: trap-t, label: "Click 'Clear filters' in the empty state" }
-  x1@{ shape: stadium, label: "<b>No 'Clear filters' button</b><br/>Only possible if there were no requests at all" }
-  g1@{ shape: subproc, label: "Continues in: Dashboard › Filters › Payer, Program, Request type and Stage" }
+  g1@{ shape: subproc, label: "Continues in: Dashboard › Table controls › Needs me today, Payer, Program, Status and Request type" }
   s1 --> d1
   d1 -->|"Yes"| sc1 --> c1 --> p1 --> w1 --> p2 --> p3 --> sc2 --> e1
   d1 -->|"No"| sc0 --> e0
   w1 --> d2
   d2 -->|"Yes"| sc2
   d2 -->|"No"| p4
-  p4 --> em1 & em2 & em3 & em4
-  em4 --> d3
-  d3 -->|"Yes"| c2 --> p1
-  d3 -->|"No"| x1
+  p4 --> em1 --> d3
+  d3 -->|"No"| em4 --> c2 --> p1
+  d3 -->|"Yes"| em5 --> c2
   sc1 -.-> g1
   class s1 k_start
   class d1,d2,d3 k_decision
-  class sc1,sc0,sc2,em1,em2,em3 k_screen
+  class sc1,sc0,sc2,em1,em5 k_screen
   class c1,c2 k_click
   class p1,p2,p3,p4 k_process
   class w1 k_store
   class e1,e0 k_end
   class em4 k_overlay
-  class x1 k_endx
   class g1 k_goto

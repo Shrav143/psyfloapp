@@ -18,21 +18,21 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Open 'Advanced'</b><br/>Then read 'Field mappings'" }
   t0@{ shape: curv-trap, label: "<b>Field mappings</b><br/>'{n} mapped, {m} waiting. A chart pulled in New case leaves the waiting fields blank until you map them.'<br/>With none waiting: '{n} mapped. Every field the agents have met is mapped.'<br/>Each row: their field → what it fills, the system, who mapped it" }
-  subgraph gRes ["Residential site: 5 mapped"]
+  subgraph gRes ["Clinical record · Site A: 5 mapped"]
   r1@{ shape: cyl, label: "<b>Admit date → 'Admission date'</b><br/>Reader, 03/14" }
   r2@{ shape: cyl, label: "<b>Primary payer → 'Payer'</b><br/>Reader, 03/14" }
   r3@{ shape: cyl, label: "<b>Member ID → 'Member ID (masked)'</b><br/>Reader, 03/14" }
   r4@{ shape: cyl, label: "<b>Progress note → 'Chart documents'</b><br/>Reader, 03/15" }
   r5@{ shape: cyl, label: "<b>MAR → 'Medication record'</b><br/>Reader, 03/15" }
   end
-  subgraph gOut ["Outpatient site: 3 mapped, 2 waiting"]
+  subgraph gOut ["Clinical record · Site B: 3 mapped, 2 waiting"]
   o1@{ shape: cyl, label: "<b>Admit date → 'Admission date'</b><br/>Reader, 03/14" }
   o2@{ shape: cyl, label: "<b>Primary payer → 'Payer'</b><br/>Reader, 03/14" }
   o3@{ shape: cyl, label: "<b>Group note → 'Chart documents'</b><br/>Reader, 03/16" }
   w1@{ shape: lean-r, label: "<b>'Level of care': Not mapped, button 'Map'</b><br/>Choices: IOP or PHP" }
   w2@{ shape: lean-r, label: "<b>'Referral source': Not mapped, button 'Map'</b><br/>Choices: Payer name, Plan type or Referring provider" }
   end
-  subgraph gBill ["Billing system: 2 mapped"]
+  subgraph gBill ["Billing system (both sites): 2 mapped"]
   b1@{ shape: cyl, label: "<b>Claim number → 'Claim reference'</b><br/>Reader, 04/02" }
   b2@{ shape: cyl, label: "<b>Remittance date → 'Payment date'</b><br/>Reader, 04/02" }
   end

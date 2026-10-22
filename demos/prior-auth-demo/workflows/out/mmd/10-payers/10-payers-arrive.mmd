@@ -54,6 +54,7 @@ flowchart TD
   g_rules@{ shape: subproc, label: "Continues in: Payers › Rules › Read the rules" }
   g_docs@{ shape: subproc, label: "Continues in: Payers › Documents › Read the document list" }
   g_chg@{ shape: subproc, label: "Continues in: Payers › Changes › Read what changed" }
+  g_site@{ shape: subproc, label: "Continues in: Payers › Sites › Clinic-wide payers, drafts in view" }
   s1 --> p1 --> d1
   s2 --> p2 --> d1
   d1 -->|"No, or an unknown id"| p3 --> d2
@@ -62,6 +63,7 @@ flowchart TD
   d2 -->|"Yes"| p6 --> pg
   pg --> list & head & tabs & c_add
   pg -.-> b1
+  pg -.-> g_site
   tabs -.-> b2
   list --> c_pick & c_search
   c_pick --> g_list
@@ -82,7 +84,7 @@ flowchart TD
   class d1,d2 k_decision
   class pg,list,head,tabs k_screen
   class c_pick,c_search,c_edit,c_log,c_tab,c_add k_click
-  class g_list,g_head,g_ps,g_edit,g_log,g_add,g_proc,g_rules,g_docs,g_chg k_goto
+  class g_list,g_head,g_ps,g_edit,g_log,g_add,g_proc,g_rules,g_docs,g_chg,g_site k_goto
   style gL fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gR fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gB fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

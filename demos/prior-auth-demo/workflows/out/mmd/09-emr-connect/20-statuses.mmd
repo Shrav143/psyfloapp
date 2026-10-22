@@ -16,7 +16,7 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s0@{ shape: stadium, label: "<b>Open EMR Connect</b><br/>The two clinical record sites start Connected, the Billing system starts amber" }
+  s0@{ shape: stadium, label: "<b>Open EMR Connect</b><br/>The two clinical record systems ('Clinical record · Site A' and 'Clinical record · Site B') start Connected, the Billing system (both sites) starts amber" }
   n1@{ shape: trap-t, label: "Click 'Connect a system', pass the test, click 'Connect {name}'" }
   n2@{ shape: st-rect, label: "<b>Production: the read-only sign-in expires or the EMR changes its screens</b><br/>Demo: only the seeded Billing system starts here" }
   subgraph gC ["Connected"]

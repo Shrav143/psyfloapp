@@ -24,7 +24,7 @@ flowchart TD
   i1@{ shape: curv-trap, label: "<b>'Action required: Billing system needs attention.'</b><br/>Button 'Fix'" }
   q3@{ shape: diam, label: "A system that is Disconnected?" }
   i2@{ shape: curv-trap, label: "<b>'Action required: {name} is disconnected.'</b><br/>Button 'Reconnect'" }
-  q4@{ shape: diam, label: "Fields waiting for a mapping?" }
+  q4@{ shape: diam, label: "<b>Fields waiting for a mapping, on a system in view?</b><br/>(both start on Site B's record, so a Site A view does not list them)" }
   i3@{ shape: curv-trap, label: "<b>'Action required: 2 fields need a mapping, so New case leaves them blank.'</b><br/>Button 'Map field' for the first waiting field" }
   q5@{ shape: diam, label: "Reader or Navigator paused in Settings?" }
   i4@{ shape: curv-trap, label: "<b>'Action required: Reader is paused, so syncs and new connections wait.'</b><br/>Link 'Open Settings'" }

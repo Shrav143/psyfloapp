@@ -29,7 +29,7 @@ flowchart TD
   pn@{ shape: odd, label: "Pill 'Needs your input'" }
   dC@{ shape: diam, label: "Does coverage need a fix?" }
   cl@{ shape: trap-t, label: "Click the 'Coverage needs a fix' pill" }
-  gE@{ shape: subproc, label: "Continues in: Eligibility & Benefits › Verify a patient" }
+  gE@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › Ways in and pre-fill" }
   end
   subgraph gD ["Deadline and next action"]
   due@{ shape: rect, label: "<b>Deadline pill, e.g. 'Notice due in 5 h'</b><br/>Under 48 h: 'in 40 min' or 'in 5 h'. Later: 'Decision Thu'. Past: '... now'<br/>Red dot only in Act now" }
@@ -47,6 +47,9 @@ flowchart TD
   off@{ shape: doc, label: "<b>Not on the row</b><br/>Scores (AUDIT-C, PHQ-9, CIWA ...), the agent line and the payer note<br/>They are in 'At a glance' on the case page" }
   idl@{ shape: trap-t, label: "Click the request ID (underlined)" }
   ob@{ shape: trap-t, label: "Click 'Open'" }
+  qv@{ shape: trap-t, label: "<b>Click the 'Quick view' icon button (aria-label 'Quick view R-1042')</b><br/>or click the row away from a link or a button" }
+  ring@{ shape: rect, label: "The row whose quick view is open has a green outline" }
+  gQ@{ shape: subproc, label: "Continues in: Authorizations › Queue › Quick view panel" }
   gC2@{ shape: subproc, label: "Continues in: Authorizations › Case page › Ways in" }
   gX@{ shape: subproc, label: "Continues in: Authorizations › Case page › Next action" }
   t --> id --> pr
@@ -66,12 +69,13 @@ flowchart TD
   t -.-> off
   t --> idl --> gC2
   t --> ob --> gC2
+  t --> qv --> ring --> gQ
   class t k_screen
-  class id,pr,st,st2,due,nx,nx2,ch,ch2,ch3,tint k_process
+  class id,pr,st,st2,due,nx,nx2,ch,ch2,ch3,tint,ring k_process
   class dR,dN,dC,dK,dA k_decision
   class pn k_toast
-  class cl,idl,ob k_click
-  class gE,gC2,gX k_goto
+  class cl,idl,ob,qv k_click
+  class gE,gQ,gC2,gX k_goto
   class off k_doc
   style gL fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gS fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

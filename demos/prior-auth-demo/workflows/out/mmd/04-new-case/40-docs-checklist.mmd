@@ -1,0 +1,84 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Click 'Continue to Clinical documentation' on Eligibility & Benefits</b><br/>Or click step 3 in the stepper" }
+  s2@{ shape: stadium, label: "<b>Click 'Continue' on a case in Case Manager</b><br/>whose agents have not started" }
+  sc@{ shape: curv-trap, label: "<b>Clinical documentation</b><br/>'Drop what you have. Reader sorts the files and lists what is still missing. The required items come from the payer's saved list.'<br/>Header button 'Use sample chart'" }
+  subgraph gPage ["The page"]
+  dz@{ shape: curv-trap, label: "<b>Drop zone</b><br/>'Drop everything you have for this patient'<br/>Privacy mode note and 'Pull a chart from EMR Connect'" }
+  pr@{ shape: curv-trap, label: "<b>Progress line</b><br/>'3 of 4 ready' with a bar and '1 to go'<br/>Pill 'Required documents are in' when no required one is missing" }
+  gc@{ shape: curv-trap, label: "<b>Clinical summary</b><br/>'Diagnoses (ICD-10)' (Recommended), 'Reason for the request' (Recommended)" }
+  gd@{ shape: curv-trap, label: "<b>Documents</b><br/>'Summit asks for 9 documents for Residential 3.5. 7 are required.'<br/>Required first, then recommended, then typical for the type, then any file not on the list" }
+  pPay@{ shape: rect, label: "<b>A case Payers redrafted after a payer change shows one line</b><br/>'Updated for a payer change on 10/20'" }
+  ft@{ shape: curv-trap, label: "<b>Footer bar, always in view</b><br/>'Back', 'Save as draft', 'Continue' and a hint line" }
+  end
+  g41@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › Drop files and let Reader sort them" }
+  g45@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › Pull a chart from EMR Connect" }
+  g42@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › Required and typical documents by type" }
+  g43@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › Clinical summary and document rows" }
+  g44@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › Replace a document or mark it not available" }
+  pCount@{ shape: rect, label: "<b>'N of M ready' counts the required documents and the typical ones for the type</b><br/>A document marked not available counts as ready: the person dealt with it<br/>Recommended documents are not counted" }
+  pLine@{ shape: rect, label: "The footer and the rows read the same list, so they always agree" }
+  dq@{ shape: diam, label: "Is a required document neither added nor marked not available?" }
+  tHint@{ shape: odd, label: "Footer hint: 'Not in yet: ASAM assessment, Nursing note and 1 more. You can go on; Review & submit lists what is missing.'" }
+  tReady@{ shape: odd, label: "Hint: 'Nothing is sent to the payer until a clinician signs.'" }
+  pStep@{ shape: rect, label: "<b>The step reads Needs attention · 'N required documents to add'</b><br/>or Complete · 'N of M ready'" }
+  subgraph gBtn ["Footer buttons"]
+  cBack@{ shape: trap-t, label: "Click 'Back'" }
+  pBack@{ shape: rect, label: "<b>Back to Eligibility & Benefits</b><br/>The draft is kept" }
+  cSave@{ shape: trap-t, label: "Click 'Save as draft'" }
+  cCont@{ shape: trap-t, label: "Click 'Continue'" }
+  dRan@{ shape: diam, label: "Have the agents already started on this case?" }
+  pDirect@{ shape: rect, label: "<b>Goes straight to step 4, Authorization preparation</b><br/>No question is asked" }
+  oConf@{ shape: win-pane, label: "<b>Start the agents?</b><br/>J.M., Residential 3.5 · Summit Medicaid HMO<br/>'Reader swaps names, dates and IDs for codes and reads the chart. Verify, Criteria, Historian and Placement check coverage, rules and how Summit has ruled. Scribe drafts the case and may ask you a question or two.'<br/>'Nothing is sent to the payer until a clinician signs.'" }
+  cCancel@{ shape: trap-t, label: "Click 'Cancel', press Escape, or click outside" }
+  cStart@{ shape: trap-t, label: "Click 'Start the agents'" }
+  end
+  gSave@{ shape: subproc, label: "Continues in: Authorizations › New case › Save as draft and leave" }
+  gAgents@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › Start the run and watch it" }
+  gElig@{ shape: subproc, label: "Continues in: Authorizations › New case › Eligibility & Benefits › Initial authorization" }
+  s1 --> sc
+  s2 --> sc
+  sc --> dz --> pr --> gc --> gd --> ft
+  sc --> pPay
+  dz --> g41
+  dz --> g45
+  gc --> g43
+  gd --> g43
+  gd --> g44
+  gd --> g42
+  pr --> pCount --> pLine --> dq
+  dq -->|"Yes"| tHint --> pStep
+  dq -->|"No"| tReady --> pStep
+  ft --> cBack --> pBack --> gElig
+  ft --> cSave --> gSave
+  ft --> cCont --> dRan
+  dRan -->|"Yes"| pDirect --> gAgents
+  dRan -->|"No"| oConf
+  oConf --> cCancel --> ft
+  oConf --> cStart --> gAgents
+  class s1,s2 k_start
+  class sc,dz,pr,gc,gd,ft k_screen
+  class pPay,pCount,pLine,pStep,pBack,pDirect k_process
+  class g41,g45,g42,g43,g44,gSave,gAgents,gElig k_goto
+  class dq,dRan k_decision
+  class tHint,tReady k_toast
+  class cBack,cSave,cCont,cCancel,cStart k_click
+  class oConf k_overlay
+  style gPage fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gBtn fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

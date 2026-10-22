@@ -16,10 +16,9 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Click 'Check' on an arrived referral</b><br/>or Reader finishes reading dropped files" }
+  s1@{ shape: stadium, label: "<b>Click 'Review' on an arrived referral</b><br/>or Reader finishes reading dropped files" }
   s2@{ shape: stadium, label: "<b>Click the crumb 'Referral'</b><br/>on the full referral page" }
-  s3@{ shape: stadium, label: "<b>Click 'Referral' in the stepper, or 'Back'</b><br/>on Medical records, when the case holds a referral" }
-  sc1@{ shape: curv-trap, label: "<b>New case › Referral</b><br/>Reader chip, 'read', then the documents<br/>'Referral form · 2 pages', 'Face sheet · 1 page'" }
+  sc1@{ shape: curv-trap, label: "<b>Intake · the referral's checklist</b><br/>Crumbs 'New case › Referral'<br/>Reader chip, 'read', then the documents<br/>'Referral form · 2 pages', 'Face sheet · 1 page'" }
   p0@{ shape: rect, label: "<b>Referral is marked opened</b><br/>Sidebar badge drops" }
   sc2@{ shape: curv-trap, label: "<b>Patient card</b><br/>Initials, age, RF number, source, channel, 'received 4 h ago'<br/>Urgency pill, '{Program} requested', status pill once decided" }
   pr@{ shape: rect, label: "<b>'8 of 11 ready' with a bar, and '3 to go'</b><br/>All done: 'Nothing is missing'<br/>Once Verify has run the total is 12" }
@@ -39,13 +38,12 @@ flowchart TD
   cOk@{ shape: trap-t, label: "Click 'Mark OK' on a row" }
   cCov@{ shape: trap-t, label: "<b>Click 'Run coverage check'</b><br/>or 'Check again' on the coverage row" }
   pReq@{ shape: rect, label: "<b>Six rows are required before the referral can be accepted</b><br/>Patient age, clinician credentials, clinician signature, diagnosis code, level of care, insurance and member ID<br/>The other rows are advisory: the Accept dialog lists them" }
-  gAsk@{ shape: subproc, label: "Continues in: New case › Referral › Ask the referrer" }
-  gOk@{ shape: subproc, label: "Continues in: New case › Referral › Mark OK or decline" }
-  gCov@{ shape: subproc, label: "Continues in: New case › Referral › Check coverage" }
-  gBtn@{ shape: subproc, label: "Continues in: New case › Referral › Checklist buttons" }
+  gAsk@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › Ask the referrer" }
+  gOk@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › Mark OK or decline" }
+  gCov@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › Check coverage" }
+  gBtn@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › Checklist buttons" }
   s1 --> sc1
   s2 --> sc1
-  s3 --> sc1
   sc1 --> p0 --> sc2 --> pr --> sA --> sB --> sC --> sD
   sc2 -.-> gBtn
   sD --> dRow
@@ -65,7 +63,7 @@ flowchart TD
   cAsk --> gAsk
   cOk --> gOk
   cCov --> gCov
-  class s1,s2,s3 k_start
+  class s1,s2 k_start
   class sc1,sc2,sA,sB,sC,sD k_screen
   class p0,pr,rDone,rMiss,rWarn,rAge,rWait,pReq k_process
   class dRow k_decision

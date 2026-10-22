@@ -22,9 +22,9 @@ flowchart TD
   c2@{ shape: trap-t, label: "Click 'Approves part'" }
   c3@{ shape: trap-t, label: "Click 'Denies'" }
   subgraph gA ["Approved"]
-  a1@{ shape: cyl, label: "<b>Stage Decided today, chip 'Approved' (green), bars full</b><br/>Cadence holds it; next step 'Next review booked. Write-back waits for you'<br/>History 'The payer approved the request' and 'Cadence updated the ledger and booked the next review'" }
+  a1@{ shape: cyl, label: "<b>Stage Decided today, status 'Approved'</b><br/>Cadence holds it; next step 'Next review booked. Write-back waits for you'<br/>History 'The payer approved the request' and 'Cadence updated the ledger and booked the next review'" }
   an@{ shape: odd, label: "<b>Notification 'Approved': 'R-1021 was approved. Write-back waits for you.'</b><br/>Toast 'Demo: Cardinal approved it'<br/>'The stage counts, the table and the notifications updated.'" }
-  as@{ shape: curv-trap, label: "<b>Dashboard after an approval</b><br/>'Decided today' goes up by one, 'Under review' goes down<br/>The Decided today headline counts it as approved" }
+  as@{ shape: curv-trap, label: "<b>Dashboard after an approval</b><br/>'Decided today' in the Status menu goes up by one, the 'Decision pending' chip goes down<br/>Its Window and Units read from the ledger once Cadence has booked it; Next action 'Approve write-back'" }
   ab@{ shape: win-pane, label: "<b>Drawer shows the green box 'Approved. Write-back waits for you'</b><br/>With write-back off in EMR Connect, a calm line instead" }
   qk@{ shape: rect, label: "<b>No reply is offered any more</b><br/>Demo controls say 'The payer has already decided this request.'<br/>So the request cannot be pushed back and stay counted in Decided today" }
   end
@@ -36,7 +36,7 @@ flowchart TD
   dn@{ shape: odd, label: "<b>Notification 'Denied' or 'Partly approved'</b><br/>'R-1021 became D-3319. Advocate booked a call.'" }
   dt@{ shape: odd, label: "<b>Toast 'The payer denied it' or 'The payer approved part of it'</b><br/>'It is now D-3319 in Denial Intelligence.'" }
   d4@{ shape: rect, label: "<b>Drawer switches to D-3319 in place (the address is replaced)</b><br/>Opening R-1021 again closes quietly: that number no longer exists" }
-  ds@{ shape: curv-trap, label: "<b>Dashboard after a denial</b><br/>'Appeal or call' and 'Decided today' each go up by one; 'Under review' goes down<br/>Sidebar badge on Denial Intelligence goes up<br/>Its row shows 'Call booked' and '3 days left'<br/>A row hidden by the old stage filter leaves the table; the drawer stays open" }
+  ds@{ shape: curv-trap, label: "<b>Dashboard after a denial</b><br/>'Denied / appeal' chip and 'Decided today' each go up by one; 'Decision pending' goes down<br/>Sidebar badge on Denial Intelligence goes up<br/>Its row shows 'Call booked', next action 'Prepare the P2P call', owner You<br/>A row hidden by the old stage filter leaves the table; the drawer stays open" }
   dd@{ shape: curv-trap, label: "<b>Drawer for D-3319</b><br/>Chip 'Call booked', 'Chance of winning 61%'<br/>Demo controls disabled: 'A denial follows its own route in Denial Intelligence.'<br/>Footer gains 'Open in Denial Intelligence'" }
   end
   g2@{ shape: subproc, label: "<b>Continues in: Denial Intelligence › Open denials</b><br/>/denials?id=D-3319" }

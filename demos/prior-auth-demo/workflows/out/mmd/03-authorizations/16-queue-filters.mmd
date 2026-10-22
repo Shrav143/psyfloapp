@@ -21,7 +21,7 @@ flowchart TD
   sk@{ shape: trap-t, label: "<b>Press '/' anywhere</b><br/>(not while typing in a field)" }
   sf@{ shape: rect, label: "Cursor jumps to the search box" }
   s1@{ shape: lean-r, label: "Type in 'Search by case ID or initials'" }
-  sm@{ shape: rect, label: "<b>Matches the ID or the initials</b><br/>Ignores case, dots, dashes and spaces<br/>'r1042' and 'jm' both find R-1042 (J.M.)" }
+  sm@{ shape: rect, label: "<b>Matches the ID or the initials of a request at a site in view</b><br/>Ignores case, dots, dashes and spaces<br/>'r1042' and 'jm' both find R-1042 (J.M.)<br/>A request at the other site is never found" }
   end
   subgraph gP ["Payer"]
   p1@{ shape: trap-t, label: "Click 'Payer'" }
@@ -30,7 +30,7 @@ flowchart TD
   end
   subgraph gQ ["Request type"]
   ty1@{ shape: trap-t, label: "Click 'Request type'" }
-  ty2@{ shape: win-pane, label: "Menu: All request types, Initial, Concurrent review, Reauthorization, Retrospective" }
+  ty2@{ shape: win-pane, label: "Menu: All request types, Initial, Concurrent review, Reauthorization, Modification / extension, Retrospective" }
   ty3@{ shape: lean-r, label: "Pick a type" }
   end
   subgraph gT ["Status"]
@@ -57,16 +57,16 @@ flowchart TD
   clr@{ shape: trap-t, label: "<b>Click 'Clear filters'</b><br/>(appears once any filter is on)" }
   dAny@{ shape: diam, label: "Any request left?" }
   res@{ shape: curv-trap, label: "<b>Bands show only the matching requests</b><br/>Band counts follow" }
-  emp@{ shape: curv-trap, label: "<b>'No requests match these filters'</b><br/>'The filters hide all 56 open requests.'" }
+  emp@{ shape: curv-trap, label: "<b>'No requests match these filters'</b><br/>'The filters hide all 56 open requests.'<br/>(the open requests at the sites in view)" }
   ce@{ shape: trap-t, label: "Click 'Clear filters' in the message" }
   rs@{ shape: rect, label: "<b>Search empty, All payers, All request types, All statuses, All urgency, payer-signal filter off</b><br/>The filters leave the web address" }
   dOpen@{ shape: diam, label: "Are there any open requests at all?" }
   e1@{ shape: stadium, label: "Every band is listed again" }
   none@{ shape: curv-trap, label: "<b>'Nothing needs you today'</b><br/>'Every open request has been sent or handled. Case Manager shows what is scheduled next.'" }
   dNow@{ shape: diam, label: "Is Act now empty, with no search, payer or status filter on?" }
-  nowE@{ shape: curv-trap, label: "<b>Act now band stays, '(0 requests)'</b><br/>'Nothing needs you today'<br/>'Everything in Act now has been sent or handled.'<br/>Header sub line: 'Nothing is urgent. ...'" }
+  nowE@{ shape: curv-trap, label: "<b>Act now band stays, '(0 requests)'</b><br/>'Nothing needs you today'<br/>'Everything in Act now has been sent or handled.'<br/>(with one site in view: 'No open request at Site B is in Act now.')<br/>Header sub line: 'Nothing is urgent. ...'" }
   ocm@{ shape: trap-t, label: "Click 'Open Case Manager'" }
-  gCM@{ shape: subproc, label: "Continues in: Case Manager › Active cases" }
+  gCM@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Tracker of every active case" }
   gSig@{ shape: subproc, label: "Continues in: Authorizations › Queue › Cardinal payer signal" }
   fb --> sk --> sf --> s1
   s1 --> sm

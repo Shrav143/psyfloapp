@@ -36,12 +36,13 @@ flowchart TD
   subgraph gRev ["Reviews this week"]
   d4@{ shape: diam, label: "Does any review match?" }
   e4s@{ shape: curv-trap, label: "<b>'Showing 0 of 47 reviews. The tiles count all 47.'</b><br/>'No reviews match'<br/>'The filters hide every review this week.'<br/>Button 'Clear filters'<br/>The 'Ready to step down?' card is still there" }
+  e6s@{ shape: curv-trap, label: "<b>'Ready to step down?' with no case at the sites in view</b><br/>'Nothing to suggest at Site A today.'" }
   c4@{ shape: trap-t, label: "Click 'Clear filters'" }
   e5s@{ shape: curv-trap, label: "<b>Third tile reads 'nothing waiting on you'</b><br/>when no review needs an update" }
   end
   p3@{ shape: rect, label: "<b>Filters go back to their first options</b><br/>Search box is emptied, lists are full again" }
   g1@{ shape: subproc, label: "Continues in: Case Manager › Filters › Search and filter both tabs" }
-  g2@{ shape: subproc, label: "Continues in: New case › Referral step" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Start with a referral or patient" }
   p4@{ shape: rect, label: "<b>How drafts run out: sign and send every case in 'Being prepared' (5 at the start)</b><br/>The header then reads '0 are still being prepared'" }
   p5@{ shape: rect, label: "<b>'Step-down plans' has no empty state</b><br/>The folded row is simply not shown when no denial was accepted or the filters hide every plan" }
   e1@{ shape: stadium, label: "Lists show rows again" }
@@ -59,6 +60,7 @@ flowchart TD
   d4 -->|"Yes"| e1
   p3 --> e1
   p3 -.-> g1
+  e4s -.-> e6s
   s1 -.-> p4
   p4 -.-> d1
   s1 -.-> e5s
@@ -67,7 +69,7 @@ flowchart TD
   class i1 k_input
   class p1,p2,p3,p4,p5 k_process
   class d1,d2,d3,d4 k_decision
-  class e1s,e2s,e3s,e4s,e5s k_screen
+  class e1s,e2s,e3s,e4s,e6s,e5s k_screen
   class c1,c2,c3,c4 k_click
   class g1,g2 k_goto
   class e1 k_end

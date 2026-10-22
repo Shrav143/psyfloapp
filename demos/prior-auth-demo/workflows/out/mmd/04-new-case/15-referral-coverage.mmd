@@ -20,7 +20,7 @@ flowchart TD
   s2@{ shape: stadium, label: "Full page: open the 'Coverage' tab" }
   d1@{ shape: diam, label: "Does the referral list an insurance?" }
   p1@{ shape: rect, label: "<b>Row says 'Optional'</b><br/>'Verify needs the insurance and member ID first.'<br/>No button" }
-  g1@{ shape: subproc, label: "Continues in: New case › Referral › Ask the referrer" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › Ask the referrer" }
   p2@{ shape: rect, label: "<b>Row says 'Optional'</b><br/>'Not checked yet. Verify looks up eligibility, the plan and whether an authorization is needed first.'" }
   c1@{ shape: trap-t, label: "Click 'Run coverage check'" }
   subgraph gTab ["Coverage tab"]
@@ -42,10 +42,10 @@ flowchart TD
   c3@{ shape: trap-t, label: "Click 'Check again'" }
   c4@{ shape: trap-t, label: "Click 'Open full Eligibility & Benefits check'" }
   p6@{ shape: rect, label: "<b>Opens Verify a patient with the referral's payer,</b><br/>member ID, level of care and a made-up birth date filled in<br/>The address keeps ?referral=RF-2053 (and ?case= once the referral is a request)" }
-  g2@{ shape: subproc, label: "Continues in: Eligibility & Benefits › Verify a patient" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › Ways in and pre-fill" }
   s3@{ shape: stadium, label: "<b>Coming back: 'Start authorization'</b><br/>on the coverage result (authorization first)" }
   p7@{ shape: rect, label: "<b>Opens a NEW case with payer, level of care, member ID, initials and age</b><br/>It is not tied to the referral or its case" }
-  g3@{ shape: subproc, label: "Continues in: New case › How a case starts and resumes" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › New case › How a case starts and resumes" }
   s4@{ shape: stadium, label: "<b>Click 'Back to referral RF-2053'</b><br/>on Verify a patient or its result<br/>(shown when the address has ?referral=)" }
   p8@{ shape: rect, label: "<b>Opens the full referral page for RF-2053</b><br/>Once the referral is a request the link reads 'Back to case R-1042'<br/>The full page finds the case that holds the referral, so 'Back to the case' still works" }
   s1 --> d1

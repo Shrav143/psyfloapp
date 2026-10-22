@@ -1,0 +1,52 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Under 'Detailed breakdowns', click 'Common denial reasons by payer'</b><br/>Or Tab to it and press Enter or Space" }
+  sc@{ shape: curv-trap, label: "<b>Summary stays: '311 denials this quarter. Most common: Continued-stay evidence incomplete at Cardinal, 23%.'</b><br/>Text: 'This quarter. Each payer's most common reason. Select a row to open those denials in Denial Intelligence.'" }
+  th@{ shape: curv-trap, label: "Columns: 'Reason', 'Payer', 'Count', 'Share of denials'" }
+  q1@{ shape: diam, label: "Which payer is chosen in the menu?" }
+  p1@{ shape: rect, label: "<b>'All payers': one row per payer, its most common reason</b><br/>Biggest first<br/>A payer with fewer than 20 denials is left out" }
+  r1@{ shape: curv-trap, label: "<b>Cardinal 73 · 23% 'Continued-stay evidence incomplete'</b><br/>Evergreen 34 · 11%<br/>Summit Medicaid 28 · 9%<br/>Harborview MA 15 · 5%<br/>Beacon PPO 13 · 4%" }
+  p3@{ shape: rect, label: "<b>One payer: all of that payer's reasons</b><br/>Shares add up to 100% of that payer's denials" }
+  q2@{ shape: diam, label: "Fewer than 20 denials in view?" }
+  nd@{ shape: curv-trap, label: "'Not enough decisions yet. Figures based on fewer than 20 decisions stay hidden.'" }
+  o1@{ shape: curv-trap, label: "<b>Under the table</b><br/>'Appeals overturned' 56%, '54 of 96 rulings this quarter'<br/>'Denials accepted' 17" }
+  o2@{ shape: rect, label: "<b>Both move when Denial Intelligence records a ruling or an accepted denial</b><br/>Appeals show a dash under 20 rulings" }
+  subgraph gClick ["Open a row"]
+  c1@{ shape: trap-t, label: "Click anywhere on a row" }
+  c2@{ shape: trap-t, label: "Click the reason text, for example 'Recertification filed too late'" }
+  p4@{ shape: rect, label: "<b>Opens /denials?payer=harborview&reason=Recertification filed too late</b><br/>The row's own payer and reason go along" }
+  end
+  g1@{ shape: subproc, label: "Continues in: Denial Intelligence › Open denials list › Filter by payer and reason" }
+  s1 --> sc --> th --> q1
+  q1 -->|"All payers"| p1 --> r1
+  q1 -->|"One payer"| p3
+  r1 & p3 --> q2
+  q2 -->|"Yes"| nd
+  q2 -->|"No"| c1 & c2
+  c1 --> p4
+  c2 --> p4
+  p4 --> g1
+  sc --> o1 --> o2
+  class s1 k_start
+  class sc,th,r1,nd,o1 k_screen
+  class q1,q2 k_decision
+  class p1,p3,o2,p4 k_process
+  class c1,c2 k_click
+  class g1 k_goto
+  style gClick fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

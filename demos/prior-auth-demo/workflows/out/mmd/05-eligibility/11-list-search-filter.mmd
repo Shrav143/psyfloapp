@@ -20,7 +20,7 @@ flowchart TD
   sc0@{ shape: curv-trap, label: "<b>Table shows every patient, first 12 rows</b><br/>'Showing 12 of 37'" }
   subgraph gSearch ["Search"]
   i1@{ shape: lean-r, label: "<b>Type in 'Search by case ID or initials'</b><br/>for example 'R-1042' or 'J.M.'" }
-  p1@{ shape: rect, label: "<b>Matches the case ID or the patient label</b><br/>(initials and age, or 'Member …4821'). Capitals do not matter" }
+  p1@{ shape: rect, label: "<b>Matches the case ID or the patient label</b><br/>(initials and age, or 'Member …4821'). Capitals do not matter<br/>Only patients inside the site view can match: a Site B case ID finds nothing for Site A staff" }
   end
   subgraph gMenus ["Menus"]
   c1@{ shape: trap-t, label: "Click 'All payers'" }
@@ -28,7 +28,7 @@ flowchart TD
   c2@{ shape: trap-t, label: "Click 'All programs'" }
   o2@{ shape: win-pane, label: "'All programs', 'Residential 3.5', 'IOP', 'PHP', 'Detox'" }
   c3@{ shape: trap-t, label: "Click 'All verdicts'" }
-  o3@{ shape: win-pane, label: "'All verdicts', 'Cleared to bill', 'Authorization first', 'Fix before billing', 'Re-check due'" }
+  o3@{ shape: win-pane, label: "<b>'All verdicts', 'Cleared to bill', 'Authorization first', 'Fix before billing', 'Re-check due'</b><br/>and 'Not checked', only while a check that could not run is on the list" }
   i2@{ shape: lean-r, label: "<b>Pick an option, or use the arrow keys and Enter</b><br/>Esc or a click outside closes the menu" }
   end
   subgraph gTiles ["Tiles"]

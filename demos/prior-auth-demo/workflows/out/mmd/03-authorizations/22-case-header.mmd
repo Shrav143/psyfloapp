@@ -23,7 +23,7 @@ flowchart TD
   dCh@{ shape: diam, label: "Has the request been sent, decided or settled since this page was written, or does it already have a result?" }
   pc@{ shape: odd, label: "<b>Pill shows the request's current status, e.g. 'Received', 'Approved'</b><br/>An info icon beside it opens 'What the statuses mean'" }
   pd@{ shape: rect, label: "<b>Pill shows the due text, e.g. 'Notice due in 5 h'</b><br/>Red under 6 h, amber under 24 h, grey later" }
-  sub@{ shape: rect, label: "<b>Sub line: 'J.M., 34 · Summit Medicaid HMO · Residential 3.5 · 14 days requested'</b><br/>IOP counts units: '21 units requested'" }
+  sub@{ shape: rect, label: "<b>Sub line: 'J.M., 34 · Summit Medicaid HMO · Residential 3.5 · 14 days requested'</b><br/>IOP counts units: '21 units requested'<br/>A viewer who can see both sites also gets a quiet '· Site A' at the end<br/>A viewer with one site does not" }
   nb@{ shape: curv-trap, label: "<b>'Next:' block, the first thing under the title</b><br/>The next action and one primary button" }
   gN@{ shape: subproc, label: "Continues in: Authorizations › Case page › Next action" }
   fr@{ shape: curv-trap, label: "<b>Authorization facts row</b><br/>Only the facts this request has" }
@@ -39,7 +39,7 @@ flowchart TD
   end
   dDb@{ shape: diam, label: "Is the request on the Dashboard past Preparing, and is the next action not already the Dashboard?" }
   od@{ shape: trap-t, label: "Click 'Open on the Dashboard' (next to the status line)" }
-  gDb@{ shape: subproc, label: "Continues in: Dashboard › Request drawer" }
+  gDb@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   subgraph gBt ["Header buttons"]
   b1@{ shape: trap-t, label: "<b>Click 'Open in review and sign'</b><br/>(always on)" }
   b3@{ shape: trap-t, label: "Click 'Back to queue'" }

@@ -17,12 +17,17 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Click 'Demo' in the top bar</b><br/>(pill shows the clock, 'Tue 10:42 am')" }
-  o1@{ shape: win-pane, label: "Demo menu opens under the button (320 px)" }
+  o1@{ shape: win-pane, label: "<b>Demo menu opens under the button (340 px, or the window width minus a margin)</b><br/>It scrolls inside itself when the window is short" }
   subgraph gT ["Section 'Time'"]
   t1@{ shape: rect, label: "<b>Text: 'The demo clock is Tue Oct 20 2026, 10:42 am. It only moves when you move it.'</b><br/>(the date and time follow the clock)" }
   f1@{ shape: trap-t, label: "Click 'Fast-forward 1 hour'" }
   f2@{ shape: trap-t, label: "Click 'Fast-forward 1 day'" }
   g1@{ shape: subproc, label: "Continues in: Global shell › Demo menu › Fast-forward the demo clock" }
+  end
+  subgraph gV ["Section 'Viewing as'"]
+  vt@{ shape: rect, label: "Text: 'Access is by site (minimum necessary). Try Dr. Rivera, who sees Site A only.'" }
+  fv@{ shape: trap-t, label: "Click a person, for example 'Dr. Rivera'" }
+  g4@{ shape: subproc, label: "Continues in: Global shell › Demo menu › Viewing as" }
   end
   subgraph gP ["Section 'Suggested path'"]
   sp@{ shape: rect, label: "Seven numbered steps, 1 to 7" }
@@ -34,7 +39,7 @@ flowchart TD
   g3@{ shape: subproc, label: "Continues in: Global shell › Demo menu › Reset demo data" }
   end
   d1@{ shape: diam, label: "What happens to the open menu?" }
-  k1@{ shape: rect, label: "<b>Menu stays open after a Fast-forward</b><br/>(the pill changes, so more clicks are possible)" }
+  k1@{ shape: rect, label: "<b>Menu stays open after a Fast-forward or a choice in 'Viewing as'</b><br/>(the pill or the tick changes, so more clicks are possible)" }
   k2@{ shape: rect, label: "Menu closes, then the app opens the step's page" }
   k3@{ shape: rect, label: "Menu closes, the app goes to /dashboard" }
   x1@{ shape: trap-t, label: "Click anywhere outside the menu" }
@@ -44,13 +49,14 @@ flowchart TD
   k5@{ shape: rect, label: "<b>Menu closes</b><br/>The page underneath is as it was" }
   e1@{ shape: stadium, label: "Menu is closed" }
   s1 --> o1
-  o1 --> t1 & f1 & f2 & sp & f4
+  o1 --> t1 & f1 & f2 & vt & sp & f4
+  vt --> fv --> g4
   f1 --> g1
   f2 --> g1
   sp --> f3 --> g2
   f4 --> g3
   o1 --> d1
-  d1 -->|"After Fast-forward"| k1
+  d1 -->|"After Fast-forward or Viewing as"| k1
   d1 -->|"After a path step"| k2
   d1 -->|"After Reset"| k3
   d1 -->|"Mouse"| x1
@@ -65,11 +71,12 @@ flowchart TD
   k1 -.-> o1
   class s1 k_start
   class o1 k_overlay
-  class t1,sp,k1,k2,k3,k4,k5 k_process
-  class f1,f2,f3,f4,x1,x2,x3 k_click
-  class g1,g2,g3 k_goto
+  class t1,vt,sp,k1,k2,k3,k4,k5 k_process
+  class f1,f2,fv,f3,f4,x1,x2,x3 k_click
+  class g1,g4,g2,g3 k_goto
   class d1 k_decision
   class e1 k_end
   style gT fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gV fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gP fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gR fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

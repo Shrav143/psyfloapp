@@ -23,12 +23,15 @@ flowchart LR
   e2@{ shape: rect, label: "<b>'Lapsed 10/12' (red)</b><br/>Coverage dropped on that date. Later days are not payable until it is restored" }
   e3@{ shape: rect, label: "<b>'Ended 09/30' (red)</b><br/>Coverage ended. The patient may have a new plan: ask the payer" }
   e4@{ shape: rect, label: "<b>'Not found' (red)</b><br/>No member matched the ID and date of birth" }
+  e5@{ shape: rect, label: "<b>'ID differs' (amber)</b><br/>Coverage is active, but the plan has the member under another ID" }
+  e6@{ shape: rect, label: "<b>'Not checked' (grey)</b><br/>Verify was paused, so nothing was asked" }
   end
   subgraph gB ["Column 'Benefits'"]
   b0@{ shape: curv-trap, label: "'Benefits' chip" }
   b1@{ shape: rect, label: "<b>'Covered' (green)</b><br/>The plan pays for this level of care" }
   b2@{ shape: rect, label: "<b>'Limited' (amber)</b><br/>Paid with conditions: diagnosis on the plan's list, each day authorized" }
   b3@{ shape: rect, label: "<b>'Not covered' (red)</b><br/>The plan does not pay for this level of care<br/>For example R-1118" }
+  b4@{ shape: rect, label: "<b>'Not confirmed' (amber)</b><br/>The plan answered for coverage but not for this service<br/>Caller can confirm it by phone" }
   end
   subgraph gA ["Column 'Authorization'"]
   a0@{ shape: curv-trap, label: "'Authorization' chip (the day or unit usage is on the quiet second line of the row)" }
@@ -38,24 +41,26 @@ flowchart LR
   a4@{ shape: rect, label: "<b>'Payer reviewing' (grey)</b><br/>A request is with the payer" }
   a5@{ shape: rect, label: "<b>'Retro request open' (amber)</b><br/>A request for days already delivered is open" }
   a6@{ shape: rect, label: "<b>'Required, not on file' (amber)</b><br/>Needed before the first day. Not started" }
+  a7@{ shape: rect, label: "<b>'Requirement unknown' (grey)</b><br/>No rule on file for this payer and level of care. Check with the payer" }
   end
   subgraph gV ["Column 'Verdict'"]
   v0@{ shape: curv-trap, label: "'Verdict' chip, with 'Checked 3 h ago' on the quiet second line" }
   v1@{ shape: rect, label: "<b>'Cleared to bill' (green)</b><br/>Everything passes" }
   v2@{ shape: rect, label: "<b>'Authorization first' (amber)</b><br/>Only the authorization is missing" }
-  v3@{ shape: rect, label: "<b>'Fix before billing' (red)</b><br/>Coverage, plan, network, another plan or a limit failed" }
+  v3@{ shape: rect, label: "<b>'Fix before billing' (red)</b><br/>Coverage, plan, network, another plan, a limit or the member ID failed,<br/>or a benefit or enrollment could not be confirmed" }
+  v5@{ shape: rect, label: "<b>'Not checked' (grey)</b><br/>The check did not run: Verify is paused in Settings" }
   v4@{ shape: rect, label: "<b>Second line: 'Checked 3 h ago' or 'Checking now'</b><br/>Time since the last check, or a re-check running<br/>'Re-check due Tue 11:32 am': Verify will run it<br/>'Re-checked automatically at 11:32 am': it did<br/>'Not re-checked: Verify is paused in Settings'" }
   end
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › Which verdict and why" }
   s1 --> e0 & b0 & a0 & v0
-  e0 --> e1 & e2 & e3 & e4
-  b0 --> b1 & b2 & b3
-  a0 --> a1 & a2 & a3 & a4 & a5 & a6
-  v0 --> v1 & v2 & v3 & v4
-  v1 & v2 & v3 --> g1
+  e0 --> e1 & e2 & e3 & e4 & e5 & e6
+  b0 --> b1 & b2 & b3 & b4
+  a0 --> a1 & a2 & a3 & a4 & a5 & a6 & a7
+  v0 --> v1 & v2 & v3 & v4 & v5
+  v1 & v2 & v3 & v5 --> g1
   class s1 k_start
   class e0,b0,a0,v0 k_screen
-  class e1,e2,e3,e4,b1,b2,b3,a1,a2,a3,a4,a5,a6,v1,v2,v3,v4 k_process
+  class e1,e2,e3,e4,e5,e6,b1,b2,b3,b4,a1,a2,a3,a4,a5,a6,a7,v1,v2,v3,v5,v4 k_process
   class g1 k_goto
   style gE fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gB fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

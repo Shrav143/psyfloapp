@@ -24,11 +24,11 @@ flowchart LR
   g1@{ shape: subproc, label: "Continues in: Dashboard" }
   r2@{ shape: rect, label: "<b>'/active' goes to /manager</b><br/>Any '?tab=' on /active is dropped, so the Active cases tab opens" }
   g2@{ shape: subproc, label: "Continues in: Case Manager › Page › Arrive and read the header" }
-  r3@{ shape: rect, label: "<b>'/referrals' goes to /authorizations/new</b><br/>Referrals no longer have a tab: they are step 1 of New case" }
+  r3@{ shape: rect, label: "<b>'/referrals' goes to /authorizations/new</b><br/>Referrals no longer have a tab: they start Intake in New case" }
   r3b@{ shape: rect, label: "New case starts a blank draft and the address becomes /authorizations/new/draft-..." }
-  g3@{ shape: subproc, label: "Continues in: New case › Referral step" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Start with a referral or patient" }
   r4@{ shape: rect, label: "'/referrals/RF-1234' goes to /authorizations/new/referral/RF-1234" }
-  g4@{ shape: subproc, label: "Continues in: New case › Referral › Open a referral" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › The full referral page" }
   end
   subgraph gKnown ["Pages that exist"]
   k1@{ shape: rect, label: "<b>/dashboard, /authorizations..., /denials..., /manager, /analytics, /emr, /payers..., /settings</b><br/>The page opens and starts at the top" }

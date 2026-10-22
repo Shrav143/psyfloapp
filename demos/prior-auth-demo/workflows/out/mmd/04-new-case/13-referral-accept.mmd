@@ -18,7 +18,7 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Click 'Accept referral and continue'</b><br/>on the checklist" }
   s2@{ shape: stadium, label: "<b>Click 'Accept referral'</b><br/>on the full referral page" }
-  s3@{ shape: stadium, label: "<b>Click 'Continue to medical records'</b><br/>on the checklist or on the green banner of the full page" }
+  s3@{ shape: stadium, label: "<b>Click 'Continue with this referral'</b><br/>on the checklist or on the green banner of the full page" }
   dB@{ shape: diam, label: "<b>Is a required finding still open?</b><br/>Patient age, clinician credentials, clinician signature,<br/>diagnosis code, level of care, insurance and member ID" }
   tB@{ shape: odd, label: "<b>The button is disabled</b><br/>One line under it: 'Resolve 4 items first: clinician credentials, clinician signature, diagnosis code, insurance and member ID.'" }
   eB@{ shape: stadium, label: "<b>Nothing opens</b><br/>'Mark OK', the referrer's reply or 'Ask the referrer' lifts an item (a failed age: only 'Mark OK')<br/>'Decline' stays available" }
@@ -40,26 +40,26 @@ flowchart TD
   st1@{ shape: cyl, label: "<b>Referral is Accepted</b><br/>Owner, program, target date saved<br/>Timeline 'Accepted into IOP' with any open findings counted" }
   st2@{ shape: cyl, label: "<b>Program capacity drops by one bed or slot</b><br/>(never below zero)" }
   t3@{ shape: odd, label: "<b>'Referral accepted'</b><br/>'RF-2048 is accepted into IOP.'" }
-  p3@{ shape: rect, label: "<b>Referral leaves 'Already arrived'</b><br/>(only open referrals are listed)" }
+  p3@{ shape: rect, label: "<b>Referral leaves 'Incoming referrals'</b><br/>(only open referrals are listed)" }
   d3@{ shape: diam, label: "Accepted from where?" }
   subgraph gPg ["From the full referral page"]
   sc1@{ shape: curv-trap, label: "<b>Page stays open</b><br/>Green banner 'Accepted into IOP'<br/>'Target admission 10/21/2026. Owner Taylor Brooks.'" }
-  c2@{ shape: trap-t, label: "<b>Click 'Continue to medical records'</b><br/>(or 'Open R-1042' when a request is linked)" }
+  c2@{ shape: trap-t, label: "<b>Click 'Continue with this referral'</b><br/>(or 'Open R-1042' when a request is linked)" }
   p7@{ shape: rect, label: "<b>Uses the case in the address (?draft=)</b><br/>Without one, a new blank case is made first" }
   end
   subgraph gAsk ["Attach the referral to the case"]
   d4@{ shape: diam, label: "Have the agents already run on this case?" }
-  oA@{ shape: win-pane, label: "<b>'Attach this referral?'</b><br/>'Attaching this referral makes the agents re-check the case. Continue?'<br/>'Their finished work is cleared. You start them again after the medical records.'" }
+  oA@{ shape: win-pane, label: "<b>'Attach this referral?'</b><br/>'Attaching this referral makes the agents re-check the case. Continue?'<br/>'Their finished work is cleared. You start them again after Clinical documentation.'" }
   cCancel@{ shape: trap-t, label: "<b>Click 'Cancel' or 'Close', press Escape,</b><br/>or click outside the dialog" }
-  eA@{ shape: stadium, label: "<b>Nothing is attached and the agents' work stays</b><br/>A referral just accepted stays accepted:<br/>the button now reads 'Continue to medical records'" }
+  eA@{ shape: stadium, label: "<b>Nothing is attached and the agents' work stays</b><br/>A referral just accepted stays accepted:<br/>the button now reads 'Continue with this referral'" }
   cCont@{ shape: trap-t, label: "Click 'Continue'" }
-  p6@{ shape: rect, label: "<b>Agents' results and answers are cleared</b><br/>Because the patient and documents changed<br/>The case goes back to Medical records" }
+  p6@{ shape: rect, label: "<b>Agents' results and answers are cleared</b><br/>Because the patient and documents changed<br/>The case goes back to Intake" }
   tR@{ shape: odd, label: "<b>'The agents will re-check this case'</b><br/>'RF-2048 changed the case, so the agents' earlier work was cleared.'" }
   p4@{ shape: rect, label: "<b>Copied into the case: patient, payer, member ID,</b><br/>level of care (the accepted program), diagnoses, reason<br/>Request type: Initial request if routine, else Admission" }
   p5@{ shape: rect, label: "<b>Referral becomes the first document</b><br/>'RF-2048 referral.pdf'" }
-  t4@{ shape: odd, label: "<b>'Referral RF-2048 is in this case'</b><br/>'A.P., 45. Next, add the medical records.'" }
+  t4@{ shape: odd, label: "<b>'Referral RF-2048 is in this case'</b><br/>'A.P., 45. Check the details below, then go on to Eligibility & Benefits.'" }
   end
-  g1@{ shape: subproc, label: "Continues in: New case › Medical records › The checklist and Continue" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Initial authorization" }
   s1 --> dB
   s2 --> dB
   dB -->|"Yes"| tB --> eB

@@ -27,7 +27,7 @@ flowchart TD
   d2@{ shape: diam, label: "<b>Are there lines left, and</b><br/>do they differ from the saved ones?" }
   t0@{ shape: odd, label: "<b>'Nothing changed'</b><br/>Edit at least one line, and keep at least one rule." }
   x0@{ shape: stadium, label: "<b>Modal closes</b><br/>Nothing saved" }
-  st@{ shape: cyl, label: "<b>Rule lines replaced</b><br/>'Saved' date becomes today<br/>The rule gets 'Source: Edited in Psyflo by Jordan Perez'" }
+  st@{ shape: cyl, label: "<b>Rule lines replaced</b><br/>'Saved' date becomes today<br/>The rule gets 'Source: Edited in Psyflo by {viewer}' (the person viewing, Jordan Perez at the start)" }
   lg@{ shape: cyl, label: "<b>Edit log entry, area 'Rules'</b><br/>Rule name, before and after (lines joined with semicolons), reason" }
   un@{ shape: cyl, label: "'Edits waiting' goes up by one" }
   nt@{ shape: cyl, label: "<b>Bell notification 'Summit rule edited'</b><br/>opens the payer's Rules tab" }

@@ -17,7 +17,7 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   q@{ shape: curv-trap, label: "<b>Queue</b><br/>Priority bands, most urgent first" }
-  b1@{ shape: rect, label: "Each open request sits in exactly one band" }
+  b1@{ shape: rect, label: "<b>Each open request at the sites in view sits in exactly one band</b><br/>Band counts for Both sites are the Site A counts plus the Site B counts" }
   lv@{ shape: rect, label: "<b>A request leaves its band once nothing is left for a person</b><br/>Preparing or ready: it was signed and sent in New case<br/>With the payer: the payer approved or denied it<br/>Denial route: accepted, settled on the call, or the appeal is filed" }
   subgraph gB ["Three bands"]
   bn@{ shape: rect, label: "<b>Act now</b><br/>Red dot, tiles tinted red" }
@@ -26,7 +26,7 @@ flowchart TD
   end
   dE@{ shape: diam, label: "Does the band have any request after filters?" }
   dZ@{ shape: diam, label: "Is it Act now, with no request open at all, and no search, payer or status filter on?" }
-  em@{ shape: curv-trap, label: "<b>Band card stays</b><br/>'Act now (0 requests)'<br/>'Nothing needs you today'<br/>'Everything in Act now has been sent or handled.'" }
+  em@{ shape: curv-trap, label: "<b>Band card stays</b><br/>'Act now (0 requests)'<br/>'Nothing needs you today'<br/>'Everything in Act now has been sent or handled.'<br/>With one site in view: 'No open request at Site B is in Act now.'" }
   hide@{ shape: rect, label: "The band card is left out" }
   bc@{ shape: curv-trap, label: "<b>Band card</b><br/>'Act now (5 requests)'<br/>Name, count, chevron" }
   r1@{ shape: rect, label: "<b>Inside a band, requests waiting on a person come first</b><br/>Preparing, Ready to sign, Denial route, or Needs your input" }
@@ -48,8 +48,10 @@ flowchart TD
   tp@{ shape: trap-t, label: "Hover or focus the info icon 'How the list is ordered' (right end of the filter bar)" }
   tp2@{ shape: win-pane, label: "<b>Tooltip says the same rule in a few words</b><br/>Esc closes it" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Queue › Read and open a request row" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Queue › Sites: what each viewer sees" }
   q --> b1
   b1 --> lv
+  b1 -.-> g2
   b1 --> bn & bd & bw
   bn --> dE
   bd --> dE
@@ -75,5 +77,5 @@ flowchart TD
   class hd,sm,sf,tp k_click
   class keep k_store
   class tp2 k_overlay
-  class g1 k_goto
+  class g1,g2 k_goto
   style gB fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

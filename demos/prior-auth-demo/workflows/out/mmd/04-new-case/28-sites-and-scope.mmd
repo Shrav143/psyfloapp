@@ -1,0 +1,85 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>The viewer and the site switcher</b><br/>Top bar: 'Both sites', 'Site A' or 'Site B'<br/>A viewer limited to one site has nothing to switch" }
+  d1@{ shape: diam, label: "How many sites are in view?" }
+  pOne@{ shape: rect, label: "<b>One site</b><br/>Everything below shows that site only<br/>Nothing says how many records are at the other site" }
+  pBoth@{ shape: rect, label: "<b>Both sites</b><br/>Everything shows both, and each row can name its site" }
+  subgraph gLists ["What shows in New case"]
+  l1@{ shape: curv-trap, label: "<b>'Incoming referrals (N)'</b><br/>Only open referrals at the sites in view<br/>The sidebar badge on 'New case' counts the same ones" }
+  l2@{ shape: curv-trap, label: "<b>Patient search</b><br/>'Searches Site A only.'<br/>'No patient at Site A matches “Q.Z.”.' when the match is at the other site<br/>With both sites in view each row names its site" }
+  l3@{ shape: curv-trap, label: "<b>Possible duplicate</b><br/>Only requests, drafts and authorizations at the sites in view are compared" }
+  l4@{ shape: curv-trap, label: "<b>Eligibility & Benefits and Review & submit</b><br/>The verification and the case belong to the case's site" }
+  end
+  subgraph gSite ["The site a new case belongs to"]
+  dLock@{ shape: diam, label: "Does the case have an id or a patient yet?" }
+  sPick@{ shape: curv-trap, label: "<b>Both sites in view: a 'Site' choice, Site A or Site B</b><br/>'A new patient belongs to one site. Staff at the other site will not see this case.'" }
+  cSite@{ shape: trap-t, label: "Pick a site" }
+  pOneSite@{ shape: rect, label: "One site in view: 'Site A · this case is at the site you are working at.'" }
+  pLocked@{ shape: rect, label: "<b>Locked</b><br/>With a patient: 'the patient's site'<br/>With an id: 'set when the case got its ID'" }
+  stId@{ shape: cyl, label: "<b>The case id is chosen so that it falls at the site</b><br/>R- for Residential 3.5 and Detox, I- for IOP, P- for PHP" }
+  pRef@{ shape: rect, label: "<b>A referral read from dropped files is placed at the site in view</b><br/>Its RF number is the next one that falls there" }
+  pNarrow@{ shape: rect, label: "<b>Narrowing the view while a blank case is open</b><br/>The case moves to the site in view<br/>A case with an id or a patient stays where it is" }
+  end
+  subgraph gLinks ["A link to a record at a site that is not in view"]
+  dLink@{ shape: diam, label: "What does the link open?" }
+  o1@{ shape: curv-trap, label: "<b>A referral: ?referral=RF-2045 or the full referral page</b><br/>'This referral is not available at Site A'" }
+  o2@{ shape: curv-trap, label: "<b>A case being prepared: /authorizations/new/draft-ID</b><br/>'This case is not available at Site A'" }
+  o3@{ shape: rect, label: "<b>?patient= and ?verification= from the other site are ignored</b><br/>A blank case opens instead" }
+  o4@{ shape: rect, label: "<b>Picking a patient from a stale list does nothing</b><br/>The other site's patient cannot be brought in" }
+  dWho@{ shape: diam, label: "Can the viewer see both sites?" }
+  sShow@{ shape: curv-trap, label: "<b>One-site viewer: 'RF-2045 belongs to Site B. Dr. Rivera can see Site A only. Access follows the site, so staff see only the patients they work with.'</b><br/>No patient, payer or date" }
+  cShow@{ shape: trap-t, label: "Click 'Show Site B'" }
+  pShow@{ shape: rect, label: "The view switches to that site and the record opens" }
+  end
+  gStart@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Start with a referral or patient" }
+  gFind@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Find a patient and the authorization" }
+  gDup@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Possible duplicate" }
+  gShell@{ shape: subproc, label: "Continues in: Global shell › Top bar › Site switcher" }
+  s1 --> d1
+  d1 -->|"One"| pOne --> l1
+  d1 -->|"Both"| pBoth --> l1
+  l1 --> l2 --> l3 --> l4
+  l1 -.-> gStart
+  l2 -.-> gFind
+  l3 -.-> gDup
+  s1 -.-> gShell
+  pBoth --> dLock
+  pOne --> dLock
+  dLock -->|"No, both sites in view"| sPick --> cSite --> stId
+  dLock -->|"No, one site in view"| pOneSite --> stId
+  dLock -->|"Yes"| pLocked
+  stId --> pRef
+  stId --> pNarrow
+  s1 --> dLink
+  dLink -->|"A referral"| o1 --> dWho
+  dLink -->|"A case"| o2 --> dWho
+  dLink -->|"A patient or a verification"| o3
+  dLink -->|"A patient in the list"| o4
+  dWho -->|"No"| sShow
+  dWho -->|"Yes"| cShow --> pShow
+  class s1 k_start
+  class d1,dLock,dLink,dWho k_decision
+  class pOne,pBoth,pOneSite,pLocked,pRef,pNarrow,o3,o4,pShow k_process
+  class l1,l2,l3,l4,sPick,o1,o2,sShow k_screen
+  class cSite,cShow k_click
+  class stId k_store
+  class gStart,gFind,gDup,gShell k_goto
+  style gLists fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gSite fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gLinks fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

@@ -17,8 +17,9 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Click 'Eligibility & Benefits' under 'Authorizations' in the sidebar" }
-  sc@{ shape: curv-trap, label: "<b>Eligibility & Benefits</b><br/>Title '28 of 37 patients are cleared to bill.' with an info icon<br/>'Coverage and benefits are checked before the first day, so you know whether the clinic will be paid. Checks in this demo are simulated.'" }
-  p1@{ shape: rect, label: "<b>Sidebar badge counts patients not 'Cleared to bill'</b><br/>Demo start: 9 = 4 'Authorization first' + 5 'Fix before billing'" }
+  sc@{ shape: curv-trap, label: "<b>Eligibility & Benefits</b><br/>Title '28 of 37 patients are cleared to bill.' with an info icon, and a Site A or Site B tag when the view is narrowed<br/>'Coverage and benefits are checked before the first day, so you know whether the clinic will be paid. Checks in this demo are simulated.'" }
+  p1@{ shape: rect, label: "<b>Sidebar badge counts patients not 'Cleared to bill' in the sites in view</b><br/>Demo start, both sites: 9 = 4 'Authorization first' + 5 'Fix before billing'" }
+  sv@{ shape: rect, label: "<b>Rows, the title count, the four figures and the badge follow the site view (top bar)</b><br/>Both sites is Site A plus Site B<br/>A viewer limited to one site never sees, counts or finds the other site's patients" }
   subgraph gTop ["Top of the page"]
   hd@{ shape: curv-trap, label: "<b>Header button</b><br/>'Verify a patient'" }
   tip@{ shape: curv-trap, label: "<b>Info icon beside the title</b><br/>(button 'Why we check twice')<br/>Hover, focus or click opens the text; Escape closes it<br/>No banner on the page any more" }
@@ -38,17 +39,19 @@ flowchart TD
   subgraph gRow ["One patient, two lines"]
   r1@{ shape: curv-trap, label: "<b>Line 1: patient</b><br/>'R-1042 · J.M., 34'<br/>No initials: 'Member …4821'" }
   r2@{ shape: curv-trap, label: "<b>Line 1: Program chip</b><br/>'Residential 3.5', 'IOP', 'PHP', 'Detox'<br/>or a label such as 'Detox → Residential'" }
-  r3@{ shape: curv-trap, label: "<b>Line 1: Eligibility and Benefits chips</b><br/>'Active', 'Lapsed 10/12', 'Ended 09/30', 'Not found'<br/>'Covered', 'Limited', 'Not covered'" }
-  r4@{ shape: curv-trap, label: "<b>Line 1: Authorization chip, one word group only</b><br/>'On file', 'Not required', 'Required, not on file', 'In progress'" }
-  r5@{ shape: curv-trap, label: "<b>Line 1: Verdict chip</b><br/>'Cleared to bill', 'Authorization first', 'Fix before billing'" }
+  r3@{ shape: curv-trap, label: "<b>Line 1: Eligibility and Benefits chips</b><br/>'Active', 'Lapsed 10/12', 'Ended 09/30', 'Not found', 'ID differs', 'Not checked'<br/>'Covered', 'Limited', 'Not confirmed', 'Not covered'" }
+  r4@{ shape: curv-trap, label: "<b>Line 1: Authorization chip, one word group only</b><br/>'On file', 'Not required', 'Required, not on file', 'In progress', 'Requirement unknown'" }
+  r5@{ shape: curv-trap, label: "<b>Line 1: Verdict chip</b><br/>'Cleared to bill', 'Authorization first', 'Fix before billing', 'Not checked'" }
   r6@{ shape: curv-trap, label: "Line 1: button 'Re-check'" }
-  r7@{ shape: curv-trap, label: "<b>Line 2, small and quiet, across the row</b><br/>Payer name · day limit · when it was checked<br/>'Cardinal Health Plan · 14 of 14 days · Checked 5 h ago'<br/>'No day limit' when the program has none<br/>A row due for a re-check adds 'Re-check due Tue 11:32 am'<br/>After Verify's own re-check 'Re-checked automatically at 11:32 am'<br/>If Verify is paused 'Not re-checked: Verify is paused in Settings' (amber)" }
+  r7@{ shape: curv-trap, label: "<b>Line 2, small and quiet, across the row</b><br/>Payer name · day limit · when it was checked<br/>'Cardinal Health Plan · 14 of 14 days · Checked 5 h ago'<br/>'No day limit' when the program has none<br/>A row due for a re-check adds 'Re-check due Tue 11:32 am'<br/>After Verify's own re-check 'Re-checked automatically at 11:32 am'<br/>If Verify is paused 'Not re-checked: Verify is paused in Settings' (amber)<br/>When the plan changed 'Now with Cardinal since 10/01'; 'Enrollment not confirmed'; 'The plan has the ID ending 5521'<br/>A check that could not run 'Could not be checked: Verify is paused in Settings' (amber)" }
   end
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › List › Search, filter and page" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › List › Open a patient or start a check" }
   g3@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › What each chip means" }
   g4@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Re-check on its own" }
   g5@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › List › The info icon" }
+  g6@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › The shared verification record" }
+  g7@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Sites" }
   s1 --> sc
   sc --> hd --> tl --> fl --> cd
   sc -.-> p1
@@ -63,10 +66,12 @@ flowchart TD
   r3 & r4 & r5 --> g3
   cnt -.-> g4
   r7 -.-> g4
+  sc --> sv --> g7
+  cd -.-> g6
   class s1 k_start
   class sc,hd,tip,tl,fl,cd,cols,r1,r2,r3,r4,r5,r6,r7 k_screen
-  class p1,cnt,so,sd,pg k_process
-  class g1,g2,g3,g4,g5 k_goto
+  class p1,sv,cnt,so,sd,pg k_process
+  class g1,g2,g3,g4,g5,g6,g7 k_goto
   style gTop fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gBar fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gCard fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

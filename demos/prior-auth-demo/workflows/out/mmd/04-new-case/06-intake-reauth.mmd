@@ -1,0 +1,66 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Pick 'Reauthorization / renewal' in 'Authorization type'</b><br/>Or open ?type=reauth" }
+  s2@{ shape: stadium, label: "<b>Click 'Start renewal' in the Dashboard's what-to-do list</b><br/>?type=reauth&patient=CASE-ID" }
+  sc@{ shape: curv-trap, label: "<b>Intake · Reauthorization / renewal</b><br/>'Find the patient, then the authorization that is ending.'" }
+  pAuto@{ shape: rect, label: "<b>The patient is chosen for the person</b><br/>If the patient has one episode and one authorization, both are chosen too" }
+  gFind@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Find a patient and the authorization" }
+  sAuth@{ shape: curv-trap, label: "<b>Authorization card</b><br/>Status, approved dates, authorized, left, expires on, 'History'" }
+  dState@{ shape: diam, label: "How much is left?" }
+  n1@{ shape: rect, label: "<b>Expiring soon</b><br/>'3 days left and the approval ends soon. Ask before it runs out.'" }
+  n2@{ shape: rect, label: "<b>None left</b><br/>'No days are left, so the next stretch needs a request now.'" }
+  n3@{ shape: rect, label: "<b>Plenty left</b><br/>No sentence<br/>The renewal can still be started early" }
+  sDates@{ shape: curv-trap, label: "<b>Card 'Dates to renew'</b><br/>'The next stretch starts the day after the approval ends, or today when it already has.'" }
+  iFrom@{ shape: lean-r, label: "<b>'Requested start date'</b><br/>The day after the approved window ends<br/>Today when it has already ended" }
+  iTo@{ shape: lean-r, label: "<b>'Requested end date' (optional)</b><br/>Left empty: the usual days for the level of care" }
+  st@{ shape: cyl, label: "<b>The request is recorded as 'Recertification'</b><br/>It carries the patient, episode and authorization ids" }
+  dDup@{ shape: diam, label: "Another open request or active authorization overlapping the new dates?" }
+  gDup@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Possible duplicate" }
+  pPayer@{ shape: rect, label: "If the plan has changed since the last stay, Eligibility & Benefits says so and offers to switch the case" }
+  pDoc@{ shape: rect, label: "Typical documents: progress summary since the last authorization, updated treatment plan, current ASAM reassessment, attendance record" }
+  gElig@{ shape: subproc, label: "Continues in: Authorizations › New case › Eligibility & Benefits › Reauthorization / renewal" }
+  gDocs@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › Required and typical documents by type" }
+  cSave@{ shape: trap-t, label: "Click 'Save as draft'" }
+  cCont@{ shape: trap-t, label: "Click 'Continue to Eligibility & Benefits'" }
+  gSave@{ shape: subproc, label: "Continues in: Authorizations › New case › Save as draft and leave" }
+  s1 --> sc --> gFind
+  s2 --> pAuto --> sAuth
+  gFind -.-> sAuth
+  sc --> sAuth --> dState
+  dState -->|"Ends within 7 days, or 2 left or fewer"| n1
+  dState -->|"Used up"| n2
+  dState -->|"More left"| n3
+  n1 --> sDates
+  n2 --> sDates
+  n3 --> sDates
+  sDates --> iFrom --> iTo --> st
+  sDates --> dDup
+  dDup -->|"Yes"| gDup
+  st --> pPayer --> gElig
+  st --> pDoc --> gDocs
+  st --> cSave --> gSave
+  st --> cCont --> gElig
+  class s1,s2 k_start
+  class sc,sAuth,sDates k_screen
+  class pAuto,n1,n2,n3,pPayer,pDoc k_process
+  class gFind,gDup,gElig,gDocs,gSave k_goto
+  class dState,dDup k_decision
+  class iFrom,iTo k_input
+  class st k_store
+  class cSave,cCont k_click

@@ -17,14 +17,18 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Tracker row is on screen" }
-  c1@{ shape: trap-t, label: "Click anywhere on the row" }
+  c1@{ shape: trap-t, label: "<b>Click anywhere on the row that is not a button</b><br/>(or its quick view button)" }
+  gq@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Quick view of a case" }
   c2@{ shape: trap-t, label: "Click the case ID (underlined)" }
   c3@{ shape: trap-t, label: "Click 'Open' at the end of the row" }
-  p0@{ shape: rect, label: "The row ignores a click that starts on the ID or the 'Open' button, so the case opens once and Back needs one press" }
+  p0@{ shape: rect, label: "A click on the ID or on a button acts on its own, and the row ignores it: the case opens once and Back needs one press" }
   p1@{ shape: rect, label: "<b>Case Manager works out the address</b><br/>/authorizations/case/ followed by the case code" }
   d1@{ shape: diam, label: "Is the row a denial?" }
   p2@{ shape: rect, label: "<b>Uses the case the denial came from</b><br/>D-3318 opens R-0997, the original case" }
   p3@{ shape: rect, label: "<b>Uses the row's own ID</b><br/>for example R-1042, I-2207 or R-0856" }
+  dsite@{ shape: diam, label: "Is the case at a site the viewer is looking at?" }
+  sos@{ shape: curv-trap, label: "<b>Out-of-site card</b><br/>'This case is not available at Site A'<br/>No patient or detail" }
+  gs@{ shape: subproc, label: "Continues in: Case Manager › Sites › What each site sees and out-of-site links" }
   d2@{ shape: diam, label: "<b>Is the case a request in the queue or on the Dashboard?</b><br/>(30 of the 56 rows, and every case signed and sent today)" }
   s2@{ shape: curv-trap, label: "<b>Case page</b><br/>Header with the case ID, level of care and the request clock<br/>Tabs for the case" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Case" }
@@ -38,11 +42,14 @@ flowchart TD
   e1@{ shape: stadium, label: "Back at the top of the tracker" }
   s1 --> c1 & c2 & c3
   c3 --> p0 --> p1
-  c1 --> p1
+  c1 --> gq
   c2 --> p1
+  gq -.-> p1
   p1 --> d1
-  d1 -->|"Yes"| p2 --> d2
-  d1 -->|"No"| p3 --> d2
+  d1 -->|"Yes"| p2 --> dsite
+  d1 -->|"No"| p3 --> dsite
+  dsite -->|"No"| sos --> gs
+  dsite -->|"Yes"| d2
   d2 -->|"Yes"| s2 --> g1
   d2 -->|"No"| d3
   d3 -->|"Yes"| s3 --> g3
@@ -52,8 +59,8 @@ flowchart TD
   c5 --> s4 --> p5 --> e1
   class s1 k_start
   class c1,c2,c3,c5 k_click
+  class gq,gs,g1,g3 k_goto
   class p0,p1,p2,p3,p5 k_process
-  class d1,d2,d3 k_decision
-  class s2,s3,s5,s4 k_screen
-  class g1,g3 k_goto
+  class d1,dsite,d2,d3 k_decision
+  class sos,s2,s3,s5,s4 k_screen
   class e1 k_end

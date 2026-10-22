@@ -16,9 +16,9 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "New case › Review and sign › 'Sign and send'" }
+  s1@{ shape: stadium, label: "New case › Review & submit › 'Sign and send to payer (demo)'" }
   st1@{ shape: cyl, label: "<b>A request is created on the Dashboard as Received</b><br/>Its ID is added to 'sent today'" }
-  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Review and sign › Sign and send" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Sign and send to payer" }
   d1@{ shape: diam, label: "<b>Is the ID already a row in the tracker?</b><br/>(R-1042, R-0988, I-2207, R-1101, I-2262 are)" }
   p1@{ shape: rect, label: "The row stays as it is" }
   p2@{ shape: rect, label: "<b>A tracker row is added</b><br/>Case ID with a green 'New today' tag, initials and age<br/>Level of care and request type<br/>'not yet approved', payer, approval chance from the draft" }

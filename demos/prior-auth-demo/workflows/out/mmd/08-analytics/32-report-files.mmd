@@ -18,37 +18,37 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "A download button is clicked in the report window" }
   subgraph gMd ["Written report (.md)"]
-  m1@{ shape: doc, label: "<b>'# Psyflo monthly report'</b><br/>'Period: This quarter', 'Scope: All payers' and 'Program: All programs'<br/>'Built by Analyst from demo data. Figures are modeled from the quarter's decisions; turnaround is demo values. A figure based on fewer than 20 decisions is left out.'" }
-  m2@{ shape: doc, label: "<b>'## Headline figures'</b><br/>Seven bullets: approval rate with the trend line, denial rate, turnaround (days, demo values), preventable denials with its share, top denial cause, advice taken works, sent without edits" }
-  m3@{ shape: doc, label: "<b>'## Approval rate by payer'</b><br/>One bullet per bar with its decisions" }
-  m9@{ shape: doc, label: "<b>'## Preventable denials by reason'</b><br/>One bullet per row of the chart, so the bullets add up to the headline count" }
-  m4@{ shape: doc, label: "<b>'## How people edit agent drafts'</b><br/>Three bullets, then 'Drafts counted'" }
-  m5@{ shape: doc, label: "<b>'## Common denial reasons'</b><br/>Table: Reason, Payer, Count, Share of denials" }
-  m7@{ shape: doc, label: "<b>'## Denial outcomes'</b><br/>'Appeals overturned: 56% (54 of 96 rulings, partly restored counts as overturned)'<br/>'Denials accepted: 17'" }
-  m6@{ shape: doc, label: "<b>'## What helps most'</b><br/>Numbered list: step, times applied, percent approved" }
-  m8@{ shape: doc, label: "<b>'## Why recommendations were dismissed'</b><br/>One bullet per reason with its count<br/>Left out when nobody dismissed one" }
+  m1@{ shape: doc, label: "<b>'# Psyflo monthly report'</b><br/>'Period', 'Site view', 'Payer', 'Program' and 'Diagnosis group'<br/>'Built by Analyst from demo data. Demo values: this is sample data. A figure based on fewer than 20 decisions is left out.' and the CMS decision time note" }
+  m2@{ shape: doc, label: "<b>'## Headline figures'</b><br/>Nine bullets: approval rate, denial rate, first-pass approval, average decision time (demo values, share past the CMS time), preventable denials, appeals overturned, top denial cause, advice taken works, sent without edits<br/>Each with its change against the earlier period" }
+  m3@{ shape: doc, label: "<b>'## Approvals and denials by month'</b><br/>Table of the twelve months: decisions, approved as requested, approved in part, denied, approval rate, denial rate" }
+  m4@{ shape: doc, label: "<b>'## Payer scorecard'</b><br/>Table: one row per payer and 'All payers', with the same columns as the page" }
+  m5@{ shape: doc, label: "<b>'## Payer by diagnosis group (approved as requested)'</b><br/>Table of rate and decisions for each cell" }
+  m6@{ shape: doc, label: "<b>'## Denial reasons'</b><br/>Table: Reason, Denials, Share of denials, Running share, Preventable" }
+  m7@{ shape: doc, label: "<b>'## Length of stay and units'</b><br/>'## Process health'<br/>Bullets for retro-authorizations by month, referral to authorization, peer-to-peer calls, appeals and the live workload" }
+  m8@{ shape: doc, label: "<b>'## Site A and Site B'</b><br/>Table with Site A, Site B and Both sites<br/>Left out for a one-site viewer or when one site is chosen" }
+  m9@{ shape: doc, label: "<b>'## How people edit agent drafts', '## Denial outcomes', '## What helps most'</b><br/>And '## Why recommendations were dismissed' when someone dismissed one" }
   end
   subgraph gCsv ["Figures as a table (.csv)"]
-  v1@{ shape: doc, label: "<b>One header row</b><br/>period, scope, section, label, value, count, program, unit<br/>Unit says percent, days, count or percent of denials" }
-  v2@{ shape: doc, label: "<b>Rows by section</b><br/>headline, approval by payer, preventable denials, draft edits, denial reasons, denial outcomes, what helps most<br/>and 'dismissed recommendations' when there are any" }
+  v1@{ shape: doc, label: "<b>One header row</b><br/>period, site_view, payer, program, diagnosis, section, label, value, count, unit<br/>Unit says percent, days or count" }
+  v2@{ shape: doc, label: "<b>Rows by section</b><br/>headline, trend, payer scorecard, payer by diagnosis group, program, request type and population, denial reasons, length of stay, process health, sites, draft edits, what helps most<br/>and 'dismissed recommendations' when there are any" }
   v3@{ shape: doc, label: "<b>Commas and quotes inside a value are wrapped in quotes</b><br/>Opens in a spreadsheet" }
   end
   q1@{ shape: diam, label: "Is the figure behind 20 or more decisions?" }
   p1@{ shape: rect, label: "The number is written" }
   p2@{ shape: rect, label: "<b>'Not enough decisions yet' is written in its place</b><br/>The count is kept" }
-  p3@{ shape: rect, label: "Same view as the page: the same period, payer and program, the same hidden figures" }
+  p3@{ shape: rect, label: "<b>Same view as the page: the same period, filters and site view, the same hidden figures</b><br/>No dollar figures anywhere" }
   e1@{ shape: stadium, label: "File matches the screen" }
   s1 --> m1 & v1
-  m1 --> m2 --> m3 --> m9 --> m4 --> m5 --> m7 --> m6 --> m8
+  m1 --> m2 --> m3 --> m4 --> m5 --> m6 --> m7 --> m8 --> m9
   v1 --> v2 --> v3
-  m8 --> q1
+  m9 --> q1
   v3 --> q1
   q1 -->|"Yes"| p1 --> e1
   q1 -->|"No"| p2 --> e1
   s1 -.-> p3
   p3 -.-> e1
   class s1 k_start
-  class m1,m2,m3,m9,m4,m5,m7,m6,m8,v1,v2,v3 k_doc
+  class m1,m2,m3,m4,m5,m6,m7,m8,m9,v1,v2,v3 k_doc
   class q1 k_decision
   class p1,p2,p3 k_process
   class e1 k_end

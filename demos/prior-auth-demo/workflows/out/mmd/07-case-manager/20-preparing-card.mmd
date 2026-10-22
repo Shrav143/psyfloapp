@@ -30,7 +30,7 @@ flowchart TD
   sh@{ shape: curv-trap, label: "<b>Top right of the opened row</b><br/>Ghost button '4 sent today', then the chips 'All', 'Agents working', 'Needs your input', 'Ready to sign'" }
   c1@{ shape: trap-t, label: "Click '4 sent today'" }
   p3@{ shape: rect, label: "Go to /dashboard?stage=received" }
-  g1@{ shape: subproc, label: "Continues in: Dashboard › Key figures › Click a figure to filter the list" }
+  g1@{ shape: subproc, label: "Continues in: Dashboard › Lifecycle › Click a state to filter the table" }
   c2@{ shape: trap-t, label: "Click a chip" }
   d1@{ shape: diam, label: "Which chip?" }
   k1@{ shape: rect, label: "'All': every row" }
@@ -48,7 +48,7 @@ flowchart TD
   g5@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Updated for a payer change" }
   e1@{ shape: stadium, label: "Rows are on screen" }
   p5@{ shape: rect, label: "After a case is signed and sent in New case it leaves this list, 'sent today' counts one more, and the tracker adds it as 'New today' unless it already had a row" }
-  s2@{ shape: stadium, label: "Later: a case is signed and sent in New case › Review and sign" }
+  s2@{ shape: stadium, label: "Later: a case is signed and sent in New case › Review & submit" }
   s1 --> sf --> pn
   sf --> cl --> pl --> gl
   sf --> co --> sc --> p1 --> p2 --> sh

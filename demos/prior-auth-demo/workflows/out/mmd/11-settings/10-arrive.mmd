@@ -17,7 +17,7 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Click 'Settings' in the sidebar</b><br/>Above 'Help', below the 'Demo data' tag" }
-  p1@{ shape: curv-trap, label: "<b>Settings</b><br/>Who the agents are, how much freedom each one has, and a way to pause them." }
+  p1@{ shape: curv-trap, label: "<b>Settings</b><br/>Who the agents are, how much freedom each one has, a way to pause them, and who can see which site." }
   hb@{ shape: trap-t, label: "<b>Click 'Pause all agents'</b><br/>Red outline button, top right<br/>'Resume all agents' when all sixteen are paused" }
   g1@{ shape: subproc, label: "Continues in: Settings › Pause › Pause all agents" }
   bn@{ shape: odd, label: "<b>'Privacy mode is always on'</b><br/>Names, dates and IDs are swapped for codes before an agent reads a chart, and mapped back only on your screen." }
@@ -25,6 +25,8 @@ flowchart TD
   lv@{ shape: curv-trap, label: "<b>What each level changes</b><br/>One plain line for each of the three levels<br/>Subtitle: 'Set per agent. Applied in EMR Connect'" }
   g6@{ shape: subproc, label: "Continues in: Settings › Agents › What each freedom level allows and the gates it never skips" }
   g2@{ shape: subproc, label: "Continues in: Settings › Page › Other controls and notices" }
+  sa@{ shape: curv-trap, label: "<b>Sites and access (closed card, first in the grid)</b><br/>'Two sites, four roles'" }
+  gsa@{ shape: subproc, label: "Continues in: Settings › Sites and access › Read the roles and switch with View as" }
   subgraph gCov ["Coverage"]
   c0@{ shape: curv-trap, label: "<b>Coverage card</b><br/>Knows who pays and files with them" }
   c1@{ shape: rect, label: "<b>Verify: Checks coverage and benefits</b><br/>Starts at 'Act on its own'" }
@@ -79,13 +81,14 @@ flowchart TD
   row --> st
   row --> fz --> g3
   row --> sw --> g4
+  p1 --> sa --> gsa
   p1 --> gates --> g2
   p1 --> lv --> g6
   c1 -.-> g5
   class s1 k_start
-  class p1,gates,lv,c0,d0,i0,k0 k_screen
+  class p1,gates,lv,sa,c0,d0,i0,k0 k_screen
   class hb,fz,sw k_click
-  class g1,g6,g2,g3,g4,g5 k_goto
+  class g1,g6,g2,gsa,g3,g4,g5 k_goto
   class bn k_toast
   class c1,c2,c3,d1,d2,d3,d4,d5,i1,i2,i3,i4,k1,k2,k3,k4,row,st k_process
   style gCov fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

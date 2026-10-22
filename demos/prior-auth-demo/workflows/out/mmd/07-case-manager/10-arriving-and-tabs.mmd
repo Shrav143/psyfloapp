@@ -21,12 +21,12 @@ flowchart TD
   s3@{ shape: stadium, label: "Old link /active" }
   s4@{ shape: stadium, label: "<b>A link from another page</b><br/>(see 'Links in and the tab address')" }
   p0@{ shape: rect, label: "/active is replaced by /manager" }
-  p1@{ shape: rect, label: "<b>Page opens at the top</b><br/>Sidebar 'Case Manager' turns green; its bubble reads 11" }
+  p1@{ shape: rect, label: "<b>Page opens at the top</b><br/>Sidebar 'Case Manager' turns green; its bubble reads 11 for Both sites (Site A 6, Site B 5)" }
   d1@{ shape: diam, label: "Is the address ?tab=reviews?" }
   sA@{ shape: curv-trap, label: "<b>Active cases tab: the tracker is what the page opens on</b><br/>Header '56 active cases.'<br/>'5 are still being prepared. Units, clocks and status for every case, across every level of care.'<br/>Button 'New case'<br/>Above the tracker, one folded row 'Being prepared' ('5 being prepared, 3 need you') and, only when a denial was accepted, a folded 'Step-down plans' row" }
-  cA@{ shape: rect, label: "<b>56 is the number of rows in the tracker</b><br/>A case signed and sent in New case adds a row ('57 active cases.'), and '1 active case.' reads in the singular<br/>5 is the drafts saved and not yet sent: it falls when a case is signed and sent ('1 is still being prepared' when one is left)" }
+  cA@{ shape: rect, label: "<b>56 is the number of rows in the tracker at the sites in view: Both sites 56 = Site A 33 plus Site B 23. A small 'Site A' tag follows the header when the view is narrowed to one site</b><br/>A case signed and sent in New case adds a row ('57 active cases.'), and '1 active case.' reads in the singular<br/>5 is the drafts saved and not yet sent: it falls when a case is signed and sent ('1 is still being prepared' when one is left)" }
   sR@{ shape: curv-trap, label: "<b>Reviews this week tab</b><br/>Header '47 clinical reviews due this week.'<br/>'Agents draft each review ahead of time. You update only what they ask about.'<br/>Buttons 'Draft all due reviews' and 'Sign all clean drafts'" }
-  cR@{ shape: rect, label: "<b>47 is one review for each approved case (9 cases are not yet approved and have none)</b><br/>Only reviews due before the end of Sunday are counted: a next review booked for Friday makes it '48', one booked for next week does not<br/>'1 clinical review due this week.' reads in the singular" }
+  cR@{ shape: rect, label: "<b>47 is one review for each approved case at the sites in view (Site A 27 plus Site B 20) (9 cases are not yet approved and have none)</b><br/>Only reviews due before the end of Sunday are counted: a next review booked for Friday makes it '48', one booked for next week does not<br/>'1 clinical review due this week.' reads in the singular" }
   sF@{ shape: curv-trap, label: "<b>Filter bar under the header (both tabs)</b><br/>Search box, 'All levels of care', 'All payers', then 'Any status' (Active cases) or 'Any review status' (Reviews)<br/>On the right the switch 'Active cases' | 'Reviews this week'" }
   c1@{ shape: trap-t, label: "Click 'Reviews this week'" }
   c2@{ shape: trap-t, label: "Click 'Active cases'" }
@@ -36,7 +36,7 @@ flowchart TD
   g2@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Being prepared card" }
   g3@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Tracker of every active case" }
   g4@{ shape: subproc, label: "Continues in: Case Manager › Reviews this week › The list" }
-  g5@{ shape: subproc, label: "Continues in: New case › Referral step" }
+  g5@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Start with a referral or patient" }
   g6@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Step-down plans from accepted denials" }
   g7@{ shape: subproc, label: "Continues in: Case Manager › Active cases › A new case joins the tracker" }
   s1 --> p1

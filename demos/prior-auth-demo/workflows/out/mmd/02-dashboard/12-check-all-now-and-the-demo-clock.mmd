@@ -16,7 +16,7 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s0@{ shape: stadium, label: "<b>Look at the header</b><br/>'Check all now' sits top right of the headline card" }
+  s0@{ shape: stadium, label: "<b>Look at the top of the page</b><br/>'Check all now' sits top right, beside the title" }
   dp@{ shape: diam, label: "Is Navigator paused in Settings?" }
   sp@{ shape: curv-trap, label: "<b>'Check all now' is disabled</b><br/>Under it a link: 'Navigator is paused in Settings'" }
   cs@{ shape: trap-t, label: "Click 'Navigator is paused in Settings'" }
@@ -24,23 +24,23 @@ flowchart TD
   xs@{ shape: stadium, label: "<b>Nothing runs</b><br/>Resume Navigator in Settings and the button works again" }
   s1@{ shape: trap-t, label: "Click 'Check all now'" }
   p1@{ shape: rect, label: "Button shows a spinner and is disabled for 1.2 seconds" }
-  a1@{ shape: hex, label: "<b>Navigator looks at every open request</b><br/>Received and Under review, whatever the filters say" }
+  a1@{ shape: hex, label: "<b>Navigator looks at every open request in view</b><br/>Submitted and Decision pending at the sites the viewer can see, whatever the menus say" }
   w1@{ shape: cyl, label: "<b>Each open request gets a history line</b><br/>'Navigator checked: received' or 'Navigator checked: under review'" }
-  t1@{ shape: odd, label: "<b>'Navigator checked 18 open requests'</b><br/>'No new answers yet. It checks again in 30 minutes.'" }
-  e1@{ shape: stadium, label: "<b>Button is ready again</b><br/>No request changes stage" }
+  t1@{ shape: odd, label: "<b>'Navigator checked 18 open requests'</b><br/>'No new answers yet. It checks again in 30 minutes.'<br/>The count is the open requests in view" }
+  e1@{ shape: stadium, label: "<b>Button is ready again</b><br/>No request changes state" }
   s2@{ shape: stadium, label: "Demo menu › Click 'Fast-forward 1 hour' or 'Fast-forward 1 day'" }
   c1@{ shape: cyl, label: "<b>Demo clock moves forward</b><br/>Nothing else moves time" }
   t2@{ shape: odd, label: "<b>'Clock moved forward 1 hour' or '1 day'</b><br/>'Times in stage and deadlines updated.'" }
   p2@{ shape: rect, label: "Dashboard recomputes from the new time" }
   subgraph gClock ["What the clock changes on the Dashboard"]
-  r1@{ shape: rect, label: "<b>Table: time in stage grows</b><br/>Over 1.5 × typical shows 'late'; over 2 × shows 'very late'" }
-  r2@{ shape: rect, label: "<b>Table: open denials count down</b><br/>'36 h left', '3 days left', then 'window closed'" }
-  r3@{ shape: rect, label: "<b>Table order: rows are ordered by their due time, so overdue ones move up</b><br/>The Summary from FLO is worked out again from the new time" }
-  r4@{ shape: rect, label: "Key figures: 'Due within 24 hours' and the 'deadlines this week' under 'Denials to act on' count from the new time" }
+  r1@{ shape: rect, label: "<b>Table: 'Days in state' grows</b><br/>Over 1.5 × the payer's median is ochre, over 2 × is terracotta" }
+  r2@{ shape: rect, label: "<b>Table: the CMS clock on Medicaid managed care payers</b><br/>'Day 5 of 7' from day 5, then the ochre flag 'Past 7 days'" }
+  r3@{ shape: rect, label: "<b>Do next: due times count down, overdue items move up</b><br/>A request past the CMS time comes first" }
+  r4@{ shape: rect, label: "<b>Lifecycle: 'running late', 'past 7 days' and 'deadlines this week' lines, and the counts of Active and Renewal due, are worked out again</b><br/>An approval whose end date has passed leaves Active" }
   end
-  p3@{ shape: rect, label: "Not changed: the stage counts" }
+  p3@{ shape: rect, label: "Not changed: the counts of Awaiting sign-off, Submitted, Decision pending, Info requested, Denied / appeal, and the title" }
   g1@{ shape: subproc, label: "Continues in: Global shell › Demo menu" }
-  g2@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Read a row: bars, clock and what happens next" }
+  g2@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Days in state and the CMS decision time" }
   s0 --> dp
   dp -->|"No"| s1 --> p1 --> a1 --> w1 --> t1 --> e1
   dp -->|"Yes"| sp --> cs --> gs

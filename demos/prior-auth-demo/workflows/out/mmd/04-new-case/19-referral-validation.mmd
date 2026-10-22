@@ -21,7 +21,7 @@ flowchart TD
   sc2@{ shape: curv-trap, label: "<b>Two lists</b><br/>'Referral form' '4 of 7 passed': signature, order not expired, credentials, clinical components, diagnosis, service, urgent criteria<br/>'Face sheet' '2 of 2 passed': age, contact" }
   d1@{ shape: diam, label: "<b>Open and something to ask?</b><br/>(a failed age check is never counted)" }
   c1@{ shape: trap-t, label: "Click 'Request information for all open findings'" }
-  g1@{ shape: subproc, label: "Continues in: New case › Referral › Ask the referrer" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › Ask the referrer" }
   d2@{ shape: diam, label: "State of one check?" }
   r1@{ shape: rect, label: "<b>Passed</b><br/>Green tick, check name, what Reader found" }
   r2@{ shape: rect, label: "<b>Needs attention</b><br/>Amber triangle, the problem in a sentence<br/>'The clinician signature is missing'" }
@@ -37,7 +37,7 @@ flowchart TD
   o1@{ shape: win-pane, label: "<b>Menu</b><br/>'Request information'<br/>'Mark OK with reason'" }
   c4@{ shape: trap-t, label: "Pick 'Request information'" }
   c5@{ shape: trap-t, label: "Pick 'Mark OK with reason'" }
-  g2@{ shape: subproc, label: "Continues in: New case › Referral › Mark OK or decline" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › Mark OK or decline" }
   s1 --> sc1 --> sc2
   sc1 --> d1
   d1 -->|"Yes"| c1 --> g1

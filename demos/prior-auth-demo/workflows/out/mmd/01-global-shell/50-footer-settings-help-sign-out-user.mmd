@@ -17,7 +17,7 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Look at the bottom of the sidebar" }
-  foot@{ shape: curv-trap, label: "<b>Footer</b><br/>'Demo data' tile, 'Settings', 'Help', 'Sign out', then 'JP  Jordan Perez  UR coordinator'" }
+  foot@{ shape: curv-trap, label: "<b>Footer</b><br/>'Demo data' tile, 'Settings', 'Help', 'Sign out', then the user card, 'JP  Jordan Perez  UR coordinator' until another viewer is chosen" }
   cTile@{ shape: trap-t, label: "Click the 'Demo data' tile" }
   pTile@{ shape: rect, label: "Nothing happens: it is a label only" }
   eTile@{ shape: stadium, label: "No change" }
@@ -26,7 +26,7 @@ flowchart TD
   pSetOn@{ shape: rect, label: "<b>The 'Settings' row turns green while the address starts with /settings</b><br/>(the only footer row that highlights)" }
   gSet@{ shape: subproc, label: "Continues in: Settings" }
   cHelp@{ shape: trap-t, label: "Click 'Help'" }
-  tHelp@{ shape: odd, label: "<b>'Help'</b><br/>'Press Ask FLO (top right) to ask a question. Use Demo, top right, to reset or move time forward.'" }
+  tHelp@{ shape: odd, label: "<b>'Help'</b><br/>'Press Ask FLO (top right) to ask a question. Use Demo, top right, to reset, move time forward or view as another person.'" }
   pHelp@{ shape: rect, label: "No page opens and no dialog: the message is the whole of Help" }
   dHelp@{ shape: diam, label: "What does the person do next?" }
   cAsk@{ shape: trap-t, label: "Click 'Ask FLO'" }
@@ -35,11 +35,11 @@ flowchart TD
   gDemo@{ shape: subproc, label: "Continues in: Global shell › Demo menu › Open, close and what is inside" }
   cOut@{ shape: trap-t, label: "Click 'Sign out'" }
   tOut@{ shape: odd, label: "<b>'This is a demo'</b><br/>'There is nothing to sign out of.'" }
-  pOut@{ shape: rect, label: "<b>The person stays signed in as Jordan Perez</b><br/>There is no login screen in the demo" }
+  pOut@{ shape: rect, label: "<b>The person stays signed in as whoever is viewing (Jordan Perez at the start)</b><br/>There is no login screen in the demo" }
   eOut@{ shape: stadium, label: "Same page, same data" }
-  cCard@{ shape: trap-t, label: "<b>Click the user card</b><br/>('JP', 'Jordan Perez', 'UR coordinator')" }
+  cCard@{ shape: trap-t, label: "<b>Click the user card</b><br/>(initials, name and role of the viewer: 'JP', 'Jordan Perez', 'UR coordinator')" }
   pCard@{ shape: rect, label: "Nothing happens: no menu, no profile page" }
-  pWho@{ shape: rect, label: "<b>Jordan Perez is the person every action is credited to</b><br/>The Case Manager sign dialog says so: 'You are signed in as Jordan Perez, a UR coordinator'" }
+  pWho@{ shape: rect, label: "<b>The viewer is the person edits and acknowledgements are credited to</b><br/>It changes with 'Viewing as' in the Demo menu: for Dr. Rivera the card reads 'Clinician, Site A'<br/>The Case Manager sign dialog says 'You are signed in as Jordan Perez, a UR coordinator'" }
   eCard@{ shape: stadium, label: "No change" }
   pToast@{ shape: rect, label: "Toasts fade after about 4 seconds, or on a click" }
   s1 --> foot
@@ -47,7 +47,7 @@ flowchart TD
   foot --> cSet --> pSet --> pSetOn --> gSet
   foot --> cHelp --> tHelp --> pHelp --> dHelp
   dHelp -->|"Ask a question"| cAsk --> gAsk
-  dHelp -->|"Move the clock or reset"| cDemo --> gDemo
+  dHelp -->|"Move the clock, reset or view as someone else"| cDemo --> gDemo
   foot --> cOut --> tOut --> pOut --> eOut
   foot --> cCard --> pCard --> eCard
   pCard -.-> pWho

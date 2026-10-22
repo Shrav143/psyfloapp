@@ -1,0 +1,71 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Pick 'Modification / extension' in 'Authorization type'</b><br/>Or open ?type=modify" }
+  sc@{ shape: curv-trap, label: "<b>Intake · Modification / extension</b><br/>'Find the patient, then the authorization to change, and say what should change.'" }
+  gFind@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Find a patient and the authorization" }
+  sAuth@{ shape: curv-trap, label: "<b>Authorization card</b><br/>Status, approved dates, authorized, left, expires on, 'History'" }
+  subgraph gChange ["Card 'Proposed change'"]
+  sChg@{ shape: curv-trap, label: "<b>'Say what should change and why. The payer decides.'</b><br/>Pill 'Payer approval: not yet. This is a request, not an approval.'" }
+  iKind@{ shape: lean-r, label: "<b>Pick 'What should change'</b><br/>More units, More days, Revised dates, Different service or level of care, A correction" }
+  dMore@{ shape: diam, label: "More units or More days?" }
+  iAmt@{ shape: lean-r, label: "<b>'How many more units' or 'How many more days'</b><br/>1 to 90" }
+  iWhy@{ shape: lean-r, label: "<b>'Why the change is needed'</b><br/>'One or two sentences. Scribe uses it in the justification, and only what the chart supports goes in.'" }
+  end
+  sDates@{ shape: curv-trap, label: "<b>Card 'Dates the change covers'</b><br/>'From today, unless the change revises the dates.'" }
+  iFrom@{ shape: lean-r, label: "<b>'Change starts'</b><br/>Today" }
+  iTo@{ shape: lean-r, label: "'Change ends' (optional)" }
+  st@{ shape: cyl, label: "<b>The request is recorded as 'Modification'</b><br/>The change is kept on the case with the authorization's ids<br/>The authorization itself is not touched" }
+  dEmpty@{ shape: diam, label: "Is the reason for the change empty?" }
+  tEmpty@{ shape: odd, label: "<b>Review & submit lists 'Proposed change' to acknowledge</b><br/>'Say what should change and why. A modification is a request, not an approval.'" }
+  pDup@{ shape: rect, label: "<b>A modification is never a duplicate of the authorization it changes</b><br/>Another open request or active authorization for the same dates still is" }
+  gDup@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Possible duplicate" }
+  pHist@{ shape: rect, label: "<b>After sending, the request's History says</b><br/>'You asked for a change to the authorization'<br/>'This is a request, not an approval. Nothing changes until the payer approves it.'" }
+  pDoc@{ shape: rect, label: "Typical documents: clinical note that supports the change, updated treatment plan, the current authorization letter" }
+  gElig@{ shape: subproc, label: "Continues in: Authorizations › New case › Eligibility & Benefits › Modification / extension" }
+  gDocs@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › Required and typical documents by type" }
+  gJust@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › Justification by type" }
+  cSave@{ shape: trap-t, label: "Click 'Save as draft'" }
+  cCont@{ shape: trap-t, label: "Click 'Continue to Eligibility & Benefits'" }
+  gSave@{ shape: subproc, label: "Continues in: Authorizations › New case › Save as draft and leave" }
+  s1 --> sc --> gFind
+  sc --> sAuth --> sChg
+  sChg --> iKind --> dMore
+  dMore -->|"Yes"| iAmt --> iWhy
+  dMore -->|"No"| iWhy
+  iWhy --> dEmpty
+  dEmpty -->|"Yes"| tEmpty
+  dEmpty -->|"No"| sDates
+  tEmpty --> sDates
+  sDates --> iFrom --> iTo --> st
+  st --> pHist
+  st --> pDup -.-> gDup
+  st --> pDoc --> gDocs
+  st --> gJust
+  st --> cSave --> gSave
+  st --> cCont --> gElig
+  class s1 k_start
+  class sc,sAuth,sChg,sDates k_screen
+  class gFind,gDup,gElig,gDocs,gJust,gSave k_goto
+  class iKind,iAmt,iWhy,iFrom,iTo k_input
+  class dMore,dEmpty k_decision
+  class st k_store
+  class tEmpty k_toast
+  class pDup,pHist,pDoc k_process
+  class cSave,cCont k_click
+  style gChange fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

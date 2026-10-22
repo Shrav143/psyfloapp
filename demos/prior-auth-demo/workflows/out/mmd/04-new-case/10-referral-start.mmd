@@ -16,43 +16,50 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Open New case</b><br/>Blank draft, step 'Referral'" }
-  s2@{ shape: stadium, label: "<b>Click 'Back' or 'Add a referral'</b><br/>on the Medical records step" }
+  s1@{ shape: stadium, label: "<b>Open New case</b><br/>Authorization type 'Initial authorization', nothing started" }
+  s2@{ shape: stadium, label: "<b>Click 'Use a different referral or patient'</b><br/>on the details of a case" }
   s3@{ shape: stadium, label: "<b>Click 'Use different documents'</b><br/>on a referral checklist" }
-  sc1@{ shape: curv-trap, label: "<b>New case › Referral</b><br/>'Start with the referral. Drop the documents and Reader lists anything that is missing.'" }
-  subgraph gDrop ["Drop the documents"]
-  i1@{ shape: lean-r, label: "<b>Drop files on 'Drop the referral documents'</b><br/>or click it and choose files" }
+  sc1@{ shape: curv-trap, label: "<b>Intake</b><br/>'Start with a referral or patient'<br/>'Drop the referral documents and Reader lists what is missing, pick one that already arrived, find a patient who is known, or create the case by hand.'" }
+  subgraph gDrop ["Drop the referral documents"]
+  i1@{ shape: lean-r, label: "<b>Drop files on 'Drop the referral documents'</b><br/>or click it and choose files<br/>'The referral form, the face sheet, the insurance card, any orders.'" }
   p1@{ shape: rect, label: "<b>Reader picks one of three invented referrals</b><br/>from the first file name" }
   c2@{ shape: trap-t, label: "Click 'Use sample referral'" }
   p2@{ shape: rect, label: "<b>Takes the next invented referral in turn</b><br/>(file: referral.pdf)" }
   end
-  sc2@{ shape: curv-trap, label: "<b>'Reader is reading 1 document'</b><br/>File names (first three, then 'and N more')" }
-  a1@{ shape: hex, label: "<b>Reader reads, about one second each:</b><br/>Scanning the documents<br/>Checking the program's requirements<br/>Verifying required components<br/>Confirming the data is complete" }
-  leave@{ shape: trap-t, label: "<b>Leave the page while Reader reads</b><br/>(no Cancel button on this screen)" }
+  sc2@{ shape: curv-trap, label: "<b>'Reader is reading 1 document'</b><br/>File names (first three, then 'and N more')<br/>Four lines with a spinner on the current one" }
+  a1@{ shape: hex, label: "<b>Reader reads, about one second each:</b><br/>Reader is scanning the documents<br/>Checking the program's requirements<br/>Verifying required components<br/>Confirming the data is complete" }
+  leave@{ shape: trap-t, label: "<b>Leave the page while Reader reads</b><br/>(there is no Cancel button on this screen)" }
   e1@{ shape: stadium, label: "Nothing is added" }
-  st1@{ shape: cyl, label: "<b>New referral added, next RF number</b><br/>Status New, received just now" }
-  t1@{ shape: odd, label: "<b>'Reader read the documents'</b><br/>'RF-2054 is ready. The checklist shows what is missing.'" }
-  t2@{ shape: odd, label: "<b>Bell notification 'New referral read'</b><br/>'RF-2054 from Eastgate Probation Services is on your checklist in New case.'" }
-  p3@{ shape: rect, label: "<b>Address gets ?ref=RF-2054</b><br/>Checklist opens" }
-  g1@{ shape: subproc, label: "Continues in: New case › Referral › Referral checklist" }
-  subgraph gArr ["Already arrived"]
-  sc3@{ shape: curv-trap, label: "<b>'Already arrived (8)'</b><br/>'Referrals that came in by fax, e-referral, the portal or phone. Reader has read each one.'" }
-  p4@{ shape: rect, label: "<b>Open referrals only: New, In review, Awaiting info</b><br/>Emergent, then urgent, then routine; waiting-on-referrer last" }
-  p5@{ shape: rect, label: "<b>Each row: initials and age, RF number, urgency, source, channel, time</b><br/>Pill: 'n to check', 'Nothing to check' or 'Waiting on the referrer'" }
+  st1@{ shape: cyl, label: "<b>New referral added with the next RF number that falls at the site in view</b><br/>Status New, received just now" }
+  t1@{ shape: odd, label: "<b>'Reader read the documents'</b><br/>'RF-2056 is ready. The checklist shows what is missing.'" }
+  t2@{ shape: odd, label: "<b>Bell notification 'New referral read'</b><br/>'RF-2056 from Eastgate Probation Services is on your checklist in New case.'" }
+  p3@{ shape: rect, label: "<b>Address gets ?ref=RF-2056</b><br/>The referral's checklist opens in Intake" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › Referral checklist" }
+  subgraph gPat ["Find a patient who is already known"]
+  cPat@{ shape: trap-t, label: "<b>Click 'Find a patient who is already known'</b><br/>'Search Both sites by initials or case ID. Nobody is added twice.'" }
+  gFind@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Find a patient and the authorization" }
+  pPick@{ shape: rect, label: "<b>Picking a patient fills their details</b><br/>No second patient is made<br/>Intake shows the details, with a possible duplicate flagged" }
+  tPick@{ shape: odd, label: "<b>'J.M., 34 is in this case'</b><br/>'The patient's own details are filled in. No second patient is made.'" }
+  end
+  subgraph gInc ["Incoming referrals"]
+  d2@{ shape: diam, label: "<b>Is any referral open at the sites in view?</b><br/>New, In review or Awaiting info" }
+  p8@{ shape: rect, label: "Whole 'Incoming referrals' section is hidden" }
+  sc3@{ shape: curv-trap, label: "<b>'Incoming referrals (8)'</b><br/>'Referrals that came in by fax, e-referral, the portal or phone, at both sites. Reader has read each one.'" }
+  p4@{ shape: rect, label: "<b>Order: emergent, then urgent, then routine, longest wait first</b><br/>A referral waiting on its referrer goes last<br/>A viewer at one site sees that site's referrals only" }
+  p5@{ shape: rect, label: "<b>Each row: initials and age, RF number, urgency (if not routine), source, channel, time</b><br/>Status: 'Documents complete', 'N items missing', 'N items to review' or 'Waiting on the referrer'<br/>Button 'Review'" }
   d1@{ shape: diam, label: "More than 6 open referrals?" }
   c3@{ shape: trap-t, label: "Click 'Show 2 more'" }
-  p6@{ shape: rect, label: "<b>All rows show</b><br/>Button now reads 'Show fewer'" }
+  p6@{ shape: rect, label: "<b>All rows show</b><br/>The button now reads 'Show fewer'" }
   c4@{ shape: trap-t, label: "Click 'Show fewer'" }
-  c5@{ shape: trap-t, label: "Click 'Check' on a row" }
-  p7@{ shape: rect, label: "<b>Referral marked opened</b><br/>Sidebar badge on 'New case' drops" }
+  c5@{ shape: trap-t, label: "Click 'Review' on a row" }
+  p7@{ shape: rect, label: "<b>Referral marked opened</b><br/>Sidebar badge on 'New case' drops<br/>Address gets ?ref=RF-2045" }
   end
-  d2@{ shape: diam, label: "Any open referral?" }
-  p8@{ shape: rect, label: "Whole 'Already arrived' section is hidden" }
-  subgraph gNone ["No referral"]
-  c6@{ shape: trap-t, label: "Click 'No referral? Continue without one'" }
-  p9@{ shape: rect, label: "<b>Step moves to Medical records</b><br/>No referral is attached" }
+  subgraph gNone ["Create the case by hand"]
+  c6@{ shape: trap-t, label: "Click 'Create case manually'" }
+  p9@{ shape: rect, label: "<b>The case is marked started</b><br/>The details show: site, patient, insurance and request rows" }
   end
-  g2@{ shape: subproc, label: "Continues in: New case › Medical records › The checklist and Continue" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Initial authorization" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Patient, insurance and request rows" }
   s1 --> sc1
   s2 --> sc1
   s3 --> sc1
@@ -61,6 +68,8 @@ flowchart TD
   sc2 --> a1 --> st1 --> t1 --> p3 --> g1
   st1 -.-> t2
   sc2 --> leave --> e1
+  sc1 --> cPat --> gFind
+  cPat --> pPick --> tPick --> g2
   sc1 --> d2
   d2 -->|"Yes"| sc3 --> p4 --> p5 --> d1
   d2 -->|"No"| p8
@@ -70,17 +79,19 @@ flowchart TD
   c4 -.-> d1
   c5 --> p7 --> g1
   sc1 --> c6 --> p9 --> g2
+  p9 -.-> g3
   class s1,s2,s3 k_start
   class sc1,sc2,sc3 k_screen
   class i1 k_input
-  class p1,p2,p3,p4,p5,p6,p7,p8,p9 k_process
-  class c2,leave,c3,c4,c5,c6 k_click
+  class p1,p2,p3,pPick,p8,p4,p5,p6,p7,p9 k_process
+  class c2,leave,cPat,c3,c4,c5,c6 k_click
   class a1 k_agent
   class e1 k_endx
   class st1 k_store
-  class t1,t2 k_toast
-  class g1,g2 k_goto
-  class d1,d2 k_decision
+  class t1,t2,tPick k_toast
+  class g1,gFind,g2,g3 k_goto
+  class d2,d1 k_decision
   style gDrop fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
-  style gArr fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gPat fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gInc fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gNone fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

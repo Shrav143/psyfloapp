@@ -31,9 +31,10 @@ flowchart TD
   p5@{ shape: rect, label: "'Reset demo data' empties the stack, then adds its own toast" }
   e1@{ shape: stadium, label: "Stack is empty" }
   subgraph gShell ["Toasts raised by the shell"]
-  s2@{ shape: odd, label: "<b>'Help'</b><br/>'Press Ask FLO (top right) to ask a question. Use Demo, top right, to reset or move time forward.'" }
+  s2@{ shape: odd, label: "<b>'Help'</b><br/>'Press Ask FLO (top right) to ask a question. Use Demo, top right, to reset, move time forward or view as another person.'" }
   s3@{ shape: odd, label: "<b>'This is a demo'</b><br/>'There is nothing to sign out of.'" }
   s4@{ shape: odd, label: "<b>'Clock moved forward 1 hour' or '1 day'</b><br/>'Times in stage and deadlines updated.'" }
+  s7@{ shape: odd, label: "<b>'Now viewing as Dr. Rivera'</b><br/>'Clinician, Site A. Only Site A is visible; the other site's records are not available.'<br/>(Demo menu › Viewing as, or Settings › View as)" }
   s5@{ shape: odd, label: "<b>'Demo data reset'</b><br/>'Everything is back to the starting point.'" }
   s6@{ shape: odd, label: "<b>Hosted preview only: 'Print is off in this preview'</b><br/>'Open the single-file version of the demo to use it.'<br/>Same for 'Copy link' and 'Download'" }
   end
@@ -53,14 +54,14 @@ flowchart TD
   t1 & t2 & t3 & t4 --> c1 --> p3 --> e1
   p1 --> p4
   p4 --> p5
-  s2 & s3 & s4 & s5 & s6 --> s1
+  s2 & s3 & s4 & s5 & s6 & s7 --> s1
   m1 & m2 & m3 --> s1
   m3 --> g1
   p5 --> g2
   class s1 k_start
   class p1,p2,p3,p4,p5 k_process
   class d1 k_decision
-  class t1,t2,t3,t4,s2,s3,s4,s5,s6,m1,m2,m3 k_toast
+  class t1,t2,t3,t4,s2,s3,s4,s7,s5,s6,m1,m2,m3 k_toast
   class w1 k_wait
   class c1 k_click
   class e1 k_end

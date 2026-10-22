@@ -6,7 +6,7 @@ Shapes and colours: see `00-overview.md`. Source: `workflows/src/07-case-manager
 
 ## Case Manager › Page › Arrive and read the header
 
-Case Manager has two tabs, 'Active cases' and 'Reviews this week'. The address decides which one opens. Each tab has its own header with live counts, and both share one filter bar.
+Case Manager has two tabs, 'Active cases' and 'Reviews this week'. The address decides which one opens. Each tab has its own header with live counts, and both share one filter bar. Every count, row and tile follows the site view.
 
 Route: `/manager (Active cases) and /manager?tab=reviews`
 
@@ -36,12 +36,12 @@ flowchart TD
   s3@{ shape: stadium, label: "Old link /active" }
   s4@{ shape: stadium, label: "<b>A link from another page</b><br/>(see 'Links in and the tab address')" }
   p0@{ shape: rect, label: "/active is replaced by /manager" }
-  p1@{ shape: rect, label: "<b>Page opens at the top</b><br/>Sidebar 'Case Manager' turns green; its bubble reads 11" }
+  p1@{ shape: rect, label: "<b>Page opens at the top</b><br/>Sidebar 'Case Manager' turns green; its bubble reads 11 for Both sites (Site A 6, Site B 5)" }
   d1@{ shape: diam, label: "Is the address ?tab=reviews?" }
   sA@{ shape: curv-trap, label: "<b>Active cases tab: the tracker is what the page opens on</b><br/>Header '56 active cases.'<br/>'5 are still being prepared. Units, clocks and status for every case, across every level of care.'<br/>Button 'New case'<br/>Above the tracker, one folded row 'Being prepared' ('5 being prepared, 3 need you') and, only when a denial was accepted, a folded 'Step-down plans' row" }
-  cA@{ shape: rect, label: "<b>56 is the number of rows in the tracker</b><br/>A case signed and sent in New case adds a row ('57 active cases.'), and '1 active case.' reads in the singular<br/>5 is the drafts saved and not yet sent: it falls when a case is signed and sent ('1 is still being prepared' when one is left)" }
+  cA@{ shape: rect, label: "<b>56 is the number of rows in the tracker at the sites in view: Both sites 56 = Site A 33 plus Site B 23. A small 'Site A' tag follows the header when the view is narrowed to one site</b><br/>A case signed and sent in New case adds a row ('57 active cases.'), and '1 active case.' reads in the singular<br/>5 is the drafts saved and not yet sent: it falls when a case is signed and sent ('1 is still being prepared' when one is left)" }
   sR@{ shape: curv-trap, label: "<b>Reviews this week tab</b><br/>Header '47 clinical reviews due this week.'<br/>'Agents draft each review ahead of time. You update only what they ask about.'<br/>Buttons 'Draft all due reviews' and 'Sign all clean drafts'" }
-  cR@{ shape: rect, label: "<b>47 is one review for each approved case (9 cases are not yet approved and have none)</b><br/>Only reviews due before the end of Sunday are counted: a next review booked for Friday makes it '48', one booked for next week does not<br/>'1 clinical review due this week.' reads in the singular" }
+  cR@{ shape: rect, label: "<b>47 is one review for each approved case at the sites in view (Site A 27 plus Site B 20) (9 cases are not yet approved and have none)</b><br/>Only reviews due before the end of Sunday are counted: a next review booked for Friday makes it '48', one booked for next week does not<br/>'1 clinical review due this week.' reads in the singular" }
   sF@{ shape: curv-trap, label: "<b>Filter bar under the header (both tabs)</b><br/>Search box, 'All levels of care', 'All payers', then 'Any status' (Active cases) or 'Any review status' (Reviews)<br/>On the right the switch 'Active cases' | 'Reviews this week'" }
   c1@{ shape: trap-t, label: "Click 'Reviews this week'" }
   c2@{ shape: trap-t, label: "Click 'Active cases'" }
@@ -51,7 +51,7 @@ flowchart TD
   g2@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Being prepared card" }
   g3@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Tracker of every active case" }
   g4@{ shape: subproc, label: "Continues in: Case Manager › Reviews this week › The list" }
-  g5@{ shape: subproc, label: "Continues in: New case › Referral step" }
+  g5@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Start with a referral or patient" }
   g6@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Step-down plans from accepted denials" }
   g7@{ shape: subproc, label: "Continues in: Case Manager › Active cases › A new case joins the tracker" }
   s1 --> p1
@@ -171,7 +171,7 @@ flowchart TD
 
 ## Case Manager › Active cases › Being prepared card
 
-Above the tracker, one folded row says how many cases the agents are still preparing and how many need a person, and links to Authorizations. Opening it shows the full list, most urgent first, with four chips that narrow it by who has the next move, and 'sent today' that jumps to the Dashboard. The list is kept so the queue is not repeated on the page. Each row is explained in the next diagram.
+Above the tracker, one folded row says how many cases the agents are still preparing at the sites in view (a case has its own site, chosen in Intake) and how many need a person, and links to Authorizations. Opening it shows the full list, most urgent first, with four chips that narrow it by who has the next move, and 'sent today' that jumps to the Dashboard. The list is kept so the queue is not repeated on the page. Each row is explained in the next diagram.
 
 Route: `/manager`
 
@@ -208,7 +208,7 @@ flowchart TD
   sh@{ shape: curv-trap, label: "<b>Top right of the opened row</b><br/>Ghost button '4 sent today', then the chips 'All', 'Agents working', 'Needs your input', 'Ready to sign'" }
   c1@{ shape: trap-t, label: "Click '4 sent today'" }
   p3@{ shape: rect, label: "Go to /dashboard?stage=received" }
-  g1@{ shape: subproc, label: "Continues in: Dashboard › Key figures › Click a figure to filter the list" }
+  g1@{ shape: subproc, label: "Continues in: Dashboard › Lifecycle › Click a state to filter the table" }
   c2@{ shape: trap-t, label: "Click a chip" }
   d1@{ shape: diam, label: "Which chip?" }
   k1@{ shape: rect, label: "'All': every row" }
@@ -226,7 +226,7 @@ flowchart TD
   g5@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Updated for a payer change" }
   e1@{ shape: stadium, label: "Rows are on screen" }
   p5@{ shape: rect, label: "After a case is signed and sent in New case it leaves this list, 'sent today' counts one more, and the tracker adds it as 'New today' unless it already had a row" }
-  s2@{ shape: stadium, label: "Later: a case is signed and sent in New case › Review and sign" }
+  s2@{ shape: stadium, label: "Later: a case is signed and sent in New case › Review & submit" }
   s1 --> sf --> pn
   sf --> cl --> pl --> gl
   sf --> co --> sc --> p1 --> p2 --> sh
@@ -294,16 +294,16 @@ flowchart TD
   c1@{ shape: trap-t, label: "Click the case ID or the button" }
   p1@{ shape: rect, label: "Go to /authorizations/new/ followed by the draft's code" }
   d2@{ shape: diam, label: "Which step does New case open on?" }
-  g1@{ shape: subproc, label: "Continues in: New case › Medical records (intake)" }
-  g2@{ shape: subproc, label: "Continues in: New case › Agents work › Answer an agent's question" }
-  g3@{ shape: subproc, label: "Continues in: New case › Agents work › Watch the agents" }
-  g4@{ shape: subproc, label: "Continues in: New case › Review and sign › Sign and send" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Reopen and resume a case" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › An agent asks a question" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › Start the run and watch it" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Sign and send to payer" }
   c2@{ shape: trap-t, label: "Click anywhere else on the row" }
   p2@{ shape: rect, label: "Nothing happens: the row itself is not a link" }
   e1@{ shape: stadium, label: "Stays on Case Manager" }
   p3@{ shape: rect, label: "Once signed and sent, the case disappears from this list, 'are still being prepared' drops by one, the sidebar bubble drops if it needed a person, and the tracker lists it as 'New today' unless it already had a row" }
   e2@{ shape: stadium, label: "The request now shows as 'Received' on the Dashboard" }
-  g5@{ shape: subproc, label: "Continues in: Dashboard › Open a request" }
+  g5@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   g6@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Updated for a payer change" }
   s1 --> r1 --> r2 --> r3 --> r4 --> p0 --> d1
   d1 -->|"Unfinished intake"| t1
@@ -402,7 +402,7 @@ flowchart TD
 
 ## Case Manager › Active cases › Step-down plans from accepted denials
 
-When the clinic accepts a denial in Denial Intelligence, Active cases gets a 'Step-down plan' for it, in a folded row between 'Being prepared' and the tracker. The row is there only while at least one plan exists. Each plan names the case, the denial it came from and one button that opens the case.
+When the clinic accepts a denial in Denial Intelligence, Active cases gets a 'Step-down plan' for it, in a folded row between 'Being prepared' and the tracker. The row is there only while at least one plan exists at a site in view: a plan follows the site of the denial it came from, so a one-site viewer never sees the other site's. Each plan names the case, the denial it came from and one button that opens the case.
 
 Route: `/manager`
 
@@ -520,7 +520,7 @@ flowchart TD
 
 ## Case Manager › Active cases › Tracker of every active case
 
-The tracker is what Active cases opens on, under the folded 'Being prepared' row (and 'Step-down plans' when there are any). It lists all 56 active cases across every level of care, plus any case signed and sent today. Four tiles count them by status and filter the table when clicked. The table is sorted by what is due next, ten rows a page.
+The tracker is what Active cases opens on, under the folded 'Being prepared' row (and 'Step-down plans' when there are any). It lists the active cases at the sites in view (Both sites: all 56; Site A 33; Site B 23) across every level of care, plus any case signed and sent today. Four tiles count them by status and filter the table when clicked. The table is sorted by what is due next, ten rows a page.
 
 Route: `/manager`
 
@@ -546,9 +546,9 @@ flowchart TD
   s1@{ shape: stadium, label: "Open Active cases: the tracker is under the folded rows" }
   t0@{ shape: curv-trap, label: "<b>Four status tiles in a row</b><br/>11 'Needs action' (act today)<br/>14 'Review due' (review or recertify soon)<br/>15 'Awaiting payer' (the payer has it)<br/>16 'On track' (nothing needed)" }
   p0@{ shape: rect, label: "<b>Tile numbers follow search, level of care and payer</b><br/>They do not follow the status filter, so they always add up to the cases in view" }
-  t1@{ shape: curv-trap, label: "<b>Table card</b><br/>Columns: Case, Status, Next due, Units or days, Level of care, Payer, Approval chance, Open<br/>Status is the one coloured pill; level of care is plain text; approval chance is one small number<br/>Under a case ID, small text when it applies: 'New today', 'Updated for a payer change · 10/20'" }
+  t1@{ shape: curv-trap, label: "<b>Table card</b><br/>Columns: Case, Status, Next due, Units or days, Level of care, Payer, Approval chance, then a small quick view button and 'Open'<br/>Status is the one coloured pill; level of care is plain text; approval chance is one small number<br/>Under a case ID, small text when it applies: 'New today', 'Updated for a payer change · 10/20'" }
   p1@{ shape: rect, label: "<b>Rows are sorted by Next due, soonest first (overdue rows lead)</b><br/>Ten rows a page, 'Showing 1 to 10 of 56'<br/>The header count, the four tiles and this line are one list, so they always agree ('57' with a new case)" }
-  t2@{ shape: curv-trap, label: "<b>Note under the table</b><br/>'Units or days left are worked out at the usual pace ... Runs out before review appears only when ...'<br/>'Approval chance estimates how well the paperwork fits the payer's past decisions ... Strong is 80 and above, Moderate 55 to 79, At risk below 55. It never blocks a request.'" }
+  t2@{ shape: curv-trap, label: "<b>Note under the table</b><br/>'Click a row for a quick view, or Open for the full case.'<br/>'Units or days left are worked out at the usual pace ... Runs out before review appears only when ...'<br/>'Approval chance estimates how well the paperwork fits the payer's past decisions ... Strong is 80 and above, Moderate 55 to 79, At risk below 55. It never blocks a request.'" }
   c1@{ shape: trap-t, label: "Click a tile, for example 'Needs action'" }
   d1@{ shape: diam, label: "Was that tile already selected?" }
   p2@{ shape: rect, label: "<b>Tile gets a green outline</b><br/>The 'Any status' dropdown shows the same status<br/>Table keeps only that status, and goes back to page 1" }
@@ -559,8 +559,11 @@ flowchart TD
   g1@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Sort and page the tracker" }
   c4@{ shape: rect, label: "Look at a row's Status, Units or days and Next due cells" }
   g2@{ shape: subproc, label: "Continues in: Case Manager › Active cases › What each tracker cell means" }
-  c5@{ shape: trap-t, label: "Click a row, its case ID or 'Open'" }
+  c5@{ shape: trap-t, label: "Click its case ID or 'Open'" }
   g3@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Open a case from the tracker" }
+  c6@{ shape: trap-t, label: "Click the row, or its quick view button" }
+  g7@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Quick view of a case" }
+  g8@{ shape: subproc, label: "Continues in: Case Manager › Sites › What each site sees and out-of-site links" }
   d2@{ shape: diam, label: "Does any row match?" }
   g4@{ shape: subproc, label: "Continues in: Case Manager › Empty states › Nothing to show" }
   g5@{ shape: subproc, label: "Continues in: Case Manager › Active cases › A new case joins the tracker" }
@@ -579,14 +582,16 @@ flowchart TD
   t1 --> c3 --> g1
   t1 --> c4 --> g2
   t1 --> c5 --> g3
+  t1 --> c6 --> g7
+  t0 -.-> g8
   t1 -.-> g5
   t1 -.-> g6
   class s1 k_start
   class t0,t1,t2 k_screen
   class p0,p1,p2,p3,p4,c4 k_process
-  class c1,c2,c3,c5 k_click
+  class c1,c2,c3,c5,c6 k_click
   class d1,d2 k_decision
-  class g1,g2,g3,g4,g5,g6 k_goto
+  class g1,g2,g3,g7,g8,g4,g5,g6 k_goto
   class e1 k_end
 ```
 
@@ -754,7 +759,7 @@ flowchart LR
 
 ## Case Manager › Active cases › Open a case from the tracker
 
-A tracker row opens the case page. Three clicks do the same thing: the row, the case ID and the 'Open' button. A case that is a request gets the Authorizations case page; a case that only the ledger has gets the Ledger case page. Neither dead-ends.
+The case ID and the 'Open' button open the case page. A click on the row itself opens the quick view instead, and its 'Open case' button reaches the same page. A case that is a request gets the Authorizations case page; a case that only the ledger has gets the Ledger case page; a case at a site the viewer is not looking at gets the out-of-site card. None dead-ends.
 
 Route: `/manager → /authorizations/case/ID`
 
@@ -780,14 +785,18 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Tracker row is on screen" }
-  c1@{ shape: trap-t, label: "Click anywhere on the row" }
+  c1@{ shape: trap-t, label: "<b>Click anywhere on the row that is not a button</b><br/>(or its quick view button)" }
+  gq@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Quick view of a case" }
   c2@{ shape: trap-t, label: "Click the case ID (underlined)" }
   c3@{ shape: trap-t, label: "Click 'Open' at the end of the row" }
-  p0@{ shape: rect, label: "The row ignores a click that starts on the ID or the 'Open' button, so the case opens once and Back needs one press" }
+  p0@{ shape: rect, label: "A click on the ID or on a button acts on its own, and the row ignores it: the case opens once and Back needs one press" }
   p1@{ shape: rect, label: "<b>Case Manager works out the address</b><br/>/authorizations/case/ followed by the case code" }
   d1@{ shape: diam, label: "Is the row a denial?" }
   p2@{ shape: rect, label: "<b>Uses the case the denial came from</b><br/>D-3318 opens R-0997, the original case" }
   p3@{ shape: rect, label: "<b>Uses the row's own ID</b><br/>for example R-1042, I-2207 or R-0856" }
+  dsite@{ shape: diam, label: "Is the case at a site the viewer is looking at?" }
+  sos@{ shape: curv-trap, label: "<b>Out-of-site card</b><br/>'This case is not available at Site A'<br/>No patient or detail" }
+  gs@{ shape: subproc, label: "Continues in: Case Manager › Sites › What each site sees and out-of-site links" }
   d2@{ shape: diam, label: "<b>Is the case a request in the queue or on the Dashboard?</b><br/>(30 of the 56 rows, and every case signed and sent today)" }
   s2@{ shape: curv-trap, label: "<b>Case page</b><br/>Header with the case ID, level of care and the request clock<br/>Tabs for the case" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Case" }
@@ -801,11 +810,14 @@ flowchart TD
   e1@{ shape: stadium, label: "Back at the top of the tracker" }
   s1 --> c1 & c2 & c3
   c3 --> p0 --> p1
-  c1 --> p1
+  c1 --> gq
   c2 --> p1
+  gq -.-> p1
   p1 --> d1
-  d1 -->|"Yes"| p2 --> d2
-  d1 -->|"No"| p3 --> d2
+  d1 -->|"Yes"| p2 --> dsite
+  d1 -->|"No"| p3 --> dsite
+  dsite -->|"No"| sos --> gs
+  dsite -->|"Yes"| d2
   d2 -->|"Yes"| s2 --> g1
   d2 -->|"No"| d3
   d3 -->|"Yes"| s3 --> g3
@@ -815,10 +827,10 @@ flowchart TD
   c5 --> s4 --> p5 --> e1
   class s1 k_start
   class c1,c2,c3,c5 k_click
+  class gq,gs,g1,g3 k_goto
   class p0,p1,p2,p3,p5 k_process
-  class d1,d2,d3 k_decision
-  class s2,s3,s5,s4 k_screen
-  class g1,g3 k_goto
+  class d1,dsite,d2,d3 k_decision
+  class sos,s2,s3,s5,s4 k_screen
   class e1 k_end
 ```
 
@@ -849,9 +861,9 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "New case › Review and sign › 'Sign and send'" }
+  s1@{ shape: stadium, label: "New case › Review & submit › 'Sign and send to payer (demo)'" }
   st1@{ shape: cyl, label: "<b>A request is created on the Dashboard as Received</b><br/>Its ID is added to 'sent today'" }
-  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Review and sign › Sign and send" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Sign and send to payer" }
   d1@{ shape: diam, label: "<b>Is the ID already a row in the tracker?</b><br/>(R-1042, R-0988, I-2207, R-1101, I-2262 are)" }
   p1@{ shape: rect, label: "The row stays as it is" }
   p2@{ shape: rect, label: "<b>A tracker row is added</b><br/>Case ID with a green 'New today' tag, initials and age<br/>Level of care and request type<br/>'not yet approved', payer, approval chance from the draft" }
@@ -945,9 +957,85 @@ flowchart TD
   class e1 k_end
 ```
 
+## Case Manager › Active cases › Quick view of a case
+
+A tracker row opens a right-hand quick view: the summary first (what is due next, units or days used and left, the approved window, level of care, payer, site, approval chance, the next review, documents and the three newest lines of history), then 'Open case' and, where it applies, 'Draft review' or 'Open review'. The case page is one button away. The row's own case ID and 'Open' button still go straight to the case.
+
+Route: `/manager`
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Tracker row is on screen" }
+  c1@{ shape: trap-t, label: "Click the row (any part that is not a button)" }
+  c2@{ shape: trap-t, label: "<b>Click the small quick view button 'Quick view of R-0988' at the end of the row</b><br/>(Tab to it, then Enter or Space)" }
+  ov@{ shape: win-pane, label: "<b>Right-hand panel 'R-0988 · Beacon'</b><br/>Subtitle 'D.L., 41 · Residential 3.5 · Continued stay 3', status pill at the right<br/>Big line 'Next due': 'Review due in 3 h', red when urgent, and one sentence on what to do next" }
+  pf@{ shape: rect, label: "<b>Focus goes to 'Open case'</b><br/>Tab stays inside the panel" }
+  kv@{ shape: curv-trap, label: "<b>Facts, one line each</b><br/>Units or days: '10 of 21 days used, 11 left' with a bar, and 'Runs out before review' when it applies<br/>Approved window: 'Sat 10/10 to Sat 10/31'<br/>Level of care, Payer, Site ('Site A · Main campus')<br/>Approval chance with its band and range, and how many similar decisions" }
+  kr@{ shape: curv-trap, label: "<b>Next review: 'Review 3, Tue 10/20, 4:00 pm' with its pill (Not drafted yet, Drafted, Needs your update)</b><br/>A case not approved yet says 'Not approved yet' and 'None until the request is approved'" }
+  dd@{ shape: diam, label: "Does the case have a case page of its own (a request in the queue or on the Dashboard)?" }
+  dc@{ shape: curv-trap, label: "<b>Documents: 'Complete, all 9 in the packet' or '8 of 9. Missing: Therapy note from the last 14 days'</b><br/>Counted the way the case page counts them" }
+  dn@{ shape: rect, label: "No Documents line: the ledger has no document list for the case" }
+  hh@{ shape: curv-trap, label: "<b>Latest history: the three newest lines that happened, each with who did it (a person or a named agent) and the time</b><br/>A case that is also a request shows the request's own events" }
+  dr@{ shape: diam, label: "What state is the next review in?" }
+  cd@{ shape: trap-t, label: "Click 'Draft review'" }
+  ag@{ shape: hex, label: "<b>Cadence drafts the review (demo: simulated, about 1.3 seconds)</b><br/>A paused Cadence says so at once: toast 'Cadence is paused in Settings'" }
+  tg@{ shape: odd, label: "'Cadence drafted 1 review'" }
+  pu@{ shape: rect, label: "The panel updates in place: the pill reads 'Drafted' and 'Draft review' becomes 'Open review'" }
+  co@{ shape: trap-t, label: "Click 'Open review'" }
+  rv@{ shape: win-pane, label: "The review drawer opens on top of the quick view" }
+  g3@{ shape: subproc, label: "Continues in: Case Manager › Reviews this week › The review drawer" }
+  pn2@{ shape: rect, label: "No review button: the next review is not due this week, or the case is not approved" }
+  cc@{ shape: trap-t, label: "Click 'Open case'" }
+  g1@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Open a case from the tracker" }
+  cx@{ shape: trap-t, label: "Press Escape, click X or the dimmed area" }
+  px@{ shape: rect, label: "<b>Escape closes one layer at a time: the review drawer first, then the quick view</b><br/>Focus returns to the quick view button of that row" }
+  ps@{ shape: rect, label: "<b>The panel shows only cases at the sites in view</b><br/>If the view changes so the case is out of site, the panel closes" }
+  e1@{ shape: stadium, label: "Back on the tracker" }
+  s1 --> c1 --> ov
+  s1 --> c2 --> ov
+  ov --> pf --> kv --> kr --> dd
+  dd -->|"Yes"| dc --> hh
+  dd -->|"No"| dn --> hh
+  hh --> dr
+  dr -->|"Not drafted yet, due this week"| cd --> ag --> tg --> pu --> co
+  dr -->|"Drafted or needs your update"| co
+  dr -->|"None, or later than this week"| pn2
+  co --> rv --> g3
+  ov --> cc --> g1
+  ov --> cx --> px --> e1
+  ov -.-> ps
+  class s1 k_start
+  class c1,c2,cd,co,cc,cx k_click
+  class ov,rv k_overlay
+  class pf,dn,pu,pn2,px,ps k_process
+  class kv,kr,dc,hh k_screen
+  class dd,dr k_decision
+  class ag k_agent
+  class tg k_toast
+  class g3,g1 k_goto
+  class e1 k_end
+```
+
 ## Case Manager › Reviews this week › The list
 
-The second tab lists every clinical review due this week, one card per day, with three tiles on top. Agents have already drafted most of them. A row opens the review drawer. A side card nudges the team to look at cases that may be ready for a lower level of care.
+The second tab lists every clinical review due this week, one card per day, with three tiles on top. Agents have already drafted most of them. A row opens the review drawer. A side card nudges the team to look at cases that may be ready for a lower level of care. Every count and row is for the sites in view (Both sites 47 = Site A 27 plus Site B 20), and the side card lists only its cases at those sites.
 
 Route: `/manager?tab=reviews`
 
@@ -1019,7 +1107,7 @@ flowchart TD
 
 ## Case Manager › Reviews this week › The review drawer
 
-Opening a review shows the draft an agent wrote, the four Integrity checks and the buttons to sign or open the case. What the clinician can do depends on the review's status: a clean draft, a draft with one check to look at, a review that needs an update, or one already signed.
+It also opens from the quick view's 'Open review' button, on top of the quick view (Escape closes one layer at a time). Opening a review shows the draft an agent wrote, the four Integrity checks and the buttons to sign or open the case. What the clinician can do depends on the review's status: a clean draft, a draft with one check to look at, a review that needs an update, or one already signed.
 
 Route: `/manager?tab=reviews (drawer over the list)`
 
@@ -1249,7 +1337,7 @@ flowchart TD
 
 ## Case Manager › Reviews this week › Draft all due reviews and sign all clean drafts
 
-Two buttons in the header work on the whole week. 'Draft all due reviews' makes Cadence draft every review that has no draft yet, unless Cadence is paused in Settings. 'Sign all clean drafts' signs every draft whose four Integrity checks passed, in one step, and leaves out anything that needs a closer look.
+Two buttons in the header work on the whole week at the sites in view (a one-site viewer never drafts or signs the other site's reviews). 'Draft all due reviews' makes Cadence draft every review that has no draft yet, unless Cadence is paused in Settings. 'Sign all clean drafts' signs every draft whose four Integrity checks passed, in one step, and leaves out anything that needs a closer look.
 
 Route: `/manager?tab=reviews (the two header buttons)`
 
@@ -1472,12 +1560,13 @@ flowchart TD
   subgraph gRev ["Reviews this week"]
   d4@{ shape: diam, label: "Does any review match?" }
   e4s@{ shape: curv-trap, label: "<b>'Showing 0 of 47 reviews. The tiles count all 47.'</b><br/>'No reviews match'<br/>'The filters hide every review this week.'<br/>Button 'Clear filters'<br/>The 'Ready to step down?' card is still there" }
+  e6s@{ shape: curv-trap, label: "<b>'Ready to step down?' with no case at the sites in view</b><br/>'Nothing to suggest at Site A today.'" }
   c4@{ shape: trap-t, label: "Click 'Clear filters'" }
   e5s@{ shape: curv-trap, label: "<b>Third tile reads 'nothing waiting on you'</b><br/>when no review needs an update" }
   end
   p3@{ shape: rect, label: "<b>Filters go back to their first options</b><br/>Search box is emptied, lists are full again" }
   g1@{ shape: subproc, label: "Continues in: Case Manager › Filters › Search and filter both tabs" }
-  g2@{ shape: subproc, label: "Continues in: New case › Referral step" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Start with a referral or patient" }
   p4@{ shape: rect, label: "<b>How drafts run out: sign and send every case in 'Being prepared' (5 at the start)</b><br/>The header then reads '0 are still being prepared'" }
   p5@{ shape: rect, label: "<b>'Step-down plans' has no empty state</b><br/>The folded row is simply not shown when no denial was accepted or the filters hide every plan" }
   e1@{ shape: stadium, label: "Lists show rows again" }
@@ -1495,6 +1584,7 @@ flowchart TD
   d4 -->|"Yes"| e1
   p3 --> e1
   p3 -.-> g1
+  e4s -.-> e6s
   s1 -.-> p4
   p4 -.-> d1
   s1 -.-> e5s
@@ -1503,7 +1593,7 @@ flowchart TD
   class i1 k_input
   class p1,p2,p3,p4,p5 k_process
   class d1,d2,d3,d4 k_decision
-  class e1s,e2s,e3s,e4s,e5s k_screen
+  class e1s,e2s,e3s,e4s,e6s,e5s k_screen
   class c1,c2,c3,c4 k_click
   class g1,g2 k_goto
   class e1 k_end
@@ -1603,9 +1693,78 @@ flowchart LR
   style gShell fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```
 
+## Case Manager › Sites › What each site sees and out-of-site links
+
+Every case belongs to one site, the same site on every screen. The tracker, its tiles and filters, the header counts, 'Being prepared', the step-down plans, the reviews and the sidebar bubble all follow the site view. A viewer limited to one site never sees, counts, drafts or signs the other site's cases, and a direct link to one shows an out-of-site card. Totals for Both sites equal Site A plus Site B.
+
+Route: `/manager`
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Switch the site in the top bar: Both sites, Site A or Site B</b><br/>Or Demo menu, 'Viewing as': Dr. Rivera (Site A only), Sam Okafor (Site B only)" }
+  sc1@{ shape: curv-trap, label: "<b>Case Manager follows the view</b><br/>Header count and a small 'Site A' tag after it when the view is narrowed<br/>Tracker rows, the four status tiles, the 'Being prepared' row, 'Step-down plans'<br/>Reviews tab: header count, the three tiles, the day cards, 'Ready to step down?'" }
+  p1@{ shape: rect, label: "<b>Both sites: 56 active cases = Site A 33 plus Site B 23</b><br/>Being prepared: 5 = 4 plus 1<br/>Reviews due this week: 47 = 27 plus 20<br/>The four tiles add up the same way" }
+  p2@{ shape: rect, label: "<b>Sidebar bubble on 'Case Manager' = cases that need a person (Being prepared) plus reviews that need a clinician's update, at the sites in view</b><br/>Both sites 11 = Site A 6 plus Site B 5" }
+  d1@{ shape: diam, label: "Is the viewer limited to one site?" }
+  p3@{ shape: rect, label: "The other site's cases do not exist for the viewer: not in the tracker, not found by the search, not counted" }
+  p4@{ shape: rect, label: "A viewer of both sites narrows to one site and widens again; every number on the page changes at once" }
+  p5@{ shape: rect, label: "<b>'Draft all due reviews' and 'Sign all clean drafts' act only on reviews at the sites in view</b><br/>The toast counts only those" }
+  p6@{ shape: rect, label: "A step-down plan from an accepted denial is shown at the denial's site" }
+  s2@{ shape: stadium, label: "<b>Open a link to a case</b><br/>/authorizations/case/ID from the tracker, a review's 'Open case', a notification or a bookmark" }
+  d2@{ shape: diam, label: "Is the case at a site in view?" }
+  ok@{ shape: curv-trap, label: "<b>The case page opens as usual</b><br/>(Authorizations case page, or the Ledger case page)" }
+  o1@{ shape: curv-trap, label: "<b>Out-of-site card instead of the page</b><br/>'This case is not available at Site A'<br/>Names the site that has it, no patient or detail" }
+  d3@{ shape: diam, label: "Can the viewer see both sites?" }
+  c1@{ shape: trap-t, label: "Click 'Show Site B'" }
+  p7@{ shape: rect, label: "The view widens to that site and the case opens" }
+  c2@{ shape: trap-t, label: "Click 'Back to the Dashboard'" }
+  g1@{ shape: subproc, label: "Continues in: Dashboard › Arrive › What the page shows" }
+  e1@{ shape: stadium, label: "A viewer limited to one site has no way to the other site's case" }
+  g2@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Tracker of every active case" }
+  g3@{ shape: subproc, label: "Continues in: Case Manager › Reviews this week › Draft all due reviews and sign all clean drafts" }
+  s1 --> sc1 --> p1
+  sc1 --> p2
+  sc1 --> d1
+  d1 -->|"Yes"| p3
+  d1 -->|"No"| p4
+  sc1 -.-> p5 --> g3
+  sc1 -.-> p6
+  sc1 --> g2
+  s2 --> d2
+  d2 -->|"Yes"| ok
+  d2 -->|"No"| o1 --> d3
+  d3 -->|"Yes"| c1 --> p7 --> ok
+  d3 -->|"No"| e1
+  o1 --> c2 --> g1
+  class s1,s2 k_start
+  class sc1,ok,o1 k_screen
+  class p1,p2,p3,p4,p5,p6,p7 k_process
+  class d1,d2,d3 k_decision
+  class c1,c2 k_click
+  class g1,g2,g3 k_goto
+  class e1 k_endx
+```
+
 ## Case Manager › Ledger case › Open and read
 
-26 of the 56 tracker cases have no request in the queue or on the Dashboard. Their ID opens a calm summary built from the ledger record, so the tracker, the reviews and the 'Ready to step down?' card never end at 'Request not found'. It says who, which payer and service, how much of the approval is used, what is due and the next step.
+A case at a site the viewer is not looking at shows an out-of-site card instead (see Case Manager › Sites). 26 of the 56 tracker cases have no request in the queue or on the Dashboard. Their ID opens a calm summary built from the ledger record, so the tracker, the reviews and the 'Ready to step down?' card never end at 'Request not found'. It says who, which payer and service, how much of the approval is used, what is due and the next step.
 
 Route: `/authorizations/case/ID (a case that is in the Case Manager ledger and has no request in the queue)`
 

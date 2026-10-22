@@ -21,9 +21,9 @@ flowchart TD
   off@{ shape: rect, label: "<b>'Send to payer' is off</b><br/>The reason sits under the button, e.g. 'Integrity has 2 open checks. Apply the matching actions first.'" }
   sp@{ shape: trap-t, label: "Click 'Send to payer' (large button)" }
   os@{ shape: trap-t, label: "Click 'Open in review and sign' (header button)" }
-  rp@{ shape: rect, label: "<b>The case page finds this request's draft in New case, or makes one from the request</b><br/>The draft opens at Review and sign when the request is ready, at Agents work when agents still have work" }
+  rp@{ shape: rect, label: "<b>The case page finds this request's draft in New case, or makes one from the request</b><br/>The draft opens at Review & submit when the request is ready, at Authorization preparation when agents still have work" }
   ns@{ shape: rect, label: "<b>Nothing is sent yet</b><br/>'Nothing goes to the payer until a clinician signs.'" }
-  gR@{ shape: subproc, label: "Continues in: New case › Review and sign" }
+  gR@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Sign and send to payer" }
   subgraph gSign ["In New case (summary only, drawn in its own diagram)"]
   sg@{ shape: rect, label: "<b>A licensed clinician signs with 'Sign and send to payer'</b><br/>The UR coordinator cannot sign; Dr. Rivera can" }
   py@{ shape: st-rect, label: "<b>Navigator sends the request through the payer's portal</b><br/>(demo: simulated)" }
@@ -35,7 +35,7 @@ flowchart TD
   db@{ shape: curv-trap, label: "<b>Dashboard opens on that request</b><br/>Stage 'Received'" }
   qg@{ shape: rect, label: "<b>Back in the queue the request is gone</b><br/>The open count drops by one<br/>The sidebar badge too, if it was in Act now or Due within 24 hours" }
   cp@{ shape: rect, label: "<b>The case page of a sent request shows the request's own status</b><br/>'Next:' the Dashboard's step, and a disabled 'Sent to payer' in place of 'Send to payer'<br/>History lists the signature and the send" }
-  gD@{ shape: subproc, label: "Continues in: Dashboard › Request drawer" }
+  gD@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   gQ@{ shape: subproc, label: "Continues in: Authorizations › Queue › Open the queue and read the top" }
   s1 --> dc
   dc -->|"No"| off

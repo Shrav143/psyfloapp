@@ -19,15 +19,19 @@ flowchart TD
   a1@{ shape: stadium, label: "On the list, click 'Re-check' on a row" }
   a2@{ shape: stadium, label: "On a result, click 'Check again'" }
   a3@{ shape: stadium, label: "Open 'Verify a patient' from a case and click 'Check now'" }
+  a4@{ shape: stadium, label: "In New case, step 2, click 'Refresh verification'" }
   q1@{ shape: diam, label: "Is a re-check already running for this patient?" }
   p1@{ shape: rect, label: "<b>The click is ignored</b><br/>The button is off with a spinner" }
   p2@{ shape: rect, label: "<b>Patient marked as checking</b><br/>List: button reads 'Checking' with a spinner, the quiet second line says 'Checking now'<br/>Result: 'Check again' shows a spinner" }
   g0@{ shape: hex, label: "Verify and the other agents ask again" }
   x1@{ shape: st-rect, label: "<b>The state and the plan</b><br/>(demo: simulated, same answer as before)" }
   w1@{ shape: delay, label: "About 1.1 seconds" }
-  st1@{ shape: cyl, label: "<b>Row updated</b><br/>Checked time is now, any booked re-check cleared, verdict unchanged" }
+  qv@{ shape: diam, label: "Is Verify paused in Settings?" }
+  st1@{ shape: cyl, label: "<b>Verification record replaced</b><br/>Checked time is now, any booked re-check cleared, verdict unchanged<br/>A check that never ran ('Not checked') is asked again for real" }
+  st3@{ shape: cyl, label: "<b>Record kept as it was, with the warning</b><br/>'Verification service unavailable'<br/>Checked time unchanged" }
+  t3@{ shape: odd, label: "<b>'Could not re-check R-1042'</b><br/>'Verify is paused in Settings, so nothing was asked. The last result is still shown.'" }
   q2@{ shape: diam, label: "Does the payer need a phone call? (Evergreen)" }
-  t1@{ shape: odd, label: "<b>'R-1042 re-checked'</b><br/>'Still Authorization first.'" }
+  t1@{ shape: odd, label: "<b>'R-1042 re-checked'</b><br/>'Still Authorization first.' ('Now Cleared to bill.' when a check that never ran has answered)" }
   t2@{ shape: odd, label: "<b>'R-0975 re-checked'</b><br/>'The plan's system did not answer, so Caller phoned. Still Fix before billing.'" }
   subgraph gAfter ["What changes on screen"]
   r1@{ shape: rect, label: "List: 'Checked 3 h ago' becomes 'Checked just now'" }
@@ -41,8 +45,11 @@ flowchart TD
   e1@{ shape: stadium, label: "Patient is up to date" }
   a1 --> q1
   a2 --> q1
+  a4 --> q1
   q1 -->|"Yes"| p1
-  q1 -->|"No"| p2 --> g0 --> x1 --> w1 --> st1 --> q2
+  q1 -->|"No"| p2 --> w1 --> qv
+  qv -->|"No"| g0 --> x1 --> st1 --> q2
+  qv -->|"Yes"| st3 --> t3 --> e1
   q2 -->|"No"| t1
   q2 -->|"Yes"| t2
   t1 --> r1 & r3 & r4
@@ -52,14 +59,14 @@ flowchart TD
   r4 --> e1
   r2 -.-> g2
   a3 --> v1 --> g1
-  class a1,a2,a3 k_start
-  class q1,q2 k_decision
+  class a1,a2,a3,a4 k_start
+  class q1,qv,q2 k_decision
   class p1,p2,r1,r2,r3,r4,v1 k_process
   class g0 k_agent
   class x1 k_ext
   class w1 k_wait
-  class st1 k_store
-  class t1,t2 k_toast
+  class st1,st3 k_store
+  class t3,t1,t2 k_toast
   class g1,g2 k_goto
   class e1 k_end
   style gAfter fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

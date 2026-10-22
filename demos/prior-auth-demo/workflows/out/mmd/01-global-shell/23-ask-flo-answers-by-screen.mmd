@@ -19,7 +19,7 @@ flowchart TD
   s1@{ shape: stadium, label: "<b>A question reaches one of the five rules</b><br/>(a chip for the screen, or typed text)" }
   d0@{ shape: diam, label: "Which key words?" }
   subgraph gM ["Missing: 'What is missing for R-1042?'"]
-  m1@{ shape: diam, label: "<b>Which case?</b><br/>Named in the question, else the open case page, else the request that needs you first" }
+  m1@{ shape: diam, label: "<b>Which case?</b><br/>Named in the question, else the open case page, else the request that needs you first, among the cases in view" }
   m2@{ shape: hex, label: "<b>FLO reads the case's draft</b><br/>Open items still unresolved, by kind: Missing, To settle, Risk<br/>The payer's document count from the saved Payers list" }
   m3@{ shape: diam, label: "Was the request already sent?" }
   m4@{ shape: odd, label: "'Nothing is missing for R-0870 (Summit, Residential 3.5). It was already sent, so it is with Summit and Navigator is tracking it.'" }
@@ -49,7 +49,7 @@ flowchart TD
   e2@{ shape: odd, label: "<b>'5 patients need a fix before billing.'</b><br/>One line each, in the screen's order: 'R-0921 (J.D., Cardinal): 14 of 14 days used.' 'R-1118 (A.F., Beacon): the plan does not cover the service.' 'I-2275 (E.K., Summit): another plan pays first.'<br/>FLO's reading line" }
   el@{ shape: trap-t, label: "Click 'Open R-0921 in Eligibility & Benefits'" }
   end
-  n1@{ shape: stadium, label: "<b>Nothing to read: 'I did not find R-9999 in the demo data.' or 'Tell me which payer, for example: What does Summit require?'</b><br/>The chips for the screen stay under it" }
+  n1@{ shape: stadium, label: "<b>Nothing to read: 'I did not find R-9999 among the cases you can see. (the same for a real case at the other site, e.g. I-2207 for Dr. Rivera)' or 'Tell me which payer, for example: What does Summit require?'</b><br/>The chips for the screen stay under it" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Case page › Recommended actions › The tab" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Case page › Ways in" }
   g3@{ shape: subproc, label: "Continues in: Payers › Documents › Read the document list" }

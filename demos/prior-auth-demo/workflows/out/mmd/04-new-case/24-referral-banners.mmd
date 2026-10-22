@@ -28,8 +28,8 @@ flowchart TD
   d2@{ shape: diam, label: "Did this referral start a request?" }
   t3@{ shape: odd, label: "<b>'Linked request R-1042' with its status chip</b><br/>button 'Open R-1042'" }
   c2@{ shape: trap-t, label: "Click 'Open R-1042' or the link 'R-1042'" }
-  t4@{ shape: odd, label: "'No request is linked yet. Continue to the medical records to build the authorization for this patient.'" }
-  c3@{ shape: trap-t, label: "<b>Click 'Continue to medical records'</b><br/>(not shown once Admitted)" }
+  t4@{ shape: odd, label: "'No request is linked yet. Continue with this referral to build the authorization for this patient.'" }
+  c3@{ shape: trap-t, label: "<b>Click 'Continue with this referral'</b><br/>(not shown once Admitted)" }
   p1@{ shape: rect, label: "<b>Uses the case in the address, or starts a new one</b><br/>Referral goes into the case<br/>Asks 'Attach this referral?' first when the agents already ran" }
   end
   subgraph gOpen ["Open referral"]
@@ -41,9 +41,9 @@ flowchart TD
   c5@{ shape: trap-t, label: "Click 'Open coverage'" }
   p3@{ shape: rect, label: "Coverage tab opens" }
   end
-  g1@{ shape: subproc, label: "Continues in: New case › Referral › Full page: Validation tab" }
-  g2@{ shape: subproc, label: "Continues in: New case › Referral › Check coverage" }
-  g3@{ shape: subproc, label: "<b>Continues in: New case › Referral › Accept a referral</b><br/>(attach the referral, then Medical records)" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › Full page: Validation tab" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › Check coverage" }
+  g3@{ shape: subproc, label: "<b>Continues in: Authorizations › New case › Referral › Accept a referral</b><br/>(attach the referral, then Intake)" }
   g4@{ shape: subproc, label: "<b>Continues in: Dashboard</b><br/>Opens request R-1042" }
   e1@{ shape: stadium, label: "<b>No banner</b><br/>A New or In review referral with no open findings and no lapsed coverage" }
   s1 --> d1

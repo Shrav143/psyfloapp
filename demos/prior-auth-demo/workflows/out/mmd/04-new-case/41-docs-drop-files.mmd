@@ -1,0 +1,106 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "On step 3, give the drop zone some files" }
+  i1@{ shape: lean-r, label: "<b>Drop files on 'Drop everything you have for this patient'</b><br/>Any names, any order, several at once" }
+  c1@{ shape: trap-t, label: "Click the zone, or press Enter or Space" }
+  p0@{ shape: rect, label: "<b>The file picker opens</b><br/>Several files can be chosen" }
+  dNone@{ shape: diam, label: "Any file chosen?" }
+  eNone@{ shape: stadium, label: "Nothing happens" }
+  p1@{ shape: rect, label: "<b>Each file becomes a name and a size in KB</b><br/>Nothing is uploaded (demo)" }
+  a1@{ shape: hex, label: "<b>Reader sorts the pile</b><br/>Insurance cards first, then everything else" }
+  subgraph gCard ["1 · Card"]
+  dCard@{ shape: diam, label: "<b>Is a file named like a card?</b><br/>Whole words: insurance, card, member, id" }
+  pCard@{ shape: rect, label: "<b>The first card fills only what is blank:</b><br/>Payer and plan, Member ID" }
+  pPayer@{ shape: rect, label: "<b>Payer comes from a payer name in the file name</b><br/>Otherwise Summit Medicaid HMO" }
+  end
+  subgraph gChart ["2 · Chart"]
+  dChart@{ shape: diam, label: "Is there a file that is not a card?" }
+  pFill@{ shape: rect, label: "<b>Fills only what is blank, from J.M.'s chart:</b><br/>Patient, Level of care, Request type, Diagnoses, Reason<br/>The request type follows the Authorization type" }
+  pKeep@{ shape: rect, label: "<b>Never overwrites what was typed</b><br/>or what a referral or EMR Connect gave" }
+  end
+  subgraph gSlot ["3 · Slots"]
+  a2@{ shape: hex, label: "<b>Reader looks for document words in the file name</b><br/>asam, urine, nursing, medication, psychosocial, therapy..." }
+  dName@{ shape: diam, label: "<b>Does the name match a document?</b><br/>The longest matching word wins" }
+  dTaken@{ shape: diam, label: "Did an earlier file in this drop already take that slot?" }
+  pDup@{ shape: rect, label: "Second file: 'Could not place'" }
+  pPlace@{ shape: rect, label: "<b>File goes into its slot</b><br/>It replaces any file already in that slot<br/>and clears a 'marked not available' on it" }
+  dOpen@{ shape: diam, label: "No match: is a required slot still open?" }
+  pGuess@{ shape: rect, label: "<b>Takes the first open required slot on the payer's list, referral last</b><br/>Skips a document marked 'not available'<br/>'Reader guessed this one. Check it.'" }
+  pNone@{ shape: rect, label: "<b>'Could not place'</b><br/>Any file type is taken, but there is no slot left" }
+  end
+  st1@{ shape: cyl, label: "<b>Draft updated once</b><br/>Each filled row remembers its file: 'Read from FILE by Reader. Check it.'" }
+  pReset@{ shape: rect, label: "<b>If the agents had already run, the run restarts</b><br/>Because the documents changed" }
+  tStale@{ shape: odd, label: "<b>'Records changed after the agents ran'</b><br/>'Their work was cleared. The agents check again when you continue.'" }
+  a3@{ shape: hex, label: "<b>Reader reads each placed file</b><br/>About 1 second each, one after another<br/>Row shows 'Reader is reading'" }
+  dFind@{ shape: diam, label: "<b>Does the file get a finding?</b><br/>Sample files are scripted<br/>Other files: about 1 case in 5" }
+  pOk@{ shape: rect, label: "Row: 'N checks passed'" }
+  pWarn@{ shape: rect, label: "Row: 'Check this' with the finding text" }
+  t1@{ shape: odd, label: "<b>'Reader sorted 6 files: 2 matched, 4 need a look'</b><br/>'Could not place: ... Check where Reader put: ... Findings in: ...'" }
+  pTick@{ shape: rect, label: "<b>Checklist rows tick off</b><br/>'N of M ready' goes up<br/>'Continue' is never switched off" }
+  g30@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › The checklist and Continue" }
+  subgraph gSample ["Use sample chart"]
+  c2@{ shape: trap-t, label: "Click 'Use sample chart' (top right of step 3)" }
+  dHas@{ shape: diam, label: "<b>Does the case already have a patient?</b><br/>From a referral, an EMR pull or typed initials" }
+  stAll@{ shape: cyl, label: "<b>Fills J.M., 34 · Summit Medicaid HMO · …4821</b><br/>Residential 3.5 · Admission · F10.20, F33.2 · reason" }
+  stKeep@{ shape: cyl, label: "<b>Keeps that patient and request</b><br/>Adds only a blank member ID, start date or type" }
+  stDocs@{ shape: cyl, label: "<b>Adds a sample file for each document on the payer's saved list</b><br/>Summit: 8 of 9. 'Therapy note from the last 14 days' is left out on purpose" }
+  t2@{ shape: odd, label: "<b>'Sample chart loaded'</b><br/>'J.M., 34. 8 of 9 documents are added and being checked.'" }
+  end
+  s1 --> i1
+  s1 --> c1
+  c1 --> p0 --> dNone
+  dNone -->|"No"| eNone
+  dNone -->|"Yes"| p1
+  i1 --> p1
+  p1 --> a1 --> dCard
+  dCard -->|"Yes"| pCard --> pPayer --> dChart
+  dCard -->|"No"| dChart
+  dChart -->|"Yes"| pFill --> pKeep --> a2
+  dChart -->|"No"| a2
+  a2 --> dName
+  dName -->|"Yes"| dTaken
+  dName -->|"No"| dOpen
+  dTaken -->|"Yes"| pDup --> st1
+  dTaken -->|"No"| pPlace --> st1
+  dOpen -->|"Yes"| pGuess --> st1
+  dOpen -->|"No"| pNone --> st1
+  st1 --> pReset --> a3 --> dFind
+  pReset -.-> tStale
+  dFind -->|"No"| pOk --> t1
+  dFind -->|"Yes"| pWarn --> t1
+  t1 --> pTick --> g30
+  s1 --> c2
+  c2 --> dHas
+  dHas -->|"No"| stAll --> stDocs
+  dHas -->|"Yes"| stKeep --> stDocs
+  stDocs --> t2 --> a3
+  class s1 k_start
+  class i1 k_input
+  class c1,c2 k_click
+  class p0,p1,pCard,pPayer,pFill,pKeep,pDup,pPlace,pGuess,pNone,pReset,pOk,pWarn,pTick k_process
+  class dNone,dCard,dChart,dName,dTaken,dOpen,dFind,dHas k_decision
+  class eNone k_endx
+  class a1,a2,a3 k_agent
+  class st1,stAll,stKeep,stDocs k_store
+  class tStale,t1,t2 k_toast
+  class g30 k_goto
+  style gCard fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gChart fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gSlot fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gSample fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

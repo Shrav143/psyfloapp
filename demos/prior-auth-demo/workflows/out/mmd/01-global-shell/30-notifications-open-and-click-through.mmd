@@ -20,6 +20,7 @@ flowchart TD
   bell@{ shape: curv-trap, label: "<b>Bell shows a red dot while any notification is unread</b><br/>(4 unread at the start)" }
   o1@{ shape: win-pane, label: "<b>Notifications drawer opens (440 px)</b><br/>Subtitle '4 unread', or 'You are all caught up' when none are left<br/>Button 'Mark all read'" }
   l1@{ shape: curv-trap, label: "<b>List, newest first</b><br/>Each row: agent badge, bold title, age ('16 min ago'), one line of text<br/>Unread rows are cream with a red dot" }
+  ps@{ shape: rect, label: "<b>Which notifications are listed</b><br/>Both sites: all six, 4 unread<br/>Site A (Dr. Rivera): 4 listed (P-1499, R-1042, the Cardinal rule change, R-0912), 3 unread<br/>Site B (Sam Okafor): 3 listed (D-3297, R-0951, the Cardinal rule change), 2 unread<br/>The denial D-3297 and R-0951 are at Site B" }
   p0@{ shape: rect, label: "Ages follow the demo clock: after 'Fast-forward 1 hour' '16 min ago' reads '1 h ago'" }
   subgraph gRows ["The six notifications at the start"]
   n1@{ shape: rect, label: "<b>Packet · 'Payer asked for info' (unread)</b><br/>→ Dashboard, request P-1499" }
@@ -34,19 +35,20 @@ flowchart TD
   p1@{ shape: rect, label: "Drawer closes" }
   d1@{ shape: diam, label: "Does the notification have a destination?" }
   p2@{ shape: rect, label: "App goes to that page" }
-  g1@{ shape: subproc, label: "Continues in: Dashboard › Open a request" }
-  g2@{ shape: subproc, label: "Continues in: New case › Agents work (the question window)" }
+  g1@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › An agent asks a question" }
   g3@{ shape: subproc, label: "Continues in: Denial Intelligence › Open a denial" }
   g4@{ shape: subproc, label: "Continues in: Payers › Changes › Read what changed" }
   e0@{ shape: stadium, label: "Stays on the page" }
   c2@{ shape: trap-t, label: "Click 'Mark all read'" }
-  st2@{ shape: cyl, label: "Every notification is saved as read" }
+  st2@{ shape: cyl, label: "<b>Every notification in the list is saved as read</b><br/>The other site's stay unread for the people who can see them" }
   p3@{ shape: rect, label: "<b>Drawer stays open</b><br/>Subtitle becomes 'You are all caught up'<br/>The bell's red dot goes" }
   c3@{ shape: trap-t, label: "Press Escape, click 'X' or click the dimmed area" }
   p4@{ shape: rect, label: "Drawer closes. Read marks are kept" }
   e1@{ shape: stadium, label: "Back on the page" }
   s1 --> bell --> o1 --> l1
   l1 --> p0
+  o1 --> ps
   l1 --> n1 & n2 & n3 & n4 & n5 & n6
   n1 & n2 & n3 & n4 & n5 & n6 --> c1
   c1 --> st1 --> p1 --> d1
@@ -58,7 +60,7 @@ flowchart TD
   class s1 k_start
   class bell,l1 k_screen
   class o1 k_overlay
-  class p0,n1,n2,n3,n4,n5,n6,p1,p2,p3,p4 k_process
+  class ps,p0,n1,n2,n3,n4,n5,n6,p1,p2,p3,p4 k_process
   class c1,c2,c3 k_click
   class st1,st2 k_store
   class d1 k_decision

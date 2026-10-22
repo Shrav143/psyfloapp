@@ -30,16 +30,16 @@ flowchart TD
   c1@{ shape: trap-t, label: "Click the case ID or the button" }
   p1@{ shape: rect, label: "Go to /authorizations/new/ followed by the draft's code" }
   d2@{ shape: diam, label: "Which step does New case open on?" }
-  g1@{ shape: subproc, label: "Continues in: New case › Medical records (intake)" }
-  g2@{ shape: subproc, label: "Continues in: New case › Agents work › Answer an agent's question" }
-  g3@{ shape: subproc, label: "Continues in: New case › Agents work › Watch the agents" }
-  g4@{ shape: subproc, label: "Continues in: New case › Review and sign › Sign and send" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Reopen and resume a case" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › An agent asks a question" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › Start the run and watch it" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Sign and send to payer" }
   c2@{ shape: trap-t, label: "Click anywhere else on the row" }
   p2@{ shape: rect, label: "Nothing happens: the row itself is not a link" }
   e1@{ shape: stadium, label: "Stays on Case Manager" }
   p3@{ shape: rect, label: "Once signed and sent, the case disappears from this list, 'are still being prepared' drops by one, the sidebar bubble drops if it needed a person, and the tracker lists it as 'New today' unless it already had a row" }
   e2@{ shape: stadium, label: "The request now shows as 'Received' on the Dashboard" }
-  g5@{ shape: subproc, label: "Continues in: Dashboard › Open a request" }
+  g5@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   g6@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Updated for a payer change" }
   s1 --> r1 --> r2 --> r3 --> r4 --> p0 --> d1
   d1 -->|"Unfinished intake"| t1

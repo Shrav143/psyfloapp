@@ -1,6 +1,6 @@
 # Global shell
 
-The sidebar, the top bar (Ask FLO, Notifications, Demo menu), Help, Sign out, redirects and toasts.
+The sidebar, the top bar (site switcher, Ask FLO, Notifications, Demo menu with Viewing as), Help, Sign out, redirects and toasts.
 
 Shapes and colours: see `00-overview.md`. Source: `workflows/src/01-global-shell/`.
 
@@ -58,10 +58,10 @@ flowchart LR
   gAuth@{ shape: subproc, label: "Continues in: Authorizations › Queue" }
   cNew@{ shape: trap-t, label: "<b>Click 'New case'</b><br/>(listed under Authorizations)" }
   pNew@{ shape: rect, label: "<b>Go to /authorizations/new</b><br/>A blank draft is started" }
-  gNew@{ shape: subproc, label: "Continues in: New case" }
+  gNew@{ shape: subproc, label: "Continues in: Authorizations › New case › How a case starts and resumes" }
   cElig@{ shape: trap-t, label: "<b>Click 'Eligibility & Benefits'</b><br/>(listed under Authorizations)" }
   pElig@{ shape: rect, label: "Go to /authorizations/eligibility" }
-  gElig@{ shape: subproc, label: "Continues in: Eligibility & Benefits" }
+  gElig@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits" }
   cDen@{ shape: trap-t, label: "Click 'Denial Intelligence'" }
   pDen@{ shape: rect, label: "Go to /denials" }
   gDen@{ shape: subproc, label: "Continues in: Denial Intelligence" }
@@ -98,11 +98,11 @@ flowchart LR
 
 ## Global shell › Sidebar › Badges and what they count
 
-Seven sidebar rows carry a number bubble. Each number is counted live from the demo data, so it changes the moment something happens on any page. Analytics and EMR Connect never have a bubble.
+Seven sidebar rows carry a number bubble. Each number is counted live from the demo data, so it changes the moment something happens on any page, and every one except Payers follows the site view. Analytics and EMR Connect never have a bubble.
 
 Route: `Every page (sidebar on the left)`
 
-Numbers shown are the values when the demo starts or after 'Reset demo data'.
+Numbers shown are the values when the demo starts or after 'Reset demo data', for Jordan Perez on Both sites. For one site they are that site's share, and Site A plus Site B always equals Both sites. Payers is the one badge that stays the same for every viewer.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -125,7 +125,8 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Any page is open" }
   sb@{ shape: curv-trap, label: "Sidebar rows with a number bubble" }
-  p1@{ shape: rect, label: "Every number is recounted from the demo data each time the data changes (no reload)" }
+  p1@{ shape: rect, label: "Every number is recounted from the demo data each time the data changes or the site view changes (no reload)" }
+  vw@{ shape: rect, label: "<b>The sites in view are read first</b><br/>Both sites for Jordan Perez and Alex Morgan, until they choose Site A or Site B; Site A for Dr. Rivera; Site B for Sam Okafor" }
   subgraph gDraw ["How a bubble is drawn"]
   d1@{ shape: diam, label: "Is the count above zero?" }
   z@{ shape: rect, label: "No bubble on that row" }
@@ -134,30 +135,30 @@ flowchart TD
   on@{ shape: rect, label: "Bubble is translucent white on green" }
   off@{ shape: rect, label: "Bubble is tan with dark text" }
   end
-  subgraph gB ["What each badge counts, and what moves it"]
+  subgraph gB ["What each badge counts, and what moves it (Both sites)"]
   b1@{ shape: rect, label: "<b>'Dashboard'  3</b><br/>Requests at stage 'Info requested'<br/>Falls when an answer is sent" }
   b2@{ shape: rect, label: "<b>'Authorizations'  19</b><br/>Open queue items in 'Act now' (5) and 'Due within 24 hours' (14)<br/>'Due this week' is not counted" }
   b3@{ shape: rect, label: "<b>'New case'  4  (listed under Authorizations)</b><br/>Referrals that are New or In review and not yet opened<br/>Falls when a referral is opened" }
   b4@{ shape: rect, label: "<b>'Eligibility & Benefits'  9  (listed under Authorizations)</b><br/>Patients not cleared: 4 'Authorization first', 5 'Fix before billing'" }
   b5@{ shape: rect, label: "<b>'Denial Intelligence'  8</b><br/>Requests at stage 'Appeal' (open denials)<br/>Falls when a denial is settled" }
   b6@{ shape: rect, label: "<b>'Case Manager'  11</b><br/>3 cases that need a person (2 questions, 1 signature)<br/>plus 8 reviews that 'Need your update'" }
-  b7@{ shape: rect, label: "<b>'Payers'  3</b><br/>Payers with a rule change waiting for a person: Cardinal, Evergreen and Harborview<br/>Falls when the change is acknowledged" }
+  b7@{ shape: rect, label: "<b>'Payers'  3</b><br/>Payers with a rule change waiting for a person: Cardinal, Evergreen and Harborview<br/>Falls when the change is acknowledged<br/>Clinic-wide: a payer's rules are not site data, so this number is the same for every viewer and every site view" }
   end
   g1@{ shape: subproc, label: "Continues in: Case Manager › Reviews this week › Add your update to a review" }
-  e1@{ shape: stadium, label: "Badges always match the pages they point to" }
-  s1 --> sb --> p1
-  p1 --> d1
+  e1@{ shape: stadium, label: "Badges always match the pages they point to, for the site in view" }
+  s1 --> sb --> p1 --> vw
+  vw --> d1
   d1 -->|"No"| z
   d1 -->|"Yes"| nz --> d2
   d2 -->|"Yes"| on
   d2 -->|"No"| off
   z & on & off --> e1
-  p1 --> b1
+  vw --> b1
   b1 ~~~ b2 ~~~ b3 ~~~ b4 ~~~ b5 ~~~ b6 ~~~ b7
   b6 --> g1
   class s1 k_start
   class sb k_screen
-  class p1,z,nz,on,off,b1,b2,b3,b4,b5,b6,b7 k_process
+  class p1,vw,z,nz,on,off,b1,b2,b3,b4,b5,b6,b7 k_process
   class d1,d2 k_decision
   class g1 k_goto
   class e1 k_end
@@ -238,9 +239,9 @@ flowchart LR
   style gClick fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```
 
-## Global shell › Top bar › Three controls and how drawers close
+## Global shell › Top bar › Controls and how drawers close
 
-The top bar holds three controls: the Demo menu, the 'Ask FLO' button and the 'Notifications' bell. The two drawers close the same three ways. There is no search box and no page title in the bar.
+The top bar holds the site view on the left and three controls on the right: the Demo menu, the 'Ask FLO' button and the 'Notifications' bell. The two drawers close the same three ways. There is no search box and no page title in the bar.
 
 Route: `Every page (top bar, right side)`
 
@@ -266,7 +267,10 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Any page is open" }
-  tb@{ shape: curv-trap, label: "<b>Top bar (stays at the top while the page scrolls)</b><br/>'Demo' with the clock, 'Ask FLO' sparkle button, 'Notifications' bell" }
+  tb@{ shape: curv-trap, label: "<b>Top bar (stays at the top while the page scrolls)</b><br/>Site view on the left, then 'Demo' with the clock, 'Ask FLO' sparkle button, 'Notifications' bell" }
+  nar@{ shape: rect, label: "On a narrow window (under 1024 px) the 'As of' date and the word 'Demo' are hidden so nothing wraps; the clock pill stays" }
+  site@{ shape: curv-trap, label: "<b>Site view</b><br/>'Both sites | Site A | Site B', or a locked 'Site A only' for a one-site viewer" }
+  gSite@{ shape: subproc, label: "Continues in: Global shell › Top bar › Site switcher" }
   cDemo@{ shape: trap-t, label: "<b>Click 'Demo'</b><br/>(the pill shows the clock, for example 'Tue 10:42 am')" }
   oDemo@{ shape: win-pane, label: "Demo menu opens under the button" }
   gDemo@{ shape: subproc, label: "Continues in: Global shell › Demo menu › Open, close and what is inside" }
@@ -286,6 +290,8 @@ flowchart TD
   keep@{ shape: rect, label: "Nothing typed is lost: the Ask FLO chat and any unsent question stay for the next time it opens" }
   e1@{ shape: stadium, label: "Back on the page" }
   s1 --> tb
+  tb --> nar
+  tb --> site --> gSite
   tb --> cDemo --> oDemo --> gDemo
   tb --> cAsk --> oAsk --> gAsk
   tb --> cBell --> oNot --> gNot
@@ -297,22 +303,22 @@ flowchart TD
   dClose -->|"Mouse"| kScrim
   kEsc & kX & kScrim --> closed --> keep --> e1
   class s1 k_start
-  class tb k_screen
+  class tb,site k_screen
+  class nar,dim,one,closed,keep k_process
+  class gSite,gDemo,gAsk,gNot k_goto
   class cDemo,cAsk,cBell,kEsc,kX,kScrim k_click
   class oDemo,oAsk,oNot k_overlay
-  class gDemo,gAsk,gNot k_goto
-  class dim,one,closed,keep k_process
   class dClose k_decision
   class e1 k_end
 ```
 
 ## Global shell › Top bar › Ask FLO › Ask a question
 
-Open the drawer, pick a suggested question or type one, and read FLO's answer. The suggestions follow the screen the person is on. FLO answers from the demo data after a short pause. What it says for each kind of question is in the next two diagrams.
+Open the drawer, pick a suggested question or type one, and read FLO's answer. The suggestions follow the screen the person is on. FLO answers from the demo data after a short pause, and only from the cases the viewer may see at the sites in view. What it says for each kind of question is in the next two diagrams.
 
 Route: `Every page (Ask FLO drawer)`
 
-The chat lives in the page, not in the demo data. It survives closing the drawer and changing pages, and 'Reset demo data' does not clear it. Reloading the browser does. The suggestions are worked out when the drawer opens, so a case page names its own case and payer.
+The chat lives in the page, not in the demo data. It survives closing the drawer and changing pages, and 'Reset demo data' does not clear it. Reloading the browser does, and so does a change of viewer or of site (see the last row). The suggestions are worked out when the drawer opens, so a case page names its own case and payer.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -335,7 +341,7 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Click 'Ask FLO' in the top bar" }
   o1@{ shape: win-pane, label: "<b>Ask FLO drawer opens</b><br/>Title 'Ask FLO', subtitle 'Your assistant, answering from your data'" }
-  a1@{ shape: hex, label: "FLO says: 'Hi Jordan, I am FLO. Ask me about your requests, a payer, or your denials. I answer from the data on your Dashboard.'" }
+  a1@{ shape: hex, label: "<b>FLO greets the person by name and says which sites it reads:</b><br/>'Hi Jordan, I am FLO. Ask me about your requests, a payer, or your denials. I answer from the data you can see: Both sites.'<br/>For Dr. Rivera: 'Hi Dr. Rivera, ... I answer from the data you can see: Site A.'" }
   dr@{ shape: diam, label: "Which screen is open?" }
   o2@{ shape: win-pane, label: "<b>Four suggestion chips under the chat:</b><br/>'What needs me today?'<br/>'What is due soonest?'<br/>'Which payers are slowest right now?'<br/>'Why is Cardinal's approval rate down?'<br/>Any other screen, or a case page that cannot be found" }
   oc@{ shape: win-pane, label: "<b>Three chips on a case page (/authorizations/case/R-1042):</b><br/>'What is missing for R-1042?'<br/>'When does this authorization run out?'<br/>'What does Summit require?'<br/>A line above them: 'Suggested for R-1042'" }
@@ -365,7 +371,10 @@ flowchart TD
   p6@{ shape: rect, label: "<b>Open it again, on any page: the same chat is there</b><br/>Typed questions still work; the chips come back under a fallback answer, or when the screen has changed" }
   e1@{ shape: stadium, label: "Back on the page" }
   e2@{ shape: stadium, label: "No question sent" }
+  s2@{ shape: stadium, label: "Change the viewer (Demo menu, 'Viewing as') or the site (top bar: Both sites, Site A, Site B)" }
+  pv@{ shape: rect, label: "<b>The conversation starts again with a new greeting</b><br/>Whatever FLO said about the other view, including case IDs, does not stay on screen<br/>The chips are worked out again for the view" }
   s1 --> o1 --> a1 --> dr
+  s2 --> pv --> a1
   dr -->|"Case page"| oc --> d1
   dr -->|"Case Manager"| om --> d1
   dr -->|"Denial Intelligence"| od --> d1
@@ -383,13 +392,13 @@ flowchart TD
   d3 -->|"No"| c4
   c4 --> p5 --> p6 --> e1
   x1 -.-> i1
-  class s1 k_start
+  class s1,s2 k_start
   class o1,o2,oc,om,od,oe k_overlay
   class a1,a2 k_agent
   class dr,d1,d2,d3,d4 k_decision
   class c1,c2,c3,c4 k_click
   class i1 k_input
-  class x1,p1,p2,p3,p4,p7,p5,p6 k_process
+  class x1,p1,p2,p3,p4,p7,p5,p6,pv k_process
   class w1 k_wait
   class g1,g2 k_goto
   class e1 k_end
@@ -398,7 +407,7 @@ flowchart TD
 
 ## Global shell › Top bar › Ask FLO › What FLO answers
 
-FLO lowercases the question and tries its rules in order. The first rule that matches answers, so a question with two key words gets the earlier answer. Counts, names and the request or denial it points to come from the live demo data. Only the Cardinal answer is fixed text. Five rules read the screen the person is on and are drawn in the next diagram.
+FLO lowercases the question and tries its rules in order. The first rule that matches answers, so a question with two key words gets the earlier answer. Counts, names and the request or denial it points to come from the live demo data. Only the Cardinal answer is fixed text, and even that counts only the unsent drafts at the sites in view. Five rules read the screen the person is on and are drawn in the next diagram. Every rule reads only the cases at the sites in view.
 
 Route: `Every page (Ask FLO drawer)`
 
@@ -424,11 +433,12 @@ flowchart LR
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>A question is sent</b><br/>(a chip or typed text)" }
+  sx@{ shape: rect, label: "<b>FLO first narrows the data to the cases the viewer may see</b><br/>Both sites, Site A or Site B; a viewer limited to one site gets that site only<br/>Counts and names are for those cases, and a count says 'at Site A' when one site is in view<br/>A case at the other site is never named, counted or linked: 'I did not find I-2207 among the cases you can see.'" }
   d1@{ shape: diam, label: "Contains 'slow', or both 'payer' and 'late'?" }
   a1@{ shape: hex, label: "<b>FLO lists every payer slower than its typical time, worst first:</b><br/>'Evergreen is averaging 3.4 days against 2 typical. Cardinal is averaging 2.8 days against 2 typical. Beacon ... Lakeshore ... Harborview ...<br/>Caller phones when a payer passes twice its typical time.'<br/>If none is slower: 'Every payer is deciding within its typical time right now.'" }
   l1@{ shape: trap-t, label: "Click 'Open Analytics, turnaround'" }
   r1@{ shape: rect, label: "<b>Opens /analytics</b><br/>The Analytics page opens; Turnaround is one of its four figures" }
-  g1@{ shape: subproc, label: "Continues in: Analytics › The four tiles" }
+  g1@{ shape: subproc, label: "Continues in: Analytics › Headline figures" }
   dn@{ shape: diam, label: "<b>Contains 'billing', 'eligib' or 'fix before'?</b><br/>Or 'missing' or 'incomplete'?<br/>Or 'expir', 'run out', 'units' or 'end' (not with 'denial')?<br/>Or 'require'?<br/>Or 'review' (not 'under review')?" }
   an@{ shape: hex, label: "<b>FLO answers from the screen you are on or the case you name:</b><br/>what is missing for a case, when an authorization ends, what a payer requires, which reviews are due, which patients need a fix before billing<br/>Each names the case, quotes live data, says once that it is FLO's reading, and ends with a link to the exact place" }
   gn@{ shape: subproc, label: "Continues in: Global shell › Top bar › Ask FLO › Answers that read the screen" }
@@ -438,7 +448,7 @@ flowchart LR
   r2@{ shape: rect, label: "<b>Opens /denials?id=D-3318, the nearest denial</b><br/>With no deadline left to name, it opens the list" }
   g2@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
   d2b@{ shape: diam, label: "Contains 'due', 'soon' or 'deadline'?" }
-  a2b@{ shape: hex, label: "<b>'R-0988 (Beacon) is due soonest: review due in 3 h. Its approval chance is 79%. After it: R-1042 (Summit), notice due in 5 h; I-2207 (Cardinal), recert due in 5 h. 56 requests are open in Authorizations.'</b><br/>Read from the open queue, soonest due first. Two due at the same time: the lower approval chance first<br/>Nothing open: 'Nothing is due. Every open request has been sent or handled.' with 'Open Authorizations'" }
+  a2b@{ shape: hex, label: "<b>'R-0988 (Beacon) is due soonest: review due in 3 h. Its approval chance is 79%. After it: R-1042 (Summit), notice due in 5 h; I-2207 (Cardinal), recert due in 5 h. 56 requests are open in Authorizations.'</b><br/>For one site: 'is due soonest at Site A: ...' and only that site's open requests are counted<br/>Read from the open queue, soonest due first. Two due at the same time: the lower approval chance first<br/>Nothing open: 'Nothing is due. Every open request has been sent or handled.' with 'Open Authorizations'" }
   l2b@{ shape: trap-t, label: "Click 'Open R-0988'" }
   r2b@{ shape: rect, label: "<b>Opens /authorizations/case/R-0988</b><br/>The case page of the request due soonest" }
   g2b@{ shape: subproc, label: "Continues in: Authorizations › Case page › Ways in" }
@@ -447,17 +457,17 @@ flowchart LR
   l3@{ shape: trap-t, label: "Click 'Open Payers, Cardinal, Changes'" }
   g3@{ shape: subproc, label: "Continues in: Payers › Changes › Read what changed" }
   d4@{ shape: diam, label: "Contains 'need', 'today' or 'first'?" }
-  a4@{ shape: hex, label: "<b>'3 requests need you: R-1042, I-2207, P-1499. 3 payers asked for more information, and 5 cases are being prepared. Start with P-1499 (Harborview). Packet drafted the answer. Waiting for your review.'</b><br/>The counts, the IDs and the request to start with are live: a payer's question comes first<br/>Nothing waiting: 'Nothing needs you right now.' with 'Open Dashboard'" }
-  l4@{ shape: trap-t, label: "Click 'Open P-1499 on the Dashboard'" }
-  r4@{ shape: rect, label: "<b>Opens /dashboard?request=P-1499</b><br/>The request drawer opens on that request" }
-  g4@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
+  a4@{ shape: hex, label: "<b>'3 requests need you: R-1042, I-2207, P-1499. Start with this: Review and sign R-0988, review due in 3 h.' then one line each for the next four, e.g. 'Answer Scribe's question on R-1042, notice due in 5 h.'</b><br/>It is the same list as Do next on the Dashboard, so the two never disagree; counts and IDs are live, and a Site A viewer gets 'need you at Site A' and only Site A cases<br/>One muted line: 'This is the Do next list on the Dashboard, worked out from today's demo data.'<br/>Nothing waiting: 'Nothing needs you right now.' with 'Open Dashboard'" }
+  l4@{ shape: trap-t, label: "Click 'Open Do next on the Dashboard'" }
+  r4@{ shape: rect, label: "<b>Opens /dashboard</b><br/>The Do next card is the first card under the Lifecycle" }
+  g4@{ shape: subproc, label: "Continues in: Dashboard › Do next › What to do now and where each button leads" }
   d5@{ shape: diam, label: "Contains 'referral'?" }
   a5@{ shape: hex, label: "'New referrals are waiting for review. Reader has already checked each document, and Verify has run coverage for the ones with an insurance card.'" }
   l5@{ shape: trap-t, label: "Click 'Start a case from a referral'" }
-  g5@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › Start screen" }
+  g5@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Start with a referral or patient" }
   a6@{ shape: hex, label: "<b>'I did not find an answer to that in the demo data. Try one of the suggestions below.'</b><br/>No link. The four suggestion chips stay right under this answer, so the sentence is true" }
   e1@{ shape: stadium, label: "Answer stays in the chat" }
-  s1 --> d1
+  s1 --> sx --> d1
   d1 -->|"Yes"| a1 --> l1 --> r1 --> g1
   d1 -->|"No"| dn
   dn -->|"Yes"| an --> gn
@@ -473,17 +483,17 @@ flowchart LR
   d5 -->|"Yes"| a5 --> l5 --> g5
   d5 -->|"No"| a6 --> e1
   class s1 k_start
+  class sx,r1,r2,r2b,r4 k_process
   class d1,dn,d2,d2b,d3,d4,d5 k_decision
   class a1,an,a2,a2b,a3,a4,a5,a6 k_agent
   class l1,l2,l2b,l3,l4,l5 k_click
-  class r1,r2,r2b,r4 k_process
   class g1,gn,g2,g2b,g3,g4,g5 k_goto
   class e1 k_end
 ```
 
 ## Global shell › Top bar › Ask FLO › Answers that read the screen
 
-Five of FLO's rules read the demo data for one case, one payer or one screen: what is missing, when an authorization ends, what a payer requires, which reviews are due, which patients need a fix before billing. When the question names a case ('R-1042') FLO uses it; otherwise it uses the case page that is open; otherwise the request that needs you first. Each answer names the case, quotes live data and ends with a link to the exact place. They are recommendations, never payer facts.
+Five of FLO's rules read the demo data for one case, one payer or one screen: what is missing, when an authorization ends, what a payer requires, which reviews are due, which patients need a fix before billing. When the question names a case ('R-1042') FLO uses it; otherwise it uses the case page that is open; otherwise the request that needs you first. Each answer names the case, quotes live data and ends with a link to the exact place. They are recommendations, never payer facts. They read only the cases at the sites in view: a case at the other site is 'not found' for a viewer limited to one site, and the review, coverage and denial counts are for the sites in view.
 
 Route: `Every page (Ask FLO drawer)`
 
@@ -511,7 +521,7 @@ flowchart TD
   s1@{ shape: stadium, label: "<b>A question reaches one of the five rules</b><br/>(a chip for the screen, or typed text)" }
   d0@{ shape: diam, label: "Which key words?" }
   subgraph gM ["Missing: 'What is missing for R-1042?'"]
-  m1@{ shape: diam, label: "<b>Which case?</b><br/>Named in the question, else the open case page, else the request that needs you first" }
+  m1@{ shape: diam, label: "<b>Which case?</b><br/>Named in the question, else the open case page, else the request that needs you first, among the cases in view" }
   m2@{ shape: hex, label: "<b>FLO reads the case's draft</b><br/>Open items still unresolved, by kind: Missing, To settle, Risk<br/>The payer's document count from the saved Payers list" }
   m3@{ shape: diam, label: "Was the request already sent?" }
   m4@{ shape: odd, label: "'Nothing is missing for R-0870 (Summit, Residential 3.5). It was already sent, so it is with Summit and Navigator is tracking it.'" }
@@ -541,7 +551,7 @@ flowchart TD
   e2@{ shape: odd, label: "<b>'5 patients need a fix before billing.'</b><br/>One line each, in the screen's order: 'R-0921 (J.D., Cardinal): 14 of 14 days used.' 'R-1118 (A.F., Beacon): the plan does not cover the service.' 'I-2275 (E.K., Summit): another plan pays first.'<br/>FLO's reading line" }
   el@{ shape: trap-t, label: "Click 'Open R-0921 in Eligibility & Benefits'" }
   end
-  n1@{ shape: stadium, label: "<b>Nothing to read: 'I did not find R-9999 in the demo data.' or 'Tell me which payer, for example: What does Summit require?'</b><br/>The chips for the screen stay under it" }
+  n1@{ shape: stadium, label: "<b>Nothing to read: 'I did not find R-9999 among the cases you can see. (the same for a real case at the other site, e.g. I-2207 for Dr. Rivera)' or 'Tell me which payer, for example: What does Summit require?'</b><br/>The chips for the screen stay under it" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Case page › Recommended actions › The tab" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Case page › Ways in" }
   g3@{ shape: subproc, label: "Continues in: Payers › Documents › Read the document list" }
@@ -581,13 +591,86 @@ flowchart TD
   style gE fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```
 
+## Global shell › Top bar › Site switcher
+
+The left of the top bar shows the date the page is as of and the site view. A viewer who may see both sites gets a three-way switch; a viewer limited to one site gets a locked label and a note on why. Every screen follows the choice.
+
+Route: `Every page (top bar, left side)`
+
+The page title can show a small tag such as 'Site A' beside it when a viewer who may see both sites has narrowed the view to one. It is never shown with Both sites, and never for a one-site viewer, whose top bar already says so.
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Look at the left of the top bar</b><br/>'As of Tue, Oct 20' (wide windows only), then the site view" }
+  d1@{ shape: diam, label: "<b>May the viewer see both sites?</b><br/>(Jordan Perez and Alex Morgan: yes. Dr. Rivera and Sam Okafor: no)" }
+  subgraph gSw ["Viewer with both sites"]
+  sw@{ shape: curv-trap, label: "<b>Switch with three buttons</b><br/>'Both sites', 'Site A', 'Site B'<br/>The chosen one is green and says it is pressed" }
+  cA@{ shape: trap-t, label: "<b>Click 'Site A' (or press Enter or Space on it)</b><br/>Tab reaches each button" }
+  cB@{ shape: trap-t, label: "Click 'Site B'" }
+  cBoth@{ shape: trap-t, label: "Click 'Both sites'" }
+  set@{ shape: rect, label: "<b>The site view is saved in the session</b><br/>Every list, count, badge and chart recomputes at once, on every screen" }
+  say@{ shape: rect, label: "<b>A hidden status line announces it for screen readers</b><br/>'Showing Site A. Every screen follows this choice.'" }
+  tag@{ shape: rect, label: "<b>Page titles can show a small 'Site A' tag</b><br/>Not with 'Both sites'" }
+  cInfo@{ shape: trap-t, label: "Hover, focus or click the info icon 'About the site view'" }
+  oInfo@{ shape: win-pane, label: "'Both sites shows everything you may see. Choose one site to narrow every list, count and chart on every screen to it. Staff limited to one site see only that site, with no switch.'" }
+  end
+  subgraph gLock ["Viewer with one site"]
+  lock@{ shape: curv-trap, label: "<b>Locked label with a padlock</b><br/>'Site A only' (Dr. Rivera) or 'Site B only' (Sam Okafor)<br/>No switch, no 'Both sites'" }
+  cWhy@{ shape: trap-t, label: "<b>Hover, focus or click the info icon</b><br/>'Why Dr. Rivera sees one site'" }
+  oWhy@{ shape: win-pane, label: "'Dr. Rivera works at Site A, so Site A is the only site this role can see. Access is by site (minimum necessary): the other site's patients, requests and records are not listed, counted or searchable, and a link to one shows a notice instead.'" }
+  fixed@{ shape: rect, label: "<b>The view cannot be changed from the top bar</b><br/>The other site does not exist for this viewer" }
+  end
+  kEsc@{ shape: trap-t, label: "Press Escape, click elsewhere or move away" }
+  closed@{ shape: rect, label: "The note closes" }
+  gOne@{ shape: subproc, label: "Continues in: Who can see what › Roles, sites and a record at the other site" }
+  gOut@{ shape: subproc, label: "Continues in: Global shell › Demo menu › Viewing as" }
+  e1@{ shape: stadium, label: "Every screen shows only the sites in view" }
+  s1 --> d1
+  d1 -->|"Yes"| sw
+  d1 -->|"No"| lock
+  sw --> cA & cB & cBoth --> set --> say --> tag --> e1
+  sw --> cInfo --> oInfo --> kEsc
+  lock --> fixed --> e1
+  lock --> cWhy --> oWhy --> kEsc
+  kEsc --> closed --> e1
+  e1 --> gOne
+  fixed -.-> gOut
+  class s1 k_start
+  class d1 k_decision
+  class sw,lock k_screen
+  class cA,cB,cBoth,cInfo,cWhy,kEsc k_click
+  class set,say,tag,fixed,closed k_process
+  class oInfo,oWhy k_overlay
+  class gOne,gOut k_goto
+  class e1 k_end
+  style gSw fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gLock fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+```
+
 ## Global shell › Top bar › Notifications › Open, read, click through
 
-The bell opens a drawer with every notification, newest first. A click on a row marks it read, closes the drawer and opens the page it points to. 'Mark all read' clears the rest in one click.
+The bell opens a drawer with the notifications about the cases the viewer may see, newest first, and those that belong to no case (a payer rule change). A click on a row marks it read, closes the drawer and opens the page it points to. 'Mark all read' clears the ones in the list in one click. A viewer limited to one site never sees, counts or marks the other site's notifications.
 
 Route: `Every page (Notifications drawer)`
 
-Read and unread marks live in the demo data, so 'Reset demo data' brings back the four unread ones from the start.
+Read and unread marks live in the demo data, so 'Reset demo data' brings back the four unread ones from the start. A notification belongs to the site of the case in its link (or named in its words); the bell's dot, the subtitle count and 'Mark all read' use only the notifications in view.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -612,6 +695,7 @@ flowchart TD
   bell@{ shape: curv-trap, label: "<b>Bell shows a red dot while any notification is unread</b><br/>(4 unread at the start)" }
   o1@{ shape: win-pane, label: "<b>Notifications drawer opens (440 px)</b><br/>Subtitle '4 unread', or 'You are all caught up' when none are left<br/>Button 'Mark all read'" }
   l1@{ shape: curv-trap, label: "<b>List, newest first</b><br/>Each row: agent badge, bold title, age ('16 min ago'), one line of text<br/>Unread rows are cream with a red dot" }
+  ps@{ shape: rect, label: "<b>Which notifications are listed</b><br/>Both sites: all six, 4 unread<br/>Site A (Dr. Rivera): 4 listed (P-1499, R-1042, the Cardinal rule change, R-0912), 3 unread<br/>Site B (Sam Okafor): 3 listed (D-3297, R-0951, the Cardinal rule change), 2 unread<br/>The denial D-3297 and R-0951 are at Site B" }
   p0@{ shape: rect, label: "Ages follow the demo clock: after 'Fast-forward 1 hour' '16 min ago' reads '1 h ago'" }
   subgraph gRows ["The six notifications at the start"]
   n1@{ shape: rect, label: "<b>Packet · 'Payer asked for info' (unread)</b><br/>→ Dashboard, request P-1499" }
@@ -626,19 +710,20 @@ flowchart TD
   p1@{ shape: rect, label: "Drawer closes" }
   d1@{ shape: diam, label: "Does the notification have a destination?" }
   p2@{ shape: rect, label: "App goes to that page" }
-  g1@{ shape: subproc, label: "Continues in: Dashboard › Open a request" }
-  g2@{ shape: subproc, label: "Continues in: New case › Agents work (the question window)" }
+  g1@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › An agent asks a question" }
   g3@{ shape: subproc, label: "Continues in: Denial Intelligence › Open a denial" }
   g4@{ shape: subproc, label: "Continues in: Payers › Changes › Read what changed" }
   e0@{ shape: stadium, label: "Stays on the page" }
   c2@{ shape: trap-t, label: "Click 'Mark all read'" }
-  st2@{ shape: cyl, label: "Every notification is saved as read" }
+  st2@{ shape: cyl, label: "<b>Every notification in the list is saved as read</b><br/>The other site's stay unread for the people who can see them" }
   p3@{ shape: rect, label: "<b>Drawer stays open</b><br/>Subtitle becomes 'You are all caught up'<br/>The bell's red dot goes" }
   c3@{ shape: trap-t, label: "Press Escape, click 'X' or click the dimmed area" }
   p4@{ shape: rect, label: "Drawer closes. Read marks are kept" }
   e1@{ shape: stadium, label: "Back on the page" }
   s1 --> bell --> o1 --> l1
   l1 --> p0
+  o1 --> ps
   l1 --> n1 & n2 & n3 & n4 & n5 & n6
   n1 & n2 & n3 & n4 & n5 & n6 --> c1
   c1 --> st1 --> p1 --> d1
@@ -650,7 +735,7 @@ flowchart TD
   class s1 k_start
   class bell,l1 k_screen
   class o1 k_overlay
-  class p0,n1,n2,n3,n4,n5,n6,p1,p2,p3,p4 k_process
+  class ps,p0,n1,n2,n3,n4,n5,n6,p1,p2,p3,p4 k_process
   class c1,c2,c3 k_click
   class st1,st2 k_store
   class d1 k_decision
@@ -791,12 +876,17 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Click 'Demo' in the top bar</b><br/>(pill shows the clock, 'Tue 10:42 am')" }
-  o1@{ shape: win-pane, label: "Demo menu opens under the button (320 px)" }
+  o1@{ shape: win-pane, label: "<b>Demo menu opens under the button (340 px, or the window width minus a margin)</b><br/>It scrolls inside itself when the window is short" }
   subgraph gT ["Section 'Time'"]
   t1@{ shape: rect, label: "<b>Text: 'The demo clock is Tue Oct 20 2026, 10:42 am. It only moves when you move it.'</b><br/>(the date and time follow the clock)" }
   f1@{ shape: trap-t, label: "Click 'Fast-forward 1 hour'" }
   f2@{ shape: trap-t, label: "Click 'Fast-forward 1 day'" }
   g1@{ shape: subproc, label: "Continues in: Global shell › Demo menu › Fast-forward the demo clock" }
+  end
+  subgraph gV ["Section 'Viewing as'"]
+  vt@{ shape: rect, label: "Text: 'Access is by site (minimum necessary). Try Dr. Rivera, who sees Site A only.'" }
+  fv@{ shape: trap-t, label: "Click a person, for example 'Dr. Rivera'" }
+  g4@{ shape: subproc, label: "Continues in: Global shell › Demo menu › Viewing as" }
   end
   subgraph gP ["Section 'Suggested path'"]
   sp@{ shape: rect, label: "Seven numbered steps, 1 to 7" }
@@ -808,7 +898,7 @@ flowchart TD
   g3@{ shape: subproc, label: "Continues in: Global shell › Demo menu › Reset demo data" }
   end
   d1@{ shape: diam, label: "What happens to the open menu?" }
-  k1@{ shape: rect, label: "<b>Menu stays open after a Fast-forward</b><br/>(the pill changes, so more clicks are possible)" }
+  k1@{ shape: rect, label: "<b>Menu stays open after a Fast-forward or a choice in 'Viewing as'</b><br/>(the pill or the tick changes, so more clicks are possible)" }
   k2@{ shape: rect, label: "Menu closes, then the app opens the step's page" }
   k3@{ shape: rect, label: "Menu closes, the app goes to /dashboard" }
   x1@{ shape: trap-t, label: "Click anywhere outside the menu" }
@@ -818,13 +908,14 @@ flowchart TD
   k5@{ shape: rect, label: "<b>Menu closes</b><br/>The page underneath is as it was" }
   e1@{ shape: stadium, label: "Menu is closed" }
   s1 --> o1
-  o1 --> t1 & f1 & f2 & sp & f4
+  o1 --> t1 & f1 & f2 & vt & sp & f4
+  vt --> fv --> g4
   f1 --> g1
   f2 --> g1
   sp --> f3 --> g2
   f4 --> g3
   o1 --> d1
-  d1 -->|"After Fast-forward"| k1
+  d1 -->|"After Fast-forward or Viewing as"| k1
   d1 -->|"After a path step"| k2
   d1 -->|"After Reset"| k3
   d1 -->|"Mouse"| x1
@@ -839,12 +930,13 @@ flowchart TD
   k1 -.-> o1
   class s1 k_start
   class o1 k_overlay
-  class t1,sp,k1,k2,k3,k4,k5 k_process
-  class f1,f2,f3,f4,x1,x2,x3 k_click
-  class g1,g2,g3 k_goto
+  class t1,vt,sp,k1,k2,k3,k4,k5 k_process
+  class f1,f2,fv,f3,f4,x1,x2,x3 k_click
+  class g1,g4,g2,g3 k_goto
   class d1 k_decision
   class e1 k_end
   style gT fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gV fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gP fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gR fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```
@@ -900,7 +992,7 @@ flowchart TD
   end
   subgraph gHow ["How things really arrive in the demo"]
   g1@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Demo controls (payer replies)" }
-  g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › Start screen" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Start with a referral or patient" }
   g3@{ shape: subproc, label: "Continues in: Global shell › Top bar › Notifications › What creates a notification" }
   end
   e1@{ shape: stadium, label: "Page keeps its place. Click again to move further" }
@@ -963,7 +1055,7 @@ flowchart LR
   g2@{ shape: subproc, label: "Continues in: Authorizations › Queue" }
   c3@{ shape: trap-t, label: "Click '3  New case: start from a referral'" }
   r3@{ shape: rect, label: "<b>Go to /authorizations/new</b><br/>A blank draft is started and the address becomes /authorizations/new/draft-..." }
-  g3@{ shape: subproc, label: "Continues in: New case › Referral step" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Start with a referral or patient" }
   c4@{ shape: trap-t, label: "Click '4  Eligibility & Benefits: verify a patient'" }
   r4@{ shape: rect, label: "Go to /authorizations/eligibility/verify" }
   g4@{ shape: subproc, label: "Continues in: Eligibility & Benefits › Verify a patient" }
@@ -1030,6 +1122,7 @@ flowchart TD
   r5@{ shape: cyl, label: "New case: the five drafts in progress, '4 sent today', referrals, referral badge" }
   r6@{ shape: cyl, label: "Eligibility & Benefits, Denial Intelligence, Payers, EMR Connect: all work done in them" }
   r9@{ shape: cyl, label: "Settings: every agent back at its starting level, every switch on, no pause" }
+  r10@{ shape: cyl, label: "<b>Viewing as: Jordan Perez, UR coordinator, on Both sites</b><br/>(the site switch and the user card follow)" }
   r7@{ shape: cyl, label: "Case Manager: the 56 tracker rows and the 47 reviews. Signed reviews are unsigned, updates added are removed" }
   r8@{ shape: cyl, label: "Next denial number starts again at D-3319" }
   end
@@ -1041,16 +1134,93 @@ flowchart TD
   p6@{ shape: rect, label: "Ask FLO chat stays: reset does not touch it" }
   e1@{ shape: stadium, label: "Demo is at its first screen again" }
   s1 --> c1 --> p1
-  p1 --> r1 & r2 & r3 & r4 & r5 & r6 & r7 & r8 & r9
-  r1 & r2 & r3 & r4 & r5 & r6 & r7 & r8 & r9 --> p2
+  p1 --> r1 & r2 & r3 & r4 & r5 & r6 & r7 & r8 & r9 & r10
+  r1 & r2 & r3 & r4 & r5 & r6 & r7 & r8 & r9 & r10 --> p2
   p2 --> p3 --> t1 --> p4 --> p5 --> p6 --> e1
   class s1 k_start
   class c1 k_click
   class p1,p2,p3,p4,p5,p6 k_process
-  class r1,r2,r3,r4,r5,r6,r9,r7,r8 k_store
+  class r1,r2,r3,r4,r5,r6,r9,r10,r7,r8 k_store
   class t1 k_toast
   class e1 k_end
   style gR fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+```
+
+## Global shell › Demo menu › Viewing as
+
+The Demo menu lists the four demo people. Choosing one changes who is viewing, and with it the sites that can be seen on every screen. The menu stays open, so people can be compared one after another.
+
+Route: `Every page (Demo menu › Viewing as)`
+
+Demo only. The default viewer is Jordan Perez on Both sites. 'Reset demo data' puts the viewer back to Jordan Perez on Both sites. The same switch is in Settings › Sites and access › 'View as'.
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Open the Demo menu</b><br/>Section 'Viewing as'" }
+  o1@{ shape: win-pane, label: "<b>'Access is by site (minimum necessary). Try Dr. Rivera, who sees Site A only.'</b><br/>Four rows, each with initials, name and role" }
+  subgraph gRows ["The four rows"]
+  v1@{ shape: rect, label: "<b>Jordan Perez</b><br/>UR coordinator, both sites" }
+  v2@{ shape: rect, label: "<b>Alex Morgan</b><br/>Clinic owner, both sites" }
+  v3@{ shape: rect, label: "<b>Dr. Rivera</b><br/>Clinician, Site A" }
+  v4@{ shape: rect, label: "<b>Sam Okafor</b><br/>Billing, Site B" }
+  cur@{ shape: rect, label: "<b>The current viewer has a green tick</b><br/>Each row says whether it is pressed, for screen readers" }
+  end
+  c1@{ shape: trap-t, label: "Click a row, for example 'Dr. Rivera'" }
+  d1@{ shape: diam, label: "Is it the viewer already shown?" }
+  same@{ shape: rect, label: "Nothing changes except the toast" }
+  sw@{ shape: rect, label: "<b>The viewer changes</b><br/>The site view becomes the viewer's only site, or Both sites for a viewer with two" }
+  st@{ shape: cyl, label: "Session saved: viewer and site view" }
+  t1@{ shape: odd, label: "<b>'Now viewing as Dr. Rivera'</b><br/>'Clinician, Site A. Only Site A is visible; the other site's records are not available.'<br/>For Jordan or Alex: 'UR coordinator. Both sites are visible.'" }
+  subgraph gAll ["Everything on screen follows at once"]
+  e1@{ shape: rect, label: "Top bar: the switch for a viewer with both sites, or the locked 'Site A only' label for one site" }
+  e2@{ shape: rect, label: "<b>Sidebar: the user card shows the viewer's name and role</b><br/>Every badge recounts for the sites in view (Payers is clinic-wide and stays 3)" }
+  e3@{ shape: rect, label: "The open page: lists, figures, charts and pickers leave out the other site" }
+  e4@{ shape: rect, label: "A record that belongs to the other site now opens the notice 'This case is not available at Site A'" }
+  e5@{ shape: rect, label: "<b>Edits and acknowledgements made from now on carry the viewer's name</b><br/>(Payers edit log, 'Acknowledged by')" }
+  end
+  g1@{ shape: subproc, label: "Continues in: Who can see what › Roles, sites and a record at the other site" }
+  g2@{ shape: subproc, label: "Continues in: Settings › Sites and access › Read the roles and switch with View as" }
+  g3@{ shape: subproc, label: "Continues in: Global shell › Demo menu › Reset demo data" }
+  e9@{ shape: stadium, label: "The whole demo is seen as that person" }
+  s1 --> o1
+  o1 --> v1 & v2 & v3 & v4 & cur
+  v3 --> c1
+  c1 --> d1
+  d1 -->|"Yes"| same --> e9
+  d1 -->|"No"| sw --> st --> t1
+  t1 --> e1 & e2 & e3 & e4 & e5
+  e1 & e2 & e3 & e4 & e5 --> e9
+  e9 --> g1
+  e9 -.-> g2
+  e9 -.-> g3
+  class s1 k_start
+  class o1 k_overlay
+  class v1,v2,v3,v4,cur,same,sw,e1,e2,e3,e4,e5 k_process
+  class c1 k_click
+  class d1 k_decision
+  class st k_store
+  class t1 k_toast
+  class g1,g2,g3 k_goto
+  class e9 k_end
+  style gRows fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gAll fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```
 
 ## Global shell › Sidebar footer › Settings, Help, Sign out, user card
@@ -1079,7 +1249,7 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Look at the bottom of the sidebar" }
-  foot@{ shape: curv-trap, label: "<b>Footer</b><br/>'Demo data' tile, 'Settings', 'Help', 'Sign out', then 'JP  Jordan Perez  UR coordinator'" }
+  foot@{ shape: curv-trap, label: "<b>Footer</b><br/>'Demo data' tile, 'Settings', 'Help', 'Sign out', then the user card, 'JP  Jordan Perez  UR coordinator' until another viewer is chosen" }
   cTile@{ shape: trap-t, label: "Click the 'Demo data' tile" }
   pTile@{ shape: rect, label: "Nothing happens: it is a label only" }
   eTile@{ shape: stadium, label: "No change" }
@@ -1088,7 +1258,7 @@ flowchart TD
   pSetOn@{ shape: rect, label: "<b>The 'Settings' row turns green while the address starts with /settings</b><br/>(the only footer row that highlights)" }
   gSet@{ shape: subproc, label: "Continues in: Settings" }
   cHelp@{ shape: trap-t, label: "Click 'Help'" }
-  tHelp@{ shape: odd, label: "<b>'Help'</b><br/>'Press Ask FLO (top right) to ask a question. Use Demo, top right, to reset or move time forward.'" }
+  tHelp@{ shape: odd, label: "<b>'Help'</b><br/>'Press Ask FLO (top right) to ask a question. Use Demo, top right, to reset, move time forward or view as another person.'" }
   pHelp@{ shape: rect, label: "No page opens and no dialog: the message is the whole of Help" }
   dHelp@{ shape: diam, label: "What does the person do next?" }
   cAsk@{ shape: trap-t, label: "Click 'Ask FLO'" }
@@ -1097,11 +1267,11 @@ flowchart TD
   gDemo@{ shape: subproc, label: "Continues in: Global shell › Demo menu › Open, close and what is inside" }
   cOut@{ shape: trap-t, label: "Click 'Sign out'" }
   tOut@{ shape: odd, label: "<b>'This is a demo'</b><br/>'There is nothing to sign out of.'" }
-  pOut@{ shape: rect, label: "<b>The person stays signed in as Jordan Perez</b><br/>There is no login screen in the demo" }
+  pOut@{ shape: rect, label: "<b>The person stays signed in as whoever is viewing (Jordan Perez at the start)</b><br/>There is no login screen in the demo" }
   eOut@{ shape: stadium, label: "Same page, same data" }
-  cCard@{ shape: trap-t, label: "<b>Click the user card</b><br/>('JP', 'Jordan Perez', 'UR coordinator')" }
+  cCard@{ shape: trap-t, label: "<b>Click the user card</b><br/>(initials, name and role of the viewer: 'JP', 'Jordan Perez', 'UR coordinator')" }
   pCard@{ shape: rect, label: "Nothing happens: no menu, no profile page" }
-  pWho@{ shape: rect, label: "<b>Jordan Perez is the person every action is credited to</b><br/>The Case Manager sign dialog says so: 'You are signed in as Jordan Perez, a UR coordinator'" }
+  pWho@{ shape: rect, label: "<b>The viewer is the person edits and acknowledgements are credited to</b><br/>It changes with 'Viewing as' in the Demo menu: for Dr. Rivera the card reads 'Clinician, Site A'<br/>The Case Manager sign dialog says 'You are signed in as Jordan Perez, a UR coordinator'" }
   eCard@{ shape: stadium, label: "No change" }
   pToast@{ shape: rect, label: "Toasts fade after about 4 seconds, or on a click" }
   s1 --> foot
@@ -1109,7 +1279,7 @@ flowchart TD
   foot --> cSet --> pSet --> pSetOn --> gSet
   foot --> cHelp --> tHelp --> pHelp --> dHelp
   dHelp -->|"Ask a question"| cAsk --> gAsk
-  dHelp -->|"Move the clock or reset"| cDemo --> gDemo
+  dHelp -->|"Move the clock, reset or view as someone else"| cDemo --> gDemo
   foot --> cOut --> tOut --> pOut --> eOut
   foot --> cCard --> pCard --> eCard
   pCard -.-> pWho
@@ -1161,11 +1331,11 @@ flowchart LR
   g1@{ shape: subproc, label: "Continues in: Dashboard" }
   r2@{ shape: rect, label: "<b>'/active' goes to /manager</b><br/>Any '?tab=' on /active is dropped, so the Active cases tab opens" }
   g2@{ shape: subproc, label: "Continues in: Case Manager › Page › Arrive and read the header" }
-  r3@{ shape: rect, label: "<b>'/referrals' goes to /authorizations/new</b><br/>Referrals no longer have a tab: they are step 1 of New case" }
+  r3@{ shape: rect, label: "<b>'/referrals' goes to /authorizations/new</b><br/>Referrals no longer have a tab: they start Intake in New case" }
   r3b@{ shape: rect, label: "New case starts a blank draft and the address becomes /authorizations/new/draft-..." }
-  g3@{ shape: subproc, label: "Continues in: New case › Referral step" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Start with a referral or patient" }
   r4@{ shape: rect, label: "'/referrals/RF-1234' goes to /authorizations/new/referral/RF-1234" }
-  g4@{ shape: subproc, label: "Continues in: New case › Referral › Open a referral" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › The full referral page" }
   end
   subgraph gKnown ["Pages that exist"]
   k1@{ shape: rect, label: "<b>/dashboard, /authorizations..., /denials..., /manager, /analytics, /emr, /payers..., /settings</b><br/>The page opens and starts at the top" }
@@ -1250,9 +1420,10 @@ flowchart TD
   p5@{ shape: rect, label: "'Reset demo data' empties the stack, then adds its own toast" }
   e1@{ shape: stadium, label: "Stack is empty" }
   subgraph gShell ["Toasts raised by the shell"]
-  s2@{ shape: odd, label: "<b>'Help'</b><br/>'Press Ask FLO (top right) to ask a question. Use Demo, top right, to reset or move time forward.'" }
+  s2@{ shape: odd, label: "<b>'Help'</b><br/>'Press Ask FLO (top right) to ask a question. Use Demo, top right, to reset, move time forward or view as another person.'" }
   s3@{ shape: odd, label: "<b>'This is a demo'</b><br/>'There is nothing to sign out of.'" }
   s4@{ shape: odd, label: "<b>'Clock moved forward 1 hour' or '1 day'</b><br/>'Times in stage and deadlines updated.'" }
+  s7@{ shape: odd, label: "<b>'Now viewing as Dr. Rivera'</b><br/>'Clinician, Site A. Only Site A is visible; the other site's records are not available.'<br/>(Demo menu › Viewing as, or Settings › View as)" }
   s5@{ shape: odd, label: "<b>'Demo data reset'</b><br/>'Everything is back to the starting point.'" }
   s6@{ shape: odd, label: "<b>Hosted preview only: 'Print is off in this preview'</b><br/>'Open the single-file version of the demo to use it.'<br/>Same for 'Copy link' and 'Download'" }
   end
@@ -1272,14 +1443,14 @@ flowchart TD
   t1 & t2 & t3 & t4 --> c1 --> p3 --> e1
   p1 --> p4
   p4 --> p5
-  s2 & s3 & s4 & s5 & s6 --> s1
+  s2 & s3 & s4 & s5 & s6 & s7 --> s1
   m1 & m2 & m3 --> s1
   m3 --> g1
   p5 --> g2
   class s1 k_start
   class p1,p2,p3,p4,p5 k_process
   class d1 k_decision
-  class t1,t2,t3,t4,s2,s3,s4,s5,s6,m1,m2,m3 k_toast
+  class t1,t2,t3,t4,s2,s3,s4,s7,s5,s6,m1,m2,m3 k_toast
   class w1 k_wait
   class c1 k_click
   class e1 k_end

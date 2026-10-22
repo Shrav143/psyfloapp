@@ -16,82 +16,65 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Open New case</b><br/>Sidebar, a 'New case' button, the Demo menu, FLO's link or the old /referrals address" }
-  s2@{ shape: stadium, label: "<b>Click 'Start authorization'</b><br/>on a coverage result" }
-  s3@{ shape: stadium, label: "<b>Click 'Start a case from this referral'</b><br/>on the full referral page (or type /authorizations/new?referral=RF-2051)" }
-  s4@{ shape: stadium, label: "<b>Open a case that already exists</b><br/>A Case Manager row button, a bell link, or 'Open in review and sign'" }
+  s1@{ shape: stadium, label: "<b>Open New case</b><br/>Sidebar 'New case', a 'New case' button, the Demo menu, FLO's link or the old /referrals address" }
+  s2@{ shape: stadium, label: "<b>Click 'Create authorization from verification' or 'Start authorization'</b><br/>on a result in Eligibility & Benefits" }
+  s3@{ shape: stadium, label: "<b>Click 'Start a case from this referral'</b><br/>on the full referral page, or type ?referral=RF-2051" }
+  s4@{ shape: stadium, label: "<b>Click 'Start renewal' in the Dashboard's what-to-do list</b><br/>(opens ?type=reauth&patient=CASE-ID)" }
+  s5@{ shape: stadium, label: "<b>Type a link with ?type=</b><br/>initial, concurrent, reauth, modify or retro" }
   subgraph gMake ["No case id in the address: make one"]
-  p1@{ shape: rect, label: "<b>Page makes a case, then opens /authorizations/new/draft-ID</b><br/>It replaces the address, so Back does not loop" }
   d1@{ shape: diam, label: "What is in the address?" }
+  dRefSite@{ shape: diam, label: "?referral=ID: is the referral at a site in view?" }
+  scRefOut@{ shape: curv-trap, label: "<b>'This referral is not available at Site A'</b><br/>Names the id and its site, nothing about the patient<br/>No case is made" }
   d2@{ shape: diam, label: "Is RF-2051 in the demo?" }
-  p2@{ shape: rect, label: "<b>Case is filled from the referral</b><br/>Patient, payer, member ID, level of care, diagnoses, reason<br/>Request type: Initial request if routine, else Admission" }
-  st1@{ shape: cyl, label: "<b>Case created on Medical records</b><br/>The referral is the first document" }
-  t1@{ shape: odd, label: "<b>'Referral RF-2051 is in this case'</b><br/>'K.R., 29. Next, add the medical records.'" }
+  p2@{ shape: rect, label: "<b>Case is filled from the referral</b><br/>Patient, payer, member ID, level of care, diagnoses, reason, referrer<br/>Request type: Initial request if routine, else Admission<br/>The case is at the referral's site" }
+  st1@{ shape: cyl, label: "<b>Case created on Intake, referral attached</b><br/>The referral is the first document" }
+  t1@{ shape: odd, label: "<b>'Referral RF-2051 is in this case'</b><br/>'K.R., 29. Check the details below, then go on to Eligibility & Benefits.'" }
   t2@{ shape: odd, label: "<b>Amber toast 'Referral not found'</b><br/>'We could not find RF-9999. Start from a blank case instead.'" }
-  p3@{ shape: rect, label: "<b>Filled from ?payer=, ?program=, ?member=, ?initials=, ?age=</b><br/>Request type: Admission<br/>An unknown payer or program is ignored" }
-  st2@{ shape: cyl, label: "Case created on Medical records" }
-  st3@{ shape: cyl, label: "<b>Blank case created, step 'Referral'</b><br/>Every click on sidebar 'New case' makes a new one<br/>Not in Case Manager until 'Save as draft'" }
+  dVer@{ shape: diam, label: "?verification=ID: is that check at a site in view?" }
+  p3@{ shape: rect, label: "<b>Case is filled from the check</b><br/>Patient, payer, plan, member ID, level of care and the dates the check covers<br/>The case uses that same verification record" }
+  dPat@{ shape: diam, label: "?patient=ID: is that patient at a site in view?" }
+  p4@{ shape: rect, label: "<b>The patient's details, treatment episode and authorization are filled in</b><br/>No second patient is made" }
+  p5@{ shape: rect, label: "<b>?type= picks the Authorization type</b><br/>Its request type is recorded: Initial request, Continued stay, Recertification, Modification or Retro-authorization" }
+  p6@{ shape: rect, label: "<b>Filled from ?payer=, ?program=, ?member=, ?initials=, ?age=</b><br/>Request type: Admission<br/>An unknown payer or program is ignored" }
+  st3@{ shape: cyl, label: "<b>Blank case created at Intake</b><br/>It belongs to the site you are working at<br/>Not in Case Manager until 'Save as draft'" }
   end
-  p4@{ shape: rect, label: "Case opens at /authorizations/new/draft-ID" }
-  subgraph gOpen ["A case id is in the address: reopen it"]
-  d3@{ shape: diam, label: "Is there a case with that id?" }
-  sc1@{ shape: curv-trap, label: "<b>New case</b><br/>'That draft is not in the demo.'<br/>'We could not find that draft'<br/>'It may have been cleared when the demo data was reset.'" }
-  c1@{ shape: trap-t, label: "Click 'Start a new case'" }
-  d4@{ shape: diam, label: "Was it signed and sent?" }
-  sc2@{ shape: curv-trap, label: "<b>'R-1234 was sent'</b><br/>'It was signed and sent to the payer. The agents are following it from the Dashboard.'<br/>'This case is no longer being prepared'" }
-  c2@{ shape: trap-t, label: "Click 'Open it on the Dashboard'" }
-  c3@{ shape: trap-t, label: "Click 'Back to Case Manager'" }
-  d5@{ shape: diam, label: "On Referral or Medical records, and have agents already run?" }
-  p5@{ shape: rect, label: "<b>Moves on when the case is opened</b><br/>Agents work if fewer than 10 agents are done, else Review and sign<br/>A later click on 'Referral' in the stepper is not undone" }
-  end
-  sc3@{ shape: curv-trap, label: "<b>New case</b><br/>Link 'Case Manager', title, one sentence, stepper, the step<br/>Title becomes 'Review and sign' on the last step" }
-  c4@{ shape: trap-t, label: "Click the link 'Case Manager'" }
-  d6@{ shape: diam, label: "Which step is the case on?" }
-  gCm@{ shape: subproc, label: "Continues in: Case Manager" }
-  gDash@{ shape: subproc, label: "<b>Continues in: Dashboard</b><br/>Opens the request" }
-  gStep@{ shape: subproc, label: "Continues in: New case › The stepper and the four steps" }
-  g1@{ shape: subproc, label: "Continues in: New case › Referral › Start screen" }
-  g1b@{ shape: subproc, label: "Continues in: New case › Referral › Referral checklist" }
-  g2@{ shape: subproc, label: "Continues in: New case › Medical records › The checklist and Continue" }
-  g3@{ shape: subproc, label: "Continues in: New case › Agents work › Start the run and watch it" }
-  g4@{ shape: subproc, label: "Continues in: New case › Review and sign › The draft and the summary" }
-  s1 --> p1
-  s2 --> p1
-  s3 --> p1
-  p1 --> d1
-  d1 -->|"?referral=ID"| d2
-  d1 -->|"payer or program valid"| p3 --> st2
-  d1 -->|"Nothing usable"| st3
-  d2 -->|"Yes"| p2 --> st1 --> t1
+  p7@{ shape: rect, label: "<b>?step= opens that step: intake, eligibility, documentation, preparation or review</b><br/>The older names referral, records and agents land on Intake, Clinical documentation and Authorization preparation" }
+  p8@{ shape: rect, label: "<b>Case opens at /authorizations/new/draft-ID</b><br/>It replaces the address, so Back does not loop" }
+  gOpen@{ shape: subproc, label: "Continues in: Authorizations › New case › Reopen and resume a case" }
+  gStep@{ shape: subproc, label: "Continues in: Authorizations › New case › The stepper and the five steps" }
+  gType@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization type" }
+  gSites@{ shape: subproc, label: "Continues in: Authorizations › New case › Sites and scope" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Start with a referral or patient" }
+  s1 --> d1
+  s2 --> d1
+  s3 --> d1
+  s4 --> d1
+  s5 --> d1
+  d1 -->|"?referral=ID"| dRefSite
+  dRefSite -->|"No"| scRefOut
+  dRefSite -->|"Yes"| d2
+  d2 -->|"Yes"| p2 --> st1 --> t1 --> p7
   d2 -->|"No"| t2 --> st3
-  t1 --> p4
-  st2 --> p4
-  st3 --> p4
-  s4 --> d3
-  p4 --> d3
-  d3 -->|"No"| sc1 --> c1 --> p1
-  d3 -->|"Yes"| d4
-  d4 -->|"Yes"| sc2
-  sc2 --> c2 --> gDash
-  sc2 --> c3 --> gCm
-  d4 -->|"No"| d5
-  d5 -->|"Yes"| p5 --> sc3
-  d5 -->|"No"| sc3
-  sc3 --> c4 --> gCm
-  sc3 --> d6
-  sc3 -.-> gStep
-  d6 -->|"Referral, nothing loaded"| g1
-  d6 -->|"Referral, one loaded"| g1b
-  d6 -->|"Medical records"| g2
-  d6 -->|"Agents work"| g3
-  d6 -->|"Review and sign"| g4
-  class s1,s2,s3,s4 k_start
-  class p1,p2,p3,p4,p5 k_process
-  class d1,d2,d3,d4,d5,d6 k_decision
-  class st1,st2,st3 k_store
+  d1 -->|"?verification=ID"| dVer
+  dVer -->|"Yes"| p3 --> p7
+  dVer -->|"No"| st3
+  d1 -->|"?patient=ID"| dPat
+  dPat -->|"Yes"| p4 --> p7
+  dPat -->|"No"| st3
+  d1 -->|"?type="| p5 --> p7
+  d1 -->|"payer or program valid"| p6 --> p7
+  d1 -->|"Nothing usable"| st3 --> p7
+  p7 --> p8
+  p8 --> gOpen
+  p8 -.-> gStep
+  p8 -.-> gType
+  scRefOut -.-> gSites
+  st1 -.-> g1
+  class s1,s2,s3,s4,s5 k_start
+  class d1,dRefSite,d2,dVer,dPat k_decision
+  class scRefOut k_screen
+  class p2,p3,p4,p5,p6,p7,p8 k_process
+  class st1,st3 k_store
   class t1,t2 k_toast
-  class sc1,sc2,sc3 k_screen
-  class c1,c2,c3,c4 k_click
-  class gCm,gDash,gStep,g1,g1b,g2,g3,g4 k_goto
+  class gOpen,gStep,gType,gSites,g1 k_goto
   style gMake fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
-  style gOpen fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

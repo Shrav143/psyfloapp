@@ -1,0 +1,88 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Scrubber finishes</b><br/>The last of ten agents" }
+  s2@{ shape: stadium, label: "<b>Click 'Back' on step 5</b><br/>'Review & submit'" }
+  t1@{ shape: odd, label: "<b>Banner: 'All ten agents are done' (one message at a time: a question, a pause or changed records come first)</b><br/>'The draft and the four checks are ready. Nothing has been sent to the payer.'" }
+  p1@{ shape: rect, label: "<b>Hint: 'Read the draft and sign it on the next step.'</b><br/>'Review & submit' switches on<br/>'Pause all agents' and 'Skip ahead' switch off" }
+  pStop@{ shape: rect, label: "The run stops for a question, an agent that could not finish, a pause in Settings, or when the page is closed" }
+  gFail@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › An agent could not finish" }
+  gPause@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › Paused in Settings" }
+  dWhat@{ shape: diam, label: "What does the person do?" }
+  cTick@{ shape: trap-t, label: "Tick or untick a 'To raise it further' box" }
+  pTick@{ shape: rect, label: "Chance moves; the summary is rebuilt on the next step" }
+  cReview@{ shape: trap-t, label: "Click 'Review & submit'" }
+  gReview@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › The draft and the summary" }
+  cBack@{ shape: trap-t, label: "Click 'Back'" }
+  cStep@{ shape: trap-t, label: "Click 'Intake', 'Eligibility & Benefits' or 'Clinical documentation' in the stepper" }
+  pLock@{ shape: rect, label: "<b>The stepper opens 'Review & submit' at any time</b><br/>Before the agents finish it says 'The packet is built when the agents finish' and offers 'Go to Authorization preparation'" }
+  sRec@{ shape: curv-trap, label: "<b>The step that was clicked</b><br/>Everything is as it was left" }
+  dEdit@{ shape: diam, label: "Does the person change the records?" }
+  pSame@{ shape: rect, label: "<b>Nothing changed</b><br/>The agents' work is kept" }
+  cCont@{ shape: trap-t, label: "Click 'Continue'" }
+  pDirect@{ shape: rect, label: "<b>Straight back to step 4 'Authorization preparation'</b><br/>No 'Start the agents?' question" }
+  stStale@{ shape: cyl, label: "<b>A change to the patient, payer, member ID, level of care, request type, dates, diagnoses, reason, proposed change or retro reason</b><br/>Or a document added, removed or replaced" }
+  pReset@{ shape: rect, label: "<b>The run starts over: all ten agents back to 'Waiting'</b><br/>Answers, ticked boxes, summary edits and a send-back note are cleared" }
+  tToast@{ shape: odd, label: "<b>Toast on the step: 'Records changed after the agents ran'</b><br/>'Their work was cleared. The agents check again when you continue.'" }
+  tBanner@{ shape: odd, label: "<b>On step 4 once the agents start again: 'Records changed after the last run. The agents re-checked.'</b><br/>It goes away when all ten are done" }
+  cCont2@{ shape: trap-t, label: "Click 'Continue'" }
+  oConf@{ shape: win-pane, label: "Start the agents?" }
+  gStart@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › Start the run and watch it" }
+  gQ@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › An agent asks a question" }
+  eBack@{ shape: stadium, label: "<b>Step 4 shows the run as it was</b><br/>Finished agents stay finished" }
+  subgraph gResume ["Opening a draft that already ran"]
+  s3@{ shape: stadium, label: "<b>Click 'Continue', 'Watch', 'Answer' or 'Review and sign'</b><br/>on a case in Case Manager › Being prepared<br/>Or 'Open in review and sign' / 'Send to payer' on a case page" }
+  pOpen@{ shape: rect, label: "<b>The page opens that draft from its address</b><br/>It is not reset<br/>A draft made from a request opens on Review & submit when it is ready, else on Authorization preparation" }
+  dFar@{ shape: diam, label: "How far did the agents get?" }
+  rNone@{ shape: rect, label: "<b>None yet</b><br/>Opens on the step it was left on: Intake, Eligibility & Benefits or Clinical documentation" }
+  rMid@{ shape: rect, label: "<b>Some of the ten</b><br/>Opens step 4; the run carries on with the next agent" }
+  rAsk@{ shape: rect, label: "<b>Waiting on a question</b><br/>Opens step 4 and the question pop-up shows at once" }
+  rAll@{ shape: rect, label: "<b>All ten</b><br/>Opens step 5 'Review & submit'" }
+  end
+  s1 --> t1 --> p1 --> pStop --> dWhat
+  s2 --> p1
+  pStop -.-> gFail
+  pStop -.-> gPause
+  dWhat --> cTick --> pTick
+  dWhat --> cReview --> gReview
+  dWhat --> cBack --> sRec
+  dWhat --> cStep --> sRec
+  cStep -.-> pLock
+  sRec --> dEdit
+  dEdit -->|"No"| pSame --> cCont --> pDirect --> eBack
+  dEdit -->|"Yes"| stStale --> pReset --> tToast --> cCont2 --> oConf --> gStart
+  oConf --> tBanner
+  s3 --> pOpen --> dFar
+  dFar -->|"0 of 10"| rNone
+  dFar -->|"1 to 9, no question"| rMid
+  dFar -->|"1 to 9, question open"| rAsk
+  dFar -->|"10 of 10"| rAll
+  rMid --> gStart
+  rAsk --> gQ
+  rAll --> gReview
+  class s1,s2,s3 k_start
+  class t1,tToast,tBanner k_toast
+  class p1,pStop,pTick,pLock,pSame,pDirect,pReset,pOpen,rNone,rMid,rAsk,rAll k_process
+  class gFail,gPause,gReview,gStart,gQ k_goto
+  class dWhat,dEdit,dFar k_decision
+  class cTick,cReview,cBack,cStep,cCont,cCont2 k_click
+  class sRec k_screen
+  class stStale k_store
+  class oConf k_overlay
+  class eBack k_end
+  style gResume fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

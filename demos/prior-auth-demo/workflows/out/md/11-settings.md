@@ -1,12 +1,12 @@
 # Settings
 
-The sixteen agents, how much freedom each has, Pause all.
+The sixteen agents, how much freedom each has, Pause all, and Sites and access.
 
 Shapes and colours: see `00-overview.md`. Source: `workflows/src/11-settings/`.
 
 ## Settings › Agents › Arrive and read the sixteen agents
 
-The Settings page is one screen about the agents: who they are, how much freedom each one has, a switch for each, and a button to pause them all. This shows what the person sees and what each row says.
+The Settings page is one screen about the agents: who they are, how much freedom each one has, a switch for each, and a button to pause them all, plus a closed card on who can see which site. This shows what the person sees and what each row says.
 
 Route: `/settings`
 
@@ -32,7 +32,7 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Click 'Settings' in the sidebar</b><br/>Above 'Help', below the 'Demo data' tag" }
-  p1@{ shape: curv-trap, label: "<b>Settings</b><br/>Who the agents are, how much freedom each one has, and a way to pause them." }
+  p1@{ shape: curv-trap, label: "<b>Settings</b><br/>Who the agents are, how much freedom each one has, a way to pause them, and who can see which site." }
   hb@{ shape: trap-t, label: "<b>Click 'Pause all agents'</b><br/>Red outline button, top right<br/>'Resume all agents' when all sixteen are paused" }
   g1@{ shape: subproc, label: "Continues in: Settings › Pause › Pause all agents" }
   bn@{ shape: odd, label: "<b>'Privacy mode is always on'</b><br/>Names, dates and IDs are swapped for codes before an agent reads a chart, and mapped back only on your screen." }
@@ -40,6 +40,8 @@ flowchart TD
   lv@{ shape: curv-trap, label: "<b>What each level changes</b><br/>One plain line for each of the three levels<br/>Subtitle: 'Set per agent. Applied in EMR Connect'" }
   g6@{ shape: subproc, label: "Continues in: Settings › Agents › What each freedom level allows and the gates it never skips" }
   g2@{ shape: subproc, label: "Continues in: Settings › Page › Other controls and notices" }
+  sa@{ shape: curv-trap, label: "<b>Sites and access (closed card, first in the grid)</b><br/>'Two sites, four roles'" }
+  gsa@{ shape: subproc, label: "Continues in: Settings › Sites and access › Read the roles and switch with View as" }
   subgraph gCov ["Coverage"]
   c0@{ shape: curv-trap, label: "<b>Coverage card</b><br/>Knows who pays and files with them" }
   c1@{ shape: rect, label: "<b>Verify: Checks coverage and benefits</b><br/>Starts at 'Act on its own'" }
@@ -94,13 +96,14 @@ flowchart TD
   row --> st
   row --> fz --> g3
   row --> sw --> g4
+  p1 --> sa --> gsa
   p1 --> gates --> g2
   p1 --> lv --> g6
   c1 -.-> g5
   class s1 k_start
-  class p1,gates,lv,c0,d0,i0,k0 k_screen
+  class p1,gates,lv,sa,c0,d0,i0,k0 k_screen
   class hb,fz,sw k_click
-  class g1,g6,g2,g3,g4,g5 k_goto
+  class g1,g6,g2,gsa,g3,g4,g5 k_goto
   class bn k_toast
   class c1,c2,c3,d1,d2,d3,d4,d5,i1,i2,i3,i4,k1,k2,k3,k4,row,st k_process
   style gCov fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
@@ -224,9 +227,9 @@ flowchart TD
   end
   p1@{ shape: rect, label: "<b>The signature is bound to the exact packet</b><br/>Nothing addressed to a payer leaves without it. PRD: an invariant, not a setting" }
   p2@{ shape: rect, label: "The step goes ahead" }
-  n1@{ shape: subproc, label: "Continues in: Authorizations › New case › Review and sign › Sign and send" }
+  n1@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Sign and send to payer" }
   n2@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Approve the write-back" }
-  n3@{ shape: subproc, label: "Continues in: Authorizations › New case › Agents work › An agent asks a question" }
+  n3@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › An agent asks a question" }
   n4@{ shape: subproc, label: "Continues in: Payers › Changes › Acknowledge a change" }
   n5@{ shape: subproc, label: "Continues in: Settings › Pause › Pause all agents" }
   n6@{ shape: subproc, label: "Continues in: Settings › Agents › Which steps need a person" }
@@ -306,7 +309,7 @@ flowchart TD
   x1@{ shape: stadium, label: "<b>Never</b><br/>The clinician authors clinical content and sets units, frequency and dates<br/>Callers never answer clinical questions" }
   h1@{ shape: trap-t, label: "<b>Clinician signs</b><br/>A licensed clinician signs every request and appeal" }
   h2@{ shape: trap-t, label: "Case owner confirms the write-back" }
-  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Review and sign › Sign and send" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Sign and send to payer" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Approve the write-back" }
   g3@{ shape: subproc, label: "Continues in: Payers › Changes › Acknowledge a change" }
   g4@{ shape: subproc, label: "Continues in: Denial Intelligence › Written appeal › Edit, sign and file" }
@@ -518,8 +521,8 @@ flowchart TD
   s1@{ shape: stadium, label: "<b>Pause an agent on Settings</b><br/>Its switch, or 'Pause all agents' then 'Pause all'" }
   p1@{ shape: cyl, label: "<b>The pause is saved in the app</b><br/>Every screen reads the same switch" }
   t1@{ shape: odd, label: "<b>The banner on Settings says what is held back, agent by agent</b><br/>For example 'Paused: Verify and Reader.' then one sentence for each screen" }
-  subgraph gNew ["New case › Agents work"]
-  n1@{ shape: curv-trap, label: "<b>Agents work</b><br/>Ten agents in a row, then 'Back', 'Pause all agents', 'Skip ahead', 'Review and sign'" }
+  subgraph gNew ["New case › Authorization preparation"]
+  n1@{ shape: curv-trap, label: "<b>Authorization preparation</b><br/>Ten agents in a row, then 'Back', 'Pause all agents', 'Skip ahead', 'Review & submit'" }
   n3@{ shape: rect, label: "<b>The run holds when it reaches a paused agent</b><br/>Its row shows a 'Paused' pill, the clock chip stops and 'Skip ahead' is dimmed" }
   n4@{ shape: odd, label: "<b>Banner 'Agents are paused in Settings' or '{Agent} is paused in Settings'</b><br/>'Nothing is read, checked or drafted until it is resumed. Nothing has been sent to the payer.'" }
   n6@{ shape: trap-t, label: "Click 'Resume agents' or 'Resume {Agent}'" }
@@ -544,7 +547,7 @@ flowchart TD
   r1@{ shape: rect, label: "Production: the operator can pause one agent, one payer channel or all outbound actions at once" }
   r2@{ shape: rect, label: "<b>Production: a pause takes effect before the next step of any running job</b><br/>Steps already going out finish, or roll back to the manual queue" }
   end
-  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Agents work › Finished, paused or left" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › Finished, paused or left" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Header › Check all now and the demo clock" }
   g3@{ shape: subproc, label: "Continues in: Case Manager › Reviews this week › Draft all due reviews and sign all clean drafts" }
   g4@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows" }
@@ -635,7 +638,7 @@ flowchart TD
   t4@{ shape: delay, label: "<b>A toast stays about four seconds</b><br/>Click it to dismiss it sooner" }
   end
   subgraph gNone ["What the page does not have"]
-  n1@{ shape: stadium, label: "<b>No Save, Apply or Reset button</b><br/>No way to change the Gates or the privacy notice" }
+  n1@{ shape: stadium, label: "<b>No Save, Apply or Reset button</b><br/>No way to change the Gates or the privacy notice<br/>No edit control for who can see which site: the roles are fixed, and 'View as' only switches the viewer" }
   n2@{ shape: stadium, label: "<b>Choices are lost on a reload</b><br/>Every agent returns to its starting level and switch. Leaving the page keeps them" }
   end
   d1@{ shape: trap-t, label: "<b>Demo menu, then 'Reset demo data'</b><br/>Top bar, any page" }
@@ -703,9 +706,9 @@ flowchart TD
   flo@{ shape: rect, label: "<b>FLO is not one of the sixteen</b><br/>Ask FLO, in the top bar, answers a question from your data" }
   emr@{ shape: curv-trap, label: "<b>EMR Connect</b><br/>Reader: pulls files, matches charts, maps fields<br/>Verify: re-checks coverage<br/>Navigator: renews sign-ins, reconnects, write-back, disconnects" }
   elig@{ shape: curv-trap, label: "<b>Authorizations › Eligibility & Benefits</b><br/>Reader, Verify: ask each source<br/>Caller: phones if a system does not answer<br/>Criteria: is authorization required<br/>Navigator: is the clinic enrolled to bill" }
-  ref@{ shape: curv-trap, label: "<b>Authorizations › New case › Referral and Medical records</b><br/>Reader: reads each file and the referral<br/>Verify: Coverage tab<br/>Placement: Fit tab<br/>Criteria: Decline reasons" }
-  run@{ shape: curv-trap, label: "<b>Authorizations › New case › Agents work</b><br/>Ten in order: Reader, Verify, Criteria, Historian, Placement, Forecaster, Scribe, Integrity, Packet, Scrubber<br/>Scribe and Packet may ask one question" }
-  sign@{ shape: curv-trap, label: "<b>Authorizations › New case › Review and sign</b><br/>Integrity: every sentence traces to the chart<br/>A licensed clinician signs" }
+  ref@{ shape: curv-trap, label: "<b>Authorizations › New case › Intake, Eligibility & Benefits and Clinical documentation</b><br/>Reader: reads each file and the referral<br/>Verify: Coverage tab, and the check on Eligibility & Benefits<br/>Placement: Fit tab<br/>Criteria: Decline reasons" }
+  run@{ shape: curv-trap, label: "<b>Authorizations › New case › Authorization preparation</b><br/>Ten in order: Reader, Verify, Criteria, Historian, Placement, Forecaster, Scribe, Integrity, Packet, Scrubber<br/>Scribe and Packet may ask one question" }
+  sign@{ shape: curv-trap, label: "<b>Authorizations › New case › Review & submit</b><br/>Integrity: every sentence traces to the chart<br/>A licensed clinician signs" }
   auth@{ shape: curv-trap, label: "<b>Authorizations › Queue and Case page</b><br/>Criteria: what the payer asks for<br/>Scribe, Integrity, Forecaster: update the draft and re-score the chance<br/>Each row shows the agent holding the request" }
   mgr@{ shape: curv-trap, label: "<b>Case Manager</b><br/>Each case shows the agent working on it<br/>Reviews this week: drafted by Scribe or Cadence" }
   dash@{ shape: curv-trap, label: "<b>Dashboard</b><br/>Navigator: sends signed requests, checks status<br/>Caller: phones if still pending<br/>Packet: drafts the answer to an information request<br/>Integrity: checks it<br/>Cadence: ledger, next review, write-back" }
@@ -796,4 +799,75 @@ flowchart TD
   class c1,c2,c3,c4 k_screen
   class verify,caller,navigator,reader,criteria,placement,scribe,integrity,historian,forecaster,sentinel,analyst,packet,scrubber,cadence,advocate k_agent
   class g1 k_goto
+```
+
+## Settings › Sites and access › Read the roles and switch with View as
+
+A closed card on Settings that shows the rule the demo follows on every screen: access is by site (minimum necessary). A small table lists the four demo roles and the sites each can see, and 'View as' switches to a role, exactly as 'Viewing as' in the Demo menu does. It shows the rule; it is not an admin tool, so there is nothing to edit.
+
+Route: `/settings`
+
+Demo only. The viewer is not saved between reloads. Settings itself is clinic-wide: the agents, their levels and Pause all are the same for every viewer.
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Open Settings</b><br/>The card 'Sites and access' is the first card, closed<br/>Summary: 'Two sites, four roles'" }
+  cOpen@{ shape: trap-t, label: "Click the card header, or Tab to it and press Enter or Space" }
+  o1@{ shape: curv-trap, label: "<b>Card opens</b><br/>Two short paragraphs, then a table: 'Person and role', 'Can see', 'Viewing as'" }
+  t1@{ shape: rect, label: "'Access is by site (minimum necessary). A person sees only the sites they work at, and every view and export respects it: lists, counts, charts, searches and downloads leave out the other site's patients.'" }
+  t2@{ shape: rect, label: "'A link to a record at a site someone cannot see opens a notice that names no patient. Agents, payers and these settings are clinic-wide. Roles are fixed in this demo, so use View as to see each one.'" }
+  subgraph gRows ["The four rows"]
+  r1@{ shape: rect, label: "<b>Jordan Perez, UR coordinator</b><br/>Site A and Site B" }
+  r2@{ shape: rect, label: "<b>Alex Morgan, clinic owner</b><br/>Site A and Site B" }
+  r3@{ shape: rect, label: "<b>Dr. Rivera, Clinician, Site A</b><br/>Site A only" }
+  r4@{ shape: rect, label: "<b>Sam Okafor, Billing, Site B</b><br/>Site B only" }
+  end
+  cur@{ shape: rect, label: "The row of the current viewer shows a 'Viewing now' tag instead of a button" }
+  cView@{ shape: trap-t, label: "Click 'View as' on another row, for example 'View as Dr. Rivera'" }
+  st@{ shape: cyl, label: "<b>The viewer changes, and the site view becomes that person's sites</b><br/>Same as 'Viewing as' in the Demo menu" }
+  tt@{ shape: odd, label: "<b>'Now viewing as Dr. Rivera'</b><br/>'Clinician, Site A. Only Site A is visible; the other site's records are not available.'" }
+  fl@{ shape: rect, label: "<b>The page itself does not change</b><br/>The tag moves to Dr. Rivera's row<br/>The top bar shows 'Site A only', the sidebar user card shows 'Dr. Rivera', badges recount" }
+  cClose@{ shape: trap-t, label: "Click the header again" }
+  cl@{ shape: rect, label: "Card closes" }
+  nx@{ shape: stadium, label: "There is no edit control: no site picker per person, no add or remove a role, no Save" }
+  g1@{ shape: subproc, label: "Continues in: Global shell › Demo menu › Viewing as" }
+  g2@{ shape: subproc, label: "Continues in: Who can see what › Roles, sites and a record at the other site" }
+  e1@{ shape: stadium, label: "Whoever is viewing now sees only their sites, on every screen" }
+  s1 --> cOpen --> o1
+  o1 --> t1 & t2
+  o1 --> r1 & r2 & r3 & r4
+  r1 --> cur
+  r3 --> cView
+  cView --> st --> tt --> fl --> e1
+  o1 --> cClose --> cl
+  o1 -.-> nx
+  st -.-> g1
+  e1 --> g2
+  class s1 k_start
+  class cOpen,cView,cClose k_click
+  class o1 k_screen
+  class t1,t2,r1,r2,r3,r4,cur,fl,cl k_process
+  class st k_store
+  class tt k_toast
+  class nx k_endx
+  class g1,g2 k_goto
+  class e1 k_end
+  style gRows fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```

@@ -18,7 +18,7 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Click 'Ask FLO' in the top bar" }
   o1@{ shape: win-pane, label: "<b>Ask FLO drawer opens</b><br/>Title 'Ask FLO', subtitle 'Your assistant, answering from your data'" }
-  a1@{ shape: hex, label: "FLO says: 'Hi Jordan, I am FLO. Ask me about your requests, a payer, or your denials. I answer from the data on your Dashboard.'" }
+  a1@{ shape: hex, label: "<b>FLO greets the person by name and says which sites it reads:</b><br/>'Hi Jordan, I am FLO. Ask me about your requests, a payer, or your denials. I answer from the data you can see: Both sites.'<br/>For Dr. Rivera: 'Hi Dr. Rivera, ... I answer from the data you can see: Site A.'" }
   dr@{ shape: diam, label: "Which screen is open?" }
   o2@{ shape: win-pane, label: "<b>Four suggestion chips under the chat:</b><br/>'What needs me today?'<br/>'What is due soonest?'<br/>'Which payers are slowest right now?'<br/>'Why is Cardinal's approval rate down?'<br/>Any other screen, or a case page that cannot be found" }
   oc@{ shape: win-pane, label: "<b>Three chips on a case page (/authorizations/case/R-1042):</b><br/>'What is missing for R-1042?'<br/>'When does this authorization run out?'<br/>'What does Summit require?'<br/>A line above them: 'Suggested for R-1042'" }
@@ -48,7 +48,10 @@ flowchart TD
   p6@{ shape: rect, label: "<b>Open it again, on any page: the same chat is there</b><br/>Typed questions still work; the chips come back under a fallback answer, or when the screen has changed" }
   e1@{ shape: stadium, label: "Back on the page" }
   e2@{ shape: stadium, label: "No question sent" }
+  s2@{ shape: stadium, label: "Change the viewer (Demo menu, 'Viewing as') or the site (top bar: Both sites, Site A, Site B)" }
+  pv@{ shape: rect, label: "<b>The conversation starts again with a new greeting</b><br/>Whatever FLO said about the other view, including case IDs, does not stay on screen<br/>The chips are worked out again for the view" }
   s1 --> o1 --> a1 --> dr
+  s2 --> pv --> a1
   dr -->|"Case page"| oc --> d1
   dr -->|"Case Manager"| om --> d1
   dr -->|"Denial Intelligence"| od --> d1
@@ -66,13 +69,13 @@ flowchart TD
   d3 -->|"No"| c4
   c4 --> p5 --> p6 --> e1
   x1 -.-> i1
-  class s1 k_start
+  class s1,s2 k_start
   class o1,o2,oc,om,od,oe k_overlay
   class a1,a2 k_agent
   class dr,d1,d2,d3,d4 k_decision
   class c1,c2,c3,c4 k_click
   class i1 k_input
-  class x1,p1,p2,p3,p4,p7,p5,p6 k_process
+  class x1,p1,p2,p3,p4,p7,p5,p6,pv k_process
   class w1 k_wait
   class g1,g2 k_goto
   class e1 k_end

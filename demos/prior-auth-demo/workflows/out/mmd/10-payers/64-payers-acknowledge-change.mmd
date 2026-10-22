@@ -23,11 +23,11 @@ flowchart TD
   ca@{ shape: trap-t, label: "Click 'Acknowledge change'" }
   m@{ shape: win-pane, label: "<b>Acknowledge this change?</b><br/>It records who saw the change and when." }
   bd@{ shape: curv-trap, label: "<b>Change shown in a tinted box</b><br/>'Criteria changed, version 2026.3'<br/>Progress evidence must now include the remaining treatment goals.<br/>Effective 10/15." }
-  who@{ shape: rect, label: "<b>'You are acknowledging as Jordan Perez.</b><br/>This does not change any draft.<br/>Updating the drafts is a separate step.'" }
+  who@{ shape: rect, label: "<b>'You are acknowledging as {viewer}.</b><br/>This does not change any draft.<br/>Updating the drafts is a separate step.'" }
   ok@{ shape: trap-t, label: "<b>Click 'Acknowledge change'</b><br/>in the modal" }
-  st@{ shape: cyl, label: "<b>Acknowledgement recorded on the change</b><br/>Who: Jordan Perez. When: the demo clock" }
-  t1@{ shape: odd, label: "<b>'Change acknowledged'</b><br/>Recorded for Jordan Perez, Tue 10:42 am.<br/>Drafts are not changed until you update them." }
-  bn2@{ shape: curv-trap, label: "<b>Banner now shows a green pill</b><br/>'Acknowledged by Jordan Perez, Tue 10:42 am'<br/>in place of the blue button<br/>'Update 1 draft' is ready" }
+  st@{ shape: cyl, label: "<b>Acknowledgement recorded on the change</b><br/>Who: the person viewing (Jordan Perez at the start). When: the demo clock" }
+  t1@{ shape: odd, label: "<b>'Change acknowledged'</b><br/>Recorded for {viewer}, Tue 10:42 am.<br/>Drafts are not changed until you update them." }
+  bn2@{ shape: curv-trap, label: "<b>Banner now shows a green pill</b><br/>'Acknowledged by {viewer}, Tue 10:42 am'<br/>in place of the blue button<br/>'Update 1 draft' is ready" }
   nb@{ shape: rect, label: "<b>No change to the sidebar badge, the dot or the drafts</b><br/>No edit log entry. No undo" }
   cx@{ shape: trap-t, label: "Click 'Cancel'" }
   cesc@{ shape: trap-t, label: "<b>Press Escape, click the X</b><br/>or click the dimmed area" }

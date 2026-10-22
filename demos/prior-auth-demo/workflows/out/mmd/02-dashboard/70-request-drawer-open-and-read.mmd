@@ -16,7 +16,7 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "Click a row, a case ID or 'Open' in the Requests table" }
+  s1@{ shape: stadium, label: "Click a row or a case ID in the table, or a Do next button such as 'Review answer'" }
   s2@{ shape: stadium, label: "<b>Follow a link with ?request=ID</b><br/>A notification, 'See on the Dashboard', 'Open R-xxxx' on another page" }
   p1@{ shape: rect, label: "<b>Address gets ?request=ID</b><br/>The page is dimmed behind the drawer" }
   o1@{ shape: win-pane, label: "<b>Request drawer slides in from the right</b><br/>Header, body, footer" }
@@ -26,7 +26,7 @@ flowchart TD
   end
   subgraph gBody ["Body, from the top down"]
   b1@{ shape: curv-trap, label: "<b>Action box (only some requests)</b><br/>'Needs your input', 'Packet is drafting the answer' or 'Approved. Write-back waits for you'<br/>The last one shows only while write-back is on in EMR Connect; otherwise a calm line says it is off" }
-  b2@{ shape: curv-trap, label: "<b>Facts</b><br/>Patient 'E.S., 42', Held by (agent and next step)" }
+  b2@{ shape: curv-trap, label: "<b>Facts</b><br/>Patient 'E.S., 42', Held by (agent and next step)<br/>For a Medicaid managed care request on day 5 of the CMS clock or later: 'Decision time: Day 5 of 7 under the CMS rule for Medicaid managed care' (or 'Past 7 days')" }
   d1@{ shape: diam, label: "Does the request have a chance figure?" }
   b3@{ shape: curv-trap, label: "<b>'Approval chance' or, for a denial, 'Chance of winning'</b><br/>'74% · Moderate · likely 66 to 82% · 219 similar cases'" }
   b5@{ shape: curv-trap, label: "<b>History</b><br/>Every event, oldest first, or 'No events yet.'<br/>Green dot with the time; dashed dot with 'Scheduled · time'" }

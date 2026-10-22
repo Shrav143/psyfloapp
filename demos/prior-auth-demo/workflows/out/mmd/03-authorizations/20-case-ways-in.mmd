@@ -26,6 +26,7 @@ flowchart TD
   a7@{ shape: stadium, label: "Eligibility & Benefits result: click 'Open case'" }
   a8@{ shape: stadium, label: "Notification 'Approval chance updated'" }
   a9@{ shape: stadium, label: "Type the address /authorizations/case/ID" }
+  a10@{ shape: stadium, label: "Queue: open the quick view panel, then click 'Open case'" }
   end
   r0@{ shape: rect, label: "Case page reads the ID from the address" }
   d1@{ shape: diam, label: "Is the ID R-1042?" }
@@ -41,10 +42,13 @@ flowchart TD
   bq@{ shape: trap-t, label: "Click 'Back to queue' or the 'Authorizations' crumb" }
   gQ@{ shape: subproc, label: "Continues in: Authorizations › Queue › Open the queue and read the top" }
   ld@{ shape: cyl, label: "<b>Your earlier work on this case is loaded</b><br/>Answers, applied and dismissed actions, focus, clinical context, draft edits, log" }
+  dS@{ shape: diam, label: "Is the case at a site the viewer has in view?" }
+  oos@{ shape: curv-trap, label: "<b>Card 'This case is not available at Site A'</b><br/>Names the site, not the patient" }
+  gO@{ shape: subproc, label: "Continues in: Authorizations › Case page › A case at another site" }
   d4@{ shape: diam, label: "Does ?tab= name one of the five tabs?" }
   tab1@{ shape: curv-trap, label: "<b>That tab opens</b><br/>e.g. a review drawer opens '?tab=draft'" }
   tab0@{ shape: curv-trap, label: "'Recommended actions' opens" }
-  gH@{ shape: subproc, label: "Continues in: Authorizations › Case page › Header and numbers" }
+  gH@{ shape: subproc, label: "Continues in: Authorizations › Case page › Header and buttons" }
   a1 --> r0
   a2 --> r0
   a3 --> r0
@@ -54,8 +58,9 @@ flowchart TD
   a7 --> r0
   a8 --> r0
   a9 --> r0
+  a10 --> r0
   r0 --> d1
-  d1 -->|"Yes"| hand --> ld
+  d1 -->|"Yes"| hand --> dS
   d1 -->|"No"| d2
   d2 -->|"Yes"| fq --> gen
   d2 -->|"No"| d3
@@ -64,15 +69,17 @@ flowchart TD
   d5 -->|"Yes"| gL
   d5 -->|"No"| nf
   nf --> bq --> gQ
-  gen --> ld
+  gen --> dS
+  dS -->|"Yes"| ld
+  dS -->|"No"| oos --> gO
   ld --> d4
   d4 -->|"Yes"| tab1 --> gH
   d4 -->|"No or missing"| tab0 --> gH
-  class a1,a2,a3,a4,a5,a6,a7,a8,a9 k_start
+  class a1,a2,a3,a4,a5,a6,a7,a8,a9,a10 k_start
   class r0,hand,fq,fr,gen k_process
-  class d1,d2,d3,d5,d4 k_decision
-  class gL,gQ,gH k_goto
-  class nf,tab1,tab0 k_screen
+  class d1,d2,d3,d5,dS,d4 k_decision
+  class gL,gQ,gO,gH k_goto
+  class nf,oos,tab1,tab0 k_screen
   class bq k_click
   class ld k_store
   style gIn fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

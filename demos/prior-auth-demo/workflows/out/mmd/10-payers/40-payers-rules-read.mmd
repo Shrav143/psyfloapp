@@ -34,7 +34,7 @@ flowchart TD
   ub@{ shape: rect, label: "<b>Foot line</b><br/>'Used by Cadence and Scrubber · saved 10/12'" }
   who@{ shape: rect, label: "<b>Used by</b><br/>Windows: Cadence, Navigator<br/>Backdating: Cadence, Scrubber<br/>No authorization needed: Verify, Criteria<br/>Peer-to-peer and appeals: Advocate, Cadence" }
   cf@{ shape: rect, label: "<b>'Saved' is the date the rule was last saved in Psyflo</b><br/>Evergreen shows 10/09, the others 10/12<br/>It moves to today when a rule is edited<br/>It is never a date the payer confirmed anything" }
-  src@{ shape: rect, label: "<b>A rule edited here adds</b><br/>'Source: Edited in Psyflo by Jordan Perez'<br/>A rule that was not edited shows no source of its own:<br/>the header says 'Source: Demo sample rules, version 2026.3'" }
+  src@{ shape: rect, label: "<b>A rule edited here adds</b><br/>'Source: Edited in Psyflo by {viewer}' (the person viewing when it was saved; Jordan Perez at the start)<br/>A rule that was not edited shows no source of its own:<br/>the header says 'Source: Demo sample rules, version 2026.3'" }
   noeff@{ shape: rect, label: "<b>New case reads the saved lines for the payer</b><br/>and level of care of each draft<br/>See the New case diagrams for what it checks" }
   ce@{ shape: trap-t, label: "<b>Click 'Edit' inside an open rule</b><br/>(the button is named 'Edit Backdating' and so on)" }
   gE@{ shape: subproc, label: "Continues in: Payers › Rules › Edit a rule" }

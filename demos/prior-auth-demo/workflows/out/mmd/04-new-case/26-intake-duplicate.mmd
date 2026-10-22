@@ -1,0 +1,67 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Patient, payer and level of care are in</b><br/>The check runs as soon as they are" }
+  d1@{ shape: diam, label: "<b>Does another record match?</b><br/>Same patient (initials and age, or the patient's id), same payer, same level of care" }
+  pWhat@{ shape: rect, label: "<b>What counts as a match</b><br/>An open request: Preparing, Received, Under review or Info requested<br/>A saved draft not yet sent whose dates overlap<br/>An active or expiring authorization whose approved dates overlap the dates asked for" }
+  pLeft@{ shape: rect, label: "<b>Left out</b><br/>The case itself<br/>The authorization a review, renewal or modification follows<br/>Anything at a site the viewer cannot see" }
+  eNone@{ shape: stadium, label: "<b>No alert</b><br/>Intake is Complete when nothing else is open" }
+  sBan@{ shape: curv-trap, label: "<b>Amber alert, the only one on Intake</b><br/>'This looks like a request that already exists'<br/>'R-1042, admission request, being prepared. Summit Medicaid HMO, Residential 3.5.'<br/>'Same patient, payer and level of care, with dates that overlap. Sending both would ask the payer for the same days twice.'" }
+  pState@{ shape: rect, label: "<b>Intake shows Blocked</b><br/>'A matching request exists'<br/>The footer hint says 'A matching request exists. Open it, or continue with a reason.'" }
+  cOpen@{ shape: trap-t, label: "Click 'Open R-1042'" }
+  pOpen@{ shape: rect, label: "<b>A request opens on its case page</b><br/>A draft opens in New case" }
+  gCase@{ shape: subproc, label: "Continues in: Authorizations › Case page › Ways in" }
+  cWhy@{ shape: trap-t, label: "Click 'Continue with a reason'" }
+  iWhy@{ shape: lean-r, label: "<b>Type in 'Why is this a different request?'</b><br/>'For example: the first request was for the earlier stay'" }
+  dText@{ shape: diam, label: "Is there a reason?" }
+  pOff@{ shape: rect, label: "'Continue with this reason' stays switched off" }
+  cDo@{ shape: trap-t, label: "Click 'Continue with this reason'" }
+  cCancel@{ shape: trap-t, label: "Click 'Cancel'" }
+  pBack@{ shape: rect, label: "The box closes; the alert stays" }
+  st@{ shape: cyl, label: "<b>The reason is saved on the case with what it is about</b><br/>The alert becomes one quiet line" }
+  sSaid@{ shape: curv-trap, label: "<b>'Continuing with a reason. R-1042, ... Your reason: ...'</b><br/>Button 'Undo'" }
+  cUndo@{ shape: trap-t, label: "Click 'Undo'" }
+  pUndo@{ shape: rect, label: "The alert is back and Intake is Blocked again" }
+  pRev@{ shape: rect, label: "<b>Review & submit lists 'Possible duplicate' as a note</b><br/>'You went on and said why: ...'<br/>Sending is no longer stopped by it" }
+  stHist@{ shape: cyl, label: "<b>After sending, the request's History says</b><br/>'You sent this request knowing a matching one exists'<br/>'Your reason: ...'" }
+  pType@{ shape: rect, label: "<b>Changing the Authorization type clears the reason</b><br/>The check runs again for the new type" }
+  gSign@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Sign and send to payer" }
+  gMis@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › What is missing" }
+  s1 --> d1
+  d1 -.-> pWhat
+  d1 -.-> pLeft
+  d1 -->|"No"| eNone
+  d1 -->|"Yes"| sBan --> pState
+  sBan --> cOpen --> pOpen --> gCase
+  sBan --> cWhy --> iWhy --> dText
+  dText -->|"No"| pOff --> iWhy
+  dText -->|"Yes"| cDo --> st --> sSaid
+  iWhy --> cCancel --> pBack --> sBan
+  sSaid --> cUndo --> pUndo --> sBan
+  st --> pRev --> gMis
+  st --> stHist --> gSign
+  sSaid -.-> pType
+  class s1 k_start
+  class d1,dText k_decision
+  class pWhat,pLeft,pState,pOpen,pOff,pBack,pUndo,pRev,pType k_process
+  class eNone k_endx
+  class sBan,sSaid k_screen
+  class cOpen,cWhy,cDo,cCancel,cUndo k_click
+  class gCase,gSign,gMis k_goto
+  class iWhy k_input
+  class st,stHist k_store

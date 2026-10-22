@@ -23,13 +23,16 @@ flowchart TD
   e2@{ shape: rect, label: "<b>Pill 'Not eligible' (red)</b><br/>'Effective 01/01/2026, ended 09/30/2026'" }
   e3@{ shape: rect, label: "<b>Pill 'Needs a fix' (red)</b><br/>'Effective 01/01/2026, lapsed 10/12/2026'<br/>Button 'Request retro-eligibility'" }
   e4@{ shape: rect, label: "<b>Pill 'Needs a fix' (red)</b><br/>'No coverage was found for these details. Check the member ID and date of birth, or read the card again.'<br/>No dates" }
+  e5@{ shape: rect, label: "<b>Pill 'Needs a fix' (red)</b><br/>'Active, under the member ID ending 5521'<br/>The plan has this member under another ID" }
+  e6@{ shape: rect, label: "<b>Pill 'Not checked' (grey)</b><br/>'Verify is paused in Settings, so nothing was asked of the plan.'" }
   end
-  nf@{ shape: rect, label: "<b>Benefits and What this service needs say 'Not checked' (grey)</b><br/>'Needs a plan that knows this member'<br/>No limit line, no cost share, no Payers rules" }
+  nf@{ shape: rect, label: "<b>Benefits and What this service needs say 'Not checked' (grey)</b><br/>'Needs a plan that knows this member' or 'Not asked while Verify is paused'<br/>No limit line, no cost share, no Payers rules" }
   subgraph gB ["Benefits"]
   b0@{ shape: diam, label: "What do the benefits say?" }
   b1@{ shape: rect, label: "<b>Pill 'Covered' (green)</b><br/>'Residential 3.5 is payable. Codes H0018 and H0019'" }
   b2@{ shape: rect, label: "<b>Pill 'Limited' (amber)</b><br/>'... is payable with conditions. Codes ...'" }
   b3@{ shape: rect, label: "<b>Pill 'Not covered' (red)</b><br/>'... is not a covered benefit. Codes ...'" }
+  b10@{ shape: rect, label: "<b>Pill 'Not confirmed' (amber)</b><br/>'Harborview did not confirm PHP. Codes H0035'" }
   b4@{ shape: diam, label: "Is a service limit on file?" }
   b5@{ shape: rect, label: "<b>Quiet line '9 of 14 days used, 5 left'</b><br/>(or '38 of 48 units used, 10 left')<br/>'All 14 days used. Nothing left' when none is left" }
   b6@{ shape: rect, label: "<b>Quiet line 'No annual day limit for residential 3.5. The authorization sets the days'</b><br/>when the program has none (Summit residential)<br/>Otherwise no limit line" }
@@ -39,7 +42,8 @@ flowchart TD
   end
   subgraph gN ["What this service needs"]
   n0@{ shape: diam, label: "What is the authorization state?" }
-  n1@{ shape: rect, label: "<b>Pill 'Not required' (grey)</b><br/>'Beacon does not require one for IOP.'" }
+  n1@{ shape: rect, label: "<b>Pill 'Not required' (grey)</b><br/>'Beacon does not require one for IOP, for dates of service 10/21/2026 to 10/31/2026.'<br/>Also when the payer's saved rule 'No authorization needed' names this level of care" }
+  n7@{ shape: rect, label: "<b>Pill 'Requirement unknown' (grey)</b><br/>'No rule on file for Beacon and residential 3.5. Check with Beacon.'<br/>Also for a payer added on Payers that does not cover this level of care" }
   n2@{ shape: rect, label: "<b>Pill 'On file' (green)</b><br/>'On file with Summit.'" }
   n3@{ shape: rect, label: "<b>Pill 'Required, not on file' (amber)</b><br/>'Required before the first day. Not on file yet.'" }
   n4@{ shape: rect, label: "<b>Pills 'In progress', 'Payer reviewing' or 'Retro request open' (amber or grey)</b><br/>with what is happening to the request" }
@@ -55,14 +59,18 @@ flowchart TD
   e0 -->|"Ended"| e2 --> b0
   e0 -->|"Lapsed"| e3 --> b0
   e0 -->|"Not found"| e4 --> nf --> note
+  e0 -->|"Other member ID"| e5 --> b0
+  e0 -->|"Verify paused"| e6 --> nf
   b0 -->|"Covered"| b1 --> b4
   b0 -->|"Limited"| b2 --> b4
   b0 -->|"Not covered"| b3 --> b4
+  b0 -->|"Not confirmed"| b10 --> b4
   b4 -->|"Yes"| b5 --> b7
   b4 -->|"No"| b6 --> b7
   b7 -->|"Yes"| b8 --> n0
   b7 -->|"No"| b9 --> n0
   n0 -->|"Not required"| n1 --> n5
+  n0 -->|"Unknown"| n7 --> n5
   n0 -->|"On file"| n2 --> n5
   n0 -->|"Required"| n3 --> n5
   n0 -->|"Drafted, reviewing, retro"| n4 --> n5
@@ -71,7 +79,7 @@ flowchart TD
   e3 -.-> g2
   class s1 k_start
   class e0,b0,b4,b7,n0 k_decision
-  class e1,e2,e3,e4,nf,b1,b2,b3,b5,b6,b8,b9,n1,n2,n3,n4,n5,note k_process
+  class e1,e2,e3,e4,e5,e6,nf,b1,b2,b3,b10,b5,b6,b8,b9,n1,n7,n2,n3,n4,n5,note k_process
   class n6 k_click
   class g1,g2,g3 k_goto
   style gE fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

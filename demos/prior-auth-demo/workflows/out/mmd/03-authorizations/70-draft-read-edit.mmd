@@ -32,13 +32,13 @@ flowchart TD
   sv@{ shape: trap-t, label: "Click 'Save changes'" }
   dCh@{ shape: diam, label: "Did any box change?" }
   tn@{ shape: odd, label: "'No changes to save'" }
-  sd@{ shape: cyl, label: "<b>Edited sections saved</b><br/>The edit keeps the sentences already added by applied actions<br/>New version: 'Version 4', 'You', 'Edited by you'<br/>Log: 'You edited the draft. Integrity will read it again before it can be signed'<br/>The same text is saved on the request's draft in New case, so Review and sign reads it" }
+  sd@{ shape: cyl, label: "<b>Edited sections saved</b><br/>The edit keeps the sentences already added by applied actions<br/>New version: 'Version 4', 'You', 'Edited by you'<br/>Log: 'You edited the draft. Integrity will read it again before it can be signed'<br/>The same text is saved on the request's draft in New case, so Review & submit reads it" }
   ts@{ shape: odd, label: "<b>'Draft saved'</b><br/>'Integrity needs to read it again before it can be signed. Use Re-check.'" }
   dy@{ shape: rect, label: "<b>'Every sentence matches the chart' now warns</b><br/>'You edited the draft. Integrity has not read it again yet.'<br/>'Send to payer' goes off" }
   bd@{ shape: rect, label: "Badge on the Draft tab goes up by one" }
   lt@{ shape: rect, label: "Actions applied later add their sentences after the edited text" }
   gK@{ shape: subproc, label: "Continues in: Authorizations › Case page › Draft › Checks, versions and send back" }
-  gR@{ shape: subproc, label: "Continues in: Review and sign › The draft and the summary" }
+  gR@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › The draft and the summary" }
   s1 --> dr --> hd --> sec --> nw
   sec --> ch --> gC
   sec --> cx

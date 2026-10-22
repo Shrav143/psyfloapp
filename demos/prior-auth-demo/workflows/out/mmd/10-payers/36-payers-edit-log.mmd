@@ -21,7 +21,7 @@ flowchart TD
   any@{ shape: diam, label: "Has anything been edited for this payer?" }
   em@{ shape: curv-trap, label: "<b>'No edits yet'</b><br/>Every edit to a workflow, rules, script or document list is logged here<br/>with your name, the time and your reason." }
   ent@{ shape: curv-trap, label: "<b>One card per edit</b><br/>Area chip, bold 'what changed'" }
-  who@{ shape: rect, label: "Line under it: 'Jordan Perez · Tue 10:42 am · Reason: ...'" }
+  who@{ shape: rect, label: "<b>Line under it: '{viewer} · Tue 10:42 am · Reason: ...'</b><br/>The name is the person viewing when the edit was saved (Jordan Perez at the start; Dr. Rivera, Alex Morgan or Sam Okafor after 'Viewing as')" }
   ba@{ shape: curv-trap, label: "<b>Two boxes with an arrow</b><br/>Red 'Before' (or 'Nothing' for an addition)<br/>Green 'After' (or 'Removed' for a removal)" }
   subgraph gA ["Where entries come from (area chip)"]
   a1@{ shape: cyl, label: "<b>Workflow</b><br/>Save workflow, Accept proposal" }

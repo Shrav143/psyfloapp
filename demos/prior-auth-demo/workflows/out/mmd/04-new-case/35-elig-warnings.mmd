@@ -1,0 +1,99 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>A check ends with warnings</b><br/>The summary lists each in one quiet block 'Warnings'" }
+  d1@{ shape: diam, label: "Which warning?" }
+  subgraph gW ["The warnings, and what to do"]
+  w1@{ shape: rect, label: "<b>Coverage is not active</b><br/>'Check the member ID and the dates, or ask the plan. You can go on with a documented exception.'<br/>Member ID ending 1012, or coverage ended" }
+  w2@{ shape: rect, label: "<b>The payer changed</b><br/>'Switch the case to the new plan and check again.'" }
+  w3@{ shape: rect, label: "<b>Member ID does not match</b><br/>'Correct the member ID in Intake, or call the plan.'<br/>Ending 8080 or 9999" }
+  w4@{ shape: rect, label: "<b>Benefit not confirmed</b><br/>'Ask the plan to confirm the benefit before the request is signed.'<br/>Ending 5050" }
+  w5@{ shape: rect, label: "<b>Service not covered</b><br/>'Check the level of care, or ask the plan about an exception.'<br/>Ending 3030" }
+  w6@{ shape: rect, label: "<b>Provider participation not confirmed</b><br/>'Confirm the clinic is in network with this plan.'<br/>Ending 4040" }
+  w7@{ shape: rect, label: "<b>Verification service unavailable</b><br/>'Resume Verify in Settings and refresh, or go on with a documented exception.'<br/>Verify paused in Settings, or a refresh that could not run" }
+  w8@{ shape: rect, label: "<b>Authorization requirement unknown</b><br/>'Ask the payer. Until then the request is prepared as if one is needed.'<br/>Ending 2020, or a payer added on Payers that does not cover the level of care" }
+  end
+  sAct@{ shape: curv-trap, label: "<b>Section 'What you can do'</b><br/>'None of this stops you. It only decides what is recorded when the request is sent.'" }
+  a1@{ shape: trap-t, label: "Click 'Switch this case to Cardinal'" }
+  sa1@{ shape: cyl, label: "<b>Payer and plan type change</b><br/>The old check is let go and Verify checks the new plan" }
+  a2@{ shape: trap-t, label: "Click 'Correct the member ID in Intake'" }
+  a3@{ shape: trap-t, label: "Click 'Change the level of care in Intake'" }
+  gIntake@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Patient, insurance and request rows" }
+  a4@{ shape: trap-t, label: "Click the link 'Open Settings to resume Verify'" }
+  gSettings@{ shape: subproc, label: "Continues in: Settings › Pause › What the rest of the app shows" }
+  pResume@{ shape: rect, label: "After Verify is resumed, 'Refresh verification' runs the check" }
+  subgraph gDoc ["A documented exception"]
+  b1@{ shape: trap-t, label: "<b>Click 'Continue with a documented exception'</b><br/>(coverage not active or member ID mismatch)<br/>or 'Continue without a verification' (the check could not run)" }
+  iWhy@{ shape: lean-r, label: "<b>Type the reason</b><br/>'Why go on without confirmed coverage?'<br/>'Why go on without a verification?'" }
+  dText@{ shape: diam, label: "Is there a reason?" }
+  pOff@{ shape: rect, label: "'Document and continue' stays switched off" }
+  cOk@{ shape: trap-t, label: "Click 'Document and continue'" }
+  cCancel@{ shape: trap-t, label: "Click 'Cancel'" }
+  st@{ shape: cyl, label: "<b>The reason is kept on the case with what it is about</b><br/>'Documented exception. ...' and 'Undo'" }
+  cUndo@{ shape: trap-t, label: "Click 'Undo'" }
+  end
+  subgraph gEffect ["What it changes"]
+  e1@{ shape: rect, label: "<b>Eligibility & Benefits: Blocked becomes Needs attention</b><br/>The warning becomes a note" }
+  e2@{ shape: rect, label: "<b>Review & submit: the item 'Coverage' stops blocking</b><br/>It says 'You went on with a documented exception: ...'" }
+  e3@{ shape: cyl, label: "<b>After sending, the request's History says</b><br/>'You went on without confirmed coverage and said why'<br/>'You went on without a verification and said why'" }
+  end
+  pAck@{ shape: rect, label: "<b>A warning with no documented exception and no block</b><br/>Review & submit lists it to acknowledge<br/>Signing needs the tick-box 'I reviewed the warning ... and want to sign anyway.'" }
+  gMis@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › What is missing" }
+  gSign@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Sign and send to payer" }
+  s1 --> d1
+  d1 -->|"Coverage"| w1
+  d1 -->|"Payer"| w2
+  d1 -->|"Member ID"| w3
+  d1 -->|"Benefit"| w4
+  d1 -->|"Service"| w5
+  d1 -->|"Network"| w6
+  d1 -->|"Unavailable"| w7
+  d1 -->|"Requirement"| w8
+  w1 --> sAct
+  w2 --> sAct
+  w3 --> sAct
+  w5 --> sAct
+  w7 --> sAct
+  w4 --> pAck
+  w6 --> pAck
+  w8 --> pAck
+  sAct --> a1 --> sa1
+  sAct --> a2 --> gIntake
+  sAct --> a3 --> gIntake
+  sAct --> a4 --> gSettings
+  a4 -.-> pResume
+  sAct --> b1 --> iWhy --> dText
+  dText -->|"No"| pOff --> iWhy
+  dText -->|"Yes"| cOk --> st
+  iWhy --> cCancel
+  st --> cUndo
+  st --> e1
+  st --> e2 --> gMis
+  st --> e3 --> gSign
+  pAck --> gMis
+  class s1 k_start
+  class d1,dText k_decision
+  class w1,w2,w3,w4,w5,w6,w7,w8,pResume,pOff,e1,e2,pAck k_process
+  class sAct k_screen
+  class a1,a2,a3,a4,b1,cOk,cCancel,cUndo k_click
+  class sa1,st,e3 k_store
+  class gIntake,gSettings,gMis,gSign k_goto
+  class iWhy k_input
+  style gW fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gDoc fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gEffect fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

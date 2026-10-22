@@ -17,7 +17,9 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "A denial is selected (from the list or ?id=)" }
-  p1@{ shape: rect, label: "<b>Title comes from the denial</b><br/>'D-3318: Cardinal approved 7 of 14 days. The chart supports challenging it.'" }
+  p1@{ shape: rect, label: "<b>Title comes from the denial</b><br/>'D-3318: Cardinal approved 7 of 14 days. The chart supports challenging it.'<br/>A small 'Site A' tag follows it when the view is narrowed to one site" }
+  hb@{ shape: curv-trap, label: "<b>Button 'Open denials 8' in the page header (under the text on a narrow window)</b><br/>When the address has a filter: a chip 'Filtered: Cardinal' under the header" }
+  g4@{ shape: subproc, label: "Continues in: Denial Intelligence › Open denials list" }
   sub1@{ shape: curv-trap, label: "<b>Sub line: initials, age · program · payer name</b><br/>'The agents read the denial against the chart, and you choose the next step.'<br/>Under it, one quiet line: 'Authorization denials only. Claim denials are handled in billing and are not in this demo.'" }
   pn@{ shape: rect, label: "No control for claim denials: the demo has no claims feed" }
   h1@{ shape: curv-trap, label: "<b>Header card, top part</b><br/>Small tag 'Authorization denial'<br/>Program chip, D-id, type pill<br/>Pills '64% chance of overturning' and the deadline ('Peer-to-peer window closes in 36 h')" }
@@ -28,7 +30,7 @@ flowchart TD
   g1@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Next step and where it stands" }
   g1b@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Recommended next step" }
   d2@{ shape: diam, label: "Still open: not filed, and not closed (accepted, or won on a call or an appeal)?" }
-  c5@{ shape: curv-trap, label: "<b>'Your options' card</b><br/>Three radio cards with their chances" }
+  c5@{ shape: curv-trap, label: "<b>'Your options' card, one short row</b><br/>Three routes with their chances, 'Recommended' on one<br/>Button 'Compare the options' in its header" }
   g3@{ shape: subproc, label: "Continues in: Denial Intelligence › Your options" }
   p3@{ shape: rect, label: "No options card" }
   c2@{ shape: curv-trap, label: "<b>'What Cardinal said': the payer's words</b><br/>'What the chart shows': two or three sentences" }
@@ -40,11 +42,8 @@ flowchart TD
   fo@{ shape: curv-trap, label: "<b>Two folded sections at the bottom, closed at first</b><br/>'What the agents did' (names the three agents, pill 'Done in 0:48')<br/>'What has happened' (step count and the latest step)" }
   g7@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Folded sections" }
   p4@{ shape: rect, label: "<b>Opened, 'What has happened' lists the timeline: done events have a green dot</b><br/>Scheduled events (dashed dot) read 'Scheduled · Wed 1:00 pm'<br/>'Every step is also on the Dashboard.'" }
-  r0@{ shape: curv-trap, label: "<b>Right column, top</b><br/>'Add a denial letter' (folded)<br/>'Drop a letter or use a sample'" }
+  pw@{ shape: rect, label: "<b>No right column: the width it used to take goes to the cards</b><br/>The six dimensions sit in three columns on a wide window, two on a medium one, one on a narrow one" }
   g8@{ shape: subproc, label: "Continues in: Denial Intelligence › Add a denial letter" }
-  r1@{ shape: curv-trap, label: "<b>Right column</b><br/>'Open denials' list, soonest deadline first" }
-  g4@{ shape: subproc, label: "Continues in: Denial Intelligence › Open denials list" }
-  pw@{ shape: rect, label: "Under 1180 px wide the right column drops under the analysis" }
   b1@{ shape: trap-t, label: "Click 'See on the Dashboard'" }
   g5@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   b2@{ shape: trap-t, label: "Click 'Appeal analysis report' (button under the 'Our read' tile)" }
@@ -70,13 +69,13 @@ flowchart TD
   p2 --> fo
   fo --> g7
   fo --> p4 --> e1
-  sub1 --> r0 --> g8
-  r0 --> r1 --> g4
-  r1 -.-> pw
+  sub1 --> hb --> g4
+  hb -.-> g8
+  c4 -.-> pw
   class s1 k_start
   class p1,pn,pv,p3,p2,p4,pw k_process
-  class sub1,h1,h2,v1,bn,c5,c2,c3,c4,fo,r0,r1 k_screen
-  class g1,g1b,g3,g2,g7,g8,g4,g5,g6 k_goto
+  class hb,sub1,h1,h2,v1,bn,c5,c2,c3,c4,fo k_screen
+  class g4,g1,g1b,g3,g2,g7,g8,g5,g6 k_goto
   class d2,d1 k_decision
   class b1,b2 k_click
   class e1 k_end

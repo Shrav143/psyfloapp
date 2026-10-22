@@ -16,49 +16,48 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "Scroll below the charts to 'Detailed breakdowns'" }
-  sc@{ shape: curv-trap, label: "<b>Heading 'Detailed breakdowns'</b><br/>'The tables and rankings behind the figures above. Each one opens in place.'<br/>Three closed sections with a chevron on the right" }
-  subgraph gA ["'Common denial reasons by payer'"]
-  a1@{ shape: curv-trap, label: "Summary: '311 denials this quarter. Most common: Continued-stay evidence incomplete at Cardinal, 23%.'" }
-  a2@{ shape: curv-trap, label: "Opens to: the table (Reason, Payer, Count, Share of denials), then 'Appeals overturned' and 'Denials accepted'" }
+  s1@{ shape: stadium, label: "Scroll below the cards to 'Detailed breakdowns'" }
+  sc@{ shape: curv-trap, label: "<b>Heading and 'The tables and rankings behind the figures above. Each one opens in place.'</b><br/>Five closed sections with a chevron" }
+  subgraph gA ["'Length of stay and units' and 'Process health'"]
+  a1@{ shape: subproc, label: "Continues in: Analytics › Length of stay and units" }
+  a2@{ shape: subproc, label: "Continues in: Analytics › Process health" }
   end
-  subgraph gB ["'How FLO's advice and drafts perform'"]
-  b1@{ shape: curv-trap, label: "<b>Summary: 'Advice taken works 84% of the time. 75% of drafts were sent without edits.'</b><br/>Adds '2 recommendations dismissed.' once any were dismissed" }
-  b2@{ shape: curv-trap, label: "<b>Opens to: four facts, 'Approved as asked' 71%, 'Top denial cause' 23%, 'Advice taken works' 84%, 'Sent without edits' 75%</b><br/>Then 'Why recommendations were dismissed' when someone dismissed one" }
+  subgraph gB ["'Common denial reasons by payer'"]
+  b1@{ shape: curv-trap, label: "Table of reasons, 'Appeals overturned', 'Denials accepted'" }
+  b2@{ shape: subproc, label: "Continues in: Analytics › Common denial reasons: open Denial Intelligence" }
   end
-  subgraph gC ["'What helps most'"]
-  c1@{ shape: curv-trap, label: "Summary: 'Most applied: Document depression severity with dated scores, 91% approved.'" }
-  c2@{ shape: curv-trap, label: "Opens to: up to four ranked steps, 'Applied 389 times', '91% approved'" }
+  subgraph gC ["'How FLO's advice and drafts perform'"]
+  c1@{ shape: curv-trap, label: "Summary: 'Advice taken works 84% of the time. 75% of drafts were sent without edits.'" }
+  c2@{ shape: curv-trap, label: "<b>Four facts: 'Approved as asked' 71%, 'Top denial cause' 23%, 'Advice taken works' 84%, 'Sent without edits' 75%</b><br/>'How people edit agent drafts': donut, 68% as written (approved 89% of the time), 27% light edits, 5% rewritten<br/>'Why recommendations were dismissed' once someone dismissed one" }
   end
-  k1@{ shape: trap-t, label: "<b>Click the section's title row</b><br/>Or Tab to it and press Enter or Space" }
-  p1@{ shape: rect, label: "<b>The button says whether it is open (aria-expanded)</b><br/>The chevron turns<br/>A hairline separates the summary from the content" }
+  subgraph gD ["'What helps most'"]
+  d1@{ shape: curv-trap, label: "Summary: 'Most applied: Document depression severity with dated scores, 91% approved.'" }
+  d2@{ shape: curv-trap, label: "Up to four ranked steps: 'Applied 389 times', '91% approved'" }
+  end
+  k1@{ shape: trap-t, label: "<b>Click a section's title row</b><br/>Or Tab to it and press Enter or Space" }
+  p1@{ shape: rect, label: "<b>The button says whether it is open (aria-expanded)</b><br/>The chevron turns" }
   k2@{ shape: trap-t, label: "Click it again, or press Enter or Space again" }
   p2@{ shape: rect, label: "It closes. The summary stays" }
   q1@{ shape: diam, label: "20 or more decisions behind the content?" }
   h1@{ shape: curv-trap, label: "<b>Content reads 'Not enough decisions yet'</b><br/>The summary says the same" }
-  p3@{ shape: rect, label: "<b>Menus change the figures while a section is open</b><br/>The open section updates in place" }
-  g1@{ shape: subproc, label: "Continues in: Analytics › Common denial reasons: open Denial Intelligence" }
-  g2@{ shape: subproc, label: "Continues in: Analytics › Denial outcomes and dismissed recommendations" }
   e1@{ shape: stadium, label: "Section read" }
   s1 --> sc
-  sc --> a1 & b1 & c1
-  a1 & b1 & c1 --> k1
-  k1 --> p1
-  k1 --> a2 & b2 & c2
-  a2 & b2 & c2 --> q1
+  sc --> a1 & a2 & b1 & c1 & d1
+  b1 --> b2
+  c1 --> c2
+  d1 --> d2
+  a1 & a2 & b1 & c1 & d1 --> k1 --> p1 --> q1
   q1 -->|"No"| h1 --> e1
   q1 -->|"Yes"| e1
   p1 --> k2 --> p2
-  a2 -.-> g1
-  b2 -.-> g2
-  sc -.-> p3
   class s1 k_start
-  class sc,a1,a2,b1,b2,c1,c2,h1 k_screen
+  class sc,b1,c1,c2,d1,d2,h1 k_screen
+  class a1,a2,b2 k_goto
   class k1,k2 k_click
-  class p1,p2,p3 k_process
+  class p1,p2 k_process
   class q1 k_decision
-  class g1,g2 k_goto
   class e1 k_end
   style gA fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gB fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gC fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gD fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

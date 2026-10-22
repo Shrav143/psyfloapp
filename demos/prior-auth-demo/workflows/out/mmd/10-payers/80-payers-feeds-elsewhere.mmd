@@ -20,14 +20,14 @@ flowchart TD
   dk@{ shape: diam, label: "Which kind of save?" }
   cfg@{ shape: cyl, label: "<b>Saved on the payer</b><br/>One edit log entry per change<br/>One bell notification<br/>New drafts use it from now on" }
   subgraph gR ["Read live by other screens (no Update drafts needed)"]
-  p1@{ shape: rect, label: "<b>New case: the document list</b><br/>The Medical records checklist, the file sorting and the<br/>Review and sign checks use the payer's saved list<br/>for the draft's level of care" }
+  p1@{ shape: rect, label: "<b>New case: the document list</b><br/>The Clinical documentation checklist, the file sorting and the<br/>Review & submit checks use the payer's saved list<br/>for the draft's level of care" }
   p2@{ shape: rect, label: "<b>New case: the rules</b><br/>Backdating: a start date that reaches back further<br/>than the rule allows is flagged<br/>No authorization needed: a level of care the payer names there" }
   p3@{ shape: rect, label: "<b>New case: the approval chance</b><br/>Each thing the payer asks for that a draft does not meet<br/>(a required document, an early start date)<br/>holds the chance back, up to 12 points" }
   p4@{ shape: rect, label: "<b>Case Manager: the next review</b><br/>The 'Submission windows' rule sets the days<br/>before the next review is booked, when it names a number" }
   p5@{ shape: rect, label: "<b>Payers added with 'Add a payer'</b><br/>have a full saved set like any payer<br/>and are offered wherever a payer is picked:<br/>New case, Eligibility & Benefits and the queue's Payer menu" }
   end
   subgraph gW ["Wired: redrafting after a payer change or edits"]
-  up@{ shape: trap-t, label: "<b>'Update N drafts' (after a payer change,</b><br/>or from the edits-waiting banner)" }
+  up@{ shape: trap-t, label: "<b>'Update N drafts' (after a payer change,</b><br/>or from the edits-waiting banner)<br/>N counts only the drafts at the sites in view" }
   rq@{ shape: cyl, label: "<b>Each unsent draft of this payer changes</b><br/>needs a person: yes<br/>Status line 'Redrafted after ... Waiting for a new signature'<br/>Timeline event from Scribe or the change's agent" }
   rp@{ shape: cyl, label: "<b>Update recorded</b><br/>Change (or 'edits-summit'), payer and the IDs of the drafts redrafted" }
   nf@{ shape: cyl, label: "<b>Bell notification 'Drafts updated'</b><br/>links to Case Manager" }
@@ -47,9 +47,9 @@ flowchart TD
   g1@{ shape: subproc, label: "Continues in: Dashboard › Requests table" }
   g2@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Updated for a payer change" }
   g3@{ shape: subproc, label: "Continues in: Dashboard › Open a request" }
-  g4@{ shape: subproc, label: "Continues in: Authorizations › New case › Medical records › The checklist and Continue" }
-  g5@{ shape: subproc, label: "Continues in: Authorizations › New case › Review and sign › Validation summary and checks" }
-  g7@{ shape: subproc, label: "Continues in: Authorizations › New case › Agents work › Start the run and watch it" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › The checklist and Continue" }
+  g5@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Validation summary and checks" }
+  g7@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › Start the run and watch it" }
   g6@{ shape: subproc, label: "Continues in: Authorizations › Queue › Open the queue and read the top" }
   s1 --> dk
   dk -->|"Workflow, rule or documents"| cfg

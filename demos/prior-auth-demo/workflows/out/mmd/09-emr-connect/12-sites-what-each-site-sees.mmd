@@ -1,0 +1,69 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Open EMR Connect</b><br/>With Both sites, Site A, Site B, or as Dr. Rivera or Sam Okafor" }
+  d1@{ shape: diam, label: "Which sites are in view?" }
+  subgraph gBoth ["Both sites"]
+  b1@{ shape: curv-trap, label: "<b>Jordan Perez or Alex Morgan on 'Both sites'</b><br/>Three rows: 'Clinical record · Site A', 'Clinical record · Site B', 'Billing system'<br/>6 min, 23 charts, 142 files, 2 failures<br/>'Action required: Billing system needs attention. Also: 2 fields need a mapping...'<br/>Advanced: 10 mappings, 2 waiting, 8 log lines" }
+  end
+  subgraph gA ["Site A"]
+  a1@{ shape: curv-trap, label: "<b>Dr. Rivera, or Jordan or Alex on 'Site A'</b><br/>Two rows: 'Clinical record · Site A' and 'Billing system'<br/>6 min, 13 charts, 80 files, 2 failures<br/>'Action required: Billing system needs attention.'<br/>Advanced: 7 mappings, none waiting, 5 log lines" }
+  a2@{ shape: rect, label: "Site B's record system, its two unmapped fields and its log lines are not listed or counted" }
+  end
+  subgraph gB ["Site B"]
+  c1@{ shape: curv-trap, label: "<b>Sam Okafor, or Jordan or Alex on 'Site B'</b><br/>Two rows: 'Clinical record · Site B' and 'Billing system'<br/>11 min, 10 charts, 62 files, 2 failures<br/>'Action required: Billing system needs attention. Also: 2 fields need a mapping...'<br/>Advanced: 5 mappings, 2 waiting, 3 log lines" }
+  c2@{ shape: rect, label: "Site A's record system and its log lines are not listed or counted" }
+  end
+  tag@{ shape: rect, label: "<b>For a viewer with both sites on one site, the title carries a small 'Site A' or 'Site B' tag</b><br/>The Connection health line says which site: 'Site A. 1 of 2 systems connected...'" }
+  note@{ shape: rect, label: "<b>For a one-site viewer the line has an info icon</b><br/>'A record system belongs to a site. You see Site A's record system and the billing system both sites share. The other site's record system is not shown, and you cannot change it.'" }
+  sum@{ shape: rect, label: "<b>Charts and files: Site A plus Site B always equals Both sites</b><br/>Sync failures count each system once: the shared Billing system shows its 2 in every view" }
+  cSync@{ shape: trap-t, label: "Click 'Sync now' in the header (one site in view)" }
+  sy@{ shape: cyl, label: "<b>Only the systems in view sync</b><br/>Only that site's charts and files go up; the other site's stay as they were<br/>The log line is about that site" }
+  cConn@{ shape: trap-t, label: "Click 'Connect a system'" }
+  pick@{ shape: lean-r, label: "<b>Choose the site it serves</b><br/>A viewer with both sites: 'Site A', 'Site B' or 'Both sites'<br/>A one-site viewer: only their own site, as text" }
+  ns@{ shape: cyl, label: "<b>The new system is listed for that site only</b><br/>A system connected as Sam Okafor for Site B never shows for Dr. Rivera" }
+  cSw@{ shape: trap-t, label: "Switch the viewer or the site while a pop-up or the Manage drawer is open for a system that leaves the view" }
+  gone@{ shape: rect, label: "<b>The drawer or pop-up closes: it is only drawn for a system in view</b><br/>The store also refuses a change to a system at a site the viewer cannot see" }
+  g1@{ shape: subproc, label: "Continues in: EMR Connect › Connect a system › Choose the system and contact" }
+  g2@{ shape: subproc, label: "Continues in: EMR Connect › Sync › What other screens use from EMR Connect" }
+  g3@{ shape: subproc, label: "Continues in: Who can see what › Roles, sites and a record at the other site" }
+  e1@{ shape: stadium, label: "Each viewer sees and changes only the systems at their sites" }
+  s1 --> d1
+  d1 -->|"Both sites"| b1
+  d1 -->|"Site A"| a1 --> a2
+  d1 -->|"Site B"| c1 --> c2
+  b1 & a2 & c2 --> tag --> note --> sum
+  sum --> cSync --> sy
+  sum --> cConn --> pick --> ns
+  sy & ns --> e1
+  cSw --> gone --> e1
+  pick -.-> g1
+  sy -.-> g2
+  e1 --> g3
+  class s1 k_start
+  class d1 k_decision
+  class b1,a1,c1 k_screen
+  class a2,c2,tag,note,sum,gone k_process
+  class cSync,cConn,cSw k_click
+  class sy,ns k_store
+  class pick k_input
+  class g1,g2,g3 k_goto
+  class e1 k_end
+  style gBoth fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gA fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gB fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

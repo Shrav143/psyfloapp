@@ -33,8 +33,8 @@ flowchart TD
   t1@{ shape: odd, label: "<b>On: 'Write-back is on'</b><br/>'The Dashboard offers the approval write-back box. Only the approval number and dates, and only after a person approves.'<br/>On but not Connected: 'The Dashboard offers the box once this system is connected.'" }
   t2@{ shape: odd, label: "<b>Off: 'Write-back is off'</b><br/>'The Dashboard still offers the box, because another connected system has write-back on.'<br/>Or 'The Dashboard no longer offers the approval write-back box.'" }
   p1@{ shape: rect, label: "<b>The row's line changes at once</b><br/>'Read only.' and 'Read and write back.' swap" }
-  p2@{ shape: rect, label: "<b>The Dashboard reads the switches</b><br/>It offers the approval write-back box only while at least one Connected system has the switch on<br/>A switch on a Disconnected or Needs attention system does not count" }
-  p3@{ shape: rect, label: "<b>A system just connected starts as Read only</b><br/>The two clinical record sites start on, the Billing system starts off" }
+  p2@{ shape: rect, label: "<b>The Dashboard reads the switches of the systems at the sites in view</b><br/>It offers the approval write-back box only while at least one Connected system there has the switch on<br/>A viewer who sees one site cannot flip the other site's switch: that row is not listed<br/>A switch on a Disconnected or Needs attention system does not count" }
+  p3@{ shape: rect, label: "<b>A system just connected starts as Read only</b><br/>The two clinical record systems (Site A, Site B) start on, the Billing system starts off" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Approve the write-back" }
   g2@{ shape: subproc, label: "Continues in: EMR Connect › Manage › Open the Manage drawer" }
   e1@{ shape: stadium, label: "Row says what it does" }

@@ -16,26 +16,28 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Dashboard is open</b><br/>Headings of the 'Requests' table" }
-  h1@{ shape: curv-trap, label: "<b>Four headings can sort</b><br/>Case, Payer, Where it is, Clock<br/>Each shows a small up and down arrow" }
+  s1@{ shape: stadium, label: "<b>Dashboard is open</b><br/>Headings of the authorizations table" }
+  h1@{ shape: curv-trap, label: "<b>Nine headings can sort</b><br/>Case, Payer, Service, Status, Days in state, Units, Window, Next action, Owner<br/>Each shows a small up and down arrow" }
   c1@{ shape: trap-t, label: "<b>Click a heading</b><br/>Or Tab to it and press Enter or Space" }
   d1@{ shape: diam, label: "Is this heading already the sorted one?" }
   p1@{ shape: rect, label: "<b>No: the sort starts on this heading, ascending</b><br/>The arrow points up; the heading is marked ascending for a screen reader" }
   d2@{ shape: diam, label: "Which way is it sorted now?" }
   p2@{ shape: rect, label: "<b>Ascending, so the next click sorts descending</b><br/>The arrow points down" }
-  p3@{ shape: rect, label: "<b>Descending, so the next click clears the sort</b><br/>Back to the list's own order<br/>Waiting on you first, then the nearest due time; rows with no due time last, longest wait first" }
-  p4@{ shape: rect, label: "Rows that tie keep the list's own order" }
-  p5@{ shape: rect, label: "Table goes back to its first 8 rows" }
+  p3@{ shape: rect, label: "<b>Descending, so the next click clears the sort</b><br/>Back to the page's own order" }
+  p4@{ shape: rect, label: "<b>Rows that tie keep the page's own order</b><br/>Rows with nothing to sort by stay last either way" }
+  p5@{ shape: rect, label: "<b>Table goes back to its first 8 rows</b><br/>The sentence under the title says 'Sorted by days in state, lowest first.'" }
   sc@{ shape: curv-trap, label: "<b>Rows in the new order</b><br/>'Showing 8 of 40'" }
   subgraph gKeys ["What each heading sorts by"]
   k1@{ shape: curv-trap, label: "<b>Case</b><br/>The ID, A to Z with numbers in order: D-3272 before D-3279, R-0870 before R-1021" }
-  k2@{ shape: curv-trap, label: "<b>Payer</b><br/>The short name shown in the row, A to Z: Beacon PPO, Cardinal, Evergreen, Harborview MA, Lakeshore, Summit Medicaid" }
-  k3@{ shape: curv-trap, label: "<b>Where it is</b><br/>The stage: Preparing, Received, Under review, Info requested, Approved, then Appeal or call" }
-  k4@{ shape: curv-trap, label: "<b>Clock</b><br/>The number in the cell: time left for a denial with a deadline, otherwise time in stage<br/>Rows with a fixed note such as 'decision 11/02' stay last either way" }
+  k2@{ shape: curv-trap, label: "<b>Payer and Service</b><br/>The short payer name, or the level of care, A to Z" }
+  k3@{ shape: curv-trap, label: "<b>Status</b><br/>The word shown, A to Z" }
+  k4@{ shape: curv-trap, label: "<b>Days in state</b><br/>The time in the state, shortest to longest" }
+  k5@{ shape: curv-trap, label: "<b>Units and Window</b><br/>Units left, and the end date; cases with no approval stay last" }
+  k6@{ shape: curv-trap, label: "<b>Next action and Owner</b><br/>The words shown, A to Z" }
   end
-  p6@{ shape: rect, label: "<b>Filters, the key figures and 'Clear filters' keep the sort</b><br/>Leaving the page or reloading clears it" }
+  p6@{ shape: rect, label: "<b>Menus, chips and 'Needs me today' keep the sort</b><br/>Leaving the page or reloading clears it" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Order, rows and paging" }
-  g2@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Read a row: bars, clock and what happens next" }
+  g2@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Days in state and the CMS decision time" }
   s1 --> h1 --> c1 --> d1
   d1 -->|"No"| p1 --> p4
   d1 -->|"Yes"| d2
@@ -43,10 +45,10 @@ flowchart TD
   d2 -->|"Descending"| p3 --> p5
   p4 --> p5 --> sc
   sc --> p6 --> g1
-  h1 --> k1 & k2 & k3 & k4
+  h1 --> k1 & k2 & k3 & k4 & k5 & k6
   k4 -.-> g2
   class s1 k_start
-  class h1,sc,k1,k2,k3,k4 k_screen
+  class h1,sc,k1,k2,k3,k4,k5,k6 k_screen
   class c1 k_click
   class d1,d2 k_decision
   class p1,p2,p3,p4,p5,p6 k_process

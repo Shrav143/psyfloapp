@@ -1,0 +1,70 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Click 'Continue to Eligibility & Benefits' on Intake" }
+  sc@{ shape: curv-trap, label: "<b>Eligibility & Benefits · Concurrent review</b><br/>'The patient's last check is shown. Refresh it if it is old.'" }
+  dKey@{ shape: diam, label: "Which record does the case use?" }
+  pEp@{ shape: rect, label: "<b>The record of the patient's treatment episode</b><br/>The same one Eligibility & Benefits keeps for that patient" }
+  pOwn@{ shape: rect, label: "A case with its own check keeps it" }
+  dSame@{ shape: diam, label: "Is it for the same payer and level of care as the case?" }
+  pOther@{ shape: rect, label: "<b>The case lets go of it</b><br/>And Verify makes a check of its own, as for an initial request" }
+  gInit@{ shape: subproc, label: "Continues in: Authorizations › New case › Eligibility & Benefits › Initial authorization" }
+  sSum@{ shape: curv-trap, label: "<b>Verification summary</b><br/>Coverage, Plan type and routing, Benefits, Authorization: 'Concurrent review'<br/>'Summit reviews each stay while an authorization is on file. A review is needed to continue.'<br/>Existing authorization: the reference, the service, the approved dates, 'N of M units used, K left'" }
+  dAge@{ shape: diam, label: "Is the check old, or for other dates?" }
+  tOld@{ shape: odd, label: "<b>'This check is 30 hours old. Refresh it before you send.'</b><br/>Nothing runs by itself: the person decides" }
+  cRef@{ shape: trap-t, label: "Click 'Refresh verification'" }
+  aV@{ shape: hex, label: "Verify asks again, about 1.2 seconds" }
+  stRec@{ shape: cyl, label: "<b>The record is replaced</b><br/>The case still uses the patient's record" }
+  dWarn@{ shape: diam, label: "<b>Does the check have warnings?</b><br/>Coverage lapsed, member ID, benefit, network" }
+  gWarn@{ shape: subproc, label: "Continues in: Authorizations › New case › Eligibility & Benefits › Warnings and documented exceptions" }
+  dNone@{ shape: diam, label: "Does the payer need no authorization for this service?" }
+  gNoAuth@{ shape: subproc, label: "Continues in: Authorizations › New case › Eligibility & Benefits › No authorization required" }
+  pPaused@{ shape: rect, label: "<b>Verify paused in Settings: the last result stays</b><br/>With 'The refresh ... could not run because Verify is paused in Settings. This is the last result.'" }
+  subgraph gFoot ["Footer bar"]
+  cBack@{ shape: trap-t, label: "Click 'Back'" }
+  cSave@{ shape: trap-t, label: "Click 'Save as draft'" }
+  cCont@{ shape: trap-t, label: "Click 'Continue to Clinical documentation'" }
+  end
+  gDocs@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › Required and typical documents by type" }
+  s1 --> sc --> dKey
+  dKey -->|"An episode is chosen"| pEp --> dSame
+  dKey -->|"The case has its own"| pOwn --> dSame
+  dSame -->|"No"| pOther --> gInit
+  dSame -->|"Yes"| sSum
+  sSum --> dAge
+  dAge -->|"Yes"| tOld --> cRef
+  dAge -->|"No"| dWarn
+  sSum --> cRef --> aV --> stRec --> dWarn
+  aV -.-> pPaused
+  dWarn -->|"Yes"| gWarn
+  dWarn -->|"No"| dNone
+  dNone -->|"Yes"| gNoAuth
+  dNone -->|"No"| cCont
+  sSum --> cBack
+  sSum --> cSave
+  cCont --> gDocs
+  class s1 k_start
+  class sc,sSum k_screen
+  class dKey,dSame,dAge,dWarn,dNone k_decision
+  class pEp,pOwn,pOther,pPaused k_process
+  class gInit,gWarn,gNoAuth,gDocs k_goto
+  class tOld k_toast
+  class cRef,cBack,cSave,cCont k_click
+  class aV k_agent
+  class stRec k_store
+  style gFoot fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

@@ -25,22 +25,27 @@ flowchart LR
   l4@{ shape: trap-t, label: "<b>On a denied request: click 'Open in Denial Intelligence'</b><br/>(in the 'Next:' block)" }
   l5@{ shape: trap-t, label: "<b>Click 'Open in review and sign' or 'Send to payer'</b><br/>('Send to payer' is the 'Next:' block's button once every check passes)" }
   l7@{ shape: trap-t, label: "Click 'Back to queue' or the 'Authorizations' crumb" }
+  l9@{ shape: trap-t, label: "<b>In the queue's quick view panel: click 'Review and sign'</b><br/>(shown while the request is being prepared)" }
+  l10@{ shape: trap-t, label: "On the card for a case at another site: click 'Back to the Dashboard'" }
   l8@{ shape: trap-t, label: "<b>Click 'Open on the Dashboard'</b><br/>(in the 'Next:' block or next to the status line, once the request is past Preparing)" }
-  g1@{ shape: subproc, label: "Continues in: New case › Referral step" }
-  g2@{ shape: subproc, label: "Continues in: Eligibility & Benefits › Verify a patient" }
-  g5@{ shape: subproc, label: "Continues in: Case Manager › Active cases" }
-  g3@{ shape: subproc, label: "Continues in: Denial Intelligence › Open a denial" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › How a case starts and resumes" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › Ways in and pre-fill" }
+  g5@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Tracker of every active case" }
+  g3@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
   g4@{ shape: subproc, label: "Continues in: Authorizations › Case page › Send to payer and review and sign" }
   g6@{ shape: subproc, label: "Continues in: Authorizations › Queue › Open the queue and read the top" }
-  g7@{ shape: subproc, label: "Continues in: Dashboard › Request drawer" }
+  g7@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
+  g8@{ shape: subproc, label: "Continues in: Dashboard › Arrive › What the page shows" }
   q --> l1 --> g1
   q --> l2 --> g2
   q --> l6 --> g5
+  q --> l9 --> g4
+  q --> l10 --> g8
   cp --> l3 --> g2
   cp --> l4 --> g3
   cp --> l5 --> g4
   cp --> l7 --> g6
   cp --> l8 --> g7
   class q,cp k_screen
-  class l1,l2,l6,l3,l4,l5,l7,l8 k_click
-  class g1,g2,g5,g3,g4,g6,g7 k_goto
+  class l1,l2,l6,l3,l4,l5,l7,l9,l10,l8 k_click
+  class g1,g2,g5,g3,g4,g6,g7,g8 k_goto

@@ -32,13 +32,13 @@ flowchart TD
   p0@{ shape: rect, label: "<b>'Payer received it' is never shown</b><br/>Every sent request is already Received, and a reply never moves a request backward" }
   x2@{ shape: st-rect, label: "<b>Payer replies through its portal, fax or phone</b><br/>(demo: simulated by these buttons)" }
   c2@{ shape: trap-t, label: "Click 'Under review'" }
-  w2@{ shape: cyl, label: "<b>Stage Under review, bars at In review</b><br/>Time in stage restarts<br/>History 'Navigator checked: under review' and a dashed 'Caller will phone the payer if it is still pending'" }
+  w2@{ shape: cyl, label: "<b>Status Decision pending</b><br/>Days in state restart<br/>History 'Navigator checked: under review' and a dashed 'Caller will phone the payer if it is still pending'" }
   t2@{ shape: odd, label: "<b>'Demo: Cardinal has it under review'</b><br/>'The stage counts and the table updated.'<br/>The payer's short name, here Cardinal" }
   c3@{ shape: trap-t, label: "Click 'Asks for information'" }
   w3@{ shape: cyl, label: "<b>Stage Info requested (amber), needs you</b><br/>Packet holds it; next step 'Packet drafted the answer. Waiting for your review'<br/>History 'The payer asked for more information'" }
   n1@{ shape: odd, label: "<b>Notification 'Payer asked for info'</b><br/>'The payer wants more on R-1021. Packet drafted the answer.'" }
   t3@{ shape: odd, label: "<b>'Demo: Cardinal asks for information'</b><br/>'The stage counts, the table and the notifications updated.'" }
-  sc@{ shape: curv-trap, label: "<b>Dashboard behind the drawer</b><br/>The key figures, the Summary from FLO, the row and its chip, bars and clock update at once<br/>In a filtered list the row may drop out; the drawer stays open" }
+  sc@{ shape: curv-trap, label: "<b>Dashboard behind the drawer</b><br/>The title, the Lifecycle chips, Do next and the row (status, days in state, next action, owner) update at once<br/>In a filtered list the row may drop out; the drawer stays open" }
   sd@{ shape: curv-trap, label: "<b>Drawer updates in place</b><br/>Chip, action box, history, the 'Details' lines and the offered buttons follow the new stage" }
   c4@{ shape: trap-t, label: "Click 'Approves', 'Approves part' or 'Denies'" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Demo controls: approve, approve part or deny" }

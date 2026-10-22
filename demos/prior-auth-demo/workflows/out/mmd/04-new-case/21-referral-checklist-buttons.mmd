@@ -22,7 +22,7 @@ flowchart TD
   cDiff@{ shape: trap-t, label: "Click 'Use different documents'" }
   pDiff@{ shape: rect, label: "<b>Address becomes ?ref= (empty), so the start screen shows</b><br/>The case keeps its old referral until you continue" }
   end
-  gStart@{ shape: subproc, label: "Continues in: New case › Referral › Start screen" }
+  gStart@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Start with a referral or patient" }
   subgraph gFoot ["Under the sections"]
   dAsk@{ shape: diam, label: "<b>Open, not waiting, and something to ask?</b><br/>(a failed age check is never counted)" }
   cFoot@{ shape: trap-t, label: "<b>Click 'Ask the referrer for the missing item'</b><br/>or '…for the 4 missing items'" }
@@ -31,29 +31,29 @@ flowchart TD
   cDemo@{ shape: trap-t, label: "Click 'Demo: the referrer replies'" }
   cFull@{ shape: trap-t, label: "Click 'Open the full referral'" }
   end
-  gAsk@{ shape: subproc, label: "Continues in: New case › Referral › Ask the referrer" }
-  gOk@{ shape: subproc, label: "Continues in: New case › Referral › Mark OK or decline" }
-  gFull@{ shape: subproc, label: "Continues in: New case › Referral › The full referral page" }
+  gAsk@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › Ask the referrer" }
+  gOk@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › Mark OK or decline" }
+  gFull@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › The full referral page" }
   dSt@{ shape: diam, label: "Referral status?" }
   dReq@{ shape: diam, label: "<b>Is a required item still open?</b><br/>Patient age, credentials, signature,<br/>diagnosis code, level of care, insurance and member ID" }
   tDis@{ shape: odd, label: "<b>'Accept referral and continue' is disabled</b><br/>Line under it: 'Resolve 4 items first: clinician credentials, clinician signature, diagnosis code, insurance and member ID.'" }
   pLift@{ shape: rect, label: "<b>Each item is lifted by 'Mark OK', by the referrer's reply,</b><br/>or once it has been asked of the referrer (a failed age: only 'Mark OK')<br/>The line shortens, then disappears" }
   cAcc@{ shape: trap-t, label: "Click 'Accept referral and continue'" }
   pAcc@{ shape: rect, label: "<b>Advisory findings are only listed in the Accept dialog</b><br/>You can accept anyway" }
-  gAcc@{ shape: subproc, label: "Continues in: New case › Referral › Accept a referral" }
+  gAcc@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › Accept a referral" }
   tAcc@{ shape: odd, label: "<b>Green banner</b><br/>'Accepted into IOP. Target admission 10/21/2026.'" }
-  cCont@{ shape: trap-t, label: "Click 'Continue to medical records'" }
-  gCont@{ shape: subproc, label: "<b>Continues in: New case › Referral › Accept a referral</b><br/>(attach the referral to the case; asks first when the agents ran)" }
+  cCont@{ shape: trap-t, label: "Click 'Continue with this referral'" }
+  gCont@{ shape: subproc, label: "<b>Continues in: Authorizations › New case › Referral › Accept a referral</b><br/>(attach the referral to the case; asks first when the agents ran)" }
   tDec@{ shape: odd, label: "<b>Red banner</b><br/>'Declined: Needs a higher level of care.'" }
   cRe@{ shape: trap-t, label: "Click 'Reopen referral'" }
   stRe@{ shape: cyl, label: "<b>Referral is In review again</b><br/>Decision cleared" }
   tRe@{ shape: odd, label: "<b>'Referral reopened'</b><br/>'RF-2048 is back In review.'" }
   dCase@{ shape: diam, label: "Did this referral start a case or a draft?" }
   cOpen@{ shape: trap-t, label: "Click 'Open the case'" }
-  pOpen@{ shape: rect, label: "<b>Opens its request on the case page,</b><br/>or its draft at its current step<br/>If the draft is the one on screen: goes on to Medical records" }
+  pOpen@{ shape: rect, label: "<b>Opens its request on the case page,</b><br/>or its draft at its current step<br/>If the draft is the one on screen: goes back to its Intake, where the referral fills the details" }
   tAdm@{ shape: odd, label: "<b>Calm note 'Admitted'</b><br/>Link 'See the full referral'" }
   gCase@{ shape: subproc, label: "Continues in: Authorizations › Case page › Ways in" }
-  gMed@{ shape: subproc, label: "Continues in: New case › Medical records › The checklist and Continue" }
+  gMed@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Initial authorization" }
   s1 --> sc1
   sc1 --> cDiff --> pDiff --> gStart
   sc1 --> dAsk
