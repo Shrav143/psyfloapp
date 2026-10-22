@@ -36,7 +36,7 @@ Source: `src/App.tsx`, `src/routes.ts`, `src/components/layout/*`, `src/store/co
 | Line 'Suggested for R-1042' (or the screen's name) above the chips (label only) | Ask FLO | 21 |
 | 'Ask a question' box, 'Send', Enter | Ask FLO | 21 |
 | 'FLO is working…', greeting, chat memory | Ask FLO | 21 |
-| Answer rules and the links under answers (each opens a matching view: Dashboard 'Payer performance', the nearest open denial, Payers › Cardinal › Changes, the request to start with, New case) | Ask FLO | 22 |
+| Answer rules and the links under answers (each opens a matching view: Analytics for the slow-payers answer, the nearest open denial, Payers › Cardinal › Changes, the request to start with, New case) | Ask FLO | 22 |
 | Answers that read a case, a payer or a screen: missing, ends, requires, reviews due, fix before billing; each with its link ('Open R-1042, Recommended actions', 'Open I-2207', 'Open Payers, Cardinal, Documents', 'Open R-0912, review', 'Open R-0921 in Eligibility & Benefits') | Ask FLO | 22, 23 |
 | The line 'This is FLO's reading of the demo data, not a payer confirmation.' (once, under those answers and the denial answer) | Ask FLO | 22, 23 |
 | Notification row click (mark read, close, go) | Notifications | 30 |

@@ -8,9 +8,9 @@ start s1 "A question is sent\n(a chip or typed text)"
 
 decision d1 "Contains 'slow', or both 'payer' and 'late'?"
 agent a1 "FLO lists every payer slower than its typical time, worst first:\n'Evergreen is averaging 3.4 days against 2 typical. Cardinal is averaging 2.8 days against 2 typical. Beacon ... Lakeshore ... Harborview ...\nCaller phones when a payer passes twice its typical time.'\nIf none is slower: 'Every payer is deciding within its typical time right now.'"
-click l1 "Click 'Open Dashboard, Payer performance'"
-process r1 "Opens /dashboard?focus=payers\nThe Dashboard opens Payer performance and scrolls to it"
-goto g1 "Continues in: Dashboard › Payer performance › Read the table and pick a payer"
+click l1 "Click 'Open Analytics, turnaround'"
+process r1 "Opens /analytics\nThe Analytics page opens; Turnaround is one of its four figures"
+goto g1 "Continues in: Analytics › The four tiles"
 
 decision dn "Contains 'billing', 'eligib' or 'fix before'?\nOr 'missing' or 'incomplete'?\nOr 'expir', 'run out', 'units' or 'end' (not with 'denial')?\nOr 'require'?\nOr 'review' (not 'under review')?"
 agent an "FLO answers from the screen you are on or the case you name:\nwhat is missing for a case, when an authorization ends, what a payer requires, which reviews are due, which patients need a fix before billing\nEach names the case, quotes live data, says once that it is FLO's reading, and ends with a link to the exact place"

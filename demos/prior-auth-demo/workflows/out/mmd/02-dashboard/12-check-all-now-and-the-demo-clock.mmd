@@ -37,30 +37,27 @@ flowchart TD
   r2@{ shape: rect, label: "<b>Table: open denials count down</b><br/>'36 h left', '3 days left', then 'window closed'" }
   r3@{ shape: rect, label: "<b>Table order: rows are ordered by their due time, so overdue ones move up</b><br/>The Summary from FLO is worked out again from the new time" }
   r4@{ shape: rect, label: "Key figures: 'Due within 24 hours' and the 'deadlines this week' under 'Denials to act on' count from the new time" }
-  r5@{ shape: rect, label: "Calendar: today moves, so the last pickable day and the shortcuts end on the new day" }
   end
-  p3@{ shape: rect, label: "Not changed: the default range Sep 21 – Oct 20, 2026, the stage counts and the payers figures" }
+  p3@{ shape: rect, label: "Not changed: the stage counts" }
   g1@{ shape: subproc, label: "Continues in: Global shell › Demo menu" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Read a row: bars, clock and what happens next" }
-  g3@{ shape: subproc, label: "Continues in: Dashboard › Filters › Date range shortcuts, keys and the address" }
   s0 --> dp
   dp -->|"No"| s1 --> p1 --> a1 --> w1 --> t1 --> e1
   dp -->|"Yes"| sp --> cs --> gs
   sp -.-> xs
   s2 --> c1 --> t2 --> p2
-  p2 --> r1 & r2 & r3 & r4 & r5
+  p2 --> r1 & r2 & r3 & r4
   r1 --> g2
   r2 --> g2
-  r5 --> g3
   p2 -.-> p3
   s2 -.-> g1
   class s0,s2 k_start
   class dp k_decision
   class sp k_screen
   class cs,s1 k_click
-  class gs,g1,g2,g3 k_goto
+  class gs,g1,g2 k_goto
   class xs k_endx
-  class p1,p2,r1,r2,r3,r4,r5,p3 k_process
+  class p1,p2,r1,r2,r3,r4,p3 k_process
   class a1 k_agent
   class w1,c1 k_store
   class t1,t2 k_toast

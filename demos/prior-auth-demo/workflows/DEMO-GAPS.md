@@ -9,8 +9,7 @@ Mapping every click showed places where the demo did less than its screen sugges
 | Toast read "Demo: payer payer received it" | Names the payer: "Demo: Cardinal approved it" |
 | "Payer received it" after "Approves" left the request in Decided today | Demo replies only move forward; a decided request says so |
 | No way to sort the requests table | Case, Payer, Where it is and Clock sort, with a direction mark and keyboard support |
-| Payers at a glance had no link to Payers | "Open Payers", and each payer name opens that payer |
-| Ask FLO linked to a Dashboard view that did not exist | `?focus=payers` scrolls to and outlines Payers at a glance |
+| Ask FLO linked to a Dashboard view that did not exist | The link first scrolled to a Payer performance section, which was removed in the later simplification. The slow-payers answer now ends with "Open Analytics, turnaround" |
 | Cases being prepared in New case were not counted under Preparing | The tile and headline count them, with a line linking to Case Manager |
 | Write-back box ignored the EMR Connect switch | Shown only when write-back is on; otherwise one line pointing to EMR Connect |
 | Check all now ignored a paused Navigator | Disabled, with a link to Settings |

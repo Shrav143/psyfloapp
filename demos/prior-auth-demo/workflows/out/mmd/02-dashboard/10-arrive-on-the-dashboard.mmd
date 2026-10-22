@@ -20,15 +20,12 @@ flowchart TD
   s2@{ shape: stadium, label: "<b>Open the app at /</b><br/>The address / goes to /dashboard" }
   s3@{ shape: stadium, label: "<b>Follow a link with a request or a filter</b><br/>A notification, or a button on another page" }
   s4@{ shape: stadium, label: "Demo menu › Click 'Reset demo data'" }
-  s5@{ shape: stadium, label: "<b>Follow 'Open Dashboard, Payer performance' in Ask FLO</b><br/>The address is /dashboard?focus=payers" }
-  d4@{ shape: diam, label: "Does the address hold ?focus=payers?" }
-  pf@{ shape: rect, label: "<b>Payer performance opens, scrolls into view and is outlined for about 2 seconds</b><br/>The ?focus part is then removed from the address" }
   t1@{ shape: odd, label: "<b>'Demo data reset'</b><br/>'Everything is back to the starting point.'" }
   p1@{ shape: rect, label: "Page opens and reads the address" }
-  d1@{ shape: diam, label: "Does the address hold payer, program, type, stage, from or to?" }
+  d1@{ shape: diam, label: "Does the address hold payer, program, type or stage?" }
   p2@{ shape: rect, label: "<b>The address wins</b><br/>Four menus go back to All, then the address values apply<br/>Unknown values are ignored" }
-  p3@{ shape: rect, label: "<b>The remembered filters are written back to the address</b><br/>First visit: no filters, last 30 days" }
-  w1@{ shape: cyl, label: "<b>Filters</b><br/>Payer, Program, Request type, Stage, date range" }
+  p3@{ shape: rect, label: "<b>The remembered filters are written back to the address</b><br/>First visit: no filters" }
+  w1@{ shape: cyl, label: "<b>Filters</b><br/>Payer, Program, Request type, Stage" }
   sc@{ shape: curv-trap, label: "<b>Dashboard</b><br/>One daily work list; the filters decide what it shows" }
   d2@{ shape: diam, label: "Does the address hold ?request=ID?" }
   d3@{ shape: diam, label: "Is there a request with that ID?" }
@@ -40,9 +37,8 @@ flowchart TD
   ca@{ shape: trap-t, label: "<b>Click 'Check all now'</b><br/>Disabled while Navigator is paused in Settings" }
   fs@{ shape: curv-trap, label: "<b>Summary from FLO</b><br/>'From today's demo data'<br/>Three short lines, each with a link: who needs you and what is due soonest, authorizations that end this week, denial deadlines this week" }
   kf@{ shape: curv-trap, label: "<b>Four key figures</b><br/>Needs you 3, Due within 24 hours 12, Waiting on payers 18, Denials to act on 8<br/>Each is a button that applies its filter" }
-  f1@{ shape: curv-trap, label: "<b>Filter bar</b><br/>'All payers', 'All programs', 'All request types', 'All stages'<br/>'Outcomes for' and the date range 'Sep 21 – Oct 20, 2026'" }
-  rq@{ shape: curv-trap, label: "<b>Requests, one table</b><br/>'Waiting on you first, then the nearest clock.'<br/>'Showing 8 of 40', six columns, four sortable headings, 'Show 8 more'<br/>Under it, closed: 'What the stages mean'" }
-  py@{ shape: curv-trap, label: "<b>Payer performance, closed</b><br/>One line: 'Evergreen is slowest: 3.4 days on average against 2 typical.'" }
+  f1@{ shape: curv-trap, label: "<b>Filter bar</b><br/>'All payers', 'All programs', 'All request types', 'All stages'" }
+  rq@{ shape: curv-trap, label: "<b>Requests, one table</b><br/>'Waiting on you first, then the nearest clock.'<br/>'Showing 8 of 40', six columns, four sortable headings, 'Show 8 more'" }
   end
   g1@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Headline › What the headline and sub line say" }
@@ -50,46 +46,37 @@ flowchart TD
   g4@{ shape: subproc, label: "Continues in: Dashboard › Filters › Payer, Program, Request type and Stage" }
   g5@{ shape: subproc, label: "Continues in: Dashboard › Key figures › Click a figure to filter the list" }
   g10@{ shape: subproc, label: "Continues in: Dashboard › Summary from FLO › What the three lines say and where they lead" }
-  g11@{ shape: subproc, label: "Continues in: Dashboard › Stage help › What the stages mean" }
   g6@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Order, rows and paging" }
-  g7@{ shape: subproc, label: "Continues in: Dashboard › Payer performance › Read the table and pick a payer" }
-  g8@{ shape: subproc, label: "Continues in: Dashboard › Filters › Pick a date range" }
   g9@{ shape: subproc, label: "Continues in: Dashboard › Filters › Clear filters and empty states" }
   s1 --> p1
   s2 --> p1
   s3 --> p1
-  s5 --> p1
   s4 --> t1 --> p1
   p1 --> d1
   d1 -->|"Yes"| p2 --> w1
   d1 -->|"No"| p3 --> w1
   w1 --> sc
-  sc --> d4
-  d4 -->|"Yes"| pf --> py
   sc --> d2
   d2 -->|"No"| e1
   d2 -->|"Yes"| d3
   d3 -->|"Yes"| o1 --> g1
   d3 -->|"No"| p4 --> e1
-  sc --> h1 --> fs --> kf --> f1 --> rq --> py
+  sc --> h1 --> fs --> kf --> f1 --> rq
   h1 --> g2
   h1 --> ca --> g3
   fs --> g10
   f1 --> g4
-  f1 --> g8
   f1 --> g9
   kf --> g5
   rq --> g6
-  rq -.-> g11
-  py --> g7
-  class s1,s2,s3,s4,s5 k_start
-  class d4,d1,d2,d3 k_decision
-  class pf,p1,p2,p3,p4 k_process
+  class s1,s2,s3,s4 k_start
   class t1 k_toast
+  class p1,p2,p3,p4 k_process
+  class d1,d2,d3 k_decision
   class w1 k_store
-  class sc,h1,fs,kf,f1,rq,py k_screen
+  class sc,h1,fs,kf,f1,rq k_screen
   class o1 k_overlay
   class e1 k_end
   class ca k_click
-  class g1,g2,g3,g4,g5,g10,g11,g6,g7,g8,g9 k_goto
+  class g1,g2,g3,g4,g5,g10,g6,g9 k_goto
   style gPage fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

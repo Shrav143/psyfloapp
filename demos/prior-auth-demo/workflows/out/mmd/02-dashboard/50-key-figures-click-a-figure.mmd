@@ -39,13 +39,11 @@ flowchart TD
   ml@{ shape: curv-trap, label: "<b>One line under the table</b><br/>'1 more is waiting on you in New case.' or '2 more are being prepared in New case.'<br/>and 'Open Active cases'" }
   c3@{ shape: trap-t, label: "Click 'Open Active cases'" }
   m1@{ shape: trap-t, label: "Pick the same choice in the 'All stages' menu instead" }
-  m2@{ shape: trap-t, label: "Click a stage name in 'What the stages mean'" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Headline › What the headline and sub line say" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Filters › Clear filters and empty states" }
   g3@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Order, rows and paging" }
   g4@{ shape: subproc, label: "Continues in: Dashboard › Filters › Payer, Program, Request type and Stage" }
   g5@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Being prepared card" }
-  g6@{ shape: subproc, label: "Continues in: Dashboard › Stage help › What the stages mean" }
   s1 --> t1 & t2 & t3 & t4
   t1 & t2 & t3 & t4 --> c1
   c1 --> d1
@@ -64,12 +62,11 @@ flowchart TD
   sc --> d3
   d3 -->|"Yes"| ml --> c3 --> g5
   m1 -.-> g4
-  m2 -.-> g6
   class s1 k_start
   class t1,t2,t3,t4,sc,em,ml k_screen
-  class c1,c2,c3,m1,m2 k_click
+  class c1,c2,c3,m1 k_click
   class d1,d2,d3 k_decision
   class p1,p1b,p2,p4,p5 k_process
   class w1 k_store
-  class g1,g2,g3,g4,g5,g6 k_goto
+  class g1,g2,g3,g4,g5 k_goto
   style gFig fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

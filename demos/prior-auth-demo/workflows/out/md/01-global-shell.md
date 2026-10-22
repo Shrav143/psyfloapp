@@ -426,9 +426,9 @@ flowchart LR
   s1@{ shape: stadium, label: "<b>A question is sent</b><br/>(a chip or typed text)" }
   d1@{ shape: diam, label: "Contains 'slow', or both 'payer' and 'late'?" }
   a1@{ shape: hex, label: "<b>FLO lists every payer slower than its typical time, worst first:</b><br/>'Evergreen is averaging 3.4 days against 2 typical. Cardinal is averaging 2.8 days against 2 typical. Beacon ... Lakeshore ... Harborview ...<br/>Caller phones when a payer passes twice its typical time.'<br/>If none is slower: 'Every payer is deciding within its typical time right now.'" }
-  l1@{ shape: trap-t, label: "Click 'Open Dashboard, Payer performance'" }
-  r1@{ shape: rect, label: "<b>Opens /dashboard?focus=payers</b><br/>The Dashboard opens Payer performance and scrolls to it" }
-  g1@{ shape: subproc, label: "Continues in: Dashboard › Payer performance › Read the table and pick a payer" }
+  l1@{ shape: trap-t, label: "Click 'Open Analytics, turnaround'" }
+  r1@{ shape: rect, label: "<b>Opens /analytics</b><br/>The Analytics page opens; Turnaround is one of its four figures" }
+  g1@{ shape: subproc, label: "Continues in: Analytics › The four tiles" }
   dn@{ shape: diam, label: "<b>Contains 'billing', 'eligib' or 'fix before'?</b><br/>Or 'missing' or 'incomplete'?<br/>Or 'expir', 'run out', 'units' or 'end' (not with 'denial')?<br/>Or 'require'?<br/>Or 'review' (not 'under review')?" }
   an@{ shape: hex, label: "<b>FLO answers from the screen you are on or the case you name:</b><br/>what is missing for a case, when an authorization ends, what a payer requires, which reviews are due, which patients need a fix before billing<br/>Each names the case, quotes live data, says once that it is FLO's reading, and ends with a link to the exact place" }
   gn@{ shape: subproc, label: "Continues in: Global shell › Top bar › Ask FLO › Answers that read the screen" }
@@ -888,7 +888,7 @@ flowchart TD
   subgraph gMove ["What moves with the clock"]
   m1@{ shape: rect, label: "<b>Case Manager</b><br/>Tracker 'Clock' column, 'Being prepared' due pills ('Notice due in 5 h' becomes 'Overdue'), the 'Today' day card on Reviews this week" }
   m2@{ shape: rect, label: "<b>Notifications</b><br/>Ages: '16 min ago' becomes '1 h ago'" }
-  m3@{ shape: rect, label: "<b>Dashboard</b><br/>Time in stage, 'late' flags and the 'Outcomes for' date range" }
+  m3@{ shape: rect, label: "<b>Dashboard</b><br/>Time in stage and 'late' flags" }
   m4@{ shape: rect, label: "<b>Authorizations, Denial Intelligence</b><br/>Queue bands, case clocks, peer-to-peer and appeal deadlines" }
   m5@{ shape: rect, label: "<b>Eligibility & Benefits, EMR Connect, New case</b><br/>How long ago a check, a sync or a referral was" }
   m6@{ shape: hex, label: "<b>Eligibility & Benefits</b><br/>Verify re-checks every patient whose re-check time has passed, unless Verify is paused in Settings<br/>A 'Re-checked automatically' notification follows" }

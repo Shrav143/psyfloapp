@@ -16,7 +16,7 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Dashboard is open</b><br/>Filter bar, under the four key figures: four menus, then 'Outcomes for' and the dates" }
+  s1@{ shape: stadium, label: "<b>Dashboard is open</b><br/>Filter bar, under the four key figures: four menus, and 'Clear filters' when one is set" }
   c1@{ shape: trap-t, label: "Click 'All payers'" }
   c2@{ shape: trap-t, label: "Click 'All programs'" }
   c3@{ shape: trap-t, label: "Click 'All request types'" }
@@ -38,14 +38,12 @@ flowchart TD
   subgraph gFollow ["What follows each filter"]
   f1@{ shape: rect, label: "<b>Payer, Program, Request type</b><br/>Headline, the four key figures, the Stage menu counts and the table follow them" }
   f2@{ shape: rect, label: "<b>Stage or a grouping</b><br/>Table and headline follow it; the key figures still count every stage and the matching figure is outlined" }
-  f3@{ shape: rect, label: "<b>Payer performance (when open)</b><br/>Waiting follows Program and Request type; the Payer pick highlights its row" }
   end
   d1@{ shape: diam, label: "Is any request left?" }
   sc@{ shape: curv-trap, label: "Dashboard shows the matching rows" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Filters › Clear filters and empty states" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Headline › What the headline and sub line say" }
   g3@{ shape: subproc, label: "Continues in: Dashboard › Key figures › Click a figure to filter the list" }
-  g4@{ shape: subproc, label: "Continues in: Dashboard › Payer performance › Read the table and pick a payer" }
   s1 --> c1 --> o1
   s1 --> c2 --> o2
   s1 --> c3 --> o3
@@ -56,21 +54,20 @@ flowchart TD
   i1 --> p1 --> w1 --> p2 --> p3
   i1 -.-> dg
   dg -->|"Yes"| pg --> w1
-  p3 --> f1 & f2 & f3
+  p3 --> f1 & f2
   f1 --> g2
   f2 --> g3
-  f3 --> g4
   f1 & f2 --> d1
   d1 -->|"Yes"| sc
   d1 -->|"No"| g1
   class s1 k_start
   class c1,c2,c3,c4,k1 k_click
   class o1,o2,o3,o4 k_overlay
-  class m1,pg,p1,p2,p3,f1,f2,f3 k_process
+  class m1,pg,p1,p2,p3,f1,f2 k_process
   class i1 k_input
   class e0 k_end
   class dg,d1 k_decision
   class w1 k_store
   class sc k_screen
-  class g1,g2,g3,g4 k_goto
+  class g1,g2,g3 k_goto
   style gFollow fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

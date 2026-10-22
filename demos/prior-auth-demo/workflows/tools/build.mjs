@@ -18,7 +18,7 @@ const LENIENT = process.argv.includes("--lenient"); // skip a file that does not
 const MODULES = {
   "00-overview": ["Overview", "How to read the diagrams, the whole site map, and one request from referral to decision."],
   "01-global-shell": ["Global shell", "The sidebar, the top bar (Ask FLO, Notifications, Demo menu), Help, Sign out, redirects and toasts."],
-  "02-dashboard": ["Dashboard", "One page with filters and a calendar: the six-stage strip, requests, payers, the request drawer and the payer's answers."],
+  "02-dashboard": ["Dashboard", "One daily work list: the headline, a summary from FLO, four figures, filters, the requests table, the request drawer and the payer's answers."],
   "03-authorizations": ["Authorizations › Queue and case page", "The queue ranked by money and time, and the case page with its five tabs."],
   "04-new-case": ["Authorizations › New case", "Four steps: Referral, Medical records, Agents work, Review and sign. A referral can also be opened in full."],
   "05-eligibility": ["Authorizations › Eligibility & Benefits", "List, verify a patient, the live check and the verdict."],

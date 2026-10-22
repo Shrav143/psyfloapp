@@ -1,9 +1,9 @@
 title: Dashboard › Filters › Payer, Program, Request type and Stage
 route: /dashboard?payer=cardinal&program=iop&type=recertification&stage=appeal
-intro: Four menus on the filter bar. Each one applies as soon as an option is picked; there is no Apply button. The date range is a separate control (see Pick a date range).
+intro: Four menus on the filter bar. Each one applies as soon as an option is picked; there is no Apply button.
 dir: TD
 ---
-start s1 "Dashboard is open\nFilter bar, under the four key figures: four menus, then 'Outcomes for' and the dates"
+start s1 "Dashboard is open\nFilter bar, under the four key figures: four menus, and 'Clear filters' when one is set"
 click c1 "Click 'All payers'"
 click c2 "Click 'All programs'"
 click c3 "Click 'All request types'"
@@ -29,7 +29,6 @@ process p3 "Table goes back to its first 8 rows"
 group gFollow "What follows each filter"
   process f1 "Payer, Program, Request type\nHeadline, the four key figures, the Stage menu counts and the table follow them"
   process f2 "Stage or a grouping\nTable and headline follow it; the key figures still count every stage and the matching figure is outlined"
-  process f3 "Payer performance (when open)\nWaiting follows Program and Request type; the Payer pick highlights its row"
 endgroup
 
 decision d1 "Is any request left?"
@@ -37,7 +36,6 @@ screen sc "Dashboard shows the matching rows"
 goto g1 "Continues in: Dashboard › Filters › Clear filters and empty states"
 goto g2 "Continues in: Dashboard › Headline › What the headline and sub line say"
 goto g3 "Continues in: Dashboard › Key figures › Click a figure to filter the list"
-goto g4 "Continues in: Dashboard › Payer performance › Read the table and pick a payer"
 
 s1 --> c1 --> o1
 s1 --> c2 --> o2
@@ -49,10 +47,9 @@ m1 -.-> k1 --> e0
 i1 --> p1 --> w1 --> p2 --> p3
 i1 -.-> dg
 dg -->|Yes| pg --> w1
-p3 --> f1 & f2 & f3
+p3 --> f1 & f2
 f1 --> g2
 f2 --> g3
-f3 --> g4
 f1 & f2 --> d1
 d1 -->|Yes| sc
 d1 -->|No| g1

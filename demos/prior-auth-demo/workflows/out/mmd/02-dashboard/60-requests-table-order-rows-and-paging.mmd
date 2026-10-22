@@ -17,7 +17,7 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Dashboard is open</b><br/>'Requests' card under the filter bar" }
-  sc1@{ shape: curv-trap, label: "<b>Card header</b><br/>'Requests' and one line: 'Waiting on you first, then the nearest clock.'<br/>Right side: 'Showing 8 of 40'<br/>The note on the progress bars is in 'What the stages mean'" }
+  sc1@{ shape: curv-trap, label: "<b>Card header</b><br/>'Requests' and one line: 'Waiting on you first, then the nearest clock.'<br/>Right side: 'Showing 8 of 40'" }
   sc2@{ shape: curv-trap, label: "<b>Six columns</b><br/>Case, Payer, Where it is, Clock, What happens next, and an unnamed column with 'Open'" }
   p1@{ shape: rect, label: "<b>The headings Case, Payer, Where it is and Clock are buttons that sort the rows</b><br/>'What happens next' and the Open column do not sort" }
   p2@{ shape: rect, label: "<b>Rows start in the list's order</b><br/>1 requests that wait on a person, 2 everything else<br/>Inside each group the nearest due time first: the time Authorizations ranks by, or a denial's deadline; overdue first<br/>Rows with no due time come last, longest wait first" }
@@ -36,13 +36,12 @@ flowchart TD
   g3@{ shape: subproc, label: "Continues in: Dashboard › Filters › Clear filters and empty states" }
   g4@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Sort the rows" }
   g5@{ shape: subproc, label: "Continues in: Dashboard › Key figures › Click a figure to filter the list" }
-  g6@{ shape: subproc, label: "Continues in: Dashboard › Stage help › What the stages mean" }
   d1@{ shape: diam, label: "Are there more rows than are shown?" }
   sc3@{ shape: curv-trap, label: "<b>Under the table</b><br/>'Show 8 more' and '32 not shown'" }
   c4@{ shape: trap-t, label: "Click 'Show 8 more'" }
   p5@{ shape: rect, label: "<b>Eight more rows are added</b><br/>With fewer than 8 left the button shows that number, e.g. 'Show 5 more'" }
   e1@{ shape: stadium, label: "<b>All rows shown</b><br/>'Showing 40 of 40'; no button" }
-  p6@{ shape: rect, label: "Changing any filter, the date range or the sort goes back to the first 8 rows" }
+  p6@{ shape: rect, label: "Changing any filter or the sort goes back to the first 8 rows" }
   t1@{ shape: odd, label: "<b>Count text 'Showing 8 of 40'</b><br/>With Appeal or call: 'Showing 8 of 8'" }
   sc4@{ shape: curv-trap, label: "<b>With cases saved in New case that have no row yet</b><br/>A line under the table with all stages or Preparing: '2 more are being prepared in New case.' and 'Open Active cases'<br/>With 'Needs you': '1 more is waiting on you in New case.'" }
   s1 --> sc1 --> sc2 --> p1 --> p2 --> d0
@@ -61,14 +60,13 @@ flowchart TD
   d1 -->|"No"| e1
   sc3 -.-> p6
   d1 -.-> sc4 -.-> g5
-  sc1 -.-> g6
   class s1 k_start
   class sc1,sc2,em,r1,sc3,sc4 k_screen
   class p1,p2,p3,p5,p6 k_process
   class d0,d1 k_decision
   class c1,c2,c3,c4 k_click
   class o1 k_overlay
-  class g1,g2,g3,g4,g5,g6 k_goto
+  class g1,g2,g3,g4,g5 k_goto
   class e1 k_end
   class t1 k_toast
   style gRow fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

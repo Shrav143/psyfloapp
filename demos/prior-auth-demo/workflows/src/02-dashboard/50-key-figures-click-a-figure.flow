@@ -1,6 +1,6 @@
 title: Dashboard › Key figures › Click a figure to filter the list
 route: /dashboard?stage=appeal
-intro: Four figures sit under the Summary from FLO: Needs you, Due within 24 hours, Waiting on payers, Denials to act on. Each is a button, so the keyboard works too. A click applies the matching filter to the list; a second click clears it. The figures follow Payer, Program and Request type but ignore Stage. The six stage names are still in the Stage menu and in 'What the stages mean'.
+intro: Four figures sit under the Summary from FLO: Needs you, Due within 24 hours, Waiting on payers, Denials to act on. Each is a button, so the keyboard works too. A click applies the matching filter to the list; a second click clears it. The figures follow Payer, Program and Request type but ignore Stage. The six stage names are in the Stage menu, each with its count.
 dir: TD
 ---
 start s1 "Dashboard is open\nFour figures between the Summary from FLO and the filter bar"
@@ -30,13 +30,11 @@ screen ml "One line under the table\n'1 more is waiting on you in New case.' or 
 click c3 "Click 'Open Active cases'"
 
 click m1 "Pick the same choice in the 'All stages' menu instead"
-click m2 "Click a stage name in 'What the stages mean'"
 goto g1 "Continues in: Dashboard › Headline › What the headline and sub line say"
 goto g2 "Continues in: Dashboard › Filters › Clear filters and empty states"
 goto g3 "Continues in: Dashboard › Requests table › Order, rows and paging"
 goto g4 "Continues in: Dashboard › Filters › Payer, Program, Request type and Stage"
 goto g5 "Continues in: Case Manager › Active cases › Being prepared card"
-goto g6 "Continues in: Dashboard › Stage help › What the stages mean"
 
 s1 --> t1 & t2 & t3 & t4
 t1 & t2 & t3 & t4 --> c1
@@ -56,4 +54,3 @@ d2 -->|Yes| em --> g2
 sc --> d3
 d3 -->|Yes| ml --> c3 --> g5
 m1 -.-> g4
-m2 -.-> g6

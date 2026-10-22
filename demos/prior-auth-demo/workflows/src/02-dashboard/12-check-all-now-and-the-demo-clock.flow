@@ -27,21 +27,18 @@ group gClock "What the clock changes on the Dashboard"
   process r2 "Table: open denials count down\n'36 h left', '3 days left', then 'window closed'"
   process r3 "Table order: rows are ordered by their due time, so overdue ones move up\nThe Summary from FLO is worked out again from the new time"
   process r4 "Key figures: 'Due within 24 hours' and the 'deadlines this week' under 'Denials to act on' count from the new time"
-  process r5 "Calendar: today moves, so the last pickable day and the shortcuts end on the new day"
 endgroup
-process p3 "Not changed: the default range Sep 21 – Oct 20, 2026, the stage counts and the payers figures"
+process p3 "Not changed: the stage counts"
 goto g1 "Continues in: Global shell › Demo menu"
 goto g2 "Continues in: Dashboard › Requests table › Read a row: bars, clock and what happens next"
-goto g3 "Continues in: Dashboard › Filters › Date range shortcuts, keys and the address"
 
 s0 --> dp
 dp -->|No| s1 --> p1 --> a1 --> w1 --> t1 --> e1
 dp -->|Yes| sp --> cs --> gs
 sp -.-> xs
 s2 --> c1 --> t2 --> p2
-p2 --> r1 & r2 & r3 & r4 & r5
+p2 --> r1 & r2 & r3 & r4
 r1 --> g2
 r2 --> g2
-r5 --> g3
 p2 -.-> p3
 s2 -.-> g1
