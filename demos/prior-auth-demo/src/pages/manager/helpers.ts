@@ -97,6 +97,35 @@ export function clockText(c: LedgerRow, clock: number): { text: string; urgent: 
 /** Share of the approval used; unknown until the case is approved. */
 export const usedShare = (c: LedgerRow): number | null => (c.used === null || !c.total ? null : c.used / c.total);
 
+/** Units or days still unused in the approval; null until the case is approved. */
+export const unitsLeft = (c: LedgerRow): number | null => (c.used === null || c.total === null ? null : Math.max(0, c.total - c.used));
+
+/** How fast an approval is used up: a day of care a day, and about three units a week for IOP. The case page dates the approval at the same pace. */
+export const unitsPerDay = (unit: LedgerRow["unit"]): number => (unit === "units" ? 3 / 7 : 1);
+
+/** "10 of 21 days used, 11 left" */
+export function usedText(c: LedgerRow): string | null {
+  const left = unitsLeft(c);
+  return left === null ? null : `${c.used} of ${c.total} ${c.unit} used, ${left === 0 ? "none" : left} left`;
+}
+
+/** The next review still to be signed for this case: the one due this week, or the one Cadence booked after a signature. */
+export const nextReviewFor = (c: LedgerRow, reviews: Review[]): Review | undefined =>
+  reviews.filter((r) => r.ledgerId === c.id && r.status !== "signed").sort((a, b) => a.dueAt - b.dueAt)[0];
+
+/**
+ * True only when the data shows it: the case has units or days left, a review is still to come, and at the usual pace
+ * the approval is used up before that review. Where the ledger itself dates the end of the approval (an expiry or a units row whose clock is not
+ * replaced by the case page's own), that date is used.
+ */
+export function runsOutBeforeReview(c: LedgerRow, reviews: Review[], clock: number): boolean {
+  const left = unitsLeft(c);
+  const review = nextReviewFor(c, reviews);
+  if (left === null || left <= 0 || !review) return false;
+  const endsAt = !c.verb && (c.clockKind === "expiry" || c.clockKind === "units") ? c.dueAt : clock + (left / unitsPerDay(c.unit)) * DAY;
+  return endsAt < review.dueAt;
+}
+
 /* ------------------------------------------------------------------ sorting */
 export type SortKey = "case" | "payer" | "used" | "clock" | "chance" | "status";
 const STATUS_RANK: Record<LedgerStatus, number> = { needs_action: 0, review_due: 1, awaiting: 2, on_track: 3 };

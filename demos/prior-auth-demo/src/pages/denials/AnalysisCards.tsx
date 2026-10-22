@@ -1,16 +1,19 @@
 import { CheckCircle2, Lightbulb, Link2 } from "lucide-react";
-import { AgentBadge, Button, Card, CardBody, CardHeader, Label, Pill } from "@/components/ui";
+import { AgentBadge, Button, Card, CardBody, CardHeader, Disclosure, Label, Pill, Timeline } from "@/components/ui";
+import { AGENTS } from "@/data/agents";
 import { cn } from "@/lib/cn";
+import { stamp } from "@/lib/time";
 import type { Finding } from "./lib/analysis";
 import type { DenialView } from "./lib/useDenialView";
 import { useStore } from "@/store";
 import { DimensionsSummary, WeakPointsSummary } from "./FullSummary";
 
+/** Folded: the three agents' steps, one line each when opened. The closed line names who did the work and how long it took. */
 export function AgentsDidCard({ view }: { view: DenialView }) {
   const { analysis } = view;
+  const names = analysis.steps.map((s) => AGENTS[s.agent].name);
   return (
-    <Card>
-      <CardHeader title="What the agents did" right={<Pill tone="good" dot>Done in {analysis.doneIn}</Pill>} />
+    <Disclosure title="What the agents did" summary={`${names.slice(0, -1).join(", ")} and ${names[names.length - 1]} read the letter and the chart, and compared similar decisions.`} right={<Pill tone="good" dot>Done in {analysis.doneIn}</Pill>}>
       {analysis.steps.map((s) => (
         <div key={s.agent} className="flex items-center gap-3 border-b border-line px-6 py-2.5 last:border-b-0">
           <AgentBadge agent={s.agent} size={32} />
@@ -18,7 +21,19 @@ export function AgentsDidCard({ view }: { view: DenialView }) {
           <CheckCircle2 size={18} className="ico text-good" aria-label="Done" />
         </div>
       ))}
-    </Card>
+    </Disclosure>
+  );
+}
+
+/** Folded: every step on this denial, oldest first. The closed line gives the newest one. */
+export function HistoryCard({ view }: { view: DenialView }) {
+  const events = view.req.events;
+  const latest = [...events].filter((e) => e.done).sort((a, b) => b.at - a.at)[0];
+  return (
+    <Disclosure title="What has happened" summary={latest ? `${events.length} ${events.length === 1 ? "step" : "steps"}. Latest, ${stamp(latest.at)}: ${latest.text}` : `${events.length} ${events.length === 1 ? "step" : "steps"}`}>
+      <div className="px-6 pt-4 text-[13.5px] text-muted">Every step is also on the Dashboard.</div>
+      <CardBody><Timeline events={events} /></CardBody>
+    </Disclosure>
   );
 }
 
@@ -41,7 +56,7 @@ export function WeakPointsCard({ view, onSource }: { view: DenialView; onSource:
   const { req, analysis, work } = view;
   const setFix = useStore((s) => s.setFix);
   return (
-    <Card>
+    <Card id="denial-weak-points" tabIndex={-1} className="outline-none">
       <CardHeader title="Where the denial is weak" subtitle="Each finding links to the chart, with a suggested fix" right={<WeakPointsSummary view={view} />} />
       {analysis.findings.map((f) => {
         const added = work.fixes.includes(f.id);

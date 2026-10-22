@@ -83,12 +83,12 @@ export default function NewCasePage() {
 
   const payer = draft.payerId ? payerById(draft.payerId) : null;
   const at = stepIndex(draft);
-  const title = at === 3 ? "Ready for your signature" : "New case";
+  const title = at === 3 ? "Review and sign" : "New case";
   const SUBS = [
     "Start with the referral. Drop the documents and Reader lists anything that is missing.",
     "Drop what you have. Reader sorts the files and lists what is still missing, then the agents check the payer's rules.",
     `The agents are reading the chart and checking ${payer?.shortName ?? "the payer"}'s rules. Questions come to you only when they must.`,
-    "Nothing goes to the payer until a clinician signs.",
+    "Nothing is sent to the payer until a person signs. See what is missing first, then read the summary.",
   ];
   const sub = SUBS[at];
 

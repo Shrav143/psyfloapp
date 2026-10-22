@@ -10,15 +10,16 @@ import { useContinueWithReferral } from "./useContinue";
 
 export type DetailTab = "extracted" | "validation" | "coverage" | "fit" | "activity";
 
-/** The state of the referral in words, with the next step as a button. */
-export function DecisionBanners({ r, onTab, draftId }: { r: Referral; onTab: (t: DetailTab) => void; draftId?: string }) {
+/** The state of the referral in words, with the next step as a button. Only the most important one shows, so the page has one alert at a time:
+    a decision (declined, accepted), then lapsed coverage, a wait on the referrer, then findings. The Coverage and Fit tabs carry their own headline, and the Validation tab lists the findings, so those banners step aside there. */
+export function DecisionBanners({ r, onTab, draftId, tab }: { r: Referral; onTab: (t: DetailTab) => void; draftId?: string; tab: DetailTab }) {
   const nav = useNavigate();
   const reopen = useStore((s) => s.reopenReferral);
   const requests = useStore((s) => s.requests);
   const { go: goOn, dialog } = useContinueWithReferral(r.id, draftId);
   const linked = requests.find((x) => x.referralId === r.id) ?? (r.requestId ? requests.find((x) => x.id === r.requestId) : undefined);
   const issues = issueCount(r.checks);
-  const out: React.ReactNode[] = [];
+  const out: React.ReactElement[] = [];
 
   if (r.status === "declined" && r.decline) {
     out.push(
@@ -83,9 +84,12 @@ export function DecisionBanners({ r, onTab, draftId }: { r: Referral; onTab: (t:
     );
   }
 
+  const RANK = ["declined", "accepted", "lapsed", "awaiting", "issues"];
+  const quiet = tab === "coverage" || tab === "fit" ? ["lapsed", "awaiting", "issues"] : tab === "validation" ? ["issues"] : [];
+  const shown = out.filter((b) => !quiet.includes(String(b.key))).sort((a, b) => RANK.indexOf(String(a.key)) - RANK.indexOf(String(b.key)))[0];
   return (
     <>
-      {out.length ? <div className="flex flex-col gap-3">{out}</div> : null}
+      {shown ?? null}
       {dialog}
     </>
   );

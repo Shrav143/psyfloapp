@@ -95,5 +95,8 @@ export const SYSTEM_READS: Record<SystemKind, string[]> = {
   "Lab results": ["Lab orders", "Lab results"],
 };
 
+/** Demo value: how often a connected system is asked for new files. A system that needs attention misses one sync for each interval since its last good one. */
+export const SYNC_EVERY_MIN = 60;
+
 export const BASE_CHARTS = 23;
 export const BASE_FILES = 142;

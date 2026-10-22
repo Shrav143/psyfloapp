@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { CheckCircle2, ScanText } from "lucide-react";
-import { AgentBadge, Button, Card, CardBody, CardHeader, FileDrop, FileRow, Spinner, TextInput, type DemoFile } from "@/components/ui";
+import { AgentBadge, Button, Disclosure, FileDrop, FileRow, Spinner, TextInput, type DemoFile } from "@/components/ui";
 import { SAMPLE_LETTERS, type SampleLetter } from "@/data/denials";
 import type { AgentKey } from "@/data/types";
 import { sleep } from "@/lib/format";
@@ -15,7 +15,7 @@ const STEPS: { agent: AgentKey; text: string }[] = [
 ];
 const STEP_MS = 1250;
 
-/** The drop area, an optional note and Analyze. The four agents work for about five seconds, then the new denial is selected. */
+/** Folded by default. Inside: the drop area, an optional note and Analyze. The four agents work for about five seconds, then the new denial is selected. Kept mounted so a running analysis or a typed note survives closing it. */
 export function AddLetterCard({ onAdded }: { onAdded: (id: string) => void }) {
   const alive = useAlive();
   const added = useStore((s) => Object.values(s.denialMeta).filter((m) => m.letterName).length);
@@ -52,9 +52,8 @@ export function AddLetterCard({ onAdded }: { onAdded: (id: string) => void }) {
   };
 
   return (
-    <Card>
-      <CardHeader title="Add a denial letter" subtitle="The agents read it, check it against your chart and past appeals, and lay out your options" />
-      <CardBody>
+    <Disclosure title="Add a denial letter" summary="Drop a letter or use a sample" keepMounted>
+      <div className="px-6 py-[22px]">
         {step !== null ? (
           <ol className="flex flex-col gap-3" aria-label="Analysis progress">
             {STEPS.map((s, i) => (
@@ -66,26 +65,23 @@ export function AddLetterCard({ onAdded }: { onAdded: (id: string) => void }) {
             ))}
           </ol>
         ) : (
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col gap-2.5">
-              {chosenName ? (
-                <FileRow file={file ?? { id: "sample", name: sample?.file ?? "", sizeKb: 184 }} onRemove={() => { setFile(null); setSample(null); }} />
-              ) : (
-                <FileDrop hint="Drop the denial letter here, or click to choose a PDF or DOCX" onFiles={(f) => { setFile(f[0]); setSample(null); setMissing(false); }} />
-              )}
-              <div className="flex items-center gap-3 text-[13px] text-muted">
-                <span>Identifiers are removed on upload.</span>
-                {!chosenName ? <Button size="sm" variant="ghost" onClick={pickSample}>Use sample letter</Button> : null}
-              </div>
+          <div className="flex flex-col gap-3.5">
+            <p className="text-[13.5px] text-muted">The agents read it, check it against the chart and past appeals, and lay out your options.</p>
+            {chosenName ? (
+              <FileRow file={file ?? { id: "sample", name: sample?.file ?? "", sizeKb: 184 }} onRemove={() => { setFile(null); setSample(null); }} />
+            ) : (
+              <FileDrop hint="Drop the denial letter here, or click to choose a PDF or DOCX" onFiles={(f) => { setFile(f[0]); setSample(null); setMissing(false); }} />
+            )}
+            <div className="flex flex-wrap items-center gap-x-3 text-[13px] text-muted">
+              <span>Identifiers are removed on upload.</span>
+              {!chosenName ? <Button size="sm" variant="ghost" onClick={pickSample}>Use sample letter</Button> : null}
             </div>
-            <div className="flex flex-col gap-2.5">
-              <TextInput value={note} onChange={(e) => setNote(e.target.value)} placeholder="Add anything not in the letter, such as a payer call note" aria-label="Note about the denial" />
-              <Button variant="primary" icon={ScanText} onClick={analyze}>Analyze the denial</Button>
-              {missing ? <p role="alert" className="text-[13px] text-risk">Add the letter first, or use the sample letter.</p> : null}
-            </div>
+            <TextInput value={note} onChange={(e) => setNote(e.target.value)} placeholder="Add anything not in the letter, such as a payer call note" aria-label="Note about the denial" />
+            <Button variant="primary" icon={ScanText} onClick={analyze}>Analyze the denial</Button>
+            {missing ? <p role="alert" className="text-[13px] text-risk">Add the letter first, or use the sample letter.</p> : null}
           </div>
         )}
-      </CardBody>
-    </Card>
+      </div>
+    </Disclosure>
   );
 }

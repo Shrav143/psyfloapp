@@ -31,11 +31,11 @@ export function CaseRow({ draft }: { draft: CaseDraft }) {
   const idLabel = draft.caseId ?? "New case";
 
   return (
-    <li className={cn("flex items-start gap-5 rounded-2xl border p-5", due?.tone === "risk" ? "border-risk-edge bg-risk-bg" : "border-edge bg-tile")}>
+    <li className={cn("flex flex-wrap items-start gap-x-5 gap-y-3 rounded-2xl border p-5", due?.tone === "risk" ? "border-risk-edge bg-risk-bg" : "border-edge bg-tile")}>
       <div className="w-[142px] shrink-0 pt-0.5">
         <Chip>{draft.levelLabel ?? (draft.program ? PROGRAM_LABEL[draft.program] : "Level not set")}</Chip>
       </div>
-      <div className="min-w-0 flex-1">
+      <div className="min-w-[240px] flex-1">
         <div>
           <IdLink onClick={open}>{idLabel}</IdLink>
           <span className="text-muted"> · {draft.patient.initials ? `${draft.patient.initials}${draft.patient.age ? `, ${draft.patient.age}` : ""}` : "No patient yet"} · {payer?.name ?? "No payer yet"}</span>

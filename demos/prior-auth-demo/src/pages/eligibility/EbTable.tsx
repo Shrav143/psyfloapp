@@ -1,11 +1,11 @@
 import { useNavigate } from "react-router-dom";
-import { Button, Chip, IdLink, Table, Td, Th, Tr } from "@/components/ui";
+import { Button, Chip, IdLink, Table, Td, Th } from "@/components/ui";
 import { verdictOf, type EbPatient } from "@/data/eligibility";
 import { payerById } from "@/data/seed";
 import { PROGRAM_LABEL } from "@/data/types";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
-import { AuthChip, BenefitsChip, EligibilityChip, patientLabel, VerdictChip } from "./chips";
+import { AuthChip, BenefitsChip, EligibilityChip, limitText, patientLabel, VerdictChip } from "./chips";
 import { autoState, DUE_AT, NOT_RECHECKED, RE_CHECKED, type AutoState } from "./recheck";
 
 const when = (at: number, now: number): string => {
@@ -17,20 +17,29 @@ const when = (at: number, now: number): string => {
   return d === 1 ? "1 day ago" : `${d} days ago`;
 };
 
-/** The small line under the verdict: when it was checked, and what Verify's automatic re-check is doing. */
-function checkedLine(at: number, now: number, busy: boolean, auto: AutoState | null) {
-  if (busy) return "Checking now";
-  if (auto?.kind === "done") return RE_CHECKED(auto.at);
-  if (auto?.kind === "paused") return <span className="text-mid-ink">{NOT_RECHECKED}</span>;
-  return (
-    <>
-      Checked {when(at, now)}
-      {auto ? <div>{DUE_AT(auto.at)}</div> : null}
-    </>
-  );
+interface Part {
+  text: string;
+  /** Verify is paused, so a re-check did not run: the one part of the line that is not just information. */
+  warn?: boolean;
 }
 
-/** One row per patient. The ID and the row open the result; Re-check runs a live check and updates the row in place. */
+/** The quiet second line of a row: the payer, the day limit, when it was checked, and what Verify's automatic re-check is doing. */
+function quietParts(p: EbPatient, now: number, busy: boolean, auto: AutoState | null): Part[] {
+  const parts: Part[] = [{ text: payerById(p.payerId).name }];
+  const limit = limitText(p);
+  if (limit) parts.push({ text: limit });
+  if (busy) parts.push({ text: "Checking now" });
+  else if (auto?.kind === "done") parts.push({ text: RE_CHECKED(auto.at) });
+  else if (auto?.kind === "paused") parts.push({ text: NOT_RECHECKED, warn: true });
+  else {
+    parts.push({ text: `Checked ${when(p.checkedAt, now)}` });
+    if (auto) parts.push({ text: DUE_AT(auto.at) });
+  }
+  return parts;
+}
+
+/** One patient is two lines: the chips that answer the question, then a quiet line with the rest. The ID and the row open the result;
+    Re-check runs a live check and updates the row in place. */
 export function EbTable({ rows }: { rows: EbPatient[] }) {
   const nav = useNavigate();
   const clock = useStore((s) => s.clock);
@@ -47,39 +56,35 @@ export function EbTable({ rows }: { rows: EbPatient[] }) {
           <Th>Benefits</Th>
           <Th>Authorization</Th>
           <Th>Verdict</Th>
-          <Th>
-            <span className="sr-only">Re-check</span>
-          </Th>
+          <Th aria-label="Re-check" />
         </tr>
       </thead>
-      <tbody>
-        {rows.map((p) => {
-          const busy = rechecking.includes(p.id);
-          return (
-            <Tr key={p.id} onClick={() => nav(paths.eligibilityResult(p.id))}>
-              <Td>
-                <div>
-                  <IdLink onClick={() => nav(paths.eligibilityResult(p.id))}>{p.id}</IdLink> <span className="text-muted">· {patientLabel(p)}</span>
-                </div>
-                <div className="text-xs text-muted">{payerById(p.payerId).name}</div>
+      {rows.map((p) => {
+        const busy = rechecking.includes(p.id);
+        const open = () => nav(paths.eligibilityResult(p.id));
+        const quiet = quietParts(p, clock, busy, autoState(p, clock, paused));
+        return (
+          <tbody key={p.id} onClick={open} className="cursor-pointer hover:bg-[#FBF8F3] [&:last-of-type>tr:last-child>td]:border-b-0">
+            <tr>
+              <Td className="border-b-0 pb-1.5">
+                <IdLink onClick={open}>{p.id}</IdLink> <span className="text-muted">· {patientLabel(p)}</span>
               </Td>
-              <Td>
+              <Td className="border-b-0 pb-1.5">
                 <Chip>{p.levelLabel ?? PROGRAM_LABEL[p.program]}</Chip>
               </Td>
-              <Td>
+              <Td className="border-b-0 pb-1.5">
                 <EligibilityChip p={p} />
               </Td>
-              <Td>
+              <Td className="border-b-0 pb-1.5">
                 <BenefitsChip p={p} />
               </Td>
-              <Td>
+              <Td className="border-b-0 pb-1.5">
                 <AuthChip p={p} />
               </Td>
-              <Td>
+              <Td className="border-b-0 pb-1.5">
                 <VerdictChip v={verdictOf(p)} />
-                <div className="mt-1 max-w-[190px] whitespace-normal text-xs text-muted">{checkedLine(p.checkedAt, clock, busy, autoState(p, clock, paused))}</div>
               </Td>
-              <Td className="text-right">
+              <Td className="border-b-0 pb-1.5 text-right">
                 <Button
                   size="sm"
                   loading={busy}
@@ -92,10 +97,20 @@ export function EbTable({ rows }: { rows: EbPatient[] }) {
                   {busy ? "Checking" : "Re-check"}
                 </Button>
               </Td>
-            </Tr>
-          );
-        })}
-      </tbody>
+            </tr>
+            <tr>
+              <Td colSpan={7} className="pt-0 pb-3.5 text-[12.5px] text-muted">
+                {quiet.map((x, i) => (
+                  <span key={x.text}>
+                    {i > 0 ? " · " : ""}
+                    <span className={x.warn ? "text-mid-ink" : undefined}>{x.text}</span>
+                  </span>
+                ))}
+              </Td>
+            </tr>
+          </tbody>
+        );
+      })}
     </Table>
   );
 }

@@ -40,6 +40,7 @@ function Title({ doc }: { doc: ReportDoc }) {
             {doc.workedExample ? <Pill className="ml-3 align-middle font-sans tracking-normal">Worked example</Pill> : null}
           </h1>
           <p className="mt-1.5 text-[15px] text-muted">{doc.id} · {doc.facts[1][1]} · {doc.payerName}</p>
+          <p className="mt-1 text-[13px] text-muted">{REPORT_FOOTER}</p>
         </div>
         <div className={cn("flex w-[250px] shrink-0 flex-col gap-0.5 rounded-2xl px-[18px] py-3.5", READ[doc.verdict.tone])}>
           <span className="text-[11.5px] font-semibold tracking-[0.1em] uppercase">Our read</span>
@@ -86,22 +87,24 @@ function Options({ doc }: { doc: ReportDoc }) {
   const th = "border-b border-line px-3 py-2.5 text-left text-[11.5px] font-medium tracking-[0.09em] text-muted uppercase";
   const td = "border-b border-line px-3 py-3 align-top";
   return (
-    <table className="w-full border-collapse text-[13.5px]">
-      <thead>
-        <tr><th scope="col" className={th}>Option</th><th scope="col" className={th}>Chance</th><th scope="col" className={th}>Time</th><th scope="col" className={th}>Gets back</th><th scope="col" className={th}>Needs</th></tr>
-      </thead>
-      <tbody>
-        {doc.options.map((o) => (
-          <tr key={o.title} className="print:break-inside-avoid">
-            <th scope="row" className={cn(td, "text-left font-semibold")}>{o.title}{o.recommended ? <div className="mt-1"><Pill tone="good">Recommended</Pill></div> : null}</th>
-            <td className={td}>{o.chance}</td>
-            <td className={td}>{o.time}</td>
-            <td className={td}>{o.gain}</td>
-            <td className={td}><ul className="list-disc pl-4">{o.needs.map((n) => <li key={n}>{n}</li>)}</ul></td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <div className="overflow-x-auto">
+      <table className="w-full min-w-[520px] border-collapse text-[13.5px]">
+        <thead>
+          <tr><th scope="col" className={th}>Option</th><th scope="col" className={th}>Chance</th><th scope="col" className={th}>Time</th><th scope="col" className={th}>Gets back</th><th scope="col" className={th}>Needs</th></tr>
+        </thead>
+        <tbody>
+          {doc.options.map((o) => (
+            <tr key={o.title} className="print:break-inside-avoid">
+              <th scope="row" className={cn(td, "text-left font-semibold")}>{o.title}{o.recommended ? <div className="mt-1"><Pill tone="good">Recommended</Pill></div> : null}</th>
+              <td className={td}>{o.chance}</td>
+              <td className={td}>{o.time}</td>
+              <td className={td}>{o.gain}</td>
+              <td className={td}><ul className="list-disc pl-4">{o.needs.map((n) => <li key={n}>{n}</li>)}</ul></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
@@ -169,7 +172,7 @@ export function ReportView({ doc }: { doc: ReportDoc }) {
           <ul className="mt-3 list-disc pl-5 leading-[1.7]">{doc.method.map((m) => <li key={m}>{m}</li>)}</ul>
         </Section>
       </div>
-      <footer className="mt-10 border-t border-line pt-4 text-[12.5px] text-muted">{REPORT_FOOTER}. Generated {doc.generatedOn}.</footer>
+      <footer className="mt-10 border-t border-line pt-4 text-[12.5px] text-muted">{REPORT_FOOTER} Generated {doc.generatedOn}.</footer>
     </article>
   );
 }

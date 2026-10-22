@@ -70,4 +70,6 @@ export const REPORT_HEADINGS = {
 } as const;
 
 export const REPORT_TITLE = "Appeal analysis report";
-export const REPORT_FOOTER = "Prepared by FLO agents, for clinician review";
+/** The one sentence that sits next to every letter, brief, report and recommendation FLO's agents generate. */
+export const REVIEW_NOTE = "Draft by FLO's agents. A clinician reviews and signs before anything is sent.";
+export const REPORT_FOOTER = REVIEW_NOTE;

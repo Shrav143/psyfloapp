@@ -1,40 +1,51 @@
 title: Analytics › The four tiles
 route: /analytics
-intro: Four tinted tiles, each with a big number, a label and two small lines: what the number means, and how many decisions, denials, requests or drafts are behind it. The tiles are not buttons.
+intro: Four tinted tiles, each with a big number, a label and two small lines, and a small info button in the corner. They are the key figures: approval rate, denial rate, turnaround and preventable denials. All four are added up from the same table as the charts, so they always agree with them. The tiles are not buttons.
 dir: TD
+also: Demo only: turnaround is demo values (each payer's average from the sample data, drifted for other periods and programs). The other three are modeled from the quarter's decisions. No figure is a dollar amount.
 ---
 start s1 "Read the row of four tiles"
-screen sc "Each tile\nBig number, label in capitals, a meaning line, then 'N decisions · this quarter'"
+screen sc "Each tile\nBig number, label in capitals, a meaning line, a count or trend line, and an info button at the top right"
 
-group gA "'Approved as asked' (green)"
+group gA "'Approval rate' (green)"
   screen a1 "71%\n'▲ 6 pts vs last quarter'\n'1,070 decisions · this quarter'"
-  process a2 "Share of decisions approved as asked in the period\nOne payer: that payer's own rate"
+  process a2 "Share of decisions approved as asked in the period\nAll payers: added up from each payer's decisions and denials\nOne payer: that payer's own rate, the same number as its bar"
   decision a3 "Change against the period before?"
   toast a4 "'▲ 6 pts vs last quarter' (up, 'pt' for one point)"
   toast a5 "'▼ 2 pts vs last quarter' (down)"
   toast a6 "'No change vs last quarter'"
 endgroup
 
-group gB "'Top denial cause' (red)"
-  screen b1 "29%\n'Thin continued-stay evidence'\n'311 denials · this quarter'"
-  process b2 "Share of denials held by the biggest reason listed in the denial table\nThe line is a short name of that reason"
+group gB "'Denial rate' (red)"
+  screen b1 "29%\n'311 denials · 17 accepted'\n'▼ 6 pts vs last quarter'"
+  process b2 "100 minus the approval rate, so the two always add up to 100\nThe count is the denials behind it\n'accepted' is the denials accepted, including the ones accepted in Denial Intelligence"
 endgroup
 
-group gC "'Advice taken works' (amber)"
-  screen c1 "84%\n'Approved when applied'\n'828 requests · this quarter'"
-  process c2 "Share approved among requests where the agents' advice was applied"
+group gC "'Turnaround' (grey)"
+  screen c1 "2.4 days\n'Sent to decision · typical 1.9 days'\n'▼ 0.1 days vs last quarter'"
+  process c2 "Average days from sent to decision\nEach payer's average from the sample data, weighted by its decisions\nOther periods and programs drift from it (demo values)\nLower is faster: down is good news"
+  process c3 "Info button 'About turnaround' says 'Demo values'"
 endgroup
 
-group gD "'Sent without edits' (grey)"
-  screen d1 "75%\n'As written, or a typo fixed'\n'966 drafts · this quarter'"
-  process d2 "Share of agent drafts sent as written, or with a typo fixed"
+group gD "'Preventable denials' (amber)"
+  screen d1 "207\n'67% of 311 denials'\n'Fixable before sending'"
+  process d2 "Denials whose reason the team can fix before sending\nThin or missing documentation, late notice, incomplete certification, duplicate request\nThe count is the sum of the rows of the preventable chart"
+endgroup
+
+group gI "Info buttons"
+  click i1 "Hover or Tab to the small 'i' on a tile"
+  overlay i2 "A short text: what the figure means\nTurnaround says 'Demo values'"
+  input i3 "Move away, Tab on, or press Escape"
+  process i4 "Text goes away\nEscape closes only the text"
 endgroup
 
 decision q1 "Fewer than 20 behind the figure?"
-screen h1 "Number becomes '-'\nMeaning line reads 'Not enough decisions yet'\nThe count line stays, for example '17 requests · this quarter'"
+screen h1 "Number becomes '-'\nMeaning line reads 'Not enough decisions yet'"
 screen ok "The number and its lines show as usual"
-process p1 "Tiles do nothing when clicked or hovered\nUnlike the Eligibility tiles, they are not filters"
-endx e1 "To change a tile, change the period or payer menu"
+process p1 "Tiles do nothing when clicked\nUnlike the Eligibility tiles, they are not filters"
+goto g1 "Continues in: Analytics › Preventable denials chart"
+goto g2 "Continues in: Analytics › Detailed breakdowns"
+endx e1 "To change a tile, change the period, payer or program menu"
 end e2 "Figures read"
 
 s1 --> sc
@@ -44,9 +55,12 @@ a3 -->|Up| a4
 a3 -->|Down| a5
 a3 -->|Same| a6
 b1 --> b2
-c1 --> c2
+c1 --> c2 --> c3
 d1 --> d2
+sc --> i1 --> i2 --> i3 --> i4
 a4 & a5 & a6 & b2 & c2 & d2 --> q1
 q1 -->|Yes| h1 --> e2
 q1 -->|No| ok --> e2
+d2 --> g1
+b2 -.-> g2
 sc -.-> p1 --> e1

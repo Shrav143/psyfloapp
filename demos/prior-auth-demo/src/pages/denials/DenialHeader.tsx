@@ -1,4 +1,4 @@
-import { FileText } from "lucide-react";
+import { FileText, LayoutDashboard } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button, Card, CardBody, Chip, Pill } from "@/components/ui";
 import { PROGRAM_LABEL, type PsyRequest, type Tone } from "@/data/types";
@@ -8,7 +8,10 @@ import { payerById } from "@/data/seed";
 import { paths } from "@/routes";
 import { cn } from "@/lib/cn";
 import type { DenialView } from "./lib/useDenialView";
+import type { OptionId } from "./lib/analysis";
+import type { RecommendedStep } from "./lib/step";
 import { capitalize, leftLabel } from "./lib/format";
+import { NextStep } from "./NextStep";
 
 const READ_TONE: Record<string, string> = { "Worth challenging": "bg-good-bg text-good-ink", Borderline: "bg-mid-bg text-mid-ink", "Probably accept": "bg-risk-bg text-risk-ink" };
 
@@ -25,7 +28,18 @@ function windowChip(r: PsyRequest, clock: number): { text: string; tone: Tone } 
   return r.clockNote ? { text: `${r.chip}, ${r.clockNote}`, tone: "neutral" } : null;
 }
 
-export function DenialHeader({ view }: { view: DenialView }) {
+interface Props {
+  view: DenialView;
+  step: RecommendedStep;
+  onChoose: (id: OptionId) => void;
+  onOpenAppeal: () => void;
+  onChangeTime: () => void;
+  onRecordDecision: () => void;
+  onFindings: () => void;
+}
+
+/** Who and what this denial is, our read of it, and the one recommended next step under it. */
+export function DenialHeader({ view, step, ...handlers }: Props) {
   const { req, meta, analysis, clock } = view;
   const chip = windowChip(req, clock);
   const nav = useNavigate();
@@ -33,13 +47,13 @@ export function DenialHeader({ view }: { view: DenialView }) {
   return (
     <Card>
       <CardBody>
-        <div className="flex items-start gap-5">
-          <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-start gap-x-6 gap-y-4">
+          <div className="min-w-[260px] flex-1">
+            <div className="mb-1.5 text-[11.5px] font-medium tracking-[0.1em] text-muted uppercase">Authorization denial</div>
             <div className="flex flex-wrap items-center gap-2.5">
               <Chip>{PROGRAM_LABEL[req.program]}</Chip>
               <span className="font-serif text-[26px] leading-none font-semibold">{req.id}</span>
               <Pill tone="mid">{meta.type}</Pill>
-              {req.chip !== meta.type ? <Pill tone={req.tone}>{req.chip}</Pill> : null}
             </div>
             <div className="mt-3 flex flex-wrap items-center gap-2">
               {chance ? <Pill tone={band(chance.value).tone}>{chance.value}% chance of overturning</Pill> : null}
@@ -49,9 +63,10 @@ export function DenialHeader({ view }: { view: DenialView }) {
               {payerById(req.payerId).name} · case {req.caseId} · {req.patient.initials}, {req.patient.age}
               {meta.letterName ? ` · letter ${meta.letterName}` : ""}
             </p>
+            <Button size="sm" variant="ghost" icon={LayoutDashboard} className="mt-1 -ml-2" onClick={() => nav(paths.dashboard({ request: req.id }))}>See on the Dashboard</Button>
             {meta.note ? <p className="mt-1 text-[13.5px] text-ink2">Your note: {meta.note}</p> : null}
           </div>
-          <div className="flex min-w-[240px] max-w-[300px] flex-col gap-2.5">
+          <div className="flex w-full max-w-[300px] min-w-[240px] flex-col gap-2.5 sm:w-[270px]">
             <div className={cn("flex flex-col gap-0.5 rounded-2xl px-[18px] py-3.5", READ_TONE[analysis.verdict])}>
               <span className="text-[11.5px] font-semibold tracking-[0.1em] uppercase">Our read</span>
               <b className="font-serif text-[20px] leading-tight">{analysis.verdict}</b>
@@ -61,6 +76,7 @@ export function DenialHeader({ view }: { view: DenialView }) {
           </div>
         </div>
       </CardBody>
+      <NextStep view={view} step={step} {...handlers} />
     </Card>
   );
 }

@@ -40,3 +40,7 @@ export function sortOpen(list: PsyRequest[], clock: number): PsyRequest[] {
 export const isFiled = (r: PsyRequest): boolean => APPEAL_LEVELS.some((l) => l.filedChip === r.chip);
 
 export const PROGRAM_SHORT: Record<string, string> = { RES: "Res.", IOP: "IOP", PHP: "PHP", WM: "Detox" };
+
+export { REVIEW_NOTE } from "@/lib/pdf/report-doc";
+/** Said once under the page description: this screen covers authorization denials only. */
+export const SCOPE_NOTE = "Authorization denials only. Claim denials are handled in billing and are not in this demo.";

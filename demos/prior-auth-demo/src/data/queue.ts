@@ -1,6 +1,5 @@
 import type { AgentKey, PayerId, Program, PsyRequest, RequestType } from "./types";
 import { PROGRAM_LABEL } from "./types";
-import { plural } from "@/lib/format";
 
 /* The Authorizations queue: 56 open requests in three priority bands. The band totals shown on the
    page are computed from these rows, so the counts and chances below add up to the canonical numbers:
@@ -28,7 +27,6 @@ export interface QueueItem {
   dueVerb: string;
   chance: number;
   liftPts: number;
-  liftLabel: string;
   phase: Phase;
   agent: AgentKey;
   status: string;
@@ -45,13 +43,38 @@ export const BAND_META: Record<Band, { name: string; dot: string }> = {
   week: { name: "Due this week", dot: "#739C8E" },
 };
 export const BANDS: Band[] = ["now", "day", "week"];
+/** Last 30 days, shown in Analytics. The queue no longer shows them. */
 export const APPROVED_30D = 112;
 export const DENIED_30D = 46;
 
-export type StatusFilter = "all" | "input" | Phase;
+export type StatusFilter = "all" | "you" | "input" | Phase;
 export const STATUS_LABEL: Record<StatusFilter, string> = {
-  all: "All statuses", input: "Needs your input", preparing: "Preparing", ready: "Ready to sign", payer: "With the payer", denial: "Denial route",
+  all: "All statuses", you: "Waiting on you", input: "Needs your input", preparing: "Preparing", ready: "Ready to sign", payer: "With the payer", denial: "Denial route",
 };
+/** What each status chip on these screens means, in the product's status vocabulary. A chip keeps its name; this is only help text. */
+export const STATUS_HELP: { chip: string; means: string }[] = [
+  { chip: "Preparing", means: "Draft: agents are building it. Nothing is sent." },
+  { chip: "Ready to sign", means: "Ready for review: waiting for a person to sign." },
+  { chip: "With the payer", means: "Submitted, Acknowledged, Under review or Info requested: signed and sent. The Dashboard shows which." },
+  { chip: "Denial route", means: "Denied: a call or an appeal is being worked." },
+  { chip: "Needs your input", means: "A question is waiting for you, at any status." },
+  { chip: "Approved, Completed", means: "These leave the queue. See the Dashboard and Case Manager." },
+];
+
+/** The four request types people filter by. The demo's own types map onto them; the rest (peer-to-peer, appeal, resubmission) show only under All. */
+export type RequestKind = "initial" | "concurrent" | "reauth" | "retro";
+export const REQUEST_KINDS: RequestKind[] = ["initial", "concurrent", "reauth", "retro"];
+export const REQUEST_KIND_LABEL: Record<RequestKind, string> = { initial: "Initial", concurrent: "Concurrent review", reauth: "Reauthorization", retro: "Retrospective" };
+export function requestKindOf(type: RequestType): RequestKind | null {
+  switch (type) {
+    case "Initial request":
+    case "Admission": return "initial";
+    case "Continued stay": return "concurrent";
+    case "Recertification": return "reauth";
+    case "Retro-authorization": return "retro";
+    default: return null;
+  }
+}
 
 /* ------------------------------------------------------------------ diagnosis clusters and scores */
 interface Scale { label: string; lo: number; hi: number; of?: number }
@@ -102,7 +125,7 @@ const STATUS_POOL: Record<Phase, [AgentKey, string][]> = {
 /* ------------------------------------------------------------------ rows */
 interface Extra {
   dx?: string; dxKey?: DxKey; scores?: Score[]; level?: string; agent?: AgentKey; status?: string; verb?: string;
-  needs?: boolean; cov?: boolean; signal?: boolean; rule?: string; lift?: number; liftLabel?: string;
+  needs?: boolean; cov?: boolean; signal?: boolean; rule?: string; lift?: number;
 }
 type Row = [id: string, who: string, age: number, payer: PayerId, prog: Program, type: RequestType, dueHours: number, chance: number, phase: Phase, extra?: Extra];
 
@@ -114,7 +137,7 @@ function make(band: Band, [id, initials, age, payerId, program, type, dueHours, 
   return {
     id, initials, age, payerId, program, type, levelLabel: x.level ?? PROGRAM_LABEL[program], dxKey,
     dx: x.dx ?? dxLine(id, dxKey, type, program), scores: x.scores ?? scoresFor(id, dxKey), band, dueAt: dueHours * 60, dueVerb: x.verb ?? DEFAULT_VERB[phase](type),
-    chance, liftPts, liftLabel: x.liftLabel ?? (liftPts > 0 ? `+${plural(liftPts, "pt")} possible` : phase === "payer" ? "waiting on the payer" : phase === "denial" ? "chance to overturn" : "on track"),
+    chance, liftPts,
     phase, agent: x.agent ?? pool[0], status: x.status ?? pool[1], needsInput: !!x.needs, coverageFix: !!x.cov, signal: !!x.signal, rule: x.rule, days: daysRequested(program),
   };
 }
@@ -124,7 +147,7 @@ const down = (label: string, value: string): Score => ({ label, value, trend: "d
 const flat = (label: string, value: string): Score => ({ label, value, trend: "flat" });
 
 const NOW_ROWS: Row[] = [
-  ["R-1042", "J.M.", 34, "summit", "RES", "Admission", 5, 62, "preparing", { dxKey: "aud", dx: "Alcohol use disorder, severe, with recurrent depression · admission", scores: [{ label: "AUDIT-C", value: "11" }, up("PHQ-9", "17"), { label: "CIWA", value: "14 → 4" }], agent: "scribe", status: "Scribe is drafting the case", needs: true, verb: "Notice due", rule: "Summit expects a named step-down provider with the first request.", lift: 26, liftLabel: "+26 pts once drafted" }],
+  ["R-1042", "J.M.", 34, "summit", "RES", "Admission", 5, 62, "preparing", { dxKey: "aud", dx: "Alcohol use disorder, severe, with recurrent depression · admission", scores: [{ label: "AUDIT-C", value: "11" }, up("PHQ-9", "17"), { label: "CIWA", value: "14 → 4" }], agent: "scribe", status: "Scribe is drafting the case", needs: true, verb: "Notice due", rule: "Summit expects a named step-down provider with the first request.", lift: 26 }],
   ["R-1101", "K.W.", 26, "summit", "RES", "Retro-authorization", 18, 47, "preparing", { level: "Detox → Residential", dxKey: "oud", dx: "Opioid use disorder · retro-authorization", scores: [down("COWS", "9"), { label: "DAST-10", value: "8" }], agent: "packet", status: "Packet is assembling the request", cov: true, verb: "Window closes", lift: 14 }],
   ["D-3318", "M.C.", 38, "cardinal", "RES", "Peer-to-peer", 36, 64, "denial", { dxKey: "mdd", dx: "Denied 7 of 14 days · continued stay", scores: [flat("PHQ-9", "15"), { label: "Craving", value: "7/10" }], agent: "advocate", status: "Advocate has a peer-to-peer brief ready", verb: "P2P" }],
   ["R-0912", "C.D.", 44, "evergreen", "RES", "Continued stay", 22, 67, "payer", { agent: "caller", status: "Caller is phoning Evergreen for the decision", verb: "Review due" }],
@@ -186,8 +209,10 @@ const WEEK_ROWS: Row[] = [
   ["R-1186", "U.X.", 51, "beacon", "WM", "Initial request", 62, 79, "preparing", { needs: true }],
 ];
 
+/** Not sent yet, a denial to work, or a question for you. The queue orders by it and the "Waiting on you" figure counts it. */
+export const isWaitingOnYou = (i: QueueItem): boolean => i.phase === "preparing" || i.phase === "ready" || i.phase === "denial" || i.needsInput;
 /** Inside each band, requests waiting on a person come first, then the soonest due. Two due at the same minute go lower approval chance first. */
-const waitingOnYou = (i: QueueItem): number => (i.phase === "preparing" || i.phase === "ready" || i.phase === "denial" || i.needsInput ? 1 : 0);
+const waitingOnYou = (i: QueueItem): number => (isWaitingOnYou(i) ? 1 : 0);
 export const QUEUE_ITEMS: QueueItem[] = [
   ...NOW_ROWS.map((r) => make("now", r)), ...DAY_ROWS.map((r) => make("day", r)), ...WEEK_ROWS.map((r) => make("week", r)),
 ].sort((a, b) => BANDS.indexOf(a.band) - BANDS.indexOf(b.band) || waitingOnYou(b) - waitingOnYou(a) || a.dueAt - b.dueAt || a.chance - b.chance);

@@ -1,41 +1,50 @@
-import { CircleCheck, CircleX, Clock, Gauge, Radar, TriangleAlert, X } from "lucide-react";
-import { Banner, Button, Stat } from "@/components/ui";
-import { APPROVED_30D, DENIED_30D } from "@/data/queue";
+import { Clock, Gauge, Radar, TriangleAlert, UserRound, X } from "lucide-react";
+import { Button, Stat } from "@/components/ui";
+import type { Band, StatusFilter } from "@/data/queue";
+import { band as chanceBand } from "@/lib/format";
+import { InfoTip } from "./InfoTip";
 import { shortSpan, type Stats } from "./queueLogic";
 
 const WORD = ["no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
 export const numberWord = (n: number): string => WORD[n] ?? String(n);
 
-/** The Cardinal payer signal. "Review the four" filters the queue to the requests it affects; the X hides it for the session. */
+/** The Cardinal payer signal, on one line. "Review the four" filters the queue to the requests it affects; the X hides it for the session. */
 export function SignalBanner({ affected, active, onReview, onClear, onHide }: { affected: number; active: boolean; onReview: () => void; onClear: () => void; onHide: () => void }) {
   return (
-    <Banner
-      icon={Radar}
-      action={
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" onClick={active ? onClear : onReview}>{active ? "Show all requests" : `Review the ${numberWord(affected)}`}</Button>
-          <button type="button" onClick={onHide} aria-label="Dismiss signal" className="grid h-8 w-8 place-items-center rounded-lg text-muted hover:bg-black/5">
-            <X size={16} className="ico" />
-          </button>
-        </div>
-      }
-    >
-      <b className="font-semibold">Payer signal.</b> Cardinal Health Plan has denied 31% more IOP continued-stay requests this week, mostly for thin recertification evidence. {affected === 1 ? "One of your open requests is" : `${numberWord(affected)[0].toUpperCase()}${numberWord(affected).slice(1)} of your open requests are`} affected, and the agents have re-scored {affected === 1 ? "it" : "them"}.
-    </Banner>
+    <div className="flex items-center gap-3 rounded-2xl bg-neutral-bg px-[18px] py-2.5 text-sm text-neutral-ink">
+      <Radar size={18} className="ico shrink-0" aria-hidden="true" />
+      <p className="m-0 min-w-0 flex-1">
+        <b className="font-semibold">Payer signal.</b> Cardinal Health Plan has denied 31% more IOP continued-stay requests this week.
+      </p>
+      <InfoTip label="More about this signal" align="end">
+        The denials were mostly for thin recertification evidence. {affected === 1 ? "One of your open requests is" : `${numberWord(affected)[0].toUpperCase()}${numberWord(affected).slice(1)} of your open requests are`} affected, and the agents have re-scored {affected === 1 ? "it" : "them"}.
+      </InfoTip>
+      <Button variant="ghost" size="sm" onClick={active ? onClear : onReview}>{active ? "Show all requests" : `Review the ${numberWord(affected)}`}</Button>
+      <button type="button" onClick={onHide} aria-label="Dismiss signal" className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-muted hover:bg-black/5">
+        <X size={16} className="ico" />
+      </button>
+    </div>
   );
 }
 
-/** Five tinted tiles for the whole queue. Urgent and In flight also work as filters. */
-export function QueueTiles({ all, urgent, onUrgent, onAll }: { all: Stats; urgent: number; onUrgent: () => void; onAll: () => void }) {
+export interface QueueFigures {
+  urgent: number;
+  day: Stats;
+  waiting: number;
+  all: Stats;
+}
+
+/** Four figures for the whole queue. The first three also work as filters. */
+export function QueueTiles({ figures, urgency, status, onUrgency, onStatus }: { figures: QueueFigures; urgency: Band | "all"; status: StatusFilter; onUrgency: (b: Band) => void; onStatus: (s: StatusFilter) => void }) {
+  const { all, day } = figures;
   const lo = Math.max(1, all.avg - 5);
   const hi = Math.min(99, all.avg + 5);
   return (
-    <div className="grid grid-cols-5 gap-4">
-      <Stat tone="mid" icon={Gauge} value={`${all.avg}%`} label="Approval chance" sub={`average · likely ${lo}–${hi}%`} />
-      <Stat tone="risk" icon={TriangleAlert} value={urgent} label="Urgent" sub="the Act now band" onClick={onUrgent} />
-      <Stat tone="neutral" icon={Clock} value={all.count} label="In flight" sub={all.firstDue === null ? "nothing open" : all.firstDue <= 0 ? "next one is due now" : `next due in ${shortSpan(all.firstDue)}`} onClick={onAll} />
-      <Stat tone="good" icon={CircleCheck} value={APPROVED_30D} label="Approved" sub="last 30 days" />
-      <Stat tone="risk" icon={CircleX} value={DENIED_30D} label="Denied" sub="last 30 days" />
+    <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
+      <Stat tone="risk" icon={TriangleAlert} value={figures.urgent} label="Urgent now" sub="the Act now band" onClick={() => onUrgency("now")} selected={urgency === "now"} />
+      <Stat tone="mid" icon={Clock} value={day.count} label="Due within 24 hours" sub={day.firstDue === null ? "nothing open" : day.firstDue <= 0 ? "next one is due now" : `next due in ${shortSpan(day.firstDue)}`} onClick={() => onUrgency("day")} selected={urgency === "day"} />
+      <Stat tone="neutral" icon={UserRound} value={figures.waiting} label="Waiting on you" sub="not sent yet, or a question for you" onClick={() => onStatus("you")} selected={status === "you"} />
+      <Stat tone={chanceBand(all.avg).tone} icon={Gauge} value={`${all.avg}%`} label="Approval chance" sub={`average · likely ${lo}–${hi}%`} />
     </div>
   );
 }

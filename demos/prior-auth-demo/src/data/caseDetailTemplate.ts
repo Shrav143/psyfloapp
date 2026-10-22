@@ -208,7 +208,7 @@ export function buildFromSeed(seed: CaseSeed): CaseDetail {
   const decile = Math.floor(clamp(seed.chance + lift, 10, 99) / 10) * 10;
   return {
     id: seed.id, requestId: seed.requestId, fromQueue: seed.fromQueue, denialId: seed.denialId, initials: seed.initials, age: seed.age, payerId: seed.payerId, program: seed.program, levelLabel: seed.levelLabel, type: seed.type, days: seed.days,
-    dx: seed.dx, scores: seed.scores, dueAt: seed.dueAt, dueVerb: seed.dueVerb, chip: seed.chip, phase: seed.phase, agent: seed.agent, statusLine: seed.statusLine,
+    dx: seed.dx, scores: seed.scores, dueAt: seed.dueAt, dueVerb: seed.dueVerb, chip: seed.chip, phase: seed.phase, agent: seed.agent, statusLine: seed.statusLine, needsInput: seed.needsInput,
     baseChance: seed.chance, spread: known?.spread ?? (little ? [8, 7] : [5, 5]),
     similar: known?.similar ?? (little ? { own: 6, network: 22, benchmark: 210 } : { own: 40 + (n % 160), network: 300 + (n % 500), benchmark: 120 + (n % 160) }),
     recs, start, rows,

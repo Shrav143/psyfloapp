@@ -99,7 +99,7 @@ export default function ReferralDetailPage() {
       </div>
       <Stepper steps={NEW_CASE_STEPS} current={0} />
       <ReferralHeader r={r} hasCase={!!caseOf(r, requests, drafts)} onAccept={() => setModal({ kind: "accept" })} onInfo={() => setModal({ kind: "info", keys: askable(r) })} onDecline={() => setModal({ kind: "decline" })} onNote={() => setModal({ kind: "note" })} onSchedule={() => setModal({ kind: "schedule" })} />
-      <DecisionBanners r={r} onTab={setTab} draftId={draftId} />
+      <DecisionBanners r={r} onTab={setTab} draftId={draftId} tab={tab} />
       <div className="grid grid-cols-1 items-start gap-[22px] min-[1100px]:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
         <div className="min-[1100px]:sticky min-[1100px]:top-[78px]">
           <DocumentPanel r={r} docs={docs} docId={docId} page={page} highlightId={hl} onDoc={(d) => { setDocId(d); setPage(1); setHl(null); }} onPage={setPage} onBlock={fromDocument} />

@@ -1,37 +1,43 @@
 title: Payers › Rules › Read the rules
 route: /payers/summit?tab=rules
-intro: Four rule cards for one payer, each a few plain lines, with the agents that use them and the date they were last confirmed. The saved lines are what New case reads for this payer; editing them is the next diagram. In the product, each field would carry a source and a confidence (published, payer-confirmed, observed, staff-reported, unconfirmed).
+intro: Four rules for one payer, each closed on its first line. A rule opens to a few plain lines with the agents that use it and the date it was last saved in Psyflo. The saved lines are what New case reads for this payer; editing them is the next diagram. The rules are demo data: none is shown as verified by the payer. In the product, each field would carry a source and a confidence (published, payer-confirmed, observed, staff-reported, unconfirmed).
 dir: TD
 ---
 start s1 "Click the 'Rules' tab"
-screen tab "Rules tab\nBanner if edits wait, four cards in two columns, a note"
+screen tab "Rules tab\nBanner if edits wait, then one card 'Rules the agents follow'\nwith an info icon and four closed rules"
 decision dU "Edits saved but not yet\napplied to open drafts?"
 toast bU "'1 edit applies to new drafts only'\nwith 'Update 2 drafts'\nSent requests keep what they were sent with"
 goto gU "Continues in: Payers › Edits waiting › Update drafts"
+click tip "Hover, focus or click the info icon\n(button 'About these rules')"
+overlay tipt "'Open a rule to read it or edit it. New drafts use a saved edit at once.\nSent requests keep what they were sent with. Click Update drafts to redraft open ones.\nThese are demo rules, not verified against Summit's current policy.'"
 
-group gC "Each card"
-  screen c1 "Submission windows\nNotice within 24 hours of admission (72 for Harborview, by phone for Evergreen, by fax for Lakeshore)\nRecertification filed 72 hours before the unit limit\nA continued-stay review every 7 days after the first 7"
-  screen c2 "Backdating\nDiffers by payer: Summit and Cardinal do not backdate,\nBeacon backdates within 2 business days,\nEvergreen up to 3 days with a call log, Lakeshore to the fax receipt date"
-  screen c3 "No authorization needed\nIndividual therapy, Medication management,\nInitial assessment, Crisis stabilization first 24 hours\n(Evergreen has no crisis line). Shown with green ticks"
-  screen c4 "Peer-to-peer and appeals\nSummit: peer-to-peer call within 3 business days (Cardinal 2),\nwritten appeal within 60 days, expedited 72 hours,\nthen external review (Evergreen: state hearing)"
+group gC "Four closed rules, each a button with aria-expanded"
+  screen c1 "Submission windows\n'Notice within 24 hours of admission, and 2 more'  3 lines\nNotice differs by payer (72 hours for Harborview, by phone for Evergreen, by fax for Lakeshore)"
+  screen c2 "Backdating\n'Summit does not backdate an authorization, and 2 more'  3 lines\nBeacon backdates within 2 business days, Evergreen up to 3 days with a call log,\nLakeshore to the fax receipt date"
+  screen c3 "No authorization needed\n'Individual therapy, and 3 more'  4 lines\nShown with green ticks once open (Evergreen has no crisis line)"
+  screen c4 "Peer-to-peer and appeals\n'Peer-to-peer call within 3 business days of a denial, and 3 more'  4 lines\nCardinal 2 days. Evergreen ends in a state hearing"
 endgroup
 
-process ub "Foot of each card\n'Used by Cadence and Navigator · confirmed 10/12'"
+click op "Click a rule (or Enter, Space)"
+process opn "Rule opens: its lines, then the foot line\nClick again to close"
+process ub "Foot line\n'Used by Cadence and Scrubber · saved 10/12'"
 process who "Used by\nWindows: Cadence, Navigator\nBackdating: Cadence, Scrubber\nNo authorization needed: Verify, Criteria\nPeer-to-peer and appeals: Advocate, Cadence"
-process cf "'Confirmed' is a date\nEvergreen shows 10/09, the others 10/12\nIt moves to today when a rule is edited"
-toast note "'Rules are learned from past decisions and confirmed against\nSummit's published policy. New drafts use a saved edit at once.\nSent requests keep what they were sent with.\nClick Update drafts to redraft open ones.'"
+process cf "'Saved' is the date the rule was last saved in Psyflo\nEvergreen shows 10/09, the others 10/12\nIt moves to today when a rule is edited\nIt is never a date the payer confirmed anything"
+process src "A rule edited here adds\n'Source: Edited in Psyflo by Jordan Perez'\nA rule that was not edited shows no source of its own:\nthe header says 'Source: Demo sample rules, version 2026.3'"
 process noeff "New case reads the saved lines for the payer\nand level of care of each draft\nSee the New case diagrams for what it checks"
-click ce "Click 'Edit' on a card\n(the button is named 'Edit Backdating' and so on)"
+click ce "Click 'Edit' inside an open rule\n(the button is named 'Edit Backdating' and so on)"
 goto gE "Continues in: Payers › Rules › Edit a rule"
 goto gF "Continues in: Payers › Configuration feeds the rest of the app"
+goto gP "Continues in: Payers › Header › Policy status and the demo-rules label"
 
 s1 --> tab --> dU
 dU -->|Yes| bU --> gU
 dU -->|No| c1
 bU --> c1
+tab -.-> tip --> tipt
 c1 --> c2 --> c3 --> c4
-c1 --> ub --> who --> cf
-c4 --> note
-c4 --> ce --> gE
-note -.-> noeff
+c1 --> op --> opn --> ub --> who --> cf --> src
+src --> ce --> gE
+c4 -.-> noeff
 noeff -.-> gF
+src -.-> gP

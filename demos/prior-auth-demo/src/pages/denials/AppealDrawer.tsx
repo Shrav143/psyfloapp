@@ -6,6 +6,7 @@ import { shortDate } from "@/lib/time";
 import { useStore } from "@/store";
 import { buildAppealLetter, defaultEvidence } from "./lib/appeal";
 import { capitalize, isFiled } from "./lib/format";
+import { ReviewNote } from "./ReviewNote";
 import { SignModal } from "./SignModal";
 import type { DenialView } from "./lib/useDenialView";
 
@@ -63,7 +64,7 @@ export function AppealDrawer({ view, onClose }: { view: DenialView; onClose: () 
           <div className="flex flex-col gap-5">
             <Banner tone="neutral" title="Drafted by Advocate, checked by Integrity">
               <span className="flex items-center gap-2"><AgentChip agent="advocate" /><AgentChip agent="integrity" /></span>
-              <span className="mt-1.5 block">{readOnly ? "This is the letter that was filed." : "Edit anything. A clinician signs before it is filed."}</span>
+              {readOnly ? <span className="mt-1.5 block">This is the letter that was filed.</span> : <><span className="mt-1.5 block">Edit anything you like.</span><ReviewNote className="mt-1" /></>}
             </Banner>
             <div>
               <Label className="mb-1.5">Letter</Label>

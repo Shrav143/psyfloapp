@@ -21,7 +21,7 @@ export function ReportModal({ view, onClose }: { view: View; onClose: () => void
     return () => clearTimeout(t);
   }, [done, finished]);
 
-  const base = `psyflo-monthly-report-${view.period.id}-${view.payer}`;
+  const base = `psyflo-monthly-report-${view.period.id}-${view.payer}-${view.program.toLowerCase()}`;
   const save = (kind: "md" | "csv") => {
     if (blockedInHosted("Download")) return;
     if (kind === "md") downloadFile(`${base}.md`, "text/markdown;charset=utf-8", reportMarkdown(view, view.period.prev));
@@ -39,7 +39,7 @@ export function ReportModal({ view, onClose }: { view: View; onClose: () => void
       open
       onClose={onClose}
       title="Monthly report"
-      subtitle={`${view.period.label} · ${view.scope}`}
+      subtitle={`${view.period.label} · ${view.scope} · ${view.programLabel}`}
       footer={<Button onClick={onClose}>{finished ? "Done" : "Cancel"}</Button>}
     >
       <div className="mb-4 flex items-center gap-2 text-sm text-muted">

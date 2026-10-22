@@ -46,12 +46,14 @@ export interface ReachLine { id: "portal" | "phone" | "fax"; title: string; text
 
 export type RuleId = "windows" | "backdating" | "noauth" | "p2p";
 export const RULE_TITLE: Record<RuleId, string> = { windows: "Submission windows", backdating: "Backdating", noauth: "No authorization needed", p2p: "Peer-to-peer and appeals" };
-export interface Rule { id: RuleId; lines: string[]; used: AgentKey[]; confirmed: string }
+/** `confirmed` is the date the rule was last saved in Psyflo, not a date a payer confirmed it. `source` is set only when this rule differs from the payer's rules as a whole, for example "Edited in Psyflo". */
+export interface Rule { id: RuleId; lines: string[]; used: AgentKey[]; confirmed: string; source?: string }
 
 export interface DocItem { id: string; title: string; requirement: string }
 export type DocLists = Record<Program, DocItem[]>;
 
-export interface ChangeEntry { id: string; date: string; title: string; text: string }
+/** `noticed` marks the entry that records a change which is still waiting for a person, so it is not counted as a change handled in Psyflo. */
+export interface ChangeEntry { id: string; date: string; title: string; text: string; noticed?: boolean }
 
 /** A payer change waiting for a person: acknowledge first, then update the payer's open drafts (read live, see openDrafts). */
 export interface PendingChange {
@@ -69,12 +71,11 @@ export interface PendingChange {
 /** What Historian suggests after "Re-learn from decisions": one more branch under a step. Never applied on its own. */
 export interface Proposal { id: string; title: string; text: string; stepTitle: string; cond: Condition; kind: StepKind; result: string }
 
-export interface PayerFacts { approvedNote: string; typicalNote: string; noticeDue: string; noticeNote: string; backup: string }
+export interface PayerFacts { noticeDue: string; noticeNote: string; backup: string }
 
 export interface PayerConfig {
   planLine: string;
   rulesVersion: string;
-  checkedOn: string;
   reachedBy: string;
   facts: PayerFacts;
   reach: ReachLine[];

@@ -1,20 +1,20 @@
-title: Analytics › Read-only cards: payers, draft edits, what helps most
+title: Analytics › Charts: payers, draft edits and workload
 route: /analytics
-intro: Three cards you read but cannot click: the payer bars, the draft-edit donut and the ranked list of what helps most. There are no tooltips on hover and nothing opens on a click. They change only with the period and payer menus.
+intro: Three cards you read but cannot click: the payer bars, the draft-edit donut and the workload card. The fourth chart, preventable denials, has its own diagram. There are no tooltips on hover and nothing opens on a click, except the link in the workload card. They change with the period, payer and program menus (workload: payer and program only).
 dir: TD
-also: Demo only: 'not enough decisions' on the bars and the donut cannot happen with the demo's numbers. On 'What helps most' it can, for one payer.
+also: Demo only: 'not enough decisions' on the bars and the donut cannot happen with the demo's numbers for all programs; with one small program and one payer it can. Workload is live: it counts the Dashboard's requests now.
 ---
 start s1 "Scroll to the cards"
 
 group gBars "Payer bars"
-  screen b1 "'Approved as asked, this quarter'\nBars, best first: Lakeshore 86%, Beacon PPO 81%, Harborview MA 77%, Summit Medicaid 74%, Evergreen 69%, Cardinal 63%"
+  screen b1 "'Approved as asked, this quarter'\nBars, best first: Lakeshore 86%, Beacon PPO 81%, Harborview MA 77%, Summit Medicaid 74%, Evergreen 69%, Cardinal 63%\nA picked program is added to the subtitle"
   decision b2 "Rate band?"
   process b3 "80 and above: green bar"
   process b4 "55 to 79: ochre bar"
   process b5 "Below 55: terracotta bar"
   screen b6 "Footnote '1,070 decisions this quarter. Green is 80 and above, ochre 55 to 79, terracotta below 55.'"
   decision b7 "A payer is chosen in the menu?"
-  process b8 "Two bars: that payer, then 'All payers' for comparison"
+  process b8 "Two bars: that payer, then 'All payers' for comparison\nThe payer's bar is the same number as the 'Approval rate' tile"
 endgroup
 
 group gEdit "Draft edits"
@@ -25,15 +25,16 @@ group gEdit "Draft edits"
   screen d5 "'Not enough decisions yet. Figures based on fewer than 20 decisions stay hidden.'"
 endgroup
 
-group gHelp "What helps most"
-  screen h1 "'Steps taken most often, and how often those requests were approved'"
-  screen h2 "Up to four rows, ranked 1 to 4\nStep name, 'Applied 389 times', '91% approved' in green"
-  process h3 "Top four this quarter: dated depression scores 91%, appeal partial unit approvals 88%, name the step-down provider 85%, file recertification 72 hours early 83%"
-  decision h4 "Any step applied 20 or more times for this payer?"
-  screen h5 "'Not enough decisions yet. Figures based on fewer than 20 decisions stay hidden.'"
+group gWork "Workload"
+  screen h1 "'Workload'\n'Requests on the Dashboard right now'\nLink 'Open the Dashboard'"
+  process h2 "Two big numbers and a meter\n'8 handled' and '32 still open' at the start\nHandled means the payer has decided, the same as 'Decided today' on the Dashboard"
+  process h3 "Follows the payer and program menus, not the period\nA line names the scope, then says how many open requests wait on you"
+  store h4 "Live: answer a payer in the Dashboard, or accept a denial in Denial Intelligence, and the numbers move by one"
+  click h5 "Click 'Open the Dashboard'"
+  goto h6 "Continues in: Dashboard › Arrive and read the page"
 endgroup
 
-process p1 "Hover and click do nothing on bars, donut slices, legend and list rows"
+process p1 "Hover and click do nothing on bars, donut slices, legend and meter"
 end e1 "Cards read"
 endx e2 "No drill-down: rows are not links"
 
@@ -48,7 +49,6 @@ b7 -->|No| e1
 d1 --> d2 --> d3 --> d4
 d4 -->|No| e1
 d4 -->|Yes| d5 --> e1
-h1 --> h2 --> h3 --> h4
-h4 -->|Yes| e1
-h4 -->|No| h5 --> e1
+h1 --> h2 --> h3 --> h4 --> e1
+h1 --> h5 --> h6
 s1 -.-> p1 --> e2

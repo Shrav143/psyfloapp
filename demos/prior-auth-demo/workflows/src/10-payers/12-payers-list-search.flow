@@ -1,17 +1,19 @@
 title: Payers › List › Search and pick a payer
 route: /payers/:id?tab=process
-intro: The 'Payers' card on the left: how the rows are grouped, what the dot means, how search narrows the list and what happens when a payer is picked. The tab that was open stays open.
+intro: The 'Payers' card: one compact row per payer with its plan type, programs, what it asks for and a mark when a change is waiting, how search narrows the list and what happens when a payer is picked. The tab that was open stays open. Approval rate and decision time are not on this page: Analytics has them.
 dir: TD
 ---
-start s1 "Look at the 'Payers' card\non the left of the page"
-screen list "Payers card\n'Search payers' box, then four groups, then a legend"
-process grp "Rows sit under four group headings\nOhio Medicaid, Commercial,\nMedicare Advantage, Behavioral carve-out\nA payer added later joins its group"
-process row "Each row shows the payer name,\nits plan type and a dot\nSelected row is pale green"
+start s1 "Look at the 'Payers' card\non the left of the page\n(above the payer on a narrow screen)"
+screen list "Payers card\n'Payers' and '3 with a change waiting'\n'Search payers' box, then one row per payer"
+process grp "Rows follow the group order\nOhio Medicaid, Commercial,\nMedicare Advantage, Behavioral carve-out\nA payer added later joins its group"
+process row "Each row has two lines on the left\nName, then 'Medicaid HMO · 4 programs'\nSelected row is pale green"
+process cue "On the right of the row\nWhat the payer asks for, read from its saved rules:\n'Initial + review', 'Initial only' or 'Review only'"
+process prog "Programs\nA built-in payer covers every program that has a document list\nA payer added with 'Add a payer' covers the programs chosen then\n'4 programs' when all four, else the names"
 decision dot "Does this payer have a change waiting?"
-process green "Green dot\nUp to date"
-process ochre "Ochre dot\nChange waiting"
-toast tnote "A proposal from Historian alone\ndoes not turn the dot ochre.\nOnly the 'Changes' tab badge counts it"
-screen leg "Legend at the foot of the card\n'up to date' and 'change waiting'"
+process green "Green dot, nothing else\nLabel for screen readers: 'No change waiting'"
+process ochre "Ochre dot with the words 'Change waiting'"
+toast tnote "A proposal from Historian alone\ndoes not mark the row.\nOnly the 'Changes' tab badge counts it"
+process nomet "No approval rate or decision time on the row\nThose figures live in Analytics"
 
 input i1 "Type in 'Search payers'"
 process filt "List narrows as you type\nMatches name, plan type or group,\nany capitals"
@@ -29,9 +31,9 @@ click same "Click the payer that is already selected"
 process nochg "Nothing changes on screen"
 end e1 "The chosen payer's page is showing"
 
-s1 --> list --> grp --> row --> dot
-dot -->|No| green --> leg
-dot -->|Yes| ochre --> leg
+s1 --> list --> grp --> row --> cue --> prog --> dot
+dot -->|No| green --> nomet
+dot -->|Yes| ochre --> nomet
 ochre -.-> tnote
 list --> i1 --> filt --> any
 any -->|No| empty --> clr --> clr2 --> list

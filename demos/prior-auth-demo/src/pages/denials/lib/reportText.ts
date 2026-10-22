@@ -1,4 +1,4 @@
-import { REPORT_HEADINGS as H, REPORT_TITLE, type ReportDoc } from "@/lib/pdf/report-doc";
+import { REPORT_FOOTER, REPORT_HEADINGS as H, REPORT_TITLE, type ReportDoc } from "@/lib/pdf/report-doc";
 
 const list = (items: string[]): string[] => [...items.map((c) => `- ${c}`), ""];
 
@@ -8,6 +8,7 @@ export function reportToText(d: ReportDoc): string {
   return [
     REPORT_TITLE.toUpperCase(),
     `${d.id}${d.workedExample ? " (worked example)" : ""} · ${d.facts[1][1]} · ${d.payerName}`,
+    REPORT_FOOTER,
     "",
     ...d.facts.map(([k, v]) => `${k}: ${v}`),
     `Our read: ${d.verdict.word}. ${d.verdict.line}`,

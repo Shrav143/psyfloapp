@@ -120,7 +120,7 @@ export const createPayerConfigSlice: StateCreator<AppState, [], [], PayerConfigS
     saveRule: (id, rule, lines, reason) => {
       const old = get().payerConfig[id]?.rules.find((r) => r.id === rule)?.lines ?? [];
       const on = shortDate(get().clock);
-      edited(id, (c) => ({ rules: c.rules.map((r) => (r.id === rule ? { ...r, lines, confirmed: on } : r)) }));
+      edited(id, (c) => ({ rules: c.rules.map((r) => (r.id === rule ? { ...r, lines, confirmed: on, source: `Edited in Psyflo by ${USER_NAME}` } : r)) }));
       logEdits(id, "Rules", reason, [{ what: RULE_TITLE[rule], before: old.join("; "), after: lines.join("; ") }]);
       told(id, "rules", "rule edited", `${USER_NAME} changed “${RULE_TITLE[rule]}”. New drafts use it at once. Click Update drafts to redraft open ones.`);
       get().toast({ title: `${RULE_TITLE[rule]} saved`, body: "New drafts use it at once. Click Update drafts to redraft open ones.", tone: "good" });
@@ -184,13 +184,12 @@ export const createPayerConfigSlice: StateCreator<AppState, [], [], PayerConfigS
       patchConfig(id, (c) => ({
         ...c,
         pending: null,
-        checkedOn: shortDate(clock),
         docs: pending.docAdds.reduce((d, a) => ({ ...d, [a.program]: d[a.program].some((x) => x.title === a.item.title) ? d[a.program] : [...d[a.program], a.item] }), c.docs),
         changes: [{ id: uid("ch"), date: shortDate(clock), title: `${pending.title}: acknowledged and applied`, text: n ? `${who} ${pending.agents.map((a) => AGENTS[a].name).join(" and ")} updated ${n} ${n === 1 ? "draft" : "drafts"}, and ${n === 1 ? "it" : "each"} returned to Case Manager for a new signature.` : `${who} No open drafts needed an update. New drafts use the change.` }, ...c.changes],
       }));
       if (pending.docAdds.length) logEdits(id, "Documents", `After ${lowerFirst(pending.title)}`, pending.docAdds.map((a) => ({ what: `Added to the ${PROGRAM_LABEL[a.program]} list`, before: "", after: `${a.item.title}. ${a.item.requirement}` })));
       if (n) get().notify({ agent: pending.agents[0], title: "Drafts updated", body: `${n} ${n === 1 ? "draft was" : "drafts were"} redrafted after ${name}'s change. Each needs a new signature in Case Manager.`, to: paths.manager(), tone: "mid" });
-      get().toast(n ? { title: `${n} ${n === 1 ? "draft" : "drafts"} updated`, body: `${name} is up to date. Each draft returned to Case Manager for a new signature.`, tone: "good" } : { title: "No open drafts to update", body: `${name} is up to date. New drafts use the change from now on.`, tone: "neutral" });
+      get().toast(n ? { title: `${n} ${n === 1 ? "draft" : "drafts"} updated`, body: `The change is applied for ${name}. Each draft returned to Case Manager for a new signature.`, tone: "good" } : { title: "No open drafts to update", body: `The change is applied for ${name}. New drafts use it from now on.`, tone: "neutral" });
     },
 
     updateOpenDrafts: (id) => {

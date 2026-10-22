@@ -1,13 +1,13 @@
 title: Payers › Changes › Read what changed
 route: /payers/cardinal?tab=changes
-intro: The Changes tab has three parts from top to bottom: the state of the payer's rules (a waiting change or 'up to date'), any proposals from Historian, and a dated history called 'What changed'. Only the waiting change and the proposals need a person.
+intro: The Changes tab has three parts from top to bottom: a waiting change (or one quiet line when nothing waits), any proposals from Historian, and a dated history called 'What changed'. Only the waiting change and the proposals need a person. The demo's changes are sample data and nothing here says a payer was checked.
 dir: TD
 ---
 start s1 "Click the 'Changes' tab\n(the badge shows how many wait)"
 screen tab "Changes tab"
 decision dp "Is a payer change waiting?"
 screen bw "Ochre banner with a megaphone\nTitle: 'Criteria changed, version 2026.3'\nWhat changed in one sentence\nWho can redraft which of this payer's unsent drafts,\nthen two buttons"
-toast bg "Green banner\n'This payer's rules are up to date'\nLast checked 10/12. Sentinel keeps watching Beacon's policy and portal."
+toast bg "One quiet line, no banner\n'Nothing is waiting for you. Changes here are demo data,\nnot read from Beacon's policy.'"
 decision dq "Any proposals from Historian?"
 screen pc "One card per proposal\nHistorian chip, 'Proposal: ...', text,\n'Under Follow up: If ... leads to Phone step'\n'Accept proposal', 'Dismiss'"
 process pn "Proposals do not turn the list dot or the sidebar badge;\nonly the tab badge counts them"

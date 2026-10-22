@@ -15,7 +15,7 @@ interface Props {
   finishLabel?: string;
 }
 
-/** A short walk-through for a system that needs a quick look: say what happened, renew the sign-in, test it. Mounted only while open. */
+/** A short walk-through for a system that needs attention: say what happened, renew the sign-in, test it. Mounted only while open. */
 export function FixModal({ system, onClose, onFinish, finishLabel = "Finish and reconnect" }: Props) {
   const [step, setStep] = useState(0);
   const [approver, setApprover] = useState(system.contact);

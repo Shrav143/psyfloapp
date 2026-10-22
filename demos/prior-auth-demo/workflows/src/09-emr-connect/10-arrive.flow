@@ -1,63 +1,58 @@
 title: EMR Connect › Page › Arrive and read the page
 route: /emr
-intro: What a person sees on arrival: two header buttons, four tiles, the Connected systems list, Recent activity and two side panels. Each region hands off to its own diagram.
+intro: What a person sees on arrival: the header with one button and one line saying the connection is simulated, a single 'Action required' line when something needs a person, a 'Connection health' card (four figures and one row per system) and a folded 'Advanced' section. Each region hands off to its own diagram.
 dir: TD
-also: Demo data. Three systems start on the list: two clinical record sites (Connected) and a Billing system (Needs a quick look).
+also: Demo data. Three systems start on the list: two clinical record sites (Connected) and a Billing system (Needs attention). Nothing is a real connection: 'Simulated connection' is said once, under the description.
 ---
 start s1 "Click 'EMR Connect' in the sidebar\nUnder Connections"
-screen p1 "EMR Connect\nCharts arrive on their own. Nothing is written back until a person approves it."
+screen p1 "EMR Connect\nCharts arrive on their own. Nothing is written back until a person approves it.\n'Simulated connection: this demo does not contact a real record system.'"
 
-group gHead "Header buttons"
-  click hb1 "Click 'Manage mapping'"
-  decision hq "Any system on the list?"
-  overlay ho "Manage drawer opens\nfor the outpatient site, or the first system"
-  endx hx "Button is dimmed\nNothing to open"
+group gHead "Header button"
   click hb2 "Click 'Connect a system'\nA paused Reader shows a toast instead"
 endgroup
-goto hg1 "Continues in: EMR Connect › Manage › Open the Manage drawer"
 goto hg2 "Continues in: EMR Connect › Connect a system › Choose the system and contact"
 
-group gTiles "Four tiles (they are not buttons)"
-  process t1 "Last sync\nTime since the newest sync. Green, amber or red"
-  process t2 "Charts matched today\n23 'to open cases'"
-  process t3 "Files pulled\n142 'this week'"
-  process t4 "Need a mapping\n2 'fields the agents could not place'"
+group gAct "Action required"
+  screen n1 "One banner line, only when something needs a person\n'Action required: Billing system needs attention. Also: 2 fields need a mapping, so New case leaves them blank.'\nOne button for the first item: 'Fix'"
+  process n2 "Nothing needs a person: no banner"
 endgroup
-goto tg "Continues in: EMR Connect › Page › What each tile shows"
+goto ng "Continues in: EMR Connect › Page › The Action required line"
 
-group gSys "Connected systems"
-  screen c1 "Connected systems\nRead access for charts, insurance details and medications"
-  process c2 "One row per system: name, what it holds, last sync, status pill, buttons"
+group gTiles "Four figures (not buttons)"
+  process t1 "Last sync\nTime since the newest sync, and 'all systems answering'"
+  process t2 "Charts matched today\n23"
+  process t3 "Files pulled this week\n142"
+  process t4 "Sync failures\n2, from the Billing system"
+endgroup
+goto tg "Continues in: EMR Connect › Page › What the health figures show"
+
+group gSys "Connection health"
+  screen c1 "Connection health\n'2 of 3 systems connected. Read access for charts, insurance details and medications.'"
+  process c2 "One row per system: name, status pill, what it reads, last sync, sync failures, buttons\nThen a line: 'Read only' or 'Read and write back', with the Write back switch"
   click c3 "Click 'Sync now' in the card header"
   click c4 "Click 'Sync now', 'Fix', 'Reconnect' or 'Manage' on a row\nA row that is not Connected also says that New case cannot pull a chart from it"
+  click c6 "Click the 'Write back' switch on a row"
   toast c5 "'Connect your record system to let charts arrive on their own.'\nEmpty list. Not reachable in the demo: a system can be disconnected, never removed"
 endgroup
 goto cg0 "Continues in: EMR Connect › Sync › When an agent is paused or asks first"
 goto cg1 "Continues in: EMR Connect › Sync › Sync now"
 goto cg2 "Continues in: EMR Connect › Connected systems › What each status means"
 goto cg3 "Continues in: EMR Connect › Problems › Every error state and what it needs"
+goto cg4 "Continues in: EMR Connect › Connected systems › Read only or read and write back"
+goto cg5 "Continues in: EMR Connect › Manage › Open the Manage drawer"
 
-group gAct "Recent activity"
-  screen a1 "Recent activity\nEvery read and write is logged. Newest six lines"
-  click a2 "Click 'See all 8'\nOnly shown when there are more than six lines"
+group gAdv "Advanced (folded)"
+  screen a1 "Advanced\n'10 field mappings, 2 waiting, and the log of every read and write (8 lines).'\nPill '2 to map'"
+  click a2 "Click 'Advanced', or Tab to it and press Enter or Space"
 endgroup
-goto ag "Continues in: EMR Connect › Recent activity › Read the activity log"
-
-group gSide "Right-hand panels"
-  screen r1 "What the agents can do here\nRead: assessments, notes, labs, medications, insurance card"
-  process r2 "Write back: only the approval number and dates, and only after a person approves\nA system's write-back switch in Manage decides whether the Dashboard offers it"
-  screen r3 "Needs a mapping\n'A chart pulled in New case leaves these fields blank until you map them.'\nPill with the count, then one row per field with a 'Map' button"
-  click r4 "Click 'Map' on a row"
-endgroup
-goto rg "Continues in: EMR Connect › Needs a mapping › Map a field"
+goto ag "Continues in: EMR Connect › Advanced › Field mappings and the activity log"
 
 s1 --> p1
-p1 --> hb1 & hb2
-hb1 --> hq
-hq -->|Yes| ho
-hq -->|No| hx
-ho --> hg1
+p1 --> hb2
 hb2 --> hg2
+p1 --> n1
+p1 -.-> n2
+n1 --> ng
 p1 --> t1 & t2 & t3 & t4
 t1 --> tg
 t2 --> tg
@@ -65,16 +60,14 @@ t3 --> tg
 t4 --> tg
 p1 --> c1
 c1 --> c2
-c2 --> c3 & c4
+c2 --> c3 & c4 & c6
 c1 -.-> c5
 c3 --> cg1
 c3 -.-> cg0
 c4 -.-> cg0
 c4 --> cg2
 c4 -.-> cg3
+c4 --> cg5
+c6 --> cg4
 p1 --> a1
 a1 --> a2 --> ag
-p1 --> r1
-r1 --> r2
-p1 --> r3
-r3 --> r4 --> rg

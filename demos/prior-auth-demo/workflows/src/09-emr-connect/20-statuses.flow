@@ -2,7 +2,7 @@ title: EMR Connect › Connected systems › What each status means
 route: /emr
 intro: Every system on the list is in one of three states. Each state shows different buttons and text, and a system moves between them by the clicks on the arrows.
 dir: TD
-also: In the demo only the seeded Billing system starts in 'Needs a quick look'. Nothing in the demo moves a Connected system into it. A system that is not Connected also says that New case cannot pull a chart from it.
+also: In the demo only the seeded Billing system starts in 'Needs attention'. Nothing in the demo moves a Connected system into it. A system that is not Connected also says that New case cannot pull a chart from it.
 ---
 start s0 "Open EMR Connect\nThe two clinical record sites start Connected, the Billing system starts amber"
 click n1 "Click 'Connect a system', pass the test, click 'Connect {name}'"
@@ -10,24 +10,24 @@ ext n2 "Production: the read-only sign-in expires or the EMR changes its screens
 
 group gC "Connected"
   store sc "Connected\nGreen pill"
-  process c1 "Row: '6 min ago' or 'Syncing'\nButtons: Sync now (dimmed while any sync runs), Manage\nNew case can pull a chart from it"
-  process c2 "Synced by 'Sync now' in the card header\nCounts in the Last sync tile"
+  process c1 "Row: 'Last sync 6 min ago' or 'Syncing', '0 sync failures', what it reads\nButtons: Sync now (dimmed while any sync runs), Manage\nNew case can pull a chart from it"
+  process c2 "Synced by 'Sync now' in the card header\nCounts in the Last sync figure"
 endgroup
 
-group gA "Needs a quick look"
-  store sa "Needs a quick look\nAmber pill"
-  process a1 "Row: the issue, 'First step: renew the sign-in with Fix.' and 'New case cannot pull a chart from it until it is connected.'\nButtons: Fix, Manage"
-  process a2 "Skipped by 'Sync now'\nStill counts in the Last sync tile"
+group gA "Needs attention"
+  store sa "Needs attention\nAmber pill"
+  process a1 "Row: the issue, 'First step: renew the sign-in with Fix.' and 'New case cannot pull a chart from it until it is connected.'\nShows its missed syncs, for example '2 sync failures'\nButtons: Fix, Manage\nThe 'Action required' line names it"
+  process a2 "Skipped by 'Sync now'\nStill counts in the Last sync figure"
 endgroup
 
 group gD "Disconnected"
   store sd "Disconnected\nRed pill"
-  process d1 "Row: 'Not syncing', 'Charts from this system are not arriving.' and 'New case cannot pull a chart from it until it is connected.'\nButtons: Reconnect, Manage"
-  process d2 "Skipped by 'Sync now'\nIgnored by the Last sync tile\nThe Manage drawer ends with 'Reconnect'\nIf it was disconnected while it needed a look, the row adds 'Reconnect starts with a fix.'"
+  process d1 "Row: 'Not syncing', 'Sync paused', 'Charts from this system are not arriving.' and 'New case cannot pull a chart from it until it is connected.'\nButtons: Reconnect, Manage\nThe 'Action required' line names it"
+  process d2 "Skipped by 'Sync now'\nIgnored by the Last sync figure\nThe Manage drawer ends with 'Reconnect'\nIf it was disconnected while it needed attention, the row adds 'Reconnect starts with a fix.'"
 endgroup
 
 goto g1 "Continues in: EMR Connect › Connect a system › Choose the system and contact"
-goto g2 "Continues in: EMR Connect › Problems › Fix a system that needs a quick look"
+goto g2 "Continues in: EMR Connect › Problems › Fix a system that needs attention"
 goto g3 "Continues in: EMR Connect › Manage › Disconnect and reconnect"
 
 s0 --> sc & sa

@@ -7,6 +7,11 @@ import { leftLabel } from "./format";
 
 export type Verdict = "Worth challenging" | "Borderline" | "Probably accept";
 export type OptionId = "p2p" | "appeal" | "accept";
+/** Which rule chose the preferred route, so the recommendation can say why. */
+export type RecommendedBecause = "low-chance" | "appeal-clock" | "window-closed" | "late-notice" | "call-window";
+/** The chance (percent) from which a denial is worth challenging, and below which accepting may be the better use of time. */
+export const CHALLENGE_FROM = 50;
+export const ACCEPT_BELOW = 35;
 export interface Chance { value: number; low: number; high: number }
 export interface Finding extends FindingText { id: string }
 export interface DenialOption {
@@ -33,6 +38,7 @@ export interface DenialAnalysis {
   dims: DimText[];
   options: DenialOption[];
   recommended: OptionId;
+  recommendedBecause: RecommendedBecause;
   regained: string;
   similar: number;
   benchmark: boolean;
@@ -86,7 +92,7 @@ function contextOf(r: PsyRequest, m: DenialMeta): Record<string, string> {
 
 const chanceOf = (value: number): Chance => ({ value, low: Math.max(0, value - 9), high: Math.min(99, value + 8) });
 
-const verdictOf = (c: number): Verdict => (c >= 50 ? "Worth challenging" : c >= 35 ? "Borderline" : "Probably accept");
+const verdictOf = (c: number): Verdict => (c >= CHALLENGE_FROM ? "Worth challenging" : c >= ACCEPT_BELOW ? "Borderline" : "Probably accept");
 const VERDICT_LINE: Record<Verdict, string> = {
   "Worth challenging": "The chart supports the request, and the reason given does not match it.",
   Borderline: "Part of the chart supports the request. A call is worth the time, but expect pushback.",
@@ -111,7 +117,8 @@ export function buildAnalysis(r: PsyRequest, m: DenialMeta, clock: number): Deni
   const regained = fill(text.regained, ctx);
   const sources = text.findings.map((f) => fill(f.source, ctx));
   const windowClosed = left !== undefined && left <= 0 && !toFile;
-  const recommended: OptionId = verdict === "Probably accept" ? "accept" : toFile || windowClosed || m.type === "Late notice" ? "appeal" : "p2p";
+  const recommendedBecause: RecommendedBecause = verdict === "Probably accept" ? "low-chance" : toFile ? "appeal-clock" : windowClosed ? "window-closed" : m.type === "Late notice" ? "late-notice" : "call-window";
+  const recommended: OptionId = recommendedBecause === "low-chance" ? "accept" : recommendedBecause === "call-window" ? "p2p" : "appeal";
   const accept = m.type === "Partial approval" ? `Accept ${ctx.approved} days and plan the step-down` : "Accept the decision and plan the next step";
   return {
     verdict,
@@ -134,6 +141,7 @@ export function buildAnalysis(r: PsyRequest, m: DenialMeta, clock: number): Deni
       { id: "accept", title: accept, summary: "Fastest. Nothing regained.", time: "Fastest, nothing to prepare", gain: "Nothing regained", needs: ["A reason for the record", "Analytics logs the denial as accepted", "Case Manager adds a step-down plan"] },
     ],
     recommended,
+    recommendedBecause,
     regained,
     similar: m.similar,
     benchmark: m.similar < 60,

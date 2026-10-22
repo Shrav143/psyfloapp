@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FileClock, CircleCheck, Info, Plus, RefreshCw, SearchX, TriangleAlert } from "lucide-react";
-import { Banner, Button, Card, CardHeader, Dropdown, EmptyState, Page, PageHeader, SearchInput, Stat } from "@/components/ui";
+import { FileClock, CircleCheck, Plus, RefreshCw, SearchX, TriangleAlert } from "lucide-react";
+import { Button, Card, CardHeader, Dropdown, EmptyState, Page, PageHeader, SearchInput, Stat } from "@/components/ui";
 import { sortPatients, verdictOf, VERDICT_LABEL } from "@/data/eligibility";
 import { PAYERS } from "@/data/seed";
 import { PROGRAM_LABEL, PROGRAMS, type PayerId, type Program } from "@/data/types";
@@ -9,6 +9,7 @@ import { paths } from "@/routes";
 import { useStore } from "@/store";
 import { EbTable } from "./EbTable";
 import { patientLabel } from "./chips";
+import { InfoTip } from "./InfoTip";
 
 const PAGE = 12;
 type VerdictFilter = "all" | "cleared" | "auth_first" | "fix" | "recheck";
@@ -53,8 +54,15 @@ export default function EligibilityListPage() {
   return (
     <Page>
       <PageHeader
-        title={`${counts.cleared} of ${patients.length} patients are cleared to bill.`}
-        sub="Coverage and benefits are checked live, so you know the clinic will be paid before the first day."
+        title={
+          <>
+            {`${counts.cleared} of ${patients.length} patients are cleared to bill.`}{" "}
+            <InfoTip label="Why we check twice">
+              <b>Why we check twice.</b> Eligibility says the patient is covered. Benefits say the service is payable. For Medicaid programs the second one decides whether the clinic is reimbursed, even when the copay is $0.
+            </InfoTip>
+          </>
+        }
+        sub="Coverage and benefits are checked before the first day, so you know whether the clinic will be paid. Checks in this demo are simulated."
         actions={
           <Button variant="primary" icon={Plus} onClick={() => nav(paths.eligibilityVerify())}>
             Verify a patient
@@ -67,9 +75,6 @@ export default function EligibilityListPage() {
         <Stat tone="risk" icon={TriangleAlert} value={counts.fix} label="Fix before billing" sub="a coverage or plan problem was found" onClick={tile("fix")} selected={verdict === "fix"} />
         <Stat tone="neutral" icon={RefreshCw} value={counts.recheck} label="Re-check due" sub="this week, done automatically" onClick={tile("recheck")} selected={verdict === "recheck"} />
       </div>
-      <Banner icon={Info}>
-        <b>Why we check twice.</b> Eligibility says the patient is covered. Benefits say the service is payable. For Medicaid programs the second one decides whether the clinic is reimbursed, even when the copay is $0.
-      </Banner>
       <div className="flex flex-wrap items-center gap-3">
         <SearchInput value={q} onChange={setQ} placeholder="Search by case ID or initials" className="w-[300px]" />
         <Dropdown<PayerId | "all"> value={payer} defaultValue="all" onChange={setPayer} ariaLabel="Payer" options={[{ value: "all", label: "All payers" }, ...PAYERS.map((p) => ({ value: p.id, label: p.name }))]} />
@@ -93,8 +98,8 @@ export default function EligibilityListPage() {
           </Button>
         ) : null}
       </div>
-      <Card className="overflow-hidden">
-        <CardHeader title="Patients" subtitle="Checked live against the state and the plan, then re-checked on a schedule" right={<span className="text-sm text-muted">{`Showing ${shown.length} of ${patients.length}`}</span>} />
+      <Card className="relative overflow-hidden">
+        <CardHeader title="Patients" subtitle="Simulated checks against the state and the plan, re-checked on a schedule" right={<span className="text-sm text-muted">{`Showing ${shown.length} of ${patients.length}`}</span>} />
         {rows.length ? (
           <>
             <EbTable rows={shown} />

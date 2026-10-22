@@ -1,11 +1,11 @@
 title: Analytics › Denial outcomes and dismissed recommendations
 route: /analytics
-intro: What other screens write back to Analytics. Two figures sit under the denial table and move when a denial is accepted or an appeal is ruled on. A card of dismissal reasons appears once a recommendation has been dismissed. Each event moves the numbers only a little.
+intro: What other screens write back to Analytics. Two figures sit under the denial table (in its folded section) and move when a denial is accepted or an appeal is ruled on. The 'Denial rate' tile shows the accepted count too. A list of dismissal reasons appears once a recommendation has been dismissed, inside the folded section 'How FLO's advice and drafts perform'. Each event moves the numbers only a little.
 dir: TD
-also: Demo only: the starting figures (96 rulings, 56% overturned, 17 accepted denials) are invented. Everything recorded in the demo counts in 'This quarter' and 'Last 12 months', never in 'Last quarter', and follows the payer menu.
+also: Demo only: the starting figures (96 rulings, 56% overturned, 17 accepted denials) are invented. Everything recorded in the demo counts in 'This quarter' and 'Last 12 months', never in 'Last quarter', and follows the payer and program menus. Accepting a denial also moves Workload (one more handled, one fewer open).
 ---
-start s1 "Scroll to the foot of 'Common denial reasons by payer'"
-screen sc "Two figures under the table\n'Appeals overturned'  56%, '54 of 96 rulings this quarter'\n'Denials accepted'  17, 'denials this quarter'"
+start s1 "Look at the 'Denial rate' tile, then open 'Common denial reasons by payer' and scroll to its foot"
+screen sc "Tile 'Denial rate': '311 denials · 17 accepted'\nTwo figures under the table\n'Appeals overturned'  56%, '54 of 96 rulings this quarter'\n'Denials accepted'  17, 'denials this quarter'"
 
 group gApp "Appeals overturned"
   ext x1 "The payer rules on an appeal\n(demo: the person logs the ruling)"
@@ -19,20 +19,20 @@ endgroup
 group gOff "Denials accepted"
   click k1 "In Denial Intelligence the person accepts a denial"
   store st2 "Denial Intelligence records the accepted denial\nWith its payer"
-  process p2 "The count goes up by one\nFor example 17 becomes 18, and the payer menu counts it for that payer"
-  screen o3 "'18', 'denials this quarter'"
+  process p2 "The count goes up by one\nFor example 17 becomes 18, and the payer and program menus count it for that payer and program"
+  screen o3 "'18', 'denials this quarter' under the table\nThe tile reads '311 denials · 18 accepted'\nWorkload: '9 handled', '31 still open'"
 endgroup
 
 group gDis "Why recommendations were dismissed"
   click k2 "On a case, the person dismisses a recommendation and gives a reason"
   store st3 "Authorizations records the reason\nWith the request, so Analytics can find its payer"
   decision q2 "Any dismissal in this view?"
-  screen d1 "Card 'Why recommendations were dismissed'\n'The reason given each time someone dismissed a recommendation, this quarter'\nOne row per reason, biggest first, '2 times' or '1 time'"
-  screen d2 "No card at all\nNothing was dismissed, or the period is 'Last quarter', or the payer has none"
+  screen d1 "In the folded section 'How FLO's advice and drafts perform'\n'Why recommendations were dismissed'\n'The reason given each time someone dismissed a recommendation, this quarter.'\nOne row per reason, biggest first, '2 times' or '1 time'\nThe section's summary adds '2 recommendations dismissed.'"
+  screen d2 "No list at all\nNothing was dismissed, or the period is 'Last quarter', or the payer or program has none"
 endgroup
 
-process m1 "The monthly report and its printout carry the same figures\n'Denial outcomes' always, 'Why recommendations were dismissed' when the card shows"
-process m2 "Pick another period or payer\nThe figures are worked out again from the recorded events"
+process m1 "The monthly report and its printout carry the same figures\n'Denial outcomes' always, 'Why recommendations were dismissed' when the list shows"
+process m2 "Pick another period, payer or program\nThe figures are worked out again from the recorded events"
 goto g1 "Continues in: Denial Intelligence › Written appeal › Record the payer's decision"
 goto g2 "Continues in: Denial Intelligence › Accept the denial"
 goto g3 "Continues in: Authorizations › Case page › Recommended actions › Dismiss and bring back"

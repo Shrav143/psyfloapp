@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link2, PenLine } from "lucide-react";
 import { Button, Card, CardBody, CardHeader, TextArea } from "@/components/ui";
 import type { NarrativeSection } from "@/data/cases";
 import { slotOfSource } from "./documents";
 
 /** The medical-necessity summary the payer will read. Editable; every source chip opens the chart page it came from. */
-export function NarrativeCard({ sections, payer, onSave, onSource }: { sections: NarrativeSection[]; payer: string; onSave: (next: NarrativeSection[]) => void; onSource: (label: string) => void }) {
+export function NarrativeCard({ sections, payer, editSignal, onSave, onSource }: { sections: NarrativeSection[]; payer: string; /** Counts up when "What is missing" asks for the summary to be edited. */ editSignal: number; onSave: (next: NarrativeSection[]) => void; onSource: (label: string) => void }) {
   const [editing, setEditing] = useState(false);
   const [text, setText] = useState<Record<string, string>>({});
 
@@ -13,6 +13,12 @@ export function NarrativeCard({ sections, payer, onSave, onSource }: { sections:
     setText(Object.fromEntries(sections.map((s) => [s.id, s.text])));
     setEditing(true);
   };
+  useEffect(() => {
+    if (editSignal === 0) return;
+    begin();
+    document.getElementById("summary-card")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    // Only a new request from "What is missing" opens the editor.
+  }, [editSignal]);
   /* A section that comes from the case page (Context added) is shown here but never part of the edit. */
   const save = () => {
     onSave(sections.filter((s) => !s.fixed).map((s) => ({ ...s, text: text[s.id] ?? s.text })));
@@ -20,7 +26,7 @@ export function NarrativeCard({ sections, payer, onSave, onSource }: { sections:
   };
 
   return (
-    <Card>
+    <Card id="summary-card">
       <CardHeader
         title="Medical-necessity summary"
         subtitle={`What ${payer} will read · every statement links to the chart`}

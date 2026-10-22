@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, FileText } from "lucide-react";
-import { Button, Card, CardBody, CardHeader, Chance, Chip, Crumbs, KeyValue, Meter, Page, PageHeader, Pill, Timeline } from "@/components/ui";
+import { Button, Card, CardBody, CardHeader, Chance, Chip, Crumbs, Disclosure, KeyValue, Meter, Page, PageHeader, Pill, Timeline } from "@/components/ui";
 import { LEDGER_STATUS_LABEL } from "@/data/manager";
 import { reviewDate, reviewStamp } from "@/data/managerReviews";
 import { similarCases } from "@/data/cases";
@@ -11,7 +11,7 @@ import { band } from "@/lib/format";
 import { cn } from "@/lib/cn";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
-import { REVIEW_STATUS_LABEL, REVIEW_STATUS_TONE, STATUS_TONE, clockText, reviewLink, usedShare } from "./helpers";
+import { REVIEW_STATUS_LABEL, REVIEW_STATUS_TONE, STATUS_TONE, clockText, reviewLink, runsOutBeforeReview, usedShare, usedText } from "./helpers";
 import { authWindow, caseHistory, nextStep, reviewsOf } from "./ledgerCase";
 import type { LedgerRow } from "./ledgerRows";
 
@@ -29,6 +29,8 @@ export default function LedgerCasePage({ row }: { row: LedgerRow }) {
   const clk = clockText(row, clock);
   const b = band(row.chance);
   const { due, signed, next } = mine;
+  const runsOut = runsOutBeforeReview(row, all, clock);
+  const latest = [...history].filter((e) => e.done).sort((a, b) => b.at - a.at)[0];
 
   return (
     <Page>
@@ -51,7 +53,7 @@ export default function LedgerCasePage({ row }: { row: LedgerRow }) {
         }
       />
 
-      <div className="grid grid-cols-[minmax(0,1fr)_380px] items-start gap-5">
+      <div className="grid grid-cols-1 items-start gap-5 min-[1180px]:grid-cols-[minmax(0,1fr)_380px]">
         <Card>
           <CardHeader title="Case summary" subtitle="From the Case Manager ledger" right={<Pill tone="neutral" dot>Privacy mode on</Pill>} />
           <CardBody>
@@ -68,7 +70,7 @@ export default function LedgerCasePage({ row }: { row: LedgerRow }) {
                   ) : (
                     <div className="flex items-center gap-3">
                       <Meter value={share * 100} color={share >= 0.75 ? "#B5553A" : "#1D4F43"} height={6} className="w-[120px]" />
-                      <span>{row.used} of {row.total} {row.unit} · {(row.total ?? 0) - (row.used ?? 0)} left</span>
+                      <span>{usedText(row)}{runsOut ? <span className="ml-2 text-[13px] font-semibold text-risk-ink">Runs out before review</span> : null}</span>
                     </div>
                   ),
                 ],
@@ -85,7 +87,6 @@ export default function LedgerCasePage({ row }: { row: LedgerRow }) {
                 ],
                 ...(next ? ([["Next review", reviewStamp(next.dueAt)]] as [string, string][]) : []),
                 ["Next on the clock", <span key="clk" className={cn(clk.urgent && "text-risk-ink")}>{clk.text}</span>],
-                ["Status", <Pill key="st" tone={STATUS_TONE[row.status]} dot>{LEDGER_STATUS_LABEL[row.status]}</Pill>],
                 [
                   "Approval chance",
                   <div key="ch" className="flex flex-col gap-1.5">
@@ -108,12 +109,11 @@ export default function LedgerCasePage({ row }: { row: LedgerRow }) {
               <p>{nextStep(row, mine)}</p>
             </CardBody>
           </Card>
-          <Card>
-            <CardHeader title="History" />
+          <Disclosure title="History" summary={latest ? `${history.length} ${history.length === 1 ? "entry" : "entries"}. Latest: ${latest.text}` : `${history.length} ${history.length === 1 ? "entry" : "entries"}`}>
             <CardBody>
               <Timeline events={history} />
             </CardBody>
-          </Card>
+          </Disclosure>
         </div>
       </div>
     </Page>

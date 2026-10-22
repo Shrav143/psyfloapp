@@ -2,7 +2,7 @@ import { ChevronDown } from "lucide-react";
 import { Button, Card } from "@/components/ui";
 import { BAND_META, type Band, type QueueItem } from "@/data/queue";
 import { cn } from "@/lib/cn";
-import { RequestTile } from "./RequestTile";
+import { RequestTile, type RowInfo } from "./RequestTile";
 import type { Stats } from "./queueLogic";
 
 const SHOWN = 5;
@@ -14,14 +14,14 @@ interface Props {
   collapsed: boolean;
   showAll: boolean;
   clock: number;
-  chances: Record<string, { chance: number; lift: string; ready: boolean }>;
+  rows: Record<string, RowInfo>;
   onToggle: () => void;
   onShowAll: (on: boolean) => void;
 }
 
 /** A priority band: click the header to collapse it. Shows the five top requests, with a link for the rest.
     A band with no request left says so instead of vanishing. */
-export function BandCard({ band, items, stats, collapsed, showAll, clock, chances, onToggle, onShowAll }: Props) {
+export function BandCard({ band, items, stats, collapsed, showAll, clock, rows, onToggle, onShowAll }: Props) {
   const meta = BAND_META[band];
   const visible = showAll ? items : items.slice(0, SHOWN);
   return (
@@ -43,7 +43,7 @@ export function BandCard({ band, items, stats, collapsed, showAll, clock, chance
             </div>
           ) : null}
           {visible.map((i) => (
-            <RequestTile key={i.id} item={i} clock={clock} chance={chances[i.id].chance} lift={chances[i.id].lift} ready={chances[i.id].ready} />
+            <RequestTile key={i.id} item={i} clock={clock} info={rows[i.id]} />
           ))}
           {items.length > SHOWN ? (
             <div className="flex justify-center">

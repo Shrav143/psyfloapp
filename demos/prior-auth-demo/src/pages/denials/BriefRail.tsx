@@ -1,5 +1,5 @@
 import { ClipboardCheck, Copy, Printer } from "lucide-react";
-import { Button, Card, CardBody, CardHeader, Checkbox, KeyValue, Label, Pill } from "@/components/ui";
+import { Button, Card, CardBody, CardHeader, Checkbox, Disclosure, KeyValue, Label, Pill } from "@/components/ui";
 import { band } from "@/lib/format";
 import type { BriefData } from "./lib/brief";
 import type { DenialView } from "./lib/useDenialView";
@@ -44,17 +44,18 @@ export function ChanceCard({ view }: { view: DenialView }) {
   );
 }
 
+/** Folded: the documents to have open during the call. The closed line counts the ones already ticked. */
 export function OpenDocsCard({ view, brief }: { view: DenialView; brief: BriefData }) {
   const toggle = useStore((s) => s.toggleBriefDoc);
+  const ticked = brief.docs.filter((d) => view.work.ticked.includes(d)).length;
   return (
-    <Card>
-      <CardHeader title="Have these open" />
+    <Disclosure title="Have these open" summary={`${ticked} of ${brief.docs.length} ticked`} keepMounted className="psy-print-open">
       {brief.docs.map((d) => (
         <div key={d} className="border-b border-line px-6 py-2.5 last:border-b-0">
           <Checkbox checked={view.work.ticked.includes(d)} onChange={() => toggle(view.req.id, d)} label={d} />
         </div>
       ))}
-    </Card>
+    </Disclosure>
   );
 }
 

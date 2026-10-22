@@ -7,20 +7,22 @@ import { payerById } from "@/data/seed";
 import { band } from "@/lib/format";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
-import { UnmetLine } from "./ChancePanel";
 import { ChecksCard } from "./ChecksCard";
-import { integrityChecks } from "./checks";
+import { integrityChecks, type FixKind } from "./checks";
 import { DocPreviewDrawer } from "./DocPreviewDrawer";
 import { slotOfSource } from "./documents";
+import { MissingCard } from "./MissingCard";
+import { missingItems } from "./missing";
 import { NarrativeCard } from "./NarrativeCard";
 import { narrativeOf } from "./narrative";
 import { PayerChangeNote } from "./PayerChangeNote";
 import { usePayerContext } from "./payerContext";
 import { SignCard } from "./SignCard";
 import { StepFooter } from "./StepFooter";
+import { stepPatch } from "./steps";
 import { useRecAdds } from "./useRecAdds";
 import { useUnmetSync } from "./useUnmetSync";
-import { ValidationSummary } from "./ValidationSummary";
+import { ValidationSummary, validationRows } from "./ValidationSummary";
 
 const RECHECK_MS = 1200;
 const NO_CONTEXT: string[] = [];
@@ -34,6 +36,8 @@ export function ReviewStep({ draft }: { draft: CaseDraft }) {
   const toast = useStore((s) => s.toast);
   const [rechecking, setRechecking] = useState(false);
   const [source, setSource] = useState<DocSlotId | null>(null);
+  const [editSignal, setEditSignal] = useState(0);
+  const [backSignal, setBackSignal] = useState(0);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
   useEffect(() => () => clearTimeout(timer.current), []);
 
@@ -46,6 +50,8 @@ export function ReviewStep({ draft }: { draft: CaseDraft }) {
   /* The same summary the case page's Draft tab reads: the edited text or Scribe's, the actions applied there, and the context added there. */
   const sections = useMemo(() => narrativeOf(draft, context, adds), [draft, context, adds]);
   const checks = integrityChecks(draft, sections, rechecking, { clock, ctx });
+  const rows = useMemo(() => validationRows(draft, clock, ctx), [draft, clock, ctx]);
+  const missing = useMemo(() => missingItems(rows, checks), [rows, checks]);
   const chance = currentChance(draft);
   const range = chanceRange(chance, true);
   const b = band(chance);
@@ -61,8 +67,14 @@ export function ReviewStep({ draft }: { draft: CaseDraft }) {
     }, RECHECK_MS);
   };
 
-  const onSign = () => {
-    const id = sign(draft.id);
+  const fix = (kind: FixKind) => {
+    if (kind === "records") patch(draft.id, stepPatch(1));
+    else if (kind === "edit") setEditSignal((n) => n + 1);
+    else setBackSignal((n) => n + 1);
+  };
+
+  const onSign = (signedBy: string) => {
+    const id = sign(draft.id, signedBy);
     if (id) nav(paths.dashboard({ request: id }));
     else toast({ title: "Could not sign yet", body: "All agents must finish before the request can be signed.", tone: "mid" });
   };
@@ -72,8 +84,9 @@ export function ReviewStep({ draft }: { draft: CaseDraft }) {
       <div className="grid grid-cols-[minmax(0,1fr)_380px] items-start gap-5">
         <div className="flex flex-col gap-5">
           <PayerChangeNote draft={draft} />
-          <NarrativeCard sections={sections} payer={payer?.shortName ?? "the payer"} onSave={edited} onSource={(label) => setSource(slotOfSource(label))} />
-          <ValidationSummary draft={draft} clock={clock} ctx={ctx} />
+          <MissingCard draft={draft} items={missing} onFix={fix} />
+          <NarrativeCard sections={sections} payer={payer?.shortName ?? "the payer"} editSignal={editSignal} onSave={edited} onSource={(label) => setSource(slotOfSource(label))} />
+          <ValidationSummary rows={rows} />
         </div>
         <div className="flex flex-col gap-4">
           <ChecksCard checks={checks} />
@@ -89,11 +102,10 @@ export function ReviewStep({ draft }: { draft: CaseDraft }) {
                   {payer ? `${payer.shortName} usually decides in about ${payer.typicalDecisionDays === 1 ? "1 day" : `${payer.typicalDecisionDays} days`}. ` : ""}
                   {sc ? `Based on ${sc.total.toLocaleString("en-US")} similar cases.` : ""}
                 </div>
-                <UnmetLine draft={draft} />
               </div>
             </CardBody>
           </Card>
-          <SignCard draft={draft} checks={checks} chance={chance} onSign={onSign} />
+          <SignCard draft={draft} checks={checks} chance={chance} backSignal={backSignal} onSign={onSign} />
         </div>
       </div>
       <StepFooter
@@ -113,7 +125,6 @@ export function ReviewStep({ draft }: { draft: CaseDraft }) {
             </Button>
           </>
         }
-        hint="Nothing goes to the payer until a clinician signs."
       />
       <DocPreviewDrawer draft={draft} slot={source} highlight onClose={() => setSource(null)} />
     </>

@@ -1,15 +1,16 @@
 title: Payers › Documents › Read the document list
 route: /payers/summit?tab=documents
-intro: What the payer wants to see for each level of care, as a plain numbered list with no status on any row. The list is chosen with 'Level of care'. In the demo the lists are per level of care (Residential 3.5, IOP, PHP, Detox); request type only changes the workflow, not this list. New case checks a draft's documents against the saved list for its payer and level of care.
+intro: What the payer wants to see for each level of care, as a plain numbered list with no status on any row. The list is closed on a one-line summary and opens on a click. The list is chosen with 'Level of care'. In the demo the lists are per level of care (Residential 3.5, IOP, PHP, Detox); request type only changes the workflow, not this list. New case checks a draft's documents against the saved list for its payer and level of care.
 dir: TD
 ---
 start s1 "Click the 'Documents' tab"
-screen tab "Documents tab\nBanner if edits wait. Left: the list card.\nRight: 'Try it on a case'"
-screen card "'What Summit wants for Residential 3.5'\n'Nine documents. The agents ask for each one\nbefore they write a word.'\n'Edit list' button on the right"
-process dflt "Opens on Residential 3.5 every time\nthe tab or the payer changes"
+screen tab "Documents tab\nBanner if edits wait. Then 'Level of care' and 'Edit list',\nthe closed list, and 'Try it on a case' below it"
+screen card "Closed section 'What Summit wants for Residential 3.5'\n'Nine documents: ASAM multidimensional assessment,\nPsychiatric evaluation or H&P, and 7 more.'"
+click op "Click the section (or Enter, Space)\nIt opens and closes, and stays open when 'Level of care' changes"
+process dflt "Opens on Residential 3.5 every time\nthe tab or the payer changes\nThe list is closed again"
 input lc "Pick 'Level of care'\nResidential 3.5, IOP, PHP, Detox"
 process sw "Title, count and list switch to that level\nFor Summit: Residential 9, IOP 6, PHP 7, Detox 8"
-screen ol "Numbered list\nNumber, document name in bold,\nwhat it must show in grey"
+screen ol "Open: numbered list\nNumber, document name in bold,\nwhat it must show in grey\nThen 'The agents ask for each one before they write a word.'"
 process ex "Example row\nASAM multidimensional assessment\nEvery dimension, dated within 7 days"
 decision any "Is the list empty?"
 toast em "'This list is empty. Add the documents Summit asks for.'"
@@ -28,12 +29,14 @@ s1 --> tab --> dU
 dU -->|Yes| bU --> gU
 dU -->|No| card
 bU --> card
-card --> dflt --> lc --> sw --> ol
+card --> dflt --> lc --> sw
+card --> op --> ol
+sw -.-> op
 ol --> ex --> any
 any -->|Yes| em
 any -->|No| pdiff
 em -.-> ce
 pdiff -.-> one
 pdiff --> aft --> gA
-card --> ce --> gE
+tab --> ce --> gE
 tab --> gC

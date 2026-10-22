@@ -1,15 +1,16 @@
 title: Analytics › Monthly report › What the files contain
 route: /analytics
-intro: The two downloaded files and the printed page are built from the same numbers as the page, for the period and payer chosen when the window opened. A figure behind fewer than 20 decisions is written as 'Not enough decisions yet', never as a number.
+intro: The two downloaded files and the printed page are built from the same numbers as the page, for the period, payer and program chosen when the window opened. A figure behind fewer than 20 decisions is written as 'Not enough decisions yet', never as a number.
 dir: TD
 also: Demo only: the real monthly pack in the product requirements is one PDF, aggregate only, approved by the operator before it is sent. The demo has no PDF file. The printed page holds the same sections as the written report.
 ---
 start s1 "A download button is clicked in the report window"
 
 group gMd "Written report (.md)"
-  doc m1 "'# Psyflo monthly report'\n'Period: This quarter' and 'Scope: All payers'\n'Built by Analyst from demo data. A figure based on fewer than 20 decisions is left out.'"
-  doc m2 "'## Headline figures'\nFour bullets: approved as asked with the trend line, top denial cause, advice taken works, sent without edits"
+  doc m1 "'# Psyflo monthly report'\n'Period: This quarter', 'Scope: All payers' and 'Program: All programs'\n'Built by Analyst from demo data. Figures are modeled from the quarter's decisions; turnaround is demo values. A figure based on fewer than 20 decisions is left out.'"
+  doc m2 "'## Headline figures'\nSeven bullets: approval rate with the trend line, denial rate, turnaround (days, demo values), preventable denials with its share, top denial cause, advice taken works, sent without edits"
   doc m3 "'## Approval rate by payer'\nOne bullet per bar with its decisions"
+  doc m9 "'## Preventable denials by reason'\nOne bullet per row of the chart, so the bullets add up to the headline count"
   doc m4 "'## How people edit agent drafts'\nThree bullets, then 'Drafts counted'"
   doc m5 "'## Common denial reasons'\nTable: Reason, Payer, Count, Share of denials"
   doc m7 "'## Denial outcomes'\n'Appeals overturned: 56% (54 of 96 rulings, partly restored counts as overturned)'\n'Denials accepted: 17'"
@@ -18,19 +19,19 @@ group gMd "Written report (.md)"
 endgroup
 
 group gCsv "Figures as a table (.csv)"
-  doc v1 "One header row\nperiod, scope, section, label, value_percent, count"
-  doc v2 "Rows by section\nheadline, approval by payer, draft edits, denial reasons, denial outcomes, what helps most\nand 'dismissed recommendations' when there are any"
+  doc v1 "One header row\nperiod, scope, section, label, value, count, program, unit\nUnit says percent, days, count or percent of denials"
+  doc v2 "Rows by section\nheadline, approval by payer, preventable denials, draft edits, denial reasons, denial outcomes, what helps most\nand 'dismissed recommendations' when there are any"
   doc v3 "Commas and quotes inside a value are wrapped in quotes\nOpens in a spreadsheet"
 endgroup
 
 decision q1 "Is the figure behind 20 or more decisions?"
 process p1 "The number is written"
 process p2 "'Not enough decisions yet' is written in its place\nThe count is kept"
-process p3 "Same view as the page: the same period and payer, the same hidden figures"
+process p3 "Same view as the page: the same period, payer and program, the same hidden figures"
 end e1 "File matches the screen"
 
 s1 --> m1 & v1
-m1 --> m2 --> m3 --> m4 --> m5 --> m7 --> m6 --> m8
+m1 --> m2 --> m3 --> m9 --> m4 --> m5 --> m7 --> m6 --> m8
 v1 --> v2 --> v3
 m8 --> q1
 v3 --> q1

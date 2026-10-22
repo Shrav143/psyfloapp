@@ -3,12 +3,12 @@ route: /payers/cardinal?tab=documents
 intro: 'Try it on a case' lets Reader read a chart against this payer's list. The chart is either a sample chart for a case still in 'Preparing', or text pasted into 'Paste chart text'. It is read only and sends nothing. A document only counts as missing when the payer's list actually asks for it.
 dir: TD
 ---
-start s1 "Look at the card 'Try it on a case'\nright of the document list\nCheck a chart against this list"
+start s1 "Look at the card 'Try it on a case'\nbelow the document list\nCheck a chart against this list\nIts info icon holds the note on keyword matching"
 decision hc "Is any case in 'Preparing'?"
 toast nc "Menu shows 'No cases to check'"
 process df "Case starts as the first 'Preparing' case for this payer,\nelse the first 'Preparing' case at all\nCardinal: I-2207"
 input pk "Pick a 'Case'\nR-1042 · J.M., 34 (Residential 3.5)\nI-2207 · T.R., 29 (IOP)\nR-0988, R-1101, I-2262"
-input pt "Type or paste in 'Paste chart text' (optional)\nHint: with text here, Reader checks it against the level\nof care list on the left instead of the case's chart"
+input pt "Type or paste in 'Paste chart text' (optional)\nHint: with text here, Reader checks it against the level\nof care list above instead of the case's chart"
 process clr "Picking a case or changing the text\nclears any earlier result"
 decision dt "Is there pasted text?\nBlank or spaces only counts as none"
 decision dg "Is there a case or pasted text?"

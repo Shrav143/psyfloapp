@@ -1,21 +1,21 @@
 title: Analytics › Common denial reasons: open Denial Intelligence
 route: /analytics
-intro: The table of common denial reasons. Every row is a link to Denial Intelligence, by the row or by the reason text. The link carries the row's payer and its reason, so the denial list opens already narrowed to those denials.
+intro: The table of common denial reasons sits in a folded section under 'Detailed breakdowns'. Every row is a link to Denial Intelligence, by the row or by the reason text. The link carries the row's payer and its reason, so the denial list opens already narrowed to those denials.
 dir: TD
 ---
-start s1 "Scroll to 'Common denial reasons by payer'"
-screen sc "Card 'Common denial reasons by payer'\n'This quarter · 311 denials in the reasons listed. Select a row to open those denials in Denial Intelligence.'"
+start s1 "Under 'Detailed breakdowns', click 'Common denial reasons by payer'\nOr Tab to it and press Enter or Space"
+screen sc "Section opens\nSummary stays: '311 denials this quarter. Most common: ...'\n'This quarter. Each payer's most common reason. Select a row to open those denials in Denial Intelligence.'\nWith a program picked: 'This quarter · IOP.'"
 screen th "Columns\n'Reason', 'Payer', 'Count', 'Share of denials' (a red bar and the percent)"
 
 decision q1 "Which payer is chosen in the menu?"
-process p1 "'All payers': one row per payer, its most common reason\nBiggest first"
-screen r1 "Cardinal 89 · 29%\n'Continued-stay evidence incomplete'"
-screen r2 "Harborview MA 74 · 24%\n'Recertification filed too late'"
-screen r3 "Evergreen 61 · 20%\n'Partial approval without a stated reason'"
-screen r4 "Summit Medicaid 48 · 15%\nBeacon PPO 39 · 13%"
-process p2 "A payer with fewer than 20 listed denials is left out\nLakeshore this quarter and last quarter"
-process p3 "One payer: all of that payer's reasons, three or four rows\nShares add up to 100% of the listed denials"
-decision q2 "Fewer than 20 denials listed?"
+process p1 "'All payers': one row per payer, its most common reason\nBiggest first\nShare is of all the denials in view, so the rows add up to less than 100%"
+screen r1 "Cardinal 73 · 23%\n'Continued-stay evidence incomplete'"
+screen r2 "Evergreen 34 · 11%\n'Partial approval without a stated reason'"
+screen r3 "Summit Medicaid 28 · 9%\n'Level of care does not match mood severity'"
+screen r4 "Harborview MA 15 · 5%\nBeacon PPO 13 · 4%"
+process p2 "A payer with fewer than 20 denials is left out\nLakeshore this quarter and last quarter"
+process p3 "One payer: all of that payer's reasons, three or four rows\nShares add up to 100% of that payer's denials\nEvery count is part of the denials behind the 'Denial rate' tile"
+decision q2 "Fewer than 20 denials in view?"
 screen nd "'Not enough decisions yet. Figures based on fewer than 20 decisions stay hidden.'\nNo table, no link"
 
 group gClick "Open a row"

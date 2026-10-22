@@ -30,7 +30,7 @@ process rb "'Reached by' is written in a fixed order\nPortal, phone, fax: 'Porta
 store lg "Edit log gets 'Added a payer'\nReason 'Payer added'"
 toast tt "'Riverbend Health was added'\nStarter workflow, rules and documents are ready.\nFigures are benchmark estimates."
 process nav "Modal closes\nOpens /payers/custom-riverbend-health?tab=process"
-screen pg "New payer's Process tab\nTitle now counts 7 payers\nRow in its group, green dot\nHeader: 'Not enough' for both figures"
+screen pg "New payer's Process tab\nTitle now counts 7 payers\nRow in its group, green dot\nHeader: plan type, the chosen programs, needs, source 'Psyflo benchmark, not a payer's policy'"
 process other "The payer is also saved where other screens read it\nNew case offers it wherever a payer is picked,\nand reads its document list and rules like any payer"
 
 click cx "Click 'Cancel'"

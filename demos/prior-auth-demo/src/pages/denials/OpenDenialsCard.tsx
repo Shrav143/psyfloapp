@@ -23,19 +23,17 @@ function Row({ r, selected, clock, meta, onSelect }: { r: PsyRequest; selected: 
   const chip = routeChip(r, clock);
   return (
     <div className={cn("relative border-b border-line last:border-b-0 hover:bg-[#FBF8F3]", selected && "bg-[#F3F7F4]")}>
-      <button type="button" onClick={() => onSelect(r.id)} className="flex w-full items-center gap-2.5 px-5 py-3.5 text-left">
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
+      <button type="button" onClick={() => onSelect(r.id)} aria-current={selected ? "true" : undefined} className="block w-full px-5 py-3.5 text-left">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex min-w-0 items-center gap-2">
             <span className="font-semibold underline decoration-1 underline-offset-[3px]">{r.id}</span>
             <Chip>{PROGRAM_SHORT[r.program]}</Chip>
           </div>
-          <div className="truncate text-[13px] text-muted">{resolveMeta(r, meta).summary}</div>
-        </div>
-        <div className="flex flex-col items-end gap-1">
           <Pill tone={chip.tone} className="max-w-[150px] truncate">{chip.text}</Pill>
-          {/* The empty span keeps room for the Report link, which sits on top of it (a link cannot live inside the row's button). */}
-          <span className="text-xs text-muted">{r.chance !== undefined ? `${r.chance}% win chance` : ""}<span className="inline-block w-[62px]" aria-hidden="true" /></span>
         </div>
+        <div className="mt-1 text-[13px] text-muted">{resolveMeta(r, meta).summary} · Authorization denial</div>
+        {/* The empty span keeps room for the Report link, which sits on top of it (a link cannot live inside the row's button). */}
+        <div className="mt-0.5 text-xs text-muted">{r.chance !== undefined ? `${r.chance}% win chance` : "\u00a0"}<span className="inline-block w-[62px]" aria-hidden="true" /></div>
       </button>
       <Link to={paths.report(r.id)} className="absolute right-5 bottom-3.5 inline-flex items-center gap-1 text-xs font-semibold text-forest hover:underline">
         <FileText size={12} className="ico" />
@@ -50,7 +48,7 @@ export function OpenDenialsCard({ open, closed, openTotal, selectedId, clock, me
   const filtered = open.length < openTotal;
   return (
     <Card className="overflow-hidden">
-      <CardHeader title="Open denials" subtitle={filtered ? `${open.length} of ${openTotal} match the filters` : undefined} right={<Pill tone={open.length ? "risk" : "good"}>{open.length}</Pill>} />
+      <CardHeader title="Open denials" subtitle={`${filtered ? `${open.length} of ${openTotal} match the filters. ` : ""}Soonest deadline first`} right={<Pill tone={open.length ? "risk" : "good"}>{open.length}</Pill>} />
       {open.length ? open.map((r) => <Row key={r.id} r={r} selected={r.id === selectedId} clock={clock} meta={meta[r.id]} onSelect={onSelect} />) : <div className="px-6 py-5 text-sm text-muted">{openTotal ? "No open denials match the filters." : "No open denials. Everything sent is approved or waiting."}</div>}
       {closed.length ? (
         <div className={cn("border-t border-line")}>

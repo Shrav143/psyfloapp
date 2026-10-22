@@ -1,5 +1,5 @@
 import { Target } from "lucide-react";
-import { Banner, Card, CardBody, CardHeader } from "@/components/ui";
+import { Banner, Card, CardBody, CardHeader, Disclosure } from "@/components/ui";
 import type { BriefData } from "./lib/brief";
 import type { DenialView } from "./lib/useDenialView";
 
@@ -53,6 +53,7 @@ export function AskBanner({ view }: { view: DenialView }) {
   );
 }
 
+/** Folded: eight or so rows that are only needed when a date or a number is asked for. Kept mounted so Print still has them. */
 export function DatesCard({ brief }: { brief: BriefData }) {
   const col = (title: string, rows: [string, string][]) => (
     <div>
@@ -68,12 +69,11 @@ export function DatesCard({ brief }: { brief: BriefData }) {
     </div>
   );
   return (
-    <Card>
-      <CardHeader title="Key dates and numbers" />
-      <CardBody className="grid grid-cols-2 gap-8">
+    <Disclosure title="Key dates and numbers" summary={`Call: ${brief.window} · Window: ${brief.closesIn}`} keepMounted className="psy-print-open">
+      <CardBody className="grid grid-cols-1 gap-8 sm:grid-cols-2">
         {col("Key dates", brief.dates)}
         {col("Numbers", brief.numbers)}
       </CardBody>
-    </Card>
+    </Disclosure>
   );
 }

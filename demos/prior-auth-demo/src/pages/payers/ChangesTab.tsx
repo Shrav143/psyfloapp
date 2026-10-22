@@ -69,7 +69,7 @@ function ProposalCard({ id, p }: { id: string; p: Proposal }) {
 export function ChangesTab({ id, name, cfg }: { id: string; name: string; cfg: PayerConfig }) {
   return (
     <div className="flex flex-col gap-4">
-      {cfg.pending ? <PendingBanner id={id} name={name} pending={cfg.pending} /> : <Banner tone="good" title="This payer's rules are up to date">Last checked {cfg.checkedOn}. Sentinel keeps watching {name}'s policy and portal.</Banner>}
+      {cfg.pending ? <PendingBanner id={id} name={name} pending={cfg.pending} /> : <p className="px-1 text-sm text-muted">Nothing is waiting for you. Changes here are demo data, not read from {name}'s policy.</p>}
       {cfg.proposals.map((p) => <ProposalCard key={p.id} id={id} p={p} />)}
       <Card>
         <CardHeader title="What changed" />

@@ -1,7 +1,7 @@
 /* Eligibility and Benefits: the patient rows, the verdict rule and the simulated live check.
    The wording of each payment check lives in pages/eligibility/checks.ts. */
 import { DAY, HOUR } from "@/lib/time";
-import type { PayerId, Program, Tone } from "./types";
+import type { PayerId, PayerSummary, Program, Tone } from "./types";
 
 export type EligState = "active" | "lapsed" | "ended" | "not_found";
 export type BenefitState = "covered" | "limited" | "not_covered";
@@ -10,6 +10,50 @@ export type Verdict = "cleared" | "auth_first" | "fix";
 
 export const VERDICT_LABEL: Record<Verdict, string> = { cleared: "Cleared to bill", auth_first: "Authorization first", fix: "Fix before billing" };
 export const VERDICT_TONE: Record<Verdict, Tone> = { cleared: "good", auth_first: "mid", fix: "risk" };
+
+/** The words for an authorization state, on the list and on the result. */
+export const AUTH_LABEL: Record<AuthState, { text: string; tone: Tone }> = {
+  not_required: { text: "Not required", tone: "neutral" },
+  on_file: { text: "On file", tone: "good" },
+  in_progress: { text: "In progress", tone: "neutral" },
+  reviewing: { text: "Payer reviewing", tone: "neutral" },
+  retro_open: { text: "Retro request open", tone: "mid" },
+  required: { text: "Required, not on file", tone: "mid" },
+};
+
+/** When the sample members' coverage began. A coverage that ended, or lapsed, carries its own end date. */
+export const EFFECTIVE_FROM = "01/01/2026";
+
+/** "Effective 01/01/2026, no end date", or the end date when coverage ended or lapsed. A member nobody found has no dates. The end date has no year of its own, so it takes the service date's. */
+export function coverageDates(p: Pick<EbPatient, "eligibility" | "dos">): string | null {
+  const { state } = p.eligibility;
+  const on = p.eligibility.on ?? "";
+  const year = p.dos.slice(-4);
+  if (state === "active") return `Effective ${EFFECTIVE_FROM}, no end date`;
+  if (state === "not_found") return null;
+  return `Effective ${EFFECTIVE_FROM}, ${state === "lapsed" ? "lapsed" : "ended"} ${on}/${year}`;
+}
+
+/** What a patient pays, by kind of plan, as sample figures. Ohio Medicaid members usually pay nothing, so it has no entry and the screens say nothing about it instead of "$0". */
+interface CostShare {
+  copay?: string;
+  deductibleLeft?: string;
+  coinsurance?: string;
+}
+const COMMERCIAL: CostShare = { copay: "$40 per day", deductibleLeft: "$350", coinsurance: "20% after the deductible" };
+const COST_SHARE: Partial<Record<PayerSummary["group"], CostShare>> = {
+  Commercial: COMMERCIAL,
+  "Behavioral carve-out": COMMERCIAL,
+  "Medicare Advantage": { deductibleLeft: "$85", coinsurance: "20%" },
+};
+/** "Copay $40 per day, deductible $350 left, coinsurance 20% after the deductible", or null when the plan has none on file. */
+export function costShareText(group: PayerSummary["group"]): string | null {
+  const c = COST_SHARE[group];
+  if (!c) return null;
+  const parts = [c.copay && `Copay ${c.copay}`, c.deductibleLeft && `deductible ${c.deductibleLeft} left`, c.coinsurance && `coinsurance ${c.coinsurance}`].filter(Boolean);
+  const text = parts.join(", ");
+  return text ? text[0].toUpperCase() + text.slice(1) : null;
+}
 
 export interface EbPatient {
   id: string; // the case ID, or V-xxxx for a check that has no case yet

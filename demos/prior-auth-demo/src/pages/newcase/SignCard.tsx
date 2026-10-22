@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { PenLine, Undo2, UserRound } from "lucide-react";
-import { Banner, Button, Card, CardBody, CardHeader, Checkbox, Dropdown, Field, Modal, TextArea } from "@/components/ui";
+import { useEffect, useState } from "react";
+import { PenLine, Undo2 } from "lucide-react";
+import { Button, Card, CardBody, CardHeader, Checkbox, Dropdown, Field, Modal, TextArea } from "@/components/ui";
 import type { CaseDraft } from "@/data/cases";
 import { payerById } from "@/data/seed";
 import { PROGRAM_LABEL } from "@/data/types";
@@ -16,7 +16,7 @@ const ATTEST = "I reviewed this summary and it reflects the record. The level of
 const QUICK = ["Say more about the risk at home", "Shorten the clinical picture", "Mention the lower levels of care that were tried"];
 
 /** The sign-off gate: only a clinician signs. Needs the attestation, and an acknowledgement when a check warns. */
-export function SignCard({ draft, checks, chance, onSign }: { draft: CaseDraft; checks: IntegrityCheck[]; chance: number; onSign: () => void }) {
+export function SignCard({ draft, checks, chance, backSignal, onSign }: { draft: CaseDraft; checks: IntegrityCheck[]; chance: number; /** Counts up when "What is missing" asks to send the draft back to Scribe. */ backSignal: number; onSign: (signedBy: string) => void }) {
   const rerun = useStore((s) => s.rerunFromScribe);
   const toast = useStore((s) => s.toast);
   const [signer, setSigner] = useState<Signer>("jordan");
@@ -25,6 +25,9 @@ export function SignCard({ draft, checks, chance, onSign }: { draft: CaseDraft; 
   const [confirm, setConfirm] = useState(false);
   const [back, setBack] = useState(false);
   const [note, setNote] = useState("");
+  useEffect(() => {
+    if (backSignal > 0) setBack(true);
+  }, [backSignal]);
   const payer = draft.payerId ? payerById(draft.payerId) : null;
   const who = SIGNERS[signer];
   const warns = checks.filter((c) => c.state === "warn");
@@ -34,20 +37,16 @@ export function SignCard({ draft, checks, chance, onSign }: { draft: CaseDraft; 
   return (
     <>
       <Card className="border-good-edge">
-        <CardHeader title="Sign and send" subtitle={`${who.name}, ${who.role} · approval chance ${chance}%`} />
+        <CardHeader title="Sign" subtitle={`${who.name}, ${who.role} · approval chance ${chance}%`} />
         <CardBody className="flex flex-col gap-3.5">
           <Field label="Signing as">
             <Dropdown<Signer> variant="field" value={signer} onChange={setSigner} options={(Object.keys(SIGNERS) as Signer[]).map((k) => ({ value: k, label: `${SIGNERS[k].name} (${SIGNERS[k].role})` }))} menuWidth={300} ariaLabel="Signing as" />
           </Field>
-          {!who.clinician ? (
-            <Banner tone="mid" icon={UserRound}>
-              {who.name} is a UR coordinator. Only a licensed clinician can sign. Switch to Dr. Rivera to sign.
-            </Banner>
-          ) : null}
-          {warns.length ? <Checkbox checked={ack} onChange={setAck} label={`I reviewed the ${warns.length === 1 ? "warning" : "warnings"} above and want to sign anyway.`} className="items-start" /> : null}
+          {!who.clinician ? <p className="-mt-1 text-[13px] text-muted">{who.name} is a UR coordinator. Only a licensed clinician can sign, so switch to Dr. Rivera.</p> : null}
+          {warns.length ? <Checkbox checked={ack} onChange={setAck} label={`I reviewed ${warns.length === 1 ? "the warning" : "the warnings"} under What is missing and want to sign anyway.`} className="items-start" /> : null}
           <Checkbox checked={attest} onChange={setAttest} label={ATTEST} className="items-start" />
           <Button variant="primary" size="lg" icon={PenLine} disabled={!canSign} onClick={() => setConfirm(true)}>
-            Sign and send
+            Sign and send to payer
           </Button>
           <Button icon={Undo2} onClick={() => setBack(true)}>
             Send back to Scribe
@@ -60,7 +59,7 @@ export function SignCard({ draft, checks, chance, onSign }: { draft: CaseDraft; 
         open={confirm}
         onClose={() => setConfirm(false)}
         size="sm"
-        title="Sign and send?"
+        title="Sign and send to payer?"
         subtitle={`Signing as ${who.name}, ${who.role}`}
         footer={
           <>
@@ -70,10 +69,10 @@ export function SignCard({ draft, checks, chance, onSign }: { draft: CaseDraft; 
               icon={PenLine}
               onClick={() => {
                 setConfirm(false);
-                onSign();
+                onSign(`${who.name} (${who.role})`);
               }}
             >
-              Sign and send
+              Sign and send to payer
             </Button>
           </>
         }

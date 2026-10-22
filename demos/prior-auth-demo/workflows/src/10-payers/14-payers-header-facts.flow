@@ -1,26 +1,25 @@
-title: Payers › Header › What the facts mean
+title: Payers › Header › What the header says
 route: /payers/:id
-intro: The card above the tabs. It names the payer, says whether a change is waiting, and shows four facts. Two come from the last 90 days of decisions; two are the payer's configuration and change when someone edits the payer.
+intro: The card above the tabs. It names the payer, carries one quiet label that says its rules are demo data, and says what a coordinator needs first: plan type, programs, whether an initial request or a continued-stay review is needed, notice and how the payer is reached, and the policy status. Everything is read from the payer and its saved configuration. Approved as asked and typical decision are no longer here: Analytics shows them.
 dir: TD
 ---
 start s1 "Pick a payer\n(or arrive on Payers)"
-screen head "Payer header\nPayer name in large type\nPlan line under it\n'Edit log' and 'Edit' on the right"
-process plan "Plan line = plan text\n+ 'rules version 2026.3'\n+ the state of the rules"
-decision pend "Is a change waiting\nfor this payer?"
-toast waiting "'... rules version 2026.3, change waiting'"
-toast checked "'... rules version 2026.3, checked 10/12'\nDate Sentinel last checked the policy"
+screen head "Payer header\nPayer name in large type\n'Edit log' and 'Edit' on the right\nThe demo-rules label under the name\nPlan line under that"
 
-group gF "Four facts under the name"
-  screen f1 "'Approved as asked'\n74% for Summit\nNote: 'last 90 days'\nCardinal says 'down 11 points'"
-  screen f2 "'Typical decision'\n1.5 days for Summit\nNote: 'for residential'\nCardinal says 'now taking 2.8'"
-  screen f3 "'Notice due'\n24 hours\nNote: 'after admission'\nHarborview is 72 hours"
-  screen f4 "'Reached by'\nOne of seven: Portal, Phone, Fax,\nor a mix such as 'Portal and fax'\nNote: the backup route\n'phone as backup'"
+group gF "Four rows under the name"
+  screen f1 "'Plan type'\n'Medicaid managed care (HMO). Claims go to Summit, not to the state.'\nNothing is shown when the payer has no plan type"
+  screen f2 "'Programs'\nResidential 3.5, IOP, PHP, Detox\nor the ones chosen when the payer was added"
+  screen f3 "'Needs'\n'Initial request: required. Notice within 24 hours of admission.'\n'Continued-stay review: required. A continued-stay review every 7 days after the first 7.'"
+  screen f4 "'Notice and reach'\n'Notice due 24 hours after admission.'\n'Reached by portal, phone as backup.'"
 endgroup
 
-decision hist "Does the payer have\n90 days of decisions?"
-toast few "'Not enough' in both figures\nNotes: 'Not enough decisions yet'\nand 'benchmark estimate'\nTrue of a payer added with 'Add a payer'"
-process real "Figures come from decisions\nalready seen for this payer"
-process cfg "'Notice due' and 'Reached by' come\nfrom the payer's saved details\nthe 'Edit' button changes them"
+process cfg "Plan type, programs and needs are read from the saved configuration\nEdit a rule, a document list or the workflow and the header follows"
+process pt "Plan type: the payer's group and the plan type New case would pre-fill\nSee 'Eligibility & Benefits › Result › Plan type and routing'"
+decision ndn "Does the saved 'Submission windows' rule\nstill have a notice line\nand a continued-stay line?"
+process need1 "Both read 'required' with the rule's own words"
+process need2 "A missing line reads 'not on file'\nThe row in the payer list says 'Initial only' or 'Review only'"
+process cfg2 "'Notice due' and 'Reached by' come from the payer's saved details\nthe 'Edit' button changes them"
+goto g_ps "Continues in: Payers › Header › Policy status and the demo-rules label"
 
 decision logn "Any edits logged for this payer?"
 screen logb1 "Button reads 'Edit log (3)'\nthe count is edits for this payer"
@@ -31,14 +30,14 @@ goto g_edit "Continues in: Payers › Edit payer details"
 goto g_log "Continues in: Payers › Edit log"
 end e1 "Header shows the payer's current state"
 
-s1 --> head --> plan --> pend
-pend -->|Yes| waiting --> hist
-pend -->|No| checked --> hist
-head --> f1 & f2 & f3 & f4
-hist -->|No| few --> logn
-hist -->|Yes| real --> logn
-f3 -.-> cfg
-f4 -.-> cfg
+s1 --> head --> f1 & f2 & f3 & f4
+f1 -.-> pt
+f1 & f2 & f3 -.-> cfg
+f3 --> ndn
+ndn -->|Yes| need1 --> logn
+ndn -->|No| need2 --> logn
+f4 -.-> cfg2
+head --> g_ps
 logn -->|Yes| logb1 --> e1
 logn -->|No| logb0 --> e1
 head --> ce --> g_edit

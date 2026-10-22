@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ChevronDown, CircleAlert, CircleCheck } from "lucide-react";
-import { Card, CardHeader, Pill } from "@/components/ui";
+import { Disclosure, Pill } from "@/components/ui";
 import type { CaseDraft } from "@/data/cases";
 import { payerById } from "@/data/seed";
 import { cn } from "@/lib/cn";
@@ -8,26 +8,35 @@ import { docEntries, findingText, isOpen, openFindings, requiredFirst } from "./
 import type { PayerContext } from "./payerContext";
 import { startDateIssue } from "./payerRules";
 
-interface Row {
+export interface ValidationRow {
   id: string;
   label: string;
   warn: boolean;
+  /** The payer requires it (the start date always counts). A finding on a required row has to be acknowledged before signing. */
+  required: boolean;
+  /** A required document that is not in the case and not marked not available: the request cannot be signed. */
+  blocks: boolean;
   findings: { id: string; ok: boolean; text: string }[];
 }
 
-/** The start date, then every document the payer asks for with what Reader found: green for what checks out, amber for what to look at. Open by default when amber. */
-export function ValidationSummary({ draft, clock, ctx }: { draft: CaseDraft; clock: number; ctx: PayerContext }) {
+/** The start date, then every document the payer asks for with what Reader found. */
+export function validationRows(draft: CaseDraft, clock: number, ctx: PayerContext): ValidationRow[] {
   const payer = draft.payerId ? payerById(draft.payerId).shortName : "The payer";
   const issue = startDateIssue(draft, ctx.rules, clock, payer);
   const [dateMm, dateDd, dateYy] = [draft.startDate.slice(5, 7), draft.startDate.slice(8, 10), draft.startDate.slice(0, 4)];
-  const rows: Row[] = [{ id: "start", label: "Start date", warn: !!issue, findings: [{ id: "start-1", ok: !issue, text: issue?.text ?? `The start date ${dateMm}/${dateDd}/${dateYy} is inside what ${payer} allows` }] }];
+  const rows: ValidationRow[] = [{ id: "start", label: "Start date", warn: !!issue, required: true, blocks: false, findings: [{ id: "start-1", ok: !issue, text: issue?.text ?? `The start date ${dateMm}/${dateDd}/${dateYy} is inside what ${payer} allows` }] }];
   for (const r of requiredFirst(docEntries(draft.payerId, draft.program, ctx.items))) {
     const doc = draft.documents.find((d) => d.slot === r.slot);
     const reason = draft.unavailable[r.slot];
-    if (doc) rows.push({ id: r.slot, label: r.label, warn: openFindings(doc, draft.answers) > 0, findings: doc.findings.map((f) => ({ id: f.id, ok: !isOpen(f, draft.answers), text: findingText(f, draft.answers) })) });
-    else if (reason !== undefined) rows.push({ id: r.slot, label: r.label, warn: r.required, findings: [{ id: `${r.slot}-na`, ok: !r.required, text: r.required ? `Marked not available: ${reason}. ${payer} requires it, so it may ask for it.` : `Marked not available: ${reason}. You can sign without it.` }] });
-    else rows.push({ id: r.slot, label: r.label, warn: true, findings: [{ id: `${r.slot}-none`, ok: false, text: r.required ? "This document was not added." : `Not added. ${payer} lists it. You can sign without it.` }] });
+    if (doc) rows.push({ id: r.slot, label: r.label, warn: openFindings(doc, draft.answers) > 0, required: r.required, blocks: false, findings: doc.findings.map((f) => ({ id: f.id, ok: !isOpen(f, draft.answers), text: findingText(f, draft.answers) })) });
+    else if (reason !== undefined) rows.push({ id: r.slot, label: r.label, warn: r.required, required: r.required, blocks: false, findings: [{ id: `${r.slot}-na`, ok: !r.required, text: r.required ? `Marked not available: ${reason}. ${payer} requires it, so it may ask for it.` : `Marked not available: ${reason}. You can sign without it.` }] });
+    else rows.push({ id: r.slot, label: r.label, warn: true, required: r.required, blocks: r.required, findings: [{ id: `${r.slot}-none`, ok: false, text: r.required ? "This document was not added." : `Not added. ${payer} lists it. You can sign without it.` }] });
   }
+  return rows;
+}
+
+/** Every document against the payer's guidelines: green for what checks out, amber for what to look at. Closed by default, with the rows that need a look open once it opens, because "What is missing" above it already carries what needs a person. */
+export function ValidationSummary({ rows }: { rows: ValidationRow[] }) {
   const flagged = rows.filter((r) => r.warn).length;
   const [open, setOpen] = useState<Set<string>>(() => new Set(rows.filter((r) => r.warn).map((r) => r.id)));
   const toggle = (id: string) =>
@@ -39,16 +48,15 @@ export function ValidationSummary({ draft, clock, ctx }: { draft: CaseDraft; clo
     });
 
   return (
-    <Card>
-      <CardHeader
-        title="Validation summary"
-        subtitle="Reader checked every document against the payer's guidelines. Review the findings before you sign."
-        right={
-          <Pill tone={flagged ? "mid" : "good"} dot>
-            {flagged ? `${flagged} to look at` : "Nothing to look at"}
-          </Pill>
-        }
-      />
+    <Disclosure
+      title="Validation summary"
+      summary="Reader checked every document against the payer's guidelines."
+      right={
+        <Pill tone={flagged ? "mid" : "good"} dot>
+          {flagged ? `${flagged} to look at` : "Nothing to look at"}
+        </Pill>
+      }
+    >
       <ul>
         {rows.map((r) => (
           <li key={r.id} className="border-b border-line last:border-b-0">
@@ -70,6 +78,6 @@ export function ValidationSummary({ draft, clock, ctx }: { draft: CaseDraft; clo
           </li>
         ))}
       </ul>
-    </Card>
+    </Disclosure>
   );
 }

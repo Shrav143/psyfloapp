@@ -3,7 +3,7 @@ route: /payers/summit?tab=rules
 intro: A rule is edited as plain text, one rule per line, with a reason. New drafts use the saved rule at once, sent requests keep what they were sent with, and open drafts follow only after 'Update drafts'. Blank lines are dropped, and a rule cannot be emptied.
 dir: TD
 ---
-start s1 "Click 'Edit' on a rule card\nExample: 'Edit Backdating'"
+start s1 "Open a rule (click its row), then click its 'Edit'\nExample: 'Edit Backdating'"
 overlay m "Edit backdating\nOne rule per line. New drafts use this at once.\nSent requests keep what they were sent with.\nClick Update drafts to redraft open ones."
 input i1 "Type in 'Rules'\nOne line per rule, starting from the saved lines"
 input i2 "Type 'Reason for the edit' (required)\nExample: Summit confirmed the new window on a call"
@@ -14,12 +14,12 @@ process tr "Split on line breaks\nTrim each line, drop blank lines"
 decision d2 "Are there lines left, and\ndo they differ from the saved ones?"
 toast t0 "'Nothing changed'\nEdit at least one line, and keep at least one rule."
 endx x0 "Modal closes\nNothing saved"
-store st "Rule lines replaced\n'Confirmed' date becomes today"
+store st "Rule lines replaced\n'Saved' date becomes today\nThe rule gets 'Source: Edited in Psyflo by Jordan Perez'"
 store lg "Edit log entry, area 'Rules'\nRule name, before and after (lines joined with semicolons), reason"
 store un "'Edits waiting' goes up by one"
 store nt "Bell notification 'Summit rule edited'\nopens the payer's Rules tab"
 toast t1 "'Backdating saved'\nNew drafts use it at once.\nClick Update drafts to redraft open ones."
-screen bn "Rule card shows the new lines\nBanner '1 edit applies to new drafts only'"
+screen bn "The rule row shows the new first line\nOpen, it shows the new lines and the source\nBanner '1 edit applies to new drafts only'"
 end e1 "New drafts use the rule from now on\nNew case reads it the next time it draws"
 click cx "Click 'Cancel'"
 click cesc "Press Escape, click the X\nor click the dimmed area"

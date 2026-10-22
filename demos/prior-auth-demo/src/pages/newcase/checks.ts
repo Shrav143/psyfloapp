@@ -12,6 +12,8 @@ import type { PayerContext } from "./payerContext";
 import { CRITERIA_COUNT } from "./runText";
 
 export type CheckState = "pass" | "warn" | "block" | "checking";
+/** What a person can do about a finding: go to Medical records, edit the summary, or send the draft back to Scribe. */
+export type FixKind = "records" | "edit" | "scribe";
 export interface IntegrityCheck {
   id: string;
   agent: AgentKey;
@@ -19,6 +21,8 @@ export interface IntegrityCheck {
   state: CheckState;
   /** One line for each thing found. Empty for a pass. */
   details: string[];
+  /** The findings the validation summary does not list by document (coverage, the summary itself, a missing step-down), each with its fix when there is one. */
+  extra: { text: string; fix?: FixKind }[];
 }
 
 /** What the checks read besides the draft: the demo clock and what Payers has saved for this payer. */
@@ -42,20 +46,24 @@ export function integrityChecks(d: CaseDraft, narrative: NarrativeSection[], rec
   const emptySection = narrative.find((s) => !s.text.trim());
 
   const traced: IntegrityCheck = rechecking
-    ? { id: "traced", agent: "integrity", label: "Every sentence traced to the chart", state: "checking", details: ["Integrity is re-checking your edits"] }
+    ? { id: "traced", agent: "integrity", label: "Every sentence traced to the chart", state: "checking", details: ["Integrity is re-checking your edits"], extra: [] }
     : emptySection
-      ? { id: "traced", agent: "integrity", label: "Every sentence traced to the chart", state: "block", details: [`The "${emptySection.heading}" section is empty. Add the text or send the draft back to Scribe.`] }
-      : { id: "traced", agent: "integrity", label: "Every sentence traced to the chart", state: "pass", details: [] };
+      ? { id: "traced", agent: "integrity", label: "Every sentence traced to the chart", state: "block", details: [`The "${emptySection.heading}" section is empty. Add the text or send the draft back to Scribe.`], extra: [{ text: `The "${emptySection.heading}" section is empty. Add the text or send the draft back to Scribe.`, fix: "edit" }] }
+      : { id: "traced", agent: "integrity", label: "Every sentence traced to the chart", state: "pass", details: [], extra: [] };
 
   const issue = startDateIssue(d, ctx.rules, clock, payer);
   const late = (d.dueKind === "notice" || d.dueKind === "window") && d.dueAt !== null && d.dueAt <= clock;
+  const lead: { text: string; fix?: FixKind }[] = [
+    ...(cov && lost ? [{ text: `Coverage ${cov.eligibility.state} ${cov.eligibility.on ?? ""}`.trim() + ". A retro-eligibility request is needed before billing.", fix: "records" as const }] : []),
+    ...(cov && !lost && verdictOf(cov) === "fix" ? [{ text: `Coverage needs a fix. ${buildResult(cov).reason}`, fix: "records" as const }] : []),
+    ...(d.run.skipped.includes("verify") ? [{ text: `Verify could not reach ${payer}'s portal, so coverage was not confirmed. You skipped it and noted it.` }] : []),
+  ];
+  const overdue = late ? [{ text: d.dueKind === "notice" ? `The notice to ${payer} was due and has passed. The request goes late.` : "The window for this retro-authorization has passed. The request goes late." }] : [];
   const errors = [
-    ...(cov && lost ? [`Coverage ${cov.eligibility.state} ${cov.eligibility.on ?? ""}`.trim() + ". A retro-eligibility request is needed before billing."] : []),
-    ...(cov && !lost && verdictOf(cov) === "fix" ? [`Coverage needs a fix. ${buildResult(cov).reason}`] : []),
-    ...(d.run.skipped.includes("verify") ? [`Verify could not reach ${payer}'s portal, so coverage was not confirmed. You skipped it and noted it.`] : []),
+    ...lead.map((x) => x.text),
     ...(flawed.length ? [`${flawed.length} required ${flawed.length === 1 ? "document has" : "documents have"} an open finding. See the validation summary.`] : []),
     ...(issue ? [issue.text] : []),
-    ...(late ? [d.dueKind === "notice" ? `The notice to ${payer} was due and has passed. The request goes late.` : "The window for this retro-authorization has passed. The request goes late."] : []),
+    ...overdue.map((x) => x.text),
   ];
 
   /* Criteria matches the chart to the payer's requirements. A required document that is not in the case leaves one of them without evidence. */
@@ -76,12 +84,13 @@ export function integrityChecks(d: CaseDraft, narrative: NarrativeSection[], rec
     ...(asam ? asam.findings.filter((f) => isOpen(f, d.answers)).map((f) => `${slotLabel("asam")}: ${findingText(f, d.answers)}.`) : []),
     ...(noAuth ? [`${payer}'s rules say: ${noAuth}. Check with ${payer} before you send.`] : []),
   ];
+  const noAuthExtra = noAuth ? [{ text: `${payer}'s rules say: ${noAuth}. Check with ${payer} before you send.` }] : [];
 
   return [
     traced,
-    { id: "errors", agent: "scrubber", label: "Request has no errors", state: errors.length ? "warn" : "pass", details: errors },
-    { id: "criteria", agent: "criteria", label: uncovered ? `${Math.max(0, n - uncovered)} of ${n} ${payer} requirements covered` : `All ${n} ${payer} requirements covered`, state: absent.length ? "block" : unmet.length ? "warn" : "pass", details: unmet },
-    { id: "level", agent: "placement", label: "Level of care matches the request", state: placement.length ? "warn" : "pass", details: placement },
+    { id: "errors", agent: "scrubber", label: "Request has no errors", state: errors.length ? "warn" : "pass", details: errors, extra: [...lead, ...overdue] },
+    { id: "criteria", agent: "criteria", label: uncovered ? `${Math.max(0, n - uncovered)} of ${n} ${payer} requirements covered` : `All ${n} ${payer} requirements covered`, state: absent.length ? "block" : unmet.length ? "warn" : "pass", details: unmet, extra: stepdownLater ? [{ text: "A named step-down provider is not on file yet.", fix: "scribe" }] : [] },
+    { id: "level", agent: "placement", label: "Level of care matches the request", state: placement.length ? "warn" : "pass", details: placement, extra: noAuthExtra },
   ];
 }
 

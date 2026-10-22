@@ -20,7 +20,7 @@ export interface EmrSlice {
   emrCharts: number;
   emrFiles: number;
   emrSyncs: number;
-  /** Sync finished: marks the systems as just synced and adds what the agents pulled. Systems that need a look are skipped. */
+  /** Sync finished: marks the systems as just synced and adds what the agents pulled. Systems that need attention are skipped. */
   syncSystems: (ids: string[]) => void;
   mapField: (fieldId: string, value: string) => void;
   /** The guided fix for a system that needs a look finished. */
@@ -61,7 +61,7 @@ export const createEmrSlice: StateCreator<AppState, [], [], EmrSlice> = (set, ge
       set((s) => ({ emrSystems: s.emrSystems.map((x) => (live.includes(x.id) ? { ...x, lastSyncAt: clock } : x)), emrCharts: s.emrCharts + Math.max(1, Math.round(r.charts * share)), emrFiles: s.emrFiles + Math.max(1, Math.round(r.files * share)), emrSyncs: s.emrSyncs + 1 }));
       log(r.agent, live.length === 1 ? `${r.text} from ${nameOf(live[0]).toLowerCase()}` : r.text);
       const skipped = ids.length - live.length;
-      report("reader", { title: "Sync finished", body: skipped ? `${live.length} synced. ${skipped} needs a quick look first.` : r.text, tone: skipped ? "mid" : "good" });
+      report("reader", { title: "Sync finished", body: skipped ? `${live.length} synced. ${skipped} needs attention first.` : r.text, tone: skipped ? "mid" : "good" });
     },
 
     mapField: (fieldId, value) => {

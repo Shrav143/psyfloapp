@@ -30,7 +30,7 @@ export default function PayersPage() {
   const edits = useStore((s) => s.payerEdits);
   const [dialog, setDialog] = useState<"edit" | "log" | "add" | null>(null);
 
-  const rows = payerRows(custom);
+  const rows = payerRows(custom, config);
   const row = rows.find((r) => r.id === id) ?? rows[0];
   const cfg = config[row.id];
   const raw = params.get("tab");
@@ -43,9 +43,9 @@ export default function PayersPage() {
   return (
     <Page>
       <PageHeader title={`${rows.length} payers. The agents know how each one works.`} sub="Workflow, rules and documents for every payer. Every edit is logged with your reason." actions={<Button variant="primary" icon={Plus} onClick={() => setDialog("add")}>Add a payer</Button>} />
-      <div className="grid grid-cols-[300px_minmax(0,1fr)] items-start gap-5">
-        <PayerList rows={rows} config={config} selectedId={row.id} onSelect={(pid) => nav(paths.payers(pid, tab))} />
-        <div className="flex flex-col gap-4">
+      <div className="grid grid-cols-1 items-start gap-5 min-[1250px]:grid-cols-[340px_minmax(0,1fr)]">
+        <PayerList rows={rows} selectedId={row.id} onSelect={(pid) => nav(paths.payers(pid, tab))} />
+        <div className="flex min-w-0 flex-col gap-4">
           <PayerHeader row={row} cfg={cfg} edits={mine.length} onEdit={() => setDialog("edit")} onLog={() => setDialog("log")} />
           <PayerTabs<Tab> value={tab} onChange={setTab} tabs={TABS.map((t) => ({ id: t, label: LABEL[t], waiting: t === "changes" ? waiting : 0 }))} />
           {tab === "process" ? <ProcessTab key={row.id} id={row.id} name={row.shortName} cfg={cfg} onReview={() => setTab("changes")} /> : null}

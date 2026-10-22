@@ -1,5 +1,5 @@
 import { Pill } from "@/components/ui";
-import { VERDICT_LABEL, VERDICT_TONE, type AuthState, type EbPatient, type Verdict } from "@/data/eligibility";
+import { AUTH_LABEL, VERDICT_LABEL, VERDICT_TONE, type EbPatient, type Verdict } from "@/data/eligibility";
 import type { Tone } from "@/data/types";
 
 export const patientLabel = (p: EbPatient): string => (p.initials ? `${p.initials}${p.age ? `, ${p.age}` : ""}` : `Member ${p.memberMasked}`);
@@ -17,25 +17,12 @@ export function BenefitsChip({ p }: { p: EbPatient }) {
   return <Pill tone={tone}>{p.benefits === "covered" ? "Covered" : p.benefits === "limited" ? "Limited" : "Not covered"}</Pill>;
 }
 
-const AUTH: Record<AuthState, { text: string; tone: Tone }> = {
-  not_required: { text: "Not required", tone: "neutral" },
-  on_file: { text: "On file", tone: "good" },
-  in_progress: { text: "In progress", tone: "neutral" },
-  reviewing: { text: "Payer reviewing", tone: "neutral" },
-  retro_open: { text: "Retro request open", tone: "mid" },
-  required: { text: "Required, not on file", tone: "mid" },
-};
+/** The day or unit limit as "14 of 14 days", or "No day limit". It sits on the quiet second line of a row. */
 export const limitText = (p: EbPatient): string | null => (p.limit ? `${p.limit.used} of ${p.limit.of} ${p.limit.unit}` : p.noDayLimit ? "No day limit" : null);
 
 export function AuthChip({ p }: { p: EbPatient }) {
-  const a = AUTH[p.auth];
-  const lim = limitText(p);
-  return (
-    <div>
-      <Pill tone={a.tone}>{a.text}</Pill>
-      {lim ? <div className="mt-1 text-xs text-muted">{lim}</div> : null}
-    </div>
-  );
+  const a = AUTH_LABEL[p.auth];
+  return <Pill tone={a.tone}>{a.text}</Pill>;
 }
 
 export function VerdictChip({ v }: { v: Verdict }) {

@@ -1,42 +1,42 @@
-title: EMR Connect › Page › What each tile shows
+title: EMR Connect › Page › What the health figures show
 route: /emr
-intro: The four tiles at the top follow the state below them. They are not buttons. This diagram shows what each one says and what moves it.
+intro: The four figures at the top of 'Connection health' follow the state below them. They are not buttons. This diagram shows what each one says and what moves it.
 dir: TD
-also: Times follow the Demo clock. Demo, Fast-forward ages the 'ago' labels but never runs a sync.
+also: Times follow the Demo clock. Demo, Fast-forward ages the 'ago' labels and adds missed syncs for a system that needs attention, but never runs a sync. A missed sync is one per hour since the last good one (demo values).
 ---
-screen p1 "EMR Connect\nFour tinted tiles above Connected systems"
+screen p1 "EMR Connect\nFour figures at the top of the Connection health card"
 
-group gSync "Tile 1: Last sync"
+group gSync "Figure 1: Last sync"
   decision q1 "Is any system not disconnected?"
-  process a1 "'None' in red\nSmall line: 'no system connected' (empty list) or 'N systems are disconnected'"
+  process a1 "'None'\nSmall line: 'no system connected' (empty list) or 'N systems are disconnected'"
   process a2 "Value is the time since the newest sync\n'Just now', '6 min', '1 h 6 min'"
   decision q2 "Is any system disconnected?"
-  process a3 "Green tile\n'all systems answering'"
-  process a4 "Amber tile\n'1 system is disconnected' or 'N systems are disconnected'"
+  process a3 "Small line 'all systems answering'"
+  process a4 "Small line '1 system is disconnected' or 'N systems are disconnected'"
 endgroup
 
-group gCharts "Tile 2: Charts matched today"
-  process b1 "23 'to open cases'\nStarts at 23 on reset"
+group gCharts "Figure 2: Charts matched today"
+  process b1 "23\nStarts at 23 on reset"
   store b2 "Each finished sync adds its charts\n1 to 3, at least 1 per system"
 endgroup
 
-group gFiles "Tile 3: Files pulled"
-  process c1 "142 'this week'\nStarts at 142 on reset"
+group gFiles "Figure 3: Files pulled this week"
+  process c1 "142\nStarts at 142 on reset"
   store c2 "Each finished sync adds its files\nA new system adds 5, and a finished Fix adds 12 remittances"
 endgroup
 
-group gMap "Tile 4: Need a mapping"
-  decision d1 "Any field waiting for a mapping?"
-  process d2 "Number in amber\n'fields the agents could not place'"
-  process d3 "0 in green\n'every field is mapped'"
+group gFail "Figure 4: Sync failures"
+  process d1 "The missed syncs of every system, added up\nA Connected system has 0\nA system that Needs attention misses one each hour since its last good sync: 2 at the start\nA Disconnected system is not asked, so it shows 'Sync paused' and adds nothing"
+  process d2 "Fix and Reconnect bring it back to 0\nFast-forward adds one per hour while the problem stays"
 endgroup
 
-process n1 "A system that Needs a quick look still counts as answering\nOnly Disconnected systems change this tile"
+process n1 "A system that Needs attention still counts as answering\nOnly Disconnected systems change the Last sync figure"
+process n3 "The fields waiting for a mapping are not a figure any more\nThey show in 'Action required' and in 'Advanced'"
 goto g1 "Continues in: EMR Connect › Sync › Sync now"
 goto g2 "Continues in: EMR Connect › Connect a system › Run the connection test and save"
 goto g3 "Continues in: EMR Connect › Needs a mapping › Map a field"
 goto g4 "Continues in: EMR Connect › Manage › Disconnect and reconnect"
-goto g5 "Continues in: EMR Connect › Problems › Fix a system that needs a quick look"
+goto g5 "Continues in: EMR Connect › Problems › Fix a system that needs attention"
 
 p1 --> q1 & b1 & c1 & d1
 q1 -->|No| a1
@@ -50,6 +50,5 @@ b1 --> b2 --> g1
 c1 --> c2
 c2 --> g1
 c2 --> g2
-c2 --> g5
-d1 -->|Yes| d2 --> g3
-d1 -->|No| d3
+d1 --> d2 --> g5
+p1 -.-> n3 --> g3

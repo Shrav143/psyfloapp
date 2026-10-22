@@ -1,10 +1,10 @@
 title: Payers › Process › Read the workflow
 route: /payers/summit?tab=process
-intro: The Process tab shows how an authorization works with one payer: numbered steps in order, with the condition drawn next to the step it leads to. It also holds the reach card, the script for Caller, and any banner about edits or proposals waiting.
+intro: The Process tab shows how an authorization works with one payer: numbered steps in order, with the condition drawn next to the step it leads to. The step-type key and the note about edits sit behind an info icon. How the payer is reached and the script for Caller are folded into one closed section. A banner shows only when edits or proposals wait.
 dir: TD
 ---
 start s1 "Click the 'Process' tab\n(the tab shown when none is named)"
-screen tab "Process tab\nBanners, workflow card, two small cards, a note"
+screen tab "Process tab\nBanners, workflow card, one closed section"
 
 group gB "Banners at the top (only when they apply)"
   decision dU "Edits saved but\nnot yet applied to open drafts?"
@@ -13,8 +13,9 @@ group gB "Banners at the top (only when they apply)"
   toast bP "'Historian proposed 1 change'\nIt never edits the workflow on its own.\n'Review in Changes'"
 endgroup
 
-screen card "Workflow card\n'How an authorization works with Summit'\nThe workflow the agents follow, in order.\nVersion 7, edited 10/12."
-process legend "'Step types' row\nChecklist step, File step, Portal step,\nPhone step, Condition"
+screen card "Workflow card\n'How an authorization works with Summit' with an info icon\n'Version 7, edited 10/12.'\n'Edit workflow' and 'Re-learn from decisions'"
+click cTip "Hover, focus or click the info icon\n(button 'About this workflow')"
+overlay tip "Info tip\nThe workflow in order, where the path splits\nThe key: Checklist step, File step, Portal step, Phone step, Condition\n'Admins can edit; every edit is logged. New drafts use a saved edit at once.\nSent requests keep what they were sent with. Click Update drafts to redraft open ones.'\nEscape closes it"
 
 group gS "One numbered step"
   screen st "Number, step title, step-type chip, agent chips\nFor example: 'Give notice'  Portal step  Navigator"
@@ -25,8 +26,7 @@ endgroup
 
 process six "Summit's six steps: Check coverage,\nGather the documents, Give notice,\nSend the request, Follow up,\nDecision and next review"
 process diff "Other payers differ in how they are reached\nEvergreen: phone steps\nLakeshore: file steps by fax\nHarborview: portal with fax for large files"
-screen two "'How to reach Summit' and\n'Instructions for Caller' side by side"
-toast note "'Admins can edit; every edit is logged. New drafts use a saved edit at once.\nSent requests keep what they were sent with.\nClick Update drafts to redraft open ones.'"
+screen two "Closed section\n'How to reach Summit and what Caller says'\n'Reached by portal, phone as backup. Caller script saved 10/12.'\nOpens to 'How to reach Summit' and 'Instructions for Caller' side by side"
 
 click cE "Click 'Edit workflow'"
 click cR "Click 'Re-learn from decisions'"
@@ -43,12 +43,13 @@ dU -->|Yes| bU --> dP
 dU -->|No| dP
 dP -->|Yes| bP --> card
 dP -->|No| card
-card --> legend --> st --> stx --> dc
+card --> st --> stx --> dc
+card -.-> cTip --> tip
 dc -->|Yes| br
 dc -->|No| six
 br --> six
 six -.-> diff
-six --> two --> note
+six --> two
 card --> cE --> g_ed
 card --> cR --> g_rl
 bP --> cRev --> g_ch

@@ -52,7 +52,7 @@ export function LiveCheck({ steps, idx, secs, running, finished, onSkip }: { ste
     <Card className="overflow-hidden">
       <CardHeader
         title="Live check"
-        subtitle="Each agent asks the right source and reports back"
+        subtitle="Simulated in this demo: each agent asks the right source and reports back"
         right={
           <>
             {running ? (

@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { Info, ListChecks } from "lucide-react";
+import { ListChecks } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Banner, Button, Card, CardBody, CardHeader, Dropdown, Field, TextArea } from "@/components/ui";
 import type { DocItem } from "@/data/payerConfig";
 import { CHART_GAPS } from "@/data/payerConfigSeed";
 import { PROGRAM_LABEL, type Program } from "@/data/types";
 import { sleep } from "@/lib/format";
+import { InfoTip } from "@/pages/eligibility/InfoTip";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
 import { checkChart, checkText, stillNeeded, type CheckResult } from "./lib/checker";
@@ -44,14 +45,24 @@ export function ChartChecker({ payerId, name, lists, program, onProgram }: { pay
 
   const r = done?.result;
   return (
-    <div className="flex flex-col gap-4">
+    <>
       <Card>
-        <CardHeader title="Try it on a case" subtitle="Check a chart against this list" />
+        <CardHeader
+          title={
+            <>
+              Try it on a case{" "}
+              <InfoTip label="About the chart check">
+                New case checks documents against this same list. Pasted text is matched by keyword, so a document that is named differently can be missed.
+              </InfoTip>
+            </>
+          }
+          subtitle="Check a chart against this list"
+        />
         <CardBody className="flex flex-col gap-3.5">
           <Labeled label="Case">
             <Dropdown variant="field" ariaLabel="Case" value={caseId} onChange={(v) => { setCaseId(v); setDone(null); }} options={cases.map((c) => ({ value: c.id, label: `${c.id} · ${c.patient.initials}, ${c.patient.age}`, hint: PROGRAM_LABEL[c.program] }))} placeholder="No cases to check" menuWidth={300} />
           </Labeled>
-          <Field label="Paste chart text" hint={`Optional. With text here, Reader checks it against the ${PROGRAM_LABEL[program]} list on the left instead of the case's chart.`}>
+          <Field label="Paste chart text" hint={`Optional. With text here, Reader checks it against the ${PROGRAM_LABEL[program]} list above instead of the case's chart.`}>
             <TextArea value={text} onChange={(e) => { setText(e.target.value); setDone(null); }} placeholder="Paste notes from the chart. Nothing is saved or sent." className="min-h-[96px]" />
           </Field>
           <Button variant="primary" icon={ListChecks} loading={busy} disabled={!pasted && !chosen} onClick={run}>{busy ? "Reader is reading the chart" : "Check this chart"}</Button>
@@ -65,7 +76,6 @@ export function ChartChecker({ payerId, name, lists, program, onProgram }: { pay
           ) : null}
         </CardBody>
       </Card>
-      <Banner tone="neutral" icon={Info}><span className="text-sm">New case checks documents against this same list. Pasted text is matched by keyword, so a document that is named differently can be missed.</span></Banner>
-    </div>
+    </>
   );
 }

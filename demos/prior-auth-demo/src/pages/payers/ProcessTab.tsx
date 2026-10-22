@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { Info } from "lucide-react";
-import { Banner } from "@/components/ui";
+import { Banner, Disclosure } from "@/components/ui";
 import type { PayerConfig } from "@/data/payerConfig";
 import { sleep } from "@/lib/format";
 import { useStore } from "@/store";
 import { useAlive } from "./lib/useAlive";
-import { CallerCard, ReachCard } from "./ReachCards";
+import { CallerSection, ReachSection } from "./ReachCards";
 import { Unapplied } from "./Unapplied";
 import { WorkflowCard } from "./WorkflowCard";
 import { WorkflowEditor } from "./WorkflowEditor";
@@ -32,11 +31,12 @@ export function ProcessTab({ id, name, cfg, onReview }: { id: string; name: stri
         <Banner tone="neutral" title={`Historian proposed ${cfg.proposals.length} ${cfg.proposals.length === 1 ? "change" : "changes"}`} action={<button type="button" onClick={onReview} className="font-semibold text-forest hover:underline">Review in Changes</button>}>It never edits the workflow on its own.</Banner>
       ) : null}
       <WorkflowCard name={name} cfg={cfg} relearning={relearning} onEdit={() => setEditing(true)} onRelearn={relearn} />
-      <div className="grid grid-cols-2 items-start gap-4">
-        <ReachCard name={name} cfg={cfg} />
-        <CallerCard id={id} cfg={cfg} />
-      </div>
-      <Banner tone="neutral" icon={Info}>Admins can edit; every edit is logged. New drafts use a saved edit at once. Sent requests keep what they were sent with. Click Update drafts to redraft open ones.</Banner>
+      <Disclosure title={`How to reach ${name} and what Caller says`} summary={`Reached by ${cfg.reachedBy.toLowerCase()}, ${cfg.facts.backup}. Caller script saved ${cfg.caller.confirmed}.`}>
+        <div className="grid grid-cols-1 divide-line min-[760px]:grid-cols-2 min-[760px]:divide-x">
+          <ReachSection name={name} cfg={cfg} />
+          <CallerSection id={id} cfg={cfg} />
+        </div>
+      </Disclosure>
       {editing ? <WorkflowEditor id={id} name={name} cfg={cfg} onClose={() => setEditing(false)} /> : null}
     </div>
   );

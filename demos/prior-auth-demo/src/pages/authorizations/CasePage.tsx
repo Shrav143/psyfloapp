@@ -8,6 +8,7 @@ import { EMPTY_WORK, canSend, checkViews, currentChance, groupRecs, isWithPayer,
 import { paths } from "@/routes";
 import { useStore } from "@/store";
 import { CaseHeader } from "./CaseHeader";
+import { CaseHistory } from "./CaseHistory";
 import { TABS, type CaseCtx, type TabId } from "./caseTypes";
 import { reviewPath } from "./reviewAndSign";
 import { ActionsTab } from "./tabs/ActionsTab";
@@ -51,6 +52,7 @@ function CaseView({ detail, work, live }: { detail: CaseDetail; work: CaseWork; 
       <div role="tabpanel" aria-label={TABS.find((t) => t.id === tab)?.label} className="psy-fade-up">
         {tab === "actions" ? <ActionsTab ctx={ctx} /> : tab === "picture" ? <PictureTab ctx={ctx} /> : tab === "criteria" ? <CriteriaTab ctx={ctx} /> : tab === "risk" ? <RiskTab ctx={ctx} /> : <DraftTab ctx={ctx} />}
       </div>
+      <CaseHistory ctx={ctx} />
     </Page>
   );
 }

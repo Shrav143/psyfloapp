@@ -1,10 +1,10 @@
-import type { PayerId } from "./types";
+import type { PayerId, Program } from "./types";
 
-/* Analytics > Performance. "This quarter" with all payers is the canonical set: 71% approved as asked,
-   29% top denial cause, 84% advice taken works, 75% sent without edits; approval by payer Lakeshore 86,
-   Beacon 81, Harborview 77, Summit 74, Evergreen 69, Cardinal 63; edits 68 / 27 / 5.
-   Appeals overturned 56% of 96 decided, 17 denials accepted.
-   Every other view (another period, one payer) is derived from the tables below. */
+/* Analytics. "This quarter" with all payers and all programs is the canonical set: 1,070 decisions, 71% approved as asked
+   (so 29% denied, 311 denials), 84% advice taken works, 75% sent without edits; approval by payer Lakeshore 86, Beacon 81,
+   Harborview 77, Summit 74, Evergreen 69, Cardinal 63; edits 68 / 27 / 5. Appeals overturned 56% of 96 decided, 17 denials accepted.
+   Turnaround is the decision-weighted average of each payer's avgDecisionDays in data/seed.ts (2.4 days).
+   Every other view (another period, one payer, one program) is derived from the tables below. */
 
 export const MIN_DECISIONS = 20;
 
@@ -26,6 +26,37 @@ export const PERIODS: PeriodInfo[] = [
   { id: "last_quarter", label: "Last quarter", phrase: "last quarter", prev: "the quarter before", scale: 0.96 },
   { id: "year", label: "Last 12 months", phrase: "the last 12 months", prev: "the year before", scale: 3.9 },
 ];
+
+/** The Program filter. The model has no per-program split, so these weights are Demo values. Shares add to 100, and the shifts
+    and multipliers are balanced against those shares, so "All programs" stays the canonical set. */
+export type ProgramFilter = Program | "all";
+export interface ProgramWeights {
+  label: string;
+  /** Share of decisions, in percent. */
+  share: number;
+  /** Points added to every payer's approved-as-asked rate. Weighted by share they add to 0. */
+  approvalShift: number;
+  /** Multiplier on a payer's average decision time. Weighted by share it averages 1. */
+  turnaround: number;
+  /** Points added to "advice taken works". */
+  adviceShift: number;
+  /** Points moved between "sent as written" and "light edits". */
+  writtenShift: number;
+  /** Weight on denial reasons the team can fix before sending, and on the others. Each averages 1 across programs. */
+  preventable: number;
+  other: number;
+}
+export const PROGRAM_WEIGHTS: Record<Program, ProgramWeights> = {
+  RES: { label: "Residential", share: 40, approvalShift: -3, turnaround: 1.1, adviceShift: -2, writtenShift: -3, preventable: 0.9, other: 1.13 },
+  IOP: { label: "IOP", share: 30, approvalShift: 4, turnaround: 0.95, adviceShift: 3, writtenShift: 4, preventable: 1.1, other: 0.86 },
+  PHP: { label: "PHP", share: 20, approvalShift: 2, turnaround: 0.95, adviceShift: 1, writtenShift: 2, preventable: 1.1, other: 0.88 },
+  WM: { label: "Withdrawal management", share: 10, approvalShift: -4, turnaround: 0.85, adviceShift: -3, writtenShift: -4, preventable: 0.9, other: 1.14 },
+};
+export const PROGRAM_ORDER: Program[] = ["RES", "IOP", "PHP", "WM"];
+
+/** Demo values: how decision times drift in other periods (a multiplier on the payer averages), and what each period is compared with. */
+export const TURNAROUND_SCALE: Record<PeriodId, number> = { quarter: 1, last_quarter: 1.06, year: 1.04 };
+export const TURNAROUND_PREV: Record<PeriodId, number> = { quarter: 1.06, last_quarter: 1.12, year: 1.1 };
 
 export const PAYER_ORDER: PayerId[] = ["lakeshore", "beacon", "harborview", "summit", "evergreen", "cardinal"];
 
@@ -63,10 +94,8 @@ export const APPROVED_PREV: Record<PeriodId, Record<PayerId, number>> = {
   year: { lakeshore: 77, beacon: 72, harborview: 68, summit: 64, evergreen: 58, cardinal: 52 },
 };
 
-/** Whole-practice figures are fixed numbers so the headline tiles never drift from rounding. */
+/** Whole-practice figures that are not sums of the payer tables. Approval and denial rates are always summed from the payers. */
 export interface AllFigures {
-  approved: number;
-  approvedPrev: number;
   advice: number;
   noEdits: number;
   written: number;
@@ -76,9 +105,9 @@ export interface AllFigures {
   editApproval: [number, number, number];
 }
 export const ALL: Record<PeriodId, AllFigures> = {
-  quarter: { approved: 71, approvedPrev: 65, advice: 84, noEdits: 75, written: 68, light: 27, rewritten: 5, editApproval: [89, 76, 45] },
-  last_quarter: { approved: 65, approvedPrev: 62, advice: 81, noEdits: 71, written: 64, light: 29, rewritten: 7, editApproval: [86, 72, 41] },
-  year: { approved: 69, approvedPrev: 61, advice: 79, noEdits: 70, written: 62, light: 31, rewritten: 7, editApproval: [85, 72, 42] },
+  quarter: { advice: 84, noEdits: 75, written: 68, light: 27, rewritten: 5, editApproval: [89, 76, 45] },
+  last_quarter: { advice: 81, noEdits: 71, written: 64, light: 29, rewritten: 7, editApproval: [86, 72, 41] },
+  year: { advice: 79, noEdits: 70, written: 62, light: 31, rewritten: 7, editApproval: [85, 72, 42] },
 };
 
 export interface Reason {
@@ -86,31 +115,33 @@ export interface Reason {
   /** One line for the Top denial cause tile. */
   short: string;
   payerId: PayerId;
-  /** Denials in a quarter. */
+  /** How often the reason is cited, relative to the payer's other reasons. A view spreads the payer's denials over its reasons in these proportions. */
   count: number;
+  /** True when the team can fix it before sending: missing or thin documentation, late notice, incomplete certification, a duplicate request. */
+  preventable: boolean;
 }
-/** The first row of each payer is its most common reason; those five are the canonical table (89, 74, 61, 48, 39). */
+/** The first row of each payer is its most common reason. */
 export const REASONS: Reason[] = [
-  { label: "Continued-stay evidence incomplete", short: "Thin continued-stay evidence", payerId: "cardinal", count: 89 },
-  { label: "Units requested above criteria", short: "Units above criteria", payerId: "cardinal", count: 41 },
-  { label: "Missing recent therapy notes", short: "Missing therapy notes", payerId: "cardinal", count: 27 },
-  { label: "Peer-to-peer window missed", short: "Peer-to-peer window missed", payerId: "cardinal", count: 14 },
-  { label: "Recertification filed too late", short: "Recertification filed late", payerId: "harborview", count: 74 },
-  { label: "Missing physician certification", short: "Missing certification", payerId: "harborview", count: 31 },
-  { label: "Fax pages unreadable", short: "Unreadable fax pages", payerId: "harborview", count: 12 },
-  { label: "Partial approval without a stated reason", short: "Partial approvals unexplained", payerId: "evergreen", count: 61 },
-  { label: "Phone confirmation not on file", short: "No phone confirmation", payerId: "evergreen", count: 22 },
-  { label: "Recertification filed too late", short: "Recertification filed late", payerId: "evergreen", count: 11 },
-  { label: "Level of care does not match mood severity", short: "Level of care vs mood severity", payerId: "summit", count: 48 },
-  { label: "Retro-authorization window missed", short: "Retro window missed", payerId: "summit", count: 29 },
-  { label: "Missing ASAM dimension ratings", short: "Missing ASAM ratings", payerId: "summit", count: 21 },
-  { label: "Duplicate request", short: "Duplicate request", payerId: "summit", count: 12 },
-  { label: "Step-down plan not named", short: "Step-down plan not named", payerId: "beacon", count: 39 },
-  { label: "Out-of-network flag in error", short: "Network flag in error", payerId: "beacon", count: 14 },
-  { label: "Missing level-of-care form", short: "Missing form", payerId: "beacon", count: 9 },
-  { label: "Authorization number missing on the claim", short: "Number missing on claim", payerId: "lakeshore", count: 6 },
-  { label: "Units above the plan limit", short: "Units above plan limit", payerId: "lakeshore", count: 5 },
-  { label: "Late notice", short: "Late notice", payerId: "lakeshore", count: 3 },
+  { label: "Continued-stay evidence incomplete", short: "Thin continued-stay evidence", payerId: "cardinal", count: 89, preventable: true },
+  { label: "Units requested above criteria", short: "Units above criteria", payerId: "cardinal", count: 41, preventable: false },
+  { label: "Missing recent therapy notes", short: "Missing therapy notes", payerId: "cardinal", count: 27, preventable: true },
+  { label: "Peer-to-peer window missed", short: "Peer-to-peer window missed", payerId: "cardinal", count: 14, preventable: true },
+  { label: "Recertification filed too late", short: "Recertification filed late", payerId: "harborview", count: 74, preventable: true },
+  { label: "Missing physician certification", short: "Missing certification", payerId: "harborview", count: 31, preventable: true },
+  { label: "Fax pages unreadable", short: "Unreadable fax pages", payerId: "harborview", count: 12, preventable: true },
+  { label: "Partial approval without a stated reason", short: "Partial approvals unexplained", payerId: "evergreen", count: 61, preventable: false },
+  { label: "Phone confirmation not on file", short: "No phone confirmation", payerId: "evergreen", count: 22, preventable: true },
+  { label: "Recertification filed too late", short: "Recertification filed late", payerId: "evergreen", count: 11, preventable: true },
+  { label: "Level of care does not match mood severity", short: "Level of care vs mood severity", payerId: "summit", count: 48, preventable: false },
+  { label: "Retro-authorization window missed", short: "Retro window missed", payerId: "summit", count: 29, preventable: true },
+  { label: "Missing ASAM dimension ratings", short: "Missing ASAM ratings", payerId: "summit", count: 21, preventable: true },
+  { label: "Duplicate request", short: "Duplicate request", payerId: "summit", count: 12, preventable: true },
+  { label: "Step-down plan not named", short: "Step-down plan not named", payerId: "beacon", count: 39, preventable: true },
+  { label: "Out-of-network flag in error", short: "Network flag in error", payerId: "beacon", count: 14, preventable: false },
+  { label: "Missing level-of-care form", short: "Missing form", payerId: "beacon", count: 9, preventable: true },
+  { label: "Authorization number missing on the claim", short: "Number missing on claim", payerId: "lakeshore", count: 6, preventable: true },
+  { label: "Units above the plan limit", short: "Units above plan limit", payerId: "lakeshore", count: 5, preventable: false },
+  { label: "Late notice", short: "Late notice", payerId: "lakeshore", count: 3, preventable: true },
 ];
 
 export interface HelpAction {

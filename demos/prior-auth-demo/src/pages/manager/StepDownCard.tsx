@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Card, CardHeader, Chip, IdLink } from "@/components/ui";
+import { Button, Chip, Disclosure, IdLink } from "@/components/ui";
 import { PAYERS } from "@/data/seed";
 import { PROGRAM_LABEL, type PayerSummary, type Program } from "@/data/types";
 import { shortDate } from "@/lib/time";
@@ -46,17 +46,16 @@ export function StepDownCard({ filters }: { filters: ManagerFilters }) {
   if (!plans.length) return null;
 
   return (
-    <Card>
-      <CardHeader title="Step-down plans" subtitle="Started when Denial Intelligence accepts a denial. Choose the next level of care and book the first visit." />
+    <Disclosure title="Step-down plans" summary={`${plans.length} ${plans.length === 1 ? "plan" : "plans"} to start. Choose the next level of care and book the first visit.`}>
       <ul className="flex flex-col gap-3.5 p-5" aria-label={`${plans.length} ${plans.length === 1 ? "step-down plan" : "step-down plans"}`}>
         {plans.map((p) => {
           const open = () => nav(paths.case(p.caseId));
           return (
-            <li key={p.key} className="flex items-start gap-5 rounded-2xl border border-edge bg-tile p-5">
+            <li key={p.key} className="flex flex-wrap items-start gap-x-5 gap-y-3 rounded-2xl border border-edge bg-tile p-5">
               <div className="w-[142px] shrink-0 pt-0.5">
                 <Chip>{p.program ? PROGRAM_LABEL[p.program] : "Level not set"}</Chip>
               </div>
-              <div className="min-w-0 flex-1">
+              <div className="min-w-[200px] flex-1">
                 <div className="font-semibold">Step-down plan</div>
                 <div>
                   <IdLink onClick={open}>{p.caseId}</IdLink>
@@ -76,6 +75,6 @@ export function StepDownCard({ filters }: { filters: ManagerFilters }) {
           );
         })}
       </ul>
-    </Card>
+    </Disclosure>
   );
 }

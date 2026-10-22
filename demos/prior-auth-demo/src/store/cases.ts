@@ -47,8 +47,8 @@ export interface CasesSlice {
   skipCaseStep: (id: string) => void;
   /** Send back to Scribe: Scribe, Integrity, Packet and Scrubber run again with the note. */
   rerunFromScribe: (id: string, note: string) => void;
-  /** Sign and send. Returns the request ID that now shows on the Dashboard. */
-  signCaseDraft: (id: string) => string | undefined;
+  /** Sign and send. `signedBy` is who the person signed as ("Dr. Rivera, clinician"); the request's history says so. Returns the request ID that now shows on the Dashboard. */
+  signCaseDraft: (id: string, signedBy?: string) => string | undefined;
   /** The draft for a request that exists on the case page: made from the request's own data when there is none, brought up to date when there is.
       It is moved to the step that fits: Review and sign when the request is ready, Agents work when agents still have work to do. Returns its ID. */
   draftFromRequest: (requestId: string) => string;
@@ -177,9 +177,10 @@ export const createCasesSlice: StateCreator<AppState, [], [], CasesSlice> = (set
         sendBackNote: note.trim() || undefined,
       })),
 
-    signCaseDraft: (id) => {
+    signCaseDraft: (id, signedBy) => {
       const d = find(id);
       if (!d || !d.payerId || !d.program || !d.type || draftState(d) !== "ready") return undefined;
+      const known = new Set(get().requests.find((r) => r.id === d.caseId)?.events.map((e) => e.id));
       const requestId = get().submitCase({
         caseId: d.caseId ?? undefined,
         patient: { initials: d.patient.initials, age: d.patient.age ?? 0 },
@@ -189,6 +190,18 @@ export const createCasesSlice: StateCreator<AppState, [], [], CasesSlice> = (set
         chance: currentChance(d),
         referralId: d.referralId,
       });
+      /* The events happened just now, in order: at the demo's current minute, so History puts them after what was done on the case page before signing.
+         The person signs as the clinician they chose, and the line says so. */
+      const sent = get().requests.find((r) => r.id === requestId);
+      if (sent) {
+        get().updateRequest(requestId, {
+          events: sent.events.map((e) => {
+            if (!e.done || known.has(e.id)) return e;
+            const text = e.text === "You signed and sent the request" && signedBy ? `You signed as ${signedBy} and sent the request` : e.text;
+            return { ...e, at: get().clock, text };
+          }),
+        });
+      }
       if (d.run.skipped.includes("verify")) get().addEvent(requestId, { actor: "verify", text: `Verify could not reach ${payerById(d.payerId).shortName}'s portal before signing`, detail: "Coverage was not confirmed. You skipped it and noted it." });
       set((s) => ({ caseDrafts: s.caseDrafts.map((x) => (x.id === id ? { ...x, sent: true, caseId: requestId } : x)), caseSentToday: [...s.caseSentToday, requestId] }));
       return requestId;

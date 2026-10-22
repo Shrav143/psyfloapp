@@ -32,7 +32,7 @@ group gC "Wired: links out of Payers"
 endgroup
 
 group gP "Not read by any edit"
-  process n1 "Header 'Approved as asked' (74% for Summit) is where New case\nstarts the approval chance: it ends 14 points higher.\nIt comes from decision history, so no rule or list edit moves it"
+  process n1 "The payer's approved-as-asked rate (74% for Summit, shown in Analytics)\nis where New case starts the approval chance: it ends 14 points higher.\nIt comes from decision history, so no rule or list edit moves it"
   process n2 "Authorizations queue order and the case page\ndo not read the saved configuration"
 endgroup
 

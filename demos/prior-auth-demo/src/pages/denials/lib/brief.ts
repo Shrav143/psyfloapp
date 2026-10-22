@@ -4,7 +4,7 @@ import { payerById } from "@/data/seed";
 import type { PayerId, PsyRequest } from "@/data/types";
 import { DAY, shortDate, stamp } from "@/lib/time";
 import type { DenialAnalysis } from "./analysis";
-import { leftLabel } from "./format";
+import { REVIEW_NOTE, leftLabel } from "./format";
 
 const LINES: Record<PayerId, { phone: string; reviewer: string }> = {
   summit: { phone: "(800) 555-0114", reviewer: "Physician reviewer, behavioral health" },
@@ -64,6 +64,7 @@ export function briefToText(r: PsyRequest, a: DenialAnalysis, b: BriefData): str
     `Peer-to-peer brief · ${r.id}`,
     `${b.payerName} · ${a.ctx.program} · ${a.ctx.who}`,
     `Call: ${b.window}. Who to call: ${b.line}. Reviewer: ${b.reviewer}.`,
+    REVIEW_NOTE,
     "",
     "YOUR OPENING",
     a.opening,

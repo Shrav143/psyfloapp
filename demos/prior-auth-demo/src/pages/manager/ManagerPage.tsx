@@ -17,7 +17,7 @@ import { LEVEL_OPTIONS, NO_FILTERS, PAYER_FILTER_OPTIONS, REVIEW_STATUS_OPTIONS,
 
 type Tab = "cases" | "reviews";
 
-/** Case Manager: every active case (the ones still being prepared, then the tracker of the rest) and the week's clinical reviews. The tab is remembered in ?tab=. `?review=` opens one review's drawer (the case page's "Open the review" uses it). */
+/** Case Manager: the tracker of every active case (what is due next, units used and left), with one folded row for the cases still being prepared, and the week's clinical reviews. The tab is remembered in ?tab=. `?review=` opens one review's drawer (the case page's "Open the review" uses it). */
 export default function ManagerPage() {
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();

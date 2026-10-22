@@ -1,0 +1,63 @@
+import { useState } from "react";
+import { CalendarClock, ChevronDown } from "lucide-react";
+import { AgentBadge, Disclosure } from "@/components/ui";
+import { AGENTS } from "@/data/agents";
+import { cn } from "@/lib/cn";
+import { PaymentChecks } from "./PaymentChecks";
+import type { AgentLine, CheckResult } from "./checks";
+
+const secs = (n: number): string => `${Math.floor(n / 60)}:${String(n % 60).padStart(2, "0")}`;
+
+function AgentRows({ agents }: { agents: AgentLine[] }) {
+  const [open, setOpen] = useState<number | null>(null);
+  return (
+    <ul aria-label="What the agents checked">
+      {agents.map((a, i) => (
+        <li key={a.label} className="border-b border-line">
+          <button type="button" aria-expanded={open === i} onClick={() => setOpen(open === i ? null : i)} className="flex w-full items-center gap-3 px-6 py-2.5 text-left hover:bg-[#FBF8F3]">
+            <AgentBadge agent={a.agent} size={30} />
+            <span className="flex-1">{a.label}</span>
+            <span className="text-xs text-muted">{secs(a.secs)}</span>
+            <ChevronDown size={15} className={cn("ico text-faint transition-transform", open === i && "rotate-180")} aria-hidden="true" />
+          </button>
+          {open === i ? <div className="psy-fade-up mx-6 mb-3 rounded-lg bg-tile px-3 py-2 text-[13px] text-ink2">{a.answer}</div> : null}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/** "6 of 7 pass" with what did not, in one line. A check that could not run is not counted as a failure. */
+function checksSummary(result: CheckResult): string {
+  const real = result.checks.filter((c) => !c.unknown);
+  const pass = real.filter((c) => c.tone === "good").length;
+  const look = real.filter((c) => c.tone === "mid").length;
+  const fail = real.filter((c) => c.tone === "risk").length;
+  const skipped = result.checks.length - real.length;
+  const bits = [`${pass} of ${real.length} pass`, look ? `${look} need${look === 1 ? "s" : ""} a look` : "", fail ? `${fail} failed` : "", skipped ? "the rest could not be checked" : ""].filter(Boolean);
+  return `${bits.join(", ")}. Every line has to pass for the clinic to be reimbursed.`;
+}
+
+/** Everything behind the summary, closed until asked for: the payment checks, and the agents' answers with the next checks. */
+export function ResultDetails({ result, nextLines }: { result: CheckResult; nextLines: string[] }) {
+  const agentNames = [...new Set(result.agents.map((a) => AGENTS[a.agent].name))];
+  const total = result.agents.reduce((n, a) => n + a.secs, 0);
+  return (
+    <div className="flex flex-col gap-4">
+      <Disclosure title="Payment checks" summary={checksSummary(result)} keepMounted>
+        <PaymentChecks result={result} showPays={false} />
+      </Disclosure>
+      <Disclosure title="How this was checked" summary={`${agentNames.join(", ")}, ${secs(total)} in all. Next check: ${nextLines[0]}`} keepMounted>
+        <AgentRows agents={result.agents} />
+        <ul aria-label="Next checks" className="flex flex-col gap-2.5 px-6 py-[18px]">
+          {nextLines.map((n) => (
+            <li key={n} className="flex items-center gap-2.5 text-sm">
+              <CalendarClock size={16} className="ico text-muted" />
+              {n}
+            </li>
+          ))}
+        </ul>
+      </Disclosure>
+    </div>
+  );
+}

@@ -16,14 +16,14 @@ process p6 "Show the tab named in the address"
 
 screen pg "Payers\n'N payers. The agents know how each one works.'\nWorkflow, rules and documents for every payer. Every edit is logged with your reason."
 
-group gL "Left column"
-  screen list "Payer list card\n'Payers', 'Search payers', four groups, a dot per payer, legend"
+group gL "Left column (above the payer on a narrow screen)"
+  screen list "Payer list card\n'Payers', 'Search payers', one compact row per payer:\nname, plan type and programs, what it asks for, change mark"
   click c_pick "Click a payer in the list"
   click c_search "Type in 'Search payers'"
 endgroup
 
 group gR "Right column"
-  screen head "Payer header\nName, plan line, 'Edit log', 'Edit', four facts"
+  screen head "Payer header\nName, 'Demo rules. Not verified...' label, plan line, 'Edit log', 'Edit'\nPlan type, programs, needs, notice and reach, policy status"
   screen tabs "Tab bar\nProcess, Rules, Documents, Changes"
   click c_edit "Click 'Edit'"
   click c_log "Click 'Edit log'"
@@ -38,7 +38,8 @@ group gB "What the badges count"
 endgroup
 
 goto g_list "Continues in: Payers › List › Search and pick a payer"
-goto g_head "Continues in: Payers › Header › What the facts mean"
+goto g_head "Continues in: Payers › Header › What the header says"
+goto g_ps "Continues in: Payers › Header › Policy status and the demo-rules label"
 goto g_edit "Continues in: Payers › Edit payer details"
 goto g_log "Continues in: Payers › Edit log"
 goto g_add "Continues in: Payers › Add a payer"
@@ -61,6 +62,7 @@ c_pick --> g_list
 c_search --> g_list
 head --> c_edit & c_log
 head --> g_head
+head -.-> g_ps
 c_edit --> g_edit
 c_log --> g_log
 c_add --> g_add

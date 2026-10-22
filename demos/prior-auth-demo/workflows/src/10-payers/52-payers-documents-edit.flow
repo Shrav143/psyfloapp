@@ -3,7 +3,7 @@ route: /payers/summit?tab=documents
 intro: 'Edit list' changes the documents for the one level of care shown. Rows can be renamed, added and removed; there is no reordering. A reason is required and each change is logged. New drafts use the list at once, sent requests keep what they were sent with, and open drafts wait for 'Update drafts'.
 dir: TD
 ---
-start s1 "Click 'Edit list'\non the document card"
+start s1 "Click 'Edit list'\nbeside 'Level of care'"
 overlay m "Edit what Summit wants for Residential 3.5\nNew drafts use this list at once. Sent requests keep\nwhat they were sent with. Click Update drafts to redraft open ones."
 process lvl "Edits only the level of care shown\nTo change IOP, close this and switch 'Level of care' first"
 screen rws "One row per document\nNumber, document name box, 'What it must show' box, bin"

@@ -1,47 +1,54 @@
 import { useState } from "react";
 import { Button, Card, SearchInput } from "@/components/ui";
+import { programsShort } from "@/data/payerConfigPlan";
 import { cn } from "@/lib/cn";
-import type { PayerConfig } from "@/data/payerConfig";
-import { groupRows, type PayerRow } from "./lib/payers";
+import { filterRows, type PayerRow } from "./lib/payers";
 
-/** Payers grouped by type. A green dot means up to date, an ochre dot means a change is waiting. */
-export function PayerList({ rows, config, selectedId, onSelect }: { rows: PayerRow[]; config: Record<string, PayerConfig>; selectedId: string; onSelect: (id: string) => void }) {
-  const [query, setQuery] = useState("");
-  const groups = groupRows(rows, query);
+/** One compact row per payer: name, plan type and programs, what the payer asks for, and a mark when a change is waiting. The row opens the payer. */
+function Row({ r, selected, onSelect }: { r: PayerRow; selected: boolean; onSelect: () => void }) {
   return (
-    <Card className="overflow-hidden">
-      <div className="px-5 pt-5 pb-4">
-        <h3 className="font-serif text-[21px] leading-tight font-semibold">Payers</h3>
-        <SearchInput className="mt-3" value={query} onChange={setQuery} placeholder="Search payers" />
+    <button type="button" aria-current={selected} onClick={onSelect} className={cn("grid w-full grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 border-t border-line px-5 py-2.5 text-left hover:bg-[#FBF8F3]", selected && "bg-[#F3F7F4] hover:bg-[#F3F7F4]")}>
+      <span className="min-w-0">
+        <span className="block truncate font-semibold" title={r.name}>{r.name}</span>
+        <span className="block text-xs text-muted">{[r.plan?.short, programsShort(r.programs)].filter(Boolean).join(" · ")}</span>
+      </span>
+      <span className="flex flex-col items-end gap-1">
+        <span className="text-xs whitespace-nowrap text-muted">{r.needs}</span>
+        <span className={cn("flex items-center gap-1.5 text-[11.5px] font-semibold whitespace-nowrap", r.waiting ? "text-mid-ink" : "text-muted")}>
+          {r.waiting ? "Change waiting" : null}
+          <span className={cn("h-[9px] w-[9px] rounded-full", r.waiting ? "bg-mid" : "bg-good")} role="img" aria-label={r.waiting ? "Change waiting" : "No change waiting"} />
+        </span>
+      </span>
+    </button>
+  );
+}
+
+/** The payers, searchable. On a wide screen it is a column beside the payer; on a narrow one it sits above and fills two columns when there is room. */
+export function PayerList({ rows, selectedId, onSelect }: { rows: PayerRow[]; selectedId: string; onSelect: (id: string) => void }) {
+  const [query, setQuery] = useState("");
+  const shown = filterRows(rows, query);
+  const waiting = rows.filter((r) => r.waiting).length;
+  return (
+    <Card className="@container overflow-hidden">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 pt-5 pb-4">
+        <div className="min-w-0">
+          <h3 className="font-serif text-[21px] leading-tight font-semibold">Payers</h3>
+          <p className="text-xs text-muted">{waiting ? `${waiting} with a change waiting` : "No change waiting"}</p>
+        </div>
+        <SearchInput className="min-w-[180px] flex-1" value={query} onChange={setQuery} placeholder="Search payers" />
       </div>
-      {groups.length ? (
-        groups.map((g) => (
-          <div key={g.group}>
-            <div className="border-t border-line px-5 pt-3 pb-1.5 text-[11.5px] font-medium tracking-[0.1em] text-muted uppercase">{g.group}</div>
-            {g.rows.map((r) => {
-              const waiting = !!config[r.id]?.pending;
-              return (
-                <button key={r.id} type="button" aria-current={r.id === selectedId} onClick={() => onSelect(r.id)} className={cn("flex w-full items-center gap-3 px-5 py-2.5 text-left hover:bg-[#FBF8F3]", r.id === selectedId && "bg-[#F3F7F4] hover:bg-[#F3F7F4]")}>
-                  <span className="min-w-0 flex-1">
-                    <span className="block font-semibold">{r.name}</span>
-                    <span className="block text-xs text-muted">{r.type}</span>
-                  </span>
-                  <span className={cn("h-[9px] w-[9px] rounded-full", waiting ? "bg-mid" : "bg-good")} role="img" aria-label={waiting ? "Change waiting" : "Up to date"} />
-                </button>
-              );
-            })}
-          </div>
-        ))
+      {shown.length ? (
+        <div className="grid grid-cols-1 @lg:grid-cols-2">
+          {shown.map((r) => (
+            <Row key={r.id} r={r} selected={r.id === selectedId} onSelect={() => onSelect(r.id)} />
+          ))}
+        </div>
       ) : (
         <div className="flex flex-col items-start gap-2 border-t border-line px-5 py-5 text-sm text-muted">
           No payer matches “{query}”.
           <Button size="sm" variant="ghost" onClick={() => setQuery("")}>Clear search</Button>
         </div>
       )}
-      <div className="flex items-center gap-4 border-t border-line px-5 py-3 text-xs text-muted">
-        <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-good" />up to date</span>
-        <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-mid" />change waiting</span>
-      </div>
     </Card>
   );
 }

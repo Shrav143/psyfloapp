@@ -1,13 +1,16 @@
 import { X } from "lucide-react";
 import { Button, Dropdown, SearchInput, type Option } from "@/components/ui";
-import { STATUS_LABEL, type Band, type StatusFilter } from "@/data/queue";
+import { REQUEST_KINDS, REQUEST_KIND_LABEL, STATUS_LABEL, type Band, type RequestKind, type StatusFilter } from "@/data/queue";
 import { PAYERS } from "@/data/seed";
 import type { PayerId } from "@/data/types";
 import type { QueueFilters } from "@/store/queue";
+import { InfoTip } from "./InfoTip";
 import { filtersActive } from "./queueLogic";
+import { StatusHelp } from "./StatusHelp";
 
 const payerOptions = (): Option<PayerId | "all">[] => [{ value: "all", label: "All payers" }, ...PAYERS.map((p) => ({ value: p.id, label: p.name }))];
 const STATUS_OPTIONS: Option<StatusFilter>[] = (Object.keys(STATUS_LABEL) as StatusFilter[]).map((v) => ({ value: v, label: STATUS_LABEL[v] }));
+const TYPE_OPTIONS: Option<RequestKind | "all">[] = [{ value: "all", label: "All request types" }, ...REQUEST_KINDS.map((k) => ({ value: k, label: REQUEST_KIND_LABEL[k] }))];
 const URGENCY_OPTIONS: Option<Band | "all">[] = [
   { value: "all", label: "All urgency" }, { value: "now", label: "Act now" }, { value: "day", label: "Due within 24 hours" }, { value: "week", label: "Due this week" },
 ];
@@ -18,9 +21,19 @@ export function QueueFilterBar({ filters, set, clear, affected }: { filters: Que
       <div className="flex flex-wrap items-center gap-3">
         <SearchInput value={filters.q} onChange={(v) => set("q", v)} placeholder="Search by case ID or initials" className="w-[280px]" />
         <Dropdown value={filters.payer} options={payerOptions()} onChange={(v) => set("payer", v)} defaultValue="all" ariaLabel="Payer" />
-        <Dropdown value={filters.status} options={STATUS_OPTIONS} onChange={(v) => set("status", v)} defaultValue="all" ariaLabel="Status" />
+        <Dropdown value={filters.type} options={TYPE_OPTIONS} onChange={(v) => set("type", v)} defaultValue="all" ariaLabel="Request type" />
+        <span className="inline-flex items-center gap-1">
+          <Dropdown value={filters.status} options={STATUS_OPTIONS} onChange={(v) => set("status", v)} defaultValue="all" ariaLabel="Status" />
+          <StatusHelp />
+        </span>
         <Dropdown value={filters.urgency} options={URGENCY_OPTIONS} onChange={(v) => set("urgency", v)} defaultValue="all" ariaLabel="Urgency" />
         {filtersActive(filters) ? <Button variant="ghost" size="sm" onClick={clear}>Clear filters</Button> : null}
+        <span className="ml-auto inline-flex items-center gap-1.5 text-[13px] text-muted">
+          How the list is ordered
+          <InfoTip label="How the list is ordered" align="end">
+            Requests sit in three bands by how soon they are due: Act now, Due within 24 hours, Due this week. Inside a band, requests waiting on you come first, then the soonest due. If two are due at the same time, the lower approval chance goes first.
+          </InfoTip>
+        </span>
       </div>
       {filters.signalOnly ? (
         <div className="flex">

@@ -39,6 +39,9 @@ export function AgentsStep({ draft }: { draft: CaseDraft }) {
 
   useEffect(() => setDismissed(false), [question]);
 
+  /* One message at a time, the most important first: a question for you (its own card below), an agent paused in Settings, records that changed, then "all done". */
+  const notice = question ? null : holding && now ? "paused" : draft.recordsChanged ? "changed" : finished ? "done" : null;
+
   const stateOf = (i: number): RowState => {
     if (i < done) return "done";
     if (i > done) return "waiting";
@@ -52,8 +55,8 @@ export function AgentsStep({ draft }: { draft: CaseDraft }) {
       <div className="grid grid-cols-[minmax(0,1fr)_380px] items-start gap-5">
         <div className="flex flex-col gap-4">
           <PayerChangeNote draft={draft} />
-          {draft.recordsChanged ? <Banner tone="neutral">Records changed after the last run. The agents re-checked.</Banner> : null}
-          {holding && now ? (
+          {notice === "changed" ? <Banner tone="neutral">Records changed after the last run. The agents re-checked.</Banner> : null}
+          {notice === "paused" && now ? (
             <Banner
               tone="mid"
               icon={PauseCircle}
@@ -96,7 +99,7 @@ export function AgentsStep({ draft }: { draft: CaseDraft }) {
               </span>
             </div>
           ))}
-          {finished ? (
+          {notice === "done" ? (
             <Banner tone="good" title="All ten agents are done">
               The draft and the four checks are ready. Nothing has been sent to the payer.
             </Banner>

@@ -6,7 +6,8 @@ import type { AgentKey, PsyRequest, StageKey, Tone } from "./types";
    Nothing here touches the store, so the same numbers appear on every tab and in the queue. */
 
 export interface RunState { token: string; recIds: string[]; stage: number; sub: number }
-export interface LogEntry { at: number; text: string }
+/** `actor` is who did it: the signed-in person or a named agent. It labels the line in History. */
+export interface LogEntry { at: number; actor: AgentKey | "you"; text: string }
 export interface DraftEdit { text: string; includes: string[] } // includes = recommendations already folded into the edited text
 export interface VersionEntry { n: number; at: number; by: string; note: string; text: string }
 
@@ -105,6 +106,7 @@ export interface LiveView {
   tone: Tone;
   line: string;
   agent: AgentKey;
+  needsYou: boolean; // the payer asked something and the answer waits for a person
 }
 const STAGES_WITH_PAYER: StageKey[] = ["received", "under_review", "info_requested"];
 export const isWithPayer = (stage: StageKey): boolean => STAGES_WITH_PAYER.includes(stage);
@@ -114,7 +116,7 @@ export function liveView(d: CaseDetail, requests: PsyRequest[]): LiveView | null
   const r = requests.find((x) => x.id === d.requestId) ?? requests.find((x) => x.caseId === d.id);
   if (!r || r.stage === "preparing") return null;
   const expected: StageKey[] = d.phase === "payer" ? STAGES_WITH_PAYER : d.phase === "denial" ? ["appeal"] : ["preparing"];
-  return { requestId: r.id, stage: r.stage, sent: d.phase !== "denial", moved: !expected.includes(r.stage), chip: r.chip, tone: r.tone, line: r.next, agent: r.agent };
+  return { requestId: r.id, stage: r.stage, sent: d.phase !== "denial", moved: !expected.includes(r.stage), chip: r.chip, tone: r.tone, line: r.next, agent: r.agent, needsYou: !!r.needsYou };
 }
 
 export interface CriterionView extends Criterion { met: boolean }

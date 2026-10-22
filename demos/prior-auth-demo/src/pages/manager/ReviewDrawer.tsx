@@ -6,6 +6,7 @@ import { WEEK_END, reviewStamp, type Review } from "@/data/managerReviews";
 import { payerById } from "@/data/seed";
 import { PROGRAM_LABEL } from "@/data/types";
 import { cn } from "@/lib/cn";
+import { REVIEW_NOTE } from "@/lib/pdf/report-doc";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
 import { REVIEW_STATUS_LABEL, REVIEW_STATUS_TONE } from "./helpers";
@@ -112,6 +113,7 @@ export function ReviewDrawer({ review: r, onClose }: { review: Review; onClose: 
             {undrafted ? "To be drafted by" : "Drafted by"} <AgentChip agent={r.agent} />
           </span>
         </div>
+        {!undrafted ? <p className="-mt-3 text-[12.5px] text-muted">{REVIEW_NOTE}</p> : null}
 
         {needsUpdate ? (
           <div className="flex flex-col gap-3 rounded-2xl border border-mid-edge bg-mid-bg px-4 py-4 text-mid-ink">

@@ -107,12 +107,12 @@ const REACH: Record<PayerId, ReachLine[]> = {
 const CALLER = (name: string) => `Ask for the provider line. Give the member ID and date of birth. Ask whether the request was received, what its status is, and who you are speaking with. Do not agree to any change. Log the call. If ${name} asks for a document, say it will be sent and note which one.`;
 
 const FACTS: Record<PayerId, PayerFacts> = {
-  summit: { approvedNote: "last 90 days", typicalNote: "for residential", noticeDue: "24 hours", noticeNote: "after admission", backup: "phone as backup" },
-  cardinal: { approvedNote: "down 11 points", typicalNote: "now taking 2.8", noticeDue: "24 hours", noticeNote: "after admission", backup: "phone as backup" },
-  beacon: { approvedNote: "last 90 days", typicalNote: "for residential", noticeDue: "24 hours", noticeNote: "after admission", backup: "phone as backup" },
-  evergreen: { approvedNote: "last 90 days", typicalNote: "now taking 3.4", noticeDue: "24 hours", noticeNote: "by phone", backup: "no portal" },
-  harborview: { approvedNote: "last 90 days", typicalNote: "for partial hospital", noticeDue: "72 hours", noticeNote: "after admission", backup: "fax for attachments" },
-  lakeshore: { approvedNote: "last 90 days", typicalNote: "for IOP", noticeDue: "24 hours", noticeNote: "after admission", backup: "phone to confirm" },
+  summit: { noticeDue: "24 hours", noticeNote: "after admission", backup: "phone as backup" },
+  cardinal: { noticeDue: "24 hours", noticeNote: "after admission", backup: "phone as backup" },
+  beacon: { noticeDue: "24 hours", noticeNote: "after admission", backup: "phone as backup" },
+  evergreen: { noticeDue: "24 hours", noticeNote: "by phone", backup: "no portal" },
+  harborview: { noticeDue: "72 hours", noticeNote: "after admission", backup: "fax for attachments" },
+  lakeshore: { noticeDue: "24 hours", noticeNote: "after admission", backup: "phone to confirm" },
 };
 const PLAN_LINE: Record<PayerId, string> = {
   summit: "Managed care plan under Ohio Medicaid · behavioral health included",
@@ -124,35 +124,35 @@ const PLAN_LINE: Record<PayerId, string> = {
 };
 
 /* ---------- what changed ---------- */
-const chg = (id: string, date: string, title: string, text: string): ChangeEntry => ({ id, date, title, text });
+const chg = (id: string, date: string, title: string, text: string, noticed = false): ChangeEntry => ({ id, date, title, text, ...(noticed ? { noticed } : {}) });
 const HISTORY: Record<PayerId, ChangeEntry[]> = {
   summit: [
-    chg("sm-1", "10/12", "Rules confirmed against Summit's published policy", "Version 2026.3 matches the policy. No change to the workflow."),
+    chg("sm-1", "10/12", "Rules version 2026.3 saved in Psyflo", "Demo rules, not checked against Summit's policy. No change to the workflow."),
     chg("sm-2", "10/02", "Portal sign-in renewed", "Navigator renewed the saved sign-in. Nothing to do."),
     chg("sm-3", "09/18", "New form for retro requests", "Packet now attaches it automatically."),
   ],
   cardinal: [
-    chg("cd-1", "10/17", "Criteria changed (version 2026.3)", "Progress evidence must now include the remaining treatment goals. Effective 10/15."),
+    chg("cd-1", "10/17", "Criteria changed (version 2026.3)", "Progress evidence must now include the remaining treatment goals. Effective 10/15.", true),
     chg("cd-2", "10/12", "IOP continued-stay denials up 31% in 7 days", "Most cite incomplete recertification evidence. Historian re-scored 4 open requests."),
     chg("cd-3", "09/30", "Portal maintenance on Sundays, 2 to 4 am", "Navigator pauses checks during the window and resumes after."),
     chg("cd-4", "09/02", "New form for retro requests", "Packet now attaches it automatically."),
   ],
   evergreen: [
     chg("ev-1", "10/09", "Provider line opens at 8 am", "Caller moved its first try to 8:05 am."),
-    chg("ev-2", "09/21", "Rules confirmed against Evergreen's published policy", "No change to the workflow."),
+    chg("ev-2", "09/21", "Rules saved in Psyflo", "Demo rules, not checked against Evergreen's policy. No change to the workflow."),
   ],
   beacon: [
     chg("bc-1", "10/14", "Continued-stay requests decided in about a day", "Cadence moved its review reminders a day earlier."),
-    chg("bc-2", "09/27", "Rules confirmed against Beacon's published policy", "No change to the workflow."),
+    chg("bc-2", "09/27", "Rules saved in Psyflo", "Demo rules, not checked against Beacon's policy. No change to the workflow."),
   ],
   harborview: [
-    chg("hv-1", "10/18", "Portal form change", "The request form now asks for the expected length of stay and a second contact. The old form closes 10/31."),
+    chg("hv-1", "10/18", "Portal form change", "The request form now asks for the expected length of stay and a second contact. The old form closes 10/31.", true),
     chg("hv-2", "10/05", "Medicare eligibility check added", "Verify now runs it before every request."),
-    chg("hv-3", "09/11", "Rules confirmed against Harborview's published policy", "No change to the workflow."),
+    chg("hv-3", "09/11", "Rules saved in Psyflo", "Demo rules, not checked against Harborview's policy. No change to the workflow."),
   ],
   lakeshore: [
     chg("ls-1", "10/10", "New fax number for appeals", "Packet updated the appeal cover sheet."),
-    chg("ls-2", "09/24", "Rules confirmed against Lakeshore's published policy", "No change to the workflow."),
+    chg("ls-2", "09/24", "Rules saved in Psyflo", "Demo rules, not checked against Lakeshore's policy. No change to the workflow."),
   ],
 };
 
@@ -213,7 +213,6 @@ export function seedPayerConfig(): Record<string, PayerConfig> {
     out[p.id] = {
       planLine: PLAN_LINE[p.id],
       rulesVersion: "2026.3",
-      checkedOn: p.id === "evergreen" ? "10/09" : "10/12",
       reachedBy: p.reachedBy,
       facts: FACTS[p.id],
       reach: REACH[p.id],
@@ -237,9 +236,8 @@ export function starterConfig(p: CustomPayer, reachList: string[], on: string): 
   return {
     planLine: `${p.type} · ${p.group} · ${p.programs.length} ${p.programs.length === 1 ? "program" : "programs"}`,
     rulesVersion: "benchmark",
-    checkedOn: on,
     reachedBy: p.reachedBy,
-    facts: { approvedNote: "Not enough decisions yet", typicalNote: "benchmark estimate", noticeDue: "24 hours", noticeNote: "benchmark, after admission", backup: has("Phone") && has("Portal") ? "phone as backup" : "no backup yet" },
+    facts: { noticeDue: "24 hours", noticeNote: "benchmark, after admission", backup: has("Phone") && has("Portal") ? "phone as backup" : "no backup yet" },
     reach: reach(has("Portal") ? "Provider portal. Navigator saves the sign-in once you add it" : "Not used", has("Phone") ? "Provider line. Add the hours" : "Not used", has("Fax") ? "Add the fax number" : "Not used"),
     caller: { text: CALLER(p.shortName), confirmed: on },
     workflow: starterWorkflow(reachList, on),

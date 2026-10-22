@@ -1,8 +1,10 @@
 /* The seven payment checks and the verdict wording, built from one patient row. Pure, so the list, the result page
    and the intake "Coverage checked" line all say the same thing. */
-import { needsCaller, verdictOf, type EbPatient, type Verdict } from "@/data/eligibility";
+import { AUTH_LABEL, costShareText, coverageDates, EFFECTIVE_FROM, needsCaller, verdictOf, type EbPatient, type Verdict } from "@/data/eligibility";
+import { planInfo } from "@/data/payerConfigPlan";
 import { payerById } from "@/data/seed";
 import { PROGRAM_LABEL, type AgentKey, type Program, type Tone } from "@/data/types";
+import { toDate } from "@/lib/time";
 
 export interface PaymentCheck {
   id: string;
@@ -19,12 +21,25 @@ export interface AgentLine {
   secs: number;
   answer: string;
 }
+/** One part of the summary at the top of a result: a chip, one line, and for benefits the service limit and what the patient pays. `unknown` when no plan knew the member. */
+export interface SummaryPart {
+  chip: string;
+  tone: Tone;
+  line: string;
+  unknown?: boolean;
+}
+export interface ResultSummary {
+  coverage: SummaryPart;
+  benefits: SummaryPart & { limit: string | null; pays: string | null };
+  auth: SummaryPart;
+}
 export interface CheckResult {
   verdict: Verdict;
   headline: string;
   reason: string;
   checks: PaymentCheck[];
-  /** What the patient pays. Null when no coverage was found: there is nothing to say about cost. */
+  summary: ResultSummary;
+  /** What the patient pays. Null when no coverage was found or the plan has no cost share on file (Ohio Medicaid): then nothing is said about cost. */
   patientPays: string | null;
   agents: AgentLine[];
   next: string[];
@@ -39,7 +54,7 @@ function coverageCheck(p: EbPatient): PaymentCheck {
   const payer = payerById(p.payerId);
   const on = p.eligibility.on ?? "";
   if (p.eligibility.state === "active") {
-    const detail = payer.group === "Ohio Medicaid" ? "Ohio Medicaid, active since 01/01/2026 with no end date" : payer.group === "Medicare Advantage" ? `Medicare Advantage through ${payer.name}, active for the 2026 plan year` : `${payer.name}, active since 01/01/2026 with no end date`;
+    const detail = payer.group === "Ohio Medicaid" ? `Ohio Medicaid, active since ${EFFECTIVE_FROM} with no end date` : payer.group === "Medicare Advantage" ? `Medicare Advantage through ${payer.name}, active for the 2026 plan year` : `${payer.name}, active since ${EFFECTIVE_FROM} with no end date`;
     return { id: "active", title: "Coverage is active on the service date", detail, chip: "Active", tone: "good" };
   }
   if (p.eligibility.state === "not_found") return { id: "active", title: "Coverage was not found", detail: "We could not find coverage with these details. Check the member ID and date of birth, or read the card again.", chip: "Not found", tone: "risk" };
@@ -57,7 +72,7 @@ function planChecks(p: EbPatient): PaymentCheck[] {
   const left = p.limit ? `${p.limit.used} of ${p.limit.of} ${p.limit.unit} used` : "";
   const free = p.limit ? p.limit.of - p.limit.used : null;
   const spent = free !== null && free <= 0;
-  const planDetail = medicaid ? `Managed by ${payer.name}. Claims go to ${who}, not to the state` : payer.group === "Medicare Advantage" ? `A Medicare Advantage plan. Claims go to ${payer.name}, not to Medicare` : payer.group === "Behavioral carve-out" ? `Behavioral health is carved out to ${payer.name}. Claims go to ${who}, not to the medical plan` : `Claims go to ${payer.name}`;
+  const planDetail = planInfo(payer)?.detail ?? `Claims go to ${payer.name}`;
   const auth: Record<EbPatient["auth"], PaymentCheck> = {
     not_required: { id: "auth", title: "Authorization", detail: `${who} does not require one for ${lower(p.program)}.`, chip: "Not required", tone: "good" },
     on_file: { id: "auth", title: "Authorization", detail: `On file with ${who}${left ? `. ${left}` : ""}`, chip: "On file", tone: "good" },
@@ -89,6 +104,45 @@ function planChecks(p: EbPatient): PaymentCheck[] {
 /** With no coverage found there is no plan to ask, so one line says so instead of six grey rows. */
 const NOT_CHECKED: PaymentCheck = { id: "rest", title: "Nothing else could be checked", detail: "The plan, benefits, authorization, enrollment, limits and other insurance all need a plan that knows this member. Fix the member ID or date of birth, then check again.", chip: "Not checked", tone: "neutral", unknown: true };
 
+/** The three parts of the summary at the top of a result: coverage with its dates, benefits with the service limit and what the patient pays, and the authorization. */
+function summaryOf(p: EbPatient, checks: PaymentCheck[], found: boolean): ResultSummary {
+  const payer = payerById(p.payerId);
+  const who = payer.shortName;
+  const prog = PROGRAM_LABEL[p.program];
+  const cover = checks[0];
+  /* The summary says what the state of coverage means: eligible, not eligible, or a problem that can be fixed (a lapse the state can restore, a member ID to correct). */
+  const word = { active: "Eligible", ended: "Not eligible", lapsed: "Needs a fix", not_found: "Needs a fix" }[p.eligibility.state];
+  const coverage: SummaryPart = { chip: word, tone: cover.tone, line: coverageDates(p) ?? "No coverage was found for these details. Check the member ID and date of birth, or read the card again." };
+  if (!found) {
+    const none: SummaryPart = { chip: "Not checked", tone: "neutral", line: "Needs a plan that knows this member", unknown: true };
+    return { coverage, benefits: { ...none, limit: null, pays: null }, auth: none };
+  }
+  const service = checks.find((c) => c.id === "service");
+  const codes = PROGRAM_CODES[p.program];
+  const free = p.limit ? p.limit.of - p.limit.used : null;
+  const limit = p.limit && free !== null ? (free <= 0 ? `All ${p.limit.of} ${p.limit.unit} used. Nothing left` : `${p.limit.used} of ${p.limit.of} ${p.limit.unit} used, ${free} left`) : p.noDayLimit ? `No annual day limit for ${lower(p.program)}. The authorization sets the days` : null;
+  const benefitLine = p.benefits === "covered" ? `${prog} is payable. Codes ${codes}` : p.benefits === "limited" ? `${prog} is payable with conditions. Codes ${codes}` : `${prog} is not a covered benefit. Codes ${codes}`;
+  const authLine: Record<EbPatient["auth"], string> = {
+    not_required: `${who} does not require one for ${lower(p.program)}.`,
+    on_file: `On file with ${who}.`,
+    in_progress: "Required before the first day. A request is being drafted.",
+    reviewing: `Required. A request is with ${who} and under review.`,
+    retro_open: "A retro-authorization request is open. It covers days already delivered.",
+    required: "Required before the first day. Not on file yet.",
+  };
+  return {
+    coverage,
+    benefits: { chip: service?.chip ?? "Covered", tone: service?.tone ?? "good", line: benefitLine, limit, pays: costShareText(payer.group) },
+    auth: { chip: AUTH_LABEL[p.auth].text, tone: AUTH_LABEL[p.auth].tone, line: authLine[p.auth] },
+  };
+}
+
+/** "11/01": the first of the month after the check, when coverage is looked at again. */
+const nextMonthFirst = (at: number): string => {
+  const d = toDate(at);
+  return `${String(((d.getMonth() + 1) % 12) + 1).padStart(2, "0")}/01`;
+};
+
 export function buildResult(p: EbPatient): CheckResult {
   const payer = payerById(p.payerId);
   const who = payer.shortName;
@@ -118,9 +172,8 @@ export function buildResult(p: EbPatient): CheckResult {
         ? `Everything checks out except the authorization. Billing is safe as soon as ${who} approves.`
         : firstFail?.detail ?? "A check failed.";
 
-  const pays = medicaid ? "$0 copay, no deductible, no coinsurance." : payer.group === "Medicare Advantage" ? "20% coinsurance after a deductible with $85 left." : "$40 copay per day, $350 left on the deductible, 20% coinsurance after.";
   const state = medicaid ? "Ohio Medicaid" : who;
-  const agents: AgentLine[] = [{ agent: "verify", label: `Eligibility with ${state}`, secs: 3, answer: p.eligibility.state === "active" ? "Coverage active, effective 01/01/2026, no end date" : !found ? "No member matched the ID and date of birth" : `Coverage ${p.eligibility.state} ${on}` }];
+  const agents: AgentLine[] = [{ agent: "verify", label: `Eligibility with ${state}`, secs: 3, answer: p.eligibility.state === "active" ? `Coverage active, effective ${EFFECTIVE_FROM}, no end date` : !found ? "No member matched the ID and date of birth" : `Coverage ${p.eligibility.state} ${on}` }];
   /* The other agents only ran when a plan knew the member. */
   if (found) {
     agents.push(
@@ -136,9 +189,10 @@ export function buildResult(p: EbPatient): CheckResult {
     headline,
     reason,
     checks,
-    patientPays: found ? pays : null,
+    summary: summaryOf(p, checks, found),
+    patientPays: found ? costShareText(payer.group) : null,
     agents,
-    next: found ? ["Coverage again on 11/01, then every month", "Before each recertification", "3 days before the first claim"] : ["Check again once the member ID or date of birth is fixed"],
+    next: found ? [`Coverage again on ${nextMonthFirst(p.checkedAt)}, then every month`, "Before each recertification", "3 days before the first claim"] : ["Check again once the member ID or date of birth is fixed"],
   };
 }
 

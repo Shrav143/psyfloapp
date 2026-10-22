@@ -41,7 +41,7 @@ export function ActionsTab({ ctx }: { ctx: CaseCtx }) {
     const next = { ...work, applied: [...work.applied, ...included.map((r) => r.id)] };
     const after = currentChance(detail, next);
     useStore.getState().applyRecs({
-      caseId: key, requestId: detail.fromQueue ? detail.requestId : "", recs: included.map((r) => ({ id: r.id, title: r.title, agent: r.agent })), chance: after, liftLeft: projectedChance(detail, next) - after, ready: canSend(detail, next),
+      caseId: key, requestId: detail.requestId, syncChance: detail.fromQueue, recs: included.map((r) => ({ id: r.id, title: r.title, agent: r.agent })), chance: after, liftLeft: projectedChance(detail, next) - after, ready: canSend(detail, next),
       versionN: versionViews(detail, work).length + 1, snapshot: plainText(draftView(detail, next)),
     });
   };

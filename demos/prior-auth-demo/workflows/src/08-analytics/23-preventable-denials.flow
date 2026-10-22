@@ -1,0 +1,36 @@
+title: Analytics › Preventable denials chart
+route: /analytics
+intro: A horizontal bar chart of the denials the team could have fixed before sending, one bar for each reason. Its rows add up to the 'Preventable denials' tile. It is read-only. The reasons come from the same table as the denial reasons list, each tagged as fixable or not.
+dir: TD
+also: Demo only. A reason is fixable when it is thin or missing documentation, late notice, an incomplete certification or a duplicate request. Not fixable: units above criteria, a clinical disagreement on level of care, a partial approval without a reason, a payer's network error. Each payer's denials are spread over its reasons in fixed proportions, so every denial is counted once.
+---
+start s1 "Scroll to 'Preventable denials by reason'"
+screen sc "Card 'Preventable denials by reason'\n'207 of 311 denials (67%) could be fixed before sending, this quarter'"
+
+group gRows "Rows"
+  screen r1 "Up to five bars, biggest first\n'Continued-stay evidence incomplete' 73\n'Missing recent therapy notes' 22\n'Recertification filed too late' 21\n'Retro-authorization window missed' 17\n'Step-down plan not named' 13"
+  screen r2 "One lighter bar: '9 other fixable reasons' 61\nSo the bars add up to 207"
+  screen r3 "Footnote: thin or missing documentation, late notice, an incomplete certification and a duplicate request count as fixable"
+endgroup
+
+group gScope "What changes it"
+  process s2 "One payer: only that payer's fixable reasons\nCardinal shows three rows, no 'other' row"
+  process s3 "One program: the fixable share moves\nResidential about 62%, IOP about 71%"
+  process s4 "Another period: counts scale with decisions, the share stays about the same"
+endgroup
+
+decision q1 "Fewer than 20 denials in this view?"
+screen h1 "'Not enough decisions yet. Figures based on fewer than 20 decisions stay hidden.'\nThe tile shows '-'"
+process p1 "Hover and click do nothing on the bars\nTo open the denials behind a reason, use 'Common denial reasons by payer'"
+process p2 "The tile, the bars, the Markdown file, the CSV and the printed page all use these rows"
+goto g1 "Continues in: Analytics › Common denial reasons: open Denial Intelligence"
+goto g2 "Continues in: Analytics › Monthly report › What the files contain"
+end e1 "Chart read"
+
+s1 --> sc --> r1 --> r2 --> r3 --> q1
+sc --> s2 & s3 & s4
+q1 -->|No| p2 --> e1
+q1 -->|Yes| h1 --> e1
+r3 -.-> p1
+p1 --> g1
+p2 -.-> g2

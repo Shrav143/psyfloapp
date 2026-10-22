@@ -4,7 +4,7 @@ import { WEEK_END, reviewStamp, type Review } from "@/data/managerReviews";
 import { payerById } from "@/data/seed";
 import type { RequestEvent } from "@/data/types";
 import { DAY, HOUR } from "@/lib/time";
-import { unitCount } from "./helpers";
+import { unitCount, unitsPerDay } from "./helpers";
 import type { LedgerRow } from "./ledgerRows";
 
 /* What the Ledger case page says about a case that is in the Case Manager ledger but is not a request in the queue.
@@ -13,7 +13,7 @@ import type { LedgerRow } from "./ledgerRows";
 /** The days the approval runs. IOP counts units, about three a week; the other levels count one day a day. */
 export function authWindow(c: LedgerRow): { start: number; end: number } | null {
   if (c.used === null || !c.total) return null;
-  const perDay = c.unit === "units" ? 3 / 7 : 1;
+  const perDay = unitsPerDay(c.unit);
   const ends = c.clockKind === "expiry" || c.clockKind === "units";
   return { start: -Math.round((c.used / perDay) * DAY), end: ends ? c.dueAt : Math.round(((c.total - c.used) / perDay) * DAY) };
 }

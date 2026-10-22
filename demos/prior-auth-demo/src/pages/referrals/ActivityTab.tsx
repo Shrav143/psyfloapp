@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Banner, Button, Card, CardBody, CardHeader, Label, TextArea, Timeline } from "@/components/ui";
+import { Button, Card, CardBody, CardHeader, Label, TextArea, Timeline } from "@/components/ui";
 import { staffById, type Referral } from "@/data/referrals";
 import { stamp } from "@/lib/time";
 import { useStore } from "@/store";
@@ -19,9 +19,8 @@ export function ActivityTab({ r }: { r: Referral }) {
         </CardBody>
       </Card>
       <Card>
-        <CardHeader title="Notes" subtitle={`${notes.length} ${notes.length === 1 ? "note" : "notes"}`} />
+        <CardHeader title="Notes" subtitle={`${notes.length} ${notes.length === 1 ? "note" : "notes"} · private, visible only to you and your team`} />
         <CardBody className="flex flex-col gap-4">
-          <Banner tone="mid">These notes are private and only visible to you and your team.</Banner>
           {notes.length ? (
             <ul className="flex flex-col gap-3">
               {notes.map((n) => (

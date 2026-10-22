@@ -12,9 +12,10 @@ import { briefToText, buildBrief } from "./lib/brief";
 import { copyText } from "./lib/clipboard";
 import { useDenialView } from "./lib/useDenialView";
 import { OutcomeModal } from "./OutcomeModal";
+import { ReviewNote } from "./ReviewNote";
 
-/* Print only the brief: hide the app's sidebar, top bar and drawers. */
-const PRINT_CSS = "@media print { aside, .sticky { display: none !important; } body { background: #fff; } main { padding: 0 !important; max-width: none !important; } }";
+/* Print only the brief: hide the app's sidebar, top bar and drawers. The folded sections open on paper: their content is kept in the page, and only the chevron is dropped. */
+const PRINT_CSS = "@media print { aside, .sticky { display: none !important; } body { background: #fff; } main { padding: 0 !important; max-width: none !important; } .psy-print-open [hidden] { display: block !important; } .psy-print-open h3 svg { display: none; } }";
 
 /** The peer-to-peer brief a clinician keeps open during the call. */
 export default function BriefPage() {
@@ -47,7 +48,7 @@ export default function BriefPage() {
       <Crumbs items={[{ label: "Denial Intelligence", to: paths.denials(req.id) }, { label: `Brief ${req.id}` }]} />
       <PageHeader
         title={`Peer-to-peer brief · ${req.id}`}
-        sub={`Talking points for your call with ${analysis.ctx.payer}'s reviewer. Every point links to the chart.`}
+        sub={<>Talking points for your call with {analysis.ctx.payer}'s reviewer. Every point links to the chart.<ReviewNote className="mt-1.5" /></>}
         actions={<Link to={paths.report(req.id)} className="inline-flex h-[38px] items-center gap-2 rounded-xl border border-field bg-white px-4 text-sm font-medium hover:bg-tile print:hidden"><FileText size={16} className="ico" />Appeal analysis report</Link>}
       />
       {outcome ? (
@@ -55,7 +56,7 @@ export default function BriefPage() {
           {outcome.kind === "upheld" ? "Advocate started a written appeal from your call notes." : "The ledger is updated and the next review is booked."}{outcome.note ? ` Note: ${outcome.note}` : ""}
         </Banner>
       ) : null}
-      <div className="grid grid-cols-[minmax(0,1fr)_340px] items-start gap-5">
+      <div className="grid grid-cols-1 items-start gap-5 min-[1180px]:grid-cols-[minmax(0,1fr)_340px]">
         <div className="flex flex-col gap-4">
           <OpeningCard view={view} />
           <PointsCard view={view} />

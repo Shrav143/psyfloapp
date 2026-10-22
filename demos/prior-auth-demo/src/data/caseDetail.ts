@@ -54,6 +54,7 @@ export interface CaseDetail {
   phase: Phase;
   agent: AgentKey;
   statusLine: string;
+  needsInput: boolean; // a question waits for a person: on a request with the payer, the answer to its question
   baseChance: number;
   spread: [number, number];
   similar: { own: number; network: number; benchmark: number };
@@ -79,6 +80,18 @@ export interface CaseDetail {
   draft: DraftSection[];
   versions: { n: number; at: number; by: string; note: string }[];
   checks: CheckDef[];
+}
+
+/** The case page's data for a queue row, built once per row: the queue shows each request's next action from it. */
+const QUEUE_DETAILS = new Map<string, CaseDetail>();
+export function detailForQueueItem(item: QueueItem): CaseDetail {
+  if (item.id === R1042_DETAIL.id) return R1042_DETAIL;
+  let d = QUEUE_DETAILS.get(item.id);
+  if (!d) {
+    d = buildFromSeed({ ...seedFromItem(item), id: item.id, requestId: item.id });
+    QUEUE_DETAILS.set(item.id, d);
+  }
+  return d;
 }
 
 /** Find what the case page needs for an id: the queue row, a Dashboard request (by id or by the case it belongs to), or nothing. */
