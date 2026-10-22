@@ -1,0 +1,70 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "The page loads, or something changes on it" }
+  q1@{ shape: diam, label: "Does anything need a person?" }
+  e0@{ shape: stadium, label: "<b>No banner</b><br/>The health card says 'all systems answering'" }
+  subgraph gItems ["What is checked, in this order"]
+  q2@{ shape: diam, label: "A system that Needs attention?" }
+  i1@{ shape: curv-trap, label: "<b>'Action required: Billing system needs attention.'</b><br/>Button 'Fix'" }
+  q3@{ shape: diam, label: "A system that is Disconnected?" }
+  i2@{ shape: curv-trap, label: "<b>'Action required: {name} is disconnected.'</b><br/>Button 'Reconnect'" }
+  q4@{ shape: diam, label: "Fields waiting for a mapping?" }
+  i3@{ shape: curv-trap, label: "<b>'Action required: 2 fields need a mapping, so New case leaves them blank.'</b><br/>Button 'Map field' for the first waiting field" }
+  q5@{ shape: diam, label: "Reader or Navigator paused in Settings?" }
+  i4@{ shape: curv-trap, label: "<b>'Action required: Reader is paused, so syncs and new connections wait.'</b><br/>Link 'Open Settings'" }
+  end
+  p1@{ shape: rect, label: "<b>Several items: the first is the line, the others follow after 'Also:'</b><br/>'Action required: Billing system needs attention. Also: 2 fields need a mapping, so New case leaves them blank.'" }
+  p2@{ shape: rect, label: "<b>Only one banner ever shows</b><br/>It is the only banner on the page" }
+  k1@{ shape: trap-t, label: "Click the banner's button" }
+  q6@{ shape: diam, label: "Which button?" }
+  b1@{ shape: rect, label: "<b>'Fix': starts the Fix steps</b><br/>A paused Navigator waits, 'Ask before acting' asks first" }
+  b2@{ shape: rect, label: "<b>'Reconnect': starts the connection test</b><br/>A paused Navigator waits, 'Ask before acting' asks first" }
+  b3@{ shape: rect, label: "'Map field': opens the Map pop-up for the first waiting field" }
+  b4@{ shape: rect, label: "'Open Settings': goes to Settings, where the agent is resumed" }
+  g1@{ shape: subproc, label: "Continues in: EMR Connect › Problems › Fix a system that needs attention" }
+  g2@{ shape: subproc, label: "Continues in: EMR Connect › Manage › Reconnect a system" }
+  g3@{ shape: subproc, label: "Continues in: EMR Connect › Needs a mapping › Map a field" }
+  g4@{ shape: subproc, label: "Continues in: Settings › Pause › Pause one agent, resume all" }
+  g5@{ shape: subproc, label: "Continues in: EMR Connect › Sync › When an agent is paused or asks first" }
+  s1 --> q1
+  q1 -->|"No"| e0
+  q1 -->|"Yes"| q2
+  q2 -->|"Yes"| i1
+  q2 -->|"No"| q3
+  q3 -->|"Yes"| i2
+  q3 -->|"No"| q4
+  q4 -->|"Yes"| i3
+  q4 -->|"No"| q5
+  q5 -->|"Yes"| i4
+  i1 & i2 & i3 & i4 --> p1
+  p1 -.-> p2
+  i1 & i2 & i3 & i4 --> k1 --> q6
+  q6 -->|"Fix"| b1 --> g1
+  q6 -->|"Reconnect"| b2 --> g2
+  q6 -->|"Map field"| b3 --> g3
+  q6 -->|"Open Settings"| b4 --> g4
+  b1 & b2 -.-> g5
+  class s1 k_start
+  class q1,q2,q3,q4,q5,q6 k_decision
+  class e0 k_end
+  class i1,i2,i3,i4 k_screen
+  class p1,p2,b1,b2,b3,b4 k_process
+  class k1 k_click
+  class g1,g2,g3,g4,g5 k_goto
+  style gItems fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

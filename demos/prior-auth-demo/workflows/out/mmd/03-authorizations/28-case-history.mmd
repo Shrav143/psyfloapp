@@ -1,0 +1,48 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  pg@{ shape: curv-trap, label: "<b>Case page, below the tab panel</b><br/>'History' with a one-line summary: '9 events · latest: Navigator saved the receipt to the case'" }
+  h1@{ shape: trap-t, label: "<b>Click 'History'</b><br/>(or Tab to it and press Enter or Space)" }
+  o1@{ shape: rect, label: "<b>The section opens</b><br/>It is a real button with aria-expanded" }
+  d1@{ shape: diam, label: "Any events?" }
+  e0@{ shape: curv-trap, label: "<b>'Nothing has happened on this request yet'</b><br/>A short line on what will appear" }
+  li@{ shape: curv-trap, label: "<b>List, newest first</b><br/>Each line: a badge, the name, '(you)' or '(agent)', the time, and the text<br/>A planned step comes first, marked 'Scheduled'" }
+  h2@{ shape: trap-t, label: "Click 'History' again" }
+  c1@{ shape: rect, label: "The section closes" }
+  subgraph gS ["Where the lines come from"]
+  s1@{ shape: cyl, label: "<b>The request's events in the store</b><br/>Agents: Reader, Verify, Scribe, Navigator ...<br/>The payer: 'The payer asked for more information'" }
+  s2@{ shape: cyl, label: "<b>What you did on this page</b><br/>'You added clinical context', 'You refined the recommendations', 'You dismissed ...', 'You edited the draft ...', 'You sent the draft back to Scribe'<br/>Agent work you started: 'Scribe applied Name the step-down provider'" }
+  s3@{ shape: cyl, label: "<b>Signing in New case</b><br/>'You signed as Dr. Rivera (clinician) and sent the request'<br/>'Navigator sent the request through the payer's portal'<br/>'Navigator saved the receipt to the case'" }
+  end
+  dd@{ shape: rect, label: "<b>The person is the signed-in user, Jordan Perez</b><br/>Who signed is in the text, because only a clinician can sign" }
+  rd@{ shape: rect, label: "<b>Read only</b><br/>No button on a line does anything" }
+  pg --> h1 --> o1 --> d1
+  d1 -->|"No"| e0
+  d1 -->|"Yes"| li
+  li --> h2 --> c1
+  s1 --> li
+  s2 --> li
+  s3 --> li
+  li -.-> dd
+  li -.-> rd
+  class pg,e0,li k_screen
+  class h1,h2 k_click
+  class o1,c1,dd,rd k_process
+  class d1 k_decision
+  class s1,s2,s3 k_store
+  style gS fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

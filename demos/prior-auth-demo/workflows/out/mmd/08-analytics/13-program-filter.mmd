@@ -1,0 +1,59 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Click the 'All programs' menu" }
+  o1@{ shape: win-pane, label: "'All programs', 'Residential', 'IOP', 'PHP', 'Withdrawal management'" }
+  i1@{ shape: lean-r, label: "<b>Pick a program</b><br/>Or press Arrow keys, Enter; Esc closes" }
+  p1@{ shape: rect, label: "<b>The pill turns green-edged and bold</b><br/>'Clear filters' appears beside the menus" }
+  subgraph gScale ["What the weights do"]
+  w1@{ shape: rect, label: "<b>Volume: the program's share of decisions</b><br/>Residential 40%, IOP 30%, PHP 20%, Withdrawal management 10%<br/>Applies to decisions, drafts, requests helped, rulings and accepted denials" }
+  w2@{ shape: rect, label: "<b>Approval: every payer's rate moves by a few points</b><br/>Residential -3, IOP +4, PHP +2, Withdrawal management -4<br/>The denials follow: decisions times the rest" }
+  w3@{ shape: rect, label: "<b>Turnaround: payer averages times a multiplier</b><br/>Residential 1.10, IOP 0.95, PHP 0.95, Withdrawal management 0.85" }
+  w4@{ shape: rect, label: "<b>Reasons: each payer's denials are spread over its reasons</b><br/>Fixable reasons weigh more in IOP and PHP, less in Residential and Withdrawal management<br/>So the preventable share moves: about 62% in Residential, 71% in IOP" }
+  w5@{ shape: rect, label: "Advice taken works and the draft edits shift a few points the same way" }
+  end
+  r1@{ shape: rect, label: "<b>Every number on the page is added up again from the same table</b><br/>Tiles, bars, preventable rows, denial table, 'What helps most', report and files" }
+  r2@{ shape: rect, label: "<b>Recorded events join only if their request is in that program</b><br/>Appeal rulings, accepted denials, dismissed recommendations<br/>The request is looked up on the Dashboard or in Authorizations" }
+  r3@{ shape: rect, label: "<b>Workload counts the Dashboard's requests in that program</b><br/>It does not follow the period" }
+  q1@{ shape: diam, label: "20 or more decisions (or denials) left?" }
+  ok@{ shape: curv-trap, label: "Numbers show" }
+  hid@{ shape: curv-trap, label: "<b>'-' and 'Not enough decisions yet'</b><br/>More likely with one payer and a small program, for example Lakeshore and Withdrawal management" }
+  cl@{ shape: trap-t, label: "Click 'Clear filters' or pick 'All programs'" }
+  p2@{ shape: rect, label: "<b>Program and payer back to all</b><br/>The starting figures return exactly" }
+  g1@{ shape: subproc, label: "Continues in: Analytics › Monthly report › What the files contain" }
+  e1@{ shape: stadium, label: "Page matches the program" }
+  s1 --> o1 --> i1 --> p1
+  i1 --> w1 & w2 & w3 & w4 & w5
+  w1 & w2 & w3 & w4 & w5 --> r1
+  r1 --> q1
+  q1 -->|"Yes"| ok --> e1
+  q1 -->|"No"| hid --> e1
+  r1 -.-> r2
+  r1 -.-> r3
+  p1 --> cl --> p2
+  r1 -.-> g1
+  class s1 k_start
+  class o1 k_overlay
+  class i1 k_input
+  class p1,w1,w2,w3,w4,w5,r1,r2,r3,p2 k_process
+  class q1 k_decision
+  class ok,hid k_screen
+  class cl k_click
+  class g1 k_goto
+  class e1 k_end
+  style gScale fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

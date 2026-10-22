@@ -1,0 +1,79 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Result page, summary card" }
+  subgraph gE ["Eligibility"]
+  e0@{ shape: diam, label: "What did the state or plan say?" }
+  e1@{ shape: rect, label: "<b>Pill 'Eligible' (green)</b><br/>'Effective 01/01/2026, no end date'" }
+  e2@{ shape: rect, label: "<b>Pill 'Not eligible' (red)</b><br/>'Effective 01/01/2026, ended 09/30/2026'" }
+  e3@{ shape: rect, label: "<b>Pill 'Needs a fix' (red)</b><br/>'Effective 01/01/2026, lapsed 10/12/2026'<br/>Button 'Request retro-eligibility'" }
+  e4@{ shape: rect, label: "<b>Pill 'Needs a fix' (red)</b><br/>'No coverage was found for these details. Check the member ID and date of birth, or read the card again.'<br/>No dates" }
+  end
+  nf@{ shape: rect, label: "<b>Benefits and What this service needs say 'Not checked' (grey)</b><br/>'Needs a plan that knows this member'<br/>No limit line, no cost share, no Payers rules" }
+  subgraph gB ["Benefits"]
+  b0@{ shape: diam, label: "What do the benefits say?" }
+  b1@{ shape: rect, label: "<b>Pill 'Covered' (green)</b><br/>'Residential 3.5 is payable. Codes H0018 and H0019'" }
+  b2@{ shape: rect, label: "<b>Pill 'Limited' (amber)</b><br/>'... is payable with conditions. Codes ...'" }
+  b3@{ shape: rect, label: "<b>Pill 'Not covered' (red)</b><br/>'... is not a covered benefit. Codes ...'" }
+  b4@{ shape: diam, label: "Is a service limit on file?" }
+  b5@{ shape: rect, label: "<b>Quiet line '9 of 14 days used, 5 left'</b><br/>(or '38 of 48 units used, 10 left')<br/>'All 14 days used. Nothing left' when none is left" }
+  b6@{ shape: rect, label: "<b>Quiet line 'No annual day limit for residential 3.5. The authorization sets the days'</b><br/>when the program has none (Summit residential)<br/>Otherwise no limit line" }
+  b7@{ shape: diam, label: "Does this plan type have a cost share on file?" }
+  b8@{ shape: rect, label: "<b>Quiet line 'Patient pays: Copay $40 per day, deductible $350 left, coinsurance 20% after the deductible'</b><br/>Commercial plans and carve-outs<br/>Medicare Advantage: 'Deductible $85 left, coinsurance 20%'" }
+  b9@{ shape: rect, label: "<b>Nothing about cost</b><br/>Ohio Medicaid members usually pay none, so there is no '$0' line" }
+  end
+  subgraph gN ["What this service needs"]
+  n0@{ shape: diam, label: "What is the authorization state?" }
+  n1@{ shape: rect, label: "<b>Pill 'Not required' (grey)</b><br/>'Beacon does not require one for IOP.'" }
+  n2@{ shape: rect, label: "<b>Pill 'On file' (green)</b><br/>'On file with Summit.'" }
+  n3@{ shape: rect, label: "<b>Pill 'Required, not on file' (amber)</b><br/>'Required before the first day. Not on file yet.'" }
+  n4@{ shape: rect, label: "<b>Pills 'In progress', 'Payer reviewing' or 'Retro request open' (amber or grey)</b><br/>with what is happening to the request" }
+  n5@{ shape: rect, label: "<b>Quiet line from the Payers config, read live</b><br/>'Summit's saved rules (demo data): Notice within 24 hours of admission.<br/>9 documents on the Residential 3.5 list.'<br/>Edit the rule or the list on Payers and this line follows" }
+  n6@{ shape: trap-t, label: "Click 'Open Summit's rules'" }
+  end
+  note@{ shape: rect, label: "<b>Under the summary: 'Active coverage does not mean this service is covered.</b><br/>Check the benefits and the authorization requirement.'" }
+  g1@{ shape: subproc, label: "Continues in: Payers › Rules › Read the rules" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › Next actions" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › Which verdict and why" }
+  s1 --> e0
+  e0 -->|"Active"| e1 --> b0
+  e0 -->|"Ended"| e2 --> b0
+  e0 -->|"Lapsed"| e3 --> b0
+  e0 -->|"Not found"| e4 --> nf --> note
+  b0 -->|"Covered"| b1 --> b4
+  b0 -->|"Limited"| b2 --> b4
+  b0 -->|"Not covered"| b3 --> b4
+  b4 -->|"Yes"| b5 --> b7
+  b4 -->|"No"| b6 --> b7
+  b7 -->|"Yes"| b8 --> n0
+  b7 -->|"No"| b9 --> n0
+  n0 -->|"Not required"| n1 --> n5
+  n0 -->|"On file"| n2 --> n5
+  n0 -->|"Required"| n3 --> n5
+  n0 -->|"Drafted, reviewing, retro"| n4 --> n5
+  n5 --> n6 --> g1
+  n5 --> note --> g3
+  e3 -.-> g2
+  class s1 k_start
+  class e0,b0,b4,b7,n0 k_decision
+  class e1,e2,e3,e4,nf,b1,b2,b3,b5,b6,b8,b9,n1,n2,n3,n4,n5,note k_process
+  class n6 k_click
+  class g1,g2,g3 k_goto
+  style gE fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gB fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gN fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

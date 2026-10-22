@@ -1,0 +1,75 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Dashboard is open</b><br/>Four figures between the Summary from FLO and the filter bar" }
+  subgraph gFig ["The four figures, left to right (two by two on narrow screens)"]
+  t1@{ shape: curv-trap, label: "<b>Needs you 3</b><br/>'1 payer question, 2 drafts'<br/>Requests waiting on a person, plus cases saved in New case that wait on one" }
+  t2@{ shape: curv-trap, label: "<b>Due within 24 hours 12</b><br/>'next: R-0988 in 3 h' or '2 already due'<br/>The due times Authorizations ranks by, or a denial's deadline; overdue counts" }
+  t3@{ shape: curv-trap, label: "<b>Waiting on payers 18</b><br/>'3 running late'<br/>Received and Under review together" }
+  t4@{ shape: curv-trap, label: "<b>Denials to act on 8</b><br/>'4 deadlines this week'<br/>Every request in Appeal or call" }
+  end
+  c1@{ shape: trap-t, label: "<b>Click a figure that is not outlined</b><br/>Or Tab to it and press Enter or Space" }
+  c2@{ shape: trap-t, label: "Click the outlined figure again" }
+  d1@{ shape: diam, label: "Which figure?" }
+  p1@{ shape: rect, label: "<b>A grouping is chosen: Needs you, Due within 24 hours or Waiting on payers</b><br/>The Stage menu shows its name and Stage goes back to 'All stages' in the address" }
+  p1b@{ shape: rect, label: "<b>Stage is set to 'Appeal or call'</b><br/>Address gets ?stage=appeal" }
+  p2@{ shape: rect, label: "<b>Grouping and stage are cleared</b><br/>Stage menu shows 'All stages'; ?stage= leaves the address" }
+  w1@{ shape: cyl, label: "<b>Filters</b><br/>Stage, or the grouping held on the page" }
+  p4@{ shape: rect, label: "<b>The chosen figure is outlined and marked pressed</b><br/>Table goes back to its first 8 rows" }
+  p5@{ shape: rect, label: "<b>Headline and sub line follow it</b><br/>Figures keep their own counts" }
+  sc@{ shape: curv-trap, label: "<b>Requests</b><br/>'Showing 8 of 12' under '12 requests are due within 24 hours.'<br/>Rows: waiting on you first, then the nearest clock" }
+  d2@{ shape: diam, label: "Does the figure show 0?" }
+  em@{ shape: curv-trap, label: "<b>Empty state: 'No requests match'</b><br/>With 'Clear filters'<br/>Needs you at 0 reads 'Nothing needs you right now.'" }
+  d3@{ shape: diam, label: "Are cases saved in New case waiting on you, or being prepared, with no row?" }
+  ml@{ shape: curv-trap, label: "<b>One line under the table</b><br/>'1 more is waiting on you in New case.' or '2 more are being prepared in New case.'<br/>and 'Open Active cases'" }
+  c3@{ shape: trap-t, label: "Click 'Open Active cases'" }
+  m1@{ shape: trap-t, label: "Pick the same choice in the 'All stages' menu instead" }
+  m2@{ shape: trap-t, label: "Click a stage name in 'What the stages mean'" }
+  g1@{ shape: subproc, label: "Continues in: Dashboard › Headline › What the headline and sub line say" }
+  g2@{ shape: subproc, label: "Continues in: Dashboard › Filters › Clear filters and empty states" }
+  g3@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Order, rows and paging" }
+  g4@{ shape: subproc, label: "Continues in: Dashboard › Filters › Payer, Program, Request type and Stage" }
+  g5@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Being prepared card" }
+  g6@{ shape: subproc, label: "Continues in: Dashboard › Stage help › What the stages mean" }
+  s1 --> t1 & t2 & t3 & t4
+  t1 & t2 & t3 & t4 --> c1
+  c1 --> d1
+  d1 -->|"Needs you, Due within 24 hours, Waiting on payers"| p1
+  d1 -->|"Denials to act on"| p1b
+  p4 -.-> c2
+  c2 --> p2
+  p1 --> w1
+  p1b --> w1
+  p2 --> w1
+  w1 --> p4 --> p5
+  p5 --> g1
+  p5 --> d2
+  d2 -->|"No"| sc --> g3
+  d2 -->|"Yes"| em --> g2
+  sc --> d3
+  d3 -->|"Yes"| ml --> c3 --> g5
+  m1 -.-> g4
+  m2 -.-> g6
+  class s1 k_start
+  class t1,t2,t3,t4,sc,em,ml k_screen
+  class c1,c2,c3,m1,m2 k_click
+  class d1,d2,d3 k_decision
+  class p1,p1b,p2,p4,p5 k_process
+  class w1 k_store
+  class g1,g2,g3,g4,g5,g6 k_goto
+  style gFig fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

@@ -1,0 +1,81 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "A denial is on screen" }
+  d1@{ shape: diam, label: "Accepted?" }
+  t1@{ shape: curv-trap, label: "<b>Label 'Where it stands'</b><br/>Title 'Closed. You accepted the decision'<br/>'Reason: ... Analytics logs it as an accepted denial.'" }
+  c1@{ shape: trap-t, label: "Click the link 'Plan the step-down'" }
+  g1@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Step-down plans from accepted denials" }
+  d2a@{ shape: diam, label: "Payer's decision on the appeal recorded as Overturned or Partly overturned?" }
+  t2a@{ shape: curv-trap, label: "<b>Label 'Where it stands'</b><br/>Title 'Overturned on appeal' or 'Partly overturned on appeal'<br/>Your note, or 'The ledger is updated and the next review is booked.'" }
+  d2@{ shape: diam, label: "Call outcome logged as Overturned or Partly restored?" }
+  t2@{ shape: curv-trap, label: "<b>Label 'Where it stands'</b><br/>Title 'Overturned on the call' or 'Partly restored on the call'<br/>Your note, or 'The ledger is updated and the next review is booked.'" }
+  pd@{ shape: rect, label: "No button here: 'See on the Dashboard' is in the header card (green tint for overturned, ochre for partly)" }
+  g2@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
+  d3@{ shape: diam, label: "Chip is 'Appeal filed', 'Second-level appeal filed' or 'External review'?" }
+  t3@{ shape: curv-trap, label: "<b>Label 'Where it stands'</b><br/>Title 'Appeal filed. Waiting on the payer' (or 'Second-level appeal filed', 'External review')<br/>'Filed 10/05, decision 11/02. Navigator checks every day. When the payer answers, record the decision here.'" }
+  c3a@{ shape: trap-t, label: "Click 'Record the payer's decision' (primary, first)" }
+  c3@{ shape: trap-t, label: "Click 'View the appeal'" }
+  g3@{ shape: subproc, label: "Continues in: Denial Intelligence › Written appeal › After filing" }
+  g3a@{ shape: subproc, label: "Continues in: Denial Intelligence › Written appeal › Record the payer's decision" }
+  d4@{ shape: diam, label: "Chip is 'Appeal drafting'?" }
+  d5@{ shape: diam, label: "Has a draft been saved?" }
+  t4@{ shape: curv-trap, label: "<b>Label 'Next step · File an appeal'</b><br/>Title 'The appeal is drafted and waiting for a clinician's signature'<br/>'Review the letter, change anything you like, then sign and file.'" }
+  t5@{ shape: curv-trap, label: "<b>Label 'Next step · File an appeal'</b><br/>Title 'Advocate is drafting the appeal'<br/>'Open the draft to see it come together.'" }
+  c4@{ shape: trap-t, label: "Click 'Open the draft'" }
+  g4@{ shape: subproc, label: "Continues in: Denial Intelligence › Written appeal › Confirm and draft" }
+  d6@{ shape: diam, label: "Chip is 'Call booked'?" }
+  t6@{ shape: curv-trap, label: "<b>Label 'Next step · Peer-to-peer review'</b><br/>Title 'Call booked: Wed 10/21, 9–11 am'<br/>'Cadence booked the window with Cardinal. The brief is ready, written by Advocate and checked by Integrity.'" }
+  c6@{ shape: trap-t, label: "Click 'Open the brief' (primary, first)" }
+  c5@{ shape: trap-t, label: "Click 'Change the time'" }
+  g5@{ shape: subproc, label: "Continues in: Denial Intelligence › Peer-to-peer › Book the call" }
+  g6@{ shape: subproc, label: "Continues in: Denial Intelligence › Peer-to-peer › The brief" }
+  p2@{ shape: rect, label: "<b>Calls booked at the start show the time from the denial's data</b><br/>Later ones show the time that was picked" }
+  rn@{ shape: curv-trap, label: "<b>Under the buttons of the three blocks that show something the agents wrote</b><br/>'Draft by FLO's agents. A clinician reviews and signs before anything is sent.'" }
+  p1@{ shape: rect, label: "<b>None of the above: nothing is under way</b><br/>Chips 'Analyzed' and 'Resubmitting'" }
+  g7@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Recommended next step" }
+  sc1@{ shape: curv-trap, label: "<b>'Your options' card shows when the denial is still open</b><br/>Its own button appears only for a route the block above has no button for" }
+  s1 --> d1
+  d1 -->|"Yes"| t1 --> c1 --> g1
+  d1 -->|"No"| d2a
+  d2a -->|"Yes"| t2a --> pd
+  d2a -->|"No"| d2
+  d2 -->|"Yes"| t2 --> pd --> g2
+  d2 -->|"No"| d3
+  d3 -->|"Yes"| t3
+  t3 --> c3a --> g3a
+  t3 --> c3 --> g3
+  d3 -->|"No"| d4
+  d4 -->|"Yes"| d5
+  d5 -->|"Yes"| t4 --> c4
+  d5 -->|"No"| t5 --> c4
+  c4 --> g4
+  t4 -.-> rn
+  d4 -->|"No"| d6
+  d6 -->|"Yes"| t6 --> c6 --> g6
+  t6 --> c5 --> g5
+  t6 -.-> p2
+  t6 -.-> rn
+  d6 -->|"No"| p1 --> g7
+  p1 --> sc1
+  class s1 k_start
+  class d1,d2a,d2,d3,d4,d5,d6 k_decision
+  class t1,t2a,t2,t3,t4,t5,t6,rn,sc1 k_screen
+  class c1,c3a,c3,c4,c6,c5 k_click
+  class g1,g2,g3,g3a,g4,g5,g6,g7 k_goto
+  class pd,p2,p1 k_process
