@@ -32,7 +32,7 @@ flowchart TD
   l2@{ shape: curv-trap, label: "<b>'Three points to make'</b><br/>'Each one links to the chart'<br/>Numbered, each with a source chip" }
   l3@{ shape: curv-trap, label: "<b>'What they may say'</b><br/>'And a short answer to each'" }
   l4@{ shape: curv-trap, label: "'The ask.' (green banner)" }
-  l5@{ shape: curv-trap, label: "<b>'Key dates and numbers'</b><br/>Denial received, Call booked, Peer-to-peer window closes, Written appeal due<br/>Days or units, At stake, Chance, Similar decisions" }
+  l5@{ shape: curv-trap, label: "<b>'Key dates and numbers'</b><br/>Denial received, Call booked, Peer-to-peer window closes, Written appeal due<br/>Days or units, Time left in the window, Chance, Similar decisions" }
   r1@{ shape: curv-trap, label: "<b>'Call details'</b><br/>Payer, Who to call, Reviewer, Window, Closes in, Dial-in" }
   p1@{ shape: rect, label: "<b>'Window' reads 'Not booked yet' before a call is booked</b><br/>'Closes in' is red under 2 days, ochre under 7, 'Closed' when over" }
   r2@{ shape: curv-trap, label: "<b>'Chance of overturning'</b><br/>64%, 'likely 55–72%', a word (Moderate), and 'A written appeal is 58%.'" }
@@ -42,6 +42,8 @@ flowchart TD
   r4@{ shape: curv-trap, label: "Three buttons: 'Copy brief', 'Print', 'Record the call outcome'" }
   g2@{ shape: subproc, label: "Continues in: Denial Intelligence › Peer-to-peer › Brief buttons" }
   g3@{ shape: subproc, label: "Continues in: Denial Intelligence › Peer-to-peer › Record the call outcome" }
+  c4@{ shape: trap-t, label: "Click the link 'Appeal analysis report' (top right of the header)" }
+  g4@{ shape: subproc, label: "Continues in: Denial Intelligence › Appeal analysis report › Open and generate" }
   p0@{ shape: rect, label: "<b>Text of the brief comes from the denial type, payer and numbers</b><br/>D-3318 is written out in full" }
   s1 --> d1
   s2 --> d1
@@ -50,6 +52,7 @@ flowchart TD
   d1 -->|"Yes"| sc1
   sc1 --> p0
   sc1 --> c1 --> g1
+  sc1 --> c4 --> g4
   sc1 -.-> b1 --> c2 --> g1
   sc1 --> l1 --> l2 --> l3 --> l4 --> l5
   sc1 --> r1 --> p1
@@ -59,8 +62,8 @@ flowchart TD
   class s1,s2,s3 k_start
   class d1 k_decision
   class e1,sc1,l1,l2,l3,l4,l5,r1,r2,r3,r4 k_screen
-  class c0,c1,c2,c3 k_click
-  class g0,g1,g2,g3 k_goto
+  class c0,c1,c2,c3,c4 k_click
+  class g0,g1,g2,g3,g4 k_goto
   class b1 k_toast
   class p1,p0 k_process
   class st1 k_store

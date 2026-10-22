@@ -18,13 +18,13 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Dashboard is open</b><br/>'Requests' card under the stage strip" }
   sc1@{ shape: curv-trap, label: "<b>Card header</b><br/>'Requests' and 'Bars show progress: Prepared, Received, In review, Decided...'<br/>Right side: 'Showing 8 of 40'" }
-  sc2@{ shape: curv-trap, label: "<b>Seven columns</b><br/>Case, Payer, Where it is, Clock, At stake, What happens next, and an unnamed column with 'Open'" }
-  p1@{ shape: rect, label: "<b>The headings Case, Payer, Where it is, Clock and At stake are buttons that sort the rows</b><br/>'What happens next' and the Open column do not sort" }
+  sc2@{ shape: curv-trap, label: "<b>Six columns</b><br/>Case, Payer, Where it is, Clock, What happens next, and an unnamed column with 'Open'" }
+  p1@{ shape: rect, label: "<b>The headings Case, Payer, Where it is and Clock are buttons that sort the rows</b><br/>'What happens next' and the Open column do not sort" }
   p2@{ shape: rect, label: "<b>Rows start in the app's order</b><br/>1 needs you, 2 very late, 3 late, 4 denial with under 2 days left, 5 the rest<br/>Same group: longest time in stage first" }
   d0@{ shape: diam, label: "Do any rows match the filters?" }
   em@{ shape: curv-trap, label: "<b>'No requests match'</b><br/>with 'Clear filters'" }
   subgraph gRow ["One row (example: P-1499)"]
-  r1@{ shape: curv-trap, label: "<b>Row</b><br/>Case ID and type, payer and program, chip and bars, clock, At stake, what happens next, 'Open'" }
+  r1@{ shape: curv-trap, label: "<b>Row</b><br/>Case ID and type, payer and program, chip and bars, clock, what happens next, 'Open'" }
   c1@{ shape: trap-t, label: "Click anywhere on the row" }
   c2@{ shape: trap-t, label: "Click the underlined case ID, e.g. 'P-1499'" }
   c3@{ shape: trap-t, label: "Click 'Open' on the row" }
@@ -42,7 +42,7 @@ flowchart TD
   p5@{ shape: rect, label: "<b>Eight more rows are added</b><br/>With fewer than 8 left the button shows that number, e.g. 'Show 5 more'" }
   e1@{ shape: stadium, label: "<b>All rows shown</b><br/>'Showing 40 of 40'; no button" }
   p6@{ shape: rect, label: "Changing any filter, the date range or the sort goes back to the first 8 rows" }
-  t1@{ shape: odd, label: "<b>Count text 'Showing 8 of 40'</b><br/>With Appeal or call: 'Showing 8 of 8 · $67.8K at stake'" }
+  t1@{ shape: odd, label: "<b>Count text 'Showing 8 of 40'</b><br/>With Appeal or call: 'Showing 8 of 8'" }
   sc4@{ shape: curv-trap, label: "<b>With the Preparing tile chosen</b><br/>A line under the table: '2 more are being prepared in New case.' and 'Open Active cases'" }
   s1 --> sc1 --> sc2 --> p1 --> p2 --> d0
   d0 -->|"No"| em --> g3

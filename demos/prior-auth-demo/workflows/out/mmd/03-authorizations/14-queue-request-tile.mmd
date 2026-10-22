@@ -35,7 +35,6 @@ flowchart TD
   rule@{ shape: rect, label: "<b>Green note under the status</b><br/>e.g. 'Summit expects a named step-down provider with the first request.'" }
   subgraph gR ["Right side"]
   due@{ shape: rect, label: "<b>Due pill, e.g. 'Notice due in 5 h'</b><br/>Under 48 h: 'in 40 min' or 'in 5 h'. Later: 'Decision Thu'. Past: '... now'" }
-  risk@{ shape: rect, label: "Pill '$22.4K at risk'" }
   ch@{ shape: rect, label: "<b>Approval chance bar and number</b><br/>Strong 80+, Moderate 55–79, At risk below 55" }
   lift@{ shape: rect, label: "<b>Line under the word</b><br/>'+26 pts once drafted', 'waiting on the payer', 'chance to overturn', 'on track'" }
   end
@@ -58,14 +57,14 @@ flowchart TD
   dC -->|"No"| dRule
   dRule -->|"Yes"| rule
   dRule -->|"No"| nr
-  t --> due --> risk --> ch --> lift --> dA
+  t --> due --> ch --> lift --> dA
   dA -->|"Yes"| ch2
   dA -->|"No"| ch3
   t --> tint
   t --> idl --> gC
   t --> ob --> gC
   class t k_screen
-  class lv,id,dx,sc,rule,due,risk,ch,lift,ch2,ch3,nr,tint k_process
+  class lv,id,dx,sc,rule,due,ch,lift,ch2,ch3,nr,tint k_process
   class dR,dN,dC,dRule,dA k_decision
   class ag1,ag2 k_agent
   class pn k_toast

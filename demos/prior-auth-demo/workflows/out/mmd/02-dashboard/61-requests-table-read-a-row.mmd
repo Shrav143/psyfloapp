@@ -39,7 +39,6 @@ flowchart TD
   k13@{ shape: curv-trap, label: "<b>'4 d 12 h' and 'typical 2 d'</b><br/>Over 2 × typical adds red 'very late'" }
   k14@{ shape: curv-trap, label: "<b>'1 h 12 m' and 'typical 2 h'</b><br/>Within typical, plain text" }
   end
-  a1@{ shape: curv-trap, label: "<b>At stake</b><br/>Money asked for, e.g. '$22.4K'" }
   n1@{ shape: curv-trap, label: "<b>What happens next</b><br/>Agent badge and a line, e.g. 'Needs your input. Scribe has a question' or 'Navigator checks again in 5 minutes'<br/>An approval says 'Write-back is off in EMR Connect' instead of 'Write-back waits for you' while write-back is off" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Order, rows and paging" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Header › Check all now and the demo clock" }
@@ -48,24 +47,24 @@ flowchart TD
   d1 -->|"No"| w1 --> w3
   d1 -->|"Yes"| w2 --> w3
   w3 --> k1
-  k1 -->|"Yes"| k2 --> a1
+  k1 -->|"Yes"| k2 --> n1
   k1 -->|"No"| k3
   k3 -->|"Yes"| k4
-  k4 -->|"Zero or less"| k5 --> a1
-  k4 -->|"Under 2 days"| k6 --> a1
-  k4 -->|"2 to 7 days"| k7 --> a1
-  k4 -->|"7 days or more"| k8 --> a1
+  k4 -->|"Zero or less"| k5 --> n1
+  k4 -->|"Under 2 days"| k6 --> n1
+  k4 -->|"2 to 7 days"| k7 --> n1
+  k4 -->|"7 days or more"| k8 --> n1
   k3 -->|"No"| k9
-  k9 -->|"Yes"| k10 --> a1
+  k9 -->|"Yes"| k10 --> n1
   k9 -->|"No"| k11
-  k11 -->|"Over 1.5 times"| k12 --> a1
-  k11 -->|"Over 2 times"| k13 --> a1
-  k11 -->|"Within typical"| k14 --> a1
-  a1 --> n1 --> g1
+  k11 -->|"Over 1.5 times"| k12 --> n1
+  k11 -->|"Over 2 times"| k13 --> n1
+  k11 -->|"Within typical"| k14 --> n1
+  n1 --> g1
   k11 -.-> g2
   s1 -.-> g3
   class s1 k_start
-  class c1,c2,w1,w2,k2,k5,k6,k7,k8,k10,k12,k13,k14,a1,n1 k_screen
+  class c1,c2,w1,w2,k2,k5,k6,k7,k8,k10,k12,k13,k14,n1 k_screen
   class d1,k1,k3,k4,k9,k11 k_decision
   class w3 k_process
   class g1,g2,g3 k_goto

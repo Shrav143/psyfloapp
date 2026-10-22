@@ -22,11 +22,16 @@ flowchart LR
   l1@{ shape: trap-t, label: "Click 'Open Dashboard, By payer'" }
   r1@{ shape: rect, label: "<b>Opens /dashboard?focus=payers</b><br/>The Dashboard scrolls to Payers at a glance" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Payers at a glance › Read the table and pick a payer" }
-  d2@{ shape: diam, label: "Contains 'denial', 'stake' or 'money'?" }
-  a2@{ shape: hex, label: "<b>'7 denials are open, with $62.4K at stake. The nearest deadline is D-3318 (Cardinal). Call booked Wed 9 to 11 am. The brief is ready. The chance of winning is 64%.'</b><br/>The count, the total and the nearest open denial are live, so the sentence follows the data" }
+  d2@{ shape: diam, label: "Contains 'denial'?" }
+  a2@{ shape: hex, label: "<b>'8 denials are open. The nearest deadline is D-3318 (Cardinal). Call booked Wed 9 to 11 am. The brief is ready. The chance of winning is 64%.'</b><br/>The count and the nearest open denial are live, so the sentence follows the data<br/>FLO gives no dollar figure: a question that only asks about money gets the fallback answer" }
   l2@{ shape: trap-t, label: "Click 'Open Denial Intelligence'" }
   r2@{ shape: rect, label: "<b>Opens /denials?id=D-3318, the nearest denial</b><br/>With no deadline left to name, it opens the list" }
   g2@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
+  d2b@{ shape: diam, label: "Contains 'due', 'soon' or 'deadline'?" }
+  a2b@{ shape: hex, label: "<b>'R-0988 (Beacon) is due soonest: review due in 3 h. Its approval chance is 79%. After it: R-1042 (Summit), notice due in 5 h; I-2207 (Cardinal), recert due in 5 h. 56 requests are open in Authorizations.'</b><br/>Read from the open queue, soonest due first. Two due at the same time: the lower approval chance first<br/>Nothing open: 'Nothing is due. Every open request has been sent or handled.' with 'Open Authorizations'" }
+  l2b@{ shape: trap-t, label: "Click 'Open R-0988'" }
+  r2b@{ shape: rect, label: "<b>Opens /authorizations/case/R-0988</b><br/>The case page of the request due soonest" }
+  g2b@{ shape: subproc, label: "Continues in: Authorizations › Case page › Ways in" }
   d3@{ shape: diam, label: "Contains 'cardinal' or 'approval rate'?" }
   a3@{ shape: hex, label: "<b>'Cardinal approved 63% as asked over the last 90 days, down 11 points. Historian links most of the drop to continued-stay evidence. Cardinal also published criteria version 2026.3, which affects 4 drafts you have not sent.'</b><br/>Fixed text" }
   l3@{ shape: trap-t, label: "Click 'Open Payers, Cardinal, Changes'" }
@@ -46,7 +51,9 @@ flowchart LR
   d1 -->|"Yes"| a1 --> l1 --> r1 --> g1
   d1 -->|"No"| d2
   d2 -->|"Yes"| a2 --> l2 --> r2 --> g2
-  d2 -->|"No"| d3
+  d2 -->|"No"| d2b
+  d2b -->|"Yes"| a2b --> l2b --> r2b --> g2b
+  d2b -->|"No"| d3
   d3 -->|"Yes"| a3 --> l3 --> g3
   d3 -->|"No"| d4
   d4 -->|"Yes"| a4 --> l4 --> r4 --> g4
@@ -54,9 +61,9 @@ flowchart LR
   d5 -->|"Yes"| a5 --> l5 --> g5
   d5 -->|"No"| a6 --> e1
   class s1 k_start
-  class d1,d2,d3,d4,d5 k_decision
-  class a1,a2,a3,a4,a5,a6 k_agent
-  class l1,l2,l3,l4,l5 k_click
-  class r1,r2,r4 k_process
-  class g1,g2,g3,g4,g5 k_goto
+  class d1,d2,d2b,d3,d4,d5 k_decision
+  class a1,a2,a2b,a3,a4,a5,a6 k_agent
+  class l1,l2,l2b,l3,l4,l5 k_click
+  class r1,r2,r2b,r4 k_process
+  class g1,g2,g2b,g3,g4,g5 k_goto
   class e1 k_end

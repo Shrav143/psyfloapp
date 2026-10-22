@@ -19,7 +19,7 @@ flowchart TD
   s1@{ shape: stadium, label: "A denial is selected (from the list or ?id=)" }
   p1@{ shape: rect, label: "<b>Title comes from the denial</b><br/>'D-3318: Cardinal approved 7 of 14 days. The chart supports challenging it.'" }
   sub1@{ shape: curv-trap, label: "<b>Sub line: initials, age · program · payer name</b><br/>'The agents read the denial against the chart, and you choose the next step.'" }
-  h1@{ shape: curv-trap, label: "<b>Header card</b><br/>Program chip, D-id, type pill, status pill, '$22.4K at stake', deadline pill" }
+  h1@{ shape: curv-trap, label: "<b>Header card</b><br/>Program chip, D-id, type pill, status pill, '64% chance of overturning', deadline pill" }
   h2@{ shape: curv-trap, label: "<b>Line under the pills</b><br/>Payer · case id · initials, age · letter file name<br/>'Your note: ...' when a note was added" }
   v1@{ shape: curv-trap, label: "<b>'Our read' tile, right of the header</b><br/>Worth challenging, Borderline or Probably accept, with one sentence" }
   pv@{ shape: rect, label: "<b>Verdict comes from the win chance: 50 and over, 35 to 49, under 35</b><br/>D-3306 (27%) reads 'Probably accept'" }
@@ -27,10 +27,10 @@ flowchart TD
   g1@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Status banner" }
   c1@{ shape: curv-trap, label: "<b>'What the agents did'</b><br/>Reader, Advocate and Historian steps, 'Done in 0:48'" }
   c2@{ shape: curv-trap, label: "<b>'What Cardinal said': the payer's words</b><br/>'What the chart shows': two or three sentences" }
-  c3@{ shape: curv-trap, label: "<b>'Where the denial is weak'</b><br/>'Each finding links to the chart, with a suggested fix'" }
+  c3@{ shape: curv-trap, label: "<b>'Where the denial is weak'</b><br/>'Each finding links to the chart, with a suggested fix'<br/>Button 'Full summary' in the card header" }
   g2@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Where the denial is weak" }
   d1@{ shape: diam, label: "<b>Is it an administrative denial?</b><br/>'Late notice' or 'Retro-authorization denied'" }
-  c4@{ shape: curv-trap, label: "<b>'The six ASAM dimensions'</b><br/>Six tiles D1 to D6, each with a green, ochre or red dot" }
+  c4@{ shape: curv-trap, label: "<b>'The six ASAM dimensions'</b><br/>Six tiles D1 to D6, each with a green, ochre or red dot<br/>Button 'Full summary' in the card header" }
   p2@{ shape: rect, label: "The card is left out" }
   d2@{ shape: diam, label: "Still open: not filed, and not closed (accepted, or won on a call or an appeal)?" }
   c5@{ shape: curv-trap, label: "'Your options' card" }
@@ -41,6 +41,8 @@ flowchart TD
   r1@{ shape: curv-trap, label: "'Open denials' list, right of the page" }
   g4@{ shape: subproc, label: "Continues in: Denial Intelligence › Open denials list" }
   b1@{ shape: trap-t, label: "Click 'See on the Dashboard' (top right)" }
+  b2@{ shape: trap-t, label: "Click 'Appeal analysis report' (button under the 'Our read' tile)" }
+  g6@{ shape: subproc, label: "Continues in: Denial Intelligence › Appeal analysis report › Open and generate" }
   g5@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   e1@{ shape: stadium, label: "Person reads the denial and chooses a next step" }
   s1 --> p1 --> sub1 --> h1
@@ -60,10 +62,11 @@ flowchart TD
   c6 --> p4 --> e1
   sub1 --> r1 --> g4
   sub1 --> b1 --> g5
+  v1 --> b2 --> g6
   class s1 k_start
   class p1,pv,p2,p3,p4 k_process
   class sub1,h1,h2,v1,bn,c1,c2,c3,c4,c5,c6,r1 k_screen
-  class g1,g2,g3,g4,g5 k_goto
+  class g1,g2,g3,g4,g6,g5 k_goto
   class d1,d2 k_decision
-  class b1 k_click
+  class b1,b2 k_click
   class e1 k_end

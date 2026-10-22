@@ -17,7 +17,7 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Scroll to the foot of 'Common denial reasons by payer'" }
-  sc@{ shape: curv-trap, label: "<b>Two figures under the table</b><br/>'Appeals overturned'  56%, '54 of 96 rulings this quarter'<br/>'Written off after accepted denials'  $88.7K, '17 denials this quarter'" }
+  sc@{ shape: curv-trap, label: "<b>Two figures under the table</b><br/>'Appeals overturned'  56%, '54 of 96 rulings this quarter'<br/>'Denials accepted'  17, 'denials this quarter'" }
   subgraph gApp ["Appeals overturned"]
   x1@{ shape: st-rect, label: "<b>The payer rules on an appeal</b><br/>(demo: the person logs the ruling)" }
   st1@{ shape: cyl, label: "<b>Denial Intelligence records the ruling</b><br/>Overturned, partly restored or upheld" }
@@ -26,11 +26,11 @@ flowchart TD
   o1@{ shape: curv-trap, label: "For example 57%, '55 of 97 rulings this quarter'" }
   o2@{ shape: curv-trap, label: "<b>'-' and 'Not enough decisions yet'</b><br/>A single payer with few rulings, for example Lakeshore" }
   end
-  subgraph gOff ["Written off"]
+  subgraph gOff ["Denials accepted"]
   k1@{ shape: trap-t, label: "In Denial Intelligence the person accepts a denial" }
-  st2@{ shape: cyl, label: "<b>Denial Intelligence records the write-off</b><br/>With the payer and the dollars at stake" }
-  p2@{ shape: rect, label: "<b>Denials go up by one</b><br/>The amount is added, for example $22.4K makes $88.7K into $111.1K" }
-  o3@{ shape: curv-trap, label: "'$111.1K', '18 denials this quarter'" }
+  st2@{ shape: cyl, label: "<b>Denial Intelligence records the accepted denial</b><br/>With its payer" }
+  p2@{ shape: rect, label: "<b>The count goes up by one</b><br/>For example 17 becomes 18, and the payer menu counts it for that payer" }
+  o3@{ shape: curv-trap, label: "'18', 'denials this quarter'" }
   end
   subgraph gDis ["Why recommendations were dismissed"]
   k2@{ shape: trap-t, label: "On a case, the person dismisses a recommendation and gives a reason" }

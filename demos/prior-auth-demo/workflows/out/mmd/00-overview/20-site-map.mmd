@@ -25,7 +25,7 @@ flowchart LR
   end
   subgraph gMain ["Sidebar › Main"]
   dash@{ shape: curv-trap, label: "<b>Dashboard</b><br/>Filters, calendar, stage strip, requests, payers" }
-  auth@{ shape: curv-trap, label: "<b>Authorizations › Queue</b><br/>Requests ranked by money and time" }
+  auth@{ shape: curv-trap, label: "<b>Authorizations › Queue</b><br/>Requests ranked by how soon each is due" }
   newc@{ shape: curv-trap, label: "<b>Authorizations › New case</b><br/>Referral, Medical records, Agents work, Review and sign" }
   elig@{ shape: curv-trap, label: "<b>Authorizations › Eligibility & Benefits</b><br/>List, verify a patient, result" }
   den@{ shape: curv-trap, label: "<b>Denial Intelligence</b><br/>Open denials, options, brief" }
@@ -46,6 +46,7 @@ flowchart LR
   ref@{ shape: curv-trap, label: "<b>New case › Full referral page</b><br/>Extracted, Validation, Coverage, Fit, Activity" }
   ver@{ shape: curv-trap, label: "Eligibility › Verify a patient and Result" }
   brief@{ shape: curv-trap, label: "Denial Intelligence › Peer-to-peer brief" }
+  rep@{ shape: curv-trap, label: "<b>Denial Intelligence › Appeal analysis report</b><br/>For every denial, copy or download as PDF" }
   payer@{ shape: curv-trap, label: "<b>Payers › One payer</b><br/>Process, Rules, Documents, Changes tabs" }
   end
   g1@{ shape: subproc, label: "Continues in: Global shell" }
@@ -67,7 +68,7 @@ flowchart LR
   auth --> case
   newc --> ref
   elig --> ver
-  den --> brief
+  den --> brief & rep
   pay --> payer
   ask --> g1
   dash --> g2
@@ -81,7 +82,7 @@ flowchart LR
   pay --> g10
   set --> g11
   class s0 k_start
-  class shell,dash,auth,newc,elig,den,mgr,ana,emr,pay,set,case,ref,ver,brief,payer k_screen
+  class shell,dash,auth,newc,elig,den,mgr,ana,emr,pay,set,case,ref,ver,brief,rep,payer k_screen
   class ask,notif,demo k_overlay
   class help,out k_toast
   class g1,g2,g3,g4,g5,g6,g7,g8,g9,g10,g11 k_goto

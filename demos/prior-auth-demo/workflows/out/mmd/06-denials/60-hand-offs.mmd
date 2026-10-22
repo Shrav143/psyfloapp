@@ -31,7 +31,7 @@ flowchart TD
   end
   subgraph gShare ["Shared with other screens"]
   c6@{ shape: trap-t, label: "Click 'Record the payer's decision' (banner on a filed appeal)" }
-  z1@{ shape: cyl, label: "On accept: Case Manager gets a step-down plan, Analytics counts the write-off" }
+  z1@{ shape: cyl, label: "On accept: Case Manager gets a step-down plan, Analytics logs the accepted denial" }
   z2@{ shape: cyl, label: "<b>On a recorded appeal decision: the result and next level are logged</b><br/>Analytics reads the appeal rulings" }
   end
   subgraph gBell ["Notifications"]

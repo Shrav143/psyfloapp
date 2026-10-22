@@ -36,13 +36,15 @@ flowchart TD
   g2@{ shape: subproc, label: "Continues in: Denial Intelligence › Peer-to-peer › Record the call outcome" }
   c5@{ shape: trap-t, label: "Tick a box under 'Have these open'" }
   st1@{ shape: cyl, label: "<b>Tick saved on the denial</b><br/>The box stays ticked next time" }
+  c7@{ shape: trap-t, label: "Click the link 'Appeal analysis report' (top right of the header)" }
+  g4@{ shape: subproc, label: "Continues in: Denial Intelligence › Appeal analysis report › Open and generate" }
   c6@{ shape: trap-t, label: "Click the crumb 'Denial Intelligence'" }
   g3@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
   e1@{ shape: stadium, label: "Notes are in the clipboard" }
   e2@{ shape: stadium, label: "Brief is on paper" }
   e3@{ shape: stadium, label: "Nothing was copied" }
   e4@{ shape: stadium, label: "Nothing was printed" }
-  s1 --> c1 & c2 & c3 & c4 & c5 & c6
+  s1 --> c1 & c2 & c3 & c4 & c5 & c6 & c7
   c1 --> p1 --> d1
   d1 -->|"Yes"| t1 --> e1
   d1 -->|"No"| p2 --> d2
@@ -55,13 +57,14 @@ flowchart TD
   c4 --> g2
   c5 --> st1
   c6 --> g3
+  c7 --> g4
   class s1 k_start
-  class c1,c2,c3,c4,c5,c6 k_click
+  class c1,c2,c3,c4,c5,c7,c6 k_click
   class p1,p2,p3,p4 k_process
   class d1,d2,d3 k_decision
   class t1,t2,t3 k_toast
   class dc1 k_doc
-  class g1,g2,g3 k_goto
+  class g1,g2,g4,g3 k_goto
   class st1 k_store
   class e1,e2 k_end
   class e3,e4 k_endx

@@ -22,10 +22,10 @@ flowchart TD
   q1@{ shape: curv-trap, label: "<b>Authorizations queue</b><br/>Header, payer signal, five tiles, filters, priority bands" }
   sb@{ shape: rect, label: "<b>Sidebar badge on 'Authorizations'</b><br/>Open requests in Act now plus Due within 24 hours (19)" }
   p1@{ shape: rect, label: "<b>The page counts the open requests</b><br/>A request that was sent, decided by the payer or settled no longer counts" }
-  p2@{ shape: rect, label: "<b>Money and average use each request's current chance</b><br/>Including actions applied on its case page" }
+  p2@{ shape: rect, label: "<b>The average and the next due time use each request's current chance and due time</b><br/>Including actions applied on its case page" }
   d1@{ shape: diam, label: "Is any filter on?" }
   h1@{ shape: curv-trap, label: "<b>Header: '19 of 56 open requests need action today.'</b><br/>The 19 are Act now plus Due within 24 hours<br/>With none left: 'Nothing needs action today.'" }
-  h2@{ shape: curv-trap, label: "<b>Sub line: 'Five are urgent. $538K rides on what is in flight, and the average approval chance is 79%.'</b><br/>With none in Act now: 'Nothing is urgent. ...'" }
+  h2@{ shape: curv-trap, label: "<b>Sub line: 'Five are urgent, and the average approval chance is 79%.'</b><br/>With none in Act now: 'Nothing is urgent, and ...'" }
   h3@{ shape: curv-trap, label: "<b>Header: 'X of 56 open requests match these filters.'</b><br/>No sub line" }
   nb@{ shape: trap-t, label: "Click 'New case' (top right button)" }
   g1@{ shape: subproc, label: "Continues in: New case › Referral step" }
@@ -33,7 +33,7 @@ flowchart TD
   tl@{ shape: curv-trap, label: "<b>Five summary tiles under the header</b><br/>Always count the whole queue, not the filtered list" }
   t1@{ shape: curv-trap, label: "<b>'Approval chance' 79%</b><br/>'average · likely 74–84%'<br/>Not clickable" }
   t2@{ shape: trap-t, label: "<b>Click the 'Urgent' tile</b><br/>5 · 'the Act now band'<br/>(0 once all five are sent or handled)" }
-  t3@{ shape: trap-t, label: "<b>Click the 'In flight' tile</b><br/>56 · '$538K at stake'" }
+  t3@{ shape: trap-t, label: "<b>Click the 'In flight' tile</b><br/>56 · 'next due in 3 h'<br/>(or 'next one is due now', or 'nothing open')" }
   t4@{ shape: curv-trap, label: "<b>'Approved' 112</b><br/>'last 30 days'<br/>Not clickable" }
   t5@{ shape: curv-trap, label: "<b>'Denied' 46</b><br/>'last 30 days'<br/>Not clickable" }
   u1@{ shape: rect, label: "All filters are cleared, then Urgency is set to 'Act now'" }

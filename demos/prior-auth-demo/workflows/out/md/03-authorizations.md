@@ -10,7 +10,7 @@ How a person reaches the queue, what the header line says, and what the five sum
 
 Route: `/authorizations`
 
-Demo only: the numbers (56 open, 19 due today, $538K, 79%) are seed data. They move when actions are applied on a case page, and a request leaves the queue once it is signed and sent, decided by the payer, or settled in Denial Intelligence.
+Demo only: the numbers (56 open, 19 due today, 79%) are seed data. They move when actions are applied on a case page, and a request leaves the queue once it is signed and sent, decided by the payer, or settled in Denial Intelligence.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -37,10 +37,10 @@ flowchart TD
   q1@{ shape: curv-trap, label: "<b>Authorizations queue</b><br/>Header, payer signal, five tiles, filters, priority bands" }
   sb@{ shape: rect, label: "<b>Sidebar badge on 'Authorizations'</b><br/>Open requests in Act now plus Due within 24 hours (19)" }
   p1@{ shape: rect, label: "<b>The page counts the open requests</b><br/>A request that was sent, decided by the payer or settled no longer counts" }
-  p2@{ shape: rect, label: "<b>Money and average use each request's current chance</b><br/>Including actions applied on its case page" }
+  p2@{ shape: rect, label: "<b>The average and the next due time use each request's current chance and due time</b><br/>Including actions applied on its case page" }
   d1@{ shape: diam, label: "Is any filter on?" }
   h1@{ shape: curv-trap, label: "<b>Header: '19 of 56 open requests need action today.'</b><br/>The 19 are Act now plus Due within 24 hours<br/>With none left: 'Nothing needs action today.'" }
-  h2@{ shape: curv-trap, label: "<b>Sub line: 'Five are urgent. $538K rides on what is in flight, and the average approval chance is 79%.'</b><br/>With none in Act now: 'Nothing is urgent. ...'" }
+  h2@{ shape: curv-trap, label: "<b>Sub line: 'Five are urgent, and the average approval chance is 79%.'</b><br/>With none in Act now: 'Nothing is urgent, and ...'" }
   h3@{ shape: curv-trap, label: "<b>Header: 'X of 56 open requests match these filters.'</b><br/>No sub line" }
   nb@{ shape: trap-t, label: "Click 'New case' (top right button)" }
   g1@{ shape: subproc, label: "Continues in: New case › Referral step" }
@@ -48,7 +48,7 @@ flowchart TD
   tl@{ shape: curv-trap, label: "<b>Five summary tiles under the header</b><br/>Always count the whole queue, not the filtered list" }
   t1@{ shape: curv-trap, label: "<b>'Approval chance' 79%</b><br/>'average · likely 74–84%'<br/>Not clickable" }
   t2@{ shape: trap-t, label: "<b>Click the 'Urgent' tile</b><br/>5 · 'the Act now band'<br/>(0 once all five are sent or handled)" }
-  t3@{ shape: trap-t, label: "<b>Click the 'In flight' tile</b><br/>56 · '$538K at stake'" }
+  t3@{ shape: trap-t, label: "<b>Click the 'In flight' tile</b><br/>56 · 'next due in 3 h'<br/>(or 'next one is due now', or 'nothing open')" }
   t4@{ shape: curv-trap, label: "<b>'Approved' 112</b><br/>'last 30 days'<br/>Not clickable" }
   t5@{ shape: curv-trap, label: "<b>'Denied' 46</b><br/>'last 30 days'<br/>Not clickable" }
   u1@{ shape: rect, label: "All filters are cleared, then Urgency is set to 'Act now'" }
@@ -83,7 +83,7 @@ flowchart TD
 
 ## Authorizations › Queue › Bands and ranking
 
-How open requests are split into three bands, when a request leaves its band, how they are ranked inside a band by money and time, and how a band opens, closes and shows more.
+How open requests are split into three bands, when a request leaves its band, how they are ranked inside a band by how soon each is due, and how a band opens, closes and shows more.
 
 Route: `/authorizations`
 
@@ -122,9 +122,9 @@ flowchart TD
   hide@{ shape: rect, label: "The band card is left out" }
   bc@{ shape: curv-trap, label: "<b>Band card</b><br/>'Act now (5 requests)'<br/>Name, count, chevron" }
   r1@{ shape: rect, label: "<b>Inside a band, requests waiting on a person come first</b><br/>Preparing, Ready to sign, Denial route, or Needs your input" }
-  r2@{ shape: rect, label: "Then money at risk times a time weight, biggest first" }
-  wt@{ shape: rect, label: "<b>Time weight by time left</b><br/>under 6 h ×3 · under 24 h ×2 · under 3 days ×1.5 · later ×1" }
-  ex@{ shape: doc, label: "<b>Example in Act now</b><br/>R-1042 ($22.4K, due in 5 h) ranks above R-0912 (payer already reviewing)" }
+  r2@{ shape: rect, label: "<b>Then the soonest due first</b><br/>The due time on the tile, earliest at the top" }
+  wt@{ shape: rect, label: "<b>Two due at the same time</b><br/>The lower approval chance goes first" }
+  ex@{ shape: doc, label: "<b>Example in Act now</b><br/>R-1117 (due in 30 h, needs you) ranks above R-0912 (due in 22 h, payer already reviewing)" }
   hd@{ shape: trap-t, label: "Click the band header" }
   dC@{ shape: diam, label: "Is the band open now?" }
   col@{ shape: rect, label: "<b>Tiles are hidden</b><br/>Chevron turns sideways" }
@@ -213,7 +213,6 @@ flowchart TD
   rule@{ shape: rect, label: "<b>Green note under the status</b><br/>e.g. 'Summit expects a named step-down provider with the first request.'" }
   subgraph gR ["Right side"]
   due@{ shape: rect, label: "<b>Due pill, e.g. 'Notice due in 5 h'</b><br/>Under 48 h: 'in 40 min' or 'in 5 h'. Later: 'Decision Thu'. Past: '... now'" }
-  risk@{ shape: rect, label: "Pill '$22.4K at risk'" }
   ch@{ shape: rect, label: "<b>Approval chance bar and number</b><br/>Strong 80+, Moderate 55–79, At risk below 55" }
   lift@{ shape: rect, label: "<b>Line under the word</b><br/>'+26 pts once drafted', 'waiting on the payer', 'chance to overturn', 'on track'" }
   end
@@ -236,14 +235,14 @@ flowchart TD
   dC -->|"No"| dRule
   dRule -->|"Yes"| rule
   dRule -->|"No"| nr
-  t --> due --> risk --> ch --> lift --> dA
+  t --> due --> ch --> lift --> dA
   dA -->|"Yes"| ch2
   dA -->|"No"| ch3
   t --> tint
   t --> idl --> gC
   t --> ob --> gC
   class t k_screen
-  class lv,id,dx,sc,rule,due,risk,ch,lift,ch2,ch3,nr,tint k_process
+  class lv,id,dx,sc,rule,due,ch,lift,ch2,ch3,nr,tint k_process
   class dR,dN,dC,dRule,dA k_decision
   class ag1,ag2 k_agent
   class pn k_toast

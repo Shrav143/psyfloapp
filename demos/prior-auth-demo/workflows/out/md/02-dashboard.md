@@ -53,7 +53,7 @@ flowchart TD
   ca@{ shape: trap-t, label: "<b>Click 'Check all now'</b><br/>Disabled while Navigator is paused in Settings" }
   f1@{ shape: curv-trap, label: "<b>Filter bar</b><br/>'All payers', 'All programs', 'All request types', 'All stages'<br/>'Outcomes for' and the date range 'Sep 21 – Oct 20, 2026'" }
   st@{ shape: curv-trap, label: "<b>Stage strip, six tiles</b><br/>Preparing 5 (plus cases saved in New case), Received 4, Under review 14, Info requested 3, Decided today 8, Appeal or call 8" }
-  rq@{ shape: curv-trap, label: "<b>Requests</b><br/>'Showing 8 of 40', seven columns, five sortable headings, 'Show 8 more'" }
+  rq@{ shape: curv-trap, label: "<b>Requests</b><br/>'Showing 8 of 40', six columns, four sortable headings, 'Show 8 more'" }
   py@{ shape: curv-trap, label: "<b>Payers at a glance</b><br/>Six payers and an 'All payers' total row<br/>'Open Payers' link; each payer name opens that payer" }
   end
   g1@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
@@ -134,7 +134,7 @@ flowchart TD
   n0@{ shape: curv-trap, label: "<b>'No requests match these filters.'</b><br/>'The filters hide everything. Clear them to see every request again.'" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Filters › Clear filters and empty states" }
   d2@{ shape: diam, label: "Which Stage is set?" }
-  a1@{ shape: curv-trap, label: "<b>Appeal or call</b><br/>'8 denials are on their route. $67.8K is at stake.'<br/>'Each one is a call, an appeal, an external review or a resubmission.'" }
+  a1@{ shape: curv-trap, label: "<b>Appeal or call</b><br/>'8 denials are on their route.'<br/>'Each one is a call, an appeal, an external review or a resubmission.'" }
   a2@{ shape: curv-trap, label: "<b>Info requested</b><br/>'3 requests are waiting on you.'<br/>'The payer asked for more information. Packet drafts each answer for you to review.'" }
   a3@{ shape: curv-trap, label: "<b>Preparing</b><br/>'5 requests are being prepared.'<br/>The count is the same as the Preparing tile: the table rows plus cases saved in New case<br/>'They are in Case Manager. Nothing has been sent to a payer yet.'" }
   a4@{ shape: curv-trap, label: "<b>Received</b><br/>'4 requests have been received.'<br/>'The payer confirmed receipt. Navigator checks each one again every few minutes.'" }
@@ -539,7 +539,7 @@ flowchart TD
   p4@{ shape: rect, label: "Example: Cardinal, IOP, Recertification, Appeal or call" }
   em1@{ shape: curv-trap, label: "<b>Headline</b><br/>'No requests match these filters.'<br/>'The filters hide everything. Clear them to see every request again.'" }
   em2@{ shape: curv-trap, label: "<b>Stage strip</b><br/>Tiles still show their own counts: 'nothing waiting on receipt', 'nothing with the payer', 'nothing waiting on you', 'none yet today', 'no open denials'" }
-  em3@{ shape: curv-trap, label: "<b>Requests card</b><br/>'Showing 0 of 0'<br/>With Appeal or call it adds ' · $0 at stake'" }
+  em3@{ shape: curv-trap, label: "<b>Requests card</b><br/>'Showing 0 of 0'" }
   em4@{ shape: win-pane, label: "<b>Empty state in the card</b><br/>'No requests match'<br/>'The filters hide everything. Clear them to see every request again.'" }
   d3@{ shape: diam, label: "Is a narrowing filter set?" }
   c2@{ shape: trap-t, label: "Click 'Clear filters' in the empty state" }
@@ -678,13 +678,13 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Dashboard is open</b><br/>'Requests' card under the stage strip" }
   sc1@{ shape: curv-trap, label: "<b>Card header</b><br/>'Requests' and 'Bars show progress: Prepared, Received, In review, Decided...'<br/>Right side: 'Showing 8 of 40'" }
-  sc2@{ shape: curv-trap, label: "<b>Seven columns</b><br/>Case, Payer, Where it is, Clock, At stake, What happens next, and an unnamed column with 'Open'" }
-  p1@{ shape: rect, label: "<b>The headings Case, Payer, Where it is, Clock and At stake are buttons that sort the rows</b><br/>'What happens next' and the Open column do not sort" }
+  sc2@{ shape: curv-trap, label: "<b>Six columns</b><br/>Case, Payer, Where it is, Clock, What happens next, and an unnamed column with 'Open'" }
+  p1@{ shape: rect, label: "<b>The headings Case, Payer, Where it is and Clock are buttons that sort the rows</b><br/>'What happens next' and the Open column do not sort" }
   p2@{ shape: rect, label: "<b>Rows start in the app's order</b><br/>1 needs you, 2 very late, 3 late, 4 denial with under 2 days left, 5 the rest<br/>Same group: longest time in stage first" }
   d0@{ shape: diam, label: "Do any rows match the filters?" }
   em@{ shape: curv-trap, label: "<b>'No requests match'</b><br/>with 'Clear filters'" }
   subgraph gRow ["One row (example: P-1499)"]
-  r1@{ shape: curv-trap, label: "<b>Row</b><br/>Case ID and type, payer and program, chip and bars, clock, At stake, what happens next, 'Open'" }
+  r1@{ shape: curv-trap, label: "<b>Row</b><br/>Case ID and type, payer and program, chip and bars, clock, what happens next, 'Open'" }
   c1@{ shape: trap-t, label: "Click anywhere on the row" }
   c2@{ shape: trap-t, label: "Click the underlined case ID, e.g. 'P-1499'" }
   c3@{ shape: trap-t, label: "Click 'Open' on the row" }
@@ -702,7 +702,7 @@ flowchart TD
   p5@{ shape: rect, label: "<b>Eight more rows are added</b><br/>With fewer than 8 left the button shows that number, e.g. 'Show 5 more'" }
   e1@{ shape: stadium, label: "<b>All rows shown</b><br/>'Showing 40 of 40'; no button" }
   p6@{ shape: rect, label: "Changing any filter, the date range or the sort goes back to the first 8 rows" }
-  t1@{ shape: odd, label: "<b>Count text 'Showing 8 of 40'</b><br/>With Appeal or call: 'Showing 8 of 8 · $67.8K at stake'" }
+  t1@{ shape: odd, label: "<b>Count text 'Showing 8 of 40'</b><br/>With Appeal or call: 'Showing 8 of 8'" }
   sc4@{ shape: curv-trap, label: "<b>With the Preparing tile chosen</b><br/>A line under the table: '2 more are being prepared in New case.' and 'Open Active cases'" }
   s1 --> sc1 --> sc2 --> p1 --> p2 --> d0
   d0 -->|"No"| em --> g3
@@ -734,7 +734,7 @@ flowchart TD
 
 ## Dashboard › Requests table › Read a row: bars, clock and what happens next
 
-What each cell of a row means. The bars and the clock follow different rules for a normal request and for a denial (an ID that starts with D-). Nothing in these cells is a button except the case ID and Open. Case, Payer, Where it is, Clock and At stake can be sorted from their headings.
+What each cell of a row means. The bars and the clock follow different rules for a normal request and for a denial (an ID that starts with D-). Nothing in these cells is a button except the case ID and Open. Case, Payer, Where it is and Clock can be sorted from their headings.
 
 Route: `/dashboard`
 
@@ -780,7 +780,6 @@ flowchart TD
   k13@{ shape: curv-trap, label: "<b>'4 d 12 h' and 'typical 2 d'</b><br/>Over 2 × typical adds red 'very late'" }
   k14@{ shape: curv-trap, label: "<b>'1 h 12 m' and 'typical 2 h'</b><br/>Within typical, plain text" }
   end
-  a1@{ shape: curv-trap, label: "<b>At stake</b><br/>Money asked for, e.g. '$22.4K'" }
   n1@{ shape: curv-trap, label: "<b>What happens next</b><br/>Agent badge and a line, e.g. 'Needs your input. Scribe has a question' or 'Navigator checks again in 5 minutes'<br/>An approval says 'Write-back is off in EMR Connect' instead of 'Write-back waits for you' while write-back is off" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Order, rows and paging" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Header › Check all now and the demo clock" }
@@ -789,24 +788,24 @@ flowchart TD
   d1 -->|"No"| w1 --> w3
   d1 -->|"Yes"| w2 --> w3
   w3 --> k1
-  k1 -->|"Yes"| k2 --> a1
+  k1 -->|"Yes"| k2 --> n1
   k1 -->|"No"| k3
   k3 -->|"Yes"| k4
-  k4 -->|"Zero or less"| k5 --> a1
-  k4 -->|"Under 2 days"| k6 --> a1
-  k4 -->|"2 to 7 days"| k7 --> a1
-  k4 -->|"7 days or more"| k8 --> a1
+  k4 -->|"Zero or less"| k5 --> n1
+  k4 -->|"Under 2 days"| k6 --> n1
+  k4 -->|"2 to 7 days"| k7 --> n1
+  k4 -->|"7 days or more"| k8 --> n1
   k3 -->|"No"| k9
-  k9 -->|"Yes"| k10 --> a1
+  k9 -->|"Yes"| k10 --> n1
   k9 -->|"No"| k11
-  k11 -->|"Over 1.5 times"| k12 --> a1
-  k11 -->|"Over 2 times"| k13 --> a1
-  k11 -->|"Within typical"| k14 --> a1
-  a1 --> n1 --> g1
+  k11 -->|"Over 1.5 times"| k12 --> n1
+  k11 -->|"Over 2 times"| k13 --> n1
+  k11 -->|"Within typical"| k14 --> n1
+  n1 --> g1
   k11 -.-> g2
   s1 -.-> g3
   class s1 k_start
-  class c1,c2,w1,w2,k2,k5,k6,k7,k8,k10,k12,k13,k14,a1,n1 k_screen
+  class c1,c2,w1,w2,k2,k5,k6,k7,k8,k10,k12,k13,k14,n1 k_screen
   class d1,k1,k3,k4,k9,k11 k_decision
   class w3 k_process
   class g1,g2,g3 k_goto
@@ -815,7 +814,7 @@ flowchart TD
 
 ## Dashboard › Requests table › Sort the rows
 
-Five headings of the Requests table sort the rows. Each is a button, so the keyboard works too. A heading goes ascending, then descending, then back to the app's own order. The sort is not saved in the address.
+Four headings of the Requests table sort the rows. Each is a button, so the keyboard works too. A heading goes ascending, then descending, then back to the app's own order. The sort is not saved in the address.
 
 Route: `/dashboard`
 
@@ -839,7 +838,7 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Dashboard is open</b><br/>Headings of the 'Requests' table" }
-  h1@{ shape: curv-trap, label: "<b>Five headings can sort</b><br/>Case, Payer, Where it is, Clock, At stake<br/>Each shows a small up and down arrow" }
+  h1@{ shape: curv-trap, label: "<b>Four headings can sort</b><br/>Case, Payer, Where it is, Clock<br/>Each shows a small up and down arrow" }
   c1@{ shape: trap-t, label: "<b>Click a heading</b><br/>Or Tab to it and press Enter or Space" }
   d1@{ shape: diam, label: "Is this heading already the sorted one?" }
   p1@{ shape: rect, label: "<b>No: the sort starts on this heading, ascending</b><br/>The arrow points up; the heading is marked ascending for a screen reader" }
@@ -854,7 +853,6 @@ flowchart TD
   k2@{ shape: curv-trap, label: "<b>Payer</b><br/>The short name shown in the row, A to Z: Beacon PPO, Cardinal, Evergreen, Harborview MA, Lakeshore, Summit Medicaid" }
   k3@{ shape: curv-trap, label: "<b>Where it is</b><br/>The stage: Preparing, Received, Under review, Info requested, Approved, then Appeal or call" }
   k4@{ shape: curv-trap, label: "<b>Clock</b><br/>The number in the cell: time left for a denial with a deadline, otherwise time in stage<br/>Rows with a fixed note such as 'decision 11/02' stay last either way" }
-  k5@{ shape: curv-trap, label: "<b>At stake</b><br/>The money asked for, smallest first when ascending" }
   end
   p6@{ shape: rect, label: "<b>Filters, the stage tiles and 'Clear filters' keep the sort</b><br/>Leaving the page or reloading clears it" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Order, rows and paging" }
@@ -866,10 +864,10 @@ flowchart TD
   d2 -->|"Descending"| p3 --> p5
   p4 --> p5 --> sc
   sc --> p6 --> g1
-  h1 --> k1 & k2 & k3 & k4 & k5
+  h1 --> k1 & k2 & k3 & k4
   k4 -.-> g2
   class s1 k_start
-  class h1,sc,k1,k2,k3,k4,k5 k_screen
+  class h1,sc,k1,k2,k3,k4 k_screen
   class c1 k_click
   class d1,d2 k_decision
   class p1,p2,p3,p4,p5,p6 k_process
@@ -912,7 +910,7 @@ flowchart TD
   end
   subgraph gBody ["Body, from the top down"]
   b1@{ shape: curv-trap, label: "<b>Action box (only some requests)</b><br/>'Needs your input', 'Packet is drafting the answer' or 'Approved. Write-back waits for you'<br/>The last one shows only while write-back is on in EMR Connect; otherwise a calm line says it is off" }
-  b2@{ shape: curv-trap, label: "<b>Facts</b><br/>Patient 'E.S., 42', At stake '$8.2K', Held by (agent and next step)" }
+  b2@{ shape: curv-trap, label: "<b>Facts</b><br/>Patient 'E.S., 42', Held by (agent and next step)" }
   d1@{ shape: diam, label: "Does the request have a chance figure?" }
   b3@{ shape: curv-trap, label: "<b>'Approval chance' or, for a denial, 'Chance of winning'</b><br/>'74% · Moderate · likely 66 to 82% · 219 similar cases'" }
   b4@{ shape: curv-trap, label: "<b>Sent</b><br/>'Not yet', 'through the payer's portal', 'by fax' or 'by phone'" }

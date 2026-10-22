@@ -38,6 +38,7 @@ group gSub "Pages reached from inside a tab"
   screen ref "New case › Full referral page\nExtracted, Validation, Coverage, Fit, Activity"
   screen ver "Eligibility › Verify a patient and Result"
   screen brief "Denial Intelligence › Peer-to-peer brief"
+  screen rep "Denial Intelligence › Appeal analysis report\nFor every denial, copy or download as PDF"
   screen payer "Payers › One payer\nProcess, Rules, Documents, Changes tabs"
 endgroup
 
@@ -61,7 +62,7 @@ shell --> set & help & out
 auth --> case
 newc --> ref
 elig --> ver
-den --> brief
+den --> brief & rep
 pay --> payer
 ask --> g1
 dash --> g2

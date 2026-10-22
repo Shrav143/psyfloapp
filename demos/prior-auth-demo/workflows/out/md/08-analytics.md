@@ -47,7 +47,7 @@ flowchart TD
   subgraph gCards ["Cards below"]
   c1@{ shape: curv-trap, label: "<b>Card 'Approval rate by payer'</b><br/>Six bars, best first" }
   c2@{ shape: curv-trap, label: "<b>Card 'How people edit agent drafts'</b><br/>Donut and three-line legend" }
-  c3@{ shape: curv-trap, label: "<b>Card 'Common denial reasons by payer'</b><br/>Table, one row per payer<br/>Under it 'Appeals overturned' and 'Written off after accepted denials'" }
+  c3@{ shape: curv-trap, label: "<b>Card 'Common denial reasons by payer'</b><br/>Table, one row per payer<br/>Under it 'Appeals overturned' and 'Denials accepted'" }
   c4@{ shape: curv-trap, label: "<b>Card 'What helps most'</b><br/>Four ranked steps" }
   c5@{ shape: curv-trap, label: "<b>Card 'Why recommendations were dismissed'</b><br/>Shown only when someone dismissed a recommendation" }
   end
@@ -403,7 +403,7 @@ What other screens write back to Analytics. Two figures sit under the denial tab
 
 Route: `/analytics`
 
-Demo only: the starting figures (96 rulings, 56% overturned, 17 accepted denials, $88.7K) are invented. Everything recorded in the demo counts in 'This quarter' and 'Last 12 months', never in 'Last quarter', and follows the payer menu.
+Demo only: the starting figures (96 rulings, 56% overturned, 17 accepted denials) are invented. Everything recorded in the demo counts in 'This quarter' and 'Last 12 months', never in 'Last quarter', and follows the payer menu.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -425,7 +425,7 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Scroll to the foot of 'Common denial reasons by payer'" }
-  sc@{ shape: curv-trap, label: "<b>Two figures under the table</b><br/>'Appeals overturned'  56%, '54 of 96 rulings this quarter'<br/>'Written off after accepted denials'  $88.7K, '17 denials this quarter'" }
+  sc@{ shape: curv-trap, label: "<b>Two figures under the table</b><br/>'Appeals overturned'  56%, '54 of 96 rulings this quarter'<br/>'Denials accepted'  17, 'denials this quarter'" }
   subgraph gApp ["Appeals overturned"]
   x1@{ shape: st-rect, label: "<b>The payer rules on an appeal</b><br/>(demo: the person logs the ruling)" }
   st1@{ shape: cyl, label: "<b>Denial Intelligence records the ruling</b><br/>Overturned, partly restored or upheld" }
@@ -434,11 +434,11 @@ flowchart TD
   o1@{ shape: curv-trap, label: "For example 57%, '55 of 97 rulings this quarter'" }
   o2@{ shape: curv-trap, label: "<b>'-' and 'Not enough decisions yet'</b><br/>A single payer with few rulings, for example Lakeshore" }
   end
-  subgraph gOff ["Written off"]
+  subgraph gOff ["Denials accepted"]
   k1@{ shape: trap-t, label: "In Denial Intelligence the person accepts a denial" }
-  st2@{ shape: cyl, label: "<b>Denial Intelligence records the write-off</b><br/>With the payer and the dollars at stake" }
-  p2@{ shape: rect, label: "<b>Denials go up by one</b><br/>The amount is added, for example $22.4K makes $88.7K into $111.1K" }
-  o3@{ shape: curv-trap, label: "'$111.1K', '18 denials this quarter'" }
+  st2@{ shape: cyl, label: "<b>Denial Intelligence records the accepted denial</b><br/>With its payer" }
+  p2@{ shape: rect, label: "<b>The count goes up by one</b><br/>For example 17 becomes 18, and the payer menu counts it for that payer" }
+  o3@{ shape: curv-trap, label: "'18', 'denials this quarter'" }
   end
   subgraph gDis ["Why recommendations were dismissed"]
   k2@{ shape: trap-t, label: "On a case, the person dismisses a recommendation and gives a reason" }
@@ -671,7 +671,7 @@ flowchart TD
   m3@{ shape: doc, label: "<b>'## Approval rate by payer'</b><br/>One bullet per bar with its decisions" }
   m4@{ shape: doc, label: "<b>'## How people edit agent drafts'</b><br/>Three bullets, then 'Drafts counted'" }
   m5@{ shape: doc, label: "<b>'## Common denial reasons'</b><br/>Table: Reason, Payer, Count, Share of denials" }
-  m7@{ shape: doc, label: "<b>'## Denial outcomes'</b><br/>'Appeals overturned: 56% (54 of 96 rulings, partly restored counts as overturned)'<br/>'Written off after accepted denials: $88.7K (17 denials)'" }
+  m7@{ shape: doc, label: "<b>'## Denial outcomes'</b><br/>'Appeals overturned: 56% (54 of 96 rulings, partly restored counts as overturned)'<br/>'Denials accepted: 17'" }
   m6@{ shape: doc, label: "<b>'## What helps most'</b><br/>Numbered list: step, times applied, percent approved" }
   m8@{ shape: doc, label: "<b>'## Why recommendations were dismissed'</b><br/>One bullet per reason with its count<br/>Left out when nobody dismissed one" }
   end

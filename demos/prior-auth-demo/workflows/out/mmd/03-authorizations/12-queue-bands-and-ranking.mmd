@@ -30,9 +30,9 @@ flowchart TD
   hide@{ shape: rect, label: "The band card is left out" }
   bc@{ shape: curv-trap, label: "<b>Band card</b><br/>'Act now (5 requests)'<br/>Name, count, chevron" }
   r1@{ shape: rect, label: "<b>Inside a band, requests waiting on a person come first</b><br/>Preparing, Ready to sign, Denial route, or Needs your input" }
-  r2@{ shape: rect, label: "Then money at risk times a time weight, biggest first" }
-  wt@{ shape: rect, label: "<b>Time weight by time left</b><br/>under 6 h ×3 · under 24 h ×2 · under 3 days ×1.5 · later ×1" }
-  ex@{ shape: doc, label: "<b>Example in Act now</b><br/>R-1042 ($22.4K, due in 5 h) ranks above R-0912 (payer already reviewing)" }
+  r2@{ shape: rect, label: "<b>Then the soonest due first</b><br/>The due time on the tile, earliest at the top" }
+  wt@{ shape: rect, label: "<b>Two due at the same time</b><br/>The lower approval chance goes first" }
+  ex@{ shape: doc, label: "<b>Example in Act now</b><br/>R-1117 (due in 30 h, needs you) ranks above R-0912 (due in 22 h, payer already reviewing)" }
   hd@{ shape: trap-t, label: "Click the band header" }
   dC@{ shape: diam, label: "Is the band open now?" }
   col@{ shape: rect, label: "<b>Tiles are hidden</b><br/>Chevron turns sideways" }

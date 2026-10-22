@@ -17,7 +17,7 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Dashboard is open</b><br/>Headings of the 'Requests' table" }
-  h1@{ shape: curv-trap, label: "<b>Five headings can sort</b><br/>Case, Payer, Where it is, Clock, At stake<br/>Each shows a small up and down arrow" }
+  h1@{ shape: curv-trap, label: "<b>Four headings can sort</b><br/>Case, Payer, Where it is, Clock<br/>Each shows a small up and down arrow" }
   c1@{ shape: trap-t, label: "<b>Click a heading</b><br/>Or Tab to it and press Enter or Space" }
   d1@{ shape: diam, label: "Is this heading already the sorted one?" }
   p1@{ shape: rect, label: "<b>No: the sort starts on this heading, ascending</b><br/>The arrow points up; the heading is marked ascending for a screen reader" }
@@ -32,7 +32,6 @@ flowchart TD
   k2@{ shape: curv-trap, label: "<b>Payer</b><br/>The short name shown in the row, A to Z: Beacon PPO, Cardinal, Evergreen, Harborview MA, Lakeshore, Summit Medicaid" }
   k3@{ shape: curv-trap, label: "<b>Where it is</b><br/>The stage: Preparing, Received, Under review, Info requested, Approved, then Appeal or call" }
   k4@{ shape: curv-trap, label: "<b>Clock</b><br/>The number in the cell: time left for a denial with a deadline, otherwise time in stage<br/>Rows with a fixed note such as 'decision 11/02' stay last either way" }
-  k5@{ shape: curv-trap, label: "<b>At stake</b><br/>The money asked for, smallest first when ascending" }
   end
   p6@{ shape: rect, label: "<b>Filters, the stage tiles and 'Clear filters' keep the sort</b><br/>Leaving the page or reloading clears it" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Order, rows and paging" }
@@ -44,10 +43,10 @@ flowchart TD
   d2 -->|"Descending"| p3 --> p5
   p4 --> p5 --> sc
   sc --> p6 --> g1
-  h1 --> k1 & k2 & k3 & k4 & k5
+  h1 --> k1 & k2 & k3 & k4
   k4 -.-> g2
   class s1 k_start
-  class h1,sc,k1,k2,k3,k4,k5 k_screen
+  class h1,sc,k1,k2,k3,k4 k_screen
   class c1 k_click
   class d1,d2 k_decision
   class p1,p2,p3,p4,p5,p6 k_process

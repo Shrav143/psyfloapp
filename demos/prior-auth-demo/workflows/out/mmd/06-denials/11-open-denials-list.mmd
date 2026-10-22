@@ -25,7 +25,7 @@ flowchart TD
   p3@{ shape: rect, label: "<b>Sorted by time left on the deadline, nearest first</b><br/>Overdue denials go to the top" }
   p4@{ shape: rect, label: "Filed appeals have no deadline of ours, so they come last, in id order" }
   p5@{ shape: rect, label: "At the start: D-3318, D-3297, D-3306, D-3290, D-3301, then D-3272, D-3279, D-3284" }
-  r1@{ shape: curv-trap, label: "<b>One row</b><br/>D-id (underlined), program chip, one-line summary<br/>'$ at stake · N% win chance'" }
+  r1@{ shape: curv-trap, label: "<b>One row</b><br/>D-id (underlined), program chip, one-line summary<br/>'N% win chance' and a small link 'Report'" }
   p6@{ shape: rect, label: "<b>Program chip: Res., IOP, PHP or Detox</b><br/>Summary example: 'Units cut 48 to 30'" }
   d2@{ shape: diam, label: "What does the route pill say?" }
   rp1@{ shape: curv-trap, label: "Call booked with a time: 'Call Wed 10/21 1 pm'" }
@@ -39,6 +39,8 @@ flowchart TD
   c1@{ shape: trap-t, label: "Click a row (a button: Tab to it, then Enter or Space)" }
   p9@{ shape: rect, label: "<b>Address becomes ?id=D-xxxx and keeps ?payer= and ?reason=</b><br/>Row is highlighted" }
   p10@{ shape: rect, label: "Left side loads that denial: title, header, banner, analysis, options, history" }
+  c3@{ shape: trap-t, label: "Click the link 'Report' on a row (its own Tab stop, does not select the row)" }
+  g4@{ shape: subproc, label: "Continues in: Denial Intelligence › Appeal analysis report › Open and generate" }
   c2@{ shape: trap-t, label: "Click 'See on the Dashboard' (top right of the page)" }
   g1@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
@@ -60,12 +62,13 @@ flowchart TD
   r1 --> c1 --> p9 --> p10 --> e1
   e1 --> g1
   sc1 --> c2 --> g2
+  r1 --> c3 --> g4
   sc1 -.-> sf --> g3
   class s1 k_start
   class sc1,r1,rp1,rp2,rp3,rp4,rp5,cl1,sf k_screen
   class p1,p2,p3,p4,p5,p6,p7,p8,p9,p10 k_process
   class d1,d2 k_decision
   class t1 k_toast
-  class c1,c2 k_click
-  class g1,g2,g3 k_goto
+  class c1,c3,c2 k_click
+  class g4,g1,g2,g3 k_goto
   class e1 k_end

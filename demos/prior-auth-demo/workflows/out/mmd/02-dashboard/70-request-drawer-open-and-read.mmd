@@ -26,7 +26,7 @@ flowchart TD
   end
   subgraph gBody ["Body, from the top down"]
   b1@{ shape: curv-trap, label: "<b>Action box (only some requests)</b><br/>'Needs your input', 'Packet is drafting the answer' or 'Approved. Write-back waits for you'<br/>The last one shows only while write-back is on in EMR Connect; otherwise a calm line says it is off" }
-  b2@{ shape: curv-trap, label: "<b>Facts</b><br/>Patient 'E.S., 42', At stake '$8.2K', Held by (agent and next step)" }
+  b2@{ shape: curv-trap, label: "<b>Facts</b><br/>Patient 'E.S., 42', Held by (agent and next step)" }
   d1@{ shape: diam, label: "Does the request have a chance figure?" }
   b3@{ shape: curv-trap, label: "<b>'Approval chance' or, for a denial, 'Chance of winning'</b><br/>'74% · Moderate · likely 66 to 82% · 219 similar cases'" }
   b4@{ shape: curv-trap, label: "<b>Sent</b><br/>'Not yet', 'through the payer's portal', 'by fax' or 'by phone'" }
