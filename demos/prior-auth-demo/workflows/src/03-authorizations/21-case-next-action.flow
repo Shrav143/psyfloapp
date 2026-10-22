@@ -8,7 +8,7 @@ screen nb "'Next:' block under the title\nSentence, one line of why, buttons, th
 decision d1 "Is the request on the Dashboard past Preparing, and either asking you something or moved on (sent here, decided)?"
 decision d2 "Did the payer ask something that waits for you?"
 process n1 "'Next: Review Packet's answer to the payer's question'\nButton 'Open on the Dashboard'"
-process n2 "'Next:' then the Dashboard's own next step, e.g. 'Navigator checks again in 30 minutes'\nButton 'Open on the Dashboard'"
+process n2 "'Next:' then the Dashboard's own next step, e.g. 'Navigator checks again in 30 minutes'\nApproved with the write-back waiting: 'Next: Confirm the write-back to the EMR', why 'Cadence booked the next review.'\nButton 'Open on the Dashboard'"
 decision d3 "Is it a denial?"
 process n3 "'Next: Review the brief and make the peer-to-peer call'\nWhy: 'This request was denied. Advocate owns the next step ...'\nButton 'Open in Denial Intelligence'"
 decision d4 "Is it with the payer already (seed data)?"

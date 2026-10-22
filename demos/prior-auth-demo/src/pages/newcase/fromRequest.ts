@@ -4,7 +4,7 @@
 import type { CaseDetail, Evidence } from "@/data/caseDetail";
 import { withFocus } from "@/data/caseDetailFocus";
 import { canSend, projectedChance, type CaseWork } from "@/data/caseModel";
-import { chanceBounds, DUE_FOR, freshRun, planTypeOf, QUESTIONS, RUN_STEPS, type Answer, type CaseDraft, type Diagnosis } from "@/data/cases";
+import { DUE_FOR, freshRun, planTypeOf, QUESTIONS, RUN_STEPS, type Answer, type CaseDraft, type Diagnosis } from "@/data/cases";
 import { verdictOf } from "@/data/eligibility";
 import { PAYERS } from "@/data/seed";
 import { PROGRAM_LABEL } from "@/data/types";

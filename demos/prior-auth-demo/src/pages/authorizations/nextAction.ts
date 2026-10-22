@@ -36,6 +36,7 @@ export function nextActionOf({ detail, work, live, canSend }: Input): NextAction
   if (live) {
     const open = { label: "Open on the Dashboard", go: { to: "dashboard", requestId: live.requestId } } as const;
     if (live.needsYou) return { text: "Review Packet's answer to the payer's question", why: "The payer asked for more information. Packet drafted the answer.", button: open };
+    if (live.stage === "decided" && /write-back waits for you/i.test(live.line)) return { text: "Confirm the write-back to the EMR", why: /next review booked/i.test(live.line) ? "Cadence booked the next review." : undefined, button: open };
     if (live.moved || live.stage === "decided") return { text: live.line, button: open };
   }
   if (detail.phase === "denial") {

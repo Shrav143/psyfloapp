@@ -30,7 +30,7 @@ export function CaseHeader({ ctx }: { ctx: CaseCtx }) {
   const note = useStore((s) => s.queueItems.find((i) => i.id === ctx.detail.id)?.rule);
   const shared = useStore((s) => draftForRequest(s.caseDrafts, ctx.detail.requestId, ctx.detail.id));
   const payerCtx = usePayerContext(ctx.detail);
-  const { detail, work, chance, projected, canSend, sent, live, send } = ctx;
+  const { detail, work, chance, projected, canSend, live, send } = ctx;
   const moved = live?.moved ? live : null; // the request is past where this page's own wording stops: show its own chip and line
   const payer = payerById(detail.payerId);
   const shown = useAnimatedNumber(chance);

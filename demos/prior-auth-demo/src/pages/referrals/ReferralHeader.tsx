@@ -81,7 +81,7 @@ export function ReferralHeader({ r, hasCase, onAccept, onInfo, onDecline, onNote
             <span>{r.payerId ? payerById(r.payerId).name : "No payer listed"}</span>
           </div>
         </div>
-        <Stepper steps={steps} current={current} className="shrink-0 pt-1" />
+        <Stepper steps={steps} current={current} className="flex-wrap gap-y-2 pt-1" />
       </div>
 
       <div className="mt-5 flex flex-wrap items-start justify-between gap-3 border-t border-line pt-5" role="group" aria-label={`Actions, status ${STATUS_LABEL[r.status]}`}>
