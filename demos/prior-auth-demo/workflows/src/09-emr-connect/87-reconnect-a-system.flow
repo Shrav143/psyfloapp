@@ -1,12 +1,12 @@
 title: EMR Connect › Manage › Reconnect a system
 route: /emr
-intro: A Disconnected system comes back only after a passed test. If it was on 'Needs a quick look' when it was disconnected, the Fix steps come first. The test is the same three checks as Connect.
+intro: A Disconnected system comes back only after a passed test. If it was on 'Needs attention' when it was disconnected, the Fix steps come first. The test is the same three checks as Connect.
 dir: TD
 also: Demo: the test always passes. The system stays Disconnected, and New case cannot pull from it, until the last check passes and the person clicks the final button.
 ---
-start s1 "Click 'Reconnect'\nOn a Disconnected row, or at the end of the Manage drawer"
+start s1 "Click 'Reconnect'\nOn a Disconnected row, in the Action required line, or at the end of the Manage drawer"
 goto g0 "Continues in: EMR Connect › Sync › When an agent is paused or asks first"
-decision q1 "Did it need a quick look when it was disconnected?"
+decision q1 "Did it need attention when it was disconnected?"
 
 group gFix "Fix first, if needed"
   overlay f1 "Fix {name}\nSteps: What happened, Renew access, Test\nThe original problem is shown in an amber box"

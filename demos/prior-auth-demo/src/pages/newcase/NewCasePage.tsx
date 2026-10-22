@@ -109,7 +109,7 @@ export default function NewCasePage() {
           ) : null
         }
       />
-      <Stepper steps={NEW_CASE_STEPS} current={at} onGo={(i) => patch(draft.id, stepPatch(i))} />
+      <Stepper steps={NEW_CASE_STEPS} current={at} onGo={(i) => patch(draft.id, stepPatch(i))} className="flex-wrap gap-y-2" />
       {at === 0 ? <ReferralStep draft={draft} /> : at === 1 ? <IntakeStep draft={draft} /> : at === 2 ? <AgentsStep draft={draft} /> : <ReviewStep draft={draft} />}
     </Page>
   );

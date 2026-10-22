@@ -1,13 +1,20 @@
 title: Case Manager › Active cases › Being prepared card
 route: /manager
-intro: The card at the top of Active cases lists the cases the agents are still preparing, most urgent first. Four chips narrow it by who has the next move, and 'sent today' jumps to the Dashboard. Each row is explained in the next diagram.
+intro: Above the tracker, one folded row says how many cases the agents are still preparing and how many need a person, and links to Authorizations. Opening it shows the full list, most urgent first, with four chips that narrow it by who has the next move, and 'sent today' that jumps to the Dashboard. The list is kept so the queue is not repeated on the page. Each row is explained in the next diagram.
 dir: TD
 ---
 start s1 "Open Case Manager (Active cases tab)"
-screen sc "Card 'Being prepared'\n'Most urgent first. Each case moves through eight steps; the agents do all but Ask and Sign.'"
+screen sf "Folded row 'Being prepared' above the tracker (closed at first)\nSummary '5 being prepared, 3 need you'\nLink 'Open in Authorizations' and a chevron"
+process pn "'N need you' counts cases with an open question, a signature to give, unfinished intake or an agent that could not finish: 3 at the start, the same cases as the two badges below\nWith page filters on: '1 of 5 match the filters, 1 needs you'. With none: 'Nothing is being prepared'"
+click cl "Click 'Open in Authorizations'"
+process pl "Go to /authorizations\n(Under 900 px wide the link moves inside the opened row)"
+goto gl "Continues in: Authorizations › Queue › Open the queue and read the top"
+click co "Click the header, or Tab to it and press Enter or Space"
+screen sc "Opened: 'Most urgent first. Each case moves through eight steps; the agents do all but Ask and Sign.'"
+process pc "Click the header again to fold it\nThe chip you picked stays while the page is open"
 process p1 "Rows are the drafts that were saved and not yet sent\n5 at the start: R-1042, R-0988, I-2207, R-1101, I-2262"
 process p2 "Search, level of care and payer from the filter bar narrow the rows\nThe tracker's status filter does not apply here"
-screen sh "Top right of the card\nGhost button '4 sent today', then the chips 'All', 'Agents working', 'Needs your input', 'Ready to sign'"
+screen sh "Top right of the opened row\nGhost button '4 sent today', then the chips 'All', 'Agents working', 'Needs your input', 'Ready to sign'"
 
 click c1 "Click '4 sent today'"
 process p3 "Go to /dashboard?stage=received"
@@ -34,7 +41,10 @@ end e1 "Rows are on screen"
 process p5 "After a case is signed and sent in New case it leaves this list, 'sent today' counts one more, and the tracker adds it as 'New today' unless it already had a row"
 start s2 "Later: a case is signed and sent in New case › Review and sign"
 
-s1 --> sc --> p1 --> p2 --> sh
+s1 --> sf --> pn
+sf --> cl --> pl --> gl
+sf --> co --> sc --> p1 --> p2 --> sh
+sc -.-> pc
 sh --> c1 --> p3 --> g1
 sh --> c2 --> d1
 d1 -->|All| k1 --> p4

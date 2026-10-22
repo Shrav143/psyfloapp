@@ -20,13 +20,13 @@ click b0 "'Connect {name}' is dimmed until the last check passes"
 click b1 "Click 'Connect {name}'\nFor example 'Connect Lab results · new site'"
 
 group gSave "What is saved"
-  store s1 "New system on the list\nStatus Connected, last sync now, connected since today, the contact, write-back off"
+  store s1 "New system on the list\nStatus Connected, last sync now, connected since today, the contact, write-back off (its row says 'Read only')"
   store s2 "Files pulled tile goes up by 5"
   agent a1 "Reader logs 'Tested the read-only connection to {name} and found 5 files to pull'"
   toast t2 "'{name} is connected'\n'Read-only. Nothing is written back.'"
 endgroup
 
-end e1 "Pop-up closes\nThe new row sits at the end of Connected systems"
+end e1 "Pop-up closes\nThe new row sits at the end of Connection health"
 click cx "Click 'Cancel', click the X, press Escape, or click the dimmed area"
 endx e2 "Test stops, nothing is saved\nThere is no 'Back' on this step"
 goto g1 "Continues in: EMR Connect › Sync › Sync now"

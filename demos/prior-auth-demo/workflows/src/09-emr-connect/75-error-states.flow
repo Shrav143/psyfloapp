@@ -7,28 +7,28 @@ also: Production-only problems (from the PRD) are shown in orange. The demo cann
 start s1 "Something on EMR Connect looks wrong"
 decision q1 "What does the page show?"
 
-group gA "Amber pill: 'Needs a quick look'"
+group gA "Amber pill: 'Needs attention'"
   process a1 "The read-only sign-in expired\nThe row names the problem and says renew it with Fix"
   click a2 "Click 'Fix'\nNeeds: a person who approves, and a tick for read-only access"
-  goto a3 "Continues in: EMR Connect › Problems › Fix a system that needs a quick look"
+  goto a3 "Continues in: EMR Connect › Problems › Fix a system that needs attention"
   end a4 "Re-test: three checks. Row turns Connected"
 endgroup
 
 group gR "Red pill: 'Disconnected'"
   process r1 "Someone disconnected it\nRow: 'Not syncing'. Charts from this system are not arriving. New case cannot pull a chart from it until it is connected."
-  click r2 "Click 'Reconnect' on the row or in the Manage drawer\nNeeds: a passed connection test, and the Fix steps first if it was on 'Needs a quick look'"
+  click r2 "Click 'Reconnect' on the row or in the Manage drawer\nNeeds: a passed connection test, and the Fix steps first if it was on 'Needs attention'"
   goto r4 "Continues in: EMR Connect › Manage › Reconnect a system"
   end r3 "Re-test: the same three checks as Connect\nRow turns Connected only after they pass. Any earlier issue text is cleared"
 endgroup
 
-group gT "Last sync tile"
-  process t1 "Red 'None': every system is Disconnected\nAmber: 'N systems are disconnected'"
+group gT "Last sync figure"
+  process t1 "'None': every system is Disconnected\nSmall line: 'N systems are disconnected'"
   process t2 "Needs: every Disconnected row reconnected"
 endgroup
 
-group gM "Amber tile: 'Need a mapping'"
-  process m1 "'fields the agents could not place'"
-  click m2 "Click 'Map'\nNeeds: a value picked for each field"
+group gM "'Action required' names fields waiting for a mapping"
+  process m1 "'2 fields need a mapping, so New case leaves them blank.'\nPill '2 to map' on 'Advanced'"
+  click m2 "Click 'Map field', or open 'Advanced' and click 'Map'\nNeeds: a value picked for each field"
 endgroup
 
 group gQ "Clicks that stop with a message"
@@ -48,9 +48,9 @@ s1 --> q1
 q1 -->|Amber pill on a row| a1 --> a2 --> a3
 a3 --> a4
 q1 -->|Red pill on a row| r1 --> r2 --> r4 --> r3
-q1 -->|Last sync tile is red or amber| t1 --> t2
+q1 -->|Last sync figure says None or a disconnected system| t1 --> t2
 t2 --> r2
-q1 -->|Need a mapping tile is amber| m1 --> m2
+q1 -->|The banner or the pill names fields| m1 --> m2
 q1 -->|A toast after a click| d1
 q1 -->|A toast after a click| d5
 q1 -.->|A message under a field| d3

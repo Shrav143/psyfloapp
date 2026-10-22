@@ -1,55 +1,68 @@
 title: Denial Intelligence › A denial opened
 route: /denials?id=D-3318
-intro: The page for one denial, top to bottom: title, header card with 'Our read', the status banner, the analysis cards, the options and the history. Each card is described once here and detailed in its own diagram.
+intro: The page for one denial, top to bottom: title and the scope line, the header card with 'Our read' and the one recommended next step, the options, the payer's words, where the denial is weak and the six ASAM dimensions, then two folded sections. 'Add a denial letter' and 'Open denials' sit in the right column. Each part is described once here and detailed in its own diagram.
 dir: TD
 ---
 start s1 "A denial is selected (from the list or ?id=)"
 process p1 "Title comes from the denial\n'D-3318: Cardinal approved 7 of 14 days. The chart supports challenging it.'"
-screen sub1 "Sub line: initials, age · program · payer name\n'The agents read the denial against the chart, and you choose the next step.'"
+screen sub1 "Sub line: initials, age · program · payer name\n'The agents read the denial against the chart, and you choose the next step.'\nUnder it, one quiet line: 'Authorization denials only. Claim denials are handled in billing and are not in this demo.'"
+process pn "No control for claim denials: the demo has no claims feed"
 
-screen h1 "Header card\nProgram chip, D-id, type pill, status pill, '64% chance of overturning', deadline pill"
-screen h2 "Line under the pills\nPayer · case id · initials, age · letter file name\n'Your note: ...' when a note was added"
-screen v1 "'Our read' tile, right of the header\nWorth challenging, Borderline or Probably accept, with one sentence"
+screen h1 "Header card, top part\nSmall tag 'Authorization denial'\nProgram chip, D-id, type pill\nPills '64% chance of overturning' and the deadline ('Peer-to-peer window closes in 36 h')"
+screen h2 "Line under the pills\nPayer · case id · initials, age · letter file name\n'Your note: ...' when a note was added\nGhost button 'See on the Dashboard'"
+screen v1 "'Our read' tile, right of the header\nWorth challenging, Borderline or Probably accept, with one sentence\nUnder it the button 'Appeal analysis report'"
 process pv "Verdict comes from the win chance: 50 and over, 35 to 49, under 35\nD-3306 (27%) reads 'Probably accept'"
-screen bn "Status banner (only for some statuses)"
-goto g1 "Continues in: Denial Intelligence › A denial opened › Status banner"
+screen bn "Next-step block, inside the same card, under a rule\nLabel, a serif title, one or two plain sentences, buttons with the primary one first"
+goto g1 "Continues in: Denial Intelligence › A denial opened › Next step and where it stands"
+goto g1b "Continues in: Denial Intelligence › A denial opened › Recommended next step"
 
-screen c1 "'What the agents did'\nReader, Advocate and Historian steps, 'Done in 0:48'"
+decision d2 "Still open: not filed, and not closed (accepted, or won on a call or an appeal)?"
+screen c5 "'Your options' card\nThree radio cards with their chances"
+goto g3 "Continues in: Denial Intelligence › Your options"
+process p3 "No options card"
 screen c2 "'What Cardinal said': the payer's words\n'What the chart shows': two or three sentences"
 screen c3 "'Where the denial is weak'\n'Each finding links to the chart, with a suggested fix'\nButton 'Full summary' in the card header"
 goto g2 "Continues in: Denial Intelligence › A denial opened › Where the denial is weak"
 decision d1 "Is it an administrative denial?\n'Late notice' or 'Retro-authorization denied'"
 screen c4 "'The six ASAM dimensions'\nSix tiles D1 to D6, each with a green, ochre or red dot\nButton 'Full summary' in the card header"
 process p2 "The card is left out"
-decision d2 "Still open: not filed, and not closed (accepted, or won on a call or an appeal)?"
-screen c5 "'Your options' card"
-goto g3 "Continues in: Denial Intelligence › Your options"
-process p3 "No options card"
-screen c6 "'What has happened'\n'Every step is also on the Dashboard'\nTimeline of events"
-process p4 "Done events have a green dot\nScheduled events (dashed dot) read 'Scheduled · Wed 1:00 pm'"
-screen r1 "'Open denials' list, right of the page"
+
+screen fo "Two folded sections at the bottom, closed at first\n'What the agents did' (names the three agents, pill 'Done in 0:48')\n'What has happened' (step count and the latest step)"
+goto g7 "Continues in: Denial Intelligence › A denial opened › Folded sections"
+process p4 "Opened, 'What has happened' lists the timeline: done events have a green dot\nScheduled events (dashed dot) read 'Scheduled · Wed 1:00 pm'\n'Every step is also on the Dashboard.'"
+
+screen r0 "Right column, top\n'Add a denial letter' (folded)\n'Drop a letter or use a sample'"
+goto g8 "Continues in: Denial Intelligence › Add a denial letter"
+screen r1 "Right column\n'Open denials' list, soonest deadline first"
 goto g4 "Continues in: Denial Intelligence › Open denials list"
-click b1 "Click 'See on the Dashboard' (top right)"
+process pw "Under 1180 px wide the right column drops under the analysis"
+
+click b1 "Click 'See on the Dashboard'"
+goto g5 "Continues in: Dashboard › Request drawer › Open and read a request"
 click b2 "Click 'Appeal analysis report' (button under the 'Our read' tile)"
 goto g6 "Continues in: Denial Intelligence › Appeal analysis report › Open and generate"
-goto g5 "Continues in: Dashboard › Request drawer › Open and read a request"
 end e1 "Person reads the denial and chooses a next step"
 
 s1 --> p1 --> sub1 --> h1
-h1 --> h2
+sub1 -.-> pn
+h1 --> h2 --> b1 --> g5
 h1 --> v1 --> pv
+v1 --> b2 --> g6
 h1 --> bn --> g1
-h1 --> c1 --> c2 --> c3 --> g2
+bn --> g1b
+bn --> d2
+d2 -->|Yes| c5 --> g3
+d2 -->|No| p3
+c5 --> c2
+p3 --> c2
+c2 --> c3 --> g2
 c3 --> d1
 d1 -->|No| c4
 d1 -->|Yes| p2
-c4 --> d2
-p2 --> d2
-d2 -->|Yes| c5 --> g3
-d2 -->|No| p3
-c5 --> c6
-p3 --> c6
-c6 --> p4 --> e1
-sub1 --> r1 --> g4
-sub1 --> b1 --> g5
-v1 --> b2 --> g6
+c4 --> fo
+p2 --> fo
+fo --> g7
+fo --> p4 --> e1
+sub1 --> r0 --> g8
+r0 --> r1 --> g4
+r1 -.-> pw

@@ -69,9 +69,9 @@ TypeScript strict, no `any`, no `console.log`, no unused code. Small components:
 - D-3318 (M.C., 38, Cardinal, Residential 3.5): 7 of 14 days approved, peer-to-peer window closes in 36 h (call Wed 10/21, 9-11 am), chance 64% by call (55-72%), 58% by appeal (49-66%), 312 similar decisions.
 - Eligibility & Benefits: 37 patients, 28 cleared to bill, 4 authorization first, 5 fix before billing, 5 re-checks due, sidebar badge 9. Three seeded rows show the verdicts that need a look: R-1118 not covered, I-2275 another plan pays first, R-0921 limit reached.
 - Case Manager: 56 active cases (every one opens a case page); 47 reviews due this week, 35 drafted (29 clean) and 4 not drafted yet until "Draft all due reviews", 8 need a clinician's update.
-- Analytics (last quarter): 71% approved as asked, 29% top denial cause (continued-stay evidence), 84% advice taken works, 75% sent without edits; approval by payer Lakeshore 86, Beacon 81, Harborview 77, Summit 74, Evergreen 69, Cardinal 63; edits 68 / 27 / 5; appeals overturned 56% of 96 rulings, 17 denials accepted.
+- Analytics (this quarter, all payers, all programs): approval rate 71%, denial rate 29% (311 denials of 1,070 decisions), turnaround 2.4 days (demo values), 207 preventable denials (67% of denials); top denial cause 23% (continued-stay evidence at Cardinal, 73 denials), 84% advice taken works, 75% sent without edits; approval by payer Lakeshore 86, Beacon 81, Harborview 77, Summit 74, Evergreen 69, Cardinal 63; edits 68 / 27 / 5; appeals overturned 56% of 96 rulings, 17 denials accepted; workload 8 handled and 32 still open (live). Program shares of decisions 40 / 30 / 20 / 10 (Residential, IOP, PHP, Withdrawal management; demo values).
 - Payers: 6 payers, 3 with a change waiting (Cardinal criteria v2026.3 affecting 1 unsent draft, I-2207; Harborview and Evergreen have no open drafts), sidebar badge 3. Summit documents for residential 3.5: 9 items; R-1042 has 8 of 9 (missing a therapy note from the last 14 days).
-- EMR Connect: last sync 6 min, 23 charts matched today, 142 files this week, 2 fields need a mapping.
+- EMR Connect: last sync 6 min, 23 charts matched today, 142 files this week, 2 sync failures (Billing system, Needs attention), 2 fields need a mapping (in the Action required line and the Advanced pill).
 
 ## Verification you must do before you report back
 

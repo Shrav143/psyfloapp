@@ -4,8 +4,8 @@ intro: The confirm gate for the peer-to-peer route: pick one of three call windo
 dir: TD
 also: Demo only: the payer holding the slot is simulated. Times follow the demo clock: fast-forwarding in the Demo menu uses them up, and with none left the message 'No call time is left' shows.
 ---
-start s1 "Click 'Choose a time and prepare the brief' (Your options)"
-start s2 "Click 'Change the time' (call-booked banner)"
+start s1 "Click 'Choose a time and prepare the brief' (the recommended next step, or Your options for another route)"
+start s2 "Click 'Change the time' (next-step block, call booked)"
 start s3 "Brief page: click 'Book the call' or 'Change the call time'"
 
 overlay o1 "Modal 'Confirm the next step: peer-to-peer call'\n'The agents stop here until you say go.'"

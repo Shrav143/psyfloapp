@@ -1,17 +1,17 @@
 title: Denial Intelligence › Peer-to-peer › The brief
 route: /denials/D-3318/brief
-intro: The one-page brief a clinician keeps open during the call: opening, three points, what the payer may say, the ask, dates and numbers on the left, call details and tools on the right.
+intro: The one-page brief a clinician keeps open during the call: opening, three points, what the payer may say and the ask on the left, call details and tools on the right. 'Key dates and numbers' and 'Have these open' are folded sections that stay in the page, and open on paper when the brief is printed.
 dir: TD
 ---
-start s1 "Click 'Open the brief' in the call-booked banner"
-start s2 "A call is booked from 'Your options'; the app opens the brief"
+start s1 "Click 'Open the brief' in the next-step block (call booked)"
+start s2 "A call is booked from the next-step block or 'Your options'; the app opens the brief"
 start s3 "Open /denials/D-xxxx/brief by its address"
 decision d1 "Does a request with that id exist?"
 screen e1 "'We could not find that denial'\n'It may have been closed or the address is wrong.'"
 click c0 "Click 'Back to Denial Intelligence'"
 goto g0 "Continues in: Denial Intelligence › Ways in"
 
-screen sc1 "'Peer-to-peer brief · D-3318'\n'Talking points for your call with Cardinal's reviewer. Every point links to the chart.'\nCrumbs: 'Denial Intelligence' › 'Brief D-3318'"
+screen sc1 "'Peer-to-peer brief · D-3318'\n'Talking points for your call with Cardinal's reviewer. Every point links to the chart.'\nUnder it: 'Draft by FLO's agents. A clinician reviews and signs before anything is sent.'\nCrumbs: 'Denial Intelligence' › 'Brief D-3318'"
 click c1 "Click the crumb 'Denial Intelligence'"
 goto g1 "Continues in: Denial Intelligence › A denial opened"
 toast b1 "'Outcome logged: ...' banner\nShows once an outcome is logged, with 'Back to the denial'"
@@ -21,13 +21,15 @@ screen l1 "'Your opening'\n'About 30 seconds. Written by Advocate, checked by In
 screen l2 "'Three points to make'\n'Each one links to the chart'\nNumbered, each with a source chip"
 screen l3 "'What they may say'\n'And a short answer to each'"
 screen l4 "'The ask.' (green banner)"
-screen l5 "'Key dates and numbers'\nDenial received, Call booked, Peer-to-peer window closes, Written appeal due\nDays or units, Time left in the window, Chance, Similar decisions"
+screen l5 "'Key dates and numbers' (folded, summary 'Call: Wed 10/21, 9–11 am · Window: 36 h')\nDenial received, Call booked, Peer-to-peer window closes, Written appeal due\nDays or units, Time left in the window, Chance, Similar decisions"
 
 screen r1 "'Call details'\nPayer, Who to call, Reviewer, Window, Closes in, Dial-in"
 process p1 "'Window' reads 'Not booked yet' before a call is booked\n'Closes in' is red under 2 days, ochre under 7, 'Closed' when over"
 screen r2 "'Chance of overturning'\n64%, 'likely 55–72%', a word (Moderate), and 'A written appeal is 58%.'"
-screen r3 "'Have these open'\nOne tick box per chart source, plus fixes added to the evidence"
-click c3 "Tick or untick a document"
+screen r3 "'Have these open' (folded, summary '0 of 3 ticked')\nOne tick box per chart source, plus fixes added to the evidence"
+click cf "Click the header of 'Key dates and numbers' or 'Have these open', or press Enter or Space on it"
+process pf "Section opens or closes\nThe summary line changes with the ticks"
+click c3 "Tick or untick a document (open the section first)"
 store st1 "Tick saved on the denial (kept when you leave and return)"
 screen r4 "Three buttons: 'Copy brief', 'Print', 'Record the call outcome'"
 goto g2 "Continues in: Denial Intelligence › Peer-to-peer › Brief buttons"
@@ -47,6 +49,7 @@ sc1 --> c4 --> g4
 sc1 -.-> b1 --> c2 --> g1
 sc1 --> l1 --> l2 --> l3 --> l4 --> l5
 sc1 --> r1 --> p1
-r1 --> r2 --> r3 --> c3 --> st1
+r1 --> r2 --> r3 --> cf --> pf --> c3 --> st1
+sc1 -.-> l5
 r3 --> r4 --> g2
 r4 --> g3

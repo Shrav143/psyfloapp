@@ -1,13 +1,15 @@
 title: Authorizations › Queue › Cardinal payer signal
 route: /authorizations
-intro: The banner that warns about a payer trend, the filter it switches on, and the three ways to turn the filter off or hide the banner.
+intro: The one banner on the queue: a single compact line about a payer trend, its info icon, the filter it switches on, and the ways to turn the filter off or hide the banner.
 dir: TD
 also: Demo only: the banner text and which four requests it affects (I-2207, I-2218, I-2236, I-2271) are seed data. Nothing re-scores the requests live.
 ---
 screen q "Authorizations queue"
 decision d0 "Are any open requests affected, and is the banner still shown?"
 endx e0 "No banner\nNone affected, or you dismissed it"
-screen bn "Banner: 'Payer signal. Cardinal Health Plan has denied 31% more IOP continued-stay requests this week ...'\n'Four of your open requests are affected, and the agents have re-scored them.'"
+screen bn "One-line banner: 'Payer signal. Cardinal Health Plan has denied 31% more IOP continued-stay requests this week.'\nInfo icon, 'Review the four', X"
+click inf "Hover or focus the info icon 'More about this signal'"
+overlay tip "Tooltip: 'The denials were mostly for thin recertification evidence. Four of your open requests are affected, and the agents have re-scored them.'\nEsc closes it"
 process wd "Wording follows the count\n'Review the three' for three; one is 'One of your open requests is affected ... re-scored it'"
 
 click r "Click 'Review the four'"
@@ -19,8 +21,8 @@ screen bb "Banner button now reads 'Show all requests'"
 click sa "Click 'Show all requests'"
 click cx "Click the X on the chip\n'Remove the Cardinal signal filter'"
 click cf "Click 'Clear filters'"
-click tl "Click the 'Urgent' or 'In flight' tile"
-process off "Payer-signal filter turns off\nAll bands return, chip goes, button reads 'Review the four' again"
+click tl "Click a figure that is the only filter on,\nor click another figure (it replaces every filter)"
+process off "Payer-signal filter turns off\nAll bands return, chip goes, button reads 'Review the four' again\nThe address loses ?signal=1"
 
 click dis "Click the X on the banner\n'Dismiss signal'"
 store hid "Banner stays hidden for the session\nuntil the demo data is reset"
@@ -33,6 +35,7 @@ process sh "When an affected request is signed and sent, it leaves the queue\nTh
 q --> d0
 d0 -->|No| e0
 d0 -->|Yes| bn --> wd
+bn --> inf --> tip
 bn --> r --> sf --> ls
 sf --> chip
 sf --> bb

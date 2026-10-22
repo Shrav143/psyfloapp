@@ -1,10 +1,10 @@
 title: Denial Intelligence › Open denials list
 route: /denials?id=D-3318
-intro: The 'Open denials' card on the right of the page: which denials are listed, how they are ordered, what each row says, the 'Closed' section, and what a click on a row does. A payer or reason in the address can narrow it.
+intro: The 'Open denials' card on the right of the page, under the folded 'Add a denial letter': which denials are listed, how they are ordered (soonest deadline first, said in its subtitle), what each row says, the 'Closed' section, and what a click on a row does. A payer or reason in the address can narrow it.
 dir: TD
 ---
 start s1 "Arrive on Denial Intelligence"
-screen sc1 "'Open denials' card, right of the page\nCount pill, then one row per open denial"
+screen sc1 "'Open denials' card, right of the page\nSubtitle 'Soonest deadline first', count pill, then one row per open denial"
 process p1 "Open denial = a request in the Dashboard's 'Appeal or call' stage"
 decision d1 "Any open denials?"
 toast t1 "'No open denials. Everything sent is approved or waiting.'\nWith a filter on: 'No open denials match the filters.'"
@@ -14,8 +14,8 @@ process p3 "Sorted by time left on the deadline, nearest first\nOverdue denials 
 process p4 "Filed appeals have no deadline of ours, so they come last, in id order"
 process p5 "At the start: D-3318, D-3297, D-3306, D-3290, D-3301, then D-3272, D-3279, D-3284"
 
-screen r1 "One row\nD-id (underlined), program chip, one-line summary\n'N% win chance' and a small link 'Report'"
-process p6 "Program chip: Res., IOP, PHP or Detox\nSummary example: 'Units cut 48 to 30'"
+screen r1 "One row, three lines\nD-id (underlined), program chip, deadline pill\nSecond line: type summary and the small tag 'Authorization denial'\n'N% win chance' and a small link 'Report'"
+process p6 "Program chip: Res., IOP, PHP or Detox\nSecond line example: 'Units cut 48 to 30 · Authorization denial'"
 decision d2 "What does the route pill say?"
 screen rp1 "Call booked with a time: 'Call Wed 10/21 1 pm'"
 screen rp2 "Peer-to-peer window: 'P2P in 36 h'"
@@ -29,10 +29,10 @@ process p8 "Closed rows show the result as the pill: 'Accepted', 'Overturned', '
 
 click c1 "Click a row (a button: Tab to it, then Enter or Space)"
 process p9 "Address becomes ?id=D-xxxx and keeps ?payer= and ?reason=\nRow is highlighted"
-process p10 "Left side loads that denial: title, header, banner, analysis, options, history"
+process p10 "Left side loads that denial: title, header card with the next-step block, options, analysis, folded sections"
 click c3 "Click the link 'Report' on a row (its own Tab stop, does not select the row)"
 goto g4 "Continues in: Denial Intelligence › Appeal analysis report › Open and generate"
-click c2 "Click 'See on the Dashboard' (top right of the page)"
+click c2 "Click 'See on the Dashboard' (ghost button in the header card)"
 goto g1 "Continues in: Denial Intelligence › A denial opened"
 goto g2 "Continues in: Dashboard › Request drawer › Open and read a request"
 screen sf "Filters from the address (?payer=, ?reason=)\nChip row, subtitle 'N of M match the filters', only the matches are listed"

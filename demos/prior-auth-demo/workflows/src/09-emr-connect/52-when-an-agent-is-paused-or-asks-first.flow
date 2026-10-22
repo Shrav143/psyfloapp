@@ -2,12 +2,12 @@ title: EMR Connect › Sync › When an agent is paused or asks first
 route: /emr
 intro: Four buttons on this page start work that an agent does: Sync now and Connect a system (Reader), Fix and Reconnect (Navigator). Settings decides how each one starts. A paused agent waits, 'Ask before acting' asks first, any other level goes ahead.
 dir: TD
-also: The choice is read at the moment of the click. Disconnect, the write-back switch and Map are a person's own decisions and are never held back. After the step, 'Act on its own' only logs it in Recent activity.
+also: The choice is read at the moment of the click. Disconnect, the Write back switch and Map are a person's own decisions and are never held back. After the step, 'Act on its own' only logs it in Recent activity.
 ---
-start s1 "Click 'Sync now', 'Connect a system', 'Fix' or 'Reconnect'\nHeader, a row, or the Manage drawer"
+start s1 "Click 'Sync now', 'Connect a system', 'Fix' or 'Reconnect'\nHeader, a row, the Action required line, or the Manage drawer"
 decision q1 "Which agent does the step?"
 process a1 "Reader\nSync now (header or a row) and Connect a system"
-process a2 "Navigator\nFix, and Reconnect on a row or in the Manage drawer"
+process a2 "Navigator\nFix, and Reconnect on a row, in the Action required line or in the Manage drawer"
 
 decision q2 "Is that agent paused in Settings?"
 toast t1 "'{Agent} is paused'\n'Resume it in Settings to sync.'\nOr: to connect a system, fix it, reconnect it\nAmber"
@@ -24,16 +24,17 @@ process p1 "The step goes ahead at once\nConnect never asks: its own three-step 
 group gAfter "After the step finishes"
   agent r1 "The agent logs one line in Recent activity\nEvery level does this"
   decision q4 "Is the agent set to 'Act on its own'?"
-  process n1 "No toast\nThe tiles and the log show what happened"
+  process n1 "No toast\nThe figures and the log (in Advanced) show what happened"
   toast t2 "A toast says what happened\n'Sync finished', '{name} is connected' or 'Sign-in renewed'"
 endgroup
 
 goto g1 "Continues in: EMR Connect › Sync › Sync now"
-goto g2 "Continues in: EMR Connect › Problems › Fix a system that needs a quick look"
+goto g2 "Continues in: EMR Connect › Problems › Fix a system that needs attention"
 goto g3 "Continues in: EMR Connect › Manage › Reconnect a system"
 goto g4 "Continues in: EMR Connect › Connect a system › Choose the system and contact"
 goto g5 "Continues in: Settings › Agents › Change an agent's freedom"
 goto g6 "Continues in: Settings › Pause › Pause one agent, resume all"
+goto g7 "Continues in: EMR Connect › Page › The Action required line"
 
 s1 --> q1
 q1 -->|Reader| a1
@@ -52,4 +53,5 @@ q4 -->|Yes| n1
 q4 -->|No| t2
 p1 -.-> g1 & g2 & g3 & g4
 t1 -.-> g6
+t1 -.-> g7
 o2 -.-> g5

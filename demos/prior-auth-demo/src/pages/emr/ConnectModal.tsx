@@ -42,7 +42,7 @@ export function ConnectModal({ onClose }: { onClose: () => void }) {
             <div role="radiogroup" aria-label="System type" className="grid grid-cols-2 gap-2.5">
               {SYSTEM_KINDS.map((k) => <ChoiceCard key={k.value} selected={kind === k.value} onClick={() => setKind(k.value)} title={k.value}>{k.holds}</ChoiceCard>)}
             </div>
-            <Field label="Name in Psyflo" hint="Shown on the Connected systems list."><TextInput value={name} onChange={(e) => setName(e.target.value)} placeholder={`${kind} · second outpatient site`} /></Field>
+            <Field label="Name in Psyflo" hint="Shown in Connection health."><TextInput value={name} onChange={(e) => setName(e.target.value)} placeholder={`${kind} · second outpatient site`} /></Field>
           </div>
         ) : null}
         {step === 1 ? (

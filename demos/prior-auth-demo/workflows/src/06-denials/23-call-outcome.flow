@@ -21,7 +21,7 @@ store st1 "Request settled: leaves 'Appeal or call' (Dashboard stage 'Decided')\
 ext x2 "Payer restores the requested days, or part of them, on the call"
 agent a1 "Cadence updates the ledger and books the next review"
 toast t1 "'Overturned' or 'Partly restored'\n'The ledger is updated and the next review is booked.'"
-process p2 "Sidebar badge goes down by one\nThe denial moves to 'Closed' in the open denials list\nBanner 'Overturned on the call' or 'Partly restored on the call'"
+process p2 "Sidebar badge goes down by one\nThe denial moves to 'Closed' in the open denials list\nNext-step block 'Overturned on the call' or 'Partly restored on the call'"
 
 store st2 "Chip 'Appeal drafting'\nClock becomes 'to file': 60 days from the denial date"
 agent a2 "Advocate starts a written appeal from the call notes"

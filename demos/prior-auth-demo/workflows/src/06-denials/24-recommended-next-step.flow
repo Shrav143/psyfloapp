@@ -1,0 +1,68 @@
+title: Denial Intelligence › A denial opened › Recommended next step
+route: /denials?id=D-3290
+intro: While nothing is under way, the block under the header card recommends ONE step in plain words, from a fixed list of six, with its primary button first. FLO works it out from the denial type, what the request itself shows and the route the analysis already prefers. It is a recommendation for a person to review, never a payer rule.
+dir: TD
+also: The mapping lives in one function (lib/step.ts, recommendedStep). 'Ask for reconsideration' is on the list but no demo denial maps to it: the demo has no payer rule that names it, and none is invented.
+---
+start s1 "A denial with nothing under way is on screen\nChip 'Analyzed' or 'Resubmitting'"
+agent a1 "FLO reads the denial type, the request (a resubmission path, time left on its window) and the analysis (win chance, which route it prefers)"
+decision d1 "Is it a retro-authorization denial?"
+decision d2 "Does the analysis say accept?\n(win chance under 35)"
+decision d3 "Late notice or full denial, and does the request have a resubmission path?\n(type 'Resubmission' or a 'to resubmit' clock)"
+decision d4 "Which route does the analysis prefer?"
+
+screen w1 "Accept"
+screen w2 "Investigate by hand"
+screen w3 "Correct and resubmit"
+screen w4 "File an appeal"
+screen w5 "Peer-to-peer review"
+process w6 "'Ask for reconsideration' is the sixth word on the list\nNo demo denial maps to it: that needs a payer rule that names it, and none is invented"
+
+process n1 "A retro denial turns on dates and coverage status: accept when the analysis says so, otherwise a person checks the dates first"
+process n2 "'File an appeal' when the clock running is the one to file or resubmit, the call window has closed, or the notice was late"
+process n3 "'Peer-to-peer review' while the call window is open"
+
+screen blk "Block under the header card\nLabel 'Recommended next step', the word as a title\nOne or two plain sentences worked out from the denial: the chance of overturning, what the route takes, what it gets back"
+screen opt "'Your options' card\nThe 'Recommended' pill sits on the card for the same route\nNone for 'Investigate by hand'"
+
+click b1 "Click 'Accept the decision and plan the step-down'"
+click b2 "Click 'Choose a time and prepare the brief'"
+click b3 "Click 'Draft the appeal letter'"
+click b4 "Click 'Draft the corrected request'"
+click b5 "Click 'Read the findings'"
+process pf "Page scrolls to 'Where the denial is weak' and puts focus on it\n(no animation when the person asked for reduced motion)"
+goto g1 "Continues in: Denial Intelligence › Accept the denial"
+goto g2 "Continues in: Denial Intelligence › Peer-to-peer › Book the call"
+goto g3 "Continues in: Denial Intelligence › Written appeal › Confirm and draft"
+overlay o4 "Confirm 'Confirm the next step: correct and resubmit'\n'Draft the corrected request' or 'Cancel'\nThe same letter flow follows: Advocate drafts, a clinician signs, Navigator files"
+goto g4 "Continues in: Denial Intelligence › A denial opened › Where the denial is weak"
+
+screen rn "Under the button\n'Draft by FLO's agents. A clinician reviews and signs before anything is sent.'"
+click wy "Click 'Why FLO suggests this' (folded), or Tab to it and press Enter or Space"
+screen wr "Reasons, as short points\nThe type and payer, and 'Our read' sentence\nThe chances of a call and of a written appeal, from N similar decisions (or a benchmark estimate)\nThe window left\nThe rule that chose the route\n'This is a recommendation for a person to review. It is not a payer rule.'"
+click wc "Click or press Enter or Space again"
+end e1 "The reasons fold away"
+
+s1 --> a1 --> d1
+d1 -->|Yes| d2
+d2 -->|Yes| w1
+d2 -->|No| w2
+d1 -->|No| d3
+d3 -->|Yes| w3
+d3 -->|No| d4
+d4 -->|Accept| w1
+d4 -->|Written appeal| w4
+d4 -->|Call| w5
+d1 -.-> n1
+d4 -.-> n2
+d4 -.-> n3
+a1 -.-> w6
+w1 & w2 & w3 & w4 & w5 --> blk
+blk --> opt
+blk --> rn
+w1 --> b1 --> g1
+w5 --> b2 --> g2
+w4 --> b3 --> g3
+w3 --> b4 --> o4 --> g3
+w2 --> b5 --> pf --> g4
+blk --> wy --> wr --> wc --> e1

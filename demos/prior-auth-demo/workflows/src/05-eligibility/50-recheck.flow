@@ -10,7 +10,7 @@ start a3 "Open 'Verify a patient' from a case and click 'Check now'"
 
 decision q1 "Is a re-check already running for this patient?"
 process p1 "The click is ignored\nThe button is off with a spinner"
-process p2 "Patient marked as checking\nList: button reads 'Checking' with a spinner, Verdict cell says 'Checking now'\nResult: 'Check again' shows a spinner"
+process p2 "Patient marked as checking\nList: button reads 'Checking' with a spinner, the quiet second line says 'Checking now'\nResult: 'Check again' shows a spinner"
 agent g0 "Verify and the other agents ask again"
 ext x1 "The state and the plan\n(demo: simulated, same answer as before)"
 wait w1 "About 1.1 seconds"
@@ -23,7 +23,7 @@ toast t2 "'R-0975 re-checked'\n'The plan's system did not answer, so Caller phon
 group gAfter "What changes on screen"
   process r1 "List: 'Checked 3 h ago' becomes 'Checked just now'"
   process r2 "List: tile 'Re-check due' goes down by one if this row had a re-check booked"
-  process r3 "Result: pill 'Last checked 10:40 am, 3 d ago' becomes 'Checked live at 10:42 am'"
+  process r3 "Result: 'Time checked' in the facts line, 'Sat 10:40 am, 3 d ago', becomes '10:42 am, live'"
   process r4 "Verdict, sidebar badge and the other tiles do not change"
 endgroup
 

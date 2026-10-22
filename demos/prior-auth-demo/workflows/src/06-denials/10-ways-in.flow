@@ -19,8 +19,8 @@ process p2 "Pick the first denial in the list: the nearest deadline\n(among the 
 process p3 "Show the denial named in the address"
 toast t1 "'We could not find D-xxxx among the open denials'\n'Showing D-3318 instead.' (the first in the list)"
 
-screen sc1 "Denial Intelligence\nHeader, 'Add a denial letter', the denial, 'Open denials' list"
-screen sc2 "'No open denials'\n'Everything sent is approved or waiting. Add a denial letter above to analyze a new one.'"
+screen sc1 "Denial Intelligence\nTitle and scope line, the denial with its recommended next step, folded 'Add a denial letter' and the 'Open denials' list"
+screen sc2 "'No open denials'\n'Everything sent is approved or waiting. Add a denial letter above to analyze a new one.'\nThe folded 'Add a denial letter' sits above it"
 click c1 "Click 'Open the Dashboard'"
 
 goto g1 "Continues in: Denial Intelligence › Open denials list"

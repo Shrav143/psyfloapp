@@ -1,17 +1,17 @@
 title: EMR Connect › Needs a mapping › Map a field
 route: /emr
-intro: When the agents meet a field they cannot place, it waits in 'Needs a mapping'. A person picks which Psyflo value it fills. The picker always has a value, so saving cannot fail.
+intro: When the agents meet a field they cannot place, it waits for a mapping. It shows in 'Action required' and, with its question, at the top of the field mappings in the folded 'Advanced' section. A person picks which Psyflo value it fills. The picker always has a value, so saving cannot fail.
 dir: TD
 also: Starting fields: 'Level of care' (outpatient record) and 'Referral source' (intake). Until one is mapped, a chart pulled in New case from that system leaves the matching field blank. Mapping is a person's own choice, so a paused Reader does not stop it.
 ---
-start s1 "Open EMR Connect\nThe 'Need a mapping' tile shows 2"
-screen c1 "Needs a mapping\nA pill with the count, then a row per field"
-process r1 "Row 1: 'Level of care' in the outpatient record\n'Match to IOP or PHP'"
-process r2 "Row 2: 'Referral source' in intake\n'Match to a payer field'"
-toast em "'Every field is mapped. New ones appear here when the agents meet a field they cannot place.'\nShown at 0 fields. Pill and tile turn green"
-click b1 "Click 'Map' on a row"
-click b2 "Click 'Map' on a 'Not mapped' row in the Manage drawer"
-goto g0 "Continues in: EMR Connect › Manage › Open the Manage drawer"
+start s1 "Open EMR Connect\n'Action required' names the waiting fields, and 'Advanced' shows the pill '2 to map'"
+screen c1 "Advanced › Field mappings\nWaiting fields first, then every mapping"
+process r1 "Row 1: 'Level of care' · Not mapped\n'Clinical record · outpatient site · Match to IOP or PHP'"
+process r2 "Row 2: 'Referral source' · Not mapped\n'Match to a payer field'"
+toast em "'10 mapped ... Every field the agents have met is mapped.'\nShown at 0 fields. The pill and the 'Action required' mention go away"
+click b0 "Click 'Advanced', or Tab to it and press Enter or Space"
+click b1 "Click 'Map' on a waiting row"
+click b2 "Click 'Map field' in the 'Action required' line\nOnly when the waiting fields are the first thing that needs a person"
 
 overlay o1 "Map 'Level of care'\nIn the outpatient record"
 process q1 "Question from the agents\n'The outpatient record writes Level of care as free text, such as Day program. Which level should the agents read it as?'"
@@ -20,35 +20,34 @@ process n1 "'Until it is mapped, New case leaves the matching field blank when i
 decision d1 "Which button?"
 click k1 "Click 'Save the mapping'"
 click k2 "Click 'Cancel' or the X, press Escape, or click the dimmed area"
-endx x1 "Pop-up closes\nThe field stays in 'Needs a mapping'"
-process q9 "Opened from the Manage drawer: the first Escape closes only this pop-up\nThe drawer stays open. A second Escape closes it"
+endx x1 "Pop-up closes\nThe field stays waiting"
 
 group gSave "What saving does"
-  store s2 "The field leaves 'Needs a mapping'"
-  store s3 "A mapping row is added to the system\n'Level of care' fills 'IOP', mapped by 'You, 10/20'"
-  agent a1 "Reader logs 'Mapped 'Level of care' to IOP. It applies to every future pull'"
+  store s2 "The field leaves the waiting rows"
+  store s3 "A mapping row is added to the list\n'Level of care → PHP', 'Clinical record · outpatient site', mapped by 'You, 10/20'"
+  agent a1 "Reader logs 'Mapped 'Level of care' to IOP. It applies to every future pull'\nIn the activity log, in Advanced"
   toast t1 "'Field mapped'\n'Level of care' now fills IOP."
-  process p1 "Tile and pill count down: 2, 1, then 0\nAt 0 they turn green: 'every field is mapped'"
+  process p1 "The pill and the 'Action required' mention count down: 2, 1, then none\nAt none the section summary reads '12 field mappings' with no 'waiting'"
   process p2 "New case now fills that field when it pulls a chart from this system\nBefore, it left it blank"
 endgroup
 goto g2 "Continues in: EMR Connect › Sync › What other screens use from EMR Connect"
 end e1 "Pop-up closes\nA mapped field cannot be unmapped or edited in the demo"
 ext x2 "Production: an unknown column holds a file back and shows what differs\nA confirmed mapping is remembered"
 goto g1 "Continues in: EMR Connect › Field mappings › Every mapping by system"
+goto g3 "Continues in: EMR Connect › Advanced › Field mappings and the activity log"
 
-s1 --> c1
+s1 --> b2 & b0
+b0 --> c1
 c1 --> r1 & r2
 c1 -.-> em
 r1 --> b1
 r2 --> b1
 b1 --> o1
 b2 --> o1
-b2 -.-> g0
 o1 --> q1 --> i1 --> n1 --> d1
 d1 -->|Save| k1
 d1 -->|Leave| k2
 k2 --> x1
-k2 -.-> q9
 k1 --> s2 & s3 & a1 & t1
 s2 --> p1
 s2 --> p2
@@ -56,4 +55,5 @@ s3 --> p1
 p1 --> e1
 p2 -.-> g2
 e1 --> g1
+c1 -.-> g3
 c1 -.-> x2

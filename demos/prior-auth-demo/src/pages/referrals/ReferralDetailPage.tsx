@@ -97,7 +97,7 @@ export default function ReferralDetailPage() {
         <Crumbs items={[{ label: "New case", to: paths.newCase({ draft: draftId }) }, { label: "Referral", to: draftId ? checklistPath(draftId, r.id) : paths.newCase() }, { label: r.id }]} />
         <Button size="sm" icon={ArrowLeft} onClick={() => nav(paths.newCase({ draft: draftId }))}>Back to the case</Button>
       </div>
-      <Stepper steps={NEW_CASE_STEPS} current={0} />
+      <Stepper steps={NEW_CASE_STEPS} current={0} className="flex-wrap gap-y-2" />
       <ReferralHeader r={r} hasCase={!!caseOf(r, requests, drafts)} onAccept={() => setModal({ kind: "accept" })} onInfo={() => setModal({ kind: "info", keys: askable(r) })} onDecline={() => setModal({ kind: "decline" })} onNote={() => setModal({ kind: "note" })} onSchedule={() => setModal({ kind: "schedule" })} />
       <DecisionBanners r={r} onTab={setTab} draftId={draftId} tab={tab} />
       <div className="grid grid-cols-1 items-start gap-[22px] min-[1100px]:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">

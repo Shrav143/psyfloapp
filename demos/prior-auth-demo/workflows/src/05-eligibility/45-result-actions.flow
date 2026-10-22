@@ -1,10 +1,10 @@
 title: Authorizations › Eligibility & Benefits › Result › Next actions
 route: /authorizations/eligibility/R-1042
-intro: The buttons on the verdict banner and where each one leads. Which buttons show depends on the verdict, on whether the patient has a case, and on why coverage failed.
+intro: The buttons on the verdict band at the top of the summary card, and where each one leads. Which buttons show depends on the verdict, on whether the patient has a case, and on why coverage failed.
 dir: TD
 also: Demo only: 'Request retro-eligibility' and 'Ask Caller to phone the payer' raise a message and change nothing. No call is made and no request is sent.
 ---
-start s1 "On a result page, read the buttons on the verdict banner"
+start s1 "On a result page, read the buttons on the verdict band"
 
 decision q1 "Verdict is 'Authorization first'?"
 click c1 "Click 'Start authorization'"

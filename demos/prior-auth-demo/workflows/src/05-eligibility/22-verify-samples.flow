@@ -22,12 +22,12 @@ click c1 "Click 'Check now'"
 process ck "Live check runs about 10 seconds\nChips and fields lock. 'Skip ahead' speeds it up\nThe member ID ending decides the answer"
 
 group gRes "Result"
-  screen r1 "'Cleared to bill: the clinic will be paid.'\nGreen verdict"
-  screen r2 "'Fix before billing: coverage lapsed 10/12.'\nButton 'Request retro-eligibility'"
-  screen r3 "'We could not find coverage.'\nOne grey row 'Nothing else could be checked'\nNo 'What the patient pays' line"
-  screen r4 "'Fix before billing: the service is not covered.'\nRow 'The service is not covered', chip 'Not covered'"
-  screen r5 "'Fix before billing: another plan pays first.'\nRow 'Another plan pays first', chip 'Other plan'"
-  screen r6 "'Fix before billing: every authorized day is used.'\nRow 'Every authorized day is used'\nChip 'Limit reached', '14 of 14 days used'"
+  screen r1 "'Cleared to bill: the clinic will be paid.'\nGreen verdict, 'Eligible', benefits 'Covered'\nCost share shown: 'Copay $40 per day, ...'"
+  screen r2 "'Fix before billing: coverage lapsed 10/12.'\nEligibility 'Needs a fix', 'Effective 01/01/2026, lapsed 10/12/2026'\nButton 'Request retro-eligibility'"
+  screen r3 "'We could not find coverage.'\nEligibility 'Needs a fix', benefits and 'What this service needs' say 'Not checked'\nNo 'Patient pays' line, no dates"
+  screen r4 "'Fix before billing: the service is not covered.'\nBenefits 'Not covered'\nRow 'The service is not covered' in 'Payment checks'"
+  screen r5 "'Fix before billing: another plan pays first.'\nRow 'Another plan pays first', chip 'Other plan', in 'Payment checks'"
+  screen r6 "'Fix before billing: every authorized day is used.'\nBenefits line 'All 14 days used. Nothing left'\nRow 'Every authorized day is used', chip 'Limit reached'"
 endgroup
 
 process sd "The list already holds a patient for each reason\nR-1101 lapsed, R-0975 ended, R-1118 not covered\nI-2275 another plan pays first, R-0921 limit reached"

@@ -1,0 +1,53 @@
+title: Authorizations › Queue › Filter by request type
+route: /authorizations?type=retro
+intro: The 'Request type' menu, how the demo's eight request types map onto its four choices, and how the choice travels in the web address so a link can open the queue already filtered.
+dir: TD
+also: Demo only: the type of each request is seed data. Peer-to-peer, Appeal and Resubmission have no choice of their own, so those requests show only under 'All request types'. The mapping is one small function (requestKindOf in src/data/queue.ts).
+---
+screen fb "Filter bar under the figures\nSearch, Payer, Request type, Status, Urgency"
+click c1 "Click 'Request type'"
+overlay m1 "Menu: All request types, Initial, Concurrent review, Reauthorization, Retrospective"
+input i1 "Pick a type"
+
+group gM "How the demo's types map"
+  process k1 "**Initial**\nInitial request, Admission"
+  process k2 "**Concurrent review**\nContinued stay"
+  process k3 "**Reauthorization**\nRecertification"
+  process k4 "**Retrospective**\nRetro-authorization"
+  process k5 "**Only under All request types**\nPeer-to-peer, Appeal, Resubmission"
+endgroup
+
+process ap "The queue keeps the requests of that type\nIt stacks with search, payer, status and urgency\nThe menu turns green"
+screen hd "Header: 'X of 56 open requests match these filters.'\nBand counts follow"
+decision dAny "Any request left?"
+screen res "Bands show the matching requests\nFor example Retrospective: R-1101 only"
+screen emp "'No requests match these filters' + 'Clear filters'"
+store addr "The type is written to the address\n?type=initial, concurrent, reauth or retro"
+click all "Pick 'All request types' or click 'Clear filters'"
+process clr "Filter off, ?type= leaves the address"
+
+start s2 "Open a link such as /authorizations?type=retro"
+decision dV "Is the value one of the four?"
+process ld "The queue opens already filtered, and the menu shows the choice"
+process ig "The value is ignored\nThe queue opens unfiltered, with any other filters the address names"
+process oth "The same address also takes ?payer=, ?status=, ?urgency=, ?q= and ?signal=1\nValues that are not menu options are ignored"
+goto g1 "Continues in: Authorizations › Queue › Search and filter"
+
+fb --> c1 --> m1 --> i1
+i1 --> k1 & k2 & k3 & k4 & k5
+k1 --> ap
+k2 --> ap
+k3 --> ap
+k4 --> ap
+k5 -.-> ap
+ap --> hd --> dAny
+dAny -->|Yes| res
+dAny -->|No| emp
+ap --> addr
+res --> all --> clr
+emp --> all
+s2 --> dV
+dV -->|Yes| ld --> ap
+dV -->|No| ig
+s2 -.-> oth
+fb --> g1

@@ -4,8 +4,8 @@ intro: The written-appeal route starts with a confirm gate, then Advocate drafts
 dir: TD
 also: Demo only: the drafting takes about two seconds and is simulated. The letter is built from the findings of the denial.
 ---
-start s1 "Select 'Written appeal' and click 'Draft the appeal letter' (Your options)"
-start s2 "Click 'Open the draft' (banner: 'Advocate is drafting the appeal')"
+start s1 "Click 'Draft the appeal letter' (recommended next step), or 'Draft the corrected request' (Correct and resubmit), or select 'Written appeal' in Your options and click its button"
+start s2 "Click 'Open the draft' (next-step block: 'Advocate is drafting the appeal')"
 start s3 "Next level chosen after an upheld decision\n('Record and start the second-level appeal')"
 decision d1 "Is the chip already 'Appeal drafting'?"
 
@@ -29,7 +29,7 @@ agent a1 "Advocate drafts the letter and Integrity checks every sentence (demo: 
 doc dc1 "Letter text\nPayer, 'Appeals Department', date, Re: line (reconsideration, second-level appeal or external review), the payer's words, what the chart shows, numbered reasons with evidence, the ask, availability for the reviewing physician"
 screen l3 "'Evidence to attach'\nOne ticked box per chart source, plus fixes added to the evidence"
 store st4 "First draft saved on the denial\n'Appeal drafted. Waiting for a clinician's signature'\nHistory: 'Advocate drafted the appeal and Integrity checked every sentence against the chart'"
-screen l4 "Banner 'Drafted by Advocate, checked by Integrity'\n'Edit anything. A clinician signs before it is filed.'"
+screen l4 "Banner 'Drafted by Advocate, checked by Integrity'\n'Edit anything you like.' and 'Draft by FLO's agents. A clinician reviews and signs before anything is sent.'"
 click c3 "Close the drawer: click X, press Esc, or click the dimmed area\n(Esc closes only the top layer: see the sign step)"
 process p2 "Edits not saved with 'Save draft' are lost\nThe saved draft loads again next time"
 goto g1 "Continues in: Denial Intelligence › Written appeal › Edit, sign and file"

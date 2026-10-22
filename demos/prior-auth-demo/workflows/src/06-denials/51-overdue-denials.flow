@@ -12,7 +12,7 @@ click c1 "Click the 'Peer-to-peer call' card"
 toast t1 "'The peer-to-peer window has closed'\n'A written appeal is still open.'"
 process p2 "The card is not selected"
 
-click c2 "Click 'Change the time' (call-booked banner)"
+click c2 "Click 'Change the time' (next-step block)"
 overlay o1 "Modal 'Confirm the next step: peer-to-peer call'"
 decision d1 "Is any call time left? (starts after the demo clock, before the window closes)"
 toast t2 "'No call time is left inside the payer's window. Choose a written appeal instead.'\nConfirm is greyed out"

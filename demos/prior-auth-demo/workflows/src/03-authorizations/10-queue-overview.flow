@@ -1,14 +1,14 @@
 title: Authorizations › Queue › Open the queue and read the top
 route: /authorizations
-intro: How a person reaches the queue, what the header line says, and what the five summary tiles show and do. Bands, request tiles, filters and the payer signal each have their own diagram.
+intro: How a person reaches the queue, what the header line says, and what the four figures show and do. Bands, request rows, filters (with the request type filter) and the payer signal each have their own diagram.
 dir: TD
-also: Demo only: the numbers (56 open, 19 due today, 79%) are seed data. They move when actions are applied on a case page, and a request leaves the queue once it is signed and sent, decided by the payer, or settled in Denial Intelligence.
+also: Demo only: the numbers (56 open, 19 due today, 79%) are seed data. Approved and denied in the last 30 days are no longer here: they belong to Analytics. They move when actions are applied on a case page, and a request leaves the queue once it is signed and sent, decided by the payer, or settled in Denial Intelligence.
 ---
 start s1 "Click 'Authorizations' in the sidebar"
 start s2 "Demo menu › 'Authorizations: the queue'"
 start s3 "On a case page: click 'Back to queue' or the 'Authorizations' crumb"
 
-screen q1 "Authorizations queue\nHeader, payer signal, five tiles, filters, priority bands"
+screen q1 "Authorizations queue\nHeader, one payer-signal line, four figures, filters, priority bands"
 process sb "Sidebar badge on 'Authorizations'\nOpen requests in Act now plus Due within 24 hours (19)"
 process p1 "The page counts the open requests\nA request that was sent, decided by the payer or settled no longer counts"
 process p2 "The average and the next due time use each request's current chance and due time\nIncluding actions applied on its case page"
@@ -22,17 +22,17 @@ click nb "Click 'New case' (top right button)"
 goto g1 "Continues in: New case › Referral step"
 goto g2 "Continues in: Authorizations › Queue › Cardinal payer signal"
 
-screen tl "Five summary tiles under the header\nAlways count the whole queue, not the filtered list"
+screen tl "Four figures under the header\nAlways count the whole queue, not the filtered list"
+click t2 "Click 'Urgent now'\n5 · 'the Act now band'"
+click t3 "Click 'Due within 24 hours'\n14 · 'next due in 3 h'\n(or 'next one is due now', or 'nothing open')"
+click t4 "Click 'Waiting on you'\n'not sent yet, or a question for you'\nCounts the requests the ordering rule puts first"
 screen t1 "'Approval chance' 79%\n'average · likely 74–84%'\nNot clickable"
-click t2 "Click the 'Urgent' tile\n5 · 'the Act now band'\n(0 once all five are sent or handled)"
-click t3 "Click the 'In flight' tile\n56 · 'next due in 3 h'\n(or 'next one is due now', or 'nothing open')"
-screen t4 "'Approved' 112\n'last 30 days'\nNot clickable"
-screen t5 "'Denied' 46\n'last 30 days'\nNot clickable"
-
-process u1 "All filters are cleared, then Urgency is set to 'Act now'"
-screen u2 "Only the Act now band is listed\nHeader uses the 'match these filters' wording\nWith none left, the band says 'Nothing needs you today'"
-process a1 "All filters are cleared"
+decision dSel "Is that figure already the only filter?"
+process u1 "All filters are cleared, then that figure's filter is set\nUrgency 'Act now', Urgency 'Due within 24 hours', or Status 'Waiting on you'\nThe figure shows an outline"
+screen u2 "Only the matching requests are listed\nHeader uses the 'match these filters' wording\nWith none left, the band says 'Nothing needs you today'"
+process a1 "All filters are cleared\nThe outline goes"
 screen a2 "Every band is listed again\nHeader returns to 'need action today'"
+doc an "Approved and denied in the last 30 days\nShown in Analytics, not here"
 
 goto g3 "Continues in: Authorizations › Queue › Search and filter"
 goto g4 "Continues in: Authorizations › Queue › Bands and ranking"
@@ -47,9 +47,13 @@ d1 -->|No| h1 --> h2
 d1 -->|Yes| h3
 h2 --> tl
 h3 --> tl
-tl --> t1 & t2 & t3 & t4 & t5
-t2 --> u1 --> u2
-t3 --> a1 --> a2
+tl --> t1 & t2 & t3 & t4
+t2 --> dSel
+t3 --> dSel
+t4 --> dSel
+dSel -->|No| u1 --> u2
+dSel -->|Yes| a1 --> a2
+tl -.-> an
 q1 --> g2
 tl --> g3
 tl --> g4

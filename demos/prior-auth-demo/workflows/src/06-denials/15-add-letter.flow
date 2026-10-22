@@ -1,11 +1,14 @@
 title: Denial Intelligence › Add a denial letter
 route: /denials
-intro: The 'Add a denial letter' card at the top of the page: drop or pick a letter, add a note, 'Analyze the denial', watch four agents work, and land on the new denial. In the demo the letter is not really read; a sample letter's facts fill the new denial.
+intro: The folded 'Add a denial letter' section, at the top of the right column (above the empty state when no denial is open): open it, drop or pick a letter, add a note, 'Analyze the denial', watch four agents work, and land on the new denial. In the demo the letter is not really read; a sample letter's facts fill the new denial.
 dir: TD
 also: Demo only: any file type is accepted and only its name and size are kept. Which of the three sample letters (Beacon, Summit, Harborview) is used depends on the file name length, or on how many letters were added before when 'Use sample letter' is clicked.
 ---
-start s1 "Look at 'Add a denial letter' at the top of the page"
-screen sc1 "'Add a denial letter'\n'The agents read it, check it against your chart and past appeals, and lay out your options'\nTwo columns: letter, then note and button"
+start s1 "Look at 'Add a denial letter' above 'Open denials'"
+screen sc0 "Folded section 'Add a denial letter'\nSummary 'Drop a letter or use a sample'"
+click co "Click the header, or press Enter or Space on it"
+screen sc1 "Opened: 'The agents read it, check it against the chart and past appeals, and lay out your options.'\nOne column: letter, 'Identifiers are removed on upload.', note box, 'Analyze the denial'"
+process pk "The section stays in the page while closed, so a typed note, a chosen file and a running analysis survive closing it"
 
 input i1 "Drop a file on the area, or click it (or press Enter or Space) to choose a file\n'Drop the denial letter here, or click to choose a PDF or DOCX'"
 click c1 "Click 'Use sample letter'"
@@ -36,10 +39,11 @@ toast t2 "'The analysis is ready'\n'D-3340 was added to Open denials.'"
 toast t3 "Notification 'Denial analyzed' from Advocate\nLinks to the new denial"
 process p5 "Form clears: file, sample and note\nNew denial is selected, address becomes ?id=D-3340 only (any ?payer= or ?reason= filter is cleared so it shows in the list)\nBadge goes up by one"
 goto g1 "Continues in: Denial Intelligence › A denial opened"
-goto g2 "Continues in: Denial Intelligence › Your options"
+goto g2 "Continues in: Denial Intelligence › A denial opened › Recommended next step"
 goto g3 "Continues in: Dashboard › Arrive › What the page shows"
 
-s1 --> sc1
+s1 --> sc0 --> co --> sc1
+sc1 -.-> pk
 sc1 --> i1 --> fr
 sc1 --> c1 --> p1 --> fr
 fr --> c2 --> p2 --> i1

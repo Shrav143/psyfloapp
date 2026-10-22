@@ -1,10 +1,10 @@
 title: Denial Intelligence › Your options
 route: /denials?id=D-3318
-intro: The 'Your options' card: three next steps as radio cards, how each chance is worked out, how 'Recommended' is chosen, and what the button under the cards opens.
+intro: The 'Your options' card, under the next-step block: three next steps as radio cards, how each chance is worked out, which card carries 'Recommended', and when the card has a button of its own.
 dir: TD
 ---
 start s1 "A denial that is not filed, accepted or closed is on screen"
-screen sc1 "'Your options'\n'Chance of overturning, from 312 similar Cardinal decisions'\nThree radio cards, then one button"
+screen sc1 "'Your options'\n'Chance of overturning, from 312 similar Cardinal decisions'\nThree radio cards, then a button only when one is needed"
 process p0 "Subtitle reads ', a benchmark estimate' instead when fewer than 60 similar decisions"
 
 process p1 "Starting point: the denial's win chance (55 when none is set)"
@@ -20,17 +20,20 @@ screen o3 "Card 'Accept the decision and plan the next step'\n'Accept 7 days and
 process p3 "Each chance reads 'likely 55–72%' (9 below to 8 above) and '312 similar decisions' or 'Benchmark estimate'"
 process p4 "Each card ends with 'Needs: ...' (who, what, and the evidence that would be attached)"
 
-decision r1 "Which card is 'Recommended'?"
+decision r1 "Which card is 'Recommended'?\n(the route of the recommended next step; none for 'Investigate by hand')"
 screen rec1 "'Accept...' card gets the green 'Recommended' pill"
 screen rec2 "'Written appeal' gets the pill"
 screen rec3 "'Peer-to-peer call' gets the pill"
-process p5 "That card is selected when the page opens"
+process p5 "That card is selected when the page opens\nIts button is the primary button of the next-step block, so the card shows no second one"
+goto g0 "Continues in: Denial Intelligence › A denial opened › Recommended next step"
 
 click c1 "Click a card (it is a radio button)"
 decision d2 "Is it 'Peer-to-peer call' and the call window has closed?"
 toast t1 "'The peer-to-peer window has closed'\n'A written appeal is still open.'"
-process p6 "Card is selected\nThe button label changes to match"
-screen b1 "Button under the cards\n'Choose a time and prepare the brief', 'Draft the appeal letter' or 'Accept the decision and plan the step-down'"
+decision d5 "Is it the route the next-step block already has a button for?"
+process p6 "Card is selected\nIf the block above has no button for it, a button appears under the cards with the matching label"
+process p8 "No second button: the one above does the same"
+screen b1 "Button under the cards (only for another route)\n'Choose a time and prepare the brief', 'Draft the appeal letter' or 'Accept the decision and plan the step-down'"
 toast t2 "'A call is already booked. Choosing again changes it.' (when the chip is 'Call booked')"
 click c2 "Click the button"
 decision d3 "Which card is selected?"
@@ -60,7 +63,10 @@ rec3 --> p5
 p5 --> c1
 c1 --> d2
 d2 -->|Yes| t1
-d2 -->|No| p6 --> b1
+d2 -->|No| d5
+d5 -->|No| p6 --> b1
+d5 -->|Yes| p8
+p5 -.-> g0
 b1 -.-> t2
 b1 --> c2 --> d3
 d3 -->|Peer-to-peer call| g1

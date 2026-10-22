@@ -1,10 +1,10 @@
 title: Authorizations › Eligibility & Benefits › Result › Payment checks: coverage, plan, service
 route: /authorizations/eligibility/R-1042
-intro: The first three of the seven rows in 'Payment checks'. Each row has a title, one line of detail and a coloured chip. If coverage is not found, the other six rows give way to one grey row, 'Nothing else could be checked'.
+intro: The first three of the seven rows in the closed section 'Payment checks' (click it to open). Each row has a title, one line of detail and a coloured chip. If coverage is not found, the other six rows give way to one grey row, 'Nothing else could be checked'. The summary card above already says eligible, covered and what the service needs.
 dir: TD
 also: Demo only: 'The service is not covered' has a seeded patient (R-1118, Beacon PPO) and a chip under 'Try a sample' on Verify.
 ---
-start s1 "Result page, card 'Payment checks'"
+start s1 "Result page, section 'Payment checks' opened"
 
 group gA "Row 1 · Coverage"
   decision a0 "What did the state or plan say about the date of service?"
@@ -14,11 +14,11 @@ group gA "Row 1 · Coverage"
   process a4 "Title 'Coverage was not found'\nChip 'Not found' (red)\n'Check the member ID and date of birth, or read the card again.'"
 endgroup
 
-process g0 "Rows 2 to 7 are replaced by one grey row\n'Nothing else could be checked', chip 'Not checked'\n'Fix the member ID or date of birth, then check again.'\nNo 'What the patient pays:' line either"
+process g0 "Rows 2 to 7 are replaced by one grey row\n'Nothing else could be checked', chip 'Not checked'\n'Fix the member ID or date of birth, then check again.'\nNo cost line either"
 
 group gB "Row 2 · The plan"
   decision b0 "Which kind of plan?"
-  process b1 "Title 'It is the right plan', chip 'Summit' (green)\n'Managed by Summit Medicaid HMO. Claims go to Summit, not to the state'"
+  process b1 "Title 'It is the right plan', chip 'Summit' (green)\n'Managed by Summit Medicaid HMO. Claims go to Summit, not to the state'\nSame source as the facts line: Result › Plan type and routing"
   process b2 "Chip 'Harborview' (green)\n'A Medicare Advantage plan. Claims go to Harborview MA, not to Medicare'"
   process b3 "Chip 'Lakeshore' (green)\n'Behavioral health is carved out to Lakeshore Behavioral. Claims go to Lakeshore, not to the medical plan'"
   process b4 "Chip 'Beacon' (green)\n'Claims go to Beacon PPO'"

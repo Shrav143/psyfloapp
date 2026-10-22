@@ -21,9 +21,9 @@ group gB "Column 'Benefits'"
 endgroup
 
 group gA "Column 'Authorization'"
-  screen a0 "'Authorization' chip, sometimes with usage under it"
+  screen a0 "'Authorization' chip (the day or unit usage is on the quiet second line of the row)"
   process a1 "'Not required' (grey)\nThe payer needs none for this level of care"
-  process a2 "'On file' (green) with '9 of 14 days' or '22 of 48 units'\nApproved, with days or units used so far"
+  process a2 "'On file' (green)\nApproved. Days or units used so far, such as '9 of 14 days', are on the second line"
   process a3 "'In progress' (grey)\nA request is being drafted"
   process a4 "'Payer reviewing' (grey)\nA request is with the payer"
   process a5 "'Retro request open' (amber)\nA request for days already delivered is open"
@@ -31,11 +31,11 @@ group gA "Column 'Authorization'"
 endgroup
 
 group gV "Column 'Verdict'"
-  screen v0 "'Verdict' chip, with 'Checked 3 h ago' under it"
+  screen v0 "'Verdict' chip, with 'Checked 3 h ago' on the quiet second line"
   process v1 "'Cleared to bill' (green)\nEverything passes"
   process v2 "'Authorization first' (amber)\nOnly the authorization is missing"
   process v3 "'Fix before billing' (red)\nCoverage, plan, network, another plan or a limit failed"
-  process v4 "'Checked 3 h ago' or 'Checking now'\nTime since the last check, or a re-check running\n'Re-check due Tue 11:32 am': Verify will run it\n'Re-checked automatically at 11:32 am': it did\n'Not re-checked: Verify is paused in Settings'"
+  process v4 "Second line: 'Checked 3 h ago' or 'Checking now'\nTime since the last check, or a re-check running\n'Re-check due Tue 11:32 am': Verify will run it\n'Re-checked automatically at 11:32 am': it did\n'Not re-checked: Verify is paused in Settings'"
 endgroup
 
 goto g1 "Continues in: Authorizations › Eligibility & Benefits › Result › Which verdict and why"

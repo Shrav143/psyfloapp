@@ -5,7 +5,7 @@ dir: TD
 also: Late notice and Retro-authorization denied have no ASAM dimensions, so that section is left out for them. Everything else appears for every denial.
 ---
 start s1 "The report is on screen"
-screen t1 "Title block\n'Appeal analysis report', D-id, initials and age, payer\nTag 'Worked example' on D-3297 only\n'Our read' tile: Worth challenging, Borderline or Probably accept"
+screen t1 "Title block\n'Appeal analysis report', D-id, initials and age, payer\nTag 'Worked example' on D-3297 only\n'Our read' tile: Worth challenging, Borderline or Probably accept\nUnder the title line: 'Draft by FLO's agents. A clinician reviews and signs before anything is sent.'"
 screen t2 "Facts\nDenial, Patient, Payer, Program, Denial type, Report date (the demo clock), Deadline, Similar decisions\nChance of overturning on a call and on a written appeal, with the likely range"
 decision d0 "Fewer than 60 similar decisions?"
 toast n1 "Note under the chances\n'Benchmark estimate: only N similar decisions, so the range is wider than usual.'"
@@ -24,7 +24,7 @@ screen r7 "'Criteria to cite'\n'Documents to attach': a list, then 'Fixes from t
 screen r8 "'Likely pushback and replies'\n'The ask'\n'Outlook'"
 screen r9 "'Timeline and deadlines'\nDenial received, Peer-to-peer window, Peer-to-peer call (booked or not), Written appeal due\nLater: appeal drafted, filed, call outcome, payer's decision, accepted\n'Where it stands'"
 screen r10 "'How this report was made'\nReader, Advocate, Historian, the count of similar decisions\nA clinician reviews and signs before anything is sent\nInitials and age only, no other identifiers"
-screen f1 "Footer line\n'Prepared by FLO agents, for clinician review. Generated 10/20/2026.'"
+screen f1 "Footer line\n'Draft by FLO's agents. A clinician reviews and signs before anything is sent. Generated 10/20/2026.'"
 click c1 "Click 'Add to the evidence' on the denial page, then reopen the report"
 process p1 "The finding's fix shows as added, and so does its tick under 'Documents to attach'"
 click c2 "Book a call or file an appeal on the denial page, then reopen the report"

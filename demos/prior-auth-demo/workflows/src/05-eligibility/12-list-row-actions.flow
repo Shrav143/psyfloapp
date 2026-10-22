@@ -4,17 +4,17 @@ intro: What a click on the list does. A row or its ID opens the result. 'Re-chec
 dir: TD
 ---
 start s1 "On the list, look at the patient rows"
-screen sc "Patients table\nRow tints on hover, pointer cursor"
+screen sc "Patients table\nEach patient is two lines, both tint on hover, pointer cursor"
 
 group gOpen "Open the result"
-  click c1 "Click anywhere on a row"
+  click c1 "Click anywhere on a patient's two lines"
   click c2 "Click the patient ID, for example 'R-1042'"
   process p1 "Opens /authorizations/eligibility/R-1042\nThe browser Back button returns here with search and filters cleared"
 endgroup
 
 group gRe "Re-check in place"
   click c3 "Click 'Re-check' on a row"
-  process p2 "The click stays on the row and does not open the result\nButton turns to a spinner and 'Checking'; Verdict cell says 'Checking now'"
+  process p2 "The click stays on the row and does not open the result\nButton turns to a spinner and 'Checking'; the quiet second line says 'Checking now'"
 endgroup
 
 group gNew "A new patient"
@@ -27,7 +27,7 @@ screen ver "Verify a patient\nEmpty form"
 goto g1 "Continues in: Authorizations › Eligibility & Benefits › Result › What the page shows"
 goto g2 "Continues in: Authorizations › Eligibility & Benefits › Re-verify a patient"
 goto g3 "Continues in: Authorizations › Eligibility & Benefits › Verify › Fill in the form"
-process t1 "About 1 second later the row reads 'Checked just now'\nA toast reports the answer"
+process t1 "About 1 second later the quiet line reads 'Checked just now'\nA toast reports the answer"
 
 s1 --> sc
 sc --> c1 & c2 & c3 & c4

@@ -19,7 +19,7 @@ export function missingItems(rows: ValidationRow[], checks: IntegrityCheck[]): M
     .map((r): MissingItem => ({ id: `row-${r.id}`, label: r.label, text: r.findings.filter((f) => !f.ok).map((f) => f.text).join(" "), severity: r.blocks ? "block" : r.required ? "ack" : "note", fix: "records" }));
   /** The only finding outside the validation rows that blocks is an empty section of the summary (fix: edit it). */
   const fromChecks = checks.flatMap((c) =>
-    c.extra.map((x, i): MissingItem => ({ id: `${c.id}-${i}`, label: c.label, text: x.text, severity: x.fix === "edit" ? "block" : "ack", fix: x.fix })),
+    c.extra.map((x, i): MissingItem => ({ id: `${c.id}-${i}`, label: x.label, text: x.text, severity: x.fix === "edit" ? "block" : "ack", fix: x.fix })),
   );
   const all = [...fromRows, ...fromChecks];
   return (["block", "ack", "note"] as const).flatMap((sev) => all.filter((m) => m.severity === sev));

@@ -1,6 +1,5 @@
 import { AGENTS } from "@/data/agents";
 import { APPEAL_WINDOW_DAYS } from "@/data/denials";
-import { payerById } from "@/data/seed";
 import type { Tone } from "@/data/types";
 import { DAY, clockTime, longDate, shortDate, toDate } from "@/lib/time";
 import type { ReportDoc, ReportFact, ReportTone } from "@/lib/pdf/report-doc";

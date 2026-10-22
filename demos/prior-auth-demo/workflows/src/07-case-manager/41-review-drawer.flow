@@ -5,7 +5,7 @@ dir: TD
 ---
 start s1 "Click the case ID or 'Open' on a review row"
 overlay o1 "Drawer slides in from the right (640 px)\nTitle 'R-0856 · Summit'\nSubtitle 'Continued-stay review 2 · Residential 3.5 · due Tue 10/20, 9:00 am'\nStatus pill at the top right"
-screen b1 "Top of the body\n'J.S., 51 · privacy mode'   'Drafted by' Scribe (Residential, Detox) or Cadence (PHP, IOP)"
+screen b1 "Top of the body\n'J.S., 51 · privacy mode'   'Drafted by' Scribe (Residential, Detox) or Cadence (PHP, IOP)\nOnce drafted: 'Draft by FLO's agents. A clinician reviews and signs before anything is sent.'"
 screen b2 "'The draft'\nLarge text box with seven parts: title and payer lines, Clinical status, Treatment progress, Risk and safety, Why this level of care still fits, Request"
 screen b3 "'Integrity checks'\n'Every sentence traced to the chart'\n'Review has no errors'\n'All payer requirements covered'\n'Level of care matches the request'"
 screen b4 "Footer\n'Sign review' (green), 'Open case', 'Close'"

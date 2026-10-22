@@ -13,10 +13,12 @@ screen n1 "'Request not found'\n'There is no request with the ID R-9999.'\nButto
 endx e2 "Nothing to show for that ID"
 
 group gPage "Ledger case page"
-  screen h1 "Header\nCrumb 'Case Manager › R-0856'\nLevel chip, case ID, review type ('Continued stay 2'), status pill ('Review due')\n'J.S., 51 · Summit Medicaid HMO · Residential 3.5'"
-  screen m1 "Card 'Case summary', pill 'Privacy mode on'\nPatient, Payer, Service\nAuthorization: 'Mon 10/8 to Mon 10/22'\nUnits used: a bar and '12 of 14 days · 2 left'"
-  screen m2 "More rows in the card\nReviews due: 'Review 2, Tue 9:00 am' with its status pill\nNext on the clock, Status\nApproval chance, its band, range and similar decisions"
-  screen r1 "Right side\n'Next step': one sentence, for example 'Review 2 is drafted. Read it, then sign it. Cadence books the next one.'\n'History': approval, drafts, signatures, and what comes next (dashed)"
+  screen h1 "Header\nCrumb 'Case Manager › R-0856'\nLevel chip, case ID, review type ('Continued stay 2'), status pill ('Review due'), the only status on the page\n'J.S., 51 · Summit Medicaid HMO · Residential 3.5'"
+  screen m1 "Card 'Case summary', pill 'Privacy mode on'\nPatient, Payer, Service\nAuthorization: 'Mon 10/8 to Mon 10/22'\nUnits used: a bar and '12 of 14 days used, 2 left', and 'Runs out before review' in red only when the data shows it"
+  screen m2 "More rows in the card\nReviews due: 'Review 2, Tue 9:00 am' with its status pill\nNext on the clock\nApproval chance, its band, range and similar decisions"
+  screen r1 "Right side\n'Next step': one sentence, for example 'Review 2 is drafted. Read it, then sign it. Cadence books the next one.'\n'History' (folded, closed at first): '4 entries. Latest: ...'\nOpened: approval, drafts, signatures, and what comes next (dashed)"
+  click ch "Click the 'History' header, or press Enter or Space on it"
+  process pch "Timeline shows; click again to fold it"
   process u1 "Case not approved yet: Authorization and Units used say 'Not approved yet'\nReviews due says 'None until the request is approved'"
   process u2 "After a signature: a 'Next review' line shows the date Cadence booked"
 endgroup
@@ -36,6 +38,7 @@ d1 -->|Yes| g1
 d1 -->|No| d2
 d2 -->|No| n1 --> e2
 d2 -->|Yes| h1 --> m1 --> m2 --> r1
+r1 --> ch --> pch
 m1 -.-> u1
 m2 -.-> u2
 r1 --> d3

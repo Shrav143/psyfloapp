@@ -7,10 +7,10 @@ also: Accepting a denial (directly, or after an upheld appeal) adds a step-down 
 screen sc1 "Denial Intelligence\nA denial is on screen"
 
 group gOut "Links out"
-click c1 "Click 'See on the Dashboard' (top right of the page)"
-click c2 "Click 'See on the Dashboard' (banner on a call that was overturned or partly restored)"
+click c1 "Click 'See on the Dashboard' (header card)"
+click c2 "Click 'See on the Dashboard' (the same button, after a call was overturned or partly restored)"
 click c3 "Click 'Open the Dashboard' (no open denials)"
-click c4 "Click 'Plan the step-down' (banner after accepting)"
+click c4 "Click 'Plan the step-down' (next-step block after accepting)"
 process p1 "Address opens /dashboard?request=D-3318"
 process p2 "Address opens /dashboard"
 process p3 "Address opens /manager?tab=cases"
@@ -20,7 +20,7 @@ goto g3 "Continues in: Case Manager › Active cases › Step-down plans from ac
 endgroup
 
 group gShare "Shared with other screens"
-  click c6 "Click 'Record the payer's decision' (banner on a filed appeal)"
+  click c6 "Click 'Record the payer's decision' (next-step block on a filed appeal)"
   store z1 "On accept: Case Manager gets a step-down plan, Analytics logs the accepted denial"
   store z2 "On a recorded appeal decision: the result and next level are logged\nAnalytics reads the appeal rulings"
 endgroup

@@ -1,15 +1,16 @@
 title: Case Manager › Active cases › What each tracker cell means
 route: /manager
-intro: Every tracker row answers two questions: how much of the approval is left (Units used) and how long until the next thing that binds (Clock). When the case is also a request, the Clock says exactly what its case page says, from the same due time. Otherwise the wording depends on what kind of event is next. It turns red when time is short, and all of it moves with the demo clock.
+intro: Every tracker row answers two questions: how much of the approval is left (Units or days, with the units left worked out) and how long until the next thing that binds (Next due). When the case is also a request, the Clock says exactly what its case page says, from the same due time. Otherwise the wording depends on what kind of event is next. It turns red when time is short, and all of it moves with the demo clock.
 dir: LR
 also: The dates and hours are measured from the demo clock, so Fast-forward changes them. Approval chance is stored on the row and does not move. Status is stored too, except that a booked next review sets 'On track'.
 ---
 start s1 "Read one tracker row"
-screen r1 "Case: ID, then initials and age\nLevel of care: chip, then a short note ('Continued stay 3', 'Recertification')\nPayer: short name ('Summit Medicaid', 'Cardinal')"
+screen r1 "Case: ID, then initials and age\nLevel of care: plain text, then a short note ('Continued stay 3', 'Recertification')\nPayer: short name ('Summit Medicaid', 'Cardinal')"
 
-decision u0 "Units used: is the case approved yet?"
+decision u0 "Units or days: is the case approved yet?"
 process u1 "'not yet approved' in grey\n(admissions, retro-authorizations and first requests: 9 cases)"
-process u2 "A bar and '10 of 21 days' (or 'units' for IOP)\nBar turns terracotta at 75 percent used or more"
+process u2 "'10 of 21 days used, 11 left' (or 'units' for IOP; 'none left' at zero), with a bar\nBar turns terracotta at 75 percent used or more"
+goto gu "Continues in: Case Manager › Active cases › Units or days left and the run-out flag"
 
 decision a0 "Clock: did the clinic accept this denial?"
 process k11 "'Step-down plan open'\nThe plan is on Active cases, in 'Step-down plans'\nStatus is unchanged"
@@ -28,8 +29,8 @@ process k8 "Units only\n'32 units left'\nNever red"
 process k10 "Next review booked after a signature\n'Next review Tue 10/27', then 'Review due' when the day comes\nStatus becomes 'On track' (or stays 'Awaiting payer')"
 process k9 "Times under two days show hours ('5 h'). Longer ones show days ('3 days')"
 
-process s1p "Approval chance: percent with a bar, coloured by band\nStrong 80 and above, Moderate 55 to 79, At risk below 55"
-process s2p "Status pill: 'Needs action' (red), 'Review due' (amber), 'Awaiting payer' (grey), 'On track' (green)\nThe four tiles count these"
+process s1p "Approval chance: one small number, '79%'\nBands (Strong 80 and above, Moderate 55 to 79, At risk below 55) are in the note under the table"
+process s2p "Status pill, the only coloured pill in the row: 'Needs action' (red), 'Review due' (amber), 'Awaiting payer' (grey), 'On track' (green)\nThe four tiles count these"
 process s3p "'Open' button at the end of the row"
 goto g1 "Continues in: Case Manager › Active cases › Open a case from the tracker"
 end e1 "Row is read"
@@ -39,6 +40,7 @@ u0 -->|No| u1
 u0 -->|Yes| u2
 u1 --> a0
 u2 --> a0
+u2 -.-> gu
 a0 -->|Yes| k11 --> s1p
 a0 -->|No| b0
 b0 -->|Yes| k10 --> s1p

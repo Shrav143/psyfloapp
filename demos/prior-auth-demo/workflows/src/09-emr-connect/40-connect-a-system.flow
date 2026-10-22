@@ -13,7 +13,7 @@ overlay o1 "Connect a system\nRead-only. Nothing is written back until a person 
 group gS1 "Step 1 of 3: System"
   input i1 "Pick one System type\nClinical record (default), Billing system, Practice management or Lab results"
   process p1 "Each choice shows what it holds\n'Charts, notes and medications', 'Claims and remittances', 'Schedules and admissions', 'Lab orders and results'"
-  input i2 "Type a 'Name in Psyflo' (optional)\n'Shown on the Connected systems list.'"
+  input i2 "Type a 'Name in Psyflo' (optional)\n'Shown in Connection health.'"
   process p2 "Blank name becomes '{kind} · new site'"
   click c1 "Click 'Next'"
 endgroup

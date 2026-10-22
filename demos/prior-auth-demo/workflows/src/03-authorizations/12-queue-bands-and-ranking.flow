@@ -39,7 +39,9 @@ process allm "Every request is shown\nButton now reads 'Show fewer'"
 click sf "Click 'Show fewer'"
 process back "Back to the top five"
 
-goto g1 "Continues in: Authorizations › Queue › Read and open a request tile"
+click tp "Hover or focus the info icon 'How the list is ordered' (right end of the filter bar)"
+overlay tp2 "Tooltip says the same rule in a few words\nEsc closes it"
+goto g1 "Continues in: Authorizations › Queue › Read and open a request row"
 
 q --> b1
 b1 --> lv
@@ -53,6 +55,7 @@ dZ -->|No| hide
 dE -->|Yes| bc
 bc --> r1 --> r2 --> wt
 r2 -.-> ex
+r1 --> tp --> tp2
 bc --> hd --> dC
 dC -->|Yes| col --> keep
 dC -->|No| exp --> keep

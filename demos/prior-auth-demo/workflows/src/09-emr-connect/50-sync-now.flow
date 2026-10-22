@@ -4,7 +4,7 @@ intro: A person starts a sync from the card header or from one row. The demo wai
 dir: TD
 also: Demo: simulated. There is no EMR behind the button. Each sync takes the next of four fixed results. While a sync runs, every Sync now button is dimmed, so a second click cannot start.
 ---
-start s1 "Click 'Sync now'\nIn the Connected systems header, or on a Connected row"
+start s1 "Click 'Sync now'\nIn the Connection health header, or on a Connected row"
 decision q0 "Is any system Connected?\n(header button only)"
 toast x0 "'Nothing to sync'\n'No system is connected. Fix or reconnect one first.'\nAmber. No spinner"
 goto gg "Continues in: EMR Connect › Sync › When an agent is paused or asks first"
@@ -15,7 +15,7 @@ ext e1 "The EMR answers\nDemo: simulated, two seconds"
 decision q4 "Did the person leave EMR Connect meanwhile?"
 endx x3 "Sync is dropped\nNothing is recorded"
 decision q3 "Is the system still Connected?\n(it could have been disconnected in Manage meanwhile)"
-endx x2 "Spinner stops\nNo toast, no log line, tiles unchanged"
+endx x2 "Spinner stops\nNo toast, no log line, figures unchanged"
 process n1 "Take the next result from a list of four\nThe next sync takes the one after, then round again"
 
 group gRes "The four results, in order"
@@ -29,13 +29,13 @@ process ap "Apply the result"
 
 group gSaved "What changes"
   store d1 "Each synced system: last sync is now\nRows read 'just now'"
-  store d2 "Charts matched today and Files pulled go up\nAbout half when only some of the Connected systems are synced"
-  store d3 "Recent activity gets the result as its newest line\nFor one system: '... from {system name}'"
+  store d2 "Charts matched today and Files pulled this week go up\nAbout half when only some of the Connected systems are synced"
+  store d3 "Recent activity (in Advanced) gets the result as its newest line\nFor one system: '... from {system name}'"
 endgroup
 decision q5 "Is Reader set to 'Act on its own'?"
 toast t1 "'Sync finished'\nThe result text. Green"
-process n2 "No toast\nThe tiles and the new log line show it"
-end z1 "Last sync tile reads 'Just now'"
+process n2 "No toast\nThe figures and the new log line (in Advanced) show it"
+end z1 "Last sync figure reads 'Just now'"
 goto g1 "Continues in: EMR Connect › Sync › What a sync pulls and when it runs"
 goto g2 "Continues in: EMR Connect › Recent activity › Read the activity log"
 

@@ -1,10 +1,10 @@
 title: Authorizations › Queue › Search and filter
 route: /authorizations
-intro: The search box and the three menus (Payer, Status, Urgency), how they combine, what the page says when nothing matches, and the 'Nothing needs you today' messages that appear once requests have been sent or handled.
+intro: The search box and the four menus (Payer, Request type, Status, Urgency), the help for the status names, the note on how the list is ordered, how filters combine and travel in the web address, what the page says when nothing matches, and the 'Nothing needs you today' messages that appear once requests have been sent or handled.
 dir: TD
-also: Demo only: filters are kept while you move around the app (not in the web address) and are cleared by Reset demo data. 'Nothing needs you today' shows in the Act now band once all five of its requests are sent or handled, and for the whole queue only when no request is left open at all.
+also: Demo only: filters are kept while you move around the app, are written to the web address (?payer=, ?type=, ?status=, ?urgency=, ?q=, ?signal=1) and are cleared by Reset demo data. 'Nothing needs you today' shows in the Act now band once all five of its requests are sent or handled, and for the whole queue only when no request is left open at all.
 ---
-screen fb "Filter bar under the tiles\nSearch box, Payer, Status, Urgency"
+screen fb "Filter bar under the figures\nSearch box, Payer, Request type, Status, Urgency, and a note on ordering"
 
 group gS "Search"
   click sk "Press '/' anywhere\n(not while typing in a field)"
@@ -19,11 +19,19 @@ group gP "Payer"
   input p3 "Pick a payer"
 endgroup
 
+group gQ "Request type"
+  click ty1 "Click 'Request type'"
+  overlay ty2 "Menu: All request types, Initial, Concurrent review, Reauthorization, Retrospective"
+  input ty3 "Pick a type"
+endgroup
+
 group gT "Status"
   click st1 "Click 'Status'"
-  overlay st2 "Menu: All statuses, Needs your input, Preparing, Ready to sign, With the payer, Denial route"
+  overlay st2 "Menu: All statuses, Waiting on you, Needs your input, Preparing, Ready to sign, With the payer, Denial route"
   input st3 "Pick a status"
-  process st4 "'Needs your input' = requests flagged as needing you\nThe others = the request's phase"
+  process st4 "'Waiting on you' = not sent yet, a denial to work, or a question for you\n'Needs your input' = requests flagged as needing you\nThe others = the request's phase (a request whose checks all passed counts as Ready to sign)"
+  click sh "Hover or focus the info icon next to 'Status'\n'What the statuses mean'"
+  overlay sh2 "Tooltip: Preparing is a draft, Ready to sign is ready for review, With the payer covers submitted, acknowledged, under review and info requested, Denial route is denied, Approved and Completed leave the queue\nEsc closes it"
 endgroup
 
 group gU "Urgency"
@@ -33,15 +41,19 @@ group gU "Urgency"
 endgroup
 
 process kb "In any menu: Up and Down move, Enter picks, Esc or a click outside closes it"
+click ot "Hover or focus the info icon 'How the list is ordered' (right end of the bar)"
+overlay ot2 "Tooltip: three bands by how soon each request is due; inside a band, requests waiting on you first, then the soonest due; a tie goes to the lower approval chance\nEsc closes it"
 process ap "Filters stack: a request must pass every one\nA menu that is not on its default turns green"
-store keep "Filters are kept in the app for this session"
+store keep "Filters are kept in the app for this session\nand written to the web address"
+start dl "Open a link with filters in it\ne.g. /authorizations?payer=cardinal&type=retro"
+process dl2 "The filters in the address are applied\nValues that are not menu options are ignored"
 screen hd "Header: 'X of 56 open requests match these filters.'"
 click clr "Click 'Clear filters'\n(appears once any filter is on)"
 decision dAny "Any request left?"
 screen res "Bands show only the matching requests\nBand counts follow"
 screen emp "'No requests match these filters'\n'The filters hide all 56 open requests.'"
 click ce "Click 'Clear filters' in the message"
-process rs "Search empty, All payers, All statuses, All urgency, payer-signal filter off"
+process rs "Search empty, All payers, All request types, All statuses, All urgency, payer-signal filter off\nThe filters leave the web address"
 
 decision dOpen "Are there any open requests at all?"
 end e1 "Every band is listed again"
@@ -57,6 +69,12 @@ s1 --> sm
 fb --> p1 --> p2 --> p3
 fb --> st1 --> st2 --> st3 --> st4
 fb --> u1 --> u2 --> u3
+fb --> ty1 --> ty2 --> ty3
+st1 --> sh
+sh --> sh2
+fb --> ot --> ot2
+dl --> dl2 --> ap
+ty3 --> ap
 p2 -.-> kb
 sm --> ap
 p3 --> ap

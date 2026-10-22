@@ -1,6 +1,6 @@
 title: Authorizations › Eligibility & Benefits › Result › Which verdict and why
 route: /authorizations/eligibility/R-1042
-intro: The verdict is worked out from the patient's row, top question first. Any failed question gives 'Fix before billing'. If all pass, a missing authorization gives 'Authorization first'. Otherwise 'Cleared to bill'.
+intro: The verdict is worked out from the patient's row, top question first. Any failed question gives 'Fix before billing'. If all pass, a missing authorization gives 'Authorization first'. Otherwise 'Cleared to bill'. The verdict is the top band of the summary card; Eligibility, Benefits and What this service needs sit under it.
 dir: TD
 also: Demo only: every failure has a seeded patient on the list (R-1101, R-0975, R-1118, I-2275, R-0921) and a chip under 'Try a sample' on Verify.
 ---

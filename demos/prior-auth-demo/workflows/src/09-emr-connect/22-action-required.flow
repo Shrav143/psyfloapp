@@ -1,0 +1,55 @@
+title: EMR Connect › Page › The Action required line
+route: /emr
+intro: One banner line under the header names what needs a person on this page, with one button for the first item. When nothing needs a person there is no banner. The line follows the page: fix the system, map the fields or resume the agent, and it changes or goes.
+dir: TD
+also: Order of importance: a system that Needs attention, a Disconnected system, fields waiting for a mapping, a paused Reader or Navigator. Only the first has a button here; the rest follow after 'Also:' as plain words, and each has its own button further down the page. Reader and Navigator are the two agents this page uses.
+---
+start s1 "The page loads, or something changes on it"
+decision q1 "Does anything need a person?"
+end e0 "No banner\nThe health card says 'all systems answering'"
+
+group gItems "What is checked, in this order"
+  decision q2 "A system that Needs attention?"
+  screen i1 "'Action required: Billing system needs attention.'\nButton 'Fix'"
+  decision q3 "A system that is Disconnected?"
+  screen i2 "'Action required: {name} is disconnected.'\nButton 'Reconnect'"
+  decision q4 "Fields waiting for a mapping?"
+  screen i3 "'Action required: 2 fields need a mapping, so New case leaves them blank.'\nButton 'Map field' for the first waiting field"
+  decision q5 "Reader or Navigator paused in Settings?"
+  screen i4 "'Action required: Reader is paused, so syncs and new connections wait.'\nLink 'Open Settings'"
+endgroup
+
+process p1 "Several items: the first is the line, the others follow after 'Also:'\n'Action required: Billing system needs attention. Also: 2 fields need a mapping, so New case leaves them blank.'"
+process p2 "Only one banner ever shows\nIt is the only banner on the page"
+
+click k1 "Click the banner's button"
+decision q6 "Which button?"
+process b1 "'Fix': starts the Fix steps\nA paused Navigator waits, 'Ask before acting' asks first"
+process b2 "'Reconnect': starts the connection test\nA paused Navigator waits, 'Ask before acting' asks first"
+process b3 "'Map field': opens the Map pop-up for the first waiting field"
+process b4 "'Open Settings': goes to Settings, where the agent is resumed"
+
+goto g1 "Continues in: EMR Connect › Problems › Fix a system that needs attention"
+goto g2 "Continues in: EMR Connect › Manage › Reconnect a system"
+goto g3 "Continues in: EMR Connect › Needs a mapping › Map a field"
+goto g4 "Continues in: Settings › Pause › Pause one agent, resume all"
+goto g5 "Continues in: EMR Connect › Sync › When an agent is paused or asks first"
+
+s1 --> q1
+q1 -->|No| e0
+q1 -->|Yes| q2
+q2 -->|Yes| i1
+q2 -->|No| q3
+q3 -->|Yes| i2
+q3 -->|No| q4
+q4 -->|Yes| i3
+q4 -->|No| q5
+q5 -->|Yes| i4
+i1 & i2 & i3 & i4 --> p1
+p1 -.-> p2
+i1 & i2 & i3 & i4 --> k1 --> q6
+q6 -->|Fix| b1 --> g1
+q6 -->|Reconnect| b2 --> g2
+q6 -->|Map field| b3 --> g3
+q6 -->|Open Settings| b4 --> g4
+b1 & b2 -.-> g5

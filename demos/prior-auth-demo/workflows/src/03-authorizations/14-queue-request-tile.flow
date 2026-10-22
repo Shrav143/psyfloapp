@@ -1,59 +1,63 @@
-title: Authorizations › Queue › Read and open a request tile
+title: Authorizations › Queue › Read and open a request row
 route: /authorizations
-intro: What each part of a request tile says, which parts are links, and where the chance, status and due text come from.
+intro: What each part of a request row says, which parts are links, and where the status, deadline, next action and chance come from. The clinical scores, the agent activity line and the payer note are not on the row: they are on the case page.
 dir: TD
-also: Only the request ID, the 'Open' button and the 'Coverage needs a fix' pill are clickable. The rest of the tile does nothing.
+also: Only the request ID, the 'Open' button and the 'Coverage needs a fix' pill are clickable. The rest of the row does nothing. At 1280 px and wider the row is one line; below that the same cells sit on two lines.
 ---
-screen t "Request tile\nOne open request inside a band"
+screen t "Request row\nOne open request inside a band"
 
-group gL "Left side"
-  process lv "Level chip\nResidential 3.5, PHP, IOP, or 'Detox → Residential'"
-  process id "'R-1042 · J.M., 34 · Summit Medicaid HMO'"
-  process dx "Diagnosis and review type\n'Alcohol use disorder, severe ... · admission'"
-  process sc "Scores with a trend arrow\n'AUDIT-C 11 · PHQ-9 17 ↑'\nRising, falling or unchanged"
+group gL "Case and patient"
+  process id "'R-1042 · J.M., 34'\nThe ID is a link"
+  process pr "'Residential 3.5 · Summit Medicaid HMO · Admission'\nLevel of care, payer, request type"
 endgroup
 
-decision dR "Has every check passed after actions applied on the case page?"
-agent ag1 "Integrity badge\n'Ready to sign. Integrity passed all four checks'"
-agent ag2 "The agent on the request, e.g. Scribe\n'Scribe is drafting the case'"
-decision dN "Needs your input, and not ready?"
-toast pn "Pill 'Needs your input'"
-decision dC "Does coverage need a fix?"
-click cl "Click the 'Coverage needs a fix' pill"
-goto gE "Continues in: Eligibility & Benefits › Verify a patient"
-decision dRule "Rule note on the request, and not ready?"
-process rule "Green note under the status\ne.g. 'Summit expects a named step-down provider with the first request.'"
-
-group gR "Right side"
-  process due "Due pill, e.g. 'Notice due in 5 h'\nUnder 48 h: 'in 40 min' or 'in 5 h'. Later: 'Decision Thu'. Past: '... now'"
-  process ch "Approval chance bar and number\nStrong 80+, Moderate 55–79, At risk below 55"
-  process lift "Line under the word\n'+26 pts once drafted', 'waiting on the payer', 'chance to overturn', 'on track'"
+group gS "Status"
+  process st "Status chip with its existing name\nPreparing, Ready to sign, With the payer or Denial route"
+  decision dR "Has every check passed after actions applied on the case page?"
+  process st2 "Chip reads 'Ready to sign' (the filter treats it the same way)"
+  decision dN "Needs your input, and not ready?"
+  toast pn "Pill 'Needs your input'"
+  decision dC "Does coverage need a fix?"
+  click cl "Click the 'Coverage needs a fix' pill"
+  goto gE "Continues in: Eligibility & Benefits › Verify a patient"
 endgroup
 
-decision dA "Were actions applied on the case page?"
-process ch2 "Bar shows the new chance\nLine reads '+N pts possible' or 'on track'"
-process ch3 "Bar shows the request's own chance and line"
-process nr "No note line"
-process tint "Tiles in Act now have a red tint\nOther bands are neutral"
+group gD "Deadline and next action"
+  process due "Deadline pill, e.g. 'Notice due in 5 h'\nUnder 48 h: 'in 40 min' or 'in 5 h'. Later: 'Decision Thu'. Past: '... now'\nRed dot only in Act now"
+  process nx "'Next: Name the step-down provider'\nThe first open recommended action, or 'Review the draft, then sign and send it' when every check passes"
+  decision dK "Is it already with the payer, or a denial?"
+  process nx2 "'Next: Wait for Cardinal to decide', 'Next: Review the brief and make the peer-to-peer call', or the payer's own next step"
+endgroup
+
+group gC "Approval chance"
+  process ch "One number in its band colour\n'62%' with the word under it: Strong 80+, Moderate 55–79, At risk below 55\nNo bar"
+  decision dA "Were actions applied on the case page?"
+  process ch2 "The number is the new chance"
+  process ch3 "The number is the request's own chance"
+endgroup
+
+process tint "Rows in Act now have a red tint\nOther bands are neutral"
+doc off "Not on the row\nScores (AUDIT-C, PHQ-9, CIWA ...), the agent line and the payer note\nThey are in 'At a glance' on the case page"
 
 click idl "Click the request ID (underlined)"
 click ob "Click 'Open'"
-goto gC "Continues in: Authorizations › Case page › Ways in"
+goto gC2 "Continues in: Authorizations › Case page › Ways in"
+goto gX "Continues in: Authorizations › Case page › Next action"
 
-t --> lv --> id --> dx --> sc
-t --> dR
-dR -->|Yes| ag1
-dR -->|No| ag2 --> dN
-dN -->|Yes| pn
+t --> id --> pr
+t --> st --> dR
+dR -->|Yes| st2 --> dN
+dR -->|No| dN
+dN -->|Yes| pn --> dC
 dN -->|No| dC
-pn --> dC
 dC -->|Yes| cl --> gE
-dC -->|No| dRule
-dRule -->|Yes| rule
-dRule -->|No| nr
-t --> due --> ch --> lift --> dA
+t --> due --> nx --> dK
+dK -->|Yes| nx2
+nx -.-> gX
+t --> ch --> dA
 dA -->|Yes| ch2
 dA -->|No| ch3
 t --> tint
-t --> idl --> gC
-t --> ob --> gC
+t -.-> off
+t --> idl --> gC2
+t --> ob --> gC2

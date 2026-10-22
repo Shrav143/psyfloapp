@@ -1,12 +1,12 @@
 title: Authorizations › Eligibility & Benefits › Result › Payment checks: authorization to other insurance
 route: /authorizations/eligibility/R-1042
-intro: Rows 4 to 7 of 'Payment checks', then the last line about what the patient pays. Authorization is the only row that can turn the verdict amber. The others turn it red.
+intro: Rows 4 to 7 of 'Payment checks' (the closed section on the result page), then, where this list is shown in the New case drawer, a last line about what the patient pays. On the result page the cost share is under Benefits in the summary instead. Authorization is the only row that can turn the verdict amber. The others turn it red.
 dir: TD
 also: Demo only: 'Limit reached' has a seeded patient (R-0921) and 'Another plan pays first' has one (I-2275). Both have a chip under 'Try a sample' on Verify.
 ---
-start s1 "Result page, card 'Payment checks', rows 4 to 7"
+start s1 "Result page, section 'Payment checks' opened, rows 4 to 7"
 decision q9 "Was coverage found?"
-endx x9 "Coverage not found\nRows 2 to 7 and the line 'What the patient pays:' are not shown\nOne grey row says nothing else could be checked"
+endx x9 "Coverage not found\nRows 2 to 7 and any cost line are not shown\nOne grey row says nothing else could be checked"
 
 group gA "Row 4 · Authorization"
   decision a0 "What is the authorization state?"
@@ -37,9 +37,11 @@ group gD "Row 7 · Other insurance"
   process d2 "Title 'Another plan pays first', chip 'Other plan' (red)\n'A second plan was found. It must be billed before this one.'"
 endgroup
 
-group gP "Last line"
-  process p1 "'What the patient pays:'\nMedicaid '$0 copay, no deductible, no coinsurance.'\nHarborview '20% coinsurance after a deductible with $85 left.'\nBeacon and Lakeshore '$40 copay per day, $350 left on the deductible, 20% coinsurance after.'"
-  toast p2 "'This does not change what the clinic is paid. A $0 copay does not mean the clinic is paid.'"
+group gP "Last line (New case drawer only; the result page shows it under Benefits)"
+  decision p0 "Does the plan type have a cost share on file?"
+  process p1 "'What the patient pays:'\nHarborview 'Deductible $85 left, coinsurance 20%.'\nBeacon and Lakeshore 'Copay $40 per day, deductible $350 left, coinsurance 20% after the deductible.'"
+  toast p2 "'This does not change what the clinic is paid.'"
+  process p3 "Ohio Medicaid: no line at all\nNo '$0 copay' text, because members usually pay none"
 endgroup
 
 goto g1 "Continues in: Authorizations › New case › Medical records › Patient and insurance rows"
@@ -57,6 +59,7 @@ b0 -->|No| b2 --> c0
 c0 -->|Limit, room left| c1 --> d0
 c0 -->|Limit, none left| c2 --> d0
 c0 -->|No limit| c3 --> d0
-d0 -->|No| d1 --> p1
-d0 -->|Yes| d2 --> p1
-p1 --> p2 --> g1
+d0 -->|No| d1 --> p0
+d0 -->|Yes| d2 --> p0
+p0 -->|Yes| p1 --> p2 --> g1
+p0 -->|No| p3 --> g1

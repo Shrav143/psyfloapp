@@ -5,7 +5,7 @@ dir: TD
 ---
 start s1 "Open /denials with ?payer= (a payer id such as cardinal),\n?reason= (a reason text such as Missing documentation), or both"
 process p1 "Payer matches the denial's payer id\nReason matches by inclusion: the reason and the denial's type or its words contain each other\nExample: 'Missing documentation' fits a full denial; 'Retro-authorization window missed' fits a retro-authorization denial"
-screen sc1 "Chip row under 'Add a denial letter'\n'Showing' then one chip per filter: 'Cardinal', 'Missing documentation'\nEach chip has an X, then 'Clear'"
+screen sc1 "Chip row under the page header\n'Showing' then one chip per filter: 'Cardinal', 'Missing documentation'\nEach chip has an X, then 'Clear'"
 decision d1 "Does any open denial match?"
 screen l1 "'Open denials' lists only the matches\nSubtitle 'N of M match the filters', count pill shows N\nNone left: 'No open denials match the filters.'\nThe 'Closed' section is filtered the same way"
 decision d2 "Is there a known ?id= in the address?"

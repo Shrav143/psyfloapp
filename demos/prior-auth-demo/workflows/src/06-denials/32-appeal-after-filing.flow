@@ -1,11 +1,11 @@
 title: Denial Intelligence › Written appeal › After filing
 route: /denials?id=D-3318
-intro: A filed appeal (new, or seeded like D-3279, D-3284 and D-3272) shows a waiting banner, a read-only letter and the button 'Record the payer's decision'. The payer's answer is recorded by a person, in its own diagram.
+intro: A filed appeal (new, or seeded like D-3279, D-3284 and D-3272) shows a waiting block, a read-only letter and the button 'Record the payer's decision'. The payer's answer is recorded by a person, in its own diagram.
 dir: TD
 also: Demo only: the 30-day decision date is fixed, the receipt is saved at filing, and fast-forwarding changes nothing on a filed appeal. Nobody plays the payer, so the person records its decision. In production Navigator finds the answer in its daily check.
 ---
 start s1 "A filed appeal is on screen (after 'Sign and file', or a seeded one)"
-screen b1 "Banner 'Appeal filed. Waiting on the payer'\n'Filed 10/20, decision 11/19. Navigator checks every day. When the payer answers, record the decision here.'"
+screen b1 "Next-step block 'Appeal filed. Waiting on the payer'\n'Filed 10/20, decision 11/19. Navigator checks every day. When the payer answers, record the decision here.'"
 screen b2 "Buttons 'View the appeal' and 'Record the payer's decision'\nOther chips: 'Second-level appeal filed', 'External review'\nSeeded appeals read 'Filed 10/05, decision 11/02'"
 screen h1 "Header pill 'Appeal filed, decision 11/19'\nList pill 'Decision 11/19'\nNo count-down: the payer has the clock"
 process p0 "'Your options' card is hidden"

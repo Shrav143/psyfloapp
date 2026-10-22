@@ -12,7 +12,7 @@ process p0 "/active is replaced by /manager"
 process p1 "Page opens at the top\nSidebar 'Case Manager' turns green; its bubble reads 11"
 decision d1 "Is the address ?tab=reviews?"
 
-screen sA "Active cases tab\nHeader '56 active cases.'\n'5 are still being prepared. Units, clocks and status for every case, across every level of care.'\nButton 'New case'"
+screen sA "Active cases tab: the tracker is what the page opens on\nHeader '56 active cases.'\n'5 are still being prepared. Units, clocks and status for every case, across every level of care.'\nButton 'New case'\nAbove the tracker, one folded row 'Being prepared' ('5 being prepared, 3 need you') and, only when a denial was accepted, a folded 'Step-down plans' row"
 process cA "56 is the number of rows in the tracker\nA case signed and sent in New case adds a row ('57 active cases.'), and '1 active case.' reads in the singular\n5 is the drafts saved and not yet sent: it falls when a case is signed and sent ('1 is still being prepared' when one is left)"
 screen sR "Reviews this week tab\nHeader '47 clinical reviews due this week.'\n'Agents draft each review ahead of time. You update only what they ask about.'\nButtons 'Draft all due reviews' and 'Sign all clean drafts'"
 process cR "47 is one review for each approved case (9 cases are not yet approved and have none)\nOnly reviews due before the end of Sunday are counted: a next review booked for Friday makes it '48', one booked for next week does not\n'1 clinical review due this week.' reads in the singular"

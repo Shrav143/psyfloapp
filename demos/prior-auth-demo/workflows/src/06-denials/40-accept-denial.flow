@@ -4,7 +4,7 @@ intro: Accepting closes the denial and logs it as accepted. A reason goes on the
 dir: TD
 also: Case Manager adds a step-down plan for the patient, and Analytics logs it as an accepted denial. The same steps run when an upheld appeal is accepted from 'Record the payer's decision'.
 ---
-start s1 "Select the 'Accept...' card in 'Your options'"
+start s1 "Click 'Accept the decision and plan the step-down' (recommended next step), or select the 'Accept...' card in 'Your options' and click its button"
 click c1 "Click 'Accept the decision and plan the step-down'"
 overlay o1 "Modal 'Accept the decision?'\n'Nothing is regained. This closes the denial.'"
 screen l1 "Three bullets\n'Analytics logs D-3297 as an accepted denial.'\n'Case Manager adds a step-down plan.'\n'D-3297 leaves Appeal or call on the Dashboard.'"
@@ -22,10 +22,10 @@ store st3 "History: 'You accepted the decision' with 'Reason: ...'\n'Cadence log
 store st4 "Shared with other screens: denial, case and payer\nCase Manager adds a step-down plan\nAnalytics logs the accepted denial"
 toast t1 "'Decision accepted'\n'Analytics logs it as an accepted denial. Case Manager has a step-down plan.'"
 toast t2 "Notification 'Denial closed' from Cadence\nOpens Case Manager, Active cases"
-screen sc1 "Denial page now shows banner 'Closed. You accepted the decision'\n'Reason: ... Analytics logs it as an accepted denial.'"
+screen sc1 "Denial page now shows the block 'Closed. You accepted the decision'\n'Reason: ... Analytics logs it as an accepted denial.'"
 process p1 "'Your options' card is gone\nDenial moves to 'Closed' in the open denials list with the pill 'Accepted'\nSidebar badge goes down by one"
 click c4 "Click 'Plan the step-down'"
-click c5 "Click 'See on the Dashboard' (top right)"
+click c5 "Click 'See on the Dashboard' (header card)"
 goto g1 "Continues in: Case Manager › Active cases › Step-down plans from accepted denials"
 goto g2 "Continues in: Dashboard › Request drawer › Open and read a request"
 process p2 "PRD guardrail: the agents never accept a denial\nA person gives the reason first"

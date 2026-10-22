@@ -1,0 +1,40 @@
+title: EMR Connect › Advanced › Field mappings and the activity log
+route: /emr
+intro: Under the connection health card, a folded section 'Advanced' holds the detail: every field mapping, with the ones still waiting at the top, and the log of every read and write. It starts closed, opens by click, Enter or Space, and shows how many fields wait in a pill.
+dir: TD
+also: Seed data. The section is not kept in the page while closed, so searching the page does not find its text until it is opened. The Map pop-up lives on the page, not in the section, so closing the section never loses a mapping in progress.
+---
+start s1 "Scroll below the Connection health card"
+screen sc "Closed section 'Advanced'\n'10 field mappings, 2 waiting, and the log of every read and write (8 lines).'\nPill '2 to map' (hidden at 0), chevron on the right"
+click k1 "Click 'Advanced'\nOr Tab to it and press Enter or Space"
+process p1 "The button says whether it is open (aria-expanded)\nThe chevron turns"
+screen o1 "Open: 'Field mappings'\n'10 mapped, 2 waiting. A chart pulled in New case leaves the waiting fields blank until you map them.'"
+
+group gMap "Field mappings list"
+  screen m1 "Waiting fields first, tinted\n'Level of care' with a 'Not mapped' pill, 'Clinical record · outpatient site · Match to IOP or PHP', button 'Map'\n'Referral source' ... 'Match to a payer field', button 'Map'"
+  screen m2 "Then every mapping, with its system and who mapped it\n'Admit date → Admission date', 'Reader, 03/14' ... ten rows at the start\nA mapping made by a person reads 'You, 10/20'"
+  click m3 "Click 'Map' on a waiting row"
+endgroup
+goto gm "Continues in: EMR Connect › Needs a mapping › Map a field"
+goto gm2 "Continues in: EMR Connect › Field mappings › Every mapping by system"
+
+group gLog "Recent activity"
+  screen l1 "'Recent activity'\n'Every read and write is logged'\nNewest six lines, then 'See all 8' when there are more"
+  click l2 "Click 'See all 8'"
+endgroup
+goto gl "Continues in: EMR Connect › Recent activity › Read the activity log"
+
+click k2 "Click 'Advanced' again, or press Enter or Space on it"
+process p2 "It closes\nSummary and pill stay, updated: for example '12 field mappings, and the log of every read and write (10 lines).'"
+process p3 "Tab order: Connect a system, banner button, Sync now, row buttons and switches, then Advanced\nOpen content follows in reading order"
+process p4 "What is not here: connection details and permissions (Manage drawer), the Write back switch (on each row), a Test button (the connection test runs inside Connect, Fix and Reconnect)"
+end e1 "Detail read"
+
+s1 --> sc --> k1 --> p1 --> o1
+o1 --> m1 --> m2
+m1 --> m3 --> gm
+m2 -.-> gm2
+o1 --> l1 --> l2 --> gl
+sc -.-> p3
+o1 --> k2 --> p2 --> e1
+sc -.-> p4

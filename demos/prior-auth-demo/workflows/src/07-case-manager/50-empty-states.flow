@@ -1,19 +1,19 @@
 title: Case Manager › Empty states › Nothing to show
 route: /manager and /manager?tab=reviews
-intro: Four places can run out of rows: the 'Being prepared' card, the tracker, the review list and the review-update tile. Each says why and offers one way out. Filters cause three of them. The fourth happens when every draft has been signed and sent.
+intro: Four places can run out of rows: the 'Being prepared' row (once opened), the tracker, the review list and the review-update tile. Each says why and offers one way out. Filters cause three of them. The fourth happens when every draft has been signed and sent.
 dir: TD
 ---
 start s1 "Case Manager is open"
 input i1 "Type a search that matches nothing (for example 'zzz'), or pick a level of care and payer that no case has"
 process p1 "Every list is re-filtered at once"
 
-group gPrep "Being prepared card"
+group gPrep "Being prepared (open the folded row first; its summary then reads 'Nothing is being prepared' or '0 of 5 match the filters')"
   decision d1 "Are there any drafts waiting at all?"
   screen e1s "Icon of a folder\n'Nothing is being prepared'\n'Start a case and the agents take it from there.'\nButton 'Start a new case'"
   click c1 "Click 'Start a new case'"
   decision d2 "Do the page filters and the chip hide all of them?"
   screen e2s "Icon of a magnifier\n'No cases match these filters'\n'The filters hide every case being prepared. Clear them to see all 5.'\nButton 'Clear filters'"
-  click c2 "Click 'Clear filters' on the card"
+  click c2 "Click 'Clear filters' in the opened row"
   process p2 "Chip goes back to 'All' and the page filters are cleared"
 endgroup
 
@@ -34,7 +34,7 @@ process p3 "Filters go back to their first options\nSearch box is emptied, lists
 goto g1 "Continues in: Case Manager › Filters › Search and filter both tabs"
 goto g2 "Continues in: New case › Referral step"
 process p4 "How drafts run out: sign and send every case in 'Being prepared' (5 at the start)\nThe header then reads '0 are still being prepared'"
-process p5 "'Step-down plans' has no empty state\nThe card is simply not shown when no denial was accepted or the filters hide every plan"
+process p5 "'Step-down plans' has no empty state\nThe folded row is simply not shown when no denial was accepted or the filters hide every plan"
 end e1 "Lists show rows again"
 
 s1 --> i1 --> p1

@@ -3,7 +3,7 @@ route: /manager
 intro: One row of 'Being prepared' shows a case, where it is on the eight steps, who has it and the one thing to do next. Only the case ID and the button on the right are clickable, and both lead to the same place in New case. The button's wording depends on the row's state.
 dir: TD
 ---
-start s1 "Look at one row in 'Being prepared'"
+start s1 "Open the folded 'Being prepared' row and look at one case"
 screen r1 "Row, left to right\nLevel chip (for example 'Residential 3.5', 'Detox → Residential', or 'Level not set')\nCase ID (or 'New case'), patient initials and age, payer\nWhat is asked ('Admission request'), and a grey tag 'Updated for a payer change · 10/20' when Payers updated this draft"
 screen r2 "Eight-step bar\nRead, Rules, Match, Ask, Draft, Check, Sign, Send\nDone steps green, current step sage and bold, the rest grey"
 screen r3 "Agent line\nA badge for the agent who has the case, then one sentence, for example 'Scribe is waiting on one answer: the sertraline start date'"

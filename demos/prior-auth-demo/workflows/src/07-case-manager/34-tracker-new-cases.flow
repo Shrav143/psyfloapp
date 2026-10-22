@@ -10,7 +10,7 @@ goto g1 "Continues in: Authorizations › New case › Review and sign › Sign 
 decision d1 "Is the ID already a row in the tracker?\n(R-1042, R-0988, I-2207, R-1101, I-2262 are)"
 process p1 "The row stays as it is"
 process p2 "A tracker row is added\nCase ID with a green 'New today' tag, initials and age\nLevel of care and request type\n'not yet approved', payer, approval chance from the draft"
-process p3 "Clock and status follow the request\nWith the payer: 'Decision expected in 2 h', 'Awaiting payer'\nInfo requested: 'Decision expected in 24 h', 'Needs action'\nApproved: '0 of 14 days', '14 days left' (IOP: '24 units left'), 'On track'\nDenied: 'Window closes Fri', 'Needs action'"
+process p3 "Clock and status follow the request\nWith the payer: 'Decision expected in 2 h', 'Awaiting payer'\nInfo requested: 'Decision expected in 24 h', 'Needs action'\nApproved: Units or days '0 of 14 days used, 14 left', Next due '14 days left' (IOP: '24 units left'), 'On track'\nDenied: 'Window closes Fri', 'Needs action'"
 process p4 "Header reads '57 active cases.'\nThe four tiles, 'Showing 1 to 10 of 57' and 'Clear them to see all 57' count it too\n'5 are still being prepared' drops by one"
 click c1 "Click the row, the case ID or 'Open'"
 goto g2 "Continues in: Authorizations › Case"

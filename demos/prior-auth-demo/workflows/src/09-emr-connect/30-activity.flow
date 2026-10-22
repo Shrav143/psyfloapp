@@ -1,16 +1,17 @@
 title: EMR Connect › Recent activity › Read the activity log
 route: /emr
-intro: Every read and write the agents make here is logged. The card shows the newest six lines; a drawer shows all of them. Most actions on this page add a line.
+intro: Every read and write the agents make here is logged. The folded section 'Advanced' shows the newest six lines, and a drawer shows all of them. Most actions on this page add a line.
 dir: TD
 also: Times follow the Demo clock. Demo, Reset demo data puts back the eight starting lines.
 ---
-screen p1 "Recent activity\nEvery read and write is logged"
-process r1 "Each line: the agent's round icon, the text, and how long ago\nNewest first. Six lines on the card"
+click ad "Click 'Advanced', or Tab to it and press Enter or Space"
+screen p1 "Advanced › Recent activity\nEvery read and write is logged"
+process r1 "Each line: the agent's round icon, the text, and how long ago\nNewest first. Six lines in the section"
 decision q1 "More than six lines?"
 click b1 "Click 'See all 8'"
-process nb "No button. The card shows every line"
+process nb "No button. The section shows every line"
 overlay o1 "Activity log drawer\nEvery read and write, newest first."
-process o2 "All lines in one list\nSame icon, text and time as the card"
+process o2 "All lines in one list\nSame icon, text and time as the section"
 click x1 "Click the X, press Escape, or click the dimmed area"
 end e1 "Drawer closes\nBack on the page"
 
@@ -24,7 +25,7 @@ store st "Activity log\nSeed: eight lines from Reader, Verify and Navigator"
 toast nt "Dashboard 'Write to the EMR' adds no line here\nIt adds an event to that request instead"
 process fz "Every line is written at every freedom level\nThe agent's Freedom in Settings only decides whether a toast follows"
 
-p1 --> r1 --> q1
+ad --> p1 --> r1 --> q1
 q1 -->|Yes| b1 --> o1 --> o2 --> x1 --> e1
 q1 -->|No| nb
 l1 & l2 & l3 & l4 --> st

@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { Info } from "lucide-react";
 import { useEscape } from "@/components/ui";
 import { cn } from "@/lib/cn";
@@ -12,6 +12,17 @@ export function InfoTip({ label, children, align = "start", className }: { label
   const [focus, setFocus] = useState(false);
   const [pinned, setPinned] = useState(false);
   const open = hover || focus || pinned;
+  const [side, setSide] = useState(align);
+
+  /* The note opens towards the side that has room, so it never pushes the page wider than the window. */
+  useLayoutEffect(() => {
+    if (!open || !ref.current) return;
+    const r = ref.current.getBoundingClientRect();
+    const width = Math.min(340, window.innerWidth - 64);
+    const fitsRight = r.left + width <= window.innerWidth - 16;
+    const fitsLeft = r.right - width >= 16;
+    setSide(align === "start" ? (fitsRight || !fitsLeft ? "start" : "end") : fitsLeft || !fitsRight ? "end" : "start");
+  }, [open, align]);
 
   useEscape(open, () => {
     setHover(false);
@@ -46,7 +57,7 @@ export function InfoTip({ label, children, align = "start", className }: { label
         role="tooltip"
         className={cn(
           "absolute top-full z-40 mt-1.5 w-[min(340px,calc(100vw-64px))] rounded-xl border border-edge bg-white px-4 py-3 text-left text-[13px] font-normal normal-case leading-snug tracking-normal text-ink2 shadow-[0_12px_32px_rgba(40,30,15,0.14)]",
-          align === "end" ? "right-0" : "left-0",
+          side === "end" ? "right-0" : "left-0",
           !open && "hidden",
         )}
       >
