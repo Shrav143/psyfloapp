@@ -3,10 +3,10 @@
    so the stepper's state, the step's own message and "What is missing" cannot disagree. */
 import { useMemo } from "react";
 import type { CaseDraft } from "@/data/cases";
-import { authorizationsIn, episodesIn, patientById, patientsIn, type AuthorizationRecord, type Patient, type PatientBook } from "@/data/patients";
+import { patientById, type AuthorizationRecord, type Patient, type PatientBook } from "@/data/patients";
 import { useScope } from "@/lib/scope";
 import { useStore } from "@/store";
-import { selectPatientBook } from "@/store/patients";
+import { selectPatientBookInView } from "@/store/patients";
 import { findDuplicate, type DuplicateHit } from "./duplicates";
 import { usePayerContext, type PayerContext } from "./payerContext";
 import { readiness, type Readiness } from "./typicalDocs";
@@ -30,7 +30,6 @@ export interface CaseEnv {
 
 export function useCaseEnv(draft: CaseDraft | undefined): CaseEnv | null {
   const clock = useStore((s) => s.clock);
-  const ledger = useStore((s) => s.ledger);
   const requests = useStore((s) => s.requests);
   const drafts = useStore((s) => s.caseDrafts);
   const key = draft ? verificationKey(draft) : null;
@@ -40,10 +39,7 @@ export function useCaseEnv(draft: CaseDraft | undefined): CaseEnv | null {
   const { sites } = scope;
   const ctx = usePayerContext({ payerId: draft?.payerId ?? null, program: draft?.program ?? null });
 
-  const book = useMemo<PatientBook>(() => {
-    const all = selectPatientBook({ ledger, requests, clock });
-    return { patients: patientsIn(all, sites), episodes: episodesIn(all, sites), authorizations: authorizationsIn(all, sites) };
-  }, [ledger, requests, clock, sites]);
+  const book = useStore(selectPatientBookInView);
 
   return useMemo(() => {
     if (!draft) return null;

@@ -76,6 +76,10 @@ export function EligibilityStep({ draft, env }: { draft: CaseDraft; env: CaseEnv
             <p className="px-1 text-[13.5px] text-mid-ink">
               {v.staleBecause === "dates" ? "This check covers other dates than the request asks for." : `This check is ${v.ageHours === null ? "old" : `${v.ageHours} hours old`}.`} Refresh it before you send.
             </p>
+          ) : v.status === "current" ? (
+            <p className="px-1 text-[13.5px] text-muted">
+              This check is recent ({v.ageHours === 0 ? "made just now" : `${v.ageHours} ${v.ageHours === 1 ? "hour" : "hours"} old`}) and covers these dates, so it is reused. Refresh it only if something changed.
+            </p>
           ) : null}
           <VerificationSummary record={rec} onRefresh={() => refresh(rec.id)} onDetails={() => setPanel(true)} />
           <NoAuthCard draft={draft} env={env} />

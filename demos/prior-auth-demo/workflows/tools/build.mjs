@@ -17,17 +17,17 @@ const LENIENT = process.argv.includes("--lenient"); // skip a file that does not
 /** Folder → the name on the sidebar of the app (or the area), shown in the viewer. */
 const MODULES = {
   "00-overview": ["Overview", "How to read the diagrams, the whole site map, and one request from referral to decision."],
-  "01-global-shell": ["Global shell", "The sidebar, the top bar (Ask FLO, Notifications, Demo menu), Help, Sign out, redirects and toasts."],
-  "02-dashboard": ["Dashboard", "One daily work list: the headline, a summary from FLO, four figures, filters, the requests table, the request drawer and the payer's answers."],
-  "03-authorizations": ["Authorizations › Queue and case page", "The queue ranked by money and time, and the case page with its five tabs."],
-  "04-new-case": ["Authorizations › New case", "Four steps: Referral, Medical records, Agents work, Review and sign. A referral can also be opened in full."],
+  "01-global-shell": ["Global shell", "The sidebar, the top bar (site switcher, Ask FLO, Notifications, Demo menu with Viewing as), Help, Sign out, redirects and toasts."],
+  "02-dashboard": ["Dashboard", "The cockpit: lifecycle chips, what to do next, one table of authorizations with days in state, units, window and owner, and the request drawer."],
+  "03-authorizations": ["Authorizations › Queue and case page", "The queue ranked by how soon each is due, the quick view, and the case page with its five tabs."],
+  "04-new-case": ["Authorizations › New case", "Five steps for five request types: Intake, Eligibility & Benefits, Clinical documentation, Authorization preparation, Review & submit."],
   "05-eligibility": ["Authorizations › Eligibility & Benefits", "List, verify a patient, the live check and the verdict."],
   "06-denials": ["Denial Intelligence", "Open denials, where each is weak, the options with chances, the peer-to-peer brief, the appeal, accept."],
   "07-case-manager": ["Case Manager", "Active cases (being prepared, and the tracker) and Reviews this week."],
-  "08-analytics": ["Analytics", "Performance, and the monthly report."],
+  "08-analytics": ["Analytics", "Owner view: approval and denial trends, the payer scorecard, payer by case-mix, denial reasons, case-level drill-down and the monthly report."],
   "09-emr-connect": ["EMR Connect", "Connected systems, sync, field mappings and fixes."],
   "10-payers": ["Payers", "Each payer's process, rules, documents and the changes to acknowledge."],
-  "11-settings": ["Settings", "The sixteen agents, how much freedom each has, Pause all."],
+  "11-settings": ["Settings", "The sixteen agents, how much freedom each has, Pause all, and Sites and access."],
 };
 
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");

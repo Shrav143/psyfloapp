@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { ShieldCheck } from "lucide-react";
 import { Banner, Button, Checkbox, Dropdown, Field, Modal } from "@/components/ui";
+import { useScope } from "@/lib/scope";
 import { Portal } from "@/pages/dashboard/Portal";
 
 const CLINICIANS = [
@@ -22,6 +23,7 @@ interface Props {
 
 /** Sign-off gate. Agents stop here: only a licensed clinician signs, and only after ticking the attestation. */
 export function SignDialog({ title, subtitle, attestation, confirmLabel, warning, children, onClose, onSign }: Props) {
+  const { viewer } = useScope();
   const [who, setWho] = useState(CLINICIANS[0].value);
   const [attested, setAttested] = useState(false);
   const [accepted, setAccepted] = useState(false);
@@ -44,7 +46,7 @@ export function SignDialog({ title, subtitle, attestation, confirmLabel, warning
     >
       <div className="flex flex-col gap-4">
         {children}
-        <Banner title="Only a licensed clinician signs">You are signed in as Jordan Perez, a UR coordinator. Choose the clinician who is signing. Agents never sign for a person.</Banner>
+        <Banner title="Only a licensed clinician signs">You are signed in as {viewer.name}, {viewer.role}. Choose the clinician who is signing. Agents never sign for a person.</Banner>
         <Field label="Signing clinician" required>
           <Dropdown variant="field" ariaLabel="Signing clinician" value={who} options={CLINICIANS} onChange={setWho} />
         </Field>

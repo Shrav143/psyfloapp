@@ -1,6 +1,6 @@
 import { Card, CardHeader } from "@/components/ui";
 import type { CaseDraft } from "@/data/cases";
-import { minutesOf, payerNameOf } from "@/data/patients";
+import { isoOf, leftText, minutesOf, payerNameOf } from "@/data/patients";
 import { PROGRAM_LABEL } from "@/data/types";
 import { plural } from "@/lib/format";
 import { ago } from "@/lib/time";
@@ -16,7 +16,8 @@ const mdy = (iso: string): string => `${iso.slice(5, 7)}/${iso.slice(8, 10)}/${i
 export function ReviewSummary({ draft, env, review }: { draft: CaseDraft; env: CaseEnv; review: ReviewModel }) {
   const dos = datesOfService(draft);
   const rec = env.verification.record;
-  const b = draft.basis;
+  const a = authType(draft.kind).existing ? env.authorization : undefined;
+  const b = a ? undefined : authType(draft.kind).existing ? draft.basis : undefined;
   const acks = review.missing.filter((m) => m.severity === "ack").length;
   const notes = review.missing.filter((m) => m.severity === "note").length;
   const r = env.readiness;
@@ -28,7 +29,7 @@ export function ReviewSummary({ draft, env, review }: { draft: CaseDraft; env: C
     ["Service", draft.program ? `${draft.levelLabel ?? PROGRAM_LABEL[draft.program]}` : "Not added"],
     ["Dates and length", dos ? `${mdy(dos.from)} to ${mdy(dos.to)} · ${plural(Math.round((minutesOf(dos.to) - minutesOf(dos.from)) / 1440) + 1, "day")}${draft.endDate ? "" : " (the usual length)"}` : "Not added"],
     ["Eligibility", rec ? `${describeVerification(rec)}. Checked ${ago(rec.checkedAt, env.clock)}, simulated source.` : "Not checked"],
-    ["Existing authorization", b ? `${b.label} · ${b.authorized === null ? "no days on file" : `${b.authorized} ${b.unit} authorized`}${b.used !== null && b.authorized !== null ? `, ${b.authorized - b.used} left` : ""}${b.to ? `, ends ${mdy(b.to)}` : ""}` : "None. This starts a new stay."],
+    ["Existing authorization", a ? `${a.id} · ${a.label} · ${leftText(a) ?? "no days on file"}${a.approvedTo === null ? "" : `, ends ${mdy(isoOf(a.approvedTo))}`}` : b ? `${b.label} · ${b.authorized === null ? "no days on file" : `${b.authorized} ${b.unit} authorized`}${b.used !== null && b.authorized !== null ? `, ${b.authorized - b.used} left` : ""}${b.to ? `, ends ${mdy(b.to)}` : ""}` : "None. This starts a new stay."],
     ["Documentation", `${r.ready} of ${r.total} ready${r.missingRequired.length ? `, ${plural(r.missingRequired.length, "required document")} missing` : ""}`],
     ["Medical necessity", review.sections.length ? `${plural(review.sections.length, "section")}, ${words} words, prepared by Scribe from the chart` : "Not prepared yet"],
     ["Outstanding", acks + notes === 0 ? "Nothing outstanding" : `${acks ? `${acks} to acknowledge` : ""}${acks && notes ? ", " : ""}${notes ? plural(notes, "note") : ""}`],

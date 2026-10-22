@@ -11,7 +11,7 @@ import { useStore } from "@/store";
 
 const KIND: Record<CoverageKind, { tone: "good" | "mid" | "risk"; text: string }> = {
   cleared: { tone: "good", text: "Everything checks out. The referral can be admitted as soon as it is accepted." },
-  auth_first: { tone: "mid", text: "Everything checks out except the authorization. Billing is safe once the payer approves. Accept the referral, then continue to the medical records from this page." },
+  auth_first: { tone: "mid", text: "Everything checks out except the authorization. Billing is safe once the payer approves. Accept the referral, then continue with it from this page." },
   lapsed: { tone: "risk", text: "Coverage ended before the service date. Do not bill until the plan is confirmed. Ask the referrer or the patient about a renewal." },
   unconfirmed: { tone: "mid", text: "There is no insurance on the referral, so Verify has nothing to look up." },
 };

@@ -41,7 +41,7 @@ export function DecisionBanners({ r, onTab, draftId, tab }: { r: Referral; onTab
           linked ? (
             <Button size="sm" onClick={() => nav(paths.dashboard({ request: linked.id }))}>Open {linked.id}</Button>
           ) : r.status !== "admitted" ? (
-            <Button variant="primary" trailing={ArrowRight} onClick={goOn}>Continue to medical records</Button>
+            <Button variant="primary" trailing={ArrowRight} onClick={goOn}>Continue with this referral</Button>
           ) : undefined
         }
       >
@@ -53,7 +53,7 @@ export function DecisionBanners({ r, onTab, draftId, tab }: { r: Referral; onTab
             <Pill tone={linked.tone}>{linked.chip}</Pill>
           </span>
         ) : r.status !== "admitted" ? (
-          <span className="block">No request is linked yet. Continue to the medical records to build the authorization for this patient.</span>
+          <span className="block">No request is linked yet. Continue with this referral to build the authorization for this patient.</span>
         ) : null}
       </Banner>,
     );
