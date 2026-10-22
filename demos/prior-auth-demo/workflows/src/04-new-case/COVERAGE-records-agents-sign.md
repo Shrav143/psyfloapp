@@ -22,6 +22,7 @@ Source: `src/pages/newcase/*`, `src/store/cases.ts`, `src/data/cases.ts`, `src/d
 | 45 | Medical records › Replace a document or mark it not available |
 | 46 | Agents work › An agent could not finish |
 | 47 | Agents work › Paused in Settings |
+| 48 | Review and sign › What is missing |
 
 On the case page (drawn in `03-authorizations`): 26 (Send to payer and Open in review and sign, and which draft and step they open), 70 (Draft tab, the summary shared with step 4), 72, 74.
 
@@ -81,13 +82,13 @@ On the case page (drawn in `03-authorizations`): 26 (Send to payer and Open in r
 | Question pop-up ('Question 1 of N'): choice cards, note box, 'Answer later', 'Send answer', Escape | 35 |
 | Row pill 'Could not finish' with 'Retry' and 'Skip and note'; pill 'Skipped and noted' | 46 |
 | Row pill 'Paused in Settings' | 47 |
-| Banner 'Agents are paused in Settings' (or 'NAME is paused in Settings') with 'Resume agents' / 'Resume NAME' | 47 |
-| Banner 'Records changed after the last run. The agents re-checked.' | 34, 36 |
+| Banner 'Agents are paused in Settings' (or 'NAME is paused in Settings') with 'Resume agents' / 'Resume NAME' (shown instead of the other messages) | 47 |
+| Banner 'Records changed after the last run. The agents re-checked.' (only when nothing more important is showing) | 34, 36 |
 | Footer: 'Back' | 36 |
 | Footer: 'Pause all agents' / 'Resume agents' (same switches as Settings) | 34, 47 |
 | Footer: 'Skip ahead' | 34 |
 | Footer: 'Review and sign' (off until all ten are done) | 36 |
-| Banner 'All ten agents are done' | 36 |
+| Banner 'All ten agents are done' (one message at a time) | 36 |
 | Stepper: 'Referral', 'Medical records' | 36 |
 | Resuming a draft that already ran | 36, 39 |
 
@@ -95,21 +96,25 @@ On the case page (drawn in `03-authorizations`): 26 (Send to payer and Open in r
 
 | Control | Diagram |
 |---|---|
+| 'What is missing' card, its three kinds of item and the fix buttons ('Open Medical records', 'Edit the summary', 'Send back to Scribe'); 'Nothing is missing' | 48 |
+| The one line 'Nothing is sent to the payer until a person signs.' (page sub line) | 37 |
 | Source chips (e.g. 'Psychiatric eval p.3') and the document drawer | 37 |
 | Summary card: 'Edit', 'Cancel', 'Save changes' | 37 |
 | 'Context added.' paragraph (from the case page) | 37, 70 |
-| Validation summary: row toggles, Start date row, document rows | 41 |
-| Checks card (four checks, each worked out from the case) | 41 |
+| Validation summary (closed section): open it, row toggles, Start date row, document rows | 41 |
+| Checks card (four checks, names and state; what they found is in 'What is missing') | 41, 48 |
 | Approval chance card | 37 |
 | 'Signing as' dropdown (Jordan Perez, Dr. Rivera) | 38 |
+| Muted line 'Only a licensed clinician can sign, so switch to Dr. Rivera.' (was a banner) | 38 |
 | Acknowledgement tick-box (only with a warning) | 38 |
 | Attestation tick-box | 38 |
-| 'Sign and send' button, 'Sign and send?' pop-up: 'Cancel', 'Sign and send' | 38 |
+| 'Sign and send to payer' button, 'Sign and send to payer?' pop-up: 'Cancel', 'Sign and send to payer' | 38 |
 | 'Send back to Scribe', its pop-up: three quick chips, note box, 'Cancel', 'Send back' | 43 |
 | Footer: 'Back' | 37 |
-| Footer: 'Save as draft' | 37, 39 |
+| Footer: 'Save as draft' (no hint line on step 4) | 37, 39 |
 | Request lands on the Dashboard, toast, notification | 38, 42 |
 | 'R-1701 was sent' page: 'Open it on the Dashboard', 'Back to Case Manager' | 42 |
+| 'R-1131 is with the payer' page (a request only the queue's seed says is with the payer): 'Back to the case', 'Back to Case Manager' | 26 |
 | 'We could not find that draft' page: 'Start a new case' | 39 |
 | Case Manager after sending: 'Being prepared' card, 'N sent today', new row in the table | 42 |
 | Case Manager row for a draft: ID link, button (Continue, Watch, Answer, Review and sign), status filter | 39 |

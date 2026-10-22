@@ -86,7 +86,7 @@ Files: 00 overview · 01 stepper · 10 start screen · 11 checklist rows · 12 a
 | 'Owner' dropdown | 23 |
 | 'Add note' | 23, 20 |
 | 'More': demo reply, download, Copy link (hosted: 'Copy link is off in this preview') | 23 |
-| Banners: 'Reopen', 'Open R-1042', 'Continue to medical records', 'Review findings', 'Open coverage' | 24, 17 |
+| The one decision banner (only the most important one shows; it steps aside on the tab it points to): 'Reopen', 'Open R-1042', 'Continue to medical records', 'Review findings', 'Open coverage' | 24, 17 |
 | Tabs Extracted, Validation, Coverage, Fit, Activity | 16 |
 | Extracted: row, eye, 'Why this value?', pencil, 'Save', 'Cancel', Enter | 18 |
 | Source document: 'Referral form' and 'Face sheet', 'Previous', 'Next', block click, print button | 18 |
