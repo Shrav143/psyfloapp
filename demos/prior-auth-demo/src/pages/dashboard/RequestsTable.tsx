@@ -93,13 +93,11 @@ interface Props {
   /** Cases saved in New case that have no row here, and what to say about them ("being prepared", "waiting on you"). */
   more: number;
   moreWhat: string;
-  /** The stage help, under the table. */
-  help: ReactNode;
 }
 
 /** Exactly six columns, always the same. Waiting on you first, then the nearest clock, until a heading is clicked.
     The table is positioned (relative) because the screen-reader text in its cells is: without a positioned parent that text would sit outside the scrolling area and widen the page. */
-export function RequestsTable({ rows, total, visible, clock, onOpen, onMore, onClear, canClear, sort, onSort, writeBackOn, more, moreWhat, help }: Props) {
+export function RequestsTable({ rows, total, visible, clock, onOpen, onMore, onClear, canClear, sort, onSort, writeBackOn, more, moreWhat }: Props) {
   const shown = rows.slice(0, visible);
   return (
     <Card className="overflow-hidden">
@@ -153,7 +151,6 @@ export function RequestsTable({ rows, total, visible, clock, onOpen, onMore, onC
           </Link>
         </p>
       ) : null}
-      {help}
     </Card>
   );
 }

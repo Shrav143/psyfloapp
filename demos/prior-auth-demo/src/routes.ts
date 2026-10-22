@@ -1,7 +1,6 @@
 /* Every link in the app goes through here, so modules never hard-code each other's URLs. */
 export const paths = {
-  /** `focus=payers` opens and scrolls to Payer performance. */
-  dashboard: (q?: { request?: string; payer?: string; stage?: string; focus?: "payers" }) => {
+  dashboard: (q?: { request?: string; payer?: string; stage?: string }) => {
     const s = new URLSearchParams(q as Record<string, string> | undefined).toString();
     return `/dashboard${s ? `?${s}` : ""}`;
   },

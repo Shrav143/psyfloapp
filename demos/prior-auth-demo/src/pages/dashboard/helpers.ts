@@ -1,11 +1,9 @@
 import type { Option } from "@/components/ui";
 import { PAYERS, payerById } from "@/data/seed";
 import { PROGRAMS, PROGRAM_LABEL, REQUEST_TYPES, STAGES, type PayerId, type PayerSummary, type PsyRequest, type StageKey } from "@/data/types";
-import { addDays, daysIn, fromISO, isISO, toISO, type DateRange } from "@/lib/dates";
 import { plural } from "@/lib/format";
 import { DAY, HOUR, duration, toDate, typical } from "@/lib/time";
-import type { RangePreset } from "@/components/ui";
-import { DEFAULT_RANGE, type DashFilters } from "@/store/core";
+import type { DashFilters } from "@/store/core";
 import { applyBaseFilters, lateness, minutesInStage, minutesLeft, stageCounts } from "@/store/selectors";
 import type { ViewKey } from "./workList";
 
@@ -30,26 +28,13 @@ export const PAYER_OPTIONS: Option<DashFilters["payer"]>[] = [{ value: "all", la
 export const PROGRAM_OPTIONS: Option<DashFilters["program"]>[] = [{ value: "all", label: "All programs" }, ...PROGRAMS.map((p) => ({ value: p, label: PROGRAM_LABEL[p] }))];
 export const TYPE_OPTIONS: Option<DashFilters["type"]>[] = [{ value: "all", label: "All request types" }, ...REQUEST_TYPES.map((t) => ({ value: t, label: typeLabel(t) }))];
 
-/** The demo's "today" as a calendar day. It moves when the clock is fast-forwarded. */
-export const todayOf = (clock: number): string => toISO(toDate(clock));
-/** Shortcuts in the calendar. Each ends today. */
-export function rangePresets(today: string): RangePreset[] {
-  const to = today;
-  return [
-    { label: "Last 7 days", range: { from: addDays(to, -6), to } },
-    { label: "Last 30 days", range: { from: addDays(to, -29), to } },
-    { label: "Last 90 days", range: { from: addDays(to, -89), to } },
-    { label: "This month", range: { from: `${to.slice(0, 7)}-01`, to } },
-  ];
-}
-
-/** True when any of the four narrowing filters is set (the period alone does not count). */
+/** True when any of the four narrowing filters is set . */
 export const hasNarrowingFilter = (f: DashFilters): boolean => f.payer !== "all" || f.program !== "all" || f.type !== "all" || f.stage !== "all";
 
 /* ------------------------------------------------------------------ URL <-> filters */
 
 const slug = (s: string): string => s.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-const FILTER_KEYS = ["payer", "program", "type", "stage", "from", "to"] as const;
+const FILTER_KEYS = ["payer", "program", "type", "stage"] as const;
 
 /** Only non-default filters are written to the address, so a clean dashboard has a clean URL. */
 export function filtersToEntries(f: Partial<DashFilters>): [string, string][] {
@@ -58,7 +43,6 @@ export function filtersToEntries(f: Partial<DashFilters>): [string, string][] {
   if (f.program && f.program !== "all") out.push(["program", f.program.toLowerCase()]);
   if (f.type && f.type !== "all") out.push(["type", slug(f.type)]);
   if (f.stage && f.stage !== "all") out.push(["stage", f.stage]);
-  if (f.range && (f.range.from !== DEFAULT_RANGE.from || f.range.to !== DEFAULT_RANGE.to)) out.push(["from", f.range.from], ["to", f.range.to]);
   return out;
 }
 export const filterKey = (f: Partial<DashFilters>): string => filtersToEntries(f).map(([k, v]) => `${k}=${v}`).join("&");
@@ -75,16 +59,10 @@ export function paramsToFilters(p: URLSearchParams): Partial<DashFilters> {
   if (matchedType) out.type = matchedType;
   const stage = p.get("stage");
   if (stage && STAGES.some((s) => s === stage)) out.stage = stage as StageKey;
-  const from = p.get("from");
-  const to = p.get("to");
-  if (isISO(from) && isISO(to) && from <= to) out.range = { from, to };
-  /* Links from before the calendar used a named period. */
-  const old = p.get("period");
-  if (!out.range && (old === "7d" || old === "30d" || old === "quarter")) out.range = { from: addDays(DEFAULT_RANGE.to, old === "7d" ? -6 : old === "30d" ? -29 : -89), to: DEFAULT_RANGE.to };
   return out;
 }
 
-/** A copy of the address params with the five filter keys replaced by the given filters. */
+/** A copy of the address params with the four filter keys replaced by the given filters. */
 export function withFilterParams(p: URLSearchParams, f: DashFilters): URLSearchParams {
   const next = new URLSearchParams(p);
   for (const k of FILTER_KEYS) next.delete(k);
@@ -208,47 +186,3 @@ export const nextLine = (r: PsyRequest, writeBackOn: boolean): string => (writeB
 export const DENIAL_ROUTE = ["Call", "Appeal 1", "Appeal 2", "External"] as const;
 export const AUTH_TRACK = ["Prepared", "Received", "In review", "Decided"] as const;
 export const isDenial = (r: PsyRequest): boolean => r.track === "denial" || r.id.startsWith("D-");
-
-/* ------------------------------------------------------------------ payers at a glance */
-
-/* The seed holds 30 days of figures. A shorter or longer range scales them, and a small shift per range makes it look like another window rather than a rescale. */
-const SHIFTS = [-3, 2, 1, -2, 3, -1];
-const isDefault = (r: DateRange): boolean => r.from === DEFAULT_RANGE.from && r.to === DEFAULT_RANGE.to;
-const factorOf = (r: DateRange): number => daysIn(r) / 30;
-const shiftOf = (r: DateRange, i: number): number => (isDefault(r) ? 0 : SHIFTS[(i + daysIn(r) + fromISO(r.from).getDate()) % SHIFTS.length]);
-
-export interface PayerRow {
-  payer: PayerSummary;
-  waiting: number;
-  approved: number;
-  denied: number;
-  infoAsks: number;
-  /** A decision time more than 15% over typical turns ochre; a smaller overshoot is noise. */
-  over: boolean;
-}
-
-/** "30 d", "7 d" or "12 d": the length of the range, for column titles. */
-export const periodWord = (r: DateRange): string => `${daysIn(r)} d`;
-
-/** The payer furthest over its typical decision time, or nothing when every payer is within it. The same ranking FLO uses for "Which payers are slowest right now?". */
-export function slowestPayer(rows: PayerRow[]): PayerSummary | undefined {
-  const over = rows.map((r) => r.payer).filter((p) => p.avgDecisionDays > p.typicalDecisionDays);
-  return over.sort((a, b) => b.avgDecisionDays / b.typicalDecisionDays - a.avgDecisionDays / a.typicalDecisionDays)[0];
-}
-
-/** Waiting counts follow Program and Request type; the payer rows themselves are never filtered away. */
-export function payerRows(requests: PsyRequest[], f: DashFilters): PayerRow[] {
-  const pool = applyBaseFilters(requests, { ...f, payer: "all" });
-  return PAYER_ORDER.map((id, i) => {
-    const payer = payerById(id);
-    const waiting = pool.filter((r) => r.payerId === id && (r.stage === "received" || r.stage === "under_review")).length;
-    return {
-      payer,
-      waiting,
-      approved: Math.min(100, payer.approvedAsAsked + shiftOf(f.range, i)),
-      denied: Math.round(payer.denied30d * factorOf(f.range)),
-      infoAsks: Math.round(payer.infoAsks30d * factorOf(f.range)),
-      over: payer.avgDecisionDays > payer.typicalDecisionDays * 1.15,
-    };
-  });
-}

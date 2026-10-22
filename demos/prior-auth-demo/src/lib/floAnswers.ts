@@ -250,7 +250,7 @@ export function answerFor(q: string, s: AppState, route: FloRoute): FloAnswer {
   if (t.includes("slow") || (t.includes("payer") && t.includes("late"))) {
     const slow = [...PAYERS].filter((p) => p.avgDecisionDays > p.typicalDecisionDays).sort((a, b) => b.avgDecisionDays / b.typicalDecisionDays - a.avgDecisionDays / a.typicalDecisionDays);
     const text = slow.length ? `${slow.map((p) => `${p.shortName} is averaging ${p.avgDecisionDays} days against ${p.typicalDecisionDays} typical`).join(". ")}. Caller phones when a payer passes twice its typical time.` : "Every payer is deciding within its typical time right now.";
-    return { text, link: { label: "Open Dashboard, Payer performance", to: paths.dashboard({ focus: "payers" }) } };
+    return { text, link: { label: "Open Analytics, turnaround", to: paths.analytics() } };
   }
   if (t.includes("billing") || t.includes("eligib") || t.includes("fix before")) return eligibilityAnswer(s);
   if (t.includes("missing") || t.includes("incomplete")) {
