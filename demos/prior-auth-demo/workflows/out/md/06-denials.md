@@ -43,8 +43,8 @@ flowchart TD
   p2@{ shape: rect, label: "<b>Pick the first denial in the list: the nearest deadline</b><br/>(among the matches, when filters are on)" }
   p3@{ shape: rect, label: "Show the denial named in the address" }
   t1@{ shape: odd, label: "<b>'We could not find D-xxxx among the open denials'</b><br/>'Showing D-3318 instead.' (the first in the list)" }
-  sc1@{ shape: curv-trap, label: "<b>Denial Intelligence</b><br/>Header, 'Add a denial letter', the denial, 'Open denials' list" }
-  sc2@{ shape: curv-trap, label: "<b>'No open denials'</b><br/>'Everything sent is approved or waiting. Add a denial letter above to analyze a new one.'" }
+  sc1@{ shape: curv-trap, label: "<b>Denial Intelligence</b><br/>Title and scope line, the denial with its recommended next step, folded 'Add a denial letter' and the 'Open denials' list" }
+  sc2@{ shape: curv-trap, label: "<b>'No open denials'</b><br/>'Everything sent is approved or waiting. Add a denial letter above to analyze a new one.'<br/>The folded 'Add a denial letter' sits above it" }
   c1@{ shape: trap-t, label: "Click 'Open the Dashboard'" }
   g1@{ shape: subproc, label: "Continues in: Denial Intelligence › Open denials list" }
   g2@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
@@ -89,7 +89,7 @@ flowchart TD
 
 ## Denial Intelligence › Open denials list
 
-The 'Open denials' card on the right of the page: which denials are listed, how they are ordered, what each row says, the 'Closed' section, and what a click on a row does. A payer or reason in the address can narrow it.
+The 'Open denials' card on the right of the page, under the folded 'Add a denial letter': which denials are listed, how they are ordered (soonest deadline first, said in its subtitle), what each row says, the 'Closed' section, and what a click on a row does. A payer or reason in the address can narrow it.
 
 Route: `/denials?id=D-3318`
 
@@ -113,7 +113,7 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Arrive on Denial Intelligence" }
-  sc1@{ shape: curv-trap, label: "<b>'Open denials' card, right of the page</b><br/>Count pill, then one row per open denial" }
+  sc1@{ shape: curv-trap, label: "<b>'Open denials' card, right of the page</b><br/>Subtitle 'Soonest deadline first', count pill, then one row per open denial" }
   p1@{ shape: rect, label: "Open denial = a request in the Dashboard's 'Appeal or call' stage" }
   d1@{ shape: diam, label: "Any open denials?" }
   t1@{ shape: odd, label: "<b>'No open denials. Everything sent is approved or waiting.'</b><br/>With a filter on: 'No open denials match the filters.'" }
@@ -121,8 +121,8 @@ flowchart TD
   p3@{ shape: rect, label: "<b>Sorted by time left on the deadline, nearest first</b><br/>Overdue denials go to the top" }
   p4@{ shape: rect, label: "Filed appeals have no deadline of ours, so they come last, in id order" }
   p5@{ shape: rect, label: "At the start: D-3318, D-3297, D-3306, D-3290, D-3301, then D-3272, D-3279, D-3284" }
-  r1@{ shape: curv-trap, label: "<b>One row</b><br/>D-id (underlined), program chip, one-line summary<br/>'N% win chance' and a small link 'Report'" }
-  p6@{ shape: rect, label: "<b>Program chip: Res., IOP, PHP or Detox</b><br/>Summary example: 'Units cut 48 to 30'" }
+  r1@{ shape: curv-trap, label: "<b>One row, three lines</b><br/>D-id (underlined), program chip, deadline pill<br/>Second line: type summary and the small tag 'Authorization denial'<br/>'N% win chance' and a small link 'Report'" }
+  p6@{ shape: rect, label: "<b>Program chip: Res., IOP, PHP or Detox</b><br/>Second line example: 'Units cut 48 to 30 · Authorization denial'" }
   d2@{ shape: diam, label: "What does the route pill say?" }
   rp1@{ shape: curv-trap, label: "Call booked with a time: 'Call Wed 10/21 1 pm'" }
   rp2@{ shape: curv-trap, label: "Peer-to-peer window: 'P2P in 36 h'" }
@@ -134,10 +134,10 @@ flowchart TD
   p8@{ shape: rect, label: "Closed rows show the result as the pill: 'Accepted', 'Overturned', 'Partly restored' (call) or 'Partly overturned' (appeal)" }
   c1@{ shape: trap-t, label: "Click a row (a button: Tab to it, then Enter or Space)" }
   p9@{ shape: rect, label: "<b>Address becomes ?id=D-xxxx and keeps ?payer= and ?reason=</b><br/>Row is highlighted" }
-  p10@{ shape: rect, label: "Left side loads that denial: title, header, banner, analysis, options, history" }
+  p10@{ shape: rect, label: "Left side loads that denial: title, header card with the next-step block, options, analysis, folded sections" }
   c3@{ shape: trap-t, label: "Click the link 'Report' on a row (its own Tab stop, does not select the row)" }
   g4@{ shape: subproc, label: "Continues in: Denial Intelligence › Appeal analysis report › Open and generate" }
-  c2@{ shape: trap-t, label: "Click 'See on the Dashboard' (top right of the page)" }
+  c2@{ shape: trap-t, label: "Click 'See on the Dashboard' (ghost button in the header card)" }
   g1@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   sf@{ shape: curv-trap, label: "<b>Filters from the address (?payer=, ?reason=)</b><br/>Chip row, subtitle 'N of M match the filters', only the matches are listed" }
@@ -172,7 +172,7 @@ flowchart TD
 
 ## Denial Intelligence › A denial opened
 
-The page for one denial, top to bottom: title, header card with 'Our read', the status banner, the analysis cards, the options and the history. Each card is described once here and detailed in its own diagram.
+The page for one denial, top to bottom: title and the scope line, the header card with 'Our read' and the one recommended next step, the options, the payer's words, where the denial is weak and the six ASAM dimensions, then two folded sections. 'Add a denial letter' and 'Open denials' sit in the right column. Each part is described once here and detailed in its own diagram.
 
 Route: `/denials?id=D-3318`
 
@@ -197,63 +197,73 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "A denial is selected (from the list or ?id=)" }
   p1@{ shape: rect, label: "<b>Title comes from the denial</b><br/>'D-3318: Cardinal approved 7 of 14 days. The chart supports challenging it.'" }
-  sub1@{ shape: curv-trap, label: "<b>Sub line: initials, age · program · payer name</b><br/>'The agents read the denial against the chart, and you choose the next step.'" }
-  h1@{ shape: curv-trap, label: "<b>Header card</b><br/>Program chip, D-id, type pill, status pill, '64% chance of overturning', deadline pill" }
-  h2@{ shape: curv-trap, label: "<b>Line under the pills</b><br/>Payer · case id · initials, age · letter file name<br/>'Your note: ...' when a note was added" }
-  v1@{ shape: curv-trap, label: "<b>'Our read' tile, right of the header</b><br/>Worth challenging, Borderline or Probably accept, with one sentence" }
+  sub1@{ shape: curv-trap, label: "<b>Sub line: initials, age · program · payer name</b><br/>'The agents read the denial against the chart, and you choose the next step.'<br/>Under it, one quiet line: 'Authorization denials only. Claim denials are handled in billing and are not in this demo.'" }
+  pn@{ shape: rect, label: "No control for claim denials: the demo has no claims feed" }
+  h1@{ shape: curv-trap, label: "<b>Header card, top part</b><br/>Small tag 'Authorization denial'<br/>Program chip, D-id, type pill<br/>Pills '64% chance of overturning' and the deadline ('Peer-to-peer window closes in 36 h')" }
+  h2@{ shape: curv-trap, label: "<b>Line under the pills</b><br/>Payer · case id · initials, age · letter file name<br/>'Your note: ...' when a note was added<br/>Ghost button 'See on the Dashboard'" }
+  v1@{ shape: curv-trap, label: "<b>'Our read' tile, right of the header</b><br/>Worth challenging, Borderline or Probably accept, with one sentence<br/>Under it the button 'Appeal analysis report'" }
   pv@{ shape: rect, label: "<b>Verdict comes from the win chance: 50 and over, 35 to 49, under 35</b><br/>D-3306 (27%) reads 'Probably accept'" }
-  bn@{ shape: curv-trap, label: "Status banner (only for some statuses)" }
-  g1@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Status banner" }
-  c1@{ shape: curv-trap, label: "<b>'What the agents did'</b><br/>Reader, Advocate and Historian steps, 'Done in 0:48'" }
+  bn@{ shape: curv-trap, label: "<b>Next-step block, inside the same card, under a rule</b><br/>Label, a serif title, one or two plain sentences, buttons with the primary one first" }
+  g1@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Next step and where it stands" }
+  g1b@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Recommended next step" }
+  d2@{ shape: diam, label: "Still open: not filed, and not closed (accepted, or won on a call or an appeal)?" }
+  c5@{ shape: curv-trap, label: "<b>'Your options' card</b><br/>Three radio cards with their chances" }
+  g3@{ shape: subproc, label: "Continues in: Denial Intelligence › Your options" }
+  p3@{ shape: rect, label: "No options card" }
   c2@{ shape: curv-trap, label: "<b>'What Cardinal said': the payer's words</b><br/>'What the chart shows': two or three sentences" }
   c3@{ shape: curv-trap, label: "<b>'Where the denial is weak'</b><br/>'Each finding links to the chart, with a suggested fix'<br/>Button 'Full summary' in the card header" }
   g2@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Where the denial is weak" }
   d1@{ shape: diam, label: "<b>Is it an administrative denial?</b><br/>'Late notice' or 'Retro-authorization denied'" }
   c4@{ shape: curv-trap, label: "<b>'The six ASAM dimensions'</b><br/>Six tiles D1 to D6, each with a green, ochre or red dot<br/>Button 'Full summary' in the card header" }
   p2@{ shape: rect, label: "The card is left out" }
-  d2@{ shape: diam, label: "Still open: not filed, and not closed (accepted, or won on a call or an appeal)?" }
-  c5@{ shape: curv-trap, label: "'Your options' card" }
-  g3@{ shape: subproc, label: "Continues in: Denial Intelligence › Your options" }
-  p3@{ shape: rect, label: "No options card" }
-  c6@{ shape: curv-trap, label: "<b>'What has happened'</b><br/>'Every step is also on the Dashboard'<br/>Timeline of events" }
-  p4@{ shape: rect, label: "<b>Done events have a green dot</b><br/>Scheduled events (dashed dot) read 'Scheduled · Wed 1:00 pm'" }
-  r1@{ shape: curv-trap, label: "'Open denials' list, right of the page" }
+  fo@{ shape: curv-trap, label: "<b>Two folded sections at the bottom, closed at first</b><br/>'What the agents did' (names the three agents, pill 'Done in 0:48')<br/>'What has happened' (step count and the latest step)" }
+  g7@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Folded sections" }
+  p4@{ shape: rect, label: "<b>Opened, 'What has happened' lists the timeline: done events have a green dot</b><br/>Scheduled events (dashed dot) read 'Scheduled · Wed 1:00 pm'<br/>'Every step is also on the Dashboard.'" }
+  r0@{ shape: curv-trap, label: "<b>Right column, top</b><br/>'Add a denial letter' (folded)<br/>'Drop a letter or use a sample'" }
+  g8@{ shape: subproc, label: "Continues in: Denial Intelligence › Add a denial letter" }
+  r1@{ shape: curv-trap, label: "<b>Right column</b><br/>'Open denials' list, soonest deadline first" }
   g4@{ shape: subproc, label: "Continues in: Denial Intelligence › Open denials list" }
-  b1@{ shape: trap-t, label: "Click 'See on the Dashboard' (top right)" }
+  pw@{ shape: rect, label: "Under 1180 px wide the right column drops under the analysis" }
+  b1@{ shape: trap-t, label: "Click 'See on the Dashboard'" }
+  g5@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   b2@{ shape: trap-t, label: "Click 'Appeal analysis report' (button under the 'Our read' tile)" }
   g6@{ shape: subproc, label: "Continues in: Denial Intelligence › Appeal analysis report › Open and generate" }
-  g5@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   e1@{ shape: stadium, label: "Person reads the denial and chooses a next step" }
   s1 --> p1 --> sub1 --> h1
-  h1 --> h2
+  sub1 -.-> pn
+  h1 --> h2 --> b1 --> g5
   h1 --> v1 --> pv
+  v1 --> b2 --> g6
   h1 --> bn --> g1
-  h1 --> c1 --> c2 --> c3 --> g2
+  bn --> g1b
+  bn --> d2
+  d2 -->|"Yes"| c5 --> g3
+  d2 -->|"No"| p3
+  c5 --> c2
+  p3 --> c2
+  c2 --> c3 --> g2
   c3 --> d1
   d1 -->|"No"| c4
   d1 -->|"Yes"| p2
-  c4 --> d2
-  p2 --> d2
-  d2 -->|"Yes"| c5 --> g3
-  d2 -->|"No"| p3
-  c5 --> c6
-  p3 --> c6
-  c6 --> p4 --> e1
-  sub1 --> r1 --> g4
-  sub1 --> b1 --> g5
-  v1 --> b2 --> g6
+  c4 --> fo
+  p2 --> fo
+  fo --> g7
+  fo --> p4 --> e1
+  sub1 --> r0 --> g8
+  r0 --> r1 --> g4
+  r1 -.-> pw
   class s1 k_start
-  class p1,pv,p2,p3,p4 k_process
-  class sub1,h1,h2,v1,bn,c1,c2,c3,c4,c5,c6,r1 k_screen
-  class g1,g2,g3,g4,g6,g5 k_goto
-  class d1,d2 k_decision
+  class p1,pn,pv,p3,p2,p4,pw k_process
+  class sub1,h1,h2,v1,bn,c5,c2,c3,c4,fo,r0,r1 k_screen
+  class g1,g1b,g3,g2,g7,g8,g4,g5,g6 k_goto
+  class d2,d1 k_decision
   class b1,b2 k_click
   class e1 k_end
 ```
 
-## Denial Intelligence › A denial opened › Status banner
+## Denial Intelligence › A denial opened › Next step and where it stands
 
-One banner under the header says where the denial stands. The code checks the statuses in this order and shows the first that fits. A filed appeal has a button to record the payer's decision.
+One block under the header card says what to do next, or where the denial stands. The code checks the states in this order and shows the first that fits. The primary button is always first. A block that shows something FLO's agents wrote (a recommendation, a draft letter, a brief) carries the sentence 'Draft by FLO's agents. A clinician reviews and signs before anything is sent.'
 
 Route: `/denials?id=D-3318`
 
@@ -278,63 +288,67 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "A denial is on screen" }
   d1@{ shape: diam, label: "Accepted?" }
-  t1@{ shape: odd, label: "<b>'Closed. You accepted the decision'</b><br/>'Reason: ... Analytics logs it as an accepted denial.'" }
-  c1@{ shape: trap-t, label: "Click 'Plan the step-down'" }
+  t1@{ shape: curv-trap, label: "<b>Label 'Where it stands'</b><br/>Title 'Closed. You accepted the decision'<br/>'Reason: ... Analytics logs it as an accepted denial.'" }
+  c1@{ shape: trap-t, label: "Click the link 'Plan the step-down'" }
   g1@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Step-down plans from accepted denials" }
   d2a@{ shape: diam, label: "Payer's decision on the appeal recorded as Overturned or Partly overturned?" }
-  t2a@{ shape: odd, label: "<b>'Overturned on appeal' or 'Partly overturned on appeal'</b><br/>Your note, or 'The ledger is updated and the next review is booked.'" }
-  c2a@{ shape: trap-t, label: "Click 'See on the Dashboard'" }
+  t2a@{ shape: curv-trap, label: "<b>Label 'Where it stands'</b><br/>Title 'Overturned on appeal' or 'Partly overturned on appeal'<br/>Your note, or 'The ledger is updated and the next review is booked.'" }
   d2@{ shape: diam, label: "Call outcome logged as Overturned or Partly restored?" }
-  t2@{ shape: odd, label: "<b>'Overturned on the call' or 'Partly restored on the call'</b><br/>Your note, or 'The ledger is updated and the next review is booked.'" }
-  c2@{ shape: trap-t, label: "Click 'See on the Dashboard'" }
+  t2@{ shape: curv-trap, label: "<b>Label 'Where it stands'</b><br/>Title 'Overturned on the call' or 'Partly restored on the call'<br/>Your note, or 'The ledger is updated and the next review is booked.'" }
+  pd@{ shape: rect, label: "No button here: 'See on the Dashboard' is in the header card (green tint for overturned, ochre for partly)" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   d3@{ shape: diam, label: "Chip is 'Appeal filed', 'Second-level appeal filed' or 'External review'?" }
-  t3@{ shape: odd, label: "<b>'Appeal filed. Waiting on the payer' (or 'Second-level appeal filed', 'External review')</b><br/>'Filed 10/05, decision 11/02. Navigator checks every day. When the payer answers, record the decision here.'" }
+  t3@{ shape: curv-trap, label: "<b>Label 'Where it stands'</b><br/>Title 'Appeal filed. Waiting on the payer' (or 'Second-level appeal filed', 'External review')<br/>'Filed 10/05, decision 11/02. Navigator checks every day. When the payer answers, record the decision here.'" }
+  c3a@{ shape: trap-t, label: "Click 'Record the payer's decision' (primary, first)" }
   c3@{ shape: trap-t, label: "Click 'View the appeal'" }
-  c3a@{ shape: trap-t, label: "Click 'Record the payer's decision'" }
   g3@{ shape: subproc, label: "Continues in: Denial Intelligence › Written appeal › After filing" }
   g3a@{ shape: subproc, label: "Continues in: Denial Intelligence › Written appeal › Record the payer's decision" }
   d4@{ shape: diam, label: "Chip is 'Appeal drafting'?" }
   d5@{ shape: diam, label: "Has a draft been saved?" }
-  t4@{ shape: odd, label: "<b>'The appeal is drafted and waiting for a clinician's signature'</b><br/>'Review the letter, change anything you like, then sign and file.'" }
-  t5@{ shape: odd, label: "<b>'Advocate is drafting the appeal'</b><br/>'Open the draft to see it come together.'" }
+  t4@{ shape: curv-trap, label: "<b>Label 'Next step · File an appeal'</b><br/>Title 'The appeal is drafted and waiting for a clinician's signature'<br/>'Review the letter, change anything you like, then sign and file.'" }
+  t5@{ shape: curv-trap, label: "<b>Label 'Next step · File an appeal'</b><br/>Title 'Advocate is drafting the appeal'<br/>'Open the draft to see it come together.'" }
   c4@{ shape: trap-t, label: "Click 'Open the draft'" }
   g4@{ shape: subproc, label: "Continues in: Denial Intelligence › Written appeal › Confirm and draft" }
   d6@{ shape: diam, label: "Chip is 'Call booked'?" }
-  t6@{ shape: odd, label: "<b>'Call booked: Wed 10/21, 9–11 am'</b><br/>'Cadence booked the window with Cardinal. The brief is ready, written by Advocate and checked by Integrity.'" }
+  t6@{ shape: curv-trap, label: "<b>Label 'Next step · Peer-to-peer review'</b><br/>Title 'Call booked: Wed 10/21, 9–11 am'<br/>'Cadence booked the window with Cardinal. The brief is ready, written by Advocate and checked by Integrity.'" }
+  c6@{ shape: trap-t, label: "Click 'Open the brief' (primary, first)" }
   c5@{ shape: trap-t, label: "Click 'Change the time'" }
-  c6@{ shape: trap-t, label: "Click 'Open the brief'" }
   g5@{ shape: subproc, label: "Continues in: Denial Intelligence › Peer-to-peer › Book the call" }
   g6@{ shape: subproc, label: "Continues in: Denial Intelligence › Peer-to-peer › The brief" }
-  p1@{ shape: rect, label: "<b>No banner</b><br/>Chips 'Analyzed' and 'Resubmitting' have none" }
-  sc1@{ shape: curv-trap, label: "'Your options' card shows when the denial is still open" }
   p2@{ shape: rect, label: "<b>Calls booked at the start show the time from the denial's data</b><br/>Later ones show the time that was picked" }
+  rn@{ shape: curv-trap, label: "<b>Under the buttons of the three blocks that show something the agents wrote</b><br/>'Draft by FLO's agents. A clinician reviews and signs before anything is sent.'" }
+  p1@{ shape: rect, label: "<b>None of the above: nothing is under way</b><br/>Chips 'Analyzed' and 'Resubmitting'" }
+  g7@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Recommended next step" }
+  sc1@{ shape: curv-trap, label: "<b>'Your options' card shows when the denial is still open</b><br/>Its own button appears only for a route the block above has no button for" }
   s1 --> d1
   d1 -->|"Yes"| t1 --> c1 --> g1
   d1 -->|"No"| d2a
-  d2a -->|"Yes"| t2a --> c2a --> g2
+  d2a -->|"Yes"| t2a --> pd
   d2a -->|"No"| d2
-  d2 -->|"Yes"| t2 --> c2 --> g2
+  d2 -->|"Yes"| t2 --> pd --> g2
   d2 -->|"No"| d3
-  d3 -->|"Yes"| t3 --> c3 --> g3
+  d3 -->|"Yes"| t3
   t3 --> c3a --> g3a
+  t3 --> c3 --> g3
   d3 -->|"No"| d4
   d4 -->|"Yes"| d5
   d5 -->|"Yes"| t4 --> c4
   d5 -->|"No"| t5 --> c4
   c4 --> g4
+  t4 -.-> rn
   d4 -->|"No"| d6
-  d6 -->|"Yes"| t6 --> c5 --> g5
-  t6 --> c6 --> g6
+  d6 -->|"Yes"| t6 --> c6 --> g6
+  t6 --> c5 --> g5
   t6 -.-> p2
-  d6 -->|"No"| p1 --> sc1
+  t6 -.-> rn
+  d6 -->|"No"| p1 --> g7
+  p1 --> sc1
   class s1 k_start
   class d1,d2a,d2,d3,d4,d5,d6 k_decision
-  class t1,t2a,t2,t3,t4,t5,t6 k_toast
-  class c1,c2a,c2,c3,c3a,c4,c5,c6 k_click
-  class g1,g2,g3,g3a,g4,g5,g6 k_goto
-  class p1,p2 k_process
-  class sc1 k_screen
+  class t1,t2a,t2,t3,t4,t5,t6,rn,sc1 k_screen
+  class c1,c3a,c3,c4,c6,c5 k_click
+  class g1,g2,g3,g3a,g4,g5,g6,g7 k_goto
+  class pd,p2,p1 k_process
 ```
 
 ## Denial Intelligence › A denial opened › Where the denial is weak
@@ -407,7 +421,7 @@ flowchart TD
 
 ## Denial Intelligence › Add a denial letter
 
-The 'Add a denial letter' card at the top of the page: drop or pick a letter, add a note, 'Analyze the denial', watch four agents work, and land on the new denial. In the demo the letter is not really read; a sample letter's facts fill the new denial.
+The folded 'Add a denial letter' section, at the top of the right column (above the empty state when no denial is open): open it, drop or pick a letter, add a note, 'Analyze the denial', watch four agents work, and land on the new denial. In the demo the letter is not really read; a sample letter's facts fill the new denial.
 
 Route: `/denials`
 
@@ -432,8 +446,11 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "Look at 'Add a denial letter' at the top of the page" }
-  sc1@{ shape: curv-trap, label: "<b>'Add a denial letter'</b><br/>'The agents read it, check it against your chart and past appeals, and lay out your options'<br/>Two columns: letter, then note and button" }
+  s1@{ shape: stadium, label: "Look at 'Add a denial letter' above 'Open denials'" }
+  sc0@{ shape: curv-trap, label: "<b>Folded section 'Add a denial letter'</b><br/>Summary 'Drop a letter or use a sample'" }
+  co@{ shape: trap-t, label: "Click the header, or press Enter or Space on it" }
+  sc1@{ shape: curv-trap, label: "<b>Opened: 'The agents read it, check it against the chart and past appeals, and lay out your options.'</b><br/>One column: letter, 'Identifiers are removed on upload.', note box, 'Analyze the denial'" }
+  pk@{ shape: rect, label: "The section stays in the page while closed, so a typed note, a chosen file and a running analysis survive closing it" }
   i1@{ shape: lean-r, label: "<b>Drop a file on the area, or click it (or press Enter or Space) to choose a file</b><br/>'Drop the denial letter here, or click to choose a PDF or DOCX'" }
   c1@{ shape: trap-t, label: "Click 'Use sample letter'" }
   p1@{ shape: rect, label: "Next sample letter in turn: Beacon, Summit, then Harborview" }
@@ -460,9 +477,10 @@ flowchart TD
   t3@{ shape: odd, label: "<b>Notification 'Denial analyzed' from Advocate</b><br/>Links to the new denial" }
   p5@{ shape: rect, label: "<b>Form clears: file, sample and note</b><br/>New denial is selected, address becomes ?id=D-3340 only (any ?payer= or ?reason= filter is cleared so it shows in the list)<br/>Badge goes up by one" }
   g1@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
-  g2@{ shape: subproc, label: "Continues in: Denial Intelligence › Your options" }
+  g2@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Recommended next step" }
   g3@{ shape: subproc, label: "Continues in: Dashboard › Arrive › What the page shows" }
-  s1 --> sc1
+  s1 --> sc0 --> co --> sc1
+  sc1 -.-> pk
   sc1 --> i1 --> fr
   sc1 --> c1 --> p1 --> fr
   fr --> c2 --> p2 --> i1
@@ -480,10 +498,10 @@ flowchart TD
   p5 --> g1 & g2
   st1 --> g3
   class s1 k_start
-  class sc1,fr,sc2 k_screen
+  class sc0,sc1,fr,sc2 k_screen
+  class co,c1,c2,c3 k_click
+  class pk,p1,p2,p3,p4,p5 k_process
   class i1,i2 k_input
-  class c1,c2,c3 k_click
-  class p1,p2,p3,p4,p5 k_process
   class d1,d2 k_decision
   class t1,t2,t3 k_toast
   class a1,a2,a3,a4 k_agent
@@ -495,7 +513,7 @@ flowchart TD
 
 ## Denial Intelligence › Your options
 
-The 'Your options' card: three next steps as radio cards, how each chance is worked out, how 'Recommended' is chosen, and what the button under the cards opens.
+The 'Your options' card, under the next-step block: three next steps as radio cards, how each chance is worked out, which card carries 'Recommended', and when the card has a button of its own.
 
 Route: `/denials?id=D-3318`
 
@@ -519,7 +537,7 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "A denial that is not filed, accepted or closed is on screen" }
-  sc1@{ shape: curv-trap, label: "<b>'Your options'</b><br/>'Chance of overturning, from 312 similar Cardinal decisions'<br/>Three radio cards, then one button" }
+  sc1@{ shape: curv-trap, label: "<b>'Your options'</b><br/>'Chance of overturning, from 312 similar Cardinal decisions'<br/>Three radio cards, then a button only when one is needed" }
   p0@{ shape: rect, label: "Subtitle reads ', a benchmark estimate' instead when fewer than 60 similar decisions" }
   p1@{ shape: rect, label: "Starting point: the denial's win chance (55 when none is set)" }
   d1@{ shape: diam, label: "What is the win chance?" }
@@ -532,16 +550,19 @@ flowchart TD
   o3@{ shape: curv-trap, label: "<b>Card 'Accept the decision and plan the next step'</b><br/>'Accept 7 days and plan the step-down' on a partial approval<br/>'Fastest. Nothing regained.' No chance shown<br/>Needs: a reason for the record, Analytics logs the denial as accepted, Case Manager adds a step-down plan" }
   p3@{ shape: rect, label: "Each chance reads 'likely 55–72%' (9 below to 8 above) and '312 similar decisions' or 'Benchmark estimate'" }
   p4@{ shape: rect, label: "Each card ends with 'Needs: ...' (who, what, and the evidence that would be attached)" }
-  r1@{ shape: diam, label: "Which card is 'Recommended'?" }
+  r1@{ shape: diam, label: "<b>Which card is 'Recommended'?</b><br/>(the route of the recommended next step; none for 'Investigate by hand')" }
   rec1@{ shape: curv-trap, label: "'Accept...' card gets the green 'Recommended' pill" }
   rec2@{ shape: curv-trap, label: "'Written appeal' gets the pill" }
   rec3@{ shape: curv-trap, label: "'Peer-to-peer call' gets the pill" }
-  p5@{ shape: rect, label: "That card is selected when the page opens" }
+  p5@{ shape: rect, label: "<b>That card is selected when the page opens</b><br/>Its button is the primary button of the next-step block, so the card shows no second one" }
+  g0@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Recommended next step" }
   c1@{ shape: trap-t, label: "Click a card (it is a radio button)" }
   d2@{ shape: diam, label: "Is it 'Peer-to-peer call' and the call window has closed?" }
   t1@{ shape: odd, label: "<b>'The peer-to-peer window has closed'</b><br/>'A written appeal is still open.'" }
-  p6@{ shape: rect, label: "<b>Card is selected</b><br/>The button label changes to match" }
-  b1@{ shape: curv-trap, label: "<b>Button under the cards</b><br/>'Choose a time and prepare the brief', 'Draft the appeal letter' or 'Accept the decision and plan the step-down'" }
+  d5@{ shape: diam, label: "Is it the route the next-step block already has a button for?" }
+  p6@{ shape: rect, label: "<b>Card is selected</b><br/>If the block above has no button for it, a button appears under the cards with the matching label" }
+  p8@{ shape: rect, label: "No second button: the one above does the same" }
+  b1@{ shape: curv-trap, label: "<b>Button under the cards (only for another route)</b><br/>'Choose a time and prepare the brief', 'Draft the appeal letter' or 'Accept the decision and plan the step-down'" }
   t2@{ shape: odd, label: "'A call is already booked. Choosing again changes it.' (when the chip is 'Call booked')" }
   c2@{ shape: trap-t, label: "Click the button" }
   d3@{ shape: diam, label: "Which card is selected?" }
@@ -570,7 +591,10 @@ flowchart TD
   p5 --> c1
   c1 --> d2
   d2 -->|"Yes"| t1
-  d2 -->|"No"| p6 --> b1
+  d2 -->|"No"| d5
+  d5 -->|"No"| p6 --> b1
+  d5 -->|"Yes"| p8
+  p5 -.-> g0
   b1 -.-> t2
   b1 --> c2 --> d3
   d3 -->|"Peer-to-peer call"| g1
@@ -581,11 +605,11 @@ flowchart TD
   c1 -.-> p7
   class s1 k_start
   class sc1,o1,o2,o3,rec1,rec2,rec3,b1 k_screen
-  class p0,p1,v1,v2,v3,p2,p3,p4,p5,p6,p7 k_process
-  class d1,r1,d2,d3,d4 k_decision
+  class p0,p1,v1,v2,v3,p2,p3,p4,p5,p6,p8,p7 k_process
+  class d1,r1,d2,d5,d3,d4 k_decision
+  class g0,g1,g2,g3 k_goto
   class c1,c2 k_click
   class t1,t2 k_toast
-  class g1,g2,g3 k_goto
 ```
 
 ## Denial Intelligence › Open denials list › Filter by payer and reason
@@ -615,7 +639,7 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Open /denials with ?payer= (a payer id such as cardinal),</b><br/>?reason= (a reason text such as Missing documentation), or both" }
   p1@{ shape: rect, label: "<b>Payer matches the denial's payer id</b><br/>Reason matches by inclusion: the reason and the denial's type or its words contain each other<br/>Example: 'Missing documentation' fits a full denial; 'Retro-authorization window missed' fits a retro-authorization denial" }
-  sc1@{ shape: curv-trap, label: "<b>Chip row under 'Add a denial letter'</b><br/>'Showing' then one chip per filter: 'Cardinal', 'Missing documentation'<br/>Each chip has an X, then 'Clear'" }
+  sc1@{ shape: curv-trap, label: "<b>Chip row under the page header</b><br/>'Showing' then one chip per filter: 'Cardinal', 'Missing documentation'<br/>Each chip has an X, then 'Clear'" }
   d1@{ shape: diam, label: "Does any open denial match?" }
   l1@{ shape: curv-trap, label: "<b>'Open denials' lists only the matches</b><br/>Subtitle 'N of M match the filters', count pill shows N<br/>None left: 'No open denials match the filters.'<br/>The 'Closed' section is filtered the same way" }
   d2@{ shape: diam, label: "Is there a known ?id= in the address?" }
@@ -831,8 +855,8 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "Click 'Choose a time and prepare the brief' (Your options)" }
-  s2@{ shape: stadium, label: "Click 'Change the time' (call-booked banner)" }
+  s1@{ shape: stadium, label: "Click 'Choose a time and prepare the brief' (the recommended next step, or Your options for another route)" }
+  s2@{ shape: stadium, label: "Click 'Change the time' (next-step block, call booked)" }
   s3@{ shape: stadium, label: "Brief page: click 'Book the call' or 'Change the call time'" }
   o1@{ shape: win-pane, label: "<b>Modal 'Confirm the next step: peer-to-peer call'</b><br/>'The agents stop here until you say go.'" }
   l1@{ shape: curv-trap, label: "<b>'What happens when you confirm'</b><br/>Cadence books the window with the payer and adds it to the clinician's calendar<br/>Advocate finishes the brief with three points and the likely pushback<br/>Integrity checks every sentence against the chart" }
@@ -885,7 +909,7 @@ flowchart TD
 
 ## Denial Intelligence › Peer-to-peer › The brief
 
-The one-page brief a clinician keeps open during the call: opening, three points, what the payer may say, the ask, dates and numbers on the left, call details and tools on the right.
+The one-page brief a clinician keeps open during the call: opening, three points, what the payer may say and the ask on the left, call details and tools on the right. 'Key dates and numbers' and 'Have these open' are folded sections that stay in the page, and open on paper when the brief is printed.
 
 Route: `/denials/D-3318/brief`
 
@@ -908,14 +932,14 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "Click 'Open the brief' in the call-booked banner" }
-  s2@{ shape: stadium, label: "A call is booked from 'Your options'; the app opens the brief" }
+  s1@{ shape: stadium, label: "Click 'Open the brief' in the next-step block (call booked)" }
+  s2@{ shape: stadium, label: "A call is booked from the next-step block or 'Your options'; the app opens the brief" }
   s3@{ shape: stadium, label: "Open /denials/D-xxxx/brief by its address" }
   d1@{ shape: diam, label: "Does a request with that id exist?" }
   e1@{ shape: curv-trap, label: "<b>'We could not find that denial'</b><br/>'It may have been closed or the address is wrong.'" }
   c0@{ shape: trap-t, label: "Click 'Back to Denial Intelligence'" }
   g0@{ shape: subproc, label: "Continues in: Denial Intelligence › Ways in" }
-  sc1@{ shape: curv-trap, label: "<b>'Peer-to-peer brief · D-3318'</b><br/>'Talking points for your call with Cardinal's reviewer. Every point links to the chart.'<br/>Crumbs: 'Denial Intelligence' › 'Brief D-3318'" }
+  sc1@{ shape: curv-trap, label: "<b>'Peer-to-peer brief · D-3318'</b><br/>'Talking points for your call with Cardinal's reviewer. Every point links to the chart.'<br/>Under it: 'Draft by FLO's agents. A clinician reviews and signs before anything is sent.'<br/>Crumbs: 'Denial Intelligence' › 'Brief D-3318'" }
   c1@{ shape: trap-t, label: "Click the crumb 'Denial Intelligence'" }
   g1@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
   b1@{ shape: odd, label: "<b>'Outcome logged: ...' banner</b><br/>Shows once an outcome is logged, with 'Back to the denial'" }
@@ -924,12 +948,14 @@ flowchart TD
   l2@{ shape: curv-trap, label: "<b>'Three points to make'</b><br/>'Each one links to the chart'<br/>Numbered, each with a source chip" }
   l3@{ shape: curv-trap, label: "<b>'What they may say'</b><br/>'And a short answer to each'" }
   l4@{ shape: curv-trap, label: "'The ask.' (green banner)" }
-  l5@{ shape: curv-trap, label: "<b>'Key dates and numbers'</b><br/>Denial received, Call booked, Peer-to-peer window closes, Written appeal due<br/>Days or units, Time left in the window, Chance, Similar decisions" }
+  l5@{ shape: curv-trap, label: "<b>'Key dates and numbers' (folded, summary 'Call: Wed 10/21, 9–11 am · Window: 36 h')</b><br/>Denial received, Call booked, Peer-to-peer window closes, Written appeal due<br/>Days or units, Time left in the window, Chance, Similar decisions" }
   r1@{ shape: curv-trap, label: "<b>'Call details'</b><br/>Payer, Who to call, Reviewer, Window, Closes in, Dial-in" }
   p1@{ shape: rect, label: "<b>'Window' reads 'Not booked yet' before a call is booked</b><br/>'Closes in' is red under 2 days, ochre under 7, 'Closed' when over" }
   r2@{ shape: curv-trap, label: "<b>'Chance of overturning'</b><br/>64%, 'likely 55–72%', a word (Moderate), and 'A written appeal is 58%.'" }
-  r3@{ shape: curv-trap, label: "<b>'Have these open'</b><br/>One tick box per chart source, plus fixes added to the evidence" }
-  c3@{ shape: trap-t, label: "Tick or untick a document" }
+  r3@{ shape: curv-trap, label: "<b>'Have these open' (folded, summary '0 of 3 ticked')</b><br/>One tick box per chart source, plus fixes added to the evidence" }
+  cf@{ shape: trap-t, label: "Click the header of 'Key dates and numbers' or 'Have these open', or press Enter or Space on it" }
+  pf@{ shape: rect, label: "<b>Section opens or closes</b><br/>The summary line changes with the ticks" }
+  c3@{ shape: trap-t, label: "Tick or untick a document (open the section first)" }
   st1@{ shape: cyl, label: "Tick saved on the denial (kept when you leave and return)" }
   r4@{ shape: curv-trap, label: "Three buttons: 'Copy brief', 'Print', 'Record the call outcome'" }
   g2@{ shape: subproc, label: "Continues in: Denial Intelligence › Peer-to-peer › Brief buttons" }
@@ -948,16 +974,17 @@ flowchart TD
   sc1 -.-> b1 --> c2 --> g1
   sc1 --> l1 --> l2 --> l3 --> l4 --> l5
   sc1 --> r1 --> p1
-  r1 --> r2 --> r3 --> c3 --> st1
+  r1 --> r2 --> r3 --> cf --> pf --> c3 --> st1
+  sc1 -.-> l5
   r3 --> r4 --> g2
   r4 --> g3
   class s1,s2,s3 k_start
   class d1 k_decision
   class e1,sc1,l1,l2,l3,l4,l5,r1,r2,r3,r4 k_screen
-  class c0,c1,c2,c3,c4 k_click
+  class c0,c1,c2,cf,c3,c4 k_click
   class g0,g1,g2,g3,g4 k_goto
   class b1 k_toast
-  class p1,p0 k_process
+  class p1,pf,p0 k_process
   class st1 k_store
 ```
 
@@ -988,7 +1015,7 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "The brief page is open" }
   c1@{ shape: trap-t, label: "Click 'Copy brief'" }
-  p1@{ shape: rect, label: "<b>The whole brief becomes plain text</b><br/>Opening, points, what they may say, the ask, dates, numbers, documents" }
+  p1@{ shape: rect, label: "<b>The whole brief becomes plain text</b><br/>Opening, points, what they may say, the ask, dates, numbers, documents<br/>Includes 'Draft by FLO's agents. A clinician reviews and signs before anything is sent.'" }
   d1@{ shape: diam, label: "Does the browser allow copying?" }
   p2@{ shape: rect, label: "Fallback: a hidden text box and the copy command, for pages opened as files" }
   d2@{ shape: diam, label: "Did the fallback work?" }
@@ -998,13 +1025,13 @@ flowchart TD
   d3@{ shape: diam, label: "Is this the hosted preview?" }
   t3@{ shape: odd, label: "<b>'Print is off in this preview'</b><br/>'Open the single-file version of the demo to use it.'" }
   p3@{ shape: rect, label: "The browser print dialog opens" }
-  p4@{ shape: rect, label: "Print layout hides the sidebar, top bar and buttons; only the brief is printed" }
+  p4@{ shape: rect, label: "<b>Print layout hides the sidebar, top bar and buttons; only the brief is printed</b><br/>The folded 'Key dates and numbers' and 'Have these open' are shown on paper" }
   dc1@{ shape: doc, label: "Paper or PDF copy of the brief" }
   c3@{ shape: trap-t, label: "Click 'Book the call' (or 'Change the call time' once booked)" }
   g1@{ shape: subproc, label: "Continues in: Denial Intelligence › Peer-to-peer › Book the call" }
   c4@{ shape: trap-t, label: "Click 'Record the call outcome'" }
   g2@{ shape: subproc, label: "Continues in: Denial Intelligence › Peer-to-peer › Record the call outcome" }
-  c5@{ shape: trap-t, label: "Tick a box under 'Have these open'" }
+  c5@{ shape: trap-t, label: "Tick a box under 'Have these open' (open the section first)" }
   st1@{ shape: cyl, label: "<b>Tick saved on the denial</b><br/>The box stays ticked next time" }
   c7@{ shape: trap-t, label: "Click the link 'Appeal analysis report' (top right of the header)" }
   g4@{ shape: subproc, label: "Continues in: Denial Intelligence › Appeal analysis report › Open and generate" }
@@ -1082,7 +1109,7 @@ flowchart TD
   x2@{ shape: st-rect, label: "Payer restores the requested days, or part of them, on the call" }
   a1@{ shape: hex, label: "Cadence updates the ledger and books the next review" }
   t1@{ shape: odd, label: "<b>'Overturned' or 'Partly restored'</b><br/>'The ledger is updated and the next review is booked.'" }
-  p2@{ shape: rect, label: "<b>Sidebar badge goes down by one</b><br/>The denial moves to 'Closed' in the open denials list<br/>Banner 'Overturned on the call' or 'Partly restored on the call'" }
+  p2@{ shape: rect, label: "<b>Sidebar badge goes down by one</b><br/>The denial moves to 'Closed' in the open denials list<br/>Next-step block 'Overturned on the call' or 'Partly restored on the call'" }
   st2@{ shape: cyl, label: "<b>Chip 'Appeal drafting'</b><br/>Clock becomes 'to file': 60 days from the denial date" }
   a2@{ shape: hex, label: "Advocate starts a written appeal from the call notes" }
   t2@{ shape: odd, label: "<b>'Outcome logged: upheld'</b><br/>'Advocate started the written appeal. Open it from the denial.'" }
@@ -1125,6 +1152,166 @@ flowchart TD
   class e2,e3 k_end
 ```
 
+## Denial Intelligence › A denial opened › Recommended next step
+
+While nothing is under way, the block under the header card recommends ONE step in plain words, from a fixed list of six, with its primary button first. FLO works it out from the denial type, what the request itself shows and the route the analysis already prefers. It is a recommendation for a person to review, never a payer rule.
+
+Route: `/denials?id=D-3290`
+
+The mapping lives in one function (lib/step.ts, recommendedStep). 'Ask for reconsideration' is on the list but no demo denial maps to it: the demo has no payer rule that names it, and none is invented.
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>A denial with nothing under way is on screen</b><br/>Chip 'Analyzed' or 'Resubmitting'" }
+  a1@{ shape: hex, label: "FLO reads the denial type, the request (a resubmission path, time left on its window) and the analysis (win chance, which route it prefers)" }
+  d1@{ shape: diam, label: "Is it a retro-authorization denial?" }
+  d2@{ shape: diam, label: "<b>Does the analysis say accept?</b><br/>(win chance under 35)" }
+  d3@{ shape: diam, label: "<b>Late notice or full denial, and does the request have a resubmission path?</b><br/>(type 'Resubmission' or a 'to resubmit' clock)" }
+  d4@{ shape: diam, label: "Which route does the analysis prefer?" }
+  w1@{ shape: curv-trap, label: "Accept" }
+  w2@{ shape: curv-trap, label: "Investigate by hand" }
+  w3@{ shape: curv-trap, label: "Correct and resubmit" }
+  w4@{ shape: curv-trap, label: "File an appeal" }
+  w5@{ shape: curv-trap, label: "Peer-to-peer review" }
+  w6@{ shape: rect, label: "<b>'Ask for reconsideration' is the sixth word on the list</b><br/>No demo denial maps to it: that needs a payer rule that names it, and none is invented" }
+  n1@{ shape: rect, label: "A retro denial turns on dates and coverage status: accept when the analysis says so, otherwise a person checks the dates first" }
+  n2@{ shape: rect, label: "'File an appeal' when the clock running is the one to file or resubmit, the call window has closed, or the notice was late" }
+  n3@{ shape: rect, label: "'Peer-to-peer review' while the call window is open" }
+  blk@{ shape: curv-trap, label: "<b>Block under the header card</b><br/>Label 'Recommended next step', the word as a title<br/>One or two plain sentences worked out from the denial: the chance of overturning, what the route takes, what it gets back" }
+  opt@{ shape: curv-trap, label: "<b>'Your options' card</b><br/>The 'Recommended' pill sits on the card for the same route<br/>None for 'Investigate by hand'" }
+  b1@{ shape: trap-t, label: "Click 'Accept the decision and plan the step-down'" }
+  b2@{ shape: trap-t, label: "Click 'Choose a time and prepare the brief'" }
+  b3@{ shape: trap-t, label: "Click 'Draft the appeal letter'" }
+  b4@{ shape: trap-t, label: "Click 'Draft the corrected request'" }
+  b5@{ shape: trap-t, label: "Click 'Read the findings'" }
+  pf@{ shape: rect, label: "<b>Page scrolls to 'Where the denial is weak' and puts focus on it</b><br/>(no animation when the person asked for reduced motion)" }
+  g1@{ shape: subproc, label: "Continues in: Denial Intelligence › Accept the denial" }
+  g2@{ shape: subproc, label: "Continues in: Denial Intelligence › Peer-to-peer › Book the call" }
+  g3@{ shape: subproc, label: "Continues in: Denial Intelligence › Written appeal › Confirm and draft" }
+  o4@{ shape: win-pane, label: "<b>Confirm 'Confirm the next step: correct and resubmit'</b><br/>'Draft the corrected request' or 'Cancel'<br/>The same letter flow follows: Advocate drafts, a clinician signs, Navigator files" }
+  g4@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Where the denial is weak" }
+  rn@{ shape: curv-trap, label: "<b>Under the button</b><br/>'Draft by FLO's agents. A clinician reviews and signs before anything is sent.'" }
+  wy@{ shape: trap-t, label: "Click 'Why FLO suggests this' (folded), or Tab to it and press Enter or Space" }
+  wr@{ shape: curv-trap, label: "<b>Reasons, as short points</b><br/>The type and payer, and 'Our read' sentence<br/>The chances of a call and of a written appeal, from N similar decisions (or a benchmark estimate)<br/>The window left<br/>The rule that chose the route<br/>'This is a recommendation for a person to review. It is not a payer rule.'" }
+  wc@{ shape: trap-t, label: "Click or press Enter or Space again" }
+  e1@{ shape: stadium, label: "The reasons fold away" }
+  s1 --> a1 --> d1
+  d1 -->|"Yes"| d2
+  d2 -->|"Yes"| w1
+  d2 -->|"No"| w2
+  d1 -->|"No"| d3
+  d3 -->|"Yes"| w3
+  d3 -->|"No"| d4
+  d4 -->|"Accept"| w1
+  d4 -->|"Written appeal"| w4
+  d4 -->|"Call"| w5
+  d1 -.-> n1
+  d4 -.-> n2
+  d4 -.-> n3
+  a1 -.-> w6
+  w1 & w2 & w3 & w4 & w5 --> blk
+  blk --> opt
+  blk --> rn
+  w1 --> b1 --> g1
+  w5 --> b2 --> g2
+  w4 --> b3 --> g3
+  w3 --> b4 --> o4 --> g3
+  w2 --> b5 --> pf --> g4
+  blk --> wy --> wr --> wc --> e1
+  class s1 k_start
+  class a1 k_agent
+  class d1,d2,d3,d4 k_decision
+  class w1,w2,w3,w4,w5,blk,opt,rn,wr k_screen
+  class w6,n1,n2,n3,pf k_process
+  class b1,b2,b3,b4,b5,wy,wc k_click
+  class g1,g2,g3,g4 k_goto
+  class o4 k_overlay
+  class e1 k_end
+```
+
+## Denial Intelligence › A denial opened › Folded sections
+
+The detail that is not needed at first sits in folded sections. Each shows its title and one summary line, and opens to the detail. The whole header row is one button. Nothing was removed: everything folded is one click or key press away.
+
+Route: `/denials?id=D-3318`
+
+'Where the denial is weak' and 'The six ASAM dimensions' are not folded: each has its own 'Full summary' button and stays open.
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "A denial is on screen (or its brief)" }
+  f1@{ shape: curv-trap, label: "<b>Folded at first, each with a title, one summary line and a chevron</b><br/>'What the agents did': 'Reader, Advocate and Historian read the letter and the chart...' and the pill 'Done in 0:48'<br/>'What has happened': '6 steps. Latest, Mon 4:46 pm: ...'<br/>'Add a denial letter': 'Drop a letter or use a sample'<br/>'Why FLO suggests this': 'The reasons, from the chart and the clock. A recommendation, not a payer rule.'" }
+  f2@{ shape: curv-trap, label: "<b>On the brief page</b><br/>'Key dates and numbers': 'Call: Wed 10/21, 9–11 am · Window: 36 h'<br/>'Have these open': '0 of 3 ticked' (and '1 of 3 ticked' after a tick)" }
+  pa@{ shape: rect, label: "<b>Each header is a real button with aria-expanded=false</b><br/>Summary lines are worked out from the denial, so they change when it does" }
+  c1@{ shape: trap-t, label: "Click a header, or Tab to it and press Enter or Space" }
+  p1@{ shape: rect, label: "<b>aria-expanded becomes true</b><br/>Chevron turns over, a rule appears, the detail shows below" }
+  d1@{ shape: curv-trap, label: "<b>'What the agents did': one line per agent with a tick</b><br/>'What has happened': 'Every step is also on the Dashboard.' and the timeline<br/>'Why FLO suggests this': the reasons<br/>'Key dates and numbers': two columns<br/>'Have these open': one tick box per source" }
+  d2@{ shape: curv-trap, label: "'Add a denial letter': drop area, 'Use sample letter', note box, 'Analyze the denial'" }
+  g1@{ shape: subproc, label: "Continues in: Denial Intelligence › Add a denial letter" }
+  g2@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Recommended next step" }
+  g3@{ shape: subproc, label: "Continues in: Denial Intelligence › Peer-to-peer › The brief" }
+  c2@{ shape: trap-t, label: "Click the header again, or press Enter or Space" }
+  p2@{ shape: rect, label: "<b>aria-expanded becomes false</b><br/>The detail hides" }
+  p3@{ shape: rect, label: "<b>'Add a denial letter' stays in the page while closed</b><br/>A typed note, a chosen file and a running analysis survive closing it" }
+  p4@{ shape: rect, label: "<b>On the brief, 'Key dates and numbers' and 'Have these open' also stay in the page while closed</b><br/>Print opens both on paper and drops the chevron" }
+  p5@{ shape: rect, label: "Esc closes menus, dialogs and drawers, not a folded section" }
+  p6@{ shape: rect, label: "<b>Opening one does not close another</b><br/>A section starts closed again each time the page is opened" }
+  e1@{ shape: stadium, label: "Section is closed again" }
+  s1 --> f1 --> pa
+  s1 --> f2 --> pa
+  pa --> c1 --> p1
+  p1 --> d1
+  p1 --> d2 --> g1
+  d1 --> g2
+  d1 --> g3
+  d1 --> c2 --> p2 --> e1
+  d2 --> c2
+  p2 -.-> p3
+  p2 -.-> p4
+  p1 -.-> p6
+  c1 -.-> p5
+  class s1 k_start
+  class f1,f2,d1,d2 k_screen
+  class pa,p1,p2,p3,p4,p5,p6 k_process
+  class c1,c2 k_click
+  class g1,g2,g3 k_goto
+  class e1 k_end
+```
+
 ## Denial Intelligence › Written appeal › Confirm and draft
 
 The written-appeal route starts with a confirm gate, then Advocate drafts the letter in a side drawer. The same drawer opens straight away when the appeal is already being drafted (for example after a call was upheld, or after the payer upheld an appeal and the next level was chosen).
@@ -1152,8 +1339,8 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "Select 'Written appeal' and click 'Draft the appeal letter' (Your options)" }
-  s2@{ shape: stadium, label: "Click 'Open the draft' (banner: 'Advocate is drafting the appeal')" }
+  s1@{ shape: stadium, label: "Click 'Draft the appeal letter' (recommended next step), or 'Draft the corrected request' (Correct and resubmit), or select 'Written appeal' in Your options and click its button" }
+  s2@{ shape: stadium, label: "Click 'Open the draft' (next-step block: 'Advocate is drafting the appeal')" }
   s3@{ shape: stadium, label: "<b>Next level chosen after an upheld decision</b><br/>('Record and start the second-level appeal')" }
   d1@{ shape: diam, label: "Is the chip already 'Appeal drafting'?" }
   o1@{ shape: win-pane, label: "<b>Modal 'Confirm the next step: written appeal'</b><br/>'The agents stop here until you say go.'" }
@@ -1174,7 +1361,7 @@ flowchart TD
   dc1@{ shape: doc, label: "<b>Letter text</b><br/>Payer, 'Appeals Department', date, Re: line (reconsideration, second-level appeal or external review), the payer's words, what the chart shows, numbered reasons with evidence, the ask, availability for the reviewing physician" }
   l3@{ shape: curv-trap, label: "<b>'Evidence to attach'</b><br/>One ticked box per chart source, plus fixes added to the evidence" }
   st4@{ shape: cyl, label: "<b>First draft saved on the denial</b><br/>'Appeal drafted. Waiting for a clinician's signature'<br/>History: 'Advocate drafted the appeal and Integrity checked every sentence against the chart'" }
-  l4@{ shape: curv-trap, label: "<b>Banner 'Drafted by Advocate, checked by Integrity'</b><br/>'Edit anything. A clinician signs before it is filed.'" }
+  l4@{ shape: curv-trap, label: "<b>Banner 'Drafted by Advocate, checked by Integrity'</b><br/>'Edit anything you like.' and 'Draft by FLO's agents. A clinician reviews and signs before anything is sent.'" }
   c3@{ shape: trap-t, label: "<b>Close the drawer: click X, press Esc, or click the dimmed area</b><br/>(Esc closes only the top layer: see the sign step)" }
   p2@{ shape: rect, label: "<b>Edits not saved with 'Save draft' are lost</b><br/>The saved draft loads again next time" }
   g1@{ shape: subproc, label: "Continues in: Denial Intelligence › Written appeal › Edit, sign and file" }
@@ -1257,7 +1444,7 @@ flowchart TD
   st3@{ shape: cyl, label: "<b>Request: chip 'Appeal filed' ('Second-level appeal filed' or 'External review' on a later level), 'Waiting on the payer'</b><br/>Deadline cleared; 'filed 10/20', 'decision 11/19'" }
   t2@{ shape: odd, label: "<b>'Appeal filed'</b><br/>'Cardinal decides by 11/19. It shows on the Dashboard.'" }
   t3@{ shape: odd, label: "<b>Notification 'Appeal filed' from Navigator</b><br/>Opens the request on the Dashboard" }
-  p2@{ shape: rect, label: "<b>Drawer closes</b><br/>Banner 'Appeal filed. Waiting on the payer'<br/>'Your options' card is gone" }
+  p2@{ shape: rect, label: "<b>Drawer closes</b><br/>Next-step block 'Appeal filed. Waiting on the payer'<br/>'Your options' card is gone" }
   c4@{ shape: trap-t, label: "Click 'Cancel' or the X in the modal" }
   p3@{ shape: rect, label: "Back to the open drawer, nothing filed" }
   c5@{ shape: trap-t, label: "Press Esc while the modal is open" }
@@ -1297,7 +1484,7 @@ flowchart TD
 
 ## Denial Intelligence › Written appeal › After filing
 
-A filed appeal (new, or seeded like D-3279, D-3284 and D-3272) shows a waiting banner, a read-only letter and the button 'Record the payer's decision'. The payer's answer is recorded by a person, in its own diagram.
+A filed appeal (new, or seeded like D-3279, D-3284 and D-3272) shows a waiting block, a read-only letter and the button 'Record the payer's decision'. The payer's answer is recorded by a person, in its own diagram.
 
 Route: `/denials?id=D-3318`
 
@@ -1323,7 +1510,7 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "A filed appeal is on screen (after 'Sign and file', or a seeded one)" }
-  b1@{ shape: curv-trap, label: "<b>Banner 'Appeal filed. Waiting on the payer'</b><br/>'Filed 10/20, decision 11/19. Navigator checks every day. When the payer answers, record the decision here.'" }
+  b1@{ shape: curv-trap, label: "<b>Next-step block 'Appeal filed. Waiting on the payer'</b><br/>'Filed 10/20, decision 11/19. Navigator checks every day. When the payer answers, record the decision here.'" }
   b2@{ shape: curv-trap, label: "<b>Buttons 'View the appeal' and 'Record the payer's decision'</b><br/>Other chips: 'Second-level appeal filed', 'External review'<br/>Seeded appeals read 'Filed 10/05, decision 11/02'" }
   h1@{ shape: curv-trap, label: "<b>Header pill 'Appeal filed, decision 11/19'</b><br/>List pill 'Decision 11/19'<br/>No count-down: the payer has the clock" }
   p0@{ shape: rect, label: "'Your options' card is hidden" }
@@ -1389,7 +1576,7 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>A filed appeal is on screen</b><br/>Banner 'Appeal filed. Waiting on the payer'" }
+  s1@{ shape: stadium, label: "<b>A filed appeal is on screen</b><br/>Next-step block 'Appeal filed. Waiting on the payer'" }
   c1@{ shape: trap-t, label: "Click 'Record the payer's decision'" }
   o1@{ shape: win-pane, label: "<b>Modal 'Record the payer's decision'</b><br/>D-3279 · Beacon PPO" }
   i1@{ shape: lean-r, label: "<b>Pick one (radio cards)</b><br/>'Overturned' (chosen at first), 'Partly overturned' or 'Upheld'" }
@@ -1403,7 +1590,7 @@ flowchart TD
   st2@{ shape: cyl, label: "<b>Request settled: leaves 'Appeal or call' (Dashboard stage 'Decided today')</b><br/>Chip 'Overturned' or 'Partly overturned'<br/>Ledger result approved or partly approved" }
   a1@{ shape: hex, label: "Cadence updates the ledger and books the next review" }
   t1@{ shape: odd, label: "<b>'Overturned' or 'Partly overturned'</b><br/>'The ledger is updated and the next review is booked.'" }
-  sc1@{ shape: curv-trap, label: "<b>Banner 'Overturned on appeal' or 'Partly overturned on appeal'</b><br/>Your note, or 'The ledger is updated and the next review is booked.'<br/>Badge goes down by one<br/>Denial moves to 'Closed' in the open denials list" }
+  sc1@{ shape: curv-trap, label: "<b>Block 'Overturned on appeal' or 'Partly overturned on appeal'</b><br/>Your note, or 'The ledger is updated and the next review is booked.'<br/>Badge goes down by one<br/>Denial moves to 'Closed' in the open denials list" }
   e2@{ shape: stadium, label: "Denial is closed with the appeal's result" }
   end
   subgraph gUp ["Upheld"]
@@ -1483,7 +1670,7 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "Select the 'Accept...' card in 'Your options'" }
+  s1@{ shape: stadium, label: "Click 'Accept the decision and plan the step-down' (recommended next step), or select the 'Accept...' card in 'Your options' and click its button" }
   c1@{ shape: trap-t, label: "Click 'Accept the decision and plan the step-down'" }
   o1@{ shape: win-pane, label: "<b>Modal 'Accept the decision?'</b><br/>'Nothing is regained. This closes the denial.'" }
   l1@{ shape: curv-trap, label: "<b>Three bullets</b><br/>'Analytics logs D-3297 as an accepted denial.'<br/>'Case Manager adds a step-down plan.'<br/>'D-3297 leaves Appeal or call on the Dashboard.'" }
@@ -1500,10 +1687,10 @@ flowchart TD
   st4@{ shape: cyl, label: "<b>Shared with other screens: denial, case and payer</b><br/>Case Manager adds a step-down plan<br/>Analytics logs the accepted denial" }
   t1@{ shape: odd, label: "<b>'Decision accepted'</b><br/>'Analytics logs it as an accepted denial. Case Manager has a step-down plan.'" }
   t2@{ shape: odd, label: "<b>Notification 'Denial closed' from Cadence</b><br/>Opens Case Manager, Active cases" }
-  sc1@{ shape: curv-trap, label: "<b>Denial page now shows banner 'Closed. You accepted the decision'</b><br/>'Reason: ... Analytics logs it as an accepted denial.'" }
+  sc1@{ shape: curv-trap, label: "<b>Denial page now shows the block 'Closed. You accepted the decision'</b><br/>'Reason: ... Analytics logs it as an accepted denial.'" }
   p1@{ shape: rect, label: "<b>'Your options' card is gone</b><br/>Denial moves to 'Closed' in the open denials list with the pill 'Accepted'<br/>Sidebar badge goes down by one" }
   c4@{ shape: trap-t, label: "Click 'Plan the step-down'" }
-  c5@{ shape: trap-t, label: "Click 'See on the Dashboard' (top right)" }
+  c5@{ shape: trap-t, label: "Click 'See on the Dashboard' (header card)" }
   g1@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Step-down plans from accepted denials" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   p2@{ shape: rect, label: "<b>PRD guardrail: the agents never accept a denial</b><br/>A person gives the reason first" }
@@ -1654,7 +1841,7 @@ flowchart TD
   c1@{ shape: trap-t, label: "Click the 'Peer-to-peer call' card" }
   t1@{ shape: odd, label: "<b>'The peer-to-peer window has closed'</b><br/>'A written appeal is still open.'" }
   p2@{ shape: rect, label: "The card is not selected" }
-  c2@{ shape: trap-t, label: "Click 'Change the time' (call-booked banner)" }
+  c2@{ shape: trap-t, label: "Click 'Change the time' (next-step block)" }
   o1@{ shape: win-pane, label: "Modal 'Confirm the next step: peer-to-peer call'" }
   d1@{ shape: diam, label: "Is any call time left? (starts after the demo clock, before the window closes)" }
   t2@{ shape: odd, label: "<b>'No call time is left inside the payer's window. Choose a written appeal instead.'</b><br/>Confirm is greyed out" }
@@ -1721,10 +1908,10 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   sc1@{ shape: curv-trap, label: "<b>Denial Intelligence</b><br/>A denial is on screen" }
   subgraph gOut ["Links out"]
-  c1@{ shape: trap-t, label: "Click 'See on the Dashboard' (top right of the page)" }
-  c2@{ shape: trap-t, label: "Click 'See on the Dashboard' (banner on a call that was overturned or partly restored)" }
+  c1@{ shape: trap-t, label: "Click 'See on the Dashboard' (header card)" }
+  c2@{ shape: trap-t, label: "Click 'See on the Dashboard' (the same button, after a call was overturned or partly restored)" }
   c3@{ shape: trap-t, label: "Click 'Open the Dashboard' (no open denials)" }
-  c4@{ shape: trap-t, label: "Click 'Plan the step-down' (banner after accepting)" }
+  c4@{ shape: trap-t, label: "Click 'Plan the step-down' (next-step block after accepting)" }
   p1@{ shape: rect, label: "Address opens /dashboard?request=D-3318" }
   p2@{ shape: rect, label: "Address opens /dashboard" }
   p3@{ shape: rect, label: "Address opens /manager?tab=cases" }
@@ -1733,7 +1920,7 @@ flowchart TD
   g3@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Step-down plans from accepted denials" }
   end
   subgraph gShare ["Shared with other screens"]
-  c6@{ shape: trap-t, label: "Click 'Record the payer's decision' (banner on a filed appeal)" }
+  c6@{ shape: trap-t, label: "Click 'Record the payer's decision' (next-step block on a filed appeal)" }
   z1@{ shape: cyl, label: "On accept: Case Manager gets a step-down plan, Analytics logs the accepted denial" }
   z2@{ shape: cyl, label: "<b>On a recorded appeal decision: the result and next level are logged</b><br/>Analytics reads the appeal rulings" }
   end
@@ -1890,7 +2077,7 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "The report is on screen" }
-  t1@{ shape: curv-trap, label: "<b>Title block</b><br/>'Appeal analysis report', D-id, initials and age, payer<br/>Tag 'Worked example' on D-3297 only<br/>'Our read' tile: Worth challenging, Borderline or Probably accept" }
+  t1@{ shape: curv-trap, label: "<b>Title block</b><br/>'Appeal analysis report', D-id, initials and age, payer<br/>Tag 'Worked example' on D-3297 only<br/>'Our read' tile: Worth challenging, Borderline or Probably accept<br/>Under the title line: 'Draft by FLO's agents. A clinician reviews and signs before anything is sent.'" }
   t2@{ shape: curv-trap, label: "<b>Facts</b><br/>Denial, Patient, Payer, Program, Denial type, Report date (the demo clock), Deadline, Similar decisions<br/>Chance of overturning on a call and on a written appeal, with the likely range" }
   d0@{ shape: diam, label: "Fewer than 60 similar decisions?" }
   n1@{ shape: odd, label: "<b>Note under the chances</b><br/>'Benchmark estimate: only N similar decisions, so the range is wider than usual.'" }
@@ -1909,7 +2096,7 @@ flowchart TD
   r8@{ shape: curv-trap, label: "<b>'Likely pushback and replies'</b><br/>'The ask'<br/>'Outlook'" }
   r9@{ shape: curv-trap, label: "<b>'Timeline and deadlines'</b><br/>Denial received, Peer-to-peer window, Peer-to-peer call (booked or not), Written appeal due<br/>Later: appeal drafted, filed, call outcome, payer's decision, accepted<br/>'Where it stands'" }
   r10@{ shape: curv-trap, label: "<b>'How this report was made'</b><br/>Reader, Advocate, Historian, the count of similar decisions<br/>A clinician reviews and signs before anything is sent<br/>Initials and age only, no other identifiers" }
-  f1@{ shape: curv-trap, label: "<b>Footer line</b><br/>'Prepared by FLO agents, for clinician review. Generated 10/20/2026.'" }
+  f1@{ shape: curv-trap, label: "<b>Footer line</b><br/>'Draft by FLO's agents. A clinician reviews and signs before anything is sent. Generated 10/20/2026.'" }
   c1@{ shape: trap-t, label: "Click 'Add to the evidence' on the denial page, then reopen the report" }
   p1@{ shape: rect, label: "The finding's fix shows as added, and so does its tick under 'Documents to attach'" }
   c2@{ shape: trap-t, label: "Book a call or file an appeal on the denial page, then reopen the report" }
@@ -1981,7 +2168,7 @@ flowchart TD
   t3@{ shape: odd, label: "<b>'Download PDF is off in this preview'</b><br/>'Open the single-file version of the demo to use it.'" }
   p3@{ shape: rect, label: "<b>Button shows a spinner</b><br/>The PDF library loads now, not before" }
   p4@{ shape: rect, label: "<b>US Letter, 0.75 inch margins, built-in fonts</b><br/>Title band, facts, every section, numbered recommendations, options table<br/>Heading never alone at the bottom of a page" }
-  p5@{ shape: rect, label: "<b>Running header on each page after the first</b><br/>Footer: 'Prepared by FLO agents, for clinician review' and 'Page x of y'" }
+  p5@{ shape: rect, label: "<b>Running header on each page after the first</b><br/>Footer: 'Draft by FLO's agents. A clinician reviews and signs before anything is sent.' and 'Page x of y'" }
   dc1@{ shape: doc, label: "<b>Psyflo-appeal-analysis-D-3297.pdf</b><br/>Title, subject and author 'Psyflo' are set" }
   d4@{ shape: diam, label: "Did it work?" }
   t4@{ shape: odd, label: "<b>'PDF downloaded'</b><br/>'Psyflo-appeal-analysis-D-3297.pdf has the whole report.'" }

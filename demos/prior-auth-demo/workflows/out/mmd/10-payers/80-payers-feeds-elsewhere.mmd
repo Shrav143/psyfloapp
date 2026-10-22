@@ -40,7 +40,7 @@ flowchart TD
   od@{ shape: rect, label: "Opens Dashboard with that request's drawer" }
   end
   subgraph gP ["Not read by any edit"]
-  n1@{ shape: rect, label: "<b>Header 'Approved as asked' (74% for Summit) is where New case</b><br/>starts the approval chance: it ends 14 points higher.<br/>It comes from decision history, so no rule or list edit moves it" }
+  n1@{ shape: rect, label: "<b>The payer's approved-as-asked rate (74% for Summit, shown in Analytics)</b><br/>is where New case starts the approval chance: it ends 14 points higher.<br/>It comes from decision history, so no rule or list edit moves it" }
   n2@{ shape: rect, label: "<b>Authorizations queue order and the case page</b><br/>do not read the saved configuration" }
   end
   prd@{ shape: rect, label: "<b>In the product (PRD 06)</b><br/>A rule version is stamped on every authorization;<br/>Packet reads the channel, form and documents; Cadence reads windows and caps;<br/>Advocate reads peer-to-peer and appeal windows" }

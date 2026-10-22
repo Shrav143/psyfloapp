@@ -14,7 +14,7 @@ import { useStore } from "@/store";
 import { AuthFacts } from "./AuthFacts";
 import type { CaseCtx } from "./caseTypes";
 import { authFacts, documentStatus, ledgerRowOf } from "./facts";
-import { InfoTip } from "./InfoTip";
+import { InfoTip } from "@/components/ui/InfoTip";
 import { nextActionOf } from "./nextAction";
 import { NextBlock } from "./NextBlock";
 import { dueText } from "./queueLogic";

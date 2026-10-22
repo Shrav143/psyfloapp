@@ -18,7 +18,7 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Open /denials with ?payer= (a payer id such as cardinal),</b><br/>?reason= (a reason text such as Missing documentation), or both" }
   p1@{ shape: rect, label: "<b>Payer matches the denial's payer id</b><br/>Reason matches by inclusion: the reason and the denial's type or its words contain each other<br/>Example: 'Missing documentation' fits a full denial; 'Retro-authorization window missed' fits a retro-authorization denial" }
-  sc1@{ shape: curv-trap, label: "<b>Chip row under 'Add a denial letter'</b><br/>'Showing' then one chip per filter: 'Cardinal', 'Missing documentation'<br/>Each chip has an X, then 'Clear'" }
+  sc1@{ shape: curv-trap, label: "<b>Chip row under the page header</b><br/>'Showing' then one chip per filter: 'Cardinal', 'Missing documentation'<br/>Each chip has an X, then 'Clear'" }
   d1@{ shape: diam, label: "Does any open denial match?" }
   l1@{ shape: curv-trap, label: "<b>'Open denials' lists only the matches</b><br/>Subtitle 'N of M match the filters', count pill shows N<br/>None left: 'No open denials match the filters.'<br/>The 'Closed' section is filtered the same way" }
   d2@{ shape: diam, label: "Is there a known ?id= in the address?" }

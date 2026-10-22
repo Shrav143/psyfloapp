@@ -308,11 +308,11 @@ flowchart TD
 
 ## Global shell › Top bar › Ask FLO › Ask a question
 
-Open the drawer, pick a suggested question or type one, and read FLO's answer. FLO answers from the demo data after a short pause. What it says for each kind of question is in the next diagram.
+Open the drawer, pick a suggested question or type one, and read FLO's answer. The suggestions follow the screen the person is on. FLO answers from the demo data after a short pause. What it says for each kind of question is in the next two diagrams.
 
 Route: `Every page (Ask FLO drawer)`
 
-The chat lives in the page, not in the demo data. It survives closing the drawer and changing pages, and 'Reset demo data' does not clear it. Reloading the browser does.
+The chat lives in the page, not in the demo data. It survives closing the drawer and changing pages, and 'Reset demo data' does not clear it. Reloading the browser does. The suggestions are worked out when the drawer opens, so a case page names its own case and payer.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -336,7 +336,12 @@ flowchart TD
   s1@{ shape: stadium, label: "Click 'Ask FLO' in the top bar" }
   o1@{ shape: win-pane, label: "<b>Ask FLO drawer opens</b><br/>Title 'Ask FLO', subtitle 'Your assistant, answering from your data'" }
   a1@{ shape: hex, label: "FLO says: 'Hi Jordan, I am FLO. Ask me about your requests, a payer, or your denials. I answer from the data on your Dashboard.'" }
-  o2@{ shape: win-pane, label: "<b>Four suggestion chips under the chat:</b><br/>'What needs me today?'<br/>'What is due soonest?'<br/>'Which payers are slowest right now?'<br/>'Why is Cardinal's approval rate down?'" }
+  dr@{ shape: diam, label: "Which screen is open?" }
+  o2@{ shape: win-pane, label: "<b>Four suggestion chips under the chat:</b><br/>'What needs me today?'<br/>'What is due soonest?'<br/>'Which payers are slowest right now?'<br/>'Why is Cardinal's approval rate down?'<br/>Any other screen, or a case page that cannot be found" }
+  oc@{ shape: win-pane, label: "<b>Three chips on a case page (/authorizations/case/R-1042):</b><br/>'What is missing for R-1042?'<br/>'When does this authorization run out?'<br/>'What does Summit require?'<br/>A line above them: 'Suggested for R-1042'" }
+  om@{ shape: win-pane, label: "<b>One chip on Case Manager:</b><br/>'Which reviews are due?'<br/>'Suggested for Case Manager'" }
+  od@{ shape: win-pane, label: "<b>One chip on Denial Intelligence:</b><br/>'Which denial is due first?'<br/>'Suggested for Denial Intelligence'" }
+  oe@{ shape: win-pane, label: "<b>One chip on Eligibility & Benefits (the list and its pages):</b><br/>'Which patients need a fix before billing?'<br/>'Suggested for Eligibility & Benefits'" }
   d1@{ shape: diam, label: "How does the person ask?" }
   c1@{ shape: trap-t, label: "Click a suggestion chip" }
   i1@{ shape: lean-r, label: "Type in the box 'Ask a question'" }
@@ -353,14 +358,19 @@ flowchart TD
   p3@{ shape: rect, label: "Drawer closes and the app opens that page" }
   g2@{ shape: subproc, label: "Continues in: Global shell › Top bar › Ask FLO › What FLO answers" }
   d4@{ shape: diam, label: "<b>Was the answer the fallback?</b><br/>('I did not find an answer...')" }
-  p4@{ shape: rect, label: "<b>The chips are gone</b><br/>They show only while the chat has fewer than three messages, and while FLO is not working" }
-  p7@{ shape: rect, label: "<b>The four chips stay under the fallback answer</b><br/>A second miss keeps them. Any real answer takes them away" }
+  p4@{ shape: rect, label: "<b>The chips are gone</b><br/>They show only while the chat has fewer than three messages, and while FLO is not working<br/>They come back, for the new screen, when the person has moved to another screen since the last message" }
+  p7@{ shape: rect, label: "<b>The chips for this screen stay under the fallback answer</b><br/>A second miss keeps them. Any real answer takes them away" }
   c4@{ shape: trap-t, label: "Press Escape, click 'X' or click the dimmed area" }
   p5@{ shape: rect, label: "<b>Drawer closes</b><br/>The chat and any unsent text are kept" }
-  p6@{ shape: rect, label: "<b>Open it again, on any page: the same chat is there</b><br/>Typed questions still work; the chips come back only under a fallback answer" }
+  p6@{ shape: rect, label: "<b>Open it again, on any page: the same chat is there</b><br/>Typed questions still work; the chips come back under a fallback answer, or when the screen has changed" }
   e1@{ shape: stadium, label: "Back on the page" }
   e2@{ shape: stadium, label: "No question sent" }
-  s1 --> o1 --> a1 --> o2 --> d1
+  s1 --> o1 --> a1 --> dr
+  dr -->|"Case page"| oc --> d1
+  dr -->|"Case Manager"| om --> d1
+  dr -->|"Denial Intelligence"| od --> d1
+  dr -->|"Eligibility & Benefits"| oe --> d1
+  dr -->|"Anywhere else"| o2 --> d1
   d1 -->|"Suggestion"| c1 --> p1
   d1 -->|"Typed"| i1 --> d2
   d2 -->|"No"| x1 --> e2
@@ -374,9 +384,9 @@ flowchart TD
   c4 --> p5 --> p6 --> e1
   x1 -.-> i1
   class s1 k_start
-  class o1,o2 k_overlay
+  class o1,o2,oc,om,od,oe k_overlay
   class a1,a2 k_agent
-  class d1,d2,d3,d4 k_decision
+  class dr,d1,d2,d3,d4 k_decision
   class c1,c2,c3,c4 k_click
   class i1 k_input
   class x1,p1,p2,p3,p4,p7,p5,p6 k_process
@@ -388,11 +398,11 @@ flowchart TD
 
 ## Global shell › Top bar › Ask FLO › What FLO answers
 
-FLO lowercases the question and tries six rules in order. The first rule that matches answers, so a question with two key words gets the earlier answer. Counts, names and the request or denial it points to come from the live demo data. Only the Cardinal answer is fixed text.
+FLO lowercases the question and tries its rules in order. The first rule that matches answers, so a question with two key words gets the earlier answer. Counts, names and the request or denial it points to come from the live demo data. Only the Cardinal answer is fixed text. Five rules read the screen the person is on and are drawn in the next diagram.
 
 Route: `Every page (Ask FLO drawer)`
 
-Typed questions use the same rules as the suggestion chips. FLO does not look at which page is open. Every link opens a view that matches the answer. PRD 08 describes row-level citations, thumbs and an escalate action on each answer; the demo gives one paragraph and one link instead.
+Typed questions use the same rules as the suggestion chips. Most rules ignore the page; the five on the next diagram use the open case page when the question does not name a case. Every link opens a view that matches the answer. PRD 08 describes row-level citations, thumbs and an escalate action on each answer; the demo gives one paragraph and one link instead.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -416,11 +426,14 @@ flowchart LR
   s1@{ shape: stadium, label: "<b>A question is sent</b><br/>(a chip or typed text)" }
   d1@{ shape: diam, label: "Contains 'slow', or both 'payer' and 'late'?" }
   a1@{ shape: hex, label: "<b>FLO lists every payer slower than its typical time, worst first:</b><br/>'Evergreen is averaging 3.4 days against 2 typical. Cardinal is averaging 2.8 days against 2 typical. Beacon ... Lakeshore ... Harborview ...<br/>Caller phones when a payer passes twice its typical time.'<br/>If none is slower: 'Every payer is deciding within its typical time right now.'" }
-  l1@{ shape: trap-t, label: "Click 'Open Dashboard, By payer'" }
-  r1@{ shape: rect, label: "<b>Opens /dashboard?focus=payers</b><br/>The Dashboard scrolls to Payers at a glance" }
-  g1@{ shape: subproc, label: "Continues in: Dashboard › Payers at a glance › Read the table and pick a payer" }
+  l1@{ shape: trap-t, label: "Click 'Open Dashboard, Payer performance'" }
+  r1@{ shape: rect, label: "<b>Opens /dashboard?focus=payers</b><br/>The Dashboard opens Payer performance and scrolls to it" }
+  g1@{ shape: subproc, label: "Continues in: Dashboard › Payer performance › Read the table and pick a payer" }
+  dn@{ shape: diam, label: "<b>Contains 'billing', 'eligib' or 'fix before'?</b><br/>Or 'missing' or 'incomplete'?<br/>Or 'expir', 'run out', 'units' or 'end' (not with 'denial')?<br/>Or 'require'?<br/>Or 'review' (not 'under review')?" }
+  an@{ shape: hex, label: "<b>FLO answers from the screen you are on or the case you name:</b><br/>what is missing for a case, when an authorization ends, what a payer requires, which reviews are due, which patients need a fix before billing<br/>Each names the case, quotes live data, says once that it is FLO's reading, and ends with a link to the exact place" }
+  gn@{ shape: subproc, label: "Continues in: Global shell › Top bar › Ask FLO › Answers that read the screen" }
   d2@{ shape: diam, label: "Contains 'denial'?" }
-  a2@{ shape: hex, label: "<b>'8 denials are open. The nearest deadline is D-3318 (Cardinal). Call booked Wed 9 to 11 am. The brief is ready. The chance of winning is 64%.'</b><br/>The count and the nearest open denial are live, so the sentence follows the data<br/>FLO gives no dollar figure: a question that only asks about money gets the fallback answer" }
+  a2@{ shape: hex, label: "<b>'8 denials are open. The nearest deadline is D-3318 (Cardinal), peer-to-peer window, 36 h left. Call booked Wed 9 to 11 am. The brief is ready. The chance of winning is 64%. 3 more deadlines fall this week.'</b><br/>The count, the nearest open denial and the time left are live, so the sentence follows the data and the clock<br/>One muted line: 'This is FLO's reading of the demo data, not a payer confirmation.'<br/>FLO gives no dollar figure: a question that only asks about money gets the fallback answer" }
   l2@{ shape: trap-t, label: "Click 'Open Denial Intelligence'" }
   r2@{ shape: rect, label: "<b>Opens /denials?id=D-3318, the nearest denial</b><br/>With no deadline left to name, it opens the list" }
   g2@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
@@ -446,7 +459,9 @@ flowchart LR
   e1@{ shape: stadium, label: "Answer stays in the chat" }
   s1 --> d1
   d1 -->|"Yes"| a1 --> l1 --> r1 --> g1
-  d1 -->|"No"| d2
+  d1 -->|"No"| dn
+  dn -->|"Yes"| an --> gn
+  dn -->|"No"| d2
   d2 -->|"Yes"| a2 --> l2 --> r2 --> g2
   d2 -->|"No"| d2b
   d2b -->|"Yes"| a2b --> l2b --> r2b --> g2b
@@ -458,12 +473,112 @@ flowchart LR
   d5 -->|"Yes"| a5 --> l5 --> g5
   d5 -->|"No"| a6 --> e1
   class s1 k_start
-  class d1,d2,d2b,d3,d4,d5 k_decision
-  class a1,a2,a2b,a3,a4,a5,a6 k_agent
+  class d1,dn,d2,d2b,d3,d4,d5 k_decision
+  class a1,an,a2,a2b,a3,a4,a5,a6 k_agent
   class l1,l2,l2b,l3,l4,l5 k_click
   class r1,r2,r2b,r4 k_process
-  class g1,g2,g2b,g3,g4,g5 k_goto
+  class g1,gn,g2,g2b,g3,g4,g5 k_goto
   class e1 k_end
+```
+
+## Global shell › Top bar › Ask FLO › Answers that read the screen
+
+Five of FLO's rules read the demo data for one case, one payer or one screen: what is missing, when an authorization ends, what a payer requires, which reviews are due, which patients need a fix before billing. When the question names a case ('R-1042') FLO uses it; otherwise it uses the case page that is open; otherwise the request that needs you first. Each answer names the case, quotes live data and ends with a link to the exact place. They are recommendations, never payer facts.
+
+Route: `Every page (Ask FLO drawer)`
+
+The short line 'This is FLO's reading of the demo data, not a payer confirmation.' appears once, under the answers that read payer rules, coverage or an authorization. The numbers and the wording are computed when the question is asked.
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>A question reaches one of the five rules</b><br/>(a chip for the screen, or typed text)" }
+  d0@{ shape: diam, label: "Which key words?" }
+  subgraph gM ["Missing: 'What is missing for R-1042?'"]
+  m1@{ shape: diam, label: "<b>Which case?</b><br/>Named in the question, else the open case page, else the request that needs you first" }
+  m2@{ shape: hex, label: "<b>FLO reads the case's draft</b><br/>Open items still unresolved, by kind: Missing, To settle, Risk<br/>The payer's document count from the saved Payers list" }
+  m3@{ shape: diam, label: "Was the request already sent?" }
+  m4@{ shape: odd, label: "'Nothing is missing for R-0870 (Summit, Residential 3.5). It was already sent, so it is with Summit and Navigator is tracking it.'" }
+  m5@{ shape: odd, label: "<b>'R-1042 (Summit, Residential 3.5) has 3 open items in the draft.'</b><br/>'To settle: One date conflict needs your answer ...'<br/>'Risk: Relapse risk is high without a named step-down.'<br/>'Missing: A therapy note from the last 14 days is missing (8 of 9 Summit documents).'<br/>'Summit asks for 9 documents at Residential 3.5.'<br/>FLO's reading line" }
+  ml@{ shape: trap-t, label: "Click 'Open R-1042, Recommended actions'" }
+  end
+  subgraph gX ["Expiry: 'When does this authorization run out?'"]
+  x1@{ shape: hex, label: "FLO reads the Case Manager ledger row of the case and its next unsigned review" }
+  x2@{ shape: diam, label: "What does the row hold?" }
+  x3@{ shape: odd, label: "<b>End date: 'I-2207 (Cardinal, IOP) has used 38 of 48 units. The authorization ends in 3 days (Fri 10/23).'</b><br/>'Its next clinical review is Wed 10/21, 4:00 pm.'" }
+  x4@{ shape: odd, label: "Measured in units, no date: 'has used 16 of 48 units, so 32 units are left. The ledger holds no end date for it.'" }
+  x5@{ shape: odd, label: "<b>Other next event: 'has used 14 of 14 days. The approved days are used up. The payer's decision on the next stay is expected Thu 10/22.'</b><br/>No approval yet: 'has no approval yet, so there is nothing to run out.'" }
+  xl@{ shape: trap-t, label: "Click 'Open I-2207'" }
+  end
+  subgraph gR ["Requires: 'What does Summit require?'"]
+  r1@{ shape: hex, label: "<b>FLO reads the payer's saved configuration on Payers</b><br/>The payer is named in the question, else the open case's payer" }
+  r2@{ shape: odd, label: "<b>On a case page: 'I-2207: Cardinal Health Plan asks for 6 documents at IOP: ASAM multidimensional assessment, ... and 2 more.'</b><br/>Otherwise: 'asks for 9 documents at Residential 3.5, 6 at IOP, 7 at PHP and 8 at Detox.'<br/>'Timing: ...' and 'After a denial: ...'<br/>'A change waits for you: Criteria changed, version 2026.3' when one is unacknowledged" }
+  rl@{ shape: trap-t, label: "Click 'Open Payers, Cardinal, Documents'" }
+  end
+  subgraph gV ["Reviews: 'Which reviews are due?'"]
+  v1@{ shape: hex, label: "FLO reads this week's clinical reviews that are not signed" }
+  v2@{ shape: odd, label: "<b>'47 reviews are due this week, 5 of them due now or overdue: 35 drafted (29 clean), 4 not drafted yet, 8 need a clinician's update.'</b><br/>'Next: ...' and 'Needs your update: R-0912, R-0899, R-0881, and 5 more.'" }
+  vl@{ shape: trap-t, label: "Click 'Open R-0912, review'" }
+  end
+  subgraph gE ["Eligibility: 'Which patients need a fix before billing?'"]
+  e1@{ shape: hex, label: "FLO reads the coverage checks and their verdicts" }
+  e2@{ shape: odd, label: "<b>'5 patients need a fix before billing.'</b><br/>One line each, in the screen's order: 'R-0921 (J.D., Cardinal): 14 of 14 days used.' 'R-1118 (A.F., Beacon): the plan does not cover the service.' 'I-2275 (E.K., Summit): another plan pays first.'<br/>FLO's reading line" }
+  el@{ shape: trap-t, label: "Click 'Open R-0921 in Eligibility & Benefits'" }
+  end
+  n1@{ shape: stadium, label: "<b>Nothing to read: 'I did not find R-9999 in the demo data.' or 'Tell me which payer, for example: What does Summit require?'</b><br/>The chips for the screen stay under it" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Case page › Recommended actions › The tab" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Case page › Ways in" }
+  g3@{ shape: subproc, label: "Continues in: Payers › Documents › Read the document list" }
+  g4@{ shape: subproc, label: "Continues in: Case Manager › Reviews this week › The review drawer" }
+  g5@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › What the page shows" }
+  s1 --> d0
+  d0 -->|"missing, incomplete"| m1
+  d0 -->|"expir, run out, units, end"| x1
+  d0 -->|"require"| r1
+  d0 -->|"review"| v1
+  d0 -->|"billing, eligib, fix before"| e1
+  m1 -->|"Found"| m2 --> m3
+  m1 -->|"No such case"| n1
+  m3 -->|"Yes"| m4 --> ml
+  m3 -->|"No"| m5 --> ml
+  ml --> g1
+  x1 --> x2
+  x2 -->|"Expiry date"| x3 --> xl
+  x2 -->|"Units only"| x4 --> xl
+  x2 -->|"Anything else"| x5 --> xl
+  xl --> g2
+  r1 --> r2 --> rl --> g3
+  r1 -.-> n1
+  v1 --> v2 --> vl --> g4
+  e1 --> e2 --> el --> g5
+  class s1 k_start
+  class d0,m1,m3,x2 k_decision
+  class m2,x1,r1,v1,e1 k_agent
+  class m4,m5,x3,x4,x5,r2,v2,e2 k_toast
+  class ml,xl,rl,vl,el k_click
+  class n1 k_endx
+  class g1,g2,g3,g4,g5 k_goto
+  style gM fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gX fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gR fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gV fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gE fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```
 
 ## Global shell › Top bar › Notifications › Open, read, click through

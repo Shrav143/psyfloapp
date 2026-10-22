@@ -16,22 +16,22 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>On step 4, find the 'Sign and send' card</b><br/>'Jordan Perez, UR coordinator · approval chance 88%'" }
+  s1@{ shape: stadium, label: "<b>On step 4, find the signing card (titled 'Sign')</b><br/>'Jordan Perez, UR coordinator · approval chance 88%'" }
   cWho@{ shape: trap-t, label: "Click the 'Signing as' dropdown" }
   oWho@{ shape: win-pane, label: "<b>Two names</b><br/>'Jordan Perez (UR coordinator)'<br/>'Dr. Rivera (clinician)'" }
   dWho@{ shape: diam, label: "Who is chosen?" }
-  tUR@{ shape: odd, label: "'Jordan Perez is a UR coordinator. Only a licensed clinician can sign. Switch to Dr. Rivera to sign.'" }
+  tUR@{ shape: rect, label: "<b>A muted line under the dropdown (not a banner)</b><br/>'Jordan Perez is a UR coordinator. Only a licensed clinician can sign, so switch to Dr. Rivera.'" }
   iRiv@{ shape: lean-r, label: "<b>Pick 'Dr. Rivera (clinician)'</b><br/>The card now reads 'Dr. Rivera, clinician'" }
   dWarn@{ shape: diam, label: "<b>Does any check show a warning?</b><br/>Open finding, document marked not available, start date outside the payer's backdating rule, a skipped Verify, a late notice" }
-  iAck@{ shape: lean-r, label: "Tick 'I reviewed the warning above and want to sign anyway.'" }
+  iAck@{ shape: lean-r, label: "Tick 'I reviewed the warning under What is missing and want to sign anyway.'" }
   iAtt@{ shape: lean-r, label: "Tick 'I reviewed this summary and it reflects the record. The level of care is my clinical judgment.'" }
   dCan@{ shape: diam, label: "Clinician chosen, attestation ticked, no block or re-check, warnings acknowledged?" }
-  eOff@{ shape: stadium, label: "'Sign and send' stays switched off" }
-  cSign@{ shape: trap-t, label: "Click 'Sign and send'" }
-  oConf@{ shape: win-pane, label: "<b>Sign and send?</b><br/>'Signing as Dr. Rivera, clinician'<br/>Patient, Payer, Level of care, Approval chance, Attachments<br/>'Navigator sends this to Summit through its portal and saves the receipt to the case. Nothing was sent before this.'" }
+  eOff@{ shape: stadium, label: "'Sign and send to payer' stays switched off" }
+  cSign@{ shape: trap-t, label: "Click 'Sign and send to payer'" }
+  oConf@{ shape: win-pane, label: "<b>Sign and send to payer?</b><br/>'Signing as Dr. Rivera, clinician'<br/>Patient, Payer, Level of care, Approval chance, Attachments<br/>'Navigator sends this to Summit through its portal and saves the receipt to the case. Nothing was sent before this.'" }
   cCancel@{ shape: trap-t, label: "Click 'Cancel', press Escape, or click outside" }
   eCancel@{ shape: stadium, label: "Pop-up closes; nothing is sent" }
-  cConfirm@{ shape: trap-t, label: "Click 'Sign and send' in the pop-up" }
+  cConfirm@{ shape: trap-t, label: "Click 'Sign and send to payer' in the pop-up" }
   dReady@{ shape: diam, label: "Are all ten agents done?" }
   tCould@{ shape: odd, label: "<b>'Could not sign yet'</b><br/>'All agents must finish before the request can be signed.'" }
   dOn@{ shape: diam, label: "Is the case already on the Dashboard as Preparing?" }
@@ -39,7 +39,7 @@ flowchart TD
   stMove@{ shape: cyl, label: "<b>That request moves from Preparing to Received</b><br/>The same ID is kept" }
   aNav@{ shape: hex, label: "Navigator files the request through the payer's portal (demo: simulated)" }
   xPortal@{ shape: st-rect, label: "<b>Payer portal</b><br/>Receives the request and gives a receipt" }
-  stEv@{ shape: cyl, label: "<b>History: 'You signed and sent the request'</b><br/>'Navigator sent the request through the payer's portal'<br/>'Navigator saved the receipt to the case'<br/>If Verify was skipped: 'Verify could not reach Cardinal's portal before signing'<br/>Next: 'Navigator checks again' in 30 minutes" }
+  stEv@{ shape: cyl, label: "<b>History: 'You signed as Dr. Rivera (clinician) and sent the request'</b><br/>'Navigator sent the request through the payer's portal'<br/>'Navigator saved the receipt to the case'<br/>If Verify was skipped: 'Verify could not reach Cardinal's portal before signing'<br/>Next: 'Navigator checks again' in 30 minutes" }
   stDraft@{ shape: cyl, label: "<b>The draft is marked sent</b><br/>'sent today' in Case Manager goes up by one" }
   tNotif@{ shape: odd, label: "<b>Notification: 'Sent to the payer'</b><br/>'R-1701 was sent. It now shows as Received on the Dashboard.'" }
   tSent@{ shape: odd, label: "<b>'Sent to the payer'</b><br/>'R-1701 is on the Dashboard as Received.'" }
@@ -72,11 +72,11 @@ flowchart TD
   class cWho,cSign,cCancel,cConfirm,cBack k_click
   class oWho,oConf k_overlay
   class dWho,dWarn,dCan,dReady,dOn k_decision
-  class tUR,tCould,tNotif,tSent k_toast
+  class tUR,pNav k_process
   class iRiv,iAck,iAtt k_input
   class eOff,eCancel,eStay k_endx
+  class tCould,tNotif,tSent k_toast
   class stNew,stMove,stEv,stDraft k_store
   class aNav k_agent
   class xPortal k_ext
-  class pNav k_process
   class gDash,gAfter,gSB k_goto

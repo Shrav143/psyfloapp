@@ -77,4 +77,44 @@ Already in the demo, so left alone: units used and total per case (Case Manager)
 
 Deliberately not built, because the demo has no data for it: per-session attendance, claim denials and authorization-to-claim reconciliation, case owner and assignment (one demo user only), live payer policy sources.
 
-The changelog by sidebar tab is appended at the end of this file when the work is done.
+The changelog by sidebar tab follows.
+
+
+## 4. Changelog by sidebar tab
+
+Page heights at 1440 px wide, before and after: Dashboard 1,856 to 1,562; Authorizations queue 3,121 to 2,419; Denial Intelligence 3,340 to 2,668; Case Manager 2,333 to 1,416; EMR Connect 1,197 to 1,026; Payers 2,299 to 2,127. Pills on the queue went from 99 to 56 and on Case Manager from 133 to 26. The case page is a little taller (2,352 to 2,549) because it now opens on the next action and the authorization facts; the two banners it used to carry are one line.
+
+**Sidebar and shell: kept.** Order, names, badges, hierarchy, colors, fonts, the Demo menu and clock, notifications and Ask FLO are unchanged. One shared `Disclosure` and one shared `InfoTip` were added to the UI kit so every folded section and every info icon behaves the same way (real buttons, `aria-expanded`, Escape).
+
+**Dashboard.** Simplified: the six tinted stage tiles became four figures (Needs you, Due within 24 hours, Waiting on payers, Denials to act on) that also filter the list; one request list with the ones waiting on you first; Payers at a glance became a closed Payer performance section; the long explanation of progress bars moved into a closed "What the stages mean". Added: Summary from FLO, three lines computed from today's data (who needs you, authorizations ending within 7 days, denial deadlines this week), each linking to the place it is about. Kept: filters, the calendar, sorting, the request drawer and its demo replies, Check all now, `?stage=`, `?focus=payers`.
+
+**Authorizations.** Simplified: one line per request (case and patient, program, payer, request type, status, deadline, next action, approval chance); scores, agent lines and payer notes moved to the case page; five figures became four; the payer signal is one line. Added: request-type filter (Initial, Concurrent review, Reauthorization, Retrospective) and filters in the address; "What the statuses mean" help; on the case page a Next action block, an authorization facts row (requested, approved, used, left, documents, who it waits on), and a closed History that labels people and agents. Kept: bands and their order, the five tabs, Refine, Add context, Apply selected, Send to payer and every gate.
+
+**New case.** Kept the four steps (the referral and chart drive the form). The last step now opens with What is missing, says once that nothing is sent until a person signs, and the button reads "Sign and send to payer". One alert at a time on each step.
+
+**Eligibility & Benefits.** Simplified: "Why we check twice" is an info icon; each patient is a chips line plus one quiet second line. The result reads in order: eligibility with effective dates, benefits and limits, then what the service needs for authorization, with plan type and routing, the time checked and a source labelled as simulated. Cost share appears only when the plan has one on file, and a plain note says active coverage does not mean the service is covered. Kept: all six sample verdicts, Re-check, Start authorization, back links.
+
+**Denial Intelligence.** Simplified: header and one recommended next step in one block; "What the agents did", FLO's reasoning and "Add a denial letter" are folded; the open list is ordered by deadline. Added: "Authorization denial" labels and the line that claim denials are not in this demo; a clinician-reviews-and-signs sentence beside every draft, brief and report; the recommendation vocabulary. Kept: both Full summary pop-ups, the six ASAM dimensions, the appeal analysis report and its PDF, and every sign gate.
+
+**Case Manager.** Opens on the tracker: status, next due, units or days used and left, a "runs out before review" flag where the data shows it. Being prepared is one folded row that links to Authorizations, so the queue is not repeated. The ledger case page folds its history. Kept: both tabs, draft all due reviews, sign, step-down plans.
+
+**Analytics.** Four figures (approval rate, denial rate, turnaround, preventable denials), a Program filter beside period and payer, three charts above the fold (approval by payer, preventable denials by reason, edit share) with workload, and the detailed tables in closed sections. Modeled and demo values are labelled once. No dollar figures anywhere. The denial reason counts now add up to the denials the rates imply.
+
+**EMR Connect.** Connection health at the top (last sync, charts matched, files pulled, sync failures), one Action required line, each system marked read only or read and write back with its switch, and field mappings and the log in a closed Advanced section. "Simulated connection" is said once.
+
+**Payers.** Compact rows by plan type, programs and what is needed; each payer opens with a policy status line that says the rules are demo rules, not verified against the payer's current policy; rules, documents and the key of step types are folded. Kept: edit, add, acknowledge, update drafts, the chart checker.
+
+**FLO.** Ask FLO suggestions now follow the screen (a case, Case Manager, Denial Intelligence, Eligibility) and the answers are computed from the demo data, name the case, say they are not a payer confirmation, and link to the place. All earlier answers still work.
+
+## 5. Not built, and why
+
+- **Per-session attendance, claim denials, authorization-to-claim reconciliation:** the demo has no claims or attendance feed; building them would be controls with nothing behind them.
+- **Case owner and assignment:** there is one demo user.
+- **Live payer policy sources and verification dates:** none exist; the Payers pages say so.
+- **Financial exposure in Analytics:** removed from the plan on purpose (see section 1).
+- **"Ask for reconsideration":** it is in the vocabulary, but no demo denial maps to it because that needs a payer rule that names it.
+- **A second sidebar:** see the recommendation in the chat reply.
+
+## 6. Known nuance
+
+The Dashboard says 3 need you; the Authorizations figure says 21 are waiting on you. They use different rules: the Dashboard counts what is waiting on a person's input right now; the queue counts everything that is yours to work (not yet sent, a denial to work, a question). Both labels say what they count.

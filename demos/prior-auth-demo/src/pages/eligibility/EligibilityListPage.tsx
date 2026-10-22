@@ -9,7 +9,7 @@ import { paths } from "@/routes";
 import { useStore } from "@/store";
 import { EbTable } from "./EbTable";
 import { patientLabel } from "./chips";
-import { InfoTip } from "./InfoTip";
+import { InfoTip } from "@/components/ui/InfoTip";
 
 const PAGE = 12;
 type VerdictFilter = "all" | "cleared" | "auth_first" | "fix" | "recheck";

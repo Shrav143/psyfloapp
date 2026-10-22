@@ -31,12 +31,12 @@ flowchart TD
   c1@{ shape: trap-t, label: "Click 'Check now'" }
   ck@{ shape: rect, label: "<b>Live check runs about 10 seconds</b><br/>Chips and fields lock. 'Skip ahead' speeds it up<br/>The member ID ending decides the answer" }
   subgraph gRes ["Result"]
-  r1@{ shape: curv-trap, label: "<b>'Cleared to bill: the clinic will be paid.'</b><br/>Green verdict" }
-  r2@{ shape: curv-trap, label: "<b>'Fix before billing: coverage lapsed 10/12.'</b><br/>Button 'Request retro-eligibility'" }
-  r3@{ shape: curv-trap, label: "<b>'We could not find coverage.'</b><br/>One grey row 'Nothing else could be checked'<br/>No 'What the patient pays' line" }
-  r4@{ shape: curv-trap, label: "<b>'Fix before billing: the service is not covered.'</b><br/>Row 'The service is not covered', chip 'Not covered'" }
-  r5@{ shape: curv-trap, label: "<b>'Fix before billing: another plan pays first.'</b><br/>Row 'Another plan pays first', chip 'Other plan'" }
-  r6@{ shape: curv-trap, label: "<b>'Fix before billing: every authorized day is used.'</b><br/>Row 'Every authorized day is used'<br/>Chip 'Limit reached', '14 of 14 days used'" }
+  r1@{ shape: curv-trap, label: "<b>'Cleared to bill: the clinic will be paid.'</b><br/>Green verdict, 'Eligible', benefits 'Covered'<br/>Cost share shown: 'Copay $40 per day, ...'" }
+  r2@{ shape: curv-trap, label: "<b>'Fix before billing: coverage lapsed 10/12.'</b><br/>Eligibility 'Needs a fix', 'Effective 01/01/2026, lapsed 10/12/2026'<br/>Button 'Request retro-eligibility'" }
+  r3@{ shape: curv-trap, label: "<b>'We could not find coverage.'</b><br/>Eligibility 'Needs a fix', benefits and 'What this service needs' say 'Not checked'<br/>No 'Patient pays' line, no dates" }
+  r4@{ shape: curv-trap, label: "<b>'Fix before billing: the service is not covered.'</b><br/>Benefits 'Not covered'<br/>Row 'The service is not covered' in 'Payment checks'" }
+  r5@{ shape: curv-trap, label: "<b>'Fix before billing: another plan pays first.'</b><br/>Row 'Another plan pays first', chip 'Other plan', in 'Payment checks'" }
+  r6@{ shape: curv-trap, label: "<b>'Fix before billing: every authorized day is used.'</b><br/>Benefits line 'All 14 days used. Nothing left'<br/>Row 'Every authorized day is used', chip 'Limit reached'" }
   end
   sd@{ shape: rect, label: "<b>The list already holds a patient for each reason</b><br/>R-1101 lapsed, R-0975 ended, R-1118 not covered<br/>I-2275 another plan pays first, R-0921 limit reached" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › Which verdict and why" }

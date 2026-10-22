@@ -19,13 +19,13 @@ flowchart LR
   q@{ shape: curv-trap, label: "Authorizations queue" }
   cp@{ shape: curv-trap, label: "A case page (any tab)" }
   l1@{ shape: trap-t, label: "Click 'New case'" }
-  l2@{ shape: trap-t, label: "Click the 'Coverage needs a fix' pill on a tile" }
+  l2@{ shape: trap-t, label: "Click the 'Coverage needs a fix' pill on a row" }
   l6@{ shape: trap-t, label: "Click 'Open Case Manager' in the empty message" }
   l3@{ shape: trap-t, label: "On the coverage card: click 'Open Eligibility & Benefits'" }
-  l4@{ shape: trap-t, label: "On a denied request: click 'Open in Denial Intelligence'" }
-  l5@{ shape: trap-t, label: "Click 'Open in review and sign' or 'Send to payer'" }
+  l4@{ shape: trap-t, label: "<b>On a denied request: click 'Open in Denial Intelligence'</b><br/>(in the 'Next:' block)" }
+  l5@{ shape: trap-t, label: "<b>Click 'Open in review and sign' or 'Send to payer'</b><br/>('Send to payer' is the 'Next:' block's button once every check passes)" }
   l7@{ shape: trap-t, label: "Click 'Back to queue' or the 'Authorizations' crumb" }
-  l8@{ shape: trap-t, label: "<b>Click 'Open on the Dashboard'</b><br/>(once the request is past Preparing)" }
+  l8@{ shape: trap-t, label: "<b>Click 'Open on the Dashboard'</b><br/>(in the 'Next:' block or next to the status line, once the request is past Preparing)" }
   g1@{ shape: subproc, label: "Continues in: New case › Referral step" }
   g2@{ shape: subproc, label: "Continues in: Eligibility & Benefits › Verify a patient" }
   g5@{ shape: subproc, label: "Continues in: Case Manager › Active cases" }

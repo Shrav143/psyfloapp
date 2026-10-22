@@ -16,9 +16,9 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Click 'Reconnect'</b><br/>On a Disconnected row, or at the end of the Manage drawer" }
+  s1@{ shape: stadium, label: "<b>Click 'Reconnect'</b><br/>On a Disconnected row, in the Action required line, or at the end of the Manage drawer" }
   g0@{ shape: subproc, label: "Continues in: EMR Connect › Sync › When an agent is paused or asks first" }
-  q1@{ shape: diam, label: "Did it need a quick look when it was disconnected?" }
+  q1@{ shape: diam, label: "Did it need attention when it was disconnected?" }
   subgraph gFix ["Fix first, if needed"]
   f1@{ shape: win-pane, label: "<b>Fix {name}</b><br/>Steps: What happened, Renew access, Test<br/>The original problem is shown in an amber box" }
   f2@{ shape: lean-r, label: "<b>Name who approves, tick the read-only box, click 'Renew and test'</b><br/>Three checks run" }

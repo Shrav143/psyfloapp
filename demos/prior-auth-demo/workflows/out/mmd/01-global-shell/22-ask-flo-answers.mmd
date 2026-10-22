@@ -19,11 +19,14 @@ flowchart LR
   s1@{ shape: stadium, label: "<b>A question is sent</b><br/>(a chip or typed text)" }
   d1@{ shape: diam, label: "Contains 'slow', or both 'payer' and 'late'?" }
   a1@{ shape: hex, label: "<b>FLO lists every payer slower than its typical time, worst first:</b><br/>'Evergreen is averaging 3.4 days against 2 typical. Cardinal is averaging 2.8 days against 2 typical. Beacon ... Lakeshore ... Harborview ...<br/>Caller phones when a payer passes twice its typical time.'<br/>If none is slower: 'Every payer is deciding within its typical time right now.'" }
-  l1@{ shape: trap-t, label: "Click 'Open Dashboard, By payer'" }
-  r1@{ shape: rect, label: "<b>Opens /dashboard?focus=payers</b><br/>The Dashboard scrolls to Payers at a glance" }
-  g1@{ shape: subproc, label: "Continues in: Dashboard › Payers at a glance › Read the table and pick a payer" }
+  l1@{ shape: trap-t, label: "Click 'Open Dashboard, Payer performance'" }
+  r1@{ shape: rect, label: "<b>Opens /dashboard?focus=payers</b><br/>The Dashboard opens Payer performance and scrolls to it" }
+  g1@{ shape: subproc, label: "Continues in: Dashboard › Payer performance › Read the table and pick a payer" }
+  dn@{ shape: diam, label: "<b>Contains 'billing', 'eligib' or 'fix before'?</b><br/>Or 'missing' or 'incomplete'?<br/>Or 'expir', 'run out', 'units' or 'end' (not with 'denial')?<br/>Or 'require'?<br/>Or 'review' (not 'under review')?" }
+  an@{ shape: hex, label: "<b>FLO answers from the screen you are on or the case you name:</b><br/>what is missing for a case, when an authorization ends, what a payer requires, which reviews are due, which patients need a fix before billing<br/>Each names the case, quotes live data, says once that it is FLO's reading, and ends with a link to the exact place" }
+  gn@{ shape: subproc, label: "Continues in: Global shell › Top bar › Ask FLO › Answers that read the screen" }
   d2@{ shape: diam, label: "Contains 'denial'?" }
-  a2@{ shape: hex, label: "<b>'8 denials are open. The nearest deadline is D-3318 (Cardinal). Call booked Wed 9 to 11 am. The brief is ready. The chance of winning is 64%.'</b><br/>The count and the nearest open denial are live, so the sentence follows the data<br/>FLO gives no dollar figure: a question that only asks about money gets the fallback answer" }
+  a2@{ shape: hex, label: "<b>'8 denials are open. The nearest deadline is D-3318 (Cardinal), peer-to-peer window, 36 h left. Call booked Wed 9 to 11 am. The brief is ready. The chance of winning is 64%. 3 more deadlines fall this week.'</b><br/>The count, the nearest open denial and the time left are live, so the sentence follows the data and the clock<br/>One muted line: 'This is FLO's reading of the demo data, not a payer confirmation.'<br/>FLO gives no dollar figure: a question that only asks about money gets the fallback answer" }
   l2@{ shape: trap-t, label: "Click 'Open Denial Intelligence'" }
   r2@{ shape: rect, label: "<b>Opens /denials?id=D-3318, the nearest denial</b><br/>With no deadline left to name, it opens the list" }
   g2@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
@@ -49,7 +52,9 @@ flowchart LR
   e1@{ shape: stadium, label: "Answer stays in the chat" }
   s1 --> d1
   d1 -->|"Yes"| a1 --> l1 --> r1 --> g1
-  d1 -->|"No"| d2
+  d1 -->|"No"| dn
+  dn -->|"Yes"| an --> gn
+  dn -->|"No"| d2
   d2 -->|"Yes"| a2 --> l2 --> r2 --> g2
   d2 -->|"No"| d2b
   d2b -->|"Yes"| a2b --> l2b --> r2b --> g2b
@@ -61,9 +66,9 @@ flowchart LR
   d5 -->|"Yes"| a5 --> l5 --> g5
   d5 -->|"No"| a6 --> e1
   class s1 k_start
-  class d1,d2,d2b,d3,d4,d5 k_decision
-  class a1,a2,a2b,a3,a4,a5,a6 k_agent
+  class d1,dn,d2,d2b,d3,d4,d5 k_decision
+  class a1,an,a2,a2b,a3,a4,a5,a6 k_agent
   class l1,l2,l2b,l3,l4,l5 k_click
   class r1,r2,r2b,r4 k_process
-  class g1,g2,g2b,g3,g4,g5 k_goto
+  class g1,gn,g2,g2b,g3,g4,g5 k_goto
   class e1 k_end

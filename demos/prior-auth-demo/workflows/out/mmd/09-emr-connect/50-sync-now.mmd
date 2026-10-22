@@ -16,7 +16,7 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Click 'Sync now'</b><br/>In the Connected systems header, or on a Connected row" }
+  s1@{ shape: stadium, label: "<b>Click 'Sync now'</b><br/>In the Connection health header, or on a Connected row" }
   q0@{ shape: diam, label: "<b>Is any system Connected?</b><br/>(header button only)" }
   x0@{ shape: odd, label: "<b>'Nothing to sync'</b><br/>'No system is connected. Fix or reconnect one first.'<br/>Amber. No spinner" }
   gg@{ shape: subproc, label: "Continues in: EMR Connect › Sync › When an agent is paused or asks first" }
@@ -27,7 +27,7 @@ flowchart TD
   q4@{ shape: diam, label: "Did the person leave EMR Connect meanwhile?" }
   x3@{ shape: stadium, label: "<b>Sync is dropped</b><br/>Nothing is recorded" }
   q3@{ shape: diam, label: "<b>Is the system still Connected?</b><br/>(it could have been disconnected in Manage meanwhile)" }
-  x2@{ shape: stadium, label: "<b>Spinner stops</b><br/>No toast, no log line, tiles unchanged" }
+  x2@{ shape: stadium, label: "<b>Spinner stops</b><br/>No toast, no log line, figures unchanged" }
   n1@{ shape: rect, label: "<b>Take the next result from a list of four</b><br/>The next sync takes the one after, then round again" }
   subgraph gRes ["The four results, in order"]
   r1@{ shape: hex, label: "<b>Reader</b><br/>'Pulled 6 new files for 3 open cases and matched the insurance cards'" }
@@ -38,13 +38,13 @@ flowchart TD
   ap@{ shape: rect, label: "Apply the result" }
   subgraph gSaved ["What changes"]
   d1@{ shape: cyl, label: "<b>Each synced system: last sync is now</b><br/>Rows read 'just now'" }
-  d2@{ shape: cyl, label: "<b>Charts matched today and Files pulled go up</b><br/>About half when only some of the Connected systems are synced" }
-  d3@{ shape: cyl, label: "<b>Recent activity gets the result as its newest line</b><br/>For one system: '... from {system name}'" }
+  d2@{ shape: cyl, label: "<b>Charts matched today and Files pulled this week go up</b><br/>About half when only some of the Connected systems are synced" }
+  d3@{ shape: cyl, label: "<b>Recent activity (in Advanced) gets the result as its newest line</b><br/>For one system: '... from {system name}'" }
   end
   q5@{ shape: diam, label: "Is Reader set to 'Act on its own'?" }
   t1@{ shape: odd, label: "<b>'Sync finished'</b><br/>The result text. Green" }
-  n2@{ shape: rect, label: "<b>No toast</b><br/>The tiles and the new log line show it" }
-  z1@{ shape: stadium, label: "Last sync tile reads 'Just now'" }
+  n2@{ shape: rect, label: "<b>No toast</b><br/>The figures and the new log line (in Advanced) show it" }
+  z1@{ shape: stadium, label: "Last sync figure reads 'Just now'" }
   g1@{ shape: subproc, label: "Continues in: EMR Connect › Sync › What a sync pulls and when it runs" }
   g2@{ shape: subproc, label: "Continues in: EMR Connect › Recent activity › Read the activity log" }
   s1 --> q0

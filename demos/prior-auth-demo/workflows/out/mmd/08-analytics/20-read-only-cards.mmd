@@ -18,14 +18,14 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Scroll to the cards" }
   subgraph gBars ["Payer bars"]
-  b1@{ shape: curv-trap, label: "<b>'Approved as asked, this quarter'</b><br/>Bars, best first: Lakeshore 86%, Beacon PPO 81%, Harborview MA 77%, Summit Medicaid 74%, Evergreen 69%, Cardinal 63%" }
+  b1@{ shape: curv-trap, label: "<b>'Approved as asked, this quarter'</b><br/>Bars, best first: Lakeshore 86%, Beacon PPO 81%, Harborview MA 77%, Summit Medicaid 74%, Evergreen 69%, Cardinal 63%<br/>A picked program is added to the subtitle" }
   b2@{ shape: diam, label: "Rate band?" }
   b3@{ shape: rect, label: "80 and above: green bar" }
   b4@{ shape: rect, label: "55 to 79: ochre bar" }
   b5@{ shape: rect, label: "Below 55: terracotta bar" }
   b6@{ shape: curv-trap, label: "Footnote '1,070 decisions this quarter. Green is 80 and above, ochre 55 to 79, terracotta below 55.'" }
   b7@{ shape: diam, label: "A payer is chosen in the menu?" }
-  b8@{ shape: rect, label: "Two bars: that payer, then 'All payers' for comparison" }
+  b8@{ shape: rect, label: "<b>Two bars: that payer, then 'All payers' for comparison</b><br/>The payer's bar is the same number as the 'Approval rate' tile" }
   end
   subgraph gEdit ["Draft edits"]
   d1@{ shape: curv-trap, label: "<b>'Share of drafts, this quarter'</b><br/>Donut with '68%' and 'as written' in the middle" }
@@ -34,14 +34,15 @@ flowchart TD
   d4@{ shape: diam, label: "<b>Fewer than 20 drafts?</b><br/>(no demo view gets here)" }
   d5@{ shape: curv-trap, label: "'Not enough decisions yet. Figures based on fewer than 20 decisions stay hidden.'" }
   end
-  subgraph gHelp ["What helps most"]
-  h1@{ shape: curv-trap, label: "'Steps taken most often, and how often those requests were approved'" }
-  h2@{ shape: curv-trap, label: "<b>Up to four rows, ranked 1 to 4</b><br/>Step name, 'Applied 389 times', '91% approved' in green" }
-  h3@{ shape: rect, label: "Top four this quarter: dated depression scores 91%, appeal partial unit approvals 88%, name the step-down provider 85%, file recertification 72 hours early 83%" }
-  h4@{ shape: diam, label: "Any step applied 20 or more times for this payer?" }
-  h5@{ shape: curv-trap, label: "'Not enough decisions yet. Figures based on fewer than 20 decisions stay hidden.'" }
+  subgraph gWork ["Workload"]
+  h1@{ shape: curv-trap, label: "<b>'Workload'</b><br/>'Requests on the Dashboard right now'<br/>Link 'Open the Dashboard'" }
+  h2@{ shape: rect, label: "<b>Two big numbers and a meter</b><br/>'8 handled' and '32 still open' at the start<br/>Handled means the payer has decided, the same as 'Decided today' on the Dashboard" }
+  h3@{ shape: rect, label: "<b>Follows the payer and program menus, not the period</b><br/>A line names the scope, then says how many open requests wait on you" }
+  h4@{ shape: cyl, label: "Live: answer a payer in the Dashboard, or accept a denial in Denial Intelligence, and the numbers move by one" }
+  h5@{ shape: trap-t, label: "Click 'Open the Dashboard'" }
+  h6@{ shape: subproc, label: "Continues in: Dashboard › Arrive › What the page shows" }
   end
-  p1@{ shape: rect, label: "Hover and click do nothing on bars, donut slices, legend and list rows" }
+  p1@{ shape: rect, label: "Hover and click do nothing on bars, donut slices, legend and meter" }
   e1@{ shape: stadium, label: "Cards read" }
   e2@{ shape: stadium, label: "No drill-down: rows are not links" }
   s1 --> b1 & d1 & h1
@@ -55,16 +56,18 @@ flowchart TD
   d1 --> d2 --> d3 --> d4
   d4 -->|"No"| e1
   d4 -->|"Yes"| d5 --> e1
-  h1 --> h2 --> h3 --> h4
-  h4 -->|"Yes"| e1
-  h4 -->|"No"| h5 --> e1
+  h1 --> h2 --> h3 --> h4 --> e1
+  h1 --> h5 --> h6
   s1 -.-> p1 --> e2
   class s1 k_start
-  class b1,b6,d1,d2,d3,d5,h1,h2,h5 k_screen
-  class b2,b7,d4,h4 k_decision
-  class b3,b4,b5,b8,h3,p1 k_process
+  class b1,b6,d1,d2,d3,d5,h1 k_screen
+  class b2,b7,d4 k_decision
+  class b3,b4,b5,b8,h2,h3,p1 k_process
+  class h4 k_store
+  class h5 k_click
+  class h6 k_goto
   class e1 k_end
   class e2 k_endx
   style gBars fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gEdit fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
-  style gHelp fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gWork fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

@@ -16,7 +16,7 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Click 'Edit' on a rule card</b><br/>Example: 'Edit Backdating'" }
+  s1@{ shape: stadium, label: "<b>Open a rule (click its row), then click its 'Edit'</b><br/>Example: 'Edit Backdating'" }
   m@{ shape: win-pane, label: "<b>Edit backdating</b><br/>One rule per line. New drafts use this at once.<br/>Sent requests keep what they were sent with.<br/>Click Update drafts to redraft open ones." }
   i1@{ shape: lean-r, label: "<b>Type in 'Rules'</b><br/>One line per rule, starting from the saved lines" }
   i2@{ shape: lean-r, label: "<b>Type 'Reason for the edit' (required)</b><br/>Example: Summit confirmed the new window on a call" }
@@ -27,12 +27,12 @@ flowchart TD
   d2@{ shape: diam, label: "<b>Are there lines left, and</b><br/>do they differ from the saved ones?" }
   t0@{ shape: odd, label: "<b>'Nothing changed'</b><br/>Edit at least one line, and keep at least one rule." }
   x0@{ shape: stadium, label: "<b>Modal closes</b><br/>Nothing saved" }
-  st@{ shape: cyl, label: "<b>Rule lines replaced</b><br/>'Confirmed' date becomes today" }
+  st@{ shape: cyl, label: "<b>Rule lines replaced</b><br/>'Saved' date becomes today<br/>The rule gets 'Source: Edited in Psyflo by Jordan Perez'" }
   lg@{ shape: cyl, label: "<b>Edit log entry, area 'Rules'</b><br/>Rule name, before and after (lines joined with semicolons), reason" }
   un@{ shape: cyl, label: "'Edits waiting' goes up by one" }
   nt@{ shape: cyl, label: "<b>Bell notification 'Summit rule edited'</b><br/>opens the payer's Rules tab" }
   t1@{ shape: odd, label: "<b>'Backdating saved'</b><br/>New drafts use it at once.<br/>Click Update drafts to redraft open ones." }
-  bn@{ shape: curv-trap, label: "<b>Rule card shows the new lines</b><br/>Banner '1 edit applies to new drafts only'" }
+  bn@{ shape: curv-trap, label: "<b>The rule row shows the new first line</b><br/>Open, it shows the new lines and the source<br/>Banner '1 edit applies to new drafts only'" }
   e1@{ shape: stadium, label: "<b>New drafts use the rule from now on</b><br/>New case reads it the next time it draws" }
   cx@{ shape: trap-t, label: "Click 'Cancel'" }
   cesc@{ shape: trap-t, label: "<b>Press Escape, click the X</b><br/>or click the dimmed area" }

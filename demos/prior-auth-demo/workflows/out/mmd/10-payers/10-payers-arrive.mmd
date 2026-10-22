@@ -27,13 +27,13 @@ flowchart TD
   p5@{ shape: rect, label: "Show the Process tab" }
   p6@{ shape: rect, label: "Show the tab named in the address" }
   pg@{ shape: curv-trap, label: "<b>Payers</b><br/>'N payers. The agents know how each one works.'<br/>Workflow, rules and documents for every payer. Every edit is logged with your reason." }
-  subgraph gL ["Left column"]
-  list@{ shape: curv-trap, label: "<b>Payer list card</b><br/>'Payers', 'Search payers', four groups, a dot per payer, legend" }
+  subgraph gL ["Left column (above the payer on a narrow screen)"]
+  list@{ shape: curv-trap, label: "<b>Payer list card</b><br/>'Payers', 'Search payers', one compact row per payer:<br/>name, plan type and programs, what it asks for, change mark" }
   c_pick@{ shape: trap-t, label: "Click a payer in the list" }
   c_search@{ shape: trap-t, label: "Type in 'Search payers'" }
   end
   subgraph gR ["Right column"]
-  head@{ shape: curv-trap, label: "<b>Payer header</b><br/>Name, plan line, 'Edit log', 'Edit', four facts" }
+  head@{ shape: curv-trap, label: "<b>Payer header</b><br/>Name, 'Demo rules. Not verified...' label, plan line, 'Edit log', 'Edit'<br/>Plan type, programs, needs, notice and reach, policy status" }
   tabs@{ shape: curv-trap, label: "<b>Tab bar</b><br/>Process, Rules, Documents, Changes" }
   c_edit@{ shape: trap-t, label: "Click 'Edit'" }
   c_log@{ shape: trap-t, label: "Click 'Edit log'" }
@@ -45,7 +45,8 @@ flowchart TD
   b2@{ shape: rect, label: "<b>'Changes' tab badge</b><br/>The waiting change plus each Historian proposal<br/>Falls as each is handled" }
   end
   g_list@{ shape: subproc, label: "Continues in: Payers › List › Search and pick a payer" }
-  g_head@{ shape: subproc, label: "Continues in: Payers › Header › What the facts mean" }
+  g_head@{ shape: subproc, label: "Continues in: Payers › Header › What the header says" }
+  g_ps@{ shape: subproc, label: "Continues in: Payers › Header › Policy status and the demo-rules label" }
   g_edit@{ shape: subproc, label: "Continues in: Payers › Edit payer details" }
   g_log@{ shape: subproc, label: "Continues in: Payers › Edit log" }
   g_add@{ shape: subproc, label: "Continues in: Payers › Add a payer" }
@@ -67,6 +68,7 @@ flowchart TD
   c_search --> g_list
   head --> c_edit & c_log
   head --> g_head
+  head -.-> g_ps
   c_edit --> g_edit
   c_log --> g_log
   c_add --> g_add
@@ -80,7 +82,7 @@ flowchart TD
   class d1,d2 k_decision
   class pg,list,head,tabs k_screen
   class c_pick,c_search,c_edit,c_log,c_tab,c_add k_click
-  class g_list,g_head,g_edit,g_log,g_add,g_proc,g_rules,g_docs,g_chg k_goto
+  class g_list,g_head,g_ps,g_edit,g_log,g_add,g_proc,g_rules,g_docs,g_chg k_goto
   style gL fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gR fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gB fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

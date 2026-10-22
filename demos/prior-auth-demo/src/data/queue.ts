@@ -43,9 +43,6 @@ export const BAND_META: Record<Band, { name: string; dot: string }> = {
   week: { name: "Due this week", dot: "#739C8E" },
 };
 export const BANDS: Band[] = ["now", "day", "week"];
-/** Last 30 days, shown in Analytics. The queue no longer shows them. */
-export const APPROVED_30D = 112;
-export const DENIED_30D = 46;
 
 export type StatusFilter = "all" | "you" | "input" | Phase;
 export const STATUS_LABEL: Record<StatusFilter, string> = {

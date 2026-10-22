@@ -2,7 +2,7 @@ import { Clock, Gauge, Radar, TriangleAlert, UserRound, X } from "lucide-react";
 import { Button, Stat } from "@/components/ui";
 import type { Band, StatusFilter } from "@/data/queue";
 import { band as chanceBand } from "@/lib/format";
-import { InfoTip } from "./InfoTip";
+import { InfoTip } from "@/components/ui/InfoTip";
 import { shortSpan, type Stats } from "./queueLogic";
 
 const WORD = ["no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];

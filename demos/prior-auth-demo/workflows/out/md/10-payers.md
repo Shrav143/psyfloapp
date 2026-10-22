@@ -40,13 +40,13 @@ flowchart TD
   p5@{ shape: rect, label: "Show the Process tab" }
   p6@{ shape: rect, label: "Show the tab named in the address" }
   pg@{ shape: curv-trap, label: "<b>Payers</b><br/>'N payers. The agents know how each one works.'<br/>Workflow, rules and documents for every payer. Every edit is logged with your reason." }
-  subgraph gL ["Left column"]
-  list@{ shape: curv-trap, label: "<b>Payer list card</b><br/>'Payers', 'Search payers', four groups, a dot per payer, legend" }
+  subgraph gL ["Left column (above the payer on a narrow screen)"]
+  list@{ shape: curv-trap, label: "<b>Payer list card</b><br/>'Payers', 'Search payers', one compact row per payer:<br/>name, plan type and programs, what it asks for, change mark" }
   c_pick@{ shape: trap-t, label: "Click a payer in the list" }
   c_search@{ shape: trap-t, label: "Type in 'Search payers'" }
   end
   subgraph gR ["Right column"]
-  head@{ shape: curv-trap, label: "<b>Payer header</b><br/>Name, plan line, 'Edit log', 'Edit', four facts" }
+  head@{ shape: curv-trap, label: "<b>Payer header</b><br/>Name, 'Demo rules. Not verified...' label, plan line, 'Edit log', 'Edit'<br/>Plan type, programs, needs, notice and reach, policy status" }
   tabs@{ shape: curv-trap, label: "<b>Tab bar</b><br/>Process, Rules, Documents, Changes" }
   c_edit@{ shape: trap-t, label: "Click 'Edit'" }
   c_log@{ shape: trap-t, label: "Click 'Edit log'" }
@@ -58,7 +58,8 @@ flowchart TD
   b2@{ shape: rect, label: "<b>'Changes' tab badge</b><br/>The waiting change plus each Historian proposal<br/>Falls as each is handled" }
   end
   g_list@{ shape: subproc, label: "Continues in: Payers › List › Search and pick a payer" }
-  g_head@{ shape: subproc, label: "Continues in: Payers › Header › What the facts mean" }
+  g_head@{ shape: subproc, label: "Continues in: Payers › Header › What the header says" }
+  g_ps@{ shape: subproc, label: "Continues in: Payers › Header › Policy status and the demo-rules label" }
   g_edit@{ shape: subproc, label: "Continues in: Payers › Edit payer details" }
   g_log@{ shape: subproc, label: "Continues in: Payers › Edit log" }
   g_add@{ shape: subproc, label: "Continues in: Payers › Add a payer" }
@@ -80,6 +81,7 @@ flowchart TD
   c_search --> g_list
   head --> c_edit & c_log
   head --> g_head
+  head -.-> g_ps
   c_edit --> g_edit
   c_log --> g_log
   c_add --> g_add
@@ -93,7 +95,7 @@ flowchart TD
   class d1,d2 k_decision
   class pg,list,head,tabs k_screen
   class c_pick,c_search,c_edit,c_log,c_tab,c_add k_click
-  class g_list,g_head,g_edit,g_log,g_add,g_proc,g_rules,g_docs,g_chg k_goto
+  class g_list,g_head,g_ps,g_edit,g_log,g_add,g_proc,g_rules,g_docs,g_chg k_goto
   style gL fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gR fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gB fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
@@ -101,7 +103,7 @@ flowchart TD
 
 ## Payers › List › Search and pick a payer
 
-The 'Payers' card on the left: how the rows are grouped, what the dot means, how search narrows the list and what happens when a payer is picked. The tab that was open stays open.
+The 'Payers' card: one compact row per payer with its plan type, programs, what it asks for and a mark when a change is waiting, how search narrows the list and what happens when a payer is picked. The tab that was open stays open. Approval rate and decision time are not on this page: Analytics has them.
 
 Route: `/payers/:id?tab=process`
 
@@ -124,15 +126,17 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Look at the 'Payers' card</b><br/>on the left of the page" }
-  list@{ shape: curv-trap, label: "<b>Payers card</b><br/>'Search payers' box, then four groups, then a legend" }
-  grp@{ shape: rect, label: "<b>Rows sit under four group headings</b><br/>Ohio Medicaid, Commercial,<br/>Medicare Advantage, Behavioral carve-out<br/>A payer added later joins its group" }
-  row@{ shape: rect, label: "<b>Each row shows the payer name,</b><br/>its plan type and a dot<br/>Selected row is pale green" }
+  s1@{ shape: stadium, label: "<b>Look at the 'Payers' card</b><br/>on the left of the page<br/>(above the payer on a narrow screen)" }
+  list@{ shape: curv-trap, label: "<b>Payers card</b><br/>'Payers' and '3 with a change waiting'<br/>'Search payers' box, then one row per payer" }
+  grp@{ shape: rect, label: "<b>Rows follow the group order</b><br/>Ohio Medicaid, Commercial,<br/>Medicare Advantage, Behavioral carve-out<br/>A payer added later joins its group" }
+  row@{ shape: rect, label: "<b>Each row has two lines on the left</b><br/>Name, then 'Medicaid HMO · 4 programs'<br/>Selected row is pale green" }
+  cue@{ shape: rect, label: "<b>On the right of the row</b><br/>What the payer asks for, read from its saved rules:<br/>'Initial + review', 'Initial only' or 'Review only'" }
+  prog@{ shape: rect, label: "<b>Programs</b><br/>A built-in payer covers every program that has a document list<br/>A payer added with 'Add a payer' covers the programs chosen then<br/>'4 programs' when all four, else the names" }
   dot@{ shape: diam, label: "Does this payer have a change waiting?" }
-  green@{ shape: rect, label: "<b>Green dot</b><br/>Up to date" }
-  ochre@{ shape: rect, label: "<b>Ochre dot</b><br/>Change waiting" }
-  tnote@{ shape: odd, label: "<b>A proposal from Historian alone</b><br/>does not turn the dot ochre.<br/>Only the 'Changes' tab badge counts it" }
-  leg@{ shape: curv-trap, label: "<b>Legend at the foot of the card</b><br/>'up to date' and 'change waiting'" }
+  green@{ shape: rect, label: "<b>Green dot, nothing else</b><br/>Label for screen readers: 'No change waiting'" }
+  ochre@{ shape: rect, label: "Ochre dot with the words 'Change waiting'" }
+  tnote@{ shape: odd, label: "<b>A proposal from Historian alone</b><br/>does not mark the row.<br/>Only the 'Changes' tab badge counts it" }
+  nomet@{ shape: rect, label: "<b>No approval rate or decision time on the row</b><br/>Those figures live in Analytics" }
   i1@{ shape: lean-r, label: "Type in 'Search payers'" }
   filt@{ shape: rect, label: "<b>List narrows as you type</b><br/>Matches name, plan type or group,<br/>any capitals" }
   any@{ shape: diam, label: "Does any payer still match?" }
@@ -147,9 +151,9 @@ flowchart TD
   same@{ shape: trap-t, label: "Click the payer that is already selected" }
   nochg@{ shape: rect, label: "Nothing changes on screen" }
   e1@{ shape: stadium, label: "The chosen payer's page is showing" }
-  s1 --> list --> grp --> row --> dot
-  dot -->|"No"| green --> leg
-  dot -->|"Yes"| ochre --> leg
+  s1 --> list --> grp --> row --> cue --> prog --> dot
+  dot -->|"No"| green --> nomet
+  dot -->|"Yes"| ochre --> nomet
   ochre -.-> tnote
   list --> i1 --> filt --> any
   any -->|"No"| empty --> clr --> clr2 --> list
@@ -158,8 +162,8 @@ flowchart TD
   pick --> nav --> swap --> fresh --> keep --> e1
   list --> same --> nochg --> e1
   class s1 k_start
-  class list,leg k_screen
-  class grp,row,green,ochre,filt,clr2,nav,swap,fresh,keep,nochg k_process
+  class list k_screen
+  class grp,row,cue,prog,green,ochre,nomet,filt,clr2,nav,swap,fresh,keep,nochg k_process
   class dot,any k_decision
   class tnote,empty k_toast
   class i1 k_input
@@ -167,9 +171,9 @@ flowchart TD
   class e1 k_end
 ```
 
-## Payers › Header › What the facts mean
+## Payers › Header › What the header says
 
-The card above the tabs. It names the payer, says whether a change is waiting, and shows four facts. Two come from the last 90 days of decisions; two are the payer's configuration and change when someone edits the payer.
+The card above the tabs. It names the payer, carries one quiet label that says its rules are demo data, and says what a coordinator needs first: plan type, programs, whether an initial request or a continued-stay review is needed, notice and how the payer is reached, and the policy status. Everything is read from the payer and its saved configuration. Approved as asked and typical decision are no longer here: Analytics shows them.
 
 Route: `/payers/:id`
 
@@ -193,21 +197,20 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Pick a payer</b><br/>(or arrive on Payers)" }
-  head@{ shape: curv-trap, label: "<b>Payer header</b><br/>Payer name in large type<br/>Plan line under it<br/>'Edit log' and 'Edit' on the right" }
-  plan@{ shape: rect, label: "<b>Plan line = plan text</b><br/>+ 'rules version 2026.3'<br/>+ the state of the rules" }
-  pend@{ shape: diam, label: "<b>Is a change waiting</b><br/>for this payer?" }
-  waiting@{ shape: odd, label: "'... rules version 2026.3, change waiting'" }
-  checked@{ shape: odd, label: "<b>'... rules version 2026.3, checked 10/12'</b><br/>Date Sentinel last checked the policy" }
-  subgraph gF ["Four facts under the name"]
-  f1@{ shape: curv-trap, label: "<b>'Approved as asked'</b><br/>74% for Summit<br/>Note: 'last 90 days'<br/>Cardinal says 'down 11 points'" }
-  f2@{ shape: curv-trap, label: "<b>'Typical decision'</b><br/>1.5 days for Summit<br/>Note: 'for residential'<br/>Cardinal says 'now taking 2.8'" }
-  f3@{ shape: curv-trap, label: "<b>'Notice due'</b><br/>24 hours<br/>Note: 'after admission'<br/>Harborview is 72 hours" }
-  f4@{ shape: curv-trap, label: "<b>'Reached by'</b><br/>One of seven: Portal, Phone, Fax,<br/>or a mix such as 'Portal and fax'<br/>Note: the backup route<br/>'phone as backup'" }
+  head@{ shape: curv-trap, label: "<b>Payer header</b><br/>Payer name in large type<br/>'Edit log' and 'Edit' on the right<br/>The demo-rules label under the name<br/>Plan line under that" }
+  subgraph gF ["Four rows under the name"]
+  f1@{ shape: curv-trap, label: "<b>'Plan type'</b><br/>'Medicaid managed care (HMO). Claims go to Summit, not to the state.'<br/>Nothing is shown when the payer has no plan type" }
+  f2@{ shape: curv-trap, label: "<b>'Programs'</b><br/>Residential 3.5, IOP, PHP, Detox<br/>or the ones chosen when the payer was added" }
+  f3@{ shape: curv-trap, label: "<b>'Needs'</b><br/>'Initial request: required. Notice within 24 hours of admission.'<br/>'Continued-stay review: required. A continued-stay review every 7 days after the first 7.'" }
+  f4@{ shape: curv-trap, label: "<b>'Notice and reach'</b><br/>'Notice due 24 hours after admission.'<br/>'Reached by portal, phone as backup.'" }
   end
-  hist@{ shape: diam, label: "<b>Does the payer have</b><br/>90 days of decisions?" }
-  few@{ shape: odd, label: "<b>'Not enough' in both figures</b><br/>Notes: 'Not enough decisions yet'<br/>and 'benchmark estimate'<br/>True of a payer added with 'Add a payer'" }
-  real@{ shape: rect, label: "<b>Figures come from decisions</b><br/>already seen for this payer" }
-  cfg@{ shape: rect, label: "<b>'Notice due' and 'Reached by' come</b><br/>from the payer's saved details<br/>the 'Edit' button changes them" }
+  cfg@{ shape: rect, label: "<b>Plan type, programs and needs are read from the saved configuration</b><br/>Edit a rule, a document list or the workflow and the header follows" }
+  pt@{ shape: rect, label: "<b>Plan type: the payer's group and the plan type New case would pre-fill</b><br/>See 'Eligibility & Benefits › Result › Plan type and routing'" }
+  ndn@{ shape: diam, label: "<b>Does the saved 'Submission windows' rule</b><br/>still have a notice line<br/>and a continued-stay line?" }
+  need1@{ shape: rect, label: "Both read 'required' with the rule's own words" }
+  need2@{ shape: rect, label: "<b>A missing line reads 'not on file'</b><br/>The row in the payer list says 'Initial only' or 'Review only'" }
+  cfg2@{ shape: rect, label: "<b>'Notice due' and 'Reached by' come from the payer's saved details</b><br/>the 'Edit' button changes them" }
+  g_ps@{ shape: subproc, label: "Continues in: Payers › Header › Policy status and the demo-rules label" }
   logn@{ shape: diam, label: "Any edits logged for this payer?" }
   logb1@{ shape: curv-trap, label: "<b>Button reads 'Edit log (3)'</b><br/>the count is edits for this payer" }
   logb0@{ shape: curv-trap, label: "Button reads 'Edit log'" }
@@ -216,27 +219,99 @@ flowchart TD
   g_edit@{ shape: subproc, label: "Continues in: Payers › Edit payer details" }
   g_log@{ shape: subproc, label: "Continues in: Payers › Edit log" }
   e1@{ shape: stadium, label: "Header shows the payer's current state" }
-  s1 --> head --> plan --> pend
-  pend -->|"Yes"| waiting --> hist
-  pend -->|"No"| checked --> hist
-  head --> f1 & f2 & f3 & f4
-  hist -->|"No"| few --> logn
-  hist -->|"Yes"| real --> logn
-  f3 -.-> cfg
-  f4 -.-> cfg
+  s1 --> head --> f1 & f2 & f3 & f4
+  f1 -.-> pt
+  f1 & f2 & f3 -.-> cfg
+  f3 --> ndn
+  ndn -->|"Yes"| need1 --> logn
+  ndn -->|"No"| need2 --> logn
+  f4 -.-> cfg2
+  head --> g_ps
   logn -->|"Yes"| logb1 --> e1
   logn -->|"No"| logb0 --> e1
   head --> ce --> g_edit
   head --> cl --> g_log
   class s1 k_start
   class head,f1,f2,f3,f4,logb1,logb0 k_screen
-  class plan,real,cfg k_process
-  class pend,hist,logn k_decision
-  class waiting,checked,few k_toast
+  class cfg,pt,need1,need2,cfg2 k_process
+  class ndn,logn k_decision
+  class g_ps,g_edit,g_log k_goto
   class ce,cl k_click
-  class g_edit,g_log k_goto
   class e1 k_end
   style gF fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+```
+
+## Payers › Header › Policy status and the demo-rules label
+
+Everything in this demo is sample data, so no rule may look verified by a payer. The header carries one quiet label next to the name, with the explanation in an info tip, and one line called Policy status. The date is the newest entry of the Changes log that a person handled in Psyflo. No verification date is invented, and nothing says a payer confirmed a rule.
+
+Route: `/payers/cardinal`
+
+Demo only: the rules, documents and workflows are invented. In the product a rule would carry a source and a confidence (published, payer-confirmed, observed, staff-reported, unconfirmed).
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Open a payer</b><br/>On any of the four tabs" }
+  lab@{ shape: curv-trap, label: "<b>Label under the name</b><br/>'Demo rules. Not verified against the payer's current policy.'<br/>One label, quiet outline, never a banner" }
+  tip@{ shape: trap-t, label: "<b>Hover, focus or click the info icon beside it</b><br/>(button 'About these rules')" }
+  tipt@{ shape: win-pane, label: "<b>Info tip opens</b><br/>'Everything on Payers is sample data for this demo.<br/>None of it was read from, or checked against, a payer's current policy.<br/>Where a rule has a source in the data, the Rules tab shows it.'" }
+  esc@{ shape: trap-t, label: "Press Escape, move away or click elsewhere" }
+  cl@{ shape: rect, label: "<b>Tip closes</b><br/>Only the tip: a pop-up behind it stays" }
+  ps@{ shape: curv-trap, label: "<b>Line at the foot of the header</b><br/>'Policy status: ...'" }
+  d1@{ shape: diam, label: "Is a change waiting for this payer?" }
+  w1@{ shape: rect, label: "'Change waiting for you (Criteria changed, version 2026.3, effective 10/15).'" }
+  d2@{ shape: diam, label: "Has a person acknowledged it already?" }
+  w2@{ shape: rect, label: "<b>'Change acknowledged, drafts not updated yet (Criteria changed, version 2026.3).'</b><br/>Date: when it was acknowledged" }
+  w0@{ shape: rect, label: "'No change waiting.'" }
+  d3@{ shape: diam, label: "<b>Does the Changes log have an entry</b><br/>that is not just the notice of a waiting change?" }
+  l1@{ shape: rect, label: "<b>'Last acknowledged or applied in Psyflo 10/12.'</b><br/>Date of the newest handled entry, or when a waiting change was acknowledged" }
+  l0@{ shape: rect, label: "'Nothing acknowledged or applied in Psyflo yet.'" }
+  d4@{ shape: diam, label: "Is it a payer added with 'Add a payer'?" }
+  s1t@{ shape: rect, label: "'Source: Psyflo benchmark, not a payer's policy'" }
+  s2t@{ shape: rect, label: "'Source: Demo sample rules, version 2026.3'" }
+  nov@{ shape: rect, label: "<b>Not shown anywhere on Payers</b><br/>No 'checked' or 'confirmed' date, no 'published policy', no 'Sentinel keeps watching'" }
+  rl@{ shape: rect, label: "<b>Rules tab: each rule shows 'saved 10/12'</b><br/>Only a rule edited in Psyflo adds 'Source: Edited in Psyflo by Jordan Perez'" }
+  e1@{ shape: stadium, label: "The header says where the rules come from and what is waiting" }
+  g1@{ shape: subproc, label: "Continues in: Payers › Changes › Acknowledge a change" }
+  g2@{ shape: subproc, label: "Continues in: Payers › Rules › Read the rules" }
+  s1 --> lab --> tip --> tipt --> esc --> cl --> e1
+  lab --> ps --> d1
+  d1 -->|"Yes"| d2
+  d2 -->|"Yes"| w2 --> d3
+  d2 -->|"No"| w1 --> d3
+  d1 -->|"No"| w0 --> d3
+  d3 -->|"Yes"| l1 --> d4
+  d3 -->|"No"| l0 --> d4
+  d4 -->|"Yes"| s1t --> nov
+  d4 -->|"No"| s2t --> nov
+  nov --> e1
+  w1 -.-> g1
+  nov -.-> rl --> g2
+  class s1 k_start
+  class lab,ps k_screen
+  class tip,esc k_click
+  class tipt k_overlay
+  class cl,w1,w2,w0,l1,l0,s1t,s2t,nov,rl k_process
+  class d1,d2,d3,d4 k_decision
+  class e1 k_end
+  class g1,g2 k_goto
 ```
 
 ## Payers › Add a payer
@@ -288,7 +363,7 @@ flowchart TD
   lg@{ shape: cyl, label: "<b>Edit log gets 'Added a payer'</b><br/>Reason 'Payer added'" }
   tt@{ shape: odd, label: "<b>'Riverbend Health was added'</b><br/>Starter workflow, rules and documents are ready.<br/>Figures are benchmark estimates." }
   nav@{ shape: rect, label: "<b>Modal closes</b><br/>Opens /payers/custom-riverbend-health?tab=process" }
-  pg@{ shape: curv-trap, label: "<b>New payer's Process tab</b><br/>Title now counts 7 payers<br/>Row in its group, green dot<br/>Header: 'Not enough' for both figures" }
+  pg@{ shape: curv-trap, label: "<b>New payer's Process tab</b><br/>Title now counts 7 payers<br/>Row in its group, green dot<br/>Header: plan type, the chosen programs, needs, source 'Psyflo benchmark, not a payer's policy'" }
   other@{ shape: rect, label: "<b>The payer is also saved where other screens read it</b><br/>New case offers it wherever a payer is picked,<br/>and reads its document list and rules like any payer" }
   cx@{ shape: trap-t, label: "Click 'Cancel'" }
   cesc@{ shape: trap-t, label: "<b>Press Escape, click the X</b><br/>or click the dimmed area<br/>Escape with a menu open closes the menu first" }
@@ -415,7 +490,7 @@ flowchart TD
 
 ## Payers › Process › Read the workflow
 
-The Process tab shows how an authorization works with one payer: numbered steps in order, with the condition drawn next to the step it leads to. It also holds the reach card, the script for Caller, and any banner about edits or proposals waiting.
+The Process tab shows how an authorization works with one payer: numbered steps in order, with the condition drawn next to the step it leads to. The step-type key and the note about edits sit behind an info icon. How the payer is reached and the script for Caller are folded into one closed section. A banner shows only when edits or proposals wait.
 
 Route: `/payers/summit?tab=process`
 
@@ -439,15 +514,16 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Click the 'Process' tab</b><br/>(the tab shown when none is named)" }
-  tab@{ shape: curv-trap, label: "<b>Process tab</b><br/>Banners, workflow card, two small cards, a note" }
+  tab@{ shape: curv-trap, label: "<b>Process tab</b><br/>Banners, workflow card, one closed section" }
   subgraph gB ["Banners at the top (only when they apply)"]
   dU@{ shape: diam, label: "<b>Edits saved but</b><br/>not yet applied to open drafts?" }
   bU@{ shape: odd, label: "<b>'1 edit applies to new drafts only'</b><br/>New drafts for Summit use this at once.<br/>Sent requests keep what they were sent with.<br/>Click Update drafts to redraft the open ones (R-1042, R-1101)." }
   dP@{ shape: diam, label: "Did Historian propose changes?" }
   bP@{ shape: odd, label: "<b>'Historian proposed 1 change'</b><br/>It never edits the workflow on its own.<br/>'Review in Changes'" }
   end
-  card@{ shape: curv-trap, label: "<b>Workflow card</b><br/>'How an authorization works with Summit'<br/>The workflow the agents follow, in order.<br/>Version 7, edited 10/12." }
-  legend@{ shape: rect, label: "<b>'Step types' row</b><br/>Checklist step, File step, Portal step,<br/>Phone step, Condition" }
+  card@{ shape: curv-trap, label: "<b>Workflow card</b><br/>'How an authorization works with Summit' with an info icon<br/>'Version 7, edited 10/12.'<br/>'Edit workflow' and 'Re-learn from decisions'" }
+  cTip@{ shape: trap-t, label: "<b>Hover, focus or click the info icon</b><br/>(button 'About this workflow')" }
+  tip@{ shape: win-pane, label: "<b>Info tip</b><br/>The workflow in order, where the path splits<br/>The key: Checklist step, File step, Portal step, Phone step, Condition<br/>'Admins can edit; every edit is logged. New drafts use a saved edit at once.<br/>Sent requests keep what they were sent with. Click Update drafts to redraft open ones.'<br/>Escape closes it" }
   subgraph gS ["One numbered step"]
   st@{ shape: curv-trap, label: "<b>Number, step title, step-type chip, agent chips</b><br/>For example: 'Give notice'  Portal step  Navigator" }
   stx@{ shape: rect, label: "<b>Plain sentence on what happens</b><br/>and a 'Typical' time on the right<br/>'same day', '2 minutes', '1.5 days'" }
@@ -456,8 +532,7 @@ flowchart TD
   end
   six@{ shape: rect, label: "<b>Summit's six steps: Check coverage,</b><br/>Gather the documents, Give notice,<br/>Send the request, Follow up,<br/>Decision and next review" }
   diff@{ shape: rect, label: "<b>Other payers differ in how they are reached</b><br/>Evergreen: phone steps<br/>Lakeshore: file steps by fax<br/>Harborview: portal with fax for large files" }
-  two@{ shape: curv-trap, label: "<b>'How to reach Summit' and</b><br/>'Instructions for Caller' side by side" }
-  note@{ shape: odd, label: "<b>'Admins can edit; every edit is logged. New drafts use a saved edit at once.</b><br/>Sent requests keep what they were sent with.<br/>Click Update drafts to redraft open ones.'" }
+  two@{ shape: curv-trap, label: "<b>Closed section</b><br/>'How to reach Summit and what Caller says'<br/>'Reached by portal, phone as backup. Caller script saved 10/12.'<br/>Opens to 'How to reach Summit' and 'Instructions for Caller' side by side" }
   cE@{ shape: trap-t, label: "Click 'Edit workflow'" }
   cR@{ shape: trap-t, label: "Click 'Re-learn from decisions'" }
   cRev@{ shape: trap-t, label: "Click 'Review in Changes'" }
@@ -472,12 +547,13 @@ flowchart TD
   dU -->|"No"| dP
   dP -->|"Yes"| bP --> card
   dP -->|"No"| card
-  card --> legend --> st --> stx --> dc
+  card --> st --> stx --> dc
+  card -.-> cTip --> tip
   dc -->|"Yes"| br
   dc -->|"No"| six
   br --> six
   six -.-> diff
-  six --> two --> note
+  six --> two
   card --> cE --> g_ed
   card --> cR --> g_rl
   bP --> cRev --> g_ch
@@ -486,9 +562,10 @@ flowchart TD
   class s1 k_start
   class tab,card,st,br,two k_screen
   class dU,dP,dc k_decision
-  class bU,bP,note k_toast
-  class legend,stx,six,diff k_process
-  class cE,cR,cRev,cUp k_click
+  class bU,bP k_toast
+  class cTip,cE,cR,cRev,cUp k_click
+  class tip k_overlay
+  class stx,six,diff k_process
   class g_ed,g_rl,g_ch,g_up,g_rc k_goto
   style gB fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gS fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
@@ -496,7 +573,7 @@ flowchart TD
 
 ## Payers › Process › Reach and Caller instructions
 
-The two small cards under the workflow. 'How to reach' is read only here; its three lines are edited from the header's 'Edit' button. 'Instructions for Caller' is the script every Phone step follows, and has its own 'Edit'.
+The closed section under the workflow, 'How to reach Summit and what Caller says'. Opened, it shows 'How to reach' (read only here; its three lines are edited from the header's 'Edit' button) and 'Instructions for Caller' (the script every Phone step follows, with its own 'Edit').
 
 Route: `/payers/summit?tab=process`
 
@@ -520,10 +597,12 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Scroll below the workflow card</b><br/>on the Process tab" }
+  op@{ shape: trap-t, label: "<b>Click the closed section</b><br/>'How to reach Summit and what Caller says'<br/>It is a button; Enter or Space also open it" }
+  opn@{ shape: rect, label: "<b>Section opens</b><br/>Click again to close it<br/>It starts closed every time the tab opens" }
   rc@{ shape: curv-trap, label: "<b>'How to reach Summit'</b><br/>Three rows: Portal, Phone, Fax" }
   rows@{ shape: rect, label: "<b>Each row has an icon, a title and a line</b><br/>Portal: Provider portal, sign-in saved by Navigator<br/>Phone: Provider line, weekdays 8 am to 6 pm<br/>Fax: Not used" }
-  ro@{ shape: odd, label: "<b>No edit button on this card</b><br/>Change the lines with 'Edit' in the header" }
-  cc@{ shape: curv-trap, label: "<b>'Instructions for Caller'</b><br/>The script in a tinted box<br/>'Used by the Phone steps. Confirmed 10/12.'" }
+  ro@{ shape: odd, label: "<b>No edit button on this part</b><br/>Change the lines with 'Edit' in the header" }
+  cc@{ shape: curv-trap, label: "<b>'Instructions for Caller'</b><br/>The script in a tinted box<br/>'Used by the Phone steps. Saved 10/12.'" }
   script@{ shape: rect, label: "<b>Script: ask for the provider line, give member ID and date of birth,</b><br/>ask if the request arrived, never agree to a change,<br/>log the call" }
   ce@{ shape: trap-t, label: "<b>Click 'Edit'</b><br/>on the Caller card" }
   m@{ shape: win-pane, label: "<b>Edit the instructions for Caller</b><br/>Caller follows this on every Phone step and never agrees to a change." }
@@ -535,7 +614,7 @@ flowchart TD
   d2@{ shape: diam, label: "Is the script the same as the saved one?" }
   t0@{ shape: odd, label: "'Nothing changed'" }
   gap@{ shape: rect, label: "<b>Demo gap: a blank script is accepted</b><br/>Phone steps would then have no instructions" }
-  st@{ shape: cyl, label: "<b>Script saved</b><br/>'Confirmed' date becomes today" }
+  st@{ shape: cyl, label: "<b>Script saved</b><br/>'Saved' date becomes today" }
   lg@{ shape: cyl, label: "<b>Edit log entry</b><br/>Area 'Caller instructions'<br/>'Instructions for Caller', before and after" }
   nt@{ shape: cyl, label: "<b>Bell notification</b><br/>'Summit caller instructions edited'<br/>opens the payer's Process tab" }
   t1@{ shape: odd, label: "<b>'Instructions for Caller saved'</b><br/>Caller follows them on its next call.<br/>The edit is logged." }
@@ -546,9 +625,9 @@ flowchart TD
   x1@{ shape: stadium, label: "<b>Modal closes</b><br/>Nothing saved, typed text discarded<br/>Reopening starts from the saved script" }
   g1@{ shape: subproc, label: "Continues in: Payers › Edit payer details" }
   g2@{ shape: subproc, label: "Continues in: Payers › Edit log" }
-  s1 --> rc --> rows --> ro
+  s1 --> op --> opn --> rc --> rows --> ro
   ro -.-> g1
-  s1 --> cc --> script --> ce --> m --> i1 --> i2 --> cs --> d1
+  opn --> cc --> script --> ce --> m --> i1 --> i2 --> cs --> d1
   d1 -->|"Yes"| er --> i2
   d1 -->|"No"| d2
   d2 -->|"Yes"| t0 --> x1
@@ -558,10 +637,10 @@ flowchart TD
   m --> cx --> x1
   m --> cesc --> x1
   class s1 k_start
+  class op,ce,cs,cx,cesc k_click
+  class opn,rows,script,gap,nb k_process
   class rc,cc k_screen
-  class rows,script,gap,nb k_process
   class ro,er,t0,t1 k_toast
-  class ce,cs,cx,cesc k_click
   class m k_overlay
   class i1,i2 k_input
   class d1,d2 k_decision
@@ -1030,7 +1109,7 @@ flowchart TD
 
 ## Payers › Rules › Read the rules
 
-Four rule cards for one payer, each a few plain lines, with the agents that use them and the date they were last confirmed. The saved lines are what New case reads for this payer; editing them is the next diagram. In the product, each field would carry a source and a confidence (published, payer-confirmed, observed, staff-reported, unconfirmed).
+Four rules for one payer, each closed on its first line. A rule opens to a few plain lines with the agents that use it and the date it was last saved in Psyflo. The saved lines are what New case reads for this payer; editing them is the next diagram. The rules are demo data: none is shown as verified by the payer. In the product, each field would carry a source and a confidence (published, payer-confirmed, observed, staff-reported, unconfirmed).
 
 Route: `/payers/summit?tab=rules`
 
@@ -1054,41 +1133,48 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Click the 'Rules' tab" }
-  tab@{ shape: curv-trap, label: "<b>Rules tab</b><br/>Banner if edits wait, four cards in two columns, a note" }
+  tab@{ shape: curv-trap, label: "<b>Rules tab</b><br/>Banner if edits wait, then one card 'Rules the agents follow'<br/>with an info icon and four closed rules" }
   dU@{ shape: diam, label: "<b>Edits saved but not yet</b><br/>applied to open drafts?" }
   bU@{ shape: odd, label: "<b>'1 edit applies to new drafts only'</b><br/>with 'Update 2 drafts'<br/>Sent requests keep what they were sent with" }
   gU@{ shape: subproc, label: "Continues in: Payers › Edits waiting › Update drafts" }
-  subgraph gC ["Each card"]
-  c1@{ shape: curv-trap, label: "<b>Submission windows</b><br/>Notice within 24 hours of admission (72 for Harborview, by phone for Evergreen, by fax for Lakeshore)<br/>Recertification filed 72 hours before the unit limit<br/>A continued-stay review every 7 days after the first 7" }
-  c2@{ shape: curv-trap, label: "<b>Backdating</b><br/>Differs by payer: Summit and Cardinal do not backdate,<br/>Beacon backdates within 2 business days,<br/>Evergreen up to 3 days with a call log, Lakeshore to the fax receipt date" }
-  c3@{ shape: curv-trap, label: "<b>No authorization needed</b><br/>Individual therapy, Medication management,<br/>Initial assessment, Crisis stabilization first 24 hours<br/>(Evergreen has no crisis line). Shown with green ticks" }
-  c4@{ shape: curv-trap, label: "<b>Peer-to-peer and appeals</b><br/>Summit: peer-to-peer call within 3 business days (Cardinal 2),<br/>written appeal within 60 days, expedited 72 hours,<br/>then external review (Evergreen: state hearing)" }
+  tip@{ shape: trap-t, label: "<b>Hover, focus or click the info icon</b><br/>(button 'About these rules')" }
+  tipt@{ shape: win-pane, label: "<b>'Open a rule to read it or edit it. New drafts use a saved edit at once.</b><br/>Sent requests keep what they were sent with. Click Update drafts to redraft open ones.<br/>These are demo rules, not verified against Summit's current policy.'" }
+  subgraph gC ["Four closed rules, each a button with aria-expanded"]
+  c1@{ shape: curv-trap, label: "<b>Submission windows</b><br/>'Notice within 24 hours of admission, and 2 more'  3 lines<br/>Notice differs by payer (72 hours for Harborview, by phone for Evergreen, by fax for Lakeshore)" }
+  c2@{ shape: curv-trap, label: "<b>Backdating</b><br/>'Summit does not backdate an authorization, and 2 more'  3 lines<br/>Beacon backdates within 2 business days, Evergreen up to 3 days with a call log,<br/>Lakeshore to the fax receipt date" }
+  c3@{ shape: curv-trap, label: "<b>No authorization needed</b><br/>'Individual therapy, and 3 more'  4 lines<br/>Shown with green ticks once open (Evergreen has no crisis line)" }
+  c4@{ shape: curv-trap, label: "<b>Peer-to-peer and appeals</b><br/>'Peer-to-peer call within 3 business days of a denial, and 3 more'  4 lines<br/>Cardinal 2 days. Evergreen ends in a state hearing" }
   end
-  ub@{ shape: rect, label: "<b>Foot of each card</b><br/>'Used by Cadence and Navigator · confirmed 10/12'" }
+  op@{ shape: trap-t, label: "Click a rule (or Enter, Space)" }
+  opn@{ shape: rect, label: "<b>Rule opens: its lines, then the foot line</b><br/>Click again to close" }
+  ub@{ shape: rect, label: "<b>Foot line</b><br/>'Used by Cadence and Scrubber · saved 10/12'" }
   who@{ shape: rect, label: "<b>Used by</b><br/>Windows: Cadence, Navigator<br/>Backdating: Cadence, Scrubber<br/>No authorization needed: Verify, Criteria<br/>Peer-to-peer and appeals: Advocate, Cadence" }
-  cf@{ shape: rect, label: "<b>'Confirmed' is a date</b><br/>Evergreen shows 10/09, the others 10/12<br/>It moves to today when a rule is edited" }
-  note@{ shape: odd, label: "<b>'Rules are learned from past decisions and confirmed against</b><br/>Summit's published policy. New drafts use a saved edit at once.<br/>Sent requests keep what they were sent with.<br/>Click Update drafts to redraft open ones.'" }
+  cf@{ shape: rect, label: "<b>'Saved' is the date the rule was last saved in Psyflo</b><br/>Evergreen shows 10/09, the others 10/12<br/>It moves to today when a rule is edited<br/>It is never a date the payer confirmed anything" }
+  src@{ shape: rect, label: "<b>A rule edited here adds</b><br/>'Source: Edited in Psyflo by Jordan Perez'<br/>A rule that was not edited shows no source of its own:<br/>the header says 'Source: Demo sample rules, version 2026.3'" }
   noeff@{ shape: rect, label: "<b>New case reads the saved lines for the payer</b><br/>and level of care of each draft<br/>See the New case diagrams for what it checks" }
-  ce@{ shape: trap-t, label: "<b>Click 'Edit' on a card</b><br/>(the button is named 'Edit Backdating' and so on)" }
+  ce@{ shape: trap-t, label: "<b>Click 'Edit' inside an open rule</b><br/>(the button is named 'Edit Backdating' and so on)" }
   gE@{ shape: subproc, label: "Continues in: Payers › Rules › Edit a rule" }
   gF@{ shape: subproc, label: "Continues in: Payers › Configuration feeds the rest of the app" }
+  gP@{ shape: subproc, label: "Continues in: Payers › Header › Policy status and the demo-rules label" }
   s1 --> tab --> dU
   dU -->|"Yes"| bU --> gU
   dU -->|"No"| c1
   bU --> c1
+  tab -.-> tip --> tipt
   c1 --> c2 --> c3 --> c4
-  c1 --> ub --> who --> cf
-  c4 --> note
-  c4 --> ce --> gE
-  note -.-> noeff
+  c1 --> op --> opn --> ub --> who --> cf --> src
+  src --> ce --> gE
+  c4 -.-> noeff
   noeff -.-> gF
+  src -.-> gP
   class s1 k_start
   class tab,c1,c2,c3,c4 k_screen
   class dU k_decision
-  class bU,note k_toast
-  class gU,gE,gF k_goto
-  class ub,who,cf,noeff k_process
-  class ce k_click
+  class bU k_toast
+  class gU,gE,gF,gP k_goto
+  class tip,op,ce k_click
+  class tipt k_overlay
+  class opn,ub,who,cf,src,noeff k_process
   style gC fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```
 
@@ -1117,7 +1203,7 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Click 'Edit' on a rule card</b><br/>Example: 'Edit Backdating'" }
+  s1@{ shape: stadium, label: "<b>Open a rule (click its row), then click its 'Edit'</b><br/>Example: 'Edit Backdating'" }
   m@{ shape: win-pane, label: "<b>Edit backdating</b><br/>One rule per line. New drafts use this at once.<br/>Sent requests keep what they were sent with.<br/>Click Update drafts to redraft open ones." }
   i1@{ shape: lean-r, label: "<b>Type in 'Rules'</b><br/>One line per rule, starting from the saved lines" }
   i2@{ shape: lean-r, label: "<b>Type 'Reason for the edit' (required)</b><br/>Example: Summit confirmed the new window on a call" }
@@ -1128,12 +1214,12 @@ flowchart TD
   d2@{ shape: diam, label: "<b>Are there lines left, and</b><br/>do they differ from the saved ones?" }
   t0@{ shape: odd, label: "<b>'Nothing changed'</b><br/>Edit at least one line, and keep at least one rule." }
   x0@{ shape: stadium, label: "<b>Modal closes</b><br/>Nothing saved" }
-  st@{ shape: cyl, label: "<b>Rule lines replaced</b><br/>'Confirmed' date becomes today" }
+  st@{ shape: cyl, label: "<b>Rule lines replaced</b><br/>'Saved' date becomes today<br/>The rule gets 'Source: Edited in Psyflo by Jordan Perez'" }
   lg@{ shape: cyl, label: "<b>Edit log entry, area 'Rules'</b><br/>Rule name, before and after (lines joined with semicolons), reason" }
   un@{ shape: cyl, label: "'Edits waiting' goes up by one" }
   nt@{ shape: cyl, label: "<b>Bell notification 'Summit rule edited'</b><br/>opens the payer's Rules tab" }
   t1@{ shape: odd, label: "<b>'Backdating saved'</b><br/>New drafts use it at once.<br/>Click Update drafts to redraft open ones." }
-  bn@{ shape: curv-trap, label: "<b>Rule card shows the new lines</b><br/>Banner '1 edit applies to new drafts only'" }
+  bn@{ shape: curv-trap, label: "<b>The rule row shows the new first line</b><br/>Open, it shows the new lines and the source<br/>Banner '1 edit applies to new drafts only'" }
   e1@{ shape: stadium, label: "<b>New drafts use the rule from now on</b><br/>New case reads it the next time it draws" }
   cx@{ shape: trap-t, label: "Click 'Cancel'" }
   cesc@{ shape: trap-t, label: "<b>Press Escape, click the X</b><br/>or click the dimmed area" }
@@ -1167,7 +1253,7 @@ flowchart TD
 
 ## Payers › Documents › Read the document list
 
-What the payer wants to see for each level of care, as a plain numbered list with no status on any row. The list is chosen with 'Level of care'. In the demo the lists are per level of care (Residential 3.5, IOP, PHP, Detox); request type only changes the workflow, not this list. New case checks a draft's documents against the saved list for its payer and level of care.
+What the payer wants to see for each level of care, as a plain numbered list with no status on any row. The list is closed on a one-line summary and opens on a click. The list is chosen with 'Level of care'. In the demo the lists are per level of care (Residential 3.5, IOP, PHP, Detox); request type only changes the workflow, not this list. New case checks a draft's documents against the saved list for its payer and level of care.
 
 Route: `/payers/summit?tab=documents`
 
@@ -1191,12 +1277,13 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Click the 'Documents' tab" }
-  tab@{ shape: curv-trap, label: "<b>Documents tab</b><br/>Banner if edits wait. Left: the list card.<br/>Right: 'Try it on a case'" }
-  card@{ shape: curv-trap, label: "<b>'What Summit wants for Residential 3.5'</b><br/>'Nine documents. The agents ask for each one<br/>before they write a word.'<br/>'Edit list' button on the right" }
-  dflt@{ shape: rect, label: "<b>Opens on Residential 3.5 every time</b><br/>the tab or the payer changes" }
+  tab@{ shape: curv-trap, label: "<b>Documents tab</b><br/>Banner if edits wait. Then 'Level of care' and 'Edit list',<br/>the closed list, and 'Try it on a case' below it" }
+  card@{ shape: curv-trap, label: "<b>Closed section 'What Summit wants for Residential 3.5'</b><br/>'Nine documents: ASAM multidimensional assessment,<br/>Psychiatric evaluation or H&P, and 7 more.'" }
+  op@{ shape: trap-t, label: "<b>Click the section (or Enter, Space)</b><br/>It opens and closes, and stays open when 'Level of care' changes" }
+  dflt@{ shape: rect, label: "<b>Opens on Residential 3.5 every time</b><br/>the tab or the payer changes<br/>The list is closed again" }
   lc@{ shape: lean-r, label: "<b>Pick 'Level of care'</b><br/>Residential 3.5, IOP, PHP, Detox" }
   sw@{ shape: rect, label: "<b>Title, count and list switch to that level</b><br/>For Summit: Residential 9, IOP 6, PHP 7, Detox 8" }
-  ol@{ shape: curv-trap, label: "<b>Numbered list</b><br/>Number, document name in bold,<br/>what it must show in grey" }
+  ol@{ shape: curv-trap, label: "<b>Open: numbered list</b><br/>Number, document name in bold,<br/>what it must show in grey<br/>Then 'The agents ask for each one before they write a word.'" }
   ex@{ shape: rect, label: "<b>Example row</b><br/>ASAM multidimensional assessment<br/>Every dimension, dated within 7 days" }
   any@{ shape: diam, label: "Is the list empty?" }
   em@{ shape: odd, label: "'This list is empty. Add the documents Summit asks for.'" }
@@ -1214,22 +1301,24 @@ flowchart TD
   dU -->|"Yes"| bU --> gU
   dU -->|"No"| card
   bU --> card
-  card --> dflt --> lc --> sw --> ol
+  card --> dflt --> lc --> sw
+  card --> op --> ol
+  sw -.-> op
   ol --> ex --> any
   any -->|"Yes"| em
   any -->|"No"| pdiff
   em -.-> ce
   pdiff -.-> one
   pdiff --> aft --> gA
-  card --> ce --> gE
+  tab --> ce --> gE
   tab --> gC
   class s1 k_start
   class tab,card,ol k_screen
+  class op,ce k_click
   class dflt,sw,ex,pdiff,one,aft k_process
   class lc k_input
   class any,dU k_decision
   class em,bU k_toast
-  class ce k_click
   class gE,gC,gU,gA k_goto
 ```
 
@@ -1258,7 +1347,7 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Click 'Edit list'</b><br/>on the document card" }
+  s1@{ shape: stadium, label: "<b>Click 'Edit list'</b><br/>beside 'Level of care'" }
   m@{ shape: win-pane, label: "<b>Edit what Summit wants for Residential 3.5</b><br/>New drafts use this list at once. Sent requests keep<br/>what they were sent with. Click Update drafts to redraft open ones." }
   lvl@{ shape: rect, label: "<b>Edits only the level of care shown</b><br/>To change IOP, close this and switch 'Level of care' first" }
   rws@{ shape: curv-trap, label: "<b>One row per document</b><br/>Number, document name box, 'What it must show' box, bin" }
@@ -1343,12 +1432,12 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Look at the card 'Try it on a case'</b><br/>right of the document list<br/>Check a chart against this list" }
+  s1@{ shape: stadium, label: "<b>Look at the card 'Try it on a case'</b><br/>below the document list<br/>Check a chart against this list<br/>Its info icon holds the note on keyword matching" }
   hc@{ shape: diam, label: "Is any case in 'Preparing'?" }
   nc@{ shape: odd, label: "Menu shows 'No cases to check'" }
   df@{ shape: rect, label: "<b>Case starts as the first 'Preparing' case for this payer,</b><br/>else the first 'Preparing' case at all<br/>Cardinal: I-2207" }
   pk@{ shape: lean-r, label: "<b>Pick a 'Case'</b><br/>R-1042 · J.M., 34 (Residential 3.5)<br/>I-2207 · T.R., 29 (IOP)<br/>R-0988, R-1101, I-2262" }
-  pt@{ shape: lean-r, label: "<b>Type or paste in 'Paste chart text' (optional)</b><br/>Hint: with text here, Reader checks it against the level<br/>of care list on the left instead of the case's chart" }
+  pt@{ shape: lean-r, label: "<b>Type or paste in 'Paste chart text' (optional)</b><br/>Hint: with text here, Reader checks it against the level<br/>of care list above instead of the case's chart" }
   clr@{ shape: rect, label: "<b>Picking a case or changing the text</b><br/>clears any earlier result" }
   dt@{ shape: diam, label: "<b>Is there pasted text?</b><br/>Blank or spaces only counts as none" }
   dg@{ shape: diam, label: "Is there a case or pasted text?" }
@@ -1413,7 +1502,7 @@ flowchart TD
 
 ## Payers › Changes › Read what changed
 
-The Changes tab has three parts from top to bottom: the state of the payer's rules (a waiting change or 'up to date'), any proposals from Historian, and a dated history called 'What changed'. Only the waiting change and the proposals need a person.
+The Changes tab has three parts from top to bottom: a waiting change (or one quiet line when nothing waits), any proposals from Historian, and a dated history called 'What changed'. Only the waiting change and the proposals need a person. The demo's changes are sample data and nothing here says a payer was checked.
 
 Route: `/payers/cardinal?tab=changes`
 
@@ -1440,7 +1529,7 @@ flowchart TD
   tab@{ shape: curv-trap, label: "Changes tab" }
   dp@{ shape: diam, label: "Is a payer change waiting?" }
   bw@{ shape: curv-trap, label: "<b>Ochre banner with a megaphone</b><br/>Title: 'Criteria changed, version 2026.3'<br/>What changed in one sentence<br/>Who can redraft which of this payer's unsent drafts,<br/>then two buttons" }
-  bg@{ shape: odd, label: "<b>Green banner</b><br/>'This payer's rules are up to date'<br/>Last checked 10/12. Sentinel keeps watching Beacon's policy and portal." }
+  bg@{ shape: odd, label: "<b>One quiet line, no banner</b><br/>'Nothing is waiting for you. Changes here are demo data,<br/>not read from Beacon's policy.'" }
   dq@{ shape: diam, label: "Any proposals from Historian?" }
   pc@{ shape: curv-trap, label: "<b>One card per proposal</b><br/>Historian chip, 'Proposal: ...', text,<br/>'Under Follow up: If ... leads to Phone step'<br/>'Accept proposal', 'Dismiss'" }
   pn@{ shape: rect, label: "<b>Proposals do not turn the list dot or the sidebar badge;</b><br/>only the tab badge counts them" }
@@ -1510,8 +1599,8 @@ flowchart TD
   pc@{ shape: cyl, label: "<b>Change opened for the payer: 'waiting for a person'</b><br/>Title, one sentence, effective date,<br/>agents that will redraft<br/>The drafts it affects are read live, not stored" }
   subgraph gS ["Where a person sees it"]
   s1@{ shape: rect, label: "Sidebar 'Payers' badge counts it (3 at the start)" }
-  s2@{ shape: rect, label: "Payer row in the list: ochre dot" }
-  s3@{ shape: rect, label: "Header plan line ends 'change waiting'" }
+  s2@{ shape: rect, label: "Payer row in the list: ochre dot and the words 'Change waiting'" }
+  s3@{ shape: rect, label: "Header 'Policy status' line starts 'Change waiting for you (...)'" }
   s4@{ shape: rect, label: "'Changes' tab badge shows 1" }
   s5@{ shape: odd, label: "<b>Bell notification from Sentinel, unread</b><br/>'Payer rule changed'<br/>Cardinal updated its criteria (version 2026.3). 4 drafts are affected.<br/>This text is fixed and still says 4; the Changes tab counts live<br/>(Harborview's and Evergreen's changes have the badge and dots but no notification)" }
   end
@@ -1650,14 +1739,14 @@ flowchart TD
   subgraph gU ["What the update does"]
   u1@{ shape: cyl, label: "<b>Each listed draft needs a person again</b><br/>'Redrafted after Cardinal's change (criteria changed, version 2026.3).<br/>Waiting for a new signature'<br/>Timeline event by Scribe" }
   u2@{ shape: cyl, label: "<b>Update recorded for Case Manager and New case</b><br/>Which change, which payer, and the IDs<br/>of the drafts redrafted: I-2207" }
-  u3@{ shape: cyl, label: "<b>Payer's change cleared</b><br/>Checked date becomes today" }
+  u3@{ shape: cyl, label: "<b>Payer's change cleared</b><br/>No 'checked' date is written: nothing was checked against the payer" }
   u4@{ shape: cyl, label: "<b>Document lists gain the change's new rows</b><br/>Remaining treatment goals: Named in the latest progress note<br/>in Residential 3.5, IOP and PHP" }
   u5@{ shape: cyl, label: "<b>Edit log: 3 'Documents' entries</b><br/>'Added to the Residential 3.5 list' and so on<br/>Reason 'After criteria changed, version 2026.3'" }
   u6@{ shape: cyl, label: "<b>'What changed' gets a new top row</b><br/>'Criteria changed, version 2026.3: acknowledged and applied'<br/>Acknowledged by Jordan Perez, ...<br/>Scribe and Integrity updated 1 draft ..." }
   end
   nt@{ shape: cyl, label: "<b>Bell notification 'Drafts updated' from Scribe</b><br/>1 draft was redrafted after Cardinal's change.<br/>Each needs a new signature in Case Manager." }
-  t1@{ shape: odd, label: "<b>'1 draft updated'</b><br/>Cardinal is up to date. Each draft returned to Case Manager<br/>for a new signature." }
-  out@{ shape: curv-trap, label: "<b>Changes tab flips to green</b><br/>'This payer's rules are up to date', last checked today<br/>Sidebar badge drops, dot turns green" }
+  t1@{ shape: odd, label: "<b>'1 draft updated'</b><br/>The change is applied for Cardinal. Each draft returned to<br/>Case Manager for a new signature." }
+  out@{ shape: curv-trap, label: "<b>Changes tab shows one quiet line</b><br/>'Nothing is waiting for you...'<br/>Header Policy status: 'No change waiting. Last acknowledged or applied in Psyflo' today<br/>Sidebar badge drops, row loses 'Change waiting', dot turns green" }
   cx@{ shape: trap-t, label: "Click 'Cancel'" }
   cesc@{ shape: trap-t, label: "<b>Press Escape, click the X</b><br/>or click the dimmed area" }
   x1@{ shape: stadium, label: "<b>Modal closes</b><br/>Nothing redrafted, still acknowledged" }
@@ -1721,7 +1810,7 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Open the 'Changes' tab</b><br/>for a payer" }
   dp@{ shape: diam, label: "Is a change waiting?" }
-  up@{ shape: curv-trap, label: "<b>Green banner</b><br/>'This payer's rules are up to date'<br/>Only the 'What changed' history below" }
+  up@{ shape: curv-trap, label: "<b>One quiet line</b><br/>'Nothing is waiting for you. Changes here are demo data...'<br/>Only the 'What changed' history below" }
   hv@{ shape: rect, label: "<b>Harborview's waiting change</b><br/>'Portal form change', effective 10/18<br/>The request form now asks for the expected length of stay and a second contact.<br/>The old form closes 10/31." }
   ev@{ shape: rect, label: "<b>Evergreen's waiting change</b><br/>'Reference number on notice calls', effective 10/22<br/>It adds 'Notice call reference number' to the Residential 3.5 list" }
   dn@{ shape: diam, label: "<b>Does the payer have an unsent draft?</b><br/>Read live: requests in 'Preparing'<br/>and saved New case drafts not sent" }
@@ -1735,13 +1824,13 @@ flowchart TD
   dd@{ shape: diam, label: "Does the change add documents?" }
   da@{ shape: cyl, label: "<b>Document lists gain the change's new rows</b><br/>Evergreen: 'Notice call reference number'<br/>Edit log: one 'Documents' entry" }
   dn0@{ shape: rect, label: "<b>Harborview adds none: the change is about a form,</b><br/>not the list" }
-  s0@{ shape: cyl, label: "<b>No drafts touched</b><br/>No update recorded for Case Manager<br/>Change cleared, checked date is today" }
+  s0@{ shape: cyl, label: "<b>No drafts touched</b><br/>No update recorded for Case Manager<br/>Change cleared, no 'checked' date is written" }
   hh0@{ shape: cyl, label: "<b>'What changed' gets a new top row</b><br/>'Portal form change: acknowledged and applied'<br/>'No open drafts needed an update. New drafts use the change.'" }
-  t0@{ shape: odd, label: "<b>'No open drafts to update'</b><br/>Harborview is up to date.<br/>New drafts use the change from now on." }
-  nb@{ shape: rect, label: "<b>No 'Drafts updated' bell notification</b><br/>Sidebar badge drops by one<br/>Payer dot turns green" }
+  t0@{ shape: odd, label: "<b>'No open drafts to update'</b><br/>The change is applied for Harborview.<br/>New drafts use it from now on." }
+  nb@{ shape: rect, label: "<b>No 'Drafts updated' bell notification</b><br/>Sidebar badge drops by one<br/>Row loses 'Change waiting', dot turns green" }
   cx@{ shape: trap-t, label: "<b>Click 'Cancel', press Escape,</b><br/>click the X or the dimmed area" }
   x1@{ shape: stadium, label: "Modal closes, change stays waiting" }
-  e1@{ shape: stadium, label: "Payer is up to date" }
+  e1@{ shape: stadium, label: "The change is applied and the payer has nothing waiting" }
   g1@{ shape: subproc, label: "Continues in: Payers › Changes › Update drafts after a change" }
   g2@{ shape: subproc, label: "Continues in: Payers › Changes › Acknowledge a change" }
   s1 --> dp
@@ -1820,7 +1909,7 @@ flowchart TD
   od@{ shape: rect, label: "Opens Dashboard with that request's drawer" }
   end
   subgraph gP ["Not read by any edit"]
-  n1@{ shape: rect, label: "<b>Header 'Approved as asked' (74% for Summit) is where New case</b><br/>starts the approval chance: it ends 14 points higher.<br/>It comes from decision history, so no rule or list edit moves it" }
+  n1@{ shape: rect, label: "<b>The payer's approved-as-asked rate (74% for Summit, shown in Analytics)</b><br/>is where New case starts the approval chance: it ends 14 points higher.<br/>It comes from decision history, so no rule or list edit moves it" }
   n2@{ shape: rect, label: "<b>Authorizations queue order and the case page</b><br/>do not read the saved configuration" }
   end
   prd@{ shape: rect, label: "<b>In the product (PRD 06)</b><br/>A rule version is stamped on every authorization;<br/>Packet reads the channel, form and documents; Cadence reads windows and caps;<br/>Advocate reads peer-to-peer and appeal windows" }

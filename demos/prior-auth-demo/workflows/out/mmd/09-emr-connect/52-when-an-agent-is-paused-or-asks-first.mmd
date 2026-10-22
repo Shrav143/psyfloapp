@@ -16,10 +16,10 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Click 'Sync now', 'Connect a system', 'Fix' or 'Reconnect'</b><br/>Header, a row, or the Manage drawer" }
+  s1@{ shape: stadium, label: "<b>Click 'Sync now', 'Connect a system', 'Fix' or 'Reconnect'</b><br/>Header, a row, the Action required line, or the Manage drawer" }
   q1@{ shape: diam, label: "Which agent does the step?" }
   a1@{ shape: rect, label: "<b>Reader</b><br/>Sync now (header or a row) and Connect a system" }
-  a2@{ shape: rect, label: "<b>Navigator</b><br/>Fix, and Reconnect on a row or in the Manage drawer" }
+  a2@{ shape: rect, label: "<b>Navigator</b><br/>Fix, and Reconnect on a row, in the Action required line or in the Manage drawer" }
   q2@{ shape: diam, label: "Is that agent paused in Settings?" }
   t1@{ shape: odd, label: "<b>'{Agent} is paused'</b><br/>'Resume it in Settings to sync.'<br/>Or: to connect a system, fix it, reconnect it<br/>Amber" }
   x1@{ shape: stadium, label: "<b>Nothing starts</b><br/>The page stays as it was" }
@@ -33,15 +33,16 @@ flowchart TD
   subgraph gAfter ["After the step finishes"]
   r1@{ shape: hex, label: "<b>The agent logs one line in Recent activity</b><br/>Every level does this" }
   q4@{ shape: diam, label: "Is the agent set to 'Act on its own'?" }
-  n1@{ shape: rect, label: "<b>No toast</b><br/>The tiles and the log show what happened" }
+  n1@{ shape: rect, label: "<b>No toast</b><br/>The figures and the log (in Advanced) show what happened" }
   t2@{ shape: odd, label: "<b>A toast says what happened</b><br/>'Sync finished', '{name} is connected' or 'Sign-in renewed'" }
   end
   g1@{ shape: subproc, label: "Continues in: EMR Connect › Sync › Sync now" }
-  g2@{ shape: subproc, label: "Continues in: EMR Connect › Problems › Fix a system that needs a quick look" }
+  g2@{ shape: subproc, label: "Continues in: EMR Connect › Problems › Fix a system that needs attention" }
   g3@{ shape: subproc, label: "Continues in: EMR Connect › Manage › Reconnect a system" }
   g4@{ shape: subproc, label: "Continues in: EMR Connect › Connect a system › Choose the system and contact" }
   g5@{ shape: subproc, label: "Continues in: Settings › Agents › Change an agent's freedom" }
   g6@{ shape: subproc, label: "Continues in: Settings › Pause › Pause one agent, resume all" }
+  g7@{ shape: subproc, label: "Continues in: EMR Connect › Page › The Action required line" }
   s1 --> q1
   q1 -->|"Reader"| a1
   q1 -->|"Navigator"| a2
@@ -59,6 +60,7 @@ flowchart TD
   q4 -->|"No"| t2
   p1 -.-> g1 & g2 & g3 & g4
   t1 -.-> g6
+  t1 -.-> g7
   o2 -.-> g5
   class s1 k_start
   class q1,q2,q3,q4 k_decision
@@ -68,5 +70,5 @@ flowchart TD
   class o1 k_overlay
   class c1,c2 k_click
   class r1 k_agent
-  class g1,g2,g3,g4,g5,g6 k_goto
+  class g1,g2,g3,g4,g5,g6,g7 k_goto
   style gAfter fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

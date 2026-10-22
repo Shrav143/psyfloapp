@@ -4,7 +4,7 @@ import { Button, Card, Disclosure, Field, TextArea } from "@/components/ui";
 import { AGENTS } from "@/data/agents";
 import { RULE_TITLE, type PayerConfig, type Rule } from "@/data/payerConfig";
 import { useStore } from "@/store";
-import { InfoTip } from "@/pages/eligibility/InfoTip";
+import { InfoTip } from "@/components/ui/InfoTip";
 import { joinWords } from "./lib/checker";
 import { ReasonModal } from "./ReasonModal";
 import { Unapplied } from "./Unapplied";

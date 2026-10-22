@@ -16,15 +16,17 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Look at the 'Payers' card</b><br/>on the left of the page" }
-  list@{ shape: curv-trap, label: "<b>Payers card</b><br/>'Search payers' box, then four groups, then a legend" }
-  grp@{ shape: rect, label: "<b>Rows sit under four group headings</b><br/>Ohio Medicaid, Commercial,<br/>Medicare Advantage, Behavioral carve-out<br/>A payer added later joins its group" }
-  row@{ shape: rect, label: "<b>Each row shows the payer name,</b><br/>its plan type and a dot<br/>Selected row is pale green" }
+  s1@{ shape: stadium, label: "<b>Look at the 'Payers' card</b><br/>on the left of the page<br/>(above the payer on a narrow screen)" }
+  list@{ shape: curv-trap, label: "<b>Payers card</b><br/>'Payers' and '3 with a change waiting'<br/>'Search payers' box, then one row per payer" }
+  grp@{ shape: rect, label: "<b>Rows follow the group order</b><br/>Ohio Medicaid, Commercial,<br/>Medicare Advantage, Behavioral carve-out<br/>A payer added later joins its group" }
+  row@{ shape: rect, label: "<b>Each row has two lines on the left</b><br/>Name, then 'Medicaid HMO · 4 programs'<br/>Selected row is pale green" }
+  cue@{ shape: rect, label: "<b>On the right of the row</b><br/>What the payer asks for, read from its saved rules:<br/>'Initial + review', 'Initial only' or 'Review only'" }
+  prog@{ shape: rect, label: "<b>Programs</b><br/>A built-in payer covers every program that has a document list<br/>A payer added with 'Add a payer' covers the programs chosen then<br/>'4 programs' when all four, else the names" }
   dot@{ shape: diam, label: "Does this payer have a change waiting?" }
-  green@{ shape: rect, label: "<b>Green dot</b><br/>Up to date" }
-  ochre@{ shape: rect, label: "<b>Ochre dot</b><br/>Change waiting" }
-  tnote@{ shape: odd, label: "<b>A proposal from Historian alone</b><br/>does not turn the dot ochre.<br/>Only the 'Changes' tab badge counts it" }
-  leg@{ shape: curv-trap, label: "<b>Legend at the foot of the card</b><br/>'up to date' and 'change waiting'" }
+  green@{ shape: rect, label: "<b>Green dot, nothing else</b><br/>Label for screen readers: 'No change waiting'" }
+  ochre@{ shape: rect, label: "Ochre dot with the words 'Change waiting'" }
+  tnote@{ shape: odd, label: "<b>A proposal from Historian alone</b><br/>does not mark the row.<br/>Only the 'Changes' tab badge counts it" }
+  nomet@{ shape: rect, label: "<b>No approval rate or decision time on the row</b><br/>Those figures live in Analytics" }
   i1@{ shape: lean-r, label: "Type in 'Search payers'" }
   filt@{ shape: rect, label: "<b>List narrows as you type</b><br/>Matches name, plan type or group,<br/>any capitals" }
   any@{ shape: diam, label: "Does any payer still match?" }
@@ -39,9 +41,9 @@ flowchart TD
   same@{ shape: trap-t, label: "Click the payer that is already selected" }
   nochg@{ shape: rect, label: "Nothing changes on screen" }
   e1@{ shape: stadium, label: "The chosen payer's page is showing" }
-  s1 --> list --> grp --> row --> dot
-  dot -->|"No"| green --> leg
-  dot -->|"Yes"| ochre --> leg
+  s1 --> list --> grp --> row --> cue --> prog --> dot
+  dot -->|"No"| green --> nomet
+  dot -->|"Yes"| ochre --> nomet
   ochre -.-> tnote
   list --> i1 --> filt --> any
   any -->|"No"| empty --> clr --> clr2 --> list
@@ -50,8 +52,8 @@ flowchart TD
   pick --> nav --> swap --> fresh --> keep --> e1
   list --> same --> nochg --> e1
   class s1 k_start
-  class list,leg k_screen
-  class grp,row,green,ochre,filt,clr2,nav,swap,fresh,keep,nochg k_process
+  class list k_screen
+  class grp,row,cue,prog,green,ochre,nomet,filt,clr2,nav,swap,fresh,keep,nochg k_process
   class dot,any k_decision
   class tnote,empty k_toast
   class i1 k_input

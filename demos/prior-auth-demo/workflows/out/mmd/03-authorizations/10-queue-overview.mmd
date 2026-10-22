@@ -19,7 +19,7 @@ flowchart TD
   s1@{ shape: stadium, label: "Click 'Authorizations' in the sidebar" }
   s2@{ shape: stadium, label: "Demo menu › 'Authorizations: the queue'" }
   s3@{ shape: stadium, label: "On a case page: click 'Back to queue' or the 'Authorizations' crumb" }
-  q1@{ shape: curv-trap, label: "<b>Authorizations queue</b><br/>Header, payer signal, five tiles, filters, priority bands" }
+  q1@{ shape: curv-trap, label: "<b>Authorizations queue</b><br/>Header, one payer-signal line, four figures, filters, priority bands" }
   sb@{ shape: rect, label: "<b>Sidebar badge on 'Authorizations'</b><br/>Open requests in Act now plus Due within 24 hours (19)" }
   p1@{ shape: rect, label: "<b>The page counts the open requests</b><br/>A request that was sent, decided by the payer or settled no longer counts" }
   p2@{ shape: rect, label: "<b>The average and the next due time use each request's current chance and due time</b><br/>Including actions applied on its case page" }
@@ -30,16 +30,17 @@ flowchart TD
   nb@{ shape: trap-t, label: "Click 'New case' (top right button)" }
   g1@{ shape: subproc, label: "Continues in: New case › Referral step" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Queue › Cardinal payer signal" }
-  tl@{ shape: curv-trap, label: "<b>Five summary tiles under the header</b><br/>Always count the whole queue, not the filtered list" }
+  tl@{ shape: curv-trap, label: "<b>Four figures under the header</b><br/>Always count the whole queue, not the filtered list" }
+  t2@{ shape: trap-t, label: "<b>Click 'Urgent now'</b><br/>5 · 'the Act now band'" }
+  t3@{ shape: trap-t, label: "<b>Click 'Due within 24 hours'</b><br/>14 · 'next due in 3 h'<br/>(or 'next one is due now', or 'nothing open')" }
+  t4@{ shape: trap-t, label: "<b>Click 'Waiting on you'</b><br/>'not sent yet, or a question for you'<br/>Counts the requests the ordering rule puts first" }
   t1@{ shape: curv-trap, label: "<b>'Approval chance' 79%</b><br/>'average · likely 74–84%'<br/>Not clickable" }
-  t2@{ shape: trap-t, label: "<b>Click the 'Urgent' tile</b><br/>5 · 'the Act now band'<br/>(0 once all five are sent or handled)" }
-  t3@{ shape: trap-t, label: "<b>Click the 'In flight' tile</b><br/>56 · 'next due in 3 h'<br/>(or 'next one is due now', or 'nothing open')" }
-  t4@{ shape: curv-trap, label: "<b>'Approved' 112</b><br/>'last 30 days'<br/>Not clickable" }
-  t5@{ shape: curv-trap, label: "<b>'Denied' 46</b><br/>'last 30 days'<br/>Not clickable" }
-  u1@{ shape: rect, label: "All filters are cleared, then Urgency is set to 'Act now'" }
-  u2@{ shape: curv-trap, label: "<b>Only the Act now band is listed</b><br/>Header uses the 'match these filters' wording<br/>With none left, the band says 'Nothing needs you today'" }
-  a1@{ shape: rect, label: "All filters are cleared" }
+  dSel@{ shape: diam, label: "Is that figure already the only filter?" }
+  u1@{ shape: rect, label: "<b>All filters are cleared, then that figure's filter is set</b><br/>Urgency 'Act now', Urgency 'Due within 24 hours', or Status 'Waiting on you'<br/>The figure shows an outline" }
+  u2@{ shape: curv-trap, label: "<b>Only the matching requests are listed</b><br/>Header uses the 'match these filters' wording<br/>With none left, the band says 'Nothing needs you today'" }
+  a1@{ shape: rect, label: "<b>All filters are cleared</b><br/>The outline goes" }
   a2@{ shape: curv-trap, label: "<b>Every band is listed again</b><br/>Header returns to 'need action today'" }
+  an@{ shape: doc, label: "<b>Approved and denied in the last 30 days</b><br/>Shown in Analytics, not here" }
   g3@{ shape: subproc, label: "Continues in: Authorizations › Queue › Search and filter" }
   g4@{ shape: subproc, label: "Continues in: Authorizations › Queue › Bands and ranking" }
   s1 --> q1
@@ -52,15 +53,20 @@ flowchart TD
   d1 -->|"Yes"| h3
   h2 --> tl
   h3 --> tl
-  tl --> t1 & t2 & t3 & t4 & t5
-  t2 --> u1 --> u2
-  t3 --> a1 --> a2
+  tl --> t1 & t2 & t3 & t4
+  t2 --> dSel
+  t3 --> dSel
+  t4 --> dSel
+  dSel -->|"No"| u1 --> u2
+  dSel -->|"Yes"| a1 --> a2
+  tl -.-> an
   q1 --> g2
   tl --> g3
   tl --> g4
   class s1,s2,s3 k_start
-  class q1,h1,h2,h3,tl,t1,t4,t5,u2,a2 k_screen
+  class q1,h1,h2,h3,tl,t1,u2,a2 k_screen
   class sb,p1,p2,u1,a1 k_process
-  class d1 k_decision
-  class nb,t2,t3 k_click
+  class d1,dSel k_decision
+  class nb,t2,t3,t4 k_click
   class g1,g2,g3,g4 k_goto
+  class an k_doc

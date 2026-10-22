@@ -17,18 +17,18 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Click 'Review and sign' on step 3</b><br/>Or 'Review and sign' on a ready case in Case Manager" }
-  sc@{ shape: curv-trap, label: "<b>Ready for your signature</b><br/>'Nothing goes to the payer until a clinician signs.'<br/>Stepper: 'Review and sign' current" }
+  sc@{ shape: curv-trap, label: "<b>Review and sign</b><br/>'Nothing is sent to the payer until a person signs. See what is missing first, then read the summary.' (the one line, said once on this step)<br/>Stepper: 'Review and sign' current" }
   subgraph gLayout ["Layout"]
-  sL@{ shape: curv-trap, label: "<b>Left column</b><br/>Medical-necessity summary, then Validation summary" }
-  sR@{ shape: curv-trap, label: "<b>Right column</b><br/>Checks, Approval chance, Sign and send" }
-  sF@{ shape: curv-trap, label: "<b>Footer bar</b><br/>'Back', 'Save as draft'" }
+  sL@{ shape: curv-trap, label: "<b>Left column</b><br/>'What is missing' first, then the Medical-necessity summary, then the Validation summary (closed)" }
+  sR@{ shape: curv-trap, label: "<b>Right column</b><br/>Checks (names only), Approval chance, the signing card with 'Sign and send to payer'" }
+  sF@{ shape: curv-trap, label: "<b>Footer bar</b><br/>'Back', 'Save as draft' (no hint: the line above already says it)" }
   end
   sNarr@{ shape: curv-trap, label: "<b>Medical-necessity summary</b><br/>'What Summit will read · every statement links to the chart'<br/>Four sections: Clinical picture, level of care reason, Current severity, Plan" }
   pCtx@{ shape: rect, label: "<b>A fifth paragraph 'Context added.' shows when notes were added on the case page</b><br/>(Add clinical context, Recommended actions)<br/>It is shown here but not edited here" }
   pApplied@{ shape: rect, label: "<b>Sentences from actions applied on the case page are part of their sections</b><br/>e.g. 'Step-down plan: ...' and 'Sertraline was started on 9/21.'" }
   pNote@{ shape: rect, label: "<b>A draft Payers redrafted after a payer change shows one line above the summary</b><br/>'Updated for a payer change on 10/20'" }
   pHead@{ shape: rect, label: "<b>The second heading follows the level of care</b><br/>'Why a lower level of care is not safe' (Residential 3.5, PHP)<br/>'Why weekly outpatient care is not enough' (IOP)<br/>'Why withdrawal needs medical monitoring' (Detox)" }
-  sChance@{ shape: curv-trap, label: "<b>Approval chance card</b><br/>Ring and 'Strong · likely 83-92%'<br/>'Summit usually decides in about 1.5 days. Based on 1,248 similar cases.'<br/>When the case does not meet what the payer asks for: 'Held back 3 points: 1 thing the payer asks for is not met.'" }
+  sChance@{ shape: curv-trap, label: "<b>Approval chance card</b><br/>Ring and 'Strong · likely 83-92%'<br/>'Summit usually decides in about 1.5 days. Based on 1,248 similar cases.'<br/>The 'Held back 3 points' sentence is now in 'What is missing'" }
   subgraph gChip ["Source chips"]
   cChip@{ shape: trap-t, label: "<b>Click a chip under a section</b><br/>For example 'Psychiatric eval p.3'" }
   pChips@{ shape: rect, label: "<b>Chips appear only for documents that are in the case</b><br/>The 'Medication list' chip needs a sertraline answer" }
@@ -43,17 +43,18 @@ flowchart TD
   pCancel@{ shape: rect, label: "Edits dropped; the summary is shown again" }
   cSave@{ shape: trap-t, label: "Click 'Save changes'" }
   stNarr@{ shape: cyl, label: "<b>Summary saved on the draft as edited</b><br/>The case page's Draft tab now reads this text" }
-  aInt@{ shape: hex, label: "<b>Integrity re-checks the edits (demo: simulated)</b><br/>Checks show 'Re-checking' for about 1 second<br/>'Sign and send' is off meanwhile" }
+  aInt@{ shape: hex, label: "<b>Integrity re-checks the edits (demo: simulated)</b><br/>Checks show 'Re-checking' for about 1 second<br/>'Sign and send to payer' is off meanwhile" }
   dEmpty@{ shape: diam, label: "Is any section empty?" }
   tOk@{ shape: odd, label: "<b>'Integrity re-checked your edits'</b><br/>'Every sentence still traces to the chart.'" }
   tEmpty@{ shape: odd, label: "<b>'Integrity re-checked your edits'</b><br/>'One section is empty, so signing is blocked.'" }
-  pEmpty@{ shape: rect, label: "<b>The empty section reads 'This section is empty.' in red</b><br/>'Every sentence traced to the chart' turns Blocked" }
+  pEmpty@{ shape: rect, label: "<b>The empty section reads 'This section is empty.' in red</b><br/>'Every sentence traced to the chart' turns Blocked<br/>'What is missing' lists it as a blocking item with 'Edit the summary'" }
   end
   pLost@{ shape: rect, label: "<b>Edits are lost when the summary is rebuilt</b><br/>After a new answer, a tick in 'To raise it further', 'Send back to Scribe', or a change to the medical records" }
   cBack@{ shape: trap-t, label: "Click 'Back'" }
   pBack@{ shape: rect, label: "<b>Back to step 3 'Agents work'</b><br/>The finished agents are shown again; nothing re-runs" }
   cSaveD@{ shape: trap-t, label: "Click 'Save as draft'" }
   tSaved@{ shape: odd, label: "<b>'Draft saved'</b><br/>'R-1701 is in Case Manager, ready to sign.'" }
+  gMis@{ shape: subproc, label: "Continues in: Review and sign › What is missing" }
   gVal@{ shape: subproc, label: "Continues in: Review and sign › Validation summary and checks" }
   gSign@{ shape: subproc, label: "Continues in: New case › Review and sign › Sign and send" }
   g36@{ shape: subproc, label: "Continues in: Agents work › Finished, paused or left" }
@@ -61,6 +62,7 @@ flowchart TD
   gDraft@{ shape: subproc, label: "Continues in: Authorizations › Case page › Draft › Read and edit" }
   s1 --> sc
   sc --> sL & sR & sF
+  sL --> gMis
   sL --> sNarr --> pHead
   sL --> gVal
   sR --> sChance
@@ -89,7 +91,7 @@ flowchart TD
   class aInt k_agent
   class dEmpty k_decision
   class tOk,tEmpty,tSaved k_toast
-  class gVal,gSign,g36,g39,gDraft k_goto
+  class gMis,gVal,gSign,g36,g39,gDraft k_goto
   style gLayout fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gChip fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gEdit fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

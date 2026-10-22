@@ -16,18 +16,18 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Tracker table is on screen</b><br/>(sorted by Clock, soonest first)" }
-  h1@{ shape: curv-trap, label: "<b>Headers</b><br/>Case, Level of care, Payer, Units used, Clock, Approval chance, Status, and a hidden 'Open' column<br/>Sortable ones show an up-and-down arrow button 'Sort by ...'" }
+  s1@{ shape: stadium, label: "<b>Tracker table is on screen</b><br/>(sorted by Next due, soonest first)" }
+  h1@{ shape: curv-trap, label: "<b>Headers</b><br/>Case, Status, Next due, Units or days, Level of care, Payer, Approval chance, and a hidden 'Open' column<br/>Sortable ones show an up-and-down arrow button 'Sort by ...'" }
   c0@{ shape: trap-t, label: "Click 'Level of care' or the empty 'Open' header" }
   p0@{ shape: rect, label: "Nothing happens: those two do not sort" }
-  c1@{ shape: trap-t, label: "<b>Click a sortable header</b><br/>('Case', 'Payer', 'Units used', 'Clock', 'Approval chance', 'Status')" }
+  c1@{ shape: trap-t, label: "<b>Click a sortable header</b><br/>('Case', 'Status', 'Next due', 'Units or days', 'Payer', 'Approval chance')" }
   d1@{ shape: diam, label: "Is it the header already used for sorting?" }
   p1@{ shape: rect, label: "<b>Order flips: ascending becomes descending and back</b><br/>The arrow points up or down" }
   d2@{ shape: diam, label: "Which header is it?" }
   s1a@{ shape: rect, label: "'Case': case ID, A to Z" }
   s2a@{ shape: rect, label: "'Payer': payer key A to Z (Beacon, Cardinal, Evergreen, Harborview, Lakeshore, Summit)" }
-  s3a@{ shape: rect, label: "<b>'Units used': share of the approval used, lowest first</b><br/>'not yet approved' rows count as lowest" }
-  s4a@{ shape: rect, label: "<b>'Clock': soonest binding event first; overdue first of all</b><br/>A case that is also a request sorts by the case page's own due time" }
+  s3a@{ shape: rect, label: "<b>'Units or days': share of the approval used, lowest first</b><br/>'not yet approved' rows count as lowest" }
+  s4a@{ shape: rect, label: "<b>'Next due': soonest binding event first; overdue first of all</b><br/>A case that is also a request sorts by the case page's own due time" }
   s5a@{ shape: rect, label: "'Approval chance': highest first on the first click" }
   s6a@{ shape: rect, label: "'Status': Needs action, Review due, Awaiting payer, On track" }
   p2@{ shape: rect, label: "<b>Ties are broken by the soonest due time</b><br/>The table goes back to page 1" }
@@ -48,8 +48,8 @@ flowchart TD
   d1 -->|"No: a new column"| d2
   d2 -->|"Case"| s1a --> p2
   d2 -->|"Payer"| s2a --> p2
-  d2 -->|"Units used"| s3a --> p2
-  d2 -->|"Clock"| s4a --> p2
+  d2 -->|"Units or days"| s3a --> p2
+  d2 -->|"Next due"| s4a --> p2
   d2 -->|"Approval chance"| s5a --> p2
   d2 -->|"Status"| s6a --> p2
   p2 --> e1

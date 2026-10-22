@@ -16,7 +16,7 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  fb@{ shape: curv-trap, label: "<b>Filter bar under the tiles</b><br/>Search box, Payer, Status, Urgency" }
+  fb@{ shape: curv-trap, label: "<b>Filter bar under the figures</b><br/>Search box, Payer, Request type, Status, Urgency, and a note on ordering" }
   subgraph gS ["Search"]
   sk@{ shape: trap-t, label: "<b>Press '/' anywhere</b><br/>(not while typing in a field)" }
   sf@{ shape: rect, label: "Cursor jumps to the search box" }
@@ -28,11 +28,18 @@ flowchart TD
   p2@{ shape: win-pane, label: "Menu: All payers, Summit Medicaid HMO, Cardinal Health Plan, Evergreen, Beacon PPO, Harborview MA, Lakeshore Behavioral" }
   p3@{ shape: lean-r, label: "Pick a payer" }
   end
+  subgraph gQ ["Request type"]
+  ty1@{ shape: trap-t, label: "Click 'Request type'" }
+  ty2@{ shape: win-pane, label: "Menu: All request types, Initial, Concurrent review, Reauthorization, Retrospective" }
+  ty3@{ shape: lean-r, label: "Pick a type" }
+  end
   subgraph gT ["Status"]
   st1@{ shape: trap-t, label: "Click 'Status'" }
-  st2@{ shape: win-pane, label: "Menu: All statuses, Needs your input, Preparing, Ready to sign, With the payer, Denial route" }
+  st2@{ shape: win-pane, label: "Menu: All statuses, Waiting on you, Needs your input, Preparing, Ready to sign, With the payer, Denial route" }
   st3@{ shape: lean-r, label: "Pick a status" }
-  st4@{ shape: rect, label: "<b>'Needs your input' = requests flagged as needing you</b><br/>The others = the request's phase" }
+  st4@{ shape: rect, label: "<b>'Waiting on you' = not sent yet, a denial to work, or a question for you</b><br/>'Needs your input' = requests flagged as needing you<br/>The others = the request's phase (a request whose checks all passed counts as Ready to sign)" }
+  sh@{ shape: trap-t, label: "<b>Hover or focus the info icon next to 'Status'</b><br/>'What the statuses mean'" }
+  sh2@{ shape: win-pane, label: "<b>Tooltip: Preparing is a draft, Ready to sign is ready for review, With the payer covers submitted, acknowledged, under review and info requested, Denial route is denied, Approved and Completed leave the queue</b><br/>Esc closes it" }
   end
   subgraph gU ["Urgency"]
   u1@{ shape: trap-t, label: "Click 'Urgency'" }
@@ -40,15 +47,19 @@ flowchart TD
   u3@{ shape: lean-r, label: "Pick an urgency" }
   end
   kb@{ shape: rect, label: "In any menu: Up and Down move, Enter picks, Esc or a click outside closes it" }
+  ot@{ shape: trap-t, label: "Hover or focus the info icon 'How the list is ordered' (right end of the bar)" }
+  ot2@{ shape: win-pane, label: "<b>Tooltip: three bands by how soon each request is due; inside a band, requests waiting on you first, then the soonest due; a tie goes to the lower approval chance</b><br/>Esc closes it" }
   ap@{ shape: rect, label: "<b>Filters stack: a request must pass every one</b><br/>A menu that is not on its default turns green" }
-  keep@{ shape: cyl, label: "Filters are kept in the app for this session" }
+  keep@{ shape: cyl, label: "<b>Filters are kept in the app for this session</b><br/>and written to the web address" }
+  dl@{ shape: stadium, label: "<b>Open a link with filters in it</b><br/>e.g. /authorizations?payer=cardinal&type=retro" }
+  dl2@{ shape: rect, label: "<b>The filters in the address are applied</b><br/>Values that are not menu options are ignored" }
   hd@{ shape: curv-trap, label: "Header: 'X of 56 open requests match these filters.'" }
   clr@{ shape: trap-t, label: "<b>Click 'Clear filters'</b><br/>(appears once any filter is on)" }
   dAny@{ shape: diam, label: "Any request left?" }
   res@{ shape: curv-trap, label: "<b>Bands show only the matching requests</b><br/>Band counts follow" }
   emp@{ shape: curv-trap, label: "<b>'No requests match these filters'</b><br/>'The filters hide all 56 open requests.'" }
   ce@{ shape: trap-t, label: "Click 'Clear filters' in the message" }
-  rs@{ shape: rect, label: "Search empty, All payers, All statuses, All urgency, payer-signal filter off" }
+  rs@{ shape: rect, label: "<b>Search empty, All payers, All request types, All statuses, All urgency, payer-signal filter off</b><br/>The filters leave the web address" }
   dOpen@{ shape: diam, label: "Are there any open requests at all?" }
   e1@{ shape: stadium, label: "Every band is listed again" }
   none@{ shape: curv-trap, label: "<b>'Nothing needs you today'</b><br/>'Every open request has been sent or handled. Case Manager shows what is scheduled next.'" }
@@ -62,6 +73,12 @@ flowchart TD
   fb --> p1 --> p2 --> p3
   fb --> st1 --> st2 --> st3 --> st4
   fb --> u1 --> u2 --> u3
+  fb --> ty1 --> ty2 --> ty3
+  st1 --> sh
+  sh --> sh2
+  fb --> ot --> ot2
+  dl --> dl2 --> ap
+  ty3 --> ap
   p2 -.-> kb
   sm --> ap
   p3 --> ap
@@ -79,15 +96,17 @@ flowchart TD
   rs --> e1
   fb --> gSig
   class fb,hd,res,emp,none,nowE k_screen
-  class sk,p1,st1,u1,clr,ce,ocm k_click
-  class sf,sm,st4,kb,ap,rs k_process
-  class s1,p3,st3,u3 k_input
-  class p2,st2,u2 k_overlay
+  class sk,p1,ty1,st1,sh,u1,ot,clr,ce,ocm k_click
+  class sf,sm,st4,kb,ap,dl2,rs k_process
+  class s1,p3,ty3,st3,u3 k_input
+  class p2,ty2,st2,sh2,u2,ot2 k_overlay
   class keep k_store
+  class dl k_start
   class dAny,dOpen,dNow k_decision
   class e1 k_end
   class gCM,gSig k_goto
   style gS fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gP fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gQ fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gT fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gU fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

@@ -18,7 +18,7 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "The brief page is open" }
   c1@{ shape: trap-t, label: "Click 'Copy brief'" }
-  p1@{ shape: rect, label: "<b>The whole brief becomes plain text</b><br/>Opening, points, what they may say, the ask, dates, numbers, documents" }
+  p1@{ shape: rect, label: "<b>The whole brief becomes plain text</b><br/>Opening, points, what they may say, the ask, dates, numbers, documents<br/>Includes 'Draft by FLO's agents. A clinician reviews and signs before anything is sent.'" }
   d1@{ shape: diam, label: "Does the browser allow copying?" }
   p2@{ shape: rect, label: "Fallback: a hidden text box and the copy command, for pages opened as files" }
   d2@{ shape: diam, label: "Did the fallback work?" }
@@ -28,13 +28,13 @@ flowchart TD
   d3@{ shape: diam, label: "Is this the hosted preview?" }
   t3@{ shape: odd, label: "<b>'Print is off in this preview'</b><br/>'Open the single-file version of the demo to use it.'" }
   p3@{ shape: rect, label: "The browser print dialog opens" }
-  p4@{ shape: rect, label: "Print layout hides the sidebar, top bar and buttons; only the brief is printed" }
+  p4@{ shape: rect, label: "<b>Print layout hides the sidebar, top bar and buttons; only the brief is printed</b><br/>The folded 'Key dates and numbers' and 'Have these open' are shown on paper" }
   dc1@{ shape: doc, label: "Paper or PDF copy of the brief" }
   c3@{ shape: trap-t, label: "Click 'Book the call' (or 'Change the call time' once booked)" }
   g1@{ shape: subproc, label: "Continues in: Denial Intelligence › Peer-to-peer › Book the call" }
   c4@{ shape: trap-t, label: "Click 'Record the call outcome'" }
   g2@{ shape: subproc, label: "Continues in: Denial Intelligence › Peer-to-peer › Record the call outcome" }
-  c5@{ shape: trap-t, label: "Tick a box under 'Have these open'" }
+  c5@{ shape: trap-t, label: "Tick a box under 'Have these open' (open the section first)" }
   st1@{ shape: cyl, label: "<b>Tick saved on the denial</b><br/>The box stays ticked next time" }
   c7@{ shape: trap-t, label: "Click the link 'Appeal analysis report' (top right of the header)" }
   g4@{ shape: subproc, label: "Continues in: Denial Intelligence › Appeal analysis report › Open and generate" }

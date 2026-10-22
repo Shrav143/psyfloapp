@@ -16,7 +16,7 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  cp@{ shape: curv-trap, label: "<b>Case page</b><br/>'Send to payer' appears in the header, the Recommended actions side panel and the Draft tab" }
+  cp@{ shape: curv-trap, label: "<b>Case page</b><br/>'Send to payer' appears in the 'Next:' block, the Recommended actions side panel and the Draft tab" }
   d1@{ shape: diam, label: "Does the request already have a result (decided)?" }
   r1@{ shape: rect, label: "<b>The button becomes a disabled 'Sent to payer'</b><br/>Tooltip: 'Approved. Nothing is left to send.'<br/>(the result word comes from the request)" }
   d2@{ shape: diam, label: "Is it already with the payer?" }
@@ -24,8 +24,8 @@ flowchart TD
   d3@{ shape: diam, label: "Is it a denial?" }
   r3@{ shape: rect, label: "Greyed out. Reason: 'This request was denied. Advocate owns the next step.'" }
   d4@{ shape: diam, label: "Do all four Integrity checks pass?" }
-  r4@{ shape: rect, label: "Greyed out. Reason: 'Integrity has 2 open checks. Apply the matching actions first.'" }
-  on@{ shape: rect, label: "<b>'Send to payer' is on</b><br/>'Sending opens review and sign. Nothing goes to the payer until a clinician signs.'" }
+  r4@{ shape: rect, label: "<b>Greyed out, next to the primary button for the next action</b><br/>Reason: 'Integrity has 2 open checks. Apply the matching actions first.'" }
+  on@{ shape: rect, label: "<b>'Send to payer' is on</b><br/>In the 'Next:' block it is the one primary button<br/>'Sending opens review and sign. Nothing goes to the payer until a clinician signs.'" }
   subgraph gChk ["What keeps a check open"]
   k1@{ shape: rect, label: "<b>'Every sentence matches the chart'</b><br/>open after you edit the draft, until 'Re-check'" }
   k2@{ shape: rect, label: "<b>'Payer criteria are covered'</b><br/>open until its action is applied (e.g. 'Name the step-down provider')" }
@@ -33,7 +33,7 @@ flowchart TD
   k4@{ shape: rect, label: "<b>'Identifiers are protected'</b><br/>always passes in the demo" }
   end
   dm@{ shape: rect, label: "<b>Dismissing the action does not clear its check</b><br/>The dismiss dialog warns about this" }
-  b1@{ shape: trap-t, label: "<b>Click 'Open in review and sign'</b><br/>(always on)" }
+  b1@{ shape: trap-t, label: "<b>Click 'Open in review and sign'</b><br/>(header, always on)" }
   b2@{ shape: trap-t, label: "<b>Click 'Send to payer'</b><br/>(only when on)" }
   rp@{ shape: rect, label: "<b>Find this request's draft in New case</b><br/>The draft named like 'draft-r1042', or any draft with this case ID<br/>Or make one: draftFromRequest" }
   d5@{ shape: diam, label: "Does the request already have a draft?" }
@@ -43,7 +43,9 @@ flowchart TD
   g1@{ shape: subproc, label: "Continues in: New case › Agents work" }
   g2@{ shape: subproc, label: "Continues in: New case › Review and sign" }
   g3@{ shape: subproc, label: "Continues in: Review and sign › After sending" }
+  dRec@{ shape: diam, label: "Is the request on the Dashboard (recorded in the store)?" }
   sent@{ shape: stadium, label: "<b>New case shows 'R-0912 was sent'</b><br/>'Open it on the Dashboard' and 'Back to Case Manager'<br/>The draft is marked sent, so it cannot be signed again" }
+  sent2@{ shape: stadium, label: "<b>New case shows 'R-1131 is with the payer'</b><br/>'It is already with the payer, so there is nothing to sign here.'<br/>'Back to the case' and 'Back to Case Manager'<br/>It does not say it was sent by you, because the store has no such request" }
   ns@{ shape: rect, label: "<b>Nothing has been sent</b><br/>A licensed clinician signs in New case" }
   cp --> d1
   d1 -->|"Yes"| r1
@@ -69,13 +71,15 @@ flowchart TD
   d5 -->|"Yes"| up --> d6
   d6 -->|"Agents still have work, e.g. R-1042 before its actions are applied"| g1
   d6 -->|"Ready or all four checks passed, e.g. R-0988, R-1142, R-1042 after its actions"| g2
-  d6 -->|"Already with the payer or decided"| sent
+  d6 -->|"Already with the payer or decided"| dRec
+  dRec -->|"Yes"| sent
+  dRec -->|"No"| sent2
   rp -.-> ns
   sent --> g3
   class cp k_screen
-  class d1,d2,d3,d4,d5,d6 k_decision
+  class d1,d2,d3,d4,d5,d6,dRec k_decision
   class r1,r2,r3,r4,on,k1,k2,k3,k4,dm,rp,mk,up,ns k_process
   class b1,b2 k_click
   class g1,g2,g3 k_goto
-  class sent k_endx
+  class sent,sent2 k_endx
   style gChk fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

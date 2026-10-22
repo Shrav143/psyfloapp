@@ -17,7 +17,7 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "A denial that is not filed, accepted or closed is on screen" }
-  sc1@{ shape: curv-trap, label: "<b>'Your options'</b><br/>'Chance of overturning, from 312 similar Cardinal decisions'<br/>Three radio cards, then one button" }
+  sc1@{ shape: curv-trap, label: "<b>'Your options'</b><br/>'Chance of overturning, from 312 similar Cardinal decisions'<br/>Three radio cards, then a button only when one is needed" }
   p0@{ shape: rect, label: "Subtitle reads ', a benchmark estimate' instead when fewer than 60 similar decisions" }
   p1@{ shape: rect, label: "Starting point: the denial's win chance (55 when none is set)" }
   d1@{ shape: diam, label: "What is the win chance?" }
@@ -30,16 +30,19 @@ flowchart TD
   o3@{ shape: curv-trap, label: "<b>Card 'Accept the decision and plan the next step'</b><br/>'Accept 7 days and plan the step-down' on a partial approval<br/>'Fastest. Nothing regained.' No chance shown<br/>Needs: a reason for the record, Analytics logs the denial as accepted, Case Manager adds a step-down plan" }
   p3@{ shape: rect, label: "Each chance reads 'likely 55–72%' (9 below to 8 above) and '312 similar decisions' or 'Benchmark estimate'" }
   p4@{ shape: rect, label: "Each card ends with 'Needs: ...' (who, what, and the evidence that would be attached)" }
-  r1@{ shape: diam, label: "Which card is 'Recommended'?" }
+  r1@{ shape: diam, label: "<b>Which card is 'Recommended'?</b><br/>(the route of the recommended next step; none for 'Investigate by hand')" }
   rec1@{ shape: curv-trap, label: "'Accept...' card gets the green 'Recommended' pill" }
   rec2@{ shape: curv-trap, label: "'Written appeal' gets the pill" }
   rec3@{ shape: curv-trap, label: "'Peer-to-peer call' gets the pill" }
-  p5@{ shape: rect, label: "That card is selected when the page opens" }
+  p5@{ shape: rect, label: "<b>That card is selected when the page opens</b><br/>Its button is the primary button of the next-step block, so the card shows no second one" }
+  g0@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Recommended next step" }
   c1@{ shape: trap-t, label: "Click a card (it is a radio button)" }
   d2@{ shape: diam, label: "Is it 'Peer-to-peer call' and the call window has closed?" }
   t1@{ shape: odd, label: "<b>'The peer-to-peer window has closed'</b><br/>'A written appeal is still open.'" }
-  p6@{ shape: rect, label: "<b>Card is selected</b><br/>The button label changes to match" }
-  b1@{ shape: curv-trap, label: "<b>Button under the cards</b><br/>'Choose a time and prepare the brief', 'Draft the appeal letter' or 'Accept the decision and plan the step-down'" }
+  d5@{ shape: diam, label: "Is it the route the next-step block already has a button for?" }
+  p6@{ shape: rect, label: "<b>Card is selected</b><br/>If the block above has no button for it, a button appears under the cards with the matching label" }
+  p8@{ shape: rect, label: "No second button: the one above does the same" }
+  b1@{ shape: curv-trap, label: "<b>Button under the cards (only for another route)</b><br/>'Choose a time and prepare the brief', 'Draft the appeal letter' or 'Accept the decision and plan the step-down'" }
   t2@{ shape: odd, label: "'A call is already booked. Choosing again changes it.' (when the chip is 'Call booked')" }
   c2@{ shape: trap-t, label: "Click the button" }
   d3@{ shape: diam, label: "Which card is selected?" }
@@ -68,7 +71,10 @@ flowchart TD
   p5 --> c1
   c1 --> d2
   d2 -->|"Yes"| t1
-  d2 -->|"No"| p6 --> b1
+  d2 -->|"No"| d5
+  d5 -->|"No"| p6 --> b1
+  d5 -->|"Yes"| p8
+  p5 -.-> g0
   b1 -.-> t2
   b1 --> c2 --> d3
   d3 -->|"Peer-to-peer call"| g1
@@ -79,8 +85,8 @@ flowchart TD
   c1 -.-> p7
   class s1 k_start
   class sc1,o1,o2,o3,rec1,rec2,rec3,b1 k_screen
-  class p0,p1,v1,v2,v3,p2,p3,p4,p5,p6,p7 k_process
-  class d1,r1,d2,d3,d4 k_decision
+  class p0,p1,v1,v2,v3,p2,p3,p4,p5,p6,p8,p7 k_process
+  class d1,r1,d2,d5,d3,d4 k_decision
+  class g0,g1,g2,g3 k_goto
   class c1,c2 k_click
   class t1,t2 k_toast
-  class g1,g2,g3 k_goto

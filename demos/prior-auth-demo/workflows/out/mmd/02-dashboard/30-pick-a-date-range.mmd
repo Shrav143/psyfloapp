@@ -37,14 +37,14 @@ flowchart TD
   p7@{ shape: rect, label: "<b>Calendar closes</b><br/>The date button shows 'Oct 5 – Oct 12, 2026' and turns green and bold" }
   p8@{ shape: rect, label: "<b>Address gets ?from=2026-10-05&to=2026-10-12</b><br/>The default last 30 days leaves no from or to" }
   p9@{ shape: rect, label: "Table goes back to its first 8 rows" }
-  sc@{ shape: curv-trap, label: "<b>Payers at a glance</b><br/>'Denied (8 d)' and 'Info asks (8 d)' rescale to 8 days<br/>'Approved as asked' shifts slightly" }
-  p10@{ shape: rect, label: "Not changed: headline, stage tiles and requests table" }
+  sc@{ shape: curv-trap, label: "<b>Payer performance, once opened</b><br/>'Denied (8 d)' and 'Info asks (8 d)' rescale to 8 days<br/>'Approved as asked' shifts slightly" }
+  p10@{ shape: rect, label: "Not changed: headline, Summary from FLO, key figures and requests table" }
   c6@{ shape: trap-t, label: "Click 'Cancel'" }
   c7@{ shape: trap-t, label: "Press Escape, click outside, or click the date button again" }
   e1@{ shape: stadium, label: "<b>Calendar closes</b><br/>The draft is thrown away and the applied range stays" }
   e2@{ shape: stadium, label: "Range applied" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Filters › Date range shortcuts, keys and the address" }
-  g2@{ shape: subproc, label: "Continues in: Dashboard › Payers at a glance › Read the table and pick a payer" }
+  g2@{ shape: subproc, label: "Continues in: Dashboard › Payer performance › Read the table and pick a payer" }
   s1 --> c1 --> p1 --> o1 --> t0
   o1 --> p2
   t0 --> c2 --> t1 --> p3 --> c3 --> d1

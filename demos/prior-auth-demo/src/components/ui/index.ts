@@ -9,6 +9,7 @@ export * from "./DocumentSheet";
 export * from "./Dropdown";
 export { useEscape } from "./escape";
 export * from "./FileDrop";
+export * from "./InfoTip";
 export * from "./Inputs";
 export * from "./Misc";
 export * from "./Overlay";

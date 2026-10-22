@@ -16,60 +16,64 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  pg@{ shape: curv-trap, label: "<b>Case page</b><br/>Crumbs, header, three tiles, notes, five tabs" }
+  pg@{ shape: curv-trap, label: "<b>Case page</b><br/>Crumbs, header card, three tiles, one-line notice, five tabs, History" }
   cr@{ shape: trap-t, label: "Click the 'Authorizations' crumb" }
   gQ@{ shape: subproc, label: "Continues in: Authorizations › Queue › Open the queue and read the top" }
   hd@{ shape: curv-trap, label: "<b>Header title</b><br/>Level chip, ID, request type chip, then one pill" }
   dCh@{ shape: diam, label: "Has the request been sent, decided or settled since this page was written, or does it already have a result?" }
-  pc@{ shape: odd, label: "Pill shows the request's current status, e.g. 'Received', 'Approved'" }
+  pc@{ shape: odd, label: "<b>Pill shows the request's current status, e.g. 'Received', 'Approved'</b><br/>An info icon beside it opens 'What the statuses mean'" }
   pd@{ shape: rect, label: "<b>Pill shows the due text, e.g. 'Notice due in 5 h'</b><br/>Red under 6 h, amber under 24 h, grey later" }
-  sub@{ shape: rect, label: "<b>Sub line: 'J.M., 34 · Summit Medicaid HMO · Residential 3.5 · 14 days requested'</b><br/>Then the diagnosis and the scores" }
+  sub@{ shape: rect, label: "<b>Sub line: 'J.M., 34 · Summit Medicaid HMO · Residential 3.5 · 14 days requested'</b><br/>IOP counts units: '21 units requested'" }
+  nb@{ shape: curv-trap, label: "<b>'Next:' block, the first thing under the title</b><br/>The next action and one primary button" }
+  gN@{ shape: subproc, label: "Continues in: Authorizations › Case page › Next action" }
+  fr@{ shape: curv-trap, label: "<b>Authorization facts row</b><br/>Only the facts this request has" }
+  gF@{ shape: subproc, label: "Continues in: Authorizations › Case page › Authorization facts" }
+  subgraph gAg ["'At a glance' (one short block)"]
+  ag0@{ shape: rect, label: "<b>'At a glance' line</b><br/>The diagnosis and review type, then the scores with a trend arrow<br/>'AUDIT-C 11 · PHQ-9 17 ↑ · CIWA 14 → 4'" }
   dRd@{ shape: diam, label: "Ready: all four checks pass and still preparing?" }
   ag1@{ shape: hex, label: "<b>Integrity badge</b><br/>'Ready to sign. Integrity passed all four checks'" }
   ag3@{ shape: hex, label: "<b>The request's own agent and line</b><br/>e.g. Navigator: 'Navigator checks again in 30 minutes'" }
   ag2@{ shape: hex, label: "<b>Agent badge and status line</b><br/>e.g. Scribe: 'Scribe is drafting the case'" }
-  dDb@{ shape: diam, label: "Is the request on the Dashboard past Preparing?" }
+  dRule@{ shape: diam, label: "Does the queue have a payer note for it?" }
+  rule@{ shape: rect, label: "Green line 'Payer note: Summit expects a named step-down provider with the first request.'" }
+  end
+  dDb@{ shape: diam, label: "Is the request on the Dashboard past Preparing, and is the next action not already the Dashboard?" }
   od@{ shape: trap-t, label: "Click 'Open on the Dashboard' (next to the status line)" }
   gDb@{ shape: subproc, label: "Continues in: Dashboard › Request drawer" }
   subgraph gBt ["Header buttons"]
-  b1@{ shape: trap-t, label: "Click 'Open in review and sign'" }
-  b2@{ shape: trap-t, label: "Click 'Send to payer'" }
+  b1@{ shape: trap-t, label: "<b>Click 'Open in review and sign'</b><br/>(always on)" }
   b3@{ shape: trap-t, label: "Click 'Back to queue'" }
   end
-  dSn@{ shape: diam, label: "Is it already with the payer or decided?" }
-  sn@{ shape: rect, label: "<b>'Send to payer' is replaced by a greyed-out 'Sent to payer'</b><br/>The note gives the reason, e.g. 'Already with the payer. Navigator is tracking it.'" }
-  dEn@{ shape: diam, label: "Can it be sent?" }
-  on@{ shape: rect, label: "<b>'Send to payer' is on</b><br/>Note: 'Sending opens review and sign. Nothing goes to the payer until a clinician signs.'" }
-  off@{ shape: rect, label: "<b>'Send to payer' is greyed out, a click does nothing</b><br/>The note and a hover hint give the reason" }
   gS@{ shape: subproc, label: "Continues in: Authorizations › Case page › Send to payer and review and sign" }
-  gN@{ shape: subproc, label: "Continues in: Authorizations › Case page › Numbers and notes" }
+  gT@{ shape: subproc, label: "Continues in: Authorizations › Case page › Numbers and notes" }
   pg --> cr --> gQ
   pg --> hd --> dCh
   dCh -->|"Yes"| pc
   dCh -->|"No"| pd
   pc --> sub
   pd --> sub
-  sub --> dRd
+  sub --> nb --> gN
+  nb --> fr --> gF
+  fr --> ag0 --> dRd
   dRd -->|"Yes"| ag1
   dRd -->|"No"| ag2
   dCh -.->|"Yes"| ag3
-  ag1 --> dDb
-  ag2 --> dDb
-  ag3 --> dDb
+  ag1 --> dRule
+  ag2 --> dRule
+  ag3 --> dRule
+  dRule -->|"Yes"| rule
+  dRule -->|"No"| dDb
+  rule --> dDb
   dDb -->|"Yes"| od --> gDb
   pg --> b1 --> gS
-  pg --> b2 --> dSn
-  dSn -->|"Yes"| sn
-  dSn -->|"No"| dEn
-  dEn -->|"Yes"| on --> gS
-  dEn -->|"No"| off
   pg --> b3 --> gQ
-  pg --> gN
-  class pg,hd k_screen
-  class cr,od,b1,b2,b3 k_click
-  class gQ,gDb,gS,gN k_goto
-  class dCh,dRd,dDb,dSn,dEn k_decision
+  pg --> gT
+  class pg,hd,nb,fr k_screen
+  class cr,od,b1,b3 k_click
+  class gQ,gN,gF,gDb,gS,gT k_goto
+  class dCh,dRd,dRule,dDb k_decision
   class pc k_toast
-  class pd,sub,sn,on,off k_process
+  class pd,sub,ag0,rule k_process
   class ag1,ag3,ag2 k_agent
+  style gAg fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gBt fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

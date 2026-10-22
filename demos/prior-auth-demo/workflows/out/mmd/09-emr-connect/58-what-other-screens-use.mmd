@@ -16,13 +16,13 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  p1@{ shape: curv-trap, label: "<b>EMR Connect</b><br/>Systems, sync, mappings and the write-back switch" }
+  p1@{ shape: curv-trap, label: "<b>EMR Connect</b><br/>Connection health, sync, mappings (in Advanced) and the Write back switch on each row" }
   subgraph gPull ["New case: pull a chart"]
   a1@{ shape: trap-t, label: "<b>Click 'Pull a chart from EMR Connect'</b><br/>Medical records step" }
   a0@{ shape: diam, label: "Is any system Connected?" }
   a8@{ shape: odd, label: "<b>'No records system is connected. Connect one in EMR Connect to pull a chart, or drop the files above.'</b><br/>With a link to EMR Connect" }
   a2@{ shape: win-pane, label: "<b>Chart from EMR Connect</b><br/>Dropdown with the charts that live in a Connected system<br/>A hint under each names the system" }
-  a2b@{ shape: rect, label: "<b>Residential site: J.M., 34 · Summit · Residential 3.5 and L.G., 29 · Cardinal · Residential 3.5</b><br/>Outpatient site: A.R., 45 · Beacon · IOP and S.T., 38 · Harborview · PHP<br/>A system that is Disconnected or Needs a quick look offers none" }
+  a2b@{ shape: rect, label: "<b>Residential site: J.M., 34 · Summit · Residential 3.5 and L.G., 29 · Cardinal · Residential 3.5</b><br/>Outpatient site: A.R., 45 · Beacon · IOP and S.T., 38 · Harborview · PHP<br/>A system that is Disconnected or Needs attention offers none" }
   a3@{ shape: lean-r, label: "Pick a chart" }
   a9@{ shape: diam, label: "<b>Does that system still have a field waiting for a mapping?</b><br/>'Level of care' or 'Referral source'" }
   a10@{ shape: rect, label: "<b>Line under the picker</b><br/>'Level of care still needs a mapping there, so that field is left blank.' with 'Open EMR Connect'" }
@@ -44,7 +44,7 @@ flowchart TD
   b6@{ shape: st-rect, label: "<b>The record system receives the three values</b><br/>Demo: simulated, about one second" }
   b7@{ shape: cyl, label: "<b>Request gets 'You confirmed the write-back' and a Cadence event</b><br/>Toast: 'Written to the EMR'" }
   end
-  n2@{ shape: rect, label: "<b>The switch on a Disconnected or Needs a quick look system does not count</b><br/>Reconnect it, and the box comes back if its switch is on" }
+  n2@{ shape: rect, label: "<b>The switch on a Disconnected or Needs attention system does not count</b><br/>Reconnect it, and the box comes back if its switch is on" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Approve the write-back" }
   p1 -.-> a1
   a1 --> a0

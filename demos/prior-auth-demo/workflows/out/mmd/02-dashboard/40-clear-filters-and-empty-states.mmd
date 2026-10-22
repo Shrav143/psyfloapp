@@ -17,11 +17,11 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Pick Payer, Program, Request type or Stage</b><br/>Any one that is not 'All'" }
-  d1@{ shape: diam, label: "Is at least one of the four menus not 'All'?" }
+  d1@{ shape: diam, label: "<b>Is at least one of the four menus not 'All'?</b><br/>A grouping such as Needs you counts" }
   sc1@{ shape: curv-trap, label: "<b>Filter bar</b><br/>Ghost button 'Clear filters' appears after the four menus" }
   sc0@{ shape: curv-trap, label: "<b>Filter bar</b><br/>No 'Clear filters' button<br/>The date range alone does not count" }
   c1@{ shape: trap-t, label: "Click 'Clear filters' on the filter bar" }
-  p1@{ shape: rect, label: "<b>Payer, Program, Request type and Stage go back to 'All'</b><br/>The date range is kept" }
+  p1@{ shape: rect, label: "<b>Payer, Program, Request type and Stage (or the grouping) go back to 'All'</b><br/>The date range is kept" }
   w1@{ shape: cyl, label: "Filters" }
   p2@{ shape: rect, label: "<b>Address loses payer, program, type and stage</b><br/>from and to stay if they are not the default" }
   p3@{ shape: rect, label: "Table goes back to its first 8 rows" }
@@ -30,12 +30,12 @@ flowchart TD
   d2@{ shape: diam, label: "Do any requests match the filters?" }
   p4@{ shape: rect, label: "Example: Cardinal, IOP, Recertification, Appeal or call" }
   em1@{ shape: curv-trap, label: "<b>Headline</b><br/>'No requests match these filters.'<br/>'The filters hide everything. Clear them to see every request again.'" }
-  em2@{ shape: curv-trap, label: "<b>Stage strip</b><br/>Tiles still show their own counts: 'nothing waiting on receipt', 'nothing with the payer', 'nothing waiting on you', 'none yet today', 'no open denials'" }
+  em2@{ shape: curv-trap, label: "<b>Key figures</b><br/>Still count every stage that the Payer, Program and Request type filters leave: '0' with 'nothing is waiting on you' or 'nothing due in the next day'<br/>The Stage menu shows the count of each stage beside its name" }
   em3@{ shape: curv-trap, label: "<b>Requests card</b><br/>'Showing 0 of 0'" }
   em4@{ shape: win-pane, label: "<b>Empty state in the card</b><br/>'No requests match'<br/>'The filters hide everything. Clear them to see every request again.'" }
   d3@{ shape: diam, label: "Is a narrowing filter set?" }
   c2@{ shape: trap-t, label: "Click 'Clear filters' in the empty state" }
-  em5@{ shape: curv-trap, label: "<b>Payers at a glance</b><br/>Still lists all six payers<br/>Waiting counts follow Program and Request type" }
+  em5@{ shape: curv-trap, label: "<b>Payer performance (closed until opened)</b><br/>Still lists all six payers<br/>Waiting counts follow Program and Request type" }
   x1@{ shape: stadium, label: "<b>No 'Clear filters' button</b><br/>Only possible if there were no requests at all" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Filters › Payer, Program, Request type and Stage" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Filters › Pick a date range" }

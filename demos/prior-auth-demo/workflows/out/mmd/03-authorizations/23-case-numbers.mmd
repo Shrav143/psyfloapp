@@ -16,7 +16,7 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  pg@{ shape: curv-trap, label: "<b>Under the header buttons</b><br/>Three tiles, banners" }
+  pg@{ shape: curv-trap, label: "<b>Under the header card</b><br/>Three tiles, one line of notice" }
   subgraph gT1 ["Tile 1"]
   t1@{ shape: curv-trap, label: "<b>'Approval chance' (or 'Chance to overturn' on a denial)</b><br/>Ring counts up over about a second<br/>'62% → 88%'" }
   t1a@{ shape: rect, label: "<b>Line under it</b><br/>'if every action is applied'<br/>After applying: 'up to 88% with the rest' or 'after the agents' checks'" }
@@ -29,16 +29,16 @@ flowchart TD
   t2b@{ shape: rect, label: "<b>'Little history for this payer ... benchmark estimate'</b><br/>'Only N are yours or the network's.'" }
   end
   subgraph gT3 ["Tile 3"]
-  t3@{ shape: curv-trap, label: "<b>'Days likely granted'</b><br/>'11 of 14 days likely'" }
+  t3@{ shape: curv-trap, label: "<b>'Days likely granted'</b><br/>'11 of 14 days likely'<br/>IOP counts units: 'Units likely granted'" }
   t3a@{ shape: rect, label: "'62% chance of all 14, otherwise most likely 7'" }
   t3b@{ shape: rect, label: "<b>On a denial: 'Days in question'</b><br/>'The payer approved part of the stay. The other days are what the call is about.'" }
   end
+  n1@{ shape: curv-trap, label: "<b>One line under the tiles:</b><br/>'Decision support for documentation and workflow only. It does not recommend or decide care.'" }
+  ni@{ shape: trap-t, label: "Hover or focus the info icon 'About the approval chance'" }
+  n2@{ shape: win-pane, label: "<b>Tooltip: 'The approval chance estimates how well the paperwork fits this payer's past decisions. It never blocks a request and is never shown to payers or patients.'</b><br/>Esc closes it" }
   dDn@{ shape: diam, label: "Is it a denial?" }
-  bd@{ shape: odd, label: "<b>Banner 'This request was denied'</b><br/>'Advocate owns the next step. The peer-to-peer brief and the appeal live in Denial Intelligence.'" }
-  bdo@{ shape: trap-t, label: "Click 'Open in Denial Intelligence'" }
-  gD@{ shape: subproc, label: "Continues in: Denial Intelligence › Open a denial" }
-  n1@{ shape: odd, label: "Note: 'The approval chance estimates how well the paperwork fits this payer's past decisions. It never blocks a request and is never shown to payers or patients.'" }
-  n2@{ shape: odd, label: "Note: 'Decision support for documentation and workflow only. It does not recommend or decide care.'" }
+  bd@{ shape: rect, label: "<b>No banner</b><br/>The denial text sits in the 'Next:' block: 'This request was denied. Advocate owns the next step ...'<br/>Button 'Open in Denial Intelligence'" }
+  gD@{ shape: subproc, label: "Continues in: Authorizations › Case page › Next action" }
   gT@{ shape: subproc, label: "Continues in: Authorizations › Case page › Tabs and deep links" }
   ap@{ shape: cyl, label: "<b>Applying actions on the first tab moves tile 1 and tile 3 and the range</b><br/>See Recommended actions › Apply selected<br/>Adding clinical context moves them by a point each (up to three)<br/>Refining the recommendations moves the number after the arrow" }
   pg --> t1 --> t1a --> t1b
@@ -47,17 +47,17 @@ flowchart TD
   dBm -->|"Yes"| t2b
   pg --> t3 --> t3a
   t3 -.-> t3b
-  pg --> dDn
-  dDn -->|"Yes"| bd --> bdo --> gD
-  dDn -->|"No"| n1
-  bd --> n1
-  n1 --> n2 --> gT
+  pg --> n1 --> ni --> n2
+  n1 --> dDn
+  dDn -->|"Yes"| bd --> gD
+  dDn -->|"No"| gT
+  n2 --> gT
   t1b -.-> ap
-  class pg,t1,t2,t3 k_screen
-  class t1a,t1b,t2a,t2b,t3a,t3b k_process
+  class pg,t1,t2,t3,n1 k_screen
+  class t1a,t1b,t2a,t2b,t3a,t3b,bd k_process
   class dBm,dDn k_decision
-  class bd,n1,n2 k_toast
-  class bdo k_click
+  class ni k_click
+  class n2 k_overlay
   class gD,gT k_goto
   class ap k_store
   style gT1 fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

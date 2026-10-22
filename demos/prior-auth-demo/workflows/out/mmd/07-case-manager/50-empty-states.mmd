@@ -19,13 +19,13 @@ flowchart TD
   s1@{ shape: stadium, label: "Case Manager is open" }
   i1@{ shape: lean-r, label: "Type a search that matches nothing (for example 'zzz'), or pick a level of care and payer that no case has" }
   p1@{ shape: rect, label: "Every list is re-filtered at once" }
-  subgraph gPrep ["Being prepared card"]
+  subgraph gPrep ["Being prepared (open the folded row first; its summary then reads 'Nothing is being prepared' or '0 of 5 match the filters')"]
   d1@{ shape: diam, label: "Are there any drafts waiting at all?" }
   e1s@{ shape: curv-trap, label: "<b>Icon of a folder</b><br/>'Nothing is being prepared'<br/>'Start a case and the agents take it from there.'<br/>Button 'Start a new case'" }
   c1@{ shape: trap-t, label: "Click 'Start a new case'" }
   d2@{ shape: diam, label: "Do the page filters and the chip hide all of them?" }
   e2s@{ shape: curv-trap, label: "<b>Icon of a magnifier</b><br/>'No cases match these filters'<br/>'The filters hide every case being prepared. Clear them to see all 5.'<br/>Button 'Clear filters'" }
-  c2@{ shape: trap-t, label: "Click 'Clear filters' on the card" }
+  c2@{ shape: trap-t, label: "Click 'Clear filters' in the opened row" }
   p2@{ shape: rect, label: "Chip goes back to 'All' and the page filters are cleared" }
   end
   subgraph gTrack ["Tracker"]
@@ -43,7 +43,7 @@ flowchart TD
   g1@{ shape: subproc, label: "Continues in: Case Manager › Filters › Search and filter both tabs" }
   g2@{ shape: subproc, label: "Continues in: New case › Referral step" }
   p4@{ shape: rect, label: "<b>How drafts run out: sign and send every case in 'Being prepared' (5 at the start)</b><br/>The header then reads '0 are still being prepared'" }
-  p5@{ shape: rect, label: "<b>'Step-down plans' has no empty state</b><br/>The card is simply not shown when no denial was accepted or the filters hide every plan" }
+  p5@{ shape: rect, label: "<b>'Step-down plans' has no empty state</b><br/>The folded row is simply not shown when no denial was accepted or the filters hide every plan" }
   e1@{ shape: stadium, label: "Lists show rows again" }
   s1 --> i1 --> p1
   p1 --> d1

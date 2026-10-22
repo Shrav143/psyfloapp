@@ -16,18 +16,18 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "Scroll to 'Common denial reasons by payer'" }
-  sc@{ shape: curv-trap, label: "<b>Card 'Common denial reasons by payer'</b><br/>'This quarter · 311 denials in the reasons listed. Select a row to open those denials in Denial Intelligence.'" }
+  s1@{ shape: stadium, label: "<b>Under 'Detailed breakdowns', click 'Common denial reasons by payer'</b><br/>Or Tab to it and press Enter or Space" }
+  sc@{ shape: curv-trap, label: "<b>Section opens</b><br/>Summary stays: '311 denials this quarter. Most common: ...'<br/>'This quarter. Each payer's most common reason. Select a row to open those denials in Denial Intelligence.'<br/>With a program picked: 'This quarter · IOP.'" }
   th@{ shape: curv-trap, label: "<b>Columns</b><br/>'Reason', 'Payer', 'Count', 'Share of denials' (a red bar and the percent)" }
   q1@{ shape: diam, label: "Which payer is chosen in the menu?" }
-  p1@{ shape: rect, label: "<b>'All payers': one row per payer, its most common reason</b><br/>Biggest first" }
-  r1@{ shape: curv-trap, label: "<b>Cardinal 89 · 29%</b><br/>'Continued-stay evidence incomplete'" }
-  r2@{ shape: curv-trap, label: "<b>Harborview MA 74 · 24%</b><br/>'Recertification filed too late'" }
-  r3@{ shape: curv-trap, label: "<b>Evergreen 61 · 20%</b><br/>'Partial approval without a stated reason'" }
-  r4@{ shape: curv-trap, label: "<b>Summit Medicaid 48 · 15%</b><br/>Beacon PPO 39 · 13%" }
-  p2@{ shape: rect, label: "<b>A payer with fewer than 20 listed denials is left out</b><br/>Lakeshore this quarter and last quarter" }
-  p3@{ shape: rect, label: "<b>One payer: all of that payer's reasons, three or four rows</b><br/>Shares add up to 100% of the listed denials" }
-  q2@{ shape: diam, label: "Fewer than 20 denials listed?" }
+  p1@{ shape: rect, label: "<b>'All payers': one row per payer, its most common reason</b><br/>Biggest first<br/>Share is of all the denials in view, so the rows add up to less than 100%" }
+  r1@{ shape: curv-trap, label: "<b>Cardinal 73 · 23%</b><br/>'Continued-stay evidence incomplete'" }
+  r2@{ shape: curv-trap, label: "<b>Evergreen 34 · 11%</b><br/>'Partial approval without a stated reason'" }
+  r3@{ shape: curv-trap, label: "<b>Summit Medicaid 28 · 9%</b><br/>'Level of care does not match mood severity'" }
+  r4@{ shape: curv-trap, label: "<b>Harborview MA 15 · 5%</b><br/>Beacon PPO 13 · 4%" }
+  p2@{ shape: rect, label: "<b>A payer with fewer than 20 denials is left out</b><br/>Lakeshore this quarter and last quarter" }
+  p3@{ shape: rect, label: "<b>One payer: all of that payer's reasons, three or four rows</b><br/>Shares add up to 100% of that payer's denials<br/>Every count is part of the denials behind the 'Denial rate' tile" }
+  q2@{ shape: diam, label: "Fewer than 20 denials in view?" }
   nd@{ shape: curv-trap, label: "<b>'Not enough decisions yet. Figures based on fewer than 20 decisions stay hidden.'</b><br/>No table, no link" }
   subgraph gClick ["Open a row"]
   c1@{ shape: trap-t, label: "Click anywhere on a row" }

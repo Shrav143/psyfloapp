@@ -19,7 +19,9 @@ flowchart TD
   q@{ shape: curv-trap, label: "Authorizations queue" }
   d0@{ shape: diam, label: "Are any open requests affected, and is the banner still shown?" }
   e0@{ shape: stadium, label: "<b>No banner</b><br/>None affected, or you dismissed it" }
-  bn@{ shape: curv-trap, label: "<b>Banner: 'Payer signal. Cardinal Health Plan has denied 31% more IOP continued-stay requests this week ...'</b><br/>'Four of your open requests are affected, and the agents have re-scored them.'" }
+  bn@{ shape: curv-trap, label: "<b>One-line banner: 'Payer signal. Cardinal Health Plan has denied 31% more IOP continued-stay requests this week.'</b><br/>Info icon, 'Review the four', X" }
+  inf@{ shape: trap-t, label: "Hover or focus the info icon 'More about this signal'" }
+  tip@{ shape: win-pane, label: "<b>Tooltip: 'The denials were mostly for thin recertification evidence. Four of your open requests are affected, and the agents have re-scored them.'</b><br/>Esc closes it" }
   wd@{ shape: rect, label: "<b>Wording follows the count</b><br/>'Review the three' for three; one is 'One of your open requests is affected ... re-scored it'" }
   r@{ shape: trap-t, label: "Click 'Review the four'" }
   sf@{ shape: cyl, label: "Payer-signal filter turns on" }
@@ -29,8 +31,8 @@ flowchart TD
   sa@{ shape: trap-t, label: "Click 'Show all requests'" }
   cx@{ shape: trap-t, label: "<b>Click the X on the chip</b><br/>'Remove the Cardinal signal filter'" }
   cf@{ shape: trap-t, label: "Click 'Clear filters'" }
-  tl@{ shape: trap-t, label: "Click the 'Urgent' or 'In flight' tile" }
-  off@{ shape: rect, label: "<b>Payer-signal filter turns off</b><br/>All bands return, chip goes, button reads 'Review the four' again" }
+  tl@{ shape: trap-t, label: "<b>Click a figure that is the only filter on,</b><br/>or click another figure (it replaces every filter)" }
+  off@{ shape: rect, label: "<b>Payer-signal filter turns off</b><br/>All bands return, chip goes, button reads 'Review the four' again<br/>The address loses ?signal=1" }
   dis@{ shape: trap-t, label: "<b>Click the X on the banner</b><br/>'Dismiss signal'" }
   hid@{ shape: cyl, label: "<b>Banner stays hidden for the session</b><br/>until the demo data is reset" }
   stay@{ shape: rect, label: "<b>If the filter was on, it stays on</b><br/>The chip and 'Clear filters' still turn it off" }
@@ -40,6 +42,7 @@ flowchart TD
   q --> d0
   d0 -->|"No"| e0
   d0 -->|"Yes"| bn --> wd
+  bn --> inf --> tip
   bn --> r --> sf --> ls
   sf --> chip
   sf --> bb
@@ -53,7 +56,8 @@ flowchart TD
   class q,bn,ls,chip,bb k_screen
   class d0 k_decision
   class e0 k_endx
+  class inf,r,sa,cx,cf,tl,dis,op k_click
+  class tip k_overlay
   class wd,off,stay,sh k_process
-  class r,sa,cx,cf,tl,dis,op k_click
   class sf,hid k_store
   class gC k_goto

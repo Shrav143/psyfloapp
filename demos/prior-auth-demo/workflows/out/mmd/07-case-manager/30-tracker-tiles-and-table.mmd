@@ -16,12 +16,12 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "Scroll below 'Being prepared' on Active cases" }
+  s1@{ shape: stadium, label: "Open Active cases: the tracker is under the folded rows" }
   t0@{ shape: curv-trap, label: "<b>Four status tiles in a row</b><br/>11 'Needs action' (act today)<br/>14 'Review due' (review or recertify soon)<br/>15 'Awaiting payer' (the payer has it)<br/>16 'On track' (nothing needed)" }
   p0@{ shape: rect, label: "<b>Tile numbers follow search, level of care and payer</b><br/>They do not follow the status filter, so they always add up to the cases in view" }
-  t1@{ shape: curv-trap, label: "<b>Table card</b><br/>Columns: Case, Level of care, Payer, Units used, Clock, Approval chance, Status, Open<br/>Under a case ID, small tags when they apply: green 'New today', grey 'Updated for a payer change · 10/20'" }
-  p1@{ shape: rect, label: "<b>Rows are sorted by Clock, soonest first (overdue rows lead)</b><br/>Ten rows a page, 'Showing 1 to 10 of 56'<br/>The header count, the four tiles and this line are one list, so they always agree ('57' with a new case)" }
-  t2@{ shape: curv-trap, label: "<b>Note under the table</b><br/>'Approval chance estimates how well the paperwork fits the payer's past decisions ... Strong is 80 and above, Moderate 55 to 79, At risk below 55. It never blocks a request.'" }
+  t1@{ shape: curv-trap, label: "<b>Table card</b><br/>Columns: Case, Status, Next due, Units or days, Level of care, Payer, Approval chance, Open<br/>Status is the one coloured pill; level of care is plain text; approval chance is one small number<br/>Under a case ID, small text when it applies: 'New today', 'Updated for a payer change · 10/20'" }
+  p1@{ shape: rect, label: "<b>Rows are sorted by Next due, soonest first (overdue rows lead)</b><br/>Ten rows a page, 'Showing 1 to 10 of 56'<br/>The header count, the four tiles and this line are one list, so they always agree ('57' with a new case)" }
+  t2@{ shape: curv-trap, label: "<b>Note under the table</b><br/>'Units or days left are worked out at the usual pace ... Runs out before review appears only when ...'<br/>'Approval chance estimates how well the paperwork fits the payer's past decisions ... Strong is 80 and above, Moderate 55 to 79, At risk below 55. It never blocks a request.'" }
   c1@{ shape: trap-t, label: "Click a tile, for example 'Needs action'" }
   d1@{ shape: diam, label: "Was that tile already selected?" }
   p2@{ shape: rect, label: "<b>Tile gets a green outline</b><br/>The 'Any status' dropdown shows the same status<br/>Table keeps only that status, and goes back to page 1" }
@@ -30,7 +30,7 @@ flowchart TD
   p4@{ shape: rect, label: "Same effect as clicking that tile" }
   c3@{ shape: trap-t, label: "Click a sortable header or 'Previous' / 'Next'" }
   g1@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Sort and page the tracker" }
-  c4@{ shape: rect, label: "Look at a row's Units used, Clock and Status cells" }
+  c4@{ shape: rect, label: "Look at a row's Status, Units or days and Next due cells" }
   g2@{ shape: subproc, label: "Continues in: Case Manager › Active cases › What each tracker cell means" }
   c5@{ shape: trap-t, label: "Click a row, its case ID or 'Open'" }
   g3@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Open a case from the tracker" }

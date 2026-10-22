@@ -22,8 +22,8 @@ flowchart TD
   pc@{ shape: cyl, label: "<b>Change opened for the payer: 'waiting for a person'</b><br/>Title, one sentence, effective date,<br/>agents that will redraft<br/>The drafts it affects are read live, not stored" }
   subgraph gS ["Where a person sees it"]
   s1@{ shape: rect, label: "Sidebar 'Payers' badge counts it (3 at the start)" }
-  s2@{ shape: rect, label: "Payer row in the list: ochre dot" }
-  s3@{ shape: rect, label: "Header plan line ends 'change waiting'" }
+  s2@{ shape: rect, label: "Payer row in the list: ochre dot and the words 'Change waiting'" }
+  s3@{ shape: rect, label: "Header 'Policy status' line starts 'Change waiting for you (...)'" }
   s4@{ shape: rect, label: "'Changes' tab badge shows 1" }
   s5@{ shape: odd, label: "<b>Bell notification from Sentinel, unread</b><br/>'Payer rule changed'<br/>Cardinal updated its criteria (version 2026.3). 4 drafts are affected.<br/>This text is fixed and still says 4; the Changes tab counts live<br/>(Harborview's and Evergreen's changes have the badge and dots but no notification)" }
   end

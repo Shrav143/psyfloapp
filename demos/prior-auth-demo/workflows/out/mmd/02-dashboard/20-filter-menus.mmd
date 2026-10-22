@@ -16,7 +16,7 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Dashboard is open</b><br/>Filter bar: four menus, then 'Outcomes for' and the dates" }
+  s1@{ shape: stadium, label: "<b>Dashboard is open</b><br/>Filter bar, under the four key figures: four menus, then 'Outcomes for' and the dates" }
   c1@{ shape: trap-t, label: "Click 'All payers'" }
   c2@{ shape: trap-t, label: "Click 'All programs'" }
   c3@{ shape: trap-t, label: "Click 'All request types'" }
@@ -24,26 +24,28 @@ flowchart TD
   o1@{ shape: win-pane, label: "<b>Payer menu</b><br/>All payers, Cardinal Health Plan, Summit Medicaid HMO, Beacon PPO, Harborview MA, Lakeshore Behavioral, Evergreen" }
   o2@{ shape: win-pane, label: "<b>Program menu</b><br/>All programs, Residential 3.5, IOP, PHP, Detox" }
   o3@{ shape: win-pane, label: "<b>Request type menu</b><br/>All request types, Initial request, Admission, Continued stay, Recertification, Retro-authorization, Peer-to-peer call, Appeal, Resubmission" }
-  o4@{ shape: win-pane, label: "<b>Stage menu</b><br/>All stages, Preparing, Received, Under review, Info requested, Decided today, Appeal or call" }
+  o4@{ shape: win-pane, label: "<b>Stage menu</b><br/>All stages<br/>The three groupings from the key figures: Needs you, Due within 24 hours, Waiting on payers<br/>The six stages: Preparing, Received, Under review, Info requested, Decided today, Appeal or call<br/>Each option shows how many requests it holds" }
   m1@{ shape: rect, label: "<b>Menu is open: the options list, current pick ticked</b><br/>Same behaviour in all four menus" }
   i1@{ shape: lean-r, label: "<b>Pick an option</b><br/>Click it, or ArrowDown or ArrowUp then Enter" }
   k1@{ shape: trap-t, label: "Press Escape, click outside, or click the menu button again" }
   e0@{ shape: stadium, label: "Menu closes, nothing changes" }
+  dg@{ shape: diam, label: "Is the pick a grouping (Needs you, Due within 24 hours, Waiting on payers)?" }
+  pg@{ shape: rect, label: "<b>The grouping applies and Stage goes back to 'All stages' in the address</b><br/>A grouping and a stage never apply together; the key figure of the same name is outlined" }
   p1@{ shape: rect, label: "Menu closes and the pick is saved to Payer, Program, Request type or Stage" }
   w1@{ shape: cyl, label: "<b>Filters</b><br/>A menu that is not 'All' turns green and bold" }
   p2@{ shape: rect, label: "<b>Address updated in place, no new history entry</b><br/>Only non-default values appear" }
   p3@{ shape: rect, label: "Table goes back to its first 8 rows" }
   subgraph gFollow ["What follows each filter"]
-  f1@{ shape: rect, label: "<b>Payer, Program, Request type</b><br/>Headline, all six tile counts and the table follow them" }
-  f2@{ shape: rect, label: "<b>Stage</b><br/>Table and headline follow it; the tile counts still count every stage and the chosen tile is outlined" }
-  f3@{ shape: rect, label: "<b>Payers at a glance</b><br/>Waiting follows Program and Request type; the Payer pick highlights its row" }
+  f1@{ shape: rect, label: "<b>Payer, Program, Request type</b><br/>Headline, the four key figures, the Stage menu counts and the table follow them" }
+  f2@{ shape: rect, label: "<b>Stage or a grouping</b><br/>Table and headline follow it; the key figures still count every stage and the matching figure is outlined" }
+  f3@{ shape: rect, label: "<b>Payer performance (when open)</b><br/>Waiting follows Program and Request type; the Payer pick highlights its row" }
   end
   d1@{ shape: diam, label: "Is any request left?" }
   sc@{ shape: curv-trap, label: "Dashboard shows the matching rows" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Filters › Clear filters and empty states" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Headline › What the headline and sub line say" }
-  g3@{ shape: subproc, label: "Continues in: Dashboard › Stage strip › Click a stage tile" }
-  g4@{ shape: subproc, label: "Continues in: Dashboard › Payers at a glance › Read the table and pick a payer" }
+  g3@{ shape: subproc, label: "Continues in: Dashboard › Key figures › Click a figure to filter the list" }
+  g4@{ shape: subproc, label: "Continues in: Dashboard › Payer performance › Read the table and pick a payer" }
   s1 --> c1 --> o1
   s1 --> c2 --> o2
   s1 --> c3 --> o3
@@ -52,6 +54,8 @@ flowchart TD
   m1 --> i1
   m1 -.-> k1 --> e0
   i1 --> p1 --> w1 --> p2 --> p3
+  i1 -.-> dg
+  dg -->|"Yes"| pg --> w1
   p3 --> f1 & f2 & f3
   f1 --> g2
   f2 --> g3
@@ -62,11 +66,11 @@ flowchart TD
   class s1 k_start
   class c1,c2,c3,c4,k1 k_click
   class o1,o2,o3,o4 k_overlay
-  class m1,p1,p2,p3,f1,f2,f3 k_process
+  class m1,pg,p1,p2,p3,f1,f2,f3 k_process
   class i1 k_input
   class e0 k_end
+  class dg,d1 k_decision
   class w1 k_store
-  class d1 k_decision
   class sc k_screen
   class g1,g2,g3,g4 k_goto
   style gFollow fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

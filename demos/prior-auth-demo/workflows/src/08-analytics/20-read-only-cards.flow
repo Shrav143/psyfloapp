@@ -31,7 +31,7 @@ group gWork "Workload"
   process h3 "Follows the payer and program menus, not the period\nA line names the scope, then says how many open requests wait on you"
   store h4 "Live: answer a payer in the Dashboard, or accept a denial in Denial Intelligence, and the numbers move by one"
   click h5 "Click 'Open the Dashboard'"
-  goto h6 "Continues in: Dashboard › Arrive and read the page"
+  goto h6 "Continues in: Dashboard › Arrive › What the page shows"
 endgroup
 
 process p1 "Hover and click do nothing on bars, donut slices, legend and meter"

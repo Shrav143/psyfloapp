@@ -23,19 +23,19 @@ flowchart TD
   c3@{ shape: trap-t, label: "Click 'Print'" }
   q2@{ shape: diam, label: "Is this the hosted preview?" }
   t3@{ shape: odd, label: "<b>'Print is off in this preview'</b><br/>'Open the single-file version of the demo to use it.'" }
-  pp@{ shape: rect, label: "<b>The browser's print window opens</b><br/>It prints a plain page of the report: title, period, scope and every section<br/>Not the sidebar, the menus or the window" }
+  pp@{ shape: rect, label: "<b>The browser's print window opens</b><br/>It prints a plain page of the report: title, period, scope, program and every section<br/>Not the sidebar, the menus or the window" }
   pq@{ shape: rect, label: "<b>Cancel or Print in the browser window</b><br/>The report window stays open" }
   q1@{ shape: diam, label: "<b>Is this the hosted preview?</b><br/>(the host page blocks downloads and printing)" }
   t1@{ shape: odd, label: "<b>'Download is off in this preview'</b><br/>'Open the single-file version of the demo to use it.'" }
   p0@{ shape: rect, label: "<b>No file is made and no second toast</b><br/>The window stays open" }
   subgraph gFile ["In the single-file demo"]
-  f1@{ shape: doc, label: "<b>Markdown file</b><br/>psyflo-monthly-report-quarter-all.md" }
-  f2@{ shape: doc, label: "<b>CSV file</b><br/>psyflo-monthly-report-quarter-all.csv" }
+  f1@{ shape: doc, label: "<b>Markdown file</b><br/>psyflo-monthly-report-quarter-all-all.md" }
+  f2@{ shape: doc, label: "<b>CSV file</b><br/>psyflo-monthly-report-quarter-all-all.csv" }
   p1@{ shape: rect, label: "Browser saves the file to the person's computer" }
-  t2@{ shape: odd, label: "<b>'Report downloaded'</b><br/>'psyflo-monthly-report-quarter-all.md has the figures you see on this page.'" }
+  t2@{ shape: odd, label: "<b>'Report downloaded'</b><br/>'psyflo-monthly-report-quarter-all-all.md has the figures you see on this page.'" }
   p2@{ shape: rect, label: "Window stays open, so the other file can be saved too" }
   end
-  n1@{ shape: rect, label: "Name pattern: psyflo-monthly-report, then the period (quarter, last_quarter, year), then the payer (all or cardinal, summit ...)" }
+  n1@{ shape: rect, label: "Name pattern: psyflo-monthly-report, then the period (quarter, last_quarter, year), then the payer (all or cardinal, summit ...), then the program (all, res, iop, php or wm)" }
   d1@{ shape: doc, label: "<b>Production, not in the demo</b><br/>One PDF monthly pack, aggregate only, drafted on the first business day<br/>The operator approves it before it is sent<br/>The demo prints through the browser instead" }
   k1@{ shape: trap-t, label: "Click 'Done', press Escape, click the X or click outside" }
   e1@{ shape: stadium, label: "Window closes, back on Analytics" }

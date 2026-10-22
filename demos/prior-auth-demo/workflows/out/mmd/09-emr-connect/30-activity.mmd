@@ -16,13 +16,14 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  p1@{ shape: curv-trap, label: "<b>Recent activity</b><br/>Every read and write is logged" }
-  r1@{ shape: rect, label: "<b>Each line: the agent's round icon, the text, and how long ago</b><br/>Newest first. Six lines on the card" }
+  ad@{ shape: trap-t, label: "Click 'Advanced', or Tab to it and press Enter or Space" }
+  p1@{ shape: curv-trap, label: "<b>Advanced › Recent activity</b><br/>Every read and write is logged" }
+  r1@{ shape: rect, label: "<b>Each line: the agent's round icon, the text, and how long ago</b><br/>Newest first. Six lines in the section" }
   q1@{ shape: diam, label: "More than six lines?" }
   b1@{ shape: trap-t, label: "Click 'See all 8'" }
-  nb@{ shape: rect, label: "No button. The card shows every line" }
+  nb@{ shape: rect, label: "No button. The section shows every line" }
   o1@{ shape: win-pane, label: "<b>Activity log drawer</b><br/>Every read and write, newest first." }
-  o2@{ shape: rect, label: "<b>All lines in one list</b><br/>Same icon, text and time as the card" }
+  o2@{ shape: rect, label: "<b>All lines in one list</b><br/>Same icon, text and time as the section" }
   x1@{ shape: trap-t, label: "Click the X, press Escape, or click the dimmed area" }
   e1@{ shape: stadium, label: "<b>Drawer closes</b><br/>Back on the page" }
   subgraph gAdds ["What adds a line (newest goes on top)"]
@@ -34,17 +35,17 @@ flowchart TD
   st@{ shape: cyl, label: "<b>Activity log</b><br/>Seed: eight lines from Reader, Verify and Navigator" }
   nt@{ shape: odd, label: "<b>Dashboard 'Write to the EMR' adds no line here</b><br/>It adds an event to that request instead" }
   fz@{ shape: rect, label: "<b>Every line is written at every freedom level</b><br/>The agent's Freedom in Settings only decides whether a toast follows" }
-  p1 --> r1 --> q1
+  ad --> p1 --> r1 --> q1
   q1 -->|"Yes"| b1 --> o1 --> o2 --> x1 --> e1
   q1 -->|"No"| nb
   l1 & l2 & l3 & l4 --> st
   st --> r1
   p1 -.-> nt
   st -.-> fz
+  class ad,b1,x1 k_click
   class p1 k_screen
   class r1,nb,o2,fz k_process
   class q1 k_decision
-  class b1,x1 k_click
   class o1 k_overlay
   class e1 k_end
   class l1,l2,l3,l4 k_agent

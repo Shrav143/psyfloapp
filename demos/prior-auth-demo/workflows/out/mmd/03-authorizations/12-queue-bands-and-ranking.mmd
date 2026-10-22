@@ -45,7 +45,9 @@ flowchart TD
   allm@{ shape: rect, label: "<b>Every request is shown</b><br/>Button now reads 'Show fewer'" }
   sf@{ shape: trap-t, label: "Click 'Show fewer'" }
   back@{ shape: rect, label: "Back to the top five" }
-  g1@{ shape: subproc, label: "Continues in: Authorizations › Queue › Read and open a request tile" }
+  tp@{ shape: trap-t, label: "Hover or focus the info icon 'How the list is ordered' (right end of the filter bar)" }
+  tp2@{ shape: win-pane, label: "<b>Tooltip says the same rule in a few words</b><br/>Esc closes it" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Queue › Read and open a request row" }
   q --> b1
   b1 --> lv
   b1 --> bn & bd & bw
@@ -58,6 +60,7 @@ flowchart TD
   dE -->|"Yes"| bc
   bc --> r1 --> r2 --> wt
   r2 -.-> ex
+  r1 --> tp --> tp2
   bc --> hd --> dC
   dC -->|"Yes"| col --> keep
   dC -->|"No"| exp --> keep
@@ -69,7 +72,8 @@ flowchart TD
   class b1,lv,bn,bd,bw,hide,r1,r2,wt,col,exp,all5,top5,allm,back k_process
   class dE,dZ,dC,dM k_decision
   class ex k_doc
-  class hd,sm,sf k_click
+  class hd,sm,sf,tp k_click
   class keep k_store
+  class tp2 k_overlay
   class g1 k_goto
   style gB fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

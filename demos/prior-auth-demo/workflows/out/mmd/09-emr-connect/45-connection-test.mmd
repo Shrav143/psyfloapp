@@ -29,12 +29,12 @@ flowchart TD
   b0@{ shape: trap-t, label: "'Connect {name}' is dimmed until the last check passes" }
   b1@{ shape: trap-t, label: "<b>Click 'Connect {name}'</b><br/>For example 'Connect Lab results · new site'" }
   subgraph gSave ["What is saved"]
-  s1@{ shape: cyl, label: "<b>New system on the list</b><br/>Status Connected, last sync now, connected since today, the contact, write-back off" }
+  s1@{ shape: cyl, label: "<b>New system on the list</b><br/>Status Connected, last sync now, connected since today, the contact, write-back off (its row says 'Read only')" }
   s2@{ shape: cyl, label: "Files pulled tile goes up by 5" }
   a1@{ shape: hex, label: "Reader logs 'Tested the read-only connection to {name} and found 5 files to pull'" }
   t2@{ shape: odd, label: "<b>'{name} is connected'</b><br/>'Read-only. Nothing is written back.'" }
   end
-  e1@{ shape: stadium, label: "<b>Pop-up closes</b><br/>The new row sits at the end of Connected systems" }
+  e1@{ shape: stadium, label: "<b>Pop-up closes</b><br/>The new row sits at the end of Connection health" }
   cx@{ shape: trap-t, label: "Click 'Cancel', click the X, press Escape, or click the dimmed area" }
   e2@{ shape: stadium, label: "<b>Test stops, nothing is saved</b><br/>There is no 'Back' on this step" }
   g1@{ shape: subproc, label: "Continues in: EMR Connect › Sync › Sync now" }

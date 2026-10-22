@@ -30,7 +30,7 @@ flowchart TD
   pSla@{ shape: rect, label: "<b>Red pill 'Past response target' while New or In review</b><br/>after 1 hour (emergent), 4 hours (urgent) or 24 hours (routine)" }
   gHead@{ shape: subproc, label: "Continues in: New case › Referral › Header actions" }
   gBan@{ shape: subproc, label: "Continues in: New case › Referral › Decision banners" }
-  sBan@{ shape: curv-trap, label: "<b>Banners under the header</b><br/>One per situation: declined, accepted, waiting on the referrer,<br/>Reader found N things to check, coverage lapsed" }
+  sBan@{ shape: curv-trap, label: "<b>One banner under the header</b><br/>The most important one: declined, accepted, coverage lapsed, waiting on the referrer, or Reader found N things to check" }
   subgraph gCr ["Breadcrumb"]
   cC1@{ shape: trap-t, label: "Click the crumb 'New case'" }
   cC2@{ shape: trap-t, label: "Click the crumb 'Referral'" }

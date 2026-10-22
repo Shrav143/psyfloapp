@@ -6,7 +6,7 @@ import type { DocItem } from "@/data/payerConfig";
 import { CHART_GAPS } from "@/data/payerConfigSeed";
 import { PROGRAM_LABEL, type Program } from "@/data/types";
 import { sleep } from "@/lib/format";
-import { InfoTip } from "@/pages/eligibility/InfoTip";
+import { InfoTip } from "@/components/ui/InfoTip";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
 import { checkChart, checkText, stillNeeded, type CheckResult } from "./lib/checker";

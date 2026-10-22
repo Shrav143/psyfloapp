@@ -31,7 +31,7 @@ flowchart TD
   x2@{ shape: st-rect, label: "Payer restores the requested days, or part of them, on the call" }
   a1@{ shape: hex, label: "Cadence updates the ledger and books the next review" }
   t1@{ shape: odd, label: "<b>'Overturned' or 'Partly restored'</b><br/>'The ledger is updated and the next review is booked.'" }
-  p2@{ shape: rect, label: "<b>Sidebar badge goes down by one</b><br/>The denial moves to 'Closed' in the open denials list<br/>Banner 'Overturned on the call' or 'Partly restored on the call'" }
+  p2@{ shape: rect, label: "<b>Sidebar badge goes down by one</b><br/>The denial moves to 'Closed' in the open denials list<br/>Next-step block 'Overturned on the call' or 'Partly restored on the call'" }
   st2@{ shape: cyl, label: "<b>Chip 'Appeal drafting'</b><br/>Clock becomes 'to file': 60 days from the denial date" }
   a2@{ shape: hex, label: "Advocate starts a written appeal from the call notes" }
   t2@{ shape: odd, label: "<b>'Outcome logged: upheld'</b><br/>'Advocate started the written appeal. Open it from the denial.'" }

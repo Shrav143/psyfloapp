@@ -18,7 +18,7 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Open the full referral page</b><br/>Tab 'Extracted' is the one it opens on" }
   sc1@{ shape: curv-trap, label: "<b>Extracted tab</b><br/>'Reader read 3 pages and found 13 fields. Click a field to see the evidence in the document.'" }
-  t0@{ shape: odd, label: "<b>Amber banner when a field is missing</b><br/>'Reader could not find every field. Add them by hand with the pencil, or ask the referrer.'" }
+  t0@{ shape: odd, label: "<b>When a field is missing, the sentence above the rows adds (in amber)</b><br/>'Reader could not find every field. Add them by hand with the pencil, or ask the referrer.'" }
   sc2@{ shape: curv-trap, label: "<b>Field rows</b><br/>Patient, Age, Referring clinician, Credentials, NPI, Reason, Diagnoses, Requested service, Urgency, Order date, Insurance, Member ID, Contact" }
   pRow@{ shape: rect, label: "<b>Each row shows a dot, the value and who set it</b><br/>Dot: green at 90% and up, amber 75 to 89, red below 75 or not found<br/>'Extracted by Reader' or 'Edited by you', '95% sure' or 'Not found'" }
   subgraph gRow ["A field"]

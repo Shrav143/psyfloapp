@@ -17,10 +17,11 @@ flowchart LR
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Read one tracker row" }
-  r1@{ shape: curv-trap, label: "<b>Case: ID, then initials and age</b><br/>Level of care: chip, then a short note ('Continued stay 3', 'Recertification')<br/>Payer: short name ('Summit Medicaid', 'Cardinal')" }
-  u0@{ shape: diam, label: "Units used: is the case approved yet?" }
+  r1@{ shape: curv-trap, label: "<b>Case: ID, then initials and age</b><br/>Level of care: plain text, then a short note ('Continued stay 3', 'Recertification')<br/>Payer: short name ('Summit Medicaid', 'Cardinal')" }
+  u0@{ shape: diam, label: "Units or days: is the case approved yet?" }
   u1@{ shape: rect, label: "<b>'not yet approved' in grey</b><br/>(admissions, retro-authorizations and first requests: 9 cases)" }
-  u2@{ shape: rect, label: "<b>A bar and '10 of 21 days' (or 'units' for IOP)</b><br/>Bar turns terracotta at 75 percent used or more" }
+  u2@{ shape: rect, label: "<b>'10 of 21 days used, 11 left' (or 'units' for IOP; 'none left' at zero), with a bar</b><br/>Bar turns terracotta at 75 percent used or more" }
+  gu@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Units or days left and the run-out flag" }
   a0@{ shape: diam, label: "Clock: did the clinic accept this denial?" }
   k11@{ shape: rect, label: "<b>'Step-down plan open'</b><br/>The plan is on Active cases, in 'Step-down plans'<br/>Status is unchanged" }
   b0@{ shape: diam, label: "Clock: did a signature book a next review for this case?" }
@@ -37,8 +38,8 @@ flowchart LR
   k8@{ shape: rect, label: "<b>Units only</b><br/>'32 units left'<br/>Never red" }
   k10@{ shape: rect, label: "<b>Next review booked after a signature</b><br/>'Next review Tue 10/27', then 'Review due' when the day comes<br/>Status becomes 'On track' (or stays 'Awaiting payer')" }
   k9@{ shape: rect, label: "Times under two days show hours ('5 h'). Longer ones show days ('3 days')" }
-  s1p@{ shape: rect, label: "<b>Approval chance: percent with a bar, coloured by band</b><br/>Strong 80 and above, Moderate 55 to 79, At risk below 55" }
-  s2p@{ shape: rect, label: "<b>Status pill: 'Needs action' (red), 'Review due' (amber), 'Awaiting payer' (grey), 'On track' (green)</b><br/>The four tiles count these" }
+  s1p@{ shape: rect, label: "<b>Approval chance: one small number, '79%'</b><br/>Bands (Strong 80 and above, Moderate 55 to 79, At risk below 55) are in the note under the table" }
+  s2p@{ shape: rect, label: "<b>Status pill, the only coloured pill in the row: 'Needs action' (red), 'Review due' (amber), 'Awaiting payer' (grey), 'On track' (green)</b><br/>The four tiles count these" }
   s3p@{ shape: rect, label: "'Open' button at the end of the row" }
   g1@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Open a case from the tracker" }
   e1@{ shape: stadium, label: "Row is read" }
@@ -47,6 +48,7 @@ flowchart LR
   u0 -->|"Yes"| u2
   u1 --> a0
   u2 --> a0
+  u2 -.-> gu
   a0 -->|"Yes"| k11 --> s1p
   a0 -->|"No"| b0
   b0 -->|"Yes"| k10 --> s1p
@@ -68,5 +70,5 @@ flowchart LR
   class r1 k_screen
   class u0,a0,b0,q0,k0 k_decision
   class u1,u2,k11,q1,k1,k2,k3,k4,k5,k6,k7,k8,k10,k9,s1p,s2p,s3p k_process
-  class g1 k_goto
+  class gu,g1 k_goto
   class e1 k_end

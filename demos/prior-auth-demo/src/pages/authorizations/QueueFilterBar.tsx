@@ -4,7 +4,7 @@ import { REQUEST_KINDS, REQUEST_KIND_LABEL, STATUS_LABEL, type Band, type Reques
 import { PAYERS } from "@/data/seed";
 import type { PayerId } from "@/data/types";
 import type { QueueFilters } from "@/store/queue";
-import { InfoTip } from "./InfoTip";
+import { InfoTip } from "@/components/ui/InfoTip";
 import { filtersActive } from "./queueLogic";
 import { StatusHelp } from "./StatusHelp";
 

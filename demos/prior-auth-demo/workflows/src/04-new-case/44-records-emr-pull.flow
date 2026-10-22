@@ -4,7 +4,7 @@ intro: The button reads EMR Connect's connected systems. With none connected it 
 dir: TD
 ---
 start s1 "On step 2, click 'Pull a chart from EMR Connect'\nClicking again closes it"
-decision dSys "Is any records system connected in EMR Connect?\nStatus 'Connected'. 'Needs a quick look' and disconnected systems do not count"
+decision dSys "Is any records system connected in EMR Connect?\nStatus 'Connected'. 'Needs attention' and disconnected systems do not count"
 toast tNone "'No records system is connected.'\n'Connect one in EMR Connect to pull a chart, or drop the files above.'\nLink 'EMR Connect' and a 'Close' button"
 click cLink "Click 'EMR Connect' in the message"
 goto gEmr "Continues in: EMR Connect › Connect a system › Choose the system and contact"

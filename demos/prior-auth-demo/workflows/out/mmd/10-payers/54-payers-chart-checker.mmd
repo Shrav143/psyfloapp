@@ -16,12 +16,12 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Look at the card 'Try it on a case'</b><br/>right of the document list<br/>Check a chart against this list" }
+  s1@{ shape: stadium, label: "<b>Look at the card 'Try it on a case'</b><br/>below the document list<br/>Check a chart against this list<br/>Its info icon holds the note on keyword matching" }
   hc@{ shape: diam, label: "Is any case in 'Preparing'?" }
   nc@{ shape: odd, label: "Menu shows 'No cases to check'" }
   df@{ shape: rect, label: "<b>Case starts as the first 'Preparing' case for this payer,</b><br/>else the first 'Preparing' case at all<br/>Cardinal: I-2207" }
   pk@{ shape: lean-r, label: "<b>Pick a 'Case'</b><br/>R-1042 · J.M., 34 (Residential 3.5)<br/>I-2207 · T.R., 29 (IOP)<br/>R-0988, R-1101, I-2262" }
-  pt@{ shape: lean-r, label: "<b>Type or paste in 'Paste chart text' (optional)</b><br/>Hint: with text here, Reader checks it against the level<br/>of care list on the left instead of the case's chart" }
+  pt@{ shape: lean-r, label: "<b>Type or paste in 'Paste chart text' (optional)</b><br/>Hint: with text here, Reader checks it against the level<br/>of care list above instead of the case's chart" }
   clr@{ shape: rect, label: "<b>Picking a case or changing the text</b><br/>clears any earlier result" }
   dt@{ shape: diam, label: "<b>Is there pasted text?</b><br/>Blank or spaces only counts as none" }
   dg@{ shape: diam, label: "Is there a case or pasted text?" }

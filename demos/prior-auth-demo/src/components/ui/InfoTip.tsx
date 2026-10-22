@@ -1,6 +1,6 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { Info } from "lucide-react";
-import { useEscape } from "@/components/ui";
+import { useEscape } from "./escape";
 import { cn } from "@/lib/cn";
 
 /** A small info icon that explains something in a few words. It opens on hover and on keyboard focus, stays open after a click

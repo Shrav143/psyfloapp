@@ -20,7 +20,7 @@ screen nc4 "New case › Review and sign\nNothing goes to the payer until a clin
 click sign "Clinician signs\nSign and send"
 store req "Request created\nStage: Received"
 ext payer "Payer receives the request\n(demo: simulated)"
-screen dash "Dashboard\nStage strip: Preparing, Received, Under review, Info requested, Decided today, Appeal or call"
+screen dash "Dashboard\nFour figures and the request list; stages: Preparing, Received, Under review, Info requested, Decided today, Appeal or call"
 wait w1 "Payer decides\nTime passes (the Demo menu moves the clock)"
 decision d3 "What does the payer decide?"
 click info "Answer on the Dashboard\nSend the information requested"

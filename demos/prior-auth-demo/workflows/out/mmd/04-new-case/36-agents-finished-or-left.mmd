@@ -18,7 +18,7 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Scrubber finishes</b><br/>The last of ten agents" }
   s2@{ shape: stadium, label: "<b>Click 'Back' on step 4</b><br/>'Review and sign'" }
-  t1@{ shape: odd, label: "<b>Banner: 'All ten agents are done'</b><br/>'The draft and the four checks are ready. Nothing has been sent to the payer.'" }
+  t1@{ shape: odd, label: "<b>Banner: 'All ten agents are done' (one message at a time: a question, a pause or changed records come first)</b><br/>'The draft and the four checks are ready. Nothing has been sent to the payer.'" }
   p1@{ shape: rect, label: "<b>Hint: 'Read the draft and sign it on the next step.'</b><br/>'Review and sign' switches on<br/>'Pause all agents' and 'Skip ahead' switch off" }
   pStop@{ shape: rect, label: "The run stops for a question, an agent that could not finish, a pause in Settings, or when the page is closed" }
   gFail@{ shape: subproc, label: "Continues in: Agents work › An agent could not finish" }
@@ -52,7 +52,7 @@ flowchart TD
   rNone@{ shape: rect, label: "<b>None yet</b><br/>Opens on step 2, or step 1 if it was left there" }
   rMid@{ shape: rect, label: "<b>Some of the ten</b><br/>Opens step 3; the run carries on with the next agent" }
   rAsk@{ shape: rect, label: "<b>Waiting on a question</b><br/>Opens step 3 and the question pop-up shows at once" }
-  rAll@{ shape: rect, label: "<b>All ten</b><br/>Opens step 4 'Ready for your signature'" }
+  rAll@{ shape: rect, label: "<b>All ten</b><br/>Opens step 4 'Review and sign'" }
   end
   s1 --> t1 --> p1 --> pStop --> dWhat
   s2 --> p1

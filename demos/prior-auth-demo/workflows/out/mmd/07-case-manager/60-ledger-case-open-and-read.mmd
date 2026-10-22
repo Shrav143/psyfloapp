@@ -24,10 +24,12 @@ flowchart TD
   n1@{ shape: curv-trap, label: "<b>'Request not found'</b><br/>'There is no request with the ID R-9999.'<br/>Button 'Back to the queue'<br/>(only for an address typed by hand)" }
   e2@{ shape: stadium, label: "Nothing to show for that ID" }
   subgraph gPage ["Ledger case page"]
-  h1@{ shape: curv-trap, label: "<b>Header</b><br/>Crumb 'Case Manager › R-0856'<br/>Level chip, case ID, review type ('Continued stay 2'), status pill ('Review due')<br/>'J.S., 51 · Summit Medicaid HMO · Residential 3.5'" }
-  m1@{ shape: curv-trap, label: "<b>Card 'Case summary', pill 'Privacy mode on'</b><br/>Patient, Payer, Service<br/>Authorization: 'Mon 10/8 to Mon 10/22'<br/>Units used: a bar and '12 of 14 days · 2 left'" }
-  m2@{ shape: curv-trap, label: "<b>More rows in the card</b><br/>Reviews due: 'Review 2, Tue 9:00 am' with its status pill<br/>Next on the clock, Status<br/>Approval chance, its band, range and similar decisions" }
-  r1@{ shape: curv-trap, label: "<b>Right side</b><br/>'Next step': one sentence, for example 'Review 2 is drafted. Read it, then sign it. Cadence books the next one.'<br/>'History': approval, drafts, signatures, and what comes next (dashed)" }
+  h1@{ shape: curv-trap, label: "<b>Header</b><br/>Crumb 'Case Manager › R-0856'<br/>Level chip, case ID, review type ('Continued stay 2'), status pill ('Review due'), the only status on the page<br/>'J.S., 51 · Summit Medicaid HMO · Residential 3.5'" }
+  m1@{ shape: curv-trap, label: "<b>Card 'Case summary', pill 'Privacy mode on'</b><br/>Patient, Payer, Service<br/>Authorization: 'Mon 10/8 to Mon 10/22'<br/>Units used: a bar and '12 of 14 days used, 2 left', and 'Runs out before review' in red only when the data shows it" }
+  m2@{ shape: curv-trap, label: "<b>More rows in the card</b><br/>Reviews due: 'Review 2, Tue 9:00 am' with its status pill<br/>Next on the clock<br/>Approval chance, its band, range and similar decisions" }
+  r1@{ shape: curv-trap, label: "<b>Right side</b><br/>'Next step': one sentence, for example 'Review 2 is drafted. Read it, then sign it. Cadence books the next one.'<br/>'History' (folded, closed at first): '4 entries. Latest: ...'<br/>Opened: approval, drafts, signatures, and what comes next (dashed)" }
+  ch@{ shape: trap-t, label: "Click the 'History' header, or press Enter or Space on it" }
+  pch@{ shape: rect, label: "Timeline shows; click again to fold it" }
   u1@{ shape: rect, label: "<b>Case not approved yet: Authorization and Units used say 'Not approved yet'</b><br/>Reviews due says 'None until the request is approved'" }
   u2@{ shape: rect, label: "After a signature: a 'Next review' line shows the date Cadence booked" }
   end
@@ -45,6 +47,7 @@ flowchart TD
   d1 -->|"No"| d2
   d2 -->|"No"| n1 --> e2
   d2 -->|"Yes"| h1 --> m1 --> m2 --> r1
+  r1 --> ch --> pch
   m1 -.-> u1
   m2 -.-> u2
   r1 --> d3
@@ -54,11 +57,11 @@ flowchart TD
   p3 --> e1
   c2 -.-> e1
   class s1 k_start
-  class p1,u1,u2,p2,p3,p4 k_process
+  class p1,pch,u1,u2,p2,p3,p4 k_process
   class d1,d2,d3 k_decision
   class g1,g2,g3 k_goto
   class n1,h1,m1,m2,r1 k_screen
   class e2 k_endx
-  class c1,c2 k_click
+  class ch,c1,c2 k_click
   class e1 k_end
   style gPage fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

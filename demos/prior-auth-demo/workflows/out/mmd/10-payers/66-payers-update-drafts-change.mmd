@@ -31,14 +31,14 @@ flowchart TD
   subgraph gU ["What the update does"]
   u1@{ shape: cyl, label: "<b>Each listed draft needs a person again</b><br/>'Redrafted after Cardinal's change (criteria changed, version 2026.3).<br/>Waiting for a new signature'<br/>Timeline event by Scribe" }
   u2@{ shape: cyl, label: "<b>Update recorded for Case Manager and New case</b><br/>Which change, which payer, and the IDs<br/>of the drafts redrafted: I-2207" }
-  u3@{ shape: cyl, label: "<b>Payer's change cleared</b><br/>Checked date becomes today" }
+  u3@{ shape: cyl, label: "<b>Payer's change cleared</b><br/>No 'checked' date is written: nothing was checked against the payer" }
   u4@{ shape: cyl, label: "<b>Document lists gain the change's new rows</b><br/>Remaining treatment goals: Named in the latest progress note<br/>in Residential 3.5, IOP and PHP" }
   u5@{ shape: cyl, label: "<b>Edit log: 3 'Documents' entries</b><br/>'Added to the Residential 3.5 list' and so on<br/>Reason 'After criteria changed, version 2026.3'" }
   u6@{ shape: cyl, label: "<b>'What changed' gets a new top row</b><br/>'Criteria changed, version 2026.3: acknowledged and applied'<br/>Acknowledged by Jordan Perez, ...<br/>Scribe and Integrity updated 1 draft ..." }
   end
   nt@{ shape: cyl, label: "<b>Bell notification 'Drafts updated' from Scribe</b><br/>1 draft was redrafted after Cardinal's change.<br/>Each needs a new signature in Case Manager." }
-  t1@{ shape: odd, label: "<b>'1 draft updated'</b><br/>Cardinal is up to date. Each draft returned to Case Manager<br/>for a new signature." }
-  out@{ shape: curv-trap, label: "<b>Changes tab flips to green</b><br/>'This payer's rules are up to date', last checked today<br/>Sidebar badge drops, dot turns green" }
+  t1@{ shape: odd, label: "<b>'1 draft updated'</b><br/>The change is applied for Cardinal. Each draft returned to<br/>Case Manager for a new signature." }
+  out@{ shape: curv-trap, label: "<b>Changes tab shows one quiet line</b><br/>'Nothing is waiting for you...'<br/>Header Policy status: 'No change waiting. Last acknowledged or applied in Psyflo' today<br/>Sidebar badge drops, row loses 'Change waiting', dot turns green" }
   cx@{ shape: trap-t, label: "Click 'Cancel'" }
   cesc@{ shape: trap-t, label: "<b>Press Escape, click the X</b><br/>or click the dimmed area" }
   x1@{ shape: stadium, label: "<b>Modal closes</b><br/>Nothing redrafted, still acknowledged" }

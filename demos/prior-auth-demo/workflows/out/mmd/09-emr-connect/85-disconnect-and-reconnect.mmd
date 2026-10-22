@@ -16,7 +16,7 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Manage drawer is open</b><br/>The system is Connected or Needs a quick look" }
+  s1@{ shape: stadium, label: "<b>Manage drawer is open</b><br/>The system is Connected or Needs attention" }
   c1@{ shape: trap-t, label: "Click 'Disconnect'" }
   o1@{ shape: win-pane, label: "<b>Disconnect {name}?</b><br/>'Charts from it stop arriving. Nothing is deleted.'" }
   p1@{ shape: rect, label: "'Requests already on the Dashboard stay where they are. You can reconnect this system at any time.'" }
@@ -26,11 +26,11 @@ flowchart TD
   e1@{ shape: stadium, label: "<b>Confirmation closes</b><br/>The drawer stays open and nothing changes<br/>A second Escape closes the drawer" }
   subgraph gOff ["What disconnecting does"]
   a1@{ shape: cyl, label: "<b>Status becomes Disconnected</b><br/>Issue text: 'Charts from this system are not arriving.'" }
-  a6@{ shape: cyl, label: "<b>If it was on 'Needs a quick look', the problem is remembered</b><br/>Reconnect will start with Fix" }
+  a6@{ shape: cyl, label: "<b>If it was on 'Needs attention', the problem is remembered</b><br/>Reconnect will start with Fix" }
   a2@{ shape: hex, label: "Navigator logs 'Disconnected {name}. Charts from it stop arriving'" }
   a3@{ shape: odd, label: "<b>'{name} is disconnected'</b><br/>'Reconnect it any time from this page.' Amber" }
-  a4@{ shape: rect, label: "<b>Row: 'Not syncing', red pill, 'Reconnect' and 'Manage'</b><br/>'New case cannot pull a chart from it until it is connected.'<br/>Drawer pill turns red, the bottom button reads 'Reconnect'" }
-  a5@{ shape: rect, label: "<b>Skipped by 'Sync now'</b><br/>Last sync tile ignores it, or reads 'None' if every system is off<br/>Its write-back switch no longer counts on the Dashboard" }
+  a4@{ shape: rect, label: "<b>Row: 'Not syncing', 'Sync paused', red pill, 'Reconnect' and 'Manage'</b><br/>The 'Action required' line names it with a 'Reconnect' button<br/>'New case cannot pull a chart from it until it is connected.'<br/>Drawer pill turns red, the bottom button reads 'Reconnect'" }
+  a5@{ shape: rect, label: "<b>Skipped by 'Sync now'</b><br/>Last sync figure ignores it, or reads 'None' if every system is off<br/>Its Write back switch no longer counts on the Dashboard" }
   end
   r1@{ shape: trap-t, label: "<b>Click 'Reconnect'</b><br/>On the row or at the end of the drawer" }
   r2@{ shape: rect, label: "<b>Nothing is connected yet</b><br/>The system stays Disconnected until a test passes" }

@@ -17,39 +17,46 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Click the 'Rules' tab" }
-  tab@{ shape: curv-trap, label: "<b>Rules tab</b><br/>Banner if edits wait, four cards in two columns, a note" }
+  tab@{ shape: curv-trap, label: "<b>Rules tab</b><br/>Banner if edits wait, then one card 'Rules the agents follow'<br/>with an info icon and four closed rules" }
   dU@{ shape: diam, label: "<b>Edits saved but not yet</b><br/>applied to open drafts?" }
   bU@{ shape: odd, label: "<b>'1 edit applies to new drafts only'</b><br/>with 'Update 2 drafts'<br/>Sent requests keep what they were sent with" }
   gU@{ shape: subproc, label: "Continues in: Payers › Edits waiting › Update drafts" }
-  subgraph gC ["Each card"]
-  c1@{ shape: curv-trap, label: "<b>Submission windows</b><br/>Notice within 24 hours of admission (72 for Harborview, by phone for Evergreen, by fax for Lakeshore)<br/>Recertification filed 72 hours before the unit limit<br/>A continued-stay review every 7 days after the first 7" }
-  c2@{ shape: curv-trap, label: "<b>Backdating</b><br/>Differs by payer: Summit and Cardinal do not backdate,<br/>Beacon backdates within 2 business days,<br/>Evergreen up to 3 days with a call log, Lakeshore to the fax receipt date" }
-  c3@{ shape: curv-trap, label: "<b>No authorization needed</b><br/>Individual therapy, Medication management,<br/>Initial assessment, Crisis stabilization first 24 hours<br/>(Evergreen has no crisis line). Shown with green ticks" }
-  c4@{ shape: curv-trap, label: "<b>Peer-to-peer and appeals</b><br/>Summit: peer-to-peer call within 3 business days (Cardinal 2),<br/>written appeal within 60 days, expedited 72 hours,<br/>then external review (Evergreen: state hearing)" }
+  tip@{ shape: trap-t, label: "<b>Hover, focus or click the info icon</b><br/>(button 'About these rules')" }
+  tipt@{ shape: win-pane, label: "<b>'Open a rule to read it or edit it. New drafts use a saved edit at once.</b><br/>Sent requests keep what they were sent with. Click Update drafts to redraft open ones.<br/>These are demo rules, not verified against Summit's current policy.'" }
+  subgraph gC ["Four closed rules, each a button with aria-expanded"]
+  c1@{ shape: curv-trap, label: "<b>Submission windows</b><br/>'Notice within 24 hours of admission, and 2 more'  3 lines<br/>Notice differs by payer (72 hours for Harborview, by phone for Evergreen, by fax for Lakeshore)" }
+  c2@{ shape: curv-trap, label: "<b>Backdating</b><br/>'Summit does not backdate an authorization, and 2 more'  3 lines<br/>Beacon backdates within 2 business days, Evergreen up to 3 days with a call log,<br/>Lakeshore to the fax receipt date" }
+  c3@{ shape: curv-trap, label: "<b>No authorization needed</b><br/>'Individual therapy, and 3 more'  4 lines<br/>Shown with green ticks once open (Evergreen has no crisis line)" }
+  c4@{ shape: curv-trap, label: "<b>Peer-to-peer and appeals</b><br/>'Peer-to-peer call within 3 business days of a denial, and 3 more'  4 lines<br/>Cardinal 2 days. Evergreen ends in a state hearing" }
   end
-  ub@{ shape: rect, label: "<b>Foot of each card</b><br/>'Used by Cadence and Navigator · confirmed 10/12'" }
+  op@{ shape: trap-t, label: "Click a rule (or Enter, Space)" }
+  opn@{ shape: rect, label: "<b>Rule opens: its lines, then the foot line</b><br/>Click again to close" }
+  ub@{ shape: rect, label: "<b>Foot line</b><br/>'Used by Cadence and Scrubber · saved 10/12'" }
   who@{ shape: rect, label: "<b>Used by</b><br/>Windows: Cadence, Navigator<br/>Backdating: Cadence, Scrubber<br/>No authorization needed: Verify, Criteria<br/>Peer-to-peer and appeals: Advocate, Cadence" }
-  cf@{ shape: rect, label: "<b>'Confirmed' is a date</b><br/>Evergreen shows 10/09, the others 10/12<br/>It moves to today when a rule is edited" }
-  note@{ shape: odd, label: "<b>'Rules are learned from past decisions and confirmed against</b><br/>Summit's published policy. New drafts use a saved edit at once.<br/>Sent requests keep what they were sent with.<br/>Click Update drafts to redraft open ones.'" }
+  cf@{ shape: rect, label: "<b>'Saved' is the date the rule was last saved in Psyflo</b><br/>Evergreen shows 10/09, the others 10/12<br/>It moves to today when a rule is edited<br/>It is never a date the payer confirmed anything" }
+  src@{ shape: rect, label: "<b>A rule edited here adds</b><br/>'Source: Edited in Psyflo by Jordan Perez'<br/>A rule that was not edited shows no source of its own:<br/>the header says 'Source: Demo sample rules, version 2026.3'" }
   noeff@{ shape: rect, label: "<b>New case reads the saved lines for the payer</b><br/>and level of care of each draft<br/>See the New case diagrams for what it checks" }
-  ce@{ shape: trap-t, label: "<b>Click 'Edit' on a card</b><br/>(the button is named 'Edit Backdating' and so on)" }
+  ce@{ shape: trap-t, label: "<b>Click 'Edit' inside an open rule</b><br/>(the button is named 'Edit Backdating' and so on)" }
   gE@{ shape: subproc, label: "Continues in: Payers › Rules › Edit a rule" }
   gF@{ shape: subproc, label: "Continues in: Payers › Configuration feeds the rest of the app" }
+  gP@{ shape: subproc, label: "Continues in: Payers › Header › Policy status and the demo-rules label" }
   s1 --> tab --> dU
   dU -->|"Yes"| bU --> gU
   dU -->|"No"| c1
   bU --> c1
+  tab -.-> tip --> tipt
   c1 --> c2 --> c3 --> c4
-  c1 --> ub --> who --> cf
-  c4 --> note
-  c4 --> ce --> gE
-  note -.-> noeff
+  c1 --> op --> opn --> ub --> who --> cf --> src
+  src --> ce --> gE
+  c4 -.-> noeff
   noeff -.-> gF
+  src -.-> gP
   class s1 k_start
   class tab,c1,c2,c3,c4 k_screen
   class dU k_decision
-  class bU,note k_toast
-  class gU,gE,gF k_goto
-  class ub,who,cf,noeff k_process
-  class ce k_click
+  class bU k_toast
+  class gU,gE,gF,gP k_goto
+  class tip,op,ce k_click
+  class tipt k_overlay
+  class opn,ub,who,cf,src,noeff k_process
   style gC fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

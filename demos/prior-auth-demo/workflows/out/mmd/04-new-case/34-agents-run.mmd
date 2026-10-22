@@ -51,13 +51,13 @@ flowchart TD
   end
   subgraph gFoot ["Footer buttons"]
   cPause@{ shape: trap-t, label: "<b>Click 'Pause all agents'</b><br/>Same as 'Pause all agents' in Settings: the whole app is paused" }
-  tPause@{ shape: odd, label: "<b>Banner 'Agents are paused in Settings'</b><br/>Row: 'Paused in Settings'<br/>The run holds at the agent it was on" }
+  tPause@{ shape: odd, label: "<b>Banner 'Agents are paused in Settings' (the only message shown while paused)</b><br/>Row: 'Paused in Settings'<br/>The run holds at the agent it was on" }
   cResume@{ shape: trap-t, label: "<b>Click 'Resume agents'</b><br/>Settings shows them resumed too" }
   cSkip@{ shape: trap-t, label: "Click 'Skip ahead'" }
   pFast@{ shape: rect, label: "<b>Each step now takes about 0.14 s</b><br/>The button switches off<br/>A question still stops the run" }
   cBack@{ shape: trap-t, label: "Click 'Back'" }
   end
-  tRec@{ shape: odd, label: "<b>Banner 'Records changed after the last run. The agents re-checked.'</b><br/>Shown when the medical records changed after an earlier run" }
+  tRec@{ shape: odd, label: "<b>Banner 'Records changed after the last run. The agents re-checked.'</b><br/>Shown when the medical records changed after an earlier run, and nothing more important is on screen (not while a question, or a pause, is showing)" }
   pAway@{ shape: rect, label: "<b>Leave the page and progress is kept in the draft</b><br/>But the agents only move while this page is open<br/>Hint: 'The agents work on their own. You can leave and come back.'" }
   g46@{ shape: subproc, label: "Continues in: Agents work › An agent could not finish" }
   g47@{ shape: subproc, label: "Continues in: Agents work › Paused in Settings" }

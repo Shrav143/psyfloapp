@@ -6,7 +6,7 @@ Shapes and colours: see `00-overview.md`. Source: `workflows/src/02-dashboard/`.
 
 ## Dashboard › Arrive › What the page shows
 
-Five ways to land on the Dashboard, how filters in the address are read, and the parts of the page from the top down. Each part continues in its own diagram.
+Five ways to land on the Dashboard, how filters in the address are read, and the parts of the page from the top down: one daily work list. Each part continues in its own diagram.
 
 Route: `/dashboard`
 
@@ -33,16 +33,16 @@ flowchart TD
   s2@{ shape: stadium, label: "<b>Open the app at /</b><br/>The address / goes to /dashboard" }
   s3@{ shape: stadium, label: "<b>Follow a link with a request or a filter</b><br/>A notification, or a button on another page" }
   s4@{ shape: stadium, label: "Demo menu › Click 'Reset demo data'" }
-  s5@{ shape: stadium, label: "<b>Follow 'Open Dashboard, By payer' in Ask FLO</b><br/>The address is /dashboard?focus=payers" }
+  s5@{ shape: stadium, label: "<b>Follow 'Open Dashboard, Payer performance' in Ask FLO</b><br/>The address is /dashboard?focus=payers" }
   d4@{ shape: diam, label: "Does the address hold ?focus=payers?" }
-  pf@{ shape: rect, label: "<b>Payers at a glance scrolls into view and is outlined for about 2 seconds</b><br/>The ?focus part is then removed from the address" }
+  pf@{ shape: rect, label: "<b>Payer performance opens, scrolls into view and is outlined for about 2 seconds</b><br/>The ?focus part is then removed from the address" }
   t1@{ shape: odd, label: "<b>'Demo data reset'</b><br/>'Everything is back to the starting point.'" }
   p1@{ shape: rect, label: "Page opens and reads the address" }
   d1@{ shape: diam, label: "Does the address hold payer, program, type, stage, from or to?" }
   p2@{ shape: rect, label: "<b>The address wins</b><br/>Four menus go back to All, then the address values apply<br/>Unknown values are ignored" }
   p3@{ shape: rect, label: "<b>The remembered filters are written back to the address</b><br/>First visit: no filters, last 30 days" }
   w1@{ shape: cyl, label: "<b>Filters</b><br/>Payer, Program, Request type, Stage, date range" }
-  sc@{ shape: curv-trap, label: "<b>Dashboard</b><br/>One page; the filters decide what it shows" }
+  sc@{ shape: curv-trap, label: "<b>Dashboard</b><br/>One daily work list; the filters decide what it shows" }
   d2@{ shape: diam, label: "Does the address hold ?request=ID?" }
   d3@{ shape: diam, label: "Is there a request with that ID?" }
   o1@{ shape: win-pane, label: "Request drawer opens over the page" }
@@ -51,18 +51,21 @@ flowchart TD
   subgraph gPage ["On the page, from the top down"]
   h1@{ shape: curv-trap, label: "<b>Headline and sub line</b><br/>'18 requests are waiting on payers. 3 are waiting on you.'" }
   ca@{ shape: trap-t, label: "<b>Click 'Check all now'</b><br/>Disabled while Navigator is paused in Settings" }
+  fs@{ shape: curv-trap, label: "<b>Summary from FLO</b><br/>'From today's demo data'<br/>Three short lines, each with a link: who needs you and what is due soonest, authorizations that end this week, denial deadlines this week" }
+  kf@{ shape: curv-trap, label: "<b>Four key figures</b><br/>Needs you 3, Due within 24 hours 12, Waiting on payers 18, Denials to act on 8<br/>Each is a button that applies its filter" }
   f1@{ shape: curv-trap, label: "<b>Filter bar</b><br/>'All payers', 'All programs', 'All request types', 'All stages'<br/>'Outcomes for' and the date range 'Sep 21 – Oct 20, 2026'" }
-  st@{ shape: curv-trap, label: "<b>Stage strip, six tiles</b><br/>Preparing 5 (plus cases saved in New case), Received 4, Under review 14, Info requested 3, Decided today 8, Appeal or call 8" }
-  rq@{ shape: curv-trap, label: "<b>Requests</b><br/>'Showing 8 of 40', six columns, four sortable headings, 'Show 8 more'" }
-  py@{ shape: curv-trap, label: "<b>Payers at a glance</b><br/>Six payers and an 'All payers' total row<br/>'Open Payers' link; each payer name opens that payer" }
+  rq@{ shape: curv-trap, label: "<b>Requests, one table</b><br/>'Waiting on you first, then the nearest clock.'<br/>'Showing 8 of 40', six columns, four sortable headings, 'Show 8 more'<br/>Under it, closed: 'What the stages mean'" }
+  py@{ shape: curv-trap, label: "<b>Payer performance, closed</b><br/>One line: 'Evergreen is slowest: 3.4 days on average against 2 typical.'" }
   end
   g1@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Headline › What the headline and sub line say" }
   g3@{ shape: subproc, label: "Continues in: Dashboard › Header › Check all now and the demo clock" }
   g4@{ shape: subproc, label: "Continues in: Dashboard › Filters › Payer, Program, Request type and Stage" }
-  g5@{ shape: subproc, label: "Continues in: Dashboard › Stage strip › Click a stage tile" }
+  g5@{ shape: subproc, label: "Continues in: Dashboard › Key figures › Click a figure to filter the list" }
+  g10@{ shape: subproc, label: "Continues in: Dashboard › Summary from FLO › What the three lines say and where they lead" }
+  g11@{ shape: subproc, label: "Continues in: Dashboard › Stage help › What the stages mean" }
   g6@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Order, rows and paging" }
-  g7@{ shape: subproc, label: "Continues in: Dashboard › Payers at a glance › Read the table and pick a payer" }
+  g7@{ shape: subproc, label: "Continues in: Dashboard › Payer performance › Read the table and pick a payer" }
   g8@{ shape: subproc, label: "Continues in: Dashboard › Filters › Pick a date range" }
   g9@{ shape: subproc, label: "Continues in: Dashboard › Filters › Clear filters and empty states" }
   s1 --> p1
@@ -81,31 +84,33 @@ flowchart TD
   d2 -->|"Yes"| d3
   d3 -->|"Yes"| o1 --> g1
   d3 -->|"No"| p4 --> e1
-  sc --> h1 --> f1 --> st --> rq --> py
+  sc --> h1 --> fs --> kf --> f1 --> rq --> py
   h1 --> g2
   h1 --> ca --> g3
+  fs --> g10
   f1 --> g4
   f1 --> g8
   f1 --> g9
-  st --> g5
+  kf --> g5
   rq --> g6
+  rq -.-> g11
   py --> g7
   class s1,s2,s3,s4,s5 k_start
   class d4,d1,d2,d3 k_decision
   class pf,p1,p2,p3,p4 k_process
   class t1 k_toast
   class w1 k_store
-  class sc,h1,f1,st,rq,py k_screen
+  class sc,h1,fs,kf,f1,rq,py k_screen
   class o1 k_overlay
   class e1 k_end
   class ca k_click
-  class g1,g2,g3,g4,g5,g6,g7,g8,g9 k_goto
+  class g1,g2,g3,g4,g5,g10,g11,g6,g7,g8,g9 k_goto
   style gPage fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```
 
 ## Dashboard › Headline › What the headline and sub line say
 
-The big sentence at the top and the muted line under it are rebuilt whenever a filter, a tile or a payer reply changes the list. Stage wins over Payer, and Payer wins over the plain count. The numbers below are the demo's opening data.
+The big sentence at the top and the muted line under it are rebuilt whenever a filter, a key figure or a payer reply changes the list. A grouping from the key figures wins over Stage, Stage wins over Payer, and Payer wins over the plain count. The numbers below are the demo's opening data.
 
 Route: `/dashboard`
 
@@ -128,15 +133,19 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "A filter, a tile click or a payer reply changes the list" }
+  s1@{ shape: stadium, label: "A filter, a key figure click or a payer reply changes the list" }
   p1@{ shape: rect, label: "<b>Headline is rebuilt</b><br/>Counts use Payer, Program and Request type, but not Stage" }
   d1@{ shape: diam, label: "Does any request match the filters?" }
   n0@{ shape: curv-trap, label: "<b>'No requests match these filters.'</b><br/>'The filters hide everything. Clear them to see every request again.'" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Filters › Clear filters and empty states" }
+  dv@{ shape: diam, label: "<b>Is Needs you, Due within 24 hours or Waiting on payers chosen?</b><br/>(from a key figure or the Stage menu)" }
+  v1@{ shape: curv-trap, label: "<b>Needs you</b><br/>'3 requests need you.'<br/>With 'Nothing needs you right now.' when none do<br/>'A payer's question, a draft with a question for you, or one ready to sign.'" }
+  v2@{ shape: curv-trap, label: "<b>Due within 24 hours</b><br/>'12 requests are due within 24 hours.'<br/>'The soonest first. Some may already be past their time.'" }
+  v3@{ shape: curv-trap, label: "<b>Waiting on payers</b><br/>'18 requests are waiting on payers.'<br/>'Received or under review. Payers usually take about 2.2 days to decide.'" }
   d2@{ shape: diam, label: "Which Stage is set?" }
   a1@{ shape: curv-trap, label: "<b>Appeal or call</b><br/>'8 denials are on their route.'<br/>'Each one is a call, an appeal, an external review or a resubmission.'" }
   a2@{ shape: curv-trap, label: "<b>Info requested</b><br/>'3 requests are waiting on you.'<br/>'The payer asked for more information. Packet drafts each answer for you to review.'" }
-  a3@{ shape: curv-trap, label: "<b>Preparing</b><br/>'5 requests are being prepared.'<br/>The count is the same as the Preparing tile: the table rows plus cases saved in New case<br/>'They are in Case Manager. Nothing has been sent to a payer yet.'" }
+  a3@{ shape: curv-trap, label: "<b>Preparing</b><br/>'5 requests are being prepared.'<br/>The count is the same as the Preparing count in the Stage menu: the table rows plus cases saved in New case<br/>'They are in Case Manager. Nothing has been sent to a payer yet.'" }
   a4@{ shape: curv-trap, label: "<b>Received</b><br/>'4 requests have been received.'<br/>'The payer confirmed receipt. Navigator checks each one again every few minutes.'" }
   a5@{ shape: curv-trap, label: "<b>Under review</b><br/>'14 requests are under review.'<br/>'Payers usually take about 2.2 days to decide. Caller phones when one runs late.'" }
   a6@{ shape: curv-trap, label: "<b>Decided today</b><br/>'8 requests were decided today. 6 approved, 2 not as asked.'<br/>'Approvals update the ledger. Write-back to the EMR waits for you.'" }
@@ -149,7 +158,12 @@ flowchart TD
   e1@{ shape: stadium, label: "Headline and sub line shown" }
   s1 --> p1 --> d1
   d1 -->|"No"| n0 --> g1
-  d1 -->|"Yes"| d2
+  d1 -->|"Yes"| dv
+  dv -->|"Needs you"| v1
+  dv -->|"Due within 24 hours"| v2
+  dv -->|"Waiting on payers"| v3
+  dv -->|"No, a stage or all stages"| d2
+  v1 & v2 & v3 --> p2
   d2 -->|"Appeal or call"| a1
   d2 -->|"Info requested"| a2
   d2 -->|"Preparing"| a3
@@ -164,8 +178,8 @@ flowchart TD
   d4 -->|"No"| c2 --> e1
   class s1 k_start
   class p1,p2 k_process
-  class d1,d2,d3,d4 k_decision
-  class n0,a1,a2,a3,a4,a5,a6,b1,c1,c2 k_screen
+  class d1,dv,d2,d3,d4 k_decision
+  class n0,v1,v2,v3,a1,a2,a3,a4,a5,a6,b1,c1,c2 k_screen
   class g1 k_goto
   class e1 k_end
 ```
@@ -216,8 +230,8 @@ flowchart TD
   subgraph gClock ["What the clock changes on the Dashboard"]
   r1@{ shape: rect, label: "<b>Table: time in stage grows</b><br/>Over 1.5 × typical shows 'late'; over 2 × shows 'very late'" }
   r2@{ shape: rect, label: "<b>Table: open denials count down</b><br/>'36 h left', '3 days left', then 'window closed'" }
-  r3@{ shape: rect, label: "Table order: very late and late rows move up" }
-  r4@{ shape: rect, label: "Stage strip: 'Appeal or call' counts 'deadlines this week' from the new time" }
+  r3@{ shape: rect, label: "<b>Table order: rows are ordered by their due time, so overdue ones move up</b><br/>The Summary from FLO is worked out again from the new time" }
+  r4@{ shape: rect, label: "Key figures: 'Due within 24 hours' and the 'deadlines this week' under 'Denials to act on' count from the new time" }
   r5@{ shape: rect, label: "Calendar: today moves, so the last pickable day and the shortcuts end on the new day" }
   end
   p3@{ shape: rect, label: "Not changed: the default range Sep 21 – Oct 20, 2026, the stage counts and the payers figures" }
@@ -249,6 +263,95 @@ flowchart TD
   style gClock fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```
 
+## Dashboard › Summary from FLO › What the three lines say and where they lead
+
+A compact card under the headline. FLO works three short lines out from the live demo data: who needs you and what is due soonest, which authorizations end within 7 days, and which denial deadlines fall this week. Each line has a link to the screen it is about. It is a recommendation for a person to check, not a payer fact, and it ignores the filters below it.
+
+Route: `/dashboard`
+
+The wording and the numbers are computed each time. Nothing in the card is typed by hand.
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Open the Dashboard" }
+  sc@{ shape: curv-trap, label: "<b>Card 'Summary from FLO'</b><br/>Small note: 'From today's demo data'<br/>Three lines, each with a link on the right" }
+  a1@{ shape: hex, label: "<b>FLO reads the requests, the Authorizations queue, the Case Manager ledger and the demo clock</b><br/>It reads them again whenever any of them changes" }
+  subgraph gL1 ["Line 1: who needs you and what is due soonest"]
+  d1@{ shape: diam, label: "Does any request need you?" }
+  l1@{ shape: curv-trap, label: "<b>'3 requests need you. Most urgent: I-2207 (Cardinal), recert due in 5 h.'</b><br/>The one due first among the requests that wait on a person" }
+  l1n@{ shape: curv-trap, label: "'Nothing needs you right now.'" }
+  d1b@{ shape: diam, label: "Is the request due soonest in the queue a different one?" }
+  l1s@{ shape: curv-trap, label: "<b>Adds 'Due soonest: R-0988 (Beacon), review due in 3 h.'</b><br/>The same answer as Ask FLO's 'What is due soonest?'" }
+  k1@{ shape: trap-t, label: "<b>Click 'Open I-2207'</b><br/>(or 'Open R-0988' when nothing needs you)" }
+  e1@{ shape: stadium, label: "Authorizations case page of that request opens" }
+  end
+  subgraph gL2 ["Line 2: authorizations that end within 7 days"]
+  d2@{ shape: diam, label: "Does an approval on the Case Manager ledger end within 7 days?" }
+  l2@{ shape: curv-trap, label: "<b>'I-2193 has used 46 of 48 units and ends in 14 h. 3 more end within 7 days.'</b><br/>The case that ends first, its units used of total, and how many more" }
+  l2n@{ shape: curv-trap, label: "'No authorization ends in the next 7 days.'" }
+  l2e@{ shape: curv-trap, label: "Adds '2 authorizations have already ended.' when an end date has passed" }
+  k2@{ shape: trap-t, label: "Click 'Open Case Manager'" }
+  end
+  subgraph gL3 ["Line 3: denial deadlines this week"]
+  d3@{ shape: diam, label: "Does an open denial have a deadline within 7 days?" }
+  l3@{ shape: curv-trap, label: "'4 denial deadlines fall this week. Nearest: D-3318 (Cardinal), peer-to-peer window, 36 h left.'" }
+  l3n@{ shape: curv-trap, label: "'No denial deadline falls this week.'" }
+  l3e@{ shape: curv-trap, label: "Adds '1 window has already closed.' when a deadline has passed" }
+  k3@{ shape: trap-t, label: "Click 'Open Denial Intelligence'" }
+  end
+  w1@{ shape: delay, label: "The demo changes: Demo menu › Fast-forward 1 hour or 1 day, a payer reply from the request drawer, a request signed and sent, a draft answered" }
+  p1@{ shape: rect, label: "<b>The lines are worked out again</b><br/>Example after a day: 'recert due now', 'ends in 2 days', '2 authorizations have already ended'" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Case page › Ways in" }
+  g2@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Tracker of every active case" }
+  g3@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
+  g4@{ shape: subproc, label: "Continues in: Global shell › Top bar › Ask FLO › What FLO answers" }
+  s1 --> sc --> a1 --> d1
+  d1 -->|"Yes"| l1 --> d1b
+  d1 -->|"No"| l1n --> d1b
+  d1b -->|"Yes"| l1s --> k1
+  d1b -->|"No"| k1
+  k1 --> e1 --> g1
+  a1 --> d2
+  d2 -->|"Yes"| l2 --> l2e --> k2
+  d2 -->|"No"| l2n --> l2e
+  k2 --> g2
+  a1 --> d3
+  d3 -->|"Yes"| l3 --> l3e --> k3
+  d3 -->|"No"| l3n --> l3e
+  k3 --> g3
+  w1 --> p1 --> a1
+  l1s -.-> g4
+  class s1 k_start
+  class sc,l1,l1n,l1s,l2,l2n,l2e,l3,l3n,l3e k_screen
+  class a1 k_agent
+  class d1,d1b,d2,d3 k_decision
+  class k1,k2,k3 k_click
+  class e1 k_end
+  class w1 k_wait
+  class p1 k_process
+  class g1,g2,g3,g4 k_goto
+  style gL1 fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gL2 fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gL3 fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+```
+
 ## Dashboard › Filters › Payer, Program, Request type and Stage
 
 Four menus on the filter bar. Each one applies as soon as an option is picked; there is no Apply button. The date range is a separate control (see Pick a date range).
@@ -274,7 +377,7 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Dashboard is open</b><br/>Filter bar: four menus, then 'Outcomes for' and the dates" }
+  s1@{ shape: stadium, label: "<b>Dashboard is open</b><br/>Filter bar, under the four key figures: four menus, then 'Outcomes for' and the dates" }
   c1@{ shape: trap-t, label: "Click 'All payers'" }
   c2@{ shape: trap-t, label: "Click 'All programs'" }
   c3@{ shape: trap-t, label: "Click 'All request types'" }
@@ -282,26 +385,28 @@ flowchart TD
   o1@{ shape: win-pane, label: "<b>Payer menu</b><br/>All payers, Cardinal Health Plan, Summit Medicaid HMO, Beacon PPO, Harborview MA, Lakeshore Behavioral, Evergreen" }
   o2@{ shape: win-pane, label: "<b>Program menu</b><br/>All programs, Residential 3.5, IOP, PHP, Detox" }
   o3@{ shape: win-pane, label: "<b>Request type menu</b><br/>All request types, Initial request, Admission, Continued stay, Recertification, Retro-authorization, Peer-to-peer call, Appeal, Resubmission" }
-  o4@{ shape: win-pane, label: "<b>Stage menu</b><br/>All stages, Preparing, Received, Under review, Info requested, Decided today, Appeal or call" }
+  o4@{ shape: win-pane, label: "<b>Stage menu</b><br/>All stages<br/>The three groupings from the key figures: Needs you, Due within 24 hours, Waiting on payers<br/>The six stages: Preparing, Received, Under review, Info requested, Decided today, Appeal or call<br/>Each option shows how many requests it holds" }
   m1@{ shape: rect, label: "<b>Menu is open: the options list, current pick ticked</b><br/>Same behaviour in all four menus" }
   i1@{ shape: lean-r, label: "<b>Pick an option</b><br/>Click it, or ArrowDown or ArrowUp then Enter" }
   k1@{ shape: trap-t, label: "Press Escape, click outside, or click the menu button again" }
   e0@{ shape: stadium, label: "Menu closes, nothing changes" }
+  dg@{ shape: diam, label: "Is the pick a grouping (Needs you, Due within 24 hours, Waiting on payers)?" }
+  pg@{ shape: rect, label: "<b>The grouping applies and Stage goes back to 'All stages' in the address</b><br/>A grouping and a stage never apply together; the key figure of the same name is outlined" }
   p1@{ shape: rect, label: "Menu closes and the pick is saved to Payer, Program, Request type or Stage" }
   w1@{ shape: cyl, label: "<b>Filters</b><br/>A menu that is not 'All' turns green and bold" }
   p2@{ shape: rect, label: "<b>Address updated in place, no new history entry</b><br/>Only non-default values appear" }
   p3@{ shape: rect, label: "Table goes back to its first 8 rows" }
   subgraph gFollow ["What follows each filter"]
-  f1@{ shape: rect, label: "<b>Payer, Program, Request type</b><br/>Headline, all six tile counts and the table follow them" }
-  f2@{ shape: rect, label: "<b>Stage</b><br/>Table and headline follow it; the tile counts still count every stage and the chosen tile is outlined" }
-  f3@{ shape: rect, label: "<b>Payers at a glance</b><br/>Waiting follows Program and Request type; the Payer pick highlights its row" }
+  f1@{ shape: rect, label: "<b>Payer, Program, Request type</b><br/>Headline, the four key figures, the Stage menu counts and the table follow them" }
+  f2@{ shape: rect, label: "<b>Stage or a grouping</b><br/>Table and headline follow it; the key figures still count every stage and the matching figure is outlined" }
+  f3@{ shape: rect, label: "<b>Payer performance (when open)</b><br/>Waiting follows Program and Request type; the Payer pick highlights its row" }
   end
   d1@{ shape: diam, label: "Is any request left?" }
   sc@{ shape: curv-trap, label: "Dashboard shows the matching rows" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Filters › Clear filters and empty states" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Headline › What the headline and sub line say" }
-  g3@{ shape: subproc, label: "Continues in: Dashboard › Stage strip › Click a stage tile" }
-  g4@{ shape: subproc, label: "Continues in: Dashboard › Payers at a glance › Read the table and pick a payer" }
+  g3@{ shape: subproc, label: "Continues in: Dashboard › Key figures › Click a figure to filter the list" }
+  g4@{ shape: subproc, label: "Continues in: Dashboard › Payer performance › Read the table and pick a payer" }
   s1 --> c1 --> o1
   s1 --> c2 --> o2
   s1 --> c3 --> o3
@@ -310,6 +415,8 @@ flowchart TD
   m1 --> i1
   m1 -.-> k1 --> e0
   i1 --> p1 --> w1 --> p2 --> p3
+  i1 -.-> dg
+  dg -->|"Yes"| pg --> w1
   p3 --> f1 & f2 & f3
   f1 --> g2
   f2 --> g3
@@ -320,11 +427,11 @@ flowchart TD
   class s1 k_start
   class c1,c2,c3,c4,k1 k_click
   class o1,o2,o3,o4 k_overlay
-  class m1,p1,p2,p3,f1,f2,f3 k_process
+  class m1,pg,p1,p2,p3,f1,f2,f3 k_process
   class i1 k_input
   class e0 k_end
+  class dg,d1 k_decision
   class w1 k_store
-  class d1 k_decision
   class sc k_screen
   class g1,g2,g3,g4 k_goto
   style gFollow fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
@@ -332,7 +439,7 @@ flowchart TD
 
 ## Dashboard › Filters › Pick a date range
 
-The calendar at the right end of the filter bar, after 'Outcomes for'. Pick a first day, then a last day, then Apply. The range only changes the figures in Payers at a glance.
+The calendar at the right end of the filter bar, after 'Outcomes for'. Pick a first day, then a last day, then Apply. The range only changes the figures in Payer performance (the section under the requests, closed until opened).
 
 Route: `/dashboard?from=2026-10-05&to=2026-10-12`
 
@@ -376,14 +483,14 @@ flowchart TD
   p7@{ shape: rect, label: "<b>Calendar closes</b><br/>The date button shows 'Oct 5 – Oct 12, 2026' and turns green and bold" }
   p8@{ shape: rect, label: "<b>Address gets ?from=2026-10-05&to=2026-10-12</b><br/>The default last 30 days leaves no from or to" }
   p9@{ shape: rect, label: "Table goes back to its first 8 rows" }
-  sc@{ shape: curv-trap, label: "<b>Payers at a glance</b><br/>'Denied (8 d)' and 'Info asks (8 d)' rescale to 8 days<br/>'Approved as asked' shifts slightly" }
-  p10@{ shape: rect, label: "Not changed: headline, stage tiles and requests table" }
+  sc@{ shape: curv-trap, label: "<b>Payer performance, once opened</b><br/>'Denied (8 d)' and 'Info asks (8 d)' rescale to 8 days<br/>'Approved as asked' shifts slightly" }
+  p10@{ shape: rect, label: "Not changed: headline, Summary from FLO, key figures and requests table" }
   c6@{ shape: trap-t, label: "Click 'Cancel'" }
   c7@{ shape: trap-t, label: "Press Escape, click outside, or click the date button again" }
   e1@{ shape: stadium, label: "<b>Calendar closes</b><br/>The draft is thrown away and the applied range stays" }
   e2@{ shape: stadium, label: "Range applied" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Filters › Date range shortcuts, keys and the address" }
-  g2@{ shape: subproc, label: "Continues in: Dashboard › Payers at a glance › Read the table and pick a payer" }
+  g2@{ shape: subproc, label: "Continues in: Dashboard › Payer performance › Read the table and pick a payer" }
   s1 --> c1 --> p1 --> o1 --> t0
   o1 --> p2
   t0 --> c2 --> t1 --> p3 --> c3 --> d1
@@ -466,7 +573,7 @@ flowchart TD
   end
   w1@{ shape: cyl, label: "Filter 'range'" }
   sc@{ shape: curv-trap, label: "<b>Date button shows the range</b><br/>Green and bold when it is not the default<br/>One day shows as 'Oct 10, 2026'" }
-  p2@{ shape: rect, label: "Payers at a glance rescales: 'Denied (N d)' and 'Info asks (N d)' use N days, N = days in the range" }
+  p2@{ shape: rect, label: "Payer performance (when open) rescales: 'Denied (N d)' and 'Info asks (N d)' use N days, N = days in the range" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Filters › Pick a date range" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Filters › Clear filters and empty states" }
   s1 --> c4 & c3 & c2 & c1
@@ -525,11 +632,11 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Pick Payer, Program, Request type or Stage</b><br/>Any one that is not 'All'" }
-  d1@{ shape: diam, label: "Is at least one of the four menus not 'All'?" }
+  d1@{ shape: diam, label: "<b>Is at least one of the four menus not 'All'?</b><br/>A grouping such as Needs you counts" }
   sc1@{ shape: curv-trap, label: "<b>Filter bar</b><br/>Ghost button 'Clear filters' appears after the four menus" }
   sc0@{ shape: curv-trap, label: "<b>Filter bar</b><br/>No 'Clear filters' button<br/>The date range alone does not count" }
   c1@{ shape: trap-t, label: "Click 'Clear filters' on the filter bar" }
-  p1@{ shape: rect, label: "<b>Payer, Program, Request type and Stage go back to 'All'</b><br/>The date range is kept" }
+  p1@{ shape: rect, label: "<b>Payer, Program, Request type and Stage (or the grouping) go back to 'All'</b><br/>The date range is kept" }
   w1@{ shape: cyl, label: "Filters" }
   p2@{ shape: rect, label: "<b>Address loses payer, program, type and stage</b><br/>from and to stay if they are not the default" }
   p3@{ shape: rect, label: "Table goes back to its first 8 rows" }
@@ -538,12 +645,12 @@ flowchart TD
   d2@{ shape: diam, label: "Do any requests match the filters?" }
   p4@{ shape: rect, label: "Example: Cardinal, IOP, Recertification, Appeal or call" }
   em1@{ shape: curv-trap, label: "<b>Headline</b><br/>'No requests match these filters.'<br/>'The filters hide everything. Clear them to see every request again.'" }
-  em2@{ shape: curv-trap, label: "<b>Stage strip</b><br/>Tiles still show their own counts: 'nothing waiting on receipt', 'nothing with the payer', 'nothing waiting on you', 'none yet today', 'no open denials'" }
+  em2@{ shape: curv-trap, label: "<b>Key figures</b><br/>Still count every stage that the Payer, Program and Request type filters leave: '0' with 'nothing is waiting on you' or 'nothing due in the next day'<br/>The Stage menu shows the count of each stage beside its name" }
   em3@{ shape: curv-trap, label: "<b>Requests card</b><br/>'Showing 0 of 0'" }
   em4@{ shape: win-pane, label: "<b>Empty state in the card</b><br/>'No requests match'<br/>'The filters hide everything. Clear them to see every request again.'" }
   d3@{ shape: diam, label: "Is a narrowing filter set?" }
   c2@{ shape: trap-t, label: "Click 'Clear filters' in the empty state" }
-  em5@{ shape: curv-trap, label: "<b>Payers at a glance</b><br/>Still lists all six payers<br/>Waiting counts follow Program and Request type" }
+  em5@{ shape: curv-trap, label: "<b>Payer performance (closed until opened)</b><br/>Still lists all six payers<br/>Waiting counts follow Program and Request type" }
   x1@{ shape: stadium, label: "<b>No 'Clear filters' button</b><br/>Only possible if there were no requests at all" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Filters › Payer, Program, Request type and Stage" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Filters › Pick a date range" }
@@ -570,11 +677,11 @@ flowchart TD
   class g1,g2 k_goto
 ```
 
-## Dashboard › Stage strip › Click a stage tile
+## Dashboard › Key figures › Click a figure to filter the list
 
-Six tinted tiles, left to right, with chevrons between them. A tile is a filter button: one click sets Stage, a second click on the same tile clears it. The chevrons are decoration and do nothing. Tile counts follow Payer, Program and Request type but ignore Stage. Preparing also counts cases saved in New case.
+Four figures sit under the Summary from FLO: Needs you, Due within 24 hours, Waiting on payers, Denials to act on. Each is a button, so the keyboard works too. A click applies the matching filter to the list; a second click clears it. The figures follow Payer, Program and Request type but ignore Stage. The six stage names are still in the Stage menu and in 'What the stages mean'.
 
-Route: `/dashboard?stage=under_review`
+Route: `/dashboard?stage=appeal`
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -595,65 +702,68 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Dashboard is open</b><br/>Stage strip under the filter bar" }
-  subgraph gTiles ["The six tiles, left to right"]
-  t1@{ shape: curv-trap, label: "<b>Preparing 5</b><br/>'in Case Manager'<br/>'2 need you, 1 ready to sign'<br/>Counts the five rows plus every case saved in New case that has no row yet" }
-  t2@{ shape: curv-trap, label: "<b>Received 4</b><br/>'payer has it'<br/>'about 25 min on average'" }
-  t3@{ shape: curv-trap, label: "<b>Under review 14</b><br/>'with the payer'<br/>'about 2.2 days on average'" }
-  t4@{ shape: curv-trap, label: "<b>Info requested 3 (amber)</b><br/>'the payer wants more'<br/>'1 draft ready, 2 in progress'" }
-  t5@{ shape: curv-trap, label: "<b>Decided today 8 (green)</b><br/>'6 approved · 2 denied'<br/>'ledger updated'" }
-  t6@{ shape: curv-trap, label: "<b>Appeal or call 8 (red)</b><br/>'open denials'<br/>'4 deadlines this week'" }
+  s1@{ shape: stadium, label: "<b>Dashboard is open</b><br/>Four figures between the Summary from FLO and the filter bar" }
+  subgraph gFig ["The four figures, left to right (two by two on narrow screens)"]
+  t1@{ shape: curv-trap, label: "<b>Needs you 3</b><br/>'1 payer question, 2 drafts'<br/>Requests waiting on a person, plus cases saved in New case that wait on one" }
+  t2@{ shape: curv-trap, label: "<b>Due within 24 hours 12</b><br/>'next: R-0988 in 3 h' or '2 already due'<br/>The due times Authorizations ranks by, or a denial's deadline; overdue counts" }
+  t3@{ shape: curv-trap, label: "<b>Waiting on payers 18</b><br/>'3 running late'<br/>Received and Under review together" }
+  t4@{ shape: curv-trap, label: "<b>Denials to act on 8</b><br/>'4 deadlines this week'<br/>Every request in Appeal or call" }
   end
-  p0@{ shape: rect, label: "<b>Today's denials count twice</b><br/>A request denied today is in Decided today and in Appeal or call" }
-  c1@{ shape: trap-t, label: "<b>Click a tile that is not outlined</b><br/>e.g. 'Under review'" }
-  c2@{ shape: trap-t, label: "Click the outlined tile again" }
-  p1@{ shape: rect, label: "Stage set to that tile" }
-  p2@{ shape: rect, label: "Stage goes back to 'All stages'" }
-  w1@{ shape: cyl, label: "Filter 'stage'" }
-  p3@{ shape: rect, label: "<b>The Stage menu shows the choice, or 'All stages' when cleared</b><br/>Address gets ?stage=under_review, or loses it" }
-  p4@{ shape: rect, label: "<b>A selected tile is outlined and marked pressed</b><br/>Table goes back to its first 8 rows" }
-  p5@{ shape: rect, label: "<b>Tile counts stay the same</b><br/>Headline, sub line and table rows follow the stage" }
-  sc@{ shape: curv-trap, label: "<b>Requests</b><br/>'Showing 8 of 14' under the headline '14 requests are under review.'" }
-  d2@{ shape: diam, label: "Does the tile show 0?" }
-  em@{ shape: curv-trap, label: "<b>Empty state: 'No requests match'</b><br/>With 'Clear filters'" }
-  d3@{ shape: diam, label: "Is Stage 'Preparing', with cases in New case that have no row?" }
-  ml@{ shape: curv-trap, label: "<b>One line under the table</b><br/>'2 more are being prepared in New case.'<br/>Headline counts them too: '7 requests are being prepared.'" }
+  c1@{ shape: trap-t, label: "<b>Click a figure that is not outlined</b><br/>Or Tab to it and press Enter or Space" }
+  c2@{ shape: trap-t, label: "Click the outlined figure again" }
+  d1@{ shape: diam, label: "Which figure?" }
+  p1@{ shape: rect, label: "<b>A grouping is chosen: Needs you, Due within 24 hours or Waiting on payers</b><br/>The Stage menu shows its name and Stage goes back to 'All stages' in the address" }
+  p1b@{ shape: rect, label: "<b>Stage is set to 'Appeal or call'</b><br/>Address gets ?stage=appeal" }
+  p2@{ shape: rect, label: "<b>Grouping and stage are cleared</b><br/>Stage menu shows 'All stages'; ?stage= leaves the address" }
+  w1@{ shape: cyl, label: "<b>Filters</b><br/>Stage, or the grouping held on the page" }
+  p4@{ shape: rect, label: "<b>The chosen figure is outlined and marked pressed</b><br/>Table goes back to its first 8 rows" }
+  p5@{ shape: rect, label: "<b>Headline and sub line follow it</b><br/>Figures keep their own counts" }
+  sc@{ shape: curv-trap, label: "<b>Requests</b><br/>'Showing 8 of 12' under '12 requests are due within 24 hours.'<br/>Rows: waiting on you first, then the nearest clock" }
+  d2@{ shape: diam, label: "Does the figure show 0?" }
+  em@{ shape: curv-trap, label: "<b>Empty state: 'No requests match'</b><br/>With 'Clear filters'<br/>Needs you at 0 reads 'Nothing needs you right now.'" }
+  d3@{ shape: diam, label: "Are cases saved in New case waiting on you, or being prepared, with no row?" }
+  ml@{ shape: curv-trap, label: "<b>One line under the table</b><br/>'1 more is waiting on you in New case.' or '2 more are being prepared in New case.'<br/>and 'Open Active cases'" }
   c3@{ shape: trap-t, label: "Click 'Open Active cases'" }
-  g5@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Being prepared card" }
-  m1@{ shape: trap-t, label: "Pick a stage in the 'All stages' menu instead" }
+  m1@{ shape: trap-t, label: "Pick the same choice in the 'All stages' menu instead" }
+  m2@{ shape: trap-t, label: "Click a stage name in 'What the stages mean'" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Headline › What the headline and sub line say" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Filters › Clear filters and empty states" }
   g3@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Order, rows and paging" }
   g4@{ shape: subproc, label: "Continues in: Dashboard › Filters › Payer, Program, Request type and Stage" }
-  s1 --> t6 & t5 & t4 & t3 & t2 & t1
-  c1 -.-> p0
-  t6 & t5 & t4 & t3 & t2 & t1 --> c1
+  g5@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Being prepared card" }
+  g6@{ shape: subproc, label: "Continues in: Dashboard › Stage help › What the stages mean" }
+  s1 --> t1 & t2 & t3 & t4
+  t1 & t2 & t3 & t4 --> c1
+  c1 --> d1
+  d1 -->|"Needs you, Due within 24 hours, Waiting on payers"| p1
+  d1 -->|"Denials to act on"| p1b
   p4 -.-> c2
-  c1 --> p1
   c2 --> p2
-  m1 -.-> g4
   p1 --> w1
+  p1b --> w1
   p2 --> w1
-  w1 --> p3 --> p4 --> p5
+  w1 --> p4 --> p5
   p5 --> g1
   p5 --> d2
   d2 -->|"No"| sc --> g3
   d2 -->|"Yes"| em --> g2
   sc --> d3
   d3 -->|"Yes"| ml --> c3 --> g5
+  m1 -.-> g4
+  m2 -.-> g6
   class s1 k_start
-  class t1,t2,t3,t4,t5,t6,sc,em,ml k_screen
-  class p0,p1,p2,p3,p4,p5 k_process
-  class c1,c2,c3,m1 k_click
+  class t1,t2,t3,t4,sc,em,ml k_screen
+  class c1,c2,c3,m1,m2 k_click
+  class d1,d2,d3 k_decision
+  class p1,p1b,p2,p4,p5 k_process
   class w1 k_store
-  class d2,d3 k_decision
-  class g5,g1,g2,g3,g4 k_goto
-  style gTiles fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  class g1,g2,g3,g4,g5,g6 k_goto
+  style gFig fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```
 
-## Dashboard › Requests table › Order, rows and paging
+## Dashboard › Stage help › What the stages mean
 
-The 'Requests' card. Rows come in the app's own order until a heading is clicked. A click on a row, a case ID or 'Open' opens the request drawer and adds one history entry. Eight rows show at a time.
+The six stage names stay as they are. A closed section at the foot of the Requests card, 'What the stages mean', puts each stage next to the status the rest of Psyflo uses, shows how many requests are in it, and holds the longer note on the progress bars. A stage name in it is also a shortcut to that filter.
 
 Route: `/dashboard`
 
@@ -676,11 +786,78 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Dashboard is open</b><br/>'Requests' card under the stage strip" }
-  sc1@{ shape: curv-trap, label: "<b>Card header</b><br/>'Requests' and 'Bars show progress: Prepared, Received, In review, Decided...'<br/>Right side: 'Showing 8 of 40'" }
+  s1@{ shape: stadium, label: "<b>Scroll to the foot of the Requests card</b><br/>A closed row 'What the stages mean'" }
+  sc@{ shape: curv-trap, label: "<b>Row</b><br/>Title 'What the stages mean'<br/>One line: 'Each stage name next to the status Psyflo uses for it, and how many requests are there'" }
+  c1@{ shape: trap-t, label: "Click the row, or Tab to it and press Enter or Space" }
+  d1@{ shape: diam, label: "Is it open?" }
+  p1@{ shape: rect, label: "<b>Section opens</b><br/>The chevron turns; the row says it is expanded" }
+  p2@{ shape: rect, label: "Section closes" }
+  subgraph gList ["Six lines: stage name, status, count"]
+  l1@{ shape: curv-trap, label: "<b>Preparing 5</b><br/>Draft while it is being prepared, Ready for review once a person can sign it" }
+  l2@{ shape: curv-trap, label: "<b>Received 4</b><br/>Submitted once it is signed and sent, Acknowledged when the payer has it" }
+  l3@{ shape: curv-trap, label: "<b>Under review 14</b><br/>Under review" }
+  l4@{ shape: curv-trap, label: "<b>Info requested 3</b><br/>Info requested. The payer asked for more information" }
+  l5@{ shape: curv-trap, label: "<b>Decided today 8</b><br/>Approved or Denied today. Completed once nothing is left to do" }
+  l6@{ shape: curv-trap, label: "<b>Appeal or call 8</b><br/>Denied, with its route: a call, an appeal, an external review or a resubmission" }
+  end
+  n1@{ shape: curv-trap, label: "<b>Note under the list</b><br/>The bars show progress: Prepared, Received, In review, Decided. A denial shows Call, Appeal 1, Appeal 2, External. Over 1.5 × the payer's typical time is late; over 2 × is very late." }
+  p3@{ shape: rect, label: "<b>Counts follow Payer, Program and Request type</b><br/>Preparing also counts cases saved in New case that have no row yet" }
+  c2@{ shape: trap-t, label: "Click a stage name, e.g. 'Under review'" }
+  p4@{ shape: rect, label: "<b>Stage is set to that stage</b><br/>Address gets ?stage=under_review<br/>The name is marked pressed" }
+  sc2@{ shape: curv-trap, label: "<b>Requests</b><br/>'Showing 8 of 14' under '14 requests are under review.'" }
+  c3@{ shape: trap-t, label: "Click the same row again" }
+  e1@{ shape: stadium, label: "Section closed again; the filter stays" }
+  g1@{ shape: subproc, label: "Continues in: Dashboard › Key figures › Click a figure to filter the list" }
+  g2@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Read a row: bars, clock and what happens next" }
+  s1 --> sc --> c1 --> d1
+  d1 -->|"No"| p1
+  d1 -->|"Yes"| p2 --> e1
+  p1 --> l1 --> l2 --> l3 --> l4 --> l5 --> l6 --> n1
+  p1 -.-> p3
+  l1 -.-> c2
+  c2 --> p4 --> sc2 --> g1
+  n1 --> c3 --> p2
+  n1 -.-> g2
+  class s1 k_start
+  class sc,l1,l2,l3,l4,l5,l6,n1,sc2 k_screen
+  class c1,c2,c3 k_click
+  class d1 k_decision
+  class p1,p2,p3,p4 k_process
+  class e1 k_end
+  class g1,g2 k_goto
+  style gList fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+```
+
+## Dashboard › Requests table › Order, rows and paging
+
+The 'Requests' card, the one list on the page. Rows come in the list's own order (waiting on you first, then the nearest clock) until a heading is clicked. A click on a row, a case ID or 'Open' opens the request drawer and adds one history entry. Eight rows show at a time.
+
+Route: `/dashboard`
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Dashboard is open</b><br/>'Requests' card under the filter bar" }
+  sc1@{ shape: curv-trap, label: "<b>Card header</b><br/>'Requests' and one line: 'Waiting on you first, then the nearest clock.'<br/>Right side: 'Showing 8 of 40'<br/>The note on the progress bars is in 'What the stages mean'" }
   sc2@{ shape: curv-trap, label: "<b>Six columns</b><br/>Case, Payer, Where it is, Clock, What happens next, and an unnamed column with 'Open'" }
   p1@{ shape: rect, label: "<b>The headings Case, Payer, Where it is and Clock are buttons that sort the rows</b><br/>'What happens next' and the Open column do not sort" }
-  p2@{ shape: rect, label: "<b>Rows start in the app's order</b><br/>1 needs you, 2 very late, 3 late, 4 denial with under 2 days left, 5 the rest<br/>Same group: longest time in stage first" }
+  p2@{ shape: rect, label: "<b>Rows start in the list's order</b><br/>1 requests that wait on a person, 2 everything else<br/>Inside each group the nearest due time first: the time Authorizations ranks by, or a denial's deadline; overdue first<br/>Rows with no due time come last, longest wait first" }
   d0@{ shape: diam, label: "Do any rows match the filters?" }
   em@{ shape: curv-trap, label: "<b>'No requests match'</b><br/>with 'Clear filters'" }
   subgraph gRow ["One row (example: P-1499)"]
@@ -695,7 +872,8 @@ flowchart TD
   g2@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Read a row: bars, clock and what happens next" }
   g3@{ shape: subproc, label: "Continues in: Dashboard › Filters › Clear filters and empty states" }
   g4@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Sort the rows" }
-  g5@{ shape: subproc, label: "Continues in: Dashboard › Stage strip › Click a stage tile" }
+  g5@{ shape: subproc, label: "Continues in: Dashboard › Key figures › Click a figure to filter the list" }
+  g6@{ shape: subproc, label: "Continues in: Dashboard › Stage help › What the stages mean" }
   d1@{ shape: diam, label: "Are there more rows than are shown?" }
   sc3@{ shape: curv-trap, label: "<b>Under the table</b><br/>'Show 8 more' and '32 not shown'" }
   c4@{ shape: trap-t, label: "Click 'Show 8 more'" }
@@ -703,7 +881,7 @@ flowchart TD
   e1@{ shape: stadium, label: "<b>All rows shown</b><br/>'Showing 40 of 40'; no button" }
   p6@{ shape: rect, label: "Changing any filter, the date range or the sort goes back to the first 8 rows" }
   t1@{ shape: odd, label: "<b>Count text 'Showing 8 of 40'</b><br/>With Appeal or call: 'Showing 8 of 8'" }
-  sc4@{ shape: curv-trap, label: "<b>With the Preparing tile chosen</b><br/>A line under the table: '2 more are being prepared in New case.' and 'Open Active cases'" }
+  sc4@{ shape: curv-trap, label: "<b>With cases saved in New case that have no row yet</b><br/>A line under the table with all stages or Preparing: '2 more are being prepared in New case.' and 'Open Active cases'<br/>With 'Needs you': '1 more is waiting on you in New case.'" }
   s1 --> sc1 --> sc2 --> p1 --> p2 --> d0
   d0 -->|"No"| em --> g3
   d0 -->|"Yes"| r1
@@ -720,13 +898,14 @@ flowchart TD
   d1 -->|"No"| e1
   sc3 -.-> p6
   d1 -.-> sc4 -.-> g5
+  sc1 -.-> g6
   class s1 k_start
   class sc1,sc2,em,r1,sc3,sc4 k_screen
   class p1,p2,p3,p5,p6 k_process
   class d0,d1 k_decision
   class c1,c2,c3,c4 k_click
   class o1 k_overlay
-  class g1,g2,g3,g4,g5 k_goto
+  class g1,g2,g3,g4,g5,g6 k_goto
   class e1 k_end
   class t1 k_toast
   style gRow fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
@@ -814,7 +993,7 @@ flowchart TD
 
 ## Dashboard › Requests table › Sort the rows
 
-Four headings of the Requests table sort the rows. Each is a button, so the keyboard works too. A heading goes ascending, then descending, then back to the app's own order. The sort is not saved in the address.
+Four headings of the Requests table sort the rows. Each is a button, so the keyboard works too. A heading goes ascending, then descending, then back to the list's own order. The sort is not saved in the address.
 
 Route: `/dashboard`
 
@@ -844,8 +1023,8 @@ flowchart TD
   p1@{ shape: rect, label: "<b>No: the sort starts on this heading, ascending</b><br/>The arrow points up; the heading is marked ascending for a screen reader" }
   d2@{ shape: diam, label: "Which way is it sorted now?" }
   p2@{ shape: rect, label: "<b>Ascending, so the next click sorts descending</b><br/>The arrow points down" }
-  p3@{ shape: rect, label: "<b>Descending, so the next click clears the sort</b><br/>Back to the app's own order<br/>Needs you first, then very late, late, denials with under 2 days left, the rest" }
-  p4@{ shape: rect, label: "Rows that tie keep the app's own order" }
+  p3@{ shape: rect, label: "<b>Descending, so the next click clears the sort</b><br/>Back to the list's own order<br/>Waiting on you first, then the nearest due time; rows with no due time last, longest wait first" }
+  p4@{ shape: rect, label: "Rows that tie keep the list's own order" }
   p5@{ shape: rect, label: "Table goes back to its first 8 rows" }
   sc@{ shape: curv-trap, label: "<b>Rows in the new order</b><br/>'Showing 8 of 40'" }
   subgraph gKeys ["What each heading sorts by"]
@@ -854,7 +1033,7 @@ flowchart TD
   k3@{ shape: curv-trap, label: "<b>Where it is</b><br/>The stage: Preparing, Received, Under review, Info requested, Approved, then Appeal or call" }
   k4@{ shape: curv-trap, label: "<b>Clock</b><br/>The number in the cell: time left for a denial with a deadline, otherwise time in stage<br/>Rows with a fixed note such as 'decision 11/02' stay last either way" }
   end
-  p6@{ shape: rect, label: "<b>Filters, the stage tiles and 'Clear filters' keep the sort</b><br/>Leaving the page or reloading clears it" }
+  p6@{ shape: rect, label: "<b>Filters, the key figures and 'Clear filters' keep the sort</b><br/>Leaving the page or reloading clears it" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Order, rows and paging" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Read a row: bars, clock and what happens next" }
   s1 --> h1 --> c1 --> d1
@@ -877,7 +1056,7 @@ flowchart TD
 
 ## Dashboard › Request drawer › Open and read a request
 
-The drawer is one scroll, with no tabs. It opens from a row, a case ID, 'Open', or a link with ?request=ID, and shows who holds the request, its history and what is next. The sections change with the request's stage.
+The drawer is one scroll, with no tabs. It opens from a row, a case ID, 'Open', or a link with ?request=ID, and shows who holds the request, its history and what is next. The sections change with the request's stage. The long lines are folded under 'Details'.
 
 Route: `/dashboard?request=P-1499`
 
@@ -913,12 +1092,11 @@ flowchart TD
   b2@{ shape: curv-trap, label: "<b>Facts</b><br/>Patient 'E.S., 42', Held by (agent and next step)" }
   d1@{ shape: diam, label: "Does the request have a chance figure?" }
   b3@{ shape: curv-trap, label: "<b>'Approval chance' or, for a denial, 'Chance of winning'</b><br/>'74% · Moderate · likely 66 to 82% · 219 similar cases'" }
-  b4@{ shape: curv-trap, label: "<b>Sent</b><br/>'Not yet', 'through the payer's portal', 'by fax' or 'by phone'" }
   b5@{ shape: curv-trap, label: "<b>History</b><br/>Every event, oldest first, or 'No events yet.'<br/>Green dot with the time; dashed dot with 'Scheduled · time'" }
-  b6@{ shape: curv-trap, label: "<b>Clock banner</b><br/>One line on when the next check happens" }
+  b6@{ shape: curv-trap, label: "<b>Details, closed</b><br/>One line: 'Sent through the payer's portal · next check in 30 minutes'<br/>Open it for 'Sent' ('Not sent yet', 'Signed and sent through the payer's portal', 'by fax' or 'by phone') and 'Checks' (the message below)" }
   b7@{ shape: win-pane, label: "<b>Demo controls</b><br/>Dashed box: pretend the payer answered<br/>Only the replies still ahead of the request show" }
   end
-  d2@{ shape: diam, label: "Which message does the banner show?" }
+  d2@{ shape: diam, label: "Which message does Checks show?" }
   m1@{ shape: odd, label: "<b>Received or Under review</b><br/>'Next automatic check in 30 minutes.'" }
   m2@{ shape: odd, label: "<b>Preparing</b><br/>'Not sent yet. Automatic checks start once the request is signed and sent.'" }
   m3@{ shape: odd, label: "<b>Info requested</b><br/>'Waiting on you, not on the payer. Automatic checks resume once the answer is sent.'" }
@@ -932,9 +1110,9 @@ flowchart TD
   s2 --> p1
   p1 --> o1 --> h1 --> h2
   h2 --> b1 --> b2 --> d1
-  d1 -->|"Yes"| b3 --> b4
-  d1 -->|"No"| b4
-  b4 --> b5 --> b6 --> d2
+  d1 -->|"Yes"| b3 --> b5
+  d1 -->|"No"| b5
+  b5 --> b6 --> d2
   d2 -->|"Received, Under review"| m1
   d2 -->|"Preparing"| m2
   d2 -->|"Info requested"| m3
@@ -948,7 +1126,7 @@ flowchart TD
   class s1,s2 k_start
   class p1 k_process
   class o1,b7 k_overlay
-  class h1,h2,b1,b2,b3,b4,b5,b6 k_screen
+  class h1,h2,b1,b2,b3,b5,b6 k_screen
   class d1,d2 k_decision
   class m1,m2,m3,m4,m5,m6 k_toast
   class g1,g2,g3 k_goto
@@ -1086,7 +1264,7 @@ flowchart TD
   g2@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Approve the write-back" }
   b4@{ shape: win-pane, label: "<b>Calm line, no button</b><br/>'Write-back is off for your records system. Turn it on in EMR Connect.'" }
   c4@{ shape: trap-t, label: "Click 'Turn it on in EMR Connect.'" }
-  g3@{ shape: subproc, label: "Continues in: EMR Connect › Manage › Open the Manage drawer" }
+  g3@{ shape: subproc, label: "Continues in: EMR Connect › Connected systems › Read only or read and write back" }
   p3@{ shape: rect, label: "<b>The row's 'What happens next' and 'Held by' say 'Write-back is off in EMR Connect'</b><br/>Turning it on in EMR Connect brings the green box back" }
   subgraph gSeed ["Demo examples"]
   e1@{ shape: rect, label: "<b>P-1499: draft ready</b><br/>Needs your input" }
@@ -1218,7 +1396,7 @@ flowchart TD
   a1@{ shape: hex, label: "<b>Packet drafts the answer from the chart</b><br/>Integrity checks every sentence against it" }
   w1@{ shape: cyl, label: "<b>Request becomes Info requested (amber)</b><br/>Needs you; next step 'Packet drafted the answer. Waiting for your review'" }
   t1@{ shape: odd, label: "<b>Notification 'Payer asked for info'</b><br/>'Harborview MA wants more on P-1499. Packet drafted the answer.'" }
-  sc@{ shape: curv-trap, label: "<b>Dashboard</b><br/>'Info requested' tile goes up and the sidebar Dashboard badge counts it<br/>The row floats to the top: it needs you" }
+  sc@{ shape: curv-trap, label: "<b>Dashboard</b><br/>'Needs you' goes up by one, the 'Info requested' count in the Stage menu too, and the sidebar Dashboard badge counts it<br/>The row floats to the top: it needs you" }
   s1@{ shape: stadium, label: "Click the row, or the notification, then the amber box 'Needs your input'" }
   c1@{ shape: trap-t, label: "Click 'Review the answer'" }
   o1@{ shape: win-pane, label: "<b>Pop-up 'Packet's answer for P-1499'</b><br/>'Harborview MA asked for more information · PHP'<br/>Drafted by Packet and checked by Integrity" }
@@ -1246,7 +1424,7 @@ flowchart TD
   t2@{ shape: odd, label: "<b>'Answer sent'</b><br/>'P-1499 is back under review.'" }
   x2@{ shape: st-rect, label: "Payer receives the answer (demo: simulated)" }
   wt@{ shape: delay, label: "Payer reviews again" }
-  e2@{ shape: stadium, label: "<b>Drawer shows Under review</b><br/>Banner: 'Next automatic check in 30 minutes.'" }
+  e2@{ shape: stadium, label: "<b>Drawer shows Under review</b><br/>Under 'Details': 'Next automatic check in 30 minutes.'" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Demo controls: the payer answers" }
   s0 --> x1 --> a1 --> w1 --> t1 --> sc
   s1 --> c1 --> o1 --> m1 --> d1
@@ -1328,8 +1506,8 @@ flowchart TD
   w3@{ shape: cyl, label: "<b>Stage Info requested (amber), needs you</b><br/>Packet holds it; next step 'Packet drafted the answer. Waiting for your review'<br/>History 'The payer asked for more information'" }
   n1@{ shape: odd, label: "<b>Notification 'Payer asked for info'</b><br/>'The payer wants more on R-1021. Packet drafted the answer.'" }
   t3@{ shape: odd, label: "<b>'Demo: Cardinal asks for information'</b><br/>'The stage counts, the table and the notifications updated.'" }
-  sc@{ shape: curv-trap, label: "<b>Dashboard behind the drawer</b><br/>The tile counts, the row and its chip, bars and clock update at once<br/>In a filtered list the row may drop out; the drawer stays open" }
-  sd@{ shape: curv-trap, label: "<b>Drawer updates in place</b><br/>Chip, action box, history, banner and the offered buttons follow the new stage" }
+  sc@{ shape: curv-trap, label: "<b>Dashboard behind the drawer</b><br/>The key figures, the Summary from FLO, the row and its chip, bars and clock update at once<br/>In a filtered list the row may drop out; the drawer stays open" }
+  sd@{ shape: curv-trap, label: "<b>Drawer updates in place</b><br/>Chip, action box, history, the 'Details' lines and the offered buttons follow the new stage" }
   c4@{ shape: trap-t, label: "Click 'Approves', 'Approves part' or 'Denies'" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Demo controls: approve, approve part or deny" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Answer a payer information request" }
@@ -1439,9 +1617,9 @@ flowchart TD
   style gD fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```
 
-## Dashboard › Payers at a glance › Read the table and pick a payer
+## Dashboard › Payer performance › Read the table and pick a payer
 
-The last card on the page. One row per payer, plus a totals row. A click on a payer row narrows the whole page to that payer; a second click clears it. The payer's name and 'Open Payers' lead to the Payers page. A link from Ask FLO scrolls the card into view.
+The last section on the page, closed until opened. Closed, it is one title and one computed line naming the slowest payer. Open, it shows one row per payer, plus a totals row, and links to Analytics and Payers. A click on a payer row narrows the whole page to that payer; a second click clears it. A link from Ask FLO opens the section and scrolls it into view.
 
 Route: `/dashboard?payer=harborview`
 
@@ -1464,10 +1642,13 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "Scroll to 'Payers at a glance'" }
-  s2@{ shape: stadium, label: "<b>Follow 'Open Dashboard, By payer' in Ask FLO</b><br/>The address is /dashboard?focus=payers" }
-  f1@{ shape: rect, label: "<b>Page scrolls to the card</b><br/>The card is outlined in green for about 2 seconds<br/>The ?focus part is then removed from the address" }
-  sc1@{ shape: curv-trap, label: "<b>Card header</b><br/>'Payers at a glance'<br/>'Waiting now, how long decisions take, and how often they go your way. Click a row to narrow everything on this page.'<br/>On the right: 'Open Payers'" }
+  s1@{ shape: stadium, label: "Scroll to 'Payer performance' at the foot of the page" }
+  s2@{ shape: stadium, label: "<b>Follow 'Open Dashboard, Payer performance' in Ask FLO</b><br/>The address is /dashboard?focus=payers" }
+  f1@{ shape: rect, label: "<b>Section opens</b><br/>Page scrolls to it<br/>It is outlined in green for about 2 seconds<br/>The ?focus part is then removed from the address" }
+  sc0@{ shape: curv-trap, label: "<b>Closed section</b><br/>'Payer performance'<br/>'Evergreen is slowest: 3.4 days on average against 2 typical.'<br/>With every payer within its typical time: 'Every payer is deciding within its typical time.'" }
+  co@{ shape: trap-t, label: "<b>Click the title row, or Tab to it and press Enter or Space</b><br/>The row says whether it is expanded" }
+  sc1@{ shape: curv-trap, label: "<b>Open section</b><br/>'Waiting now, how long decisions take, and how often they go your way. Click a row to narrow everything on this page.'<br/>On the right: 'Open Analytics' and 'Open Payers'" }
+  cc@{ shape: trap-t, label: "<b>Click the title row again</b><br/>Section closes; the payer filter stays" }
   d0@{ shape: diam, label: "Is Program or Request type set?" }
   t0@{ shape: odd, label: "<b>Sentence added to the header</b><br/>'Waiting counts follow your Program and Request type filters.'" }
   subgraph gCols ["Columns and rows"]
@@ -1486,10 +1667,13 @@ flowchart TD
   p2@{ shape: rect, label: "Payer filter goes back to 'All payers'" }
   w1@{ shape: cyl, label: "Filter 'payer'" }
   p3@{ shape: rect, label: "<b>Address gets ?payer=harborview, or loses it</b><br/>Table goes back to its first 8 rows" }
-  sc2@{ shape: curv-trap, label: "<b>Page follows the payer</b><br/>Headline 'Harborview MA: 3 waiting, taking 3.1 days.'<br/>Tile counts and the requests table follow it; the Payer menu shows its name" }
+  sc2@{ shape: curv-trap, label: "<b>Page follows the payer</b><br/>Headline 'Harborview MA: 3 waiting, taking 3.1 days.'<br/>Key figures and the requests table follow it; the Payer menu shows its name" }
   sc3@{ shape: curv-trap, label: "<b>Payers table keeps all six rows</b><br/>The chosen row is tinted green and marked selected<br/>Waiting counts do not change" }
   c2@{ shape: trap-t, label: "<b>Click the payer's name, e.g. 'Harborview MA'</b><br/>The filter does not change" }
   c3@{ shape: trap-t, label: "Click 'Open Payers'" }
+  c4@{ shape: trap-t, label: "Click 'Open Analytics'" }
+  n4@{ shape: rect, label: "Address becomes /analytics" }
+  g6@{ shape: subproc, label: "Continues in: Analytics › Arrive and read the page" }
   n2@{ shape: rect, label: "<b>Address becomes /payers/harborview</b><br/>A new history entry, so Back returns here" }
   n3@{ shape: rect, label: "Address becomes /payers" }
   g4@{ shape: subproc, label: "Continues in: Payers › Arrive on the page" }
@@ -1497,7 +1681,8 @@ flowchart TD
   g2@{ shape: subproc, label: "Continues in: Dashboard › Filters › Date range shortcuts, keys and the address" }
   g3@{ shape: subproc, label: "Continues in: Dashboard › Filters › Payer, Program, Request type and Stage" }
   g5@{ shape: subproc, label: "Continues in: Global shell › Top bar › Ask FLO › What FLO answers" }
-  s1 --> sc1 --> d0
+  s1 --> sc0 --> co --> sc1 --> d0
+  sc1 -.-> cc
   s2 --> f1 --> sc1
   s2 -.-> g5
   d0 -->|"Yes"| t0 --> r1
@@ -1514,13 +1699,14 @@ flowchart TD
   sc3 -.-> g3
   r1 --> c2 --> n2 --> g4
   sc1 --> c3 --> n3 --> g4
+  sc1 --> c4 --> n4 --> g6
   class s1,s2 k_start
-  class f1,p1,p2,p3,n2,n3 k_process
-  class sc1,r1,r2,r3,r4,r5,r6,r7,r8,sc2,sc3 k_screen
+  class f1,p1,p2,p3,n4,n2,n3 k_process
+  class sc0,sc1,r1,r2,r3,r4,r5,r6,r7,r8,sc2,sc3 k_screen
+  class co,cc,c1,c2,c3,c4 k_click
   class d0,d1 k_decision
   class t0 k_toast
-  class c1,c2,c3 k_click
   class w1 k_store
-  class g4,g1,g2,g3,g5 k_goto
+  class g6,g4,g1,g2,g3,g5 k_goto
   style gCols fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```

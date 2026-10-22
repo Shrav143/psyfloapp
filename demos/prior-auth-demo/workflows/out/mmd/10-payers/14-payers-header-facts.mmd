@@ -17,21 +17,20 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Pick a payer</b><br/>(or arrive on Payers)" }
-  head@{ shape: curv-trap, label: "<b>Payer header</b><br/>Payer name in large type<br/>Plan line under it<br/>'Edit log' and 'Edit' on the right" }
-  plan@{ shape: rect, label: "<b>Plan line = plan text</b><br/>+ 'rules version 2026.3'<br/>+ the state of the rules" }
-  pend@{ shape: diam, label: "<b>Is a change waiting</b><br/>for this payer?" }
-  waiting@{ shape: odd, label: "'... rules version 2026.3, change waiting'" }
-  checked@{ shape: odd, label: "<b>'... rules version 2026.3, checked 10/12'</b><br/>Date Sentinel last checked the policy" }
-  subgraph gF ["Four facts under the name"]
-  f1@{ shape: curv-trap, label: "<b>'Approved as asked'</b><br/>74% for Summit<br/>Note: 'last 90 days'<br/>Cardinal says 'down 11 points'" }
-  f2@{ shape: curv-trap, label: "<b>'Typical decision'</b><br/>1.5 days for Summit<br/>Note: 'for residential'<br/>Cardinal says 'now taking 2.8'" }
-  f3@{ shape: curv-trap, label: "<b>'Notice due'</b><br/>24 hours<br/>Note: 'after admission'<br/>Harborview is 72 hours" }
-  f4@{ shape: curv-trap, label: "<b>'Reached by'</b><br/>One of seven: Portal, Phone, Fax,<br/>or a mix such as 'Portal and fax'<br/>Note: the backup route<br/>'phone as backup'" }
+  head@{ shape: curv-trap, label: "<b>Payer header</b><br/>Payer name in large type<br/>'Edit log' and 'Edit' on the right<br/>The demo-rules label under the name<br/>Plan line under that" }
+  subgraph gF ["Four rows under the name"]
+  f1@{ shape: curv-trap, label: "<b>'Plan type'</b><br/>'Medicaid managed care (HMO). Claims go to Summit, not to the state.'<br/>Nothing is shown when the payer has no plan type" }
+  f2@{ shape: curv-trap, label: "<b>'Programs'</b><br/>Residential 3.5, IOP, PHP, Detox<br/>or the ones chosen when the payer was added" }
+  f3@{ shape: curv-trap, label: "<b>'Needs'</b><br/>'Initial request: required. Notice within 24 hours of admission.'<br/>'Continued-stay review: required. A continued-stay review every 7 days after the first 7.'" }
+  f4@{ shape: curv-trap, label: "<b>'Notice and reach'</b><br/>'Notice due 24 hours after admission.'<br/>'Reached by portal, phone as backup.'" }
   end
-  hist@{ shape: diam, label: "<b>Does the payer have</b><br/>90 days of decisions?" }
-  few@{ shape: odd, label: "<b>'Not enough' in both figures</b><br/>Notes: 'Not enough decisions yet'<br/>and 'benchmark estimate'<br/>True of a payer added with 'Add a payer'" }
-  real@{ shape: rect, label: "<b>Figures come from decisions</b><br/>already seen for this payer" }
-  cfg@{ shape: rect, label: "<b>'Notice due' and 'Reached by' come</b><br/>from the payer's saved details<br/>the 'Edit' button changes them" }
+  cfg@{ shape: rect, label: "<b>Plan type, programs and needs are read from the saved configuration</b><br/>Edit a rule, a document list or the workflow and the header follows" }
+  pt@{ shape: rect, label: "<b>Plan type: the payer's group and the plan type New case would pre-fill</b><br/>See 'Eligibility & Benefits › Result › Plan type and routing'" }
+  ndn@{ shape: diam, label: "<b>Does the saved 'Submission windows' rule</b><br/>still have a notice line<br/>and a continued-stay line?" }
+  need1@{ shape: rect, label: "Both read 'required' with the rule's own words" }
+  need2@{ shape: rect, label: "<b>A missing line reads 'not on file'</b><br/>The row in the payer list says 'Initial only' or 'Review only'" }
+  cfg2@{ shape: rect, label: "<b>'Notice due' and 'Reached by' come from the payer's saved details</b><br/>the 'Edit' button changes them" }
+  g_ps@{ shape: subproc, label: "Continues in: Payers › Header › Policy status and the demo-rules label" }
   logn@{ shape: diam, label: "Any edits logged for this payer?" }
   logb1@{ shape: curv-trap, label: "<b>Button reads 'Edit log (3)'</b><br/>the count is edits for this payer" }
   logb0@{ shape: curv-trap, label: "Button reads 'Edit log'" }
@@ -40,24 +39,23 @@ flowchart TD
   g_edit@{ shape: subproc, label: "Continues in: Payers › Edit payer details" }
   g_log@{ shape: subproc, label: "Continues in: Payers › Edit log" }
   e1@{ shape: stadium, label: "Header shows the payer's current state" }
-  s1 --> head --> plan --> pend
-  pend -->|"Yes"| waiting --> hist
-  pend -->|"No"| checked --> hist
-  head --> f1 & f2 & f3 & f4
-  hist -->|"No"| few --> logn
-  hist -->|"Yes"| real --> logn
-  f3 -.-> cfg
-  f4 -.-> cfg
+  s1 --> head --> f1 & f2 & f3 & f4
+  f1 -.-> pt
+  f1 & f2 & f3 -.-> cfg
+  f3 --> ndn
+  ndn -->|"Yes"| need1 --> logn
+  ndn -->|"No"| need2 --> logn
+  f4 -.-> cfg2
+  head --> g_ps
   logn -->|"Yes"| logb1 --> e1
   logn -->|"No"| logb0 --> e1
   head --> ce --> g_edit
   head --> cl --> g_log
   class s1 k_start
   class head,f1,f2,f3,f4,logb1,logb0 k_screen
-  class plan,real,cfg k_process
-  class pend,hist,logn k_decision
-  class waiting,checked,few k_toast
+  class cfg,pt,need1,need2,cfg2 k_process
+  class ndn,logn k_decision
+  class g_ps,g_edit,g_log k_goto
   class ce,cl k_click
-  class g_edit,g_log k_goto
   class e1 k_end
   style gF fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

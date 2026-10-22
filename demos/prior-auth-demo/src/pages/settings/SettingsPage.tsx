@@ -45,7 +45,7 @@ export default function SettingsPage() {
         </Banner>
       ) : null}
       <Banner icon={LockKeyhole} title="Privacy mode is always on">Names, dates and IDs are swapped for codes before an agent reads a chart, and mapped back only on your screen.</Banner>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
         {crews.map((c) => (
           <Card key={c.key}>
             <CardHeader title={CREW[c.key].label} subtitle={CREW[c.key].sub} />

@@ -17,53 +17,48 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Click 'EMR Connect' in the sidebar</b><br/>Under Connections" }
-  p1@{ shape: curv-trap, label: "<b>EMR Connect</b><br/>Charts arrive on their own. Nothing is written back until a person approves it." }
-  subgraph gHead ["Header buttons"]
-  hb1@{ shape: trap-t, label: "Click 'Manage mapping'" }
-  hq@{ shape: diam, label: "Any system on the list?" }
-  ho@{ shape: win-pane, label: "<b>Manage drawer opens</b><br/>for the outpatient site, or the first system" }
-  hx@{ shape: stadium, label: "<b>Button is dimmed</b><br/>Nothing to open" }
+  p1@{ shape: curv-trap, label: "<b>EMR Connect</b><br/>Charts arrive on their own. Nothing is written back until a person approves it.<br/>'Simulated connection: this demo does not contact a real record system.'" }
+  subgraph gHead ["Header button"]
   hb2@{ shape: trap-t, label: "<b>Click 'Connect a system'</b><br/>A paused Reader shows a toast instead" }
   end
-  hg1@{ shape: subproc, label: "Continues in: EMR Connect › Manage › Open the Manage drawer" }
   hg2@{ shape: subproc, label: "Continues in: EMR Connect › Connect a system › Choose the system and contact" }
-  subgraph gTiles ["Four tiles (they are not buttons)"]
-  t1@{ shape: rect, label: "<b>Last sync</b><br/>Time since the newest sync. Green, amber or red" }
-  t2@{ shape: rect, label: "<b>Charts matched today</b><br/>23 'to open cases'" }
-  t3@{ shape: rect, label: "<b>Files pulled</b><br/>142 'this week'" }
-  t4@{ shape: rect, label: "<b>Need a mapping</b><br/>2 'fields the agents could not place'" }
+  subgraph gAct ["Action required"]
+  n1@{ shape: curv-trap, label: "<b>One banner line, only when something needs a person</b><br/>'Action required: Billing system needs attention. Also: 2 fields need a mapping, so New case leaves them blank.'<br/>One button for the first item: 'Fix'" }
+  n2@{ shape: rect, label: "Nothing needs a person: no banner" }
   end
-  tg@{ shape: subproc, label: "Continues in: EMR Connect › Page › What each tile shows" }
-  subgraph gSys ["Connected systems"]
-  c1@{ shape: curv-trap, label: "<b>Connected systems</b><br/>Read access for charts, insurance details and medications" }
-  c2@{ shape: rect, label: "One row per system: name, what it holds, last sync, status pill, buttons" }
+  ng@{ shape: subproc, label: "Continues in: EMR Connect › Page › The Action required line" }
+  subgraph gTiles ["Four figures (not buttons)"]
+  t1@{ shape: rect, label: "<b>Last sync</b><br/>Time since the newest sync, and 'all systems answering'" }
+  t2@{ shape: rect, label: "<b>Charts matched today</b><br/>23" }
+  t3@{ shape: rect, label: "<b>Files pulled this week</b><br/>142" }
+  t4@{ shape: rect, label: "<b>Sync failures</b><br/>2, from the Billing system" }
+  end
+  tg@{ shape: subproc, label: "Continues in: EMR Connect › Page › What the health figures show" }
+  subgraph gSys ["Connection health"]
+  c1@{ shape: curv-trap, label: "<b>Connection health</b><br/>'2 of 3 systems connected. Read access for charts, insurance details and medications.'" }
+  c2@{ shape: rect, label: "<b>One row per system: name, status pill, what it reads, last sync, sync failures, buttons</b><br/>Then a line: 'Read only' or 'Read and write back', with the Write back switch" }
   c3@{ shape: trap-t, label: "Click 'Sync now' in the card header" }
   c4@{ shape: trap-t, label: "<b>Click 'Sync now', 'Fix', 'Reconnect' or 'Manage' on a row</b><br/>A row that is not Connected also says that New case cannot pull a chart from it" }
+  c6@{ shape: trap-t, label: "Click the 'Write back' switch on a row" }
   c5@{ shape: odd, label: "<b>'Connect your record system to let charts arrive on their own.'</b><br/>Empty list. Not reachable in the demo: a system can be disconnected, never removed" }
   end
   cg0@{ shape: subproc, label: "Continues in: EMR Connect › Sync › When an agent is paused or asks first" }
   cg1@{ shape: subproc, label: "Continues in: EMR Connect › Sync › Sync now" }
   cg2@{ shape: subproc, label: "Continues in: EMR Connect › Connected systems › What each status means" }
   cg3@{ shape: subproc, label: "Continues in: EMR Connect › Problems › Every error state and what it needs" }
-  subgraph gAct ["Recent activity"]
-  a1@{ shape: curv-trap, label: "<b>Recent activity</b><br/>Every read and write is logged. Newest six lines" }
-  a2@{ shape: trap-t, label: "<b>Click 'See all 8'</b><br/>Only shown when there are more than six lines" }
+  cg4@{ shape: subproc, label: "Continues in: EMR Connect › Connected systems › Read only or read and write back" }
+  cg5@{ shape: subproc, label: "Continues in: EMR Connect › Manage › Open the Manage drawer" }
+  subgraph gAdv ["Advanced (folded)"]
+  a1@{ shape: curv-trap, label: "<b>Advanced</b><br/>'10 field mappings, 2 waiting, and the log of every read and write (8 lines).'<br/>Pill '2 to map'" }
+  a2@{ shape: trap-t, label: "Click 'Advanced', or Tab to it and press Enter or Space" }
   end
-  ag@{ shape: subproc, label: "Continues in: EMR Connect › Recent activity › Read the activity log" }
-  subgraph gSide ["Right-hand panels"]
-  r1@{ shape: curv-trap, label: "<b>What the agents can do here</b><br/>Read: assessments, notes, labs, medications, insurance card" }
-  r2@{ shape: rect, label: "<b>Write back: only the approval number and dates, and only after a person approves</b><br/>A system's write-back switch in Manage decides whether the Dashboard offers it" }
-  r3@{ shape: curv-trap, label: "<b>Needs a mapping</b><br/>'A chart pulled in New case leaves these fields blank until you map them.'<br/>Pill with the count, then one row per field with a 'Map' button" }
-  r4@{ shape: trap-t, label: "Click 'Map' on a row" }
-  end
-  rg@{ shape: subproc, label: "Continues in: EMR Connect › Needs a mapping › Map a field" }
+  ag@{ shape: subproc, label: "Continues in: EMR Connect › Advanced › Field mappings and the activity log" }
   s1 --> p1
-  p1 --> hb1 & hb2
-  hb1 --> hq
-  hq -->|"Yes"| ho
-  hq -->|"No"| hx
-  ho --> hg1
+  p1 --> hb2
   hb2 --> hg2
+  p1 --> n1
+  p1 -.-> n2
+  n1 --> ng
   p1 --> t1 & t2 & t3 & t4
   t1 --> tg
   t2 --> tg
@@ -71,30 +66,25 @@ flowchart TD
   t4 --> tg
   p1 --> c1
   c1 --> c2
-  c2 --> c3 & c4
+  c2 --> c3 & c4 & c6
   c1 -.-> c5
   c3 --> cg1
   c3 -.-> cg0
   c4 -.-> cg0
   c4 --> cg2
   c4 -.-> cg3
+  c4 --> cg5
+  c6 --> cg4
   p1 --> a1
   a1 --> a2 --> ag
-  p1 --> r1
-  r1 --> r2
-  p1 --> r3
-  r3 --> r4 --> rg
   class s1 k_start
-  class p1,c1,a1,r1,r3 k_screen
-  class hb1,hb2,c3,c4,a2,r4 k_click
-  class hq k_decision
-  class ho k_overlay
-  class hx k_endx
-  class hg1,hg2,tg,cg0,cg1,cg2,cg3,ag,rg k_goto
-  class t1,t2,t3,t4,c2,r2 k_process
+  class p1,n1,c1,a1 k_screen
+  class hb2,c3,c4,c6,a2 k_click
+  class hg2,ng,tg,cg0,cg1,cg2,cg3,cg4,cg5,ag k_goto
+  class n2,t1,t2,t3,t4,c2 k_process
   class c5 k_toast
   style gHead fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gAct fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gTiles fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gSys fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
-  style gAct fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
-  style gSide fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gAdv fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

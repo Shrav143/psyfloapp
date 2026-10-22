@@ -38,7 +38,7 @@ flowchart TD
   p0@{ shape: rect, label: "/active is replaced by /manager" }
   p1@{ shape: rect, label: "<b>Page opens at the top</b><br/>Sidebar 'Case Manager' turns green; its bubble reads 11" }
   d1@{ shape: diam, label: "Is the address ?tab=reviews?" }
-  sA@{ shape: curv-trap, label: "<b>Active cases tab</b><br/>Header '56 active cases.'<br/>'5 are still being prepared. Units, clocks and status for every case, across every level of care.'<br/>Button 'New case'" }
+  sA@{ shape: curv-trap, label: "<b>Active cases tab: the tracker is what the page opens on</b><br/>Header '56 active cases.'<br/>'5 are still being prepared. Units, clocks and status for every case, across every level of care.'<br/>Button 'New case'<br/>Above the tracker, one folded row 'Being prepared' ('5 being prepared, 3 need you') and, only when a denial was accepted, a folded 'Step-down plans' row" }
   cA@{ shape: rect, label: "<b>56 is the number of rows in the tracker</b><br/>A case signed and sent in New case adds a row ('57 active cases.'), and '1 active case.' reads in the singular<br/>5 is the drafts saved and not yet sent: it falls when a case is signed and sent ('1 is still being prepared' when one is left)" }
   sR@{ shape: curv-trap, label: "<b>Reviews this week tab</b><br/>Header '47 clinical reviews due this week.'<br/>'Agents draft each review ahead of time. You update only what they ask about.'<br/>Buttons 'Draft all due reviews' and 'Sign all clean drafts'" }
   cR@{ shape: rect, label: "<b>47 is one review for each approved case (9 cases are not yet approved and have none)</b><br/>Only reviews due before the end of Sunday are counted: a next review booked for Friday makes it '48', one booked for next week does not<br/>'1 clinical review due this week.' reads in the singular" }
@@ -171,7 +171,7 @@ flowchart TD
 
 ## Case Manager › Active cases › Being prepared card
 
-The card at the top of Active cases lists the cases the agents are still preparing, most urgent first. Four chips narrow it by who has the next move, and 'sent today' jumps to the Dashboard. Each row is explained in the next diagram.
+Above the tracker, one folded row says how many cases the agents are still preparing and how many need a person, and links to Authorizations. Opening it shows the full list, most urgent first, with four chips that narrow it by who has the next move, and 'sent today' that jumps to the Dashboard. The list is kept so the queue is not repeated on the page. Each row is explained in the next diagram.
 
 Route: `/manager`
 
@@ -195,13 +195,20 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Open Case Manager (Active cases tab)" }
-  sc@{ shape: curv-trap, label: "<b>Card 'Being prepared'</b><br/>'Most urgent first. Each case moves through eight steps; the agents do all but Ask and Sign.'" }
+  sf@{ shape: curv-trap, label: "<b>Folded row 'Being prepared' above the tracker (closed at first)</b><br/>Summary '5 being prepared, 3 need you'<br/>Link 'Open in Authorizations' and a chevron" }
+  pn@{ shape: rect, label: "<b>'N need you' counts cases with an open question, a signature to give, unfinished intake or an agent that could not finish: 3 at the start, the same cases as the two badges below</b><br/>With page filters on: '1 of 5 match the filters, 1 needs you'. With none: 'Nothing is being prepared'" }
+  cl@{ shape: trap-t, label: "Click 'Open in Authorizations'" }
+  pl@{ shape: rect, label: "<b>Go to /authorizations</b><br/>(Under 900 px wide the link moves inside the opened row)" }
+  gl@{ shape: subproc, label: "Continues in: Authorizations › Queue › Open the queue and read the top" }
+  co@{ shape: trap-t, label: "Click the header, or Tab to it and press Enter or Space" }
+  sc@{ shape: curv-trap, label: "Opened: 'Most urgent first. Each case moves through eight steps; the agents do all but Ask and Sign.'" }
+  pc@{ shape: rect, label: "<b>Click the header again to fold it</b><br/>The chip you picked stays while the page is open" }
   p1@{ shape: rect, label: "<b>Rows are the drafts that were saved and not yet sent</b><br/>5 at the start: R-1042, R-0988, I-2207, R-1101, I-2262" }
   p2@{ shape: rect, label: "<b>Search, level of care and payer from the filter bar narrow the rows</b><br/>The tracker's status filter does not apply here" }
-  sh@{ shape: curv-trap, label: "<b>Top right of the card</b><br/>Ghost button '4 sent today', then the chips 'All', 'Agents working', 'Needs your input', 'Ready to sign'" }
+  sh@{ shape: curv-trap, label: "<b>Top right of the opened row</b><br/>Ghost button '4 sent today', then the chips 'All', 'Agents working', 'Needs your input', 'Ready to sign'" }
   c1@{ shape: trap-t, label: "Click '4 sent today'" }
   p3@{ shape: rect, label: "Go to /dashboard?stage=received" }
-  g1@{ shape: subproc, label: "Continues in: Dashboard › Stage strip › Click a stage tile" }
+  g1@{ shape: subproc, label: "Continues in: Dashboard › Key figures › Click a figure to filter the list" }
   c2@{ shape: trap-t, label: "Click a chip" }
   d1@{ shape: diam, label: "Which chip?" }
   k1@{ shape: rect, label: "'All': every row" }
@@ -220,7 +227,10 @@ flowchart TD
   e1@{ shape: stadium, label: "Rows are on screen" }
   p5@{ shape: rect, label: "After a case is signed and sent in New case it leaves this list, 'sent today' counts one more, and the tracker adds it as 'New today' unless it already had a row" }
   s2@{ shape: stadium, label: "Later: a case is signed and sent in New case › Review and sign" }
-  s1 --> sc --> p1 --> p2 --> sh
+  s1 --> sf --> pn
+  sf --> cl --> pl --> gl
+  sf --> co --> sc --> p1 --> p2 --> sh
+  sc -.-> pc
   sh --> c1 --> p3 --> g1
   sh --> c2 --> d1
   d1 -->|"All"| k1 --> p4
@@ -237,10 +247,10 @@ flowchart TD
   p5 --> g4
   r1 -.-> g5
   class s1,s2 k_start
-  class sc,sh,r1 k_screen
-  class p1,p2,p3,k1,k2,k3,k4,p4,o1,o2,p5 k_process
-  class c1,c2 k_click
-  class g1,g2,g3,g4,g5 k_goto
+  class sf,sc,sh,r1 k_screen
+  class pn,pl,pc,p1,p2,p3,k1,k2,k3,k4,p4,o1,o2,p5 k_process
+  class cl,co,c1,c2 k_click
+  class gl,g1,g2,g3,g4,g5 k_goto
   class d1,d2 k_decision
   class e1 k_end
 ```
@@ -270,7 +280,7 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "Look at one row in 'Being prepared'" }
+  s1@{ shape: stadium, label: "Open the folded 'Being prepared' row and look at one case" }
   r1@{ shape: curv-trap, label: "<b>Row, left to right</b><br/>Level chip (for example 'Residential 3.5', 'Detox → Residential', or 'Level not set')<br/>Case ID (or 'New case'), patient initials and age, payer<br/>What is asked ('Admission request'), and a grey tag 'Updated for a payer change · 10/20' when Payers updated this draft" }
   r2@{ shape: curv-trap, label: "<b>Eight-step bar</b><br/>Read, Rules, Match, Ask, Draft, Check, Sign, Send<br/>Done steps green, current step sage and bold, the rest grey" }
   r3@{ shape: curv-trap, label: "<b>Agent line</b><br/>A badge for the agent who has the case, then one sentence, for example 'Scribe is waiting on one answer: the sertraline start date'" }
@@ -392,7 +402,7 @@ flowchart TD
 
 ## Case Manager › Active cases › Step-down plans from accepted denials
 
-When the clinic accepts a denial in Denial Intelligence, Active cases gets a 'Step-down plan' for it, between 'Being prepared' and the tracker. The card is there only while at least one plan exists. Each plan names the case, the denial it came from and one button that opens the case.
+When the clinic accepts a denial in Denial Intelligence, Active cases gets a 'Step-down plan' for it, in a folded row between 'Being prepared' and the tracker. The row is there only while at least one plan exists. Each plan names the case, the denial it came from and one button that opens the case.
 
 Route: `/manager`
 
@@ -422,10 +432,12 @@ flowchart TD
   g1@{ shape: subproc, label: "Continues in: Denial Intelligence › Accept the denial" }
   s2@{ shape: stadium, label: "Open Case Manager (Active cases tab)" }
   d1@{ shape: diam, label: "Has any denial been accepted?" }
-  p0@{ shape: rect, label: "<b>No card</b><br/>Active cases shows 'Being prepared', then the tracker" }
-  c1@{ shape: curv-trap, label: "<b>Card 'Step-down plans'</b><br/>'Started when Denial Intelligence accepts a denial. Choose the next level of care and book the first visit.'<br/>One row for each accepted denial, newest first" }
+  p0@{ shape: rect, label: "<b>No row</b><br/>Active cases shows 'Being prepared', then the tracker" }
+  c1@{ shape: curv-trap, label: "<b>Folded row 'Step-down plans' (closed at first)</b><br/>Summary '1 plan to start. Choose the next level of care and book the first visit.'" }
+  co@{ shape: trap-t, label: "Click the header, or press Enter or Space on it" }
+  c1b@{ shape: curv-trap, label: "Opened: one row for each accepted denial, newest first" }
   r1@{ shape: curv-trap, label: "<b>A row</b><br/>Level chip ('Residential 3.5')<br/>'Step-down plan'<br/>Case ID, 'M.C., 38', payer name<br/>'From denial D-3318 · accepted 10/20'<br/>Button 'Open case'" }
-  p1@{ shape: rect, label: "<b>Search, level of care and payer from the filter bar narrow the plans</b><br/>The tracker's status filter does not apply<br/>When nothing matches, the whole card is hidden" }
+  p1@{ shape: rect, label: "<b>Search, level of care and payer from the filter bar narrow the plans</b><br/>The tracker's status filter does not apply<br/>When nothing matches, the whole row is hidden" }
   c2@{ shape: trap-t, label: "Click the case ID or 'Open case'" }
   p2@{ shape: rect, label: "Go to /authorizations/case/ and the case code of the denial's request (R-0997)" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Case" }
@@ -437,7 +449,7 @@ flowchart TD
   st1 --> d1
   s2 --> d1
   d1 -->|"No"| p0 --> e2
-  d1 -->|"Yes"| c1 --> r1 --> p1
+  d1 -->|"Yes"| c1 --> co --> c1b --> r1 --> p1
   r1 --> c2 --> p2 --> g2
   p1 --> e1
   st1 --> p3
@@ -447,8 +459,8 @@ flowchart TD
   class g1,g2 k_goto
   class d1 k_decision
   class p0,p1,p2,p3 k_process
-  class c1,r1 k_screen
-  class c2 k_click
+  class c1,c1b,r1 k_screen
+  class co,c2 k_click
   class e1,e2 k_end
 ```
 
@@ -508,7 +520,7 @@ flowchart TD
 
 ## Case Manager › Active cases › Tracker of every active case
 
-Under 'Being prepared' (and 'Step-down plans' when there are any), the tracker lists all 56 active cases across every level of care, plus any case signed and sent today. Four tiles count them by status and filter the table when clicked. The table is sorted soonest-first, ten rows a page.
+The tracker is what Active cases opens on, under the folded 'Being prepared' row (and 'Step-down plans' when there are any). It lists all 56 active cases across every level of care, plus any case signed and sent today. Four tiles count them by status and filter the table when clicked. The table is sorted by what is due next, ten rows a page.
 
 Route: `/manager`
 
@@ -531,12 +543,12 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "Scroll below 'Being prepared' on Active cases" }
+  s1@{ shape: stadium, label: "Open Active cases: the tracker is under the folded rows" }
   t0@{ shape: curv-trap, label: "<b>Four status tiles in a row</b><br/>11 'Needs action' (act today)<br/>14 'Review due' (review or recertify soon)<br/>15 'Awaiting payer' (the payer has it)<br/>16 'On track' (nothing needed)" }
   p0@{ shape: rect, label: "<b>Tile numbers follow search, level of care and payer</b><br/>They do not follow the status filter, so they always add up to the cases in view" }
-  t1@{ shape: curv-trap, label: "<b>Table card</b><br/>Columns: Case, Level of care, Payer, Units used, Clock, Approval chance, Status, Open<br/>Under a case ID, small tags when they apply: green 'New today', grey 'Updated for a payer change · 10/20'" }
-  p1@{ shape: rect, label: "<b>Rows are sorted by Clock, soonest first (overdue rows lead)</b><br/>Ten rows a page, 'Showing 1 to 10 of 56'<br/>The header count, the four tiles and this line are one list, so they always agree ('57' with a new case)" }
-  t2@{ shape: curv-trap, label: "<b>Note under the table</b><br/>'Approval chance estimates how well the paperwork fits the payer's past decisions ... Strong is 80 and above, Moderate 55 to 79, At risk below 55. It never blocks a request.'" }
+  t1@{ shape: curv-trap, label: "<b>Table card</b><br/>Columns: Case, Status, Next due, Units or days, Level of care, Payer, Approval chance, Open<br/>Status is the one coloured pill; level of care is plain text; approval chance is one small number<br/>Under a case ID, small text when it applies: 'New today', 'Updated for a payer change · 10/20'" }
+  p1@{ shape: rect, label: "<b>Rows are sorted by Next due, soonest first (overdue rows lead)</b><br/>Ten rows a page, 'Showing 1 to 10 of 56'<br/>The header count, the four tiles and this line are one list, so they always agree ('57' with a new case)" }
+  t2@{ shape: curv-trap, label: "<b>Note under the table</b><br/>'Units or days left are worked out at the usual pace ... Runs out before review appears only when ...'<br/>'Approval chance estimates how well the paperwork fits the payer's past decisions ... Strong is 80 and above, Moderate 55 to 79, At risk below 55. It never blocks a request.'" }
   c1@{ shape: trap-t, label: "Click a tile, for example 'Needs action'" }
   d1@{ shape: diam, label: "Was that tile already selected?" }
   p2@{ shape: rect, label: "<b>Tile gets a green outline</b><br/>The 'Any status' dropdown shows the same status<br/>Table keeps only that status, and goes back to page 1" }
@@ -545,7 +557,7 @@ flowchart TD
   p4@{ shape: rect, label: "Same effect as clicking that tile" }
   c3@{ shape: trap-t, label: "Click a sortable header or 'Previous' / 'Next'" }
   g1@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Sort and page the tracker" }
-  c4@{ shape: rect, label: "Look at a row's Units used, Clock and Status cells" }
+  c4@{ shape: rect, label: "Look at a row's Status, Units or days and Next due cells" }
   g2@{ shape: subproc, label: "Continues in: Case Manager › Active cases › What each tracker cell means" }
   c5@{ shape: trap-t, label: "Click a row, its case ID or 'Open'" }
   g3@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Open a case from the tracker" }
@@ -603,18 +615,18 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Tracker table is on screen</b><br/>(sorted by Clock, soonest first)" }
-  h1@{ shape: curv-trap, label: "<b>Headers</b><br/>Case, Level of care, Payer, Units used, Clock, Approval chance, Status, and a hidden 'Open' column<br/>Sortable ones show an up-and-down arrow button 'Sort by ...'" }
+  s1@{ shape: stadium, label: "<b>Tracker table is on screen</b><br/>(sorted by Next due, soonest first)" }
+  h1@{ shape: curv-trap, label: "<b>Headers</b><br/>Case, Status, Next due, Units or days, Level of care, Payer, Approval chance, and a hidden 'Open' column<br/>Sortable ones show an up-and-down arrow button 'Sort by ...'" }
   c0@{ shape: trap-t, label: "Click 'Level of care' or the empty 'Open' header" }
   p0@{ shape: rect, label: "Nothing happens: those two do not sort" }
-  c1@{ shape: trap-t, label: "<b>Click a sortable header</b><br/>('Case', 'Payer', 'Units used', 'Clock', 'Approval chance', 'Status')" }
+  c1@{ shape: trap-t, label: "<b>Click a sortable header</b><br/>('Case', 'Status', 'Next due', 'Units or days', 'Payer', 'Approval chance')" }
   d1@{ shape: diam, label: "Is it the header already used for sorting?" }
   p1@{ shape: rect, label: "<b>Order flips: ascending becomes descending and back</b><br/>The arrow points up or down" }
   d2@{ shape: diam, label: "Which header is it?" }
   s1a@{ shape: rect, label: "'Case': case ID, A to Z" }
   s2a@{ shape: rect, label: "'Payer': payer key A to Z (Beacon, Cardinal, Evergreen, Harborview, Lakeshore, Summit)" }
-  s3a@{ shape: rect, label: "<b>'Units used': share of the approval used, lowest first</b><br/>'not yet approved' rows count as lowest" }
-  s4a@{ shape: rect, label: "<b>'Clock': soonest binding event first; overdue first of all</b><br/>A case that is also a request sorts by the case page's own due time" }
+  s3a@{ shape: rect, label: "<b>'Units or days': share of the approval used, lowest first</b><br/>'not yet approved' rows count as lowest" }
+  s4a@{ shape: rect, label: "<b>'Next due': soonest binding event first; overdue first of all</b><br/>A case that is also a request sorts by the case page's own due time" }
   s5a@{ shape: rect, label: "'Approval chance': highest first on the first click" }
   s6a@{ shape: rect, label: "'Status': Needs action, Review due, Awaiting payer, On track" }
   p2@{ shape: rect, label: "<b>Ties are broken by the soonest due time</b><br/>The table goes back to page 1" }
@@ -635,8 +647,8 @@ flowchart TD
   d1 -->|"No: a new column"| d2
   d2 -->|"Case"| s1a --> p2
   d2 -->|"Payer"| s2a --> p2
-  d2 -->|"Units used"| s3a --> p2
-  d2 -->|"Clock"| s4a --> p2
+  d2 -->|"Units or days"| s3a --> p2
+  d2 -->|"Next due"| s4a --> p2
   d2 -->|"Approval chance"| s5a --> p2
   d2 -->|"Status"| s6a --> p2
   p2 --> e1
@@ -657,7 +669,7 @@ flowchart TD
 
 ## Case Manager › Active cases › What each tracker cell means
 
-Every tracker row answers two questions: how much of the approval is left (Units used) and how long until the next thing that binds (Clock). When the case is also a request, the Clock says exactly what its case page says, from the same due time. Otherwise the wording depends on what kind of event is next. It turns red when time is short, and all of it moves with the demo clock.
+Every tracker row answers two questions: how much of the approval is left (Units or days, with the units left worked out) and how long until the next thing that binds (Next due). When the case is also a request, the Clock says exactly what its case page says, from the same due time. Otherwise the wording depends on what kind of event is next. It turns red when time is short, and all of it moves with the demo clock.
 
 Route: `/manager`
 
@@ -683,10 +695,11 @@ flowchart LR
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Read one tracker row" }
-  r1@{ shape: curv-trap, label: "<b>Case: ID, then initials and age</b><br/>Level of care: chip, then a short note ('Continued stay 3', 'Recertification')<br/>Payer: short name ('Summit Medicaid', 'Cardinal')" }
-  u0@{ shape: diam, label: "Units used: is the case approved yet?" }
+  r1@{ shape: curv-trap, label: "<b>Case: ID, then initials and age</b><br/>Level of care: plain text, then a short note ('Continued stay 3', 'Recertification')<br/>Payer: short name ('Summit Medicaid', 'Cardinal')" }
+  u0@{ shape: diam, label: "Units or days: is the case approved yet?" }
   u1@{ shape: rect, label: "<b>'not yet approved' in grey</b><br/>(admissions, retro-authorizations and first requests: 9 cases)" }
-  u2@{ shape: rect, label: "<b>A bar and '10 of 21 days' (or 'units' for IOP)</b><br/>Bar turns terracotta at 75 percent used or more" }
+  u2@{ shape: rect, label: "<b>'10 of 21 days used, 11 left' (or 'units' for IOP; 'none left' at zero), with a bar</b><br/>Bar turns terracotta at 75 percent used or more" }
+  gu@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Units or days left and the run-out flag" }
   a0@{ shape: diam, label: "Clock: did the clinic accept this denial?" }
   k11@{ shape: rect, label: "<b>'Step-down plan open'</b><br/>The plan is on Active cases, in 'Step-down plans'<br/>Status is unchanged" }
   b0@{ shape: diam, label: "Clock: did a signature book a next review for this case?" }
@@ -703,8 +716,8 @@ flowchart LR
   k8@{ shape: rect, label: "<b>Units only</b><br/>'32 units left'<br/>Never red" }
   k10@{ shape: rect, label: "<b>Next review booked after a signature</b><br/>'Next review Tue 10/27', then 'Review due' when the day comes<br/>Status becomes 'On track' (or stays 'Awaiting payer')" }
   k9@{ shape: rect, label: "Times under two days show hours ('5 h'). Longer ones show days ('3 days')" }
-  s1p@{ shape: rect, label: "<b>Approval chance: percent with a bar, coloured by band</b><br/>Strong 80 and above, Moderate 55 to 79, At risk below 55" }
-  s2p@{ shape: rect, label: "<b>Status pill: 'Needs action' (red), 'Review due' (amber), 'Awaiting payer' (grey), 'On track' (green)</b><br/>The four tiles count these" }
+  s1p@{ shape: rect, label: "<b>Approval chance: one small number, '79%'</b><br/>Bands (Strong 80 and above, Moderate 55 to 79, At risk below 55) are in the note under the table" }
+  s2p@{ shape: rect, label: "<b>Status pill, the only coloured pill in the row: 'Needs action' (red), 'Review due' (amber), 'Awaiting payer' (grey), 'On track' (green)</b><br/>The four tiles count these" }
   s3p@{ shape: rect, label: "'Open' button at the end of the row" }
   g1@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Open a case from the tracker" }
   e1@{ shape: stadium, label: "Row is read" }
@@ -713,6 +726,7 @@ flowchart LR
   u0 -->|"Yes"| u2
   u1 --> a0
   u2 --> a0
+  u2 -.-> gu
   a0 -->|"Yes"| k11 --> s1p
   a0 -->|"No"| b0
   b0 -->|"Yes"| k10 --> s1p
@@ -734,7 +748,7 @@ flowchart LR
   class r1 k_screen
   class u0,a0,b0,q0,k0 k_decision
   class u1,u2,k11,q1,k1,k2,k3,k4,k5,k6,k7,k8,k10,k9,s1p,s2p,s3p k_process
-  class g1 k_goto
+  class gu,g1 k_goto
   class e1 k_end
 ```
 
@@ -841,7 +855,7 @@ flowchart TD
   d1@{ shape: diam, label: "<b>Is the ID already a row in the tracker?</b><br/>(R-1042, R-0988, I-2207, R-1101, I-2262 are)" }
   p1@{ shape: rect, label: "The row stays as it is" }
   p2@{ shape: rect, label: "<b>A tracker row is added</b><br/>Case ID with a green 'New today' tag, initials and age<br/>Level of care and request type<br/>'not yet approved', payer, approval chance from the draft" }
-  p3@{ shape: rect, label: "<b>Clock and status follow the request</b><br/>With the payer: 'Decision expected in 2 h', 'Awaiting payer'<br/>Info requested: 'Decision expected in 24 h', 'Needs action'<br/>Approved: '0 of 14 days', '14 days left' (IOP: '24 units left'), 'On track'<br/>Denied: 'Window closes Fri', 'Needs action'" }
+  p3@{ shape: rect, label: "<b>Clock and status follow the request</b><br/>With the payer: 'Decision expected in 2 h', 'Awaiting payer'<br/>Info requested: 'Decision expected in 24 h', 'Needs action'<br/>Approved: Units or days '0 of 14 days used, 14 left', Next due '14 days left' (IOP: '24 units left'), 'On track'<br/>Denied: 'Window closes Fri', 'Needs action'" }
   p4@{ shape: rect, label: "<b>Header reads '57 active cases.'</b><br/>The four tiles, 'Showing 1 to 10 of 57' and 'Clear them to see all 57' count it too<br/>'5 are still being prepared' drops by one" }
   c1@{ shape: trap-t, label: "Click the row, the case ID or 'Open'" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Case" }
@@ -857,6 +871,77 @@ flowchart TD
   class d1 k_decision
   class p1,p2,p3,p4 k_process
   class c1 k_click
+  class e1 k_end
+```
+
+## Case Manager › Active cases › Units or days left and the run-out flag
+
+The 'Units or days' column of the tracker says how much of the approval is used, how much is left (worked out, not stored) and, only when the data shows it, that the approval runs out before the next review. The same words are on the ledger case page.
+
+Route: `/manager`
+
+The pace is the demo's own: one day of care a day, and about three units a week for IOP (the case page dates the approval with the same pace). A real payer's day or unit count would replace it.
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Read the 'Units or days' cell of a tracker row" }
+  d1@{ shape: diam, label: "Is the case approved yet?" }
+  n1@{ shape: rect, label: "<b>'not yet approved' in grey</b><br/>(9 cases: admissions, retro-authorizations and first requests)" }
+  p1@{ shape: rect, label: "<b>Left = total minus used, never below zero</b><br/>Text '10 of 21 days used, 11 left'<br/>'units' for IOP, 'none left' at zero<br/>A thin bar under it, terracotta from 75 percent used" }
+  pc@{ shape: rect, label: "Sorting this column ('Sort by Units or days') orders by the share used" }
+  d2@{ shape: diam, label: "Are there units or days left, and a review still to be signed?" }
+  n2@{ shape: rect, label: "<b>No flag</b><br/>(nothing left to run out, or no review to run out before)" }
+  st1@{ shape: cyl, label: "<b>Next review of the case = the earliest review not yet signed</b><br/>The one due this week, or the one Cadence booked after a signature" }
+  pp@{ shape: rect, label: "Pace of use: a day a day, about three units a week for IOP" }
+  d3@{ shape: diam, label: "<b>Does the ledger date the end of the approval?</b><br/>(an expiry or units clock that the case page has not replaced with its own)" }
+  e1p@{ shape: rect, label: "End of the approval = that date" }
+  e2p@{ shape: rect, label: "End of the approval = now + left divided by the pace" }
+  d4@{ shape: diam, label: "Does the approval end before that review?" }
+  n3@{ shape: rect, label: "No flag" }
+  f1@{ shape: curv-trap, label: "<b>'Runs out before review' in red under the bar</b><br/>No pill: it is text<br/>At the start one row shows it (P-1590: 2 days left, its review falls later in the week)" }
+  f2@{ shape: curv-trap, label: "<b>The ledger case page says the same beside 'Units used'</b><br/>'10 of 12 days used, 2 left   Runs out before review'" }
+  ft@{ shape: curv-trap, label: "<b>Footnote under the table</b><br/>'Units or days left are worked out at the usual pace ... Runs out before review appears only when that pace uses the approval up before the next review.'" }
+  pm@{ shape: rect, label: "<b>Moves with the demo clock</b><br/>Fast-forward and a signed review (which books the next one) can add or remove the flag" }
+  g1@{ shape: subproc, label: "Continues in: Case Manager › Active cases › What each tracker cell means" }
+  g2@{ shape: subproc, label: "Continues in: Case Manager › Ledger case › Open and read" }
+  e1@{ shape: stadium, label: "Cell is read" }
+  s1 --> d1
+  d1 -->|"No"| n1 --> e1
+  d1 -->|"Yes"| p1 --> d2
+  p1 -.-> pc
+  d2 -->|"No"| n2 --> e1
+  d2 -->|"Yes"| st1 --> pp --> d3
+  d3 -->|"Yes"| e1p --> d4
+  d3 -->|"No"| e2p --> d4
+  d4 -->|"No"| n3 --> e1
+  d4 -->|"Yes"| f1 --> f2
+  f1 -.-> pm
+  f1 --> ft --> e1
+  f2 --> g2
+  p1 --> g1
+  class s1 k_start
+  class d1,d2,d3,d4 k_decision
+  class n1,p1,pc,n2,pp,e1p,e2p,n3,pm k_process
+  class st1 k_store
+  class f1,f2,ft k_screen
+  class g1,g2 k_goto
   class e1 k_end
 ```
 
@@ -959,7 +1044,7 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Click the case ID or 'Open' on a review row" }
   o1@{ shape: win-pane, label: "<b>Drawer slides in from the right (640 px)</b><br/>Title 'R-0856 · Summit'<br/>Subtitle 'Continued-stay review 2 · Residential 3.5 · due Tue 10/20, 9:00 am'<br/>Status pill at the top right" }
-  b1@{ shape: curv-trap, label: "<b>Top of the body</b><br/>'J.S., 51 · privacy mode'   'Drafted by' Scribe (Residential, Detox) or Cadence (PHP, IOP)" }
+  b1@{ shape: curv-trap, label: "<b>Top of the body</b><br/>'J.S., 51 · privacy mode'   'Drafted by' Scribe (Residential, Detox) or Cadence (PHP, IOP)<br/>Once drafted: 'Draft by FLO's agents. A clinician reviews and signs before anything is sent.'" }
   b2@{ shape: curv-trap, label: "<b>'The draft'</b><br/>Large text box with seven parts: title and payer lines, Clinical status, Treatment progress, Risk and safety, Why this level of care still fits, Request" }
   b3@{ shape: curv-trap, label: "<b>'Integrity checks'</b><br/>'Every sentence traced to the chart'<br/>'Review has no errors'<br/>'All payer requirements covered'<br/>'Level of care matches the request'" }
   b4@{ shape: curv-trap, label: "<b>Footer</b><br/>'Sign review' (green), 'Open case', 'Close'" }
@@ -1302,7 +1387,7 @@ flowchart TD
   d1@{ shape: diam, label: "Does the next review fall before the end of Sunday?" }
   n2@{ shape: rect, label: "<b>It joins this week's list on its day, as 'Not drafted yet'</b><br/>The header counts it: '48 clinical reviews due this week'<br/>'Draft all due reviews' drafts it" }
   n3@{ shape: rect, label: "<b>It is kept but not listed this week</b><br/>The header still reads '47'<br/>The drawer says 'It falls after this week, so it is not on the list yet.'" }
-  n4@{ shape: rect, label: "<b>Tracker row: the Clock cell reads 'Next review Tue 10/27'</b><br/>Status goes to 'On track' (from 'Needs action' or 'Review due'; 'Awaiting payer' stays)<br/>Once that day comes it reads 'Review due'" }
+  n4@{ shape: rect, label: "<b>Tracker row: the Next due cell reads 'Next review Tue 10/27'</b><br/>Status goes to 'On track' (from 'Needs action' or 'Review due'; 'Awaiting payer' stays)<br/>Once that day comes it reads 'Review due'" }
   n5@{ shape: rect, label: "Ledger case page: a 'Next review' line and, in the history, 'Cadence booked review 3'" }
   x1@{ shape: st-rect, label: "Payer receives the signed review through its portal or by fax (real product, not drawn in the demo)" }
   end
@@ -1344,7 +1429,7 @@ flowchart TD
 
 ## Case Manager › Empty states › Nothing to show
 
-Four places can run out of rows: the 'Being prepared' card, the tracker, the review list and the review-update tile. Each says why and offers one way out. Filters cause three of them. The fourth happens when every draft has been signed and sent.
+Four places can run out of rows: the 'Being prepared' row (once opened), the tracker, the review list and the review-update tile. Each says why and offers one way out. Filters cause three of them. The fourth happens when every draft has been signed and sent.
 
 Route: `/manager and /manager?tab=reviews`
 
@@ -1370,13 +1455,13 @@ flowchart TD
   s1@{ shape: stadium, label: "Case Manager is open" }
   i1@{ shape: lean-r, label: "Type a search that matches nothing (for example 'zzz'), or pick a level of care and payer that no case has" }
   p1@{ shape: rect, label: "Every list is re-filtered at once" }
-  subgraph gPrep ["Being prepared card"]
+  subgraph gPrep ["Being prepared (open the folded row first; its summary then reads 'Nothing is being prepared' or '0 of 5 match the filters')"]
   d1@{ shape: diam, label: "Are there any drafts waiting at all?" }
   e1s@{ shape: curv-trap, label: "<b>Icon of a folder</b><br/>'Nothing is being prepared'<br/>'Start a case and the agents take it from there.'<br/>Button 'Start a new case'" }
   c1@{ shape: trap-t, label: "Click 'Start a new case'" }
   d2@{ shape: diam, label: "Do the page filters and the chip hide all of them?" }
   e2s@{ shape: curv-trap, label: "<b>Icon of a magnifier</b><br/>'No cases match these filters'<br/>'The filters hide every case being prepared. Clear them to see all 5.'<br/>Button 'Clear filters'" }
-  c2@{ shape: trap-t, label: "Click 'Clear filters' on the card" }
+  c2@{ shape: trap-t, label: "Click 'Clear filters' in the opened row" }
   p2@{ shape: rect, label: "Chip goes back to 'All' and the page filters are cleared" }
   end
   subgraph gTrack ["Tracker"]
@@ -1394,7 +1479,7 @@ flowchart TD
   g1@{ shape: subproc, label: "Continues in: Case Manager › Filters › Search and filter both tabs" }
   g2@{ shape: subproc, label: "Continues in: New case › Referral step" }
   p4@{ shape: rect, label: "<b>How drafts run out: sign and send every case in 'Being prepared' (5 at the start)</b><br/>The header then reads '0 are still being prepared'" }
-  p5@{ shape: rect, label: "<b>'Step-down plans' has no empty state</b><br/>The card is simply not shown when no denial was accepted or the filters hide every plan" }
+  p5@{ shape: rect, label: "<b>'Step-down plans' has no empty state</b><br/>The folded row is simply not shown when no denial was accepted or the filters hide every plan" }
   e1@{ shape: stadium, label: "Lists show rows again" }
   s1 --> i1 --> p1
   p1 --> d1
@@ -1553,10 +1638,12 @@ flowchart TD
   n1@{ shape: curv-trap, label: "<b>'Request not found'</b><br/>'There is no request with the ID R-9999.'<br/>Button 'Back to the queue'<br/>(only for an address typed by hand)" }
   e2@{ shape: stadium, label: "Nothing to show for that ID" }
   subgraph gPage ["Ledger case page"]
-  h1@{ shape: curv-trap, label: "<b>Header</b><br/>Crumb 'Case Manager › R-0856'<br/>Level chip, case ID, review type ('Continued stay 2'), status pill ('Review due')<br/>'J.S., 51 · Summit Medicaid HMO · Residential 3.5'" }
-  m1@{ shape: curv-trap, label: "<b>Card 'Case summary', pill 'Privacy mode on'</b><br/>Patient, Payer, Service<br/>Authorization: 'Mon 10/8 to Mon 10/22'<br/>Units used: a bar and '12 of 14 days · 2 left'" }
-  m2@{ shape: curv-trap, label: "<b>More rows in the card</b><br/>Reviews due: 'Review 2, Tue 9:00 am' with its status pill<br/>Next on the clock, Status<br/>Approval chance, its band, range and similar decisions" }
-  r1@{ shape: curv-trap, label: "<b>Right side</b><br/>'Next step': one sentence, for example 'Review 2 is drafted. Read it, then sign it. Cadence books the next one.'<br/>'History': approval, drafts, signatures, and what comes next (dashed)" }
+  h1@{ shape: curv-trap, label: "<b>Header</b><br/>Crumb 'Case Manager › R-0856'<br/>Level chip, case ID, review type ('Continued stay 2'), status pill ('Review due'), the only status on the page<br/>'J.S., 51 · Summit Medicaid HMO · Residential 3.5'" }
+  m1@{ shape: curv-trap, label: "<b>Card 'Case summary', pill 'Privacy mode on'</b><br/>Patient, Payer, Service<br/>Authorization: 'Mon 10/8 to Mon 10/22'<br/>Units used: a bar and '12 of 14 days used, 2 left', and 'Runs out before review' in red only when the data shows it" }
+  m2@{ shape: curv-trap, label: "<b>More rows in the card</b><br/>Reviews due: 'Review 2, Tue 9:00 am' with its status pill<br/>Next on the clock<br/>Approval chance, its band, range and similar decisions" }
+  r1@{ shape: curv-trap, label: "<b>Right side</b><br/>'Next step': one sentence, for example 'Review 2 is drafted. Read it, then sign it. Cadence books the next one.'<br/>'History' (folded, closed at first): '4 entries. Latest: ...'<br/>Opened: approval, drafts, signatures, and what comes next (dashed)" }
+  ch@{ shape: trap-t, label: "Click the 'History' header, or press Enter or Space on it" }
+  pch@{ shape: rect, label: "Timeline shows; click again to fold it" }
   u1@{ shape: rect, label: "<b>Case not approved yet: Authorization and Units used say 'Not approved yet'</b><br/>Reviews due says 'None until the request is approved'" }
   u2@{ shape: rect, label: "After a signature: a 'Next review' line shows the date Cadence booked" }
   end
@@ -1574,6 +1661,7 @@ flowchart TD
   d1 -->|"No"| d2
   d2 -->|"No"| n1 --> e2
   d2 -->|"Yes"| h1 --> m1 --> m2 --> r1
+  r1 --> ch --> pch
   m1 -.-> u1
   m2 -.-> u2
   r1 --> d3
@@ -1583,12 +1671,12 @@ flowchart TD
   p3 --> e1
   c2 -.-> e1
   class s1 k_start
-  class p1,u1,u2,p2,p3,p4 k_process
+  class p1,pch,u1,u2,p2,p3,p4 k_process
   class d1,d2,d3 k_decision
   class g1,g2,g3 k_goto
   class n1,h1,m1,m2,r1 k_screen
   class e2 k_endx
-  class c1,c2 k_click
+  class ch,c1,c2 k_click
   class e1 k_end
   style gPage fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```

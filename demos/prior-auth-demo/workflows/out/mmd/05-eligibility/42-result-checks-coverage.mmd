@@ -16,7 +16,7 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "Result page, card 'Payment checks'" }
+  s1@{ shape: stadium, label: "Result page, section 'Payment checks' opened" }
   subgraph gA ["Row 1 · Coverage"]
   a0@{ shape: diam, label: "What did the state or plan say about the date of service?" }
   a1@{ shape: rect, label: "<b>Title 'Coverage is active on the service date'</b><br/>Chip 'Active' (green)<br/>'Ohio Medicaid, active since 01/01/2026 with no end date'" }
@@ -24,10 +24,10 @@ flowchart TD
   a3@{ shape: rect, label: "<b>Title 'Coverage is not active on the service date'</b><br/>Chip 'Ended 09/30' (red)<br/>'The patient may have a new plan, so ask the payer.'" }
   a4@{ shape: rect, label: "<b>Title 'Coverage was not found'</b><br/>Chip 'Not found' (red)<br/>'Check the member ID and date of birth, or read the card again.'" }
   end
-  g0@{ shape: rect, label: "<b>Rows 2 to 7 are replaced by one grey row</b><br/>'Nothing else could be checked', chip 'Not checked'<br/>'Fix the member ID or date of birth, then check again.'<br/>No 'What the patient pays:' line either" }
+  g0@{ shape: rect, label: "<b>Rows 2 to 7 are replaced by one grey row</b><br/>'Nothing else could be checked', chip 'Not checked'<br/>'Fix the member ID or date of birth, then check again.'<br/>No cost line either" }
   subgraph gB ["Row 2 · The plan"]
   b0@{ shape: diam, label: "Which kind of plan?" }
-  b1@{ shape: rect, label: "<b>Title 'It is the right plan', chip 'Summit' (green)</b><br/>'Managed by Summit Medicaid HMO. Claims go to Summit, not to the state'" }
+  b1@{ shape: rect, label: "<b>Title 'It is the right plan', chip 'Summit' (green)</b><br/>'Managed by Summit Medicaid HMO. Claims go to Summit, not to the state'<br/>Same source as the facts line: Result › Plan type and routing" }
   b2@{ shape: rect, label: "<b>Chip 'Harborview' (green)</b><br/>'A Medicare Advantage plan. Claims go to Harborview MA, not to Medicare'" }
   b3@{ shape: rect, label: "<b>Chip 'Lakeshore' (green)</b><br/>'Behavioral health is carved out to Lakeshore Behavioral. Claims go to Lakeshore, not to the medical plan'" }
   b4@{ shape: rect, label: "<b>Chip 'Beacon' (green)</b><br/>'Claims go to Beacon PPO'" }

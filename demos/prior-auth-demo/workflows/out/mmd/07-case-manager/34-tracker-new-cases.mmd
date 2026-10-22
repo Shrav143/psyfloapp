@@ -22,7 +22,7 @@ flowchart TD
   d1@{ shape: diam, label: "<b>Is the ID already a row in the tracker?</b><br/>(R-1042, R-0988, I-2207, R-1101, I-2262 are)" }
   p1@{ shape: rect, label: "The row stays as it is" }
   p2@{ shape: rect, label: "<b>A tracker row is added</b><br/>Case ID with a green 'New today' tag, initials and age<br/>Level of care and request type<br/>'not yet approved', payer, approval chance from the draft" }
-  p3@{ shape: rect, label: "<b>Clock and status follow the request</b><br/>With the payer: 'Decision expected in 2 h', 'Awaiting payer'<br/>Info requested: 'Decision expected in 24 h', 'Needs action'<br/>Approved: '0 of 14 days', '14 days left' (IOP: '24 units left'), 'On track'<br/>Denied: 'Window closes Fri', 'Needs action'" }
+  p3@{ shape: rect, label: "<b>Clock and status follow the request</b><br/>With the payer: 'Decision expected in 2 h', 'Awaiting payer'<br/>Info requested: 'Decision expected in 24 h', 'Needs action'<br/>Approved: Units or days '0 of 14 days used, 14 left', Next due '14 days left' (IOP: '24 units left'), 'On track'<br/>Denied: 'Window closes Fri', 'Needs action'" }
   p4@{ shape: rect, label: "<b>Header reads '57 active cases.'</b><br/>The four tiles, 'Showing 1 to 10 of 57' and 'Clear them to see all 57' count it too<br/>'5 are still being prepared' drops by one" }
   c1@{ shape: trap-t, label: "Click the row, the case ID or 'Open'" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Case" }

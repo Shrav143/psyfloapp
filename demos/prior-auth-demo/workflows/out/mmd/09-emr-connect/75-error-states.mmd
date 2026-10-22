@@ -18,25 +18,25 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Something on EMR Connect looks wrong" }
   q1@{ shape: diam, label: "What does the page show?" }
-  subgraph gA ["Amber pill: 'Needs a quick look'"]
+  subgraph gA ["Amber pill: 'Needs attention'"]
   a1@{ shape: rect, label: "<b>The read-only sign-in expired</b><br/>The row names the problem and says renew it with Fix" }
   a2@{ shape: trap-t, label: "<b>Click 'Fix'</b><br/>Needs: a person who approves, and a tick for read-only access" }
-  a3@{ shape: subproc, label: "Continues in: EMR Connect › Problems › Fix a system that needs a quick look" }
+  a3@{ shape: subproc, label: "Continues in: EMR Connect › Problems › Fix a system that needs attention" }
   a4@{ shape: stadium, label: "Re-test: three checks. Row turns Connected" }
   end
   subgraph gR ["Red pill: 'Disconnected'"]
   r1@{ shape: rect, label: "<b>Someone disconnected it</b><br/>Row: 'Not syncing'. Charts from this system are not arriving. New case cannot pull a chart from it until it is connected." }
-  r2@{ shape: trap-t, label: "<b>Click 'Reconnect' on the row or in the Manage drawer</b><br/>Needs: a passed connection test, and the Fix steps first if it was on 'Needs a quick look'" }
+  r2@{ shape: trap-t, label: "<b>Click 'Reconnect' on the row or in the Manage drawer</b><br/>Needs: a passed connection test, and the Fix steps first if it was on 'Needs attention'" }
   r4@{ shape: subproc, label: "Continues in: EMR Connect › Manage › Reconnect a system" }
   r3@{ shape: stadium, label: "<b>Re-test: the same three checks as Connect</b><br/>Row turns Connected only after they pass. Any earlier issue text is cleared" }
   end
-  subgraph gT ["Last sync tile"]
-  t1@{ shape: rect, label: "<b>Red 'None': every system is Disconnected</b><br/>Amber: 'N systems are disconnected'" }
+  subgraph gT ["Last sync figure"]
+  t1@{ shape: rect, label: "<b>'None': every system is Disconnected</b><br/>Small line: 'N systems are disconnected'" }
   t2@{ shape: rect, label: "Needs: every Disconnected row reconnected" }
   end
-  subgraph gM ["Amber tile: 'Need a mapping'"]
-  m1@{ shape: rect, label: "'fields the agents could not place'" }
-  m2@{ shape: trap-t, label: "<b>Click 'Map'</b><br/>Needs: a value picked for each field" }
+  subgraph gM ["'Action required' names fields waiting for a mapping"]
+  m1@{ shape: rect, label: "<b>'2 fields need a mapping, so New case leaves them blank.'</b><br/>Pill '2 to map' on 'Advanced'" }
+  m2@{ shape: trap-t, label: "<b>Click 'Map field', or open 'Advanced' and click 'Map'</b><br/>Needs: a value picked for each field" }
   end
   subgraph gQ ["Clicks that stop with a message"]
   d1@{ shape: odd, label: "<b>'Sync now' with no Connected system</b><br/>'Nothing to sync'<br/>'No system is connected. Fix or reconnect one first.'" }
@@ -53,9 +53,9 @@ flowchart TD
   q1 -->|"Amber pill on a row"| a1 --> a2 --> a3
   a3 --> a4
   q1 -->|"Red pill on a row"| r1 --> r2 --> r4 --> r3
-  q1 -->|"Last sync tile is red or amber"| t1 --> t2
+  q1 -->|"Last sync figure says None or a disconnected system"| t1 --> t2
   t2 --> r2
-  q1 -->|"Need a mapping tile is amber"| m1 --> m2
+  q1 -->|"The banner or the pill names fields"| m1 --> m2
   q1 -->|"A toast after a click"| d1
   q1 -->|"A toast after a click"| d5
   q1 -.->|"A message under a field"| d3

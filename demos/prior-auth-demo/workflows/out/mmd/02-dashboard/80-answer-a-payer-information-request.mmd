@@ -21,7 +21,7 @@ flowchart TD
   a1@{ shape: hex, label: "<b>Packet drafts the answer from the chart</b><br/>Integrity checks every sentence against it" }
   w1@{ shape: cyl, label: "<b>Request becomes Info requested (amber)</b><br/>Needs you; next step 'Packet drafted the answer. Waiting for your review'" }
   t1@{ shape: odd, label: "<b>Notification 'Payer asked for info'</b><br/>'Harborview MA wants more on P-1499. Packet drafted the answer.'" }
-  sc@{ shape: curv-trap, label: "<b>Dashboard</b><br/>'Info requested' tile goes up and the sidebar Dashboard badge counts it<br/>The row floats to the top: it needs you" }
+  sc@{ shape: curv-trap, label: "<b>Dashboard</b><br/>'Needs you' goes up by one, the 'Info requested' count in the Stage menu too, and the sidebar Dashboard badge counts it<br/>The row floats to the top: it needs you" }
   s1@{ shape: stadium, label: "Click the row, or the notification, then the amber box 'Needs your input'" }
   c1@{ shape: trap-t, label: "Click 'Review the answer'" }
   o1@{ shape: win-pane, label: "<b>Pop-up 'Packet's answer for P-1499'</b><br/>'Harborview MA asked for more information · PHP'<br/>Drafted by Packet and checked by Integrity" }
@@ -49,7 +49,7 @@ flowchart TD
   t2@{ shape: odd, label: "<b>'Answer sent'</b><br/>'P-1499 is back under review.'" }
   x2@{ shape: st-rect, label: "Payer receives the answer (demo: simulated)" }
   wt@{ shape: delay, label: "Payer reviews again" }
-  e2@{ shape: stadium, label: "<b>Drawer shows Under review</b><br/>Banner: 'Next automatic check in 30 minutes.'" }
+  e2@{ shape: stadium, label: "<b>Drawer shows Under review</b><br/>Under 'Details': 'Next automatic check in 30 minutes.'" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Demo controls: the payer answers" }
   s0 --> x1 --> a1 --> w1 --> t1 --> sc
   s1 --> c1 --> o1 --> m1 --> d1

@@ -30,8 +30,8 @@ flowchart TD
   p2@{ shape: rect, label: "<b>Pick the first denial in the list: the nearest deadline</b><br/>(among the matches, when filters are on)" }
   p3@{ shape: rect, label: "Show the denial named in the address" }
   t1@{ shape: odd, label: "<b>'We could not find D-xxxx among the open denials'</b><br/>'Showing D-3318 instead.' (the first in the list)" }
-  sc1@{ shape: curv-trap, label: "<b>Denial Intelligence</b><br/>Header, 'Add a denial letter', the denial, 'Open denials' list" }
-  sc2@{ shape: curv-trap, label: "<b>'No open denials'</b><br/>'Everything sent is approved or waiting. Add a denial letter above to analyze a new one.'" }
+  sc1@{ shape: curv-trap, label: "<b>Denial Intelligence</b><br/>Title and scope line, the denial with its recommended next step, folded 'Add a denial letter' and the 'Open denials' list" }
+  sc2@{ shape: curv-trap, label: "<b>'No open denials'</b><br/>'Everything sent is approved or waiting. Add a denial letter above to analyze a new one.'<br/>The folded 'Add a denial letter' sits above it" }
   c1@{ shape: trap-t, label: "Click 'Open the Dashboard'" }
   g1@{ shape: subproc, label: "Continues in: Denial Intelligence › Open denials list" }
   g2@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }

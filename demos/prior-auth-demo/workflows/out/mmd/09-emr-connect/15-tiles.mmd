@@ -16,34 +16,34 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  p1@{ shape: curv-trap, label: "<b>EMR Connect</b><br/>Four tinted tiles above Connected systems" }
-  subgraph gSync ["Tile 1: Last sync"]
+  p1@{ shape: curv-trap, label: "<b>EMR Connect</b><br/>Four figures at the top of the Connection health card" }
+  subgraph gSync ["Figure 1: Last sync"]
   q1@{ shape: diam, label: "Is any system not disconnected?" }
-  a1@{ shape: rect, label: "<b>'None' in red</b><br/>Small line: 'no system connected' (empty list) or 'N systems are disconnected'" }
+  a1@{ shape: rect, label: "<b>'None'</b><br/>Small line: 'no system connected' (empty list) or 'N systems are disconnected'" }
   a2@{ shape: rect, label: "<b>Value is the time since the newest sync</b><br/>'Just now', '6 min', '1 h 6 min'" }
   q2@{ shape: diam, label: "Is any system disconnected?" }
-  a3@{ shape: rect, label: "<b>Green tile</b><br/>'all systems answering'" }
-  a4@{ shape: rect, label: "<b>Amber tile</b><br/>'1 system is disconnected' or 'N systems are disconnected'" }
+  a3@{ shape: rect, label: "Small line 'all systems answering'" }
+  a4@{ shape: rect, label: "Small line '1 system is disconnected' or 'N systems are disconnected'" }
   end
-  subgraph gCharts ["Tile 2: Charts matched today"]
-  b1@{ shape: rect, label: "<b>23 'to open cases'</b><br/>Starts at 23 on reset" }
+  subgraph gCharts ["Figure 2: Charts matched today"]
+  b1@{ shape: rect, label: "<b>23</b><br/>Starts at 23 on reset" }
   b2@{ shape: cyl, label: "<b>Each finished sync adds its charts</b><br/>1 to 3, at least 1 per system" }
   end
-  subgraph gFiles ["Tile 3: Files pulled"]
-  c1@{ shape: rect, label: "<b>142 'this week'</b><br/>Starts at 142 on reset" }
+  subgraph gFiles ["Figure 3: Files pulled this week"]
+  c1@{ shape: rect, label: "<b>142</b><br/>Starts at 142 on reset" }
   c2@{ shape: cyl, label: "<b>Each finished sync adds its files</b><br/>A new system adds 5, and a finished Fix adds 12 remittances" }
   end
-  subgraph gMap ["Tile 4: Need a mapping"]
-  d1@{ shape: diam, label: "Any field waiting for a mapping?" }
-  d2@{ shape: rect, label: "<b>Number in amber</b><br/>'fields the agents could not place'" }
-  d3@{ shape: rect, label: "<b>0 in green</b><br/>'every field is mapped'" }
+  subgraph gFail ["Figure 4: Sync failures"]
+  d1@{ shape: rect, label: "<b>The missed syncs of every system, added up</b><br/>A Connected system has 0<br/>A system that Needs attention misses one each hour since its last good sync: 2 at the start<br/>A Disconnected system is not asked, so it shows 'Sync paused' and adds nothing" }
+  d2@{ shape: rect, label: "<b>Fix and Reconnect bring it back to 0</b><br/>Fast-forward adds one per hour while the problem stays" }
   end
-  n1@{ shape: rect, label: "<b>A system that Needs a quick look still counts as answering</b><br/>Only Disconnected systems change this tile" }
+  n1@{ shape: rect, label: "<b>A system that Needs attention still counts as answering</b><br/>Only Disconnected systems change the Last sync figure" }
+  n3@{ shape: rect, label: "<b>The fields waiting for a mapping are not a figure any more</b><br/>They show in 'Action required' and in 'Advanced'" }
   g1@{ shape: subproc, label: "Continues in: EMR Connect › Sync › Sync now" }
   g2@{ shape: subproc, label: "Continues in: EMR Connect › Connect a system › Run the connection test and save" }
   g3@{ shape: subproc, label: "Continues in: EMR Connect › Needs a mapping › Map a field" }
   g4@{ shape: subproc, label: "Continues in: EMR Connect › Manage › Disconnect and reconnect" }
-  g5@{ shape: subproc, label: "Continues in: EMR Connect › Problems › Fix a system that needs a quick look" }
+  g5@{ shape: subproc, label: "Continues in: EMR Connect › Problems › Fix a system that needs attention" }
   p1 --> q1 & b1 & c1 & d1
   q1 -->|"No"| a1
   q1 -->|"Yes"| a2 --> q2
@@ -56,15 +56,14 @@ flowchart TD
   c1 --> c2
   c2 --> g1
   c2 --> g2
-  c2 --> g5
-  d1 -->|"Yes"| d2 --> g3
-  d1 -->|"No"| d3
+  d1 --> d2 --> g5
+  p1 -.-> n3 --> g3
   class p1 k_screen
-  class q1,q2,d1 k_decision
-  class a1,a2,a3,a4,b1,c1,d2,d3,n1 k_process
+  class q1,q2 k_decision
+  class a1,a2,a3,a4,b1,c1,d1,d2,n1,n3 k_process
   class b2,c2 k_store
   class g1,g2,g3,g4,g5 k_goto
   style gSync fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gCharts fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gFiles fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
-  style gMap fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gFail fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

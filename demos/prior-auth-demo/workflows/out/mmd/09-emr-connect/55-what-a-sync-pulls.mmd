@@ -30,12 +30,12 @@ flowchart TD
   end
   a1@{ shape: hex, label: "<b>Reader</b><br/>Reads each file, swaps names, dates and IDs for codes, matches the chart to an open case" }
   a2@{ shape: hex, label: "<b>Verify</b><br/>Re-checks coverage for members whose plans changed" }
-  p1@{ shape: rect, label: "Fields it cannot place go to 'Needs a mapping'" }
+  p1@{ shape: rect, label: "Fields it cannot place wait in 'Advanced', and 'Action required' names them" }
   s2@{ shape: cyl, label: "<b>Charts matched today</b><br/>Goes up by the number of charts matched to open cases" }
   s3@{ shape: cyl, label: "<b>Files pulled this week</b><br/>Goes up by the number of files saved to those cases" }
-  s4@{ shape: cyl, label: "<b>Recent activity</b><br/>One line per sync" }
+  s4@{ shape: cyl, label: "<b>Recent activity (in Advanced)</b><br/>One line per sync" }
   p2@{ shape: rect, label: "<b>Demo: nothing else changes</b><br/>No new case in Case Manager. New case offers the same four charts, from Connected systems only" }
-  e1@{ shape: rect, label: "Last sync tile reads 'Just now'" }
+  e1@{ shape: rect, label: "Last sync figure reads 'Just now'" }
   g1@{ shape: subproc, label: "Continues in: EMR Connect › Sync › Sync now" }
   g2@{ shape: subproc, label: "Continues in: EMR Connect › Needs a mapping › Map a field" }
   g3@{ shape: subproc, label: "Continues in: EMR Connect › Sync › What other screens use from EMR Connect" }

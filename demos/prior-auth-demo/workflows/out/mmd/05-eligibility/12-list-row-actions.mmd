@@ -17,15 +17,15 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "On the list, look at the patient rows" }
-  sc@{ shape: curv-trap, label: "<b>Patients table</b><br/>Row tints on hover, pointer cursor" }
+  sc@{ shape: curv-trap, label: "<b>Patients table</b><br/>Each patient is two lines, both tint on hover, pointer cursor" }
   subgraph gOpen ["Open the result"]
-  c1@{ shape: trap-t, label: "Click anywhere on a row" }
+  c1@{ shape: trap-t, label: "Click anywhere on a patient's two lines" }
   c2@{ shape: trap-t, label: "Click the patient ID, for example 'R-1042'" }
   p1@{ shape: rect, label: "<b>Opens /authorizations/eligibility/R-1042</b><br/>The browser Back button returns here with search and filters cleared" }
   end
   subgraph gRe ["Re-check in place"]
   c3@{ shape: trap-t, label: "Click 'Re-check' on a row" }
-  p2@{ shape: rect, label: "<b>The click stays on the row and does not open the result</b><br/>Button turns to a spinner and 'Checking'; Verdict cell says 'Checking now'" }
+  p2@{ shape: rect, label: "<b>The click stays on the row and does not open the result</b><br/>Button turns to a spinner and 'Checking'; the quiet second line says 'Checking now'" }
   end
   subgraph gNew ["A new patient"]
   c4@{ shape: trap-t, label: "Click 'Verify a patient' (top right)" }
@@ -36,7 +36,7 @@ flowchart TD
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › What the page shows" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Re-verify a patient" }
   g3@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › Fill in the form" }
-  t1@{ shape: rect, label: "<b>About 1 second later the row reads 'Checked just now'</b><br/>A toast reports the answer" }
+  t1@{ shape: rect, label: "<b>About 1 second later the quiet line reads 'Checked just now'</b><br/>A toast reports the answer" }
   s1 --> sc
   sc --> c1 & c2 & c3 & c4
   c1 --> p1

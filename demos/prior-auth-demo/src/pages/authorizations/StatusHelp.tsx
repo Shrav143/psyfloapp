@@ -1,5 +1,5 @@
 import { STATUS_HELP } from "@/data/queue";
-import { InfoTip } from "./InfoTip";
+import { InfoTip } from "@/components/ui/InfoTip";
 
 /** "What the statuses mean": the demo's chips set against the product's status words. The chips keep their names. */
 export function StatusHelp({ align = "start" }: { align?: "start" | "end" }) {

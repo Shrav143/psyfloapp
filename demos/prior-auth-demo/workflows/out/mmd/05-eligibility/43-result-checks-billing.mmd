@@ -16,9 +16,9 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "Result page, card 'Payment checks', rows 4 to 7" }
+  s1@{ shape: stadium, label: "Result page, section 'Payment checks' opened, rows 4 to 7" }
   q9@{ shape: diam, label: "Was coverage found?" }
-  x9@{ shape: stadium, label: "<b>Coverage not found</b><br/>Rows 2 to 7 and the line 'What the patient pays:' are not shown<br/>One grey row says nothing else could be checked" }
+  x9@{ shape: stadium, label: "<b>Coverage not found</b><br/>Rows 2 to 7 and any cost line are not shown<br/>One grey row says nothing else could be checked" }
   subgraph gA ["Row 4 · Authorization"]
   a0@{ shape: diam, label: "What is the authorization state?" }
   a1@{ shape: rect, label: "<b>Chip 'Not required' (green)</b><br/>'Beacon does not require one for IOP.'" }
@@ -44,9 +44,11 @@ flowchart TD
   d1@{ shape: rect, label: "<b>Title 'No other insurance', chip 'None' (green)</b><br/>'None found. Medicaid pays last, so we checked for another payer'" }
   d2@{ shape: rect, label: "<b>Title 'Another plan pays first', chip 'Other plan' (red)</b><br/>'A second plan was found. It must be billed before this one.'" }
   end
-  subgraph gP ["Last line"]
-  p1@{ shape: rect, label: "<b>'What the patient pays:'</b><br/>Medicaid '$0 copay, no deductible, no coinsurance.'<br/>Harborview '20% coinsurance after a deductible with $85 left.'<br/>Beacon and Lakeshore '$40 copay per day, $350 left on the deductible, 20% coinsurance after.'" }
-  p2@{ shape: odd, label: "'This does not change what the clinic is paid. A $0 copay does not mean the clinic is paid.'" }
+  subgraph gP ["Last line (New case drawer only; the result page shows it under Benefits)"]
+  p0@{ shape: diam, label: "Does the plan type have a cost share on file?" }
+  p1@{ shape: rect, label: "<b>'What the patient pays:'</b><br/>Harborview 'Deductible $85 left, coinsurance 20%.'<br/>Beacon and Lakeshore 'Copay $40 per day, deductible $350 left, coinsurance 20% after the deductible.'" }
+  p2@{ shape: odd, label: "'This does not change what the clinic is paid.'" }
+  p3@{ shape: rect, label: "<b>Ohio Medicaid: no line at all</b><br/>No '$0 copay' text, because members usually pay none" }
   end
   g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Medical records › Patient and insurance rows" }
   s1 --> q9
@@ -63,13 +65,14 @@ flowchart TD
   c0 -->|"Limit, room left"| c1 --> d0
   c0 -->|"Limit, none left"| c2 --> d0
   c0 -->|"No limit"| c3 --> d0
-  d0 -->|"No"| d1 --> p1
-  d0 -->|"Yes"| d2 --> p1
-  p1 --> p2 --> g1
+  d0 -->|"No"| d1 --> p0
+  d0 -->|"Yes"| d2 --> p0
+  p0 -->|"Yes"| p1 --> p2 --> g1
+  p0 -->|"No"| p3 --> g1
   class s1 k_start
-  class q9,a0,b0,c0,d0 k_decision
+  class q9,a0,b0,c0,d0,p0 k_decision
   class x9 k_endx
-  class a1,a2,a3,a4,a5,a6,b1,b2,c1,c2,c3,d1,d2,p1 k_process
+  class a1,a2,a3,a4,a5,a6,b1,b2,c1,c2,c3,d1,d2,p1,p3 k_process
   class p2 k_toast
   class g1 k_goto
   style gA fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

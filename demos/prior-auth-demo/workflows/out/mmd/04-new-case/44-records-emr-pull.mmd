@@ -17,7 +17,7 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>On step 2, click 'Pull a chart from EMR Connect'</b><br/>Clicking again closes it" }
-  dSys@{ shape: diam, label: "<b>Is any records system connected in EMR Connect?</b><br/>Status 'Connected'. 'Needs a quick look' and disconnected systems do not count" }
+  dSys@{ shape: diam, label: "<b>Is any records system connected in EMR Connect?</b><br/>Status 'Connected'. 'Needs attention' and disconnected systems do not count" }
   tNone@{ shape: odd, label: "<b>'No records system is connected.'</b><br/>'Connect one in EMR Connect to pull a chart, or drop the files above.'<br/>Link 'EMR Connect' and a 'Close' button" }
   cLink@{ shape: trap-t, label: "Click 'EMR Connect' in the message" }
   gEmr@{ shape: subproc, label: "Continues in: EMR Connect › Connect a system › Choose the system and contact" }

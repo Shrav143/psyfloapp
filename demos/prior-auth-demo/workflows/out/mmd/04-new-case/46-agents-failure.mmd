@@ -32,7 +32,7 @@ flowchart TD
   pAfter@{ shape: rect, label: "The other nine agents run as usual" }
   gReview@{ shape: subproc, label: "Continues in: Review and sign › Validation summary and checks" }
   tWarn@{ shape: odd, label: "<b>Review and sign, Checks: 'Request has no errors' warns</b><br/>'Verify could not reach Cardinal's portal, so coverage was not confirmed. You skipped it and noted it.'<br/>Signing needs the acknowledgement tick-box" }
-  stNote@{ shape: cyl, label: "<b>After Sign and send, the request's history says</b><br/>'Verify could not reach Cardinal's portal before signing'<br/>'Coverage was not confirmed. You skipped it and noted it.'" }
+  stNote@{ shape: cyl, label: "<b>After 'Sign and send to payer', the request's history says</b><br/>'Verify could not reach Cardinal's portal before signing'<br/>'Coverage was not confirmed. You skipped it and noted it.'" }
   gSign@{ shape: subproc, label: "Continues in: New case › Review and sign › Sign and send" }
   cLeave@{ shape: trap-t, label: "Leave the page, or click 'Back'" }
   pStay@{ shape: rect, label: "<b>The draft keeps the failure</b><br/>Opening it again shows the same row" }

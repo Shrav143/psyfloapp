@@ -1,7 +1,7 @@
 import { ArrowRight, GitBranch, History, PenLine } from "lucide-react";
 import { AgentChip, Button, Card, Label, Spinner } from "@/components/ui";
 import { conditionText, STEP_KINDS, type PayerConfig, type WorkflowStep } from "@/data/payerConfig";
-import { InfoTip } from "@/pages/eligibility/InfoTip";
+import { InfoTip } from "@/components/ui/InfoTip";
 import { ConditionChip, StepChip } from "./StepChip";
 
 function Branches({ step }: { step: WorkflowStep }) {

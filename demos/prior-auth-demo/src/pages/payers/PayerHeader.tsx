@@ -4,7 +4,7 @@ import { Button, Card, CardBody } from "@/components/ui";
 import type { PayerConfig } from "@/data/payerConfig";
 import { DEMO_RULES_LABEL, policyStatus, requestNeeds, type RequestNeed } from "@/data/payerConfigPlan";
 import { PROGRAM_LABEL } from "@/data/types";
-import { InfoTip } from "@/pages/eligibility/InfoTip";
+import { InfoTip } from "@/components/ui/InfoTip";
 import type { PayerRow } from "./lib/payers";
 
 const sentence = (s: string): string => (/[.!?]$/.test(s) ? s : `${s}.`);

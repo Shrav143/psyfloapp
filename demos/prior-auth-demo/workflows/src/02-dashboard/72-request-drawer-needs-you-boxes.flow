@@ -28,7 +28,7 @@ click c3 "Click 'Approve write-back'"
 goto g2 "Continues in: Dashboard › Request drawer › Approve the write-back"
 overlay b4 "Calm line, no button\n'Write-back is off for your records system. Turn it on in EMR Connect.'"
 click c4 "Click 'Turn it on in EMR Connect.'"
-goto g3 "Continues in: EMR Connect › Manage › Open the Manage drawer"
+goto g3 "Continues in: EMR Connect › Connected systems › Read only or read and write back"
 process p3 "The row's 'What happens next' and 'Held by' say 'Write-back is off in EMR Connect'\nTurning it on in EMR Connect brings the green box back"
 
 group gSeed "Demo examples"

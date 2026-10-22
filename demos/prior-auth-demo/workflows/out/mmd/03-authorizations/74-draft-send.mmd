@@ -25,16 +25,16 @@ flowchart TD
   ns@{ shape: rect, label: "<b>Nothing is sent yet</b><br/>'Nothing goes to the payer until a clinician signs.'" }
   gR@{ shape: subproc, label: "Continues in: New case › Review and sign" }
   subgraph gSign ["In New case (summary only, drawn in its own diagram)"]
-  sg@{ shape: rect, label: "<b>A licensed clinician signs with 'Sign and send'</b><br/>The UR coordinator cannot sign; Dr. Rivera can" }
+  sg@{ shape: rect, label: "<b>A licensed clinician signs with 'Sign and send to payer'</b><br/>The UR coordinator cannot sign; Dr. Rivera can" }
   py@{ shape: st-rect, label: "<b>Navigator sends the request through the payer's portal</b><br/>(demo: simulated)" }
   pk@{ shape: doc, label: "<b>What goes out</b><br/>The signed summary and the packet's documents" }
   end
-  rq@{ shape: cyl, label: "<b>Dashboard: the request is created, or moves to 'Received'</b><br/>History: 'You signed and sent the request', 'Navigator sent the request through the payer's portal', 'Navigator saved the receipt to the case'" }
+  rq@{ shape: cyl, label: "<b>Dashboard: the request is created, or moves to 'Received'</b><br/>History: 'You signed as Dr. Rivera (clinician) and sent the request', 'Navigator sent the request through the payer's portal', 'Navigator saved the receipt to the case' (read in the case page's History)" }
   tt@{ shape: odd, label: "<b>Toast 'Sent to the payer'</b><br/>'R-0988 is on the Dashboard as Received.'" }
   nt@{ shape: odd, label: "<b>Notification from Navigator: 'Sent to the payer'</b><br/>'R-0988 was sent. It now shows as Received on the Dashboard.'" }
   db@{ shape: curv-trap, label: "<b>Dashboard opens on that request</b><br/>Stage 'Received'" }
   qg@{ shape: rect, label: "<b>Back in the queue the request is gone</b><br/>The open count drops by one<br/>The sidebar badge too, if it was in Act now or Due within 24 hours" }
-  cp@{ shape: rect, label: "<b>The case page of a sent request shows the request's own status</b><br/>and a disabled 'Sent to payer' in place of 'Send to payer'" }
+  cp@{ shape: rect, label: "<b>The case page of a sent request shows the request's own status</b><br/>'Next:' the Dashboard's step, and a disabled 'Sent to payer' in place of 'Send to payer'<br/>History lists the signature and the send" }
   gD@{ shape: subproc, label: "Continues in: Dashboard › Request drawer" }
   gQ@{ shape: subproc, label: "Continues in: Authorizations › Queue › Open the queue and read the top" }
   s1 --> dc

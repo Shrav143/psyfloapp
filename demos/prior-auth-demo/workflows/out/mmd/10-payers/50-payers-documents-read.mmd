@@ -17,12 +17,13 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Click the 'Documents' tab" }
-  tab@{ shape: curv-trap, label: "<b>Documents tab</b><br/>Banner if edits wait. Left: the list card.<br/>Right: 'Try it on a case'" }
-  card@{ shape: curv-trap, label: "<b>'What Summit wants for Residential 3.5'</b><br/>'Nine documents. The agents ask for each one<br/>before they write a word.'<br/>'Edit list' button on the right" }
-  dflt@{ shape: rect, label: "<b>Opens on Residential 3.5 every time</b><br/>the tab or the payer changes" }
+  tab@{ shape: curv-trap, label: "<b>Documents tab</b><br/>Banner if edits wait. Then 'Level of care' and 'Edit list',<br/>the closed list, and 'Try it on a case' below it" }
+  card@{ shape: curv-trap, label: "<b>Closed section 'What Summit wants for Residential 3.5'</b><br/>'Nine documents: ASAM multidimensional assessment,<br/>Psychiatric evaluation or H&P, and 7 more.'" }
+  op@{ shape: trap-t, label: "<b>Click the section (or Enter, Space)</b><br/>It opens and closes, and stays open when 'Level of care' changes" }
+  dflt@{ shape: rect, label: "<b>Opens on Residential 3.5 every time</b><br/>the tab or the payer changes<br/>The list is closed again" }
   lc@{ shape: lean-r, label: "<b>Pick 'Level of care'</b><br/>Residential 3.5, IOP, PHP, Detox" }
   sw@{ shape: rect, label: "<b>Title, count and list switch to that level</b><br/>For Summit: Residential 9, IOP 6, PHP 7, Detox 8" }
-  ol@{ shape: curv-trap, label: "<b>Numbered list</b><br/>Number, document name in bold,<br/>what it must show in grey" }
+  ol@{ shape: curv-trap, label: "<b>Open: numbered list</b><br/>Number, document name in bold,<br/>what it must show in grey<br/>Then 'The agents ask for each one before they write a word.'" }
   ex@{ shape: rect, label: "<b>Example row</b><br/>ASAM multidimensional assessment<br/>Every dimension, dated within 7 days" }
   any@{ shape: diam, label: "Is the list empty?" }
   em@{ shape: odd, label: "'This list is empty. Add the documents Summit asks for.'" }
@@ -40,20 +41,22 @@ flowchart TD
   dU -->|"Yes"| bU --> gU
   dU -->|"No"| card
   bU --> card
-  card --> dflt --> lc --> sw --> ol
+  card --> dflt --> lc --> sw
+  card --> op --> ol
+  sw -.-> op
   ol --> ex --> any
   any -->|"Yes"| em
   any -->|"No"| pdiff
   em -.-> ce
   pdiff -.-> one
   pdiff --> aft --> gA
-  card --> ce --> gE
+  tab --> ce --> gE
   tab --> gC
   class s1 k_start
   class tab,card,ol k_screen
+  class op,ce k_click
   class dflt,sw,ex,pdiff,one,aft k_process
   class lc k_input
   class any,dU k_decision
   class em,bU k_toast
-  class ce k_click
   class gE,gC,gU,gA k_goto

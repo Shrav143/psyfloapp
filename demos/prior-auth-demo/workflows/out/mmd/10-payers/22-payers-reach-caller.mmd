@@ -17,10 +17,12 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Scroll below the workflow card</b><br/>on the Process tab" }
+  op@{ shape: trap-t, label: "<b>Click the closed section</b><br/>'How to reach Summit and what Caller says'<br/>It is a button; Enter or Space also open it" }
+  opn@{ shape: rect, label: "<b>Section opens</b><br/>Click again to close it<br/>It starts closed every time the tab opens" }
   rc@{ shape: curv-trap, label: "<b>'How to reach Summit'</b><br/>Three rows: Portal, Phone, Fax" }
   rows@{ shape: rect, label: "<b>Each row has an icon, a title and a line</b><br/>Portal: Provider portal, sign-in saved by Navigator<br/>Phone: Provider line, weekdays 8 am to 6 pm<br/>Fax: Not used" }
-  ro@{ shape: odd, label: "<b>No edit button on this card</b><br/>Change the lines with 'Edit' in the header" }
-  cc@{ shape: curv-trap, label: "<b>'Instructions for Caller'</b><br/>The script in a tinted box<br/>'Used by the Phone steps. Confirmed 10/12.'" }
+  ro@{ shape: odd, label: "<b>No edit button on this part</b><br/>Change the lines with 'Edit' in the header" }
+  cc@{ shape: curv-trap, label: "<b>'Instructions for Caller'</b><br/>The script in a tinted box<br/>'Used by the Phone steps. Saved 10/12.'" }
   script@{ shape: rect, label: "<b>Script: ask for the provider line, give member ID and date of birth,</b><br/>ask if the request arrived, never agree to a change,<br/>log the call" }
   ce@{ shape: trap-t, label: "<b>Click 'Edit'</b><br/>on the Caller card" }
   m@{ shape: win-pane, label: "<b>Edit the instructions for Caller</b><br/>Caller follows this on every Phone step and never agrees to a change." }
@@ -32,7 +34,7 @@ flowchart TD
   d2@{ shape: diam, label: "Is the script the same as the saved one?" }
   t0@{ shape: odd, label: "'Nothing changed'" }
   gap@{ shape: rect, label: "<b>Demo gap: a blank script is accepted</b><br/>Phone steps would then have no instructions" }
-  st@{ shape: cyl, label: "<b>Script saved</b><br/>'Confirmed' date becomes today" }
+  st@{ shape: cyl, label: "<b>Script saved</b><br/>'Saved' date becomes today" }
   lg@{ shape: cyl, label: "<b>Edit log entry</b><br/>Area 'Caller instructions'<br/>'Instructions for Caller', before and after" }
   nt@{ shape: cyl, label: "<b>Bell notification</b><br/>'Summit caller instructions edited'<br/>opens the payer's Process tab" }
   t1@{ shape: odd, label: "<b>'Instructions for Caller saved'</b><br/>Caller follows them on its next call.<br/>The edit is logged." }
@@ -43,9 +45,9 @@ flowchart TD
   x1@{ shape: stadium, label: "<b>Modal closes</b><br/>Nothing saved, typed text discarded<br/>Reopening starts from the saved script" }
   g1@{ shape: subproc, label: "Continues in: Payers › Edit payer details" }
   g2@{ shape: subproc, label: "Continues in: Payers › Edit log" }
-  s1 --> rc --> rows --> ro
+  s1 --> op --> opn --> rc --> rows --> ro
   ro -.-> g1
-  s1 --> cc --> script --> ce --> m --> i1 --> i2 --> cs --> d1
+  opn --> cc --> script --> ce --> m --> i1 --> i2 --> cs --> d1
   d1 -->|"Yes"| er --> i2
   d1 -->|"No"| d2
   d2 -->|"Yes"| t0 --> x1
@@ -55,10 +57,10 @@ flowchart TD
   m --> cx --> x1
   m --> cesc --> x1
   class s1 k_start
+  class op,ce,cs,cx,cesc k_click
+  class opn,rows,script,gap,nb k_process
   class rc,cc k_screen
-  class rows,script,gap,nb k_process
   class ro,er,t0,t1 k_toast
-  class ce,cs,cx,cesc k_click
   class m k_overlay
   class i1,i2 k_input
   class d1,d2 k_decision

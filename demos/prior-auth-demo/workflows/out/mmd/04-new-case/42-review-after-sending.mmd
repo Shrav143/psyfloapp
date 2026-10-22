@@ -19,7 +19,7 @@ flowchart TD
   s1@{ shape: stadium, label: "The request is signed and sent" }
   subgraph gDash ["Dashboard"]
   sDash@{ shape: curv-trap, label: "<b>Dashboard</b><br/>The request is open in the side drawer<br/>Chip 'Received', held by Navigator" }
-  pCount@{ shape: rect, label: "<b>In the stage strip 'Received' goes up by one</b><br/>The 'Preparing' count goes down by one: a saved draft was counted there until now" }
+  pCount@{ shape: rect, label: "<b>In the stage counts 'Received' goes up by one</b><br/>The 'Preparing' count goes down by one: a saved draft was counted there until now" }
   tToast@{ shape: odd, label: "<b>Toast: 'Sent to the payer'</b><br/>Bell notification: 'Sent to the payer'" }
   end
   gOpen@{ shape: subproc, label: "Continues in: Dashboard › Open a request" }
@@ -38,7 +38,7 @@ flowchart TD
   pSentN@{ shape: rect, label: "The count is one higher (4 becomes 5)" }
   pLedger@{ shape: rect, label: "<b>The table of active cases gains a row for the request</b><br/>The header goes from '56 active cases.' to '57 active cases.'" }
   end
-  gDash2@{ shape: subproc, label: "Continues in: Dashboard › Stage strip and requests" }
+  gDash2@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Order, rows and paging" }
   gCM2@{ shape: subproc, label: "Continues in: Case Manager › Active cases" }
   s1 --> sDash --> pCount
   sDash --> tToast

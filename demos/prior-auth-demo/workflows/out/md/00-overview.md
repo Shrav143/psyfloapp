@@ -100,7 +100,7 @@ flowchart LR
   demo@{ shape: win-pane, label: "<b>Demo menu</b><br/>Reset data, move the clock, suggested path" }
   end
   subgraph gMain ["Sidebar › Main"]
-  dash@{ shape: curv-trap, label: "<b>Dashboard</b><br/>Filters, calendar, stage strip, requests, payers" }
+  dash@{ shape: curv-trap, label: "<b>Dashboard</b><br/>FLO summary, four figures, filters, calendar, requests, payer performance" }
   auth@{ shape: curv-trap, label: "<b>Authorizations › Queue</b><br/>Requests ranked by how soon each is due" }
   newc@{ shape: curv-trap, label: "<b>Authorizations › New case</b><br/>Referral, Medical records, Agents work, Review and sign" }
   elig@{ shape: curv-trap, label: "<b>Authorizations › Eligibility & Benefits</b><br/>List, verify a patient, result" }
@@ -211,7 +211,7 @@ flowchart TD
   sign@{ shape: trap-t, label: "<b>Clinician signs</b><br/>Sign and send" }
   req@{ shape: cyl, label: "<b>Request created</b><br/>Stage: Received" }
   payer@{ shape: st-rect, label: "<b>Payer receives the request</b><br/>(demo: simulated)" }
-  dash@{ shape: curv-trap, label: "<b>Dashboard</b><br/>Stage strip: Preparing, Received, Under review, Info requested, Decided today, Appeal or call" }
+  dash@{ shape: curv-trap, label: "<b>Dashboard</b><br/>Four figures and the request list; stages: Preparing, Received, Under review, Info requested, Decided today, Appeal or call" }
   w1@{ shape: delay, label: "<b>Payer decides</b><br/>Time passes (the Demo menu moves the clock)" }
   d3@{ shape: diam, label: "What does the payer decide?" }
   info@{ shape: trap-t, label: "<b>Answer on the Dashboard</b><br/>Send the information requested" }

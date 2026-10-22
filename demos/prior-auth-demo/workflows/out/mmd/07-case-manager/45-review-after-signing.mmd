@@ -35,7 +35,7 @@ flowchart TD
   d1@{ shape: diam, label: "Does the next review fall before the end of Sunday?" }
   n2@{ shape: rect, label: "<b>It joins this week's list on its day, as 'Not drafted yet'</b><br/>The header counts it: '48 clinical reviews due this week'<br/>'Draft all due reviews' drafts it" }
   n3@{ shape: rect, label: "<b>It is kept but not listed this week</b><br/>The header still reads '47'<br/>The drawer says 'It falls after this week, so it is not on the list yet.'" }
-  n4@{ shape: rect, label: "<b>Tracker row: the Clock cell reads 'Next review Tue 10/27'</b><br/>Status goes to 'On track' (from 'Needs action' or 'Review due'; 'Awaiting payer' stays)<br/>Once that day comes it reads 'Review due'" }
+  n4@{ shape: rect, label: "<b>Tracker row: the Next due cell reads 'Next review Tue 10/27'</b><br/>Status goes to 'On track' (from 'Needs action' or 'Review due'; 'Awaiting payer' stays)<br/>Once that day comes it reads 'Review due'" }
   n5@{ shape: rect, label: "Ledger case page: a 'Next review' line and, in the history, 'Cadence booked review 3'" }
   x1@{ shape: st-rect, label: "Payer receives the signed review through its portal or by fax (real product, not drawn in the demo)" }
   end

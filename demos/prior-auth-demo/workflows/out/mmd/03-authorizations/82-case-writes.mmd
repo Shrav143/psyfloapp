@@ -21,7 +21,7 @@ flowchart TD
   w1@{ shape: cyl, label: "Dashboard request gets the new chance" }
   w2@{ shape: cyl, label: "<b>Dashboard request history</b><br/>'Scribe added 6 items to the draft. Approval chance is now 88%'" }
   w0@{ shape: rect, label: "Only this case page and the queue change" }
-  q1@{ shape: rect, label: "<b>Queue tile shows the new chance</b><br/>Line reads '+N pts possible' or 'on track'<br/>Queue average moves too" }
+  q1@{ shape: rect, label: "<b>Queue row shows the new chance</b><br/>Line reads '+N pts possible' or 'on track'<br/>Queue average moves too" }
   n1@{ shape: odd, label: "<b>Notification from Forecaster: 'Approval chance updated'</b><br/>'R-1042 is now 88% after 6 actions.'" }
   n2@{ shape: trap-t, label: "Open Notifications and click 'Approval chance updated'" }
   n3@{ shape: rect, label: "The case page of that request opens" }
@@ -35,7 +35,7 @@ flowchart TD
   w8@{ shape: cyl, label: "<b>Clinical context added to the shared list for the request</b><br/>The Draft tab and New case read it" }
   d4@{ shape: diam, label: "Is it a queue request that also has a Dashboard entry?" }
   w9@{ shape: cyl, label: "<b>Dashboard request gets the new chance</b><br/>Timeline: 'You added clinical context. ...'" }
-  w10@{ shape: rect, label: "<b>Queue tile shows the new chance</b><br/>The approval chance is one point higher for each of the first three notes" }
+  w10@{ shape: rect, label: "<b>Queue row shows the new chance</b><br/>The approval chance is one point higher for each of the first three notes" }
   s3@{ shape: stadium, label: "A request is signed and sent in New case" }
   w5@{ shape: cyl, label: "Dashboard stage 'Received'" }
   w6@{ shape: rect, label: "<b>Queue drops the request</b><br/>The open count drops by one<br/>The sidebar badge too, if it was in Act now or Due within 24 hours" }

@@ -28,13 +28,13 @@ flowchart TD
   t1@{ shape: curv-trap, label: "Referral: 'Start with the referral. Drop the documents and Reader lists anything that is missing.'" }
   t2@{ shape: curv-trap, label: "<b>Medical records: 'Drop what you have. Reader sorts the files and lists what is still missing, then the agents check the payer's rules.'</b><br/>Top right: 'Use sample chart'" }
   t3@{ shape: curv-trap, label: "Agents work: 'The agents are reading the chart and checking Summit's rules. Questions come to you only when they must.'" }
-  t4@{ shape: curv-trap, label: "<b>Review and sign: 'Nothing goes to the payer until a clinician signs.'</b><br/>Title 'Ready for your signature'" }
+  t4@{ shape: curv-trap, label: "<b>Review and sign: 'Nothing is sent to the payer until a person signs. See what is missing first, then read the summary.'</b><br/>Title 'Review and sign'" }
   end
   subgraph gFwd ["Moving forward and back: each step's own buttons"]
   b1@{ shape: trap-t, label: "Referral: 'Accept referral and continue', 'Continue to medical records' or 'No referral? Continue without one'" }
   b2@{ shape: trap-t, label: "Medical records: 'Back', 'Save as draft', 'Continue'" }
   b3@{ shape: trap-t, label: "Agents work: 'Back', 'Pause all agents', 'Skip ahead', 'Review and sign'" }
-  b4@{ shape: trap-t, label: "Review and sign: 'Back', 'Save as draft', 'Sign and send'" }
+  b4@{ shape: trap-t, label: "Review and sign: 'Back', 'Save as draft' (the button that signs is 'Sign and send to payer' in the card on the right)" }
   end
   pBack@{ shape: rect, label: "<b>'Back' goes one step back</b><br/>Medical records to Referral; Agents work to Medical records; Review and sign to Agents work" }
   pNext@{ shape: rect, label: "<b>Forward buttons stay disabled until the step is ready</b><br/>'Accept referral and continue' waits for the required referral items;<br/>'Continue' waits for nothing missing; 'Review and sign' waits for the agents" }

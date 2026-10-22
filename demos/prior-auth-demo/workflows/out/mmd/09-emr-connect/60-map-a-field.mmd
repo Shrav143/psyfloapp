@@ -16,14 +16,14 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Open EMR Connect</b><br/>The 'Need a mapping' tile shows 2" }
-  c1@{ shape: curv-trap, label: "<b>Needs a mapping</b><br/>A pill with the count, then a row per field" }
-  r1@{ shape: rect, label: "<b>Row 1: 'Level of care' in the outpatient record</b><br/>'Match to IOP or PHP'" }
-  r2@{ shape: rect, label: "<b>Row 2: 'Referral source' in intake</b><br/>'Match to a payer field'" }
-  em@{ shape: odd, label: "<b>'Every field is mapped. New ones appear here when the agents meet a field they cannot place.'</b><br/>Shown at 0 fields. Pill and tile turn green" }
-  b1@{ shape: trap-t, label: "Click 'Map' on a row" }
-  b2@{ shape: trap-t, label: "Click 'Map' on a 'Not mapped' row in the Manage drawer" }
-  g0@{ shape: subproc, label: "Continues in: EMR Connect › Manage › Open the Manage drawer" }
+  s1@{ shape: stadium, label: "<b>Open EMR Connect</b><br/>'Action required' names the waiting fields, and 'Advanced' shows the pill '2 to map'" }
+  c1@{ shape: curv-trap, label: "<b>Advanced › Field mappings</b><br/>Waiting fields first, then every mapping" }
+  r1@{ shape: rect, label: "<b>Row 1: 'Level of care' · Not mapped</b><br/>'Clinical record · outpatient site · Match to IOP or PHP'" }
+  r2@{ shape: rect, label: "<b>Row 2: 'Referral source' · Not mapped</b><br/>'Match to a payer field'" }
+  em@{ shape: odd, label: "<b>'10 mapped ... Every field the agents have met is mapped.'</b><br/>Shown at 0 fields. The pill and the 'Action required' mention go away" }
+  b0@{ shape: trap-t, label: "Click 'Advanced', or Tab to it and press Enter or Space" }
+  b1@{ shape: trap-t, label: "Click 'Map' on a waiting row" }
+  b2@{ shape: trap-t, label: "<b>Click 'Map field' in the 'Action required' line</b><br/>Only when the waiting fields are the first thing that needs a person" }
   o1@{ shape: win-pane, label: "<b>Map 'Level of care'</b><br/>In the outpatient record" }
   q1@{ shape: rect, label: "<b>Question from the agents</b><br/>'The outpatient record writes Level of care as free text, such as Day program. Which level should the agents read it as?'" }
   i1@{ shape: lean-r, label: "<b>Pick a value in the dropdown (click, or arrow keys and Enter)</b><br/>Level of care: IOP (first) or PHP<br/>Referral source: Payer name (first), Plan type or Referring provider" }
@@ -31,33 +31,32 @@ flowchart TD
   d1@{ shape: diam, label: "Which button?" }
   k1@{ shape: trap-t, label: "Click 'Save the mapping'" }
   k2@{ shape: trap-t, label: "Click 'Cancel' or the X, press Escape, or click the dimmed area" }
-  x1@{ shape: stadium, label: "<b>Pop-up closes</b><br/>The field stays in 'Needs a mapping'" }
-  q9@{ shape: rect, label: "<b>Opened from the Manage drawer: the first Escape closes only this pop-up</b><br/>The drawer stays open. A second Escape closes it" }
+  x1@{ shape: stadium, label: "<b>Pop-up closes</b><br/>The field stays waiting" }
   subgraph gSave ["What saving does"]
-  s2@{ shape: cyl, label: "The field leaves 'Needs a mapping'" }
-  s3@{ shape: cyl, label: "<b>A mapping row is added to the system</b><br/>'Level of care' fills 'IOP', mapped by 'You, 10/20'" }
-  a1@{ shape: hex, label: "Reader logs 'Mapped 'Level of care' to IOP. It applies to every future pull'" }
+  s2@{ shape: cyl, label: "The field leaves the waiting rows" }
+  s3@{ shape: cyl, label: "<b>A mapping row is added to the list</b><br/>'Level of care → PHP', 'Clinical record · outpatient site', mapped by 'You, 10/20'" }
+  a1@{ shape: hex, label: "<b>Reader logs 'Mapped 'Level of care' to IOP. It applies to every future pull'</b><br/>In the activity log, in Advanced" }
   t1@{ shape: odd, label: "<b>'Field mapped'</b><br/>'Level of care' now fills IOP." }
-  p1@{ shape: rect, label: "<b>Tile and pill count down: 2, 1, then 0</b><br/>At 0 they turn green: 'every field is mapped'" }
+  p1@{ shape: rect, label: "<b>The pill and the 'Action required' mention count down: 2, 1, then none</b><br/>At none the section summary reads '12 field mappings' with no 'waiting'" }
   p2@{ shape: rect, label: "<b>New case now fills that field when it pulls a chart from this system</b><br/>Before, it left it blank" }
   end
   g2@{ shape: subproc, label: "Continues in: EMR Connect › Sync › What other screens use from EMR Connect" }
   e1@{ shape: stadium, label: "<b>Pop-up closes</b><br/>A mapped field cannot be unmapped or edited in the demo" }
   x2@{ shape: st-rect, label: "<b>Production: an unknown column holds a file back and shows what differs</b><br/>A confirmed mapping is remembered" }
   g1@{ shape: subproc, label: "Continues in: EMR Connect › Field mappings › Every mapping by system" }
-  s1 --> c1
+  g3@{ shape: subproc, label: "Continues in: EMR Connect › Advanced › Field mappings and the activity log" }
+  s1 --> b2 & b0
+  b0 --> c1
   c1 --> r1 & r2
   c1 -.-> em
   r1 --> b1
   r2 --> b1
   b1 --> o1
   b2 --> o1
-  b2 -.-> g0
   o1 --> q1 --> i1 --> n1 --> d1
   d1 -->|"Save"| k1
   d1 -->|"Leave"| k2
   k2 --> x1
-  k2 -.-> q9
   k1 --> s2 & s3 & a1 & t1
   s2 --> p1
   s2 --> p2
@@ -65,19 +64,20 @@ flowchart TD
   p1 --> e1
   p2 -.-> g2
   e1 --> g1
+  c1 -.-> g3
   c1 -.-> x2
   class s1 k_start
   class c1 k_screen
-  class r1,r2,q1,n1,q9,p1,p2 k_process
+  class r1,r2,q1,n1,p1,p2 k_process
   class em,t1 k_toast
-  class b1,b2,k1,k2 k_click
-  class g0,g2,g1 k_goto
+  class b0,b1,b2,k1,k2 k_click
   class o1 k_overlay
   class i1 k_input
   class d1 k_decision
   class x1 k_endx
   class s2,s3 k_store
   class a1 k_agent
+  class g2,g1,g3 k_goto
   class e1 k_end
   class x2 k_ext
   style gSave fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
