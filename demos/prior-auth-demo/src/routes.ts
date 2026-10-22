@@ -11,8 +11,13 @@ export const paths = {
   authorizations: () => "/authorizations",
   case: (id: string, tab?: "actions" | "picture" | "criteria" | "risk" | "draft") => `/authorizations/case/${id}${tab ? `?tab=${tab}` : ""}`,
   /** New case. `draft` resumes a case being prepared. `referral` pre-fills from a referral. */
-  newCase: (o?: { draft?: string; referral?: string }) => {
-    const qs = o?.referral ? `?referral=${encodeURIComponent(o.referral)}` : "";
+  newCase: (o?: { draft?: string; referral?: string; /** A stored verification (VerificationRecord id) to carry into step 2. */ verification?: string; /** Authorization type: initial, concurrent, reauth, modify or retro. */ type?: string; /** A patient's case id, to start from an existing patient. */ patient?: string }) => {
+    const q = new URLSearchParams();
+    if (o?.referral) q.set("referral", o.referral);
+    if (o?.verification) q.set("verification", o.verification);
+    if (o?.type) q.set("type", o.type);
+    if (o?.patient) q.set("patient", o.patient);
+    const qs = q.toString() ? `?${q.toString()}` : "";
     return o?.draft ? `/authorizations/new/${o.draft}${qs}` : `/authorizations/new${qs}`;
   },
   eligibility: () => "/authorizations/eligibility",
