@@ -1,0 +1,67 @@
+title: Authorizations › New case › Sites and scope
+route: /authorizations/new (the site switcher in the top bar decides what is in view)
+intro: A clinic can run more than one site, and staff at one site must not see the other site's patients. New case follows the sites in view everywhere: the incoming referrals, the patient search, the duplicate check, the site a new case belongs to, and every link. A record at a site the viewer cannot see is never named, counted or searched; a link to it shows 'not available' and nothing else.
+dir: TD
+also: Demo only: Jordan Perez sees Both sites, Dr. Rivera sees Site A, Sam Okafor sees Site B. Choose the viewer in the Demo menu. A case id decides its site, so a new case gets an id that falls at the site it was made for.
+---
+start s1 "The viewer and the site switcher\nTop bar: 'Both sites', 'Site A' or 'Site B'\nA viewer limited to one site has nothing to switch"
+decision d1 "How many sites are in view?"
+process pOne "One site\nEverything below shows that site only\nNothing says how many records are at the other site"
+process pBoth "Both sites\nEverything shows both, and each row can name its site"
+
+group gLists "What shows in New case"
+  screen l1 "'Incoming referrals (N)'\nOnly open referrals at the sites in view\nThe sidebar badge on 'New case' counts the same ones"
+  screen l2 "Patient search\n'Searches Site A only.'\n'No patient at Site A matches “Q.Z.”.' when the match is at the other site\nWith both sites in view each row names its site"
+  screen l3 "Possible duplicate\nOnly requests, drafts and authorizations at the sites in view are compared"
+  screen l4 "Eligibility & Benefits and Review & submit\nThe verification and the case belong to the case's site"
+endgroup
+
+group gSite "The site a new case belongs to"
+  decision dLock "Does the case have an id or a patient yet?"
+  screen sPick "Both sites in view: a 'Site' choice, Site A or Site B\n'A new patient belongs to one site. Staff at the other site will not see this case.'"
+  click cSite "Pick a site"
+  process pOneSite "One site in view: 'Site A · this case is at the site you are working at.'"
+  process pLocked "Locked\nWith a patient: 'the patient's site'\nWith an id: 'set when the case got its ID'"
+  store stId "The case id is chosen so that it falls at the site\nR- for Residential 3.5 and Detox, I- for IOP, P- for PHP"
+  process pRef "A referral read from dropped files is placed at the site in view\nIts RF number is the next one that falls there"
+  process pNarrow "Narrowing the view while a blank case is open\nThe case moves to the site in view\nA case with an id or a patient stays where it is"
+endgroup
+
+group gLinks "A link to a record at a site that is not in view"
+  decision dLink "What does the link open?"
+  screen o1 "A referral: ?referral=RF-2045 or the full referral page\n'This referral is not available at Site A'"
+  screen o2 "A case being prepared: /authorizations/new/draft-ID\n'This case is not available at Site A'"
+  process o3 "?patient= and ?verification= from the other site are ignored\nA blank case opens instead"
+  process o4 "Picking a patient from a stale list does nothing\nThe other site's patient cannot be brought in"
+  decision dWho "Can the viewer see both sites?"
+  screen sShow "One-site viewer: 'RF-2045 belongs to Site B. Dr. Rivera can see Site A only. Access follows the site, so staff see only the patients they work with.'\nNo patient, payer or date"
+  click cShow "Click 'Show Site B'"
+  process pShow "The view switches to that site and the record opens"
+endgroup
+goto gStart "Continues in: Authorizations › New case › Intake › Start with a referral or patient"
+goto gFind "Continues in: Authorizations › New case › Intake › Find a patient and the authorization"
+goto gDup "Continues in: Authorizations › New case › Intake › Possible duplicate"
+goto gShell "Continues in: Global shell › Top bar › Site switcher"
+
+s1 --> d1
+d1 -->|One| pOne --> l1
+d1 -->|Both| pBoth --> l1
+l1 --> l2 --> l3 --> l4
+l1 -.-> gStart
+l2 -.-> gFind
+l3 -.-> gDup
+s1 -.-> gShell
+pBoth --> dLock
+pOne --> dLock
+dLock -->|No, both sites in view| sPick --> cSite --> stId
+dLock -->|No, one site in view| pOneSite --> stId
+dLock -->|Yes| pLocked
+stId --> pRef
+stId --> pNarrow
+s1 --> dLink
+dLink -->|A referral| o1 --> dWho
+dLink -->|A case| o2 --> dWho
+dLink -->|A patient or a verification| o3
+dLink -->|A patient in the list| o4
+dWho -->|No| sShow
+dWho -->|Yes| cShow --> pShow

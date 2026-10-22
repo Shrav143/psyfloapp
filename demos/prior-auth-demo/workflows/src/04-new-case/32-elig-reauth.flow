@@ -1,0 +1,45 @@
+title: Authorizations › New case › Eligibility & Benefits › Reauthorization / renewal
+route: /authorizations/new/:draftId (step 2 of 5, type 'Reauthorization / renewal')
+intro: A renewal has to check that coverage continues and that the plan has not changed. The patient's last check is shown with the authorization that is ending. When the member has moved to another plan, step 2 says so and offers to switch the case to it, then Verify checks the new plan. Nothing is switched without a click.
+dir: TD
+---
+start s1 "Click 'Continue to Eligibility & Benefits' on Intake"
+screen sc "Eligibility & Benefits · Reauthorization / renewal\n'Check that coverage continues and that the plan has not changed.'"
+screen sSum "Verification summary\nThe patient's last check for this episode\nExisting authorization: the one that is ending, with what is used and left"
+decision dAge "Is the check old, or for other dates?"
+toast tOld "'This check is 30 hours old. Refresh it before you send.'\nThe person decides when to refresh"
+click cRef "Click 'Refresh verification'"
+agent aV "Verify asks the plan again, about 1.2 seconds"
+goto gWarn "Continues in: Authorizations › New case › Eligibility & Benefits › Warnings and documented exceptions"
+decision dPlan "Has the member moved to another plan?\nExample: B.N. (R-0975), Evergreen to Cardinal since 10/01, or a member ID ending 7070"
+screen sPlan "Warning in the summary\n'The payer changed. The member is with Cardinal Health Plan since 10/01. Start the request with the new plan.'\nFor B.N. also 'Coverage is not active': the old plan ended 09/30\nSection 'What you can do': 'None of this stops you.'"
+click cSwitch "Click 'Switch this case to Cardinal'"
+store stSw "The case's payer and plan type change\nThe link to the old check is dropped"
+agent aV2 "Verify checks the new plan for the renewal dates"
+click cKeep "Go on with the old plan"
+toast tKeep "The warning stays in the summary\nReview & submit lists 'Payer changed' to acknowledge"
+decision dNoAuth "Does the payer need no authorization for this level of care?"
+goto gNoAuth "Continues in: Authorizations › New case › Eligibility & Benefits › No authorization required"
+process pPaused "Verify paused in Settings: the last result stays with a 'Verification service unavailable' warning\n'Open Settings to resume Verify'"
+group gFoot "Footer bar"
+  click cBack "Click 'Back'"
+  click cSave "Click 'Save as draft'"
+  click cCont "Click 'Continue to Clinical documentation'"
+endgroup
+goto gDocs "Continues in: Authorizations › New case › Clinical documentation › Required and typical documents by type"
+
+s1 --> sc --> sSum --> dAge
+dAge -->|Yes| tOld --> cRef
+sSum --> cRef --> aV --> dPlan
+dAge -->|No| dPlan
+dPlan -->|Yes| sPlan
+sPlan --> cSwitch --> stSw --> aV2 --> dNoAuth
+sPlan --> cKeep --> tKeep --> dNoAuth
+dPlan -->|No| dNoAuth
+sPlan -.-> gWarn
+dNoAuth -->|Yes| gNoAuth
+dNoAuth -->|No| cCont
+aV -.-> pPaused
+sSum --> cBack
+sSum --> cSave
+cCont --> gDocs

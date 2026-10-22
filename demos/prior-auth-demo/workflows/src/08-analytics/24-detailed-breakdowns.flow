@@ -1,47 +1,41 @@
 title: Analytics › Detailed breakdowns
 route: /analytics
-intro: Under the heading 'Detailed breakdowns' three sections are folded. Each is a real button that shows its title and one summary line, and opens in place. Open by click, Enter or Space. Nothing else on the page moves except the content below it.
+intro: Under the heading 'Detailed breakdowns' five sections are folded. Each is a real button that shows its title and one summary line, and opens in place. Open by click, Enter or Space. Everything inside follows the period, payer, program, diagnosis group and site view.
 dir: TD
-also: The summary lines are worked out from the page's figures, so they change with the menus. A section starts closed every time the page opens.
+also: The summary lines are worked out from the records, so they change with the menus. A section starts closed every time the page opens.
 ---
-start s1 "Scroll below the charts to 'Detailed breakdowns'"
-screen sc "Heading 'Detailed breakdowns'\n'The tables and rankings behind the figures above. Each one opens in place.'\nThree closed sections with a chevron on the right"
-
-group gA "'Common denial reasons by payer'"
-  screen a1 "Summary: '311 denials this quarter. Most common: Continued-stay evidence incomplete at Cardinal, 23%.'"
-  screen a2 "Opens to: the table (Reason, Payer, Count, Share of denials), then 'Appeals overturned' and 'Denials accepted'"
+start s1 "Scroll below the cards to 'Detailed breakdowns'"
+screen sc "Heading and 'The tables and rankings behind the figures above. Each one opens in place.'\nFive closed sections with a chevron"
+group gA "'Length of stay and units' and 'Process health'"
+  goto a1 "Continues in: Analytics › Length of stay and units"
+  goto a2 "Continues in: Analytics › Process health"
 endgroup
-
-group gB "'How FLO's advice and drafts perform'"
-  screen b1 "Summary: 'Advice taken works 84% of the time. 75% of drafts were sent without edits.'\nAdds '2 recommendations dismissed.' once any were dismissed"
-  screen b2 "Opens to: four facts, 'Approved as asked' 71%, 'Top denial cause' 23%, 'Advice taken works' 84%, 'Sent without edits' 75%\nThen 'Why recommendations were dismissed' when someone dismissed one"
+group gB "'Common denial reasons by payer'"
+  screen b1 "Table of reasons, 'Appeals overturned', 'Denials accepted'"
+  goto b2 "Continues in: Analytics › Common denial reasons: open Denial Intelligence"
 endgroup
-
-group gC "'What helps most'"
-  screen c1 "Summary: 'Most applied: Document depression severity with dated scores, 91% approved.'"
-  screen c2 "Opens to: up to four ranked steps, 'Applied 389 times', '91% approved'"
+group gC "'How FLO's advice and drafts perform'"
+  screen c1 "Summary: 'Advice taken works 84% of the time. 75% of drafts were sent without edits.'"
+  screen c2 "Four facts: 'Approved as asked' 71%, 'Top denial cause' 23%, 'Advice taken works' 84%, 'Sent without edits' 75%\n'How people edit agent drafts': donut, 68% as written (approved 89% of the time), 27% light edits, 5% rewritten\n'Why recommendations were dismissed' once someone dismissed one"
 endgroup
-
-click k1 "Click the section's title row\nOr Tab to it and press Enter or Space"
-process p1 "The button says whether it is open (aria-expanded)\nThe chevron turns\nA hairline separates the summary from the content"
+group gD "'What helps most'"
+  screen d1 "Summary: 'Most applied: Document depression severity with dated scores, 91% approved.'"
+  screen d2 "Up to four ranked steps: 'Applied 389 times', '91% approved'"
+endgroup
+click k1 "Click a section's title row\nOr Tab to it and press Enter or Space"
+process p1 "The button says whether it is open (aria-expanded)\nThe chevron turns"
 click k2 "Click it again, or press Enter or Space again"
 process p2 "It closes. The summary stays"
 decision q1 "20 or more decisions behind the content?"
 screen h1 "Content reads 'Not enough decisions yet'\nThe summary says the same"
-process p3 "Menus change the figures while a section is open\nThe open section updates in place"
-goto g1 "Continues in: Analytics › Common denial reasons: open Denial Intelligence"
-goto g2 "Continues in: Analytics › Denial outcomes and dismissed recommendations"
 end e1 "Section read"
 
 s1 --> sc
-sc --> a1 & b1 & c1
-a1 & b1 & c1 --> k1
-k1 --> p1
-k1 --> a2 & b2 & c2
-a2 & b2 & c2 --> q1
+sc --> a1 & a2 & b1 & c1 & d1
+b1 --> b2
+c1 --> c2
+d1 --> d2
+a1 & a2 & b1 & c1 & d1 --> k1 --> p1 --> q1
 q1 -->|No| h1 --> e1
 q1 -->|Yes| e1
 p1 --> k2 --> p2
-a2 -.-> g1
-b2 -.-> g2
-sc -.-> p3

@@ -1,0 +1,79 @@
+title: Authorizations › New case › Authorization type
+route: /authorizations/new/:draftId (the dropdown under the title) and ?type=
+intro: One dropdown, 'Authorization type', decides what Intake asks, how Eligibility & Benefits behaves, which documents are typical, what the justification says and which request type the demo records. It can be set by a link, by the Dashboard or by hand.
+dir: TD
+also: Demo only: the type is the demo's own request type. A real payer's form has its own fields.
+---
+start s1 "Open New case\nThe dropdown starts on 'Initial authorization'"
+start s2 "Open a link with ?type= or paths.newCase({type})\ninitial, concurrent, reauth, modify or retro"
+start s3 "Click 'Authorization type' under the page title"
+decision dKnown "Is the value one of the five?\nAnd has the case not started and not been sent"
+process pIgnore "An unknown value is ignored\nA case that has started keeps its type"
+overlay o1 "Authorization type menu\nInitial authorization\nConcurrent review\nReauthorization / renewal\nModification / extension\nRetroactive authorization"
+click c1 "Pick a type"
+decision dSent "Was the case already sent?"
+decision dKind "Which type was picked?"
+endx eSent "The dropdown is switched off"
+decision dEx "Does the new type follow an existing authorization?\nConcurrent review, Reauthorization or Modification"
+decision dPat "Is the patient from the patient book?"
+process pClear "A patient typed by hand is cleared\nPatient, payer, plan, member ID, level of care and the referral\nIntake asks to find the patient instead, so no second patient is made"
+process pKeep "The patient stays"
+process pNew "Initial and Retroactive: the link to an episode and authorization is dropped\nA new stay has none yet"
+group gRecord "The request type the demo records"
+  store r1 "Initial authorization\nInitial request, or Admission when the case already has it"
+  store r2 "Concurrent review\nContinued stay"
+  store r3 "Reauthorization / renewal\nRecertification"
+  store r4 "Modification / extension\nModification"
+  store r5 "Retroactive authorization\nRetro-authorization"
+endgroup
+process pTidy "A 'continue with a reason' said about a duplicate is cleared\nThe proposed change is dropped when leaving Modification\nThe retro reason is dropped when leaving Retroactive"
+decision dRan "Had the agents already worked?"
+toast tStale "'Records changed after the agents ran'\n'Their work was cleared. The agents check again when you continue.'"
+screen sOut "Every step now follows the type"
+group gEffect "What the type changes"
+  process x1 "Intake: what is asked, and from where"
+  process x2 "Eligibility & Benefits: what the check is for"
+  process x3 "Clinical documentation: the typical items"
+  process x4 "Authorization preparation: the justification's heading and content"
+  process x5 "Review & submit: the 'Request' line and the history of the request"
+endgroup
+goto g1 "Continues in: Authorizations › New case › Intake › Initial authorization"
+goto g2 "Continues in: Authorizations › New case › Intake › Concurrent review"
+goto g3 "Continues in: Authorizations › New case › Intake › Reauthorization / renewal"
+goto g4 "Continues in: Authorizations › New case › Intake › Modification / extension"
+goto g5 "Continues in: Authorizations › New case › Intake › Retroactive authorization"
+goto gDocs "Continues in: Authorizations › New case › Clinical documentation › Required and typical documents by type"
+goto gJust "Continues in: Authorizations › New case › Authorization preparation › Justification by type"
+
+s1 --> s3
+s2 --> dKnown
+dKnown -->|No| pIgnore --> s3
+dKnown -->|Yes| c1
+s3 --> o1 --> c1 --> dSent
+dSent -->|Yes| eSent
+dSent -->|No| dKind
+dKind -->|Initial authorization| r1
+dKind -->|Concurrent review| r2
+dKind -->|Reauthorization / renewal| r3
+dKind -->|Modification / extension| r4
+dKind -->|Retroactive authorization| r5
+r1 --> dEx
+r2 --> dEx
+r3 --> dEx
+r4 --> dEx
+r5 --> dEx
+dEx -->|Yes| dPat
+dEx -->|No| pNew
+dPat -->|No| pClear
+dPat -->|Yes| pKeep
+pClear --> pTidy
+pKeep --> pTidy
+pNew --> pTidy
+pTidy --> dRan
+dRan -->|Yes| tStale --> sOut
+dRan -->|No| sOut
+sOut --> x1 & x2 & x3 & x4 & x5
+x1 --> g1
+x1 -.-> g2 & g3 & g4 & g5
+x3 --> gDocs
+x4 --> gJust

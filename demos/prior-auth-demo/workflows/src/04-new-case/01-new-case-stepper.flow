@@ -1,60 +1,65 @@
-title: Authorizations › New case › The stepper and the four steps
+title: Authorizations › New case › The stepper and the five steps
 route: /authorizations/new/:draftId
-intro: The strip at the top of New case: Referral, Medical records, Agents work, Review and sign. Earlier steps can be clicked to go back; later ones open only through the step's own button.
+intro: The strip at the top of New case: Intake, Eligibility & Benefits, Clinical documentation, Authorization preparation, Review & submit. Every step opens at any time, forward or back; the draft keeps what was typed and what the agents did. Each step shows one state under its name, and the same state sits in the step's own header.
 dir: TD
 ---
 start s1 "A case is open on any step"
-screen sc1 "Stepper under the title\n1 Referral · 2 Medical records · 3 Agents work · 4 Review and sign"
-process p1 "Current step: dark circle with its number\nEarlier steps: green circle with a tick\nLater steps: grey circle"
+screen sc1 "Stepper under the title and the 'Authorization type' dropdown\nFive steps, each a button with its name and one state label under it"
+process p1 "The current step: dark circle with its number\nComplete: a tick. Needs attention: a warning triangle. Blocked: a cross\nNot applicable: a dashed circle with a dash. Pending: the step number"
 decision d1 "Which step did the person click?"
-process pNo "Current step and later steps are disabled\nNothing happens"
-click c1 "Click an earlier step\n'Referral', 'Medical records' or 'Agents work'"
-process p2 "Case moves to that step\nWhat was entered and what the agents did is kept"
-screen sc2 "Page shows that step\nTitle and sentence change with it"
+click c1 "Click any step, including a later one"
+process p2 "The draft's position moves to that step\nNothing typed and nothing the agents did is lost"
+screen sc2 "Page shows that step\nSentence under the title and the step header change with it"
+screen sH "Step header\n'STEP 2 OF 5' · step name · state pill · one reason, e.g. 'Coverage and benefits checked'"
+process pTip "Hover a step: its one-line reason\n'Needs the payer, member ID and dates', '2 warnings', 'The draft is ready'"
+process pNoStart "Opening Authorization preparation never starts the agents\nIt says 'The agents have not started' with one button, 'Start the agents'"
 
 group gSub "The sentence under the title"
-  screen t1 "Referral: 'Start with the referral. Drop the documents and Reader lists anything that is missing.'"
-  screen t2 "Medical records: 'Drop what you have. Reader sorts the files and lists what is still missing, then the agents check the payer's rules.'\nTop right: 'Use sample chart'"
-  screen t3 "Agents work: 'The agents are reading the chart and checking Summit's rules. Questions come to you only when they must.'"
-  screen t4 "Review and sign: 'Nothing is sent to the payer until a person signs. See what is missing first, then read the summary.'\nTitle 'Review and sign'"
+  screen t1 "Intake: the type's own line\nInitial: 'Start with a referral or a patient. Everything is editable.'\nReview, renewal, modification: 'Find the patient, then the authorization ...'\nRetroactive: 'Care was delivered before an authorization was in place. Say what, when and why.'"
+  screen t2 "Eligibility & Benefits: 'Verify checks coverage and benefits for the dates asked. A warning says what to do next and never traps you.'"
+  screen t3 "Clinical documentation: 'Drop what you have. Reader sorts the files and lists what is still missing. The required items come from the payer's saved list.'\nTop right: 'Use sample chart'"
+  screen t4 "Authorization preparation: 'The agents are reading the chart and checking Summit's rules. Questions come to you only when they must.'"
+  screen t5 "Review & submit: 'Nothing is sent to the payer until a person signs. See what is missing first, then read the summary.'"
 endgroup
 
-group gFwd "Moving forward and back: each step's own buttons"
-  click b1 "Referral: 'Accept referral and continue', 'Continue to medical records' or 'No referral? Continue without one'"
-  click b2 "Medical records: 'Back', 'Save as draft', 'Continue'"
-  click b3 "Agents work: 'Back', 'Pause all agents', 'Skip ahead', 'Review and sign'"
-  click b4 "Review and sign: 'Back', 'Save as draft' (the button that signs is 'Sign and send to payer' in the card on the right)"
+group gFwd "Each step's own buttons"
+  click b1 "Intake: 'Save as draft', 'Continue to Eligibility & Benefits'"
+  click b2 "Eligibility & Benefits: 'Back', 'Save as draft', 'Continue to Clinical documentation'"
+  click b3 "Clinical documentation: 'Back', 'Save as draft', 'Continue'"
+  click b4 "Authorization preparation: 'Back', 'Pause all agents', 'Skip ahead', 'Review & submit'"
+  click b5 "Review & submit: 'Back', 'Save as draft'\nThe button that signs is in the Sign card on the right"
 endgroup
-process pBack "'Back' goes one step back\nMedical records to Referral; Agents work to Medical records; Review and sign to Agents work"
-process pNext "Forward buttons stay disabled until the step is ready\n'Accept referral and continue' waits for the required referral items;\n'Continue' waits for nothing missing; 'Review and sign' waits for the agents"
+process pBack "'Back' goes one step back\nIn the step bar at the bottom, always in view while a long step scrolls"
+process pHint "The footer's hint line says what is still open, never that the person cannot go on\ne.g. 'Still to add: patient, payer. You can go on; Review & submit lists what is missing.'"
 
 click cLink "Click the link 'Case Manager' above the title"
 goto gCm "Continues in: Case Manager"
-
-screen sFull "Stepper on the full referral page\n'Referral' is current and no step is clickable\nThe button 'Back to the case' sits beside the crumbs"
-goto gFull "Continues in: New case › Referral › The full referral page"
-
-goto g1 "Continues in: New case › Referral › Start screen"
-goto g2 "Continues in: New case › Medical records › The checklist and Continue"
-goto g3 "Continues in: New case › Agents work › Start the run and watch it"
-goto g4 "Continues in: New case › Review and sign › The draft and the summary"
+screen sFull "Stepper on the full referral page\n'Intake' is current\nThe button 'Back to the case' sits beside the crumbs"
+goto gFull "Continues in: Authorizations › New case › Referral › The full referral page"
+goto gStates "Continues in: Authorizations › New case › Step states"
+goto g1 "Continues in: Authorizations › New case › Intake › Initial authorization"
+goto g2 "Continues in: Authorizations › New case › Eligibility & Benefits › Initial authorization"
+goto g3 "Continues in: Authorizations › New case › Clinical documentation › The checklist and Continue"
+goto g4 "Continues in: Authorizations › New case › Authorization preparation › Start the run and watch it"
+goto g5 "Continues in: Authorizations › New case › Review & submit › The draft and the summary"
 
 s1 --> sc1 --> p1 --> d1
-d1 -->|Current or later step| pNo
-d1 -->|Earlier step| c1 --> p2 --> sc2
-sc2 --> t1
-sc2 --> t2
-sc2 --> t3
-sc2 --> t4
+sc1 --> pTip
+d1 --> c1 --> p2 --> sc2 --> sH
+sc2 -.-> pNoStart
+sc2 --> t1 & t2 & t3 & t4 & t5
 t1 --> b1 --> g1
 t2 --> b2 --> g2
 t3 --> b3 --> g3
 t4 --> b4 --> g4
+t5 --> b5 --> g5
 b2 --> pBack
 b3 --> pBack
 b4 --> pBack
-b1 -.-> pNext
-b2 -.-> pNext
-b3 -.-> pNext
+b5 --> pBack
+b1 -.-> pHint
+b2 -.-> pHint
+b3 -.-> pHint
+sH -.-> gStates
 sc1 --> cLink --> gCm
 sc1 -.-> sFull --> gFull

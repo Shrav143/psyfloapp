@@ -7,7 +7,7 @@ also: Found by reading the code and testing the built demo. Disconnect every sys
 screen p1 "EMR Connect\nConnection health, sync, mappings (in Advanced) and the Write back switch on each row"
 
 group gPull "New case: pull a chart"
-  click a1 "Click 'Pull a chart from EMR Connect'\nMedical records step"
+  click a1 "Click 'Pull a chart from EMR Connect'\nClinical documentation step"
   decision a0 "Is any system at a site in view Connected?"
   toast a8 "'No records system is connected. Connect one in EMR Connect to pull a chart, or drop the files above.'\nWith a link to EMR Connect"
   overlay a2 "Chart from EMR Connect\nDropdown with the charts that live in a Connected system\nA hint under each names the system"
@@ -21,7 +21,7 @@ group gPull "New case: pull a chart"
   toast a7 "'Pulled J.M., 34 from EMR Connect'\n'Everything below was filled in from the chart. You can still change it.'\nOr, amber: 'Level of care needs a mapping, so that field was left blank. You can still fill it in.'"
 endgroup
 process n1 "Sync now does not add charts to the picker\nThe four charts are fixed. Connect, Disconnect, Fix and Reconnect decide which systems offer them, and Map decides which fields a pull leaves blank"
-goto g1 "Continues in: Authorizations › New case › Medical records › Patient and insurance rows"
+goto g1 "Continues in: Authorizations › New case › Intake › Patient, insurance and request rows"
 
 group gWrite "Dashboard: write back"
   screen b1 "Dashboard request: 'Approved. Write-back waits for you'"

@@ -1,0 +1,48 @@
+title: Authorizations › New case › Eligibility & Benefits › Concurrent review
+route: /authorizations/new/:draftId (step 2 of 5, type 'Concurrent review')
+intro: A review follows a stay that is already authorized, so step 2 shows the check the patient already has instead of starting a new one. It sits beside the authorization on file: what was approved, what is used and what is left. The person refreshes it only if it is old or something changed.
+dir: TD
+---
+start s1 "Click 'Continue to Eligibility & Benefits' on Intake"
+screen sc "Eligibility & Benefits · Concurrent review\n'The patient's last check is shown. Refresh it if it is old.'"
+decision dKey "Which record does the case use?"
+process pEp "The record of the patient's treatment episode\nThe same one Eligibility & Benefits keeps for that patient"
+process pOwn "A case with its own check keeps it"
+decision dSame "Is it for the same payer and level of care as the case?"
+process pOther "The case lets go of it\nAnd Verify makes a check of its own, as for an initial request"
+goto gInit "Continues in: Authorizations › New case › Eligibility & Benefits › Initial authorization"
+screen sSum "Verification summary\nCoverage, Plan type and routing, Benefits, Authorization: 'Concurrent review'\n'Summit reviews each stay while an authorization is on file. A review is needed to continue.'\nExisting authorization: the reference, the service, the approved dates, 'N of M units used, K left'"
+decision dAge "Is the check old, or for other dates?"
+toast tOld "'This check is 30 hours old. Refresh it before you send.'\nNothing runs by itself: the person decides"
+click cRef "Click 'Refresh verification'"
+agent aV "Verify asks again, about 1.2 seconds"
+store stRec "The record is replaced\nThe case still uses the patient's record"
+decision dWarn "Does the check have warnings?\nCoverage lapsed, member ID, benefit, network"
+goto gWarn "Continues in: Authorizations › New case › Eligibility & Benefits › Warnings and documented exceptions"
+decision dNone "Does the payer need no authorization for this service?"
+goto gNoAuth "Continues in: Authorizations › New case › Eligibility & Benefits › No authorization required"
+process pPaused "Verify paused in Settings: the last result stays\nWith 'The refresh ... could not run because Verify is paused in Settings. This is the last result.'"
+group gFoot "Footer bar"
+  click cBack "Click 'Back'"
+  click cSave "Click 'Save as draft'"
+  click cCont "Click 'Continue to Clinical documentation'"
+endgroup
+goto gDocs "Continues in: Authorizations › New case › Clinical documentation › Required and typical documents by type"
+
+s1 --> sc --> dKey
+dKey -->|An episode is chosen| pEp --> dSame
+dKey -->|The case has its own| pOwn --> dSame
+dSame -->|No| pOther --> gInit
+dSame -->|Yes| sSum
+sSum --> dAge
+dAge -->|Yes| tOld --> cRef
+dAge -->|No| dWarn
+sSum --> cRef --> aV --> stRec --> dWarn
+aV -.-> pPaused
+dWarn -->|Yes| gWarn
+dWarn -->|No| dNone
+dNone -->|Yes| gNoAuth
+dNone -->|No| cCont
+sSum --> cBack
+sSum --> cSave
+cCont --> gDocs

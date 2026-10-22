@@ -1,0 +1,45 @@
+title: Authorizations › New case › Clinical documentation › Required and typical documents by type
+route: /authorizations/new/:draftId (step 3 of 5, the Documents list)
+intro: Which documents a case needs comes from two places. The required ones come from the payer's saved list for the level of care (Payers › Documents). What a request of this type usually carries is added under them and labelled 'Typical for a continued stay' and so on. Typical items are the demo's advice, never a payer's rule, and never required. 'N of M ready' counts both.
+dir: TD
+---
+start s1 "Open Clinical documentation\nThe Authorization type decides the typical items"
+process pReq "Required documents\nThe list saved on Payers › Documents for this payer and level of care\nSummit Residential 3.5: 9 documents, 7 required\nNo payer or level of care yet: only the referral and the diagnosis report"
+goto gPayers "Continues in: Payers › Documents › Edit the list"
+decision dKind "Which Authorization type?"
+process t1 "Initial authorization\nNo extra typical items\nThe payer's list is the list"
+process t2 "Concurrent review · 'Typical for a continued stay'\nProgress note since the last review\nUpdated treatment plan\nCurrent ASAM reassessment\nStep-down or discharge plan"
+process t3 "Reauthorization / renewal · 'Typical for a renewal'\nProgress summary since the last authorization\nUpdated treatment plan\nCurrent ASAM reassessment\nAttendance record"
+process t4 "Modification / extension · 'Typical for a modification'\nClinical note that supports the change\nUpdated treatment plan\nThe current authorization letter"
+process t5 "Retroactive authorization · 'Typical for a retroactive authorization'\nAdmission order with its date\nEligibility check from the admission date\nAttendance record for the dates of service\nWhy the authorization was not obtained"
+decision dFit "Does the title fit a standard document the payer already lists?\ne.g. 'Updated treatment plan' fits Treatment plan, 'Current ASAM reassessment' fits ASAM assessment"
+process pSame "It is not listed twice\nA dropped file fills the one row"
+process pOwn "It is its own row\nReader cannot match a file by name, so the person adds it"
+screen sRow "The Documents list\nRequired first · Recommended · Typical for the type · 'Not on the list' for a file the payer does not ask for"
+process pHint "A typical row says 'Typical for a continued stay. You can continue without it.'\nA required row says 'Not found yet. Drop it above or add it here.'"
+process pCount "Progress line 'N of M ready'\nRequired plus typical, with 'Mark not available' counting as ready\n'3 of 4 ready' reads three items in and one to go"
+process pJust "Authorization preparation lists a missing typical item as evidence that is missing\n'... is not in the case. It is typical for a continued stay.'"
+goto gRows "Continues in: Authorizations › New case › Clinical documentation › Clinical summary and document rows"
+goto gMark "Continues in: Authorizations › New case › Clinical documentation › Replace a document or mark it not available"
+goto gJust "Continues in: Authorizations › New case › Authorization preparation › Justification by type"
+goto gRev "Continues in: Authorizations › New case › Review & submit › Validation summary and checks"
+
+s1 --> pReq --> dKind
+pReq -.-> gPayers
+dKind -->|Initial| t1
+dKind -->|Concurrent| t2
+dKind -->|Reauthorization| t3
+dKind -->|Modification| t4
+dKind -->|Retroactive| t5
+t2 --> dFit
+t3 --> dFit
+t4 --> dFit
+t5 --> dFit
+t1 --> sRow
+dFit -->|Yes| pSame --> sRow
+dFit -->|No| pOwn --> sRow
+sRow --> pHint --> pCount
+pCount --> pJust --> gJust
+sRow --> gRows
+sRow --> gMark
+pCount -.-> gRev

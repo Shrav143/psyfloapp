@@ -1,0 +1,67 @@
+title: Authorizations › New case › Authorization preparation › Justification by type
+route: /authorizations/new/:draftId (step 4 of 5 once Scribe is done, and the summary on step 5)
+intro: Scribe prepares a justification for the type of request. Four sections are the same for every type; one section, what the request rests on, differs. It is built only from the documents and answers in the case. Evidence that is not there is listed as missing and never filled in. The same text is on Review & submit, where it can be edited.
+dir: TD
+also: Demo only: the sentences are written from the case's own data and fixed phrases. A real justification would be drafted from the chart.
+---
+start s1 "Scribe finishes its step (seventh of ten)\nThe section 'Initial request justification' (or the type's own name) appears under the agent list, closed"
+screen sCard "Closed section titled for the type\n'Initial request justification', 'Continued-stay justification', 'Renewal justification', 'Modification justification' or 'Retroactive justification'\n'5 sections from the 8 documents in the case. Scribe adds only what the chart supports.'\nPill 'N missing' or 'Nothing missing'"
+click cOpen "Click the section to open it"
+screen sOpen "Each section: a bold heading, then its text\nAt the end, if anything is missing: 'Evidence that is missing' with a list"
+decision dKind "Which Authorization type?"
+
+group gSame "Sections every type has"
+  process a1 "**Clinical picture**\nWho, age, diagnoses, how long (from an answer), the reason given, withdrawal scores when a nursing note is in"
+  process a2 "**Why a lower level of care is not safe**\n'Why this level of care is still needed' for a review or a renewal\n'Why weekly outpatient care is not enough' (IOP), 'Why withdrawal needs medical monitoring' (Detox)"
+  process a3 "**Current severity**\nScores from the psychiatric evaluation, or 'The chart records current symptoms and day-to-day function.'"
+  process a4 "**Plan**\nThe days or units asked for, and the step-down"
+endgroup
+
+group gBasis "The section that differs"
+  process b0 "Initial authorization\nNo extra section: there is no earlier authorization to point at"
+  process b1 "Concurrent review\n**Progress since the last review**\nHow much of the current authorization is used, and the latest therapy note\n'No therapy or progress note is in the case, so progress since the last review is not documented yet.'"
+  process b2 "Reauthorization / renewal\n**Progress since the authorization began**\nWhat is used, attendance for the period, and the treatment plan\n'No attendance record is in the case, so attendance for the period is not documented yet.'"
+  process b3 "Modification / extension\n**What changes and why**\n'The request is for more days: 7 more days.' and the reason typed on Intake\n'This is a request. Nothing about the authorization changes until the payer approves it.'"
+  process b4 "Retroactive authorization\n**Dates of service and why no authorization was in place**\n'Care was given from 10/05/2026 to 10/12/2026.' and the reason typed on Intake\nPlan: 'The authorization is asked from the first day of care, so it covers the days already delivered.'"
+endgroup
+
+group gGap "What is never filled in"
+  decision dGap "Is the evidence in the case?"
+  process g1 "A required document that is not in the case\n'ASAM assessment is not in the case. The payer lists it as required.'"
+  process g2 "A typical item that is not in the case\n'Progress note since the last review is not in the case. It is typical for a continued stay.'"
+  process g3 "'The chart does not yet say why a lower level of care is not enough.'\nScribe asks a question when it is the second one it needs"
+  process g4 "'The reason for the change has not been added.' (modification)\n'The reason no authorization was in place has not been added.' (retroactive)"
+  process g5 "Each gap is listed in the card's 'Evidence that is missing'\nand under 'What is missing' on Review & submit"
+endgroup
+
+process pEdit "On Review & submit the same text is editable\nAn edit is kept until the summary is rebuilt: after a new answer, a tick in 'To raise it further', 'Send back to Scribe', or a change to the details or documents"
+goto gQ "Continues in: Authorizations › New case › Authorization preparation › An agent asks a question"
+goto gSum "Continues in: Authorizations › New case › Review & submit › The draft and the summary"
+goto gMis "Continues in: Authorizations › New case › Review & submit › What is missing"
+goto gDocs "Continues in: Authorizations › New case › Clinical documentation › Required and typical documents by type"
+
+s1 --> sCard --> cOpen --> sOpen --> dKind
+sOpen --> a1 & a2 & a3 & a4
+dKind -->|Initial| b0
+dKind -->|Concurrent| b1
+dKind -->|Reauthorization| b2
+dKind -->|Modification| b3
+dKind -->|Retroactive| b4
+b1 --> dGap
+b2 --> dGap
+b3 --> dGap
+b4 --> dGap
+b0 --> dGap
+a2 --> dGap
+dGap -->|Required document missing| g1
+dGap -->|Typical item missing| g2
+dGap -->|No lower-level evidence| g3
+dGap -->|No reason typed| g4
+g1 --> g5
+g2 --> g5
+g3 --> g5
+g4 --> g5
+g3 -.-> gQ
+g1 -.-> gDocs
+g5 --> gMis
+sOpen --> pEdit --> gSum

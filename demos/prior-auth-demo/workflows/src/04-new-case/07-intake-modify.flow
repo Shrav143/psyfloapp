@@ -1,0 +1,51 @@
+title: Authorizations › New case › Intake › Modification / extension
+route: /authorizations/new/:draftId?type=modify (Intake)
+intro: A modification asks the payer to change an authorization that is already approved: more days or units, other dates, a different service, or a correction. It is a request, never an approval, and says so. Intake finds the patient and the authorization, then asks what should change and why.
+dir: TD
+---
+start s1 "Pick 'Modification / extension' in 'Authorization type'\nOr open ?type=modify"
+screen sc "Intake · Modification / extension\n'Find the patient, then the authorization to change, and say what should change.'"
+goto gFind "Continues in: Authorizations › New case › Intake › Find a patient and the authorization"
+screen sAuth "Authorization card\nStatus, approved dates, authorized, left, expires on, 'History'"
+
+group gChange "Card 'Proposed change'"
+  screen sChg "'Say what should change and why. The payer decides.'\nPill 'Payer approval: not yet. This is a request, not an approval.'"
+  input iKind "Pick 'What should change'\nMore units, More days, Revised dates, Different service or level of care, A correction"
+  decision dMore "More units or More days?"
+  input iAmt "'How many more units' or 'How many more days'\n1 to 90"
+  input iWhy "'Why the change is needed'\n'One or two sentences. Scribe uses it in the justification, and only what the chart supports goes in.'"
+endgroup
+
+screen sDates "Card 'Dates the change covers'\n'From today, unless the change revises the dates.'"
+input iFrom "'Change starts'\nToday"
+input iTo "'Change ends' (optional)"
+store st "The request is recorded as 'Modification'\nThe change is kept on the case with the authorization's ids\nThe authorization itself is not touched"
+decision dEmpty "Is the reason for the change empty?"
+toast tEmpty "Review & submit lists 'Proposed change' to acknowledge\n'Say what should change and why. A modification is a request, not an approval.'"
+process pDup "A modification is never a duplicate of the authorization it changes\nAnother open request or active authorization for the same dates still is"
+goto gDup "Continues in: Authorizations › New case › Intake › Possible duplicate"
+process pHist "After sending, the request's History says\n'You asked for a change to the authorization'\n'This is a request, not an approval. Nothing changes until the payer approves it.'"
+process pDoc "Typical documents: clinical note that supports the change, updated treatment plan, the current authorization letter"
+goto gElig "Continues in: Authorizations › New case › Eligibility & Benefits › Modification / extension"
+goto gDocs "Continues in: Authorizations › New case › Clinical documentation › Required and typical documents by type"
+goto gJust "Continues in: Authorizations › New case › Authorization preparation › Justification by type"
+click cSave "Click 'Save as draft'"
+click cCont "Click 'Continue to Eligibility & Benefits'"
+goto gSave "Continues in: Authorizations › New case › Save as draft and leave"
+
+s1 --> sc --> gFind
+sc --> sAuth --> sChg
+sChg --> iKind --> dMore
+dMore -->|Yes| iAmt --> iWhy
+dMore -->|No| iWhy
+iWhy --> dEmpty
+dEmpty -->|Yes| tEmpty
+dEmpty -->|No| sDates
+tEmpty --> sDates
+sDates --> iFrom --> iTo --> st
+st --> pHist
+st --> pDup -.-> gDup
+st --> pDoc --> gDocs
+st --> gJust
+st --> cSave --> gSave
+st --> cCont --> gElig

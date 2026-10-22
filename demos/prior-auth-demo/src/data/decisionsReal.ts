@@ -11,6 +11,7 @@ import type { BuiltInPayerId, Program } from "./types";
 export interface RealDecision {
   id: string;
   denialId?: string;
+  linkId?: string;
   caseId: string;
   initials: string;
   age: number;
@@ -138,7 +139,13 @@ function realApprovals(): RealDecision[] {
   });
 }
 
-export const REAL_DECISIONS: RealDecision[] = [...realDenials(), ...realApprovals()];
+/** R-1042 (J.M., 34, Summit, residential admission) is still being prepared, so it has no decision yet. Its chart does record an intensive outpatient
+    attempt in 2025 that ended in week 3 when housing was lost: that approval is in the history, and its case panel opens R-1042. */
+const PRIOR: RealDecision[] = [
+  { id: "I-1993", linkId: "R-1042", caseId: "R-1042", initials: "J.M.", age: 34, payerId: "summit", program: "IOP", kind: "initial", dx: "cooc", population: "first", outcome: "approved", day: 355, unit: "units", requested: 36, approvedAmt: 36, p2p: "none", appeal: "none" },
+];
+
+export const REAL_DECISIONS: RealDecision[] = [...realDenials(), ...realApprovals(), ...PRIOR];
 
 /** Every id that opens a real page in the demo: a queue row, a Dashboard request or its case, a ledger case. */
 export const DEMO_CASE_IDS: Set<string> = new Set([

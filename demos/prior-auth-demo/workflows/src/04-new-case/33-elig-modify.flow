@@ -1,0 +1,46 @@
+title: Authorizations › New case › Eligibility & Benefits › Modification / extension
+route: /authorizations/new/:draftId (step 2 of 5, type 'Modification / extension')
+intro: A modification changes an authorization that is already approved, so step 2 checks whether the change alters what the plan requires: the authorization requirement, the benefit and the network. The patient's last check is shown beside the authorization. The request stays a request: nothing about the authorization changes until the payer approves it.
+dir: TD
+---
+start s1 "Click 'Continue to Eligibility & Benefits' on Intake"
+screen sc "Eligibility & Benefits · Modification / extension\n'Check whether the change alters what the plan requires.'"
+screen sSum "Verification summary\nThe patient's last check\nAuthorization: Required, Concurrent review, Not required or Unknown\nExisting authorization with what is used and left"
+decision dChg "What is the proposed change?"
+process c1 "More days or units, or revised dates\nThe check should cover the new dates\n'This check covers other dates than the request asks for.'"
+process c2 "A different service or level of care\nThe check is for another level of care, so it does not describe this case\nVerify makes a new one"
+process c3 "A correction\nThe last check is shown as it is"
+decision dAge "Is the check old, or for other dates?"
+toast tOld "'This check covers other dates than the request asks for. Refresh it before you send.'"
+click cRef "Click 'Refresh verification'"
+agent aV "Verify asks the plan again, about 1.2 seconds"
+decision dReq "What does the check say about the authorization?"
+process q1 "Required or Concurrent review\nThe change goes to the payer as a request"
+process q2 "Unknown\nWarning 'Authorization requirement unknown'\n'No rule on file says whether Summit requires an authorization for this service. Check with Summit. Nothing was assumed.'"
+process q3 "Not required\n'No authorization required': go to the three actions"
+goto gWarn "Continues in: Authorizations › New case › Eligibility & Benefits › Warnings and documented exceptions"
+goto gNoAuth "Continues in: Authorizations › New case › Eligibility & Benefits › No authorization required"
+process pNote "The request is not an approval\nThe authorization keeps its approved dates and units until the payer decides"
+group gFoot "Footer bar"
+  click cBack "Click 'Back'"
+  click cSave "Click 'Save as draft'"
+  click cCont "Click 'Continue to Clinical documentation'"
+endgroup
+goto gDocs "Continues in: Authorizations › New case › Clinical documentation › Required and typical documents by type"
+
+s1 --> sc --> sSum --> dChg
+dChg -->|More days, more units, revised dates| c1
+dChg -->|Different service| c2
+dChg -->|A correction| c3
+c1 --> dAge
+c2 --> aV
+c3 --> dReq
+dAge -->|Yes| tOld --> cRef --> aV --> dReq
+dAge -->|No| dReq
+dReq -->|Required or concurrent| q1 --> pNote
+dReq -->|Unknown| q2 --> gWarn
+dReq -->|Not required| q3 --> gNoAuth
+pNote --> cCont
+sSum --> cBack
+sSum --> cSave
+cCont --> gDocs

@@ -1,0 +1,77 @@
+title: Authorizations › New case › Authorization preparation › Start the run and watch it
+route: /authorizations/new/:draftId (step 4 of 5, 'Authorization preparation')
+intro: 'Continue' on Clinical documentation asks once, then ten agents work in order for about 13 seconds. Opening this step never starts them: before they start it says so and offers one button. The page shows each agent's line, the approval chance climbing, two ways to raise it, and Pause and Skip ahead. A paused agent holds the run, and Verify can fail to reach a payer's portal. All progress is written to the draft.
+dir: TD
+---
+start s1 "On step 3, click 'Continue'\nThe agents have not started yet"
+start s0 "Click 'Authorization preparation' in the stepper\nbefore the agents have started"
+screen sNot "'The agents have not started'\n'They read the chart, check the payer's rules, match the evidence to the criteria and prepare the justification. 2 required documents are not in the case yet. They will flag them rather than guess. Nothing is sent to the payer until a clinician signs.'\nButton 'Start the agents'\nFooter 'Back' and 'Go back to add what is missing, or start now and review the gaps later.'"
+click cNot "Click 'Start the agents'"
+click cBackNot "Click 'Back'"
+goto gDocs "Continues in: Authorizations › New case › Clinical documentation › The checklist and Continue"
+overlay o1 "Start the agents?\nJ.M., Residential 3.5 · Summit Medicaid HMO\n'Reader swaps names, dates and IDs for codes and reads the chart. Verify, Criteria, Historian and Placement check coverage, rules and how Summit has ruled. Scribe drafts the case and may ask you a question or two.'\n'Nothing is sent to the payer until a clinician signs.'"
+click cCancel "Click 'Cancel', press Escape, or click outside"
+endx eCancel "Back where it was; nothing started"
+click cStart "Click 'Start the agents'"
+store st1 "Draft saved as a case with an ID such as R-1701\nIt now shows in Case Manager › Being prepared"
+store st2 "Run set up\nChance range from the payer: 62% to 88% for Summit\nQuestions planned: one, or two when the chart leaves a gap\nClock set from the request type"
+screen sc "Step 4 'Authorization preparation'\n'Agents at work on R-1701'\n'Residential 3.5 admission · Summit Medicaid HMO' and a clock chip that counts up"
+process pRow "Each agent row goes 'Waiting', then 'Working' with a spinner, then a green tick with its time"
+
+group gRun "Ten agents, in this order"
+  agent a1 "Reader · 1.3 s\n'Read 8 files and found 214 facts. Identifiers are now codes'"
+  agent a2 "Verify · 1.0 s\n'Coverage is active and prior authorization is required'\nFirst run for Cardinal: it cannot reach the portal and stops"
+  agent a3 "Criteria · 1.4 s\n'Matched the chart to Summit's criteria: 9 of 9 requirements met'"
+  agent a4 "Historian · 1.3 s\n'Reviewed 1,248 similar Summit decisions: 212 your own, 806 network, 230 benchmark'"
+  agent a5 "Placement · 1.0 s\n'The chart supports Residential 3.5 (ASAM 3.5)'"
+  agent a6 "Forecaster · 1.1 s\n'Approval chance 88%, likely 83-92%'"
+  agent a7 "Scribe · 2.2 s\nStops to ask its question (two when the chart leaves a gap), then 'Drafted the medical-necessity summary'"
+  agent a8 "Integrity · 1.4 s\n'Every sentence traces to the chart'"
+  agent a9 "Packet · 1.3 s\n'Assembled Summit's form with 8 attachments'"
+  agent a10 "Scrubber · 1.0 s\n'Checked the request for errors. None found'"
+endgroup
+
+
+
+group gFoot "Footer buttons"
+  click cPause "Click 'Pause all agents'\nSame as 'Pause all agents' in Settings: the whole app is paused"
+  toast tPause "Banner 'Agents are paused in Settings' (the only message shown while paused)\nRow: 'Paused in Settings'\nThe run holds at the agent it was on"
+  click cResume "Click 'Resume agents'\nSettings shows them resumed too"
+  click cSkip "Click 'Skip ahead'"
+  process pFast "Each step now takes about 0.14 s\nThe button switches off\nA question still stops the run"
+  click cBack "Click 'Back'"
+  click cRev "Click 'Review & submit'\nSwitched off until all ten agents are done"
+endgroup
+
+toast tRec "Banner 'Records changed after the last run. The agents re-checked.'\nShown when the documents or the details changed after an earlier run, and nothing more important is on screen (not while a question, or a pause, is showing)"
+process pAway "Leave the page and progress is kept in the draft\nBut the agents only move while this page is open\nHint: 'The agents work on their own. You can leave and come back.'"
+process pJust "After Scribe: a closed section titled for the type\n'Initial request justification', 'Continued-stay justification', 'Renewal justification', 'Modification justification' or 'Retroactive justification'\n'N sections from the N documents in the case. Scribe adds only what the chart supports.' Pill 'N missing' or 'Nothing missing'"
+goto gJust "Continues in: Authorizations › New case › Authorization preparation › Justification by type"
+goto gChance "Continues in: Authorizations › New case › Authorization preparation › Approval chance and ways to raise it"
+goto g46 "Continues in: Authorizations › New case › Authorization preparation › An agent could not finish"
+goto g47 "Continues in: Authorizations › New case › Authorization preparation › Paused in Settings"
+goto g35 "Continues in: Authorizations › New case › Authorization preparation › An agent asks a question"
+goto gRev "Continues in: Authorizations › New case › Review & submit › The draft and the summary"
+goto g36 "Continues in: Authorizations › New case › Authorization preparation › Finished, paused or left"
+
+s1 --> o1
+s0 --> sNot --> cNot --> o1
+sNot --> cBackNot --> gDocs
+o1 --> cCancel --> eCancel
+o1 --> cStart --> st1 --> st2 --> sc --> pRow --> a1
+a1 --> a2 --> a3 --> a4 --> a5 --> a6 --> a7 --> a8 --> a9 --> a10 --> g36
+a7 -.->|Stops once| g35
+a7 --> pJust --> gJust
+
+sc --> tRec
+a2 -.->|Cardinal, first run| g46
+
+
+sc --> cPause --> tPause --> cResume
+tPause --> g47
+sc --> cSkip --> pFast
+sc --> cBack --> g36
+sc --> cRev --> gRev
+sc --> pAway --> g36
+sc -.-> gChance
+a6 -.-> gChance

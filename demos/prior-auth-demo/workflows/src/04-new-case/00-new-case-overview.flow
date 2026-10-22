@@ -1,79 +1,62 @@
 title: Authorizations › New case › How a case starts and resumes
 route: /authorizations/new
-intro: New case is a page that makes or reopens a case (a 'draft') and shows the step it is on. This diagram covers every way in, how the case is made, and the three special pages. The four steps continue in their own diagrams.
+intro: New case is a page that makes or reopens a case (a 'draft'). This diagram covers every way in and how a new case is made from the address: a referral, a verification, a patient, an authorization type or nothing. Reopening a case that exists, and what a viewer at one site can open, are in the next diagram.
 dir: TD
 also: Demo only: the hosted preview keeps the address in memory, so ?referral= cannot be typed there. The button 'Start a case from this referral' still works in it.
 ---
-start s1 "Open New case\nSidebar, a 'New case' button, the Demo menu, FLO's link or the old /referrals address"
-start s2 "Click 'Start authorization'\non a coverage result"
-start s3 "Click 'Start a case from this referral'\non the full referral page (or type /authorizations/new?referral=RF-2051)"
-start s4 "Open a case that already exists\nA Case Manager row button, a bell link, or 'Open in review and sign'"
+start s1 "Open New case\nSidebar 'New case', a 'New case' button, the Demo menu, FLO's link or the old /referrals address"
+start s2 "Click 'Create authorization from verification' or 'Start authorization'\non a result in Eligibility & Benefits"
+start s3 "Click 'Start a case from this referral'\non the full referral page, or type ?referral=RF-2051"
+start s4 "Click 'Start renewal' in the Dashboard's what-to-do list\n(opens ?type=reauth&patient=CASE-ID)"
+start s5 "Type a link with ?type=\ninitial, concurrent, reauth, modify or retro"
 
 group gMake "No case id in the address: make one"
-  process p1 "Page makes a case, then opens /authorizations/new/draft-ID\nIt replaces the address, so Back does not loop"
   decision d1 "What is in the address?"
+  decision dRefSite "?referral=ID: is the referral at a site in view?"
+  screen scRefOut "'This referral is not available at Site A'\nNames the id and its site, nothing about the patient\nNo case is made"
   decision d2 "Is RF-2051 in the demo?"
-  process p2 "Case is filled from the referral\nPatient, payer, member ID, level of care, diagnoses, reason\nRequest type: Initial request if routine, else Admission"
-  store st1 "Case created on Medical records\nThe referral is the first document"
-  toast t1 "'Referral RF-2051 is in this case'\n'K.R., 29. Next, add the medical records.'"
+  process p2 "Case is filled from the referral\nPatient, payer, member ID, level of care, diagnoses, reason, referrer\nRequest type: Initial request if routine, else Admission\nThe case is at the referral's site"
+  store st1 "Case created on Intake, referral attached\nThe referral is the first document"
+  toast t1 "'Referral RF-2051 is in this case'\n'K.R., 29. Check the details below, then go on to Eligibility & Benefits.'"
   toast t2 "Amber toast 'Referral not found'\n'We could not find RF-9999. Start from a blank case instead.'"
-  process p3 "Filled from ?payer=, ?program=, ?member=, ?initials=, ?age=\nRequest type: Admission\nAn unknown payer or program is ignored"
-  store st2 "Case created on Medical records"
-  store st3 "Blank case created, step 'Referral'\nEvery click on sidebar 'New case' makes a new one\nNot in Case Manager until 'Save as draft'"
+  decision dVer "?verification=ID: is that check at a site in view?"
+  process p3 "Case is filled from the check\nPatient, payer, plan, member ID, level of care and the dates the check covers\nThe case uses that same verification record"
+  decision dPat "?patient=ID: is that patient at a site in view?"
+  process p4 "The patient's details, treatment episode and authorization are filled in\nNo second patient is made"
+  process p5 "?type= picks the Authorization type\nIts request type is recorded: Initial request, Continued stay, Recertification, Modification or Retro-authorization"
+  process p6 "Filled from ?payer=, ?program=, ?member=, ?initials=, ?age=\nRequest type: Admission\nAn unknown payer or program is ignored"
+  store st3 "Blank case created at Intake\nIt belongs to the site you are working at\nNot in Case Manager until 'Save as draft'"
 endgroup
-process p4 "Case opens at /authorizations/new/draft-ID"
+process p7 "?step= opens that step: intake, eligibility, documentation, preparation or review\nThe older names referral, records and agents land on Intake, Clinical documentation and Authorization preparation"
+process p8 "Case opens at /authorizations/new/draft-ID\nIt replaces the address, so Back does not loop"
+goto gOpen "Continues in: Authorizations › New case › Reopen and resume a case"
+goto gStep "Continues in: Authorizations › New case › The stepper and the five steps"
+goto gType "Continues in: Authorizations › New case › Authorization type"
+goto gSites "Continues in: Authorizations › New case › Sites and scope"
+goto g1 "Continues in: Authorizations › New case › Intake › Start with a referral or patient"
 
-group gOpen "A case id is in the address: reopen it"
-  decision d3 "Is there a case with that id?"
-  screen sc1 "New case\n'That draft is not in the demo.'\n'We could not find that draft'\n'It may have been cleared when the demo data was reset.'"
-  click c1 "Click 'Start a new case'"
-  decision d4 "Was it signed and sent?"
-  screen sc2 "'R-1234 was sent'\n'It was signed and sent to the payer. The agents are following it from the Dashboard.'\n'This case is no longer being prepared'"
-  click c2 "Click 'Open it on the Dashboard'"
-  click c3 "Click 'Back to Case Manager'"
-  decision d5 "On Referral or Medical records, and have agents already run?"
-  process p5 "Moves on when the case is opened\nAgents work if fewer than 10 agents are done, else Review and sign\nA later click on 'Referral' in the stepper is not undone"
-endgroup
-
-screen sc3 "New case\nLink 'Case Manager', title, one sentence, stepper, the step\nTitle becomes 'Review and sign' on the last step"
-click c4 "Click the link 'Case Manager'"
-decision d6 "Which step is the case on?"
-goto gCm "Continues in: Case Manager"
-goto gDash "Continues in: Dashboard\nOpens the request"
-goto gStep "Continues in: New case › The stepper and the four steps"
-goto g1 "Continues in: New case › Referral › Start screen"
-goto g1b "Continues in: New case › Referral › Referral checklist"
-goto g2 "Continues in: New case › Medical records › The checklist and Continue"
-goto g3 "Continues in: New case › Agents work › Start the run and watch it"
-goto g4 "Continues in: New case › Review and sign › The draft and the summary"
-
-s1 --> p1
-s2 --> p1
-s3 --> p1
-p1 --> d1
-d1 -->|?referral=ID| d2
-d1 -->|payer or program valid| p3 --> st2
-d1 -->|Nothing usable| st3
-d2 -->|Yes| p2 --> st1 --> t1
+s1 --> d1
+s2 --> d1
+s3 --> d1
+s4 --> d1
+s5 --> d1
+d1 -->|?referral=ID| dRefSite
+dRefSite -->|No| scRefOut
+dRefSite -->|Yes| d2
+d2 -->|Yes| p2 --> st1 --> t1 --> p7
 d2 -->|No| t2 --> st3
-t1 --> p4
-st2 --> p4
-st3 --> p4
-s4 --> d3
-p4 --> d3
-d3 -->|No| sc1 --> c1 --> p1
-d3 -->|Yes| d4
-d4 -->|Yes| sc2
-sc2 --> c2 --> gDash
-sc2 --> c3 --> gCm
-d4 -->|No| d5
-d5 -->|Yes| p5 --> sc3
-d5 -->|No| sc3
-sc3 --> c4 --> gCm
-sc3 --> d6
-sc3 -.-> gStep
-d6 -->|Referral, nothing loaded| g1
-d6 -->|Referral, one loaded| g1b
-d6 -->|Medical records| g2
-d6 -->|Agents work| g3
-d6 -->|Review and sign| g4
+d1 -->|?verification=ID| dVer
+dVer -->|Yes| p3 --> p7
+dVer -->|No| st3
+d1 -->|?patient=ID| dPat
+dPat -->|Yes| p4 --> p7
+dPat -->|No| st3
+d1 -->|?type=| p5 --> p7
+d1 -->|payer or program valid| p6 --> p7
+d1 -->|Nothing usable| st3 --> p7
+p7 --> p8
+p8 --> gOpen
+p8 -.-> gStep
+p8 -.-> gType
+scRefOut -.-> gSites
+st1 -.-> g1

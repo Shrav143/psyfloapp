@@ -1,0 +1,34 @@
+title: Analytics › Common denial reasons: open Denial Intelligence
+route: /analytics
+intro: The table of common denial reasons sits in a folded section under 'Detailed breakdowns'. Every row is a link to Denial Intelligence, by the row or by the reason text. The link carries the row's payer and its reason, so the denial list opens already narrowed to those denials. Under the table are how appeals ended and how many denials were accepted.
+dir: TD
+---
+start s1 "Under 'Detailed breakdowns', click 'Common denial reasons by payer'\nOr Tab to it and press Enter or Space"
+screen sc "Summary stays: '311 denials this quarter. Most common: Continued-stay evidence incomplete at Cardinal, 23%.'\nText: 'This quarter. Each payer's most common reason. Select a row to open those denials in Denial Intelligence.'"
+screen th "Columns: 'Reason', 'Payer', 'Count', 'Share of denials'"
+decision q1 "Which payer is chosen in the menu?"
+process p1 "'All payers': one row per payer, its most common reason\nBiggest first\nA payer with fewer than 20 denials is left out"
+screen r1 "Cardinal 73 · 23% 'Continued-stay evidence incomplete'\nEvergreen 34 · 11%\nSummit Medicaid 28 · 9%\nHarborview MA 15 · 5%\nBeacon PPO 13 · 4%"
+process p3 "One payer: all of that payer's reasons\nShares add up to 100% of that payer's denials"
+decision q2 "Fewer than 20 denials in view?"
+screen nd "'Not enough decisions yet. Figures based on fewer than 20 decisions stay hidden.'"
+screen o1 "Under the table\n'Appeals overturned' 56%, '54 of 96 rulings this quarter'\n'Denials accepted' 17"
+process o2 "Both move when Denial Intelligence records a ruling or an accepted denial\nAppeals show a dash under 20 rulings"
+
+group gClick "Open a row"
+  click c1 "Click anywhere on a row"
+  click c2 "Click the reason text, for example 'Recertification filed too late'"
+  process p4 "Opens /denials?payer=harborview&reason=Recertification filed too late\nThe row's own payer and reason go along"
+endgroup
+goto g1 "Continues in: Denial Intelligence › Open denials list › Filter by payer and reason"
+
+s1 --> sc --> th --> q1
+q1 -->|All payers| p1 --> r1
+q1 -->|One payer| p3
+r1 & p3 --> q2
+q2 -->|Yes| nd
+q2 -->|No| c1 & c2
+c1 --> p4
+c2 --> p4
+p4 --> g1
+sc --> o1 --> o2

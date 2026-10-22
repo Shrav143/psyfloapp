@@ -46,7 +46,7 @@ group gP "Last line (New case drawer only; the result page shows it under Benefi
   process p3 "Ohio Medicaid: no line at all\nNo '$0 copay' text, because members usually pay none"
 endgroup
 
-goto g1 "Continues in: Authorizations › New case › Medical records › Patient and insurance rows"
+goto g1 "Continues in: Authorizations › New case › Intake › Patient, insurance and request rows"
 s1 --> q9
 q9 -->|No| x9
 q9 -->|Yes| a0

@@ -117,6 +117,18 @@ export function ChartFrame({ id, summary, table, children, className, hint }: { 
 }
 export const summaryId = (frameId: string): string => `${frameId}-summary`;
 
+/** A tidy top and step for an axis with `intervals` gridlines: 1, 2, 2.5, 5 or 10 times a power of ten, and whole numbers when `integer` is set. */
+export function niceScale(max: number, intervals = 4, integer = false): { max: number; step: number } {
+  const raw = Math.max(max, 1e-9) / intervals;
+  const pow = Math.pow(10, Math.floor(Math.log10(raw)));
+  for (const k of [1, 2, 2.5, 5, 10]) {
+    const step = k * pow;
+    if (step >= raw - 1e-9 && (!integer || Math.abs(step - Math.round(step)) < 1e-9)) return { max: step * intervals, step };
+  }
+  const step = Math.max(1, 10 * pow);
+  return { max: step * intervals, step };
+}
+
 /** A round "nice" top for an axis. */
 export function niceMax(v: number): number {
   if (v <= 0) return 1;

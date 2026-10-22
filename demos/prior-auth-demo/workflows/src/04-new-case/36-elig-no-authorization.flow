@@ -1,0 +1,53 @@
+title: Authorizations › New case › Eligibility & Benefits › No authorization required
+route: /authorizations/new/:draftId (step 2 of 5, the outcome 'No authorization is required')
+intro: Some payers need no authorization for some levels of care, for example Beacon for IOP and PHP, as its rule on Payers says. When the check says so, nothing is prepared or sent unless the person chooses to. The step offers three actions: save the verification, return to Case Manager, or continue with a documented exception. Steps 3, 4 and 5 are marked Not applicable and still open.
+dir: TD
+---
+start s1 "Verify finishes: the payer needs no authorization for this level of care and these dates\nExample: Beacon PPO, IOP"
+decision d1 "Does the case already have a documented exception for it?"
+screen sCard "Card 'No authorization is required'\n'Beacon PPO needs no authorization for IOP, 10/22/2026 to 11/11/2026. Its rule says: ... Documentation and preparation do not apply, so those steps are marked Not applicable.'"
+process pSteps "The stepper reads\nStep 2 Complete · No authorization required\nSteps 3, 4 and 5 Not applicable · 'The payer needs no authorization'"
+toast tHint "Footer hint: 'No authorization is required. Save the verification, return to Case Manager, or continue with a documented exception.'"
+
+group gThree "The three actions"
+  click a1 "Click 'Save verification to the patient record'"
+  store s1a "The verification is saved\nIt shows in Eligibility & Benefits"
+  toast t1 "'Verification saved'\n'J.M.'s verification is in Eligibility & Benefits.'"
+  process p1 "A case that was never saved as a draft is discarded\nNothing is left in Case Manager"
+  click a2 "Click 'Return to Case Manager'"
+  process p2 "A case that was never saved as a draft is discarded\nThe page opens Case Manager"
+  click a3 "Click 'Continue with a documented exception'"
+  input iWhy "'Why send a request when none is required?'\n'For example: the payer's care manager asked for a review in writing'"
+  decision dText "Is there a reason?"
+  process pOff "'Document and continue' stays switched off"
+  click cOk "Click 'Document and continue'"
+  click cCancel "Click 'Cancel'"
+  store st "The reason is kept on the case\n'Documented exception. ...' and 'Undo'"
+endgroup
+
+process pOn "Steps 3, 4 and 5 are applicable again\nClinical documentation, Authorization preparation and Review & submit work as usual"
+process pRev "Review & submit lists 'No authorization needed' as a note\n'You went on with a documented exception: ...'"
+store stHist "After sending, the request's History says\n'You sent this request although the payer needs no authorization, and said why'"
+process pOpen "Without a decision the person may still open steps 3 to 5\nNothing there is sent: the step says it is Not applicable"
+goto gEb "Continues in: Authorizations › Eligibility & Benefits › Result › What the page shows"
+goto gCm "Continues in: Case Manager"
+goto gDocs "Continues in: Authorizations › New case › Clinical documentation › The checklist and Continue"
+goto gSign "Continues in: Authorizations › New case › Review & submit › Sign and send to payer"
+goto gPayers "Continues in: Payers › Rules › Edit a rule"
+
+s1 --> d1
+d1 -->|No| sCard
+d1 -->|Yes| pOn
+sCard --> pSteps
+sCard --> tHint
+sCard -.-> gPayers
+sCard --> a1 --> s1a --> t1 --> p1 --> gEb
+sCard --> a2 --> p2 --> gCm
+sCard --> a3 --> iWhy --> dText
+dText -->|No| pOff --> iWhy
+dText -->|Yes| cOk --> st --> pOn
+iWhy --> cCancel --> sCard
+pSteps --> pOpen
+pOn --> pRev
+pOn --> gDocs
+pRev --> stHist --> gSign

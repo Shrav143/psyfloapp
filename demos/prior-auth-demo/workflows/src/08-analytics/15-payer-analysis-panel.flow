@@ -1,0 +1,47 @@
+title: Analytics › Payer analysis panel
+route: /analytics
+intro: A right-hand panel for one payer. It follows the period, program, diagnosis group and site view on the page, and every number in it is counted from that payer's own decisions. Top to bottom: six figures against the clinic, what the payer tends to do, its twelve months, where it approves and where it does not, why it denies, and the cases behind the numbers.
+dir: TD
+also: The panel stacks. A case list opens on top of it, and a case summary on top of that. Escape closes the top layer only.
+---
+start s1 "A payer row on the scorecard, or a payer name in the grid, was opened"
+overlay o1 "Panel: payer name, plan type, period, site view, number of decisions\nButton 'Copy summary'\nClose (X)"
+screen a1 "Six figures: approval, denial, first-pass, average decision time, preventable, appeals\nEach with 'Clinic 71%' beside it and the change"
+screen a2 "'What this payer tends to do'\nThree plain bullets worked out from the decisions, for example 'Cuts continued-stay days for opioid use disorder: approved 4.8 of 12.2 requested on average'"
+screen a3 "'Approvals and denials by month'\nThe payer's approval and denial lines and a dashed clinic line"
+screen a4 "'Approval by diagnosis group'\nBars with a tick for the clinic's rate, red under 55%\n'By program' and 'By request type'"
+screen a5 "'Top denial reasons'\nBars with a 'Preventable' tag and counts"
+screen a6 "'The cases behind these numbers'\nOutcome tabs: All, Approved as requested, Approved in part, Denied\nColumns: Case, Patient, Diagnosis group, Program, Request, Site, Outcome, Reason, Days, Decided"
+
+click c1 "Click a figure, a bar or a reason"
+process p1 "Opens the case list panel for that payer and number"
+goto g1 "Continues in: Analytics › Case list panel"
+click c2 "Click a month on the trend"
+process p2 "Opens the case list panel for that month at this payer"
+
+group gTable "The cases table"
+  click t1 "Click a column heading"
+  process t2 "Sorts by it, again reverses\nThe heading says its sort order to a screen reader"
+  click t3 "Pick an outcome tab"
+  process t4 "Filters the table, the count line updates\n'No cases match. Pick another outcome.' when none"
+  click t5 "Next or previous page"
+  process t6 "15 cases a page, 'Page 2 of 6'"
+endgroup
+
+click c3 "Click a case row or its id"
+goto g2 "Continues in: Analytics › Case summary panel"
+click b1 "Click 'Copy summary'"
+process b2 "Copies the payer, period, figures, the three bullets and the top reasons\nToast 'Payer summary copied'\nMarked as demo data"
+input k1 "Press Escape"
+process k2 "Closes the top layer\nFocus returns to the control that opened the panel"
+end e1 "Back on the page"
+
+s1 --> o1 --> a1 --> a2 --> a3 --> a4 --> a5 --> a6
+a1 & a4 & a5 --> c1 --> p1 --> g1
+a3 --> c2 --> p2 --> g1
+a6 --> t1 --> t2
+a6 --> t3 --> t4
+a6 --> t5 --> t6
+a6 --> c3 --> g2
+o1 --> b1 --> b2
+o1 --> k1 --> k2 --> e1

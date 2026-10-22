@@ -1,18 +1,18 @@
 title: Authorizations › New case › Referral › Referral statuses
 route: /authorizations/new/:draftId?ref=RF-2053 and /authorizations/new/referral/RF-2053
-intro: A referral is New, In review, Awaiting info, Accepted, Scheduled, Admitted or Declined. The first three are 'open' and appear in 'Already arrived'. Each box shows what the checklist and the full page allow; each arrow is the button that moves it.
+intro: A referral is New, In review, Awaiting info, Accepted, Scheduled, Admitted or Declined. The first three are 'open' and appear in 'Incoming referrals'. Each box shows what the checklist and the full page allow; each arrow is the button that moves it.
 dir: TD
 ---
 start s1 "A referral arrives\nOr Reader reads dropped files"
 
-group gOpen "Open: listed in 'Already arrived'"
+group gOpen "Open: listed in 'Incoming referrals'"
   store stNew "NEW\nChecklist: Accept, Ask, Mark OK, Run coverage, Decline\nFull page: Accept, Request information, Decline, Start a case from this referral\nAccept is disabled while a required item is open\nBanner 'Reader found N things to check'"
   store stRev "IN REVIEW\nSame buttons as New\nSet when someone gets an owner, or after a reply or a reopen"
   store stAwait "AWAITING INFO\nPill 'Waiting on the referrer'\nChecklist: Accept, Decline, Mark OK; no 'Ask'\nFull page: Accept, Decline; no 'Request information'\nAsked rows no longer block Accept\nBanner 'Waiting on the referrer'"
 endgroup
 
-store stAcc "ACCEPTED\nNot in 'Already arrived'\nChecklist: 'Continue to medical records'\nFull page: 'Schedule intake'\nGreen banner with 'Continue to medical records'"
-store stSch "SCHEDULED\nChecklist: 'Continue to medical records'\nFull page: 'Mark admitted', 'Change intake'\nBanner adds 'Intake visit Thu 9:00 am'"
+store stAcc "ACCEPTED\nNot in 'Incoming referrals'\nChecklist: 'Continue with this referral'\nFull page: 'Schedule intake'\nGreen banner with 'Continue with this referral'"
+store stSch "SCHEDULED\nChecklist: 'Continue with this referral'\nFull page: 'Mark admitted', 'Change intake'\nBanner adds 'Intake visit Thu 9:00 am'"
 store stAdm "ADMITTED\nChecklist: 'Open the case' when a case or draft exists,\nelse the note 'Admitted' with 'See the full referral'\nFull page: no decision buttons\nBanner 'Admitted into IOP'"
 store stDec "DECLINED\nChecklist and full page: 'Reopen referral'\nRed banner 'Declined: reason' with 'Reopen'\n'A courtesy reply went to the referrer.'"
 
@@ -25,15 +25,15 @@ click c6 "Click 'Reopen referral'\nor 'Reopen' on the red banner"
 click c7 "Click 'Schedule intake'"
 click c8 "Click 'Mark admitted'"
 
-goto gAsk "Continues in: New case › Referral › Ask the referrer"
-goto gReply "Continues in: New case › Referral › The referrer replies"
-goto gAcc "Continues in: New case › Referral › Accept a referral"
-goto gDec "Continues in: New case › Referral › Mark OK or decline"
-goto gSch "Continues in: New case › Referral › Schedule intake"
-goto gBan "Continues in: New case › Referral › Decision banners"
-goto gMed "Continues in: New case › Medical records › The checklist and Continue"
+goto gAsk "Continues in: Authorizations › New case › Referral › Ask the referrer"
+goto gReply "Continues in: Authorizations › New case › Referral › The referrer replies"
+goto gAcc "Continues in: Authorizations › New case › Referral › Accept a referral"
+goto gDec "Continues in: Authorizations › New case › Referral › Mark OK or decline"
+goto gSch "Continues in: Authorizations › New case › Referral › Schedule intake"
+goto gBan "Continues in: Authorizations › New case › Referral › Decision banners"
+goto gMed "Continues in: Authorizations › New case › Intake › Initial authorization"
 
-click cCont "Click 'Continue to medical records'"
+click cCont "Click 'Continue with this referral'"
 decision dReq "Did this referral start a request?"
 click cOpen "Click 'Open R-1042'\n(banner also says 'Linked request R-1042' with its chip)"
 click cOC "Click 'Open the case'\n(checklist of an admitted referral)"

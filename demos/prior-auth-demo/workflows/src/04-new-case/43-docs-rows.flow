@@ -1,0 +1,82 @@
+title: Authorizations › New case › Clinical documentation › Clinical summary and document rows
+route: /authorizations/new/:draftId (step 3 of 5, Clinical summary and Documents lists)
+intro: The clinical summary rows are typed or picked in a small editor under the row. Document rows list what the payer asks for, plus what is typical for the type, and each one is added, looked at, replaced, marked not available or taken out with the buttons on the row. Replace and Mark not available have their own diagram.
+dir: TD
+---
+start s1 "On step 3, read the Clinical summary and Documents lists"
+screen sc "Clinical summary: 'Diagnoses (ICD-10)' (Recommended), 'Reason for the request' (Recommended)\nDocuments: one row for each document the payer asks for, then the typical ones"
+
+group gReq "Clinical summary rows"
+  click cDx "Click 'Add' on 'Diagnoses (ICD-10)'"
+  input iDx "Type in 'Add a diagnosis, e.g. F10 or alcohol'\n'Search by code or name, then pick one to add it'"
+  process pDx "Up to six matches from 13 codes\nCodes already added are hidden"
+  click cPickDx "Click a match"
+  process pChip "A chip with the code and name is added and the box clears"
+  click cRemDx "Click the x on a chip ('Remove F10.20')"
+  click cReason "Click 'Add' on 'Reason for the request'"
+  input iReason "Type one or two plain sentences\n'Scribe uses it in the summary.'"
+  click cDone "Click 'Done', or press Escape in a text box"
+  store stReq "Draft updated as you type\nIf the agents had already run, the run restarts"
+  toast tStale "'Records changed after the agents ran'\n'Their work was cleared. The agents check again when you continue.'"
+endgroup
+
+group gDocs "Document rows"
+  process pList "The list saved on Payers › Documents decides the rows\nTyped for the Authorization type: 'Typical for a continued stay'\nA line that fits no standard document is its own required row"
+  decision dRow "What does the row hold?"
+  process rMiss "Required, empty: 'Not found yet. Drop it above or add it here.'\nButtons 'Add file', 'Use sample file' and 'Mark not available'"
+  process rOpt "Recommended or typical, empty: 'You can continue without it.'\nSame three buttons"
+  process rMarked "Marked not available: 'Marked not available: REASON · Summit asks for it, so the review will warn.'\nCounts as ready. Buttons 'Add file' and 'Undo'"
+  process rRef "Referral row, empty: 'No referral attached. Drop a referral or an admission order, or add a referral.'\nAlso 'Add a referral' on an initial authorization\nOther types: 'No referral or admission order attached. Drop one above or add it here.'"
+  process rFile "File in place: name, then 'N checks passed' or the finding\nA finding Scribe can settle says 'Scribe will ask you to confirm it.'\nButtons: the eye, 'Replace' and the x"
+  process rExtra "File the payer does not ask for: tagged 'Not on the list'"
+  process rRead "Reader is reading: 'FILE · Reader is reading', about 1 second"
+  click cAdd "Click 'Add file'"
+  input iFile "Choose one file in the picker"
+  click cSample "Click 'Use sample file'"
+  agent aRead "Reader reads the file for about 1 second"
+  click cEye "Click the eye ('View FILE NAME')"
+  overlay oView "Drawer with the document's name and 'FILE NAME · 186 KB'\nPage 1 of 3 with the cited passage boxed under 'Evidence'"
+  click cClose "Press Escape or close the drawer"
+  click cX "Click the x ('Remove FILE NAME')"
+  store stDrop "Document taken out\nThe row goes back to missing, recommended or typical"
+  click cView "Click 'View' on the referral that came with the case"
+  click cAddRef "Click 'Add a referral' (initial authorization)"
+endgroup
+goto gAct "Continues in: Authorizations › New case › Clinical documentation › Replace a document or mark it not available"
+goto gStart "Continues in: Authorizations › New case › Intake › Start with a referral or patient"
+goto gRef "Continues in: Authorizations › New case › Referral › The full referral page"
+goto gTyp "Continues in: Authorizations › New case › Clinical documentation › Required and typical documents by type"
+
+s1 --> sc
+sc --> cDx --> iDx --> pDx --> cPickDx --> pChip
+pChip --> cRemDx
+sc --> cReason --> iReason --> cDone
+cRemDx --> stReq
+cDone --> stReq
+pChip --> cDone
+stReq -.-> tStale
+
+sc --> pList --> dRow
+pList -.-> gTyp
+dRow -->|Required, no file| rMiss
+dRow -->|Recommended or typical, no file| rOpt
+dRow -->|Referral, no file| rRef
+dRow -->|Marked not available| rMarked
+dRow -->|File in place| rFile
+dRow -->|Just given to Reader| rRead
+dRow -->|Not on the payer's list| rExtra
+rMiss --> cAdd
+rMiss --> cSample
+rMiss --> gAct
+rMarked --> gAct
+rOpt --> cAdd
+rRef --> cAddRef --> gStart
+cAdd --> iFile --> aRead
+cSample --> aRead
+aRead --> rFile
+rRead --> rFile
+rFile --> cEye --> oView --> cClose
+rFile --> gAct
+rFile --> cX --> stDrop --> gAct
+rFile --> cView --> gRef
+stDrop -.-> stReq

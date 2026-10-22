@@ -28,7 +28,7 @@ goto g1 "Continues in: Case Manager › Filters › Search and filter both tabs"
 goto g2 "Continues in: Case Manager › Active cases › Being prepared card"
 goto g3 "Continues in: Case Manager › Active cases › Tracker of every active case"
 goto g4 "Continues in: Case Manager › Reviews this week › The list"
-goto g5 "Continues in: New case › Referral step"
+goto g5 "Continues in: Authorizations › New case › Intake › Start with a referral or patient"
 goto g6 "Continues in: Case Manager › Active cases › Step-down plans from accepted denials"
 goto g7 "Continues in: Case Manager › Active cases › A new case joins the tracker"
 

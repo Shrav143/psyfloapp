@@ -50,6 +50,8 @@ export interface Decision {
   denialId?: string;
   /** Set when the case exists in the demo, so Open case can link to it. */
   inDemo: boolean;
+  /** The demo case this decision belongs to when its own id is not a page: an earlier decision for the patient on an open request (R-1042). */
+  linkId?: string;
   initials: string;
   age: number;
   site: SiteId;

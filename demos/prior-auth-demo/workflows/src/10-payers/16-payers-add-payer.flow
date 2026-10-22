@@ -38,7 +38,7 @@ click cesc "Press Escape, click the X\nor click the dimmed area\nEscape with a m
 endx x1 "Modal closes\nNothing was added"
 end e "New payer is ready to edit"
 goto g1 "Continues in: Payers › Process › Read the workflow"
-goto g2 "Continues in: Authorizations › New case › Medical records › Patient and insurance rows"
+goto g2 "Continues in: Authorizations › New case › Intake › Patient, insurance and request rows"
 
 s1 --> m --> i1 --> i2 --> i3 --> i4 --> i5 --> ca
 i1 -.-> clr

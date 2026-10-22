@@ -53,7 +53,7 @@ export function CasePanel({ d, width, onClose }: { d: Decision; width: number; o
       }
       footer={
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <span className="text-[12.5px] text-muted">{d.inDemo ? "This case is in the demo." : "A past case: it has no page in this demo."}</span>
+          <span className="text-[12.5px] text-muted">{d.linkId ? `An earlier decision for the patient on ${d.linkId}.` : d.inDemo ? "This case is in the demo." : "A past case: it has no page in this demo."}</span>
           <span className="flex flex-wrap items-center gap-2">
             {d.denialId ? (
               <Link to={paths.denials(d.denialId)} className="inline-flex h-[38px] items-center gap-2 rounded-xl border border-field bg-white px-4 text-sm font-medium hover:bg-tile">
@@ -61,7 +61,7 @@ export function CasePanel({ d, width, onClose }: { d: Decision; width: number; o
               </Link>
             ) : null}
             {d.inDemo ? (
-              <Link to={paths.case(d.denialId ?? d.id)} className="inline-flex h-[38px] items-center gap-2 rounded-xl border border-transparent bg-forest px-4 text-sm font-medium text-white hover:bg-forest-dark">
+              <Link to={paths.case(d.linkId ?? d.denialId ?? d.id)} className="inline-flex h-[38px] items-center gap-2 rounded-xl border border-transparent bg-forest px-4 text-sm font-medium text-white hover:bg-forest-dark">
                 Open case
                 <ArrowUpRight size={16} className="ico" aria-hidden="true" />
               </Link>

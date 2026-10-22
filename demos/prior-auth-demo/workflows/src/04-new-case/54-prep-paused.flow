@@ -1,0 +1,40 @@
+title: Authorizations › New case › Authorization preparation › Paused in Settings
+route: /authorizations/new/:draftId (step 4 of 5, 'Authorization preparation')
+intro: The run reads the same pause switches as Settings. An agent paused there does not take its turn, whether it was paused in Settings or with 'Pause all agents' on this page. The run holds at that agent until someone resumes it.
+dir: TD
+---
+start s1 "An agent is paused\nIn Settings (one agent or all), or by 'Pause all agents' in the footer here"
+click cPause "Click 'Pause all agents' in the footer"
+process pAll "All sixteen agents are paused\nSettings shows 'All agents are paused'"
+decision dTurn "Is the agent whose turn it is paused?"
+process pGo "The run carries on\nA later agent that is paused stops it when its turn comes"
+process pHold "That agent does not advance\nIts row shows 'Paused in Settings'\nThe agents before it keep their ticks, the ones after it show 'Waiting'\n'Skip ahead' is switched off and the clock chip stops"
+decision dAll "Are all agents paused?"
+screen sAll "Banner 'Agents are paused in Settings'\n'Nothing is read, checked or drafted until it is resumed. Nothing has been sent to the payer.'\nButton 'Resume agents'"
+screen sOne "Banner 'Verify is paused in Settings' (the paused agent's name)\nSame text\nButton 'Resume Verify'"
+process pFoot "Footer: the button reads 'Resume agents' while any agent is paused, 'Pause all agents' otherwise\nHint: 'Paused in Settings.'"
+click cAll "Click 'Resume agents' (banner or footer)"
+process rAll "All agents are resumed, here and in Settings"
+click cOne "Click 'Resume Verify'"
+process rOne "Only that agent is resumed\nOthers stay paused in Settings"
+click cSet "Resume in Settings instead"
+agent aGo "The run carries on from the agent it held at\nIt does not start over"
+goto gSettings "Continues in: Settings › Pause › What the rest of the app shows"
+goto gRun "Continues in: Authorizations › New case › Authorization preparation › Start the run and watch it"
+goto gAsk "Continues in: Authorizations › New case › Authorization preparation › An agent asks a question"
+process pAsk "A question still waits for an answer\nPausing does not answer it, and neither does Skip ahead"
+
+s1 --> dTurn
+s1 --> gSettings
+cPause --> pAll --> dTurn
+dTurn -->|No| pGo --> gRun
+dTurn -->|Yes| pHold --> dAll
+dAll -->|Yes| sAll
+dAll -->|No| sOne
+pHold --> pFoot
+sAll --> cAll --> rAll --> aGo
+sOne --> cOne --> rOne --> aGo
+pHold --> cSet --> aGo
+aGo --> gRun
+pHold -.-> pAsk -.-> gAsk
+s1 --> cPause

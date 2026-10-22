@@ -62,7 +62,11 @@ export const createReferralsSlice: StateCreator<AppState, [], [], ReferralsSlice
 
     addReferral: (sampleIndex) => {
       const { referrals, clock } = get();
-      const id = `RF-${Math.max(...referrals.map((r) => Number(r.id.slice(3)) || 0)) + 1}`;
+      /* A referral is at the site where the documents were dropped, and its id places it: take the next number that falls at the first site in view. */
+      const site = sitesInView(get())[0];
+      let n = Math.max(...referrals.map((r) => Number(r.id.slice(3)) || 0)) + 1;
+      while (siteOf(`RF-${n}`) !== site) n += 1;
+      const id = `RF-${n}`;
       const created = sampleReferral(sampleIndex % SAMPLE_COUNT, id, clock);
       set({ referrals: [created, ...referrals] });
       get().notify({ agent: "reader", title: "New referral read", body: `${id} from ${created.source.name} is on your checklist in New case.`, to: link(id), tone: "neutral" });

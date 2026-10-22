@@ -1,6 +1,6 @@
 title: Authorizations › Case page › Draft › Read and edit
 route: /authorizations/case/R-1042?tab=draft
-intro: The fifth tab, left side: the medical-necessity summary Scribe wrote, how sentences from applied actions and added clinical context appear, and how a person edits and saves it. It is the same summary Review and sign shows in New case: one text for each request, so an edit made in either place is read in the other.
+intro: The fifth tab, left side: the medical-necessity summary Scribe wrote, how sentences from applied actions and added clinical context appear, and how a person edits and saves it. It is the same summary Review & submit shows in New case: one text for each request, so an edit made in either place is read in the other.
 dir: TD
 ---
 start s1 "Click 'Draft'"
@@ -20,13 +20,13 @@ process cd "Edit mode closes\nNothing is saved"
 click sv "Click 'Save changes'"
 decision dCh "Did any box change?"
 toast tn "'No changes to save'"
-store sd "Edited sections saved\nThe edit keeps the sentences already added by applied actions\nNew version: 'Version 4', 'You', 'Edited by you'\nLog: 'You edited the draft. Integrity will read it again before it can be signed'\nThe same text is saved on the request's draft in New case, so Review and sign reads it"
+store sd "Edited sections saved\nThe edit keeps the sentences already added by applied actions\nNew version: 'Version 4', 'You', 'Edited by you'\nLog: 'You edited the draft. Integrity will read it again before it can be signed'\nThe same text is saved on the request's draft in New case, so Review & submit reads it"
 toast ts "'Draft saved'\n'Integrity needs to read it again before it can be signed. Use Re-check.'"
 process dy "'Every sentence matches the chart' now warns\n'You edited the draft. Integrity has not read it again yet.'\n'Send to payer' goes off"
 process bd "Badge on the Draft tab goes up by one"
 process lt "Actions applied later add their sentences after the edited text"
 goto gK "Continues in: Authorizations › Case page › Draft › Checks, versions and send back"
-goto gR "Continues in: Authorizations › New case › Review and sign › The draft and the summary"
+goto gR "Continues in: Authorizations › New case › Review & submit › The draft and the summary"
 
 s1 --> dr --> hd --> sec --> nw
 sec --> ch --> gC

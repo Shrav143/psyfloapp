@@ -71,7 +71,7 @@ function documentRow(d: CaseDraft, entry: DocEntry, need: "required" | "recommen
     return { id, label, state: need === "required" ? "warn" : "done", detail: join(`Marked not available: ${reason}`, note), tag, handled: true };
   }
   if (!doc) {
-    const detail = quiet ? entry.hint : need === "required" ? (slot === "referral" ? "No referral attached. Drop a referral or an admission order, or add a referral." : "Not found yet. Drop it above or add it here.") : `${entry.hint}. You can continue without it.`;
+    const detail = quiet ? entry.hint : need === "required" ? (slot === "referral" ? (d.kind === "initial" ? "No referral attached. Drop a referral or an admission order, or add a referral." : "No referral or admission order attached. Drop one above or add it here.") : "Not found yet. Drop it above or add it here.") : `${entry.hint}. You can continue without it.`;
     return { id, label, state: need === "required" ? "missing" : "optional", detail: need === "typical" ? `${entry.hint}. You can continue without it.` : detail, tag, quiet: quiet && need === "required" };
   }
   const name = doc.file.name;

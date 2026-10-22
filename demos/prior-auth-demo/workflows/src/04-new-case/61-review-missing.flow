@@ -1,0 +1,65 @@
+title: Authorizations › New case › Review & submit › What is missing
+route: /authorizations/new/:draftId (step 5 of 5, the first card on the left)
+intro: The first thing on the last step. It lists what holds the request back, blocking items first, each with the action that already exists for it. It is the one alert on this step. When nothing is missing it is one calm line. Only a few things block sending; the rest are warnings the person acknowledges, or notes. Nothing is sent from here: a clinician signs in the Sign card.
+dir: TD
+also: Demo only: the items come from the case itself (Intake and Eligibility & Benefits), the validation rows and the four checks, so they change at once when the details, documents, answers or the summary change.
+---
+start s1 "Arrive on step 5 'Review & submit'"
+decision d1 "Is anything missing?"
+screen ok "Card 'Nothing is missing'\n'All four checks passed. The summary below is what the payer will read.'"
+screen mc "Card 'What is missing'\nSubtitle: 'N items must be fixed before it can be signed.' 'N items can be signed once you acknowledge them.' 'N items do not stop you from signing.'\nPill: 'Blocked', 'N to acknowledge' or 'N to look at'"
+process hb "When the case does not meet what the payer asks, the subtitle adds\n'Together they hold the approval chance back 3 points.'"
+
+group gSev "Three kinds of item, in this order"
+  process k1 "**Blocks sending** (red cross)\nNo patient, payer, service or dates\nCoverage confirmed inactive with no documented exception\nA possible duplicate nobody has answered"
+  process k2 "**Acknowledge before signing** (amber)\nA required document that is not in the case or has a finding, or is marked not available\nNo authorization chosen, an empty proposed change, no retro reason\nCoverage that was not checked, a check that could not run, a payer change, a benefit or network the plan did not confirm\nAn empty section of the summary, a late notice or window, a start date outside the payer's rule, a no-authorization rule"
+  process k3 "**Does not stop signing** (grey)\nA recommended document that is not added\nA documented exception, with the reason\nNo Backdating rule on file for a retro-authorization\nAn authorization that is not approved yet"
+endgroup
+
+group gFix "The fix button on an item"
+  click f1 "Click 'Open Intake'\n(no patient, payer, service or dates; the duplicate)"
+  click f2 "Click 'Open Eligibility & Benefits'\n(coverage and the plan's warnings)"
+  click f3 "Click 'Open Clinical documentation'\n(documents and findings)"
+  process p1 "The step opens\nChanging the details or documents restarts the agents when they had run"
+  click f4 "Click 'Edit the summary'\n(an empty section)"
+  process p2 "The summary scrolls into view and opens for editing"
+  click f5 "Click 'Send back to Scribe'\n(a named step-down provider is not on file)"
+  overlay o5 "Send back to Scribe dialog\nSame as the button in the Sign card"
+  process p4 "An item with no fix button is information only\ne.g. a notice that has passed, or the payer's no-authorization rule"
+endgroup
+
+decision dBlk "Any blocking item left?"
+endx eBlk "The Sign card says 'One item stops sending: coverage. Fix it under What is missing.'\n'Sign and send to payer (demo)' stays off"
+process pAck "'Sign and send to payer (demo)' needs the attestation,\nthe acknowledgement of the warnings under What is missing,\nand a clinician as the signer"
+goto gSign "Continues in: Authorizations › New case › Review & submit › Sign and send to payer"
+goto gVal "Continues in: Authorizations › New case › Review & submit › Validation summary and checks"
+goto gInt "Continues in: Authorizations › New case › Intake › Initial authorization"
+goto gElig "Continues in: Authorizations › New case › Eligibility & Benefits › Warnings and documented exceptions"
+goto gRec "Continues in: Authorizations › New case › Clinical documentation › Replace a document or mark it not available"
+goto gSB "Continues in: Authorizations › New case › Review & submit › Send back to Scribe"
+
+s1 --> d1
+d1 -->|No| ok
+d1 -->|Yes| mc
+mc --> hb
+mc --> k1 & k2 & k3
+k1 --> f1
+k1 --> f2
+k2 --> f1
+k2 --> f2
+k2 --> f3
+k3 --> f3
+k2 --> f4
+k2 --> f5
+k2 -.-> p4
+f1 --> p1 --> gInt
+f2 --> p1
+p1 -.-> gElig
+f3 --> p1 --> gRec
+f4 --> p2
+f5 --> o5 --> gSB
+mc --> dBlk
+dBlk -->|Yes| eBlk
+dBlk -->|No| pAck --> gSign
+ok --> pAck
+mc -.-> gVal

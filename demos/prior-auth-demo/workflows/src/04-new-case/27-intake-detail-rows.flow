@@ -1,0 +1,73 @@
+title: Authorizations › New case › Intake › Patient, insurance and request rows
+route: /authorizations/new/:draftId (Intake, the rows)
+intro: Each row says where its value came from, and its button opens a small editor under the row. Edits go straight into the draft; nothing needs saving. A referral, a chart pulled from EMR Connect, a file Reader read, or a patient who is known fills them in, and every one stays editable. The rows are the same for an initial authorization and, without the request type and start date, for a retroactive one.
+dir: TD
+---
+start s1 "On Intake, read the Patient, Insurance and Request rows"
+screen sc "Patient: 'Patient initials and age'\nInsurance: 'Payer and plan', 'Member ID' (Recommended)\nRequest: 'Level of care', 'Request type', 'Start date' (Recommended)\nEach row: a box, a label, a detail line and one button"
+
+group gState "What a row can say"
+  decision dSrc "Does the row have a value?"
+  process r1 "Read from a file\n'Read from referral.pdf by Reader. Check it.'"
+  process r3 "From a referral\n'From referral RF-2051'\nWith 'Referred by Eastgate Probation Services' under Patient"
+  process r4 "From EMR Connect\n'From EMR Connect'"
+  process r2 "Typed by a person\nThe detail shows the value with no source note"
+  process r5 "Missing\n'Initials and age only. A name never enters the app.'\nRow shaded, button 'Add'"
+  process r6 "Half filled\n'Found initials J.M. The age is still needed.'"
+  process r7 "Left blank by a chart pull\n'Left blank. “Level of care” in the outpatient record needs a mapping. Map it, then pull the chart again.'\nLink 'Open EMR Connect'"
+  process rNote "A source note goes quiet as soon as the value is edited"
+endgroup
+
+click cEdit "Click 'Add' (empty row) or 'Edit' (filled row)"
+overlay oEd "Editor opens under the row\nThe first box takes focus\nOnly one editor is open at a time"
+click cAgain "Click the same row button again"
+process pClose "Editor closes"
+
+group gRows "The editors"
+  input iInit "Patient: 'Patient initials' (up to 8, shown in capitals, e.g. J.M.) and 'Age' (1 to 110)\n'Initials and age only. A name never enters the app.'"
+  input iPayer "Payer and plan: pick 'Payer'\n'Plan type' fills in for that payer, and can be changed"
+  input iMember "Member ID: type it\n'Agents see …4821 only. The full ID is removed before any agent reads the chart.'"
+  input iLevel "Level of care: pick Residential 3.5, IOP, PHP or Detox\nThe editor closes at once"
+  input iType "Request type (initial authorization only): Initial request or Admission\nAdmission adds 'notice due in about 5 hours'"
+  input iStart "Start date: 'Requested start date' and 'Requested end date' (optional)\nThe row shows both, with today marked"
+endgroup
+
+click cDone "Click 'Done', or press Escape in a text box"
+store stLive "Every keystroke is written to the draft\nNothing to save"
+decision dRan "Had the agents already run?"
+toast tStale "'Records changed after the agents ran'\n'Their work was cleared. The agents check again when you continue.'"
+process pVerify "A changed payer, level of care, member ID or date makes the check on Eligibility & Benefits old or for another payer\nStep 2 shows it, and Verify runs again"
+process pDocs "The payer and the level of care decide the document list on Clinical documentation"
+goto gDup "Continues in: Authorizations › New case › Intake › Possible duplicate"
+goto gElig "Continues in: Authorizations › New case › Eligibility & Benefits › Initial authorization"
+goto gDoc "Continues in: Authorizations › New case › Clinical documentation › The checklist and Continue"
+
+s1 --> sc --> dSrc
+dSrc -->|Read by Reader| r1
+dSrc -->|From a referral| r3
+dSrc -->|From the EMR| r4
+dSrc -->|Typed| r2
+dSrc -->|No| r5
+dSrc -->|Only one of two| r6
+dSrc -->|Blank because EMR Connect has no mapping yet| r7
+r1 --> rNote
+r3 --> rNote
+r4 --> rNote
+sc --> cEdit --> oEd
+oEd --> iInit & iPayer & iMember & iLevel & iType & iStart
+oEd --> cAgain --> pClose
+r5 --> cEdit
+r6 --> cEdit
+r7 --> cEdit
+iInit --> cDone
+iPayer --> cDone
+iMember --> cDone
+iStart --> cDone
+iLevel --> stLive
+iType --> stLive
+cDone --> stLive --> dRan
+dRan -->|Yes| tStale --> pVerify
+dRan -->|No| pVerify
+pVerify --> gElig
+pVerify -.-> pDocs --> gDoc
+stLive -.-> gDup

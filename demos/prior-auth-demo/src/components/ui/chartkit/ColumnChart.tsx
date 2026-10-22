@@ -1,5 +1,5 @@
 import { useId, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
-import { CHART, ChartFrame, Tooltip, niceMax, summaryId, useChartWidth, type ChartTableData } from "./core";
+import { CHART, ChartFrame, Tooltip, niceScale, summaryId, useChartWidth, type ChartTableData } from "./core";
 
 export interface ColumnSeries {
   key: string;
@@ -37,7 +37,7 @@ export function ColumnChart(p: ColumnChartProps) {
   const focused = useRef(false);
   const totals = p.labels.map((_, i) => p.series.reduce((a, s) => a + (s.values[i] ?? 0), 0));
   const top = p.stacked ? Math.max(1, ...totals) : Math.max(1, ...p.series.flatMap((s) => s.values.map((v) => v ?? 0)));
-  const yMax = p.yMax ?? niceMax(top * 1.05);
+  const yMax = p.yMax ?? niceScale(top * 1.04, 4, true).max;
   const y = (v: number): number => M.t + ih - (v / yMax) * ih;
   const slot = iw / n;
   const bar = Math.min(34, slot * 0.62);

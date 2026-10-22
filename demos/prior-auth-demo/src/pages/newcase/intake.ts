@@ -154,7 +154,14 @@ export function pullFromEmr(id: string, c: EmrChart): void {
   const gaps = unmappedFor(st, c);
   const blank = new Set(gaps.map((u) => MAPPED_FIELD[u.field]));
   const payerId = blank.has("payer") ? null : c.payerId;
-  const kind = st.caseDrafts.find((d) => d.id === id)?.kind ?? "initial";
+  const draft = st.caseDrafts.find((d) => d.id === id);
+  const kind = draft?.kind ?? "initial";
+  /* A case that follows a patient who is known keeps that patient, payer and level of care: a chart cannot make it a different person. It brings the diagnoses and the reason. */
+  if (draft?.patientId) {
+    st.patchCaseDraft(id, { started: true, diagnoses: dx(...c.diagnoses), reason: c.reason, emrChart: c.id });
+    st.toast({ title: `Pulled the chart from EMR Connect`, body: `This case follows ${draft.patient.initials}, ${draft.patient.age ?? ""}, so the patient and the plan stay as they are. The diagnoses and the reason came from the chart.`, tone: "good" });
+    return;
+  }
   st.patchCaseDraft(id, {
     started: true,
     patient: { initials: c.initials, age: c.age },

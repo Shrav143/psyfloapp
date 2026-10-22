@@ -11,7 +11,7 @@ import { filterWords, periodInfo, type Filters } from "./filters";
 import { buildPayerView, type GroupBar } from "./payerView";
 import { cellQuery, type MatrixKey } from "./board";
 import type { CaseQuery } from "./query";
-import { avgDays, fmt, pctOf, pctText, ptsText } from "./stats";
+import { avgDays, fmt, pctOf, pctText, rateAxis } from "./stats";
 import { payerSummary } from "./summary";
 import { useCopy } from "./useCopy";
 
@@ -44,9 +44,7 @@ export function PayerPanel({ payer, scoped, filters, siteLabel, width, onCases, 
   const approvalTrend = v.months.map((m) => pctOf(m.s.approved, m.s.n));
   const denialTrend = v.months.map((m) => pctOf(m.s.notApproved, m.s.n));
   const clinicTrend = v.clinicMonths.map((m) => pctOf(m.s.approved, m.s.n));
-  const known = [...approvalTrend, ...denialTrend, ...clinicTrend].filter((x): x is number => x !== null);
-  const yMin = known.length ? Math.max(0, Math.floor((Math.min(...known) - 8) / 10) * 10) : 0;
-  const yMax = known.length ? Math.min(100, Math.ceil((Math.max(...known) + 8) / 10) * 10) : 100;
+  const axis = rateAxis([...approvalTrend, ...denialTrend, ...clinicTrend]);
   const reasonRows = v.reasons.map((r) => ({ key: r.label, label: r.label, value: r.count, display: String(r.count), sub: `${r.share}% of denials`, color: r.preventable ? CHART.mid : CHART.umber, tag: r.preventable ? "Preventable" : undefined }));
   const topReason = Math.max(1, ...v.reasons.map((r) => r.count));
   const cms = cmsApplies(payer);
@@ -107,8 +105,9 @@ export function PayerPanel({ payer, scoped, filters, siteLabel, width, onCases, 
             details={MONTHS.map((m) => m.range)}
             height={230}
             format={(x) => `${Math.round(x)}%`}
-            yMin={yMin}
-            yMax={yMax}
+            yMin={axis.min}
+            yMax={axis.max}
+            tickStep={axis.step}
             highlight={{ from: period.months[0], to: period.months[1], label: period.label }}
             onPoint={monthQ}
             extra={(i) => `${v.months[i].s.n} decisions`}

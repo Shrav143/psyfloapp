@@ -9,7 +9,7 @@ start s2 "Full page: open the 'Coverage' tab"
 
 decision d1 "Does the referral list an insurance?"
 process p1 "Row says 'Optional'\n'Verify needs the insurance and member ID first.'\nNo button"
-goto g1 "Continues in: New case › Referral › Ask the referrer"
+goto g1 "Continues in: Authorizations › New case › Referral › Ask the referrer"
 process p2 "Row says 'Optional'\n'Not checked yet. Verify looks up eligibility, the plan and whether an authorization is needed first.'"
 click c1 "Click 'Run coverage check'"
 
@@ -34,10 +34,10 @@ click c3 "Click 'Check again'"
 
 click c4 "Click 'Open full Eligibility & Benefits check'"
 process p6 "Opens Verify a patient with the referral's payer,\nmember ID, level of care and a made-up birth date filled in\nThe address keeps ?referral=RF-2053 (and ?case= once the referral is a request)"
-goto g2 "Continues in: Eligibility & Benefits › Verify a patient"
+goto g2 "Continues in: Authorizations › Eligibility & Benefits › Verify › Ways in and pre-fill"
 start s3 "Coming back: 'Start authorization'\non the coverage result (authorization first)"
 process p7 "Opens a NEW case with payer, level of care, member ID, initials and age\nIt is not tied to the referral or its case"
-goto g3 "Continues in: New case › How a case starts and resumes"
+goto g3 "Continues in: Authorizations › New case › How a case starts and resumes"
 start s4 "Click 'Back to referral RF-2053'\non Verify a patient or its result\n(shown when the address has ?referral=)"
 process p8 "Opens the full referral page for RF-2053\nOnce the referral is a request the link reads 'Back to case R-1042'\nThe full page finds the case that holds the referral, so 'Back to the case' still works"
 

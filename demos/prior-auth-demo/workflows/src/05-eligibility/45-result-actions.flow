@@ -9,7 +9,7 @@ start s1 "On a result page, read the buttons on the verdict band"
 decision q1 "Verdict is 'Authorization first'?"
 click c1 "Click 'Start authorization'"
 process p1 "Opens /authorizations/new?verification=R-1042&type=initial\nNew case reads the stored verification: payer, level of care, member, initials, age and the check itself\nAuthorization type is already 'Initial'"
-goto g1 "Continues in: Authorizations › New case › Medical records › The checklist and Continue"
+goto g1 "Continues in: Authorizations › New case › Clinical documentation › The checklist and Continue"
 
 decision q2 "Is there a request with this ID?"
 click c2 "Click 'Open case'\n(outlined button)"

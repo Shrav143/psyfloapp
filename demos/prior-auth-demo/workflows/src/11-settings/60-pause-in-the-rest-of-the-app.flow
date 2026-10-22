@@ -8,8 +8,8 @@ start s1 "Pause an agent on Settings\nIts switch, or 'Pause all agents' then 'Pa
 store p1 "The pause is saved in the app\nEvery screen reads the same switch"
 toast t1 "The banner on Settings says what is held back, agent by agent\nFor example 'Paused: Verify and Reader.' then one sentence for each screen"
 
-group gNew "New case › Agents work"
-  screen n1 "Agents work\nTen agents in a row, then 'Back', 'Pause all agents', 'Skip ahead', 'Review and sign'"
+group gNew "New case › Authorization preparation"
+  screen n1 "Authorization preparation\nTen agents in a row, then 'Back', 'Pause all agents', 'Skip ahead', 'Review & submit'"
   process n3 "The run holds when it reaches a paused agent\nIts row shows a 'Paused' pill, the clock chip stops and 'Skip ahead' is dimmed"
   toast n4 "Banner 'Agents are paused in Settings' or '{Agent} is paused in Settings'\n'Nothing is read, checked or drafted until it is resumed. Nothing has been sent to the payer.'"
   click n6 "Click 'Resume agents' or 'Resume {Agent}'"
@@ -41,7 +41,7 @@ group gReal "Production (PRD FR-25)"
   process r2 "Production: a pause takes effect before the next step of any running job\nSteps already going out finish, or roll back to the manual queue"
 endgroup
 
-goto g1 "Continues in: Authorizations › New case › Agents work › Finished, paused or left"
+goto g1 "Continues in: Authorizations › New case › Authorization preparation › Finished, paused or left"
 goto g2 "Continues in: Dashboard › Header › Check all now and the demo clock"
 goto g3 "Continues in: Case Manager › Reviews this week › Draft all due reviews and sign all clean drafts"
 goto g4 "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows"

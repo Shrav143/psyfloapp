@@ -4,9 +4,9 @@ intro: A case signed and sent in New case becomes a request on the Dashboard. Th
 dir: TD
 also: The new row follows the request. Fast-forward moves its clock. Reset demo data removes the row.
 ---
-start s1 "New case › Review and sign › 'Sign and send'"
+start s1 "New case › Review & submit › 'Sign and send to payer (demo)'"
 store st1 "A request is created on the Dashboard as Received\nIts ID is added to 'sent today'"
-goto g1 "Continues in: Authorizations › New case › Review and sign › Sign and send"
+goto g1 "Continues in: Authorizations › New case › Review & submit › Sign and send to payer"
 decision d1 "Is the ID already a row in the tracker?\n(R-1042, R-0988, I-2207, R-1101, I-2262 are)"
 process p1 "The row stays as it is"
 process p2 "A tracker row is added\nCase ID with a green 'New today' tag, initials and age\nLevel of care and request type\n'not yet approved', payer, approval chance from the draft"

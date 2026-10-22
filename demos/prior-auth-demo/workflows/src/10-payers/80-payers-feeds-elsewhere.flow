@@ -8,7 +8,7 @@ decision dk "Which kind of save?"
 store cfg "Saved on the payer\nOne edit log entry per change\nOne bell notification\nNew drafts use it from now on"
 
 group gR "Read live by other screens (no Update drafts needed)"
-  process p1 "New case: the document list\nThe Medical records checklist, the file sorting and the\nReview and sign checks use the payer's saved list\nfor the draft's level of care"
+  process p1 "New case: the document list\nThe Clinical documentation checklist, the file sorting and the\nReview & submit checks use the payer's saved list\nfor the draft's level of care"
   process p2 "New case: the rules\nBackdating: a start date that reaches back further\nthan the rule allows is flagged\nNo authorization needed: a level of care the payer names there"
   process p3 "New case: the approval chance\nEach thing the payer asks for that a draft does not meet\n(a required document, an early start date)\nholds the chance back, up to 12 points"
   process p4 "Case Manager: the next review\nThe 'Submission windows' rule sets the days\nbefore the next review is booked, when it names a number"
@@ -41,9 +41,9 @@ process prd "In the product (PRD 06)\nA rule version is stamped on every authori
 goto g1 "Continues in: Dashboard › Requests table"
 goto g2 "Continues in: Case Manager › Active cases › Updated for a payer change"
 goto g3 "Continues in: Dashboard › Open a request"
-goto g4 "Continues in: Authorizations › New case › Medical records › The checklist and Continue"
-goto g5 "Continues in: Authorizations › New case › Review and sign › Validation summary and checks"
-goto g7 "Continues in: Authorizations › New case › Agents work › Start the run and watch it"
+goto g4 "Continues in: Authorizations › New case › Clinical documentation › The checklist and Continue"
+goto g5 "Continues in: Authorizations › New case › Review & submit › Validation summary and checks"
+goto g7 "Continues in: Authorizations › New case › Authorization preparation › Start the run and watch it"
 goto g6 "Continues in: Authorizations › Queue › Open the queue and read the top"
 
 s1 --> dk

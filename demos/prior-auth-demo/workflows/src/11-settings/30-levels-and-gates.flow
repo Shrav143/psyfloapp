@@ -26,9 +26,9 @@ endgroup
 
 process p1 "The signature is bound to the exact packet\nNothing addressed to a payer leaves without it. PRD: an invariant, not a setting"
 process p2 "The step goes ahead"
-goto n1 "Continues in: Authorizations › New case › Review and sign › Sign and send"
+goto n1 "Continues in: Authorizations › New case › Review & submit › Sign and send to payer"
 goto n2 "Continues in: Dashboard › Request drawer › Approve the write-back"
-goto n3 "Continues in: Authorizations › New case › Agents work › An agent asks a question"
+goto n3 "Continues in: Authorizations › New case › Authorization preparation › An agent asks a question"
 goto n4 "Continues in: Payers › Changes › Acknowledge a change"
 goto n5 "Continues in: Settings › Pause › Pause all agents"
 goto n6 "Continues in: Settings › Agents › Which steps need a person"

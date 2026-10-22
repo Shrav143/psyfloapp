@@ -29,12 +29,6 @@ const SORTERS: Record<SortKey, (a: Decision, b: Decision) => number> = {
   days: (a, b) => a.hours - b.hours,
 };
 
-interface Col {
-  key: SortKey;
-  label: string;
-  className?: string;
-}
-
 export function CaseTable({ rows, onOpen, showPayer = false, pageSize = 15, startSort = "date", startDesc = true, label }: { rows: readonly Decision[]; onOpen: (d: Decision) => void; showPayer?: boolean; pageSize?: number; startSort?: SortKey; startDesc?: boolean; label: string }) {
   const [outcome, setOutcome] = useState<Outcome | "all">("all");
   const [sort, setSort] = useState<SortKey>(startSort);
@@ -51,38 +45,38 @@ export function CaseTable({ rows, onOpen, showPayer = false, pageSize = 15, star
   const pages = Math.max(1, Math.ceil(shown.length / pageSize));
   const at = Math.min(page, pages - 1);
   const slice = shown.slice(at * pageSize, at * pageSize + pageSize);
-  const cols: Col[] = [
-    { key: "id", label: "Case" },
-    { key: "patient", label: "Patient" },
-    ...(showPayer ? [{ key: "payer" as const, label: "Payer" }] : []),
-    { key: "dx", label: "Diagnosis group" },
-    { key: "program", label: "Program" },
-    { key: "kind", label: "Request" },
-    { key: "site", label: "Site" },
-    { key: "outcome", label: "Outcome" },
-    { key: "reason", label: "Reason" },
-    { key: "days", label: "Days" },
-    { key: "date", label: "Decided" },
+  /* A column can hold two things (a case and its patient), so each heading offers one sort button for each. */
+  const groups: { label: string; keys: { key: SortKey; label: string }[]; right?: boolean }[] = [
+    { label: "Case", keys: [{ key: "id", label: "Case" }, { key: "patient", label: "Patient" }] },
+    ...(showPayer ? [{ label: "Payer", keys: [{ key: "payer" as const, label: "Payer" }] }] : []),
+    { label: "Diagnosis group", keys: [{ key: "dx", label: "Diagnosis group" }, { key: "program", label: "Program" }, { key: "kind", label: "Request" }] },
+    { label: "Site", keys: [{ key: "site", label: "Site" }] },
+    { label: "Outcome", keys: [{ key: "outcome", label: "Outcome" }, { key: "reason", label: "Reason" }] },
+    { label: "Days", keys: [{ key: "days", label: "Days" }, { key: "date", label: "Decided" }], right: true },
   ];
-  const head = (c: Col) => {
-    const on = sort === c.key;
+  const sortBy = (key: SortKey) => {
+    if (sort === key) setDesc((d) => !d);
+    else {
+      setSort(key);
+      setDesc(key === "date");
+    }
+    setPage(0);
+  };
+  const head = (g: (typeof groups)[number]) => {
+    const active = g.keys.find((k) => k.key === sort);
     return (
-      <Th key={c.key} aria-sort={on ? (desc ? "descending" : "ascending") : "none"} className="px-3 py-2.5">
-        <button
-          type="button"
-          onClick={() => {
-            if (on) setDesc((d) => !d);
-            else {
-              setSort(c.key);
-              setDesc(c.key === "date");
-            }
-            setPage(0);
-          }}
-          className={cn("inline-flex items-center gap-1 uppercase tracking-[0.08em]", on && "text-ink")}
-        >
-          {c.label}
-          {on ? desc ? <ArrowDown size={12} className="ico" aria-hidden="true" /> : <ArrowUp size={12} className="ico" aria-hidden="true" /> : null}
-        </button>
+      <Th key={g.label} aria-sort={active ? (desc ? "descending" : "ascending") : "none"} className={cn("px-2.5 py-2.5", g.right && "text-right")}>
+        <span className={cn("inline-flex flex-wrap items-center gap-x-1.5", g.right && "justify-end")}>
+          {g.keys.map((k, n) => (
+            <span key={k.key} className="inline-flex items-center gap-1.5">
+              {n > 0 ? <span aria-hidden="true" className="text-faint">·</span> : null}
+              <button type="button" onClick={() => sortBy(k.key)} aria-label={`Sort by ${k.label.toLowerCase()}`} className={cn("inline-flex items-center gap-0.5 uppercase tracking-[0.08em]", sort === k.key && "text-ink")}>
+                {k.label}
+                {sort === k.key ? desc ? <ArrowDown size={11} className="ico" aria-hidden="true" /> : <ArrowUp size={11} className="ico" aria-hidden="true" /> : null}
+              </button>
+            </span>
+          ))}
+        </span>
       </Th>
     );
   };
@@ -108,14 +102,14 @@ export function CaseTable({ rows, onOpen, showPayer = false, pageSize = 15, star
         <p className="rounded-xl border border-line px-4 py-8 text-center text-sm text-muted">No cases match. Pick another outcome.</p>
       ) : (
         <div className="rounded-xl border border-line">
-          <Table nowrap className="text-[13px]" >
+          <Table className="text-[13px]">
             <thead>
-              <tr>{cols.map(head)}</tr>
+              <tr>{groups.map(head)}</tr>
             </thead>
             <tbody>
               {slice.map((d) => (
                 <Tr key={d.id} onClick={() => onOpen(d)} data-case={d.id}>
-                  <Td className="px-3 py-2.5">
+                  <Td className="px-2.5 py-2.5 whitespace-nowrap" data-col="case">
                     <button
                       type="button"
                       onClick={(e) => {
@@ -127,23 +121,34 @@ export function CaseTable({ rows, onOpen, showPayer = false, pageSize = 15, star
                     >
                       {d.id}
                     </button>
+                    <div className="text-[12px] text-muted">
+                      {d.initials}, {d.age}
+                    </div>
                   </Td>
-                  <Td className="px-3 py-2.5">
-                    {d.initials}, {d.age}
+                  {showPayer ? (
+                    <Td className="px-2.5 py-2.5 whitespace-nowrap" data-col="payer">
+                      {payerById(d.payerId).shortName}
+                    </Td>
+                  ) : null}
+                  <Td className="px-2.5 py-2.5" data-col="dx">
+                    <div className="whitespace-nowrap">{DX_SHORT[d.dx]}</div>
+                    <div className="text-[12px] whitespace-nowrap text-muted">
+                      {PROGRAM_LABEL[d.program]} · {KIND_LABEL[d.kind]}
+                    </div>
                   </Td>
-                  {showPayer ? <Td className="px-3 py-2.5">{payerById(d.payerId).shortName}</Td> : null}
-                  <Td className="px-3 py-2.5">{DX_SHORT[d.dx]}</Td>
-                  <Td className="px-3 py-2.5">{PROGRAM_LABEL[d.program]}</Td>
-                  <Td className="px-3 py-2.5">{KIND_LABEL[d.kind]}</Td>
-                  <Td className="px-3 py-2.5">Site {d.site}</Td>
-                  <Td className="px-3 py-2.5">
+                  <Td className="px-2.5 py-2.5 whitespace-nowrap" data-col="site">
+                    Site {d.site}
+                  </Td>
+                  <Td className="px-2.5 py-2.5" data-col="outcome">
                     <Pill tone={OUTCOME_TONE[d.outcome]}>{OUTCOME_SHORT[d.outcome]}</Pill>
+                    <div className="mt-0.5 max-w-[185px] truncate text-[12px] text-muted" title={d.reason}>
+                      {d.reason ?? `${d.requested} ${d.unit}`}
+                    </div>
                   </Td>
-                  <Td className="max-w-[210px] truncate px-3 py-2.5 text-muted" title={d.reason}>
-                    {d.reason ?? "None"}
+                  <Td className="px-2.5 py-2.5 text-right whitespace-nowrap" data-col="days">
+                    <div className="tabular-nums">{(d.hours / 24).toFixed(1)}</div>
+                    <div className="text-[12px] text-muted">{shortDateOfDay(d.day)}</div>
                   </Td>
-                  <Td className="px-3 py-2.5 tabular-nums">{(d.hours / 24).toFixed(1)}</Td>
-                  <Td className="px-3 py-2.5 text-muted">{shortDateOfDay(d.day)}</Td>
                 </Tr>
               ))}
             </tbody>

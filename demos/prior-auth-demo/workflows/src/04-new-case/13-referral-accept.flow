@@ -1,11 +1,11 @@
 title: Authorizations › New case › Referral › Accept a referral
 route: /authorizations/new/:draftId?ref=RF-2048
-intro: Accepting a referral takes a bed or slot, records who owns it, and moves the case on to the medical records. Six findings must be dealt with first. The other open findings are listed in the dialog and do not stop it.
+intro: Accepting a referral takes a bed or slot, records who owns it, and takes the referral into the case's Intake, where it fills in the details. Six findings must be dealt with first. The other open findings are listed in the dialog and do not stop it.
 dir: TD
 ---
 start s1 "Click 'Accept referral and continue'\non the checklist"
 start s2 "Click 'Accept referral'\non the full referral page"
-start s3 "Click 'Continue to medical records'\non the checklist or on the green banner of the full page"
+start s3 "Click 'Continue with this referral'\non the checklist or on the green banner of the full page"
 
 decision dB "Is a required finding still open?\nPatient age, clinician credentials, clinician signature,\ndiagnosis code, level of care, insurance and member ID"
 toast tB "The button is disabled\nOne line under it: 'Resolve 4 items first: clinician credentials, clinician signature, diagnosis code, insurance and member ID.'"
@@ -31,28 +31,28 @@ click c1 "Click 'Accept referral'"
 store st1 "Referral is Accepted\nOwner, program, target date saved\nTimeline 'Accepted into IOP' with any open findings counted"
 store st2 "Program capacity drops by one bed or slot\n(never below zero)"
 toast t3 "'Referral accepted'\n'RF-2048 is accepted into IOP.'"
-process p3 "Referral leaves 'Already arrived'\n(only open referrals are listed)"
+process p3 "Referral leaves 'Incoming referrals'\n(only open referrals are listed)"
 decision d3 "Accepted from where?"
 
 group gPg "From the full referral page"
   screen sc1 "Page stays open\nGreen banner 'Accepted into IOP'\n'Target admission 10/21/2026. Owner Taylor Brooks.'"
-  click c2 "Click 'Continue to medical records'\n(or 'Open R-1042' when a request is linked)"
+  click c2 "Click 'Continue with this referral'\n(or 'Open R-1042' when a request is linked)"
   process p7 "Uses the case in the address (?draft=)\nWithout one, a new blank case is made first"
 endgroup
 
 group gAsk "Attach the referral to the case"
   decision d4 "Have the agents already run on this case?"
-  overlay oA "'Attach this referral?'\n'Attaching this referral makes the agents re-check the case. Continue?'\n'Their finished work is cleared. You start them again after the medical records.'"
+  overlay oA "'Attach this referral?'\n'Attaching this referral makes the agents re-check the case. Continue?'\n'Their finished work is cleared. You start them again after Clinical documentation.'"
   click cCancel "Click 'Cancel' or 'Close', press Escape,\nor click outside the dialog"
-  endx eA "Nothing is attached and the agents' work stays\nA referral just accepted stays accepted:\nthe button now reads 'Continue to medical records'"
+  endx eA "Nothing is attached and the agents' work stays\nA referral just accepted stays accepted:\nthe button now reads 'Continue with this referral'"
   click cCont "Click 'Continue'"
-  process p6 "Agents' results and answers are cleared\nBecause the patient and documents changed\nThe case goes back to Medical records"
+  process p6 "Agents' results and answers are cleared\nBecause the patient and documents changed\nThe case goes back to Intake"
   toast tR "'The agents will re-check this case'\n'RF-2048 changed the case, so the agents' earlier work was cleared.'"
   process p4 "Copied into the case: patient, payer, member ID,\nlevel of care (the accepted program), diagnoses, reason\nRequest type: Initial request if routine, else Admission"
   process p5 "Referral becomes the first document\n'RF-2048 referral.pdf'"
-  toast t4 "'Referral RF-2048 is in this case'\n'A.P., 45. Next, add the medical records.'"
+  toast t4 "'Referral RF-2048 is in this case'\n'A.P., 45. Check the details below, then go on to Eligibility & Benefits.'"
 endgroup
-goto g1 "Continues in: New case › Medical records › The checklist and Continue"
+goto g1 "Continues in: Authorizations › New case › Intake › Initial authorization"
 
 s1 --> dB
 s2 --> dB

@@ -47,7 +47,7 @@ export function heatColor(rate: number): { fill: string; text: string } {
 }
 const band = (rate: number): string => (rate >= 80 ? "strong, 80% and above" : rate >= 55 ? "moderate, 55 to 79%" : "at risk, below 55%");
 
-const LABEL_W = 128;
+const MIN_CELL = 74;
 const HEAD_H = 46;
 const CELL_H = 54;
 
@@ -57,7 +57,9 @@ export function Heatmap(p: HeatmapProps) {
   const [ref, w] = useChartWidth(760);
   const id = useId();
   const minN = p.minN ?? 10;
-  const cw = Math.max(64, (w - LABEL_W) / p.cols.length);
+  const LABEL_W = w < 560 ? 96 : 128;
+  const cw = Math.max(MIN_CELL, (w - LABEL_W) / p.cols.length);
+  const sw = Math.max(w, LABEL_W + cw * p.cols.length);
   const h = HEAD_H + p.rows.length * CELL_H + 2;
   const [hot, setHot] = useState<{ r: number; c: number } | null>(null);
   const chars = Math.max(8, Math.floor(cw / 6.4));
@@ -70,8 +72,9 @@ export function Heatmap(p: HeatmapProps) {
   const cell = hot ? p.cells[hot.r][hot.c] : null;
   return (
     <ChartFrame id={id} summary={p.summary} table={p.table} hint={p.hint}>
-      <div ref={ref} role="group" aria-label={p.ariaLabel} aria-describedby={summaryId(id)} className="relative w-full" style={{ height: h }}>
-        <svg width={w} height={h} className="block select-none">
+      <div ref={ref} role="group" aria-label={p.ariaLabel} aria-describedby={summaryId(id)} className="w-full overflow-x-auto overflow-y-hidden pb-1">
+      <div className="relative" style={{ height: h, width: sw }}>
+        <svg width={sw} height={h} className="block select-none">
           <defs>
             <pattern id={`${id}-stripe`} patternUnits="userSpaceOnUse" width="7" height="7" patternTransform="rotate(45)">
               <line x1="0" y1="0" x2="0" y2="7" stroke="#7A2E1B" strokeWidth="1.6" opacity="0.28" />
@@ -176,7 +179,7 @@ export function Heatmap(p: HeatmapProps) {
           })}
         </svg>
         {hot && cell && cell.n > 0 ? (
-          <Tooltip x={LABEL_W + cw * hot.c + cw / 2 - 14} y={HEAD_H + hot.r * CELL_H + CELL_H - 2} bound={w} width={230}>
+          <Tooltip x={LABEL_W + cw * hot.c + cw / 2 - 14} y={HEAD_H + hot.r * CELL_H + CELL_H - 2} bound={sw} width={230}>
             <div className="font-semibold">{p.cellName ? p.cellName(hot.r, hot.c) : `${p.rows[hot.r].label}, ${p.cols[hot.c].label}`}</div>
             <div className="mt-0.5">
               <b>{cell.rate === null ? "-" : `${cell.rate}%`}</b> {p.metric ?? "approved as requested"}
@@ -188,6 +191,7 @@ export function Heatmap(p: HeatmapProps) {
             {cell.detail ? <div className="mt-1 border-t border-line pt-1 text-muted">{cell.detail}</div> : null}
           </Tooltip>
         ) : null}
+      </div>
       </div>
       <HeatLegend minN={minN} />
     </ChartFrame>

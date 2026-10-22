@@ -1,5 +1,5 @@
 import { MIN_DECISIONS } from "@/data/analytics";
-import { cmsApplies, type Decision } from "@/data/decisions";
+import { MONTHS, cmsApplies, type Decision, type MonthInfo } from "@/data/decisions";
 
 /* The one place a rate, a count or an average is worked out. The headline figures, the charts, the tables and the case lists all call
    `statsOf` on the same rows, so a figure and the cases behind it cannot disagree. */
@@ -96,3 +96,25 @@ export function groupBy<T extends string>(rows: readonly Decision[], keys: reado
   for (const d of rows) m.get(keyOf(d))?.push(d);
   return m;
 }
+
+/** A tidy axis for a set of percentages: gridlines every 10 or 20 points, a floor and a ceiling a little beyond the data, so a change of a few points can be seen. */
+export function rateAxis(values: readonly (number | null)[]): { min: number; max: number; step: number } {
+  const v = values.filter((x): x is number => x !== null);
+  if (!v.length) return { min: 0, max: 100, step: 25 };
+  const lo = Math.min(...v);
+  const hi = Math.max(...v);
+  const step = hi - lo > 40 ? 20 : 10;
+  return { min: Math.max(0, Math.floor((lo - 5) / step) * step), max: Math.min(100, Math.ceil((hi + 5) / step) * step), step };
+}
+
+export interface MonthPoint {
+  month: MonthInfo;
+  s: Stats;
+}
+/** Rows by month, twelve arrays. */
+export function byMonth(rows: readonly Decision[]): Decision[][] {
+  const out: Decision[][] = MONTHS.map(() => []);
+  for (const d of rows) out[d.month].push(d);
+  return out;
+}
+export const monthPoints = (rows: readonly Decision[]): MonthPoint[] => byMonth(rows).map((r, i) => ({ month: MONTHS[i], s: statsOf(r) }));

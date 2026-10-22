@@ -60,8 +60,6 @@ export interface Live {
   scope: Scope;
   /** Every record the viewer may see, live events included, before any filter. */
   scoped: Decision[];
-  /** Both sites, for the site comparison. Empty for a one-site viewer. */
-  everything: Decision[];
   dismissals: DismissedRow[];
 }
 export interface DismissedRow {
@@ -83,8 +81,7 @@ export function useLive(): Live {
   const dismissals = useMemo(() => dismissalRows(dismissed, requests, queue), [dismissed, requests, queue]);
   const sites = scope.sites;
   const scoped = useMemo(() => bySites(live, sites), [live, sites]);
-  const everything = sites.length === 2 ? live : [];
-  return { scope, scoped, everything, dismissals: dismissals.filter((d) => scope.has(d.caseId)) };
+  return { scope, scoped, dismissals: dismissals.filter((d) => scope.has(d.caseId)) };
 }
 
 /** Each dismissal knows its request, so the payer, program and diagnosis group are looked up there (Dashboard requests first, then the Authorizations queue). */

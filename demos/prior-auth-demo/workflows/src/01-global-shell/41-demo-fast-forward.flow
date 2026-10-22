@@ -31,7 +31,7 @@ endgroup
 
 group gHow "How things really arrive in the demo"
   goto g1 "Continues in: Dashboard › Request drawer › Demo controls (payer replies)"
-  goto g2 "Continues in: Authorizations › New case › Referral › Start screen"
+  goto g2 "Continues in: Authorizations › New case › Intake › Start with a referral or patient"
 goto g3 "Continues in: Global shell › Top bar › Notifications › What creates a notification"
 endgroup
 

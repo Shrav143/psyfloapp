@@ -11,7 +11,7 @@ decision d1 "Contains 'slow', or both 'payer' and 'late'?"
 agent a1 "FLO lists every payer slower than its typical time, worst first:\n'Evergreen is averaging 3.4 days against 2 typical. Cardinal is averaging 2.8 days against 2 typical. Beacon ... Lakeshore ... Harborview ...\nCaller phones when a payer passes twice its typical time.'\nIf none is slower: 'Every payer is deciding within its typical time right now.'"
 click l1 "Click 'Open Analytics, turnaround'"
 process r1 "Opens /analytics\nThe Analytics page opens; Turnaround is one of its four figures"
-goto g1 "Continues in: Analytics › The four tiles"
+goto g1 "Continues in: Analytics › Headline figures"
 
 decision dn "Contains 'billing', 'eligib' or 'fix before'?\nOr 'missing' or 'incomplete'?\nOr 'expir', 'run out', 'units' or 'end' (not with 'denial')?\nOr 'require'?\nOr 'review' (not 'under review')?"
 agent an "FLO answers from the screen you are on or the case you name:\nwhat is missing for a case, when an authorization ends, what a payer requires, which reviews are due, which patients need a fix before billing\nEach names the case, quotes live data, says once that it is FLO's reading, and ends with a link to the exact place"
@@ -40,7 +40,7 @@ goto g4 "Continues in: Dashboard › Do next › What to do now and where each b
 decision d5 "Contains 'referral'?"
 agent a5 "'New referrals are waiting for review. Reader has already checked each document, and Verify has run coverage for the ones with an insurance card.'"
 click l5 "Click 'Start a case from a referral'"
-goto g5 "Continues in: Authorizations › New case › Referral › Start screen"
+goto g5 "Continues in: Authorizations › New case › Intake › Start with a referral or patient"
 
 agent a6 "'I did not find an answer to that in the demo data. Try one of the suggestions below.'\nNo link. The four suggestion chips stay right under this answer, so the sentence is true"
 end e1 "Answer stays in the chat"

@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { Card, CardBody, CardHeader, CHART, Segmented, TrendChart } from "@/components/ui";
+import { Card, CardBody, CHART, Segmented, TrendChart } from "@/components/ui";
 import { MONTHS } from "@/data/decisions";
 import type { Board } from "./board";
 import type { CaseQuery } from "./query";
 import { filterWords } from "./filters";
-import { fmt, pctOf } from "./stats";
+import { fmt, pctOf, rateAxis } from "./stats";
 
 type Mode = "rate" | "count";
 
@@ -17,9 +17,7 @@ export function TrendCard({ board, onOpen }: { board: Board; onOpen: (q: CaseQue
   const denial = rate((s) => s.notApproved);
   const clinic = clinicMonths ? rate((s) => s.approved, clinicMonths) : null;
   const words = filterWords(filters);
-  const known = [...approval, ...denial, ...(clinic ?? [])].filter((v): v is number => v !== null);
-  const yMin = known.length ? Math.max(0, Math.floor((Math.min(...known) - 8) / 10) * 10) : 0;
-  const yMax = known.length ? Math.min(100, Math.ceil((Math.max(...known) + 8) / 10) * 10) : 100;
+  const axis = rateAxis([...approval, ...denial, ...(clinic ?? [])]);
   const first = approval.findIndex((v) => v !== null);
   const last = approval.length - 1 - [...approval].reverse().findIndex((v) => v !== null);
   const summary =
@@ -30,20 +28,20 @@ export function TrendCard({ board, onOpen }: { board: Board; onOpen: (q: CaseQue
   const openMonth = (i: number) => onOpen({ month: i, title: `Decisions in ${MONTHS[i].long}`, note: `Every decision from ${MONTHS[i].range}${words ? `, for ${words}` : ""}. A month runs from the 21st to the 20th, so the last one ends on the demo date.` });
   return (
     <Card data-testid="trend-card">
-      <CardHeader
-        title="Approvals and denials by month"
-        subtitle={`${words ? `${words}. ` : ""}Twelve months to 20 Oct 2026. Click a month to see its cases.`}
-        right={
-          <Segmented
-            items={[
-              { id: "rate", label: "Rate" },
-              { id: "count", label: "Count" },
-            ]}
-            value={mode}
-            onChange={setMode}
-          />
-        }
-      />
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 border-b border-line px-6 pt-5 pb-[18px]">
+        <div className="min-w-[220px] flex-1">
+          <h3 className="font-serif text-[21px] font-semibold leading-tight tracking-tight">Approvals and denials by month</h3>
+          <p className="mt-[3px] text-[13.5px] text-muted">{`${words ? `${words}. ` : ""}Twelve months to 20 Oct 2026. Click a month to see its cases.`}</p>
+        </div>
+        <Segmented
+          items={[
+            { id: "rate", label: "Rate" },
+            { id: "count", label: "Count" },
+          ]}
+          value={mode}
+          onChange={setMode}
+        />
+      </div>
       <CardBody>
         {mode === "rate" ? (
           <TrendChart
@@ -52,8 +50,9 @@ export function TrendCard({ board, onOpen }: { board: Board; onOpen: (q: CaseQue
             details={details}
             height={280}
             format={(v) => `${Math.round(v)}%`}
-            yMin={yMin}
-            yMax={yMax}
+            yMin={axis.min}
+            yMax={axis.max}
+            tickStep={axis.step}
             highlight={{ from: period.months[0], to: period.months[1], label: period.label }}
             onPoint={openMonth}
             extra={(i) => `${fmt(months[i].s.n)} decisions in the month`}
@@ -72,6 +71,7 @@ export function TrendCard({ board, onOpen }: { board: Board; onOpen: (q: CaseQue
             details={details}
             height={280}
             stacked
+            integer
             format={(v) => fmt(Math.round(v))}
             highlight={{ from: period.months[0], to: period.months[1], label: period.label }}
             onPoint={openMonth}

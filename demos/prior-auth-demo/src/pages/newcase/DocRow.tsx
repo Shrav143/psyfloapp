@@ -66,7 +66,7 @@ export function DocRow({ row, slot, draft, open, onToggle, onPick, onPreview }: 
   } else if (!doc) {
     action = (
       <div className="flex max-w-[400px] flex-wrap justify-end gap-2">
-        {slot === "referral" ? (
+        {slot === "referral" && draft.kind === "initial" ? (
           <Button size="sm" aria-describedby={labelId} onClick={() => { patch(draft.id, stepPatch(0)); nav(`${paths.newCase({ draft: draft.id })}?ref=`); }}>
             Add a referral
           </Button>

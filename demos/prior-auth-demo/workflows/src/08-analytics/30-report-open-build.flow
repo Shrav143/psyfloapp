@@ -2,10 +2,10 @@ title: Analytics › Monthly report › Open and build
 route: /analytics
 intro: 'Monthly report' opens a small window where the Analyst agent builds the report in four short steps, about 3 seconds. Cancel, Close, Escape and a click outside all stop it. Closing throws the build away.
 dir: TD
-also: Demo only: the steps are a timer, 0.75 seconds each. The report is built from the period, payer and program chosen when the window opened. Escape closes the window, and a menu opened beforehand closes first, one press each.
+also: Demo only: the steps are a timer, 0.75 seconds each. The report is built from the period, payer, program, diagnosis group and site view chosen when the window opened. Escape closes the window, and a menu opened beforehand closes first, one press each.
 ---
 start s1 "Click 'Monthly report' (top right)"
-overlay o1 "Window 'Monthly report'\nSubtitle 'This quarter · All payers · All programs'\n'Built by' Analyst\nButton 'Cancel' in the footer"
+overlay o1 "Window 'Monthly report'\nSubtitle 'This quarter · Both sites · All payers · All programs · All diagnosis groups'\n'Built by' Analyst\nButton 'Cancel' in the footer"
 process p0 "Page behind is dimmed\nThe menus cannot be used until the window closes"
 
 group gSteps "Four steps"
@@ -21,7 +21,7 @@ endgroup
 
 process p1 "Each step shows a spinner while it runs, then a green tick\nSteps still to come have a grey dot and grey text"
 
-screen r1 "Panel 'Your report is ready'\n'Same figures as this page. Save a file or print it.'\nButtons 'Download report', 'Download data (CSV)' and 'Print'\nFooter button now reads 'Done'"
+screen r1 "Panel 'Your report is ready'\n'Same figures as this page, for the site view and filters you have set. Save a file or print it.'\nButtons 'Download report', 'Download data (CSV)' and 'Print'\nFooter button now reads 'Done'"
 
 group gClose "Close it at any moment"
   click c1 "Click 'Cancel' (while building) or 'Done' (when ready)"

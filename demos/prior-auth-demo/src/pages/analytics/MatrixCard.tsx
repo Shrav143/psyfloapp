@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Card, CardBody, CardHeader, Heatmap, Segmented, type HeatCell } from "@/components/ui";
+import { Card, CardBody, Heatmap, Segmented, type HeatCell } from "@/components/ui";
 import type { Board, MatrixKey } from "./board";
 import { cellQuery } from "./board";
 import type { CaseQuery } from "./query";
@@ -25,11 +25,13 @@ export function MatrixCard({ board, onCases, onPayer }: { board: Board; onCases:
   const title = (ri: number, ci: number): string => `${m.rows[ri].label}: ${ci === m.cols.length ? "all cases" : m.cols[ci].label}`;
   return (
     <Card data-testid="matrix-card">
-      <CardHeader
-        title="Payer by case mix"
-        subtitle="How often each payer approves each kind of case as requested. Click a cell to see its cases, a payer to see its analysis."
-        right={<Segmented items={TABS} value={key} onChange={setKey} className="max-w-full flex-wrap" />}
-      />
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 border-b border-line px-6 pt-5 pb-[18px]">
+        <div className="min-w-[240px] flex-1">
+          <h3 className="font-serif text-[21px] font-semibold leading-tight tracking-tight">Payer by case mix</h3>
+          <p className="mt-[3px] text-[13.5px] text-muted">How often each payer approves each kind of case as requested. Click a cell to see its cases, a payer to see its analysis.</p>
+        </div>
+        <Segmented items={TABS} value={key} onChange={setKey} className="max-w-full flex-wrap" />
+      </div>
       <CardBody>
         <Heatmap
           ariaLabel={`Approval rate by payer and ${m.title.toLowerCase()}`}

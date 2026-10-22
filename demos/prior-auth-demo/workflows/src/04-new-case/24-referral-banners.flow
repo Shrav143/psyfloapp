@@ -17,8 +17,8 @@ group gAcc "Decided and moving on"
   decision d2 "Did this referral start a request?"
   toast t3 "'Linked request R-1042' with its status chip\nbutton 'Open R-1042'"
   click c2 "Click 'Open R-1042' or the link 'R-1042'"
-  toast t4 "'No request is linked yet. Continue to the medical records to build the authorization for this patient.'"
-  click c3 "Click 'Continue to medical records'\n(not shown once Admitted)"
+  toast t4 "'No request is linked yet. Continue with this referral to build the authorization for this patient.'"
+  click c3 "Click 'Continue with this referral'\n(not shown once Admitted)"
   process p1 "Uses the case in the address, or starts a new one\nReferral goes into the case\nAsks 'Attach this referral?' first when the agents already ran"
 endgroup
 
@@ -32,9 +32,9 @@ group gOpen "Open referral"
   process p3 "Coverage tab opens"
 endgroup
 
-goto g1 "Continues in: New case › Referral › Full page: Validation tab"
-goto g2 "Continues in: New case › Referral › Check coverage"
-goto g3 "Continues in: New case › Referral › Accept a referral\n(attach the referral, then Medical records)"
+goto g1 "Continues in: Authorizations › New case › Referral › Full page: Validation tab"
+goto g2 "Continues in: Authorizations › New case › Referral › Check coverage"
+goto g3 "Continues in: Authorizations › New case › Referral › Accept a referral\n(attach the referral, then Intake)"
 goto g4 "Continues in: Dashboard\nOpens request R-1042"
 end e1 "No banner\nA New or In review referral with no open findings and no lapsed coverage"
 

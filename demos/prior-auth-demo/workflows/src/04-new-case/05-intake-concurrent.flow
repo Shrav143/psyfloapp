@@ -1,0 +1,44 @@
+title: Authorizations › New case › Intake › Concurrent review
+route: /authorizations/new/:draftId?type=concurrent (Intake)
+intro: A concurrent review asks the payer to approve more days of a stay that is already authorized. Intake finds the patient and the authorization, says what state it is in, and asks for the dates of the next stretch. The request is recorded as a continued stay. It is never a duplicate of the authorization it follows.
+dir: TD
+---
+start s1 "Pick 'Concurrent review' in 'Authorization type'\nOr open ?type=concurrent"
+screen sc "Intake · Concurrent review\n'Find the patient, then the authorization this review is for.'"
+goto gFind "Continues in: Authorizations › New case › Intake › Find a patient and the authorization"
+decision dHas "Is a patient and an authorization chosen?"
+screen sAuth "Authorization card and one quiet sentence about its state\nNone left, Expiring soon, Not approved yet or Closed"
+decision dDup "Does another open request, draft or active authorization overlap these dates?\nThe authorization this review follows is left out"
+goto gDup "Continues in: Authorizations › New case › Intake › Possible duplicate"
+screen sDates "Card 'Dates to review'\n'The next stretch starts the day after the approval ends, or today when it already has.' · Residential 3.5 · Summit Medicaid HMO"
+input iFrom "'Requested start date'\nFilled from the authorization"
+input iTo "'Requested end date' (optional)\nLeft empty: the usual days for the level of care"
+decision dBad "Is the end before the start?"
+toast tBad "Field error: 'The end is before the start.'"
+store st "The request is recorded as 'Continued stay'\nIt carries the patient, treatment episode and authorization ids"
+process pCheck "Eligibility & Benefits will show the patient's last check\nand the authorization already on file"
+process pDoc "Typical documents: progress note since the last review, updated treatment plan, current ASAM reassessment, step-down or discharge plan"
+goto gElig "Continues in: Authorizations › New case › Eligibility & Benefits › Concurrent review"
+goto gDocs "Continues in: Authorizations › New case › Clinical documentation › Required and typical documents by type"
+group gFoot "Footer bar"
+  click cSave "Click 'Save as draft'"
+  click cCont "Click 'Continue to Eligibility & Benefits'"
+  toast tHint "'Still to add: authorization. You can go on; Review & submit lists what is missing.'"
+endgroup
+goto gSave "Continues in: Authorizations › New case › Save as draft and leave"
+
+s1 --> sc --> gFind
+sc --> dHas
+dHas -->|No| gFind
+dHas -->|Yes| sAuth --> dDup
+dDup -->|Yes| gDup
+dDup -->|No| sDates
+gDup -.-> sDates
+sDates --> iFrom --> iTo --> dBad
+dBad -->|Yes| tBad --> iTo
+dBad -->|No| st
+st --> pCheck --> gElig
+st --> pDoc --> gDocs
+sDates --> tHint
+sDates --> cSave --> gSave
+sDates --> cCont --> gElig

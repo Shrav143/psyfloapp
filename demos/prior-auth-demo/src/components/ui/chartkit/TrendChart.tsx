@@ -1,5 +1,5 @@
 import { useId, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
-import { CHART, ChartFrame, Tooltip, niceMax, smoothPath, summaryId, useChartWidth, type ChartTableData } from "./core";
+import { CHART, ChartFrame, Tooltip, niceScale, smoothPath, summaryId, useChartWidth, type ChartTableData } from "./core";
 
 export interface TrendSeries {
   key: string;
@@ -21,6 +21,10 @@ export interface TrendChartProps {
   format: (v: number) => string;
   yMin?: number;
   yMax?: number;
+  /** The values are whole numbers (counts), so the axis steps are too. */
+  integer?: boolean;
+  /** Gap between gridlines. Left out, the axis has four equal steps. */
+  tickStep?: number;
   height?: number;
   /** Shade the points of the chosen period. */
   highlight?: { from: number; to: number; label: string };
@@ -51,10 +55,10 @@ export function TrendChart(p: TrendChartProps) {
   const stacks = p.series.map((_, si) => p.labels.map((__, i) => p.series.slice(0, si + 1).reduce((a, s) => a + (s.values[i] ?? 0), 0)));
   const all = p.stacked ? stacks[stacks.length - 1] : p.series.flatMap((s) => s.values.filter((v): v is number => v !== null));
   const yMin = p.yMin ?? 0;
-  const yMax = p.yMax ?? niceMax(Math.max(1, ...all) * 1.05);
+  const yMax = p.yMax ?? niceScale(Math.max(1, ...all) * 1.04, 4, p.integer).max;
   const x = (i: number): number => M.l + (n === 1 ? iw / 2 : (i / (n - 1)) * iw);
   const y = (v: number): number => M.t + ih - ((v - yMin) / (yMax - yMin || 1)) * ih;
-  const ticks = Array.from({ length: 5 }, (_, i) => yMin + ((yMax - yMin) * i) / 4);
+  const ticks = p.tickStep ? Array.from({ length: Math.floor((yMax - yMin) / p.tickStep + 1e-9) + 1 }, (_, i) => yMin + i * (p.tickStep as number)) : Array.from({ length: 5 }, (_, i) => yMin + ((yMax - yMin) * i) / 4);
   const step = n > 1 ? iw / (n - 1) : iw;
   const everyOther = w < 520;
 

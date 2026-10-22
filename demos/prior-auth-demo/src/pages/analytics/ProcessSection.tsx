@@ -44,7 +44,7 @@ export function ProcessSection({ board, workload, scopeWords, onOpen }: { board:
             labels={MONTHS.map((m) => m.label)}
             details={MONTHS.map((m) => m.range)}
             height={190}
-            format={(v) => v.toFixed(1)}
+            format={(v) => (Number.isInteger(v) ? String(v) : v.toFixed(1))}
             extra={(i) => `${p.referral[i].n} first requests`}
             series={[{ key: "days", name: "Days, referral to authorization", color: CHART.forest, values: refValues, area: true }]}
             summary={`Days from referral to authorization went from ${refValues[0] ?? "-"} in ${MONTHS[0].label} to ${refValues[11] ?? "-"} in ${MONTHS[11].label}.`}

@@ -1,6 +1,7 @@
-import { Copy } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Copy, X } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Button, Drawer } from "@/components/ui";
+import { Button, CHART, Drawer, HBarChart } from "@/components/ui";
 import type { Decision } from "@/data/decisions";
 import { paths } from "@/routes";
 import { CaseTable } from "./CaseTable";
@@ -20,9 +21,15 @@ export function CaseListPanel({ query, rows, filters, siteLabel, width, onOpenCa
   const when = query.month !== undefined ? `${MONTHS[query.month].long} (${MONTHS[query.month].range})` : periodInfo(filters.period).label;
   const words = filterWords(filters);
   const extra = describeQuery(query);
-  const reasons = new Map<string, number>();
-  for (const d of rows) if (d.reason) reasons.set(d.reason, (reasons.get(d.reason) ?? 0) + 1);
-  const top = [...reasons].sort((a, b) => b[1] - a[1]).slice(0, 3);
+  const [reason, setReason] = useState<string | null>(null);
+  const reasons = useMemo(() => {
+    const m = new Map<string, { n: number; preventable: boolean }>();
+    for (const d of rows) if (d.reason) m.set(d.reason, { n: (m.get(d.reason)?.n ?? 0) + 1, preventable: !!d.preventable });
+    return [...m].map(([label, v]) => ({ label, ...v })).sort((a, b) => b.n - a.n || a.label.localeCompare(b.label));
+  }, [rows]);
+  const shown = reason ? rows.filter((d) => d.reason === reason) : rows;
+  const top = reasons.slice(0, 6);
+  const topN = Math.max(1, ...top.map((r) => r.n));
   return (
     <Drawer
       open
@@ -67,11 +74,31 @@ export function CaseListPanel({ query, rows, filters, siteLabel, width, onOpenCa
           ))}
         </div>
         {top.length ? (
-          <p className="text-[13px] text-ink2">
-            <b>Most common reasons:</b> {top.map(([r, n]) => `${r} (${n})`).join(" · ")}
+          <div data-testid="caselist-reasons">
+            <h4 className="text-[14px] font-semibold">Why these were not approved as requested</h4>
+            <p className="mb-1 text-[12.5px] text-muted">{reasons.length > top.length ? `The ${top.length} most common of ${reasons.length} reasons. ` : ""}Click a reason to show only its cases in the table.</p>
+            <HBarChart
+              ariaLabel="Denial reasons for these cases"
+              rows={top.map((r) => ({ key: r.label, label: r.label, value: r.n, display: String(r.n), color: reason === r.label ? CHART.forest : r.preventable ? CHART.mid : CHART.umber, tag: r.preventable ? "Preventable" : undefined, quiet: reason !== null && reason !== r.label }))}
+              max={topN}
+              labelWidth={250}
+              valueWidth={32}
+              onRow={(k) => setReason((cur) => (cur === k ? null : k))}
+              summary={`Denial reasons for ${rows.length} cases: ${top.map((r) => `${r.label} ${r.n}`).join(", ")}.`}
+              table={{ caption: "Denial reasons for these cases", head: ["Reason", "Cases", "Preventable"], rows: reasons.map((r) => [r.label, r.n, r.preventable ? "Yes" : "No"]) }}
+            />
+          </div>
+        ) : null}
+        {reason ? (
+          <p className="flex items-center gap-2 text-[13px]">
+            <span className="rounded-full bg-sage-bg px-3 py-1 font-medium text-forest">Showing {shown.length} with reason: {reason}</span>
+            <button type="button" onClick={() => setReason(null)} className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold text-forest hover:bg-sage-bg">
+              <X size={13} className="ico" aria-hidden="true" />
+              Show all {rows.length}
+            </button>
           </p>
         ) : null}
-        <CaseTable rows={rows} onOpen={onOpenCase} showPayer={!query.payer} label={query.title} startSort={query.slowest ? "days" : "date"} startDesc />
+        <CaseTable key={reason ?? "all"} rows={shown} onOpen={onOpenCase} showPayer={!query.payer} label={query.title} startSort={query.slowest ? "days" : "date"} startDesc />
       </div>
     </Drawer>
   );

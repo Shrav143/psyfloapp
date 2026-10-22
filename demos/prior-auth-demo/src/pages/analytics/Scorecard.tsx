@@ -21,8 +21,8 @@ function Trend({ delta }: { delta: number | null }) {
   );
 }
 
-const cell = "px-3 py-3.5";
-const head = "px-3 py-3 text-right";
+const cell = "px-2 py-3.5";
+const head = "px-2 py-3 text-right";
 
 /** One row per payer: how many decisions, how often it approves as requested (with twelve months beside it), denials, cuts, time, information requests, appeals. A row opens the payer's analysis. */
 export function Scorecard({ board, onPayer, onCases }: { board: Board; onPayer: (p: BuiltInPayerId) => void; onCases: (q: CaseQuery) => void }) {
@@ -37,7 +37,7 @@ export function Scorecard({ board, onPayer, onCases }: { board: Board; onPayer: 
       <Table>
         <thead>
           <tr>
-            <Th className="min-w-[230px] px-3 py-3 first:pl-6">Payer</Th>
+            <Th className="min-w-[205px] px-2 py-3 first:pl-6">Payer</Th>
             <Th className={head}>Decisions</Th>
             <Th className={head}>Approval rate</Th>
             <Th className={head}>Denial rate</Th>
@@ -70,7 +70,7 @@ export function Scorecard({ board, onPayer, onCases }: { board: Board; onPayer: 
                 <Td className={cn(cell, "text-right tabular-nums")}>{fmt(r.s.n)}</Td>
                 <Td className={cn(cell, "text-right")}>
                   <span className="inline-flex items-center justify-end gap-2.5">
-                    <Sparkline data={r.spark} width={64} height={22} color={r.approval !== null && r.approval < 55 ? "#B5553A" : "#2F6F5C"} />
+                    <Sparkline data={r.spark} width={52} height={22} color={r.approval !== null && r.approval < 55 ? "#B5553A" : "#2F6F5C"} />
                     <b className="w-[40px] text-right tabular-nums" data-testid={`rate-${r.payer}`}>{pct(r.approval)}</b>
                   </span>
                 </Td>
@@ -79,7 +79,7 @@ export function Scorecard({ board, onPayer, onCases }: { board: Board; onPayer: 
                   <button type="button" onClick={figure(r, "approved in part", { outcome: "partial" })} aria-label={`${r.name}: ${r.partial} approved in part. List the cases.`} className="underline decoration-dotted underline-offset-[3px] hover:text-forest">
                     {fmt(r.partial)}
                   </button>
-                  <span className="ml-1 text-[12px] font-normal text-muted">({pct(pctOf(r.partial, r.s.n))})</span>
+                  <span className="ml-0.5 text-[12px] font-normal text-muted">({pct(pctOf(r.partial, r.s.n))})</span>
                 </Td>
                 <Td className={cn(cell, "text-right tabular-nums")}>{r.days === null ? dash : r.days.toFixed(1)}</Td>
                 <Td className={cn(cell, "text-right tabular-nums")}>
@@ -105,7 +105,7 @@ export function Scorecard({ board, onPayer, onCases }: { board: Board; onPayer: 
                   ) : (
                     dash
                   )}
-                  {r.overturn !== null ? <span className="ml-1 text-[12px] font-normal text-muted">({r.s.overturned} of {r.s.rulings})</span> : null}
+                  {r.overturn !== null ? <span className="ml-1 text-[12px] font-normal text-muted">of {r.s.rulings}</span> : null}
                 </Td>
                 <Td className={cn(cell, "text-right last:pr-6")}>
                   <Trend delta={r.trend} />

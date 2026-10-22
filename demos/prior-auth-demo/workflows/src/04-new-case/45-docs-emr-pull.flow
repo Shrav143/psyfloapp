@@ -1,0 +1,54 @@
+title: Authorizations › New case › Clinical documentation › Pull a chart from EMR Connect
+route: /authorizations/new/:draftId (step 3 of 5, 'Pull a chart from EMR Connect')
+intro: The button reads EMR Connect's connected systems. With none connected it says so and links to EMR Connect. Otherwise the picker lists charts by system, names the system, and leaves blank any field whose system still needs a mapping.
+dir: TD
+---
+start s1 "On step 3, click 'Pull a chart from EMR Connect'\nClicking again closes it"
+decision dSys "Is any records system connected in EMR Connect?\nStatus 'Connected'. 'Needs attention' and disconnected systems do not count"
+toast tNone "'No records system is connected.'\n'Connect one in EMR Connect to pull a chart, or drop the files above.'\nLink 'EMR Connect' and a 'Close' button"
+click cLink "Click 'EMR Connect' in the message"
+goto gEmr "Continues in: EMR Connect › Connect a system › Choose the system and contact"
+goto gMap "Continues in: EMR Connect › Needs a mapping › Map a field"
+click cClose "Click 'Close'"
+endx eClose "Message closes; nothing changes"
+
+overlay oPick "Chart from EMR Connect\nPicker with a chart list, 'Pull' and 'Cancel'\nOnly charts from connected systems are listed"
+input iChart "Pick a chart\nEach option names its system, e.g. 'J.M., 34 · Summit · Residential 3.5'\n'Clinical record · residential site. Admitted yesterday'"
+decision dMap "Does the chart's system still have a field waiting for a mapping?\nResidential site: none. Outpatient site: 'Level of care' and 'Referral source'"
+toast tGap "Under the picker: 'From Clinical record · outpatient site.'\n'“Level of care” and “Referral source” still need a mapping there, so those fields are left blank.'\nLink 'Open EMR Connect'"
+toast tFrom "Under the picker: 'From Clinical record · residential site.'"
+click cPull "Click 'Pull'"
+process pPulling "Button reads 'Pulling' for about 1 second\nThe list and 'Cancel' switch off"
+ext xEmr "EMR Connect (demo: simulated)\nThe chart's patient, member ID, request type, diagnoses and reason\nPayer and level of care only when their field is mapped\nThe request type follows the Authorization type"
+decision dLinked "Does the case follow a patient who is known?\nA review, renewal or modification, or a patient picked on Intake"
+store stLinked "Only the diagnoses and the reason are filled\nThe patient, plan and level of care stay as they are"
+toast tLinked "'Pulled the chart from EMR Connect'\n'This case follows J.M., 34, so the patient and the plan stay as they are. The diagnoses and the reason came from the chart.'"
+store stEmr "Draft filled, replacing those fields\nA field that needs a mapping is set blank\nNo documents come with it"
+decision dBlank "Were any fields left blank?"
+toast tMid "'Pulled A.R., 45 from EMR Connect'\n'“Level of care” and “Referral source” need a mapping, so those fields were left blank. You can still fill them in.'"
+toast tGood "'Pulled J.M., 34 from EMR Connect'\n'Everything below was filled in from the chart. You can still change it.'"
+process pRows "The rows that stayed blank say 'Left blank. ... needs a mapping' and link to EMR Connect\nOnce the field is mapped there, pull the chart again"
+process pStale "If the agents had already run, the run restarts\nBecause the records changed"
+toast tStale "'Records changed after the agents ran'\n'Their work was cleared. The agents check again when you continue.'"
+click cCancel "Click 'Cancel'"
+process pCancel "Picker closes; nothing changes"
+goto gRows "Continues in: Authorizations › New case › Intake › Patient, insurance and request rows"
+goto gRec "Continues in: Authorizations › New case › Clinical documentation › The checklist and Continue"
+
+s1 --> dSys
+dSys -->|No| tNone
+tNone --> cLink --> gEmr
+tNone --> cClose --> eClose
+dSys -->|Yes| oPick --> iChart --> dMap
+dMap -->|Yes| tGap
+dMap -->|No| tFrom
+tGap --> cPull
+tFrom --> cPull
+cPull --> pPulling --> xEmr --> dLinked
+dLinked -->|Yes| stLinked --> tLinked --> gRec
+dLinked -->|No| stEmr --> dBlank
+dBlank -->|Yes| tMid --> pRows --> gRows
+pRows -.-> gMap
+dBlank -->|No| tGood --> gRec
+stEmr -.-> pStale -.-> tStale
+oPick --> cCancel --> pCancel

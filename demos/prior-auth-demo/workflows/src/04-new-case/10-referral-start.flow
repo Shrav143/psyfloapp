@@ -1,51 +1,59 @@
-title: Authorizations › New case › Referral › Start screen
-route: /authorizations/new/:draftId (step 'Referral', no referral loaded yet)
-intro: What a person sees on step 1 before a referral is loaded. Drop documents (Reader reads them), use the sample, check a referral that already arrived, or go on without one.
+title: Authorizations › New case › Intake › Start with a referral or patient
+route: /authorizations/new/:draftId (Intake, Initial authorization, nothing started yet; ?ref= is empty)
+intro: What a person sees on Intake for an initial authorization before anything is chosen. Drop referral documents (Reader reads them), use the sample referral, open an incoming referral with Review, find a patient who is already known, or create the case by hand. Incoming referrals and the patient search show only the sites in view.
 dir: TD
-also: Demo only: Reader's reading is invented. The same file name always gives the same one of three sample referrals.
+also: Demo only: Reader's reading is invented. The same file name always gives the same one of three sample referrals. A referral read from dropped files is placed at the site the person is working at.
 ---
-start s1 "Open New case\nBlank draft, step 'Referral'"
-start s2 "Click 'Back' or 'Add a referral'\non the Medical records step"
+start s1 "Open New case\nAuthorization type 'Initial authorization', nothing started"
+start s2 "Click 'Use a different referral or patient'\non the details of a case"
 start s3 "Click 'Use different documents'\non a referral checklist"
 
-screen sc1 "New case › Referral\n'Start with the referral. Drop the documents and Reader lists anything that is missing.'"
+screen sc1 "Intake\n'Start with a referral or patient'\n'Drop the referral documents and Reader lists what is missing, pick one that already arrived, find a patient who is known, or create the case by hand.'"
 
-group gDrop "Drop the documents"
-  input i1 "Drop files on 'Drop the referral documents'\nor click it and choose files"
+group gDrop "Drop the referral documents"
+  input i1 "Drop files on 'Drop the referral documents'\nor click it and choose files\n'The referral form, the face sheet, the insurance card, any orders.'"
   process p1 "Reader picks one of three invented referrals\nfrom the first file name"
   click c2 "Click 'Use sample referral'"
   process p2 "Takes the next invented referral in turn\n(file: referral.pdf)"
 endgroup
 
-screen sc2 "'Reader is reading 1 document'\nFile names (first three, then 'and N more')"
-agent a1 "Reader reads, about one second each:\nScanning the documents\nChecking the program's requirements\nVerifying required components\nConfirming the data is complete"
-click leave "Leave the page while Reader reads\n(no Cancel button on this screen)"
+screen sc2 "'Reader is reading 1 document'\nFile names (first three, then 'and N more')\nFour lines with a spinner on the current one"
+agent a1 "Reader reads, about one second each:\nReader is scanning the documents\nChecking the program's requirements\nVerifying required components\nConfirming the data is complete"
+click leave "Leave the page while Reader reads\n(there is no Cancel button on this screen)"
 endx e1 "Nothing is added"
-store st1 "New referral added, next RF number\nStatus New, received just now"
-toast t1 "'Reader read the documents'\n'RF-2054 is ready. The checklist shows what is missing.'"
-toast t2 "Bell notification 'New referral read'\n'RF-2054 from Eastgate Probation Services is on your checklist in New case.'"
-process p3 "Address gets ?ref=RF-2054\nChecklist opens"
-goto g1 "Continues in: New case › Referral › Referral checklist"
+store st1 "New referral added with the next RF number that falls at the site in view\nStatus New, received just now"
+toast t1 "'Reader read the documents'\n'RF-2056 is ready. The checklist shows what is missing.'"
+toast t2 "Bell notification 'New referral read'\n'RF-2056 from Eastgate Probation Services is on your checklist in New case.'"
+process p3 "Address gets ?ref=RF-2056\nThe referral's checklist opens in Intake"
+goto g1 "Continues in: Authorizations › New case › Referral › Referral checklist"
 
-group gArr "Already arrived"
-  screen sc3 "'Already arrived (8)'\n'Referrals that came in by fax, e-referral, the portal or phone. Reader has read each one.'"
-  process p4 "Open referrals only: New, In review, Awaiting info\nEmergent, then urgent, then routine; waiting-on-referrer last"
-  process p5 "Each row: initials and age, RF number, urgency, source, channel, time\nPill: 'n to check', 'Nothing to check' or 'Waiting on the referrer'"
+group gPat "Find a patient who is already known"
+  click cPat "Click 'Find a patient who is already known'\n'Search Both sites by initials or case ID. Nobody is added twice.'"
+  goto gFind "Continues in: Authorizations › New case › Intake › Find a patient and the authorization"
+  process pPick "Picking a patient fills their details\nNo second patient is made\nIntake shows the details, with a possible duplicate flagged"
+  toast tPick "'J.M., 34 is in this case'\n'The patient's own details are filled in. No second patient is made.'"
+endgroup
+
+group gInc "Incoming referrals"
+  decision d2 "Is any referral open at the sites in view?\nNew, In review or Awaiting info"
+  process p8 "Whole 'Incoming referrals' section is hidden"
+  screen sc3 "'Incoming referrals (8)'\n'Referrals that came in by fax, e-referral, the portal or phone, at both sites. Reader has read each one.'"
+  process p4 "Order: emergent, then urgent, then routine, longest wait first\nA referral waiting on its referrer goes last\nA viewer at one site sees that site's referrals only"
+  process p5 "Each row: initials and age, RF number, urgency (if not routine), source, channel, time\nStatus: 'Documents complete', 'N items missing', 'N items to review' or 'Waiting on the referrer'\nButton 'Review'"
   decision d1 "More than 6 open referrals?"
   click c3 "Click 'Show 2 more'"
-  process p6 "All rows show\nButton now reads 'Show fewer'"
+  process p6 "All rows show\nThe button now reads 'Show fewer'"
   click c4 "Click 'Show fewer'"
-  click c5 "Click 'Check' on a row"
-  process p7 "Referral marked opened\nSidebar badge on 'New case' drops"
+  click c5 "Click 'Review' on a row"
+  process p7 "Referral marked opened\nSidebar badge on 'New case' drops\nAddress gets ?ref=RF-2045"
 endgroup
-decision d2 "Any open referral?"
-process p8 "Whole 'Already arrived' section is hidden"
 
-group gNone "No referral"
-  click c6 "Click 'No referral? Continue without one'"
-  process p9 "Step moves to Medical records\nNo referral is attached"
+group gNone "Create the case by hand"
+  click c6 "Click 'Create case manually'"
+  process p9 "The case is marked started\nThe details show: site, patient, insurance and request rows"
 endgroup
-goto g2 "Continues in: New case › Medical records › The checklist and Continue"
+goto g2 "Continues in: Authorizations › New case › Intake › Initial authorization"
+goto g3 "Continues in: Authorizations › New case › Intake › Patient, insurance and request rows"
 
 s1 --> sc1
 s2 --> sc1
@@ -57,6 +65,9 @@ sc2 --> a1 --> st1 --> t1 --> p3 --> g1
 st1 -.-> t2
 sc2 --> leave --> e1
 
+sc1 --> cPat --> gFind
+cPat --> pPick --> tPick --> g2
+
 sc1 --> d2
 d2 -->|Yes| sc3 --> p4 --> p5 --> d1
 d2 -->|No| p8
@@ -67,3 +78,4 @@ c4 -.-> d1
 c5 --> p7 --> g1
 
 sc1 --> c6 --> p9 --> g2
+p9 -.-> g3
