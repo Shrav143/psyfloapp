@@ -33,9 +33,9 @@ Source: `src/pages/manager/*`, `src/store/manager.ts`, `src/store/cases.ts`, `sr
 | Row ID link; clicking elsewhere on the row does nothing | Being prepared | 21 |
 | Status rules (question, ready, working, intake) and due clocks per request type | Being prepared | 22 |
 | Four status tiles 'Needs action', 'Review due', 'Awaiting payer', 'On track' | Tracker | 30 |
-| Table columns (Case, Level of care, Payer, Status, Units or days, Next due, Approval chance, Open), default sort by Next due, 'Showing 1 to 10 of 56', footnote | Tracker | 30 |
+| Table columns (Case, Status, Next due, Units or days, Level of care, Payer, Approval chance, Open), default sort by Next due, 'Showing 1 to 10 of 56', footnote | Tracker | 30 |
 | Text 'New today' and the row of a case signed and sent today | Tracker | 34 |
-| Sort buttons: Case, Payer, Status, Units or days, Next due, Approval chance | Tracker headers | 31 |
+| Sort buttons: Case, Status, Next due, Units or days, Payer, Approval chance | Tracker headers | 31 |
 | 'Level of care' and 'Open' headers (not sortable) | Tracker headers | 31 |
 | 'Previous', 'Next', 'Page N of M' | Tracker pager | 31 |
 | Cells: Units or days ('10 of 21 days used, 11 left', 'none left', 'not yet approved'), Next due (eight kinds, the case page's own words for a request, 'Next review <date>', 'Step-down plan open'), Approval chance (one small number), Status (the one coloured pill) | Tracker rows | 32 |

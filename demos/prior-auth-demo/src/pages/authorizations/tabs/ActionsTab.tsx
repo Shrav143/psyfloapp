@@ -64,7 +64,7 @@ export function ActionsTab({ ctx }: { ctx: CaseCtx }) {
   const sections = new Set(included.map((r) => r.add?.section).filter(Boolean)).size;
 
   return (
-    <div className="grid grid-cols-[minmax(0,1fr)_300px] items-start gap-5">
+    <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-[minmax(0,1fr)_300px]">
       <div className="flex flex-col gap-3.5">
         {work.run ? <WorkStrip run={work.run} sections={Math.max(1, sections)} similar={similarTotal(detail)} /> : null}
         <p className="text-sm text-muted">Each card shows what the agents will add to the draft and how much it tends to help. Applied together, they take the chance from {detail.baseChance}% to {projectedChance(detail, { ...work, applied: [], dismissed: [] }) }%.</p>

@@ -37,7 +37,7 @@ export function PictureTab({ ctx }: { ctx: CaseCtx }) {
     { label: "Readiness", body: open.length === 0 ? "The draft is ready for signature." : s.readiness, source: "readiness" },
   ];
   return (
-    <div className="grid grid-cols-[minmax(0,1fr)_360px] items-start gap-5">
+    <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
       <div className="flex flex-col gap-4">
         <Card>
           <CardHeader title="Clinical picture" subtitle="Built by Reader and Placement from the chart. Every line links back to a file." right={<Chip>{detail.levelLabel}</Chip>} />
@@ -55,7 +55,7 @@ export function PictureTab({ ctx }: { ctx: CaseCtx }) {
         </Card>
         <Card>
           <CardHeader title="ASAM dimensions" subtitle="Placement maps the chart to the six dimensions. The words show how much each one weighs on the level of care." />
-          <CardBody className="grid grid-cols-2 gap-3">
+          <CardBody className="grid grid-cols-1 gap-3 lg:grid-cols-2">
             {detail.asam.map((d) => <Dim key={d.n} d={d} />)}
           </CardBody>
         </Card>

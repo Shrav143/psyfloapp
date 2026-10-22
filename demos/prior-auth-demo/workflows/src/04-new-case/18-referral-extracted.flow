@@ -6,7 +6,7 @@ also: Demo only: Print and the page buttons act on an invented document; nothing
 ---
 start s1 "Open the full referral page\nTab 'Extracted' is the one it opens on"
 screen sc1 "Extracted tab\n'Reader read 3 pages and found 13 fields. Click a field to see the evidence in the document.'"
-toast t0 "Amber banner when a field is missing\n'Reader could not find every field. Add them by hand with the pencil, or ask the referrer.'"
+toast t0 "When a field is missing, the sentence above the rows adds (in amber)\n'Reader could not find every field. Add them by hand with the pencil, or ask the referrer.'"
 screen sc2 "Field rows\nPatient, Age, Referring clinician, Credentials, NPI, Reason, Diagnoses, Requested service, Urgency, Order date, Insurance, Member ID, Contact"
 process pRow "Each row shows a dot, the value and who set it\nDot: green at 90% and up, amber 75 to 89, red below 75 or not found\n'Extracted by Reader' or 'Edited by you', '95% sure' or 'Not found'"
 

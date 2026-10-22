@@ -1,24 +1,24 @@
 title: Authorizations › New case › Review and sign › Sign and send
-route: /authorizations/new/:draftId (step 4 of 4, the 'Sign and send' card)
-intro: Only a licensed clinician can sign. The card opens signed in as Jordan Perez, a UR coordinator, so the first step is to switch to Dr. Rivera. Signing needs an attestation, and an acknowledgement when a check warns. After the confirm, Navigator sends the request and it lands on the Dashboard as Received.
+route: /authorizations/new/:draftId (step 4 of 4, the signing card)
+intro: Only a licensed clinician can sign. The card opens signed in as Jordan Perez, a UR coordinator, so the first step is to switch to Dr. Rivera. Signing needs an attestation, and an acknowledgement when a check warns. After the confirm, Navigator sends the request and it lands on the Dashboard as Received. Nothing is said to be sent until the store has the request.
 dir: TD
 ---
-start s1 "On step 4, find the 'Sign and send' card\n'Jordan Perez, UR coordinator · approval chance 88%'"
+start s1 "On step 4, find the signing card (titled 'Sign')\n'Jordan Perez, UR coordinator · approval chance 88%'"
 click cWho "Click the 'Signing as' dropdown"
 overlay oWho "Two names\n'Jordan Perez (UR coordinator)'\n'Dr. Rivera (clinician)'"
 decision dWho "Who is chosen?"
-toast tUR "'Jordan Perez is a UR coordinator. Only a licensed clinician can sign. Switch to Dr. Rivera to sign.'"
+process tUR "A muted line under the dropdown (not a banner)\n'Jordan Perez is a UR coordinator. Only a licensed clinician can sign, so switch to Dr. Rivera.'"
 input iRiv "Pick 'Dr. Rivera (clinician)'\nThe card now reads 'Dr. Rivera, clinician'"
 decision dWarn "Does any check show a warning?\nOpen finding, document marked not available, start date outside the payer's backdating rule, a skipped Verify, a late notice"
-input iAck "Tick 'I reviewed the warning above and want to sign anyway.'"
+input iAck "Tick 'I reviewed the warning under What is missing and want to sign anyway.'"
 input iAtt "Tick 'I reviewed this summary and it reflects the record. The level of care is my clinical judgment.'"
 decision dCan "Clinician chosen, attestation ticked, no block or re-check, warnings acknowledged?"
-endx eOff "'Sign and send' stays switched off"
-click cSign "Click 'Sign and send'"
-overlay oConf "Sign and send?\n'Signing as Dr. Rivera, clinician'\nPatient, Payer, Level of care, Approval chance, Attachments\n'Navigator sends this to Summit through its portal and saves the receipt to the case. Nothing was sent before this.'"
+endx eOff "'Sign and send to payer' stays switched off"
+click cSign "Click 'Sign and send to payer'"
+overlay oConf "Sign and send to payer?\n'Signing as Dr. Rivera, clinician'\nPatient, Payer, Level of care, Approval chance, Attachments\n'Navigator sends this to Summit through its portal and saves the receipt to the case. Nothing was sent before this.'"
 click cCancel "Click 'Cancel', press Escape, or click outside"
 endx eCancel "Pop-up closes; nothing is sent"
-click cConfirm "Click 'Sign and send' in the pop-up"
+click cConfirm "Click 'Sign and send to payer' in the pop-up"
 decision dReady "Are all ten agents done?"
 toast tCould "'Could not sign yet'\n'All agents must finish before the request can be signed.'"
 decision dOn "Is the case already on the Dashboard as Preparing?"
@@ -26,7 +26,7 @@ store stNew "A new request is added to the Dashboard\nStage 'Received', held by 
 store stMove "That request moves from Preparing to Received\nThe same ID is kept"
 agent aNav "Navigator files the request through the payer's portal (demo: simulated)"
 ext xPortal "Payer portal\nReceives the request and gives a receipt"
-store stEv "History: 'You signed and sent the request'\n'Navigator sent the request through the payer's portal'\n'Navigator saved the receipt to the case'\nIf Verify was skipped: 'Verify could not reach Cardinal's portal before signing'\nNext: 'Navigator checks again' in 30 minutes"
+store stEv "History: 'You signed as Dr. Rivera (clinician) and sent the request'\n'Navigator sent the request through the payer's portal'\n'Navigator saved the receipt to the case'\nIf Verify was skipped: 'Verify could not reach Cardinal's portal before signing'\nNext: 'Navigator checks again' in 30 minutes"
 store stDraft "The draft is marked sent\n'sent today' in Case Manager goes up by one"
 toast tNotif "Notification: 'Sent to the payer'\n'R-1701 was sent. It now shows as Received on the Dashboard.'"
 toast tSent "'Sent to the payer'\n'R-1701 is on the Dashboard as Received.'"

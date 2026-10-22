@@ -1,10 +1,10 @@
 title: Authorizations › New case › Referral › Decision banners
 route: /authorizations/new/referral/RF-2053?draft=draft-1001
-intro: The banners between the header and the document. Each one says where the referral stands in words and offers the next step as a button. Several can show at once.
+intro: The one banner between the header and the document. It says where the referral stands in words and offers the next step as a button. Only the most important one shows (declined, accepted, coverage lapsed, waiting on the referrer, findings), so the page has one alert at a time. On the Coverage and Fit tabs, which carry their own headline, and on the Validation tab, which lists the findings, the banner that points at that tab steps aside.
 dir: TD
 ---
 start s1 "Open the full referral page"
-decision d1 "Which banners apply?"
+decision d1 "Which banner is the most important one that applies?"
 
 group gDec "Declined"
   toast t1 "Red banner 'Declined: Needs a higher level of care'\nThe note, then 'A courtesy reply went to the referrer.'\nor 'No reply was sent to the referrer.'"

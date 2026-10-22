@@ -1,0 +1,55 @@
+title: Authorizations › New case › Review and sign › What is missing
+route: /authorizations/new/:draftId (step 4 of 4, the first card on the left)
+intro: The first thing on the last step. It lists what holds the request back, blocking items first, each with the action that already exists for it. It is the one alert on this step. When nothing is missing it is one calm line. Nothing is sent from here: a clinician signs in the card on the right.
+dir: TD
+also: Demo only: the items come from the same findings as the validation summary and the four checks, so they change at once when records, answers or the summary change.
+---
+start s1 "Arrive on step 4 'Review and sign'"
+decision d1 "Is anything missing?"
+screen ok "Card 'Nothing is missing'\n'All four checks passed. The summary below is what the payer will read.'"
+screen mc "Card 'What is missing'\nSubtitle counts: 'N items must be fixed before it can be signed.' 'N items can be signed once you acknowledge them.' 'N items do not stop you from signing.'\nPill: 'Blocked', 'N to acknowledge' or 'N to look at'"
+process hb "If the case does not meet what the payer asks for, the subtitle adds\n'Together they hold the approval chance back 3 points.'"
+
+group gSev "Three kinds of item, in this order"
+  process k1 "**Blocks signing** (red cross)\nA required document that is not in the case, or an empty section of the summary"
+  process k2 "**Acknowledge before signing** (amber)\nCoverage that needs a fix or lapsed, a skipped Verify, a late notice or window, a start date outside the payer's rule, a required document with an open finding or marked not available, a step-down answer of 'Not yet', a no-authorization rule"
+  process k3 "**Does not stop signing** (grey)\nA recommended document that is not added, or has a finding, e.g. 'Treatment plan: The clinician signature is missing.'"
+endgroup
+
+group gFix "The fix button on an item"
+  click f1 "Click 'Open Medical records'\n(documents, start date, coverage)"
+  process p1 "Step 2 'Medical records' opens\nChanging the records restarts the agents when they had run"
+  click f2 "Click 'Edit the summary'\n(an empty section)"
+  process p2 "The summary scrolls into view and opens for editing"
+  click f3 "Click 'Send back to Scribe'\n(a named step-down provider is not on file)"
+  overlay o3 "Send back to Scribe dialog\nSame as the button in the signing card"
+  process p4 "An item with no fix button is information only\ne.g. a notice that has passed, or the payer's no-authorization rule"
+endgroup
+
+decision dBlk "Any blocking item left?"
+endx eBlk "'Sign and send to payer' stays off"
+process pAck "'Sign and send to payer' needs the attestation, and the acknowledgement of the warnings under 'What is missing'"
+goto gSign "Continues in: New case › Review and sign › Sign and send"
+goto gVal "Continues in: Review and sign › Validation summary and checks"
+goto gRec "Continues in: Medical records › Replace a document or mark it not available"
+goto gSB "Continues in: Review and sign › Send back to Scribe"
+
+s1 --> d1
+d1 -->|No| ok
+d1 -->|Yes| mc
+mc --> hb
+mc --> k1 & k2 & k3
+k1 --> f1
+k2 --> f1
+k3 --> f1
+k1 --> f2
+k2 --> f3
+k2 -.-> p4
+f1 --> p1 --> gRec
+f2 --> p2
+f3 --> o3 --> gSB
+mc --> dBlk
+dBlk -->|Yes| eBlk
+dBlk -->|No| pAck --> gSign
+ok --> pAck
+mc -.-> gVal

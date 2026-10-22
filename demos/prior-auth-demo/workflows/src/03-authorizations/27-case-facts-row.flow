@@ -1,0 +1,37 @@
+title: Authorizations › Case page › Authorization facts
+route: /authorizations/case/I-2207
+intro: The row of facts under the 'Next:' block. A fact appears only when this request has the data for it. A request that is not approved yet shows no approved, used, left or review date, and a request with no Case Manager row shows no review date. Nothing says 'N/A'.
+dir: TD
+also: Demo only: the numbers come from the Case Manager ledger (read only) and the request's draft. Three requests to compare: R-1042 (not approved yet), I-2207 (48 units approved, 38 used, ends Fri 10/23) and R-0988 (21 days approved, next review today).
+---
+screen fr "Authorization facts row\nUnder the 'Next:' block"
+process f1 "'Request type'\nThe request's own type, e.g. Admission, Recertification, Peer-to-peer\nAlways shown"
+process f2 "'Requested'\n'14 days'; IOP counts units: '21 units'\nAlways shown"
+decision d1 "Does the Case Manager ledger have an approval for this request (days or units approved)?"
+process f3 "'Approved'\n'48 units' with '38 used · 10 left'"
+decision d2 "Does the ledger's next event say when the approval ends or when the next review is?"
+process f4 "'Approval ends  Fri 10/23' with 'in 3 d'\nor 'Next review  Tue 10/20' with 'in 5 h'"
+process f5 "No approved, used, left, expiry or review fact\nNothing is shown in their place"
+decision d3 "Does the request have a draft in New case, or can one be made from it?"
+process f6 "'Documents'\n'8 of 9' with 'Missing: Therapy note from the last 14 days'\nor 'Complete' with 'All 9 in the packet'\nCounted against the documents the payer's saved list asks for"
+decision d4 "Has the request been decided?"
+process f7 "No 'Waiting on' fact"
+process f8 "'Waiting on'\n'You' with 'to sign', 'an answer', 'peer-to-peer call' or 'after Scribe drafts'\nOr the payer, e.g. 'Summit' with 'decision'"
+store src "Read only\nCase Manager ledger (units, review and expiry dates)\nThe request's draft and the payer's document list\nThe request on the Dashboard"
+process wrap "Facts wrap onto a second line on a narrow window\nThe page never scrolls sideways"
+goto g1 "Continues in: Case Manager › Active cases"
+
+fr --> f1 --> f2 --> d1
+d1 -->|Yes| f3 --> d2
+d1 -->|No| f5
+d2 -->|Yes| f4 --> d3
+d2 -->|No| d3
+f5 --> d3
+d3 -->|Yes| f6 --> d4
+d3 -->|No| d4
+d4 -->|Yes| f7
+d4 -->|No| f8
+fr -.-> src
+f8 --> wrap
+f7 --> wrap
+fr -.-> g1

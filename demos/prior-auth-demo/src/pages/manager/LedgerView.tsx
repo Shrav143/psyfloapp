@@ -88,11 +88,11 @@ export function LedgerView({ ledger, filters, onStatus, onClear }: { ledger: Led
             <thead>
               <tr>
                 <SortTh label="Case" k="case" sort={sort} onSort={onSort} />
+                <SortTh label="Status" k="status" sort={sort} onSort={onSort} />
+                <SortTh label="Next due" k="clock" sort={sort} onSort={onSort} />
+                <SortTh label="Units or days" k="used" sort={sort} onSort={onSort} />
                 <Th>Level of care</Th>
                 <SortTh label="Payer" k="payer" sort={sort} onSort={onSort} />
-                <SortTh label="Status" k="status" sort={sort} onSort={onSort} />
-                <SortTh label="Units or days" k="used" sort={sort} onSort={onSort} />
-                <SortTh label="Next due" k="clock" sort={sort} onSort={onSort} />
                 <SortTh label="Approval chance" k="chance" sort={sort} onSort={onSort} wrap />
                 <Th className="relative">
                   <span className="sr-only">Open</span>
@@ -115,13 +115,9 @@ export function LedgerView({ ledger, filters, onStatus, onClear }: { ledger: Led
                       {update ? <div className="max-w-[128px] text-xs leading-snug font-medium whitespace-normal text-ink2">{payerUpdateText(update)}</div> : null}
                     </Td>
                     <Td>
-                      <div>{PROGRAM_LABEL[c.program]}</div>
-                      <div className="text-xs text-muted">{c.note}</div>
-                    </Td>
-                    <Td>{PAYER_ROW_LABEL[c.payerId]}</Td>
-                    <Td>
                       <Pill tone={STATUS_TONE[c.status]}>{LEDGER_STATUS_LABEL[c.status]}</Pill>
                     </Td>
+                    <Td className={cn("min-w-[170px] font-semibold", clk.urgent && "text-risk-ink")}>{clk.text}</Td>
                     <Td>
                       {share === null ? (
                         <span className="text-sm text-muted">not yet approved</span>
@@ -133,7 +129,11 @@ export function LedgerView({ ledger, filters, onStatus, onClear }: { ledger: Led
                         </div>
                       )}
                     </Td>
-                    <Td className={cn("min-w-[170px] font-semibold", clk.urgent && "text-risk-ink")}>{clk.text}</Td>
+                    <Td>
+                      <div>{PROGRAM_LABEL[c.program]}</div>
+                      <div className="text-xs text-muted">{c.note}</div>
+                    </Td>
+                    <Td>{PAYER_ROW_LABEL[c.payerId]}</Td>
                     <Td>
                       <span className="text-sm tabular-nums text-ink2" aria-label={`Approval chance ${Math.round(c.chance)} percent`}>{Math.round(c.chance)}%</span>
                     </Td>

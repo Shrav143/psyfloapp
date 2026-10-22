@@ -1,6 +1,6 @@
 title: Authorizations › New case › Referral › The full referral page
 route: /authorizations/new/referral/RF-2053?draft=draft-1001
-intro: One referral in full: the header, the decision banners, the source document on the left and five tabs on the right. It is a page inside New case, so 'Back to the case' and the breadcrumb lead back to the case.
+intro: One referral in full: the header, the one decision banner, the source document on the left and five tabs on the right. It is a page inside New case, so 'Back to the case' and the breadcrumb lead back to the case.
 dir: TD
 ---
 start s1 "Click 'Open the full referral'\non the referral checklist"
@@ -19,7 +19,7 @@ screen sH "Header card\nPill '{Program} requested', big RF number, status pill, 
 process pSla "Red pill 'Past response target' while New or In review\nafter 1 hour (emergent), 4 hours (urgent) or 24 hours (routine)"
 goto gHead "Continues in: New case › Referral › Header actions"
 goto gBan "Continues in: New case › Referral › Decision banners"
-screen sBan "Banners under the header\nOne per situation: declined, accepted, waiting on the referrer,\nReader found N things to check, coverage lapsed"
+screen sBan "One banner under the header\nThe most important one: declined, accepted, coverage lapsed, waiting on the referrer, or Reader found N things to check"
 
 group gCr "Breadcrumb"
   click cC1 "Click the crumb 'New case'"

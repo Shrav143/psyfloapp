@@ -16,14 +16,14 @@ group gSub "The sentence under the title"
   screen t1 "Referral: 'Start with the referral. Drop the documents and Reader lists anything that is missing.'"
   screen t2 "Medical records: 'Drop what you have. Reader sorts the files and lists what is still missing, then the agents check the payer's rules.'\nTop right: 'Use sample chart'"
   screen t3 "Agents work: 'The agents are reading the chart and checking Summit's rules. Questions come to you only when they must.'"
-  screen t4 "Review and sign: 'Nothing goes to the payer until a clinician signs.'\nTitle 'Ready for your signature'"
+  screen t4 "Review and sign: 'Nothing is sent to the payer until a person signs. See what is missing first, then read the summary.'\nTitle 'Review and sign'"
 endgroup
 
 group gFwd "Moving forward and back: each step's own buttons"
   click b1 "Referral: 'Accept referral and continue', 'Continue to medical records' or 'No referral? Continue without one'"
   click b2 "Medical records: 'Back', 'Save as draft', 'Continue'"
   click b3 "Agents work: 'Back', 'Pause all agents', 'Skip ahead', 'Review and sign'"
-  click b4 "Review and sign: 'Back', 'Save as draft', 'Sign and send'"
+  click b4 "Review and sign: 'Back', 'Save as draft' (the button that signs is 'Sign and send to payer' in the card on the right)"
 endgroup
 process pBack "'Back' goes one step back\nMedical records to Referral; Agents work to Medical records; Review and sign to Agents work"
 process pNext "Forward buttons stay disabled until the step is ready\n'Accept referral and continue' waits for the required referral items;\n'Continue' waits for nothing missing; 'Review and sign' waits for the agents"

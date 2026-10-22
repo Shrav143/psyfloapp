@@ -4,10 +4,10 @@ intro: Six of the eight table headers sort. A second click on the same header fl
 dir: TD
 ---
 start s1 "Tracker table is on screen\n(sorted by Next due, soonest first)"
-screen h1 "Headers\nCase, Level of care, Payer, Status, Units or days, Next due, Approval chance, and a hidden 'Open' column\nSortable ones show an up-and-down arrow button 'Sort by ...'"
+screen h1 "Headers\nCase, Status, Next due, Units or days, Level of care, Payer, Approval chance, and a hidden 'Open' column\nSortable ones show an up-and-down arrow button 'Sort by ...'"
 click c0 "Click 'Level of care' or the empty 'Open' header"
 process p0 "Nothing happens: those two do not sort"
-click c1 "Click a sortable header\n('Case', 'Payer', 'Status', 'Units or days', 'Next due', 'Approval chance')"
+click c1 "Click a sortable header\n('Case', 'Status', 'Next due', 'Units or days', 'Payer', 'Approval chance')"
 decision d1 "Is it the header already used for sorting?"
 process p1 "Order flips: ascending becomes descending and back\nThe arrow points up or down"
 decision d2 "Which header is it?"

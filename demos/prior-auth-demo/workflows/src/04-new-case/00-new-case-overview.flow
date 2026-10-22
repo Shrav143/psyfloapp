@@ -35,7 +35,7 @@ group gOpen "A case id is in the address: reopen it"
   process p5 "Moves on when the case is opened\nAgents work if fewer than 10 agents are done, else Review and sign\nA later click on 'Referral' in the stepper is not undone"
 endgroup
 
-screen sc3 "New case\nLink 'Case Manager', title, one sentence, stepper, the step\nTitle becomes 'Ready for your signature' on the last step"
+screen sc3 "New case\nLink 'Case Manager', title, one sentence, stepper, the step\nTitle becomes 'Review and sign' on the last step"
 click c4 "Click the link 'Case Manager'"
 decision d6 "Which step is the case on?"
 goto gCm "Continues in: Case Manager"

@@ -11,7 +11,7 @@ process q2 "Step-down provider\n'Is a named step-down provider on file? Summit a
 process q4 "Diagnosis duration (Scribe)\n'How long has the patient had this diagnosis? The psychiatric evaluation is not in the case, so Scribe cannot read it from there.'\nChoices: 'Less than a year', 'One to five years', 'More than five years'"
 process q5 "Why a lower level is not enough (Scribe)\n'Why is a lower level of care not enough? The chart does not say, and the payer will ask.'\nChoices: 'A lower level was tried and did not hold', 'Home is not safe or supportive enough', 'Symptoms are too severe for a lower level'"
 process q3 "Discharge date (Packet)\n'Is a discharge or step-down date planned in the next 30 days? The payer's form asks for it.'\nChoices: 'Yes, within 2 weeks', 'Yes, within 30 days', 'Not decided yet'"
-screen sc "Step 3 shows the question\nThe asking row: 'Needs your answer' and a button 'Answer'\nGreen banner: 'Question 1 of 2 from Scribe.' and the text\nHint: 'The agents are waiting for your answer.'"
+screen sc "Step 3 shows the question\nThe asking row: 'Needs your answer' and a button 'Answer'\nGreen card: 'Question 1 of 2 from Scribe.' and the text\nNo banner shows while the question is open\nHint: 'The agents are waiting for your answer.'"
 overlay oM "Scribe has a question\n'Question 1 of 2 for this case. The agents wait for you.'\nChoice cards, then 'Or add a note in your own words'"
 process pNoSkip "'Pause all agents' and 'Skip ahead' do not get past the question"
 

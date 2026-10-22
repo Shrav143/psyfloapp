@@ -37,7 +37,7 @@ export function RiskTab({ ctx }: { ctx: CaseCtx }) {
         </CardBody>
       </Card>
 
-      <div className="grid grid-cols-2 items-stretch gap-4">
+      <div className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-2">
         <div className="rounded-2xl border border-risk-edge bg-risk-bg px-[18px] py-4 text-risk-ink">
           <div className="flex items-center gap-2 font-semibold"><TriangleAlert size={18} className="ico" />Biggest driver of a short approval</div>
           <div className="mt-1.5 font-semibold">{detail.biggest.title}</div>
@@ -52,7 +52,7 @@ export function RiskTab({ ctx }: { ctx: CaseCtx }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 items-start gap-4">
+      <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-2">
         <div className="flex flex-col gap-4">
           <Card>
             <CardHeader title="Why this number" subtitle={<span data-testid="formula">{formulaOf(rows, total)}</span>} right={<Pill tone={b.tone} dot>{b.word} · {total}%</Pill>} />

@@ -20,6 +20,8 @@ export default function NewCasePage() {
   const draft = useStore((s) => s.caseDrafts.find((d) => d.id === draftId));
   const patch = useStore((s) => s.patchCaseDraft);
   const created = useRef(false);
+  // "Was sent" is only said for a request the store holds: one signed here, or one that is on the Dashboard.
+  const recorded = useStore((s) => (draft?.caseId ? s.requests.some((r) => r.id === draft.caseId || r.caseId === draft.caseId) : false));
 
   /* No draft in the address: start one (from ?referral=ID or a coverage result) and open it. The ref stops a second draft in development. */
   useEffect(() => {
@@ -62,14 +64,17 @@ export default function NewCasePage() {
     const sentId = draft.caseId;
     return (
       <Page>
-        <PageHeader title={`${sentId} was sent`} sub="It was signed and sent to the payer. The agents are following it from the Dashboard." />
+        <PageHeader
+          title={recorded ? `${sentId} was sent` : `${sentId} is with the payer`}
+          sub={recorded ? "It was signed and sent to the payer. The agents are following it from the Dashboard." : "It is already with the payer, so there is nothing to sign here."}
+        />
         <Card>
           <EmptyState
             icon={Send}
             title="This case is no longer being prepared"
             action={
               <div className="flex gap-2.5">
-                <Button variant="primary" onClick={() => nav(paths.dashboard({ request: sentId }))}>Open it on the Dashboard</Button>
+                {recorded ? <Button variant="primary" onClick={() => nav(paths.dashboard({ request: sentId }))}>Open it on the Dashboard</Button> : <Button variant="primary" onClick={() => nav(paths.case(sentId))}>Back to the case</Button>}
                 <Button onClick={() => nav(paths.manager())}>Back to Case Manager</Button>
               </div>
             }

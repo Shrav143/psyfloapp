@@ -14,17 +14,17 @@ process ns "Nothing is sent yet\n'Nothing goes to the payer until a clinician si
 goto gR "Continues in: New case › Review and sign"
 
 group gSign "In New case (summary only, drawn in its own diagram)"
-  process sg "A licensed clinician signs with 'Sign and send'\nThe UR coordinator cannot sign; Dr. Rivera can"
+  process sg "A licensed clinician signs with 'Sign and send to payer'\nThe UR coordinator cannot sign; Dr. Rivera can"
   ext py "Navigator sends the request through the payer's portal\n(demo: simulated)"
   doc pk "What goes out\nThe signed summary and the packet's documents"
 endgroup
 
-store rq "Dashboard: the request is created, or moves to 'Received'\nHistory: 'You signed and sent the request', 'Navigator sent the request through the payer's portal', 'Navigator saved the receipt to the case'"
+store rq "Dashboard: the request is created, or moves to 'Received'\nHistory: 'You signed as Dr. Rivera (clinician) and sent the request', 'Navigator sent the request through the payer's portal', 'Navigator saved the receipt to the case' (read in the case page's History)"
 toast tt "Toast 'Sent to the payer'\n'R-0988 is on the Dashboard as Received.'"
 toast nt "Notification from Navigator: 'Sent to the payer'\n'R-0988 was sent. It now shows as Received on the Dashboard.'"
 screen db "Dashboard opens on that request\nStage 'Received'"
 process qg "Back in the queue the request is gone\nThe open count drops by one\nThe sidebar badge too, if it was in Act now or Due within 24 hours"
-process cp "The case page of a sent request shows the request's own status\nand a disabled 'Sent to payer' in place of 'Send to payer'"
+process cp "The case page of a sent request shows the request's own status\n'Next:' the Dashboard's step, and a disabled 'Sent to payer' in place of 'Send to payer'\nHistory lists the signature and the send"
 goto gD "Continues in: Dashboard › Request drawer"
 goto gQ "Continues in: Authorizations › Queue › Open the queue and read the top"
 

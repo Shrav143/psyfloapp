@@ -1,0 +1,32 @@
+title: Authorizations › Case page › History
+route: /authorizations/case/R-1042
+intro: The 'History' section at the bottom of every case page. It is closed until opened and read only. Each line says who did it: a person (the signed-in user) or a named agent.
+dir: TD
+also: Demo only: the lines are the request's events in the store plus what was done on this page. Nothing is made up: a request with no events shows 'Nothing has happened on this request yet'. A line that is both an event and a page action shows once.
+---
+screen pg "Case page, below the tab panel\n'History' with a one-line summary: '9 events · latest: Navigator saved the receipt to the case'"
+click h1 "Click 'History'\n(or Tab to it and press Enter or Space)"
+process o1 "The section opens\nIt is a real button with aria-expanded"
+decision d1 "Any events?"
+screen e0 "'Nothing has happened on this request yet'\nA short line on what will appear"
+screen li "List, newest first\nEach line: a badge, the name, '(you)' or '(agent)', the time, and the text\nA planned step comes first, marked 'Scheduled'"
+click h2 "Click 'History' again"
+process c1 "The section closes"
+
+group gS "Where the lines come from"
+  store s1 "The request's events in the store\nAgents: Reader, Verify, Scribe, Navigator ...\nThe payer: 'The payer asked for more information'"
+  store s2 "What you did on this page\n'You added clinical context', 'You refined the recommendations', 'You dismissed ...', 'You edited the draft ...', 'You sent the draft back to Scribe'\nAgent work you started: 'Scribe applied Name the step-down provider'"
+  store s3 "Signing in New case\n'You signed as Dr. Rivera (clinician) and sent the request'\n'Navigator sent the request through the payer's portal'\n'Navigator saved the receipt to the case'"
+endgroup
+process dd "The person is the signed-in user, Jordan Perez\nWho signed is in the text, because only a clinician can sign"
+process rd "Read only\nNo button on a line does anything"
+
+pg --> h1 --> o1 --> d1
+d1 -->|No| e0
+d1 -->|Yes| li
+li --> h2 --> c1
+s1 --> li
+s2 --> li
+s3 --> li
+li -.-> dd
+li -.-> rd

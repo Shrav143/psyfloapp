@@ -92,7 +92,7 @@ export function DraftTab({ ctx }: { ctx: CaseCtx }) {
     });
 
   return (
-    <div className="grid grid-cols-[minmax(0,1fr)_360px] items-start gap-5">
+    <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
       <Card>
         <CardHeader
           title="Medical-necessity summary" subtitle={`Version ${versions[0].n} · written by Scribe, checked by Integrity · every statement links to the chart`}

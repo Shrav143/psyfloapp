@@ -94,7 +94,7 @@ export function CaseHeader({ ctx }: { ctx: CaseCtx }) {
         </div>
       </Card>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <Card className="px-6 py-5">
           <Label>{denial ? "Chance to overturn" : "Approval chance"}</Label>
           <div className="mt-3 flex items-center gap-4">

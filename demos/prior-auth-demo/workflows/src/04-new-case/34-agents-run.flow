@@ -42,14 +42,14 @@ endgroup
 
 group gFoot "Footer buttons"
   click cPause "Click 'Pause all agents'\nSame as 'Pause all agents' in Settings: the whole app is paused"
-  toast tPause "Banner 'Agents are paused in Settings'\nRow: 'Paused in Settings'\nThe run holds at the agent it was on"
+  toast tPause "Banner 'Agents are paused in Settings' (the only message shown while paused)\nRow: 'Paused in Settings'\nThe run holds at the agent it was on"
   click cResume "Click 'Resume agents'\nSettings shows them resumed too"
   click cSkip "Click 'Skip ahead'"
   process pFast "Each step now takes about 0.14 s\nThe button switches off\nA question still stops the run"
   click cBack "Click 'Back'"
 endgroup
 
-toast tRec "Banner 'Records changed after the last run. The agents re-checked.'\nShown when the medical records changed after an earlier run"
+toast tRec "Banner 'Records changed after the last run. The agents re-checked.'\nShown when the medical records changed after an earlier run, and nothing more important is on screen (not while a question, or a pause, is showing)"
 process pAway "Leave the page and progress is kept in the draft\nBut the agents only move while this page is open\nHint: 'The agents work on their own. You can leave and come back.'"
 goto g46 "Continues in: Agents work › An agent could not finish"
 goto g47 "Continues in: Agents work › Paused in Settings"
