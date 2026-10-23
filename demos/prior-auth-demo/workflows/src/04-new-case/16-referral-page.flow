@@ -1,6 +1,6 @@
-title: Authorizations › New case › Referral › The full referral page
+title: Authorizations › New Case › Referral › The full referral page
 route: /authorizations/new/referral/RF-2053?draft=draft-1001
-intro: One referral in full: the header, the one decision banner, the source document on the left and five tabs on the right. It is a page inside New case, so 'Back to the case' and the breadcrumb lead back to the case.
+intro: One referral in full: the header, the one decision banner, the source document on the left and five tabs on the right. It is a page inside New Case, so 'Back to the case' and the breadcrumb lead back to the case.
 dir: TD
 ---
 start s1 "Click 'Open the full referral'\non the referral checklist"
@@ -9,36 +9,36 @@ start s3 "Open an old link such as /referrals/RF-2053\n(no case in the address)"
 
 process p1 "Address is /authorizations/new/referral/RF-2053?draft=…\nThe case id rides along so the page can lead back to it\nWithout it, a draft that already holds this referral is used"
 decision d1 "Is that referral in the demo?"
-screen sc0 "Crumbs 'New case › Referral › RF-9999'\n'That referral is not in the demo'\n'Referral RF-9999 does not exist. Go back to the referral step to drop the documents or pick one that arrived.'"
+screen sc0 "Crumbs 'New Case › Referral › RF-9999'\n'That referral is not in the demo'\n'Referral RF-9999 does not exist. Go back to the referral step to drop the documents or pick one that arrived.'"
 click cBack "Click 'Back to the referral step'"
-goto gStart "Continues in: Authorizations › New case › Intake › Start with a referral or patient"
+goto gStart "Continues in: Authorizations › New Case › Intake › Start with a referral or patient"
 
-store st1 "Referral is marked opened\nSidebar badge on 'New case' drops"
-screen sc1 "Referral page\nCrumbs 'New case › Referral › RF-2053' and, at the right, the button 'Back to the case'\nStepper: 'Intake' is current, nothing in it is clickable"
+store st1 "Referral is marked opened\nSidebar badge on 'New Case' drops"
+screen sc1 "Referral page\nCrumbs 'New Case › Referral › RF-2053' and, at the right, the button 'Back to the case'\nStepper: 'Intake' is current, nothing in it is clickable"
 screen sH "Header card\nPill '{Program} requested', big RF number, status pill, urgency pill\nPatient · source · channel · received · payer\nSmall stepper Received, Reviewed, Decided, Admitted"
 process pSla "Red pill 'Past response target' while New or In review\nafter 1 hour (emergent), 4 hours (urgent) or 24 hours (routine)"
-goto gHead "Continues in: Authorizations › New case › Referral › Header actions"
-goto gBan "Continues in: Authorizations › New case › Referral › Decision banners"
+goto gHead "Continues in: Authorizations › New Case › Referral › Header actions"
+goto gBan "Continues in: Authorizations › New Case › Referral › Decision banners"
 screen sBan "One banner under the header\nThe most important one: declined, accepted, coverage lapsed, waiting on the referrer, or Reader found N things to check"
 
 group gCr "Breadcrumb"
-  click cC1 "Click the crumb 'New case'"
+  click cC1 "Click the crumb 'New Case'"
   click cC2 "Click the crumb 'Referral'"
   decision dC "Is there a case?"
   decision dD "Is there a case?"
   process pC1 "Opens that case (its current step)"
   process pC2 "Opens the checklist for this referral: ?ref=RF-2053"
-  process pC3 "Opens New case with no case id\nA new blank case starts"
+  process pC3 "Opens New Case with no case id\nA new blank case starts"
   process pC4 "'RF-2053' is plain text, not a link"
 endgroup
 group gBk "Back to the case"
   click cBk "Click 'Back to the case'\n(beside the crumbs)"
   decision dBk "Is there a case?\n(?draft= in the address, or a draft that holds this referral)"
   process pBk1 "Opens that case (its current step)"
-  process pBk2 "Opens New case with no case id\nA new blank case starts"
+  process pBk2 "Opens New Case with no case id\nA new blank case starts"
 endgroup
-goto gOv "Continues in: Authorizations › New case › How a case starts and resumes"
-goto gChk "Continues in: Authorizations › New case › Referral › Referral checklist"
+goto gOv "Continues in: Authorizations › New Case › How a case starts and resumes"
+goto gChk "Continues in: Authorizations › New Case › Referral › Referral checklist"
 
 group gTwo "Two columns"
   screen sDoc "Left: 'Source document' card (stays in view while you scroll)\n'Fax from {referrer}, Mon 2:10 pm'\n'Referral form' and 'Face sheet', print, page buttons"
@@ -49,10 +49,10 @@ click cT2 "Click 'Validation'"
 click cT3 "Click 'Coverage'"
 click cT4 "Click 'Fit'"
 click cT5 "Click 'Activity'"
-goto gT1 "Continues in: Authorizations › New case › Referral › Full page: Extracted tab and document"
-goto gT2 "Continues in: Authorizations › New case › Referral › Full page: Validation tab"
-goto gT3 "Continues in: Authorizations › New case › Referral › Check coverage"
-goto gT4 "Continues in: Authorizations › New case › Referral › Full page: Fit, Activity and notes"
+goto gT1 "Continues in: Authorizations › New Case › Referral › Full page: Extracted tab and document"
+goto gT2 "Continues in: Authorizations › New Case › Referral › Full page: Validation tab"
+goto gT3 "Continues in: Authorizations › New Case › Referral › Check coverage"
+goto gT4 "Continues in: Authorizations › New Case › Referral › Full page: Fit, Activity and notes"
 
 s1 --> p1
 s2 --> p1

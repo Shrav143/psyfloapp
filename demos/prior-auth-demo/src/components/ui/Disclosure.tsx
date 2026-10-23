@@ -39,8 +39,8 @@ export function Disclosure({ title, summary, right, defaultOpen = false, keepMou
           className="flex w-full items-center justify-between gap-4 rounded-[20px] px-6 py-4 text-left hover:bg-tile focus-visible:outline-2"
         >
           <span className="min-w-0">
-            <span className="block font-serif text-[19px] font-semibold leading-tight tracking-tight">{title}</span>
-            {summary ? <span className="mt-[3px] block text-[13.5px] font-normal text-muted">{summary}</span> : null}
+            <span className="block font-serif text-[18px] font-semibold leading-tight tracking-tight">{title}</span>
+            {summary ? <span className="mt-[3px] block text-[13px] font-normal text-muted">{summary}</span> : null}
           </span>
           <span className="flex shrink-0 items-center gap-3">
             {right}

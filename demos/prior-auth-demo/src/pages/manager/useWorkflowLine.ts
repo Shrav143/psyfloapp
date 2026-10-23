@@ -4,7 +4,7 @@ import { useStore } from "@/store";
 import type { LedgerRow } from "./ledgerRows";
 
 /** The payer workflow a case follows, for the Case Manager: "Initial Authorization, Residential SUD v3", and what the workflow did on a case that is not a request yet (a review being prepared
-    for it in New case). A case that is a request has its lines in the request's History already. Null for a case with no workflow. */
+    for it in New Case). A case that is a request has its lines in the request's History already. Null for a case with no workflow. */
 export interface WorkflowLine {
   /** "Initial Authorization, Residential SUD, version 3", or the default's name. */
   text: string;

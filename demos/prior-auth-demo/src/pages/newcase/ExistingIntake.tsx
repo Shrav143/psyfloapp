@@ -35,8 +35,8 @@ export function ExistingIntake({ draft, env }: { draft: CaseDraft; env: CaseEnv 
       <Card>
         <CardBody className="flex flex-col gap-4">
           <div>
-            <h2 className="font-serif text-[22px] font-semibold tracking-tight">Find the patient</h2>
-            <p className="mt-0.5 text-[13.5px] text-muted">{def.intake} The patient already exists, so no one is added.</p>
+            <h2 className="font-serif text-[18px] font-semibold tracking-tight">Find the patient</h2>
+            <p className="mt-0.5 text-[13px] text-muted">{def.intake} The patient already exists, so no one is added.</p>
           </div>
           <PatientSearch book={env.book} onPick={(p) => choose(draft.id, { patientId: p.id })} />
         </CardBody>
@@ -57,7 +57,7 @@ export function ExistingIntake({ draft, env }: { draft: CaseDraft; env: CaseEnv 
           <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-neutral-bg text-neutral-ink"><UserRound size={18} className="ico" aria-hidden="true" /></span>
           <div className="min-w-0 flex-1">
             <div className="font-semibold">{patient.initials}, {patient.age} <span className="ml-1 text-xs font-normal text-muted">{patient.id}</span></div>
-            <div className="text-[13.5px] text-muted">{payerNameOf(patient.payerId)} · member ID {patient.memberMasked} · {siteName(patient.site)}</div>
+            <div className="text-[13px] text-muted">{payerNameOf(patient.payerId)} · member ID {patient.memberMasked} · {siteName(patient.site)}</div>
           </div>
           <Button size="sm" variant="ghost" onClick={() => clear(draft.id)}>Change patient</Button>
         </div>
@@ -88,10 +88,10 @@ export function ExistingIntake({ draft, env }: { draft: CaseDraft; env: CaseEnv 
       {episode && auth ? (
         <>
           <AuthorizationCard patient={patient} episode={episode} auth={auth} />
-          {note ? <p className="px-1 text-[13.5px] text-ink2">{note}</p> : null}
+          {note ? <p className="px-1 text-[13px] text-ink2">{note}</p> : null}
         </>
       ) : !episode && episodes.length > 1 ? null : (
-        <p className="px-1 text-[13.5px] text-muted">This patient has no authorization on file.</p>
+        <p className="px-1 text-[13px] text-muted">This patient has no authorization on file.</p>
       )}
 
       {episode ? (
@@ -101,8 +101,8 @@ export function ExistingIntake({ draft, env }: { draft: CaseDraft; env: CaseEnv 
           <Card>
             <CardBody className="flex flex-col gap-4">
               <div>
-                <h3 className="font-serif text-[19px] font-semibold tracking-tight">{draft.kind === "modify" ? "Dates the change covers" : draft.kind === "reauth" ? "Dates to renew" : "Dates to review"}</h3>
-                <p className="mt-0.5 text-[13.5px] text-muted">
+                <h3 className="font-serif text-[18px] font-semibold tracking-tight">{draft.kind === "modify" ? "Dates the change covers" : draft.kind === "reauth" ? "Dates to renew" : "Dates to review"}</h3>
+                <p className="mt-0.5 text-[13px] text-muted">
                   {draft.kind === "modify" ? "From today, unless the change revises the dates." : "The next stretch starts the day after the approval ends, or today when it already has."} {PROGRAM_LABEL[episode.program]} · {payerNameOf(episode.payerId)}
                 </p>
               </div>

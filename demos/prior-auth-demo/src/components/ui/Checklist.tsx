@@ -35,7 +35,7 @@ export function ChecklistProgress({ done, total, label = "ready", right }: { don
     <div className="flex items-center gap-5">
       <div className="min-w-0 flex-1">
         <div className="mb-2 flex items-baseline justify-between gap-3">
-          <span className="font-serif text-[22px] leading-none font-semibold">
+          <span className="font-serif text-[18px] leading-none font-semibold">
             {done} of {total} {label}
           </span>
           <span className={cn("text-[13px]", full ? "font-medium text-good-ink" : "text-muted")}>{full ? "Nothing is missing" : `${total - done} to go`}</span>
@@ -54,7 +54,7 @@ export function ChecklistGroup({ title, done, total, children }: { title: string
   return (
     <section className="border-t border-line first:border-t-0">
       <div className="flex items-center justify-between px-6 pt-5 pb-1.5">
-        <h3 className="text-[11.5px] font-medium tracking-[0.1em] text-muted uppercase">{title}</h3>
+        <h3 className="text-[11px] font-medium tracking-[0.1em] text-muted uppercase">{title}</h3>
         {done !== undefined && total !== undefined ? <span className="text-xs text-muted">{done} of {total}</span> : null}
       </div>
       <ul className="flex flex-col pb-2">{children}</ul>
@@ -73,7 +73,7 @@ export function ChecklistItem({ state, label, detail, tag, action, children, sou
             <span className={cn("font-medium", state === "optional" && "text-ink2")}>{label}</span>
             {tag ? <span className="text-xs text-muted">{tag}</span> : null}
           </div>
-          {detail ? <div className={cn("mt-0.5 text-[13.5px]", state === "done" ? "text-ink2" : state === "warn" ? "text-mid-ink" : state === "missing" ? "text-mid-ink" : "text-muted")}>{detail}</div> : null}
+          {detail ? <div className={cn("mt-0.5 text-[13px]", state === "done" ? "text-ink2" : state === "warn" ? "text-mid-ink" : state === "missing" ? "text-mid-ink" : "text-muted")}>{detail}</div> : null}
           {source ? <div className="mt-1.5 flex flex-wrap gap-1.5">{source}</div> : null}
         </div>
         {action ? <div className="flex shrink-0 items-center gap-2">{action}</div> : null}

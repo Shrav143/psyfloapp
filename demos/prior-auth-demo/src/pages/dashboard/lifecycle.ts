@@ -1,16 +1,13 @@
 import type { Option } from "@/components/ui";
 import type { LedgerCase } from "@/data/manager";
-import { payerById } from "@/data/seed";
-import { PROGRAM_LABEL, STAGES, type PsyRequest, type StageKey } from "@/data/types";
+import { STAGES, type PsyRequest, type StageKey } from "@/data/types";
 import { denialDeadlines, inSpan } from "@/lib/floFacts";
 import { plural } from "@/lib/format";
 import { isActiveAuth, isRenewalDue } from "@/lib/ledgerFacts";
 import { DAY } from "@/lib/time";
 import { paths } from "@/routes";
-import type { DashFilters } from "@/store/core";
 import { stageCounts } from "@/store/selectors";
 import { STATUS_LABEL, type CaseRow } from "./caseRows";
-import { SORT_LABEL, type RowSort } from "./sort-rows";
 
 /* The Lifecycle: five states that filter the table (they are the stages, in the words the page uses for them), and two counts of approved
    authorizations from the Case Manager ledger that open Case Manager. Every count is worked out from the rows and the ledger, never typed. */
@@ -28,7 +25,7 @@ export interface StateChip {
   flag?: "late" | "urgent";
 }
 
-/** Cases saved in New case that have no row yet: how many, and how many of those wait for a person to sign. They count under Awaiting sign-off. */
+/** Cases saved in New Case that have no row yet: how many, and how many of those wait for a person to sign. They count under Awaiting sign-off. */
 export interface SavedCases {
   total: number;
   ready: number;
@@ -86,7 +83,7 @@ export function statusOptions(counts: Record<StageKey, number>): Option<StageKey
   return [{ value: "all", label: "All statuses" }, ...STAGES.map((s) => ({ value: s, label: STATUS_LABEL[s], hint: String(counts[s]) }))];
 }
 
-/** How many requests sit in each stage, with the cases saved in New case that have no row yet added to Awaiting sign-off. */
+/** How many requests sit in each stage, with the cases saved in New Case that have no row yet added to Awaiting sign-off. */
 export function stageTotals(requests: PsyRequest[], saved: SavedCases): Record<StageKey, number> {
   const c = stageCounts(requests);
   return { ...c, preparing: c.preparing + saved.total };
@@ -98,14 +95,7 @@ export function headline(requests: PsyRequest[], waitingOnYou: number): { title:
   const waiting = c.received + c.under_review;
   const payers = waiting === 0 ? "Nothing is waiting on a payer." : waiting === 1 ? "1 request is waiting on a payer." : `${waiting} requests are waiting on payers.`;
   const you = waitingOnYou === 0 ? "Nothing is waiting on you." : waitingOnYou === 1 ? "1 is waiting on you." : `${waitingOnYou} are waiting on you.`;
-  return { title: `${payers} ${you}`, sub: "What to do now, and where every authorization stands." };
+  return { title: `${payers} ${you}`, sub: "" };
 }
 
-const SCOPE = (f: DashFilters): string => [f.payer !== "all" ? payerById(f.payer).name : "", f.program !== "all" ? PROGRAM_LABEL[f.program] : "", f.type !== "all" ? f.type : "", f.stage !== "all" ? STATUS_LABEL[f.stage] : ""].filter(Boolean).join(" · ");
 
-/** The one quiet sentence under the table's title: what is filtered, then how it is ordered. */
-export function tableSentence(f: DashFilters, needsToday: boolean, sort: RowSort | null): string {
-  const lead = [needsToday ? "Needs you today" : "", SCOPE(f)].filter(Boolean).join(" · ");
-  const order = sort ? `Sorted by ${SORT_LABEL[sort.key].toLowerCase()}, ${sort.dir === "asc" ? "lowest first" : "highest first"}.` : needsToday ? "Longest in their state first." : "Longest in their state first, with what needs you today on top.";
-  return lead ? `${lead}. ${order}` : order;
-}

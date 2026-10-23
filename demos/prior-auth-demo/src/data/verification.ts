@@ -1,5 +1,5 @@
 /* The shared verification record. One check of coverage and benefits for a patient, a payer, a program and dates of service.
-   Eligibility & Benefits shows it as a row and a result; New case (step 2) reads and writes the same record, so a check made in
+   Eligibility & Benefits shows it as a row and a result; New Case (step 2) reads and writes the same record, so a check made in
    either place is the one the other finds. Everything here is simulated and built from data the demo already has: the seeded
    patients and the scripted live check (data/eligibility.ts), the payer's plan type and cost share, the saved Payers rules for the
    authorization requirement, and the Case Manager ledger for an authorization that exists. No store state is changed here. */
@@ -149,7 +149,7 @@ function existingAuthOf(p: EbPatient, state: VerifyContext): VerificationRecord[
   if (!count) return undefined;
   /* A unit is about one visit, three a week; a day is a day. The window is worked back from the date of service so the numbers agree. */
   const per = count.unit === "units" ? 7 / 3 : 1;
-  /* When the Case Manager ledger has an approved window for this case, the reference and the dates are the ledger's, so Intake in New case and this check show the same authorization. */
+  /* When the Case Manager ledger has an approved window for this case, the reference and the dates are the ledger's, so Intake in New Case and this check show the same authorization. */
   const book = led ? buildPatientBook([led], [], state.clock).authorizations.find((a) => a.approvedFrom !== null && a.approvedTo !== null) : undefined;
   const from = book?.approvedFrom != null ? bookIso(book.approvedFrom) : shiftDays(isoOf(p.dos), -Math.round(count.used * per));
   const digits = p.id.replace(/\D/g, "");
@@ -181,7 +181,7 @@ export function exceptionsOf(p: EbPatient, requirement: AuthRequirement): Verifi
   return out;
 }
 
-/** A standalone row and a New case check are the same shape: this builds it from a row. */
+/** A standalone row and a New Case check are the same shape: this builds it from a row. */
 export function recordFromEb(p: EbPatient, state: VerifyContext): VerificationRecord {
   const payer = payerById(p.payerId);
   const plan = payer ? planInfo(payer) : null;

@@ -31,7 +31,7 @@ function CardStrip({ form, reading, locked, onReplace }: { form: Form; reading: 
         ) : (
           <div className="font-semibold">Card read just now</div>
         )}
-        <div className="text-[13.5px] text-muted">Payer, member ID and plan type are filled in below</div>
+        <div className="text-[13px] text-muted">Payer, member ID and plan type are filled in below</div>
       </div>
       <Button size="sm" icon={Paperclip} onClick={onReplace} disabled={locked || reading}>
         Replace

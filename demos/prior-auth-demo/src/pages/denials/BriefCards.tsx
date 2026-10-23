@@ -7,7 +7,7 @@ export function OpeningCard({ view }: { view: DenialView }) {
   return (
     <Card>
       <CardHeader title="Your opening" subtitle="About 30 seconds. Written by Advocate, checked by Integrity." />
-      <CardBody><p className="text-[15px] leading-[1.7]">{view.analysis.opening}</p></CardBody>
+      <CardBody><p className="text-[14px] leading-[1.7]">{view.analysis.opening}</p></CardBody>
     </Card>
   );
 }
@@ -22,7 +22,7 @@ export function PointsCard({ view }: { view: DenialView }) {
           <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-neutral-bg text-xs font-semibold">{i + 1}</span>
           <div className="min-w-0 flex-1">
             <div className="font-semibold">{p.title}</div>
-            <div className="text-[13.5px] text-muted">{p.detail}</div>
+            <div className="text-[13px] text-muted">{p.detail}</div>
             <span className="mt-1.5 inline-block rounded-full bg-neutral-bg px-2.5 py-[3px] text-xs font-semibold text-neutral-ink">{p.source}</span>
           </div>
         </div>
@@ -38,7 +38,7 @@ export function PushbackCard({ view }: { view: DenialView }) {
       {view.analysis.pushback.map(([q, a]) => (
         <div key={q} className="border-b border-line px-6 py-3.5 last:border-b-0">
           <div className="font-semibold">{q}</div>
-          <div className="mt-0.5 text-[13.5px] text-ink2">{a}</div>
+          <div className="mt-0.5 text-[13px] text-ink2">{a}</div>
         </div>
       ))}
     </Card>
@@ -57,7 +57,7 @@ export function AskBanner({ view }: { view: DenialView }) {
 export function DatesCard({ brief }: { brief: BriefData }) {
   const col = (title: string, rows: [string, string][]) => (
     <div>
-      <div className="mb-2 text-[11.5px] font-medium tracking-[0.1em] text-muted uppercase">{title}</div>
+      <div className="mb-2 text-[11px] font-medium tracking-[0.1em] text-muted uppercase">{title}</div>
       <dl className="grid grid-cols-[1fr_auto] gap-x-4 gap-y-2">
         {rows.map(([k, v]) => (
           <div key={k} className="contents">

@@ -11,7 +11,7 @@ group gPay "Payers"
   store n10 "The change's agent or Scribe · 'Drafts updated'\n→ Case Manager"
 endgroup
 
-group gRef "Referrals (New case)"
+group gRef "Referrals (New Case)"
   click c9 "Click 'Use sample referral'\n(or drop referral documents)"
   store n9 "Reader · 'New referral read'\n→ that referral"
   click c9b "'Demo: simulate the referrer's reply'"
@@ -48,7 +48,7 @@ group gDash "Dashboard › Demo controls on a request"
   store n6 "Advocate · 'Partly approved' or 'Denied'\n→ Denial Intelligence, new D- number"
 endgroup
 
-group gSend "New case"
+group gSend "New Case"
   click c1 "Click 'Sign and send'"
   store n1 "Navigator · 'Sent to the payer'\n→ Dashboard, that request"
 endgroup

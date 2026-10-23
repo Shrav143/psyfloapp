@@ -18,11 +18,11 @@ export function HowCalculatedModal({ detail, onClose }: { detail: CaseDetail; on
         {steps.map(([t, d], i) => (
           <li key={t} className="flex items-start gap-3">
             <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-neutral-bg text-xs font-semibold">{i + 1}</span>
-            <div><div className="font-semibold">{t}</div><div className="text-[13.5px] text-muted">{d}</div></div>
+            <div><div className="font-semibold">{t}</div><div className="text-[13px] text-muted">{d}</div></div>
           </li>
         ))}
       </ol>
-      <div className="mt-5 rounded-xl bg-tile px-4 py-3 text-[13.5px] text-ink2">It estimates how well the paperwork fits the payer's past decisions. It does not decide care, never blocks a request, and is never shown to payers or patients.</div>
+      <div className="mt-5 rounded-xl bg-tile px-4 py-3 text-[13px] text-ink2">It estimates how well the paperwork fits the payer's past decisions. It does not decide care, never blocks a request, and is never shown to payers or patients.</div>
     </Modal>
   );
 }

@@ -22,7 +22,7 @@ interface Section {
   text: string;
   /** The chips of the chart pages the text came from (kept by the case page), then the ones the applied actions added. */
   sources: Evidence[];
-  /** What the New case summary lists as this section's chips. */
+  /** What the New Case summary lists as this section's chips. */
   summarySources: string[];
   /** Sentences from applied actions that the summary does not hold yet. They follow the text in a green mark. */
   added: { recId: string; text: string }[];
@@ -31,7 +31,7 @@ interface Section {
 }
 const sectionText = (s: Section): string => [s.text, ...s.added.map((a) => a.text)].join(" ");
 
-/** The Draft tab reads the same summary as Review and sign in New case: one narrative per request, with the context added on this page. */
+/** The Draft tab reads the same summary as Review and sign in New Case: one narrative per request, with the context added on this page. */
 export function DraftTab({ ctx }: { ctx: CaseCtx }) {
   const { detail, work, key, canSend, sendReason, sent, send } = ctx;
   const clock = useStore((s) => s.clock);
@@ -74,7 +74,7 @@ export function DraftTab({ ctx }: { ctx: CaseCtx }) {
     const edits = Object.fromEntries(changed.map((s) => [OWN_ID[s.id] ?? s.id, { text: values[s.id].trim(), includes: work.applied }]));
     const text = (s: Section) => (values[s.id] ?? sectionText(s)).trim();
     store().saveDraft(key, edits, { n: versions.length + 1, snapshot: own.map((s) => `${s.title}. ${text(s)}`).join("\n\n") });
-    /* The edited text goes to the draft in New case, so Review and sign reads it too. Every applied action's sentence is in it from now on. */
+    /* The edited text goes to the draft in New Case, so Review and sign reads it too. Every applied action's sentence is in it from now on. */
     const id = store().draftFromRequest(detail.requestId);
     store().patchCaseDraft(id, { narrative: own.map((s) => ({ id: s.id, heading: s.title, text: text(s), sources: s.summarySources })), narrativeIncludes: adds.map((a) => a.recId) });
     store().toast({ title: "Draft saved", body: "Integrity needs to read it again before it can be signed. Use Re-check.", tone: "mid" });
@@ -98,7 +98,7 @@ export function DraftTab({ ctx }: { ctx: CaseCtx }) {
           title="Medical-necessity summary" subtitle={`Version ${versions[0].n} · written by Scribe, checked by Integrity · every statement links to the chart`}
           right={editing ? <><Button size="sm" onClick={() => setEditing(false)}>Cancel</Button><Button size="sm" variant="primary" onClick={save}>Save changes</Button></> : <Button size="sm" icon={PenLine} onClick={startEdit}>Edit</Button>}
         />
-        <CardBody className="flex flex-col gap-4 text-[15px] leading-[1.75]">
+        <CardBody className="flex flex-col gap-4 text-[14px] leading-[1.75]">
           {sections.map((s) =>
             editing && !s.fixed ? (
               <div key={s.id}>
@@ -163,7 +163,7 @@ export function DraftTab({ ctx }: { ctx: CaseCtx }) {
       </div>
       {viewing ? (
         <Modal open onClose={() => setViewing(null)} title={`Version ${viewing.n}`} subtitle={`${stamp(viewing.at)} · ${viewing.by}. Read only.`} footer={<Button onClick={() => setViewing(null)}>Close</Button>}>
-          <div className="text-[14.5px] leading-[1.7] whitespace-pre-wrap">{viewing.text}</div>
+          <div className="text-[14px] leading-[1.7] whitespace-pre-wrap">{viewing.text}</div>
         </Modal>
       ) : null}
     </div>

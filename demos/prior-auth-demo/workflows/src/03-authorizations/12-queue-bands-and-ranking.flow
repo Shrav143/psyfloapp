@@ -6,7 +6,7 @@ also: Demo only: which band a request sits in is fixed in the seed data. Moving 
 ---
 screen q "Queue\nPriority bands, most urgent first"
 process b1 "Each open request at the sites in view sits in exactly one band\nBand counts for Both sites are the Site A counts plus the Site B counts"
-process lv "A request leaves its band once nothing is left for a person\nPreparing or ready: it was signed and sent in New case\nWith the payer: the payer approved or denied it\nDenial route: accepted, settled on the call, or the appeal is filed"
+process lv "A request leaves its band once nothing is left for a person\nPreparing or ready: it was signed and sent in New Case\nWith the payer: the payer approved or denied it\nDenial route: accepted, settled on the call, or the appeal is filed"
 
 group gB "Three bands"
   process bn "**Act now**\nRed dot, tiles tinted red"

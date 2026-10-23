@@ -35,8 +35,8 @@ export function OptionsSummary({ view, step, onCompare }: { view: DenialView; st
                   <b className="leading-snug">{o.title}</b>
                   {step.option === o.id ? <Pill tone="good">Recommended</Pill> : null}
                 </div>
-                <div className="mt-1 text-[13.5px] text-muted">
-                  {o.chance && b ? <><b className="text-[15px]" style={{ color: b.color }}>{o.chance.value}%</b> · likely {o.chance.low}–{o.chance.high}% · {o.gain}</> : o.gain}
+                <div className="mt-1 text-[13px] text-muted">
+                  {o.chance && b ? <><b className="text-[14px]" style={{ color: b.color }}>{o.chance.value}%</b> · likely {o.chance.low}–{o.chance.high}% · {o.gain}</> : o.gain}
                 </div>
               </li>
             );

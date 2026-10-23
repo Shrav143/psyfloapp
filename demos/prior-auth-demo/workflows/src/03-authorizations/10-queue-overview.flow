@@ -18,8 +18,8 @@ screen h1 "Header: '19 of 56 open requests need action today.'\nThe 19 are Act n
 screen h2 "Sub line: 'Five are urgent, and the average approval chance is 79%.'\nWith none in Act now: 'Nothing is urgent, and ...'"
 screen h3 "Header: 'X of 56 open requests match these filters.'\nNo sub line"
 
-click nb "Click 'New case' (top right button)"
-goto g1 "Continues in: Authorizations › New case › How a case starts and resumes"
+click nb "Click 'New Case' (top right button)"
+goto g1 "Continues in: Authorizations › New Case › How a case starts and resumes"
 goto g2 "Continues in: Authorizations › Queue › Cardinal payer signal"
 
 screen tl "Four figures under the header\nAlways count the whole queue at the sites in view, not the filtered list"

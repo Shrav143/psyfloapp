@@ -96,19 +96,19 @@ function WfNodeViewBase({ data, selected }: NodeProps<RfWfNode>) {
               </span>
             ) : null}
           </div>
-          {node.purpose ? <div className="mt-0.5 line-clamp-2 text-[12.5px] leading-[1.35] text-muted">{node.purpose}</div> : null}
+          {node.purpose ? <div className="mt-0.5 line-clamp-2 text-[12px] leading-[1.35] text-muted">{node.purpose}</div> : null}
         </div>
       </div>
 
       {isFlow && !word ? null : (
         <div className="mt-2.5 flex items-center gap-2">
           {word && RunIcon ? (
-            <span className={cn("inline-flex items-center gap-1 rounded-full bg-white/80 px-2 py-0.5 text-[11.5px] font-semibold ring-1 ring-current/15", rs?.tone)}>
+            <span className={cn("inline-flex items-center gap-1 rounded-full bg-white/80 px-2 py-0.5 text-[11px] font-semibold ring-1 ring-current/15", rs?.tone)}>
               <RunIcon size={12} className={cn("ico", run === "active" && "psy-spin")} aria-hidden="true" />
               {word}
             </span>
           ) : null}
-          {isFlow ? null : <span className="rounded-full bg-neutral-bg px-2 py-0.5 text-[11.5px] font-medium text-neutral-ink">{EXEC_LABEL[node.mode]}</span>}
+          {isFlow ? null : <span className="rounded-full bg-neutral-bg px-2 py-0.5 text-[11px] font-medium text-neutral-ink">{EXEC_LABEL[node.mode]}</span>}
           {node.approval ? (
             <span role="img" aria-label="A person approves before this step completes" title="A person approves before this step completes" className="text-muted">
               <UserCheck size={14} className="ico" aria-hidden="true" />

@@ -15,9 +15,9 @@ click c2 "Click '2  Authorizations: the queue'"
 process r2 "Go to /authorizations"
 goto g2 "Continues in: Authorizations › Queue"
 
-click c3 "Click '3  New case: start from a referral'"
+click c3 "Click '3  New Case: start from a referral'"
 process r3 "Go to /authorizations/new\nA blank draft is started and the address becomes /authorizations/new/draft-..."
-goto g3 "Continues in: Authorizations › New case › Intake › Start with a referral or patient"
+goto g3 "Continues in: Authorizations › New Case › Intake › Start with a referral or patient"
 
 click c4 "Click '4  Eligibility & Benefits: verify a patient'"
 process r4 "Go to /authorizations/eligibility/verify"

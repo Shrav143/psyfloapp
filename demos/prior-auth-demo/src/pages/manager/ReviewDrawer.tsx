@@ -102,7 +102,7 @@ export function ReviewDrawer({ review: r, onClose }: { review: Review; onClose: 
             {undrafted ? "To be drafted by" : "Drafted by"} <AgentChip agent={r.agent} />
           </span>
         </div>
-        {!undrafted ? <p className="-mt-3 text-[12.5px] text-muted">{REVIEW_NOTE}</p> : null}
+        {!undrafted ? <p className="-mt-3 text-[12px] text-muted">{REVIEW_NOTE}</p> : null}
 
         {needsUpdate ? (
           <div className="flex flex-col gap-3 rounded-2xl border border-mid-edge bg-mid-bg px-4 py-4 text-mid-ink">
@@ -136,12 +136,12 @@ export function ReviewDrawer({ review: r, onClose }: { review: Review; onClose: 
         ) : (
           <>
             <Field label="The draft">
-              <TextArea value={text} onChange={(e) => setText(e.target.value)} readOnly={needsUpdate || signed} rows={16} className={cn("min-h-[300px] text-[13.5px] leading-relaxed", (needsUpdate || signed) && "bg-tile text-ink2")} />
+              <TextArea value={text} onChange={(e) => setText(e.target.value)} readOnly={needsUpdate || signed} rows={16} className={cn("min-h-[300px] text-[13px] leading-relaxed", (needsUpdate || signed) && "bg-tile text-ink2")} />
             </Field>
             {needsUpdate ? <p className="-mt-3 text-xs text-muted">The draft is locked until your update is added.</p> : null}
 
             <div>
-              <h3 className="mb-2.5 font-serif text-xl font-semibold">Integrity checks</h3>
+              <h3 className="mb-2.5 font-serif text-[18px] font-semibold">Integrity checks</h3>
               <Checks review={r} />
             </div>
           </>

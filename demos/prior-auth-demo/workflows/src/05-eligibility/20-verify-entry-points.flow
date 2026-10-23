@@ -32,7 +32,7 @@ process bk "Back links above the title\n'Eligibility & Benefits' always\n'Back t
 process nb "A referral that does not exist gives no back link\nOnly the toast"
 process cy "Both addresses are carried to the result page\nso the way back is still there after the check"
 goto g1 "Continues in: Authorizations › Eligibility & Benefits › Verify › Fill in the form"
-goto g2 "Continues in: Authorizations › New case › Referral › The full referral page"
+goto g2 "Continues in: Authorizations › New Case › Referral › The full referral page"
 goto g3 "Continues in: Authorizations › Case page › Ways in"
 
 a1 --> p0

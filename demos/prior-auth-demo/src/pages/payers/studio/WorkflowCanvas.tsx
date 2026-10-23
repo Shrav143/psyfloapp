@@ -20,7 +20,7 @@ const reduced = (): boolean => typeof window !== "undefined" && !!window.matchMe
 export interface WorkflowCanvasProps {
   nodes: WfNode[];
   edges: WfEdge[];
-  /** Pan, zoom and select only. Used by the view panel, the simulator and New case. */
+  /** Pan, zoom and select only. Used by the view panel, the simulator and New Case. */
   readOnly?: boolean;
   /** Draws a run: done, skipped, failed, waiting and not reached. */
   runState?: RunState;

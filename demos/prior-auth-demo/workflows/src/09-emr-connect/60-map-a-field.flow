@@ -2,7 +2,7 @@ title: EMR Connect › Needs a mapping › Map a field
 route: /emr
 intro: When the agents meet a field they cannot place, it waits for a mapping. It shows in 'Action required' and, with its question, at the top of the field mappings in the folded 'Advanced' section. A person picks which Psyflo value it fills. The picker always has a value, so saving cannot fail.
 dir: TD
-also: Starting fields: 'Level of care' (the Site B record) and 'Referral source' (intake at Site B). Both belong to Clinical record · Site B, so only a viewer who sees Site B is asked to map them. Until one is mapped, a chart pulled in New case from that system leaves the matching field blank. Mapping is a person's own choice, so a paused Reader does not stop it.
+also: Starting fields: 'Level of care' (the Site B record) and 'Referral source' (intake at Site B). Both belong to Clinical record · Site B, so only a viewer who sees Site B is asked to map them. Until one is mapped, a chart pulled in New Case from that system leaves the matching field blank. Mapping is a person's own choice, so a paused Reader does not stop it.
 ---
 start s1 "Open EMR Connect\n'Action required' names the waiting fields, and 'Advanced' shows the pill '2 to map'"
 screen c1 "Advanced › Field mappings\nWaiting fields first, then every mapping"
@@ -16,7 +16,7 @@ click b2 "Click 'Map field' in the 'Action required' line\nOnly when the waiting
 overlay o1 "Map 'Level of care'\nIn the Site B record"
 process q1 "Question from the agents\n'The Site B record writes Level of care as free text, such as Day program. Which level should the agents read it as?'"
 input i1 "Pick a value in the dropdown (click, or arrow keys and Enter)\nLevel of care: IOP (first) or PHP\nReferral source: Payer name (first), Plan type or Referring provider"
-process n1 "'Until it is mapped, New case leaves the matching field blank when it pulls a chart from this system. Once it is mapped, every future pull fills it. Files already pulled are not rewritten.'"
+process n1 "'Until it is mapped, New Case leaves the matching field blank when it pulls a chart from this system. Once it is mapped, every future pull fills it. Files already pulled are not rewritten.'"
 decision d1 "Which button?"
 click k1 "Click 'Save the mapping'"
 click k2 "Click 'Cancel' or the X, press Escape, or click the dimmed area"
@@ -28,7 +28,7 @@ group gSave "What saving does"
   agent a1 "Reader logs 'Mapped 'Level of care' to IOP. It applies to every future pull'\nIn the activity log, in Advanced"
   toast t1 "'Field mapped'\n'Level of care' now fills IOP."
   process p1 "The pill and the 'Action required' mention count down: 2, 1, then none\nAt none the section summary reads '12 field mappings' with no 'waiting'"
-  process p2 "New case now fills that field when it pulls a chart from this system\nBefore, it left it blank"
+  process p2 "New Case now fills that field when it pulls a chart from this system\nBefore, it left it blank"
 endgroup
 goto g2 "Continues in: EMR Connect › Sync › What other screens use from EMR Connect"
 end e1 "Pop-up closes\nA mapped field cannot be unmapped or edited in the demo"

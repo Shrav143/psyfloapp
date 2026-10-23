@@ -7,7 +7,7 @@ export function WorkflowTraceDrawer({ draft, open, onClose }: { draft: CaseDraft
   const events: RequestEvent[] = (draft.workflowLog ?? []).map((e) => ({ id: e.key, at: e.at, actor: e.actor, text: e.text, detail: e.detail, done: true }));
   return (
     <Drawer open={open} onClose={onClose} width={520} title="Workflow trace" subtitle={draft.appliedWorkflow ? `${draft.appliedWorkflow.name}, version ${draft.appliedWorkflow.version}` : undefined}>
-      <p className="mb-4 text-[13.5px] text-muted">
+      <p className="mb-4 text-[13px] text-muted">
         {(draft.workflowLog ?? []).every((e) => e.posted) ? "These lines are in the request's History on the case page." : "These lines are written to the request's History when it is signed and sent."}
       </p>
       <Timeline events={events} empty="The workflow has not recorded anything yet." />

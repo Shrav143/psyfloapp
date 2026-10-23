@@ -2,7 +2,7 @@ title: Authorizations › Eligibility & Benefits › Verify › The check finish
 route: /authorizations/eligibility/verify
 intro: When the last step ticks, the demo saves the check as a verification record, then opens the result. A patient already on the list gets the record refreshed. Anyone else is added as a new check at the site in view. Scripted answers keep it predictable. If Verify is paused in Settings nothing could be asked, and the check is saved as 'Not checked'.
 dir: TD
-also: Demo only: answers are scripted from the member ID and the plan. A known patient keeps the verdict it already had. The record is the same one New case reads and writes.
+also: Demo only: answers are scripted from the member ID and the plan. A known patient keeps the verdict it already had. The record is the same one New Case reads and writes.
 ---
 start s1 "Last step ticks, banner 'All answers are in. Opening the result.'"
 wait w1 "Half a second"

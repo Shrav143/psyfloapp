@@ -67,7 +67,7 @@ export default function ReferralDetailPage() {
   if (!r) {
     return (
       <Page>
-        <Crumbs items={[{ label: "New case", to: paths.newCase({ draft: draftId }) }, { label: "Referral", to: paths.newCase({ draft: draftId }) }, { label: id }]} />
+        <Crumbs items={[{ label: "New Case", to: paths.newCase({ draft: draftId }) }, { label: "Referral", to: paths.newCase({ draft: draftId }) }, { label: id }]} />
         <EmptyState icon={SearchX} title="That referral is not in the demo" action={<Link to={paths.newCase({ draft: draftId })}><Button>Back to Intake</Button></Link>}>
           Referral {id} does not exist. Go back to Intake to drop the documents or pick one that arrived.
         </EmptyState>
@@ -99,7 +99,7 @@ export default function ReferralDetailPage() {
   return (
     <Page>
       <div className="-mb-1.5 flex flex-wrap items-center justify-between gap-3">
-        <Crumbs items={[{ label: "New case", to: paths.newCase({ draft: draftId }) }, { label: "Referral", to: draftId ? checklistPath(draftId, r.id) : paths.newCase() }, { label: r.id }]} />
+        <Crumbs items={[{ label: "New Case", to: paths.newCase({ draft: draftId }) }, { label: "Referral", to: draftId ? checklistPath(draftId, r.id) : paths.newCase() }, { label: r.id }]} />
         <Button size="sm" icon={ArrowLeft} onClick={() => nav(paths.newCase({ draft: draftId }))}>Back to the case</Button>
       </div>
       <Stepper steps={NEW_CASE_STEPS} current={0} className="flex-wrap gap-y-2" />

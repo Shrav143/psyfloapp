@@ -1,4 +1,4 @@
-title: Authorizations › New case › Intake › Retroactive authorization
+title: Authorizations › New Case › Intake › Retroactive authorization
 route: /authorizations/new/:draftId?type=retro (Intake)
 intro: A retroactive authorization asks for approval of care that was already given. Intake starts from the care: the patient (known, or entered by hand), the payer, the service, the dates of service, why no authorization was in place, and the supporting documents. It says up front that retro approval depends on the payer and may not be available, and shows the payer's own Backdating rule when one is saved.
 dir: TD
@@ -13,12 +13,12 @@ toast tNo "'... No rule on file for Riverbend Health. Check with the payer.'\nRe
 goto gPayers "Continues in: Payers › Rules & Instructions › Edit a rule"
 decision dStart "Has the patient been chosen?"
 overlay oPat "Section 'Find a patient who is already known', open\nSearch box, the sites in view only"
-goto gFind "Continues in: Authorizations › New case › Intake › Find a patient and the authorization"
+goto gFind "Continues in: Authorizations › New Case › Intake › Find a patient and the authorization"
 click cHand "Click 'Enter the patient by hand'"
 process pHand "The case is marked started\nThe details show"
 screen sSite "Site, then the rows\nPatient initials and age · Payer and plan · Member ID · Level of care\nNo 'Request type' row: it is 'Retro-authorization'"
 screen sDup "'This looks like a request that already exists' only when one matches"
-goto gDup "Continues in: Authorizations › New case › Intake › Possible duplicate"
+goto gDup "Continues in: Authorizations › New Case › Intake › Possible duplicate"
 screen sDos "Card 'Dates of service'\n'The first and the last day care was given without an authorization. Verify checks coverage for these dates.'"
 input iFrom "'First date of service' (required)"
 input iTo "'Last date of service'\nWithout it Review & submit asks the person to acknowledge it; the first date is what blocks"
@@ -33,11 +33,11 @@ screen sDoc "Card 'Supporting documents'\nThe admission order, the eligibility c
 input iDrop "Drop supporting documents here, or click to choose files"
 agent aRead "Reader sorts the files into the document list\nShown as chips with the file names"
 store st "The request is recorded as 'Retro-authorization'\nDates of service, the reason and the files are kept on the case"
-goto gElig "Continues in: Authorizations › New case › Eligibility & Benefits › Retroactive authorization"
-goto gDocs "Continues in: Authorizations › New case › Clinical documentation › Required and typical documents by type"
+goto gElig "Continues in: Authorizations › New Case › Eligibility & Benefits › Retroactive authorization"
+goto gDocs "Continues in: Authorizations › New Case › Clinical documentation › Required and typical documents by type"
 click cSave "Click 'Save as draft'"
 click cCont "Click 'Continue to Eligibility & Benefits'"
-goto gSave "Continues in: Authorizations › New case › Save as draft and leave"
+goto gSave "Continues in: Authorizations › New Case › Save as draft and leave"
 
 s1 --> sc --> dRule
 dRule -->|No payer yet| tPick

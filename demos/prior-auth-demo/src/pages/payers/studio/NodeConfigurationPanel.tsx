@@ -62,9 +62,9 @@ function NodeEditor({ node, graph, issues, readOnly, onChangeNode, onGraph, onDu
           <Icon size={18} className="ico" aria-hidden="true" />
         </span>
         <div className="min-w-0 flex-1">
-          <h3 ref={headingRef} tabIndex={-1} className="m-0 font-serif text-[19px] leading-tight font-semibold outline-none">{def?.title ?? node.title}</h3>
+          <h3 ref={headingRef} tabIndex={-1} className="m-0 font-serif text-[18px] leading-tight font-semibold outline-none">{def?.title ?? node.title}</h3>
           {def && !isFlow ? (
-            <div className="mt-1 flex items-center gap-1.5 text-[12.5px] text-muted">
+            <div className="mt-1 flex items-center gap-1.5 text-[12px] text-muted">
               <SupportDot status={def.support} />
               <span className="font-medium text-ink2">{SUPPORT_WORD[def.support]}</span>
             </div>
@@ -142,9 +142,9 @@ function NodeEditor({ node, graph, issues, readOnly, onChangeNode, onGraph, onDu
                 {node.onError === "retry" ? <NumberField label="Retries before manual review" value={node.retries ?? 2} min={1} max={5} disabled={readOnly} onChange={(v) => patch({ retries: v === "" ? undefined : v })} /> : null}
               </div>
 
-              <Fold title="Advanced" summary={`Stage in New case: ${STAGE_LABEL[node.stage]}`}>
+              <Fold title="Advanced" summary={`Stage in New Case: ${STAGE_LABEL[node.stage]}`}>
                 <div className="flex flex-col gap-3.5">
-                  <SelectField label="Stage in New case" value={node.stage} disabled={readOnly} onChange={(v) => patch({ stage: v as Stage })} options={STAGES_ORDER.map((s) => ({ value: s, label: STAGE_LABEL[s] }))} help="Which of the five stages this step is shown under. It does not force an order." />
+                  <SelectField label="Stage in New Case" value={node.stage} disabled={readOnly} onChange={(v) => patch({ stage: v as Stage })} options={STAGES_ORDER.map((s) => ({ value: s, label: STAGE_LABEL[s] }))} help="Which of the five stages this step is shown under. It does not force an order." />
                   {advanced.map((f) => (
                     <FieldView key={f.key} spec={f} node={node} value={val(f.key)} onCfg={setCfg} onRefs={(ruleRefs) => patch({ ruleRefs })} graph={graph} onBranches={(b) => setCfg(f.key, b)} disabled={readOnly} />
                   ))}
@@ -183,7 +183,7 @@ function ModePicker({ value, onChange, disabled }: { value: ExecMode; onChange: 
 function ConnectionStatus({ status }: { status: IntegrationStatus }) {
   return (
     <div className={cn("rounded-2xl border px-3.5 py-3", status.tone === "good" ? "border-good-edge bg-good-bg/60" : status.tone === "mid" ? "border-mid-edge bg-mid-bg/60" : "border-field bg-tile")}>
-      <div className="flex items-center gap-2 text-[13.5px] font-semibold text-ink">
+      <div className="flex items-center gap-2 text-[13px] font-semibold text-ink">
         <Link2 size={15} className="ico" aria-hidden="true" />
         Connection: {status.word}
       </div>

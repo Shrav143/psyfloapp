@@ -11,7 +11,7 @@ const READ: Record<ReportTone, string> = { good: "bg-good-bg text-good-ink", mid
 function Section({ title, page, children }: { title: string; page?: boolean; children: ReactNode }) {
   return (
     <section data-break={page ? "page" : undefined} className="mt-10 first:mt-0">
-      <h2 className="mb-4 border-b border-line pb-2 font-serif text-[23px] font-semibold leading-tight">{title}</h2>
+      <h2 className="mb-4 border-b border-line pb-2 font-serif text-[18px] font-semibold leading-tight">{title}</h2>
       {children}
     </section>
   );
@@ -34,17 +34,17 @@ function Title({ doc }: { doc: ReportDoc }) {
     <header>
       <div className="flex items-start justify-between gap-8">
         <div className="min-w-0">
-          <div className="text-[11.5px] font-medium tracking-[0.1em] text-muted uppercase">Psyflo · Denial Intelligence</div>
-          <h1 className="mt-1 font-serif text-[34px] leading-[1.1] font-semibold tracking-tight">
+          <div className="text-[11px] font-medium tracking-[0.1em] text-muted uppercase">Psyflo · Denial Intelligence</div>
+          <h1 className="mt-1 font-serif text-[24px] leading-[1.1] font-semibold tracking-tight">
             {REPORT_TITLE}
             {doc.workedExample ? <Pill className="ml-3 align-middle font-sans tracking-normal">Worked example</Pill> : null}
           </h1>
-          <p className="mt-1.5 text-[15px] text-muted">{doc.id} · {doc.facts[1][1]} · {doc.payerName}</p>
+          <p className="mt-1.5 text-[14px] text-muted">{doc.id} · {doc.facts[1][1]} · {doc.payerName}</p>
           <p className="mt-1 text-[13px] text-muted">{REPORT_FOOTER}</p>
         </div>
         <div className={cn("flex w-[250px] shrink-0 flex-col gap-0.5 rounded-2xl px-[18px] py-3.5", READ[doc.verdict.tone])}>
-          <span className="text-[11.5px] font-semibold tracking-[0.1em] uppercase">Our read</span>
-          <b className="font-serif text-[21px] leading-tight">{doc.verdict.word}</b>
+          <span className="text-[11px] font-semibold tracking-[0.1em] uppercase">Our read</span>
+          <b className="font-serif text-[18px] leading-tight">{doc.verdict.word}</b>
           <span className="text-sm">{doc.verdict.line}</span>
         </div>
       </div>
@@ -52,7 +52,7 @@ function Title({ doc }: { doc: ReportDoc }) {
         <Facts rows={doc.facts} cols={2} labelW={104} />
         <div className="mt-4 border-t border-tile-edge pt-4">
           <Facts rows={doc.chances} labelW={230} />
-          {doc.chanceNote ? <p className="mt-2.5 text-[13.5px] text-mid-ink">{doc.chanceNote}</p> : null}
+          {doc.chanceNote ? <p className="mt-2.5 text-[13px] text-mid-ink">{doc.chanceNote}</p> : null}
         </div>
       </div>
     </header>
@@ -70,8 +70,8 @@ function Findings({ doc }: { doc: ReportDoc }) {
               <div className="flex flex-wrap items-center gap-2.5"><Pill tone={f.sev === "Critical" ? "risk" : "mid"}>{f.sev}</Pill><b className="leading-snug">{f.title}</b></div>
               <p className="mt-2 leading-[1.7]">{f.text}</p>
               <div className="mt-3 text-[13px] font-semibold text-neutral-ink">Source: {f.source}</div>
-              <blockquote className="mt-1 rounded-r-xl border-l-[3px] border-field bg-white px-4 py-2.5 font-serif text-[14.5px] leading-[1.6] text-ink2 italic">{f.excerpt}</blockquote>
-              <div className="mt-3 flex flex-wrap items-center gap-2.5 text-[13.5px]">
+              <blockquote className="mt-1 rounded-r-xl border-l-[3px] border-field bg-white px-4 py-2.5 font-serif text-[14px] leading-[1.6] text-ink2 italic">{f.excerpt}</blockquote>
+              <div className="mt-3 flex flex-wrap items-center gap-2.5 text-[13px]">
                 <span><b>Suggested fix:</b> {f.fix}</span>
                 <Pill tone={f.added ? "good" : "neutral"}>{f.added ? "Added to the evidence" : "Not added yet"}</Pill>
               </div>
@@ -84,11 +84,11 @@ function Findings({ doc }: { doc: ReportDoc }) {
 }
 
 function Options({ doc }: { doc: ReportDoc }) {
-  const th = "border-b border-line px-3 py-2.5 text-left text-[11.5px] font-medium tracking-[0.09em] text-muted uppercase";
+  const th = "border-b border-line px-3 py-2.5 text-left text-[11px] font-medium tracking-[0.09em] text-muted uppercase";
   const td = "border-b border-line px-3 py-3 align-top";
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[520px] border-collapse text-[13.5px]">
+      <table className="w-full min-w-[520px] border-collapse text-[13px]">
         <thead>
           <tr><th scope="col" className={th}>Option</th><th scope="col" className={th}>Chance</th><th scope="col" className={th}>Time</th><th scope="col" className={th}>Gets back</th><th scope="col" className={th}>Needs</th></tr>
         </thead>
@@ -111,7 +111,7 @@ function Options({ doc }: { doc: ReportDoc }) {
 /** The report as a page: the same words as Copy report and the PDF, laid out for the screen and, with the print rules on the page, for paper. */
 export function ReportView({ doc }: { doc: ReportDoc }) {
   return (
-    <article className="psy-report mx-auto w-full max-w-[860px] rounded-[20px] border border-edge bg-white px-11 py-10 text-[15px]">
+    <article className="psy-report mx-auto w-full max-w-[860px] rounded-[20px] border border-edge bg-white px-11 py-10 text-[14px]">
       <Title doc={doc} />
       <div className="mt-10">
         <Section title={H.reasoning}>
@@ -126,7 +126,7 @@ export function ReportView({ doc }: { doc: ReportDoc }) {
         </Section>
         {doc.dims.length ? (
           <Section title={H.dims}>
-            {doc.dimsSub ? <p className="-mt-2 mb-4 text-[13.5px] text-muted">{doc.dimsSub}</p> : null}
+            {doc.dimsSub ? <p className="-mt-2 mb-4 text-[13px] text-muted">{doc.dimsSub}</p> : null}
             <div className="flex flex-col gap-4">
               {doc.dims.map((d) => (
                 <div key={d.name} className="print:break-inside-avoid">
@@ -172,7 +172,7 @@ export function ReportView({ doc }: { doc: ReportDoc }) {
           <ul className="mt-3 list-disc pl-5 leading-[1.7]">{doc.method.map((m) => <li key={m}>{m}</li>)}</ul>
         </Section>
       </div>
-      <footer className="mt-10 border-t border-line pt-4 text-[12.5px] text-muted">{REPORT_FOOTER} Generated {doc.generatedOn}.</footer>
+      <footer className="mt-10 border-t border-line pt-4 text-[12px] text-muted">{REPORT_FOOTER} Generated {doc.generatedOn}.</footer>
     </article>
   );
 }

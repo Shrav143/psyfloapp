@@ -23,7 +23,7 @@ interface Item {
   subs?: Item[];
 }
 
-const link = "flex h-[42px] items-center gap-3 rounded-xl px-3 text-[15px] font-medium text-ink2 transition-colors hover:bg-[#EADFD0]";
+const link = "flex h-[42px] items-center gap-3 rounded-xl px-3 text-[14px] font-medium text-ink2 transition-colors hover:bg-[#EADFD0]";
 
 function NavItem({ item, depth = 0 }: { item: Item; depth?: number }) {
   const { pathname } = useLocation();
@@ -35,7 +35,7 @@ function NavItem({ item, depth = 0 }: { item: Item; depth?: number }) {
   const Icon = item.icon;
   return (
     <>
-      <NavLink to={item.to} end={exact} className={cn(link, depth > 0 && "ml-3 h-9 text-[13.5px]", on && !subActive && "bg-forest text-white hover:bg-forest")}>
+      <NavLink to={item.to} end={exact} className={cn(link, depth > 0 && "ml-3 h-9 text-[13px]", on && !subActive && "bg-forest text-white hover:bg-forest")}>
         <Icon size={depth ? 16 : 18} className="ico" />
         <span className="truncate">{item.label}</span>
         {item.subs ? <span className="ml-1 opacity-70">{inGroup ? <ChevronDown size={15} className="ico" /> : <ChevronRight size={15} className="ico" />}</span> : null}
@@ -51,7 +51,7 @@ function SubLink({ item }: { item: Item }) {
   const on = item.match ? item.match.some((m) => pathname.startsWith(m)) : pathname.startsWith(item.to);
   const Icon = item.icon;
   return (
-    <NavLink to={item.to} className={cn(link, "ml-3 h-9 gap-2.5 pr-2 text-[13.5px]", on && "bg-forest text-white hover:bg-forest")}>
+    <NavLink to={item.to} className={cn(link, "ml-3 h-9 gap-2.5 pr-2 text-[13px]", on && "bg-forest text-white hover:bg-forest")}>
       <Icon size={16} className="ico" />
       <span className="truncate">{item.label}</span>
       {item.badge ? <Count on={on} className="ml-auto">{item.badge}</Count> : null}
@@ -79,7 +79,7 @@ export function Sidebar() {
     {
       to: paths.authorizations(), label: "Authorizations", icon: ClipboardList, badge: queue,
       subs: [
-        { to: "/authorizations/new", label: "New case", icon: PlusCircle, badge: referrals },
+        { to: "/authorizations/new", label: "New Case", icon: PlusCircle, badge: referrals },
         { to: paths.eligibility(), label: "Eligibility & Benefits", icon: ShieldCheck, badge: eb },
       ],
     },
@@ -95,7 +95,7 @@ export function Sidebar() {
   return (
     <aside className="sticky top-0 flex h-screen w-[256px] shrink-0 flex-col gap-[22px] border-r border-[#EADFD2] bg-side px-3.5 pt-6 pb-3.5">
       <div className="px-2">
-        <div className="font-serif text-[30px] leading-none font-semibold tracking-[-0.4px] text-[#1C473B]">
+        <div className="font-serif text-[24px] leading-none font-semibold tracking-[-0.4px] text-[#1C473B]">
           psyflo<i className="not-italic text-sage">.</i>
         </div>
         <div className="mt-[5px] text-[11px] tracking-[0.12em] text-muted uppercase">Prior auth &amp; UR</div>
@@ -111,7 +111,7 @@ export function Sidebar() {
         ))}
       </nav>
       <div className="flex flex-col gap-0.5">
-        <div className="mb-2 flex items-center gap-2.5 rounded-xl border border-[#EADFD2] bg-[#FBF8F3] px-3 py-2.5 text-[12.5px] text-ink2">
+        <div className="mb-2 flex items-center gap-2.5 rounded-xl border border-[#EADFD2] bg-[#FBF8F3] px-3 py-2.5 text-[12px] text-ink2">
           <FlaskConical size={16} className="ico text-muted" />
           Demo data
         </div>
@@ -130,7 +130,7 @@ export function Sidebar() {
         <div className="mt-2.5 flex items-center gap-3 border-t border-[#EADFD2] px-2 pt-3.5" role="group" aria-label={`Signed in as ${viewer.name}, ${viewer.role}`}>
           <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-forest text-xs font-semibold text-white" aria-hidden="true">{viewer.initials}</div>
           <div className="min-w-0">
-            <div className="truncate text-[13.5px] font-semibold">{viewer.name}</div>
+            <div className="truncate text-[13px] font-semibold">{viewer.name}</div>
             <div className="truncate text-xs text-muted">{viewer.role}</div>
           </div>
         </div>

@@ -37,7 +37,7 @@ export function ParetoChart(p: ParetoChartProps) {
   const reach = named.findIndex((r) => r.cum >= 80);
   return (
     <ChartFrame id={id} summary={p.summary} table={p.table} hint={p.hint}>
-      <ul className="mb-2 flex flex-wrap items-center gap-x-5 gap-y-1 text-[12.5px] text-ink2" aria-label="Legend">
+      <ul className="mb-2 flex flex-wrap items-center gap-x-5 gap-y-1 text-[12px] text-ink2" aria-label="Legend">
         <li className="flex items-center gap-2">
           <svg width="16" height="12" aria-hidden="true">
             <defs>
@@ -67,20 +67,20 @@ export function ParetoChart(p: ParetoChartProps) {
             const body = (
               <div className="grid grid-cols-[minmax(0,1fr)_48px_52px] items-center gap-x-3 gap-y-1.5 @xl:grid-cols-[minmax(200px,1.5fr)_minmax(0,1fr)_52px_64px]">
                 <span className="min-w-0 text-left @xl:col-start-1">
-                  <span className="block text-[13.5px] leading-snug">{r.label}</span>
+                  <span className="block text-[13px] leading-snug">{r.label}</span>
                   {r.marked ? (
-                    <span className="mt-0.5 inline-flex items-center gap-1 rounded-full bg-mid-bg px-2 py-px text-[10.5px] font-semibold text-mid-ink">
+                    <span className="mt-0.5 inline-flex items-center gap-1 rounded-full bg-mid-bg px-2 py-px text-[11px] font-semibold text-mid-ink">
                       <Wrench size={10} className="ico" aria-hidden="true" />
                       {p.markLabel}
                     </span>
                   ) : null}
-                  {r.sub ? <span className="ml-1.5 text-[11.5px] text-muted">{r.sub}</span> : null}
+                  {r.sub ? <span className="ml-1.5 text-[11px] text-muted">{r.sub}</span> : null}
                 </span>
                 <svg width="100%" height="16" role="presentation" className="col-span-3 row-start-2 block @xl:col-span-1 @xl:col-start-2 @xl:row-start-1">
                   <rect x="0" y="0" width="100%" height="16" rx="4" fill={CHART.track} />
                   <rect x="0" y="0" width={`${Math.min(100, (r.count / top) * 100)}%`} height="16" rx="4" fill={r.other ? CHART.midSoft : r.marked ? `url(#${id}-p)` : CHART.umber} />
                 </svg>
-                <span className="text-right text-[13.5px] font-semibold tabular-nums @xl:col-start-3">
+                <span className="text-right text-[13px] font-semibold tabular-nums @xl:col-start-3">
                   {r.count}
                   <span className="block text-[11px] font-normal text-muted">{r.share}%</span>
                 </span>

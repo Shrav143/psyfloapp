@@ -30,7 +30,7 @@ function NotFound() {
   );
 }
 
-/** Referrals used to have their own tab. Old links land on the referral inside New case. */
+/** Referrals used to have their own tab. Old links land on the referral inside New Case. */
 function OldReferralLink() {
   const { id = "" } = useParams();
   return <Navigate to={paths.referral(id)} replace />;

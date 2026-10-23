@@ -1,6 +1,6 @@
 title: Payers › Rules & Instructions › Edit a rule
 route: /payers/summit?tab=rules
-intro: 'Edit' on a rule row opens a right-hand panel with the rule's structured values, its free text, who and what it applies to, and its dates. Saving asks for a reason, says which version it becomes, and writes the edit audit. A verified rule that is edited goes back to Needs review. A rule read through from the payer's saved rules writes its change back to those saved rules, so New case and Eligibility read it at once; a rule the library owns is saved in the library.
+intro: 'Edit' on a rule row opens a right-hand panel with the rule's structured values, its free text, who and what it applies to, and its dates. Saving asks for a reason, says which version it becomes, and writes the edit audit. A verified rule that is edited goes back to Needs review. A rule read through from the payer's saved rules writes its change back to those saved rules, so New Case and Eligibility read it at once; a rule the library owns is saved in the library.
 dir: TD
 ---
 start s1 "Open a group, open a rule row,\nclick 'Edit'"

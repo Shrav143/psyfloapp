@@ -72,7 +72,7 @@ export function LiveCheck({ steps, idx, secs, running, finished, onSkip }: { ste
                 <AgentBadge agent={s.agent} size={36} />
                 <div className="min-w-0 flex-1">
                   <div className="font-semibold">{AGENTS[s.agent].name}</div>
-                  <div className="text-[13.5px] text-muted">{state === "done" ? s.done : state === "work" ? s.doing : s.wait}</div>
+                  <div className="text-[13px] text-muted">{state === "done" ? s.done : state === "work" ? s.doing : s.wait}</div>
                 </div>
                 {state === "done" ? (
                   <span className="flex items-center gap-1.5 text-good" aria-label="Done">

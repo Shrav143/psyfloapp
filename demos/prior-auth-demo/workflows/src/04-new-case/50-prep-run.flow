@@ -1,4 +1,4 @@
-title: Authorizations › New case › Authorization preparation › Start the run and watch it
+title: Authorizations › New Case › Authorization preparation › Start the run and watch it
 route: /authorizations/new/:draftId (step 4 of 5, 'Authorization preparation')
 intro: 'Continue' on Clinical documentation asks once, then ten agents work in order for about 13 seconds. Opening this step never starts them: before they start it says so and offers one button. The page shows each agent's line, the approval chance climbing, two ways to raise it, and Pause and Skip ahead. A paused agent holds the run, and Verify can fail to reach a payer's portal. All progress is written to the draft.
 dir: TD
@@ -8,7 +8,7 @@ start s0 "Click 'Authorization preparation' in the stepper\nbefore the agents ha
 screen sNot "'The agents have not started'\n'They read the chart, check the payer's rules, match the evidence to the criteria and prepare the justification. 2 required documents are not in the case yet. They will flag them rather than guess. Nothing is sent to the payer until a clinician signs.'\nButton 'Start the agents'\nFooter 'Back' and 'Go back to add what is missing, or start now and review the gaps later.'"
 click cNot "Click 'Start the agents'"
 click cBackNot "Click 'Back'"
-goto gDocs "Continues in: Authorizations › New case › Clinical documentation › The checklist and Continue"
+goto gDocs "Continues in: Authorizations › New Case › Clinical documentation › The checklist and Continue"
 overlay o1 "Start the agents?\nJ.M., Residential 3.5 · Summit Medicaid HMO\n'Reader swaps names, dates and IDs for codes and reads the chart. Verify, Criteria, Historian and Placement check coverage, rules and how Summit has ruled. Scribe drafts the case and may ask you a question or two.'\n'Nothing is sent to the payer until a clinician signs.'"
 click cCancel "Click 'Cancel', press Escape, or click outside"
 endx eCancel "Back where it was; nothing started"
@@ -46,13 +46,13 @@ endgroup
 toast tRec "Banner 'Records changed after the last run. The agents re-checked.'\nShown when the documents or the details changed after an earlier run, and nothing more important is on screen (not while a question, or a pause, is showing)"
 process pAway "Leave the page and progress is kept in the draft\nBut the agents only move while this page is open\nHint: 'The agents work on their own. You can leave and come back.'"
 process pJust "After Scribe: a closed section titled for the type\n'Initial request justification', 'Continued-stay justification', 'Renewal justification', 'Modification justification' or 'Retroactive justification'\n'N sections from the N documents in the case. Scribe adds only what the chart supports.' Pill 'N missing' or 'Nothing missing'"
-goto gJust "Continues in: Authorizations › New case › Authorization preparation › Justification by type"
-goto gChance "Continues in: Authorizations › New case › Authorization preparation › Approval chance and ways to raise it"
-goto g46 "Continues in: Authorizations › New case › Authorization preparation › An agent could not finish"
-goto g47 "Continues in: Authorizations › New case › Authorization preparation › Paused in Settings"
-goto g35 "Continues in: Authorizations › New case › Authorization preparation › An agent asks a question"
-goto gRev "Continues in: Authorizations › New case › Review & submit › The draft and the summary"
-goto g36 "Continues in: Authorizations › New case › Authorization preparation › Finished, paused or left"
+goto gJust "Continues in: Authorizations › New Case › Authorization preparation › Justification by type"
+goto gChance "Continues in: Authorizations › New Case › Authorization preparation › Approval chance and ways to raise it"
+goto g46 "Continues in: Authorizations › New Case › Authorization preparation › An agent could not finish"
+goto g47 "Continues in: Authorizations › New Case › Authorization preparation › Paused in Settings"
+goto g35 "Continues in: Authorizations › New Case › Authorization preparation › An agent asks a question"
+goto gRev "Continues in: Authorizations › New Case › Review & submit › The draft and the summary"
+goto g36 "Continues in: Authorizations › New Case › Authorization preparation › Finished, paused or left"
 
 s1 --> o1
 s0 --> sNot --> cNot --> o1

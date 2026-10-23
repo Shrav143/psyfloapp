@@ -1,4 +1,4 @@
-title: Authorizations › New case › Intake › Initial authorization
+title: Authorizations › New Case › Intake › Initial authorization
 route: /authorizations/new/:draftId (Intake, type 'Initial authorization', once something is started)
 intro: For a new stay: the details come from a referral, from a patient who is known, from a chart, or are typed. Everything stays editable. Nothing here stops the person from going on: what is missing is listed again, with a fix, on Review & submit. A possible duplicate is the one alert Intake raises.
 dir: TD
@@ -7,21 +7,21 @@ start s1 "Open the details\nAfter 'Review' on a referral and 'Continue with this
 screen sc "Intake · Initial authorization\n'Start with a referral or a patient. Everything is editable.'\nStep header 'STEP 1 OF 5 · Intake' with its state"
 screen sFrom "One line above the details\n'From referral RF-2051 · Eastgate Probation Services. Everything below can be changed.'\nor 'An existing patient. Their details are filled in and can be changed for this request.'\nor 'Created by hand. Add what you know; Reader fills the rest from the chart.'"
 click cDiff "Click 'Use a different referral or patient'"
-goto gStart "Continues in: Authorizations › New case › Intake › Start with a referral or patient"
+goto gStart "Continues in: Authorizations › New Case › Intake › Start with a referral or patient"
 click cRef "Click the referral number in the line"
-goto gRef "Continues in: Authorizations › New case › Referral › The full referral page"
+goto gRef "Continues in: Authorizations › New Case › Referral › The full referral page"
 process pPay "A case Payers redrafted after a payer change shows one line\n'Updated for a payer change on 10/20'"
 screen sDup "One alert at a time\n'This looks like a request that already exists' (only when one matches)"
-goto gDup "Continues in: Authorizations › New case › Intake › Possible duplicate"
+goto gDup "Continues in: Authorizations › New Case › Intake › Possible duplicate"
 screen sSite "Site\nWith both sites in view: a 'Site' choice, Site A or Site B\nWith one site in view: 'Site A · this case is at the site you are working at.'"
-goto gSite "Continues in: Authorizations › New case › Sites and scope"
+goto gSite "Continues in: Authorizations › New Case › Sites and scope"
 
 group gRows "The case's details, as rows you can edit"
   screen r1 "Patient\n'Patient initials and age'"
   screen r2 "Insurance\n'Payer and plan', 'Member ID' (Recommended)"
   screen r3 "Request\n'Level of care', 'Request type', 'Start date' (Recommended)"
 endgroup
-goto gRows "Continues in: Authorizations › New case › Intake › Patient, insurance and request rows"
+goto gRows "Continues in: Authorizations › New Case › Intake › Patient, insurance and request rows"
 process pType "'Request type' offers Initial request and Admission\nAdmission adds 'notice due in about 5 hours'"
 process pEnd "'Requested end date' is optional\nLeft empty it asks for the level of care's usual length\n'Left empty: the usual 21 days for Residential 3.5, through 11/09/2026.'"
 
@@ -34,10 +34,10 @@ group gFoot "Footer bar, always in view"
 endgroup
 click cSave "Click 'Save as draft'"
 toast tSave "'Draft saved'\n'R-1701 is in Case Manager. Pick it up whenever you like.'"
-goto gSave "Continues in: Authorizations › New case › Save as draft and leave"
+goto gSave "Continues in: Authorizations › New Case › Save as draft and leave"
 click cCont "Click 'Continue to Eligibility & Benefits'"
 process pGo "Moves to step 2\nNothing blocks the click"
-goto gElig "Continues in: Authorizations › New case › Eligibility & Benefits › Initial authorization"
+goto gElig "Continues in: Authorizations › New Case › Eligibility & Benefits › Initial authorization"
 
 s1 --> sc --> sFrom
 sFrom --> cDiff --> gStart

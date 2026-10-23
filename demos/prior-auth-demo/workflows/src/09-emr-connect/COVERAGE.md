@@ -23,7 +23,7 @@ Source: `src/pages/emr/*`, `src/store/emr.ts`, `src/data/emr.ts`, `src/data/site
 | Row 'Fix' (Needs attention only) | 70 |
 | Row 'Reconnect' (Disconnected only) | 85, 87 |
 | Row 'Manage' | 80 |
-| Row text: name, status pill, 'Reads ...', 'Last sync N min ago', 'Syncing', 'Not syncing', 'N sync failures' or 'Sync paused'; issue line and 'New case cannot pull a chart from it until it is connected.' | 20, 15 |
+| Row text: name, status pill, 'Reads ...', 'Last sync N min ago', 'Syncing', 'Not syncing', 'N sync failures' or 'Sync paused'; issue line and 'New Case cannot pull a chart from it until it is connected.' | 20, 15 |
 | Row write-back line: 'Read only.' or 'Read and write back.' with its one sentence | 25 |
 | Row 'Write back' switch (named 'Write back for {system}'; toasts 'Write-back is on' and 'Write-back is off') | 25 |
 | Empty list text | 10 (dotted, not reachable) |
@@ -57,7 +57,7 @@ Source: `src/pages/emr/*`, `src/store/emr.ts`, `src/data/emr.ts`, `src/data/site
 | Two-second wait, guard while a sync runs, leaving the page mid-sync, no Connected system | 50 |
 | Four rotating results, counters, toast 'Sync finished' | 50 |
 | What a sync pulls and when it runs (schedule is PRD only) | 55 |
-| 'Pull a chart from EMR Connect' in New case (Connected systems only, blank fields while a mapping waits) and the write-back box on the Dashboard (needs a Connected system with its switch on) | 58 |
+| 'Pull a chart from EMR Connect' in New Case (Connected systems only, blank fields while a mapping waits) and the write-back box on the Dashboard (needs a Connected system with its switch on) | 58 |
 
 ## Field mappings
 
@@ -94,7 +94,7 @@ Source: `src/pages/emr/*`, `src/store/emr.ts`, `src/data/emr.ts`, `src/data/site
 | Sync from one site's view pulls and counts only for that site's systems | 12, 50 |
 | A system connected by a one-site viewer serves only that site | 12, 40 |
 | The write-back switches that count for the Dashboard are those of the systems at the sites in view | 25, 58 |
-| New case's 'Pull a chart from EMR Connect' offers the charts of the Connected systems at the sites in view | 58 |
+| New Case's 'Pull a chart from EMR Connect' offers the charts of the Connected systems at the sites in view | 58 |
 
 ## Not drawn
 
@@ -122,8 +122,8 @@ Source: `src/pages/emr/*`, `src/store/emr.ts`, `src/data/emr.ts`, `src/data/site
 
 ## Looks broken or dead in the demo
 
-- A mapping's chosen value (IOP or PHP, Payer name ...) is not applied anywhere. A mapped field only stops being left blank in New case's pull, and a mapped field cannot be unmapped or edited.
-- The four charts New case can pull are fixed. Sync now adds none, and a new system offers none.
+- A mapping's chosen value (IOP or PHP, Payer name ...) is not applied anywhere. A mapped field only stops being left blank in New Case's pull, and a mapped field cannot be unmapped or edited.
+- The four charts New Case can pull are fixed. Sync now adds none, and a new system offers none.
 - 'Sync failures' counts one missed sync per hour since the last good sync of a system that needs attention (demo values). No sync actually runs on a schedule.
 - Reader's default level is 'Act on its own', so a plain Sync now ends with no toast. The figures and the new log line show it. Set Reader to 'Act, then report' to see 'Sync finished'.
 - Reader (Sync now, Connect a system) and Navigator (Fix, Reconnect) read the pause. Their freedom applies to Sync now, Fix and Reconnect only: Connect asks nothing beyond its own pop-up. Disconnect, Map and the Write back switch are a person's own choices and are never held back.

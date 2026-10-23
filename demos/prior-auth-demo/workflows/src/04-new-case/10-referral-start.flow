@@ -1,10 +1,10 @@
-title: Authorizations › New case › Intake › Start with a referral or patient
+title: Authorizations › New Case › Intake › Start with a referral or patient
 route: /authorizations/new/:draftId (Intake, Initial authorization, nothing started yet; ?ref= is empty)
 intro: What a person sees on Intake for an initial authorization before anything is chosen. Drop referral documents (Reader reads them), use the sample referral, open an incoming referral with Review, find a patient who is already known, or create the case by hand. Incoming referrals and the patient search show only the sites in view.
 dir: TD
 also: Demo only: Reader's reading is invented. The same file name always gives the same one of three sample referrals. A referral read from dropped files is placed at the site the person is working at.
 ---
-start s1 "Open New case\nAuthorization type 'Initial authorization', nothing started"
+start s1 "Open New Case\nAuthorization type 'Initial authorization', nothing started"
 start s2 "Click 'Use a different referral or patient'\non the details of a case"
 start s3 "Click 'Use different documents'\non a referral checklist"
 
@@ -23,13 +23,13 @@ click leave "Leave the page while Reader reads\n(there is no Cancel button on th
 endx e1 "Nothing is added"
 store st1 "New referral added with the next RF number that falls at the site in view\nStatus New, received just now"
 toast t1 "'Reader read the documents'\n'RF-2056 is ready. The checklist shows what is missing.'"
-toast t2 "Bell notification 'New referral read'\n'RF-2056 from Eastgate Probation Services is on your checklist in New case.'"
+toast t2 "Bell notification 'New referral read'\n'RF-2056 from Eastgate Probation Services is on your checklist in New Case.'"
 process p3 "Address gets ?ref=RF-2056\nThe referral's checklist opens in Intake"
-goto g1 "Continues in: Authorizations › New case › Referral › Referral checklist"
+goto g1 "Continues in: Authorizations › New Case › Referral › Referral checklist"
 
 group gPat "Find a patient who is already known"
   click cPat "Click 'Find a patient who is already known'\n'Search Both sites by initials or case ID. Nobody is added twice.'"
-  goto gFind "Continues in: Authorizations › New case › Intake › Find a patient and the authorization"
+  goto gFind "Continues in: Authorizations › New Case › Intake › Find a patient and the authorization"
   process pPick "Picking a patient fills their details\nNo second patient is made\nIntake shows the details, with a possible duplicate flagged"
   toast tPick "'J.M., 34 is in this case'\n'The patient's own details are filled in. No second patient is made.'"
 endgroup
@@ -45,15 +45,15 @@ group gInc "Incoming referrals"
   process p6 "All rows show\nThe button now reads 'Show fewer'"
   click c4 "Click 'Show fewer'"
   click c5 "Click 'Review' on a row"
-  process p7 "Referral marked opened\nSidebar badge on 'New case' drops\nAddress gets ?ref=RF-2045"
+  process p7 "Referral marked opened\nSidebar badge on 'New Case' drops\nAddress gets ?ref=RF-2045"
 endgroup
 
 group gNone "Create the case by hand"
   click c6 "Click 'Create case manually'"
   process p9 "The case is marked started\nThe details show: site, patient, insurance and request rows"
 endgroup
-goto g2 "Continues in: Authorizations › New case › Intake › Initial authorization"
-goto g3 "Continues in: Authorizations › New case › Intake › Patient, insurance and request rows"
+goto g2 "Continues in: Authorizations › New Case › Intake › Initial authorization"
+goto g3 "Continues in: Authorizations › New Case › Intake › Patient, insurance and request rows"
 
 s1 --> sc1
 s2 --> sc1

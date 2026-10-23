@@ -1,4 +1,4 @@
-title: Authorizations › New case › Authorization preparation › Justification by type
+title: Authorizations › New Case › Authorization preparation › Justification by type
 route: /authorizations/new/:draftId (step 4 of 5 once Scribe is done, and the summary on step 5)
 intro: Scribe prepares a justification for the type of request. Four sections are the same for every type; one section, what the request rests on, differs. It is built only from the documents and answers in the case. Evidence that is not there is listed as missing and never filled in. The same text is on Review & submit, where it can be edited.
 dir: TD
@@ -35,10 +35,10 @@ group gGap "What is never filled in"
 endgroup
 
 process pEdit "On Review & submit the same text is editable\nAn edit is kept until the summary is rebuilt: after a new answer, a tick in 'To raise it further', 'Send back to Scribe', or a change to the details or documents"
-goto gQ "Continues in: Authorizations › New case › Authorization preparation › An agent asks a question"
-goto gSum "Continues in: Authorizations › New case › Review & submit › The draft and the summary"
-goto gMis "Continues in: Authorizations › New case › Review & submit › What is missing"
-goto gDocs "Continues in: Authorizations › New case › Clinical documentation › Required and typical documents by type"
+goto gQ "Continues in: Authorizations › New Case › Authorization preparation › An agent asks a question"
+goto gSum "Continues in: Authorizations › New Case › Review & submit › The draft and the summary"
+goto gMis "Continues in: Authorizations › New Case › Review & submit › What is missing"
+goto gDocs "Continues in: Authorizations › New Case › Clinical documentation › Required and typical documents by type"
 
 s1 --> sCard --> cOpen --> sOpen --> dKind
 sOpen --> a1 & a2 & a3 & a4

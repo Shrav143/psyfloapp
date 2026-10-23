@@ -98,7 +98,7 @@ export function RequestDrawer({ request: r, onClose, onSwitch }: { request: PsyR
           ]}
         />
         <div>
-          <h3 className="mb-3 font-serif text-xl font-semibold">History</h3>
+          <h3 className="mb-3 font-serif text-[18px] font-semibold">History</h3>
           <Timeline events={r.events} empty="No events yet." />
         </div>
         <Disclosure variant="plain" className="-mx-6" title="Details" summary={detailsLine}>

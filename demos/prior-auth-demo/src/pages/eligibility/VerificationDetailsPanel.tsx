@@ -79,7 +79,7 @@ export function VerificationDetailsPanel({ record, open, onClose }: { record: Ve
               {auth.line}
             </Part>
             {record.existingAuth ? (
-              <div className="pt-3 text-[13.5px] text-muted">
+              <div className="pt-3 text-[13px] text-muted">
                 <b className="font-semibold text-ink2">Existing authorization.</b> {existingAuthText(record.existingAuth)}
               </div>
             ) : null}
@@ -88,8 +88,8 @@ export function VerificationDetailsPanel({ record, open, onClose }: { record: Ve
         {record.exceptions.length ? <ExceptionList record={record} /> : null}
         <DetailSections result={result} nextLines={next} />
         <section aria-label="About this check">
-          <h3 className="font-serif text-[19px] font-semibold leading-tight">About this check</h3>
-          <dl className="mt-3 flex flex-col gap-1.5 rounded-[20px] border border-edge bg-white px-6 py-4 text-[13.5px]">
+          <h3 className="font-serif text-[18px] font-semibold leading-tight">About this check</h3>
+          <dl className="mt-3 flex flex-col gap-1.5 rounded-[20px] border border-edge bg-white px-6 py-4 text-[13px]">
             {facts.map(([k, v]) => (
               <div key={k} className="grid grid-cols-[150px_1fr] gap-x-4 max-[560px]:grid-cols-1">
                 <dt className="text-muted">{k}</dt>

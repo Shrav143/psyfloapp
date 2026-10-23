@@ -18,7 +18,7 @@ function Tick({ checked, disabled, onChange, title }: { checked: boolean; disabl
       >
         {checked ? <Check size={12} className="ico pointer-events-none" /> : null}
       </button>
-      <span className={cn("text-[15px] font-semibold", !disabled && "cursor-pointer")} onClick={disabled ? undefined : onChange}>{title}</span>
+      <span className={cn("text-[14px] font-semibold", !disabled && "cursor-pointer")} onClick={disabled ? undefined : onChange}>{title}</span>
     </div>
   );
 }
@@ -65,7 +65,7 @@ export function RecCard({ rec, selected, answer, note, focus, showError, disable
           {why ? <ChevronDown size={14} className="ico" /> : <ChevronRight size={14} className="ico" />}
           Why this matters
         </button>
-        {why ? <div className="mt-2 rounded-xl bg-tile px-3.5 py-2.5 text-[13.5px] text-ink2">{rec.why}</div> : null}
+        {why ? <div className="mt-2 rounded-xl bg-tile px-3.5 py-2.5 text-[13px] text-ink2">{rec.why}</div> : null}
 
         {rec.input ? (
           <div className="mt-3">

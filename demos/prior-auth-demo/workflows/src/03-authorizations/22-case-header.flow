@@ -2,7 +2,7 @@ title: Authorizations › Case page › Header and buttons
 route: /authorizations/case/R-1042
 intro: The header card above the three tiles: the title and its chips, the line that names the patient, the 'Next' block, the authorization facts and the 'At a glance' lines. It stays the same on all five tabs, and it follows the request: once the request is sent or decided the header shows its new status. The next action is drawn in 21, the facts in 27, and the three tiles and the one-line notice in 23.
 dir: TD
-also: Demo only: the header reads the request's current stage from the Dashboard, so signing and sending in New case, or a payer reply made with the Dashboard demo controls, shows here at once.
+also: Demo only: the header reads the request's current stage from the Dashboard, so signing and sending in New Case, or a payer reply made with the Dashboard demo controls, shows here at once.
 ---
 screen pg "Case page\nCrumbs, header card, three tiles, one-line notice, five tabs, History"
 click cr "Click the 'Authorizations' crumb"

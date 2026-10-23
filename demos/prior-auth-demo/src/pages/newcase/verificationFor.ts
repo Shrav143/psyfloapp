@@ -1,4 +1,4 @@
-/* New case reads and writes the shared verification record (data/verification.ts, store/eligibility.ts): the same record the Eligibility & Benefits page shows.
+/* New Case reads and writes the shared verification record (data/verification.ts, store/eligibility.ts): the same record the Eligibility & Benefits page shows.
    This file decides which record a case uses and what it means for the case. It adds no verification logic of its own. */
 import type { CaseDraft, DocumentedReason } from "@/data/cases";
 import { daysRequested } from "@/data/queue";

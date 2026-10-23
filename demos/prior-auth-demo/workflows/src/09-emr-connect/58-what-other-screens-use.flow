@@ -1,12 +1,12 @@
 title: EMR Connect › Sync › What other screens use from EMR Connect
 route: /emr
-intro: Two other screens lean on EMR Connect. New case can pull a chart only from a Connected system at a site in view, and leaves a field blank while its mapping waits. The Dashboard offers the approval write-back box only while a Connected system at a site in view has its write-back switch on.
+intro: Two other screens lean on EMR Connect. New Case can pull a chart only from a Connected system at a site in view, and leaves a field blank while its mapping waits. The Dashboard offers the approval write-back box only while a Connected system at a site in view has its write-back switch on.
 dir: TD
-also: Found by reading the code and testing the built demo. Disconnect every system and the pull in New case says no records system is connected. Switch write-back off on every row and the Dashboard shows 'Write-back is off for your records system.'
+also: Found by reading the code and testing the built demo. Disconnect every system and the pull in New Case says no records system is connected. Switch write-back off on every row and the Dashboard shows 'Write-back is off for your records system.'
 ---
 screen p1 "EMR Connect\nConnection health, sync, mappings (in Advanced) and the Write back switch on each row"
 
-group gPull "New case: pull a chart"
+group gPull "New Case: pull a chart"
   click a1 "Click 'Pull a chart from EMR Connect'\nClinical documentation step"
   decision a0 "Is any system at a site in view Connected?"
   toast a8 "'No records system is connected. Connect one in EMR Connect to pull a chart, or drop the files above.'\nWith a link to EMR Connect"
@@ -21,7 +21,7 @@ group gPull "New case: pull a chart"
   toast a7 "'Pulled J.M., 34 from EMR Connect'\n'Everything below was filled in from the chart. You can still change it.'\nOr, amber: 'Level of care needs a mapping, so that field was left blank. You can still fill it in.'"
 endgroup
 process n1 "Sync now does not add charts to the picker\nThe four charts are fixed. Connect, Disconnect, Fix and Reconnect decide which systems offer them, and Map decides which fields a pull leaves blank"
-goto g1 "Continues in: Authorizations › New case › Intake › Patient, insurance and request rows"
+goto g1 "Continues in: Authorizations › New Case › Intake › Patient, insurance and request rows"
 
 group gWrite "Dashboard: write back"
   screen b1 "Dashboard request: 'Approved. Write-back waits for you'"

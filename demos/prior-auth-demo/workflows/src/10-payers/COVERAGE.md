@@ -65,7 +65,7 @@ Source: `src/pages/payers/*` (without `studio/`, which `12-payer-studio` covers)
 | Topic | Diagram |
 |---|---|
 | Sites: payers, workflows and rules are clinic-wide; the drafts and cases an update reaches follow the site in view; edits are logged under the person viewing | 84 |
-| What payer configuration and published workflows reach elsewhere (New case documents, rules, workflow match and pin, Case Manager review interval and tag, Dashboard rows, bell, Open the request) | 80 |
+| What payer configuration and published workflows reach elsewhere (New Case documents, rules, workflow match and pin, Case Manager review interval and tag, Dashboard rows, bell, Open the request) | 80 |
 | Cancel, X, Escape (one layer at a time), dimmed area, save buttons, no undo, every pop-up and panel | 82 |
 
 ## Not drawn
@@ -74,16 +74,16 @@ Source: `src/pages/payers/*` (without `studio/`, which `12-payer-studio` covers)
 - Toast timing and dismissal: shared component.
 - Browser Back after a tab or payer change (each pick writes a new address; nothing special happens beyond 12).
 - PRD features with no demo screen: rejecting or deferring a change, as-of lookups of an older rule version, field provenance and confidence, observed-versus-published scorecard, strategy rules, degradation alerts. Only mentioned in 62 and 80.
-- Where goto targets point (Dashboard, Case Manager, Authorizations, New case) are named by module and screen.
+- Where goto targets point (Dashboard, Case Manager, Authorizations, New Case) are named by module and screen.
 
 ## Demo behaviours to know
 
 - Every seeded rule is a demo sample: Unverified, source 'Demo sample rules, version 2026.3', never a made-up date or address. Nothing on Payers says a payer confirmed a rule. Only 'Mark as verified' (a source and a date a person types) makes a rule Verified. Editing a verified rule sends it to Needs review. Verifying does not change the version number; any edit does (40, 42, 44).
-- Rules the payer's saved configuration already holds (submission windows, backdating, no authorization needed, peer-to-peer and appeals, the document lists, the Caller script, the reach lines) are read through to the rules page, not copied. Saving one writes back to the saved lines, documents, script or reach lines, so New case and Eligibility read the change at once; the rule's version, verification and extra values are kept beside them. The title and description of such a rule stay as they are (42).
+- Rules the payer's saved configuration already holds (submission windows, backdating, no authorization needed, peer-to-peer and appeals, the document lists, the Caller script, the reach lines) are read through to the rules page, not copied. Saving one writes back to the saved lines, documents, script or reach lines, so New Case and Eligibility read the change at once; the rule's version, verification and extra values are kept beside them. The title and description of such a rule stay as they are (42).
 - A rule the library owns (review cadence, units and duration, clinical criteria, the payer-wide agent instructions, any rule added on this page) is saved in the library with its own history (42, 46).
-- A draft is a request in 'Preparing' or a New case draft that is saved and not sent, for that payer only. It is read live from the store each time the change card or the 'Update drafts' step draws (34, 66, 70). A request the payer already has (Received and later) is never listed or rewritten, and neither is the answer to a payer's question on an 'Info requested' request (P-1499, I-2218, R-0975). So Cardinal's change lists I-2207 only; Harborview's and Evergreen's list none.
+- A draft is a request in 'Preparing' or a New Case draft that is saved and not sent, for that payer only. It is read live from the store each time the change card or the 'Update drafts' step draws (34, 66, 70). A request the payer already has (Received and later) is never listed or rewritten, and neither is the answer to a payer's question on an 'Info requested' request (P-1499, I-2218, R-0975). So Cardinal's change lists I-2207 only; Harborview's and Evergreen's list none.
 - The impact lists the payer's published and draft workflows that use the changed rule (a step names it, or a rule or document step reads the rule of its kind) and the open cases that follow one of them, each with the version it keeps. Cases at a site the viewer cannot see are not listed (60, 84).
-- Every update records itself for Case Manager and New case: the change id (the change's own id, or `edits-<payerId>` for edits), the payer and the IDs of the drafts that were redrafted. Nothing is recorded when no draft was redrafted (34, 66, 70).
+- Every update records itself for Case Manager and New Case: the change id (the change's own id, or `edits-<payerId>` for edits), the payer and the IDs of the drafts that were redrafted. Nothing is recorded when no draft was redrafted (34, 66, 70).
 - Every saved edit (rule, document list, caller script, payer details, workflow save, publish, archive or restore, accepted suggestion) writes the edit audit and most send one bell notification that opens the tab it was made on (18, 42, 46, 72, 76).
 - Workflows, the rules library, the payers added, each payer's saved configuration and the edit audit are written to the browser's storage (guarded). A reload shows what was saved; if storage is blocked the foot line says changes last until the tab closes. Reset demo data restores every seed (10, 12).
 - 'Reached by' is always one of seven values (Portal, Phone, Fax and their mixes, written in that order). A name that another payer already has (a full name or a short name, any capitals) is refused when adding a payer (16, 18).

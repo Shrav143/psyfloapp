@@ -35,7 +35,7 @@ export function ValidationTab({ r, onView, onRequest, onOverride }: Props) {
         <CardBody className="flex flex-col gap-3 py-5">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <div className="font-serif text-[22px] font-semibold">{ok} of {total} checks passed</div>
+              <div className="font-serif text-[18px] font-semibold">{ok} of {total} checks passed</div>
               <div className="text-sm text-muted">{open.length ? `${open.length} ${open.length === 1 ? "needs" : "need"} your attention.` : "Everything Reader checked is clear."}</div>
             </div>
             <AgentChip agent="reader" />

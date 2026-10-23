@@ -31,7 +31,7 @@ process nr "A new row at the top: 'Restored from version 1', Draft"
 goto g1 "Continues in: Payers › Workflow Builder › Read a workflow"
 goto g2 "Continues in: Payers › Workflow Builder › Save a draft and publish"
 goto g3 "Continues in: Payers › History & Changes › Edit audit"
-goto g4 "Continues in: Authorizations › New case › Workflow › Match and pin the payer workflow"
+goto g4 "Continues in: Authorizations › New Case › Workflow › Match and pin the payer workflow"
 process pin "A case keeps the version it started with\nPublishing a newer version moves nobody"
 end e1 "Person can see who changed which version, and why, and bring one back as a draft"
 

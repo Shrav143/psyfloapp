@@ -1,4 +1,4 @@
-title: Authorizations › New case › Eligibility & Benefits › Initial authorization
+title: Authorizations › New Case › Eligibility & Benefits › Initial authorization
 route: /authorizations/new/:draftId (step 2 of 5, type 'Initial authorization')
 intro: Step 2 for a new stay. Verify runs a check for the dates asked, or reuses one made in the last 24 hours for the same patient, payer and level of care. It is the same record the Eligibility & Benefits page shows. Warnings say what to do next and never trap the person; only coverage confirmed inactive with no documented exception stops the final send.
 dir: TD
@@ -8,7 +8,7 @@ screen sc "Eligibility & Benefits · Initial authorization\n'Verify runs a check
 decision dIn "Are the payer, level of care, member ID and start date in?"
 screen sNeed "Card 'Verify needs a little more'\n'Add the payer, the level of care, the member ID and the start date in Intake, and Verify checks coverage for those dates.'"
 click cIntake "Click 'Open Intake'"
-goto gIntake "Continues in: Authorizations › New case › Intake › Initial authorization"
+goto gIntake "Continues in: Authorizations › New Case › Intake › Initial authorization"
 decision dHave "Is there a check for this patient, payer and level of care\nthat covers the dates and is under 24 hours old?"
 process pReuse "The check is reused\n'This check is recent (made just now) and covers these dates, so it is reused. Refresh it only if something changed.'"
 store stId "The case gets its id first, so the check is filed under it\nThe id falls at the case's site"
@@ -23,9 +23,9 @@ process pRef "Verify asks again\nThe record is replaced"
 click cDet "Click 'View full verification details'"
 overlay oDet "Drawer 'Verification details'\nThe full record, the same as on Eligibility & Benefits"
 decision dWarn "Does the check have warnings?"
-goto gWarn "Continues in: Authorizations › New case › Eligibility & Benefits › Warnings and documented exceptions"
+goto gWarn "Continues in: Authorizations › New Case › Eligibility & Benefits › Warnings and documented exceptions"
 decision dNoAuth "Does the payer need no authorization?"
-goto gNoAuth "Continues in: Authorizations › New case › Eligibility & Benefits › No authorization required"
+goto gNoAuth "Continues in: Authorizations › New Case › Eligibility & Benefits › No authorization required"
 screen sNote "'This is the same record as on Eligibility & Benefits. It is a simulated check and never a payer's decision.'\nLink 'Eligibility & Benefits'"
 goto gEb "Continues in: Authorizations › Eligibility & Benefits › The shared verification record"
 group gFoot "Footer bar"
@@ -34,7 +34,7 @@ group gFoot "Footer bar"
   click cCont "Click 'Continue to Clinical documentation'"
   toast tHint "'2 warnings. You can go on; Review & submit lists them again.'\nor 'Nothing is sent to the payer until a clinician signs.'"
 endgroup
-goto gDocs "Continues in: Authorizations › New case › Clinical documentation › The checklist and Continue"
+goto gDocs "Continues in: Authorizations › New Case › Clinical documentation › The checklist and Continue"
 
 s1 --> sc --> dIn
 dIn -->|No| sNeed --> cIntake --> gIntake

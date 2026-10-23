@@ -13,11 +13,11 @@ group gRed "Redirects (the old address is replaced)"
   goto g1 "Continues in: Dashboard"
   process r2 "'/active' goes to /manager\nAny '?tab=' on /active is dropped, so the Active cases tab opens"
   goto g2 "Continues in: Case Manager › Page › Arrive and read the header"
-  process r3 "'/referrals' goes to /authorizations/new\nReferrals no longer have a tab: they start Intake in New case"
-  process r3b "New case starts a blank draft and the address becomes /authorizations/new/draft-..."
-  goto g3 "Continues in: Authorizations › New case › Intake › Start with a referral or patient"
+  process r3 "'/referrals' goes to /authorizations/new\nReferrals no longer have a tab: they start Intake in New Case"
+  process r3b "New Case starts a blank draft and the address becomes /authorizations/new/draft-..."
+  goto g3 "Continues in: Authorizations › New Case › Intake › Start with a referral or patient"
   process r4 "'/referrals/RF-1234' goes to /authorizations/new/referral/RF-1234"
-  goto g4 "Continues in: Authorizations › New case › Referral › The full referral page"
+  goto g4 "Continues in: Authorizations › New Case › Referral › The full referral page"
 endgroup
 
 group gKnown "Pages that exist"
@@ -37,7 +37,7 @@ endgroup
 group gOwn "Known page, unknown record (the page answers)"
   process o1 "/authorizations/case/XYZ shows 'Request not found' with 'Back to the queue'"
   process o2 "/authorizations/new/XYZ shows 'We could not find that draft' with 'Start a new case'"
-  goto g7 "Continues in: Authorizations › New case › How a case starts and resumes"
+  goto g7 "Continues in: Authorizations › New Case › How a case starts and resumes"
 endgroup
 
 s1 --> p0 --> d1

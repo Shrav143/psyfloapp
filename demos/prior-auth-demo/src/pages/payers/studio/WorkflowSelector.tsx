@@ -81,7 +81,7 @@ export function WorkflowSelector({ workflows, current, dirty, savedNote, onSelec
       </span>
     </div>
     {notice ? (
-      <div role="note" className={cn("flex items-start gap-2.5 border-t px-4 py-2.5 text-[13.5px]", notice.tone === "mid" ? "border-mid-edge bg-mid-bg text-mid-ink" : "border-line bg-tile text-ink2")}>
+      <div role="note" className={cn("flex items-start gap-2.5 border-t px-4 py-2.5 text-[13px]", notice.tone === "mid" ? "border-mid-edge bg-mid-bg text-mid-ink" : "border-line bg-tile text-ink2")}>
         <Info size={16} className="ico mt-0.5" aria-hidden="true" />
         <span>{notice.title ? <span className="font-semibold">{notice.title}. </span> : null}{notice.text}</span>
       </div>
@@ -108,7 +108,7 @@ function WorkflowPicker({ workflows, current, onSelect }: { workflows: Workflow[
     <div ref={ref} className="relative min-w-0 max-w-full">
       <button type="button" aria-haspopup="listbox" aria-expanded={open} aria-controls={id} aria-label={`Workflow: ${current?.name ?? "none chosen"}. Change workflow`} onClick={() => setOpen((o) => !o)} className="flex h-[46px] min-w-0 max-w-full items-center gap-2.5 rounded-xl border border-field bg-white px-3.5 text-left hover:bg-tile">
         <span className="min-w-0">
-          <span className="block max-w-[300px] truncate font-serif text-[17px] leading-tight font-semibold">{current?.name ?? "Choose a workflow"}</span>
+          <span className="block max-w-[300px] truncate font-serif text-[16px] leading-tight font-semibold">{current?.name ?? "Choose a workflow"}</span>
           {current ? <span className="block text-xs leading-tight text-muted">{requestOf(current)} · version {current.version}</span> : null}
         </span>
         {current ? <Pill tone={STATUS_TONE[current.status]} dot>{STATUS_WORD[current.status]}</Pill> : null}

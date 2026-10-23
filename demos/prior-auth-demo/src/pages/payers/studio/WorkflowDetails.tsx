@@ -5,7 +5,7 @@ import { stateName, US_STATES } from "../lib/states";
 import { Labeled, MultiChips, SelectField, TextField } from "./fields/controls";
 import { STATUS_TONE, STATUS_WORD, datesOf } from "./lib/ui";
 
-/* The workflow's own facts: who it is for and when it applies. Matching in New case reads exactly these. */
+/* The workflow's own facts: who it is for and when it applies. Matching in New Case reads exactly these. */
 
 export const metaOf = (w: Workflow): WorkflowMeta => ({ id: w.id, payerId: w.payerId, name: w.name, state: w.state, product: w.product, services: w.services, providerType: w.providerType, requestType: w.requestType, effectiveFrom: w.effectiveFrom, effectiveTo: w.effectiveTo, owner: w.owner });
 
@@ -16,7 +16,7 @@ export function WorkflowDetails({ workflow, payerName, onChange, disabled }: { w
   return (
     <Card>
       <div className="flex items-center justify-between gap-3 border-b border-line px-6 py-3.5">
-        <h3 className="m-0 font-serif text-[19px] font-semibold">Details</h3>
+        <h3 className="m-0 font-serif text-[18px] font-semibold">Details</h3>
         <Pill tone={STATUS_TONE[workflow.status]} dot>{STATUS_WORD[workflow.status]} · version {workflow.version}</Pill>
       </div>
       <div className="grid grid-cols-1 gap-x-5 gap-y-4 px-6 py-5 sm:grid-cols-2 xl:grid-cols-3">

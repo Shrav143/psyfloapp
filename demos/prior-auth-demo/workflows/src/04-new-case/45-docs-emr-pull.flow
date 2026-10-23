@@ -1,4 +1,4 @@
-title: Authorizations › New case › Clinical documentation › Pull a chart from EMR Connect
+title: Authorizations › New Case › Clinical documentation › Pull a chart from EMR Connect
 route: /authorizations/new/:draftId (step 3 of 5, 'Pull a chart from EMR Connect')
 intro: The button reads EMR Connect's connected systems. With none connected it says so and links to EMR Connect. Otherwise the picker lists charts by system, names the system, and leaves blank any field whose system still needs a mapping.
 dir: TD
@@ -32,8 +32,8 @@ process pStale "If the agents had already run, the run restarts\nBecause the rec
 toast tStale "'Records changed after the agents ran'\n'Their work was cleared. The agents check again when you continue.'"
 click cCancel "Click 'Cancel'"
 process pCancel "Picker closes; nothing changes"
-goto gRows "Continues in: Authorizations › New case › Intake › Patient, insurance and request rows"
-goto gRec "Continues in: Authorizations › New case › Clinical documentation › The checklist and Continue"
+goto gRows "Continues in: Authorizations › New Case › Intake › Patient, insurance and request rows"
+goto gRec "Continues in: Authorizations › New Case › Clinical documentation › The checklist and Continue"
 
 s1 --> dSys
 dSys -->|No| tNone

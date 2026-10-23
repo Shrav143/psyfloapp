@@ -8,7 +8,7 @@ screen sc "Five chips in a row\nAwaiting sign-off 5, Submitted 4, Decision pendi
 screen ip "Info icon beside 'Lifecycle'\nHover, focus or click: what the states count"
 
 group gCount "What each chip counts, and its quiet line"
-  process c1 "Awaiting sign-off = Preparing: requests not yet signed and sent, plus cases saved in New case\nQuiet line '1 ready to sign'"
+  process c1 "Awaiting sign-off = Preparing: requests not yet signed and sent, plus cases saved in New Case\nQuiet line '1 ready to sign'"
   process c2 "Submitted = Received: the payer has it\nQuiet line 'all on time' or '1 running late' (ochre)"
   process c3 "Decision pending = Under review\nQuiet line 'none running late', '2 running late', or '1 past 7 days' (ochre)"
   process c4 "Info requested\nQuiet line '1 waiting on you' or 'none waiting on you'"

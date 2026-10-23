@@ -90,7 +90,7 @@ export interface PsyRequest {
   sentVia: SentVia;
   chance?: number; // approval chance 0-100 (for requests) or chance of winning (for denials)
   referralId?: string; // set when the case was started from a referral
-  /** Set by New case: the patient, the treatment episode, the authorization and the verification the request belongs to (see data/patients.ts). */
+  /** Set by New Case: the patient, the treatment episode, the authorization and the verification the request belongs to (see data/patients.ts). */
   patientId?: string;
   episodeId?: string;
   authorizationId?: string;
@@ -101,7 +101,7 @@ export interface PsyRequest {
 /* ---------- referrals (shared so the new-case flow can pre-fill from one) ---------- */
 export type Urgency = "routine" | "urgent" | "emergent";
 
-/** What the New case flow needs to start from a referral. Implemented by store/referrals.ts: referralPrefill(). */
+/** What the New Case flow needs to start from a referral. Implemented by store/referrals.ts: referralPrefill(). */
 export interface NewCasePrefill {
   referralId: string;
   patientInitials: string;

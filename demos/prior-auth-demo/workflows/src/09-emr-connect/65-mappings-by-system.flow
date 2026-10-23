@@ -2,10 +2,10 @@ title: EMR Connect › Field mappings › Every mapping by system
 route: /emr
 intro: The field mappings list in the folded 'Advanced' section: every mapping with its system, what each of their fields fills in Psyflo, who mapped it, and the fields that still wait. A newly connected system starts with none.
 dir: TD
-also: Seed data. 'Mapped by' reads 'Reader, 03/14' for the agents and 'You, {date}' for a person. Dates come from the Demo clock. A chart pulled in New case leaves a waiting field blank (Level of care, Referral source) and fills a mapped one. The list is one list with the system named under each row, and it shows only the systems at the sites in view (Site A's viewer sees 7 mappings, Site B's 5, Both sites 10); the Manage drawer no longer holds mappings.
+also: Seed data. 'Mapped by' reads 'Reader, 03/14' for the agents and 'You, {date}' for a person. Dates come from the Demo clock. A chart pulled in New Case leaves a waiting field blank (Level of care, Referral source) and fills a mapped one. The list is one list with the system named under each row, and it shows only the systems at the sites in view (Site A's viewer sees 7 mappings, Site B's 5, Both sites 10); the Manage drawer no longer holds mappings.
 ---
 start s1 "Open 'Advanced'\nThen read 'Field mappings'"
-screen t0 "Field mappings\n'{n} mapped, {m} waiting. A chart pulled in New case leaves the waiting fields blank until you map them.'\nWith none waiting: '{n} mapped. Every field the agents have met is mapped.'\nEach row: their field → what it fills, the system, who mapped it"
+screen t0 "Field mappings\n'{n} mapped, {m} waiting. A chart pulled in New Case leaves the waiting fields blank until you map them.'\nWith none waiting: '{n} mapped. Every field the agents have met is mapped.'\nEach row: their field → what it fills, the system, who mapped it"
 
 group gRes "Clinical record · Site A: 5 mapped"
   store r1 "Admit date → 'Admission date'\nReader, 03/14"

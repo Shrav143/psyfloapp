@@ -325,7 +325,7 @@ export function BuilderWorkspace({ payer, stored, workflows, rules, docs, focusN
         <div className={cn("grid gap-3", mode === "wide" ? "items-start" : "")} style={mode === "stacked" ? undefined : { gridTemplateColumns: `${libOpen && mode === "wide" ? "250px" : "44px"} minmax(0,1fr) ${panelOpen ? "340px" : "44px"}` }}>
           {mode === "stacked" ? (
             <details className="rounded-[20px] border border-edge bg-white [&[open]>summary]:border-b">
-              <summary className="cursor-pointer list-none rounded-[20px] border-line px-4 py-3 text-[15px] font-semibold">Add a step</summary>
+              <summary className="cursor-pointer list-none rounded-[20px] border-line px-4 py-3 text-[14px] font-semibold">Add a step</summary>
               <div className="p-2">{library}</div>
             </details>
           ) : (
@@ -352,7 +352,7 @@ export function BuilderWorkspace({ payer, stored, workflows, rules, docs, focusN
             </div>
             <div style={{ height: mode === "stacked" ? 520 : `calc(${AREA_H} - 46px)` }}>{canvasEl}</div>
             {mode === "stacked" && node ? (
-              <p className="m-0 flex flex-wrap items-center gap-2 rounded-xl bg-sage-bg px-3.5 py-2 text-[13.5px] text-good-ink">
+              <p className="m-0 flex flex-wrap items-center gap-2 rounded-xl bg-sage-bg px-3.5 py-2 text-[13px] text-good-ink">
                 <span className="font-semibold">{node.title}</span> is selected.
                 <button type="button" onClick={() => panelBox.current?.scrollIntoView({ block: "start", behavior: prefersReducedMotion() ? "auto" : "smooth" })} className="font-semibold underline underline-offset-2">Open its settings</button>
               </p>
@@ -425,7 +425,7 @@ function conflictOf(w: Workflow, all: Workflow[], payerId: string): string | nul
       const hit = m.conflict?.find((c) => c.id === w.id);
       if (hit && m.conflict) {
         const others = m.conflict.filter((c) => c.id !== w.id);
-        return `${w.name} and ${others.map((o) => o.name).join(" and ")} both match ${PROGRAM_LABEL[s]}, ${REQUEST_TYPE_LABEL[t].toLowerCase()}. New case flags it and picks neither until one is changed.`;
+        return `${w.name} and ${others.map((o) => o.name).join(" and ")} both match ${PROGRAM_LABEL[s]}, ${REQUEST_TYPE_LABEL[t].toLowerCase()}. New Case flags it and picks neither until one is changed.`;
       }
     }
   }

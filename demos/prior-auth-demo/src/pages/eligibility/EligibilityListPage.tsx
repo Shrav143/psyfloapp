@@ -17,7 +17,7 @@ const PAGE = 12;
 type VerdictFilter = "all" | Verdict | "recheck";
 
 /** Eligibility and Benefits: will the clinic be paid for each patient? Reads the shared verification records, inside the sites in view,
-    so a check made in New case is a row here and a check made here is the one New case finds. */
+    so a check made in New Case is a row here and a check made here is the one New Case finds. */
 export default function EligibilityListPage() {
   const nav = useNavigate();
   const patients = useStore(selectEbRows);

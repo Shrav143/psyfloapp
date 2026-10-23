@@ -1,11 +1,11 @@
-title: Authorizations › New case › Intake › Modification / extension
+title: Authorizations › New Case › Intake › Modification / extension
 route: /authorizations/new/:draftId?type=modify (Intake)
 intro: A modification asks the payer to change an authorization that is already approved: more days or units, other dates, a different service, or a correction. It is a request, never an approval, and says so. Intake finds the patient and the authorization, then asks what should change and why.
 dir: TD
 ---
 start s1 "Pick 'Modification / extension' in 'Authorization type'\nOr open ?type=modify"
 screen sc "Intake · Modification / extension\n'Find the patient, then the authorization to change, and say what should change.'"
-goto gFind "Continues in: Authorizations › New case › Intake › Find a patient and the authorization"
+goto gFind "Continues in: Authorizations › New Case › Intake › Find a patient and the authorization"
 screen sAuth "Authorization card\nStatus, approved dates, authorized, left, expires on, 'History'"
 
 group gChange "Card 'Proposed change'"
@@ -23,15 +23,15 @@ store st "The request is recorded as 'Modification'\nThe change is kept on the c
 decision dEmpty "Is the reason for the change empty?"
 toast tEmpty "Review & submit lists 'Proposed change' to acknowledge\n'Say what should change and why. A modification is a request, not an approval.'"
 process pDup "A modification is never a duplicate of the authorization it changes\nAnother open request or active authorization for the same dates still is"
-goto gDup "Continues in: Authorizations › New case › Intake › Possible duplicate"
+goto gDup "Continues in: Authorizations › New Case › Intake › Possible duplicate"
 process pHist "After sending, the request's History says\n'You asked for a change to the authorization'\n'This is a request, not an approval. Nothing changes until the payer approves it.'"
 process pDoc "Typical documents: clinical note that supports the change, updated treatment plan, the current authorization letter"
-goto gElig "Continues in: Authorizations › New case › Eligibility & Benefits › Modification / extension"
-goto gDocs "Continues in: Authorizations › New case › Clinical documentation › Required and typical documents by type"
-goto gJust "Continues in: Authorizations › New case › Authorization preparation › Justification by type"
+goto gElig "Continues in: Authorizations › New Case › Eligibility & Benefits › Modification / extension"
+goto gDocs "Continues in: Authorizations › New Case › Clinical documentation › Required and typical documents by type"
+goto gJust "Continues in: Authorizations › New Case › Authorization preparation › Justification by type"
 click cSave "Click 'Save as draft'"
 click cCont "Click 'Continue to Eligibility & Benefits'"
-goto gSave "Continues in: Authorizations › New case › Save as draft and leave"
+goto gSave "Continues in: Authorizations › New Case › Save as draft and leave"
 
 s1 --> sc --> gFind
 sc --> sAuth --> sChg

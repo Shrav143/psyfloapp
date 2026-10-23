@@ -1,6 +1,6 @@
 title: Authorizations › Eligibility & Benefits › Result › Payment checks: authorization to other insurance
 route: /authorizations/eligibility/R-1042
-intro: Rows 4 to 7 of 'Payment checks' (in the side panel 'Verification details' on the result page), then, where this list is shown in the New case drawer, a last line about what the patient pays. On the result page the cost share is under Benefits in the summary instead. Authorization is the only row that can turn the verdict amber. The others turn it red.
+intro: Rows 4 to 7 of 'Payment checks' (in the side panel 'Verification details' on the result page), then, where this list is shown in the New Case drawer, a last line about what the patient pays. On the result page the cost share is under Benefits in the summary instead. Authorization is the only row that can turn the verdict amber. The others turn it red.
 dir: TD
 also: Demo only: 'Limit reached' has a seeded patient (R-0921) and 'Another plan pays first' has one (I-2275). Both have a chip under 'Try a sample' on Verify.
 ---
@@ -39,14 +39,14 @@ group gD "Row 7 · Other insurance"
   process d2 "Title 'Another plan pays first', chip 'Other plan' (red)\n'A second plan was found. It must be billed before this one.'"
 endgroup
 
-group gP "Last line (New case drawer only; the result page shows it under Benefits)"
+group gP "Last line (New Case drawer only; the result page shows it under Benefits)"
   decision p0 "Does the plan type have a cost share on file?"
   process p1 "'What the patient pays:'\nHarborview 'Deductible $85 left, coinsurance 20%.'\nBeacon and Lakeshore 'Copay $40 per day, deductible $350 left, coinsurance 20% after the deductible.'"
   toast p2 "'This does not change what the clinic is paid.'"
   process p3 "Ohio Medicaid: no line at all\nNo '$0 copay' text, because members usually pay none"
 endgroup
 
-goto g1 "Continues in: Authorizations › New case › Intake › Patient, insurance and request rows"
+goto g1 "Continues in: Authorizations › New Case › Intake › Patient, insurance and request rows"
 s1 --> q9
 q9 -->|No| x9
 q9 -->|Yes| a0

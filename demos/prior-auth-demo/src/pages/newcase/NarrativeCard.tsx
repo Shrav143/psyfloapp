@@ -47,14 +47,14 @@ export function NarrativeCard({ sections, payer, editSignal, onSave, onSource }:
           )
         }
       />
-      <CardBody className="flex flex-col gap-4 text-[15px] leading-[1.75]">
+      <CardBody className="flex flex-col gap-4 text-[14px] leading-[1.75]">
         {sections.map((s) =>
           editing && !s.fixed ? (
             <div key={s.id}>
               <label htmlFor={`sec-${s.id}`} className="mb-1.5 block text-[13px] font-semibold">
                 {s.heading}
               </label>
-              <TextArea id={`sec-${s.id}`} className="min-h-[104px] text-[14.5px] leading-[1.6]" value={text[s.id] ?? ""} onChange={(e) => setText((t) => ({ ...t, [s.id]: e.target.value }))} />
+              <TextArea id={`sec-${s.id}`} className="min-h-[104px] text-[14px] leading-[1.6]" value={text[s.id] ?? ""} onChange={(e) => setText((t) => ({ ...t, [s.id]: e.target.value }))} />
             </div>
           ) : (
             <p key={s.id}>

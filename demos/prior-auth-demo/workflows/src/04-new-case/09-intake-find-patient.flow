@@ -1,4 +1,4 @@
-title: Authorizations › New case › Intake › Find a patient and the authorization
+title: Authorizations › New Case › Intake › Find a patient and the authorization
 route: /authorizations/new/:draftId (Intake, types Concurrent review, Reauthorization, Modification; also the search under Initial and Retroactive)
 intro: A review, a renewal or a modification follows an authorization that exists, so Intake finds the patient first, then the treatment episode and the authorization. Picking a patient never creates a second one. The search covers the sites in view only: a viewer at one site never finds, counts or links to the other site's patients.
 dir: TD
@@ -41,12 +41,12 @@ process n3 "Not approved yet\n'Nothing is approved yet. A review follows an appr
 process n4 "Closed\n'This request was decided and no approved window is open.'"
 process n5 "Active\nNo sentence"
 process pNext "Intake goes on with the type's own cards: the dates and, for a modification, the proposed change\nThe sentence is one quiet line, never a banner"
-goto gType "Continues in: Authorizations › New case › Intake › Concurrent review"
-goto gRe "Continues in: Authorizations › New case › Intake › Reauthorization / renewal"
-goto gMod "Continues in: Authorizations › New case › Intake › Modification / extension"
-goto gDup "Continues in: Authorizations › New case › Intake › Possible duplicate"
-goto gSite "Continues in: Authorizations › New case › Sites and scope"
-goto gElig "Continues in: Authorizations › New case › Eligibility & Benefits › Concurrent review"
+goto gType "Continues in: Authorizations › New Case › Intake › Concurrent review"
+goto gRe "Continues in: Authorizations › New Case › Intake › Reauthorization / renewal"
+goto gMod "Continues in: Authorizations › New Case › Intake › Modification / extension"
+goto gDup "Continues in: Authorizations › New Case › Intake › Possible duplicate"
+goto gSite "Continues in: Authorizations › New Case › Sites and scope"
+goto gElig "Continues in: Authorizations › New Case › Eligibility & Benefits › Concurrent review"
 
 s1 --> sc1 --> i1 --> p1 --> d1
 d1 -->|No| tNo --> i1

@@ -60,7 +60,7 @@ export default function AnalyticsPage() {
           sub={
             <>
               <span>Where approvals are won and lost, by payer and by kind of case. Click a payer, a cell, a reason or a month to see the cases behind it.</span>
-              <span className="mt-1.5 block text-[12.5px]">{MODEL_NOTE}</span>
+              <span className="mt-1.5 block text-[12px]">{MODEL_NOTE}</span>
             </>
           }
           actions={

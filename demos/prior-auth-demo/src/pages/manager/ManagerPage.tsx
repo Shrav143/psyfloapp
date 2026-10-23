@@ -76,7 +76,7 @@ export default function ManagerPage() {
         <PageHeader
           title={<>{plural(ledger.length, "active case")}.<SiteTag /></>}
           sub={`${preparing} ${preparing === 1 ? "is" : "are"} still being prepared. Units, clocks and status for every case, across every level of care.`}
-          actions={<Button variant="primary" icon={Plus} onClick={() => navigate(paths.newCase())}>New case</Button>}
+          actions={<Button variant="primary" icon={Plus} onClick={() => navigate(paths.newCase())}>New Case</Button>}
         />
       ) : (
         <PageHeader

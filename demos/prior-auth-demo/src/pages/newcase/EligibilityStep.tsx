@@ -51,12 +51,12 @@ export function EligibilityStep({ draft, env }: { draft: CaseDraft; env: CaseEnv
 
   return (
     <div className="mx-auto flex w-full max-w-[960px] flex-col gap-5">
-      <p className="px-1 text-[13.5px] text-muted">{LEAD[draft.kind]}</p>
+      <p className="px-1 text-[13px] text-muted">{LEAD[draft.kind]}</p>
 
       {v.status === "needs_input" ? (
         <Card>
           <CardBody className="flex flex-col items-start gap-3">
-            <h2 className="font-serif text-[21px] font-semibold">Verify needs a little more</h2>
+            <h2 className="font-serif text-[18px] font-semibold">Verify needs a little more</h2>
             <p className="text-[14px] text-muted">Add the payer, the level of care, the member ID and the start date in Intake, and Verify checks coverage for those dates.</p>
             <Button onClick={() => patch(draft.id, stepPatch(0))}>Open Intake</Button>
           </CardBody>
@@ -74,11 +74,11 @@ export function EligibilityStep({ draft, env }: { draft: CaseDraft; env: CaseEnv
       ) : rec ? (
         <>
           {v.status === "stale" ? (
-            <p className="px-1 text-[13.5px] text-mid-ink">
+            <p className="px-1 text-[13px] text-mid-ink">
               {v.staleBecause === "dates" ? "This check covers other dates than the request asks for." : `This check is ${v.ageHours === null ? "old" : `${v.ageHours} hours old`}.`} Refresh it before you send.
             </p>
           ) : v.status === "current" ? (
-            <p className="px-1 text-[13.5px] text-muted">
+            <p className="px-1 text-[13px] text-muted">
               This check is recent ({v.ageHours === 0 ? "made just now" : `${v.ageHours} ${v.ageHours === 1 ? "hour" : "hours"} old`}) and covers these dates, so it is reused. Refresh it only if something changed.
             </p>
           ) : null}

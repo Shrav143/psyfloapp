@@ -14,7 +14,7 @@ function CheckRow({ c }: { c: PaymentCheck }) {
       <Icon size={20} className={cn("ico mt-0.5", COLOR[c.tone])} aria-hidden="true" />
       <div className="min-w-0 flex-1">
         <div className="font-semibold">{c.title}</div>
-        <div className="mt-0.5 text-[13.5px] text-muted">{c.detail}</div>
+        <div className="mt-0.5 text-[13px] text-muted">{c.detail}</div>
       </div>
       <Pill tone={c.tone} dot>
         {c.chip}
@@ -38,7 +38,7 @@ export function PaymentChecks({ result, showPays = true }: { result: Pick<CheckR
       {pays !== null ? (
         <div className="flex items-start gap-3.5 rounded-b-[20px] bg-tile px-6 py-4">
           <Receipt size={18} className="ico mt-0.5 text-muted" aria-hidden="true" />
-          <div className="text-[13.5px]">
+          <div className="text-[13px]">
             <span className="font-semibold">What the patient pays:</span> <span className="text-muted">{pays}. This does not change what the clinic is paid.</span>
           </div>
         </div>

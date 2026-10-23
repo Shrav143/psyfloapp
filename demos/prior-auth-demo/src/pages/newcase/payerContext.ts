@@ -1,5 +1,5 @@
 /* What the saved Payers configuration says about a case: the document list for its level of care and the payer's rules.
-   New case reads it live, so an edit on Payers reaches every draft the next time its page draws. */
+   New Case reads it live, so an edit on Payers reaches every draft the next time its page draws. */
 import { useMemo } from "react";
 import type { CaseDraft } from "@/data/cases";
 import type { DocItem, Rule } from "@/data/payerConfig";

@@ -1,4 +1,4 @@
-title: Authorizations › New case › Review & submit › The draft and the summary
+title: Authorizations › New Case › Review & submit › The draft and the summary
 route: /authorizations/new/:draftId (step 5 of 5, 'Review & submit')
 intro: Step 5 starts with what is missing (next diagram), then lists the whole case in one short summary, then shows the packet the payer will read: the medical-necessity summary Scribe drafted, which can be edited, with a chip for every chart page it came from. It is the same summary the case page's Draft tab shows: an edit made in either place is read in the other. The validation summary (closed until opened), the checks and the Sign card are in the diagrams after it.
 dir: TD
@@ -47,13 +47,13 @@ process pLost "Edits are lost when the summary is rebuilt\nAfter a new answer, a
 click cBack "Click 'Back'"
 click cSaveD "Click 'Save as draft'"
 toast tSaved "'Draft saved'\n'R-1701 is in Case Manager, ready to sign.'"
-goto gMis "Continues in: Authorizations › New case › Review & submit › What is missing"
-goto gVal "Continues in: Authorizations › New case › Review & submit › Validation summary and checks"
-goto gSign "Continues in: Authorizations › New case › Review & submit › Sign and send to payer"
-goto gPrep "Continues in: Authorizations › New case › Authorization preparation › Finished, paused or left"
-goto gSave "Continues in: Authorizations › New case › Save as draft and leave"
+goto gMis "Continues in: Authorizations › New Case › Review & submit › What is missing"
+goto gVal "Continues in: Authorizations › New Case › Review & submit › Validation summary and checks"
+goto gSign "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer"
+goto gPrep "Continues in: Authorizations › New Case › Authorization preparation › Finished, paused or left"
+goto gSave "Continues in: Authorizations › New Case › Save as draft and leave"
 goto gDraft "Continues in: Authorizations › Case page › Draft › Read and edit"
-goto gJust "Continues in: Authorizations › New case › Authorization preparation › Justification by type"
+goto gJust "Continues in: Authorizations › New Case › Authorization preparation › Justification by type"
 
 s1 --> sc --> dReady
 dReady -->|No| sNot --> gPrep

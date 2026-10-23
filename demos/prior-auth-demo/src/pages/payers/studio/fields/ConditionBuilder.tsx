@@ -54,7 +54,7 @@ export function ConditionBuilder({ group, onChange, name = "condition", depth = 
       <ul className="m-0 flex list-none flex-col gap-2 p-0">
         {group.items.map((item, i) => (
           <li key={i} className="flex flex-col gap-1.5">
-            {i > 0 ? <span className="pl-1 text-[11.5px] font-semibold tracking-wide text-muted uppercase">{group.join === "and" ? "and" : "or"}</span> : null}
+            {i > 0 ? <span className="pl-1 text-[11px] font-semibold tracking-wide text-muted uppercase">{group.join === "and" ? "and" : "or"}</span> : null}
             {isGroup(item) ? (
               <ConditionBuilder group={item} onChange={(g) => update(i, g)} name={`${name}, group ${i + 1}`} depth={1} disabled={disabled} onRemove={() => remove(i)} />
             ) : (
@@ -96,13 +96,13 @@ function ConditionRow({ cond, onChange, onRemove, label, disabled }: { cond: Con
   return (
     <div className="rounded-xl border border-line bg-white p-2">
       <div className="flex items-center gap-1.5">
-        <Select ariaLabel={`${label}: what to check`} value={cond.fact} onChange={pickFact} options={factOptions} disabled={disabled} className="h-9 text-[13.5px]" />
+        <Select ariaLabel={`${label}: what to check`} value={cond.fact} onChange={pickFact} options={factOptions} disabled={disabled} className="h-9 text-[13px]" />
         <button type="button" onClick={onRemove} disabled={disabled} aria-label={`Remove ${label}`} className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-muted hover:bg-risk-bg hover:text-risk-ink">
           <Trash2 size={14} className="ico" aria-hidden="true" />
         </button>
       </div>
       <div className="mt-1.5 grid grid-cols-2 items-center gap-1.5">
-        <Select ariaLabel={`${label}: operator`} value={cond.op} onChange={(v) => pickOp(v as Operator)} options={ops.map((o) => ({ value: o, label: OPERATOR_LABEL[o] }))} disabled={disabled} className="h-9 min-w-0 text-[13.5px]" />
+        <Select ariaLabel={`${label}: operator`} value={cond.op} onChange={(v) => pickOp(v as Operator)} options={ops.map((o) => ({ value: o, label: OPERATOR_LABEL[o] }))} disabled={disabled} className="h-9 min-w-0 text-[13px]" />
         {needsValue(cond.op) ? <ValueInput meta={meta} cond={cond} onChange={(value) => onChange({ ...cond, value })} label={label} disabled={disabled} /> : <span className="text-[13px] text-muted">no value needed</span>}
       </div>
     </div>
@@ -111,18 +111,18 @@ function ConditionRow({ cond, onChange, onRemove, label, disabled }: { cond: Con
 
 function ValueInput({ meta, cond, onChange, label, disabled }: { meta: FactMeta; cond: Condition; onChange: (v: string | number) => void; label: string; disabled?: boolean }) {
   const aria = `${label}: value`;
-  if (meta.key === "payer") return <Select ariaLabel={aria} value={String(cond.value ?? "")} onChange={onChange} options={PAYERS.map((p) => ({ value: p.id, label: p.name }))} placeholder="Choose a payer" disabled={disabled} className="h-9 min-w-0 text-[13.5px]" />;
-  if (meta.options) return <Select ariaLabel={aria} value={String(cond.value ?? "")} onChange={onChange} options={meta.options} disabled={disabled} className="h-9 min-w-0 text-[13.5px]" />;
-  if (meta.kind === "yesno") return <Select ariaLabel={aria} value={String(cond.value ?? "true")} onChange={onChange} options={[{ value: "true", label: "Yes" }, { value: "false", label: "No" }]} disabled={disabled} className="h-9 min-w-0 text-[13.5px]" />;
+  if (meta.key === "payer") return <Select ariaLabel={aria} value={String(cond.value ?? "")} onChange={onChange} options={PAYERS.map((p) => ({ value: p.id, label: p.name }))} placeholder="Choose a payer" disabled={disabled} className="h-9 min-w-0 text-[13px]" />;
+  if (meta.options) return <Select ariaLabel={aria} value={String(cond.value ?? "")} onChange={onChange} options={meta.options} disabled={disabled} className="h-9 min-w-0 text-[13px]" />;
+  if (meta.kind === "yesno") return <Select ariaLabel={aria} value={String(cond.value ?? "true")} onChange={onChange} options={[{ value: "true", label: "Yes" }, { value: "false", label: "No" }]} disabled={disabled} className="h-9 min-w-0 text-[13px]" />;
   if (meta.kind === "number")
     return (
       <span className="flex min-w-0 items-center gap-1.5">
-        <input aria-label={aria} type="number" inputMode="numeric" value={cond.value === undefined ? "" : cond.value} disabled={disabled} onChange={(e) => onChange(e.target.value === "" ? 0 : Number(e.target.value))} className={cn(FIELD, "h-9 w-[72px] text-[13.5px]")} />
-        {meta.unit ? <span className="text-[12.5px] text-muted">{meta.unit}</span> : null}
+        <input aria-label={aria} type="number" inputMode="numeric" value={cond.value === undefined ? "" : cond.value} disabled={disabled} onChange={(e) => onChange(e.target.value === "" ? 0 : Number(e.target.value))} className={cn(FIELD, "h-9 w-[72px] text-[13px]")} />
+        {meta.unit ? <span className="text-[12px] text-muted">{meta.unit}</span> : null}
       </span>
     );
   if (meta.kind === "date") return <DateValue value={String(cond.value ?? "today")} onChange={onChange} label={aria} disabled={disabled} />;
-  return <input aria-label={aria} value={String(cond.value ?? "")} disabled={disabled} onChange={(e) => onChange(e.target.value)} className={cn(FIELD, "h-9 min-w-0 text-[13.5px]")} />;
+  return <input aria-label={aria} value={String(cond.value ?? "")} disabled={disabled} onChange={(e) => onChange(e.target.value)} className={cn(FIELD, "h-9 min-w-0 text-[13px]")} />;
 }
 
 /** A date in a condition: today, a number of days from today, or one fixed date. The engine reads "today", "today+3" and "today-2". */
@@ -133,9 +133,9 @@ function DateValue({ value, onChange, label, disabled }: { value: string; onChan
   const set = (m: string, d: string) => onChange(m === "today" ? "today" : m === "plus" ? `today+${d || 1}` : m === "minus" ? `today-${d || 1}` : /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : "2026-10-20");
   return (
     <span className="col-span-2 flex min-w-0 items-center gap-1.5">
-      <Select ariaLabel={`${label}: which date`} value={mode} onChange={(m) => set(m, days)} disabled={disabled} className="h-9 min-w-0 text-[13.5px]" options={[{ value: "today", label: "Today" }, { value: "plus", label: "Days after today" }, { value: "minus", label: "Days before today" }, { value: "date", label: "A fixed date" }]} />
-      {mode === "plus" || mode === "minus" ? <input aria-label={`${label}: number of days`} type="number" min={0} value={days} disabled={disabled} onChange={(e) => set(mode, e.target.value)} className={cn(FIELD, "h-9 w-[64px] shrink-0 text-[13.5px]")} /> : null}
-      {mode === "date" ? <input aria-label={`${label}: date`} type="date" value={/^\d{4}-\d{2}-\d{2}$/.test(value) ? value : ""} disabled={disabled} onChange={(e) => onChange(e.target.value)} className={cn(FIELD, "h-9 min-w-0 text-[13.5px]")} /> : null}
+      <Select ariaLabel={`${label}: which date`} value={mode} onChange={(m) => set(m, days)} disabled={disabled} className="h-9 min-w-0 text-[13px]" options={[{ value: "today", label: "Today" }, { value: "plus", label: "Days after today" }, { value: "minus", label: "Days before today" }, { value: "date", label: "A fixed date" }]} />
+      {mode === "plus" || mode === "minus" ? <input aria-label={`${label}: number of days`} type="number" min={0} value={days} disabled={disabled} onChange={(e) => set(mode, e.target.value)} className={cn(FIELD, "h-9 w-[64px] shrink-0 text-[13px]")} /> : null}
+      {mode === "date" ? <input aria-label={`${label}: date`} type="date" value={/^\d{4}-\d{2}-\d{2}$/.test(value) ? value : ""} disabled={disabled} onChange={(e) => onChange(e.target.value)} className={cn(FIELD, "h-9 min-w-0 text-[13px]")} /> : null}
     </span>
   );
 }

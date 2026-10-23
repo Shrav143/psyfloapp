@@ -14,7 +14,7 @@ function Chance({ o, benchmark, similar }: { o: DenialOption; benchmark: boolean
   const b = band(o.chance.value);
   return (
     <div className="text-right">
-      <b className="text-xl" style={{ color: b.color }}>{o.chance.value}%</b>
+      <b className="text-[18px]" style={{ color: b.color }}>{o.chance.value}%</b>
       <div className="text-xs text-muted">likely {o.chance.low}–{o.chance.high}%</div>
       <div className="text-xs text-muted">{benchmark ? "Benchmark estimate" : `${similar} similar decisions`}</div>
     </div>
@@ -64,7 +64,7 @@ export function OptionsPanel({ view, step, from, onChoose, onClose }: { view: De
       subtitle={`${req.id}. Chance of overturning${analysis.benchmark ? ", a benchmark estimate" : `, from ${analysis.similar} similar ${analysis.ctx.payer} decisions`}`}
       footer={
         <div className="flex flex-wrap items-center gap-2.5">
-          {go && selected ? <Button variant="primary" icon={go.icon} onClick={() => onChoose(selected)}>{go.label}</Button> : <span className="text-[13.5px] text-muted">Pick a route to go on. Nothing is sent until a clinician signs.</span>}
+          {go && selected ? <Button variant="primary" icon={go.icon} onClick={() => onChoose(selected)}>{go.label}</Button> : <span className="text-[13px] text-muted">Pick a route to go on. Nothing is sent until a clinician signs.</span>}
           {booked ? <span className="inline-flex items-center gap-1.5 text-[13px] text-muted"><FileText size={14} className="ico" />A call is already booked. Choosing again changes it.</span> : null}
         </div>
       }

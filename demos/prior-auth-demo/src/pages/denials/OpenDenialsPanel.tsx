@@ -86,7 +86,7 @@ function Body({ open, closed, openTotal, selectedId, clock, meta, filter, onSele
       )}
       {closed.length ? (
         <>
-          <div className="px-6 pt-4 pb-1.5 text-[11.5px] font-medium tracking-[0.1em] text-muted uppercase">Closed</div>
+          <div className="px-6 pt-4 pb-1.5 text-[11px] font-medium tracking-[0.1em] text-muted uppercase">Closed</div>
           <ul aria-label="Closed denials" onKeyDown={arrowRows} className="m-0 list-none border-t border-line bg-white p-0">
             {closed.map((r) => <Row key={r.id} r={r} selected={r.id === selectedId} clock={clock} meta={meta[r.id]} onSelect={onSelect} />)}
           </ul>

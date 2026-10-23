@@ -36,7 +36,7 @@ export function EarlierProcessView({ name, cfg }: { name: string; cfg: PayerConf
         <InfoTip label="About the earlier process view">
           <span className="block">The steps the agents followed before the Workflow Builder, kept as saved. The builder has the same process as a graph; change it there.</span>
           <span className="mt-2 flex flex-wrap items-center gap-1.5">
-            <span className="mr-1 text-[11.5px] font-medium tracking-[0.1em] whitespace-nowrap text-muted uppercase">Step types</span>
+            <span className="mr-1 text-[11px] font-medium tracking-[0.1em] whitespace-nowrap text-muted uppercase">Step types</span>
             {STEP_KINDS.map((k) => <StepChip key={k} kind={k} />)}
             <ConditionChip />
           </span>
@@ -49,11 +49,11 @@ export function EarlierProcessView({ name, cfg }: { name: string; cfg: PayerConf
               <span className="grid h-[34px] w-[34px] shrink-0 place-items-center rounded-full bg-forest font-semibold text-white">{i + 1}</span>
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2.5">
-                  <span className="text-[15px] font-semibold">{s.title}</span>
+                  <span className="text-[14px] font-semibold">{s.title}</span>
                   <StepChip kind={s.kind} />
                   {s.agents.map((a) => <AgentChip key={a} agent={a} />)}
                 </div>
-                <p className="mt-1 text-[13.5px] text-muted">{s.text}</p>
+                <p className="mt-1 text-[13px] text-muted">{s.text}</p>
               </div>
               <div className="min-w-[90px] text-right">
                 <Label>Typical</Label>

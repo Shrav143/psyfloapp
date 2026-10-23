@@ -47,7 +47,7 @@ export function HBarChart(p: HBarChartProps) {
   return (
     <ChartFrame id={id} summary={p.summary} table={p.table} hint={p.hint} className={p.className}>
       {p.legend ? (
-        <ul className="mb-2.5 flex flex-wrap items-center gap-x-5 gap-y-1 text-[12.5px] text-ink2" aria-label="Legend">
+        <ul className="mb-2.5 flex flex-wrap items-center gap-x-5 gap-y-1 text-[12px] text-ink2" aria-label="Legend">
           {p.legend.map((l) => (
             <li key={l.name} className="flex items-center gap-2">
               {l.marker ? <i className="inline-block h-3 w-0.5" style={{ background: l.color }} /> : <i className="inline-block h-2.5 w-2.5 rounded-sm" style={{ background: l.color }} />}
@@ -61,12 +61,12 @@ export function HBarChart(p: HBarChartProps) {
           const body = (
             <div className="grid items-center gap-3" style={{ gridTemplateColumns: `minmax(0,${lw}px) minmax(0,1fr) ${vw}px` }}>
               <span className="min-w-0 text-left">
-                <span className="block truncate text-[13.5px]" title={r.label}>
+                <span className="block truncate text-[13px]" title={r.label}>
                   {r.label}
                 </span>
                 {r.sub || r.tag ? (
-                  <span className="flex items-center gap-1.5 text-[11.5px] text-muted">
-                    {r.tag ? <span className="rounded-full bg-mid-bg px-2 py-px text-[10.5px] font-semibold text-mid-ink">{r.tag}</span> : null}
+                  <span className="flex items-center gap-1.5 text-[11px] text-muted">
+                    {r.tag ? <span className="rounded-full bg-mid-bg px-2 py-px text-[11px] font-semibold text-mid-ink">{r.tag}</span> : null}
                     <span className="truncate">{r.sub}</span>
                   </span>
                 ) : null}
@@ -82,9 +82,9 @@ export function HBarChart(p: HBarChartProps) {
                 ) : null}
                 {r.marker !== null && r.marker !== undefined ? <line x1={`${(r.marker / max) * 100}%`} x2={`${(r.marker / max) * 100}%`} y1="-2" y2={h + 2} stroke={CHART.ink} strokeWidth="1.5" /> : null}
               </svg>
-              <span className="text-right text-[13.5px] font-semibold tabular-nums">
+              <span className="text-right text-[13px] font-semibold tabular-nums">
                 {r.display ?? (r.value === null ? "-" : `${r.value}%`)}
-                {two ? <span className="block text-[11.5px] font-normal text-muted">{r.display2 ?? (r.value2 === null || r.value2 === undefined ? "-" : `${r.value2}%`)}</span> : null}
+                {two ? <span className="block text-[11px] font-normal text-muted">{r.display2 ?? (r.value2 === null || r.value2 === undefined ? "-" : `${r.value2}%`)}</span> : null}
               </span>
             </div>
           );
@@ -149,7 +149,7 @@ export function StackedHBars(p: StackedHBarsProps) {
           let acc = 0;
           const body = (
             <div className="grid items-center gap-3" style={{ gridTemplateColumns: `minmax(0,${lw}px) minmax(0,1fr) 44px` }}>
-              <span className="truncate text-left text-[13.5px]" title={r.label}>
+              <span className="truncate text-left text-[13px]" title={r.label}>
                 {r.label}
               </span>
               <svg width="100%" height="16" role="presentation" className="block">
@@ -167,7 +167,7 @@ export function StackedHBars(p: StackedHBarsProps) {
                     })
                   : null}
               </svg>
-              <span className="text-right text-[13.5px] font-semibold tabular-nums">{r.total}</span>
+              <span className="text-right text-[13px] font-semibold tabular-nums">{r.total}</span>
             </div>
           );
           return (

@@ -85,7 +85,7 @@ export default function EmrPage() {
         sub={
           <>
             <span>Charts arrive on their own. Nothing is written back until a person approves it.</span>
-            <span className="mt-1.5 block text-[12.5px]">Simulated connection: this demo does not contact a real record system.</span>
+            <span className="mt-1.5 block text-[12px]">Simulated connection: this demo does not contact a real record system.</span>
           </>
         }
         actions={<Button variant="primary" icon={Plus} onClick={() => begin("reader", "connect a system", null, () => setConnecting(true))}>Connect a system</Button>}

@@ -1,6 +1,6 @@
 # Coverage: Authorizations (queue and case page)
 
-Every control on `/authorizations` and `/authorizations/case/:id` and the diagram that shows it. New case and Eligibility & Benefits are other modules; this module only hands off to them.
+Every control on `/authorizations` and `/authorizations/case/:id` and the diagram that shows it. New Case and Eligibility & Benefits are other modules; this module only hands off to them.
 
 File names below are in `src/03-authorizations/`. Short names: 10 queue-overview, 11 site-view, 12 bands, 14 row, 15 quick-view, 16 filters, 17 request-type, 18 signal, 20 ways-in, 21 next-action, 22 header, 23 numbers, 24 tabs, 25 out-of-site, 26 send-gates, 27 facts-row, 28 history, 30 actions-tab, 32 card, 34 apply, 36 dismiss, 38 refine, 39 context, 40 picture, 42 chip, 50 criteria, 60 risk, 62 modals, 70 draft-read-edit, 72 checks-versions, 74 send, 80 exits, 82 writes.
 
@@ -13,7 +13,7 @@ File names below are in `src/03-authorizations/`. Short names: 10 queue-overview
 | Demo menu 'Viewing as' (Jordan, Alex, Dr. Rivera, Sam): rows, bands, figures, badge and signal count follow the viewer; Site A + Site B = Both sites | 11 |
 | Header names the site when one site is in view ('12 of 36 open requests at Site A need action today.') | 10, 11 |
 | Header line and sub line (filtered, unfiltered and 'Nothing needs action today' / 'Nothing is urgent' wording) | 10, 16 |
-| 'New case' button | 10, 80 |
+| 'New Case' button | 10, 80 |
 | Payer signal: one-line banner, 'Review the four' ('Review it' for one) / 'Show all requests'; the count is the affected requests in view | 18, 11 |
 | Payer signal: info icon 'More about this signal' (hover, focus, Esc) | 18 |
 | Payer signal: X 'Dismiss signal' | 18 |
@@ -126,7 +126,7 @@ File names below are in `src/03-authorizations/`. Short names: 10 queue-overview
 | 'Checks' card (four checks, pill) and 'Re-check' | 72 |
 | 'Versions' card, 'Current', 'View', version dialog ('Close', X, dimmed area, Esc) | 72 |
 | 'Send back to Scribe' | 72 |
-| 'Send to payer' (large) and what follows: New case, sign, Dashboard 'Received', queue | 74 |
+| 'Send to payer' (large) and what follows: New Case, sign, Dashboard 'Received', queue | 74 |
 
 ## Hand-offs and side effects
 
@@ -142,14 +142,14 @@ File names below are in `src/03-authorizations/`. Short names: 10 queue-overview
 - The top bar site switch, the locked 'Site A only' label and the Demo menu 'Viewing as' themselves: Global shell module. 11 and 25 only show what this module does with them.
 - The Dashboard's request panel that the quick view reuses for a request on the Dashboard: Dashboard module ('Request drawer').
 - Chart and donut hover: the charts have no interaction in the code.
-- Sidebar sub links ('New case', 'Eligibility & Benefits') and the global top bar: Global shell module.
+- Sidebar sub links ('New Case', 'Eligibility & Benefits') and the global top bar: Global shell module.
 - The Demo menu 'Fast-forward' and 'Reset demo data' only appear as a note in 12; their own diagram is in Global shell.
 - The whole-queue 'Nothing needs you today' message needs every one of the 56 requests to be sent or handled, so it was checked in the app only for the Act now band (all five requests cleared by signing, a payer reply and settling the denial).
 
 ## Still limited in the demo
 
-- The routing of 'Open in review and sign' and 'Send to payer' into New case, 'Send back to Scribe' on the Draft tab, and what the Draft tab carries into the signed summary belong to the Draft tab and New case; they are drawn in 26, 72 and 74 and not repeated here. 'Open in review and sign' stays on even for a request already with the payer.
-- Clinical context is saved in the shared list. The Draft tab and New case read it themselves; this page does not rewrite the draft text.
+- The routing of 'Open in review and sign' and 'Send to payer' into New Case, 'Send back to Scribe' on the Draft tab, and what the Draft tab carries into the signed summary belong to the Draft tab and New Case; they are drawn in 26, 72 and 74 and not repeated here. 'Open in review and sign' stays on even for a request already with the payer.
+- Clinical context is saved in the shared list. The Draft tab and New Case read it themselves; this page does not rewrite the draft text.
 - Each of the first three notes of clinical context adds a point to the approval chance, whatever it says. A refinement is a fixed re-order plus one fixed card per focus, not a new reading of the chart.
 - An ID with no queue row and no Dashboard request opens the Ledger case page when it is in the Case Manager ledger, and ends at 'Request not found' only when it is in neither (20).
 
@@ -164,7 +164,7 @@ File names below are in `src/03-authorizations/`. Short names: 10 queue-overview
 
 - Queue: one-line rows (scores, agent line and payer note moved to the case page), four figures instead of five, one compact banner, request type filter, filters in the address, help for the status names and for the ordering (10, 12, 14, 16, 17, 18).
 - Case page: 'Next:' block first, authorization facts, 'At a glance', one-line notice with an info icon instead of two banners, the denial banner folded into the Next block, closed History at the bottom (21, 22, 23, 27, 28).
-- New case 'R-... is with the payer' for a request that only the queue's seed data says is with the payer (26).
+- New Case 'R-... is with the payer' for a request that only the queue's seed data says is with the payer (26).
 
 ## Fixed since the first mapping
 

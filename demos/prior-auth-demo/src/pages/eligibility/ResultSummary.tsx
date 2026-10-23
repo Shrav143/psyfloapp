@@ -45,9 +45,9 @@ export function ResultSummary({ verdict, result, actions, payer, program, rules,
     <section aria-label="Result" className="overflow-hidden rounded-[20px] border border-edge bg-white">
       <div className={cn("flex flex-wrap items-center gap-x-6 gap-y-4 border-b px-7 py-5", BAND[verdict])} role="status">
         <div className="min-w-[260px] flex-1">
-          <div className="text-[11.5px] font-medium tracking-[0.1em] uppercase">Verdict</div>
-          <div className="mt-0.5 font-serif text-[28px] font-semibold leading-tight">{VERDICT_LABEL[verdict]}</div>
-          <p className="mt-1 max-w-[720px] text-[14.5px]">{result.reason}</p>
+          <div className="text-[11px] font-medium tracking-[0.1em] uppercase">Verdict</div>
+          <div className="mt-0.5 font-serif text-[24px] font-semibold leading-tight">{VERDICT_LABEL[verdict]}</div>
+          <p className="mt-1 max-w-[720px] text-[14px]">{result.reason}</p>
         </div>
         <div className="flex max-w-full flex-wrap gap-2.5">{actions}</div>
       </div>
@@ -74,7 +74,7 @@ export function ResultSummary({ verdict, result, actions, payer, program, rules,
       </div>
       {warnings ? <div className="border-t border-line px-7 py-4">{warnings}</div> : null}
       <div className="flex flex-col gap-1.5 border-t border-line px-7 py-4">
-        <dl aria-label="About this check" className="flex flex-wrap gap-x-5 gap-y-1 text-[12.5px] text-muted">
+        <dl aria-label="About this check" className="flex flex-wrap gap-x-5 gap-y-1 text-[12px] text-muted">
           {facts.map((f) => (
             <div key={f.label} className="flex gap-1.5">
               <dt className="text-faint">{f.label}</dt>

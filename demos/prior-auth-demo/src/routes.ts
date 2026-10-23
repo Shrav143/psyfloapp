@@ -10,13 +10,13 @@ export const paths = {
     const s = new URLSearchParams(q as Record<string, string> | undefined).toString();
     return `/dashboard${s ? `?${s}` : ""}`;
   },
-  /** Referrals have no list of their own: the first step of New case is the referral checklist. */
+  /** Referrals have no list of their own: the first step of New Case is the referral checklist. */
   referrals: () => "/authorizations/new",
-  /** One referral, opened from New case. `draft` is the case it was opened from, so Continue returns to it. */
+  /** One referral, opened from New Case. `draft` is the case it was opened from, so Continue returns to it. */
   referral: (id: string, draft?: string) => `/authorizations/new/referral/${id}${draft ? `?draft=${draft}` : ""}`,
   authorizations: () => "/authorizations",
   case: (id: string, tab?: "actions" | "picture" | "criteria" | "risk" | "draft") => `/authorizations/case/${id}${tab ? `?tab=${tab}` : ""}`,
-  /** New case. `draft` resumes a case being prepared. `referral` pre-fills from a referral. */
+  /** New Case. `draft` resumes a case being prepared. `referral` pre-fills from a referral. */
   newCase: (o?: { draft?: string; referral?: string; /** A stored verification (VerificationRecord id) to carry into step 2. */ verification?: string; /** Authorization type: initial, concurrent, reauth, modify or retro. */ type?: string; /** A patient's case id, to start from an existing patient. */ patient?: string; /** A step to open: intake, eligibility, documentation, preparation or review (the older referral, records, agents and review names work too). */ step?: string }) => {
     const q = new URLSearchParams();
     if (o?.referral) q.set("referral", o.referral);

@@ -1,17 +1,17 @@
 title: Authorizations › Eligibility & Benefits › The shared verification record
 route: /authorizations/eligibility
-intro: One check of coverage and benefits for a patient, a payer, a program and dates of service is one stored record. Eligibility & Benefits and step 2 of New case read and write the same record, so a check made in either place is the one the other finds. A record is reused when it is still fresh, and refreshed when it is not. Everything is simulated.
+intro: One check of coverage and benefits for a patient, a payer, a program and dates of service is one stored record. Eligibility & Benefits and step 2 of New Case read and write the same record, so a check made in either place is the one the other finds. A record is reused when it is still fresh, and refreshed when it is not. Everything is simulated.
 dir: TD
 also: Demo only: the record is built from the demo's own data (the seeded patients, the scripted live check, the payer's plan type and cost share, the saved Payers rules and the Case Manager ledger). Nothing is sent to a payer.
 ---
 start s1 "A check is made"
-start s2 "New case needs coverage for a patient"
+start s2 "New Case needs coverage for a patient"
 
 group gWrite "Where a record is written"
   click w1 "Verify a patient: 'Check now' finishes"
   click w2 "Eligibility list: 'Re-check', or the result's 'Check again'"
   wait w3 "The Demo clock passes a booked re-check time"
-  click w4 "New case step 2: run a check, or 'Refresh verification'"
+  click w4 "New Case step 2: run a check, or 'Refresh verification'"
 endgroup
 
 agent v1 "Verify (and Criteria, Navigator, Caller) run the check\nThe same rules everywhere: the seeded patient, or the scripted answer from the member ID"
@@ -26,10 +26,10 @@ store r6 "Paused: nothing is asked\nA patient already known keeps the last resul
 group gRead "Where a record is read"
   screen a1 "Eligibility list: a row, the title count, the four figures, the sidebar badge"
   screen a2 "Eligibility result: the verdict, the three parts, the warnings"
-  screen a3 "New case step 2: the summary and 'View full verification details'"
+  screen a3 "New Case step 2: the summary and 'View full verification details'"
 endgroup
 
-decision q1 "New case: is there a record for this patient, payer and program?"
+decision q1 "New Case: is there a record for this patient, payer and program?"
 decision q2 "Do the dates asked for fall inside the dates the record covers?"
 decision q3 "Was it checked within the last 24 demo hours?"
 decision q4 "Did the check actually run? (not 'Not checked')"
@@ -38,7 +38,7 @@ process u2 "Do not reuse: the step offers 'Refresh verification'\nA refresh runs
 click u3 "Click 'Refresh verification'"
 toast u4 "'R-1042 re-checked'\n'Still Authorization first.'\nor 'Could not re-check R-1042' while Verify is paused"
 goto g1 "Continues in: Authorizations › Eligibility & Benefits › Re-verify a patient"
-goto g2 "Continues in: Authorizations › New case › How a case starts and resumes"
+goto g2 "Continues in: Authorizations › New Case › How a case starts and resumes"
 goto g3 "Continues in: Authorizations › Eligibility & Benefits › The exceptions"
 goto g4 "Continues in: Authorizations › Eligibility & Benefits › Sites"
 

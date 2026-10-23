@@ -34,7 +34,7 @@ function NotStarted({ draft, env }: { draft: CaseDraft; env: CaseEnv }) {
       <div className="mx-auto flex w-full max-w-[960px] flex-col gap-5">
         <Card>
           <CardBody className="flex flex-col items-center gap-3 py-10 text-center">
-            <h2 className="font-serif text-[22px] font-semibold">The agents have not started</h2>
+            <h2 className="font-serif text-[18px] font-semibold">The agents have not started</h2>
             <p className="max-w-[520px] text-[14px] text-muted">
               They read the chart, check the payer's rules, match the evidence to the criteria and prepare the justification.
               {gaps ? ` ${gaps} required ${gaps === 1 ? "document is" : "documents are"} not in the case yet. They will flag ${gaps === 1 ? "it" : "them"} rather than guess.` : ""} Nothing is sent to the payer until a clinician signs.

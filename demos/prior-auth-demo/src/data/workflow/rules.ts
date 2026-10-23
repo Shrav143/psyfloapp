@@ -8,7 +8,7 @@ import type { NodeKind, PayerRule, RequestType, RuleChange, RuleGroup, RuleSourc
 /* The payer rules library.
    A rule is one record with provenance (source, verification, version, history). Where the payer's saved rules already hold the content (submission windows, backdating,
    no authorization needed, peer-to-peer and appeals, the document lists, the instructions for Caller and the reach lines), the rule is READ THROUGH from that saved
-   configuration, never copied, so Eligibility and New case keep reading the same data. Saving a derived rule goes back through the existing Payers actions (see routeDerivedSave).
+   configuration, never copied, so Eligibility and New Case keep reading the same data. Saving a derived rule goes back through the existing Payers actions (see routeDerivedSave).
    What the saved configuration lacks (the review cadence, units and duration limits, clinical criteria, payer-wide agent instructions) lives in the library, in the workflow store.
    Every seeded rule is a demo sample: unverified, source "Demo sample", never a made-up date or address. */
 
@@ -227,7 +227,7 @@ export function derivedRulesFor(payerId: string, cfg: PayerConfig, profile: Paye
   const about: Record<RuleId, string> = {
     windows: "When notice and requests are due, counted from the date the payer says. Read from the payer's saved submission windows.",
     backdating: "How far back a start date may reach, and what the payer asks for when it does. Read from the payer's saved backdating rule.",
-    noauth: "Services the payer says need no authorization. Read from the payer's saved rule; Eligibility and New case use the same lines.",
+    noauth: "Services the payer says need no authorization. Read from the payer's saved rule; Eligibility and New Case use the same lines.",
     p2p: "How long a peer-to-peer call and a written appeal stay open after a denial, and what comes next. Read from the payer's saved rule.",
   };
   for (const r of cfg.rules) {

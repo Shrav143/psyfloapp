@@ -1,4 +1,4 @@
-title: Authorizations › New case › Workflow › A newer version exists
+title: Authorizations › New Case › Workflow › A newer version exists
 route: /authorizations/new/:draftId (the Workflow line and the 'Review newer version' side panel)
 intro: A case keeps the workflow version it started with. If a person publishes a newer version of the same workflow in Payers, the case is not switched. The Workflow line says so quietly and offers 'Review newer version'. The side panel shows what changed and what it would mean for this case now. Nothing changes until a person clicks Apply, and applying is written to the case's history. A packet that was already sent is never rewritten.
 dir: TD
@@ -21,8 +21,8 @@ click c3 "Click 'Keep version 3', press Escape, or click outside"
 process p4 "The panel closes\nThe case keeps v3\nThe quiet line stays"
 endx e1 "Nothing was changed"
 end e2 "The case follows v4 from here"
-goto g1 "Continues in: Authorizations › New case › Workflow › Show the workflow and its path"
-goto g2 "Continues in: Authorizations › New case › Workflow › What the workflow adds to the history"
+goto g1 "Continues in: Authorizations › New Case › Workflow › Show the workflow and its path"
+goto g2 "Continues in: Authorizations › New Case › Workflow › What the workflow adds to the history"
 goto g3 "Continues in: Payers › Workflow Builder › Publish a workflow"
 
 s1 --> p1 --> sc1 --> c1 --> o1 --> p2 --> sc2 --> p3 --> sc3 --> sc4

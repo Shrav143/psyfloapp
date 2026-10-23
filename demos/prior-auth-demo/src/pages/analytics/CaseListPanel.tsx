@@ -51,7 +51,7 @@ export function CaseListPanel({ query, rows, filters, siteLabel, width, onOpenCa
       footer={
         drill ? (
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <span className="text-[12.5px] text-muted">The open denials with this reason are in Denial Intelligence.</span>
+            <span className="text-[12px] text-muted">The open denials with this reason are in Denial Intelligence.</span>
             <Link to={paths.denials(undefined, drill)} className="inline-flex h-[38px] items-center rounded-xl border border-field bg-white px-4 text-sm font-medium hover:bg-tile">
               Open in Denial Intelligence
             </Link>
@@ -60,7 +60,7 @@ export function CaseListPanel({ query, rows, filters, siteLabel, width, onOpenCa
       }
     >
       <div className="flex flex-col gap-4" data-testid="caselist">
-        {query.note ? <p className="text-[13.5px] text-muted">{query.note}</p> : null}
+        {query.note ? <p className="text-[13px] text-muted">{query.note}</p> : null}
         <div className="grid grid-cols-3 gap-3">
           {[
             ["Approved as requested", s.approved],
@@ -68,15 +68,15 @@ export function CaseListPanel({ query, rows, filters, siteLabel, width, onOpenCa
             ["Denied", s.denied],
           ].map(([label, n]) => (
             <div key={label} className="rounded-2xl border border-tile-edge bg-tile px-4 py-3">
-              <div className="text-[11.5px] font-medium tracking-[0.08em] text-muted uppercase">{label}</div>
-              <div className="mt-0.5 text-[22px] font-semibold tabular-nums">{fmt(n as number)}</div>
+              <div className="text-[11px] font-medium tracking-[0.08em] text-muted uppercase">{label}</div>
+              <div className="mt-0.5 text-[18px] font-semibold tabular-nums">{fmt(n as number)}</div>
             </div>
           ))}
         </div>
         {top.length ? (
           <div data-testid="caselist-reasons">
             <h4 className="text-[14px] font-semibold">Why these were not approved as requested</h4>
-            <p className="mb-1 text-[12.5px] text-muted">{reasons.length > top.length ? `The ${top.length} most common of ${reasons.length} reasons. ` : ""}Click a reason to show only its cases in the table.</p>
+            <p className="mb-1 text-[12px] text-muted">{reasons.length > top.length ? `The ${top.length} most common of ${reasons.length} reasons. ` : ""}Click a reason to show only its cases in the table.</p>
             <HBarChart
               ariaLabel="Denial reasons for these cases"
               rows={top.map((r) => ({ key: r.label, label: r.label, value: r.n, display: String(r.n), color: reason === r.label ? CHART.forest : r.preventable ? CHART.mid : CHART.umber, tag: r.preventable ? "Preventable" : undefined, quiet: reason !== null && reason !== r.label }))}

@@ -1,6 +1,6 @@
 title: EMR Connect › Manage › Open the Manage drawer
 route: /emr
-intro: One system's details in a right-hand drawer: connection facts, what the agents may read, whether it is read only or read and write back (in words), and a Disconnect or Reconnect button. A system that is not Connected says here that New case cannot pull a chart from it. The Write back switch and the field mappings are not here: the switch is on the system's row, the mappings are in 'Advanced'.
+intro: One system's details in a right-hand drawer: connection facts, what the agents may read, whether it is read only or read and write back (in words), and a Disconnect or Reconnect button. A system that is not Connected says here that New Case cannot pull a chart from it. The Write back switch and the field mappings are not here: the switch is on the system's row, the mappings are in 'Advanced'.
 dir: TD
 also: Drawer buttons that the demo does not have: pause, edit, rename, delete, rotate sign-in. The only way to stop a system is Disconnect, and a system is never removed. Escape closes one layer at a time, so a pop-up on top of the drawer closes first. The header button 'Manage mapping' no longer exists: the mappings sit in 'Advanced'.
 ---
@@ -9,7 +9,7 @@ overlay o1 "Drawer: {system name}\n'{kind} · {what it holds}'\nStatus pill on t
 
 group gDet "Card: Connection details"
   process d1 "Type, Connected since, Contact at the practice\nLast sync: 'N min ago' or 'Not syncing'\nAccess: 'Secure, read-only connection'"
-  toast d2 "Only when it is not Connected\nThe issue text, for example the expired sign-in, then 'New case cannot pull a chart from it until it is connected.'"
+  toast d2 "Only when it is not Connected\nThe issue text, for example the expired sign-in, then 'New Case cannot pull a chart from it until it is connected.'"
 endgroup
 
 group gPerm "Card: Permissions"

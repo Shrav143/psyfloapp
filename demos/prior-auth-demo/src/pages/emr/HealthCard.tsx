@@ -24,8 +24,8 @@ interface Props {
 function Figure({ value, label, note }: { value: string | number; label: string; note?: string }) {
   return (
     <div>
-      <div className="text-[22px] font-semibold leading-tight tracking-tight">{value}</div>
-      <div className="text-[12.5px] text-muted">{label}</div>
+      <div className="text-[18px] font-semibold leading-tight tracking-tight">{value}</div>
+      <div className="text-[12px] text-muted">{label}</div>
       {note ? <div className="text-[12px] text-muted opacity-80">{note}</div> : null}
     </div>
   );

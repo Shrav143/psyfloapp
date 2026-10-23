@@ -115,7 +115,7 @@ export function ReferralChecklist({ r, draftId, onReplace }: { r: Referral; draf
         <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-2 px-6 pt-5">
           <div className="min-w-0">
             <div className="font-semibold">{r.patient.initials}, {r.patient.age} <span className="ml-1 text-xs font-normal text-muted">{r.id}</span></div>
-            <div className="mt-0.5 flex flex-wrap items-center gap-x-2.5 text-[13.5px] text-muted">
+            <div className="mt-0.5 flex flex-wrap items-center gap-x-2.5 text-[13px] text-muted">
               <span>{r.source.name}</span>
               <ChannelTag channel={r.channel} />
               <span>received {ago(r.receivedAt, clock)}</span>

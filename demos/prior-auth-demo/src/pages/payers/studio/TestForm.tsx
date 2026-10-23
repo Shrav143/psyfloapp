@@ -89,7 +89,7 @@ export function TestForm({ value, onChange, docs, workflow, onService }: { value
           <Labeled label="Manual approvals">
             <div role="radiogroup" aria-label="Manual approvals" className="grid grid-cols-3 gap-1 rounded-xl border border-field bg-white p-0.5">
               {(["none", "some", "all"] as Approvals[]).map((m) => (
-                <button key={m} type="button" role="radio" aria-checked={value.approvals === m} onClick={() => onChange({ ...value, approvals: m })} className={cn("h-8 rounded-[9px] px-1 text-[12.5px] font-medium", value.approvals === m ? "bg-forest text-white" : "text-ink2 hover:bg-tile")}>
+                <button key={m} type="button" role="radio" aria-checked={value.approvals === m} onClick={() => onChange({ ...value, approvals: m })} className={cn("h-8 rounded-[9px] px-1 text-[12px] font-medium", value.approvals === m ? "bg-forest text-white" : "text-ink2 hover:bg-tile")}>
                   {m === "none" ? "None yet" : m === "some" ? "Choose" : "All given"}
                 </button>
               ))}
@@ -108,7 +108,7 @@ export function TestForm({ value, onChange, docs, workflow, onService }: { value
               <p className="m-0 text-[13px] text-muted">This workflow has no step that waits for a person.</p>
             )
           ) : null}
-          <p className="m-0 text-xs text-muted">A step that waits for a person stops the run until its approval is given, as in New case.</p>
+          <p className="m-0 text-xs text-muted">A step that waits for a person stops the run until its approval is given, as in New Case.</p>
         </div>
       </Fold>
     </div>

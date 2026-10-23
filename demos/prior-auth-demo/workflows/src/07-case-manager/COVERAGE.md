@@ -7,7 +7,7 @@ Source: `src/pages/manager/*` (including `CaseQuickView.tsx` and `useDraftReview
 | Page opens on the tracker (Active cases); 'Being prepared' and 'Step-down plans' are folded rows above it | Active cases | 10, 20, 23 |
 | Header counts '56 active cases.' (57 with a new case; '1 active case.' singular), '5 are still being prepared.' | Active cases | 10, 34 |
 | Header '47 clinical reviews due this week.' ('48' when a next review falls this week; singular for one) | Reviews this week | 10, 45 |
-| 'New case' button | Active cases header | 10 |
+| 'New Case' button | Active cases header | 10 |
 | Switch 'Active cases' / 'Reviews this week' | Filter bar, right | 10 |
 | Address `?tab=reviews`, `?tab=cases`, none, `/active` | Address | 10, 51 |
 | Links in from other pages and the shell, and '?review=' from the Ledger case page | Other pages | 51 |
@@ -47,7 +47,7 @@ Source: `src/pages/manager/*` (including `CaseQuickView.tsx` and `useDraftReview
 | Quick view keys: focus lands on 'Open case', Tab stays inside, Escape closes one layer at a time (the review drawer, then the quick view), focus returns to the row's quick view button, the dimmed area and X close it | Quick view | 36 |
 | Ledger case page: header, 'Case summary', 'Next step', 'Open the review', 'Back to Case Manager', crumb | Case page for a ledger-only case | 60 |
 | Ledger case page 'History': folded, summary '4 entries. Latest: ...', opened by click, Enter or Space | Case page for a ledger-only case | 60 |
-| Ledger case page row 'Workflow' ('Initial Authorization, Residential SUD, version 3', or the labelled default) in 'Case summary', only for a case with a New case draft that follows a workflow | Case page for a ledger-only case | 61 |
+| Ledger case page row 'Workflow' ('Initial Authorization, Residential SUD, version 3', or the labelled default) in 'Case summary', only for a case with a New Case draft that follows a workflow | Case page for a ledger-only case | 61 |
 | Ledger case page 'History' also holds the lines the payer workflow wrote on the draft ('Workflow applied: ...', 'Workflow ran to ...', 'Waiting: ...') | Case page for a ledger-only case | 61 |
 | Quick view row 'Workflow' and the three newest history lines, the workflow's among them | Tracker quick view | 61 |
 | 'Request not found' (an address typed by hand only) | Hand-off | 33, 60 |
@@ -90,7 +90,7 @@ Source: `src/pages/manager/*` (including `CaseQuickView.tsx` and `useDraftReview
 
 - Hover colours, focus order, screen reader labels (the lists announce 'Showing N of 47' politely).
 - Exact words in the draft text box (seven parts, written per level of care). Only its parts are named in 41.
-- What New case, the case page and the Dashboard do after a hand-off. Those are other modules' diagrams.
+- What New Case, the case page and the Dashboard do after a hand-off. Those are other modules' diagrams.
 - The `Sign all clean drafts` toast 'No clean drafts to sign' is in the store but the button is greyed out first, so it is shown dotted in 44.
 - The 'Draft this review' button's paused path is drawn in 41; the Settings switches that pause Cadence are in the Settings diagrams.
 

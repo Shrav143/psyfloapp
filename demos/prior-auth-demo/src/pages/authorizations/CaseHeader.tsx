@@ -50,7 +50,7 @@ export function CaseHeader({ ctx }: { ctx: CaseCtx }) {
         <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <h1 className="flex flex-wrap items-center gap-3 font-serif text-[32px] leading-[1.15] font-semibold tracking-tight">
+              <h1 className="flex flex-wrap items-center gap-3 font-serif text-[24px] leading-[1.15] font-semibold tracking-tight">
                 <Chip className="font-sans tracking-normal">{detail.levelLabel}</Chip>
                 <span>{detail.id}</span>
                 <Chip className="font-sans tracking-normal">{detail.type}</Chip>
@@ -58,7 +58,7 @@ export function CaseHeader({ ctx }: { ctx: CaseCtx }) {
               </h1>
               {statusChip ? <StatusHelp /> : null}
             </div>
-            <div className="mt-2 text-[15px] text-muted">{detail.initials}, {detail.age} · {payer.name} · {detail.levelLabel} · {detail.days} {unit} requested{site ? <span data-testid="case-site"> · {siteName(site)}</span> : null}</div>
+            <div className="mt-2 text-[14px] text-muted">{detail.initials}, {detail.age} · {payer.name} · {detail.levelLabel} · {detail.days} {unit} requested{site ? <span data-testid="case-site"> · {siteName(site)}</span> : null}</div>
           </div>
           <div className="flex shrink-0 items-center gap-3">
             <Button icon={PenLine} onClick={send}>Open in review and sign</Button>
@@ -69,7 +69,7 @@ export function CaseHeader({ ctx }: { ctx: CaseCtx }) {
         <NextBlock ctx={ctx} next={next} />
         <AuthFacts facts={facts} />
 
-        <div className="flex flex-col gap-1.5 border-t border-line pt-4 text-[13.5px] text-ink2">
+        <div className="flex flex-col gap-1.5 border-t border-line pt-4 text-[13px] text-ink2">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
             <b className="font-semibold text-ink">At a glance</b>
             <span>{detail.dx}</span>
@@ -92,7 +92,7 @@ export function CaseHeader({ ctx }: { ctx: CaseCtx }) {
           <div className="mt-3 flex items-center gap-4">
             <Ring value={shown} size={72} stroke={8} />
             <div>
-              <div className="text-xl font-semibold" aria-live="polite">{detail.baseChance}% → {applied ? chance : projected}%</div>
+              <div className="text-[18px] font-semibold" aria-live="polite">{detail.baseChance}% → {applied ? chance : projected}%</div>
               <div className="text-sm text-muted">{!applied ? "if every action is applied" : projected > chance ? `up to ${projected}% with the rest` : "after the agents' checks"}</div>
             </div>
           </div>
@@ -100,7 +100,7 @@ export function CaseHeader({ ctx }: { ctx: CaseCtx }) {
         </Card>
         <Card className="px-6 py-5">
           <Label>How sure are we</Label>
-          <div className="mt-3 text-[28px] leading-none font-semibold">{confidenceWord(detail)}</div>
+          <div className="mt-3 text-[24px] leading-none font-semibold">{confidenceWord(detail)}</div>
           <div className="mt-2 text-sm text-muted">
             {benchmark
               ? `Little history for this payer and level of care, so this is a benchmark estimate from ${sim.benchmark} benchmark cases. Only ${sim.own + sim.network} are yours or the network's.`
@@ -109,8 +109,8 @@ export function CaseHeader({ ctx }: { ctx: CaseCtx }) {
         </Card>
         <Card className="px-6 py-5">
           <Label>{denial ? `${unit === "units" ? "Units" : "Days"} in question` : `${unit === "units" ? "Units" : "Days"} likely granted`}</Label>
-          <div className="mt-3 text-[28px] leading-none font-semibold">
-            {denial ? Math.round(detail.days / 2) : daysLikely(shown, detail.days)} <span className="text-base font-medium text-muted">of {detail.days} {denial ? unit : `${unit} likely`}</span>
+          <div className="mt-3 text-[24px] leading-none font-semibold">
+            {denial ? Math.round(detail.days / 2) : daysLikely(shown, detail.days)} <span className="text-[14px] font-medium text-muted">of {detail.days} {denial ? unit : `${unit} likely`}</span>
           </div>
           <div className="mt-2 text-sm text-muted">{denial ? "The payer approved part of the stay. The other days are what the call is about." : `${chance}% chance of all ${detail.days}, otherwise most likely ${Math.round(detail.days / 2)}`}</div>
         </Card>

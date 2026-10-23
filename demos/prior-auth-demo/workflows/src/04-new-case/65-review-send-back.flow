@@ -1,4 +1,4 @@
-title: Authorizations › New case › Review & submit › Send back to Scribe
+title: Authorizations › New Case › Review & submit › Send back to Scribe
 route: /authorizations/new/:draftId (step 5 of 5, then step 4 and back)
 intro: Anyone on the Sign card can send the draft back, with or without a note, and so can the 'Send back to Scribe' button under What is missing. Scribe, Integrity, Packet and Scrubber run again in a few seconds and the person returns to review. The note is added to the Plan section.
 dir: TD
@@ -31,7 +31,7 @@ click cReview "Click 'Review & submit'"
 screen sRev "Step 5 again\nThe Plan section ends: 'Reviewer's note, addressed: YOUR NOTE'"
 click cStay "Click the browser's Back, or leave"
 process pAway "The run only moves while step 4 is open"
-goto gSign "Continues in: Authorizations › New case › Review & submit › Sign and send to payer"
+goto gSign "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer"
 
 s1 --> o1
 o1 --> iNote

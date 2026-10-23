@@ -29,7 +29,7 @@ export interface LedgerCase {
   dueAt: number;
   chance: number;
   status: LedgerStatus;
-  /** Signed and sent in New case today, so it is not part of the seed ledger. */
+  /** Signed and sent in New Case today, so it is not part of the seed ledger. */
   isNew?: boolean;
 }
 

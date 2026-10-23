@@ -1,4 +1,4 @@
-title: Authorizations › New case › Referral › Ask the referrer
+title: Authorizations › New Case › Referral › Ask the referrer
 route: /authorizations/new/:draftId?ref=RF-2053
 intro: Ask the referrer for what is missing. The same dialog opens from the checklist and from the full referral page. In the demo nothing leaves the app.
 dir: TD
@@ -26,7 +26,7 @@ process p5 "Timeline gets 'You asked Crisis line 988 follow-up for more informat
 ext x1 "Referrer receives the request\n(demo: simulated, nothing is sent)"
 toast t1 "'Request sent'\n'Crisis line 988 follow-up was asked for more information. RF-2053 is Awaiting info.'"
 screen sc1 "Checklist after sending\nAsked rows read 'Waiting on the referrer. Asked by email, just now.'\nNo 'Ask' buttons, 'Mark OK' stays, button 'Demo: the referrer replies' appears\nAsked rows no longer block 'Accept referral and continue'"
-goto g1 "Continues in: Authorizations › New case › Referral › The referrer replies"
+goto g1 "Continues in: Authorizations › New Case › Referral › The referrer replies"
 
 s1 --> o1
 s2 --> o1

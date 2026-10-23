@@ -1,8 +1,8 @@
 title: Authorizations › Case page › Recommended actions › Add clinical context
 route: /authorizations/case/R-1042?tab=actions
-intro: Adding a note the chart does not show. It is kept in the list the Draft tab and New case read, shown on the case page, and it nudges the approval chance by a point.
+intro: Adding a note the chart does not show. It is kept in the list the Draft tab and New Case read, shown on the case page, and it nudges the approval chance by a point.
 dir: TD
-also: Demo only: each of the first three notes adds one point to the approval chance, whatever it says. The draft text on this page is not rewritten here; the Draft tab and New case read the list themselves.
+also: Demo only: each of the first three notes adds one point to the approval chance, whatever it says. The draft text on this page is not rewritten here; the Draft tab and New Case read the list themselves.
 ---
 click cc "Click 'Add clinical context'"
 overlay m "Dialog 'Add clinical context'\n'Something the chart does not show. Scribe folds it into the draft. Nothing goes to the payer.'"

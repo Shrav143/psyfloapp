@@ -1,4 +1,4 @@
-title: Authorizations › New case › Workflow › What the workflow says at each step
+title: Authorizations › New Case › Workflow › What the workflow says at each step
 route: /authorizations/new/:draftId (each step's header, footer line and 'What is missing')
 intro: The workflow runs again whenever the person changes step and whenever a document or the verification changes. Its outcome is one quiet line in the step header: 'Next in this workflow: ...'. The workflow informs and warns; it never adds a blocker. A warning of its own is folded into the step's one existing alert (the line next to the buttons, or 'What is missing' on Review & submit), never shown as a second alert. Only the conditions from the earlier design still stop a send: no patient, payer, service or dates; coverage confirmed inactive with no documented exception; an unanswered duplicate; no clinician sign-off.
 dir: TD
@@ -16,11 +16,11 @@ screen sc2 "Steps 1 to 4\nThe warning is added to the footer line beside the but
 screen sc3 "Step 5, Review & submit\nOne extra note in 'What is missing'\n'Workflow: Initial Authorization, Residential SUD'\nIt is a note, not an item to acknowledge, and it does not stop signing"
 process p4 "Rules that are only unverified are not repeated as a warning on every step\nThey are listed in the info icon and in the history"
 decision d3 "Does the workflow end in 'No authorization required'?"
-goto g1 "Continues in: Authorizations › New case › Workflow › No authorization required from the workflow"
+goto g1 "Continues in: Authorizations › New Case › Workflow › No authorization required from the workflow"
 decision d4 "Is an existing blocker true?\nNo patient, payer, service or dates; inactive coverage with no documented exception; an unanswered duplicate; no clinician as signer"
 toast t1 "Review & submit says what stops sending, as before\nThe workflow does not add to it"
 end e1 "The person goes on, with the workflow's outcome in view"
-goto g2 "Continues in: Authorizations › New case › Review & submit › What is missing"
+goto g2 "Continues in: Authorizations › New Case › Review & submit › What is missing"
 
 s1 --> p1 --> dChk
 dChk -->|No| scWait --> d1

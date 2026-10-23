@@ -66,7 +66,7 @@ export function ValidationSummary({ rows }: { rows: ValidationRow[] }) {
             {open.has(r.id) ? (
               <ul className="flex flex-col gap-1.5 pr-6 pb-3.5 pl-[54px]">
                 {r.findings.map((f) => (
-                  <li key={f.id} className={cn("flex items-start gap-2 text-[13.5px]", f.ok ? "text-ink2" : "text-mid-ink")}>
+                  <li key={f.id} className={cn("flex items-start gap-2 text-[13px]", f.ok ? "text-ink2" : "text-mid-ink")}>
                     {f.ok ? <CircleCheck size={14} className="ico mt-1 text-good" /> : <CircleAlert size={14} className="ico mt-1 text-mid" />}
                     {f.text}
                   </li>

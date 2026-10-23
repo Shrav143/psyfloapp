@@ -27,7 +27,7 @@ export function WorkflowRow({ draft, view }: { draft: CaseDraft; view: CaseWorkf
   const reviewKind: ReviewKind | null = !reviewable ? null : view.conflict ? "choose" : view.differs ? "changed" : view.newer ? "newer" : null;
 
   return (
-    <div data-testid="workflow-row" className="flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-2xl border border-line bg-white/70 px-4 py-2 text-[13.5px]">
+    <div data-testid="workflow-row" className="flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-2xl border border-line bg-white/70 px-4 py-2 text-[13px]">
       <GitBranch size={16} className="ico shrink-0 text-forest" aria-hidden="true" />
       <span className="min-w-0 text-ink2">
         <span className="text-muted">Workflow: </span>

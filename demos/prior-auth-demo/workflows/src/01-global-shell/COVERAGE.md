@@ -8,14 +8,14 @@ Source: `src/App.tsx`, `src/routes.ts`, `src/components/layout/*` (including the
 | Captions 'Main', 'Connections' (labels only) | Sidebar | 10 (note) |
 | 'Dashboard' | Sidebar | 10, 12 |
 | 'Authorizations' (opens the group) | Sidebar | 10, 12 |
-| 'New case' (sub row) | Sidebar | 10, 12 |
+| 'New Case' (sub row) | Sidebar | 10, 12 |
 | 'Eligibility & Benefits' (sub row) | Sidebar | 10, 12 |
 | 'Denial Intelligence' | Sidebar | 10, 12 |
 | 'Case Manager' | Sidebar | 10, 12 |
 | 'Analytics' (no badge) | Sidebar | 10, 12 |
 | 'EMR Connect' (no badge) | Sidebar | 10, 12 |
 | 'Payers' | Sidebar | 10, 12 |
-| Number bubbles on Dashboard, Authorizations, New case, Eligibility & Benefits, Denial Intelligence, Case Manager, Payers. Every one follows the site view except Payers, which is clinic-wide (a payer's rules are not site data) | Sidebar | 11 |
+| Number bubbles on Dashboard, Authorizations, New Case, Eligibility & Benefits, Denial Intelligence, Case Manager, Payers. Every one follows the site view except Payers, which is clinic-wide (a payer's rules are not site data) | Sidebar | 11 |
 | Chevron right / down on 'Authorizations' | Sidebar | 12 |
 | Green highlight rules, bubble colour on the green row | Sidebar | 11, 12 |
 | 'Demo data' tile (label only) | Sidebar footer | 10 (note), 50 |
@@ -47,7 +47,7 @@ Source: `src/App.tsx`, `src/routes.ts`, `src/components/layout/*` (including the
 | A change of viewer or site starts a new conversation (nothing said about the other view stays on screen) and works the chips out again | Ask FLO | 21 |
 | FLO reads only the cases at the sites in view: counts say 'at Site A', a case at the other site is 'not found among the cases you can see', Both sites = Site A + Site B | Ask FLO | 22, 23 |
 | 'What needs me today?' answers with the Dashboard's Do next list (same rows, same order) and its link 'Open Do next on the Dashboard' | Ask FLO | 22 |
-| Answer rules and the links under answers (each opens a matching view: Analytics for the slow-payers answer, the nearest open denial, Payers › Cardinal › History & Changes, the request to start with, New case) | Ask FLO | 22 |
+| Answer rules and the links under answers (each opens a matching view: Analytics for the slow-payers answer, the nearest open denial, Payers › Cardinal › History & Changes, the request to start with, New Case) | Ask FLO | 22 |
 | Answers that read a case, a payer or a screen: missing, ends, requires, reviews due, fix before billing; each with its link ('Open R-1042, Recommended actions', 'Open I-2207', 'Open Payers, Cardinal, Documents', 'Open R-0912, review', 'Open R-0921 in Eligibility & Benefits') | Ask FLO | 22, 23 |
 | The line 'This is FLO's reading of the demo data, not a payer confirmation.' (once, under those answers and the denial answer) | Ask FLO | 22, 23 |
 | Which notifications are listed: the ones about cases at the sites in view and the ones about no case; the bell dot, the unread count and 'Mark all read' use only those | Notifications | 30 |

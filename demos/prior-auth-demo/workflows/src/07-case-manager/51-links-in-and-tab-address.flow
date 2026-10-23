@@ -17,7 +17,7 @@ group gOther "Links from other pages"
   process r4 "Go to /manager (no tab)"
   click c5 "Authorizations queue empty › 'Open Case Manager'\n('Nothing needs you today')"
   process r5 "Go to /manager (no tab)"
-  click c6 "New case › 'Case Manager' link above the title,\nor 'Back to Case Manager' on a sent case"
+  click c6 "New Case › 'Case Manager' link above the title,\nor 'Back to Case Manager' on a sent case"
   process r6 "Go to /manager (no tab)"
 endgroup
 

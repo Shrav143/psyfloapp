@@ -15,8 +15,8 @@ export function ModificationCard({ draft }: { draft: CaseDraft }) {
       <CardBody className="flex flex-col gap-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h3 className="font-serif text-[19px] font-semibold tracking-tight">Proposed change</h3>
-            <p className="mt-0.5 text-[13.5px] text-muted">Say what should change and why. The payer decides.</p>
+            <h3 className="font-serif text-[18px] font-semibold tracking-tight">Proposed change</h3>
+            <p className="mt-0.5 text-[13px] text-muted">Say what should change and why. The payer decides.</p>
           </div>
           <Pill tone="neutral" dot>Payer approval: not yet. This is a request, not an approval.</Pill>
         </div>

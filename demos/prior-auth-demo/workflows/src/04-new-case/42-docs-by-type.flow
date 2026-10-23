@@ -1,4 +1,4 @@
-title: Authorizations › New case › Clinical documentation › Required and typical documents by type
+title: Authorizations › New Case › Clinical documentation › Required and typical documents by type
 route: /authorizations/new/:draftId (step 3 of 5, the Documents list)
 intro: Which documents a case needs comes from two places. The required ones come from the payer's saved list for the level of care (Payers › Rules & Instructions › Clinical documentation). What a request of this type usually carries is added under them and labelled 'Typical for a continued stay' and so on. Typical items are the demo's advice, never a payer's rule, and never required. 'N of M ready' counts both.
 dir: TD
@@ -19,10 +19,10 @@ screen sRow "The Documents list\nRequired first · Recommended · Typical for th
 process pHint "A typical row says 'Typical for a continued stay. You can continue without it.'\nA required row says 'Not found yet. Drop it above or add it here.'"
 process pCount "Progress line 'N of M ready'\nRequired plus typical, with 'Mark not available' counting as ready\n'3 of 4 ready' reads three items in and one to go"
 process pJust "Authorization preparation lists a missing typical item as evidence that is missing\n'... is not in the case. It is typical for a continued stay.'"
-goto gRows "Continues in: Authorizations › New case › Clinical documentation › Clinical summary and document rows"
-goto gMark "Continues in: Authorizations › New case › Clinical documentation › Replace a document or mark it not available"
-goto gJust "Continues in: Authorizations › New case › Authorization preparation › Justification by type"
-goto gRev "Continues in: Authorizations › New case › Review & submit › Validation summary and checks"
+goto gRows "Continues in: Authorizations › New Case › Clinical documentation › Clinical summary and document rows"
+goto gMark "Continues in: Authorizations › New Case › Clinical documentation › Replace a document or mark it not available"
+goto gJust "Continues in: Authorizations › New Case › Authorization preparation › Justification by type"
+goto gRev "Continues in: Authorizations › New Case › Review & submit › Validation summary and checks"
 
 s1 --> pReq --> dKind
 pReq -.-> gPayers

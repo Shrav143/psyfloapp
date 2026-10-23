@@ -20,7 +20,7 @@ export function AuthorizationCard({ patient, episode, auth }: { patient: Patient
         <div className="min-w-0">
           <Label>Authorization</Label>
           <div className="mt-1 text-lg font-semibold">{PROGRAM_LABEL[episode.program]} · {auth.label}</div>
-          <div className="text-[13.5px] text-muted">{payerNameOf(auth.payerId)} · {patient.initials}, {patient.age} · {auth.id}</div>
+          <div className="text-[13px] text-muted">{payerNameOf(auth.payerId)} · {patient.initials}, {patient.age} · {auth.id}</div>
         </div>
         <div className="flex items-center gap-2">
           <Pill tone={AUTH_STATUS_TONE[auth.status]} dot>{AUTH_STATUS_LABEL[auth.status]}</Pill>
@@ -34,7 +34,7 @@ export function AuthorizationCard({ patient, episode, auth }: { patient: Patient
         <Fact label={auth.approvedTo === null ? "Expires" : "Expires on"} value={ends ?? "Not set"} />
       </dl>
       <Drawer open={open} onClose={() => setOpen(false)} title="Authorization history" subtitle={`${patient.initials}, ${patient.age} · ${PROGRAM_LABEL[episode.program]} · ${auth.id}`} width={520}>
-        <p className="mb-4 text-[13.5px] text-muted">Demo data, built from the Case Manager ledger. Each line says who acted: the payer, an agent or a person.</p>
+        <p className="mb-4 text-[13px] text-muted">Demo data, built from the Case Manager ledger. Each line says who acted: the payer, an agent or a person.</p>
         <ol className="flex flex-col gap-3.5 border-l border-line pl-5">
           {auth.history.map((h, i) => (
             <li key={`${h.at}-${i}`} className="relative">
@@ -54,7 +54,7 @@ function Fact({ label, value, tone }: { label: string; value: string; tone?: "ri
   return (
     <div>
       <dt className="text-xs text-muted">{label}</dt>
-      <dd className={cn("mt-0.5 text-[14.5px] font-semibold", tone === "risk" ? "text-risk-ink" : tone === "mid" ? "text-mid-ink" : "")}>{value}</dd>
+      <dd className={cn("mt-0.5 text-[14px] font-semibold", tone === "risk" ? "text-risk-ink" : tone === "mid" ? "text-mid-ink" : "")}>{value}</dd>
     </div>
   );
 }

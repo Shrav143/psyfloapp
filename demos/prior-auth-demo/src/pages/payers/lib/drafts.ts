@@ -4,7 +4,7 @@ import { siteName, siteOf } from "@/data/sites";
 import { useScope } from "@/lib/scope";
 import { useStore } from "@/store";
 
-/** One payer's drafts that have not been sent, at the sites in view, read live from the Dashboard requests and the saved New case drafts.
+/** One payer's drafts that have not been sent, at the sites in view, read live from the Dashboard requests and the saved New Case drafts.
     A payer is clinic-wide, but a draft belongs to a case and so to a site: Update drafts counts, lists and redrafts only the ones the viewer may see. */
 export function useOpenDrafts(payerId: string): OpenDraft[] {
   const requests = useStore((s) => s.requests);

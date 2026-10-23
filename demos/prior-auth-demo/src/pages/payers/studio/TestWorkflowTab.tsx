@@ -20,7 +20,7 @@ import { usePayerRules, usePayerWorkflows } from "./lib/store";
 import { factsOf, PRESETS, type TestCase } from "./lib/testCases";
 import { STATUS_WORD } from "./lib/ui";
 
-/* Test Workflow: a fictional case goes through the same engine New case uses, and the path it took lights up on the canvas. */
+/* Test Workflow: a fictional case goes through the same engine New Case uses, and the path it took lights up on the canvas. */
 
 const STEP_MS = 350;
 
@@ -49,7 +49,7 @@ export function TestWorkflowTab({ payerId }: { payerId: string }) {
   const [problem, setProblem] = useState<string | null>(null);
   const timer = useRef<number | undefined>(undefined);
 
-  /* The workflow that would run for this case, unless the person picked one. Published ones first, as New case would. */
+  /* The workflow that would run for this case, unless the person picked one. Published ones first, as New Case would. */
   const published = useMemo(() => workflows.filter((w) => w.status === "published"), [workflows]);
   const auto = useMemo(() => {
     const f = factsOf(test, { nodes: [] });
@@ -125,8 +125,8 @@ export function TestWorkflowTab({ payerId }: { payerId: string }) {
   if (!workflows.length) {
     return (
       <Card className="px-7 py-10 text-center">
-        <h2 className="m-0 font-serif text-[24px] font-semibold">There is nothing to test yet</h2>
-        <p className="mx-auto mt-2 mb-5 max-w-[460px] text-[15px] text-muted">{payerCtx.name} has no workflow. Build one in Workflow Builder, then come back and try it on a made-up case.</p>
+        <h2 className="m-0 font-serif text-[18px] font-semibold">There is nothing to test yet</h2>
+        <p className="mx-auto mt-2 mb-5 max-w-[460px] text-[14px] text-muted">{payerCtx.name} has no workflow. Build one in Workflow Builder, then come back and try it on a made-up case.</p>
         <Button variant="primary" onClick={() => nav(paths.payers(payerId, "builder"))}>Open Workflow Builder</Button>
       </Card>
     );
@@ -150,11 +150,11 @@ export function TestWorkflowTab({ payerId }: { payerId: string }) {
         </Card>
 
         <Card className="px-5 py-4">
-          <h3 className="m-0 font-serif text-[19px] font-semibold">Start from a made-up case</h3>
+          <h3 className="m-0 font-serif text-[18px] font-semibold">Start from a made-up case</h3>
           <p className="mt-0.5 mb-3 text-[13px] text-muted">Fictional facts only. Pick one, change anything, and run it.</p>
           <div role="radiogroup" aria-label="Test cases" className="flex flex-wrap gap-2">
             {PRESETS.map((p) => (
-              <button key={p.id} type="button" role="radio" aria-checked={preset === p.id} title={p.hint} onClick={() => applyPreset(p.id)} className={cn("rounded-full border px-3.5 py-1.5 text-[13.5px] font-medium", preset === p.id ? "border-forest bg-forest text-white" : "border-field bg-white text-ink2 hover:bg-tile")}>
+              <button key={p.id} type="button" role="radio" aria-checked={preset === p.id} title={p.hint} onClick={() => applyPreset(p.id)} className={cn("rounded-full border px-3.5 py-1.5 text-[13px] font-medium", preset === p.id ? "border-forest bg-forest text-white" : "border-field bg-white text-ink2 hover:bg-tile")}>
                 {p.label}
               </button>
             ))}
@@ -169,7 +169,7 @@ export function TestWorkflowTab({ payerId }: { payerId: string }) {
           <div ref={stage} className="flex min-w-0 scroll-mt-20 flex-col gap-4">
             <Card className="p-3">
               <div className="mb-2 flex flex-wrap items-center gap-2 px-1.5">
-                <h3 className="m-0 font-serif text-[19px] font-semibold">{shown?.name}</h3>
+                <h3 className="m-0 font-serif text-[18px] font-semibold">{shown?.name}</h3>
                 {shown ? <Pill tone={shown.status === "published" ? "good" : "neutral"} dot>{STATUS_WORD[shown.status]} · version {shown.version}</Pill> : null}
                 {ran ? null : <span className="text-[13px] text-muted">Run the test to light up the path.</span>}
               </div>

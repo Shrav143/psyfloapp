@@ -45,7 +45,7 @@ export function RuleRow({ rule, usedBy, onEdit, onVerify, onArchive, defaultOpen
       <button type="button" aria-expanded={open} onClick={() => setOpen((o) => !o)} className="flex w-full items-start gap-3 px-6 py-3.5 text-left hover:bg-tile focus-visible:outline-2">
         <span className="min-w-0 flex-1">
           <span className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
-            <span className={cn("text-[15px] font-semibold", gone && "text-muted line-through")}>{rule.title}</span>
+            <span className={cn("text-[14px] font-semibold", gone && "text-muted line-through")}>{rule.title}</span>
             <Pill tone={VERIFICATION_TONE[rule.verification]}>{VERIFICATION_LABEL[rule.verification]}</Pill>
           </span>
           <span className="mt-0.5 block text-[13px] text-muted">{valuesLine(rule)}</span>
@@ -81,7 +81,7 @@ export function RuleRow({ rule, usedBy, onEdit, onVerify, onArchive, defaultOpen
             <li className={cn(chip, !rule.lastVerified && "text-mid-ink")}>{rule.lastVerified ? `Last verified ${readDate(rule.lastVerified)}` : "Never verified"}</li>
             <li className={chip}>Owner: {rule.owner}</li>
             <li className={chip}>Version {rule.version}</li>
-            {rule.origin === "payer_config" ? <li className={chip} title="Eligibility and New case read the same saved rule">Saved with the payer's rules</li> : null}
+            {rule.origin === "payer_config" ? <li className={chip} title="Eligibility and New Case read the same saved rule">Saved with the payer's rules</li> : null}
           </ul>
           {rule.verification === "unverified" || rule.verification === "needs_review" ? (
             <p className="text-xs text-mid-ink">{rule.verification === "unverified" ? "Unverified. Workflows route this to manual review until a person marks it verified with a source." : "Needs review. A person should check it against the source before workflows rely on it."}</p>

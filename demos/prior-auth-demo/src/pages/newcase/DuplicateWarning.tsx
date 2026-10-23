@@ -20,7 +20,7 @@ export function DuplicateWarning({ env }: { env: CaseEnv }) {
 
   if (said) {
     return (
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-2xl border border-edge bg-white px-[18px] py-3 text-[13.5px]">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-2xl border border-edge bg-white px-[18px] py-3 text-[13px]">
         <CopyCheck size={16} className="ico text-muted" aria-hidden="true" />
         <span className="min-w-0 flex-1">
           <b>Continuing with a reason.</b> {dup.title}. Your reason: {said.reason}

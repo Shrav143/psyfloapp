@@ -5,13 +5,13 @@ dir: LR
 ---
 start s1 "The address changes\n(a click, a link, a redirect or the browser Back button)"
 decision d1 "Does the address start with /authorizations?"
-process open "Group is open\n'New case' and 'Eligibility & Benefits' are listed under 'Authorizations'\nChevron points down"
+process open "Group is open\n'New Case' and 'Eligibility & Benefits' are listed under 'Authorizations'\nChevron points down"
 process shut "Group is closed\nThe two sub rows are hidden\nChevron points right"
 
 group gHi "Which row is green"
   decision d2 "Which address is it?"
   process h1 "'Authorizations' turns green\nAddress is exactly /authorizations, or a case: /authorizations/case/..."
-  process h2 "'New case' turns green, 'Authorizations' stays plain\n/authorizations/new, a draft, or a referral"
+  process h2 "'New Case' turns green, 'Authorizations' stays plain\n/authorizations/new, a draft, or a referral"
   process h3 "'Eligibility & Benefits' turns green, 'Authorizations' stays plain\n/authorizations/eligibility, /verify or a result"
   process h4 "'Dashboard' turns green\n/dashboard (also when the address has ?request=)"
   process h5 "'Denial Intelligence' turns green\n/denials and a brief under it"
@@ -35,7 +35,7 @@ d1 -->|Yes| open
 d1 -->|No| shut
 open & shut --> d2
 d2 -->|/authorizations or a case| h1
-d2 -->|New case pages| h2
+d2 -->|New Case pages| h2
 d2 -->|Eligibility pages| h3
 d2 -->|/dashboard| h4
 d2 -->|/denials| h5

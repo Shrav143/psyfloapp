@@ -66,7 +66,7 @@ interface Input {
   clock: number;
   /** The case's site, or null when the viewer can see only one site (then a site label tells them nothing). */
   site?: SiteId | null;
-  /** The payer workflow the case follows, when it has one (set in New case). */
+  /** The payer workflow the case follows, when it has one (set in New Case). */
   workflow?: Pick<AppliedWorkflow, "name" | "version" | "usedDefault"> | null;
 }
 

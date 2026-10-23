@@ -18,16 +18,16 @@ export function Stat({ tone = "neutral", icon: Icon, value, label, sub, onClick,
       type={onClick ? "button" : undefined}
       onClick={onClick}
       aria-pressed={onClick ? !!selected : undefined}
-      className={cn("flex flex-col items-center gap-0.5 rounded-[18px] border px-4 py-[18px] text-center", TONE[tone], onClick && "transition-transform hover:-translate-y-0.5", selected && "outline-2 outline-offset-[3px] outline-forest", className)}
+      className={cn("flex flex-col items-center gap-0.5 rounded-2xl border px-3 py-3 text-center", TONE[tone], onClick && "transition-transform hover:-translate-y-0.5", selected && "outline-2 outline-offset-[3px] outline-forest", className)}
     >
       {Icon ? (
-        <span className="mb-1 grid h-9 w-9 place-items-center rounded-full bg-white/70">
-          <Icon size={20} className="ico" />
+        <span className="mb-0.5 grid h-7 w-7 place-items-center rounded-full bg-white/70">
+          <Icon size={16} className="ico" />
         </span>
       ) : null}
-      <div className="text-[34px] font-semibold leading-[1.05] tracking-tight">{value}</div>
-      <div className="text-[11.5px] font-medium uppercase tracking-[0.1em]">{label}</div>
-      {sub ? <div className="mt-0.5 text-[12.5px] opacity-85">{sub}</div> : null}
+      <div className="text-[18px] font-semibold leading-[1.1] tracking-tight">{value}</div>
+      <div className="text-[11px] font-medium uppercase tracking-[0.1em]">{label}</div>
+      {sub ? <div className="mt-0.5 text-[12px] opacity-85">{sub}</div> : null}
     </Tag>
   );
 }

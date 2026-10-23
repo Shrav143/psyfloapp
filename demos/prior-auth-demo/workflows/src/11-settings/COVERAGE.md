@@ -32,7 +32,7 @@ Source: `src/pages/settings/SettingsPage.tsx`, `src/pages/settings/SitesAccess.t
 | 'Pause all agents?' pop-up: 'Pause all', 'Cancel', X, Escape, click outside | 40 |
 | 'Resume all agents' and the 'Agents resumed' toast | 40, 50 |
 | One switch off, one switch back on, the mixed states and their toasts | 50 |
-| What each screen does with a pause: New case, Dashboard, Case Manager, Eligibility & Benefits, EMR Connect | 60 |
+| What each screen does with a pause: New Case, Dashboard, Case Manager, Eligibility & Benefits, EMR Connect | 60 |
 | Production kill switch (PRD FR-25) | 40, 60 |
 
 ## Toasts and other
@@ -63,7 +63,7 @@ Source: `src/pages/settings/SettingsPage.tsx`, `src/pages/settings/SitesAccess.t
 ## Looks broken or dead in the demo
 
 - Only Reader and Navigator read their freedom, and only in EMR Connect (Sync now, Fix, Reconnect). The levels of the other fourteen agents are saved and shown but no screen acts on them. The levels card says 'Applied in EMR Connect'.
-- Every agent can be paused. Screens that read the pause: New case (Agents work), Dashboard (Check all now, Navigator), Case Manager (Draft all due reviews, Cadence), Eligibility & Benefits (automatic re-checks, Verify) and EMR Connect (Reader, Navigator). Pausing any other agent only shows the tag and the banner.
+- Every agent can be paused. Screens that read the pause: New Case (Agents work), Dashboard (Check all now, Navigator), Case Manager (Draft all due reviews, Cadence), Eligibility & Benefits (automatic re-checks, Verify) and EMR Connect (Reader, Navigator). Pausing any other agent only shows the tag and the banner.
 - Settings keeps nothing after a reload.
 - Forecaster is listed as 'Estimates the approval chance', while PRD 07 lists predicting approval probability as 'Never until calibrated'.
 - Sentinel appears on Settings but no screen runs it. Only one seeded notification, 'Payer rule changed', is attributed to it.

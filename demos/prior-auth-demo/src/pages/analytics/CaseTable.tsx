@@ -93,7 +93,7 @@ export function CaseTable({ rows, onOpen, showPayer = false, pageSize = 15, star
           }}
           className="max-w-full flex-wrap"
         />
-        <span className="text-[12.5px] text-muted" data-testid="case-count">
+        <span className="text-[12px] text-muted" data-testid="case-count">
           {outcome === "all" ? `${fmt(counts.all)} cases` : `${fmt(shown.length)} of ${fmt(counts.all)} cases`}
           {` · ${fmt(counts.approved)} approved, ${fmt(counts.partial)} in part, ${fmt(counts.denied)} denied`}
         </span>
@@ -156,7 +156,7 @@ export function CaseTable({ rows, onOpen, showPayer = false, pageSize = 15, star
         </div>
       )}
       {pages > 1 ? (
-        <div className="flex items-center justify-between gap-3 pt-3 text-[12.5px] text-muted">
+        <div className="flex items-center justify-between gap-3 pt-3 text-[12px] text-muted">
           <span>
             {at * pageSize + 1} to {Math.min(shown.length, at * pageSize + pageSize)} of {fmt(shown.length)}
           </span>

@@ -71,8 +71,8 @@ export function PayerPanel({ payer, scoped, filters, siteLabel, width, onCases, 
         <section aria-label="Headline figures" className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {v.figures.map((f) => (
             <button key={f.id} type="button" onClick={() => onCases({ ...f.query, payer, title: `${v.name}: ${f.query.title}` })} data-testid={`payer-figure-${f.id}`} className="rounded-2xl border border-edge bg-white px-4 py-3.5 text-left hover:bg-[#FBF8F3]">
-              <div className="text-[11.5px] font-medium tracking-[0.08em] text-muted uppercase">{f.label}</div>
-              <div className="mt-1 text-[26px] leading-none font-semibold tabular-nums">{f.value}</div>
+              <div className="text-[11px] font-medium tracking-[0.08em] text-muted uppercase">{f.label}</div>
+              <div className="mt-1 text-[24px] leading-none font-semibold tabular-nums">{f.value}</div>
               <div className="mt-1.5 text-[12px] text-muted">{compare[f.id]}</div>
               {f.change ? <div className="mt-0.5 text-[12px] text-ink2">{f.change.text}</div> : null}
             </button>
@@ -80,12 +80,12 @@ export function PayerPanel({ payer, scoped, filters, siteLabel, width, onCases, 
         </section>
 
         <section aria-labelledby="tends-title">
-          <h3 id="tends-title" className="font-serif text-[19px] font-semibold">
+          <h3 id="tends-title" className="font-serif text-[18px] font-semibold">
             What this payer tends to do
           </h3>
           <ul className="mt-2 flex flex-col gap-2.5" data-testid="tends">
             {v.insights.map((t) => (
-              <li key={t} className="flex gap-3 text-[14.5px] leading-snug">
+              <li key={t} className="flex gap-3 text-[14px] leading-snug">
                 <span className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-forest" aria-hidden="true" />
                 {t}
               </li>
@@ -95,7 +95,7 @@ export function PayerPanel({ payer, scoped, filters, siteLabel, width, onCases, 
         </section>
 
         <section aria-labelledby="ptrend-title">
-          <h3 id="ptrend-title" className="font-serif text-[19px] font-semibold">
+          <h3 id="ptrend-title" className="font-serif text-[18px] font-semibold">
             Approvals and denials by month
           </h3>
           <p className="mb-2 text-[13px] text-muted">Click a month to list its cases.</p>
@@ -122,7 +122,7 @@ export function PayerPanel({ payer, scoped, filters, siteLabel, width, onCases, 
         </section>
 
         <section aria-labelledby="pdx-title">
-          <h3 id="pdx-title" className="font-serif text-[19px] font-semibold">
+          <h3 id="pdx-title" className="font-serif text-[18px] font-semibold">
             Approval by diagnosis group
           </h3>
           <p className="mb-2 text-[13px] text-muted">Approved as requested. The black tick is the clinic's rate across all payers. Click a bar for its cases.</p>
@@ -163,7 +163,7 @@ export function PayerPanel({ payer, scoped, filters, siteLabel, width, onCases, 
         </section>
 
         <section aria-labelledby="preasons-title">
-          <h3 id="preasons-title" className="font-serif text-[19px] font-semibold">
+          <h3 id="preasons-title" className="font-serif text-[18px] font-semibold">
             Top denial reasons
           </h3>
           <p className="mb-2 text-[13px] text-muted">
@@ -184,7 +184,7 @@ export function PayerPanel({ payer, scoped, filters, siteLabel, width, onCases, 
         </section>
 
         <section aria-labelledby="pcases-title">
-          <h3 id="pcases-title" className="font-serif text-[19px] font-semibold">
+          <h3 id="pcases-title" className="font-serif text-[18px] font-semibold">
             The cases behind these numbers
           </h3>
           <p className="mb-3 text-[13px] text-muted">{fmt(v.rows.length)} decisions in {period.phrase}. Click a case for its summary.</p>

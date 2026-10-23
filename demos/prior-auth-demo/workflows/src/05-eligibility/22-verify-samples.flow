@@ -2,7 +2,7 @@ title: Authorizations › Eligibility & Benefits › Verify › Try a sample
 route: /authorizations/eligibility/verify
 intro: Six chips fill the form with a made-up member who ends in a different answer, so every verdict can be seen without a trick. The last four digits of the member ID script the answer. 'Use sample card' (top right) gives 'Authorization first'. 'More samples' opens five more chips for the checks that need a look (next diagram).
 dir: TD
-also: Demo only: the endings are scripted. Typing the same ending by hand gives the same answer, on Verify and on the Coverage row in New case.
+also: Demo only: the endings are scripted. Typing the same ending by hand gives the same answer, on Verify and on the Coverage row in New Case.
 ---
 start s1 "Open 'Verify a patient'"
 screen sc "Card 'The patient and the service'\nRow 'Try a sample' with six chips and a 'More samples' button, then the card drop zone and the fields"

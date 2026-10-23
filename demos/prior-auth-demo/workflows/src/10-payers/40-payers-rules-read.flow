@@ -1,6 +1,6 @@
 title: Payers › Rules & Instructions › Read the rules
 route: /payers/summit?tab=rules
-intro: One calm page of eight closed groups, each with a one-line summary and a count. A group opens to its rule rows. A rule is stored once, with where it comes from and whether a person verified it, and workflows point at it. Every seeded rule is a demo sample and says Unverified; nothing here says a payer confirmed anything. Where the payer's saved rules already hold a rule (submission windows, backdating, no authorization needed, peer-to-peer and appeals, document lists, the Caller script, the reach lines), the row is read through from them, so Eligibility and New case keep reading the same data.
+intro: One calm page of eight closed groups, each with a one-line summary and a count. A group opens to its rule rows. A rule is stored once, with where it comes from and whether a person verified it, and workflows point at it. Every seeded rule is a demo sample and says Unverified; nothing here says a payer confirmed anything. Where the payer's saved rules already hold a rule (submission windows, backdating, no authorization needed, peer-to-peer and appeals, document lists, the Caller script, the reach lines), the row is read through from them, so Eligibility and New Case keep reading the same data.
 dir: TD
 ---
 start s1 "Click the 'Rules & Instructions' tab"

@@ -16,7 +16,7 @@ export function AppliedList({ recs }: { recs: Rec[] }) {
             <span className="flex-1 font-semibold">{r.title}</span>
             <Pill tone="good">+{plural(gainOf(r), "pt")} · applied</Pill>
           </summary>
-          <ul className="mt-2 ml-[30px] list-disc pl-4 text-[13.5px] text-ink2">
+          <ul className="mt-2 ml-[30px] list-disc pl-4 text-[13px] text-ink2">
             {r.bullets.map((b) => <li key={b}>{b}</li>)}
           </ul>
         </details>

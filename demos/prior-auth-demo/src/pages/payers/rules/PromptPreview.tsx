@@ -21,7 +21,7 @@ export function PromptPreview({ name, instructions }: { name: string; instructio
   return (
     <section aria-label="How a node prompt combines with these instructions" className="border-t border-line px-6 py-5">
       <div className="flex items-center gap-1.5">
-        <h4 className="font-serif text-[17px] font-semibold">How a node prompt combines with these</h4>
+        <h4 className="font-serif text-[16px] font-semibold">How a node prompt combines with these</h4>
         <InfoTip label="About the combined prompt">An agent node sends its own prompt after the safeguards and the payer-wide instructions. This preview shows that text. It is a Demo simulation: no model is called.</InfoTip>
       </div>
       <Field label="A node prompt to try" className="mt-3" hint="Type any node prompt. Variables such as {{payer_name}} are filled in from the case."><TextArea value={node} onChange={(e) => setNode(e.target.value)} className="min-h-[72px]" /></Field>

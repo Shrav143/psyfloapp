@@ -16,7 +16,7 @@ export function DocumentSheet({ blocks, highlightId, onBlockClick, className, pa
   const hl = (id?: string) => (id && id === highlightId ? "outline-2 outline-offset-2 outline-risk bg-[#fdf3ec]" : id && onBlockClick ? "hover:bg-[#fdf9ef] cursor-pointer" : "");
   const click = (id?: string) => (id && onBlockClick ? () => onBlockClick(id) : undefined);
   return (
-    <div className={cn("rounded-lg border border-[#E7DFD3] bg-white px-9 py-8 font-serif text-[13.5px] leading-[1.55] text-[#2b2823] shadow-[0_1px_0_rgba(0,0,0,0.03)]", className)}>
+    <div className={cn("rounded-lg border border-[#E7DFD3] bg-white px-9 py-8 font-serif text-[13px] leading-[1.55] text-[#2b2823] shadow-[0_1px_0_rgba(0,0,0,0.03)]", className)}>
       {blocks.map((b, i) => {
         switch (b.kind) {
           case "letterhead":
@@ -28,7 +28,7 @@ export function DocumentSheet({ blocks, highlightId, onBlockClick, className, pa
             );
           case "title":
             return (
-              <div key={i} className="mb-3 text-center text-[15px] font-bold tracking-wide uppercase">
+              <div key={i} className="mb-3 text-center text-[14px] font-bold tracking-wide uppercase">
                 {b.text}
               </div>
             );

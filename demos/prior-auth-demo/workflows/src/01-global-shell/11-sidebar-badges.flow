@@ -21,7 +21,7 @@ endgroup
 group gB "What each badge counts, and what moves it (Both sites)"
   process b1 "'Dashboard'  3\nRequests at stage 'Info requested'\nFalls when an answer is sent"
   process b2 "'Authorizations'  19\nOpen queue items in 'Act now' (5) and 'Due within 24 hours' (14)\n'Due this week' is not counted"
-  process b3 "'New case'  4  (listed under Authorizations)\nReferrals that are New or In review and not yet opened\nFalls when a referral is opened"
+  process b3 "'New Case'  4  (listed under Authorizations)\nReferrals that are New or In review and not yet opened\nFalls when a referral is opened"
   process b4 "'Eligibility & Benefits'  9  (listed under Authorizations)\nPatients not cleared: 4 'Authorization first', 5 'Fix before billing'"
   process b5 "'Denial Intelligence'  8\nRequests at stage 'Appeal' (open denials)\nFalls when a denial is settled"
   process b6 "'Case Manager'  11\n3 cases that need a person (2 questions, 1 signature)\nplus 8 reviews that 'Need your update'"

@@ -1,4 +1,4 @@
-/* The one place New case reaches into the Payers module's engine and store. Everything else in this folder imports from here, so the contract with the engine is one short file. */
+/* The one place New Case reaches into the Payers module's engine and store. Everything else in this folder imports from here, so the contract with the engine is one short file. */
 import { useMemo } from "react";
 import { approveAll, runWorkflow } from "@/data/workflow/engine";
 import { matchWorkflow } from "@/data/workflow/match";

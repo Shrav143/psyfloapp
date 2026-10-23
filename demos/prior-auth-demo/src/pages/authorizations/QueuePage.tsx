@@ -116,7 +116,7 @@ export default function QueuePage() {
 
   return (
     <Page>
-      <PageHeader title={title} sub={sub} actions={<Button variant="primary" icon={Plus} onClick={() => navigate(paths.newCase())}>New case</Button>} />
+      <PageHeader title={title} sub={sub} actions={<Button variant="primary" icon={Plus} onClick={() => navigate(paths.newCase())}>New Case</Button>} />
       {signalHidden || affected === 0 ? null : (
         <SignalBanner affected={affected} active={filters.signalOnly} onReview={() => setFilter("signalOnly", true)} onClear={() => setFilter("signalOnly", false)} onHide={useStore.getState().hideSignal} />
       )}

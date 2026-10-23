@@ -103,7 +103,7 @@ export function MultiChips({ label, values, onChange, options, help, empty }: { 
         {options.map((o) => {
           const on = values.includes(o.value);
           return (
-            <button key={o.value} type="button" role="checkbox" aria-checked={on} onClick={() => onChange(on ? values.filter((v) => v !== o.value) : [...values, o.value])} className={cn("inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[12.5px] font-medium", on ? "border-forest bg-[#F3F7F4] text-forest" : "border-field bg-white text-ink2 hover:bg-tile")}>
+            <button key={o.value} type="button" role="checkbox" aria-checked={on} onClick={() => onChange(on ? values.filter((v) => v !== o.value) : [...values, o.value])} className={cn("inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[12px] font-medium", on ? "border-forest bg-[#F3F7F4] text-forest" : "border-field bg-white text-ink2 hover:bg-tile")}>
               {on ? <Check size={12} className="ico" aria-hidden="true" /> : null}
               {o.label}
             </button>
@@ -118,7 +118,7 @@ export function MultiChips({ label, values, onChange, options, help, empty }: { 
 export function PanelHeading({ children, right }: { children: ReactNode; right?: ReactNode }) {
   return (
     <div className="flex items-center justify-between gap-2">
-      <h4 className="m-0 text-[11.5px] font-medium tracking-[0.1em] text-muted uppercase">{children}</h4>
+      <h4 className="m-0 text-[11px] font-medium tracking-[0.1em] text-muted uppercase">{children}</h4>
       {right}
     </div>
   );
@@ -133,7 +133,7 @@ export function Fold({ title, summary, defaultOpen = false, children, className 
       <h4 className="m-0">
         <button type="button" aria-expanded={open} aria-controls={id} onClick={() => setOpen((o) => !o)} className="flex w-full items-center gap-2 rounded-2xl px-3.5 py-2.5 text-left hover:bg-tile">
           <span className="min-w-0 flex-1">
-            <span className="block text-[13.5px] font-semibold text-ink">{title}</span>
+            <span className="block text-[13px] font-semibold text-ink">{title}</span>
             {summary && !open ? <span className="block truncate text-xs font-normal text-muted">{summary}</span> : null}
           </span>
           <ChevronDown size={16} className={cn("ico text-muted transition-transform", open && "rotate-180")} aria-hidden="true" />

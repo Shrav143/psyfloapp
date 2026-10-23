@@ -1,4 +1,4 @@
-title: Authorizations › New case › Clinical documentation › The checklist and Continue
+title: Authorizations › New Case › Clinical documentation › The checklist and Continue
 route: /authorizations/new/:draftId (step 3 of 5, 'Clinical documentation')
 intro: Step 3 is one page: a drop zone and one checklist card with a clinical summary and a document list. The required documents come from the payer's saved list for the level of care (Payers › Rules & Instructions › Clinical documentation). What a request of this type usually carries is added and labelled 'Typical for ...', never as a payer's rule. Nothing here blocks: what is missing is listed again, with a fix, on Review & submit.
 dir: TD
@@ -16,11 +16,11 @@ group gPage "The page"
   screen ft "Footer bar, always in view\n'Back', 'Save as draft', 'Continue' and a hint line"
 endgroup
 
-goto g41 "Continues in: Authorizations › New case › Clinical documentation › Drop files and let Reader sort them"
-goto g45 "Continues in: Authorizations › New case › Clinical documentation › Pull a chart from EMR Connect"
-goto g42 "Continues in: Authorizations › New case › Clinical documentation › Required and typical documents by type"
-goto g43 "Continues in: Authorizations › New case › Clinical documentation › Clinical summary and document rows"
-goto g44 "Continues in: Authorizations › New case › Clinical documentation › Replace a document or mark it not available"
+goto g41 "Continues in: Authorizations › New Case › Clinical documentation › Drop files and let Reader sort them"
+goto g45 "Continues in: Authorizations › New Case › Clinical documentation › Pull a chart from EMR Connect"
+goto g42 "Continues in: Authorizations › New Case › Clinical documentation › Required and typical documents by type"
+goto g43 "Continues in: Authorizations › New Case › Clinical documentation › Clinical summary and document rows"
+goto g44 "Continues in: Authorizations › New Case › Clinical documentation › Replace a document or mark it not available"
 
 process pCount "'N of M ready' counts the required documents and the typical ones for the type\nA document marked not available counts as ready: the person dealt with it\nRecommended documents are not counted"
 process pLine "The footer and the rows read the same list, so they always agree"
@@ -40,9 +40,9 @@ group gBtn "Footer buttons"
   click cCancel "Click 'Cancel', press Escape, or click outside"
   click cStart "Click 'Start the agents'"
 endgroup
-goto gSave "Continues in: Authorizations › New case › Save as draft and leave"
-goto gAgents "Continues in: Authorizations › New case › Authorization preparation › Start the run and watch it"
-goto gElig "Continues in: Authorizations › New case › Eligibility & Benefits › Initial authorization"
+goto gSave "Continues in: Authorizations › New Case › Save as draft and leave"
+goto gAgents "Continues in: Authorizations › New Case › Authorization preparation › Start the run and watch it"
+goto gElig "Continues in: Authorizations › New Case › Eligibility & Benefits › Initial authorization"
 
 s1 --> sc
 s2 --> sc

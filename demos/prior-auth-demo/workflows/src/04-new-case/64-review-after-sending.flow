@@ -1,4 +1,4 @@
-title: Authorizations › New case › Review & submit › After sending
+title: Authorizations › New Case › Review & submit › After sending
 route: /authorizations/case/R-1701, then /dashboard, /authorizations and /manager
 intro: What changes once the request is signed and sent: the new case opens, the Dashboard shows it as Received, the Authorizations queue lists it, Case Manager stops listing it under Being prepared, and the patient's record gains the request. An existing patient is never copied: the request joins the patient, the treatment episode and the authorization it belongs to. The draft's own address turns into a 'was sent' page.
 dir: TD

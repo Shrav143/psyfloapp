@@ -33,7 +33,7 @@ export function Lifecycle({ chips, ledger, active, onPick }: { chips: StateChip[
                 <span className={cn("text-[14px] font-medium", on && "text-forest")}>{c.label}</span>
                 <span className="text-[18px] font-semibold leading-none tabular-nums">{c.count}</span>
               </span>
-              <span className={cn("text-[12.5px]", c.flag ? FLAG[c.flag] : "text-muted")}>{c.note}</span>
+              <span className={cn("text-[12px]", c.flag ? FLAG[c.flag] : "text-muted")}>{c.note}</span>
             </button>
           );
         })}
@@ -47,7 +47,7 @@ export function Lifecycle({ chips, ledger, active, onPick }: { chips: StateChip[
                   <ArrowUpRight size={14} className="ico self-center text-muted" aria-hidden="true" />
                 </span>
               </span>
-              <span className="text-[12.5px] text-muted">{l.note}</span>
+              <span className="text-[12px] text-muted">{l.note}</span>
             </Link>
           ))}
         </div>

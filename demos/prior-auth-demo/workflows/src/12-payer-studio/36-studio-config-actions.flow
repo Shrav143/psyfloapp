@@ -6,7 +6,7 @@ dir: TD
 start s1 "Select an action step"
 decision d1 "Which kind of action?"
 screen a1 "Create task: 'Task', 'For', 'Due in'\nSend notification: 'Tell', 'Message'\nGenerate document: 'Document' (cover sheet, notice of admission, letter of medical necessity, appeal letter)"
-screen a2 "Request human approval: 'Who approves', 'What they approve'\nA clinician, an authorization coordinator or a manager\nThe real sign-off gate in New case: only a clinician signs, nothing is sent until they do"
+screen a2 "Request human approval: 'Who approves', 'What they approve'\nA clinician, an authorization coordinator or a manager\nThe real sign-off gate in New Case: only a clinician signs, nothing is sent until they do"
 screen a3 "Update authorization status: 'Status' (Draft, Ready for review, Submitted, Acknowledged,\nUnder review, Info requested, Approved, Denied, Completed)\nSchedule follow-up: 'After', 'Counted in', 'How'"
 screen a4 "Escalate case: 'Escalate to', 'Reason'\nUpdate Case Manager: 'History line' and 'Book the next review'\n(writes a real line to the case's history)"
 screen ph "Prepare phone call: 'What Caller says' (the script)\nand 'Place the call once approved'"

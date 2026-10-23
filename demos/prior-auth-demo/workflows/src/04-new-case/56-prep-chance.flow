@@ -1,4 +1,4 @@
-title: Authorizations › New case › Authorization preparation › Approval chance and ways to raise it
+title: Authorizations › New Case › Authorization preparation › Approval chance and ways to raise it
 route: /authorizations/new/:draftId (step 4 of 5, the right column; also on Review & submit)
 intro: The approval chance is a ring that climbs as agents finish, with where it started and a likely range. Two optional actions can raise it. It estimates how well the paperwork fits this payer's past decisions and never decides care. Required documents that are not in the case, or a start date the payer's rule does not allow, hold it back.
 dir: TD
@@ -7,7 +7,7 @@ start s1 "Open step 4 with the agents running or done"
 screen sc "Right column\nCard 'Approval chance': the ring, 'started at 62% → 88%', the likely range\nCard 'To raise it further' with two ticks"
 click cBack "Open Review & submit"
 screen sRev "Review & submit shows the same number\n'Strong · likely 83-92%'\n'Summit usually decides in about 1.5 days. Based on 1,248 similar cases.'\nThe 'Held back' sentence is under 'What is missing'"
-goto gMis "Continues in: Authorizations › New case › Review & submit › What is missing"
+goto gMis "Continues in: Authorizations › New Case › Review & submit › What is missing"
 group gChance "Approval chance panel"
   process pRing "Ring starts at 62% ('started at 62%')\nIt climbs as Verify, Criteria, Historian and Placement finish: 65, 72, 78, 83"
   process pPill "Pill: 'Moderate so far · likely 53-70%'"

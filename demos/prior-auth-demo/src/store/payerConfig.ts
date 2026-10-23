@@ -18,7 +18,7 @@ import type { AppState } from "./index";
 
 /* Payers workflow, rules, documents, changes (owner: denials agent). One PayerConfig per payer id, plus the edit log.
    Saving an edit applies to new drafts at once; open drafts follow when the user clicks Update drafts. Requests already sent keep what they were sent with.
-   Which drafts are open is read live from the Dashboard requests and New case drafts (openDrafts), never from a stored list. */
+   Which drafts are open is read live from the Dashboard requests and New Case drafts (openDrafts), never from a stored list. */
 
 export type PayerDetailsPatch = Partial<Pick<PayerConfig, "planLine" | "reachedBy" | "reach">> & { noticeDue?: string; backup?: string };
 
@@ -65,7 +65,7 @@ export const createPayerConfigSlice: StateCreator<AppState, [], [], PayerConfigS
   /** An edit was saved: new drafts use it now, and open drafts wait for Update drafts. */
   const edited = (id: string, extra?: (c: PayerConfig) => Partial<PayerConfig>) => patchConfig(id, (c) => ({ ...c, unapplied: c.unapplied + 1, ...extra?.(c) }));
 
-  /** Put each open draft back in front of a person and record it for Case Manager and New case. Only unsent drafts come here: a request the payer already has is never rewritten. */
+  /** Put each open draft back in front of a person and record it for Case Manager and New Case. Only unsent drafts come here: a request the payer already has is never rewritten. */
   const redraft = (drafts: OpenDraft[], why: string, agent: AgentKey, changeId: string, payerId: string) => {
     const { updateRequest, addEvent } = get();
     const name = AGENTS[agent].name;
@@ -270,7 +270,7 @@ export function initPayerConfigPersistence(store: StoreApi<AppState>): () => voi
 /** Sidebar badge: payers with a change waiting for a person. */
 export const selectPayersBadge = (s: AppState): number => Object.values(s.payerConfig).filter((c) => c.pending).length;
 
-/** The document list for one payer and program, as saved on Payers › Documents. New case reads it for its document checks. */
+/** The document list for one payer and program, as saved on Payers › Documents. New Case reads it for its document checks. */
 export const selectPayerDocs = (s: AppState, payerId: string, program: Program): DocItem[] => s.payerConfig[payerId]?.docs[program] ?? [];
 
 

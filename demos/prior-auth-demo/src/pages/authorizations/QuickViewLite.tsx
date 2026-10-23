@@ -61,12 +61,12 @@ export function QuickViewLite({ item, onClose }: { item: QueueItem; onClose: () 
     >
       <div className="flex flex-col gap-5">
         <section aria-label="Next action" className="rounded-2xl border border-forest/25 bg-[#F3F7F4] px-4 py-3.5">
-          <div className="text-[15px] font-semibold leading-snug"><span className="text-forest">Next:</span> {next.text}</div>
-          {next.why ? <div className="mt-0.5 text-[13.5px] text-ink2">{next.why}</div> : null}
+          <div className="text-[14px] font-semibold leading-snug"><span className="text-forest">Next:</span> {next.text}</div>
+          {next.why ? <div className="mt-0.5 text-[13px] text-ink2">{next.why}</div> : null}
         </section>
         <KeyValue className="grid-cols-[130px_1fr] text-[14px]" items={rows} />
         <div>
-          <h3 className="mb-3 font-serif text-xl font-semibold">History</h3>
+          <h3 className="mb-3 font-serif text-[18px] font-semibold">History</h3>
           {recent.length === 0 ? (
             <p className="m-0 text-sm text-muted">Nothing has happened on this request yet. Events appear when an agent or a person acts on it.</p>
           ) : (

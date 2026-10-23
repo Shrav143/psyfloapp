@@ -32,7 +32,7 @@ goto g4 "Continues in: Payers › History & Changes › Edit audit"
 goto g5 "Continues in: Payers › History & Changes › Suggestions from Historian"
 goto g6 "Continues in: Payers › History & Changes › Earlier process view"
 goto g7 "Continues in: Payers › History & Changes › A change with no drafts"
-process dl "The drafts it names are read live\nThis payer's requests in 'Preparing' and saved New case drafts\nCardinal: I-2207. Requests already sent are never named"
+process dl "The drafts it names are read live\nThis payer's requests in 'Preparing' and saved New Case drafts\nCardinal: I-2207. Requests already sent are never named"
 end e1 "Person knows what changed and what is waiting"
 
 s1 --> tab --> dp

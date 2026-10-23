@@ -1,10 +1,10 @@
-title: Authorizations › New case › Authorization type
+title: Authorizations › New Case › Authorization type
 route: /authorizations/new/:draftId (the dropdown under the title) and ?type=
 intro: One dropdown, 'Authorization type', decides what Intake asks, how Eligibility & Benefits behaves, which documents are typical, what the justification says and which request type the demo records. It can be set by a link, by the Dashboard or by hand.
 dir: TD
 also: Demo only: the type is the demo's own request type. A real payer's form has its own fields.
 ---
-start s1 "Open New case\nThe dropdown starts on 'Initial authorization'"
+start s1 "Open New Case\nThe dropdown starts on 'Initial authorization'"
 start s2 "Open a link with ?type= or paths.newCase({type})\ninitial, concurrent, reauth, modify or retro"
 start s3 "Click 'Authorization type' under the page title"
 decision dKnown "Is the value one of the five?\nAnd has the case not started and not been sent"
@@ -37,13 +37,13 @@ group gEffect "What the type changes"
   process x4 "Authorization preparation: the justification's heading and content"
   process x5 "Review & submit: the 'Request' line and the history of the request"
 endgroup
-goto g1 "Continues in: Authorizations › New case › Intake › Initial authorization"
-goto g2 "Continues in: Authorizations › New case › Intake › Concurrent review"
-goto g3 "Continues in: Authorizations › New case › Intake › Reauthorization / renewal"
-goto g4 "Continues in: Authorizations › New case › Intake › Modification / extension"
-goto g5 "Continues in: Authorizations › New case › Intake › Retroactive authorization"
-goto gDocs "Continues in: Authorizations › New case › Clinical documentation › Required and typical documents by type"
-goto gJust "Continues in: Authorizations › New case › Authorization preparation › Justification by type"
+goto g1 "Continues in: Authorizations › New Case › Intake › Initial authorization"
+goto g2 "Continues in: Authorizations › New Case › Intake › Concurrent review"
+goto g3 "Continues in: Authorizations › New Case › Intake › Reauthorization / renewal"
+goto g4 "Continues in: Authorizations › New Case › Intake › Modification / extension"
+goto g5 "Continues in: Authorizations › New Case › Intake › Retroactive authorization"
+goto gDocs "Continues in: Authorizations › New Case › Clinical documentation › Required and typical documents by type"
+goto gJust "Continues in: Authorizations › New Case › Authorization preparation › Justification by type"
 
 s1 --> s3
 s2 --> dKnown

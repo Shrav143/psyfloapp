@@ -17,7 +17,7 @@ export function AgentRow({ agent, state, text, elapsed, skipped, onAnswer, onRet
       <AgentBadge agent={agent} size={36} />
       <div className="min-w-0 flex-1">
         <div className="font-semibold">{AGENTS[agent].name}</div>
-        <div className="text-[13.5px] text-muted">{line}</div>
+        <div className="text-[13px] text-muted">{line}</div>
       </div>
       {state === "done" && skipped ? (
         <Pill tone="mid" dot>

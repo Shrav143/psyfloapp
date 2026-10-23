@@ -30,13 +30,13 @@ export function FitTab({ r }: { r: Referral }) {
         <CardBody className="flex flex-col gap-5">
           <div className="grid grid-cols-2 gap-4">
             <div className="rounded-2xl border border-tile-edge bg-tile px-4 py-3.5">
-              <div className="text-[11.5px] font-medium uppercase tracking-[0.1em] text-muted">The referral supports</div>
-              <div className="mt-1 text-xl font-semibold">{PROGRAM_LABEL[f.suggested]}</div>
+              <div className="text-[11px] font-medium uppercase tracking-[0.1em] text-muted">The referral supports</div>
+              <div className="mt-1 text-[18px] font-semibold">{PROGRAM_LABEL[f.suggested]}</div>
               <div className="mt-2 flex items-center gap-2.5 text-sm"><b>{f.confidence}%</b> confident<Meter value={f.confidence} color="#2F6F5C" className="w-24" /></div>
             </div>
             <div className="rounded-2xl border border-tile-edge bg-tile px-4 py-3.5">
-              <div className="text-[11.5px] font-medium uppercase tracking-[0.1em] text-muted">Next best</div>
-              <div className="mt-1 text-xl font-semibold">{PROGRAM_LABEL[f.alt]}</div>
+              <div className="text-[11px] font-medium uppercase tracking-[0.1em] text-muted">Next best</div>
+              <div className="mt-1 text-[18px] font-semibold">{PROGRAM_LABEL[f.alt]}</div>
               <div className="mt-2 flex items-center gap-2.5 text-sm"><b>{f.altConfidence}%</b> confident<Meter value={f.altConfidence} color="#A9A59C" className="w-24" /></div>
             </div>
           </div>

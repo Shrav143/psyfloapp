@@ -1,13 +1,13 @@
 title: Authorizations › Eligibility & Benefits › The details panel
 route: /authorizations/eligibility/R-0988
-intro: The payment checks and how a check was done are secondary, so they sit in a side panel, 'Verification details', instead of a section of the page. The same panel opens from the result and from step 2 of New case ('View full verification details'). On the result the panel opens on the detail only, because the summary is already on the page. From New case it starts with the summary and ends with a button to open the full result.
+intro: The payment checks and how a check was done are secondary, so they sit in a side panel, 'Verification details', instead of a section of the page. The same panel opens from the result and from step 2 of New Case ('View full verification details'). On the result the panel opens on the detail only, because the summary is already on the page. From New Case it starts with the summary and ends with a button to open the full result.
 dir: TD
 ---
 start s1 "On a result, click 'View full verification details'"
-start s2 "In New case step 2, click 'View full verification details'"
+start s2 "In New Case step 2, click 'View full verification details'"
 overlay o1 "Side panel 'Verification details' slides in from the right\nSub line: initials, age, payer, level of care"
 decision q1 "Opened from the result page itself?"
-screen a1 "From New case: the summary comes first\n'Eligibility', 'Benefits', 'What this service needs', and the existing authorization\nthen any warnings"
+screen a1 "From New Case: the summary comes first\n'Eligibility', 'Benefits', 'What this service needs', and the existing authorization\nthen any warnings"
 screen a2 "From the result: warnings only if there are any, because the page above already shows the summary"
 screen b1 "'Payment checks'\n'6 of 7 pass, 1 needs a look. Every line has to pass for the clinic to be reimbursed.'\nSeven rows, one chip each"
 screen b2 "'How this was checked'\nOne row per agent, with the time it took\nThen 'Next checks'"
@@ -16,12 +16,12 @@ decision q2 "Was that row already open?"
 process p1 "Row closes"
 process p2 "Its answer opens under it\nAny other open row closes"
 screen b3 "'About this check'\nPayer, plan type and routing, member (masked), dates of service,\nlast verified, source 'Simulated check against the payer portal'\n'Active coverage does not mean this service is covered.'"
-click f1 "Click 'Open the full result' (footer, only from New case)"
+click f1 "Click 'Open the full result' (footer, only from New Case)"
 process p3 "Opens /authorizations/eligibility/R-0988"
 click e1 "Press Escape, click the dimmed area or click the close button"
 process p4 "The panel closes, one layer at a time\nThe page and its place on the page are as they were"
 goto g1 "Continues in: Authorizations › Eligibility & Benefits › Result › What the page shows"
-goto g2 "Continues in: Authorizations › New case › How a case starts and resumes"
+goto g2 "Continues in: Authorizations › New Case › How a case starts and resumes"
 
 s1 --> o1
 s2 --> o1

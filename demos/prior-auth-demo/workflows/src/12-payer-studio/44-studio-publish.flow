@@ -1,6 +1,6 @@
 title: Payers › Workflow Builder › Publish a workflow
 route: /payers/summit?tab=builder
-intro: Publishing needs a clean check and a reason. It snapshots a version, makes it the one New case matches, and replaces the earlier published version. Cases already in progress keep the version they started with, and nothing already sent is changed.
+intro: Publishing needs a clean check and a reason. It snapshots a version, makes it the one New Case matches, and replaces the earlier published version. Cases already in progress keep the version they started with, and nothing already sent is changed.
 dir: TD
 ---
 start s1 "Click 'Publish'"
@@ -23,7 +23,7 @@ click c2 "Click 'Cancel' or Escape"
 endx e2 "Nothing published"
 toast t2 "If the store's own check finds a blocker: 'cannot be published yet'\nwith the first problem, and the panel lists them"
 end e1 "Published"
-goto g1 "Continues in: Authorizations › New case › Workflow › Match and pin the payer workflow"
+goto g1 "Continues in: Authorizations › New Case › Workflow › Match and pin the payer workflow"
 
 s1 --> d1
 d1 -->|Yes| g0

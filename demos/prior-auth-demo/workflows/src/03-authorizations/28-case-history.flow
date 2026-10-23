@@ -16,7 +16,7 @@ process c1 "The section closes"
 group gS "Where the lines come from"
   store s1 "The request's events in the store\nAgents: Reader, Verify, Scribe, Navigator ...\nThe payer: 'The payer asked for more information'"
   store s2 "What you did on this page\n'You added clinical context', 'You refined the recommendations', 'You dismissed ...', 'You edited the draft ...', 'You sent the draft back to Scribe'\nAgent work you started: 'Scribe applied Name the step-down provider'"
-  store s3 "Signing in New case\n'You signed as Dr. Rivera (clinician) and sent the request'\n'Navigator sent the request through the payer's portal'\n'Navigator saved the receipt to the case'"
+  store s3 "Signing in New Case\n'You signed as Dr. Rivera (clinician) and sent the request'\n'Navigator sent the request through the payer's portal'\n'Navigator saved the receipt to the case'"
 endgroup
 process dd "The person is the signed-in user, Jordan Perez\nWho signed is in the text, because only a clinician can sign"
 process rd "Read only\nNo button on a line does anything"

@@ -93,8 +93,8 @@ export function ReviewStep({ draft, env }: { draft: CaseDraft; env: CaseEnv }) {
           ) : (
             <Card>
               <CardBody className="flex flex-col items-start gap-3">
-                <h3 className="font-serif text-[21px] font-semibold">The packet is built when the agents finish</h3>
-                <p className="text-[13.5px] text-muted">Scribe drafts the justification and Packet assembles the forms in Authorization preparation. You can read what is missing above and fix it now.</p>
+                <h3 className="font-serif text-[18px] font-semibold">The packet is built when the agents finish</h3>
+                <p className="text-[13px] text-muted">Scribe drafts the justification and Packet assembles the forms in Authorization preparation. You can read what is missing above and fix it now.</p>
                 <Button size="sm" onClick={() => patch(draft.id, stepPatch(3))}>Go to Authorization preparation</Button>
               </CardBody>
             </Card>

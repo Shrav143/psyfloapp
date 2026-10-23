@@ -1,4 +1,4 @@
-title: Authorizations › New case › Workflow › The case changed after the workflow started
+title: Authorizations › New Case › Workflow › The case changed after the workflow started
 route: /authorizations/new/:draftId (the Workflow line and the 'Review the workflow match' side panel)
 intro: Once the workflow has run past Intake, a change to the payer, the level of care or the Authorization type does not switch the workflow behind the person's back. The line says the case details changed and offers 'Review the match'. The side panel shows the workflow that would match now. A person decides, and the decision is written to the case's history.
 dir: TD
@@ -19,7 +19,7 @@ toast t1 "'Workflow applied'"
 click c3 "Click 'Keep version 3', press Escape, or click outside"
 end e1 "The case follows the new match"
 endx e2 "The case keeps its workflow"
-goto g1 "Continues in: Authorizations › New case › Workflow › Default process and equal matches"
+goto g1 "Continues in: Authorizations › New Case › Workflow › Default process and equal matches"
 
 s1 --> p1 --> d1
 d1 -->|No| p2 --> e2

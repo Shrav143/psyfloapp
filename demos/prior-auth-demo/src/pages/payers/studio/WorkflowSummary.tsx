@@ -25,7 +25,7 @@ export function WorkflowSummary({ workflow, issues, rules, attempted, onGoTo, on
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <header className="border-b border-line px-4 pt-4 pb-3.5">
-        <h3 className="m-0 font-serif text-[19px] leading-tight font-semibold">This workflow</h3>
+        <h3 className="m-0 font-serif text-[18px] leading-tight font-semibold">This workflow</h3>
         <p className="mt-1 mb-0 text-[13px] text-muted">
           {workflow.nodes.length} steps and {workflow.edges.length} lines. Select a step to change it.
         </p>
@@ -35,13 +35,13 @@ export function WorkflowSummary({ workflow, issues, rules, attempted, onGoTo, on
           <section aria-label="Checks">
             <PanelHeading>Checks</PanelHeading>
             {attempted && errors.length ? (
-              <p role="alert" className="mt-2 mb-0 flex items-start gap-2 rounded-xl bg-risk-bg px-3 py-2.5 text-[13.5px] font-semibold text-risk-ink">
+              <p role="alert" className="mt-2 mb-0 flex items-start gap-2 rounded-xl bg-risk-bg px-3 py-2.5 text-[13px] font-semibold text-risk-ink">
                 <OctagonX size={16} className="ico mt-0.5" aria-hidden="true" />
                 Cannot publish yet: {errors.length} {errors.length === 1 ? "thing needs" : "things need"} fixing.
               </p>
             ) : null}
             {issues.length === 0 ? (
-              <p className="mt-2 mb-0 flex items-start gap-2 text-[13.5px] text-good-ink">
+              <p className="mt-2 mb-0 flex items-start gap-2 text-[13px] text-good-ink">
                 <CheckCircle2 size={16} className="ico mt-0.5 text-good" aria-hidden="true" />
                 No problems found. It can be published.
               </p>
@@ -54,7 +54,7 @@ export function WorkflowSummary({ workflow, issues, rules, attempted, onGoTo, on
                     ))}
                   </ul>
                 ) : (
-                  <p className="m-0 flex items-start gap-2 text-[13.5px] text-good-ink">
+                  <p className="m-0 flex items-start gap-2 text-[13px] text-good-ink">
                     <CheckCircle2 size={16} className="ico mt-0.5 text-good" aria-hidden="true" />
                     Nothing blocks publishing.
                   </p>
@@ -128,7 +128,7 @@ function IssueRow({ issue: i, title, onGoTo }: { issue: ValidationIssue; title?:
         </span>
       </div>
       {i.nodeId ? (
-        <button type="button" onClick={() => onGoTo(i.nodeId as string)} className="mt-1.5 ml-[22px] inline-flex items-center gap-1 text-[12.5px] font-semibold underline-offset-2 hover:underline">
+        <button type="button" onClick={() => onGoTo(i.nodeId as string)} className="mt-1.5 ml-[22px] inline-flex items-center gap-1 text-[12px] font-semibold underline-offset-2 hover:underline">
           <Crosshair size={13} className="ico" aria-hidden="true" /> Go to node
         </button>
       ) : null}

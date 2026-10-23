@@ -37,8 +37,8 @@ export function ReferralStart({ onOpen, onManual, patients }: { onOpen: (referra
     <>
       <section aria-labelledby="start-title" className="flex flex-col gap-3">
         <div>
-          <h2 id="start-title" className="font-serif text-[22px] font-semibold tracking-tight">Start with a referral or patient</h2>
-          <p className="mt-0.5 text-[13.5px] text-muted">Drop the referral documents and Reader lists what is missing, pick one that already arrived, find a patient who is known, or create the case by hand.</p>
+          <h2 id="start-title" className="font-serif text-[18px] font-semibold tracking-tight">Start with a referral or patient</h2>
+          <p className="mt-0.5 text-[13px] text-muted">Drop the referral documents and Reader lists what is missing, pick one that already arrived, find a patient who is known, or create the case by hand.</p>
         </div>
         <FileDrop
           variant="panel"

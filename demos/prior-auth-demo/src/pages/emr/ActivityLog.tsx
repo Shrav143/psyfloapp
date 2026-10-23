@@ -22,7 +22,7 @@ export function ActivityLog({ activity, clock }: { activity: EmrActivity[]; cloc
     <section aria-labelledby="activity-title">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h4 id="activity-title" className="font-serif text-[17px] font-semibold">Recent activity</h4>
+          <h4 id="activity-title" className="font-serif text-[16px] font-semibold">Recent activity</h4>
           <p className="mt-0.5 text-[13px] text-muted">Every read and write is logged</p>
         </div>
         {activity.length > SHOWN ? <Button size="sm" variant="ghost" onClick={() => setAll(true)}>See all {activity.length}</Button> : null}

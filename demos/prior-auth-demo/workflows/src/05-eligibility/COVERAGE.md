@@ -79,18 +79,18 @@ All five reasons for 'Fix before billing' can be reached, and Verify re-checks o
 | One row 'Payment checks and how this was checked' with the one-line summary ('6 of 7 pass, 1 needs a look') and the button 'View full verification details' | Opens the side panel 'Verification details' | 40, 63 |
 | Side panel 'Verification details', section 'Payment checks' (seven rows and their chips) | Read-only. When coverage is not found: the first row and one grey row only | 42, 43, 63 |
 | Side panel, section 'How this was checked' (agents' rows, accordion, one open at a time) and 'Next checks' | Opens an answer; 'Next checks' is read-only and starts with the booked re-check when there is one | 52, 63 |
-| Side panel, section 'About this check'; footer 'Open the full result' (only when the panel is opened from New case); Escape, the close button or a click outside closes it | Read-only; the footer button opens the result | 63 |
+| Side panel, section 'About this check'; footer 'Open the full result' (only when the panel is opened from New Case); Escape, the close button or a click outside closes it | Read-only; the footer button opens the result | 63 |
 | Chip meanings in the table and on this page | Read-only | 44 |
 | Unknown ID: 'We could not find that check' + 'Back to Eligibility & Benefits' | Empty state | 51 |
 | A check at a site the viewer cannot see: 'This coverage check is not available at Site A' (names no patient; 'Show Site B' for staff who may see both) | Notice instead of the result | 40, 51, 64 |
 
-## Shared verification record (used by Eligibility & Benefits and New case)
+## Shared verification record (used by Eligibility & Benefits and New Case)
 
 | Control | What it does | Diagram |
 |---|---|---|
-| One record per case or `V-` check: coverage, plan type and routing, benefits, authorization requirement, provider, existing authorization, cost share, warnings, 'simulated' source | Written by Verify, the list's 'Re-check', the Demo clock and New case; read by the list, the result and New case step 2 | 60 |
-| Reuse rule: same patient, payer and program, dates inside the record's dates, checked within 24 demo hours | New case reuses the record, or offers 'Refresh verification' | 60 |
-| 'Refresh verification' (New case) | Runs the check again on the demo clock and replaces the record | 50, 60 |
+| One record per case or `V-` check: coverage, plan type and routing, benefits, authorization requirement, provider, existing authorization, cost share, warnings, 'simulated' source | Written by Verify, the list's 'Re-check', the Demo clock and New Case; read by the list, the result and New Case step 2 | 60 |
+| Reuse rule: same patient, payer and program, dates inside the record's dates, checked within 24 demo hours | New Case reuses the record, or offers 'Refresh verification' | 60 |
+| 'Refresh verification' (New Case) | Runs the check again on the demo clock and replaces the record | 50, 60 |
 | The eight warnings | See 61 | 61 |
 | 'Create authorization from verification' | See 62 | 62 |
 | Side panel 'Verification details' | See 63 | 63 |
@@ -101,7 +101,7 @@ All five reasons for 'Fix before billing' can be reached, and Verify re-checks o
 - Enter or Space on the info icon, the sample buttons and 'View full verification details': drawn as clicks (13, 23, 40).
 - Tab or Enter on the patient ID link: works like a click, drawn once as a click (12). The row itself is not keyboard focusable.
 - Toast dismissal, Demo menu and Ask FLO: belong to the global shell diagrams.
-- The 'Coverage checked' drawer in New case, which reuses the seven rows: owned by the New case diagrams, linked from 43. It no longer shows 'What the patient pays: $0 ...' for Ohio Medicaid, and shows no cost line for it.
+- The 'Coverage checked' drawer in New Case, which reuses the seven rows: owned by the New Case diagrams, linked from 43. It no longer shows 'What the patient pays: $0 ...' for Ohio Medicaid, and shows no cost line for it.
 - The static 'Privacy mode on' pill and the 'State' menu (its only option is 'Ohio'): mentioned in 21, no branch.
 
 ## Fixed in this pass
@@ -121,7 +121,7 @@ All five reasons for 'Fix before billing' can be reached, and Verify re-checks o
 ## Changed in round 4
 
 - The list, the figures and the badge read the shared verification records inside the site view (64). Both sites is Site A plus Site B.
-- A check made in New case is a row here, and a check made here is the one New case finds and reuses (60).
+- A check made in New Case is a row here, and a check made here is the one New Case finds and reuses (60).
 - The two closed sections on the result became one row and a side panel, 'Verification details' (40, 63).
 - Warnings (eight) sit in one quiet block under the result, and every one can be reached (23, 61). New: payer changed, member ID mismatch, benefit not confirmed, provider not confirmed, requirement unknown, and a check that cannot run while Verify is paused.
 - The result has 'Create authorization from verification', and 'Start authorization' now carries the stored verification (62).
@@ -130,5 +130,5 @@ All five reasons for 'Fix before billing' can be reached, and Verify re-checks o
 ## Changed in the UX round
 
 - Result first: one summary card (verdict, Eligibility, Benefits, What this service needs, one facts line, one plain note), with 'Payment checks' and 'How this was checked' closed below it (40, 46, 47).
-- Plan type and routing come from the payer record and New case's plan type; a payer without one shows nothing (46). Copay, deductible and coinsurance show only for plan types that have them; Ohio Medicaid shows no '$0' (47).
+- Plan type and routing come from the payer record and New Case's plan type; a payer without one shows nothing (46). Copay, deductible and coinsurance show only for plan types that have them; Ohio Medicaid shows no '$0' (47).
 - The list keeps four figures, folds 'Why we check twice' into an info icon (13), and puts payer, day limit and checked time on a quiet second line (10).

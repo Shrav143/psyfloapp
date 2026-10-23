@@ -15,7 +15,7 @@ group gA "Amber pill: 'Needs attention'"
 endgroup
 
 group gR "Red pill: 'Disconnected'"
-  process r1 "Someone disconnected it\nRow: 'Not syncing'. Charts from this system are not arriving. New case cannot pull a chart from it until it is connected."
+  process r1 "Someone disconnected it\nRow: 'Not syncing'. Charts from this system are not arriving. New Case cannot pull a chart from it until it is connected."
   click r2 "Click 'Reconnect' on the row or in the Manage drawer\nNeeds: a passed connection test, and the Fix steps first if it was on 'Needs attention'"
   goto r4 "Continues in: EMR Connect › Manage › Reconnect a system"
   end r3 "Re-test: the same three checks as Connect\nRow turns Connected only after they pass. Any earlier issue text is cleared"
@@ -27,7 +27,7 @@ group gT "Last sync figure"
 endgroup
 
 group gM "'Action required' names fields waiting for a mapping"
-  process m1 "'2 fields need a mapping, so New case leaves them blank.'\nPill '2 to map' on 'Advanced'"
+  process m1 "'2 fields need a mapping, so New Case leaves them blank.'\nPill '2 to map' on 'Advanced'"
   click m2 "Click 'Map field', or open 'Advanced' and click 'Map'\nNeeds: a value picked for each field"
 endgroup
 

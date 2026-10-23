@@ -2,7 +2,7 @@ title: Authorizations › Eligibility & Benefits › Verify › More samples: ch
 route: /authorizations/eligibility/verify
 intro: 'More samples' opens a second row, 'Needs a look', with five chips. Each fills the form with a made-up member whose check ends with a warning, so every exception can be seen without a trick. A sixth, a check that cannot run at all, happens when Verify is paused in Settings. The last four digits of the member ID script the answer, as for the first six chips.
 dir: TD
-also: Demo only: the endings are scripted. The warnings are the same ones New case shows in step 2, because both read the same verification record.
+also: Demo only: the endings are scripted. The warnings are the same ones New Case shows in step 2, because both read the same verification record.
 ---
 start s1 "On 'Verify a patient', click 'More samples'"
 screen sc "Row 'Needs a look' with five chips\n'Payer changed', 'Member ID mismatch', 'Benefit not confirmed',\n'Provider not confirmed', 'Requirement unknown'\nA note: 'To see a check that cannot run, pause Verify in Settings.'"
@@ -29,7 +29,7 @@ group gRes "Result"
   screen r5 "'Covered, but we do not know whether it needs an authorization.'\n'What this service needs' says 'No rule on file for Beacon and residential 3.5. Check with Beacon.'\nWarning 'Authorization requirement unknown'"
 endgroup
 
-store st "The check is saved as a verification record for the site in view\nIt is a row on the list at once, and New case can find it"
+store st "The check is saved as a verification record for the site in view\nIt is a row on the list at once, and New Case can find it"
 goto g1 "Continues in: Authorizations › Eligibility & Benefits › The exceptions"
 goto g2 "Continues in: Authorizations › Eligibility & Benefits › The shared verification record"
 

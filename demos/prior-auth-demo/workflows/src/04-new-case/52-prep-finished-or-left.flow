@@ -1,4 +1,4 @@
-title: Authorizations › New case › Authorization preparation › Finished, paused or left
+title: Authorizations › New Case › Authorization preparation › Finished, paused or left
 route: /authorizations/new/:draftId (step 4 of 5, after the run)
 intro: What the person can do when the ten agents are done, when the run stops, when they go Back, and when they reopen a draft that already ran. Changing the details or the documents after the agents ran starts the run over: a toast says so and a banner on this step says it again. An agent that cannot finish waits for Retry or Skip, and an agent paused in Settings holds the run.
 dir: TD
@@ -8,14 +8,14 @@ start s2 "Click 'Back' on step 5\n'Review & submit'"
 toast t1 "Banner: 'All ten agents are done' (one message at a time: a question, a pause or changed records come first)\n'The draft and the four checks are ready. Nothing has been sent to the payer.'"
 process p1 "Hint: 'Read the draft and sign it on the next step.'\n'Review & submit' switches on\n'Pause all agents' and 'Skip ahead' switch off"
 process pStop "The run stops for a question, an agent that could not finish, a pause in Settings, or when the page is closed"
-goto gFail "Continues in: Authorizations › New case › Authorization preparation › An agent could not finish"
-goto gPause "Continues in: Authorizations › New case › Authorization preparation › Paused in Settings"
+goto gFail "Continues in: Authorizations › New Case › Authorization preparation › An agent could not finish"
+goto gPause "Continues in: Authorizations › New Case › Authorization preparation › Paused in Settings"
 decision dWhat "What does the person do?"
 
 click cTick "Tick or untick a 'To raise it further' box"
 process pTick "Chance moves; the summary is rebuilt on the next step"
 click cReview "Click 'Review & submit'"
-goto gReview "Continues in: Authorizations › New case › Review & submit › The draft and the summary"
+goto gReview "Continues in: Authorizations › New Case › Review & submit › The draft and the summary"
 click cBack "Click 'Back'"
 click cStep "Click 'Intake', 'Eligibility & Benefits' or 'Clinical documentation' in the stepper"
 process pLock "The stepper opens 'Review & submit' at any time\nBefore the agents finish it says 'The packet is built when the agents finish' and offers 'Go to Authorization preparation'"
@@ -30,8 +30,8 @@ toast tToast "Toast on the step: 'Records changed after the agents ran'\n'Their 
 toast tBanner "On step 4 once the agents start again: 'Records changed after the last run. The agents re-checked.'\nIt goes away when all ten are done"
 click cCont2 "Click 'Continue'"
 overlay oConf "Start the agents?"
-goto gStart "Continues in: Authorizations › New case › Authorization preparation › Start the run and watch it"
-goto gQ "Continues in: Authorizations › New case › Authorization preparation › An agent asks a question"
+goto gStart "Continues in: Authorizations › New Case › Authorization preparation › Start the run and watch it"
+goto gQ "Continues in: Authorizations › New Case › Authorization preparation › An agent asks a question"
 end eBack "Step 4 shows the run as it was\nFinished agents stay finished"
 
 group gResume "Opening a draft that already ran"

@@ -1,4 +1,4 @@
-title: Authorizations › New case › Clinical documentation › Drop files and let Reader sort them
+title: Authorizations › New Case › Clinical documentation › Drop files and let Reader sort them
 route: /authorizations/new/:draftId (step 3 of 5, the drop zone and 'Use sample chart')
 intro: One drop zone takes the whole pile. Reader sorts files by what their names say, fills what is still blank, reads each file, and reports in one toast. 'Use sample chart' does the same job for J.M. in one click. A retroactive request has a smaller drop zone on Intake that works the same way.
 dir: TD
@@ -44,7 +44,7 @@ process pOk "Row: 'N checks passed'"
 process pWarn "Row: 'Check this' with the finding text"
 toast t1 "'Reader sorted 6 files: 2 matched, 4 need a look'\n'Could not place: ... Check where Reader put: ... Findings in: ...'"
 process pTick "Checklist rows tick off\n'N of M ready' goes up\n'Continue' is never switched off"
-goto g30 "Continues in: Authorizations › New case › Clinical documentation › The checklist and Continue"
+goto g30 "Continues in: Authorizations › New Case › Clinical documentation › The checklist and Continue"
 
 group gSample "Use sample chart"
   click c2 "Click 'Use sample chart' (top right of step 3)"

@@ -2,7 +2,7 @@ title: EMR Connect › Connected systems › What each status means
 route: /emr
 intro: Every system on the list is in one of three states. Each state shows different buttons and text, and a system moves between them by the clicks on the arrows.
 dir: TD
-also: In the demo only the seeded Billing system starts in 'Needs attention'. Nothing in the demo moves a Connected system into it. A system that is not Connected also says that New case cannot pull a chart from it.
+also: In the demo only the seeded Billing system starts in 'Needs attention'. Nothing in the demo moves a Connected system into it. A system that is not Connected also says that New Case cannot pull a chart from it.
 ---
 start s0 "Open EMR Connect\nThe two clinical record systems ('Clinical record · Site A' and 'Clinical record · Site B') start Connected, the Billing system (both sites) starts amber"
 click n1 "Click 'Connect a system', pass the test, click 'Connect {name}'"
@@ -16,13 +16,13 @@ endgroup
 
 group gA "Needs attention"
   store sa "Needs attention\nAmber pill"
-  process a1 "Row: the issue, 'First step: renew the sign-in with Fix.' and 'New case cannot pull a chart from it until it is connected.'\nShows its missed syncs, for example '2 sync failures'\nButtons: Fix, Manage\nThe 'Action required' line names it"
+  process a1 "Row: the issue, 'First step: renew the sign-in with Fix.' and 'New Case cannot pull a chart from it until it is connected.'\nShows its missed syncs, for example '2 sync failures'\nButtons: Fix, Manage\nThe 'Action required' line names it"
   process a2 "Skipped by 'Sync now'\nStill counts in the Last sync figure"
 endgroup
 
 group gD "Disconnected"
   store sd "Disconnected\nRed pill"
-  process d1 "Row: 'Not syncing', 'Sync paused', 'Charts from this system are not arriving.' and 'New case cannot pull a chart from it until it is connected.'\nButtons: Reconnect, Manage\nThe 'Action required' line names it"
+  process d1 "Row: 'Not syncing', 'Sync paused', 'Charts from this system are not arriving.' and 'New Case cannot pull a chart from it until it is connected.'\nButtons: Reconnect, Manage\nThe 'Action required' line names it"
   process d2 "Skipped by 'Sync now'\nIgnored by the Last sync figure\nThe Manage drawer ends with 'Reconnect'\nIf it was disconnected while it needed attention, the row adds 'Reconnect starts with a fix.'"
 endgroup
 

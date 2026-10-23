@@ -13,7 +13,7 @@ import {
 export { DEFAULT_WORKFLOW_FOR, defaultWorkflowFor } from "./default";
 export { defaultFactsFor } from "./facts";
 
-/* The deterministic engine. One pure function runs a workflow over a fact sheet: Test Workflow and New case call this same code. Branching is decided by structured conditions and by the
+/* The deterministic engine. One pure function runs a workflow over a fact sheet: Test Workflow and New Case call this same code. Branching is decided by structured conditions and by the
    saved rules, never by a model. The engine does not send anything and does not write anything: it returns what ran, what was skipped, what it is waiting for and why.
    - A verification step reads the facts; a rule step reads its rule's values and the facts; a document step waits when a required document is missing and names it.
    - A step that needs a person (an approval step, anything marked "approval", and every step that reaches a payer) waits until facts.approvals says approved.

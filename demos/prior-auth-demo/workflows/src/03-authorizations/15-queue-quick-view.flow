@@ -2,7 +2,7 @@ title: Authorizations › Queue › Quick view panel
 route: /authorizations?quick=R-1117
 intro: The right-hand panel that opens from a queue row: a summary first, and a button to open the full case. A request that is also on the Dashboard opens the Dashboard's own request panel; a request that only the queue has opens a lighter panel built from the case. Esc closes it and focus goes back to the row.
 dir: TD
-also: Demo only: the lighter panel's units, window and documents come from the Case Manager ledger and the case's draft where they exist. The panel changes nothing by itself; 'Review and sign' only opens New case, where a clinician signs.
+also: Demo only: the lighter panel's units, window and documents come from the Case Manager ledger and the case's draft where they exist. The panel changes nothing by itself; 'Review and sign' only opens New Case, where a clinician signs.
 ---
 screen row "Queue row\nCase ID link, a small 'Quick view' icon button beside the patient, 'Open'"
 click c1 "Click the icon button 'Quick view R-1117'"

@@ -1,6 +1,6 @@
 title: Authorizations › Eligibility & Benefits › Result › Next actions
 route: /authorizations/eligibility/R-1042
-intro: The buttons on the verdict band at the top of the summary card, and where each one leads. Which buttons show depends on the verdict, on whether the patient has a case, and on why coverage failed. 'Create authorization from verification' shows on every result and carries the stored verification to New case.
+intro: The buttons on the verdict band at the top of the summary card, and where each one leads. Which buttons show depends on the verdict, on whether the patient has a case, and on why coverage failed. 'Create authorization from verification' shows on every result and carries the stored verification to New Case.
 dir: TD
 also: Demo only: 'Request retro-eligibility' and 'Ask Caller to phone the payer' raise a message and change nothing. No call is made and no request is sent.
 ---
@@ -9,7 +9,7 @@ start s1 "On a result page, read the buttons on the verdict band"
 decision q1 "Verdict is 'Authorization first'?"
 click c1 "Click 'Start authorization'"
 process p1 "Opens /authorizations/new?verification=R-1042&type=initial\nNew case reads the stored verification: payer, level of care, member, initials, age and the check itself\nAuthorization type is already 'Initial'"
-goto g1 "Continues in: Authorizations › New case › Clinical documentation › The checklist and Continue"
+goto g1 "Continues in: Authorizations › New Case › Clinical documentation › The checklist and Continue"
 
 decision q2 "Is there a request with this ID?"
 click c2 "Click 'Open case'\n(outlined button)"
@@ -38,7 +38,7 @@ goto g4 "Continues in: Authorizations › Eligibility & Benefits › Re-verify a
 click c7 "Click '← Eligibility & Benefits'"
 goto g5 "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows"
 click c8 "Click '← Back to referral RF-2040'\nWith ?case= in the address it reads '← Back to case R-1042'\nShown only when the check began from a referral"
-goto g6 "Continues in: Authorizations › New case › Referral › The full referral page"
+goto g6 "Continues in: Authorizations › New Case › Referral › The full referral page"
 
 s1 --> q1 & q2 & q4 & c6 & c7 & c8 & cv & ce
 cv --> gv

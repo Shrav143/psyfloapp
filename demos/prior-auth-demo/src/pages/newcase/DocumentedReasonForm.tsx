@@ -16,7 +16,7 @@ export function DocumentedReasonForm({ draft, kind, about, button, prompt, place
 
   if (said) {
     return (
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[13.5px]">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px]">
         <span className="min-w-0 flex-1"><b>Documented exception.</b> {said.reason}</span>
         <Button size="sm" variant="ghost" icon={Undo2} onClick={() => unsay(draft.id, kind)}>Undo</Button>
       </div>

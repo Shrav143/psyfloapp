@@ -23,7 +23,7 @@ export function PatientSearch({ book, onPick, label = "Find a patient", hint }: 
         <span className="mt-1 block text-xs text-muted">{hint ?? `Searches ${scope.label.toLowerCase()} only. Initials and case IDs; a name never enters the app.`}</span>
       </div>
       {q.trim() && hits.length === 0 ? (
-        <p role="status" className="rounded-xl bg-tile px-4 py-3 text-[13.5px] text-ink2">No patient at {scope.label} matches “{q.trim()}”. Check the initials or the case ID.</p>
+        <p role="status" className="rounded-xl bg-tile px-4 py-3 text-[13px] text-ink2">No patient at {scope.label} matches “{q.trim()}”. Check the initials or the case ID.</p>
       ) : null}
       {shown.length ? (
         <ul aria-label="Patients found" className="overflow-hidden rounded-2xl border border-edge bg-white">

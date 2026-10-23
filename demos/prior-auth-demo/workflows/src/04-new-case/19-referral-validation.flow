@@ -1,4 +1,4 @@
-title: Authorizations › New case › Referral › Full page: Validation tab
+title: Authorizations › New Case › Referral › Full page: Validation tab
 route: /authorizations/new/referral/RF-2053?draft=draft-1001
 intro: The nine checks Reader ran on the referral, split by document. Each open finding can be shown in the document, asked of the referrer, or marked OK with a reason.
 dir: TD
@@ -8,7 +8,7 @@ screen sc1 "Summary card\n'6 of 9 checks passed'\n'3 need your attention.' (or '
 screen sc2 "Two lists\n'Referral form' '4 of 7 passed': signature, order not expired, credentials, clinical components, diagnosis, service, urgent criteria\n'Face sheet' '2 of 2 passed': age, contact"
 decision d1 "Open and something to ask?\n(a failed age check is never counted)"
 click c1 "Click 'Request information for all open findings'"
-goto g1 "Continues in: Authorizations › New case › Referral › Ask the referrer"
+goto g1 "Continues in: Authorizations › New Case › Referral › Ask the referrer"
 
 decision d2 "State of one check?"
 process r1 "Passed\nGreen tick, check name, what Reader found"
@@ -26,7 +26,7 @@ click c3 "Open 'Resolve'"
 overlay o1 "Menu\n'Request information'\n'Mark OK with reason'"
 click c4 "Pick 'Request information'"
 click c5 "Pick 'Mark OK with reason'"
-goto g2 "Continues in: Authorizations › New case › Referral › Mark OK or decline"
+goto g2 "Continues in: Authorizations › New Case › Referral › Mark OK or decline"
 
 s1 --> sc1 --> sc2
 sc1 --> d1

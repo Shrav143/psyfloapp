@@ -32,7 +32,7 @@ export function VersionHistoryDrawer({ workflow, onClose, onRestored }: { workfl
             return (
               <li key={`${v.version}-${v.savedAt}`} className={cn("rounded-2xl border bg-white", open ? "border-forest" : "border-edge")}>
                 <div className="flex flex-wrap items-start gap-3 px-4 py-3.5">
-                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-neutral-bg font-serif text-[15px] font-semibold">v{v.version}</span>
+                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-neutral-bg font-serif text-[14px] font-semibold">v{v.version}</span>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <Pill tone={STATUS_TONE[v.status]} dot>{STATUS_WORD[v.status]}</Pill>
@@ -58,7 +58,7 @@ export function VersionHistoryDrawer({ workflow, onClose, onRestored }: { workfl
                 ) : null}
                 {asking?.version === v.version && asking.savedAt === v.savedAt ? (
                   <div className="border-t border-line bg-tile/60 px-4 py-3.5">
-                    <p className="mt-0 mb-2 text-[13.5px] text-ink2">Restoring makes version {v.version}'s steps the new draft. The published version stays in force until a person publishes the draft.</p>
+                    <p className="mt-0 mb-2 text-[13px] text-ink2">Restoring makes version {v.version}'s steps the new draft. The published version stays in force until a person publishes the draft.</p>
                     <div className="mt-3 flex justify-end gap-2">
                       <Button size="sm" onClick={() => setAsking(null)}>Cancel</Button>
                       <Button size="sm" variant="primary" onClick={() => restore(v)}>Restore as a new draft</Button>

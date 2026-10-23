@@ -106,7 +106,7 @@ export function EbTable({ rows }: { rows: EbPatient[] }) {
               </Td>
             </tr>
             <tr>
-              <Td colSpan={7} className="pt-0 pb-3.5 text-[12.5px] text-muted">
+              <Td colSpan={7} className="pt-0 pb-3.5 text-[12px] text-muted">
                 {quiet.map((x, i) => (
                   <span key={x.text}>
                     {i > 0 ? " · " : ""}

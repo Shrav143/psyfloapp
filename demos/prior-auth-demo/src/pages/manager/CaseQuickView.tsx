@@ -123,13 +123,13 @@ export function CaseQuickView({ row, from, onClose, onOpenReview }: { row: Ledge
     >
       <div ref={body} tabIndex={-1} className="flex flex-col gap-6 outline-none">
         <div>
-          <div className="text-[11.5px] font-medium tracking-[0.1em] text-muted uppercase">Next due</div>
-          <div className={cn("mt-1 font-serif text-[24px] leading-tight font-semibold", clk.urgent && "text-risk-ink")}>{clk.text}</div>
+          <div className="text-[11px] font-medium tracking-[0.1em] text-muted uppercase">Next due</div>
+          <div className={cn("mt-1 font-serif text-[18px] leading-tight font-semibold", clk.urgent && "text-risk-ink")}>{clk.text}</div>
           <p className="mt-1.5 text-[14px] text-ink2">{nextStep(row, mine)}</p>
         </div>
         <KeyValue className="grid-cols-[130px_1fr] text-[14px]" items={items} />
         <div>
-          <h3 className="mb-3 font-serif text-xl font-semibold">Latest history</h3>
+          <h3 className="mb-3 font-serif text-[18px] font-semibold">Latest history</h3>
           {history.length === 0 ? (
             <p className="text-sm text-muted">Nothing has happened on this case yet.</p>
           ) : (

@@ -34,8 +34,8 @@ export function BandCard({ band, items, stats, collapsed, showAll, clock, rows, 
       <h3 className="m-0">
         <button type="button" onClick={onToggle} aria-expanded={!collapsed} className="flex w-full items-center gap-3 rounded-[20px] px-6 py-5 text-left hover:bg-[#FBF8F3]">
           <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: meta.dot }} aria-hidden="true" />
-          <span className="font-serif text-[21px] font-semibold leading-tight tracking-tight">{meta.name}</span>
-          <span className="text-[15px] font-normal text-muted">({stats.count} {stats.count === 1 ? "request" : "requests"})</span>
+          <span className="font-serif text-[18px] font-semibold leading-tight tracking-tight">{meta.name}</span>
+          <span className="text-[14px] font-normal text-muted">({stats.count} {stats.count === 1 ? "request" : "requests"})</span>
           <ChevronDown size={18} className={cn("ico ml-auto shrink-0 text-muted transition-transform", collapsed && "-rotate-90")} />
         </button>
       </h3>
@@ -43,7 +43,7 @@ export function BandCard({ band, items, stats, collapsed, showAll, clock, rows, 
         <div className="flex flex-col gap-3 border-t border-line px-5 py-5">
           {items.length === 0 ? (
             <div className="px-4 py-6 text-center">
-              <div className="font-serif text-xl font-semibold">Nothing needs you today</div>
+              <div className="font-serif text-[18px] font-semibold">Nothing needs you today</div>
               <div className="mt-1 text-sm text-muted">{emptyNote}</div>
             </div>
           ) : null}

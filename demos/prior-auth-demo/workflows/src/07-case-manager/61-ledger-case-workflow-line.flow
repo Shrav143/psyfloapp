@@ -1,11 +1,11 @@
 title: Case Manager › Ledger case › Workflow line and history
 route: /authorizations/case/ID (a ledger case) and the Case Manager tracker quick view
-intro: A case that was prepared or reviewed in New case follows a payer workflow, pinned by version. The ledger case page shows one row, 'Workflow', in the case summary, and the lines the workflow wrote appear in its folded History. The tracker's quick view shows the same row and the three newest history lines. A case with no workflow shows neither. Workflows are clinic-wide; the case stays at its site.
+intro: A case that was prepared or reviewed in New Case follows a payer workflow, pinned by version. The ledger case page shows one row, 'Workflow', in the case summary, and the lines the workflow wrote appear in its folded History. The tracker's quick view shows the same row and the three newest history lines. A case with no workflow shows neither. Workflows are clinic-wide; the case stays at its site.
 dir: TD
-also: A case that is also a request opens the Authorizations case page instead (its facts row has 'Workflow', and its History holds the same lines). Those are drawn in New case › Workflow › What the workflow adds to the history.
+also: A case that is also a request opens the Authorizations case page instead (its facts row has 'Workflow', and its History holds the same lines). Those are drawn in New Case › Workflow › What the workflow adds to the history.
 ---
 start s1 "Open a ledger case, or click a tracker row"
-decision d1 "Is there a New case draft for this case with a workflow?\nSame case ID, or the patient's treatment episode"
+decision d1 "Is there a New Case draft for this case with a workflow?\nSame case ID, or the patient's treatment episode"
 process p1 "No 'Workflow' row\nHistory is the ledger's own"
 screen sc1 "Card 'Case summary'\nRow 'Workflow': 'Initial Authorization, Residential SUD, version 3'\nor 'Default process for a concurrent review' with 'illustrative default'"
 decision d2 "Did the workflow write lines that are not on a request?"
@@ -18,7 +18,7 @@ click c3 "Click 'Open case'"
 process p3 "Opens the case page: the ledger case, or the Authorizations case page for a request"
 end e1 "The workflow is read where the case is read"
 goto g1 "Continues in: Case Manager › Ledger case › Open and read"
-goto g2 "Continues in: Authorizations › New case › Workflow › What the workflow adds to the history"
+goto g2 "Continues in: Authorizations › New Case › Workflow › What the workflow adds to the history"
 
 s1 --> d1
 d1 -->|No| p1 --> e1

@@ -1,4 +1,4 @@
-title: Authorizations › New case › Referral › Referral statuses
+title: Authorizations › New Case › Referral › Referral statuses
 route: /authorizations/new/:draftId?ref=RF-2053 and /authorizations/new/referral/RF-2053
 intro: A referral is New, In review, Awaiting info, Accepted, Scheduled, Admitted or Declined. The first three are 'open' and appear in 'Incoming referrals'. Each box shows what the checklist and the full page allow; each arrow is the button that moves it.
 dir: TD
@@ -25,13 +25,13 @@ click c6 "Click 'Reopen referral'\nor 'Reopen' on the red banner"
 click c7 "Click 'Schedule intake'"
 click c8 "Click 'Mark admitted'"
 
-goto gAsk "Continues in: Authorizations › New case › Referral › Ask the referrer"
-goto gReply "Continues in: Authorizations › New case › Referral › The referrer replies"
-goto gAcc "Continues in: Authorizations › New case › Referral › Accept a referral"
-goto gDec "Continues in: Authorizations › New case › Referral › Mark OK or decline"
-goto gSch "Continues in: Authorizations › New case › Referral › Schedule intake"
-goto gBan "Continues in: Authorizations › New case › Referral › Decision banners"
-goto gMed "Continues in: Authorizations › New case › Intake › Initial authorization"
+goto gAsk "Continues in: Authorizations › New Case › Referral › Ask the referrer"
+goto gReply "Continues in: Authorizations › New Case › Referral › The referrer replies"
+goto gAcc "Continues in: Authorizations › New Case › Referral › Accept a referral"
+goto gDec "Continues in: Authorizations › New Case › Referral › Mark OK or decline"
+goto gSch "Continues in: Authorizations › New Case › Referral › Schedule intake"
+goto gBan "Continues in: Authorizations › New Case › Referral › Decision banners"
+goto gMed "Continues in: Authorizations › New Case › Intake › Initial authorization"
 
 click cCont "Click 'Continue with this referral'"
 decision dReq "Did this referral start a request?"

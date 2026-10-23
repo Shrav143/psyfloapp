@@ -1,6 +1,6 @@
 title: Authorizations › Eligibility & Benefits › The exceptions
 route: /authorizations/eligibility/V-1001
-intro: A check can end with a warning that needs a look. There are eight, and each says what was found and what to do next. The warnings sit in one quiet block under the three parts of the result, and in step 2 of New case. A warning never forces anyone to abandon a case, and none of them is a payer decision: they report what the check found.
+intro: A check can end with a warning that needs a look. There are eight, and each says what was found and what to do next. The warnings sit in one quiet block under the three parts of the result, and in step 2 of New Case. A warning never forces anyone to abandon a case, and none of them is a payer decision: they report what the check found.
 dir: TD
 also: Demo only: every one can be reached. Three have a seeded patient on the list (R-1101, R-0975, R-1118) and each has a chip on Verify, under 'Try a sample' or 'More samples'. 'Verification service unavailable' happens when Verify is paused in Settings.
 ---
@@ -19,15 +19,15 @@ group gW "The eight warnings"
 endgroup
 
 screen sc "One quiet block under the result, one line each:\n'Coverage is not active. Coverage ended 09/30. Ask the payer, or request retro-eligibility; ...'"
-screen sn "New case step 2 shows the same block in its summary, and the case can go on\nWarnings are saved with the draft"
+screen sn "New Case step 2 shows the same block in its summary, and the case can go on\nWarnings are saved with the draft"
 decision q1 "Is the warning 'Verification service unavailable'?"
 process p1 "A known patient keeps the last result, marked with the warning, check time unchanged\nAnyone else shows 'Not checked' everywhere"
-click c1 "Click 'Check again' (result) or 'Refresh verification' (New case)"
+click c1 "Click 'Check again' (result) or 'Refresh verification' (New Case)"
 process p2 "Still paused: toast 'Could not re-check ...' and the last result stays\nResumed: the check runs and the warning goes"
 process p3 "The verdict follows: 'Fix before billing', 'Authorization first' or 'Not checked'\nThe sidebar badge counts it until it is cleared"
 goto g1 "Continues in: Authorizations › Eligibility & Benefits › Result › Which verdict and why"
 goto g2 "Continues in: Authorizations › Eligibility & Benefits › Verify › More samples: checks that need a look"
-goto g3 "Continues in: Authorizations › New case › How a case starts and resumes"
+goto g3 "Continues in: Authorizations › New Case › How a case starts and resumes"
 goto g4 "Continues in: Settings"
 
 s1 --> q0

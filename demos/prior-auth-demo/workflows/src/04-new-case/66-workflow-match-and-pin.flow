@@ -1,6 +1,6 @@
-title: Authorizations › New case › Workflow › Match and pin the payer workflow
+title: Authorizations › New Case › Workflow › Match and pin the payer workflow
 route: /authorizations/new/:draftId (the Workflow line under the stepper)
-intro: The Payer Workflow Studio is configuration; New case is execution. Once Intake knows the payer, the level of care and the Authorization type, New case finds the published payer workflow that fits, shows its name and version in one calm line under the stepper, and stores it on the draft. Until the workflow has run past Intake the case follows the best match, so a changed payer or level of care matches again. After that the version is pinned. Workflows are clinic-wide; the case and its history stay at the case's site.
+intro: The Payer Workflow Studio is configuration; New Case is execution. Once Intake knows the payer, the level of care and the Authorization type, New Case finds the published payer workflow that fits, shows its name and version in one calm line under the stepper, and stores it on the draft. Until the workflow has run past Intake the case follows the best match, so a changed payer or level of care matches again. After that the version is pinned. Workflows are clinic-wide; the case and its history stay at the case's site.
 dir: TD
 also: Matching reads the published workflows only. A draft or archived workflow is never matched. The five stages (Intake, Eligibility & Benefits, Clinical documentation, Authorization preparation, Review & submit) do not change.
 ---
@@ -23,10 +23,10 @@ store stPin "The version is pinned to the case\nThe line now says 'This version 
 wait wNew "Later, a person publishes a newer version, or the case details change"
 decision d3 "Did something change after the pin?"
 process pQuiet "Nothing changes on its own\nThe case keeps the version it started with"
-goto g1 "Continues in: Authorizations › New case › Workflow › A newer version exists"
-goto g2 "Continues in: Authorizations › New case › Workflow › The case changed after the workflow started"
-goto g3 "Continues in: Authorizations › New case › Workflow › Default process and equal matches"
-goto g4 "Continues in: Authorizations › New case › Workflow › Show the workflow and its path"
+goto g1 "Continues in: Authorizations › New Case › Workflow › A newer version exists"
+goto g2 "Continues in: Authorizations › New Case › Workflow › The case changed after the workflow started"
+goto g3 "Continues in: Authorizations › New Case › Workflow › Default process and equal matches"
+goto g4 "Continues in: Authorizations › New Case › Workflow › Show the workflow and its path"
 endx eNone "No payer or level of care yet\nThe Workflow line is not shown"
 end eDone "The case follows one workflow version"
 

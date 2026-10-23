@@ -63,7 +63,7 @@ export function CoverageTab({ r }: { r: Referral }) {
       <Card>
         <CardBody className="flex flex-col items-start gap-3 py-8">
           <span className="grid h-11 w-11 place-items-center rounded-full bg-neutral-bg text-ink2"><ShieldCheck size={22} className="ico" /></span>
-          <h3 className="font-serif text-xl font-semibold">Coverage has not been checked</h3>
+          <h3 className="font-serif text-[18px] font-semibold">Coverage has not been checked</h3>
           <p className="max-w-md text-sm text-muted">
             Verify looks up eligibility, the plan, the authorization rule and the program's network status.
             {r.payerId ? ` It will check ${payerName} for ${r.patient.initials}.` : " This referral lists no insurance, so Verify will report that it cannot confirm coverage."}

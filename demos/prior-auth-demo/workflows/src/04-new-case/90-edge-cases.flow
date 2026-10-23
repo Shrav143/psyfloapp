@@ -1,4 +1,4 @@
-title: Authorizations › New case › Edge cases and where to see them
+title: Authorizations › New Case › Edge cases and where to see them
 route: /authorizations/new
 intro: A map of the unusual cases the demo has on purpose, how to reach each, and the diagram that draws what the case does. None of them traps the person: each warns and says what to do next. Only the few conditions on 'What is missing' marked as blocking stop a send.
 dir: TD
@@ -42,16 +42,16 @@ group gSite "Another site"
   process e11 "Open a link to a referral, a case or a patient at the site you cannot see\n'This referral is not available at Site A'"
 endgroup
 
-goto g1 "Continues in: Authorizations › New case › Eligibility & Benefits › Retroactive authorization"
-goto g2 "Continues in: Authorizations › New case › Intake › Reauthorization / renewal"
-goto g3 "Continues in: Authorizations › New case › Intake › Find a patient and the authorization"
-goto g4 "Continues in: Authorizations › New case › Eligibility & Benefits › Reauthorization / renewal"
-goto g5 "Continues in: Authorizations › New case › Eligibility & Benefits › Warnings and documented exceptions"
-goto g6 "Continues in: Authorizations › New case › Eligibility & Benefits › No authorization required"
-goto g7 "Continues in: Authorizations › New case › Intake › Possible duplicate"
-goto g8 "Continues in: Authorizations › New case › Intake › Retroactive authorization"
-goto g10 "Continues in: Authorizations › New case › Authorization preparation › An agent could not finish"
-goto g11 "Continues in: Authorizations › New case › Sites and scope"
+goto g1 "Continues in: Authorizations › New Case › Eligibility & Benefits › Retroactive authorization"
+goto g2 "Continues in: Authorizations › New Case › Intake › Reauthorization / renewal"
+goto g3 "Continues in: Authorizations › New Case › Intake › Find a patient and the authorization"
+goto g4 "Continues in: Authorizations › New Case › Eligibility & Benefits › Reauthorization / renewal"
+goto g5 "Continues in: Authorizations › New Case › Eligibility & Benefits › Warnings and documented exceptions"
+goto g6 "Continues in: Authorizations › New Case › Eligibility & Benefits › No authorization required"
+goto g7 "Continues in: Authorizations › New Case › Intake › Possible duplicate"
+goto g8 "Continues in: Authorizations › New Case › Intake › Retroactive authorization"
+goto g10 "Continues in: Authorizations › New Case › Authorization preparation › An agent could not finish"
+goto g11 "Continues in: Authorizations › New Case › Sites and scope"
 goto gSet "Continues in: Settings › Pause › What the rest of the app shows"
 goto gPay "Continues in: Payers › Add a payer"
 

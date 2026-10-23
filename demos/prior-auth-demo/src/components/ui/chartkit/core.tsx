@@ -54,7 +54,7 @@ export interface ChartTableData {
 export function DataTable({ table, id }: { table: ChartTableData; id?: string }) {
   return (
     <div id={id} className="max-h-[320px] overflow-auto rounded-xl border border-line">
-      <table className="w-full border-collapse text-left text-[12.5px]">
+      <table className="w-full border-collapse text-left text-[12px]">
         <caption className="px-3 pt-2 pb-1 text-left text-xs text-muted">{table.caption}</caption>
         <thead>
           <tr>
@@ -208,7 +208,7 @@ export function wrapLabel(label: string, max: number, lines = 3): string[] {
 export function Tooltip({ x, y, width = 220, bound, children }: { x: number; y: number; width?: number; bound: number; children: ReactNode }) {
   const left = x + 14 + width > bound ? Math.max(4, x - 14 - width) : x + 14;
   return (
-    <div role="presentation" style={{ left, top: y, width }} className="pointer-events-none absolute z-20 rounded-xl border border-edge bg-white px-3 py-2.5 text-[12.5px] leading-snug text-ink shadow-[0_8px_24px_rgba(40,30,15,0.14)]">
+    <div role="presentation" style={{ left, top: y, width }} className="pointer-events-none absolute z-20 rounded-xl border border-edge bg-white px-3 py-2.5 text-[12px] leading-snug text-ink shadow-[0_8px_24px_rgba(40,30,15,0.14)]">
       {children}
     </div>
   );

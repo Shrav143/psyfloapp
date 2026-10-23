@@ -8,7 +8,7 @@ start s1 "Open 'Verify a patient'"
 screen sc "Verify a patient\n'The agents check coverage and benefits live, so you know whether the clinic will be paid.'\nCard 'The patient and the service' with the pill 'Privacy mode on'"
 click b1 "Click '← Eligibility & Benefits' (back link)"
 click b2 "Click '← Back to referral RF-2040' or '← Back to case R-1042'\nShown only when the address names a referral (see 'Ways in and pre-fill')"
-goto g3 "Continues in: Authorizations › New case › Referral › The full referral page"
+goto g3 "Continues in: Authorizations › New Case › Referral › The full referral page"
 goto g0 "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows"
 
 group gSample "Try a sample"

@@ -68,7 +68,7 @@ export function AppealDrawer({ view, onClose }: { view: DenialView; onClose: () 
             </Banner>
             <div>
               <Label className="mb-1.5">Letter</Label>
-              <TextArea value={text} onChange={(e) => setText(e.target.value)} readOnly={readOnly} aria-label="Appeal letter" className="min-h-[340px] font-serif text-[14.5px] leading-[1.6]" />
+              <TextArea value={text} onChange={(e) => setText(e.target.value)} readOnly={readOnly} aria-label="Appeal letter" className="min-h-[340px] font-serif text-[14px] leading-[1.6]" />
             </div>
             <div>
               <Label className="mb-2">Evidence to attach</Label>

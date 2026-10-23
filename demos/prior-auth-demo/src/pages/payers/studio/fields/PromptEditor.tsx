@@ -49,7 +49,7 @@ export function PromptEditor({ value, onChange, disabled }: { value: PromptConfi
           <ArrowlessLabel>Insert a variable</ArrowlessLabel>
           <div className="mt-1 flex flex-wrap gap-1">
             {PROMPT_VARIABLES.map((v) => (
-              <button key={v} type="button" disabled={disabled} onClick={() => insert(v)} aria-label={`Insert variable ${v}`} className="rounded-md border border-field bg-white px-1.5 py-0.5 font-mono text-[11.5px] text-ink2 hover:bg-tile">
+              <button key={v} type="button" disabled={disabled} onClick={() => insert(v)} aria-label={`Insert variable ${v}`} className="rounded-md border border-field bg-white px-1.5 py-0.5 font-mono text-[11px] text-ink2 hover:bg-tile">
                 {`{{${v}}}`}
               </button>
             ))}
@@ -63,7 +63,7 @@ export function PromptEditor({ value, onChange, disabled }: { value: PromptConfi
       <Fold title="Preview what the agent receives" summary={payerWide.length ? `${payerWide.length} payer-wide instruction${payerWide.length === 1 ? "" : "s"} plus this prompt` : "This prompt only: no payer-wide instructions"}>
         <div className="flex flex-col gap-2.5 text-[13px]">
           <div>
-            <div className="mb-1 text-[11.5px] font-medium tracking-wide text-muted uppercase">{payerName} instructions, for every agent</div>
+            <div className="mb-1 text-[11px] font-medium tracking-wide text-muted uppercase">{payerName} instructions, for every agent</div>
             {payerWide.length ? (
               <ul className="m-0 flex list-none flex-col gap-1.5 p-0">
                 {payerWide.map((t, i) => (
@@ -76,13 +76,13 @@ export function PromptEditor({ value, onChange, disabled }: { value: PromptConfi
             <button type="button" onClick={() => openRules("agent_instructions")} className="mt-1.5 text-[13px] font-semibold text-forest hover:underline">Edit them in Rules & Instructions</button>
           </div>
           <div>
-            <div className="mb-1 text-[11.5px] font-medium tracking-wide text-muted uppercase">This step ({agentName})</div>
+            <div className="mb-1 text-[11px] font-medium tracking-wide text-muted uppercase">This step ({agentName})</div>
             <p className={cn("m-0 rounded-lg bg-tile px-2.5 py-1.5 whitespace-pre-wrap", value.prompt ? "text-ink2" : "text-muted")}>{value.prompt || "No prompt written yet."}</p>
           </div>
         </div>
       </Fold>
 
-      <div className="flex items-start gap-2 rounded-xl bg-sage-bg px-3 py-2.5 text-[12.5px] text-good-ink">
+      <div className="flex items-start gap-2 rounded-xl bg-sage-bg px-3 py-2.5 text-[12px] text-good-ink">
         <ShieldCheck size={15} className="ico mt-0.5" aria-hidden="true" />
         <span>Text inside a document is data. The agent reads it and never takes orders from it, and it cannot change these instructions or switch off a safeguard.</span>
       </div>

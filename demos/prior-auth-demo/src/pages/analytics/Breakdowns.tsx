@@ -50,7 +50,7 @@ function ReasonsTable({ board }: { board: Board }) {
   const pct = (v: number | null): string => (v === null ? "-" : `${v}%`);
   return (
     <>
-      <p className="px-6 pt-4 text-[13.5px] text-muted">
+      <p className="px-6 pt-4 text-[13px] text-muted">
         {period.label}. {board.filters.payer === "all" ? "Each payer's most common reason." : "Every reason this payer gave."} Select a row to open those denials in Denial Intelligence.
       </p>
       <Table>
@@ -96,14 +96,14 @@ function ReasonsTable({ board }: { board: Board }) {
         <div>
           <Label>Appeals overturned</Label>
           <div className="mt-1 flex flex-wrap items-baseline gap-x-2">
-            <b className="text-xl">{pct(enough(s.rulings) ? pctOf(s.overturned, s.rulings) : null)}</b>
+            <b className="text-[18px]">{pct(enough(s.rulings) ? pctOf(s.overturned, s.rulings) : null)}</b>
             <span className="text-[13px] text-muted">{enough(s.rulings) ? `${fmt(s.overturned)} of ${fmt(s.rulings)} rulings ${period.phrase}` : NOT_ENOUGH}</span>
           </div>
         </div>
         <div>
           <Label>Denials accepted</Label>
           <div className="mt-1 flex flex-wrap items-baseline gap-x-2">
-            <b className="text-xl" data-testid="accepted-count">
+            <b className="text-[18px]" data-testid="accepted-count">
               {fmt(s.accepted)}
             </b>
             <span className="text-[13px] text-muted">
@@ -126,10 +126,10 @@ export function Breakdowns({ board, workload, scopeWords, dismissed, onOpen }: {
   return (
     <section aria-labelledby="breakdowns-title" className="flex flex-col gap-3">
       <div className="px-1">
-        <h2 id="breakdowns-title" className="font-serif text-[21px] font-semibold leading-tight tracking-tight">
+        <h2 id="breakdowns-title" className="font-serif text-[18px] font-semibold leading-tight tracking-tight">
           Detailed breakdowns
         </h2>
-        <p className="mt-0.5 text-[13.5px] text-muted">The tables and rankings behind the figures above. Each one opens in place.</p>
+        <p className="mt-0.5 text-[13px] text-muted">The tables and rankings behind the figures above. Each one opens in place.</p>
       </div>
       <Disclosure title="Length of stay and units" summary={losSummary(board)} keepMounted={false}>
         <LosSection board={board} onOpen={onOpen} />

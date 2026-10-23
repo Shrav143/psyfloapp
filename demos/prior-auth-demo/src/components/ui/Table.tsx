@@ -10,7 +10,7 @@ export function Table({ className, nowrap, children }: { className?: string; now
   );
 }
 export function Th({ className, ...rest }: ThHTMLAttributes<HTMLTableCellElement>) {
-  return <th className={cn("border-b border-line px-[18px] py-3.5 text-[11.5px] font-medium uppercase tracking-[0.09em] text-muted first:pl-6 last:pr-6", className)} {...rest} />;
+  return <th className={cn("border-b border-line px-[18px] py-3.5 text-[11px] font-medium uppercase tracking-[0.09em] text-muted first:pl-6 last:pr-6", className)} {...rest} />;
 }
 export function Td({ className, ...rest }: TdHTMLAttributes<HTMLTableCellElement>) {
   return <td className={cn("border-b border-line px-[18px] py-4 align-middle first:pl-6 last:pr-6", className)} {...rest} />;

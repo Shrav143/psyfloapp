@@ -65,12 +65,12 @@ export function ReferralHeader({ r, hasCase, onAccept, onInfo, onDecline, onNote
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-3">
             <span className="rounded-full bg-neutral-bg px-3 py-1 text-[13px] font-semibold text-neutral-ink">{PROGRAM_LABEL[r.program]} requested</span>
-            <h1 className="font-serif text-[36px] leading-none font-semibold tracking-tight">{r.id}</h1>
+            <h1 className="font-serif text-[24px] leading-none font-semibold tracking-tight">{r.id}</h1>
             <StatusPill status={r.status} />
             <UrgencyPill urgency={r.urgency} />
             {pastTarget(r, clock) ? <Pill tone="risk">Past response target</Pill> : null}
           </div>
-          <div className="mt-3 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[15px] text-muted">
+          <div className="mt-3 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[14px] text-muted">
             <span className="text-ink">{r.patient.initials}, {r.patient.age}</span>
             <span aria-hidden="true">·</span>
             <span>{r.source.name}</span>

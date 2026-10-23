@@ -25,7 +25,7 @@ export function TestResults({ workflow, result, revealed, onFix, onAgain, onSkip
   return (
     <section aria-label="Test result" className="rounded-[20px] border border-edge bg-white">
       <header className="flex flex-wrap items-center gap-2.5 border-b border-line px-5 py-4">
-        <h3 className="m-0 font-serif text-[21px] leading-tight font-semibold">What happened</h3>
+        <h3 className="m-0 font-serif text-[18px] leading-tight font-semibold">What happened</h3>
         {workflow.status !== "published" ? <Pill tone="mid" dot>Draft: not used for cases yet</Pill> : <Pill tone={STATUS_TONE[workflow.status]} dot>{STATUS_WORD[workflow.status]}</Pill>}
         <span className="text-[13px] text-muted">{workflow.name}, version {workflow.version}</span>
         <div className="ml-auto flex gap-2">
@@ -41,11 +41,11 @@ export function TestResults({ workflow, result, revealed, onFix, onAgain, onSkip
               <Pill tone={STATUS[result.status].tone} dot>{STATUS[result.status].word}</Pill>
               {result.endResult ? <span className="text-xs text-muted">Ended as: {result.endResult.replace("_", " ")}</span> : null}
             </div>
-            <p role="status" className="mt-2 mb-0 font-serif text-[19px] leading-snug font-semibold text-ink">{result.outcomeText}</p>
-            {result.reason ? <p className="mt-1.5 mb-0 text-[13.5px] text-ink2"><span className="font-semibold">Why it stopped: </span>{result.reason}</p> : null}
+            <p role="status" className="mt-2 mb-0 font-serif text-[18px] leading-snug font-semibold text-ink">{result.outcomeText}</p>
+            {result.reason ? <p className="mt-1.5 mb-0 text-[13px] text-ink2"><span className="font-semibold">Why it stopped: </span>{result.reason}</p> : null}
           </div>
         ) : (
-          <p className="mb-4 mt-0 text-[13.5px] text-muted" aria-live="polite">Running the steps, one at a time…</p>
+          <p className="mb-4 mt-0 text-[13px] text-muted" aria-live="polite">Running the steps, one at a time…</p>
         )}
 
         <ol className="m-0 flex list-none flex-col gap-2 p-0" aria-label="Steps in the order they ran">
@@ -57,7 +57,7 @@ export function TestResults({ workflow, result, revealed, onFix, onAgain, onSkip
                 <Pill tone={OUTCOME_TONE[s.outcome]} dot>{OUTCOME_WORD[s.outcome]}</Pill>
                 {s.support && s.support !== "live" ? <span className="text-xs text-muted">{s.support === "simulated" ? "Demo simulation" : "Not configured"}</span> : null}
               </div>
-              <p className="mt-1 mb-0 pl-8 text-[13.5px] text-ink2">{s.message}</p>
+              <p className="mt-1 mb-0 pl-8 text-[13px] text-ink2">{s.message}</p>
               {s.ruleRefs.length ? (
                 <p className="mt-1.5 mb-0 flex flex-wrap items-center gap-1.5 pl-8">
                   {s.ruleRefs.map((id) => {
@@ -87,7 +87,7 @@ export function TestResults({ workflow, result, revealed, onFix, onAgain, onSkip
             {result.warnings.length ? (
               <div>
                 <h4 className="m-0 mb-1.5 text-[14px] font-semibold">Warnings</h4>
-                <ul className="m-0 list-disc pl-5 text-[13.5px] text-mid-ink">
+                <ul className="m-0 list-disc pl-5 text-[13px] text-mid-ink">
                   {result.warnings.map((w, i) => (
                     <li key={i}>{w}</li>
                   ))}
@@ -106,7 +106,7 @@ export function TestResults({ workflow, result, revealed, onFix, onAgain, onSkip
                   ))}
                 </ul>
               ) : (
-                <p className="m-0 text-[13.5px] text-muted">No payer rule was read on this path.</p>
+                <p className="m-0 text-[13px] text-muted">No payer rule was read on this path.</p>
               )}
               {unverified.length ? (
                 <p className="mt-2 mb-0 flex items-start gap-2 text-[13px] text-mid-ink"><ShieldAlert size={15} className="ico mt-0.5" aria-hidden="true" />{unverified.length} of these {unverified.length === 1 ? "is" : "are"} not verified. A person should confirm {unverified.length === 1 ? "it" : "them"} with the payer before relying on this result.</p>

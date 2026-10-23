@@ -18,7 +18,7 @@ group gOff "What disconnecting does"
   store a6 "If it was on 'Needs attention', the problem is remembered\nReconnect will start with Fix"
   agent a2 "Navigator logs 'Disconnected {name}. Charts from it stop arriving'"
   toast a3 "'{name} is disconnected'\n'Reconnect it any time from this page.' Amber"
-  process a4 "Row: 'Not syncing', 'Sync paused', red pill, 'Reconnect' and 'Manage'\nThe 'Action required' line names it with a 'Reconnect' button\n'New case cannot pull a chart from it until it is connected.'\nDrawer pill turns red, the bottom button reads 'Reconnect'"
+  process a4 "Row: 'Not syncing', 'Sync paused', red pill, 'Reconnect' and 'Manage'\nThe 'Action required' line names it with a 'Reconnect' button\n'New Case cannot pull a chart from it until it is connected.'\nDrawer pill turns red, the bottom button reads 'Reconnect'"
   process a5 "Skipped by 'Sync now'\nLast sync figure ignores it, or reads 'None' if every system is off\nIts Write back switch no longer counts on the Dashboard"
 endgroup
 

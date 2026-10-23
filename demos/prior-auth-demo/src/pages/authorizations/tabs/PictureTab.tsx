@@ -19,7 +19,7 @@ function Dim({ d }: { d: AsamDim }) {
         <div className="min-w-0 flex-1 font-semibold leading-snug">{d.name}</div>
         <Pill tone={lv.tone} dot>{lv.word}</Pill>
       </div>
-      <div className="mt-1.5 ml-9 text-[13.5px] text-ink2">{d.sentence}</div>
+      <div className="mt-1.5 ml-9 text-[13px] text-ink2">{d.sentence}</div>
     </div>
   );
 }
@@ -70,7 +70,7 @@ export function PictureTab({ ctx }: { ctx: CaseCtx }) {
               {detail.keyScores.map((k) => (
                 <div key={k.label} className="rounded-2xl border border-tile-edge bg-tile py-3 text-center">
                   <Label>{k.label}</Label>
-                  <div className="mt-0.5 text-[22px] font-semibold" style={{ color: TEXT_TONE[k.tone] }}>{k.value} <span className="text-sm font-medium text-muted">{k.of}</span></div>
+                  <div className="mt-0.5 text-[18px] font-semibold" style={{ color: TEXT_TONE[k.tone] }}>{k.value} <span className="text-sm font-medium text-muted">{k.of}</span></div>
                 </div>
               ))}
             </div>
@@ -87,18 +87,18 @@ export function PictureTab({ ctx }: { ctx: CaseCtx }) {
         <Card>
           <CardHeader title="Engagement and behavior" right={<Pill tone={eng >= 70 ? "good" : "mid"}>{engWord}</Pill>} />
           <CardBody>
-            <div className="flex items-center gap-3"><b className="text-[22px] text-good">{eng}%</b><Meter value={eng} className="flex-1" height={8} color="#2F6F5C" /></div>
-            {detail.engagement.checks.map((t) => <div key={t} className="mt-2.5 flex items-center gap-2 text-[13.5px]"><Check size={14} className="ico text-good" />{t}</div>)}
+            <div className="flex items-center gap-3"><b className="text-[18px] text-good">{eng}%</b><Meter value={eng} className="flex-1" height={8} color="#2F6F5C" /></div>
+            {detail.engagement.checks.map((t) => <div key={t} className="mt-2.5 flex items-center gap-2 text-[13px]"><Check size={14} className="ico text-good" />{t}</div>)}
           </CardBody>
         </Card>
         <Card>
           <CardHeader title="Still open" right={<Pill tone={open.length ? "mid" : "good"}>{open.length}</Pill>} />
           <CardBody className="flex flex-col gap-3" >
-            {open.length === 0 ? <div className="flex items-center gap-2 text-[13.5px] text-good-ink"><Check size={14} className="ico text-good" />Nothing is open. Every conflict, document and risk is settled.</div> : null}
+            {open.length === 0 ? <div className="flex items-center gap-2 text-[13px] text-good-ink"><Check size={14} className="ico text-good" />Nothing is open. Every conflict, document and risk is settled.</div> : null}
             {open.map((o) => (
               <div key={o.id} className="flex items-start gap-2.5">
                 <TriangleAlert size={15} className={cn("ico mt-0.5", "text-mid")} aria-label={o.kind === "conflict" ? "Conflict" : o.kind === "missing" ? "Missing" : "Risk"} />
-                <div className="min-w-0 flex-1 text-[13.5px] text-mid-ink">{o.text}</div>
+                <div className="min-w-0 flex-1 text-[13px] text-mid-ink">{o.text}</div>
                 <Button size="sm" variant="ghost" onClick={() => goTab("actions", o.fixRec)}>Settle it</Button>
               </div>
             ))}

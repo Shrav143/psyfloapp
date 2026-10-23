@@ -1,10 +1,10 @@
-title: Authorizations › New case › How a case starts and resumes
+title: Authorizations › New Case › How a case starts and resumes
 route: /authorizations/new
-intro: New case is a page that makes or reopens a case (a 'draft'). This diagram covers every way in and how a new case is made from the address: a referral, a verification, a patient, an authorization type or nothing. Reopening a case that exists, and what a viewer at one site can open, are in the next diagram.
+intro: New Case is a page that makes or reopens a case (a 'draft'). This diagram covers every way in and how a new case is made from the address: a referral, a verification, a patient, an authorization type or nothing. Reopening a case that exists, and what a viewer at one site can open, are in the next diagram.
 dir: TD
 also: Demo only: the hosted preview keeps the address in memory, so ?referral= cannot be typed there. The button 'Start a case from this referral' still works in it.
 ---
-start s1 "Open New case\nSidebar 'New case', a 'New case' button, the Demo menu, FLO's link or the old /referrals address"
+start s1 "Open New Case\nSidebar 'New Case', a 'New Case' button, the Demo menu, FLO's link or the old /referrals address"
 start s2 "Click 'Create authorization from verification' or 'Start authorization'\non a result in Eligibility & Benefits"
 start s3 "Click 'Start a case from this referral'\non the full referral page, or type ?referral=RF-2051"
 start s4 "Click 'Start renewal' in the Dashboard's what-to-do list\n(opens ?type=reauth&patient=CASE-ID)"
@@ -29,11 +29,11 @@ group gMake "No case id in the address: make one"
 endgroup
 process p7 "?step= opens that step: intake, eligibility, documentation, preparation or review\nThe older names referral, records and agents land on Intake, Clinical documentation and Authorization preparation"
 process p8 "Case opens at /authorizations/new/draft-ID\nIt replaces the address, so Back does not loop"
-goto gOpen "Continues in: Authorizations › New case › Reopen and resume a case"
-goto gStep "Continues in: Authorizations › New case › The stepper and the five steps"
-goto gType "Continues in: Authorizations › New case › Authorization type"
-goto gSites "Continues in: Authorizations › New case › Sites and scope"
-goto g1 "Continues in: Authorizations › New case › Intake › Start with a referral or patient"
+goto gOpen "Continues in: Authorizations › New Case › Reopen and resume a case"
+goto gStep "Continues in: Authorizations › New Case › The stepper and the five steps"
+goto gType "Continues in: Authorizations › New Case › Authorization type"
+goto gSites "Continues in: Authorizations › New Case › Sites and scope"
+goto g1 "Continues in: Authorizations › New Case › Intake › Start with a referral or patient"
 
 s1 --> d1
 s2 --> d1

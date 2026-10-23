@@ -1,4 +1,4 @@
-title: Authorizations › New case › Save as draft and leave
+title: Authorizations › New Case › Save as draft and leave
 route: /authorizations/new/:draftId, then /manager
 intro: A case becomes a draft in Case Manager once it is saved, which happens on 'Save as draft' and also on 'Start the agents'. Leaving without saving leaves nothing in Case Manager. The draft keeps which of the five steps it was on, so opening it puts the person back where the case was. The step is part of the draft, so 'Send to payer' and a Case Manager button land on the right one.
 dir: TD
@@ -25,7 +25,7 @@ store stPos "The draft keeps its step\nIntake, Eligibility & Benefits, Clinical 
 
 click cLeave "Click 'Case Manager' at the top, a sidebar item, or close the tab"
 decision dSaved "Was the case saved?"
-process pUnsaved "Nothing appears in Case Manager\nThe draft stays in this session and its address still opens it\nOpening New case again starts another blank draft"
+process pUnsaved "Nothing appears in Case Manager\nThe draft stays in this session and its address still opens it\nOpening New Case again starts another blank draft"
 process pAway "A running case stops moving while the page is closed\nThe row shows the agent that was working\nOr, when an agent could not finish: 'Verify could not reach Cardinal's portal. Retry it or skip it'"
 
 screen sCM "Case Manager › Active cases › Being prepared\n'Most urgent first. Each case moves through eight steps; the agents do all but Ask and Sign.'\nFilter: 'All', 'Agents working', 'Needs your input', 'Ready to sign'\nOnly cases at the sites in view"
@@ -39,15 +39,15 @@ process pBadge "The sidebar badge on 'Case Manager' counts drafts that need a pe
 process pDash "The Dashboard counts a saved draft under 'Preparing' ('N in Case Manager')\nA draft that was never saved is not counted\nSeeded cases such as R-1042 are counted as requests"
 click cOpen "Click the case ID, or the row's button"
 process pResume "Opens /authorizations/new/DRAFT\nThe page resumes where the draft was\nA draft whose agents already ran opens on Authorization preparation or Review & submit, never on Intake"
-goto gResume "Continues in: Authorizations › New case › Authorization preparation › Finished, paused or left"
-goto gStep3 "Continues in: Authorizations › New case › Clinical documentation › The checklist and Continue"
-goto gOpen "Continues in: Authorizations › New case › Reopen and resume a case"
+goto gResume "Continues in: Authorizations › New Case › Authorization preparation › Finished, paused or left"
+goto gStep3 "Continues in: Authorizations › New Case › Clinical documentation › The checklist and Continue"
+goto gOpen "Continues in: Authorizations › New Case › Reopen and resume a case"
 goto gCM "Continues in: Case Manager › Active cases › Being prepared card"
 
-screen sNF "New case\n'That draft is not in the demo.'\n'We could not find that draft'\n'It may have been cleared when the demo data was reset.'"
+screen sNF "New Case\n'That draft is not in the demo.'\n'We could not find that draft'\n'It may have been cleared when the demo data was reset.'"
 click cNew "Click 'Start a new case'"
 process pNew "A new blank draft opens on Intake"
-goto gRef "Continues in: Authorizations › New case › Intake › Start with a referral or patient"
+goto gRef "Continues in: Authorizations › New Case › Intake › Start with a referral or patient"
 
 s2 --> pReq --> gCase
 s1 --> c1

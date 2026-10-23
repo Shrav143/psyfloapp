@@ -44,7 +44,7 @@ function Row({ r, onOpen }: { r: PayerRow; onOpen: (id: string) => void }) {
         <div className="order-2 @4xl:order-none">
           <Pill tone={status === "published" ? "good" : status === "drafts" ? "mid" : "neutral"}>{WF_STATUS_LABEL[status]}</Pill>
         </div>
-        <div className={cn("order-7 flex items-center gap-1.5 text-[12.5px] font-semibold whitespace-nowrap @4xl:order-none", r.waiting ? "text-mid-ink" : "text-muted")}>
+        <div className={cn("order-7 flex items-center gap-1.5 text-[12px] font-semibold whitespace-nowrap @4xl:order-none", r.waiting ? "text-mid-ink" : "text-muted")}>
           <span className={cn("h-[9px] w-[9px] shrink-0 rounded-full", r.waiting ? "bg-mid" : "bg-good")} role="img" aria-label={r.waiting ? "Change waiting" : "No change waiting"} />
           {r.waiting ? "Change waiting" : <span className="font-normal"><span className="@4xl:hidden">No change waiting</span><span className="hidden @4xl:inline">None</span></span>}
         </div>

@@ -14,7 +14,7 @@ import { Check } from "lucide-react";
 const PATH: [string, string][] = [
   ["Dashboard: where every request stands", paths.dashboard()],
   ["Authorizations: the queue", paths.authorizations()],
-  ["New case: start from a referral", paths.referrals()],
+  ["New Case: start from a referral", paths.referrals()],
   ["Eligibility & Benefits: verify a patient", paths.eligibilityVerify()],
   ["Denial Intelligence: D-3318", paths.denials("D-3318")],
   ["Payers: Cardinal, Changes", paths.payers("cardinal", "changes")],
@@ -60,7 +60,7 @@ function DemoMenu() {
                 <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-neutral-bg text-[10px] font-semibold" aria-hidden="true">{v.initials}</span>
                 <span className="min-w-0 flex-1">
                   <span className="block font-medium">{v.name}</span>
-                  <span className="block text-[12.5px] text-muted">{v.role}{v.sites.length > 1 ? ", both sites" : ""}</span>
+                  <span className="block text-[12px] text-muted">{v.role}{v.sites.length > 1 ? ", both sites" : ""}</span>
                 </span>
                 {viewerId === v.id ? <Check size={15} className="ico shrink-0 text-forest" aria-label="Current" /> : null}
               </button>

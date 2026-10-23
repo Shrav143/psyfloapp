@@ -87,7 +87,7 @@ export default function ReportPage() {
           <Button icon={RefreshCw} onClick={() => clearReport(id)}>Regenerate</Button>
         </div>
       </div>
-      {state === "failed" ? <p role="status" className="mx-auto w-full max-w-[860px] text-[13.5px] text-mid-ink print:hidden">Select the text and press Ctrl or Cmd C</p> : null}
+      {state === "failed" ? <p role="status" className="mx-auto w-full max-w-[860px] text-[13px] text-mid-ink print:hidden">Select the text and press Ctrl or Cmd C</p> : null}
       <ReportView doc={doc} />
     </Page>
   );

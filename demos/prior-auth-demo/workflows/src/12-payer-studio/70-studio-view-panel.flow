@@ -1,6 +1,6 @@
 title: Payers › Workflow view › Read the path in a side panel
 route: any page that offers 'View workflow'
-intro: The same read-only canvas opens in a right-hand panel from New case (the 'View workflow' button on a case's Workflow line) and from History & Changes (a version). With a run behind it, it shows which steps were executed, skipped or are still pending. It never edits anything.
+intro: The same read-only canvas opens in a right-hand panel from New Case (the 'View workflow' button on a case's Workflow line) and from History & Changes (a version). With a run behind it, it shows which steps were executed, skipped or are still pending. It never edits anything.
 dir: TD
 ---
 start s1 "Click 'View workflow' on a case's Workflow line\nor open a version in History & Changes"
@@ -22,7 +22,7 @@ click c2 "Click 'Open in Workflow Builder'"
 process p3 "Goes to the payer's builder on that workflow"
 click c3 "Click X, press Escape or click the dim area"
 end e1 "The reader knows which path the case took"
-goto g1 "Continues in: Authorizations › New case › Workflow › What the workflow adds to the history"
+goto g1 "Continues in: Authorizations › New Case › Workflow › What the workflow adds to the history"
 
 s1 --> o1 --> d1
 d1 -->|No| m1

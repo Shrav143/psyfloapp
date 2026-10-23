@@ -1,4 +1,4 @@
-title: Authorizations › New case › Intake › Possible duplicate
+title: Authorizations › New Case › Intake › Possible duplicate
 route: /authorizations/new/:draftId (Intake, the one alert)
 intro: Intake warns when the case looks like a request that already exists: the same patient, payer and level of care with an open request, a saved draft that has not been sent, or an active authorization whose dates overlap. It never refuses. The person opens the other one, or continues with a short reason, which stays on the case and in the request's History. Only records at the sites in view are compared.
 dir: TD
@@ -11,7 +11,7 @@ endx eNone "No alert\nIntake is Complete when nothing else is open"
 screen sBan "Amber alert, the only one on Intake\n'This looks like a request that already exists'\n'R-1042, admission request, being prepared. Summit Medicaid HMO, Residential 3.5.'\n'Same patient, payer and level of care, with dates that overlap. Sending both would ask the payer for the same days twice.'"
 process pState "Intake shows Blocked\n'A matching request exists'\nThe footer hint says 'A matching request exists. Open it, or continue with a reason.'"
 click cOpen "Click 'Open R-1042'"
-process pOpen "A request opens on its case page\nA draft opens in New case"
+process pOpen "A request opens on its case page\nA draft opens in New Case"
 goto gCase "Continues in: Authorizations › Case page › Ways in"
 click cWhy "Click 'Continue with a reason'"
 input iWhy "Type in 'Why is this a different request?'\n'For example: the first request was for the earlier stay'"
@@ -27,8 +27,8 @@ process pUndo "The alert is back and Intake is Blocked again"
 process pRev "Review & submit lists 'Possible duplicate' as a note\n'You went on and said why: ...'\nSending is no longer stopped by it"
 store stHist "After sending, the request's History says\n'You sent this request knowing a matching one exists'\n'Your reason: ...'"
 process pType "Changing the Authorization type clears the reason\nThe check runs again for the new type"
-goto gSign "Continues in: Authorizations › New case › Review & submit › Sign and send to payer"
-goto gMis "Continues in: Authorizations › New case › Review & submit › What is missing"
+goto gSign "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer"
+goto gMis "Continues in: Authorizations › New Case › Review & submit › What is missing"
 
 s1 --> d1
 d1 -.-> pWhat

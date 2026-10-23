@@ -6,10 +6,10 @@ import type { Figure, FigureId } from "./board";
 const TONE: Record<FigureId, string> = { approval: "#2F6F5C", denial: "#B5553A", firstPass: "#2F6F5C", time: "#1D4F43", preventable: "#8F6620", appeals: "#2F6F5C" };
 
 function Change({ f }: { f: Figure }) {
-  if (!f.change) return <div className="mt-2 text-[12.5px] text-muted">No earlier period to compare</div>;
+  if (!f.change) return <div className="mt-2 text-[12px] text-muted">No earlier period to compare</div>;
   const Icon = f.change.dir === "up" ? TrendingUp : f.change.dir === "down" ? TrendingDown : Minus;
   return (
-    <div className={cn("mt-2 flex items-center gap-1.5 text-[12.5px] font-medium", f.change.good === null ? "text-ink2" : f.change.good ? "text-good" : "text-risk")} data-testid={`change-${f.id}`}>
+    <div className={cn("mt-2 flex items-center gap-1.5 text-[12px] font-medium", f.change.good === null ? "text-ink2" : f.change.good ? "text-good" : "text-risk")} data-testid={`change-${f.id}`}>
       <Icon size={15} className="ico" aria-hidden="true" />
       {f.change.text}
     </div>
@@ -25,9 +25,9 @@ export function HeadlineFigures({ figures, onOpen }: { figures: Figure[]; onOpen
         return (
           <div key={f.id} className="relative" data-testid={`figure-${f.id}`}>
             <button type="button" onClick={() => onOpen(f)} className="flex h-full w-full flex-col rounded-[20px] border border-edge bg-white px-5 py-[18px] text-left transition-colors hover:bg-[#FBF8F3]">
-              <span className="pr-8 text-[11.5px] font-medium tracking-[0.1em] text-muted uppercase">{f.label}</span>
+              <span className="pr-8 text-[11px] font-medium tracking-[0.1em] text-muted uppercase">{f.label}</span>
               <span className="mt-2.5 flex items-end justify-between gap-4">
-                <span className="text-[36px] leading-none font-semibold tracking-tight tabular-nums">
+                <span className="text-[24px] leading-none font-semibold tracking-tight tabular-nums">
                   {num}
                   {unit ? <span className="ml-1.5 text-[16px] font-medium text-ink2">{unit}</span> : null}
                 </span>
@@ -36,7 +36,7 @@ export function HeadlineFigures({ figures, onOpen }: { figures: Figure[]; onOpen
                 </span>
               </span>
               <Change f={f} />
-              <span className="mt-1 text-[12.5px] text-muted">{f.sub}</span>
+              <span className="mt-1 text-[12px] text-muted">{f.sub}</span>
             </button>
             <div className="absolute top-3 right-3">
               <InfoTip label={`About ${f.label.toLowerCase()}`} align="end">

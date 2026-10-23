@@ -8,9 +8,9 @@ import { clockTime, toDate } from "@/lib/time";
 import { paths } from "@/routes";
 import type { AppState } from "./index";
 
-/* Eligibility and Benefits, and the verification record New case shares with it.
+/* Eligibility and Benefits, and the verification record New Case shares with it.
    `verifications` is the one source of truth: a record per case (or per V-xxxx check made on the Verify form). `ebPatients` is the same
-   rows in a list, kept in step by `commit` so the list, FLO and the badge read what New case wrote. */
+   rows in a list, kept in step by `commit` so the list, FLO and the badge read what New Case wrote. */
 export interface VerifyFormInput {
   payerId: PayerId;
   program: Program;
@@ -28,7 +28,7 @@ export interface EligibilitySlice {
   /** IDs with a refresh in flight (a row or a summary shows a spinner). */
   ebRechecking: string[];
   ebSeq: number;
-  /** New case, or a check made anywhere else, stores its record here. The Eligibility list and result show it at once. */
+  /** New Case, or a check made anywhere else, stores its record here. The Eligibility list and result show it at once. */
   saveVerification: (rec: VerificationRecord) => void;
   /** Runs the check again on the demo clock, replaces the record and says what happened in a toast. While Verify is paused the last result stays, with a warning. */
   refreshVerification: (id: string) => void;

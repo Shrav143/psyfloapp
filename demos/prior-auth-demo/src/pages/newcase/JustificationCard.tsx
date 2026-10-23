@@ -17,7 +17,7 @@ export function JustificationCard({ draft, env }: { draft: CaseDraft; env: CaseE
       summary={`${sections.length} sections from the ${draft.documents.length} ${draft.documents.length === 1 ? "document" : "documents"} in the case. Scribe adds only what the chart supports.`}
       right={<Pill tone={gaps.length ? "mid" : "good"} dot>{gaps.length ? `${gaps.length} missing` : "Nothing missing"}</Pill>}
     >
-      <div className="flex flex-col gap-4 px-6 py-5 text-[14.5px] leading-[1.7]">
+      <div className="flex flex-col gap-4 px-6 py-5 text-[14px] leading-[1.7]">
         {sections.map((s) => (
           <div key={s.id}>
             <div className="text-[13px] font-semibold">{s.heading}</div>
@@ -25,7 +25,7 @@ export function JustificationCard({ draft, env }: { draft: CaseDraft; env: CaseE
           </div>
         ))}
         {gaps.length ? (
-          <div className="rounded-xl bg-mid-bg px-4 py-3 text-[13.5px] text-mid-ink">
+          <div className="rounded-xl bg-mid-bg px-4 py-3 text-[13px] text-mid-ink">
             <div className="font-semibold">Evidence that is missing</div>
             <ul className="mt-1 list-disc pl-5">
               {gaps.map((g) => (

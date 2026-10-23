@@ -20,7 +20,7 @@ function CopyButton({ text, label, hidden, size = "sm", variant = "outline" }: {
         {state === "copied" ? "Copied" : label}
         {hidden ? <span className="sr-only"> {hidden}</span> : null}
       </Button>
-      {state === "failed" ? <span role="status" className="text-[12.5px] text-mid-ink">{MANUAL}</span> : null}
+      {state === "failed" ? <span role="status" className="text-[12px] text-mid-ink">{MANUAL}</span> : null}
     </span>
   );
 }
@@ -28,10 +28,10 @@ function CopyButton({ text, label, hidden, size = "sm", variant = "outline" }: {
 /** The scrolling text of a pop-up: selectable, a readable width, focused when it opens so the arrow keys scroll it. */
 function Body({ from, children }: { from: ReturnType<typeof useDialogState>["from"]; children: ReactNode }) {
   const ref = useDialogFocus(from);
-  return <div ref={ref} tabIndex={-1} className="mx-auto max-w-[720px] select-text text-[15px] leading-[1.7] outline-none">{children}</div>;
+  return <div ref={ref} tabIndex={-1} className="mx-auto max-w-[720px] select-text text-[14px] leading-[1.7] outline-none">{children}</div>;
 }
 
-const H = ({ children }: { children: ReactNode }) => <h3 className="mt-7 mb-2 border-b border-line pb-1.5 font-serif text-[19px] font-semibold first:mt-0">{children}</h3>;
+const H = ({ children }: { children: ReactNode }) => <h3 className="mt-7 mb-2 border-b border-line pb-1.5 font-serif text-[18px] font-semibold first:mt-0">{children}</h3>;
 
 function Shell({ open, from, onClose, title, view, text, children }: { open: boolean; from: ReturnType<typeof useDialogState>["from"]; onClose: () => void; title: string; view: DenialView; text: string; children: ReactNode }) {
   const { req, analysis } = view;
@@ -85,7 +85,7 @@ export function WeakPointsSummary({ view }: { view: DenialView }) {
             <div key={f.id}>
               <div className="flex items-center gap-2.5"><Pill tone={f.sev === "Critical" ? "risk" : "mid"}>{f.sev}</Pill><b className="leading-snug">{f.title}</b></div>
               <p className="mt-1.5">{long.findings[i]}</p>
-              <p className="mt-1 text-[13.5px] text-muted">Source: {f.source}</p>
+              <p className="mt-1 text-[13px] text-muted">Source: {f.source}</p>
             </div>
           ))}
         </div>

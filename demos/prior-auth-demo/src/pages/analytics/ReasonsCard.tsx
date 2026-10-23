@@ -38,7 +38,7 @@ export function ReasonsCard({ board, onOpen }: { board: Board; onOpen: (q: CaseQ
       <CardBody className="flex flex-col gap-8">
         <div className="grid grid-cols-1 gap-8 xl:grid-cols-[1.55fr_1fr]">
           <div>
-            <h4 className="mb-2 text-[15px] font-semibold">Most common reasons</h4>
+            <h4 className="mb-2 text-[14px] font-semibold">Most common reasons</h4>
             <ParetoChart
               ariaLabel="Denial reasons, most common first"
               rows={rows}
@@ -50,7 +50,7 @@ export function ReasonsCard({ board, onOpen }: { board: Board; onOpen: (q: CaseQ
             />
           </div>
           <div>
-            <h4 className="mb-2 text-[15px] font-semibold">Preventable or not</h4>
+            <h4 className="mb-2 text-[14px] font-semibold">Preventable or not</h4>
             <DonutChart
               ariaLabel="Preventable and not preventable denials"
               parts={parts}
@@ -58,7 +58,7 @@ export function ReasonsCard({ board, onOpen }: { board: Board; onOpen: (q: CaseQ
               thickness={24}
               center={
                 <>
-                  <span className="block text-[26px] leading-none font-semibold">{share}%</span>
+                  <span className="block text-[24px] leading-none font-semibold">{share}%</span>
                   <span className="mt-1 block text-[11px] text-muted">preventable</span>
                 </>
               }
@@ -68,7 +68,7 @@ export function ReasonsCard({ board, onOpen }: { board: Board; onOpen: (q: CaseQ
             />
             {prevByPayer.length > 1 ? (
               <div className="mt-6">
-                <h4 className="mb-1 text-[15px] font-semibold">Preventable denials by payer</h4>
+                <h4 className="mb-1 text-[14px] font-semibold">Preventable denials by payer</h4>
                 <HBarChart
                   ariaLabel="Preventable denials by payer"
                   rows={prevByPayer.map((x) => ({ key: x.p, label: payerById(x.p).shortName, value: x.k, display: String(x.k), sub: `${pctOf(x.k, x.n)}% of ${x.n} denials`, color: CHART.mid }))}
@@ -84,7 +84,7 @@ export function ReasonsCard({ board, onOpen }: { board: Board; onOpen: (q: CaseQ
           </div>
         </div>
         <div>
-          <h4 className="mb-0.5 text-[15px] font-semibold">Reasons by diagnosis group</h4>
+          <h4 className="mb-0.5 text-[14px] font-semibold">Reasons by diagnosis group</h4>
           <p className="mb-3 text-[13px] text-muted">Each bar is the mix of reasons behind that group's denials, in four kinds. The number is how many denials. Hover a segment for its count; click a bar for its cases.</p>
           <StackedHBars
             ariaLabel="Denial reasons by diagnosis group"

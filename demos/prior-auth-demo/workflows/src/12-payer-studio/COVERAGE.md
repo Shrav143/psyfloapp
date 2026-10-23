@@ -56,7 +56,7 @@ Source: `src/pages/payers/studio/*` (the builder, the canvas, the settings panel
 | Eight made-up cases and the form folds | 62, 60 |
 | Test from the builder | 52 |
 
-## The view panel (New case, History & Changes)
+## The view panel (New Case, History & Changes)
 
 | Control | Diagram |
 |---|---|

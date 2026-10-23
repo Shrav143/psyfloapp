@@ -21,7 +21,7 @@ export function DocumentsGroup({ id, name, cfg, startProgram = "RES" }: { id: st
         <span className="text-[13px] font-medium text-ink2">Level of care</span>
         <Dropdown value={program} options={OPTIONS} onChange={setProgram} ariaLabel="Level of care" menuWidth={190} />
         <Button size="sm" variant="ghost" onClick={() => setEditing(true)}>Edit list</Button>
-        <span className="text-xs text-muted">Demo sample lists, Unverified. New case asks for what is listed here.</span>
+        <span className="text-xs text-muted">Demo sample lists, Unverified. New Case asks for what is listed here.</span>
       </div>
       <Disclosure title={`What ${name} wants for ${PROGRAM_LABEL[program]}`} summary={summary}>
         <ol>
@@ -30,7 +30,7 @@ export function DocumentsGroup({ id, name, cfg, startProgram = "RES" }: { id: st
               <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-neutral-bg text-xs font-semibold text-neutral-ink">{i + 1}</span>
               <div>
                 <div className="font-semibold">{d.title}</div>
-                <div className="text-[13.5px] text-muted">{d.requirement}</div>
+                <div className="text-[13px] text-muted">{d.requirement}</div>
               </div>
             </li>
           ))}

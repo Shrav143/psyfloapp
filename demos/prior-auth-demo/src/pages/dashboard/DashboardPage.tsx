@@ -19,7 +19,7 @@ import { CasesTable, PAGE_SIZE } from "./CasesTable";
 import { DoNext } from "./DoNext";
 import { hasNarrowingFilter } from "./helpers";
 import { Lifecycle } from "./Lifecycle";
-import { headline, ledgerChips, stageTotals, stateChips, statusOptions, tableSentence } from "./lifecycle";
+import { headline, ledgerChips, stageTotals, stateChips, statusOptions } from "./lifecycle";
 import { RequestDrawer } from "./RequestDrawer";
 import { nextSort, sortRows, type RowSort } from "./sort-rows";
 import { TableControls } from "./TableControls";
@@ -143,8 +143,8 @@ export default function DashboardPage() {
     <div className="flex flex-col gap-[22px]">
       <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
         <div className="min-w-0">
-          <h1 className="font-serif text-[26px] font-semibold leading-[1.2] tracking-tight">{head.title}</h1>
-          <p className="mt-1 text-[14px] text-muted">{head.sub}</p>
+          <h1 className="font-serif text-[24px] font-semibold leading-[1.2] tracking-tight">{head.title}</h1>
+          {head.sub ? <p className="mt-1 text-[13px] text-muted">{head.sub}</p> : null}
         </div>
         <div className="flex flex-col items-end gap-1.5">
           <Button icon={RefreshCw} loading={checking} disabled={navigatorPaused} onClick={checkAll}>
@@ -161,7 +161,6 @@ export default function DashboardPage() {
       <DoNext items={todo.items} moreToday={Math.max(0, todayAll - todayShown)} onGo={go} onShowMore={showToday} />
       <CasesTable
         title={plural(shown.length, "authorization")}
-        sentence={tableSentence(filters, needsToday, sort)}
         controls={<TableControls needsToday={needsToday} onNeedsToday={setNeedsToday} statusOptions={statusOptions(stageTotals(base.map((x) => x.r), savedCounts))} canClear={canClear} onClear={clearAll} />}
         rows={shown}
         visible={visible}

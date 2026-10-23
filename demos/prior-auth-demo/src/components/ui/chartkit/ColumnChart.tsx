@@ -56,7 +56,7 @@ export function ColumnChart(p: ColumnChartProps) {
   };
   return (
     <ChartFrame id={id} summary={p.summary} table={p.table} hint={p.hint}>
-      <ul className="mb-2 flex flex-wrap items-center gap-x-5 gap-y-1 text-[12.5px] text-ink2" aria-label="Legend">
+      <ul className="mb-2 flex flex-wrap items-center gap-x-5 gap-y-1 text-[12px] text-ink2" aria-label="Legend">
         {p.series.map((s) => (
           <li key={s.key} className="flex items-center gap-2">
             <i className="inline-block h-2.5 w-2.5 rounded-sm" style={{ background: s.color }} />

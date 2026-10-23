@@ -31,7 +31,7 @@ export function HistoryCard({ view }: { view: DenialView }) {
   const latest = [...events].filter((e) => e.done).sort((a, b) => b.at - a.at)[0];
   return (
     <Disclosure title="What has happened" summary={latest ? `${events.length} ${events.length === 1 ? "step" : "steps"}. Latest, ${stamp(latest.at)}: ${latest.text}` : `${events.length} ${events.length === 1 ? "step" : "steps"}`}>
-      <div className="px-6 pt-4 text-[13.5px] text-muted">Every step is also on the Dashboard.</div>
+      <div className="px-6 pt-4 text-[13px] text-muted">Every step is also on the Dashboard.</div>
       <CardBody><Timeline events={events} /></CardBody>
     </Disclosure>
   );
@@ -65,7 +65,7 @@ export function WeakPointsCard({ view, onSource }: { view: DenialView; onSource:
             <Pill tone={f.sev === "Critical" ? "risk" : "mid"} className="mt-0.5">{f.sev}</Pill>
             <div className="min-w-0 flex-1">
               <div className="font-semibold">{f.title}</div>
-              <div className="max-w-[80ch] text-[13.5px] text-muted">{f.detail}</div>
+              <div className="max-w-[80ch] text-[13px] text-muted">{f.detail}</div>
               <div className="mt-2 flex flex-wrap items-center gap-2.5">
                 <button type="button" onClick={() => onSource(f)} className="inline-flex items-center gap-1.5 rounded-full bg-neutral-bg px-2.5 py-[3px] text-xs font-semibold text-neutral-ink hover:bg-[#EADFD0]">
                   <Link2 size={12} className="ico" />
@@ -102,7 +102,7 @@ export function DimensionsCard({ view }: { view: DenialView }) {
               <span className={cn("h-[9px] w-[9px] rounded-full", DOT[d.tone])} aria-hidden="true" />
               <b>{d.name}</b>
             </div>
-            <p className="mt-1.5 text-[13.5px] text-ink2">{d.text}</p>
+            <p className="mt-1.5 text-[13px] text-ink2">{d.text}</p>
           </div>
         ))}
       </CardBody>

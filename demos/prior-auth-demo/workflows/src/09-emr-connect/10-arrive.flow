@@ -14,7 +14,7 @@ goto hg2 "Continues in: EMR Connect › Connect a system › Choose the system a
 goto sg "Continues in: EMR Connect › Sites › What each site sees"
 
 group gAct "Action required"
-  screen n1 "One banner line, only when something needs a person\n'Action required: Billing system needs attention. Also: 2 fields need a mapping, so New case leaves them blank.'\nOne button for the first item: 'Fix'"
+  screen n1 "One banner line, only when something needs a person\n'Action required: Billing system needs attention. Also: 2 fields need a mapping, so New Case leaves them blank.'\nOne button for the first item: 'Fix'"
   process n2 "Nothing needs a person: no banner"
 endgroup
 goto ng "Continues in: EMR Connect › Page › The Action required line"
@@ -31,7 +31,7 @@ group gSys "Connection health"
   screen c1 "Connection health\n'2 of 3 systems connected. Read access for charts, insurance details and medications.'\nOne site: 'Site A. 1 of 2 systems connected...' and, for a one-site viewer, an info icon on why only some systems show"
   process c2 "One row per system: name, status pill, what it holds and reads ('All programs at Site A. Reads ...'), last sync, sync failures, buttons\nThen a line: 'Read only' or 'Read and write back', with the Write back switch"
   click c3 "Click 'Sync now' in the card header"
-  click c4 "Click 'Sync now', 'Fix', 'Reconnect' or 'Manage' on a row\nA row that is not Connected also says that New case cannot pull a chart from it"
+  click c4 "Click 'Sync now', 'Fix', 'Reconnect' or 'Manage' on a row\nA row that is not Connected also says that New Case cannot pull a chart from it"
   click c6 "Click the 'Write back' switch on a row"
   toast c5 "'Connect your record system to let charts arrive on their own.'\nEmpty list. Not reachable in the demo: a system can be disconnected, never removed"
 endgroup

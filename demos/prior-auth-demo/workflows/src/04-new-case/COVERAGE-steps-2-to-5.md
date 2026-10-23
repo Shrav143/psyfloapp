@@ -1,4 +1,4 @@
-# Coverage: New case, steps 2 to 5 (Eligibility & Benefits, Clinical documentation, Authorization preparation, Review & submit)
+# Coverage: New Case, steps 2 to 5 (Eligibility & Benefits, Clinical documentation, Authorization preparation, Review & submit)
 
 Source: `src/pages/newcase/*` (EligibilityStep, NoAuthCard, ExceptionActions, DocumentedReasonForm, useVerifyRun, verificationFor, DocumentationStep, DropPanel, RecordsChecklist, DocRow, typicalDocs, readFiles, PreparationStep, AgentRow, QuestionModal, useAgentRun, JustificationCard, justification, narrative, ChancePanel, ReviewStep, ReviewSummary, MissingCard, NarrativeCard, ValidationSummary, ChecksCard, SignCard, caseIssues, reviewModel, stepState), `src/store/cases.ts`, `src/data/cases.ts`, `src/data/patients.ts`, `src/data/agents.ts`, `src/data/verification.ts` and `src/store/eligibility.ts` (read through the shared verification record; the Eligibility module owns them), `src/pages/authorizations/reviewAndSign.ts`. Diagram numbers are the file prefixes in this folder.
 

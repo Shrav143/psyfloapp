@@ -49,27 +49,27 @@ export function DenialHeader({ view, step, ...handlers }: Props) {
       <CardBody>
         <div className="flex flex-wrap items-start gap-x-6 gap-y-4">
           <div className="min-w-[260px] flex-1">
-            <div className="mb-1.5 text-[11.5px] font-medium tracking-[0.1em] text-muted uppercase">Authorization denial</div>
+            <div className="mb-1.5 text-[11px] font-medium tracking-[0.1em] text-muted uppercase">Authorization denial</div>
             <div className="flex flex-wrap items-center gap-2.5">
               <Chip>{PROGRAM_LABEL[req.program]}</Chip>
-              <span className="font-serif text-[26px] leading-none font-semibold">{req.id}</span>
+              <span className="font-serif text-[24px] leading-none font-semibold">{req.id}</span>
               <Pill tone="mid">{meta.type}</Pill>
             </div>
             <div className="mt-3 flex flex-wrap items-center gap-2">
               {chance ? <Pill tone={band(chance.value).tone}>{chance.value}% chance of overturning</Pill> : null}
               {chip ? <Pill tone={chip.tone} dot>{capitalize(chip.text)}</Pill> : null}
             </div>
-            <p className="mt-3 text-[13.5px] text-muted">
+            <p className="mt-3 text-[13px] text-muted">
               {payerById(req.payerId).name} · case {req.caseId} · {req.patient.initials}, {req.patient.age}
               {meta.letterName ? ` · letter ${meta.letterName}` : ""}
             </p>
             <Button size="sm" variant="ghost" icon={LayoutDashboard} className="mt-1 -ml-2" onClick={() => nav(paths.dashboard({ request: req.id }))}>See on the Dashboard</Button>
-            {meta.note ? <p className="mt-1 text-[13.5px] text-ink2">Your note: {meta.note}</p> : null}
+            {meta.note ? <p className="mt-1 text-[13px] text-ink2">Your note: {meta.note}</p> : null}
           </div>
           <div className="flex w-full max-w-[300px] min-w-[240px] flex-col gap-2.5 sm:w-[270px]">
             <div className={cn("flex flex-col gap-0.5 rounded-2xl px-[18px] py-3.5", READ_TONE[analysis.verdict])}>
-              <span className="text-[11.5px] font-semibold tracking-[0.1em] uppercase">Our read</span>
-              <b className="font-serif text-[20px] leading-tight">{analysis.verdict}</b>
+              <span className="text-[11px] font-semibold tracking-[0.1em] uppercase">Our read</span>
+              <b className="font-serif text-[18px] leading-tight">{analysis.verdict}</b>
               <span className="text-sm">{analysis.verdictLine}</span>
             </div>
             <Button icon={FileText} onClick={() => nav(paths.report(req.id))}>Appeal analysis report</Button>

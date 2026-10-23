@@ -53,7 +53,7 @@ export function CasePanel({ d, width, onClose }: { d: Decision; width: number; o
       }
       footer={
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <span className="text-[12.5px] text-muted">{d.linkId ? `An earlier decision for the patient on ${d.linkId}.` : d.inDemo ? "This case is in the demo." : "A past case: it has no page in this demo."}</span>
+          <span className="text-[12px] text-muted">{d.linkId ? `An earlier decision for the patient on ${d.linkId}.` : d.inDemo ? "This case is in the demo." : "A past case: it has no page in this demo."}</span>
           <span className="flex flex-wrap items-center gap-2">
             {d.denialId ? (
               <Link to={paths.denials(d.denialId)} className="inline-flex h-[38px] items-center gap-2 rounded-xl border border-field bg-white px-4 text-sm font-medium hover:bg-tile">
@@ -74,7 +74,7 @@ export function CasePanel({ d, width, onClose }: { d: Decision; width: number; o
         <section className="rounded-2xl border border-line bg-white px-5 py-4">
           <div className="flex flex-wrap items-center gap-3">
             <Pill tone={OUTCOME_TONE[d.outcome]}>{OUTCOME_LABEL[d.outcome]}</Pill>
-            <span className="text-[15px] font-semibold">{amountText(d)}</span>
+            <span className="text-[14px] font-semibold">{amountText(d)}</span>
           </div>
           {d.outcome !== "approved" ? (
             <svg width="100%" height="10" role="img" aria-label={`${d.approvedAmt} of ${d.requested} ${d.unit} approved`} className="mt-3 block">

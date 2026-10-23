@@ -1,4 +1,4 @@
-title: Authorizations › New case › Intake › Reauthorization / renewal
+title: Authorizations › New Case › Intake › Reauthorization / renewal
 route: /authorizations/new/:draftId?type=reauth (Intake)
 intro: A renewal asks for a new authorization when the current one is ending or has run out. Intake finds the patient and the authorization that is ending, says how much is left and when it ends, and asks for the dates to renew. The Dashboard's 'Start renewal' opens it with the patient already chosen. The request is recorded as a recertification.
 dir: TD
@@ -7,7 +7,7 @@ start s1 "Pick 'Reauthorization / renewal' in 'Authorization type'\nOr open ?typ
 start s2 "Click 'Start renewal' in the Dashboard's what-to-do list\n?type=reauth&patient=CASE-ID"
 screen sc "Intake · Reauthorization / renewal\n'Find the patient, then the authorization that is ending.'"
 process pAuto "The patient is chosen for the person\nIf the patient has one episode and one authorization, both are chosen too"
-goto gFind "Continues in: Authorizations › New case › Intake › Find a patient and the authorization"
+goto gFind "Continues in: Authorizations › New Case › Intake › Find a patient and the authorization"
 screen sAuth "Authorization card\nStatus, approved dates, authorized, left, expires on, 'History'"
 decision dState "How much is left?"
 process n1 "Expiring soon\n'3 days left and the approval ends soon. Ask before it runs out.'"
@@ -18,14 +18,14 @@ input iFrom "'Requested start date'\nThe day after the approved window ends\nTod
 input iTo "'Requested end date' (optional)\nLeft empty: the usual days for the level of care"
 store st "The request is recorded as 'Recertification'\nIt carries the patient, episode and authorization ids"
 decision dDup "Another open request or active authorization overlapping the new dates?"
-goto gDup "Continues in: Authorizations › New case › Intake › Possible duplicate"
+goto gDup "Continues in: Authorizations › New Case › Intake › Possible duplicate"
 process pPayer "If the plan has changed since the last stay, Eligibility & Benefits says so and offers to switch the case"
 process pDoc "Typical documents: progress summary since the last authorization, updated treatment plan, current ASAM reassessment, attendance record"
-goto gElig "Continues in: Authorizations › New case › Eligibility & Benefits › Reauthorization / renewal"
-goto gDocs "Continues in: Authorizations › New case › Clinical documentation › Required and typical documents by type"
+goto gElig "Continues in: Authorizations › New Case › Eligibility & Benefits › Reauthorization / renewal"
+goto gDocs "Continues in: Authorizations › New Case › Clinical documentation › Required and typical documents by type"
 click cSave "Click 'Save as draft'"
 click cCont "Click 'Continue to Eligibility & Benefits'"
-goto gSave "Continues in: Authorizations › New case › Save as draft and leave"
+goto gSave "Continues in: Authorizations › New Case › Save as draft and leave"
 
 s1 --> sc --> gFind
 s2 --> pAuto --> sAuth

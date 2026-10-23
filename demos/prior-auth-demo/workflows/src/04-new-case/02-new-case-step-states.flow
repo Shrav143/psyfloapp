@@ -1,4 +1,4 @@
-title: Authorizations › New case › Step states
+title: Authorizations › New Case › Step states
 route: /authorizations/new/:draftId (the stepper and each step's header)
 intro: Every step is in one of five states, worked out from the case itself, so the stepper, the step header and 'What is missing' never disagree. Only a few conditions stop a request from being sent (marked Blocked); everything else warns and the person can go on. The states are Complete, Needs attention, Pending, Not applicable and Blocked.
 dir: TD
@@ -54,9 +54,9 @@ endgroup
 decision dNa "Does the payer need no authorization for this service?\nAnd no documented exception to go on"
 process pNa "Steps 3, 4 and 5 read 'Not applicable'\n'The payer needs no authorization'\nStep 1 and 2 keep their own state"
 process pWarn "Everything else only warns\nMissing documents, an empty section of the summary, a check that could not run\nThe person can save, go on and send after acknowledging"
-goto gNoAuth "Continues in: Authorizations › New case › Eligibility & Benefits › No authorization required"
-goto gMis "Continues in: Authorizations › New case › Review & submit › What is missing"
-goto gStep "Continues in: Authorizations › New case › The stepper and the five steps"
+goto gNoAuth "Continues in: Authorizations › New Case › Eligibility & Benefits › No authorization required"
+goto gMis "Continues in: Authorizations › New Case › Review & submit › What is missing"
+goto gStep "Continues in: Authorizations › New Case › The stepper and the five steps"
 
 s1 --> m1 & m2 & m3 & m4 & m5
 s1 --> d1 & d2 & d3 & d4 & d5

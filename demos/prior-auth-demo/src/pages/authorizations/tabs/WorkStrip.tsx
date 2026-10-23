@@ -22,7 +22,7 @@ export function WorkStrip({ run, sections, similar }: { run: RunState; sections:
           <div key={s.agent} className="flex items-center gap-3 py-1.5">
             <AgentBadge agent={s.agent} size={26} />
             <span className="w-24 font-semibold">{AGENTS[s.agent].name}</span>
-            <span className={state === "waiting" ? "flex-1 text-[13.5px] text-muted" : "flex-1 text-[13.5px] text-ink2"}>{state === "done" ? s.done : state === "working" ? s.lines[Math.min(run.sub, s.lines.length - 1)] : "Waiting"}</span>
+            <span className={state === "waiting" ? "flex-1 text-[13px] text-muted" : "flex-1 text-[13px] text-ink2"}>{state === "done" ? s.done : state === "working" ? s.lines[Math.min(run.sub, s.lines.length - 1)] : "Waiting"}</span>
             {state === "done" ? <Check size={18} className="ico text-good" aria-label="Done" /> : state === "working" ? <Spinner /> : <span className="h-2 w-2 rounded-full bg-[#D9D0C3]" />}
           </div>
         );

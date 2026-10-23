@@ -72,7 +72,7 @@ export function InitialIntake({ draft, env }: { draft: CaseDraft; env: CaseEnv }
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 px-1 text-[13.5px] text-muted">
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 px-1 text-[13px] text-muted">
         <span>
           {draft.referralId ? (
             <>

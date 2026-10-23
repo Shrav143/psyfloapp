@@ -5,10 +5,10 @@ import { Link } from "react-router-dom";
 /** The white headline card at the top of a page: a serif sentence, one muted line, actions on the right. */
 export function PageHeader({ title, sub, actions }: { title: ReactNode; sub?: ReactNode; actions?: ReactNode }) {
   return (
-    <div className="flex items-center justify-between gap-6 rounded-[20px] border border-edge bg-white px-7 py-6">
+    <div className="flex items-center justify-between gap-6 rounded-[20px] border border-edge bg-white px-6 py-5">
       <div className="min-w-0">
-        <h1 className="font-serif text-[32px] font-semibold leading-[1.15] tracking-tight">{title}</h1>
-        {sub ? <div className="mt-2 text-[15px] text-muted">{sub}</div> : null}
+        <h1 className="font-serif text-[24px] font-semibold leading-[1.15] tracking-tight">{title}</h1>
+        {sub ? <div className="mt-1 text-[13px] text-muted">{sub}</div> : null}
       </div>
       {actions ? <div className="flex shrink-0 items-center gap-3">{actions}</div> : null}
     </div>

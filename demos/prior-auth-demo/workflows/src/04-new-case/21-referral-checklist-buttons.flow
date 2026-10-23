@@ -1,4 +1,4 @@
-title: Authorizations › New case › Referral › Checklist buttons
+title: Authorizations › New Case › Referral › Checklist buttons
 route: /authorizations/new/:draftId?ref=RF-2053
 intro: The buttons around the referral checklist: replace the documents, ask the referrer, decline, open the full page, and the main button, which changes with the referral's status and is disabled while a required item is open.
 dir: TD
@@ -11,7 +11,7 @@ group gTop "Above the card"
   click cDiff "Click 'Use different documents'"
   process pDiff "Address becomes ?ref= (empty), so the start screen shows\nThe case keeps its old referral until you continue"
 endgroup
-goto gStart "Continues in: Authorizations › New case › Intake › Start with a referral or patient"
+goto gStart "Continues in: Authorizations › New Case › Intake › Start with a referral or patient"
 
 group gFoot "Under the sections"
   decision dAsk "Open, not waiting, and something to ask?\n(a failed age check is never counted)"
@@ -21,9 +21,9 @@ group gFoot "Under the sections"
   click cDemo "Click 'Demo: the referrer replies'"
   click cFull "Click 'Open the full referral'"
 endgroup
-goto gAsk "Continues in: Authorizations › New case › Referral › Ask the referrer"
-goto gOk "Continues in: Authorizations › New case › Referral › Mark OK or decline"
-goto gFull "Continues in: Authorizations › New case › Referral › The full referral page"
+goto gAsk "Continues in: Authorizations › New Case › Referral › Ask the referrer"
+goto gOk "Continues in: Authorizations › New Case › Referral › Mark OK or decline"
+goto gFull "Continues in: Authorizations › New Case › Referral › The full referral page"
 
 decision dSt "Referral status?"
 decision dReq "Is a required item still open?\nPatient age, credentials, signature,\ndiagnosis code, level of care, insurance and member ID"
@@ -31,10 +31,10 @@ toast tDis "'Accept referral and continue' is disabled\nLine under it: 'Resolve 
 process pLift "Each item is lifted by 'Mark OK', by the referrer's reply,\nor once it has been asked of the referrer (a failed age: only 'Mark OK')\nThe line shortens, then disappears"
 click cAcc "Click 'Accept referral and continue'"
 process pAcc "Advisory findings are only listed in the Accept dialog\nYou can accept anyway"
-goto gAcc "Continues in: Authorizations › New case › Referral › Accept a referral"
+goto gAcc "Continues in: Authorizations › New Case › Referral › Accept a referral"
 toast tAcc "Green banner\n'Accepted into IOP. Target admission 10/21/2026.'"
 click cCont "Click 'Continue with this referral'"
-goto gCont "Continues in: Authorizations › New case › Referral › Accept a referral\n(attach the referral to the case; asks first when the agents ran)"
+goto gCont "Continues in: Authorizations › New Case › Referral › Accept a referral\n(attach the referral to the case; asks first when the agents ran)"
 toast tDec "Red banner\n'Declined: Needs a higher level of care.'"
 click cRe "Click 'Reopen referral'"
 store stRe "Referral is In review again\nDecision cleared"
@@ -45,7 +45,7 @@ click cOpen "Click 'Open the case'"
 process pOpen "Opens its request on the case page,\nor its draft at its current step\nIf the draft is the one on screen: goes back to its Intake, where the referral fills the details"
 toast tAdm "Calm note 'Admitted'\nLink 'See the full referral'"
 goto gCase "Continues in: Authorizations › Case page › Ways in"
-goto gMed "Continues in: Authorizations › New case › Intake › Initial authorization"
+goto gMed "Continues in: Authorizations › New Case › Intake › Initial authorization"
 
 s1 --> sc1
 sc1 --> cDiff --> pDiff --> gStart

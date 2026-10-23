@@ -7,8 +7,8 @@ export function AuthFacts({ facts }: { facts: Fact[] }) {
     <dl aria-label="Authorization facts" className="m-0 flex flex-wrap gap-x-9 gap-y-3">
       {facts.map((f) => (
         <div key={f.label} className="min-w-0">
-          <dt className="text-[11.5px] font-medium uppercase tracking-[0.1em] text-muted">{f.label}</dt>
-          <dd className="m-0 mt-0.5 text-[15px] font-semibold">{f.value}</dd>
+          <dt className="text-[11px] font-medium uppercase tracking-[0.1em] text-muted">{f.label}</dt>
+          <dd className="m-0 mt-0.5 text-[14px] font-semibold">{f.value}</dd>
           {f.note ? <dd className="m-0 text-xs text-muted">{f.note}</dd> : null}
         </div>
       ))}

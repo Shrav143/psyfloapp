@@ -15,7 +15,7 @@ export function EmptyState({ icon: Icon, title, children, action }: { icon?: Luc
           <Icon size={22} className="ico" />
         </span>
       ) : null}
-      <div className="font-serif text-xl font-semibold">{title}</div>
+      <div className="font-serif text-[18px] font-semibold">{title}</div>
       {children ? <div className="max-w-sm text-sm text-muted">{children}</div> : null}
       {action ? <div className="mt-2">{action}</div> : null}
     </div>
@@ -41,7 +41,7 @@ export function Fact({ label, value, note }: { label: string; value: ReactNode; 
   return (
     <div className="rounded-2xl border border-tile-edge bg-tile px-4 py-3.5">
       <Label>{label}</Label>
-      <div className="mt-1 text-xl font-semibold">{value}</div>
+      <div className="mt-1 text-[18px] font-semibold">{value}</div>
       {note ? <div className="text-xs text-muted">{note}</div> : null}
     </div>
   );

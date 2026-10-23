@@ -1,4 +1,4 @@
-title: Authorizations › New case › Referral › Mark OK or decline
+title: Authorizations › New Case › Referral › Mark OK or decline
 route: /authorizations/new/:draftId?ref=RF-2048
 intro: Two ways to decide a referral without waiting for the referrer. 'Mark OK' accepts one finding with a written reason. 'Decline' closes the referral with a reason, and can be undone with 'Reopen referral'.
 dir: TD

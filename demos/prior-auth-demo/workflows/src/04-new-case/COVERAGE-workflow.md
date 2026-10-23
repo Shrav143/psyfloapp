@@ -1,6 +1,6 @@
-# Coverage: New case › the payer workflow (Workflow line, View workflow, review panels, trace)
+# Coverage: New Case › the payer workflow (Workflow line, View workflow, review panels, trace)
 
-Source: `src/pages/newcase/workflow/*` (facts, model, diff, trace, items, fold, useCaseWorkflow, useWorkflowSync, WorkflowRow, ReviewWorkflowDrawer, WorkflowTraceDrawer), `src/pages/newcase/caseEnv.ts`, `StepHeader.tsx`, `reviewModel.ts`, `NewCasePage.tsx`, `ReviewStep.tsx`, `src/store/cases.ts` (`recordCaseWorkflow`, `signCaseDraft`), `src/data/cases.ts` (`appliedWorkflow`, `workflowPinned`, `workflowChoice`, `workflowLog`). The engine, matching and the saved workflows are the Payers module's (`src/data/workflow/*`, `src/store/workflows.ts`, `src/pages/payers/studio/*`); New case only reads them. Diagram numbers are the file prefixes in this folder.
+Source: `src/pages/newcase/workflow/*` (facts, model, diff, trace, items, fold, useCaseWorkflow, useWorkflowSync, WorkflowRow, ReviewWorkflowDrawer, WorkflowTraceDrawer), `src/pages/newcase/caseEnv.ts`, `StepHeader.tsx`, `reviewModel.ts`, `NewCasePage.tsx`, `ReviewStep.tsx`, `src/store/cases.ts` (`recordCaseWorkflow`, `signCaseDraft`), `src/data/cases.ts` (`appliedWorkflow`, `workflowPinned`, `workflowChoice`, `workflowLog`). The engine, matching and the saved workflows are the Payers module's (`src/data/workflow/*`, `src/store/workflows.ts`, `src/pages/payers/studio/*`); New Case only reads them. Diagram numbers are the file prefixes in this folder.
 
 | File | Title |
 |---|---|

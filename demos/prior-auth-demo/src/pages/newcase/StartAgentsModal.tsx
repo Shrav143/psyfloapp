@@ -12,7 +12,7 @@ export function StartAgentsModal({ draft, open, onClose, onStart }: { draft: Cas
       onClose={onClose}
       size="sm"
       title="Start the agents?"
-      subtitle={`${draft.patient.initials || "New case"}${draft.patient.initials ? "," : ""} ${draft.program ? PROGRAM_LABEL[draft.program] : ""} · ${payer?.name ?? ""}`.trim()}
+      subtitle={`${draft.patient.initials || "New Case"}${draft.patient.initials ? "," : ""} ${draft.program ? PROGRAM_LABEL[draft.program] : ""} · ${payer?.name ?? ""}`.trim()}
       footer={
         <>
           <Button onClick={onClose}>Cancel</Button>

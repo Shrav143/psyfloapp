@@ -1,6 +1,6 @@
 title: Payers › Rules & Instructions › Read the document list
 route: /payers/summit?tab=documents
-intro: The 'Clinical documentation' group of Rules & Instructions. A link with ?tab=documents (the older Documents tab) opens the group and scrolls it into view. It shows what the payer wants to see for each level of care, as a plain numbered list with no status on any row; the same group holds the chart checker and any clinical-criteria rules. The list is closed on a one-line summary and opens on a click. The list is chosen with 'Level of care'. In the demo the lists are per level of care (Residential 3.5, IOP, PHP, Detox); request type only changes the workflow, not this list. New case checks a draft's documents against the saved list for its payer and level of care.
+intro: The 'Clinical documentation' group of Rules & Instructions. A link with ?tab=documents (the older Documents tab) opens the group and scrolls it into view. It shows what the payer wants to see for each level of care, as a plain numbered list with no status on any row; the same group holds the chart checker and any clinical-criteria rules. The list is closed on a one-line summary and opens on a click. The list is chosen with 'Level of care'. In the demo the lists are per level of care (Residential 3.5, IOP, PHP, Detox); request type only changes the workflow, not this list. New Case checks a draft's documents against the saved list for its payer and level of care.
 dir: TD
 ---
 start s1 "Open 'Clinical documentation' in Rules & Instructions\nor follow a link with ?tab=documents"

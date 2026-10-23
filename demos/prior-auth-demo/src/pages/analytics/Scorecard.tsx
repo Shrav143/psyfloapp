@@ -115,7 +115,7 @@ export function Scorecard({ board, onPayer, onCases }: { board: Board; onPayer: 
           })}
         </tbody>
       </Table>
-      <p className="border-t border-line px-6 py-3 text-[12.5px] text-muted">
+      <p className="border-t border-line px-6 py-3 text-[12px] text-muted">
         Approval rate is approved as requested. Trend compares {period.compare.words.replace(/^vs /, "with the ")}. A figure under 20 decisions shows a dash. Each payer is compared with the clinic's own average in the last row, not with an outside benchmark. {CMS_NOTE}
       </p>
     </Card>

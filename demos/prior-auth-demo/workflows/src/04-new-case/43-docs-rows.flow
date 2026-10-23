@@ -1,4 +1,4 @@
-title: Authorizations › New case › Clinical documentation › Clinical summary and document rows
+title: Authorizations › New Case › Clinical documentation › Clinical summary and document rows
 route: /authorizations/new/:draftId (step 3 of 5, Clinical summary and Documents lists)
 intro: The clinical summary rows are typed or picked in a small editor under the row. Document rows list what the payer asks for, plus what is typical for the type, and each one is added, looked at, replaced, marked not available or taken out with the buttons on the row. Replace and Mark not available have their own diagram.
 dir: TD
@@ -42,10 +42,10 @@ group gDocs "Document rows"
   click cView "Click 'View' on the referral that came with the case"
   click cAddRef "Click 'Add a referral' (initial authorization)"
 endgroup
-goto gAct "Continues in: Authorizations › New case › Clinical documentation › Replace a document or mark it not available"
-goto gStart "Continues in: Authorizations › New case › Intake › Start with a referral or patient"
-goto gRef "Continues in: Authorizations › New case › Referral › The full referral page"
-goto gTyp "Continues in: Authorizations › New case › Clinical documentation › Required and typical documents by type"
+goto gAct "Continues in: Authorizations › New Case › Clinical documentation › Replace a document or mark it not available"
+goto gStart "Continues in: Authorizations › New Case › Intake › Start with a referral or patient"
+goto gRef "Continues in: Authorizations › New Case › Referral › The full referral page"
+goto gTyp "Continues in: Authorizations › New Case › Clinical documentation › Required and typical documents by type"
 
 s1 --> sc
 sc --> cDx --> iDx --> pDx --> cPickDx --> pChip

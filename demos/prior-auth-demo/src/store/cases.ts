@@ -25,7 +25,7 @@ import { blankDraft, SEED_DRAFTS } from "@/pages/newcase/seedDrafts";
 import type { AppState } from "./index";
 import { selectPatientBook } from "./patients";
 
-/* New case drafts and Case Manager (owner: new-case agent).
+/* New Case drafts and Case Manager (owner: new-case agent).
    A draft is everything about one case being prepared: the intake, the documents, the agents' run, the answers, the summary.
    The pages never keep this in component state, so Back, Save as draft and "Resume" all work, and Reset demo data restores it. */
 export interface CasesSlice {

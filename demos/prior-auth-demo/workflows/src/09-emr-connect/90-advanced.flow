@@ -8,7 +8,7 @@ start s1 "Scroll below the Connection health card"
 screen sc "Closed section 'Advanced'\n'10 field mappings, 2 waiting, and the log of every read and write (8 lines).'\nPill '2 to map' (hidden at 0), chevron on the right"
 click k1 "Click 'Advanced'\nOr Tab to it and press Enter or Space"
 process p1 "The button says whether it is open (aria-expanded)\nThe chevron turns"
-screen o1 "Open: 'Field mappings'\n'10 mapped, 2 waiting. A chart pulled in New case leaves the waiting fields blank until you map them.'"
+screen o1 "Open: 'Field mappings'\n'10 mapped, 2 waiting. A chart pulled in New Case leaves the waiting fields blank until you map them.'"
 
 group gMap "Field mappings list"
   screen m1 "Waiting fields first, tinted\n'Level of care' with a 'Not mapped' pill, 'Clinical record · Site B · Match to IOP or PHP', button 'Map'\n'Referral source' ... 'Match to a payer field', button 'Map'"

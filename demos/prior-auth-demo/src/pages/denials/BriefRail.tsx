@@ -34,7 +34,7 @@ export function ChanceCard({ view }: { view: DenialView }) {
       <CardBody className="flex flex-col gap-1.5">
         <Label>Chance of overturning</Label>
         <div className="flex items-baseline gap-3">
-          <b className="text-[32px]" style={{ color: b.color }}>{p2p.chance.value}%</b>
+          <b className="text-[24px]" style={{ color: b.color }}>{p2p.chance.value}%</b>
           <span className="text-muted">likely {p2p.chance.low}–{p2p.chance.high}%</span>
           <Pill tone={b.tone}>{b.word}</Pill>
         </div>

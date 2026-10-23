@@ -98,11 +98,11 @@ export function NextStep({ view, step, onChoose, onOpenAppeal, onChangeTime, onR
     <div className="border-t border-edge">
       <div className={cn("px-6 py-5", BG[s.tone], !s.why && "rounded-b-[20px]")} data-step={s.why ? step.word : undefined}>
         <Label>{s.eyebrow}</Label>
-        <h2 className="mt-1 flex items-center gap-2.5 font-serif text-[24px] leading-tight font-semibold">
+        <h2 className="mt-1 flex items-center gap-2.5 font-serif text-[18px] leading-tight font-semibold">
           {Icon ? <Icon size={22} className="ico" aria-hidden="true" /> : null}
           {s.title}
         </h2>
-        <p className="mt-1.5 max-w-[70ch] text-[15px] text-ink2">{s.body}</p>
+        <p className="mt-1.5 max-w-[70ch] text-[14px] text-ink2">{s.body}</p>
         {s.actions ? <div className="mt-4 flex flex-wrap items-center gap-2.5">{s.actions}</div> : null}
         {s.generated ? <ReviewNote className="mt-3.5" /> : null}
       </div>

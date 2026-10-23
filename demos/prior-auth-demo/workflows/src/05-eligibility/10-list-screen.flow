@@ -1,6 +1,6 @@
 title: Authorizations › Eligibility & Benefits › List › What the screen shows
 route: /authorizations/eligibility
-intro: The first page of Eligibility & Benefits. A headline count with an info icon, four figures, a filter bar and one patient per two lines: the chips that answer the question, then a quiet line with the rest. The rows are the shared verification records, so a check made in New case is a row here. Everything follows the site view, and the sidebar badge counts the patients who are not cleared to bill.
+intro: The first page of Eligibility & Benefits. A headline count with an info icon, four figures, a filter bar and one patient per two lines: the chips that answer the question, then a quiet line with the rest. The rows are the shared verification records, so a check made in New Case is a row here. Everything follows the site view, and the sidebar badge counts the patients who are not cleared to bill.
 dir: TD
 also: Demo only: the 37 patients are invented and every check is simulated. Re-check dates run on the Demo clock.
 ---

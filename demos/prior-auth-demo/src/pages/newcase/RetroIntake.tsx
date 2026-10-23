@@ -23,8 +23,8 @@ export function RetroIntake({ draft, env }: { draft: CaseDraft; env: CaseEnv }) 
 
   const head = (
     <div>
-      <h2 className="font-serif text-[22px] font-semibold tracking-tight">Retroactive authorization</h2>
-      <p className="mt-0.5 text-[13.5px] text-muted">
+      <h2 className="font-serif text-[18px] font-semibold tracking-tight">Retroactive authorization</h2>
+      <p className="mt-0.5 text-[13px] text-muted">
         Retroactive authorization depends on the payer and may not be available.{rule ? ` ${rule.text}` : " Pick the payer to see its Backdating rule."}
       </p>
     </div>
@@ -56,8 +56,8 @@ export function RetroIntake({ draft, env }: { draft: CaseDraft; env: CaseEnv }) 
       <Card>
         <CardBody className="flex flex-col gap-4">
           <div>
-            <h3 className="font-serif text-[19px] font-semibold tracking-tight">Dates of service</h3>
-            <p className="mt-0.5 text-[13.5px] text-muted">The first and the last day care was given without an authorization. Verify checks coverage for these dates.</p>
+            <h3 className="font-serif text-[18px] font-semibold tracking-tight">Dates of service</h3>
+            <p className="mt-0.5 text-[13px] text-muted">The first and the last day care was given without an authorization. Verify checks coverage for these dates.</p>
           </div>
           <DatesFields draft={draft} from="First date of service" to="Last date of service" required />
         </CardBody>
@@ -65,8 +65,8 @@ export function RetroIntake({ draft, env }: { draft: CaseDraft; env: CaseEnv }) 
       <Card>
         <CardBody className="flex flex-col gap-3">
           <div>
-            <h3 className="font-serif text-[19px] font-semibold tracking-tight">Why it was not obtained ahead of time</h3>
-            <p className="mt-0.5 text-[13.5px] text-muted">The payer will ask. Use one of these or write your own. Only what happened goes in the request.</p>
+            <h3 className="font-serif text-[18px] font-semibold tracking-tight">Why it was not obtained ahead of time</h3>
+            <p className="mt-0.5 text-[13px] text-muted">The payer will ask. Use one of these or write your own. Only what happened goes in the request.</p>
           </div>
           <div className="flex flex-wrap gap-2">
             {RETRO_REASONS.map((r) => (
@@ -83,8 +83,8 @@ export function RetroIntake({ draft, env }: { draft: CaseDraft; env: CaseEnv }) 
       <Card>
         <CardBody className="flex flex-col gap-3">
           <div>
-            <h3 className="font-serif text-[19px] font-semibold tracking-tight">Supporting documents</h3>
-            <p className="mt-0.5 text-[13.5px] text-muted">The admission order, the eligibility check from the admission date, attendance for the dates of service. Reader sorts them; you can add more on Clinical documentation.</p>
+            <h3 className="font-serif text-[18px] font-semibold tracking-tight">Supporting documents</h3>
+            <p className="mt-0.5 text-[13px] text-muted">The admission order, the eligibility check from the admission date, attendance for the dates of service. Reader sorts them; you can add more on Clinical documentation.</p>
           </div>
           <FileDrop hint="Drop supporting documents here, or click to choose files" onFiles={(files) => sortFiles(draft.id, files)} />
           {draft.documents.length ? <div className="flex flex-wrap gap-2">{draft.documents.map((d) => <Chip key={d.slot}>{d.file.name}</Chip>)}</div> : null}

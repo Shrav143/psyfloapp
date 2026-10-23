@@ -1,13 +1,13 @@
 title: Authorizations › Eligibility & Benefits › Re-verify a patient
 route: /authorizations/eligibility (and /authorizations/eligibility/R-1042)
-intro: Three ways to check a patient again. A row's 'Re-check' and the result's 'Check again' run the same quick re-check, and so does 'Refresh verification' in New case: all three refresh the one shared verification record. Opening 'Verify a patient' from a case runs the full live check again.
+intro: Three ways to check a patient again. A row's 'Re-check' and the result's 'Check again' run the same quick re-check, and so does 'Refresh verification' in New Case: all three refresh the one shared verification record. Opening 'Verify a patient' from a case runs the full live check again.
 dir: TD
 also: Demo only: a re-check never changes the answer. R-1101 stays lapsed. The re-checks Verify runs on its own, when the Demo clock passes a booked time, are in 'Re-check on its own'.
 ---
 start a1 "On the list, click 'Re-check' on a row"
 start a2 "On a result, click 'Check again'"
 start a3 "Open 'Verify a patient' from a case and click 'Check now'"
-start a4 "In New case, step 2, click 'Refresh verification'"
+start a4 "In New Case, step 2, click 'Refresh verification'"
 
 decision q1 "Is a re-check already running for this patient?"
 process p1 "The click is ignored\nThe button is off with a spinner"

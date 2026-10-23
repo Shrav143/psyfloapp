@@ -51,7 +51,7 @@ export function PayerHeader({ row, cfg, edits, onEdit, onLog, compact = false }:
       <CardBody className={compact ? "py-4" : undefined}>
         <div className="flex flex-wrap items-start gap-x-5 gap-y-3">
           <div className="min-w-[240px] flex-1">
-            <h1 className={cn("font-serif leading-tight font-semibold", compact ? "text-[24px]" : "text-[28px]")}>{row.name}</h1>
+            <h1 className={cn("font-serif leading-tight font-semibold", compact ? "text-[18px]" : "text-[24px]")}>{row.name}</h1>
             <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-ink2">
               <span>{row.org !== row.name ? <>{row.org} <span className="text-muted">·</span> </> : null}{row.product} <span className="text-muted">·</span> {stateName(row.state)}</span>
               {compact ? <DemoRulesNote /> : null}

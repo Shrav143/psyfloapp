@@ -52,13 +52,13 @@ export function ChartChecker({ payerId, name, lists, program, onProgram }: { pay
   return (
     <section aria-label="Try it on a case" className="flex flex-col gap-3.5 border-t border-line pt-5">
       <div>
-        <h4 className="font-serif text-[19px] leading-tight font-semibold tracking-tight">
+        <h4 className="font-serif text-[18px] leading-tight font-semibold tracking-tight">
           Try it on a case{" "}
           <InfoTip label="About the chart check">
-            New case checks documents against this same list. Pasted text is matched by keyword, so a document that is named differently can be missed.
+            New Case checks documents against this same list. Pasted text is matched by keyword, so a document that is named differently can be missed.
           </InfoTip>
         </h4>
-        <p className="mt-[3px] text-[13.5px] text-muted">Check a chart against this list</p>
+        <p className="mt-[3px] text-[13px] text-muted">Check a chart against this list</p>
       </div>
       <Labeled label="Case">
         <Dropdown variant="field" ariaLabel="Case" value={caseId} onChange={(v) => { setCaseId(v); setDone(null); }} options={cases.map((c) => ({ value: c.id, label: `${c.id} · ${c.patient.initials}, ${c.patient.age}`, hint: PROGRAM_LABEL[c.program] }))} placeholder="No cases to check" menuWidth={300} />

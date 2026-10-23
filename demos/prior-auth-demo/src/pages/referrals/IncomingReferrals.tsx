@@ -33,8 +33,8 @@ export function IncomingReferrals({ onReview }: { onReview: (id: string) => void
   return (
     <section aria-labelledby="incoming-title" className="flex flex-col gap-3">
       <div>
-        <h2 id="incoming-title" className="font-serif text-[22px] font-semibold tracking-tight">Incoming referrals ({open.length})</h2>
-        <p className="mt-0.5 text-[13.5px] text-muted">Referrals that came in by fax, e-referral, the portal or phone, at {scope.label.toLowerCase()}. Reader has read each one.</p>
+        <h2 id="incoming-title" className="font-serif text-[18px] font-semibold tracking-tight">Incoming referrals ({open.length})</h2>
+        <p className="mt-0.5 text-[13px] text-muted">Referrals that came in by fax, e-referral, the portal or phone, at {scope.label.toLowerCase()}. Reader has read each one.</p>
       </div>
       <Card>
         <ul>
@@ -46,7 +46,7 @@ export function IncomingReferrals({ onReview }: { onReview: (id: string) => void
                   <span className="text-xs text-muted">{r.id}</span>
                   {r.urgency !== "routine" ? <UrgencyPill urgency={r.urgency} /> : null}
                 </div>
-                <div className="mt-0.5 flex flex-wrap items-center gap-x-2.5 text-[13.5px] text-muted">
+                <div className="mt-0.5 flex flex-wrap items-center gap-x-2.5 text-[13px] text-muted">
                   <span>{r.source.name}</span>
                   <ChannelTag channel={r.channel} />
                   <span>{ago(r.receivedAt, clock)}</span>

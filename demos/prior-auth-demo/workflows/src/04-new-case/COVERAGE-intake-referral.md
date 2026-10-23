@@ -1,4 +1,4 @@
-# Coverage: New case overview, stepper, Intake and the referral
+# Coverage: New Case overview, stepper, Intake and the referral
 
 Source: `src/pages/newcase/` (NewCasePage, steps, stepState, authType, AuthTypePicker, NewCaseStepper, StepHeader, IntakeStep, InitialIntake, ExistingIntake, ModificationCard, RetroIntake, PatientSearch, AuthorizationCard, DuplicateWarning, SitePicker, DatesFields, CaseDetails, RecordsChecklist, RecordEditors, FieldRow, intake, duplicates, caseIssues, seedDrafts), `src/pages/referrals/` (all), `src/data/patients.ts`, `src/store/patients.ts`, `src/store/cases.ts`, `src/store/referrals*.ts`, `src/data/referral*.ts`, `src/routes.ts`. Steps 2 to 5 are in COVERAGE-steps-2-to-5.md.
 
@@ -8,9 +8,9 @@ Files: 00 how a case starts · 01 the stepper · 02 step states · 03 Authorizat
 
 | Control | Diagram |
 |---|---|
-| Sidebar 'New case' (makes a fresh blank case each click) | 00 |
-| 'New case' button on Authorizations and on Case Manager, 'Start a new case' (empty Preparing card) | 00 |
-| Demo menu 'New case: start from a referral', FLO answer link | 00 |
+| Sidebar 'New Case' (makes a fresh blank case each click) | 00 |
+| 'New Case' button on Authorizations and on Case Manager, 'Start a new case' (empty Preparing card) | 00 |
+| Demo menu 'New Case: start from a referral', FLO answer link | 00 |
 | Old addresses /referrals and /referrals/:id | 00, 16 |
 | 'Start a case from this referral' on the full page, or typed ?referral=ID (found, not found, other site) | 00, 23, 28 |
 | 'Create authorization from verification' and 'Start authorization' on an Eligibility result (?verification=, ?type=initial) | 00 |
@@ -93,7 +93,7 @@ Files: 00 how a case starts · 01 the stepper · 02 step states · 03 Authorizat
 
 | Control | Diagram |
 |---|---|
-| Crumbs 'New case', 'Referral', RF number | 16 |
+| Crumbs 'New Case', 'Referral', RF number | 16 |
 | 'Back to the case' beside the crumbs | 16 |
 | Not found page, 'Back to Intake' | 16 |
 | A referral at another site: 'This referral is not available at Site A' | 28 |

@@ -93,15 +93,15 @@ export function ReviewWorkflowDrawer({ draft, view, kind, onClose }: { draft: Ca
           </p>
           <h3 className="mt-5 font-serif text-[18px] font-semibold">What changed</h3>
           {diff.empty ? (
-            <p className="mt-1.5 text-[13.5px] text-muted">The steps are the same. Only the saved version number moved.</p>
+            <p className="mt-1.5 text-[13px] text-muted">The steps are the same. Only the saved version number moved.</p>
           ) : (
-            <ul className="mt-2 flex list-disc flex-col gap-1 pl-5 text-[13.5px] text-ink2">
+            <ul className="mt-2 flex list-disc flex-col gap-1 pl-5 text-[13px] text-ink2">
               {lines.slice(0, 10).map((l) => <li key={l}>{l}</li>)}
               {lines.length > 10 ? <li className="list-none text-muted">and {lines.length - 10} more</li> : null}
             </ul>
           )}
           <h3 className="mt-5 font-serif text-[18px] font-semibold">What it would mean for this case</h3>
-          <dl className="mt-2 grid grid-cols-[110px_1fr] gap-x-3 gap-y-2 text-[13.5px]">
+          <dl className="mt-2 grid grid-cols-[110px_1fr] gap-x-3 gap-y-2 text-[13px]">
             <dt className="text-muted">Now, v{applied.version}</dt>
             <dd>{view.run.outcomeText}</dd>
             <dt className="text-muted">With v{newer.version}</dt>
@@ -134,7 +134,7 @@ export function ReviewWorkflowDrawer({ draft, view, kind, onClose }: { draft: Ca
             The payer, the level of care or the Authorization type changed after the workflow started. This case still follows <b>{applied.name}{applied.usedDefault ? "" : `, version ${applied.version}`}</b>.
             A match for the case as it is now would use <b>{next.name}{next.usedDefault ? "" : `, version ${next.version}`}</b>.
           </p>
-          <p className="mt-3 text-[13.5px] text-muted">{next.explanation}</p>
+          <p className="mt-3 text-[13px] text-muted">{next.explanation}</p>
           <p className="mt-4 text-[13px] text-muted">Applying it changes the steps this case follows from here. A packet that was already sent is never rewritten. The switch is written to the case's history.</p>
           <div className="mt-5 flex flex-wrap gap-2.5">
             <Button variant="primary" onClick={() => apply(next, `Workflow changed: ${applied.name} to ${next.name}${next.usedDefault ? "" : ` v${next.version}`}, reviewed by ${you}`, next.explanation)}>

@@ -1,6 +1,6 @@
-title: Authorizations › New case › The stepper and the five steps
+title: Authorizations › New Case › The stepper and the five steps
 route: /authorizations/new/:draftId
-intro: The strip at the top of New case: Intake, Eligibility & Benefits, Clinical documentation, Authorization preparation, Review & submit. Every step opens at any time, forward or back; the draft keeps what was typed and what the agents did. Each step shows one state under its name, and the same state sits in the step's own header.
+intro: The strip at the top of New Case: Intake, Eligibility & Benefits, Clinical documentation, Authorization preparation, Review & submit. Every step opens at any time, forward or back; the draft keeps what was typed and what the agents did. Each step shows one state under its name, and the same state sits in the step's own header.
 dir: TD
 ---
 start s1 "A case is open on any step"
@@ -35,13 +35,13 @@ process pHint "The footer's hint line says what is still open, never that the pe
 click cLink "Click the link 'Case Manager' above the title"
 goto gCm "Continues in: Case Manager"
 screen sFull "Stepper on the full referral page\n'Intake' is current\nThe button 'Back to the case' sits beside the crumbs"
-goto gFull "Continues in: Authorizations › New case › Referral › The full referral page"
-goto gStates "Continues in: Authorizations › New case › Step states"
-goto g1 "Continues in: Authorizations › New case › Intake › Initial authorization"
-goto g2 "Continues in: Authorizations › New case › Eligibility & Benefits › Initial authorization"
-goto g3 "Continues in: Authorizations › New case › Clinical documentation › The checklist and Continue"
-goto g4 "Continues in: Authorizations › New case › Authorization preparation › Start the run and watch it"
-goto g5 "Continues in: Authorizations › New case › Review & submit › The draft and the summary"
+goto gFull "Continues in: Authorizations › New Case › Referral › The full referral page"
+goto gStates "Continues in: Authorizations › New Case › Step states"
+goto g1 "Continues in: Authorizations › New Case › Intake › Initial authorization"
+goto g2 "Continues in: Authorizations › New Case › Eligibility & Benefits › Initial authorization"
+goto g3 "Continues in: Authorizations › New Case › Clinical documentation › The checklist and Continue"
+goto g4 "Continues in: Authorizations › New Case › Authorization preparation › Start the run and watch it"
+goto g5 "Continues in: Authorizations › New Case › Review & submit › The draft and the summary"
 
 s1 --> sc1 --> p1 --> d1
 sc1 --> pTip

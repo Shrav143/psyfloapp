@@ -14,7 +14,7 @@ process fw "'Window'  '10/20 to 11/3' with 'ends in 14 d'\nShown instead of 'App
 decision d2 "Does the ledger's next event say when the approval ends or when the next review is?"
 process f4 "'Approval ends  Fri 10/23' with 'in 3 d'\nor 'Next review  Tue 10/20' with 'in 5 h'"
 process f5 "No approved, used, left, expiry or review fact\nNothing is shown in their place"
-decision d3 "Does the request have a draft in New case, or can one be made from it?"
+decision d3 "Does the request have a draft in New Case, or can one be made from it?"
 decision dSt "Can the viewer see both sites?"
 process fs "'Site'\n'Site A' with 'Main campus', or 'Site B' with 'Second campus'"
 process f6 "'Documents'\n'8 of 9' with 'Missing: Therapy note from the last 14 days'\nor 'Complete' with 'All 9 in the packet'\nCounted against the documents the payer's saved list asks for"

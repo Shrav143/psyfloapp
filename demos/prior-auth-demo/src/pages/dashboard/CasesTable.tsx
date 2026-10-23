@@ -43,7 +43,7 @@ function SortTh({ column, sort, onSort }: { column: SortKey; sort: RowSort | nul
   );
 }
 
-const QUIET = "text-[12.5px] text-muted";
+const QUIET = "text-[12px] text-muted";
 /** Under 1400 px the text columns that can break (payer, status, next action) wrap, so all nine columns fit at 1280 without sideways scrolling. */
 const WRAP = "max-[1399px]:whitespace-normal!";
 
@@ -118,7 +118,6 @@ function Row({ row, clock, onOpen }: { row: CaseRow; clock: number; onOpen: (id:
 
 interface Props {
   title: string;
-  sentence: string;
   controls: ReactNode;
   rows: CaseRow[];
   visible: number;
@@ -131,21 +130,18 @@ interface Props {
   needsToday: boolean;
   sort: RowSort | null;
   onSort: (key: SortKey) => void;
-  /** Cases saved in New case that have no row here, and what to say about them. */
+  /** Cases saved in New Case that have no row here, and what to say about them. */
   more: number;
 }
 
-/** One card: the title and one quiet sentence on the left, the controls on the right, then one line per authorization. Nine columns, the same on every row.
+/** One card: the controls on top, then one line per authorization. Nine columns, the same on every row. The title is for screen readers only; the rows speak for themselves.
     The menus sit in the header, so only the table body is clipped to the card's rounded corners. */
-export function CasesTable({ title, sentence, controls, rows, visible, clock, onOpen, onMore, onClear, narrowed, needsToday, sort, onSort, more }: Props) {
+export function CasesTable({ title, controls, rows, visible, clock, onOpen, onMore, onClear, narrowed, needsToday, sort, onSort, more }: Props) {
   const shown = rows.slice(0, visible);
   return (
     <section id="authorizations-table" aria-label="Authorizations" className="scroll-mt-4 rounded-[20px] border border-edge bg-white">
-      <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-3 border-b border-line px-6 pt-5 pb-[18px]">
-        <div className="min-w-0 basis-[260px]">
-          <h2 className="font-serif text-[21px] font-semibold leading-tight tracking-tight">{title}</h2>
-          <p className="mt-[3px] max-w-[460px] text-[13.5px] text-muted">{sentence}</p>
-        </div>
+      <div className="flex flex-wrap items-center justify-end gap-x-6 gap-y-3 border-b border-line px-5 py-3">
+        <h2 className="sr-only">{title}</h2>
         {controls}
       </div>
       {rows.length === 0 ? (
@@ -172,12 +168,12 @@ export function CasesTable({ title, sentence, controls, rows, visible, clock, on
           </Table>
           {rows.length > 0 ? (
             <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line px-6 py-3.5">
-              <span className="text-[13.5px] text-muted" aria-live="polite">
+              <span className="text-[13px] text-muted" aria-live="polite">
                 Showing {shown.length} of {rows.length}
               </span>
               {rows.length > shown.length ? (
                 <div className="flex items-center gap-3">
-                  <span className="text-[13.5px] text-muted">{rows.length - shown.length} not shown</span>
+                  <span className="text-[13px] text-muted">{rows.length - shown.length} not shown</span>
                   <Button onClick={onMore}>Show {Math.min(PAGE_SIZE, rows.length - shown.length)} more</Button>
                 </div>
               ) : null}
@@ -186,9 +182,9 @@ export function CasesTable({ title, sentence, controls, rows, visible, clock, on
         </div>
       )}
       {more > 0 ? (
-        <p className={cn("px-6 py-3.5 text-[13.5px] text-ink2", rows.length > 0 && "border-t border-line")}>
+        <p className={cn("px-6 py-3.5 text-[13px] text-ink2", rows.length > 0 && "border-t border-line")}>
           {more} {rows.length > 0 ? "more " : ""}
-          {more === 1 ? "is" : "are"} being prepared in New case.{" "}
+          {more === 1 ? "is" : "are"} being prepared in New Case.{" "}
           <Link to={paths.manager("cases")} className="font-semibold text-forest hover:underline">
             Open Active cases
           </Link>

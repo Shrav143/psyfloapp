@@ -38,8 +38,8 @@ goto g4 "Continues in: Case Manager › Active cases › A new case joins the tr
 goto g5 "Continues in: Case Manager › Active cases › Updated for a payer change"
 end e1 "Rows are on screen"
 
-process p5 "After a case is signed and sent in New case it leaves this list, 'sent today' counts one more, and the tracker adds it as 'New today' unless it already had a row"
-start s2 "Later: a case is signed and sent in New case › Review & submit"
+process p5 "After a case is signed and sent in New Case it leaves this list, 'sent today' counts one more, and the tracker adds it as 'New today' unless it already had a row"
+start s2 "Later: a case is signed and sent in New Case › Review & submit"
 
 s1 --> sf --> pn
 sf --> cl --> pl --> gl

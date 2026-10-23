@@ -13,7 +13,7 @@ group gKinds "What can be on the list"
   process k5 "A payer to chase\nA request in Submitted or Decision pending at least 4 hours late, or on day 5 of the CMS clock or later, with no agent already phoning"
   process k6 "An approval to write back\nOnly while write-back is on in EMR Connect"
   process k7 "An authorization that ends within 7 days, or has ended, with no request in flight to replace it"
-  process k8 "Cases saved in New case that wait for a person and have no row yet\nOne line for all of them"
+  process k8 "Cases saved in New Case that wait for a person and have no row yet\nOne line for all of them"
 endgroup
 process p2 "Each row gets a time\nThe due time the Authorizations queue ranks by, or the denial's deadline"
 decision d1 "Is it past the CMS decision time?"

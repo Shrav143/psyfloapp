@@ -21,7 +21,7 @@ function Form({ letter, from }: { letter: Letter; from: RefObject<HTMLElement | 
         </ol>
       ) : (
         <>
-          <p className="text-[13.5px] text-muted">The agents read it, check it against the chart and past appeals, and lay out your options. The new denial belongs to the site you are viewing.</p>
+          <p className="text-[13px] text-muted">The agents read it, check it against the chart and past appeals, and lay out your options. The new denial belongs to the site you are viewing.</p>
           {chosenName ? (
             <FileRow file={file ?? { id: "sample", name: sample?.file ?? "", sizeKb: 184 }} onRemove={letter.clear} />
           ) : (

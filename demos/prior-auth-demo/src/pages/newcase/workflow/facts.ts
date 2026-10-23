@@ -1,4 +1,4 @@
-/* The facts the payer workflow reads, built from a New case draft and what New case already knows: the payer, the level of care, the Authorization type, the demo date, the requested start,
+/* The facts the payer workflow reads, built from a New Case draft and what New Case already knows: the payer, the level of care, the Authorization type, the demo date, the requested start,
    the shared verification record, which of the payer's documents are in the case, the payer's answer once the request is sent, and the sign-off.
    Pure and cheap, so the workflow can run again whenever the person changes step or a document or a check changes. The Studio's Test Workflow fills the same shape from a form. */
 import type { CaseDraft, DocSlotId } from "@/data/cases";

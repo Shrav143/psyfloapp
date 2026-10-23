@@ -80,7 +80,7 @@ export function migratePayerWorkflow(payerId: string, cfg: PayerConfig, profile:
   add("end", "end", { title: "Completed", purpose: "The process is finished for this request.", config: { result: "completed" } });
   add("end_denial", "end", { title: "Denial workflow", purpose: "A denial or a partial approval goes to Denial Intelligence.", config: { result: "denial" } });
 
-  /* Nothing reaches a payer without a person's approval. The earlier Process tab left that to the sign-off in New case, so the graph says it out loud: one approval step goes in front of the
+  /* Nothing reaches a payer without a person's approval. The earlier Process tab left that to the sign-off in New Case, so the graph says it out loud: one approval step goes in front of the
      first step that sends something (or has a branch that does). */
   const reaches = (kind: NodeKind): boolean => !!nodeDef(kind).payerFacing;
   const firstOut = steps.findIndex((st) => reaches(kindOf(st.kind, st.text, st.title)) || st.branches.some((b) => reaches(kindOf(b.kind, b.text))));
@@ -89,7 +89,7 @@ export function migratePayerWorkflow(payerId: string, cfg: PayerConfig, profile:
   let usedDenialEnd = false;
 
   if (firstOut >= 0) {
-    add("gate", "act_human_approval", { title: "A person signs before anything is sent", purpose: "Nothing goes to the payer until a person approves.", instructions: "A clinician reviews the request and signs. Nothing is sent before this. The earlier Process tab left this to the sign-off in New case; here it is a step.", config: { approver: "clinician", what: "Review the request and sign before it goes to the payer" }, stage: "review" });
+    add("gate", "act_human_approval", { title: "A person signs before anything is sent", purpose: "Nothing goes to the payer until a person approves.", instructions: "A clinician reviews the request and signs. Nothing is sent before this. The earlier Process tab left this to the sign-off in New Case; here it is a step.", config: { approver: "clinician", what: "Review the request and sign before it goes to the payer" }, stage: "review" });
     link("gate", "next", `s${firstOut}`);
   }
   steps.forEach((step, i) => {

@@ -28,7 +28,7 @@ export function CaseRow({ draft }: { draft: CaseDraft }) {
   const due = dueChip(draft, clock);
   const payer = draft.payerId ? payerById(draft.payerId) : null;
   const open = () => nav(paths.newCase({ draft: draft.id }));
-  const idLabel = draft.caseId ?? "New case";
+  const idLabel = draft.caseId ?? "New Case";
 
   return (
     <li className={cn("flex flex-wrap items-start gap-x-5 gap-y-3 rounded-2xl border p-5", due?.tone === "risk" ? "border-risk-edge bg-risk-bg" : "border-edge bg-tile")}>

@@ -36,11 +36,11 @@ export function NodeLibrary({ onAdd, hasStart, className }: NodeLibraryProps) {
   return (
     <div className={cn("flex min-h-0 flex-col rounded-[20px] border border-edge bg-white", className)}>
       <div className="border-b border-line px-4 pt-4 pb-3">
-        <h3 className="font-serif text-[19px] leading-tight font-semibold">Steps</h3>
-        <p className="mt-0.5 text-[12.5px] text-muted">Drag a step onto the canvas, or select it and press Enter.</p>
+        <h3 className="font-serif text-[18px] leading-tight font-semibold">Steps</h3>
+        <p className="mt-0.5 text-[12px] text-muted">Drag a step onto the canvas, or select it and press Enter.</p>
         <div className="relative mt-3">
           <Search size={15} className="ico pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-faint" aria-hidden="true" />
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search steps" aria-label="Search steps" className="h-9 w-full rounded-xl border border-field bg-white pr-3 pl-9 text-[13.5px] placeholder:text-faint focus:border-forest focus:ring-2 focus:ring-forest/15 focus:outline-none" />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search steps" aria-label="Search steps" className="h-9 w-full rounded-xl border border-field bg-white pr-3 pl-9 text-[13px] placeholder:text-faint focus:border-forest focus:ring-2 focus:ring-forest/15 focus:outline-none" />
         </div>
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto px-2 py-2" role="list" aria-label="Available steps">
@@ -55,7 +55,7 @@ export function NodeLibrary({ onAdd, hasStart, className }: NodeLibraryProps) {
                 <button type="button" aria-expanded={isOpen} aria-controls={panel} onClick={() => setOpen((o) => ({ ...o, [cat]: !isOpen }))} className="flex w-full items-center gap-2 rounded-xl px-2.5 py-2 text-left hover:bg-tile">
                   <Icon size={15} className="ico text-sage" aria-hidden="true" />
                   <span className="flex-1 text-[13px] font-semibold text-ink2">{CATEGORY_LABEL[cat]}</span>
-                  <span className="text-[11.5px] text-muted">{items.length}</span>
+                  <span className="text-[11px] text-muted">{items.length}</span>
                   <ChevronDown size={15} className={cn("ico text-muted transition-transform", isOpen && "rotate-180")} aria-hidden="true" />
                 </button>
               </h4>
@@ -92,9 +92,9 @@ function Item({ def, onAdd }: { def: NodeDef; onAdd: (k: NodeKind) => void }) {
           <Icon size={15} className="ico" aria-hidden="true" />
         </span>
         <span className="min-w-0 flex-1">
-          <span className="block text-[13.5px] leading-[1.3] font-medium text-ink">{def.title}</span>
+          <span className="block text-[13px] leading-[1.3] font-medium text-ink">{def.title}</span>
           {flagged ? (
-            <span title={SUPPORT_LABEL[def.support]} className={cn("mt-0.5 inline-block rounded-full px-1.5 py-px text-[10.5px] font-semibold", def.support === "simulated" ? "bg-mid-bg text-mid-ink" : "bg-neutral-bg text-neutral-ink")}>
+            <span title={SUPPORT_LABEL[def.support]} className={cn("mt-0.5 inline-block rounded-full px-1.5 py-px text-[11px] font-semibold", def.support === "simulated" ? "bg-mid-bg text-mid-ink" : "bg-neutral-bg text-neutral-ink")}>
               {SUPPORT_WORD[def.support]}
             </span>
           ) : null}

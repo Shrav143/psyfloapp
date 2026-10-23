@@ -76,7 +76,7 @@ export function GenerateDrawer({ payer, docs, rules, onClose, onCreated }: { pay
         {draft ? (
           <section aria-label="The draft" className="flex flex-col gap-5 rounded-2xl border border-edge bg-white p-5">
             <div className="flex flex-wrap items-center gap-2">
-              <h3 className="m-0 font-serif text-[20px] font-semibold">{draft.name}</h3>
+              <h3 className="m-0 font-serif text-[18px] font-semibold">{draft.name}</h3>
               <Pill tone="mid" dot>Demo draft: not a live model, not payer policy</Pill>
             </div>
             <p className="m-0 text-[13px] text-muted">Matched on: {draft.matched.join(", ")}.</p>
@@ -84,7 +84,7 @@ export function GenerateDrawer({ payer, docs, rules, onClose, onCreated }: { pay
             <Block icon={AlertTriangle} title="Rules it needs that are not on file" items={draft.missingRules} none="Every rule it needs is on file. They are still unverified samples." />
             <Block icon={Settings2} title="Things to set up" items={draft.setup} />
             {draft.notes.length ? <Block icon={ListChecks} title="Kept as unverified notes, not as rules" items={draft.notes} /> : null}
-            <p className="m-0 rounded-xl bg-sage-bg px-3.5 py-2.5 text-[13.5px] text-good-ink">It lands on the canvas as a draft. A person has to review it, run it in Test Workflow and publish it. Nothing here is used for a real case until then.</p>
+            <p className="m-0 rounded-xl bg-sage-bg px-3.5 py-2.5 text-[13px] text-good-ink">It lands on the canvas as a draft. A person has to review it, run it in Test Workflow and publish it. Nothing here is used for a real case until then.</p>
           </section>
         ) : null}
       </div>
@@ -97,13 +97,13 @@ function Block({ icon: Icon, title, items, none }: { icon: typeof Sparkles; titl
     <div>
       <h4 className="m-0 flex items-center gap-2 text-[14px] font-semibold"><Icon size={16} className="ico text-sage" aria-hidden="true" />{title}</h4>
       {items.length ? (
-        <ul className="mt-2 mb-0 flex list-disc flex-col gap-1 pl-5 text-[13.5px] text-ink2">
+        <ul className="mt-2 mb-0 flex list-disc flex-col gap-1 pl-5 text-[13px] text-ink2">
           {items.map((t, i) => (
             <li key={i}>{t}</li>
           ))}
         </ul>
       ) : (
-        <p className="mt-2 mb-0 text-[13.5px] text-muted">{none ?? "Nothing."}</p>
+        <p className="mt-2 mb-0 text-[13px] text-muted">{none ?? "Nothing."}</p>
       )}
     </div>
   );

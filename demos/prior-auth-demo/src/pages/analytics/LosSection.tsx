@@ -42,7 +42,7 @@ export function LosSection({ board, onOpen }: { board: Board; onOpen: (q: CaseQu
   return (
     <div className="flex flex-col gap-4 px-6 py-5" data-testid="los">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-[13.5px] text-muted">{tab === "all" ? "Share of the requested days or units that were approved, by payer." : `Average ${unit} requested (grey) and approved (green) per approval, ${PROGRAM_LABEL[tab]}.`} Click a payer for its cases.</p>
+        <p className="text-[13px] text-muted">{tab === "all" ? "Share of the requested days or units that were approved, by payer." : `Average ${unit} requested (grey) and approved (green) per approval, ${PROGRAM_LABEL[tab]}.`} Click a payer for its cases.</p>
         <Segmented items={[{ id: "all", label: "All" }, ...PROGRAM_ORDER.map((p) => ({ id: p, label: PROGRAM_LABEL[p] }))]} value={tab} onChange={setTab} className="max-w-full flex-wrap" />
       </div>
       {bars.length === 0 ? (

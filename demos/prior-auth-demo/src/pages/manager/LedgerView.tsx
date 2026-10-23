@@ -155,7 +155,7 @@ export function LedgerView({ ledger, filters, onStatus, onClear, onQuick }: { le
           </Table>
         )}
         {rows.length > 0 ? <Pager page={page} pages={pages} from={page * PAGE + 1} to={Math.min(rows.length, page * PAGE + PAGE)} total={rows.length} onPage={(p) => setPaging({ key, page: p })} /> : null}
-        <p className="border-t border-line px-6 py-3 text-[12.5px] text-muted">
+        <p className="border-t border-line px-6 py-3 text-[12px] text-muted">
           Click a row for a quick view, or Open for the full case. Units or days left are worked out at the usual pace: a day of care a day, about three units a week for IOP. "Runs out before review" appears only when that pace uses the approval up before the next review. Approval chance estimates how well the paperwork fits the payer's past decisions. It is a range of about 6 points either way, drawn from similar decisions in your own cases, the network and benchmarks. Strong is 80 and above, Moderate 55 to 79, At risk below 55. It never blocks a request.
         </p>
       </Card>

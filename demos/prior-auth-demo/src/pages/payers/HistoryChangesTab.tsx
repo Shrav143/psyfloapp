@@ -24,7 +24,7 @@ export function HistoryChangesTab({ payerId, name, cfg }: { payerId: string; nam
             <span className="w-12 shrink-0 pt-0.5 text-muted">{c.date}</span>
             <div>
               <div className="font-semibold">{c.title}</div>
-              <div className="text-[13.5px] text-muted">{c.text}</div>
+              <div className="text-[13px] text-muted">{c.text}</div>
             </div>
           </div>
         ))}

@@ -64,7 +64,7 @@ export function RiskTab({ ctx }: { ctx: CaseCtx }) {
               <Donut
                 size={150} thickness={22}
                 parts={[{ value: full, color: "#2F6F5C" }, { value: partly, color: "#A87A26" }, { value: denied, color: "#B5553A" }]}
-                center={<><div className="text-[26px] leading-none font-semibold" style={{ color: b.color }}>{full}%</div><div className="mt-0.5 text-[11px] text-muted">as asked</div></>}
+                center={<><div className="text-[24px] leading-none font-semibold" style={{ color: b.color }}>{full}%</div><div className="mt-0.5 text-[11px] text-muted">as asked</div></>}
               />
               <ul className="flex flex-1 flex-col gap-2.5" data-testid="outcomes">
                 {[["Approved as asked", full, "#2F6F5C"], ["Partly approved", partly, "#A87A26"], ["Denied", denied, "#B5553A"]].map(([l, v, c]) => (
@@ -79,7 +79,7 @@ export function RiskTab({ ctx }: { ctx: CaseCtx }) {
             <CardHeader title="How sure are we" right={<Pill tone={bench ? "neutral" : "good"}>{confidenceWord(detail)}</Pill>} />
             <CardBody>
               <div className="flex items-baseline gap-3">
-                <span className="text-[28px] leading-none font-semibold" style={{ color: b.color }}>{lo}–{hi}%</span>
+                <span className="text-[24px] leading-none font-semibold" style={{ color: b.color }}>{lo}–{hi}%</span>
                 <span className="text-sm text-muted">likely range · {b.word}</span>
               </div>
               <div className="mt-4 flex h-3 overflow-hidden rounded-full" role="img" aria-label={`${sim.own} yours, ${sim.network} network, ${sim.benchmark} benchmark`}>

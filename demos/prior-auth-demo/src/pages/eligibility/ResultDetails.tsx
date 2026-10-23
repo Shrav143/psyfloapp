@@ -52,15 +52,15 @@ export function DetailSections({ result, nextLines }: { result: CheckResult; nex
   return (
     <div className="flex flex-col gap-6">
       <section aria-label="Payment checks">
-        <h3 className="font-serif text-[19px] font-semibold leading-tight">Payment checks</h3>
-        <p className="mt-0.5 mb-3 text-[13.5px] text-muted">{checksSummary(result)}</p>
+        <h3 className="font-serif text-[18px] font-semibold leading-tight">Payment checks</h3>
+        <p className="mt-0.5 mb-3 text-[13px] text-muted">{checksSummary(result)}</p>
         <div className="overflow-hidden rounded-[20px] border border-edge bg-white">
           <PaymentChecks result={result} showPays={false} />
         </div>
       </section>
       <section aria-label="How this was checked">
-        <h3 className="font-serif text-[19px] font-semibold leading-tight">How this was checked</h3>
-        <p className="mt-0.5 mb-3 text-[13.5px] text-muted">{howSummary(result, nextLines)}</p>
+        <h3 className="font-serif text-[18px] font-semibold leading-tight">How this was checked</h3>
+        <p className="mt-0.5 mb-3 text-[13px] text-muted">{howSummary(result, nextLines)}</p>
         <div className="overflow-hidden rounded-[20px] border border-edge bg-white">
           <AgentRows agents={result.agents} />
           <ul aria-label="Next checks" className="flex flex-col gap-2.5 px-6 py-[18px]">

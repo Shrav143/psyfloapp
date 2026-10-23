@@ -36,9 +36,9 @@ group gMain "Main"
   process pAuth "Go to /authorizations\nThe group opens under it"
   goto gAuth "Continues in: Authorizations › Queue"
 
-  click cNew "Click 'New case'\n(listed under Authorizations)"
+  click cNew "Click 'New Case'\n(listed under Authorizations)"
   process pNew "Go to /authorizations/new\nA blank draft is started"
-  goto gNew "Continues in: Authorizations › New case › How a case starts and resumes"
+  goto gNew "Continues in: Authorizations › New Case › How a case starts and resumes"
 
   click cElig "Click 'Eligibility & Benefits'\n(listed under Authorizations)"
   process pElig "Go to /authorizations/eligibility"

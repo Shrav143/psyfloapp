@@ -1,4 +1,4 @@
-title: Authorizations › New case › Clinical documentation › Replace a document or mark it not available
+title: Authorizations › New Case › Clinical documentation › Replace a document or mark it not available
 route: /authorizations/new/:draftId (step 3 of 5, Documents list)
 intro: Two more buttons on a document row. 'Replace' swaps a file for another one and Reader reads it again. 'Mark not available' says the document does not exist, with a short reason. The checklist counts it as handled, and the review warns when the payer requires it.
 dir: TD
@@ -38,9 +38,9 @@ group gRow "What the row and the page say"
   click cAdd "Click 'Add file'\nThe file replaces the mark"
 endgroup
 
-goto gRev "Continues in: Authorizations › New case › Review & submit › Validation summary and checks"
-goto gQ "Continues in: Authorizations › New case › Authorization preparation › An agent asks a question"
-goto gRec "Continues in: Authorizations › New case › Clinical documentation › Clinical summary and document rows"
+goto gRev "Continues in: Authorizations › New Case › Review & submit › Validation summary and checks"
+goto gQ "Continues in: Authorizations › New Case › Authorization preparation › An agent asks a question"
+goto gRec "Continues in: Authorizations › New Case › Clinical documentation › Clinical summary and document rows"
 
 s1 --> dRow
 dRow -->|Yes| cRep --> iFile --> pSwap --> aRead --> pClean --> dAfter

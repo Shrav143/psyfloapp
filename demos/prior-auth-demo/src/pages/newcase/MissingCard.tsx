@@ -15,7 +15,7 @@ export function MissingCard({ draft, items, onFix }: { draft: CaseDraft; items: 
         <CircleCheck size={20} className="ico shrink-0 text-good" aria-hidden="true" />
         <div>
           <div className="font-semibold">Nothing is missing</div>
-          <div className="text-[13.5px] text-muted">All four checks passed. The summary below is what the payer will read.</div>
+          <div className="text-[13px] text-muted">All four checks passed. The summary below is what the payer will read.</div>
         </div>
       </Card>
     );
@@ -41,7 +41,7 @@ export function MissingCard({ draft, items, onFix }: { draft: CaseDraft; items: 
             {m.severity === "block" ? <CircleX size={18} className="ico mt-0.5 shrink-0 text-risk" aria-label="Blocks signing" /> : <CircleAlert size={18} className={m.severity === "ack" ? "ico mt-0.5 shrink-0 text-mid" : "ico mt-0.5 shrink-0 text-faint"} aria-label={m.severity === "ack" ? "Acknowledge before signing" : "Does not stop signing"} />}
             <div className="min-w-0 flex-1">
               <div className="font-semibold">{m.label}</div>
-              <div className={m.severity === "block" ? "text-[13.5px] text-risk-ink" : m.severity === "ack" ? "text-[13.5px] text-mid-ink" : "text-[13.5px] text-ink2"}>{m.text}</div>
+              <div className={m.severity === "block" ? "text-[13px] text-risk-ink" : m.severity === "ack" ? "text-[13px] text-mid-ink" : "text-[13px] text-ink2"}>{m.text}</div>
             </div>
             {m.fix ? <Button size="sm" onClick={() => onFix(m.fix as FixKind)}>{FIX_LABEL[m.fix]}</Button> : null}
           </li>

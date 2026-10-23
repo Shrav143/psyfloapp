@@ -26,7 +26,7 @@ function ActionBox({ tone, agent, title, children, action }: { tone: Tone; agent
       <AgentBadge agent={agent} size={30} />
       <div className="min-w-0 flex-1">
         <div className="font-semibold">{title}</div>
-        <div className="mt-0.5 text-[13.5px]">{children}</div>
+        <div className="mt-0.5 text-[13px]">{children}</div>
         <div className="mt-3">{action}</div>
       </div>
     </div>
@@ -134,7 +134,7 @@ export function DemoControls({ request: r, onNewId }: { request: PsyRequest; onN
   };
   return (
     <section aria-label="Demo controls" className="rounded-2xl border border-dashed border-faint bg-white/60 px-4 py-3.5">
-      <div className="flex items-center gap-2 text-[11.5px] font-medium uppercase tracking-[0.1em] text-muted">
+      <div className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.1em] text-muted">
         <FlaskConical size={14} className="ico" />
         Demo controls
       </div>

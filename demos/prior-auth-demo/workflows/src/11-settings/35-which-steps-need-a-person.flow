@@ -20,7 +20,7 @@ endx x1 "Never\nThe clinician authors clinical content and sets units, frequency
 
 click h1 "Clinician signs\nA licensed clinician signs every request and appeal"
 click h2 "Case owner confirms the write-back"
-goto g1 "Continues in: Authorizations › New case › Review & submit › Sign and send to payer"
+goto g1 "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer"
 goto g2 "Continues in: Dashboard › Request drawer › Approve the write-back"
 goto g3 "Continues in: Payers › History & Changes › Acknowledge a change"
 goto g4 "Continues in: Denial Intelligence › Written appeal › Edit, sign and file"

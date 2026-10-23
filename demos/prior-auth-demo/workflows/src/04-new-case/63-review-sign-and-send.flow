@@ -1,4 +1,4 @@
-title: Authorizations › New case › Review & submit › Sign and send to payer
+title: Authorizations › New Case › Review & submit › Sign and send to payer
 route: /authorizations/new/:draftId (step 5 of 5, the Sign card)
 intro: Only a licensed clinician can sign. The card opens signed in as Jordan Perez, a UR coordinator, so the first step is to switch to Dr. Rivera. Signing needs an attestation, an acknowledgement when something warns, and nothing blocking. The send is simulated and says so. After the confirm the request is saved, linked to its patient, episode, authorization and verification, shown on the Dashboard, in the Authorizations queue and in Case Manager, and the new case opens.
 dir: TD
@@ -39,9 +39,9 @@ process pNav "The new case opens: /authorizations/case/R-1701"
 endx eStay "Stays on step 5; nothing is sent"
 click cBack "Click 'Send back to Scribe'"
 goto gCase "Continues in: Authorizations › Case page › Header and buttons"
-goto gAfter "Continues in: Authorizations › New case › Review & submit › After sending"
-goto gSB "Continues in: Authorizations › New case › Review & submit › Send back to Scribe"
-goto gMis "Continues in: Authorizations › New case › Review & submit › What is missing"
+goto gAfter "Continues in: Authorizations › New Case › Review & submit › After sending"
+goto gSB "Continues in: Authorizations › New Case › Review & submit › Send back to Scribe"
+goto gMis "Continues in: Authorizations › New Case › Review & submit › What is missing"
 
 s1 --> cWho --> oWho --> dWho
 dWho -->|Jordan Perez| tUR --> eOff

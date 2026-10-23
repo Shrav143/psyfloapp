@@ -158,13 +158,13 @@ export interface OpenDraft {
   /** "J.M., 34" */
   patient: string;
   program: Program | null;
-  /** False for a case saved in New case that has no Dashboard row yet. */
+  /** False for a case saved in New Case that has no Dashboard row yet. */
   onDashboard: boolean;
 }
 export const OPEN_DRAFT_STATUS = "Draft, not yet sent";
 
-/** Read from the live Dashboard requests and New case drafts, never from a fixed list. `inView` keeps the drafts at the sites a viewer is looking at (pass the draft's case id); left out, every site counts.
-    A draft is a request still in Preparing, or a New case draft that is saved and not sent. A request the payer already has (Received and later, and an answer to the payer's
+/** Read from the live Dashboard requests and New Case drafts, never from a fixed list. `inView` keeps the drafts at the sites a viewer is looking at (pass the draft's case id); left out, every site counts.
+    A draft is a request still in Preparing, or a New Case draft that is saved and not sent. A request the payer already has (Received and later, and an answer to the payer's
     question on an Info requested one) is left out: sent requests keep what they were sent with. */
 export function openDrafts(requests: PsyRequest[], caseDrafts: CaseDraft[], payerId: string, inView: (caseId: string) => boolean = () => true): OpenDraft[] {
   const out: OpenDraft[] = requests

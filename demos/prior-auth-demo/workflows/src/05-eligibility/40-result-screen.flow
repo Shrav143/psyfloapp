@@ -10,7 +10,7 @@ screen sc "Eligibility & Benefits\nTitle is the headline, for example 'Covered, 
 click b1 "Click '← Eligibility & Benefits' (back link, top left)"
 goto g0 "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows"
 click b2 "Click '← Back to referral RF-2040' beside it\nWith ?case= in the address it reads '← Back to case R-1042'\nShown only when ?referral= names a referral that exists"
-goto g4 "Continues in: Authorizations › New case › Referral › The full referral page"
+goto g4 "Continues in: Authorizations › New Case › Referral › The full referral page"
 
 group gSum "Summary card (one card, then one row)"
   screen vb "Top band, green, amber, red or grey\nSmall caps 'Verdict'\nBig words: 'Cleared to bill', 'Authorization first', 'Fix before billing' or 'Not checked'\nOne sentence why"

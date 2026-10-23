@@ -1,6 +1,6 @@
-title: Authorizations › New case › Sites and scope
+title: Authorizations › New Case › Sites and scope
 route: /authorizations/new (the site switcher in the top bar decides what is in view)
-intro: A clinic can run more than one site, and staff at one site must not see the other site's patients. New case follows the sites in view everywhere: the incoming referrals, the patient search, the duplicate check, the site a new case belongs to, and every link. A record at a site the viewer cannot see is never named, counted or searched; a link to it shows 'not available' and nothing else.
+intro: A clinic can run more than one site, and staff at one site must not see the other site's patients. New Case follows the sites in view everywhere: the incoming referrals, the patient search, the duplicate check, the site a new case belongs to, and every link. A record at a site the viewer cannot see is never named, counted or searched; a link to it shows 'not available' and nothing else.
 dir: TD
 also: Demo only: Jordan Perez sees Both sites, Dr. Rivera sees Site A, Sam Okafor sees Site B. Choose the viewer in the Demo menu. A case id decides its site, so a new case gets an id that falls at the site it was made for.
 ---
@@ -9,8 +9,8 @@ decision d1 "How many sites are in view?"
 process pOne "One site\nEverything below shows that site only\nNothing says how many records are at the other site"
 process pBoth "Both sites\nEverything shows both, and each row can name its site"
 
-group gLists "What shows in New case"
-  screen l1 "'Incoming referrals (N)'\nOnly open referrals at the sites in view\nThe sidebar badge on 'New case' counts the same ones"
+group gLists "What shows in New Case"
+  screen l1 "'Incoming referrals (N)'\nOnly open referrals at the sites in view\nThe sidebar badge on 'New Case' counts the same ones"
   screen l2 "Patient search\n'Searches Site A only.'\n'No patient at Site A matches “Q.Z.”.' when the match is at the other site\nWith both sites in view each row names its site"
   screen l3 "Possible duplicate\nOnly requests, drafts and authorizations at the sites in view are compared"
   screen l4 "Eligibility & Benefits and Review & submit\nThe verification and the case belong to the case's site"
@@ -38,9 +38,9 @@ group gLinks "A link to a record at a site that is not in view"
   click cShow "Click 'Show Site B'"
   process pShow "The view switches to that site and the record opens"
 endgroup
-goto gStart "Continues in: Authorizations › New case › Intake › Start with a referral or patient"
-goto gFind "Continues in: Authorizations › New case › Intake › Find a patient and the authorization"
-goto gDup "Continues in: Authorizations › New case › Intake › Possible duplicate"
+goto gStart "Continues in: Authorizations › New Case › Intake › Start with a referral or patient"
+goto gFind "Continues in: Authorizations › New Case › Intake › Find a patient and the authorization"
+goto gDup "Continues in: Authorizations › New Case › Intake › Possible duplicate"
 goto gShell "Continues in: Global shell › Top bar › Site switcher"
 
 s1 --> d1

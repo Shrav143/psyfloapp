@@ -20,8 +20,8 @@ export function NextBlock({ ctx, next }: { ctx: CaseCtx; next: NextAction }) {
   return (
     <section aria-label="Next action" className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 rounded-2xl border border-forest/25 bg-[#F3F7F4] px-5 py-4">
       <div className="min-w-0 flex-1 basis-[320px]">
-        <div className="text-[17px] font-semibold leading-snug"><span className="text-forest">Next:</span> {next.text}</div>
-        {next.why ? <div className="mt-0.5 text-[13.5px] text-ink2">{next.why}</div> : null}
+        <div className="text-[16px] font-semibold leading-snug"><span className="text-forest">Next:</span> {next.text}</div>
+        {next.why ? <div className="mt-0.5 text-[13px] text-ink2">{next.why}</div> : null}
       </div>
       <div className="flex shrink-0 flex-col items-end gap-1.5">
         <div className="flex flex-wrap items-center justify-end gap-2.5">

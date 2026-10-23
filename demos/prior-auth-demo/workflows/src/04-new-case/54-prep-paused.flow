@@ -1,4 +1,4 @@
-title: Authorizations › New case › Authorization preparation › Paused in Settings
+title: Authorizations › New Case › Authorization preparation › Paused in Settings
 route: /authorizations/new/:draftId (step 4 of 5, 'Authorization preparation')
 intro: The run reads the same pause switches as Settings. An agent paused there does not take its turn, whether it was paused in Settings or with 'Pause all agents' on this page. The run holds at that agent until someone resumes it.
 dir: TD
@@ -20,8 +20,8 @@ process rOne "Only that agent is resumed\nOthers stay paused in Settings"
 click cSet "Resume in Settings instead"
 agent aGo "The run carries on from the agent it held at\nIt does not start over"
 goto gSettings "Continues in: Settings › Pause › What the rest of the app shows"
-goto gRun "Continues in: Authorizations › New case › Authorization preparation › Start the run and watch it"
-goto gAsk "Continues in: Authorizations › New case › Authorization preparation › An agent asks a question"
+goto gRun "Continues in: Authorizations › New Case › Authorization preparation › Start the run and watch it"
+goto gAsk "Continues in: Authorizations › New Case › Authorization preparation › An agent asks a question"
 process pAsk "A question still waits for an answer\nPausing does not answer it, and neither does Skip ahead"
 
 s1 --> dTurn

@@ -34,7 +34,7 @@ export function ExceptionList({ record }: { record: VerificationRecord }) {
   return (
     <ul aria-label="Warnings" className="flex flex-col gap-2 rounded-2xl border border-mid-edge bg-mid-bg px-4 py-3 text-mid-ink">
       {lines.map((l) => (
-        <li key={l.code} className="flex items-start gap-2.5 text-[13.5px]">
+        <li key={l.code} className="flex items-start gap-2.5 text-[13px]">
           <CircleAlert size={16} className="ico mt-[3px] shrink-0" aria-hidden="true" />
           <span>
             <b className="font-semibold">{l.title}.</b> {l.text}
@@ -58,7 +58,7 @@ function Row({ label, chip, tone, children }: { label: string; chip?: string; to
 }
 
 /** What one check found, in the order a person reads it: coverage, plan type and routing, benefits, the authorization requirement, provider participation,
-    an authorization already on file, then the warnings. The same record shows on Eligibility & Benefits and in step 2 of New case.
+    an authorization already on file, then the warnings. The same record shows on Eligibility & Benefits and in step 2 of New Case.
     `compact` keeps it to the chips and the warnings, for a step that already says the rest. */
 export function VerificationSummary({ record, onRefresh, onDetails, compact }: { record: VerificationRecord; onRefresh?: () => void; onDetails?: () => void; compact?: boolean }) {
   const clock = useStore((s) => s.clock);
@@ -87,7 +87,7 @@ export function VerificationSummary({ record, onRefresh, onDetails, compact }: {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <Label>Coverage and benefits{payer ? ` · ${payer.shortName}` : ""}</Label>
-          <p className="mt-0.5 text-[12.5px] text-muted">{lastVerifiedText(record, clock)}</p>
+          <p className="mt-0.5 text-[12px] text-muted">{lastVerifiedText(record, clock)}</p>
         </div>
         {compact ? null : buttons}
       </div>

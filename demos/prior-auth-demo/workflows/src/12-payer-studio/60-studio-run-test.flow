@@ -1,6 +1,6 @@
 title: Payers › Test Workflow › Run a test case
 route: /payers/summit?tab=test
-intro: A made-up case goes through the same engine New case uses, so the branches taken here are the branches a real case would take. The path lights up on a read-only canvas one step at a time, and the list beside it says in words what each step found. Nothing here is a real patient or touches a payer.
+intro: A made-up case goes through the same engine New Case uses, so the branches taken here are the branches a real case would take. The path lights up on a read-only canvas one step at a time, and the list beside it says in words what each step found. Nothing here is a real patient or touches a payer.
 dir: TD
 ---
 start s1 "Click 'Test Workflow' in a payer's workspace\nor 'Test' in the builder"

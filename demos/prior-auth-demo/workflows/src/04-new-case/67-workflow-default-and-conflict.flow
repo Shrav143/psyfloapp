@@ -1,6 +1,6 @@
-title: Authorizations › New case › Workflow › Default process and equal matches
+title: Authorizations › New Case › Workflow › Default process and equal matches
 route: /authorizations/new/:draftId (the Workflow line under the stepper)
-intro: When no published workflow fits the case, New case uses a clearly labelled default process for the request type and invents no payer rule. When two published workflows are equally specific, nothing is picked silently: the line names both, the default is used, and a person chooses in a small side panel. The choice is written to the case's history with who made it.
+intro: When no published workflow fits the case, New Case uses a clearly labelled default process for the request type and invents no payer rule. When two published workflows are equally specific, nothing is picked silently: the line names both, the default is used, and a person chooses in a small side panel. The choice is written to the case's history with who made it.
 dir: TD
 also: The default is illustrative. It is not payer policy and it never claims a payer rule. The wording of the default is the same for each request type: 'Default process for a concurrent review. No payer workflow matches. Illustrative, not payer policy.'
 ---
@@ -32,8 +32,8 @@ endgroup
 
 decision d2 "Does the case change so the same two no longer compete?"
 process p2 "The choice no longer holds\nA fresh match is made (before the workflow has run past Intake), or offered for review (after)"
-goto g1 "Continues in: Authorizations › New case › Workflow › Match and pin the payer workflow"
-goto g2 "Continues in: Authorizations › New case › Workflow › The case changed after the workflow started"
+goto g1 "Continues in: Authorizations › New Case › Workflow › Match and pin the payer workflow"
+goto g2 "Continues in: Authorizations › New Case › Workflow › The case changed after the workflow started"
 end e1 "The case follows the workflow a person chose"
 end e2 "The case follows the default, clearly labelled"
 

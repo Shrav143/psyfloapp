@@ -2,7 +2,7 @@ title: Authorizations › Case page › Next action
 route: /authorizations/case/R-1042
 intro: The 'Next:' block at the top of the case page. It names the one thing a person should do on this request and gives one primary button for it. The queue row shows the same sentence. 'Send to payer' keeps its gate: it becomes the primary button once every check passes, and sits greyed out with its reason until then.
 dir: TD
-also: Demo only: the sentence comes from the request's recommended actions, its checks and where the Dashboard says it is. Nothing is decided by it; a clinician still signs in New case.
+also: Demo only: the sentence comes from the request's recommended actions, its checks and where the Dashboard says it is. Nothing is decided by it; a clinician still signs in New Case.
 ---
 screen nb "'Next:' block under the title\nSentence, one line of why, buttons, the reason line"
 decision d1 "Is the request on the Dashboard past Preparing, and either asking you something or moved on (sent here, decided)?"

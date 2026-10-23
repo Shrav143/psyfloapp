@@ -1,4 +1,4 @@
-title: Authorizations › New case › Referral › Header actions
+title: Authorizations › New Case › Referral › Header actions
 route: /authorizations/new/referral/RF-2053?draft=draft-1001
 intro: The buttons in the header card of the full referral page. The decision buttons open the same dialogs as the checklist, and 'Accept referral' is disabled in the same way. 'Start a case from this referral', 'Owner', 'Add note' and 'More' are only here.
 dir: TD
@@ -13,15 +13,15 @@ group gDec "Decision buttons (left)"
   click cReq "Click 'Request information'\nOnly while New or In review"
   click cDec "Click 'Decline'\nWhile open"
 endgroup
-goto gAcc "Continues in: Authorizations › New case › Referral › Accept a referral"
-goto gAsk "Continues in: Authorizations › New case › Referral › Ask the referrer"
-goto gOk "Continues in: Authorizations › New case › Referral › Mark OK or decline"
+goto gAcc "Continues in: Authorizations › New Case › Referral › Accept a referral"
+goto gAsk "Continues in: Authorizations › New Case › Referral › Ask the referrer"
+goto gOk "Continues in: Authorizations › New Case › Referral › Mark OK or decline"
 click cSt "Click 'Schedule intake', 'Mark admitted'\nor 'Change intake'\nAccepted and Scheduled only"
-goto gSt "Continues in: Authorizations › New case › Referral › Schedule intake"
+goto gSt "Continues in: Authorizations › New Case › Referral › Schedule intake"
 click cRe "Click 'Reopen referral'\nDeclined only"
 click cStart "Click 'Start a case from this referral'\nShown unless the referral is declined or already has a case"
 process pStart "Opens /authorizations/new?referral=RF-2053\nA new case is made from the referral and opens on Intake with the referral's details filled in"
-goto gNew "Continues in: Authorizations › New case › How a case starts and resumes"
+goto gNew "Continues in: Authorizations › New Case › How a case starts and resumes"
 store stRe "Referral is In review again\nTimeline 'You reopened the referral'\nToast 'Referral reopened'"
 
 group gOwn "Owner"
@@ -31,7 +31,7 @@ group gOwn "Owner"
 endgroup
 
 click cNote "Click 'Add note'"
-goto gNote "Continues in: Authorizations › New case › Referral › Full page: Fit, Activity and notes"
+goto gNote "Continues in: Authorizations › New Case › Referral › Full page: Fit, Activity and notes"
 
 group gMore "More"
   click cMore "Click 'More'"
@@ -45,7 +45,7 @@ group gMore "More"
   toast tCopy "'Link copied'\n'It opens this referral for anyone on your team.'"
   toast tDown "'Downloading the original'\n'RF-2053.pdf, 2 pages. This is a demo, so no file is saved.'"
 endgroup
-goto gReply "Continues in: Authorizations › New case › Referral › The referrer replies"
+goto gReply "Continues in: Authorizations › New Case › Referral › The referrer replies"
 
 s1 --> dReq
 dReq -->|Yes| tDis

@@ -1,4 +1,4 @@
-title: Authorizations › New case › Authorization preparation › An agent could not finish
+title: Authorizations › New Case › Authorization preparation › An agent could not finish
 route: /authorizations/new/:draftId (step 4 of 5, 'Authorization preparation')
 intro: Verify cannot reach Cardinal's portal the first time a case for Cardinal runs. The row says 'Could not finish' and the run holds until the person chooses 'Retry' or 'Skip and note'. Retry works. Skip adds a warning to Review and sign and a note to the request's history.
 dir: TD
@@ -15,21 +15,21 @@ process pHold "The run holds\nFooter hint: 'Verify could not finish. Retry it, o
 click cRetry "Click 'Retry'"
 store stRetry "Failure cleared\nThe draft remembers that Verify has been retried, so a later run of this case does not fail again"
 agent aV2 "Verify runs its step again and answers"
-goto gRun "Continues in: Authorizations › New case › Authorization preparation › Start the run and watch it"
+goto gRun "Continues in: Authorizations › New Case › Authorization preparation › Start the run and watch it"
 
 click cSkip "Click 'Skip and note'"
 store stSkip "Verify counts as done and is marked skipped\nRow: pill 'Skipped and noted'\n'Skipped. Cardinal's portal could not be reached, so coverage is not confirmed'"
 process pAfter "The other nine agents run as usual"
-goto gReview "Continues in: Authorizations › New case › Review & submit › Validation summary and checks"
+goto gReview "Continues in: Authorizations › New Case › Review & submit › Validation summary and checks"
 toast tWarn "Review & submit, Checks: 'Request has no errors' warns\n'Verify could not reach Cardinal's portal, so coverage was not confirmed. You skipped it and noted it.'\nSigning needs the acknowledgement tick-box"
 store stNote "After 'Sign and send to payer', the request's history says\n'Verify could not reach Cardinal's portal before signing'\n'Coverage was not confirmed. You skipped it and noted it.'"
-goto gSign "Continues in: Authorizations › New case › Review & submit › Sign and send to payer"
+goto gSign "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer"
 
 click cLeave "Leave the page, or click 'Back'"
 process pStay "The draft keeps the failure\nOpening it again shows the same row"
 click cOther "Records change before Retry (any intake edit)"
 process pReset "The run starts over\nThe failure is gone and Verify tries again; if Retry was already used it passes"
-goto gRec "Continues in: Authorizations › New case › Clinical documentation › The checklist and Continue"
+goto gRec "Continues in: Authorizations › New Case › Clinical documentation › The checklist and Continue"
 
 s1 --> dPay
 dPay -->|No| pOk --> gRun

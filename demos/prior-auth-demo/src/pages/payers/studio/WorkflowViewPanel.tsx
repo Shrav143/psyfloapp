@@ -14,7 +14,7 @@ import { useLiveWorkflow, usePayerRules, useVersions } from "./lib/store";
 import { OUTCOME_TONE, OUTCOME_WORD, STATUS_TONE, STATUS_WORD, VERIFICATION_TONE, datesOf } from "./lib/ui";
 
 /* The read-only view of a workflow: its canvas, its rules and, when a run is given, which steps were executed, skipped or are still pending.
-   New case and Case Manager open it; so does Test Workflow. */
+   New Case and Case Manager open it; so does Test Workflow. */
 
 export interface WorkflowViewPanelProps {
   workflowId: string;
@@ -88,7 +88,7 @@ export function WorkflowViewPanel({ workflowId, version, trace, open, onClose }:
           </div>
 
           {pickedNode ? (
-            <div className="rounded-2xl border border-line bg-tile/60 px-4 py-3 text-[13.5px]" aria-live="polite">
+            <div className="rounded-2xl border border-line bg-tile/60 px-4 py-3 text-[13px]" aria-live="polite">
               <div className="font-semibold">{pickedNode.title}{run ? <span className="ml-2 font-normal text-muted">{RUN_WORD[run.nodes[pickedNode.id] ?? "queued"] || ""}</span> : null}</div>
               <p className="mt-0.5 mb-0 text-ink2">{step ? step.message : pickedNode.purpose}</p>
             </div>
@@ -98,10 +98,10 @@ export function WorkflowViewPanel({ workflowId, version, trace, open, onClose }:
 
           {trace && trace.steps.length ? (
             <section aria-label="The path">
-              <h3 className="m-0 mb-2 font-serif text-[19px] font-semibold">The path so far</h3>
+              <h3 className="m-0 mb-2 font-serif text-[18px] font-semibold">The path so far</h3>
               <ol className="m-0 flex list-none flex-col gap-1.5 p-0">
                 {trace.steps.map((s) => (
-                  <li key={`${s.seq}-${s.nodeId}`} className="flex items-start gap-2.5 rounded-xl border border-line bg-white px-3 py-2 text-[13.5px]">
+                  <li key={`${s.seq}-${s.nodeId}`} className="flex items-start gap-2.5 rounded-xl border border-line bg-white px-3 py-2 text-[13px]">
                     <Pill tone={OUTCOME_TONE[s.outcome]} dot>{OUTCOME_WORD[s.outcome]}</Pill>
                     <span className="min-w-0 flex-1"><span className="font-semibold">{s.title}.</span> {s.message}</span>
                   </li>
@@ -111,13 +111,13 @@ export function WorkflowViewPanel({ workflowId, version, trace, open, onClose }:
           ) : null}
 
           <section aria-label="Payer rules">
-            <h3 className="m-0 mb-2 font-serif text-[19px] font-semibold">Payer rules it points at</h3>
+            <h3 className="m-0 mb-2 font-serif text-[18px] font-semibold">Payer rules it points at</h3>
             {refs.length === 0 ? (
               <p className="m-0 text-sm text-muted">No step points at a payer rule.</p>
             ) : (
               <ul className="m-0 flex list-none flex-col gap-1.5 p-0">
                 {refs.map(({ id, rule }) => (
-                  <li key={id} className="flex flex-wrap items-center gap-2 rounded-xl border border-line bg-white px-3 py-2 text-[13.5px]">
+                  <li key={id} className="flex flex-wrap items-center gap-2 rounded-xl border border-line bg-white px-3 py-2 text-[13px]">
                     <span className="min-w-0 flex-1 font-medium">{rule ? rule.title : "A rule that is no longer in the library"}</span>
                     {rule ? <Pill tone={VERIFICATION_TONE[rule.verification]} dot>{VERIFICATION_LABEL[rule.verification]}</Pill> : <Pill tone="risk" dot>Missing</Pill>}
                     {rule ? <span className="text-xs text-muted">{rule.source.label} · {datesOf(rule.effectiveFrom, rule.effectiveTo)} · v{rule.version}</span> : null}

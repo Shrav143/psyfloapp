@@ -10,16 +10,16 @@ function Mappings({ systems, mappings, waiting, onMap }: { systems: EmrSystem[];
   const nameOf = (id: string) => systems.find((s) => s.id === id)?.name ?? "A system";
   return (
     <section aria-labelledby="mappings-title">
-      <h4 id="mappings-title" className="font-serif text-[17px] font-semibold">Field mappings</h4>
+      <h4 id="mappings-title" className="font-serif text-[16px] font-semibold">Field mappings</h4>
       <p className="mt-0.5 text-[13px] text-muted">
-        {mappings.length} mapped{waiting.length ? `, ${waiting.length} waiting. A chart pulled in New case leaves the waiting fields blank until you map them.` : ". Every field the agents have met is mapped."}
+        {mappings.length} mapped{waiting.length ? `, ${waiting.length} waiting. A chart pulled in New Case leaves the waiting fields blank until you map them.` : ". Every field the agents have met is mapped."}
       </p>
       <ul className="mt-3 overflow-hidden rounded-2xl border border-edge" aria-label="Field mappings">
         {waiting.map((u) => (
           <li key={u.id} className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-line bg-mid-bg/40 px-4 py-3 last:border-b-0">
             <div className="min-w-0 flex-1 basis-[220px]">
               <div className="font-medium">{u.field} <Pill tone="mid" className="ml-1.5">Not mapped</Pill></div>
-              <div className="text-[12.5px] text-muted">{nameOf(u.systemId)} · {u.hint}</div>
+              <div className="text-[12px] text-muted">{nameOf(u.systemId)} · {u.hint}</div>
             </div>
             <Button size="sm" onClick={() => onMap(u)} aria-label={`Map ${u.field}`}>Map</Button>
           </li>
@@ -28,7 +28,7 @@ function Mappings({ systems, mappings, waiting, onMap }: { systems: EmrSystem[];
           <li key={m.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-line px-4 py-3 last:border-b-0">
             <div className="min-w-0 flex-1 basis-[220px]">
               <div className="font-medium">{m.source} <span className="sr-only"> fills </span><span className="text-muted" aria-hidden="true">→</span> {m.target}</div>
-              <div className="text-[12.5px] text-muted">{nameOf(m.systemId)}</div>
+              <div className="text-[12px] text-muted">{nameOf(m.systemId)}</div>
             </div>
             <span className="text-[13px] text-muted">{m.by}</span>
           </li>

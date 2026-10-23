@@ -1,6 +1,6 @@
 title: Authorizations › Eligibility & Benefits › Result › Plan type and routing
 route: /authorizations/eligibility/R-1042
-intro: The facts line under the summary says which plan type the payer is and where claims go. It is derived from the payer record and the plan type New case would pre-fill, so a payer added on Payers gets it too. A payer with no plan type shows nothing in its place. The check row 'It is the right plan' in 'Payment checks' reads from the same place.
+intro: The facts line under the summary says which plan type the payer is and where claims go. It is derived from the payer record and the plan type New Case would pre-fill, so a payer added on Payers gets it too. A payer with no plan type shows nothing in its place. The check row 'It is the right plan' in 'Payment checks' reads from the same place.
 dir: TD
 also: Demo only: no built-in payer is fee for service. The branch exists for a payer added later.
 ---

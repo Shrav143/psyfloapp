@@ -28,7 +28,7 @@ export function SiteSwitcher() {
 
   return (
     <div className="flex min-w-0 items-center gap-2 lg:gap-3">
-      <span className="hidden text-[11.5px] font-medium tracking-[0.1em] whitespace-nowrap text-muted uppercase lg:inline">As of</span>
+      <span className="hidden text-[11px] font-medium tracking-[0.1em] whitespace-nowrap text-muted uppercase lg:inline">As of</span>
       <span className="hidden text-[13px] font-medium whitespace-nowrap text-ink lg:inline">{asOf}</span>
       {restricted ? (
         <>

@@ -23,3 +23,4 @@ export * from "./Tabs";
 export * from "./Timeline";
 export * from "./Toaster";
 export * from "./charts";
+export * from "./HistoryFeed";

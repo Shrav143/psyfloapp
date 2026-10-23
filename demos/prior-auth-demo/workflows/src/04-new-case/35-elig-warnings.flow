@@ -1,4 +1,4 @@
-title: Authorizations › New case › Eligibility & Benefits › Warnings and documented exceptions
+title: Authorizations › New Case › Eligibility & Benefits › Warnings and documented exceptions
 route: /authorizations/new/:draftId (step 2 of 5, the summary's warnings and 'What you can do')
 intro: A check can end with warnings. Each says what was found and what to do next, in one line, and none of them traps the person. A section 'What you can do' offers one action each. Coverage that is confirmed inactive, or a check that could not run, can be gone past with a documented exception: a short reason, kept on the case and written to the request's History. Only coverage confirmed inactive with no documented exception stops the final send.
 dir: TD
@@ -23,7 +23,7 @@ click a1 "Click 'Switch this case to Cardinal'"
 store sa1 "Payer and plan type change\nThe old check is let go and Verify checks the new plan"
 click a2 "Click 'Correct the member ID in Intake'"
 click a3 "Click 'Change the level of care in Intake'"
-goto gIntake "Continues in: Authorizations › New case › Intake › Patient, insurance and request rows"
+goto gIntake "Continues in: Authorizations › New Case › Intake › Patient, insurance and request rows"
 click a4 "Click the link 'Open Settings to resume Verify'"
 goto gSettings "Continues in: Settings › Pause › What the rest of the app shows"
 process pResume "After Verify is resumed, 'Refresh verification' runs the check"
@@ -45,8 +45,8 @@ group gEffect "What it changes"
   store e3 "After sending, the request's History says\n'You went on without confirmed coverage and said why'\n'You went on without a verification and said why'"
 endgroup
 process pAck "A warning with no documented exception and no block\nReview & submit lists it to acknowledge\nSigning needs the tick-box 'I reviewed the warning ... and want to sign anyway.'"
-goto gMis "Continues in: Authorizations › New case › Review & submit › What is missing"
-goto gSign "Continues in: Authorizations › New case › Review & submit › Sign and send to payer"
+goto gMis "Continues in: Authorizations › New Case › Review & submit › What is missing"
+goto gSign "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer"
 
 s1 --> d1
 d1 -->|Coverage| w1

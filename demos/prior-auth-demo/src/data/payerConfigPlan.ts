@@ -17,7 +17,7 @@ export interface PlanInfo {
   detail: string;
 }
 
-/** The plan type and where claims go, from the payer's group and the plan type New case would pre-fill. A payer with no plan type gives null, and the caller shows nothing. */
+/** The plan type and where claims go, from the payer's group and the plan type New Case would pre-fill. A payer with no plan type gives null, and the caller shows nothing. */
 export function planInfo(p: PayerSummary): PlanInfo | null {
   const kind = planTypeOf(p.id);
   if (!kind) return null;

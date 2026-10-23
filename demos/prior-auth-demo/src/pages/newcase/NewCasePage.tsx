@@ -29,7 +29,7 @@ import { WorkflowRow } from "./workflow/WorkflowRow";
 
 const NO_CONTEXT: string[] = [];
 
-/** New case. /authorizations/new starts a draft and moves to /authorizations/new/:draftId, which resumes one. ?type= picks the Authorization type, ?referral=, ?verification= and ?patient= start from one;
+/** New Case. /authorizations/new starts a draft and moves to /authorizations/new/:draftId, which resumes one. ?type= picks the Authorization type, ?referral=, ?verification= and ?patient= start from one;
     ?step= opens a step (the older names referral, records, agents and review land on Intake, Clinical documentation, Authorization preparation and Review & submit). */
 export default function NewCasePage() {
   const { draftId } = useParams();
@@ -106,7 +106,7 @@ export default function NewCasePage() {
   if (!draft || !env || !steps) {
     return (
       <Page>
-        <PageHeader title="New case" sub="That draft is not in the demo." />
+        <PageHeader title="New Case" sub="That draft is not in the demo." />
         <Card>
           <EmptyState icon={SearchX} title="We could not find that draft" action={<Button variant="primary" onClick={() => nav(paths.newCase())}>Start a new case</Button>}>
             It may have been cleared when the demo data was reset.
@@ -164,7 +164,7 @@ export default function NewCasePage() {
         Case Manager
       </Link>
       <PageHeader
-        title="New case"
+        title="New Case"
         sub={SUBS[at]}
         actions={
           at === 2 ? (

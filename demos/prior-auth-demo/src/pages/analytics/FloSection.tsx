@@ -10,7 +10,7 @@ function Figure({ value, label, note }: { value: string; label: string; note: st
   return (
     <div className="rounded-2xl border border-tile-edge bg-tile px-4 py-3.5">
       <Label>{label}</Label>
-      <div className="mt-1 text-2xl font-semibold">{value}</div>
+      <div className="mt-1 text-[24px] font-semibold">{value}</div>
       <div className="text-xs text-muted">{note}</div>
     </div>
   );
@@ -47,7 +47,7 @@ export function FloSection({ board, dismissed }: { board: Board; dismissed: { re
             thickness={22}
             center={
               <>
-                <span className="block text-[26px] leading-none font-semibold">{Math.round((100 * d.written) / d.n)}%</span>
+                <span className="block text-[24px] leading-none font-semibold">{Math.round((100 * d.written) / d.n)}%</span>
                 <span className="mt-1 block text-[11px] text-muted">as written</span>
               </>
             }

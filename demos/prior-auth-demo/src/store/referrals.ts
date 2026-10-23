@@ -69,7 +69,7 @@ export const createReferralsSlice: StateCreator<AppState, [], [], ReferralsSlice
       const id = `RF-${n}`;
       const created = sampleReferral(sampleIndex % SAMPLE_COUNT, id, clock);
       set({ referrals: [created, ...referrals] });
-      get().notify({ agent: "reader", title: "New referral read", body: `${id} from ${created.source.name} is on your checklist in New case.`, to: link(id), tone: "neutral" });
+      get().notify({ agent: "reader", title: "New referral read", body: `${id} from ${created.source.name} is on your checklist in New Case.`, to: link(id), tone: "neutral" });
       get().toast({ title: "Reader read the documents", body: `${id} is ready. The checklist shows what is missing.`, tone: "good" });
       return id;
     },
@@ -169,7 +169,7 @@ export const selectReferralBadge = (s: AppState): number => {
   return s.referrals.filter((r) => (r.status === "new" || r.status === "in_review") && !r.opened && sites.includes(siteOf(r.id))).length;
 };
 
-/** The New case flow calls this to pre-fill itself from a referral. Built from the extracted fields, so corrections carry over. */
+/** The New Case flow calls this to pre-fill itself from a referral. Built from the extracted fields, so corrections carry over. */
 export function referralPrefill(s: AppState, id: string): NewCasePrefill | null {
   const r = s.referrals.find((x) => x.id === id);
   if (!r) return null;

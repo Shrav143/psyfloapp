@@ -55,12 +55,12 @@ export function RequestTile({ item, clock, info, quick, onQuick }: { item: Queue
         <div className="min-w-[150px] xl:min-w-0">
           <Pill tone={DUE_TONE[item.band]} dot={item.band === "now"}>{dueText(item.dueVerb, item.dueAt, clock)}</Pill>
         </div>
-        <div className="min-w-[200px] flex-1 text-[13.5px] xl:min-w-0"><span className="font-semibold text-forest">Next:</span> {info.next}</div>
+        <div className="min-w-[200px] flex-1 text-[13px] xl:min-w-0"><span className="font-semibold text-forest">Next:</span> {info.next}</div>
       </div>
 
       <div className="order-2 flex items-center gap-4 xl:contents">
         <div className="text-right">
-          <div className="text-[17px] leading-tight font-semibold" style={{ color: b.color }}>{Math.round(info.chance)}%</div>
+          <div className="text-[16px] leading-tight font-semibold" style={{ color: b.color }}>{Math.round(info.chance)}%</div>
           <div className="text-xs font-semibold" style={{ color: b.color }}>{b.word}</div>
         </div>
         <Button size="sm" onClick={() => navigate(paths.case(item.id))} aria-label={`Open ${item.id}`}>Open</Button>

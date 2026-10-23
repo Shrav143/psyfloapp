@@ -19,7 +19,7 @@ group gMove "What moves with the clock"
   process m2 "Notifications\nAges: '16 min ago' becomes '1 h ago'"
   process m3 "Dashboard\nTime in stage and 'late' flags"
   process m4 "Authorizations, Denial Intelligence\nQueue bands, case clocks, peer-to-peer and appeal deadlines"
-  process m5 "Eligibility & Benefits, EMR Connect, New case\nHow long ago a check, a sync or a referral was"
+  process m5 "Eligibility & Benefits, EMR Connect, New Case\nHow long ago a check, a sync or a referral was"
   agent m6 "Eligibility & Benefits\nVerify re-checks every patient whose re-check time has passed, unless Verify is paused in Settings\nA 'Re-checked automatically' notification follows"
 endgroup
 
@@ -31,7 +31,7 @@ endgroup
 
 group gHow "How things really arrive in the demo"
   goto g1 "Continues in: Dashboard › Request drawer › Demo controls (payer replies)"
-  goto g2 "Continues in: Authorizations › New case › Intake › Start with a referral or patient"
+  goto g2 "Continues in: Authorizations › New Case › Intake › Start with a referral or patient"
 goto g3 "Continues in: Global shell › Top bar › Notifications › What creates a notification"
 endgroup
 

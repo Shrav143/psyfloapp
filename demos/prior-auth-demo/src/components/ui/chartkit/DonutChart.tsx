@@ -100,10 +100,10 @@ export function DonutChart(p: DonutChartProps) {
                   )}
                 </svg>
                 <span className="min-w-0 flex-1 text-left">
-                  <b className="block text-[13.5px] font-semibold">{x.label}</b>
+                  <b className="block text-[13px] font-semibold">{x.label}</b>
                   {x.note ? <span className="block text-[12px] text-muted">{x.note}</span> : null}
                 </span>
-                <span className="text-right text-[13.5px] tabular-nums">
+                <span className="text-right text-[13px] tabular-nums">
                   <b>{x.value.toLocaleString("en-US")}</b>
                   <span className="ml-1.5 text-muted">{Math.round((x.value / total) * 100)}%</span>
                 </span>

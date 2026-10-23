@@ -30,8 +30,8 @@ export function TrendCard({ board, onOpen }: { board: Board; onOpen: (q: CaseQue
     <Card data-testid="trend-card">
       <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 border-b border-line px-6 pt-5 pb-[18px]">
         <div className="min-w-[220px] flex-1">
-          <h3 className="font-serif text-[21px] font-semibold leading-tight tracking-tight">Approvals and denials by month</h3>
-          <p className="mt-[3px] text-[13.5px] text-muted">{`${words ? `${words}. ` : ""}Twelve months to 20 Oct 2026. Click a month to see its cases.`}</p>
+          <h3 className="font-serif text-[18px] font-semibold leading-tight tracking-tight">Approvals and denials by month</h3>
+          <p className="mt-[3px] text-[13px] text-muted">{`${words ? `${words}. ` : ""}Twelve months to 20 Oct 2026. Click a month to see its cases.`}</p>
         </div>
         <Segmented
           items={[

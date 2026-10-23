@@ -21,7 +21,7 @@ export function ProcessSection({ board, workload, scopeWords, onOpen }: { board:
     <div className="flex flex-col gap-8 px-6 py-5" data-testid="process">
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
         <div>
-          <h4 className="text-[15px] font-semibold">Retro-authorizations by month</h4>
+          <h4 className="text-[14px] font-semibold">Retro-authorizations by month</h4>
           <p className="mb-2 text-[13px] text-muted">Requests made after care began, a sign that an authorization was missed. Click a month for its cases.</p>
           <ColumnChart
             ariaLabel="Retrospective requests by month"
@@ -37,7 +37,7 @@ export function ProcessSection({ board, workload, scopeWords, onOpen }: { board:
           />
         </div>
         <div>
-          <h4 className="text-[15px] font-semibold">Referral to authorization</h4>
+          <h4 className="text-[14px] font-semibold">Referral to authorization</h4>
           <p className="mb-2 text-[13px] text-muted">Average days from referral to the payer's decision on first requests.</p>
           <TrendChart
             ariaLabel="Days from referral to authorization, by month"
@@ -54,7 +54,7 @@ export function ProcessSection({ board, workload, scopeWords, onOpen }: { board:
       </div>
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
         <div>
-          <h4 className="text-[15px] font-semibold">Workload: decisions by month</h4>
+          <h4 className="text-[14px] font-semibold">Workload: decisions by month</h4>
           <p className="mb-2 text-[13px] text-muted">How many requests the payers decided each month, by outcome.</p>
           <ColumnChart
             ariaLabel="Decisions by month and outcome"
@@ -74,7 +74,7 @@ export function ProcessSection({ board, workload, scopeWords, onOpen }: { board:
           />
         </div>
         <div>
-          <h4 className="text-[15px] font-semibold">Peer-to-peer calls and appeals</h4>
+          <h4 className="text-[14px] font-semibold">Peer-to-peer calls and appeals</h4>
           <p className="mb-2 text-[13px] text-muted">How the {fmt(p.denials)} denials in the period were challenged and what came of it.</p>
           <StackedHBars
             ariaLabel="Peer-to-peer calls and appeals"
@@ -96,13 +96,13 @@ export function ProcessSection({ board, workload, scopeWords, onOpen }: { board:
             <div className="text-[13px] font-semibold">Requests on the Dashboard right now</div>
             <div className="mt-2 flex items-end gap-10">
               <div>
-                <div className="text-[30px] leading-none font-semibold" data-testid="workload-handled">
+                <div className="text-[24px] leading-none font-semibold" data-testid="workload-handled">
                   {workload.handled}
                 </div>
                 <div className="mt-1 text-[13px] text-muted">handled</div>
               </div>
               <div>
-                <div className="text-[30px] leading-none font-semibold" data-testid="workload-open">
+                <div className="text-[24px] leading-none font-semibold" data-testid="workload-open">
                   {workload.open}
                 </div>
                 <div className="mt-1 text-[13px] text-muted">still open</div>

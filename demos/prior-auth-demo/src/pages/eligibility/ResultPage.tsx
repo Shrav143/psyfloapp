@@ -135,8 +135,8 @@ export default function ResultPage() {
       ) : null}
       <section aria-label="More about this check" className="flex flex-wrap items-center justify-between gap-4 rounded-[20px] border border-edge bg-white px-6 py-4">
         <div className="min-w-[240px] flex-1">
-          <h2 className="font-serif text-[19px] font-semibold leading-tight">Payment checks and how this was checked</h2>
-          <p className="mt-[3px] text-[13.5px] text-muted">{checksSummary(result)}</p>
+          <h2 className="font-serif text-[18px] font-semibold leading-tight">Payment checks and how this was checked</h2>
+          <p className="mt-[3px] text-[13px] text-muted">{checksSummary(result)}</p>
         </div>
         <Button icon={PanelRightOpen} onClick={() => setPanel(true)}>
           View full verification details

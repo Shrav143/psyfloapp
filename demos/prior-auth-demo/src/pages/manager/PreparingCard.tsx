@@ -57,7 +57,7 @@ export function PreparingCard({ filters, onClear }: { filters: ManagerFilters; o
     <div className="relative">
       <Disclosure title="Being prepared" summary={summary}>
         <div className="flex flex-wrap items-center justify-between gap-3 px-6 pt-4">
-          <p className="text-[13.5px] text-muted">Most urgent first. Each case moves through eight steps; the agents do all but Ask and Sign.</p>
+          <p className="text-[13px] text-muted">Most urgent first. Each case moves through eight steps; the agents do all but Ask and Sign.</p>
           <div className="flex flex-wrap items-center gap-3">
             <Link to={paths.authorizations()} className="inline-flex items-center gap-1 text-[13px] font-semibold text-forest hover:underline min-[900px]:hidden">
               Open in Authorizations<ArrowUpRight size={13} className="ico" aria-hidden="true" />

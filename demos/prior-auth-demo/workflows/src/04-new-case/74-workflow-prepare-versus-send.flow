@@ -1,6 +1,6 @@
-title: Authorizations › New case › Workflow › Prepare versus send, and sites
+title: Authorizations › New Case › Workflow › Prepare versus send, and sites
 route: /authorizations/new/:draftId (Review & submit)
-intro: A workflow can contain steps that prepare a payer-facing action (a portal packet, a fax packet, a call script) and steps that would transmit one. New case never runs a payer-facing step on its own. It prepares, and the one send is the existing 'Sign and send to payer (demo)', which a clinician must sign and which only simulates the send. The history says which steps prepared and that nothing was transmitted. Workflows and their traces are clinic-wide; the case, its history and the people who can open it stay at the case's site.
+intro: A workflow can contain steps that prepare a payer-facing action (a portal packet, a fax packet, a call script) and steps that would transmit one. New Case never runs a payer-facing step on its own. It prepares, and the one send is the existing 'Sign and send to payer (demo)', which a clinician must sign and which only simulates the send. The history says which steps prepared and that nothing was transmitted. Workflows and their traces are clinic-wide; the case, its history and the people who can open it stay at the case's site.
 dir: TD
 ---
 start s1 "The workflow has steps that prepare a portal, fax or phone action"
@@ -16,8 +16,8 @@ screen sc2 "Jordan Perez or Alex Morgan\nBoth sites; the case is at its own site
 screen sc3 "Dr. Rivera (Site A only)\nOnly Site A cases and their workflow lines\nThe same clinic-wide workflows as everyone"
 screen sc4 "Sam Okafor (Site B only)\nOnly Site B cases\nA Site A case link shows the out-of-site card, with no patient"
 end e2 "The send stays a person's, simulated, and recorded"
-goto g1 "Continues in: Authorizations › New case › Review & submit › Sign and send to payer"
-goto g2 "Continues in: Authorizations › New case › Sites and scope"
+goto g1 "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer"
+goto g2 "Continues in: Authorizations › New Case › Sites and scope"
 
 s1 --> p1 --> sc1 --> d1
 d1 -->|No| e1

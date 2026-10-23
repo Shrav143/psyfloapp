@@ -1,6 +1,6 @@
 title: Payers › Add a payer
 route: /payers
-intro: The 'Add a payer' modal. Besides the name it asks for the organization, the product and the state, which place the payer on the landing page (and in its State and Insurance type filters). A new payer gets a full starter set (rules and document lists, and the earlier process kept as a migrated workflow) and benchmark figures; the agents learn the rest from decisions. Nothing is saved until 'Add payer' passes its four checks, and a name that another payer already has is refused. The new payer is also offered wherever New case picks a payer.
+intro: The 'Add a payer' modal. Besides the name it asks for the organization, the product and the state, which place the payer on the landing page (and in its State and Insurance type filters). A new payer gets a full starter set (rules and document lists, and the earlier process kept as a migrated workflow) and benchmark figures; the agents learn the rest from decisions. Nothing is saved until 'Add payer' passes its four checks, and a name that another payer already has is refused. The new payer is also offered wherever New Case picks a payer.
 dir: TD
 ---
 start s1 "Click 'Add a payer'\ntop right of the landing page"
@@ -41,7 +41,7 @@ click cesc "Press Escape, click the X\nor click the dimmed area\nEscape with a m
 endx x1 "Modal closes\nNothing was added"
 end e "New payer is ready to edit"
 goto g1 "Continues in: Payers › Workflow Builder › Read a workflow"
-goto g2 "Continues in: Authorizations › New case › Intake › Patient, insurance and request rows"
+goto g2 "Continues in: Authorizations › New Case › Intake › Patient, insurance and request rows"
 
 s1 --> m --> i1 --> iO --> iP --> iS --> i3 --> i2 --> i4 --> i5 --> ca
 i1 -.-> clr

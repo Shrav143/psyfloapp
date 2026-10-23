@@ -85,7 +85,7 @@ export function TrendChart(p: TrendChartProps) {
 
   return (
     <ChartFrame id={id} summary={`${p.summary} Use the left and right arrow keys to move between months${p.onPoint ? " and Enter to list the cases of the month" : ""}.`} table={p.table} hint={p.hint}>
-      <ul className="mb-2 flex flex-wrap items-center gap-x-5 gap-y-1 text-[12.5px] text-ink2" aria-label="Legend">
+      <ul className="mb-2 flex flex-wrap items-center gap-x-5 gap-y-1 text-[12px] text-ink2" aria-label="Legend">
         {p.series.map((s) => (
           <li key={s.key} className="flex items-center gap-2">
             <svg width="22" height="10" aria-hidden="true">

@@ -54,7 +54,7 @@ export function RuleDrawer({ rule, group, onClose, onSave }: { rule: PayerRule; 
           <Field label="What it says"><TextArea value={draft.description} disabled={fixed} onChange={(e) => set({ description: e.target.value })} className="min-h-[64px]" placeholder="One or two plain sentences." /></Field>
           {held.length || rest.length ? (
             <section aria-label="Structured values" className="flex flex-col gap-3.5 rounded-2xl border border-edge bg-white p-4">
-              <h3 className="font-serif text-[17px] font-semibold">Structured values</h3>
+              <h3 className="font-serif text-[16px] font-semibold">Structured values</h3>
               {held.map((f) => <ValueField key={f.key} f={f} value={draft.values[f.key]} onChange={(v) => setValue(f.key, v)} />)}
               {rest.length ? (
                 <Disclosure variant="plain" title={<span className="text-[14px]">Other values for this group</span>} summary={rest.map((f) => f.label).join(", ")}>

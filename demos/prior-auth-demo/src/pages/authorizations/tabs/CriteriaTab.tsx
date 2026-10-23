@@ -37,7 +37,7 @@ export function CriteriaTab({ ctx }: { ctx: CaseCtx }) {
         <Fact label="Approved as asked" value={<span className="text-forest">{payer.approvedAsAsked}%</span>} note={`${payer.shortName}, ${detail.levelLabel}, last 90 days`} />
         <Fact label="Chart-to-criteria match" value={<span className="text-forest" data-testid="match">{rows.length} / {rows.length}</span>} note="covered in the draft" />
         <Fact label="Time to read the policy" value={<span className="text-forest">&lt; 10 s</span>} note="by hand, usually over an hour" />
-        <Fact label="Required tool" value={<span className="text-[17px] leading-snug">{detail.tool}</span>} note="attached to the packet" />
+        <Fact label="Required tool" value={<span className="text-[16px] leading-snug">{detail.tool}</span>} note="attached to the packet" />
       </div>
 
       <Card>
@@ -73,7 +73,7 @@ export function CriteriaTab({ ctx }: { ctx: CaseCtx }) {
                   )}
                 </Td>
                 <Td className="align-top"><EvidenceChip evidence={r.source} detail={detail} /></Td>
-                <Td className="min-w-[240px] align-top text-[13.5px] text-ink2">{r.note}</Td>
+                <Td className="min-w-[240px] align-top text-[13px] text-ink2">{r.note}</Td>
               </Tr>
             ))}
           </tbody>

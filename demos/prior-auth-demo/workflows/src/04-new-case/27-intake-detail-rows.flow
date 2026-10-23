@@ -1,4 +1,4 @@
-title: Authorizations › New case › Intake › Patient, insurance and request rows
+title: Authorizations › New Case › Intake › Patient, insurance and request rows
 route: /authorizations/new/:draftId (Intake, the rows)
 intro: Each row says where its value came from, and its button opens a small editor under the row. Edits go straight into the draft; nothing needs saving. A referral, a chart pulled from EMR Connect, a file Reader read, or a patient who is known fills them in, and every one stays editable. The rows are the same for an initial authorization and, without the request type and start date, for a retroactive one.
 dir: TD
@@ -38,9 +38,9 @@ decision dRan "Had the agents already run?"
 toast tStale "'Records changed after the agents ran'\n'Their work was cleared. The agents check again when you continue.'"
 process pVerify "A changed payer, level of care, member ID or date makes the check on Eligibility & Benefits old or for another payer\nStep 2 shows it, and Verify runs again"
 process pDocs "The payer and the level of care decide the document list on Clinical documentation"
-goto gDup "Continues in: Authorizations › New case › Intake › Possible duplicate"
-goto gElig "Continues in: Authorizations › New case › Eligibility & Benefits › Initial authorization"
-goto gDoc "Continues in: Authorizations › New case › Clinical documentation › The checklist and Continue"
+goto gDup "Continues in: Authorizations › New Case › Intake › Possible duplicate"
+goto gElig "Continues in: Authorizations › New Case › Eligibility & Benefits › Initial authorization"
+goto gDoc "Continues in: Authorizations › New Case › Clinical documentation › The checklist and Continue"
 
 s1 --> sc --> dSrc
 dSrc -->|Read by Reader| r1

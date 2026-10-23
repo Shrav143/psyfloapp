@@ -41,8 +41,8 @@ export function FileDrop({ onFiles, sampleName, hint = "Drag and drop files here
         {variant === "panel" ? (
           <>
             <span className="grid h-12 w-12 place-items-center rounded-full bg-white text-forest"><UploadCloud size={24} className="ico" /></span>
-            {title ? <span className="font-serif text-[20px] font-semibold text-ink">{title}</span> : null}
-            <span className="max-w-[560px] text-[13.5px]">{hint}</span>
+            {title ? <span className="font-serif text-[18px] font-semibold text-ink">{title}</span> : null}
+            <span className="max-w-[560px] text-[13px]">{hint}</span>
           </>
         ) : (
           <>

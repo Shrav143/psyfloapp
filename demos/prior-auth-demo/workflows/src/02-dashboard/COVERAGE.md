@@ -65,7 +65,7 @@ The page, top to bottom: a small title and one quiet line (with 'Check all now' 
 | A chip sets the Status filter, writes `?stage=` and shows in the Status menu | 50, 20 |
 | Counts follow Payer, Program and Request type and the sites in view, never Status | 50, 20 |
 | 'Decided today' (6 approved, 2 denied) is not a chip: it is in the Status menu and in `?stage=decided` | 50, 20 |
-| Cases saved in New case count under Awaiting sign-off | 50, 60 |
+| Cases saved in New Case count under Awaiting sign-off | 50, 60 |
 | 'Active' and 'Renewal due' (links with an arrow to Case Manager, counts of ledger cases, not table rows) | 51 |
 | Case Manager opens with `?tab=cases&show=active` or `show=renewal`; the row count there equals the chip; 'Clear filters' drops `show` | 51 |
 | Active and Renewal due follow the sites in view | 51, 65 |
@@ -76,11 +76,11 @@ The page, top to bottom: a small title and one quiet line (with 'Check all now' 
 |---|---|
 | Card title and 'Suggested by FLO from today's demo data' (label only) | 13 |
 | A row: one sentence and a quiet line (who, what, when); terracotta only inside 6 hours or past | 13 |
-| 'Review and sign' (Review and sign R-0988) and 'Answer Scribe' / 'Answer Packet': open the draft in New case at the step that fits | 13 |
+| 'Review and sign' (Review and sign R-0988) and 'Answer Scribe' / 'Answer Packet': open the draft in New Case at the step that fits | 13 |
 | 'Review answer' (a payer's question) and 'Open request' (chase a late payer) and 'Approve write-back': open the request drawer | 13 |
 | 'Open denial' (peer-to-peer in 36 h): opens the denial in Denial Intelligence | 13 |
-| 'Start renewal': opens New case as a Reauthorization for that patient | 13 |
-| 'Open Active cases' (cases saved in New case that wait for a person) | 13 |
+| 'Start renewal': opens New Case as a Reauthorization for that patient | 13 |
+| 'Open Active cases' (cases saved in New Case that wait for a person) | 13 |
 | '2 more need you today.' and 'Show them in the table' (turns 'Needs me today' on and scrolls to the table) | 13 |
 | Empty card 'Nothing needs you right now.' | 13 |
 | What can be on the list, the order, the five-row limit, the CMS-past rule | 14 |
@@ -102,7 +102,7 @@ The page, top to bottom: a small title and one quiet line (with 'Check all now' 
 | Every heading sorts (click, Enter, Space; ascending, descending, off) | 62 |
 | Row click and the case ID button (one history entry) | 60 |
 | 'Show 8 more', '32 not shown', 'Showing 8 of 40', paging reset | 60 |
-| Line 'N more are being prepared in New case' and 'Open Active cases' | 60 |
+| Line 'N more are being prepared in New Case' and 'Open Active cases' | 60 |
 | Case cell: ID, initials and age | 61 |
 | Units '48 → 10' and Window 'Sep 22 – Oct 20' from the Case Manager ledger; a quiet dash with no approval | 61 |
 | Status words, Next action verbs, Owner (You, an agent, the payer) | 61 |
@@ -139,7 +139,7 @@ The page, top to bottom: a small title and one quiet line (with 'Check all now' 
 - Window resizing: the Lifecycle chips wrap (the two ledger links together) under about 1400 px, the table's payer, status and next-action text wraps under 1400 px, and under about 1100 px the table scrolls inside its card; the page itself never scrolls sideways.
 - The FLO panel and the notification bell are Global shell. Their links into this page are shown only as entry points.
 - 'No events yet.' in History: no request has an empty history, so it cannot be reached (noted in 70).
-- Case Manager (what its tracker shows after `show=`), New case, Denial Intelligence and the case page: only `goto` nodes.
+- Case Manager (what its tracker shows after `show=`), New Case, Denial Intelligence and the case page: only `goto` nodes.
 - The wording of the amount in the Window column for IOP: units are turned into days at the demo's own rate (24 units cover 14 days). It is a derived demo date, not a payer fact.
 
 ## Gaps found earlier and now fixed
@@ -147,7 +147,7 @@ The page, top to bottom: a small title and one quiet line (with 'Check all now' 
 - Clicking the case ID pushed two history entries. It now pushes one (60).
 - The toast after a demo reply read 'Demo: payer payer received it'. It now names the payer, for example 'Demo: Cardinal approved it' (85, 86).
 - 'Payer received it' after 'Approves' left the request counted in Decided today. A request now only moves forward, so only the replies still ahead of it are offered (85, 86).
-- A case being prepared in New case never counted under Preparing (50, 11).
+- A case being prepared in New Case never counted under Preparing (50, 11).
 - The write-back box ignored the EMR Connect switch (72, 73).
 - 'Check all now' ignored the Settings pause (12).
 - Escape with a pop-up open in the drawer closed both layers. It now closes one layer at a time (71, 73, 80).

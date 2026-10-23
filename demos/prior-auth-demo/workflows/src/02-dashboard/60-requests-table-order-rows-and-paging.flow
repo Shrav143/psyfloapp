@@ -30,7 +30,7 @@ click c4 "Click 'Show 8 more'"
 process p5 "Eight more rows are added\nWith fewer than 8 left the button shows that number, e.g. 'Show 5 more'"
 end e1 "All rows shown\n'Showing 40 of 40'; no button"
 process p6 "Changing any menu, chip, toggle or the sort goes back to the first 8 rows"
-screen sc4 "With cases saved in New case that have no row yet\nA line under the table with all statuses or Awaiting sign-off: '2 more are being prepared in New case.' and 'Open Active cases'"
+screen sc4 "With cases saved in New Case that have no row yet\nA line under the table with all statuses or Awaiting sign-off: '2 more are being prepared in New Case.' and 'Open Active cases'"
 goto g6 "Continues in: Case Manager › Active cases › Being prepared card"
 
 s1 --> sc1 --> sc2 --> p1 --> p2 --> d0
