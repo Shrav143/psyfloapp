@@ -24,20 +24,23 @@ flowchart TD
   who@{ shape: rect, label: "<b>Line under it: '{viewer} · Tue 10:42 am · Reason: ...'</b><br/>The name is the person viewing when the edit was saved (Jordan Perez at the start; Dr. Rivera, Alex Morgan or Sam Okafor after 'Viewing as')" }
   ba@{ shape: curv-trap, label: "<b>Two boxes with an arrow</b><br/>Red 'Before' (or 'Nothing' for an addition)<br/>Green 'After' (or 'Removed' for a removal)" }
   subgraph gA ["Where entries come from (area chip)"]
-  a1@{ shape: cyl, label: "<b>Workflow</b><br/>Save workflow, Accept proposal" }
-  a2@{ shape: cyl, label: "<b>Rules</b><br/>Save a rule" }
+  a1@{ shape: cyl, label: "<b>Workflow</b><br/>Save, publish, archive or restore a workflow, accept a suggestion" }
+  a2@{ shape: cyl, label: "<b>Rules</b><br/>Save, add, verify or archive a rule" }
   a3@{ shape: cyl, label: "<b>Documents</b><br/>Save a document list,<br/>and documents added by a payer change" }
   a4@{ shape: cyl, label: "<b>Caller instructions</b><br/>Save the script" }
   a5@{ shape: cyl, label: "<b>Payer details</b><br/>Edit payer, Add a payer" }
   end
   cnt@{ shape: rect, label: "<b>Header button count 'Edit log (3)'</b><br/>counts entries for this payer only<br/>Each changed field is its own entry" }
-  ro@{ shape: rect, label: "<b>Read only</b><br/>No search, filter, revert or export" }
+  ro@{ shape: rect, label: "<b>Read only</b><br/>No search, revert or export" }
+  fl@{ shape: trap-t, label: "<b>Click an area button</b><br/>Example: 'Workflow 2'" }
+  flp@{ shape: rect, label: "<b>Only that area shows</b><br/>Every area has a count<br/>An area with none reads 'No Rules edits'" }
   cc@{ shape: trap-t, label: "<b>Click the X ('Close'),</b><br/>press Escape or click the dimmed area" }
   e1@{ shape: stadium, label: "<b>Drawer closes</b><br/>Page underneath unchanged" }
-  g1@{ shape: subproc, label: "Continues in: Payers › Process › Save the workflow" }
-  g2@{ shape: subproc, label: "Continues in: Payers › Rules › Edit a rule" }
-  g3@{ shape: subproc, label: "Continues in: Payers › Documents › Edit the list" }
+  g1@{ shape: subproc, label: "Continues in: Payers › Workflow Builder › Save a draft and publish" }
+  g2@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Edit a rule" }
+  g3@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Edit the document list" }
   s1 --> dr --> any
+  dr --> fl --> flp --> ent
   any -->|"No"| em --> cc
   any -->|"Yes"| ent --> who --> ba --> cc
   ent --> cnt
@@ -55,9 +58,9 @@ flowchart TD
   class dr k_overlay
   class any k_decision
   class em,ent,ba k_screen
-  class who,cnt,ro k_process
+  class who,cnt,ro,flp k_process
   class a1,a2,a3,a4,a5 k_store
-  class cc k_click
+  class fl,cc k_click
   class e1 k_end
   class g1,g2,g3 k_goto
   style gA fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

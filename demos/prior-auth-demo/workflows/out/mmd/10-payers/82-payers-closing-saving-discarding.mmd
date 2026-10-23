@@ -17,7 +17,7 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Any Payers pop-up is open" }
-  ov@{ shape: win-pane, label: "<b>Ten pop-ups</b><br/>Add a payer, Edit payer details, Edit log, Edit workflow,<br/>Save the workflow?, Edit the instructions for Caller,<br/>Edit a rule, Edit what a payer wants, Acknowledge this change?,<br/>Update drafts?, plus the menus inside them" }
+  ov@{ shape: win-pane, label: "<b>Pop-ups and panels</b><br/>Add a payer, Edit payer details, Edit log (drawer),<br/>Edit rule (drawer), Save the rule?, Mark as verified, Archive a rule?,<br/>Edit what a payer wants, Acknowledge this change?, Update drafts?,<br/>Restore as draft?, the workflow version panel, plus the menus inside them" }
   subgraph gX ["Ways to close"]
   x1@{ shape: trap-t, label: "Click 'Cancel'" }
   x2@{ shape: trap-t, label: "Click the X ('Close')" }
@@ -28,14 +28,14 @@ flowchart TD
   dk@{ shape: diam, label: "Which pop-up is it?" }
   pl@{ shape: rect, label: "<b>Plain pop-up (everything except the cases below)</b><br/>Closes. Typed text and picks are discarded<br/>Nothing is saved or logged" }
   rd@{ shape: rect, label: "<b>Edit log</b><br/>Read only, nothing to save or discard" }
-  sv@{ shape: rect, label: "<b>'Save the workflow?' over the Edit workflow drawer</b><br/>Cancel, X, Escape or the dimmed area:<br/>only this reason modal closes" }
-  dr@{ shape: rect, label: "<b>The drawer is still open with every edit in it</b><br/>A second Escape, Cancel, X or dimmed area closes it:<br/>every unsaved workflow edit is lost, no 'are you sure'" }
+  sv@{ shape: rect, label: "<b>'Save the rule?' over the Edit rule drawer</b><br/>Cancel, X, Escape or the dimmed area:<br/>only this reason modal closes" }
+  dr@{ shape: rect, label: "<b>The drawer is still open with every edit in it</b><br/>A second Escape, Cancel, X or dimmed area closes it:<br/>every unsaved rule edit is lost, no 'are you sure'" }
   bz@{ shape: rect, label: "<b>'Update drafts?' while the agents work (about 3 seconds)</b><br/>Cancel is greyed, Escape, X and dimmed area do nothing<br/>Wait for it to finish" }
-  mn@{ shape: rect, label: "<b>A menu open inside a pop-up</b><br/>(Plan type, Group, Reached by, Level of care, Case, step type)<br/>Escape closes only the menu<br/>The next Escape closes the pop-up" }
+  mn@{ shape: rect, label: "<b>A menu open inside a pop-up</b><br/>(Plan type, Insurance type, State, Reached by, Level of care, Case, Workflow)<br/>Escape closes only the menu<br/>The next Escape closes the pop-up" }
   subgraph gS ["Ways to save (the primary button)"]
   sa@{ shape: rect, label: "<b>'Save and log the edit' needs a reason</b><br/>Empty reason: 'Add a reason. It goes in the edit log.'<br/>'Edit payer details' also needs a listed 'Reached by'" }
   sb@{ shape: rect, label: "<b>'Add payer' needs a name no other payer has,</b><br/>a way to reach and a program" }
-  sc@{ shape: rect, label: "<b>'Acknowledge change' and 'Update N drafts' are confirm buttons</b><br/>they need no typing" }
+  sc@{ shape: rect, label: "<b>'Acknowledge change' and 'Update N drafts' are confirm buttons;</b><br/>'Mark as verified' needs a source and a date<br/>they need no typing" }
   sd@{ shape: rect, label: "<b>If nothing differs from what is saved:</b><br/>'Nothing changed' (or 'Nothing to save' in the workflow drawer)" }
   end
   sv1@{ shape: cyl, label: "<b>Saved: the change is in force for new drafts</b><br/>One edit log entry per change<br/>One bell notification" }
@@ -51,7 +51,7 @@ flowchart TD
   cl --> dk
   dk -->|"Plain"| pl --> x0
   dk -->|"Edit log"| rd --> x0
-  dk -->|"Save the workflow?"| sv --> dr --> x0
+  dk -->|"Save the rule?"| sv --> dr --> x0
   dk -->|"Update drafts?, busy"| bz --> e1
   dk -->|"Menu open"| mn --> x0
   ov --> sa --> sv1

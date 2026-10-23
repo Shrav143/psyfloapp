@@ -21,6 +21,7 @@ export function DocumentsGroup({ id, name, cfg, startProgram = "RES" }: { id: st
         <span className="text-[13px] font-medium text-ink2">Level of care</span>
         <Dropdown value={program} options={OPTIONS} onChange={setProgram} ariaLabel="Level of care" menuWidth={190} />
         <Button size="sm" variant="ghost" onClick={() => setEditing(true)}>Edit list</Button>
+        <span className="text-xs text-muted">Demo sample lists, Unverified. New case asks for what is listed here.</span>
       </div>
       <Disclosure title={`What ${name} wants for ${PROGRAM_LABEL[program]}`} summary={summary}>
         <ol>

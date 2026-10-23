@@ -3,7 +3,8 @@ import { ArrowUpRight, ShieldAlert } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button, Drawer, Pill } from "@/components/ui";
 import { PROGRAM_LABEL } from "@/data/types";
-import { REQUEST_TYPE_LABEL, VERIFICATION_LABEL, type PayerRule, type RunResult, type WfEdge, type WfNode, type WorkflowStatus } from "@/data/workflow/types";
+import { DEFAULT_ID_PREFIX, DEFAULT_NOTE, DEFAULT_WORKFLOW_FOR, isDefaultWorkflowId } from "@/data/workflow/default";
+import { REQUEST_TYPE_LABEL, VERIFICATION_LABEL, type PayerRule, type RequestType, type RunResult, type WfEdge, type WfNode, type WorkflowStatus } from "@/data/workflow/types";
 import { paths } from "@/routes";
 import { stamp } from "@/lib/time";
 import { stateName } from "../lib/states";
@@ -26,9 +27,12 @@ export interface WorkflowViewPanelProps {
 }
 
 export function WorkflowViewPanel({ workflowId, version, trace, open, onClose }: WorkflowViewPanelProps) {
-  const live = useLiveWorkflow(workflowId);
+  const saved = useLiveWorkflow(workflowId);
+  // The labelled default lives in the app, not in a payer's saved workflows. It draws the same way and says what it is.
+  const isDefault = !saved && isDefaultWorkflowId(workflowId);
+  const live = saved ?? (isDefault ? DEFAULT_WORKFLOW_FOR(workflowId.slice(DEFAULT_ID_PREFIX.length) as RequestType) : undefined);
   const versions = useVersions(workflowId);
-  const rules = usePayerRules(live?.payerId ?? "");
+  const rules = usePayerRules(isDefault ? "" : live?.payerId ?? "");
   const [picked, setPicked] = useState<string | null>(null);
 
   const snap = version !== undefined ? versions.find((v) => v.version === version) : undefined;
@@ -56,8 +60,8 @@ export function WorkflowViewPanel({ workflowId, version, trace, open, onClose }:
       onClose={onClose}
       width={860}
       title={meta?.name ?? "Workflow"}
-      subtitle={meta ? <span className="flex flex-wrap items-center gap-2">{status ? <Pill tone={STATUS_TONE[status]} dot>{STATUS_WORD[status]}</Pill> : null}<span>Version {shownVersion}</span><span>·</span><span>{datesOf(meta.effectiveFrom, meta.effectiveTo)}</span></span> : "This workflow is not in the library."}
-      footer={meta && live ? <div className="flex justify-end"><Link to={`${paths.payers(live.payerId, "builder")}&workflow=${live.id}`} onClick={onClose}><Button icon={ArrowUpRight}>Open in Workflow Builder</Button></Link></div> : undefined}
+      subtitle={meta ? (isDefault ? <span className="flex flex-wrap items-center gap-2"><Pill tone="neutral">Illustrative default</Pill><span>{DEFAULT_NOTE}</span></span> : <span className="flex flex-wrap items-center gap-2">{status ? <Pill tone={STATUS_TONE[status]} dot>{STATUS_WORD[status]}</Pill> : null}<span>Version {shownVersion}</span><span>·</span><span>{datesOf(meta.effectiveFrom, meta.effectiveTo)}</span></span>) : "This workflow is not in the library."}
+      footer={meta && live && !isDefault ? <div className="flex justify-end"><Link to={`${paths.payers(live.payerId, "builder")}&workflow=${live.id}`} onClick={onClose}><Button icon={ArrowUpRight}>Open in Workflow Builder</Button></Link></div> : undefined}
     >
       {!meta ? (
         <p className="m-0 text-sm text-muted">The workflow this case followed has been removed from the library. The case keeps what it recorded.</p>

@@ -455,7 +455,7 @@ flowchart LR
   d3@{ shape: diam, label: "Contains 'cardinal' or 'approval rate'?" }
   a3@{ shape: hex, label: "<b>'Cardinal approved 63% as asked over the last 90 days, down 11 points. Historian links most of the drop to continued-stay evidence. Cardinal also published criteria version 2026.3, which affects 4 drafts you have not sent.'</b><br/>Fixed text" }
   l3@{ shape: trap-t, label: "Click 'Open Payers, Cardinal, Changes'" }
-  g3@{ shape: subproc, label: "Continues in: Payers › Changes › Read what changed" }
+  g3@{ shape: subproc, label: "Continues in: Payers › History & Changes › Read what changed" }
   d4@{ shape: diam, label: "Contains 'need', 'today' or 'first'?" }
   a4@{ shape: hex, label: "<b>'3 requests need you: R-1042, I-2207, P-1499. Start with this: Review and sign R-0988, review due in 3 h.' then one line each for the next four, e.g. 'Answer Scribe's question on R-1042, notice due in 5 h.'</b><br/>It is the same list as Do next on the Dashboard, so the two never disagree; counts and IDs are live, and a Site A viewer gets 'need you at Site A' and only Site A cases<br/>One muted line: 'This is the Do next list on the Dashboard, worked out from today's demo data.'<br/>Nothing waiting: 'Nothing needs you right now.' with 'Open Dashboard'" }
   l4@{ shape: trap-t, label: "Click 'Open Do next on the Dashboard'" }
@@ -554,7 +554,7 @@ flowchart TD
   n1@{ shape: stadium, label: "<b>Nothing to read: 'I did not find R-9999 among the cases you can see. (the same for a real case at the other site, e.g. I-2207 for Dr. Rivera)' or 'Tell me which payer, for example: What does Summit require?'</b><br/>The chips for the screen stay under it" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Case page › Recommended actions › The tab" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Case page › Ways in" }
-  g3@{ shape: subproc, label: "Continues in: Payers › Documents › Read the document list" }
+  g3@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Read the document list" }
   g4@{ shape: subproc, label: "Continues in: Case Manager › Reviews this week › The review drawer" }
   g5@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › What the page shows" }
   s1 --> d0
@@ -713,7 +713,7 @@ flowchart TD
   g1@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › An agent asks a question" }
   g3@{ shape: subproc, label: "Continues in: Denial Intelligence › Open a denial" }
-  g4@{ shape: subproc, label: "Continues in: Payers › Changes › Read what changed" }
+  g4@{ shape: subproc, label: "Continues in: Payers › History & Changes › Read what changed" }
   e0@{ shape: stadium, label: "Stays on the page" }
   c2@{ shape: trap-t, label: "Click 'Mark all read'" }
   st2@{ shape: cyl, label: "<b>Every notification in the list is saved as read</b><br/>The other site's stay unread for the people who can see them" }
@@ -1064,7 +1064,7 @@ flowchart LR
   g5@{ shape: subproc, label: "Continues in: Denial Intelligence › Open a denial" }
   c6@{ shape: trap-t, label: "Click '6  Payers: Cardinal, Changes'" }
   r6@{ shape: rect, label: "Go to /payers/cardinal?tab=changes" }
-  g6@{ shape: subproc, label: "Continues in: Payers › Changes › Read what changed" }
+  g6@{ shape: subproc, label: "Continues in: Payers › History & Changes › Read what changed" }
   c7@{ shape: trap-t, label: "Click '7  Case Manager: reviews this week'" }
   r7@{ shape: rect, label: "Go to /manager?tab=reviews" }
   g7@{ shape: subproc, label: "Continues in: Case Manager › Reviews this week › The list" }

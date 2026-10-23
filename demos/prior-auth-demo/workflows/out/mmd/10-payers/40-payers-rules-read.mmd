@@ -16,47 +16,58 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "Click the 'Rules' tab" }
-  tab@{ shape: curv-trap, label: "<b>Rules tab</b><br/>Banner if edits wait, then one card 'Rules the agents follow'<br/>with an info icon and four closed rules" }
-  dU@{ shape: diam, label: "<b>Edits saved but not yet</b><br/>applied to open drafts?" }
-  bU@{ shape: odd, label: "<b>'1 edit applies to new drafts only'</b><br/>with 'Update 2 drafts'<br/>Sent requests keep what they were sent with" }
-  gU@{ shape: subproc, label: "Continues in: Payers › Edits waiting › Update drafts" }
-  tip@{ shape: trap-t, label: "<b>Hover, focus or click the info icon</b><br/>(button 'About these rules')" }
-  tipt@{ shape: win-pane, label: "<b>'Open a rule to read it or edit it. New drafts use a saved edit at once.</b><br/>Sent requests keep what they were sent with. Click Update drafts to redraft open ones.<br/>These are demo rules, not verified against Summit's current policy.'" }
-  subgraph gC ["Four closed rules, each a button with aria-expanded"]
-  c1@{ shape: curv-trap, label: "<b>Submission windows</b><br/>'Notice within 24 hours of admission, and 2 more'  3 lines<br/>Notice differs by payer (72 hours for Harborview, by phone for Evergreen, by fax for Lakeshore)" }
-  c2@{ shape: curv-trap, label: "<b>Backdating</b><br/>'Summit does not backdate an authorization, and 2 more'  3 lines<br/>Beacon backdates within 2 business days, Evergreen up to 3 days with a call log,<br/>Lakeshore to the fax receipt date" }
-  c3@{ shape: curv-trap, label: "<b>No authorization needed</b><br/>'Individual therapy, and 3 more'  4 lines<br/>Shown with green ticks once open (Evergreen has no crisis line)" }
-  c4@{ shape: curv-trap, label: "<b>Peer-to-peer and appeals</b><br/>'Peer-to-peer call within 3 business days of a denial, and 3 more'  4 lines<br/>Cardinal 2 days. Evergreen ends in a state hearing" }
-  end
-  op@{ shape: trap-t, label: "Click a rule (or Enter, Space)" }
-  opn@{ shape: rect, label: "<b>Rule opens: its lines, then the foot line</b><br/>Click again to close" }
-  ub@{ shape: rect, label: "<b>Foot line</b><br/>'Used by Cadence and Scrubber · saved 10/12'" }
-  who@{ shape: rect, label: "<b>Used by</b><br/>Windows: Cadence, Navigator<br/>Backdating: Cadence, Scrubber<br/>No authorization needed: Verify, Criteria<br/>Peer-to-peer and appeals: Advocate, Cadence" }
-  cf@{ shape: rect, label: "<b>'Saved' is the date the rule was last saved in Psyflo</b><br/>Evergreen shows 10/09, the others 10/12<br/>It moves to today when a rule is edited<br/>It is never a date the payer confirmed anything" }
-  src@{ shape: rect, label: "<b>A rule edited here adds</b><br/>'Source: Edited in Psyflo by {viewer}' (the person viewing when it was saved; Jordan Perez at the start)<br/>A rule that was not edited shows no source of its own:<br/>the header says 'Source: Demo sample rules, version 2026.3'" }
-  noeff@{ shape: rect, label: "<b>New case reads the saved lines for the payer</b><br/>and level of care of each draft<br/>See the New case diagrams for what it checks" }
-  ce@{ shape: trap-t, label: "<b>Click 'Edit' inside an open rule</b><br/>(the button is named 'Edit Backdating' and so on)" }
-  gE@{ shape: subproc, label: "Continues in: Payers › Rules › Edit a rule" }
-  gF@{ shape: subproc, label: "Continues in: Payers › Configuration feeds the rest of the app" }
-  gP@{ shape: subproc, label: "Continues in: Payers › Header › Policy status and the demo-rules label" }
-  s1 --> tab --> dU
-  dU -->|"Yes"| bU --> gU
-  dU -->|"No"| c1
-  bU --> c1
-  tab -.-> tip --> tipt
-  c1 --> c2 --> c3 --> c4
-  c1 --> op --> opn --> ub --> who --> cf --> src
-  src --> ce --> gE
-  c4 -.-> noeff
-  noeff -.-> gF
-  src -.-> gP
+  s1@{ shape: stadium, label: "Click the 'Rules & Instructions' tab" }
+  pg@{ shape: curv-trap, label: "<b>Rules & Instructions</b><br/>Card 'Rules the agents and workflows follow' with an info icon<br/>'14 rules, 14 unverified. Saved in this browser.<br/>These are demo rules, not verified against Summit's current policy.'<br/>Banner above it if edits wait" }
+  grp@{ shape: curv-trap, label: "<b>Eight closed groups, in this order</b><br/>Authorization requirements, Submission windows,<br/>Backdating & retroactive requests, Clinical documentation,<br/>Concurrent review & reauthorization, Submission methods,<br/>Appeals & peer-to-peer, Agent instructions<br/>Each: title, one summary line, a count" }
+  sm@{ shape: rect, label: "<b>Summary is worked out live</b><br/>'1 requirement, 1 unverified.'<br/>'30 documents across 4 levels of care, and the chart checker. 2 rules, 2 unverified.'<br/>A group with nothing says 'No rules yet.'" }
+  og@{ shape: trap-t, label: "<b>Click a group (Enter or Space)</b><br/>It opens and closes" }
+  ar@{ shape: diam, label: "<b>Did the address ask for a group?</b><br/>?tab=documents, or ?group=..." }
+  ao@{ shape: rect, label: "That group is open and scrolled into view" }
+  rows@{ shape: curv-trap, label: "<b>Open group: one row per rule</b><br/>Title, a verification pill (Verified, Needs review, Unverified, Superseded),<br/>the first three values in one grey line, 'Used by 2 workflows'" }
+  orw@{ shape: trap-t, label: "Click a rule row" }
+  rd@{ shape: curv-trap, label: "<b>Open row</b><br/>What it says, then the structured values as readable fields<br/>(Authorization required, Exceptions, Window '2 business days',<br/>Historical-date rule, Documentation prerequisites, Service units,<br/>Review cadence, Portal, Phone, Fax, Fallback channel, Escalation path)" }
+  ins@{ shape: curv-trap, label: "<b>Instructions (optional free text)</b><br/>It adds to the values and never replaces them" }
+  chips@{ shape: curv-trap, label: "<b>Provenance chips</b><br/>Source: Demo sample rules, version 2026.3 (a link when the source has an address)<br/>Who and what it applies to, Effective from, Last verified or 'Never verified',<br/>Owner, Version, 'Saved with the payer's rules' for a read-through rule" }
+  un@{ shape: diam, label: "Unverified or Needs review?" }
+  un1@{ shape: odd, label: "<b>'Unverified. Workflows route this to manual review until a person</b><br/>marks it verified with a source.'" }
+  ar2@{ shape: rect, label: "<b>Archived (Superseded) rules sit at the bottom, struck through</b><br/>They keep their provenance and no buttons" }
+  btn@{ shape: curv-trap, label: "<b>Buttons in the row</b><br/>'Edit', 'Mark as verified' ('Verify again' when verified),<br/>'Archive' (not on a rule read through from the payer's rules)" }
+  dc@{ shape: rect, label: "<b>Clinical documentation also shows</b><br/>the per-level document lists and the chart checker (above its rules)<br/>The document lists have no separate rows: they are the lists" }
+  mt@{ shape: rect, label: "<b>Submission methods: the reach rule</b><br/>Portal, Phone, Fax, preferred and fallback channel, escalation path<br/>'Edit payer' still changes the reach lines in the header" }
+  ag@{ shape: rect, label: "<b>Agent instructions: Instructions for Caller (the saved script),</b><br/>the payer-wide instructions, and the combined-prompt preview" }
+  ad@{ shape: trap-t, label: "Click 'Add a rule' at the foot of a group" }
+  g1@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Edit a rule" }
+  g2@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Mark a rule as verified" }
+  g3@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Add or archive a rule" }
+  g4@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Read the document list" }
+  g5@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Agent instructions and the combined prompt" }
+  g6@{ shape: subproc, label: "Continues in: Payers › Workflow Builder › Read a workflow" }
+  wb@{ shape: rect, label: "<b>'Used by N workflows' counts workflows (published or draft)</b><br/>whose steps name the rule<br/>The builder's rule steps point at these rules; no policy text is copied into a step" }
+  e1@{ shape: stadium, label: "Person knows what each rule says, where it came from and whether anyone verified it" }
+  s1 --> pg --> grp --> sm
+  grp --> og --> ar
+  ar -->|"Yes"| ao --> rows
+  ar -->|"No"| rows
+  rows --> orw --> rd --> ins --> chips --> un
+  un -->|"Yes"| un1 --> btn
+  un -->|"No"| btn
+  rows -.-> ar2
+  og -.-> dc
+  og -.-> mt
+  og -.-> ag
+  btn --> e1
+  btn -->|"Edit"| g1
+  btn -->|"Mark as verified"| g2
+  btn -->|"Archive"| g3
+  rows --> ad --> g3
+  dc --> g4
+  ag --> g5
+  rows --> wb --> g6
   class s1 k_start
-  class tab,c1,c2,c3,c4 k_screen
-  class dU k_decision
-  class bU k_toast
-  class gU,gE,gF,gP k_goto
-  class tip,op,ce k_click
-  class tipt k_overlay
-  class opn,ub,who,cf,src,noeff k_process
-  style gC fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  class pg,grp,rows,rd,ins,chips,btn k_screen
+  class sm,ao,ar2,dc,mt,ag,wb k_process
+  class og,orw,ad k_click
+  class ar,un k_decision
+  class un1 k_toast
+  class g1,g2,g3,g4,g5,g6 k_goto
+  class e1 k_end

@@ -26,7 +26,7 @@ const MODULES = {
   "07-case-manager": ["Case Manager", "Active cases (being prepared, and the tracker) and Reviews this week."],
   "08-analytics": ["Analytics", "Owner view: approval and denial trends, the payer scorecard, payer by case-mix, denial reasons, case-level drill-down and the monthly report."],
   "09-emr-connect": ["EMR Connect", "Connected systems, sync, field mappings and fixes."],
-  "10-payers": ["Payers", "Each payer's process, rules, documents and the changes to acknowledge."],
+  "10-payers": ["Payers › Workspace", "The payers list with search and filters, a payer's workspace, Rules & Instructions with provenance, and History & Changes with the change to acknowledge, its impact and the workflow versions."],
   "12-payer-studio": ["Payers › Workflow Studio", "The visual builder: pick or start a workflow, drag nodes, connect branches, configure a node, validate, test with a fictional case, publish and keep versions."],
   "11-settings": ["Settings", "The sixteen agents, how much freedom each has, Pause all, and Sites and access."],
 };

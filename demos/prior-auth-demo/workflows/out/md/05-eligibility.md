@@ -1615,7 +1615,7 @@ flowchart TD
   n6@{ shape: trap-t, label: "Click 'Open Summit's rules'" }
   end
   note@{ shape: rect, label: "<b>Under the summary: 'Active coverage does not mean this service is covered.</b><br/>Check the benefits and the authorization requirement.'" }
-  g1@{ shape: subproc, label: "Continues in: Payers › Rules › Read the rules" }
+  g1@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Read the rules" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › Next actions" }
   g3@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › Which verdict and why" }
   s1 --> e0

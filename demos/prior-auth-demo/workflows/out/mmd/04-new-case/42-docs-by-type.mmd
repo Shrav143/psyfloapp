@@ -17,8 +17,8 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Open Clinical documentation</b><br/>The Authorization type decides the typical items" }
-  pReq@{ shape: rect, label: "<b>Required documents</b><br/>The list saved on Payers › Documents for this payer and level of care<br/>Summit Residential 3.5: 9 documents, 7 required<br/>No payer or level of care yet: only the referral and the diagnosis report" }
-  gPayers@{ shape: subproc, label: "Continues in: Payers › Documents › Edit the list" }
+  pReq@{ shape: rect, label: "<b>Required documents</b><br/>The list saved on Payers › Rules & Instructions › Clinical documentation for this payer and level of care<br/>Summit Residential 3.5: 9 documents, 7 required<br/>No payer or level of care yet: only the referral and the diagnosis report" }
+  gPayers@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Edit the document list" }
   dKind@{ shape: diam, label: "Which Authorization type?" }
   t1@{ shape: rect, label: "<b>Initial authorization</b><br/>No extra typical items<br/>The payer's list is the list" }
   t2@{ shape: rect, label: "<b>Concurrent review · 'Typical for a continued stay'</b><br/>Progress note since the last review<br/>Updated treatment plan<br/>Current ASAM reassessment<br/>Step-down or discharge plan" }

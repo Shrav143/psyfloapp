@@ -493,7 +493,7 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Payers › a change is acknowledged and 'Update drafts' is confirmed" }
   st1@{ shape: cyl, label: "<b>Payers records the update</b><br/>Which change, which payer, the IDs of the drafts and the demo-clock time" }
-  g1@{ shape: subproc, label: "Continues in: Payers › Changes › Update drafts after a change" }
+  g1@{ shape: subproc, label: "Continues in: Payers › History & Changes › Review and apply a change" }
   s2@{ shape: stadium, label: "Open Case Manager (Active cases tab)" }
   d1@{ shape: diam, label: "<b>Does an update list this case?</b><br/>(match on the case ID or draft ID, any letter case)" }
   p1@{ shape: rect, label: "The newest update for the case is used" }
@@ -1838,4 +1838,62 @@ flowchart TD
   class ch,c1,c2 k_click
   class e1 k_end
   style gPage fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+```
+
+## Case Manager › Ledger case › Workflow line and history
+
+A case that was prepared or reviewed in New case follows a payer workflow, pinned by version. The ledger case page shows one row, 'Workflow', in the case summary, and the lines the workflow wrote appear in its folded History. The tracker's quick view shows the same row and the three newest history lines. A case with no workflow shows neither. Workflows are clinic-wide; the case stays at its site.
+
+Route: `/authorizations/case/ID (a ledger case) and the Case Manager tracker quick view`
+
+A case that is also a request opens the Authorizations case page instead (its facts row has 'Workflow', and its History holds the same lines). Those are drawn in New case › Workflow › What the workflow adds to the history.
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Open a ledger case, or click a tracker row" }
+  d1@{ shape: diam, label: "<b>Is there a New case draft for this case with a workflow?</b><br/>Same case ID, or the patient's treatment episode" }
+  p1@{ shape: rect, label: "<b>No 'Workflow' row</b><br/>History is the ledger's own" }
+  sc1@{ shape: curv-trap, label: "<b>Card 'Case summary'</b><br/>Row 'Workflow': 'Initial Authorization, Residential SUD, version 3'<br/>or 'Default process for a concurrent review' with 'illustrative default'" }
+  d2@{ shape: diam, label: "Did the workflow write lines that are not on a request?" }
+  sc2@{ shape: curv-trap, label: "<b>'History' (folded)</b><br/>The ledger's lines plus the workflow's: 'Workflow applied: ...', 'Workflow ran to Eligibility & Benefits: ...', 'Waiting: ...'<br/>Each with its time" }
+  c1@{ shape: trap-t, label: "Click the 'History' header" }
+  p2@{ shape: rect, label: "The Timeline shows, oldest first; click again to fold it" }
+  sc3@{ shape: curv-trap, label: "<b>Tracker quick view (right-hand panel)</b><br/>Row 'Workflow' after 'Payer'<br/>'Latest history': the three newest lines, the workflow's among them" }
+  c2@{ shape: trap-t, label: "Click a tracker row" }
+  c3@{ shape: trap-t, label: "Click 'Open case'" }
+  p3@{ shape: rect, label: "Opens the case page: the ledger case, or the Authorizations case page for a request" }
+  e1@{ shape: stadium, label: "The workflow is read where the case is read" }
+  g1@{ shape: subproc, label: "Continues in: Case Manager › Ledger case › Open and read" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Workflow › What the workflow adds to the history" }
+  s1 --> d1
+  d1 -->|"No"| p1 --> e1
+  d1 -->|"Yes"| sc1 --> d2
+  d2 -->|"Yes"| sc2 --> c1 --> p2 --> e1
+  d2 -->|"No"| e1
+  s1 --> c2 --> sc3 --> c3 --> p3 --> g1
+  sc2 -.-> g2
+  class s1 k_start
+  class d1,d2 k_decision
+  class p1,p2,p3 k_process
+  class sc1,sc2,sc3 k_screen
+  class c1,c2,c3 k_click
+  class e1 k_end
+  class g1,g2 k_goto
 ```

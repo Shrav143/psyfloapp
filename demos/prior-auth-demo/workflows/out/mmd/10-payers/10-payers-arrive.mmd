@@ -17,74 +17,55 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Click 'Payers' in the sidebar</b><br/>under Connections" }
-  s2@{ shape: stadium, label: "<b>Open a link to one payer's Changes tab</b><br/>Bell notification, FLO answer, Demo menu" }
-  p1@{ shape: rect, label: "<b>Address is /payers</b><br/>No payer, no tab" }
-  p2@{ shape: rect, label: "Address is /payers/cardinal?tab=changes" }
-  d1@{ shape: diam, label: "Does the address name a known payer?" }
-  p3@{ shape: rect, label: "<b>Use the first payer in the list</b><br/>Summit Medicaid HMO" }
-  p4@{ shape: rect, label: "Use the payer named in the address" }
-  d2@{ shape: diam, label: "<b>Is ?tab one of process,</b><br/>rules, documents, changes?" }
-  p5@{ shape: rect, label: "Show the Process tab" }
-  p6@{ shape: rect, label: "Show the tab named in the address" }
-  pg@{ shape: curv-trap, label: "<b>Payers</b><br/>'N payers. The agents know how each one works.'<br/>Workflow, rules and documents for every payer. Every edit is logged with your reason." }
-  subgraph gL ["Left column (above the payer on a narrow screen)"]
-  list@{ shape: curv-trap, label: "<b>Payer list card</b><br/>'Payers', 'Search payers', one compact row per payer:<br/>name, plan type and programs, what it asks for, change mark" }
-  c_pick@{ shape: trap-t, label: "Click a payer in the list" }
-  c_search@{ shape: trap-t, label: "Type in 'Search payers'" }
-  end
-  subgraph gR ["Right column"]
-  head@{ shape: curv-trap, label: "<b>Payer header</b><br/>Name, 'Demo rules. Not verified...' label, plan line, 'Edit log', 'Edit'<br/>Plan type, programs, needs, notice and reach, policy status" }
-  tabs@{ shape: curv-trap, label: "<b>Tab bar</b><br/>Process, Rules, Documents, Changes" }
-  c_edit@{ shape: trap-t, label: "Click 'Edit'" }
-  c_log@{ shape: trap-t, label: "Click 'Edit log'" }
-  c_tab@{ shape: trap-t, label: "Click a tab" }
-  end
-  c_add@{ shape: trap-t, label: "<b>Click 'Add a payer'</b><br/>top right of the page" }
+  s2@{ shape: stadium, label: "<b>Open a link to one payer</b><br/>Bell notification, FLO answer, Demo menu,<br/>Eligibility 'Rules' link, an address" }
+  p1@{ shape: rect, label: "<b>Address is /payers</b><br/>No payer" }
+  p2@{ shape: rect, label: "<b>Address is /payers/cardinal?tab=changes</b><br/>or ?tab=builder, rules, test, history,<br/>or the older process, documents, changes" }
+  d1@{ shape: diam, label: "Does the address name a payer?" }
+  d2@{ shape: diam, label: "Is it a known payer?" }
+  nf@{ shape: curv-trap, label: "<b>'That payer is not in the demo'</b><br/>Button 'Back to all payers'" }
+  cnf@{ shape: trap-t, label: "Click 'Back to all payers'" }
+  land@{ shape: curv-trap, label: "<b>Payers landing page</b><br/>'N payers. The agents know how each one works.'<br/>Search, three filters, 'Add a payer', one row per payer" }
+  d3@{ shape: diam, label: "Which view does ?tab name?" }
+  t1@{ shape: rect, label: "<b>builder, process, missing or unknown</b><br/>Opens Workflow Builder" }
+  t2@{ shape: rect, label: "<b>rules</b><br/>Opens Rules & Instructions" }
+  t3@{ shape: rect, label: "<b>documents</b><br/>Opens Rules & Instructions with the<br/>Clinical documentation group open and in view" }
+  t4@{ shape: rect, label: "<b>test</b><br/>Opens Test Workflow" }
+  t5@{ shape: rect, label: "<b>history, changes</b><br/>Opens History & Changes" }
+  ws@{ shape: curv-trap, label: "<b>Payer workspace</b><br/>Breadcrumb 'Payers › name'<br/>Header, then four tabs" }
   subgraph gB ["What the badges count"]
-  b1@{ shape: rect, label: "<b>Sidebar 'Payers' badge</b><br/>Payers with a change waiting<br/>3 at the start: Cardinal, Evergreen<br/>and Harborview. Falls when a change is updated" }
-  b2@{ shape: rect, label: "<b>'Changes' tab badge</b><br/>The waiting change plus each Historian proposal<br/>Falls as each is handled" }
+  b1@{ shape: rect, label: "<b>Sidebar 'Payers' badge</b><br/>Payers with a change waiting<br/>3 at the start: Cardinal, Evergreen and Harborview.<br/>Falls when a change is applied. Same for every viewer and site" }
+  b2@{ shape: rect, label: "<b>'History & Changes' tab badge</b><br/>The waiting change plus each Historian suggestion<br/>Falls as each is handled" }
   end
-  g_list@{ shape: subproc, label: "Continues in: Payers › List › Search and pick a payer" }
-  g_head@{ shape: subproc, label: "Continues in: Payers › Header › What the header says" }
-  g_ps@{ shape: subproc, label: "Continues in: Payers › Header › Policy status and the demo-rules label" }
-  g_edit@{ shape: subproc, label: "Continues in: Payers › Edit payer details" }
-  g_log@{ shape: subproc, label: "Continues in: Payers › Edit log" }
+  g_land@{ shape: subproc, label: "Continues in: Payers › Landing › Search, filter and open a payer" }
   g_add@{ shape: subproc, label: "Continues in: Payers › Add a payer" }
-  g_proc@{ shape: subproc, label: "Continues in: Payers › Process › Read the workflow" }
-  g_rules@{ shape: subproc, label: "Continues in: Payers › Rules › Read the rules" }
-  g_docs@{ shape: subproc, label: "Continues in: Payers › Documents › Read the document list" }
-  g_chg@{ shape: subproc, label: "Continues in: Payers › Changes › Read what changed" }
+  g_head@{ shape: subproc, label: "Continues in: Payers › Workspace › What the header says" }
+  g_bld@{ shape: subproc, label: "Continues in: Payers › Workflow Builder › Read a workflow" }
+  g_rules@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Read the rules" }
+  g_test@{ shape: subproc, label: "Continues in: Payers › Test Workflow › Run a test case" }
+  g_hist@{ shape: subproc, label: "Continues in: Payers › History & Changes › Read what changed" }
   g_site@{ shape: subproc, label: "Continues in: Payers › Sites › Clinic-wide payers, drafts in view" }
   s1 --> p1 --> d1
   s2 --> p2 --> d1
-  d1 -->|"No, or an unknown id"| p3 --> d2
-  d1 -->|"Yes"| p4 --> d2
-  d2 -->|"No, or missing"| p5 --> pg
-  d2 -->|"Yes"| p6 --> pg
-  pg --> list & head & tabs & c_add
-  pg -.-> b1
-  pg -.-> g_site
-  tabs -.-> b2
-  list --> c_pick & c_search
-  c_pick --> g_list
-  c_search --> g_list
-  head --> c_edit & c_log
-  head --> g_head
-  head -.-> g_ps
-  c_edit --> g_edit
-  c_log --> g_log
-  c_add --> g_add
-  tabs --> c_tab
-  c_tab -->|"Process"| g_proc
-  c_tab -->|"Rules"| g_rules
-  c_tab -->|"Documents"| g_docs
-  c_tab -->|"Changes"| g_chg
+  d1 -->|"No"| land
+  d1 -->|"Yes"| d2
+  d2 -->|"No"| nf --> cnf --> land
+  d2 -->|"Yes"| d3
+  d3 --> t1 & t2 & t3 & t4 & t5
+  t1 & t2 & t3 & t4 & t5 --> ws
+  land --> g_land
+  land -.-> g_add
+  ws --> g_head
+  ws -->|"Workflow Builder"| g_bld
+  ws -->|"Rules & Instructions"| g_rules
+  ws -->|"Test Workflow"| g_test
+  ws -->|"History & Changes"| g_hist
+  land -.-> b1
+  ws -.-> b2
+  ws -.-> g_site
   class s1,s2 k_start
-  class p1,p2,p3,p4,p5,p6,b1,b2 k_process
-  class d1,d2 k_decision
-  class pg,list,head,tabs k_screen
-  class c_pick,c_search,c_edit,c_log,c_tab,c_add k_click
-  class g_list,g_head,g_ps,g_edit,g_log,g_add,g_proc,g_rules,g_docs,g_chg,g_site k_goto
-  style gL fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
-  style gR fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  class p1,p2,t1,t2,t3,t4,t5,b1,b2 k_process
+  class d1,d2,d3 k_decision
+  class nf,land,ws k_screen
+  class cnf k_click
+  class g_land,g_add,g_head,g_bld,g_rules,g_test,g_hist,g_site k_goto
   style gB fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

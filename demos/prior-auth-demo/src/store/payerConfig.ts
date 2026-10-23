@@ -216,7 +216,7 @@ export const createPayerConfigSlice: StateCreator<AppState, [], [], PayerConfigS
 };
 
 /* ------------------------------------------------------------------ persistence
-   The payers added, each payer's saved configuration (rules, documents, details, acknowledged changes) and the edit log are kept in this browser, next to the workflows (store/workflows.ts),
+   The payers added, each payer's saved configuration (rules, documents, details) and the edit log are kept in this browser, next to the workflows (store/workflows.ts),
    so a reload shows the same payer pages the workflows were saved with. Storage is guarded: a blocked store (a private window, a preview) just means changes last until the tab closes.
    Reset demo data puts the seeds back, and the next write replaces what was saved. */
 export const PAYERS_STORAGE_KEY = "psyflo.prior-auth-demo.payers.v1";
@@ -246,7 +246,14 @@ export function initPayerConfigPersistence(store: StoreApi<AppState>): () => voi
   const saved = loadPayers();
   if (saved) {
     const seeds = seedPayerConfig();
-    store.setState({ customPayers: saved.customPayers, payerConfig: { ...seeds, ...saved.payerConfig }, payerEdits: saved.payerEdits });
+    // What a payer's saved page holds (rules, documents, details) comes back. The change waiting, the changes already applied and the edits not yet applied to drafts start over,
+    // because the requests and drafts they act on live in memory and start over too.
+    const restored: Record<string, PayerConfig> = { ...seeds };
+    for (const [id, cfg] of Object.entries(saved.payerConfig)) {
+      const seed = seeds[id];
+      restored[id] = seed ? { ...cfg, pending: seed.pending, changes: seed.changes, proposals: seed.proposals, dismissed: seed.dismissed, unapplied: 0 } : { ...cfg, unapplied: 0 };
+    }
+    store.setState({ customPayers: saved.customPayers, payerConfig: restored, payerEdits: saved.payerEdits });
     syncCustomPayers(saved.customPayers.map(customToSummary));
   }
   return store.subscribe((s, prev) => {

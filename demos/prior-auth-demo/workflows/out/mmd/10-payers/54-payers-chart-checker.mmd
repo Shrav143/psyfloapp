@@ -16,7 +16,7 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Look at the card 'Try it on a case'</b><br/>below the document list<br/>Check a chart against this list<br/>Its info icon holds the note on keyword matching" }
+  s1@{ shape: stadium, label: "<b>Look at the card 'Try it on a case'</b><br/>below the document list<br/>in the Clinical documentation group<br/>Check a chart against this list<br/>Its info icon holds the note on keyword matching" }
   hc@{ shape: diam, label: "<b>Is any case in 'Preparing' at a site in view?</b><br/>(the Case menu lists only those; a case at the other site is never offered)" }
   nc@{ shape: odd, label: "Menu shows 'No cases to check'" }
   df@{ shape: rect, label: "<b>Case starts as the first 'Preparing' case for this payer,</b><br/>else the first 'Preparing' case at all<br/>Cardinal: I-2207" }
@@ -49,7 +49,7 @@ flowchart TD
   g1@{ shape: subproc, label: "Continues in: Dashboard › Open a request" }
   why@{ shape: rect, label: "<b>Edit the list and check again to see it change</b><br/>Cardinal's list asks for 'Remaining treatment goals' only after<br/>its criteria change is updated, so I-2207 then reads '5 of 7 ready'" }
   info@{ shape: odd, label: "<b>'New case checks documents against this same list.</b><br/>Pasted text is matched by keyword, so a document that<br/>is named differently can be missed.'" }
-  g2@{ shape: subproc, label: "Continues in: Payers › Documents › Edit the list" }
+  g2@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Edit the document list" }
   g3@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › The checklist and Continue" }
   s1 --> hc
   hc -->|"No"| nc --> pt

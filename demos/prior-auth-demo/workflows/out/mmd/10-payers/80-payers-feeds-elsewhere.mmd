@@ -16,8 +16,10 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>A payer's workflow, rule, document list</b><br/>or payer change is saved or updated" }
+  s1@{ shape: stadium, label: "<b>A payer's rule, document list, payer detail</b><br/>or workflow is saved, published or updated" }
   dk@{ shape: diam, label: "Which kind of save?" }
+  wfp@{ shape: rect, label: "<b>A published workflow</b><br/>New case finds it by payer, product, state,<br/>service, request type and date, shows its name and version,<br/>and pins that version on the case<br/>A newer version never moves a case that already started" }
+  gwf@{ shape: subproc, label: "Continues in: Authorizations › New case › Workflow › Match and pin the payer workflow" }
   cfg@{ shape: cyl, label: "<b>Saved on the payer</b><br/>One edit log entry per change<br/>One bell notification<br/>New drafts use it from now on" }
   subgraph gR ["Read live by other screens (no Update drafts needed)"]
   p1@{ shape: rect, label: "<b>New case: the document list</b><br/>The Clinical documentation checklist, the file sorting and the<br/>Review & submit checks use the payer's saved list<br/>for the draft's level of care" }
@@ -52,7 +54,8 @@ flowchart TD
   g7@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › Start the run and watch it" }
   g6@{ shape: subproc, label: "Continues in: Authorizations › Queue › Open the queue and read the top" }
   s1 --> dk
-  dk -->|"Workflow, rule or documents"| cfg
+  dk -->|"Rule or documents"| cfg
+  dk -->|"Workflow published"| wfp --> gwf
   dk -->|"Payer change or edits update"| up --> rq --> rp --> nf
   rq --> dsh --> g1
   rq --> cmt --> g2
@@ -70,10 +73,10 @@ flowchart TD
   p2 -.-> prd
   class s1 k_start
   class dk k_decision
+  class wfp,p1,p2,p3,p4,p5,dsh,cmt,sent,od,n1,n2,prd k_process
+  class gwf,g1,g2,g3,g4,g5,g7,g6 k_goto
   class cfg,rq,rp,nf k_store
-  class p1,p2,p3,p4,p5,dsh,cmt,sent,od,n1,n2,prd k_process
   class up,oc k_click
-  class g1,g2,g3,g4,g5,g7,g6 k_goto
   style gR fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gW fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gC fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

@@ -6,7 +6,6 @@ import { payerById } from "@/data/seed";
 import { STAGE_LABEL } from "@/data/workflow/types";
 import { stamp } from "@/lib/time";
 import { WorkflowViewPanel } from "@/pages/payers/studio";
-import { DefaultWorkflowPanel } from "./DefaultWorkflowPanel";
 import { defaultLabel, type CaseWorkflow } from "./model";
 import { ReviewWorkflowDrawer, type ReviewKind } from "./ReviewWorkflowDrawer";
 import { WorkflowTraceDrawer } from "./WorkflowTraceDrawer";
@@ -75,11 +74,7 @@ export function WorkflowRow({ draft, view }: { draft: CaseDraft; view: CaseWorkf
         ) : null}
       </span>
 
-      {applied.usedDefault ? (
-        <DefaultWorkflowPanel view={view} open={viewing} onClose={() => setViewing(false)} />
-      ) : (
-        <WorkflowViewPanel workflowId={applied.workflowId} version={applied.version} trace={view.run} open={viewing} onClose={() => setViewing(false)} />
-      )}
+      <WorkflowViewPanel workflowId={applied.workflowId} version={applied.usedDefault ? undefined : applied.version} trace={view.run} open={viewing} onClose={() => setViewing(false)} />
       <WorkflowTraceDrawer draft={draft} open={tracing} onClose={() => setTracing(false)} />
       <ReviewWorkflowDrawer draft={draft} view={view} kind={review} onClose={() => setReview(null)} />
     </div>

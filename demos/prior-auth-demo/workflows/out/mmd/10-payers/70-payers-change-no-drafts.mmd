@@ -16,16 +16,16 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Open the 'Changes' tab</b><br/>for a payer" }
+  s1@{ shape: stadium, label: "<b>Open 'History & Changes'</b><br/>for a payer" }
   dp@{ shape: diam, label: "Is a change waiting?" }
   up@{ shape: curv-trap, label: "<b>One quiet line</b><br/>'Nothing is waiting for you. Changes here are demo data...'<br/>Only the 'What changed' history below" }
   hv@{ shape: rect, label: "<b>Harborview's waiting change</b><br/>'Portal form change', effective 10/18<br/>The request form now asks for the expected length of stay and a second contact.<br/>The old form closes 10/31." }
   ev@{ shape: rect, label: "<b>Evergreen's waiting change</b><br/>'Reference number on notice calls', effective 10/22<br/>It adds 'Notice call reference number' to the Residential 3.5 list" }
   dn@{ shape: diam, label: "<b>Does the payer have an unsent draft at a site in view?</b><br/>Read live: requests in 'Preparing'<br/>and saved New case drafts not sent, at the sites in view" }
-  none@{ shape: odd, label: "<b>'No open drafts are affected.</b><br/>New drafts for Harborview use the change once you apply it.'<br/>Buttons: 'Acknowledge change', then 'Apply to new drafts'<br/>Note: 'Acknowledging records who saw it. Applying makes new drafts use the change.'" }
+  none@{ shape: odd, label: "<b>'No open drafts are affected.</b><br/>New drafts for Harborview use the change once you apply it.'<br/>Buttons: 'Acknowledge change', then 'Review & apply changes'<br/>whose pop-up reads 'Apply to new drafts?'<br/>Note: 'Acknowledging records who saw it. Applying makes new drafts use the change.'" }
   why0@{ shape: rect, label: "<b>P-1499 is not listed: it is an answer on a request</b><br/>Harborview already has. R-0975 is the same for Evergreen" }
-  one@{ shape: odd, label: "<b>'Scribe can redraft the 1 draft that is not yet sent: I-2207.'</b><br/>Buttons: 'Acknowledge change', then 'Update 1 draft'" }
-  ca0@{ shape: trap-t, label: "<b>Click 'Acknowledge change' and confirm,</b><br/>then 'Apply to new drafts'" }
+  one@{ shape: odd, label: "<b>'Scribe can redraft the 1 draft that is not yet sent: I-2207.'</b><br/>Buttons: 'Acknowledge change', then 'Review & apply changes'<br/>whose pop-up reads 'Update 1 draft?'" }
+  ca0@{ shape: trap-t, label: "<b>Click 'Acknowledge change' and confirm,</b><br/>then 'Review & apply changes'" }
   mn@{ shape: win-pane, label: "<b>Apply to new drafts?</b><br/>Nothing is redrafted until you confirm.<br/>No open drafts are affected.<br/>Harborview will use the change for every new draft from now on." }
   a1@{ shape: hex, label: "<b>Packet is setting the change up for new drafts</b><br/>(demo: 1.5 seconds)" }
   a2@{ shape: hex, label: "<b>Integrity is checking the document lists</b><br/>(demo: 1.5 seconds)" }
@@ -39,8 +39,8 @@ flowchart TD
   cx@{ shape: trap-t, label: "<b>Click 'Cancel', press Escape,</b><br/>click the X or the dimmed area" }
   x1@{ shape: stadium, label: "Modal closes, change stays waiting" }
   e1@{ shape: stadium, label: "The change is applied and the payer has nothing waiting" }
-  g1@{ shape: subproc, label: "Continues in: Payers › Changes › Update drafts after a change" }
-  g2@{ shape: subproc, label: "Continues in: Payers › Changes › Acknowledge a change" }
+  g1@{ shape: subproc, label: "Continues in: Payers › History & Changes › Review and apply a change" }
+  g2@{ shape: subproc, label: "Continues in: Payers › History & Changes › Acknowledge a change" }
   s1 --> dp
   dp -->|"No"| up --> e1
   dp -->|"Yes"| hv --> dn

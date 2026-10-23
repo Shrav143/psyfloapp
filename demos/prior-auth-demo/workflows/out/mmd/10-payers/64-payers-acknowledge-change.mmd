@@ -16,24 +16,24 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Open the Changes tab</b><br/>of a payer with a waiting change" }
-  bn@{ shape: curv-trap, label: "<b>Ochre banner</b><br/>'Acknowledge change' (blue, ready)<br/>Update button (greyed out): 'Update 1 draft',<br/>or 'Apply to new drafts' when no draft is open<br/>Note: Acknowledging records who saw it.<br/>Updating redrafts, and each draft returns to Case Manager for a new signature." }
-  hv@{ shape: trap-t, label: "Hover or click the greyed 'Update 1 draft'" }
+  s1@{ shape: stadium, label: "<b>Open History & Changes</b><br/>of a payer with a waiting change" }
+  bn@{ shape: curv-trap, label: "<b>Ochre card, first on the tab</b><br/>'Acknowledge change' (green, ready)<br/>'Review & apply changes' (greyed out)<br/>Note: Acknowledging records who saw it. Applying redrafts the unsent drafts,<br/>and each returns to Case Manager for a new signature.<br/>A submitted packet is never rewritten, and no active case moves<br/>to another workflow version without a person reviewing it." }
+  hv@{ shape: trap-t, label: "<b>Hover or click the greyed</b><br/>'Review & apply changes'" }
   tip@{ shape: odd, label: "<b>Tooltip: 'Acknowledge the change first'</b><br/>Nothing happens on click" }
   ca@{ shape: trap-t, label: "Click 'Acknowledge change'" }
   m@{ shape: win-pane, label: "<b>Acknowledge this change?</b><br/>It records who saw the change and when." }
   bd@{ shape: curv-trap, label: "<b>Change shown in a tinted box</b><br/>'Criteria changed, version 2026.3'<br/>Progress evidence must now include the remaining treatment goals.<br/>Effective 10/15." }
-  who@{ shape: rect, label: "<b>'You are acknowledging as {viewer}.</b><br/>This does not change any draft.<br/>Updating the drafts is a separate step.'" }
+  who@{ shape: rect, label: "<b>'You are acknowledging as {viewer}.</b><br/>This does not change any draft or any workflow.<br/>Applying the change is a separate step.'" }
   ok@{ shape: trap-t, label: "<b>Click 'Acknowledge change'</b><br/>in the modal" }
   st@{ shape: cyl, label: "<b>Acknowledgement recorded on the change</b><br/>Who: the person viewing (Jordan Perez at the start). When: the demo clock" }
   t1@{ shape: odd, label: "<b>'Change acknowledged'</b><br/>Recorded for {viewer}, Tue 10:42 am.<br/>Drafts are not changed until you update them." }
-  bn2@{ shape: curv-trap, label: "<b>Banner now shows a green pill</b><br/>'Acknowledged by {viewer}, Tue 10:42 am'<br/>in place of the blue button<br/>'Update 1 draft' is ready" }
-  nb@{ shape: rect, label: "<b>No change to the sidebar badge, the dot or the drafts</b><br/>No edit log entry. No undo" }
+  bn2@{ shape: curv-trap, label: "<b>Card now shows a green pill</b><br/>'Acknowledged by {viewer}, Tue 10:42 am'<br/>in place of the blue button<br/>'Review & apply changes' is ready" }
+  nb@{ shape: rect, label: "<b>No change to the sidebar badge, the dot, the drafts or any workflow</b><br/>No edit log entry. No undo" }
   cx@{ shape: trap-t, label: "Click 'Cancel'" }
   cesc@{ shape: trap-t, label: "<b>Press Escape, click the X</b><br/>or click the dimmed area" }
-  x1@{ shape: stadium, label: "<b>Modal closes</b><br/>Nothing recorded<br/>Banner as before" }
+  x1@{ shape: stadium, label: "<b>Modal closes</b><br/>Nothing recorded<br/>Card as before" }
   e1@{ shape: stadium, label: "Ready for the second gate" }
-  g1@{ shape: subproc, label: "Continues in: Payers › Changes › Update drafts after a change" }
+  g1@{ shape: subproc, label: "Continues in: Payers › History & Changes › Review and apply a change" }
   s1 --> bn
   bn --> hv --> tip --> ca
   bn --> ca --> m --> bd --> who --> ok --> st --> t1 --> bn2 --> e1

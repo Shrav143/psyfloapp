@@ -16,11 +16,11 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Open Payers</b><br/>As any of the four viewers, on any site view" }
-  p1@{ shape: rect, label: "<b>The same payers, rules, documents and changes for everyone</b><br/>Sidebar badge 'Payers' stays 3 for every viewer and site view" }
+  s1@{ shape: stadium, label: "<b>Open Payers (the list or a workspace)</b><br/>As any of the four viewers, on any site view" }
+  p1@{ shape: rect, label: "<b>The same payers, workflows, rules, documents and changes for everyone</b><br/>The landing list, its filters and its counts do not change<br/>Sidebar badge 'Payers' stays 3 for every viewer and site view" }
   cAck@{ shape: trap-t, label: "Acknowledge a change, or save an edit" }
   lg@{ shape: cyl, label: "<b>Edit log and 'Acknowledged by' name the person viewing</b><br/>Jordan Perez at the start; Dr. Rivera, Alex Morgan or Sam Okafor after 'Viewing as'" }
-  cUp@{ shape: trap-t, label: "<b>Open the Update drafts step</b><br/>'Update N drafts' (Changes tab banner) or the edits-waiting banner" }
+  cUp@{ shape: trap-t, label: "<b>Open the Update drafts step</b><br/>'Review & apply changes' (History & Changes)<br/>or the edits-waiting banner" }
   d1@{ shape: diam, label: "Which drafts does this payer have at the sites in view?" }
   subgraph gAll ["Both sites"]
   a1@{ shape: curv-trap, label: "<b>Cardinal: 'Update 1 draft' (I-2207)</b><br/>Summit: 'Update 2 drafts' (R-1042, R-1101)<br/>Same numbers as before sites" }
@@ -38,11 +38,11 @@ flowchart TD
   ag@{ shape: hex, label: "<b>Scribe and Integrity redraft exactly the drafts that were listed (demo: 3 seconds)</b><br/>A draft at a site the viewer cannot see is never listed, counted or changed" }
   up@{ shape: cyl, label: "<b>Each listed draft needs a person again</b><br/>Update recorded for Case Manager and New case" }
   t1@{ shape: odd, label: "<b>'N drafts updated'</b><br/>Or 'No open drafts to update' when none were in view" }
-  cChk@{ shape: trap-t, label: "Documents tab › 'Try it on a case'" }
+  cChk@{ shape: trap-t, label: "<b>Rules & Instructions › Clinical documentation</b><br/>› 'Try it on a case'" }
   chk@{ shape: rect, label: "<b>The Case menu lists only 'Preparing' cases at the sites in view</b><br/>Switching the site view changes the list" }
-  g1@{ shape: subproc, label: "Continues in: Payers › Changes › Update drafts after a change" }
+  g1@{ shape: subproc, label: "Continues in: Payers › History & Changes › Review and apply a change" }
   g2@{ shape: subproc, label: "Continues in: Payers › Edits waiting › Update drafts" }
-  g3@{ shape: subproc, label: "Continues in: Payers › Documents › Try it on a case" }
+  g3@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Try it on a case" }
   g4@{ shape: subproc, label: "Continues in: Who can see what › Roles, sites and a record at the other site" }
   e1@{ shape: stadium, label: "Payers stay the clinic's; drafts stay with their site" }
   s1 --> p1 --> cAck --> lg

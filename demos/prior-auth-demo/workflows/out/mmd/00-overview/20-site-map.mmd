@@ -35,7 +35,7 @@ flowchart LR
   end
   subgraph gConn ["Sidebar › Connections"]
   emr@{ shape: curv-trap, label: "<b>EMR Connect</b><br/>Systems per site, sync, mappings" }
-  pay@{ shape: curv-trap, label: "<b>Payers</b><br/>Process, Rules, Documents, Changes" }
+  pay@{ shape: curv-trap, label: "<b>Payers</b><br/>Landing list, then one payer with four views" }
   end
   subgraph gBot ["Sidebar › Bottom"]
   set@{ shape: curv-trap, label: "<b>Settings</b><br/>The sixteen agents, Pause all and Sites and access" }
@@ -48,7 +48,7 @@ flowchart LR
   ver@{ shape: curv-trap, label: "Eligibility › Verify a patient and Result" }
   brief@{ shape: curv-trap, label: "Denial Intelligence › Peer-to-peer brief" }
   rep@{ shape: curv-trap, label: "<b>Denial Intelligence › Appeal analysis report</b><br/>For every denial, copy or download as PDF" }
-  payer@{ shape: curv-trap, label: "<b>Payers › One payer</b><br/>Process, Rules, Documents, Changes tabs" }
+  payer@{ shape: curv-trap, label: "<b>Payers › One payer</b><br/>Workflow Builder, Rules & Instructions, Test Workflow, History & Changes tabs" }
   end
   g0@{ shape: subproc, label: "Continues in: Who can see what › Roles, sites and a record at the other site" }
   g1@{ shape: subproc, label: "Continues in: Global shell" }

@@ -759,7 +759,7 @@ flowchart TD
   tPick@{ shape: odd, label: "'Retroactive authorization depends on the payer and may not be available. Pick the payer to see its Backdating rule.'" }
   tRule@{ shape: odd, label: "'Retroactive authorization depends on the payer and may not be available. Summit's Backdating rule: ...'" }
   tNo@{ shape: odd, label: "<b>'... No rule on file for Riverbend Health. Check with the payer.'</b><br/>Review & submit adds a note 'Retroactive rule'" }
-  gPayers@{ shape: subproc, label: "Continues in: Payers › Rules › Edit a rule" }
+  gPayers@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Edit a rule" }
   dStart@{ shape: diam, label: "Has the patient been chosen?" }
   oPat@{ shape: win-pane, label: "<b>Section 'Find a patient who is already known', open</b><br/>Search box, the sites in view only" }
   gFind@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Find a patient and the authorization" }
@@ -3268,7 +3268,7 @@ flowchart TD
   gCm@{ shape: subproc, label: "Continues in: Case Manager" }
   gDocs@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › The checklist and Continue" }
   gSign@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Sign and send to payer" }
-  gPayers@{ shape: subproc, label: "Continues in: Payers › Rules › Edit a rule" }
+  gPayers@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Edit a rule" }
   s1 --> d1
   d1 -->|"No"| sCard
   d1 -->|"Yes"| pOn
@@ -3299,7 +3299,7 @@ flowchart TD
 
 ## Authorizations › New case › Clinical documentation › The checklist and Continue
 
-Step 3 is one page: a drop zone and one checklist card with a clinical summary and a document list. The required documents come from the payer's saved list for the level of care (Payers › Documents). What a request of this type usually carries is added and labelled 'Typical for ...', never as a payer's rule. Nothing here blocks: what is missing is listed again, with a fix, on Review & submit.
+Step 3 is one page: a drop zone and one checklist card with a clinical summary and a document list. The required documents come from the payer's saved list for the level of care (Payers › Rules & Instructions › Clinical documentation). What a request of this type usually carries is added and labelled 'Typical for ...', never as a payer's rule. Nothing here blocks: what is missing is listed again, with a fix, on Review & submit.
 
 Route: `/authorizations/new/:draftId (step 3 of 5, 'Clinical documentation')`
 
@@ -3507,7 +3507,7 @@ flowchart TD
 
 ## Authorizations › New case › Clinical documentation › Required and typical documents by type
 
-Which documents a case needs comes from two places. The required ones come from the payer's saved list for the level of care (Payers › Documents). What a request of this type usually carries is added under them and labelled 'Typical for a continued stay' and so on. Typical items are the demo's advice, never a payer's rule, and never required. 'N of M ready' counts both.
+Which documents a case needs comes from two places. The required ones come from the payer's saved list for the level of care (Payers › Rules & Instructions › Clinical documentation). What a request of this type usually carries is added under them and labelled 'Typical for a continued stay' and so on. Typical items are the demo's advice, never a payer's rule, and never required. 'N of M ready' counts both.
 
 Route: `/authorizations/new/:draftId (step 3 of 5, the Documents list)`
 
@@ -3531,8 +3531,8 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Open Clinical documentation</b><br/>The Authorization type decides the typical items" }
-  pReq@{ shape: rect, label: "<b>Required documents</b><br/>The list saved on Payers › Documents for this payer and level of care<br/>Summit Residential 3.5: 9 documents, 7 required<br/>No payer or level of care yet: only the referral and the diagnosis report" }
-  gPayers@{ shape: subproc, label: "Continues in: Payers › Documents › Edit the list" }
+  pReq@{ shape: rect, label: "<b>Required documents</b><br/>The list saved on Payers › Rules & Instructions › Clinical documentation for this payer and level of care<br/>Summit Residential 3.5: 9 documents, 7 required<br/>No payer or level of care yet: only the referral and the diagnosis report" }
+  gPayers@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Edit the document list" }
   dKind@{ shape: diam, label: "Which Authorization type?" }
   t1@{ shape: rect, label: "<b>Initial authorization</b><br/>No extra typical items<br/>The payer's list is the list" }
   t2@{ shape: rect, label: "<b>Concurrent review · 'Typical for a continued stay'</b><br/>Progress note since the last review<br/>Updated treatment plan<br/>Current ASAM reassessment<br/>Step-down or discharge plan" }
@@ -3617,7 +3617,7 @@ flowchart TD
   tStale@{ shape: odd, label: "<b>'Records changed after the agents ran'</b><br/>'Their work was cleared. The agents check again when you continue.'" }
   end
   subgraph gDocs ["Document rows"]
-  pList@{ shape: rect, label: "<b>The list saved on Payers › Documents decides the rows</b><br/>Typed for the Authorization type: 'Typical for a continued stay'<br/>A line that fits no standard document is its own required row" }
+  pList@{ shape: rect, label: "<b>The list saved on Payers › Rules & Instructions › Clinical documentation decides the rows</b><br/>Typed for the Authorization type: 'Typical for a continued stay'<br/>A line that fits no standard document is its own required row" }
   dRow@{ shape: diam, label: "What does the row hold?" }
   rMiss@{ shape: rect, label: "<b>Required, empty: 'Not found yet. Drop it above or add it here.'</b><br/>Buttons 'Add file', 'Use sample file' and 'Mark not available'" }
   rOpt@{ shape: rect, label: "<b>Recommended or typical, empty: 'You can continue without it.'</b><br/>Same three buttons" }
@@ -4646,7 +4646,7 @@ flowchart TD
 
 ## Authorizations › New case › Review & submit › Validation summary and checks
 
-The validation summary lists the start date and what Reader found in every document the payer asks for. It is a closed section until opened; the rows that need a look are open inside it, and the same findings are listed with their fixes under 'What is missing'. The Checks card has four checks from four agents and shows their names and state. Every row and check is worked out from the case, the payer's saved documents (Payers › Documents) and rules (Payers › Rules). A warning can be signed after an acknowledgement; only a re-check in progress holds the Sign card off.
+The validation summary lists the start date and what Reader found in every document the payer asks for. It is a closed section until opened; the rows that need a look are open inside it, and the same findings are listed with their fixes under 'What is missing'. The Checks card has four checks from four agents and shows their names and state. Every row and check is worked out from the case, the payer's saved documents (Payers › Rules & Instructions › Clinical documentation) and rules (Payers › Rules & Instructions). A warning can be signed after an acknowledgement; only a re-check in progress holds the Sign card off.
 
 Route: `/authorizations/new/:draftId (step 5 of 5, Validation summary and Checks)`
 
@@ -4710,7 +4710,7 @@ flowchart TD
   gSign@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Sign and send to payer" }
   gMis@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › What is missing" }
   gDocs@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › Replace a document or mark it not available" }
-  gRules@{ shape: subproc, label: "Continues in: Payers › Rules › Edit a rule" }
+  gRules@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Edit a rule" }
   s1 --> sV --> pRows --> dStart
   dStart -->|"Yes"| pStartOk
   dStart -->|"No"| pStartBad
@@ -5017,6 +5017,602 @@ flowchart TD
   class a1,a2,a3,a4 k_agent
   class gSign k_goto
   style gRerun fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+```
+
+## Authorizations › New case › Workflow › Match and pin the payer workflow
+
+The Payer Workflow Studio is configuration; New case is execution. Once Intake knows the payer, the level of care and the Authorization type, New case finds the published payer workflow that fits, shows its name and version in one calm line under the stepper, and stores it on the draft. Until the workflow has run past Intake the case follows the best match, so a changed payer or level of care matches again. After that the version is pinned. Workflows are clinic-wide; the case and its history stay at the case's site.
+
+Route: `/authorizations/new/:draftId (the Workflow line under the stepper)`
+
+Matching reads the published workflows only. A draft or archived workflow is never matched. The five stages (Intake, Eligibility & Benefits, Clinical documentation, Authorization preparation, Review & submit) do not change.
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>On Intake, the payer and the level of care are filled in</b><br/>(the Authorization type is chosen under the page heading)" }
+  p1@{ shape: rect, label: "<b>The facts are built from the case</b><br/>Payer, its plan product and state (from Payers), level of care, Authorization type, today's demo date, requested start date" }
+  p2@{ shape: rect, label: "<b>The published workflows are matched</b><br/>By payer, product, state, service, request type and effective date<br/>The most specific applicable one is preferred" }
+  d1@{ shape: diam, label: "Is there one best match?" }
+  st1@{ shape: cyl, label: "<b>The workflow is stored on the draft</b><br/>Name, version, why it matched, when it was applied<br/>Not yet pinned" }
+  st2@{ shape: cyl, label: "<b>History line, kept on the draft until the request exists</b><br/>'Workflow applied: Initial Authorization, Residential SUD v3 (Summit)'" }
+  sc1@{ shape: curv-trap, label: "<b>Line under the stepper, above the step header</b><br/>'Workflow: Initial Authorization, Residential SUD · v3 · Summit'<br/>Info icon, 'View workflow', 'At Intake'" }
+  cInfo@{ shape: trap-t, label: "Hover over the info icon, or focus it with Tab" }
+  oInfo@{ shape: win-pane, label: "<b>'Why this workflow'</b><br/>The match explanation<br/>'Rules read: ...' with each rule's verification state<br/>'The workflow can still change until it runs past Intake.'" }
+  d2@{ shape: diam, label: "<b>Has the workflow run past Intake?</b><br/>A later step opened, or the agents started" }
+  iChg@{ shape: lean-r, label: "Change the payer, the level of care or the Authorization type in Intake" }
+  pChg@{ shape: rect, label: "<b>Matched again</b><br/>If a different workflow fits, it replaces the old one on the draft" }
+  stChg@{ shape: cyl, label: "History: 'Workflow applied: ...' for the new match" }
+  cStep@{ shape: trap-t, label: "Click 'Continue to Eligibility & Benefits', or any later step in the stepper" }
+  pRun@{ shape: rect, label: "<b>The workflow runs against the case at that step</b><br/>The engine that Test Workflow uses, with this case's facts" }
+  stPin@{ shape: cyl, label: "<b>The version is pinned to the case</b><br/>The line now says 'This version is pinned to the case since ...'" }
+  wNew@{ shape: delay, label: "Later, a person publishes a newer version, or the case details change" }
+  d3@{ shape: diam, label: "Did something change after the pin?" }
+  pQuiet@{ shape: rect, label: "<b>Nothing changes on its own</b><br/>The case keeps the version it started with" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Workflow › A newer version exists" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Workflow › The case changed after the workflow started" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › New case › Workflow › Default process and equal matches" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › New case › Workflow › Show the workflow and its path" }
+  eNone@{ shape: stadium, label: "<b>No payer or level of care yet</b><br/>The Workflow line is not shown" }
+  eDone@{ shape: stadium, label: "The case follows one workflow version" }
+  s1 --> p1 --> p2 --> d1
+  d1 -->|"Yes"| st1 --> st2 --> sc1
+  d1 -->|"No match, or two equal matches"| g3
+  sc1 --> cInfo --> oInfo
+  sc1 --> d2
+  d2 -->|"No"| iChg --> pChg --> stChg --> sc1
+  d2 -->|"Not yet"| cStep --> pRun --> stPin --> wNew --> d3
+  d3 -->|"Newer version published"| g1
+  d3 -->|"Payer, level of care or type changed"| g2
+  d3 -->|"Nothing"| pQuiet --> eDone
+  sc1 -.-> g4
+  s1 -.-> eNone
+  class s1 k_start
+  class p1,p2,pChg,pRun,pQuiet k_process
+  class d1,d2,d3 k_decision
+  class st1,st2,stChg,stPin k_store
+  class sc1 k_screen
+  class cInfo,cStep k_click
+  class oInfo k_overlay
+  class iChg k_input
+  class wNew k_wait
+  class g1,g2,g3,g4 k_goto
+  class eNone k_endx
+  class eDone k_end
+```
+
+## Authorizations › New case › Workflow › Default process and equal matches
+
+When no published workflow fits the case, New case uses a clearly labelled default process for the request type and invents no payer rule. When two published workflows are equally specific, nothing is picked silently: the line names both, the default is used, and a person chooses in a small side panel. The choice is written to the case's history with who made it.
+
+Route: `/authorizations/new/:draftId (the Workflow line under the stepper)`
+
+The default is illustrative. It is not payer policy and it never claims a payer rule. The wording of the default is the same for each request type: 'Default process for a concurrent review. No payer workflow matches. Illustrative, not payer policy.'
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "The case's payer, level of care and Authorization type are known" }
+  p1@{ shape: rect, label: "The published workflows are matched" }
+  d1@{ shape: diam, label: "What did the match find?" }
+  subgraph gNone ["Nothing matches"]
+  n1@{ shape: cyl, label: "<b>The labelled default for the request type is stored on the draft</b><br/>'Default process for a concurrent review'" }
+  n2@{ shape: cyl, label: "<b>History: 'Default workflow applied: Default process for a concurrent review'</b><br/>Detail: the match explanation" }
+  n3@{ shape: curv-trap, label: "<b>Workflow line</b><br/>'Workflow: Default process for a concurrent review'<br/>Pill 'Illustrative default'<br/>No version or payer after the name" }
+  n4@{ shape: trap-t, label: "Hover over the info icon" }
+  n5@{ shape: win-pane, label: "'Default process for a concurrent review. No payer workflow matches. Illustrative, not payer policy.'" }
+  end
+  subgraph gConf ["Two workflows are equally specific"]
+  c1@{ shape: cyl, label: "The default is stored on the draft for now" }
+  c2@{ shape: curv-trap, label: "<b>Workflow line</b><br/>'Workflow: Default process for a ... Illustrative default'<br/>In amber: '<Workflow A> and <Workflow B> match equally. The default is used until you choose.'<br/>Button 'Choose a workflow'" }
+  c3@{ shape: trap-t, label: "Click 'Choose a workflow'" }
+  c4@{ shape: win-pane, label: "<b>Side panel 'Choose a workflow'</b><br/>One radio choice per workflow: name, version, request type, services, effective date, why it matched" }
+  c5@{ shape: lean-r, label: "Pick one" }
+  c6@{ shape: trap-t, label: "Click 'Use this workflow'" }
+  c7@{ shape: trap-t, label: "Click 'Keep the default for now', press Escape, or click outside" }
+  c8@{ shape: rect, label: "<b>The panel closes</b><br/>The default stays" }
+  c9@{ shape: cyl, label: "<b>The choice is stored on the case with the names it was chosen among</b><br/>The workflow replaces the default (it is pinned once the workflow has run past Intake)" }
+  c10@{ shape: cyl, label: "<b>History: 'Workflow chosen: Initial Authorization, Residential SUD v3 (Initial Authorization, IOP matched equally)'</b><br/>Detail: who chose and why they matched" }
+  c11@{ shape: odd, label: "<b>'Workflow applied'</b><br/>'Initial Authorization, Residential SUD, version 3 is what this case follows now.'" }
+  end
+  d2@{ shape: diam, label: "Does the case change so the same two no longer compete?" }
+  p2@{ shape: rect, label: "<b>The choice no longer holds</b><br/>A fresh match is made (before the workflow has run past Intake), or offered for review (after)" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Workflow › Match and pin the payer workflow" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Workflow › The case changed after the workflow started" }
+  e1@{ shape: stadium, label: "The case follows the workflow a person chose" }
+  e2@{ shape: stadium, label: "The case follows the default, clearly labelled" }
+  s1 --> p1 --> d1
+  d1 -->|"No match"| n1 --> n2 --> n3 --> e2
+  n3 --> n4 --> n5
+  d1 -->|"Equal matches"| c1 --> c2 --> c3 --> c4 --> c5 --> c6 --> c9 --> c10 --> c11 --> e1
+  c4 --> c7 --> c8 --> e2
+  d1 -->|"One best match"| g1
+  c11 --> d2
+  d2 -->|"Yes"| p2 --> g2
+  d2 -->|"No"| e1
+  class s1 k_start
+  class p1,c8,p2 k_process
+  class d1,d2 k_decision
+  class n1,n2,c1,c9,c10 k_store
+  class n3,c2 k_screen
+  class n4,c3,c6,c7 k_click
+  class n5,c4 k_overlay
+  class c5 k_input
+  class c11 k_toast
+  class g1,g2 k_goto
+  class e1,e2 k_end
+  style gNone fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gConf fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+```
+
+## Authorizations › New case › Workflow › A newer version exists
+
+A case keeps the workflow version it started with. If a person publishes a newer version of the same workflow in Payers, the case is not switched. The Workflow line says so quietly and offers 'Review newer version'. The side panel shows what changed and what it would mean for this case now. Nothing changes until a person clicks Apply, and applying is written to the case's history. A packet that was already sent is never rewritten.
+
+Route: `/authorizations/new/:draftId (the Workflow line and the 'Review newer version' side panel)`
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>A case is pinned to a version, for example v3</b><br/>A person publishes v4 of the same workflow in Payers › Workflow Builder" }
+  p1@{ shape: rect, label: "<b>The next time the case is drawn it is compared with the latest published version</b><br/>The case still follows v3" }
+  sc1@{ shape: curv-trap, label: "<b>Workflow line, quietly</b><br/>'Workflow: Initial Authorization, Residential SUD · v3 · Summit'<br/>'A newer version exists (v4).'<br/>Button 'Review newer version'" }
+  c1@{ shape: trap-t, label: "Click 'Review newer version'" }
+  o1@{ shape: win-pane, label: "<b>Side panel 'Review newer version'</b><br/>'This case started on ... version 3 and keeps it until you decide. Version 4 was published since.'<br/>Who saved it, when, and the reason they gave" }
+  p2@{ shape: rect, label: "<b>What changed is worked out from the two versions</b><br/>Added, removed and changed steps, the services and dates it covers, whether the routes changed" }
+  sc2@{ shape: curv-trap, label: "<b>'What changed'</b><br/>A short list, for example 'Added: Check provider network (Eligibility & Benefits)'<br/>or 'The steps are the same. Only the saved version number moved.'" }
+  p3@{ shape: rect, label: "Both versions run on this case's facts" }
+  sc3@{ shape: curv-trap, label: "<b>'What it would mean for this case'</b><br/>'Now, v3' and the outcome sentence<br/>'With v4' and the outcome sentence" }
+  sc4@{ shape: curv-trap, label: "'Applying it changes the steps this case follows from here. A packet that was already sent is never rewritten. The switch is written to the case's history.'" }
+  c2@{ shape: trap-t, label: "Click 'Apply version 4'" }
+  st1@{ shape: cyl, label: "The case now follows v4 and is pinned to it" }
+  st2@{ shape: cyl, label: "<b>History: 'Workflow updated: Initial Authorization, Residential SUD v3 to v4, reviewed by Jordan Perez'</b><br/>Detail: what changed, and that requests already sent are not changed" }
+  t1@{ shape: odd, label: "<b>'Workflow applied'</b><br/>'Initial Authorization, Residential SUD, version 4 is what this case follows now.'" }
+  c3@{ shape: trap-t, label: "Click 'Keep version 3', press Escape, or click outside" }
+  p4@{ shape: rect, label: "<b>The panel closes</b><br/>The case keeps v3<br/>The quiet line stays" }
+  e1@{ shape: stadium, label: "Nothing was changed" }
+  e2@{ shape: stadium, label: "The case follows v4 from here" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Workflow › Show the workflow and its path" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Workflow › What the workflow adds to the history" }
+  g3@{ shape: subproc, label: "Continues in: Payers › Workflow Builder › Publish a workflow" }
+  s1 --> p1 --> sc1 --> c1 --> o1 --> p2 --> sc2 --> p3 --> sc3 --> sc4
+  sc4 --> c2 --> st1 --> st2 --> t1 --> e2
+  sc4 --> c3 --> p4 --> e1
+  o1 --> c3
+  st2 -.-> g2
+  sc1 -.-> g1
+  s1 -.-> g3
+  class s1 k_start
+  class p1,p2,p3,p4 k_process
+  class sc1,sc2,sc3,sc4 k_screen
+  class c1,c2,c3 k_click
+  class o1 k_overlay
+  class st1,st2 k_store
+  class t1 k_toast
+  class e1 k_endx
+  class e2 k_end
+  class g1,g2,g3 k_goto
+```
+
+## Authorizations › New case › Workflow › The case changed after the workflow started
+
+Once the workflow has run past Intake, a change to the payer, the level of care or the Authorization type does not switch the workflow behind the person's back. The line says the case details changed and offers 'Review the match'. The side panel shows the workflow that would match now. A person decides, and the decision is written to the case's history.
+
+Route: `/authorizations/new/:draftId (the Workflow line and the 'Review the workflow match' side panel)`
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>The workflow is pinned</b><br/>The person goes back to Intake and changes the payer, the level of care or the Authorization type" }
+  p1@{ shape: rect, label: "A fresh match is made for the case as it is now" }
+  d1@{ shape: diam, label: "<b>Is it a different workflow from the one the case follows?</b><br/>A workflow published later for other cases does not count: only a change to this case's own payer, level of care or type does" }
+  p2@{ shape: rect, label: "<b>Nothing to review</b><br/>The pinned version keeps running with the new facts" }
+  sc1@{ shape: curv-trap, label: "<b>Workflow line, in amber</b><br/>'The case details changed since this workflow was applied.'<br/>Button 'Review the match'" }
+  c1@{ shape: trap-t, label: "Click 'Review the match'" }
+  o1@{ shape: win-pane, label: "<b>Side panel 'Review the workflow match'</b><br/>'This case still follows ... version 3. A match for the case as it is now would use ... version 2.'<br/>The reason it matches" }
+  d2@{ shape: diam, label: "Do two workflows match the changed case equally?" }
+  sc2@{ shape: curv-trap, label: "<b>The line offers 'Choose a workflow' instead of 'Review the match'</b><br/>'<A> and <B> match equally. The default is used until you choose.'" }
+  c2@{ shape: trap-t, label: "Click 'Apply ...'" }
+  st1@{ shape: cyl, label: "The case follows the new match and is pinned to it" }
+  st2@{ shape: cyl, label: "History: 'Workflow changed: Initial Authorization, Residential SUD to Initial Authorization, IOP v2, reviewed by Jordan Perez'" }
+  t1@{ shape: odd, label: "'Workflow applied'" }
+  c3@{ shape: trap-t, label: "Click 'Keep version 3', press Escape, or click outside" }
+  e1@{ shape: stadium, label: "The case follows the new match" }
+  e2@{ shape: stadium, label: "The case keeps its workflow" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Workflow › Default process and equal matches" }
+  s1 --> p1 --> d1
+  d1 -->|"No"| p2 --> e2
+  d1 -->|"Yes"| d2
+  d2 -->|"Yes"| sc2 --> g1
+  d2 -->|"No"| sc1 --> c1 --> o1 --> c2 --> st1 --> st2 --> t1 --> e1
+  o1 --> c3 --> e2
+  class s1 k_start
+  class p1,p2 k_process
+  class d1,d2 k_decision
+  class sc1,sc2 k_screen
+  class c1,c2,c3 k_click
+  class o1 k_overlay
+  class st1,st2 k_store
+  class t1 k_toast
+  class e1 k_end
+  class e2 k_endx
+  class g1 k_goto
+```
+
+## Authorizations › New case › Workflow › Show the workflow and its path
+
+'View workflow' opens the Studio's read-only canvas in a right-hand panel, showing the version this case follows and the path so far: the steps that ran, the steps that were skipped, and the ones still pending. Nothing in the panel can be edited; changes are made in Payers. 'Trace' lists what the workflow did on this case, the same lines that go to the request's History when it is signed and sent.
+
+Route: `/authorizations/new/:draftId (the 'View workflow' side panel and the 'Trace' side panel)`
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "On any step, the Workflow line shows 'View workflow'" }
+  c1@{ shape: trap-t, label: "Click 'View workflow'" }
+  dDef@{ shape: diam, label: "Is the case on the labelled default process?" }
+  oDef@{ shape: win-pane, label: "<b>Side panel 'Default process for ...' with the pill 'Illustrative default'</b><br/>'No payer workflow matches. Illustrative, not payer policy.'<br/>The steps by stage, each Done, Skipped, Waiting, Pending or Not reached, with what happened" }
+  p1@{ shape: rect, label: "<b>The version the case is pinned to is opened (a saved snapshot, not the working copy)</b><br/>The engine runs it on this case's facts to get the path" }
+  o1@{ shape: win-pane, label: "<b>Side panel: the read-only workflow canvas</b><br/>Steps that ran, steps that were skipped and steps that are pending are highlighted<br/>Rule references with their verification state" }
+  c2@{ shape: trap-t, label: "Click a step" }
+  sc1@{ shape: curv-trap, label: "<b>What the step did on this case</b><br/>Its message, the rules it read, its warnings" }
+  c3@{ shape: trap-t, label: "Click the close button, press Escape, or click outside" }
+  p2@{ shape: rect, label: "<b>The panel closes</b><br/>The step the person was on is unchanged" }
+  d1@{ shape: diam, label: "Has the workflow written anything to the case yet?" }
+  c4@{ shape: trap-t, label: "Click 'Trace' in the Workflow line" }
+  o2@{ shape: win-pane, label: "<b>Side panel 'Workflow trace'</b><br/>'Initial Authorization, Residential SUD, version 3'<br/>One line per entry, with the time and who: a named agent, 'Psyflo' or 'You' (a choice, a review or an override)" }
+  sc2@{ shape: curv-trap, label: "<b>Under the title</b><br/>'These lines are written to the request's History when it is signed and sent.'<br/>or, once the request exists, 'These lines are in the request's History on the case page.'" }
+  sc3@{ shape: curv-trap, label: "<b>No 'Trace' button yet</b><br/>The line shows only the name, 'View workflow' and where the workflow is" }
+  c5@{ shape: trap-t, label: "Click the close button, press Escape, or click outside" }
+  e1@{ shape: stadium, label: "Back on the step" }
+  g1@{ shape: subproc, label: "Continues in: Payers › Workflow Builder › Read a workflow" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Workflow › What the workflow adds to the history" }
+  s1 --> c1 --> dDef
+  dDef -->|"No"| p1 --> o1
+  dDef -->|"Yes"| oDef --> c3
+  o1 --> c2 --> sc1 --> c3
+  o1 --> c3 --> p2 --> e1
+  s1 --> d1
+  d1 -->|"Yes"| c4 --> o2 --> sc2 --> c5 --> e1
+  d1 -->|"No"| sc3 --> e1
+  o1 -.-> g1
+  o2 -.-> g2
+  class s1 k_start
+  class c1,c2,c3,c4,c5 k_click
+  class dDef,d1 k_decision
+  class oDef,o1,o2 k_overlay
+  class p1,p2 k_process
+  class sc1,sc2,sc3 k_screen
+  class e1 k_end
+  class g1,g2 k_goto
+```
+
+## Authorizations › New case › Workflow › What the workflow says at each step
+
+The workflow runs again whenever the person changes step and whenever a document or the verification changes. Its outcome is one quiet line in the step header: 'Next in this workflow: ...'. The workflow informs and warns; it never adds a blocker. A warning of its own is folded into the step's one existing alert (the line next to the buttons, or 'What is missing' on Review & submit), never shown as a second alert. Only the conditions from the earlier design still stop a send: no patient, payer, service or dates; coverage confirmed inactive with no documented exception; an unanswered duplicate; no clinician sign-off.
+
+Route: `/authorizations/new/:draftId (each step's header, footer line and 'What is missing')`
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "The person opens a step, adds a document, or refreshes the verification" }
+  p1@{ shape: rect, label: "<b>The facts are rebuilt</b><br/>The verification record (coverage, benefit, authorization requirement, provider participation, existing authorization), which of the payer's documents are in the case, the dates, the sign-off" }
+  dChk@{ shape: diam, label: "Has Verify checked coverage for this case yet?" }
+  scWait@{ shape: curv-trap, label: "<b>Step header, second line</b><br/>'Next in this workflow: Waiting for the eligibility check: Verify has not checked coverage for this case yet.'<br/>The workflow does not send the case to a person for a plan nobody asked" }
+  p2@{ shape: rect, label: "<b>The pinned version runs</b><br/>The same engine as Test Workflow in Payers" }
+  sc1@{ shape: curv-trap, label: "<b>Step header, second line</b><br/>'Next in this workflow: Paused for documentation: the treatment plan is missing.'" }
+  d1@{ shape: diam, label: "<b>Does the workflow have a warning of its own?</b><br/>For example 'Verify benefits for this service: Limited benefit: check the limit before the request goes out'" }
+  p3@{ shape: rect, label: "No extra text" }
+  d2@{ shape: diam, label: "Which step is open?" }
+  sc2@{ shape: curv-trap, label: "<b>Steps 1 to 4</b><br/>The warning is added to the footer line beside the buttons, after the step's own text<br/>'Workflow: Verify benefits for this service: Limited benefit: check the limit before the request goes out'<br/>In amber, in the same line" }
+  sc3@{ shape: curv-trap, label: "<b>Step 5, Review & submit</b><br/>One extra note in 'What is missing'<br/>'Workflow: Initial Authorization, Residential SUD'<br/>It is a note, not an item to acknowledge, and it does not stop signing" }
+  p4@{ shape: rect, label: "<b>Rules that are only unverified are not repeated as a warning on every step</b><br/>They are listed in the info icon and in the history" }
+  d3@{ shape: diam, label: "Does the workflow end in 'No authorization required'?" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Workflow › No authorization required from the workflow" }
+  d4@{ shape: diam, label: "<b>Is an existing blocker true?</b><br/>No patient, payer, service or dates; inactive coverage with no documented exception; an unanswered duplicate; no clinician as signer" }
+  t1@{ shape: odd, label: "<b>Review & submit says what stops sending, as before</b><br/>The workflow does not add to it" }
+  e1@{ shape: stadium, label: "The person goes on, with the workflow's outcome in view" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › What is missing" }
+  s1 --> p1 --> dChk
+  dChk -->|"No"| scWait --> d1
+  dChk -->|"Yes"| p2 --> sc1 --> d1
+  d1 -->|"No"| p3 --> e1
+  d1 -->|"Yes"| d2
+  d2 -->|"1 to 4"| sc2 --> e1
+  d2 -->|"5"| sc3 --> g2
+  sc1 --> d3
+  d3 -->|"Yes"| g1
+  d3 -->|"No"| d4
+  d4 -->|"Yes"| t1 --> e1
+  d4 -->|"No"| e1
+  p2 -.-> p4
+  class s1 k_start
+  class p1,p2,p3,p4 k_process
+  class dChk,d1,d2,d3,d4 k_decision
+  class scWait,sc1,sc2,sc3 k_screen
+  class g1,g2 k_goto
+  class t1 k_toast
+  class e1 k_end
+```
+
+## Authorizations › New case › Workflow › What the workflow adds to the history
+
+The workflow leaves a short trace in the case's history: which workflow was applied, how far it ran at each stage change (steps done, skipped and waiting), the rules it read with their verification state, any override, the sign-off, and what was prepared versus what was transmitted. Before the request exists the lines wait on the draft; they are written to the request's History when it is signed and sent. A draft that is already a request on the case page writes them straight away. Lines are short; the detail sits under them.
+
+Route: `/authorizations/new/:draftId, then /authorizations/case/ID (History) and Case Manager`
+
+The engine's line for a stage names the agent that works it (Verify at Eligibility & Benefits, Reader at Clinical documentation, Scribe at Authorization preparation, Integrity at Review & submit); 'Workflow applied' is Psyflo's; a person's choice, review or override is the person's; the 'Prepared for' line is Packet's. Nothing here is a payer fact.
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "The workflow is applied, a stage is opened, a choice is made or the case is signed" }
+  d1@{ shape: diam, label: "What happened?" }
+  a1@{ shape: cyl, label: "<b>'Workflow applied: Initial Authorization, Residential SUD v3 (Summit)'</b><br/>or 'Default workflow applied: Default process for a concurrent review'<br/>Detail: why it matched" }
+  a2@{ shape: cyl, label: "<b>'Workflow ran to Eligibility & Benefits: 3 steps done, 1 skipped (Check provider network: not needed for this plan)'</b><br/>Detail: the steps done and 'Rules read: Submission window (Unverified), ...'" }
+  a3@{ shape: cyl, label: "'Waiting: ...' with what the workflow waits for" }
+  a4@{ shape: cyl, label: "<b>'Override: continued without confirmed coverage, reason documented'</b><br/>Detail: where, and 'Your reason: ...'" }
+  a5@{ shape: cyl, label: "<b>'Workflow updated: ... v3 to v4, reviewed by Jordan Perez'</b><br/>'Workflow changed: ... to ...'<br/>'Workflow chosen: ...'" }
+  a6@{ shape: cyl, label: "<b>'Workflow approval recorded: Dr. Rivera (clinician)'</b><br/>'Workflow ran to Review & submit: ...'<br/>'Override: signed with 2 warnings acknowledged'<br/>'Prepared for Summit (demo simulation). Nothing was transmitted outside this app'" }
+  d2@{ shape: diam, label: "Does the request exist yet?" }
+  p1@{ shape: rect, label: "<b>The lines wait on the draft</b><br/>The 'Trace' button in the Workflow line lists them" }
+  p2@{ shape: rect, label: "<b>Sign and send writes them to the new request's History, before the signature line</b><br/>Times are the demo clock" }
+  p3@{ shape: rect, label: "The lines go straight to the request's History" }
+  sc1@{ shape: curv-trap, label: "<b>Authorizations › the case page › 'History'</b><br/>Each line says who: Psyflo, you or a named agent<br/>The 'Authorization facts' row has 'Workflow' with the version" }
+  sc2@{ shape: curv-trap, label: "<b>Case Manager › tracker row quick view</b><br/>'Workflow' row and the three newest history lines" }
+  sc3@{ shape: curv-trap, label: "<b>Case Manager › a case with no request yet</b><br/>'Workflow' row in the case summary and the lines in 'History'" }
+  d3@{ shape: diam, label: "Is the case a request?" }
+  e1@{ shape: stadium, label: "The trace can be read where the case is read" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Case page › History" }
+  g2@{ shape: subproc, label: "Continues in: Case Manager › Ledger case › Workflow line and history" }
+  s1 --> d1
+  d1 -->|"Applied"| a1 --> d2
+  d1 -->|"Stage opened"| a2 --> a3 --> d2
+  d1 -->|"Override"| a4 --> d2
+  d1 -->|"Review or choice"| a5 --> d2
+  d1 -->|"Sign and send"| a6 --> p2
+  d2 -->|"No"| p1 --> d3
+  d2 -->|"Yes"| p3 --> d3
+  p2 --> d3
+  d3 -->|"Yes"| sc1 --> sc2 --> e1
+  d3 -->|"No"| sc3 --> e1
+  sc1 -.-> g1
+  sc3 -.-> g2
+  class s1 k_start
+  class d1,d2,d3 k_decision
+  class a1,a2,a3,a4,a5,a6 k_store
+  class p1,p2,p3 k_process
+  class sc1,sc2,sc3 k_screen
+  class e1 k_end
+  class g1,g2 k_goto
+```
+
+## Authorizations › New case › Workflow › No authorization required from the workflow
+
+When the workflow ends in 'No authorization required', New case raises the same outcome as a verification that says so: a card with the payer, service and dates, and the same three actions. Documentation, preparation and review are marked Not applicable, and nothing is prepared or sent unless the person chooses to go on with a documented exception. The workflow does not send or save anything on its own.
+
+Route: `/authorizations/new/:draftId (Eligibility & Benefits)`
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>The workflow reaches its 'No authorization required' ending</b><br/>The verification says the payer does not require one, or a payer rule node says so" }
+  p1@{ shape: rect, label: "The step header says 'Next in this workflow: ...' with the ending" }
+  p2@{ shape: rect, label: "<b>The no-authorization outcome is raised</b><br/>Steps 3, 4 and 5 read 'Not applicable'" }
+  sc1@{ shape: curv-trap, label: "<b>Card 'No authorization is required'</b><br/>The payer, the level of care, the dates<br/>'Its rule says: ...' when the payer has written one" }
+  c1@{ shape: trap-t, label: "Click 'Save verification to the patient record'" }
+  st1@{ shape: cyl, label: "<b>The verification is saved</b><br/>The draft is removed" }
+  p3@{ shape: rect, label: "Opens the result on Eligibility & Benefits" }
+  c2@{ shape: trap-t, label: "Click 'Return to Case Manager'" }
+  p4@{ shape: rect, label: "<b>The draft is removed</b><br/>Opens Case Manager" }
+  c3@{ shape: trap-t, label: "Click 'Continue with a documented exception'" }
+  i1@{ shape: lean-r, label: "Type why a request is sent when none is required" }
+  st2@{ shape: cyl, label: "<b>The reason is kept on the draft</b><br/>History: 'Override: continued although no authorization is required, reason documented'" }
+  p5@{ shape: rect, label: "<b>Steps 3, 4 and 5 open as normal</b><br/>The workflow keeps running; nothing is sent until a clinician signs" }
+  e1@{ shape: stadium, label: "The person saved, left or went on" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Eligibility & Benefits › No authorization required" }
+  s1 --> p1 --> p2 --> sc1
+  sc1 --> c1 --> st1 --> p3 --> e1
+  sc1 --> c2 --> p4 --> e1
+  sc1 --> c3 --> i1 --> st2 --> p5 --> e1
+  sc1 -.-> g1
+  class s1 k_start
+  class p1,p2,p3,p4,p5 k_process
+  class sc1 k_screen
+  class c1,c2,c3 k_click
+  class st1,st2 k_store
+  class i1 k_input
+  class e1 k_end
+  class g1 k_goto
+```
+
+## Authorizations › New case › Workflow › Prepare versus send, and sites
+
+A workflow can contain steps that prepare a payer-facing action (a portal packet, a fax packet, a call script) and steps that would transmit one. New case never runs a payer-facing step on its own. It prepares, and the one send is the existing 'Sign and send to payer (demo)', which a clinician must sign and which only simulates the send. The history says which steps prepared and that nothing was transmitted. Workflows and their traces are clinic-wide; the case, its history and the people who can open it stay at the case's site.
+
+Route: `/authorizations/new/:draftId (Review & submit)`
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "The workflow has steps that prepare a portal, fax or phone action" }
+  p1@{ shape: rect, label: "<b>The agents prepare the packet in Authorization preparation</b><br/>Nothing is transmitted" }
+  sc1@{ shape: curv-trap, label: "<b>Review & submit</b><br/>The packet, the checks, 'What is missing'<br/>Card 'Sign' with 'Demo: simulated send. Nothing leaves the app.'" }
+  d1@{ shape: diam, label: "Is a clinician signing, with the attestation, nothing blocking and any warning acknowledged?" }
+  e1@{ shape: stadium, label: "'Sign and send to payer (demo)' stays switched off" }
+  c1@{ shape: trap-t, label: "Click 'Sign and send to payer (demo)' and confirm" }
+  st1@{ shape: cyl, label: "The request is recorded as Received (demo simulation)" }
+  st2@{ shape: cyl, label: "<b>History: 'Workflow approval recorded: Dr. Rivera (clinician)'</b><br/>'Prepared for Summit (demo simulation). Nothing was transmitted outside this app'<br/>Detail: what the workflow prepared, and that its portal, fax and email steps are not transmitted on their own" }
+  d2@{ shape: diam, label: "Who is looking?" }
+  sc2@{ shape: curv-trap, label: "<b>Jordan Perez or Alex Morgan</b><br/>Both sites; the case is at its own site" }
+  sc3@{ shape: curv-trap, label: "<b>Dr. Rivera (Site A only)</b><br/>Only Site A cases and their workflow lines<br/>The same clinic-wide workflows as everyone" }
+  sc4@{ shape: curv-trap, label: "<b>Sam Okafor (Site B only)</b><br/>Only Site B cases<br/>A Site A case link shows the out-of-site card, with no patient" }
+  e2@{ shape: stadium, label: "The send stays a person's, simulated, and recorded" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Sign and send to payer" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Sites and scope" }
+  s1 --> p1 --> sc1 --> d1
+  d1 -->|"No"| e1
+  d1 -->|"Yes"| c1 --> st1 --> st2 --> e2
+  st2 -.-> g1
+  sc1 --> d2
+  d2 -->|"Both sites"| sc2 --> e2
+  d2 -->|"Site A only"| sc3 --> e2
+  d2 -->|"Site B only"| sc4 --> e2
+  sc4 -.-> g2
+  class s1 k_start
+  class p1 k_process
+  class sc1,sc2,sc3,sc4 k_screen
+  class d1,d2 k_decision
+  class e1 k_endx
+  class c1 k_click
+  class st1,st2 k_store
+  class e2 k_end
+  class g1,g2 k_goto
 ```
 
 ## Authorizations › New case › Save as draft and leave

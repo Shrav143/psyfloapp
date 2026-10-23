@@ -37,15 +37,15 @@ flowchart TD
   st@{ shape: cyl, label: "Document list for that level of care replaced" }
   lg@{ shape: cyl, label: "<b>One edit log entry per change</b><br/>Area 'Documents'" }
   un@{ shape: cyl, label: "'Edits waiting' goes up by one" }
-  nt@{ shape: cyl, label: "<b>Bell notification 'Summit document list edited'</b><br/>opens the payer's Documents tab" }
+  nt@{ shape: cyl, label: "<b>Bell notification 'Summit document list edited'</b><br/>opens Rules & Instructions at Clinical documentation" }
   t1@{ shape: odd, label: "<b>'Residential 3.5 list saved'</b><br/>New drafts use it at once.<br/>Click Update drafts to redraft open ones." }
-  out@{ shape: curv-trap, label: "<b>Documents tab shows the new list and count</b><br/>Banner '1 edit applies to new drafts only'" }
+  out@{ shape: curv-trap, label: "<b>Clinical documentation shows the new list and count</b><br/>Banner '1 edit applies to new drafts only'" }
   ck@{ shape: rect, label: "<b>'Try it on a case' now reads the new list</b><br/>A removed document can no longer be 'still needed'<br/>New case reads the same saved list for its checks" }
   cx@{ shape: trap-t, label: "Click 'Cancel'" }
   cesc@{ shape: trap-t, label: "<b>Press Escape, click the X</b><br/>or click the dimmed area" }
   x1@{ shape: stadium, label: "<b>Modal closes</b><br/>Nothing saved" }
   e1@{ shape: stadium, label: "Edited list is in force for new drafts" }
-  g1@{ shape: subproc, label: "Continues in: Payers › Documents › Try it on a case" }
+  g1@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Try it on a case" }
   g2@{ shape: subproc, label: "Continues in: Payers › Edits waiting › Update drafts" }
   g3@{ shape: subproc, label: "Continues in: Payers › Configuration feeds the rest of the app" }
   s1 --> m --> lvl --> rws

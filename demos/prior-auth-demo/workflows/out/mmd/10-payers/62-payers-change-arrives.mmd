@@ -24,20 +24,20 @@ flowchart TD
   s1@{ shape: rect, label: "Sidebar 'Payers' badge counts it (3 at the start)" }
   s2@{ shape: rect, label: "Payer row in the list: ochre dot and the words 'Change waiting'" }
   s3@{ shape: rect, label: "Header 'Policy status' line starts 'Change waiting for you (...)'" }
-  s4@{ shape: rect, label: "'Changes' tab badge shows 1" }
-  s5@{ shape: odd, label: "<b>Bell notification from Sentinel, unread</b><br/>'Payer rule changed'<br/>Cardinal updated its criteria (version 2026.3). 4 drafts are affected.<br/>This text is fixed and still says 4; the Changes tab counts live<br/>(Harborview's and Evergreen's changes have the badge and dots but no notification)" }
+  s4@{ shape: rect, label: "'History & Changes' tab badge shows 1" }
+  s5@{ shape: odd, label: "<b>Bell notification from Sentinel, unread</b><br/>'Payer rule changed'<br/>Cardinal updated its criteria (version 2026.3). 4 drafts are affected.<br/>This text is fixed and still says 4; the History & Changes card counts live<br/>(Harborview's and Evergreen's changes have the badge and dots but no notification)" }
   end
   st1@{ shape: stadium, label: "Click the bell, then the notification" }
   cn@{ shape: trap-t, label: "Click 'Payer rule changed'" }
-  mr@{ shape: rect, label: "<b>Notification marked read, panel closes</b><br/>Opens /payers/cardinal?tab=changes" }
+  mr@{ shape: rect, label: "<b>Notification marked read, panel closes</b><br/>Opens /payers/cardinal?tab=changes<br/>(the older name, which opens History & Changes)" }
   st2@{ shape: stadium, label: "Ask FLO: 'Why is Cardinal's approval rate down?'" }
   cl@{ shape: trap-t, label: "Click 'Open Payers, Cardinal, Changes'" }
-  st3@{ shape: stadium, label: "<b>Demo menu, suggested path</b><br/>'Payers: Cardinal, Changes'" }
-  st4@{ shape: stadium, label: "<b>Click 'Payers', pick the payer with an ochre dot,</b><br/>click the 'Changes' tab" }
-  ch@{ shape: curv-trap, label: "<b>Changes tab</b><br/>Ochre banner 'Criteria changed, version 2026.3'<br/>'Progress evidence must now include the remaining treatment goals.<br/>Scribe can redraft the 1 draft that is not yet sent: I-2207.<br/>Requests already sent keep what they were sent with.'" }
-  rj@{ shape: rect, label: "<b>Production also allows rejecting or deferring a change.</b><br/>The demo offers only Acknowledge, then Update" }
-  g1@{ shape: subproc, label: "Continues in: Payers › Changes › Acknowledge a change" }
-  g2@{ shape: subproc, label: "Continues in: Payers › Changes › Read what changed" }
+  st3@{ shape: stadium, label: "<b>Demo menu, suggested path</b><br/>'Payers: Cardinal, Changes'<br/>(opens History & Changes)" }
+  st4@{ shape: stadium, label: "<b>Click 'Payers', open the payer with an ochre dot,</b><br/>click the 'History & Changes' tab" }
+  ch@{ shape: curv-trap, label: "<b>History & Changes</b><br/>Ochre card 'Criteria changed, version 2026.3'<br/>'Progress evidence must now include the remaining treatment goals.<br/>Scribe can redraft the 1 draft that is not yet sent: I-2207.<br/>Requests already sent keep what they were sent with.'" }
+  rj@{ shape: rect, label: "<b>Production also allows rejecting or deferring a change.</b><br/>The demo offers only Acknowledge, then Review & apply changes" }
+  g1@{ shape: subproc, label: "Continues in: Payers › History & Changes › Acknowledge a change" }
+  g2@{ shape: subproc, label: "Continues in: Payers › History & Changes › Read what changed" }
   px --> sn --> mp --> pc
   pc -->|"Shows up at once"| s1 & s2 & s3 & s4 & s5
   st1 --> cn --> mr --> ch

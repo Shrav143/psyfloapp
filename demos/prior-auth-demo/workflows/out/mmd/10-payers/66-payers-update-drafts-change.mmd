@@ -16,13 +16,13 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Click 'Update 1 draft'</b><br/>(ready after 'Acknowledge change')" }
+  s1@{ shape: stadium, label: "<b>Click 'Review & apply changes'</b><br/>(ready after 'Acknowledge change')" }
   m@{ shape: win-pane, label: "<b>Update 1 draft?</b><br/>Nothing is redrafted until you confirm.<br/>Reason: criteria changed, version 2026.3." }
   rows@{ shape: curv-trap, label: "<b>One row per unsent draft of this payer</b><br/>Request id, patient initials and age · payer,<br/>level of care chip, status" }
   r1@{ shape: rect, label: "<b>Cardinal's row, read now</b><br/>I-2207 · T.R., 29 · Cardinal · IOP<br/>Draft, not yet sent" }
   who@{ shape: rect, label: "<b>Who is listed</b><br/>Only drafts at the sites in view (Cardinal's I-2207 is at Site B, so Dr. Rivera and a Site A view see none; Both sites and Site B read 'Update 1 draft')<br/>This payer's requests in 'Preparing'<br/>and its saved New case drafts that are not sent<br/>Not listed: Summit's R-1042, Beacon's R-0988,<br/>sent I-2231, I-2218 (a reply on a request the payer has)" }
   fn@{ shape: odd, label: "<b>'Each redrafted case returns to Case Manager for a new signature.</b><br/>Requests already sent keep what they were sent with.'" }
-  cs@{ shape: trap-t, label: "Click 'Update 1 draft'" }
+  cs@{ shape: trap-t, label: "<b>Click 'Update 1 draft'</b><br/>in the pop-up" }
   lock@{ shape: rect, label: "<b>Cancel greys out and the button spins</b><br/>Escape, X and dimmed area do nothing" }
   a1@{ shape: hex, label: "<b>Scribe is redrafting 1 draft</b><br/>(demo: 1.5 seconds)" }
   a2@{ shape: hex, label: "<b>Integrity is checking every sentence</b><br/>against the chart (demo: 1.5 seconds)" }
@@ -38,16 +38,16 @@ flowchart TD
   end
   nt@{ shape: cyl, label: "<b>Bell notification 'Drafts updated' from Scribe</b><br/>1 draft was redrafted after Cardinal's change.<br/>Each needs a new signature in Case Manager." }
   t1@{ shape: odd, label: "<b>'1 draft updated'</b><br/>The change is applied for Cardinal. Each draft returned to<br/>Case Manager for a new signature." }
-  out@{ shape: curv-trap, label: "<b>Changes tab shows one quiet line</b><br/>'Nothing is waiting for you...'<br/>Header Policy status: 'No change waiting. Last acknowledged or applied in Psyflo' today<br/>Sidebar badge drops, row loses 'Change waiting', dot turns green" }
+  out@{ shape: curv-trap, label: "<b>History & Changes shows one quiet line</b><br/>'Nothing is waiting for you...'<br/>Header Policy status: 'No change waiting. Last acknowledged or applied in Psyflo' today<br/>Sidebar badge drops, row loses 'Change waiting', dot turns green" }
   cx@{ shape: trap-t, label: "Click 'Cancel'" }
   cesc@{ shape: trap-t, label: "<b>Press Escape, click the X</b><br/>or click the dimmed area" }
   x1@{ shape: stadium, label: "<b>Modal closes</b><br/>Nothing redrafted, still acknowledged" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Requests table" }
   cb@{ shape: trap-t, label: "<b>Click the bell notification</b><br/>'Drafts updated'" }
   g2@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Updated for a payer change" }
-  g3@{ shape: subproc, label: "Continues in: Payers › Documents › Try it on a case" }
+  g3@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Try it on a case" }
   g4@{ shape: subproc, label: "Continues in: Payers › Edit log" }
-  g5@{ shape: subproc, label: "Continues in: Payers › Changes › A change with no drafts" }
+  g5@{ shape: subproc, label: "Continues in: Payers › History & Changes › A change with no drafts" }
   s1 --> m --> rows
   rows --> r1 --> fn --> cs --> lock --> a1 --> a2 --> lv
   rows -.-> who

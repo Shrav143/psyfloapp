@@ -102,7 +102,7 @@ Page heights at 1440 px wide, before and after: Dashboard 1,856 to 1,562; Author
 
 **EMR Connect.** Connection health at the top (last sync, charts matched, files pulled, sync failures), one Action required line, each system marked read only or read and write back with its switch, and field mappings and the log in a closed Advanced section. "Simulated connection" is said once.
 
-**Payers.** Compact rows by plan type, programs and what is needed; each payer opens with a policy status line that says the rules are demo rules, not verified against the payer's current policy; rules, documents and the key of step types are folded. Kept: edit, add, acknowledge, update drafts, the chart checker.
+**Payers.** (Superseded by the Payer Workflow Studio, section 16.) Compact rows by plan type, programs and what is needed; each payer opens with a policy status line that says the rules are demo rules, not verified against the payer's current policy; rules, documents and the key of step types are folded. Kept: edit, add, acknowledge, update drafts, the chart checker.
 
 **FLO.** Ask FLO suggestions now follow the screen (a case, Case Manager, Denial Intelligence, Eligibility) and the answers are computed from the demo data, name the case, say they are not a payer confirmation, and link to the place. All earlier answers still work.
 
@@ -233,3 +233,18 @@ Exports each agent provides to the others:
 - STUDIO: `WorkflowBuilderTab({ payerId })`, `TestWorkflowTab({ payerId })`, `WorkflowCanvas({ workflow, readOnly, runState?, onChange? })` (also used read-only by New case through `WorkflowViewPanel({ workflowId, version?, trace? })`), `NodeLibrary`, `NodeConfigurationPanel`, `WorkflowSelector`.
 - PAYERS: `PayersLandingPage`, `PayerWorkspace` (four tabs), `RulesInstructionsTab({ payerId })`, `HistoryChangesTab({ payerId })`.
 - CASES: matching and trace in New case (`pages/newcase/**`), the "Workflow" chip and View workflow panel, history lines, and a line on the Case Manager case page.
+
+## 16. Round 5 changelog: Payer Workflow Studio
+
+Payers keeps its sidebar name, its six payer records and everything that already worked (acknowledge a change, review and apply it to open drafts, the Case Manager tag, the chart checker, the edit log, Edit payer, Add a payer, Historian's suggestions). What changed:
+
+- **Landing page** at `/payers`: search, filters for state, insurance type and workflow status, Add payer (organization, product, state), and a table with product and state, published and draft workflow counts, last update, publication status and "Change waiting".
+- **Workspace** at `/payers/:id` with four tabs: Workflow Builder, Rules & Instructions, Test Workflow, History & Changes. The old Process, Rules, Documents and Changes tabs map onto them. The old step-by-step editor is kept as a read-only "Earlier process view (migrated)"; every old process was migrated into a published graph workflow, so nothing was lost.
+- **Workflow Builder**: node library (triggers, verification, clinical documentation, conditions and branching, payer rules, actions, agent steps with prompts and a variable picker, integrations that say Live, Demo simulation or Not configured), canvas (pan, zoom, drag, connect, branch, duplicate, delete, undo and redo, tidy, fit, keyboard operation), a step editor with a condition builder, branches, document checklist, prompt editor and rule picker, templates, "Generate with FLO" (a demo draft, no model), draft and published and archived states, version history with restore, validation that blocks publishing.
+- **Rules & Instructions**: eight groups with provenance (source, effective dates, last verified, owner, version, verification status). All seeded rules are demo samples and Unverified. A rule becomes Verified only when a person gives a source and a date. Edits need a reason and bump the version.
+- **Test Workflow**: a fictional case form with eight presets, one engine shared with New case, an animated path, rules read, warnings, the outcome sentence and "Fix in builder".
+- **History & Changes**: the pending payer change with its impact on workflows and open cases (it never rewrites a submitted packet or switches a case's workflow version), workflow versions, edit audit by area, Historian suggestions.
+- **New case** matches the most specific published workflow (payer, state, product, service, request type, effective dates), shows "Workflow: name · vN", View workflow and Trace, uses a labelled default when nothing matches, shows both names when two match equally, pins the version when the case moves on, offers "Review newer version" and writes the trace to the case history. The blocking rules from round 4 are unchanged: the workflow informs and warns.
+- **Saved in this browser**: workflows, versions, library rules and each payer's saved page persist in localStorage (guarded). A change waiting and the cases and drafts it acts on start over on reload, and Reset demo data restores every seed.
+
+Limits, said plainly in the demo: no live payer rules or policy sources, no live portal, fax, email, API or webhook integrations, "Generate with FLO" is a keyword-driven sample draft, partial node-level overrides are not built, and browser Back cannot be intercepted by the unsaved-changes guard.

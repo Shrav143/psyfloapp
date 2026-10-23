@@ -16,11 +16,11 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "Click the 'Documents' tab" }
-  tab@{ shape: curv-trap, label: "<b>Documents tab</b><br/>Banner if edits wait. Then 'Level of care' and 'Edit list',<br/>the closed list, and 'Try it on a case' below it" }
+  s1@{ shape: stadium, label: "<b>Open 'Clinical documentation' in Rules & Instructions</b><br/>or follow a link with ?tab=documents" }
+  tab@{ shape: curv-trap, label: "<b>Clinical documentation group (opened and in view)</b><br/>Banner above the groups if edits wait<br/>Then 'Level of care' and 'Edit list', the closed list,<br/>'Try it on a case', and clinical-criteria rules" }
   card@{ shape: curv-trap, label: "<b>Closed section 'What Summit wants for Residential 3.5'</b><br/>'Nine documents: ASAM multidimensional assessment,<br/>Psychiatric evaluation or H&P, and 7 more.'" }
   op@{ shape: trap-t, label: "<b>Click the section (or Enter, Space)</b><br/>It opens and closes, and stays open when 'Level of care' changes" }
-  dflt@{ shape: rect, label: "<b>Opens on Residential 3.5 every time</b><br/>the tab or the payer changes<br/>The list is closed again" }
+  dflt@{ shape: rect, label: "<b>Opens on Residential 3.5 every time</b><br/>the view or the payer changes<br/>The list is closed again" }
   lc@{ shape: lean-r, label: "<b>Pick 'Level of care'</b><br/>Residential 3.5, IOP, PHP, Detox" }
   sw@{ shape: rect, label: "<b>Title, count and list switch to that level</b><br/>For Summit: Residential 9, IOP 6, PHP 7, Detox 8" }
   ol@{ shape: curv-trap, label: "<b>Open: numbered list</b><br/>Number, document name in bold,<br/>what it must show in grey<br/>Then 'The agents ask for each one before they write a word.'" }
@@ -32,11 +32,11 @@ flowchart TD
   dU@{ shape: diam, label: "Edits saved but not yet applied?" }
   bU@{ shape: odd, label: "<b>'1 edit applies to new drafts only'</b><br/>New drafts use this at once. Sent requests keep<br/>what they were sent with." }
   ce@{ shape: trap-t, label: "Click 'Edit list'" }
-  gE@{ shape: subproc, label: "Continues in: Payers › Documents › Edit the list" }
-  gC@{ shape: subproc, label: "Continues in: Payers › Documents › Try it on a case" }
+  gE@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Edit the document list" }
+  gC@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Try it on a case" }
   gU@{ shape: subproc, label: "Continues in: Payers › Edits waiting › Update drafts" }
   aft@{ shape: rect, label: "<b>A payer change can add rows</b><br/>Cardinal's 2026.3 change adds 'Remaining treatment goals'<br/>(Named in the latest progress note) to Residential 3.5,<br/>IOP and PHP when the change is updated.<br/>Evergreen's change adds 'Notice call reference number'" }
-  gA@{ shape: subproc, label: "Continues in: Payers › Changes › Update drafts after a change" }
+  gA@{ shape: subproc, label: "Continues in: Payers › History & Changes › Review and apply a change" }
   s1 --> tab --> dU
   dU -->|"Yes"| bU --> gU
   dU -->|"No"| card

@@ -16,10 +16,10 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Open a payer</b><br/>On any of the four tabs" }
+  s1@{ shape: stadium, label: "<b>Open a payer</b><br/>On any of the four views" }
   lab@{ shape: curv-trap, label: "<b>Label under the name</b><br/>'Demo rules. Not verified against the payer's current policy.'<br/>One label, quiet outline, never a banner" }
   tip@{ shape: trap-t, label: "<b>Hover, focus or click the info icon beside it</b><br/>(button 'About these rules')" }
-  tipt@{ shape: win-pane, label: "<b>Info tip opens</b><br/>'Everything on Payers is sample data for this demo.<br/>None of it was read from, or checked against, a payer's current policy.<br/>Where a rule has a source in the data, the Rules tab shows it.'" }
+  tipt@{ shape: win-pane, label: "<b>Info tip opens</b><br/>'Everything on Payers is sample data for this demo.<br/>None of it was read from, or checked against, a payer's current policy.<br/>Where a rule has a source in the data, Rules & Instructions shows it,<br/>and only a person can mark a rule Verified.'" }
   esc@{ shape: trap-t, label: "Press Escape, move away or click elsewhere" }
   cl@{ shape: rect, label: "<b>Tip closes</b><br/>Only the tip: a pop-up behind it stays" }
   ps@{ shape: curv-trap, label: "<b>Line at the foot of the header</b><br/>'Policy status: ...'" }
@@ -28,17 +28,17 @@ flowchart TD
   d2@{ shape: diam, label: "Has a person acknowledged it already?" }
   w2@{ shape: rect, label: "<b>'Change acknowledged, drafts not updated yet (Criteria changed, version 2026.3).'</b><br/>Date: when it was acknowledged" }
   w0@{ shape: rect, label: "'No change waiting.'" }
-  d3@{ shape: diam, label: "<b>Does the Changes log have an entry</b><br/>that is not just the notice of a waiting change?" }
+  d3@{ shape: diam, label: "<b>Does 'What changed' have an entry</b><br/>that is not just the notice of a waiting change?" }
   l1@{ shape: rect, label: "<b>'Last acknowledged or applied in Psyflo 10/12.'</b><br/>Date of the newest handled entry, or when a waiting change was acknowledged" }
   l0@{ shape: rect, label: "'Nothing acknowledged or applied in Psyflo yet.'" }
   d4@{ shape: diam, label: "Is it a payer added with 'Add a payer'?" }
   s1t@{ shape: rect, label: "'Source: Psyflo benchmark, not a payer's policy'" }
   s2t@{ shape: rect, label: "'Source: Demo sample rules, version 2026.3'" }
   nov@{ shape: rect, label: "<b>Not shown anywhere on Payers</b><br/>No 'checked' or 'confirmed' date, no 'published policy', no 'Sentinel keeps watching'" }
-  rl@{ shape: rect, label: "<b>Rules tab: each rule shows 'saved 10/12'</b><br/>Only a rule edited in Psyflo adds 'Source: Edited in Psyflo by {viewer}' (the person viewing when it was saved; Jordan Perez at the start)" }
+  rl@{ shape: rect, label: "<b>Rules & Instructions: every seeded rule says 'Unverified'</b><br/>and 'Source: Demo sample rules, version 2026.3'<br/>A rule edited in Psyflo says who entered it and stays Unverified<br/>Only 'Mark as verified' (a source and a date) makes a rule Verified" }
   e1@{ shape: stadium, label: "The header says where the rules come from and what is waiting" }
-  g1@{ shape: subproc, label: "Continues in: Payers › Changes › Acknowledge a change" }
-  g2@{ shape: subproc, label: "Continues in: Payers › Rules › Read the rules" }
+  g1@{ shape: subproc, label: "Continues in: Payers › History & Changes › Acknowledge a change" }
+  g2@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Read the rules" }
   s1 --> lab --> tip --> tipt --> esc --> cl --> e1
   lab --> ps --> d1
   d1 -->|"Yes"| d2

@@ -32,7 +32,7 @@ flowchart TD
   tStale@{ shape: odd, label: "<b>'Records changed after the agents ran'</b><br/>'Their work was cleared. The agents check again when you continue.'" }
   end
   subgraph gDocs ["Document rows"]
-  pList@{ shape: rect, label: "<b>The list saved on Payers › Documents decides the rows</b><br/>Typed for the Authorization type: 'Typical for a continued stay'<br/>A line that fits no standard document is its own required row" }
+  pList@{ shape: rect, label: "<b>The list saved on Payers › Rules & Instructions › Clinical documentation decides the rows</b><br/>Typed for the Authorization type: 'Typical for a continued stay'<br/>A line that fits no standard document is its own required row" }
   dRow@{ shape: diam, label: "What does the row hold?" }
   rMiss@{ shape: rect, label: "<b>Required, empty: 'Not found yet. Drop it above or add it here.'</b><br/>Buttons 'Add file', 'Use sample file' and 'Mark not available'" }
   rOpt@{ shape: rect, label: "<b>Recommended or typical, empty: 'You can continue without it.'</b><br/>Same three buttons" }

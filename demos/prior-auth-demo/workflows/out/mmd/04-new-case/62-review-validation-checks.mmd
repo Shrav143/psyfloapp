@@ -57,7 +57,7 @@ flowchart TD
   gSign@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Sign and send to payer" }
   gMis@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › What is missing" }
   gDocs@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › Replace a document or mark it not available" }
-  gRules@{ shape: subproc, label: "Continues in: Payers › Rules › Edit a rule" }
+  gRules@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Edit a rule" }
   s1 --> sV --> pRows --> dStart
   dStart -->|"Yes"| pStartOk
   dStart -->|"No"| pStartBad

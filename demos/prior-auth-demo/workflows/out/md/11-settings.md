@@ -230,7 +230,7 @@ flowchart TD
   n1@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Sign and send to payer" }
   n2@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Approve the write-back" }
   n3@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › An agent asks a question" }
-  n4@{ shape: subproc, label: "Continues in: Payers › Changes › Acknowledge a change" }
+  n4@{ shape: subproc, label: "Continues in: Payers › History & Changes › Acknowledge a change" }
   n5@{ shape: subproc, label: "Continues in: Settings › Pause › Pause all agents" }
   n6@{ shape: subproc, label: "Continues in: Settings › Agents › Which steps need a person" }
   n7@{ shape: subproc, label: "Continues in: EMR Connect › Sync › When an agent is paused or asks first" }
@@ -311,7 +311,7 @@ flowchart TD
   h2@{ shape: trap-t, label: "Case owner confirms the write-back" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Sign and send to payer" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Approve the write-back" }
-  g3@{ shape: subproc, label: "Continues in: Payers › Changes › Acknowledge a change" }
+  g3@{ shape: subproc, label: "Continues in: Payers › History & Changes › Acknowledge a change" }
   g4@{ shape: subproc, label: "Continues in: Denial Intelligence › Written appeal › Edit, sign and file" }
   s1 --> q1
   q1 -->|"Read, poll or check: eligibility, packet completeness, status, decision letters"| a1
@@ -780,7 +780,7 @@ flowchart TD
   c3@{ shape: curv-trap, label: "<b>Intelligence</b><br/>Knows how each payer behaves" }
   historian@{ shape: hex, label: "<b>Historian</b><br/>New case run step 4<br/>Denial Intelligence: similar decisions<br/>Payers Changes: proposals" }
   forecaster@{ shape: hex, label: "<b>Forecaster</b><br/>New case run step 6<br/>Case page: re-scores the approval chance" }
-  sentinel@{ shape: hex, label: "<b>Sentinel</b><br/>No screen runs it<br/>Only the notification 'Payer rule changed', which links to Payers › Changes" }
+  sentinel@{ shape: hex, label: "<b>Sentinel</b><br/>No screen runs it<br/>Only the notification 'Payer rule changed', which links to Payers › History & Changes" }
   analyst@{ shape: hex, label: "<b>Analyst</b><br/>Analytics: builds the monthly report" }
   c4@{ shape: curv-trap, label: "<b>Case work</b><br/>Moves each case to done" }
   packet@{ shape: hex, label: "<b>Packet</b><br/>New case run step 9 and a question<br/>Dashboard: drafts the answer to an information request<br/>Payers process steps" }

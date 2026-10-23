@@ -16,14 +16,14 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Click 'Edit'</b><br/>in the payer header" }
+  s1@{ shape: stadium, label: "<b>Click 'Edit payer'</b><br/>in the payer header" }
   m@{ shape: win-pane, label: "<b>Edit payer details</b><br/>Admins can edit. Every edit is logged." }
   subgraph gF ["Fields"]
   i1@{ shape: lean-r, label: "Type 'Plan line'" }
   i2@{ shape: lean-r, label: "<b>Pick 'Reached by'</b><br/>Portal, Phone, Fax, Portal and phone,<br/>Portal and fax, Phone and fax,<br/>Portal, phone and fax" }
   i3@{ shape: lean-r, label: "<b>Type 'Notice due'</b><br/>Example: 24 hours" }
   i4@{ shape: lean-r, label: "<b>Type 'Backup route'</b><br/>Example: phone as backup" }
-  i5@{ shape: lean-r, label: "<b>Type the 'Portal', 'Phone' and 'Fax' lines</b><br/>They feed 'How to reach' on the Process tab" }
+  i5@{ shape: lean-r, label: "<b>Type the 'Portal', 'Phone' and 'Fax' lines</b><br/>They feed the reach lines in Rules & Instructions › Submission methods" }
   i6@{ shape: lean-r, label: "<b>Type 'Reason for the edit' (required)</b><br/>Saved with your name, the time,<br/>the old text and the new text" }
   end
   dv@{ shape: diam, label: "Is the saved 'Reached by' one of the seven?" }
@@ -39,7 +39,7 @@ flowchart TD
   t0@{ shape: odd, label: "'Nothing changed'" }
   st@{ shape: cyl, label: "<b>Payer details saved</b><br/>Header, plan line and 'How to reach' update<br/>A payer added with 'Add a payer' keeps its<br/>entry for other screens in step" }
   lg@{ shape: cyl, label: "<b>One edit log entry per changed field</b><br/>Area 'Payer details', with before, after and reason" }
-  nt@{ shape: cyl, label: "<b>Bell notification 'Evergreen details edited'</b><br/>opens the payer's Process tab" }
+  nt@{ shape: cyl, label: "<b>Bell notification 'Evergreen details edited'</b><br/>opens the payer's History & Changes tab" }
   t1@{ shape: odd, label: "<b>'Payer details saved'</b><br/>The edit is in the log with your reason." }
   nb@{ shape: rect, label: "<b>No 'edit applies to new drafts only' banner</b><br/>Payer details are not part of a draft" }
   e1@{ shape: stadium, label: "<b>Modal closes</b><br/>Header shows the new values" }
@@ -47,7 +47,7 @@ flowchart TD
   cx@{ shape: trap-t, label: "Click 'Cancel'" }
   cesc@{ shape: trap-t, label: "<b>Press Escape, click the X</b><br/>or click the dimmed area<br/>Escape with the 'Reached by' menu open closes the menu first" }
   g1@{ shape: subproc, label: "Continues in: Payers › Edit log" }
-  g2@{ shape: subproc, label: "Continues in: Payers › Process › Reach and Caller instructions" }
+  g2@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Agent instructions and the combined prompt" }
   s1 --> m --> dv
   dv -->|"Yes"| okv --> i1
   dv -->|"No, an old value"| ev --> i1

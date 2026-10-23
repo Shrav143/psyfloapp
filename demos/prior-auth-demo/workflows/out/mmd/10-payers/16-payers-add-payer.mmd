@@ -16,12 +16,15 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Click 'Add a payer'</b><br/>top right of Payers" }
+  s1@{ shape: stadium, label: "<b>Click 'Add a payer'</b><br/>top right of the landing page" }
   m@{ shape: win-pane, label: "<b>Add a payer</b><br/>The agents start with a standard workflow<br/>and learn the rest from decisions." }
   subgraph gF ["Fields in the modal"]
   i1@{ shape: lean-r, label: "<b>Type 'Payer name' (required)</b><br/>Example: Riverbend Health" }
+  iO@{ shape: lean-r, label: "<b>Type 'Organization' (optional)</b><br/>Empty: the payer's own name is used" }
+  iP@{ shape: lean-r, label: "<b>Type 'Product' (optional)</b><br/>Example: Medicaid HMO<br/>Empty: the plan type is used" }
+  iS@{ shape: lean-r, label: "<b>Pick 'State'</b><br/>Ohio unless changed; every state is listed" }
+  i3@{ shape: lean-r, label: "<b>Pick 'Insurance type'</b><br/>Ohio Medicaid, Commercial,<br/>Medicare Advantage, Behavioral carve-out<br/>Groups the payer and filters the list" }
   i2@{ shape: lean-r, label: "<b>Pick 'Plan type'</b><br/>Managed care plan, PPO,<br/>Medicare Advantage, Carve-out" }
-  i3@{ shape: lean-r, label: "<b>Pick 'Group'</b><br/>Ohio Medicaid, Commercial,<br/>Medicare Advantage, Behavioral carve-out" }
   i4@{ shape: lean-r, label: "<b>Tick 'How it is reached'</b><br/>Portal (ticked), Phone, Fax" }
   i5@{ shape: lean-r, label: "<b>Tick 'Programs it covers'</b><br/>Residential 3.5, IOP, PHP ticked<br/>Detox not ticked" }
   end
@@ -35,20 +38,20 @@ flowchart TD
   e1b@{ shape: odd, label: "<b>Under the name box:</b><br/>'There is already a payer called<br/>Beacon PPO. Use a different name.'" }
   e2@{ shape: odd, label: "Choose at least one way to reach the payer." }
   e3@{ shape: odd, label: "Choose at least one program." }
-  st@{ shape: cyl, label: "<b>Payer saved with a full starter set</b><br/>Workflow v1 (six steps for how it is reached)<br/>Four rules, document lists for all four levels of care<br/>Figures marked as benchmark estimates" }
+  st@{ shape: cyl, label: "<b>Payer saved with a full starter set</b><br/>The organization, state and product it was added with<br/>Four rules, document lists for all four levels of care<br/>The earlier process (six steps for how it is reached)<br/>Figures marked as benchmark estimates" }
   rb@{ shape: rect, label: "<b>'Reached by' is written in a fixed order</b><br/>Portal, phone, fax: 'Portal, phone and fax'<br/>so it is always one of the seven listed values" }
   lg@{ shape: cyl, label: "<b>Edit log gets 'Added a payer'</b><br/>Reason 'Payer added'" }
   tt@{ shape: odd, label: "<b>'Riverbend Health was added'</b><br/>Starter workflow, rules and documents are ready.<br/>Figures are benchmark estimates." }
-  nav@{ shape: rect, label: "<b>Modal closes</b><br/>Opens /payers/custom-riverbend-health?tab=process" }
-  pg@{ shape: curv-trap, label: "<b>New payer's Process tab</b><br/>Title now counts 7 payers<br/>Row in its group, green dot<br/>Header: plan type, the chosen programs, needs, source 'Psyflo benchmark, not a payer's policy'" }
+  nav@{ shape: rect, label: "<b>Modal closes</b><br/>Opens /payers/custom-riverbend-health<br/>(the workspace, on Workflow Builder)" }
+  pg@{ shape: curv-trap, label: "<b>New payer's workspace</b><br/>Header: organization · product · state, the plan line,<br/>source 'Psyflo benchmark, not a payer's policy'<br/>Landing page now counts 7 payers, the row sits in its group,<br/>and the state filter lists its state" }
   other@{ shape: rect, label: "<b>The payer is also saved where other screens read it</b><br/>New case offers it wherever a payer is picked,<br/>and reads its document list and rules like any payer" }
   cx@{ shape: trap-t, label: "Click 'Cancel'" }
   cesc@{ shape: trap-t, label: "<b>Press Escape, click the X</b><br/>or click the dimmed area<br/>Escape with a menu open closes the menu first" }
   x1@{ shape: stadium, label: "<b>Modal closes</b><br/>Nothing was added" }
   e@{ shape: stadium, label: "New payer is ready to edit" }
-  g1@{ shape: subproc, label: "Continues in: Payers › Process › Read the workflow" }
+  g1@{ shape: subproc, label: "Continues in: Payers › Workflow Builder › Read a workflow" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Patient, insurance and request rows" }
-  s1 --> m --> i1 --> i2 --> i3 --> i4 --> i5 --> ca
+  s1 --> m --> i1 --> iO --> iP --> iS --> i3 --> i2 --> i4 --> i5 --> ca
   i1 -.-> clr
   i4 -.-> clr
   ca --> v1
@@ -67,7 +70,7 @@ flowchart TD
   m --> cesc --> x1
   class s1 k_start
   class m k_overlay
-  class i1,i2,i3,i4,i5 k_input
+  class i1,iO,iP,iS,i3,i2,i4,i5 k_input
   class clr,rb,nav,other k_process
   class ca,cx,cesc k_click
   class v1,v1b,v2,v3 k_decision

@@ -16,49 +16,63 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Open a rule (click its row), then click its 'Edit'</b><br/>Example: 'Edit Backdating'" }
-  m@{ shape: win-pane, label: "<b>Edit backdating</b><br/>One rule per line. New drafts use this at once.<br/>Sent requests keep what they were sent with.<br/>Click Update drafts to redraft open ones." }
-  i1@{ shape: lean-r, label: "<b>Type in 'Rules'</b><br/>One line per rule, starting from the saved lines" }
-  i2@{ shape: lean-r, label: "<b>Type 'Reason for the edit' (required)</b><br/>Example: Summit confirmed the new window on a call" }
+  s1@{ shape: stadium, label: "<b>Open a group, open a rule row,</b><br/>click 'Edit'" }
+  pn@{ shape: win-pane, label: "<b>Edit rule (right-hand panel)</b><br/>'Submission windows. Version 1 now, 2 when you save.'" }
+  f1@{ shape: curv-trap, label: "Title, 'What it says'" }
+  f2@{ shape: curv-trap, label: "<b>Structured values for that rule</b><br/>Toggle (Authorization required), number with its unit (Window, days),<br/>choice (Counted in: Business days or Calendar days), short text (Portal, Phone, Fax),<br/>long text (Exceptions, Historical-date rule, Documentation prerequisites)<br/>'Other values for this group' holds the rest of the group's values" }
+  f3@{ shape: curv-trap, label: "<b>Instructions</b><br/>Free text for people and agents<br/>For a read-through rule it is the payer's saved lines, one per line" }
+  f4@{ shape: curv-trap, label: "<b>Closed 'Applies to and dates'</b><br/>Services, request types (none ticked means all),<br/>Effective from, Effective until, Product, Provider type" }
+  i1@{ shape: lean-r, label: "Change a value, the text or a date" }
+  cnt@{ shape: rect, label: "<b>Footer counts the changes</b><br/>'2 changes not saved yet'" }
+  sv@{ shape: trap-t, label: "Click 'Save rule'" }
+  dt@{ shape: diam, label: "Is the title empty?" }
+  et@{ shape: odd, label: "Under the title: 'Add a title.'" }
+  dn@{ shape: diam, label: "Did anything change?" }
+  nc@{ shape: rect, label: "<b>The panel closes</b><br/>Nothing is saved or logged" }
+  rm@{ shape: win-pane, label: "<b>Save the rule?</b><br/>This becomes version 2. (A verified rule goes back to Needs review.)<br/>Workflows that use it read the new version; History & Changes lists what it touches.<br/>List of the changes" }
+  ir@{ shape: lean-r, label: "Type 'Reason for the edit' (required)" }
   cs@{ shape: trap-t, label: "Click 'Save and log the edit'" }
-  d1@{ shape: diam, label: "Is the reason empty?" }
+  dre@{ shape: diam, label: "Is the reason empty?" }
   er@{ shape: odd, label: "Add a reason. It goes in the edit log." }
-  tr@{ shape: rect, label: "<b>Split on line breaks</b><br/>Trim each line, drop blank lines" }
-  d2@{ shape: diam, label: "<b>Are there lines left, and</b><br/>do they differ from the saved ones?" }
-  t0@{ shape: odd, label: "<b>'Nothing changed'</b><br/>Edit at least one line, and keep at least one rule." }
-  x0@{ shape: stadium, label: "<b>Modal closes</b><br/>Nothing saved" }
-  st@{ shape: cyl, label: "<b>Rule lines replaced</b><br/>'Saved' date becomes today<br/>The rule gets 'Source: Edited in Psyflo by {viewer}' (the person viewing, Jordan Perez at the start)" }
-  lg@{ shape: cyl, label: "<b>Edit log entry, area 'Rules'</b><br/>Rule name, before and after (lines joined with semicolons), reason" }
-  un@{ shape: cyl, label: "'Edits waiting' goes up by one" }
-  nt@{ shape: cyl, label: "<b>Bell notification 'Summit rule edited'</b><br/>opens the payer's Rules tab" }
-  t1@{ shape: odd, label: "<b>'Backdating saved'</b><br/>New drafts use it at once.<br/>Click Update drafts to redraft open ones." }
-  bn@{ shape: curv-trap, label: "<b>The rule row shows the new first line</b><br/>Open, it shows the new lines and the source<br/>Banner '1 edit applies to new drafts only'" }
-  e1@{ shape: stadium, label: "<b>New drafts use the rule from now on</b><br/>New case reads it the next time it draws" }
-  cx@{ shape: trap-t, label: "Click 'Cancel'" }
-  cesc@{ shape: trap-t, label: "<b>Press Escape, click the X</b><br/>or click the dimmed area" }
-  x1@{ shape: stadium, label: "<b>Modal closes</b><br/>Nothing saved, typed text discarded" }
+  dk@{ shape: diam, label: "Where does the rule live?" }
+  pc@{ shape: cyl, label: "<b>A rule read through from the payer's saved rules</b><br/>The change is written back as that payer's saved lines, documents or script<br/>'Edits waiting' goes up by one for rules and document lists<br/>New drafts use it at once" }
+  lb@{ shape: cyl, label: "<b>A rule the library owns</b><br/>Saved in the library with a new version and a history line" }
+  lg@{ shape: cyl, label: "<b>Edit audit gets one line per changed value</b><br/>Area 'Rules' (or 'Documents', 'Caller instructions', 'Payer details')<br/>with before, after, your name, the time and the reason" }
+  vs@{ shape: cyl, label: "<b>Version goes up by one</b><br/>Last verified date stays until it is verified again" }
+  t1@{ shape: odd, label: "<b>Saved toast</b><br/>New drafts use it at once.<br/>Click Update drafts to redraft open ones." }
+  out@{ shape: curv-trap, label: "<b>Row shows the new values and 'Version 2'</b><br/>Banner '1 edit applies to new drafts only' (rules and document lists)" }
+  cx@{ shape: trap-t, label: "<b>Click 'Cancel', the X, or press Escape</b><br/>Escape closes the reason pop-up first, then the panel" }
+  x1@{ shape: stadium, label: "<b>Panel closes</b><br/>Nothing saved" }
+  e1@{ shape: stadium, label: "Edited rule is in force for new drafts" }
   g1@{ shape: subproc, label: "Continues in: Payers › Edits waiting › Update drafts" }
-  g2@{ shape: subproc, label: "Continues in: Payers › Configuration feeds the rest of the app" }
-  g3@{ shape: subproc, label: "Continues in: Payers › Edit log" }
-  s1 --> m --> i1 --> i2 --> cs --> d1
-  d1 -->|"Yes"| er --> i2
-  d1 -->|"No"| tr --> d2
-  d2 -->|"No"| t0 --> x0
-  d2 -->|"Yes"| st --> lg --> un --> nt --> t1 --> bn --> e1
-  bn --> g1
-  e1 -.-> g2
-  lg -.-> g3
-  m --> cx --> x1
-  m --> cesc --> x1
+  g2@{ shape: subproc, label: "Continues in: Payers › Edit log" }
+  g3@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Mark a rule as verified" }
+  g4@{ shape: subproc, label: "Continues in: Payers › Configuration feeds the rest of the app" }
+  s1 --> pn --> f1 --> f2 --> f3 --> f4 --> i1 --> cnt --> sv --> dt
+  dt -->|"Yes"| et --> f1
+  dt -->|"No"| dn
+  dn -->|"No"| nc --> x1
+  dn -->|"Yes"| rm --> ir --> cs --> dre
+  dre -->|"Yes"| er --> ir
+  dre -->|"No"| dk
+  dk -->|"Payer's saved rules"| pc --> lg
+  dk -->|"Library"| lb --> lg
+  lg --> vs --> t1 --> out --> e1
+  pn --> cx --> x1
+  rm --> cx
+  out --> g1
+  lg -.-> g2
+  out -.-> g3
+  pc -.-> g4
   class s1 k_start
-  class m k_overlay
-  class i1,i2 k_input
-  class cs,cx,cesc k_click
-  class d1,d2 k_decision
-  class er,t0,t1 k_toast
-  class tr k_process
-  class x0,x1 k_endx
-  class st,lg,un,nt k_store
-  class bn k_screen
+  class pn,rm k_overlay
+  class f1,f2,f3,f4,out k_screen
+  class i1,ir k_input
+  class cnt,nc k_process
+  class sv,cs,cx k_click
+  class dt,dn,dre,dk k_decision
+  class et,er,t1 k_toast
+  class pc,lb,lg,vs k_store
+  class x1 k_endx
   class e1 k_end
-  class g1,g2,g3 k_goto
+  class g1,g2,g3,g4 k_goto

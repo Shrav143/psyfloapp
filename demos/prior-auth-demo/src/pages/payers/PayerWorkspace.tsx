@@ -50,7 +50,7 @@ export function PayerWorkspace({ id }: { id: string }) {
   return (
     <Page>
       <Crumbs items={[{ label: "Payers", to: paths.payers() }, { label: row.name }]} />
-      <PayerHeader row={row} cfg={cfg} edits={mine.length} onEdit={() => setDialog("edit")} onLog={() => setDialog("log")} />
+      <PayerHeader row={row} cfg={cfg} edits={mine.length} onEdit={() => setDialog("edit")} onLog={() => setDialog("log")} compact={tab === "builder" || tab === "test"} />
       <PayerTabs<PayerTabId> value={tab} onChange={setTab} tabs={PAYER_TABS.map((t) => ({ id: t, label: TAB_LABEL[t], waiting: t === "history" ? waitingCount(cfg) : 0 }))} />
       <div id="payer-panel" role="tabpanel" aria-labelledby={`payer-tab-${tab}`} className="flex min-w-0 flex-col gap-4">
         {tab === "rules" || tab === "history" ? <Unapplied id={id} name={row.shortName} cfg={cfg} /> : null}

@@ -16,9 +16,9 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>A workflow, rule or document-list</b><br/>edit was just saved" }
-  un@{ shape: cyl, label: "<b>'Edits waiting' for this payer goes up by one</b><br/>Payer details and Caller script edits do not count" }
-  bn@{ shape: curv-trap, label: "<b>Ochre banner on Process, Rules and Documents</b><br/>'1 edit applies to new drafts only'<br/>'2 edits apply...' after a second edit" }
+  s1@{ shape: stadium, label: "<b>A saved rule, an edit to a document list</b><br/>or an accepted suggestion" }
+  un@{ shape: cyl, label: "<b>'Edits waiting' for this payer goes up by one</b><br/>Payer details and Caller script edits do not count<br/>A workflow draft or a publish does not count:<br/>cases keep the workflow version they started with" }
+  bn@{ shape: curv-trap, label: "<b>Ochre banner on Rules & Instructions and History & Changes</b><br/>'1 edit applies to new drafts only'<br/>'2 edits apply...' after a second edit" }
   dr@{ shape: diam, label: "<b>Does this payer have an unsent draft at a site in view?</b><br/>A request in 'Preparing', or a New case draft<br/>that is saved and not sent. Summit's two are R-1042 and R-1101: both sites show 2" }
   b1@{ shape: odd, label: "<b>New drafts for Summit use this at once.</b><br/>Sent requests keep what they were sent with.<br/>Click Update drafts to redraft the open ones (R-1042, R-1101).<br/>Button: 'Update 2 drafts'" }
   b0@{ shape: odd, label: "<b>New drafts for Evergreen use this at once.</b><br/>Sent requests keep what they were sent with.<br/>There are no open drafts for this payer right now.<br/>Button: 'Update drafts'" }
