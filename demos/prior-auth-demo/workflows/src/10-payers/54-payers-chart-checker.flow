@@ -1,9 +1,9 @@
-title: Payers › Documents › Try it on a case
+title: Payers › Rules & Instructions › Try it on a case
 route: /payers/cardinal?tab=documents
 intro: 'Try it on a case' lets Reader read a chart against this payer's list. The chart is either a sample chart for a case still in 'Preparing', or text pasted into 'Paste chart text'. It is read only and sends nothing. A document only counts as missing when the payer's list actually asks for it.
 dir: TD
 ---
-start s1 "Look at the card 'Try it on a case'\nbelow the document list\nCheck a chart against this list\nIts info icon holds the note on keyword matching"
+start s1 "Look at the card 'Try it on a case'\nbelow the document list\nin the Clinical documentation group\nCheck a chart against this list\nIts info icon holds the note on keyword matching"
 decision hc "Is any case in 'Preparing' at a site in view?\n(the Case menu lists only those; a case at the other site is never offered)"
 toast nc "Menu shows 'No cases to check'"
 process df "Case starts as the first 'Preparing' case for this payer,\nelse the first 'Preparing' case at all\nCardinal: I-2207"
@@ -39,7 +39,7 @@ click ol "Click 'Open the request'"
 goto g1 "Continues in: Dashboard › Open a request"
 process why "Edit the list and check again to see it change\nCardinal's list asks for 'Remaining treatment goals' only after\nits criteria change is updated, so I-2207 then reads '5 of 7 ready'"
 toast info "'New case checks documents against this same list.\nPasted text is matched by keyword, so a document that\nis named differently can be missed.'"
-goto g2 "Continues in: Payers › Documents › Edit the list"
+goto g2 "Continues in: Payers › Rules & Instructions › Edit the document list"
 goto g3 "Continues in: Authorizations › New case › Clinical documentation › The checklist and Continue"
 
 s1 --> hc

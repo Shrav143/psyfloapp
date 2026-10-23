@@ -10,6 +10,7 @@ import { StartAgentsModal } from "./StartAgentsModal";
 import { StepFooter } from "./StepFooter";
 import { stepPatch } from "./steps";
 import { useUnmetSync } from "./useUnmetSync";
+import { foldWorkflow } from "./workflow/fold";
 
 /** Step 3, Clinical documentation: drop what you have, watch the list tick off, add what is missing. The required items come from the payer's saved list for the level of care;
     what is typical for this type of request is labelled as typical. Nothing here blocks: what is missing is listed again, with a fix, on Review & submit. */
@@ -55,7 +56,7 @@ export function DocumentationStep({ draft, env }: { draft: CaseDraft; env: CaseE
             </Button>
           </>
         }
-        hint={r.missingRequired.length ? `Not in yet: ${names}. You can go on; Review & submit lists what is missing.` : "Nothing is sent to the payer until a clinician signs."}
+        hint={foldWorkflow(r.missingRequired.length ? `Not in yet: ${names}. You can go on; Review & submit lists what is missing.` : "Nothing is sent to the payer until a clinician signs.", env)}
       />
       <StartAgentsModal
         draft={draft}

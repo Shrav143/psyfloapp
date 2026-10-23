@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, FileText } from "lucide-react";
 import { Button, Card, CardBody, CardHeader, Chance, Chip, Crumbs, Disclosure, KeyValue, Meter, Page, PageHeader, Pill, Timeline } from "@/components/ui";
@@ -14,6 +14,7 @@ import { useStore } from "@/store";
 import { REVIEW_STATUS_LABEL, REVIEW_STATUS_TONE, STATUS_TONE, clockText, reviewLink, runsOutBeforeReview, usedShare, usedText } from "./helpers";
 import { authWindow, caseHistory, nextStep, reviewsOf } from "./ledgerCase";
 import type { LedgerRow } from "./ledgerRows";
+import { useWorkflowLine } from "./useWorkflowLine";
 
 /** A case that is in the Case Manager ledger but has no request in the queue: a calm summary from the ledger record, with the one action that fits. */
 export default function LedgerCasePage({ row }: { row: LedgerRow }) {
@@ -21,7 +22,8 @@ export default function LedgerCasePage({ row }: { row: LedgerRow }) {
   const clock = useStore((s) => s.clock);
   const all = useStore((s) => s.reviews);
   const mine = useMemo(() => reviewsOf(row, all), [row, all]);
-  const history = useMemo(() => caseHistory(row, mine, clock), [row, mine, clock]);
+  const workflow = useWorkflowLine(row);
+  const history = useMemo(() => [...caseHistory(row, mine, clock), ...(workflow?.events ?? [])], [row, mine, clock, workflow]);
 
   const payer = payerById(row.payerId);
   const win = authWindow(row);
@@ -62,6 +64,7 @@ export default function LedgerCasePage({ row }: { row: LedgerRow }) {
                 ["Patient", `${row.initials}, ${row.age}`],
                 ["Payer", payer.name],
                 ["Service", `${row.note} · ${PROGRAM_LABEL[row.program]}`],
+                ...(workflow ? ([["Workflow", <span key="wf" data-testid="case-workflow">{workflow.text}{workflow.usedDefault ? <span className="font-normal text-muted"> · illustrative default</span> : null}</span>]] as [string, ReactNode][]) : []),
                 ["Authorization", win ? `${reviewDate(win.start)} to ${reviewDate(win.end)}` : <span className="font-normal text-muted">Not approved yet</span>],
                 [
                   "Units used",

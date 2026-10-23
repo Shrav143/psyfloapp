@@ -8,6 +8,7 @@ import { payerById } from "@/data/seed";
 import { SITES, siteName, type SiteId } from "@/data/sites";
 import { DAY, shortDate, toDate } from "@/lib/time";
 import { docEntries } from "@/pages/newcase/documents";
+import type { AppliedWorkflow } from "@/data/workflow/types";
 import { shortSpan } from "./queueLogic";
 
 /* The authorization facts row at the top of the case page. A fact appears only when this request has the data for it:
@@ -65,9 +66,11 @@ interface Input {
   clock: number;
   /** The case's site, or null when the viewer can see only one site (then a site label tells them nothing). */
   site?: SiteId | null;
+  /** The payer workflow the case follows, when it has one (set in New case). */
+  workflow?: Pick<AppliedWorkflow, "name" | "version" | "usedDefault"> | null;
 }
 
-export function authFacts({ detail, live, ledger, docs, clock, site }: Input): Fact[] {
+export function authFacts({ detail, live, ledger, docs, clock, site, workflow }: Input): Fact[] {
   const out: Fact[] = [{ label: "Request type", value: detail.type }];
   const unit = ledger?.unit ?? (detail.program === "IOP" ? "units" : "days");
   out.push({ label: "Requested", value: count(detail.days, unit) });
@@ -91,6 +94,8 @@ export function authFacts({ detail, live, ledger, docs, clock, site }: Input): F
     const n = docs.missing.length;
     out.push({ label: "Documents", value: n === 0 ? "Complete" : `${docs.have} of ${docs.total}`, note: n === 0 ? `All ${docs.total} in the packet` : n <= 2 ? `Missing: ${docs.missing.join(", ")}` : `${n} missing` });
   }
+
+  if (workflow) out.push({ label: "Workflow", value: workflow.name, note: workflow.usedDefault ? "Illustrative default" : `Version ${workflow.version}` });
 
   const w = waitingOn(detail, live);
   if (w) out.push({ label: "Waiting on", value: w.who, note: w.note });

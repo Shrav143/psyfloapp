@@ -1,13 +1,13 @@
 title: Payers › Header › Policy status and the demo-rules label
 route: /payers/cardinal
-intro: Everything in this demo is sample data, so no rule may look verified by a payer. The header carries one quiet label next to the name, with the explanation in an info tip, and one line called Policy status. The date is the newest entry of the Changes log that a person handled in Psyflo. No verification date is invented, and nothing says a payer confirmed a rule.
+intro: Everything in this demo is sample data, so no rule may look verified by a payer. The header carries one quiet label next to the name, with the explanation in an info tip, and one line called Policy status. The date is the newest entry of the 'What changed' history (History & Changes) that a person handled in Psyflo. No verification date is invented, and nothing says a payer confirmed a rule.
 dir: TD
 also: Demo only: the rules, documents and workflows are invented. In the product a rule would carry a source and a confidence (published, payer-confirmed, observed, staff-reported, unconfirmed).
 ---
-start s1 "Open a payer\nOn any of the four tabs"
+start s1 "Open a payer\nOn any of the four views"
 screen lab "Label under the name\n'Demo rules. Not verified against the payer's current policy.'\nOne label, quiet outline, never a banner"
 click tip "Hover, focus or click the info icon beside it\n(button 'About these rules')"
-overlay tipt "Info tip opens\n'Everything on Payers is sample data for this demo.\nNone of it was read from, or checked against, a payer's current policy.\nWhere a rule has a source in the data, the Rules tab shows it.'"
+overlay tipt "Info tip opens\n'Everything on Payers is sample data for this demo.\nNone of it was read from, or checked against, a payer's current policy.\nWhere a rule has a source in the data, Rules & Instructions shows it,\nand only a person can mark a rule Verified.'"
 click esc "Press Escape, move away or click elsewhere"
 process cl "Tip closes\nOnly the tip: a pop-up behind it stays"
 screen ps "Line at the foot of the header\n'Policy status: ...'"
@@ -16,17 +16,17 @@ process w1 "'Change waiting for you (Criteria changed, version 2026.3, effective
 decision d2 "Has a person acknowledged it already?"
 process w2 "'Change acknowledged, drafts not updated yet (Criteria changed, version 2026.3).'\nDate: when it was acknowledged"
 process w0 "'No change waiting.'"
-decision d3 "Does the Changes log have an entry\nthat is not just the notice of a waiting change?"
+decision d3 "Does 'What changed' have an entry\nthat is not just the notice of a waiting change?"
 process l1 "'Last acknowledged or applied in Psyflo 10/12.'\nDate of the newest handled entry, or when a waiting change was acknowledged"
 process l0 "'Nothing acknowledged or applied in Psyflo yet.'"
 decision d4 "Is it a payer added with 'Add a payer'?"
 process s1t "'Source: Psyflo benchmark, not a payer's policy'"
 process s2t "'Source: Demo sample rules, version 2026.3'"
 process nov "Not shown anywhere on Payers\nNo 'checked' or 'confirmed' date, no 'published policy', no 'Sentinel keeps watching'"
-process rl "Rules tab: each rule shows 'saved 10/12'\nOnly a rule edited in Psyflo adds 'Source: Edited in Psyflo by {viewer}' (the person viewing when it was saved; Jordan Perez at the start)"
+process rl "Rules & Instructions: every seeded rule says 'Unverified'\nand 'Source: Demo sample rules, version 2026.3'\nA rule edited in Psyflo says who entered it and stays Unverified\nOnly 'Mark as verified' (a source and a date) makes a rule Verified"
 end e1 "The header says where the rules come from and what is waiting"
-goto g1 "Continues in: Payers › Changes › Acknowledge a change"
-goto g2 "Continues in: Payers › Rules › Read the rules"
+goto g1 "Continues in: Payers › History & Changes › Acknowledge a change"
+goto g2 "Continues in: Payers › Rules & Instructions › Read the rules"
 
 s1 --> lab --> tip --> tipt --> esc --> cl --> e1
 lab --> ps --> d1

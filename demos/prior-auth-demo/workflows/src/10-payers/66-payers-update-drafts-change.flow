@@ -1,15 +1,15 @@
-title: Payers › Changes › Update drafts after a change
-route: /payers/cardinal?tab=changes
-intro: The second gate. Once a payer's change is acknowledged, 'Update 1 draft' lists exactly this payer's unsent drafts, read live from the Dashboard requests and the saved New case drafts, then two agents redraft for about three seconds. Drafts return to Case Manager for a new signature. A request that was already sent is never listed or rewritten.
+title: Payers › History & Changes › Review and apply a change
+route: /payers/cardinal?tab=history
+intro: The second gate. Once a payer's change is acknowledged, 'Review & apply changes' opens the Update drafts step. It lists exactly this payer's unsent drafts, read live from the Dashboard requests and the saved New case drafts, then two agents redraft for about three seconds. Drafts return to Case Manager for a new signature. A request that was already sent is never listed or rewritten, and no case moves to another workflow version: a person reviews that case by case.
 dir: TD
 ---
-start s1 "Click 'Update 1 draft'\n(ready after 'Acknowledge change')"
+start s1 "Click 'Review & apply changes'\n(ready after 'Acknowledge change')"
 overlay m "Update 1 draft?\nNothing is redrafted until you confirm.\nReason: criteria changed, version 2026.3."
 screen rows "One row per unsent draft of this payer\nRequest id, patient initials and age · payer,\nlevel of care chip, status"
 process r1 "Cardinal's row, read now\nI-2207 · T.R., 29 · Cardinal · IOP\nDraft, not yet sent"
 process who "Who is listed\nOnly drafts at the sites in view (Cardinal's I-2207 is at Site B, so Dr. Rivera and a Site A view see none; Both sites and Site B read 'Update 1 draft')\nThis payer's requests in 'Preparing'\nand its saved New case drafts that are not sent\nNot listed: Summit's R-1042, Beacon's R-0988,\nsent I-2231, I-2218 (a reply on a request the payer has)"
 toast fn "'Each redrafted case returns to Case Manager for a new signature.\nRequests already sent keep what they were sent with.'"
-click cs "Click 'Update 1 draft'"
+click cs "Click 'Update 1 draft'\nin the pop-up"
 process lock "Cancel greys out and the button spins\nEscape, X and dimmed area do nothing"
 agent a1 "Scribe is redrafting 1 draft\n(demo: 1.5 seconds)"
 agent a2 "Integrity is checking every sentence\nagainst the chart (demo: 1.5 seconds)"
@@ -26,16 +26,16 @@ group gU "What the update does"
 endgroup
 store nt "Bell notification 'Drafts updated' from Scribe\n1 draft was redrafted after Cardinal's change.\nEach needs a new signature in Case Manager."
 toast t1 "'1 draft updated'\nThe change is applied for Cardinal. Each draft returned to\nCase Manager for a new signature."
-screen out "Changes tab shows one quiet line\n'Nothing is waiting for you...'\nHeader Policy status: 'No change waiting. Last acknowledged or applied in Psyflo' today\nSidebar badge drops, row loses 'Change waiting', dot turns green"
+screen out "History & Changes shows one quiet line\n'Nothing is waiting for you...'\nHeader Policy status: 'No change waiting. Last acknowledged or applied in Psyflo' today\nSidebar badge drops, row loses 'Change waiting', dot turns green"
 click cx "Click 'Cancel'"
 click cesc "Press Escape, click the X\nor click the dimmed area"
 endx x1 "Modal closes\nNothing redrafted, still acknowledged"
 goto g1 "Continues in: Dashboard › Requests table"
 click cb "Click the bell notification\n'Drafts updated'"
 goto g2 "Continues in: Case Manager › Active cases › Updated for a payer change"
-goto g3 "Continues in: Payers › Documents › Try it on a case"
+goto g3 "Continues in: Payers › Rules & Instructions › Try it on a case"
 goto g4 "Continues in: Payers › Edit log"
-goto g5 "Continues in: Payers › Changes › A change with no drafts"
+goto g5 "Continues in: Payers › History & Changes › A change with no drafts"
 
 s1 --> m --> rows
 rows --> r1 --> fn --> cs --> lock --> a1 --> a2 --> lv

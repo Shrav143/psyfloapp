@@ -1,4 +1,4 @@
-title: Payers › Documents › Edit the list
+title: Payers › Rules & Instructions › Edit the document list
 route: /payers/summit?tab=documents
 intro: 'Edit list' changes the documents for the one level of care shown. Rows can be renamed, added and removed; there is no reordering. A reason is required and each change is logged. New drafts use the list at once, sent requests keep what they were sent with, and open drafts wait for 'Update drafts'.
 dir: TD
@@ -24,15 +24,15 @@ toast t0 "'Nothing changed'"
 store st "Document list for that level of care replaced"
 store lg "One edit log entry per change\nArea 'Documents'"
 store un "'Edits waiting' goes up by one"
-store nt "Bell notification 'Summit document list edited'\nopens the payer's Documents tab"
+store nt "Bell notification 'Summit document list edited'\nopens Rules & Instructions at Clinical documentation"
 toast t1 "'Residential 3.5 list saved'\nNew drafts use it at once.\nClick Update drafts to redraft open ones."
-screen out "Documents tab shows the new list and count\nBanner '1 edit applies to new drafts only'"
+screen out "Clinical documentation shows the new list and count\nBanner '1 edit applies to new drafts only'"
 process ck "'Try it on a case' now reads the new list\nA removed document can no longer be 'still needed'\nNew case reads the same saved list for its checks"
 click cx "Click 'Cancel'"
 click cesc "Press Escape, click the X\nor click the dimmed area"
 endx x1 "Modal closes\nNothing saved"
 end e1 "Edited list is in force for new drafts"
-goto g1 "Continues in: Payers › Documents › Try it on a case"
+goto g1 "Continues in: Payers › Rules & Instructions › Try it on a case"
 goto g2 "Continues in: Payers › Edits waiting › Update drafts"
 goto g3 "Continues in: Payers › Configuration feeds the rest of the app"
 

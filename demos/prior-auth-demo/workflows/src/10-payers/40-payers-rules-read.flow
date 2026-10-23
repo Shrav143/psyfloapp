@@ -1,43 +1,53 @@
-title: Payers › Rules › Read the rules
+title: Payers › Rules & Instructions › Read the rules
 route: /payers/summit?tab=rules
-intro: Four rules for one payer, each closed on its first line. A rule opens to a few plain lines with the agents that use it and the date it was last saved in Psyflo. The saved lines are what New case reads for this payer; editing them is the next diagram. The rules are demo data: none is shown as verified by the payer. In the product, each field would carry a source and a confidence (published, payer-confirmed, observed, staff-reported, unconfirmed).
+intro: One calm page of eight closed groups, each with a one-line summary and a count. A group opens to its rule rows. A rule is stored once, with where it comes from and whether a person verified it, and workflows point at it. Every seeded rule is a demo sample and says Unverified; nothing here says a payer confirmed anything. Where the payer's saved rules already hold a rule (submission windows, backdating, no authorization needed, peer-to-peer and appeals, document lists, the Caller script, the reach lines), the row is read through from them, so Eligibility and New case keep reading the same data.
 dir: TD
 ---
-start s1 "Click the 'Rules' tab"
-screen tab "Rules tab\nBanner if edits wait, then one card 'Rules the agents follow'\nwith an info icon and four closed rules"
-decision dU "Edits saved but not yet\napplied to open drafts?"
-toast bU "'1 edit applies to new drafts only'\nwith 'Update 2 drafts'\nSent requests keep what they were sent with"
-goto gU "Continues in: Payers › Edits waiting › Update drafts"
-click tip "Hover, focus or click the info icon\n(button 'About these rules')"
-overlay tipt "'Open a rule to read it or edit it. New drafts use a saved edit at once.\nSent requests keep what they were sent with. Click Update drafts to redraft open ones.\nThese are demo rules, not verified against Summit's current policy.'"
+start s1 "Click the 'Rules & Instructions' tab"
+screen pg "Rules & Instructions\nCard 'Rules the agents and workflows follow' with an info icon\n'27 rules, 27 unverified. Saved in this browser.\nThese are demo rules, not verified against Summit's current policy.'\nBanner above it if edits wait"
+screen grp "Eight closed groups, in this order\nAuthorization requirements, Submission windows,\nBackdating & retroactive requests, Clinical documentation,\nConcurrent review & reauthorization, Submission methods,\nAppeals & peer-to-peer, Agent instructions\nEach: title, one summary line, a count"
+process sm "Summary is worked out live\n'1 requirement, 1 unverified.'\n'30 documents across 4 levels of care, and the chart checker. 2 rules, 2 unverified.'\nA group with nothing says 'No rules yet.'"
+click og "Click a group (Enter or Space)\nIt opens and closes"
+decision ar "Did the address ask for a group?\n?tab=documents, or ?group=..."
+process ao "That group is open and scrolled into view"
+screen rows "Open group: one row per rule\nTitle, a verification pill (Verified, Needs review, Unverified, Superseded),\nthe first three values in one grey line, 'Used by 2 workflows'"
+click orw "Click a rule row"
+screen rd "Open row\nWhat it says, then the structured values as readable fields\n(Authorization required, Exceptions, Window '2 business days',\nHistorical-date rule, Documentation prerequisites, Service units,\nReview cadence, Portal, Phone, Fax, Fallback channel, Escalation path)"
+screen ins "Instructions (optional free text)\nIt adds to the values and never replaces them"
+screen chips "Provenance chips\nSource: Demo sample rules, version 2026.3 (a link when the source has an address)\nWho and what it applies to, Effective from, Last verified or 'Never verified',\nOwner, Version, 'Saved with the payer's rules' for a read-through rule"
+decision un "Unverified or Needs review?"
+toast un1 "'Unverified. Workflows route this to manual review until a person\nmarks it verified with a source.'"
+process ar2 "Archived (Superseded) rules sit at the bottom, struck through\nThey keep their provenance and no buttons"
+screen btn "Buttons in the row\n'Edit', 'Mark as verified' ('Verify again' when verified),\n'Archive' (not on a rule read through from the payer's rules)"
+process dc "Clinical documentation also shows\nthe per-level document lists and the chart checker (above its rules)\nThe document lists have no separate rows: they are the lists"
+process mt "Submission methods: the reach rule\nPortal, Phone, Fax, preferred and fallback channel, escalation path\n'Edit payer' still changes the reach lines in the header"
+process ag "Agent instructions: Instructions for Caller (the saved script),\nthe payer-wide instructions, and the combined-prompt preview"
+click ad "Click 'Add a rule' at the foot of a group"
+goto g1 "Continues in: Payers › Rules & Instructions › Edit a rule"
+goto g2 "Continues in: Payers › Rules & Instructions › Mark a rule as verified"
+goto g3 "Continues in: Payers › Rules & Instructions › Add or archive a rule"
+goto g4 "Continues in: Payers › Rules & Instructions › Read the document list"
+goto g5 "Continues in: Payers › Rules & Instructions › Agent instructions and the combined prompt"
+goto g6 "Continues in: Payers › Workflow Builder › Read a workflow"
+process wb "'Used by N workflows' counts workflows (published or draft)\nwhose steps name the rule\nThe builder's rule steps point at these rules; no policy text is copied into a step"
+end e1 "Person knows what each rule says, where it came from and whether anyone verified it"
 
-group gC "Four closed rules, each a button with aria-expanded"
-  screen c1 "Submission windows\n'Notice within 24 hours of admission, and 2 more'  3 lines\nNotice differs by payer (72 hours for Harborview, by phone for Evergreen, by fax for Lakeshore)"
-  screen c2 "Backdating\n'Summit does not backdate an authorization, and 2 more'  3 lines\nBeacon backdates within 2 business days, Evergreen up to 3 days with a call log,\nLakeshore to the fax receipt date"
-  screen c3 "No authorization needed\n'Individual therapy, and 3 more'  4 lines\nShown with green ticks once open (Evergreen has no crisis line)"
-  screen c4 "Peer-to-peer and appeals\n'Peer-to-peer call within 3 business days of a denial, and 3 more'  4 lines\nCardinal 2 days. Evergreen ends in a state hearing"
-endgroup
-
-click op "Click a rule (or Enter, Space)"
-process opn "Rule opens: its lines, then the foot line\nClick again to close"
-process ub "Foot line\n'Used by Cadence and Scrubber · saved 10/12'"
-process who "Used by\nWindows: Cadence, Navigator\nBackdating: Cadence, Scrubber\nNo authorization needed: Verify, Criteria\nPeer-to-peer and appeals: Advocate, Cadence"
-process cf "'Saved' is the date the rule was last saved in Psyflo\nEvergreen shows 10/09, the others 10/12\nIt moves to today when a rule is edited\nIt is never a date the payer confirmed anything"
-process src "A rule edited here adds\n'Source: Edited in Psyflo by {viewer}' (the person viewing when it was saved; Jordan Perez at the start)\nA rule that was not edited shows no source of its own:\nthe header says 'Source: Demo sample rules, version 2026.3'"
-process noeff "New case reads the saved lines for the payer\nand level of care of each draft\nSee the New case diagrams for what it checks"
-click ce "Click 'Edit' inside an open rule\n(the button is named 'Edit Backdating' and so on)"
-goto gE "Continues in: Payers › Rules › Edit a rule"
-goto gF "Continues in: Payers › Configuration feeds the rest of the app"
-goto gP "Continues in: Payers › Header › Policy status and the demo-rules label"
-
-s1 --> tab --> dU
-dU -->|Yes| bU --> gU
-dU -->|No| c1
-bU --> c1
-tab -.-> tip --> tipt
-c1 --> c2 --> c3 --> c4
-c1 --> op --> opn --> ub --> who --> cf --> src
-src --> ce --> gE
-c4 -.-> noeff
-noeff -.-> gF
-src -.-> gP
+s1 --> pg --> grp --> sm
+grp --> og --> ar
+ar -->|Yes| ao --> rows
+ar -->|No| rows
+rows --> orw --> rd --> ins --> chips --> un
+un -->|Yes| un1 --> btn
+un -->|No| btn
+rows -.-> ar2
+og -.-> dc
+og -.-> mt
+og -.-> ag
+btn --> e1
+btn -->|Edit| g1
+btn -->|Mark as verified| g2
+btn -->|Archive| g3
+rows --> ad --> g3
+dc --> g4
+ag --> g5
+rows --> wb --> g6

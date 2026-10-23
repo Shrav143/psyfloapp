@@ -1,6 +1,7 @@
 import type { CaseDraft } from "./cases";
 import { PAYERS } from "./seed";
 import type { AgentKey, PayerSummary, Program, PsyRequest } from "./types";
+import type { RuleGroup } from "./workflow/types";
 
 /* Payers: the shapes behind the Process, Rules, Documents and Changes tabs. Seed content is in payerConfigSeed.ts. */
 
@@ -45,6 +46,8 @@ export interface Workflow { version: number; editedOn: string; steps: WorkflowSt
 export interface ReachLine { id: "portal" | "phone" | "fax"; title: string; text: string }
 
 export type RuleId = "windows" | "backdating" | "noauth" | "p2p";
+/** The Rules & Instructions group each of the four saved rules belongs to. */
+export const LEGACY_RULE_GROUP: Record<RuleId, RuleGroup> = { windows: "submission_windows", backdating: "backdating", noauth: "auth_requirements", p2p: "appeals_p2p" };
 export const RULE_TITLE: Record<RuleId, string> = { windows: "Submission windows", backdating: "Backdating", noauth: "No authorization needed", p2p: "Peer-to-peer and appeals" };
 /** `confirmed` is the date the rule was last saved in Psyflo, not a date a payer confirmed it. `source` is set only when this rule differs from the payer's rules as a whole, for example "Edited in Psyflo". */
 export interface Rule { id: RuleId; lines: string[]; used: AgentKey[]; confirmed: string; source?: string }
@@ -117,6 +120,10 @@ export interface CustomPayer {
   group: PayerSummary["group"];
   reachedBy: string;
   programs: Program[];
+  /** The payer organization, the state and the plan or product it was added with. Left out, the landing page reads "the name", Ohio and the plan type. */
+  org?: string;
+  state?: string;
+  product?: string;
 }
 
 /** What the rest of the app shows for an added payer: it has no history yet, so the figures are benchmark estimates. */
@@ -124,7 +131,7 @@ export const customToSummary = (c: CustomPayer): PayerSummary => ({ id: c.id, na
 
 export const PAYER_GROUPS: PayerSummary["group"][] = ["Ohio Medicaid", "Commercial", "Medicare Advantage", "Behavioral carve-out"];
 
-export interface AddPayerFields { name: string; type: string; group: PayerSummary["group"]; reach: string[]; programs: Program[] }
+export interface AddPayerFields { name: string; type: string; group: PayerSummary["group"]; reach: string[]; programs: Program[]; org?: string; state?: string; product?: string }
 
 /** The ways a payer is reached, in the order they are written. */
 export const REACH_ROUTES = ["Portal", "Phone", "Fax"];

@@ -1,40 +1,54 @@
-title: Payers › Rules › Edit a rule
+title: Payers › Rules & Instructions › Edit a rule
 route: /payers/summit?tab=rules
-intro: A rule is edited as plain text, one rule per line, with a reason. New drafts use the saved rule at once, sent requests keep what they were sent with, and open drafts follow only after 'Update drafts'. Blank lines are dropped, and a rule cannot be emptied.
+intro: 'Edit' on a rule row opens a right-hand panel with the rule's structured values, its free text, who and what it applies to, and its dates. Saving asks for a reason, says which version it becomes, and writes the edit audit. A verified rule that is edited goes back to Needs review. A rule read through from the payer's saved rules writes its change back to those saved rules, so New case and Eligibility read it at once; a rule the library owns is saved in the library.
 dir: TD
 ---
-start s1 "Open a rule (click its row), then click its 'Edit'\nExample: 'Edit Backdating'"
-overlay m "Edit backdating\nOne rule per line. New drafts use this at once.\nSent requests keep what they were sent with.\nClick Update drafts to redraft open ones."
-input i1 "Type in 'Rules'\nOne line per rule, starting from the saved lines"
-input i2 "Type 'Reason for the edit' (required)\nExample: Summit confirmed the new window on a call"
+start s1 "Open a group, open a rule row,\nclick 'Edit'"
+overlay pn "Edit rule (right-hand panel)\n'Submission windows. Version 1 now, 2 when you save.'"
+screen f1 "Title, 'What it says'"
+screen f2 "Structured values for that rule\nToggle (Authorization required), number with its unit (Window, days),\nchoice (Counted in: Business days or Calendar days), short text (Portal, Phone, Fax),\nlong text (Exceptions, Historical-date rule, Documentation prerequisites)\n'Other values for this group' holds the rest of the group's values"
+screen f3 "Instructions\nFree text for people and agents\nFor a read-through rule it is the payer's saved lines, one per line"
+screen f4 "Closed 'Applies to and dates'\nServices, request types (none ticked means all),\nEffective from, Effective until, Product, Provider type"
+input i1 "Change a value, the text or a date"
+process cnt "Footer counts the changes\n'2 changes not saved yet'"
+click sv "Click 'Save rule'"
+decision dt "Is the title empty?"
+toast et "Under the title: 'Add a title.'"
+decision dn "Did anything change?"
+process nc "The panel closes\nNothing is saved or logged"
+overlay rm "Save the rule?\nThis becomes version 2. (A verified rule goes back to Needs review.)\nWorkflows that use it read the new version; History & Changes lists what it touches.\nList of the changes"
+input ir "Type 'Reason for the edit' (required)"
 click cs "Click 'Save and log the edit'"
-decision d1 "Is the reason empty?"
+decision dre "Is the reason empty?"
 toast er "Add a reason. It goes in the edit log."
-process tr "Split on line breaks\nTrim each line, drop blank lines"
-decision d2 "Are there lines left, and\ndo they differ from the saved ones?"
-toast t0 "'Nothing changed'\nEdit at least one line, and keep at least one rule."
-endx x0 "Modal closes\nNothing saved"
-store st "Rule lines replaced\n'Saved' date becomes today\nThe rule gets 'Source: Edited in Psyflo by {viewer}' (the person viewing, Jordan Perez at the start)"
-store lg "Edit log entry, area 'Rules'\nRule name, before and after (lines joined with semicolons), reason"
-store un "'Edits waiting' goes up by one"
-store nt "Bell notification 'Summit rule edited'\nopens the payer's Rules tab"
-toast t1 "'Backdating saved'\nNew drafts use it at once.\nClick Update drafts to redraft open ones."
-screen bn "The rule row shows the new first line\nOpen, it shows the new lines and the source\nBanner '1 edit applies to new drafts only'"
-end e1 "New drafts use the rule from now on\nNew case reads it the next time it draws"
-click cx "Click 'Cancel'"
-click cesc "Press Escape, click the X\nor click the dimmed area"
-endx x1 "Modal closes\nNothing saved, typed text discarded"
+decision dk "Where does the rule live?"
+store pc "A rule read through from the payer's saved rules\nThe change is written back as that payer's saved lines, documents or script\n'Edits waiting' goes up by one for rules and document lists\nNew drafts use it at once"
+store lb "A rule the library owns\nSaved in the library with a new version and a history line"
+store lg "Edit audit gets one line per changed value\nArea 'Rules' (or 'Documents', 'Caller instructions', 'Payer details')\nwith before, after, your name, the time and the reason"
+store vs "Version goes up by one\nLast verified date stays until it is verified again"
+toast t1 "Saved toast\nNew drafts use it at once.\nClick Update drafts to redraft open ones."
+screen out "Row shows the new values and 'Version 2'\nBanner '1 edit applies to new drafts only' (rules and document lists)"
+click cx "Click 'Cancel', the X, or press Escape\nEscape closes the reason pop-up first, then the panel"
+endx x1 "Panel closes\nNothing saved"
+end e1 "Edited rule is in force for new drafts"
 goto g1 "Continues in: Payers › Edits waiting › Update drafts"
-goto g2 "Continues in: Payers › Configuration feeds the rest of the app"
-goto g3 "Continues in: Payers › Edit log"
+goto g2 "Continues in: Payers › Edit log"
+goto g3 "Continues in: Payers › Rules & Instructions › Mark a rule as verified"
+goto g4 "Continues in: Payers › Configuration feeds the rest of the app"
 
-s1 --> m --> i1 --> i2 --> cs --> d1
-d1 -->|Yes| er --> i2
-d1 -->|No| tr --> d2
-d2 -->|No| t0 --> x0
-d2 -->|Yes| st --> lg --> un --> nt --> t1 --> bn --> e1
-bn --> g1
-e1 -.-> g2
-lg -.-> g3
-m --> cx --> x1
-m --> cesc --> x1
+s1 --> pn --> f1 --> f2 --> f3 --> f4 --> i1 --> cnt --> sv --> dt
+dt -->|Yes| et --> f1
+dt -->|No| dn
+dn -->|No| nc --> x1
+dn -->|Yes| rm --> ir --> cs --> dre
+dre -->|Yes| er --> ir
+dre -->|No| dk
+dk -->|Payer's saved rules| pc --> lg
+dk -->|Library| lb --> lg
+lg --> vs --> t1 --> out --> e1
+pn --> cx --> x1
+rm --> cx
+out --> g1
+lg -.-> g2
+out -.-> g3
+pc -.-> g4

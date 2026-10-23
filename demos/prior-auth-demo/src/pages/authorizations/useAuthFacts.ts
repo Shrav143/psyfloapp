@@ -27,6 +27,7 @@ export function useAuthFacts(detail: CaseDetail, work: CaseWork, live: LiveView 
   const basis = useMemo(() => shared ?? requestDraft(detail, work, clock, payerCtx), [shared, detail, work, clock, payerCtx]);
   const docs = useMemo(() => documentStatus(basis, payerCtx.items), [basis, payerCtx.items]);
   const site = restricted ? null : siteOf(caseId);
-  const facts = useMemo(() => authFacts({ detail, live, ledger: ledgerRowOf(ledger, detail), docs, clock, site }), [detail, live, ledger, docs, clock, site]);
+  const workflow = shared?.appliedWorkflow;
+  const facts = useMemo(() => authFacts({ detail, live, ledger: ledgerRowOf(ledger, detail), docs, clock, site, workflow }), [detail, live, ledger, docs, clock, site, workflow]);
   return { facts, docs, site };
 }

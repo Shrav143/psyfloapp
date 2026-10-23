@@ -1,10 +1,12 @@
 title: Payers › Configuration feeds the rest of the app
 route: /payers/:id
-intro: What a payer's workflow, rules and document lists reach outside the Payers page. New drafts use a saved edit at once: New case reads the saved document list and rules every time it draws, and Case Manager reads the submission windows. Updating drafts changes the matching requests on the Dashboard, tags them in Case Manager and sends a bell notification. Requests already sent keep what they were sent with. The diagram also marks what no edit reaches.
+intro: What a payer's workflows, rules and document lists reach outside the Payers page. New drafts use a saved edit at once: New case reads the saved document list and rules every time it draws, and Case Manager reads the submission windows. Updating drafts changes the matching requests on the Dashboard, tags them in Case Manager and sends a bell notification. Requests already sent keep what they were sent with. The diagram also marks what no edit reaches.
 dir: TD
 ---
-start s1 "A payer's workflow, rule, document list\nor payer change is saved or updated"
+start s1 "A payer's rule, document list, payer detail\nor workflow is saved, published or updated"
 decision dk "Which kind of save?"
+process wfp "A published workflow\nNew case finds it by payer, product, state,\nservice, request type and date, shows its name and version,\nand pins that version on the case\nA newer version never moves a case that already started"
+goto gwf "Continues in: Authorizations › New case › Workflow › Match and pin the payer workflow"
 store cfg "Saved on the payer\nOne edit log entry per change\nOne bell notification\nNew drafts use it from now on"
 
 group gR "Read live by other screens (no Update drafts needed)"
@@ -47,7 +49,8 @@ goto g7 "Continues in: Authorizations › New case › Authorization preparation
 goto g6 "Continues in: Authorizations › Queue › Open the queue and read the top"
 
 s1 --> dk
-dk -->|Workflow, rule or documents| cfg
+dk -->|Rule or documents| cfg
+dk -->|Workflow published| wfp --> gwf
 dk -->|Payer change or edits update| up --> rq --> rp --> nf
 rq --> dsh --> g1
 rq --> cmt --> g2

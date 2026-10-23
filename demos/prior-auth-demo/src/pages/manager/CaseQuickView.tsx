@@ -23,6 +23,7 @@ import { REVIEW_STATUS_LABEL, REVIEW_STATUS_TONE, STATUS_TONE, clockText, nextRe
 import { authWindow, latestHistory, nextStep, reviewsOf } from "./ledgerCase";
 import type { LedgerRow } from "./ledgerRows";
 import { useDraftReviews } from "./useDraftReviews";
+import { useWorkflowLine } from "./useWorkflowLine";
 
 /** The documents the payer lists for this case, counted the way the case page counts them. Rendered only for a case that has a case page of its own, so the hooks always run. */
 function Documents({ detail }: { detail: CaseDetail }) {
@@ -50,7 +51,8 @@ export function CaseQuickView({ row, from, onClose, onOpenReview }: { row: Ledge
   const toDraft = !!review && review.status === "due" && inWeek(review);
   const { drafting, draft } = useDraftReviews(review ? [review.id] : []);
   const detail = useMemo(() => resolveCase(row.caseId, requests), [row.caseId, requests]);
-  const history = useMemo(() => latestHistory(row, requests, mine, clock), [row, requests, mine, clock]);
+  const workflow = useWorkflowLine(row);
+  const history = useMemo(() => [...latestHistory(row, requests, mine, clock), ...(workflow?.events ?? [])].sort((a, b) => b.at - a.at).slice(0, 3), [row, requests, mine, clock, workflow]);
   const body = useDialogFocus(from, ["[data-quick-first]"]);
 
   const payer = payerById(row.payerId);
@@ -77,6 +79,7 @@ export function CaseQuickView({ row, from, onClose, onOpenReview }: { row: Ledge
     ["Approved window", win ? `${reviewDate(win.start)} to ${reviewDate(win.end)}` : <span key="w" className="font-normal text-muted">Not approved yet</span>],
     ["Level of care", `${PROGRAM_LABEL[row.program]} · ${row.note}`],
     ["Payer", payer.name],
+    ...(workflow ? ([["Workflow", <span key="wf">{workflow.text}</span>]] as [string, ReactNode][]) : []),
     ["Site", site ? `${site.name} · ${site.sub}` : siteOf(row.caseId)],
     [
       "Approval chance",

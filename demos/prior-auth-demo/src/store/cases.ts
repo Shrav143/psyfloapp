@@ -3,7 +3,7 @@ import { EMPTY_WORK } from "@/data/caseModel";
 import { resolveCase } from "@/data/caseDetail";
 import {
   chanceBounds, currentChance, draftState, DUE_FOR, freshRun, needsPerson, nextCaseCode, planTypeOf, QUESTIONS, queueItemOf, RUN_STEPS, SCRIBE_STEP,
-  type AuthKind, type CaseDraft, type DocSlotId, type DocumentedReason, type DraftDocument,
+  type AuthKind, type CaseDraft, type DocSlotId, type DocumentedReason, type DraftDocument, type WorkflowChoice, type WorkflowLogEntry,
 } from "@/data/cases";
 import { authorizationsOf, episodesOf, isoOf, patientById } from "@/data/patients";
 import { payerById } from "@/data/seed";
@@ -11,6 +11,7 @@ import type { SiteId } from "@/data/sites";
 import { PROGRAM_LABEL, type AgentKey } from "@/data/types";
 import { verify } from "@/data/verification";
 import { viewerById } from "@/data/viewers";
+import type { AppliedWorkflow } from "@/data/workflow/types";
 import { uid } from "@/lib/format";
 import { DAY } from "@/lib/time";
 import { authType, defaultTypeFor } from "@/pages/newcase/authType";
@@ -19,6 +20,7 @@ import { payerContextOf } from "@/pages/newcase/payerContext";
 import { unmetCount } from "@/pages/newcase/payerRules";
 import { verificationKey, wantOf } from "@/pages/newcase/verificationFor";
 import { pendingFor, planQuestions } from "@/pages/newcase/questions";
+import { NEW_CASE_STEPS, stepIndex } from "@/pages/newcase/steps";
 import { blankDraft, SEED_DRAFTS } from "@/pages/newcase/seedDrafts";
 import type { AppState } from "./index";
 import { selectPatientBook } from "./patients";
@@ -70,12 +72,15 @@ export interface CasesSlice {
   /** Send back to Scribe: Scribe, Integrity, Packet and Scrubber run again with the note. */
   rerunFromScribe: (id: string, note: string) => void;
   /** Sign and send. `signedBy` is who the person signed as ("Dr. Rivera, clinician"); the request's history says so. Returns the request ID that now shows on the Dashboard. */
-  signCaseDraft: (id: string, signedBy?: string) => string | undefined;
+  signCaseDraft: (id: string, signedBy?: string, workflowEntries?: Omit<WorkflowLogEntry, "posted">[]) => string | undefined;
   /** The draft for a request that exists on the case page: made from the request's own data when there is none, brought up to date when there is.
       It is moved to the step that fits: Review & submit when the request is ready, Authorization preparation when agents still have work to do. Returns its ID. */
   draftFromRequest: (requestId: string) => string;
   /** The payer's saved list or rules changed: count again what the case does not meet, so the approval chance follows. */
   refreshCaseUnmet: (id: string) => void;
+  /** The payer workflow on a case: which one it follows (`applied`), that its version is now pinned (`pin`), a person's choice between equals (`choice`, null clears it) and what the workflow did (`entries`).
+      Entries already known by their `key` are ignored. Once the request exists they go straight to its History; before that they wait on the draft and are written when it is signed. */
+  recordCaseWorkflow: (id: string, patch: { applied?: AppliedWorkflow; pin?: boolean; choice?: WorkflowChoice | null; entries?: Omit<WorkflowLogEntry, "posted">[] }) => void;
 }
 
 /** The line History shows when the person went on past a warning. */
@@ -84,6 +89,13 @@ const DOCUMENTED_TEXT: Record<DocumentedReason["kind"], string> = {
   coverage: "You went on without confirmed coverage and said why",
   no_auth: "You sent this request although the payer needs no authorization, and said why",
   unavailable: "You went on without a verification and said why",
+};
+/** The same warnings as a short line of the workflow's trace. */
+const OVERRIDE_TEXT: Record<DocumentedReason["kind"], string> = {
+  duplicate: "continued with a matching request, reason documented",
+  coverage: "continued without confirmed coverage, reason documented",
+  no_auth: "continued although no authorization is required, reason documented",
+  unavailable: "continued without a verification, reason documented",
 };
 const INTAKE_KEYS: (keyof CaseDraft)[] = ["patient", "payerId", "memberId", "program", "type", "startDate", "endDate", "change", "retroReason", "reason", "diagnoses", "documents", "unavailable"];
 
@@ -228,7 +240,12 @@ export const createCasesSlice: StateCreator<AppState, [], [], CasesSlice> = (set
 
     clearCasePatient: (id) => change(id, () => ({ basis: undefined, patientId: null, episodeId: null, authorizationId: null, started: false, patient: { initials: "", age: null }, payerId: null, planType: "", memberId: "", program: null, levelLabel: undefined, verificationId: null })),
 
-    documentReason: (id, reason) => update(id, (d) => ({ ...d, documented: [...(d.documented ?? []).filter((r) => r.kind !== reason.kind), reason] })),
+    documentReason: (id, reason) => {
+      update(id, (d) => ({ ...d, documented: [...(d.documented ?? []).filter((r) => r.kind !== reason.kind), reason] }));
+      /* Going on past a warning is an override of what the workflow would do next, so it is part of the workflow's trace. */
+      const d = find(id);
+      if (d?.appliedWorkflow) get().recordCaseWorkflow(id, { entries: [{ key: `override:${reason.kind}:${reason.reason}`, at: get().clock, actor: "you", text: `Override: ${OVERRIDE_TEXT[reason.kind]}`, detail: `At ${NEW_CASE_STEPS[stepIndex(d)]}, ${d.appliedWorkflow.name} v${d.appliedWorkflow.version}. Your reason: ${reason.reason}` }] });
+    },
     clearDocumentedReason: (id, kind) => update(id, (d) => ({ ...d, documented: (d.documented ?? []).filter((r) => r.kind !== kind) })),
     discardCaseDraft: (id) => set((s) => ({ caseDrafts: s.caseDrafts.filter((d) => !(d.id === id && !d.saved)) })),
 
@@ -295,7 +312,7 @@ export const createCasesSlice: StateCreator<AppState, [], [], CasesSlice> = (set
         sendBackNote: note.trim() || undefined,
       })),
 
-    signCaseDraft: (id, signedBy) => {
+    signCaseDraft: (id, signedBy, workflowEntries = []) => {
       const d = find(id);
       if (!d || !d.payerId || !d.program || !d.type || draftState(d) !== "ready") return undefined;
       const known = new Set(get().requests.find((r) => r.id === d.caseId)?.events.map((e) => e.id));
@@ -312,13 +329,15 @@ export const createCasesSlice: StateCreator<AppState, [], [], CasesSlice> = (set
          The person signs as the clinician they chose, and the line says so. */
       const sent = get().requests.find((r) => r.id === requestId);
       if (sent) {
-        get().updateRequest(requestId, {
-          events: sent.events.map((e) => {
-            if (!e.done || known.has(e.id)) return e;
-            const text = e.text === "You signed and sent the request" && signedBy ? `You signed as ${signedBy} and sent the request` : e.text;
-            return { ...e, at: get().clock, text };
-          }),
+        const mapped = sent.events.map((e) => {
+          if (!e.done || known.has(e.id)) return e;
+          const text = e.text === "You signed and sent the request" && signedBy ? `You signed as ${signedBy} and sent the request` : e.text;
+          return { ...e, at: get().clock, text };
         });
+        /* What the payer workflow did before the signature happened first, so History reads in order. */
+        const before = [...(d.workflowLog ?? []).filter((e) => !e.posted), ...workflowEntries].map((e) => ({ id: uid("ev"), at: e.at, actor: e.actor, text: e.text, detail: e.detail, done: true }));
+        const firstNew = mapped.findIndex((e) => !known.has(e.id));
+        get().updateRequest(requestId, { events: firstNew < 0 ? [...mapped, ...before] : [...mapped.slice(0, firstNew), ...before, ...mapped.slice(firstNew)] });
       }
       if (d.run.skipped.includes("verify")) get().addEvent(requestId, { actor: "verify", text: `Verify could not reach ${payerById(d.payerId).shortName}'s portal before signing`, detail: "Coverage was not confirmed. You skipped it and noted it." });
       /* The Authorizations queue lists it too: it is with the payer now. */
@@ -329,7 +348,10 @@ export const createCasesSlice: StateCreator<AppState, [], [], CasesSlice> = (set
       get().updateRequest(requestId, { patientId: d.patientId ?? requestId, episodeId: d.episodeId ?? `EP-${requestId}`, authorizationId: d.authorizationId ?? `AU-${requestId}`, verificationId: verified ?? undefined });
       for (const r of d.documented ?? []) get().addEvent(requestId, { actor: "you", text: DOCUMENTED_TEXT[r.kind], detail: `${r.about}. Your reason: ${r.reason}` });
       if (d.change) get().addEvent(requestId, { actor: "you", text: "You asked for a change to the authorization", detail: `${d.change.detail || "No detail added"}. This is a request, not an approval. Nothing changes until the payer approves it.` });
-      set((s) => ({ caseDrafts: s.caseDrafts.map((x) => (x.id === id ? { ...x, sent: true, caseId: requestId } : x)), caseSentToday: [...s.caseSentToday, requestId] }));
+      set((s) => ({
+        caseDrafts: s.caseDrafts.map((x) => (x.id === id ? { ...x, sent: true, caseId: requestId, workflowPinned: x.appliedWorkflow ? true : x.workflowPinned, workflowLog: x.appliedWorkflow ? [...(x.workflowLog ?? []), ...workflowEntries].map((e) => ({ ...e, posted: true })) : x.workflowLog } : x)),
+        caseSentToday: [...s.caseSentToday, requestId],
+      }));
       return requestId;
     },
 
@@ -344,6 +366,22 @@ export const createCasesSlice: StateCreator<AppState, [], [], CasesSlice> = (set
     },
 
     refreshCaseUnmet: (id) => update(id, (d) => d),
+
+    recordCaseWorkflow: (id, p) => {
+      const d = find(id);
+      if (!d) return;
+      const known = new Set((d.workflowLog ?? []).map((e) => e.key));
+      const fresh = (p.entries ?? []).filter((e, i, all) => !known.has(e.key) && all.findIndex((x) => x.key === e.key) === i);
+      const request = d.caseId ? get().requests.find((r) => r.id === d.caseId || r.caseId === d.caseId) : undefined;
+      update(id, (x) => ({
+        ...x,
+        ...(p.applied ? { appliedWorkflow: p.applied } : {}),
+        ...(p.pin ? { workflowPinned: true } : {}),
+        ...(p.choice !== undefined ? { workflowChoice: p.choice ?? undefined } : {}),
+        ...(fresh.length ? { workflowLog: [...(x.workflowLog ?? []), ...fresh.map((e) => ({ ...e, posted: !!request }))] } : {}),
+      }));
+      if (request) for (const e of fresh) get().addEvent(request.id, { actor: e.actor, text: e.text, detail: e.detail, at: e.at });
+    },
   };
 };
 

@@ -8,6 +8,7 @@ import type { RecAdd } from "./fromRequest";
 import { missingItems, type MissingItem } from "./missing";
 import { narrativeOf } from "./narrative";
 import { validationRows, type ValidationRow } from "./ValidationSummary";
+import { workflowItems } from "./workflow/items";
 
 export interface ReviewModel {
   sections: NarrativeSection[];
@@ -23,6 +24,6 @@ export function reviewModel(env: CaseEnv, context: string[], adds: RecAdd[], rec
   const sections = narrativeOf(draft, context, adds);
   const checks = integrityChecks(draft, sections, rechecking, { clock, ctx, verification: env.verification.record });
   const rows = validationRows(draft, clock, ctx);
-  const missing = missingItems(rows, checks, [...intakeIssues(env), ...eligibilityIssues(env)]);
+  const missing = missingItems(rows, checks, [...intakeIssues(env), ...eligibilityIssues(env), ...workflowItems(env)]);
   return { sections, checks, rows, missing, blocking: missing.filter((m) => m.severity === "block") };
 }

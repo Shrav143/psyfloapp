@@ -1,9 +1,9 @@
 title: Payers › Edit payer details
 route: /payers/:id
-intro: The 'Edit' button in the header opens one modal for the plan line, how the payer is reached, the notice rule, the backup route and the three 'How to reach' lines. Every edit needs a reason, is written to the edit log and sends a bell notification. Unlike workflow, rule and document edits, it does not wait for 'Update drafts'. 'Reached by' only holds one of the seven listed values.
+intro: The 'Edit payer' button in the header opens one modal for the plan line, how the payer is reached, the notice rule, the backup route and the three 'How to reach' lines. Every edit needs a reason, is written to the edit log and sends a bell notification. Unlike workflow, rule and document edits, it does not wait for 'Update drafts'. 'Reached by' only holds one of the seven listed values.
 dir: TD
 ---
-start s1 "Click 'Edit'\nin the payer header"
+start s1 "Click 'Edit payer'\nin the payer header"
 overlay m "Edit payer details\nAdmins can edit. Every edit is logged."
 
 group gF "Fields"
@@ -11,7 +11,7 @@ group gF "Fields"
   input i2 "Pick 'Reached by'\nPortal, Phone, Fax, Portal and phone,\nPortal and fax, Phone and fax,\nPortal, phone and fax"
   input i3 "Type 'Notice due'\nExample: 24 hours"
   input i4 "Type 'Backup route'\nExample: phone as backup"
-  input i5 "Type the 'Portal', 'Phone' and 'Fax' lines\nThey feed 'How to reach' on the Process tab"
+  input i5 "Type the 'Portal', 'Phone' and 'Fax' lines\nThey feed the reach lines in Rules & Instructions › Submission methods"
   input i6 "Type 'Reason for the edit' (required)\nSaved with your name, the time,\nthe old text and the new text"
 endgroup
 
@@ -29,7 +29,7 @@ decision d2 "Did anything change?"
 toast t0 "'Nothing changed'"
 store st "Payer details saved\nHeader, plan line and 'How to reach' update\nA payer added with 'Add a payer' keeps its\nentry for other screens in step"
 store lg "One edit log entry per changed field\nArea 'Payer details', with before, after and reason"
-store nt "Bell notification 'Evergreen details edited'\nopens the payer's Process tab"
+store nt "Bell notification 'Evergreen details edited'\nopens the payer's History & Changes tab"
 toast t1 "'Payer details saved'\nThe edit is in the log with your reason."
 process nb "No 'edit applies to new drafts only' banner\nPayer details are not part of a draft"
 end e1 "Modal closes\nHeader shows the new values"
@@ -37,7 +37,7 @@ endx x1 "Modal closes\nNothing saved"
 click cx "Click 'Cancel'"
 click cesc "Press Escape, click the X\nor click the dimmed area\nEscape with the 'Reached by' menu open closes the menu first"
 goto g1 "Continues in: Payers › Edit log"
-goto g2 "Continues in: Payers › Process › Reach and Caller instructions"
+goto g2 "Continues in: Payers › Rules & Instructions › Submission methods and agent instructions"
 
 s1 --> m --> dv
 dv -->|Yes| okv --> i1

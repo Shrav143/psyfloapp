@@ -1,4 +1,4 @@
-import { PAYERS } from "./seed";
+import { builtInPayers } from "./seed";
 import type { AgentKey, PayerId, Program } from "./types";
 import type { ChangeEntry, CustomPayer, DocItem, DocLists, PayerConfig, PayerFacts, PendingChange, Proposal, ReachLine, Rule, RuleId } from "./payerConfig";
 import { seedWorkflow, starterWorkflow } from "./payerConfigWorkflows";
@@ -208,7 +208,8 @@ export const proposalsFor = (id: string): Omit<Proposal, "id">[] => PROPOSALS[id
 /* ---------- assembly ---------- */
 export function seedPayerConfig(): Record<string, PayerConfig> {
   const out: Record<string, PayerConfig> = {};
-  for (const p of PAYERS) {
+  // The six core payers only: a payer added on Payers joins PAYERS later and has its own starter configuration, so reading the seed after one is added must not touch it.
+  for (const p of builtInPayers()) {
     const pending = PENDING[p.id] ?? null;
     out[p.id] = {
       planLine: PLAN_LINE[p.id],

@@ -11,6 +11,7 @@ import { PayerChangeNote } from "./PayerChangeNote";
 import { RetroIntake } from "./RetroIntake";
 import { StepFooter } from "./StepFooter";
 import { stepPatch } from "./steps";
+import { foldWorkflow } from "./workflow/fold";
 import { useUnmetSync } from "./useUnmetSync";
 
 /** Step 1, Intake. What it asks depends on the Authorization type: an initial authorization starts from a referral or a patient, a review, renewal or modification starts from a patient
@@ -53,7 +54,7 @@ export function IntakeStep({ draft, env }: { draft: CaseDraft; env: CaseEnv }) {
               </Button>
             </>
           }
-          hint={hint}
+          hint={foldWorkflow(hint, env)}
         />
       ) : null}
     </div>

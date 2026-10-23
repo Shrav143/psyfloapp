@@ -26,6 +26,7 @@ export function ReviewSummary({ draft, env, review }: { draft: CaseDraft; env: C
     ["Patient", draft.patient.initials ? `${draft.patient.initials}, ${draft.patient.age ?? ""}${draft.patientId ? ` · existing patient ${draft.patientId}` : " · new patient"}` : "Not added"],
     ["Payer", draft.payerId ? `${payerNameOf(draft.payerId)}${draft.planType ? ` · ${draft.planType}` : ""}${draft.memberId ? ` · member ID ${draft.memberId.startsWith("…") ? draft.memberId : `…${draft.memberId.replace(/\W/g, "").slice(-4)}`}` : ""}` : "Not added"],
     ["Request", `${authType(draft.kind).label} · recorded as ${draft.type ?? "no type yet"}`],
+    ...(env.workflow ? ([["Workflow", `${env.workflow.applied.usedDefault ? `${env.workflow.applied.name}. Illustrative default, not payer policy` : `${env.workflow.applied.name}, version ${env.workflow.applied.version}`}. ${env.workflow.hint}`]] as [string, string][]) : []),
     ["Service", draft.program ? `${draft.levelLabel ?? PROGRAM_LABEL[draft.program]}` : "Not added"],
     ["Dates and length", dos ? `${mdy(dos.from)} to ${mdy(dos.to)} · ${plural(Math.round((minutesOf(dos.to) - minutesOf(dos.from)) / 1440) + 1, "day")}${draft.endDate ? "" : " (the usual length)"}` : "Not added"],
     ["Eligibility", rec ? `${describeVerification(rec)}. Checked ${ago(rec.checkedAt, env.clock)}, simulated source.` : "Not checked"],

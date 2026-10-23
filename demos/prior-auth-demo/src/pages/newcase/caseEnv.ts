@@ -11,6 +11,8 @@ import { findDuplicate, type DuplicateHit } from "./duplicates";
 import { usePayerContext, type PayerContext } from "./payerContext";
 import { readiness, type Readiness } from "./typicalDocs";
 import { verificationKey, verificationView, type VerificationView } from "./verificationFor";
+import type { CaseWorkflow } from "./workflow/model";
+import { useCaseWorkflow } from "./workflow/useCaseWorkflow";
 
 export interface CaseEnv {
   draft: CaseDraft;
@@ -26,6 +28,8 @@ export interface CaseEnv {
   patient: Patient | undefined;
   authorization: AuthorizationRecord | undefined;
   readiness: Readiness;
+  /** The payer workflow the case follows and where it stands. Null until Intake knows the payer and the level of care. */
+  workflow: CaseWorkflow | null;
 }
 
 export function useCaseEnv(draft: CaseDraft | undefined): CaseEnv | null {
@@ -40,22 +44,26 @@ export function useCaseEnv(draft: CaseDraft | undefined): CaseEnv | null {
   const ctx = usePayerContext({ payerId: draft?.payerId ?? null, program: draft?.program ?? null });
 
   const book = useStore(selectPatientBookInView);
+  const workflow = useCaseWorkflow(draft);
 
   return useMemo(() => {
     if (!draft) return null;
     const visibleRequests = requests.filter((r) => scope.has(r.caseId));
     const visibleDrafts = drafts.filter((d) => sites.includes(d.site));
+    const verification = verificationView(draft, record, clock);
     return {
       draft,
       clock,
       ctx,
-      verification: verificationView(draft, record, clock),
+      /* A workflow that ends in "No authorization required" raises the same outcome as a check that says so: the same card, the same three actions. */
+      verification: workflow?.noAuth && !verification.noAuth && verification.record ? { ...verification, noAuth: true } : verification,
       duplicate: findDuplicate(draft, book, visibleRequests, visibleDrafts),
       verifyPaused,
       book,
       patient: draft.patientId ? patientById(book, draft.patientId) : undefined,
       authorization: draft.authorizationId ? book.authorizations.find((a) => a.id === draft.authorizationId) : undefined,
       readiness: readiness(draft, ctx),
+      workflow,
     };
-  }, [draft, clock, ctx, record, verifyPaused, book, requests, drafts, scope, sites]);
+  }, [draft, clock, ctx, record, verifyPaused, book, requests, drafts, scope, sites, workflow]);
 }

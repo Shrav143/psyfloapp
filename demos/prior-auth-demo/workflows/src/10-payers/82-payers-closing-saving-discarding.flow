@@ -4,7 +4,7 @@ intro: One page for how every Payers pop-up closes. Nothing is saved by closing:
 dir: TD
 ---
 start s1 "Any Payers pop-up is open"
-overlay ov "Ten pop-ups\nAdd a payer, Edit payer details, Edit log, Edit workflow,\nSave the workflow?, Edit the instructions for Caller,\nEdit a rule, Edit what a payer wants, Acknowledge this change?,\nUpdate drafts?, plus the menus inside them"
+overlay ov "Pop-ups and panels\nAdd a payer, Edit payer details, Edit log (drawer),\nEdit rule (drawer), Save the rule?, Mark as verified, Archive a rule?,\nEdit what a payer wants, Acknowledge this change?, Update drafts?,\nRestore as draft?, the workflow version panel, plus the menus inside them"
 
 group gX "Ways to close"
   click x1 "Click 'Cancel'"
@@ -17,15 +17,15 @@ process cl "The top layer is asked to close\nEscape only ever reaches the top la
 decision dk "Which pop-up is it?"
 process pl "Plain pop-up (everything except the cases below)\nCloses. Typed text and picks are discarded\nNothing is saved or logged"
 process rd "Edit log\nRead only, nothing to save or discard"
-process sv "'Save the workflow?' over the Edit workflow drawer\nCancel, X, Escape or the dimmed area:\nonly this reason modal closes"
-process dr "The drawer is still open with every edit in it\nA second Escape, Cancel, X or dimmed area closes it:\nevery unsaved workflow edit is lost, no 'are you sure'"
+process sv "'Save the rule?' over the Edit rule drawer\nCancel, X, Escape or the dimmed area:\nonly this reason modal closes"
+process dr "The drawer is still open with every edit in it\nA second Escape, Cancel, X or dimmed area closes it:\nevery unsaved rule edit is lost, no 'are you sure'"
 process bz "'Update drafts?' while the agents work (about 3 seconds)\nCancel is greyed, Escape, X and dimmed area do nothing\nWait for it to finish"
-process mn "A menu open inside a pop-up\n(Plan type, Group, Reached by, Level of care, Case, step type)\nEscape closes only the menu\nThe next Escape closes the pop-up"
+process mn "A menu open inside a pop-up\n(Plan type, Insurance type, State, Reached by, Level of care, Case, Workflow)\nEscape closes only the menu\nThe next Escape closes the pop-up"
 
 group gS "Ways to save (the primary button)"
   process sa "'Save and log the edit' needs a reason\nEmpty reason: 'Add a reason. It goes in the edit log.'\n'Edit payer details' also needs a listed 'Reached by'"
   process sb "'Add payer' needs a name no other payer has,\na way to reach and a program"
-  process sc "'Acknowledge change' and 'Update N drafts' are confirm buttons\nthey need no typing"
+  process sc "'Acknowledge change' and 'Update N drafts' are confirm buttons;\n'Mark as verified' needs a source and a date\nthey need no typing"
   process sd "If nothing differs from what is saved:\n'Nothing changed' (or 'Nothing to save' in the workflow drawer)"
 endgroup
 
@@ -43,7 +43,7 @@ x4 --> cl
 cl --> dk
 dk -->|Plain| pl --> x0
 dk -->|Edit log| rd --> x0
-dk -->|Save the workflow?| sv --> dr --> x0
+dk -->|Save the rule?| sv --> dr --> x0
 dk -->|Update drafts?, busy| bz --> e1
 dk -->|Menu open| mn --> x0
 ov --> sa --> sv1

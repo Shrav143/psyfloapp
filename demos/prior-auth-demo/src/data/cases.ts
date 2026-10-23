@@ -5,6 +5,7 @@ import { payerById } from "./seed";
 import { daysRequested, dxKeyFor, dxLine, scoresFor, type QueueItem, type RequestKind } from "./queue";
 import { siteOf, type SiteId } from "./sites";
 import { PROGRAM_LABEL, type AgentKey, type PayerId, type Program, type PsyRequest, type RequestType, type Tone } from "./types";
+import type { AppliedWorkflow } from "./workflow/types";
 import { clockTime, toDate } from "@/lib/time";
 
 /* ------------------------------------------------------------------ documents */
@@ -102,6 +103,27 @@ export interface DocumentedReason {
   about: string;
 }
 
+/** One line of the trace the payer workflow leaves on a case: which stage it ran to, what it skipped or waits for, an override, a rule it read. It is kept on the draft until the request exists,
+    then written to the request's History (`posted`). Short on purpose. */
+export interface WorkflowLogEntry {
+  key: string;
+  /** Demo minutes. */
+  at: number;
+  actor: AgentKey | "you" | "system";
+  text: string;
+  detail?: string;
+  /** Already written to the request's History. */
+  posted?: boolean;
+}
+/** A person chose between two equally specific workflows. It holds only while the same two still compete. */
+export interface WorkflowChoice {
+  workflowId: string;
+  /** Every workflow that matched equally, so a changed case drops the choice. */
+  among: string[];
+  by: string;
+  at: number;
+}
+
 export interface CaseDraft {
   id: string;
   caseId: string | null;
@@ -175,6 +197,13 @@ export interface CaseDraft {
   dueKind: DueKind | null;
   dueAt: number | null;
   updatedAt: number;
+  /** The published payer workflow this case follows, by version (`appliedAt` is in it). Chosen once Intake knows the payer, the level of care and the Authorization type. */
+  appliedWorkflow?: AppliedWorkflow;
+  /** The workflow has run past Intake (or the request was sent): its version stays the one the case started with until a person reviews and applies another. */
+  workflowPinned?: boolean;
+  workflowChoice?: WorkflowChoice;
+  /** What the workflow did on this case, for History. */
+  workflowLog?: WorkflowLogEntry[];
 }
 
 export const freshRun = (): RunState => ({ done: 0, asked: false, question: null, elapsed: [], failed: null, retried: false, skipped: [] });

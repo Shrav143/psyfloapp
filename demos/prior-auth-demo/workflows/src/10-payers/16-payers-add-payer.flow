@@ -1,15 +1,18 @@
 title: Payers › Add a payer
 route: /payers
-intro: The 'Add a payer' modal. A new payer gets a full starter set (workflow, rules and document lists) and benchmark figures; the agents learn the rest from decisions. Nothing is saved until 'Add payer' passes its four checks, and a name that another payer already has is refused. The new payer is also offered wherever New case picks a payer.
+intro: The 'Add a payer' modal. Besides the name it asks for the organization, the product and the state, which place the payer on the landing page (and in its State and Insurance type filters). A new payer gets a full starter set (rules and document lists, and the earlier process kept as a migrated workflow) and benchmark figures; the agents learn the rest from decisions. Nothing is saved until 'Add payer' passes its four checks, and a name that another payer already has is refused. The new payer is also offered wherever New case picks a payer.
 dir: TD
 ---
-start s1 "Click 'Add a payer'\ntop right of Payers"
+start s1 "Click 'Add a payer'\ntop right of the landing page"
 overlay m "Add a payer\nThe agents start with a standard workflow\nand learn the rest from decisions."
 
 group gF "Fields in the modal"
   input i1 "Type 'Payer name' (required)\nExample: Riverbend Health"
+  input iO "Type 'Organization' (optional)\nEmpty: the payer's own name is used"
+  input iP "Type 'Product' (optional)\nExample: Medicaid HMO\nEmpty: the plan type is used"
+  input iS "Pick 'State'\nOhio unless changed; every state is listed"
+  input i3 "Pick 'Insurance type'\nOhio Medicaid, Commercial,\nMedicare Advantage, Behavioral carve-out\nGroups the payer and filters the list"
   input i2 "Pick 'Plan type'\nManaged care plan, PPO,\nMedicare Advantage, Carve-out"
-  input i3 "Pick 'Group'\nOhio Medicaid, Commercial,\nMedicare Advantage, Behavioral carve-out"
   input i4 "Tick 'How it is reached'\nPortal (ticked), Phone, Fax"
   input i5 "Tick 'Programs it covers'\nResidential 3.5, IOP, PHP ticked\nDetox not ticked"
 endgroup
@@ -25,22 +28,22 @@ toast e1b "Under the name box:\n'There is already a payer called\nBeacon PPO. Us
 toast e2 "Choose at least one way to reach the payer."
 toast e3 "Choose at least one program."
 
-store st "Payer saved with a full starter set\nWorkflow v1 (six steps for how it is reached)\nFour rules, document lists for all four levels of care\nFigures marked as benchmark estimates"
+store st "Payer saved with a full starter set\nThe organization, state and product it was added with\nFour rules, document lists for all four levels of care\nThe earlier process (six steps for how it is reached)\nFigures marked as benchmark estimates"
 process rb "'Reached by' is written in a fixed order\nPortal, phone, fax: 'Portal, phone and fax'\nso it is always one of the seven listed values"
 store lg "Edit log gets 'Added a payer'\nReason 'Payer added'"
 toast tt "'Riverbend Health was added'\nStarter workflow, rules and documents are ready.\nFigures are benchmark estimates."
-process nav "Modal closes\nOpens /payers/custom-riverbend-health?tab=process"
-screen pg "New payer's Process tab\nTitle now counts 7 payers\nRow in its group, green dot\nHeader: plan type, the chosen programs, needs, source 'Psyflo benchmark, not a payer's policy'"
+process nav "Modal closes\nOpens /payers/custom-riverbend-health\n(the workspace, on Workflow Builder)"
+screen pg "New payer's workspace\nHeader: organization · product · state, the plan line,\nsource 'Psyflo benchmark, not a payer's policy'\nLanding page now counts 7 payers, the row sits in its group,\nand the state filter lists its state"
 process other "The payer is also saved where other screens read it\nNew case offers it wherever a payer is picked,\nand reads its document list and rules like any payer"
 
 click cx "Click 'Cancel'"
 click cesc "Press Escape, click the X\nor click the dimmed area\nEscape with a menu open closes the menu first"
 endx x1 "Modal closes\nNothing was added"
 end e "New payer is ready to edit"
-goto g1 "Continues in: Payers › Process › Read the workflow"
+goto g1 "Continues in: Payers › Workflow Builder › Read a workflow"
 goto g2 "Continues in: Authorizations › New case › Intake › Patient, insurance and request rows"
 
-s1 --> m --> i1 --> i2 --> i3 --> i4 --> i5 --> ca
+s1 --> m --> i1 --> iO --> iP --> iS --> i3 --> i2 --> i4 --> i5 --> ca
 i1 -.-> clr
 i4 -.-> clr
 ca --> v1

@@ -1,6 +1,8 @@
 import type { RequestKind } from "../queue";
 import type { AgentKey, PayerId, Program } from "../types";
 
+export type { AgentKey, PayerId, Program };
+
 /* The Payer Workflow Studio contract. Everything the builder, the simulator, the rules library, New case and the engine share is typed here.
    A workflow is a saved graph of nodes and edges. Branching is decided by structured conditions over case facts, never by a model, so the
    simulator and New case run the same code (engine.ts). Payer policy text lives once in the rules library; nodes point at rules by id. */
@@ -139,8 +141,9 @@ export interface NodeDef {
   support: SupportStatus;
   /** One sentence on what is real and what is simulated, shown in the editor. */
   supportNote: string;
-  /** The exits the node can have, in order. "next" for one exit; named results for branching nodes; Decision and Start/End are special-cased. */
-  outputs: { handle: Handle; label: string }[];
+  /** The exits the node can have, in order. "next" for one exit; named results for branching nodes; Decision and Start/End are special-cased.
+      `optional` exits need no connection to publish: the engine has a fixed fallback (see `fallbacks` and engine.ts) when the path is not wired. */
+  outputs: { handle: Handle; label: string; optional?: boolean }[];
   /** True when more than one incoming connection makes no sense (a trigger). */
   noInputs?: boolean;
   /** The fields the contextual editor shows, and their defaults. */
@@ -148,6 +151,10 @@ export interface NodeDef {
   defaults: Record<string, ConfigValue>;
   /** The rule group this node references, if it is a payer-rule node. */
   ruleGroup?: RuleGroup;
+  /** Reaches outside this app (a payer, a fax line, an API). Such a node always needs a person's approval, and its toggle cannot be turned off. */
+  payerFacing?: boolean;
+  /** When an exit has no connection, the engine follows this exit instead, if it is connected ("expiring" falls back to "active"). */
+  fallbacks?: Record<Handle, Handle>;
 }
 
 /* ------------------------------------------------------------------ the payer rules library */
@@ -194,6 +201,8 @@ export interface PayerRule {
   owner: string;
   version: number;
   history: RuleChange[];
+  /** "payer_config" for a rule read through from the payer's saved rules, documents, caller script or reach lines (edits go to those); "library" for one the rules library owns. */
+  origin?: "payer_config" | "library";
 }
 
 /* ------------------------------------------------------------------ workflows */
@@ -202,6 +211,8 @@ export interface WorkflowMeta {
   id: string;
   payerId: PayerId;
   name: string;
+  /** One or two sentences on what the workflow is for. Templates say they are illustrative, not payer policy. */
+  description?: string;
   state: string;
   product?: string;
   /** Empty means every service. */
@@ -225,6 +236,8 @@ export interface Workflow extends WorkflowMeta {
   startsFrom?: string;
   /** Set on the workflow made from a payer's earlier Process tab, so nothing is lost. */
   migrated?: boolean;
+  /** On a draft that sits on top of a published workflow: the version that is in force while the draft is edited. Absent when nothing is published yet. */
+  publishedVersion?: number;
 }
 export interface WorkflowVersion {
   workflowId: string;
@@ -265,6 +278,10 @@ export interface CaseFacts {
   portalStatus: "up" | "down";
   /** Business days the request has waited for a payer answer. */
   waitingDays: number;
+  /** The provider type the request is for, when the case knows it. A workflow set for one provider type matches only that type. */
+  providerType?: string;
+  /** ISO date of the payer's decision, for the appeal deadline and peer-to-peer window. Without it those rules cannot be counted and say so. */
+  decisionDate?: string;
   /** Human approvals already given, by node id (New case fills it from the sign-off). */
   approvals?: Record<string, ApprovalState>;
 }
@@ -279,12 +296,17 @@ export interface TraceStep {
   handle?: Handle;
   /** Plain sentence of what happened, with the numbers. */
   message: string;
+  /** How real the step is in this demo (live, a simulation, or not configured), so a trace never reads as more than it was. */
+  support?: SupportStatus;
   ruleRefs: string[];
   warnings: string[];
   /** Order of execution, from 0. */
   seq: number;
 }
 export type RunStatus = "completed" | "no_authorization" | "paused" | "manual_review" | "failed";
+/** What an End node says about how its path finished. "denial" reads as a completed run that hands the case to the denial workflow. */
+export type EndResult = "completed" | "no_authorization" | "manual_review" | "denial";
+export const END_RESULT_LABEL: Record<EndResult, string> = { completed: "Completed", no_authorization: "No authorization needed", manual_review: "Needs a person (manual review)", denial: "Hand over to the denial workflow" };
 export interface RunResult {
   status: RunStatus;
   steps: TraceStep[];
@@ -296,6 +318,10 @@ export interface RunResult {
   reason?: string;
   /** One sentence for the person: "Paused for documentation: the treatment plan is missing." */
   outcomeText: string;
+  /** How the run ended when it reached an End node: completed, no authorization needed, manual review, or handed to the denial workflow. */
+  endResult?: EndResult;
+  /** Ids of nodes not reached yet that the stopped run could still reach (waiting nodes behind a pause). `skipped` holds the nodes on other paths. */
+  pending?: string[];
   warnings: string[];
   /** Rule ids read, with their verification state, so unverified rules are never silent. */
   rulesUsed: { id: string; title: string; verification: Verification }[];

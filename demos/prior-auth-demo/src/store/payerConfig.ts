@@ -1,15 +1,16 @@
-import type { StateCreator } from "zustand";
+import type { StateCreator, StoreApi } from "zustand";
 import { AGENTS } from "@/data/agents";
-import { conditionText, openDrafts, payerWithName, reachedByOf, RULE_TITLE, type AddPayerFields, type CustomPayer, type DocItem, type EditArea, type EditLogEntry, type LogChange, type OpenDraft, type PayerConfig, type Rule, type RuleId, type WorkflowStep } from "@/data/payerConfig";
+import { conditionText, customToSummary, LEGACY_RULE_GROUP, openDrafts, payerWithName, reachedByOf, RULE_TITLE, type AddPayerFields, type CustomPayer, type DocItem, type EditArea, type EditLogEntry, type LogChange, type OpenDraft, type PayerConfig, type Rule, type RuleId, type WorkflowStep } from "@/data/payerConfig";
 import { proposalsFor, seedPayerConfig, starterConfig } from "@/data/payerConfigSeed";
-import { PAYERS } from "@/data/seed";
+import { PAYERS, syncCustomPayers } from "@/data/seed";
 import { siteOf } from "@/data/sites";
 import { PROGRAM_LABEL, type AgentKey, type Program } from "@/data/types";
 import { viewerById } from "@/data/viewers";
 import { uid } from "@/lib/format";
 import { sitesInView } from "@/lib/scope";
 import { shortDate, stamp } from "@/lib/time";
-import { paths } from "@/routes";
+import { paths, type PayerTabId } from "@/routes";
+import type { RuleGroup } from "@/data/workflow/types";
 import { createEmrSlice, type EmrSlice } from "./emr";
 import type { AppState } from "./index";
 
@@ -24,6 +25,8 @@ export interface PayerConfigSlice extends EmrSlice {
   payerConfig: Record<string, PayerConfig>;
   payerEdits: EditLogEntry[];
   addPayer: (input: AddPayerFields) => string;
+  /** Write lines to a payer's edit audit (any area). The Workflow Studio and the rules library use it so every save shows in History & Changes. */
+  logPayerEdit: (id: string, area: EditArea, reason: string, changes: LogChange[]) => void;
   editPayerDetails: (id: string, patch: PayerDetailsPatch, reason: string, changes: LogChange[]) => void;
   saveWorkflow: (id: string, steps: WorkflowStep[], reason: string, changes: LogChange[]) => void;
   saveCaller: (id: string, text: string, reason: string) => void;
@@ -54,8 +57,8 @@ export const createPayerConfigSlice: StateCreator<AppState, [], [], PayerConfigS
     return openDrafts(get().requests, get().caseDrafts, id, (caseId) => view.includes(siteOf(caseId)));
   };
   /** A bell notification for a saved edit, linking to the tab it was made on. */
-  const told = (id: string, tab: "process" | "rules" | "documents", title: string, body: string) =>
-    get().notify({ agent: "system", title: `${shortOf(id)} ${title}`, body, to: paths.payers(id, tab), tone: "neutral" });
+  const told = (id: string, tab: PayerTabId, group: RuleGroup | undefined, title: string, body: string) =>
+    get().notify({ agent: "system", title: `${shortOf(id)} ${title}`, body, to: paths.payers(id, tab, group), tone: "neutral" });
   const logEdits = (id: string, area: EditArea, reason: string, changes: LogChange[], user = who()) =>
     set((s) => ({ payerEdits: [...changes.map((c) => ({ id: uid("pe"), payerId: id, at: s.clock, user, area, what: c.what, before: c.before, after: c.after, reason })), ...s.payerEdits] }));
   /** An edit was saved: new drafts use it now, and open drafts wait for Update drafts. */
@@ -89,13 +92,17 @@ export const createPayerConfigSlice: StateCreator<AppState, [], [], PayerConfigS
       for (let n = 2; get().payerConfig[id]; n += 1) id = `custom-${slug}-${n}`;
       const first = name.split(" ")[0];
       const clash = PAYERS.some((p) => p.shortName.toLowerCase() === first.toLowerCase()) || get().customPayers.some((p) => p.shortName.toLowerCase() === first.toLowerCase());
-      const payer: CustomPayer = { id, name, shortName: clash ? name : first, type: input.type, group: input.group, reachedBy: reachedByOf(input.reach), programs: input.programs };
+      const profile = { ...(input.org?.trim() ? { org: input.org.trim() } : {}), ...(input.state?.trim() ? { state: input.state.trim() } : {}), ...(input.product?.trim() ? { product: input.product.trim() } : {}) };
+      const payer: CustomPayer = { id, name, shortName: clash ? name : first, type: input.type, group: input.group, reachedBy: reachedByOf(input.reach), programs: input.programs, ...profile };
       const on = shortDate(get().clock);
       set((s) => ({ customPayers: [...s.customPayers, payer], payerConfig: { ...s.payerConfig, [id]: starterConfig(payer, input.reach, on) } }));
-      logEdits(id, "Payer details", "Payer added", [{ what: "Added a payer", before: "", after: `${name}, ${input.type}, reached by ${payer.reachedBy}` }]);
+      const where = [payer.org, payer.product, payer.state].filter(Boolean).join(", ");
+      logEdits(id, "Payer details", "Payer added", [{ what: "Added a payer", before: "", after: `${name}, ${input.type}, reached by ${payer.reachedBy}${where ? `. ${where}` : ""}` }]);
       get().toast({ title: `${name} was added`, body: "Starter workflow, rules and documents are ready. Figures are benchmark estimates.", tone: "good" });
       return id;
     },
+
+    logPayerEdit: (id, area, reason, changes) => logEdits(id, area, reason, changes),
 
     editPayerDetails: (id, patch, reason, changes) => {
       const { noticeDue, backup, ...top } = patch;
@@ -104,7 +111,7 @@ export const createPayerConfigSlice: StateCreator<AppState, [], [], PayerConfigS
       const reachedBy = top.reachedBy;
       if (reachedBy) set((s) => ({ customPayers: s.customPayers.map((p) => (p.id === id ? { ...p, reachedBy } : p)) }));
       logEdits(id, "Payer details", reason, changes);
-      told(id, "process", "details edited", `${who()} changed ${changes.map((c) => c.what.toLowerCase()).join(", ")}. The edit is in the log with the reason.`);
+      told(id, "history", undefined, "details edited", `${who()} changed ${changes.map((c) => c.what.toLowerCase()).join(", ")}. The edit is in the log with the reason.`);
       get().toast({ title: "Payer details saved", body: "The edit is in the log with your reason.", tone: "good" });
     },
 
@@ -114,7 +121,7 @@ export const createPayerConfigSlice: StateCreator<AppState, [], [], PayerConfigS
       logEdits(id, "Workflow", reason, changes);
       const v = get().payerConfig[id]?.workflow.version;
       const logged = `${changes.length} ${changes.length === 1 ? "change" : "changes"} logged.`;
-      told(id, "process", "workflow edited", `${who()} saved version ${v}. ${logged} New drafts use it at once. Click Update drafts to redraft open ones.`);
+      told(id, "history", undefined, "workflow edited", `${who()} saved version ${v}. ${logged} New drafts use it at once. Click Update drafts to redraft open ones.`);
       get().toast({ title: `Workflow saved as version ${v}`, body: `${logged} New drafts use it at once. Click Update drafts to redraft open ones.`, tone: "good" });
     },
 
@@ -122,7 +129,7 @@ export const createPayerConfigSlice: StateCreator<AppState, [], [], PayerConfigS
       const old = get().payerConfig[id]?.caller.text ?? "";
       patchConfig(id, (c) => ({ ...c, caller: { text, confirmed: shortDate(get().clock) } }));
       logEdits(id, "Caller instructions", reason, [{ what: "Instructions for Caller", before: old, after: text }]);
-      told(id, "process", "caller instructions edited", `${who()} saved a new script. Caller follows it on its next call.`);
+      told(id, "rules", "agent_instructions", "caller instructions edited", `${who()} saved a new script. Caller follows it on its next call.`);
       get().toast({ title: "Instructions for Caller saved", body: "Caller follows them on its next call. The edit is logged.", tone: "good" });
     },
 
@@ -131,14 +138,14 @@ export const createPayerConfigSlice: StateCreator<AppState, [], [], PayerConfigS
       const on = shortDate(get().clock);
       edited(id, (c) => ({ rules: c.rules.map((r) => (r.id === rule ? { ...r, lines, confirmed: on, source: `Edited in Psyflo by ${who()}` } : r)) }));
       logEdits(id, "Rules", reason, [{ what: RULE_TITLE[rule], before: old.join("; "), after: lines.join("; ") }]);
-      told(id, "rules", "rule edited", `${who()} changed “${RULE_TITLE[rule]}”. New drafts use it at once. Click Update drafts to redraft open ones.`);
+      told(id, "rules", LEGACY_RULE_GROUP[rule], "rule edited", `${who()} changed “${RULE_TITLE[rule]}”. New drafts use it at once. Click Update drafts to redraft open ones.`);
       get().toast({ title: `${RULE_TITLE[rule]} saved`, body: "New drafts use it at once. Click Update drafts to redraft open ones.", tone: "good" });
     },
 
     saveDocs: (id, program, items, reason, changes) => {
       edited(id, (c) => ({ docs: { ...c.docs, [program]: items } }));
       logEdits(id, "Documents", reason, changes);
-      told(id, "documents", "document list edited", `${who()} changed the ${PROGRAM_LABEL[program]} list. New drafts use it at once. Click Update drafts to redraft open ones.`);
+      told(id, "rules", "clinical_documentation", "document list edited", `${who()} changed the ${PROGRAM_LABEL[program]} list. New drafts use it at once. Click Update drafts to redraft open ones.`);
       get().toast({ title: `${PROGRAM_LABEL[program]} list saved`, body: "New drafts use it at once. Click Update drafts to redraft open ones.", tone: "good" });
     },
 
@@ -165,7 +172,7 @@ export const createPayerConfigSlice: StateCreator<AppState, [], [], PayerConfigS
       }));
       logEdits(id, "Workflow", `Accepted Historian's proposal: ${p.title}`, [{ what: `Added a branch under “${target.title}”`, before: "", after: `If ${conditionText(p.cond)}: ${p.result}` }]);
       const v = get().payerConfig[id]?.workflow.version;
-      told(id, "process", "workflow edited", `${who()} accepted Historian's proposal and saved version ${v}. New drafts use it at once. Click Update drafts to redraft open ones.`);
+      told(id, "history", undefined, "workflow edited", `${who()} accepted Historian's proposal and saved version ${v}. New drafts use it at once. Click Update drafts to redraft open ones.`);
       get().toast({ title: "Proposal accepted", body: `Added under “${target.title}” and logged as version ${v}.`, tone: "good" });
     },
 
@@ -212,6 +219,51 @@ export const createPayerConfigSlice: StateCreator<AppState, [], [], PayerConfigS
     },
   };
 };
+
+/* ------------------------------------------------------------------ persistence
+   The payers added, each payer's saved configuration (rules, documents, details, acknowledged changes) and the edit log are kept in this browser, next to the workflows (store/workflows.ts),
+   so a reload shows the same payer pages the workflows were saved with. Storage is guarded: a blocked store (a private window, a preview) just means changes last until the tab closes.
+   Reset demo data puts the seeds back, and the next write replaces what was saved. */
+export const PAYERS_STORAGE_KEY = "psyflo.prior-auth-demo.payers.v1";
+interface PersistedPayers { v: 1; customPayers: CustomPayer[]; payerConfig: Record<string, PayerConfig>; payerEdits: EditLogEntry[] }
+
+const storage = (): Storage | null => {
+  try {
+    return typeof localStorage === "undefined" ? null : localStorage;
+  } catch {
+    return null;
+  }
+};
+
+function loadPayers(): PersistedPayers | null {
+  const st = storage();
+  if (!st) return null;
+  try {
+    const parsed = JSON.parse(st.getItem(PAYERS_STORAGE_KEY) ?? "null") as PersistedPayers | null;
+    return parsed && parsed.v === 1 && Array.isArray(parsed.customPayers) && Array.isArray(parsed.payerEdits) && parsed.payerConfig && typeof parsed.payerConfig === "object" ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Puts back what was saved (the six payers' saved copy wins over their seed, a payer added joins every picker again) and writes every later change. Called once from store/index.ts. Returns the unsubscribe. */
+export function initPayerConfigPersistence(store: StoreApi<AppState>): () => void {
+  const saved = loadPayers();
+  if (saved) {
+    const seeds = seedPayerConfig();
+    store.setState({ customPayers: saved.customPayers, payerConfig: { ...seeds, ...saved.payerConfig }, payerEdits: saved.payerEdits });
+    syncCustomPayers(saved.customPayers.map(customToSummary));
+  }
+  return store.subscribe((s, prev) => {
+    if (s.customPayers === prev.customPayers && s.payerConfig === prev.payerConfig && s.payerEdits === prev.payerEdits) return;
+    try {
+      const out: PersistedPayers = { v: 1, customPayers: s.customPayers, payerConfig: s.payerConfig, payerEdits: s.payerEdits };
+      storage()?.setItem(PAYERS_STORAGE_KEY, JSON.stringify(out));
+    } catch {
+      /* Storage is full or blocked: the changes stay in memory. */
+    }
+  });
+}
 
 /** Sidebar badge: payers with a change waiting for a person. */
 export const selectPayersBadge = (s: AppState): number => Object.values(s.payerConfig).filter((c) => c.pending).length;

@@ -1,0 +1,26 @@
+title: Authorizations › New case › Workflow › No authorization required from the workflow
+route: /authorizations/new/:draftId (Eligibility & Benefits)
+intro: When the workflow ends in 'No authorization required', New case raises the same outcome as a verification that says so: a card with the payer, service and dates, and the same three actions. Documentation, preparation and review are marked Not applicable, and nothing is prepared or sent unless the person chooses to go on with a documented exception. The workflow does not send or save anything on its own.
+dir: TD
+---
+start s1 "The workflow reaches its 'No authorization required' ending\nThe verification says the payer does not require one, or a payer rule node says so"
+process p1 "The step header says 'Next in this workflow: ...' with the ending"
+process p2 "The no-authorization outcome is raised\nSteps 3, 4 and 5 read 'Not applicable'"
+screen sc1 "Card 'No authorization is required'\nThe payer, the level of care, the dates\n'Its rule says: ...' when the payer has written one"
+click c1 "Click 'Save verification to the patient record'"
+store st1 "The verification is saved\nThe draft is removed"
+process p3 "Opens the result on Eligibility & Benefits"
+click c2 "Click 'Return to Case Manager'"
+process p4 "The draft is removed\nOpens Case Manager"
+click c3 "Click 'Continue with a documented exception'"
+input i1 "Type why a request is sent when none is required"
+store st2 "The reason is kept on the draft\nHistory: 'Override: continued although no authorization is required, reason documented'"
+process p5 "Steps 3, 4 and 5 open as normal\nThe workflow keeps running; nothing is sent until a clinician signs"
+end e1 "The person saved, left or went on"
+goto g1 "Continues in: New case › Eligibility & Benefits › No authorization required"
+
+s1 --> p1 --> p2 --> sc1
+sc1 --> c1 --> st1 --> p3 --> e1
+sc1 --> c2 --> p4 --> e1
+sc1 --> c3 --> i1 --> st2 --> p5 --> e1
+sc1 -.-> g1

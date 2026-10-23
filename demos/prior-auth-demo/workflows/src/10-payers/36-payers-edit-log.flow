@@ -1,6 +1,6 @@
 title: Payers › Edit log
 route: /payers/:id
-intro: The 'Edit log' button opens a read-only drawer listing every edit to this payer, newest first, with who, when, why and the old and new text. It is the only record of a change: there is no undo or revert button.
+intro: The 'Edit log' button opens a read-only drawer listing every edit to this payer, newest first, with who, when, why and the old and new text. A row of area buttons (All, Workflow, Rules, Documents, Caller instructions, Payer details) narrows the list; History & Changes holds the same list under 'Edit audit'. It is the only record of a change: there is no undo or revert button.
 dir: TD
 ---
 start s1 "Click 'Edit log'\nin the payer header"
@@ -12,22 +12,25 @@ process who "Line under it: '{viewer} · Tue 10:42 am · Reason: ...'\nThe name 
 screen ba "Two boxes with an arrow\nRed 'Before' (or 'Nothing' for an addition)\nGreen 'After' (or 'Removed' for a removal)"
 
 group gA "Where entries come from (area chip)"
-  store a1 "Workflow\nSave workflow, Accept proposal"
-  store a2 "Rules\nSave a rule"
+  store a1 "Workflow\nSave, publish, archive or restore a workflow, accept a suggestion"
+  store a2 "Rules\nSave, add, verify or archive a rule"
   store a3 "Documents\nSave a document list,\nand documents added by a payer change"
   store a4 "Caller instructions\nSave the script"
   store a5 "Payer details\nEdit payer, Add a payer"
 endgroup
 
 process cnt "Header button count 'Edit log (3)'\ncounts entries for this payer only\nEach changed field is its own entry"
-process ro "Read only\nNo search, filter, revert or export"
+process ro "Read only\nNo search, revert or export"
+click fl "Click an area button\nExample: 'Workflow 2'"
+process flp "Only that area shows\nEvery area has a count\nAn area with none reads 'No Rules edits'"
 click cc "Click the X ('Close'),\npress Escape or click the dimmed area"
 end e1 "Drawer closes\nPage underneath unchanged"
-goto g1 "Continues in: Payers › Process › Save the workflow"
-goto g2 "Continues in: Payers › Rules › Edit a rule"
-goto g3 "Continues in: Payers › Documents › Edit the list"
+goto g1 "Continues in: Payers › Workflow Builder › Save a draft and publish"
+goto g2 "Continues in: Payers › Rules & Instructions › Edit a rule"
+goto g3 "Continues in: Payers › Rules & Instructions › Edit the document list"
 
 s1 --> dr --> any
+dr --> fl --> flp --> ent
 any -->|No| em --> cc
 any -->|Yes| ent --> who --> ba --> cc
 ent --> cnt

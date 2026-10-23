@@ -24,6 +24,8 @@ import { stepIdOf, stepIndex, stepPatch, stepPatchOf } from "./steps";
 import { stepStates } from "./stepState";
 import { useRecAdds } from "./useRecAdds";
 import { useReading } from "./useRecordsTimers";
+import { useWorkflowSync } from "./workflow/useWorkflowSync";
+import { WorkflowRow } from "./workflow/WorkflowRow";
 
 const NO_CONTEXT: string[] = [];
 
@@ -48,6 +50,8 @@ export default function NewCasePage() {
     return !!step && s.agentPaused[step.agent];
   });
   useReading(draft);
+  /* The payer workflow follows the case: it is matched, pinned and traced from here, only for a case the viewer can see. */
+  useWorkflowSync(draft, env?.workflow ?? null, !!draft && !!env && scope.sites.includes(draft.site));
 
   /* No draft in the address: start one (from ?referral=ID, ?verification=ID, ?patient=ID or ?type=) and open it. The ref stops a second draft in development. */
   useEffect(() => {
@@ -119,6 +123,7 @@ export default function NewCasePage() {
     const sentId = draft.caseId;
     return (
       <Page>
+        {env.workflow ? <WorkflowRow draft={draft} view={env.workflow} /> : null}
         <PageHeader
           title={recorded ? `${sentId} was sent` : `${sentId} is with the payer`}
           sub={recorded ? "It was signed and sent to the payer (demo). The agents are following it from the Dashboard." : "It is already with the payer, so there is nothing to sign here."}
@@ -171,7 +176,8 @@ export default function NewCasePage() {
       />
       <AuthTypePicker draftId={draft.id} kind={draft.kind} disabled={draft.sent} />
       <NewCaseStepper steps={steps} current={at} onGo={(i) => patch(draft.id, stepPatch(i))} />
-      <StepHeader index={at} info={steps[at]} />
+      {env.workflow ? <WorkflowRow draft={draft} view={env.workflow} /> : null}
+      <StepHeader index={at} info={steps[at]} workflowHint={env.workflow?.hint} />
       {at === 0 ? <IntakeStep draft={draft} env={env} /> : at === 1 ? <EligibilityStep draft={draft} env={env} /> : at === 2 ? <DocumentationStep draft={draft} env={env} /> : at === 3 ? <PreparationStep draft={draft} env={env} /> : <ReviewStep draft={draft} env={env} />}
     </Page>
   );

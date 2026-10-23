@@ -1,0 +1,30 @@
+title: Authorizations › New case › Workflow › Prepare versus send, and sites
+route: /authorizations/new/:draftId (Review & submit)
+intro: A workflow can contain steps that prepare a payer-facing action (a portal packet, a fax packet, a call script) and steps that would transmit one. New case never runs a payer-facing step on its own. It prepares, and the one send is the existing 'Sign and send to payer (demo)', which a clinician must sign and which only simulates the send. The history says which steps prepared and that nothing was transmitted. Workflows and their traces are clinic-wide; the case, its history and the people who can open it stay at the case's site.
+dir: TD
+---
+start s1 "The workflow has steps that prepare a portal, fax or phone action"
+process p1 "The agents prepare the packet in Authorization preparation\nNothing is transmitted"
+screen sc1 "Review & submit\nThe packet, the checks, 'What is missing'\nCard 'Sign' with 'Demo: simulated send. Nothing leaves the app.'"
+decision d1 "Is a clinician signing, with the attestation, nothing blocking and any warning acknowledged?"
+endx e1 "'Sign and send to payer (demo)' stays switched off"
+click c1 "Click 'Sign and send to payer (demo)' and confirm"
+store st1 "The request is recorded as Received (demo simulation)"
+store st2 "History: 'Workflow approval recorded: Dr. Rivera (clinician)'\n'Prepared for Summit (demo simulation). Nothing was transmitted outside this app'\nDetail: what the workflow prepared, and that its portal, fax and email steps are not transmitted on their own"
+decision d2 "Who is looking?"
+screen sc2 "Jordan Perez or Alex Morgan\nBoth sites; the case is at its own site"
+screen sc3 "Dr. Rivera (Site A only)\nOnly Site A cases and their workflow lines\nThe same clinic-wide workflows as everyone"
+screen sc4 "Sam Okafor (Site B only)\nOnly Site B cases\nA Site A case link shows the out-of-site card, with no patient"
+end e2 "The send stays a person's, simulated, and recorded"
+goto g1 "Continues in: New case › Review & submit › Sign and send to payer"
+goto g2 "Continues in: New case › Sites and scope"
+
+s1 --> p1 --> sc1 --> d1
+d1 -->|No| e1
+d1 -->|Yes| c1 --> st1 --> st2 --> e2
+st2 -.-> g1
+sc1 --> d2
+d2 -->|Both sites| sc2 --> e2
+d2 -->|Site A only| sc3 --> e2
+d2 -->|Site B only| sc4 --> e2
+sc4 -.-> g2

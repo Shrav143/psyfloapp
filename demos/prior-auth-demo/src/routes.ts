@@ -1,4 +1,10 @@
 /* Every link in the app goes through here, so modules never hard-code each other's URLs. */
+
+/** The four views inside a payer: Workflow Builder, Rules & Instructions, Test Workflow, History & Changes. */
+export type PayerTabId = "builder" | "rules" | "test" | "history";
+/** The ids of the earlier Process, Documents and Changes tabs. Links that still use them keep working. */
+export type LegacyPayerTabId = "process" | "documents" | "changes";
+
 export const paths = {
   dashboard: (q?: { request?: string; payer?: string; stage?: string }) => {
     const s = new URLSearchParams(q as Record<string, string> | undefined).toString();
@@ -38,7 +44,14 @@ export const paths = {
   manager: (tab?: "cases" | "reviews") => `/manager${tab ? `?tab=${tab}` : ""}`,
   analytics: () => "/analytics",
   emr: () => "/emr",
-  payers: (id?: string, tab?: "process" | "rules" | "documents" | "changes") =>
-    `/payers${id ? `/${id}` : ""}${tab ? `?tab=${tab}` : ""}`,
+  /** The landing page (no id) or one payer's workspace. `tab` is one of the four views; the older ids still open the matching view
+      (process: builder, documents: rules with the Clinical documentation group open, changes: history). `group` opens one Rules & Instructions group. */
+  payers: (id?: string, tab?: PayerTabId | LegacyPayerTabId, group?: string) => {
+    const q = new URLSearchParams();
+    if (tab) q.set("tab", tab);
+    if (group) q.set("group", group);
+    const qs = q.toString();
+    return `/payers${id ? `/${id}` : ""}${qs ? `?${qs}` : ""}`;
+  },
   settings: () => "/settings",
 };

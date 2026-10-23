@@ -22,6 +22,7 @@ import { StepFooter } from "./StepFooter";
 import { stepPatch } from "./steps";
 import { useRecAdds } from "./useRecAdds";
 import { useUnmetSync } from "./useUnmetSync";
+import { signEntries } from "./workflow/trace";
 import { ValidationSummary } from "./ValidationSummary";
 
 const RECHECK_MS = 1200;
@@ -73,7 +74,9 @@ export function ReviewStep({ draft, env }: { draft: CaseDraft; env: CaseEnv }) {
   };
 
   const onSign = (signedBy: string) => {
-    const id = sign(draft.id, signedBy);
+    /* The workflow's lines for the sign-off and the send are written to the request's History with the signature. */
+    const entries = env.workflow ? signEntries(env.workflow, { signer: signedBy, payerShort: payer?.shortName ?? "the payer", at: env.clock, acknowledged: review.missing.filter((m) => m.severity === "ack").map((m) => m.label), known: (draft.workflowLog ?? []).map((e) => e.text) }) : [];
+    const id = sign(draft.id, signedBy, entries);
     if (id) nav(paths.case(id));
     else toast({ title: "Could not sign yet", body: "All agents must finish before the request can be signed.", tone: "mid" });
   };

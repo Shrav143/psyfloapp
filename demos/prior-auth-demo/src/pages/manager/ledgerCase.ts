@@ -85,5 +85,6 @@ export function caseHistory(c: LedgerRow, r: ReturnType<typeof reviewsOf>, clock
 export function latestHistory(c: LedgerRow, requests: PsyRequest[], r: ReturnType<typeof reviewsOf>, clock: number, n = 3): RequestEvent[] {
   const req = requests.find((x) => x.id === c.id) ?? requests.find((x) => x.caseId === c.caseId);
   const events = req?.events.length ? req.events : caseHistory(c, r, clock);
-  return events.filter((e) => e.done).sort((a, b) => b.at - a.at).slice(0, n);
+  /* Lines at the same minute (the demo clock only moves when someone moves it) keep the order they were written in, newest last, so the newest comes first here. */
+  return events.map((e, i) => ({ e, i })).filter((x) => x.e.done).sort((a, b) => b.e.at - a.e.at || b.i - a.i).slice(0, n).map((x) => x.e);
 }

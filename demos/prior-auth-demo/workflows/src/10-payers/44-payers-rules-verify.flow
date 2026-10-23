@@ -1,0 +1,39 @@
+title: Payers › Rules & Instructions › Mark a rule as verified
+route: /payers/summit?tab=rules
+intro: 'Mark as verified' is the only way a rule becomes Verified. A person names the source and the date they checked it; Psyflo cannot check a source itself and says so. An address is optional and must be a web address. Nothing is opened or fetched. Editing a rule never verifies it, and editing a verified rule sends it back to Needs review. Verification is a record of what a person did, not a payer's confirmation.
+dir: TD
+---
+start s1 "Open a rule row\nclick 'Mark as verified'\n('Verify again' on a verified rule)"
+overlay m "Mark as verified\n'Verified means a person checked it against a source.\nPsyflo does not check the source itself.'"
+input i1 "Type 'Source' (required)\nExample: the payer's provider manual, section 4, or a call reference"
+input i2 "Type 'Source address' (optional)\nhttps://..."
+input i3 "Pick 'Source published on' (optional date)"
+input i4 "Pick 'Checked on' (required date)\nStarts as today in the demo (Oct 20, 2026)"
+click ok "Click 'Mark as verified'"
+decision d1 "Is the source empty?"
+toast e1 "'Name the source: the payer's manual, a letter, a call reference.'"
+decision d2 "Is there an address that does not start with http:// or https://?"
+toast e2 "'Use a web address that starts with http:// or https://, or leave it empty.'"
+decision d3 "Is the date missing or after today?"
+toast e3 "'Add the date you checked it.'\nor 'That date is in the future. Use today or earlier.'"
+store st "Rule saved as Verified\nSource label, address and publication date kept\nLast verified = the date entered\nVersion goes up by one, one history line"
+store lg "Edit audit gets a 'Rules' line\n'Verified against the source ...' with your name and the time"
+screen out "Row shows a green 'Verified' pill\n'Source: ...' (a link when it has an address)\n'Last verified Oct 20, 2026'\nThe 'unverified' note is gone"
+process wf "Workflows that use the rule read it as verified\nTest Workflow no longer warns that it is unverified"
+process nv "Nothing else becomes verified\nA payer's other rules, and a rule edited later, keep their own state"
+click cx "Click 'Cancel', the X or press Escape"
+endx x1 "Pop-up closes\nNothing changed"
+end e1b "The rule is Verified, with a source and a date"
+goto g1 "Continues in: Payers › Workflow Builder › Test a workflow"
+goto g2 "Continues in: Payers › Edit log"
+
+s1 --> m --> i1 --> i2 --> i3 --> i4 --> ok --> d1
+d1 -->|Yes| e1 --> i1
+d1 -->|No| d2
+d2 -->|Yes| e2 --> i2
+d2 -->|No| d3
+d3 -->|Yes| e3 --> i4
+d3 -->|No| st --> lg --> out --> wf --> nv --> e1b
+m --> cx --> x1
+lg -.-> g2
+wf -.-> g1

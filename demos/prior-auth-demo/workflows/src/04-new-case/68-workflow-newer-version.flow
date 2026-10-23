@@ -1,0 +1,34 @@
+title: Authorizations › New case › Workflow › A newer version exists
+route: /authorizations/new/:draftId (the Workflow line and the 'Review newer version' side panel)
+intro: A case keeps the workflow version it started with. If a person publishes a newer version of the same workflow in Payers, the case is not switched. The Workflow line says so quietly and offers 'Review newer version'. The side panel shows what changed and what it would mean for this case now. Nothing changes until a person clicks Apply, and applying is written to the case's history. A packet that was already sent is never rewritten.
+dir: TD
+---
+start s1 "A case is pinned to a version, for example v3\nA person publishes v4 of the same workflow in Payers › Workflow Builder"
+process p1 "The next time the case is drawn it is compared with the latest published version\nThe case still follows v3"
+screen sc1 "Workflow line, quietly\n'Workflow: Initial Authorization, Residential SUD · v3 · Summit'\n'A newer version exists (v4).'\nButton 'Review newer version'"
+click c1 "Click 'Review newer version'"
+overlay o1 "Side panel 'Review newer version'\n'This case started on ... version 3 and keeps it until you decide. Version 4 was published since.'\nWho saved it, when, and the reason they gave"
+process p2 "What changed is worked out from the two versions\nAdded, removed and changed steps, the services and dates it covers, whether the routes changed"
+screen sc2 "'What changed'\nA short list, for example 'Added: Check provider network (Eligibility & Benefits)'\nor 'The steps are the same. Only the saved version number moved.'"
+process p3 "Both versions run on this case's facts"
+screen sc3 "'What it would mean for this case'\n'Now, v3' and the outcome sentence\n'With v4' and the outcome sentence"
+screen sc4 "'Applying it changes the steps this case follows from here. A packet that was already sent is never rewritten. The switch is written to the case's history.'"
+click c2 "Click 'Apply version 4'"
+store st1 "The case now follows v4 and is pinned to it"
+store st2 "History: 'Workflow updated: Initial Authorization, Residential SUD v3 to v4, reviewed by Jordan Perez'\nDetail: what changed, and that requests already sent are not changed"
+toast t1 "'Workflow applied'\n'Initial Authorization, Residential SUD, version 4 is what this case follows now.'"
+click c3 "Click 'Keep version 3', press Escape, or click outside"
+process p4 "The panel closes\nThe case keeps v3\nThe quiet line stays"
+endx e1 "Nothing was changed"
+end e2 "The case follows v4 from here"
+goto g1 "Continues in: New case › Workflow › Show the workflow and its path"
+goto g2 "Continues in: New case › Workflow › What the workflow adds to the history"
+goto g3 "Continues in: Payers › Workflow Builder › Publish a workflow"
+
+s1 --> p1 --> sc1 --> c1 --> o1 --> p2 --> sc2 --> p3 --> sc3 --> sc4
+sc4 --> c2 --> st1 --> st2 --> t1 --> e2
+sc4 --> c3 --> p4 --> e1
+o1 --> c3
+st2 -.-> g2
+sc1 -.-> g1
+s1 -.-> g3

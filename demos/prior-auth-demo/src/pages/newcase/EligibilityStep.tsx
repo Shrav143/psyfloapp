@@ -14,6 +14,7 @@ import { NoAuthCard } from "./NoAuthCard";
 import { StepFooter } from "./StepFooter";
 import { stepPatch } from "./steps";
 import { useVerifyRun } from "./useVerifyRun";
+import { foldWorkflow } from "./workflow/fold";
 
 /** What Verify does on this type of request, in one line under the heading of the step. */
 const LEAD = {
@@ -105,7 +106,7 @@ export function EligibilityStep({ draft, env }: { draft: CaseDraft; env: CaseEnv
             </Button>
           </>
         }
-        hint={hint}
+        hint={foldWorkflow(hint, env)}
       />
     </div>
   );

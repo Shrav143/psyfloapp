@@ -21,6 +21,7 @@ import { StepFooter } from "./StepFooter";
 import { stepPatch } from "./steps";
 import { useAgentRun } from "./useAgentRun";
 import { useUnmetSync } from "./useUnmetSync";
+import { foldWorkflow } from "./workflow/fold";
 
 /** Step 4, Authorization preparation, before the agents were started: nothing has run, so the step says so and offers the one button. Opening a step never starts anything. */
 function NotStarted({ draft, env }: { draft: CaseDraft; env: CaseEnv }) {
@@ -164,7 +165,7 @@ function AgentsRun({ draft, env }: { draft: CaseDraft; env: CaseEnv }) {
             </Button>
           </>
         }
-        hint={finished ? "Read the draft and sign it on the next step." : question ? "The agents are waiting for your answer." : failed ? `${AGENTS[failed].name} could not finish. Retry it, or skip it and note it.` : holding ? "Paused in Settings." : "The agents work on their own. You can leave and come back."}
+        hint={foldWorkflow(finished ? "Read the draft and sign it on the next step." : question ? "The agents are waiting for your answer." : failed ? `${AGENTS[failed].name} could not finish. Retry it, or skip it and note it.` : holding ? "Paused in Settings." : "The agents work on their own. You can leave and come back.", env)}
       />
       <QuestionModal draft={draft} open={!!question && !dismissed} onClose={() => setDismissed(true)} />
     </>
