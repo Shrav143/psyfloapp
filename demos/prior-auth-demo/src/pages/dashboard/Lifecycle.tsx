@@ -22,9 +22,8 @@ export function Lifecycle({ chips, ledger, active, onPick }: { chips: StateChip[
             </InfoTip>
           </span>
         }
-        subtitle="Where every authorization stands. Select a state to filter the table below."
       />
-      <div className="flex flex-wrap items-stretch gap-2 px-6 py-5" role="group" aria-label="Lifecycle states">
+      <div className="flex flex-wrap items-stretch gap-2 px-5 py-4" role="group" aria-label="Lifecycle states">
         {chips.map((c) => {
           const on = active === c.stage;
           return (

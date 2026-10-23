@@ -9,13 +9,13 @@ export function DoNext({ items, moreToday, onGo, onShowMore }: { items: DoItem[]
   const uid = useId();
   return (
     <Card>
-      <CardHeader title="Do next" subtitle="Suggested by FLO from today's demo data" />
+      <CardHeader title="Do next" />
       {items.length === 0 ? (
-        <p className="px-6 py-8 text-[14px] text-muted">Nothing needs you right now.</p>
+        <p className="px-5 py-6 text-[14px] text-muted">Nothing needs you right now.</p>
       ) : (
         <ul className="divide-y divide-line">
           {items.map((i) => (
-            <li key={i.key} data-do={i.key} className="flex flex-wrap items-center gap-x-5 gap-y-2 px-6 py-3.5">
+            <li key={i.key} data-do={i.key} className="flex flex-wrap items-center gap-x-5 gap-y-2 px-5 py-3">
               <div className="min-w-0 flex-1 basis-[280px]">
                 <p id={`${uid}-${i.key}`} className="text-[14px] font-medium">
                   {i.sentence}
@@ -38,7 +38,7 @@ export function DoNext({ items, moreToday, onGo, onShowMore }: { items: DoItem[]
         </ul>
       )}
       {moreToday > 0 ? (
-        <div className="flex flex-wrap items-center gap-x-3 border-t border-line px-6 py-3 text-[13px] text-muted">
+        <div className="flex flex-wrap items-center gap-x-3 border-t border-line px-5 py-2.5 text-[13px] text-muted">
           {moreToday} more {moreToday === 1 ? "needs" : "need"} you today.
           <Button variant="ghost" size="sm" onClick={onShowMore}>
             Show them in the table
