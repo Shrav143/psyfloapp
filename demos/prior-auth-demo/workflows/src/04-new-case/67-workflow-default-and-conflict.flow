@@ -18,7 +18,7 @@ endgroup
 
 group gConf "Two workflows are equally specific"
   store c1 "The default is stored on the draft for now"
-  screen c2 "Workflow line\n'Workflow: Default process for a ... Illustrative default'\nIn amber: 'Two workflows match equally. The default is used until you choose.'\nButton 'Choose a workflow'"
+  screen c2 "Workflow line\n'Workflow: Default process for a ... Illustrative default'\nIn amber: '<Workflow A> and <Workflow B> match equally. The default is used until you choose.'\nButton 'Choose a workflow'"
   click c3 "Click 'Choose a workflow'"
   overlay c4 "Side panel 'Choose a workflow'\nOne radio choice per workflow: name, version, request type, services, effective date, why it matched"
   input c5 "Pick one"
@@ -32,8 +32,8 @@ endgroup
 
 decision d2 "Does the case change so the same two no longer compete?"
 process p2 "The choice no longer holds\nA fresh match is made (before the workflow has run past Intake), or offered for review (after)"
-goto g1 "Continues in: New case › Workflow › Match and pin the payer workflow"
-goto g2 "Continues in: New case › Workflow › The case changed after the workflow started"
+goto g1 "Continues in: Authorizations › New case › Workflow › Match and pin the payer workflow"
+goto g2 "Continues in: Authorizations › New case › Workflow › The case changed after the workflow started"
 end e1 "The case follows the workflow a person chose"
 end e2 "The case follows the default, clearly labelled"
 

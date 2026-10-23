@@ -16,14 +16,14 @@ function ProposalCard({ id, p }: { id: string; p: Proposal }) {
       <div className="mt-3 flex flex-wrap items-center gap-2.5">
         <Button variant="primary" size="sm" onClick={() => accept(id, p.id)}>Accept proposal</Button>
         <Button size="sm" onClick={() => dismiss(id, p.id)}>Dismiss</Button>
-        <span className="text-xs">Applies to the earlier process view. Historian never changes a workflow on its own.</span>
+        <span className="text-xs">Applies to the earlier process view and to a draft of the migrated workflow in the Workflow Builder. Historian never changes a workflow on its own.</span>
       </div>
     </Banner>
   );
 }
 
 /** Historian's suggestions for this payer's process. "Re-learn from decisions" looks at the last 90 days for about three seconds, then proposes one change. It never edits a workflow itself:
-    a person accepts or dismisses each suggestion. */
+    a person accepts or dismisses each suggestion. Accepting adds the branch to the earlier process view and to a DRAFT of the migrated workflow; the published workflow changes only when a person publishes the draft. */
 export function Suggestions({ id, name, cfg }: { id: string; name: string; cfg: PayerConfig }) {
   const alive = useAlive();
   const [relearning, setRelearning] = useState(false);

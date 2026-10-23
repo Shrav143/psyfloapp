@@ -6,7 +6,7 @@ also: A case that was already sent (I-2231) has no 'Being prepared' row, so it i
 ---
 start s1 "Payers › a change is acknowledged and 'Update drafts' is confirmed"
 store st1 "Payers records the update\nWhich change, which payer, the IDs of the drafts and the demo-clock time"
-goto g1 "Continues in: Payers › Changes › Update drafts after a change"
+goto g1 "Continues in: Payers › History & Changes › Review and apply a change"
 start s2 "Open Case Manager (Active cases tab)"
 decision d1 "Does an update list this case?\n(match on the case ID or draft ID, any letter case)"
 process p1 "The newest update for the case is used"

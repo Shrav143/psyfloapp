@@ -1,0 +1,33 @@
+title: Payers › Workflow Builder › Generate with FLO
+route: /payers/summit?tab=builder
+intro: Describe the payer's process in plain English and FLO drafts a workflow to review. No model runs behind the demo: it picks one of a few sample workflows by the words used, and says so everywhere. Anything typed as policy is kept as an unverified note, never as a rule. A person has to review and publish the result.
+dir: TD
+---
+start s1 "Click 'Generate with FLO'\n(New menu or empty state)"
+overlay o1 "Right-hand panel 'Generate with FLO'\nBanner 'Demo draft: not a live model, not payer policy'\n'Describe the payer's process in plain English'\n'Examples' (three)"
+input i1 "Type a description\nor click an example to fill it in"
+decision d1 "At least eight characters typed?"
+click c1 "Click 'Generate a demo draft'"
+process p1 "FLO is drafting (about a second, spinner on the button)"
+agent a1 "FLO builds the draft from a library of sample workflows\nChosen by words: residential, iop, php, detox, concurrent or continued stay,\nreauthorization or renewal, retro, modification or extension\nDefault: initial"
+screen r1 "The draft in the panel\nName with '(FLO draft)', pill 'Demo draft: not a live model, not payer policy'\n'Matched on: ...'"
+screen r2 "'What FLO proposed'\n'Rules it needs that are not on file'\n'Things to set up'"
+decision d2 "Did the description contain policy-like sentences?\nnumbers of days or hours, 'must', 'within'"
+screen r3 "'Kept as unverified notes, not as rules'\nThe sentences, also kept on the Start step"
+process p2 "Plain statement: 'A person has to review it, run it in Test Workflow and publish it.'"
+click c2 "Click 'Put the draft on the canvas'"
+store st1 "Workflow saved as a draft\nVersion history: 'Drafted by FLO from a description (demo draft)'"
+screen s2 "The draft opens on the canvas, status 'Draft'\nChecks show anything still to fix"
+click c3 "Click 'Cancel' or Escape"
+endx e2 "Nothing created"
+end e1 "A demo draft is on the canvas, waiting for a person"
+goto g1 "Continues in: Payers › Workflow Builder › Check a workflow before publishing"
+
+s1 --> o1 --> i1 --> d1
+d1 -->|No| i1
+d1 -->|Yes| c1 --> p1 --> a1 --> r1 --> r2 --> d2
+d2 -->|Yes| r3 --> p2
+d2 -->|No| p2
+p2 --> c2 --> st1 --> s2 --> e1
+o1 --> c3 --> e2
+s2 --> g1

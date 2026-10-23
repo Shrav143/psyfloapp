@@ -55,7 +55,7 @@ export function PayerWorkspace({ id }: { id: string }) {
       <div id="payer-panel" role="tabpanel" aria-labelledby={`payer-tab-${tab}`} className="flex min-w-0 flex-col gap-4">
         {tab === "rules" || tab === "history" ? <Unapplied id={id} name={row.shortName} cfg={cfg} /> : null}
         {tab === "builder" ? <WorkflowBuilderTab key={id} payerId={id} /> : null}
-        {tab === "rules" ? <RulesInstructionsTab key={`${id}-${group ?? ""}`} payerId={id} name={row.shortName} cfg={cfg} openGroup={group} /> : null}
+        {tab === "rules" ? <RulesInstructionsTab key={`${id}-${group ?? ""}-${params.get("rule") ?? ""}`} payerId={id} name={row.shortName} cfg={cfg} openGroup={group} openRule={params.get("rule")} /> : null}
         {tab === "test" ? <TestWorkflowTab key={id} payerId={id} /> : null}
         {tab === "history" ? <HistoryChangesTab key={id} payerId={id} name={row.shortName} cfg={cfg} /> : null}
       </div>

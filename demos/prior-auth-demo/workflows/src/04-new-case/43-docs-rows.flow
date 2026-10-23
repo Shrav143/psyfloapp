@@ -21,7 +21,7 @@ group gReq "Clinical summary rows"
 endgroup
 
 group gDocs "Document rows"
-  process pList "The list saved on Payers › Documents decides the rows\nTyped for the Authorization type: 'Typical for a continued stay'\nA line that fits no standard document is its own required row"
+  process pList "The list saved on Payers › Rules & Instructions › Clinical documentation decides the rows\nTyped for the Authorization type: 'Typical for a continued stay'\nA line that fits no standard document is its own required row"
   decision dRow "What does the row hold?"
   process rMiss "Required, empty: 'Not found yet. Drop it above or add it here.'\nButtons 'Add file', 'Use sample file' and 'Mark not available'"
   process rOpt "Recommended or typical, empty: 'You can continue without it.'\nSame three buttons"

@@ -17,7 +17,7 @@ input i1 "Type why a request is sent when none is required"
 store st2 "The reason is kept on the draft\nHistory: 'Override: continued although no authorization is required, reason documented'"
 process p5 "Steps 3, 4 and 5 open as normal\nThe workflow keeps running; nothing is sent until a clinician signs"
 end e1 "The person saved, left or went on"
-goto g1 "Continues in: New case › Eligibility & Benefits › No authorization required"
+goto g1 "Continues in: Authorizations › New case › Eligibility & Benefits › No authorization required"
 
 s1 --> p1 --> p2 --> sc1
 sc1 --> c1 --> st1 --> p3 --> e1

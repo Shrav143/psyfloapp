@@ -19,7 +19,7 @@ agent integrity "Integrity\nNew case run step 8\nDashboard: review and sign\nDen
 screen c3 "Intelligence\nKnows how each payer behaves"
 agent historian "Historian\nNew case run step 4\nDenial Intelligence: similar decisions\nPayers Changes: proposals"
 agent forecaster "Forecaster\nNew case run step 6\nCase page: re-scores the approval chance"
-agent sentinel "Sentinel\nNo screen runs it\nOnly the notification 'Payer rule changed', which links to Payers › Changes"
+agent sentinel "Sentinel\nNo screen runs it\nOnly the notification 'Payer rule changed', which links to Payers › History & Changes"
 agent analyst "Analyst\nAnalytics: builds the monthly report"
 
 screen c4 "Case work\nMoves each case to done"

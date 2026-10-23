@@ -2,7 +2,7 @@ import { useMemo, type ReactNode, type Ref } from "react";
 import { AlertTriangle, Copy, Link2, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui";
 import { cn } from "@/lib/cn";
-import { ERROR_LABEL, EXEC_LABEL, STAGES_ORDER, STAGE_LABEL, SUPPORT_LABEL, type BranchDef, type ConditionGroup, type ConfigValue, type ErrorMode, type ExecMode, type FieldSpec, type NodeDef, type PromptConfig, type Stage, type ValidationIssue, type WfNode } from "@/data/workflow/types";
+import { ERROR_LABEL, EXEC_LABEL, STAGES_ORDER, STAGE_LABEL, SUPPORT_LABEL, type BranchDef, type ConditionGroup, type ConfigValue, type ErrorMode, type ExecMode, type FieldSpec, type PromptConfig, type Stage, type ValidationIssue, type WfNode } from "@/data/workflow/types";
 import { BranchesEditor } from "./fields/BranchesEditor";
 import { ChecklistEditor } from "./fields/ChecklistEditor";
 import { ConditionBuilder, emptyGroup } from "./fields/ConditionBuilder";
@@ -80,14 +80,30 @@ function NodeEditor({ node, graph, issues, readOnly, onChangeNode, onGraph, onDu
           {def && !isFlow ? <p className="m-0 text-[13px] text-muted">{def.supportNote || SUPPORT_LABEL[def.support]}</p> : null}
 
           {mine.length ? (
-            <ul className="m-0 flex list-none flex-col gap-1.5 p-0">
-              {mine.map((i, k) => (
-                <li key={k} className={cn("flex items-start gap-2 rounded-xl px-3 py-2 text-[13px]", i.severity === "error" ? "bg-risk-bg text-risk-ink" : "bg-mid-bg text-mid-ink")}>
-                  <AlertTriangle size={14} className="ico mt-0.5" aria-hidden="true" />
-                  <span><span className="font-semibold">{i.severity === "error" ? "Needs fixing: " : "Check: "}</span>{i.text}</span>
-                </li>
-              ))}
-            </ul>
+            <div className="flex flex-col gap-2">
+              {mine.some((i) => i.severity === "error") ? (
+                <ul className="m-0 flex list-none flex-col gap-1.5 p-0">
+                  {mine.filter((i) => i.severity === "error").map((i, k) => (
+                    <li key={k} className="flex items-start gap-2 rounded-xl bg-risk-bg px-3 py-2 text-[13px] text-risk-ink">
+                      <AlertTriangle size={14} className="ico mt-0.5" aria-hidden="true" />
+                      <span><span className="font-semibold">Needs fixing: </span>{i.text}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+              {mine.some((i) => i.severity === "warning") ? (
+                <Fold title={`${mine.filter((i) => i.severity === "warning").length} to check`} summary="Not blocking. Open to read them.">
+                  <ul className="m-0 flex list-none flex-col gap-1.5 p-0">
+                    {mine.filter((i) => i.severity === "warning").map((i, k) => (
+                      <li key={k} className="flex items-start gap-2 rounded-xl bg-mid-bg px-3 py-2 text-[13px] text-mid-ink">
+                        <AlertTriangle size={14} className="ico mt-0.5" aria-hidden="true" />
+                        <span><span className="font-semibold">Check: </span>{i.text}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </Fold>
+              ) : null}
+            </div>
           ) : null}
 
           <TextField label="Title" value={node.title} onChange={(title) => patch({ title }, `title:${node.id}`)} disabled={readOnly} maxLength={60} />
@@ -179,7 +195,6 @@ function ConnectionStatus({ status }: { status: IntegrationStatus }) {
 
 /** One row per exit: where it leads, chosen from a list. The keyboard way to connect two steps. */
 function NextSteps({ node, graph, onGraph, disabled }: { node: WfNode; graph: Graph; onGraph: (g: Graph, note: string) => void; disabled?: boolean }) {
-  const def = nodeDef(node.kind);
   const outs = outputsOf(node);
   const titles = useMemo(() => {
     const count = new Map<string, number>();
@@ -292,4 +307,3 @@ function Block({ label, help, children }: { label: string; help?: string; childr
 const isGroupValue = (v: ConfigValue | undefined): v is ConditionGroup => !!v && typeof v === "object" && !Array.isArray(v) && "join" in v && "items" in v;
 const isPrompt = (v: ConfigValue | undefined): v is PromptConfig => !!v && typeof v === "object" && !Array.isArray(v) && "prompt" in v && "agent" in v;
 
-export type { NodeDef };

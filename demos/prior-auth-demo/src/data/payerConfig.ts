@@ -3,7 +3,7 @@ import { PAYERS } from "./seed";
 import type { AgentKey, PayerSummary, Program, PsyRequest } from "./types";
 import type { RuleGroup } from "./workflow/types";
 
-/* Payers: the shapes behind the Process, Rules, Documents and Changes tabs. Seed content is in payerConfigSeed.ts. */
+/* Payers: the shapes behind a payer's saved rules, documents, details, earlier process and changes (Rules & Instructions and History & Changes read them). Seed content is in payerConfigSeed.ts. */
 
 export type StepKind = "check" | "file" | "portal" | "phone";
 export const STEP_KINDS: StepKind[] = ["check", "file", "portal", "phone"];

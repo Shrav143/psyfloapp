@@ -1,9 +1,11 @@
 import type { StateCreator, StoreApi } from "zustand";
 import { AGENTS } from "@/data/agents";
-import { conditionText, customToSummary, LEGACY_RULE_GROUP, openDrafts, payerWithName, reachedByOf, RULE_TITLE, type AddPayerFields, type CustomPayer, type DocItem, type EditArea, type EditLogEntry, type LogChange, type OpenDraft, type PayerConfig, type Rule, type RuleId, type WorkflowStep } from "@/data/payerConfig";
+import { conditionText, customToSummary, LEGACY_RULE_GROUP, openDrafts, payerWithName, reachedByOf, RULE_TITLE, type AddPayerFields, type CustomPayer, type DocItem, type EditArea, type EditLogEntry, type LogChange, type OpenDraft, type PayerConfig, type Rule, type RuleId } from "@/data/payerConfig";
 import { proposalsFor, seedPayerConfig, starterConfig } from "@/data/payerConfigSeed";
 import { PAYERS, syncCustomPayers } from "@/data/seed";
 import { siteOf } from "@/data/sites";
+import { migratedId } from "@/data/workflow/migrate";
+import { proposalToBranch } from "@/data/payerConfigProposal";
 import { PROGRAM_LABEL, type AgentKey, type Program } from "@/data/types";
 import { viewerById } from "@/data/viewers";
 import { uid } from "@/lib/format";
@@ -28,7 +30,6 @@ export interface PayerConfigSlice extends EmrSlice {
   /** Write lines to a payer's edit audit (any area). The Workflow Studio and the rules library use it so every save shows in History & Changes. */
   logPayerEdit: (id: string, area: EditArea, reason: string, changes: LogChange[]) => void;
   editPayerDetails: (id: string, patch: PayerDetailsPatch, reason: string, changes: LogChange[]) => void;
-  saveWorkflow: (id: string, steps: WorkflowStep[], reason: string, changes: LogChange[]) => void;
   saveCaller: (id: string, text: string, reason: string) => void;
   saveRule: (id: string, rule: RuleId, lines: string[], reason: string) => void;
   saveDocs: (id: string, program: Program, items: DocItem[], reason: string, changes: LogChange[]) => void;
@@ -115,16 +116,6 @@ export const createPayerConfigSlice: StateCreator<AppState, [], [], PayerConfigS
       get().toast({ title: "Payer details saved", body: "The edit is in the log with your reason.", tone: "good" });
     },
 
-    saveWorkflow: (id, steps, reason, changes) => {
-      const clock = get().clock;
-      edited(id, (c) => ({ workflow: { version: c.workflow.version + 1, editedOn: shortDate(clock), steps } }));
-      logEdits(id, "Workflow", reason, changes);
-      const v = get().payerConfig[id]?.workflow.version;
-      const logged = `${changes.length} ${changes.length === 1 ? "change" : "changes"} logged.`;
-      told(id, "history", undefined, "workflow edited", `${who()} saved version ${v}. ${logged} New drafts use it at once. Click Update drafts to redraft open ones.`);
-      get().toast({ title: `Workflow saved as version ${v}`, body: `${logged} New drafts use it at once. Click Update drafts to redraft open ones.`, tone: "good" });
-    },
-
     saveCaller: (id, text, reason) => {
       const old = get().payerConfig[id]?.caller.text ?? "";
       patchConfig(id, (c) => ({ ...c, caller: { text, confirmed: shortDate(get().clock) } }));
@@ -172,8 +163,12 @@ export const createPayerConfigSlice: StateCreator<AppState, [], [], PayerConfigS
       }));
       logEdits(id, "Workflow", `Accepted Historian's proposal: ${p.title}`, [{ what: `Added a branch under “${target.title}”`, before: "", after: `If ${conditionText(p.cond)}: ${p.result}` }]);
       const v = get().payerConfig[id]?.workflow.version;
-      told(id, "history", undefined, "workflow edited", `${who()} accepted Historian's proposal and saved version ${v}. New drafts use it at once. Click Update drafts to redraft open ones.`);
-      get().toast({ title: "Proposal accepted", body: `Added under “${target.title}” and logged as version ${v}.`, tone: "good" });
+      /* The same branch goes into a DRAFT of the migrated workflow, so the Workflow Builder has it too. The published workflow does not change until a person publishes the draft. */
+      const migrated = get().workflowDrafts[migratedId(id)] ?? get().workflows.find((w) => w.id === migratedId(id));
+      const graph = migrated && migrated.status !== "archived" ? proposalToBranch(migrated, p, p.id) : null;
+      const drafted = !!graph && get().saveWorkflowDraft(migratedId(id), graph, `Accepted Historian's proposal: ${p.title}`);
+      told(id, "history", undefined, "workflow edited", `${who()} accepted Historian's proposal and saved version ${v} of the earlier process view${drafted ? " and a draft of the migrated workflow" : ""}. New drafts use it at once. Click Update drafts to redraft open ones.`);
+      get().toast({ title: "Proposal accepted", body: `Added under “${target.title}” to the earlier process view (version ${v})${drafted ? " and to a draft of the migrated workflow. Publish the draft in the Workflow Builder to use it" : ""}.`, tone: "good" });
     },
 
     dismissProposal: (id, proposalId) => {

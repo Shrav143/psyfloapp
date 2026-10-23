@@ -202,6 +202,8 @@ export interface CaseDraft {
   /** The workflow has run past Intake (or the request was sent): its version stays the one the case started with until a person reviews and applies another. */
   workflowPinned?: boolean;
   workflowChoice?: WorkflowChoice;
+  /** The payer, level of care and Authorization type the workflow was matched for ("summit|RES|initial"). A pinned case offers a review only when these change. */
+  workflowFor?: string;
   /** What the workflow did on this case, for History. */
   workflowLog?: WorkflowLogEntry[];
 }

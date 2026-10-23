@@ -25,11 +25,13 @@ export function groupSummary(rules: PayerRule[], noun: string): string {
 
 /** One Rules & Instructions group: a closed section with a one-line summary and a count; open it shows the rule rows, then whatever the group adds (document lists, the Caller script)
     and an Add a rule button. `open` opens it on arrival and scrolls to it (a link to the Clinical documentation group does this). */
-export function RuleGroupSection({ group, summary, count, rules, actions, open, before, after, canAdd = true }: { group: Group; summary: ReactNode; count: number; rules: PayerRule[]; actions: RuleActions; open: boolean; before?: ReactNode; after?: ReactNode; canAdd?: boolean }) {
+export function RuleGroupSection({ group, summary, count, rules, actions, open, openRule, before, after, canAdd = true }: { group: Group; summary: ReactNode; count: number; rules: PayerRule[]; actions: RuleActions; open: boolean; openRule: string | null; before?: ReactNode; after?: ReactNode; canAdd?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
+  const hasAsked = openRule !== null && rules.some((r) => r.id === openRule);
   useEffect(() => {
-    if (open) ref.current?.scrollIntoView({ block: "start", behavior: "auto" });
-  }, [open]);
+    // A link to one rule scrolls to the rule instead (see RuleRow).
+    if (open && !hasAsked) ref.current?.scrollIntoView({ block: "start", behavior: "auto" });
+  }, [open, hasAsked]);
   const label = RULE_GROUP_LABEL[group];
   const live = rules.filter((r) => r.verification !== "superseded");
   const gone = rules.filter((r) => r.verification === "superseded");
@@ -37,9 +39,9 @@ export function RuleGroupSection({ group, summary, count, rules, actions, open, 
     <div ref={ref} id={`group-${group}`} className="scroll-mt-4">
       <Disclosure title={label} summary={summary} defaultOpen={open} right={<span className="text-xs text-muted" aria-label={`${count} in ${label}`}>{count}</span>}>
         {before}
-        {live.map((r) => <RuleRow key={r.id} rule={r} usedBy={actions.usedBy(r.id)} onEdit={() => actions.onEdit(r)} onVerify={() => actions.onVerify(r)} onArchive={() => actions.onArchive(r)} />)}
+        {live.map((r) => <RuleRow key={r.id} defaultOpen={r.id === openRule} rule={r} usedBy={actions.usedBy(r.id)} onEdit={() => actions.onEdit(r)} onVerify={() => actions.onVerify(r)} onArchive={() => actions.onArchive(r)} />)}
         {!live.length && !before ? <p className="px-6 py-5 text-sm text-muted">No rules here yet. Add one, and it starts Unverified.</p> : null}
-        {gone.map((r) => <RuleRow key={r.id} rule={r} usedBy={actions.usedBy(r.id)} onEdit={() => actions.onEdit(r)} onVerify={() => actions.onVerify(r)} onArchive={() => actions.onArchive(r)} />)}
+        {gone.map((r) => <RuleRow key={r.id} defaultOpen={r.id === openRule} rule={r} usedBy={actions.usedBy(r.id)} onEdit={() => actions.onEdit(r)} onVerify={() => actions.onVerify(r)} onArchive={() => actions.onArchive(r)} />)}
         {after}
         {canAdd ? (
           <div className="border-t border-line px-6 py-3">

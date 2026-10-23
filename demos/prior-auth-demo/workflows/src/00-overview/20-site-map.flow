@@ -25,7 +25,7 @@ endgroup
 
 group gConn "Sidebar › Connections"
   screen emr "EMR Connect\nSystems per site, sync, mappings"
-  screen pay "Payers\nProcess, Rules, Documents, Changes"
+  screen pay "Payers\nLanding list, then one payer with four views"
 endgroup
 
 group gBot "Sidebar › Bottom"
@@ -40,7 +40,7 @@ group gSub "Pages reached from inside a tab"
   screen ver "Eligibility › Verify a patient and Result"
   screen brief "Denial Intelligence › Peer-to-peer brief"
   screen rep "Denial Intelligence › Appeal analysis report\nFor every denial, copy or download as PDF"
-  screen payer "Payers › One payer\nProcess, Rules, Documents, Changes tabs"
+  screen payer "Payers › One payer\nWorkflow Builder, Rules & Instructions, Test Workflow, History & Changes tabs"
 endgroup
 
 goto g0 "Continues in: Who can see what › Roles, sites and a record at the other site"

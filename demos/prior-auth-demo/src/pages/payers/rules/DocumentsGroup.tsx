@@ -9,8 +9,8 @@ import { numberWord } from "../lib/payers";
 const OPTIONS = PROGRAMS.map((p) => ({ value: p, label: PROGRAM_LABEL[p] }));
 
 /** The Clinical documentation group: what the payer wants for a level of care. The list is closed on a one-line summary and opens to a numbered list; the chart checker sits below it. */
-export function DocumentsGroup({ id, name, cfg }: { id: string; name: string; cfg: PayerConfig }) {
-  const [program, setProgram] = useState<Program>("RES");
+export function DocumentsGroup({ id, name, cfg, startProgram = "RES" }: { id: string; name: string; cfg: PayerConfig; startProgram?: Program }) {
+  const [program, setProgram] = useState<Program>(startProgram);
   const [editing, setEditing] = useState(false);
   const items = cfg.docs[program];
   const first = items.slice(0, 2).map((d) => d.title);

@@ -5,22 +5,26 @@ dir: TD
 ---
 start s1 "The person opens a step, adds a document, or refreshes the verification"
 process p1 "The facts are rebuilt\nThe verification record (coverage, benefit, authorization requirement, provider participation, existing authorization), which of the payer's documents are in the case, the dates, the sign-off"
+decision dChk "Has Verify checked coverage for this case yet?"
+screen scWait "Step header, second line\n'Next in this workflow: Waiting for the eligibility check: Verify has not checked coverage for this case yet.'\nThe workflow does not send the case to a person for a plan nobody asked"
 process p2 "The pinned version runs\nThe same engine as Test Workflow in Payers"
 screen sc1 "Step header, second line\n'Next in this workflow: Paused for documentation: the treatment plan is missing.'"
-decision d1 "Does the workflow have a warning of its own?\nFor example 'Submission window: 1 business day left, rule unverified'"
+decision d1 "Does the workflow have a warning of its own?\nFor example 'Verify benefits for this service: Limited benefit: check the limit before the request goes out'"
 process p3 "No extra text"
 decision d2 "Which step is open?"
-screen sc2 "Steps 1 to 4\nThe warning is added to the footer line beside the buttons, after the step's own text\n'Workflow: Submission window: 1 business day left, rule unverified'\nIn amber, in the same line"
+screen sc2 "Steps 1 to 4\nThe warning is added to the footer line beside the buttons, after the step's own text\n'Workflow: Verify benefits for this service: Limited benefit: check the limit before the request goes out'\nIn amber, in the same line"
 screen sc3 "Step 5, Review & submit\nOne extra note in 'What is missing'\n'Workflow: Initial Authorization, Residential SUD'\nIt is a note, not an item to acknowledge, and it does not stop signing"
 process p4 "Rules that are only unverified are not repeated as a warning on every step\nThey are listed in the info icon and in the history"
 decision d3 "Does the workflow end in 'No authorization required'?"
-goto g1 "Continues in: New case › Workflow › No authorization required from the workflow"
+goto g1 "Continues in: Authorizations › New case › Workflow › No authorization required from the workflow"
 decision d4 "Is an existing blocker true?\nNo patient, payer, service or dates; inactive coverage with no documented exception; an unanswered duplicate; no clinician as signer"
 toast t1 "Review & submit says what stops sending, as before\nThe workflow does not add to it"
 end e1 "The person goes on, with the workflow's outcome in view"
-goto g2 "Continues in: New case › Review & submit › What is missing"
+goto g2 "Continues in: Authorizations › New case › Review & submit › What is missing"
 
-s1 --> p1 --> p2 --> sc1 --> d1
+s1 --> p1 --> dChk
+dChk -->|No| scWait --> d1
+dChk -->|Yes| p2 --> sc1 --> d1
 d1 -->|No| p3 --> e1
 d1 -->|Yes| d2
 d2 -->|1 to 4| sc2 --> e1

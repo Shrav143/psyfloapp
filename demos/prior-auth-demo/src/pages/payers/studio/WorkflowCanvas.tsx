@@ -1,7 +1,7 @@
 import "@xyflow/react/dist/style.css";
 import "./studio.css";
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState, type DragEvent, type KeyboardEvent } from "react";
-import { Background, BackgroundVariant, Controls, MiniMap, ReactFlow, ReactFlowProvider, applyNodeChanges, useReactFlow, type Connection, type Edge, type EdgeChange, type Node, type NodeChange } from "@xyflow/react";
+import { Background, BackgroundVariant, Controls, MiniMap, ReactFlow, ReactFlowProvider, applyNodeChanges, useReactFlow, type Connection, type Edge, type EdgeChange, type NodeChange } from "@xyflow/react";
 import type { NodeKind, ValidationIssue, WfEdge, WfNode } from "@/data/workflow/types";
 import { cn } from "@/lib/cn";
 import { directionOf, nodeDef, type Direction } from "./lib/engine";

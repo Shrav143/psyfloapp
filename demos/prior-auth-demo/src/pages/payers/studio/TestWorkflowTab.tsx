@@ -17,7 +17,7 @@ import { match, run as runEngine } from "./lib/engine";
 import { prefersReducedMotion, useElementWidth } from "./lib/hooks";
 import { runStateOf } from "./lib/model";
 import { usePayerRules, usePayerWorkflows } from "./lib/store";
-import { freshCase, factsOf, PRESETS, type TestCase } from "./lib/testCases";
+import { factsOf, PRESETS, type TestCase } from "./lib/testCases";
 import { STATUS_WORD } from "./lib/ui";
 
 /* Test Workflow: a fictional case goes through the same engine New case uses, and the path it took lights up on the canvas. */
@@ -32,6 +32,7 @@ export function TestWorkflowTab({ payerId }: { payerId: string }) {
   const workflows = usePayerWorkflows(payerId);
   const rules = usePayerRules(payerId);
   const root = useRef<HTMLDivElement>(null);
+  const stage = useRef<HTMLDivElement>(null);
   const width = useElementWidth(root);
   const row = useMemo(() => payerRows(custom, config).find((r) => r.id === payerId), [custom, config, payerId]);
 
@@ -72,6 +73,7 @@ export function TestWorkflowTab({ payerId }: { payerId: string }) {
     try {
       const res = runEngine(chosen, factsOf(test, chosen), rules);
       setRan({ wf: chosen, res, type: test.facts.requestType });
+      stage.current?.scrollIntoView({ block: "nearest", behavior: prefersReducedMotion() ? "auto" : "smooth" });
       const total = res.steps.length;
       if (prefersReducedMotion() || total === 0) return setRevealed(total);
       setRevealed(0);
@@ -164,7 +166,7 @@ export function TestWorkflowTab({ payerId }: { payerId: string }) {
 
         <div className={cn("grid items-start gap-4", wide ? "grid-cols-[340px_minmax(0,1fr)]" : "grid-cols-1")}>
           <TestForm value={test} onChange={(t) => { setTest(t); setRan(null); stop(); }} docs={docsOf(test.facts.service)} workflow={chosen} onService={changeService} />
-          <div className="flex min-w-0 flex-col gap-4">
+          <div ref={stage} className="flex min-w-0 scroll-mt-20 flex-col gap-4">
             <Card className="p-3">
               <div className="mb-2 flex flex-wrap items-center gap-2 px-1.5">
                 <h3 className="m-0 font-serif text-[19px] font-semibold">{shown?.name}</h3>

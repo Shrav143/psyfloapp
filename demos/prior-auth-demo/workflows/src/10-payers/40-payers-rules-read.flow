@@ -4,7 +4,7 @@ intro: One calm page of eight closed groups, each with a one-line summary and a 
 dir: TD
 ---
 start s1 "Click the 'Rules & Instructions' tab"
-screen pg "Rules & Instructions\nCard 'Rules the agents and workflows follow' with an info icon\n'27 rules, 27 unverified. Saved in this browser.\nThese are demo rules, not verified against Summit's current policy.'\nBanner above it if edits wait"
+screen pg "Rules & Instructions\nCard 'Rules the agents and workflows follow' with an info icon\n'14 rules, 14 unverified. Saved in this browser.\nThese are demo rules, not verified against Summit's current policy.'\nBanner above it if edits wait"
 screen grp "Eight closed groups, in this order\nAuthorization requirements, Submission windows,\nBackdating & retroactive requests, Clinical documentation,\nConcurrent review & reauthorization, Submission methods,\nAppeals & peer-to-peer, Agent instructions\nEach: title, one summary line, a count"
 process sm "Summary is worked out live\n'1 requirement, 1 unverified.'\n'30 documents across 4 levels of care, and the chart checker. 2 rules, 2 unverified.'\nA group with nothing says 'No rules yet.'"
 click og "Click a group (Enter or Space)\nIt opens and closes"

@@ -1,0 +1,31 @@
+title: Payers › Workflow Builder › Configure a step › Integrations
+route: /payers/summit?tab=builder
+intro: Integration steps (EMR sync, payer portal, API request, webhook, fax, email, external task system, custom integration) show a connection status and never take a secret. Credentials are managed outside the app. Connected is shown only for what EMR Connect really has connected; everything else says Demo simulation or Not configured.
+dir: TD
+---
+start s1 "Select an integration step"
+screen cn "A box 'Connection: ...'\nthen 'Credentials are managed outside this app. Nothing secret is entered or stored here.'"
+decision d1 "Which status?"
+screen k1 "Connected\nOnly EMR sync, and only when EMR Connect has a system connected\n'Clinical record · Site A ... connected in EMR Connect. The sync itself is a demo simulation.'"
+screen k2 "Demo simulation\nPayer portal and Fax: the demo pretends the connection works, nothing leaves the app"
+screen k3 "Not configured\nAPI request, Webhook, Email, External task system, Custom integration,\nand EMR sync when no record system is connected"
+screen fl "Fields\n'Action' (for example check the status, submit, upload)\n'If it is not connected' (A person does it by hand, or No fallback: stop and ask)\n'What to send' under Advanced (the data it carries, never a secret)"
+process p1 "Steps that reach the payer carry 'A person approves first', always on"
+process p2 "When a step is not connected, a test run says so\nand follows the fallback chosen"
+decision d2 "Is anything typed that looks like a password or a key?"
+process p3 "There is no field for one: the app has nowhere to keep it"
+click c1 "Open EMR Connect to see what is connected"
+goto g1 "Continues in: EMR Connect › Connected systems › What each status means"
+goto g2 "Continues in: Payers › Test Workflow › Run a test case"
+end e1 "The step says exactly how real it is"
+
+s1 --> cn --> d1
+d1 -->|Connected| k1 --> fl
+d1 -->|Demo| k2 --> fl
+d1 -->|Not set up| k3 --> fl
+fl --> p1 --> p2 --> e1
+cn --> d2
+d2 -->|Yes| p3 --> e1
+d2 -->|No| fl
+k1 --> c1 --> g1
+p2 --> g2

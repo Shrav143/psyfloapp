@@ -13,14 +13,14 @@ import { NodeLibrary } from "./NodeLibrary";
 import { StudioProvider, type StudioCtx, type StudioDoc } from "./StudioContext";
 import { VersionHistoryDrawer } from "./VersionHistoryDrawer";
 import { WorkflowCanvas, type CanvasHandle } from "./WorkflowCanvas";
-import { metaOf, metaSummary, WorkflowDetails } from "./WorkflowDetails";
+import { metaSummary, WorkflowDetails } from "./WorkflowDetails";
 import { WorkflowSelector, type NewKind } from "./WorkflowSelector";
 import { WorkflowSummary } from "./WorkflowSummary";
 import { describeChange, sameGraph } from "./lib/describe";
 import { baseFacts, directionOf, layout, match, validate, type Direction } from "./lib/engine";
-import { useAnnouncer, useElementWidth, useLeaveGuard } from "./lib/hooks";
+import { prefersReducedMotion, useAnnouncer, useElementWidth, useLeaveGuard } from "./lib/hooks";
 import { duplicateNodes, reconcileEdges, removeNodes, type Graph } from "./lib/model";
-import { api } from "./lib/store";
+import { api, workflowStorageStatus } from "./lib/store";
 import { useHistory } from "./lib/useHistory";
 
 /* One workflow open on the canvas. The edits live here, with undo and redo, until Save draft writes them to the store. */
@@ -53,6 +53,7 @@ export function BuilderWorkspace({ payer, stored, workflows, rules, docs, focusN
   const root = useRef<HTMLDivElement>(null);
   const canvas = useRef<CanvasHandle>(null);
   const heading = useRef<HTMLHeadingElement>(null);
+  const panelBox = useRef<HTMLDivElement>(null);
   const width = useElementWidth(root);
   const mode: "wide" | "medium" | "stacked" = width >= 1100 ? "wide" : width >= 900 ? "medium" : "stacked";
   const { message, say } = useAnnouncer();
@@ -251,7 +252,8 @@ export function BuilderWorkspace({ payer, stored, workflows, rules, docs, focusN
   const ctx = useMemo<StudioCtx>(() => ({ payerId: payer.id, payerName: payer.name, services: work.meta.services, requestType: work.meta.requestType, docs, rules, openRules: guardedOpen }), [payer, work.meta.services, work.meta.requestType, docs, rules, guardedOpen]);
 
   const conflict = useMemo(() => conflictOf(working, workflows, payer.id), [working, workflows, payer.id]);
-  const savedNote = stored.status === "archived" ? "Archived. Read only." : `Saved in this browser · last saved ${stamp(stored.updatedAt)} by ${stored.updatedBy}`;
+  const where = workflowStorageStatus() === "saved in this browser" ? "Saved in this browser" : "Memory only: browser storage is blocked here, so changes last until the tab closes";
+  const savedNote = stored.status === "archived" ? "Archived. Read only." : `${where} · last saved ${stamp(stored.updatedAt)} by ${stored.updatedBy}`;
   void clock;
 
   const summary = (
@@ -349,10 +351,16 @@ export function BuilderWorkspace({ payer, stored, workflows, rules, docs, focusN
               <CanvasToolbar canUndo={history.canUndo} canRedo={history.canRedo} hasSelection={selected.length > 0} canDuplicate={selected.some((id) => work.nodes.find((n) => n.id === id)?.kind !== "start") && selected.length > 0} snap={snap} minimap={minimap} direction={direction} disabled={locked} onUndo={undo} onRedo={redo} onLayout={tidy} onDirection={turn} onFit={() => canvas.current?.fit()} onSnap={() => setSnap((s) => !s)} onMinimap={() => setMinimap((m) => !m)} onDuplicate={duplicateSelected} onDelete={deleteSelected} />
             </div>
             <div style={{ height: mode === "stacked" ? 520 : `calc(${AREA_H} - 46px)` }}>{canvasEl}</div>
+            {mode === "stacked" && node ? (
+              <p className="m-0 flex flex-wrap items-center gap-2 rounded-xl bg-sage-bg px-3.5 py-2 text-[13.5px] text-good-ink">
+                <span className="font-semibold">{node.title}</span> is selected.
+                <button type="button" onClick={() => panelBox.current?.scrollIntoView({ block: "start", behavior: prefersReducedMotion() ? "auto" : "smooth" })} className="font-semibold underline underline-offset-2">Open its settings</button>
+              </p>
+            ) : null}
           </div>
 
           {panelOpen ? (
-            <div style={mode === "stacked" ? undefined : { height: AREA_H }} className="flex min-h-0 flex-col">{panel}</div>
+            <div ref={panelBox} style={mode === "stacked" ? undefined : { height: AREA_H }} className="flex min-h-0 scroll-mt-20 flex-col">{panel}</div>
           ) : (
             <div className="relative" style={{ height: 120 }}>
               <Rail icon={PanelLeftOpen} label="Show the step settings" onClick={() => setPanelOpen(true)} text="Settings" flip />
@@ -424,4 +432,3 @@ function conflictOf(w: Workflow, all: Workflow[], payerId: string): string | nul
   return null;
 }
 
-export { metaOf };

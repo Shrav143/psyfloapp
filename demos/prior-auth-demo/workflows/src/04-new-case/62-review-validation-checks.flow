@@ -1,6 +1,6 @@
 title: Authorizations › New case › Review & submit › Validation summary and checks
 route: /authorizations/new/:draftId (step 5 of 5, Validation summary and Checks)
-intro: The validation summary lists the start date and what Reader found in every document the payer asks for. It is a closed section until opened; the rows that need a look are open inside it, and the same findings are listed with their fixes under 'What is missing'. The Checks card has four checks from four agents and shows their names and state. Every row and check is worked out from the case, the payer's saved documents (Payers › Documents) and rules (Payers › Rules). A warning can be signed after an acknowledgement; only a re-check in progress holds the Sign card off.
+intro: The validation summary lists the start date and what Reader found in every document the payer asks for. It is a closed section until opened; the rows that need a look are open inside it, and the same findings are listed with their fixes under 'What is missing'. The Checks card has four checks from four agents and shows their names and state. Every row and check is worked out from the case, the payer's saved documents (Payers › Rules & Instructions › Clinical documentation) and rules (Payers › Rules & Instructions). A warning can be signed after an acknowledgement; only a re-check in progress holds the Sign card off.
 dir: TD
 ---
 start s1 "On step 5, read the Validation summary and the Checks"
@@ -47,7 +47,7 @@ process pHover "Hover an agent badge to see the agent's name"
 goto gSign "Continues in: Authorizations › New case › Review & submit › Sign and send to payer"
 goto gMis "Continues in: Authorizations › New case › Review & submit › What is missing"
 goto gDocs "Continues in: Authorizations › New case › Clinical documentation › Replace a document or mark it not available"
-goto gRules "Continues in: Payers › Rules › Edit a rule"
+goto gRules "Continues in: Payers › Rules & Instructions › Edit a rule"
 
 s1 --> sV --> pRows --> dStart
 dStart -->|Yes| pStartOk

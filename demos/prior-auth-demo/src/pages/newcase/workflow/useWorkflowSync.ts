@@ -37,7 +37,7 @@ export function useWorkflowSync(draft: CaseDraft | undefined, view: CaseWorkflow
       entries.push(appliedEntry(v, d.payerId ? payerById(d.payerId).shortName : "", useStore.getState().clock, (d.workflowLog ?? []).length));
     }
     const pin = executing && !d.workflowPinned;
-    if (applied || pin || entries.length) record(d.id, { applied, pin, entries });
+    if (applied || pin || entries.length) record(d.id, { applied, forKey: applied ? v.forKey : undefined, pin, entries });
   }, [enabled, id, appliedKey, storedKey, executing, pinnedNow, record]);
 
   /* One line per stage change, once the workflow follows the case. */

@@ -37,7 +37,7 @@ endx x1 "Modal closes\nNothing saved"
 click cx "Click 'Cancel'"
 click cesc "Press Escape, click the X\nor click the dimmed area\nEscape with the 'Reached by' menu open closes the menu first"
 goto g1 "Continues in: Payers › Edit log"
-goto g2 "Continues in: Payers › Rules & Instructions › Submission methods and agent instructions"
+goto g2 "Continues in: Payers › Rules & Instructions › Agent instructions and the combined prompt"
 
 s1 --> m --> dv
 dv -->|Yes| okv --> i1

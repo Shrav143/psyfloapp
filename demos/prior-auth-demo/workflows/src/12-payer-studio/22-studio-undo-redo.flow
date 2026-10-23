@@ -1,0 +1,34 @@
+title: Payers › Workflow Builder › Undo and redo
+route: /payers/summit?tab=builder
+intro: Every change on the canvas and in the settings can be undone and redone, up to eighty steps back. Deleting and duplicating steps count as changes. Undo works anywhere on the page except while a field has the focus, where the field's own undo applies.
+dir: TD
+---
+start s1 "Make a change on the canvas or in the settings\nadd, move, connect, delete, duplicate, edit a field"
+process p1 "The change is added to the history\nTyping in one field, or nudging one step with the arrow keys, counts as one change"
+screen tb "Canvas tools\nUndo and Redo buttons light up when there is something to undo or redo"
+click c1 "Click 'Undo', or press Ctrl+Z (Cmd+Z on a Mac)"
+decision d1 "Anything to undo?"
+process p2 "The previous state returns: steps, lines and settings\nAnnounced: 'Undone'"
+process p3 "Nothing happens, the button is dimmed"
+click c2 "Click 'Redo', or press Ctrl+Shift+Z or Ctrl+Y"
+process p4 "The change comes back\nAnnounced: 'Redone'"
+click c3 "Select steps, click 'Delete the selected steps' or press Delete"
+process p5 "Steps and the lines touching them are removed\nStart cannot be deleted: 'Start cannot be deleted.'\nAnnounced: 'Deleted'"
+click c4 "Click 'Duplicate the selected steps'\nor 'Duplicate' in the settings"
+process p6 "A copy appears 48 px down and right with its settings\nLines between copied steps are copied too, and the copies are selected\nAnnounced: 'Duplicated the step'"
+decision d2 "A field has the focus?"
+process p7 "The browser's own undo for that field applies, the canvas history is left alone"
+process p8 "Making a new change after an undo drops what could have been redone"
+end e1 "The canvas matches the last undo or redo, still unsaved until 'Save draft'"
+
+s1 --> p1 --> tb
+tb --> c1 --> d1
+d1 -->|Yes| p2 --> c2 --> p4
+d1 -->|No| p3
+tb --> c3 --> p5 --> tb
+tb --> c4 --> p6 --> tb
+c1 --> d2
+d2 -->|Yes| p7
+d2 -->|No| d1
+p2 --> p8 --> e1
+p4 --> e1

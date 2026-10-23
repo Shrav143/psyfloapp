@@ -16,8 +16,8 @@ screen sc2 "Jordan Perez or Alex Morgan\nBoth sites; the case is at its own site
 screen sc3 "Dr. Rivera (Site A only)\nOnly Site A cases and their workflow lines\nThe same clinic-wide workflows as everyone"
 screen sc4 "Sam Okafor (Site B only)\nOnly Site B cases\nA Site A case link shows the out-of-site card, with no patient"
 end e2 "The send stays a person's, simulated, and recorded"
-goto g1 "Continues in: New case › Review & submit › Sign and send to payer"
-goto g2 "Continues in: New case › Sites and scope"
+goto g1 "Continues in: Authorizations › New case › Review & submit › Sign and send to payer"
+goto g2 "Continues in: Authorizations › New case › Sites and scope"
 
 s1 --> p1 --> sc1 --> d1
 d1 -->|No| e1

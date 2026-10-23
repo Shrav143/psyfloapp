@@ -1,0 +1,33 @@
+title: Payers › Workflow Builder › Published workflows and conflicts
+route: /payers/summit?tab=builder
+intro: Several workflows can be published for one payer, each for a service, request type, state, plan and dates. New case picks the most specific one. When two are equally specific, neither is chosen: the builder names both and New case flags it. A workflow for 'Any request type' is the payer's default and gives way to a specific one.
+dir: TD
+---
+start s1 "Publish or edit a workflow\nor change its Details"
+process p1 "Each time the builder checks, it asks the same matching New case uses:\nfor each service and request type the workflow covers, which published workflows fit?"
+decision d1 "Does exactly one workflow win for every case it covers?"
+process p2 "Nothing to say"
+decision d2 "Do two or more fit equally well?"
+toast t1 "Notice in the bar, in ochre:\n'Two published workflows are equally specific'\n'A and B both match Residential 3.5, initial authorization.\nNew case flags it and picks neither until one is changed.'"
+process p3 "Neither workflow is chosen for those cases\nThe checks list the same on the workflow being published"
+click c1 "Open 'Details' and narrow one of them\nServices, request type, state, plan, provider type or dates"
+click c2 "Or archive one"
+process p4 "The more specific workflow wins: one service beats every service,\none request type beats 'Any request type', a plan or state beats none"
+decision d3 "Is the open workflow published?"
+screen n1 "Notice 'Published version N is in force. Your changes are saved as a draft of version N+1,\nand publishing it replaces version N.'"
+store st1 "First save makes a draft of the next version beside the published one\nThe published one keeps serving new cases until the draft is published"
+screen n2 "Notice 'Published version N is still in force. This draft is version M and replaces it when published.'"
+process p5 "In-progress cases keep the version they started with\nNew case says 'A newer version exists' and offers 'Review newer version', never switching it silently"
+end e1 "The right workflow is in force for each kind of case"
+goto g1 "Continues in: Authorizations › New case › Workflow › Default process and equal matches"
+
+s1 --> p1 --> d1
+d1 -->|Yes| p2 --> d3
+d1 -->|No| d2
+d2 -->|Yes| t1 --> p3 --> c1 --> p4
+p3 --> c2 --> p4
+d2 -->|No| p4
+p4 --> d3
+d3 -->|Yes| n1 --> st1 --> n2 --> p5 --> e1
+d3 -->|No| p5
+p3 --> g1

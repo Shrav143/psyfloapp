@@ -2,7 +2,7 @@ title: Authorizations › New case › Workflow › What the workflow adds to th
 route: /authorizations/new/:draftId, then /authorizations/case/ID (History) and Case Manager
 intro: The workflow leaves a short trace in the case's history: which workflow was applied, how far it ran at each stage change (steps done, skipped and waiting), the rules it read with their verification state, any override, the sign-off, and what was prepared versus what was transmitted. Before the request exists the lines wait on the draft; they are written to the request's History when it is signed and sent. A draft that is already a request on the case page writes them straight away. Lines are short; the detail sits under them.
 dir: TD
-also: The engine's lines are attributed to Psyflo; a person's choice, review or override is attributed to the person. Nothing here is a payer fact.
+also: The engine's line for a stage names the agent that works it (Verify at Eligibility & Benefits, Reader at Clinical documentation, Scribe at Authorization preparation, Integrity at Review & submit); 'Workflow applied' is Psyflo's; a person's choice, review or override is the person's; the 'Prepared for' line is Packet's. Nothing here is a payer fact.
 ---
 start s1 "The workflow is applied, a stage is opened, a choice is made or the case is signed"
 decision d1 "What happened?"

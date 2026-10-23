@@ -1,105 +1,92 @@
 # Payers: coverage
 
-Source: `src/pages/payers/*`, `src/store/payerConfig.ts`, `src/data/payerConfig*.ts`, `src/lib/scope.ts`, `src/data/viewers.ts`. PRD: `06-payer-intelligence-and-rules-engine.md` (policy watch, rule versions). File names below are in this folder.
+Source: `src/pages/payers/*` (without `studio/`, which `12-payer-studio` covers), `src/store/payerConfig.ts`, `src/store/workflows.ts` (rules and versions), `src/data/payerConfig*.ts`, `src/data/workflow/rules.ts` and `impact.ts`, `src/lib/scope.ts`, `src/data/viewers.ts`. PRD: `06-payer-intelligence-and-rules-engine.md` (policy watch, rule versions). File names below are in this folder. The Workflow Builder and Test Workflow views are drawn in `12-payer-studio`.
 
 ## Arriving on Payers
 
 | Control | Diagram |
 |---|---|
-| Sidebar 'Payers' (Connections), its badge (payers with a change waiting: 3 at the start) | 10 |
-| Links in: bell notification 'Payer rule changed', FLO answer 'Open Payers, Cardinal, Changes', Demo menu 'Payers: Cardinal, Changes', bell notifications for saved edits ('Summit rule edited' and so on) | 10, 62, 28, 42, 52 |
-| /payers with no id (first payer), unknown id, bad or missing ?tab | 10 |
-| Page title 'N payers...', the line under it, 'Add a payer' button | 10, 16 |
-| 'Search payers', 'Clear search', empty text 'No payer matches', '3 with a change waiting', one compact row per payer (name, plan type and programs, what it asks for: 'Initial + review', 'Initial only', 'Review only'), green dot with 'No change waiting', ochre dot with the words 'Change waiting'. No approval rate or decision time on the row (Analytics has them) | 12 |
-| Header: name, plan line, 'Plan type' (with where claims go, nothing when the payer has none), 'Programs', 'Needs' (initial request, continued-stay review), 'Notice and reach' | 14 |
-| Header label 'Demo rules. Not verified against the payer's current policy.', its info icon ('About these rules', hover, focus, click, Escape), the 'Policy status' line (waiting or acknowledged change, last acknowledged or applied date, source) | 15 |
-| Header 'Edit log (N)' button | 14, 36 |
-| Header 'Edit' button | 14, 18 |
-| Tab bar Process, Rules, Documents, Changes, tab badge | 10, 60 |
+| Sidebar 'Payers' (Connections), its badge (payers with a change waiting: 3 at the start, the same for every viewer and site view) | 10 |
+| Links in: bell notification 'Payer rule changed', FLO answer 'Open Payers, Cardinal, Changes', Demo menu 'Payers: Cardinal, Changes', Eligibility's 'Rules' link, bell notifications for saved edits and rule changes, the builder's rule links (`?rule=`) | 10, 62, 40 |
+| /payers (landing), /payers/:id (workspace), an unknown id ('That payer is not in the demo', 'Back to all payers') | 10 |
+| ?tab=builder, rules, test, history, and the older process (builder), documents (Rules & Instructions with Clinical documentation open and in view), changes (History & Changes), a missing or unknown tab (builder) | 10, 50 |
 
-## Sites
+## Landing page
 
 | Control | Diagram |
 |---|---|
-| Payers are clinic-wide: same six payers, rules, documents and changes for every viewer; the 'Payers' sidebar badge (3) never changes with the site view | 84, 10 |
-| 'Update N drafts' / 'Apply to new drafts' count, list and redraft only the drafts at the sites in view (Cardinal: 1 at Site B; Summit: 2 at Site A); Both sites reads as before | 84, 66, 34, 70 |
-| Hint '1 more draft at Site B is not in this view...' (only a viewer who may see both sites, with one chosen) | 84 |
-| Edit log, 'Acknowledged by', 'You are acknowledging as' and 'Edited in Psyflo by' name the person viewing | 36, 64, 15, 40, 42 |
-| 'Try it on a case' lists only the Preparing cases at the sites in view | 84, 54 |
+| Page title 'N payers. The agents know how each one works.', the line under it, 'Add a payer' | 10, 12, 16 |
+| 'Search payers', 'State', 'Insurance type', 'Workflow status' (Has a published workflow, Only drafts, No workflow), 'Clear filters', the count line ('3 of 6 payers · 3 with a change waiting'), filters kept in the address (?q, state, type, wf), empty text with 'Clear filters' | 12 |
+| One row per payer: name (link) and organization, product and state, '2 published · 1 draft' or 'None yet', last update, status pill (Published, Drafts only, No workflow), change mark ('Change waiting' or none), the narrow two-line layout | 12 |
+| Row or name opens the workspace, Back keeps the list as it was | 12 |
+| Foot line: where changes are saved and what Reset demo data does | 12 |
+| Add a payer: name, Organization, Product, State, Insurance type, Plan type, 'How it is reached', 'Programs it covers', four validation messages, Cancel, 'Add payer', toast, redirect | 16 |
 
-## Modals opened from the header
-
-| Control | Diagram |
-|---|---|
-| Add a payer: name, Plan type, Group, 'How it is reached' (Portal, Phone, Fax), 'Programs it covers', four validation messages (empty name, a name another payer has, no route, no program), Cancel, 'Add payer', toast, redirect | 16 |
-| Edit payer details: Plan line, Reached by (seven listed values, inline error for an old value), Notice due, Backup route, three 'How to reach' lines, reason, 'Save and log the edit', 'Nothing changed' | 18 |
-| Edit log drawer: entries (area chip, who, when, reason, Before and After), empty state, close | 36 |
-
-## Process tab
+## Workspace (one payer)
 
 | Control | Diagram |
 |---|---|
-| Workflow card: title, info icon ('About this workflow': step-type key and the note on edits), version, steps, step-type chips, agent chips, 'Typical', condition rows | 20 |
-| 'Edit workflow' | 24 |
-| 'Re-learn from decisions', spinner row, 'Nothing new to propose', 'Historian has a proposal' | 30 |
-| 'Historian proposed N change(s)' banner, 'Review in Changes' | 20, 30 |
-| Edit-workflow drawer: step title, step type, 'What happens', 'Typical time', up arrow, down arrow, bin, 'Add a step', footer count, Cancel, Save workflow, X, Escape, dimmed area | 24 |
-| 'Add a condition', 'Condition on', 'Condition value', 'Leads to', 'What happens on this path', 'Remove this condition' | 26 |
-| 'Save workflow' with no changes ('Nothing to save'), 'Save the workflow?' modal, reason, 'Save and log the edit', Cancel, Escape (closes only the modal) | 28 |
-| Closed section 'How to reach X and what Caller says' (opens and closes, starts closed) with 'How to reach X' (read only) | 22 |
-| 'Instructions for Caller' in that section, its 'Edit', script modal, reason, save, 'Nothing changed' | 22 |
-| Edits-waiting banner ('N edit(s) apply to new drafts only'), 'Update N drafts' / 'Update drafts', 'Update drafts?' / 'Apply to new drafts?' modal, 3 second redraft, toasts | 34 |
+| Breadcrumb 'Payers › name', header (name, organization · product · state, the demo-rules label and its info icon, plan line, Policy status), 'Plan details' (plan type, programs, needs, notice and reach) | 14, 15 |
+| Four tabs (Workflow Builder, Rules & Instructions, Test Workflow, History & Changes), Left and Right arrows, the History & Changes badge, address follows the tab | 14 |
+| 'Edit payer' modal: Plan line, Reached by (seven listed values), Notice due, Backup route, three reach lines, reason, 'Nothing changed' | 18 |
+| 'Edit log (N)' drawer: entries, area buttons, empty state, close | 36, 74 |
 
-## Rules tab
+## Rules & Instructions
 
 | Control | Diagram |
 |---|---|
-| One card 'Rules the agents follow' with an info icon and four closed rules (first line and line count), each opens and closes; open: lines, green ticks on 'No authorization needed', 'Used by ... saved date', 'Source: Edited in Psyflo ...' on a rule edited here; edits-waiting banner | 40 |
-| 'Edit' inside an open rule ('Edit <rule>'), 'Edit <rule>' modal, 'Rules, one per line', reason, save, 'Nothing changed', Cancel, Escape | 42 |
+| Intro card with its info icon, the rule and unverified counts, eight closed groups with a summary and a count, a group opens and closes, the address can open a group or a rule | 40 |
+| Rule row: title, verification pill (Verified, Needs review, Unverified, Superseded), first values, 'Used by N workflows'; open: what it says, structured values, instructions, provenance chips (source and link, who and what it applies to, effective dates, last verified, owner, version), the Unverified note | 40 |
+| 'Edit' (right-hand panel with structured values, instructions, 'Applies to and dates'), the footer count, 'Save rule', 'Save the rule?' with the version it becomes and a reason, 'Nothing changed', Escape one layer at a time, the verified-rule warning | 42 |
+| 'Mark as verified' / 'Verify again': Source, address, published on, checked on, the four validation messages | 44 |
+| 'Add a rule' per group (starts Unverified), 'Archive' (Superseded, struck through, stays listed) | 46 |
+| Clinical documentation: 'Level of care', the closed document list, 'Edit list' and its modal, clinical-criteria rules | 50, 52 |
+| 'Try it on a case' (chart checker): Case menu, 'Paste chart text', 'Check this chart', result, 'Open the request' | 54 |
+| Agent instructions: 'Instructions for Caller', payer-wide instructions, 'How a node prompt combines with these', 'About the combined prompt' | 56 |
+| Submission methods: the reach rule (portal, phone, fax, preferred and fallback channel, escalation path) | 40, 56 |
+| Edits-waiting banner ('N edit(s) apply to new drafts only'), 'Update N drafts', the pop-up | 34 |
 
-## Documents tab
+## History & Changes
 
 | Control | Diagram |
 |---|---|
-| 'Level of care' menu, closed document section (title, one-line summary, opens to the numbered list, empty state), payer differences | 50 |
-| 'Edit list' (beside 'Level of care'), 'Edit what X wants for Y' modal, name, 'What it must show', bin, 'Add a document', reason, save | 52 |
-| 'Try it on a case' (below the list): its info icon ('About the chart check'), 'Case' menu, 'Paste chart text', 'Check this chart', 'Reader is reading the chart', result banner, 'Open the request' | 54 |
-
-## Changes tab
-
-| Control | Diagram |
-|---|---|
-| Waiting-change banner, the quiet line 'Nothing is waiting for you...' when nothing waits, proposals, 'What changed' history, tab badge | 60 |
-| A change arriving (Sentinel, bell notification, badge, dot, plan line) | 62 |
-| 'Acknowledge change', locked 'Update N drafts' (tooltip 'Acknowledge the change first'), 'Acknowledge this change?' modal, green 'Acknowledged by' pill | 64 |
-| 'Update N drafts' modal after a change, rows (only this payer's unsent drafts), redraft, documents added, history row, update recorded for Case Manager, notification, toast | 66 |
-| The no-draft variant (Harborview, Evergreen): 'Apply to new drafts', 'No open drafts to update', 'Apply to new drafts?' modal | 70 |
-| 'Accept proposal', 'Dismiss' | 30 |
+| The quiet line when nothing waits, the change card (rule that changed, source and date, before and after, Impact: workflows, open cases, owner notice), 'What changed', the four closed sections | 60 |
+| A change arriving (Sentinel, bell, badge, dot, header line) | 62 |
+| 'Acknowledge change', the locked 'Review & apply changes' (tooltip 'Acknowledge the change first'), 'Acknowledge this change?', the green 'Acknowledged by' pill | 64 |
+| 'Review & apply changes': 'Update N drafts?' pop-up, redraft, documents added, history row, Case Manager tag, bell, toast, the promise that nothing sent is rewritten and no case changes version | 66 |
+| The no-draft variant (Harborview, Evergreen): 'Apply to new drafts?', 'No open drafts to update' | 70 |
+| 'Workflow versions': rows, 'Workflow' menu, 'View' (version panel), 'Restore as draft' | 72 |
+| 'Edit audit': area buttons with counts, cards, empty states | 74 |
+| 'Suggestions from Historian': 'Re-learn from decisions', 'Accept proposal', 'Dismiss' | 76 |
+| 'Earlier process view (migrated)': read only steps and conditions, the info icon | 78 |
 
 ## Across the app
 
 | Topic | Diagram |
 |---|---|
-| What payer configuration reaches elsewhere (New case documents, rules and approval chance, Case Manager review interval and tag, Dashboard rows, bell, Open the request) and what it does not | 80 |
-| Cancel, X, Escape (one layer at a time), dimmed area, save buttons, no undo, nothing half saved, every pop-up | 82 |
+| Sites: payers, workflows and rules are clinic-wide; the drafts and cases an update reaches follow the site in view; edits are logged under the person viewing | 84 |
+| What payer configuration and published workflows reach elsewhere (New case documents, rules, workflow match and pin, Case Manager review interval and tag, Dashboard rows, bell, Open the request) | 80 |
+| Cancel, X, Escape (one layer at a time), dimmed area, save buttons, no undo, every pop-up and panel | 82 |
 
 ## Not drawn
 
 - Dropdown keyboard use (ArrowUp, ArrowDown, Enter) inside every menu: one shared component, not specific to Payers.
 - Toast timing and dismissal: shared component.
-- Browser Back after a tab or payer change (each pick writes a new address; nothing special happens).
-- PRD features with no demo screen: rejecting or deferring a change, rule versions and as-of lookups, field provenance and confidence, observed-versus-published scorecard, strategy rules, degradation alerts. Only mentioned in 62 and 80.
+- Browser Back after a tab or payer change (each pick writes a new address; nothing special happens beyond 12).
+- PRD features with no demo screen: rejecting or deferring a change, as-of lookups of an older rule version, field provenance and confidence, observed-versus-published scorecard, strategy rules, degradation alerts. Only mentioned in 62 and 80.
 - Where goto targets point (Dashboard, Case Manager, Authorizations, New case) are named by module and screen.
 
 ## Demo behaviours to know
 
-- A draft is a request in 'Preparing' or a New case draft that is saved and not sent, for that payer only. It is read live from the store each time a banner or the 'Update drafts' step draws (34, 66, 70). A request the payer already has (Received and later) is never listed or rewritten, and neither is the answer to a payer's question on an 'Info requested' request (P-1499, I-2218, R-0975). So Cardinal's change lists I-2207 only; Harborview's and Evergreen's changes list none.
+- Every seeded rule is a demo sample: Unverified, source 'Demo sample rules, version 2026.3', never a made-up date or address. Nothing on Payers says a payer confirmed a rule. Only 'Mark as verified' (a source and a date a person types) makes a rule Verified. Editing a verified rule sends it to Needs review. Verifying does not change the version number; any edit does (40, 42, 44).
+- Rules the payer's saved configuration already holds (submission windows, backdating, no authorization needed, peer-to-peer and appeals, the document lists, the Caller script, the reach lines) are read through to the rules page, not copied. Saving one writes back to the saved lines, documents, script or reach lines, so New case and Eligibility read the change at once; the rule's version, verification and extra values are kept beside them. The title and description of such a rule stay as they are (42).
+- A rule the library owns (review cadence, units and duration, clinical criteria, the payer-wide agent instructions, any rule added on this page) is saved in the library with its own history (42, 46).
+- A draft is a request in 'Preparing' or a New case draft that is saved and not sent, for that payer only. It is read live from the store each time the change card or the 'Update drafts' step draws (34, 66, 70). A request the payer already has (Received and later) is never listed or rewritten, and neither is the answer to a payer's question on an 'Info requested' request (P-1499, I-2218, R-0975). So Cardinal's change lists I-2207 only; Harborview's and Evergreen's list none.
+- The impact lists the payer's published and draft workflows that use the changed rule (a step names it, or a rule or document step reads the rule of its kind) and the open cases that follow one of them, each with the version it keeps. Cases at a site the viewer cannot see are not listed (60, 84).
 - Every update records itself for Case Manager and New case: the change id (the change's own id, or `edits-<payerId>` for edits), the payer and the IDs of the drafts that were redrafted. Nothing is recorded when no draft was redrafted (34, 66, 70).
-- Every saved edit (workflow, accepted proposal, rule, document list, caller script, payer details) writes the edit log and sends one bell notification that opens the tab it was made on (18, 22, 28, 30, 42, 52).
-- 'Reached by' is always one of seven values (Portal, Phone, Fax and their mixes, written in that order). A payer added with 'Add a payer' gets one of them, and 'Edit' shows it as it is (16, 18). An old value that is not listed shows an inline error and blocks Save until one is picked.
-- A name that another payer already has (a full name or a short name, any capitals) is refused when adding a payer (16). 'Edit' has no name field, so only 'Add a payer' needs the check.
+- Every saved edit (rule, document list, caller script, payer details, workflow save, publish, archive or restore, accepted suggestion) writes the edit audit and most send one bell notification that opens the tab it was made on (18, 42, 46, 72, 76).
+- Workflows, the rules library, the payers added, each payer's saved configuration and the edit audit are written to the browser's storage (guarded). A reload shows what was saved; if storage is blocked the foot line says changes last until the tab closes. Reset demo data restores every seed (10, 12).
+- 'Reached by' is always one of seven values (Portal, Phone, Fax and their mixes, written in that order). A name that another payer already has (a full name or a short name, any capitals) is refused when adding a payer (16, 18).
 - The pasted-text check in 'Try it on a case' is keyword level: it looks for each document's name or a usual word for it (CIWA for the withdrawal scale, UDS for the urine screen). A document named in some other way can be missed (54).
-- Blank Caller script and blank condition text are accepted (22, 26). A rule edit moves its 'saved' date to today and gives it 'Source: Edited in Psyflo by Jordan Perez' (42).
-- Nothing on Payers says a payer verified a rule. The header label 'Demo rules. Not verified against the payer's current policy.' is always there; the 'checked' and 'confirmed' dates, 'published policy' and 'Sentinel keeps watching' wording were removed. The policy status date is the newest Changes-log entry that is not the notice of a waiting change (15).
-- The Process, Rules, Documents and Changes tabs fold what is long: the key and note on Process sit behind an info icon and the reach and Caller section starts closed; every rule and the document list start closed with a one-line summary.
-- Sidebar badge starts at 3: Cardinal, Evergreen and Harborview each have a change waiting. The bell notification 'Payer rule changed' and the FLO answer about Cardinal come from fixed text elsewhere in the app and still say 4 drafts; the Changes tab counts live and says 1 (62).
+- 'Accept proposal' still adds its branch to the earlier process view (the migrated record), not to the builder's graph, and the card says so. The builder's graph changes only when a person edits and publishes it (76, 78).
+- Sidebar badge starts at 3: Cardinal, Evergreen and Harborview each have a change waiting. The bell notification 'Payer rule changed' and the FLO answer about Cardinal come from fixed text elsewhere in the app and still say 4 drafts; the History & Changes card counts live and says 1 (62).

@@ -2,7 +2,7 @@
    New case is execution: it never edits a workflow. It matches the published ones by payer, product, state, service, request type and date, runs the one it follows against the case's facts, and
    tells the person what the workflow does next. Until the workflow has run past Intake the case follows the best match; after that the version is pinned and only a person's review changes it. */
 import type { CaseDraft } from "@/data/cases";
-import { STAGES_ORDER, type AppliedWorkflow, type CaseFacts, type MatchResult, type PayerRule, type RunResult, type Stage, type WfNode, type Workflow, type WorkflowVersion } from "@/data/workflow/types";
+import type { AppliedWorkflow, CaseFacts, MatchResult, PayerRule, RunResult, Stage, WfNode, Workflow, WorkflowVersion } from "@/data/workflow/types";
 import { DEFAULT_NOTE, defaultWorkflowFor, matchWorkflow, runWorkflow } from "./engine";
 import { approvalsFor } from "./facts";
 
@@ -31,8 +31,10 @@ export interface CaseWorkflow {
   stage: Stage;
   /** The same workflow has a later published version than the one the case is pinned to. */
   newer: Workflow | null;
-  /** The case is pinned and a fresh match is a different workflow now (the payer, the level of care or the type changed). */
+  /** The case is pinned, its payer, level of care or type changed since the workflow was matched, and a fresh match is a different workflow. */
   differs: boolean;
+  /** What the match was made for: "summit|RES|initial". */
+  forKey: string;
   pinned: boolean;
   /** The workflows, saved versions and rules this was worked out from. */
   library: WorkflowLibrary;
@@ -85,7 +87,6 @@ const stageAt = (workflow: Workflow, run: RunResult): Stage => {
   if (stop) return stop.stage;
   return run.status === "completed" || run.status === "no_authorization" ? "review" : "intake";
 };
-export const stageIndex = (s: Stage): number => STAGES_ORDER.indexOf(s);
 
 /** A person's choice between equals holds only while the same workflows still compete. */
 function choiceOf(draft: CaseDraft, conflict: Workflow[]): Workflow | undefined {
@@ -147,12 +148,15 @@ export function resolveCaseWorkflow(draft: CaseDraft, base: CaseFacts, lib: Work
 
   const latest = pinned && !applied.usedDefault ? latestPublished(applied.workflowId, lib) : null;
   const newer = latest && latest.version > applied.version ? latest : null;
-  const differs = pinned && !!stored && (stored.workflowId !== target.workflowId || stored.usedDefault !== target.usedDefault);
+  const forKey = `${base.payerId}|${base.service}|${base.requestType}`;
+  /* A workflow published later does not move a case that follows another one: only a change to the case itself asks for a review. */
+  const changed = !!draft.workflowFor && draft.workflowFor !== forKey;
+  const differs = pinned && !!stored && changed && (stored.workflowId !== target.workflowId || stored.usedDefault !== target.usedDefault);
 
   return {
     facts,
     match,
-    conflict: unresolved,
+    conflict: unresolved && (!pinned || !stored || changed || stored.usedDefault) ? unresolved : null,
     target,
     applied,
     workflow,
@@ -161,6 +165,7 @@ export function resolveCaseWorkflow(draft: CaseDraft, base: CaseFacts, lib: Work
     stage: stageAt(workflow, run),
     newer,
     differs,
+    forKey,
     pinned,
     hint: run.outcomeText,
     noAuth: run.status === "no_authorization",

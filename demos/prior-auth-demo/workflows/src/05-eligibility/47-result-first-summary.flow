@@ -44,7 +44,7 @@ group gN "What this service needs"
 endgroup
 
 process note "Under the summary: 'Active coverage does not mean this service is covered.\nCheck the benefits and the authorization requirement.'"
-goto g1 "Continues in: Payers › Rules › Read the rules"
+goto g1 "Continues in: Payers › Rules & Instructions › Read the rules"
 goto g2 "Continues in: Authorizations › Eligibility & Benefits › Result › Next actions"
 goto g3 "Continues in: Authorizations › Eligibility & Benefits › Result › Which verdict and why"
 

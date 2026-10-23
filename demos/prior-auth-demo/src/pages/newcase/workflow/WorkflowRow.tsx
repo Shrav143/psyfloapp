@@ -6,9 +6,12 @@ import { payerById } from "@/data/seed";
 import { STAGE_LABEL } from "@/data/workflow/types";
 import { stamp } from "@/lib/time";
 import { WorkflowViewPanel } from "@/pages/payers/studio";
+import { DefaultWorkflowPanel } from "./DefaultWorkflowPanel";
 import { defaultLabel, type CaseWorkflow } from "./model";
 import { ReviewWorkflowDrawer, type ReviewKind } from "./ReviewWorkflowDrawer";
 import { WorkflowTraceDrawer } from "./WorkflowTraceDrawer";
+
+const namesOf = (list: { name: string }[]): string => (list.length < 3 ? list.map((w) => w.name).join(" and ") : `${list.slice(0, -1).map((w) => w.name).join(", ")} and ${list[list.length - 1].name}`);
 
 /** The one line under the stepper that says which payer workflow this case follows. It is calm: the name, the version and the payer, a note on why this one, View workflow,
     and where the workflow is. A conflict, a newer version or a changed match is said in the same line, with the one button that reviews it. */
@@ -20,7 +23,9 @@ export function WorkflowRow({ draft, view }: { draft: CaseDraft; view: CaseWorkf
   /* The payer of the workflow the case follows, which is not the case's payer once the payer was changed after the workflow was pinned. */
   const payer = applied.usedDefault ? "" : payerById(view.workflow.payerId)?.shortName ?? "";
   const log = draft.workflowLog ?? [];
-  const reviewKind: ReviewKind | null = view.conflict ? "choose" : view.differs ? "changed" : view.newer ? "newer" : null;
+  /* A request that was sent keeps the workflow it was sent with: nothing is offered to change it. */
+  const reviewable = !draft.sent;
+  const reviewKind: ReviewKind | null = !reviewable ? null : view.conflict ? "choose" : view.differs ? "changed" : view.newer ? "newer" : null;
 
   return (
     <div data-testid="workflow-row" className="flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-2xl border border-line bg-white/70 px-4 py-2 text-[13.5px]">
@@ -51,14 +56,14 @@ export function WorkflowRow({ draft, view }: { draft: CaseDraft; view: CaseWorkf
       ) : null}
 
       <span className="ml-auto flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
-        {view.conflict ? (
+        {reviewable && view.conflict ? (
           <span className="flex items-center gap-1.5 text-mid-ink" role="status">
             <Triangle size={13} className="ico shrink-0" aria-hidden="true" />
-            Two workflows match equally. The default is used until you choose.
+            {namesOf(view.conflict)} match equally. The default is used until you choose.
           </span>
-        ) : view.differs ? (
+        ) : reviewable && view.differs ? (
           <span className="text-mid-ink" role="status">The case details changed since this workflow was applied.</span>
-        ) : view.newer ? (
+        ) : reviewable && view.newer ? (
           <span className="text-muted" role="status">A newer version exists (v{view.newer.version}).</span>
         ) : (
           <span className="text-muted">At {STAGE_LABEL[view.stage]}</span>
@@ -70,7 +75,11 @@ export function WorkflowRow({ draft, view }: { draft: CaseDraft; view: CaseWorkf
         ) : null}
       </span>
 
-      <WorkflowViewPanel workflowId={applied.workflowId} version={applied.version} trace={view.run} open={viewing} onClose={() => setViewing(false)} />
+      {applied.usedDefault ? (
+        <DefaultWorkflowPanel view={view} open={viewing} onClose={() => setViewing(false)} />
+      ) : (
+        <WorkflowViewPanel workflowId={applied.workflowId} version={applied.version} trace={view.run} open={viewing} onClose={() => setViewing(false)} />
+      )}
       <WorkflowTraceDrawer draft={draft} open={tracing} onClose={() => setTracing(false)} />
       <ReviewWorkflowDrawer draft={draft} view={view} kind={review} onClose={() => setReview(null)} />
     </div>

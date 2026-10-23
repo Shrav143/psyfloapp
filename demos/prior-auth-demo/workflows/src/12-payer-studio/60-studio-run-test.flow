@@ -1,0 +1,45 @@
+title: Payers › Test Workflow › Run a test case
+route: /payers/summit?tab=test
+intro: A made-up case goes through the same engine New case uses, so the branches taken here are the branches a real case would take. The path lights up on a read-only canvas one step at a time, and the list beside it says in words what each step found. Nothing here is a real patient or touches a payer.
+dir: TD
+---
+start s1 "Click 'Test Workflow' in a payer's workspace\nor 'Test' in the builder"
+screen top "Top card\n'Workflow to test' (name, version, status)\n'Run the test' and 'Reset the case'"
+decision d1 "Did you pick a workflow, or arrive with one?"
+process p1 "That workflow is used\n'You chose this workflow.'"
+process p2 "The published workflow that matches the case is used\n'The published workflow that matches Residential 3.5, initial authorization.'\nNone matches: the first one, with a note"
+screen pre "'Start from a made-up case'\nEight cases, one pick at a time (see the next diagram)"
+screen frm "The case form in folds\n'The request', 'Coverage and authorization', 'Dates and existing authorization',\n'Documents on hand', 'Payer and portal', 'Approvals already given'"
+input i1 "Change any fact: service, request type, coverage, benefit, requirement, network,\ndates, units, documents, payer answer, portal, days waiting, approvals"
+screen cv "Canvas with the workflow, read only\n'Run the test to light up the path.'"
+click c1 "Click 'Run the test'"
+agent a1 "The engine runs the workflow on the case\nBranches are structured conditions over the facts, no model\nRules it reads keep their verification chip"
+process p3 "The view scrolls to the canvas and results"
+decision d2 "Does the person prefer reduced motion?"
+process p4 "The whole path is shown at once"
+process p5 "Each step lights up in order, about a third of a second apiece\nThe view follows the step that is running, then fits the path"
+click c2 "Click 'Skip the animation'"
+screen col "Colours and words on every step\nDone, Skipped, Failed, Waiting, Manual review, Pending, Not reached\nLines the run followed are drawn heavier"
+screen res "'What happened'\nPill Published or 'Draft: not used for cases yet', the workflow and version\nOutcome pill and one sentence, 'Why it stopped'\nEach step: number, name, outcome, the sentence, rule chips, warnings"
+screen rl "'Rules it read' with chips Verified, Needs review, Unverified, Superseded\n'N of these are not verified. A person should confirm them with the payer before relying on this result.'"
+decision d3 "Did it stop before the end?"
+click c3 "Click 'Fix in builder'"
+goto g1 "Continues in: Payers › Test Workflow › Fix in builder"
+click c4 "Click 'Run again'"
+end e1 "The result is on screen with its path"
+goto g2 "Continues in: Payers › Test Workflow › Made-up cases"
+
+s1 --> top --> d1
+d1 -->|Yes| p1 --> pre
+d1 -->|No| p2 --> pre
+pre --> frm --> i1 --> cv
+cv --> c1 --> a1 --> p3 --> d2
+d2 -->|Yes| p4 --> col
+d2 -->|No| p5 --> col
+p5 --> c2 --> col
+col --> res --> rl --> d3
+d3 -->|Yes| c3 --> g1
+d3 -->|No| e1
+res --> c4 --> a1
+rl --> e1
+pre --> g2

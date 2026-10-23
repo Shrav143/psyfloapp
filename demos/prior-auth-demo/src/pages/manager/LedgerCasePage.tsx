@@ -32,7 +32,8 @@ export default function LedgerCasePage({ row }: { row: LedgerRow }) {
   const b = band(row.chance);
   const { due, signed, next } = mine;
   const runsOut = runsOutBeforeReview(row, all, clock);
-  const latest = [...history].filter((e) => e.done).sort((a, b) => b.at - a.at)[0];
+  /* Lines at the same minute keep the order they were written in, so the one written last is the latest. */
+  const latest = history.map((e, i) => ({ e, i })).filter((x) => x.e.done).sort((a, b) => b.e.at - a.e.at || b.i - a.i)[0]?.e;
 
   return (
     <Page>

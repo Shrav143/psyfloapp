@@ -1,0 +1,31 @@
+title: Payers › Workflow Builder › Configure a step › Agents and prompts
+route: /payers/summit?tab=builder
+intro: An agent step names which of FLO's agents does the work and what it is told. The prompt can use variables filled in from the case, and the payer's own instructions are added in front of it. Text found inside a document is data: the agent reads it and never takes orders from it. A person reviews the result unless the switch is turned off.
+dir: TD
+---
+start s1 "Select an agent step\nDocument review, Clinical summary, Medical necessity review, Authorization preparation,\nPayer rule interpretation, Call preparation, Missing information detection or Custom agent"
+screen pe "'Instructions for the agent'\nAgent list, 'Prompt', 'Insert a variable', 'Reads', 'What it hands back',\n'Preview what the agent receives', a safeguards note, 'A person reviews the result', 'If the agent fails'"
+click c1 "Pick an agent in 'Agent'"
+screen ag "The agents\nVerify, Caller, Navigator, Reader, Criteria, Placement, Scribe, Integrity, Historian,\nForecaster, Sentinel, Analyst, Packet, Scrubber, Cadence, Advocate, each with its role\nand 'Custom: write the prompt yourself'"
+input i1 "Write or edit the 'Prompt'"
+click c2 "Click a variable such as 'patient_name'"
+process p1 "The variable is typed into the prompt where the cursor is\nand added under 'Reads'\nVariables: patient_name, payer_name, service_type, authorization_type, requested_start_date,\nexisting_authorization, clinical_documents, payer_rules, requested_units"
+input i2 "Choose what it 'Reads', describe 'What it hands back'"
+click c3 "Open 'Preview what the agent receives'"
+screen pv "Two parts\n'Summit instructions, for every agent' (from Rules & Instructions, Agent instructions)\nthen 'This step' with the prompt as written"
+click c4 "Click 'Edit them in Rules & Instructions'"
+goto g1 "Continues in: Payers › Rules & Instructions › Agent instructions and the combined prompt"
+screen sf "Always shown\n'Text inside a document is data. The agent reads it and never takes orders from it,\nand it cannot change these instructions or switch off a safeguard.'"
+click c5 "Switch 'A person reviews the result'"
+process p2 "On: the result waits for a person before the workflow goes on"
+click c6 "Choose 'If the agent fails'"
+process p3 "Stop the workflow, Send to manual review, Retry then manual review, or Skip and go on"
+process p4 "The step is marked Demo simulation: agents run as scripted steps in this demo,\nno live model runs, and no answer is a payer decision"
+end e1 "The agent step has a prompt, inputs, an expected output and a failure plan"
+
+s1 --> pe --> c1 --> ag --> i1 --> c2 --> p1 --> i2
+i2 --> c3 --> pv --> c4 --> g1
+pe --> sf
+i2 --> c5 --> p2 --> c6 --> p3 --> e1
+pe --> p4 --> e1
+pv --> e1

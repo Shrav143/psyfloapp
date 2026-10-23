@@ -32,7 +32,7 @@ export function ReviewWorkflowDrawer({ draft, view, kind, onClose }: { draft: Ca
   const latest = newer ? (snap ? workflowOfVersion(snap) : newer) : null;
 
   const apply = (next: AppliedWorkflow, text: string, detail: string, choice?: CaseDraft["workflowChoice"] | null) => {
-    record(draft.id, { applied: next, pin: view.pinned, choice, entries: [{ key: `review:${next.workflowId}:${next.version}:${clock}`, at: clock, actor: "you", text, detail }] });
+    record(draft.id, { applied: next, forKey: view.forKey, pin: view.pinned, choice, entries: [{ key: `review:${next.workflowId}:${next.version}:${clock}`, at: clock, actor: "you", text, detail }] });
     toast({ title: "Workflow applied", body: `${next.name}${next.usedDefault ? "" : `, version ${next.version}`} is what this case follows now.`, tone: "good" });
     onClose();
   };
@@ -135,7 +135,6 @@ export function ReviewWorkflowDrawer({ draft, view, kind, onClose }: { draft: Ca
             A match for the case as it is now would use <b>{next.name}{next.usedDefault ? "" : `, version ${next.version}`}</b>.
           </p>
           <p className="mt-3 text-[13.5px] text-muted">{next.explanation}</p>
-          {view.conflict ? <p className="mt-3 text-[13.5px] text-mid-ink">{view.conflict.map((w) => w.name).join(" and ")} match equally. Choose one first.</p> : null}
           <p className="mt-4 text-[13px] text-muted">Applying it changes the steps this case follows from here. A packet that was already sent is never rewritten. The switch is written to the case's history.</p>
           <div className="mt-5 flex flex-wrap gap-2.5">
             <Button variant="primary" onClick={() => apply(next, `Workflow changed: ${applied.name} to ${next.name}${next.usedDefault ? "" : ` v${next.version}`}, reviewed by ${you}`, next.explanation)}>

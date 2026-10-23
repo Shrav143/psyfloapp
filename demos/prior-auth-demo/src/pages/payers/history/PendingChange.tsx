@@ -36,12 +36,12 @@ function BeforeAfter({ cfg, pending }: { cfg: PayerConfig; pending: PendingChang
   const after = (program: Program) => pending.docAdds.reduce((list, a) => (a.program !== program || list.some((x) => x.title === a.item.title) ? list : [...list, a.item]), cfg.docs[program]);
   const added = [...new Set(programs.flatMap((p) => docsChanges(cfg.docs[p], after(p)).map((l) => l.after)))];
   return (
-    <div className="grid grid-cols-1 items-stretch gap-2 text-[13px] min-[640px]:grid-cols-[1fr_auto_1fr]">
+    <div className="grid grid-cols-1 items-stretch gap-2 text-[13px] @lg:grid-cols-[1fr_auto_1fr]">
       <div className="rounded-xl bg-white/70 px-3 py-2 text-ink2">
         <div className="mb-0.5 text-[11px] font-medium tracking-[0.08em] uppercase">Before</div>
         {programs.map((p) => `${PROGRAM_LABEL[p]}: ${cfg.docs[p].length} documents`).join(" · ")}
       </div>
-      <ArrowRight size={15} className="ico hidden self-center text-muted min-[640px]:block" aria-label="becomes" />
+      <ArrowRight size={15} className="ico hidden self-center text-muted @lg:block" aria-label="becomes" />
       <div className="rounded-xl bg-good-bg px-3 py-2 text-good-ink">
         <div className="mb-0.5 text-[11px] font-medium tracking-[0.08em] uppercase">After</div>
         {programs.map((p) => `${PROGRAM_LABEL[p]}: ${after(p).length}`).join(" · ")}. Adds {added.join("; ")}.
@@ -62,15 +62,15 @@ export function PendingChangeCard({ id, name, cfg, pending }: { id: string; name
   const ack = pending.acknowledged;
   return (
     <>
-      <Banner tone="mid" icon={Megaphone} title={pending.title}>
+      <Banner tone="mid" icon={Megaphone} title={pending.title} className="@container">
         <p>
           {pending.text}{" "}
           {n ? `${AGENTS[pending.agents[0]].name} can redraft the ${n} ${n === 1 ? "draft" : "drafts"} that ${n === 1 ? "is" : "are"} not yet sent: ${joinWords(drafts.map((d) => d.id))}. Requests already sent keep what they were sent with.` : `No open drafts are affected. New drafts for ${name} use the change once you apply it.`}
         </p>
-        <dl className="mt-3 grid grid-cols-1 gap-x-4 gap-y-1 text-[13px] min-[640px]:grid-cols-[130px_minmax(0,1fr)]">
+        <dl className="mt-3 grid grid-cols-1 gap-x-4 gap-y-0 text-[13px] @md:grid-cols-[130px_minmax(0,1fr)] @md:gap-y-1">
           <dt className="font-medium">The rule that changed</dt>
           <dd>{impact.ruleLine}</dd>
-          <dt className="font-medium">Source and date</dt>
+          <dt className="mt-1 font-medium @md:mt-0">Source and date</dt>
           <dd>{impact.sourceLine} Effective {pending.effective}.</dd>
         </dl>
         <div className="mt-3"><BeforeAfter cfg={cfg} pending={pending} /></div>

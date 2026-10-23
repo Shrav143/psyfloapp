@@ -33,7 +33,7 @@ goto gEb "Continues in: Authorizations › Eligibility & Benefits › Result ›
 goto gCm "Continues in: Case Manager"
 goto gDocs "Continues in: Authorizations › New case › Clinical documentation › The checklist and Continue"
 goto gSign "Continues in: Authorizations › New case › Review & submit › Sign and send to payer"
-goto gPayers "Continues in: Payers › Rules › Edit a rule"
+goto gPayers "Continues in: Payers › Rules & Instructions › Edit a rule"
 
 s1 --> d1
 d1 -->|No| sCard

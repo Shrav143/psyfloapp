@@ -29,7 +29,7 @@ goto g5 "Continues in: Denial Intelligence › Open a denial"
 
 click c6 "Click '6  Payers: Cardinal, Changes'"
 process r6 "Go to /payers/cardinal?tab=changes"
-goto g6 "Continues in: Payers › Changes › Read what changed"
+goto g6 "Continues in: Payers › History & Changes › Read what changed"
 click c7 "Click '7  Case Manager: reviews this week'"
 process r7 "Go to /manager?tab=reviews"
 goto g7 "Continues in: Case Manager › Reviews this week › The list"

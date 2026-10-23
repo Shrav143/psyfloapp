@@ -129,7 +129,8 @@ export function generateDraft(description: string, ctx: FloContext): FloDraft {
   push(ruleNode("method", "rule_submission_method"));
 
   /* the lines of the spine: each step goes on through its main exit, and its other exits go to manual review */
-  link(startId, "next", spine[0]);
+  // Start and the trigger both lead into the first real step, as in the templates: nothing may lead into a trigger.
+  link(startId, "next", spine[1]);
   spine.forEach((id, i) => {
     const node = g.nodes.find((n) => n.id === id);
     if (!node) return;

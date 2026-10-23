@@ -5,7 +5,7 @@ import type { PayerConfig } from "@/data/payerConfig";
 import { useOpenDrafts, useOtherSiteNote } from "./lib/drafts";
 import { UpdateDraftsModal } from "./UpdateDraftsModal";
 
-/** Shown on Process, Rules and Documents after an edit: new drafts use it already, open drafts wait for Update drafts. */
+/** Shown on Rules & Instructions and History & Changes after an edit: new drafts use it already, open drafts wait for Update drafts. */
 export function Unapplied({ id, name, cfg }: { id: string; name: string; cfg: PayerConfig }) {
   const [open, setOpen] = useState(false);
   const drafts = useOpenDrafts(id);

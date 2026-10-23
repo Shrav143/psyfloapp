@@ -5,7 +5,6 @@ import type { Workflow, WorkflowVersion } from "@/data/workflow/types";
 import { cn } from "@/lib/cn";
 import { stamp } from "@/lib/time";
 import { WorkflowCanvas } from "./WorkflowCanvas";
-import { AreaField } from "./fields/controls";
 import { api, useVersions } from "./lib/store";
 import { STATUS_TONE, STATUS_WORD, datesOf } from "./lib/ui";
 import { REQUEST_TYPE_LABEL } from "@/data/workflow/types";
@@ -16,7 +15,6 @@ export function VersionHistoryDrawer({ workflow, onClose, onRestored }: { workfl
   const versions = useVersions(workflow.id);
   const [pick, setPick] = useState<WorkflowVersion | null>(null);
   const [asking, setAsking] = useState<WorkflowVersion | null>(null);
-  const [reason, setReason] = useState("");
 
   const restore = (v: WorkflowVersion) => {
     const id = api.restore(workflow.id, v.version);
@@ -45,7 +43,7 @@ export function VersionHistoryDrawer({ workflow, onClose, onRestored }: { workfl
                   </div>
                   <div className="flex shrink-0 gap-2">
                     <Button size="sm" aria-expanded={open} onClick={() => setPick(open ? null : v)} icon={History}>{open ? "Hide preview" : "Preview"}</Button>
-                    <Button size="sm" icon={RotateCcw} onClick={() => { setAsking(v); setReason(""); }}>Restore as a draft</Button>
+                    <Button size="sm" icon={RotateCcw} onClick={() => setAsking(v)}>Restore as a draft</Button>
                   </div>
                 </div>
                 {open ? (

@@ -1,0 +1,47 @@
+title: Payers › Workflow Builder › Add, move and connect steps
+route: /payers/summit?tab=builder
+intro: Steps come from the list on the left. Drag one onto the canvas, or select it and press Enter (or click) to drop it in the free place nearest the middle of the view. Lines are drawn from a step's exit to the next step's top. A line is refused, with the reason read out, when it would break a rule.
+dir: TD
+---
+start s1 "A workflow is open in Workflow Builder"
+screen lib "'Steps' list\nSearch box 'Search steps', nine groups that fold open and shut\nStart and end, Triggers, Verification, Clinical documentation,\nConditions, Payer rules, Actions, Agents, Integrations\nChips 'Demo simulation' or 'Not configured' on steps that are not real"
+input i1 "Type in 'Search steps'"
+process p0 "Groups narrow to the matching steps and open"
+click c1 "Drag a step from the list onto the canvas"
+click c2 "Or click a step in the list, or focus it and press Enter"
+process p1 "Dropped: the step lands where the pointer is, on the 20 px grid\nClicked: it lands in the free place nearest the middle of the view\nIt is selected and its settings open"
+toast t1 "Announced: 'Added Create task'"
+decision d1 "Start already on the canvas?"
+process p2 "Start is not offered again: a workflow has one Start"
+click c3 "Drag a step by its card to move it"
+process p3 "Position saved in the draft after the drop\nA lone arrow-key press moves a selected step 20 px (Shift: 80)"
+click c4 "Drag from a step's exit dot (bottom) to another step's top dot"
+decision d2 "Is the line allowed?"
+process p4 "Line drawn, labelled with the exit's name when the step has more than one\n(Yes, No, Approved, Denied, More information ...)"
+toast t2 "Announced: 'Connected Create task to Send notification'"
+toast t3 "Refused and read out:\n'A step cannot lead back to itself.'\n'Nothing connects into a trigger or Start.' (those have no top dot)\n'Each exit leads to one step. Remove its line first.'"
+click c5 "Release on empty canvas"
+process p5 "Nothing happens: no line, no new step"
+click c6 "Click a line, then press Delete or Backspace"
+process p6 "The line is removed\nAnnounced: 'Deleted the line'"
+process p7 "Any change marks the workflow 'Unsaved changes'"
+end e1 "The steps are placed and connected in the draft"
+goto g1 "Continues in: Payers › Workflow Builder › Undo and redo"
+goto g2 "Continues in: Payers › Workflow Builder › Configure a step"
+
+s1 --> lib
+lib --> i1 --> p0
+lib --> c1 --> p1
+lib --> c2 --> p1
+p1 --> t1
+lib --> d1
+d1 -->|Yes| p2
+p1 --> c3 --> p3 --> p7
+p1 --> c4 --> d2
+d2 -->|Yes| p4 --> t2 --> p7
+d2 -->|No| t3
+c4 --> c5 --> p5
+p4 --> c6 --> p6 --> p7
+p7 --> e1
+e1 --> g1
+e1 --> g2

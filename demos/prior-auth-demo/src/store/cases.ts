@@ -80,7 +80,7 @@ export interface CasesSlice {
   refreshCaseUnmet: (id: string) => void;
   /** The payer workflow on a case: which one it follows (`applied`), that its version is now pinned (`pin`), a person's choice between equals (`choice`, null clears it) and what the workflow did (`entries`).
       Entries already known by their `key` are ignored. Once the request exists they go straight to its History; before that they wait on the draft and are written when it is signed. */
-  recordCaseWorkflow: (id: string, patch: { applied?: AppliedWorkflow; pin?: boolean; choice?: WorkflowChoice | null; entries?: Omit<WorkflowLogEntry, "posted">[] }) => void;
+  recordCaseWorkflow: (id: string, patch: { applied?: AppliedWorkflow; forKey?: string; pin?: boolean; choice?: WorkflowChoice | null; entries?: Omit<WorkflowLogEntry, "posted">[] }) => void;
 }
 
 /** The line History shows when the person went on past a warning. */
@@ -375,7 +375,7 @@ export const createCasesSlice: StateCreator<AppState, [], [], CasesSlice> = (set
       const request = d.caseId ? get().requests.find((r) => r.id === d.caseId || r.caseId === d.caseId) : undefined;
       update(id, (x) => ({
         ...x,
-        ...(p.applied ? { appliedWorkflow: p.applied } : {}),
+        ...(p.applied ? { appliedWorkflow: p.applied, workflowFor: p.forKey ?? x.workflowFor } : {}),
         ...(p.pin ? { workflowPinned: true } : {}),
         ...(p.choice !== undefined ? { workflowChoice: p.choice ?? undefined } : {}),
         ...(fresh.length ? { workflowLog: [...(x.workflowLog ?? []), ...fresh.map((e) => ({ ...e, posted: !!request }))] } : {}),

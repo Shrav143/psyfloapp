@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Card } from "@/components/ui";
 import { InfoTip } from "@/components/ui/InfoTip";
 import type { PayerConfig } from "@/data/payerConfig";
-import { PROGRAMS } from "@/data/types";
-import { isDocumentListRule } from "@/data/workflow/rules";
+import { PROGRAMS, type Program } from "@/data/types";
+import { derivedKeyOf, isDocumentListRule } from "@/data/workflow/rules";
 import { RULE_GROUP_LABEL, type PayerRule, type RuleGroup } from "@/data/workflow/types";
 import { useRulesApi } from "./lib/rulesApi";
 import { savedWhere } from "./lib/studio";
@@ -19,7 +19,7 @@ const GROUPS = Object.keys(RULE_GROUP_LABEL) as RuleGroup[];
 
 /** Rules & Instructions: eight groups on one calm page, each closed on a one-line summary and a count. Rules are stored once, with where they come from and whether a person verified them;
     workflows point at them. Everything is a demo sample and says Unverified until a person marks it verified with a source. */
-export function RulesInstructionsTab({ payerId, name, cfg, openGroup }: { payerId: string; name: string; cfg: PayerConfig; openGroup: RuleGroup | null }) {
+export function RulesInstructionsTab({ payerId, name, cfg, openGroup, openRule }: { payerId: string; name: string; cfg: PayerConfig; openGroup: RuleGroup | null; openRule: string | null }) {
   const api = useRulesApi(payerId);
   const [editing, setEditing] = useState<{ rule: PayerRule; group: RuleGroup } | null>(null);
   const [verifying, setVerifying] = useState<PayerRule | null>(null);
@@ -35,6 +35,11 @@ export function RulesInstructionsTab({ payerId, name, cfg, openGroup }: { payerI
   // The document lists of each level of care are shown as lists (with the chart checker), so their rule records stay out of the rows.
   const shown = api.rules.filter((r) => !isDocumentListRule(r));
   const inGroup = (g: RuleGroup) => shown.filter((r) => r.group === g);
+  // A link can name one rule (the builder's rule steps do): its group opens and the rule is open and in view. A document list has no row of its own, so that opens its level of care in the list.
+  const asked = openRule ? api.rules.find((r) => r.id === openRule) : undefined;
+  const startGroup = openGroup ?? asked?.group ?? null;
+  const listed = asked && !isDocumentListRule(asked) ? asked.id : null;
+  const startProgram = asked && isDocumentListRule(asked) ? (derivedKeyOf(asked.id).slice(5) as Program) : undefined;
   const live = shown.filter((r) => r.verification !== "superseded");
   const unverified = live.filter((r) => r.verification === "unverified").length;
   const docCount = PROGRAMS.reduce((n, p) => n + cfg.docs[p].length, 0);
@@ -68,13 +73,14 @@ export function RulesInstructionsTab({ payerId, name, cfg, openGroup }: { payerI
         <RuleGroupSection
           key={g}
           group={g}
-          open={openGroup === g}
+          open={startGroup === g}
+          openRule={listed}
           summary={summary(g)}
           count={count(g)}
           rules={inGroup(g)}
           actions={actions}
          
-          before={g === "clinical_documentation" ? <DocumentsGroup id={payerId} name={name} cfg={cfg} /> : undefined}
+          before={g === "clinical_documentation" ? <DocumentsGroup id={payerId} name={name} cfg={cfg} startProgram={startProgram} /> : undefined}
           after={g === "agent_instructions" ? <PromptPreview name={name} instructions={wide.map((r) => ({ label: r.title, text: r.instructions ?? "" }))} /> : undefined}
         />
       ))}

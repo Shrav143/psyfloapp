@@ -1,0 +1,26 @@
+title: Payers › Workflow Builder › Start from a template
+route: /payers/summit?tab=builder
+intro: Five starter workflows, each marked 'Illustrative, not payer policy'. Picking one and naming it makes a draft for this payer; the draft keeps a link to the template it came from, and each rule step is pointed at the payer's own rule when exactly one fits.
+dir: TD
+---
+start s1 "Click 'From a template' (New menu)\nor 'Start with a template' (empty state)"
+overlay o1 "Right-hand panel 'Start with a template'\n'A new draft for Summit Medicaid HMO. Nothing is used for cases until you publish it.'"
+screen l1 "Five choices (radio cards)\nInitial Authorization, Concurrent Review, Reauthorization,\nRetroactive Authorization, Modification\nEach with one description and 'Illustrative, not payer policy.'"
+click c1 "Pick one template"
+screen f1 "Form appears under the list\n'Name' (placeholder: the template name),\n'Service' (Every service or one level of care),\n'Request type' (set from the template)"
+input i1 "Optionally rename it, pick a service and request type"
+decision d1 "Is a template picked?"
+click c2 "Click 'Create the draft'"
+process p1 "Store makes a draft\nState, plan and owner are filled in, start date is the demo date\nEach rule step points at the payer's rule when exactly one fits"
+store st1 "Workflow saved as a draft, version 1\nVersion history first line: 'Started from the template'\nEdit log gets an entry"
+process p2 "The new draft is selected and opens on the canvas\nThe address becomes ?workflow=the-new-id"
+screen s2 "Bar shows the name and a 'Draft' pill\n'Nothing blocks publishing' or the checks that do"
+click c3 "Click 'Cancel', X, or press Escape"
+process p3 "Panel closes, nothing is created"
+end e1 "A draft made from the template is open"
+endx e2 "No draft made"
+
+s1 --> o1 --> l1 --> c1 --> f1 --> i1 --> d1
+d1 -->|Yes| c2 --> p1 --> st1 --> p2 --> s2 --> e1
+d1 -->|No| l1
+o1 --> c3 --> p3 --> e2

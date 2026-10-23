@@ -20,13 +20,13 @@ In Case Manager: `07-case-manager/61` (Ledger case › Workflow line and history
 |---|---|
 | The Workflow line (name, version, payer, 'Illustrative default' pill, 'At <stage>') | 66, 67 |
 | Info icon 'Why this workflow' (explanation, rules read, pinned or free) | 66, 67 |
-| 'View workflow' | 70 |
+| 'View workflow' (the Studio's read-only canvas with this case's path; for the labelled default, a list of its steps by stage) | 70 |
 | 'Trace' (only when the workflow has written lines) | 70, 72 |
 | 'A newer version exists (vN).' and 'Review newer version' | 68 |
 | 'Apply version N', 'Keep version N' | 68 |
 | 'The case details changed since this workflow was applied.' and 'Review the match' | 69 |
 | 'Apply <workflow>', 'Keep version N' in the match panel | 69 |
-| 'Two workflows match equally. The default is used until you choose.' and 'Choose a workflow' | 67 |
+| '<A> and <B> match equally. The default is used until you choose.' and 'Choose a workflow' | 67, 69 |
 | 'Use this workflow', 'Keep the default for now', the radio choices | 67 |
 | 'Next in this workflow: ...' under the step header | 71 |
 | 'Workflow: ...' folded into the footer line of steps 1 to 4 | 71 |
@@ -47,5 +47,5 @@ In Case Manager: `07-case-manager/61` (Ledger case › Workflow line and history
 
 - The workflow's own warnings are folded into each step's existing line; a rule that is merely unverified (every seeded rule is a demo sample) is listed in the info icon and the history, not repeated as a warning on every step.
 - Matching reads the published workflows. Until a newer version is reviewed, the case keeps the version it started with, even if the working copy in Payers has moved on.
-- The default process is a stand-in per request type. It states no payer rule.
+- The default process is a stand-in per request type. It states no payer rule. It is not one of a payer's saved workflows, so 'View workflow' shows it as a list of steps by stage (`DefaultWorkflowPanel`) rather than on the Studio's canvas.
 - A case that was opened from a request already on the case page is pinned on first view, because its workflow has already run past Intake.

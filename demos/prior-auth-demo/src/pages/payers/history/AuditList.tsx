@@ -12,7 +12,7 @@ export function AuditList({ edits }: { edits: EditLogEntry[] }) {
   const [area, setArea] = useState<EditArea | "all">("all");
   const shown = area === "all" ? edits : edits.filter((e) => e.area === area);
   return (
-    <div className="flex flex-col gap-3">
+    <div className="@container flex flex-col gap-3">
       {edits.length ? (
         <div role="group" aria-label="Filter by area" className="flex flex-wrap items-center gap-2">
           <span className="text-[13px] font-medium text-ink2">Area</span>
@@ -30,9 +30,9 @@ export function AuditList({ edits }: { edits: EditLogEntry[] }) {
             <li key={e.id} className="rounded-2xl border border-edge bg-white p-4">
               <div className="flex flex-wrap items-center gap-2"><Chip>{e.area}</Chip><span className="font-semibold">{e.what}</span></div>
               <div className="mt-1 text-xs text-muted">{e.user} · {stamp(e.at)} · Reason: {e.reason}</div>
-              <div className="mt-2.5 grid grid-cols-1 items-stretch gap-2 text-[13px] min-[560px]:grid-cols-[1fr_auto_1fr]">
+              <div className="mt-2.5 grid grid-cols-1 items-stretch gap-2 text-[13px] @lg:grid-cols-[1fr_auto_1fr]">
                 <div className="rounded-xl bg-risk-bg px-3 py-2 text-risk-ink"><div className="mb-0.5 text-[11px] font-medium tracking-[0.08em] uppercase">Before</div>{e.before || "Nothing"}</div>
-                <ArrowRight size={15} className="ico hidden self-center text-muted min-[560px]:block" />
+                <ArrowRight size={15} className="ico hidden self-center text-muted @lg:block" />
                 <div className="rounded-xl bg-good-bg px-3 py-2 text-good-ink"><div className="mb-0.5 text-[11px] font-medium tracking-[0.08em] uppercase">After</div>{e.after || "Removed"}</div>
               </div>
             </li>

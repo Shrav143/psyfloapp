@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button, Checkbox, Disclosure, Drawer, Dropdown, Field, Switch, TextArea, TextInput } from "@/components/ui";
 import { PROGRAM_LABEL, PROGRAMS } from "@/data/types";
+import { useStore } from "@/store";
 import { REQUEST_TYPE_LABEL, RULE_GROUP_LABEL, type PayerRule, type RequestType, type RuleGroup } from "@/data/workflow/types";
 import { Labeled } from "../Labeled";
 import { ReasonModal } from "../ReasonModal";
@@ -38,7 +39,10 @@ export function RuleDrawer({ rule, group, onClose, onSave }: { rule: PayerRule; 
 
   const trySave = () => {
     if (!draft.title.trim()) return setMissing(true);
-    if (!changes.length) return onClose();
+    if (!changes.length) {
+      useStore.getState().toast({ title: "Nothing changed", body: "Change a value or the text first.", tone: "neutral" });
+      return onClose();
+    }
     setSaving(true);
   };
   return (

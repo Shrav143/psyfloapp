@@ -13,6 +13,8 @@ const bare = (s: string): string => s.trim().replace(/[.\s]+$/, "");
 const lower = (s: string): string => (s ? s[0].toLowerCase() + s.slice(1) : s);
 const cap = (s: string): string => (s ? s[0].toUpperCase() + s.slice(1) : s);
 const stageIdx = (s: Stage): number => STAGES_ORDER.indexOf(s);
+/** The agent that does the work of each stage, so a line about the stage names who was working on it. Intake is the person's own. */
+const STAGE_ACTOR: Record<Stage, Entry["actor"]> = { intake: "system", eligibility: "verify", documentation: "reader", preparation: "scribe", review: "integrity" };
 
 /** "Submission window (Unverified), Backdating (Demo sample, Unverified)" */
 export const rulesLine = (view: Pick<CaseWorkflow, "run">): string =>
@@ -51,15 +53,15 @@ export function stageEntries(view: CaseWorkflow, stage: Stage, at: number, run =
     {
       key: `stage:${stage}:${sig}`,
       at,
-      actor: "system",
+      actor: STAGE_ACTOR[stage],
       text: `Workflow ran to ${STAGE_LABEL[stage]}: ${plural(done.length, "step")} done${skipped.length ? `, ${skipped.length} skipped${skip}` : ""}`,
-      detail: cut([done.length ? `Done: ${done.slice(0, 4).map((s) => s.title).join(", ")}${done.length > 4 ? ` and ${done.length - 4} more` : ""}.` : "", rulesLine({ run }), warningsOf(run).length ? `Warnings: ${warningsOf(run).join(" ")}` : ""].filter(Boolean).join(" "), 400) || undefined,
+      detail: cut([done.length ? `Done: ${done.slice(0, 4).map((s) => s.title).join(", ")}${done.length > 4 ? ` and ${done.length - 4} more` : ""}.` : "", run.pending?.length ? `${plural(run.pending.length, "step")} still ahead.` : "", rulesLine({ run }), warningsOf(run).length ? `Warnings: ${warningsOf(run).join(" ")}` : ""].filter(Boolean).join(" "), 400) || undefined,
     },
   ];
   const stop = waiting[0];
   if (stop) {
     const what = bare(stop.message).replace(/^waiting for (a |an |the )?/i, "").replace(/^./, (c) => c.toUpperCase()) || stop.title;
-    out.push({ key: `waiting:${stage}:${sig}`, at, actor: "system", text: `Waiting: ${cut(what, 100)}`, detail: what.length > 100 ? `${what}.` : undefined });
+    out.push({ key: `waiting:${stage}:${sig}`, at, actor: STAGE_ACTOR[stage], text: `Waiting: ${cut(what, 100)}`, detail: what.length > 100 ? `${what}.` : undefined });
   }
   return out;
 }
@@ -81,7 +83,7 @@ export function signEntries(view: CaseWorkflow, p: { signer: string; payerShort:
   out.push({
     key: "sign:prepared",
     at: p.at,
-    actor: "system",
+    actor: "packet",
     text: `Prepared for ${p.payerShort} (demo simulation). Nothing was transmitted outside this app`,
     detail: cut([prepared.length ? `Prepared by the workflow: ${prepared.join(", ")}.` : "The packet was prepared by the agents.", reaches.length ? `Not transmitted on their own: ${reaches.join(", ")}. The send is the one simulated by Sign and send to payer (demo).` : "The one send is simulated by Sign and send to payer (demo)."].join(" "), 300),
   });

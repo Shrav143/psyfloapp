@@ -1,0 +1,45 @@
+title: Payers › History & Changes › Suggestions from Historian
+route: /payers/summit?tab=history
+intro: Historian reads how the payer ruled over the last 90 days and suggests changes to the process. 'Re-learn from decisions' waits about three seconds, then proposes at most one change at a time. A suggestion is never applied on its own: a person accepts or dismisses it. An accepted suggestion adds its branch to the earlier process view (the record the migrated workflow was made from) and to a DRAFT of the migrated workflow in the Workflow Builder, and is written to the edit audit; the published workflow does not change until a person publishes the draft. The card says so. If the graph has no place for the branch, only the earlier view gets it. A dismissed suggestion is not offered again.
+dir: TD
+---
+start s1 "Open History & Changes\nthe section 'Suggestions from Historian'\nopens by itself when a suggestion waits"
+screen sm "Closed: 'None waiting. Re-learn from decisions to ask for one.'\nor 'N waiting for you. Nothing changes unless you accept.'"
+screen top "Open: 'Re-learn from decisions' and one line\n'Historian reads how Summit ruled over the last 90 days and suggests a change to the process.'"
+click rl "Click 'Re-learn from decisions'"
+process sp "Button spins\nA line 'Historian is reviewing how Summit ruled over the last 90 days.'"
+agent hs "Historian reads the last 90 days\n(demo: about 3 seconds, scripted)"
+decision lv "Still on Payers after 3 seconds?"
+endx drop "Result dropped"
+decision dn "Is there a suggestion that is not on the process yet\nand was not dismissed?"
+toast t0 "'Nothing new to propose'\n'The workflow already matches how Summit ruled in the last 90 days.'"
+toast t1 "'Historian has a suggestion'\n'Review it here. The workflow has not changed.'"
+screen pc "One card per suggestion\nHistorian chip, 'Suggestion: Ask for a therapy note on continued stays'\nWhy (6 of Summit's last 9 information requests)\n'Under Gather the documents: If request is a continued-stay request → File step. Add a therapy note...'\n'Accept proposal', 'Dismiss'\n'Applies to the earlier process view and to a draft of the migrated workflow\nin the Workflow Builder. Historian never changes a workflow on its own.'"
+process bd "The History & Changes tab badge counts waiting suggestions"
+click ac "Click 'Accept proposal'"
+store ap "The branch is added to the earlier process view (version goes up by one)\n'Edits waiting' goes up by one"
+store dr "The same branch is added to a DRAFT of the migrated workflow\none more condition in the step's decision and one more step it leads to\nThe published version keeps matching new cases until the draft is published"
+store lg "Edit audit: 'Workflow' line\n'Accepted Historian's proposal: ...'\n'Added a branch under Gather the documents'"
+store nt "Bell notification 'Summit workflow edited'"
+toast ta "'Proposal accepted'\n'Added under Gather the documents to the earlier process view (version 8)\nand to a draft of the migrated workflow. Publish the draft in the Workflow Builder to use it.'"
+click di "Click 'Dismiss'"
+store ds "Suggestion removed; its title is remembered\nso Historian does not offer it again"
+toast td "'Proposal dismissed'\n'The workflow did not change.'"
+process nw "Dismiss changes nothing in any workflow\nA published workflow only changes when a person publishes a draft"
+goto g1 "Continues in: Payers › Edits waiting › Update drafts"
+goto g2 "Continues in: Payers › History & Changes › Earlier process view"
+goto g3 "Continues in: Payers › History & Changes › Edit audit"
+goto g4 "Continues in: Payers › Workflow Builder › Save a draft and publish"
+end e1 "A person decided; nothing changed on its own"
+
+s1 --> sm --> top --> rl --> sp --> hs --> lv
+lv -->|No| drop
+lv -->|Yes| dn
+dn -->|No| t0 --> e1
+dn -->|Yes| t1 --> pc --> bd
+pc --> ac --> ap --> dr --> lg --> nt --> ta --> e1
+pc --> di --> ds --> td --> nw --> e1
+ap -.-> g1
+ap -.-> g2
+lg -.-> g3
+dr -.-> g4

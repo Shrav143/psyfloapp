@@ -21,6 +21,9 @@ export function docsForServices(docs: Record<Program, { id: string; title: strin
   return out;
 }
 
+/** The workflow each payer was last open on, so leaving the builder for another view and coming back lands on the same one. */
+const LAST = new Map<string, string>();
+
 /** The first published workflow, else the first one that is not archived, else the first. */
 const defaultPick = (list: Workflow[]): Workflow | undefined => list.find((w) => w.status === "published") ?? list.find((w) => w.status !== "archived") ?? list[0];
 
@@ -35,8 +38,9 @@ export function WorkflowBuilderTab({ payerId }: { payerId: string }) {
 
   const row = useMemo(() => payerRows(custom, config).find((r) => r.id === payerId), [custom, config, payerId]);
   const payer: PayerInfo = { id: payerId, name: row?.name ?? payerId, state: row?.state ?? "OH", product: row?.product ?? "" };
-  const asked = params.get("workflow");
+  const asked = params.get("workflow") ?? LAST.get(payerId);
   const stored = workflows.find((w) => w.id === asked) ?? defaultPick(workflows);
+  if (stored) LAST.set(payerId, stored.id);
   const node = params.get("node") ?? undefined;
 
   const pick = useCallback(

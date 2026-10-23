@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChevronDown, ExternalLink } from "lucide-react";
 import { Button, Pill } from "@/components/ui";
 import { PROGRAM_LABEL } from "@/data/types";
@@ -27,6 +27,11 @@ function SourceChip({ rule }: { rule: PayerRule }) {
     Edit, Mark as verified and Archive sit inside. A rule nobody has verified says so in its pill and in its provenance line. */
 export function RuleRow({ rule, usedBy, onEdit, onVerify, onArchive, defaultOpen = false }: { rule: PayerRule; usedBy: number; onEdit: () => void; onVerify: () => void; onArchive: () => void; defaultOpen?: boolean }) {
   const [open, setOpen] = useState(defaultOpen);
+  const ref = useRef<HTMLDivElement>(null);
+  // A link to this rule brings it into view.
+  useEffect(() => {
+    if (defaultOpen) ref.current?.scrollIntoView({ block: "center" });
+  }, [defaultOpen]);
   const values = readValues(rule);
   const gone = rule.verification === "superseded";
   const scope = [
@@ -36,7 +41,7 @@ export function RuleRow({ rule, usedBy, onEdit, onVerify, onArchive, defaultOpen
     rule.providerType ? rule.providerType : "",
   ].filter(Boolean);
   return (
-    <div className={cn("border-t border-line", gone && "bg-tile/60")}>
+    <div ref={ref} data-rule={rule.id} className={cn("border-t border-line", gone && "bg-tile/60")}>
       <button type="button" aria-expanded={open} onClick={() => setOpen((o) => !o)} className="flex w-full items-start gap-3 px-6 py-3.5 text-left hover:bg-tile focus-visible:outline-2">
         <span className="min-w-0 flex-1">
           <span className="flex flex-wrap items-center gap-x-2.5 gap-y-1">

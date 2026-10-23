@@ -1,6 +1,6 @@
 # Coverage: Case Manager
 
-Source: `src/pages/manager/*` (including `CaseQuickView.tsx` and `useDraftReviews.ts`), `src/store/manager.ts`, `src/store/cases.ts`, `src/store/ripples.ts`, `src/data/manager.ts`, `src/data/managerReviews.ts`, `src/data/cases.ts`, `src/pages/newcase/runText.ts`, and `src/App.tsx` (the case route).
+Source: `src/pages/manager/*` (including `CaseQuickView.tsx` and `useDraftReviews.ts`), `src/store/manager.ts`, `src/store/cases.ts`, `src/store/ripples.ts`, `src/data/manager.ts`, `src/data/managerReviews.ts`, `src/data/cases.ts`, `src/pages/manager/useWorkflowLine.ts` (the workflow row), `src/pages/newcase/runText.ts`, and `src/App.tsx` (the case route).
 
 | Control | Where | Diagram |
 |---|---|---|
@@ -47,6 +47,9 @@ Source: `src/pages/manager/*` (including `CaseQuickView.tsx` and `useDraftReview
 | Quick view keys: focus lands on 'Open case', Tab stays inside, Escape closes one layer at a time (the review drawer, then the quick view), focus returns to the row's quick view button, the dimmed area and X close it | Quick view | 36 |
 | Ledger case page: header, 'Case summary', 'Next step', 'Open the review', 'Back to Case Manager', crumb | Case page for a ledger-only case | 60 |
 | Ledger case page 'History': folded, summary '4 entries. Latest: ...', opened by click, Enter or Space | Case page for a ledger-only case | 60 |
+| Ledger case page row 'Workflow' ('Initial Authorization, Residential SUD, version 3', or the labelled default) in 'Case summary', only for a case with a New case draft that follows a workflow | Case page for a ledger-only case | 61 |
+| Ledger case page 'History' also holds the lines the payer workflow wrote on the draft ('Workflow applied: ...', 'Workflow ran to ...', 'Waiting: ...') | Case page for a ledger-only case | 61 |
+| Quick view row 'Workflow' and the three newest history lines, the workflow's among them | Tracker quick view | 61 |
 | 'Request not found' (an address typed by hand only) | Hand-off | 33, 60 |
 | Three tiles on Reviews (35 / 39 drafted, '4 not drafted yet') | Reviews | 40 |
 | 'Showing N of 47 reviews' line | Reviews | 40 |
