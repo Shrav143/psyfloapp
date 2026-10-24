@@ -4,6 +4,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Newsreader:opsz,wght@6..72,500;6..72,600&family=JetBrains+Mono:wght@400&display=swap">
 <style>
+/* The full-screen overlay is shown and hidden with the hidden attribute; its own display rule must not override it, whichever page the fragment sits in. */
+[hidden] { display: none !important; }
 /* Layout: a menu tree on the left mirrors the app's sidebar; each diagram is a card with its own zoom, so a wide flow is read in place or full screen. */
 :root {
   --bg: #FAF6EE;
