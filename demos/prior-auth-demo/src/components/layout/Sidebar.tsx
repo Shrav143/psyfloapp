@@ -1,4 +1,5 @@
 import { BarChart3, Building2, ChevronDown, ChevronRight, ClipboardList, HelpCircle, ListChecks, LayoutDashboard, LogOut, RefreshCw, Scale, Settings, ShieldCheck, PlusCircle, FlaskConical, type LucideIcon } from "lucide-react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useScope } from "@/lib/scope";
 import { NavLink, useLocation } from "react-router-dom";
 import { Count } from "@/components/ui";
@@ -27,21 +28,67 @@ const link = "flex h-[42px] items-center gap-3 rounded-xl px-3 text-[14px] font-
 
 function NavItem({ item, depth = 0 }: { item: Item; depth?: number }) {
   const { pathname } = useLocation();
-  const inGroup = !!item.subs?.some((s) => pathname.startsWith(s.to)) || (item.subs && pathname.startsWith("/authorizations"));
-  const exact = item.to === paths.authorizations();
-  // The parent is "on" only for the queue and case pages, not for its sub-pages.
-  const subActive = item.subs?.some((s) => pathname.startsWith(s.to));
-  const on = item.match ? item.match.some((m) => pathname.startsWith(m)) : exact ? pathname === item.to || (pathname.startsWith("/authorizations/case") && !subActive) : pathname.startsWith(item.to);
+  if (item.subs) return <GroupItem item={item} />;
+  const on = item.match ? item.match.some((m) => pathname.startsWith(m)) : pathname.startsWith(item.to);
   const Icon = item.icon;
   return (
+    <NavLink to={item.to} className={cn(link, depth > 0 && "ml-3 h-9 text-[13px]", on && "bg-forest text-white hover:bg-forest")}>
+      <Icon size={depth ? 16 : 18} className="ico" />
+      <span className="truncate">{item.label}</span>
+      {item.badge ? <Count on={on} className="ml-auto">{item.badge}</Count> : null}
+    </NavLink>
+  );
+}
+
+/** A parent with sub-items. The label is a link to the parent's page; the arrow is its own button that opens and closes the sub-items, without
+    navigating. The group opens by itself when the address enters it, and otherwise keeps the person's choice. While it is closed on one of its
+    pages, the parent is the highlighted item, so the place is never lost. */
+function GroupItem({ item }: { item: Item }) {
+  const { pathname } = useLocation();
+  const subs = item.subs ?? [];
+  const inGroup = subs.some((s) => pathname.startsWith(s.to)) || pathname.startsWith(item.to);
+  const [open, setOpen] = useState(inGroup);
+  const was = useRef(inGroup);
+  useEffect(() => {
+    if (inGroup && !was.current) setOpen(true);
+    was.current = inGroup;
+  }, [inGroup]);
+  const id = useId();
+  const lit = inGroup && !open;
+  const Icon = item.icon;
+  const Chevron = open ? ChevronDown : ChevronRight;
+  return (
     <>
-      <NavLink to={item.to} end={exact} className={cn(link, depth > 0 && "ml-3 h-9 text-[13px]", on && !subActive && "bg-forest text-white hover:bg-forest")}>
-        <Icon size={depth ? 16 : 18} className="ico" />
-        <span className="truncate">{item.label}</span>
-        {item.subs ? <span className="ml-1 opacity-70">{inGroup ? <ChevronDown size={15} className="ico" /> : <ChevronRight size={15} className="ico" />}</span> : null}
-        {item.badge ? <Count on={on && !subActive} className="ml-auto">{item.badge}</Count> : null}
-      </NavLink>
-      {item.subs && inGroup ? item.subs.map((s) => <SubLink key={s.to} item={s} />) : null}
+      <div className={cn(link, "relative", lit && "bg-forest text-white hover:bg-forest")}>
+        {/* The link covers the whole row (its ::after), so the row clicks as before; the arrow button sits above it. */}
+        <NavLink
+          to={item.to}
+          end
+          className="flex min-w-0 items-center gap-3 after:absolute after:inset-0 after:rounded-xl after:content-[''] focus-visible:outline-none! focus-visible:after:outline-2 focus-visible:after:outline-offset-2 focus-visible:after:outline-forest"
+        >
+          <Icon size={18} className="ico" />
+          <span className="truncate">{item.label}</span>
+          {item.badge ? <Count on={lit} className="absolute top-1/2 right-3 -translate-y-1/2">{item.badge}</Count> : null}
+        </NavLink>
+        <button
+          type="button"
+          aria-expanded={open}
+          aria-controls={id}
+          aria-label={`${open ? "Collapse" : "Expand"} ${item.label}`}
+          title={open ? "Collapse" : "Expand"}
+          onClick={() => setOpen((o) => !o)}
+          className={cn("relative z-10 -ml-2 grid h-7 w-7 place-items-center rounded-md opacity-70 hover:opacity-100", lit ? "hover:bg-white/15" : "hover:bg-black/5")}
+        >
+          <Chevron size={15} className="ico" />
+        </button>
+      </div>
+      {open ? (
+        <div id={id} className="flex flex-col gap-[3px]">
+          {subs.map((s) => (
+            <SubLink key={s.to + s.label} item={s} />
+          ))}
+        </div>
+      ) : null}
     </>
   );
 }
