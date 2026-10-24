@@ -16,10 +16,10 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "Click 'Accept the decision and plan the step-down' (recommended next step), or open 'Compare the options', select the 'Accept...' card and click its button" }
-  c1@{ shape: trap-t, label: "Click 'Accept the decision and plan the step-down'" }
-  o1@{ shape: win-pane, label: "<b>Modal 'Accept the decision?'</b><br/>'Nothing is regained. This closes the denial.'" }
-  l1@{ shape: curv-trap, label: "<b>Three bullets</b><br/>'Analytics logs D-3297 as an accepted denial.'<br/>'Case Manager adds a step-down plan.'<br/>'D-3297 leaves Appeal or call on the Dashboard.'" }
+  s1@{ shape: stadium, label: "Click 'Accept the decision' in the accept choice of Your options (primary when it is recommended), or open 'Compare the options', select the 'Accept...' card and click its button" }
+  c1@{ shape: trap-t, label: "Click 'Accept the decision'" }
+  o1@{ shape: win-pane, label: "Modal 'Accept the decision?'" }
+  l1@{ shape: curv-trap, label: "Sub line 'D-3297 · closes the denial, nothing regained'" }
   i1@{ shape: lean-r, label: "'Reason for the record' (required): open the menu and pick one" }
   l2@{ shape: curv-trap, label: "<b>Menu choices</b><br/>'The chart does not yet support a challenge' (chosen at first)<br/>'The clinical team agrees with the payer's reasoning'<br/>'The member and family chose to step down'<br/>'The effort of an appeal outweighs the likely gain'" }
   i2@{ shape: lean-r, label: "<b>Note (optional)</b><br/>'Anything the team should know'" }
@@ -33,10 +33,10 @@ flowchart TD
   st4@{ shape: cyl, label: "<b>Shared with other screens: denial, case and payer</b><br/>Case Manager adds a step-down plan<br/>Analytics logs the accepted denial" }
   t1@{ shape: odd, label: "<b>'Decision accepted'</b><br/>'Analytics logs it as an accepted denial. Case Manager has a step-down plan.'" }
   t2@{ shape: odd, label: "<b>Notification 'Denial closed' from Cadence</b><br/>Opens Case Manager, Active cases" }
-  sc1@{ shape: curv-trap, label: "<b>Denial page now shows the block 'Closed. You accepted the decision'</b><br/>'Reason: ... Analytics logs it as an accepted denial.'" }
-  p1@{ shape: rect, label: "<b>'Your options' row is gone</b><br/>Denial moves to 'Closed' in the 'Open denials' panel with the pill 'Accepted'<br/>Sidebar badge goes down by one" }
+  sc1@{ shape: curv-trap, label: "<b>The accept choice in Your options reads 'Accepted 10/20' with the link 'Plan the step-down'</b><br/>History: 'You accepted the decision' flagged 'Logged decision'" }
+  p1@{ shape: rect, label: "<b>The accept choice reads 'Accepted 10/20' with 'Plan the step-down'; 'Compare the options' is gone</b><br/>The dashboard lists it under 'Closed' with the outcome 'Accepted'<br/>Sidebar badge goes down by one" }
   c4@{ shape: trap-t, label: "Click 'Plan the step-down'" }
-  c5@{ shape: trap-t, label: "Click 'See on the Dashboard' (header card)" }
+  c5@{ shape: trap-t, label: "Open the Dashboard from the sidebar" }
   g1@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Step-down plans from accepted denials" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   p2@{ shape: rect, label: "<b>PRD guardrail: the agents never accept a denial</b><br/>A person gives the reason first" }

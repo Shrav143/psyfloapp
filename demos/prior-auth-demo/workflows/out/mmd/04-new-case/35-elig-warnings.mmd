@@ -28,12 +28,12 @@ flowchart TD
   w7@{ shape: rect, label: "<b>Verification service unavailable</b><br/>'Resume Verify in Settings and refresh, or go on with a documented exception.'<br/>Verify paused in Settings, or a refresh that could not run" }
   w8@{ shape: rect, label: "<b>Authorization requirement unknown</b><br/>'Ask the payer. Until then the request is prepared as if one is needed.'<br/>Ending 2020, or a payer added on Payers that does not cover the level of care" }
   end
-  sAct@{ shape: curv-trap, label: "<b>Section 'What you can do'</b><br/>'None of this stops you. It only decides what is recorded when the request is sent.'" }
+  sAct@{ shape: curv-trap, label: "<b>Section 'What you can do'</b><br/>One short button per warning" }
   a1@{ shape: trap-t, label: "Click 'Switch this case to Cardinal'" }
   sa1@{ shape: cyl, label: "<b>Payer and plan type change</b><br/>The old check is let go and Verify checks the new plan" }
   a2@{ shape: trap-t, label: "Click 'Correct the member ID in Intake'" }
   a3@{ shape: trap-t, label: "Click 'Change the level of care in Intake'" }
-  gIntake@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Patient, insurance and request rows" }
+  gIntake@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Patient, insurance and request rows" }
   a4@{ shape: trap-t, label: "Click the link 'Open Settings to resume Verify'" }
   gSettings@{ shape: subproc, label: "Continues in: Settings › Pause › What the rest of the app shows" }
   pResume@{ shape: rect, label: "After Verify is resumed, 'Refresh verification' runs the check" }
@@ -53,8 +53,8 @@ flowchart TD
   e3@{ shape: cyl, label: "<b>After sending, the request's History says</b><br/>'You went on without confirmed coverage and said why'<br/>'You went on without a verification and said why'" }
   end
   pAck@{ shape: rect, label: "<b>A warning with no documented exception and no block</b><br/>Review & submit lists it to acknowledge<br/>Signing needs the tick-box 'I reviewed the warning ... and want to sign anyway.'" }
-  gMis@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › What is missing" }
-  gSign@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Sign and send to payer" }
+  gMis@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › What is missing" }
+  gSign@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer" }
   s1 --> d1
   d1 -->|"Coverage"| w1
   d1 -->|"Payer"| w2

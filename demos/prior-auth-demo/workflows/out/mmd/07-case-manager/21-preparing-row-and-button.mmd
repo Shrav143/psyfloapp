@@ -17,7 +17,7 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Open the folded 'Being prepared' row and look at one case" }
-  r1@{ shape: curv-trap, label: "<b>Row, left to right</b><br/>Level chip (for example 'Residential 3.5', 'Detox → Residential', or 'Level not set')<br/>Case ID (or 'New case'), patient initials and age, payer<br/>What is asked ('Admission request'), and a grey tag 'Updated for a payer change · 10/20' when Payers updated this draft" }
+  r1@{ shape: curv-trap, label: "<b>Row, left to right</b><br/>Level chip (for example 'Residential 3.5', 'Detox → Residential', or 'Level not set')<br/>Case ID (or 'New Case'), patient initials and age, payer<br/>What is asked ('Admission request'), and a grey tag 'Updated for a payer change · 10/20' when Payers updated this draft" }
   r2@{ shape: curv-trap, label: "<b>Eight-step bar</b><br/>Read, Rules, Match, Ask, Draft, Check, Sign, Send<br/>Done steps green, current step sage and bold, the rest grey" }
   r3@{ shape: curv-trap, label: "<b>Agent line</b><br/>A badge for the agent who has the case, then one sentence, for example 'Scribe is waiting on one answer: the sertraline start date'" }
   r4@{ shape: curv-trap, label: "<b>Right side</b><br/>Due pill (for example 'Notice due in 5 h'), status pill, approval chance with a bar (or 'Not started'), then the button" }
@@ -29,11 +29,11 @@ flowchart TD
   t4@{ shape: rect, label: "<b>'Ready to sign'</b><br/>Button 'Review and sign' (green)" }
   c1@{ shape: trap-t, label: "Click the case ID or the button" }
   p1@{ shape: rect, label: "Go to /authorizations/new/ followed by the draft's code" }
-  d2@{ shape: diam, label: "Which step does New case open on?" }
-  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Reopen and resume a case" }
-  g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › An agent asks a question" }
-  g3@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › Start the run and watch it" }
-  g4@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Sign and send to payer" }
+  d2@{ shape: diam, label: "Which step does New Case open on?" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New Case › Reopen and resume a case" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › An agent asks a question" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › Start the run and watch it" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer" }
   c2@{ shape: trap-t, label: "Click anywhere else on the row" }
   p2@{ shape: rect, label: "Nothing happens: the row itself is not a link" }
   e1@{ shape: stadium, label: "Stays on Case Manager" }

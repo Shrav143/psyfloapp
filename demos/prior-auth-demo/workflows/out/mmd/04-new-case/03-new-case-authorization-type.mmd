@@ -16,7 +16,7 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Open New case</b><br/>The dropdown starts on 'Initial authorization'" }
+  s1@{ shape: stadium, label: "<b>Open New Case</b><br/>The dropdown starts on 'Initial authorization'" }
   s2@{ shape: stadium, label: "<b>Open a link with ?type= or paths.newCase({type})</b><br/>initial, concurrent, reauth, modify or retro" }
   s3@{ shape: stadium, label: "Click 'Authorization type' under the page title" }
   dKnown@{ shape: diam, label: "<b>Is the value one of the five?</b><br/>And has the case not started and not been sent" }
@@ -49,13 +49,13 @@ flowchart TD
   x4@{ shape: rect, label: "Authorization preparation: the justification's heading and content" }
   x5@{ shape: rect, label: "Review & submit: the 'Request' line and the history of the request" }
   end
-  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Initial authorization" }
-  g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Concurrent review" }
-  g3@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Reauthorization / renewal" }
-  g4@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Modification / extension" }
-  g5@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Retroactive authorization" }
-  gDocs@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › Required and typical documents by type" }
-  gJust@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › Justification by type" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Initial authorization" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Concurrent review" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Reauthorization / renewal" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Modification / extension" }
+  g5@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Retroactive authorization" }
+  gDocs@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › Required and typical documents by type" }
+  gJust@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › Justification by type" }
   s1 --> s3
   s2 --> dKnown
   dKnown -->|"No"| pIgnore --> s3

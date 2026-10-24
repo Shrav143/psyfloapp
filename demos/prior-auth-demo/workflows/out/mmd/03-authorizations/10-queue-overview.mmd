@@ -25,15 +25,15 @@ flowchart TD
   p2@{ shape: rect, label: "<b>The average and the next due time use each request's current chance and due time</b><br/>Including actions applied on its case page" }
   d1@{ shape: diam, label: "Is any filter on?" }
   h1@{ shape: curv-trap, label: "<b>Header: '19 of 56 open requests need action today.'</b><br/>The 19 are Act now plus Due within 24 hours<br/>With one site in view it names it: '12 of 36 open requests at Site A need action today.'<br/>With none left: 'Nothing needs action today.'" }
-  h2@{ shape: curv-trap, label: "<b>Sub line: 'Five are urgent, and the average approval chance is 79%.'</b><br/>With none in Act now: 'Nothing is urgent, and ...'" }
+  h2@{ shape: curv-trap, label: "No sub line: the figures under it say how many are urgent and the average chance" }
   h3@{ shape: curv-trap, label: "<b>Header: 'X of 56 open requests match these filters.'</b><br/>No sub line" }
-  nb@{ shape: trap-t, label: "Click 'New case' (top right button)" }
-  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › How a case starts and resumes" }
+  nb@{ shape: trap-t, label: "Click 'New Case' (top right button)" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New Case › How a case starts and resumes" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Queue › Cardinal payer signal" }
-  tl@{ shape: curv-trap, label: "<b>Four figures under the header</b><br/>Always count the whole queue at the sites in view, not the filtered list" }
-  t2@{ shape: trap-t, label: "<b>Click 'Urgent now'</b><br/>5 · 'the Act now band'" }
+  tl@{ shape: curv-trap, label: "<b>Four small figures under the header, as wide as their figure</b><br/>Always count the whole queue at the sites in view, not the filtered list" }
+  t2@{ shape: trap-t, label: "<b>Click 'Urgent now'</b><br/>5" }
   t3@{ shape: trap-t, label: "<b>Click 'Due within 24 hours'</b><br/>14 · 'next due in 3 h'<br/>(or 'next one is due now', or 'nothing open')" }
-  t4@{ shape: trap-t, label: "<b>Click 'Waiting on you'</b><br/>'not sent yet, or a question for you'<br/>Counts the requests the ordering rule puts first" }
+  t4@{ shape: trap-t, label: "<b>Click 'Waiting on you'</b><br/>21: not sent yet, a denial to work, or a question for you<br/>the requests the ordering rule puts first" }
   t1@{ shape: curv-trap, label: "<b>'Approval chance' 79%</b><br/>'average · likely 74–84%'<br/>Not clickable" }
   dSel@{ shape: diam, label: "Is that figure already the only filter?" }
   u1@{ shape: rect, label: "<b>All filters are cleared, then that figure's filter is set</b><br/>Urgency 'Act now', Urgency 'Due within 24 hours', or Status 'Waiting on you'<br/>The figure shows an outline" }

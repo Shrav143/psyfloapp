@@ -129,7 +129,7 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Dashboard is open" }
   p1@{ shape: rect, label: "<b>Take the requests at the sites in view</b><br/>Both sites, Site A or Site B, from the top bar and the viewer<br/>Payer, Program, Request type and Status menus are ignored here" }
-  p2@{ shape: rect, label: "<b>Waiting on payers = Submitted + Decision pending</b><br/>Waiting on you = requests with a question for a person (a payer's question, an agent's question)<br/>plus cases saved in New case that wait for a person" }
+  p2@{ shape: rect, label: "<b>Waiting on payers = Submitted + Decision pending</b><br/>Waiting on you = requests with a question for a person (a payer's question, an agent's question)<br/>plus cases saved in New Case that wait for a person" }
   d1@{ shape: diam, label: "How many wait on payers?" }
   a0@{ shape: curv-trap, label: "'Nothing is waiting on a payer.'" }
   a1@{ shape: curv-trap, label: "'1 request is waiting on a payer.'" }
@@ -140,7 +140,7 @@ flowchart TD
   b2@{ shape: curv-trap, label: "'3 are waiting on you.'" }
   h@{ shape: curv-trap, label: "<b>Title</b><br/>The two sentences together, e.g. '18 requests are waiting on payers. 3 are waiting on you.'<br/>Small serif type, no card around it" }
   q@{ shape: curv-trap, label: "<b>One quiet line under it</b><br/>'What to do now, and where every authorization stands.'" }
-  p3@{ shape: rect, label: "<b>Recomputed after a payer reply, an answer sent, a case signed and sent, a case saved in New case, or a change of site or viewer</b><br/>Site A and Site B add up to Both sites" }
+  p3@{ shape: rect, label: "<b>Recomputed after a payer reply, an answer sent, a case signed and sent, a case saved in New Case, or a change of site or viewer</b><br/>Site A and Site B add up to Both sites" }
   d3@{ shape: diam, label: "Does the number match the table?" }
   n1@{ shape: curv-trap, label: "<b>Not the same count as 'Needs me today'</b><br/>The title counts questions waiting on a person; 'Needs me today' also counts a request ready to sign, a write-back to approve, a late payer to chase and a denial deadline inside 2 days" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Table controls › Needs me today, Payer, Program, Status and Request type" }
@@ -278,19 +278,19 @@ flowchart TD
   b5@{ shape: trap-t, label: "<b>Click 'Open request'</b><br/>Sentence 'Chase Cardinal on R-1021'" }
   b6@{ shape: trap-t, label: "<b>Click 'Approve write-back'</b><br/>Sentence 'Approve the write-back for R-0951'" }
   b7@{ shape: trap-t, label: "<b>Click 'Start renewal'</b><br/>Sentence 'Start renewal for I-2193'" }
-  b8@{ shape: trap-t, label: "<b>Click 'Open Active cases'</b><br/>Sentence 'Finish 1 case saved in New case'" }
+  b8@{ shape: trap-t, label: "<b>Click 'Open Active cases'</b><br/>Sentence 'Finish 1 case saved in New Case'" }
   end
-  p1@{ shape: rect, label: "<b>The request gets a draft in New case if it has none, then the draft opens at the step that fits</b><br/>Authorization preparation for a question, Review & submit when every check passed" }
+  p1@{ shape: rect, label: "<b>The request gets a draft in New Case if it has none, then the draft opens at the step that fits</b><br/>Authorization preparation for a question, Review & submit when every check passed" }
   p2@{ shape: rect, label: "<b>Address gets ?request=ID</b><br/>The request drawer opens on the Dashboard" }
   p3@{ shape: rect, label: "Denial Intelligence opens on that denial" }
-  p4@{ shape: rect, label: "New case opens as a Reauthorization for that patient" }
+  p4@{ shape: rect, label: "New Case opens as a Reauthorization for that patient" }
   p5@{ shape: rect, label: "Case Manager opens on Active cases" }
   d1@{ shape: diam, label: "Are more people-owned rows left than the five shown?" }
   more@{ shape: curv-trap, label: "<b>Under the list</b><br/>'2 more need you today.' and the button 'Show them in the table'" }
   b9@{ shape: trap-t, label: "Click 'Show them in the table'" }
   p6@{ shape: rect, label: "'Needs me today' turns on and the page scrolls to the table" }
-  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › An agent asks a question" }
-  g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Sign and send to payer" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › An agent asks a question" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer" }
   g3@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   g4@{ shape: subproc, label: "Continues in: Denial Intelligence › Open denials list" }
   g5@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Tracker of every active case" }
@@ -356,7 +356,7 @@ flowchart TD
   k5@{ shape: rect, label: "<b>A payer to chase</b><br/>A request in Submitted or Decision pending at least 4 hours late, or on day 5 of the CMS clock or later, with no agent already phoning" }
   k6@{ shape: rect, label: "<b>An approval to write back</b><br/>Only while write-back is on in EMR Connect" }
   k7@{ shape: rect, label: "An authorization that ends within 7 days, or has ended, with no request in flight to replace it" }
-  k8@{ shape: rect, label: "<b>Cases saved in New case that wait for a person and have no row yet</b><br/>One line for all of them" }
+  k8@{ shape: rect, label: "<b>Cases saved in New Case that wait for a person and have no row yet</b><br/>One line for all of them" }
   end
   p2@{ shape: rect, label: "<b>Each row gets a time</b><br/>The due time the Authorizations queue ranks by, or the denial's deadline" }
   d1@{ shape: diam, label: "Is it past the CMS decision time?" }
@@ -565,7 +565,7 @@ flowchart TD
   sc@{ shape: curv-trap, label: "<b>Five chips in a row</b><br/>Awaiting sign-off 5, Submitted 4, Decision pending 14, Info requested 3, Denied / appeal 8<br/>White, thin border, no icon, no tinted fill" }
   ip@{ shape: curv-trap, label: "<b>Info icon beside 'Lifecycle'</b><br/>Hover, focus or click: what the states count" }
   subgraph gCount ["What each chip counts, and its quiet line"]
-  c1@{ shape: rect, label: "<b>Awaiting sign-off = Preparing: requests not yet signed and sent, plus cases saved in New case</b><br/>Quiet line '1 ready to sign'" }
+  c1@{ shape: rect, label: "<b>Awaiting sign-off = Preparing: requests not yet signed and sent, plus cases saved in New Case</b><br/>Quiet line '1 ready to sign'" }
   c2@{ shape: rect, label: "<b>Submitted = Received: the payer has it</b><br/>Quiet line 'all on time' or '1 running late' (ochre)" }
   c3@{ shape: rect, label: "<b>Decision pending = Under review</b><br/>Quiet line 'none running late', '2 running late', or '1 past 7 days' (ochre)" }
   c4@{ shape: rect, label: "<b>Info requested</b><br/>Quiet line '1 waiting on you' or 'none waiting on you'" }
@@ -712,7 +712,7 @@ flowchart TD
   p5@{ shape: rect, label: "<b>Eight more rows are added</b><br/>With fewer than 8 left the button shows that number, e.g. 'Show 5 more'" }
   e1@{ shape: stadium, label: "<b>All rows shown</b><br/>'Showing 40 of 40'; no button" }
   p6@{ shape: rect, label: "Changing any menu, chip, toggle or the sort goes back to the first 8 rows" }
-  sc4@{ shape: curv-trap, label: "<b>With cases saved in New case that have no row yet</b><br/>A line under the table with all statuses or Awaiting sign-off: '2 more are being prepared in New case.' and 'Open Active cases'" }
+  sc4@{ shape: curv-trap, label: "<b>With cases saved in New Case that have no row yet</b><br/>A line under the table with all statuses or Awaiting sign-off: '2 more are being prepared in New Case.' and 'Open Active cases'" }
   g6@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Being prepared card" }
   s1 --> sc1 --> sc2 --> p1 --> p2 --> d0
   d0 -->|"No"| em --> g3
@@ -1135,7 +1135,7 @@ flowchart TD
   c2@{ shape: trap-t, label: "Click 'Open case'" }
   g1@{ shape: subproc, label: "<b>Continues in: Authorizations › Case page</b><br/>/authorizations/case/ followed by the case ID" }
   c3@{ shape: trap-t, label: "Click 'Open in Denial Intelligence'" }
-  g2@{ shape: subproc, label: "<b>Continues in: Denial Intelligence › Open denials</b><br/>/denials?id=D-3318" }
+  g2@{ shape: subproc, label: "<b>Continues in: Denial Intelligence › A denial opened</b><br/>/denials/D-3318" }
   subgraph gClose ["Closing the drawer"]
   x1@{ shape: trap-t, label: "Click the X 'Close'" }
   x2@{ shape: trap-t, label: "Press Escape" }
@@ -1551,7 +1551,7 @@ flowchart TD
   ds@{ shape: curv-trap, label: "<b>Dashboard after a denial</b><br/>'Denied / appeal' chip and 'Decided today' each go up by one; 'Decision pending' goes down<br/>Sidebar badge on Denial Intelligence goes up<br/>Its row shows 'Call booked', next action 'Prepare the P2P call', owner You<br/>A row hidden by the old stage filter leaves the table; the drawer stays open" }
   dd@{ shape: curv-trap, label: "<b>Drawer for D-3319</b><br/>Chip 'Call booked', 'Chance of winning 61%'<br/>Demo controls disabled: 'A denial follows its own route in Denial Intelligence.'<br/>Footer gains 'Open in Denial Intelligence'" }
   end
-  g2@{ shape: subproc, label: "<b>Continues in: Denial Intelligence › Open denials</b><br/>/denials?id=D-3319" }
+  g2@{ shape: subproc, label: "<b>Continues in: Denial Intelligence › A denial opened</b><br/>/denials/D-3319" }
   g3@{ shape: subproc, label: "<b>Continues in: Authorizations › Case page</b><br/>The case number is unchanged" }
   s1 --> x1 --> c1 & c2 & c3
   c1 --> a1 --> an --> as --> ab --> g1

@@ -23,24 +23,24 @@ flowchart TD
   pOwn@{ shape: rect, label: "A case with its own check keeps it" }
   dSame@{ shape: diam, label: "Is it for the same payer and level of care as the case?" }
   pOther@{ shape: rect, label: "<b>The case lets go of it</b><br/>And Verify makes a check of its own, as for an initial request" }
-  gInit@{ shape: subproc, label: "Continues in: Authorizations › New case › Eligibility & Benefits › Initial authorization" }
+  gInit@{ shape: subproc, label: "Continues in: Authorizations › New Case › Eligibility & Benefits › Initial authorization" }
   sSum@{ shape: curv-trap, label: "<b>Verification summary</b><br/>Coverage, Plan type and routing, Benefits, Authorization: 'Concurrent review'<br/>'Summit reviews each stay while an authorization is on file. A review is needed to continue.'<br/>Existing authorization: the reference, the service, the approved dates, 'N of M units used, K left'" }
   dAge@{ shape: diam, label: "Is the check old, or for other dates?" }
-  tOld@{ shape: odd, label: "<b>'This check is 30 hours old. Refresh it before you send.'</b><br/>Nothing runs by itself: the person decides" }
+  tOld@{ shape: odd, label: "<b>Chip 'Checked 30 h ago'</b><br/>Nothing runs by itself: the person decides" }
   cRef@{ shape: trap-t, label: "Click 'Refresh verification'" }
   aV@{ shape: hex, label: "Verify asks again, about 1.2 seconds" }
   stRec@{ shape: cyl, label: "<b>The record is replaced</b><br/>The case still uses the patient's record" }
   dWarn@{ shape: diam, label: "<b>Does the check have warnings?</b><br/>Coverage lapsed, member ID, benefit, network" }
-  gWarn@{ shape: subproc, label: "Continues in: Authorizations › New case › Eligibility & Benefits › Warnings and documented exceptions" }
+  gWarn@{ shape: subproc, label: "Continues in: Authorizations › New Case › Eligibility & Benefits › Warnings and documented exceptions" }
   dNone@{ shape: diam, label: "Does the payer need no authorization for this service?" }
-  gNoAuth@{ shape: subproc, label: "Continues in: Authorizations › New case › Eligibility & Benefits › No authorization required" }
+  gNoAuth@{ shape: subproc, label: "Continues in: Authorizations › New Case › Eligibility & Benefits › No authorization required" }
   pPaused@{ shape: rect, label: "<b>Verify paused in Settings: the last result stays</b><br/>With 'The refresh ... could not run because Verify is paused in Settings. This is the last result.'" }
   subgraph gFoot ["Footer bar"]
   cBack@{ shape: trap-t, label: "Click 'Back'" }
   cSave@{ shape: trap-t, label: "Click 'Save as draft'" }
   cCont@{ shape: trap-t, label: "Click 'Continue to Clinical documentation'" }
   end
-  gDocs@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › Required and typical documents by type" }
+  gDocs@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › Required and typical documents by type" }
   s1 --> sc --> dKey
   dKey -->|"An episode is chosen"| pEp --> dSame
   dKey -->|"The case has its own"| pOwn --> dSame

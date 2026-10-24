@@ -17,42 +17,42 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Scrubber finishes</b><br/>The last of ten agents" }
-  s2@{ shape: stadium, label: "<b>Click 'Back' on step 5</b><br/>'Review & submit'" }
-  t1@{ shape: odd, label: "<b>Banner: 'All ten agents are done' (one message at a time: a question, a pause or changed records come first)</b><br/>'The draft and the four checks are ready. Nothing has been sent to the payer.'" }
-  p1@{ shape: rect, label: "<b>Hint: 'Read the draft and sign it on the next step.'</b><br/>'Review & submit' switches on<br/>'Pause all agents' and 'Skip ahead' switch off" }
+  s2@{ shape: stadium, label: "<b>Click 'Back' on Review & submit</b><br/>It opens Clinical documentation at this section" }
+  t1@{ shape: odd, label: "<b>Section header: 'Authorization preparation' with the pill 'Done'</b><br/>The ten rows fold under 'All ten agents' with the total time" }
+  p1@{ shape: rect, label: "<b>'Continue to Review & submit' appears in the bar</b><br/>'Pause all agents' and 'Skip ahead' go away" }
   pStop@{ shape: rect, label: "The run stops for a question, an agent that could not finish, a pause in Settings, or when the page is closed" }
-  gFail@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › An agent could not finish" }
-  gPause@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › Paused in Settings" }
+  gFail@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › An agent could not finish" }
+  gPause@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › Paused in Settings" }
   dWhat@{ shape: diam, label: "What does the person do?" }
   cTick@{ shape: trap-t, label: "Tick or untick a 'To raise it further' box" }
   pTick@{ shape: rect, label: "Chance moves; the summary is rebuilt on the next step" }
-  cReview@{ shape: trap-t, label: "Click 'Review & submit'" }
-  gReview@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › The draft and the summary" }
+  cReview@{ shape: trap-t, label: "Click 'Continue to Review & submit'" }
+  gReview@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › The draft and the summary" }
   cBack@{ shape: trap-t, label: "Click 'Back'" }
   cStep@{ shape: trap-t, label: "Click 'Intake', 'Eligibility & Benefits' or 'Clinical documentation' in the stepper" }
-  pLock@{ shape: rect, label: "<b>The stepper opens 'Review & submit' at any time</b><br/>Before the agents finish it says 'The packet is built when the agents finish' and offers 'Go to Authorization preparation'" }
+  pLock@{ shape: rect, label: "<b>The stepper opens 'Review & submit' at any time</b><br/>Before the agents finish it says 'The packet is built when the agents finish' and offers 'Open Authorization preparation'" }
   sRec@{ shape: curv-trap, label: "<b>The step that was clicked</b><br/>Everything is as it was left" }
   dEdit@{ shape: diam, label: "Does the person change the records?" }
   pSame@{ shape: rect, label: "<b>Nothing changed</b><br/>The agents' work is kept" }
-  cCont@{ shape: trap-t, label: "Click 'Continue'" }
-  pDirect@{ shape: rect, label: "<b>Straight back to step 4 'Authorization preparation'</b><br/>No 'Start the agents?' question" }
+  cCont@{ shape: trap-t, label: "Click 'Clinical documentation' in the stepper" }
+  pDirect@{ shape: rect, label: "<b>The section shows the run as it was</b><br/>No 'Start the agents?' question" }
   stStale@{ shape: cyl, label: "<b>A change to the patient, payer, member ID, level of care, request type, dates, diagnoses, reason, proposed change or retro reason</b><br/>Or a document added, removed or replaced" }
   pReset@{ shape: rect, label: "<b>The run starts over: all ten agents back to 'Waiting'</b><br/>Answers, ticked boxes, summary edits and a send-back note are cleared" }
   tToast@{ shape: odd, label: "<b>Toast on the step: 'Records changed after the agents ran'</b><br/>'Their work was cleared. The agents check again when you continue.'" }
-  tBanner@{ shape: odd, label: "<b>On step 4 once the agents start again: 'Records changed after the last run. The agents re-checked.'</b><br/>It goes away when all ten are done" }
-  cCont2@{ shape: trap-t, label: "Click 'Continue'" }
+  tBanner@{ shape: odd, label: "<b>In the section once the agents start again: 'Records changed after the last run. The agents are running again.'</b><br/>It goes away when all ten are done" }
+  cCont2@{ shape: trap-t, label: "Click 'Start the agents' in the section" }
   oConf@{ shape: win-pane, label: "Start the agents?" }
-  gStart@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › Start the run and watch it" }
-  gQ@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › An agent asks a question" }
-  eBack@{ shape: stadium, label: "<b>Step 4 shows the run as it was</b><br/>Finished agents stay finished" }
+  gStart@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › Start the run and watch it" }
+  gQ@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › An agent asks a question" }
+  eBack@{ shape: stadium, label: "<b>The section shows the run as it was</b><br/>Finished agents stay finished" }
   subgraph gResume ["Opening a draft that already ran"]
   s3@{ shape: stadium, label: "<b>Click 'Continue', 'Watch', 'Answer' or 'Review and sign'</b><br/>on a case in Case Manager › Being prepared<br/>Or 'Open in review and sign' / 'Send to payer' on a case page" }
-  pOpen@{ shape: rect, label: "<b>The page opens that draft from its address</b><br/>It is not reset<br/>A draft made from a request opens on Review & submit when it is ready, else on Authorization preparation" }
+  pOpen@{ shape: rect, label: "<b>The page opens that draft from its address</b><br/>It is not reset<br/>A draft made from a request opens on Review & submit when it is ready, else on Clinical documentation at Authorization preparation" }
   dFar@{ shape: diam, label: "How far did the agents get?" }
   rNone@{ shape: rect, label: "<b>None yet</b><br/>Opens on the step it was left on: Intake, Eligibility & Benefits or Clinical documentation" }
-  rMid@{ shape: rect, label: "<b>Some of the ten</b><br/>Opens step 4; the run carries on with the next agent" }
-  rAsk@{ shape: rect, label: "<b>Waiting on a question</b><br/>Opens step 4 and the question pop-up shows at once" }
-  rAll@{ shape: rect, label: "<b>All ten</b><br/>Opens step 5 'Review & submit'" }
+  rMid@{ shape: rect, label: "<b>Some of the ten, or saved at the old step 4</b><br/>Opens Clinical documentation scrolled to Authorization preparation; the run carries on" }
+  rAsk@{ shape: rect, label: "<b>Waiting on a question</b><br/>Opens there too, and the question pop-up shows at once" }
+  rAll@{ shape: rect, label: "<b>All ten</b><br/>Opens step 4 'Review & submit'" }
   end
   s1 --> t1 --> p1 --> pStop --> dWhat
   s2 --> p1

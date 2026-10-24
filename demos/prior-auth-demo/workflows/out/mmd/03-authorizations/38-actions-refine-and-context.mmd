@@ -17,7 +17,7 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   rf@{ shape: trap-t, label: "Click 'Refine recommendations'" }
-  rm@{ shape: win-pane, label: "<b>Panel 'Refine recommendations'</b><br/>'Pick what matters most for this request. Historian and Scribe put the matching cards first and may add one.'" }
+  rm@{ shape: win-pane, label: "<b>Panel 'Refine recommendations'</b><br/>three choices" }
   rp@{ shape: lean-r, label: "<b>Pick one focus</b><br/>'Strengthen medical necessity' · 'Meet payer criteria' · 'Reduce denial risk'" }
   rd@{ shape: rect, label: "<b>'Apply focus' stays off until a focus is picked</b><br/>and while that focus is the one already set" }
   ra@{ shape: trap-t, label: "Click 'Apply focus'" }
@@ -25,35 +25,34 @@ flowchart TD
   re@{ shape: stadium, label: "<b>Panel closes</b><br/>Nothing changes" }
   sp@{ shape: rect, label: "Button shows a spinner for about 1.2 seconds" }
   hs@{ shape: hex, label: "<b>Historian and Scribe re-rank the cards</b><br/>(demo: simulated)" }
-  fs@{ shape: cyl, label: "<b>Focus saved on the case</b><br/>Log: 'You refined the recommendations: ...'" }
+  fs@{ shape: cyl, label: "<b>Focus saved on the case</b><br/>History: 'You refined the recommendations: ...' flagged 'Logged decision'" }
   ro@{ shape: rect, label: "<b>Cards that move that part of the number come first</b><br/>One more card that fits the focus is added at the top, worth up to 2 points<br/>(no card when the request is already too strong to add one)" }
-  fb@{ shape: curv-trap, label: "<b>Banner 'Focus: Meet payer criteria. The cards are in that order, and one card was added.'</b><br/>The added card has the pill 'Added for your focus'" }
-  pv@{ shape: rect, label: "<b>Approval chance preview moves</b><br/>Header '62% → 90%', the intro line and 'Apply selected (7)' follow" }
-  tr@{ shape: odd, label: "<b>'Recommendations refined'</b><br/>'Cards are in the order for ... and one was added. With every action applied the chance is 90%.'" }
-  cf@{ shape: trap-t, label: "Click 'Clear focus' in the banner" }
+  fb@{ shape: curv-trap, label: "<b>Chip 'Focus: Meet payer criteria' with an X</b><br/>The added card has the pill 'Added for your focus'" }
+  pv@{ shape: rect, label: "<b>Approval chance preview moves</b><br/>Header '62% → 90%' and 'Apply selected (7)' follow" }
+  tr@{ shape: odd, label: "<b>'Recommendations refined'</b><br/>'Meet payer criteria · one card added · 90% with every action'" }
+  cf@{ shape: trap-t, label: "Click the X 'Clear focus' on the chip" }
   cr@{ shape: rect, label: "<b>Original order is back and the added card goes</b><br/>Unless it was already applied or dismissed: then it stays, with its points" }
   lk@{ shape: rect, label: "<b>While the agents are updating the draft</b><br/>both buttons are off" }
   cc@{ shape: trap-t, label: "Click 'Add clinical context'" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Case page › Recommended actions › Add clinical context" }
-  lg@{ shape: curv-trap, label: "<b>Card 'Logged decisions'</b><br/>Newest six entries, each with the time<br/>Shown once there is at least one entry" }
-  en@{ shape: rect, label: "<b>Entries come from</b><br/>applied actions, dismissals, bring back, notes sent, focus, clinical context, draft edits, re-check, send back to Scribe" }
+  lg@{ shape: curv-trap, label: "<b>History at the bottom of the page</b><br/>the line lands at once, once<br/>no separate 'Logged decisions' box" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Case page › History" }
   rf --> rm --> rp --> rd --> ra
   rm --> rx --> re
   ra --> sp --> hs --> fs --> ro --> fb --> pv
   fs --> tr
-  fs --> lg
+  fs --> lg --> g2
   fb --> cf --> cr
-  lg --> en
   rf -.-> lk
   cc -.-> lk
   cc --> g1
   class rf,ra,rx,cf,cc k_click
   class rm k_overlay
   class rp k_input
-  class rd,sp,ro,pv,cr,lk,en k_process
+  class rd,sp,ro,pv,cr,lk k_process
   class re k_endx
   class hs k_agent
   class fs k_store
   class fb,lg k_screen
   class tr k_toast
-  class g1 k_goto
+  class g1,g2 k_goto

@@ -20,8 +20,8 @@ flowchart TD
   d1@{ shape: diam, label: "How many sites are in view?" }
   pOne@{ shape: rect, label: "<b>One site</b><br/>Everything below shows that site only<br/>Nothing says how many records are at the other site" }
   pBoth@{ shape: rect, label: "<b>Both sites</b><br/>Everything shows both, and each row can name its site" }
-  subgraph gLists ["What shows in New case"]
-  l1@{ shape: curv-trap, label: "<b>'Incoming referrals (N)'</b><br/>Only open referrals at the sites in view<br/>The sidebar badge on 'New case' counts the same ones" }
+  subgraph gLists ["What shows in New Case"]
+  l1@{ shape: curv-trap, label: "<b>'Incoming referrals (N)'</b><br/>Only open referrals at the sites in view<br/>The sidebar badge on 'New Case' counts the same ones" }
   l2@{ shape: curv-trap, label: "<b>Patient search</b><br/>'Searches Site A only.'<br/>'No patient at Site A matches “Q.Z.”.' when the match is at the other site<br/>With both sites in view each row names its site" }
   l3@{ shape: curv-trap, label: "<b>Possible duplicate</b><br/>Only requests, drafts and authorizations at the sites in view are compared" }
   l4@{ shape: curv-trap, label: "<b>Eligibility & Benefits and Review & submit</b><br/>The verification and the case belong to the case's site" }
@@ -47,9 +47,9 @@ flowchart TD
   cShow@{ shape: trap-t, label: "Click 'Show Site B'" }
   pShow@{ shape: rect, label: "The view switches to that site and the record opens" }
   end
-  gStart@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Start with a referral or patient" }
-  gFind@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Find a patient and the authorization" }
-  gDup@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Possible duplicate" }
+  gStart@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Start with a referral or patient" }
+  gFind@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Find a patient and the authorization" }
+  gDup@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Possible duplicate" }
   gShell@{ shape: subproc, label: "Continues in: Global shell › Top bar › Site switcher" }
   s1 --> d1
   d1 -->|"One"| pOne --> l1

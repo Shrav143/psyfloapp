@@ -16,14 +16,15 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "Click 'Draft'" }
-  dr@{ shape: curv-trap, label: "<b>Draft</b><br/>Left: 'Medical-necessity summary'. Right: 'Checks', 'Versions', send buttons" }
-  hd@{ shape: rect, label: "<b>Card subtitle</b><br/>'Version 3 · written by Scribe, checked by Integrity · every statement links to the chart'" }
-  sec@{ shape: rect, label: "<b>Four sections in a row, each with its source chips</b><br/>'Clinical picture.', 'Why a lower level of care is not safe.', 'Current severity.', 'Plan.'<br/>The text is the request's draft in New case (before it has one, the text that draft would have)" }
-  cx@{ shape: rect, label: "<b>A fifth paragraph 'Context added.' when notes were added with 'Add clinical context'</b><br/>The notes in the person's own words, no chips<br/>Shown but not edited here: Edit has no box for it" }
+  s1@{ shape: stadium, label: "<b>Click 'Clinical picture & draft'</b><br/>(or open ?tab=draft)" }
+  dr@{ shape: curv-trap, label: "<b>Main column: card 'Medical necessity request'</b><br/>'Version 3 · Scribe · Tue 10:21 am'<br/>The clinical picture rail beside it" }
+  sec@{ shape: rect, label: "<b>Sections, each a heading, the text and its source chips</b><br/>'Clinical picture', 'Why a lower level of care is not safe', 'Current severity', 'Plan'<br/>The text is the request's draft in New Case (before it has one, the text that draft would have)" }
+  cx@{ shape: rect, label: "<b>A section 'Context added' when notes were added with 'Add clinical context'</b><br/>shown, not edited here" }
   nw@{ shape: rect, label: "<b>Sentences from applied actions follow in a green mark with a 'New' tag</b><br/>Each adds its own chip, e.g. 'Your answer'" }
+  lit@{ shape: rect, label: "'In draft' or 'Show in draft' in the clinical picture lights the sections that use that item" }
   ch@{ shape: trap-t, label: "Click a source chip" }
   gC@{ shape: subproc, label: "Continues in: Authorizations › Case page › Source chip" }
+  gP@{ shape: subproc, label: "Continues in: Authorizations › Case page › Clinical picture" }
   ed@{ shape: trap-t, label: "Click 'Edit'" }
   em@{ shape: curv-trap, label: "<b>Edit mode</b><br/>One text box per section, e.g. 'Edit Plan'<br/>Header buttons 'Cancel' and 'Save changes'" }
   ty@{ shape: lean-r, label: "Change the text in one or more boxes" }
@@ -32,16 +33,17 @@ flowchart TD
   sv@{ shape: trap-t, label: "Click 'Save changes'" }
   dCh@{ shape: diam, label: "Did any box change?" }
   tn@{ shape: odd, label: "'No changes to save'" }
-  sd@{ shape: cyl, label: "<b>Edited sections saved</b><br/>The edit keeps the sentences already added by applied actions<br/>New version: 'Version 4', 'You', 'Edited by you'<br/>Log: 'You edited the draft. Integrity will read it again before it can be signed'<br/>The same text is saved on the request's draft in New case, so Review & submit reads it" }
-  ts@{ shape: odd, label: "<b>'Draft saved'</b><br/>'Integrity needs to read it again before it can be signed. Use Re-check.'" }
-  dy@{ shape: rect, label: "<b>'Every sentence matches the chart' now warns</b><br/>'You edited the draft. Integrity has not read it again yet.'<br/>'Send to payer' goes off" }
-  bd@{ shape: rect, label: "Badge on the Draft tab goes up by one" }
+  sd@{ shape: cyl, label: "<b>Edited sections saved, with the sentences already added by applied actions</b><br/>New version 'Edited by you'<br/>History: 'You edited the draft ...' flagged 'Logged decision'<br/>The same text is saved on the request's draft in New Case" }
+  ts@{ shape: odd, label: "<b>'Draft saved'</b><br/>'Integrity reads it again before it can be signed.'" }
+  dy@{ shape: rect, label: "<b>'Every sentence matches the chart' now warns</b><br/>the header chip drops to 'Integrity 3/4', 'Send to payer' goes off<br/>the 'Integrity checks' fold opens with 'Re-check'" }
+  bd@{ shape: rect, label: "Badge on 'Clinical picture & draft' goes up by one" }
   lt@{ shape: rect, label: "Actions applied later add their sentences after the edited text" }
   gK@{ shape: subproc, label: "Continues in: Authorizations › Case page › Draft › Checks, versions and send back" }
-  gR@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › The draft and the summary" }
-  s1 --> dr --> hd --> sec --> nw
+  gR@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › The draft and the summary" }
+  s1 --> dr --> sec --> nw
   sec --> ch --> gC
   sec --> cx
+  dr --> lit --> gP
   dr --> ed --> em --> ty
   em --> cn --> cd
   em --> sv --> dCh
@@ -53,9 +55,9 @@ flowchart TD
   sd --> gR
   class s1 k_start
   class dr,em k_screen
-  class hd,sec,cx,nw,cd,dy,bd,lt k_process
+  class sec,cx,nw,lit,cd,dy,bd,lt k_process
   class ch,ed,cn,sv k_click
-  class gC,gK,gR k_goto
+  class gC,gP,gK,gR k_goto
   class ty k_input
   class dCh k_decision
   class tn,ts k_toast

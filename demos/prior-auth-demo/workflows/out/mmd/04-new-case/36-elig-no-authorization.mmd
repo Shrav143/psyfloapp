@@ -18,8 +18,8 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Verify finishes: the payer needs no authorization for this level of care and these dates</b><br/>Example: Beacon PPO, IOP" }
   d1@{ shape: diam, label: "Does the case already have a documented exception for it?" }
-  sCard@{ shape: curv-trap, label: "<b>Card 'No authorization is required'</b><br/>'Beacon PPO needs no authorization for IOP, 10/22/2026 to 11/11/2026. Its rule says: ... Documentation and preparation do not apply, so those steps are marked Not applicable.'" }
-  pSteps@{ shape: rect, label: "<b>The stepper reads</b><br/>Step 2 Complete · No authorization required<br/>Steps 3, 4 and 5 Not applicable · 'The payer needs no authorization'" }
+  sCard@{ shape: curv-trap, label: "<b>Card 'No authorization is required'</b><br/>'Beacon PPO needs no authorization for IOP, 10/22/2026 to 11/11/2026. Rule: ...'" }
+  pSteps@{ shape: rect, label: "<b>The stepper reads</b><br/>Step 2 Complete · No authorization required<br/>Steps 3 and 4 Not applicable · 'The payer needs no authorization'" }
   tHint@{ shape: odd, label: "Footer hint: 'No authorization is required. Save the verification, return to Case Manager, or continue with a documented exception.'" }
   subgraph gThree ["The three actions"]
   a1@{ shape: trap-t, label: "Click 'Save verification to the patient record'" }
@@ -39,11 +39,11 @@ flowchart TD
   pOn@{ shape: rect, label: "<b>Steps 3, 4 and 5 are applicable again</b><br/>Clinical documentation, Authorization preparation and Review & submit work as usual" }
   pRev@{ shape: rect, label: "<b>Review & submit lists 'No authorization needed' as a note</b><br/>'You went on with a documented exception: ...'" }
   stHist@{ shape: cyl, label: "<b>After sending, the request's History says</b><br/>'You sent this request although the payer needs no authorization, and said why'" }
-  pOpen@{ shape: rect, label: "<b>Without a decision the person may still open steps 3 to 5</b><br/>Nothing there is sent: the step says it is Not applicable" }
+  pOpen@{ shape: rect, label: "<b>Without a decision the person may still open steps 3 and 4</b><br/>Nothing there is sent: the step says it is Not applicable" }
   gEb@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › What the page shows" }
   gCm@{ shape: subproc, label: "Continues in: Case Manager" }
-  gDocs@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › The checklist and Continue" }
-  gSign@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Sign and send to payer" }
+  gDocs@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › The checklist and Continue" }
+  gSign@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer" }
   gPayers@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Edit a rule" }
   s1 --> d1
   d1 -->|"No"| sCard

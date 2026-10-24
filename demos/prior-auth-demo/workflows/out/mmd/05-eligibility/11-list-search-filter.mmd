@@ -17,7 +17,7 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "On the list, narrow the patients" }
-  sc0@{ shape: curv-trap, label: "<b>Table shows every patient, first 12 rows</b><br/>'Showing 12 of 37'" }
+  sc0@{ shape: curv-trap, label: "<b>Table shows every patient, first 12 rows</b><br/>'Showing 12 of 37' at the right of the filter bar" }
   subgraph gSearch ["Search"]
   i1@{ shape: lean-r, label: "<b>Type in 'Search by case ID or initials'</b><br/>for example 'R-1042' or 'J.M.'" }
   p1@{ shape: rect, label: "<b>Matches the case ID or the patient label</b><br/>(initials and age, or 'Member …4821'). Capitals do not matter<br/>Only patients inside the site view can match: a Site B case ID finds nothing for Site A staff" }
@@ -27,35 +27,32 @@ flowchart TD
   o1@{ shape: win-pane, label: "<b>'All payers', then each payer</b><br/>Summit Medicaid HMO, Cardinal Health Plan, Evergreen, Beacon PPO, Harborview MA, Lakeshore Behavioral" }
   c2@{ shape: trap-t, label: "Click 'All programs'" }
   o2@{ shape: win-pane, label: "'All programs', 'Residential 3.5', 'IOP', 'PHP', 'Detox'" }
-  c3@{ shape: trap-t, label: "Click 'All verdicts'" }
-  o3@{ shape: win-pane, label: "<b>'All verdicts', 'Cleared to bill', 'Authorization first', 'Fix before billing', 'Re-check due'</b><br/>and 'Not checked', only while a check that could not run is on the list" }
   i2@{ shape: lean-r, label: "<b>Pick an option, or use the arrow keys and Enter</b><br/>Esc or a click outside closes the menu" }
   end
-  subgraph gTiles ["Tiles"]
-  c4@{ shape: trap-t, label: "<b>Click a tile</b><br/>'Cleared to bill', 'Authorization first', 'Fix before billing' or 'Re-check due'" }
+  subgraph gTiles ["Verdict tiles"]
+  c4@{ shape: trap-t, label: "<b>Click a tile</b><br/>'Cleared to bill', 'Authorization first', 'Fix before billing' or 'Re-check due'<br/>('Not checked' too, while one is listed)<br/>Hover shows its meaning as a tooltip" }
   q1@{ shape: diam, label: "Was that tile already selected?" }
-  p2@{ shape: rect, label: "<b>Verdict menu set to that tile</b><br/>The tile gets an outline" }
-  p3@{ shape: rect, label: "Verdict menu back to 'All verdicts'" }
+  p2@{ shape: rect, label: "<b>Only that verdict is shown</b><br/>The tile is pressed and gets an outline; any other tile is released" }
+  p3@{ shape: rect, label: "The tile is released: all verdicts again" }
   end
-  p4@{ shape: rect, label: "<b>Rows recompute: every active filter must match</b><br/>A menu that is not 'All ...' is highlighted" }
+  p4@{ shape: rect, label: "<b>Rows recompute: every active filter must match</b><br/>The count follows: 'Showing 5 of 37'" }
   q2@{ shape: diam, label: "Any filter active?" }
   p5@{ shape: rect, label: "<b>Every match is shown</b><br/>No 'Show more' button" }
   p6@{ shape: rect, label: "Only the first 12 rows" }
-  c5@{ shape: trap-t, label: "Click 'Show 12 more'" }
-  p7@{ shape: rect, label: "<b>Twelve more rows join the table</b><br/>The last click reads 'Show 10 more'" }
-  sc1@{ shape: curv-trap, label: "<b>Table with the matches, two lines per patient</b><br/>'Showing 5 of 37'" }
-  t0@{ shape: odd, label: "'Clear filters' button appears beside the menus" }
+  c5@{ shape: trap-t, label: "Click 'Show 12 more' (small button under the table)" }
+  p7@{ shape: rect, label: "<b>Twelve more rows join the table</b><br/>The last click reads 'Show 1 more'" }
+  sc1@{ shape: curv-trap, label: "Table with the matches, two lines per patient" }
+  t0@{ shape: odd, label: "'Clear filters' appears in the filter bar" }
   q3@{ shape: diam, label: "Any rows left?" }
-  em@{ shape: curv-trap, label: "<b>'No patients match these filters'</b><br/>'The filters hide every row. Clear them to see all 37 patients.'" }
+  em@{ shape: curv-trap, label: "<b>'No patients match these filters'</b><br/>with the button 'Clear filters'" }
   c6@{ shape: trap-t, label: "Click 'Clear filters' (bar or empty state)" }
-  p8@{ shape: rect, label: "<b>Search emptied</b><br/>Payer, program and verdict back to 'All'" }
+  p8@{ shape: rect, label: "<b>Search emptied</b><br/>Payer and program back to 'All', no tile pressed" }
   e1@{ shape: stadium, label: "Full list again, button gone" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › List › Open a patient or start a check" }
   s1 --> sc0
   sc0 --> i1 --> p1 --> p4
   sc0 --> c1 --> o1 --> i2
   sc0 --> c2 --> o2 --> i2
-  sc0 --> c3 --> o3 --> i2
   i2 --> p4
   sc0 --> c4 --> q1
   q1 -->|"No"| p2 --> p4
@@ -72,8 +69,8 @@ flowchart TD
   class sc0,sc1,em k_screen
   class i1,i2 k_input
   class p1,p2,p3,p4,p5,p6,p7,p8 k_process
-  class c1,c2,c3,c4,c5,c6 k_click
-  class o1,o2,o3 k_overlay
+  class c1,c2,c4,c5,c6 k_click
+  class o1,o2 k_overlay
   class q1,q2,q3 k_decision
   class t0 k_toast
   class e1 k_end

@@ -26,19 +26,19 @@ flowchart TD
   cRetry@{ shape: trap-t, label: "Click 'Retry'" }
   stRetry@{ shape: cyl, label: "<b>Failure cleared</b><br/>The draft remembers that Verify has been retried, so a later run of this case does not fail again" }
   aV2@{ shape: hex, label: "Verify runs its step again and answers" }
-  gRun@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › Start the run and watch it" }
+  gRun@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › Start the run and watch it" }
   cSkip@{ shape: trap-t, label: "Click 'Skip and note'" }
   stSkip@{ shape: cyl, label: "<b>Verify counts as done and is marked skipped</b><br/>Row: pill 'Skipped and noted'<br/>'Skipped. Cardinal's portal could not be reached, so coverage is not confirmed'" }
   pAfter@{ shape: rect, label: "The other nine agents run as usual" }
-  gReview@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Validation summary and checks" }
+  gReview@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › Validation summary and checks" }
   tWarn@{ shape: odd, label: "<b>Review & submit, Checks: 'Request has no errors' warns</b><br/>'Verify could not reach Cardinal's portal, so coverage was not confirmed. You skipped it and noted it.'<br/>Signing needs the acknowledgement tick-box" }
   stNote@{ shape: cyl, label: "<b>After 'Sign and send to payer', the request's history says</b><br/>'Verify could not reach Cardinal's portal before signing'<br/>'Coverage was not confirmed. You skipped it and noted it.'" }
-  gSign@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Sign and send to payer" }
+  gSign@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer" }
   cLeave@{ shape: trap-t, label: "Leave the page, or click 'Back'" }
   pStay@{ shape: rect, label: "<b>The draft keeps the failure</b><br/>Opening it again shows the same row" }
   cOther@{ shape: trap-t, label: "Records change before Retry (any intake edit)" }
   pReset@{ shape: rect, label: "<b>The run starts over</b><br/>The failure is gone and Verify tries again; if Retry was already used it passes" }
-  gRec@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › The checklist and Continue" }
+  gRec@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › The checklist and Continue" }
   s1 --> dPay
   dPay -->|"No"| pOk --> gRun
   dPay -->|"Yes"| xPortal --> aV --> sFail --> pHold

@@ -20,7 +20,7 @@ flowchart TD
   sc@{ shape: curv-trap, label: "<b>Five chips in a row</b><br/>Awaiting sign-off 5, Submitted 4, Decision pending 14, Info requested 3, Denied / appeal 8<br/>White, thin border, no icon, no tinted fill" }
   ip@{ shape: curv-trap, label: "<b>Info icon beside 'Lifecycle'</b><br/>Hover, focus or click: what the states count" }
   subgraph gCount ["What each chip counts, and its quiet line"]
-  c1@{ shape: rect, label: "<b>Awaiting sign-off = Preparing: requests not yet signed and sent, plus cases saved in New case</b><br/>Quiet line '1 ready to sign'" }
+  c1@{ shape: rect, label: "<b>Awaiting sign-off = Preparing: requests not yet signed and sent, plus cases saved in New Case</b><br/>Quiet line '1 ready to sign'" }
   c2@{ shape: rect, label: "<b>Submitted = Received: the payer has it</b><br/>Quiet line 'all on time' or '1 running late' (ochre)" }
   c3@{ shape: rect, label: "<b>Decision pending = Under review</b><br/>Quiet line 'none running late', '2 running late', or '1 past 7 days' (ochre)" }
   c4@{ shape: rect, label: "<b>Info requested</b><br/>Quiet line '1 waiting on you' or 'none waiting on you'" }

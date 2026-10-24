@@ -29,14 +29,14 @@ flowchart TD
   s2@{ shape: stadium, label: "Click 'Dismiss and log' on a case page" }
   d2@{ shape: diam, label: "Is the request on the Dashboard?" }
   w3@{ shape: cyl, label: "<b>Dashboard request history</b><br/>'You dismissed ... Reason: ...'" }
-  w4@{ shape: rect, label: "<b>Only the case page log changes</b><br/>'Logged decisions'" }
+  w4@{ shape: rect, label: "<b>Only the case page's History changes</b><br/>one line, flagged 'Logged decision'" }
   w7@{ shape: cyl, label: "<b>Dismissal recorded: the request and the reason</b><br/>Analytics reads it" }
   s4@{ shape: stadium, label: "Click 'Add context' on a case page" }
-  w8@{ shape: cyl, label: "<b>Clinical context added to the shared list for the request</b><br/>The Draft tab and New case read it" }
+  w8@{ shape: cyl, label: "<b>Clinical context added to the shared list for the request</b><br/>The draft and New Case read it" }
   d4@{ shape: diam, label: "Is it a queue request that also has a Dashboard entry?" }
   w9@{ shape: cyl, label: "<b>Dashboard request gets the new chance</b><br/>Timeline: 'You added clinical context. ...'" }
   w10@{ shape: rect, label: "<b>Queue row shows the new chance</b><br/>The approval chance is one point higher for each of the first three notes" }
-  s3@{ shape: stadium, label: "A request is signed and sent in New case" }
+  s3@{ shape: stadium, label: "A request is signed and sent in New Case" }
   w5@{ shape: cyl, label: "Dashboard stage 'Received'" }
   w6@{ shape: rect, label: "<b>Queue drops the request</b><br/>The open count drops by one<br/>The sidebar badge too, if it was in Act now or Due within 24 hours" }
   w11@{ shape: rect, label: "<b>Its case page reads the new stage</b><br/>Chip 'Received', the request's own status line, a greyed-out 'Sent to payer' and 'Open on the Dashboard'" }

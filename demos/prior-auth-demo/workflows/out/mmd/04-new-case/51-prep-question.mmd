@@ -24,7 +24,7 @@ flowchart TD
   q4@{ shape: rect, label: "<b>Diagnosis duration (Scribe)</b><br/>'How long has the patient had this diagnosis? The psychiatric evaluation is not in the case, so Scribe cannot read it from there.'<br/>Choices: 'Less than a year', 'One to five years', 'More than five years'" }
   q5@{ shape: rect, label: "<b>Why a lower level is not enough (Scribe)</b><br/>'Why is a lower level of care not enough? The chart does not say, and the payer will ask.'<br/>Choices: 'A lower level was tried and did not hold', 'Home is not safe or supportive enough', 'Symptoms are too severe for a lower level'" }
   q3@{ shape: rect, label: "<b>Discharge date (Packet)</b><br/>'Is a discharge or step-down date planned in the next 30 days? The payer's form asks for it.'<br/>Choices: 'Yes, within 2 weeks', 'Yes, within 30 days', 'Not decided yet'" }
-  sc@{ shape: curv-trap, label: "<b>Step 4 shows the question</b><br/>The asking row: 'Needs your answer' and a button 'Answer'<br/>Green card: 'Question 1 of 2 from Scribe.' and the text<br/>No banner shows while the question is open<br/>Hint: 'The agents are waiting for your answer.'" }
+  sc@{ shape: curv-trap, label: "<b>The Authorization preparation section shows the question</b><br/>The asking row: 'Needs your answer' and a button 'Answer'<br/>Green card: 'Question 1 of 2 from Scribe.' and the text<br/>No banner shows while the question is open<br/>Hint: 'The agents are waiting for your answer.'" }
   oM@{ shape: win-pane, label: "<b>Scribe has a question</b><br/>'Question 1 of 2 for this case. The agents wait for you.'<br/>Choice cards, then 'Or add a note in your own words'" }
   pNoSkip@{ shape: rect, label: "'Pause all agents' and 'Skip ahead' do not get past the question" }
   iChoice@{ shape: lean-r, label: "<b>Click one choice card</b><br/>It highlights" }
@@ -44,7 +44,7 @@ flowchart TD
   cAnswer@{ shape: trap-t, label: "Click 'Answer' on the agent's row" }
   pLeave@{ shape: rect, label: "Leave and come back: the pop-up opens again by itself" }
   gCM@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Being prepared card" }
-  g36@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › Finished, paused or left" }
+  g36@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › Finished, paused or left" }
   s1 --> p1 --> dKey
   dKey -->|"Medication list has the sertraline finding"| q1
   dKey -->|"Residential 3.5 or Detox"| q2

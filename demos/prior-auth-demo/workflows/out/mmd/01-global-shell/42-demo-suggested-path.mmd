@@ -25,15 +25,15 @@ flowchart LR
   c2@{ shape: trap-t, label: "Click '2  Authorizations: the queue'" }
   r2@{ shape: rect, label: "Go to /authorizations" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Queue" }
-  c3@{ shape: trap-t, label: "Click '3  New case: start from a referral'" }
+  c3@{ shape: trap-t, label: "Click '3  New Case: start from a referral'" }
   r3@{ shape: rect, label: "<b>Go to /authorizations/new</b><br/>A blank draft is started and the address becomes /authorizations/new/draft-..." }
-  g3@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Start with a referral or patient" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Start with a referral or patient" }
   c4@{ shape: trap-t, label: "Click '4  Eligibility & Benefits: verify a patient'" }
   r4@{ shape: rect, label: "Go to /authorizations/eligibility/verify" }
   g4@{ shape: subproc, label: "Continues in: Eligibility & Benefits › Verify a patient" }
   c5@{ shape: trap-t, label: "Click '5  Denial Intelligence: D-3318'" }
-  r5@{ shape: rect, label: "Go to /denials?id=D-3318" }
-  g5@{ shape: subproc, label: "Continues in: Denial Intelligence › Open a denial" }
+  r5@{ shape: rect, label: "Go to /denials/D-3318" }
+  g5@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
   c6@{ shape: trap-t, label: "Click '6  Payers: Cardinal, Changes'" }
   r6@{ shape: rect, label: "Go to /payers/cardinal?tab=changes" }
   g6@{ shape: subproc, label: "Continues in: Payers › History & Changes › Read what changed" }

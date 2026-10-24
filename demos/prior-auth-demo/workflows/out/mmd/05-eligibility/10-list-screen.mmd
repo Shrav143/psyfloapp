@@ -17,61 +17,56 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Click 'Eligibility & Benefits' under 'Authorizations' in the sidebar" }
-  sc@{ shape: curv-trap, label: "<b>Eligibility & Benefits</b><br/>Title '28 of 37 patients are cleared to bill.' with an info icon, and a Site A or Site B tag when the view is narrowed<br/>'Coverage and benefits are checked before the first day, so you know whether the clinic will be paid. Checks in this demo are simulated.'" }
+  sc@{ shape: curv-trap, label: "<b>Title row 'Eligibility & Benefits' (24 px)</b><br/>with a Site A or Site B tag when the view is narrowed<br/>Primary button 'Verify a patient' on the right" }
   p1@{ shape: rect, label: "<b>Sidebar badge counts patients not 'Cleared to bill' in the sites in view</b><br/>Demo start, both sites: 9 = 4 'Authorization first' + 5 'Fix before billing'" }
-  sv@{ shape: rect, label: "<b>Rows, the title count, the four figures and the badge follow the site view (top bar)</b><br/>Both sites is Site A plus Site B<br/>A viewer limited to one site never sees, counts or finds the other site's patients" }
-  subgraph gTop ["Top of the page"]
-  hd@{ shape: curv-trap, label: "<b>Header button</b><br/>'Verify a patient'" }
-  tip@{ shape: curv-trap, label: "<b>Info icon beside the title</b><br/>(button 'Why we check twice')<br/>Hover, focus or click opens the text; Escape closes it<br/>No banner on the page any more" }
-  tl@{ shape: curv-trap, label: "<b>Four figures, left to right</b><br/>'Cleared to bill' 28 · 'Authorization first' 4<br/>'Fix before billing' 5 · 'Re-check due' 5" }
-  cnt@{ shape: rect, label: "<b>Counts follow each row's verdict</b><br/>'Re-check due' counts rows with a re-check still to come this week<br/>Verify runs each one on its own when the Demo clock passes its time" }
+  sv@{ shape: rect, label: "<b>Rows, the tiles, the count and the badge follow the site view (top bar)</b><br/>Both sites is Site A plus Site B<br/>A viewer limited to one site never sees, counts or finds the other site's patients" }
+  subgraph gTop ["Under the title"]
+  tl@{ shape: curv-trap, label: "<b>Four small tiles on one line each: icon, number, label</b><br/>'28 Cleared to bill' · '4 Authorization first'<br/>'5 Fix before billing' · '5 Re-check due'<br/>The longer meaning is the tile's tooltip" }
+  cnt@{ shape: rect, label: "<b>Counts follow each row's verdict</b><br/>'Re-check due' counts rows with a re-check still to come this week<br/>Verify runs each one on its own when the Demo clock passes its time<br/>A fifth tile 'Not checked' appears only while a check that could not run is listed" }
   end
   subgraph gBar ["Filter bar"]
-  fl@{ shape: curv-trap, label: "<b>'Search by case ID or initials'</b><br/>Menus 'All payers', 'All programs', 'All verdicts'" }
+  fl@{ shape: curv-trap, label: "<b>'Search by case ID or initials'</b><br/>Menus 'All payers', 'All programs'<br/>'Showing 12 of 37' on the right" }
   end
-  subgraph gCard ["Card 'Patients'"]
-  cd@{ shape: curv-trap, label: "<b>Card 'Patients'</b><br/>'Simulated checks against the state and the plan, re-checked on a schedule'<br/>'Showing 12 of 37'" }
+  subgraph gCard ["Table card, no title"]
   so@{ shape: rect, label: "<b>Fixed sort order</b><br/>'Fix before billing' first, then 'Authorization first', then oldest check" }
   sd@{ shape: rect, label: "<b>The five 'Fix before billing' rows show five reasons</b><br/>Coverage lapsed, coverage ended, service not covered, another plan pays first, every authorized day used" }
   pg@{ shape: rect, label: "<b>No filter: the first 12 rows</b><br/>A filter shows every match" }
-  cols@{ shape: curv-trap, label: "<b>Columns</b><br/>Patient, Program, Eligibility, Benefits, Authorization, Verdict, Re-check<br/>Headers do not sort" }
+  cols@{ shape: curv-trap, label: "<b>Columns</b><br/>Patient, Verdict, Eligibility, Benefits, Authorization, Re-check<br/>The verdict comes right after the patient, so it stays in view when a narrow window scrolls the table<br/>Headers do not sort" }
   end
   subgraph gRow ["One patient, two lines"]
   r1@{ shape: curv-trap, label: "<b>Line 1: patient</b><br/>'R-1042 · J.M., 34'<br/>No initials: 'Member …4821'" }
-  r2@{ shape: curv-trap, label: "<b>Line 1: Program chip</b><br/>'Residential 3.5', 'IOP', 'PHP', 'Detox'<br/>or a label such as 'Detox → Residential'" }
-  r3@{ shape: curv-trap, label: "<b>Line 1: Eligibility and Benefits chips</b><br/>'Active', 'Lapsed 10/12', 'Ended 09/30', 'Not found', 'ID differs', 'Not checked'<br/>'Covered', 'Limited', 'Not confirmed', 'Not covered'" }
-  r4@{ shape: curv-trap, label: "<b>Line 1: Authorization chip, one word group only</b><br/>'On file', 'Not required', 'Required, not on file', 'In progress', 'Requirement unknown'" }
   r5@{ shape: curv-trap, label: "<b>Line 1: Verdict chip</b><br/>'Cleared to bill', 'Authorization first', 'Fix before billing', 'Not checked'" }
+  r3@{ shape: curv-trap, label: "<b>Line 1: Eligibility and Benefits chips</b><br/>'Active', 'Lapsed 10/12', 'Ended 09/30', 'Not found', 'ID differs', 'Not checked'<br/>'Covered', 'Limited', 'Not confirmed', 'Not covered'" }
+  r4@{ shape: curv-trap, label: "<b>Line 1: Authorization chip</b><br/>'On file', 'Not required', 'Required, not on file', 'In progress', 'Requirement unknown'" }
   r6@{ shape: curv-trap, label: "Line 1: button 'Re-check'" }
-  r7@{ shape: curv-trap, label: "<b>Line 2, small and quiet, across the row</b><br/>Payer name · day limit · when it was checked<br/>'Cardinal Health Plan · 14 of 14 days · Checked 5 h ago'<br/>'No day limit' when the program has none<br/>A row due for a re-check adds 'Re-check due Tue 11:32 am'<br/>After Verify's own re-check 'Re-checked automatically at 11:32 am'<br/>If Verify is paused 'Not re-checked: Verify is paused in Settings' (amber)<br/>When the plan changed 'Now with Cardinal since 10/01'; 'Enrollment not confirmed'; 'The plan has the ID ending 5521'<br/>A check that could not run 'Could not be checked: Verify is paused in Settings' (amber)" }
+  r7@{ shape: curv-trap, label: "<b>Line 2, small and quiet, across the row</b><br/>Program · payer · day limit · when it was checked<br/>'Residential 3.5 · Cardinal Health Plan · 14 of 14 days · Checked 5 h ago'<br/>'No day limit' when the program has none<br/>A row due for a re-check adds 'Re-check due Tue 11:32 am'<br/>After Verify's own re-check 'Re-checked automatically at 11:32 am'<br/>If Verify is paused 'Not re-checked: Verify is paused in Settings' (amber)<br/>When the plan changed 'Now with Cardinal since 10/01'; 'Enrollment not confirmed'; 'The plan has the ID ending 5521'<br/>A check that could not run 'Could not be checked: Verify is paused in Settings' (amber)" }
   end
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › List › Search, filter and page" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › List › Open a patient or start a check" }
   g3@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › What each chip means" }
   g4@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Re-check on its own" }
-  g5@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › List › The info icon" }
   g6@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › The shared verification record" }
   g7@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Sites" }
   s1 --> sc
-  sc --> hd --> tl --> fl --> cd
+  sc --> tl --> fl --> so
   sc -.-> p1
-  sc --> tip --> g5
   tl --> cnt
-  cd --> so --> sd
+  tl --> g1
+  so --> sd
   so --> pg --> cols
-  cols --> r1 & r2 & r3 & r4 & r5 & r6 & r7
+  cols --> r1 & r5 & r3 & r4 & r6 & r7
   fl --> g1
-  hd --> g2
+  sc --> g2
   r6 --> g2
   r3 & r4 & r5 --> g3
   cnt -.-> g4
   r7 -.-> g4
   sc --> sv --> g7
-  cd -.-> g6
+  cols -.-> g6
   class s1 k_start
-  class sc,hd,tip,tl,fl,cd,cols,r1,r2,r3,r4,r5,r6,r7 k_screen
+  class sc,tl,fl,cols,r1,r5,r3,r4,r6,r7 k_screen
   class p1,sv,cnt,so,sd,pg k_process
-  class g1,g2,g3,g4,g5,g6,g7 k_goto
+  class g1,g2,g3,g4,g6,g7 k_goto
   style gTop fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gBar fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gCard fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

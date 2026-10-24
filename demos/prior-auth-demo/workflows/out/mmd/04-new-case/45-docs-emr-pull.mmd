@@ -16,61 +16,47 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>On step 3, click 'Pull a chart from EMR Connect'</b><br/>Clicking again closes it" }
-  dSys@{ shape: diam, label: "<b>Is any records system connected in EMR Connect?</b><br/>Status 'Connected'. 'Needs attention' and disconnected systems do not count" }
-  tNone@{ shape: odd, label: "<b>'No records system is connected.'</b><br/>'Connect one in EMR Connect to pull a chart, or drop the files above.'<br/>Link 'EMR Connect' and a 'Close' button" }
-  cLink@{ shape: trap-t, label: "Click 'EMR Connect' in the message" }
-  gEmr@{ shape: subproc, label: "Continues in: EMR Connect › Connect a system › Choose the system and contact" }
-  gMap@{ shape: subproc, label: "Continues in: EMR Connect › Needs a mapping › Map a field" }
-  cClose@{ shape: trap-t, label: "Click 'Close'" }
-  eClose@{ shape: stadium, label: "Message closes; nothing changes" }
-  oPick@{ shape: win-pane, label: "<b>Chart from EMR Connect</b><br/>Picker with a chart list, 'Pull' and 'Cancel'<br/>Only charts from connected systems are listed" }
-  iChart@{ shape: lean-r, label: "<b>Pick a chart</b><br/>Each option names its system, e.g. 'J.M., 34 · Summit · Residential 3.5'<br/>'Clinical record · residential site. Admitted yesterday'" }
-  dMap@{ shape: diam, label: "<b>Does the chart's system still have a field waiting for a mapping?</b><br/>Residential site: none. Outpatient site: 'Level of care' and 'Referral source'" }
-  tGap@{ shape: odd, label: "<b>Under the picker: 'From Clinical record · outpatient site.'</b><br/>'“Level of care” and “Referral source” still need a mapping there, so those fields are left blank.'<br/>Link 'Open EMR Connect'" }
-  tFrom@{ shape: odd, label: "Under the picker: 'From Clinical record · residential site.'" }
-  cPull@{ shape: trap-t, label: "Click 'Pull'" }
-  pPulling@{ shape: rect, label: "<b>Button reads 'Pulling' for about 1 second</b><br/>The list and 'Cancel' switch off" }
-  xEmr@{ shape: st-rect, label: "<b>EMR Connect (demo: simulated)</b><br/>The chart's patient, member ID, request type, diagnoses and reason<br/>Payer and level of care only when their field is mapped<br/>The request type follows the Authorization type" }
-  dLinked@{ shape: diam, label: "<b>Does the case follow a patient who is known?</b><br/>A review, renewal or modification, or a patient picked on Intake" }
-  stLinked@{ shape: cyl, label: "<b>Only the diagnoses and the reason are filled</b><br/>The patient, plan and level of care stay as they are" }
-  tLinked@{ shape: odd, label: "<b>'Pulled the chart from EMR Connect'</b><br/>'This case follows J.M., 34, so the patient and the plan stay as they are. The diagnoses and the reason came from the chart.'" }
-  stEmr@{ shape: cyl, label: "<b>Draft filled, replacing those fields</b><br/>A field that needs a mapping is set blank<br/>No documents come with it" }
-  dBlank@{ shape: diam, label: "Were any fields left blank?" }
-  tMid@{ shape: odd, label: "<b>'Pulled A.R., 45 from EMR Connect'</b><br/>'“Level of care” and “Referral source” need a mapping, so those fields were left blank. You can still fill them in.'" }
-  tGood@{ shape: odd, label: "<b>'Pulled J.M., 34 from EMR Connect'</b><br/>'Everything below was filled in from the chart. You can still change it.'" }
-  pRows@{ shape: rect, label: "<b>The rows that stayed blank say 'Left blank. ... needs a mapping' and link to EMR Connect</b><br/>Once the field is mapped there, pull the chart again" }
-  pStale@{ shape: rect, label: "<b>If the agents had already run, the run restarts</b><br/>Because the records changed" }
+  s1@{ shape: stadium, label: "On step 3, under the drop bar" }
+  dSys@{ shape: diam, label: "<b>Is a clinical record system connected at a site in view?</b><br/>'Needs attention' and disconnected systems do not count" }
+  pNo@{ shape: rect, label: "No 'Pull from EMR' button" }
+  cEmr@{ shape: trap-t, label: "Click 'Pull from EMR', pick a chart, click 'Pull'" }
+  cFile@{ shape: trap-t, label: "<b>Click 'Import a file'</b><br/>A document export: title and date columns, one document per row" }
+  cShot@{ shape: trap-t, label: "<b>Click 'Paste a screenshot', or press Ctrl+V or Cmd+V</b><br/>A screenshot of a note" }
+  gEmr@{ shape: subproc, label: "Continues in: Authorizations › New Case › Import › Pull from EMR" }
+  gFile@{ shape: subproc, label: "Continues in: Authorizations › New Case › Import › Import a file with field mapping" }
+  gShot@{ shape: subproc, label: "Continues in: Authorizations › New Case › Import › Paste a screenshot" }
+  sRev@{ shape: curv-trap, label: "<b>Review: '3 documents found'</b><br/>A box for each: 'Psychiatric evaluation · 10/18/2026'" }
+  cApply@{ shape: trap-t, label: "Click 'Apply 3'" }
+  dSlot@{ shape: diam, label: "Does a document's title match a slot on the payer's list?" }
+  pSlot@{ shape: rect, label: "It takes that slot: 'Progress note' goes to 'Therapy note from the last 14 days'" }
+  pExtra@{ shape: rect, label: "It is listed as 'Not on the list'" }
+  dTaken@{ shape: diam, label: "Is that slot already filled?" }
+  pKeep@{ shape: rect, label: "<b>Kept as it is; the toast names it</b><br/>'Already in the case: Medication list.'" }
+  aRead@{ shape: hex, label: "<b>Reader reads each new document</b><br/>The row shows 'Reader is reading', then its checks" }
+  t1@{ shape: odd, label: "<b>'Applied 3 documents'</b><br/>'Pulled from Clinical record · Site A'" }
+  pStale@{ shape: rect, label: "<b>If the agents had already run, the run starts over</b><br/>Because the records changed" }
   tStale@{ shape: odd, label: "<b>'Records changed after the agents ran'</b><br/>'Their work was cleared. The agents check again when you continue.'" }
-  cCancel@{ shape: trap-t, label: "Click 'Cancel'" }
-  pCancel@{ shape: rect, label: "Picker closes; nothing changes" }
-  gRows@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Patient, insurance and request rows" }
-  gRec@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › The checklist and Continue" }
+  gRec@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › The checklist and Continue" }
   s1 --> dSys
-  dSys -->|"No"| tNone
-  tNone --> cLink --> gEmr
-  tNone --> cClose --> eClose
-  dSys -->|"Yes"| oPick --> iChart --> dMap
-  dMap -->|"Yes"| tGap
-  dMap -->|"No"| tFrom
-  tGap --> cPull
-  tFrom --> cPull
-  cPull --> pPulling --> xEmr --> dLinked
-  dLinked -->|"Yes"| stLinked --> tLinked --> gRec
-  dLinked -->|"No"| stEmr --> dBlank
-  dBlank -->|"Yes"| tMid --> pRows --> gRows
-  pRows -.-> gMap
-  dBlank -->|"No"| tGood --> gRec
-  stEmr -.-> pStale -.-> tStale
-  oPick --> cCancel --> pCancel
+  dSys -->|"No"| pNo
+  dSys -->|"Yes"| cEmr --> gEmr
+  s1 --> cFile --> gFile
+  s1 --> cShot --> gShot
+  gEmr -.-> sRev
+  gFile -.-> sRev
+  gShot -.-> sRev
+  sRev --> cApply --> dSlot
+  dSlot -->|"Yes"| dTaken
+  dSlot -->|"No"| pExtra --> aRead
+  dTaken -->|"No"| pSlot --> aRead
+  dTaken -->|"Yes"| pKeep --> t1
+  aRead --> t1 --> gRec
+  aRead -.-> pStale -.-> tStale
   class s1 k_start
-  class dSys,dMap,dLinked,dBlank k_decision
-  class tNone,tGap,tFrom,tLinked,tMid,tGood,tStale k_toast
-  class cLink,cClose,cPull,cCancel k_click
-  class gEmr,gMap,gRows,gRec k_goto
-  class eClose k_endx
-  class oPick k_overlay
-  class iChart k_input
-  class pPulling,pRows,pStale,pCancel k_process
-  class xEmr k_ext
-  class stLinked,stEmr k_store
+  class dSys,dSlot,dTaken k_decision
+  class pNo,pSlot,pExtra,pKeep,pStale k_process
+  class cEmr,cFile,cShot,cApply k_click
+  class gEmr,gFile,gShot,gRec k_goto
+  class sRev k_screen
+  class aRead k_agent
+  class t1,tStale k_toast

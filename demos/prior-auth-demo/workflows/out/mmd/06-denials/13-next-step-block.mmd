@@ -18,64 +18,51 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "A denial is on screen" }
   d1@{ shape: diam, label: "Accepted?" }
-  t1@{ shape: curv-trap, label: "<b>Label 'Where it stands'</b><br/>Title 'Closed. You accepted the decision'<br/>'Reason: ... Analytics logs it as an accepted denial.'" }
-  c1@{ shape: trap-t, label: "Click the link 'Plan the step-down'" }
+  t1@{ shape: curv-trap, label: "<b>Accept choice: pill 'Accepted 10/20' and the link 'Plan the step-down'</b><br/>The two other choices dimmed" }
+  c1@{ shape: trap-t, label: "Click 'Plan the step-down'" }
   g1@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Step-down plans from accepted denials" }
   d2a@{ shape: diam, label: "Payer's decision on the appeal recorded as Overturned or Partly overturned?" }
-  t2a@{ shape: curv-trap, label: "<b>Label 'Where it stands'</b><br/>Title 'Overturned on appeal' or 'Partly overturned on appeal'<br/>Your note, or 'The ledger is updated and the next review is booked.'" }
+  t2a@{ shape: curv-trap, label: "Written appeal choice: pill 'Overturned on appeal' or 'Partly overturned on appeal'" }
   d2@{ shape: diam, label: "Call outcome logged as Overturned or Partly restored?" }
-  t2@{ shape: curv-trap, label: "<b>Label 'Where it stands'</b><br/>Title 'Overturned on the call' or 'Partly restored on the call'<br/>Your note, or 'The ledger is updated and the next review is booked.'" }
-  pd@{ shape: rect, label: "No button here: 'See on the Dashboard' is in the header card (green tint for overturned, ochre for partly)" }
-  g2@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
+  t2@{ shape: curv-trap, label: "Peer-to-peer choice: pill 'Overturned on the call' or 'Partly restored on the call'" }
+  pc@{ shape: rect, label: "<b>Settled: the header drops the read and the chance; no 'Compare the options'</b><br/>The dashboard lists it under 'Closed'" }
   d3@{ shape: diam, label: "Chip is 'Appeal filed', 'Second-level appeal filed' or 'External review'?" }
-  t3@{ shape: curv-trap, label: "<b>Label 'Where it stands'</b><br/>Title 'Appeal filed. Waiting on the payer' (or 'Second-level appeal filed', 'External review')<br/>'Filed 10/05, decision 11/02. Navigator checks every day. When the payer answers, record the decision here.'" }
-  c3a@{ shape: trap-t, label: "Click 'Record the payer's decision' (primary, first)" }
-  c3@{ shape: trap-t, label: "Click 'View the appeal'" }
+  t3@{ shape: curv-trap, label: "<b>Written appeal choice, outlined</b><br/>'Appeal filed 10/05 · decision 11/02' (or 'External review 10/09 · decision 11/20')<br/>Buttons 'Record the payer's decision' (primary), 'View the appeal'" }
   g3@{ shape: subproc, label: "Continues in: Denial Intelligence › Written appeal › After filing" }
   g3a@{ shape: subproc, label: "Continues in: Denial Intelligence › Written appeal › Record the payer's decision" }
   d4@{ shape: diam, label: "Chip is 'Appeal drafting'?" }
-  d5@{ shape: diam, label: "Has a draft been saved?" }
-  t4@{ shape: curv-trap, label: "<b>Label 'Next step · File an appeal'</b><br/>Title 'The appeal is drafted and waiting for a clinician's signature'<br/>'Review the letter, change anything you like, then sign and file.'" }
-  t5@{ shape: curv-trap, label: "<b>Label 'Next step · File an appeal'</b><br/>Title 'Advocate is drafting the appeal'<br/>'Open the draft to see it come together.'" }
-  c4@{ shape: trap-t, label: "Click 'Open the draft'" }
+  t4@{ shape: curv-trap, label: "<b>Written appeal choice, outlined</b><br/>'Advocate is drafting · due 11/30', or 'Drafted, ready to sign · due 11/30'<br/>Button 'Open the draft' (primary)<br/>Titled 'Second-level appeal' or 'External review' on a later level" }
   g4@{ shape: subproc, label: "Continues in: Denial Intelligence › Written appeal › Confirm and draft" }
   d6@{ shape: diam, label: "Chip is 'Call booked'?" }
-  t6@{ shape: curv-trap, label: "<b>Label 'Next step · Peer-to-peer review'</b><br/>Title 'Call booked: Wed 10/21, 9–11 am'<br/>'Cadence booked the window with Cardinal. The brief is ready, written by Advocate and checked by Integrity.'" }
-  c6@{ shape: trap-t, label: "Click 'Open the brief' (primary, first)" }
-  c5@{ shape: trap-t, label: "Click 'Change the time'" }
+  t6@{ shape: curv-trap, label: "<b>Peer-to-peer choice, outlined</b><br/>'Call booked Wed 10/21, 9–11 am'<br/>Buttons 'Open the brief' (primary), 'Change the time'" }
+  p2@{ shape: rect, label: "Calls booked at the start show the time from the denial's data; later ones the time that was picked" }
   g5@{ shape: subproc, label: "Continues in: Denial Intelligence › Peer-to-peer › Book the call" }
   g6@{ shape: subproc, label: "Continues in: Denial Intelligence › Peer-to-peer › The brief" }
-  p2@{ shape: rect, label: "<b>Calls booked at the start show the time from the denial's data</b><br/>Later ones show the time that was picked" }
-  rn@{ shape: curv-trap, label: "<b>Under the buttons of the three blocks that show something the agents wrote</b><br/>'Draft by FLO's agents. A clinician reviews and signs before anything is sent.'" }
+  po@{ shape: rect, label: "<b>Other routes while one is under way: their own button stays ('Draft the appeal', 'Accept the decision')</b><br/>A call that was upheld reads 'Upheld on the call'; a closed call window reads 'Window closed'" }
   p1@{ shape: rect, label: "<b>None of the above: nothing is under way</b><br/>Chips 'Analyzed' and 'Resubmitting'" }
   g7@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Recommended next step" }
-  sc1@{ shape: curv-trap, label: "<b>'Your options' shows as one short row when the denial is still open</b><br/>'Compare the options' opens a right-hand panel with the detail and a button for any route" }
   s1 --> d1
   d1 -->|"Yes"| t1 --> c1 --> g1
+  t1 --> pc
   d1 -->|"No"| d2a
-  d2a -->|"Yes"| t2a --> pd
+  d2a -->|"Yes"| t2a --> pc
   d2a -->|"No"| d2
-  d2 -->|"Yes"| t2 --> pd --> g2
+  d2 -->|"Yes"| t2 --> pc
   d2 -->|"No"| d3
-  d3 -->|"Yes"| t3
-  t3 --> c3a --> g3a
-  t3 --> c3 --> g3
+  d3 -->|"Yes"| t3 --> g3a
+  t3 --> g3
   d3 -->|"No"| d4
-  d4 -->|"Yes"| d5
-  d5 -->|"Yes"| t4 --> c4
-  d5 -->|"No"| t5 --> c4
-  c4 --> g4
-  t4 -.-> rn
+  d4 -->|"Yes"| t4 --> g4
+  t4 -.-> po
   d4 -->|"No"| d6
-  d6 -->|"Yes"| t6 --> c6 --> g6
-  t6 --> c5 --> g5
+  d6 -->|"Yes"| t6 --> g6
+  t6 --> g5
   t6 -.-> p2
-  t6 -.-> rn
+  t6 -.-> po
   d6 -->|"No"| p1 --> g7
-  p1 --> sc1
   class s1 k_start
-  class d1,d2a,d2,d3,d4,d5,d6 k_decision
-  class t1,t2a,t2,t3,t4,t5,t6,rn,sc1 k_screen
-  class c1,c3a,c3,c4,c6,c5 k_click
-  class g1,g2,g3,g3a,g4,g5,g6,g7 k_goto
-  class pd,p2,p1 k_process
+  class d1,d2a,d2,d3,d4,d6 k_decision
+  class t1,t2a,t2,t3,t4,t6 k_screen
+  class c1 k_click
+  class g1,g3,g3a,g4,g5,g6,g7 k_goto
+  class pc,p2,po,p1 k_process

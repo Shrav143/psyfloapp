@@ -16,82 +16,67 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Open New case</b><br/>Authorization type 'Initial authorization', nothing started" }
-  s2@{ shape: stadium, label: "<b>Click 'Use a different referral or patient'</b><br/>on the details of a case" }
-  s3@{ shape: stadium, label: "<b>Click 'Use different documents'</b><br/>on a referral checklist" }
-  sc1@{ shape: curv-trap, label: "<b>Intake</b><br/>'Start with a referral or patient'<br/>'Drop the referral documents and Reader lists what is missing, pick one that already arrived, find a patient who is known, or create the case by hand.'" }
-  subgraph gDrop ["Drop the referral documents"]
-  i1@{ shape: lean-r, label: "<b>Drop files on 'Drop the referral documents'</b><br/>or click it and choose files<br/>'The referral form, the face sheet, the insurance card, any orders.'" }
-  p1@{ shape: rect, label: "<b>Reader picks one of three invented referrals</b><br/>from the first file name" }
-  c2@{ shape: trap-t, label: "Click 'Use sample referral'" }
-  p2@{ shape: rect, label: "<b>Takes the next invented referral in turn</b><br/>(file: referral.pdf)" }
+  s1@{ shape: stadium, label: "Open Intake on a new case" }
+  s2@{ shape: stadium, label: "<b>Click 'Use a different referral' or 'Use a different patient'</b><br/>or 'Add a referral' on Clinical documentation (opens ?ref= empty)" }
+  sc1@{ shape: curv-trap, label: "<b>The row</b><br/>'Pull from EMR' (only when a clinical record system is connected at a site in view)<br/>'Import a file', 'Paste a screenshot' | 'Referrals 8', 'Known patient'<br/>A retroactive request has no 'Referrals'" }
+  subgraph gImport ["Bring a record in"]
+  cEmr@{ shape: trap-t, label: "Click 'Pull from EMR'" }
+  cFile@{ shape: trap-t, label: "Click 'Import a file'" }
+  cShot@{ shape: trap-t, label: "Click 'Paste a screenshot', or press Ctrl+V or Cmd+V in the row" }
   end
-  sc2@{ shape: curv-trap, label: "<b>'Reader is reading 1 document'</b><br/>File names (first three, then 'and N more')<br/>Four lines with a spinner on the current one" }
-  a1@{ shape: hex, label: "<b>Reader reads, about one second each:</b><br/>Reader is scanning the documents<br/>Checking the program's requirements<br/>Verifying required components<br/>Confirming the data is complete" }
-  leave@{ shape: trap-t, label: "<b>Leave the page while Reader reads</b><br/>(there is no Cancel button on this screen)" }
-  e1@{ shape: stadium, label: "Nothing is added" }
-  st1@{ shape: cyl, label: "<b>New referral added with the next RF number that falls at the site in view</b><br/>Status New, received just now" }
-  t1@{ shape: odd, label: "<b>'Reader read the documents'</b><br/>'RF-2056 is ready. The checklist shows what is missing.'" }
-  t2@{ shape: odd, label: "<b>Bell notification 'New referral read'</b><br/>'RF-2056 from Eastgate Probation Services is on your checklist in New case.'" }
-  p3@{ shape: rect, label: "<b>Address gets ?ref=RF-2056</b><br/>The referral's checklist opens in Intake" }
-  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › Referral checklist" }
-  subgraph gPat ["Find a patient who is already known"]
-  cPat@{ shape: trap-t, label: "<b>Click 'Find a patient who is already known'</b><br/>'Search Both sites by initials or case ID. Nobody is added twice.'" }
-  gFind@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Find a patient and the authorization" }
-  pPick@{ shape: rect, label: "<b>Picking a patient fills their details</b><br/>No second patient is made<br/>Intake shows the details, with a possible duplicate flagged" }
-  tPick@{ shape: odd, label: "<b>'J.M., 34 is in this case'</b><br/>'The patient's own details are filled in. No second patient is made.'" }
+  gEmr@{ shape: subproc, label: "Continues in: Authorizations › New Case › Import › Pull from EMR" }
+  gFile@{ shape: subproc, label: "Continues in: Authorizations › New Case › Import › Import a file with field mapping" }
+  gShot@{ shape: subproc, label: "Continues in: Authorizations › New Case › Import › Paste a screenshot" }
+  subgraph gRefs ["Referrals, a side panel"]
+  cRefs@{ shape: trap-t, label: "Click 'Referrals'" }
+  oRefs@{ shape: win-pane, label: "<b>Side panel 'Incoming referrals'</b><br/>Drop zone 'Drop referral documents, or click to choose'<br/>'Use sample referral'<br/>One row per open referral at the sites in view" }
+  pRows@{ shape: rect, label: "<b>Each row: initials and age, RF number, urgency (if not routine), source, channel, time</b><br/>Status: 'Documents complete', 'N items missing', 'N items to review' or 'Waiting on the referrer'<br/>Button 'Review'" }
+  iDrop@{ shape: lean-r, label: "Drop files, or click and choose" }
+  cSample@{ shape: trap-t, label: "Click 'Use sample referral'" }
+  aRead@{ shape: hex, label: "<b>Reader reads, about one second a line, in the panel</b><br/>The same reading as the full referral page" }
+  stRef@{ shape: cyl, label: "New referral added with the next RF number at the site in view" }
+  cReview@{ shape: trap-t, label: "Click 'Review' on a row" }
+  pRev@{ shape: rect, label: "<b>Panel closes</b><br/>Address gets ?ref=RF-2045<br/>The referral's checklist replaces the form" }
+  cEsc@{ shape: trap-t, label: "Press Escape, or click outside" }
   end
-  subgraph gInc ["Incoming referrals"]
-  d2@{ shape: diam, label: "<b>Is any referral open at the sites in view?</b><br/>New, In review or Awaiting info" }
-  p8@{ shape: rect, label: "Whole 'Incoming referrals' section is hidden" }
-  sc3@{ shape: curv-trap, label: "<b>'Incoming referrals (8)'</b><br/>'Referrals that came in by fax, e-referral, the portal or phone, at both sites. Reader has read each one.'" }
-  p4@{ shape: rect, label: "<b>Order: emergent, then urgent, then routine, longest wait first</b><br/>A referral waiting on its referrer goes last<br/>A viewer at one site sees that site's referrals only" }
-  p5@{ shape: rect, label: "<b>Each row: initials and age, RF number, urgency (if not routine), source, channel, time</b><br/>Status: 'Documents complete', 'N items missing', 'N items to review' or 'Waiting on the referrer'<br/>Button 'Review'" }
-  d1@{ shape: diam, label: "More than 6 open referrals?" }
-  c3@{ shape: trap-t, label: "Click 'Show 2 more'" }
-  p6@{ shape: rect, label: "<b>All rows show</b><br/>The button now reads 'Show fewer'" }
-  c4@{ shape: trap-t, label: "Click 'Show fewer'" }
-  c5@{ shape: trap-t, label: "Click 'Review' on a row" }
-  p7@{ shape: rect, label: "<b>Referral marked opened</b><br/>Sidebar badge on 'New case' drops<br/>Address gets ?ref=RF-2045" }
+  gCheck@{ shape: subproc, label: "Continues in: Authorizations › New Case › Referral › Referral checklist" }
+  subgraph gKnown ["Known patient, a side panel"]
+  cKnown@{ shape: trap-t, label: "Click 'Known patient'" }
+  oKnown@{ shape: win-pane, label: "<b>Side panel 'Known patient'</b><br/>Search 'Find a patient' by initials or case ID" }
+  gFind@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Find a patient and the authorization" }
+  pPick@{ shape: rect, label: "<b>Picking a patient fills the form with their details</b><br/>No second patient is made<br/>Panel closes" }
+  tPick@{ shape: odd, label: "'J.M., 34 is in this case'" }
   end
-  subgraph gNone ["Create the case by hand"]
-  c6@{ shape: trap-t, label: "Click 'Create case manually'" }
-  p9@{ shape: rect, label: "<b>The case is marked started</b><br/>The details show: site, patient, insurance and request rows" }
-  end
-  g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Initial authorization" }
-  g3@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Patient, insurance and request rows" }
+  iType@{ shape: lean-r, label: "Type into the form: Initials, Date of birth, Payer, Level of care" }
+  pStart@{ shape: rect, label: "<b>The case counts as started</b><br/>The stepper's Intake state follows" }
+  gForm@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Patient, insurance and request rows" }
+  eNone@{ shape: stadium, label: "Panel closed, nothing changes" }
   s1 --> sc1
   s2 --> sc1
-  s3 --> sc1
-  sc1 --> i1 --> p1 --> sc2
-  sc1 --> c2 --> p2 --> sc2
-  sc2 --> a1 --> st1 --> t1 --> p3 --> g1
-  st1 -.-> t2
-  sc2 --> leave --> e1
-  sc1 --> cPat --> gFind
-  cPat --> pPick --> tPick --> g2
-  sc1 --> d2
-  d2 -->|"Yes"| sc3 --> p4 --> p5 --> d1
-  d2 -->|"No"| p8
-  d1 -->|"Yes"| c3 --> p6 --> c4
-  d1 -->|"No"| c5
-  p6 --> c5
-  c4 -.-> d1
-  c5 --> p7 --> g1
-  sc1 --> c6 --> p9 --> g2
-  p9 -.-> g3
-  class s1,s2,s3 k_start
-  class sc1,sc2,sc3 k_screen
-  class i1 k_input
-  class p1,p2,p3,pPick,p8,p4,p5,p6,p7,p9 k_process
-  class c2,leave,cPat,c3,c4,c5,c6 k_click
-  class a1 k_agent
-  class e1 k_endx
-  class st1 k_store
-  class t1,t2,tPick k_toast
-  class g1,gFind,g2,g3 k_goto
-  class d2,d1 k_decision
-  style gDrop fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
-  style gPat fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
-  style gInc fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
-  style gNone fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  sc1 --> cEmr --> gEmr
+  sc1 --> cFile --> gFile
+  sc1 --> cShot --> gShot
+  sc1 --> cRefs --> oRefs --> pRows
+  oRefs --> iDrop --> aRead
+  oRefs --> cSample --> aRead
+  aRead --> stRef --> pRev
+  pRows --> cReview --> pRev --> gCheck
+  oRefs --> cEsc --> eNone
+  sc1 --> cKnown --> oKnown --> gFind
+  oKnown --> pPick --> tPick
+  oKnown -.-> eNone
+  sc1 --> iType --> pStart --> gForm
+  class s1,s2 k_start
+  class sc1 k_screen
+  class cEmr,cFile,cShot,cRefs,cSample,cReview,cEsc,cKnown k_click
+  class gEmr,gFile,gShot,gCheck,gFind,gForm k_goto
+  class oRefs,oKnown k_overlay
+  class pRows,pRev,pPick,pStart k_process
+  class iDrop,iType k_input
+  class aRead k_agent
+  class stRef k_store
+  class tPick k_toast
+  class eNone k_endx
+  style gImport fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gRefs fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gKnown fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

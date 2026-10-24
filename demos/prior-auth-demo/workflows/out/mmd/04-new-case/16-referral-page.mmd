@@ -21,34 +21,34 @@ flowchart TD
   s3@{ shape: stadium, label: "<b>Open an old link such as /referrals/RF-2053</b><br/>(no case in the address)" }
   p1@{ shape: rect, label: "<b>Address is /authorizations/new/referral/RF-2053?draft=…</b><br/>The case id rides along so the page can lead back to it<br/>Without it, a draft that already holds this referral is used" }
   d1@{ shape: diam, label: "Is that referral in the demo?" }
-  sc0@{ shape: curv-trap, label: "<b>Crumbs 'New case › Referral › RF-9999'</b><br/>'That referral is not in the demo'<br/>'Referral RF-9999 does not exist. Go back to the referral step to drop the documents or pick one that arrived.'" }
+  sc0@{ shape: curv-trap, label: "<b>Crumbs 'New Case › Referral › RF-9999'</b><br/>'That referral is not in the demo'<br/>'Referral RF-9999 does not exist. Go back to the referral step to drop the documents or pick one that arrived.'" }
   cBack@{ shape: trap-t, label: "Click 'Back to the referral step'" }
-  gStart@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Start with a referral or patient" }
-  st1@{ shape: cyl, label: "<b>Referral is marked opened</b><br/>Sidebar badge on 'New case' drops" }
-  sc1@{ shape: curv-trap, label: "<b>Referral page</b><br/>Crumbs 'New case › Referral › RF-2053' and, at the right, the button 'Back to the case'<br/>Stepper: 'Intake' is current, nothing in it is clickable" }
+  gStart@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Start with a referral or patient" }
+  st1@{ shape: cyl, label: "<b>Referral is marked opened</b><br/>Sidebar badge on 'New Case' drops" }
+  sc1@{ shape: curv-trap, label: "<b>Referral page</b><br/>Crumbs 'New Case › Referral › RF-2053' and, at the right, the button 'Back to the case'<br/>Stepper: 'Intake' is current, nothing in it is clickable" }
   sH@{ shape: curv-trap, label: "<b>Header card</b><br/>Pill '{Program} requested', big RF number, status pill, urgency pill<br/>Patient · source · channel · received · payer<br/>Small stepper Received, Reviewed, Decided, Admitted" }
   pSla@{ shape: rect, label: "<b>Red pill 'Past response target' while New or In review</b><br/>after 1 hour (emergent), 4 hours (urgent) or 24 hours (routine)" }
-  gHead@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › Header actions" }
-  gBan@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › Decision banners" }
+  gHead@{ shape: subproc, label: "Continues in: Authorizations › New Case › Referral › Header actions" }
+  gBan@{ shape: subproc, label: "Continues in: Authorizations › New Case › Referral › Decision banners" }
   sBan@{ shape: curv-trap, label: "<b>One banner under the header</b><br/>The most important one: declined, accepted, coverage lapsed, waiting on the referrer, or Reader found N things to check" }
   subgraph gCr ["Breadcrumb"]
-  cC1@{ shape: trap-t, label: "Click the crumb 'New case'" }
+  cC1@{ shape: trap-t, label: "Click the crumb 'New Case'" }
   cC2@{ shape: trap-t, label: "Click the crumb 'Referral'" }
   dC@{ shape: diam, label: "Is there a case?" }
   dD@{ shape: diam, label: "Is there a case?" }
   pC1@{ shape: rect, label: "Opens that case (its current step)" }
   pC2@{ shape: rect, label: "Opens the checklist for this referral: ?ref=RF-2053" }
-  pC3@{ shape: rect, label: "<b>Opens New case with no case id</b><br/>A new blank case starts" }
+  pC3@{ shape: rect, label: "<b>Opens New Case with no case id</b><br/>A new blank case starts" }
   pC4@{ shape: rect, label: "'RF-2053' is plain text, not a link" }
   end
   subgraph gBk ["Back to the case"]
   cBk@{ shape: trap-t, label: "<b>Click 'Back to the case'</b><br/>(beside the crumbs)" }
   dBk@{ shape: diam, label: "<b>Is there a case?</b><br/>(?draft= in the address, or a draft that holds this referral)" }
   pBk1@{ shape: rect, label: "Opens that case (its current step)" }
-  pBk2@{ shape: rect, label: "<b>Opens New case with no case id</b><br/>A new blank case starts" }
+  pBk2@{ shape: rect, label: "<b>Opens New Case with no case id</b><br/>A new blank case starts" }
   end
-  gOv@{ shape: subproc, label: "Continues in: Authorizations › New case › How a case starts and resumes" }
-  gChk@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › Referral checklist" }
+  gOv@{ shape: subproc, label: "Continues in: Authorizations › New Case › How a case starts and resumes" }
+  gChk@{ shape: subproc, label: "Continues in: Authorizations › New Case › Referral › Referral checklist" }
   subgraph gTwo ["Two columns"]
   sDoc@{ shape: curv-trap, label: "<b>Left: 'Source document' card (stays in view while you scroll)</b><br/>'Fax from {referrer}, Mon 2:10 pm'<br/>'Referral form' and 'Face sheet', print, page buttons" }
   sTab@{ shape: curv-trap, label: "<b>Right: tabs</b><br/>Extracted · Validation (with the count of open findings) · Coverage · Fit · Activity" }
@@ -58,10 +58,10 @@ flowchart TD
   cT3@{ shape: trap-t, label: "Click 'Coverage'" }
   cT4@{ shape: trap-t, label: "Click 'Fit'" }
   cT5@{ shape: trap-t, label: "Click 'Activity'" }
-  gT1@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › Full page: Extracted tab and document" }
-  gT2@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › Full page: Validation tab" }
-  gT3@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › Check coverage" }
-  gT4@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › Full page: Fit, Activity and notes" }
+  gT1@{ shape: subproc, label: "Continues in: Authorizations › New Case › Referral › Full page: Extracted tab and document" }
+  gT2@{ shape: subproc, label: "Continues in: Authorizations › New Case › Referral › Full page: Validation tab" }
+  gT3@{ shape: subproc, label: "Continues in: Authorizations › New Case › Referral › Check coverage" }
+  gT4@{ shape: subproc, label: "Continues in: Authorizations › New Case › Referral › Full page: Fit, Activity and notes" }
   s1 --> p1
   s2 --> p1
   s3 --> p1

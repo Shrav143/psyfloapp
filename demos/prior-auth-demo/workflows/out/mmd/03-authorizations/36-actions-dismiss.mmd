@@ -18,10 +18,10 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   d1@{ shape: trap-t, label: "Click 'Dismiss' on one card" }
   d2@{ shape: trap-t, label: "<b>Click 'Dismiss recommendations' in the side panel</b><br/>(all included cards at once)" }
-  m@{ shape: win-pane, label: "<b>Dialog 'Dismiss this recommendation?' or 'Dismiss 3 recommendations?'</b><br/>'Say why. The reason is logged and helps the agents learn what is useful.'" }
+  m@{ shape: win-pane, label: "Dialog 'Dismiss this recommendation?' or 'Dismiss 3 recommendations?'" }
   li@{ shape: rect, label: "Bullet list of the card titles" }
   dg@{ shape: diam, label: "Does a title clear a check that gates 'Send to payer'?" }
-  wb@{ shape: odd, label: "Warning: '... clears a check that gates Send to payer. Dismissing it leaves that check open. You can bring it back later.'" }
+  wb@{ shape: odd, label: "Warning: 'Leaves a Send to payer check open: ...'" }
   subgraph gR ["Reason (pick one)"]
   r1@{ shape: trap-t, label: "Pick 'Already handled outside Psyflo'" }
   r2@{ shape: trap-t, label: "Pick 'Not relevant to this request'" }
@@ -39,7 +39,7 @@ flowchart TD
   an@{ shape: cyl, label: "<b>Dismissal recorded for Analytics</b><br/>The request and the reason" }
   gA@{ shape: subproc, label: "Continues in: Analytics › Arrive and read the page" }
   tt@{ shape: odd, label: "<b>'Recommendation dismissed' or '3 recommendations dismissed'</b><br/>'The reason is logged and feeds Analytics.'" }
-  mv@{ shape: rect, label: "<b>Cards leave the open list</b><br/>Header line 'up to N%' drops their points<br/>'Dismissed (1)' appears: struck-through title, 'Reason logged: ...'" }
+  mv@{ shape: rect, label: "<b>Cards leave the open list</b><br/>Header line 'up to N%' drops their points<br/>'Dismissed (1)' appears: struck-through title, the reason, 'Bring back'" }
   gt@{ shape: rect, label: "<b>If the card gated a check, that check stays open</b><br/>'Send to payer' stays off" }
   bb@{ shape: trap-t, label: "Click 'Bring back' on a dismissed card" }
   rs@{ shape: cyl, label: "<b>Card returns to the open list</b><br/>Log: 'You brought back a dismissed recommendation'" }

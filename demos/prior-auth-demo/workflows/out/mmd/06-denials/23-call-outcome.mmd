@@ -20,8 +20,8 @@ flowchart TD
   x1@{ shape: st-rect, label: "Clinician holds the peer-to-peer call with the payer's reviewer" }
   o1@{ shape: win-pane, label: "<b>Modal 'Record the call outcome'</b><br/>D-3318 · Cardinal Health Plan" }
   i1@{ shape: lean-r, label: "<b>Pick one (radio cards)</b><br/>'Overturned' (chosen at first), 'Partly restored' or 'Upheld'" }
-  p1@{ shape: rect, label: "<b>Card texts</b><br/>Overturned: the payer restored the requested days, the denial closes<br/>Partly restored: closes with a new end date<br/>Upheld: Advocate starts a written appeal from your call notes" }
-  i2@{ shape: lean-r, label: "<b>Note (optional)</b><br/>'Who you spoke to and what was agreed.'" }
+  p1@{ shape: rect, label: "<b>Card texts</b><br/>Overturned: 'Closes the denial'<br/>Partly restored: 'Closes with a new end date'<br/>Upheld: 'Starts the written appeal'" }
+  i2@{ shape: lean-r, label: "Note (optional)" }
   c1@{ shape: trap-t, label: "Click 'Log the outcome'" }
   c2@{ shape: trap-t, label: "Click 'Cancel', the X, press Esc, or click the dimmed area" }
   e1@{ shape: stadium, label: "Nothing is logged" }
@@ -31,7 +31,7 @@ flowchart TD
   x2@{ shape: st-rect, label: "Payer restores the requested days, or part of them, on the call" }
   a1@{ shape: hex, label: "Cadence updates the ledger and books the next review" }
   t1@{ shape: odd, label: "<b>'Overturned' or 'Partly restored'</b><br/>'The ledger is updated and the next review is booked.'" }
-  p2@{ shape: rect, label: "<b>Sidebar badge goes down by one</b><br/>The denial moves to 'Closed' in the open denials list<br/>Next-step block 'Overturned on the call' or 'Partly restored on the call'" }
+  p2@{ shape: rect, label: "<b>Sidebar badge goes down by one</b><br/>The denial moves under 'Closed' on the dashboard<br/>The peer-to-peer choice reads 'Overturned on the call' or 'Partly restored on the call'" }
   st2@{ shape: cyl, label: "<b>Chip 'Appeal drafting'</b><br/>Clock becomes 'to file': 60 days from the denial date" }
   a2@{ shape: hex, label: "Advocate starts a written appeal from the call notes" }
   t2@{ shape: odd, label: "<b>'Outcome logged: upheld'</b><br/>'Advocate started the written appeal. Open it from the denial.'" }

@@ -16,8 +16,8 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>On step 5, click 'Send back to Scribe'</b><br/>Or the same button on an item under What is missing" }
-  o1@{ shape: win-pane, label: "<b>Send back to Scribe</b><br/>'Scribe, Integrity, Packet and Scrubber run again with your note. It takes a few seconds.'<br/>Box: 'What should Scribe change?'" }
+  s1@{ shape: stadium, label: "<b>On step 4, click 'Send back to Scribe'</b><br/>Or the same button on an item under What is missing" }
+  o1@{ shape: win-pane, label: "<b>Send back to Scribe</b><br/>Box: 'What should Scribe change?' and three suggestions" }
   iNote@{ shape: lean-r, label: "<b>Type a note, or leave the box empty</b><br/>'Optional. Your note is added to the plan section.'" }
   cQ1@{ shape: trap-t, label: "Click 'Say more about the risk at home'" }
   cQ2@{ shape: trap-t, label: "Click 'Shorten the clinical picture'" }
@@ -26,10 +26,10 @@ flowchart TD
   cCancel@{ shape: trap-t, label: "Click 'Cancel', press Escape, or click outside" }
   eCancel@{ shape: stadium, label: "Pop-up closes; nothing changes" }
   cSend@{ shape: trap-t, label: "Click 'Send back'" }
-  st1@{ shape: cyl, label: "<b>The draft goes back to step 4 with six agents done</b><br/>The summary is cleared<br/>A revision count goes up by one<br/>The note is kept" }
+  st1@{ shape: cyl, label: "<b>The draft goes back to Clinical documentation, at Authorization preparation, with six agents done</b><br/>The summary is cleared<br/>A revision count goes up by one<br/>The note is kept" }
   pReset@{ shape: rect, label: "Both tick-boxes on the Sign card are unticked" }
   t1@{ shape: odd, label: "<b>'Sent back to Scribe'</b><br/>'The agents are re-drafting. You will see the new draft in a moment.'" }
-  sRun@{ shape: curv-trap, label: "<b>Step 4 'Authorization preparation'</b><br/>The first six agents stay done" }
+  sRun@{ shape: curv-trap, label: "<b>Clinical documentation, scrolled to 'Authorization preparation'</b><br/>The first six agents stay done" }
   subgraph gRerun ["The four agents run again"]
   a1@{ shape: hex, label: "<b>Scribe · 2.2 s</b><br/>Writes the summary again" }
   a2@{ shape: hex, label: "<b>Integrity · 1.4 s</b><br/>Checks every sentence again" }
@@ -37,12 +37,12 @@ flowchart TD
   a4@{ shape: hex, label: "<b>Scrubber · 1.0 s</b><br/>Checks the request for errors again" }
   end
   pNoQ@{ shape: rect, label: "<b>No new question is asked</b><br/>Earlier answers stay in the draft" }
-  tDone@{ shape: odd, label: "Banner: 'All ten agents are done'" }
+  tDone@{ shape: odd, label: "Section pill 'Done'; the rows fold under 'All ten agents'" }
   cReview@{ shape: trap-t, label: "Click 'Review & submit'" }
-  sRev@{ shape: curv-trap, label: "<b>Step 5 again</b><br/>The Plan section ends: 'Reviewer's note, addressed: YOUR NOTE'" }
+  sRev@{ shape: curv-trap, label: "<b>Review & submit again</b><br/>The Plan section ends: 'Reviewer's note, addressed: YOUR NOTE'" }
   cStay@{ shape: trap-t, label: "Click the browser's Back, or leave" }
-  pAway@{ shape: rect, label: "The run only moves while step 4 is open" }
-  gSign@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Sign and send to payer" }
+  pAway@{ shape: rect, label: "The run only moves while Clinical documentation is open" }
+  gSign@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer" }
   s1 --> o1
   o1 --> iNote
   o1 --> cQ1 & cQ2 & cQ3 --> pFill --> iNote

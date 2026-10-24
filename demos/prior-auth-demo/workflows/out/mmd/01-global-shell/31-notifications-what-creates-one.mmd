@@ -21,7 +21,7 @@ flowchart LR
   c10@{ shape: trap-t, label: "<b>Click 'Update drafts' on a payer's change</b><br/>(after 'Acknowledge change', which only raises a toast)" }
   n10@{ shape: cyl, label: "<b>The change's agent or Scribe · 'Drafts updated'</b><br/>→ Case Manager" }
   end
-  subgraph gRef ["Referrals (New case)"]
+  subgraph gRef ["Referrals (New Case)"]
   c9@{ shape: trap-t, label: "<b>Click 'Use sample referral'</b><br/>(or drop referral documents)" }
   n9@{ shape: cyl, label: "<b>Reader · 'New referral read'</b><br/>→ that referral" }
   c9b@{ shape: trap-t, label: "'Demo: simulate the referrer's reply'" }
@@ -53,7 +53,7 @@ flowchart LR
   c6@{ shape: trap-t, label: "'Approves part' or 'Denies'" }
   n6@{ shape: cyl, label: "<b>Advocate · 'Partly approved' or 'Denied'</b><br/>→ Denial Intelligence, new D- number" }
   end
-  subgraph gSend ["New case"]
+  subgraph gSend ["New Case"]
   c1@{ shape: trap-t, label: "Click 'Sign and send'" }
   n1@{ shape: cyl, label: "<b>Navigator · 'Sent to the payer'</b><br/>→ Dashboard, that request" }
   end

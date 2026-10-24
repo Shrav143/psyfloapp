@@ -16,68 +16,54 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "Open 'Verify a patient'" }
-  sc@{ shape: curv-trap, label: "<b>Verify a patient</b><br/>'The agents check coverage and benefits live, so you know whether the clinic will be paid.'<br/>Card 'The patient and the service' with the pill 'Privacy mode on'" }
+  s1@{ shape: stadium, label: "Open the Verify page" }
+  sc@{ shape: curv-trap, label: "<b>Card 'Patient and service' with the pill 'Privacy mode on'</b><br/>Import row, the six fields, 'Check now'<br/>A tinted strip 'Try a sample' at the foot of the card" }
   b1@{ shape: trap-t, label: "Click '← Eligibility & Benefits' (back link)" }
   b2@{ shape: trap-t, label: "<b>Click '← Back to referral RF-2040' or '← Back to case R-1042'</b><br/>Shown only when the address names a referral (see 'Ways in and pre-fill')" }
-  g3@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › The full referral page" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › New Case › Referral › The full referral page" }
   g0@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows" }
+  subgraph gImport ["Bring the card in"]
+  f1@{ shape: trap-t, label: "Import row: 'Pull from EMR' (only when a record system is connected at the site in view), 'Import a file', 'Paste a screenshot'" }
+  p1@{ shape: rect, label: "<b>Payer and member ID filled on Apply</b><br/>A quiet line under the row: where it came from, the group and the coverage dates<br/>'From the sample screenshot · Group GRP-55120 · Effective 01/01/2026 to 12/31/2026'" }
+  end
   subgraph gSample ["Try a sample"]
-  f5@{ shape: trap-t, label: "<b>Click a chip in the row 'Try a sample'</b><br/>'Cleared to bill', 'Coverage lapsed', 'Not found',<br/>'Not covered', 'Another plan pays first', 'Limit reached'" }
+  f5@{ shape: trap-t, label: "<b>Click a small chip in the strip 'Try a sample'</b><br/>'Cleared to bill', 'Authorization first', 'Coverage lapsed', 'Not found',<br/>'Not covered', 'Another plan pays first', 'Limit reached'" }
   p7@{ shape: rect, label: "<b>Fills the whole form with a made-up member who ends that way</b><br/>The chip turns green. Initials and age are remembered for the result" }
   end
-  subgraph gCard ["Add the insurance card"]
-  f1@{ shape: lean-r, label: "<b>Drop a file, or click the drop zone</b><br/>'Drag and drop the insurance card, or click to select a file'" }
-  f2@{ shape: trap-t, label: "Click 'Use sample file'" }
-  f3@{ shape: trap-t, label: "Click 'Use sample card' (top right)" }
-  a1@{ shape: hex, label: "<b>Reader reads the card</b><br/>'Reader is reading the card' for about 1 second" }
-  p1@{ shape: rect, label: "<b>Fills payer from the file name (else Summit) and a member ID</b><br/>Date of birth stays empty" }
-  p2@{ shape: rect, label: "<b>Fills Summit, 'SM7403964821', 03/14/1992, Residential 3.5, 10/21/2026</b><br/>Remembers J.M., 34" }
-  t1@{ shape: odd, label: "<b>'Sample card loaded'</b><br/>'Reader filled in the details for J.M., 34. The check can start when you are ready.'" }
-  cs@{ shape: curv-trap, label: "<b>Card strip 'Card read just now'</b><br/>'Payer, member ID and plan type are filled in below'" }
-  f4@{ shape: trap-t, label: "Click 'Replace'" }
-  p3@{ shape: rect, label: "<b>Strip goes, drop zone returns</b><br/>The typed values stay" }
-  end
   subgraph gFields ["Type the details"]
-  i1@{ shape: lean-r, label: "<b>'Payer' menu: 'Choose a payer', six payers</b><br/>(label reads 'Payer (read from card)' after a card)" }
+  i1@{ shape: lean-r, label: "<b>'Payer' menu: 'Choose a payer', six payers</b><br/>Under it, the plan type, for example 'Medicaid managed care (HMO)'" }
   i2@{ shape: lean-r, label: "'State': the only choice is 'Ohio'" }
-  i3@{ shape: lean-r, label: "<b>'Member ID (removed before analysis)'</b><br/>Hint 'Agents see …4821 only'" }
+  i3@{ shape: lean-r, label: "'Member ID'" }
   i4@{ shape: lean-r, label: "'Date of birth' as MM/DD/YYYY" }
   i5@{ shape: lean-r, label: "'Program': 'Residential 3.5', 'IOP', 'PHP', 'Detox'" }
   i6@{ shape: lean-r, label: "'Date of service' as MM/DD/YYYY, starts as 10/21/2026" }
   end
   q1@{ shape: diam, label: "Payer chosen, member ID has 4 or more letters or digits, both dates shaped MM/DD/YYYY?" }
-  p4@{ shape: rect, label: "<b>'Check now' is off</b><br/>Hint 'Add the payer, member ID, date of birth and date of service to check.'" }
+  p4@{ shape: rect, label: "<b>'Check now' is off</b><br/>The required fields carry a red star; no hint line" }
   p5@{ shape: rect, label: "Only the shape of a date is checked, not whether it is a real day" }
-  p6@{ shape: rect, label: "<b>'Check now' is on</b><br/>Hint 'Takes about 10 seconds. Nothing is changed at the payer or in the record.'" }
+  p6@{ shape: rect, label: "'Check now' is on" }
   c1@{ shape: trap-t, label: "Click 'Check now'" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › The live check" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › Try a sample" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › Import the card or the coverage screen" }
   s1 --> sc
   sc --> b1 --> g0
   sc --> b2 --> g3
+  sc --> f1 --> p1 --> q1
+  f1 -.-> g4
   sc --> f5 --> p7 --> q1
   f5 -.-> g2
-  sc --> f1 --> a1
-  sc --> f2 --> a1
-  a1 --> p1 --> cs
-  sc --> f3 --> p2 --> t1 --> cs
-  cs --> f4 --> p3
   sc --> i1 --> i2 --> i3 --> i4 --> i5 --> i6 --> q1
-  cs --> q1
-  p3 --> q1
   q1 -->|"No"| p4 -.-> p5
   p4 --> q1
   q1 -->|"Yes"| p6 --> c1 --> g1
   class s1 k_start
-  class sc,cs k_screen
-  class b1,b2,f5,f2,f3,f4,c1 k_click
-  class g3,g0,g1,g2 k_goto
-  class p7,p1,p2,p3,p4,p5,p6 k_process
-  class f1,i1,i2,i3,i4,i5,i6 k_input
-  class a1 k_agent
-  class t1 k_toast
+  class sc k_screen
+  class b1,b2,f1,f5,c1 k_click
+  class g3,g0,g1,g2,g4 k_goto
+  class p1,p7,p4,p5,p6 k_process
+  class i1,i2,i3,i4,i5,i6 k_input
   class q1 k_decision
+  style gImport fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gSample fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
-  style gCard fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gFields fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

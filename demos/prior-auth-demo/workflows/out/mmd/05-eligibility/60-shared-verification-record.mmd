@@ -17,12 +17,12 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "A check is made" }
-  s2@{ shape: stadium, label: "New case needs coverage for a patient" }
+  s2@{ shape: stadium, label: "New Case needs coverage for a patient" }
   subgraph gWrite ["Where a record is written"]
-  w1@{ shape: trap-t, label: "Verify a patient: 'Check now' finishes" }
-  w2@{ shape: trap-t, label: "Eligibility list: 'Re-check', or the result's 'Check again'" }
+  w1@{ shape: trap-t, label: "Verify page: 'Check now' finishes" }
+  w2@{ shape: trap-t, label: "Eligibility list or result: 'Re-check'" }
   w3@{ shape: delay, label: "The Demo clock passes a booked re-check time" }
-  w4@{ shape: trap-t, label: "New case step 2: run a check, or 'Refresh verification'" }
+  w4@{ shape: trap-t, label: "New Case step 2: run a check, or 'Refresh verification'" }
   end
   v1@{ shape: hex, label: "<b>Verify (and Criteria, Navigator, Caller) run the check</b><br/>The same rules everywhere: the seeded patient, or the scripted answer from the member ID" }
   qp@{ shape: diam, label: "Is Verify paused in Settings?" }
@@ -33,11 +33,11 @@ flowchart TD
   r5@{ shape: cyl, label: "<b>A check at no case yet is filed under one site</b><br/>the site in view (Site A when both are in view)" }
   r6@{ shape: cyl, label: "<b>Paused: nothing is asked</b><br/>A patient already known keeps the last result with the warning 'Verification service unavailable'<br/>Anyone else is saved as 'Not checked'" }
   subgraph gRead ["Where a record is read"]
-  a1@{ shape: curv-trap, label: "Eligibility list: a row, the title count, the four figures, the sidebar badge" }
-  a2@{ shape: curv-trap, label: "Eligibility result: the verdict, the three parts, the warnings" }
-  a3@{ shape: curv-trap, label: "New case step 2: the summary and 'View full verification details'" }
+  a1@{ shape: curv-trap, label: "Eligibility list: a row, the verdict tiles, the count, the sidebar badge" }
+  a2@{ shape: curv-trap, label: "Eligibility result: the verdict and its fact, the rows, a warning no row says, History" }
+  a3@{ shape: curv-trap, label: "New Case step 2: the summary and 'View full verification details'" }
   end
-  q1@{ shape: diam, label: "New case: is there a record for this patient, payer and program?" }
+  q1@{ shape: diam, label: "New Case: is there a record for this patient, payer and program?" }
   q2@{ shape: diam, label: "Do the dates asked for fall inside the dates the record covers?" }
   q3@{ shape: diam, label: "Was it checked within the last 24 demo hours?" }
   q4@{ shape: diam, label: "Did the check actually run? (not 'Not checked')" }
@@ -46,7 +46,7 @@ flowchart TD
   u3@{ shape: trap-t, label: "Click 'Refresh verification'" }
   u4@{ shape: odd, label: "<b>'R-1042 re-checked'</b><br/>'Still Authorization first.'<br/>or 'Could not re-check R-1042' while Verify is paused" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Re-verify a patient" }
-  g2@{ shape: subproc, label: "Continues in: Authorizations › New case › How a case starts and resumes" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New Case › How a case starts and resumes" }
   g3@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › The exceptions" }
   g4@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Sites" }
   s1 --> w1 & w2 & w3

@@ -17,10 +17,10 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Click 'Continue to Eligibility & Benefits' on Intake" }
-  sc@{ shape: curv-trap, label: "<b>Eligibility & Benefits · Retroactive authorization</b><br/>'Verify checks coverage for the dates of service.'" }
+  sc@{ shape: curv-trap, label: "<b>Eligibility & Benefits · Retroactive authorization</b><br/>No sentence under the title; the check covers the dates of service" }
   dIn@{ shape: diam, label: "Are the payer, level of care, member ID and the first date of service in?" }
   sNeed@{ shape: curv-trap, label: "<b>Card 'Verify needs a little more'</b><br/>Button 'Open Intake'" }
-  gIntake@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Retroactive authorization" }
+  gIntake@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Retroactive authorization" }
   dHave@{ shape: diam, label: "<b>Is there a check for this payer and level of care</b><br/>that covers the dates of service and is under 24 hours old?" }
   pReuse@{ shape: rect, label: "The check is reused" }
   stId@{ shape: cyl, label: "The case gets its id first, so the check is filed under it" }
@@ -35,15 +35,15 @@ flowchart TD
   stDoc@{ shape: cyl, label: "<b>The reason is kept on the case</b><br/>It goes to the request's History when sent" }
   pBlock@{ shape: rect, label: "<b>Without a documented exception the warning stays</b><br/>Review & submit marks 'Coverage' as a blocking item" }
   pRule@{ shape: rect, label: "<b>Retro approval depends on the payer</b><br/>Its Backdating rule, or 'No rule on file for ...', is on Intake and a note on Review & submit" }
-  gIntake2@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Retroactive authorization" }
-  gWarn@{ shape: subproc, label: "Continues in: Authorizations › New case › Eligibility & Benefits › Warnings and documented exceptions" }
-  gNoAuth@{ shape: subproc, label: "Continues in: Authorizations › New case › Eligibility & Benefits › No authorization required" }
+  gIntake2@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Retroactive authorization" }
+  gWarn@{ shape: subproc, label: "Continues in: Authorizations › New Case › Eligibility & Benefits › Warnings and documented exceptions" }
+  gNoAuth@{ shape: subproc, label: "Continues in: Authorizations › New Case › Eligibility & Benefits › No authorization required" }
   subgraph gFoot ["Footer bar"]
   cBack@{ shape: trap-t, label: "Click 'Back'" }
   cSave@{ shape: trap-t, label: "Click 'Save as draft'" }
   cCont@{ shape: trap-t, label: "Click 'Continue to Clinical documentation'" }
   end
-  gDocs@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › Required and typical documents by type" }
+  gDocs@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › Required and typical documents by type" }
   s1 --> sc --> dIn
   dIn -->|"No"| sNeed --> gIntake
   dIn -->|"Yes"| dHave

@@ -17,37 +17,37 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Click 'Continue to Eligibility & Benefits' on Intake</b><br/>Or click step 2 in the stepper" }
-  sc@{ shape: curv-trap, label: "<b>Eligibility & Benefits · Initial authorization</b><br/>'Verify runs a check for the dates asked, or reuses one made in the last 24 hours.'" }
+  sc@{ shape: curv-trap, label: "<b>Eligibility & Benefits · Initial authorization</b><br/>No sentence under the title" }
   dIn@{ shape: diam, label: "Are the payer, level of care, member ID and start date in?" }
-  sNeed@{ shape: curv-trap, label: "<b>Card 'Verify needs a little more'</b><br/>'Add the payer, the level of care, the member ID and the start date in Intake, and Verify checks coverage for those dates.'" }
+  sNeed@{ shape: curv-trap, label: "<b>One line 'Verify needs the payer, level of care, member ID and start date'</b><br/>and 'Open Intake'" }
   cIntake@{ shape: trap-t, label: "Click 'Open Intake'" }
-  gIntake@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Initial authorization" }
+  gIntake@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Initial authorization" }
   dHave@{ shape: diam, label: "<b>Is there a check for this patient, payer and level of care</b><br/>that covers the dates and is under 24 hours old?" }
-  pReuse@{ shape: rect, label: "<b>The check is reused</b><br/>'This check is recent (made just now) and covers these dates, so it is reused. Refresh it only if something changed.'" }
+  pReuse@{ shape: rect, label: "<b>The check is reused</b><br/>Chip 'Reused · checked Tue 10:42 am'; 'Refresh verification' is the way to ask again" }
   stId@{ shape: cyl, label: "<b>The case gets its id first, so the check is filed under it</b><br/>The id falls at the case's site" }
-  aV@{ shape: hex, label: "<b>Verify checks coverage and benefits with Summit, about 1.2 seconds</b><br/>Spinner and 'Verify is checking coverage and benefits with Summit'" }
+  aV@{ shape: hex, label: "<b>Verify checks coverage and benefits with Summit, about 1.2 seconds</b><br/>Spinner and 'Checking coverage and benefits with Summit'" }
   xPlan@{ shape: st-rect, label: "<b>The payer's eligibility service (demo: simulated)</b><br/>Answers from the member ID's last four digits" }
   stRec@{ shape: cyl, label: "<b>Check saved as a verification record</b><br/>The case remembers its id<br/>The same record is on Eligibility & Benefits" }
   dOld@{ shape: diam, label: "Is the check old, or for other dates?" }
-  tOld@{ shape: odd, label: "<b>'This check is 30 hours old. Refresh it before you send.'</b><br/>or 'This check covers other dates than the request asks for.'<br/>The check runs again by itself for an initial request" }
+  tOld@{ shape: odd, label: "<b>Chip 'Checked 30 h ago' or 'Covers other dates'</b><br/>The check runs again by itself for an initial request" }
   sSum@{ shape: curv-trap, label: "<b>Verification summary</b><br/>'Coverage and benefits · Summit'<br/>'Last verified Tue 10:44 am, 2 min ago. Simulated source.'<br/>Coverage, Plan type and routing, Benefits, Authorization, Provider, Existing authorization" }
   cRef@{ shape: trap-t, label: "Click 'Refresh verification'" }
   pRef@{ shape: rect, label: "<b>Verify asks again</b><br/>The record is replaced" }
   cDet@{ shape: trap-t, label: "Click 'View full verification details'" }
   oDet@{ shape: win-pane, label: "<b>Drawer 'Verification details'</b><br/>The full record, the same as on Eligibility & Benefits" }
   dWarn@{ shape: diam, label: "Does the check have warnings?" }
-  gWarn@{ shape: subproc, label: "Continues in: Authorizations › New case › Eligibility & Benefits › Warnings and documented exceptions" }
+  gWarn@{ shape: subproc, label: "Continues in: Authorizations › New Case › Eligibility & Benefits › Warnings and documented exceptions" }
   dNoAuth@{ shape: diam, label: "Does the payer need no authorization?" }
-  gNoAuth@{ shape: subproc, label: "Continues in: Authorizations › New case › Eligibility & Benefits › No authorization required" }
-  sNote@{ shape: curv-trap, label: "<b>'This is the same record as on Eligibility & Benefits. It is a simulated check and never a payer's decision.'</b><br/>Link 'Eligibility & Benefits'" }
+  gNoAuth@{ shape: subproc, label: "Continues in: Authorizations › New Case › Eligibility & Benefits › No authorization required" }
+  sNote@{ shape: curv-trap, label: "<b>Link 'Open in Eligibility & Benefits' above the summary</b><br/>The summary itself says 'Simulated source'" }
   gEb@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › The shared verification record" }
   subgraph gFoot ["Footer bar"]
   cBack@{ shape: trap-t, label: "Click 'Back'" }
   cSave@{ shape: trap-t, label: "Click 'Save as draft'" }
   cCont@{ shape: trap-t, label: "Click 'Continue to Clinical documentation'" }
-  tHint@{ shape: odd, label: "<b>'2 warnings. You can go on; Review & submit lists them again.'</b><br/>or 'Nothing is sent to the payer until a clinician signs.'" }
+  tHint@{ shape: odd, label: "The bar's only line is a payer workflow warning, when there is one" }
   end
-  gDocs@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › The checklist and Continue" }
+  gDocs@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › The checklist and Continue" }
   s1 --> sc --> dIn
   dIn -->|"No"| sNeed --> cIntake --> gIntake
   dIn -->|"Yes"| dHave

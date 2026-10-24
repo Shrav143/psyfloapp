@@ -17,22 +17,21 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   p1@{ shape: curv-trap, label: "<b>EMR Connect</b><br/>Connection health, sync, mappings (in Advanced) and the Write back switch on each row" }
-  subgraph gPull ["New case: pull a chart"]
-  a1@{ shape: trap-t, label: "<b>Click 'Pull a chart from EMR Connect'</b><br/>Clinical documentation step" }
-  a0@{ shape: diam, label: "Is any system at a site in view Connected?" }
-  a8@{ shape: odd, label: "<b>'No records system is connected. Connect one in EMR Connect to pull a chart, or drop the files above.'</b><br/>With a link to EMR Connect" }
-  a2@{ shape: win-pane, label: "<b>Chart from EMR Connect</b><br/>Dropdown with the charts that live in a Connected system<br/>A hint under each names the system" }
-  a2b@{ shape: rect, label: "<b>Clinical record · Site A: J.M., 34 · Summit · Residential 3.5 and L.G., 29 · Cardinal · Residential 3.5</b><br/>Clinical record · Site B: A.R., 45 · Beacon · IOP and S.T., 38 · Harborview · PHP<br/>A viewer who sees one site is offered only that site's two charts<br/>A system that is Disconnected or Needs attention offers none" }
+  subgraph gPull ["New Case and Eligibility & Benefits: Pull from EMR"]
+  a1@{ shape: trap-t, label: "<b>Click 'Pull from EMR' in the import row</b><br/>Intake, Clinical documentation, and Eligibility & Benefits' verify" }
+  a0@{ shape: diam, label: "Is a clinical record system at a site in view Connected?" }
+  a8@{ shape: rect, label: "<b>No 'Pull from EMR' button</b><br/>'Import a file' and 'Paste a screenshot' remain" }
+  a2@{ shape: win-pane, label: "<b>Chart picker</b><br/>The charts that live in a Connected system<br/>A hint under each names the system" }
+  a2b@{ shape: rect, label: "<b>Clinical record · Site A: J.M., 34 · Summit · Residential 3.5 and L.G., 29 · Cardinal · Residential 3.5</b><br/>Clinical record · Site B: A.R., 45 · Beacon · IOP and S.T., 38 · Harborview · PHP<br/>A viewer who sees one site is offered only that site's two charts" }
   a3@{ shape: lean-r, label: "Pick a chart" }
-  a9@{ shape: diam, label: "<b>Does that system still have a field waiting for a mapping?</b><br/>'Level of care' or 'Referral source'" }
-  a10@{ shape: rect, label: "<b>Line under the picker</b><br/>'Level of care still needs a mapping there, so that field is left blank.' with 'Open EMR Connect'" }
-  a4@{ shape: trap-t, label: "<b>Click 'Pull'</b><br/>Or 'Cancel'" }
+  a4@{ shape: trap-t, label: "Click 'Pull'" }
   a5@{ shape: rect, label: "Button reads 'Pulling' for one second" }
-  a6@{ shape: cyl, label: "<b>Case draft is filled in</b><br/>Patient, payer, member ID, level of care, request type, diagnoses, reason<br/>A field that waits for a mapping stays blank" }
-  a7@{ shape: odd, label: "<b>'Pulled J.M., 34 from EMR Connect'</b><br/>'Everything below was filled in from the chart. You can still change it.'<br/>Or, amber: 'Level of care needs a mapping, so that field was left blank. You can still fill it in.'" }
+  a9@{ shape: diam, label: "<b>Does that system still have a field waiting for a mapping?</b><br/>'Level of care' or 'Referral source'" }
+  a10@{ shape: rect, label: "<b>That field is left out of the review</b><br/>'Level of care: “Level of care” in the Site B record needs a mapping' with 'Map it'" }
+  a6@{ shape: curv-trap, label: "<b>Review: '8 fields found' and the earlier notes as documents</b><br/>Nothing applied until 'Apply'" }
   end
-  n1@{ shape: rect, label: "<b>Sync now does not add charts to the picker</b><br/>The four charts are fixed. Connect, Disconnect, Fix and Reconnect decide which systems offer them, and Map decides which fields a pull leaves blank" }
-  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Patient, insurance and request rows" }
+  n1@{ shape: rect, label: "<b>Sync now does not add charts to the picker</b><br/>The four charts are fixed. Connect, Disconnect, Fix and Reconnect decide which systems offer them, and Map decides which fields a pull leaves out" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New Case › Import › Pull from EMR" }
   subgraph gWrite ["Dashboard: write back"]
   b1@{ shape: curv-trap, label: "Dashboard request: 'Approved. Write-back waits for you'" }
   b0@{ shape: diam, label: "Does at least one Connected system at a site in view have its write-back switch on?" }
@@ -49,25 +48,25 @@ flowchart TD
   p1 -.-> a1
   a1 --> a0
   a0 -->|"No"| a8
-  a0 -->|"Yes"| a2 --> a2b --> a3 --> a9
-  a9 -->|"Yes"| a10 --> a4
-  a9 -->|"No"| a4
-  a4 --> a5 --> a6 --> a7 --> g1
+  a0 -->|"Yes"| a2 --> a2b --> a3 --> a4 --> a5 --> a9
+  a9 -->|"Yes"| a10 --> a6
+  a9 -->|"No"| a6
+  a6 --> g1
   a2 -.-> n1
   p1 -.-> b1
   b1 --> b0
   b0 -->|"No"| b8
   b0 -->|"Yes"| b2 --> b3 --> b4 --> b5 --> b6 --> b7 --> g2
   b8 -.-> n2
-  class p1,b1 k_screen
+  class p1,a6,b1 k_screen
   class a1,a4,b2,b5 k_click
   class a0,a9,b0 k_decision
-  class a8,a7,b8 k_toast
+  class a8,a2b,a5,a10,n1,b4,n2 k_process
   class a2,b3 k_overlay
-  class a2b,a10,a5,n1,b4,n2 k_process
   class a3 k_input
-  class a6,b7 k_store
   class g1,g2 k_goto
+  class b8 k_toast
   class b6 k_ext
+  class b7 k_store
   style gPull fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gWrite fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

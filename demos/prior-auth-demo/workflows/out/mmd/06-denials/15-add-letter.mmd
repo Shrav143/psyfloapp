@@ -16,19 +16,18 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Open the 'Open denials' panel</b><br/>Look at its footer" }
-  s1b@{ shape: stadium, label: "<b>No open denial: the empty state</b><br/>'No open denials'" }
-  co@{ shape: trap-t, label: "<b>Click 'Add a denial letter'</b><br/>(panel footer, or the empty-state button)" }
-  sc1@{ shape: win-pane, label: "<b>Right-hand panel 'Add a denial letter'</b><br/>Subtitle 'Drop a letter or use a sample'<br/>'The agents read it, check it against the chart and past appeals, and lay out your options. The new denial belongs to the site you are viewing.'<br/>Letter area, 'Identifiers are removed on upload.', note box, 'Analyze the denial', footer 'Back to open denials'" }
-  cb@{ shape: trap-t, label: "Click 'Back to open denials'" }
-  pk@{ shape: rect, label: "The state lives on the page, not in the panel: a typed note, a chosen file and a running analysis survive closing the panel" }
-  i1@{ shape: lean-r, label: "<b>Drop a file on the area, or click it (or press Enter or Space) to choose a file</b><br/>'Drop the denial letter here, or click to choose a PDF or DOCX'" }
+  s1@{ shape: stadium, label: "Dashboard title row: click 'Add a denial letter'" }
+  s1b@{ shape: stadium, label: "Empty state 'No open denials': click 'Add a denial letter'" }
+  sc1@{ shape: win-pane, label: "<b>Right-hand panel 'Add a denial letter'</b><br/>Drop area, the import's 'Import a file' and 'Paste a screenshot'<br/>Pill 'Identifiers removed on upload', 'Use sample letter', a note box, 'Analyze the denial'" }
+  pk@{ shape: rect, label: "The state lives on the page, not in the panel: a typed note, a chosen letter and a running analysis survive closing the panel" }
+  i1@{ shape: lean-r, label: "<b>Drop a file on the area, or click it (Enter or Space) to choose one</b><br/>'Drop the denial letter, or click to choose a PDF or DOCX'" }
   c1@{ shape: trap-t, label: "Click 'Use sample letter'" }
   p1@{ shape: rect, label: "Next sample letter in turn: Beacon, Summit, then Harborview" }
-  fr@{ shape: curv-trap, label: "<b>File row: file name and size</b><br/>A small X removes it" }
-  c2@{ shape: trap-t, label: "Click the X on the file row" }
-  p2@{ shape: rect, label: "<b>Drop area comes back</b><br/>The note is kept" }
-  i2@{ shape: lean-r, label: "<b>Type a note (optional)</b><br/>'Add anything not in the letter, such as a payer call note'" }
+  ci@{ shape: trap-t, label: "Click 'Paste a screenshot' and press Ctrl or Cmd V, or 'Import a file' (CSV with a field mapping, or a PDF)" }
+  pr@{ shape: rect, label: "<b>The shared import (the same one New Case and Eligibility use): FLO reads the screenshot or the file (demo: simulated)</b><br/>what it found is listed for review, nothing is applied until 'Apply'" }
+  pi@{ shape: rect, label: "<b>After the person reviews what was read and clicks 'Apply': payer, dates, days or units requested and approved, and the reason</b><br/>show as pills under the letter row; the reason picks the kind of denial" }
+  fr@{ shape: curv-trap, label: "<b>Letter row: the file name, or 'From a pasted screenshot'</b><br/>A small X removes it and brings the choices back" }
+  i2@{ shape: lean-r, label: "Type a note (optional) 'Note, such as a payer call'" }
   c3@{ shape: trap-t, label: "Click 'Analyze the denial'" }
   d1@{ shape: diam, label: "Is a letter chosen?" }
   t1@{ shape: odd, label: "'Add the letter first, or use the sample letter.'" }
@@ -39,28 +38,22 @@ flowchart TD
   a4@{ shape: hex, label: "Integrity is checking every statement against the chart" }
   w1@{ shape: delay, label: "About 1.25 seconds per step, 5 seconds in all (demo: simulated)" }
   cx@{ shape: trap-t, label: "Press Escape, click X or the dimmed area while the agents work" }
-  px@{ shape: rect, label: "<b>Panel closes, the agents keep going</b><br/>The page switches to the new denial when they finish" }
-  d2@{ shape: diam, label: "Is the person still on this page?" }
+  px@{ shape: rect, label: "Panel closes, focus returns to 'Add a denial letter'; the agents keep going" }
+  d2@{ shape: diam, label: "Is the person still on the dashboard?" }
   e1@{ shape: stadium, label: "Work is dropped and no denial is added" }
-  p4@{ shape: rect, label: "Facts of the sample fill the denial: initials, age, payer, program, win chance, denial type, similar decisions, call window" }
-  st1@{ shape: cyl, label: "<b>New open denial created</b><br/>Site = the site in view (Site A when both are in view), kept on the denial<br/>Id = the next free number from D-3340 that the site rule places at that site<br/>Chip 'Analyzed', route 'Peer-to-peer', file name and note saved" }
-  st2@{ shape: cyl, label: "History lines: Reader read the letter and removed identifiers; Advocate checked the notice, the deadline and how the payer applied its own criteria; Historian compared N similar decisions" }
+  st1@{ shape: cyl, label: "<b>New open denial created</b><br/>Site = the site in view (Site A when both are in view)<br/>Id = the next free number from D-3340 that the site rule places at that site<br/>Chip 'Analyzed', letter name and note saved" }
   t2@{ shape: odd, label: "<b>'The analysis is ready'</b><br/>'D-3340 was added to Open denials.'" }
-  t3@{ shape: odd, label: "<b>Notification 'Denial analyzed' from Advocate</b><br/>Links to the new denial" }
-  p5@{ shape: rect, label: "<b>Form clears: file, sample and note</b><br/>Panel closes<br/>New denial is selected, address becomes ?id=D-3340 only (any ?payer= or ?reason= filter is cleared so it shows in the list)<br/>Badge and the 'Open denials' count go up by one, for that site and for Both sites" }
-  g1@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
-  g2@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Recommended next step" }
-  g3@{ shape: subproc, label: "Continues in: Dashboard › Arrive › What the page shows" }
-  g4@{ shape: subproc, label: "Continues in: Denial Intelligence › Sites › What each site sees and out-of-site links" }
+  t3@{ shape: odd, label: "Notification 'Denial analyzed' from Advocate, linking to /denials/D-3340" }
+  p5@{ shape: rect, label: "<b>Panel closes, filters and the figure are cleared</b><br/>The new row is listed first, highlighted, with the pill 'New', and its id link has focus<br/>The badge and 'Open' go up by one, for that site and for Both sites" }
   g5@{ shape: subproc, label: "Continues in: Denial Intelligence › Open denials list" }
-  s1 --> co
-  s1b --> co
-  co --> sc1
-  sc1 --> cb --> g5
+  g2@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Recommended next step" }
+  g4@{ shape: subproc, label: "Continues in: Denial Intelligence › Sites › What each site sees and out-of-site links" }
+  s1 --> sc1
+  s1b --> sc1
   sc1 -.-> pk
   sc1 --> i1 --> fr
   sc1 --> c1 --> p1 --> fr
-  fr --> c2 --> p2 --> i1
+  sc1 --> ci --> pr --> pi --> fr
   sc1 --> i2 --> c3
   fr --> c3
   c3 --> d1
@@ -70,21 +63,20 @@ flowchart TD
   sc2 --> cx --> px
   a4 --> d2
   d2 -->|"No, left the page"| e1
-  d2 -->|"Yes"| p4 --> st1 --> st2 --> t2 --> p5
+  d2 -->|"Yes"| st1 --> t2 --> p5 --> g5
   st1 --> t3
-  p5 --> g1 & g2
-  st1 --> g3
+  p5 --> g2
   st1 -.-> g4
   class s1,s1b k_start
-  class co,cb,c1,c2,c3,cx k_click
   class sc1 k_overlay
-  class pk,p1,p2,px,p4,p5 k_process
+  class pk,p1,pr,pi,px,p5 k_process
   class i1,i2 k_input
+  class c1,ci,c3,cx k_click
   class fr,sc2 k_screen
   class d1,d2 k_decision
   class t1,t2,t3 k_toast
   class a1,a2,a3,a4 k_agent
   class w1 k_wait
   class e1 k_endx
-  class st1,st2 k_store
-  class g1,g2,g3,g4,g5 k_goto
+  class st1 k_store
+  class g5,g2,g4 k_goto

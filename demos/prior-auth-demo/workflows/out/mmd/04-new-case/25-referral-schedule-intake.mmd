@@ -36,7 +36,7 @@ flowchart TD
   t2@{ shape: odd, label: "<b>'Marked admitted'</b><br/>'RF-2053 counts as admitted in the funnel.'" }
   sc2@{ shape: curv-trap, label: "<b>Green banner 'Admitted into IOP'</b><br/>Header has no decision buttons" }
   c5@{ shape: trap-t, label: "<b>Click 'Continue with this referral' on the banner</b><br/>or on the checklist" }
-  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Initial authorization" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Initial authorization" }
   s1 --> c1 --> o1 --> i1 --> i2 --> d1
   d1 -->|"No"| p1 --> cX
   d1 -->|"Yes"| c2 --> st1 --> t1 --> sc1

@@ -24,7 +24,7 @@ flowchart TD
   hg2@{ shape: subproc, label: "Continues in: EMR Connect › Connect a system › Choose the system and contact" }
   sg@{ shape: subproc, label: "Continues in: EMR Connect › Sites › What each site sees" }
   subgraph gAct ["Action required"]
-  n1@{ shape: curv-trap, label: "<b>One banner line, only when something needs a person</b><br/>'Action required: Billing system needs attention. Also: 2 fields need a mapping, so New case leaves them blank.'<br/>One button for the first item: 'Fix'" }
+  n1@{ shape: curv-trap, label: "<b>One banner line, only when something needs a person</b><br/>'Action required: Billing system needs attention. Also: 2 fields need a mapping, so New Case leaves them blank.'<br/>One button for the first item: 'Fix'" }
   n2@{ shape: rect, label: "Nothing needs a person: no banner" }
   end
   ng@{ shape: subproc, label: "Continues in: EMR Connect › Page › The Action required line" }
@@ -39,7 +39,7 @@ flowchart TD
   c1@{ shape: curv-trap, label: "<b>Connection health</b><br/>'2 of 3 systems connected. Read access for charts, insurance details and medications.'<br/>One site: 'Site A. 1 of 2 systems connected...' and, for a one-site viewer, an info icon on why only some systems show" }
   c2@{ shape: rect, label: "<b>One row per system: name, status pill, what it holds and reads ('All programs at Site A. Reads ...'), last sync, sync failures, buttons</b><br/>Then a line: 'Read only' or 'Read and write back', with the Write back switch" }
   c3@{ shape: trap-t, label: "Click 'Sync now' in the card header" }
-  c4@{ shape: trap-t, label: "<b>Click 'Sync now', 'Fix', 'Reconnect' or 'Manage' on a row</b><br/>A row that is not Connected also says that New case cannot pull a chart from it" }
+  c4@{ shape: trap-t, label: "<b>Click 'Sync now', 'Fix', 'Reconnect' or 'Manage' on a row</b><br/>A row that is not Connected also says that New Case cannot pull a chart from it" }
   c6@{ shape: trap-t, label: "Click the 'Write back' switch on a row" }
   c5@{ shape: odd, label: "<b>'Connect your record system to let charts arrive on their own.'</b><br/>Empty list. Not reachable in the demo: a system can be disconnected, never removed" }
   end

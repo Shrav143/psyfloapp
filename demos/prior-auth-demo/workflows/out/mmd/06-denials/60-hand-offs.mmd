@@ -18,10 +18,10 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   sc1@{ shape: curv-trap, label: "<b>Denial Intelligence</b><br/>A denial is on screen" }
   subgraph gOut ["Links out"]
-  c1@{ shape: trap-t, label: "Click 'See on the Dashboard' (header card)" }
-  c2@{ shape: trap-t, label: "Click 'See on the Dashboard' (the same button, after a call was overturned or partly restored)" }
+  c1@{ shape: trap-t, label: "Click 'Case R-0997' (header card)" }
+  c2@{ shape: trap-t, label: "Open the Dashboard from the sidebar (after a call was overturned or partly restored)" }
   c3@{ shape: trap-t, label: "Click 'Open the Dashboard' (no open denials)" }
-  c4@{ shape: trap-t, label: "Click 'Plan the step-down' (next-step block after accepting)" }
+  c4@{ shape: trap-t, label: "Click 'Plan the step-down' (the accept choice after accepting)" }
   p1@{ shape: rect, label: "Address opens /dashboard?request=D-3318" }
   p2@{ shape: rect, label: "Address opens /dashboard" }
   p3@{ shape: rect, label: "Address opens /manager?tab=cases" }
@@ -30,7 +30,7 @@ flowchart TD
   g3@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Step-down plans from accepted denials" }
   end
   subgraph gShare ["Shared with other screens"]
-  c6@{ shape: trap-t, label: "Click 'Record the payer's decision' (next-step block on a filed appeal)" }
+  c6@{ shape: trap-t, label: "Click 'Record the payer's decision' (the written appeal choice on a filed appeal)" }
   z1@{ shape: cyl, label: "On accept: Case Manager gets a step-down plan, Analytics logs the accepted denial" }
   z2@{ shape: cyl, label: "<b>On a recorded appeal decision: the result and next level are logged</b><br/>Analytics reads the appeal rulings" }
   end

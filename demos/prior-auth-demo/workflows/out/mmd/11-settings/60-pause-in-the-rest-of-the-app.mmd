@@ -19,7 +19,7 @@ flowchart TD
   s1@{ shape: stadium, label: "<b>Pause an agent on Settings</b><br/>Its switch, or 'Pause all agents' then 'Pause all'" }
   p1@{ shape: cyl, label: "<b>The pause is saved in the app</b><br/>Every screen reads the same switch" }
   t1@{ shape: odd, label: "<b>The banner on Settings says what is held back, agent by agent</b><br/>For example 'Paused: Verify and Reader.' then one sentence for each screen" }
-  subgraph gNew ["New case › Authorization preparation"]
+  subgraph gNew ["New Case › Authorization preparation"]
   n1@{ shape: curv-trap, label: "<b>Authorization preparation</b><br/>Ten agents in a row, then 'Back', 'Pause all agents', 'Skip ahead', 'Review & submit'" }
   n3@{ shape: rect, label: "<b>The run holds when it reaches a paused agent</b><br/>Its row shows a 'Paused' pill, the clock chip stops and 'Skip ahead' is dimmed" }
   n4@{ shape: odd, label: "<b>Banner 'Agents are paused in Settings' or '{Agent} is paused in Settings'</b><br/>'Nothing is read, checked or drafted until it is resumed. Nothing has been sent to the payer.'" }
@@ -45,7 +45,7 @@ flowchart TD
   r1@{ shape: rect, label: "Production: the operator can pause one agent, one payer channel or all outbound actions at once" }
   r2@{ shape: rect, label: "<b>Production: a pause takes effect before the next step of any running job</b><br/>Steps already going out finish, or roll back to the manual queue" }
   end
-  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › Finished, paused or left" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › Finished, paused or left" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Header › Check all now and the demo clock" }
   g3@{ shape: subproc, label: "Continues in: Case Manager › Reviews this week › Draft all due reviews and sign all clean drafts" }
   g4@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows" }

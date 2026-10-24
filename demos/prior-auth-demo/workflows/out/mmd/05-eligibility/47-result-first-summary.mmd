@@ -16,41 +16,40 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "Result page, summary card" }
-  subgraph gE ["Eligibility"]
+  s1@{ shape: stadium, label: "Result page, rows under the verdict band" }
+  subgraph gE ["Row 'Eligibility'"]
   e0@{ shape: diam, label: "What did the state or plan say?" }
   e1@{ shape: rect, label: "<b>Pill 'Eligible' (green)</b><br/>'Effective 01/01/2026, no end date'" }
-  e2@{ shape: rect, label: "<b>Pill 'Not eligible' (red)</b><br/>'Effective 01/01/2026, ended 09/30/2026'" }
-  e3@{ shape: rect, label: "<b>Pill 'Needs a fix' (red)</b><br/>'Effective 01/01/2026, lapsed 10/12/2026'<br/>Button 'Request retro-eligibility'" }
-  e4@{ shape: rect, label: "<b>Pill 'Needs a fix' (red)</b><br/>'No coverage was found for these details. Check the member ID and date of birth, or read the card again.'<br/>No dates" }
-  e5@{ shape: rect, label: "<b>Pill 'Needs a fix' (red)</b><br/>'Active, under the member ID ending 5521'<br/>The plan has this member under another ID" }
-  e6@{ shape: rect, label: "<b>Pill 'Not checked' (grey)</b><br/>'Verify is paused in Settings, so nothing was asked of the plan.'" }
+  e2@{ shape: rect, label: "<b>Pill 'Not eligible' (red)</b><br/>'Effective 01/01/2026, ended 09/30/2026'<br/>and '· with Cardinal Health Plan since 10/01' when the member moved" }
+  e3@{ shape: rect, label: "<b>Pill 'Needs a fix' (red)</b><br/>'Effective 01/01/2026, lapsed 10/12/2026'<br/>Button 'Request retro-eligibility' on the band" }
+  e4@{ shape: rect, label: "<b>Pill 'Needs a fix' (red)</b><br/>'No coverage found for these details'<br/>No dates" }
+  e5@{ shape: rect, label: "<b>Pill 'Needs a fix' (red)</b><br/>'Active, under the member ID ending 5521'" }
+  e6@{ shape: rect, label: "<b>Pill 'Not checked' (grey)</b><br/>'Not asked: Verify is paused in Settings'" }
   end
-  nf@{ shape: rect, label: "<b>Benefits and What this service needs say 'Not checked' (grey)</b><br/>'Needs a plan that knows this member' or 'Not asked while Verify is paused'<br/>No limit line, no cost share, no Payers rules" }
-  subgraph gB ["Benefits"]
+  nf@{ shape: rect, label: "<b>Benefits and What this service needs say 'Not checked' (grey), 'Not asked'</b><br/>No limit, no cost share, no Payers rules" }
+  subgraph gB ["Rows 'Benefits' and 'Patient pays'"]
   b0@{ shape: diam, label: "What do the benefits say?" }
-  b1@{ shape: rect, label: "<b>Pill 'Covered' (green)</b><br/>'Residential 3.5 is payable. Codes H0018 and H0019'" }
-  b2@{ shape: rect, label: "<b>Pill 'Limited' (amber)</b><br/>'... is payable with conditions. Codes ...'" }
-  b3@{ shape: rect, label: "<b>Pill 'Not covered' (red)</b><br/>'... is not a covered benefit. Codes ...'" }
-  b10@{ shape: rect, label: "<b>Pill 'Not confirmed' (amber)</b><br/>'Harborview did not confirm PHP. Codes H0035'" }
+  b1@{ shape: rect, label: "<b>Pill 'Covered' (green)</b><br/>'Residential 3.5 · H0018 and H0019'" }
+  b2@{ shape: rect, label: "<b>Pill 'Limited' (amber)</b><br/>'PHP, with conditions · H0035'" }
+  b3@{ shape: rect, label: "<b>Pill 'Not covered' (red)</b><br/>'Residential 3.5 not covered · H0018 and H0019'" }
+  b10@{ shape: rect, label: "<b>Pill 'Not confirmed' (amber)</b><br/>'PHP not confirmed by Harborview · H0035'" }
   b4@{ shape: diam, label: "Is a service limit on file?" }
-  b5@{ shape: rect, label: "<b>Quiet line '9 of 14 days used, 5 left'</b><br/>(or '38 of 48 units used, 10 left')<br/>'All 14 days used. Nothing left' when none is left" }
-  b6@{ shape: rect, label: "<b>Quiet line 'No annual day limit for residential 3.5. The authorization sets the days'</b><br/>when the program has none (Summit residential)<br/>Otherwise no limit line" }
+  b5@{ shape: rect, label: "<b>Added to the row: '· 9 of 14 days used, 5 left'</b><br/>(or '· 38 of 48 units used, 10 left'), '· All 14 days used' when none is left" }
+  b6@{ shape: rect, label: "<b>Added to the row: '· No annual day limit' (Summit residential)</b><br/>Otherwise nothing" }
   b7@{ shape: diam, label: "Does this plan type have a cost share on file?" }
-  b8@{ shape: rect, label: "<b>Quiet line 'Patient pays: Copay $40 per day, deductible $350 left, coinsurance 20% after the deductible'</b><br/>Commercial plans and carve-outs<br/>Medicare Advantage: 'Deductible $85 left, coinsurance 20%'" }
-  b9@{ shape: rect, label: "<b>Nothing about cost</b><br/>Ohio Medicaid members usually pay none, so there is no '$0' line" }
+  b8@{ shape: rect, label: "<b>Row 'Patient pays'</b><br/>'Copay $40 per day, deductible $350 left, coinsurance 20% after the deductible'<br/>Medicare Advantage: 'Deductible $85 left, coinsurance 20%'" }
+  b9@{ shape: rect, label: "<b>No 'Patient pays' row</b><br/>Ohio Medicaid members usually pay none, so there is no '$0'" }
   end
-  subgraph gN ["What this service needs"]
+  subgraph gN ["Row 'What this service needs'"]
   n0@{ shape: diam, label: "What is the authorization state?" }
-  n1@{ shape: rect, label: "<b>Pill 'Not required' (grey)</b><br/>'Beacon does not require one for IOP, for dates of service 10/21/2026 to 10/31/2026.'<br/>Also when the payer's saved rule 'No authorization needed' names this level of care" }
-  n7@{ shape: rect, label: "<b>Pill 'Requirement unknown' (grey)</b><br/>'No rule on file for Beacon and residential 3.5. Check with Beacon.'<br/>Also for a payer added on Payers that does not cover this level of care" }
-  n2@{ shape: rect, label: "<b>Pill 'On file' (green)</b><br/>'On file with Summit.'" }
-  n3@{ shape: rect, label: "<b>Pill 'Required, not on file' (amber)</b><br/>'Required before the first day. Not on file yet.'" }
-  n4@{ shape: rect, label: "<b>Pills 'In progress', 'Payer reviewing' or 'Retro request open' (amber or grey)</b><br/>with what is happening to the request" }
-  n5@{ shape: rect, label: "<b>Quiet line from the Payers config, read live</b><br/>'Summit's saved rules (demo data): Notice within 24 hours of admission.<br/>9 documents on the Residential 3.5 list.'<br/>Edit the rule or the list on Payers and this line follows" }
+  n1@{ shape: rect, label: "<b>Pill 'Not required' (grey)</b><br/>'Beacon does not require one for IOP · 10/21/2026 to 10/31/2026'<br/>Also when the payer's saved rule 'No authorization needed' names this level of care" }
+  n7@{ shape: rect, label: "<b>Pill 'Requirement unknown' (grey)</b><br/>'No rule on file for Beacon and residential 3.5'<br/>Also for a payer added on Payers that does not cover this level of care" }
+  n2@{ shape: rect, label: "<b>Pill 'On file' (green)</b><br/>'On file with Summit'" }
+  n3@{ shape: rect, label: "<b>Pill 'Required, not on file' (amber)</b><br/>'Before the first day'" }
+  n4@{ shape: rect, label: "<b>Pills 'In progress', 'Payer reviewing' or 'Retro request open'</b><br/>'Before the first day · request being drafted', 'Under review with Cardinal', 'For days already delivered'" }
+  n5@{ shape: rect, label: "<b>Quiet second line from the Payers config, read live</b><br/>'Summit rules: Notice within 24 hours of admission · 9 documents on the Residential 3.5 list'<br/>Edit the rule or the list on Payers and this line follows" }
   n6@{ shape: trap-t, label: "Click 'Open Summit's rules'" }
   end
-  note@{ shape: rect, label: "<b>Under the summary: 'Active coverage does not mean this service is covered.</b><br/>Check the benefits and the authorization requirement.'" }
   g1@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Read the rules" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › Next actions" }
   g3@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › Which verdict and why" }
@@ -58,7 +57,7 @@ flowchart TD
   e0 -->|"Active"| e1 --> b0
   e0 -->|"Ended"| e2 --> b0
   e0 -->|"Lapsed"| e3 --> b0
-  e0 -->|"Not found"| e4 --> nf --> note
+  e0 -->|"Not found"| e4 --> nf --> g3
   e0 -->|"Other member ID"| e5 --> b0
   e0 -->|"Verify paused"| e6 --> nf
   b0 -->|"Covered"| b1 --> b4
@@ -70,16 +69,17 @@ flowchart TD
   b7 -->|"Yes"| b8 --> n0
   b7 -->|"No"| b9 --> n0
   n0 -->|"Not required"| n1 --> n5
-  n0 -->|"Unknown"| n7 --> n5
+  n0 -->|"Unknown"| n7
   n0 -->|"On file"| n2 --> n5
   n0 -->|"Required"| n3 --> n5
   n0 -->|"Drafted, reviewing, retro"| n4 --> n5
   n5 --> n6 --> g1
-  n5 --> note --> g3
+  n5 --> g3
+  n7 --> g3
   e3 -.-> g2
   class s1 k_start
   class e0,b0,b4,b7,n0 k_decision
-  class e1,e2,e3,e4,e5,e6,nf,b1,b2,b3,b10,b5,b6,b8,b9,n1,n7,n2,n3,n4,n5,note k_process
+  class e1,e2,e3,e4,e5,e6,nf,b1,b2,b3,b10,b5,b6,b8,b9,n1,n7,n2,n3,n4,n5 k_process
   class n6 k_click
   class g1,g2,g3 k_goto
   style gE fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

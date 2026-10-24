@@ -29,12 +29,12 @@ flowchart TD
   o2@{ shape: win-pane, label: "<b>Lighter quick view, from the right</b><br/>Title 'R-1117 · Harborview MA', patient, level of care and request type" }
   f1@{ shape: rect, label: "<b>Focus moves into the panel (the X)</b><br/>Tab and Shift+Tab stay inside it" }
   subgraph gS ["What the lighter panel says, in this order"]
-  s1@{ shape: rect, label: "<b>'Next:' sentence and why</b><br/>The same sentence as the row and the case page" }
+  s1@{ shape: rect, label: "<b>'Next:' line</b><br/>The same words as the row and the case page" }
   s2@{ shape: rect, label: "<b>Status chips: Preparing, Ready to sign, With the payer or Denial route</b><br/>plus 'Needs your input' and 'Coverage needs a fix' when they apply" }
   s3@{ shape: rect, label: "<b>Deadline chip, e.g. 'Review due in 30 h'</b><br/>Waiting on: You, the payer or the agent" }
   s4@{ shape: rect, label: "<b>Approved, used and left; Window; Documents, complete or what is missing</b><br/>Only the ones this request has data for" }
   s5@{ shape: rect, label: "<b>Site (only for a viewer who can see both sites)</b><br/>Approval chance, its word and likely range" }
-  s6@{ shape: rect, label: "<b>History: the last three events, each labelled person or agent</b><br/>or 'Nothing has happened on this request yet'" }
+  s6@{ shape: rect, label: "<b>History: the last three lines with their flags (Agent, Logged decision ...)</b><br/>or 'Nothing yet'" }
   end
   b1@{ shape: trap-t, label: "Click 'Open case'" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Case page › Ways in" }

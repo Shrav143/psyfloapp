@@ -27,7 +27,7 @@ flowchart LR
   subgraph gMain ["Sidebar › Main"]
   dash@{ shape: curv-trap, label: "<b>Dashboard</b><br/>Lifecycle chips, Do next, authorizations table" }
   auth@{ shape: curv-trap, label: "<b>Authorizations › Queue</b><br/>Requests ranked by how soon each is due" }
-  newc@{ shape: curv-trap, label: "<b>Authorizations › New case</b><br/>Intake, Eligibility & Benefits, Clinical documentation, Authorization preparation, Review & submit" }
+  newc@{ shape: curv-trap, label: "<b>Authorizations › New Case</b><br/>Intake, Eligibility & Benefits, Clinical documentation, Authorization preparation, Review & submit" }
   elig@{ shape: curv-trap, label: "<b>Authorizations › Eligibility & Benefits</b><br/>List, verify a patient, result" }
   den@{ shape: curv-trap, label: "<b>Denial Intelligence</b><br/>Open denials, options, brief" }
   mgr@{ shape: curv-trap, label: "<b>Case Manager</b><br/>Tabs: Active cases and Reviews this week" }
@@ -44,7 +44,7 @@ flowchart LR
   end
   subgraph gSub ["Pages reached from inside a tab"]
   case@{ shape: curv-trap, label: "<b>Authorizations › Case page</b><br/>Five tabs: actions, picture, criteria, risk, draft" }
-  ref@{ shape: curv-trap, label: "<b>New case › Full referral page</b><br/>Extracted, Validation, Coverage, Fit, Activity" }
+  ref@{ shape: curv-trap, label: "<b>New Case › Full referral page</b><br/>Extracted, Validation, Coverage, Fit, Activity" }
   ver@{ shape: curv-trap, label: "Eligibility › Verify a patient and Result" }
   brief@{ shape: curv-trap, label: "Denial Intelligence › Peer-to-peer brief" }
   rep@{ shape: curv-trap, label: "<b>Denial Intelligence › Appeal analysis report</b><br/>For every denial, copy or download as PDF" }
@@ -54,7 +54,7 @@ flowchart LR
   g1@{ shape: subproc, label: "Continues in: Global shell" }
   g2@{ shape: subproc, label: "Continues in: Dashboard" }
   g3@{ shape: subproc, label: "Continues in: Authorizations › Queue and case page" }
-  g4@{ shape: subproc, label: "Continues in: Authorizations › New case" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › New Case" }
   g5@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits" }
   g6@{ shape: subproc, label: "Continues in: Denial Intelligence" }
   g7@{ shape: subproc, label: "Continues in: Case Manager" }

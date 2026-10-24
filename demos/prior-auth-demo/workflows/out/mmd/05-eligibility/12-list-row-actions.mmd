@@ -28,11 +28,11 @@ flowchart TD
   p2@{ shape: rect, label: "<b>The click stays on the row and does not open the result</b><br/>Button turns to a spinner and 'Checking'; the quiet second line says 'Checking now'" }
   end
   subgraph gNew ["A new patient"]
-  c4@{ shape: trap-t, label: "Click 'Verify a patient' (top right)" }
+  c4@{ shape: trap-t, label: "Click 'Verify a patient' (title row, right)" }
   p3@{ shape: rect, label: "<b>Opens /authorizations/eligibility/verify</b><br/>with an empty form" }
   end
   res@{ shape: curv-trap, label: "Result page for that patient" }
-  ver@{ shape: curv-trap, label: "<b>Verify a patient</b><br/>Empty form" }
+  ver@{ shape: curv-trap, label: "<b>Verify page</b><br/>Empty form" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › What the page shows" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Re-verify a patient" }
   g3@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › Fill in the form" }

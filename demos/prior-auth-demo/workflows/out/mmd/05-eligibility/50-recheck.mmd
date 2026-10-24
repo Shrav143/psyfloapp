@@ -17,12 +17,12 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   a1@{ shape: stadium, label: "On the list, click 'Re-check' on a row" }
-  a2@{ shape: stadium, label: "On a result, click 'Check again'" }
-  a3@{ shape: stadium, label: "Open 'Verify a patient' from a case and click 'Check now'" }
-  a4@{ shape: stadium, label: "In New case, step 2, click 'Refresh verification'" }
+  a2@{ shape: stadium, label: "On a result, click 'Re-check' on the verdict band" }
+  a3@{ shape: stadium, label: "Open the Verify page from a case and click 'Check now'" }
+  a4@{ shape: stadium, label: "In New Case, step 2, click 'Refresh verification'" }
   q1@{ shape: diam, label: "Is a re-check already running for this patient?" }
   p1@{ shape: rect, label: "<b>The click is ignored</b><br/>The button is off with a spinner" }
-  p2@{ shape: rect, label: "<b>Patient marked as checking</b><br/>List: button reads 'Checking' with a spinner, the quiet second line says 'Checking now'<br/>Result: 'Check again' shows a spinner" }
+  p2@{ shape: rect, label: "<b>Patient marked as checking</b><br/>List: button reads 'Checking' with a spinner, the quiet second line says 'Checking now'<br/>Result: 'Re-check' shows a spinner" }
   g0@{ shape: hex, label: "Verify and the other agents ask again" }
   x1@{ shape: st-rect, label: "<b>The state and the plan</b><br/>(demo: simulated, same answer as before)" }
   w1@{ shape: delay, label: "About 1.1 seconds" }
@@ -36,7 +36,7 @@ flowchart TD
   subgraph gAfter ["What changes on screen"]
   r1@{ shape: rect, label: "List: 'Checked 3 h ago' becomes 'Checked just now'" }
   r2@{ shape: rect, label: "List: tile 'Re-check due' goes down by one if this row had a re-check booked" }
-  r3@{ shape: rect, label: "Result: 'Time checked' in the facts line, 'Sat 10:40 am, 3 d ago', becomes '10:42 am, live'" }
+  r3@{ shape: rect, label: "<b>Result: 'Time checked' in the facts line, 'Sat 10:40 am, 3 d ago', becomes '10:42 am, live'</b><br/>History in the side panel: 'Checked coverage and benefits: ...' at the new time" }
   r4@{ shape: rect, label: "Verdict, sidebar badge and the other tiles do not change" }
   end
   v1@{ shape: rect, label: "<b>Opens the verify form pre-filled from the case</b><br/>Then the full live check (about 10 seconds)" }

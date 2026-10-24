@@ -16,7 +16,7 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "On step 5, read the Validation summary and the Checks" }
+  s1@{ shape: stadium, label: "On step 4, read the Validation summary and the Checks" }
   subgraph gVal ["Validation summary"]
   sV@{ shape: curv-trap, label: "<b>Validation summary (closed section)</b><br/>'Reader checked every document against the payer's guidelines.'<br/>Pill: 'N to look at' or 'Nothing to look at'<br/>Click the header to open it" }
   pRows@{ shape: rect, label: "One row for 'Start date', then the referral, the required documents and the recommended ones, from the payer's saved list" }
@@ -54,9 +54,9 @@ flowchart TD
   tW6@{ shape: odd, label: "'1 required document is not in the case: Discharge summary. Add it on Clinical documentation, or mark it not available.'" }
   pHeld@{ shape: rect, label: "<b>The approval chance is held back 3 points for each required document that is not in the case and for a start date the rule does not allow, up to 12</b><br/>The sentence is in the subtitle of 'What is missing'" }
   pHover@{ shape: rect, label: "Hover an agent badge to see the agent's name" }
-  gSign@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Sign and send to payer" }
-  gMis@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › What is missing" }
-  gDocs@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › Replace a document or mark it not available" }
+  gSign@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer" }
+  gMis@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › What is missing" }
+  gDocs@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › Replace a document or mark it not available" }
   gRules@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Edit a rule" }
   s1 --> sV --> pRows --> dStart
   dStart -->|"Yes"| pStartOk

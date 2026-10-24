@@ -17,27 +17,25 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Click 'Check now'" }
-  p1@{ shape: rect, label: "<b>Form fields, 'Use sample card', the 'Try a sample' chips and the card drop lock</b><br/>The button reads 'Checking' with a spinner" }
-  sc@{ shape: curv-trap, label: "<b>Card 'Live check'</b><br/>'Simulated in this demo: each agent asks the right source and reports back'" }
+  p1@{ shape: rect, label: "<b>Form fields, the import row and the 'Try a sample' chips lock or hide</b><br/>The button reads 'Checking' with a spinner" }
+  sc@{ shape: curv-trap, label: "Card 'Live check', no subtitle" }
   subgraph gRows ["Agent rows"]
-  r1@{ shape: curv-trap, label: "<b>Waiting</b><br/>Agent name, grey text 'Will ask Ohio Medicaid whether coverage is active', clock and 'Waiting', dimmed" }
-  r2@{ shape: curv-trap, label: "<b>Checking</b><br/>Agent name, 'Asking Ohio Medicaid whether coverage is active on 10/21/2026', spinner and 'Checking'" }
-  r3@{ shape: curv-trap, label: "<b>Done</b><br/>Agent name, the answer, green tick and a small time such as 0:02" }
+  r1@{ shape: curv-trap, label: "<b>Waiting</b><br/>Agent name, what it asks ('Coverage with Ohio Medicaid'), clock and 'Waiting', dimmed" }
+  r2@{ shape: curv-trap, label: "<b>Checking</b><br/>Agent name, the same label, spinner and 'Checking'" }
+  r3@{ shape: curv-trap, label: "<b>Done</b><br/>Agent name, the answer ('Active on 10/21/2026'), green tick and a small time such as 0:02" }
   end
   tm@{ shape: curv-trap, label: "<b>Timer pill beside the title</b><br/>Shows 0:00 and counts up each second" }
   k1@{ shape: trap-t, label: "Click 'Skip ahead' (shown only while running)" }
   p2@{ shape: rect, label: "Every step still to run takes 0.15 seconds instead of 1.4 to 2.6" }
   q1@{ shape: diam, label: "Last step ticked?" }
-  t1@{ shape: odd, label: "Banner 'All answers are in. Opening the result.'" }
+  t1@{ shape: odd, label: "The timer pill turns green: 'Opening the result'" }
   w1@{ shape: delay, label: "Half a second so the last tick is seen" }
-  ft@{ shape: curv-trap, label: "<b>Footer line</b><br/>'If a system does not answer, Caller phones the payer and logs the call.'" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › The live check: the agents' questions" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › The check finishes and is saved" }
   s1 --> p1 --> sc
   sc --> r1
   r1 --> r2 --> r3
   sc --> tm
-  sc --> ft
   sc -.-> g1
   r3 --> q1
   q1 -->|"No"| r1
@@ -45,7 +43,7 @@ flowchart TD
   r2 -.-> k1 --> p2 -.-> r3
   class s1 k_start
   class p1,p2 k_process
-  class sc,r1,r2,r3,tm,ft k_screen
+  class sc,r1,r2,r3,tm k_screen
   class k1 k_click
   class q1 k_decision
   class t1 k_toast

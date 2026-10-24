@@ -17,22 +17,22 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   cc@{ shape: trap-t, label: "Click 'Add clinical context'" }
-  m@{ shape: win-pane, label: "<b>Dialog 'Add clinical context'</b><br/>'Something the chart does not show. Scribe folds it into the draft. Nothing goes to the payer.'" }
-  ta@{ shape: lean-r, label: "<b>Type in the box</b><br/>e.g. 'He called the program himself on 10/19 and asked for a bed.'<br/>Hint: 'Each note adds a point to the approval chance, up to 3.'" }
+  m@{ shape: win-pane, label: "Pop-up 'Add clinical context'" }
+  ta@{ shape: lean-r, label: "<b>Type in the box</b><br/>e.g. 'He called the program himself on 10/19 and asked for a bed.'<br/>Hint: '+1 pt each, up to 3. Not sent to the payer.'" }
   d@{ shape: diam, label: "Is anything typed?" }
   dis@{ shape: rect, label: "'Add context' stays off" }
   ad@{ shape: trap-t, label: "Click 'Add context'" }
   cn@{ shape: trap-t, label: "Click 'Cancel', the X or the dimmed area, or press Esc" }
-  cl@{ shape: stadium, label: "<b>Dialog closes</b><br/>Nothing is added<br/>What you typed stays in the box for next time" }
+  cl@{ shape: stadium, label: "<b>Pop-up closes</b><br/>Nothing is added<br/>What you typed stays in the box for next time" }
   lk@{ shape: rect, label: "<b>While the agents are updating the draft</b><br/>the button is off" }
-  sv@{ shape: cyl, label: "<b>Note added to the shared list for this request</b><br/>Log: 'You added clinical context: ...'" }
+  sv@{ shape: cyl, label: "<b>Note added to the shared list for this request</b><br/>History: 'You added clinical context: ...' flagged 'Logged decision', once" }
   nu@{ shape: rect, label: "<b>Approval chance goes up by 1 point for each of the first three notes</b><br/>The fourth and later notes are kept and listed, with no points" }
   ls@{ shape: curv-trap, label: "<b>Card 'Context you added' in the side panel</b><br/>Each note with '+1 pt' (no pill after the third)" }
-  rk@{ shape: curv-trap, label: "<b>Risk analysis › Why this number gets a row</b><br/>'Clinical context you added'<br/>The rows still add up to the chance" }
+  rk@{ shape: curv-trap, label: "<b>Criteria & risk › See the breakdown gets a row</b><br/>'Clinical context you added'<br/>The rows still add up to the chance" }
   dQ@{ shape: diam, label: "Is it a queue request that also has a Dashboard entry?" }
-  db@{ shape: cyl, label: "<b>Dashboard request gets the new chance</b><br/>Timeline: 'You added clinical context. Approval chance is now 63%'" }
-  qu@{ shape: rect, label: "Queue tile shows the new chance" }
-  tc@{ shape: odd, label: "<b>'Clinical context added'</b><br/>'Scribe will fold it into the draft. Nothing goes to the payer.'" }
+  db@{ shape: cyl, label: "<b>Dashboard request gets the new chance</b><br/>Its own line 'You added clinical context. Approval chance is now 63%'<br/>is not repeated in the case page's History" }
+  qu@{ shape: rect, label: "Queue row shows the new chance" }
+  tc@{ shape: odd, label: "'Clinical context added'" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Case page › Draft › Read and edit" }
   cc --> m --> ta --> d
   d -->|"No"| dis

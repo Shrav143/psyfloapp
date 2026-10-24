@@ -16,33 +16,42 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  pg@{ shape: curv-trap, label: "<b>Case page, below the tab panel</b><br/>'History' with a one-line summary: '9 events · latest: Navigator saved the receipt to the case'" }
+  pg@{ shape: curv-trap, label: "<b>Case page, below the tab panel</b><br/>'History' with a one-line summary: '9 lines · 2 logged decisions'" }
   h1@{ shape: trap-t, label: "<b>Click 'History'</b><br/>(or Tab to it and press Enter or Space)" }
   o1@{ shape: rect, label: "<b>The section opens</b><br/>It is a real button with aria-expanded" }
-  d1@{ shape: diam, label: "Any events?" }
-  e0@{ shape: curv-trap, label: "<b>'Nothing has happened on this request yet'</b><br/>A short line on what will appear" }
-  li@{ shape: curv-trap, label: "<b>List, newest first</b><br/>Each line: a badge, the name, '(you)' or '(agent)', the time, and the text<br/>A planned step comes first, marked 'Scheduled'" }
+  d1@{ shape: diam, label: "Any lines?" }
+  e0@{ shape: curv-trap, label: "'Nothing yet'" }
+  li@{ shape: curv-trap, label: "<b>One list, newest first, planned steps on top</b><br/>Each line: a badge, the name, the time, the text, and a flag on the right" }
   h2@{ shape: trap-t, label: "Click 'History' again" }
   c1@{ shape: rect, label: "The section closes" }
   subgraph gS ["Where the lines come from"]
-  s1@{ shape: cyl, label: "<b>The request's events in the store</b><br/>Agents: Reader, Verify, Scribe, Navigator ...<br/>The payer: 'The payer asked for more information'" }
-  s2@{ shape: cyl, label: "<b>What you did on this page</b><br/>'You added clinical context', 'You refined the recommendations', 'You dismissed ...', 'You edited the draft ...', 'You sent the draft back to Scribe'<br/>Agent work you started: 'Scribe applied Name the step-down provider'" }
-  s3@{ shape: cyl, label: "<b>Signing in New case</b><br/>'You signed as Dr. Rivera (clinician) and sent the request'<br/>'Navigator sent the request through the payer's portal'<br/>'Navigator saved the receipt to the case'" }
+  s1@{ shape: cyl, label: "<b>The request's events in the store</b><br/>Agents: Reader, Verify, Scribe, Navigator<br/>The payer: 'The payer approved the request'" }
+  s2@{ shape: cyl, label: "<b>What you logged on this page</b><br/>'You dismissed ...', 'You added clinical context', 'You refined the recommendations', 'You sent ... a note', 'You edited the draft', 'You sent the draft back to Scribe'" }
+  s3@{ shape: cyl, label: "<b>Agent work you started</b><br/>'Scribe applied Name the step-down provider'<br/>'Integrity read the draft again'" }
+  s4@{ shape: cyl, label: "<b>Signing in New Case</b><br/>'You signed as Dr. Rivera (clinician) and sent the request'" }
   end
-  dd@{ shape: rect, label: "<b>The person is the signed-in user, Jordan Perez</b><br/>Who signed is in the text, because only a clinician can sign" }
-  rd@{ shape: rect, label: "<b>Read only</b><br/>No button on a line does anything" }
+  dup@{ shape: rect, label: "<b>Same line twice is shown once</b><br/>A dismissal the request repeats word for word<br/>The request's 'You added clinical context' at the same minute<br/>The request's 'Scribe added 6 items' when each applied card has its own line" }
+  subgraph gF ["The flag on the right"]
+  f1@{ shape: rect, label: "'Agent': a Psyflo agent did it" }
+  f2@{ shape: rect, label: "<b>'Decision': the payer answered</b><br/>green approved, amber in part or asked for more, red denied" }
+  f3@{ shape: rect, label: "'Logged decision': you logged it on this page" }
+  f4@{ shape: rect, label: "'Scheduled': planned, not done yet" }
+  f5@{ shape: rect, label: "No flag: a person's action from elsewhere, e.g. the signature" }
+  end
   pg --> h1 --> o1 --> d1
   d1 -->|"No"| e0
   d1 -->|"Yes"| li
   li --> h2 --> c1
-  s1 --> li
-  s2 --> li
-  s3 --> li
-  li -.-> dd
-  li -.-> rd
+  s1 --> dup
+  s2 --> dup
+  s3 --> dup
+  s4 --> dup
+  dup --> li
+  li --> f1 & f2 & f3 & f4 & f5
   class pg,e0,li k_screen
   class h1,h2 k_click
-  class o1,c1,dd,rd k_process
+  class o1,c1,dup,f1,f2,f3,f4,f5 k_process
   class d1 k_decision
-  class s1,s2,s3 k_store
+  class s1,s2,s3,s4 k_store
   style gS fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gF fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

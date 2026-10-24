@@ -24,7 +24,7 @@ flowchart TD
   p0@{ shape: rect, label: "Ages follow the demo clock: after 'Fast-forward 1 hour' '16 min ago' reads '1 h ago'" }
   subgraph gRows ["The six notifications at the start"]
   n1@{ shape: rect, label: "<b>Packet · 'Payer asked for info' (unread)</b><br/>→ Dashboard, request P-1499" }
-  n2@{ shape: rect, label: "<b>Scribe · 'Scribe has a question' (unread)</b><br/>→ New case, draft of R-1042" }
+  n2@{ shape: rect, label: "<b>Scribe · 'Scribe has a question' (unread)</b><br/>→ New Case, draft of R-1042" }
   n3@{ shape: rect, label: "<b>Advocate · 'Denied today' (unread)</b><br/>→ Denial Intelligence, D-3297" }
   n4@{ shape: rect, label: "<b>Cadence · 'Approved' (read)</b><br/>→ Dashboard, request R-0951" }
   n5@{ shape: rect, label: "<b>Sentinel · 'Payer rule changed' (unread)</b><br/>→ Payers, Cardinal, Changes" }
@@ -36,8 +36,8 @@ flowchart TD
   d1@{ shape: diam, label: "Does the notification have a destination?" }
   p2@{ shape: rect, label: "App goes to that page" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
-  g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › An agent asks a question" }
-  g3@{ shape: subproc, label: "Continues in: Denial Intelligence › Open a denial" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › An agent asks a question" }
+  g3@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
   g4@{ shape: subproc, label: "Continues in: Payers › History & Changes › Read what changed" }
   e0@{ shape: stadium, label: "Stays on the page" }
   c2@{ shape: trap-t, label: "Click 'Mark all read'" }

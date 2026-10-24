@@ -16,21 +16,23 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  nb@{ shape: curv-trap, label: "<b>'Next:' block under the title</b><br/>Sentence, one line of why, buttons, the reason line" }
-  d1@{ shape: diam, label: "Is the request on the Dashboard past Preparing, and either asking you something or moved on (sent here, decided)?" }
+  nb@{ shape: curv-trap, label: "<b>'Next:' block under the title</b><br/>One line, the Integrity chip while preparing, the buttons" }
+  d1@{ shape: diam, label: "Is the request on the Dashboard past Preparing, and either asking you something or moved on?" }
   d2@{ shape: diam, label: "Did the payer ask something that waits for you?" }
   n1@{ shape: rect, label: "<b>'Next: Review Packet's answer to the payer's question'</b><br/>Button 'Open on the Dashboard'" }
-  n2@{ shape: rect, label: "<b>'Next:' then the Dashboard's own next step, e.g. 'Navigator checks again in 30 minutes'</b><br/>Approved with the write-back waiting: 'Next: Confirm the write-back to the EMR', why 'Cadence booked the next review.'<br/>Button 'Open on the Dashboard'" }
+  dw@{ shape: diam, label: "Is it with the payer?" }
+  nw@{ shape: rect, label: "<b>'Next: Wait for Beacon to decide'</b><br/>Button 'Open on the Dashboard'" }
+  n2@{ shape: rect, label: "<b>Decided: the Dashboard's own step, e.g. 'Next: Confirm the write-back to the EMR'</b><br/>Button 'Open on the Dashboard'" }
   d3@{ shape: diam, label: "Is it a denial?" }
-  n3@{ shape: rect, label: "<b>'Next: Review the brief and make the peer-to-peer call'</b><br/>Why: 'This request was denied. Advocate owns the next step ...'<br/>Button 'Open in Denial Intelligence'" }
+  n3@{ shape: rect, label: "<b>'Next: Review the brief and make the peer-to-peer call'</b><br/>Button 'Open in Denial Intelligence'" }
   d4@{ shape: diam, label: "Is it with the payer already (seed data)?" }
-  n4@{ shape: rect, label: "<b>'Next: Wait for Cardinal to decide'</b><br/>Why: the agent's line, e.g. 'Payer is reviewing. Navigator checks again in 22 minutes'<br/>Button 'Open on the Dashboard' when the request is on the Dashboard<br/>If its own line says the answer waits for your review: 'Review Packet's answer to the payer's question'" }
+  n4@{ shape: rect, label: "<b>'Next: Wait for Cardinal to decide', or</b><br/>'Next: Review Packet's answer to the payer's question' when the answer waits for you<br/>Button 'Open on the Dashboard' when the request is on the Dashboard" }
   d5@{ shape: diam, label: "Do all four Integrity checks pass?" }
-  n5@{ shape: rect, label: "<b>'Next: Review the draft, then sign and send it'</b><br/>Why: 'Integrity passed all four checks. Only a clinician can sign.'<br/>Primary button 'Send to payer'" }
+  n5@{ shape: rect, label: "<b>'Next: Review the draft, then sign and send it'</b><br/>Chip 'Integrity 4/4'<br/>Primary button 'Send to payer'" }
   d6@{ shape: diam, label: "Is any recommended action still open?" }
-  n6@{ shape: rect, label: "<b>'Next:' the first open action, e.g. 'Name the step-down provider'</b><br/>Why: 'Scribe needs your answer before it can apply this.' or the action's first line<br/>Primary button 'Go to this action'" }
-  n7@{ shape: rect, label: "<b>'Next: Read the draft again'</b><br/>Why: 'Integrity has not read it since the last edit.'<br/>Button 'Open the draft'" }
-  sg@{ shape: rect, label: "<b>Beside the primary button, 'Send to payer' stays</b><br/>Greyed out with the reason under it, e.g. 'Integrity has 2 open checks. Apply the matching actions first.'<br/>Once it is with the payer: a greyed-out 'Sent to payer'" }
+  n6@{ shape: rect, label: "<b>'Next:' the first open action, e.g. 'Name the step-down provider'</b><br/>Chip 'Integrity 2/4'<br/>Primary button 'Go to this action'" }
+  n7@{ shape: rect, label: "<b>'Next: Read the draft again'</b><br/>Button 'Open the draft'" }
+  sg@{ shape: rect, label: "<b>Beside the primary button, 'Send to payer' stays</b><br/>greyed out; its tooltip says why<br/>Once it is with the payer: a greyed-out 'Sent to payer'" }
   c1@{ shape: trap-t, label: "Click 'Go to this action'" }
   t1@{ shape: rect, label: "<b>Opens Recommended actions and scrolls to that card</b><br/>(address ?tab=actions&rec=stepdown)" }
   c2@{ shape: trap-t, label: "Click 'Send to payer'" }
@@ -39,12 +41,14 @@ flowchart TD
   g3@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   c4@{ shape: trap-t, label: "Click 'Open in Denial Intelligence'" }
   g4@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
-  fl@{ shape: cyl, label: "<b>The sentence follows the case as work is done</b><br/>Apply or dismiss an action: the next open one is named<br/>Refine recommendations: its re-ordered first card<br/>After signing: the Dashboard's step" }
-  q@{ shape: rect, label: "The queue row shows the same sentence after 'Next:'" }
+  fl@{ shape: cyl, label: "<b>The words follow the case as work is done</b><br/>Apply or dismiss an action: the next open one is named<br/>Refine recommendations: its re-ordered first card<br/>After signing: 'Wait for the payer to decide'" }
+  q@{ shape: rect, label: "The queue row shows the same words after 'Next:'" }
   nb --> d1
   d1 -->|"Yes"| d2
   d2 -->|"Yes"| n1 --> c3
-  d2 -->|"No"| n2 --> c3
+  d2 -->|"No"| dw
+  dw -->|"Yes"| nw --> c3
+  dw -->|"No"| n2 --> c3
   d1 -->|"No"| d3
   d3 -->|"Yes"| n3 --> c4 --> g4
   d3 -->|"No"| d4
@@ -58,8 +62,8 @@ flowchart TD
   nb -.-> fl
   nb -.-> q
   class nb k_screen
-  class d1,d2,d3,d4,d5,d6 k_decision
-  class n1,n2,n3,n4,n5,n6,n7,sg,t1,q k_process
+  class d1,d2,dw,d3,d4,d5,d6 k_decision
+  class n1,nw,n2,n3,n4,n5,n6,n7,sg,t1,q k_process
   class c1,c2,c3,c4 k_click
   class g2,g3,g4 k_goto
   class fl k_store

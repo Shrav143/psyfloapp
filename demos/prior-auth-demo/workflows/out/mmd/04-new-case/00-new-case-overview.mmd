@@ -16,7 +16,7 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Open New case</b><br/>Sidebar 'New case', a 'New case' button, the Demo menu, FLO's link or the old /referrals address" }
+  s1@{ shape: stadium, label: "<b>Open New Case</b><br/>Sidebar 'New Case', a 'New Case' button, the Demo menu, FLO's link or the old /referrals address" }
   s2@{ shape: stadium, label: "<b>Click 'Create authorization from verification' or 'Start authorization'</b><br/>on a result in Eligibility & Benefits" }
   s3@{ shape: stadium, label: "<b>Click 'Start a case from this referral'</b><br/>on the full referral page, or type ?referral=RF-2051" }
   s4@{ shape: stadium, label: "<b>Click 'Start renewal' in the Dashboard's what-to-do list</b><br/>(opens ?type=reauth&patient=CASE-ID)" }
@@ -38,13 +38,13 @@ flowchart TD
   p6@{ shape: rect, label: "<b>Filled from ?payer=, ?program=, ?member=, ?initials=, ?age=</b><br/>Request type: Admission<br/>An unknown payer or program is ignored" }
   st3@{ shape: cyl, label: "<b>Blank case created at Intake</b><br/>It belongs to the site you are working at<br/>Not in Case Manager until 'Save as draft'" }
   end
-  p7@{ shape: rect, label: "<b>?step= opens that step: intake, eligibility, documentation, preparation or review</b><br/>The older names referral, records and agents land on Intake, Clinical documentation and Authorization preparation" }
+  p7@{ shape: rect, label: "<b>?step= opens that step: intake, eligibility, documentation or review</b><br/>preparation and the older agents open Clinical documentation scrolled to 'Authorization preparation'<br/>The older referral and records land on Intake and Clinical documentation" }
   p8@{ shape: rect, label: "<b>Case opens at /authorizations/new/draft-ID</b><br/>It replaces the address, so Back does not loop" }
-  gOpen@{ shape: subproc, label: "Continues in: Authorizations › New case › Reopen and resume a case" }
-  gStep@{ shape: subproc, label: "Continues in: Authorizations › New case › The stepper and the five steps" }
-  gType@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization type" }
-  gSites@{ shape: subproc, label: "Continues in: Authorizations › New case › Sites and scope" }
-  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Start with a referral or patient" }
+  gOpen@{ shape: subproc, label: "Continues in: Authorizations › New Case › Reopen and resume a case" }
+  gStep@{ shape: subproc, label: "Continues in: Authorizations › New Case › The stepper and the four steps" }
+  gType@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization type" }
+  gSites@{ shape: subproc, label: "Continues in: Authorizations › New Case › Sites and scope" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Start with a referral or patient" }
   s1 --> d1
   s2 --> d1
   s3 --> d1

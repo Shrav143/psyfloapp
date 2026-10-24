@@ -19,12 +19,12 @@ flowchart TD
   s1@{ shape: stadium, label: "<b>A payer's rule, document list, payer detail</b><br/>or workflow is saved, published or updated" }
   dk@{ shape: diam, label: "Which kind of save?" }
   wfp@{ shape: rect, label: "<b>A published workflow</b><br/>New case finds it by payer, product, state,<br/>service, request type and date, shows its name and version,<br/>and pins that version on the case<br/>A newer version never moves a case that already started" }
-  gwf@{ shape: subproc, label: "Continues in: Authorizations › New case › Workflow › Match and pin the payer workflow" }
+  gwf@{ shape: subproc, label: "Continues in: Authorizations › New Case › Workflow › Match and pin the payer workflow" }
   cfg@{ shape: cyl, label: "<b>Saved on the payer</b><br/>One edit log entry per change<br/>One bell notification<br/>New drafts use it from now on" }
   subgraph gR ["Read live by other screens (no Update drafts needed)"]
-  p1@{ shape: rect, label: "<b>New case: the document list</b><br/>The Clinical documentation checklist, the file sorting and the<br/>Review & submit checks use the payer's saved list<br/>for the draft's level of care" }
-  p2@{ shape: rect, label: "<b>New case: the rules</b><br/>Backdating: a start date that reaches back further<br/>than the rule allows is flagged<br/>No authorization needed: a level of care the payer names there" }
-  p3@{ shape: rect, label: "<b>New case: the approval chance</b><br/>Each thing the payer asks for that a draft does not meet<br/>(a required document, an early start date)<br/>holds the chance back, up to 12 points" }
+  p1@{ shape: rect, label: "<b>New Case: the document list</b><br/>The Clinical documentation checklist, the file sorting and the<br/>Review & submit checks use the payer's saved list<br/>for the draft's level of care" }
+  p2@{ shape: rect, label: "<b>New Case: the rules</b><br/>Backdating: a start date that reaches back further<br/>than the rule allows is flagged<br/>No authorization needed: a level of care the payer names there" }
+  p3@{ shape: rect, label: "<b>New Case: the approval chance</b><br/>Each thing the payer asks for that a draft does not meet<br/>(a required document, an early start date)<br/>holds the chance back, up to 12 points" }
   p4@{ shape: rect, label: "<b>Case Manager: the next review</b><br/>The 'Submission windows' rule sets the days<br/>before the next review is booked, when it names a number" }
   p5@{ shape: rect, label: "<b>Payers added with 'Add a payer'</b><br/>have a full saved set like any payer<br/>and are offered wherever a payer is picked:<br/>New case, Eligibility & Benefits and the queue's Payer menu" }
   end
@@ -34,7 +34,7 @@ flowchart TD
   rp@{ shape: cyl, label: "<b>Update recorded</b><br/>Change (or 'edits-summit'), payer and the IDs of the drafts redrafted" }
   nf@{ shape: cyl, label: "<b>Bell notification 'Drafts updated'</b><br/>links to Case Manager" }
   dsh@{ shape: rect, label: "<b>Dashboard shows the new status line</b><br/>and lists the request among those needing you" }
-  cmt@{ shape: rect, label: "<b>Case Manager and New case tag those drafts</b><br/>'Updated for a payer change'" }
+  cmt@{ shape: rect, label: "<b>Case Manager and New Case tag those drafts</b><br/>'Updated for a payer change'" }
   end
   sent@{ shape: rect, label: "<b>Requests already sent are never changed</b><br/>They keep what they were sent with" }
   subgraph gC ["Wired: links out of Payers"]
@@ -42,16 +42,16 @@ flowchart TD
   od@{ shape: rect, label: "Opens Dashboard with that request's drawer" }
   end
   subgraph gP ["Not read by any edit"]
-  n1@{ shape: rect, label: "<b>The payer's approved-as-asked rate (74% for Summit, shown in Analytics)</b><br/>is where New case starts the approval chance: it ends 14 points higher.<br/>It comes from decision history, so no rule or list edit moves it" }
+  n1@{ shape: rect, label: "<b>The payer's approved-as-asked rate (74% for Summit, shown in Analytics)</b><br/>is where New Case starts the approval chance: it ends 14 points higher.<br/>It comes from decision history, so no rule or list edit moves it" }
   n2@{ shape: rect, label: "<b>Authorizations queue order and the case page</b><br/>do not read the saved configuration" }
   end
   prd@{ shape: rect, label: "<b>In the product (PRD 06)</b><br/>A rule version is stamped on every authorization;<br/>Packet reads the channel, form and documents; Cadence reads windows and caps;<br/>Advocate reads peer-to-peer and appeal windows" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Requests table" }
   g2@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Updated for a payer change" }
   g3@{ shape: subproc, label: "Continues in: Dashboard › Open a request" }
-  g4@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › The checklist and Continue" }
-  g5@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Validation summary and checks" }
-  g7@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › Start the run and watch it" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › The checklist and Continue" }
+  g5@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › Validation summary and checks" }
+  g7@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › Start the run and watch it" }
   g6@{ shape: subproc, label: "Continues in: Authorizations › Queue › Open the queue and read the top" }
   s1 --> dk
   dk -->|"Rule or documents"| cfg

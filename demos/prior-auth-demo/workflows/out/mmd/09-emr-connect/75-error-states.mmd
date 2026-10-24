@@ -25,7 +25,7 @@ flowchart TD
   a4@{ shape: stadium, label: "Re-test: three checks. Row turns Connected" }
   end
   subgraph gR ["Red pill: 'Disconnected'"]
-  r1@{ shape: rect, label: "<b>Someone disconnected it</b><br/>Row: 'Not syncing'. Charts from this system are not arriving. New case cannot pull a chart from it until it is connected." }
+  r1@{ shape: rect, label: "<b>Someone disconnected it</b><br/>Row: 'Not syncing'. Charts from this system are not arriving. New Case cannot pull a chart from it until it is connected." }
   r2@{ shape: trap-t, label: "<b>Click 'Reconnect' on the row or in the Manage drawer</b><br/>Needs: a passed connection test, and the Fix steps first if it was on 'Needs attention'" }
   r4@{ shape: subproc, label: "Continues in: EMR Connect › Manage › Reconnect a system" }
   r3@{ shape: stadium, label: "<b>Re-test: the same three checks as Connect</b><br/>Row turns Connected only after they pass. Any earlier issue text is cleared" }
@@ -35,7 +35,7 @@ flowchart TD
   t2@{ shape: rect, label: "Needs: every Disconnected row reconnected" }
   end
   subgraph gM ["'Action required' names fields waiting for a mapping"]
-  m1@{ shape: rect, label: "<b>'2 fields need a mapping, so New case leaves them blank.'</b><br/>Pill '2 to map' on 'Advanced'" }
+  m1@{ shape: rect, label: "<b>'2 fields need a mapping, so New Case leaves them blank.'</b><br/>Pill '2 to map' on 'Advanced'" }
   m2@{ shape: trap-t, label: "<b>Click 'Map field', or open 'Advanced' and click 'Map'</b><br/>Needs: a value picked for each field" }
   end
   subgraph gQ ["Clicks that stop with a message"]

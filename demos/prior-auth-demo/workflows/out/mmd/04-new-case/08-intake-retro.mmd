@@ -17,52 +17,44 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Pick 'Retroactive authorization' in 'Authorization type'</b><br/>Or open ?type=retro" }
-  sc@{ shape: curv-trap, label: "<b>Intake · Retroactive authorization</b><br/>'Care was delivered before an authorization was in place. Say what, when and why.'<br/>Card 'Retroactive authorization'" }
+  sc@{ shape: curv-trap, label: "<b>Intake · Retroactive authorization</b><br/>The row of ways in without 'Referrals', then the form, then one card for the reason and the documents" }
+  gWays@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Start with a referral or patient" }
+  gForm@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Patient, insurance and request rows" }
   dRule@{ shape: diam, label: "Is a payer chosen, and has it a Backdating rule on file?" }
-  tPick@{ shape: odd, label: "'Retroactive authorization depends on the payer and may not be available. Pick the payer to see its Backdating rule.'" }
-  tRule@{ shape: odd, label: "'Retroactive authorization depends on the payer and may not be available. Summit's Backdating rule: ...'" }
-  tNo@{ shape: odd, label: "<b>'... No rule on file for Riverbend Health. Check with the payer.'</b><br/>Review & submit adds a note 'Retroactive rule'" }
+  pNoLine@{ shape: rect, label: "No line until a payer is chosen" }
+  tRule@{ shape: odd, label: "<b>One line above the form</b><br/>'Summit's Backdating rule: ...'" }
+  tNo@{ shape: odd, label: "<b>One amber line: 'No rule on file for Riverbend. Check with the payer.'</b><br/>Review & submit adds a note 'Retroactive rule'" }
   gPayers@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Edit a rule" }
-  dStart@{ shape: diam, label: "Has the patient been chosen?" }
-  oPat@{ shape: win-pane, label: "<b>Section 'Find a patient who is already known', open</b><br/>Search box, the sites in view only" }
-  gFind@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Find a patient and the authorization" }
-  cHand@{ shape: trap-t, label: "Click 'Enter the patient by hand'" }
-  pHand@{ shape: rect, label: "<b>The case is marked started</b><br/>The details show" }
-  sSite@{ shape: curv-trap, label: "<b>Site, then the rows</b><br/>Patient initials and age · Payer and plan · Member ID · Level of care<br/>No 'Request type' row: it is 'Retro-authorization'" }
   sDup@{ shape: curv-trap, label: "'This looks like a request that already exists' only when one matches" }
-  gDup@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Possible duplicate" }
-  sDos@{ shape: curv-trap, label: "<b>Card 'Dates of service'</b><br/>'The first and the last day care was given without an authorization. Verify checks coverage for these dates.'" }
+  gDup@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Possible duplicate" }
+  sReq@{ shape: curv-trap, label: "<b>Request section: 'Level of care', 'First date of service', 'Last date of service'</b><br/>No 'Request type': it is 'Retro-authorization'" }
   iFrom@{ shape: lean-r, label: "'First date of service' (required)" }
-  iTo@{ shape: lean-r, label: "<b>'Last date of service'</b><br/>Without it Review & submit asks the person to acknowledge it; the first date is what blocks" }
+  iTo@{ shape: lean-r, label: "<b>'Last date of service' (required)</b><br/>Without it Review & submit asks the person to acknowledge it; the first date is what blocks" }
   dBad@{ shape: diam, label: "Is the last date before the first?" }
-  tBad@{ shape: odd, label: "Field error: 'The end is before the start.'" }
-  sWhy@{ shape: curv-trap, label: "<b>Card 'Why it was not obtained ahead of time'</b><br/>'The payer will ask. Use one of these or write your own. Only what happened goes in the request.'" }
+  tBad@{ shape: odd, label: "Field error: 'Before the first date'" }
+  sWhy@{ shape: curv-trap, label: "<b>'WHY IT WAS NOT OBTAINED AHEAD OF TIME'</b><br/>Four reasons to click, and 'Reason'" }
   cChip@{ shape: trap-t, label: "<b>Click a reason</b><br/>'Coverage was pending when the patient was admitted', 'The patient was admitted after hours or on a weekend, and the notice window passed', 'The payer was not known on the day of admission', 'The notice was sent but the payer has no record of it'" }
   iReason@{ shape: lean-r, label: "Type or edit the 'Reason'" }
   dReason@{ shape: diam, label: "Is the reason empty?" }
   tReason@{ shape: odd, label: "<b>Review & submit lists 'Why it was not obtained ahead of time' to acknowledge</b><br/>'The payer will ask why no authorization was in place. Add the reason.'" }
-  sDoc@{ shape: curv-trap, label: "<b>Card 'Supporting documents'</b><br/>The admission order, the eligibility check from the admission date, attendance for the dates of service" }
-  iDrop@{ shape: lean-r, label: "Drop supporting documents here, or click to choose files" }
+  sDoc@{ shape: curv-trap, label: "<b>'SUPPORTING DOCUMENTS'</b><br/>Drop zone 'Admission order, eligibility check, attendance'" }
+  iDrop@{ shape: lean-r, label: "Drop supporting documents, or click to choose files" }
   aRead@{ shape: hex, label: "<b>Reader sorts the files into the document list</b><br/>Shown as chips with the file names" }
   st@{ shape: cyl, label: "<b>The request is recorded as 'Retro-authorization'</b><br/>Dates of service, the reason and the files are kept on the case" }
-  gElig@{ shape: subproc, label: "Continues in: Authorizations › New case › Eligibility & Benefits › Retroactive authorization" }
-  gDocs@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › Required and typical documents by type" }
+  gElig@{ shape: subproc, label: "Continues in: Authorizations › New Case › Eligibility & Benefits › Retroactive authorization" }
+  gDocs@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › Required and typical documents by type" }
   cSave@{ shape: trap-t, label: "Click 'Save as draft'" }
   cCont@{ shape: trap-t, label: "Click 'Continue to Eligibility & Benefits'" }
-  gSave@{ shape: subproc, label: "Continues in: Authorizations › New case › Save as draft and leave" }
-  s1 --> sc --> dRule
-  dRule -->|"No payer yet"| tPick
+  gSave@{ shape: subproc, label: "Continues in: Authorizations › New Case › Save as draft and leave" }
+  s1 --> sc
+  sc -.-> gWays
+  sc -.-> gForm
+  sc --> dRule
+  dRule -->|"No payer yet"| pNoLine
   dRule -->|"Rule on file"| tRule
   dRule -->|"No rule on file"| tNo -.-> gPayers
-  sc --> dStart
-  dStart -->|"No"| oPat
-  oPat --> gFind
-  oPat --> cHand --> pHand
-  gFind -.-> sSite
-  dStart -->|"Yes"| sSite
-  pHand --> sSite
-  sSite --> sDup -.-> gDup
-  sSite --> sDos --> iFrom --> iTo --> dBad
+  sc --> sDup -.-> gDup
+  sc --> sReq --> iFrom --> iTo --> dBad
   dBad -->|"Yes"| tBad --> iTo
   dBad -->|"No"| sWhy
   sWhy --> cChip --> iReason
@@ -76,13 +68,12 @@ flowchart TD
   st --> cSave --> gSave
   st --> cCont --> gElig
   class s1 k_start
-  class sc,sSite,sDup,sDos,sWhy,sDoc k_screen
-  class dRule,dStart,dBad,dReason k_decision
-  class tPick,tRule,tNo,tBad,tReason k_toast
-  class gPayers,gFind,gDup,gElig,gDocs,gSave k_goto
-  class oPat k_overlay
-  class cHand,cChip,cSave,cCont k_click
-  class pHand k_process
+  class sc,sDup,sReq,sWhy,sDoc k_screen
+  class gWays,gForm,gPayers,gDup,gElig,gDocs,gSave k_goto
+  class dRule,dBad,dReason k_decision
+  class pNoLine k_process
+  class tRule,tNo,tBad,tReason k_toast
   class iFrom,iTo,iReason,iDrop k_input
+  class cChip,cSave,cCont k_click
   class aRead k_agent
   class st k_store

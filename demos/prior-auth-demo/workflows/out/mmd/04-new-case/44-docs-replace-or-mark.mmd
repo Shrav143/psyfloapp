@@ -47,9 +47,9 @@ flowchart TD
   pUndo@{ shape: rect, label: "<b>The mark is removed</b><br/>The row is missing again" }
   cAdd@{ shape: trap-t, label: "<b>Click 'Add file'</b><br/>The file replaces the mark" }
   end
-  gRev@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Validation summary and checks" }
-  gQ@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › An agent asks a question" }
-  gRec@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › Clinical summary and document rows" }
+  gRev@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › Validation summary and checks" }
+  gQ@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › An agent asks a question" }
+  gRec@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › Clinical summary and document rows" }
   s1 --> dRow
   dRow -->|"Yes"| cRep --> iFile --> pSwap --> aRead --> pClean --> dAfter
   dAfter -->|"Yes"| tStale

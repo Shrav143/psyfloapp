@@ -24,7 +24,7 @@ flowchart TD
   t1@{ shape: odd, label: "<b>'Clock moved forward 1 hour' (or '1 day')</b><br/>'Times in stage and deadlines updated.'" }
   p1@{ shape: rect, label: "Every time-left text is worked out again from the clock" }
   p2@{ shape: rect, label: "Time left reads 'N min' under an hour, 'N h' under 3 days, 'N d' after that" }
-  p3@{ shape: rect, label: "<b>The 'Open denials' panel sorts again, nearest deadline first</b><br/>Time that has run out counts as nearest" }
+  p3@{ shape: rect, label: "<b>The dashboard table sorts again, nearest deadline first, and 'Deadlines this week' recounts</b><br/>Time that has run out reads 'Passed' and counts as nearest" }
   d1@{ shape: diam, label: "Which clock does this denial run?" }
   k1@{ shape: curv-trap, label: "<b>Peer-to-peer window</b><br/>List 'P2P in 36 h'<br/>Header 'Peer-to-peer window closes in 36 h'" }
   k2@{ shape: curv-trap, label: "<b>Written appeal due</b><br/>List 'Appeal in 41 d'<br/>Header 'Appeal due in 41 d'" }

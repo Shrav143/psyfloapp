@@ -31,11 +31,11 @@ flowchart TD
   st1@{ shape: cyl, label: "<b>Draft marked saved and given a case ID</b><br/>R- for Residential 3.5 and Detox, I- for IOP, P- for PHP<br/>A draft with no level of care yet falls under R<br/>Numbered from 1701" }
   pNoop@{ shape: rect, label: "Nothing changes; the toast still shows" }
   t1@{ shape: odd, label: "<b>Steps 1 to 3: 'Draft saved'</b><br/>'R-1701 is in Case Manager. Pick it up whenever you like.'" }
-  t2@{ shape: odd, label: "<b>Step 5: 'Draft saved'</b><br/>'R-1701 is in Case Manager, ready to sign.'" }
+  t2@{ shape: odd, label: "<b>Review & submit: 'Draft saved'</b><br/>'R-1701 is in Case Manager.'" }
   stPos@{ shape: cyl, label: "<b>The draft keeps its step</b><br/>Intake, Eligibility & Benefits, Clinical documentation, Authorization preparation or Review & submit<br/>And what was typed, picked, answered and documented" }
   cLeave@{ shape: trap-t, label: "Click 'Case Manager' at the top, a sidebar item, or close the tab" }
   dSaved@{ shape: diam, label: "Was the case saved?" }
-  pUnsaved@{ shape: rect, label: "<b>Nothing appears in Case Manager</b><br/>The draft stays in this session and its address still opens it<br/>Opening New case again starts another blank draft" }
+  pUnsaved@{ shape: rect, label: "<b>Nothing appears in Case Manager</b><br/>The draft stays in this session and its address still opens it<br/>Opening New Case again starts another blank draft" }
   pAway@{ shape: rect, label: "<b>A running case stops moving while the page is closed</b><br/>The row shows the agent that was working<br/>Or, when an agent could not finish: 'Verify could not reach Cardinal's portal. Retry it or skip it'" }
   sCM@{ shape: curv-trap, label: "<b>Case Manager › Active cases › Being prepared</b><br/>'Most urgent first. Each case moves through eight steps; the agents do all but Ask and Sign.'<br/>Filter: 'All', 'Agents working', 'Needs your input', 'Ready to sign'<br/>Only cases at the sites in view" }
   sRow@{ shape: curv-trap, label: "<b>A row for the draft</b><br/>Level of care chip, case ID, 'J.M., 34 · Summit Medicaid HMO', request<br/>Eight-step bar: Read, Rules, Match, Ask, Draft, Check, Sign, Send<br/>Who has it, due chip, status pill, approval chance, one button" }
@@ -48,14 +48,14 @@ flowchart TD
   pDash@{ shape: rect, label: "<b>The Dashboard counts a saved draft under 'Preparing' ('N in Case Manager')</b><br/>A draft that was never saved is not counted<br/>Seeded cases such as R-1042 are counted as requests" }
   cOpen@{ shape: trap-t, label: "Click the case ID, or the row's button" }
   pResume@{ shape: rect, label: "<b>Opens /authorizations/new/DRAFT</b><br/>The page resumes where the draft was<br/>A draft whose agents already ran opens on Authorization preparation or Review & submit, never on Intake" }
-  gResume@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › Finished, paused or left" }
-  gStep3@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › The checklist and Continue" }
-  gOpen@{ shape: subproc, label: "Continues in: Authorizations › New case › Reopen and resume a case" }
+  gResume@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › Finished, paused or left" }
+  gStep3@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › The checklist and Continue" }
+  gOpen@{ shape: subproc, label: "Continues in: Authorizations › New Case › Reopen and resume a case" }
   gCM@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Being prepared card" }
-  sNF@{ shape: curv-trap, label: "<b>New case</b><br/>'That draft is not in the demo.'<br/>'We could not find that draft'<br/>'It may have been cleared when the demo data was reset.'" }
+  sNF@{ shape: curv-trap, label: "<b>New Case</b><br/>'That draft is not in the demo.'<br/>'We could not find that draft'<br/>'It may have been cleared when the demo data was reset.'" }
   cNew@{ shape: trap-t, label: "Click 'Start a new case'" }
   pNew@{ shape: rect, label: "A new blank draft opens on Intake" }
-  gRef@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Start with a referral or patient" }
+  gRef@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Start with a referral or patient" }
   s2 --> pReq --> gCase
   s1 --> c1
   s1 --> c2

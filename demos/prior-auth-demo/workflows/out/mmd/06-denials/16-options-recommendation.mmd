@@ -16,73 +16,46 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "A denial that is not filed, accepted or closed is on screen" }
-  sc1@{ shape: curv-trap, label: "<b>'Your options' card, one short row</b><br/>'Chance of overturning, from 312 similar Cardinal decisions'<br/>Peer-to-peer call 64% · likely 55–72% · 5 to 7 days regained, with 'Recommended'<br/>Written appeal 58% · likely 49–66%<br/>Accept 7 days and plan the step-down: Nothing regained<br/>Button 'Compare the options' in the header" }
-  p0@{ shape: rect, label: "Subtitle reads ', a benchmark estimate' instead when fewer than 60 similar decisions" }
+  s1@{ shape: stadium, label: "A denial is on screen" }
+  sc1@{ shape: curv-trap, label: "<b>'Your options' card</b><br/>Sub line 'From 312 similar Cardinal decisions' ('Benchmark estimate, 58 similar decisions' under 60)<br/>Peer-to-peer call · 64% · likely 55–72% · 5 to 7 days regained<br/>Written appeal · 58% · likely 49–66%<br/>Accept 7 days and plan the step-down · Nothing regained" }
   p1@{ shape: rect, label: "Starting point: the denial's win chance (55 when none is set)" }
-  d1@{ shape: diam, label: "What is the win chance?" }
-  v1@{ shape: rect, label: "<b>'Worth challenging'</b><br/>50 and over" }
-  v2@{ shape: rect, label: "<b>'Borderline'</b><br/>35 to 49" }
-  v3@{ shape: rect, label: "<b>'Probably accept'</b><br/>under 35" }
-  p2@{ shape: rect, label: "<b>Seed denials sit between 27 and 64</b><br/>D-3306 (27%) reads 'Probably accept' and recommends 'Accept' at the start" }
-  p2b@{ shape: rect, label: "<b>Peer-to-peer chance = the win chance</b><br/>Written appeal = win chance minus 6, never under 5<br/>Accept has no chance, only 'Nothing regained'<br/>Each chance reads 'likely 55–72%' (9 below to 8 above)" }
-  r1@{ shape: diam, label: "<b>Which route is 'Recommended'?</b><br/>(the route of the recommended next step; none for 'Investigate by hand')" }
-  rec1@{ shape: rect, label: "Verdict is 'Probably accept': Accept" }
-  rec2@{ shape: rect, label: "Deadline is to file or resubmit, window closed, or 'Late notice': Written appeal" }
-  rec3@{ shape: rect, label: "Anything else: Peer-to-peer call" }
+  p2b@{ shape: rect, label: "<b>Peer-to-peer chance = the win chance</b><br/>Written appeal = win chance minus 6, never under 5<br/>Accept has no chance, only 'Nothing regained'<br/>Each chance reads 'likely' 9 below to 8 above" }
+  r1@{ shape: diam, label: "<b>Which route is 'Recommended'?</b><br/>(the route of the recommended next step; none for 'Investigate by hand', which shows as a pill in the header)" }
   g0@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Recommended next step" }
-  c0@{ shape: trap-t, label: "<b>Click 'Compare the options'</b><br/>(a button: Enter or Space)" }
-  ov@{ shape: win-pane, label: "<b>Right-hand panel 'Your options'</b><br/>Subtitle 'D-3318. Chance of overturning, from 312 similar Cardinal decisions'<br/>Three radio cards, each with its summary, chance, 'Likely 55–72%', similar decisions or 'Benchmark estimate', and 'Needs: ...'<br/>The recommended route is selected and carries 'Recommended'" }
-  pf@{ shape: rect, label: "<b>Focus goes to the selected card</b><br/>Tab stays inside the panel" }
-  c1@{ shape: trap-t, label: "Click a card (it is a radio button)" }
-  d2@{ shape: diam, label: "Is it 'Peer-to-peer call' and the call window has closed?" }
-  t1@{ shape: odd, label: "<b>'The peer-to-peer window has closed'</b><br/>'A written appeal is still open.'" }
-  p6@{ shape: rect, label: "<b>Card is selected</b><br/>Footer button matches it: 'Choose a time and prepare the brief', 'Draft the appeal letter' or 'Accept the decision and plan the step-down'" }
-  t2@{ shape: odd, label: "'A call is already booked. Choosing again changes it.' (when the chip is 'Call booked')" }
-  c2@{ shape: trap-t, label: "Click the footer button" }
-  p9@{ shape: rect, label: "<b>Panel closes</b><br/>The confirm dialog for that route opens" }
-  d3@{ shape: diam, label: "Which card is selected?" }
-  d4@{ shape: diam, label: "Is the chip already 'Appeal drafting'?" }
+  gs@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Next step and where it stands" }
+  b1@{ shape: trap-t, label: "Click 'Book a call' (peer-to-peer choice)" }
+  b2@{ shape: trap-t, label: "Click 'Draft the appeal' (or 'Draft the corrected request' when the choice is titled 'Correct and resubmit')" }
+  b3@{ shape: trap-t, label: "Click 'Accept the decision'" }
   g1@{ shape: subproc, label: "Continues in: Denial Intelligence › Peer-to-peer › Book the call" }
   g2@{ shape: subproc, label: "Continues in: Denial Intelligence › Written appeal › Confirm and draft" }
   g3@{ shape: subproc, label: "Continues in: Denial Intelligence › Accept the denial" }
+  c0@{ shape: trap-t, label: "Click 'Compare the options' (only while the denial is open and not filed)" }
+  ov@{ shape: win-pane, label: "<b>Right-hand panel 'Your options'</b><br/>Sub line 'D-3318 · 312 similar Cardinal decisions'<br/>Three radio cards with summary, chance, similar decisions and 'Needs: ...'<br/>The recommended one is selected and carries 'Recommended'<br/>Under them: 'Why FLO suggests peer-to-peer review' and the reasons" }
+  pf@{ shape: rect, label: "Focus goes to the selected card; Tab stays inside the panel" }
+  c1@{ shape: trap-t, label: "Click a card (a radio button)" }
+  d2@{ shape: diam, label: "'Peer-to-peer call' and the call window has closed?" }
+  t1@{ shape: odd, label: "<b>'The peer-to-peer window has closed'</b><br/>'A written appeal is still open.'" }
+  p6@{ shape: rect, label: "Footer button matches the card: 'Book a call' ('Change the time' when a call is booked), 'Draft the appeal' or 'Accept the decision'" }
+  c2@{ shape: trap-t, label: "Click the footer button" }
+  p9@{ shape: rect, label: "Panel closes, the confirm dialog for that route opens" }
   cx@{ shape: trap-t, label: "Press Escape, click X or the dimmed area" }
-  px@{ shape: rect, label: "<b>Panel closes, nothing is chosen</b><br/>Focus returns to 'Compare the options'" }
-  pn@{ shape: rect, label: "<b>No card is selected for 'Investigate by hand'</b><br/>The footer says 'Pick a route to go on. Nothing is sent until a clinician signs.'" }
-  s1 --> sc1 --> p0
-  sc1 --> p1 --> d1
-  d1 -->|"50 and over"| v1
-  d1 -->|"35 to 49"| v2
-  d1 -->|"Under 35"| v3
-  v1 --> p2
-  v2 --> p2
-  v3 --> p2
-  p2 --> p2b --> r1
-  r1 -->|"Verdict is Probably accept"| rec1
-  r1 -->|"Clock is to file or window closed"| rec2
-  r1 -->|"Anything else"| rec3
-  rec1 --> c0
-  rec2 --> c0
-  rec3 --> c0
-  rec3 -.-> g0
-  sc1 --> c0 --> ov --> pf --> c1
-  ov -.-> pn
-  c1 --> d2
+  px@{ shape: rect, label: "Panel closes, nothing is chosen; focus returns to 'Compare the options'" }
+  s1 --> sc1 --> p1 --> p2b --> r1
+  r1 --> g0
+  sc1 --> gs
+  sc1 --> b1 --> g1
+  sc1 --> b2 --> g2
+  sc1 --> b3 --> g3
+  sc1 --> c0 --> ov --> pf --> c1 --> d2
   d2 -->|"Yes"| t1
-  d2 -->|"No"| p6
-  p6 -.-> t2
-  p6 --> c2 --> p9 --> d3
-  d3 -->|"Peer-to-peer call"| g1
-  d3 -->|"Written appeal"| d4
-  d4 -->|"Yes: drawer opens at once"| g2
-  d4 -->|"No: confirm first"| g2
-  d3 -->|"Accept"| g3
+  d2 -->|"No"| p6 --> c2 --> p9
+  p9 --> g1 & g2 & g3
   ov --> cx --> px
   class s1 k_start
   class sc1 k_screen
-  class p0,p1,v1,v2,v3,p2,p2b,rec1,rec2,rec3,pf,p6,p9,px,pn k_process
-  class d1,r1,d2,d3,d4 k_decision
-  class g0,g1,g2,g3 k_goto
-  class c0,c1,c2,cx k_click
+  class p1,p2b,pf,p6,p9,px k_process
+  class r1,d2 k_decision
+  class g0,gs,g1,g2,g3 k_goto
+  class b1,b2,b3,c0,c1,c2,cx k_click
   class ov k_overlay
-  class t1,t2 k_toast
+  class t1 k_toast

@@ -18,12 +18,12 @@ flowchart LR
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>The address changes</b><br/>(a click, a link, a redirect or the browser Back button)" }
   d1@{ shape: diam, label: "Does the address start with /authorizations?" }
-  open@{ shape: rect, label: "<b>Group is open</b><br/>'New case' and 'Eligibility & Benefits' are listed under 'Authorizations'<br/>Chevron points down" }
+  open@{ shape: rect, label: "<b>Group is open</b><br/>'New Case' and 'Eligibility & Benefits' are listed under 'Authorizations'<br/>Chevron points down" }
   shut@{ shape: rect, label: "<b>Group is closed</b><br/>The two sub rows are hidden<br/>Chevron points right" }
   subgraph gHi ["Which row is green"]
   d2@{ shape: diam, label: "Which address is it?" }
   h1@{ shape: rect, label: "<b>'Authorizations' turns green</b><br/>Address is exactly /authorizations, or a case: /authorizations/case/..." }
-  h2@{ shape: rect, label: "<b>'New case' turns green, 'Authorizations' stays plain</b><br/>/authorizations/new, a draft, or a referral" }
+  h2@{ shape: rect, label: "<b>'New Case' turns green, 'Authorizations' stays plain</b><br/>/authorizations/new, a draft, or a referral" }
   h3@{ shape: rect, label: "<b>'Eligibility & Benefits' turns green, 'Authorizations' stays plain</b><br/>/authorizations/eligibility, /verify or a result" }
   h4@{ shape: rect, label: "<b>'Dashboard' turns green</b><br/>/dashboard (also when the address has ?request=)" }
   h5@{ shape: rect, label: "<b>'Denial Intelligence' turns green</b><br/>/denials and a brief under it" }
@@ -44,7 +44,7 @@ flowchart LR
   d1 -->|"No"| shut
   open & shut --> d2
   d2 -->|"/authorizations or a case"| h1
-  d2 -->|"New case pages"| h2
+  d2 -->|"New Case pages"| h2
   d2 -->|"Eligibility pages"| h3
   d2 -->|"/dashboard"| h4
   d2 -->|"/denials"| h5

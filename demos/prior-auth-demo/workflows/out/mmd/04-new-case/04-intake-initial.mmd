@@ -16,63 +16,62 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Open the details</b><br/>After 'Review' on a referral and 'Continue with this referral'<br/>Or 'Create case manually', or a patient picked, or ?referral= or ?verification=" }
-  sc@{ shape: curv-trap, label: "<b>Intake · Initial authorization</b><br/>'Start with a referral or a patient. Everything is editable.'<br/>Step header 'STEP 1 OF 5 · Intake' with its state" }
-  sFrom@{ shape: curv-trap, label: "<b>One line above the details</b><br/>'From referral RF-2051 · Eastgate Probation Services. Everything below can be changed.'<br/>or 'An existing patient. Their details are filled in and can be changed for this request.'<br/>or 'Created by hand. Add what you know; Reader fills the rest from the chart.'" }
-  cDiff@{ shape: trap-t, label: "Click 'Use a different referral or patient'" }
-  gStart@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Start with a referral or patient" }
+  s1@{ shape: stadium, label: "<b>Open Intake on an initial authorization</b><br/>A new case, a referral continued into it, a known patient picked, or ?verification=" }
+  sc@{ shape: curv-trap, label: "<b>Intake · Initial authorization</b><br/>The row of ways in, then the form<br/>No sentence under the title" }
+  subgraph gWays ["The row of ways in"]
+  cImp@{ shape: trap-t, label: "<b>Click 'Pull from EMR', 'Import a file' or 'Paste a screenshot'</b><br/>or press Ctrl+V or Cmd+V in the row" }
+  cRefs@{ shape: trap-t, label: "Click 'Referrals' (count of open referrals)" }
+  cKnown@{ shape: trap-t, label: "Click 'Known patient'" }
+  end
+  gImp@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Start with a referral or patient" }
+  sFrom@{ shape: curv-trap, label: "<b>Once a referral or a known patient is in, one line under the row</b><br/>'From referral RF-2051 · St. Brigid Medical Center' or 'Existing patient R-1042'<br/>and 'Use a different referral' or 'Use a different patient'" }
   cRef@{ shape: trap-t, label: "Click the referral number in the line" }
-  gRef@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › The full referral page" }
+  gRef@{ shape: subproc, label: "Continues in: Authorizations › New Case › Referral › The full referral page" }
   pPay@{ shape: rect, label: "<b>A case Payers redrafted after a payer change shows one line</b><br/>'Updated for a payer change on 10/20'" }
   sDup@{ shape: curv-trap, label: "<b>One alert at a time</b><br/>'This looks like a request that already exists' (only when one matches)" }
-  gDup@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Possible duplicate" }
-  sSite@{ shape: curv-trap, label: "<b>Site</b><br/>With both sites in view: a 'Site' choice, Site A or Site B<br/>With one site in view: 'Site A · this case is at the site you are working at.'" }
-  gSite@{ shape: subproc, label: "Continues in: Authorizations › New case › Sites and scope" }
-  subgraph gRows ["The case's details, as rows you can edit"]
-  r1@{ shape: curv-trap, label: "<b>Patient</b><br/>'Patient initials and age'" }
-  r2@{ shape: curv-trap, label: "<b>Insurance</b><br/>'Payer and plan', 'Member ID' (Recommended)" }
-  r3@{ shape: curv-trap, label: "<b>Request</b><br/>'Level of care', 'Request type', 'Start date' (Recommended)" }
+  gDup@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Possible duplicate" }
+  subgraph gForm ["The form, one card"]
+  f1@{ shape: curv-trap, label: "<b>Patient</b><br/>Initials, Date of birth with Age beside it, Sex" }
+  f2@{ shape: curv-trap, label: "<b>Coverage</b><br/>Payer, Plan type (the payer's own plans), Member ID" }
+  f3@{ shape: curv-trap, label: "<b>Request</b><br/>Level of care, Request type (Initial request or Admission), Requested start date<br/>Primary diagnosis (ICD-10), Site" }
+  f4@{ shape: curv-trap, label: "<b>More, folded</b><br/>Secondary insurance, Requested end date, Attending clinician and NPI, Referral source<br/>Guardian, only for a patient under 18" }
   end
-  gRows@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Patient, insurance and request rows" }
-  pType@{ shape: rect, label: "<b>'Request type' offers Initial request and Admission</b><br/>Admission adds 'notice due in about 5 hours'" }
-  pEnd@{ shape: rect, label: "<b>'Requested end date' is optional</b><br/>Left empty it asks for the level of care's usual length<br/>'Left empty: the usual 21 days for Residential 3.5, through 11/09/2026.'" }
-  subgraph gFoot ["Footer bar, always in view"]
-  ft@{ shape: curv-trap, label: "<b>'Save as draft' and 'Continue to Eligibility & Benefits'</b><br/>One hint line" }
-  dHint@{ shape: diam, label: "What does the hint say?" }
-  h1@{ shape: odd, label: "'A matching request exists. Open it, or continue with a reason.'" }
-  h2@{ shape: odd, label: "'Still to add: patient, payer and 1 more. You can go on; Review & submit lists what is missing.'" }
-  h3@{ shape: odd, label: "'Nothing is sent to the payer until a clinician signs.'" }
+  gRows@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Patient, insurance and request rows" }
+  gSite@{ shape: subproc, label: "Continues in: Authorizations › New Case › Sites and scope" }
+  subgraph gFoot ["Bar at the bottom, always in view"]
+  ft@{ shape: curv-trap, label: "'Save as draft' and 'Continue to Eligibility & Benefits'" }
+  h1@{ shape: odd, label: "<b>A payer workflow warning, when there is one</b><br/>'Workflow: ...'" }
   end
   cSave@{ shape: trap-t, label: "Click 'Save as draft'" }
-  tSave@{ shape: odd, label: "<b>'Draft saved'</b><br/>'R-1701 is in Case Manager. Pick it up whenever you like.'" }
-  gSave@{ shape: subproc, label: "Continues in: Authorizations › New case › Save as draft and leave" }
+  tSave@{ shape: odd, label: "<b>'Draft saved'</b><br/>'R-1701 is in Case Manager.'" }
+  gSave@{ shape: subproc, label: "Continues in: Authorizations › New Case › Save as draft and leave" }
   cCont@{ shape: trap-t, label: "Click 'Continue to Eligibility & Benefits'" }
   pGo@{ shape: rect, label: "<b>Moves to step 2</b><br/>Nothing blocks the click" }
-  gElig@{ shape: subproc, label: "Continues in: Authorizations › New case › Eligibility & Benefits › Initial authorization" }
-  s1 --> sc --> sFrom
-  sFrom --> cDiff --> gStart
+  gElig@{ shape: subproc, label: "Continues in: Authorizations › New Case › Eligibility & Benefits › Initial authorization" }
+  s1 --> sc
+  sc --> cImp --> gImp
+  sc --> cRefs --> gImp
+  sc --> cKnown --> gImp
+  sc --> sFrom
   sFrom --> cRef --> gRef
   sc --> pPay
   sc --> sDup -.-> gDup
-  sc --> sSite -.-> gSite
-  sc --> r1 & r2 & r3
-  r1 --> gRows
-  r2 --> gRows
-  r3 --> pType
-  r3 --> pEnd
-  pType -.-> gRows
-  sc --> ft --> dHint
-  dHint -->|"Duplicate unanswered"| h1
-  dHint -->|"Items open"| h2
-  dHint -->|"Nothing open"| h3
+  sc --> f1 & f2 & f3 & f4
+  f1 --> gRows
+  f2 --> gRows
+  f3 --> gRows
+  f3 -.-> gSite
+  f4 -.-> gRows
+  sc --> ft
+  ft -.-> h1
   ft --> cSave --> tSave --> gSave
   ft --> cCont --> pGo --> gElig
   class s1 k_start
-  class sc,sFrom,sDup,sSite,r1,r2,r3,ft k_screen
-  class cDiff,cRef,cSave,cCont k_click
-  class gStart,gRef,gDup,gSite,gRows,gSave,gElig k_goto
-  class pPay,pType,pEnd,pGo k_process
-  class dHint k_decision
-  class h1,h2,h3,tSave k_toast
-  style gRows fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  class sc,sFrom,sDup,f1,f2,f3,f4,ft k_screen
+  class cImp,cRefs,cKnown,cRef,cSave,cCont k_click
+  class gImp,gRef,gDup,gRows,gSite,gSave,gElig k_goto
+  class pPay,pGo k_process
+  class h1,tSave k_toast
+  style gWays fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gForm fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gFoot fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

@@ -16,8 +16,8 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "Click 'Appeal analysis report' under the 'Our read' tile of a denial" }
-  s2@{ shape: stadium, label: "Click 'Report' on a row of the 'Open denials' panel" }
+  s1@{ shape: stadium, label: "Click 'Appeal analysis report' in the header card of a denial" }
+  s2@{ shape: stadium, label: "Click 'Appeal analysis report' on the brief page" }
   s3@{ shape: stadium, label: "Click 'Appeal analysis report' at the top right of the brief page" }
   s4@{ shape: stadium, label: "Open /denials/D-xxxx/report by its address" }
   d1@{ shape: diam, label: "Does a request with that id exist?" }
@@ -38,7 +38,7 @@ flowchart TD
   st2@{ shape: cyl, label: "Saved time is cleared, so the panel runs again" }
   c2@{ shape: trap-t, label: "Click 'Back to the denial'" }
   c3@{ shape: trap-t, label: "Click the crumb 'Denial Intelligence' or the crumb with the D-id" }
-  p1@{ shape: rect, label: "Address opens /denials?id=D-xxxx (the crumb 'Denial Intelligence' opens /denials)" }
+  p1@{ shape: rect, label: "Address opens /denials/D-xxxx (the crumb 'Denial Intelligence' opens the dashboard)" }
   g3@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
   p2@{ shape: rect, label: "Leave the page while it is generating: nothing is saved, the next visit generates again" }
   p3@{ shape: rect, label: "<b>Demo menu, 'Reset demo data' clears the saved times</b><br/>Every report generates again" }

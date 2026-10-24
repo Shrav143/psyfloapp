@@ -24,15 +24,15 @@ flowchart TD
   cReq@{ shape: trap-t, label: "<b>Click 'Request information'</b><br/>Only while New or In review" }
   cDec@{ shape: trap-t, label: "<b>Click 'Decline'</b><br/>While open" }
   end
-  gAcc@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › Accept a referral" }
-  gAsk@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › Ask the referrer" }
-  gOk@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › Mark OK or decline" }
+  gAcc@{ shape: subproc, label: "Continues in: Authorizations › New Case › Referral › Accept a referral" }
+  gAsk@{ shape: subproc, label: "Continues in: Authorizations › New Case › Referral › Ask the referrer" }
+  gOk@{ shape: subproc, label: "Continues in: Authorizations › New Case › Referral › Mark OK or decline" }
   cSt@{ shape: trap-t, label: "<b>Click 'Schedule intake', 'Mark admitted'</b><br/>or 'Change intake'<br/>Accepted and Scheduled only" }
-  gSt@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › Schedule intake" }
+  gSt@{ shape: subproc, label: "Continues in: Authorizations › New Case › Referral › Schedule intake" }
   cRe@{ shape: trap-t, label: "<b>Click 'Reopen referral'</b><br/>Declined only" }
   cStart@{ shape: trap-t, label: "<b>Click 'Start a case from this referral'</b><br/>Shown unless the referral is declined or already has a case" }
   pStart@{ shape: rect, label: "<b>Opens /authorizations/new?referral=RF-2053</b><br/>A new case is made from the referral and opens on Intake with the referral's details filled in" }
-  gNew@{ shape: subproc, label: "Continues in: Authorizations › New case › How a case starts and resumes" }
+  gNew@{ shape: subproc, label: "Continues in: Authorizations › New Case › How a case starts and resumes" }
   stRe@{ shape: cyl, label: "<b>Referral is In review again</b><br/>Timeline 'You reopened the referral'<br/>Toast 'Referral reopened'" }
   subgraph gOwn ["Owner"]
   cOwn@{ shape: trap-t, label: "<b>Open 'Owner' and pick a person</b><br/>Jordan Perez, Taylor Brooks, Morgan Lee or Unassigned" }
@@ -40,7 +40,7 @@ flowchart TD
   tOwn@{ shape: odd, label: "<b>'Assigned to Taylor Brooks'</b><br/>'RF-2053'<br/>Unassigned: 'Owner removed'" }
   end
   cNote@{ shape: trap-t, label: "Click 'Add note'" }
-  gNote@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › Full page: Fit, Activity and notes" }
+  gNote@{ shape: subproc, label: "Continues in: Authorizations › New Case › Referral › Full page: Fit, Activity and notes" }
   subgraph gMore ["More"]
   cMore@{ shape: trap-t, label: "Click 'More'" }
   oMore@{ shape: win-pane, label: "<b>Menu</b><br/>'Demo: simulate the referrer's reply'<br/>'Download the source document'<br/>'Copy link to this referral'" }
@@ -53,7 +53,7 @@ flowchart TD
   tCopy@{ shape: odd, label: "<b>'Link copied'</b><br/>'It opens this referral for anyone on your team.'" }
   tDown@{ shape: odd, label: "<b>'Downloading the original'</b><br/>'RF-2053.pdf, 2 pages. This is a demo, so no file is saved.'" }
   end
-  gReply@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › The referrer replies" }
+  gReply@{ shape: subproc, label: "Continues in: Authorizations › New Case › Referral › The referrer replies" }
   s1 --> dReq
   dReq -->|"Yes"| tDis
   dReq -->|"No"| cAcc --> gAcc

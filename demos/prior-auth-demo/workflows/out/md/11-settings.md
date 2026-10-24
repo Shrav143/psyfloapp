@@ -227,9 +227,9 @@ flowchart TD
   end
   p1@{ shape: rect, label: "<b>The signature is bound to the exact packet</b><br/>Nothing addressed to a payer leaves without it. PRD: an invariant, not a setting" }
   p2@{ shape: rect, label: "The step goes ahead" }
-  n1@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Sign and send to payer" }
+  n1@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer" }
   n2@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Approve the write-back" }
-  n3@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › An agent asks a question" }
+  n3@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › An agent asks a question" }
   n4@{ shape: subproc, label: "Continues in: Payers › History & Changes › Acknowledge a change" }
   n5@{ shape: subproc, label: "Continues in: Settings › Pause › Pause all agents" }
   n6@{ shape: subproc, label: "Continues in: Settings › Agents › Which steps need a person" }
@@ -309,7 +309,7 @@ flowchart TD
   x1@{ shape: stadium, label: "<b>Never</b><br/>The clinician authors clinical content and sets units, frequency and dates<br/>Callers never answer clinical questions" }
   h1@{ shape: trap-t, label: "<b>Clinician signs</b><br/>A licensed clinician signs every request and appeal" }
   h2@{ shape: trap-t, label: "Case owner confirms the write-back" }
-  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Sign and send to payer" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Approve the write-back" }
   g3@{ shape: subproc, label: "Continues in: Payers › History & Changes › Acknowledge a change" }
   g4@{ shape: subproc, label: "Continues in: Denial Intelligence › Written appeal › Edit, sign and file" }
@@ -369,7 +369,7 @@ flowchart TD
   s1@{ shape: curv-trap, label: "<b>Settings</b><br/>Header button 'Pause all agents', red outline, with a pause icon" }
   c1@{ shape: trap-t, label: "Click 'Pause all agents'" }
   o1@{ shape: win-pane, label: "<b>Pause all agents?</b><br/>'No agent starts new work until you resume.'" }
-  p1@{ shape: rect, label: "'New case stops running agents. Check all now on the Dashboard waits. Draft all due reviews in Case Manager waits. Eligibility & Benefits stops its automatic re-checks. EMR Connect will not sync, connect, fix or reconnect a system. Requests already with a payer stay where they are. You can resume at any time.'" }
+  p1@{ shape: rect, label: "'New Case stops running agents. Check all now on the Dashboard waits. Draft all due reviews in Case Manager waits. Eligibility & Benefits stops its automatic re-checks. EMR Connect will not sync, connect, fix or reconnect a system. Requests already with a payer stay where they are. You can resume at any time.'" }
   q1@{ shape: diam, label: "Which button?" }
   k1@{ shape: trap-t, label: "Click 'Cancel', click the X, press Escape, or click the dimmed area" }
   x1@{ shape: stadium, label: "<b>Pop-up closes</b><br/>Nothing changes and no toast" }
@@ -497,7 +497,7 @@ Pausing on Settings is shared with the rest of the app. Each screen that uses a 
 
 Route: `/settings`
 
-Found by reading the code and testing the built demo. There is one pause for the whole app: the 'Pause all agents' button on New case is the same switch as Settings. 'Reset demo data' lifts it.
+Found by reading the code and testing the built demo. There is one pause for the whole app: the 'Pause all agents' button on New Case is the same switch as Settings. 'Reset demo data' lifts it.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -521,7 +521,7 @@ flowchart TD
   s1@{ shape: stadium, label: "<b>Pause an agent on Settings</b><br/>Its switch, or 'Pause all agents' then 'Pause all'" }
   p1@{ shape: cyl, label: "<b>The pause is saved in the app</b><br/>Every screen reads the same switch" }
   t1@{ shape: odd, label: "<b>The banner on Settings says what is held back, agent by agent</b><br/>For example 'Paused: Verify and Reader.' then one sentence for each screen" }
-  subgraph gNew ["New case › Authorization preparation"]
+  subgraph gNew ["New Case › Authorization preparation"]
   n1@{ shape: curv-trap, label: "<b>Authorization preparation</b><br/>Ten agents in a row, then 'Back', 'Pause all agents', 'Skip ahead', 'Review & submit'" }
   n3@{ shape: rect, label: "<b>The run holds when it reaches a paused agent</b><br/>Its row shows a 'Paused' pill, the clock chip stops and 'Skip ahead' is dimmed" }
   n4@{ shape: odd, label: "<b>Banner 'Agents are paused in Settings' or '{Agent} is paused in Settings'</b><br/>'Nothing is read, checked or drafted until it is resumed. Nothing has been sent to the payer.'" }
@@ -547,7 +547,7 @@ flowchart TD
   r1@{ shape: rect, label: "Production: the operator can pause one agent, one payer channel or all outbound actions at once" }
   r2@{ shape: rect, label: "<b>Production: a pause takes effect before the next step of any running job</b><br/>Steps already going out finish, or roll back to the manual queue" }
   end
-  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › Finished, paused or left" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › Finished, paused or left" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Header › Check all now and the demo clock" }
   g3@{ shape: subproc, label: "Continues in: Case Manager › Reviews this week › Draft all due reviews and sign all clean drafts" }
   g4@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows" }
@@ -706,9 +706,9 @@ flowchart TD
   flo@{ shape: rect, label: "<b>FLO is not one of the sixteen</b><br/>Ask FLO, in the top bar, answers a question from your data" }
   emr@{ shape: curv-trap, label: "<b>EMR Connect</b><br/>Reader: pulls files, matches charts, maps fields<br/>Verify: re-checks coverage<br/>Navigator: renews sign-ins, reconnects, write-back, disconnects" }
   elig@{ shape: curv-trap, label: "<b>Authorizations › Eligibility & Benefits</b><br/>Reader, Verify: ask each source<br/>Caller: phones if a system does not answer<br/>Criteria: is authorization required<br/>Navigator: is the clinic enrolled to bill" }
-  ref@{ shape: curv-trap, label: "<b>Authorizations › New case › Intake, Eligibility & Benefits and Clinical documentation</b><br/>Reader: reads each file and the referral<br/>Verify: Coverage tab, and the check on Eligibility & Benefits<br/>Placement: Fit tab<br/>Criteria: Decline reasons" }
-  run@{ shape: curv-trap, label: "<b>Authorizations › New case › Authorization preparation</b><br/>Ten in order: Reader, Verify, Criteria, Historian, Placement, Forecaster, Scribe, Integrity, Packet, Scrubber<br/>Scribe and Packet may ask one question" }
-  sign@{ shape: curv-trap, label: "<b>Authorizations › New case › Review & submit</b><br/>Integrity: every sentence traces to the chart<br/>A licensed clinician signs" }
+  ref@{ shape: curv-trap, label: "<b>Authorizations › New Case › Intake, Eligibility & Benefits and Clinical documentation</b><br/>Reader: reads each file and the referral<br/>Verify: Coverage tab, and the check on Eligibility & Benefits<br/>Placement: Fit tab<br/>Criteria: Decline reasons" }
+  run@{ shape: curv-trap, label: "<b>Authorizations › New Case › Authorization preparation</b><br/>Ten in order: Reader, Verify, Criteria, Historian, Placement, Forecaster, Scribe, Integrity, Packet, Scrubber<br/>Scribe and Packet may ask one question" }
+  sign@{ shape: curv-trap, label: "<b>Authorizations › New Case › Review & submit</b><br/>Integrity: every sentence traces to the chart<br/>A licensed clinician signs" }
   auth@{ shape: curv-trap, label: "<b>Authorizations › Queue and Case page</b><br/>Criteria: what the payer asks for<br/>Scribe, Integrity, Forecaster: update the draft and re-score the chance<br/>Each row shows the agent holding the request" }
   mgr@{ shape: curv-trap, label: "<b>Case Manager</b><br/>Each case shows the agent working on it<br/>Reviews this week: drafted by Scribe or Cadence" }
   dash@{ shape: curv-trap, label: "<b>Dashboard</b><br/>Navigator: sends signed requests, checks status<br/>Caller: phones if still pending<br/>Packet: drafts the answer to an information request<br/>Integrity: checks it<br/>Cadence: ledger, next review, write-back" }

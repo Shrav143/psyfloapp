@@ -52,12 +52,12 @@ flowchart TD
   n4@{ shape: rect, label: "<b>Closed</b><br/>'This request was decided and no approved window is open.'" }
   n5@{ shape: rect, label: "<b>Active</b><br/>No sentence" }
   pNext@{ shape: rect, label: "<b>Intake goes on with the type's own cards: the dates and, for a modification, the proposed change</b><br/>The sentence is one quiet line, never a banner" }
-  gType@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Concurrent review" }
-  gRe@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Reauthorization / renewal" }
-  gMod@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Modification / extension" }
-  gDup@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Possible duplicate" }
-  gSite@{ shape: subproc, label: "Continues in: Authorizations › New case › Sites and scope" }
-  gElig@{ shape: subproc, label: "Continues in: Authorizations › New case › Eligibility & Benefits › Concurrent review" }
+  gType@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Concurrent review" }
+  gRe@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Reauthorization / renewal" }
+  gMod@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Modification / extension" }
+  gDup@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Possible duplicate" }
+  gSite@{ shape: subproc, label: "Continues in: Authorizations › New Case › Sites and scope" }
+  gElig@{ shape: subproc, label: "Continues in: Authorizations › New Case › Eligibility & Benefits › Concurrent review" }
   s1 --> sc1 --> i1 --> p1 --> d1
   d1 -->|"No"| tNo --> i1
   d1 -->|"Yes"| sList --> cPick --> dSite

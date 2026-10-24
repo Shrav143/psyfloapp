@@ -16,11 +16,11 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "Open step 4 with the agents running or done" }
+  s1@{ shape: stadium, label: "Open the Authorization preparation section with the agents running or done" }
   sc@{ shape: curv-trap, label: "<b>Right column</b><br/>Card 'Approval chance': the ring, 'started at 62% → 88%', the likely range<br/>Card 'To raise it further' with two ticks" }
   cBack@{ shape: trap-t, label: "Open Review & submit" }
   sRev@{ shape: curv-trap, label: "<b>Review & submit shows the same number</b><br/>'Strong · likely 83-92%'<br/>'Summit usually decides in about 1.5 days. Based on 1,248 similar cases.'<br/>The 'Held back' sentence is under 'What is missing'" }
-  gMis@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › What is missing" }
+  gMis@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › What is missing" }
   subgraph gChance ["Approval chance panel"]
   pRing@{ shape: rect, label: "<b>Ring starts at 62% ('started at 62%')</b><br/>It climbs as Verify, Criteria, Historian and Placement finish: 65, 72, 78, 83" }
   pPill@{ shape: rect, label: "Pill: 'Moderate so far · likely 53-70%'" }

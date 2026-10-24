@@ -28,7 +28,7 @@ flowchart TD
   f6@{ shape: odd, label: "<b>'Sign-in renewed'</b><br/>'One more test, then {name} is connected.'<br/>No toast when Navigator is set to 'Act on its own'" }
   end
   subgraph gTest ["The connection test"]
-  t1@{ shape: win-pane, label: "<b>Reconnect {name}</b><br/>'Read-only. Nothing is written back until a person approves it.'<br/>'It is connected again only when the test passes. Until then New case cannot pull a chart from it.'" }
+  t1@{ shape: win-pane, label: "<b>Reconnect {name}</b><br/>'Read-only. Nothing is written back until a person approves it.'<br/>'It is connected again only when the test passes. Until then New Case cannot pull a chart from it.'" }
   t2@{ shape: rect, label: "<b>Reaching the system</b><br/>Signing in with read-only access<br/>Reading one test record<br/>About 0.8 seconds a check" }
   t3@{ shape: odd, label: "'The test passed. Access is read-only, and nothing is written back.'" }
   t4@{ shape: trap-t, label: "<b>'Reconnect {name}' is dimmed until the last check passes</b><br/>Then click it" }

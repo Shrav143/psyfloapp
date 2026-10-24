@@ -16,47 +16,41 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "On the Draft tab: read the summary and the four checks" }
+  s1@{ shape: stadium, label: "Header 'Next:' block, on any tab" }
   dc@{ shape: diam, label: "Do all four checks pass, and is the request still preparing?" }
-  off@{ shape: rect, label: "<b>'Send to payer' is off</b><br/>The reason sits under the button, e.g. 'Integrity has 2 open checks. Apply the matching actions first.'" }
-  sp@{ shape: trap-t, label: "Click 'Send to payer' (large button)" }
-  os@{ shape: trap-t, label: "Click 'Open in review and sign' (header button)" }
-  rp@{ shape: rect, label: "<b>The case page finds this request's draft in New case, or makes one from the request</b><br/>The draft opens at Review & submit when the request is ready, at Authorization preparation when agents still have work" }
-  ns@{ shape: rect, label: "<b>Nothing is sent yet</b><br/>'Nothing goes to the payer until a clinician signs.'" }
-  gR@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Sign and send to payer" }
-  subgraph gSign ["In New case (summary only, drawn in its own diagram)"]
-  sg@{ shape: rect, label: "<b>A licensed clinician signs with 'Sign and send to payer'</b><br/>The UR coordinator cannot sign; Dr. Rivera can" }
+  off@{ shape: rect, label: "<b>'Send to payer' is greyed out</b><br/>its tooltip says why, e.g. 'Integrity 2/4: apply the matching actions'<br/>the chip beside it counts the checks" }
+  sp@{ shape: trap-t, label: "<b>Click 'Send to payer'</b><br/>(the primary button once ready; tooltip: a clinician signs before anything is sent)" }
+  os@{ shape: trap-t, label: "Click 'Open in review and sign' (header, always on)" }
+  rp@{ shape: rect, label: "<b>The case page finds this request's draft in New Case, or makes one from the request</b><br/>Review & submit when the request is ready, Authorization preparation when agents still have work" }
+  gR@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer" }
+  subgraph gSign ["In New Case (drawn in its own diagram)"]
+  sg@{ shape: rect, label: "<b>A licensed clinician signs</b><br/>The UR coordinator cannot sign; Dr. Rivera can" }
   py@{ shape: st-rect, label: "<b>Navigator sends the request through the payer's portal</b><br/>(demo: simulated)" }
   pk@{ shape: doc, label: "<b>What goes out</b><br/>The signed summary and the packet's documents" }
   end
-  rq@{ shape: cyl, label: "<b>Dashboard: the request is created, or moves to 'Received'</b><br/>History: 'You signed as Dr. Rivera (clinician) and sent the request', 'Navigator sent the request through the payer's portal', 'Navigator saved the receipt to the case' (read in the case page's History)" }
-  tt@{ shape: odd, label: "<b>Toast 'Sent to the payer'</b><br/>'R-0988 is on the Dashboard as Received.'" }
-  nt@{ shape: odd, label: "<b>Notification from Navigator: 'Sent to the payer'</b><br/>'R-0988 was sent. It now shows as Received on the Dashboard.'" }
-  db@{ shape: curv-trap, label: "<b>Dashboard opens on that request</b><br/>Stage 'Received'" }
-  qg@{ shape: rect, label: "<b>Back in the queue the request is gone</b><br/>The open count drops by one<br/>The sidebar badge too, if it was in Act now or Due within 24 hours" }
-  cp@{ shape: rect, label: "<b>The case page of a sent request shows the request's own status</b><br/>'Next:' the Dashboard's step, and a disabled 'Sent to payer' in place of 'Send to payer'<br/>History lists the signature and the send" }
+  rq@{ shape: cyl, label: "<b>Dashboard: the request moves to 'Received'</b><br/>History: 'You signed as Dr. Rivera (clinician) and sent the request', 'Navigator sent the request through the payer's portal'" }
+  cpg@{ shape: curv-trap, label: "Back on the case page or the Dashboard" }
+  qg@{ shape: rect, label: "<b>In the queue the request is gone</b><br/>The open count drops by one<br/>The sidebar badge too, if it was in Act now or Due within 24 hours" }
+  cp@{ shape: rect, label: "<b>The case page of a sent request</b><br/>the request's own status chip, e.g. 'Received'<br/>'Next: Wait for Beacon to decide' and a greyed-out 'Sent to payer'<br/>no Integrity chip" }
   gD@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   gQ@{ shape: subproc, label: "Continues in: Authorizations › Queue › Open the queue and read the top" }
   s1 --> dc
   dc -->|"No"| off
   dc -->|"Yes"| sp --> rp
   s1 --> os --> rp
-  rp --> ns --> gR
+  rp --> gR
   gR --> sg --> py --> pk
-  sg --> rq
-  rq --> tt
-  rq --> nt
-  rq --> db --> gD
+  sg --> rq --> cpg
+  cpg --> cp
+  cpg --> gD
   rq --> qg --> gQ
-  qg -.-> cp
   class s1 k_start
   class dc k_decision
-  class off,rp,ns,sg,qg,cp k_process
+  class off,rp,sg,qg,cp k_process
   class sp,os k_click
   class gR,gD,gQ k_goto
   class py k_ext
   class pk k_doc
   class rq k_store
-  class tt,nt k_toast
-  class db k_screen
+  class cpg k_screen
   style gSign fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

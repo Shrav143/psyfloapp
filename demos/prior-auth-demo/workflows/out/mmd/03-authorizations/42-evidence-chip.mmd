@@ -17,43 +17,38 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   subgraph gW ["Where chips appear"]
-  w1@{ shape: curv-trap, label: "<b>Clinical picture</b><br/>One chip beside each of Diagnosis, Status, Trajectory, Readiness" }
-  w2@{ shape: curv-trap, label: "<b>Payer criteria</b><br/>One chip in the 'Evidence' column of each requirement" }
-  w3@{ shape: curv-trap, label: "<b>Draft</b><br/>Chips after each section<br/>Each sentence from an applied action adds its own" }
+  w1@{ shape: curv-trap, label: "<b>Clinical picture & draft › each draft section</b><br/>Each sentence from an applied action adds its own" }
+  w2@{ shape: curv-trap, label: "Clinical picture rail › diagnosis and medications" }
+  w3@{ shape: curv-trap, label: "Criteria & risk › inside each criterion, beside the quoted chart text" }
   end
   c@{ shape: trap-t, label: "<b>Click a source chip</b><br/>e.g. 'Psychiatric eval p.1'" }
-  m@{ shape: win-pane, label: "<b>Dialog titled with the source name</b><br/>'Source for J.M., 34. Privacy mode is on.'" }
-  d1@{ shape: doc, label: "<b>Sheet 'Source document'</b><br/>'Names, dates of birth and member IDs are masked'" }
+  m@{ shape: win-pane, label: "<b>Side panel titled with the source name</b><br/>'J.M., 34 · R-1042'" }
+  d1@{ shape: doc, label: "<b>Sheet 'Source document'</b><br/>'Privacy mode: names, dates of birth and member IDs masked'" }
   d2@{ shape: doc, label: "<b>Facts on the sheet</b><br/>Patient, Payer, Level of care, Request" }
-  d3@{ shape: doc, label: "<b>'What the agents used'</b><br/>The quoted sentence, boxed and highlighted" }
-  ft@{ shape: rect, label: "'The full document stays in the chart system. Reader read it and Integrity checked every sentence against it.'" }
+  d3@{ shape: doc, label: "The quoted sentence, boxed and highlighted" }
   rd@{ shape: hex, label: "<b>Reader read the chart</b><br/>Integrity checked each sentence against it<br/>(demo: the quote is stored text)" }
   dY@{ shape: diam, label: "Is it a chip for an answer you typed?" }
   yo@{ shape: rect, label: "<b>Chip reads 'Your answer'</b><br/>Quote: 'Typed by you for Scribe on this request.'" }
-  cl@{ shape: trap-t, label: "Click 'Close'" }
   x@{ shape: trap-t, label: "Click the X" }
   dim@{ shape: trap-t, label: "Click the dimmed area" }
   esc@{ shape: trap-t, label: "Press Esc" }
-  e@{ shape: stadium, label: "<b>Dialog closes</b><br/>You are back on the same tab, nothing changed" }
+  e@{ shape: stadium, label: "<b>Side panel closes</b><br/>You are back on the same tab, nothing changed" }
   w1 --> c
   w2 --> c
   w3 --> c
-  c --> m --> d1 --> d2 --> d3 --> ft
+  c --> m --> d1 --> d2 --> d3
   d3 -.-> rd
   c --> dY
-  dY -->|"Yes"| yo --> d3
-  dY -->|"No"| d3
-  m --> cl & x & dim & esc
-  cl --> e
-  x --> e
-  dim --> e
-  esc --> e
+  dY -->|"Yes"| yo
+  m --> x --> e
+  m --> dim --> e
+  m --> esc --> e
   class w1,w2,w3 k_screen
-  class c,cl,x,dim,esc k_click
+  class c,x,dim,esc k_click
   class m k_overlay
   class d1,d2,d3 k_doc
-  class ft,yo k_process
   class rd k_agent
   class dY k_decision
+  class yo k_process
   class e k_end
   style gW fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

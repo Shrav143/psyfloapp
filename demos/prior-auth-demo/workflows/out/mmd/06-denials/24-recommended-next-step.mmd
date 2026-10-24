@@ -31,24 +31,22 @@ flowchart TD
   n1@{ shape: rect, label: "A retro denial turns on dates and coverage status: accept when the analysis says so, otherwise a person checks the dates first" }
   n2@{ shape: rect, label: "'File an appeal' when the clock running is the one to file or resubmit, the call window has closed, or the notice was late" }
   n3@{ shape: rect, label: "'Peer-to-peer review' while the call window is open" }
-  blk@{ shape: curv-trap, label: "<b>Block under the header card</b><br/>Label 'Recommended next step', the word as a title<br/>One or two plain sentences worked out from the denial: the chance of overturning, what the route takes, what it gets back" }
-  opt@{ shape: curv-trap, label: "<b>'Your options' row and its 'Compare the options' panel</b><br/>The 'Recommended' pill sits on the same route in both<br/>None for 'Investigate by hand'" }
-  b1@{ shape: trap-t, label: "Click 'Accept the decision and plan the step-down'" }
-  b2@{ shape: trap-t, label: "Click 'Choose a time and prepare the brief'" }
-  b3@{ shape: trap-t, label: "Click 'Draft the appeal letter'" }
+  blk@{ shape: curv-trap, label: "<b>Your options: 'Recommended' on that route, its button primary</b><br/>'Investigate by hand' picks no route: a pill with the word sits in the card header<br/>The written choice is titled 'Correct and resubmit' for that word" }
+  opt@{ shape: curv-trap, label: "<b>Dashboard: the row's Next step reads the word ('Accept', 'Correct and resubmit')</b><br/>Compare the options: the same route is selected" }
+  b1@{ shape: trap-t, label: "Click 'Accept the decision'" }
+  b2@{ shape: trap-t, label: "Click 'Book a call'" }
+  b3@{ shape: trap-t, label: "Click 'Draft the appeal'" }
   b4@{ shape: trap-t, label: "Click 'Draft the corrected request'" }
-  b5@{ shape: trap-t, label: "Click 'Read the findings'" }
-  pf@{ shape: rect, label: "<b>Page scrolls to 'Where the denial is weak' and puts focus on it</b><br/>(no animation when the person asked for reduced motion)" }
+  pf@{ shape: rect, label: "No route is picked: the person reads the findings and the eligibility dates, then chooses any of the three" }
   g1@{ shape: subproc, label: "Continues in: Denial Intelligence › Accept the denial" }
   g2@{ shape: subproc, label: "Continues in: Denial Intelligence › Peer-to-peer › Book the call" }
   g3@{ shape: subproc, label: "Continues in: Denial Intelligence › Written appeal › Confirm and draft" }
   o4@{ shape: win-pane, label: "<b>Confirm 'Confirm the next step: correct and resubmit'</b><br/>'Draft the corrected request' or 'Cancel'<br/>The same letter flow follows: Advocate drafts, a clinician signs, Navigator files" }
   g4@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Where the denial is weak" }
-  rn@{ shape: curv-trap, label: "<b>Under the button</b><br/>'Draft by FLO's agents. A clinician reviews and signs before anything is sent.'" }
-  wy@{ shape: trap-t, label: "Click 'Why FLO suggests this' (folded), or Tab to it and press Enter or Space" }
-  wr@{ shape: curv-trap, label: "<b>Reasons, as short points</b><br/>The type and payer, and 'Our read' sentence<br/>The chances of a call and of a written appeal, from N similar decisions (or a benchmark estimate)<br/>The window left<br/>The rule that chose the route<br/>'This is a recommendation for a person to review. It is not a payer rule.'" }
-  wc@{ shape: trap-t, label: "Click or press Enter or Space again" }
-  e1@{ shape: stadium, label: "The reasons fold away" }
+  wy@{ shape: trap-t, label: "Click 'Compare the options'" }
+  wr@{ shape: curv-trap, label: "<b>Under the radio cards: 'Why FLO suggests correct and resubmit'</b><br/>The type and payer, and the read<br/>The chances of a call and of a written appeal, from N similar decisions (or a benchmark estimate)<br/>The window left, the rule that chose the route<br/>'This is a recommendation for a person to review. It is not a payer rule.'" }
+  gc@{ shape: subproc, label: "Continues in: Denial Intelligence › Your options" }
+  e1@{ shape: stadium, label: "The person picks a route" }
   s1 --> a1 --> d1
   d1 -->|"Yes"| d2
   d2 -->|"Yes"| w1
@@ -65,19 +63,19 @@ flowchart TD
   a1 -.-> w6
   w1 & w2 & w3 & w4 & w5 --> blk
   blk --> opt
-  blk --> rn
   w1 --> b1 --> g1
   w5 --> b2 --> g2
   w4 --> b3 --> g3
   w3 --> b4 --> o4 --> g3
-  w2 --> b5 --> pf --> g4
-  blk --> wy --> wr --> wc --> e1
+  w2 --> pf --> g4
+  blk --> wy --> wr --> gc
+  wr --> e1
   class s1 k_start
   class a1 k_agent
   class d1,d2,d3,d4 k_decision
-  class w1,w2,w3,w4,w5,blk,opt,rn,wr k_screen
+  class w1,w2,w3,w4,w5,blk,opt,wr k_screen
   class w6,n1,n2,n3,pf k_process
-  class b1,b2,b3,b4,b5,wy,wc k_click
-  class g1,g2,g3,g4 k_goto
+  class b1,b2,b3,b4,wy k_click
+  class g1,g2,g3,g4,gc k_goto
   class o4 k_overlay
   class e1 k_end

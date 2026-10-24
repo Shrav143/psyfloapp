@@ -18,11 +18,11 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Pick 'Concurrent review' in 'Authorization type'</b><br/>Or open ?type=concurrent" }
   sc@{ shape: curv-trap, label: "<b>Intake · Concurrent review</b><br/>'Find the patient, then the authorization this review is for.'" }
-  gFind@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Find a patient and the authorization" }
+  gFind@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Find a patient and the authorization" }
   dHas@{ shape: diam, label: "Is a patient and an authorization chosen?" }
   sAuth@{ shape: curv-trap, label: "<b>Authorization card and one quiet sentence about its state</b><br/>None left, Expiring soon, Not approved yet or Closed" }
   dDup@{ shape: diam, label: "<b>Does another open request, draft or active authorization overlap these dates?</b><br/>The authorization this review follows is left out" }
-  gDup@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Possible duplicate" }
+  gDup@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Possible duplicate" }
   sDates@{ shape: curv-trap, label: "<b>Card 'Dates to review'</b><br/>'The next stretch starts the day after the approval ends, or today when it already has.' · Residential 3.5 · Summit Medicaid HMO" }
   iFrom@{ shape: lean-r, label: "<b>'Requested start date'</b><br/>Filled from the authorization" }
   iTo@{ shape: lean-r, label: "<b>'Requested end date' (optional)</b><br/>Left empty: the usual days for the level of care" }
@@ -31,14 +31,14 @@ flowchart TD
   st@{ shape: cyl, label: "<b>The request is recorded as 'Continued stay'</b><br/>It carries the patient, treatment episode and authorization ids" }
   pCheck@{ shape: rect, label: "<b>Eligibility & Benefits will show the patient's last check</b><br/>and the authorization already on file" }
   pDoc@{ shape: rect, label: "Typical documents: progress note since the last review, updated treatment plan, current ASAM reassessment, step-down or discharge plan" }
-  gElig@{ shape: subproc, label: "Continues in: Authorizations › New case › Eligibility & Benefits › Concurrent review" }
-  gDocs@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › Required and typical documents by type" }
+  gElig@{ shape: subproc, label: "Continues in: Authorizations › New Case › Eligibility & Benefits › Concurrent review" }
+  gDocs@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › Required and typical documents by type" }
   subgraph gFoot ["Footer bar"]
   cSave@{ shape: trap-t, label: "Click 'Save as draft'" }
   cCont@{ shape: trap-t, label: "Click 'Continue to Eligibility & Benefits'" }
   tHint@{ shape: odd, label: "'Still to add: authorization. You can go on; Review & submit lists what is missing.'" }
   end
-  gSave@{ shape: subproc, label: "Continues in: Authorizations › New case › Save as draft and leave" }
+  gSave@{ shape: subproc, label: "Continues in: Authorizations › New Case › Save as draft and leave" }
   s1 --> sc --> gFind
   sc --> dHas
   dHas -->|"No"| gFind

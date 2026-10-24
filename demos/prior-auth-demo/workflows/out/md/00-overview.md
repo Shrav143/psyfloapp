@@ -103,7 +103,7 @@ flowchart LR
   subgraph gMain ["Sidebar › Main"]
   dash@{ shape: curv-trap, label: "<b>Dashboard</b><br/>Lifecycle chips, Do next, authorizations table" }
   auth@{ shape: curv-trap, label: "<b>Authorizations › Queue</b><br/>Requests ranked by how soon each is due" }
-  newc@{ shape: curv-trap, label: "<b>Authorizations › New case</b><br/>Intake, Eligibility & Benefits, Clinical documentation, Authorization preparation, Review & submit" }
+  newc@{ shape: curv-trap, label: "<b>Authorizations › New Case</b><br/>Intake, Eligibility & Benefits, Clinical documentation, Authorization preparation, Review & submit" }
   elig@{ shape: curv-trap, label: "<b>Authorizations › Eligibility & Benefits</b><br/>List, verify a patient, result" }
   den@{ shape: curv-trap, label: "<b>Denial Intelligence</b><br/>Open denials, options, brief" }
   mgr@{ shape: curv-trap, label: "<b>Case Manager</b><br/>Tabs: Active cases and Reviews this week" }
@@ -120,7 +120,7 @@ flowchart LR
   end
   subgraph gSub ["Pages reached from inside a tab"]
   case@{ shape: curv-trap, label: "<b>Authorizations › Case page</b><br/>Five tabs: actions, picture, criteria, risk, draft" }
-  ref@{ shape: curv-trap, label: "<b>New case › Full referral page</b><br/>Extracted, Validation, Coverage, Fit, Activity" }
+  ref@{ shape: curv-trap, label: "<b>New Case › Full referral page</b><br/>Extracted, Validation, Coverage, Fit, Activity" }
   ver@{ shape: curv-trap, label: "Eligibility › Verify a patient and Result" }
   brief@{ shape: curv-trap, label: "Denial Intelligence › Peer-to-peer brief" }
   rep@{ shape: curv-trap, label: "<b>Denial Intelligence › Appeal analysis report</b><br/>For every denial, copy or download as PDF" }
@@ -130,7 +130,7 @@ flowchart LR
   g1@{ shape: subproc, label: "Continues in: Global shell" }
   g2@{ shape: subproc, label: "Continues in: Dashboard" }
   g3@{ shape: subproc, label: "Continues in: Authorizations › Queue and case page" }
-  g4@{ shape: subproc, label: "Continues in: Authorizations › New case" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › New Case" }
   g5@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits" }
   g6@{ shape: subproc, label: "Continues in: Denial Intelligence" }
   g7@{ shape: subproc, label: "Continues in: Case Manager" }
@@ -200,18 +200,18 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>A referral arrives</b><br/>A clinic sends documents, or someone drops them in" }
   ref1@{ shape: st-rect, label: "Referrer sends documents" }
-  nc1@{ shape: curv-trap, label: "<b>New case › Intake</b><br/>The referral's checklist of what is ready and what is missing" }
+  nc1@{ shape: curv-trap, label: "<b>New Case › Intake</b><br/>The referral's checklist of what is ready and what is missing" }
   rd@{ shape: hex, label: "Reader reads the documents and fills the checklist" }
   d1@{ shape: diam, label: "Is the referral complete and acceptable?" }
   askref@{ shape: trap-t, label: "<b>Ask the referrer</b><br/>or Decline or Override" }
-  nc2@{ shape: curv-trap, label: "<b>New case › Clinical documentation</b><br/>One checklist for the documents the payer asks for" }
+  nc2@{ shape: curv-trap, label: "<b>New Case › Clinical documentation</b><br/>One checklist for the documents the payer asks for" }
   emr@{ shape: st-rect, label: "<b>EMR Connect supplies the chart</b><br/>Pull from EMR" }
   ver@{ shape: hex, label: "<b>Verify checks coverage and benefits</b><br/>Eligibility & Benefits" }
-  nc3@{ shape: curv-trap, label: "<b>New case › Authorization preparation</b><br/>Scribe, Criteria, Placement, Integrity, Forecaster ..." }
+  nc3@{ shape: curv-trap, label: "<b>New Case › Authorization preparation</b><br/>Scribe, Criteria, Placement, Integrity, Forecaster ..." }
   d2@{ shape: diam, label: "Does an agent need an answer from you?" }
   ans@{ shape: lean-r, label: "Answer Scribe's question" }
   chance@{ shape: hex, label: "Forecaster shows the approval chance" }
-  nc4@{ shape: curv-trap, label: "<b>New case › Review & submit</b><br/>Nothing goes to the payer until a clinician signs" }
+  nc4@{ shape: curv-trap, label: "<b>New Case › Review & submit</b><br/>Nothing goes to the payer until a clinician signs" }
   sign@{ shape: trap-t, label: "<b>Clinician signs</b><br/>Sign and send" }
   req@{ shape: cyl, label: "<b>Request created</b><br/>Stage: Received" }
   payer@{ shape: st-rect, label: "<b>Payer receives the request</b><br/>(demo: simulated)" }

@@ -248,3 +248,17 @@ Payers keeps its sidebar name, its six payer records and everything that already
 - **Saved in this browser**: workflows, versions, library rules and each payer's saved page persist in localStorage (guarded). A change waiting and the cases and drafts it acts on start over on reload, and Reset demo data restores every seed.
 
 Limits, said plainly in the demo: no live payer rules or policy sources, no live portal, fax, email, API or webhook integrations, "Generate with FLO" is a keyword-driven sample draft, partial node-level overrides are not built, and browser Back cannot be intercepted by the unsaved-changes guard.
+
+## 17. Round 6 changelog: less text, one type scale, merged tabs
+
+What the user asked: remove the text that explains, teaches or repeats; smaller cards and more white space; one consistent font size scale; and specific changes per tab. What changed:
+
+- **Everywhere**: one type scale (24, 18, 16, 14, 13, 12, 11 px), smaller card padding and stat tiles, "New Case" capitalized, explanatory subtitles removed or moved into an (i). History on Authorizations and Denial Intelligence is one list with standard flags on the right: Agent, Decision, Logged decision, Scheduled.
+- **Dashboard**: the table has no title or ordering sentence; Lifecycle and Do next have no subtitles; the headline has no sub line.
+- **Authorizations**: three tabs (Recommended actions; Clinical picture & draft with the draft in the main column and a clinical rail beside it; Criteria & risk with criteria met, approval chance, the biggest risks and each criterion's evidence, the breakdown in a pop-up). A compact multi-screener chart (checkbox per screener, Add screener, View results), modelled on the user's Blueprint example. Logged decisions folded into History. Status narration replaced by a status pill, an Integrity chip and the Send button's state.
+- **Frameworks**: ASAM Criteria for substance use and co-occurring conditions, LOCUS for adult mental health only, CALOCUS-CASII under 18; payer licensed criteria (InterQual, MCG) stay the payer's criteria. Four demo cases are mental health only and show LOCUS.
+- **New Case**: four steps; Intake is patient onboarding (date of birth with computed age, sex, payer, plan type, member ID, level of care, request type, start date, primary diagnosis; secondary insurance, clinician and NPI, guardian and referral source folded under More); three ways to bring a record in on Intake and Clinical documentation (Pull from EMR, Import a file with field mapping, Paste a screenshot), also on Eligibility Verify, EMR Connect and a denial letter; authorization preparation is the last section of Clinical documentation; the notes the user named are gone.
+- **Eligibility & Benefits**: no headline card, four one-line verdict figures, Verify a patient in the title row, no header box or instructions on Verify, one verdict block on the result.
+- **Denial Intelligence**: opens on a dashboard of open denials (figures that filter, payer chips, sortable table); each denial on its own page with Your options first and the step under way shown inside its option; the headline card and the duplicate top card are gone; the framework card has a pop-up per dimension; History with flags.
+
+Limits: the screenshot reading and the file import are simulated in this demo (deterministic sample readings, nothing leaves the browser); an imported insurance card carries no date of birth.

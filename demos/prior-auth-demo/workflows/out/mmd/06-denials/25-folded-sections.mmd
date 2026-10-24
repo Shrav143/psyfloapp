@@ -16,40 +16,41 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "A denial is on screen (or its brief)" }
-  f1@{ shape: curv-trap, label: "<b>Folded at first, each with a title, one summary line and a chevron</b><br/>'What the agents did': 'Reader, Advocate and Historian read the letter and the chart...' and the pill 'Done in 0:48'<br/>'What has happened': '6 steps. Latest, Mon 4:46 pm: ...'<br/>'Why FLO suggests this': 'The reasons, from the chart and the clock. A recommendation, not a payer rule.'" }
-  f2@{ shape: curv-trap, label: "<b>On the brief page</b><br/>'Key dates and numbers': 'Call: Wed 10/21, 9–11 am · Window: 36 h'<br/>'Have these open': '0 of 3 ticked' (and '1 of 3 ticked' after a tick)" }
-  pa@{ shape: rect, label: "<b>Each header is a real button with aria-expanded=false</b><br/>Summary lines are worked out from the denial, so they change when it does" }
-  pn@{ shape: curv-trap, label: "<b>Not folded: right-hand panels</b><br/>'Open denials' (header button), 'Compare the options' (Your options), 'Add a denial letter' (panel footer)<br/>Each closes with Escape, X or the dimmed area" }
-  g1@{ shape: subproc, label: "Continues in: Denial Intelligence › Open denials list" }
-  g4@{ shape: subproc, label: "Continues in: Denial Intelligence › Your options" }
-  c1@{ shape: trap-t, label: "Click a header, or Tab to it and press Enter or Space" }
-  p1@{ shape: rect, label: "<b>aria-expanded becomes true</b><br/>Chevron turns over, a rule appears, the detail shows below" }
-  d1@{ shape: curv-trap, label: "<b>'What the agents did': one line per agent with a tick</b><br/>'What has happened': 'Every step is also on the Dashboard.' and the timeline<br/>'Why FLO suggests this': the reasons<br/>'Key dates and numbers': two columns<br/>'Have these open': one tick box per source" }
-  g2@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Recommended next step" }
+  s1@{ shape: stadium, label: "A denial is on screen" }
+  f1@{ shape: curv-trap, label: "'History', folded, with a chevron and nothing under the title" }
+  c1@{ shape: trap-t, label: "Click the header, or Tab to it and press Enter or Space" }
+  p1@{ shape: rect, label: "aria-expanded becomes true, the list shows" }
+  pm@{ shape: rect, label: "<b>The list: the request's own events (the Dashboard shows the same) and the agents' reading of the letter, newest first</b><br/>A reading already in the events is not listed twice" }
+  h1@{ shape: curv-trap, label: "One line each: who (agent, 'You' or 'Payer'), when, what" }
+  dq@{ shape: diam, label: "Who did it?" }
+  fa@{ shape: curv-trap, label: "<b>Flag 'Agent': a Psyflo agent did it</b><br/>(Reader, Advocate, Historian, Cadence, Navigator)" }
+  fd@{ shape: curv-trap, label: "<b>Flag 'Decision': the payer decided</b><br/>Red when it denied or upheld, ochre when it approved part ('did not approve the full request' on a partial approval), green when it overturned or restored" }
+  fl@{ shape: curv-trap, label: "<b>Flag 'Logged decision': a person logged it by hand</b><br/>'You logged the call outcome', 'You recorded the payer's decision', 'You accepted the decision'" }
+  fs@{ shape: curv-trap, label: "<b>Flag 'Scheduled': planned, not done</b><br/>'Peer-to-peer call with Cardinal', 'Navigator checks for the decision each day'" }
+  fn@{ shape: curv-trap, label: "No flag: anything else a person did ('You signed the appeal as Medical director', 'You chose a written appeal')" }
+  px@{ shape: rect, label: "A scheduled line leaves once the answer is in (call outcome, payer decision, accept)" }
+  c2@{ shape: trap-t, label: "Click the header again, or Enter or Space" }
+  e1@{ shape: stadium, label: "History folds away" }
+  f2@{ shape: curv-trap, label: "<b>On the brief page, folded</b><br/>'Key dates and numbers' (no summary line)<br/>'Have these open' with the count '0 of 3' on the right" }
+  p4@{ shape: rect, label: "Both stay in the page while closed; Print opens them on paper and drops the chevron" }
+  p6@{ shape: rect, label: "A section starts closed again each time a denial is opened, also when moving from one denial to the next" }
   g3@{ shape: subproc, label: "Continues in: Denial Intelligence › Peer-to-peer › The brief" }
-  c2@{ shape: trap-t, label: "Click the header again, or press Enter or Space" }
-  p2@{ shape: rect, label: "<b>aria-expanded becomes false</b><br/>The detail hides" }
-  p4@{ shape: rect, label: "<b>On the brief, 'Key dates and numbers' and 'Have these open' stay in the page while closed</b><br/>Print opens both on paper and drops the chevron" }
-  p5@{ shape: rect, label: "Esc closes menus, dialogs and drawers, not a folded section" }
-  p6@{ shape: rect, label: "<b>Opening one does not close another</b><br/>A section starts closed again each time the page is opened" }
-  e1@{ shape: stadium, label: "Section is closed again" }
-  s1 --> f1 --> pa
-  s1 --> f2 --> pa
-  s1 -.-> pn
-  pn --> g1
-  pn --> g4
-  pa --> c1 --> p1
-  p1 --> d1
-  d1 --> g2
-  d1 --> g3
-  d1 --> c2 --> p2 --> e1
-  p2 -.-> p4
+  g4@{ shape: subproc, label: "Continues in: Denial Intelligence › Your options" }
+  s1 --> f1 --> c1 --> p1 --> pm --> h1 --> dq
+  dq -->|"Agent"| fa
+  dq -->|"Payer"| fd
+  dq -->|"A person logged an outcome"| fl
+  dq -->|"Planned"| fs
+  dq -->|"A person, otherwise"| fn
+  fs -.-> px
+  h1 --> c2 --> e1
   p1 -.-> p6
-  c1 -.-> p5
+  s1 -.-> g4
+  s1 -.-> f2 --> p4 --> g3
   class s1 k_start
-  class f1,f2,pn,d1 k_screen
-  class pa,p1,p2,p4,p5,p6 k_process
-  class g1,g4,g2,g3 k_goto
+  class f1,h1,fa,fd,fl,fs,fn,f2 k_screen
   class c1,c2 k_click
+  class p1,pm,px,p4,p6 k_process
+  class dq k_decision
   class e1 k_end
+  class g3,g4 k_goto

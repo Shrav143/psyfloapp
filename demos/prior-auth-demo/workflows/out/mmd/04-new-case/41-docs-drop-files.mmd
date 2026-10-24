@@ -16,9 +16,9 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "On step 3, give the drop zone some files" }
-  i1@{ shape: lean-r, label: "<b>Drop files on 'Drop everything you have for this patient'</b><br/>Any names, any order, several at once" }
-  c1@{ shape: trap-t, label: "Click the zone, or press Enter or Space" }
+  s1@{ shape: stadium, label: "On step 3, give the drop bar some files" }
+  i1@{ shape: lean-r, label: "<b>Drop files on 'Drop the chart, the insurance card and any documents, or click to choose'</b><br/>Any names, any order, several at once" }
+  c1@{ shape: trap-t, label: "Click the bar, or press Enter or Space" }
   p0@{ shape: rect, label: "<b>The file picker opens</b><br/>Several files can be chosen" }
   dNone@{ shape: diam, label: "Any file chosen?" }
   eNone@{ shape: stadium, label: "Nothing happens" }
@@ -41,7 +41,7 @@ flowchart TD
   pDup@{ shape: rect, label: "Second file: 'Could not place'" }
   pPlace@{ shape: rect, label: "<b>File goes into its slot</b><br/>It replaces any file already in that slot<br/>and clears a 'marked not available' on it" }
   dOpen@{ shape: diam, label: "No match: is a required slot still open?" }
-  pGuess@{ shape: rect, label: "<b>Takes the first open required slot on the payer's list, referral last</b><br/>Skips a document marked 'not available'<br/>'Reader guessed this one. Check it.'" }
+  pGuess@{ shape: rect, label: "<b>Takes the first open required slot on the payer's list, referral last</b><br/>Skips a document marked 'not available'<br/>'Reader guessed the slot. Check it'" }
   pNone@{ shape: rect, label: "<b>'Could not place'</b><br/>Any file type is taken, but there is no slot left" }
   end
   st1@{ shape: cyl, label: "<b>Draft updated once</b><br/>Each filled row remembers its file: 'Read from FILE by Reader. Check it.'" }
@@ -52,15 +52,15 @@ flowchart TD
   pOk@{ shape: rect, label: "Row: 'N checks passed'" }
   pWarn@{ shape: rect, label: "Row: 'Check this' with the finding text" }
   t1@{ shape: odd, label: "<b>'Reader sorted 6 files: 2 matched, 4 need a look'</b><br/>'Could not place: ... Check where Reader put: ... Findings in: ...'" }
-  pTick@{ shape: rect, label: "<b>Checklist rows tick off</b><br/>'N of M ready' goes up<br/>'Continue' is never switched off" }
-  g30@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › The checklist and Continue" }
+  pTick@{ shape: rect, label: "<b>Checklist rows tick off</b><br/>'N of M ready' goes up<br/>'Start the agents' is never switched off" }
+  g30@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › The checklist and Continue" }
   subgraph gSample ["Use sample chart"]
   c2@{ shape: trap-t, label: "Click 'Use sample chart' (top right of step 3)" }
   dHas@{ shape: diam, label: "<b>Does the case already have a patient?</b><br/>From a referral, an EMR pull or typed initials" }
-  stAll@{ shape: cyl, label: "<b>Fills J.M., 34 · Summit Medicaid HMO · …4821</b><br/>Residential 3.5 · Admission · F10.20, F33.2 · reason" }
+  stAll@{ shape: cyl, label: "<b>Fills T.W., 41, born 03/02/1985, Female · Summit Medicaid HMO · …5519</b><br/>Residential 3.5 · Admission · F10.20, F33.2 · reason" }
   stKeep@{ shape: cyl, label: "<b>Keeps that patient and request</b><br/>Adds only a blank member ID, start date or type" }
   stDocs@{ shape: cyl, label: "<b>Adds a sample file for each document on the payer's saved list</b><br/>Summit: 8 of 9. 'Therapy note from the last 14 days' is left out on purpose" }
-  t2@{ shape: odd, label: "<b>'Sample chart loaded'</b><br/>'J.M., 34. 8 of 9 documents are added and being checked.'" }
+  t2@{ shape: odd, label: "<b>'Sample chart loaded'</b><br/>'T.W., 41. 8 of 9 documents are added and being checked.'" }
   end
   s1 --> i1
   s1 --> c1

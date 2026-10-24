@@ -16,18 +16,18 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Result page, facts line</b><br/>'Payer', 'Plan type and routing', 'Member', 'Date of service', 'Time checked', 'Source'" }
-  pl@{ shape: rect, label: "<b>Payer item</b><br/>'Summit Medicaid HMO (Ohio Medicaid)'<br/>Name, then its group in brackets" }
+  s1@{ shape: stadium, label: "<b>Result page</b><br/>Title row names the payer, rows under the verdict, a quiet facts line at the foot" }
+  pl@{ shape: rect, label: "<b>Payer in the title row</b><br/>'Summit Medicaid HMO (Ohio Medicaid)'<br/>Name, then its group in brackets" }
   d0@{ shape: diam, label: "<b>Does the payer have a plan type?</b><br/>(HMO, PPO, Medicare Advantage, behavioral carve-out, fee for service)" }
-  none@{ shape: rect, label: "<b>'Plan type and routing' is left out of the line</b><br/>Nothing is guessed" }
+  none@{ shape: rect, label: "<b>No 'Plan type and routing' row</b><br/>Nothing is guessed" }
   d1@{ shape: diam, label: "Which group is the payer in?" }
   m1@{ shape: rect, label: "<b>Ohio Medicaid, HMO or PPO</b><br/>'Medicaid managed care (HMO). Claims go to Summit, not to the state'" }
   m2@{ shape: rect, label: "<b>Ohio Medicaid, fee for service</b><br/>'Medicaid fee for service. Claims go to the state, not to a health plan'" }
   c1@{ shape: rect, label: "<b>Commercial</b><br/>'Commercial PPO. Claims go to Beacon PPO'" }
   a1@{ shape: rect, label: "<b>Medicare Advantage</b><br/>'Medicare Advantage. Claims go to Harborview MA, not to Medicare'" }
   b1@{ shape: rect, label: "<b>Behavioral carve-out</b><br/>'Behavioral health carve-out. Behavioral health is carved out to Lakeshore Behavioral.<br/>Claims go to Lakeshore, not to the medical plan'" }
-  cost@{ shape: rect, label: "<b>The same plan decides whether a cost share is on file</b><br/>Commercial and carve-out: copay, deductible, coinsurance<br/>Medicare Advantage: deductible, coinsurance<br/>Ohio Medicaid: none, nothing is shown" }
-  src@{ shape: rect, label: "<b>'Source' item</b><br/>'Simulated check against the payer portal'<br/>Evergreen, reached by phone: 'Simulated check, confirmed by phone'" }
+  cost@{ shape: rect, label: "<b>The same plan decides whether a 'Patient pays' row shows</b><br/>Commercial and carve-out: copay, deductible, coinsurance<br/>Medicare Advantage: deductible, coinsurance<br/>Ohio Medicaid: none, no row" }
+  src@{ shape: rect, label: "<b>'Source' in the facts line</b><br/>'Simulated check against the payer portal'<br/>Evergreen, reached by phone: 'Simulated check, confirmed by phone'" }
   e1@{ shape: stadium, label: "Facts line ends with where the answer came from, and says it is simulated" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › Result first: eligibility, benefits, what the service needs" }
   s1 --> pl --> d0

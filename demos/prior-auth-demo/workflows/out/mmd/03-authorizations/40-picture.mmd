@@ -16,48 +16,53 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "Click 'Clinical picture'" }
-  pt@{ shape: curv-trap, label: "<b>Clinical picture</b><br/>Left: summary, ASAM dimensions, trend. Right: what stands out, engagement, still open" }
-  subgraph gL ["Left column"]
-  sm@{ shape: curv-trap, label: "<b>Card 'Clinical picture'</b><br/>'Built by Reader and Placement from the chart. Every line links back to a file.'<br/>Rows: Diagnosis, Status, Trajectory, Readiness" }
-  ch@{ shape: trap-t, label: "Click the source chip beside a row" }
-  dRd@{ shape: diam, label: "Is anything still open?" }
-  r1@{ shape: rect, label: "Readiness reads 'The draft is ready for signature.'" }
-  r2@{ shape: rect, label: "Readiness reads 'The request is ready for signature once the open items below are settled.'" }
-  as@{ shape: curv-trap, label: "<b>Card 'ASAM dimensions'</b><br/>Six cards: number, name, one sentence and a word<br/>None, Low, Moderate, High or Severe" }
-  tr@{ shape: curv-trap, label: "<b>Card 'Symptom and function trend'</b><br/>Line chart by date with a legend<br/>A missing score is left as a gap" }
-  ks@{ shape: rect, label: "<b>Two tiles under the chart</b><br/>e.g. 'Withdrawal now 4 / 67, peak 14' and 'Depression now 17 / 27'" }
+  s1@{ shape: stadium, label: "<b>Click 'Clinical picture & draft'</b><br/>(or open an old ?tab=picture link)" }
+  dW@{ shape: diam, label: "Wider than 1024 px?" }
+  rl@{ shape: curv-trap, label: "Rail 'Clinical picture' beside the draft, about 340 px" }
+  rf@{ shape: curv-trap, label: "'Clinical picture' under the draft, folded" }
+  of@{ shape: trap-t, label: "Click 'Clinical picture' to open it" }
+  subgraph gR ["The rail, top to bottom"]
+  dx@{ shape: curv-trap, label: "Diagnosis line, status pill and source chip" }
+  ind@{ shape: trap-t, label: "Click 'In draft'" }
+  sc@{ shape: curv-trap, label: "Screener chart: Low to High, one line per screener" }
+  fw@{ shape: curv-trap, label: "<b>Framework name and six rows</b><br/>'ASAM Criteria' or 'LOCUS · adult mental health'<br/>number, short name, dot and rating" }
+  row@{ shape: trap-t, label: "Click a dimension row" }
+  pop@{ shape: win-pane, label: "<b>Pop-up: the dimension, its rating on the framework's scale</b><br/>what the chart shows, and the source page quoted" }
+  sid@{ shape: trap-t, label: "Click 'Show in draft'" }
+  cl@{ shape: trap-t, label: "Click 'Close', X, the dimmed area or Esc" }
+  me@{ shape: trap-t, label: "<b>Open 'Medications'</b><br/>name and dose, source chip" }
+  so@{ shape: trap-t, label: "<b>Open 'What stands out'</b><br/>four short lines" }
+  en@{ shape: trap-t, label: "<b>Open 'Engagement'</b><br/>percent, bar and three ticked checks" }
   end
-  subgraph gR ["Right column"]
-  so@{ shape: curv-trap, label: "<b>Card 'What stands out'</b><br/>Four short lines" }
-  en@{ shape: curv-trap, label: "<b>Card 'Engagement and behavior'</b><br/>Percent and bar, with a word<br/>Strong 85+, Moderate 70–84, Low below 70<br/>Then three ticked checks" }
-  op@{ shape: curv-trap, label: "<b>Card 'Still open'</b><br/>Count pill and one line per open item<br/>Conflict, Missing or Risk" }
-  dOp@{ shape: diam, label: "Any open items?" }
-  no@{ shape: rect, label: "'Nothing is open. Every conflict, document and risk is settled.'" }
-  se@{ shape: trap-t, label: "Click 'Settle it' on a line" }
-  end
-  dl@{ shape: rect, label: "Recommended actions opens with that card outlined" }
-  ap@{ shape: rect, label: "<b>An item leaves 'Still open' when its action is applied</b><br/>Dismissing the action does not clear it" }
+  lt@{ shape: rect, label: "<b>The draft sections that cite the same chart page turn green for a few seconds</b><br/>and the first scrolls into view" }
+  dCt@{ shape: diam, label: "Does any section cite that page?" }
+  fb@{ shape: rect, label: "<b>The section the item speaks to lights instead</b><br/>e.g. the diagnosis lights 'Clinical picture'" }
+  ch@{ shape: trap-t, label: "Click the source chip" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Case page › Source chip" }
-  g2@{ shape: subproc, label: "Continues in: Authorizations › Case page › Recommended actions › The tab" }
-  s1 --> pt
-  pt --> sm --> dRd
-  dRd -->|"Yes"| r2
-  dRd -->|"No"| r1
-  sm --> ch --> g1
-  pt --> as
-  pt --> tr --> ks
-  pt --> so
-  pt --> en
-  pt --> op --> dOp
-  dOp -->|"Yes"| se --> dl --> g2
-  dOp -->|"No"| no
-  se -.-> ap
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Case page › Screener chart" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › Case page › Framework: ASAM or LOCUS" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › Case page › Draft › Read and edit" }
+  s1 --> dW
+  dW -->|"Yes"| rl
+  dW -->|"No"| rf --> of --> rl
+  rl --> dx & sc & fw
+  dx --> ind --> dCt
+  dx --> ch --> g1
+  sc --> g2
+  fw --> row --> pop
+  pop --> sid --> dCt
+  pop --> cl
+  fw --> g3
+  rl --> me & so & en
+  dCt -->|"Yes"| lt
+  dCt -->|"No"| fb
+  lt --> g4
+  fb --> g4
   class s1 k_start
-  class pt,sm,as,tr,so,en,op k_screen
-  class ch,se k_click
-  class dRd,dOp k_decision
-  class r1,r2,ks,no,dl,ap k_process
-  class g1,g2 k_goto
-  style gL fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  class dW,dCt k_decision
+  class rl,rf,dx,sc,fw k_screen
+  class of,ind,row,sid,cl,me,so,en,ch k_click
+  class pop k_overlay
+  class lt,fb k_process
+  class g1,g2,g3,g4 k_goto
   style gR fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

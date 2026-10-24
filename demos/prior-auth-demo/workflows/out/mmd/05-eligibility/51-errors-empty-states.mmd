@@ -17,36 +17,36 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>A check cannot be found</b><br/>Old link, typed address, or after 'Reset demo data' in the Demo menu" }
-  e1@{ shape: curv-trap, label: "<b>Coverage check</b><br/>'That check is not in the list.'" }
+  e1@{ shape: curv-trap, label: "Back link '← Eligibility & Benefits', no title" }
   e2@{ shape: curv-trap, label: "<b>Empty state 'We could not find that check'</b><br/>'It may have been cleared when the demo data was reset.'" }
   c1@{ shape: trap-t, label: "Click 'Back to Eligibility & Benefits'" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows" }
-  s2@{ shape: stadium, label: "Open 'Verify a patient' with a referral that does not exist" }
-  t1@{ shape: odd, label: "<b>'Referral not found'</b><br/>'We could not find RF-9999. Type the details instead.'" }
+  s2@{ shape: stadium, label: "Open the Verify page with a referral that does not exist" }
+  t1@{ shape: odd, label: "<b>'Referral not found'</b><br/>'RF-9999 is not in the referrals.'" }
   p1@{ shape: rect, label: "<b>The form stays empty</b><br/>No 'Back to referral' link either" }
-  s3@{ shape: stadium, label: "Open 'Verify a patient' with a case that is neither on the list nor in the queue" }
+  s3@{ shape: stadium, label: "Open the Verify page with a case that is neither on the list nor in the queue" }
   p2@{ shape: rect, label: "<b>The form stays empty</b><br/>No message appears" }
   s4@{ shape: stadium, label: "Type in the form but leave something out or in the wrong shape" }
   q1@{ shape: diam, label: "Payer, a member ID of 4 or more characters and two MM/DD/YYYY dates?" }
-  p3@{ shape: rect, label: "<b>'Check now' is off and the hint says what is missing</b><br/>No red error text next to the fields" }
+  p3@{ shape: rect, label: "<b>'Check now' is off; the required fields carry a red star</b><br/>No hint line and no red error text" }
   c2@{ shape: trap-t, label: "Click 'Check now'" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › The live check" }
   s5@{ shape: stadium, label: "Search or filters on the list match nobody" }
-  e3@{ shape: curv-trap, label: "<b>'No patients match these filters'</b><br/>'The filters hide every row. Clear them to see all 37 patients.'<br/>(the count is the patients in the site view)" }
+  e3@{ shape: curv-trap, label: "<b>'No patients match these filters' with 'Clear filters'</b><br/>No explanation line" }
   c3@{ shape: trap-t, label: "Click 'Clear filters'" }
   e4@{ shape: stadium, label: "All patients are back" }
   s6@{ shape: stadium, label: "<b>The check finds a coverage problem</b><br/>Member ID ends 1012, 9999, 3030, 6060 or 9090, or Evergreen with Detox" }
-  e5@{ shape: curv-trap, label: "<b>A normal result page with a red verdict 'Fix before billing'</b><br/>If coverage is not found, headline 'We could not find coverage.', one grey row 'Nothing else could be checked' and no payment lines" }
+  e5@{ shape: curv-trap, label: "<b>A normal result page with a red verdict 'Fix before billing'</b><br/>If coverage is not found: Coverage 'Not found', benefits and what the service needs 'Not checked', no 'Patient pays' row" }
   g3@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › Next actions" }
   g5@{ shape: subproc, label: "Continues in: Dashboard" }
-  s7@{ shape: stadium, label: "Leave 'Verify a patient' while the live check runs" }
+  s7@{ shape: stadium, label: "Leave the Verify page while the live check runs" }
   e6@{ shape: stadium, label: "<b>The check is dropped</b><br/>Nothing is saved and no row is added" }
   s8@{ shape: stadium, label: "<b>Open a result at a site the viewer cannot see</b><br/>A link, or a sign-in as Dr. Rivera (Site A) or Sam Okafor (Site B)" }
   e7@{ shape: curv-trap, label: "<b>'This coverage check is not available at Site A'</b><br/>It names the case and its site, never a patient or a payer<br/>Staff who may see both sites also get 'Show Site B'" }
   c4@{ shape: trap-t, label: "Click 'Back to the Dashboard'" }
   s9@{ shape: stadium, label: "Verify is paused in Settings and a check is started or asked again" }
-  e8@{ shape: curv-trap, label: "<b>Verify page banner 'Verify is paused in Settings'</b><br/>The check still runs its steps, each saying 'Not asked: Verify is paused in Settings'" }
-  e9@{ shape: curv-trap, label: "<b>A result 'Could not verify: Verify is paused in Settings.'</b><br/>Verdict 'Not checked', warning 'Verification service unavailable'<br/>'Open Settings' and 'Check again'" }
+  e8@{ shape: curv-trap, label: "<b>Verify page banner 'Verify is paused in Settings' with 'Open Settings'</b><br/>The check still runs its steps, each saying 'Not asked: Verify is paused in Settings'" }
+  e9@{ shape: curv-trap, label: "<b>A result with the verdict 'Not checked' · Coverage 'Not checked'</b><br/>Eligibility 'Not asked: Verify is paused in Settings'<br/>'Open Settings' and 'Re-check'" }
   g4@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › The exceptions" }
   s1 --> e1 --> e2 --> c1 --> g1
   s2 --> t1 --> p1

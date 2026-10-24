@@ -16,41 +16,42 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "Click 'Full summary' in the header of 'The six ASAM dimensions'" }
+  s0@{ shape: stadium, label: "A denial is on screen" }
+  pfw@{ shape: rect, label: "<b>Framework = frameworkFor(level of care, diagnosis group, age)</b><br/>Residential 3.5 and withdrawal management: ASAM Criteria<br/>IOP or PHP: any substance use (alone or co-occurring) ASAM; a mental health condition alone LOCUS, or CALOCUS-CASII under 18" }
+  pdx@{ shape: rect, label: "Diagnosis: the one recorded with the denial; for a denial made from a queue case, that case's (I-2166, generalized anxiety, IOP, 24: LOCUS)" }
   d0@{ shape: diam, label: "Does this kind of denial have dimensions?" }
-  p9@{ shape: rect, label: "The card is not on the page, so there is no button" }
-  p0@{ shape: rect, label: "<b>Long text is chosen for each dimension</b><br/>Hand-written for this denial first, then the text for the dimension's name and colour, then the short tile text" }
-  o1@{ shape: win-pane, label: "<b>Pop-up 'The six ASAM dimensions, full summary'</b><br/>'Select any part to copy it, or use Copy all.'" }
+  p9@{ shape: rect, label: "The card is not on the page" }
+  cd@{ shape: curv-trap, label: "<b>Card titled 'ASAM Criteria' (or 'LOCUS', 'CALOCUS-CASII')</b><br/>Six rows in two columns (one on a narrow window): dot, 'D1 Acute intoxication and withdrawal potential', a word on the right ('Some concern')" }
+  r1@{ shape: trap-t, label: "Click a row (a button: Tab to it, Enter or Space)" }
+  m1@{ shape: win-pane, label: "<b>Pop-up titled 'D1 Acute intoxication and withdrawal potential'</b><br/>Sub line 'ASAM Criteria · Some concern'<br/>The reading, the long paragraph, then 'Source' ('Progress note 10/19 · Session 5')" }
+  pl@{ shape: rect, label: "Long text: hand-written for this denial first, then the text for the dimension and its colour" }
+  mc@{ shape: trap-t, label: "Click 'Copy' (the dimension's name, word and paragraph) or 'Close'" }
+  s1@{ shape: trap-t, label: "Click 'Full summary' in the card header" }
+  o1@{ shape: win-pane, label: "<b>Pop-up 'ASAM Criteria, full summary'</b><br/>Six blocks: dot, number and name, a word and the long paragraph, a small 'Copy' on each" }
   p1@{ shape: rect, label: "Focus moves into the text, Tab stays inside the pop-up" }
-  l1@{ shape: curv-trap, label: "<b>Six blocks, D1 Withdrawal to D6 Home</b><br/>Coloured dot, name, a word (Low concern, Some concern, High concern) and the long paragraph<br/>A small 'Copy' button on each" }
-  c1@{ shape: trap-t, label: "Click 'Copy all' (footer)" }
-  c2@{ shape: trap-t, label: "Click 'Copy' on one dimension" }
-  p2@{ shape: rect, label: "Plain text of all six, or of that dimension (name, word, paragraph)" }
+  c1@{ shape: trap-t, label: "Click 'Copy all' (footer) or 'Copy' on one dimension" }
   d1@{ shape: diam, label: "Did the copy work?" }
   t1@{ shape: odd, label: "Button reads 'Copied' for 2 seconds" }
   t2@{ shape: odd, label: "'Select the text and press Ctrl or Cmd C'" }
-  c3@{ shape: trap-t, label: "Click 'Close', the X, or the dimmed area" }
-  c4@{ shape: trap-t, label: "Press Esc (closes only this pop-up)" }
-  p3@{ shape: rect, label: "<b>Pop-up closes</b><br/>Focus goes back to 'Full summary'" }
+  c4@{ shape: trap-t, label: "Press Esc, click X, 'Close' or the dimmed area (closes only this pop-up)" }
+  p3@{ shape: rect, label: "Focus goes back to the row or to 'Full summary'" }
   e1@{ shape: stadium, label: "Back on the denial page, nothing changed" }
-  e2@{ shape: stadium, label: "Nothing copied" }
-  s1 --> d0
+  s0 --> pfw --> d0
+  pfw -.-> pdx
   d0 -->|"No"| p9
-  d0 -->|"Yes"| p0 --> o1 --> p1 --> l1
-  l1 --> c2 --> p2
-  o1 --> c1 --> p2
-  p2 --> d1
+  d0 -->|"Yes"| cd
+  cd --> r1 --> m1 --> pl
+  m1 --> mc --> d1
+  cd --> s1 --> o1 --> p1 --> c1 --> d1
   d1 -->|"Yes"| t1 --> e1
-  d1 -->|"No"| t2 --> e2
-  o1 --> c3 --> p3
-  o1 --> c4 --> p3
-  p3 --> e1
-  class s1 k_start
+  d1 -->|"No"| t2 --> e1
+  m1 --> c4
+  o1 --> c4 --> p3 --> e1
+  class s0 k_start
+  class pfw,pdx,p9,pl,p1,p3 k_process
   class d0,d1 k_decision
-  class p9,p0,p1,p2,p3 k_process
-  class o1 k_overlay
-  class l1 k_screen
-  class c1,c2,c3,c4 k_click
+  class cd k_screen
+  class r1,mc,s1,c1,c4 k_click
+  class m1,o1 k_overlay
   class t1,t2 k_toast
   class e1 k_end
-  class e2 k_endx

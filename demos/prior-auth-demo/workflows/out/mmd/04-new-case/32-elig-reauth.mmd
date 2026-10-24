@@ -17,13 +17,13 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Click 'Continue to Eligibility & Benefits' on Intake" }
-  sc@{ shape: curv-trap, label: "<b>Eligibility & Benefits · Reauthorization / renewal</b><br/>'Check that coverage continues and that the plan has not changed.'" }
+  sc@{ shape: curv-trap, label: "<b>Eligibility & Benefits · Reauthorization / renewal</b><br/>No sentence under the title" }
   sSum@{ shape: curv-trap, label: "<b>Verification summary</b><br/>The patient's last check for this episode<br/>Existing authorization: the one that is ending, with what is used and left" }
   dAge@{ shape: diam, label: "Is the check old, or for other dates?" }
-  tOld@{ shape: odd, label: "<b>'This check is 30 hours old. Refresh it before you send.'</b><br/>The person decides when to refresh" }
+  tOld@{ shape: odd, label: "<b>Chip 'Checked 30 h ago'</b><br/>The person decides when to refresh" }
   cRef@{ shape: trap-t, label: "Click 'Refresh verification'" }
   aV@{ shape: hex, label: "Verify asks the plan again, about 1.2 seconds" }
-  gWarn@{ shape: subproc, label: "Continues in: Authorizations › New case › Eligibility & Benefits › Warnings and documented exceptions" }
+  gWarn@{ shape: subproc, label: "Continues in: Authorizations › New Case › Eligibility & Benefits › Warnings and documented exceptions" }
   dPlan@{ shape: diam, label: "<b>Has the member moved to another plan?</b><br/>Example: B.N. (R-0975), Evergreen to Cardinal since 10/01, or a member ID ending 7070" }
   sPlan@{ shape: curv-trap, label: "<b>Warning in the summary</b><br/>'The payer changed. The member is with Cardinal Health Plan since 10/01. Start the request with the new plan.'<br/>For B.N. also 'Coverage is not active': the old plan ended 09/30<br/>Section 'What you can do': 'None of this stops you.'" }
   cSwitch@{ shape: trap-t, label: "Click 'Switch this case to Cardinal'" }
@@ -32,14 +32,14 @@ flowchart TD
   cKeep@{ shape: trap-t, label: "Go on with the old plan" }
   tKeep@{ shape: odd, label: "<b>The warning stays in the summary</b><br/>Review & submit lists 'Payer changed' to acknowledge" }
   dNoAuth@{ shape: diam, label: "Does the payer need no authorization for this level of care?" }
-  gNoAuth@{ shape: subproc, label: "Continues in: Authorizations › New case › Eligibility & Benefits › No authorization required" }
+  gNoAuth@{ shape: subproc, label: "Continues in: Authorizations › New Case › Eligibility & Benefits › No authorization required" }
   pPaused@{ shape: rect, label: "<b>Verify paused in Settings: the last result stays with a 'Verification service unavailable' warning</b><br/>'Open Settings to resume Verify'" }
   subgraph gFoot ["Footer bar"]
   cBack@{ shape: trap-t, label: "Click 'Back'" }
   cSave@{ shape: trap-t, label: "Click 'Save as draft'" }
   cCont@{ shape: trap-t, label: "Click 'Continue to Clinical documentation'" }
   end
-  gDocs@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › Required and typical documents by type" }
+  gDocs@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › Required and typical documents by type" }
   s1 --> sc --> sSum --> dAge
   dAge -->|"Yes"| tOld --> cRef
   sSum --> cRef --> aV --> dPlan

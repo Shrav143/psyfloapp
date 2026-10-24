@@ -16,27 +16,27 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "Click 'Open the brief' in the next-step block (call booked)" }
-  s2@{ shape: stadium, label: "A call is booked from the next-step block or the 'Your options' panel; the app opens the brief" }
+  s1@{ shape: stadium, label: "Click 'Open the brief' in the peer-to-peer choice of Your options (call booked)" }
+  s2@{ shape: stadium, label: "A call is booked from Your options or its 'Compare the options' panel; the app opens the brief" }
   s3@{ shape: stadium, label: "Open /denials/D-xxxx/brief by its address" }
   d1@{ shape: diam, label: "Does a request with that id exist?" }
   e1@{ shape: curv-trap, label: "<b>'We could not find that denial'</b><br/>'It may have been closed or the address is wrong.'" }
   c0@{ shape: trap-t, label: "Click 'Back to Denial Intelligence'" }
   g0@{ shape: subproc, label: "Continues in: Denial Intelligence › Ways in" }
-  sc1@{ shape: curv-trap, label: "<b>'Peer-to-peer brief · D-3318'</b><br/>'Talking points for your call with Cardinal's reviewer. Every point links to the chart.'<br/>Under it: 'Draft by FLO's agents. A clinician reviews and signs before anything is sent.'<br/>Crumbs: 'Denial Intelligence' › 'Brief D-3318'" }
-  c1@{ shape: trap-t, label: "Click the crumb 'Denial Intelligence'" }
+  sc1@{ shape: curv-trap, label: "<b>'Peer-to-peer brief · D-3318' with the pill 'Draft for clinician review'</b><br/>Sub line 'M.C., 38 · Cardinal Health Plan · Residential 3.5'<br/>Crumbs: 'Denial Intelligence' › 'D-3318' › 'Brief'" }
+  c1@{ shape: trap-t, label: "Click the crumb 'D-3318' ('Denial Intelligence' opens the dashboard)" }
   g1@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
   b1@{ shape: odd, label: "<b>'Outcome logged: ...' banner</b><br/>Shows once an outcome is logged, with 'Back to the denial'" }
   c2@{ shape: trap-t, label: "Click 'Back to the denial'" }
-  l1@{ shape: curv-trap, label: "<b>'Your opening'</b><br/>'About 30 seconds. Written by Advocate, checked by Integrity.'" }
-  l2@{ shape: curv-trap, label: "<b>'Three points to make'</b><br/>'Each one links to the chart'<br/>Numbered, each with a source chip" }
-  l3@{ shape: curv-trap, label: "<b>'What they may say'</b><br/>'And a short answer to each'" }
+  l1@{ shape: curv-trap, label: "'Your opening': the paragraph to read out" }
+  l2@{ shape: curv-trap, label: "<b>'Three points to make'</b><br/>Numbered, each with a source chip" }
+  l3@{ shape: curv-trap, label: "'What they may say': each line and a short answer" }
   l4@{ shape: curv-trap, label: "'The ask.' (green banner)" }
-  l5@{ shape: curv-trap, label: "<b>'Key dates and numbers' (folded, summary 'Call: Wed 10/21, 9–11 am · Window: 36 h')</b><br/>Denial received, Call booked, Peer-to-peer window closes, Written appeal due<br/>Days or units, Time left in the window, Chance, Similar decisions" }
+  l5@{ shape: curv-trap, label: "<b>'Key dates and numbers' (folded)</b><br/>Denial received, Call booked, Peer-to-peer window closes, Written appeal due<br/>Days or units, Time left in the window, Chance, Similar decisions" }
   r1@{ shape: curv-trap, label: "<b>'Call details'</b><br/>Payer, Who to call, Reviewer, Window, Closes in, Dial-in" }
   p1@{ shape: rect, label: "<b>'Window' reads 'Not booked yet' before a call is booked</b><br/>'Closes in' is red under 2 days, ochre under 7, 'Closed' when over" }
   r2@{ shape: curv-trap, label: "<b>'Chance of overturning'</b><br/>64%, 'likely 55–72%', a word (Moderate), and 'A written appeal is 58%.'" }
-  r3@{ shape: curv-trap, label: "<b>'Have these open' (folded, summary '0 of 3 ticked')</b><br/>One tick box per chart source, plus fixes added to the evidence" }
+  r3@{ shape: curv-trap, label: "<b>'Have these open' (folded, '0 of 3' on the right)</b><br/>One tick box per chart source, plus fixes added to the evidence" }
   cf@{ shape: trap-t, label: "Click the header of 'Key dates and numbers' or 'Have these open', or press Enter or Space on it" }
   pf@{ shape: rect, label: "<b>Section opens or closes</b><br/>The summary line changes with the ticks" }
   c3@{ shape: trap-t, label: "Tick or untick a document (open the section first)" }

@@ -19,24 +19,23 @@ flowchart TD
   s1@{ shape: stadium, label: "Click a row on the list, or a live check finishes" }
   qs@{ shape: diam, label: "Is this check at a site the viewer can see?" }
   os@{ shape: curv-trap, label: "<b>'This coverage check is not available at Site A'</b><br/>It names no patient. Staff who may see both sites get 'Show Site B'" }
-  sc@{ shape: curv-trap, label: "<b>Eligibility & Benefits</b><br/>Title is the headline, for example 'Covered, but you need an authorization first.'<br/>Sub 'R-1042 · J.M., 34 · Residential 3.5'" }
+  sc@{ shape: curv-trap, label: "<b>Title row (no card, no headline)</b><br/>'R-1042' (24 px) · 'J.M., 34' · 'Residential 3.5 · Summit Medicaid HMO (Ohio Medicaid)'<br/>A Site A or Site B tag when the view is narrowed" }
   b1@{ shape: trap-t, label: "Click '← Eligibility & Benefits' (back link, top left)" }
   g0@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows" }
   b2@{ shape: trap-t, label: "<b>Click '← Back to referral RF-2040' beside it</b><br/>With ?case= in the address it reads '← Back to case R-1042'<br/>Shown only when ?referral= names a referral that exists" }
-  g4@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › The full referral page" }
-  subgraph gSum ["Summary card (one card, then one row)"]
-  vb@{ shape: curv-trap, label: "<b>Top band, green, amber, red or grey</b><br/>Small caps 'Verdict'<br/>Big words: 'Cleared to bill', 'Authorization first', 'Fix before billing' or 'Not checked'<br/>One sentence why" }
-  bt@{ shape: curv-trap, label: "<b>Buttons on the band</b><br/>'Start authorization', 'Create authorization from verification', 'Open case', 'Request retro-eligibility' ... 'Check again'<br/>They wrap under the words on a narrow screen" }
-  three@{ shape: curv-trap, label: "<b>Three parts side by side (stacked on a narrow screen)</b><br/>'Eligibility', 'Benefits', 'What this service needs'" }
-  warn@{ shape: curv-trap, label: "<b>Warnings, only when the check found something</b><br/>One quiet block, one line each, for example<br/>'The payer changed. The member is with Cardinal Health Plan since 10/01.'" }
-  facts@{ shape: curv-trap, label: "<b>One facts line</b><br/>Payer, plan type and routing, member (masked), dates of service,<br/>time checked, source 'Simulated check against the payer portal'" }
-  note@{ shape: curv-trap, label: "<b>One small plain note, not a banner</b><br/>'Active coverage does not mean this service is covered. Check the benefits and the authorization requirement.'" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › New Case › Referral › The full referral page" }
+  subgraph gSum ["The result card"]
+  vb@{ shape: curv-trap, label: "<b>Verdict band, green, amber, red or grey</b><br/>'Authorization first' (18 px) | 'Authorization' 'In progress'<br/>The verdict and the one fact behind it, as a value, no sentence" }
+  bt@{ shape: curv-trap, label: "<b>Actions on a second line of the band, small buttons</b><br/>'Start authorization', 'Create authorization from verification', 'Request retro-eligibility',<br/>'Ask Caller to ...', 'Ask Navigator to check enrollment', 'Open Settings', 'Open case', 'Re-check'" }
+  rows@{ shape: curv-trap, label: "<b>Label and value rows</b><br/>'Eligibility' pill and dates · 'Plan type and routing'<br/>'Benefits' pill, program, codes and limit · 'Patient pays' only with a cost share<br/>'What this service needs' pill and line, then the payer's saved rules" }
+  warn@{ shape: curv-trap, label: "<b>A warning only when no row says it already</b><br/>Today that is one: a refresh that could not run while Verify is paused<br/>'Verification service unavailable. ... This is the last result.'" }
+  facts@{ shape: curv-trap, label: "<b>One quiet facts line</b><br/>Member (masked), dates of service, time checked, source 'Simulated check against the payer portal'" }
   end
-  t1@{ shape: odd, label: "<b>Banner 'Not re-checked: Verify is paused in Settings'</b><br/>'The re-check was due Tue 11:32 am. It runs as soon as Verify is resumed.'<br/>The only banner on the page, and only when it applies" }
+  t1@{ shape: odd, label: "<b>Banner 'Not re-checked: Verify is paused in Settings'</b><br/>'Due Tue 11:32 am' with 'Open Settings'<br/>Only when a booked re-check passed while Verify is paused" }
   subgraph gRow ["One row under the card"]
-  pc@{ shape: curv-trap, label: "<b>'Payment checks and how this was checked'</b><br/>'6 of 7 pass, 1 needs a look. Every line has to pass for the clinic to be reimbursed.'<br/>Button 'View full verification details'" }
+  pc@{ shape: curv-trap, label: "<b>'Verification details'</b><br/>'Payment checks: 6 of 7 pass, 1 needs a look'<br/>Button 'View full verification details'" }
   pk@{ shape: trap-t, label: "Click 'View full verification details'" }
-  ov@{ shape: win-pane, label: "<b>Side panel 'Verification details' opens from the right</b><br/>Payment checks, How this was checked, About this check<br/>The page behind stays where it was" }
+  ov@{ shape: win-pane, label: "<b>Side panel 'Verification details' opens from the right</b><br/>Payment checks, How this was checked, History<br/>The page behind stays where it was" }
   end
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › Which verdict and why" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › The details panel" }
@@ -53,15 +52,15 @@ flowchart TD
   sc --> vb --> bt
   vb -.-> g1
   bt --> g3
-  vb --> three --> warn --> facts --> note
-  three -.-> g5
+  vb --> rows --> warn --> facts
+  rows -.-> g5
+  rows -.-> g6
   warn -.-> g7
-  facts -.-> g6
   sc -.-> t1
   sc --> pc --> pk --> ov --> g2
   class s1 k_start
   class qs k_decision
-  class os,sc,vb,bt,three,warn,facts,note,pc k_screen
+  class os,sc,vb,bt,rows,warn,facts,pc k_screen
   class b1,b2,pk k_click
   class g0,g4,g1,g2,g3,g5,g6,g7,g8 k_goto
   class t1 k_toast

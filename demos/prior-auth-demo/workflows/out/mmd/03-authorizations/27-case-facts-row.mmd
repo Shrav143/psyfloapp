@@ -17,8 +17,8 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   fr@{ shape: curv-trap, label: "<b>Authorization facts row</b><br/>Under the 'Next:' block" }
-  f1@{ shape: rect, label: "<b>'Request type'</b><br/>The request's own type, e.g. Admission, Recertification, Peer-to-peer<br/>Always shown" }
-  f2@{ shape: rect, label: "<b>'Requested'</b><br/>'14 days'; IOP counts units: '21 units'<br/>Always shown" }
+  f1@{ shape: rect, label: "Request type: in the title line as a chip, not here" }
+  f2@{ shape: rect, label: "Days or units requested: in the line under the title, not here" }
   d1@{ shape: diam, label: "Does the Case Manager ledger have an approval for this request (days or units approved)?" }
   f3@{ shape: rect, label: "<b>'Approved'</b><br/>'48 units' with '38 used · 10 left'" }
   dW@{ shape: diam, label: "Is the approval counted in days, and does the ledger give an end date for it?" }
@@ -26,9 +26,8 @@ flowchart TD
   d2@{ shape: diam, label: "Does the ledger's next event say when the approval ends or when the next review is?" }
   f4@{ shape: rect, label: "<b>'Approval ends  Fri 10/23' with 'in 3 d'</b><br/>or 'Next review  Tue 10/20' with 'in 5 h'" }
   f5@{ shape: rect, label: "<b>No approved, used, left, expiry or review fact</b><br/>Nothing is shown in their place" }
-  d3@{ shape: diam, label: "Does the request have a draft in New case, or can one be made from it?" }
-  dSt@{ shape: diam, label: "Can the viewer see both sites?" }
-  fs@{ shape: rect, label: "<b>'Site'</b><br/>'Site A' with 'Main campus', or 'Site B' with 'Second campus'" }
+  d3@{ shape: diam, label: "Does the request have a draft in New Case, or can one be made from it?" }
+  fs@{ shape: rect, label: "<b>Site: at the end of the line under the title</b><br/>for a viewer who can see both sites" }
   f6@{ shape: rect, label: "<b>'Documents'</b><br/>'8 of 9' with 'Missing: Therapy note from the last 14 days'<br/>or 'Complete' with 'All 9 in the packet'<br/>Counted against the documents the payer's saved list asks for" }
   d4@{ shape: diam, label: "Has the request been decided?" }
   f7@{ shape: rect, label: "No 'Waiting on' fact" }
@@ -49,13 +48,12 @@ flowchart TD
   d4 -->|"Yes"| f7
   d4 -->|"No"| f8
   fr -.-> src
-  f8 --> dSt
-  f7 --> dSt
-  dSt -->|"Yes"| fs --> wrap
-  dSt -->|"No"| wrap
+  f8 --> wrap
+  f7 --> wrap
+  fr -.-> fs
   fr -.-> g1
   class fr k_screen
   class f1,f2,f3,fw,f4,f5,fs,f6,f7,f8,wrap k_process
-  class d1,dW,d2,d3,dSt,d4 k_decision
+  class d1,dW,d2,d3,d4 k_decision
   class src k_store
   class g1 k_goto

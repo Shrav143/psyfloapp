@@ -38,15 +38,15 @@ flowchart TD
   gen@{ shape: rect, label: "<b>Chance, actions, criteria, draft and checks are generated</b><br/>from the payer, level of care and chance" }
   d5@{ shape: diam, label: "Is the ID in the Case Manager ledger?" }
   gL@{ shape: subproc, label: "Continues in: Case Manager › Ledger case › Open and read" }
-  nf@{ shape: curv-trap, label: "<b>'Request not found'</b><br/>'There is no request with the ID X.'<br/>'Nothing to show here' · 'Check the ID, or open a request from the queue.'" }
+  nf@{ shape: curv-trap, label: "<b>'Request not found'</b><br/>'No request X' and 'Back to queue'" }
   bq@{ shape: trap-t, label: "Click 'Back to queue' or the 'Authorizations' crumb" }
   gQ@{ shape: subproc, label: "Continues in: Authorizations › Queue › Open the queue and read the top" }
   ld@{ shape: cyl, label: "<b>Your earlier work on this case is loaded</b><br/>Answers, applied and dismissed actions, focus, clinical context, draft edits, log" }
   dS@{ shape: diam, label: "Is the case at a site the viewer has in view?" }
   oos@{ shape: curv-trap, label: "<b>Card 'This case is not available at Site A'</b><br/>Names the site, not the patient" }
   gO@{ shape: subproc, label: "Continues in: Authorizations › Case page › A case at another site" }
-  d4@{ shape: diam, label: "Does ?tab= name one of the five tabs?" }
-  tab1@{ shape: curv-trap, label: "<b>That tab opens</b><br/>e.g. a review drawer opens '?tab=draft'" }
+  d4@{ shape: diam, label: "Does ?tab= name one of the three tabs, or one of the five old names?" }
+  tab1@{ shape: curv-trap, label: "<b>That tab opens, an old name on its merged tab</b><br/>e.g. a review drawer opens '?tab=draft' on 'Clinical picture & draft'" }
   tab0@{ shape: curv-trap, label: "'Recommended actions' opens" }
   gH@{ shape: subproc, label: "Continues in: Authorizations › Case page › Header and buttons" }
   a1 --> r0

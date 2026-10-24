@@ -17,58 +17,59 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "A case page opens" }
-  d1@{ shape: diam, label: "Does the address name a valid tab (tab=...)?" }
-  ts@{ shape: rect, label: "That tab is selected" }
-  ta@{ shape: rect, label: "Recommended actions is selected" }
-  tabs@{ shape: curv-trap, label: "<b>Tab strip</b><br/>Recommended actions · Clinical picture · Payer criteria · Risk analysis · Draft" }
+  d1@{ shape: diam, label: "What does the address name (tab=...)?" }
+  ta@{ shape: rect, label: "<b>Recommended actions is selected</b><br/>(tab=actions, a missing or unknown name)" }
+  tdr@{ shape: rect, label: "<b>Clinical picture & draft is selected</b><br/>(tab=draft)" }
+  tpi@{ shape: rect, label: "<b>Clinical picture & draft is selected</b><br/>and the page scrolls to the clinical picture<br/>(the old tab=picture)" }
+  tcr@{ shape: rect, label: "<b>Criteria & risk is selected</b><br/>(tab=criteria)" }
+  tri@{ shape: rect, label: "<b>Criteria & risk is selected</b><br/>and the page scrolls to the figures and risks<br/>(the old tab=risk)" }
+  dW@{ shape: diam, label: "Is the window 1024 px or narrower?" }
+  fo@{ shape: rect, label: "<b>The clinical picture sits under the draft, folded</b><br/>tab=picture opens it" }
+  tabs@{ shape: curv-trap, label: "<b>Tab strip</b><br/>Recommended actions · Clinical picture & draft · Criteria & risk" }
   subgraph gC ["Click a tab"]
   c1@{ shape: trap-t, label: "Click 'Recommended actions'" }
-  c2@{ shape: trap-t, label: "Click 'Clinical picture'" }
-  c3@{ shape: trap-t, label: "Click 'Payer criteria'" }
-  c4@{ shape: trap-t, label: "Click 'Risk analysis'" }
-  c5@{ shape: trap-t, label: "Click 'Draft'" }
+  c2@{ shape: trap-t, label: "Click 'Clinical picture & draft'" }
+  c3@{ shape: trap-t, label: "Click 'Criteria & risk'" }
   end
-  url@{ shape: rect, label: "<b>The address changes to tab=actions, picture, criteria, risk or draft</b><br/>Browser Back returns to the previous tab" }
-  fd@{ shape: rect, label: "<b>The tab's panel fades in</b><br/>Header and tiles stay as they were" }
+  url@{ shape: rect, label: "<b>The address changes to tab=actions, draft or criteria</b><br/>Browser Back returns to the previous tab" }
   rec@{ shape: rect, label: "Any tab click drops rec= from the address" }
   b1@{ shape: rect, label: "<b>Badge on 'Recommended actions'</b><br/>Number of open recommendations (6)<br/>Gone when none are left" }
-  b2@{ shape: rect, label: "<b>Badge on 'Draft'</b><br/>Number of checks that need attention (2)<br/>Gone when all four pass" }
+  b2@{ shape: rect, label: "<b>Badge on 'Clinical picture & draft'</b><br/>Number of checks that need attention (2)<br/>Gone when all four pass" }
   subgraph gD ["Buttons that jump to one card"]
-  l1@{ shape: trap-t, label: "Clinical picture › 'Settle it' on a 'Still open' line" }
-  l2@{ shape: trap-t, label: "Payer criteria › 'Go to the action' under 'Could be stronger'" }
-  l3@{ shape: trap-t, label: "Payer criteria › 'Open the action' in 'To keep the approval chance high'" }
+  l1@{ shape: trap-t, label: "<b>Criteria & risk › a risk chip</b><br/>'No named step-down · 11 pts'" }
+  l2@{ shape: trap-t, label: "Criteria & risk › the action under a Partial criterion" }
+  l3@{ shape: trap-t, label: "Header › 'Go to this action'" }
   end
   dl@{ shape: rect, label: "Recommended actions opens with rec= set to that card's ID" }
   fc@{ shape: rect, label: "<b>The card scrolls to the middle of the screen</b><br/>and gets a green outline" }
-  dEx@{ shape: diam, label: "Is that card still open?" }
-  nofc@{ shape: rect, label: "<b>Nothing to scroll to</b><br/>Applied cards are one-line rows; dismissed ones are in 'Dismissed'" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Case page › Recommended actions › The tab" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Case page › Clinical picture" }
-  g3@{ shape: subproc, label: "Continues in: Authorizations › Case page › Payer criteria" }
-  g4@{ shape: subproc, label: "Continues in: Authorizations › Case page › Risk analysis" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › Case page › Criteria & risk" }
   g5@{ shape: subproc, label: "Continues in: Authorizations › Case page › Draft › Read and edit" }
   s1 --> d1
-  d1 -->|"Yes"| ts --> tabs
-  d1 -->|"No or missing"| ta --> tabs
+  d1 -->|"actions or nothing"| ta --> tabs
+  d1 -->|"draft"| tdr --> tabs
+  d1 -->|"picture"| tpi --> dW
+  dW -->|"Yes"| fo --> tabs
+  dW -->|"No"| tabs
+  d1 -->|"criteria"| tcr --> tabs
+  d1 -->|"risk"| tri --> tabs
   tabs --> b1 & b2
-  tabs --> url --> rec --> fd
-  tabs --> c1 & c2 & c3 & c4 & c5
+  tabs --> url --> rec
+  tabs --> c1 & c2 & c3
   c1 --> g1
+  c2 --> g5
   c2 --> g2
   c3 --> g3
-  c4 --> g4
-  c5 --> g5
   l1 --> dl
   l2 --> dl
   l3 --> dl
-  dl --> dEx
-  dEx -->|"Yes"| fc
-  dEx -->|"No"| nofc
+  dl --> fc
   class s1 k_start
-  class d1,dEx k_decision
-  class ts,ta,url,fd,rec,b1,b2,dl,fc,nofc k_process
+  class d1,dW k_decision
+  class ta,tdr,tpi,tcr,tri,fo,url,rec,b1,b2,dl,fc k_process
   class tabs k_screen
-  class c1,c2,c3,c4,c5,l1,l2,l3 k_click
-  class g1,g2,g3,g4,g5 k_goto
+  class c1,c2,c3,l1,l2,l3 k_click
+  class g1,g2,g3,g5 k_goto
   style gC fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gD fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

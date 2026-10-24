@@ -31,7 +31,7 @@ flowchart LR
   b1@{ shape: rect, label: "<b>'Covered' (green)</b><br/>The plan pays for this level of care" }
   b2@{ shape: rect, label: "<b>'Limited' (amber)</b><br/>Paid with conditions: diagnosis on the plan's list, each day authorized" }
   b3@{ shape: rect, label: "<b>'Not covered' (red)</b><br/>The plan does not pay for this level of care<br/>For example R-1118" }
-  b4@{ shape: rect, label: "<b>'Not confirmed' (amber)</b><br/>The plan answered for coverage but not for this service<br/>Caller can confirm it by phone" }
+  b4@{ shape: rect, label: "<b>'Not confirmed' (amber)</b><br/>The plan answered for coverage but not for this service<br/>The result offers 'Ask Caller to confirm the benefit'" }
   end
   subgraph gA ["Column 'Authorization'"]
   a0@{ shape: curv-trap, label: "'Authorization' chip (the day or unit usage is on the quiet second line of the row)" }
@@ -44,7 +44,7 @@ flowchart LR
   a7@{ shape: rect, label: "<b>'Requirement unknown' (grey)</b><br/>No rule on file for this payer and level of care. Check with the payer" }
   end
   subgraph gV ["Column 'Verdict'"]
-  v0@{ shape: curv-trap, label: "'Verdict' chip, with 'Checked 3 h ago' on the quiet second line" }
+  v0@{ shape: curv-trap, label: "'Verdict' chip, right after the patient, with 'Checked 3 h ago' on the quiet second line" }
   v1@{ shape: rect, label: "<b>'Cleared to bill' (green)</b><br/>Everything passes" }
   v2@{ shape: rect, label: "<b>'Authorization first' (amber)</b><br/>Only the authorization is missing" }
   v3@{ shape: rect, label: "<b>'Fix before billing' (red)</b><br/>Coverage, plan, network, another plan, a limit or the member ID failed,<br/>or a benefit or enrollment could not be confirmed" }

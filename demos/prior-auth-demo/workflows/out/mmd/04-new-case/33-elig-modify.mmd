@@ -17,29 +17,29 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Click 'Continue to Eligibility & Benefits' on Intake" }
-  sc@{ shape: curv-trap, label: "<b>Eligibility & Benefits · Modification / extension</b><br/>'Check whether the change alters what the plan requires.'" }
+  sc@{ shape: curv-trap, label: "<b>Eligibility & Benefits · Modification / extension</b><br/>No sentence under the title" }
   sSum@{ shape: curv-trap, label: "<b>Verification summary</b><br/>The patient's last check<br/>Authorization: Required, Concurrent review, Not required or Unknown<br/>Existing authorization with what is used and left" }
   dChg@{ shape: diam, label: "What is the proposed change?" }
-  c1@{ shape: rect, label: "<b>More days or units, or revised dates</b><br/>The check should cover the new dates<br/>'This check covers other dates than the request asks for.'" }
+  c1@{ shape: rect, label: "<b>More days or units, or revised dates</b><br/>The check should cover the new dates<br/>Chip 'Covers other dates'" }
   c2@{ shape: rect, label: "<b>A different service or level of care</b><br/>The check is for another level of care, so it does not describe this case<br/>Verify makes a new one" }
   c3@{ shape: rect, label: "<b>A correction</b><br/>The last check is shown as it is" }
   dAge@{ shape: diam, label: "Is the check old, or for other dates?" }
-  tOld@{ shape: odd, label: "'This check covers other dates than the request asks for. Refresh it before you send.'" }
+  tOld@{ shape: odd, label: "Chip 'Covers other dates'" }
   cRef@{ shape: trap-t, label: "Click 'Refresh verification'" }
   aV@{ shape: hex, label: "Verify asks the plan again, about 1.2 seconds" }
   dReq@{ shape: diam, label: "What does the check say about the authorization?" }
   q1@{ shape: rect, label: "<b>Required or Concurrent review</b><br/>The change goes to the payer as a request" }
   q2@{ shape: rect, label: "<b>Unknown</b><br/>Warning 'Authorization requirement unknown'<br/>'No rule on file says whether Summit requires an authorization for this service. Check with Summit. Nothing was assumed.'" }
   q3@{ shape: rect, label: "<b>Not required</b><br/>'No authorization required': go to the three actions" }
-  gWarn@{ shape: subproc, label: "Continues in: Authorizations › New case › Eligibility & Benefits › Warnings and documented exceptions" }
-  gNoAuth@{ shape: subproc, label: "Continues in: Authorizations › New case › Eligibility & Benefits › No authorization required" }
+  gWarn@{ shape: subproc, label: "Continues in: Authorizations › New Case › Eligibility & Benefits › Warnings and documented exceptions" }
+  gNoAuth@{ shape: subproc, label: "Continues in: Authorizations › New Case › Eligibility & Benefits › No authorization required" }
   pNote@{ shape: rect, label: "<b>The request is not an approval</b><br/>The authorization keeps its approved dates and units until the payer decides" }
   subgraph gFoot ["Footer bar"]
   cBack@{ shape: trap-t, label: "Click 'Back'" }
   cSave@{ shape: trap-t, label: "Click 'Save as draft'" }
   cCont@{ shape: trap-t, label: "Click 'Continue to Clinical documentation'" }
   end
-  gDocs@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › Required and typical documents by type" }
+  gDocs@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › Required and typical documents by type" }
   s1 --> sc --> sSum --> dChg
   dChg -->|"More days, more units, revised dates"| c1
   dChg -->|"Different service"| c2

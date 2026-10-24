@@ -16,36 +16,42 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  subgraph gW ["See the breakdown"]
+  br@{ shape: trap-t, label: "Click 'See the breakdown'" }
+  m0@{ shape: win-pane, label: "<b>Pop-up 'Why 62%'</b><br/>the formula '58 + 4 + 6 + 2 + 0 + 0 − 8 = 62'" }
+  bars@{ shape: rect, label: "<b>Bars: the starting point, six rows, then 'Approval chance now'</b><br/>a dashed outline for what is still to come<br/>'Clinical context you added' appears once a note is added" }
+  lo@{ shape: rect, label: "<b>'Likely outcomes'</b><br/>Approved as asked 62% · Partly approved 25% · Denied 13%" }
+  c0@{ shape: trap-t, label: "Click 'Close'" }
+  end
   subgraph gA ["See all"]
-  sa@{ shape: trap-t, label: "Click 'See all' on 'Comparable decisions'" }
-  m1@{ shape: win-pane, label: "<b>Dialog 'Comparable decisions'</b><br/>'6 of the closest matches from your own and the network's history'" }
-  rw@{ shape: rect, label: "<b>Six rows, each with who, match and an outcome pill</b><br/>The three from the card, then three more" }
-  mr@{ shape: rect, label: "<b>The extra rows</b><br/>'Same payer, plan named, scores falling' (Network, close match)<br/>'Earlier attempt not documented' (Yours, close match)<br/>'Recent relapse, no step-down named' (Network, partial match)" }
-  dy@{ shape: rect, label: "<b>Outcomes use the request's own days</b><br/>e.g. 'Approved 14/14' or 'Approved 7/14' for a 14-day request" }
+  sa@{ shape: trap-t, label: "Click 'See all' under 'Similar decisions'" }
+  m1@{ shape: win-pane, label: "<b>Pop-up 'Comparable decisions'</b><br/>six of the closest matches" }
+  dy@{ shape: rect, label: "<b>Outcomes use the request's own days</b><br/>e.g. 'Approved 14/14' or 'Approved 7/14'" }
   c1@{ shape: trap-t, label: "Click 'Close'" }
   end
   subgraph gB ["How it is calculated"]
   hc@{ shape: trap-t, label: "Click 'How it is calculated'" }
-  m2@{ shape: win-pane, label: "<b>Dialog 'How the approval chance is calculated'</b><br/>'In plain words. Updated nightly.'" }
-  s1@{ shape: hex, label: "<b>1 Historian finds similar decisions</b><br/>Same payer and plan, level of care, diagnosis cluster, review type and documentation signals" }
-  s2@{ shape: hex, label: "<b>2 Forecaster starts from the base rate</b><br/>How often the payer approved those requests as asked" }
-  s3@{ shape: rect, label: "<b>3 It adds and takes away points</b><br/>Each row is something the draft shows, or does not show yet" }
-  s4@{ shape: rect, label: "<b>4 The range says how sure it is</b><br/>With little history it says 'Benchmark estimate'" }
-  s5@{ shape: hex, label: "<b>5 It is checked every night</b><br/>Forecaster compares what it said with what payers decided" }
-  nt@{ shape: rect, label: "Footer: 'It estimates how well the paperwork fits the payer's past decisions. It does not decide care, never blocks a request, and is never shown to payers or patients.'" }
+  m2@{ shape: win-pane, label: "Pop-up 'How the approval chance is calculated'" }
+  s1@{ shape: hex, label: "1 Historian finds similar decisions" }
+  s2@{ shape: hex, label: "2 Forecaster starts from the base rate" }
+  s3@{ shape: rect, label: "<b>3 It adds and takes away points</b><br/>4 The range says how sure it is" }
+  s5@{ shape: hex, label: "5 Forecaster checks it every night" }
   c2@{ shape: trap-t, label: "Click 'Got it'" }
   end
   cx@{ shape: trap-t, label: "Click the X, click the dimmed area, or press Esc" }
-  e@{ shape: stadium, label: "<b>Dialog closes</b><br/>You are back on Risk analysis, nothing changed" }
-  sa --> m1 --> rw --> mr --> dy --> c1 --> e
+  e@{ shape: stadium, label: "<b>Pop-up closes</b><br/>You are back on Criteria & risk, nothing changed" }
+  br --> m0 --> bars --> lo --> c0 --> e
+  m0 --> cx
+  sa --> m1 --> dy --> c1 --> e
   m1 --> cx
-  hc --> m2 --> s1 --> s2 --> s3 --> s4 --> s5 --> nt --> c2 --> e
+  hc --> m2 --> s1 --> s2 --> s3 --> s5 --> c2 --> e
   m2 --> cx
   cx --> e
-  class sa,c1,hc,c2,cx k_click
-  class m1,m2 k_overlay
-  class rw,mr,dy,s3,s4,nt k_process
+  class br,c0,sa,c1,hc,c2,cx k_click
+  class m0,m1,m2 k_overlay
+  class bars,lo,dy,s3 k_process
   class s1,s2,s5 k_agent
   class e k_end
+  style gW fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gA fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gB fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

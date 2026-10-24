@@ -26,18 +26,18 @@ flowchart TD
   a1@{ shape: hex, label: "<b>Verify re-checks every patient that came due</b><br/>Asks the state and the plan again (demo: simulated, same answer as before)" }
   st1@{ shape: cyl, label: "<b>Each row updated</b><br/>Checked time is the booked time, booking cleared<br/>Verdict unchanged, sidebar badge unchanged" }
   r1@{ shape: rect, label: "<b>List: second line reads 'Re-checked automatically at 11:32 am'</b><br/>Tile 'Re-check due' goes down by the rows done" }
-  r2@{ shape: rect, label: "<b>Result: 'Time checked' reads 'Re-checked automatically at 11:32 am'</b><br/>'Next checks' (inside 'How this was checked') no longer starts with the re-check line (it is in the side panel, under 'How this was checked')" }
+  r2@{ shape: rect, label: "<b>Result: 'Time checked' reads 'Re-checked automatically at 11:32 am'</b><br/>History in the side panel: 'Re-checked automatically: Cleared to bill' (Agent) and no 'Re-check' (Scheduled) any more" }
   q3@{ shape: diam, label: "How many came due at once?" }
   n1@{ shape: odd, label: "<b>Bell: 'Re-checked automatically'</b><br/>'I-2207 is still Cleared to bill. Verify re-checked it at 11:32 am.'<br/>Click opens that result" }
   n2@{ shape: odd, label: "<b>Bell: 'Re-checked 2 patients automatically'</b><br/>'I-2144, I-2102 came due. None of the verdicts changed.'<br/>Click opens the list" }
   end
   subgraph gPaused ["Verify is paused"]
   w1@{ shape: rect, label: "<b>Nothing runs</b><br/>Row reads 'Not re-checked: Verify is paused in Settings'<br/>Tile 'Re-check due' keeps its count" }
-  w2@{ shape: curv-trap, label: "<b>Result shows a banner 'Not re-checked: Verify is paused in Settings'</b><br/>'The re-check was due Tue 11:32 am. It runs as soon as Verify is resumed.'" }
+  w2@{ shape: curv-trap, label: "<b>Result shows a banner 'Not re-checked: Verify is paused in Settings'</b><br/>'Due Tue 11:32 am' with 'Open Settings'<br/>History: 'Re-check, waiting for Verify to be resumed' (Scheduled)" }
   c2@{ shape: trap-t, label: "In Settings, switch Verify back on, or click 'Resume all agents'" }
   w3@{ shape: rect, label: "<b>Verify catches up at once</b><br/>Checked time is now, then the same rows and bell messages as above" }
   end
-  m1@{ shape: trap-t, label: "Meanwhile the person clicks 'Re-check' on a row or 'Check again' on a result" }
+  m1@{ shape: trap-t, label: "Meanwhile the person clicks 'Re-check' on a row or on a result" }
   m2@{ shape: rect, label: "That booking is cleared: the person got there first" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Re-verify a patient" }
   g2@{ shape: subproc, label: "Continues in: Settings › Pause › What the rest of the app shows" }

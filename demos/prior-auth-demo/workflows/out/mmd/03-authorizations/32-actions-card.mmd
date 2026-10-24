@@ -29,7 +29,7 @@ flowchart TD
   dA@{ shape: diam, label: "Is there an answer?" }
   er@{ shape: rect, label: "<b>After a failed Apply, red text under the box</b><br/>'Type your answer before Scribe can apply this.'" }
   sn@{ shape: trap-t, label: "<b>Click 'Send note'</b><br/>(off until there is an answer)" }
-  cp@{ shape: rect, label: "<b>Caption: 'Scribe uses your answer in the draft.'</b><br/>After a note: 'Note sent to Scribe.'" }
+  cp@{ shape: rect, label: "<b>No caption</b><br/>After a note: 'Sent to Scribe'" }
   end
   subgraph gN ["Cards without a question"]
   an2@{ shape: trap-t, label: "Click 'Add a note'" }
@@ -41,7 +41,7 @@ flowchart TD
   end
   nt@{ shape: cyl, label: "<b>Note saved on the case</b><br/>Log: 'You sent Scribe a note: ...'" }
   tn@{ shape: odd, label: "<b>'Note sent to Scribe'</b><br/>'It will be used the next time the draft is updated.'" }
-  ag@{ shape: hex, label: "<b>Agent line: badge and 'Scribe does this'</b><br/>Scribe writes the plan, Packet attaches documents, Integrity settles dates, Reader finds chart notes, Verify fixes coverage" }
+  ag@{ shape: hex, label: "<b>Agent: badge and name, e.g. 'Scribe', then 'Why this matters'</b><br/>Scribe writes the plan, Packet attaches documents, Integrity settles dates, Reader finds chart notes, Verify fixes coverage" }
   dL@{ shape: diam, label: "Is it the coverage card?" }
   lk@{ shape: trap-t, label: "Click 'Open Eligibility & Benefits'" }
   gE@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › Ways in and pre-fill" }

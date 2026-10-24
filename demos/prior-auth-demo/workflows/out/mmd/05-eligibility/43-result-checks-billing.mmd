@@ -18,41 +18,40 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Result page, side panel opened, 'Payment checks', rows 4 to 7" }
   q9@{ shape: diam, label: "Was coverage found?" }
-  x9@{ shape: stadium, label: "<b>Coverage not found</b><br/>Rows 2 to 7 and any cost line are not shown<br/>One grey row says nothing else could be checked" }
+  x9@{ shape: stadium, label: "<b>Coverage not found</b><br/>Rows 2 to 7 are not shown<br/>One grey row says nothing else could be checked" }
   subgraph gA ["Row 4 · Authorization"]
   a0@{ shape: diam, label: "What is the authorization state?" }
-  a1@{ shape: rect, label: "<b>Chip 'Not required' (green)</b><br/>'Beacon does not require one for IOP.'" }
+  a1@{ shape: rect, label: "<b>Chip 'Not required' (green)</b><br/>'Beacon does not require one for IOP'" }
   a2@{ shape: rect, label: "<b>Chip 'On file' (green)</b><br/>'On file with Summit. 9 of 14 days used'" }
-  a3@{ shape: rect, label: "<b>Chip 'Required' (amber)</b><br/>'Required before the first day. Not on file yet. A request is being drafted'" }
-  a4@{ shape: rect, label: "<b>Chip 'Under review' (amber)</b><br/>'Required. A request is with Cardinal and under review'" }
-  a5@{ shape: rect, label: "<b>Chip 'Retro request open' (amber)</b><br/>'A retro-authorization request is open. It covers days already delivered'" }
-  a6@{ shape: rect, label: "<b>Chip 'Required' (amber)</b><br/>'Required before the first day. Not on file yet. Start an authorization'" }
-  a7@{ shape: rect, label: "<b>Chip 'Unknown' (grey)</b><br/>'No rule on file says whether Beacon requires one for residential 3.5. Check with Beacon. Nothing was assumed'<br/>The check could not run, so it is not counted as a failure" }
+  a3@{ shape: rect, label: "<b>Chip 'Required' (amber)</b><br/>'Required before the first day. A request is being drafted'" }
+  a4@{ shape: rect, label: "<b>Chip 'Under review' (amber)</b><br/>'Required. Under review with Cardinal'" }
+  a5@{ shape: rect, label: "<b>Chip 'Retro request open' (amber)</b><br/>'Retro-authorization request open, for days already delivered'" }
+  a6@{ shape: rect, label: "<b>Chip 'Required' (amber)</b><br/>'Required before the first day. Not on file'" }
+  a7@{ shape: rect, label: "<b>Chip 'Unknown' (grey)</b><br/>'No rule on file for Beacon and residential 3.5. Nothing was assumed'<br/>The check could not run, so it is not counted as a failure" }
   end
   subgraph gB ["Row 5 · Can the clinic bill?"]
   b0@{ shape: diam, label: "Is the clinic enrolled with this payer for this level of care?" }
-  b1@{ shape: rect, label: "<b>Title 'The clinic can bill', chip 'In network' (green)</b><br/>'The clinic is enrolled and in network with Summit for residential 3.5'" }
-  b2@{ shape: rect, label: "<b>Title 'The clinic cannot bill yet', chip 'Not enrolled' (red)</b><br/>'Claims would be rejected. Navigator can start the enrollment.'" }
-  b3@{ shape: rect, label: "<b>Title 'The clinic's enrollment is not confirmed', chip 'Not confirmed' (amber)</b><br/>'Navigator can check the enrollment record'" }
+  b1@{ shape: rect, label: "<b>Title 'The clinic can bill', chip 'In network' (green)</b><br/>'Enrolled and in network with Summit for residential 3.5'" }
+  b2@{ shape: rect, label: "<b>Title 'The clinic cannot bill yet', chip 'Not enrolled' (red)</b><br/>'Not enrolled with Evergreen for detox'" }
+  b3@{ shape: rect, label: "<b>Title 'The clinic's enrollment is not confirmed', chip 'Not confirmed' (amber)</b><br/>'Enrollment with Lakeshore for IOP could not be confirmed'<br/>The result offers 'Ask Navigator to check enrollment'" }
   end
   subgraph gC ["Row 6 · Limits"]
   c0@{ shape: diam, label: "Is there a day or unit limit?" }
   c1@{ shape: rect, label: "<b>Chip '5 days left' (green), or amber at 3 or fewer</b><br/>'9 of 14 days used in this authorization period'" }
-  c2@{ shape: rect, label: "<b>Title 'Every authorized day is used' (or unit)</b><br/>Chip 'Limit reached' (red)<br/>'14 of 14 days used in this authorization period. Nothing is left. Ask Cardinal for more days before the next day of service'" }
-  c3@{ shape: rect, label: "<b>Chip 'No limit' (green)</b><br/>'No annual day limit for residential care. The authorization sets the days'<br/>or 'No visit or day limit applies to this program'" }
+  c2@{ shape: rect, label: "<b>Title 'Every authorized day is used' (or unit)</b><br/>Chip 'Limit reached' (red)<br/>'14 of 14 days used in this authorization period'" }
+  c3@{ shape: rect, label: "<b>Chip 'No limit' (green)</b><br/>'No annual day limit for residential 3.5'<br/>or 'No visit or day limit for this program'" }
   end
   subgraph gD ["Row 7 · Other insurance"]
   d0@{ shape: diam, label: "Did the check find another plan?" }
-  d1@{ shape: rect, label: "<b>Title 'No other insurance', chip 'None' (green)</b><br/>'None found. Medicaid pays last, so we checked for another payer'" }
-  d2@{ shape: rect, label: "<b>Title 'Another plan pays first', chip 'Other plan' (red)</b><br/>'A second plan was found. It must be billed before this one.'" }
+  d1@{ shape: rect, label: "<b>Title 'No other insurance', chip 'None' (green)</b><br/>'None found'" }
+  d2@{ shape: rect, label: "<b>Title 'Another plan pays first', chip 'Other plan' (red)</b><br/>'A second plan was found. It is billed before this one'" }
   end
-  subgraph gP ["Last line (New case drawer only; the result page shows it under Benefits)"]
+  subgraph gP ["What the patient pays (not a payment check)"]
   p0@{ shape: diam, label: "Does the plan type have a cost share on file?" }
-  p1@{ shape: rect, label: "<b>'What the patient pays:'</b><br/>Harborview 'Deductible $85 left, coinsurance 20%.'<br/>Beacon and Lakeshore 'Copay $40 per day, deductible $350 left, coinsurance 20% after the deductible.'" }
-  p2@{ shape: odd, label: "'This does not change what the clinic is paid.'" }
-  p3@{ shape: rect, label: "<b>Ohio Medicaid: no line at all</b><br/>No '$0 copay' text, because members usually pay none" }
+  p1@{ shape: rect, label: "<b>Row 'Patient pays' on the result</b><br/>Harborview 'Deductible $85 left, coinsurance 20%'<br/>Beacon and Lakeshore 'Copay $40 per day, deductible $350 left, coinsurance 20% after the deductible'" }
+  p3@{ shape: rect, label: "<b>Ohio Medicaid: no row at all</b><br/>No '$0 copay' text, because members usually pay none" }
   end
-  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Patient, insurance and request rows" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Patient, insurance and request rows" }
   s1 --> q9
   q9 -->|"No"| x9
   q9 -->|"Yes"| a0
@@ -71,13 +70,12 @@ flowchart TD
   c0 -->|"No limit"| c3 --> d0
   d0 -->|"No"| d1 --> p0
   d0 -->|"Yes"| d2 --> p0
-  p0 -->|"Yes"| p1 --> p2 --> g1
+  p0 -->|"Yes"| p1 --> g1
   p0 -->|"No"| p3 --> g1
   class s1 k_start
   class q9,a0,b0,c0,d0,p0 k_decision
   class x9 k_endx
   class a1,a2,a3,a4,a5,a6,a7,b1,b2,b3,c1,c2,c3,d1,d2,p1,p3 k_process
-  class p2 k_toast
   class g1 k_goto
   style gA fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gB fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

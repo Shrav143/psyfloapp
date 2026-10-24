@@ -21,13 +21,13 @@ flowchart TD
   p1@{ shape: rect, label: "<b>Jordan Perez or Alex Morgan, both sites</b><br/>The top bar offers Both sites, Site A and Site B" }
   p2@{ shape: rect, label: "<b>Dr. Rivera (Site A) or Sam Okafor (Site B)</b><br/>The top bar says 'Site A only' or 'Site B only', with no switch<br/>'Both sites' is not offered" }
   c1@{ shape: trap-t, label: "Click 'Site A' or 'Site B' in the top bar" }
-  p3@{ shape: rect, label: "<b>Rows, the title count, the four figures, search, menus and the sidebar badge</b><br/>are worked out from the checks inside the sites in view<br/>The title gets a 'Site A' tag when the view is narrowed" }
+  p3@{ shape: rect, label: "<b>Rows, the verdict tiles, the count, search, menus and the sidebar badge</b><br/>are worked out from the checks inside the sites in view<br/>The title gets a 'Site A' tag when the view is narrowed" }
   p4@{ shape: rect, label: "<b>Totals add up: Both sites = Site A + Site B</b><br/>for patients, cleared, authorization first, fix before billing, re-checks due and the badge" }
   c2@{ shape: trap-t, label: "Open a result, or a link to one" }
   q2@{ shape: diam, label: "Does the check belong to a site in view?" }
   sc@{ shape: curv-trap, label: "The result" }
   o1@{ shape: curv-trap, label: "<b>'This coverage check is not available at Site A'</b><br/>It names the case and its site, never a patient or a payer<br/>Both-site staff get 'Show Site B'" }
-  c3@{ shape: trap-t, label: "Click 'Check now' on the Verify form" }
+  c3@{ shape: trap-t, label: "<b>Click 'Check now' on the Verify form</b><br/>The sample 'Authorization first' (J.M.'s card, R-1042 at Site A) is offered only when Site A is in view" }
   st1@{ shape: cyl, label: "<b>The new check is filed under the site in view</b><br/>(Site A when both are in view)<br/>Its ID, V-1001 and on, resolves to that site on every screen" }
   q3@{ shape: diam, label: "Verify re-checks on its own (the Demo clock passes a time)" }
   t1@{ shape: odd, label: "<b>One bell message per site</b><br/>A message never names a patient at a site the viewer cannot see" }

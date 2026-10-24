@@ -30,7 +30,7 @@ flowchart TD
   m2@{ shape: rect, label: "<b>Notifications</b><br/>Ages: '16 min ago' becomes '1 h ago'" }
   m3@{ shape: rect, label: "<b>Dashboard</b><br/>Time in stage and 'late' flags" }
   m4@{ shape: rect, label: "<b>Authorizations, Denial Intelligence</b><br/>Queue bands, case clocks, peer-to-peer and appeal deadlines" }
-  m5@{ shape: rect, label: "<b>Eligibility & Benefits, EMR Connect, New case</b><br/>How long ago a check, a sync or a referral was" }
+  m5@{ shape: rect, label: "<b>Eligibility & Benefits, EMR Connect, New Case</b><br/>How long ago a check, a sync or a referral was" }
   m6@{ shape: hex, label: "<b>Eligibility & Benefits</b><br/>Verify re-checks every patient whose re-check time has passed, unless Verify is paused in Settings<br/>A 'Re-checked automatically' notification follows" }
   end
   subgraph gStill ["What does not change"]
@@ -40,7 +40,7 @@ flowchart TD
   end
   subgraph gHow ["How things really arrive in the demo"]
   g1@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Demo controls (payer replies)" }
-  g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Start with a referral or patient" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Start with a referral or patient" }
   g3@{ shape: subproc, label: "Continues in: Global shell › Top bar › Notifications › What creates a notification" }
   end
   e1@{ shape: stadium, label: "Page keeps its place. Click again to move further" }

@@ -16,54 +16,48 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "On the Draft tab, look at the right column" }
-  ck@{ shape: curv-trap, label: "<b>Card 'Checks'</b><br/>'Integrity's four checks'<br/>Pill 'All clear' or '2 open'" }
-  c1@{ shape: rect, label: "'Every sentence matches the chart'" }
-  c2@{ shape: rect, label: "'Payer criteria are covered'" }
-  c3@{ shape: rect, label: "'Dates are consistent'" }
-  c4@{ shape: rect, label: "'Identifiers are protected'" }
+  s1@{ shape: stadium, label: "Under the draft" }
+  hc@{ shape: curv-trap, label: "<b>Header chip 'Integrity 2/4' (amber) or 'Integrity 4/4' (green)</b><br/>while the request is being prepared<br/>hover: the checks that are open" }
+  hcc@{ shape: trap-t, label: "Click the chip" }
+  gt@{ shape: rect, label: "'Clinical picture & draft' opens" }
+  ck@{ shape: curv-trap, label: "Fold 'Integrity checks' with '2 open' or '4/4'" }
+  ok@{ shape: trap-t, label: "Open it" }
+  c1@{ shape: rect, label: "<b>Four rows: 'Every sentence matches the chart', 'Payer criteria are covered',</b><br/>'Dates are consistent', 'Identifiers are protected'" }
   dok@{ shape: diam, label: "Does each check pass?" }
   pass@{ shape: rect, label: "Green tick and 'Pass'" }
   warn@{ shape: rect, label: "<b>Amber triangle, 'Warn' and a note</b><br/>e.g. 'Sertraline start is 9/14 in the medication list and 9/21 in the psychiatric evaluation.'" }
   why@{ shape: rect, label: "<b>A warning clears when the matching action is applied</b><br/>(criteria and dates), or on 'Re-check' after an edit (chart)" }
   rc@{ shape: trap-t, label: "Click 'Re-check'" }
-  ig@{ shape: hex, label: "<b>Integrity reads the draft again</b><br/>Spinner on the button for about 1.6 seconds<br/>(demo: simulated)" }
-  mr@{ shape: cyl, label: "<b>Edit flag cleared</b><br/>Log: 'Integrity read the draft again'" }
+  ig@{ shape: hex, label: "<b>Integrity reads the draft again</b><br/>about 1.6 seconds (demo: simulated)" }
+  mr@{ shape: cyl, label: "<b>Edit flag cleared</b><br/>History: 'Integrity read the draft again' flagged 'Agent'" }
   dst@{ shape: diam, label: "Do other checks still warn?" }
-  t1@{ shape: odd, label: "<b>'All four checks passed'</b><br/>'Integrity read every sentence against the chart again.'" }
+  t1@{ shape: odd, label: "'All four checks passed'" }
   t2@{ shape: odd, label: "<b>'1 check needs an action'</b><br/>'Apply the matching recommendation, then check again.'" }
-  vs@{ shape: curv-trap, label: "<b>Card 'Versions'</b><br/>Newest first: 'Version 3', time, author, note" }
-  cu@{ shape: rect, label: "<b>Newest row carries a 'Current' pill</b><br/>Older rows have 'View'" }
+  vs@{ shape: curv-trap, label: "Fold 'Versions' with the count" }
+  vo@{ shape: trap-t, label: "Open it" }
+  cu@{ shape: rect, label: "<b>Newest first: version, time, author, note</b><br/>the newest carries 'Current', older rows have 'View'" }
   vw@{ shape: trap-t, label: "Click 'View' on an older version" }
-  vm@{ shape: win-pane, label: "<b>Dialog 'Version 2'</b><br/>Time and author. 'Read only.' Then the text" }
+  vm@{ shape: win-pane, label: "Pop-up 'Version 2', read only" }
   vc@{ shape: trap-t, label: "Click 'Close', the X, the dimmed area, or press Esc" }
-  vn@{ shape: rect, label: "<b>A new version appears after every Apply</b><br/>('Scribe', 'Added 6 recommendations')<br/>and every saved edit ('You', 'Edited by you')" }
-  sb@{ shape: curv-trap, label: "<b>Bottom card</b><br/>'Send to payer' (a disabled 'Sent to payer' once the payer has it), 'Send back to Scribe', and a note" }
   sk@{ shape: trap-t, label: "Click 'Send back to Scribe'" }
-  bz@{ shape: rect, label: "Spinner for about 1.4 seconds" }
-  lg@{ shape: cyl, label: "Log: 'You sent the draft back to Scribe'" }
-  tb@{ shape: odd, label: "<b>'Sent back to Scribe'</b><br/>'Scribe will redraft the summary and Integrity will check it again.'" }
+  lg@{ shape: cyl, label: "History: 'You sent the draft back to Scribe' flagged 'Logged decision'" }
+  tb@{ shape: odd, label: "'Sent back to Scribe'" }
   gS@{ shape: subproc, label: "Continues in: Authorizations › Case page › Draft › Review, sign and what happens next" }
-  s1 --> ck --> c1 & c2 & c3 & c4
-  c1 --> dok
-  c2 --> dok
-  c3 --> dok
-  c4 --> dok
+  s1 --> hc --> hcc --> gt --> ck
+  s1 --> ck --> ok --> c1 --> dok
   dok -->|"Yes"| pass
   dok -->|"No"| warn --> why
-  ck --> rc --> ig --> mr --> dst
+  c1 --> rc --> ig --> mr --> dst
   dst -->|"No"| t1
   dst -->|"Yes"| t2
-  s1 --> vs --> cu
-  cu --> vw --> vm --> vc
-  vs --> vn
-  s1 --> sb --> sk --> bz --> lg --> tb
-  sb --> gS
+  s1 --> vs --> vo --> cu --> vw --> vm --> vc
+  s1 --> sk --> lg --> tb
+  t1 --> gS
   class s1 k_start
-  class ck,vs,sb k_screen
-  class c1,c2,c3,c4,pass,warn,why,cu,vn,bz k_process
+  class hc,ck,vs k_screen
+  class hcc,ok,rc,vo,vw,vc,sk k_click
+  class gt,c1,pass,warn,why,cu k_process
   class dok,dst k_decision
-  class rc,vw,vc,sk k_click
   class ig k_agent
   class mr,lg k_store
   class t1,t2,tb k_toast

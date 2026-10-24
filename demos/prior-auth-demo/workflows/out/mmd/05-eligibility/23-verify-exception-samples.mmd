@@ -16,8 +16,8 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "On 'Verify a patient', click 'More samples'" }
-  sc@{ shape: curv-trap, label: "<b>Row 'Needs a look' with five chips</b><br/>'Payer changed', 'Member ID mismatch', 'Benefit not confirmed',<br/>'Provider not confirmed', 'Requirement unknown'<br/>A note: 'To see a check that cannot run, pause Verify in Settings.'" }
+  s1@{ shape: stadium, label: "On the Verify page, click 'More samples'" }
+  sc@{ shape: curv-trap, label: "<b>Row 'Needs a look' with five small chips</b><br/>'Payer changed', 'Member ID mismatch', 'Benefit not confirmed',<br/>'Provider not confirmed', 'Requirement unknown'" }
   c0@{ shape: trap-t, label: "Click 'Fewer samples' to fold the row again" }
   q1@{ shape: diam, label: "Click which chip?" }
   subgraph gPick ["What each chip fills in"]
@@ -30,14 +30,15 @@ flowchart TD
   pf@{ shape: rect, label: "<b>The form is filled, the chip turns green, 'Check now' is on</b><br/>The row stays open while one of its chips is picked" }
   c1@{ shape: trap-t, label: "Click 'Check now'" }
   ck@{ shape: rect, label: "The live check runs. The member ID ending decides the answer" }
-  subgraph gRes ["Result"]
-  r1@{ shape: curv-trap, label: "<b>'Fix before billing: coverage ended 09/30, the member is with Cardinal now.'</b><br/>Warnings: 'Coverage is not active', 'The payer changed'<br/>'Start the request with the new plan.'" }
-  r2@{ shape: curv-trap, label: "<b>'Fix before billing: coverage is active, but under another member ID.'</b><br/>Eligibility 'Needs a fix', 'Active, under the member ID ending 5521'<br/>Warning 'Member ID does not match'" }
-  r3@{ shape: curv-trap, label: "<b>'Fix before billing: the service is not confirmed.'</b><br/>Benefits 'Not confirmed'<br/>Warning 'Benefit not confirmed. Caller can confirm the benefit by phone.'" }
-  r4@{ shape: curv-trap, label: "<b>'Fix before billing: the clinic's enrollment is not confirmed.'</b><br/>Warning 'Provider participation not confirmed. Navigator can check the enrollment record.'" }
-  r5@{ shape: curv-trap, label: "<b>'Covered, but we do not know whether it needs an authorization.'</b><br/>'What this service needs' says 'No rule on file for Beacon and residential 3.5. Check with Beacon.'<br/>Warning 'Authorization requirement unknown'" }
+  subgraph gRes ["Result: each finding once"]
+  r1@{ shape: curv-trap, label: "<b>'Fix before billing' · Coverage 'Ended 09/30, now with Cardinal'</b><br/>Eligibility 'Not eligible', '... ended 09/30/2026 · with Cardinal Health Plan since 10/01'" }
+  r2@{ shape: curv-trap, label: "<b>'Fix before billing' · Member ID 'Plan has ID ending 5521'</b><br/>Eligibility 'Needs a fix', 'Active, under the member ID ending 5521'" }
+  r3@{ shape: curv-trap, label: "<b>'Fix before billing' · Benefits 'Not confirmed'</b><br/>Benefits 'PHP not confirmed by Harborview · H0035'<br/>Button 'Ask Caller to confirm the benefit'" }
+  r4@{ shape: curv-trap, label: "<b>'Fix before billing' · Enrollment 'Not confirmed'</b><br/>Button 'Ask Navigator to check enrollment'" }
+  r5@{ shape: curv-trap, label: "<b>'Authorization first' · Authorization 'Requirement unknown'</b><br/>What this service needs: 'No rule on file for Beacon and residential 3.5'" }
   end
-  st@{ shape: cyl, label: "<b>The check is saved as a verification record for the site in view</b><br/>It is a row on the list at once, and New case can find it" }
+  t3@{ shape: odd, label: "<b>'Caller will confirm the benefit'</b><br/>or 'Navigator will check the enrollment'<br/>(demo: a message only)" }
+  st@{ shape: cyl, label: "<b>The check is saved as a verification record for the site in view</b><br/>It is a row on the list at once, and New Case can find it with its warnings" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › The exceptions" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › The shared verification record" }
   s1 --> sc --> q1
@@ -53,6 +54,7 @@ flowchart TD
   ck -->|"Ends 5050"| r3
   ck -->|"Ends 4040"| r4
   ck -->|"Ends 2020"| r5
+  r3 & r4 -.-> t3
   r1 & r2 & r3 & r4 & r5 --> st --> g2
   r1 & r2 & r3 & r4 & r5 -.-> g1
   class s1 k_start
@@ -60,6 +62,7 @@ flowchart TD
   class c0,c1 k_click
   class q1 k_decision
   class p1,p2,p3,p4,p5,pf,ck k_process
+  class t3 k_toast
   class st k_store
   class g1,g2 k_goto
   style gPick fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

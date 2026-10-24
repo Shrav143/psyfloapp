@@ -17,37 +17,35 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Click 'Recommended actions'" }
-  at@{ shape: curv-trap, label: "<b>Recommended actions</b><br/>Cards on the left, side panel on the right" }
-  in@{ shape: rect, label: "<b>Intro line</b><br/>'Each card shows what the agents will add to the draft and how much it tends to help. Applied together, they take the chance from 62% to 88%.'" }
+  at@{ shape: curv-trap, label: "<b>Recommended actions</b><br/>Cards on the left, a narrow side panel on the right" }
   subgraph gL ["Left: the cards"]
-  fb@{ shape: curv-trap, label: "<b>Banner 'Focus: ...' with 'Clear focus'</b><br/>Only after 'Refine recommendations'" }
-  oc@{ shape: curv-trap, label: "<b>Open cards</b><br/>One card per recommendation that is not yet applied or dismissed<br/>After a refinement: in the new order, plus one card marked 'Added for your focus'" }
+  fb@{ shape: curv-trap, label: "<b>Chip 'Focus: Meet payer criteria' with an X 'Clear focus'</b><br/>Only after 'Refine recommendations'" }
+  oc@{ shape: curv-trap, label: "<b>Open cards, compact</b><br/>One per recommendation not yet applied or dismissed<br/>After a refinement: in the new order, plus one marked 'Added for your focus'" }
   ap@{ shape: curv-trap, label: "<b>'Applied (6)' (only when something is applied)</b><br/>One line each with a green tick and '+11 pts · applied'<br/>Click a line to open its bullets" }
-  dm@{ shape: curv-trap, label: "<b>'Dismissed (1)' (only when something is dismissed)</b><br/>Title struck through, 'Reason logged: ...', 'Bring back'" }
-  ban@{ shape: odd, label: "<b>Banner 'Every recommendation is applied'</b><br/>'The draft is up to date. Open the Draft tab to read it, or send it to the payer.'" }
+  dm@{ shape: curv-trap, label: "<b>'Dismissed (1)' (only when something is dismissed)</b><br/>Title struck through, the reason, 'Bring back'" }
+  ban@{ shape: odd, label: "One line 'Every recommendation is applied'" }
   end
   subgraph gR ["Right: the side panel"]
-  cnt@{ shape: rect, label: "<b>Count line</b><br/>'6 of 6 recommendations will be included in the draft.'<br/>When none are open: 'No open recommendations. Applied ones are listed on the left.'" }
+  cnt@{ shape: rect, label: "'6 of 6 selected' ('None open' when nothing is left)" }
   b1@{ shape: trap-t, label: "Click 'Apply selected (6)'" }
-  b2@{ shape: trap-t, label: "<b>Click 'Send to payer'</b><br/>(a greyed-out 'Sent to payer' once the request is with the payer)" }
   b3@{ shape: trap-t, label: "Click 'Refine recommendations'" }
   b4@{ shape: trap-t, label: "Click 'Add clinical context'" }
   b5@{ shape: trap-t, label: "Click 'Dismiss recommendations'" }
   cx@{ shape: curv-trap, label: "<b>'Context you added'</b><br/>Each note with '+1 pt'<br/>Only once a note is added" }
-  lg@{ shape: curv-trap, label: "<b>'Logged decisions'</b><br/>Newest six entries, each with the time" }
   end
-  off@{ shape: rect, label: "<b>Why a button is off</b><br/>Apply and Dismiss: no card is included<br/>Send to payer: checks open, or the request is not sendable, or it was already sent<br/>All five: while the agents are updating the draft" }
+  off@{ shape: rect, label: "<b>Why a button is off</b><br/>Apply and Dismiss: no card is included<br/>All four: while the agents are updating the draft" }
   tk@{ shape: trap-t, label: "Click a card's checkbox or title to leave it out or put it back" }
-  up@{ shape: rect, label: "<b>Count line and 'Apply selected (N)' follow</b><br/>Nothing is logged" }
+  up@{ shape: rect, label: "<b>'N of 6 selected' and 'Apply selected (N)' follow</b><br/>Nothing is logged" }
   dAll@{ shape: diam, label: "Is anything open?" }
   dApp@{ shape: diam, label: "Is anything applied?" }
+  hs@{ shape: rect, label: "<b>Every dismissal, note, focus and added context lands in History at once</b><br/>flagged 'Logged decision'" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Case page › Recommended actions › One card" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Case page › Recommended actions › Apply selected" }
-  g3@{ shape: subproc, label: "Continues in: Authorizations › Case page › Send to payer and review and sign" }
   g4@{ shape: subproc, label: "Continues in: Authorizations › Case page › Recommended actions › Refine and add clinical context" }
   g6@{ shape: subproc, label: "Continues in: Authorizations › Case page › Recommended actions › Add clinical context" }
   g5@{ shape: subproc, label: "Continues in: Authorizations › Case page › Recommended actions › Dismiss and bring back" }
-  s1 --> at --> in
+  g7@{ shape: subproc, label: "Continues in: Authorizations › Case page › History" }
+  s1 --> at
   at --> dAll
   at --> fb
   dAll -->|"Yes"| oc --> g1
@@ -59,19 +57,20 @@ flowchart TD
   at --> cnt
   oc --> tk --> up --> cnt
   cnt --> b1 --> g2
-  cnt --> b2 --> g3
   cnt --> b3 --> g4
   cnt --> b4 --> g6
   cnt --> b5 --> g5
   cnt --> off
   at --> cx
-  at --> lg
+  b5 -.-> hs
+  b4 -.-> hs
+  hs --> g7
   class s1 k_start
-  class at,fb,oc,ap,dm,cx,lg k_screen
-  class in,cnt,off,up k_process
+  class at,fb,oc,ap,dm,cx k_screen
   class ban k_toast
-  class b1,b2,b3,b4,b5,tk k_click
+  class cnt,off,up,hs k_process
+  class b1,b3,b4,b5,tk k_click
   class dAll,dApp k_decision
-  class g1,g2,g3,g4,g6,g5 k_goto
+  class g1,g2,g4,g6,g5,g7 k_goto
   style gL fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gR fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

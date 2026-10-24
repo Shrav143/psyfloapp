@@ -53,10 +53,10 @@ flowchart TD
   cView@{ shape: trap-t, label: "Click 'View' on the referral that came with the case" }
   cAddRef@{ shape: trap-t, label: "Click 'Add a referral' (initial authorization)" }
   end
-  gAct@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › Replace a document or mark it not available" }
-  gStart@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Start with a referral or patient" }
-  gRef@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › The full referral page" }
-  gTyp@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › Required and typical documents by type" }
+  gAct@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › Replace a document or mark it not available" }
+  gStart@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Start with a referral or patient" }
+  gRef@{ shape: subproc, label: "Continues in: Authorizations › New Case › Referral › The full referral page" }
+  gTyp@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › Required and typical documents by type" }
   s1 --> sc
   sc --> cDx --> iDx --> pDx --> cPickDx --> pChip
   pChip --> cRemDx

@@ -16,66 +16,47 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "A denial is selected (from the list or ?id=)" }
-  p1@{ shape: rect, label: "<b>Title comes from the denial</b><br/>'D-3318: Cardinal approved 7 of 14 days. The chart supports challenging it.'<br/>A small 'Site A' tag follows it when the view is narrowed to one site" }
-  hb@{ shape: curv-trap, label: "<b>Button 'Open denials 8' in the page header (under the text on a narrow window)</b><br/>When the address has a filter: a chip 'Filtered: Cardinal' under the header" }
-  g4@{ shape: subproc, label: "Continues in: Denial Intelligence › Open denials list" }
-  sub1@{ shape: curv-trap, label: "<b>Sub line: initials, age · program · payer name</b><br/>'The agents read the denial against the chart, and you choose the next step.'<br/>Under it, one quiet line: 'Authorization denials only. Claim denials are handled in billing and are not in this demo.'" }
-  pn@{ shape: rect, label: "No control for claim denials: the demo has no claims feed" }
-  h1@{ shape: curv-trap, label: "<b>Header card, top part</b><br/>Small tag 'Authorization denial'<br/>Program chip, D-id, type pill<br/>Pills '64% chance of overturning' and the deadline ('Peer-to-peer window closes in 36 h')" }
-  h2@{ shape: curv-trap, label: "<b>Line under the pills</b><br/>Payer · case id · initials, age · letter file name<br/>'Your note: ...' when a note was added<br/>Ghost button 'See on the Dashboard'" }
-  v1@{ shape: curv-trap, label: "<b>'Our read' tile, right of the header</b><br/>Worth challenging, Borderline or Probably accept, with one sentence<br/>Under it the button 'Appeal analysis report'" }
-  pv@{ shape: rect, label: "<b>Verdict comes from the win chance: 50 and over, 35 to 49, under 35</b><br/>D-3306 (27%) reads 'Probably accept'" }
-  bn@{ shape: curv-trap, label: "<b>Next-step block, inside the same card, under a rule</b><br/>Label, a serif title, one or two plain sentences, buttons with the primary one first" }
-  g1@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Next step and where it stands" }
-  g1b@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Recommended next step" }
-  d2@{ shape: diam, label: "Still open: not filed, and not closed (accepted, or won on a call or an appeal)?" }
-  c5@{ shape: curv-trap, label: "<b>'Your options' card, one short row</b><br/>Three routes with their chances, 'Recommended' on one<br/>Button 'Compare the options' in its header" }
+  s1@{ shape: stadium, label: "Open /denials/D-3318 (a dashboard row, a link from another screen)" }
+  cr@{ shape: curv-trap, label: "Crumbs 'Denial Intelligence › D-3318'" }
+  cb@{ shape: trap-t, label: "Click 'Denial Intelligence' in the crumbs" }
+  g0@{ shape: subproc, label: "Continues in: Denial Intelligence › Open denials list" }
+  h1@{ shape: curv-trap, label: "<b>Header card</b><br/>D-id (24 px), level of care chip, type pill ('Partial approval')<br/>Pills: the read ('Worth challenging', 'Borderline', 'Probably accept'), '64% chance of overturning', the deadline ('Peer-to-peer window closes in 36 h')<br/>Payer · initials, age · diagnosis · letter file name; 'Note: ...' when one was added" }
+  pv@{ shape: rect, label: "<b>The read comes from the chance: 50 and over, 35 to 49, under 35 (D-3306, 27%, reads 'Probably accept')</b><br/>A filed or settled denial drops the deadline pill: Your options says where it stands" }
+  b2@{ shape: trap-t, label: "Click 'Appeal analysis report'" }
+  g6@{ shape: subproc, label: "Continues in: Denial Intelligence › Appeal analysis report › Open and generate" }
+  b3@{ shape: trap-t, label: "Click 'Case R-0997'" }
+  g7@{ shape: subproc, label: "Continues in: Authorizations › Case page › Ways in" }
+  c5@{ shape: curv-trap, label: "<b>'Your options': the first section under the header</b><br/>Three compact choices: Peer-to-peer call, Written appeal, Accept<br/>Each with its chance and what it gets back; 'Recommended' on one; 'Compare the options' in the header" }
   g3@{ shape: subproc, label: "Continues in: Denial Intelligence › Your options" }
-  p3@{ shape: rect, label: "No options card" }
+  g1@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Next step and where it stands" }
   c2@{ shape: curv-trap, label: "<b>'What Cardinal said': the payer's words</b><br/>'What the chart shows': two or three sentences" }
-  c3@{ shape: curv-trap, label: "<b>'Where the denial is weak'</b><br/>'Each finding links to the chart, with a suggested fix'<br/>Button 'Full summary' in the card header" }
+  c3@{ shape: curv-trap, label: "<b>'Where the denial is weak': findings with severity, source chip and fix</b><br/>Button 'Full summary' in the card header" }
   g2@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Where the denial is weak" }
   d1@{ shape: diam, label: "<b>Is it an administrative denial?</b><br/>'Late notice' or 'Retro-authorization denied'" }
-  c4@{ shape: curv-trap, label: "<b>'The six ASAM dimensions'</b><br/>Six tiles D1 to D6, each with a green, ochre or red dot<br/>Button 'Full summary' in the card header" }
+  c4@{ shape: curv-trap, label: "<b>The framework card, titled with its name: 'ASAM Criteria' (LOCUS or CALOCUS-CASII for mental health alone)</b><br/>Six compact rows: dot, D1 to D6 with the framework's names, a word ('High concern')" }
+  g8@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Framework dimensions and their pop-ups" }
   p2@{ shape: rect, label: "The card is left out" }
-  fo@{ shape: curv-trap, label: "<b>Two folded sections at the bottom, closed at first</b><br/>'What the agents did' (names the three agents, pill 'Done in 0:48')<br/>'What has happened' (step count and the latest step)" }
-  g7@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Folded sections" }
-  p4@{ shape: rect, label: "<b>Opened, 'What has happened' lists the timeline: done events have a green dot</b><br/>Scheduled events (dashed dot) read 'Scheduled · Wed 1:00 pm'<br/>'Every step is also on the Dashboard.'" }
-  pw@{ shape: rect, label: "<b>No right column: the width it used to take goes to the cards</b><br/>The six dimensions sit in three columns on a wide window, two on a medium one, one on a narrow one" }
-  g8@{ shape: subproc, label: "Continues in: Denial Intelligence › Add a denial letter" }
-  b1@{ shape: trap-t, label: "Click 'See on the Dashboard'" }
-  g5@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
-  b2@{ shape: trap-t, label: "Click 'Appeal analysis report' (button under the 'Our read' tile)" }
-  g6@{ shape: subproc, label: "Continues in: Denial Intelligence › Appeal analysis report › Open and generate" }
-  e1@{ shape: stadium, label: "Person reads the denial and chooses a next step" }
-  s1 --> p1 --> sub1 --> h1
-  sub1 -.-> pn
-  h1 --> h2 --> b1 --> g5
-  h1 --> v1 --> pv
-  v1 --> b2 --> g6
-  h1 --> bn --> g1
-  bn --> g1b
-  bn --> d2
-  d2 -->|"Yes"| c5 --> g3
-  d2 -->|"No"| p3
-  c5 --> c2
-  p3 --> c2
-  c2 --> c3 --> g2
+  fo@{ shape: curv-trap, label: "'History', folded: one list, newest first, a flag on the right" }
+  g9@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Folded sections" }
+  e1@{ shape: stadium, label: "Person reads the denial and acts from Your options" }
+  s1 --> cr --> cb --> g0
+  cr --> h1 --> pv
+  h1 --> b2 --> g6
+  h1 --> b3 --> g7
+  h1 --> c5 --> g3
+  c5 --> g1
+  c5 --> c2 --> c3 --> g2
   c3 --> d1
-  d1 -->|"No"| c4
+  d1 -->|"No"| c4 --> g8
   d1 -->|"Yes"| p2
   c4 --> fo
   p2 --> fo
-  fo --> g7
-  fo --> p4 --> e1
-  sub1 --> hb --> g4
-  hb -.-> g8
-  c4 -.-> pw
+  fo --> g9
+  fo --> e1
   class s1 k_start
-  class p1,pn,pv,p3,p2,p4,pw k_process
-  class hb,sub1,h1,h2,v1,bn,c5,c2,c3,c4,fo k_screen
-  class g4,g1,g1b,g3,g2,g7,g8,g5,g6 k_goto
-  class d2,d1 k_decision
-  class b1,b2 k_click
+  class cr,h1,c5,c2,c3,c4,fo k_screen
+  class cb,b2,b3 k_click
+  class g0,g6,g7,g3,g1,g2,g8,g9 k_goto
+  class pv,p2 k_process
+  class d1 k_decision
   class e1 k_end

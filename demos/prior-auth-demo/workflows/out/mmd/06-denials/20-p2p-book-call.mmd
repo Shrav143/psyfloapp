@@ -16,17 +16,17 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "Click 'Choose a time and prepare the brief' (the recommended next step, or the 'Your options' panel for another route)" }
-  s2@{ shape: stadium, label: "Click 'Change the time' (next-step block, call booked)" }
+  s1@{ shape: stadium, label: "Click 'Book a call' in the peer-to-peer choice of Your options, or pick it in 'Compare the options'" }
+  s2@{ shape: stadium, label: "Click 'Change the time' (the peer-to-peer choice in Your options, call booked)" }
   s3@{ shape: stadium, label: "Brief page: click 'Book the call' or 'Change the call time'" }
-  o1@{ shape: win-pane, label: "<b>Modal 'Confirm the next step: peer-to-peer call'</b><br/>'The agents stop here until you say go.'" }
-  l1@{ shape: curv-trap, label: "<b>'What happens when you confirm'</b><br/>Cadence books the window with the payer and adds it to the clinician's calendar<br/>Advocate finishes the brief with three points and the likely pushback<br/>Integrity checks every sentence against the chart" }
-  l2@{ shape: curv-trap, label: "'Pick a time. Chance of overturning is 64% (likely 55–72%).'" }
+  o1@{ shape: win-pane, label: "<b>Modal 'Confirm the next step: peer-to-peer call'</b><br/>Sub line 'D-3318 · Cardinal Health Plan'" }
+  l1@{ shape: hex, label: "On confirm: Cadence books the window with the payer, Advocate finishes the brief, Integrity checks it (demo: simulated)" }
+  l2@{ shape: curv-trap, label: "Radio cards 'Call time', one per window" }
   p1@{ shape: rect, label: "<b>Up to three windows on working days: 9–11 am, 1–3 pm, 4–5 pm</b><br/>Only windows that start after the demo clock and before the payer's window closes<br/>At the start of D-3318: Tue 1–3 pm, Tue 4–5 pm, Wed 9–11 am" }
   d1@{ shape: diam, label: "<b>Is any call time left?</b><br/>(starts after the demo clock, before the window closes)" }
-  t1@{ shape: odd, label: "<b>'No call time is left inside the payer's window. Choose a written appeal instead.'</b><br/>'Confirm and book the call' is greyed out<br/>Example: D-3318 after fast-forwarding 1 day and 6 hours, or once the window has closed" }
+  t1@{ shape: odd, label: "<b>'No call time is left inside the payer's window. A written appeal is still open.'</b><br/>'Confirm and book the call' is greyed out<br/>Example: D-3318 after fast-forwarding 1 day and 6 hours, or once the window has closed" }
   i1@{ shape: lean-r, label: "<b>Pick a call time (radio cards)</b><br/>The time already booked is chosen (if it is still ahead of the clock), otherwise the first" }
-  p2@{ shape: rect, label: "Card text: 'Booked now' on the booked time (also a time booked before the demo started, such as D-3318's Wed 9–11 am), 'Open with the payer's reviewer' on the others" }
+  p2@{ shape: rect, label: "A pill 'Booked' on the booked time (also a time booked before the demo started, such as D-3318's Wed 9–11 am)" }
   c1@{ shape: trap-t, label: "Click 'Confirm and book the call'" }
   c2@{ shape: trap-t, label: "Click 'Cancel', the X, press Esc, or click the dimmed area" }
   e1@{ shape: stadium, label: "Nothing changes" }
@@ -54,7 +54,8 @@ flowchart TD
   d2 -->|"Brief page"| p4 --> e2
   class s1,s2,s3 k_start
   class o1 k_overlay
-  class l1,l2 k_screen
+  class l1,a1,a2 k_agent
+  class l2 k_screen
   class p1,p2,p3,p4 k_process
   class d1,d2 k_decision
   class t1,t2 k_toast
@@ -63,6 +64,5 @@ flowchart TD
   class e1 k_endx
   class st1,st2 k_store
   class x1 k_ext
-  class a1,a2 k_agent
   class g1 k_goto
   class e2 k_end

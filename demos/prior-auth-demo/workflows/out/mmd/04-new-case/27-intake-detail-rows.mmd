@@ -16,78 +16,68 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "On Intake, read the Patient, Insurance and Request rows" }
-  sc@{ shape: curv-trap, label: "<b>Patient: 'Patient initials and age'</b><br/>Insurance: 'Payer and plan', 'Member ID' (Recommended)<br/>Request: 'Level of care', 'Request type', 'Start date' (Recommended)<br/>Each row: a box, a label, a detail line and one button" }
-  subgraph gState ["What a row can say"]
-  dSrc@{ shape: diam, label: "Does the row have a value?" }
-  r1@{ shape: rect, label: "<b>Read from a file</b><br/>'Read from referral.pdf by Reader. Check it.'" }
-  r3@{ shape: rect, label: "<b>From a referral</b><br/>'From referral RF-2051'<br/>With 'Referred by Eastgate Probation Services' under Patient" }
-  r4@{ shape: rect, label: "<b>From EMR Connect</b><br/>'From EMR Connect'" }
-  r2@{ shape: rect, label: "<b>Typed by a person</b><br/>The detail shows the value with no source note" }
-  r5@{ shape: rect, label: "<b>Missing</b><br/>'Initials and age only. A name never enters the app.'<br/>Row shaded, button 'Add'" }
-  r6@{ shape: rect, label: "<b>Half filled</b><br/>'Found initials J.M. The age is still needed.'" }
-  r7@{ shape: rect, label: "<b>Left blank by a chart pull</b><br/>'Left blank. “Level of care” in the outpatient record needs a mapping. Map it, then pull the chart again.'<br/>Link 'Open EMR Connect'" }
-  rNote@{ shape: rect, label: "A source note goes quiet as soon as the value is edited" }
+  s1@{ shape: stadium, label: "Intake is open on an initial or a retroactive authorization" }
+  s2@{ shape: stadium, label: "<b>'Continues in' from Payers or Eligibility & Benefits:</b><br/>a new payer or a verification fills the coverage" }
+  subgraph gPat ["Patient"]
+  iIni@{ shape: lean-r, label: "Type 'Initials' (upper case, at most 8 characters)" }
+  iDob@{ shape: lean-r, label: "Pick 'Date of birth'" }
+  pAge@{ shape: rect, label: "<b>Age is worked out from the date of birth on the demo day and shown beside it</b><br/>The age box is then read only" }
+  iAge@{ shape: lean-r, label: "A draft that has only an age (from a referral) keeps its age, editable" }
+  iSex@{ shape: lean-r, label: "Pick 'Sex': Female, Male, Other or not stated" }
   end
-  cEdit@{ shape: trap-t, label: "Click 'Add' (empty row) or 'Edit' (filled row)" }
-  oEd@{ shape: win-pane, label: "<b>Editor opens under the row</b><br/>The first box takes focus<br/>Only one editor is open at a time" }
-  cAgain@{ shape: trap-t, label: "Click the same row button again" }
-  pClose@{ shape: rect, label: "Editor closes" }
-  subgraph gRows ["The editors"]
-  iInit@{ shape: lean-r, label: "<b>Patient: 'Patient initials' (up to 8, shown in capitals, e.g. J.M.) and 'Age' (1 to 110)</b><br/>'Initials and age only. A name never enters the app.'" }
-  iPayer@{ shape: lean-r, label: "<b>Payer and plan: pick 'Payer'</b><br/>'Plan type' fills in for that payer, and can be changed" }
-  iMember@{ shape: lean-r, label: "<b>Member ID: type it</b><br/>'Agents see …4821 only. The full ID is removed before any agent reads the chart.'" }
-  iLevel@{ shape: lean-r, label: "<b>Level of care: pick Residential 3.5, IOP, PHP or Detox</b><br/>The editor closes at once" }
-  iType@{ shape: lean-r, label: "<b>Request type (initial authorization only): Initial request or Admission</b><br/>Admission adds 'notice due in about 5 hours'" }
-  iStart@{ shape: lean-r, label: "<b>Start date: 'Requested start date' and 'Requested end date' (optional)</b><br/>The row shows both, with today marked" }
+  subgraph gCov ["Coverage"]
+  iPayer@{ shape: lean-r, label: "Pick 'Payer'" }
+  pPlans@{ shape: rect, label: "<b>'Plan type' offers the payer's own plans, the first one picked</b><br/>Summit: HMO. Beacon: PPO, HMO, EPO. Harborview: Medicare Advantage, D-SNP" }
+  iPlan@{ shape: lean-r, label: "Pick another 'Plan type'" }
+  iMem@{ shape: lean-r, label: "Type 'Member ID'" }
   end
-  cDone@{ shape: trap-t, label: "Click 'Done', or press Escape in a text box" }
-  stLive@{ shape: cyl, label: "<b>Every keystroke is written to the draft</b><br/>Nothing to save" }
-  dRan@{ shape: diam, label: "Had the agents already run?" }
+  subgraph gReq ["Request"]
+  iLoc@{ shape: lean-r, label: "Pick 'Level of care': Residential 3.5, IOP, PHP, Detox" }
+  iType@{ shape: lean-r, label: "<b>Pick 'Request type': Initial request or Admission</b><br/>A retroactive request records Retro-authorization and shows no choice" }
+  iStart@{ shape: lean-r, label: "<b>Pick 'Requested start date'</b><br/>Retroactive: 'First date of service' and 'Last date of service'" }
+  iDx@{ shape: lean-r, label: "<b>Search 'Primary diagnosis (ICD-10)' by code or name, pick one</b><br/>The first chip is the primary" }
+  iSite@{ shape: lean-r, label: "<b>'Site': Site A or Site B with both sites in view</b><br/>One site in view, or a case with its id: the site name only" }
+  end
+  subgraph gMore ["More, folded"]
+  cMore@{ shape: trap-t, label: "<b>Click 'More'</b><br/>Its summary names what is filled, e.g. 'Referral source'" }
+  m1@{ shape: lean-r, label: "'Secondary insurance': None or a payer, then its member ID" }
+  m2@{ shape: lean-r, label: "'Requested end date': empty asks for the usual length" }
+  m3@{ shape: lean-r, label: "'Attending clinician' and 'Clinician NPI' (10 digits, else '10 digits')" }
+  m4@{ shape: lean-r, label: "'Referral source' (a referral fills it with the organization and the clinician)" }
+  m5@{ shape: lean-r, label: "'Guardian': initials and relationship, only when the patient is under 18" }
+  end
+  st@{ shape: cyl, label: "<b>Each change is written to the draft at once</b><br/>After the agents ran, a change clears their work" }
   tStale@{ shape: odd, label: "<b>'Records changed after the agents ran'</b><br/>'Their work was cleared. The agents check again when you continue.'" }
-  pVerify@{ shape: rect, label: "<b>A changed payer, level of care, member ID or date makes the check on Eligibility & Benefits old or for another payer</b><br/>Step 2 shows it, and Verify runs again" }
-  pDocs@{ shape: rect, label: "The payer and the level of care decide the document list on Clinical documentation" }
-  gDup@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Possible duplicate" }
-  gElig@{ shape: subproc, label: "Continues in: Authorizations › New case › Eligibility & Benefits › Initial authorization" }
-  gDoc@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › The checklist and Continue" }
-  s1 --> sc --> dSrc
-  dSrc -->|"Read by Reader"| r1
-  dSrc -->|"From a referral"| r3
-  dSrc -->|"From the EMR"| r4
-  dSrc -->|"Typed"| r2
-  dSrc -->|"No"| r5
-  dSrc -->|"Only one of two"| r6
-  dSrc -->|"Blank because EMR Connect has no mapping yet"| r7
-  r1 --> rNote
-  r3 --> rNote
-  r4 --> rNote
-  sc --> cEdit --> oEd
-  oEd --> iInit & iPayer & iMember & iLevel & iType & iStart
-  oEd --> cAgain --> pClose
-  r5 --> cEdit
-  r6 --> cEdit
-  r7 --> cEdit
-  iInit --> cDone
-  iPayer --> cDone
-  iMember --> cDone
-  iStart --> cDone
-  iLevel --> stLive
-  iType --> stLive
-  cDone --> stLive --> dRan
-  dRan -->|"Yes"| tStale --> pVerify
-  dRan -->|"No"| pVerify
-  pVerify --> gElig
-  pVerify -.-> pDocs --> gDoc
-  stLive -.-> gDup
-  class s1 k_start
-  class sc k_screen
-  class dSrc,dRan k_decision
-  class r1,r3,r4,r2,r5,r6,r7,rNote,pClose,pVerify,pDocs k_process
-  class cEdit,cAgain,cDone k_click
-  class oEd k_overlay
-  class iInit,iPayer,iMember,iLevel,iType,iStart k_input
-  class stLive k_store
+  sMark@{ shape: curv-trap, label: "<b>A field an import filled says 'From EMR', 'From file' or 'From screenshot' under it</b><br/>until the person changes it" }
+  pState@{ shape: rect, label: "<b>The Intake state on the stepper follows</b><br/>Complete once patient, payer, service and dates are in" }
+  gImp@{ shape: subproc, label: "Continues in: Authorizations › New Case › Import › Review what was found and apply" }
+  gSite@{ shape: subproc, label: "Continues in: Authorizations › New Case › Sites and scope" }
+  gStates@{ shape: subproc, label: "Continues in: Authorizations › New Case › Step states" }
+  s1 --> iIni --> iDob --> pAge
+  s1 --> iAge
+  iDob --> iSex
+  s1 --> iPayer --> pPlans --> iPlan --> iMem
+  s2 --> iPayer
+  s1 --> iLoc --> iType --> iStart --> iDx --> iSite
+  iSite -.-> gSite
+  s1 --> cMore --> m1 & m2 & m3 & m4 & m5
+  iIni --> st
+  iSex --> st
+  iMem --> st
+  iDx --> st
+  m5 --> st
+  st -.-> tStale
+  st --> pState -.-> gStates
+  s1 -.-> sMark -.-> gImp
+  class s1,s2 k_start
+  class iIni,iDob,iAge,iSex,iPayer,iPlan,iMem,iLoc,iType,iStart,iDx,iSite,m1,m2,m3,m4,m5 k_input
+  class pAge,pPlans,pState k_process
+  class cMore k_click
+  class st k_store
   class tStale k_toast
-  class gDup,gElig,gDoc k_goto
-  style gState fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
-  style gRows fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  class sMark k_screen
+  class gImp,gSite,gStates k_goto
+  style gPat fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gCov fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gReq fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gMore fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

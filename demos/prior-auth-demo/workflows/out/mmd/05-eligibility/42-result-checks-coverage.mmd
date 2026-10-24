@@ -19,28 +19,28 @@ flowchart TD
   s1@{ shape: stadium, label: "Result page, side panel opened, section 'Payment checks'" }
   subgraph gA ["Row 1 · Coverage"]
   a0@{ shape: diam, label: "What did the state or plan say about the date of service?" }
-  a1@{ shape: rect, label: "<b>Title 'Coverage is active on the service date'</b><br/>Chip 'Active' (green)<br/>'Ohio Medicaid, active since 01/01/2026 with no end date'" }
-  a2@{ shape: rect, label: "<b>Title 'Coverage is not active on the service date'</b><br/>Chip 'Lapsed 10/12' (red)<br/>'Days after that are not payable until eligibility is restored. A retro-eligibility request can cover the gap.'" }
-  a3@{ shape: rect, label: "<b>Title 'Coverage is not active on the service date'</b><br/>Chip 'Ended 09/30' (red)<br/>'The patient may have a new plan, so ask the payer.'<br/>If the plan changed: 'Coverage with Evergreen ended 09/30. The member is with Cardinal Health Plan since 10/01.'" }
-  a5@{ shape: rect, label: "<b>Title 'Coverage is active, but under another member ID'</b><br/>Chip 'ID differs' (red)<br/>'The plan matched this person to the ID ending 5521, not the one given.'" }
-  a6@{ shape: rect, label: "<b>Title 'Coverage could not be checked'</b><br/>Chip 'Not checked' (grey)<br/>'Verify is paused in Settings, so nothing was asked of the plan.'" }
-  a4@{ shape: rect, label: "<b>Title 'Coverage was not found'</b><br/>Chip 'Not found' (red)<br/>'Check the member ID and date of birth, or read the card again.'" }
+  a1@{ shape: rect, label: "<b>Title 'Coverage is active on the service date'</b><br/>Chip 'Active' (green)<br/>'Ohio Medicaid, active since 01/01/2026, no end date'" }
+  a2@{ shape: rect, label: "<b>Title 'Coverage is not active on the service date'</b><br/>Chip 'Lapsed 10/12' (red)<br/>No line: the chip says it" }
+  a3@{ shape: rect, label: "<b>Title 'Coverage is not active on the service date'</b><br/>Chip 'Ended 09/30' (red)<br/>No line: a plan the member moved to is row 2" }
+  a5@{ shape: rect, label: "<b>Title 'Coverage is active, under another member ID'</b><br/>Chip 'ID differs' (red)<br/>'The plan has this member under the ID ending 5521'" }
+  a6@{ shape: rect, label: "<b>Title 'Coverage could not be checked'</b><br/>Chip 'Not checked' (grey)<br/>'Not asked: Verify is paused in Settings'" }
+  a4@{ shape: rect, label: "<b>Title 'Coverage was not found'</b><br/>Chip 'Not found' (red)<br/>'No member matched this ID and date of birth'" }
   end
-  g0@{ shape: rect, label: "<b>Rows 2 to 7 are replaced by one grey row</b><br/>'Nothing else could be checked', chip 'Not checked'<br/>'Fix the member ID or date of birth, then check again.'<br/>No cost line either" }
+  g0@{ shape: rect, label: "<b>Rows 2 to 7 are replaced by one grey row</b><br/>'Nothing else could be checked', chip 'Not checked'<br/>'Plan, benefits, authorization, enrollment, limits and other insurance: not asked, no coverage found'" }
   subgraph gB ["Row 2 · The plan"]
   b0@{ shape: diam, label: "Which kind of plan?" }
   b1@{ shape: rect, label: "<b>Title 'It is the right plan', chip 'Summit' (green)</b><br/>'Managed by Summit Medicaid HMO. Claims go to Summit, not to the state'<br/>Same source as the facts line: Result › Plan type and routing" }
   b2@{ shape: rect, label: "<b>Chip 'Harborview' (green)</b><br/>'A Medicare Advantage plan. Claims go to Harborview MA, not to Medicare'" }
   b3@{ shape: rect, label: "<b>Chip 'Lakeshore' (green)</b><br/>'Behavioral health is carved out to Lakeshore Behavioral. Claims go to Lakeshore, not to the medical plan'" }
   b4@{ shape: rect, label: "<b>Chip 'Beacon' (green)</b><br/>'Claims go to Beacon PPO'" }
-  b5@{ shape: rect, label: "<b>Title 'The member is with another plan now'</b><br/>Chip 'Plan changed' (red)<br/>'Cardinal Health Plan, since 10/01. A claim sent to Evergreen would be rejected'" }
+  b5@{ shape: rect, label: "<b>Title 'The member is with another plan now'</b><br/>Chip 'Plan changed' (red)<br/>'Cardinal Health Plan, since 10/01'" }
   end
   subgraph gC ["Row 3 · The service"]
   c0@{ shape: diam, label: "What do the benefits say for this level of care?" }
   c1@{ shape: rect, label: "<b>Title 'The service is covered'</b><br/>Chip 'Covered' (green)<br/>'Residential 3.5 is payable for substance use disorder (F10.20 on the chart). Codes H0018 and H0019'" }
-  c2@{ shape: rect, label: "<b>Title 'The service is covered with conditions'</b><br/>Chip 'Limited' (amber)<br/>'The diagnosis must be on the plan's list and each day needs an authorization.'" }
-  c5@{ shape: rect, label: "<b>Title 'The service is not confirmed'</b><br/>Chip 'Not confirmed' (amber)<br/>'Harborview answered for coverage but not for PHP. Caller can confirm the benefit by phone.'<br/>The verdict is 'Fix before billing'" }
-  c3@{ shape: rect, label: "<b>Title 'The service is not covered'</b><br/>Chip 'Not covered' (red)<br/>'Ask Beacon which program it pays for.'<br/>The verdict is 'Fix before billing'" }
+  c2@{ shape: rect, label: "<b>Title 'The service is covered with conditions'</b><br/>Chip 'Limited' (amber)<br/>'PHP is payable when the diagnosis is on the plan's list and each day is authorized'" }
+  c5@{ shape: rect, label: "<b>Title 'The service is not confirmed'</b><br/>Chip 'Not confirmed' (amber)<br/>'Harborview answered for coverage, not for PHP. Codes H0035'<br/>The verdict is 'Fix before billing'; the result offers 'Ask Caller to confirm the benefit'" }
+  c3@{ shape: rect, label: "<b>Title 'The service is not covered'</b><br/>Chip 'Not covered' (red)<br/>'Residential 3.5 is not a covered benefit under this plan. Codes H0018 and H0019'<br/>The verdict is 'Fix before billing'" }
   c4@{ shape: rect, label: "<b>Codes by level of care</b><br/>Residential 3.5 H0018 and H0019 · IOP H0015 · PHP H0035 · Detox H0010 and H0011" }
   end
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › Payment checks: authorization to other insurance" }

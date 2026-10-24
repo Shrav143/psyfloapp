@@ -38,20 +38,20 @@ flowchart TD
   p0@{ shape: rect, label: "/active is replaced by /manager" }
   p1@{ shape: rect, label: "<b>Page opens at the top</b><br/>Sidebar 'Case Manager' turns green; its bubble reads 11 for Both sites (Site A 6, Site B 5)" }
   d1@{ shape: diam, label: "Is the address ?tab=reviews?" }
-  sA@{ shape: curv-trap, label: "<b>Active cases tab: the tracker is what the page opens on</b><br/>Header '56 active cases.'<br/>'5 are still being prepared. Units, clocks and status for every case, across every level of care.'<br/>Button 'New case'<br/>Above the tracker, one folded row 'Being prepared' ('5 being prepared, 3 need you') and, only when a denial was accepted, a folded 'Step-down plans' row" }
-  cA@{ shape: rect, label: "<b>56 is the number of rows in the tracker at the sites in view: Both sites 56 = Site A 33 plus Site B 23. A small 'Site A' tag follows the header when the view is narrowed to one site</b><br/>A case signed and sent in New case adds a row ('57 active cases.'), and '1 active case.' reads in the singular<br/>5 is the drafts saved and not yet sent: it falls when a case is signed and sent ('1 is still being prepared' when one is left)" }
+  sA@{ shape: curv-trap, label: "<b>Active cases tab: the tracker is what the page opens on</b><br/>Header '56 active cases.'<br/>'5 are still being prepared. Units, clocks and status for every case, across every level of care.'<br/>Button 'New Case'<br/>Above the tracker, one folded row 'Being prepared' ('5 being prepared, 3 need you') and, only when a denial was accepted, a folded 'Step-down plans' row" }
+  cA@{ shape: rect, label: "<b>56 is the number of rows in the tracker at the sites in view: Both sites 56 = Site A 33 plus Site B 23. A small 'Site A' tag follows the header when the view is narrowed to one site</b><br/>A case signed and sent in New Case adds a row ('57 active cases.'), and '1 active case.' reads in the singular<br/>5 is the drafts saved and not yet sent: it falls when a case is signed and sent ('1 is still being prepared' when one is left)" }
   sR@{ shape: curv-trap, label: "<b>Reviews this week tab</b><br/>Header '47 clinical reviews due this week.'<br/>'Agents draft each review ahead of time. You update only what they ask about.'<br/>Buttons 'Draft all due reviews' and 'Sign all clean drafts'" }
   cR@{ shape: rect, label: "<b>47 is one review for each approved case at the sites in view (Site A 27 plus Site B 20) (9 cases are not yet approved and have none)</b><br/>Only reviews due before the end of Sunday are counted: a next review booked for Friday makes it '48', one booked for next week does not<br/>'1 clinical review due this week.' reads in the singular" }
   sF@{ shape: curv-trap, label: "<b>Filter bar under the header (both tabs)</b><br/>Search box, 'All levels of care', 'All payers', then 'Any status' (Active cases) or 'Any review status' (Reviews)<br/>On the right the switch 'Active cases' | 'Reviews this week'" }
   c1@{ shape: trap-t, label: "Click 'Reviews this week'" }
   c2@{ shape: trap-t, label: "Click 'Active cases'" }
   p2@{ shape: rect, label: "<b>Address becomes ?tab=reviews or ?tab=cases</b><br/>No new history entry, so Back does not walk through tab clicks<br/>Header and body swap; search, level of care and payer filters stay" }
-  c3@{ shape: trap-t, label: "Click 'New case'" }
+  c3@{ shape: trap-t, label: "Click 'New Case'" }
   g1@{ shape: subproc, label: "Continues in: Case Manager › Filters › Search and filter both tabs" }
   g2@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Being prepared card" }
   g3@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Tracker of every active case" }
   g4@{ shape: subproc, label: "Continues in: Case Manager › Reviews this week › The list" }
-  g5@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Start with a referral or patient" }
+  g5@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Start with a referral or patient" }
   g6@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Step-down plans from accepted denials" }
   g7@{ shape: subproc, label: "Continues in: Case Manager › Active cases › A new case joins the tracker" }
   s1 --> p1
@@ -225,8 +225,8 @@ flowchart TD
   g4@{ shape: subproc, label: "Continues in: Case Manager › Active cases › A new case joins the tracker" }
   g5@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Updated for a payer change" }
   e1@{ shape: stadium, label: "Rows are on screen" }
-  p5@{ shape: rect, label: "After a case is signed and sent in New case it leaves this list, 'sent today' counts one more, and the tracker adds it as 'New today' unless it already had a row" }
-  s2@{ shape: stadium, label: "Later: a case is signed and sent in New case › Review & submit" }
+  p5@{ shape: rect, label: "After a case is signed and sent in New Case it leaves this list, 'sent today' counts one more, and the tracker adds it as 'New today' unless it already had a row" }
+  s2@{ shape: stadium, label: "Later: a case is signed and sent in New Case › Review & submit" }
   s1 --> sf --> pn
   sf --> cl --> pl --> gl
   sf --> co --> sc --> p1 --> p2 --> sh
@@ -257,7 +257,7 @@ flowchart TD
 
 ## Case Manager › Active cases › One row and its button
 
-One row of 'Being prepared' shows a case, where it is on the eight steps, who has it and the one thing to do next. Only the case ID and the button on the right are clickable, and both lead to the same place in New case. The button's wording depends on the row's state.
+One row of 'Being prepared' shows a case, where it is on the eight steps, who has it and the one thing to do next. Only the case ID and the button on the right are clickable, and both lead to the same place in New Case. The button's wording depends on the row's state.
 
 Route: `/manager`
 
@@ -281,7 +281,7 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Open the folded 'Being prepared' row and look at one case" }
-  r1@{ shape: curv-trap, label: "<b>Row, left to right</b><br/>Level chip (for example 'Residential 3.5', 'Detox → Residential', or 'Level not set')<br/>Case ID (or 'New case'), patient initials and age, payer<br/>What is asked ('Admission request'), and a grey tag 'Updated for a payer change · 10/20' when Payers updated this draft" }
+  r1@{ shape: curv-trap, label: "<b>Row, left to right</b><br/>Level chip (for example 'Residential 3.5', 'Detox → Residential', or 'Level not set')<br/>Case ID (or 'New Case'), patient initials and age, payer<br/>What is asked ('Admission request'), and a grey tag 'Updated for a payer change · 10/20' when Payers updated this draft" }
   r2@{ shape: curv-trap, label: "<b>Eight-step bar</b><br/>Read, Rules, Match, Ask, Draft, Check, Sign, Send<br/>Done steps green, current step sage and bold, the rest grey" }
   r3@{ shape: curv-trap, label: "<b>Agent line</b><br/>A badge for the agent who has the case, then one sentence, for example 'Scribe is waiting on one answer: the sertraline start date'" }
   r4@{ shape: curv-trap, label: "<b>Right side</b><br/>Due pill (for example 'Notice due in 5 h'), status pill, approval chance with a bar (or 'Not started'), then the button" }
@@ -293,11 +293,11 @@ flowchart TD
   t4@{ shape: rect, label: "<b>'Ready to sign'</b><br/>Button 'Review and sign' (green)" }
   c1@{ shape: trap-t, label: "Click the case ID or the button" }
   p1@{ shape: rect, label: "Go to /authorizations/new/ followed by the draft's code" }
-  d2@{ shape: diam, label: "Which step does New case open on?" }
-  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Reopen and resume a case" }
-  g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › An agent asks a question" }
-  g3@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › Start the run and watch it" }
-  g4@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Sign and send to payer" }
+  d2@{ shape: diam, label: "Which step does New Case open on?" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New Case › Reopen and resume a case" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › An agent asks a question" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › Start the run and watch it" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer" }
   c2@{ shape: trap-t, label: "Click anywhere else on the row" }
   p2@{ shape: rect, label: "Nothing happens: the row itself is not a link" }
   e1@{ shape: stadium, label: "Stays on Case Manager" }
@@ -836,7 +836,7 @@ flowchart TD
 
 ## Case Manager › Active cases › A new case joins the tracker
 
-A case signed and sent in New case becomes a request on the Dashboard. The tracker adds it as a row marked 'New today', so the header count, the four status tiles, the pager and the rows always agree. A case that was already a row in the ledger (for example R-1042) keeps its row and gets no second one.
+A case signed and sent in New Case becomes a request on the Dashboard. The tracker adds it as a row marked 'New today', so the header count, the four status tiles, the pager and the rows always agree. A case that was already a row in the ledger (for example R-1042) keeps its row and gets no second one.
 
 Route: `/manager`
 
@@ -861,9 +861,9 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "New case › Review & submit › 'Sign and send to payer (demo)'" }
+  s1@{ shape: stadium, label: "New Case › Review & submit › 'Sign and send to payer (demo)'" }
   st1@{ shape: cyl, label: "<b>A request is created on the Dashboard as Received</b><br/>Its ID is added to 'sent today'" }
-  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Sign and send to payer" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer" }
   d1@{ shape: diam, label: "<b>Is the ID already a row in the tracker?</b><br/>(R-1042, R-0988, I-2207, R-1101, I-2262 are)" }
   p1@{ shape: rect, label: "The row stays as it is" }
   p2@{ shape: rect, label: "<b>A tracker row is added</b><br/>Case ID with a green 'New today' tag, initials and age<br/>Level of care and request type<br/>'not yet approved', payer, approval chance from the draft" }
@@ -1566,7 +1566,7 @@ flowchart TD
   end
   p3@{ shape: rect, label: "<b>Filters go back to their first options</b><br/>Search box is emptied, lists are full again" }
   g1@{ shape: subproc, label: "Continues in: Case Manager › Filters › Search and filter both tabs" }
-  g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Start with a referral or patient" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Start with a referral or patient" }
   p4@{ shape: rect, label: "<b>How drafts run out: sign and send every case in 'Being prepared' (5 at the start)</b><br/>The header then reads '0 are still being prepared'" }
   p5@{ shape: rect, label: "<b>'Step-down plans' has no empty state</b><br/>The folded row is simply not shown when no denial was accepted or the filters hide every plan" }
   e1@{ shape: stadium, label: "Lists show rows again" }
@@ -1641,7 +1641,7 @@ flowchart LR
   r4@{ shape: rect, label: "Go to /manager (no tab)" }
   c5@{ shape: trap-t, label: "<b>Authorizations queue empty › 'Open Case Manager'</b><br/>('Nothing needs you today')" }
   r5@{ shape: rect, label: "Go to /manager (no tab)" }
-  c6@{ shape: trap-t, label: "<b>New case › 'Case Manager' link above the title,</b><br/>or 'Back to Case Manager' on a sent case" }
+  c6@{ shape: trap-t, label: "<b>New Case › 'Case Manager' link above the title,</b><br/>or 'Back to Case Manager' on a sent case" }
   r6@{ shape: rect, label: "Go to /manager (no tab)" }
   end
   subgraph gShell ["Links from the shell"]
@@ -1842,11 +1842,11 @@ flowchart TD
 
 ## Case Manager › Ledger case › Workflow line and history
 
-A case that was prepared or reviewed in New case follows a payer workflow, pinned by version. The ledger case page shows one row, 'Workflow', in the case summary, and the lines the workflow wrote appear in its folded History. The tracker's quick view shows the same row and the three newest history lines. A case with no workflow shows neither. Workflows are clinic-wide; the case stays at its site.
+A case that was prepared or reviewed in New Case follows a payer workflow, pinned by version. The ledger case page shows one row, 'Workflow', in the case summary, and the lines the workflow wrote appear in its folded History. The tracker's quick view shows the same row and the three newest history lines. A case with no workflow shows neither. Workflows are clinic-wide; the case stays at its site.
 
 Route: `/authorizations/case/ID (a ledger case) and the Case Manager tracker quick view`
 
-A case that is also a request opens the Authorizations case page instead (its facts row has 'Workflow', and its History holds the same lines). Those are drawn in New case › Workflow › What the workflow adds to the history.
+A case that is also a request opens the Authorizations case page instead (its facts row has 'Workflow', and its History holds the same lines). Those are drawn in New Case › Workflow › What the workflow adds to the history.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -1868,7 +1868,7 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Open a ledger case, or click a tracker row" }
-  d1@{ shape: diam, label: "<b>Is there a New case draft for this case with a workflow?</b><br/>Same case ID, or the patient's treatment episode" }
+  d1@{ shape: diam, label: "<b>Is there a New Case draft for this case with a workflow?</b><br/>Same case ID, or the patient's treatment episode" }
   p1@{ shape: rect, label: "<b>No 'Workflow' row</b><br/>History is the ledger's own" }
   sc1@{ shape: curv-trap, label: "<b>Card 'Case summary'</b><br/>Row 'Workflow': 'Initial Authorization, Residential SUD, version 3'<br/>or 'Default process for a concurrent review' with 'illustrative default'" }
   d2@{ shape: diam, label: "Did the workflow write lines that are not on a request?" }
@@ -1881,7 +1881,7 @@ flowchart TD
   p3@{ shape: rect, label: "Opens the case page: the ledger case, or the Authorizations case page for a request" }
   e1@{ shape: stadium, label: "The workflow is read where the case is read" }
   g1@{ shape: subproc, label: "Continues in: Case Manager › Ledger case › Open and read" }
-  g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Workflow › What the workflow adds to the history" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New Case › Workflow › What the workflow adds to the history" }
   s1 --> d1
   d1 -->|"No"| p1 --> e1
   d1 -->|"Yes"| sc1 --> d2

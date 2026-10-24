@@ -56,9 +56,9 @@ flowchart LR
   cAuth@{ shape: trap-t, label: "Click 'Authorizations'" }
   pAuth@{ shape: rect, label: "<b>Go to /authorizations</b><br/>The group opens under it" }
   gAuth@{ shape: subproc, label: "Continues in: Authorizations › Queue" }
-  cNew@{ shape: trap-t, label: "<b>Click 'New case'</b><br/>(listed under Authorizations)" }
+  cNew@{ shape: trap-t, label: "<b>Click 'New Case'</b><br/>(listed under Authorizations)" }
   pNew@{ shape: rect, label: "<b>Go to /authorizations/new</b><br/>A blank draft is started" }
-  gNew@{ shape: subproc, label: "Continues in: Authorizations › New case › How a case starts and resumes" }
+  gNew@{ shape: subproc, label: "Continues in: Authorizations › New Case › How a case starts and resumes" }
   cElig@{ shape: trap-t, label: "<b>Click 'Eligibility & Benefits'</b><br/>(listed under Authorizations)" }
   pElig@{ shape: rect, label: "Go to /authorizations/eligibility" }
   gElig@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits" }
@@ -138,7 +138,7 @@ flowchart TD
   subgraph gB ["What each badge counts, and what moves it (Both sites)"]
   b1@{ shape: rect, label: "<b>'Dashboard'  3</b><br/>Requests at stage 'Info requested'<br/>Falls when an answer is sent" }
   b2@{ shape: rect, label: "<b>'Authorizations'  19</b><br/>Open queue items in 'Act now' (5) and 'Due within 24 hours' (14)<br/>'Due this week' is not counted" }
-  b3@{ shape: rect, label: "<b>'New case'  4  (listed under Authorizations)</b><br/>Referrals that are New or In review and not yet opened<br/>Falls when a referral is opened" }
+  b3@{ shape: rect, label: "<b>'New Case'  4  (listed under Authorizations)</b><br/>Referrals that are New or In review and not yet opened<br/>Falls when a referral is opened" }
   b4@{ shape: rect, label: "<b>'Eligibility & Benefits'  9  (listed under Authorizations)</b><br/>Patients not cleared: 4 'Authorization first', 5 'Fix before billing'" }
   b5@{ shape: rect, label: "<b>'Denial Intelligence'  8</b><br/>Requests at stage 'Appeal' (open denials)<br/>Falls when a denial is settled" }
   b6@{ shape: rect, label: "<b>'Case Manager'  11</b><br/>3 cases that need a person (2 questions, 1 signature)<br/>plus 8 reviews that 'Need your update'" }
@@ -193,12 +193,12 @@ flowchart LR
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>The address changes</b><br/>(a click, a link, a redirect or the browser Back button)" }
   d1@{ shape: diam, label: "Does the address start with /authorizations?" }
-  open@{ shape: rect, label: "<b>Group is open</b><br/>'New case' and 'Eligibility & Benefits' are listed under 'Authorizations'<br/>Chevron points down" }
+  open@{ shape: rect, label: "<b>Group is open</b><br/>'New Case' and 'Eligibility & Benefits' are listed under 'Authorizations'<br/>Chevron points down" }
   shut@{ shape: rect, label: "<b>Group is closed</b><br/>The two sub rows are hidden<br/>Chevron points right" }
   subgraph gHi ["Which row is green"]
   d2@{ shape: diam, label: "Which address is it?" }
   h1@{ shape: rect, label: "<b>'Authorizations' turns green</b><br/>Address is exactly /authorizations, or a case: /authorizations/case/..." }
-  h2@{ shape: rect, label: "<b>'New case' turns green, 'Authorizations' stays plain</b><br/>/authorizations/new, a draft, or a referral" }
+  h2@{ shape: rect, label: "<b>'New Case' turns green, 'Authorizations' stays plain</b><br/>/authorizations/new, a draft, or a referral" }
   h3@{ shape: rect, label: "<b>'Eligibility & Benefits' turns green, 'Authorizations' stays plain</b><br/>/authorizations/eligibility, /verify or a result" }
   h4@{ shape: rect, label: "<b>'Dashboard' turns green</b><br/>/dashboard (also when the address has ?request=)" }
   h5@{ shape: rect, label: "<b>'Denial Intelligence' turns green</b><br/>/denials and a brief under it" }
@@ -219,7 +219,7 @@ flowchart LR
   d1 -->|"No"| shut
   open & shut --> d2
   d2 -->|"/authorizations or a case"| h1
-  d2 -->|"New case pages"| h2
+  d2 -->|"New Case pages"| h2
   d2 -->|"Eligibility pages"| h3
   d2 -->|"/dashboard"| h4
   d2 -->|"/denials"| h5
@@ -445,7 +445,7 @@ flowchart LR
   d2@{ shape: diam, label: "Contains 'denial'?" }
   a2@{ shape: hex, label: "<b>'8 denials are open. The nearest deadline is D-3318 (Cardinal), peer-to-peer window, 36 h left. Call booked Wed 9 to 11 am. The brief is ready. The chance of winning is 64%. 3 more deadlines fall this week.'</b><br/>The count, the nearest open denial and the time left are live, so the sentence follows the data and the clock<br/>One muted line: 'This is FLO's reading of the demo data, not a payer confirmation.'<br/>FLO gives no dollar figure: a question that only asks about money gets the fallback answer" }
   l2@{ shape: trap-t, label: "Click 'Open Denial Intelligence'" }
-  r2@{ shape: rect, label: "<b>Opens /denials?id=D-3318, the nearest denial</b><br/>With no deadline left to name, it opens the list" }
+  r2@{ shape: rect, label: "<b>Opens /denials/D-3318, the nearest denial</b><br/>With no deadline left to name, it opens the dashboard of open denials" }
   g2@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
   d2b@{ shape: diam, label: "Contains 'due', 'soon' or 'deadline'?" }
   a2b@{ shape: hex, label: "<b>'R-0988 (Beacon) is due soonest: review due in 3 h. Its approval chance is 79%. After it: R-1042 (Summit), notice due in 5 h; I-2207 (Cardinal), recert due in 5 h. 56 requests are open in Authorizations.'</b><br/>For one site: 'is due soonest at Site A: ...' and only that site's open requests are counted<br/>Read from the open queue, soonest due first. Two due at the same time: the lower approval chance first<br/>Nothing open: 'Nothing is due. Every open request has been sent or handled.' with 'Open Authorizations'" }
@@ -464,7 +464,7 @@ flowchart LR
   d5@{ shape: diam, label: "Contains 'referral'?" }
   a5@{ shape: hex, label: "'New referrals are waiting for review. Reader has already checked each document, and Verify has run coverage for the ones with an insurance card.'" }
   l5@{ shape: trap-t, label: "Click 'Start a case from a referral'" }
-  g5@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Start with a referral or patient" }
+  g5@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Start with a referral or patient" }
   a6@{ shape: hex, label: "<b>'I did not find an answer to that in the demo data. Try one of the suggestions below.'</b><br/>No link. The four suggestion chips stay right under this answer, so the sentence is true" }
   e1@{ shape: stadium, label: "Answer stays in the chat" }
   s1 --> sx --> d1
@@ -699,7 +699,7 @@ flowchart TD
   p0@{ shape: rect, label: "Ages follow the demo clock: after 'Fast-forward 1 hour' '16 min ago' reads '1 h ago'" }
   subgraph gRows ["The six notifications at the start"]
   n1@{ shape: rect, label: "<b>Packet · 'Payer asked for info' (unread)</b><br/>→ Dashboard, request P-1499" }
-  n2@{ shape: rect, label: "<b>Scribe · 'Scribe has a question' (unread)</b><br/>→ New case, draft of R-1042" }
+  n2@{ shape: rect, label: "<b>Scribe · 'Scribe has a question' (unread)</b><br/>→ New Case, draft of R-1042" }
   n3@{ shape: rect, label: "<b>Advocate · 'Denied today' (unread)</b><br/>→ Denial Intelligence, D-3297" }
   n4@{ shape: rect, label: "<b>Cadence · 'Approved' (read)</b><br/>→ Dashboard, request R-0951" }
   n5@{ shape: rect, label: "<b>Sentinel · 'Payer rule changed' (unread)</b><br/>→ Payers, Cardinal, Changes" }
@@ -711,8 +711,8 @@ flowchart TD
   d1@{ shape: diam, label: "Does the notification have a destination?" }
   p2@{ shape: rect, label: "App goes to that page" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
-  g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › An agent asks a question" }
-  g3@{ shape: subproc, label: "Continues in: Denial Intelligence › Open a denial" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › An agent asks a question" }
+  g3@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
   g4@{ shape: subproc, label: "Continues in: Payers › History & Changes › Read what changed" }
   e0@{ shape: stadium, label: "Stays on the page" }
   c2@{ shape: trap-t, label: "Click 'Mark all read'" }
@@ -776,7 +776,7 @@ flowchart LR
   c10@{ shape: trap-t, label: "<b>Click 'Update drafts' on a payer's change</b><br/>(after 'Acknowledge change', which only raises a toast)" }
   n10@{ shape: cyl, label: "<b>The change's agent or Scribe · 'Drafts updated'</b><br/>→ Case Manager" }
   end
-  subgraph gRef ["Referrals (New case)"]
+  subgraph gRef ["Referrals (New Case)"]
   c9@{ shape: trap-t, label: "<b>Click 'Use sample referral'</b><br/>(or drop referral documents)" }
   n9@{ shape: cyl, label: "<b>Reader · 'New referral read'</b><br/>→ that referral" }
   c9b@{ shape: trap-t, label: "'Demo: simulate the referrer's reply'" }
@@ -808,7 +808,7 @@ flowchart LR
   c6@{ shape: trap-t, label: "'Approves part' or 'Denies'" }
   n6@{ shape: cyl, label: "<b>Advocate · 'Partly approved' or 'Denied'</b><br/>→ Denial Intelligence, new D- number" }
   end
-  subgraph gSend ["New case"]
+  subgraph gSend ["New Case"]
   c1@{ shape: trap-t, label: "Click 'Sign and send'" }
   n1@{ shape: cyl, label: "<b>Navigator · 'Sent to the payer'</b><br/>→ Dashboard, that request" }
   end
@@ -982,7 +982,7 @@ flowchart TD
   m2@{ shape: rect, label: "<b>Notifications</b><br/>Ages: '16 min ago' becomes '1 h ago'" }
   m3@{ shape: rect, label: "<b>Dashboard</b><br/>Time in stage and 'late' flags" }
   m4@{ shape: rect, label: "<b>Authorizations, Denial Intelligence</b><br/>Queue bands, case clocks, peer-to-peer and appeal deadlines" }
-  m5@{ shape: rect, label: "<b>Eligibility & Benefits, EMR Connect, New case</b><br/>How long ago a check, a sync or a referral was" }
+  m5@{ shape: rect, label: "<b>Eligibility & Benefits, EMR Connect, New Case</b><br/>How long ago a check, a sync or a referral was" }
   m6@{ shape: hex, label: "<b>Eligibility & Benefits</b><br/>Verify re-checks every patient whose re-check time has passed, unless Verify is paused in Settings<br/>A 'Re-checked automatically' notification follows" }
   end
   subgraph gStill ["What does not change"]
@@ -992,7 +992,7 @@ flowchart TD
   end
   subgraph gHow ["How things really arrive in the demo"]
   g1@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Demo controls (payer replies)" }
-  g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Start with a referral or patient" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Start with a referral or patient" }
   g3@{ shape: subproc, label: "Continues in: Global shell › Top bar › Notifications › What creates a notification" }
   end
   e1@{ shape: stadium, label: "Page keeps its place. Click again to move further" }
@@ -1053,15 +1053,15 @@ flowchart LR
   c2@{ shape: trap-t, label: "Click '2  Authorizations: the queue'" }
   r2@{ shape: rect, label: "Go to /authorizations" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Queue" }
-  c3@{ shape: trap-t, label: "Click '3  New case: start from a referral'" }
+  c3@{ shape: trap-t, label: "Click '3  New Case: start from a referral'" }
   r3@{ shape: rect, label: "<b>Go to /authorizations/new</b><br/>A blank draft is started and the address becomes /authorizations/new/draft-..." }
-  g3@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Start with a referral or patient" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Start with a referral or patient" }
   c4@{ shape: trap-t, label: "Click '4  Eligibility & Benefits: verify a patient'" }
   r4@{ shape: rect, label: "Go to /authorizations/eligibility/verify" }
   g4@{ shape: subproc, label: "Continues in: Eligibility & Benefits › Verify a patient" }
   c5@{ shape: trap-t, label: "Click '5  Denial Intelligence: D-3318'" }
-  r5@{ shape: rect, label: "Go to /denials?id=D-3318" }
-  g5@{ shape: subproc, label: "Continues in: Denial Intelligence › Open a denial" }
+  r5@{ shape: rect, label: "Go to /denials/D-3318" }
+  g5@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
   c6@{ shape: trap-t, label: "Click '6  Payers: Cardinal, Changes'" }
   r6@{ shape: rect, label: "Go to /payers/cardinal?tab=changes" }
   g6@{ shape: subproc, label: "Continues in: Payers › History & Changes › Read what changed" }
@@ -1119,7 +1119,7 @@ flowchart TD
   r2@{ shape: cyl, label: "Dashboard: all requests and denials, and all filters" }
   r3@{ shape: cyl, label: "Notifications: the original six, four unread. Open toasts are cleared" }
   r4@{ shape: cyl, label: "Authorizations: answers, applied actions, dismissals, draft edits" }
-  r5@{ shape: cyl, label: "New case: the five drafts in progress, '4 sent today', referrals, referral badge" }
+  r5@{ shape: cyl, label: "New Case: the five drafts in progress, '4 sent today', referrals, referral badge" }
   r6@{ shape: cyl, label: "Eligibility & Benefits, Denial Intelligence, Payers, EMR Connect: all work done in them" }
   r9@{ shape: cyl, label: "Settings: every agent back at its starting level, every switch on, no pause" }
   r10@{ shape: cyl, label: "<b>Viewing as: Jordan Perez, UR coordinator, on Both sites</b><br/>(the site switch and the user card follow)" }
@@ -1331,11 +1331,11 @@ flowchart LR
   g1@{ shape: subproc, label: "Continues in: Dashboard" }
   r2@{ shape: rect, label: "<b>'/active' goes to /manager</b><br/>Any '?tab=' on /active is dropped, so the Active cases tab opens" }
   g2@{ shape: subproc, label: "Continues in: Case Manager › Page › Arrive and read the header" }
-  r3@{ shape: rect, label: "<b>'/referrals' goes to /authorizations/new</b><br/>Referrals no longer have a tab: they start Intake in New case" }
-  r3b@{ shape: rect, label: "New case starts a blank draft and the address becomes /authorizations/new/draft-..." }
-  g3@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Start with a referral or patient" }
+  r3@{ shape: rect, label: "<b>'/referrals' goes to /authorizations/new</b><br/>Referrals no longer have a tab: they start Intake in New Case" }
+  r3b@{ shape: rect, label: "New Case starts a blank draft and the address becomes /authorizations/new/draft-..." }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Start with a referral or patient" }
   r4@{ shape: rect, label: "'/referrals/RF-1234' goes to /authorizations/new/referral/RF-1234" }
-  g4@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › The full referral page" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › New Case › Referral › The full referral page" }
   end
   subgraph gKnown ["Pages that exist"]
   k1@{ shape: rect, label: "<b>/dashboard, /authorizations..., /denials..., /manager, /analytics, /emr, /payers..., /settings</b><br/>The page opens and starts at the top" }
@@ -1352,7 +1352,7 @@ flowchart LR
   subgraph gOwn ["Known page, unknown record (the page answers)"]
   o1@{ shape: rect, label: "/authorizations/case/XYZ shows 'Request not found' with 'Back to the queue'" }
   o2@{ shape: rect, label: "/authorizations/new/XYZ shows 'We could not find that draft' with 'Start a new case'" }
-  g7@{ shape: subproc, label: "Continues in: Authorizations › New case › How a case starts and resumes" }
+  g7@{ shape: subproc, label: "Continues in: Authorizations › New Case › How a case starts and resumes" }
   end
   s1 --> p0 --> d1
   d1 -->|"/"| r1 --> g1

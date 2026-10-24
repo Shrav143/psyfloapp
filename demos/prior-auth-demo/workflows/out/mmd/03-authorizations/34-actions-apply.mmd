@@ -24,24 +24,24 @@ flowchart TD
   sc@{ shape: rect, label: "<b>Red text on those cards</b><br/>Page scrolls to the first one" }
   e1@{ shape: stadium, label: "<b>Nothing is applied</b><br/>Answer, or uncheck the card, then try again" }
   st@{ shape: rect, label: "<b>New chance worked out</b><br/>Current chance plus the points on the included cards" }
-  run@{ shape: cyl, label: "<b>A run starts on this case</b><br/>All five side buttons and every card control lock" }
+  run@{ shape: cyl, label: "<b>A run starts on this case</b><br/>The four side buttons and every card control lock" }
   top@{ shape: rect, label: "Page scrolls to the top so the strip and the ring are in view" }
-  strip@{ shape: curv-trap, label: "<b>Work strip</b><br/>'The agents are updating the draft · about 8 seconds'" }
+  strip@{ shape: curv-trap, label: "<b>Work strip</b><br/>'The agents are updating the draft'" }
   subgraph gA ["Agents in turn"]
   a1@{ shape: hex, label: "<b>Scribe</b><br/>'Reading your answers' › 'Writing the new sentences into the draft' › 'Rewriting 2 sections' › 'Draft updated'" }
   a2@{ shape: hex, label: "<b>Integrity</b><br/>'Reading every sentence against the chart' › 'Checking dates and identifiers' › 'Every sentence matches the chart'" }
   a3@{ shape: hex, label: "<b>Forecaster</b><br/>'Matching 1,248 similar decisions' › 'Re-scoring the approval chance' › 'New chance ready'" }
   end
   w@{ shape: delay, label: "<b>About 8 seconds in all</b><br/>(demo: simulated)<br/>Each agent: Waiting, spinner, green tick" }
-  dn@{ shape: cyl, label: "<b>Run ends</b><br/>Cards move to 'Applied'<br/>Chance and 'points left' saved on the case<br/>New draft version: 'Scribe', 'Added 6 recommendations'<br/>Log: Scribe applied '...' for each card" }
+  dn@{ shape: cyl, label: "<b>Run ends</b><br/>Cards move to 'Applied'<br/>Chance and 'points left' saved on the case<br/>New draft version: 'Scribe', 'Added 6 recommendations'<br/>History: Scribe applied '...' for each card, flagged 'Agent'" }
   rg@{ shape: rect, label: "<b>Header ring counts up to the new chance</b><br/>Pill, likely range and 'Days likely granted' follow" }
   dQ@{ shape: diam, label: "Is this a queue request with a Dashboard entry?" }
-  db@{ shape: cyl, label: "<b>Dashboard request gets the new chance</b><br/>Timeline: 'Scribe added 6 items to the draft. Approval chance is now 88%'" }
+  db@{ shape: cyl, label: "<b>Dashboard request gets the new chance</b><br/>Its own line 'Scribe added 6 items to the draft ...'<br/>not repeated in the case page's History" }
   qu@{ shape: rect, label: "<b>Queue tile shows the new chance</b><br/>Line reads '+N pts possible' or 'on track'<br/>Queue average moves too" }
   nf@{ shape: odd, label: "<b>Notification from Forecaster: 'Approval chance updated'</b><br/>'R-1042 is now 88% after 6 actions.'<br/>Click it to return to this case" }
   ts@{ shape: odd, label: "<b>Toast: 'Draft updated'</b><br/>'6 actions applied. Approval chance is now 88%.'" }
   dR@{ shape: diam, label: "Do all four checks pass now?" }
-  ok@{ shape: rect, label: "<b>'Send to payer' turns on</b><br/>Badge on the Draft tab clears<br/>Banner 'Every recommendation is applied' if none are left" }
+  ok@{ shape: rect, label: "<b>'Send to payer' turns on, chip 'Integrity 4/4'</b><br/>Badge on 'Clinical picture & draft' clears<br/>'Every recommendation is applied' if none are left" }
   no@{ shape: rect, label: "<b>'Send to payer' stays off</b><br/>Its reason names the checks still open" }
   pt@{ shape: rect, label: "<b>Cards you left out stay open</b><br/>Header line then reads 'up to N% with the rest'" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Case page › Draft › Read and edit" }

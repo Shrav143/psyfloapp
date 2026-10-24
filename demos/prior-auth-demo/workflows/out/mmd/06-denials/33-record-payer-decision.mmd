@@ -16,11 +16,11 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>A filed appeal is on screen</b><br/>Next-step block 'Appeal filed. Waiting on the payer'" }
+  s1@{ shape: stadium, label: "<b>A filed appeal is on screen</b><br/>Written appeal choice 'Appeal filed 10/05 · decision 11/02'" }
   c1@{ shape: trap-t, label: "Click 'Record the payer's decision'" }
   o1@{ shape: win-pane, label: "<b>Modal 'Record the payer's decision'</b><br/>D-3279 · Beacon PPO" }
   i1@{ shape: lean-r, label: "<b>Pick one (radio cards)</b><br/>'Overturned' (chosen at first), 'Partly overturned' or 'Upheld'" }
-  i2@{ shape: lean-r, label: "<b>Note (optional)</b><br/>'What the payer wrote, or who you spoke to.'" }
+  i2@{ shape: lean-r, label: "Note (optional)" }
   c2@{ shape: trap-t, label: "Click 'Cancel', the X, press Esc, or click the dimmed area" }
   e1@{ shape: stadium, label: "<b>Nothing is recorded</b><br/>The appeal stays filed" }
   d1@{ shape: diam, label: "Which decision?" }
@@ -30,7 +30,7 @@ flowchart TD
   st2@{ shape: cyl, label: "<b>Request settled: leaves 'Appeal or call' (Dashboard stage 'Decided today')</b><br/>Chip 'Overturned' or 'Partly overturned'<br/>Ledger result approved or partly approved" }
   a1@{ shape: hex, label: "Cadence updates the ledger and books the next review" }
   t1@{ shape: odd, label: "<b>'Overturned' or 'Partly overturned'</b><br/>'The ledger is updated and the next review is booked.'" }
-  sc1@{ shape: curv-trap, label: "<b>Block 'Overturned on appeal' or 'Partly overturned on appeal'</b><br/>Your note, or 'The ledger is updated and the next review is booked.'<br/>Badge goes down by one<br/>Denial moves to 'Closed' in the open denials list" }
+  sc1@{ shape: curv-trap, label: "<b>Written appeal choice: pill 'Overturned on appeal' or 'Partly overturned on appeal'</b><br/>Badge goes down by one<br/>The dashboard lists it under 'Closed'" }
   e2@{ shape: stadium, label: "Denial is closed with the appeal's result" }
   end
   subgraph gUp ["Upheld"]
@@ -48,7 +48,7 @@ flowchart TD
   st5@{ shape: cyl, label: "Decision saved: upheld, no next level" }
   end
   r1@{ shape: cyl, label: "<b>Every decision is also logged for other screens</b><br/>Denial, request, payer, result and next level<br/>Analytics reads the appeal rulings" }
-  c6@{ shape: trap-t, label: "Click 'See on the Dashboard'" }
+  c6@{ shape: trap-t, label: "Open the Dashboard from the sidebar" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   g2@{ shape: subproc, label: "Continues in: Denial Intelligence › Written appeal › Confirm and draft" }
   g3@{ shape: subproc, label: "Continues in: Denial Intelligence › Accept the denial" }

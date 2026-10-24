@@ -16,26 +16,27 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Live check starts</b><br/>Rows read 'Will read the card and fill in the details' and so on" }
-  a1@{ shape: hex, label: "<b>1 Reader</b><br/>'Reading the card and filling in the details'<br/>or 'Taking the member ID and date of birth as typed'" }
+  s1@{ shape: stadium, label: "<b>Live check starts</b><br/>Rows read 'Member details', 'Coverage with Ohio Medicaid' and so on" }
+  a1@{ shape: hex, label: "1 Reader · 'Member details'" }
   w1@{ shape: delay, label: "About 1.4 seconds" }
-  d1@{ shape: rect, label: "<b>Row ticks</b><br/>'Read the card and filled in the details' or 'Took the member ID and date of birth as typed'" }
-  a2@{ shape: hex, label: "<b>2 Verify</b><br/>'Asking Ohio Medicaid whether coverage is active on 10/21/2026'" }
+  d1@{ shape: rect, label: "<b>Row ticks</b><br/>'As typed', or where an import came from: 'From the sample screenshot'" }
+  a2@{ shape: hex, label: "2 Verify · 'Coverage with Ohio Medicaid'" }
   x2@{ shape: st-rect, label: "<b>Ohio Medicaid, or the plan for Beacon, Harborview, Lakeshore</b><br/>Real step: eligibility inquiry (demo: simulated)" }
   w2@{ shape: delay, label: "About 2.4 seconds" }
-  d2@{ shape: rect, label: "<b>Row ticks</b><br/>'Asked Ohio Medicaid: coverage is active on 10/21/2026'<br/>or 'coverage lapsed 10/12' or 'no coverage found for these details'<br/>Ending 6060 adds '. Another plan pays first'" }
-  a3@{ shape: hex, label: "<b>3 Verify</b><br/>'Asking Summit what Residential 3.5 covers'" }
+  d2@{ shape: rect, label: "<b>Row ticks</b><br/>'Active on 10/21/2026', 'Lapsed 10/12', 'Ended 09/30, with Cardinal Health Plan since 10/01'<br/>or 'No coverage found'<br/>Ending 6060 adds '. Another plan pays first'" }
+  a3@{ shape: hex, label: "3 Verify · 'Residential 3.5 benefits with Summit'" }
   x3@{ shape: st-rect, label: "<b>The plan answers for the service codes</b><br/>Real step: benefit detail (demo: simulated)" }
   w3@{ shape: delay, label: "About 2.6 seconds" }
-  d3@{ shape: rect, label: "<b>Row ticks</b><br/>'Summit covers Residential 3.5 (H0018 and H0019)'<br/>Ending 3030 'Summit does not cover Residential 3.5'<br/>Ending 9090 adds '. All 14 days are used'<br/>No coverage found: 'Not asked: no coverage was found'" }
+  d3@{ shape: rect, label: "<b>Row ticks</b><br/>'Covered (H0018 and H0019)'<br/>Ending 3030 'Not covered'; ending 5050 'Not confirmed by Harborview'<br/>Ending 9090 adds '. All 14 days used'<br/>No coverage found: 'Not asked: no coverage found'" }
   q1@{ shape: diam, label: "Is the payer Evergreen?" }
-  a4@{ shape: hex, label: "<b>Caller</b><br/>'Evergreen did not answer online. Caller is phoning'" }
-  a5@{ shape: hex, label: "<b>4 Criteria</b><br/>'Checking whether an authorization is required'" }
+  a4@{ shape: hex, label: "<b>Caller · 'Phone call to Evergreen'</b><br/>The benefits row reads 'No answer online'" }
+  a5@{ shape: hex, label: "4 Criteria · 'Authorization rule'" }
   w5@{ shape: delay, label: "About 1.6 seconds" }
-  d5@{ shape: rect, label: "<b>Row ticks</b><br/>'An authorization is required before the first day'<br/>or 'Beacon does not require an authorization'<br/>or 'An authorization is on file with Cardinal' (ending 9090)<br/>No coverage found: 'Not asked: no coverage was found'" }
-  a6@{ shape: hex, label: "<b>5 Navigator</b><br/>'Checking that the clinic is enrolled to bill Summit'" }
+  d5@{ shape: rect, label: "<b>Row ticks</b><br/>'Required before the first day', 'Not required',<br/>'On file with Cardinal' (ending 9090), or 'No rule on file. Nothing was assumed' (ending 2020)<br/>No coverage found: 'Not asked: no coverage found'" }
+  a6@{ shape: hex, label: "5 Navigator · 'Enrollment with Summit'" }
   w6@{ shape: delay, label: "About 1.8 seconds" }
-  d6@{ shape: rect, label: "<b>Row ticks</b><br/>'The clinic is enrolled and in network'<br/>or 'The clinic is not enrolled for this program'<br/>No coverage found: 'Not asked: no coverage was found'" }
+  d6@{ shape: rect, label: "<b>Row ticks</b><br/>'Enrolled, in network', 'Not enrolled for this program' or 'Not confirmed' (ending 4040)<br/>No coverage found: 'Not asked: no coverage found'" }
+  pz@{ shape: rect, label: "<b>While Verify is paused in Settings every row after Reader ticks</b><br/>'Not asked: Verify is paused in Settings'" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › When a system does not answer" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › The check finishes and is saved" }
   s1 --> a1
@@ -52,10 +53,11 @@ flowchart TD
   a4 -.-> g1
   a5 --> w5 --> d5 --> a6
   a6 --> w6 --> d6 --> g2
+  s1 -.-> pz
   class s1 k_start
   class a1,a2,a3,a4,a5,a6 k_agent
   class w1,w2,w3,w5,w6 k_wait
-  class d1,d2,d3,d5,d6 k_process
+  class d1,d2,d3,d5,d6,pz k_process
   class x2,x3 k_ext
   class q1 k_decision
   class g1,g2 k_goto

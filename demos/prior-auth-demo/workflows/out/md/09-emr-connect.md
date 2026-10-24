@@ -1,6 +1,6 @@
 # EMR Connect
 
-Connected systems, sync, field mappings and fixes.
+Connected systems, sync, field mappings and fixes, and importing a record without a connection.
 
 Shapes and colours: see `00-overview.md`. Source: `workflows/src/09-emr-connect/`.
 
@@ -39,7 +39,7 @@ flowchart TD
   hg2@{ shape: subproc, label: "Continues in: EMR Connect › Connect a system › Choose the system and contact" }
   sg@{ shape: subproc, label: "Continues in: EMR Connect › Sites › What each site sees" }
   subgraph gAct ["Action required"]
-  n1@{ shape: curv-trap, label: "<b>One banner line, only when something needs a person</b><br/>'Action required: Billing system needs attention. Also: 2 fields need a mapping, so New case leaves them blank.'<br/>One button for the first item: 'Fix'" }
+  n1@{ shape: curv-trap, label: "<b>One banner line, only when something needs a person</b><br/>'Action required: Billing system needs attention. Also: 2 fields need a mapping, so New Case leaves them blank.'<br/>One button for the first item: 'Fix'" }
   n2@{ shape: rect, label: "Nothing needs a person: no banner" }
   end
   ng@{ shape: subproc, label: "Continues in: EMR Connect › Page › The Action required line" }
@@ -54,7 +54,7 @@ flowchart TD
   c1@{ shape: curv-trap, label: "<b>Connection health</b><br/>'2 of 3 systems connected. Read access for charts, insurance details and medications.'<br/>One site: 'Site A. 1 of 2 systems connected...' and, for a one-site viewer, an info icon on why only some systems show" }
   c2@{ shape: rect, label: "<b>One row per system: name, status pill, what it holds and reads ('All programs at Site A. Reads ...'), last sync, sync failures, buttons</b><br/>Then a line: 'Read only' or 'Read and write back', with the Write back switch" }
   c3@{ shape: trap-t, label: "Click 'Sync now' in the card header" }
-  c4@{ shape: trap-t, label: "<b>Click 'Sync now', 'Fix', 'Reconnect' or 'Manage' on a row</b><br/>A row that is not Connected also says that New case cannot pull a chart from it" }
+  c4@{ shape: trap-t, label: "<b>Click 'Sync now', 'Fix', 'Reconnect' or 'Manage' on a row</b><br/>A row that is not Connected also says that New Case cannot pull a chart from it" }
   c6@{ shape: trap-t, label: "Click the 'Write back' switch on a row" }
   c5@{ shape: odd, label: "<b>'Connect your record system to let charts arrive on their own.'</b><br/>Empty list. Not reachable in the demo: a system can be disconnected, never removed" }
   end
@@ -273,7 +273,7 @@ Every system on the list is in one of three states. Each state shows different b
 
 Route: `/emr`
 
-In the demo only the seeded Billing system starts in 'Needs attention'. Nothing in the demo moves a Connected system into it. A system that is not Connected also says that New case cannot pull a chart from it.
+In the demo only the seeded Billing system starts in 'Needs attention'. Nothing in the demo moves a Connected system into it. A system that is not Connected also says that New Case cannot pull a chart from it.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -304,12 +304,12 @@ flowchart TD
   end
   subgraph gA ["Needs attention"]
   sa@{ shape: cyl, label: "<b>Needs attention</b><br/>Amber pill" }
-  a1@{ shape: rect, label: "<b>Row: the issue, 'First step: renew the sign-in with Fix.' and 'New case cannot pull a chart from it until it is connected.'</b><br/>Shows its missed syncs, for example '2 sync failures'<br/>Buttons: Fix, Manage<br/>The 'Action required' line names it" }
+  a1@{ shape: rect, label: "<b>Row: the issue, 'First step: renew the sign-in with Fix.' and 'New Case cannot pull a chart from it until it is connected.'</b><br/>Shows its missed syncs, for example '2 sync failures'<br/>Buttons: Fix, Manage<br/>The 'Action required' line names it" }
   a2@{ shape: rect, label: "<b>Skipped by 'Sync now'</b><br/>Still counts in the Last sync figure" }
   end
   subgraph gD ["Disconnected"]
   sd@{ shape: cyl, label: "<b>Disconnected</b><br/>Red pill" }
-  d1@{ shape: rect, label: "<b>Row: 'Not syncing', 'Sync paused', 'Charts from this system are not arriving.' and 'New case cannot pull a chart from it until it is connected.'</b><br/>Buttons: Reconnect, Manage<br/>The 'Action required' line names it" }
+  d1@{ shape: rect, label: "<b>Row: 'Not syncing', 'Sync paused', 'Charts from this system are not arriving.' and 'New Case cannot pull a chart from it until it is connected.'</b><br/>Buttons: Reconnect, Manage<br/>The 'Action required' line names it" }
   d2@{ shape: rect, label: "<b>Skipped by 'Sync now'</b><br/>Ignored by the Last sync figure<br/>The Manage drawer ends with 'Reconnect'<br/>If it was disconnected while it needed attention, the row adds 'Reconnect starts with a fix.'" }
   end
   g1@{ shape: subproc, label: "Continues in: EMR Connect › Connect a system › Choose the system and contact" }
@@ -375,11 +375,11 @@ flowchart TD
   q3@{ shape: diam, label: "A system that is Disconnected?" }
   i2@{ shape: curv-trap, label: "<b>'Action required: {name} is disconnected.'</b><br/>Button 'Reconnect'" }
   q4@{ shape: diam, label: "<b>Fields waiting for a mapping, on a system in view?</b><br/>(both start on Site B's record, so a Site A view does not list them)" }
-  i3@{ shape: curv-trap, label: "<b>'Action required: 2 fields need a mapping, so New case leaves them blank.'</b><br/>Button 'Map field' for the first waiting field" }
+  i3@{ shape: curv-trap, label: "<b>'Action required: 2 fields need a mapping, so New Case leaves them blank.'</b><br/>Button 'Map field' for the first waiting field" }
   q5@{ shape: diam, label: "Reader or Navigator paused in Settings?" }
   i4@{ shape: curv-trap, label: "<b>'Action required: Reader is paused, so syncs and new connections wait.'</b><br/>Link 'Open Settings'" }
   end
-  p1@{ shape: rect, label: "<b>Several items: the first is the line, the others follow after 'Also:'</b><br/>'Action required: Billing system needs attention. Also: 2 fields need a mapping, so New case leaves them blank.'" }
+  p1@{ shape: rect, label: "<b>Several items: the first is the line, the others follow after 'Also:'</b><br/>'Action required: Billing system needs attention. Also: 2 fields need a mapping, so New Case leaves them blank.'" }
   p2@{ shape: rect, label: "<b>Only one banner ever shows</b><br/>It is the only banner on the page" }
   k1@{ shape: trap-t, label: "Click the banner's button" }
   q6@{ shape: diam, label: "Which button?" }
@@ -940,7 +940,7 @@ flowchart TD
   s2@{ shape: cyl, label: "<b>Charts matched today</b><br/>Goes up, for the sites the sync pulled from, by the number of charts matched to open cases" }
   s3@{ shape: cyl, label: "<b>Files pulled this week</b><br/>Goes up, for those sites, by the number of files saved to those cases" }
   s4@{ shape: cyl, label: "<b>Recent activity (in Advanced)</b><br/>One line per sync" }
-  p2@{ shape: rect, label: "<b>Demo: nothing else changes</b><br/>No new case in Case Manager. New case offers the same four charts, from Connected systems at the sites in view only" }
+  p2@{ shape: rect, label: "<b>Demo: nothing else changes</b><br/>No new case in Case Manager. New Case offers the same four charts, from Connected systems at the sites in view only" }
   e1@{ shape: rect, label: "Last sync figure reads 'Just now'" }
   g1@{ shape: subproc, label: "Continues in: EMR Connect › Sync › Sync now" }
   g2@{ shape: subproc, label: "Continues in: EMR Connect › Needs a mapping › Map a field" }
@@ -976,11 +976,11 @@ flowchart TD
 
 ## EMR Connect › Sync › What other screens use from EMR Connect
 
-Two other screens lean on EMR Connect. New case can pull a chart only from a Connected system at a site in view, and leaves a field blank while its mapping waits. The Dashboard offers the approval write-back box only while a Connected system at a site in view has its write-back switch on.
+Other screens lean on EMR Connect. The import row of New Case and Eligibility & Benefits offers 'Pull from EMR' only while a clinical record system at a site in view is Connected, and leaves out a field while its mapping waits. The Dashboard offers the approval write-back box only while a Connected system at a site in view has its write-back switch on.
 
 Route: `/emr`
 
-Found by reading the code and testing the built demo. Disconnect every system and the pull in New case says no records system is connected. Switch write-back off on every row and the Dashboard shows 'Write-back is off for your records system.'
+Found by reading the code and testing the built demo. Disconnect every clinical record system and 'Pull from EMR' is not offered. Switch write-back off on every row and the Dashboard shows 'Write-back is off for your records system.'
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -1002,22 +1002,21 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   p1@{ shape: curv-trap, label: "<b>EMR Connect</b><br/>Connection health, sync, mappings (in Advanced) and the Write back switch on each row" }
-  subgraph gPull ["New case: pull a chart"]
-  a1@{ shape: trap-t, label: "<b>Click 'Pull a chart from EMR Connect'</b><br/>Clinical documentation step" }
-  a0@{ shape: diam, label: "Is any system at a site in view Connected?" }
-  a8@{ shape: odd, label: "<b>'No records system is connected. Connect one in EMR Connect to pull a chart, or drop the files above.'</b><br/>With a link to EMR Connect" }
-  a2@{ shape: win-pane, label: "<b>Chart from EMR Connect</b><br/>Dropdown with the charts that live in a Connected system<br/>A hint under each names the system" }
-  a2b@{ shape: rect, label: "<b>Clinical record · Site A: J.M., 34 · Summit · Residential 3.5 and L.G., 29 · Cardinal · Residential 3.5</b><br/>Clinical record · Site B: A.R., 45 · Beacon · IOP and S.T., 38 · Harborview · PHP<br/>A viewer who sees one site is offered only that site's two charts<br/>A system that is Disconnected or Needs attention offers none" }
+  subgraph gPull ["New Case and Eligibility & Benefits: Pull from EMR"]
+  a1@{ shape: trap-t, label: "<b>Click 'Pull from EMR' in the import row</b><br/>Intake, Clinical documentation, and Eligibility & Benefits' verify" }
+  a0@{ shape: diam, label: "Is a clinical record system at a site in view Connected?" }
+  a8@{ shape: rect, label: "<b>No 'Pull from EMR' button</b><br/>'Import a file' and 'Paste a screenshot' remain" }
+  a2@{ shape: win-pane, label: "<b>Chart picker</b><br/>The charts that live in a Connected system<br/>A hint under each names the system" }
+  a2b@{ shape: rect, label: "<b>Clinical record · Site A: J.M., 34 · Summit · Residential 3.5 and L.G., 29 · Cardinal · Residential 3.5</b><br/>Clinical record · Site B: A.R., 45 · Beacon · IOP and S.T., 38 · Harborview · PHP<br/>A viewer who sees one site is offered only that site's two charts" }
   a3@{ shape: lean-r, label: "Pick a chart" }
-  a9@{ shape: diam, label: "<b>Does that system still have a field waiting for a mapping?</b><br/>'Level of care' or 'Referral source'" }
-  a10@{ shape: rect, label: "<b>Line under the picker</b><br/>'Level of care still needs a mapping there, so that field is left blank.' with 'Open EMR Connect'" }
-  a4@{ shape: trap-t, label: "<b>Click 'Pull'</b><br/>Or 'Cancel'" }
+  a4@{ shape: trap-t, label: "Click 'Pull'" }
   a5@{ shape: rect, label: "Button reads 'Pulling' for one second" }
-  a6@{ shape: cyl, label: "<b>Case draft is filled in</b><br/>Patient, payer, member ID, level of care, request type, diagnoses, reason<br/>A field that waits for a mapping stays blank" }
-  a7@{ shape: odd, label: "<b>'Pulled J.M., 34 from EMR Connect'</b><br/>'Everything below was filled in from the chart. You can still change it.'<br/>Or, amber: 'Level of care needs a mapping, so that field was left blank. You can still fill it in.'" }
+  a9@{ shape: diam, label: "<b>Does that system still have a field waiting for a mapping?</b><br/>'Level of care' or 'Referral source'" }
+  a10@{ shape: rect, label: "<b>That field is left out of the review</b><br/>'Level of care: “Level of care” in the Site B record needs a mapping' with 'Map it'" }
+  a6@{ shape: curv-trap, label: "<b>Review: '8 fields found' and the earlier notes as documents</b><br/>Nothing applied until 'Apply'" }
   end
-  n1@{ shape: rect, label: "<b>Sync now does not add charts to the picker</b><br/>The four charts are fixed. Connect, Disconnect, Fix and Reconnect decide which systems offer them, and Map decides which fields a pull leaves blank" }
-  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Patient, insurance and request rows" }
+  n1@{ shape: rect, label: "<b>Sync now does not add charts to the picker</b><br/>The four charts are fixed. Connect, Disconnect, Fix and Reconnect decide which systems offer them, and Map decides which fields a pull leaves out" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New Case › Import › Pull from EMR" }
   subgraph gWrite ["Dashboard: write back"]
   b1@{ shape: curv-trap, label: "Dashboard request: 'Approved. Write-back waits for you'" }
   b0@{ shape: diam, label: "Does at least one Connected system at a site in view have its write-back switch on?" }
@@ -1034,26 +1033,26 @@ flowchart TD
   p1 -.-> a1
   a1 --> a0
   a0 -->|"No"| a8
-  a0 -->|"Yes"| a2 --> a2b --> a3 --> a9
-  a9 -->|"Yes"| a10 --> a4
-  a9 -->|"No"| a4
-  a4 --> a5 --> a6 --> a7 --> g1
+  a0 -->|"Yes"| a2 --> a2b --> a3 --> a4 --> a5 --> a9
+  a9 -->|"Yes"| a10 --> a6
+  a9 -->|"No"| a6
+  a6 --> g1
   a2 -.-> n1
   p1 -.-> b1
   b1 --> b0
   b0 -->|"No"| b8
   b0 -->|"Yes"| b2 --> b3 --> b4 --> b5 --> b6 --> b7 --> g2
   b8 -.-> n2
-  class p1,b1 k_screen
+  class p1,a6,b1 k_screen
   class a1,a4,b2,b5 k_click
   class a0,a9,b0 k_decision
-  class a8,a7,b8 k_toast
+  class a8,a2b,a5,a10,n1,b4,n2 k_process
   class a2,b3 k_overlay
-  class a2b,a10,a5,n1,b4,n2 k_process
   class a3 k_input
-  class a6,b7 k_store
   class g1,g2 k_goto
+  class b8 k_toast
   class b6 k_ext
+  class b7 k_store
   style gPull fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gWrite fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```
@@ -1064,7 +1063,7 @@ When the agents meet a field they cannot place, it waits for a mapping. It shows
 
 Route: `/emr`
 
-Starting fields: 'Level of care' (the Site B record) and 'Referral source' (intake at Site B). Both belong to Clinical record · Site B, so only a viewer who sees Site B is asked to map them. Until one is mapped, a chart pulled in New case from that system leaves the matching field blank. Mapping is a person's own choice, so a paused Reader does not stop it.
+Starting fields: 'Level of care' (the Site B record) and 'Referral source' (intake at Site B). Both belong to Clinical record · Site B, so only a viewer who sees Site B is asked to map them. Until one is mapped, a chart pulled in New Case from that system leaves the matching field blank. Mapping is a person's own choice, so a paused Reader does not stop it.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -1096,7 +1095,7 @@ flowchart TD
   o1@{ shape: win-pane, label: "<b>Map 'Level of care'</b><br/>In the Site B record" }
   q1@{ shape: rect, label: "<b>Question from the agents</b><br/>'The Site B record writes Level of care as free text, such as Day program. Which level should the agents read it as?'" }
   i1@{ shape: lean-r, label: "<b>Pick a value in the dropdown (click, or arrow keys and Enter)</b><br/>Level of care: IOP (first) or PHP<br/>Referral source: Payer name (first), Plan type or Referring provider" }
-  n1@{ shape: rect, label: "'Until it is mapped, New case leaves the matching field blank when it pulls a chart from this system. Once it is mapped, every future pull fills it. Files already pulled are not rewritten.'" }
+  n1@{ shape: rect, label: "'Until it is mapped, New Case leaves the matching field blank when it pulls a chart from this system. Once it is mapped, every future pull fills it. Files already pulled are not rewritten.'" }
   d1@{ shape: diam, label: "Which button?" }
   k1@{ shape: trap-t, label: "Click 'Save the mapping'" }
   k2@{ shape: trap-t, label: "Click 'Cancel' or the X, press Escape, or click the dimmed area" }
@@ -1107,7 +1106,7 @@ flowchart TD
   a1@{ shape: hex, label: "<b>Reader logs 'Mapped 'Level of care' to IOP. It applies to every future pull'</b><br/>In the activity log, in Advanced" }
   t1@{ shape: odd, label: "<b>'Field mapped'</b><br/>'Level of care' now fills IOP." }
   p1@{ shape: rect, label: "<b>The pill and the 'Action required' mention count down: 2, 1, then none</b><br/>At none the section summary reads '12 field mappings' with no 'waiting'" }
-  p2@{ shape: rect, label: "<b>New case now fills that field when it pulls a chart from this system</b><br/>Before, it left it blank" }
+  p2@{ shape: rect, label: "<b>New Case now fills that field when it pulls a chart from this system</b><br/>Before, it left it blank" }
   end
   g2@{ shape: subproc, label: "Continues in: EMR Connect › Sync › What other screens use from EMR Connect" }
   e1@{ shape: stadium, label: "<b>Pop-up closes</b><br/>A mapped field cannot be unmapped or edited in the demo" }
@@ -1158,7 +1157,7 @@ The field mappings list in the folded 'Advanced' section: every mapping with its
 
 Route: `/emr`
 
-Seed data. 'Mapped by' reads 'Reader, 03/14' for the agents and 'You, {date}' for a person. Dates come from the Demo clock. A chart pulled in New case leaves a waiting field blank (Level of care, Referral source) and fills a mapped one. The list is one list with the system named under each row, and it shows only the systems at the sites in view (Site A's viewer sees 7 mappings, Site B's 5, Both sites 10); the Manage drawer no longer holds mappings.
+Seed data. 'Mapped by' reads 'Reader, 03/14' for the agents and 'You, {date}' for a person. Dates come from the Demo clock. A chart pulled in New Case leaves a waiting field blank (Level of care, Referral source) and fills a mapped one. The list is one list with the system named under each row, and it shows only the systems at the sites in view (Site A's viewer sees 7 mappings, Site B's 5, Both sites 10); the Manage drawer no longer holds mappings.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -1180,7 +1179,7 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Open 'Advanced'</b><br/>Then read 'Field mappings'" }
-  t0@{ shape: curv-trap, label: "<b>Field mappings</b><br/>'{n} mapped, {m} waiting. A chart pulled in New case leaves the waiting fields blank until you map them.'<br/>With none waiting: '{n} mapped. Every field the agents have met is mapped.'<br/>Each row: their field → what it fills, the system, who mapped it" }
+  t0@{ shape: curv-trap, label: "<b>Field mappings</b><br/>'{n} mapped, {m} waiting. A chart pulled in New Case leaves the waiting fields blank until you map them.'<br/>With none waiting: '{n} mapped. Every field the agents have met is mapped.'<br/>Each row: their field → what it fills, the system, who mapped it" }
   subgraph gRes ["Clinical record · Site A: 5 mapped"]
   r1@{ shape: cyl, label: "<b>Admit date → 'Admission date'</b><br/>Reader, 03/14" }
   r2@{ shape: cyl, label: "<b>Primary payer → 'Payer'</b><br/>Reader, 03/14" }
@@ -1360,7 +1359,7 @@ flowchart TD
   a4@{ shape: stadium, label: "Re-test: three checks. Row turns Connected" }
   end
   subgraph gR ["Red pill: 'Disconnected'"]
-  r1@{ shape: rect, label: "<b>Someone disconnected it</b><br/>Row: 'Not syncing'. Charts from this system are not arriving. New case cannot pull a chart from it until it is connected." }
+  r1@{ shape: rect, label: "<b>Someone disconnected it</b><br/>Row: 'Not syncing'. Charts from this system are not arriving. New Case cannot pull a chart from it until it is connected." }
   r2@{ shape: trap-t, label: "<b>Click 'Reconnect' on the row or in the Manage drawer</b><br/>Needs: a passed connection test, and the Fix steps first if it was on 'Needs attention'" }
   r4@{ shape: subproc, label: "Continues in: EMR Connect › Manage › Reconnect a system" }
   r3@{ shape: stadium, label: "<b>Re-test: the same three checks as Connect</b><br/>Row turns Connected only after they pass. Any earlier issue text is cleared" }
@@ -1370,7 +1369,7 @@ flowchart TD
   t2@{ shape: rect, label: "Needs: every Disconnected row reconnected" }
   end
   subgraph gM ["'Action required' names fields waiting for a mapping"]
-  m1@{ shape: rect, label: "<b>'2 fields need a mapping, so New case leaves them blank.'</b><br/>Pill '2 to map' on 'Advanced'" }
+  m1@{ shape: rect, label: "<b>'2 fields need a mapping, so New Case leaves them blank.'</b><br/>Pill '2 to map' on 'Advanced'" }
   m2@{ shape: trap-t, label: "<b>Click 'Map field', or open 'Advanced' and click 'Map'</b><br/>Needs: a value picked for each field" }
   end
   subgraph gQ ["Clicks that stop with a message"]
@@ -1416,7 +1415,7 @@ flowchart TD
 
 ## EMR Connect › Manage › Open the Manage drawer
 
-One system's details in a right-hand drawer: connection facts, what the agents may read, whether it is read only or read and write back (in words), and a Disconnect or Reconnect button. A system that is not Connected says here that New case cannot pull a chart from it. The Write back switch and the field mappings are not here: the switch is on the system's row, the mappings are in 'Advanced'.
+One system's details in a right-hand drawer: connection facts, what the agents may read, whether it is read only or read and write back (in words), and a Disconnect or Reconnect button. A system that is not Connected says here that New Case cannot pull a chart from it. The Write back switch and the field mappings are not here: the switch is on the system's row, the mappings are in 'Advanced'.
 
 Route: `/emr`
 
@@ -1445,7 +1444,7 @@ flowchart TD
   o1@{ shape: win-pane, label: "<b>Drawer: {system name}</b><br/>'{kind} · {what it holds}'<br/>Status pill on the right, X at the top" }
   subgraph gDet ["Card: Connection details"]
   d1@{ shape: rect, label: "<b>Type, Connected since, Contact at the practice</b><br/>Last sync: 'N min ago' or 'Not syncing'<br/>Access: 'Secure, read-only connection'" }
-  d2@{ shape: odd, label: "<b>Only when it is not Connected</b><br/>The issue text, for example the expired sign-in, then 'New case cannot pull a chart from it until it is connected.'" }
+  d2@{ shape: odd, label: "<b>Only when it is not Connected</b><br/>The issue text, for example the expired sign-in, then 'New Case cannot pull a chart from it until it is connected.'" }
   end
   subgraph gPerm ["Card: Permissions"]
   r1@{ shape: rect, label: "<b>Read chips depend on the kind</b><br/>Clinical record: Assessments, Progress notes, Labs, Medications, Insurance card<br/>Billing system: Claims, Remittances, Payment dates<br/>Practice management: Schedules, Admissions, Insurance card<br/>Lab results: Lab orders, Lab results" }
@@ -1524,7 +1523,7 @@ flowchart TD
   a6@{ shape: cyl, label: "<b>If it was on 'Needs attention', the problem is remembered</b><br/>Reconnect will start with Fix" }
   a2@{ shape: hex, label: "Navigator logs 'Disconnected {name}. Charts from it stop arriving'" }
   a3@{ shape: odd, label: "<b>'{name} is disconnected'</b><br/>'Reconnect it any time from this page.' Amber" }
-  a4@{ shape: rect, label: "<b>Row: 'Not syncing', 'Sync paused', red pill, 'Reconnect' and 'Manage'</b><br/>The 'Action required' line names it with a 'Reconnect' button<br/>'New case cannot pull a chart from it until it is connected.'<br/>Drawer pill turns red, the bottom button reads 'Reconnect'" }
+  a4@{ shape: rect, label: "<b>Row: 'Not syncing', 'Sync paused', red pill, 'Reconnect' and 'Manage'</b><br/>The 'Action required' line names it with a 'Reconnect' button<br/>'New Case cannot pull a chart from it until it is connected.'<br/>Drawer pill turns red, the bottom button reads 'Reconnect'" }
   a5@{ shape: rect, label: "<b>Skipped by 'Sync now'</b><br/>Last sync figure ignores it, or reads 'None' if every system is off<br/>Its Write back switch no longer counts on the Dashboard" }
   end
   r1@{ shape: trap-t, label: "<b>Click 'Reconnect'</b><br/>On the row or at the end of the drawer" }
@@ -1560,7 +1559,7 @@ A Disconnected system comes back only after a passed test. If it was on 'Needs a
 
 Route: `/emr`
 
-Demo: the test always passes. The system stays Disconnected, and New case cannot pull from it, until the last check passes and the person clicks the final button.
+Demo: the test always passes. The system stays Disconnected, and New Case cannot pull from it, until the last check passes and the person clicks the final button.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -1593,7 +1592,7 @@ flowchart TD
   f6@{ shape: odd, label: "<b>'Sign-in renewed'</b><br/>'One more test, then {name} is connected.'<br/>No toast when Navigator is set to 'Act on its own'" }
   end
   subgraph gTest ["The connection test"]
-  t1@{ shape: win-pane, label: "<b>Reconnect {name}</b><br/>'Read-only. Nothing is written back until a person approves it.'<br/>'It is connected again only when the test passes. Until then New case cannot pull a chart from it.'" }
+  t1@{ shape: win-pane, label: "<b>Reconnect {name}</b><br/>'Read-only. Nothing is written back until a person approves it.'<br/>'It is connected again only when the test passes. Until then New Case cannot pull a chart from it.'" }
   t2@{ shape: rect, label: "<b>Reaching the system</b><br/>Signing in with read-only access<br/>Reading one test record<br/>About 0.8 seconds a check" }
   t3@{ shape: odd, label: "'The test passed. Access is read-only, and nothing is written back.'" }
   t4@{ shape: trap-t, label: "<b>'Reconnect {name}' is dimmed until the last check passes</b><br/>Then click it" }
@@ -1668,7 +1667,7 @@ flowchart TD
   sc@{ shape: curv-trap, label: "<b>Closed section 'Advanced'</b><br/>'10 field mappings, 2 waiting, and the log of every read and write (8 lines).'<br/>Pill '2 to map' (hidden at 0), chevron on the right" }
   k1@{ shape: trap-t, label: "<b>Click 'Advanced'</b><br/>Or Tab to it and press Enter or Space" }
   p1@{ shape: rect, label: "<b>The button says whether it is open (aria-expanded)</b><br/>The chevron turns" }
-  o1@{ shape: curv-trap, label: "<b>Open: 'Field mappings'</b><br/>'10 mapped, 2 waiting. A chart pulled in New case leaves the waiting fields blank until you map them.'" }
+  o1@{ shape: curv-trap, label: "<b>Open: 'Field mappings'</b><br/>'10 mapped, 2 waiting. A chart pulled in New Case leaves the waiting fields blank until you map them.'" }
   subgraph gMap ["Field mappings list"]
   m1@{ shape: curv-trap, label: "<b>Waiting fields first, tinted</b><br/>'Level of care' with a 'Not mapped' pill, 'Clinical record · Site B · Match to IOP or PHP', button 'Map'<br/>'Referral source' ... 'Match to a payer field', button 'Map'" }
   m2@{ shape: curv-trap, label: "<b>Then every mapping, with its system and who mapped it</b><br/>'Admit date → Admission date', 'Reader, 03/14' ... ten rows at the start<br/>A mapping made by a person reads 'You, 10/20'" }
@@ -1702,4 +1701,65 @@ flowchart TD
   class e1 k_end
   style gMap fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gLog fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+```
+
+## EMR Connect › No connection › Import a record and start a New Case
+
+For a record system that has no connection: one small row under Connection health opens the shared import in a side panel. Import an export (CSV or XLSX with field mapping, or a PDF) or paste a screenshot; on Apply, a New Case starts with the patient filled in.
+
+Route: `/emr`
+
+Demo only: the screenshot reading and the PDF reading are simulated and say so. Files and images stay in the browser.
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Open EMR Connect" }
+  sc@{ shape: curv-trap, label: "<b>Row under Connection health</b><br/>'No connection for a system? Import an export or paste a screenshot'<br/>Button 'Import a record'" }
+  c1@{ shape: trap-t, label: "Click 'Import a record'" }
+  o1@{ shape: win-pane, label: "<b>Side panel 'Import a record'</b><br/>'Import a file' and 'Paste a screenshot'<br/>No 'Pull from EMR' here" }
+  cFile@{ shape: trap-t, label: "Click 'Import a file'" }
+  cShot@{ shape: trap-t, label: "Click 'Paste a screenshot', or press Ctrl+V or Cmd+V in the panel" }
+  gFile@{ shape: subproc, label: "Continues in: Authorizations › New Case › Import › Import a file with field mapping" }
+  gShot@{ shape: subproc, label: "Continues in: Authorizations › New Case › Import › Paste a screenshot" }
+  sRev@{ shape: curv-trap, label: "<b>Review: '9 fields found', a box for each</b><br/>'Apply 10'" }
+  cApply@{ shape: trap-t, label: "Click 'Apply 10'" }
+  st1@{ shape: cyl, label: "<b>A new case is made at the site in view</b><br/>The patient, coverage and request are filled; the notes become documents" }
+  t1@{ shape: odd, label: "'Applied 9 fields and 1 document'" }
+  p1@{ shape: rect, label: "<b>New Case opens on Intake with the case</b><br/>Each filled field says 'From file' or 'From screenshot'" }
+  gIntake@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Initial authorization" }
+  cEsc@{ shape: trap-t, label: "Press Escape, click outside, or the X" }
+  e1@{ shape: stadium, label: "Panel closes; nothing is made" }
+  s1 --> sc --> c1 --> o1
+  o1 --> cFile --> gFile
+  o1 --> cShot --> gShot
+  gFile -.-> sRev
+  gShot -.-> sRev
+  sRev --> cApply --> st1 --> t1 --> p1 --> gIntake
+  o1 --> cEsc --> e1
+  class s1 k_start
+  class sc,sRev k_screen
+  class c1,cFile,cShot,cApply,cEsc k_click
+  class o1 k_overlay
+  class gFile,gShot,gIntake k_goto
+  class st1 k_store
+  class t1 k_toast
+  class p1 k_process
+  class e1 k_endx
 ```

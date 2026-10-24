@@ -24,30 +24,29 @@ flowchart TD
   q4@{ shape: diam, label: "Every day or unit limit still has room?" }
   q5@{ shape: diam, label: "Another plan pays first?" }
   q6@{ shape: diam, label: "<b>Authorization needed but not approved,</b><br/>or no rule on file?<br/>(required, in progress, under review, retro request open, unknown)" }
-  subgraph gFix ["Fix before billing (red)"]
+  subgraph gFix ["Fix before billing (red): the fact is the first check that fails"]
   f0@{ shape: curv-trap, label: "Verdict 'Fix before billing'" }
-  f1@{ shape: rect, label: "<b>Coverage lapsed or ended</b><br/>Headline 'Fix before billing: coverage lapsed 10/12.'<br/>If the member moved to another plan: '..., the member is with Cardinal now.'" }
-  f2@{ shape: rect, label: "<b>Coverage not found</b><br/>Headline 'We could not find coverage.'<br/>Nothing else is checked and no payment line is shown" }
-  f3@{ shape: rect, label: "<b>Clinic not enrolled, or enrollment not confirmed</b><br/>Headline 'Fix before billing: the clinic cannot bill yet.'<br/>or '..., the clinic's enrollment is not confirmed.'" }
-  f8@{ shape: rect, label: "<b>Member ID differs from the plan's</b><br/>Headline 'Fix before billing: coverage is active, but under another member ID.'" }
-  f9@{ shape: rect, label: "<b>Service not confirmed by the plan</b><br/>Headline 'Fix before billing: the service is not confirmed.'" }
-  f4@{ shape: rect, label: "<b>Service not covered</b><br/>Headline 'Fix before billing: the service is not covered.'" }
-  f6@{ shape: rect, label: "<b>Another plan pays first</b><br/>Headline 'Fix before billing: another plan pays first.'" }
-  f7@{ shape: rect, label: "<b>Limit reached</b><br/>Headline 'Fix before billing: every authorized day is used.'<br/>(or unit, for IOP)" }
-  f5@{ shape: rect, label: "Reason sentence is the detail of the first failed check" }
+  f1@{ shape: rect, label: "<b>Coverage 'Lapsed 10/12'</b><br/>or 'Ended 09/30', and 'Ended 09/30, now with Cardinal' when the member moved" }
+  f2@{ shape: rect, label: "<b>Coverage 'Not found'</b><br/>Nothing else is checked and no payment line is shown" }
+  f8@{ shape: rect, label: "Member ID 'Plan has ID ending 5521'" }
+  f4@{ shape: rect, label: "Benefits 'Not covered'" }
+  f9@{ shape: rect, label: "Benefits 'Not confirmed'" }
+  f3@{ shape: rect, label: "Enrollment 'Not enrolled' or 'Not confirmed'" }
+  f7@{ shape: rect, label: "Limit '14 of 14 days used' (or units, for IOP)" }
+  f6@{ shape: rect, label: "Other insurance 'Another plan pays first'" }
   end
   subgraph gAuth ["Authorization first (amber)"]
   a0@{ shape: curv-trap, label: "Verdict 'Authorization first'" }
-  a1@{ shape: odd, label: "<b>Headline 'Covered, but you need an authorization first.'</b><br/>'Everything checks out except the authorization. Billing is safe as soon as Summit approves.'" }
-  a2@{ shape: odd, label: "<b>No rule on file</b><br/>Headline 'Covered, but we do not know whether it needs an authorization.'<br/>'Check with Beacon before the first day.'" }
+  a1@{ shape: odd, label: "<b>Authorization 'In progress', 'Payer reviewing', 'Required, not on file' or 'Retro request open'</b><br/>Primary button 'Start authorization'" }
+  a2@{ shape: odd, label: "No rule on file: Authorization 'Requirement unknown'" }
   end
   subgraph gOk ["Cleared to bill (green)"]
   o0@{ shape: curv-trap, label: "Verdict 'Cleared to bill'" }
-  o1@{ shape: odd, label: "<b>Headline 'Cleared to bill: the clinic will be paid.'</b><br/>'Coverage, benefits, authorization and enrollment all check out. The clinic can bill Summit for Residential 3.5 on 10/21/2026.'" }
+  o1@{ shape: odd, label: "Authorization 'On file, 11 days left' or 'Not required'" }
   end
   subgraph gUn ["Not checked (grey)"]
   u0@{ shape: curv-trap, label: "Verdict 'Not checked'" }
-  u1@{ shape: odd, label: "<b>Headline 'Could not verify: Verify is paused in Settings.'</b><br/>Nothing was asked of the plan. 'Open Settings' and 'Check again' are the buttons" }
+  u1@{ shape: odd, label: "<b>Coverage 'Not checked'</b><br/>Nothing was asked of the plan. 'Open Settings' and 'Re-check' are the buttons" }
   end
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › Next actions" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › The exceptions" }
@@ -70,12 +69,12 @@ flowchart TD
   q6 -->|"Yes"| a0 --> a1 --> g1
   a0 -.-> a2
   q6 -->|"No"| o0 --> o1 --> g1
-  f0 --> f5 --> g1
-  f5 -.-> g2
+  f0 --> g1
+  f0 -.-> g2
   class s1 k_start
   class qu,q1,q2,q3,q4,q5,q6 k_decision
   class f0,a0,o0,u0 k_screen
-  class f1,f2,f3,f8,f9,f4,f6,f7,f5 k_process
+  class f1,f2,f8,f4,f9,f3,f7,f6 k_process
   class a1,a2,o1,u1 k_toast
   class g1,g2 k_goto
   style gFix fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

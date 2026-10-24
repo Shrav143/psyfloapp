@@ -18,43 +18,41 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Click 'Continue to Clinical documentation' on Eligibility & Benefits</b><br/>Or click step 3 in the stepper" }
   s2@{ shape: stadium, label: "<b>Click 'Continue' on a case in Case Manager</b><br/>whose agents have not started" }
-  sc@{ shape: curv-trap, label: "<b>Clinical documentation</b><br/>'Drop what you have. Reader sorts the files and lists what is still missing. The required items come from the payer's saved list.'<br/>Header button 'Use sample chart'" }
+  sc@{ shape: curv-trap, label: "<b>Clinical documentation</b><br/>No sentence under the title<br/>Header button 'Use sample chart'" }
   subgraph gPage ["The page"]
-  dz@{ shape: curv-trap, label: "<b>Drop zone</b><br/>'Drop everything you have for this patient'<br/>Privacy mode note and 'Pull a chart from EMR Connect'" }
-  pr@{ shape: curv-trap, label: "<b>Progress line</b><br/>'3 of 4 ready' with a bar and '1 to go'<br/>Pill 'Required documents are in' when no required one is missing" }
-  gc@{ shape: curv-trap, label: "<b>Clinical summary</b><br/>'Diagnoses (ICD-10)' (Recommended), 'Reason for the request' (Recommended)" }
-  gd@{ shape: curv-trap, label: "<b>Documents</b><br/>'Summit asks for 9 documents for Residential 3.5. 7 are required.'<br/>Required first, then recommended, then typical for the type, then any file not on the list" }
+  dz@{ shape: curv-trap, label: "<b>Drop bar 'Drop the chart, the insurance card and any documents, or click to choose'</b><br/>Under it: 'Pull from EMR', 'Import a file', 'Paste a screenshot'" }
+  pr@{ shape: curv-trap, label: "<b>Progress line</b><br/>'3 of 4 ready' with a bar and '1 to go', or 'Nothing is missing'<br/>Pill 'Required documents are in' while an optional one is still open<br/>'Privacy mode' with an info tip" }
+  gc@{ shape: curv-trap, label: "<b>CLINICAL SUMMARY</b><br/>'Diagnoses (ICD-10)' (Recommended), 'Reason for the request' (Recommended)" }
+  gd@{ shape: curv-trap, label: "<b>DOCUMENTS · SUMMIT, with '7 of 9'</b><br/>Required first, then recommended, then typical for the type, then any file not on the list<br/>An empty row has no sentence under it" }
+  prep@{ shape: curv-trap, label: "<b>Last section: 'Authorization preparation'</b><br/>with 'Start the agents'" }
   pPay@{ shape: rect, label: "<b>A case Payers redrafted after a payer change shows one line</b><br/>'Updated for a payer change on 10/20'" }
-  ft@{ shape: curv-trap, label: "<b>Footer bar, always in view</b><br/>'Back', 'Save as draft', 'Continue' and a hint line" }
+  ft@{ shape: curv-trap, label: "<b>Bar at the bottom, always in view</b><br/>'Back', 'Save as draft'<br/>'Continue to Review & submit' once all ten agents are done" }
   end
-  g41@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › Drop files and let Reader sort them" }
-  g45@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › Pull a chart from EMR Connect" }
-  g42@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › Required and typical documents by type" }
-  g43@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › Clinical summary and document rows" }
-  g44@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › Replace a document or mark it not available" }
+  g41@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › Drop files and let Reader sort them" }
+  g45@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › Bring notes in from the EMR, a file or a screenshot" }
+  g42@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › Required and typical documents by type" }
+  g43@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › Clinical summary and document rows" }
+  g44@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › Replace a document or mark it not available" }
   pCount@{ shape: rect, label: "<b>'N of M ready' counts the required documents and the typical ones for the type</b><br/>A document marked not available counts as ready: the person dealt with it<br/>Recommended documents are not counted" }
-  pLine@{ shape: rect, label: "The footer and the rows read the same list, so they always agree" }
-  dq@{ shape: diam, label: "Is a required document neither added nor marked not available?" }
-  tHint@{ shape: odd, label: "Footer hint: 'Not in yet: ASAM assessment, Nursing note and 1 more. You can go on; Review & submit lists what is missing.'" }
-  tReady@{ shape: odd, label: "Hint: 'Nothing is sent to the payer until a clinician signs.'" }
-  pStep@{ shape: rect, label: "<b>The step reads Needs attention · 'N required documents to add'</b><br/>or Complete · 'N of M ready'" }
-  subgraph gBtn ["Footer buttons"]
+  pStep@{ shape: rect, label: "<b>The step reads Needs attention · 'N required documents to add'</b><br/>or Pending · 'Agents not started' with everything in" }
+  subgraph gBtn ["Buttons"]
   cBack@{ shape: trap-t, label: "Click 'Back'" }
   pBack@{ shape: rect, label: "<b>Back to Eligibility & Benefits</b><br/>The draft is kept" }
   cSave@{ shape: trap-t, label: "Click 'Save as draft'" }
-  cCont@{ shape: trap-t, label: "Click 'Continue'" }
-  dRan@{ shape: diam, label: "Have the agents already started on this case?" }
-  pDirect@{ shape: rect, label: "<b>Goes straight to step 4, Authorization preparation</b><br/>No question is asked" }
-  oConf@{ shape: win-pane, label: "<b>Start the agents?</b><br/>J.M., Residential 3.5 · Summit Medicaid HMO<br/>'Reader swaps names, dates and IDs for codes and reads the chart. Verify, Criteria, Historian and Placement check coverage, rules and how Summit has ruled. Scribe drafts the case and may ask you a question or two.'<br/>'Nothing is sent to the payer until a clinician signs.'" }
+  cStart@{ shape: trap-t, label: "Click 'Start the agents' in Authorization preparation" }
+  oConf@{ shape: win-pane, label: "<b>Start the agents?</b><br/>J.M., Residential 3.5 · Summit Medicaid HMO<br/>'8 of 9 documents ready'<br/>'Missing: Therapy note from the last 14 days' when one is" }
   cCancel@{ shape: trap-t, label: "Click 'Cancel', press Escape, or click outside" }
-  cStart@{ shape: trap-t, label: "Click 'Start the agents'" }
+  cGo@{ shape: trap-t, label: "Click 'Start the agents'" }
+  cRev@{ shape: trap-t, label: "Click 'Continue to Review & submit'" }
   end
-  gSave@{ shape: subproc, label: "Continues in: Authorizations › New case › Save as draft and leave" }
-  gAgents@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › Start the run and watch it" }
-  gElig@{ shape: subproc, label: "Continues in: Authorizations › New case › Eligibility & Benefits › Initial authorization" }
+  gSave@{ shape: subproc, label: "Continues in: Authorizations › New Case › Save as draft and leave" }
+  gAgents@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › Start the run and watch it" }
+  gElig@{ shape: subproc, label: "Continues in: Authorizations › New Case › Eligibility & Benefits › Initial authorization" }
+  gRev@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › The draft and the summary" }
+  eNo@{ shape: stadium, label: "Nothing starts" }
   s1 --> sc
   s2 --> sc
-  sc --> dz --> pr --> gc --> gd --> ft
+  sc --> dz --> pr --> gc --> gd --> prep --> ft
   sc --> pPay
   dz --> g41
   dz --> g45
@@ -62,23 +60,19 @@ flowchart TD
   gd --> g43
   gd --> g44
   gd --> g42
-  pr --> pCount --> pLine --> dq
-  dq -->|"Yes"| tHint --> pStep
-  dq -->|"No"| tReady --> pStep
+  pr --> pCount --> pStep
   ft --> cBack --> pBack --> gElig
   ft --> cSave --> gSave
-  ft --> cCont --> dRan
-  dRan -->|"Yes"| pDirect --> gAgents
-  dRan -->|"No"| oConf
-  oConf --> cCancel --> ft
-  oConf --> cStart --> gAgents
+  prep --> cStart --> oConf
+  oConf --> cCancel --> eNo
+  oConf --> cGo --> gAgents
+  ft --> cRev --> gRev
   class s1,s2 k_start
-  class sc,dz,pr,gc,gd,ft k_screen
-  class pPay,pCount,pLine,pStep,pBack,pDirect k_process
-  class g41,g45,g42,g43,g44,gSave,gAgents,gElig k_goto
-  class dq,dRan k_decision
-  class tHint,tReady k_toast
-  class cBack,cSave,cCont,cCancel,cStart k_click
+  class sc,dz,pr,gc,gd,prep,ft k_screen
+  class pPay,pCount,pStep,pBack k_process
+  class g41,g45,g42,g43,g44,gSave,gAgents,gElig,gRev k_goto
+  class cBack,cSave,cStart,cCancel,cGo,cRev k_click
   class oConf k_overlay
+  class eNo k_endx
   style gPage fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gBtn fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

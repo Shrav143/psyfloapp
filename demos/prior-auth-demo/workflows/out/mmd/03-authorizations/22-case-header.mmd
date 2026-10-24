@@ -16,29 +16,23 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  pg@{ shape: curv-trap, label: "<b>Case page</b><br/>Crumbs, header card, three tiles, one-line notice, five tabs, History" }
+  pg@{ shape: curv-trap, label: "<b>Case page</b><br/>Crumbs, header card, figures strip, three tabs, History" }
   cr@{ shape: trap-t, label: "Click the 'Authorizations' crumb" }
   gQ@{ shape: subproc, label: "Continues in: Authorizations › Queue › Open the queue and read the top" }
-  hd@{ shape: curv-trap, label: "<b>Header title</b><br/>Level chip, ID, request type chip, then one pill" }
-  dCh@{ shape: diam, label: "Has the request been sent, decided or settled since this page was written, or does it already have a result?" }
-  pc@{ shape: odd, label: "<b>Pill shows the request's current status, e.g. 'Received', 'Approved'</b><br/>An info icon beside it opens 'What the statuses mean'" }
-  pd@{ shape: rect, label: "<b>Pill shows the due text, e.g. 'Notice due in 5 h'</b><br/>Red under 6 h, amber under 24 h, grey later" }
-  sub@{ shape: rect, label: "<b>Sub line: 'J.M., 34 · Summit Medicaid HMO · Residential 3.5 · 14 days requested'</b><br/>IOP counts units: '21 units requested'<br/>A viewer who can see both sites also gets a quiet '· Site A' at the end<br/>A viewer with one site does not" }
-  nb@{ shape: curv-trap, label: "<b>'Next:' block, the first thing under the title</b><br/>The next action and one primary button" }
+  hd@{ shape: curv-trap, label: "<b>Title line</b><br/>ID, level chip, request type chip, a status pill, the due pill" }
+  dCh@{ shape: diam, label: "Is the request on the Dashboard past Preparing, or does it already have a result?" }
+  pc@{ shape: odd, label: "Status pill: the request's own status, e.g. 'Received', 'Under review', 'Approved'" }
+  ps@{ shape: rect, label: "Status pill: 'Preparing', 'Ready to sign', 'With the payer' or 'Denial route'" }
+  pd@{ shape: rect, label: "<b>Due pill, e.g. 'Notice due in 5 h'</b><br/>red under 6 h, amber under 24 h, grey later<br/>not shown once decided" }
+  hi@{ shape: trap-t, label: "Hover or focus the info icon 'What the statuses mean'" }
+  sub@{ shape: rect, label: "<b>Sub line: 'J.M., 34 · Summit Medicaid HMO · 14 days requested · Site A'</b><br/>IOP counts units<br/>the site only for a viewer who can see both sites" }
+  nb@{ shape: curv-trap, label: "'Next:' block, the first thing under the title" }
   gN@{ shape: subproc, label: "Continues in: Authorizations › Case page › Next action" }
-  fr@{ shape: curv-trap, label: "<b>Authorization facts row</b><br/>Only the facts this request has" }
+  fr@{ shape: curv-trap, label: "<b>Authorization facts row</b><br/>only the facts this request has, none the title line already says" }
   gF@{ shape: subproc, label: "Continues in: Authorizations › Case page › Authorization facts" }
-  subgraph gAg ["'At a glance' (one short block)"]
-  ag0@{ shape: rect, label: "<b>'At a glance' line</b><br/>The diagnosis and review type, then the scores with a trend arrow<br/>'AUDIT-C 11 · PHQ-9 17 ↑ · CIWA 14 → 4'" }
-  dRd@{ shape: diam, label: "Ready: all four checks pass and still preparing?" }
-  ag1@{ shape: hex, label: "<b>Integrity badge</b><br/>'Ready to sign. Integrity passed all four checks'" }
-  ag3@{ shape: hex, label: "<b>The request's own agent and line</b><br/>e.g. Navigator: 'Navigator checks again in 30 minutes'" }
-  ag2@{ shape: hex, label: "<b>Agent badge and status line</b><br/>e.g. Scribe: 'Scribe is drafting the case'" }
-  dRule@{ shape: diam, label: "Does the queue have a payer note for it?" }
-  rule@{ shape: rect, label: "Green line 'Payer note: Summit expects a named step-down provider with the first request.'" }
-  end
+  ag0@{ shape: rect, label: "<b>Diagnosis line and scores with a trend arrow</b><br/>'Alcohol use disorder, severe, with recurrent depression · admission  AUDIT-C 11 · PHQ-9 17 ↑ · CIWA 14 → 4'" }
   dDb@{ shape: diam, label: "Is the request on the Dashboard past Preparing, and is the next action not already the Dashboard?" }
-  od@{ shape: trap-t, label: "Click 'Open on the Dashboard' (next to the status line)" }
+  od@{ shape: trap-t, label: "Click 'Open on the Dashboard' (at the end of the diagnosis line)" }
   gDb@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   subgraph gBt ["Header buttons"]
   b1@{ shape: trap-t, label: "<b>Click 'Open in review and sign'</b><br/>(always on)" }
@@ -49,31 +43,21 @@ flowchart TD
   pg --> cr --> gQ
   pg --> hd --> dCh
   dCh -->|"Yes"| pc
-  dCh -->|"No"| pd
-  pc --> sub
-  pd --> sub
-  sub --> nb --> gN
+  dCh -->|"No"| ps
+  pc --> pd
+  ps --> pd
+  pd --> hi
+  pd --> sub --> nb --> gN
   nb --> fr --> gF
-  fr --> ag0 --> dRd
-  dRd -->|"Yes"| ag1
-  dRd -->|"No"| ag2
-  dCh -.->|"Yes"| ag3
-  ag1 --> dRule
-  ag2 --> dRule
-  ag3 --> dRule
-  dRule -->|"Yes"| rule
-  dRule -->|"No"| dDb
-  rule --> dDb
+  fr --> ag0 --> dDb
   dDb -->|"Yes"| od --> gDb
   pg --> b1 --> gS
   pg --> b3 --> gQ
   pg --> gT
   class pg,hd,nb,fr k_screen
-  class cr,od,b1,b3 k_click
+  class cr,hi,od,b1,b3 k_click
   class gQ,gN,gF,gDb,gS,gT k_goto
-  class dCh,dRd,dRule,dDb k_decision
+  class dCh,dDb k_decision
   class pc k_toast
-  class pd,sub,ag0,rule k_process
-  class ag1,ag3,ag2 k_agent
-  style gAg fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  class ps,pd,sub,ag0 k_process
   style gBt fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

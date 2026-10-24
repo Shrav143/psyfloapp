@@ -27,7 +27,7 @@ flowchart TD
   o1@{ shape: win-pane, label: "<b>Map 'Level of care'</b><br/>In the Site B record" }
   q1@{ shape: rect, label: "<b>Question from the agents</b><br/>'The Site B record writes Level of care as free text, such as Day program. Which level should the agents read it as?'" }
   i1@{ shape: lean-r, label: "<b>Pick a value in the dropdown (click, or arrow keys and Enter)</b><br/>Level of care: IOP (first) or PHP<br/>Referral source: Payer name (first), Plan type or Referring provider" }
-  n1@{ shape: rect, label: "'Until it is mapped, New case leaves the matching field blank when it pulls a chart from this system. Once it is mapped, every future pull fills it. Files already pulled are not rewritten.'" }
+  n1@{ shape: rect, label: "'Until it is mapped, New Case leaves the matching field blank when it pulls a chart from this system. Once it is mapped, every future pull fills it. Files already pulled are not rewritten.'" }
   d1@{ shape: diam, label: "Which button?" }
   k1@{ shape: trap-t, label: "Click 'Save the mapping'" }
   k2@{ shape: trap-t, label: "Click 'Cancel' or the X, press Escape, or click the dimmed area" }
@@ -38,7 +38,7 @@ flowchart TD
   a1@{ shape: hex, label: "<b>Reader logs 'Mapped 'Level of care' to IOP. It applies to every future pull'</b><br/>In the activity log, in Advanced" }
   t1@{ shape: odd, label: "<b>'Field mapped'</b><br/>'Level of care' now fills IOP." }
   p1@{ shape: rect, label: "<b>The pill and the 'Action required' mention count down: 2, 1, then none</b><br/>At none the section summary reads '12 field mappings' with no 'waiting'" }
-  p2@{ shape: rect, label: "<b>New case now fills that field when it pulls a chart from this system</b><br/>Before, it left it blank" }
+  p2@{ shape: rect, label: "<b>New Case now fills that field when it pulls a chart from this system</b><br/>Before, it left it blank" }
   end
   g2@{ shape: subproc, label: "Continues in: EMR Connect › Sync › What other screens use from EMR Connect" }
   e1@{ shape: stadium, label: "<b>Pop-up closes</b><br/>A mapped field cannot be unmapped or edited in the demo" }

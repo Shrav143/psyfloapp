@@ -18,7 +18,7 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   q@{ shape: curv-trap, label: "<b>Queue</b><br/>Priority bands, most urgent first" }
   b1@{ shape: rect, label: "<b>Each open request at the sites in view sits in exactly one band</b><br/>Band counts for Both sites are the Site A counts plus the Site B counts" }
-  lv@{ shape: rect, label: "<b>A request leaves its band once nothing is left for a person</b><br/>Preparing or ready: it was signed and sent in New case<br/>With the payer: the payer approved or denied it<br/>Denial route: accepted, settled on the call, or the appeal is filed" }
+  lv@{ shape: rect, label: "<b>A request leaves its band once nothing is left for a person</b><br/>Preparing or ready: it was signed and sent in New Case<br/>With the payer: the payer approved or denied it<br/>Denial route: accepted, settled on the call, or the appeal is filed" }
   subgraph gB ["Three bands"]
   bn@{ shape: rect, label: "<b>Act now</b><br/>Red dot, tiles tinted red" }
   bd@{ shape: rect, label: "<b>Due within 24 hours</b><br/>Amber dot" }
@@ -26,7 +26,7 @@ flowchart TD
   end
   dE@{ shape: diam, label: "Does the band have any request after filters?" }
   dZ@{ shape: diam, label: "Is it Act now, with no request open at all, and no search, payer or status filter on?" }
-  em@{ shape: curv-trap, label: "<b>Band card stays</b><br/>'Act now (0 requests)'<br/>'Nothing needs you today'<br/>'Everything in Act now has been sent or handled.'<br/>With one site in view: 'No open request at Site B is in Act now.'" }
+  em@{ shape: curv-trap, label: "<b>Band card stays</b><br/>'Act now (0 requests)'<br/>'Nothing needs you today · Everything here is sent or handled'<br/>With one site in view: '· None open at Site B'" }
   hide@{ shape: rect, label: "The band card is left out" }
   bc@{ shape: curv-trap, label: "<b>Band card</b><br/>'Act now (5 requests)'<br/>Name, count, chevron" }
   r1@{ shape: rect, label: "<b>Inside a band, requests waiting on a person come first</b><br/>Preparing, Ready to sign, Denial route, or Needs your input" }

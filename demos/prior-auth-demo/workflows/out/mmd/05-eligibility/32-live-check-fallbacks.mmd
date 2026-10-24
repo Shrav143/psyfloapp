@@ -19,11 +19,11 @@ flowchart TD
   s1@{ shape: stadium, label: "Verify reaches the benefits question for the chosen payer" }
   subgraph gDemo ["In the demo"]
   d1@{ shape: diam, label: "Is the payer Evergreen?" }
-  p1@{ shape: rect, label: "<b>Benefits row ticks</b><br/>'Evergreen's system did not answer'" }
-  a1@{ shape: hex, label: "<b>Caller</b><br/>'Evergreen did not answer online. Caller is phoning'" }
+  p1@{ shape: rect, label: "<b>Benefits row ticks</b><br/>'No answer online'" }
+  a1@{ shape: hex, label: "<b>Caller · 'Phone call to Evergreen'</b><br/>Checking" }
   w1@{ shape: delay, label: "About 2.6 seconds" }
-  p2@{ shape: rect, label: "Row ticks 'Caller phoned Evergreen, confirmed the answers and logged the call'" }
-  p3@{ shape: rect, label: "<b>Result lists the call under 'What the agents checked'</b><br/>'Phone call to Evergreen' 1:34, reference C-4471" }
+  p2@{ shape: rect, label: "Row ticks 'Answers confirmed, call logged'" }
+  p3@{ shape: rect, label: "<b>Result: Source 'Simulated check, confirmed by phone'</b><br/>Side panel 'How this was checked': 'Phone call to Evergreen' 1:34, reference C-4471" }
   p4@{ shape: rect, label: "<b>Every other payer</b><br/>The plan answers at once and the check goes on" }
   end
   subgraph gReal ["Production, simulated here"]
@@ -38,16 +38,16 @@ flowchart TD
   end
   subgraph gBad ["When the answer is bad, not missing"]
   b1@{ shape: diam, label: "What did the checks find?" }
-  b2@{ shape: rect, label: "<b>Member ID ends 1012</b><br/>'coverage lapsed 10/12'" }
-  b3@{ shape: rect, label: "<b>Member ID ends 9999</b><br/>'no coverage found for these details'" }
-  b4@{ shape: rect, label: "<b>Evergreen with Detox</b><br/>'The clinic is not enrolled for this program'" }
-  b6@{ shape: rect, label: "<b>Member ID ends 3030</b><br/>'does not cover Residential 3.5'" }
+  b2@{ shape: rect, label: "<b>Member ID ends 1012</b><br/>'Lapsed 10/12'" }
+  b3@{ shape: rect, label: "<b>Member ID ends 9999</b><br/>'No coverage found'" }
+  b4@{ shape: rect, label: "<b>Evergreen with Detox</b><br/>'Not enrolled for this program'" }
+  b6@{ shape: rect, label: "<b>Member ID ends 3030</b><br/>'Not covered'" }
   b7@{ shape: rect, label: "<b>Member ID ends 6060</b><br/>'Another plan pays first'" }
-  b8@{ shape: rect, label: "<b>Member ID ends 9090</b><br/>'All 14 days are used'" }
+  b8@{ shape: rect, label: "<b>Member ID ends 9090</b><br/>'All 14 days used'" }
   b5@{ shape: rect, label: "<b>The check still runs to the end and opens a result</b><br/>Verdict 'Fix before billing'" }
   end
   s2@{ shape: stadium, label: "<b>While the check runs, leave the page</b><br/>(sidebar, back link or browser Back)" }
-  e1@{ shape: stadium, label: "<b>The check is dropped</b><br/>Nothing is saved: no row, no badge change<br/>Open 'Verify a patient' and start again" }
+  e1@{ shape: stadium, label: "<b>The check is dropped</b><br/>Nothing is saved: no row, no badge change<br/>Open the Verify page and start again" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › Next actions" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › The check finishes and is saved" }
   s1 --> d1

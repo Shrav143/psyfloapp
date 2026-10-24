@@ -16,11 +16,11 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "Arrive on step 5 'Review & submit'" }
+  s1@{ shape: stadium, label: "Arrive on step 4 'Review & submit'" }
   d1@{ shape: diam, label: "Is anything missing?" }
-  ok@{ shape: curv-trap, label: "<b>Card 'Nothing is missing'</b><br/>'All four checks passed. The summary below is what the payer will read.'" }
-  mc@{ shape: curv-trap, label: "<b>Card 'What is missing'</b><br/>Subtitle: 'N items must be fixed before it can be signed.' 'N items can be signed once you acknowledge them.' 'N items do not stop you from signing.'<br/>Pill: 'Blocked', 'N to acknowledge' or 'N to look at'" }
-  hb@{ shape: rect, label: "<b>When the case does not meet what the payer asks, the subtitle adds</b><br/>'Together they hold the approval chance back 3 points.'" }
+  ok@{ shape: curv-trap, label: "Card 'Nothing is missing'" }
+  mc@{ shape: curv-trap, label: "<b>Card 'What is missing'</b><br/>Pill: 'Blocked', 'N to acknowledge' or 'N to look at'<br/>Each row's icon says what it does: a red cross blocks, amber asks for an acknowledgement, grey does not stop signing" }
+  hb@{ shape: rect, label: "<b>When the case does not meet what the payer asks, the only subtitle is</b><br/>'−3 points on the approval chance'" }
   subgraph gSev ["Three kinds of item, in this order"]
   k1@{ shape: rect, label: "<b>Blocks sending</b> (red cross)<br/>No patient, payer, service or dates<br/>Coverage confirmed inactive with no documented exception<br/>A possible duplicate nobody has answered" }
   k2@{ shape: rect, label: "<b>Acknowledge before signing</b> (amber)<br/>A required document that is not in the case or has a finding, or is marked not available<br/>No authorization chosen, an empty proposed change, no retro reason, no last date of service<br/>Coverage that was not checked, a check that could not run, a payer change, a benefit or network the plan did not confirm<br/>An empty section of the summary, a late notice or window, a start date outside the payer's rule, a no-authorization rule" }
@@ -38,14 +38,14 @@ flowchart TD
   p4@{ shape: rect, label: "<b>An item with no fix button is information only</b><br/>e.g. a notice that has passed, or the payer's no-authorization rule" }
   end
   dBlk@{ shape: diam, label: "Any blocking item left?" }
-  eBlk@{ shape: stadium, label: "<b>The Sign card says 'One item stops sending: coverage. Fix it under What is missing.'</b><br/>'Sign and send to payer (demo)' stays off" }
+  eBlk@{ shape: stadium, label: "<b>The Sign card says 'Fix first: coverage'</b><br/>'Sign and send to payer (demo)' stays off" }
   pAck@{ shape: rect, label: "<b>'Sign and send to payer (demo)' needs the attestation,</b><br/>the acknowledgement of the warnings under What is missing,<br/>and a clinician as the signer" }
-  gSign@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Sign and send to payer" }
-  gVal@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Validation summary and checks" }
-  gInt@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Initial authorization" }
-  gElig@{ shape: subproc, label: "Continues in: Authorizations › New case › Eligibility & Benefits › Warnings and documented exceptions" }
-  gRec@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › Replace a document or mark it not available" }
-  gSB@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Send back to Scribe" }
+  gSign@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer" }
+  gVal@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › Validation summary and checks" }
+  gInt@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Initial authorization" }
+  gElig@{ shape: subproc, label: "Continues in: Authorizations › New Case › Eligibility & Benefits › Warnings and documented exceptions" }
+  gRec@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › Replace a document or mark it not available" }
+  gSB@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › Send back to Scribe" }
   s1 --> d1
   d1 -->|"No"| ok
   d1 -->|"Yes"| mc

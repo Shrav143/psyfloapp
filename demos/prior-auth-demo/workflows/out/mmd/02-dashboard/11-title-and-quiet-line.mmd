@@ -18,7 +18,7 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Dashboard is open" }
   p1@{ shape: rect, label: "<b>Take the requests at the sites in view</b><br/>Both sites, Site A or Site B, from the top bar and the viewer<br/>Payer, Program, Request type and Status menus are ignored here" }
-  p2@{ shape: rect, label: "<b>Waiting on payers = Submitted + Decision pending</b><br/>Waiting on you = requests with a question for a person (a payer's question, an agent's question)<br/>plus cases saved in New case that wait for a person" }
+  p2@{ shape: rect, label: "<b>Waiting on payers = Submitted + Decision pending</b><br/>Waiting on you = requests with a question for a person (a payer's question, an agent's question)<br/>plus cases saved in New Case that wait for a person" }
   d1@{ shape: diam, label: "How many wait on payers?" }
   a0@{ shape: curv-trap, label: "'Nothing is waiting on a payer.'" }
   a1@{ shape: curv-trap, label: "'1 request is waiting on a payer.'" }
@@ -29,7 +29,7 @@ flowchart TD
   b2@{ shape: curv-trap, label: "'3 are waiting on you.'" }
   h@{ shape: curv-trap, label: "<b>Title</b><br/>The two sentences together, e.g. '18 requests are waiting on payers. 3 are waiting on you.'<br/>Small serif type, no card around it" }
   q@{ shape: curv-trap, label: "<b>One quiet line under it</b><br/>'What to do now, and where every authorization stands.'" }
-  p3@{ shape: rect, label: "<b>Recomputed after a payer reply, an answer sent, a case signed and sent, a case saved in New case, or a change of site or viewer</b><br/>Site A and Site B add up to Both sites" }
+  p3@{ shape: rect, label: "<b>Recomputed after a payer reply, an answer sent, a case signed and sent, a case saved in New Case, or a change of site or viewer</b><br/>Site A and Site B add up to Both sites" }
   d3@{ shape: diam, label: "Does the number match the table?" }
   n1@{ shape: curv-trap, label: "<b>Not the same count as 'Needs me today'</b><br/>The title counts questions waiting on a person; 'Needs me today' also counts a request ready to sign, a write-back to approve, a late payer to chase and a denial deadline inside 2 days" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Table controls › Needs me today, Payer, Program, Status and Request type" }

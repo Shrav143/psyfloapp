@@ -29,7 +29,7 @@ flowchart TD
   q1@{ shape: diam, label: "Address has ?referral= ?" }
   q2@{ shape: diam, label: "Referral found?" }
   p1@{ shape: rect, label: "<b>Fills payer, member ID (masked), program from the referral</b><br/>Initials and age remembered for the result" }
-  t1@{ shape: odd, label: "<b>'Referral not found'</b><br/>'We could not find RF-9999. Type the details instead.'" }
+  t1@{ shape: odd, label: "<b>'Referral not found'</b><br/>'RF-9999 is not in the referrals.'" }
   q3@{ shape: diam, label: "Address has ?case= ?" }
   q4@{ shape: diam, label: "Case is a row on the Eligibility list?" }
   p2@{ shape: rect, label: "<b>Fills payer, masked member ID, program and date of service from that row</b><br/>The case ID is remembered" }
@@ -37,12 +37,12 @@ flowchart TD
   p3@{ shape: rect, label: "<b>Fills payer and program</b><br/>Member ID left empty: type it" }
   p4@{ shape: rect, label: "Nothing is filled and no message appears" }
   p5@{ shape: rect, label: "<b>Date of birth made up from the age, for example age 26 gives 01/15/2000</b><br/>Anything the source lacks stays empty" }
-  sc@{ shape: curv-trap, label: "<b>Verify a patient</b><br/>Form on the left, 'Live check' on the right" }
-  bk@{ shape: rect, label: "<b>Back links above the title</b><br/>'Eligibility & Benefits' always<br/>'Back to referral RF-2040' when ?referral= names a referral that exists<br/>With ?case= as well, 'Back to case R-1042' takes its place" }
+  sc@{ shape: curv-trap, label: "<b>Verify page</b><br/>Card 'Patient and service' on the left, 'Live check' on the right" }
+  bk@{ shape: rect, label: "<b>Back links at the top</b><br/>'Eligibility & Benefits' always<br/>'Back to referral RF-2040' when ?referral= names a referral that exists<br/>With ?case= as well, 'Back to case R-1042' takes its place" }
   nb@{ shape: rect, label: "<b>A referral that does not exist gives no back link</b><br/>Only the toast" }
   cy@{ shape: rect, label: "<b>Both addresses are carried to the result page</b><br/>so the way back is still there after the check" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › Fill in the form" }
-  g2@{ shape: subproc, label: "Continues in: Authorizations › New case › Referral › The full referral page" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New Case › Referral › The full referral page" }
   g3@{ shape: subproc, label: "Continues in: Authorizations › Case page › Ways in" }
   a1 --> p0
   a2 --> p0

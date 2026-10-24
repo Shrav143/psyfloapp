@@ -21,9 +21,9 @@ flowchart TD
   i2@{ shape: lean-r, label: "Tick or untick items under 'Evidence to attach'" }
   c1@{ shape: trap-t, label: "Click 'Save draft'" }
   st1@{ shape: cyl, label: "<b>Letter and evidence saved on the denial</b><br/>Status does not change" }
-  t1@{ shape: odd, label: "<b>'Draft saved'</b><br/>'It stays in Denial Intelligence until a clinician signs.'" }
+  t1@{ shape: odd, label: "'Draft saved'" }
   c2@{ shape: trap-t, label: "Click 'Sign and file'" }
-  o1@{ shape: win-pane, label: "<b>Modal 'Sign and file the appeal'</b><br/>'Sign-off gate. A licensed clinician signs every appeal.'" }
+  o1@{ shape: win-pane, label: "<b>Modal 'Sign and file the appeal'</b><br/>Sub line 'Sign-off gate'" }
   i3@{ shape: lean-r, label: "<b>'Signing as' (required)</b><br/>Medical director (chosen at first), Clinical director, Treating clinician (licensed)" }
   i4@{ shape: lean-r, label: "Tick: 'I reviewed this letter against the chart. Every statement is accurate and supported by the evidence attached.'" }
   d1@{ shape: diam, label: "Is the box ticked?" }
@@ -36,7 +36,7 @@ flowchart TD
   st3@{ shape: cyl, label: "<b>Request: chip 'Appeal filed' ('Second-level appeal filed' or 'External review' on a later level), 'Waiting on the payer'</b><br/>Deadline cleared; 'filed 10/20', 'decision 11/19'" }
   t2@{ shape: odd, label: "<b>'Appeal filed'</b><br/>'Cardinal decides by 11/19. It shows on the Dashboard.'" }
   t3@{ shape: odd, label: "<b>Notification 'Appeal filed' from Navigator</b><br/>Opens the request on the Dashboard" }
-  p2@{ shape: rect, label: "<b>Drawer closes</b><br/>Next-step block 'Appeal filed. Waiting on the payer'<br/>'Your options' row is gone" }
+  p2@{ shape: rect, label: "<b>Drawer closes</b><br/>The written appeal choice reads 'Appeal filed 10/20 · decision 11/19'<br/>'Compare the options' is gone" }
   c4@{ shape: trap-t, label: "Click 'Cancel' or the X in the modal" }
   p3@{ shape: rect, label: "Back to the open drawer, nothing filed" }
   c5@{ shape: trap-t, label: "Press Esc while the modal is open" }

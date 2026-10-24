@@ -16,19 +16,19 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Click 'Review & submit' on step 4</b><br/>Or click step 5 in the stepper at any time<br/>Or 'Review and sign' on a ready case in Case Manager" }
-  sc@{ shape: curv-trap, label: "<b>Review & submit</b><br/>'Nothing is sent to the payer until a person signs. See what is missing first, then read the summary.'<br/>The stepper: 'Review & submit' current" }
+  s1@{ shape: stadium, label: "<b>Click 'Continue to Review & submit' on Clinical documentation</b><br/>Or click step 4 in the stepper at any time<br/>Or 'Review and sign' on a ready case in Case Manager" }
+  sc@{ shape: curv-trap, label: "<b>Review & submit</b><br/>No sentence under the title<br/>The stepper: 'Review & submit' current" }
   dReady@{ shape: diam, label: "Have all ten agents finished?" }
-  sNot@{ shape: curv-trap, label: "<b>'The packet is built when the agents finish'</b><br/>'Scribe drafts the justification and Packet assembles the forms in Authorization preparation. You can read what is missing above and fix it now.'<br/>Button 'Go to Authorization preparation'<br/>Checks and Validation summary are not shown yet<br/>The Sign card says 'Authorization preparation has not finished, so there is nothing to sign yet.'" }
+  sNot@{ shape: curv-trap, label: "<b>One line 'The packet is built when the agents finish'</b><br/>Button 'Open Authorization preparation' (Clinical documentation, at its last section)<br/>Checks and Validation summary are not shown yet<br/>The Sign card says 'After the agents finish'" }
   subgraph gLayout ["Layout"]
   sL@{ shape: curv-trap, label: "<b>Left column</b><br/>1 'What is missing' (the one alert) · 2 'Summary' · 3 the Medical-necessity summary · 4 the Validation summary (closed)" }
   sR@{ shape: curv-trap, label: "<b>Right column</b><br/>Checks (names only), Approval chance, the Sign card" }
   sF@{ shape: curv-trap, label: "<b>Footer bar</b><br/>'Back', 'Save as draft'" }
   end
-  sSum@{ shape: curv-trap, label: "<b>Card 'Summary'</b><br/>'What the payer will be asked for'<br/>Ten rows, worked out from the draft, never typed" }
+  sSum@{ shape: curv-trap, label: "<b>Card 'Summary'</b><br/>Ten rows, worked out from the draft, never typed" }
   pRows@{ shape: rect, label: "Patient · Payer · Request · Service · Dates and length · Eligibility · Existing authorization · Documentation · Medical necessity · Outstanding" }
-  pEx@{ shape: rect, label: "<b>Examples</b><br/>Patient: 'J.M., 34 · existing patient R-1042' or '· new patient'<br/>Request: 'Concurrent review · recorded as Continued stay'<br/>Dates and length: '10/22/2026 to 11/11/2026 · 21 days (the usual length)'<br/>Eligibility: 'Coverage active, benefits covered, authorization required. Checked 2 min ago, simulated source.'<br/>Existing authorization: 'AU-I-2144 · ... · 32 of 48 units left, ends 11/19/2026' or 'None. This starts a new stay.'<br/>Documentation: '3 of 4 ready, 1 required document missing'<br/>Outstanding: 'Nothing outstanding' or '2 to acknowledge, 1 note'" }
-  sNarr@{ shape: curv-trap, label: "<b>Card 'Medical-necessity summary'</b><br/>'What Summit will read · every statement links to the chart'<br/>Sections: Clinical picture, the type's own section, the level-of-care reason, Current severity, Plan" }
+  pEx@{ shape: rect, label: "<b>Examples</b><br/>Patient: 'J.M., 34 · existing patient R-1042', or 'T.W., 41 · born 03/02/1985 · Female · new patient'<br/>Request: 'Concurrent review · recorded as Continued stay'<br/>Dates and length: '10/22/2026 to 11/11/2026 · 21 days (the usual length)'<br/>Eligibility: 'Coverage active, benefits covered, authorization required. Checked 2 min ago, simulated source.'<br/>Existing authorization: 'AU-I-2144 · ... · 32 of 48 units left, ends 11/19/2026' or 'None. This starts a new stay.'<br/>Documentation: '3 of 4 ready, 1 required document missing'<br/>Outstanding: 'Nothing outstanding' or '2 to acknowledge, 1 note'" }
+  sNarr@{ shape: curv-trap, label: "<b>Card 'Medical-necessity summary'</b><br/>Sections: Clinical picture, the type's own section, the level-of-care reason, Current severity, Plan" }
   pCtx@{ shape: rect, label: "<b>A paragraph 'Context added.' shows when notes were added on the case page</b><br/>It is shown here but not edited here" }
   pNote@{ shape: rect, label: "<b>A draft Payers redrafted after a payer change shows one line above</b><br/>'Updated for a payer change on 10/20'" }
   sChance@{ shape: curv-trap, label: "<b>Approval chance card</b><br/>Ring and 'Strong · likely 83-92%'<br/>'Summit usually decides in about 1.5 days. Based on 1,248 similar cases.'" }
@@ -55,13 +55,13 @@ flowchart TD
   cBack@{ shape: trap-t, label: "Click 'Back'" }
   cSaveD@{ shape: trap-t, label: "Click 'Save as draft'" }
   tSaved@{ shape: odd, label: "<b>'Draft saved'</b><br/>'R-1701 is in Case Manager, ready to sign.'" }
-  gMis@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › What is missing" }
-  gVal@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Validation summary and checks" }
-  gSign@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Sign and send to payer" }
-  gPrep@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › Finished, paused or left" }
-  gSave@{ shape: subproc, label: "Continues in: Authorizations › New case › Save as draft and leave" }
+  gMis@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › What is missing" }
+  gVal@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › Validation summary and checks" }
+  gSign@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer" }
+  gPrep@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › Finished, paused or left" }
+  gSave@{ shape: subproc, label: "Continues in: Authorizations › New Case › Save as draft and leave" }
   gDraft@{ shape: subproc, label: "Continues in: Authorizations › Case page › Draft › Read and edit" }
-  gJust@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › Justification by type" }
+  gJust@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › Justification by type" }
   s1 --> sc --> dReady
   dReady -->|"No"| sNot --> gPrep
   dReady -->|"Yes"| sL & sR & sF

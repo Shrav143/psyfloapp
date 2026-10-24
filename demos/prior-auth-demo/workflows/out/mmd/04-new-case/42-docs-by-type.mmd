@@ -32,10 +32,10 @@ flowchart TD
   pHint@{ shape: rect, label: "<b>A typical row says 'Typical for a continued stay. You can continue without it.'</b><br/>A required row says 'Not found yet. Drop it above or add it here.'" }
   pCount@{ shape: rect, label: "<b>Progress line 'N of M ready'</b><br/>Required plus typical, with 'Mark not available' counting as ready<br/>'3 of 4 ready' reads three items in and one to go" }
   pJust@{ shape: rect, label: "<b>Authorization preparation lists a missing typical item as evidence that is missing</b><br/>'... is not in the case. It is typical for a continued stay.'" }
-  gRows@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › Clinical summary and document rows" }
-  gMark@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › Replace a document or mark it not available" }
-  gJust@{ shape: subproc, label: "Continues in: Authorizations › New case › Authorization preparation › Justification by type" }
-  gRev@{ shape: subproc, label: "Continues in: Authorizations › New case › Review & submit › Validation summary and checks" }
+  gRows@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › Clinical summary and document rows" }
+  gMark@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › Replace a document or mark it not available" }
+  gJust@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › Justification by type" }
+  gRev@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › Validation summary and checks" }
   s1 --> pReq --> dKind
   pReq -.-> gPayers
   dKind -->|"Initial"| t1

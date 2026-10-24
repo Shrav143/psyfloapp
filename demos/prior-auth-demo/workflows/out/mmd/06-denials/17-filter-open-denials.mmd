@@ -16,52 +16,35 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Open /denials with ?payer= (a payer id such as cardinal),</b><br/>?reason= (a reason text such as Missing documentation), or both<br/>(Analytics: 'Common denial reasons by payer' rows link here)" }
-  p1@{ shape: rect, label: "<b>Payer matches the denial's payer id</b><br/>Reason matches by inclusion: the reason and the denial's type or its words contain each other<br/>Only denials at the sites in view are considered<br/>Example: 'Missing documentation' fits a full denial; 'Retro-authorization window missed' fits a retro-authorization denial" }
-  sc1@{ shape: curv-trap, label: "<b>Chip under the page header</b><br/>'Filtered: Cardinal, Late notice' with an X ('Clear filters')<br/>The 'Open denials' button counts only the matches" }
-  d2@{ shape: diam, label: "Is there a known ?id= in the address?" }
-  p2@{ shape: rect, label: "That denial opens on the page, even if the filters hide it from the list" }
-  d1@{ shape: diam, label: "Does any open denial match?" }
-  d4@{ shape: diam, label: "Do two or more match?" }
-  l1@{ shape: win-pane, label: "<b>The 'Open denials' panel opens by itself</b><br/>Chip at the top and 'N of M open'<br/>Only the matches are listed<br/>The 'Closed' section is filtered the same way" }
-  p3@{ shape: rect, label: "<b>The first match opens on the page (nearest deadline)</b><br/>With exactly one match the panel stays closed" }
-  d3@{ shape: diam, label: "Is there an ?id= that is not an open denial?" }
-  t1@{ shape: odd, label: "<b>'We could not find D-xxxx among the open denials'</b><br/>'Showing D-xxxx instead.' (the first match)" }
-  e0@{ shape: curv-trap, label: "<b>Empty state, calm</b><br/>'No open denials match these filters'<br/>'The filters hide all N open denials.'<br/>Button 'Clear filters'" }
-  pe@{ shape: rect, label: "In the panel with no match: 'No open denials match the filters.'" }
-  c1@{ shape: trap-t, label: "Click a row in the panel" }
-  p4@{ shape: rect, label: "<b>Panel closes</b><br/>Address gets ?id=D-xxxx and keeps the filters" }
-  c3@{ shape: trap-t, label: "Click the X on the chip ('Clear filters'), or 'Clear filters' in the empty state" }
-  p6@{ shape: rect, label: "<b>?payer= and ?reason= leave the address</b><br/>?id= stays" }
-  sc2@{ shape: curv-trap, label: "<b>All open denials are listed again</b><br/>No chip" }
-  c4@{ shape: trap-t, label: "Click 'Analyze the denial' and a new denial is added" }
-  p7@{ shape: rect, label: "<b>Address becomes ?id=D-xxxx only</b><br/>Filters are cleared so the new denial is in the list" }
+  s1@{ shape: stadium, label: "<b>On the dashboard, or open /denials?payer=cardinal&reason=... from Analytics</b><br/>('Open in Denial Intelligence' on a reason, a row of 'Common denial reasons by payer')" }
+  fg@{ shape: curv-trap, label: "Figures 'Open', 'Deadlines this week', 'To decide', 'Peer-to-peer booked', 'Appeals in progress', 'Closed'" }
+  cf@{ shape: trap-t, label: "Click a figure" }
+  pf@{ shape: rect, label: "<b>'Deadlines this week': 7 days or less on our own clock, overdue included</b><br/>'To decide': nothing under way; 'Peer-to-peer booked': chip 'Call booked'<br/>'Appeals in progress': drafting or with the payer; 'Closed': settled here" }
+  pc@{ shape: curv-trap, label: "<b>Payer chips: 'All payers', then each payer with a denial in the current figure and its count, most first</b><br/>('Cardinal 3', 'Summit 2', 'Beacon 1', ...)" }
+  cp@{ shape: trap-t, label: "Click a payer chip" }
+  pp@{ shape: rect, label: "<b>Only that payer's rows; the chip is outlined; address ?payer=cardinal</b><br/>Click it again, or 'All payers', to clear it" }
+  pr@{ shape: rect, label: "<b>?reason= matches by inclusion: the reason and the denial's type or its words contain each other</b><br/>Example: 'Late notice' fits D-3290; 'Continued-stay evidence incomplete' fits D-3318" }
+  rc@{ shape: curv-trap, label: "Chip 'Reason: Late notice' with an X ('Clear the reason')" }
+  cr@{ shape: trap-t, label: "Click the X" }
+  pq@{ shape: rect, label: "?reason= leaves the address" }
+  d1@{ shape: diam, label: "Any rows left?" }
+  e0@{ shape: curv-trap, label: "<b>'No denials match these filters'</b><br/>Button 'Clear filters' (payer, reason and figure)" }
+  tb@{ shape: curv-trap, label: "The table shows only the matches, in the chosen order" }
+  p8@{ shape: rect, label: "An unknown payer id (?payer=zzz) has no chip and matches nothing: the empty state offers 'Clear filters'" }
   g1@{ shape: subproc, label: "Continues in: Denial Intelligence › Open denials list" }
   g2@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
-  g3@{ shape: subproc, label: "Continues in: Denial Intelligence › Add a denial letter" }
-  p8@{ shape: rect, label: "An unknown payer id (for example ?payer=zzz) matches nothing and shows its text as the chip" }
-  s1 --> p1 --> sc1 --> d2
-  d2 -->|"Yes"| p2 --> g2
-  d2 -->|"No"| d1
-  d1 -->|"Yes"| d4
-  d4 -->|"Yes"| l1
-  d4 -->|"No, one"| p3
-  d1 -->|"No"| e0
-  d1 -.-> d3
-  d3 -->|"Yes"| t1 --> p3
-  d3 -->|"No, no id"| p3
-  l1 --> c1 --> p4 --> g2
-  l1 -.-> pe
-  p3 --> g2
-  sc1 --> c3 --> p6 --> sc2 --> g1
-  e0 --> c3
-  sc1 --> c4 --> p7 --> g3
-  p1 -.-> p8
+  g3@{ shape: subproc, label: "Continues in: Analytics › Denial reasons" }
+  s1 --> fg --> cf --> pf --> d1
+  s1 --> pc --> cp --> pp --> d1
+  s1 -.-> pr --> rc --> cr --> pq --> d1
+  pr --> d1
+  d1 -->|"Yes"| tb --> g2
+  d1 -->|"No"| e0 --> g1
+  pp -.-> p8
+  s1 -.-> g3
   class s1 k_start
-  class p1,p2,p3,pe,p4,p6,p7,p8 k_process
-  class sc1,e0,sc2 k_screen
-  class d2,d1,d4,d3 k_decision
-  class l1 k_overlay
-  class t1 k_toast
-  class c1,c3,c4 k_click
+  class fg,pc,rc,e0,tb k_screen
+  class cf,cp,cr k_click
+  class pf,pp,pr,pq,p8 k_process
+  class d1 k_decision
   class g1,g2,g3 k_goto

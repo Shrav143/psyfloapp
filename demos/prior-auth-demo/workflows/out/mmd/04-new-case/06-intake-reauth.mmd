@@ -20,7 +20,7 @@ flowchart TD
   s2@{ shape: stadium, label: "<b>Click 'Start renewal' in the Dashboard's what-to-do list</b><br/>?type=reauth&patient=CASE-ID" }
   sc@{ shape: curv-trap, label: "<b>Intake · Reauthorization / renewal</b><br/>'Find the patient, then the authorization that is ending.'" }
   pAuto@{ shape: rect, label: "<b>The patient is chosen for the person</b><br/>If the patient has one episode and one authorization, both are chosen too" }
-  gFind@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Find a patient and the authorization" }
+  gFind@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Find a patient and the authorization" }
   sAuth@{ shape: curv-trap, label: "<b>Authorization card</b><br/>Status, approved dates, authorized, left, expires on, 'History'" }
   dState@{ shape: diam, label: "How much is left?" }
   n1@{ shape: rect, label: "<b>Expiring soon</b><br/>'3 days left and the approval ends soon. Ask before it runs out.'" }
@@ -31,14 +31,14 @@ flowchart TD
   iTo@{ shape: lean-r, label: "<b>'Requested end date' (optional)</b><br/>Left empty: the usual days for the level of care" }
   st@{ shape: cyl, label: "<b>The request is recorded as 'Recertification'</b><br/>It carries the patient, episode and authorization ids" }
   dDup@{ shape: diam, label: "Another open request or active authorization overlapping the new dates?" }
-  gDup@{ shape: subproc, label: "Continues in: Authorizations › New case › Intake › Possible duplicate" }
+  gDup@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Possible duplicate" }
   pPayer@{ shape: rect, label: "If the plan has changed since the last stay, Eligibility & Benefits says so and offers to switch the case" }
   pDoc@{ shape: rect, label: "Typical documents: progress summary since the last authorization, updated treatment plan, current ASAM reassessment, attendance record" }
-  gElig@{ shape: subproc, label: "Continues in: Authorizations › New case › Eligibility & Benefits › Reauthorization / renewal" }
-  gDocs@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › Required and typical documents by type" }
+  gElig@{ shape: subproc, label: "Continues in: Authorizations › New Case › Eligibility & Benefits › Reauthorization / renewal" }
+  gDocs@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › Required and typical documents by type" }
   cSave@{ shape: trap-t, label: "Click 'Save as draft'" }
   cCont@{ shape: trap-t, label: "Click 'Continue to Eligibility & Benefits'" }
-  gSave@{ shape: subproc, label: "Continues in: Authorizations › New case › Save as draft and leave" }
+  gSave@{ shape: subproc, label: "Continues in: Authorizations › New Case › Save as draft and leave" }
   s1 --> sc --> gFind
   s2 --> pAuto --> sAuth
   gFind -.-> sAuth

@@ -48,9 +48,9 @@ flowchart TD
   ol@{ shape: trap-t, label: "Click 'Open the request'" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Open a request" }
   why@{ shape: rect, label: "<b>Edit the list and check again to see it change</b><br/>Cardinal's list asks for 'Remaining treatment goals' only after<br/>its criteria change is updated, so I-2207 then reads '5 of 7 ready'" }
-  info@{ shape: odd, label: "<b>'New case checks documents against this same list.</b><br/>Pasted text is matched by keyword, so a document that<br/>is named differently can be missed.'" }
+  info@{ shape: odd, label: "<b>'New Case checks documents against this same list.</b><br/>Pasted text is matched by keyword, so a document that<br/>is named differently can be missed.'" }
   g2@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Edit the document list" }
-  g3@{ shape: subproc, label: "Continues in: Authorizations › New case › Clinical documentation › The checklist and Continue" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › The checklist and Continue" }
   s1 --> hc
   hc -->|"No"| nc --> pt
   hc -->|"Yes"| df --> pk --> pt

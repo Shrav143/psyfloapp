@@ -22,14 +22,14 @@ flowchart TD
   p1@{ shape: rect, label: "<b>Opens /authorizations/new?verification=R-1042&type=initial</b><br/>Authorization type is already Initial" }
   c2@{ shape: trap-t, label: "<b>Click 'Create authorization from verification'</b><br/>(on every result, whatever the verdict)" }
   p2@{ shape: rect, label: "<b>Opens /authorizations/new?verification=R-1042</b><br/>The authorization type is still to be chosen" }
-  p3@{ shape: rect, label: "<b>New case reads the stored verification</b><br/>Patient (initials, age), payer, program, member (masked), dates of service<br/>and the check itself, with its warnings" }
+  p3@{ shape: rect, label: "<b>New Case reads the stored verification</b><br/>Patient (initials, age), payer, program, member (masked), dates of service<br/>and the check itself, with its warnings" }
   q2@{ shape: diam, label: "Is the verification still fresh, 24 demo hours or less?" }
   p4@{ shape: rect, label: "<b>Step 2 shows it as the verification for this case</b><br/>'Last verified Tue 10:44 am, 2 min ago. Simulated source.'" }
   p5@{ shape: rect, label: "Step 2 offers 'Refresh verification' before going on" }
   q3@{ shape: diam, label: "Is the check at a site the viewer can see?" }
   o1@{ shape: curv-trap, label: "<b>A notice: not available at this site</b><br/>Nothing is carried over" }
-  sc@{ shape: curv-trap, label: "<b>New case</b><br/>Authorization type, the five steps" }
-  g1@{ shape: subproc, label: "Continues in: Authorizations › New case › How a case starts and resumes" }
+  sc@{ shape: curv-trap, label: "<b>New Case</b><br/>Authorization type, the four steps" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New Case › How a case starts and resumes" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › The shared verification record" }
   g3@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › Next actions" }
   s1 --> q1

@@ -16,18 +16,18 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "Last step ticks, banner 'All answers are in. Opening the result.'" }
+  s1@{ shape: stadium, label: "Last step ticks, the timer pill reads 'Opening the result'" }
   w1@{ shape: delay, label: "Half a second" }
   qp@{ shape: diam, label: "Is Verify paused in Settings?" }
   q1@{ shape: diam, label: "Opened from a case that is a row on the list?" }
-  q2@{ shape: diam, label: "Sample card: Summit, Residential 3.5, member ID ending 4821?" }
+  q2@{ shape: diam, label: "J.M.'s card (sample 'Authorization first' or the referral): Summit, Residential 3.5, member ID ending 4821?" }
   st1@{ shape: cyl, label: "<b>Existing record updated</b><br/>'Checked just now', its re-check time cleared, date of service as typed" }
-  p1@{ shape: rect, label: "The sample card matches J.M., case R-1042" }
+  p1@{ shape: rect, label: "The card matches J.M., case R-1042" }
   p2@{ shape: rect, label: "<b>Answers are not asked again</b><br/>The row keeps its verdict" }
   subgraph gPaused ["Verify is paused"]
   sp1@{ shape: cyl, label: "<b>Known patient: the last result is kept with the warning</b><br/>'Verification service unavailable', check time unchanged" }
   sp2@{ shape: cyl, label: "<b>Anyone else: a new check with no answers</b><br/>Eligibility, benefits and authorization 'Not checked'<br/>Warning 'Verification service unavailable'" }
-  sp3@{ shape: rect, label: "<b>Headline 'Could not verify: Verify is paused in Settings.'</b><br/>Buttons 'Open Settings' and 'Check again'" }
+  sp3@{ shape: rect, label: "<b>Verdict 'Not checked' · Coverage 'Not checked'</b><br/>Buttons 'Open Settings' and 'Re-check'" }
   end
   subgraph gNew ["A new patient"]
   n1@{ shape: rect, label: "<b>Check gets the next ID: V-1001, V-1002 ...</b><br/>The ID is picked so it belongs to the site in view<br/>(Site A when both are in view). Initials and age only if known from a referral or a case" }
