@@ -62,7 +62,7 @@ export function eligibilityIssues(env: CaseEnv): MissingItem[] {
   if (v.noAuth) {
     const said = reasonOf(d, "no_auth");
     const line = noAuthLine(env.ctx.rules, d.program);
-    out.push(said ? note("no-auth", "No authorization needed", `The payer needs no authorization for this service. You went on with a documented exception: ${said.reason}`) : ack("no-auth", "No authorization needed", `The payer needs no authorization for this service${line ? `: ${line}` : ""}. Save the verification, return to Case Manager, or go on with a documented exception.`, "eligibility"));
+    out.push(said ? note("no-auth", "No authorization needed", `The payer needs no authorization for this service. You went on with a documented exception: ${said.reason}`) : ack("no-auth", "No authorization needed", `The payer needs no authorization for this service${line ? `: ${line}` : ""}. Save the verification, return to Authorizations, or go on with a documented exception.`, "eligibility"));
   }
   return out;
 }

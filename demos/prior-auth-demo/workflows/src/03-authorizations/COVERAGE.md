@@ -131,6 +131,7 @@ File names below are in `src/03-authorizations/`. Short names: 01 arrive, 02 vie
 | 'Biggest risks' chips (open the card on Recommended actions) | 50, 24 |
 | Criterion rows (Met, Partial, Not met), the fold with evidence, quote, source chip, 'N pts at risk' and the action | 50 |
 | 'Re-check criteria' | 50 |
+| (i) 'Payer note' beside 'What <payer> requires' (shown only when the request has a note) | 50 |
 | Criteria text that follows the framework (substance use or mental health) | 46, 50 |
 | Fold 'Similar decisions', 'See all', 'How it is calculated' | 50, 62 |
 | Pop-ups 'Why 62%' (bars and likely outcomes), 'Comparable decisions', 'How the approval chance is calculated' ('Close', 'Got it', X, dimmed area, Esc) | 62 |

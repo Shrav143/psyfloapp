@@ -3212,6 +3212,7 @@ flowchart TD
   pRev@{ shape: rect, label: "<b>Review & submit lists 'No authorization needed' as a note</b><br/>'You went on with a documented exception: ...'" }
   stHist@{ shape: cyl, label: "<b>After sending, the request's History says</b><br/>'You sent this request although the payer needs no authorization, and said why'" }
   pOpen@{ shape: rect, label: "<b>Without a decision the person may still open steps 3 and 4</b><br/>Nothing there is sent: the step says it is Not applicable" }
+  pAck@{ shape: rect, label: "<b>Review & submit, without a documented exception</b><br/>Lists 'No authorization needed' as an item to acknowledge before signing<br/>'The payer needs no authorization for this service: ... Save the verification, return to Authorizations, or go on with a documented exception.'" }
   gEb@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › What the page shows" }
   gCm@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Arrive and read the views" }
   gDocs@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › The checklist and Continue" }
@@ -3228,14 +3229,14 @@ flowchart TD
   dText -->|"No"| pOff --> iWhy
   dText -->|"Yes"| cOk --> st --> pOn
   iWhy --> cCancel --> sCard
-  pSteps --> pOpen
+  pSteps --> pOpen --> pAck --> gSign
   pOn --> pRev
   pOn --> gDocs
   pRev --> stHist --> gSign
   class s1 k_start
   class d1,dText k_decision
   class sCard k_screen
-  class pSteps,p1,p2,pOff,pOn,pRev,pOpen k_process
+  class pSteps,p1,p2,pOff,pOn,pRev,pOpen,pAck k_process
   class a1,a2,a3,cOk,cCancel k_click
   class s1a,st,stHist k_store
   class t1 k_toast

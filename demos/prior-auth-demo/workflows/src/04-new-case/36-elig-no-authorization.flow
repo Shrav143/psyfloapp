@@ -28,6 +28,7 @@ process pOn "Steps 3, 4 and 5 are applicable again\nClinical documentation, Auth
 process pRev "Review & submit lists 'No authorization needed' as a note\n'You went on with a documented exception: ...'"
 store stHist "After sending, the request's History says\n'You sent this request although the payer needs no authorization, and said why'"
 process pOpen "Without a decision the person may still open steps 3 and 4\nNothing there is sent: the step says it is Not applicable"
+process pAck "Review & submit, without a documented exception\nLists 'No authorization needed' as an item to acknowledge before signing\n'The payer needs no authorization for this service: ... Save the verification, return to Authorizations, or go on with a documented exception.'"
 goto gEb "Continues in: Authorizations › Eligibility & Benefits › Result › What the page shows"
 goto gCm "Continues in: Authorizations › Worklist › Arrive and read the views"
 goto gDocs "Continues in: Authorizations › New Case › Clinical documentation › The checklist and Continue"
@@ -45,7 +46,7 @@ sCard --> a3 --> iWhy --> dText
 dText -->|No| pOff --> iWhy
 dText -->|Yes| cOk --> st --> pOn
 iWhy --> cCancel --> sCard
-pSteps --> pOpen
+pSteps --> pOpen --> pAck --> gSign
 pOn --> pRev
 pOn --> gDocs
 pRev --> stHist --> gSign

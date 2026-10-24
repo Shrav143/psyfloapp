@@ -12,7 +12,7 @@ decision dRk "Any action still open?"
 process nr "Pill 'None open'"
 click chp "Click a risk chip"
 
-screen tb "Card 'What Summit requires'\npolicy v2026.3, approved as asked in the last 90 days, the required tool\none row per criterion, closed"
+screen tb "Card 'What Summit requires' with an (i) 'Payer note' when the payer has a note on this request\npolicy v2026.3, approved as asked in the last 90 days, the required tool\none row per criterion, closed"
 decision dS "For each row: what does the chart show?"
 process met "'Met' with a green tick"
 process par "'Partial' with an amber icon and '11 pts at risk'\ncovered in the draft, not backed by the chart yet"

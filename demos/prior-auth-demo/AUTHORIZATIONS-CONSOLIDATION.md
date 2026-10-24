@@ -53,7 +53,7 @@ Round 7. Scope: the Authorizations workspace, the Case Manager functionality mer
 
 **Files**: new `src/pages/authorizations/AuthorizationsPage.tsx`, `worklist/model.ts`, `worklist/useWorkRows.ts`, `worklist/ViewChips.tsx`, `worklist/WorkFilterBar.tsx`, `worklist/WorkTable.tsx`, `worklist/params.ts`, `src/pages/manager/ManagerRedirect.tsx`. Changed `src/App.tsx` (routes), `src/routes.ts`, `src/components/layout/Sidebar.tsx`, `src/components/layout/Topbar.tsx` (Demo path labels), `src/lib/floAnswers.ts` (Ask FLO labels and chips), `src/pages/authorizations/CaseHeader.tsx`, `CasePage.tsx` and `QueueTop.tsx`, `src/pages/manager/LedgerCasePage.tsx`. Deleted `QueuePage.tsx`, `BandCard.tsx`, `RequestTile.tsx`, `QueueFilterBar.tsx`, `ManagerPage.tsx`, `LedgerView.tsx`, `PreparingCard.tsx`, `StepDownCard.tsx`, `CaseRow.tsx`, `StepBar.tsx`, `ReviewsView.tsx`. Docs: README, CONVENTIONS, this file, UX-REFINEMENT section 18. Workflow diagrams: `workflows/src/03-authorizations` now draws the worklist (12 new diagrams replace the queue's 8), `workflows/src/07-case-manager` keeps its folder name but holds the Case Manager functions as "Authorizations › …" diagrams (20, from 25), the overview and the global shell show the new sidebar and its arrow, and every link between diagrams that pointed at Case Manager points at the Authorizations diagram that carries it (336 diagrams, every link resolved).
 
-**Label-only changes in New Case and Eligibility & Benefits** (both under Authorizations; no layout, step or logic change): "Back to Case Manager" became "Back to Authorizations" (sent page) and the crumb "Case Manager" became "Authorizations"; "Return to Case Manager" became "Return to Authorizations" (no-authorization outcome); the draft-saved toast says "is in Authorizations"; Eligibility's "Open in Case Manager" became "Open in Authorizations". New Case still has four steps; no fifth step was added.
+**Label-only changes in New Case and Eligibility & Benefits** (both under Authorizations; no layout, step or logic change): "Back to Case Manager" became "Back to Authorizations" (sent page) and the crumb "Case Manager" became "Authorizations"; "Return to Case Manager" became "Return to Authorizations" (no-authorization outcome, and the matching "No authorization needed" note on Review & submit); the draft-saved toast says "is in Authorizations"; Eligibility's "Open in Case Manager" became "Open in Authorizations". New Case still has four steps; no fifth step was added.
 
 ## 5. Not changed, and follow-ups
 
@@ -62,7 +62,8 @@ No change to Dashboard, Denial Intelligence, Analytics, EMR Connect, Payers or S
 - Denial Intelligence: the accept route's line and its toast and notification ("Case Manager adds a step-down plan").
 - Payers: the Update drafts text and toasts ("Each returns to Case Manager for a new signature").
 - Settings: a pause effect line ("Draft all due reviews in Case Manager waits").
-- Workflow Studio catalog: the step name "Update Case Manager".
+- Workflow Studio catalog: the step name "Update Case Manager" and the notes of a few steps ("Case Manager shows review dates...", "Cadence books real reviews in Case Manager").
+- EMR Connect: a line in the sync log, "Read 2 new admissions and proposed cases in Case Manager".
 - Dashboard: the "Open Active cases" link label.
 - Denial Intelligence and the "Denial closed" notification link to the Authorizations list (All), not straight to the Denied view; Payers' "Drafts updated" notification opens the list in the last view used.
 

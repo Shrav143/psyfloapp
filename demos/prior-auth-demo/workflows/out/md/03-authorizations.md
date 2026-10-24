@@ -2565,7 +2565,7 @@ flowchart TD
   dRk@{ shape: diam, label: "Any action still open?" }
   nr@{ shape: rect, label: "Pill 'None open'" }
   chp@{ shape: trap-t, label: "Click a risk chip" }
-  tb@{ shape: curv-trap, label: "<b>Card 'What Summit requires'</b><br/>policy v2026.3, approved as asked in the last 90 days, the required tool<br/>one row per criterion, closed" }
+  tb@{ shape: curv-trap, label: "<b>Card 'What Summit requires' with an (i) 'Payer note' when the payer has a note on this request</b><br/>policy v2026.3, approved as asked in the last 90 days, the required tool<br/>one row per criterion, closed" }
   dS@{ shape: diam, label: "For each row: what does the chart show?" }
   met@{ shape: rect, label: "'Met' with a green tick" }
   par@{ shape: rect, label: "<b>'Partial' with an amber icon and '11 pts at risk'</b><br/>covered in the draft, not backed by the chart yet" }
