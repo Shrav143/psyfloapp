@@ -1,0 +1,61 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Denial Intelligence › a denial › 'Accept the decision' › 'Accept and close'" }
+  st1@{ shape: cyl, label: "<b>The accepted denial is recorded</b><br/>Which denial (e.g. D-3297), its request's case, the payer and the demo-clock time" }
+  g1@{ shape: subproc, label: "Continues in: Denial Intelligence › Accept the denial" }
+  c0@{ shape: trap-t, label: "<b>On the denial: click 'Plan the step-down'</b><br/>or the notification 'Denial closed'" }
+  p0@{ shape: rect, label: "Go to /authorizations?view=all" }
+  s2@{ shape: stadium, label: "Open Authorizations › Denied, or Needs attention" }
+  d1@{ shape: diam, label: "<b>Is the denial a row in the list?</b><br/>(by its denial ID or its request's case ID)" }
+  n1@{ shape: rect, label: "Nothing changes in Authorizations" }
+  p1@{ shape: rect, label: "<b>The row stays in Denied (Denied 8 at the start, still 8)</b><br/>It keeps its site: a denial added from a letter follows its own" }
+  r1@{ shape: curv-trap, label: "<b>The row</b><br/>Status 'Accepted' (grey); its other chips go<br/>Next action 'Plan the step-down: choose the next level of care and book the first visit.'<br/>Button 'Open case' (green)" }
+  r2@{ shape: rect, label: "<b>Deadline</b><br/>A tracked denial (D-3318) reads 'Step-down plan open'<br/>A denial only the Dashboard has reads 'None'" }
+  r3@{ shape: rect, label: "<b>It counts in Needs attention; only Reset demo data clears it</b><br/>The status filter 'Accepted' finds it" }
+  c1@{ shape: trap-t, label: "Click 'Open case' or the ID" }
+  p2@{ shape: rect, label: "<b>Go to /authorizations/case/ and the case of the denial's request</b><br/>(D-3297 opens I-2141)" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Case page › Ways in" }
+  p3@{ shape: rect, label: "The case page reads 'Accepted. Nothing left to send'" }
+  subgraph gN ["'Consider a step-down' notes"]
+  n2@{ shape: curv-trap, label: "Under the patient on R-0873 and P-1522: 'Consider a step-down'" }
+  n3@{ shape: trap-t, label: "Hover the note" }
+  n4@{ shape: rect, label: "<b>'Consider a step-down: Day 18 of 21 · aftercare visit not booked yet'</b><br/>or 'Day 11 · IOP starts Monday'" }
+  end
+  st2@{ shape: cyl, label: "'Reset demo data' clears the accepted denials" }
+  e1@{ shape: stadium, label: "The plan is on the denial's own row" }
+  s1 --> st1 --> g1
+  st1 --> c0 --> p0 --> d1
+  s2 --> d1
+  d1 -->|"No"| n1
+  d1 -->|"Yes"| p1 --> r1 --> r2
+  r1 --> r3
+  r1 --> c1 --> p2 --> g2
+  p2 -.-> p3
+  r2 --> e1
+  s2 -.-> n2 --> n3 --> n4
+  st1 -.-> st2
+  class s1,s2 k_start
+  class st1,st2 k_store
+  class g1,g2 k_goto
+  class c0,c1,n3 k_click
+  class p0,n1,p1,r2,r3,p2,p3,n4 k_process
+  class d1 k_decision
+  class r1,n2 k_screen
+  class e1 k_end
+  style gN fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

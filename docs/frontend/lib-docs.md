@@ -165,6 +165,10 @@ Custom components extending core UI.
 
 ### Domain Features
 
+#### Prior-authorization demo (`demo/`, `demo-ui/`)
+
+Deterministic mock dataset and derivations behind the `/demo` routes (payers, patients, authorization ledger, visits, eligibility run, denials, appeals, agents, analytics) plus the shared demo presentational pieces. No database or auth imports. Architecture: `docs/frontend/lib/demo-docs.md`; per-file docs under `docs/frontend/lib/demo/` and `docs/frontend/lib/demo-ui/`.
+
 #### Alerts (`alerts/`)
 
 Alert management for counselors.

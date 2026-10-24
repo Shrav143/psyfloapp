@@ -1,0 +1,60 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  px@{ shape: st-rect, label: "<b>Payer publishes new criteria or a portal form change</b><br/>Cardinal: criteria version 2026.3, effective 10/15<br/>Harborview: new portal form, old one closes 10/31<br/>Evergreen: a reference number on phone notice, effective 10/22<br/>(demo: already seeded)" }
+  sn@{ shape: hex, label: "<b>Sentinel watches the payer's policy and portal</b><br/>Fetches, compares with the last version, keeps only parts<br/>that touch this clinic's programs, notes what changed" }
+  mp@{ shape: hex, label: "<b>Sentinel maps the impact on open work</b><br/>Only this payer's unsent drafts count<br/>Cardinal: I-2207. Harborview and Evergreen: none right now" }
+  pc@{ shape: cyl, label: "<b>Change opened for the payer: 'waiting for a person'</b><br/>Title, one sentence, effective date,<br/>agents that will redraft<br/>The drafts it affects are read live, not stored" }
+  subgraph gS ["Where a person sees it"]
+  s1@{ shape: rect, label: "Sidebar 'Payers' badge counts it (3 at the start)" }
+  s2@{ shape: rect, label: "Payer row in the list: ochre dot and the words 'Change waiting'" }
+  s3@{ shape: rect, label: "Header 'Policy status' line starts 'Change waiting for you (...)'" }
+  s4@{ shape: rect, label: "'History & Changes' tab badge shows 1" }
+  s5@{ shape: odd, label: "<b>Bell notification from Sentinel, unread</b><br/>'Payer rule changed'<br/>Cardinal updated its criteria (version 2026.3). 4 drafts are affected.<br/>This text is fixed and still says 4; the History & Changes card counts live<br/>(Harborview's and Evergreen's changes have the badge and dots but no notification)" }
+  end
+  st1@{ shape: stadium, label: "Click the bell, then the notification" }
+  cn@{ shape: trap-t, label: "Click 'Payer rule changed'" }
+  mr@{ shape: rect, label: "<b>Notification marked read, panel closes</b><br/>Opens /payers/cardinal?tab=changes<br/>(the older name, which opens History & Changes)" }
+  st2@{ shape: stadium, label: "Ask FLO: 'Why is Cardinal's approval rate down?'" }
+  cl@{ shape: trap-t, label: "Click 'Open Payers, Cardinal, Changes'" }
+  st3@{ shape: stadium, label: "<b>Demo menu, suggested path</b><br/>'Payers: Cardinal, Changes'<br/>(opens History & Changes)" }
+  st4@{ shape: stadium, label: "<b>Click 'Payers', open the payer with an ochre dot,</b><br/>click the 'History & Changes' tab" }
+  ch@{ shape: curv-trap, label: "<b>History & Changes</b><br/>Ochre card 'Criteria changed, version 2026.3'<br/>'Progress evidence must now include the remaining treatment goals.<br/>Scribe can redraft the 1 draft that is not yet sent: I-2207.<br/>Requests already sent keep what they were sent with.'" }
+  rj@{ shape: rect, label: "<b>Production also allows rejecting or deferring a change.</b><br/>The demo offers only Acknowledge, then Review & apply changes" }
+  g1@{ shape: subproc, label: "Continues in: Payers › History & Changes › Acknowledge a change" }
+  g2@{ shape: subproc, label: "Continues in: Payers › History & Changes › Read what changed" }
+  px --> sn --> mp --> pc
+  pc -->|"Shows up at once"| s1 & s2 & s3 & s4 & s5
+  st1 --> cn --> mr --> ch
+  s5 -.-> st1
+  st2 --> cl --> ch
+  st3 --> ch
+  st4 --> ch
+  ch --> g1
+  ch -.-> g2
+  ch -.-> rj
+  class px k_ext
+  class sn,mp k_agent
+  class pc k_store
+  class s1,s2,s3,s4,mr,rj k_process
+  class s5 k_toast
+  class st1,st2,st3,st4 k_start
+  class cn,cl k_click
+  class ch k_screen
+  class g1,g2 k_goto
+  style gS fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

@@ -1,0 +1,60 @@
+title: Denial Intelligence › Hand-offs
+route: /denials
+intro: Every link that leaves Denial Intelligence for the Dashboard or Authorizations, what accepting or deciding an appeal passes on to other screens, and the links from other screens that arrive here. There is no link from Denial Intelligence to Analytics.
+dir: TD
+also: Accepting a denial (directly, or after an upheld appeal) makes the denial's row in Authorizations read Accepted with 'Plan the step-down', and logs the accepted denial in Analytics. Every recorded appeal decision is also logged for other screens.
+---
+screen sc1 "Denial Intelligence\nA denial is on screen"
+
+group gOut "Links out"
+click c1 "Click 'Case R-0997' (header card)"
+click c2 "Open the Dashboard from the sidebar (after a call was overturned or partly restored)"
+click c3 "Click 'Open the Dashboard' (no open denials)"
+click c4 "Click 'Plan the step-down' (the accept choice after accepting)"
+process p1 "Address opens /dashboard?request=D-3318"
+process p2 "Address opens /dashboard"
+process p3 "Address opens /authorizations?view=all\nThe denial's row reads Accepted with 'Plan the step-down'"
+goto g1 "Continues in: Dashboard › Request drawer › Open and read a request"
+goto g2 "Continues in: Dashboard › Arrive › What the page shows"
+goto g3 "Continues in: Authorizations › Denied › Step-down plans from accepted denials"
+endgroup
+
+group gShare "Shared with other screens"
+  click c6 "Click 'Record the payer's decision' (the written appeal choice on a filed appeal)"
+  store z1 "On accept: the denial's row in Authorizations gets a step-down plan (Accepted), Analytics logs the accepted denial"
+  store z2 "On a recorded appeal decision: the result and next level are logged\nAnalytics reads the appeal rulings"
+endgroup
+
+group gBell "Notifications"
+click c5 "Click the bell 'Notifications', then a row"
+toast n1 "'Appeal filed', 'Appeal decision: ...' or 'Call outcome: ...'\nFrom Navigator or Advocate"
+toast n2 "'Denial closed'\nFrom Cadence, after an accept"
+toast n3 "'Denial analyzed', 'Denied today', 'Denied' or 'Partly approved'\nFrom Advocate"
+endgroup
+
+group gIn "Links in from other screens"
+start a1 "Analytics: 'Common denial reasons by payer'\nClick a row or its payer name\n(opens with that payer and reason as filters)"
+start a2 "Authorizations case page: 'This request was denied'\nClick 'Open in Denial Intelligence'"
+start a3 "Dashboard request drawer\nClick 'Open in Denial Intelligence'"
+goto g4 "Continues in: Denial Intelligence › Ways in"
+endgroup
+
+process p4 "The timeline says 'Every step is also on the Dashboard'\nThis is text, not a link"
+process p5 "No link to Analytics from this screen"
+end e1 "Person is on the other screen"
+
+sc1 --> c1 --> p1 --> g1 --> e1
+sc1 --> c2 --> p1
+sc1 --> c3 --> p2 --> g2
+sc1 --> c4 --> p3 --> g3
+sc1 --> c6 --> z2
+c4 -.-> z1
+sc1 --> c5
+c5 --> n1 --> p1
+c5 --> n2 --> p3
+c5 --> n3 --> g4
+sc1 -.-> p4
+sc1 -.-> p5
+a1 --> g4
+a2 --> g4
+a3 --> g4

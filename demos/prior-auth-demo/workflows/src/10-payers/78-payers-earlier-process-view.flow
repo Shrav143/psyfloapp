@@ -1,0 +1,27 @@
+title: Payers › History & Changes › Earlier process view
+route: /payers/summit?tab=history
+intro: The Workflow Builder replaced the Process tab, and nothing the Process tab showed is lost: each payer's earlier steps and conditions were migrated into a published graph named '<payer> process (migrated)'. The 'Earlier process view (migrated)' section keeps the original, read only, as it was saved: numbered steps with their step type, agents and typical time, and each condition drawn next to the step it leads to. It is the record the migration was made from. A suggestion that Historian proposed and a person accepted lands here and in a draft of the migrated workflow.
+dir: TD
+---
+start s1 "Open History & Changes\nclick 'Earlier process view (migrated)' (closed)"
+screen sm "Closed: 'Version 7, edited 10/12. Read only; the Workflow Builder\nholds the same process.'"
+screen top "Open: a grey line\n'Read only. How an authorization works with Summit, version 7, edited 10/12.'\nand an info icon ('About the earlier process view') with the step-type key"
+screen st "Numbered steps\n1 Check coverage, 2 Gather the documents, 3 Give notice,\n4 Send the request, 5 Follow up, 6 Decision and next review\nEach: step-type chip (Checklist, File, Portal or Phone step),\nagent chips, one sentence, 'Typical' time on the right"
+screen br "Conditions under a step\n'If program is Residential 3.5' → File step\n'Nine documents, including the ASAM assessment and a withdrawal scale'"
+process ro "No Edit button: to change the process, edit the migrated workflow in the Workflow Builder"
+process mg "The graph in the Workflow Builder was made from this record\nEvery step and condition is kept, in the same order\nIt applies to any request type and every service\nuntil a more specific workflow is published"
+click ib "Click the info icon, press Escape"
+toast tp "'The steps the agents followed before the Workflow Builder, kept as saved.\nThe builder has the same process as a graph; change it there.'"
+decision ca "Was a Historian suggestion accepted?"
+process v8 "Version goes up by one and the new branch shows here"
+goto g1 "Continues in: Payers › Workflow Builder › Read a workflow"
+goto g2 "Continues in: Payers › History & Changes › Suggestions from Historian"
+end e1 "Nothing the Process tab showed is lost"
+
+s1 --> sm --> top --> st --> br --> ro
+top --> ib --> tp
+ro --> mg --> g1
+br --> ca
+ca -->|Yes| v8 --> g2
+ca -->|No| e1
+mg --> e1

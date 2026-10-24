@@ -1,0 +1,69 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Click an approved row's ID or 'Open'</b><br/>or 'Open case' in its tracked quick view or in a review drawer" }
+  p1@{ shape: rect, label: "Go to /authorizations/case/ and the case code" }
+  d1@{ shape: diam, label: "Is the ID a request (a queue record or a Dashboard request)?" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Case page › Ways in" }
+  d2@{ shape: diam, label: "Is the ID in the ledger?" }
+  n1@{ shape: curv-trap, label: "<b>'Request not found'</b><br/>'No request R-9999' and 'Back to Authorizations'<br/>(only for an address typed by hand)" }
+  e2@{ shape: stadium, label: "Nothing to show for that ID" }
+  subgraph gPage ["Ledger case page"]
+  h1@{ shape: curv-trap, label: "<b>Header</b><br/>Crumb 'Authorizations › R-0856'<br/>Level chip, case ID, review type ('Continued stay 2'), status pill ('Review due'), the only status on the page<br/>'J.S., 51 · Summit Medicaid HMO · Residential 3.5'" }
+  m1@{ shape: curv-trap, label: "<b>Card 'Case summary', pill 'Privacy mode on'</b><br/>Patient, Payer, Service<br/>Authorization: 'Thu 10/8 to Thu 10/22'<br/>Units used: a bar and '12 of 14 days used, 2 left', and 'Runs out before review' in red only when the data shows it" }
+  m2@{ shape: curv-trap, label: "<b>More rows in the card</b><br/>Reviews due: 'Review 2, Tue 10/20, 9:00 am' with its status pill<br/>Next on the clock<br/>Approval chance, its band, range and similar decisions" }
+  r1@{ shape: curv-trap, label: "<b>Right side</b><br/>'Next step': one sentence, for example 'Review 2 is drafted. Read it, then sign it. Cadence books the next one.'<br/>'History' (folded, closed at first): '4 entries. Latest: ...'<br/>Opened: approval, drafts, signatures, and what comes next (dashed)" }
+  ch@{ shape: trap-t, label: "Click the 'History' header, or press Enter or Space on it" }
+  pch@{ shape: rect, label: "Timeline shows; click again to fold it" }
+  u1@{ shape: rect, label: "<b>Case not approved yet: Authorization and Units used say 'Not approved yet'</b><br/>Reviews due says 'None until the request is approved'<br/>(no case reaches it at the start: each one not approved is also a request)" }
+  u2@{ shape: rect, label: "After a signature: a 'Next review' line shows the date Cadence booked" }
+  end
+  d3@{ shape: diam, label: "Is a review due this week and not yet signed?" }
+  c1@{ shape: trap-t, label: "Click 'Open the review'" }
+  p2@{ shape: rect, label: "<b>Go to /authorizations?view=reviews&review= and the review ID</b><br/>The drawer opens over Reviews this week" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Reviews this week › The review drawer" }
+  p3@{ shape: rect, label: "<b>No 'Open the review' button</b><br/>(the review is signed, or none is due)" }
+  c2@{ shape: trap-t, label: "Click 'Back to Authorizations' or the crumb 'Authorizations'" }
+  p4@{ shape: rect, label: "<b>Go to /authorizations</b><br/>The last view and filters used come back" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Arrive and read the views" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › Ledger case page › Workflow line and history" }
+  e1@{ shape: stadium, label: "Case is read" }
+  s1 --> p1 --> d1
+  d1 -->|"Yes"| g1
+  d1 -->|"No"| d2
+  d2 -->|"No"| n1 --> e2
+  d2 -->|"Yes"| h1 --> m1 --> m2 --> r1
+  m1 -.->|"A case that follows a payer workflow"| g4
+  r1 --> ch --> pch
+  m1 -.-> u1
+  m2 -.-> u2
+  r1 --> d3
+  d3 -->|"Yes"| c1 --> p2 --> g2
+  d3 -->|"No"| p3
+  r1 --> c2 --> p4 --> g3
+  p3 --> e1
+  c2 -.-> e1
+  class s1 k_start
+  class p1,pch,u1,u2,p2,p3,p4 k_process
+  class d1,d2,d3 k_decision
+  class g1,g2,g3,g4 k_goto
+  class n1,h1,m1,m2,r1 k_screen
+  class e2 k_endx
+  class ch,c1,c2 k_click
+  class e1 k_end
+  style gPage fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

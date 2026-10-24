@@ -1,0 +1,82 @@
+title: Authorizations › New Case › Step states
+route: /authorizations/new/:draftId (the stepper; the reason is the step's tooltip)
+intro: Every step is in one of five states, worked out from the case itself, so the stepper, its tooltips and 'What is missing' never disagree. Only a few conditions stop a request from being sent (marked Blocked); everything else warns and the person can go on. The states are Complete, Needs attention, Pending, Not applicable and Blocked.
+dir: TD
+---
+start s1 "Look at the stepper, or hover a step for its reason"
+
+group gMeaning "What the five labels mean"
+  process m1 "**Complete**\nEverything this step needs is done"
+  process m2 "**Needs attention**\nSomething to fix or answer. The person can still go on"
+  process m3 "**Pending**\nNot started, or waiting on an agent or a reply"
+  process m4 "**Not applicable**\nThe payer needs no authorization, so nothing is prepared or sent"
+  process m5 "**Blocked**\nA condition that stops sending, listed on Review & submit"
+endgroup
+
+group gIntake "1 · Intake"
+  decision d1 "Which is true first?"
+  process i1 "Pending · 'Not started'"
+  process i2 "Blocked · 'A matching request exists'\nA possible duplicate nobody has answered"
+  process i3 "Needs attention · 'N items to fill in'\nPatient, payer, service, dates, the authorization, the proposed change, the reason for a retro"
+  process i4 "Complete · 'Patient, payer, service and dates are in'"
+endgroup
+
+group gElig "2 · Eligibility & Benefits"
+  decision d2 "Which is true first?"
+  process e1 "Pending · 'Needs the payer, member ID and dates'\nor 'Verify has not checked yet'"
+  process e2 "Blocked · 'Coverage is not active'\nConfirmed inactive, and no documented exception"
+  process e3 "Needs attention · 'N warnings'\nor 'The last check is old. Refresh it'\nor 'The check covers other dates. Refresh it'"
+  process e4 "Complete · 'Coverage and benefits checked'\nor 'No authorization required'"
+endgroup
+
+group gDocs "3 · Clinical documentation, with Authorization preparation as its last section"
+  decision d3 "Which is true first?"
+  process p1 "Needs attention · 'An agent could not finish'\n'An agent has a question'\n'Paused in Settings'"
+  process c1 "Pending · 'Reader is reading the files'\nor 'No documents yet'"
+  process c2 "Needs attention · 'N required documents to add'\nor 'N documents have a finding'"
+  process p2 "Pending · 'Agents not started'\nor 'The agents are working'"
+  process p3 "Needs attention · 'N required documents missing'\nor 'A step was skipped', once the agents are done"
+  process c3 "Complete · 'The draft is ready'\nAll ten agents done, every required document in"
+endgroup
+
+group gRev "4 · Review & submit"
+  decision d5 "Which is true first?"
+  process r1 "Complete · 'Sent'"
+  process r2 "Pending · 'After the agents finish'\nor 'Waiting for a clinician to sign'"
+  process r3 "Blocked · 'N items stop sending'\nNo patient, payer, service or dates; coverage inactive with no documented exception; an unanswered duplicate; no clinician sign-off"
+  process r4 "Needs attention · 'N to acknowledge'"
+endgroup
+
+decision dNa "Does the payer need no authorization for this service?\nAnd no documented exception to go on"
+process pNa "Steps 3 and 4 read 'Not applicable'\n'The payer needs no authorization'\nSteps 1 and 2 keep their own state"
+process pWarn "Everything else only warns\nMissing documents, an empty section of the summary, a check that could not run\nThe person can save, go on and send after acknowledging"
+goto gNoAuth "Continues in: Authorizations › New Case › Eligibility & Benefits › No authorization required"
+goto gMis "Continues in: Authorizations › New Case › Review & submit › What is missing"
+goto gStep "Continues in: Authorizations › New Case › The stepper and the four steps"
+
+s1 --> m1 & m2 & m3 & m4 & m5
+s1 --> d1 & d2 & d3 & d5
+d1 -->|Nothing added yet| i1
+d1 -->|Duplicate unanswered| i2
+d1 -->|Items open| i3
+d1 -->|All in| i4
+d2 -->|Not checked| e1
+d2 -->|Coverage inactive| e2
+d2 -->|Warning or old check| e3
+d2 -->|Clear| e4
+d3 -->|Failed, question or paused| p1
+d3 -->|Reading, or nothing| c1
+d3 -->|Before the run: required item or finding| c2
+d3 -->|Documents in, run not started or running| p2
+d3 -->|Run done, a gap| p3
+d3 -->|Run done, all in| c3
+d5 -->|Sent| r1
+d5 -->|Agents not finished, or only the signature left| r2
+d5 -->|Blocking item| r3
+d5 -->|Items to acknowledge| r4
+s1 --> dNa
+dNa -->|Yes| pNa --> gNoAuth
+dNa -->|No| pWarn
+r3 -.-> gMis
+r4 -.-> gMis
+s1 -.-> gStep

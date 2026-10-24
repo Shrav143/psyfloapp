@@ -1,0 +1,83 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Click a row's 'Update the review', 'Review and sign', 'Check the review' or 'Open the review'" }
+  o1@{ shape: win-pane, label: "<b>Drawer slides in from the right (640 px); ?review= is in the address</b><br/>Title 'R-0856 · Summit'<br/>Subtitle 'Continued-stay review 2 · Residential 3.5 · due Tue 10/20, 9:00 am'<br/>Status pill at the top right" }
+  b1@{ shape: curv-trap, label: "<b>Top of the body</b><br/>'J.S., 51 · privacy mode'   'Drafted by' Scribe (Residential, Detox) or Cadence (PHP, IOP)<br/>Once drafted: 'Draft by FLO's agents. A clinician reviews and signs before anything is sent.'" }
+  b2@{ shape: curv-trap, label: "<b>'The draft'</b><br/>Large text box with seven parts: title and payer lines, Clinical status, Treatment progress, Risk and safety, Why this level of care still fits, Request" }
+  b3@{ shape: curv-trap, label: "<b>'Integrity checks'</b><br/>'Every sentence traced to the chart'<br/>'Review has no errors'<br/>'All payer requirements covered'<br/>'Level of care matches the request'" }
+  b4@{ shape: curv-trap, label: "<b>Footer</b><br/>'Sign review' (green), 'Open case', 'Close'" }
+  d1@{ shape: diam, label: "What is the review's status?" }
+  t1@{ shape: rect, label: "<b>'Drafted', all four checks green ticks</b><br/>Draft can be edited<br/>Banner: 'Signing is one review at a time. Your edits to the draft are saved with the signature.'" }
+  t2@{ shape: rect, label: "<b>'Drafted' with 'Check to look at'</b><br/>One check is amber with Integrity's note, for example 'The draft asks for 7 days. Beacon's usual limit at this level of care is 5.'<br/>Draft can be edited" }
+  t3@{ shape: rect, label: "<b>'Needs your update'</b><br/>Amber panel names what is missing; 'All payer requirements covered' is red<br/>Draft is locked: 'The draft is locked until your update is added.'<br/>'Sign review' is greyed, hover text 'Add your update first'" }
+  t4@{ shape: rect, label: "<b>'Signed'</b><br/>Draft is read-only<br/>Footer shows 'Signed by Heather K., LISW-S' in place of the button<br/>Green banner 'Next review: Tue 10/27, 9:00 am' with 'Cadence booked it.' and either 'It is on this week's list.' or 'It falls after this week, so it is not on the list yet.'" }
+  t5@{ shape: rect, label: "<b>'Not drafted yet'</b><br/>Grey panel 'Not drafted yet': 'Cadence drafts each review a few days ahead. This one is not due until Sat 10/24, 9:00 am, so it has no draft and no Integrity checks yet.'<br/>The line above reads 'To be drafted by' Cadence<br/>No draft box and no checks<br/>'Sign review' is greyed, hover text 'Draft the review first'" }
+  c4@{ shape: trap-t, label: "Click 'Draft this review'" }
+  dp@{ shape: diam, label: "Is Cadence paused in Settings?" }
+  tp@{ shape: odd, label: "<b>'Cadence is paused in Settings'</b><br/>'It drafts no reviews until you resume it there.'" }
+  pd@{ shape: rect, label: "Button shows a spinner for about 1.3 seconds" }
+  sd@{ shape: cyl, label: "Review becomes 'Drafted': the seven-part text and four green Integrity checks appear" }
+  td@{ shape: odd, label: "'Cadence drafted 1 review'" }
+  i1@{ shape: lean-r, label: "Edit the draft text" }
+  c1@{ shape: trap-t, label: "Click 'Sign review'" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Reviews this week › Sign a review" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Reviews this week › Add your update to a review" }
+  c2@{ shape: trap-t, label: "Click 'Open case'" }
+  p1@{ shape: rect, label: "<b>Go to /authorizations/case/ and the case ID, with ?tab=draft</b><br/>The drawer is gone with the page" }
+  d3@{ shape: diam, label: "Is the case a request (a queue record or a Dashboard request)?" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › Case page › Draft › Read and edit" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › Ledger case page › Open and read" }
+  c3@{ shape: trap-t, label: "<b>Click 'Close', the X, the dimmed area, or press Escape</b><br/>(Escape closes one layer at a time: an open sign dialog first, the drawer next)" }
+  d2@{ shape: diam, label: "Was the review a draft?" }
+  st1@{ shape: cyl, label: "<b>Edits to the draft are saved on the review</b><br/>Open it again and the edited text is there" }
+  p2@{ shape: rect, label: "Nothing to save" }
+  e1@{ shape: stadium, label: "Back on the list, same view and page; ?review= leaves the address" }
+  s1 --> o1 --> b1 --> b2 --> b3 --> b4 --> d1
+  d1 -->|"Clean draft"| t1
+  d1 -->|"One check to look at"| t2
+  d1 -->|"Missing item"| t3
+  d1 -->|"Already signed"| t4
+  d1 -->|"No draft yet"| t5
+  t1 --> i1
+  t2 --> i1
+  t1 --> c1 --> g1
+  t2 --> c1
+  t3 --> g2
+  t4 --> c2
+  t1 --> c2
+  c2 --> p1 --> d3
+  d3 -->|"Yes"| g3
+  d3 -->|"No: only the ledger has it"| g4
+  t5 --> c4 --> dp
+  dp -->|"Yes"| tp
+  dp -->|"No"| pd --> sd --> td --> t1
+  b4 --> c3 --> d2
+  d2 -->|"Yes: Drafted"| st1 --> e1
+  d2 -->|"No"| p2 --> e1
+  class s1 k_start
+  class o1 k_overlay
+  class b1,b2,b3,b4 k_screen
+  class d1,dp,d3,d2 k_decision
+  class t1,t2,t3,t4,t5,pd,p1,p2 k_process
+  class c4,c1,c2,c3 k_click
+  class tp,td k_toast
+  class sd,st1 k_store
+  class i1 k_input
+  class g1,g2,g3,g4 k_goto
+  class e1 k_end

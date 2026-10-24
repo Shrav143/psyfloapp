@@ -1,0 +1,64 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Arrive on /denials" }
+  tr@{ shape: curv-trap, label: "<b>Title row</b><br/>'Denial Intelligence' with an (i) that reads 'Authorization denials only. Claim denials are handled in billing...'<br/>A 'Site A' tag when the view is narrowed; button 'Add a denial letter' on the right" }
+  g5@{ shape: subproc, label: "Continues in: Denial Intelligence › Add a denial letter" }
+  fg@{ shape: curv-trap, label: "<b>Figures, each a button that filters</b><br/>'Open 8', 'Deadlines this week 4', 'To decide 2', 'Peer-to-peer booked 2', 'Appeals in progress 4'<br/>then, apart, 'Closed 0'" }
+  pc@{ shape: rect, label: "<b>Counts = denials at the sites in view</b><br/>Both sites is Site A plus Site B; a one-site viewer never counts the other site" }
+  cf@{ shape: trap-t, label: "Click a figure" }
+  pf@{ shape: rect, label: "<b>The table shows only those rows; the figure is outlined</b><br/>Address ?view=week, decide, call, appeal or closed; 'Open' clears it" }
+  g3@{ shape: subproc, label: "Continues in: Denial Intelligence › Open denials list › Filter by payer and reason" }
+  tb@{ shape: curv-trap, label: "<b>Table, one row per denial</b><br/>Denial, Patient (initials, age), Payer, Level of care, Denied ('7 of 14 days', '48 to 30 units'),<br/>Chance, Next step and its date, Deadline (time left), Owner (the agent)" }
+  p3@{ shape: rect, label: "<b>Default order: newly analyzed letters first, marked 'New', then time left, soonest first</b><br/>Filed appeals have no deadline of ours ('—'), so they come last, in id order" }
+  p5@{ shape: rect, label: "At the start: D-3318, D-3297, D-3306, D-3290, D-3301, then D-3272, D-3279, D-3284" }
+  p7@{ shape: rect, label: "Deadline pill: red with a dot under 2 days, ochre under 7 days, grey otherwise; 'Passed' when time is up" }
+  pn@{ shape: rect, label: "<b>Next step: 'Peer-to-peer call' with the booked time, 'Appeal letter, drafting' with the due date,</b><br/>'Payer's decision' or 'Reviewer's decision' with the expected date, or the recommended word for a denial still to decide" }
+  cs@{ shape: trap-t, label: "Click a column heading (a button: Tab to it, Enter or Space)" }
+  ps@{ shape: rect, label: "<b>Sorts by that column; again reverses it; Chance starts highest first</b><br/>aria-sort names the direction, address ?sort=" }
+  c1@{ shape: trap-t, label: "Click a row, or Tab to its id link and press Enter" }
+  g2@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
+  cl@{ shape: curv-trap, label: "<b>Figure 'Closed': the denials settled here</b><br/>Outcome column ('Accepted', 'Overturned on appeal', 'Partly restored on the call') and the date it closed" }
+  d1@{ shape: diam, label: "Any rows to show?" }
+  e1@{ shape: curv-trap, label: "'No open denials' with 'Add a denial letter' and 'Open the Dashboard'" }
+  e2@{ shape: curv-trap, label: "'No denials match these filters' with 'Clear filters'" }
+  e3@{ shape: curv-trap, label: "'No closed denials yet'" }
+  g6@{ shape: subproc, label: "Continues in: Denial Intelligence › Sites › What each site sees and out-of-site links" }
+  g4@{ shape: subproc, label: "Continues in: Dashboard › Arrive › What the page shows" }
+  s1 --> tr --> fg --> pc
+  tr --> g5
+  fg --> cf --> pf --> tb
+  pf -.-> g3
+  fg --> tb --> p3 --> p5
+  tb --> p7
+  tb --> pn
+  tb --> cs --> ps
+  tb --> c1 --> g2
+  cf -.->|"Closed"| cl --> c1
+  tb --> d1
+  d1 -->|"No open denial at all"| e1 --> g4
+  d1 -->|"Filters hide them all"| e2
+  d1 -->|"Closed and none yet"| e3
+  e1 -.-> g5
+  pc -.-> g6
+  class s1 k_start
+  class tr,fg,tb,cl,e1,e2,e3 k_screen
+  class g5,g3,g2,g6,g4 k_goto
+  class pc,pf,p3,p5,p7,pn,ps k_process
+  class cf,cs,c1 k_click
+  class d1 k_decision

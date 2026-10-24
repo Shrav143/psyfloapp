@@ -1,0 +1,26 @@
+title: Analytics › Payer scorecard
+route: /analytics
+intro: One row per payer for the chosen period, and an 'All payers' row at the bottom to compare with. A payer row opens the Payer analysis panel; a count inside a row opens its cases.
+dir: TD
+---
+start s1 "Scroll to 'Payer scorecard'"
+screen sc "Columns: 'Payer' (plan type), 'Decisions', 'Approval rate' with a small 12-month line, 'Denial rate', 'Approved in part', 'Average days', 'Past CMS time', 'Info requests', 'Appeals overturned', 'Trend'\nLakeshore 86%, Beacon 81%, Harborview 77%, Summit 74%, Evergreen 69%, Cardinal 63%, All payers 71%"
+process p1 "'Trend' is the change in approval rate against the earlier period, an arrow and 'pts'\n'Past CMS time' is 'n/a' for payers the CMS time does not apply to\nA figure under 20 decisions shows a dash\nWith a payer picked, only that payer and 'All payers' show"
+
+click c1 "Click a payer row, or Tab to the payer name and press Enter"
+process p2 "Opens the Payer analysis panel for that payer\nFocus returns to the row when it closes"
+goto g1 "Continues in: Analytics › Payer analysis panel"
+
+group gCount "Counts inside a row"
+  click c2 "Click 'Approved in part', 'Past CMS time', 'Info requests' or 'Appeals overturned'"
+  process p3 "Opens the case list panel for that payer and figure\nThe row does not open as well"
+endgroup
+goto g2 "Continues in: Analytics › Case list panel"
+
+process p4 "The 'All payers' row is the clinic's own average\nIt is not clickable\nThe footnote says payers are compared with the clinic, not with an outside benchmark"
+end e1 "Scorecard read"
+
+s1 --> sc --> p1
+sc --> c1 --> p2 --> g1
+sc --> c2 --> p3 --> g2
+sc -.-> p4 --> e1

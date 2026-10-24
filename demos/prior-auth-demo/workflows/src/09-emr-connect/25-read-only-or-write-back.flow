@@ -1,0 +1,42 @@
+title: EMR Connect › Connected systems › Read only or read and write back
+route: /emr
+intro: Each system row ends with a line that says plainly whether the agents only read from it ('Read only') or may also write back ('Read and write back'), what write back means in one sentence, and the 'Write back' switch that changes it. The switch lives in that line.
+dir: TD
+also: In the demo no value is really written: the switch decides whether the Dashboard offers the approval write-back box (the box is simulated, see Dashboard › Approve the write-back). A person's own choice, so a paused agent or 'Ask before acting' never holds it back. The Manage drawer shows the state in words and points back to this switch.
+---
+start s1 "Look at a system row"
+screen sc "Line under the name and buttons\nBold 'Read only.' or 'Read and write back.' then one sentence, then the 'Write back' switch on the right"
+
+group gOff "Switch off"
+  screen o1 "'Read only. Agents only read here, and nothing is written to this system.'"
+endgroup
+group gOn "Switch on"
+  screen n1 "'Read and write back. After a person approves, the Dashboard can write the approval number and dates back to this system, and nothing else.'"
+  screen n2 "If the system is not Connected: adds 'It counts once the system is connected.'"
+endgroup
+
+click c1 "Click the 'Write back' switch\nOr Tab to it and press Space or Enter\nIts name says which system: 'Write back for {system}'"
+decision q1 "Switch is now?"
+store s2 "Write-back on for this system"
+store s3 "Write-back off for this system"
+agent a1 "Navigator logs 'Write-back is on for {name}, approval number and dates only, after a person approves'\nOr 'Write-back is off for {name}'\nThe line is in Advanced, in the activity log"
+toast t1 "On: 'Write-back is on'\n'The Dashboard offers the approval write-back box. Only the approval number and dates, and only after a person approves.'\nOn but not Connected: 'The Dashboard offers the box once this system is connected.'"
+toast t2 "Off: 'Write-back is off'\n'The Dashboard still offers the box, because another connected system has write-back on.'\nOr 'The Dashboard no longer offers the approval write-back box.'"
+process p1 "The row's line changes at once\n'Read only.' and 'Read and write back.' swap"
+process p2 "The Dashboard reads the switches of the systems at the sites in view\nIt offers the approval write-back box only while at least one Connected system there has the switch on\nA viewer who sees one site cannot flip the other site's switch: that row is not listed\nA switch on a Disconnected or Needs attention system does not count"
+process p3 "A system just connected starts as Read only\nThe two clinical record systems (Site A, Site B) start on, the Billing system starts off"
+goto g1 "Continues in: Dashboard › Request drawer › Approve the write-back"
+goto g2 "Continues in: EMR Connect › Manage › Open the Manage drawer"
+end e1 "Row says what it does"
+
+s1 --> sc
+sc --> o1 & n1
+n1 -.-> n2
+sc -.-> p3
+o1 & n1 --> c1 --> q1
+q1 -->|On| s2 --> t1
+q1 -->|Off| s3 --> t2
+s2 & s3 --> a1
+s2 & s3 --> p1 --> e1
+t1 & t2 -.-> p2 --> g1
+sc -.-> g2

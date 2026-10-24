@@ -1,0 +1,35 @@
+title: Analytics › Payer by case mix
+route: /analytics
+intro: A grid with payers down and a kind of case across. Each cell is how often that payer approves that kind of case as requested, with how many decisions stand behind it. Four tabs change the columns. A cell opens its cases; a payer name opens the payer analysis.
+dir: TD
+also: A cell with fewer than 10 decisions is drawn grey with a dashed edge and the word 'few', so a small number is not read as a pattern. Color is never the only signal: a cell under 55% is striped with a down mark, a cell from 80% has an up mark, and every rate is printed.
+---
+start s1 "Scroll to 'Payer by case mix'"
+screen sc "Tabs: 'Diagnosis group', 'Program', 'Request type', 'Population'\nColumns for diagnosis group: Alcohol use disorder, Opioid use disorder, Stimulant or other substance use, Depression or anxiety, Trauma-related, Co-occurring, 'All cases'\nA row for each payer and 'All payers'\nLegend: the color scale, 'Below 55%, striped', '80% and above', 'Fewer than 10 decisions'"
+click t1 "Click a tab"
+process t2 "The columns change: program (Residential 3.5, IOP, PHP, Detox), request type (Initial, Concurrent review, Reauthorization, Modification, Retrospective) or population (Adolescent, Adult, Dual-eligible, Pregnant or postpartum, First-time treatment, Prior admissions)"
+
+group gHover "Hover or Tab to a cell"
+  input h1 "Move over a cell or Tab to it"
+  overlay h2 "Tooltip: payer and column, '53% approved as requested', '131 decisions', approved and not approved counts"
+endgroup
+
+click c1 "Click a cell (or press Enter on it)\nFor example Cardinal and Opioid use disorder, 53% of 131"
+process p1 "Opens the case list panel with exactly those 131 cases\nAnd their reasons"
+goto g1 "Continues in: Analytics › Case list panel"
+click c2 "Click a payer name"
+process p2 "Opens the payer analysis panel"
+goto g2 "Continues in: Analytics › Payer analysis panel"
+click c3 "Click a column heading"
+process p3 "Opens the case list for that column across all payers"
+click d1 "Click 'View data table'"
+screen d2 "A table of rate and decisions for every cell"
+process p4 "In the default view Cardinal's weakest cells are opioid use disorder and co-occurring, concurrent reviews and, in the case list, thin continued-stay evidence"
+
+s1 --> sc --> t1 --> t2
+sc --> h1 --> h2
+sc --> c1 --> p1 --> g1
+sc --> c2 --> p2 --> g2
+sc --> c3 --> p3 --> g1
+sc --> d1 --> d2
+p1 -.-> p4

@@ -1,0 +1,82 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Dashboard title row: click 'Add a denial letter'" }
+  s1b@{ shape: stadium, label: "Empty state 'No open denials': click 'Add a denial letter'" }
+  sc1@{ shape: win-pane, label: "<b>Right-hand panel 'Add a denial letter'</b><br/>Drop area, the import's 'Import a file' and 'Paste a screenshot'<br/>Pill 'Identifiers removed on upload', 'Use sample letter', a note box, 'Analyze the denial'" }
+  pk@{ shape: rect, label: "The state lives on the page, not in the panel: a typed note, a chosen letter and a running analysis survive closing the panel" }
+  i1@{ shape: lean-r, label: "<b>Drop a file on the area, or click it (Enter or Space) to choose one</b><br/>'Drop the denial letter, or click to choose a PDF or DOCX'" }
+  c1@{ shape: trap-t, label: "Click 'Use sample letter'" }
+  p1@{ shape: rect, label: "Next sample letter in turn: Beacon, Summit, then Harborview" }
+  ci@{ shape: trap-t, label: "Click 'Paste a screenshot' and press Ctrl or Cmd V, or 'Import a file' (CSV with a field mapping, or a PDF)" }
+  pr@{ shape: rect, label: "<b>The shared import (the same one New Case and Eligibility use): FLO reads the screenshot or the file (demo: simulated)</b><br/>what it found is listed for review, nothing is applied until 'Apply'" }
+  pi@{ shape: rect, label: "<b>After the person reviews what was read and clicks 'Apply': payer, dates, days or units requested and approved, and the reason</b><br/>show as pills under the letter row; the reason picks the kind of denial" }
+  fr@{ shape: curv-trap, label: "<b>Letter row: the file name, or 'From a pasted screenshot'</b><br/>A small X removes it and brings the choices back" }
+  i2@{ shape: lean-r, label: "Type a note (optional) 'Note, such as a payer call'" }
+  c3@{ shape: trap-t, label: "Click 'Analyze the denial'" }
+  d1@{ shape: diam, label: "Is a letter chosen?" }
+  t1@{ shape: odd, label: "'Add the letter first, or use the sample letter.'" }
+  sc2@{ shape: curv-trap, label: "<b>Progress list replaces the form</b><br/>One line per agent, a spinner on the one working, a tick when done" }
+  a1@{ shape: hex, label: "Reader is reading the letter and removing identifiers" }
+  a2@{ shape: hex, label: "Advocate is checking the notice, the deadline and the payer's own criteria" }
+  a3@{ shape: hex, label: "Historian is comparing similar decisions and appeals" }
+  a4@{ shape: hex, label: "Integrity is checking every statement against the chart" }
+  w1@{ shape: delay, label: "About 1.25 seconds per step, 5 seconds in all (demo: simulated)" }
+  cx@{ shape: trap-t, label: "Press Escape, click X or the dimmed area while the agents work" }
+  px@{ shape: rect, label: "Panel closes, focus returns to 'Add a denial letter'; the agents keep going" }
+  d2@{ shape: diam, label: "Is the person still on the dashboard?" }
+  e1@{ shape: stadium, label: "Work is dropped and no denial is added" }
+  st1@{ shape: cyl, label: "<b>New open denial created</b><br/>Site = the site in view (Site A when both are in view)<br/>Id = the next free number from D-3340 that the site rule places at that site<br/>Chip 'Analyzed', letter name and note saved" }
+  t2@{ shape: odd, label: "<b>'The analysis is ready'</b><br/>'D-3340 was added to Open denials.'" }
+  t3@{ shape: odd, label: "Notification 'Denial analyzed' from Advocate, linking to /denials/D-3340" }
+  p5@{ shape: rect, label: "<b>Panel closes, filters and the figure are cleared</b><br/>The new row is listed first, highlighted, with the pill 'New', and its id link has focus<br/>The badge and 'Open' go up by one, for that site and for Both sites" }
+  g5@{ shape: subproc, label: "Continues in: Denial Intelligence › Open denials list" }
+  g2@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Recommended next step" }
+  g4@{ shape: subproc, label: "Continues in: Denial Intelligence › Sites › What each site sees and out-of-site links" }
+  s1 --> sc1
+  s1b --> sc1
+  sc1 -.-> pk
+  sc1 --> i1 --> fr
+  sc1 --> c1 --> p1 --> fr
+  sc1 --> ci --> pr --> pi --> fr
+  sc1 --> i2 --> c3
+  fr --> c3
+  c3 --> d1
+  d1 -->|"No"| t1 --> sc1
+  d1 -->|"Yes"| sc2 --> a1 --> a2 --> a3 --> a4
+  sc2 --> w1
+  sc2 --> cx --> px
+  a4 --> d2
+  d2 -->|"No, left the page"| e1
+  d2 -->|"Yes"| st1 --> t2 --> p5 --> g5
+  st1 --> t3
+  p5 --> g2
+  st1 -.-> g4
+  class s1,s1b k_start
+  class sc1 k_overlay
+  class pk,p1,pr,pi,px,p5 k_process
+  class i1,i2 k_input
+  class c1,ci,c3,cx k_click
+  class fr,sc2 k_screen
+  class d1,d2 k_decision
+  class t1,t2,t3 k_toast
+  class a1,a2,a3,a4 k_agent
+  class w1 k_wait
+  class e1 k_endx
+  class st1 k_store
+  class g5,g2,g4 k_goto

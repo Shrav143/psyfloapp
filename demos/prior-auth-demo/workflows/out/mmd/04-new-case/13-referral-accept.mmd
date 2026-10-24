@@ -1,0 +1,97 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Click 'Accept referral and continue'</b><br/>on the checklist" }
+  s2@{ shape: stadium, label: "<b>Click 'Accept referral'</b><br/>on the full referral page" }
+  s3@{ shape: stadium, label: "<b>Click 'Continue with this referral'</b><br/>on the checklist or on the green banner of the full page" }
+  dB@{ shape: diam, label: "<b>Is a required finding still open?</b><br/>Patient age, clinician credentials, clinician signature,<br/>diagnosis code, level of care, insurance and member ID" }
+  tB@{ shape: odd, label: "<b>The button is disabled</b><br/>One line under it: 'Resolve 4 items first: clinician credentials, clinician signature, diagnosis code, insurance and member ID.'" }
+  eB@{ shape: stadium, label: "<b>Nothing opens</b><br/>'Mark OK', the referrer's reply or 'Ask the referrer' lifts an item (a failed age: only 'Mark OK')<br/>'Decline' stays available" }
+  o1@{ shape: win-pane, label: "<b>'Accept this referral?'</b><br/>'RF-2048 · A.P., 45 · Dr. Lindqvist, Family Medicine'" }
+  d1@{ shape: diam, label: "Anything still open?" }
+  t1@{ shape: odd, label: "<b>Amber banner '3 things are still open'</b><br/>Each open finding, 'Coverage has not been checked yet.' or the lapsed coverage<br/>'You can accept anyway. Each open item stays on the timeline.'" }
+  t2@{ shape: odd, label: "<b>Green banner</b><br/>'All 9 checks are clear and coverage is confirmed.'" }
+  subgraph gForm ["Three fields"]
+  i1@{ shape: lean-r, label: "<b>Pick 'Owner'</b><br/>Jordan Perez, Taylor Brooks or Morgan Lee<br/>Starts as the referral's owner, else Jordan Perez" }
+  i2@{ shape: lean-r, label: "<b>Pick 'Program'</b><br/>Residential 3.5, IOP, PHP or Detox, each with '2 open'<br/>Starts as the program requested" }
+  p1@{ shape: rect, label: "<b>Hint under the date reads the program's room</b><br/>'Residential 3.5: 2 beds open this week, 1 after this.'<br/>None left: 'Accepting puts the referral on the waiting list.'" }
+  i3@{ shape: lean-r, label: "<b>Set 'Target admission date'</b><br/>Starts at tomorrow" }
+  end
+  d2@{ shape: diam, label: "Is the date valid?" }
+  p2@{ shape: rect, label: "'Accept referral' is disabled" }
+  cX@{ shape: trap-t, label: "<b>Click 'Cancel' or 'Close', press Escape,</b><br/>or click outside the dialog<br/>(Escape closes an open Owner or Program menu first)" }
+  e1@{ shape: stadium, label: "Nothing changes" }
+  c1@{ shape: trap-t, label: "Click 'Accept referral'" }
+  st1@{ shape: cyl, label: "<b>Referral is Accepted</b><br/>Owner, program, target date saved<br/>Timeline 'Accepted into IOP' with any open findings counted" }
+  st2@{ shape: cyl, label: "<b>Program capacity drops by one bed or slot</b><br/>(never below zero)" }
+  t3@{ shape: odd, label: "<b>'Referral accepted'</b><br/>'RF-2048 is accepted into IOP.'" }
+  p3@{ shape: rect, label: "<b>Referral leaves 'Incoming referrals'</b><br/>(only open referrals are listed)" }
+  d3@{ shape: diam, label: "Accepted from where?" }
+  subgraph gPg ["From the full referral page"]
+  sc1@{ shape: curv-trap, label: "<b>Page stays open</b><br/>Green banner 'Accepted into IOP'<br/>'Target admission 10/21/2026. Owner Taylor Brooks.'" }
+  c2@{ shape: trap-t, label: "<b>Click 'Continue with this referral'</b><br/>(or 'Open R-1042' when a request is linked)" }
+  p7@{ shape: rect, label: "<b>Uses the case in the address (?draft=)</b><br/>Without one, a new blank case is made first" }
+  end
+  subgraph gAsk ["Attach the referral to the case"]
+  d4@{ shape: diam, label: "Have the agents already run on this case?" }
+  oA@{ shape: win-pane, label: "<b>'Attach this referral?'</b><br/>'Attaching this referral makes the agents re-check the case. Continue?'<br/>'Their finished work is cleared. You start them again after Clinical documentation.'" }
+  cCancel@{ shape: trap-t, label: "<b>Click 'Cancel' or 'Close', press Escape,</b><br/>or click outside the dialog" }
+  eA@{ shape: stadium, label: "<b>Nothing is attached and the agents' work stays</b><br/>A referral just accepted stays accepted:<br/>the button now reads 'Continue with this referral'" }
+  cCont@{ shape: trap-t, label: "Click 'Continue'" }
+  p6@{ shape: rect, label: "<b>Agents' results and answers are cleared</b><br/>Because the patient and documents changed<br/>The case goes back to Intake" }
+  tR@{ shape: odd, label: "<b>'The agents will re-check this case'</b><br/>'RF-2048 changed the case, so the agents' earlier work was cleared.'" }
+  p4@{ shape: rect, label: "<b>Copied into the case: patient, payer, member ID,</b><br/>level of care (the accepted program), diagnoses, reason<br/>Request type: Initial request if routine, else Admission" }
+  p5@{ shape: rect, label: "<b>Referral becomes the first document</b><br/>'RF-2048 referral.pdf'" }
+  t4@{ shape: odd, label: "<b>'Referral RF-2048 is in this case'</b><br/>'A.P., 45. Check the details below, then go on to Eligibility & Benefits.'" }
+  end
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Initial authorization" }
+  s1 --> dB
+  s2 --> dB
+  dB -->|"Yes"| tB --> eB
+  dB -->|"No"| o1
+  o1 --> d1
+  d1 -->|"Yes"| t1 --> i1
+  d1 -->|"No"| t2 --> i1
+  i1 --> i2 --> p1 --> i3 --> d2
+  d2 -->|"No"| p2 --> cX
+  d2 -->|"Yes"| c1
+  o1 --> cX --> e1
+  c1 --> st1 --> st2 --> t3 --> p3 --> d3
+  d3 -->|"Checklist, at once"| d4
+  d3 -->|"Full page, later"| sc1 --> c2 --> p7 --> d4
+  s3 --> d4
+  d4 -->|"No"| p4
+  d4 -->|"Yes"| oA
+  oA --> cCancel --> eA
+  oA --> cCont --> p6 --> p4
+  p6 -.-> tR
+  p4 --> p5 --> t4 --> g1
+  class s1,s2,s3 k_start
+  class dB,d1,d2,d3,d4 k_decision
+  class tB,t1,t2,t3,tR,t4 k_toast
+  class eB,e1,eA k_endx
+  class o1,oA k_overlay
+  class i1,i2,i3 k_input
+  class p1,p2,p3,p7,p6,p4,p5 k_process
+  class cX,c1,c2,cCancel,cCont k_click
+  class st1,st2 k_store
+  class sc1 k_screen
+  class g1 k_goto
+  style gForm fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gPg fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gAsk fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

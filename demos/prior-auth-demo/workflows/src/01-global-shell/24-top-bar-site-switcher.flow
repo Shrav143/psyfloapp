@@ -1,0 +1,44 @@
+title: Global shell › Top bar › Site switcher
+route: Every page (top bar, left side)
+intro: The left of the top bar shows the date the page is as of and the site view. A viewer who may see both sites gets a three-way switch; a viewer limited to one site gets a locked label and a note on why. Every screen follows the choice.
+dir: TD
+also: The page title can show a small tag such as 'Site A' beside it when a viewer who may see both sites has narrowed the view to one. It is never shown with Both sites, and never for a one-site viewer, whose top bar already says so.
+---
+start s1 "Look at the left of the top bar\n'As of Tue, Oct 20' (wide windows only), then the site view"
+decision d1 "May the viewer see both sites?\n(Jordan Perez and Alex Morgan: yes. Dr. Rivera and Sam Okafor: no)"
+
+group gSw "Viewer with both sites"
+  screen sw "Switch with three buttons\n'Both sites', 'Site A', 'Site B'\nThe chosen one is green and says it is pressed"
+  click cA "Click 'Site A' (or press Enter or Space on it)\nTab reaches each button"
+  click cB "Click 'Site B'"
+  click cBoth "Click 'Both sites'"
+  process set "The site view is saved in the session\nEvery list, count, badge and chart recomputes at once, on every screen"
+  process say "A hidden status line announces it for screen readers\n'Showing Site A. Every screen follows this choice.'"
+  process tag "Page titles can show a small 'Site A' tag\nNot with 'Both sites'"
+  click cInfo "Hover, focus or click the info icon 'About the site view'"
+  overlay oInfo "'Both sites shows everything you may see. Choose one site to narrow every list, count and chart on every screen to it. Staff limited to one site see only that site, with no switch.'"
+endgroup
+
+group gLock "Viewer with one site"
+  screen lock "Locked label with a padlock\n'Site A only' (Dr. Rivera) or 'Site B only' (Sam Okafor)\nNo switch, no 'Both sites'"
+  click cWhy "Hover, focus or click the info icon\n'Why Dr. Rivera sees one site'"
+  overlay oWhy "'Dr. Rivera works at Site A, so Site A is the only site this role can see. Access is by site (minimum necessary): the other site's patients, requests and records are not listed, counted or searchable, and a link to one shows a notice instead.'"
+  process fixed "The view cannot be changed from the top bar\nThe other site does not exist for this viewer"
+endgroup
+
+click kEsc "Press Escape, click elsewhere or move away"
+process closed "The note closes"
+goto gOne "Continues in: Who can see what › Roles, sites and a record at the other site"
+goto gOut "Continues in: Global shell › Demo menu › Viewing as"
+end e1 "Every screen shows only the sites in view"
+
+s1 --> d1
+d1 -->|Yes| sw
+d1 -->|No| lock
+sw --> cA & cB & cBoth --> set --> say --> tag --> e1
+sw --> cInfo --> oInfo --> kEsc
+lock --> fixed --> e1
+lock --> cWhy --> oWhy --> kEsc
+kEsc --> closed --> e1
+e1 --> gOne
+fixed -.-> gOut

@@ -1,0 +1,58 @@
+title: Authorizations › New Case › Intake › Initial authorization
+route: /authorizations/new/:draftId (Intake, type 'Initial authorization')
+intro: Intake is patient onboarding. One row of ways in sits at the top (Pull from EMR, Import a file, Paste a screenshot, Referrals, Known patient), then one form: Patient, Coverage, Request and a folded More. Everything stays editable and nothing here stops the person from going on: what is missing is listed on Review & submit. A possible duplicate is the one alert Intake raises.
+dir: TD
+---
+start s1 "Open Intake on an initial authorization\nA new case, a referral continued into it, a known patient picked, or ?verification="
+screen sc "Intake · Initial authorization\nThe row of ways in, then the form\nNo sentence under the title"
+group gWays "The row of ways in"
+  click cImp "Click 'Pull from EMR', 'Import a file' or 'Paste a screenshot'\nor press Ctrl+V or Cmd+V in the row"
+  click cRefs "Click 'Referrals' (count of open referrals)"
+  click cKnown "Click 'Known patient'"
+endgroup
+goto gImp "Continues in: Authorizations › New Case › Intake › Start with a referral or patient"
+screen sFrom "Once a referral or a known patient is in, one line under the row\n'From referral RF-2051 · St. Brigid Medical Center' or 'Existing patient R-1042'\nand 'Use a different referral' or 'Use a different patient'"
+click cRef "Click the referral number in the line"
+goto gRef "Continues in: Authorizations › New Case › Referral › The full referral page"
+process pPay "A case Payers redrafted after a payer change shows one line\n'Updated for a payer change on 10/20'"
+screen sDup "One alert at a time\n'This looks like a request that already exists' (only when one matches)"
+goto gDup "Continues in: Authorizations › New Case › Intake › Possible duplicate"
+
+group gForm "The form, one card"
+  screen f1 "Patient\nInitials, Date of birth with Age beside it, Sex"
+  screen f2 "Coverage\nPayer, Plan type (the payer's own plans), Member ID"
+  screen f3 "Request\nLevel of care, Request type (Initial request or Admission), Requested start date\nPrimary diagnosis (ICD-10), Site"
+  screen f4 "More, folded\nSecondary insurance, Requested end date, Attending clinician and NPI, Referral source\nGuardian, only for a patient under 18"
+endgroup
+goto gRows "Continues in: Authorizations › New Case › Intake › Patient, insurance and request rows"
+goto gSite "Continues in: Authorizations › New Case › Sites and scope"
+
+group gFoot "Bar at the bottom, always in view"
+  screen ft "'Save as draft' and 'Continue to Eligibility & Benefits'"
+  toast h1 "A payer workflow warning, when there is one\n'Workflow: ...'"
+endgroup
+click cSave "Click 'Save as draft'"
+toast tSave "'Draft saved'\n'R-1701 is in Authorizations.'"
+goto gSave "Continues in: Authorizations › New Case › Save as draft and leave"
+click cCont "Click 'Continue to Eligibility & Benefits'"
+process pGo "Moves to step 2\nNothing blocks the click"
+goto gElig "Continues in: Authorizations › New Case › Eligibility & Benefits › Initial authorization"
+
+s1 --> sc
+sc --> cImp --> gImp
+sc --> cRefs --> gImp
+sc --> cKnown --> gImp
+sc --> sFrom
+sFrom --> cRef --> gRef
+sc --> pPay
+sc --> sDup -.-> gDup
+sc --> f1 & f2 & f3 & f4
+f1 --> gRows
+f2 --> gRows
+f3 --> gRows
+f3 -.-> gSite
+f4 -.-> gRows
+sc --> ft
+ft -.-> h1
+ft --> cSave --> tSave --> gSave
+ft --> cCont --> pGo --> gElig

@@ -1,0 +1,36 @@
+title: Global shell › Demo menu › Reset demo data
+route: Every page (Demo menu › Reset demo data)
+intro: One click puts every part of the demo back to its starting point and lands on the Dashboard. Use it between run-throughs. There is no confirmation step.
+dir: TD
+also: Not reset: the Ask FLO chat and the Authorizations worklist's last view (they live in the page). Anything done before a browser reload is gone anyway, because the demo keeps nothing between reloads.
+---
+start s1 "Open the Demo menu"
+click c1 "Click 'Reset demo data' (red text, below the divider)"
+process p1 "The demo data is replaced by its starting copy, all at once"
+
+group gR "What goes back to the start"
+  store r1 "Clock: Tue 20 Oct 2026, 10:42 am\n('Demo' pill reads 'Tue 10:42 am')"
+  store r2 "Dashboard: all requests and denials, and all filters"
+  store r3 "Notifications: the original six, four unread. Open toasts are cleared"
+  store r4 "Authorizations: answers, applied actions, dismissals, draft edits"
+  store r5 "New Case: the five drafts in progress, '4 sent today', referrals, referral badge"
+  store r6 "Eligibility & Benefits, Denial Intelligence, Payers, EMR Connect: all work done in them"
+  store r9 "Settings: every agent back at its starting level, every switch on, no pause"
+  store r10 "Viewing as: Jordan Perez, UR coordinator, on Both sites\n(the site switch and the user card follow)"
+  store r7 "Authorizations: the approved authorizations, accepted denials and the 47 reviews of the week. Signed reviews are unsigned, updates added are removed"
+  store r8 "Next denial number starts again at D-3319"
+endgroup
+
+process p2 "Menu closes"
+process p3 "App goes to /dashboard\n(even when already there, and from any other page)"
+toast t1 "'Demo data reset'\n'Everything is back to the starting point.'"
+process p4 "Sidebar badges return to their starting numbers\n3, 19, 4, 9, 8, 3"
+process p5 "Page-only state is lost as the page changes: open drawers, typed text"
+process p7 "Not reset either: Authorizations still reopens on its last view and filters\nThe sidebar group follows the move to /dashboard: made on an Authorizations page, the reset closes it"
+process p6 "Ask FLO chat stays: reset does not touch it"
+end e1 "Demo is at its first screen again"
+
+s1 --> c1 --> p1
+p1 --> r1 & r2 & r3 & r4 & r5 & r6 & r7 & r8 & r9 & r10
+r1 & r2 & r3 & r4 & r5 & r6 & r7 & r8 & r9 & r10 --> p2
+p2 --> p3 --> t1 --> p4 --> p5 --> p6 --> p7 --> e1

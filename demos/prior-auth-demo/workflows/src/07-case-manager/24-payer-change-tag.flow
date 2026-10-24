@@ -1,0 +1,33 @@
+title: Authorizations › Worklist › Updated for a payer change
+route: /authorizations
+intro: When Payers updates open drafts after a rule change or saved edits, the rows of the cases it redrafted carry a small note 'Updated for a payer change' with the date, under the patient. The note shows the latest update for the case. Rows that no update lists carry no note.
+dir: TD
+also: Only drafts not sent yet are redrafted; a request the payer already has is never rewritten. Reset demo data clears the notes. The Payers toast and the 'Drafts updated' notification still say Case Manager; the notification opens plain /authorizations, which brings back the last view used.
+---
+start s1 "Payers › History & Changes: a change is acknowledged and 'Update drafts' is confirmed"
+start s0 "Payers › Edits waiting: 'Update drafts' after saved edits"
+store st1 "Payers records the update\nWhich change, which payer, the IDs of the drafts and the demo-clock time"
+goto g1 "Continues in: Payers › History & Changes › Review and apply a change"
+goto g0 "Continues in: Payers › Edits waiting › Update drafts"
+process pd "A redrafted request that is on the Dashboard waits for a new signature\nIt needs you again, so its row counts in 'Needs attention'"
+toast nt "Notification 'Drafts updated'\n'2 drafts were redrafted after Cardinal's change. Each needs a new signature in Case Manager.'"
+click cn "Click the notification"
+process pn "Go to /authorizations (the last view and filters come back)"
+start s2 "Open Authorizations"
+decision d1 "Does an update list one of the row's IDs?\n(request, case, ledger or draft ID, any letter case)"
+process p1 "The newest update for the case is used"
+screen t1 "Grey note under the patient\n'Updated for a payer change · 10/20'\nOn a queue request's row, a saved draft's row or a tracked row"
+process n1 "No note"
+goto g2 "Continues in: Authorizations › In progress › Drafts being prepared"
+end e1 "Rows are marked"
+end e2 "Rows as before"
+
+s1 --> st1 --> g1
+s0 --> st1
+s0 -.-> g0
+st1 --> pd
+st1 --> nt --> cn --> pn --> d1
+s2 --> d1
+d1 -->|Yes| p1 --> t1 --> e1
+t1 -.-> g2
+d1 -->|No| n1 --> e2

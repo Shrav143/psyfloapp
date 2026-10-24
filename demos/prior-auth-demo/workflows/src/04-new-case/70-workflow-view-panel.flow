@@ -1,0 +1,35 @@
+title: Authorizations › New Case › Workflow › Show the workflow and its path
+route: /authorizations/new/:draftId (the 'View workflow' side panel and the 'Trace' side panel)
+intro: 'View workflow' opens the Studio's read-only canvas in a right-hand panel, showing the version this case follows and the path so far: the steps that ran, the steps that were skipped, and the ones still pending. Nothing in the panel can be edited; changes are made in Payers. 'Trace' lists what the workflow did on this case, the same lines that go to the request's History when it is signed and sent.
+dir: TD
+---
+start s1 "On any step, the Workflow line shows 'View workflow'"
+click c1 "Click 'View workflow'"
+decision dDef "Is the case on the labelled default process?"
+overlay oDef "Side panel 'Default process for ...' with the pill 'Illustrative default'\n'No payer workflow matches. Illustrative, not payer policy.'\nThe steps by stage, each Done, Skipped, Waiting, Pending or Not reached, with what happened"
+process p1 "The version the case is pinned to is opened (a saved snapshot, not the working copy)\nThe engine runs it on this case's facts to get the path"
+overlay o1 "Side panel: the read-only workflow canvas\nSteps that ran, steps that were skipped and steps that are pending are highlighted\nRule references with their verification state"
+click c2 "Click a step"
+screen sc1 "What the step did on this case\nIts message, the rules it read, its warnings"
+click c3 "Click the close button, press Escape, or click outside"
+process p2 "The panel closes\nThe step the person was on is unchanged"
+decision d1 "Has the workflow written anything to the case yet?"
+click c4 "Click 'Trace' in the Workflow line"
+overlay o2 "Side panel 'Workflow trace'\n'Initial Authorization, Residential SUD, version 3'\nOne line per entry, with the time and who: a named agent, 'Psyflo' or 'You' (a choice, a review or an override)"
+screen sc2 "Under the title\n'These lines are written to the request's History when it is signed and sent.'\nor, once the request exists, 'These lines are in the request's History on the case page.'"
+screen sc3 "No 'Trace' button yet\nThe line shows only the name, 'View workflow' and where the workflow is"
+click c5 "Click the close button, press Escape, or click outside"
+end e1 "Back on the step"
+goto g1 "Continues in: Payers › Workflow Builder › Read a workflow"
+goto g2 "Continues in: Authorizations › New Case › Workflow › What the workflow adds to the history"
+
+s1 --> c1 --> dDef
+dDef -->|No| p1 --> o1
+dDef -->|Yes| oDef --> c3
+o1 --> c2 --> sc1 --> c3
+o1 --> c3 --> p2 --> e1
+s1 --> d1
+d1 -->|Yes| c4 --> o2 --> sc2 --> c5 --> e1
+d1 -->|No| sc3 --> e1
+o1 -.-> g1
+o2 -.-> g2

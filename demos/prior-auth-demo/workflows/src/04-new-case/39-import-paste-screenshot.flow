@@ -1,0 +1,32 @@
+title: Authorizations › New Case › Import › Paste a screenshot
+route: /authorizations/new/:draftId (Intake, and the documents row of Clinical documentation)
+intro: For a record system with no connection and no export: take a screenshot of the chart and paste it. FLO reads it and shows the fields it found, with a 'Check' mark where it is unsure. The image stays in the browser; nothing is uploaded. It works the same in the hosted preview.
+dir: TD
+also: Demo only: the reading is simulated and deterministic, and the review says 'Demo: reading is simulated' once. 'Use a sample screenshot' reads a built-in picture of an invented chart header (K.L., Beacon PPO, IOP).
+---
+start s1 "Click 'Paste a screenshot'"
+start s2 "Press Ctrl+V or Cmd+V anywhere in the import row\nwith a screenshot on the clipboard"
+overlay o1 "Paste target, focused\n'Paste (Ctrl+V), drop or choose an image'\nLink 'Use a sample screenshot'"
+input i1 "Paste with Ctrl+V or Cmd+V"
+input i2 "Drop an image, or click and choose one"
+click c1 "Click 'Use a sample screenshot'"
+process pThumb "The image is shown as a small thumbnail\nRead in the browser only"
+agent a1 "FLO reads the screenshot\n'Reading…', about one second"
+decision dWhat "What is being read?"
+process pPat "Intake: initials, date of birth, sex, payer, plan type, member ID, level of care, primary diagnosis, start date\nand the notes it shows, as documents"
+process pDoc "Clinical documentation: the note itself, with its date"
+screen sRev "Review\n'9 fields found' · 'From a pasted screenshot' with the thumbnail\n'Check' beside Member ID and Start date\n'Demo: reading is simulated'"
+goto gReview "Continues in: Authorizations › New Case › Import › Review what was found and apply"
+click cClose "Click the X"
+endx eClose "Nothing applied"
+
+s1 --> o1
+s2 --> pThumb
+o1 --> i1 --> pThumb
+o1 --> i2 --> pThumb
+o1 --> c1 --> pThumb
+pThumb --> a1 --> dWhat
+dWhat -->|Patient| pPat --> sRev
+dWhat -->|Documents| pDoc --> sRev
+sRev --> gReview
+o1 --> cClose --> eClose

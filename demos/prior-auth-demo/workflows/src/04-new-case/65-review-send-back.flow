@@ -1,0 +1,41 @@
+title: Authorizations › New Case › Review & submit › Send back to Scribe
+route: /authorizations/new/:draftId (step 4 of 4, then the 'Authorization preparation' section and back)
+intro: Anyone on the Sign card can send the draft back, with or without a note, and so can the 'Send back to Scribe' button under What is missing. Scribe, Integrity, Packet and Scrubber run again in a few seconds and the person returns to review. The note is added to the Plan section.
+dir: TD
+---
+start s1 "On step 4, click 'Send back to Scribe'\nOr the same button on an item under What is missing"
+overlay o1 "Send back to Scribe\nBox: 'What should Scribe change?' and three suggestions"
+input iNote "Type a note, or leave the box empty\n'Optional. Your note is added to the plan section.'"
+click cQ1 "Click 'Say more about the risk at home'"
+click cQ2 "Click 'Shorten the clinical picture'"
+click cQ3 "Click 'Mention the lower levels of care that were tried'"
+process pFill "The chip's words fill the note box"
+click cCancel "Click 'Cancel', press Escape, or click outside"
+endx eCancel "Pop-up closes; nothing changes"
+click cSend "Click 'Send back'"
+store st1 "The draft goes back to Clinical documentation, at Authorization preparation, with six agents done\nThe summary is cleared\nA revision count goes up by one\nThe note is kept"
+process pReset "Both tick-boxes on the Sign card are unticked"
+toast t1 "'Sent back to Scribe'\n'The agents are re-drafting. You will see the new draft in a moment.'"
+screen sRun "Clinical documentation, scrolled to 'Authorization preparation'\nThe first six agents stay done"
+
+group gRerun "The four agents run again"
+  agent a1 "Scribe · 2.2 s\nWrites the summary again"
+  agent a2 "Integrity · 1.4 s\nChecks every sentence again"
+  agent a3 "Packet · 1.3 s\nAssembles the form again"
+  agent a4 "Scrubber · 1.0 s\nChecks the request for errors again"
+endgroup
+
+process pNoQ "No new question is asked\nEarlier answers stay in the draft"
+toast tDone "Section pill 'Done'; the rows fold under 'All ten agents'"
+click cReview "Click 'Review & submit'"
+screen sRev "Review & submit again\nThe Plan section ends: 'Reviewer's note, addressed: YOUR NOTE'"
+click cStay "Click the browser's Back, or leave"
+process pAway "The run only moves while Clinical documentation is open"
+goto gSign "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer"
+
+s1 --> o1
+o1 --> iNote
+o1 --> cQ1 & cQ2 & cQ3 --> pFill --> iNote
+o1 --> cCancel --> eCancel
+iNote --> cSend --> st1 --> pReset --> t1 --> sRun --> a1 --> a2 --> a3 --> a4 --> pNoQ --> tDone --> cReview --> sRev --> gSign
+sRun --> cStay --> pAway

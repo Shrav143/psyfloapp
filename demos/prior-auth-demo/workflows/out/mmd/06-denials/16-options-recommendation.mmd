@@ -1,0 +1,61 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "A denial is on screen" }
+  sc1@{ shape: curv-trap, label: "<b>'Your options' card</b><br/>Sub line 'From 312 similar Cardinal decisions' ('Benchmark estimate, 58 similar decisions' under 60)<br/>Peer-to-peer call · 64% · likely 55–72% · 5 to 7 days regained<br/>Written appeal · 58% · likely 49–66%<br/>Accept 7 days and plan the step-down · Nothing regained" }
+  p1@{ shape: rect, label: "Starting point: the denial's win chance (55 when none is set)" }
+  p2b@{ shape: rect, label: "<b>Peer-to-peer chance = the win chance</b><br/>Written appeal = win chance minus 6, never under 5<br/>Accept has no chance, only 'Nothing regained'<br/>Each chance reads 'likely' 9 below to 8 above" }
+  r1@{ shape: diam, label: "<b>Which route is 'Recommended'?</b><br/>(the route of the recommended next step; none for 'Investigate by hand', which shows as a pill in the header)" }
+  g0@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Recommended next step" }
+  gs@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Next step and where it stands" }
+  b1@{ shape: trap-t, label: "Click 'Book a call' (peer-to-peer choice)" }
+  b2@{ shape: trap-t, label: "Click 'Draft the appeal' (or 'Draft the corrected request' when the choice is titled 'Correct and resubmit')" }
+  b3@{ shape: trap-t, label: "Click 'Accept the decision'" }
+  g1@{ shape: subproc, label: "Continues in: Denial Intelligence › Peer-to-peer › Book the call" }
+  g2@{ shape: subproc, label: "Continues in: Denial Intelligence › Written appeal › Confirm and draft" }
+  g3@{ shape: subproc, label: "Continues in: Denial Intelligence › Accept the denial" }
+  c0@{ shape: trap-t, label: "Click 'Compare the options' (only while the denial is open and not filed)" }
+  ov@{ shape: win-pane, label: "<b>Right-hand panel 'Your options'</b><br/>Sub line 'D-3318 · 312 similar Cardinal decisions'<br/>Three radio cards with summary, chance, similar decisions and 'Needs: ...'<br/>The recommended one is selected and carries 'Recommended'<br/>Under them: 'Why FLO suggests peer-to-peer review' and the reasons" }
+  pf@{ shape: rect, label: "Focus goes to the selected card; Tab stays inside the panel" }
+  c1@{ shape: trap-t, label: "Click a card (a radio button)" }
+  d2@{ shape: diam, label: "'Peer-to-peer call' and the call window has closed?" }
+  t1@{ shape: odd, label: "<b>'The peer-to-peer window has closed'</b><br/>'A written appeal is still open.'" }
+  p6@{ shape: rect, label: "Footer button matches the card: 'Book a call' ('Change the time' when a call is booked), 'Draft the appeal' or 'Accept the decision'" }
+  c2@{ shape: trap-t, label: "Click the footer button" }
+  p9@{ shape: rect, label: "Panel closes, the confirm dialog for that route opens" }
+  cx@{ shape: trap-t, label: "Press Escape, click X or the dimmed area" }
+  px@{ shape: rect, label: "Panel closes, nothing is chosen; focus returns to 'Compare the options'" }
+  s1 --> sc1 --> p1 --> p2b --> r1
+  r1 --> g0
+  sc1 --> gs
+  sc1 --> b1 --> g1
+  sc1 --> b2 --> g2
+  sc1 --> b3 --> g3
+  sc1 --> c0 --> ov --> pf --> c1 --> d2
+  d2 -->|"Yes"| t1
+  d2 -->|"No"| p6 --> c2 --> p9
+  p9 --> g1 & g2 & g3
+  ov --> cx --> px
+  class s1 k_start
+  class sc1 k_screen
+  class p1,p2b,pf,p6,p9,px k_process
+  class r1,d2 k_decision
+  class g0,gs,g1,g2,g3 k_goto
+  class b1,b2,b3,c0,c1,c2,cx k_click
+  class ov k_overlay
+  class t1 k_toast

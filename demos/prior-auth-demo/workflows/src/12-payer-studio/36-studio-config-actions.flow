@@ -1,0 +1,27 @@
+title: Payers › Workflow Builder › Configure a step › Actions
+route: /payers/summit?tab=builder
+intro: Action steps do something: make a task, notify, draft a document, prepare a portal, fax or phone submission, ask for approval, set a status, schedule a follow-up, escalate, create an appeal, or update Case Manager. Preparing a submission is kept apart from sending it, and anything that reaches the payer needs a person's approval first.
+dir: TD
+---
+start s1 "Select an action step"
+decision d1 "Which kind of action?"
+screen a1 "Create task: 'Task', 'For', 'Due in'\nSend notification: 'Tell', 'Message'\nGenerate document: 'Document' (cover sheet, notice of admission, letter of medical necessity, appeal letter)"
+screen a2 "Request human approval: 'Who approves', 'What they approve'\nA clinician, an authorization coordinator or a manager\nThe real sign-off gate in New Case: only a clinician signs, nothing is sent until they do"
+screen a3 "Update authorization status: 'Status' (Draft, Ready for review, Submitted, Acknowledged,\nUnder review, Info requested, Approved, Denied, Completed)\nSchedule follow-up: 'After', 'Counted in', 'How'"
+screen a4 "Escalate case: 'Escalate to', 'Reason'\nUpdate Case Manager: 'History line' and 'Book the next review'\n(writes a real line to the case's history)"
+screen ph "Prepare phone call: 'What Caller says' (the script)\nand 'Place the call once approved'"
+screen pp "Prepare portal submission or Prepare fax packet:\n'Send it once approved' (off: the packet is prepared and a person sends it),\n'Notes for the person who submits', 'Add a cover sheet'\nCreate appeal: 'Kind' (reconsideration, peer-to-peer call, written appeal)"
+process p1 "Steps that reach the payer are marked with 'A person approves first', always on\n'Steps that reach the payer always need a person's approval.'"
+process p2 "Support shown on the step: Demo simulation for all but the sign-off gate and Update Case Manager\nNothing leaves the app"
+click c1 "Edit the script or any field"
+process p3 "Held in the builder until 'Save draft'"
+end e1 "The action is set up, and prepare is separate from send"
+
+s1 --> d1
+d1 -->|Task, notify, document| a1 --> p2
+d1 -->|Approval| a2 --> p2
+d1 -->|Status, follow-up| a3 --> p2
+d1 -->|Escalate, Case Manager| a4 --> p2
+d1 -->|Phone| ph --> p1
+d1 -->|Portal, fax, appeal| pp --> p1
+p1 --> p2 --> c1 --> p3 --> e1

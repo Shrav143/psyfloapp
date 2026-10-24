@@ -1,0 +1,62 @@
+title: Payers › Landing › Search, filter and open a payer
+route: /payers
+intro: The landing page is one calm card: a search box, three filters (state, insurance type, workflow status), a count line and one row per payer. A row shows the name and organization, the product and state, how many workflows are published and in draft, the date of the last update, whether the payer has a published workflow, and a mark when a rule change waits. The filters live in the address, so Back from a payer returns to the same list. The row or its name opens that payer's workspace.
+dir: TD
+---
+start s1 "Look at the list under the page title\n'6 payers. The agents know how each one works.'"
+screen card "Payers card\n'Search payers', 'All states', 'All insurance types',\n'Any workflow status', '6 payers · 3 with a change waiting'"
+screen hd "Column heads (wide screens)\nPayer and organization, Product and state, Workflows,\nLast update, Status, Pending rule changes"
+screen row "One row per payer, in the order\nOhio Medicaid, Commercial, Medicare Advantage, Behavioral carve-out\nName (link), organization under it when it differs,\nproduct and state, '2 published · 1 draft' or 'None yet',\nlast update (10/17), status pill, change mark"
+process nar "On a narrow screen the same facts sit on two lines\nName and status pill, then product, state, workflows, update and mark"
+decision dst "Does the payer have a published workflow?"
+process st1 "Green pill 'Published'"
+decision dst2 "Any draft?"
+process st2 "Ochre pill 'Drafts only'"
+process st3 "Grey pill 'No workflow'"
+decision dwt "Is a rule change waiting for this payer?"
+process wt1 "Ochre dot and 'Change waiting'"
+process wt0 "Green dot, 'None' (narrow: 'No change waiting')"
+process lu "Last update is the newest of\na saved workflow, a rule edit or a logged change\nShown as a date, 'None' when there is nothing"
+
+input i1 "Type in 'Search payers'"
+process sf "List narrows as you type\nMatches name, organization, product, state, plan type or group"
+click c2 "Pick a state in 'State'\nAll states, then each state the payers are in"
+click c3 "Pick an 'Insurance type'\nOhio Medicaid, Commercial, Medicare Advantage, Behavioral carve-out"
+click c4 "Pick a 'Workflow status'\nHas a published workflow, Only drafts, No workflow"
+process ad "The address holds the search and filters\n?q=, state=, type=, wf=\nChoosing 'All' clears that one"
+process cnt "'3 of 6 payers · 3 with a change waiting'"
+decision any "Does any payer still match?"
+screen em "'No payer matches “text”.' or 'No payer matches these filters.'\nButton 'Clear filters'"
+click clr "Click 'Clear filters'\n(also beside the filters once any is set)"
+process clr2 "Search and filters reset\nEvery payer shows again"
+
+click pk "Click a payer row, or its name"
+process nav "Address becomes /payers/the-payer\nOpens the payer's workspace on Workflow Builder"
+click ab "Click 'Add a payer'"
+click bk "Back, or 'Payers' in the breadcrumb"
+process bk2 "List returns with the same search and filters"
+end e1 "The chosen payer's workspace is showing"
+goto g1 "Continues in: Payers › Workspace › What the header says"
+goto g2 "Continues in: Payers › Add a payer"
+goto g3 "Continues in: Payers › Sites › Clinic-wide payers, drafts in view"
+
+s1 --> card --> hd --> row --> nar
+row --> dst
+dst -->|Yes| st1 --> dwt
+dst -->|No| dst2
+dst2 -->|Yes| st2 --> dwt
+dst2 -->|No| st3 --> dwt
+dwt -->|Yes| wt1 --> lu
+dwt -->|No| wt0 --> lu
+card --> i1 --> sf --> ad
+card --> c2 --> sf
+card --> c3 --> sf
+card --> c4 --> sf
+ad --> cnt --> any
+any -->|No| em --> clr --> clr2 --> row
+any -->|Yes| pk
+row --> pk --> nav --> e1
+e1 --> bk --> bk2
+nav --> g1
+card --> ab --> g2
+row -.-> g3

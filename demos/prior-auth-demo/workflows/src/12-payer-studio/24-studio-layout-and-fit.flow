@@ -1,0 +1,30 @@
+title: Payers › Workflow Builder › Arrange and fit the canvas
+route: /payers/summit?tab=builder
+intro: Pan with the scroll wheel or by dragging the background, zoom with Ctrl and the wheel or the plus and minus buttons, and use the tools above the canvas to tidy a messy workflow. Tidying only moves steps; it never changes a line or a setting.
+dir: TD
+---
+start s1 "Look at the canvas of an open workflow"
+screen cv "Canvas\nPan: scroll wheel or drag the background. Zoom: Ctrl and wheel, or the plus and minus buttons\nAlways opens on the beginning of the workflow at a readable size"
+click c1 "Click 'Fit the workflow to the screen'\n(also the frame button at the bottom left of the canvas)"
+process p1 "The whole workflow fits in view, however small the steps become"
+click c2 "Click 'Tidy up: arrange the steps automatically'"
+process p2 "Steps are placed in layers from Start, branches side by side,\nthe same arrangement every time, and the view fits again\nAnnounced: 'Arranged the steps'\nCan be undone"
+click c3 "Click the direction button\n'Steps run down the page. Switch to across'"
+process p3 "The steps are arranged across the page (or back down)\nExits and entries move to the right and left sides\nAnnounced: 'Steps now run across the page'"
+click c4 "Click 'Snap to grid'"
+process p4 "On: steps snap to a 20 px grid when moved or dropped\nOff: they stay where they are put"
+click c5 "Click 'Show the overview map'"
+process p5 "A small map of the whole workflow appears at the top right of the canvas\nDrag in it to pan"
+decision d1 "Is the workflow archived (read only)?"
+process p6 "Tidy, direction and snap are dimmed\nFit, zoom and the map still work"
+end e1 "The canvas is arranged how you want it"
+
+s1 --> cv
+cv --> c1 --> p1 --> e1
+cv --> c2 --> p2 --> e1
+cv --> c3 --> p3 --> e1
+cv --> c4 --> p4 --> e1
+cv --> c5 --> p5 --> e1
+cv --> d1
+d1 -->|Yes| p6 --> e1
+d1 -->|No| c2

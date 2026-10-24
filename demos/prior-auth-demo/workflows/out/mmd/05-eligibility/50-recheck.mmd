@@ -1,0 +1,72 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  a1@{ shape: stadium, label: "On the list, click 'Re-check' on a row" }
+  a2@{ shape: stadium, label: "On a result, click 'Re-check' on the verdict band" }
+  a3@{ shape: stadium, label: "Open the Verify page from a case and click 'Check now'" }
+  a4@{ shape: stadium, label: "In New Case, step 2, click 'Refresh verification'" }
+  q1@{ shape: diam, label: "Is a re-check already running for this patient?" }
+  p1@{ shape: rect, label: "<b>The click is ignored</b><br/>The button is off with a spinner" }
+  p2@{ shape: rect, label: "<b>Patient marked as checking</b><br/>List: button reads 'Checking' with a spinner, the quiet second line says 'Checking now'<br/>Result: 'Re-check' shows a spinner" }
+  g0@{ shape: hex, label: "Verify and the other agents ask again" }
+  x1@{ shape: st-rect, label: "<b>The state and the plan</b><br/>(demo: simulated, same answer as before)" }
+  w1@{ shape: delay, label: "About 1.1 seconds" }
+  qv@{ shape: diam, label: "Is Verify paused in Settings?" }
+  st1@{ shape: cyl, label: "<b>Verification record replaced</b><br/>Checked time is now, any booked re-check cleared, verdict unchanged<br/>A check that never ran ('Not checked') is asked again for real" }
+  st3@{ shape: cyl, label: "<b>Record kept as it was, with the warning</b><br/>'Verification service unavailable'<br/>Checked time unchanged" }
+  t3@{ shape: odd, label: "<b>'Could not re-check R-1042'</b><br/>'Verify is paused in Settings, so nothing was asked. The last result is still shown.'" }
+  q2@{ shape: diam, label: "Does the payer need a phone call? (Evergreen)" }
+  t1@{ shape: odd, label: "<b>'R-1042 re-checked'</b><br/>'Still Authorization first.' ('Now Cleared to bill.' when a check that never ran has answered)" }
+  t2@{ shape: odd, label: "<b>'R-0975 re-checked'</b><br/>'The plan's system did not answer, so Caller phoned. Still Fix before billing.'" }
+  subgraph gAfter ["What changes on screen"]
+  r1@{ shape: rect, label: "List: 'Checked 3 h ago' becomes 'Checked just now'" }
+  r2@{ shape: rect, label: "List: tile 'Re-check due' goes down by one if this row had a re-check booked" }
+  r3@{ shape: rect, label: "<b>Result: 'Time checked' in the facts line, 'Sat 10:40 am, 3 d ago', becomes '10:42 am, live'</b><br/>History in the side panel: 'Checked coverage and benefits: ...' at the new time" }
+  r4@{ shape: rect, label: "Verdict, sidebar badge and the other tiles do not change" }
+  end
+  v1@{ shape: rect, label: "<b>Opens the verify form pre-filled from the case</b><br/>Then the full live check (about 10 seconds)" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › The check finishes and is saved" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Re-check on its own" }
+  e1@{ shape: stadium, label: "Patient is up to date" }
+  a1 --> q1
+  a2 --> q1
+  a4 --> q1
+  q1 -->|"Yes"| p1
+  q1 -->|"No"| p2 --> w1 --> qv
+  qv -->|"No"| g0 --> x1 --> st1 --> q2
+  qv -->|"Yes"| st3 --> t3 --> e1
+  q2 -->|"No"| t1
+  q2 -->|"Yes"| t2
+  t1 --> r1 & r3 & r4
+  t2 --> r1 & r3 & r4
+  r1 --> r2 --> e1
+  r3 --> e1
+  r4 --> e1
+  r2 -.-> g2
+  a3 --> v1 --> g1
+  class a1,a2,a3,a4 k_start
+  class q1,qv,q2 k_decision
+  class p1,p2,r1,r2,r3,r4,v1 k_process
+  class g0 k_agent
+  class x1 k_ext
+  class w1 k_wait
+  class st1,st3 k_store
+  class t3,t1,t2 k_toast
+  class g1,g2 k_goto
+  class e1 k_end
+  style gAfter fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

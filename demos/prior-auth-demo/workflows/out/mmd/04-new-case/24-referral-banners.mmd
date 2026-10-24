@@ -1,0 +1,68 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Open the full referral page" }
+  d1@{ shape: diam, label: "Which banner is the most important one that applies?" }
+  subgraph gDec ["Declined"]
+  t1@{ shape: odd, label: "<b>Red banner 'Declined: Needs a higher level of care'</b><br/>The note, then 'A courtesy reply went to the referrer.'<br/>or 'No reply was sent to the referrer.'" }
+  c1@{ shape: trap-t, label: "Click 'Reopen'" }
+  st1@{ shape: cyl, label: "Referral is In review again" }
+  end
+  subgraph gAcc ["Decided and moving on"]
+  t2@{ shape: odd, label: "<b>Green banner 'Accepted into IOP' (or 'Admitted into IOP')</b><br/>'Target admission 10/21/2026. Owner Taylor Brooks.'<br/>Scheduled adds 'Intake visit Thu 9:00 am'" }
+  d2@{ shape: diam, label: "Did this referral start a request?" }
+  t3@{ shape: odd, label: "<b>'Linked request R-1042' with its status chip</b><br/>button 'Open R-1042'" }
+  c2@{ shape: trap-t, label: "Click 'Open R-1042' or the link 'R-1042'" }
+  t4@{ shape: odd, label: "'No request is linked yet. Continue with this referral to build the authorization for this patient.'" }
+  c3@{ shape: trap-t, label: "<b>Click 'Continue with this referral'</b><br/>(not shown once Admitted)" }
+  p1@{ shape: rect, label: "<b>Uses the case in the address, or starts a new one</b><br/>Referral goes into the case<br/>Asks 'Attach this referral?' first when the agents already ran" }
+  end
+  subgraph gOpen ["Open referral"]
+  t5@{ shape: odd, label: "<b>Amber banner 'Waiting on the referrer'</b><br/>'You asked … by fax Mon 2:10 pm. Reader reads the reply as soon as it arrives. For the demo, open More and choose 'Demo: simulate the referrer's reply'.'" }
+  t6@{ shape: odd, label: "<b>Amber banner 'Reader found 3 things to check'</b><br/>The problems in a sentence. Only while New or In review" }
+  c4@{ shape: trap-t, label: "Click 'Review findings'" }
+  p2@{ shape: rect, label: "Validation tab opens" }
+  t7@{ shape: odd, label: "<b>Red banner 'Verify found that coverage has lapsed'</b><br/>'Fix this before billing. Ask the referrer about a renewal or a new plan.'" }
+  c5@{ shape: trap-t, label: "Click 'Open coverage'" }
+  p3@{ shape: rect, label: "Coverage tab opens" }
+  end
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New Case › Referral › Full page: Validation tab" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New Case › Referral › Check coverage" }
+  g3@{ shape: subproc, label: "<b>Continues in: Authorizations › New Case › Referral › Accept a referral</b><br/>(attach the referral, then Intake)" }
+  g4@{ shape: subproc, label: "<b>Continues in: Dashboard</b><br/>Opens request R-1042" }
+  e1@{ shape: stadium, label: "<b>No banner</b><br/>A New or In review referral with no open findings and no lapsed coverage" }
+  s1 --> d1
+  d1 -->|"Declined"| t1 --> c1 --> st1
+  d1 -->|"Accepted, Scheduled, Admitted"| t2 --> d2
+  d2 -->|"Yes"| t3 --> c2 --> g4
+  d2 -->|"No"| t4 --> c3 --> p1 --> g3
+  d1 -->|"Awaiting info"| t5
+  d1 -->|"Open findings"| t6 --> c4 --> p2 --> g1
+  d1 -->|"Coverage lapsed"| t7 --> c5 --> p3 --> g2
+  d1 -->|"Nothing to say"| e1
+  class s1 k_start
+  class d1,d2 k_decision
+  class t1,t2,t3,t4,t5,t6,t7 k_toast
+  class c1,c2,c3,c4,c5 k_click
+  class st1 k_store
+  class p1,p2,p3 k_process
+  class g1,g2,g3,g4 k_goto
+  class e1 k_end
+  style gDec fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gAcc fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gOpen fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

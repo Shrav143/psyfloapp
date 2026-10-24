@@ -1,0 +1,79 @@
+title: Authorizations › Worklist › A row's action button
+route: /authorizations
+intro: Every row ends with one button: the next action its own record already had, so nothing new is decided here. This diagram covers the open requests (the queue's requests and the Dashboard requests that are in no other list). The buttons of ledger records (approved authorizations), reviews, saved drafts and accepted denials are drawn with those views.
+dir: TD
+also: The button column stays narrow, so three labels are shortened on the button and said in full in its tooltip and its screen reader name: 'Go to action' (Go to this action), 'Open on Dashboard' (Open on the Dashboard), 'Open the denial' (Open in Denial Intelligence). The button reads the record only when it is clicked: a draft is made from a request only when a person asks for it.
+---
+start s1 "A row in any view except Reviews this week"
+decision dK "Where does the row come from?"
+
+group gQ "An open queue request"
+  decision q1 "Is it on the Dashboard past Preparing, asking you or moved on?"
+  process q2 "Button 'Open on Dashboard'\n'Review Packet's answer to the payer's question', 'Wait for Beacon to decide' or 'Confirm the write-back to the EMR'"
+  decision q3 "Is it a denial?"
+  process q4 "Button 'Open the denial'\n'Review the brief and make the peer-to-peer call'"
+  decision q5 "Do all four checks pass?"
+  process q6 "Button 'Send to payer'\n'Review the draft, then sign and send it'"
+  decision q7 "Is a recommended action still open?"
+  process q8 "Button 'Go to action'\nthe first open action, e.g. 'Name the step-down provider'"
+  process q9 "Button 'Open the draft'\n'Read the draft again'"
+  decision qP "Is it with the payer?"
+  process q0 "'Wait for Beacon to decide'\n'Open on Dashboard' when the Dashboard has it, else an outlined 'Open'"
+endgroup
+
+group gR "A Dashboard-only request"
+  decision r1 "What is it?"
+  process r2 "A denial: 'Open the denial'"
+  process r3 "Still preparing: 'Review and sign'"
+  process r4 "It needs you: 'Open on Dashboard'"
+  process r5 "Anything else: an outlined 'Open'"
+endgroup
+
+click c1 "Click the button"
+process g1 "'Go to action': the case page on Recommended actions, scrolled to that card\n/authorizations/case/R-1042?tab=actions&rec=stepdown"
+process g2 "'Send to payer': the request's draft in New Case, made from the request if it has none\nReview & submit when ready, Authorization preparation when agents still have work"
+process g3 "'Review and sign' on a Dashboard request: a draft is made from the request and opened in New Case"
+process g4 "'Open on Dashboard': /dashboard?request=ID opens its request panel"
+process g5 "'Open the denial': /denials/ID"
+process g6 "'Open the draft' and 'Open': the case page (Draft tab for 'Open the draft')"
+
+goto x1 "Continues in: Authorizations › Case page › Recommended actions › The tab"
+goto x2 "Continues in: Authorizations › Case page › Send to payer and review and sign"
+goto x3 "Continues in: Dashboard › Request drawer › Open and read a request"
+goto x4 "Continues in: Denial Intelligence › A denial opened"
+goto x5 "Continues in: Authorizations › Case page › Ways in"
+goto xO "Continues in: Authorizations › Approved › Open an approved authorization"
+goto xD "Continues in: Authorizations › In progress › Drafts being prepared"
+goto xS "Continues in: Authorizations › Denied › Step-down plans from accepted denials"
+goto xV "Continues in: Authorizations › Reviews this week › The view"
+process pr "Reviews this week shows the review's own button instead, on every row that has an unsigned review"
+
+s1 --> dK
+dK -->|Queue request| q1
+dK -->|Dashboard request only| r1
+dK -.->|Ledger record: approved, or sent today| xO
+dK -.->|Saved draft| xD
+dK -.->|Accepted denial| xS
+s1 -.-> pr -.-> xV
+q1 -->|Yes| q2
+q1 -->|No| q3
+q3 -->|Yes| q4
+q3 -->|No| qP
+qP -->|Yes| q0
+qP -->|No: still preparing| q5
+q5 -->|Yes| q6
+q5 -->|No| q7
+q7 -->|Yes| q8
+q7 -->|No| q9
+r1 -->|Denial| r2
+r1 -->|Preparing| r3
+r1 -->|Needs you| r4
+r1 -->|Other| r5
+q2 & q4 & q6 & q8 & q9 & q0 --> c1
+r2 & r3 & r4 & r5 --> c1
+c1 --> g1 --> x1
+c1 --> g2 --> x2
+c1 --> g3 --> x2
+c1 --> g4 --> x3
+c1 --> g5 --> x4
+c1 --> g6 --> x5

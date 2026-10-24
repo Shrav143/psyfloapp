@@ -1,0 +1,37 @@
+title: Dashboard › Table controls › Clear filters and empty states
+route: /dashboard?payer=cardinal&program=iop&type=recertification&stage=appeal
+intro: When 'Clear filters' appears, what it resets, and what the table shows when the controls match nothing.
+dir: TD
+---
+start s1 "Pick Payer, Program, Request type or Status, press a Lifecycle chip, or turn on 'Needs me today'"
+decision d1 "Is a menu not 'All', a chip pressed, or 'Needs me today' on?"
+screen sc1 "Table header\nGhost button 'Clear filters' after the menus"
+screen sc0 "No 'Clear filters' button\nAll four menus show 'All' and the toggle is off"
+click c1 "Click 'Clear filters'"
+process p1 "Payer, Program, Request type and Status go back to 'All'\n'Needs me today' turns off"
+store w1 "Filters"
+process p2 "Address loses payer, program, type and stage"
+process p3 "Table goes back to its first 8 rows"
+screen sc2 "Every authorization is shown again\n'40 authorizations', 'Showing 8 of 40'"
+end e1 "Back to the full list"
+end e0 "Nothing to clear\nThe button appears as soon as a control is set"
+
+decision d2 "Do any authorizations match?"
+process p4 "Example: Cardinal, IOP, Recertification, Denied / appeal"
+screen em1 "Table title '0 authorizations'\nThe Lifecycle still counts every state that Payer, Program and Request type leave"
+overlay em4 "Empty state in the card\n'No authorizations match'\n'The filters hide everything. Clear them to see every authorization again.'"
+decision d3 "Is only 'Needs me today' on?"
+screen em5 "Empty state 'Nothing needs you today'\n'Every authorization is with a payer or with the agents.'"
+click c2 "Click 'Clear filters' in the empty state"
+goto g1 "Continues in: Dashboard › Table controls › Needs me today, Payer, Program, Status and Request type"
+
+s1 --> d1
+d1 -->|Yes| sc1 --> c1 --> p1 --> w1 --> p2 --> p3 --> sc2 --> e1
+d1 -->|No| sc0 --> e0
+w1 --> d2
+d2 -->|Yes| sc2
+d2 -->|No| p4
+p4 --> em1 --> d3
+d3 -->|No| em4 --> c2 --> p1
+d3 -->|Yes| em5 --> c2
+sc1 -.-> g1

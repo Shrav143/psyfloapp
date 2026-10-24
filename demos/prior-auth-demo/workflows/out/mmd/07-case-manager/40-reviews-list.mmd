@@ -1,0 +1,71 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Click the view chip 'Reviews this week 47'" }
+  s2@{ shape: stadium, label: "<b>Demo menu › Suggested path › 'Authorizations: reviews this week'</b><br/>or an old /manager?tab=reviews link" }
+  ad@{ shape: cyl, label: "<b>?view=reviews in the address</b><br/>The table goes back to page 1" }
+  hd@{ shape: curv-trap, label: "Header: 'Draft all due reviews' and 'Sign all clean drafts' before 'New Case'" }
+  gB@{ shape: subproc, label: "Continues in: Authorizations › Reviews this week › Draft all due reviews and sign all clean drafts" }
+  tb@{ shape: curv-trap, label: "'47 authorizations', ordered by the review's time, today first" }
+  subgraph gRow ["What a row says in this view"]
+  r1@{ shape: rect, label: "<b>Patient / request and Status as on every view</b><br/>The request's own chip: Approved, With the payer, Ready to sign, Denial route ..." }
+  r2@{ shape: rect, label: "<b>Column 'Review': 'Not drafted yet', 'Drafted', 'Needs your update' or 'Signed'</b><br/>'Check to look at' (amber) beside a draft whose checks did not all pass<br/>A review that needs an update shows what is missing, in amber" }
+  r3@{ shape: rect, label: "<b>Column 'Due': 'Review 2 · Tue 10/20, 8:30 am'</b><br/>Sorting by 'Due' sorts by that time" }
+  r4@{ shape: rect, label: "Owner: the agent who drafted it (Scribe for Residential and Detox, Cadence for PHP and IOP) or the request's own" }
+  r5@{ shape: rect, label: "Notes: 'Consider a step-down' on R-0873 and P-1522 (hover for why)" }
+  end
+  db@{ shape: diam, label: "What does the review need?" }
+  b1@{ shape: rect, label: "Needs your update: 'Update the review' (green)" }
+  b2@{ shape: rect, label: "Not drafted yet: 'Open the review' (outlined)" }
+  b3@{ shape: rect, label: "Drafted and clean: 'Review and sign' (green)" }
+  b4@{ shape: rect, label: "Drafted with a check to look at: 'Check the review' (green)" }
+  b5@{ shape: rect, label: "Signed: the row's own button again ('Open', 'Send to payer', 'Open on Dashboard')" }
+  c1@{ shape: trap-t, label: "Click the button" }
+  rv@{ shape: cyl, label: "?review= and the review ID in the address (replaces the entry)" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Reviews this week › The review drawer" }
+  c2@{ shape: trap-t, label: "Click the ID, the row or its quick view icon" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Read a row" }
+  f1@{ shape: rect, label: "<b>Search and every filter narrow the view; 'Any deadline' counts it (6, 16, 32)</b><br/>There is no review-status filter: the 'Review' column shows it" }
+  gF@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Search and filter" }
+  p5@{ shape: rect, label: "<b>A next review booked inside the week takes the signed one's place on the row</b><br/>The week ends on Sunday night whatever the demo clock says" }
+  e1@{ shape: stadium, label: "The week's reviews are on screen" }
+  s1 --> ad
+  s2 --> ad
+  ad --> hd --> gB
+  ad --> tb --> r1 --> r2 --> r3 --> r4 --> r5
+  r2 --> db
+  db -->|"Missing item"| b1
+  db -->|"No draft"| b2
+  db -->|"Clean"| b3
+  db -->|"Check to look at"| b4
+  db -->|"Signed"| b5
+  b1 & b2 & b3 & b4 --> c1 --> rv --> g1
+  tb --> c2 --> g2
+  tb -.-> f1 -.-> gF
+  r3 -.-> p5
+  b5 --> e1
+  r5 --> e1
+  class s1,s2 k_start
+  class ad,rv k_store
+  class hd,tb k_screen
+  class gB,g1,g2,gF k_goto
+  class r1,r2,r3,r4,r5,b1,b2,b3,b4,b5,f1,p5 k_process
+  class db k_decision
+  class c1,c2 k_click
+  class e1 k_end
+  style gRow fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

@@ -1,0 +1,74 @@
+title: Global shell › Top bar › Ask FLO › Answers that read the screen
+route: Every page (Ask FLO drawer)
+intro: Five of FLO's rules read the demo data for one case, one payer or one screen: what is missing, when an authorization ends, what a payer requires, which reviews are due, which patients need a fix before billing. When the question names a case ('R-1042') FLO uses it; otherwise it uses the case page that is open; otherwise the request that needs you first. Each answer names the case, quotes live data and ends with a link to the exact place. They are recommendations, never payer facts. They read only the cases at the sites in view: a case at the other site is 'not found' for a viewer limited to one site, and the review, coverage and denial counts are for the sites in view.
+dir: TD
+also: The short line 'This is FLO's reading of the demo data, not a payer confirmation.' appears once, under the answers that read payer rules, coverage or an authorization. The numbers and the wording are computed when the question is asked.
+---
+start s1 "A question reaches one of the five rules\n(a chip for the screen, or typed text)"
+decision d0 "Which key words?"
+
+group gM "Missing: 'What is missing for R-1042?'"
+  decision m1 "Which case?\nNamed in the question, else the open case page, else the request that needs you first, among the cases in view"
+  agent m2 "FLO reads the case's draft\nOpen items still unresolved, by kind: Missing, To settle, Risk\nThe payer's document count from the saved Payers list"
+  decision m3 "Was the request already sent?"
+  toast m4 "'Nothing is missing for R-0870 (Summit, Residential 3.5). It was already sent, so it is with Summit and Navigator is tracking it.'"
+  toast m5 "'R-1042 (Summit, Residential 3.5) has 3 open items in the draft.'\n'To settle: One date conflict needs your answer ...'\n'Risk: Relapse risk is high without a named step-down.'\n'Missing: A therapy note from the last 14 days is missing (8 of 9 Summit documents).'\n'Summit asks for 9 documents at Residential 3.5.'\nFLO's reading line"
+  click ml "Click 'Open R-1042, Recommended actions'"
+endgroup
+
+group gX "Expiry: 'When does this authorization run out?'"
+  agent x1 "FLO reads the case's approved authorization (the record behind Authorizations › Approved) and its next unsigned review"
+  decision x2 "What does the row hold?"
+  toast x3 "End date: 'I-2207 (Cardinal, IOP) has used 38 of 48 units. The authorization ends in 3 days (Fri 10/23).'\n'Its next clinical review is Wed 10/21, 4:00 pm.'"
+  toast x4 "Measured in units, no date: 'has used 16 of 48 units, so 32 units are left. The ledger holds no end date for it.'"
+  toast x5 "Other next event: 'has used 14 of 14 days. The approved days are used up. The payer's decision on the next stay is expected Thu 10/22.'\nNo approval yet: 'has no approval yet, so there is nothing to run out.'\nAway from a case page with none ending: 'No approved authorization has an end date ahead of it.' with 'Open Authorizations' (the All view)"
+  click xl "Click 'Open I-2207'"
+endgroup
+
+group gR "Requires: 'What does Summit require?'"
+  agent r1 "FLO reads the payer's saved configuration on Payers\nThe payer is named in the question, else the open case's payer"
+  toast r2 "On a case page: 'I-2207: Cardinal Health Plan asks for 6 documents at IOP: ASAM multidimensional assessment, ... and 2 more.'\nOtherwise: 'asks for 9 documents at Residential 3.5, 6 at IOP, 7 at PHP and 8 at Detox.'\n'Timing: ...' and 'After a denial: ...'\n'A change waits for you: Criteria changed, version 2026.3' when one is unacknowledged"
+  click rl "Click 'Open Payers, Cardinal, Documents'"
+endgroup
+
+group gV "Reviews: 'Which reviews are due?'"
+  agent v1 "FLO reads this week's clinical reviews that are not signed"
+  toast v2 "'47 reviews are due this week, 5 of them due now or overdue: 35 drafted (29 clean), 4 not drafted yet, 8 need a clinician's update.'\n'Next: ...' and 'Needs your update: R-0912, R-0899, R-0881, and 5 more.'"
+  click vl "Click 'Open R-0912, review'\n(with nothing due: 'No review is due this week. Every one has been signed.' and 'Open Reviews this week')"
+  process vp "Drawer closes. Goes to /authorizations?view=reviews&review=rv-R-0912\nThe worklist opens on Reviews this week with R-0912's review drawer open"
+endgroup
+
+group gE "Eligibility: 'Which patients need a fix before billing?'"
+  agent e1 "FLO reads the coverage checks and their verdicts"
+  toast e2 "'5 patients need a fix before billing.'\nOne line each, in the screen's order: 'R-0921 (J.D., Cardinal): 14 of 14 days used.' 'R-1118 (A.F., Beacon): the plan does not cover the service.' 'I-2275 (E.K., Summit): another plan pays first.'\nFLO's reading line"
+  click el "Click 'Open R-0921 in Eligibility & Benefits'"
+endgroup
+
+endx n1 "Nothing to read: 'I did not find R-9999 among the cases you can see. (the same for a real case at the other site, e.g. I-2207 for Dr. Rivera)' or 'Tell me which payer, for example: What does Summit require?'\nThe chips for the screen stay under it"
+
+goto g1 "Continues in: Authorizations › Case page › Recommended actions › The tab"
+goto g2 "Continues in: Authorizations › Case page › Ways in"
+goto g3 "Continues in: Payers › Rules & Instructions › Read the document list"
+goto g4 "Continues in: Authorizations › Reviews this week › The review drawer"
+goto g5 "Continues in: Authorizations › Eligibility & Benefits › Result › What the page shows"
+
+s1 --> d0
+d0 -->|missing, incomplete| m1
+d0 -->|expir, run out, units, end| x1
+d0 -->|require| r1
+d0 -->|review| v1
+d0 -->|billing, eligib, fix before| e1
+m1 -->|Found| m2 --> m3
+m1 -->|No such case| n1
+m3 -->|Yes| m4 --> ml
+m3 -->|No| m5 --> ml
+ml --> g1
+x1 --> x2
+x2 -->|Expiry date| x3 --> xl
+x2 -->|Units only| x4 --> xl
+x2 -->|Anything else| x5 --> xl
+xl --> g2
+r1 --> r2 --> rl --> g3
+r1 -.-> n1
+v1 --> v2 --> vl --> vp --> g4
+e1 --> e2 --> el --> g5

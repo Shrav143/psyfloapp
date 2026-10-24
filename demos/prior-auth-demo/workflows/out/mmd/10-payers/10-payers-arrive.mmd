@@ -1,0 +1,71 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Click 'Payers' in the sidebar</b><br/>under Connections" }
+  s2@{ shape: stadium, label: "<b>Open a link to one payer</b><br/>Bell notification, FLO answer, Demo menu,<br/>Eligibility 'Rules' link, an address" }
+  p1@{ shape: rect, label: "<b>Address is /payers</b><br/>No payer" }
+  p2@{ shape: rect, label: "<b>Address is /payers/cardinal?tab=changes</b><br/>or ?tab=builder, rules, test, history,<br/>or the older process, documents, changes" }
+  d1@{ shape: diam, label: "Does the address name a payer?" }
+  d2@{ shape: diam, label: "Is it a known payer?" }
+  nf@{ shape: curv-trap, label: "<b>'That payer is not in the demo'</b><br/>Button 'Back to all payers'" }
+  cnf@{ shape: trap-t, label: "Click 'Back to all payers'" }
+  land@{ shape: curv-trap, label: "<b>Payers landing page</b><br/>'N payers. The agents know how each one works.'<br/>Search, three filters, 'Add a payer', one row per payer" }
+  d3@{ shape: diam, label: "Which view does ?tab name?" }
+  t1@{ shape: rect, label: "<b>builder, process, missing or unknown</b><br/>Opens Workflow Builder" }
+  t2@{ shape: rect, label: "<b>rules</b><br/>Opens Rules & Instructions" }
+  t3@{ shape: rect, label: "<b>documents</b><br/>Opens Rules & Instructions with the<br/>Clinical documentation group open and in view" }
+  t4@{ shape: rect, label: "<b>test</b><br/>Opens Test Workflow" }
+  t5@{ shape: rect, label: "<b>history, changes</b><br/>Opens History & Changes" }
+  ws@{ shape: curv-trap, label: "<b>Payer workspace</b><br/>Breadcrumb 'Payers › name'<br/>Header, then four tabs" }
+  subgraph gB ["What the badges count"]
+  b1@{ shape: rect, label: "<b>Sidebar 'Payers' badge</b><br/>Payers with a change waiting<br/>3 at the start: Cardinal, Evergreen and Harborview.<br/>Falls when a change is applied. Same for every viewer and site" }
+  b2@{ shape: rect, label: "<b>'History & Changes' tab badge</b><br/>The waiting change plus each Historian suggestion<br/>Falls as each is handled" }
+  end
+  g_land@{ shape: subproc, label: "Continues in: Payers › Landing › Search, filter and open a payer" }
+  g_add@{ shape: subproc, label: "Continues in: Payers › Add a payer" }
+  g_head@{ shape: subproc, label: "Continues in: Payers › Workspace › What the header says" }
+  g_bld@{ shape: subproc, label: "Continues in: Payers › Workflow Builder › Read a workflow" }
+  g_rules@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Read the rules" }
+  g_test@{ shape: subproc, label: "Continues in: Payers › Test Workflow › Run a test case" }
+  g_hist@{ shape: subproc, label: "Continues in: Payers › History & Changes › Read what changed" }
+  g_site@{ shape: subproc, label: "Continues in: Payers › Sites › Clinic-wide payers, drafts in view" }
+  s1 --> p1 --> d1
+  s2 --> p2 --> d1
+  d1 -->|"No"| land
+  d1 -->|"Yes"| d2
+  d2 -->|"No"| nf --> cnf --> land
+  d2 -->|"Yes"| d3
+  d3 --> t1 & t2 & t3 & t4 & t5
+  t1 & t2 & t3 & t4 & t5 --> ws
+  land --> g_land
+  land -.-> g_add
+  ws --> g_head
+  ws -->|"Workflow Builder"| g_bld
+  ws -->|"Rules & Instructions"| g_rules
+  ws -->|"Test Workflow"| g_test
+  ws -->|"History & Changes"| g_hist
+  land -.-> b1
+  ws -.-> b2
+  ws -.-> g_site
+  class s1,s2 k_start
+  class p1,p2,t1,t2,t3,t4,t5,b1,b2 k_process
+  class d1,d2,d3 k_decision
+  class nf,land,ws k_screen
+  class cnf k_click
+  class g_land,g_add,g_head,g_bld,g_rules,g_test,g_hist,g_site k_goto
+  style gB fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

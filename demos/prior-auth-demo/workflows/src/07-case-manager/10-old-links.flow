@@ -1,0 +1,58 @@
+title: Authorizations › Old links › Case Manager addresses and links from other tabs
+route: /manager, /active (both redirect to /authorizations)
+intro: Case Manager is no longer a page. Its old addresses redirect to the matching Authorizations view, and the links other tabs still make to it land there too: Active cases is All, Reviews this week is its own view. The sidebar has no Case Manager row.
+dir: TD
+also: The redirect replaces the entry, so Back does not return to /manager. It always names the view, so an old link opens All or Reviews this week, never the last view used. Only ?tab=, ?show= and ?review= carry over; search and filters on an old address are dropped. Some text in other tabs still says Case Manager (the Dashboard's 'Open Active cases', the 'Decision accepted' and 'Drafts updated' messages).
+---
+start s1 "A saved or typed old address\n/manager, /manager?tab=reviews, /manager?tab=cases, /active"
+start s0 "An old queue address: /authorizations?status=ready, ?urgency=now"
+goto gQ "Continues in: Authorizations › Worklist › Addresses and old queue links"
+
+group gIn "Old Case Manager links"
+  click c1 "Dashboard › Lifecycle: 'Active' or 'Renewal due'"
+  click c2 "Dashboard: 'Open Active cases' under the requests table, or a 'Do next' item for a saved draft"
+  click c3 "Denial Intelligence › an accepted denial: 'Plan the step-down'\nor the notification 'Denial closed'"
+  click c4 "Ask FLO: 'Open Reviews this week' or 'Open R-0912, review'"
+  click c5 "Ledger case page: 'Open the review'"
+endgroup
+click c6 "Notification 'Drafts updated' (after a payer change), Eligibility result 'Open in Authorizations', New Case 'Back to Authorizations'"
+process r6 "Go to /authorizations with no view\nThe last view and filters used come back"
+
+process r1 "/authorizations?view=all&show=active or show=renewal"
+process r2 "/authorizations?view=all"
+process r4 "/authorizations?view=reviews, with &review= and the review ID for one review"
+
+process rd "/manager and /active redirect at once\n?tab=reviews or any ?review= gives view=reviews; anything else view=all\n?show=active or renewal and ?review= are kept"
+decision d1 "Which view does the address name?"
+decision d2 "Does it carry ?review=?"
+overlay ov "The review drawer opens over Reviews this week"
+goto gD "Continues in: Authorizations › Reviews this week › The review drawer"
+goto gR "Continues in: Authorizations › Reviews this week › The view"
+decision d3 "Does it carry ?show=?"
+screen sc "All, with the chip 'Showing Active (approved, units left)'\nor 'Showing Renewal due (review due or ending within 7 days)'\nActive 40 rows, Renewal due 19: the Dashboard's own numbers"
+goto gS "Continues in: Authorizations › Worklist › Deadline, More and the Showing chip"
+screen al "All, every row"
+goto gA "Continues in: Authorizations › Worklist › Arrive and read the views"
+process sb "Sidebar: 'All Authorizations' is green\nThe Authorizations badge is unchanged (19): Case Manager's own badge is gone; its items count in 'Needs attention'"
+end e1 "Authorizations is open on the view the old link meant"
+
+s1 --> rd
+s0 --> gQ
+c1 --> r1
+c2 --> r2
+c3 --> r2
+c4 --> r4
+c5 --> r4
+c6 --> r6 --> gA
+r1 & r2 & r4 --> d1
+rd --> d1
+d1 -->|Reviews this week| d2
+d2 -->|Yes| ov --> gD
+d2 -->|No| gR
+d1 -->|All| d3
+d3 -->|Yes| sc --> gS
+d3 -->|No| al --> gA
+d1 -.-> sb
+sc --> e1
+al --> e1
+ov --> e1

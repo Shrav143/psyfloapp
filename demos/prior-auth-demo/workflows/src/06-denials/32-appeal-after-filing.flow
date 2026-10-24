@@ -1,0 +1,37 @@
+title: Denial Intelligence › Written appeal › After filing
+route: /denials/D-3318
+intro: A filed appeal (new, or seeded like D-3279, D-3284 and D-3272) shows a waiting block, a read-only letter and the button 'Record the payer's decision'. The payer's answer is recorded by a person, in its own diagram.
+dir: TD
+also: Demo only: the 30-day decision date is fixed, the receipt is saved at filing, and fast-forwarding changes nothing on a filed appeal. Nobody plays the payer, so the person records its decision. In production Navigator finds the answer in its daily check.
+---
+start s1 "A filed appeal is on screen (after 'Sign and file', or a seeded one)"
+screen b1 "Written appeal choice in Your options\n'Appeal filed 10/20 · decision 11/19'\n'Record the payer's decision' and 'View the appeal'"
+screen b2 "Buttons 'View the appeal' and 'Record the payer's decision'\nOther chips: 'Second-level appeal filed', 'External review'\nSeeded appeals read 'Filed 10/05, decision 11/02'"
+screen h1 "Header pill 'Appeal filed, decision 11/19'\nList pill 'Decision 11/19'\nNo count-down: the payer has the clock"
+process p0 "'Your options' row is hidden"
+
+click c1 "Click 'View the appeal'"
+overlay o1 "Drawer 'Appeal letter · D-3318' (read only)\n'Filed by Medical director. Decision 11/19.'\nSeeded appeals read 'Filed 10/05. Decision 11/02.'"
+doc dc1 "Letter as filed, pill 'Filed letter, read only'\nEvidence list with greyed tick boxes"
+click c2 "Click 'Close', the X, press Esc, or click the dimmed area"
+
+wait w1 "Decision clock runs: 30 days from filing\n(PRD: from confirmed receipt; 72 hours when expedited)"
+wait w2 "Navigator checks for the decision each day\nShown in History as a scheduled step"
+ext x1 "PRD: receipt call 3 business days after sending\n'Not on file' means resend or a dispute file (not in the demo)"
+process p1 "Fast-forward moves the clock, but no status, pill or notification changes on its own"
+ext x2 "Payer decides: overturns, partly overturns or upholds\n(demo: nobody plays this)"
+click c3 "Click 'Record the payer's decision'"
+end e3 "Back on the page, nothing changed"
+goto g1 "Continues in: Dashboard › Request drawer › Check now, Open case and closing"
+goto g2 "Continues in: Denial Intelligence › Written appeal › Record the payer's decision"
+
+s1 --> b1 --> h1
+b1 --> p0
+b1 --> b2
+b2 --> c1 --> o1 --> dc1 --> c2 --> e3
+b1 --> w1 --> w2 --> x2
+w2 --> x1
+w2 -.-> p1
+x2 --> c3
+b2 --> c3 --> g2
+h1 --> g1

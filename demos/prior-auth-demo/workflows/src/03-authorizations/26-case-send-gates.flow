@@ -1,0 +1,69 @@
+title: Authorizations › Case page › Send to payer and review and sign
+route: /authorizations/case/R-1042
+intro: When the 'Send to payer' button is on or greyed out, what both header buttons do when clicked, and which New Case draft they open. Nothing is sent from the case page: a clinician signs in New Case.
+dir: TD
+also: Every request gets a draft in New Case, made from its own data when it has none (five requests have one already: R-1042, I-2207, R-0988, R-1101, I-2262). It never opens blank at Intake. 'Open in review and sign' is always on, even for a request already with the payer.
+---
+screen cp "Case page\n'Send to payer' appears once, in the 'Next:' block in the header, on every tab"
+decision d1 "Does the request already have a result (decided)?"
+process r1 "The button becomes a greyed-out 'Sent to payer'\nTooltip: 'Approved. Nothing left to send'\n(the result word comes from the request)"
+decision d2 "Is it already with the payer?"
+process r2 "The button becomes a greyed-out 'Sent to payer'\nTooltip: 'With the payer'\nThe status pill in the title says the same"
+decision d3 "Is it a denial?"
+process r3 "Greyed out. Tooltip: 'Denied. Advocate has the next step'"
+decision d4 "Do all four Integrity checks pass?"
+process r4 "Greyed out, next to the primary button for the next action\nChip 'Integrity 2/4'; tooltip 'Integrity 2/4: apply the matching actions'"
+process on "'Send to payer' is on, chip 'Integrity 4/4'\nIn the 'Next:' block it is the one primary button\nTooltip: 'Opens review and sign. A clinician signs before anything is sent.'"
+
+group gChk "What keeps a check open"
+  process k1 "'Every sentence matches the chart'\nopen after you edit the draft, until 'Re-check'"
+  process k2 "'Payer criteria are covered'\nopen until its action is applied (e.g. 'Name the step-down provider')"
+  process k3 "'Dates are consistent'\nopen until its action is applied (e.g. 'Settle the sertraline start date')"
+  process k4 "'Identifiers are protected'\nalways passes in the demo"
+endgroup
+process dm "Dismissing the action does not clear its check\nThe dismiss dialog warns about this"
+
+click b1 "Click 'Open in review and sign'\n(header, always on)"
+click b2 "Click 'Send to payer'\n(only when on)"
+process rp "Find this request's draft in New Case\nThe draft named like 'draft-r1042', or any draft with this case ID\nOr make one: draftFromRequest"
+decision d5 "Does the request already have a draft?"
+process mk "A draft is created from the request\nPatient, payer, level of care, request type, a reason and diagnoses from the case page\nThe documents the payer's saved list asks for, as sample files\nNot saved, so Authorizations does not list it as a draft"
+process up "A draft that exists is brought up to date\nAnswers from applied actions (sertraline date, step-down provider) are added\nThe therapy note is added when that action was applied\nWhen every check passes the run is marked finished"
+decision d6 "Where does the request stand?"
+goto g1 "Continues in: Authorizations › New Case › Authorization preparation › Start the run and watch it"
+goto g2 "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer"
+goto g3 "Continues in: Authorizations › New Case › Review & submit › After sending"
+decision dRec "Is the request on the Dashboard (recorded in the store)?"
+endx sent "New Case shows 'R-0912 was sent'\n'Open it on the Dashboard' and 'Back to Authorizations'\nThe draft is marked sent, so it cannot be signed again"
+endx sent2 "New Case shows 'R-1131 is with the payer'\n'It is already with the payer, so there is nothing to sign here.'\n'Back to the case' and 'Back to Authorizations'\nIt does not say it was sent by you, because the store has no such request"
+process ns "Nothing has been sent\nA licensed clinician signs in New Case"
+
+cp --> d1
+d1 -->|Yes| r1
+d1 -->|No| d2
+d2 -->|Yes| r2
+d2 -->|No| d3
+d3 -->|Yes| r3
+d3 -->|No| d4
+d4 -->|No| r4
+d4 -->|Yes| on
+r4 -.-> k1
+r4 -.-> k2
+r4 -.-> k3
+r4 -.-> k4
+k2 --> dm
+k3 --> dm
+cp --> b1
+on --> b2
+b1 --> rp
+b2 --> rp
+rp --> d5
+d5 -->|No| mk --> d6
+d5 -->|Yes| up --> d6
+d6 -->|Agents still have work, e.g. R-1042 before its actions are applied| g1
+d6 -->|Ready or all four checks passed, e.g. R-0988, R-1142, R-1042 after its actions| g2
+d6 -->|Already with the payer or decided| dRec
+dRec -->|Yes| sent
+dRec -->|No| sent2
+rp -.-> ns
+sent --> g3

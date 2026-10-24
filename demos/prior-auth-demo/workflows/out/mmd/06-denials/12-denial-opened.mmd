@@ -1,0 +1,62 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Open /denials/D-3318 (a dashboard row, a link from another screen)" }
+  cr@{ shape: curv-trap, label: "Crumbs 'Denial Intelligence › D-3318'" }
+  cb@{ shape: trap-t, label: "Click 'Denial Intelligence' in the crumbs" }
+  g0@{ shape: subproc, label: "Continues in: Denial Intelligence › Open denials list" }
+  h1@{ shape: curv-trap, label: "<b>Header card</b><br/>D-id (24 px), level of care chip, type pill ('Partial approval')<br/>Pills: the read ('Worth challenging', 'Borderline', 'Probably accept'), '64% chance of overturning', the deadline ('Peer-to-peer window closes in 36 h')<br/>Payer · initials, age · diagnosis · letter file name; 'Note: ...' when one was added" }
+  pv@{ shape: rect, label: "<b>The read comes from the chance: 50 and over, 35 to 49, under 35 (D-3306, 27%, reads 'Probably accept')</b><br/>A filed or settled denial drops the deadline pill: Your options says where it stands" }
+  b2@{ shape: trap-t, label: "Click 'Appeal analysis report'" }
+  g6@{ shape: subproc, label: "Continues in: Denial Intelligence › Appeal analysis report › Open and generate" }
+  b3@{ shape: trap-t, label: "Click 'Case R-0997'" }
+  g7@{ shape: subproc, label: "Continues in: Authorizations › Case page › Ways in" }
+  c5@{ shape: curv-trap, label: "<b>'Your options': the first section under the header</b><br/>Three compact choices: Peer-to-peer call, Written appeal, Accept<br/>Each with its chance and what it gets back; 'Recommended' on one; 'Compare the options' in the header" }
+  g3@{ shape: subproc, label: "Continues in: Denial Intelligence › Your options" }
+  g1@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Next step and where it stands" }
+  c2@{ shape: curv-trap, label: "<b>'What Cardinal said': the payer's words</b><br/>'What the chart shows': two or three sentences" }
+  c3@{ shape: curv-trap, label: "<b>'Where the denial is weak': findings with severity, source chip and fix</b><br/>Button 'Full summary' in the card header" }
+  g2@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Where the denial is weak" }
+  d1@{ shape: diam, label: "<b>Is it an administrative denial?</b><br/>'Late notice' or 'Retro-authorization denied'" }
+  c4@{ shape: curv-trap, label: "<b>The framework card, titled with its name: 'ASAM Criteria' (LOCUS or CALOCUS-CASII for mental health alone)</b><br/>Six compact rows: dot, D1 to D6 with the framework's names, a word ('High concern')" }
+  g8@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Framework dimensions and their pop-ups" }
+  p2@{ shape: rect, label: "The card is left out" }
+  fo@{ shape: curv-trap, label: "'History', folded: one list, newest first, a flag on the right" }
+  g9@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened › Folded sections" }
+  e1@{ shape: stadium, label: "Person reads the denial and acts from Your options" }
+  s1 --> cr --> cb --> g0
+  cr --> h1 --> pv
+  h1 --> b2 --> g6
+  h1 --> b3 --> g7
+  h1 --> c5 --> g3
+  c5 --> g1
+  c5 --> c2 --> c3 --> g2
+  c3 --> d1
+  d1 -->|"No"| c4 --> g8
+  d1 -->|"Yes"| p2
+  c4 --> fo
+  p2 --> fo
+  fo --> g9
+  fo --> e1
+  class s1 k_start
+  class cr,h1,c5,c2,c3,c4,fo k_screen
+  class cb,b2,b3 k_click
+  class g0,g6,g7,g3,g1,g2,g8,g9 k_goto
+  class pv,p2 k_process
+  class d1 k_decision
+  class e1 k_end

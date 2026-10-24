@@ -1,0 +1,50 @@
+title: Authorizations › New Case › Eligibility & Benefits › Retroactive authorization
+route: /authorizations/new/:draftId (step 2 of 4, type 'Retroactive authorization')
+intro: For care already given, Verify checks coverage for the dates of service, not for today. The check runs by itself, and again when it is old. When coverage had lapsed on those dates the warning says so and points to retro-eligibility; the person can go on with a documented exception. Retro approval still depends on the payer.
+dir: TD
+---
+start s1 "Click 'Continue to Eligibility & Benefits' on Intake"
+screen sc "Eligibility & Benefits · Retroactive authorization\nNo sentence under the title; the check covers the dates of service"
+decision dIn "Are the payer, level of care, member ID and the first date of service in?"
+screen sNeed "Card 'Verify needs a little more'\nButton 'Open Intake'"
+goto gIntake "Continues in: Authorizations › New Case › Intake › Retroactive authorization"
+decision dHave "Is there a check for this payer and level of care\nthat covers the dates of service and is under 24 hours old?"
+process pReuse "The check is reused"
+store stId "The case gets its id first, so the check is filed under it"
+agent aV "Verify checks coverage for the dates of service with Summit, about 1.2 seconds"
+store stRec "Check saved\nThe same record is on Eligibility & Benefits"
+screen sSum "Verification summary for the dates of service\n'Dates of service' in the details panel"
+decision dLapse "Was coverage active on the dates of service?\nExample: K.W., member ID ending 1012, lapsed 10/12"
+screen sLapse "Warning 'Coverage is not active'\n'Coverage lapsed 10/12. Ask the payer, or request retro-eligibility; a retro-authorization can cover the gap.'"
+click cDoc "Click 'Continue with a documented exception'"
+input iWhy "'Why go on without confirmed coverage?'\n'For example: the member renewed on 10/22 and the plan has not updated yet'"
+click cOk "Click 'Document and continue'"
+store stDoc "The reason is kept on the case\nIt goes to the request's History when sent"
+process pBlock "Without a documented exception the warning stays\nReview & submit marks 'Coverage' as a blocking item"
+process pRule "Retro approval depends on the payer\nIts Backdating rule, or 'No rule on file for ...', is on Intake and a note on Review & submit"
+goto gIntake2 "Continues in: Authorizations › New Case › Intake › Retroactive authorization"
+goto gWarn "Continues in: Authorizations › New Case › Eligibility & Benefits › Warnings and documented exceptions"
+goto gNoAuth "Continues in: Authorizations › New Case › Eligibility & Benefits › No authorization required"
+group gFoot "Footer bar"
+  click cBack "Click 'Back'"
+  click cSave "Click 'Save as draft'"
+  click cCont "Click 'Continue to Clinical documentation'"
+endgroup
+goto gDocs "Continues in: Authorizations › New Case › Clinical documentation › Required and typical documents by type"
+
+s1 --> sc --> dIn
+dIn -->|No| sNeed --> gIntake
+dIn -->|Yes| dHave
+dHave -->|Yes| pReuse --> sSum
+dHave -->|No| stId --> aV --> stRec --> sSum
+sSum --> dLapse
+dLapse -->|Yes, active| cCont
+dLapse -->|No, lapsed| sLapse
+sSum -.-> pRule --> gIntake2
+sLapse --> cDoc --> iWhy --> cOk --> stDoc --> cCont
+sLapse --> pBlock
+sLapse -.-> gWarn
+sSum -.-> gNoAuth
+sSum --> cBack
+sSum --> cSave
+cCont --> gDocs

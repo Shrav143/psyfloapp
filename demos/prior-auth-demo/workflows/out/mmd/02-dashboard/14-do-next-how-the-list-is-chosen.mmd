@@ -1,0 +1,69 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Any change to a request, the queue, the ledger, the clock, the EMR write-back switch or the site in view" }
+  p1@{ shape: rect, label: "FLO takes only the requests, queue items and ledger cases at the sites in view" }
+  subgraph gKinds ["What can be on the list"]
+  k1@{ shape: rect, label: "<b>A request ready to sign (all four checks passed)</b><br/>One a person signs" }
+  k2@{ shape: rect, label: "<b>A question from an agent on a request being prepared</b><br/>'Answer Scribe', 'Answer Packet'" }
+  k3@{ shape: rect, label: "<b>A payer's question with the draft answer waiting for review</b><br/>Info requested, waiting on you" }
+  k4@{ shape: rect, label: "A denial with a peer-to-peer deadline in the next 7 days" }
+  k5@{ shape: rect, label: "<b>A payer to chase</b><br/>A request in Submitted or Decision pending at least 4 hours late, or on day 5 of the CMS clock or later, with no agent already phoning" }
+  k6@{ shape: rect, label: "<b>An approval to write back</b><br/>Only while write-back is on in EMR Connect" }
+  k7@{ shape: rect, label: "An authorization that ends within 7 days, or has ended, with no request in flight to replace it" }
+  k8@{ shape: rect, label: "<b>Cases saved in New Case that wait for a person and have no row yet</b><br/>One line for all of them" }
+  end
+  p2@{ shape: rect, label: "<b>Each row gets a time</b><br/>The due time the Authorizations worklist sorts by, or the denial's deadline" }
+  d1@{ shape: diam, label: "Is it past the CMS decision time?" }
+  p3@{ shape: rect, label: "<b>It goes first</b><br/>Other rows are ordered by their due time, overdue first" }
+  p4@{ shape: rect, label: "<b>Softer rows wait a little longer than a hard deadline</b><br/>A late payer by 2 days, a renewal by 1 day, a write-back by 3 days" }
+  p5@{ shape: rect, label: "Rows with the same time: ready to sign, then a payer's question, then an agent's question, then a denial, then the rest" }
+  p6@{ shape: rect, label: "<b>The first five are shown</b><br/>The rest stay in the table under 'Needs me today'" }
+  sc@{ shape: curv-trap, label: "<b>Do next card</b><br/>Up to five rows, or 'Nothing needs you right now.'" }
+  d2@{ shape: diam, label: "Is the viewer limited to one site?" }
+  ss@{ shape: curv-trap, label: "<b>Only cases at that site</b><br/>A case at the other site is never named, counted or linked" }
+  g1@{ shape: subproc, label: "Continues in: Dashboard › Do next › What to do now and where each button leads" }
+  g2@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Days in state and the CMS decision time" }
+  g3@{ shape: subproc, label: "Continues in: Global shell › Top bar › Ask FLO › What FLO answers" }
+  s1 --> p1 --> d2
+  d2 -->|"Yes"| ss --> p2
+  d2 -->|"No"| p2
+  p1 --> k1 & k2 & k3 & k4 & k5 & k6 & k7 & k8
+  k1 --> p2
+  k2 --> p2
+  k3 --> p2
+  k4 --> p2
+  k5 --> p2
+  k6 --> p2
+  k7 --> p2
+  k8 --> p2
+  p2 --> d1
+  d1 -->|"Yes"| p3
+  d1 -->|"No"| p4
+  p3 --> p5
+  p4 --> p5
+  p5 --> p6 --> sc
+  sc --> g1
+  k5 -.-> g2
+  sc -.-> g3
+  class s1 k_start
+  class p1,k1,k2,k3,k4,k5,k6,k7,k8,p2,p3,p4,p5,p6 k_process
+  class d1,d2 k_decision
+  class sc,ss k_screen
+  class g1,g2,g3 k_goto
+  style gKinds fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

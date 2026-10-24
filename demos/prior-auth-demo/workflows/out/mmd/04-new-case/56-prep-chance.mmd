@@ -1,0 +1,49 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Open the Authorization preparation section with the agents running or done" }
+  sc@{ shape: curv-trap, label: "<b>Right column</b><br/>Card 'Approval chance': the ring, 'started at 62% → 88%', the likely range<br/>Card 'To raise it further' with two ticks" }
+  cBack@{ shape: trap-t, label: "Open Review & submit" }
+  sRev@{ shape: curv-trap, label: "<b>Review & submit shows the same number</b><br/>'Strong · likely 83-92%'<br/>'Summit usually decides in about 1.5 days. Based on 1,248 similar cases.'<br/>The 'Held back' sentence is under 'What is missing'" }
+  gMis@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › What is missing" }
+  subgraph gChance ["Approval chance panel"]
+  pRing@{ shape: rect, label: "<b>Ring starts at 62% ('started at 62%')</b><br/>It climbs as Verify, Criteria, Historian and Placement finish: 65, 72, 78, 83" }
+  pPill@{ shape: rect, label: "Pill: 'Moderate so far · likely 53-70%'" }
+  pSettle@{ shape: rect, label: "<b>After Forecaster: 88%</b><br/>Pill: 'Strong · likely 83-92%'<br/>'Based on 1,248 similar cases'" }
+  pHeld@{ shape: rect, label: "<b>Below the pill: 'Held back 3 points: 1 thing the payer asks for is not met.'</b><br/>Three points for each required document that is not in the case, and for a start date the payer's backdating rule does not allow, up to 12" }
+  end
+  subgraph gRaise ["To raise it further"]
+  cTick1@{ shape: trap-t, label: "<b>Tick 'Name the step-down provider'</b><br/>+2-4" }
+  cTick2@{ shape: trap-t, label: "<b>Tick 'Attach the 2025 IOP discharge summary'</b><br/>+1-3" }
+  pBoost@{ shape: rect, label: "<b>Chance goes up 3 or 2 points, never above 97%</b><br/>The summary will be rebuilt with an extra line" }
+  cUntick@{ shape: trap-t, label: "<b>Untick a box</b><br/>The points come off" }
+  end
+  s1 --> sc --> pRing --> pPill --> pSettle --> pHeld
+  sc --> cTick1 --> pBoost
+  sc --> cTick2 --> pBoost
+  pBoost --> cUntick
+  sc --> cBack --> sRev
+  pHeld -.-> gMis
+  sRev -.-> gMis
+  class s1 k_start
+  class sc,sRev k_screen
+  class cBack,cTick1,cTick2,cUntick k_click
+  class gMis k_goto
+  class pRing,pPill,pSettle,pHeld,pBoost k_process
+  style gChance fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gRaise fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

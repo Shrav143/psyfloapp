@@ -1,0 +1,62 @@
+title: Authorizations › Eligibility & Benefits › Verify › Try a sample
+route: /authorizations/eligibility/verify
+intro: Seven small chips in a tinted strip at the foot of the form fill it with a member who ends in a different answer, so every verdict can be seen without a trick. The last four digits of the member ID script the answer. 'Authorization first' is J.M.'s card, the headline case R-1042. 'More samples' opens five more chips for the checks that need a look (next diagram).
+dir: TD
+also: Demo only: the endings are scripted. Typing the same ending by hand gives the same answer, on Verify and on the Coverage row in New Case.
+---
+start s1 "Open the Verify page"
+screen sc "Strip 'Try a sample' at the foot of 'Patient and service'\nSeven small chips and 'More samples'"
+decision qs "Is R-1042 (Site A) in the site view?"
+process ps "'Authorization first' is left out: a Site B view never touches a Site A case"
+decision q1 "Click which chip?"
+
+group gPick "What each chip fills in"
+  process p1 "'Cleared to bill'\nBeacon PPO, IOP, member ending 2468\nBeacon asks for no authorization for IOP"
+  process p0 "'Authorization first'\nJ.M., 34, Summit Medicaid HMO, Residential 3.5, member SM7403964821\nThe check updates R-1042"
+  process p2 "'Coverage lapsed'\nSummit Medicaid HMO, Residential 3.5, member ending 1012"
+  process p3 "'Not found'\nLakeshore Behavioral, IOP, member ending 9999"
+  process p4 "'Not covered'\nBeacon PPO, Residential 3.5, member ending 3030"
+  process p5 "'Another plan pays first'\nSummit Medicaid HMO, IOP, member ending 6060"
+  process p6 "'Limit reached'\nCardinal Health Plan, Residential 3.5, member ending 9090"
+endgroup
+
+process pf "Payer, member ID, date of birth, program and date of service are all filled\nThe chip turns green. 'Check now' is on"
+click c1 "Click 'Check now'"
+process ck "Live check runs about 10 seconds\nChips and fields lock. 'Skip ahead' speeds it up\nThe member ID ending decides the answer"
+
+group gRes "Result: verdict, the fact behind it, rows"
+  screen r1 "'Cleared to bill' · Authorization 'Not required'\nEligibility 'Eligible', Benefits 'Covered', Patient pays 'Copay $40 per day, ...'\n'Beacon does not require one for IOP · 10/21/2026 to 10/31/2026'"
+  screen r0 "R-1042 · 'Authorization first' · Authorization 'In progress'\nButton 'Start authorization'"
+  screen r2 "'Fix before billing' · Coverage 'Lapsed 10/12'\nEligibility 'Needs a fix', 'Effective 01/01/2026, lapsed 10/12/2026'\nButton 'Request retro-eligibility'"
+  screen r3 "'Fix before billing' · Coverage 'Not found'\n'No coverage found for these details'; Benefits and What this service needs 'Not checked'\nNo 'Patient pays' row, no dates. Button 'Ask Caller to phone the payer'"
+  screen r4 "'Fix before billing' · Benefits 'Not covered'\nRow 'The service is not covered' in the side panel's 'Payment checks'"
+  screen r5 "'Fix before billing' · Other insurance 'Another plan pays first'\nRow 'Another plan pays first', chip 'Other plan', in the side panel"
+  screen r6 "'Fix before billing' · Limit '14 of 14 days used'\nBenefits '... · All 14 days used'\nRow 'Every authorized day is used', chip 'Limit reached'"
+endgroup
+
+process sd "The list already holds a patient for each reason\nR-1101 lapsed, R-0975 ended, R-1118 not covered\nI-2275 another plan pays first, R-0921 limit reached"
+goto g1 "Continues in: Authorizations › Eligibility & Benefits › Result › Which verdict and why"
+goto g2 "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows"
+goto g3 "Continues in: Authorizations › Eligibility & Benefits › Verify › More samples: checks that need a look"
+
+s1 --> sc --> qs
+qs -->|Yes| q1
+qs -->|No| ps --> q1
+q1 -->|Cleared to bill| p1 --> pf
+q1 -->|Authorization first| p0 --> pf
+q1 -->|Coverage lapsed| p2 --> pf
+q1 -->|Not found| p3 --> pf
+q1 -->|Not covered| p4 --> pf
+q1 -->|Another plan pays first| p5 --> pf
+q1 -->|Limit reached| p6 --> pf
+pf --> c1 --> ck
+ck -->|Ends 2468| r1
+ck -->|J.M.'s card| r0
+ck -->|Ends 1012| r2
+ck -->|Ends 9999| r3
+ck -->|Ends 3030| r4
+ck -->|Ends 6060| r5
+ck -->|Ends 9090| r6
+r1 & r0 & r2 & r3 & r4 & r5 & r6 --> g1
+sc -.-> sd --> g2
+sc -.-> g3

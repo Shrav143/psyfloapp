@@ -1,0 +1,44 @@
+title: Denial Intelligence › Deadlines › Overdue denials
+route: /denials/D-3318
+intro: What changes, and what still works, once a window has run out. Example: D-3318's peer-to-peer window after fast-forwarding 2 days, then a written-appeal deadline that has passed.
+dir: TD
+also: Demo only: nothing blocks filing after a deadline. Call times are offered only after the demo clock, so once the window has run out there is none to book.
+---
+start s1 "Peer-to-peer window of D-3318 has run out (Demo menu: fast-forward 2 days)"
+screen sc1 "List row moves to the top with the pill 'Window closed' (red)\nHeader pill 'Peer-to-peer window closed' (red)"
+process p1 "'Written appeal' becomes 'Recommended'\nThe peer-to-peer card is no longer chosen first"
+
+click c1 "Click the 'Peer-to-peer call' card"
+toast t1 "'The peer-to-peer window has closed'\n'A written appeal is still open.'"
+process p2 "The card is not selected"
+
+click c2 "Click 'Change the time' (the peer-to-peer choice)"
+overlay o1 "Modal 'Confirm the next step: peer-to-peer call'"
+decision d1 "Is any call time left? (starts after the demo clock, before the window closes)"
+toast t2 "'No call time is left inside the payer's window. Choose a written appeal instead.'\nConfirm is greyed out"
+process p3 "Only while the window is still open: the times offered are ahead of the clock\nThe call can be booked"
+click c3 "Click 'Cancel', the X, press Esc, or click the dimmed area"
+endx e1 "Nothing changes"
+
+click c4 "Click 'Open the brief'"
+screen b1 "Brief page: 'Closes in' reads 'Closed' in red\n'Key dates' still lists 'Peer-to-peer window closes'"
+click c5 "Click 'Record the call outcome'"
+goto g1 "Continues in: Denial Intelligence › Peer-to-peer › Record the call outcome"
+
+start s2 "A written-appeal or resubmission deadline has run out (example D-3301 after 42 days, D-3290 after 6 days)"
+screen sc2 "List pill 'Window closed' (red)\nHeader pill 'Appeal deadline passed' or 'Resubmission window closed' (red)"
+screen o2 "'Written appeal' card reads 'Deadline passed' in place of the time to file or resubmit\nStill 'Recommended'"
+click c6 "Click 'Draft the appeal', or 'Open the draft'"
+process p4 "Drafting, signing and filing work as usual\nDrawer sub line still says 'Due 11/30.'\nNo late warning (demo)"
+goto g2 "Continues in: Denial Intelligence › Written appeal › Confirm and draft"
+process p5 "Filed appeals have no deadline of ours, so they never turn overdue"
+
+s1 --> sc1 --> p1
+sc1 --> c1 --> t1 --> p2
+sc1 --> c2 --> o1 --> d1
+d1 -->|No| t2 --> c3
+d1 -->|Yes| p3 --> c3
+c3 --> e1
+sc1 --> c4 --> b1 --> c5 --> g1
+s2 --> sc2 --> o2 --> c6 --> p4 --> g2
+sc2 -.-> p5

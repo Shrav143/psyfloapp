@@ -1,0 +1,56 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Scroll below the Connection health card" }
+  sc@{ shape: curv-trap, label: "<b>Closed section 'Advanced'</b><br/>'10 field mappings, 2 waiting, and the log of every read and write (8 lines).'<br/>Pill '2 to map' (hidden at 0), chevron on the right" }
+  k1@{ shape: trap-t, label: "<b>Click 'Advanced'</b><br/>Or Tab to it and press Enter or Space" }
+  p1@{ shape: rect, label: "<b>The button says whether it is open (aria-expanded)</b><br/>The chevron turns" }
+  o1@{ shape: curv-trap, label: "<b>Open: 'Field mappings'</b><br/>'10 mapped, 2 waiting. A chart pulled in New Case leaves the waiting fields blank until you map them.'" }
+  subgraph gMap ["Field mappings list"]
+  m1@{ shape: curv-trap, label: "<b>Waiting fields first, tinted</b><br/>'Level of care' with a 'Not mapped' pill, 'Clinical record · Site B · Match to IOP or PHP', button 'Map'<br/>'Referral source' ... 'Match to a payer field', button 'Map'" }
+  m2@{ shape: curv-trap, label: "<b>Then every mapping, with its system and who mapped it</b><br/>'Admit date → Admission date', 'Reader, 03/14' ... ten rows at the start<br/>A mapping made by a person reads 'You, 10/20'" }
+  m3@{ shape: trap-t, label: "Click 'Map' on a waiting row" }
+  end
+  gm@{ shape: subproc, label: "Continues in: EMR Connect › Needs a mapping › Map a field" }
+  gm2@{ shape: subproc, label: "Continues in: EMR Connect › Field mappings › Every mapping by system" }
+  subgraph gLog ["Recent activity"]
+  l1@{ shape: curv-trap, label: "<b>'Recent activity'</b><br/>'Every read and write is logged'<br/>Newest six lines, then 'See all 8' when there are more" }
+  l2@{ shape: trap-t, label: "Click 'See all 8'" }
+  end
+  gl@{ shape: subproc, label: "Continues in: EMR Connect › Recent activity › Read the activity log" }
+  k2@{ shape: trap-t, label: "Click 'Advanced' again, or press Enter or Space on it" }
+  p2@{ shape: rect, label: "<b>It closes</b><br/>Summary and pill stay, updated: for example '12 field mappings, and the log of every read and write (10 lines).'" }
+  p3@{ shape: rect, label: "<b>Tab order: Connect a system, banner button, Sync now, row buttons and switches, then Advanced</b><br/>Open content follows in reading order" }
+  p4@{ shape: rect, label: "What is not here: connection details and permissions (Manage drawer), the Write back switch (on each row), a Test button (the connection test runs inside Connect, Fix and Reconnect)" }
+  e1@{ shape: stadium, label: "Detail read" }
+  s1 --> sc --> k1 --> p1 --> o1
+  o1 --> m1 --> m2
+  m1 --> m3 --> gm
+  m2 -.-> gm2
+  o1 --> l1 --> l2 --> gl
+  sc -.-> p3
+  o1 --> k2 --> p2 --> e1
+  sc -.-> p4
+  class s1 k_start
+  class sc,o1,m1,m2,l1 k_screen
+  class k1,m3,l2,k2 k_click
+  class p1,p2,p3,p4 k_process
+  class gm,gm2,gl k_goto
+  class e1 k_end
+  style gMap fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gLog fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

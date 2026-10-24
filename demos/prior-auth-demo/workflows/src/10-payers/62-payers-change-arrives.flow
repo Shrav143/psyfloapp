@@ -1,0 +1,39 @@
+title: Payers › History & Changes › A change arrives (policy watch)
+route: /payers/cardinal?tab=history
+intro: How a payer's policy change reaches a person. In the product Sentinel watches each payer's policy and portal, compares versions, finds what affects open work and raises a change. In the demo three changes (Cardinal, Harborview and Evergreen) are already waiting when the demo starts; there is no button that creates a new one. Reset demo data brings them back.
+dir: TD
+---
+ext px "Payer publishes new criteria or a portal form change\nCardinal: criteria version 2026.3, effective 10/15\nHarborview: new portal form, old one closes 10/31\nEvergreen: a reference number on phone notice, effective 10/22\n(demo: already seeded)"
+agent sn "Sentinel watches the payer's policy and portal\nFetches, compares with the last version, keeps only parts\nthat touch this clinic's programs, notes what changed"
+agent mp "Sentinel maps the impact on open work\nOnly this payer's unsent drafts count\nCardinal: I-2207. Harborview and Evergreen: none right now"
+store pc "Change opened for the payer: 'waiting for a person'\nTitle, one sentence, effective date,\nagents that will redraft\nThe drafts it affects are read live, not stored"
+group gS "Where a person sees it"
+  process s1 "Sidebar 'Payers' badge counts it (3 at the start)"
+  process s2 "Payer row in the list: ochre dot and the words 'Change waiting'"
+  process s3 "Header 'Policy status' line starts 'Change waiting for you (...)'"
+  process s4 "'History & Changes' tab badge shows 1"
+  toast s5 "Bell notification from Sentinel, unread\n'Payer rule changed'\nCardinal updated its criteria (version 2026.3). 4 drafts are affected.\nThis text is fixed and still says 4; the History & Changes card counts live\n(Harborview's and Evergreen's changes have the badge and dots but no notification)"
+endgroup
+
+start st1 "Click the bell, then the notification"
+click cn "Click 'Payer rule changed'"
+process mr "Notification marked read, panel closes\nOpens /payers/cardinal?tab=changes\n(the older name, which opens History & Changes)"
+start st2 "Ask FLO: 'Why is Cardinal's approval rate down?'"
+click cl "Click 'Open Payers, Cardinal, Changes'"
+start st3 "Demo menu, suggested path\n'Payers: Cardinal, Changes'\n(opens History & Changes)"
+start st4 "Click 'Payers', open the payer with an ochre dot,\nclick the 'History & Changes' tab"
+screen ch "History & Changes\nOchre card 'Criteria changed, version 2026.3'\n'Progress evidence must now include the remaining treatment goals.\nScribe can redraft the 1 draft that is not yet sent: I-2207.\nRequests already sent keep what they were sent with.'"
+process rj "Production also allows rejecting or deferring a change.\nThe demo offers only Acknowledge, then Review & apply changes"
+goto g1 "Continues in: Payers › History & Changes › Acknowledge a change"
+goto g2 "Continues in: Payers › History & Changes › Read what changed"
+
+px --> sn --> mp --> pc
+pc -->|Shows up at once| s1 & s2 & s3 & s4 & s5
+st1 --> cn --> mr --> ch
+s5 -.-> st1
+st2 --> cl --> ch
+st3 --> ch
+st4 --> ch
+ch --> g1
+ch -.-> g2
+ch -.-> rj

@@ -1,0 +1,77 @@
+title: Global shell › Top bar › Notifications › What creates a notification
+route: Every page (the bell)
+intro: A notification is created only when a person or a demo control does something. Nothing arrives on a timer. The one exception is the demo clock: moving it past a patient's re-check time makes Verify re-check them. Each row below is one action, the notification it adds and the page that notification opens.
+dir: LR
+also: Each notification is added at the top, unread, stamped with the demo clock ('just now'). Most also raise a toast, shown in 'Toasts'. The words of two of them still name Case Manager ('Each needs a new signature in Case Manager', 'Case Manager has a step-down plan'): that text belongs to Payers and Denial Intelligence and is left for their own pass; the links open Authorizations.
+---
+start s1 "A person or a demo control does something in the app"
+
+group gPay "Payers"
+  click c10 "Click 'Update drafts' on a payer's change\n(after 'Acknowledge change', which only raises a toast)"
+  store n10 "The change's agent or Scribe · 'Drafts updated'\n→ Authorizations (a plain /authorizations, so the worklist reopens the last view used)"
+endgroup
+
+group gRef "Referrals (New Case)"
+  click c9 "Click 'Use sample referral'\n(or drop referral documents)"
+  store n9 "Reader · 'New referral read'\n→ that referral"
+  click c9b "'Demo: simulate the referrer's reply'"
+  store n9b "Reader · 'The referrer replied'\n→ that referral"
+endgroup
+
+group gDen "Denial Intelligence"
+  click c8 "Click 'Analyze the denial' on an uploaded letter"
+  store n8 "Advocate · 'Denial analyzed'\n→ that denial"
+  click c8b "Sign and file an appeal"
+  store n8b "Navigator · 'Appeal filed'\n→ Dashboard, that request"
+  click c8c "Click 'Accept and close'"
+  store n8c "Cadence · 'Denial closed'\n→ Authorizations, All view, where the denial's row reads Accepted with 'Plan the step-down'"
+  click c8d "Click 'Log the outcome'"
+  store n8d "Advocate · 'Call outcome: ...'\n→ Dashboard, that request"
+endgroup
+
+group gElig "Eligibility & Benefits"
+  click c11 "Demo menu, 'Fast-forward 1 hour' or 'Fast-forward 1 day', past a patient's re-check time\nOr resume Verify in Settings after a pause"
+  store n11 "Verify · 'Re-checked automatically' or 'Re-checked N patients automatically'\n→ Eligibility & Benefits, that patient or the list\nNot while Verify is paused"
+endgroup
+
+group gAuth "Authorizations"
+  click c7 "Apply recommendations on a case\n(Actions tab)"
+  store n7 "Forecaster · 'Approval chance updated'\n→ that case"
+endgroup
+
+group gDash "Dashboard › Demo controls on a request"
+  click c4 "'Asks for information'"
+  store n4 "Packet · 'Payer asked for info'\n→ Dashboard, that request"
+  click c5 "'Approves'"
+  store n5 "Cadence · 'Approved'\n→ Dashboard, that request"
+  click c6 "'Approves part' or 'Denies'"
+  store n6 "Advocate · 'Partly approved' or 'Denied'\n→ Denial Intelligence, new D- number"
+endgroup
+
+group gSend "New Case"
+  click c1 "Click 'Sign and send'"
+  store n1 "Navigator · 'Sent to the payer'\n→ Dashboard, that request"
+endgroup
+
+process p1 "Notification is added at the top of the list\nUnread, 'just now'"
+process p2 "Red dot appears on the bell\nDrawer subtitle counts it ('5 unread')"
+goto g1 "Continues in: Global shell › Top bar › Notifications › Open, read, click through"
+endx e1 "Nothing else creates one: no timers, no payer or referrer replies on their own"
+
+s1 --> c1 & c4 & c5 & c6 & c7 & c8 & c8b & c8c & c8d & c9 & c9b & c10 & c11
+c1 --> n1
+c4 --> n4
+c5 --> n5
+c6 --> n6
+c7 --> n7
+c8 --> n8
+c8b --> n8b
+c8c --> n8c
+c8d --> n8d
+c9 --> n9
+c9b --> n9b
+c10 --> n10
+c11 --> n11
+n1 & n4 & n5 & n6 & n7 & n8 & n8b & n8c & n8d & n9 & n9b & n10 & n11 --> p1
+p1 --> p2 --> g1
+s1 -.-> e1

@@ -1,0 +1,32 @@
+title: Payers › Workflow Builder › Use the keyboard only
+route: /payers/summit?tab=builder
+intro: Everything on the canvas can be done without a mouse: steps and the list are focusable, Enter opens the editor, arrow keys move a step, Delete removes it, and the settings have a menu for connecting steps. Changes are announced to screen readers, and colour is never the only signal.
+dir: TD
+---
+start s1 "Tab into the page"
+click c1 "Tab to a group in the 'Steps' list and press Enter to open it"
+click c2 "Tab to a step in the list and press Enter"
+process p1 "The step is added in the free place nearest the middle of the view and selected\nAnnounced: 'Added Create task'"
+click c3 "Tab to the canvas and on to a step (each step is a focusable group)\nPress Enter"
+process p2 "The step is selected and the focus moves to the heading of its settings"
+click c4 "Press the arrow keys on a selected step"
+process p3 "The step moves 20 px per press (Shift: 80), snapped to the grid\nA run of presses is one undo step"
+click c5 "In the settings, under 'Next steps', pick where each exit leads\n(a list of the steps that can be connected)"
+process p4 "The line is drawn, or removed when 'Not connected' is chosen\nAnnounced: 'Connected Start to Create task'"
+click c6 "Press Delete on a selected step"
+process p5 "The step and its lines go\nAnnounced: 'Deleted'"
+click c7 "Press Ctrl+Z, Ctrl+Shift+Z or Ctrl+S"
+process p6 "Undone, redone, or the draft is saved\nAnnounced: 'Undone', 'Redone', 'Draft saved'"
+click c8 "Press Escape"
+process p7 "Closes the pop-up, menu or panel on top, one at a time"
+screen sr "For people who cannot see colour\nStatus is words and shapes: 'Live', 'Demo simulation', 'Not configured' dots differ in shape,\nrun states say Done, Skipped, Failed, Waiting, Pending, Not reached\nValidation marks have a name: 'Needs fixing' or 'Check'"
+end e1 "A workflow was built, connected and edited with the keyboard"
+
+s1 --> c1 --> c2 --> p1 --> c3 --> p2
+p2 --> c4 --> p3
+p2 --> c5 --> p4
+p2 --> c6 --> p5
+p3 --> c7
+p4 --> c7
+p5 --> c7 --> p6 --> c8 --> p7 --> e1
+p2 --> sr
