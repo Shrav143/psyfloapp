@@ -28,10 +28,10 @@ group gShell "Toasts raised by the shell"
   toast s6 "Hosted preview only: 'Print is off in this preview'\n'Open the single-file version of the demo to use it.'\nSame for 'Copy link' and 'Download'"
 endgroup
 
-group gMgr "Toasts raised in Case Manager"
-  toast m1 "'Cadence checked the next 3 days'\n(after 'Draft all due reviews')"
+group gMgr "Toasts raised on Authorizations › Reviews this week"
+  toast m1 "After 'Draft all due reviews': 'Cadence drafted 4 reviews' (the number varies), 'Nothing to draft' or 'Cadence is paused in Settings'"
   toast m2 "'Review signed', 'Review updated'"
-  toast m3 "'33 reviews signed' (the number varies) or 'No clean drafts to sign'"
+  toast m3 "After 'Sign all clean drafts': '33 reviews signed' (the number varies) or 'No clean drafts to sign'"
   goto g1 "Continues in: Case Manager › Reviews this week › Sign a review"
 endgroup
 

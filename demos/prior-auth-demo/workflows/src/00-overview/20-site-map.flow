@@ -1,7 +1,8 @@
 title: Site map › Every menu tab and sub tab
 route: / (opens the Dashboard)
-intro: The whole product on one page. Each green screen is a sidebar destination; dashed boxes jump to the diagrams for that tab. The top bar (site switcher, Ask FLO, Notifications, Demo menu) is on every page. Authorizations is the only item with sub tabs; Case Manager has two tabs inside its page.
+intro: The whole product on one page. Each green screen is a sidebar destination; dashed boxes jump to the diagrams for that tab. The top bar (site switcher, Ask FLO, Notifications, Demo menu) is on every page. Authorizations is the only item with sub items (All Authorizations, New Case, Eligibility & Benefits), and its arrow opens and closes them. There is no Case Manager tab: its tracker and its reviews are views of the one Authorizations worklist.
 dir: LR
+also: Old Case Manager links (/manager, /active) open the matching Authorizations view, see Global shell › Addresses.
 ---
 start s0 "Open Psyflo\nThe address / goes to the Dashboard"
 screen shell "App frame\nSidebar on the left, top bar on top, page in the middle"
@@ -15,11 +16,10 @@ endgroup
 
 group gMain "Sidebar › Main"
   screen dash "Dashboard\nLifecycle chips, Do next, authorizations table"
-  screen auth "Authorizations › Queue\nRequests ranked by how soon each is due"
+  screen auth "Authorizations › All Authorizations\nOne worklist with view chips: All, Needs attention, In progress, With the payer, Approved, Denied, Reviews this week"
   screen newc "Authorizations › New Case\nIntake, Eligibility & Benefits, Clinical documentation, Authorization preparation, Review & submit"
   screen elig "Authorizations › Eligibility & Benefits\nList, verify a patient, result"
   screen den "Denial Intelligence\nOpen denials, options, brief"
-  screen mgr "Case Manager\nTabs: Active cases and Reviews this week"
   screen ana "Analytics\nPerformance and the monthly report"
 endgroup
 
@@ -35,7 +35,9 @@ group gBot "Sidebar › Bottom"
 endgroup
 
 group gSub "Pages reached from inside a tab"
-  screen case "Authorizations › Case page\nFive tabs: actions, picture, criteria, risk, draft"
+  screen case "Authorizations › Case page\nThree tabs: Recommended actions, Clinical picture & draft, Criteria & risk"
+  screen ledg "Authorizations › Approved authorization with no open request\nCase summary, window, units, reviews due, history"
+  overlay rev "Authorizations › Reviews this week › Review drawer\nOpens from a row in Reviews this week"
   screen ref "New Case › Full referral page\nExtracted, Validation, Coverage, Fit, Activity"
   screen ver "Eligibility › Verify a patient and Result"
   screen brief "Denial Intelligence › Peer-to-peer brief"
@@ -46,11 +48,12 @@ endgroup
 goto g0 "Continues in: Who can see what › Roles, sites and a record at the other site"
 goto g1 "Continues in: Global shell"
 goto g2 "Continues in: Dashboard"
-goto g3 "Continues in: Authorizations › Queue and case page"
+goto g3 "Continues in: Authorizations › Worklist › Arrive and read the views"
+goto g3b "Continues in: Case Manager › Ledger case › Open and read"
+goto g3c "Continues in: Case Manager › Reviews this week › The review drawer"
 goto g4 "Continues in: Authorizations › New Case"
 goto g5 "Continues in: Authorizations › Eligibility & Benefits"
 goto g6 "Continues in: Denial Intelligence"
-goto g7 "Continues in: Case Manager"
 goto g8 "Continues in: Analytics"
 goto g9 "Continues in: EMR Connect"
 goto g10 "Continues in: Payers"
@@ -60,10 +63,12 @@ s0 --> shell
 shell --> ask & notif & demo & site
 site --> g0
 demo --> g0
-shell --> dash & auth & newc & elig & den & mgr & ana
+shell --> dash & auth & newc & elig & den & ana
 shell --> emr & pay
 shell --> set & help & out
-auth --> case
+auth --> case & ledg & rev
+ledg --> g3b
+rev --> g3c
 newc --> ref
 elig --> ver
 den --> brief & rep
@@ -74,7 +79,6 @@ auth --> g3
 newc --> g4
 elig --> g5
 den --> g6
-mgr --> g7
 ana --> g8
 emr --> g9
 pay --> g10

@@ -31,7 +31,7 @@ end eOut "Same page, same data"
 
 click cCard "Click the user card\n(initials, name and role of the viewer: 'JP', 'Jordan Perez', 'UR coordinator')"
 process pCard "Nothing happens: no menu, no profile page"
-process pWho "The viewer is the person edits and acknowledgements are credited to\nIt changes with 'Viewing as' in the Demo menu: for Dr. Rivera the card reads 'Clinician, Site A'\nThe Case Manager sign dialog says 'You are signed in as Jordan Perez, a UR coordinator'"
+process pWho "The viewer is the person edits and acknowledgements are credited to\nIt changes with 'Viewing as' in the Demo menu: for Dr. Rivera the card reads 'Clinician, Site A'\nThe review sign dialog (Authorizations › Reviews this week) says 'You are signed in as Jordan Perez, UR coordinator.'"
 endx eCard "No change"
 
 process pToast "Toasts fade after about 4 seconds, or on a click"

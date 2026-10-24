@@ -22,7 +22,7 @@ endgroup
 
 group gP "Section 'Suggested path'"
   process sp "Seven numbered steps, 1 to 7"
-  click f3 "Click a step, for example '7 Case Manager: reviews this week'"
+  click f3 "Click a step, for example '7 Authorizations: reviews this week'"
   goto g2 "Continues in: Global shell › Demo menu › Suggested path"
 endgroup
 

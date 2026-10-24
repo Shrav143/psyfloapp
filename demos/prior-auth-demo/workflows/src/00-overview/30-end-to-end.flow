@@ -1,6 +1,6 @@
 title: End to end › A request from referral to decision, denial and appeal
 route: Across the whole product
-intro: How one patient's request moves through the tabs. Follow the main path down the middle; the branches to the sides are what happens when the payer asks for more, denies, or approves.
+intro: How one patient's request moves through the tabs. Follow the main path down the middle; the branches to the sides are what happens when the payer asks for more, denies, or approves. Authorizations tracks the request the whole way: it is one row of the worklist, and its view chip follows it from In progress to With the payer, then Approved or Denied.
 dir: TD
 ---
 start s1 "A referral arrives\nA clinic sends documents, or someone drops them in"
@@ -13,27 +13,29 @@ screen nc2 "New Case › Clinical documentation\nOne checklist for the documents
 ext emr "EMR Connect supplies the chart\nPull from EMR"
 agent ver "Verify checks coverage and benefits\nEligibility & Benefits"
 screen nc3 "New Case › Authorization preparation\nScribe, Criteria, Placement, Integrity, Forecaster ..."
+store drf "A saved draft is an In progress row in Authorizations\nwith 'Continue', 'Answer', 'Watch' or 'Review and sign'"
 decision d2 "Does an agent need an answer from you?"
 input ans "Answer Scribe's question"
 agent chance "Forecaster shows the approval chance"
 screen nc4 "New Case › Review & submit\nNothing goes to the payer until a clinician signs"
 click sign "Clinician signs\nSign and send"
-store req "Request created\nStage: Received"
+store req "Request created\nStage: Received\nIn Authorizations it moves to With the payer"
 ext payer "Payer receives the request\n(demo: simulated)"
 screen dash "Dashboard\nFour figures and the request list; stages: Preparing, Received, Under review, Info requested, Decided today, Appeal or call"
 wait w1 "Payer decides\nTime passes (the Demo menu moves the clock)"
 decision d3 "What does the payer decide?"
 click info "Answer on the Dashboard\nSend the information requested"
-end ok "Approved\nIn Case Manager: reviews are scheduled before the authorization ends"
+end ok "Approved\nAuthorizations › Approved: units used and left, the window and the next review"
 screen den "Denial Intelligence\nWhere the denial is weak, options with chances"
 decision d4 "Which route?"
 doc p2p "Peer-to-peer brief and call"
 doc app "Written appeal, signed and sent"
-click acc "Accept the denial"
+click acc "Accept the denial\nIts Authorizations row reads Accepted with 'Plan the step-down'"
 decision d5 "Overturned?"
 endx lost "Denial stands\nRecorded and counted in Analytics"
 screen ana "Analytics\nApproval by payer, denial reasons, what helps most"
-screen mgr "Case Manager\nActive cases and Reviews this week"
+screen mgr "Authorizations › Reviews this week\nCadence drafts each continued-stay review, a clinician signs it, and the next one is booked before the authorization ends"
+goto gW "Continues in: Authorizations › Worklist › Pick a view"
 
 s1 --> ref1 --> nc1 --> rd --> d1
 d1 -->|Missing items| askref --> nc1
@@ -41,6 +43,7 @@ d1 -->|Ready| nc2
 emr -.-> nc2
 nc2 --> ver --> nc3
 nc3 --> d2
+nc3 -.-> drf
 d2 -->|Yes| ans --> chance
 d2 -->|No| chance
 chance --> nc4 --> sign --> req --> payer --> dash --> w1 --> d3
@@ -52,6 +55,6 @@ d4 -->|Appeal| app --> d5
 d4 -->|Accept| acc --> lost
 d5 -->|Yes| ok
 d5 -->|No| lost
-ok --> mgr
+ok --> mgr --> gW
 lost --> ana
 ok --> ana

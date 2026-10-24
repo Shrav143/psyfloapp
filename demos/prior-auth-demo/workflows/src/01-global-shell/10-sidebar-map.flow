@@ -1,6 +1,6 @@
 title: Global shell › Sidebar › Where every item goes
 route: Every page (sidebar on the left)
-intro: The sidebar is on every page. Each row below is one click and the page it opens. Number bubbles, the Authorizations group and the green highlight have their own diagrams.
+intro: The sidebar is on every page. Each row below is one click and the page it opens. Number bubbles, opening and closing the Authorizations group, and the green highlight have their own diagrams.
 dir: LR
 also: The logo 'psyflo.', the caption 'Prior auth & UR', the captions 'Main' and 'Connections' and the 'Demo data' tile are labels only. Nothing happens when they are clicked.
 ---
@@ -32,25 +32,28 @@ group gMain "Main"
   process pDash "Go to /dashboard"
   goto gDash "Continues in: Dashboard"
 
-  click cAuth "Click 'Authorizations'"
-  process pAuth "Go to /authorizations\nThe group opens under it"
-  goto gAuth "Continues in: Authorizations › Queue"
+  click cAuth "Click 'Authorizations' (the label or the row)"
+  process pAuth "Go to /authorizations\nArriving from another page, the worklist reopens the last view and filters used (All the first time); on the worklist itself it shows All with no filters\nFrom outside the group, the group opens"
+  goto gAuth "Continues in: Authorizations › Worklist › Arrive and read the views"
 
-  click cNew "Click 'New Case'\n(listed under Authorizations)"
+  click cArrow "Click the arrow beside 'Authorizations'"
+  process pArrow "The sub rows show or hide\nNo page opens"
+  goto gArrow "Continues in: Global shell › Sidebar › Authorizations group › Open and close the group"
+
+  click cAll "Click 'All Authorizations'\n(under Authorizations, while the group is open)"
+  process pAll "Go to /authorizations\nThe same page, with the same rules, as 'Authorizations'"
+
+  click cNew "Click 'New Case'\n(under Authorizations, while the group is open)"
   process pNew "Go to /authorizations/new\nA blank draft is started"
   goto gNew "Continues in: Authorizations › New Case › How a case starts and resumes"
 
-  click cElig "Click 'Eligibility & Benefits'\n(listed under Authorizations)"
+  click cElig "Click 'Eligibility & Benefits'\n(under Authorizations, while the group is open)"
   process pElig "Go to /authorizations/eligibility"
   goto gElig "Continues in: Authorizations › Eligibility & Benefits"
 
   click cDen "Click 'Denial Intelligence'"
   process pDen "Go to /denials"
   goto gDen "Continues in: Denial Intelligence"
-
-  click cMgr "Click 'Case Manager'"
-  process pMgr "Go to /manager\nActive cases tab"
-  goto gMgr "Continues in: Case Manager"
 
   click cAna "Click 'Analytics'"
   process pAna "Go to /analytics"
@@ -59,13 +62,14 @@ endgroup
 
 
 s1 --> sb
-sb --> cDash & cAuth & cNew & cElig & cDen & cMgr & cAna & cEmr & cPay & cSet & cHelp & cOut
+sb --> cDash & cAuth & cArrow & cAll & cNew & cElig & cDen & cAna & cEmr & cPay & cSet & cHelp & cOut
 cDash --> pDash --> gDash
 cAuth --> pAuth --> gAuth
+cArrow --> pArrow --> gArrow
+cAll --> pAll --> gAuth
 cNew --> pNew --> gNew
 cElig --> pElig --> gElig
 cDen --> pDen --> gDen
-cMgr --> pMgr --> gMgr
 cAna --> pAna --> gAna
 cEmr --> pEmr --> gEmr
 cPay --> pPay --> gPay

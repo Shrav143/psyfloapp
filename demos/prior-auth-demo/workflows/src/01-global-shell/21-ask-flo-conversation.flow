@@ -8,9 +8,9 @@ start s1 "Click 'Ask FLO' in the top bar"
 overlay o1 "Ask FLO drawer opens\nTitle 'Ask FLO', subtitle 'Your assistant, answering from your data'"
 agent a1 "FLO greets the person by name and says which sites it reads:\n'Hi Jordan, I am FLO. Ask me about your requests, a payer, or your denials. I answer from the data you can see: Both sites.'\nFor Dr. Rivera: 'Hi Dr. Rivera, ... I answer from the data you can see: Site A.'"
 decision dr "Which screen is open?"
-overlay o2 "Four suggestion chips under the chat:\n'What needs me today?'\n'What is due soonest?'\n'Which payers are slowest right now?'\n'Why is Cardinal's approval rate down?'\nAny other screen, or a case page that cannot be found"
+overlay o2 "Four suggestion chips under the chat:\n'What needs me today?'\n'What is due soonest?'\n'Which payers are slowest right now?'\n'Why is Cardinal's approval rate down?'\nAny other screen (New Case included), or a case page that cannot be found"
 overlay oc "Three chips on a case page (/authorizations/case/R-1042):\n'What is missing for R-1042?'\n'When does this authorization run out?'\n'What does Summit require?'\nA line above them: 'Suggested for R-1042'"
-overlay om "One chip on Case Manager:\n'Which reviews are due?'\n'Suggested for Case Manager'"
+overlay om "Three chips on Authorizations (the worklist, every view):\n'What needs me today?'\n'What is due soonest?'\n'Which reviews are due?'\n'Suggested for Authorizations'"
 overlay od "One chip on Denial Intelligence:\n'Which denial is due first?'\n'Suggested for Denial Intelligence'"
 overlay oe "One chip on Eligibility & Benefits (the list and its pages):\n'Which patients need a fix before billing?'\n'Suggested for Eligibility & Benefits'"
 decision d1 "How does the person ask?"
@@ -43,7 +43,7 @@ process pv "The conversation starts again with a new greeting\nWhatever FLO said
 s1 --> o1 --> a1 --> dr
 s2 --> pv --> a1
 dr -->|Case page| oc --> d1
-dr -->|Case Manager| om --> d1
+dr -->|Authorizations worklist| om --> d1
 dr -->|Denial Intelligence| od --> d1
 dr -->|Eligibility & Benefits| oe --> d1
 dr -->|Anywhere else| o2 --> d1

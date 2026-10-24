@@ -17,11 +17,11 @@ group gM "Missing: 'What is missing for R-1042?'"
 endgroup
 
 group gX "Expiry: 'When does this authorization run out?'"
-  agent x1 "FLO reads the Case Manager ledger row of the case and its next unsigned review"
+  agent x1 "FLO reads the case's approved authorization (the record behind Authorizations › Approved) and its next unsigned review"
   decision x2 "What does the row hold?"
   toast x3 "End date: 'I-2207 (Cardinal, IOP) has used 38 of 48 units. The authorization ends in 3 days (Fri 10/23).'\n'Its next clinical review is Wed 10/21, 4:00 pm.'"
   toast x4 "Measured in units, no date: 'has used 16 of 48 units, so 32 units are left. The ledger holds no end date for it.'"
-  toast x5 "Other next event: 'has used 14 of 14 days. The approved days are used up. The payer's decision on the next stay is expected Thu 10/22.'\nNo approval yet: 'has no approval yet, so there is nothing to run out.'"
+  toast x5 "Other next event: 'has used 14 of 14 days. The approved days are used up. The payer's decision on the next stay is expected Thu 10/22.'\nNo approval yet: 'has no approval yet, so there is nothing to run out.'\nAway from a case page with none ending: 'No approved authorization has an end date ahead of it.' with 'Open Authorizations' (the All view)"
   click xl "Click 'Open I-2207'"
 endgroup
 
@@ -34,7 +34,8 @@ endgroup
 group gV "Reviews: 'Which reviews are due?'"
   agent v1 "FLO reads this week's clinical reviews that are not signed"
   toast v2 "'47 reviews are due this week, 5 of them due now or overdue: 35 drafted (29 clean), 4 not drafted yet, 8 need a clinician's update.'\n'Next: ...' and 'Needs your update: R-0912, R-0899, R-0881, and 5 more.'"
-  click vl "Click 'Open R-0912, review'"
+  click vl "Click 'Open R-0912, review'\n(with nothing due: 'No review is due this week. Every one has been signed.' and 'Open Reviews this week')"
+  process vp "Drawer closes. Goes to /authorizations?view=reviews&review=rv-R-0912\nThe worklist opens on Reviews this week with R-0912's review drawer open"
 endgroup
 
 group gE "Eligibility: 'Which patients need a fix before billing?'"
@@ -69,5 +70,5 @@ x2 -->|Anything else| x5 --> xl
 xl --> g2
 r1 --> r2 --> rl --> g3
 r1 -.-> n1
-v1 --> v2 --> vl --> g4
+v1 --> v2 --> vl --> vp --> g4
 e1 --> e2 --> el --> g5

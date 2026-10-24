@@ -2,13 +2,13 @@ title: Global shell › Top bar › Notifications › What creates a notificatio
 route: Every page (the bell)
 intro: A notification is created only when a person or a demo control does something. Nothing arrives on a timer. The one exception is the demo clock: moving it past a patient's re-check time makes Verify re-check them. Each row below is one action, the notification it adds and the page that notification opens.
 dir: LR
-also: Each notification is added at the top, unread, stamped with the demo clock ('just now'). Most also raise a toast, shown in 'Toasts'.
+also: Each notification is added at the top, unread, stamped with the demo clock ('just now'). Most also raise a toast, shown in 'Toasts'. The words of two of them still name Case Manager ('Each needs a new signature in Case Manager', 'Case Manager has a step-down plan'): that text belongs to Payers and Denial Intelligence and is left for their own pass; the links open Authorizations.
 ---
 start s1 "A person or a demo control does something in the app"
 
 group gPay "Payers"
   click c10 "Click 'Update drafts' on a payer's change\n(after 'Acknowledge change', which only raises a toast)"
-  store n10 "The change's agent or Scribe · 'Drafts updated'\n→ Case Manager"
+  store n10 "The change's agent or Scribe · 'Drafts updated'\n→ Authorizations (a plain /authorizations, so the worklist reopens the last view used)"
 endgroup
 
 group gRef "Referrals (New Case)"
@@ -24,7 +24,7 @@ group gDen "Denial Intelligence"
   click c8b "Sign and file an appeal"
   store n8b "Navigator · 'Appeal filed'\n→ Dashboard, that request"
   click c8c "Click 'Accept and close'"
-  store n8c "Cadence · 'Denial closed'\n→ Case Manager, Reviews this week"
+  store n8c "Cadence · 'Denial closed'\n→ Authorizations, All view, where the denial's row reads Accepted with 'Plan the step-down'"
   click c8d "Click 'Log the outcome'"
   store n8d "Advocate · 'Call outcome: ...'\n→ Dashboard, that request"
 endgroup
