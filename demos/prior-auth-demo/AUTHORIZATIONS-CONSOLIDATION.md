@@ -63,3 +63,21 @@ No change to Dashboard, Denial Intelligence, Analytics, EMR Connect, Payers or S
 - Payers: the Update drafts text and toasts ("Each returns to Case Manager for a new signature").
 - Settings: a pause effect line ("Draft all due reviews in Case Manager waits").
 - Workflow Studio catalog: the step name "Update Case Manager".
+
+## 6. Build and tests
+
+`tsc --noEmit` is clean, and `vite build` and the hosted build both succeed (one 2.7 MB file). The browser regression ran on a build of the pushed code and passed every suite:
+- Workflow engine unit checks: 1,124.
+- Round 7 worklist checks:
+  - views, counts and sites, with A + B = Both in every view
+  - filters, legacy addresses and redirects
+  - quick views, drafts and denials
+  - no horizontal scroll at 1440, 1280 and 1024 px
+- Moved behaviors:
+  - accepting a denial gives an Accepted row with "Plan the step-down"
+  - Draft all, Sign all clean, then signing one review books the next one
+  - the Dashboard's Active (40) and Renewal due (19) chips land on the same rows
+- Unchanged tabs: Authorizations case pages, New Case, Eligibility & Benefits, Denial Intelligence, Dashboard, shell and sites, EMR Connect, Analytics, Payers and Workflow Studio.
+- The hosted demo inside a sandboxed frame.
+
+Tests that pointed at the removed screens were moved to the merged worklist; the old Case Manager suite was retired, because those checks now run against Authorizations.
