@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowRight, ChartColumn, CircleAlert, CircleCheck, CircleHelp, CircleX, RefreshCw } from "lucide-react";
+import { ArrowRight, ChartColumn, Check, CircleAlert, CircleCheck, CircleHelp, CircleX, RefreshCw } from "lucide-react";
 import { Button, Card, CardHeader, InfoTip, Label, Pill } from "@/components/ui";
 import type { Rec } from "@/data/caseDetail";
 import { criteriaView, gainOf, groupRecs, rangeOf, type CriterionView } from "@/data/caseModel";
@@ -77,7 +77,10 @@ export function CriteriaRiskTab({ ctx, section }: { ctx: CaseCtx; section: "pict
           </div>
         </div>
         <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-line pt-3" data-testid="risks">
-          <Label className="mr-1">Biggest risks</Label>
+          <span className="mr-1 inline-flex items-center gap-1">
+            <Label>Biggest risks</Label>
+            <InfoTip label="About the biggest risk">{detail.biggest.title}. {detail.biggest.text} {detail.biggest.seen}.</InfoTip>
+          </span>
           {risks.length === 0 ? <Pill tone="good" dot>None open</Pill> : null}
           {risks.map((r) => (
             <button key={r.id} type="button" onClick={() => goTab("actions", r.id)} title={r.title} className="inline-flex items-center gap-1.5 rounded-full border border-risk-edge bg-risk-bg px-2.5 py-[3px] text-[12px] font-semibold text-risk-ink hover:brightness-[0.98]">
@@ -138,7 +141,11 @@ export function CriteriaRiskTab({ ctx, section }: { ctx: CaseCtx; section: "pict
                 <Pill tone={c.tone}>{c.outcome}</Pill>
               </div>
             ))}
-            <div className="mt-2 text-[13px]" data-testid="calibration">
+            <Label className="mt-3 mb-1">What the approved ones had</Label>
+            <ul className="m-0 flex list-none flex-col gap-1 p-0 text-[13px]">
+              {detail.common.map((t) => <li key={t} className="flex items-center gap-2"><Check size={13} className="ico text-good" aria-hidden="true" />{t}</li>)}
+            </ul>
+            <div className="mt-3 text-[13px]" data-testid="calibration">
               Forecaster said <b>{detail.calibration.said}</b> · <b>{detail.calibration.actual}%</b> approved in full · {detail.calibration.n} {payer.shortName} decisions
             </div>
             <div className="mt-1 flex flex-wrap gap-1">

@@ -71,9 +71,14 @@ export default function DenialsPage() {
     setNewId(id);
     setParams(new URLSearchParams(), { replace: true });
   });
+  // Focus goes to the new row once, when it first shows, not again each time the table recomputes.
+  const focused = useRef<string | null>(null);
   useEffect(() => {
-    if (!newId) return;
-    document.querySelector<HTMLElement>(`[data-denial="${newId}"] a`)?.focus();
+    if (!newId || focused.current === newId) return;
+    const link = document.querySelector<HTMLElement>(`[data-denial="${newId}"] a`);
+    if (!link) return;
+    focused.current = newId;
+    link.focus();
   }, [newId, shown]);
   const openLetter = (e: MouseEvent<HTMLElement>) => { from.current = e.currentTarget; setLetterOpen(true); };
 

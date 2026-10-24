@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { ArrowLeft, SearchX, Send, Sparkles } from "lucide-react";
+import { ArrowLeft, SearchX, Send } from "lucide-react";
 import { OutOfSite } from "@/components/layout/OutOfSite";
 import { Button, Card, EmptyState, Page, PageHeader } from "@/components/ui";
 import { RUN_STEPS } from "@/data/cases";
@@ -12,7 +12,7 @@ import { isAuthKind } from "./authType";
 import { useCaseEnv } from "./caseEnv";
 import { DocumentationStep } from "./DocumentationStep";
 import { EligibilityStep } from "./EligibilityStep";
-import { applySampleChart, attachReferral, initialDraft } from "./intake";
+import { attachReferral, initialDraft } from "./intake";
 import { IntakeStep } from "./IntakeStep";
 import { NewCaseStepper } from "./NewCaseStepper";
 import { reviewModel } from "./reviewModel";
@@ -163,14 +163,7 @@ export default function NewCasePage() {
           </>
         }
         actions={
-          <div className="flex flex-wrap items-center justify-end gap-2.5">
-            {at === 2 ? (
-              <Button size="sm" variant="ghost" icon={Sparkles} onClick={() => applySampleChart(draft.id)}>
-                Use sample chart
-              </Button>
-            ) : null}
-            <AuthTypePicker draftId={draft.id} kind={draft.kind} disabled={draft.sent} />
-          </div>
+          <AuthTypePicker draftId={draft.id} kind={draft.kind} disabled={draft.sent} />
         }
       />
       <div className="flex flex-col gap-3">

@@ -7,9 +7,9 @@ import { AUTH_TYPES } from "./authType";
 export function AuthTypePicker({ draftId, kind, disabled }: { draftId: string; kind: AuthKind; disabled?: boolean }) {
   const set = useStore((s) => s.setCaseKind);
   return (
-    <div className="flex flex-wrap items-center gap-3 px-1">
-      <span className="text-[13px] font-medium text-ink2">Authorization type</span>
-      <Dropdown<AuthKind> ariaLabel="Authorization type" value={kind} onChange={(k) => set(draftId, k)} disabled={disabled} options={AUTH_TYPES.map((t) => ({ value: t.kind, label: t.label }))} menuWidth={290} className="w-[260px]" />
+    <div className="flex items-center gap-3">
+      <span className="text-[13px] font-medium text-ink2 max-[1023px]:sr-only">Authorization type</span>
+      <Dropdown<AuthKind> ariaLabel="Authorization type" value={kind} onChange={(k) => set(draftId, k)} disabled={disabled} options={AUTH_TYPES.map((t) => ({ value: t.kind, label: t.label }))} menuWidth={290} className="w-[250px] max-[640px]:w-[200px]" />
     </div>
   );
 }

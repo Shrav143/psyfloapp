@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Save } from "lucide-react";
 import { AgentChip, Button, Card, CardBody, Pill, Spinner } from "@/components/ui";
 import type { CaseDraft } from "@/data/cases";
+import type { VerificationException } from "@/data/verification";
 import { payerById } from "@/data/seed";
 import { VerificationDetailsPanel, VerificationSummary } from "@/pages/eligibility";
 import { clockTime, toDate } from "@/lib/time";
@@ -16,6 +17,9 @@ import { stepPatch } from "./steps";
 import { useSaveDraft } from "./useSaveDraft";
 import { useVerifyRun } from "./useVerifyRun";
 import { foldWorkflow } from "./workflow/fold";
+
+/** The warnings the summary's own rows already say (Coverage, Benefits, Authorization, Provider), so the list under them does not repeat them. What to do about them is in "What you can do". */
+const SAID_IN_ROWS: ReadonlySet<VerificationException> = new Set<VerificationException>(["coverage_inactive", "payer_changed", "member_id_mismatch", "benefit_unconfirmed", "service_not_covered", "requirement_unknown", "provider_unresolved", "service_unavailable"]);
 
 /** Step 2, Eligibility & Benefits, from the shared verification module: the same record the Eligibility & Benefits page shows. Warnings never trap: each says what to do next,
     and only coverage confirmed inactive with no documented exception stops the final send. */
@@ -68,7 +72,7 @@ export function EligibilityStep({ draft, env }: { draft: CaseDraft; env: CaseEnv
               Open in Eligibility &amp; Benefits
             </Link>
           </div>
-          <VerificationSummary record={rec} onRefresh={() => refresh(rec.id)} onDetails={() => setPanel(true)} />
+          <VerificationSummary record={rec} onRefresh={() => refresh(rec.id)} onDetails={() => setPanel(true)} omit={SAID_IN_ROWS} />
           <NoAuthCard draft={draft} env={env} />
           <ExceptionActions draft={draft} env={env} />
           <VerificationDetailsPanel record={rec} open={panel} onClose={() => setPanel(false)} />

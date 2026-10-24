@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
+import { useEffect, useId, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { Plus } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { clockTime, shortDate, toDate } from "@/lib/time";
@@ -118,7 +118,7 @@ export function ScreenerTrend({ series, defaultShown, now, height = 170, subject
   const ticks = [{ at: from, label: dayLabel(from) }, ...(iw > 220 ? [{ at: from + span / 2, label: dayLabel(from + span / 2) }] : []), { at: now, label: "Today" }];
 
   /* Keyboard: the plot is one stop; the arrow keys walk through every visible point in date order. */
-  const order = useMemo(() => visible.flatMap((s) => s.points.map((p, i) => ({ key: s.key, i, at: p.at }))).sort((a, b) => a.at - b.at || a.key.localeCompare(b.key)), [visible]);
+  const order = visible.flatMap((s) => s.points.map((p, i) => ({ key: s.key, i, at: p.at }))).sort((a, b) => a.at - b.at || a.key.localeCompare(b.key));
   const onKey = (e: KeyboardEvent<HTMLDivElement>) => {
     if (!order.length || (e.key !== "ArrowLeft" && e.key !== "ArrowRight" && e.key !== "Home" && e.key !== "End")) return;
     e.preventDefault();
@@ -198,7 +198,8 @@ export function ScreenerTrend({ series, defaultShown, now, height = 170, subject
         <span className="sr-only" aria-live="polite">{actPoint && act ? `${act.name} ${actPoint.value} of ${act.max}, ${dayLabel(actPoint.at)}` : ""}</span>
       </div>
 
-      <figcaption className="mt-2 flex flex-wrap items-start gap-x-4 gap-y-2">
+      <fieldset className="m-0 mt-2 flex min-w-0 flex-wrap items-start gap-x-4 gap-y-2 border-0 p-0">
+        <legend className="sr-only">Screeners shown</legend>
         {legend.map((key) => {
           const s = series.find((x) => x.key === key);
           if (!s) return null;
@@ -217,7 +218,7 @@ export function ScreenerTrend({ series, defaultShown, now, height = 170, subject
             </label>
           );
         })}
-      </figcaption>
+      </fieldset>
       <div className="mt-2 flex items-center gap-1">
         {onFile.length ? (
           <div ref={menuRef} className="relative">

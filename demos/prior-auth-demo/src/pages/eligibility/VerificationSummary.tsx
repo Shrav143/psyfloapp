@@ -61,7 +61,7 @@ function Row({ label, chip, tone, children }: { label: string; chip?: string; to
 /** What one check found, in the order a person reads it: coverage, plan type and routing, benefits, the authorization requirement, provider participation,
     an authorization already on file, then the warnings. The same record shows on Eligibility & Benefits and in step 2 of New Case.
     `compact` keeps it to the chips and the warnings, for a step that already says the rest. */
-export function VerificationSummary({ record, onRefresh, onDetails, compact }: { record: VerificationRecord; onRefresh?: () => void; onDetails?: () => void; compact?: boolean }) {
+export function VerificationSummary({ record, onRefresh, onDetails, compact, omit }: { record: VerificationRecord; onRefresh?: () => void; onDetails?: () => void; compact?: boolean; /** Warnings the caller's screen already says, left out of the list (see ExceptionList). */ omit?: ReadonlySet<VerificationException> }) {
   const clock = useStore((s) => s.clock);
   const busy = useStore((s) => s.ebRechecking.includes(record.id));
   const { summary } = buildResult(record.row);
@@ -123,9 +123,9 @@ export function VerificationSummary({ record, onRefresh, onDetails, compact }: {
           <Row label="Existing authorization">{record.existingAuth ? existingAuthText(record.existingAuth) : "None on file"}</Row>
         </dl>
       )}
-      {record.exceptions.length ? (
+      {record.exceptions.some((e) => !omit?.has(e)) ? (
         <div className="mt-3">
-          <ExceptionList record={record} />
+          <ExceptionList record={record} omit={omit} />
         </div>
       ) : null}
       {compact && buttons ? <div className="mt-3">{buttons}</div> : null}
