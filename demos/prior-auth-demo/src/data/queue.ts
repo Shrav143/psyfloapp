@@ -63,7 +63,7 @@ export const STATUS_HELP: { chip: string; means: string }[] = [
   { chip: "With the payer", means: "Submitted, Acknowledged, Under review or Info requested: signed and sent. The Dashboard shows which." },
   { chip: "Denial route", means: "Denied: a call or an appeal is being worked." },
   { chip: "Needs your input", means: "A question is waiting for you, at any status." },
-  { chip: "Approved, Completed", means: "These leave the queue. See the Dashboard and Case Manager." },
+  { chip: "Approved, Denied", means: "The payer decided. They stay in this list, under the Approved and Denied views." },
 ];
 
 /** The five request types people filter by. The demo's own types map onto them; the rest (peer-to-peer, appeal, resubmission) show only under All. */

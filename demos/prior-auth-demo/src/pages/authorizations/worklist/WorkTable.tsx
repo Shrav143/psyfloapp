@@ -84,7 +84,7 @@ export function WorkTable({ rows, view, page, onPage, sort, onSort, quickKey, on
                     )}
                     <span className="text-[13px] text-muted">· {r.initials || "No patient yet"}{r.age ? `, ${r.age}` : ""}</span>
                     {quickable ? (
-                      <button type="button" data-quick aria-label={`Quick view ${r.id}`} title="Quick view" aria-haspopup="dialog" onClick={(e) => onQuick(r, e.currentTarget)} className="inline-grid h-6 w-6 translate-y-[3px] place-items-center rounded-md text-muted hover:bg-black/5 hover:text-ink">
+                      <button type="button" data-quick={r.id} aria-label={`Quick view ${r.id}`} title="Quick view" aria-haspopup="dialog" onClick={(e) => onQuick(r, e.currentTarget)} className="inline-grid h-6 w-6 translate-y-[3px] place-items-center rounded-md text-muted hover:bg-black/5 hover:text-ink">
                         <PanelRightOpen size={15} className="ico" aria-hidden="true" />
                       </button>
                     ) : null}

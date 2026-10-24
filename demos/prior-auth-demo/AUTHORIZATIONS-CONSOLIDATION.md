@@ -63,6 +63,8 @@ No change to Dashboard, Denial Intelligence, Analytics, EMR Connect, Payers or S
 - Payers: the Update drafts text and toasts ("Each returns to Case Manager for a new signature").
 - Settings: a pause effect line ("Draft all due reviews in Case Manager waits").
 - Workflow Studio catalog: the step name "Update Case Manager".
+- Dashboard: the "Open Active cases" link label.
+- Denial Intelligence and the "Denial closed" notification link to the Authorizations list (All), not straight to the Denied view; Payers' "Drafts updated" notification opens the list in the last view used.
 
 ## 6. Build and tests
 

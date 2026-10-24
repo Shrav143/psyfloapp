@@ -115,8 +115,9 @@ export default function AuthorizationsPage() {
   const reviewId = params.get("review");
   const review = reviewId ? reviewsAll.find((r) => r.id === reviewId && rows.some((x) => x.caseId === r.caseId || x.ids.includes(r.ledgerId))) : undefined;
   const [signAll, setSignAll] = useState(false);
-  const weekReviews = filtered.filter((r) => inView(r, "reviews")).map((r) => r.review!);
-  const clean = weekReviews.filter(isClean);
+  /* Like Draft all due reviews, Sign all clean drafts covers every clean draft due this week at the sites in view, whatever the filters show,
+     so the count in its dialog is the number it signs. */
+  const clean = rows.filter((r) => inView(r, "reviews")).map((r) => r.review!).filter(isClean);
 
   const act = (r: WorkRow, go: Go) => {
     switch (go.to) {
