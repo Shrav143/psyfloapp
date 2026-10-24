@@ -23,7 +23,7 @@ function Unavailable({ draftId, slot, close }: { draftId: string; slot: DocSlotI
   };
   return (
     <Frame onClose={close} done={false}>
-      <Field label="Why is it not available?" hint="A few words. The review shows it, and the payer's list still asks for the document.">
+      <Field label="Why is it not available?">
         <TextInput value={why} maxLength={80} placeholder="For example: the patient has not had one done yet" onChange={(e) => setWhy(e.target.value)} onKeyDown={(e) => e.key === "Enter" && done()} />
       </Field>
       <div className="flex gap-2">

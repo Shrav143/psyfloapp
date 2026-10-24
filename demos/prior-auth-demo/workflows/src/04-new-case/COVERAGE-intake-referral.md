@@ -1,8 +1,8 @@
 # Coverage: New Case overview, stepper, Intake and the referral
 
-Source: `src/pages/newcase/` (NewCasePage, steps, stepState, authType, AuthTypePicker, NewCaseStepper, StepHeader, IntakeStep, InitialIntake, ExistingIntake, ModificationCard, RetroIntake, PatientSearch, AuthorizationCard, DuplicateWarning, SitePicker, DatesFields, CaseDetails, RecordsChecklist, RecordEditors, FieldRow, intake, duplicates, caseIssues, seedDrafts), `src/pages/referrals/` (all), `src/data/patients.ts`, `src/store/patients.ts`, `src/store/cases.ts`, `src/store/referrals*.ts`, `src/data/referral*.ts`, `src/routes.ts`. Steps 2 to 5 are in COVERAGE-steps-2-to-5.md.
+Source: `src/pages/newcase/` (NewCasePage, steps, stepState, authType, AuthTypePicker, NewCaseStepper, IntakeStep, InitialIntake, IntakeSources, IntakeForm, ReferralRows, importIntake, ExistingIntake, ModificationCard, RetroIntake, PatientSearch, AuthorizationCard, DuplicateWarning, SitePicker, DatesFields, intake, duplicates, caseIssues, seedDrafts), `src/components/import/` (ImportSources and its parts), `src/pages/referrals/` (all), `src/data/patients.ts`, `src/store/patients.ts`, `src/store/cases.ts`, `src/store/referrals*.ts`, `src/data/referral*.ts`, `src/routes.ts`. Steps 2 to 4 are in COVERAGE-steps-2-to-5.md (the file name is kept so links resolve).
 
-Files: 00 how a case starts · 01 the stepper · 02 step states · 03 Authorization type · 04 Intake, Initial authorization · 05 Concurrent review · 06 Reauthorization / renewal · 07 Modification / extension · 08 Retroactive authorization · 09 find a patient and the authorization · 10 start with a referral or patient · 11 checklist rows · 12 ask the referrer · 13 accept · 14 mark OK and decline · 15 check coverage · 16 full page · 17 statuses · 18 Extracted tab and document · 19 Validation tab · 20 Fit, Activity, notes · 21 checklist buttons · 22 the referrer replies · 23 header actions · 24 decision banners · 25 schedule intake · 26 possible duplicate · 27 patient, insurance and request rows · 28 sites and scope · 29 reopen and resume.
+Files: 00 how a case starts · 01 the stepper · 02 step states · 03 Authorization type · 04 Intake, Initial authorization · 05 Concurrent review · 06 Reauthorization / renewal · 07 Modification / extension · 08 Retroactive authorization · 09 find a patient and the authorization · 10 the row of ways in (import, referrals, known patient) · 11 checklist rows · 12 ask the referrer · 13 accept · 14 mark OK and decline · 15 check coverage · 16 full page · 17 statuses · 18 Extracted tab and document · 19 Validation tab · 20 Fit, Activity, notes · 21 checklist buttons · 22 the referrer replies · 23 header actions · 24 decision banners · 25 schedule intake · 26 possible duplicate · 27 the onboarding form (Patient, Coverage, Request, More) · 28 sites and scope · 29 reopen and resume · 37 to 39 the import: Pull from EMR, Import a file with field mapping, Paste a screenshot, and the review with Apply.
 
 ## Ways in
 
@@ -16,7 +16,7 @@ Files: 00 how a case starts · 01 the stepper · 02 step states · 03 Authorizat
 | 'Create authorization from verification' and 'Start authorization' on an Eligibility result (?verification=, ?type=initial) | 00 |
 | 'Start renewal' in the Dashboard's what-to-do list (?type=reauth&patient=) | 00, 06 |
 | ?type=initial, concurrent, reauth, modify, retro; paths.newCase({type}) | 00, 03 |
-| ?step=intake, eligibility, documentation, preparation, review (and the older referral, records, agents, review) | 00 |
+| ?step=intake, eligibility, documentation, review; preparation and the older agents open Clinical documentation at Authorization preparation; the older referral and records | 00, 29 |
 | ?payer=&program=&member=&initials=&age= | 00 |
 | Case Manager row buttons 'Continue', 'Answer', 'Watch', 'Review and sign'; bell link; 'Open in review and sign' and 'Send to payer' on a case page | 29, 80 |
 | Missing case: 'We could not find that draft', 'Start a new case' | 29 |
@@ -29,12 +29,12 @@ Files: 00 how a case starts · 01 the stepper · 02 step states · 03 Authorizat
 
 | Control | Diagram |
 |---|---|
-| Five steps, each a button with its state (Complete, Needs attention, Pending, Not applicable, Blocked) | 01, 02 |
+| Four steps, each a button with its state (Complete, Needs attention, Pending, Not applicable, Blocked) | 01, 02 |
 | Free movement to any step; progress kept in the draft | 01 |
-| Step header ('STEP n OF 5', name, state, reason); tooltip | 01, 02 |
-| Opening Authorization preparation does not start the agents | 01, 50 |
-| 'Back', 'Save as draft', 'Continue to ...' on each step; footer hint | 01 |
-| Sentence under the title per step; 'Use sample chart' | 01 |
+| The step's reason as the stepper's tooltip (no step header) | 01, 02 |
+| Opening Clinical documentation does not start the agents | 01, 50 |
+| 'Back', 'Save as draft', 'Continue to ...' on each step; the bar's one line is a workflow warning | 01 |
+| Header card 'New Case' with the case id and 'Authorization type'; 'Use sample chart' in the drop row of Clinical documentation | 01, 41 |
 | Stepper on the full referral page (Intake current, not clickable) | 01, 16 |
 | 'Authorization type' dropdown: five types, request type recorded, patient cleared for existing-authorization types, tidy-up of reasons, run restart | 03 |
 | Disabled once sent | 03 |
@@ -43,19 +43,23 @@ Files: 00 how a case starts · 01 the stepper · 02 step states · 03 Authorizat
 
 | Control | Diagram |
 |---|---|
-| 'Start with a referral or patient', drop panel 'Drop the referral documents', 'Use sample referral', 'Create case manually' | 10 |
-| Reader reading screen (four lines), no Cancel; toast and bell for the new referral; the referral is placed at the site in view | 10 |
-| 'Incoming referrals (N)': rows, statuses (Documents complete, N items missing, N items to review, Waiting on the referrer), 'Review', 'Show N more', 'Show fewer' | 10 |
-| 'Find a patient who is already known', the patient search, results, no match, 'N more' | 10, 09 |
-| 'Use a different referral or patient', the line 'From referral ...' | 04 |
-| Rows 'Patient initials and age', 'Payer and plan', 'Member ID', 'Level of care', 'Request type', 'Start date'; row sources; editors; 'Done' | 27 |
-| Requested start and end date, the usual length hint | 04, 27 |
-| Footer 'Save as draft', 'Continue to Eligibility & Benefits' and its hint | 04, 80 |
+| The row: 'Pull from EMR' (connected sites only), 'Import a file', 'Paste a screenshot', 'Referrals N', 'Known patient'; typing into the form is the by-hand way | 10 |
+| 'Pull from EMR': chart picker, 'Pull', the fields a mapping leaves out, 'Map it' | 37 |
+| 'Import a file': drop or choose, 'Use a sample export', the mapping table, 'Row to import', 'Skip', 'Apply mapping', 'Cancel'; XLSX; PDF; pasted cells; unreadable files | 38 |
+| 'Paste a screenshot': Ctrl+V or Cmd+V, drop or choose an image, 'Use a sample screenshot', 'Reading…', 'Demo: reading is simulated' | 39 |
+| The review: 'N fields found', a box per field and document, 'Check', 'replaces J.M.', 'Apply N', 'Cancel'; 'From EMR', 'From file', 'From screenshot' under applied fields | 39 (review) |
+| Referrals panel: 'Drop referral documents', 'Use sample referral', Reader's reading in the panel; the referral is placed at the site in view | 10 |
+| Referrals panel rows, statuses (Documents complete, N items missing, N items to review, Waiting on the referrer), 'Review' | 10 |
+| 'Known patient' panel: the patient search, results, no match, 'N more' | 10, 09 |
+| 'Use a different referral' or 'Use a different patient', the line 'From referral ...' or 'Existing patient ...' | 04 |
+| Form: 'Initials', 'Date of birth' with the age worked out, 'Age' for a draft with only an age, 'Sex', 'Payer', 'Plan type' (the payer's plans), 'Member ID', 'Level of care', 'Request type', 'Requested start date', 'Primary diagnosis (ICD-10)', 'Site'; 'More': 'Secondary insurance', 'Requested end date', 'Attending clinician', 'Clinician NPI', 'Referral source', 'Guardian' (under 18) | 27 |
+| Requested start date; end date under More | 04, 27 |
+| Bar 'Save as draft', 'Continue to Eligibility & Benefits' | 04, 80 |
 | Concurrent review: patient, authorization, 'Dates to review' | 05 |
 | Reauthorization / renewal: 'Dates to renew', ending soon, none left | 06 |
 | Modification / extension: 'Proposed change', 'What should change', amounts, 'Why the change is needed', 'Dates the change covers', 'Payer approval: not yet' | 07 |
-| Retroactive authorization: payer's Backdating rule or 'No rule on file', 'Enter the patient by hand', 'Dates of service', 'Why it was not obtained ahead of time' and the four reasons, 'Supporting documents' | 08 |
-| Patient card, 'Change patient', 'Which treatment episode?', 'Which authorization?', authorization card, 'History' drawer, the sentence about its state | 09 |
+| Retroactive authorization: payer's Backdating rule or 'No rule on file', the form with 'First date of service' and 'Last date of service', 'Why it was not obtained ahead of time' and the four reasons, 'Supporting documents' | 08 |
+| Patient card, 'Change patient', 'Which treatment episode?', 'Which authorization?', authorization card, 'History' drawer | 09 |
 | Possible duplicate: 'Open R-1042', 'Continue with a reason', 'Continue with this reason', 'Cancel', 'Undo' | 26 |
 | 'Site' choice, locked site, ids by site; links to other sites | 28 |
 | 'Updated for a payer change on ...' | 04, 40 (named) |

@@ -111,6 +111,11 @@ export function narrativeOf(d: CaseDraft, context: string[] = [], adds: RecAdd[]
 /** Applied actions whose sentence the summary does not hold yet: the case page marks them "New". */
 export const unfoldedAdds = (d: CaseDraft, adds: RecAdd[]): RecAdd[] => adds.filter((a) => !(d.narrative ? d.narrativeIncludes ?? [] : []).includes(a.recId));
 
+/** The case's own scores as the summary's severity line: "PCL-5 52 and PHQ-9 16, with dates in the chart." The case page's draft says the same. */
+export const severityLine = (scores: { label: string; value: string }[]): string | undefined => (scores.length ? `${scores.map((s) => `${s.label} ${s.value}`).join(" and ")}, with dates in the chart.` : undefined);
+/** What the sample documents' psychiatric evaluation says (and R-1042's chart). */
+const SAMPLE_SEVERITY = "Depression score 17 and anxiety score 14. Craving was 7 of 10 on 10/17.";
+
 export function buildNarrative(d: CaseDraft): NarrativeSection[] {
   const has = (slot: DocSlotId): boolean => d.documents.some((x) => x.slot === slot);
   const chips = (pairs: [DocSlotId, string][]): string[] => pairs.filter(([slot]) => has(slot)).map(([, label]) => label);
@@ -151,7 +156,7 @@ export function buildNarrative(d: CaseDraft): NarrativeSection[] {
     { id: "clinical", heading: "Clinical picture", text: clinical, sources: chips([["psych_eval", "Psychiatric eval p.3"], ["nursing", "Nursing notes"], ...(sertraline ? ([["meds", "Medication list"]] as [DocSlotId, string][]) : [])]) },
     ...(basis ? [basis] : []),
     { id: "level", heading: levelHeading, text: level, sources: chips(LEVEL_SOURCES[prog]) },
-    { id: "severity", heading: "Current severity", text: has("psych_eval") ? "Depression score 17 and anxiety score 14. Craving was 7 of 10 on 10/17." : "The chart records current symptoms and day-to-day function.", sources: chips([["psych_eval", "Psychiatric eval p.5"]]) },
+    { id: "severity", heading: "Current severity", text: d.severity ?? (has("psych_eval") ? SAMPLE_SEVERITY : "The chart records current symptoms and day-to-day function."), sources: chips([["psych_eval", "Psychiatric eval p.5"]]) },
     { id: "plan", heading: "Plan", text: plan, sources: chips([["treatment_plan", "Treatment plan p.2"]]) },
   ];
 }

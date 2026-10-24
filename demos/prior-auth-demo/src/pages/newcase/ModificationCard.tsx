@@ -29,7 +29,7 @@ export function ModificationCard({ draft }: { draft: CaseDraft }) {
             </Field>
           ) : null}
         </div>
-        <Field label="Why the change is needed" hint="One or two sentences. Scribe uses it in the justification, and only what the chart supports goes in.">
+        <Field label="Why the change is needed">
           <TextArea value={change.detail} onChange={(e) => edit({ detail: e.target.value })} placeholder="For example: progress is steady but the home is still not safe, and the step-down bed opens on 11/09" />
         </Field>
       </CardBody>

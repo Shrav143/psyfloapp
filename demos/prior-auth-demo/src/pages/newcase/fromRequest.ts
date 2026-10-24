@@ -43,8 +43,20 @@ export interface RecAdd {
 export const appliedAdds = (detail: CaseDetail, work: CaseWork): RecAdd[] =>
   withFocus(detail, work).recs.flatMap((r) => (r.add && work.applied.includes(r.id) ? [{ recId: r.id, section: SECTION_OF[r.add.section] ?? r.add.section, text: r.add.text(work.inputs[r.id] ?? ""), source: r.add.source }] : []));
 
-const DX_FOR: [RegExp, string][] = [[/alcohol/i, "F10.20"], [/opioid/i, "F11.20"], [/stimulant/i, "F15.20"], [/cannabis/i, "F12.20"], [/depress/i, "F33.1"], [/anxiety/i, "F41.1"]];
-const diagnosesOf = (text: string): Diagnosis[] => ICD_CODES.filter((c) => DX_FOR.some(([re, code]) => re.test(text) && code === c.code));
+/** The ICD-10 codes a case's diagnosis names. A bipolar depressed episode is not a major depressive disorder, and "recurrent, severe" is F33.2, not the moderate F33.1. */
+export function diagnosisCodesOf(text: string): string[] {
+  const codes: string[] = [];
+  if (/alcohol/i.test(text)) codes.push("F10.20");
+  if (/opioid/i.test(text)) codes.push("F11.20");
+  if (/stimulant/i.test(text)) codes.push("F15.20");
+  if (/cannabis/i.test(text)) codes.push("F12.20");
+  if (/bipolar/i.test(text)) codes.push(/depress/i.test(text) ? "F31.30" : "F31.9");
+  else if (/depress/i.test(text)) codes.push(/recurrent,? severe/i.test(text) ? "F33.2" : "F33.1");
+  if (/post-?traumatic|\bptsd\b/i.test(text)) codes.push("F43.10");
+  if (/anxiety/i.test(text)) codes.push("F41.1");
+  return codes;
+}
+const diagnosesOf = (text: string): Diagnosis[] => diagnosisCodesOf(text).flatMap((code) => ICD_CODES.filter((c) => c.code === code));
 
 const ELAPSED = [12, 8, 17, 18, 12, 11, 22, 13, 11, 9];
 
@@ -88,6 +100,8 @@ export function requestDraft(base: CaseDetail, work: CaseWork, clock: number, ct
     type: detail.type,
     reason: `${detail.summary.diagnosis} ${detail.summary.trajectory}`.trim(),
     diagnoses: diagnosesOf(`${detail.dx} ${detail.summary.diagnosis}`),
+    /* The case page's own severity line, from the case's scores; R-1042's is its authored one. */
+    severity: detail.draft.find((s) => s.id === "current")?.text,
     documents,
     answers,
     startChance: Math.max(1, Math.min(detail.baseChance, final - 6)),
@@ -113,6 +127,7 @@ export function requestDraft(base: CaseDetail, work: CaseWork, clock: number, ct
     the therapy note, and a finished run once every check passes. It moves to the step that fits: Review & submit when ready, the agents' section of Clinical documentation when they have work left. */
 export function mergeRequestDraft(d: CaseDraft, target: CaseDraft, state: RequestState): CaseDraft {
   if (d.sent) return d;
+  if (!d.severity && target.severity) d = { ...d, severity: target.severity };
   const answers = [...d.answers, ...target.answers.filter((a) => !d.answers.some((x) => x.key === a.key))];
   const therapy = target.documents.find((x) => x.slot === "therapy_note");
   const documents = therapy && !d.documents.some((x) => x.slot === "therapy_note") && !("therapy_note" in d.unavailable) ? [...d.documents, therapy] : d.documents;

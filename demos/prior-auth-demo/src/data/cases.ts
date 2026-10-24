@@ -207,6 +207,8 @@ export interface CaseDraft {
   questions: QuestionKey[];
   suggestions: string[];
   narrative: NarrativeSection[] | null;
+  /** The "Current severity" line from the case's own scores, for a case the queue already knows (the case page says the same). Left out, the summary reads the documents. */
+  severity?: string;
   /** The case page's applied actions whose sentences the edited summary already holds. Read only while `narrative` is set. */
   narrativeIncludes?: string[];
   revision: number;

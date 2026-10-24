@@ -57,7 +57,7 @@ Source: `src/pages/emr/*`, `src/store/emr.ts`, `src/data/emr.ts`, `src/data/site
 | Two-second wait, guard while a sync runs, leaving the page mid-sync, no Connected system | 50 |
 | Four rotating results, counters, toast 'Sync finished' | 50 |
 | What a sync pulls and when it runs (schedule is PRD only) | 55 |
-| 'Pull a chart from EMR Connect' in New Case (Connected systems only, blank fields while a mapping waits) and the write-back box on the Dashboard (needs a Connected system with its switch on) | 58 |
+| 'Pull from EMR' in the import row of New Case and Eligibility & Benefits (Connected clinical record systems only, a field left out while its mapping waits) and the write-back box on the Dashboard (needs a Connected system with its switch on) | 58 |
 
 ## Field mappings
 
@@ -94,7 +94,14 @@ Source: `src/pages/emr/*`, `src/store/emr.ts`, `src/data/emr.ts`, `src/data/site
 | Sync from one site's view pulls and counts only for that site's systems | 12, 50 |
 | A system connected by a one-site viewer serves only that site | 12, 40 |
 | The write-back switches that count for the Dashboard are those of the systems at the sites in view | 25, 58 |
-| New Case's 'Pull a chart from EMR Connect' offers the charts of the Connected systems at the sites in view | 58 |
+| New Case's 'Pull from EMR' offers the charts of the Connected systems at the sites in view | 58 |
+
+## No connection (round 6)
+
+| Control | Diagram |
+|---|---|
+| Row 'No connection for a system? Import an export or paste a screenshot' and 'Import a record' | 95 |
+| Side panel 'Import a record': 'Import a file', 'Paste a screenshot' (no 'Pull from EMR'), the review, 'Apply'; a New Case starts with the fields | 95 |
 
 ## Not drawn
 

@@ -14,6 +14,7 @@ export const ICD_CODES: Diagnosis[] = [
   { code: "F33.1", label: "Major depressive disorder, recurrent, moderate" },
   { code: "F41.1", label: "Generalized anxiety disorder" },
   { code: "F43.10", label: "Post-traumatic stress disorder, unspecified" },
+  { code: "F31.30", label: "Bipolar disorder, current episode depressed, mild or moderate severity, unspecified" },
   { code: "F31.9", label: "Bipolar disorder, unspecified" },
 ];
 

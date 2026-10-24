@@ -13,7 +13,7 @@ group gChange "Card 'Proposed change'"
   input iKind "Pick 'What should change'\nMore units, More days, Revised dates, Different service or level of care, A correction"
   decision dMore "More units or More days?"
   input iAmt "'How many more units' or 'How many more days'\n1 to 90"
-  input iWhy "'Why the change is needed'\n'One or two sentences. Scribe uses it in the justification, and only what the chart supports goes in.'"
+  input iWhy "'Why the change is needed'\nOne or two sentences; Scribe uses only what the chart supports"
 endgroup
 
 screen sDates "Card 'Dates the change covers'\n'From today, unless the change revises the dates.'"

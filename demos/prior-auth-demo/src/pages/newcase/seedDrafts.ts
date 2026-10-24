@@ -5,7 +5,9 @@ import { siteOf } from "@/data/sites";
 import type { PayerId, Program } from "@/data/types";
 import { kindOfType } from "./authType";
 import { docEntries, makeDocument, sampleFile } from "./documents";
+import { QUEUE_ITEMS } from "@/data/queue";
 import { ICD_CODES } from "./lookups";
+import { severityLine } from "./narrative";
 
 export function blankDraft(over: Partial<CaseDraft> = {}): CaseDraft {
   return {
@@ -67,7 +69,10 @@ const answer = (key: QuestionKey, choice: string, label: string, payerShort: str
 /** A seeded draft is a case the ledger already knows: its patient, episode and authorization are the ledger's own (data/patients.ts). */
 function seed(id: string, over: Partial<CaseDraft>): CaseDraft {
   const payerId = over.payerId as PayerId;
+  /* The severity line follows the case's own scores, as the case page says it. R-1042's chart is the sample documents' own, so it keeps their line. */
+  const scores = id === "R-1042" ? [] : QUEUE_ITEMS.find((i) => i.id === id)?.scores ?? [];
   return blankDraft({
+    severity: severityLine(scores),
     id: `draft-${id.toLowerCase().replace("-", "")}`, caseId: id, saved: true, step: 1, phase: "records", planType: planTypeOf(payerId), cardRead: true,
     site: siteOf(id), kind: kindOfType(over.type ?? null), started: true, patientId: id, episodeId: `EP-${id}`, authorizationId: `AU-${id}`, ...over,
   });

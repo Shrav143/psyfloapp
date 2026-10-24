@@ -28,8 +28,8 @@ In Case Manager: `07-case-manager/61` (Ledger case › Workflow line and history
 | 'Apply <workflow>', 'Keep version N' in the match panel | 69 |
 | '<A> and <B> match equally. The default is used until you choose.' and 'Choose a workflow' | 67, 69 |
 | 'Use this workflow', 'Keep the default for now', the radio choices | 67 |
-| 'Next in this workflow: ...' under the step header | 71 |
-| 'Workflow: ...' folded into the footer line of steps 1 to 4 | 71 |
+| 'At Clinical documentation' (the engine's documentation and preparation stages) at the end of the workflow line; no hint under a step | 71, 72 |
+| 'Workflow: ...' as the one line in the bar of steps 1 to 3 | 71 |
 | The 'Workflow' note in 'What is missing' | 71 |
 | 'No authorization is required' raised by the workflow | 73 |
 | 'Sign and send to payer (demo)' keeps being the one simulated send | 74 |
