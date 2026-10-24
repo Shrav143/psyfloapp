@@ -83,7 +83,7 @@ export default function CasePage() {
         <Card>
           <EmptyState
             icon={SearchX} title={`No request ${id}`}
-            action={<Link to={paths.authorizations()} className="inline-flex h-[38px] items-center rounded-xl bg-forest px-4 text-sm font-medium text-white hover:bg-forest-dark">Back to queue</Link>}
+            action={<Link to={paths.authorizations()} className="inline-flex h-[38px] items-center rounded-xl bg-forest px-4 text-sm font-medium text-white hover:bg-forest-dark">Back to Authorizations</Link>}
           />
         </Card>
       </Page>

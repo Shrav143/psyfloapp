@@ -128,8 +128,8 @@ export default function ResultPage() {
           Open case
         </Button>
       ) : !id.startsWith("V-") ? (
-        <Button size="sm" icon={FolderOpen} onClick={() => nav(paths.manager("cases"))}>
-          Open in Case Manager
+        <Button size="sm" icon={FolderOpen} onClick={() => nav(paths.authorizations())}>
+          Open in Authorizations
         </Button>
       ) : null}
       <Button size="sm" icon={RefreshCw} loading={busy} onClick={() => refresh(id)}>

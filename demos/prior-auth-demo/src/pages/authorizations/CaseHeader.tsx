@@ -66,7 +66,7 @@ export function CaseHeader({ ctx }: { ctx: CaseCtx }) {
           </div>
           <div className="flex shrink-0 items-center gap-2">
             <Button size="sm" icon={PenLine} onClick={send}>Open in review and sign</Button>
-            <Button size="sm" variant="ghost" icon={ArrowLeft} onClick={() => navigate(paths.authorizations())}>Back to queue</Button>
+            <Button size="sm" variant="ghost" icon={ArrowLeft} onClick={() => navigate(paths.authorizations())}>Back to Authorizations</Button>
           </div>
         </div>
 

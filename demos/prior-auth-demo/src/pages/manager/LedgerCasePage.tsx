@@ -16,7 +16,7 @@ import { authWindow, caseHistory, nextStep, reviewsOf } from "./ledgerCase";
 import type { LedgerRow } from "./ledgerRows";
 import { useWorkflowLine } from "./useWorkflowLine";
 
-/** A case that is in the Case Manager ledger but has no request in the queue: a calm summary from the ledger record, with the one action that fits. */
+/** An approved authorization (or a ledger case) that has no request in the queue: a calm summary from the ledger record, with the one action that fits. */
 export default function LedgerCasePage({ row }: { row: LedgerRow }) {
   const navigate = useNavigate();
   const clock = useStore((s) => s.clock);
@@ -37,7 +37,7 @@ export default function LedgerCasePage({ row }: { row: LedgerRow }) {
 
   return (
     <Page>
-      <Crumbs items={[{ label: "Case Manager", to: paths.manager() }, { label: row.id }]} />
+      <Crumbs items={[{ label: "Authorizations", to: paths.authorizations() }, { label: row.id }]} />
       <PageHeader
         title={
           <span className="flex flex-wrap items-center gap-3">
@@ -51,14 +51,14 @@ export default function LedgerCasePage({ row }: { row: LedgerRow }) {
         actions={
           <>
             {due ? <Button variant="primary" icon={FileText} onClick={() => navigate(reviewLink(due.id))}>Open the review</Button> : null}
-            <Button variant="ghost" icon={ArrowLeft} onClick={() => navigate(paths.manager())}>Back to Case Manager</Button>
+            <Button variant="ghost" icon={ArrowLeft} onClick={() => navigate(paths.authorizations())}>Back to Authorizations</Button>
           </>
         }
       />
 
       <div className="grid grid-cols-1 items-start gap-5 min-[1180px]:grid-cols-[minmax(0,1fr)_380px]">
         <Card>
-          <CardHeader title="Case summary" subtitle="From the Case Manager ledger" right={<Pill tone="neutral" dot>Privacy mode on</Pill>} />
+          <CardHeader title="Case summary" right={<Pill tone="neutral" dot>Privacy mode on</Pill>} />
           <CardBody>
             <KeyValue
               items={[

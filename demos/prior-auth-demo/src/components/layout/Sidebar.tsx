@@ -1,14 +1,12 @@
-import { BarChart3, Building2, ChevronDown, ChevronRight, ClipboardList, FolderOpen, HelpCircle, LayoutDashboard, LogOut, RefreshCw, Scale, Settings, ShieldCheck, PlusCircle, FlaskConical, type LucideIcon } from "lucide-react";
+import { BarChart3, Building2, ChevronDown, ChevronRight, ClipboardList, HelpCircle, ListChecks, LayoutDashboard, LogOut, RefreshCw, Scale, Settings, ShieldCheck, PlusCircle, FlaskConical, type LucideIcon } from "lucide-react";
 import { useScope } from "@/lib/scope";
 import { NavLink, useLocation } from "react-router-dom";
 import { Count } from "@/components/ui";
 import { cn } from "@/lib/cn";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
-import { selectActiveBadge } from "@/store/cases";
 import { selectDenialBadge } from "@/store/denials";
 import { selectEbBadge } from "@/store/eligibility";
-import { selectManagerBadge } from "@/store/manager";
 import { selectPayersBadge } from "@/store/payerConfig";
 import { selectQueueBadge } from "@/store/queue";
 import { selectReferralBadge } from "@/store/referrals";
@@ -20,6 +18,8 @@ interface Item {
   badge?: number;
   /** Paths that keep this item highlighted. */
   match?: string[];
+  /** For a sub-item that shares its parent's address: when it is the one highlighted. */
+  isOn?: (pathname: string) => boolean;
   subs?: Item[];
 }
 
@@ -48,10 +48,10 @@ function NavItem({ item, depth = 0 }: { item: Item; depth?: number }) {
 
 function SubLink({ item }: { item: Item }) {
   const { pathname } = useLocation();
-  const on = item.match ? item.match.some((m) => pathname.startsWith(m)) : pathname.startsWith(item.to);
+  const on = item.isOn ? item.isOn(pathname) : item.match ? item.match.some((m) => pathname.startsWith(m)) : pathname.startsWith(item.to);
   const Icon = item.icon;
   return (
-    <NavLink to={item.to} className={cn(link, "ml-3 h-9 gap-2.5 pr-2 text-[13px]", on && "bg-forest text-white hover:bg-forest")}>
+    <NavLink to={item.to} end={!!item.isOn} className={cn(link, "ml-3 h-9 gap-2.5 pr-2 text-[13px]", on && "bg-forest text-white hover:bg-forest")}>
       <Icon size={16} className="ico" />
       <span className="truncate">{item.label}</span>
       {item.badge ? <Count on={on} className="ml-auto">{item.badge}</Count> : null}
@@ -59,7 +59,7 @@ function SubLink({ item }: { item: Item }) {
   );
 }
 
-/** Every badge follows the site view. The slice badges (queue, Eligibility, denials, Case Manager, active, referrals) read the view inside their selectors; the
+/** Every badge follows the site view. The slice badges (Authorizations, Eligibility, denials, referrals) read the view inside their selectors; the
     Dashboard badge is counted here with the same rule. Payers is clinic-wide on purpose: a payer's rules and changes are not site data, so its badge never changes with the view. */
 export function Sidebar() {
   const requests = useStore((s) => s.requests);
@@ -69,8 +69,6 @@ export function Sidebar() {
   const queue = useStore(selectQueueBadge);
   const eb = useStore(selectEbBadge);
   const denials = useStore(selectDenialBadge);
-  const active = useStore(selectActiveBadge);
-  const manager = useStore(selectManagerBadge);
   const payers = useStore(selectPayersBadge);
   const toast = useStore((s) => s.toast);
 
@@ -79,12 +77,13 @@ export function Sidebar() {
     {
       to: paths.authorizations(), label: "Authorizations", icon: ClipboardList, badge: queue,
       subs: [
+        // The same page as the parent: the one worklist. It is the highlighted item on the worklist and on a case page.
+        { to: paths.authorizations(), label: "All Authorizations", icon: ListChecks, isOn: (p) => p === "/authorizations" || p.startsWith("/authorizations/case") },
         { to: "/authorizations/new", label: "New Case", icon: PlusCircle, badge: referrals },
         { to: paths.eligibility(), label: "Eligibility & Benefits", icon: ShieldCheck, badge: eb },
       ],
     },
     { to: paths.denials(), label: "Denial Intelligence", icon: Scale, badge: denials, match: ["/denials"] },
-    { to: paths.manager(), label: "Case Manager", icon: FolderOpen, badge: active + manager, match: ["/manager", "/active"] },
     { to: paths.analytics(), label: "Analytics", icon: BarChart3, match: ["/analytics"] },
   ];
   const conn: Item[] = [

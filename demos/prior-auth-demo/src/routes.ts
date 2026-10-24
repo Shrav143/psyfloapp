@@ -14,7 +14,8 @@ export const paths = {
   referrals: () => "/authorizations/new",
   /** One referral, opened from New Case. `draft` is the case it was opened from, so Continue returns to it. */
   referral: (id: string, draft?: string) => `/authorizations/new/referral/${id}${draft ? `?draft=${draft}` : ""}`,
-  authorizations: () => "/authorizations",
+  /** The one Authorizations workspace. `view` is one of all, attention, progress, payer, approved, denied or reviews. */
+  authorizations: (view?: "all" | "attention" | "progress" | "payer" | "approved" | "denied" | "reviews") => `/authorizations${view ? `?view=${view}` : ""}`,
   case: (id: string, tab?: "actions" | "picture" | "criteria" | "risk" | "draft") => `/authorizations/case/${id}${tab ? `?tab=${tab}` : ""}`,
   /** New Case. `draft` resumes a case being prepared. `referral` pre-fills from a referral. */
   newCase: (o?: { draft?: string; referral?: string; /** A stored verification (VerificationRecord id) to carry into step 2. */ verification?: string; /** Authorization type: initial, concurrent, reauth, modify or retro. */ type?: string; /** A patient's case id, to start from an existing patient. */ patient?: string; /** A step to open: intake, eligibility, documentation or review. preparation (and the older agents) opens Clinical documentation at the agents' section; the older referral and records names work too. */ step?: string }) => {
@@ -41,7 +42,8 @@ export const paths = {
   brief: (id: string) => `/denials/${id}/brief`,
   /** The appeal analysis report for one denial. */
   report: (id: string) => `/denials/${id}/report`,
-  manager: (tab?: "cases" | "reviews") => `/manager${tab ? `?tab=${tab}` : ""}`,
+  /** Case Manager is part of Authorizations now. The old tabs open the matching view: Active cases is All (callers add &show=active or &show=renewal), Reviews this week is its view. /manager links still redirect. */
+  manager: (tab?: "cases" | "reviews") => (tab === "reviews" ? "/authorizations?view=reviews" : tab === "cases" ? "/authorizations?view=all" : "/authorizations"),
   analytics: () => "/analytics",
   emr: () => "/emr",
   /** The landing page (no id) or one payer's workspace. `tab` is one of the four views; the older ids still open the matching view

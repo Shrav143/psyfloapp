@@ -130,7 +130,7 @@ export function ReviewStep({ draft, env }: { draft: CaseDraft; env: CaseEnv }) {
               icon={Save}
               onClick={() => {
                 save(draft.id);
-                toast({ title: "Draft saved", body: `${draft.caseId ?? "The draft"} is in Case Manager.`, tone: "good" });
+                toast({ title: "Draft saved", body: `${draft.caseId ?? "The draft"} is in Authorizations.`, tone: "good" });
               }}
             >
               Save as draft

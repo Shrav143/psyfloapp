@@ -13,12 +13,12 @@ import { Check } from "lucide-react";
 
 const PATH: [string, string][] = [
   ["Dashboard: where every request stands", paths.dashboard()],
-  ["Authorizations: the queue", paths.authorizations()],
+  ["Authorizations: every request in one list", paths.authorizations()],
   ["New Case: start from a referral", paths.referrals()],
   ["Eligibility & Benefits: verify a patient", paths.eligibilityVerify()],
   ["Denial Intelligence: D-3318", paths.denials("D-3318")],
   ["Payers: Cardinal, Changes", paths.payers("cardinal", "changes")],
-  ["Case Manager: reviews this week", paths.manager("reviews")],
+  ["Authorizations: reviews this week", paths.authorizations("reviews")],
 ];
 
 /** The Demo menu: reset data, move the clock, jump along a suggested path. Not part of the product. */

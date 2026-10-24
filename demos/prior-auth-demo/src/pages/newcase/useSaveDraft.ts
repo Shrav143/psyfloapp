@@ -7,6 +7,6 @@ export function useSaveDraft(draftId: string): () => void {
   return () => {
     save(draftId);
     const id = useStore.getState().caseDrafts.find((d) => d.id === draftId)?.caseId;
-    toast({ title: "Draft saved", body: `${id ?? "The draft"} is in Case Manager.`, tone: "good" });
+    toast({ title: "Draft saved", body: `${id ?? "The draft"} is in Authorizations.`, tone: "good" });
   };
 }

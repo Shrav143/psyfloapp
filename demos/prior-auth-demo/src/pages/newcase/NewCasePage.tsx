@@ -138,7 +138,7 @@ export default function NewCasePage() {
               <div className="flex flex-wrap justify-center gap-2.5">
                 <Button variant="primary" onClick={() => nav(paths.case(sentId))}>Open the case</Button>
                 {recorded ? <Button onClick={() => nav(paths.dashboard({ request: sentId }))}>Open it on the Dashboard</Button> : null}
-                <Button onClick={() => nav(paths.manager())}>Back to Case Manager</Button>
+                <Button onClick={() => nav(paths.authorizations())}>Back to Authorizations</Button>
               </div>
             }
           />
@@ -151,9 +151,9 @@ export default function NewCasePage() {
 
   return (
     <Page>
-      <Link to={paths.manager()} className="-mb-1.5 flex w-fit items-center gap-1.5 text-[13px] text-muted hover:text-ink">
+      <Link to={paths.authorizations()} className="-mb-1.5 flex w-fit items-center gap-1.5 text-[13px] text-muted hover:text-ink">
         <ArrowLeft size={14} className="ico" />
-        Case Manager
+        Authorizations
       </Link>
       <PageHeader
         title={

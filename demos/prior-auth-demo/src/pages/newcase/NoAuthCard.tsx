@@ -59,10 +59,10 @@ export function NoAuthCard({ draft, env }: { draft: CaseDraft; env: CaseEnv }) {
                   size="sm"
                   onClick={() => {
                     discard(draft.id);
-                    nav(paths.manager());
+                    nav(paths.authorizations());
                   }}
                 >
-                  Return to Case Manager
+                  Return to Authorizations
                 </Button>
               </>
             )

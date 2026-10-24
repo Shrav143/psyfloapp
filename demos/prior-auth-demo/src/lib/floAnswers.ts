@@ -42,7 +42,7 @@ export type FloRoute = { kind: "case"; id: string } | { kind: "manager" } | { ki
 export function routeOf(pathname: string): FloRoute {
   const c = /^\/authorizations\/case\/([^/]+)/.exec(pathname);
   if (c) return { kind: "case", id: decodeURIComponent(c[1]) };
-  if (pathname === "/manager" || pathname.startsWith("/manager/")) return { kind: "manager" };
+  if (pathname === "/authorizations" || pathname === "/manager" || pathname.startsWith("/manager/")) return { kind: "manager" };
   if (pathname === "/denials" || pathname.startsWith("/denials/")) return { kind: "denials" };
   if (pathname === "/authorizations/eligibility" || pathname.startsWith("/authorizations/eligibility/")) return { kind: "eligibility" };
   return { kind: "other" };
@@ -78,7 +78,7 @@ export function chipsFor(route: FloRoute, all: AppState): { chips: string[]; lab
     const c = caseFacts(route.id, s);
     if (c) return { chips: [`What is missing for ${c.id}?`, "When does this authorization run out?", `What does ${payerById(c.payerId).shortName} require?`], label: c.id };
   }
-  if (route.kind === "manager") return { chips: ["Which reviews are due?"], label: "Case Manager" };
+  if (route.kind === "manager") return { chips: ["What needs me today?", "What is due soonest?", "Which reviews are due?"], label: "Authorizations" };
   if (route.kind === "denials") return { chips: ["Which denial is due first?"], label: "Denial Intelligence" };
   if (route.kind === "eligibility") return { chips: ["Which patients need a fix before billing?"], label: "Eligibility & Benefits" };
   return { chips: DEFAULT_CHIPS };
@@ -108,7 +108,7 @@ function missingAnswer(id: string, guessed: boolean, s: AppState): FloAnswer {
   const link = { label: `Open ${id}, Recommended actions`, to: paths.case(id, "actions") };
   const lead = guessed ? `${ON_PAGE} ` : "";
   const d = c.detail;
-  if (!d) return { text: `${lead}${head} is an approved case on the Case Manager ledger. No draft is open for it, so nothing is missing.`, link: { label: `Open ${id}`, to: paths.case(id) } };
+  if (!d) return { text: `${lead}${head} is an approved authorization. No draft is open for it, so nothing is missing.`, link: { label: `Open ${id}`, to: paths.case(id) } };
 
   const work = s.queueCases[d.requestId] ?? EMPTY_WORK;
   const sent = liveView(d, s.requests)?.sent === true || d.phase === "payer";
@@ -149,7 +149,7 @@ function expiryAnswer(id: string, guessed: boolean, s: AppState): FloAnswer {
   const request = s.requests.find((r) => r.id === id) ?? s.requests.find((r) => r.caseId === id);
   const lead = guessed ? `${ON_PAGE} ` : "";
   const link = { label: `Open ${id}`, to: paths.case(id) };
-  if (!c) return request ? { text: `${lead}${id} (${shortPayer(request)}) has no approved authorization on the Case Manager ledger yet. It is ${request.chip.toLowerCase()}.`, link } : notFound(id);
+  if (!c) return request ? { text: `${lead}${id} (${shortPayer(request)}) has no approved authorization yet. It is ${request.chip.toLowerCase()}.`, link } : notFound(id);
 
   const payer = payerById(c.payerId).shortName;
   const head = `${c.id} (${payer}, ${PROGRAM_LABEL[c.program]})`;
@@ -198,7 +198,7 @@ function requireAnswer(payerId: PayerId, program: Program | undefined, caseId: s
 
 function reviewsAnswer(s: AppState): FloAnswer {
   const week = s.reviews.filter((r) => r.status !== "signed" && inWeek(r));
-  const link = { label: "Open Case Manager, Reviews this week", to: paths.manager("reviews") };
+  const link = { label: "Open Reviews this week", to: paths.manager("reviews") };
   if (!week.length) return { text: "No review is due this week. Every one has been signed.", link };
   const drafted = week.filter((r) => r.status === "drafted");
   const clean = drafted.filter(isClean).length;
@@ -276,7 +276,7 @@ export function answerFor(q: string, all: AppState, route: FloRoute): FloAnswer 
     if (route.kind === "case") return expiryAnswer(route.id, false, s);
     // Away from a case page, the authorization that ends first.
     const first = s.ledger.filter((c) => c.clockKind === "expiry" && c.used !== null && c.dueAt > clock).sort((a, b) => a.dueAt - b.dueAt)[0];
-    return first ? expiryAnswer(first.id, false, s) : { text: "No authorization on the Case Manager ledger has an end date ahead of it.", link: { label: "Open Case Manager", to: paths.manager("cases") } };
+    return first ? expiryAnswer(first.id, false, s) : { text: "No approved authorization has an end date ahead of it.", link: { label: "Open Authorizations", to: paths.manager("cases") } };
   }
   if (t.includes("require")) {
     const byName = PAYERS.find((p) => t.includes(p.shortName.toLowerCase()) || t.includes(p.name.toLowerCase()));

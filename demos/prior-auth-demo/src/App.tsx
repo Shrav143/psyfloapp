@@ -4,7 +4,7 @@ import { EmptyState, Page, PageHeader } from "@/components/ui";
 import { HOSTED } from "@/lib/hosted";
 import { paths } from "@/routes";
 import AnalyticsPage from "@/pages/analytics/AnalyticsPage";
-import QueuePage from "@/pages/authorizations/QueuePage";
+import AuthorizationsPage from "@/pages/authorizations/AuthorizationsPage";
 import DashboardPage from "@/pages/dashboard/DashboardPage";
 import BriefPage from "@/pages/denials/BriefPage";
 import DenialPage from "@/pages/denials/DenialPage";
@@ -15,7 +15,7 @@ import ResultPage from "@/pages/eligibility/ResultPage";
 import VerifyPage from "@/pages/eligibility/VerifyPage";
 import EmrPage from "@/pages/emr/EmrPage";
 import CaseRoute from "@/pages/manager/CaseRoute";
-import ManagerPage from "@/pages/manager/ManagerPage";
+import ManagerRedirect from "@/pages/manager/ManagerRedirect";
 import NewCasePage from "@/pages/newcase/NewCasePage";
 import PayersPage from "@/pages/payers/PayersPage";
 import ReferralDetailPage from "@/pages/referrals/ReferralDetailPage";
@@ -49,7 +49,7 @@ export default function App() {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/referrals" element={<Navigate to={paths.referrals()} replace />} />
           <Route path="/referrals/:id" element={<OldReferralLink />} />
-          <Route path="/authorizations" element={<QueuePage />} />
+          <Route path="/authorizations" element={<AuthorizationsPage />} />
           <Route path="/authorizations/case/:id" element={<CaseRoute />} />
           <Route path="/authorizations/new" element={<NewCasePage />} />
           <Route path="/authorizations/new/referral/:id" element={<ReferralDetailPage />} />
@@ -61,8 +61,8 @@ export default function App() {
           <Route path="/denials/:id" element={<DenialPage />} />
           <Route path="/denials/:id/brief" element={<BriefPage />} />
           <Route path="/denials/:id/report" element={<ReportPage />} />
-          <Route path="/active" element={<Navigate to="/manager" replace />} />
-          <Route path="/manager" element={<ManagerPage />} />
+          <Route path="/active" element={<ManagerRedirect />} />
+          <Route path="/manager" element={<ManagerRedirect />} />
           <Route path="/analytics" element={<AnalyticsPage />} />
           <Route path="/emr" element={<EmrPage />} />
           <Route path="/payers" element={<PayersPage />} />
