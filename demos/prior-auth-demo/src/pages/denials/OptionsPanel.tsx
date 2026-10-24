@@ -1,13 +1,12 @@
 import { useState, type RefObject } from "react";
-import { FileText } from "lucide-react";
-import { Button, ChoiceCard, Drawer, Pill } from "@/components/ui";
+import { Button, ChoiceCard, Drawer, Label, Pill } from "@/components/ui";
 import { band } from "@/lib/format";
 import { useStore } from "@/store";
 import type { DenialOption, OptionId } from "./lib/analysis";
 import type { RecommendedStep } from "./lib/step";
 import { useDialogFocus } from "./lib/useDialogFocus";
 import type { DenialView } from "./lib/useDenialView";
-import { GO } from "./OptionsCard";
+import { GO, writtenTitle } from "./OptionsCard";
 
 function Chance({ o, benchmark, similar }: { o: DenialOption; benchmark: boolean; similar: number }) {
   if (!o.chance) return null;
@@ -21,13 +20,13 @@ function Chance({ o, benchmark, similar }: { o: DenialOption; benchmark: boolean
   );
 }
 
-function Cards({ view, recommended, selected, onPick, from }: { view: DenialView; recommended: OptionId | null; selected: OptionId | null; onPick: (o: DenialOption) => void; from: RefObject<HTMLElement | null> }) {
+function Cards({ view, step, recommended, selected, onPick, from }: { view: DenialView; step: RecommendedStep; recommended: OptionId | null; selected: OptionId | null; onPick: (o: DenialOption) => void; from: RefObject<HTMLElement | null> }) {
   const { analysis } = view;
   const ref = useDialogFocus(from, ["[role=radio][aria-checked=true]", "[role=radio]"]);
   return (
     <div ref={ref} tabIndex={-1} role="radiogroup" aria-label="Next step" className="flex flex-col gap-3 outline-none">
       {analysis.options.map((o) => (
-        <ChoiceCard key={o.id} selected={selected === o.id} onClick={() => onPick(o)} title={<span className="flex items-center gap-2">{o.title}{recommended === o.id ? <Pill tone="good">Recommended</Pill> : null}</span>} right={<Chance o={o} benchmark={analysis.benchmark} similar={analysis.similar} />}>
+        <ChoiceCard key={o.id} selected={selected === o.id} onClick={() => onPick(o)} title={<span className="flex items-center gap-2">{o.id === "appeal" ? writtenTitle(view, step) : o.title}{recommended === o.id ? <Pill tone="good">Recommended</Pill> : null}</span>} right={<Chance o={o} benchmark={analysis.benchmark} similar={analysis.similar} />}>
           <span className="block">{o.summary}</span>
           <span className="mt-1.5 block text-xs">Needs: {o.needs.join(" · ")}</span>
         </ChoiceCard>
@@ -37,8 +36,8 @@ function Cards({ view, recommended, selected, onPick, from }: { view: DenialView
 }
 
 /**
- * The three routes as radio cards with their chances and what each needs, in a right-hand panel. The recommended step's route is selected; picking another and pressing its button
- * closes the panel and opens the confirm dialog for that route. A route that does not exist for the denial (the call window has closed) says so and cannot be picked.
+ * The three routes as radio cards with their chances and what each needs, in a right-hand panel, with the reasons for the recommendation under them. The recommended
+ * route is selected; picking another and pressing its button closes the panel and opens the confirm dialog for that route. A call whose window has closed cannot be picked.
  */
 export function OptionsPanel({ view, step, from, onChoose, onClose }: { view: DenialView; step: RecommendedStep; from: RefObject<HTMLElement | null>; onChoose: (id: OptionId) => void; onClose: () => void }) {
   const { analysis, req, clock } = view;
@@ -61,15 +60,18 @@ export function OptionsPanel({ view, step, from, onChoose, onClose }: { view: De
       onClose={onClose}
       width={560}
       title="Your options"
-      subtitle={`${req.id}. Chance of overturning${analysis.benchmark ? ", a benchmark estimate" : `, from ${analysis.similar} similar ${analysis.ctx.payer} decisions`}`}
+      subtitle={`${req.id} · ${analysis.benchmark ? `benchmark estimate, ${analysis.similar} similar decisions` : `${analysis.similar} similar ${analysis.ctx.payer} decisions`}`}
       footer={
         <div className="flex flex-wrap items-center gap-2.5">
-          {go && selected ? <Button variant="primary" icon={go.icon} onClick={() => onChoose(selected)}>{go.label}</Button> : <span className="text-[13px] text-muted">Pick a route to go on. Nothing is sent until a clinician signs.</span>}
-          {booked ? <span className="inline-flex items-center gap-1.5 text-[13px] text-muted"><FileText size={14} className="ico" />A call is already booked. Choosing again changes it.</span> : null}
+          {go && selected ? <Button variant="primary" icon={go.icon} onClick={() => onChoose(selected)}>{selected === "appeal" && step.word === "Correct and resubmit" ? "Draft the corrected request" : selected === "p2p" && booked ? "Change the time" : go.label}</Button> : null}
         </div>
       }
     >
-      <Cards view={view} recommended={step.option} selected={selected} onPick={pick} from={from} />
+      <Cards view={view} step={step} recommended={step.option} selected={selected} onPick={pick} from={from} />
+      <Label className="mt-6 mb-2">Why FLO suggests {step.word.toLowerCase()}</Label>
+      <ul className="flex list-disc flex-col gap-1.5 pl-5 text-[13px] text-ink2">
+        {step.why.map((w) => <li key={w}>{w}</li>)}
+      </ul>
     </Drawer>
   );
 }

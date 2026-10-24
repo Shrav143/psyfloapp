@@ -1,5 +1,5 @@
 title: Authorizations › New Case › Authorization preparation › Justification by type
-route: /authorizations/new/:draftId (step 4 of 5 once Scribe is done, and the summary on step 5)
+route: /authorizations/new/:draftId (step 3 of 4 once Scribe is done, and the summary on Review & submit)
 intro: Scribe prepares a justification for the type of request. Four sections are the same for every type; one section, what the request rests on, differs. It is built only from the documents and answers in the case. Evidence that is not there is listed as missing and never filled in. The same text is on Review & submit, where it can be edited.
 dir: TD
 also: Demo only: the sentences are written from the case's own data and fixed phrases. A real justification would be drafted from the chart.

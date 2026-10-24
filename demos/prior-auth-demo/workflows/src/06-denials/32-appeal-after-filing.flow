@@ -1,18 +1,18 @@
 title: Denial Intelligence › Written appeal › After filing
-route: /denials?id=D-3318
+route: /denials/D-3318
 intro: A filed appeal (new, or seeded like D-3279, D-3284 and D-3272) shows a waiting block, a read-only letter and the button 'Record the payer's decision'. The payer's answer is recorded by a person, in its own diagram.
 dir: TD
 also: Demo only: the 30-day decision date is fixed, the receipt is saved at filing, and fast-forwarding changes nothing on a filed appeal. Nobody plays the payer, so the person records its decision. In production Navigator finds the answer in its daily check.
 ---
 start s1 "A filed appeal is on screen (after 'Sign and file', or a seeded one)"
-screen b1 "Next-step block 'Appeal filed. Waiting on the payer'\n'Filed 10/20, decision 11/19. Navigator checks every day. When the payer answers, record the decision here.'"
+screen b1 "Written appeal choice in Your options\n'Appeal filed 10/20 · decision 11/19'\n'Record the payer's decision' and 'View the appeal'"
 screen b2 "Buttons 'View the appeal' and 'Record the payer's decision'\nOther chips: 'Second-level appeal filed', 'External review'\nSeeded appeals read 'Filed 10/05, decision 11/02'"
 screen h1 "Header pill 'Appeal filed, decision 11/19'\nList pill 'Decision 11/19'\nNo count-down: the payer has the clock"
 process p0 "'Your options' row is hidden"
 
 click c1 "Click 'View the appeal'"
 overlay o1 "Drawer 'Appeal letter · D-3318' (read only)\n'Filed by Medical director. Decision 11/19.'\nSeeded appeals read 'Filed 10/05. Decision 11/02.'"
-doc dc1 "Letter as filed\n'This is the letter that was filed.'\nEvidence list with greyed tick boxes"
+doc dc1 "Letter as filed, pill 'Filed letter, read only'\nEvidence list with greyed tick boxes"
 click c2 "Click 'Close', the X, press Esc, or click the dimmed area"
 
 wait w1 "Decision clock runs: 30 days from filing\n(PRD: from confirmed receipt; 72 hours when expedited)"

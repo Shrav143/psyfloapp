@@ -110,7 +110,7 @@ export function requestDraft(base: CaseDetail, work: CaseWork, clock: number, ct
 }
 
 /** A draft that already exists keeps what the person did there. It takes from the request what the case page changed since: the answers the applied actions gave,
-    the therapy note, and a finished run once every check passes. It moves to the step that fits: Review & submit when ready, Authorization preparation when agents have work left. */
+    the therapy note, and a finished run once every check passes. It moves to the step that fits: Review & submit when ready, the agents' section of Clinical documentation when they have work left. */
 export function mergeRequestDraft(d: CaseDraft, target: CaseDraft, state: RequestState): CaseDraft {
   if (d.sent) return d;
   const answers = [...d.answers, ...target.answers.filter((a) => !d.answers.some((x) => x.key === a.key))];

@@ -5,7 +5,7 @@ import type { NarrativeSection } from "@/data/cases";
 import { slotOfSource } from "./documents";
 
 /** The medical-necessity summary the payer will read. Editable; every source chip opens the chart page it came from. */
-export function NarrativeCard({ sections, payer, editSignal, onSave, onSource }: { sections: NarrativeSection[]; payer: string; /** Counts up when "What is missing" asks for the summary to be edited. */ editSignal: number; onSave: (next: NarrativeSection[]) => void; onSource: (label: string) => void }) {
+export function NarrativeCard({ sections, editSignal, onSave, onSource }: { sections: NarrativeSection[]; /** Counts up when "What is missing" asks for the summary to be edited. */ editSignal: number; onSave: (next: NarrativeSection[]) => void; onSource: (label: string) => void }) {
   const [editing, setEditing] = useState(false);
   const [text, setText] = useState<Record<string, string>>({});
 
@@ -29,7 +29,6 @@ export function NarrativeCard({ sections, payer, editSignal, onSave, onSource }:
     <Card id="summary-card">
       <CardHeader
         title="Medical-necessity summary"
-        subtitle={`What ${payer} will read · every statement links to the chart`}
         right={
           editing ? (
             <>

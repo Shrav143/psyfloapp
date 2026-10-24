@@ -1,12 +1,12 @@
 title: Authorizations › New Case › Review & submit › The draft and the summary
-route: /authorizations/new/:draftId (step 5 of 5, 'Review & submit')
-intro: Step 5 starts with what is missing (next diagram), then lists the whole case in one short summary, then shows the packet the payer will read: the medical-necessity summary Scribe drafted, which can be edited, with a chip for every chart page it came from. It is the same summary the case page's Draft tab shows: an edit made in either place is read in the other. The validation summary (closed until opened), the checks and the Sign card are in the diagrams after it.
+route: /authorizations/new/:draftId (step 4 of 4, 'Review & submit')
+intro: Step 4 starts with what is missing (next diagram), then lists the whole case in one short summary, then shows the packet the payer will read: the medical-necessity summary Scribe drafted, which can be edited, with a chip for every chart page it came from. It is the same summary the case page's Draft tab shows: an edit made in either place is read in the other. The validation summary (closed until opened), the checks and the Sign card are in the diagrams after it.
 dir: TD
 ---
-start s1 "Click 'Review & submit' on step 4\nOr click step 5 in the stepper at any time\nOr 'Review and sign' on a ready case in Case Manager"
-screen sc "Review & submit\n'Nothing is sent to the payer until a person signs. See what is missing first, then read the summary.'\nThe stepper: 'Review & submit' current"
+start s1 "Click 'Continue to Review & submit' on Clinical documentation\nOr click step 4 in the stepper at any time\nOr 'Review and sign' on a ready case in Case Manager"
+screen sc "Review & submit\nNo sentence under the title\nThe stepper: 'Review & submit' current"
 decision dReady "Have all ten agents finished?"
-screen sNot "'The packet is built when the agents finish'\n'Scribe drafts the justification and Packet assembles the forms in Authorization preparation. You can read what is missing above and fix it now.'\nButton 'Go to Authorization preparation'\nChecks and Validation summary are not shown yet\nThe Sign card says 'Authorization preparation has not finished, so there is nothing to sign yet.'"
+screen sNot "One line 'The packet is built when the agents finish'\nButton 'Open Authorization preparation' (Clinical documentation, at its last section)\nChecks and Validation summary are not shown yet\nThe Sign card says 'After the agents finish'"
 
 group gLayout "Layout"
   screen sL "Left column\n1 'What is missing' (the one alert) · 2 'Summary' · 3 the Medical-necessity summary · 4 the Validation summary (closed)"
@@ -14,10 +14,10 @@ group gLayout "Layout"
   screen sF "Footer bar\n'Back', 'Save as draft'"
 endgroup
 
-screen sSum "Card 'Summary'\n'What the payer will be asked for'\nTen rows, worked out from the draft, never typed"
+screen sSum "Card 'Summary'\nTen rows, worked out from the draft, never typed"
 process pRows "Patient · Payer · Request · Service · Dates and length · Eligibility · Existing authorization · Documentation · Medical necessity · Outstanding"
-process pEx "Examples\nPatient: 'J.M., 34 · existing patient R-1042' or '· new patient'\nRequest: 'Concurrent review · recorded as Continued stay'\nDates and length: '10/22/2026 to 11/11/2026 · 21 days (the usual length)'\nEligibility: 'Coverage active, benefits covered, authorization required. Checked 2 min ago, simulated source.'\nExisting authorization: 'AU-I-2144 · ... · 32 of 48 units left, ends 11/19/2026' or 'None. This starts a new stay.'\nDocumentation: '3 of 4 ready, 1 required document missing'\nOutstanding: 'Nothing outstanding' or '2 to acknowledge, 1 note'"
-screen sNarr "Card 'Medical-necessity summary'\n'What Summit will read · every statement links to the chart'\nSections: Clinical picture, the type's own section, the level-of-care reason, Current severity, Plan"
+process pEx "Examples\nPatient: 'J.M., 34 · existing patient R-1042', or 'T.W., 41 · born 03/02/1985 · Female · new patient'\nRequest: 'Concurrent review · recorded as Continued stay'\nDates and length: '10/22/2026 to 11/11/2026 · 21 days (the usual length)'\nEligibility: 'Coverage active, benefits covered, authorization required. Checked 2 min ago, simulated source.'\nExisting authorization: 'AU-I-2144 · ... · 32 of 48 units left, ends 11/19/2026' or 'None. This starts a new stay.'\nDocumentation: '3 of 4 ready, 1 required document missing'\nOutstanding: 'Nothing outstanding' or '2 to acknowledge, 1 note'"
+screen sNarr "Card 'Medical-necessity summary'\nSections: Clinical picture, the type's own section, the level-of-care reason, Current severity, Plan"
 process pCtx "A paragraph 'Context added.' shows when notes were added on the case page\nIt is shown here but not edited here"
 process pNote "A draft Payers redrafted after a payer change shows one line above\n'Updated for a payer change on 10/20'"
 screen sChance "Approval chance card\nRing and 'Strong · likely 83-92%'\n'Summit usually decides in about 1.5 days. Based on 1,248 similar cases.'"

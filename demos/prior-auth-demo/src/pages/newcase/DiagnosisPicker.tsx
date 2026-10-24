@@ -5,7 +5,7 @@ import type { Diagnosis } from "@/data/cases";
 import { ICD_CODES } from "./lookups";
 
 /** ICD-10 chips with add and remove. The search list is a short, fixed set for the demo. */
-export function DiagnosisPicker({ value, onChange }: { value: Diagnosis[]; onChange: (next: Diagnosis[]) => void }) {
+export function DiagnosisPicker({ value, onChange, label = "Diagnoses (ICD-10)", note }: { value: Diagnosis[]; onChange: (next: Diagnosis[]) => void; label?: string; /** A short source note under the field ("From EMR"). */ note?: string }) {
   const [q, setQ] = useState("");
   const [focus, setFocus] = useState(false);
   const matches = useMemo(() => {
@@ -17,14 +17,15 @@ export function DiagnosisPicker({ value, onChange }: { value: Diagnosis[]; onCha
     setQ("");
   };
   return (
-    <div role="group" aria-label="Diagnoses (ICD-10)">
-      <span className="mb-1.5 block text-[13px] font-medium text-ink2">Diagnoses (ICD-10)</span>
+    <div role="group" aria-label={label}>
+      <span className="mb-1.5 block text-[13px] font-medium text-ink2">{label}</span>
       <div>
         {value.length ? (
           <ul className="mb-2.5 flex flex-wrap gap-2" aria-label="Diagnoses on this request">
-            {value.map((d) => (
+            {value.map((d, i) => (
               <li key={d.code} className="flex items-center gap-1.5 rounded-full bg-neutral-bg py-1 pr-1.5 pl-3 text-[13px]">
                 <b>{d.code}</b>
+                {i === 0 && value.length > 1 ? <span className="text-[12px] text-muted">primary</span> : null}
                 <span className="max-w-[190px] truncate text-ink2">{d.label}</span>
                 <button type="button" aria-label={`Remove ${d.code}`} onClick={() => onChange(value.filter((x) => x.code !== d.code))} className="grid h-5 w-5 place-items-center rounded-full hover:bg-white">
                   <X size={13} className="ico" />
@@ -48,7 +49,7 @@ export function DiagnosisPicker({ value, onChange }: { value: Diagnosis[]; onCha
             </ul>
           ) : null}
         </div>
-        <span className="mt-1 block text-xs text-muted">Search by code or name, then pick one to add it</span>
+        {note ? <span className="mt-1 block text-xs text-muted">{note}</span> : null}
       </div>
     </div>
   );

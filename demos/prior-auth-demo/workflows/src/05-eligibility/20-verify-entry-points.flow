@@ -1,6 +1,6 @@
 title: Authorizations › Eligibility & Benefits › Verify › Ways in and pre-fill
 route: /authorizations/eligibility/verify?referral=RF-2040 or ?case=R-1101
-intro: Five places lead to 'Verify a patient'. Two open an empty form. Three carry a referral or a case in the address, and the form fills itself from it. A referral also gives a link back to where the person came from.
+intro: Five places lead to the Verify page (no header box: the form and the live check open at once). Two open an empty form. Three carry a referral or a case in the address, and the form fills itself from it. A referral also gives a link back to where the person came from.
 dir: TD
 also: Date of birth is never stored. When only an age is known, the form makes up 01/15 of the matching year so it can be complete.
 ---
@@ -19,7 +19,7 @@ process p0 "Address opens /authorizations/eligibility/verify\nwith ?referral=ID 
 decision q1 "Address has ?referral= ?"
 decision q2 "Referral found?"
 process p1 "Fills payer, member ID (masked), program from the referral\nInitials and age remembered for the result"
-toast t1 "'Referral not found'\n'We could not find RF-9999. Type the details instead.'"
+toast t1 "'Referral not found'\n'RF-9999 is not in the referrals.'"
 decision q3 "Address has ?case= ?"
 decision q4 "Case is a row on the Eligibility list?"
 process p2 "Fills payer, masked member ID, program and date of service from that row\nThe case ID is remembered"
@@ -27,8 +27,8 @@ decision q5 "Case is a request in the queue?"
 process p3 "Fills payer and program\nMember ID left empty: type it"
 process p4 "Nothing is filled and no message appears"
 process p5 "Date of birth made up from the age, for example age 26 gives 01/15/2000\nAnything the source lacks stays empty"
-screen sc "Verify a patient\nForm on the left, 'Live check' on the right"
-process bk "Back links above the title\n'Eligibility & Benefits' always\n'Back to referral RF-2040' when ?referral= names a referral that exists\nWith ?case= as well, 'Back to case R-1042' takes its place"
+screen sc "Verify page\nCard 'Patient and service' on the left, 'Live check' on the right"
+process bk "Back links at the top\n'Eligibility & Benefits' always\n'Back to referral RF-2040' when ?referral= names a referral that exists\nWith ?case= as well, 'Back to case R-1042' takes its place"
 process nb "A referral that does not exist gives no back link\nOnly the toast"
 process cy "Both addresses are carried to the result page\nso the way back is still there after the check"
 goto g1 "Continues in: Authorizations › Eligibility & Benefits › Verify › Fill in the form"

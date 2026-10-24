@@ -1,14 +1,14 @@
 title: Authorizations › New Case › Reopen and resume a case
 route: /authorizations/new/:draftId
-intro: What happens when the address names a case: it reopens where it was left, a case that was already sent says so, a case at another site is not available to a viewer who cannot see that site, and an unknown id says so. A case whose agents already ran never reopens on Intake.
+intro: What happens when the address names a case: it reopens where it was left, a case that was already sent says so, a case at another site is not available to a viewer who cannot see that site, and an unknown id says so. A case whose agents already ran never reopens on Intake; one saved while the agents worked (the old step 4) opens Clinical documentation scrolled to Authorization preparation.
 dir: TD
 ---
 start s1 "A case id is in the address"
 start s2 "Click a button on a case in Case Manager\n'Continue', 'Watch', 'Answer' or 'Review and sign'"
 start s3 "Click 'Open in review and sign' or 'Send to payer' on a case page\nA draft is made from the request, or the one it has is brought up to date"
-process pReq "Draft opens on Review & submit when the request is ready\non Authorization preparation when agents still have work\nNever a blank draft"
+process pReq "Draft opens on Review & submit when the request is ready\non Clinical documentation at Authorization preparation when agents still have work\nNever a blank draft"
 decision d3 "Is there a case with that id?"
-screen sc1 "New Case\n'That draft is not in the demo.'\n'We could not find that draft'\n'It may have been cleared when the demo data was reset.'"
+screen sc1 "New Case\n'We could not find that draft'\n'It may have been cleared when the demo data was reset.'"
 click c1 "Click 'Start a new case'"
 goto gNew "Continues in: Authorizations › New Case › How a case starts and resumes"
 decision dSite "Is the case at a site in view?"
@@ -16,12 +16,12 @@ screen scOut "'This case is not available at Site B'\n'R-0975 belongs to Site B.
 click cShow "Click 'Show Site B'\nOnly for a viewer who may see both sites"
 process pShow "The site view switches to Site B\nThe case opens"
 decision d4 "Was it signed and sent?"
-screen sc2 "'R-1234 was sent'\n'It was signed and sent to the payer (demo). The agents are following it from the Dashboard.'\n'This case is no longer being prepared'"
+screen sc2 "'R-1234 was sent'\n'Signed and sent (demo)', or 'Already with the payer'"
 click c2 "Click 'Open the case', or 'Open it on the Dashboard'"
 click c3 "Click 'Back to Case Manager'"
 decision d5 "Did the agents already run, with the case still on an earlier step?"
-process p9 "Opens on Authorization preparation when fewer than ten agents are done\nelse on Review & submit\nA later click in the stepper is not undone"
-screen sc3 "New Case\nLink 'Case Manager', title 'New Case', one sentence, 'Authorization type' dropdown\nThe stepper with each step's state, then the step header and the step"
+process p9 "Opens on Clinical documentation, scrolled to Authorization preparation, when fewer than ten agents are done\nelse on Review & submit\nA later click in the stepper is not undone"
+screen sc3 "New Case\nLink 'Case Manager', the header card 'New Case' with the case id and the 'Authorization type' dropdown\nThe stepper with each step's state, the workflow line, then the step"
 click c4 "Click the link 'Case Manager'"
 decision d6 "Which step is the case on?"
 process pNarrow "Narrowing the site view while a blank case is open\nA case with no patient and no ID moves to the site in view; one with an ID or a patient stays at its own site"
@@ -59,5 +59,5 @@ d6 -->|Intake, initial or retroactive| g1
 d6 -->|Intake, review, renewal or modification| g1b
 d6 -->|Eligibility & Benefits| g2
 d6 -->|Clinical documentation| g3
-d6 -->|Authorization preparation| g4
+d6 -->|Clinical documentation, agents started| g4
 d6 -->|Review & submit| g5

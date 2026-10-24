@@ -24,8 +24,8 @@ process r4 "Go to /authorizations/eligibility/verify"
 goto g4 "Continues in: Eligibility & Benefits › Verify a patient"
 
 click c5 "Click '5  Denial Intelligence: D-3318'"
-process r5 "Go to /denials?id=D-3318"
-goto g5 "Continues in: Denial Intelligence › Open a denial"
+process r5 "Go to /denials/D-3318"
+goto g5 "Continues in: Denial Intelligence › A denial opened"
 
 click c6 "Click '6  Payers: Cardinal, Changes'"
 process r6 "Go to /payers/cardinal?tab=changes"

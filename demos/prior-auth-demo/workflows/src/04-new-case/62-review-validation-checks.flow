@@ -1,9 +1,9 @@
 title: Authorizations › New Case › Review & submit › Validation summary and checks
-route: /authorizations/new/:draftId (step 5 of 5, Validation summary and Checks)
+route: /authorizations/new/:draftId (step 4 of 4, Validation summary and Checks)
 intro: The validation summary lists the start date and what Reader found in every document the payer asks for. It is a closed section until opened; the rows that need a look are open inside it, and the same findings are listed with their fixes under 'What is missing'. The Checks card has four checks from four agents and shows their names and state. Every row and check is worked out from the case, the payer's saved documents (Payers › Rules & Instructions › Clinical documentation) and rules (Payers › Rules & Instructions). A warning can be signed after an acknowledgement; only a re-check in progress holds the Sign card off.
 dir: TD
 ---
-start s1 "On step 5, read the Validation summary and the Checks"
+start s1 "On step 4, read the Validation summary and the Checks"
 
 group gVal "Validation summary"
   screen sV "Validation summary (closed section)\n'Reader checked every document against the payer's guidelines.'\nPill: 'N to look at' or 'Nothing to look at'\nClick the header to open it"

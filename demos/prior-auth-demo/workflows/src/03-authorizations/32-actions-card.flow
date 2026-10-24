@@ -19,7 +19,7 @@ group gQ "Cards with a question"
   decision dA "Is there an answer?"
   process er "After a failed Apply, red text under the box\n'Type your answer before Scribe can apply this.'"
   click sn "Click 'Send note'\n(off until there is an answer)"
-  process cp "Caption: 'Scribe uses your answer in the draft.'\nAfter a note: 'Note sent to Scribe.'"
+  process cp "No caption\nAfter a note: 'Sent to Scribe'"
 endgroup
 
 group gN "Cards without a question"
@@ -34,7 +34,7 @@ endgroup
 store nt "Note saved on the case\nLog: 'You sent Scribe a note: ...'"
 toast tn "'Note sent to Scribe'\n'It will be used the next time the draft is updated.'"
 
-agent ag "Agent line: badge and 'Scribe does this'\nScribe writes the plan, Packet attaches documents, Integrity settles dates, Reader finds chart notes, Verify fixes coverage"
+agent ag "Agent: badge and name, e.g. 'Scribe', then 'Why this matters'\nScribe writes the plan, Packet attaches documents, Integrity settles dates, Reader finds chart notes, Verify fixes coverage"
 decision dL "Is it the coverage card?"
 click lk "Click 'Open Eligibility & Benefits'"
 goto gE "Continues in: Authorizations › Eligibility & Benefits › Verify › Ways in and pre-fill"

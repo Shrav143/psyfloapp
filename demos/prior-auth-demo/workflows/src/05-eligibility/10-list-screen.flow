@@ -1,64 +1,59 @@
 title: Authorizations › Eligibility & Benefits › List › What the screen shows
 route: /authorizations/eligibility
-intro: The first page of Eligibility & Benefits. A headline count with an info icon, four figures, a filter bar and one patient per two lines: the chips that answer the question, then a quiet line with the rest. The rows are the shared verification records, so a check made in New Case is a row here. Everything follows the site view, and the sidebar badge counts the patients who are not cleared to bill.
+intro: The first page of Eligibility & Benefits. A slim title row with 'Verify a patient', four small verdict tiles that filter, a filter bar with the count, and one patient per two lines: the verdict and the chips behind it, then a quiet line with the rest. No headline card, no subtitles. The rows are the shared verification records, so a check made in New Case is a row here. Everything follows the site view, and the sidebar badge counts the patients who are not cleared to bill.
 dir: TD
-also: Demo only: the 37 patients are invented and every check is simulated. Re-check dates run on the Demo clock.
+also: Demo only: the 37 patients are invented and every check is simulated (the sidebar says 'Demo data'). Re-check dates run on the Demo clock.
 ---
 start s1 "Click 'Eligibility & Benefits' under 'Authorizations' in the sidebar"
-screen sc "Eligibility & Benefits\nTitle '28 of 37 patients are cleared to bill.' with an info icon, and a Site A or Site B tag when the view is narrowed\n'Coverage and benefits are checked before the first day, so you know whether the clinic will be paid. Checks in this demo are simulated.'"
+screen sc "Title row 'Eligibility & Benefits' (24 px)\nwith a Site A or Site B tag when the view is narrowed\nPrimary button 'Verify a patient' on the right"
 process p1 "Sidebar badge counts patients not 'Cleared to bill' in the sites in view\nDemo start, both sites: 9 = 4 'Authorization first' + 5 'Fix before billing'"
-process sv "Rows, the title count, the four figures and the badge follow the site view (top bar)\nBoth sites is Site A plus Site B\nA viewer limited to one site never sees, counts or finds the other site's patients"
+process sv "Rows, the tiles, the count and the badge follow the site view (top bar)\nBoth sites is Site A plus Site B\nA viewer limited to one site never sees, counts or finds the other site's patients"
 
-group gTop "Top of the page"
-  screen hd "Header button\n'Verify a patient'"
-  screen tip "Info icon beside the title\n(button 'Why we check twice')\nHover, focus or click opens the text; Escape closes it\nNo banner on the page any more"
-  screen tl "Four figures, left to right\n'Cleared to bill' 28 · 'Authorization first' 4\n'Fix before billing' 5 · 'Re-check due' 5"
-  process cnt "Counts follow each row's verdict\n'Re-check due' counts rows with a re-check still to come this week\nVerify runs each one on its own when the Demo clock passes its time"
+group gTop "Under the title"
+  screen tl "Four small tiles on one line each: icon, number, label\n'28 Cleared to bill' · '4 Authorization first'\n'5 Fix before billing' · '5 Re-check due'\nThe longer meaning is the tile's tooltip"
+  process cnt "Counts follow each row's verdict\n'Re-check due' counts rows with a re-check still to come this week\nVerify runs each one on its own when the Demo clock passes its time\nA fifth tile 'Not checked' appears only while a check that could not run is listed"
 endgroup
 
 group gBar "Filter bar"
-  screen fl "'Search by case ID or initials'\nMenus 'All payers', 'All programs', 'All verdicts'"
+  screen fl "'Search by case ID or initials'\nMenus 'All payers', 'All programs'\n'Showing 12 of 37' on the right"
 endgroup
 
-group gCard "Card 'Patients'"
-  screen cd "Card 'Patients'\n'Simulated checks against the state and the plan, re-checked on a schedule'\n'Showing 12 of 37'"
+group gCard "Table card, no title"
   process so "Fixed sort order\n'Fix before billing' first, then 'Authorization first', then oldest check"
   process sd "The five 'Fix before billing' rows show five reasons\nCoverage lapsed, coverage ended, service not covered, another plan pays first, every authorized day used"
   process pg "No filter: the first 12 rows\nA filter shows every match"
-  screen cols "Columns\nPatient, Program, Eligibility, Benefits, Authorization, Verdict, Re-check\nHeaders do not sort"
+  screen cols "Columns\nPatient, Verdict, Eligibility, Benefits, Authorization, Re-check\nThe verdict comes right after the patient, so it stays in view when a narrow window scrolls the table\nHeaders do not sort"
 endgroup
 
 group gRow "One patient, two lines"
   screen r1 "Line 1: patient\n'R-1042 · J.M., 34'\nNo initials: 'Member …4821'"
-  screen r2 "Line 1: Program chip\n'Residential 3.5', 'IOP', 'PHP', 'Detox'\nor a label such as 'Detox → Residential'"
-  screen r3 "Line 1: Eligibility and Benefits chips\n'Active', 'Lapsed 10/12', 'Ended 09/30', 'Not found', 'ID differs', 'Not checked'\n'Covered', 'Limited', 'Not confirmed', 'Not covered'"
-  screen r4 "Line 1: Authorization chip, one word group only\n'On file', 'Not required', 'Required, not on file', 'In progress', 'Requirement unknown'"
   screen r5 "Line 1: Verdict chip\n'Cleared to bill', 'Authorization first', 'Fix before billing', 'Not checked'"
+  screen r3 "Line 1: Eligibility and Benefits chips\n'Active', 'Lapsed 10/12', 'Ended 09/30', 'Not found', 'ID differs', 'Not checked'\n'Covered', 'Limited', 'Not confirmed', 'Not covered'"
+  screen r4 "Line 1: Authorization chip\n'On file', 'Not required', 'Required, not on file', 'In progress', 'Requirement unknown'"
   screen r6 "Line 1: button 'Re-check'"
-  screen r7 "Line 2, small and quiet, across the row\nPayer name · day limit · when it was checked\n'Cardinal Health Plan · 14 of 14 days · Checked 5 h ago'\n'No day limit' when the program has none\nA row due for a re-check adds 'Re-check due Tue 11:32 am'\nAfter Verify's own re-check 'Re-checked automatically at 11:32 am'\nIf Verify is paused 'Not re-checked: Verify is paused in Settings' (amber)\nWhen the plan changed 'Now with Cardinal since 10/01'; 'Enrollment not confirmed'; 'The plan has the ID ending 5521'\nA check that could not run 'Could not be checked: Verify is paused in Settings' (amber)"
+  screen r7 "Line 2, small and quiet, across the row\nProgram · payer · day limit · when it was checked\n'Residential 3.5 · Cardinal Health Plan · 14 of 14 days · Checked 5 h ago'\n'No day limit' when the program has none\nA row due for a re-check adds 'Re-check due Tue 11:32 am'\nAfter Verify's own re-check 'Re-checked automatically at 11:32 am'\nIf Verify is paused 'Not re-checked: Verify is paused in Settings' (amber)\nWhen the plan changed 'Now with Cardinal since 10/01'; 'Enrollment not confirmed'; 'The plan has the ID ending 5521'\nA check that could not run 'Could not be checked: Verify is paused in Settings' (amber)"
 endgroup
 
 goto g1 "Continues in: Authorizations › Eligibility & Benefits › List › Search, filter and page"
 goto g2 "Continues in: Authorizations › Eligibility & Benefits › List › Open a patient or start a check"
 goto g3 "Continues in: Authorizations › Eligibility & Benefits › Result › What each chip means"
 goto g4 "Continues in: Authorizations › Eligibility & Benefits › Re-check on its own"
-goto g5 "Continues in: Authorizations › Eligibility & Benefits › List › The info icon"
 goto g6 "Continues in: Authorizations › Eligibility & Benefits › The shared verification record"
 goto g7 "Continues in: Authorizations › Eligibility & Benefits › Sites"
 
 s1 --> sc
-sc --> hd --> tl --> fl --> cd
+sc --> tl --> fl --> so
 sc -.-> p1
-sc --> tip --> g5
 tl --> cnt
-cd --> so --> sd
+tl --> g1
+so --> sd
 so --> pg --> cols
-cols --> r1 & r2 & r3 & r4 & r5 & r6 & r7
+cols --> r1 & r5 & r3 & r4 & r6 & r7
 fl --> g1
-hd --> g2
+sc --> g2
 r6 --> g2
 r3 & r4 & r5 --> g3
 cnt -.-> g4
 r7 -.-> g4
 sc --> sv --> g7
-cd -.-> g6
+cols -.-> g6

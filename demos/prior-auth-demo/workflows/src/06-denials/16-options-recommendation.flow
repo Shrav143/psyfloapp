@@ -1,71 +1,44 @@
 title: Denial Intelligence › Your options
-route: /denials?id=D-3318
-intro: 'Your options' is one short row under the next-step block: the three routes, their chances and which one is recommended. 'Compare the options' opens a right-hand panel with the three radio cards, what each needs, and the button for the route picked. How each chance is worked out and which route is recommended are the same as before; the recommended route's own button stays in the next-step block, so the main path has no extra click.
+route: /denials/D-3318
+intro: 'Your options' is the first section under the header: three compact choices side by side (stacked on a narrow window), each with its chance, what it gets back and its own button. The recommended route carries 'Recommended' and, while nothing is under way, the primary button. 'Compare the options' opens a right-hand panel with the radio cards, what each route needs and the reasons for the recommendation.
 dir: TD
 ---
-start s1 "A denial that is not filed, accepted or closed is on screen"
-screen sc1 "'Your options' card, one short row\n'Chance of overturning, from 312 similar Cardinal decisions'\nPeer-to-peer call 64% · likely 55–72% · 5 to 7 days regained, with 'Recommended'\nWritten appeal 58% · likely 49–66%\nAccept 7 days and plan the step-down: Nothing regained\nButton 'Compare the options' in the header"
-process p0 "Subtitle reads ', a benchmark estimate' instead when fewer than 60 similar decisions"
+start s1 "A denial is on screen"
+screen sc1 "'Your options' card\nSub line 'From 312 similar Cardinal decisions' ('Benchmark estimate, 58 similar decisions' under 60)\nPeer-to-peer call · 64% · likely 55–72% · 5 to 7 days regained\nWritten appeal · 58% · likely 49–66%\nAccept 7 days and plan the step-down · Nothing regained"
 
 process p1 "Starting point: the denial's win chance (55 when none is set)"
-decision d1 "What is the win chance?"
-process v1 "'Worth challenging'\n50 and over"
-process v2 "'Borderline'\n35 to 49"
-process v3 "'Probably accept'\nunder 35"
-process p2 "Seed denials sit between 27 and 64\nD-3306 (27%) reads 'Probably accept' and recommends 'Accept' at the start"
-process p2b "Peer-to-peer chance = the win chance\nWritten appeal = win chance minus 6, never under 5\nAccept has no chance, only 'Nothing regained'\nEach chance reads 'likely 55–72%' (9 below to 8 above)"
-
-decision r1 "Which route is 'Recommended'?\n(the route of the recommended next step; none for 'Investigate by hand')"
-process rec1 "Verdict is 'Probably accept': Accept"
-process rec2 "Deadline is to file or resubmit, window closed, or 'Late notice': Written appeal"
-process rec3 "Anything else: Peer-to-peer call"
+process p2b "Peer-to-peer chance = the win chance\nWritten appeal = win chance minus 6, never under 5\nAccept has no chance, only 'Nothing regained'\nEach chance reads 'likely' 9 below to 8 above"
+decision r1 "Which route is 'Recommended'?\n(the route of the recommended next step; none for 'Investigate by hand', which shows as a pill in the header)"
 goto g0 "Continues in: Denial Intelligence › A denial opened › Recommended next step"
+goto gs "Continues in: Denial Intelligence › A denial opened › Next step and where it stands"
 
-click c0 "Click 'Compare the options'\n(a button: Enter or Space)"
-overlay ov "Right-hand panel 'Your options'\nSubtitle 'D-3318. Chance of overturning, from 312 similar Cardinal decisions'\nThree radio cards, each with its summary, chance, 'Likely 55–72%', similar decisions or 'Benchmark estimate', and 'Needs: ...'\nThe recommended route is selected and carries 'Recommended'"
-process pf "Focus goes to the selected card\nTab stays inside the panel"
-click c1 "Click a card (it is a radio button)"
-decision d2 "Is it 'Peer-to-peer call' and the call window has closed?"
-toast t1 "'The peer-to-peer window has closed'\n'A written appeal is still open.'"
-process p6 "Card is selected\nFooter button matches it: 'Choose a time and prepare the brief', 'Draft the appeal letter' or 'Accept the decision and plan the step-down'"
-toast t2 "'A call is already booked. Choosing again changes it.' (when the chip is 'Call booked')"
-click c2 "Click the footer button"
-process p9 "Panel closes\nThe confirm dialog for that route opens"
-decision d3 "Which card is selected?"
-decision d4 "Is the chip already 'Appeal drafting'?"
+click b1 "Click 'Book a call' (peer-to-peer choice)"
+click b2 "Click 'Draft the appeal' (or 'Draft the corrected request' when the choice is titled 'Correct and resubmit')"
+click b3 "Click 'Accept the decision'"
 goto g1 "Continues in: Denial Intelligence › Peer-to-peer › Book the call"
 goto g2 "Continues in: Denial Intelligence › Written appeal › Confirm and draft"
 goto g3 "Continues in: Denial Intelligence › Accept the denial"
-click cx "Press Escape, click X or the dimmed area"
-process px "Panel closes, nothing is chosen\nFocus returns to 'Compare the options'"
-process pn "No card is selected for 'Investigate by hand'\nThe footer says 'Pick a route to go on. Nothing is sent until a clinician signs.'"
 
-s1 --> sc1 --> p0
-sc1 --> p1 --> d1
-d1 -->|50 and over| v1
-d1 -->|35 to 49| v2
-d1 -->|Under 35| v3
-v1 --> p2
-v2 --> p2
-v3 --> p2
-p2 --> p2b --> r1
-r1 -->|Verdict is Probably accept| rec1
-r1 -->|Clock is to file or window closed| rec2
-r1 -->|Anything else| rec3
-rec1 --> c0
-rec2 --> c0
-rec3 --> c0
-rec3 -.-> g0
-sc1 --> c0 --> ov --> pf --> c1
-ov -.-> pn
-c1 --> d2
+click c0 "Click 'Compare the options' (only while the denial is open and not filed)"
+overlay ov "Right-hand panel 'Your options'\nSub line 'D-3318 · 312 similar Cardinal decisions'\nThree radio cards with summary, chance, similar decisions and 'Needs: ...'\nThe recommended one is selected and carries 'Recommended'\nUnder them: 'Why FLO suggests peer-to-peer review' and the reasons"
+process pf "Focus goes to the selected card; Tab stays inside the panel"
+click c1 "Click a card (a radio button)"
+decision d2 "'Peer-to-peer call' and the call window has closed?"
+toast t1 "'The peer-to-peer window has closed'\n'A written appeal is still open.'"
+process p6 "Footer button matches the card: 'Book a call' ('Change the time' when a call is booked), 'Draft the appeal' or 'Accept the decision'"
+click c2 "Click the footer button"
+process p9 "Panel closes, the confirm dialog for that route opens"
+click cx "Press Escape, click X or the dimmed area"
+process px "Panel closes, nothing is chosen; focus returns to 'Compare the options'"
+
+s1 --> sc1 --> p1 --> p2b --> r1
+r1 --> g0
+sc1 --> gs
+sc1 --> b1 --> g1
+sc1 --> b2 --> g2
+sc1 --> b3 --> g3
+sc1 --> c0 --> ov --> pf --> c1 --> d2
 d2 -->|Yes| t1
-d2 -->|No| p6
-p6 -.-> t2
-p6 --> c2 --> p9 --> d3
-d3 -->|Peer-to-peer call| g1
-d3 -->|Written appeal| d4
-d4 -->|Yes: drawer opens at once| g2
-d4 -->|No: confirm first| g2
-d3 -->|Accept| g3
+d2 -->|No| p6 --> c2 --> p9
+p9 --> g1 & g2 & g3
 ov --> cx --> px

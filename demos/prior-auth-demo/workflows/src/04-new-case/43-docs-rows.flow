@@ -1,5 +1,5 @@
 title: Authorizations › New Case › Clinical documentation › Clinical summary and document rows
-route: /authorizations/new/:draftId (step 3 of 5, Clinical summary and Documents lists)
+route: /authorizations/new/:draftId (step 3 of 4, Clinical summary and Documents lists)
 intro: The clinical summary rows are typed or picked in a small editor under the row. Document rows list what the payer asks for, plus what is typical for the type, and each one is added, looked at, replaced, marked not available or taken out with the buttons on the row. Replace and Mark not available have their own diagram.
 dir: TD
 ---

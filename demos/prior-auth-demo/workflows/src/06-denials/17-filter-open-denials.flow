@@ -1,48 +1,32 @@
 title: Denial Intelligence › Open denials list › Filter by payer and reason
-route: /denials?payer=cardinal&reason=Missing documentation
-intro: The address can narrow the 'Open denials' list to one payer and one reason, for example from a row on Analytics. One small chip 'Filtered: Cardinal, Late notice' with a clear X shows what is on, under the page header and at the top of the panel. When the filter matches more than one denial the panel opens by itself so the person can pick one. ?id= keeps working beside the filters.
+route: /denials?payer=cardinal&reason=Late notice
+intro: Three ways to narrow the dashboard table, all kept in the address: the figures (which also switch to Closed), one payer chip, and a reason that arrives from Analytics. They combine. The figures keep counting the whole view, so 'Open 8' stays 8 while a payer is picked.
 dir: TD
 ---
-start s1 "Open /denials with ?payer= (a payer id such as cardinal),\n?reason= (a reason text such as Missing documentation), or both\n(Analytics: 'Common denial reasons by payer' rows link here)"
-process p1 "Payer matches the denial's payer id\nReason matches by inclusion: the reason and the denial's type or its words contain each other\nOnly denials at the sites in view are considered\nExample: 'Missing documentation' fits a full denial; 'Retro-authorization window missed' fits a retro-authorization denial"
-screen sc1 "Chip under the page header\n'Filtered: Cardinal, Late notice' with an X ('Clear filters')\nThe 'Open denials' button counts only the matches"
-decision d2 "Is there a known ?id= in the address?"
-process p2 "That denial opens on the page, even if the filters hide it from the list"
-decision d1 "Does any open denial match?"
-decision d4 "Do two or more match?"
-overlay l1 "The 'Open denials' panel opens by itself\nChip at the top and 'N of M open'\nOnly the matches are listed\nThe 'Closed' section is filtered the same way"
-process p3 "The first match opens on the page (nearest deadline)\nWith exactly one match the panel stays closed"
-decision d3 "Is there an ?id= that is not an open denial?"
-toast t1 "'We could not find D-xxxx among the open denials'\n'Showing D-xxxx instead.' (the first match)"
-screen e0 "Empty state, calm\n'No open denials match these filters'\n'The filters hide all N open denials.'\nButton 'Clear filters'"
-process pe "In the panel with no match: 'No open denials match the filters.'"
-
-click c1 "Click a row in the panel"
-process p4 "Panel closes\nAddress gets ?id=D-xxxx and keeps the filters"
-click c3 "Click the X on the chip ('Clear filters'), or 'Clear filters' in the empty state"
-process p6 "?payer= and ?reason= leave the address\n?id= stays"
-screen sc2 "All open denials are listed again\nNo chip"
-click c4 "Click 'Analyze the denial' and a new denial is added"
-process p7 "Address becomes ?id=D-xxxx only\nFilters are cleared so the new denial is in the list"
+start s1 "On the dashboard, or open /denials?payer=cardinal&reason=... from Analytics\n('Open in Denial Intelligence' on a reason, a row of 'Common denial reasons by payer')"
+screen fg "Figures 'Open', 'Deadlines this week', 'To decide', 'Peer-to-peer booked', 'Appeals in progress', 'Closed'"
+click cf "Click a figure"
+process pf "'Deadlines this week': 7 days or less on our own clock, overdue included\n'To decide': nothing under way; 'Peer-to-peer booked': chip 'Call booked'\n'Appeals in progress': drafting or with the payer; 'Closed': settled here"
+screen pc "Payer chips: 'All payers', then each payer with a denial in the current figure and its count, most first\n('Cardinal 3', 'Summit 2', 'Beacon 1', ...)"
+click cp "Click a payer chip"
+process pp "Only that payer's rows; the chip is outlined; address ?payer=cardinal\nClick it again, or 'All payers', to clear it"
+process pr "?reason= matches by inclusion: the reason and the denial's type or its words contain each other\nExample: 'Late notice' fits D-3290; 'Continued-stay evidence incomplete' fits D-3318"
+screen rc "Chip 'Reason: Late notice' with an X ('Clear the reason')"
+click cr "Click the X"
+process pq "?reason= leaves the address"
+decision d1 "Any rows left?"
+screen e0 "'No denials match these filters'\nButton 'Clear filters' (payer, reason and figure)"
+screen tb "The table shows only the matches, in the chosen order"
+process p8 "An unknown payer id (?payer=zzz) has no chip and matches nothing: the empty state offers 'Clear filters'"
 goto g1 "Continues in: Denial Intelligence › Open denials list"
 goto g2 "Continues in: Denial Intelligence › A denial opened"
-goto g3 "Continues in: Denial Intelligence › Add a denial letter"
-process p8 "An unknown payer id (for example ?payer=zzz) matches nothing and shows its text as the chip"
+goto g3 "Continues in: Analytics › Denial reasons"
 
-s1 --> p1 --> sc1 --> d2
-d2 -->|Yes| p2 --> g2
-d2 -->|No| d1
-d1 -->|Yes| d4
-d4 -->|Yes| l1
-d4 -->|No, one| p3
-d1 -->|No| e0
-d1 -.-> d3
-d3 -->|Yes| t1 --> p3
-d3 -->|No, no id| p3
-l1 --> c1 --> p4 --> g2
-l1 -.-> pe
-p3 --> g2
-sc1 --> c3 --> p6 --> sc2 --> g1
-e0 --> c3
-sc1 --> c4 --> p7 --> g3
-p1 -.-> p8
+s1 --> fg --> cf --> pf --> d1
+s1 --> pc --> cp --> pp --> d1
+s1 -.-> pr --> rc --> cr --> pq --> d1
+pr --> d1
+d1 -->|Yes| tb --> g2
+d1 -->|No| e0 --> g1
+pp -.-> p8
+s1 -.-> g3

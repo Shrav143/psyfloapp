@@ -1,48 +1,43 @@
 title: Authorizations › Case page › Numbers and notes
 route: /authorizations/case/R-1042
-intro: The three tiles and the one-line notice under the header card. They stay on screen on all five tabs and change as actions are applied. The two long notes and the denial banner are gone from here: the notice is one line with an info icon, and the denial text is in the 'Next:' block.
+intro: The strip of three figures under the header card. It stays on screen on all three tabs and changes as actions are applied. What used to be sentences under each figure is in an info icon beside its label.
 dir: TD
 also: Demo only: the numbers are seed data plus simple arithmetic.
 ---
-screen pg "Under the header card\nThree tiles, one line of notice"
+screen pg "Under the header card\none card, three figures"
 
-group gT1 "Tile 1"
+group gT1 "Approval chance"
   screen t1 "'Approval chance' (or 'Chance to overturn' on a denial)\nRing counts up over about a second\n'62% → 88%'"
-  process t1a "Line under it\n'if every action is applied'\nAfter applying: 'up to 88% with the rest' or 'after the agents' checks'"
-  process t1b "Pill 'Moderate · likely range 57–66%'\nStrong 80+, Moderate 55–79, At risk below 55"
+  process t1b "Pill 'Moderate · 57–66%' and a short caption\n'with every action', 'up to 88% with the rest' or 'now'\nStrong 80+, Moderate 55–79, At risk below 55"
+  click ni "Hover or focus the info icon 'About the approval chance'"
+  overlay n2 "'Decision support for documentation and workflow only. It does not recommend or decide care, never blocks a request and is never shown to payers or patients.'"
 endgroup
 
-group gT2 "Tile 2"
-  screen t2 "'How sure are we'\nHigh, Medium or Benchmark estimate"
+group gT2 "How sure are we"
+  screen t2 "'How sure are we'\nHigh, Medium or Benchmark estimate\n'1,248 similar cases'"
+  click si "Hover or focus 'About the similar cases'"
   decision dBm "Fewer than 100 similar cases from you and the network?"
-  process t2a "'Based on 1,248 similar cases: 212 yours, 806 from the network, 230 benchmark'"
-  process t2b "'Little history for this payer ... benchmark estimate'\n'Only N are yours or the network's.'"
+  overlay t2a "'212 yours, 806 from the network, 230 benchmark.'"
+  overlay t2b "'Little history for this payer and level of care: 210 of 238 are benchmark cases.'"
 endgroup
 
-group gT3 "Tile 3"
-  screen t3 "'Days likely granted'\n'11 of 14 days likely'\nIOP counts units: 'Units likely granted'"
-  process t3a "'62% chance of all 14, otherwise most likely 7'"
-  process t3b "On a denial: 'Days in question'\n'The payer approved part of the stay. The other days are what the call is about.'"
+group gT3 "Days likely granted"
+  screen t3 "'Days likely granted' 11 of 14 days\nIOP counts units"
+  click di "Hover or focus 'About the days likely granted'"
+  overlay t3a "'62% chance of all 14, otherwise most likely 7.'"
+  process t3b "On a denial: 'Days in question' 7 of 14 days, no info icon"
 endgroup
 
-screen n1 "One line under the tiles:\n'Decision support for documentation and workflow only. It does not recommend or decide care.'"
-click ni "Hover or focus the info icon 'About the approval chance'"
-overlay n2 "Tooltip: 'The approval chance estimates how well the paperwork fits this payer's past decisions. It never blocks a request and is never shown to payers or patients.'\nEsc closes it"
-decision dDn "Is it a denial?"
-process bd "No banner\nThe denial text sits in the 'Next:' block: 'This request was denied. Advocate owns the next step ...'\nButton 'Open in Denial Intelligence'"
-goto gD "Continues in: Authorizations › Case page › Next action"
+click esc "Esc or move away"
 goto gT "Continues in: Authorizations › Case page › Tabs and deep links"
-store ap "Applying actions on the first tab moves tile 1 and tile 3 and the range\nSee Recommended actions › Apply selected\nAdding clinical context moves them by a point each (up to three)\nRefining the recommendations moves the number after the arrow"
+store ap "Applying actions moves the ring, the range and the days\nAdding clinical context moves them by a point each (up to three)\nRefining the recommendations moves the number after the arrow"
 
-pg --> t1 --> t1a --> t1b
-pg --> t2 --> dBm
-dBm -->|No| t2a
-dBm -->|Yes| t2b
-pg --> t3 --> t3a
+pg --> t1 --> t1b
+t1 --> ni --> n2 --> esc
+pg --> t2 --> si --> dBm
+dBm -->|No| t2a --> esc
+dBm -->|Yes| t2b --> esc
+pg --> t3 --> di --> t3a --> esc
 t3 -.-> t3b
-pg --> n1 --> ni --> n2
-n1 --> dDn
-dDn -->|Yes| bd --> gD
-dDn -->|No| gT
-n2 --> gT
+pg --> gT
 t1b -.-> ap

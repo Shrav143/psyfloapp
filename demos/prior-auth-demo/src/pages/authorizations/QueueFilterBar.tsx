@@ -28,10 +28,9 @@ export function QueueFilterBar({ filters, set, clear, affected }: { filters: Que
         </span>
         <Dropdown value={filters.urgency} options={URGENCY_OPTIONS} onChange={(v) => set("urgency", v)} defaultValue="all" ariaLabel="Urgency" />
         {filtersActive(filters) ? <Button variant="ghost" size="sm" onClick={clear}>Clear filters</Button> : null}
-        <span className="ml-auto inline-flex items-center gap-1.5 text-[13px] text-muted">
-          How the list is ordered
+        <span className="ml-auto inline-flex items-center">
           <InfoTip label="How the list is ordered" align="end">
-            Requests sit in three bands by how soon they are due: Act now, Due within 24 hours, Due this week. Inside a band, requests waiting on you come first, then the soonest due. If two are due at the same time, the lower approval chance goes first.
+            By band (how soon it is due), then waiting on you first, then soonest due, then lower approval chance.
           </InfoTip>
         </span>
       </div>

@@ -6,8 +6,8 @@ import type { DenialView } from "./lib/useDenialView";
 export function OpeningCard({ view }: { view: DenialView }) {
   return (
     <Card>
-      <CardHeader title="Your opening" subtitle="About 30 seconds. Written by Advocate, checked by Integrity." />
-      <CardBody><p className="text-[14px] leading-[1.7]">{view.analysis.opening}</p></CardBody>
+      <CardHeader title="Your opening" />
+      <CardBody><p className="leading-[1.65]">{view.analysis.opening}</p></CardBody>
     </Card>
   );
 }
@@ -16,14 +16,14 @@ export function PointsCard({ view }: { view: DenialView }) {
   const points = view.analysis.points;
   return (
     <Card>
-      <CardHeader title={`${points.length === 3 ? "Three" : points.length} points to make`} subtitle="Each one links to the chart" />
+      <CardHeader title={`${points.length === 3 ? "Three" : points.length} points to make`} />
       {points.map((p, i) => (
-        <div key={p.title} className="flex items-start gap-3.5 border-b border-line px-6 py-4 last:border-b-0">
-          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-neutral-bg text-xs font-semibold">{i + 1}</span>
+        <div key={p.title} className="flex items-start gap-3 border-b border-line px-5 py-3 last:border-b-0">
+          <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-neutral-bg text-xs font-semibold">{i + 1}</span>
           <div className="min-w-0 flex-1">
             <div className="font-semibold">{p.title}</div>
             <div className="text-[13px] text-muted">{p.detail}</div>
-            <span className="mt-1.5 inline-block rounded-full bg-neutral-bg px-2.5 py-[3px] text-xs font-semibold text-neutral-ink">{p.source}</span>
+            <span className="mt-1 inline-block rounded-full bg-neutral-bg px-2.5 py-[3px] text-xs font-semibold text-neutral-ink">{p.source}</span>
           </div>
         </div>
       ))}
@@ -34,9 +34,9 @@ export function PointsCard({ view }: { view: DenialView }) {
 export function PushbackCard({ view }: { view: DenialView }) {
   return (
     <Card>
-      <CardHeader title="What they may say" subtitle="And a short answer to each" />
+      <CardHeader title="What they may say" />
       {view.analysis.pushback.map(([q, a]) => (
-        <div key={q} className="border-b border-line px-6 py-3.5 last:border-b-0">
+        <div key={q} className="border-b border-line px-5 py-3 last:border-b-0">
           <div className="font-semibold">{q}</div>
           <div className="mt-0.5 text-[13px] text-ink2">{a}</div>
         </div>
@@ -69,8 +69,8 @@ export function DatesCard({ brief }: { brief: BriefData }) {
     </div>
   );
   return (
-    <Disclosure title="Key dates and numbers" summary={`Call: ${brief.window} · Window: ${brief.closesIn}`} keepMounted className="psy-print-open">
-      <CardBody className="grid grid-cols-1 gap-8 sm:grid-cols-2">
+    <Disclosure title="Key dates and numbers" keepMounted className="psy-print-open">
+      <CardBody className="grid grid-cols-1 gap-6 sm:grid-cols-2">
         {col("Key dates", brief.dates)}
         {col("Numbers", brief.numbers)}
       </CardBody>

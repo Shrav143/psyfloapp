@@ -1,6 +1,6 @@
 title: Denial Intelligence › A denial opened › Recommended next step
-route: /denials?id=D-3290
-intro: While nothing is under way, the block under the header card recommends ONE step in plain words, from a fixed list of six, with its primary button first. FLO works it out from the denial type, what the request itself shows and the route the analysis already prefers. It is a recommendation for a person to review, never a payer rule.
+route: /denials/D-3290
+intro: FLO recommends ONE step, from a fixed list of six, worked out from the denial type, what the request itself shows and the route the analysis already prefers. It shows as the 'Recommended' pill on that route in Your options (and its button is the primary one while nothing is under way), as the next step of a row still to decide on the dashboard, and, with its reasons, in the 'Compare the options' panel. It is a recommendation for a person to review, never a payer rule.
 dir: TD
 also: The mapping lives in one function (lib/step.ts, recommendedStep). 'Ask for reconsideration' is on the list but no demo denial maps to it: the demo has no payer rule that names it, and none is invented.
 ---
@@ -22,26 +22,24 @@ process n1 "A retro denial turns on dates and coverage status: accept when the a
 process n2 "'File an appeal' when the clock running is the one to file or resubmit, the call window has closed, or the notice was late"
 process n3 "'Peer-to-peer review' while the call window is open"
 
-screen blk "Block under the header card\nLabel 'Recommended next step', the word as a title\nOne or two plain sentences worked out from the denial: the chance of overturning, what the route takes, what it gets back"
-screen opt "'Your options' row and its 'Compare the options' panel\nThe 'Recommended' pill sits on the same route in both\nNone for 'Investigate by hand'"
+screen blk "Your options: 'Recommended' on that route, its button primary\n'Investigate by hand' picks no route: a pill with the word sits in the card header\nThe written choice is titled 'Correct and resubmit' for that word"
+screen opt "Dashboard: the row's Next step reads the word ('Accept', 'Correct and resubmit')\nCompare the options: the same route is selected"
 
-click b1 "Click 'Accept the decision and plan the step-down'"
-click b2 "Click 'Choose a time and prepare the brief'"
-click b3 "Click 'Draft the appeal letter'"
+click b1 "Click 'Accept the decision'"
+click b2 "Click 'Book a call'"
+click b3 "Click 'Draft the appeal'"
 click b4 "Click 'Draft the corrected request'"
-click b5 "Click 'Read the findings'"
-process pf "Page scrolls to 'Where the denial is weak' and puts focus on it\n(no animation when the person asked for reduced motion)"
+process pf "No route is picked: the person reads the findings and the eligibility dates, then chooses any of the three"
 goto g1 "Continues in: Denial Intelligence › Accept the denial"
 goto g2 "Continues in: Denial Intelligence › Peer-to-peer › Book the call"
 goto g3 "Continues in: Denial Intelligence › Written appeal › Confirm and draft"
 overlay o4 "Confirm 'Confirm the next step: correct and resubmit'\n'Draft the corrected request' or 'Cancel'\nThe same letter flow follows: Advocate drafts, a clinician signs, Navigator files"
 goto g4 "Continues in: Denial Intelligence › A denial opened › Where the denial is weak"
 
-screen rn "Under the button\n'Draft by FLO's agents. A clinician reviews and signs before anything is sent.'"
-click wy "Click 'Why FLO suggests this' (folded), or Tab to it and press Enter or Space"
-screen wr "Reasons, as short points\nThe type and payer, and 'Our read' sentence\nThe chances of a call and of a written appeal, from N similar decisions (or a benchmark estimate)\nThe window left\nThe rule that chose the route\n'This is a recommendation for a person to review. It is not a payer rule.'"
-click wc "Click or press Enter or Space again"
-end e1 "The reasons fold away"
+click wy "Click 'Compare the options'"
+screen wr "Under the radio cards: 'Why FLO suggests correct and resubmit'\nThe type and payer, and the read\nThe chances of a call and of a written appeal, from N similar decisions (or a benchmark estimate)\nThe window left, the rule that chose the route\n'This is a recommendation for a person to review. It is not a payer rule.'"
+goto gc "Continues in: Denial Intelligence › Your options"
+end e1 "The person picks a route"
 
 s1 --> a1 --> d1
 d1 -->|Yes| d2
@@ -59,10 +57,10 @@ d4 -.-> n3
 a1 -.-> w6
 w1 & w2 & w3 & w4 & w5 --> blk
 blk --> opt
-blk --> rn
 w1 --> b1 --> g1
 w5 --> b2 --> g2
 w4 --> b3 --> g3
 w3 --> b4 --> o4 --> g3
-w2 --> b5 --> pf --> g4
-blk --> wy --> wr --> wc --> e1
+w2 --> pf --> g4
+blk --> wy --> wr --> gc
+wr --> e1

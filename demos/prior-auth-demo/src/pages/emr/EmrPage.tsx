@@ -14,6 +14,7 @@ import { AskFirst, type Asking } from "./AskFirst";
 import { ConnectModal } from "./ConnectModal";
 import { FixModal } from "./FixModal";
 import { HealthCard } from "./HealthCard";
+import { ImportFallback } from "./ImportFallback";
 import { agentGate } from "./lib/agentGate";
 import { useAlive } from "./lib/useAlive";
 import { ManageDrawer } from "./ManageDrawer";
@@ -92,6 +93,7 @@ export default function EmrPage() {
       />
       <ActionRequired needs={needs} />
       <HealthCard systems={systems} clock={clock} charts={charts} files={files} syncing={syncing} allBusy={allBusy} onSyncAll={syncAll} onSync={syncOne} onManage={setManage} onFix={fix} onReconnect={reconnect} />
+      <ImportFallback />
       <Advanced systems={systems} clock={clock} onMap={setMapping} />
       {manage && systems.some((x) => x.id === manage) ? <ManageDrawer systemId={manage} clock={clock} onClose={() => setManage(null)} onReconnect={reconnect} /> : null}
       {mapping && unmapped.some((u) => u.id === mapping.id) ? <MapModal field={mapping} onClose={() => setMapping(null)} /> : null}

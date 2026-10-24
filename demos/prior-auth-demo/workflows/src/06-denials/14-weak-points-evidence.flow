@@ -1,11 +1,11 @@
 title: Denial Intelligence › A denial opened › Where the denial is weak
-route: /denials?id=D-3318
+route: /denials/D-3318
 intro: The findings card: each finding has a severity, a source chip that opens the chart excerpt, and a suggested fix that can be added to the evidence for the brief and the appeal.
 dir: TD
 ---
 start s1 "Scroll to 'Where the denial is weak'"
 process p0 "Words of the card follow the denial type\nPartial approval, Level-of-care downgrade, Units cut, Late notice, Retro-authorization denied, Full denial\nD-3318 is written out in full"
-screen sc1 "'Where the denial is weak'\n'Each finding links to the chart, with a suggested fix'"
+screen sc1 "'Where the denial is weak'\nOne row per finding: severity, title, detail, source chip, 'Fix: ...' and its button"
 screen f1 "One row per finding\nSeverity pill 'Critical' or 'Strong', title, detail"
 screen f2 "Under it: source chip (for example 'Progress note 10/14'), 'Suggested fix: Add the progress note from 10/14', button 'Add to the evidence'"
 

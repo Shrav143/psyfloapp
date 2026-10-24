@@ -1,67 +1,45 @@
 title: Denial Intelligence › A denial opened
-route: /denials?id=D-3318
-intro: The page for one denial, top to bottom, in one column: title with the 'Open denials' button, the scope line, the header card with 'Our read' and the one recommended next step, the options in one short row, the payer's words, where the denial is weak and the six ASAM dimensions, then two folded sections. The list of denials and 'Add a denial letter' are in right-hand panels. Each part is described once here and detailed in its own diagram.
+route: /denials/D-3318
+intro: The page of one denial, top to bottom: the header card, Your options (the route under way says where it stands inside its own choice), what the payer said, where the denial is weak, the framework's six dimensions, then History. No headline card above the header and no separate next-step block. Each part is detailed in its own diagram.
 dir: TD
 ---
-start s1 "A denial is selected (from the list or ?id=)"
-process p1 "Title comes from the denial\n'D-3318: Cardinal approved 7 of 14 days. The chart supports challenging it.'\nA small 'Site A' tag follows it when the view is narrowed to one site"
-screen hb "Button 'Open denials 8' in the page header (under the text on a narrow window)\nWhen the address has a filter: a chip 'Filtered: Cardinal' under the header"
-goto g4 "Continues in: Denial Intelligence › Open denials list"
-screen sub1 "Sub line: initials, age · program · payer name\n'The agents read the denial against the chart, and you choose the next step.'\nUnder it, one quiet line: 'Authorization denials only. Claim denials are handled in billing and are not in this demo.'"
-process pn "No control for claim denials: the demo has no claims feed"
+start s1 "Open /denials/D-3318 (a dashboard row, a link from another screen)"
+screen cr "Crumbs 'Denial Intelligence › D-3318'"
+click cb "Click 'Denial Intelligence' in the crumbs"
+goto g0 "Continues in: Denial Intelligence › Open denials list"
 
-screen h1 "Header card, top part\nSmall tag 'Authorization denial'\nProgram chip, D-id, type pill\nPills '64% chance of overturning' and the deadline ('Peer-to-peer window closes in 36 h')"
-screen h2 "Line under the pills\nPayer · case id · initials, age · letter file name\n'Your note: ...' when a note was added\nGhost button 'See on the Dashboard'"
-screen v1 "'Our read' tile, right of the header\nWorth challenging, Borderline or Probably accept, with one sentence\nUnder it the button 'Appeal analysis report'"
-process pv "Verdict comes from the win chance: 50 and over, 35 to 49, under 35\nD-3306 (27%) reads 'Probably accept'"
-screen bn "Next-step block, inside the same card, under a rule\nLabel, a serif title, one or two plain sentences, buttons with the primary one first"
-goto g1 "Continues in: Denial Intelligence › A denial opened › Next step and where it stands"
-goto g1b "Continues in: Denial Intelligence › A denial opened › Recommended next step"
+screen h1 "Header card\nD-id (24 px), level of care chip, type pill ('Partial approval')\nPills: the read ('Worth challenging', 'Borderline', 'Probably accept'), '64% chance of overturning', the deadline ('Peer-to-peer window closes in 36 h')\nPayer · initials, age · diagnosis · letter file name; 'Note: ...' when one was added"
+process pv "The read comes from the chance: 50 and over, 35 to 49, under 35 (D-3306, 27%, reads 'Probably accept')\nA filed or settled denial drops the deadline pill: Your options says where it stands"
+click b2 "Click 'Appeal analysis report'"
+goto g6 "Continues in: Denial Intelligence › Appeal analysis report › Open and generate"
+click b3 "Click 'Case R-0997'"
+goto g7 "Continues in: Authorizations › Case page › Ways in"
 
-decision d2 "Still open: not filed, and not closed (accepted, or won on a call or an appeal)?"
-screen c5 "'Your options' card, one short row\nThree routes with their chances, 'Recommended' on one\nButton 'Compare the options' in its header"
+screen c5 "'Your options': the first section under the header\nThree compact choices: Peer-to-peer call, Written appeal, Accept\nEach with its chance and what it gets back; 'Recommended' on one; 'Compare the options' in the header"
 goto g3 "Continues in: Denial Intelligence › Your options"
-process p3 "No options card"
+goto g1 "Continues in: Denial Intelligence › A denial opened › Next step and where it stands"
 screen c2 "'What Cardinal said': the payer's words\n'What the chart shows': two or three sentences"
-screen c3 "'Where the denial is weak'\n'Each finding links to the chart, with a suggested fix'\nButton 'Full summary' in the card header"
+screen c3 "'Where the denial is weak': findings with severity, source chip and fix\nButton 'Full summary' in the card header"
 goto g2 "Continues in: Denial Intelligence › A denial opened › Where the denial is weak"
 decision d1 "Is it an administrative denial?\n'Late notice' or 'Retro-authorization denied'"
-screen c4 "'The six ASAM dimensions'\nSix tiles D1 to D6, each with a green, ochre or red dot\nButton 'Full summary' in the card header"
+screen c4 "The framework card, titled with its name: 'ASAM Criteria' (LOCUS or CALOCUS-CASII for mental health alone)\nSix compact rows: dot, D1 to D6 with the framework's names, a word ('High concern')"
+goto g8 "Continues in: Denial Intelligence › A denial opened › Framework dimensions and their pop-ups"
 process p2 "The card is left out"
+screen fo "'History', folded: one list, newest first, a flag on the right"
+goto g9 "Continues in: Denial Intelligence › A denial opened › Folded sections"
+end e1 "Person reads the denial and acts from Your options"
 
-screen fo "Two folded sections at the bottom, closed at first\n'What the agents did' (names the three agents, pill 'Done in 0:48')\n'What has happened' (step count and the latest step)"
-goto g7 "Continues in: Denial Intelligence › A denial opened › Folded sections"
-process p4 "Opened, 'What has happened' lists the timeline: done events have a green dot\nScheduled events (dashed dot) read 'Scheduled · Wed 1:00 pm'\n'Every step is also on the Dashboard.'"
-
-process pw "No right column: the width it used to take goes to the cards\nThe six dimensions sit in three columns on a wide window, two on a medium one, one on a narrow one"
-goto g8 "Continues in: Denial Intelligence › Add a denial letter"
-
-click b1 "Click 'See on the Dashboard'"
-goto g5 "Continues in: Dashboard › Request drawer › Open and read a request"
-click b2 "Click 'Appeal analysis report' (button under the 'Our read' tile)"
-goto g6 "Continues in: Denial Intelligence › Appeal analysis report › Open and generate"
-end e1 "Person reads the denial and chooses a next step"
-
-s1 --> p1 --> sub1 --> h1
-sub1 -.-> pn
-h1 --> h2 --> b1 --> g5
-h1 --> v1 --> pv
-v1 --> b2 --> g6
-h1 --> bn --> g1
-bn --> g1b
-bn --> d2
-d2 -->|Yes| c5 --> g3
-d2 -->|No| p3
-c5 --> c2
-p3 --> c2
-c2 --> c3 --> g2
+s1 --> cr --> cb --> g0
+cr --> h1 --> pv
+h1 --> b2 --> g6
+h1 --> b3 --> g7
+h1 --> c5 --> g3
+c5 --> g1
+c5 --> c2 --> c3 --> g2
 c3 --> d1
-d1 -->|No| c4
+d1 -->|No| c4 --> g8
 d1 -->|Yes| p2
 c4 --> fo
 p2 --> fo
-fo --> g7
-fo --> p4 --> e1
-sub1 --> hb --> g4
-hb -.-> g8
-c4 -.-> pw
+fo --> g9
+fo --> e1

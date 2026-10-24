@@ -1,8 +1,9 @@
 /* What changed between two versions of one payer workflow, in a few plain lines, for "Review newer version". Pure. */
-import { REQUEST_TYPE_LABEL, STAGE_LABEL, type WfNode, type Workflow } from "@/data/workflow/types";
+import { REQUEST_TYPE_LABEL, type WfNode, type Workflow } from "@/data/workflow/types";
+import { caseStageLabel } from "./stageLabel";
 
 const sameJson = (a: unknown, b: unknown): boolean => JSON.stringify(a) === JSON.stringify(b);
-const where = (n: WfNode): string => `${n.title} (${STAGE_LABEL[n.stage]})`;
+const where = (n: WfNode): string => `${n.title} (${caseStageLabel(n.stage)})`;
 const edgeKey = (e: Workflow["edges"][number]): string => `${e.from}>${e.handle}>${e.to}`;
 
 /** The node content that matters to a case. Where a node sits on the canvas does not. */

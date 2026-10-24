@@ -1,5 +1,4 @@
 import { REASON_TERMS, type DenialMeta } from "@/data/denials";
-import { PAYERS } from "@/data/seed";
 import type { PsyRequest } from "@/data/types";
 import { resolveMeta } from "./analysis";
 
@@ -10,9 +9,6 @@ export interface DenialFilter {
 }
 
 export const isFiltering = (f: DenialFilter): boolean => !!(f.payer || f.reason);
-
-/** "Cardinal" for a known payer id, otherwise whatever the address said. */
-export const payerLabel = (id: string): string => PAYERS.find((p) => p.id === id.toLowerCase())?.shortName ?? id;
 
 /** A reason matches when it and one of the denial's words (the type, its summary, or the words for that type) contain each other. */
 function reasonMatches(reason: string, meta: DenialMeta): boolean {

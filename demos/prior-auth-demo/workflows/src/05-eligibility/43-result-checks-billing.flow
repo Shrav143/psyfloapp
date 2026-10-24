@@ -1,49 +1,48 @@
 title: Authorizations › Eligibility & Benefits › Result › Payment checks: authorization to other insurance
 route: /authorizations/eligibility/R-1042
-intro: Rows 4 to 7 of 'Payment checks' (in the side panel 'Verification details' on the result page), then, where this list is shown in the New Case drawer, a last line about what the patient pays. On the result page the cost share is under Benefits in the summary instead. Authorization is the only row that can turn the verdict amber. The others turn it red.
+intro: Rows 4 to 7 of 'Payment checks' (in the side panel 'Verification details'). What the patient pays is not in this list: it is its own row, 'Patient pays', on the result (and in the panel's summary when opened from New Case). Authorization is the only row that can turn the verdict amber. The others turn it red.
 dir: TD
 also: Demo only: 'Limit reached' has a seeded patient (R-0921) and 'Another plan pays first' has one (I-2275). Both have a chip under 'Try a sample' on Verify.
 ---
 start s1 "Result page, side panel opened, 'Payment checks', rows 4 to 7"
 decision q9 "Was coverage found?"
-endx x9 "Coverage not found\nRows 2 to 7 and any cost line are not shown\nOne grey row says nothing else could be checked"
+endx x9 "Coverage not found\nRows 2 to 7 are not shown\nOne grey row says nothing else could be checked"
 
 group gA "Row 4 · Authorization"
   decision a0 "What is the authorization state?"
-  process a1 "Chip 'Not required' (green)\n'Beacon does not require one for IOP.'"
+  process a1 "Chip 'Not required' (green)\n'Beacon does not require one for IOP'"
   process a2 "Chip 'On file' (green)\n'On file with Summit. 9 of 14 days used'"
-  process a3 "Chip 'Required' (amber)\n'Required before the first day. Not on file yet. A request is being drafted'"
-  process a4 "Chip 'Under review' (amber)\n'Required. A request is with Cardinal and under review'"
-  process a5 "Chip 'Retro request open' (amber)\n'A retro-authorization request is open. It covers days already delivered'"
-  process a6 "Chip 'Required' (amber)\n'Required before the first day. Not on file yet. Start an authorization'"
-  process a7 "Chip 'Unknown' (grey)\n'No rule on file says whether Beacon requires one for residential 3.5. Check with Beacon. Nothing was assumed'\nThe check could not run, so it is not counted as a failure"
+  process a3 "Chip 'Required' (amber)\n'Required before the first day. A request is being drafted'"
+  process a4 "Chip 'Under review' (amber)\n'Required. Under review with Cardinal'"
+  process a5 "Chip 'Retro request open' (amber)\n'Retro-authorization request open, for days already delivered'"
+  process a6 "Chip 'Required' (amber)\n'Required before the first day. Not on file'"
+  process a7 "Chip 'Unknown' (grey)\n'No rule on file for Beacon and residential 3.5. Nothing was assumed'\nThe check could not run, so it is not counted as a failure"
 endgroup
 
 group gB "Row 5 · Can the clinic bill?"
   decision b0 "Is the clinic enrolled with this payer for this level of care?"
-  process b1 "Title 'The clinic can bill', chip 'In network' (green)\n'The clinic is enrolled and in network with Summit for residential 3.5'"
-  process b2 "Title 'The clinic cannot bill yet', chip 'Not enrolled' (red)\n'Claims would be rejected. Navigator can start the enrollment.'"
-  process b3 "Title 'The clinic's enrollment is not confirmed', chip 'Not confirmed' (amber)\n'Navigator can check the enrollment record'"
+  process b1 "Title 'The clinic can bill', chip 'In network' (green)\n'Enrolled and in network with Summit for residential 3.5'"
+  process b2 "Title 'The clinic cannot bill yet', chip 'Not enrolled' (red)\n'Not enrolled with Evergreen for detox'"
+  process b3 "Title 'The clinic's enrollment is not confirmed', chip 'Not confirmed' (amber)\n'Enrollment with Lakeshore for IOP could not be confirmed'\nThe result offers 'Ask Navigator to check enrollment'"
 endgroup
 
 group gC "Row 6 · Limits"
   decision c0 "Is there a day or unit limit?"
   process c1 "Chip '5 days left' (green), or amber at 3 or fewer\n'9 of 14 days used in this authorization period'"
-  process c2 "Title 'Every authorized day is used' (or unit)\nChip 'Limit reached' (red)\n'14 of 14 days used in this authorization period. Nothing is left. Ask Cardinal for more days before the next day of service'"
-  process c3 "Chip 'No limit' (green)\n'No annual day limit for residential care. The authorization sets the days'\nor 'No visit or day limit applies to this program'"
+  process c2 "Title 'Every authorized day is used' (or unit)\nChip 'Limit reached' (red)\n'14 of 14 days used in this authorization period'"
+  process c3 "Chip 'No limit' (green)\n'No annual day limit for residential 3.5'\nor 'No visit or day limit for this program'"
 endgroup
 
 group gD "Row 7 · Other insurance"
   decision d0 "Did the check find another plan?"
-  process d1 "Title 'No other insurance', chip 'None' (green)\n'None found. Medicaid pays last, so we checked for another payer'"
-  process d2 "Title 'Another plan pays first', chip 'Other plan' (red)\n'A second plan was found. It must be billed before this one.'"
+  process d1 "Title 'No other insurance', chip 'None' (green)\n'None found'"
+  process d2 "Title 'Another plan pays first', chip 'Other plan' (red)\n'A second plan was found. It is billed before this one'"
 endgroup
 
-group gP "Last line (New Case drawer only; the result page shows it under Benefits)"
+group gP "What the patient pays (not a payment check)"
   decision p0 "Does the plan type have a cost share on file?"
-  process p1 "'What the patient pays:'\nHarborview 'Deductible $85 left, coinsurance 20%.'\nBeacon and Lakeshore 'Copay $40 per day, deductible $350 left, coinsurance 20% after the deductible.'"
-  toast p2 "'This does not change what the clinic is paid.'"
-  process p3 "Ohio Medicaid: no line at all\nNo '$0 copay' text, because members usually pay none"
+  process p1 "Row 'Patient pays' on the result\nHarborview 'Deductible $85 left, coinsurance 20%'\nBeacon and Lakeshore 'Copay $40 per day, deductible $350 left, coinsurance 20% after the deductible'"
+  process p3 "Ohio Medicaid: no row at all\nNo '$0 copay' text, because members usually pay none"
 endgroup
 
 goto g1 "Continues in: Authorizations › New Case › Intake › Patient, insurance and request rows"
@@ -65,5 +64,5 @@ c0 -->|Limit, none left| c2 --> d0
 c0 -->|No limit| c3 --> d0
 d0 -->|No| d1 --> p0
 d0 -->|Yes| d2 --> p0
-p0 -->|Yes| p1 --> p2 --> g1
+p0 -->|Yes| p1 --> g1
 p0 -->|No| p3 --> g1

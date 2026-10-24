@@ -1,9 +1,11 @@
-import { APPEAL_WINDOW_DAYS, AUTHORED_TEXT, SEED_DENIAL_META, type AnalysisText, type DenialMeta, type DimText, type FindingText } from "@/data/denials";
+import { APPEAL_WINDOW_DAYS, AUTHORED_TEXT, GENERIC_DIMS_MH, SEED_DENIAL_META, type AnalysisText, type DenialMeta, type FindingText } from "@/data/denials";
 import { TEMPLATES } from "@/data/denialsTemplates";
+import type { FrameworkDef } from "@/data/frameworks";
 import { payerById } from "@/data/seed";
-import { PROGRAM_LABEL, type AgentKey, type PsyRequest } from "@/data/types";
+import { PROGRAM_LABEL, type AgentKey, type PsyRequest, type Tone } from "@/data/types";
 import { DAY, shortDate } from "@/lib/time";
 import { leftLabel } from "./format";
+import { dxOfDenial, frameworkOfDenial } from "./framework";
 
 export type Verdict = "Worth challenging" | "Borderline" | "Probably accept";
 export type OptionId = "p2p" | "appeal" | "accept";
@@ -14,6 +16,18 @@ export const CHALLENGE_FROM = 50;
 export const ACCEPT_BELOW = 35;
 export interface Chance { value: number; low: number; high: number }
 export interface Finding extends FindingText { id: string }
+/** One dimension of the denial's framework, in framework order. `key` is the name the long text is filed under; `name` is the framework's own. */
+export interface Dimension {
+  key: string;
+  n: number;
+  name: string;
+  /** "D1 Acute intoxication and withdrawal potential": the dimension's number and name, used wherever it is copied or printed. */
+  label: string;
+  short: string;
+  tone: Tone;
+  text: string;
+  source: string;
+}
 export interface DenialOption {
   id: OptionId;
   title: string;
@@ -28,14 +42,16 @@ export interface DenialOption {
 export interface DenialAnalysis {
   verdict: Verdict;
   verdictLine: string;
-  headline: string;
+  /** The working diagnosis, and the level-of-care framework it puts the denial under. */
+  dx: string;
+  framework: FrameworkDef;
   steps: { agent: AgentKey; text: string }[];
   doneIn: string;
   quote: string;
   chartShows: string;
   findings: Finding[];
   dimsSub: string;
-  dims: DimText[];
+  dims: Dimension[];
   options: DenialOption[];
   recommended: OptionId;
   recommendedBecause: RecommendedBecause;
@@ -98,11 +114,6 @@ const VERDICT_LINE: Record<Verdict, string> = {
   Borderline: "Part of the chart supports the request. A call is worth the time, but expect pushback.",
   "Probably accept": "The chart does not yet support a challenge. Accepting may be the better use of time.",
 };
-const VERDICT_SENTENCE: Record<Verdict, string> = {
-  "Worth challenging": "The chart supports challenging it.",
-  Borderline: "It is borderline, and a call is worth the time.",
-  "Probably accept": "Accepting may be the better use of time.",
-};
 
 export function buildAnalysis(r: PsyRequest, m: DenialMeta, clock: number): DenialAnalysis {
   const ctx = contextOf(r, m);
@@ -120,10 +131,14 @@ export function buildAnalysis(r: PsyRequest, m: DenialMeta, clock: number): Deni
   const recommendedBecause: RecommendedBecause = verdict === "Probably accept" ? "low-chance" : toFile ? "appeal-clock" : windowClosed ? "window-closed" : m.type === "Late notice" ? "late-notice" : "call-window";
   const recommended: OptionId = recommendedBecause === "low-chance" ? "accept" : recommendedBecause === "call-window" ? "p2p" : "appeal";
   const accept = m.type === "Partial approval" ? `Accept ${ctx.approved} days and plan the step-down` : "Accept the decision and plan the next step";
+  const framework = frameworkOfDenial(r, m);
+  // A template written for substance use reads wrong under LOCUS or CASII, so a mental health denial takes the mental health reading of the six positions.
+  const dimTexts = text.dims.length && framework.id !== "asam" ? GENERIC_DIMS_MH : text.dims;
   return {
     verdict,
     verdictLine: VERDICT_LINE[verdict],
-    headline: `${r.id}: ${fill(text.short, ctx)}. ${VERDICT_SENTENCE[verdict]}`,
+    dx: dxOfDenial(r, m),
+    framework,
     steps: [
       { agent: "reader", text: "Read the letter and the chart, and removed identifiers" },
       { agent: "advocate", text: `Checked the notice, the deadline and how ${ctx.payer} applied its own criteria` },
@@ -134,7 +149,10 @@ export function buildAnalysis(r: PsyRequest, m: DenialMeta, clock: number): Deni
     chartShows: fill(text.chartShows, ctx),
     findings: text.findings.map((f, i) => ({ ...f, id: `${r.id}-f${i}`, title: fill(f.title, ctx), detail: fill(f.detail, ctx), source: fill(f.source, ctx), excerpt: fill(f.excerpt, ctx), fix: fill(f.fix, ctx) })),
     dimsSub: text.dimsSub,
-    dims: text.dims.map((d) => ({ ...d, text: fill(d.text, ctx) })),
+    dims: dimTexts.map((d, i) => {
+      const fd = framework.dims[i];
+      return { key: d.name, n: fd.n, name: fd.name, label: `D${fd.n} ${fd.name}`, short: fd.short, tone: d.tone, text: fill(d.text, ctx), source: fill(d.source ?? `${framework.short} assessment {noteDate}`, ctx) };
+    }),
     options: [
       { id: "p2p", title: "Peer-to-peer call", summary: `30 to 45 minutes of clinician time · ${regained}`, time: "30 to 45 minutes of clinician time", gain: regained, chance: p2p, needs: ["A clinician on the call", "The brief, written by Advocate and checked by Integrity", "A call time inside the payer's window"] },
       { id: "appeal", title: "Written appeal", summary: `${appealTime} · ${regained}`, time: appealTime, gain: regained, chance: appeal, needs: ["A clinician's signature on the letter", "The letter, drafted by Advocate and checked by Integrity", `Evidence attached: ${sources.slice(0, 3).join(", ")}`] },

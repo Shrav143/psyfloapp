@@ -1,26 +1,23 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { ArrowLeft, SearchX, Send, Sparkles } from "lucide-react";
 import { OutOfSite } from "@/components/layout/OutOfSite";
 import { Button, Card, EmptyState, Page, PageHeader } from "@/components/ui";
 import { RUN_STEPS } from "@/data/cases";
-import { payerById } from "@/data/seed";
 import { useScope } from "@/lib/scope";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
 import { AuthTypePicker } from "./AuthTypePicker";
-import { authType, isAuthKind } from "./authType";
+import { isAuthKind } from "./authType";
 import { useCaseEnv } from "./caseEnv";
 import { DocumentationStep } from "./DocumentationStep";
 import { EligibilityStep } from "./EligibilityStep";
 import { applySampleChart, attachReferral, initialDraft } from "./intake";
 import { IntakeStep } from "./IntakeStep";
 import { NewCaseStepper } from "./NewCaseStepper";
-import { PreparationStep } from "./PreparationStep";
 import { reviewModel } from "./reviewModel";
 import { ReviewStep } from "./ReviewStep";
-import { StepHeader } from "./StepHeader";
-import { stepIdOf, stepIndex, stepPatch, stepPatchOf } from "./steps";
+import { NEW_CASE_STEPS, opensPreparation, preparationPatch, stepIdOf, stepIndex, stepPatch, stepPatchOf } from "./steps";
 import { stepStates } from "./stepState";
 import { useRecAdds } from "./useRecAdds";
 import { useReading } from "./useRecordsTimers";
@@ -29,8 +26,8 @@ import { WorkflowRow } from "./workflow/WorkflowRow";
 
 const NO_CONTEXT: string[] = [];
 
-/** New Case. /authorizations/new starts a draft and moves to /authorizations/new/:draftId, which resumes one. ?type= picks the Authorization type, ?referral=, ?verification= and ?patient= start from one;
-    ?step= opens a step (the older names referral, records, agents and review land on Intake, Clinical documentation, Authorization preparation and Review & submit). */
+/** New Case, in four steps. /authorizations/new starts a draft and moves to /authorizations/new/:draftId, which resumes one. ?type= picks the Authorization type, ?referral=, ?verification= and ?patient= start from one;
+    ?step= opens a step (the older names referral, records and review land on Intake, Clinical documentation and Review & submit; preparation and agents open Clinical documentation at the agents' section). */
 export default function NewCasePage() {
   const { draftId } = useParams();
   const [params] = useSearchParams();
@@ -70,21 +67,29 @@ export default function NewCasePage() {
     if (init.referralId) attachReferral(id, init.referralId);
     if (patient) st.chooseCasePatient(id, { patientId: patient });
     const step = stepIdOf(params.get("step"));
-    if (step) st.patchCaseDraft(id, stepPatchOf(step));
+    if (step) st.patchCaseDraft(id, opensPreparation(params.get("step")) ? preparationPatch : stepPatchOf(step));
     nav(paths.newCase({ draft: id }), { replace: true });
   }, [draftId, params, nav, scope]);
 
-  /* A draft whose agents already ran reopens on the agents step, not on intake. */
+  /* The agents' section of Clinical documentation is scrolled to when the page opens on it: a draft saved while the agents worked (the old step 4), or ?step=preparation. */
+  const [toPreparation, setToPreparation] = useState(0);
+  /* A draft whose agents already ran reopens on their section, or on Review & submit once they are done, not on intake. */
   useEffect(() => {
-    if (draft && draft.step === 0 && draft.run.done > 0) patch(draft.id, { step: draft.run.done >= RUN_STEPS.length ? 2 : 1 });
+    if (!draft) return;
+    if (draft.step === 0 && draft.run.done > 0) patch(draft.id, draft.run.done >= RUN_STEPS.length ? stepPatch(3) : preparationPatch);
+    if (draft.step === 1 || (draft.step === 0 && draft.run.done > 0 && draft.run.done < RUN_STEPS.length)) setToPreparation((n) => n + 1);
     // Only on opening a draft: going Back to a step later must stay there.
   }, [draft?.id]);
 
   /* An address that names a step or a type opens that step or type on a draft that exists. */
   useEffect(() => {
     if (!draft) return;
-    const step = stepIdOf(params.get("step"));
-    if (step) patch(draft.id, stepPatchOf(step));
+    const stepParam = params.get("step");
+    const step = stepIdOf(stepParam);
+    if (step && opensPreparation(stepParam)) {
+      patch(draft.id, preparationPatch);
+      setToPreparation((n) => n + 1);
+    } else if (step) patch(draft.id, stepPatchOf(step));
     const kind = params.get("type");
     if (isAuthKind(kind) && !draft.started && !draft.sent) setKind(draft.id, kind);
     // Only when the address changes: the person moves between steps with the stepper afterwards.
@@ -124,61 +129,56 @@ export default function NewCasePage() {
     return (
       <Page>
         {env.workflow ? <WorkflowRow draft={draft} view={env.workflow} /> : null}
-        <PageHeader
-          title={recorded ? `${sentId} was sent` : `${sentId} is with the payer`}
-          sub={recorded ? "It was signed and sent to the payer (demo). The agents are following it from the Dashboard." : "It is already with the payer, so there is nothing to sign here."}
-        />
+        <PageHeader title={recorded ? `${sentId} was sent` : `${sentId} is with the payer`} />
         <Card>
           <EmptyState
             icon={Send}
-            title="This case is no longer being prepared"
+            title={recorded ? "Signed and sent (demo)" : "Already with the payer"}
             action={
-              <div className="flex gap-2.5">
+              <div className="flex flex-wrap justify-center gap-2.5">
                 <Button variant="primary" onClick={() => nav(paths.case(sentId))}>Open the case</Button>
                 {recorded ? <Button onClick={() => nav(paths.dashboard({ request: sentId }))}>Open it on the Dashboard</Button> : null}
                 <Button onClick={() => nav(paths.manager())}>Back to Case Manager</Button>
               </div>
             }
-          >
-            Nothing more is needed here.
-          </EmptyState>
+          />
         </Card>
       </Page>
     );
   }
 
-  const payer = draft.payerId ? payerById(draft.payerId) : null;
   const at = stepIndex(draft);
-  const SUBS = [
-    authType(draft.kind).intake,
-    "Verify checks coverage and benefits for the dates asked. A warning says what to do next and never traps you.",
-    "Drop what you have. Reader sorts the files and lists what is still missing. The required items come from the payer's saved list.",
-    `The agents are reading the chart and checking ${payer?.shortName ?? "the payer"}'s rules. Questions come to you only when they must.`,
-    "Nothing is sent to the payer until a person signs. See what is missing first, then read the summary.",
-  ];
 
   return (
     <Page>
-      <Link to={paths.manager()} className="-mb-1.5 flex w-fit items-center gap-1.5 text-muted hover:text-ink">
+      <Link to={paths.manager()} className="-mb-1.5 flex w-fit items-center gap-1.5 text-[13px] text-muted hover:text-ink">
         <ArrowLeft size={14} className="ico" />
         Case Manager
       </Link>
       <PageHeader
-        title="New Case"
-        sub={SUBS[at]}
+        title={
+          <>
+            New Case
+            {draft.caseId ? <span data-testid="case-id" className="ml-2.5 font-sans text-[13px] font-medium text-muted">{draft.caseId}</span> : null}
+          </>
+        }
         actions={
-          at === 2 ? (
-            <Button icon={Sparkles} onClick={() => applySampleChart(draft.id)}>
-              Use sample chart
-            </Button>
-          ) : null
+          <div className="flex flex-wrap items-center justify-end gap-2.5">
+            {at === 2 ? (
+              <Button size="sm" variant="ghost" icon={Sparkles} onClick={() => applySampleChart(draft.id)}>
+                Use sample chart
+              </Button>
+            ) : null}
+            <AuthTypePicker draftId={draft.id} kind={draft.kind} disabled={draft.sent} />
+          </div>
         }
       />
-      <AuthTypePicker draftId={draft.id} kind={draft.kind} disabled={draft.sent} />
-      <NewCaseStepper steps={steps} current={at} onGo={(i) => patch(draft.id, stepPatch(i))} />
-      {env.workflow ? <WorkflowRow draft={draft} view={env.workflow} /> : null}
-      <StepHeader index={at} info={steps[at]} workflowHint={env.workflow?.hint} />
-      {at === 0 ? <IntakeStep draft={draft} env={env} /> : at === 1 ? <EligibilityStep draft={draft} env={env} /> : at === 2 ? <DocumentationStep draft={draft} env={env} /> : at === 3 ? <PreparationStep draft={draft} env={env} /> : <ReviewStep draft={draft} env={env} />}
+      <div className="flex flex-col gap-3">
+        <NewCaseStepper steps={steps} current={at} onGo={(i) => patch(draft.id, stepPatch(i))} />
+        {env.workflow ? <WorkflowRow draft={draft} view={env.workflow} /> : null}
+      </div>
+      <h2 className="sr-only">{NEW_CASE_STEPS[at]}</h2>
+      {at === 0 ? <IntakeStep draft={draft} env={env} /> : at === 1 ? <EligibilityStep draft={draft} env={env} /> : at === 2 ? <DocumentationStep draft={draft} env={env} toPreparation={toPreparation} /> : <ReviewStep draft={draft} env={env} />}
     </Page>
   );
 }

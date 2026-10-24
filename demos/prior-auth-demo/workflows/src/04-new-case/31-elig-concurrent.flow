@@ -1,5 +1,5 @@
 title: Authorizations › New Case › Eligibility & Benefits › Concurrent review
-route: /authorizations/new/:draftId (step 2 of 5, type 'Concurrent review')
+route: /authorizations/new/:draftId (step 2 of 4, type 'Concurrent review')
 intro: A review follows a stay that is already authorized, so step 2 shows the check the patient already has instead of starting a new one. It sits beside the authorization on file: what was approved, what is used and what is left. The person refreshes it only if it is old or something changed.
 dir: TD
 ---
@@ -13,7 +13,7 @@ process pOther "The case lets go of it\nAnd Verify makes a check of its own, as 
 goto gInit "Continues in: Authorizations › New Case › Eligibility & Benefits › Initial authorization"
 screen sSum "Verification summary\nCoverage, Plan type and routing, Benefits, Authorization: 'Concurrent review'\n'Summit reviews each stay while an authorization is on file. A review is needed to continue.'\nExisting authorization: the reference, the service, the approved dates, 'N of M units used, K left'"
 decision dAge "Is the check old, or for other dates?"
-toast tOld "'This check is 30 hours old. Refresh it before you send.'\nNothing runs by itself: the person decides"
+toast tOld "Chip 'Checked 30 h ago'\nNothing runs by itself: the person decides"
 click cRef "Click 'Refresh verification'"
 agent aV "Verify asks again, about 1.2 seconds"
 store stRec "The record is replaced\nThe case still uses the patient's record"

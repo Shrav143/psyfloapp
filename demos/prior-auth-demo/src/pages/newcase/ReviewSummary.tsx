@@ -1,5 +1,5 @@
 import { Card, CardHeader } from "@/components/ui";
-import type { CaseDraft } from "@/data/cases";
+import { SEX_LABEL, type CaseDraft } from "@/data/cases";
 import { isoOf, leftText, minutesOf, payerNameOf } from "@/data/patients";
 import { PROGRAM_LABEL } from "@/data/types";
 import { plural } from "@/lib/format";
@@ -23,10 +23,10 @@ export function ReviewSummary({ draft, env, review }: { draft: CaseDraft; env: C
   const r = env.readiness;
   const words = review.sections.reduce((n, s) => n + s.text.split(/\s+/).filter(Boolean).length, 0);
   const rows: [string, string][] = [
-    ["Patient", draft.patient.initials ? `${draft.patient.initials}, ${draft.patient.age ?? ""}${draft.patientId ? ` · existing patient ${draft.patientId}` : " · new patient"}` : "Not added"],
+    ["Patient", draft.patient.initials ? `${draft.patient.initials}, ${draft.patient.age ?? ""}${draft.patient.dob ? ` · born ${mdy(draft.patient.dob)}` : ""}${draft.patient.sex ? ` · ${SEX_LABEL[draft.patient.sex]}` : ""}${draft.patientId ? ` · existing patient ${draft.patientId}` : " · new patient"}` : "Not added"],
     ["Payer", draft.payerId ? `${payerNameOf(draft.payerId)}${draft.planType ? ` · ${draft.planType}` : ""}${draft.memberId ? ` · member ID ${draft.memberId.startsWith("…") ? draft.memberId : `…${draft.memberId.replace(/\W/g, "").slice(-4)}`}` : ""}` : "Not added"],
     ["Request", `${authType(draft.kind).label} · recorded as ${draft.type ?? "no type yet"}`],
-    ...(env.workflow ? ([["Workflow", `${env.workflow.applied.usedDefault ? `${env.workflow.applied.name}. Illustrative default, not payer policy` : `${env.workflow.applied.name}, version ${env.workflow.applied.version}`}. ${env.workflow.hint}`]] as [string, string][]) : []),
+    ...(env.workflow ? ([["Workflow", env.workflow.applied.usedDefault ? `${env.workflow.applied.name} (illustrative default)` : `${env.workflow.applied.name}, v${env.workflow.applied.version}`]] as [string, string][]) : []),
     ["Service", draft.program ? `${draft.levelLabel ?? PROGRAM_LABEL[draft.program]}` : "Not added"],
     ["Dates and length", dos ? `${mdy(dos.from)} to ${mdy(dos.to)} · ${plural(Math.round((minutesOf(dos.to) - minutesOf(dos.from)) / 1440) + 1, "day")}${draft.endDate ? "" : " (the usual length)"}` : "Not added"],
     ["Eligibility", rec ? `${describeVerification(rec)}. Checked ${ago(rec.checkedAt, env.clock)}, simulated source.` : "Not checked"],
@@ -37,12 +37,12 @@ export function ReviewSummary({ draft, env, review }: { draft: CaseDraft; env: C
   ];
   return (
     <Card>
-      <CardHeader title="Summary" subtitle="What the payer will be asked for" />
-      <dl className="grid grid-cols-[160px_minmax(0,1fr)] gap-x-4 gap-y-2.5 px-6 py-5 text-[14px]">
+      <CardHeader title="Summary" />
+      <dl className="grid grid-cols-[150px_minmax(0,1fr)] gap-x-4 gap-y-2 px-5 py-4 text-[14px] max-[560px]:grid-cols-1">
         {rows.map(([k, v]) => (
           <div key={k} className="contents">
             <dt className="text-muted">{k}</dt>
-            <dd className="font-medium">{v}</dd>
+            <dd className="text-ink2">{v}</dd>
           </div>
         ))}
       </dl>

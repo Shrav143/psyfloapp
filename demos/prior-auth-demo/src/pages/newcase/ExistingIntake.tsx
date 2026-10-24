@@ -1,11 +1,9 @@
 import { UserRound } from "lucide-react";
 import { Button, Card, CardBody, ChoiceCard, Label, Pill } from "@/components/ui";
 import type { CaseDraft } from "@/data/cases";
-import { authorizationsOf, episodesOf, windowText, payerNameOf, AUTH_STATUS_LABEL, AUTH_STATUS_TONE, type AuthorizationRecord } from "@/data/patients";
-import { PROGRAM_LABEL } from "@/data/types";
+import { authorizationsOf, episodesOf, windowText, payerNameOf, AUTH_STATUS_LABEL, AUTH_STATUS_TONE } from "@/data/patients";
 import { siteName } from "@/data/sites";
 import { useStore } from "@/store";
-import { authType } from "./authType";
 import { AuthorizationCard } from "./AuthorizationCard";
 import type { CaseEnv } from "./caseEnv";
 import { DatesFields } from "./DatesFields";
@@ -13,32 +11,19 @@ import { DuplicateWarning } from "./DuplicateWarning";
 import { ModificationCard } from "./ModificationCard";
 import { PatientSearch } from "./PatientSearch";
 
-/** One quiet sentence about the state of the authorization, never a banner: what the person should know before asking for more. */
-function authNote(a: AuthorizationRecord): string | null {
-  if (a.status === "exhausted") return `No ${a.unit} are left, so the next stretch needs a request now.`;
-  if (a.status === "expiring") return `${a.left ?? 0} ${a.unit} left and the approval ends soon. Ask before it runs out.`;
-  if (a.status === "pending") return "Nothing is approved yet. A review follows an approval, so check this is the right authorization.";
-  if (a.status === "closed") return "This request was decided and no approved window is open.";
-  return null;
-}
-
 /** Intake for a concurrent review, a renewal or a modification: find the patient, pick the treatment episode and the authorization, say what is asked.
     No new patient is ever created. Only patients at the sites in view are searched. */
 export function ExistingIntake({ draft, env }: { draft: CaseDraft; env: CaseEnv }) {
   const choose = useStore((s) => s.chooseCasePatient);
   const clear = useStore((s) => s.clearCasePatient);
-  const def = authType(draft.kind);
   const patient = env.patient;
 
   if (!patient) {
     return (
       <Card>
-        <CardBody className="flex flex-col gap-4">
-          <div>
-            <h2 className="font-serif text-[18px] font-semibold tracking-tight">Find the patient</h2>
-            <p className="mt-0.5 text-[13px] text-muted">{def.intake} The patient already exists, so no one is added.</p>
-          </div>
-          <PatientSearch book={env.book} onPick={(p) => choose(draft.id, { patientId: p.id })} />
+        <CardBody className="flex flex-col gap-3">
+          <h2 className="font-serif text-[18px] font-semibold tracking-tight">Find the patient</h2>
+          <PatientSearch book={env.book} label="Patient" onPick={(p) => choose(draft.id, { patientId: p.id })} />
         </CardBody>
       </Card>
     );
@@ -48,11 +33,10 @@ export function ExistingIntake({ draft, env }: { draft: CaseDraft; env: CaseEnv 
   const episode = episodes.find((e) => e.id === draft.episodeId);
   const auths = episode ? authorizationsOf(env.book, episode.id) : [];
   const auth = env.authorization;
-  const note = auth ? authNote(auth) : null;
 
   return (
     <div className="flex flex-col gap-4">
-      <Card className="px-6 py-4">
+      <Card className="px-5 py-4">
         <div className="flex flex-wrap items-center gap-3">
           <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-neutral-bg text-neutral-ink"><UserRound size={18} className="ico" aria-hidden="true" /></span>
           <div className="min-w-0 flex-1">
@@ -86,10 +70,7 @@ export function ExistingIntake({ draft, env }: { draft: CaseDraft; env: CaseEnv 
       ) : null}
 
       {episode && auth ? (
-        <>
-          <AuthorizationCard patient={patient} episode={episode} auth={auth} />
-          {note ? <p className="px-1 text-[13px] text-ink2">{note}</p> : null}
-        </>
+        <AuthorizationCard patient={patient} episode={episode} auth={auth} />
       ) : !episode && episodes.length > 1 ? null : (
         <p className="px-1 text-[13px] text-muted">This patient has no authorization on file.</p>
       )}
@@ -99,13 +80,8 @@ export function ExistingIntake({ draft, env }: { draft: CaseDraft; env: CaseEnv 
           <DuplicateWarning env={env} />
           {draft.kind === "modify" ? <ModificationCard draft={draft} /> : null}
           <Card>
-            <CardBody className="flex flex-col gap-4">
-              <div>
-                <h3 className="font-serif text-[18px] font-semibold tracking-tight">{draft.kind === "modify" ? "Dates the change covers" : draft.kind === "reauth" ? "Dates to renew" : "Dates to review"}</h3>
-                <p className="mt-0.5 text-[13px] text-muted">
-                  {draft.kind === "modify" ? "From today, unless the change revises the dates." : "The next stretch starts the day after the approval ends, or today when it already has."} {PROGRAM_LABEL[episode.program]} · {payerNameOf(episode.payerId)}
-                </p>
-              </div>
+            <CardBody className="flex flex-col gap-3">
+              <h3 className="font-serif text-[18px] font-semibold tracking-tight">{draft.kind === "modify" ? "Dates the change covers" : draft.kind === "reauth" ? "Dates to renew" : "Dates to review"}</h3>
               <DatesFields draft={draft} from={draft.kind === "modify" ? "Change starts" : "Requested start date"} to={draft.kind === "modify" ? "Change ends" : "Requested end date"} />
             </CardBody>
           </Card>

@@ -1,17 +1,17 @@
 title: Denial Intelligence › Written appeal › Confirm and draft
-route: /denials?id=D-3318
+route: /denials/D-3318
 intro: The written-appeal route starts with a confirm gate, then Advocate drafts the letter in a side drawer. The same drawer opens straight away when the appeal is already being drafted (for example after a call was upheld, or after the payer upheld an appeal and the next level was chosen).
 dir: TD
 also: Demo only: the drafting takes about two seconds and is simulated. The letter is built from the findings of the denial.
 ---
-start s1 "Click 'Draft the appeal letter' (recommended next step), or 'Draft the corrected request' (Correct and resubmit), or open 'Compare the options', select 'Written appeal' and click its button"
-start s2 "Click 'Open the draft' (next-step block: 'Advocate is drafting the appeal')"
+start s1 "Click 'Draft the appeal' (the written appeal choice), or 'Draft the corrected request' (Correct and resubmit), or open 'Compare the options', select 'Written appeal' and click its button"
+start s2 "Click 'Open the draft' (the written appeal choice: 'Advocate is drafting')"
 start s3 "Next level chosen after an upheld decision\n('Record and start the second-level appeal')"
 decision d1 "Is the chip already 'Appeal drafting'?"
 
-overlay o1 "Modal 'Confirm the next step: written appeal'\n'The agents stop here until you say go.'"
-screen l1 "What happens next\nAdvocate drafts the letter from the findings and the evidence list\nIntegrity checks every sentence against the chart\nNavigator files it through the payer's portal after a clinician signs"
-screen l2 "'Chance of overturning is 58% (likely 49–66%). You can edit the letter before it goes. Nothing leaves without a clinician's signature.'"
+overlay o1 "Modal 'Confirm the next step: written appeal'\nSub line 'D-3318 · Cardinal Health Plan'"
+agent l1 "On confirm: Advocate drafts the letter, Integrity checks it, Navigator files it once a clinician signs"
+screen l2 "Four facts: 'Chance 58% · likely 49–66%', 'Gets back', 'Due' (when a filing clock runs), 'Sign-off: A clinician signs before it is filed'"
 click c1 "Click 'Draft the appeal'"
 click c2 "Click 'Cancel', the X, press Esc, or click the dimmed area"
 endx e1 "Nothing changes"
@@ -24,12 +24,12 @@ store st3 "History: 'You chose a written appeal', 'Advocate started the appeal l
 
 overlay o2 "Drawer 'Appeal letter · D-3318' (wide, right side)\nSub line: 'Cardinal Health Plan. Due 12/18.'"
 decision d3 "Is a draft already saved?"
-wait w1 "Spinner: 'Advocate is drafting the letter from the findings. Integrity is checking each sentence.'\nAbout 2 seconds; 'Save draft' and 'Sign and file' are greyed out"
+wait w1 "Spinner: 'Advocate is drafting the letter'\nAbout 2 seconds; 'Save draft' and 'Sign and file' are greyed out"
 agent a1 "Advocate drafts the letter and Integrity checks every sentence (demo: simulated)"
 doc dc1 "Letter text\nPayer, 'Appeals Department', date, Re: line (reconsideration, second-level appeal or external review), the payer's words, what the chart shows, numbered reasons with evidence, the ask, availability for the reviewing physician"
 screen l3 "'Evidence to attach'\nOne ticked box per chart source, plus fixes added to the evidence"
 store st4 "First draft saved on the denial\n'Appeal drafted. Waiting for a clinician's signature'\nHistory: 'Advocate drafted the appeal and Integrity checked every sentence against the chart'"
-screen l4 "Banner 'Drafted by Advocate, checked by Integrity'\n'Edit anything you like.' and 'Draft by FLO's agents. A clinician reviews and signs before anything is sent.'"
+screen l4 "Chips 'Advocate', 'Integrity' and the pill 'Draft · a clinician signs before filing'"
 click c3 "Close the drawer: click X, press Esc, or click the dimmed area\n(Esc closes only the top layer: see the sign step)"
 process p2 "Edits not saved with 'Save draft' are lost\nThe saved draft loads again next time"
 goto g1 "Continues in: Denial Intelligence › Written appeal › Edit, sign and file"

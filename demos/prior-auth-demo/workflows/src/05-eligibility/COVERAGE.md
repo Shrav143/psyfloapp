@@ -9,25 +9,22 @@ All five reasons for 'Fix before billing' can be reached, and Verify re-checks o
 | Control | What it does | Diagram |
 |---|---|---|
 | Sidebar 'Eligibility & Benefits' (+ badge) | Opens the list; badge counts rows that are not 'Cleared to bill' inside the site view (9 at the start, both sites) | 10, 33, 64 |
-| Site switch in the top bar ('Both sites', 'Site A', 'Site B'), or a one-site viewer | Rows, title count, figures, search, menus and the badge follow it; Both sites is Site A plus Site B; a 'Site A' or 'Site B' tag sits beside the title when narrowed | 10, 11, 64 |
-| Header button 'Verify a patient' | Opens an empty Verify form | 12, 20 |
-| Tile 'Cleared to bill' / 'Authorization first' / 'Fix before billing' / 'Re-check due' | Toggles the verdict filter. 'Re-check due' counts rows with a re-check still booked | 11, 52 |
-| Info icon beside the title (button 'Why we check twice', hover, focus, click, Escape): the old banner's text | 10, 13 |
+| Site switch in the top bar ('Both sites', 'Site A', 'Site B'), or a one-site viewer | Rows, tiles, count, search, menus and the badge follow it; Both sites is Site A plus Site B; a 'Site A' or 'Site B' tag sits beside the title when narrowed | 10, 11, 64 |
+| Slim title row 'Eligibility & Benefits' with the primary button 'Verify a patient' | Opens an empty Verify form | 10, 12, 20 |
+| Small tiles '28 Cleared to bill', '4 Authorization first', '5 Fix before billing', '5 Re-check due' (one line each; the meaning is the tooltip); a fifth 'Not checked' only while a check that could not run is listed | The verdict filter: a click presses one tile, a second click releases it. 'Re-check due' counts rows with a re-check still booked | 10, 11, 52 |
 | Search 'Search by case ID or initials' | Filters rows by ID or patient label | 11 |
-| Menu 'All payers' / 'All programs' / 'All verdicts' (click, arrows, Enter, Esc, click outside); 'Not checked' appears in the verdict menu only while a check that could not run is on the list | Filters rows | 11 |
-| 'Clear filters' (bar, empty state) | Resets search and the three menus | 11, 51 |
-| 'Show 12 more' / 'Show 10 more' | Adds rows; hidden while any filter is on | 11 |
+| Menu 'All payers' / 'All programs' (click, arrows, Enter, Esc, click outside) | Filters rows | 11 |
+| 'Showing 12 of 37' at the right of the filter bar | Read-only count | 11 |
+| 'Clear filters' (bar, empty state) | Resets search, both menus and the tiles | 11, 51 |
+| 'Show 12 more' / 'Show 1 more' | Adds rows; hidden while any filter is on | 11 |
 | Empty state 'No patients match these filters' | Shown when no row matches | 11, 51 |
 | Table row, patient ID link | Opens the result | 12 |
-| Table headers | Static, not sortable; fixed sort order | 10 |
-| Chips Program / Eligibility / Benefits / Authorization / Verdict (one line, chips only), including 'ID differs', 'Not confirmed', 'Requirement unknown' and 'Not checked' | Read-only, meanings | 10, 44, 61 |
+| Table headers Patient, Verdict, Eligibility, Benefits, Authorization | Static, not sortable; fixed sort order; the verdict sits right after the patient | 10 |
+| Chips Verdict / Eligibility / Benefits / Authorization, including 'ID differs', 'Not confirmed', 'Requirement unknown' and 'Not checked' | Read-only, meanings | 10, 44, 61 |
 | Per-row 'Re-check' | Quick re-check, spinner, toast | 12, 50 |
-| Quiet second line under each patient: payer, day limit ('14 of 14 days', 'No day limit'), 'Checked 3 h ago' / 'Checking now' | Read-only | 10, 50 |
-| Same line: 'Re-check due Tue 11:32 am' | Read-only, shown on rows with a re-check booked | 10, 52 |
-| Same line: 'Re-checked automatically at 11:32 am' | Read-only, after Verify's own re-check | 10, 52 |
-| Same line: 'Not re-checked: Verify is paused in Settings' (amber) | Read-only, when a booked time passed and Verify is paused | 10, 52 |
+| Quiet second line under each patient: program, payer, day limit ('14 of 14 days', 'No day limit'), 'Checked 3 h ago' / 'Checking now' | Read-only | 10, 50 |
+| Same line: 'Re-check due Tue 11:32 am', 'Re-checked automatically at 11:32 am', 'Not re-checked: Verify is paused in Settings' (amber) | Read-only | 10, 52 |
 | Same line: 'Now with Cardinal since 10/01', 'The plan has the ID ending 5521', 'Enrollment not confirmed', 'Could not be checked: Verify is paused in Settings' | Read-only, one part for each warning that has no chip of its own | 10, 61 |
-| Card subtitle 'Simulated checks against the state and the plan...' and the page line 'Checks in this demo are simulated' | Read-only | 10 |
 
 ## Verify (`/authorizations/eligibility/verify`)
 
@@ -38,21 +35,19 @@ All five reasons for 'Fix before billing' can be reached, and Verify re-checks o
 | `?case=` on the list / only in the queue / unknown | Pre-fill, partial pre-fill, nothing | 20, 51 |
 | Back link '← Eligibility & Benefits' | Returns to the list | 21 |
 | Back link '← Back to referral RF-xxxx' (or '← Back to case R-xxxx' with `?case=`) | Returns to the referral or the case; only when `?referral=` names a referral that exists | 20, 21 |
-| Row 'Try a sample' with six chips: 'Cleared to bill', 'Coverage lapsed', 'Not found', 'Not covered', 'Another plan pays first', 'Limit reached' | Fills the whole form with a member who ends in that answer; chips lock while checking | 21, 22 |
-| Button 'More samples' / 'Fewer samples' (aria-expanded) and the row 'Needs a look': 'Payer changed', 'Member ID mismatch', 'Benefit not confirmed', 'Provider not confirmed', 'Requirement unknown'; link 'Settings' in its note | Opens or folds the row; each chip fills the form with a member whose check ends with a warning | 23 |
-| Banner 'Verify is paused in Settings' and link 'Open Settings' (only while Verify is paused) | Says a check cannot ask the plan anything; 'Check now' still saves the check, marked 'Not checked' | 23, 33, 51 |
-| 'Use sample card' (+ toast 'Sample card loaded') | Fills the J.M. details | 21 |
-| Drop zone (click, drop, Enter or Space), 'Use sample file' | Reader reads a card, fills payer and member ID | 21 |
-| 'Replace' on the card strip | Back to the drop zone, values kept | 21 |
-| Payer, State, Member ID, Date of birth, Program, Date of service | Form fields | 21 |
-| Hint line and 'Check now' on or off | Validation by shape only | 21, 51 |
+| Card 'Patient and service' with the pill 'Privacy mode on' (no page header) | Read-only | 21 |
+| Import row 'Pull from EMR' (only when a record system is connected at the site in view), 'Import a file', 'Paste a screenshot'; review; 'Apply' / 'Cancel' | Shared ImportSources, target insurance. Apply fills payer and member ID; a quiet line names the source, the group and the coverage dates | 21, 24 |
+| Payer (with the plan type under it), State, Member ID, Date of birth, Program, Date of service | Form fields | 21 |
+| 'Check now' on or off | Validation by shape only; no hint line | 21, 51 |
+| Strip 'Try a sample' at the foot of the form: 'Cleared to bill', 'Authorization first' (J.M.'s card, only when R-1042 is in view), 'Coverage lapsed', 'Not found', 'Not covered', 'Another plan pays first', 'Limit reached' | Fills the whole form with a member who ends in that answer; chips lock while checking | 21, 22 |
+| 'More samples' / 'Fewer samples' (aria-expanded) and the row 'Needs a look': 'Payer changed', 'Member ID mismatch', 'Benefit not confirmed', 'Provider not confirmed', 'Requirement unknown' | Opens or folds the row; each chip fills the form with a member whose check ends with a warning | 23 |
+| Banner 'Verify is paused in Settings' and link 'Open Settings' (only while Verify is paused) | 'Check now' still saves the check, marked 'Not checked' | 23, 33, 51 |
 | 'Check now' | Starts the live check, locks the form | 30 |
-| Live check rows (Reader, Verify, Verify, Caller, Criteria, Navigator), card subtitle 'Simulated in this demo: ...' | Ticking steps | 30, 31 |
-| 'Skip ahead' and timer pill | Speeds up the steps | 30 |
-| Banner 'All answers are in. Opening the result.' | Then opens the result | 30, 33 |
+| Live check rows (Reader, Verify, Verify, Caller, Criteria, Navigator): a label while waiting and working, the answer when done | Ticking steps | 30, 31 |
+| 'Skip ahead' and timer pill; the pill reads 'Opening the result' at the end | Speeds up the steps, then opens the result | 30, 33 |
 | Caller fallback (Evergreen), production retry ladder | Phone call step | 32 |
 | Leave mid-check | Check is dropped | 32, 51 |
-| What is saved: a verification record for a known row, the sample card, or a new `V-` check at the site in view; scripted answers (endings 1012, 9999, 3030, 6060, 9090, 7070, 8080, 5050, 4040, 2020); a check that could not run while Verify is paused | Store changes; `?referral=` and `?case=` go on to the result | 33, 60 |
+| What is saved: a verification record for a known row, J.M.'s card, or a new `V-` check at the site in view; scripted answers (endings 1012, 9999, 3030, 6060, 9090, 7070, 8080, 5050, 4040, 2020); a check that could not run while Verify is paused | Store changes; `?referral=` and `?case=` go on to the result | 33, 60 |
 
 ## Result (`/authorizations/eligibility/:id`)
 
@@ -60,29 +55,23 @@ All five reasons for 'Fix before billing' can be reached, and Verify re-checks o
 |---|---|---|
 | Back link '← Eligibility & Benefits' | Returns to the list | 40, 45 |
 | Back link '← Back to referral RF-xxxx' (or '← Back to case R-xxxx') | Returns to the referral or the case; only when the address carries `?referral=` | 40, 45 |
-| Summary card, top band: verdict (four verdicts including 'Not checked', headline and reason wording, the reasons for 'Fix before billing') | Read-only | 40, 41 |
-| Summary card, warnings block (one quiet list, one line each, only when the check found something): coverage not active, payer changed, member ID does not match, benefit not confirmed, service not covered, provider participation not confirmed, verification service unavailable, authorization requirement unknown | Read-only | 40, 61 |
-| Summary card, 'Eligibility': 'Eligible', 'Not eligible' or 'Needs a fix', with 'Effective 01/01/2026, no end date', 'ended 09/30/2026' or 'lapsed 10/12/2026' | Read-only; 'Not found' has no dates | 40, 47 |
-| Summary card, 'Benefits': Covered, Limited or Not covered, the service limit (days or units used and left, or 'No annual day limit') and, only when the plan has them, 'Patient pays: Copay ..., deductible ... left, coinsurance ...' | Read-only; Ohio Medicaid shows no cost line; 'Not found' shows 'Not checked' and no cost | 40, 47 |
-| Summary card, 'What this service needs': 'Required, not on file', 'In progress', 'Payer reviewing', 'Retro request open', 'On file' or 'Not required', then the payer's saved rules (read live from Payers) and 'Open Summit's rules' | Read-only; the link opens the payer's Rules tab | 40, 47 |
-| Facts line: Payer (with its group), Plan type and routing, Member (masked), Dates of service ('10/21/2026 to 10/31/2026'), Time checked (demo clock, with the re-check due), Source ('Simulated check against the payer portal', 'Simulated check, confirmed by phone' for Evergreen) | Read-only; a payer with no plan type has no plan type item | 40, 46 |
-| Small note 'Active coverage does not mean this service is covered. Check the benefits and the authorization requirement.' | Read-only, not a banner | 40, 47 |
-| Banner 'Not re-checked: Verify is paused in Settings' | Read-only, when a booked re-check passed while Verify is paused | 40, 52 |
+| Title row: patient ID (24 px), initials and age, level of care, payer and group; site tag when narrowed | Read-only; no headline | 40 |
+| Verdict band: verdict (four, including 'Not checked') and the one fact that decides it, as a label and a value ('Coverage' 'Lapsed 10/12') | Read-only | 40, 41 |
+| Rows 'Eligibility' (pill, dates, a plan the member moved to), 'Plan type and routing', 'Benefits' (pill, program, codes, limit), 'Patient pays' (only with a cost share), 'What this service needs' (pill, line, the payer's saved rules read live from Payers, 'Open Summit's rules') | Read-only; the link opens the payer's Rules tab | 40, 46, 47 |
+| Warning block, only for what no row says (a refresh that could not run while Verify is paused) | Read-only | 40, 61 |
+| Facts line: Member (masked), Dates of service, Time checked (demo clock, with the re-check due), Source | Read-only | 40, 46 |
+| Banner 'Not re-checked: Verify is paused in Settings' ('Due ...', 'Open Settings') | When a booked re-check passed while Verify is paused | 40, 52 |
 | 'Start authorization' (verdict 'Authorization first') | Opens `/authorizations/new?verification=ID&type=initial` | 45, 62 |
 | 'Create authorization from verification' (every result) | Opens `/authorizations/new?verification=ID`; the authorization type is still to choose | 45, 62 |
+| 'Request retro-eligibility' (lapsed), 'Ask Caller to phone the payer' (ended, not found), 'Ask Caller to confirm the benefit' (benefit not confirmed), 'Ask Navigator to check enrollment' (enrollment not confirmed) | Toast only | 45 |
 | 'Open Settings' (only when the check did not run) | Opens Settings | 45, 51 |
-| 'Open case' | Opens the case | 45 |
-| 'Open in Case Manager' | Opens Case Manager | 45 |
-| 'Request retro-eligibility' | Toast only | 45 |
-| 'Ask Caller to phone the payer' | Toast only | 45 |
-| 'Check again' | Refreshes the shared verification record; while Verify is paused the last result stays with a warning | 45, 50, 60 |
-| One row 'Payment checks and how this was checked' with the one-line summary ('6 of 7 pass, 1 needs a look') and the button 'View full verification details' | Opens the side panel 'Verification details' | 40, 63 |
-| Side panel 'Verification details', section 'Payment checks' (seven rows and their chips) | Read-only. When coverage is not found: the first row and one grey row only | 42, 43, 63 |
-| Side panel, section 'How this was checked' (agents' rows, accordion, one open at a time) and 'Next checks' | Opens an answer; 'Next checks' is read-only and starts with the booked re-check when there is one | 52, 63 |
-| Side panel, section 'About this check'; footer 'Open the full result' (only when the panel is opened from New Case); Escape, the close button or a click outside closes it | Read-only; the footer button opens the result | 63 |
-| Chip meanings in the table and on this page | Read-only | 44 |
+| 'Open case' / 'Open in Case Manager' | Opens the case or Case Manager | 45 |
+| 'Re-check' | Refreshes the shared verification record; while Verify is paused the last result stays with the one warning | 45, 50, 60 |
+| Row 'Verification details' with 'Payment checks: 6 of 7 pass, 1 needs a look' and 'View full verification details' | Opens the side panel | 40, 63 |
+| Side panel: 'Payment checks' (seven rows), 'How this was checked' (agents, accordion, one open at a time), 'History' (HistoryFeed: Agent and Scheduled flags) | Read-only | 42, 43, 52, 63 |
+| Side panel from New Case: rows, facts and warnings first; footer 'Open the full result'; Escape, the close button or a click outside closes it | Read-only; the footer button opens the result | 63 |
 | Unknown ID: 'We could not find that check' + 'Back to Eligibility & Benefits' | Empty state | 51 |
-| A check at a site the viewer cannot see: 'This coverage check is not available at Site A' (names no patient; 'Show Site B' for staff who may see both) | Notice instead of the result | 40, 51, 64 |
+| A check at a site the viewer cannot see: 'This coverage check is not available at Site A' | Notice instead of the result | 40, 51, 64 |
 
 ## Shared verification record (used by Eligibility & Benefits and New Case)
 
@@ -98,11 +87,13 @@ All five reasons for 'Fix before billing' can be reached, and Verify re-checks o
 
 ## Not drawn
 
-- Enter or Space on the info icon, the sample buttons and 'View full verification details': drawn as clicks (13, 23, 40).
+- Enter or Space on the tiles, the sample chips and 'View full verification details': drawn as clicks (11, 23, 40).
+- The import's own screens (mapping, review, EMR chart picker) belong to the shared import; 24 draws only what Verify does with the result.
 - Tab or Enter on the patient ID link: works like a click, drawn once as a click (12). The row itself is not keyboard focusable.
 - Toast dismissal, Demo menu and Ask FLO: belong to the global shell diagrams.
 - The 'Coverage checked' drawer in New Case, which reuses the seven rows: owned by the New Case diagrams, linked from 43. It no longer shows 'What the patient pays: $0 ...' for Ohio Medicaid, and shows no cost line for it.
 - The static 'Privacy mode on' pill and the 'State' menu (its only option is 'Ohio'): mentioned in 21, no branch.
+- The tile tooltips (native hover titles): mentioned in 10 and 11.
 
 ## Fixed in this pass
 
@@ -113,8 +104,9 @@ All five reasons for 'Fix before billing' can be reached, and Verify re-checks o
 
 ## Still open
 
-- A paused Verify does not block 'Re-check', 'Check again' or 'Check now': each runs and says it could not ask the plan, and the last result stays with the warning 'Verification service unavailable' (50, 61).
-- After a card is read, the date of birth stays empty, so 'Check now' stays off until it is typed.
+- A paused Verify does not block 'Re-check' or 'Check now': each runs and says it could not ask the plan, and the last result stays with the warning 'Verification service unavailable' (50, 61).
+- An imported card has no date of birth, so 'Check now' stays off until it is typed (24).
+- History shows only the latest check: a refresh replaces the record, so earlier checks are not kept.
 - A re-check never changes a verdict, except that a check which never ran ('Not checked') gets its real answer. Its visible effect is the new time stamp, the toast and the bell message.
 - No result button leads to the Dashboard.
 
@@ -132,3 +124,10 @@ All five reasons for 'Fix before billing' can be reached, and Verify re-checks o
 - Result first: one summary card (verdict, Eligibility, Benefits, What this service needs, one facts line, one plain note), with 'Payment checks' and 'How this was checked' closed below it (40, 46, 47).
 - Plan type and routing come from the payer record and New Case's plan type; a payer without one shows nothing (46). Copay, deductible and coinsurance show only for plan types that have them; Ohio Medicaid shows no '$0' (47).
 - The list keeps four figures, folds 'Why we check twice' into an info icon (13), and puts payer, day limit and checked time on a quiet second line (10).
+
+## Changed in round 6 (declutter)
+
+- List: the headline card ('28 of 37 patients are cleared to bill.' with its info tip and the line under it) and the card subtitle are gone. A slim title row holds 'Verify a patient'. The four tiles are one line each and are the only verdict filter (the 'All verdicts' menu is gone). The verdict column sits right after the patient and the program moved to the quiet line, so the verdict stays in view at 1024 px (10, 11). The info icon diagram (13) was removed with the icon.
+- Verify: no header box, no 'Use sample card' (J.M.'s card is the sample 'Authorization first'), no subtitles, no hint lines, no live-check subtitle or footer. The shared import row replaces the card drop zone (21, 24). Live-check rows show a label, then the answer (30, 31).
+- Result: no headline and no reason sentence. One card: the verdict with the one fact that decides it and the actions, then label and value rows. Warnings already said by a row are not repeated; 'Caller can confirm ...' and 'Navigator can check ...' became buttons. 'Check again' is 'Re-check', as on the list. 'Payment checks and how this was checked' is the row 'Verification details'; the panel gained History and lost 'Next checks' and 'About this check' on the result page (40, 41, 45, 47, 63).
+

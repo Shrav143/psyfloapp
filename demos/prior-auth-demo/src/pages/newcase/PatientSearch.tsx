@@ -20,10 +20,10 @@ export function PatientSearch({ book, onPick, label = "Find a patient", hint }: 
       <div>
         <label htmlFor="patient-search" className="mb-1.5 block text-[13px] font-medium text-ink2">{label}</label>
         <TextInput id="patient-search" icon={Search} value={q} onChange={(e) => setQ(e.target.value)} placeholder="Initials or case ID, for example J.M. or R-1042" autoComplete="off" />
-        <span className="mt-1 block text-xs text-muted">{hint ?? `Searches ${scope.label.toLowerCase()} only. Initials and case IDs; a name never enters the app.`}</span>
+        {hint ? <span className="mt-1 block text-xs text-muted">{hint}</span> : null}
       </div>
       {q.trim() && hits.length === 0 ? (
-        <p role="status" className="rounded-xl bg-tile px-4 py-3 text-[13px] text-ink2">No patient at {scope.label} matches “{q.trim()}”. Check the initials or the case ID.</p>
+        <p role="status" className="rounded-xl bg-tile px-4 py-3 text-[13px] text-ink2">No patient at {scope.label} matches “{q.trim()}”</p>
       ) : null}
       {shown.length ? (
         <ul aria-label="Patients found" className="overflow-hidden rounded-2xl border border-edge bg-white">
@@ -45,7 +45,7 @@ export function PatientSearch({ book, onPick, label = "Find a patient", hint }: 
           })}
         </ul>
       ) : null}
-      {hits.length > SHOWN ? <p className="text-xs text-muted">{hits.length - SHOWN} more. Type more of the initials or the case ID to narrow it down.</p> : null}
+      {hits.length > SHOWN ? <p className="text-xs text-muted">{hits.length - SHOWN} more</p> : null}
     </div>
   );
 }

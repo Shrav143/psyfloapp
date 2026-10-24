@@ -1,6 +1,6 @@
 title: Authorizations › Queue › Read and open a request row
 route: /authorizations
-intro: What each part of a request row says, which parts are links, and where the status, deadline, next action and chance come from. The clinical scores, the agent activity line and the payer note are not on the row: they are on the case page.
+intro: What each part of a request row says, which parts are links, and where the status, deadline, next action and chance come from. The clinical scores are not on the row: they are on the case page. Agent activity lines are not shown anywhere; the status chip and 'Next:' carry the fact.
 dir: TD
 also: The request ID, the small 'Quick view' icon button beside the patient, the 'Open' button and the 'Coverage needs a fix' pill are controls. A click on the rest of the row also opens the quick view. At 1280 px and wider the row is one line; below that the same cells sit on two lines.
 ---
@@ -37,7 +37,7 @@ group gC "Approval chance"
 endgroup
 
 process tint "Rows in Act now have a red tint\nOther bands are neutral"
-doc off "Not on the row\nScores (AUDIT-C, PHQ-9, CIWA ...), the agent line and the payer note\nThey are in 'At a glance' on the case page"
+doc off "Not on the row\nScores (AUDIT-C, PHQ-9, CIWA ...)\nThey are in the case page's diagnosis line"
 
 click idl "Click the request ID (underlined)"
 click ob "Click 'Open'"

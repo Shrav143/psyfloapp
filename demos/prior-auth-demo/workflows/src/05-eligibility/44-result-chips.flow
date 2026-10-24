@@ -20,7 +20,7 @@ group gB "Column 'Benefits'"
   process b1 "'Covered' (green)\nThe plan pays for this level of care"
   process b2 "'Limited' (amber)\nPaid with conditions: diagnosis on the plan's list, each day authorized"
   process b3 "'Not covered' (red)\nThe plan does not pay for this level of care\nFor example R-1118"
-  process b4 "'Not confirmed' (amber)\nThe plan answered for coverage but not for this service\nCaller can confirm it by phone"
+  process b4 "'Not confirmed' (amber)\nThe plan answered for coverage but not for this service\nThe result offers 'Ask Caller to confirm the benefit'"
 endgroup
 
 group gA "Column 'Authorization'"
@@ -35,7 +35,7 @@ group gA "Column 'Authorization'"
 endgroup
 
 group gV "Column 'Verdict'"
-  screen v0 "'Verdict' chip, with 'Checked 3 h ago' on the quiet second line"
+  screen v0 "'Verdict' chip, right after the patient, with 'Checked 3 h ago' on the quiet second line"
   process v1 "'Cleared to bill' (green)\nEverything passes"
   process v2 "'Authorization first' (amber)\nOnly the authorization is missing"
   process v3 "'Fix before billing' (red)\nCoverage, plan, network, another plan, a limit or the member ID failed,\nor a benefit or enrollment could not be confirmed"

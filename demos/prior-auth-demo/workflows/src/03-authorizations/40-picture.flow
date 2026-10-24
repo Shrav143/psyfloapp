@@ -1,47 +1,52 @@
 title: Authorizations › Case page › Clinical picture
-route: /authorizations/case/R-1042?tab=picture
-intro: The second tab: what Reader and Placement built from the chart, the six ASAM dimensions, the trend chart, and the 'Still open' list whose 'Settle it' buttons jump back to a recommendation.
+route: /authorizations/case/R-1042?tab=draft
+intro: The clinical picture is a narrow rail beside the draft on 'Clinical picture & draft': diagnosis, the screener chart, the six dimensions of the case's framework, then medications, what stands out and engagement folded. Any item can light the draft sections that use it.
 dir: TD
-also: Demo only: the chart content is generated text for every request except R-1042, which is hand-written.
+also: Demo only: the chart content is generated for every request except R-1042, which is hand-written. At 1024 px and narrower the rail sits under the draft, folded.
 ---
-start s1 "Click 'Clinical picture'"
-screen pt "Clinical picture\nLeft: summary, ASAM dimensions, trend. Right: what stands out, engagement, still open"
+start s1 "Click 'Clinical picture & draft'\n(or open an old ?tab=picture link)"
+decision dW "Wider than 1024 px?"
+screen rl "Rail 'Clinical picture' beside the draft, about 340 px"
+screen rf "'Clinical picture' under the draft, folded"
+click of "Click 'Clinical picture' to open it"
 
-group gL "Left column"
-  screen sm "Card 'Clinical picture'\n'Built by Reader and Placement from the chart. Every line links back to a file.'\nRows: Diagnosis, Status, Trajectory, Readiness"
-  click ch "Click the source chip beside a row"
-  decision dRd "Is anything still open?"
-  process r1 "Readiness reads 'The draft is ready for signature.'"
-  process r2 "Readiness reads 'The request is ready for signature once the open items below are settled.'"
-  screen as "Card 'ASAM dimensions'\nSix cards: number, name, one sentence and a word\nNone, Low, Moderate, High or Severe"
-  screen tr "Card 'Symptom and function trend'\nLine chart by date with a legend\nA missing score is left as a gap"
-  process ks "Two tiles under the chart\ne.g. 'Withdrawal now 4 / 67, peak 14' and 'Depression now 17 / 27'"
+group gR "The rail, top to bottom"
+  screen dx "Diagnosis line, status pill and source chip"
+  click ind "Click 'In draft'"
+  screen sc "Screener chart: Low to High, one line per screener"
+  screen fw "Framework name and six rows\n'ASAM Criteria' or 'LOCUS · adult mental health'\nnumber, short name, dot and rating"
+  click row "Click a dimension row"
+  overlay pop "Pop-up: the dimension, its rating on the framework's scale\nwhat the chart shows, and the source page quoted"
+  click sid "Click 'Show in draft'"
+  click cl "Click 'Close', X, the dimmed area or Esc"
+  click me "Open 'Medications'\nname and dose, source chip"
+  click so "Open 'What stands out'\nfour short lines"
+  click en "Open 'Engagement'\npercent, bar and three ticked checks"
 endgroup
 
-group gR "Right column"
-  screen so "Card 'What stands out'\nFour short lines"
-  screen en "Card 'Engagement and behavior'\nPercent and bar, with a word\nStrong 85+, Moderate 70–84, Low below 70\nThen three ticked checks"
-  screen op "Card 'Still open'\nCount pill and one line per open item\nConflict, Missing or Risk"
-  decision dOp "Any open items?"
-  process no "'Nothing is open. Every conflict, document and risk is settled.'"
-  click se "Click 'Settle it' on a line"
-endgroup
+process lt "The draft sections that cite the same chart page turn green for a few seconds\nand the first scrolls into view"
+decision dCt "Does any section cite that page?"
+process fb "The section the item speaks to lights instead\ne.g. the diagnosis lights 'Clinical picture'"
+click ch "Click the source chip"
 
-process dl "Recommended actions opens with that card outlined"
-process ap "An item leaves 'Still open' when its action is applied\nDismissing the action does not clear it"
 goto g1 "Continues in: Authorizations › Case page › Source chip"
-goto g2 "Continues in: Authorizations › Case page › Recommended actions › The tab"
+goto g2 "Continues in: Authorizations › Case page › Screener chart"
+goto g3 "Continues in: Authorizations › Case page › Framework: ASAM or LOCUS"
+goto g4 "Continues in: Authorizations › Case page › Draft › Read and edit"
 
-s1 --> pt
-pt --> sm --> dRd
-dRd -->|Yes| r2
-dRd -->|No| r1
-sm --> ch --> g1
-pt --> as
-pt --> tr --> ks
-pt --> so
-pt --> en
-pt --> op --> dOp
-dOp -->|Yes| se --> dl --> g2
-dOp -->|No| no
-se -.-> ap
+s1 --> dW
+dW -->|Yes| rl
+dW -->|No| rf --> of --> rl
+rl --> dx & sc & fw
+dx --> ind --> dCt
+dx --> ch --> g1
+sc --> g2
+fw --> row --> pop
+pop --> sid --> dCt
+pop --> cl
+fw --> g3
+rl --> me & so & en
+dCt -->|Yes| lt
+dCt -->|No| fb
+lt --> g4
+fb --> g4

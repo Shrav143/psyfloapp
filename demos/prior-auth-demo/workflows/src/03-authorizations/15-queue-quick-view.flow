@@ -18,12 +18,12 @@ overlay o2 "Lighter quick view, from the right\nTitle 'R-1117 · Harborview MA',
 process f1 "Focus moves into the panel (the X)\nTab and Shift+Tab stay inside it"
 
 group gS "What the lighter panel says, in this order"
-  process s1 "'Next:' sentence and why\nThe same sentence as the row and the case page"
+  process s1 "'Next:' line\nThe same words as the row and the case page"
   process s2 "Status chips: Preparing, Ready to sign, With the payer or Denial route\nplus 'Needs your input' and 'Coverage needs a fix' when they apply"
   process s3 "Deadline chip, e.g. 'Review due in 30 h'\nWaiting on: You, the payer or the agent"
   process s4 "Approved, used and left; Window; Documents, complete or what is missing\nOnly the ones this request has data for"
   process s5 "Site (only for a viewer who can see both sites)\nApproval chance, its word and likely range"
-  process s6 "History: the last three events, each labelled person or agent\nor 'Nothing has happened on this request yet'"
+  process s6 "History: the last three lines with their flags (Agent, Logged decision ...)\nor 'Nothing yet'"
 endgroup
 
 click b1 "Click 'Open case'"

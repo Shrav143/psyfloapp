@@ -1,24 +1,26 @@
 title: Authorizations › Case page › Next action
 route: /authorizations/case/R-1042
-intro: The 'Next:' block at the top of the case page. It names the one thing a person should do on this request and gives one primary button for it. The queue row shows the same sentence. 'Send to payer' keeps its gate: it becomes the primary button once every check passes, and sits greyed out with its reason until then.
+intro: The 'Next:' block at the top of the case page. It names the one thing a person should do on this request and gives one primary button for it; the queue row shows the same words. 'Send to payer' keeps its gate: the primary button once every check passes, greyed out with its reason in a tooltip until then.
 dir: TD
-also: Demo only: the sentence comes from the request's recommended actions, its checks and where the Dashboard says it is. Nothing is decided by it; a clinician still signs in New Case.
+also: Demo only: the words come from the request's recommended actions, its checks and where the Dashboard says it is. Nothing is decided by it; a clinician still signs in New Case.
 ---
-screen nb "'Next:' block under the title\nSentence, one line of why, buttons, the reason line"
-decision d1 "Is the request on the Dashboard past Preparing, and either asking you something or moved on (sent here, decided)?"
+screen nb "'Next:' block under the title\nOne line, the Integrity chip while preparing, the buttons"
+decision d1 "Is the request on the Dashboard past Preparing, and either asking you something or moved on?"
 decision d2 "Did the payer ask something that waits for you?"
 process n1 "'Next: Review Packet's answer to the payer's question'\nButton 'Open on the Dashboard'"
-process n2 "'Next:' then the Dashboard's own next step, e.g. 'Navigator checks again in 30 minutes'\nApproved with the write-back waiting: 'Next: Confirm the write-back to the EMR', why 'Cadence booked the next review.'\nButton 'Open on the Dashboard'"
+decision dw "Is it with the payer?"
+process nw "'Next: Wait for Beacon to decide'\nButton 'Open on the Dashboard'"
+process n2 "Decided: the Dashboard's own step, e.g. 'Next: Confirm the write-back to the EMR'\nButton 'Open on the Dashboard'"
 decision d3 "Is it a denial?"
-process n3 "'Next: Review the brief and make the peer-to-peer call'\nWhy: 'This request was denied. Advocate owns the next step ...'\nButton 'Open in Denial Intelligence'"
+process n3 "'Next: Review the brief and make the peer-to-peer call'\nButton 'Open in Denial Intelligence'"
 decision d4 "Is it with the payer already (seed data)?"
-process n4 "'Next: Wait for Cardinal to decide'\nWhy: the agent's line, e.g. 'Payer is reviewing. Navigator checks again in 22 minutes'\nButton 'Open on the Dashboard' when the request is on the Dashboard\nIf its own line says the answer waits for your review: 'Review Packet's answer to the payer's question'"
+process n4 "'Next: Wait for Cardinal to decide', or\n'Next: Review Packet's answer to the payer's question' when the answer waits for you\nButton 'Open on the Dashboard' when the request is on the Dashboard"
 decision d5 "Do all four Integrity checks pass?"
-process n5 "'Next: Review the draft, then sign and send it'\nWhy: 'Integrity passed all four checks. Only a clinician can sign.'\nPrimary button 'Send to payer'"
+process n5 "'Next: Review the draft, then sign and send it'\nChip 'Integrity 4/4'\nPrimary button 'Send to payer'"
 decision d6 "Is any recommended action still open?"
-process n6 "'Next:' the first open action, e.g. 'Name the step-down provider'\nWhy: 'Scribe needs your answer before it can apply this.' or the action's first line\nPrimary button 'Go to this action'"
-process n7 "'Next: Read the draft again'\nWhy: 'Integrity has not read it since the last edit.'\nButton 'Open the draft'"
-process sg "Beside the primary button, 'Send to payer' stays\nGreyed out with the reason under it, e.g. 'Integrity has 2 open checks. Apply the matching actions first.'\nOnce it is with the payer: a greyed-out 'Sent to payer'"
+process n6 "'Next:' the first open action, e.g. 'Name the step-down provider'\nChip 'Integrity 2/4'\nPrimary button 'Go to this action'"
+process n7 "'Next: Read the draft again'\nButton 'Open the draft'"
+process sg "Beside the primary button, 'Send to payer' stays\ngreyed out; its tooltip says why\nOnce it is with the payer: a greyed-out 'Sent to payer'"
 click c1 "Click 'Go to this action'"
 process t1 "Opens Recommended actions and scrolls to that card\n(address ?tab=actions&rec=stepdown)"
 click c2 "Click 'Send to payer'"
@@ -27,13 +29,15 @@ click c3 "Click 'Open on the Dashboard'"
 goto g3 "Continues in: Dashboard › Request drawer › Open and read a request"
 click c4 "Click 'Open in Denial Intelligence'"
 goto g4 "Continues in: Denial Intelligence › A denial opened"
-store fl "The sentence follows the case as work is done\nApply or dismiss an action: the next open one is named\nRefine recommendations: its re-ordered first card\nAfter signing: the Dashboard's step"
-process q "The queue row shows the same sentence after 'Next:'"
+store fl "The words follow the case as work is done\nApply or dismiss an action: the next open one is named\nRefine recommendations: its re-ordered first card\nAfter signing: 'Wait for the payer to decide'"
+process q "The queue row shows the same words after 'Next:'"
 
 nb --> d1
 d1 -->|Yes| d2
 d2 -->|Yes| n1 --> c3
-d2 -->|No| n2 --> c3
+d2 -->|No| dw
+dw -->|Yes| nw --> c3
+dw -->|No| n2 --> c3
 d1 -->|No| d3
 d3 -->|Yes| n3 --> c4 --> g4
 d3 -->|No| d4

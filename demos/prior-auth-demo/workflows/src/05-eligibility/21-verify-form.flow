@@ -1,64 +1,52 @@
 title: Authorizations › Eligibility & Benefits › Verify › Fill in the form
 route: /authorizations/eligibility/verify
-intro: The form on the left of 'Verify a patient'. Add an insurance card, pick a sample, or type the details. 'Check now' stays off until the four required answers look complete.
+intro: The form on the left of the Verify page, card 'Patient and service'. No header box and no instructions: bring the card in with the import row, pick a sample, or type the details. 'Check now' stays off until the four required answers look complete.
 dir: TD
-also: Demo only: any file counts as a card. The payer comes from the file name, or Summit if none matches.
+also: Demo only: the samples under the form fill made-up members. The import reads a screenshot or a file in the browser, and its reading is simulated.
 ---
-start s1 "Open 'Verify a patient'"
-screen sc "Verify a patient\n'The agents check coverage and benefits live, so you know whether the clinic will be paid.'\nCard 'The patient and the service' with the pill 'Privacy mode on'"
+start s1 "Open the Verify page"
+screen sc "Card 'Patient and service' with the pill 'Privacy mode on'\nImport row, the six fields, 'Check now'\nA tinted strip 'Try a sample' at the foot of the card"
 click b1 "Click '← Eligibility & Benefits' (back link)"
 click b2 "Click '← Back to referral RF-2040' or '← Back to case R-1042'\nShown only when the address names a referral (see 'Ways in and pre-fill')"
 goto g3 "Continues in: Authorizations › New Case › Referral › The full referral page"
 goto g0 "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows"
 
+group gImport "Bring the card in"
+  click f1 "Import row: 'Pull from EMR' (only when a record system is connected at the site in view), 'Import a file', 'Paste a screenshot'"
+  process p1 "Payer and member ID filled on Apply\nA quiet line under the row: where it came from, the group and the coverage dates\n'From the sample screenshot · Group GRP-55120 · Effective 01/01/2026 to 12/31/2026'"
+endgroup
+
 group gSample "Try a sample"
-  click f5 "Click a chip in the row 'Try a sample'\n'Cleared to bill', 'Coverage lapsed', 'Not found',\n'Not covered', 'Another plan pays first', 'Limit reached'"
+  click f5 "Click a small chip in the strip 'Try a sample'\n'Cleared to bill', 'Authorization first', 'Coverage lapsed', 'Not found',\n'Not covered', 'Another plan pays first', 'Limit reached'"
   process p7 "Fills the whole form with a made-up member who ends that way\nThe chip turns green. Initials and age are remembered for the result"
 endgroup
 
-group gCard "Add the insurance card"
-  input f1 "Drop a file, or click the drop zone\n'Drag and drop the insurance card, or click to select a file'"
-  click f2 "Click 'Use sample file'"
-  click f3 "Click 'Use sample card' (top right)"
-  agent a1 "Reader reads the card\n'Reader is reading the card' for about 1 second"
-  process p1 "Fills payer from the file name (else Summit) and a member ID\nDate of birth stays empty"
-  process p2 "Fills Summit, 'SM7403964821', 03/14/1992, Residential 3.5, 10/21/2026\nRemembers J.M., 34"
-  toast t1 "'Sample card loaded'\n'Reader filled in the details for J.M., 34. The check can start when you are ready.'"
-  screen cs "Card strip 'Card read just now'\n'Payer, member ID and plan type are filled in below'"
-  click f4 "Click 'Replace'"
-  process p3 "Strip goes, drop zone returns\nThe typed values stay"
-endgroup
-
 group gFields "Type the details"
-  input i1 "'Payer' menu: 'Choose a payer', six payers\n(label reads 'Payer (read from card)' after a card)"
+  input i1 "'Payer' menu: 'Choose a payer', six payers\nUnder it, the plan type, for example 'Medicaid managed care (HMO)'"
   input i2 "'State': the only choice is 'Ohio'"
-  input i3 "'Member ID (removed before analysis)'\nHint 'Agents see …4821 only'"
+  input i3 "'Member ID'"
   input i4 "'Date of birth' as MM/DD/YYYY"
   input i5 "'Program': 'Residential 3.5', 'IOP', 'PHP', 'Detox'"
   input i6 "'Date of service' as MM/DD/YYYY, starts as 10/21/2026"
 endgroup
 
 decision q1 "Payer chosen, member ID has 4 or more letters or digits, both dates shaped MM/DD/YYYY?"
-process p4 "'Check now' is off\nHint 'Add the payer, member ID, date of birth and date of service to check.'"
+process p4 "'Check now' is off\nThe required fields carry a red star; no hint line"
 process p5 "Only the shape of a date is checked, not whether it is a real day"
-process p6 "'Check now' is on\nHint 'Takes about 10 seconds. Nothing is changed at the payer or in the record.'"
+process p6 "'Check now' is on"
 click c1 "Click 'Check now'"
 goto g1 "Continues in: Authorizations › Eligibility & Benefits › Verify › The live check"
 goto g2 "Continues in: Authorizations › Eligibility & Benefits › Verify › Try a sample"
+goto g4 "Continues in: Authorizations › Eligibility & Benefits › Verify › Import the card or the coverage screen"
 
 s1 --> sc
 sc --> b1 --> g0
 sc --> b2 --> g3
+sc --> f1 --> p1 --> q1
+f1 -.-> g4
 sc --> f5 --> p7 --> q1
 f5 -.-> g2
-sc --> f1 --> a1
-sc --> f2 --> a1
-a1 --> p1 --> cs
-sc --> f3 --> p2 --> t1 --> cs
-cs --> f4 --> p3
 sc --> i1 --> i2 --> i3 --> i4 --> i5 --> i6 --> q1
-cs --> q1
-p3 --> q1
 q1 -->|No| p4 -.-> p5
 p4 --> q1
 q1 -->|Yes| p6 --> c1 --> g1

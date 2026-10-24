@@ -13,7 +13,7 @@ toast t1 "'Clock moved forward 1 hour' (or '1 day')\n'Times in stage and deadlin
 
 process p1 "Every time-left text is worked out again from the clock"
 process p2 "Time left reads 'N min' under an hour, 'N h' under 3 days, 'N d' after that"
-process p3 "The 'Open denials' panel sorts again, nearest deadline first\nTime that has run out counts as nearest"
+process p3 "The dashboard table sorts again, nearest deadline first, and 'Deadlines this week' recounts\nTime that has run out reads 'Passed' and counts as nearest"
 decision d1 "Which clock does this denial run?"
 screen k1 "Peer-to-peer window\nList 'P2P in 36 h'\nHeader 'Peer-to-peer window closes in 36 h'"
 screen k2 "Written appeal due\nList 'Appeal in 41 d'\nHeader 'Appeal due in 41 d'"

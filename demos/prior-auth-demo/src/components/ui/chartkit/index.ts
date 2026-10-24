@@ -5,3 +5,4 @@ export * from "./DonutChart";
 export * from "./Heatmap";
 export * from "./Pareto";
 export * from "./TrendChart";
+export * from "./ScreenerTrend";

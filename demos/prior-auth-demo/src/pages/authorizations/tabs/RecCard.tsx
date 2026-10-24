@@ -18,7 +18,7 @@ function Tick({ checked, disabled, onChange, title }: { checked: boolean; disabl
       >
         {checked ? <Check size={12} className="ico pointer-events-none" /> : null}
       </button>
-      <span className={cn("text-[14px] font-semibold", !disabled && "cursor-pointer")} onClick={disabled ? undefined : onChange}>{title}</span>
+      <span className={cn("text-[14px] font-semibold leading-snug", !disabled && "cursor-pointer")} onClick={disabled ? undefined : onChange}>{title}</span>
     </div>
   );
 }
@@ -37,7 +37,7 @@ interface Props {
   onDismiss: () => void;
 }
 
-/** One recommendation: checkbox, title, chips, up to three bullets, a "Why this matters" expander and a note box. */
+/** One recommendation: checkbox, title, chips, up to three bullets, the agent, a "Why this matters" expander and a note box. */
 export function RecCard({ rec, selected, answer, note, focus, showError, disabled, onToggle, onAnswer, onSendNote, onDismiss }: Props) {
   const [why, setWhy] = useState(false);
   const [noting, setNoting] = useState(false);
@@ -45,42 +45,38 @@ export function RecCard({ rec, selected, answer, note, focus, showError, disable
   const answered = answer.trim().length > 0;
   const agent = AGENTS[rec.agent].name;
   return (
-    <div id={`rec-${rec.id}`} data-testid={`rec-${rec.id}`} className={cn("rounded-[20px] border p-5 transition-colors", selected ? "border-[#BFD3CA] bg-[#F8FAF8]" : "border-edge bg-white", focus && "outline-2 outline-offset-2 outline-forest")}>
+    <div id={`rec-${rec.id}`} data-testid={`rec-${rec.id}`} className={cn("rounded-2xl border px-4 py-3 transition-colors", selected ? "border-[#BFD3CA] bg-[#F8FAF8]" : "border-edge bg-white", focus && "outline-2 outline-offset-2 outline-forest")}>
       <div className="flex items-start gap-3">
         <Tick checked={selected} disabled={disabled} onChange={onToggle} title={rec.title} />
         {rec.input ? (answered ? <Pill tone="good">Answer added</Pill> : <Pill tone="mid">Needs your input</Pill>) : null}
         {rec.focus ? <Pill tone="neutral">Added for your focus</Pill> : null}
         <Pill tone="good">+{plural(gainOf(rec), "pt")}</Pill>
       </div>
-      <ul className="mt-2.5 ml-[30px] flex flex-col gap-1.5">
+      <ul className="mt-1.5 ml-[28px] flex flex-col gap-1 text-[13px] text-ink2">
         {rec.bullets.map((b) => (
-          <li key={b} className="flex items-start gap-2.5">
-            <ArrowRight size={14} className="ico mt-[5px] text-muted" />
+          <li key={b} className="flex items-start gap-2">
+            <ArrowRight size={13} className="ico mt-[4px] shrink-0 text-muted" />
             <span>{b}</span>
           </li>
         ))}
       </ul>
-      <div className="mt-2.5 ml-[30px]">
-        <button type="button" onClick={() => setWhy(!why)} aria-expanded={why} className="flex items-center gap-1 text-[13px] font-medium text-forest">
-          {why ? <ChevronDown size={14} className="ico" /> : <ChevronRight size={14} className="ico" />}
-          Why this matters
-        </button>
-        {why ? <div className="mt-2 rounded-xl bg-tile px-3.5 py-2.5 text-[13px] text-ink2">{rec.why}</div> : null}
+      <div className="mt-1.5 ml-[28px]">
+        {why ? <div className="mb-2 rounded-xl bg-tile px-3 py-2 text-[13px] text-ink2">{rec.why}</div> : null}
 
         {rec.input ? (
-          <div className="mt-3">
+          <div className="mt-2">
             <Field label={rec.input.label} required error={showError && !answered ? `Type your answer before ${agent} can apply this.` : undefined}>
               <TextArea rows={2} className="min-h-14!" value={answer} disabled={disabled} onChange={(e) => onAnswer(e.target.value)} placeholder={rec.input.placeholder} />
             </Field>
             <div className="mt-2 flex items-center gap-2">
               <Button size="sm" disabled={!answered || disabled} onClick={() => onSendNote(answer.trim())}>Send note</Button>
-              <span className="text-xs text-muted">{note ? `Note sent to ${agent}.` : `${agent} uses your answer in the draft.`}</span>
+              {note ? <span className="text-[12px] text-muted">Sent to {agent}</span> : null}
             </div>
           </div>
         ) : null}
 
         {noting && !rec.input ? (
-          <div className="mt-3">
+          <div className="mt-2">
             <TextArea rows={2} className="min-h-14!" value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="Add context or a note for the agent…" aria-label={`Note for ${agent}`} />
             <div className="mt-2 flex gap-2">
               <Button size="sm" disabled={!draft.trim()} onClick={() => { onSendNote(draft.trim()); setNoting(false); setDraft(""); }}>Send note</Button>
@@ -88,12 +84,16 @@ export function RecCard({ rec, selected, answer, note, focus, showError, disable
             </div>
           </div>
         ) : null}
-        {note && !rec.input ? <div className="mt-2 text-xs text-muted">Note sent to {agent}: “{note}”</div> : null}
+        {note && !rec.input ? <div className="mt-2 text-[12px] text-muted">Note to {agent}: “{note}”</div> : null}
 
-        <div className="mt-3 flex flex-wrap items-center gap-2">
-          <AgentBadge agent={rec.agent} size={20} />
-          <span className="text-xs text-muted">{agent} does this</span>
-          {rec.link ? <Link to={rec.link.to} className="ml-2 inline-flex items-center gap-1 text-[13px] font-medium text-forest hover:underline">{rec.link.label}<ExternalLink size={12} className="ico" /></Link> : null}
+        <div className="mt-2 flex flex-wrap items-center gap-1.5">
+          <AgentBadge agent={rec.agent} size={18} />
+          <span className="text-[12px] text-muted">{agent}</span>
+          <button type="button" onClick={() => setWhy(!why)} aria-expanded={why} className="ml-2 inline-flex items-center gap-1 rounded-md px-1 text-[12px] font-semibold text-forest hover:bg-sage-bg">
+            {why ? <ChevronDown size={13} className="ico" /> : <ChevronRight size={13} className="ico" />}
+            Why this matters
+          </button>
+          {rec.link ? <Link to={rec.link.to} className="ml-1 inline-flex items-center gap-1 text-[12px] font-semibold text-forest hover:underline">{rec.link.label}<ExternalLink size={12} className="ico" /></Link> : null}
           <span className="flex-1" />
           {!rec.input && !noting ? <Button size="sm" variant="ghost" onClick={() => setNoting(true)}>Add a note</Button> : null}
           <Button size="sm" variant="ghost" icon={X} onClick={onDismiss} disabled={disabled} className="!text-muted">Dismiss</Button>

@@ -1,0 +1,49 @@
+title: Authorizations › Case page › Screener chart
+route: /authorizations/case/R-1042?tab=draft
+intro: One small chart of every screener on file in the clinical picture rail. Each screener is scaled to its own range, so the axis runs from Low to High; the raw score is in the tooltip and the results table. A legend of checkboxes shows or hides each line.
+dir: TD
+also: Demo only: every case has three to five screeners with six to ten dated points, built from the scores and the old trend chart the case already had, so those numbers stay true. Taken twice a day in residential care and withdrawal management (CIWA-Ar, COWS, craving), weekly elsewhere, AUDIT-C monthly.
+---
+start s1 "Rail 'Clinical picture' › Screeners"
+screen ch "Chart about 170 px high\nLow to High, dated axis from the first point to 'Today'\none line per screener, each with its own color and marker"
+screen lg "Legend under it: a checkbox per screener\nname in bold, what it measures below\ne.g. 'CIWA-Ar' Withdrawal, 'Craving' Self-rated, 0 to 10"
+process df "The two screeners the page showed before are checked\nMental-health cases: the two in the case's scores"
+
+group gI "Read a point"
+  input hv "Point at a marker"
+  click kb "Tab to the chart, then Left, Right, Home or End"
+  overlay tp "Tooltip: screener, what it measures\nscore of its maximum, date and time"
+  process an "Screen readers hear the same line"
+endgroup
+
+group gL "Show and hide"
+  click un "Uncheck a screener"
+  process hi "Its line and markers leave the chart\nthe axis keeps the dates of the lines still shown"
+  click re "Check it again"
+  process sh "The line is back"
+endgroup
+
+group gA "Add a screener"
+  click ad "Click 'Add screener'"
+  overlay mn "Menu 'Screeners on file'\nthe ones not in the legend, e.g. PHQ-9 Depression, GAD-7 Anxiety"
+  click pk "Pick one"
+  process ins "It joins the legend, checked, with its own color and marker\nthe dates widen if it goes back further"
+  click esc "Esc or a click outside"
+  process nn "Nothing left to add: the button is not shown"
+endgroup
+
+group gV "Every score"
+  click vr "Click 'View results'"
+  overlay tb "Pop-up 'Screener results'\na table: one row per date, newest first\none column per screener on file with its range"
+  click cl "Close, X, the dimmed area or Esc"
+endgroup
+
+s1 --> ch & lg
+lg --> df
+ch --> hv --> tp
+ch --> kb --> tp --> an
+lg --> un --> hi --> re --> sh
+lg --> ad --> mn --> pk --> ins
+mn --> esc
+ins -.-> nn
+lg --> vr --> tb --> cl

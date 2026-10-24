@@ -1,16 +1,17 @@
 title: Authorizations › Case page › Draft › Read and edit
 route: /authorizations/case/R-1042?tab=draft
-intro: The fifth tab, left side: the medical-necessity summary Scribe wrote, how sentences from applied actions and added clinical context appear, and how a person edits and saves it. It is the same summary Review & submit shows in New Case: one text for each request, so an edit made in either place is read in the other.
+intro: The main column of 'Clinical picture & draft': the medical necessity request Scribe wrote, section by section, each with its source chips; how sentences from applied actions and added clinical context appear; and how a person edits and saves it. It is the same summary Review & submit shows in New Case, so an edit made in either place is read in the other.
 dir: TD
 ---
-start s1 "Click 'Draft'"
-screen dr "Draft\nLeft: 'Medical-necessity summary'. Right: 'Checks', 'Versions', send buttons"
-process hd "Card subtitle\n'Version 3 · written by Scribe, checked by Integrity · every statement links to the chart'"
-process sec "Four sections in a row, each with its source chips\n'Clinical picture.', 'Why a lower level of care is not safe.', 'Current severity.', 'Plan.'\nThe text is the request's draft in New Case (before it has one, the text that draft would have)"
-process cx "A fifth paragraph 'Context added.' when notes were added with 'Add clinical context'\nThe notes in the person's own words, no chips\nShown but not edited here: Edit has no box for it"
+start s1 "Click 'Clinical picture & draft'\n(or open ?tab=draft)"
+screen dr "Main column: card 'Medical necessity request'\n'Version 3 · Scribe · Tue 10:21 am'\nThe clinical picture rail beside it"
+process sec "Sections, each a heading, the text and its source chips\n'Clinical picture', 'Why a lower level of care is not safe', 'Current severity', 'Plan'\nThe text is the request's draft in New Case (before it has one, the text that draft would have)"
+process cx "A section 'Context added' when notes were added with 'Add clinical context'\nshown, not edited here"
 process nw "Sentences from applied actions follow in a green mark with a 'New' tag\nEach adds its own chip, e.g. 'Your answer'"
+process lit "'In draft' or 'Show in draft' in the clinical picture lights the sections that use that item"
 click ch "Click a source chip"
 goto gC "Continues in: Authorizations › Case page › Source chip"
+goto gP "Continues in: Authorizations › Case page › Clinical picture"
 
 click ed "Click 'Edit'"
 screen em "Edit mode\nOne text box per section, e.g. 'Edit Plan'\nHeader buttons 'Cancel' and 'Save changes'"
@@ -20,17 +21,18 @@ process cd "Edit mode closes\nNothing is saved"
 click sv "Click 'Save changes'"
 decision dCh "Did any box change?"
 toast tn "'No changes to save'"
-store sd "Edited sections saved\nThe edit keeps the sentences already added by applied actions\nNew version: 'Version 4', 'You', 'Edited by you'\nLog: 'You edited the draft. Integrity will read it again before it can be signed'\nThe same text is saved on the request's draft in New Case, so Review & submit reads it"
-toast ts "'Draft saved'\n'Integrity needs to read it again before it can be signed. Use Re-check.'"
-process dy "'Every sentence matches the chart' now warns\n'You edited the draft. Integrity has not read it again yet.'\n'Send to payer' goes off"
-process bd "Badge on the Draft tab goes up by one"
+store sd "Edited sections saved, with the sentences already added by applied actions\nNew version 'Edited by you'\nHistory: 'You edited the draft ...' flagged 'Logged decision'\nThe same text is saved on the request's draft in New Case"
+toast ts "'Draft saved'\n'Integrity reads it again before it can be signed.'"
+process dy "'Every sentence matches the chart' now warns\nthe header chip drops to 'Integrity 3/4', 'Send to payer' goes off\nthe 'Integrity checks' fold opens with 'Re-check'"
+process bd "Badge on 'Clinical picture & draft' goes up by one"
 process lt "Actions applied later add their sentences after the edited text"
 goto gK "Continues in: Authorizations › Case page › Draft › Checks, versions and send back"
 goto gR "Continues in: Authorizations › New Case › Review & submit › The draft and the summary"
 
-s1 --> dr --> hd --> sec --> nw
+s1 --> dr --> sec --> nw
 sec --> ch --> gC
 sec --> cx
+dr --> lit --> gP
 dr --> ed --> em --> ty
 em --> cn --> cd
 em --> sv --> dCh

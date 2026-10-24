@@ -18,7 +18,7 @@ export function reportToText(d: ReportDoc): string {
     ...sec(H.reasoning, [`"${d.reasoning.quote}"`, `Where it parts from the chart: ${d.reasoning.gap}`]),
     ...sec(H.synthesis, d.synthesis.flatMap((p) => [p, ""]).slice(0, -1)),
     ...sec(H.weak, d.findings.flatMap((f) => [`${f.n}. [${f.sev}] ${f.title}`, f.text, `Source: ${f.source}. ${f.excerpt}`, `Suggested fix: ${f.fix} (${f.added ? "added to the evidence" : "not added yet"})`, ""]).slice(0, -1)),
-    ...(d.dims.length ? sec(H.dims, [...(d.dimsSub ? [d.dimsSub, ""] : []), ...d.dims.flatMap((x) => [`${x.name} (${x.toneWord})`, x.text, ""]).slice(0, -1)]) : []),
+    ...(d.dims.length ? sec(d.dimsTitle ?? H.dims, [...(d.dimsSub ? [d.dimsSub, ""] : []), ...d.dims.flatMap((x) => [`${x.name} (${x.toneWord})`, x.text, ""]).slice(0, -1)]) : []),
     ...sec(H.todo, d.recommendations.flatMap((r, i) => [`${i + 1}. ${r.title}`, r.text, ""]).slice(0, -1)),
     ...sec(H.options, d.options.flatMap((o) => [`${o.title}${o.recommended ? " (recommended)" : ""}`, `  Chance: ${o.chance}`, `  Time: ${o.time}`, `  Gets back: ${o.gain}`, `  Needs: ${o.needs.join("; ")}`])),
     ...sec(H.criteria, list(d.criteria).slice(0, -1)),

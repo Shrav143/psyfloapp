@@ -5,9 +5,9 @@ import { useStore } from "@/store";
 import type { DenialView } from "./lib/useDenialView";
 
 const CHOICES: { id: OutcomeKind; title: string; text: string }[] = [
-  { id: "overturned", title: "Overturned", text: "The payer restored the requested days. The denial closes." },
-  { id: "partly", title: "Partly restored", text: "The payer restored some of them. The denial closes with a new end date." },
-  { id: "upheld", title: "Upheld", text: "The payer kept its decision. Advocate starts a written appeal from your call notes." },
+  { id: "overturned", title: "Overturned", text: "Closes the denial" },
+  { id: "partly", title: "Partly restored", text: "Closes with a new end date" },
+  { id: "upheld", title: "Upheld", text: "Starts the written appeal" },
 ];
 
 /** Log the outcome of the call. Overturned and partly restored close the denial, upheld starts the appeal. Mounted only while open. */
@@ -26,7 +26,7 @@ export function OutcomeModal({ view, onClose }: { view: DenialView; onClose: () 
             <ChoiceCard key={c.id} selected={kind === c.id} onClick={() => setKind(c.id)} title={c.title}>{c.text}</ChoiceCard>
           ))}
         </div>
-        <Field label="Note (optional)" hint="Who you spoke to and what was agreed.">
+        <Field label="Note (optional)">
           <TextArea value={note} onChange={(e) => setNote(e.target.value)} placeholder="For example: spoke with the reviewer, days 8 to 14 restored with a review on day 14" />
         </Field>
       </div>

@@ -1,5 +1,5 @@
 title: Authorizations › New Case › Clinical documentation › Replace a document or mark it not available
-route: /authorizations/new/:draftId (step 3 of 5, Documents list)
+route: /authorizations/new/:draftId (step 3 of 4, Documents list)
 intro: Two more buttons on a document row. 'Replace' swaps a file for another one and Reader reads it again. 'Mark not available' says the document does not exist, with a short reason. The checklist counts it as handled, and the review warns when the payer requires it.
 dir: TD
 ---

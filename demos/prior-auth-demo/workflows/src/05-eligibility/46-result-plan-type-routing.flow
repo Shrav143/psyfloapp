@@ -1,21 +1,21 @@
 title: Authorizations › Eligibility & Benefits › Result › Plan type and routing
 route: /authorizations/eligibility/R-1042
-intro: The facts line under the summary says which plan type the payer is and where claims go. It is derived from the payer record and the plan type New Case would pre-fill, so a payer added on Payers gets it too. A payer with no plan type shows nothing in its place. The check row 'It is the right plan' in 'Payment checks' reads from the same place.
+intro: The row 'Plan type and routing' under Eligibility says which plan type the payer is and where claims go. It is derived from the payer record and the plan type New Case would pre-fill, so a payer added on Payers gets it too. A payer with no plan type has no such row. The check row 'It is the right plan' in 'Payment checks' and the hint under 'Payer' on the Verify form read from the same place.
 dir: TD
 also: Demo only: no built-in payer is fee for service. The branch exists for a payer added later.
 ---
-start s1 "Result page, facts line\n'Payer', 'Plan type and routing', 'Member', 'Date of service', 'Time checked', 'Source'"
-process pl "Payer item\n'Summit Medicaid HMO (Ohio Medicaid)'\nName, then its group in brackets"
+start s1 "Result page\nTitle row names the payer, rows under the verdict, a quiet facts line at the foot"
+process pl "Payer in the title row\n'Summit Medicaid HMO (Ohio Medicaid)'\nName, then its group in brackets"
 decision d0 "Does the payer have a plan type?\n(HMO, PPO, Medicare Advantage, behavioral carve-out, fee for service)"
-process none "'Plan type and routing' is left out of the line\nNothing is guessed"
+process none "No 'Plan type and routing' row\nNothing is guessed"
 decision d1 "Which group is the payer in?"
 process m1 "Ohio Medicaid, HMO or PPO\n'Medicaid managed care (HMO). Claims go to Summit, not to the state'"
 process m2 "Ohio Medicaid, fee for service\n'Medicaid fee for service. Claims go to the state, not to a health plan'"
 process c1 "Commercial\n'Commercial PPO. Claims go to Beacon PPO'"
 process a1 "Medicare Advantage\n'Medicare Advantage. Claims go to Harborview MA, not to Medicare'"
 process b1 "Behavioral carve-out\n'Behavioral health carve-out. Behavioral health is carved out to Lakeshore Behavioral.\nClaims go to Lakeshore, not to the medical plan'"
-process cost "The same plan decides whether a cost share is on file\nCommercial and carve-out: copay, deductible, coinsurance\nMedicare Advantage: deductible, coinsurance\nOhio Medicaid: none, nothing is shown"
-process src "'Source' item\n'Simulated check against the payer portal'\nEvergreen, reached by phone: 'Simulated check, confirmed by phone'"
+process cost "The same plan decides whether a 'Patient pays' row shows\nCommercial and carve-out: copay, deductible, coinsurance\nMedicare Advantage: deductible, coinsurance\nOhio Medicaid: none, no row"
+process src "'Source' in the facts line\n'Simulated check against the payer portal'\nEvergreen, reached by phone: 'Simulated check, confirmed by phone'"
 end e1 "Facts line ends with where the answer came from, and says it is simulated"
 goto g1 "Continues in: Authorizations › Eligibility & Benefits › Result › Result first: eligibility, benefits, what the service needs"
 

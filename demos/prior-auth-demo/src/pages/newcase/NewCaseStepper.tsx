@@ -21,7 +21,7 @@ function Dot({ index, state, current }: { index: number; state: StepState; curre
   );
 }
 
-/** The five steps. Every step can be opened at any time, forward or back; the draft holds the progress, so nothing typed is lost. Each shows its state in a small label under its name. */
+/** The four steps. Every step can be opened at any time, forward or back; the draft holds the progress, so nothing typed is lost. Each shows its state in a small label under its name. */
 export function NewCaseStepper({ steps, current, onGo, className }: { steps: StepInfo[]; current: number; onGo: (i: number) => void; className?: string }) {
   return (
     <ol aria-label="Steps" className={cn("flex flex-wrap items-start gap-x-2 gap-y-3 text-muted", className)}>

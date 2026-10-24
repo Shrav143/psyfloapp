@@ -4,19 +4,19 @@ intro: When the last step ticks, the demo saves the check as a verification reco
 dir: TD
 also: Demo only: answers are scripted from the member ID and the plan. A known patient keeps the verdict it already had. The record is the same one New Case reads and writes.
 ---
-start s1 "Last step ticks, banner 'All answers are in. Opening the result.'"
+start s1 "Last step ticks, the timer pill reads 'Opening the result'"
 wait w1 "Half a second"
 decision qp "Is Verify paused in Settings?"
 decision q1 "Opened from a case that is a row on the list?"
-decision q2 "Sample card: Summit, Residential 3.5, member ID ending 4821?"
+decision q2 "J.M.'s card (sample 'Authorization first' or the referral): Summit, Residential 3.5, member ID ending 4821?"
 store st1 "Existing record updated\n'Checked just now', its re-check time cleared, date of service as typed"
-process p1 "The sample card matches J.M., case R-1042"
+process p1 "The card matches J.M., case R-1042"
 process p2 "Answers are not asked again\nThe row keeps its verdict"
 
 group gPaused "Verify is paused"
   store sp1 "Known patient: the last result is kept with the warning\n'Verification service unavailable', check time unchanged"
   store sp2 "Anyone else: a new check with no answers\nEligibility, benefits and authorization 'Not checked'\nWarning 'Verification service unavailable'"
-  process sp3 "Headline 'Could not verify: Verify is paused in Settings.'\nButtons 'Open Settings' and 'Check again'"
+  process sp3 "Verdict 'Not checked' · Coverage 'Not checked'\nButtons 'Open Settings' and 'Re-check'"
 endgroup
 
 group gNew "A new patient"

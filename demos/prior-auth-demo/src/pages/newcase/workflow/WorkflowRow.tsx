@@ -3,11 +3,11 @@ import { GitBranch, History, Triangle } from "lucide-react";
 import { Button, InfoTip, Pill } from "@/components/ui";
 import type { CaseDraft } from "@/data/cases";
 import { payerById } from "@/data/seed";
-import { STAGE_LABEL } from "@/data/workflow/types";
 import { stamp } from "@/lib/time";
 import { WorkflowViewPanel } from "@/pages/payers/studio";
 import { defaultLabel, type CaseWorkflow } from "./model";
 import { ReviewWorkflowDrawer, type ReviewKind } from "./ReviewWorkflowDrawer";
+import { caseStageLabel } from "./stageLabel";
 import { WorkflowTraceDrawer } from "./WorkflowTraceDrawer";
 
 const namesOf = (list: { name: string }[]): string => (list.length < 3 ? list.map((w) => w.name).join(" and ") : `${list.slice(0, -1).map((w) => w.name).join(", ")} and ${list[list.length - 1].name}`);
@@ -65,7 +65,7 @@ export function WorkflowRow({ draft, view }: { draft: CaseDraft; view: CaseWorkf
         ) : reviewable && view.newer ? (
           <span className="text-muted" role="status">A newer version exists (v{view.newer.version}).</span>
         ) : (
-          <span className="text-muted">At {STAGE_LABEL[view.stage]}</span>
+          <span className="text-muted">At {caseStageLabel(view.stage)}</span>
         )}
         {reviewKind ? (
           <Button size="sm" variant={view.conflict ? "outline" : "ghost"} onClick={() => setReview(reviewKind)}>

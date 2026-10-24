@@ -24,7 +24,7 @@ export function RequestTile({ item, clock, info, quick, onQuick }: { item: Queue
       data-testid={`tile-${item.id}`}
       onClick={(e) => !(e.target as Element).closest("button, a") && onQuick(item.id)}
       className={cn(
-        "grid cursor-pointer grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-3 rounded-2xl border px-5 py-4 xl:grid-cols-[minmax(0,1.4fr)_130px_150px_minmax(0,1.25fr)_76px_60px]",
+        "grid cursor-pointer grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-2 rounded-xl border px-4 py-2.5 xl:grid-cols-[minmax(0,1.4fr)_130px_150px_minmax(0,1.25fr)_64px_56px]",
         item.band === "now" ? "border-risk-edge bg-risk-bg" : "border-tile-edge bg-tile", quick && "ring-2 ring-forest/35",
       )}
     >
@@ -39,11 +39,11 @@ export function RequestTile({ item, clock, info, quick, onQuick }: { item: Queue
             <PanelRightOpen size={15} className="ico" aria-hidden="true" />
           </button>
         </div>
-        <div className="mt-0.5 text-[13px] text-muted">{item.levelLabel} · {payer.name} · {item.type}</div>
+        <div className="text-[13px] text-muted">{item.levelLabel} · {payer.name} · {item.type}</div>
       </div>
 
       <div className="order-3 col-span-2 flex flex-wrap items-center gap-x-4 gap-y-2 xl:contents">
-        <div className="flex min-w-[130px] flex-col items-start gap-1 xl:min-w-0">
+        <div className="flex min-w-[130px] flex-wrap items-start gap-1 xl:min-w-0 xl:flex-col">
           <Pill tone={PHASE_TONE[info.phase]}>{STATUS_LABEL[info.phase]}</Pill>
           {asks ? <Pill tone="mid">Needs your input</Pill> : null}
           {item.coverageFix ? (
@@ -60,8 +60,8 @@ export function RequestTile({ item, clock, info, quick, onQuick }: { item: Queue
 
       <div className="order-2 flex items-center gap-4 xl:contents">
         <div className="text-right">
-          <div className="text-[16px] leading-tight font-semibold" style={{ color: b.color }}>{Math.round(info.chance)}%</div>
-          <div className="text-xs font-semibold" style={{ color: b.color }}>{b.word}</div>
+          <div className="text-[14px] leading-tight font-semibold" style={{ color: b.color }}>{Math.round(info.chance)}%</div>
+          <div className="text-[12px] font-semibold" style={{ color: b.color }}>{b.word}</div>
         </div>
         <Button size="sm" onClick={() => navigate(paths.case(item.id))} aria-label={`Open ${item.id}`}>Open</Button>
       </div>

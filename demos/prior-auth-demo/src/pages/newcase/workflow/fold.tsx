@@ -5,9 +5,12 @@ import type { CaseEnv } from "../caseEnv";
 export function foldWorkflow(hint: ReactNode, env: CaseEnv): ReactNode {
   const warning = env.workflow?.warnings[0];
   if (!warning || env.workflow?.noAuth) return hint;
-  return (
+  const line = <span className="font-medium text-mid-ink">Workflow: {warning}</span>;
+  return hint ? (
     <>
-      {hint} <span className="font-medium text-mid-ink">Workflow: {warning}</span>
+      {hint} {line}
     </>
+  ) : (
+    line
   );
 }

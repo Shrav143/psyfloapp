@@ -1,5 +1,5 @@
 title: Authorizations › New Case › Eligibility & Benefits › Warnings and documented exceptions
-route: /authorizations/new/:draftId (step 2 of 5, the summary's warnings and 'What you can do')
+route: /authorizations/new/:draftId (step 2 of 4, the summary's warnings and 'What you can do')
 intro: A check can end with warnings. Each says what was found and what to do next, in one line, and none of them traps the person. A section 'What you can do' offers one action each. Coverage that is confirmed inactive, or a check that could not run, can be gone past with a documented exception: a short reason, kept on the case and written to the request's History. Only coverage confirmed inactive with no documented exception stops the final send.
 dir: TD
 also: Demo only: the check is scripted from the last four digits of the member ID. 1012 lapsed, 9999 not found, 8080 known under another ID, 7070 moved to another plan, 3030 service not covered, 5050 benefit not confirmed, 4040 clinic enrollment not confirmed, 2020 no authorization rule on file, 6060 another plan pays first, 9090 every day used.
@@ -18,7 +18,7 @@ group gW "The warnings, and what to do"
   process w8 "**Authorization requirement unknown**\n'Ask the payer. Until then the request is prepared as if one is needed.'\nEnding 2020, or a payer added on Payers that does not cover the level of care"
 endgroup
 
-screen sAct "Section 'What you can do'\n'None of this stops you. It only decides what is recorded when the request is sent.'"
+screen sAct "Section 'What you can do'\nOne short button per warning"
 click a1 "Click 'Switch this case to Cardinal'"
 store sa1 "Payer and plan type change\nThe old check is let go and Verify checks the new plan"
 click a2 "Click 'Correct the member ID in Intake'"

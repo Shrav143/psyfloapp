@@ -10,7 +10,7 @@ process p2 "The published workflows are matched\nBy payer, product, state, servi
 decision d1 "Is there one best match?"
 store st1 "The workflow is stored on the draft\nName, version, why it matched, when it was applied\nNot yet pinned"
 store st2 "History line, kept on the draft until the request exists\n'Workflow applied: Initial Authorization, Residential SUD v3 (Summit)'"
-screen sc1 "Line under the stepper, above the step header\n'Workflow: Initial Authorization, Residential SUD · v3 · Summit'\nInfo icon, 'View workflow', 'At Intake'"
+screen sc1 "Line under the stepper\n'Workflow: Initial Authorization, Residential SUD · v3 · Summit'\nInfo icon, 'View workflow', 'At Intake'"
 click cInfo "Hover over the info icon, or focus it with Tab"
 overlay oInfo "'Why this workflow'\nThe match explanation\n'Rules read: ...' with each rule's verification state\n'The workflow can still change until it runs past Intake.'"
 decision d2 "Has the workflow run past Intake?\nA later step opened, or the agents started"

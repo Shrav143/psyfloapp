@@ -1,34 +1,19 @@
 import { useId } from "react";
-import { Link } from "react-router-dom";
 import { Button, ChecklistItem } from "@/components/ui";
 import type { CaseDraft } from "@/data/cases";
-import { paths } from "@/routes";
 import { FieldEditor } from "./RecordEditors";
 import type { FieldId, Row } from "./recordsModel";
 
 /** A row for something typed or read from a file. The button opens the editor under the row; the label is the button's description, not part of its name. */
 export function FieldRow({ row, field, draft, open, onToggle }: { row: Row; field: FieldId; draft: CaseDraft; open: boolean; onToggle: () => void }) {
   const labelId = useId();
-  const has = row.state === "done" || row.state === "warn" || (field === "patient" && !!(draft.patient.initials || draft.patient.age));
+  const has = row.state === "done" || row.state === "warn";
   return (
     <ChecklistItem
       state={row.state}
       label={<span id={labelId}>{row.label}</span>}
       tag={row.tag}
-      detail={
-        row.mapping ? (
-          <>
-            {row.detail}{" "}
-            <Link to={paths.emr()} className="font-medium text-forest underline underline-offset-2">
-              Open EMR Connect
-            </Link>
-          </>
-        ) : row.quiet ? (
-          <span className="text-muted">{row.detail}</span>
-        ) : (
-          row.detail
-        )
-      }
+      detail={row.quiet ? <span className="text-muted">{row.detail}</span> : row.detail}
       action={
         <Button size="sm" variant={has ? "ghost" : "outline"} aria-expanded={open} aria-describedby={labelId} onClick={onToggle}>
           {has ? "Edit" : "Add"}

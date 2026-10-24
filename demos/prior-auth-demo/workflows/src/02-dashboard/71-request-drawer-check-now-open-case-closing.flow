@@ -22,7 +22,7 @@ end e1 "Drawer stays open\nNo stage changes"
 click c2 "Click 'Open case'"
 goto g1 "Continues in: Authorizations › Case page\n/authorizations/case/ followed by the case ID"
 click c3 "Click 'Open in Denial Intelligence'"
-goto g2 "Continues in: Denial Intelligence › Open denials\n/denials?id=D-3318"
+goto g2 "Continues in: Denial Intelligence › A denial opened\n/denials/D-3318"
 
 group gClose "Closing the drawer"
   click x1 "Click the X 'Close'"

@@ -44,7 +44,6 @@ export function DuplicateWarning({ env }: { env: CaseEnv }) {
       }
     >
       <div>{dup.title}. {dup.detail}.</div>
-      <div className="mt-0.5 text-[13px]">Same patient, payer and level of care, with dates that overlap. Sending both would ask the payer for the same days twice.</div>
       {asking ? (
         <div className="mt-3 flex flex-col gap-2.5">
           <label htmlFor="duplicate-reason" className="text-[13px] font-medium">Why is this a different request?</label>

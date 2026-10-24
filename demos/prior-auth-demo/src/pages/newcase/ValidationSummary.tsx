@@ -27,8 +27,8 @@ export function validationRows(draft: CaseDraft, clock: number, ctx: PayerContex
     const doc = draft.documents.find((d) => d.slot === r.slot);
     const reason = draft.unavailable[r.slot];
     if (doc) rows.push({ id: r.slot, label: r.label, warn: openFindings(doc, draft.answers) > 0, required: r.required, findings: doc.findings.map((f) => ({ id: f.id, ok: !isOpen(f, draft.answers), text: findingText(f, draft.answers) })) });
-    else if (reason !== undefined) rows.push({ id: r.slot, label: r.label, warn: r.required, required: r.required, findings: [{ id: `${r.slot}-na`, ok: !r.required, text: r.required ? `Marked not available: ${reason}. ${payer} requires it, so it may ask for it.` : `Marked not available: ${reason}. You can sign without it.` }] });
-    else rows.push({ id: r.slot, label: r.label, warn: true, required: r.required, findings: [{ id: `${r.slot}-none`, ok: false, text: r.required ? "This document was not added." : `Not added. ${payer} lists it. You can sign without it.` }] });
+    else if (reason !== undefined) rows.push({ id: r.slot, label: r.label, warn: r.required, required: r.required, findings: [{ id: `${r.slot}-na`, ok: !r.required, text: `Not available: ${reason}` }] });
+    else rows.push({ id: r.slot, label: r.label, warn: true, required: r.required, findings: [{ id: `${r.slot}-none`, ok: false, text: "Not added" }] });
   }
   return rows;
 }
@@ -48,7 +48,6 @@ export function ValidationSummary({ rows }: { rows: ValidationRow[] }) {
   return (
     <Disclosure
       title="Validation summary"
-      summary="Reader checked every document against the payer's guidelines."
       right={
         <Pill tone={flagged ? "mid" : "good"} dot>
           {flagged ? `${flagged} to look at` : "Nothing to look at"}

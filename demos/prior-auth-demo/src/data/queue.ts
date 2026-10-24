@@ -1,3 +1,4 @@
+import type { DxTrack } from "./frameworks";
 import { siteOf, type SiteId } from "./sites";
 import type { AgentKey, PayerId, Program, PsyRequest, RequestType } from "./types";
 import { PROGRAM_LABEL } from "./types";
@@ -12,6 +13,8 @@ export type Band = "now" | "day" | "week";
 export type Phase = "preparing" | "ready" | "payer" | "denial";
 export type Trend = "up" | "down" | "flat";
 export type DxKey = "aud" | "oud" | "stim" | "cann" | "mdd" | "gad";
+/** A mental health diagnosis with no substance use disorder. Set by hand on a few IOP and PHP rows (the hash pools never pick one), so those cases are assessed with LOCUS. */
+export type MhDxKey = "mdd_rec" | "ptsd" | "bipolar" | "gad_mh";
 export interface Score { label: string; value: string; trend?: Trend }
 
 export interface QueueItem {
@@ -23,6 +26,8 @@ export interface QueueItem {
   type: RequestType;
   levelLabel: string;
   dxKey: DxKey;
+  /** Set when the diagnosis is a mental health condition alone. `dxKey` then stays the hash pool's value and only Analytics reads it. */
+  mh?: MhDxKey;
   dx: string;
   scores: Score[];
   band: Band;
@@ -87,6 +92,14 @@ export const DX: Record<DxKey, { name: string; scales: Scale[] }> = {
   mdd: { name: "Major depressive disorder with alcohol use", scales: [{ label: "PHQ-9", lo: 10, hi: 19 }, { label: "GAD-7", lo: 6, hi: 14 }] },
   gad: { name: "Generalized anxiety with substance use", scales: [{ label: "GAD-7", lo: 9, hi: 17 }, { label: "AUDIT-C", lo: 4, hi: 9 }] },
 };
+export const MH_DX: Record<MhDxKey, { name: string }> = {
+  mdd_rec: { name: "Major depressive disorder, recurrent, severe" },
+  ptsd: { name: "Posttraumatic stress disorder" },
+  bipolar: { name: "Bipolar I disorder, current episode depressed" },
+  gad_mh: { name: "Generalized anxiety disorder" },
+};
+/** Whether a substance use disorder is part of the picture: it picks the level-of-care framework (see frameworks.ts). The depression and anxiety clusters say "with alcohol use" or "with substance use", so they are co-occurring. */
+export const dxTrackOf = (i: { dxKey: DxKey; mh?: MhDxKey }): DxTrack => (i.mh ? "mental_health" : i.dxKey === "mdd" || i.dxKey === "gad" ? "cooccurring" : "sud");
 const DX_BY_PROGRAM: Record<Program, DxKey[]> = {
   RES: ["aud", "oud", "stim", "mdd"], WM: ["oud", "aud"], IOP: ["aud", "oud", "stim", "cann", "mdd", "gad"], PHP: ["aud", "mdd", "gad", "oud", "stim"],
 };
@@ -125,7 +138,7 @@ const STATUS_POOL: Record<Phase, [AgentKey, string][]> = {
 
 /* ------------------------------------------------------------------ rows */
 interface Extra {
-  dx?: string; dxKey?: DxKey; scores?: Score[]; level?: string; agent?: AgentKey; status?: string; verb?: string;
+  dx?: string; dxKey?: DxKey; mh?: MhDxKey; scores?: Score[]; level?: string; agent?: AgentKey; status?: string; verb?: string;
   needs?: boolean; cov?: boolean; signal?: boolean; rule?: string; lift?: number;
 }
 type Row = [id: string, who: string, age: number, payer: PayerId, prog: Program, type: RequestType, dueHours: number, chance: number, phase: Phase, extra?: Extra];
@@ -136,8 +149,8 @@ function make(band: Band, [id, initials, age, payerId, program, type, dueHours, 
   const auto = phase === "preparing" ? (chance >= 85 ? 0 : Math.max(3, Math.min(16, Math.round((92 - chance) * 0.6)))) : phase === "ready" ? 3 : 0;
   const liftPts = x.lift ?? auto;
   return {
-    id, initials, age, payerId, program, type, levelLabel: x.level ?? PROGRAM_LABEL[program], dxKey,
-    dx: x.dx ?? dxLine(id, dxKey, type, program), scores: x.scores ?? scoresFor(id, dxKey), band, dueAt: dueHours * 60, dueVerb: x.verb ?? DEFAULT_VERB[phase](type),
+    id, initials, age, payerId, program, type, levelLabel: x.level ?? PROGRAM_LABEL[program], dxKey, mh: x.mh,
+    dx: x.dx ?? (x.mh ? `${MH_DX[x.mh].name} · ${PHRASE[type](hashOf(id), program)}` : dxLine(id, dxKey, type, program)), scores: x.scores ?? scoresFor(id, dxKey), band, dueAt: dueHours * 60, dueVerb: x.verb ?? DEFAULT_VERB[phase](type),
     chance, liftPts,
     phase, agent: x.agent ?? pool[0], status: x.status ?? pool[1], needsInput: !!x.needs, coverageFix: !!x.cov, signal: !!x.signal, rule: x.rule, days: daysRequested(program),
   };
@@ -175,14 +188,14 @@ const WEEK_ROWS: Row[] = [
   ["I-2190", "R.P.", 31, "lakeshore", "IOP", "Initial request", 130, 86, "payer", { dxKey: "cann", dx: "Cannabis use disorder · initial authorization", scores: [{ label: "DAST-10", value: "6" }, { label: "PHQ-9", value: "7" }], verb: "Decision" }],
   ["R-1088", "L.T.", 45, "beacon", "RES", "Initial request", 54, 83, "payer"],
   ["P-1611", "A.K.", 33, "summit", "PHP", "Initial request", 66, 81, "payer"],
-  ["P-1637", "N.C.", 52, "harborview", "PHP", "Initial request", 80, 77, "payer"],
+  ["P-1637", "N.C.", 52, "harborview", "PHP", "Initial request", 80, 77, "payer", { mh: "ptsd", scores: [flat("PCL-5", "52"), down("PHQ-9", "16")] }],
   ["I-2231", "S.B.", 37, "cardinal", "IOP", "Initial request", 56, 74, "payer"],
   ["I-2249", "C.G.", 27, "cardinal", "IOP", "Initial request", 90, 66, "payer"],
   ["P-1602", "R.H.", 39, "cardinal", "PHP", "Continued stay", 100, 69, "payer"],
   ["I-2158", "D.O.", 43, "summit", "IOP", "Recertification", 70, 85, "payer"],
   ["P-1580", "F.L.", 35, "summit", "PHP", "Continued stay", 84, 80, "payer"],
   ["R-0902", "G.W.", 50, "summit", "RES", "Continued stay", 62, 76, "payer"],
-  ["I-2166", "H.A.", 24, "summit", "IOP", "Initial request", 78, 83, "payer"],
+  ["I-2166", "H.A.", 24, "summit", "IOP", "Initial request", 78, 83, "payer", { mh: "gad_mh", scores: [down("GAD-7", "13"), flat("PHQ-9", "9")] }],
   ["R-0934", "E.Y.", 38, "beacon", "RES", "Continued stay", 96, 88, "payer"],
   ["P-1590", "Z.T.", 46, "harborview", "PHP", "Continued stay", 110, 79, "payer"],
   ["R-1015", "W.D.", 57, "harborview", "RES", "Initial request", 120, 70, "payer"],
@@ -199,12 +212,12 @@ const WEEK_ROWS: Row[] = [
   ["P-1640", "V.W.", 48, "summit", "PHP", "Continued stay", 100, 80, "payer"],
   ["P-1643", "X.Y.", 36, "cardinal", "PHP", "Initial request", 80, 88, "preparing", { needs: true }],
   ["P-1646", "Z.A.", 55, "beacon", "PHP", "Continued stay", 66, 84, "payer"],
-  ["P-1649", "B.C.", 29, "lakeshore", "PHP", "Initial request", 125, 90, "preparing"],
+  ["P-1649", "B.C.", 29, "lakeshore", "PHP", "Initial request", 125, 90, "preparing", { mh: "bipolar", scores: [down("PHQ-9", "18"), flat("C-SSRS", "1")] }],
   ["P-1652", "D.E.", 61, "evergreen", "PHP", "Continued stay", 95, 86, "payer"],
   ["I-2280", "F.G.", 27, "summit", "IOP", "Initial request", 70, 92, "preparing"],
   ["I-2283", "H.I.", 40, "beacon", "IOP", "Recertification", 85, 85, "payer"],
   ["I-2286", "J.K.", 32, "harborview", "IOP", "Modification", 105, 87, "payer"],
-  ["I-2289", "N.S.", 49, "lakeshore", "IOP", "Initial request", 150, 90, "preparing"],
+  ["I-2289", "N.S.", 49, "lakeshore", "IOP", "Initial request", 150, 90, "preparing", { mh: "mdd_rec", scores: [down("PHQ-9", "19"), down("C-SSRS", "2")] }],
   ["I-2292", "Q.T.", 34, "evergreen", "IOP", "Continued stay", 115, 82, "payer"],
   ["R-1183", "S.W.", 34, "summit", "WM", "Initial request", 55, 80, "payer"],
   ["R-1186", "U.X.", 51, "beacon", "WM", "Initial request", 62, 79, "preparing", { needs: true }],

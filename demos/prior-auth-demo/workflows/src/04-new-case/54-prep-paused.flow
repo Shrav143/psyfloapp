@@ -1,5 +1,5 @@
 title: Authorizations › New Case › Authorization preparation › Paused in Settings
-route: /authorizations/new/:draftId (step 4 of 5, 'Authorization preparation')
+route: /authorizations/new/:draftId (step 3 of 4, Clinical documentation, its last section 'Authorization preparation')
 intro: The run reads the same pause switches as Settings. An agent paused there does not take its turn, whether it was paused in Settings or with 'Pause all agents' on this page. The run holds at that agent until someone resumes it.
 dir: TD
 ---

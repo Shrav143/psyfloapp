@@ -6,7 +6,7 @@ import type { DenialView } from "./lib/useDenialView";
 import { useStore } from "@/store";
 
 export function CallDetailsCard({ view, brief, onBook }: { view: DenialView; brief: BriefData; onBook: () => void }) {
-  const booked = !!view.work.slot;
+  const booked = !!view.work.slot || view.req.chip === "Call booked";
   return (
     <Card>
       <CardHeader title="Call details" />
@@ -49,9 +49,9 @@ export function OpenDocsCard({ view, brief }: { view: DenialView; brief: BriefDa
   const toggle = useStore((s) => s.toggleBriefDoc);
   const ticked = brief.docs.filter((d) => view.work.ticked.includes(d)).length;
   return (
-    <Disclosure title="Have these open" summary={`${ticked} of ${brief.docs.length} ticked`} keepMounted className="psy-print-open">
+    <Disclosure title="Have these open" right={<span className="text-[13px] text-muted tabular-nums">{ticked} of {brief.docs.length}</span>} keepMounted className="psy-print-open">
       {brief.docs.map((d) => (
-        <div key={d} className="border-b border-line px-6 py-2.5 last:border-b-0">
+        <div key={d} className="border-b border-line px-5 py-2.5 last:border-b-0">
           <Checkbox checked={view.work.ticked.includes(d)} onChange={() => toggle(view.req.id, d)} label={d} />
         </div>
       ))}

@@ -124,12 +124,30 @@ export interface WorkflowChoice {
   at: number;
 }
 
+export type PatientSex = "F" | "M" | "X";
+export const SEX_LABEL: Record<PatientSex, string> = { F: "Female", M: "Male", X: "Other or not stated" };
+export interface Onboarding {
+  /** A second plan: its payer and member ID. Null payer means "No". */
+  secondary?: { payerId: PayerId | null; memberId: string };
+  clinician?: string;
+  npi?: string;
+  /** For a patient under 18: the guardian's initials and relationship. */
+  guardian?: string;
+  referralSource?: string;
+}
+/** The intake fields an import can fill. */
+export type ImportedKey = "initials" | "dob" | "age" | "sex" | "payerId" | "planType" | "memberId" | "program" | "diagnosis" | "startDate";
+export interface ImportMark {
+  source: "emr" | "file" | "screenshot";
+  value: string;
+}
+
 export interface CaseDraft {
   id: string;
   caseId: string | null;
   saved: boolean;
   sent: boolean;
-  /** 0 holds the first three of the five steps, 1 is Authorization preparation (the agents), 2 is Review and submit. */
+  /** 0 holds the first three of the four steps, 1 is Clinical documentation with the agents started (it opens on their section, Authorization preparation), 2 is Review & submit. */
   step: 0 | 1 | 2;
   /** While step is 0: Intake, then Eligibility and benefits, then Clinical documentation. */
   phase: "intake" | "eligibility" | "records";
@@ -157,7 +175,12 @@ export interface CaseDraft {
   referrer?: { org: string; clinician: string };
   /** The person went on past a warning and said why. Shown on Review and written to the request's history. */
   documented?: DocumentedReason[];
-  patient: { initials: string; age: number | null };
+  /** Initials, age and, when known, the date of birth (yyyy-mm-dd; the age is computed from it) and sex. A draft from before the date of birth was asked keeps its age. */
+  patient: { initials: string; age: number | null; dob?: string; sex?: PatientSex };
+  /** The rarely needed parts of patient onboarding, folded under "More" on Intake. */
+  onboarding?: Onboarding;
+  /** Fields an import filled (EMR pull, file or screenshot), with the value it gave: the "From EMR" note shows until the person changes the field. */
+  imported?: Partial<Record<ImportedKey, ImportMark>>;
   reference: string;
   payerId: PayerId | null;
   planType: string;
@@ -187,7 +210,7 @@ export interface CaseDraft {
   /** The case page's applied actions whose sentences the edited summary already holds. Read only while `narrative` is set. */
   narrativeIncludes?: string[];
   revision: number;
-  /** The records changed after the agents ran, so the run started over. Shown on Authorization preparation until the run ends. */
+  /** The records changed after the agents ran, so the run started over. Shown in the Authorization preparation section until the run ends. */
   recordsChanged?: boolean;
   /** Things the payer asks for that the case does not meet (required documents, backdating). Each holds the approval chance back a little. */
   unmet: number;
@@ -309,7 +332,7 @@ export const SUGGESTIONS = [
 /* ------------------------------------------------------------------ pure helpers */
 export type DraftState = "intake" | "question" | "working" | "ready";
 
-/** The agents have been started on this case: some of their work is done, or the plan for the run has been made. Looking at the Authorization preparation step does not start them. */
+/** The agents have been started on this case: some of their work is done, or the plan for the run has been made. Looking at Clinical documentation does not start them. */
 export const runStarted = (d: Pick<CaseDraft, "run" | "questions">): boolean => d.run.done > 0 || d.questions.length > 0 || !!d.run.failed;
 
 export function draftState(d: CaseDraft): DraftState {
@@ -409,6 +432,27 @@ const PLAN_TYPE_OF: Record<string, string> = { summit: "HMO", cardinal: "HMO", e
 /** The plan type to pre-fill for a payer. A payer added on Payers maps its own type onto the same list. */
 export const planTypeOf = (id: PayerId): string => PLAN_TYPE_OF[id] ?? ({ "Managed care plan": "HMO", PPO: "PPO", "Medicare Advantage": "Medicare Advantage", "Carve-out": "Behavioral carve-out" } as Record<string, string>)[payerById(id)?.type ?? ""] ?? "";
 export const PLAN_TYPES = ["HMO", "PPO", "Medicare Advantage", "Behavioral carve-out", "Fee-for-service"];
+/** The plans each payer offers, as its record says. The first is the one pre-filled. */
+const PLANS_OF: Record<string, string[]> = {
+  summit: ["HMO"],
+  cardinal: ["HMO", "MyCare Ohio (Medicare-Medicaid)"],
+  evergreen: ["HMO", "Fee-for-service"],
+  beacon: ["PPO", "HMO", "EPO"],
+  harborview: ["Medicare Advantage", "Dual special needs plan (D-SNP)"],
+  lakeshore: ["Behavioral carve-out"],
+};
+/** The plan types to choose from for a payer. A payer added on Payers offers its own type. */
+export const plansOf = (id: PayerId | null): string[] => (!id ? [] : PLANS_OF[id] ?? (planTypeOf(id) ? [planTypeOf(id)] : PLAN_TYPES));
+
+/** Whole years between a date of birth (yyyy-mm-dd) and a demo minute. Null for a date that cannot be read or lies in the future. */
+export function ageOn(dob: string, clock: number): number | null {
+  const m = dob.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return null;
+  const now = toDate(clock);
+  let age = now.getFullYear() - Number(m[1]);
+  if (now.getMonth() + 1 < Number(m[2]) || (now.getMonth() + 1 === Number(m[2]) && now.getDate() < Number(m[3]))) age -= 1;
+  return age >= 0 && age < 120 ? age : null;
+}
 export const NEW_REQUEST_TYPES: RequestType[] = ["Initial request", "Admission", "Continued stay", "Recertification", "Modification", "Retro-authorization"];
 
 /** Where the approval chance starts and ends for a payer: its "approved as asked" rate plus 14 once the agents have worked. Summit: 62 to 88. */

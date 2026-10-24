@@ -3,20 +3,16 @@ import { Card, ChecklistGroup } from "@/components/ui";
 import type { CaseDraft, DocSlotId } from "@/data/cases";
 import { uid } from "@/lib/format";
 import { useStore } from "@/store";
-import { selectUnmappedForConnected } from "@/store/emr";
 import { referralPrefill } from "@/store/referrals";
 import { DocPreviewDrawer } from "./DocPreviewDrawer";
 import { DocRow } from "./DocRow";
 import { makeDocument } from "./documents";
 import { FieldRow } from "./FieldRow";
-import { EMR_CHARTS } from "./lookups";
 import { usePayerContext } from "./payerContext";
 import { buildChecklist, isDocRow, slotOf, tally, type Group, type RowId } from "./recordsModel";
 
-/** Some groups of the checklist in one card. Intake shows the patient, insurance and request groups; Clinical documentation shows the clinical summary and the documents.
-    Only one editor is open at a time. `rows` can leave rows out of a group (a retro-authorization keeps its dates on a card of its own). */
+/** The checklist of Clinical documentation in one card: the clinical summary and the documents. Only one editor is open at a time. `rows` can leave rows out of a group. */
 export function RecordsChecklist({ draft, groups: ids, rows: keep, header }: { draft: CaseDraft; groups: Group["id"][]; rows?: readonly string[]; /** Sits at the top of the card: the readiness line. */ header?: ReactNode }) {
-  const clock = useStore((s) => s.clock);
   const referrals = useStore((s) => s.referrals);
   const put = useStore((s) => s.putCaseDocs);
   const [open, setOpen] = useState<RowId | null>(null);
@@ -25,18 +21,10 @@ export function RecordsChecklist({ draft, groups: ids, rows: keep, header }: { d
   const pickFor = useRef<{ slot: DocSlotId; replace: boolean } | null>(null);
   const ctx = usePayerContext(draft);
 
-  /* The fields of the system the chart came from that still wait for a mapping in EMR Connect. */
-  const emrUnmapped = useStore((s) => s.emrUnmapped);
-  const emrSystems = useStore((s) => s.emrSystems);
-  const unmapped = useMemo(() => {
-    const system = EMR_CHARTS.find((c) => c.id === draft.emrChart)?.systemId;
-    return selectUnmappedForConnected(useStore.getState()).filter((u) => u.systemId === system);
-    // The selector reads these two lists; the store is read directly so it can stay a plain function of the state.
-  }, [emrUnmapped, emrSystems, draft.emrChart]);
   const referral = useMemo(() => (draft.referralId ? referralPrefill(useStore.getState(), draft.referralId) : null), [referrals, draft.referralId]);
   const groups = useMemo(
-    () => buildChecklist(draft, clock, referral, ctx, unmapped).filter((g) => ids.includes(g.id)).map((g) => (keep ? { ...g, rows: g.rows.filter((r) => keep.includes(r.id)) } : g)),
-    [draft, clock, referral, ctx, unmapped, ids, keep],
+    () => buildChecklist(draft, referral, ctx).filter((g) => ids.includes(g.id)).map((g) => (keep ? { ...g, rows: g.rows.filter((r) => keep.includes(r.id)) } : g)),
+    [draft, referral, ctx, ids, keep],
   );
   const toggle = (id: RowId) => setOpen((cur) => (cur === id ? null : id));
 
@@ -54,12 +42,12 @@ export function RecordsChecklist({ draft, groups: ids, rows: keep, header }: { d
 
   return (
     <Card>
-      {header ? <div className="px-6 pt-6 pb-5">{header}</div> : null}
+      {header ? <div className="px-5 pt-4 pb-4">{header}</div> : null}
       {groups.map((g) => {
         const count = tally([g]);
         return (
           <ChecklistGroup key={g.id} title={g.title} done={count.done} total={count.total}>
-            {g.note ? <li className="px-6 pb-1.5 text-[13px] text-muted">{g.note}</li> : null}
+            {g.note ? <li className="px-6 pb-1.5 text-[13px] text-mid-ink">{g.note}</li> : null}
             {g.rows.map((row) => {
               if (isDocRow(row.id)) {
                 const id = row.id;

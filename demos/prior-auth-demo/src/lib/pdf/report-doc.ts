@@ -36,9 +36,11 @@ export interface ReportDoc {
   reasoning: { quote: string; gap: string };
   synthesis: string[];
   findings: ReportFinding[];
-  /** Empty for denials with no ASAM dimensions (late notice, retro-authorization). */
+  /** Empty for denials with no framework dimensions (late notice, retro-authorization). */
   dims: ReportDim[];
   dimsSub: string;
+  /** The heading of the dimensions section, named after the denial's framework ("ASAM Criteria dimensions", "LOCUS dimensions"). Falls back to REPORT_HEADINGS.dims. */
+  dimsTitle?: string;
   recommendations: { title: string; text: string }[];
   options: ReportOption[];
   criteria: string[];

@@ -1,5 +1,5 @@
 title: Denial Intelligence › Written appeal › Edit, sign and file
-route: /denials?id=D-3318
+route: /denials/D-3318
 intro: With the letter drafted, the person edits it, picks the evidence, saves a draft, and a licensed clinician signs. Navigator files only after the signature.
 dir: TD
 also: Demo only: Navigator's filing through the payer's portal is simulated (about one second).
@@ -9,10 +9,10 @@ input i1 "Edit the letter text\n(box 'Appeal letter')"
 input i2 "Tick or untick items under 'Evidence to attach'"
 click c1 "Click 'Save draft'"
 store st1 "Letter and evidence saved on the denial\nStatus does not change"
-toast t1 "'Draft saved'\n'It stays in Denial Intelligence until a clinician signs.'"
+toast t1 "'Draft saved'"
 
 click c2 "Click 'Sign and file'"
-overlay o1 "Modal 'Sign and file the appeal'\n'Sign-off gate. A licensed clinician signs every appeal.'"
+overlay o1 "Modal 'Sign and file the appeal'\nSub line 'Sign-off gate'"
 input i3 "'Signing as' (required)\nMedical director (chosen at first), Clinical director, Treating clinician (licensed)"
 input i4 "Tick: 'I reviewed this letter against the chart. Every statement is accurate and supported by the evidence attached.'"
 decision d1 "Is the box ticked?"
@@ -26,7 +26,7 @@ agent a1 "Navigator files it through the payer's portal and saves the receipt"
 store st3 "Request: chip 'Appeal filed' ('Second-level appeal filed' or 'External review' on a later level), 'Waiting on the payer'\nDeadline cleared; 'filed 10/20', 'decision 11/19'"
 toast t2 "'Appeal filed'\n'Cardinal decides by 11/19. It shows on the Dashboard.'"
 toast t3 "Notification 'Appeal filed' from Navigator\nOpens the request on the Dashboard"
-process p2 "Drawer closes\nNext-step block 'Appeal filed. Waiting on the payer'\n'Your options' row is gone"
+process p2 "Drawer closes\nThe written appeal choice reads 'Appeal filed 10/20 · decision 11/19'\n'Compare the options' is gone"
 
 click c4 "Click 'Cancel' or the X in the modal"
 process p3 "Back to the open drawer, nothing filed"

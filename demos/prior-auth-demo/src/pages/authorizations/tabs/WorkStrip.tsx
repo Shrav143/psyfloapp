@@ -14,14 +14,14 @@ export function WorkStrip({ run, sections, similar }: { run: RunState; sections:
     { agent: "forecaster", lines: [`Matching ${similar.toLocaleString("en-US")} similar decisions`, "Re-scoring the approval chance"], done: "New chance ready" },
   ];
   return (
-    <div role="status" aria-live="polite" className="psy-fade-up rounded-[20px] border border-forest/30 bg-[#F3F7F4] px-5 py-4">
-      <div className="mb-2 text-sm font-semibold">The agents are updating the draft <span className="font-normal text-muted">· about 8 seconds</span></div>
+    <div role="status" aria-live="polite" className="psy-fade-up rounded-2xl border border-forest/30 bg-[#F3F7F4] px-4 py-3">
+      <div className="mb-1 text-[13px] font-semibold">The agents are updating the draft</div>
       {steps.map((s, i) => {
         const state = run.stage > i ? "done" : run.stage === i ? "working" : "waiting";
         return (
-          <div key={s.agent} className="flex items-center gap-3 py-1.5">
-            <AgentBadge agent={s.agent} size={26} />
-            <span className="w-24 font-semibold">{AGENTS[s.agent].name}</span>
+          <div key={s.agent} className="flex items-center gap-3 py-1">
+            <AgentBadge agent={s.agent} size={22} />
+            <span className="w-24 text-[13px] font-semibold">{AGENTS[s.agent].name}</span>
             <span className={state === "waiting" ? "flex-1 text-[13px] text-muted" : "flex-1 text-[13px] text-ink2"}>{state === "done" ? s.done : state === "working" ? s.lines[Math.min(run.sub, s.lines.length - 1)] : "Waiting"}</span>
             {state === "done" ? <Check size={18} className="ico text-good" aria-label="Done" /> : state === "working" ? <Spinner /> : <span className="h-2 w-2 rounded-full bg-[#D9D0C3]" />}
           </div>

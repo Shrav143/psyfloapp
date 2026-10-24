@@ -1,36 +1,26 @@
-title: Authorizations › New Case › The stepper and the five steps
+title: Authorizations › New Case › The stepper and the four steps
 route: /authorizations/new/:draftId
-intro: The strip at the top of New Case: Intake, Eligibility & Benefits, Clinical documentation, Authorization preparation, Review & submit. Every step opens at any time, forward or back; the draft keeps what was typed and what the agents did. Each step shows one state under its name, and the same state sits in the step's own header.
+intro: The strip at the top of New Case: Intake, Eligibility & Benefits, Clinical documentation, Review & submit. Authorization preparation (the agents' run) is the last section of Clinical documentation. Every step opens at any time, forward or back; the draft keeps what was typed and what the agents did. Each step shows one state under its name; hovering it gives the one reason.
 dir: TD
 ---
 start s1 "A case is open on any step"
-screen sc1 "Stepper under the title and the 'Authorization type' dropdown\nFive steps, each a button with its name and one state label under it"
+screen sc1 "Header card: 'New Case', the case id once it has one\n'Authorization type' dropdown on the right\nStepper under it: four steps, each a button with its name and one state label"
 process p1 "The current step: dark circle with its number\nComplete: a tick. Needs attention: a warning triangle. Blocked: a cross\nNot applicable: a dashed circle with a dash. Pending: the step number"
-decision d1 "Which step did the person click?"
+screen sWf "The workflow line under the stepper\nName, version, payer, info tip, 'View workflow', 'At Clinical documentation'"
 click c1 "Click any step, including a later one"
 process p2 "The draft's position moves to that step\nNothing typed and nothing the agents did is lost"
-screen sc2 "Page shows that step\nSentence under the title and the step header change with it"
-screen sH "Step header\n'STEP 2 OF 5' · step name · state pill · one reason, e.g. 'Coverage and benefits checked'"
+screen sc2 "Page shows that step\nNo sentence under the title and no step header: the stepper says where you are"
 process pTip "Hover a step: its one-line reason\n'Needs the payer, member ID and dates', '2 warnings', 'The draft is ready'"
-process pNoStart "Opening Authorization preparation never starts the agents\nIt says 'The agents have not started' with one button, 'Start the agents'"
+process pNoStart "Opening Clinical documentation never starts the agents\nIts last section, 'Authorization preparation', has one button: 'Start the agents'"
 
-group gSub "The sentence under the title"
-  screen t1 "Intake: the type's own line\nInitial: 'Start with a referral or a patient. Everything is editable.'\nReview, renewal, modification: 'Find the patient, then the authorization ...'\nRetroactive: 'Care was delivered before an authorization was in place. Say what, when and why.'"
-  screen t2 "Eligibility & Benefits: 'Verify checks coverage and benefits for the dates asked. A warning says what to do next and never traps you.'"
-  screen t3 "Clinical documentation: 'Drop what you have. Reader sorts the files and lists what is still missing. The required items come from the payer's saved list.'\nTop right: 'Use sample chart'"
-  screen t4 "Authorization preparation: 'The agents are reading the chart and checking Summit's rules. Questions come to you only when they must.'"
-  screen t5 "Review & submit: 'Nothing is sent to the payer until a person signs. See what is missing first, then read the summary.'"
-endgroup
-
-group gFwd "Each step's own buttons"
+group gFwd "Each step's own buttons, in the bar at the bottom"
   click b1 "Intake: 'Save as draft', 'Continue to Eligibility & Benefits'"
   click b2 "Eligibility & Benefits: 'Back', 'Save as draft', 'Continue to Clinical documentation'"
-  click b3 "Clinical documentation: 'Back', 'Save as draft', 'Continue'"
-  click b4 "Authorization preparation: 'Back', 'Pause all agents', 'Skip ahead', 'Review & submit'"
-  click b5 "Review & submit: 'Back', 'Save as draft'\nThe button that signs is in the Sign card on the right"
+  click b3 "Clinical documentation: 'Back', 'Save as draft'\n'Continue to Review & submit' once all ten agents are done"
+  click b4 "Review & submit: 'Back', 'Save as draft'\nThe button that signs is in the Sign card on the right"
 endgroup
-process pBack "'Back' goes one step back\nIn the step bar at the bottom, always in view while a long step scrolls"
-process pHint "The footer's hint line says what is still open, never that the person cannot go on\ne.g. 'Still to add: patient, payer. You can go on; Review & submit lists what is missing.'"
+process pBack "'Back' goes one step back\nFrom Review & submit it opens the agents' section of Clinical documentation\nThe bar stays in view while a long step scrolls"
+toast pHint "The bar's only line is a payer workflow warning, when there is one\ne.g. 'Workflow: Submission window: 1 business day left'"
 
 click cLink "Click the link 'Case Manager' above the title"
 goto gCm "Continues in: Case Manager"
@@ -42,24 +32,22 @@ goto g2 "Continues in: Authorizations › New Case › Eligibility & Benefits �
 goto g3 "Continues in: Authorizations › New Case › Clinical documentation › The checklist and Continue"
 goto g4 "Continues in: Authorizations › New Case › Authorization preparation › Start the run and watch it"
 goto g5 "Continues in: Authorizations › New Case › Review & submit › The draft and the summary"
+goto gWf "Continues in: Authorizations › New Case › Workflow › Show the workflow and its path"
 
-s1 --> sc1 --> p1 --> d1
+s1 --> sc1 --> p1 --> c1
 sc1 --> pTip
-d1 --> c1 --> p2 --> sc2 --> sH
-sc2 -.-> pNoStart
-sc2 --> t1 & t2 & t3 & t4 & t5
-t1 --> b1 --> g1
-t2 --> b2 --> g2
-t3 --> b3 --> g3
-t4 --> b4 --> g4
-t5 --> b5 --> g5
+sc1 --> sWf -.-> gWf
+c1 --> p2 --> sc2
+sc2 -.-> pNoStart --> g4
+sc2 --> b1 --> g1
+sc2 --> b2 --> g2
+sc2 --> b3 --> g3
+sc2 --> b4 --> g5
 b2 --> pBack
 b3 --> pBack
 b4 --> pBack
-b5 --> pBack
 b1 -.-> pHint
-b2 -.-> pHint
 b3 -.-> pHint
-sH -.-> gStates
+p1 -.-> gStates
 sc1 --> cLink --> gCm
 sc1 -.-> sFull --> gFull

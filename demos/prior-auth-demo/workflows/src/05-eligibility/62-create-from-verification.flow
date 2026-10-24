@@ -16,7 +16,7 @@ process p4 "Step 2 shows it as the verification for this case\n'Last verified Tu
 process p5 "Step 2 offers 'Refresh verification' before going on"
 decision q3 "Is the check at a site the viewer can see?"
 screen o1 "A notice: not available at this site\nNothing is carried over"
-screen sc "New Case\nAuthorization type, the five steps"
+screen sc "New Case\nAuthorization type, the four steps"
 goto g1 "Continues in: Authorizations › New Case › How a case starts and resumes"
 goto g2 "Continues in: Authorizations › Eligibility & Benefits › The shared verification record"
 goto g3 "Continues in: Authorizations › Eligibility & Benefits › Result › Next actions"

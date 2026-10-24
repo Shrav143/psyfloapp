@@ -2,14 +2,14 @@ title: Authorizations › Case page › Recommended actions › Dismiss and brin
 route: /authorizations/case/R-1042?tab=actions
 intro: Dismissing one card or every included card, why the dialog asks for a reason, what it warns about when a card gates 'Send to payer', and how to bring a card back.
 dir: TD
-also: The reason is written to the shared list of dismissals that Analytics reads, one line for each time 'Dismiss and log' is confirmed (not one per card). It also shows in 'Logged decisions', on the dismissed card and in the Dashboard request's history.
+also: The reason is written to the shared list of dismissals that Analytics reads, one line for each time 'Dismiss and log' is confirmed (not one per card). It also shows once in the case page's History, flagged 'Logged decision', on the dismissed card and in the Dashboard request's history.
 ---
 click d1 "Click 'Dismiss' on one card"
 click d2 "Click 'Dismiss recommendations' in the side panel\n(all included cards at once)"
-overlay m "Dialog 'Dismiss this recommendation?' or 'Dismiss 3 recommendations?'\n'Say why. The reason is logged and helps the agents learn what is useful.'"
+overlay m "Dialog 'Dismiss this recommendation?' or 'Dismiss 3 recommendations?'"
 process li "Bullet list of the card titles"
 decision dg "Does a title clear a check that gates 'Send to payer'?"
-toast wb "Warning: '... clears a check that gates Send to payer. Dismissing it leaves that check open. You can bring it back later.'"
+toast wb "Warning: 'Leaves a Send to payer check open: ...'"
 
 group gR "Reason (pick one)"
   click r1 "Pick 'Already handled outside Psyflo'"
@@ -29,7 +29,7 @@ store dsh "If the request is on the Dashboard: an event on its history\n'You dis
 store an "Dismissal recorded for Analytics\nThe request and the reason"
 goto gA "Continues in: Analytics › Arrive and read the page"
 toast tt "'Recommendation dismissed' or '3 recommendations dismissed'\n'The reason is logged and feeds Analytics.'"
-process mv "Cards leave the open list\nHeader line 'up to N%' drops their points\n'Dismissed (1)' appears: struck-through title, 'Reason logged: ...'"
+process mv "Cards leave the open list\nHeader line 'up to N%' drops their points\n'Dismissed (1)' appears: struck-through title, the reason, 'Bring back'"
 process gt "If the card gated a check, that check stays open\n'Send to payer' stays off"
 
 click bb "Click 'Bring back' on a dismissed card"

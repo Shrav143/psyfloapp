@@ -1,11 +1,11 @@
 title: Authorizations › New Case › Clinical documentation › Drop files and let Reader sort them
-route: /authorizations/new/:draftId (step 3 of 5, the drop zone and 'Use sample chart')
-intro: One drop zone takes the whole pile. Reader sorts files by what their names say, fills what is still blank, reads each file, and reports in one toast. 'Use sample chart' does the same job for J.M. in one click. A retroactive request has a smaller drop zone on Intake that works the same way.
+route: /authorizations/new/:draftId (step 3 of 4, the drop bar and 'Use sample chart')
+intro: One drop bar takes the whole pile. Reader sorts files by what their names say, fills what is still blank, reads each file, and reports in one toast. 'Use sample chart' does the same job for J.M. in one click. A retroactive request has a smaller drop zone on Intake that works the same way.
 dir: TD
 ---
-start s1 "On step 3, give the drop zone some files"
-input i1 "Drop files on 'Drop everything you have for this patient'\nAny names, any order, several at once"
-click c1 "Click the zone, or press Enter or Space"
+start s1 "On step 3, give the drop bar some files"
+input i1 "Drop files on 'Drop the chart, the insurance card and any documents, or click to choose'\nAny names, any order, several at once"
+click c1 "Click the bar, or press Enter or Space"
 process p0 "The file picker opens\nSeveral files can be chosen"
 decision dNone "Any file chosen?"
 endx eNone "Nothing happens"
@@ -31,7 +31,7 @@ group gSlot "3 · Slots"
   process pDup "Second file: 'Could not place'"
   process pPlace "File goes into its slot\nIt replaces any file already in that slot\nand clears a 'marked not available' on it"
   decision dOpen "No match: is a required slot still open?"
-  process pGuess "Takes the first open required slot on the payer's list, referral last\nSkips a document marked 'not available'\n'Reader guessed this one. Check it.'"
+  process pGuess "Takes the first open required slot on the payer's list, referral last\nSkips a document marked 'not available'\n'Reader guessed the slot. Check it'"
   process pNone "'Could not place'\nAny file type is taken, but there is no slot left"
 endgroup
 
@@ -43,16 +43,16 @@ decision dFind "Does the file get a finding?\nSample files are scripted\nOther f
 process pOk "Row: 'N checks passed'"
 process pWarn "Row: 'Check this' with the finding text"
 toast t1 "'Reader sorted 6 files: 2 matched, 4 need a look'\n'Could not place: ... Check where Reader put: ... Findings in: ...'"
-process pTick "Checklist rows tick off\n'N of M ready' goes up\n'Continue' is never switched off"
+process pTick "Checklist rows tick off\n'N of M ready' goes up\n'Start the agents' is never switched off"
 goto g30 "Continues in: Authorizations › New Case › Clinical documentation › The checklist and Continue"
 
 group gSample "Use sample chart"
   click c2 "Click 'Use sample chart' (top right of step 3)"
   decision dHas "Does the case already have a patient?\nFrom a referral, an EMR pull or typed initials"
-  store stAll "Fills J.M., 34 · Summit Medicaid HMO · …4821\nResidential 3.5 · Admission · F10.20, F33.2 · reason"
+  store stAll "Fills T.W., 41, born 03/02/1985, Female · Summit Medicaid HMO · …5519\nResidential 3.5 · Admission · F10.20, F33.2 · reason"
   store stKeep "Keeps that patient and request\nAdds only a blank member ID, start date or type"
   store stDocs "Adds a sample file for each document on the payer's saved list\nSummit: 8 of 9. 'Therapy note from the last 14 days' is left out on purpose"
-  toast t2 "'Sample chart loaded'\n'J.M., 34. 8 of 9 documents are added and being checked.'"
+  toast t2 "'Sample chart loaded'\n'T.W., 41. 8 of 9 documents are added and being checked.'"
 endgroup
 
 s1 --> i1

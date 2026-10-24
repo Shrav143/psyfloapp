@@ -8,8 +8,8 @@ start s1 "A check is made"
 start s2 "New Case needs coverage for a patient"
 
 group gWrite "Where a record is written"
-  click w1 "Verify a patient: 'Check now' finishes"
-  click w2 "Eligibility list: 'Re-check', or the result's 'Check again'"
+  click w1 "Verify page: 'Check now' finishes"
+  click w2 "Eligibility list or result: 'Re-check'"
   wait w3 "The Demo clock passes a booked re-check time"
   click w4 "New Case step 2: run a check, or 'Refresh verification'"
 endgroup
@@ -24,8 +24,8 @@ store r5 "A check at no case yet is filed under one site\nthe site in view (Site
 store r6 "Paused: nothing is asked\nA patient already known keeps the last result with the warning 'Verification service unavailable'\nAnyone else is saved as 'Not checked'"
 
 group gRead "Where a record is read"
-  screen a1 "Eligibility list: a row, the title count, the four figures, the sidebar badge"
-  screen a2 "Eligibility result: the verdict, the three parts, the warnings"
+  screen a1 "Eligibility list: a row, the verdict tiles, the count, the sidebar badge"
+  screen a2 "Eligibility result: the verdict and its fact, the rows, a warning no row says, History"
   screen a3 "New Case step 2: the summary and 'View full verification details'"
 endgroup
 

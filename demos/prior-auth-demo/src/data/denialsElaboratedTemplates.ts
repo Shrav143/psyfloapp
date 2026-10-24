@@ -392,4 +392,41 @@ export const DIMS_LONG: Record<string, DimLongByTone> = {
     risk: "The home setting has little support for recovery: someone in the household uses, there is no family or peer support, or housing is unstable. The lower level of care in the letter assumes a home that can hold the patient between sessions. Cite the referral log and the social history, and ask the case manager to look at recovery housing. Ask the reviewer how the lower level would work from this setting.",
     neutral: "The home setting was not described in the most recent review. It is rated in the assessment, and a sentence on housing, household and supports would let it be cited. Ask the clinician or the case manager for it before the call. Until then, leave the dimension out.",
   },
+  /* A mental health condition with no substance use (LOCUS, or CALOCUS-CASII under 18). One reading per tone, as above. */
+  "MH1 Risk of harm": {
+    good: "No thoughts of self-harm or harm to others are recorded at the most recent review, and the safety plan is up to date. On this dimension the chart would not support a higher level of care, and saying so first shows the review was read in full.",
+    mid: "Thoughts of self-harm come and go, with no plan or intent, and a safety plan is in place. Cite the date of the last risk assessment and what changed since admission, because a reviewer will look for movement here before anything else.",
+    risk: "Passive thoughts of self-harm were recorded at the most recent review, with no plan, and the safety plan is in place. Risk of harm is the first dimension a reviewer reads for a mental health level of care. Cite the risk assessment with its date and the safety plan, and say how often risk is checked in the program, because a lower level of care would check it far less often.",
+    neutral: "Risk of harm was not rated at the most recent review. Ask the clinician to record a dated risk assessment before the request goes back: without it, the reviewer reads the lowest risk.",
+  },
+  "MH2 Function": {
+    good: "Daily routines, work or school and self-care are back to where they were before the episode. This supports a step-down plan rather than the requested level, so cite it only together with what still limits function.",
+    mid: "Function has improved but is not back to baseline: some days are managed, others are not. Cite concrete examples from the progress notes, such as missed work days or tasks the patient cannot yet do alone.",
+    risk: "The patient has not been able to keep up with work or daily routines since the episode began. Loss of function is the second test a reviewer applies, and the chart supports it here. Cite the progress note that describes the days missed and the routines that have stopped, and the functional rating if one is recorded.",
+    neutral: "Function is not described in enough detail to be cited. A sentence on work, school, self-care and daily routines in the next note would answer the question a reviewer asks on this dimension.",
+  },
+  "MH3 Co-morbidity": {
+    good: "No medical or other psychiatric condition complicates treatment at the most recent review. This dimension does not drive the request.",
+    mid: "Poor sleep and a medical condition that is being managed alongside treatment both make recovery slower and need watching. Cite the medication record and any dose change still settling, because a change made inside the requested period is a reason to keep the current level until its effect is known.",
+    risk: "A second psychiatric or medical condition is active and interacts with treatment, for example a medication that needs close observation. Cite the record that shows it and how the program monitors it.",
+    neutral: "No other condition is recorded for this dimension. It neither helps nor hurts the request.",
+  },
+  "MH4 Environment": {
+    good: "Home is stable and supportive, with people who can help the patient keep to the plan. This favours a step-down once the other dimensions allow it.",
+    mid: "Stress at home is high and support outside the program is limited. Cite the psychosocial assessment for who is at home and what support exists, and the plan for building it before a step-down.",
+    risk: "Home adds to the stress that brought the patient into treatment, and there is no support outside the program. Cite the psychosocial assessment, and name what would need to be in place for a lower level of care to be safe.",
+    neutral: "The recovery environment was not described at the most recent review. A sentence on the household, stressors and supports would answer the reviewer's question on this dimension.",
+  },
+  "MH5 History": {
+    good: "The patient has responded to treatment at a lower level before. That supports a step-down plan, so pair it with what is different this time.",
+    mid: "An earlier, less intensive treatment did not hold. Cite its dates and why it ended, because a reviewer weighs a failed lower level of care heavily when deciding whether the requested level is needed now.",
+    risk: "Several earlier attempts at lower levels of care did not hold, and the last ended in a crisis. Cite each one with its dates; the history is the strongest answer to a reviewer who suggests outpatient care.",
+    neutral: "Treatment history is not recorded in enough detail to cite. The intake assessment usually has it; attach it if it does.",
+  },
+  "MH6 Engagement": {
+    good: "The patient attends every session and takes part in the plan. A reviewer may read engagement as stability, so cite it as the reason the plan is working, not as a sign that it can stop.",
+    mid: "Attendance is regular but participation is uneven. Cite what the patient is working on and what is still ahead in the plan.",
+    risk: "Engagement is low: missed sessions or ambivalence about the plan. This is a weakness in the request, and the clinician should say how the team is addressing it.",
+    neutral: "Engagement is not described in the most recent review. A line on attendance and participation would answer the reviewer's question.",
+  },
 };

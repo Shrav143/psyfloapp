@@ -10,8 +10,8 @@ const bullets = (items: string[]): string[] => [...items.map((c) => `- ${c}`), "
 /** One numbered recommendation, as copied by its own Copy button. */
 export const recommendationText = (r: { title: string; text: string }): string => `${r.title}\n${r.text}`;
 
-export function dimensionText(d: { name: string; tone: Tone; text: string }): string {
-  return `${d.name} (${DIM_TONE_WORD[d.tone]})\n${d.text}`;
+export function dimensionText(d: { label: string; tone: Tone; text: string }): string {
+  return `${d.label} (${DIM_TONE_WORD[d.tone]})\n${d.text}`;
 }
 
 export function weakSummaryText(view: DenialView, long: LongText): string {
@@ -33,9 +33,12 @@ export function weakSummaryText(view: DenialView, long: LongText): string {
   ].join("\n");
 }
 
+/** "ASAM Criteria, full summary": the title of the dimensions pop-up and of its copied text. */
+export const dimsSummaryTitle = (view: DenialView): string => `${view.analysis.framework.name}, full summary`;
+
 export function dimsSummaryText(view: DenialView, long: LongText): string {
   return [
-    ...head(view, "The six ASAM dimensions, full summary"),
-    ...long.dims.flatMap((d) => [`${d.name.toUpperCase()} (${DIM_TONE_WORD[d.tone]})`, d.text, ""]),
+    ...head(view, dimsSummaryTitle(view)),
+    ...long.dims.flatMap((d) => [`${d.label.toUpperCase()} (${DIM_TONE_WORD[d.tone]})`, d.text, ""]),
   ].join("\n").trimEnd();
 }

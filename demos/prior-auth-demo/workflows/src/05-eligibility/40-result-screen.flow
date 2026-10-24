@@ -1,32 +1,31 @@
 title: Authorizations › Eligibility & Benefits › Result › What the page shows
 route: /authorizations/eligibility/R-1042
-intro: One result, result first. A single summary card holds the verdict with its buttons, then Eligibility, Benefits and What this service needs, then any warnings, one facts line and one plain note. The seven payment checks and the agents' answers are behind one button, in a side panel. Reached by a row on the list, or when a live check finishes. When the check began from a referral, a link leads back to it. A check at a site the viewer cannot see shows a notice instead.
+intro: One result, said once. A slim title row (the patient), then one card: the verdict band with the one fact that decides it and the actions, then Eligibility, Plan type and routing, Benefits, Patient pays (only when there is a cost share) and What this service needs as label and value rows, then a warning only when no row already says it, and one quiet facts line. The payment checks, how it was checked and History are behind one button, in a side panel. Reached by a row on the list, or when a live check finishes. A check at a site the viewer cannot see shows a notice instead.
 dir: TD
 ---
 start s1 "Click a row on the list, or a live check finishes"
 decision qs "Is this check at a site the viewer can see?"
 screen os "'This coverage check is not available at Site A'\nIt names no patient. Staff who may see both sites get 'Show Site B'"
-screen sc "Eligibility & Benefits\nTitle is the headline, for example 'Covered, but you need an authorization first.'\nSub 'R-1042 · J.M., 34 · Residential 3.5'"
+screen sc "Title row (no card, no headline)\n'R-1042' (24 px) · 'J.M., 34' · 'Residential 3.5 · Summit Medicaid HMO (Ohio Medicaid)'\nA Site A or Site B tag when the view is narrowed"
 click b1 "Click '← Eligibility & Benefits' (back link, top left)"
 goto g0 "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows"
 click b2 "Click '← Back to referral RF-2040' beside it\nWith ?case= in the address it reads '← Back to case R-1042'\nShown only when ?referral= names a referral that exists"
 goto g4 "Continues in: Authorizations › New Case › Referral › The full referral page"
 
-group gSum "Summary card (one card, then one row)"
-  screen vb "Top band, green, amber, red or grey\nSmall caps 'Verdict'\nBig words: 'Cleared to bill', 'Authorization first', 'Fix before billing' or 'Not checked'\nOne sentence why"
-  screen bt "Buttons on the band\n'Start authorization', 'Create authorization from verification', 'Open case', 'Request retro-eligibility' ... 'Check again'\nThey wrap under the words on a narrow screen"
-  screen three "Three parts side by side (stacked on a narrow screen)\n'Eligibility', 'Benefits', 'What this service needs'"
-  screen warn "Warnings, only when the check found something\nOne quiet block, one line each, for example\n'The payer changed. The member is with Cardinal Health Plan since 10/01.'"
-  screen facts "One facts line\nPayer, plan type and routing, member (masked), dates of service,\ntime checked, source 'Simulated check against the payer portal'"
-  screen note "One small plain note, not a banner\n'Active coverage does not mean this service is covered. Check the benefits and the authorization requirement.'"
+group gSum "The result card"
+  screen vb "Verdict band, green, amber, red or grey\n'Authorization first' (18 px) | 'Authorization' 'In progress'\nThe verdict and the one fact behind it, as a value, no sentence"
+  screen bt "Actions on a second line of the band, small buttons\n'Start authorization', 'Create authorization from verification', 'Request retro-eligibility',\n'Ask Caller to ...', 'Ask Navigator to check enrollment', 'Open Settings', 'Open case', 'Re-check'"
+  screen rows "Label and value rows\n'Eligibility' pill and dates · 'Plan type and routing'\n'Benefits' pill, program, codes and limit · 'Patient pays' only with a cost share\n'What this service needs' pill and line, then the payer's saved rules"
+  screen warn "A warning only when no row says it already\nToday that is one: a refresh that could not run while Verify is paused\n'Verification service unavailable. ... This is the last result.'"
+  screen facts "One quiet facts line\nMember (masked), dates of service, time checked, source 'Simulated check against the payer portal'"
 endgroup
 
-toast t1 "Banner 'Not re-checked: Verify is paused in Settings'\n'The re-check was due Tue 11:32 am. It runs as soon as Verify is resumed.'\nThe only banner on the page, and only when it applies"
+toast t1 "Banner 'Not re-checked: Verify is paused in Settings'\n'Due Tue 11:32 am' with 'Open Settings'\nOnly when a booked re-check passed while Verify is paused"
 
 group gRow "One row under the card"
-  screen pc "'Payment checks and how this was checked'\n'6 of 7 pass, 1 needs a look. Every line has to pass for the clinic to be reimbursed.'\nButton 'View full verification details'"
+  screen pc "'Verification details'\n'Payment checks: 6 of 7 pass, 1 needs a look'\nButton 'View full verification details'"
   click pk "Click 'View full verification details'"
-  overlay ov "Side panel 'Verification details' opens from the right\nPayment checks, How this was checked, About this check\nThe page behind stays where it was"
+  overlay ov "Side panel 'Verification details' opens from the right\nPayment checks, How this was checked, History\nThe page behind stays where it was"
 endgroup
 
 goto g1 "Continues in: Authorizations › Eligibility & Benefits › Result › Which verdict and why"
@@ -45,9 +44,9 @@ sc --> b2 --> g4
 sc --> vb --> bt
 vb -.-> g1
 bt --> g3
-vb --> three --> warn --> facts --> note
-three -.-> g5
+vb --> rows --> warn --> facts
+rows -.-> g5
+rows -.-> g6
 warn -.-> g7
-facts -.-> g6
 sc -.-> t1
 sc --> pc --> pk --> ov --> g2

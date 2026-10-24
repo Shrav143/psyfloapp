@@ -1,5 +1,5 @@
 title: Denial Intelligence › A denial opened › Full summary: where the denial is weak
-route: /denials?id=D-3318
+route: /denials/D-3318
 intro: The short findings stay on the page. 'Full summary' in the card header opens the long version in a pop-up, as plain text that can be selected and copied: the whole thing, or one recommendation at a time.
 dir: TD
 ---

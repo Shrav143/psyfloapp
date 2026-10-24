@@ -17,7 +17,7 @@ export const paths = {
   authorizations: () => "/authorizations",
   case: (id: string, tab?: "actions" | "picture" | "criteria" | "risk" | "draft") => `/authorizations/case/${id}${tab ? `?tab=${tab}` : ""}`,
   /** New Case. `draft` resumes a case being prepared. `referral` pre-fills from a referral. */
-  newCase: (o?: { draft?: string; referral?: string; /** A stored verification (VerificationRecord id) to carry into step 2. */ verification?: string; /** Authorization type: initial, concurrent, reauth, modify or retro. */ type?: string; /** A patient's case id, to start from an existing patient. */ patient?: string; /** A step to open: intake, eligibility, documentation, preparation or review (the older referral, records, agents and review names work too). */ step?: string }) => {
+  newCase: (o?: { draft?: string; referral?: string; /** A stored verification (VerificationRecord id) to carry into step 2. */ verification?: string; /** Authorization type: initial, concurrent, reauth, modify or retro. */ type?: string; /** A patient's case id, to start from an existing patient. */ patient?: string; /** A step to open: intake, eligibility, documentation or review. preparation (and the older agents) opens Clinical documentation at the agents' section; the older referral and records names work too. */ step?: string }) => {
     const q = new URLSearchParams();
     if (o?.referral) q.set("referral", o.referral);
     if (o?.verification) q.set("verification", o.verification);
@@ -33,10 +33,10 @@ export const paths = {
     return `/authorizations/eligibility/verify${s ? `?${s}` : ""}`;
   },
   eligibilityResult: (id: string) => `/authorizations/eligibility/${id}`,
-  /** `payer` and `reason` narrow the open-denials list (Analytics rows link here). */
+  /** No id: the dashboard of open denials, where `payer` and `reason` narrow the table (Analytics rows link here). An id: that denial's page. */
   denials: (id?: string, filter?: { payer?: string; reason?: string }) => {
-    const s = new URLSearchParams({ ...(id ? { id } : {}), ...(filter?.payer ? { payer: filter.payer } : {}), ...(filter?.reason ? { reason: filter.reason } : {}) }).toString();
-    return `/denials${s ? `?${s}` : ""}`;
+    const s = new URLSearchParams({ ...(filter?.payer ? { payer: filter.payer } : {}), ...(filter?.reason ? { reason: filter.reason } : {}) }).toString();
+    return `/denials${id ? `/${encodeURIComponent(id)}` : ""}${s ? `?${s}` : ""}`;
   },
   brief: (id: string) => `/denials/${id}/brief`,
   /** The appeal analysis report for one denial. */

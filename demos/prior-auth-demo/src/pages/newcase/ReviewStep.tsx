@@ -19,7 +19,7 @@ import { reviewModel } from "./reviewModel";
 import { ReviewSummary } from "./ReviewSummary";
 import { SignCard } from "./SignCard";
 import { StepFooter } from "./StepFooter";
-import { stepPatch } from "./steps";
+import { preparationPatch, stepPatch } from "./steps";
 import { useRecAdds } from "./useRecAdds";
 import { useUnmetSync } from "./useUnmetSync";
 import { signEntries } from "./workflow/trace";
@@ -83,19 +83,18 @@ export function ReviewStep({ draft, env }: { draft: CaseDraft; env: CaseEnv }) {
 
   return (
     <>
-      <div className="grid grid-cols-[minmax(0,1fr)_380px] items-start gap-5 max-[1080px]:grid-cols-1">
+      <div className="grid grid-cols-[minmax(0,1fr)_340px] items-start gap-5 max-[1080px]:grid-cols-1">
         <div className="flex flex-col gap-5">
           <PayerChangeNote draft={draft} />
           <MissingCard draft={draft} items={review.missing} onFix={fix} />
           <ReviewSummary draft={draft} env={env} review={review} />
           {ready ? (
-            <NarrativeCard sections={review.sections} payer={payer?.shortName ?? "the payer"} editSignal={editSignal} onSave={edited} onSource={(label) => setSource(slotOfSource(label))} />
+            <NarrativeCard sections={review.sections} editSignal={editSignal} onSave={edited} onSource={(label) => setSource(slotOfSource(label))} />
           ) : (
             <Card>
-              <CardBody className="flex flex-col items-start gap-3">
-                <h3 className="font-serif text-[18px] font-semibold">The packet is built when the agents finish</h3>
-                <p className="text-[13px] text-muted">Scribe drafts the justification and Packet assembles the forms in Authorization preparation. You can read what is missing above and fix it now.</p>
-                <Button size="sm" onClick={() => patch(draft.id, stepPatch(3))}>Go to Authorization preparation</Button>
+              <CardBody className="flex flex-wrap items-center justify-between gap-3">
+                <span className="text-[14px]">The packet is built when the agents finish</span>
+                <Button size="sm" onClick={() => patch(draft.id, preparationPatch)}>Open Authorization preparation</Button>
               </CardBody>
             </Card>
           )}
@@ -124,14 +123,14 @@ export function ReviewStep({ draft, env }: { draft: CaseDraft; env: CaseEnv }) {
       <StepFooter
         actions={
           <>
-            <Button icon={ArrowLeft} onClick={() => patch(draft.id, stepPatch(3))}>
+            <Button icon={ArrowLeft} onClick={() => patch(draft.id, draft.run.done > 0 ? preparationPatch : stepPatch(2))}>
               Back
             </Button>
             <Button
               icon={Save}
               onClick={() => {
                 save(draft.id);
-                toast({ title: "Draft saved", body: `${draft.caseId ?? "The draft"} is in Case Manager${ready ? ", ready to sign" : ""}.`, tone: "good" });
+                toast({ title: "Draft saved", body: `${draft.caseId ?? "The draft"} is in Case Manager.`, tone: "good" });
               }}
             >
               Save as draft

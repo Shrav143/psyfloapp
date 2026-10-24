@@ -1,4 +1,5 @@
 import type { CaseDetail, Evidence } from "./caseDetail";
+import { SCREENERS, atOf, type CaseScreener, type ScreenerId } from "./caseScreeners";
 
 /* R-1042 (J.M., 34, Summit Medicaid HMO, Residential 3.5, admission), written by hand.
    Chance 62% before any action, 88% once all six recommendations are applied:
@@ -15,11 +16,18 @@ const PLAN2 = ev("Treatment plan p.2", "Seven goals with target dates. Planned s
 const PLAN4 = ev("Treatment plan p.4", "Step-down: program and provider not yet named.");
 const MEDS = ev("Medication list", "Sertraline 50 mg daily. Start date 9/14.");
 
+/** Twice-daily withdrawal and craving scores from the nursing notes (CIWA-Ar 14 on 10/17, 9 on 10/18, 4 on 10/19), weekly mood and anxiety scores from the outpatient chart. */
+const at = (md: string, h: number, m = 0) => atOf(md, h, m);
+const screener = (id: ScreenerId, shown: boolean, points: [number, number][]): CaseScreener => ({ id, ...SCREENERS[id], shown, points: points.map(([t, value]) => ({ at: t, value })) });
+const SHIFTS: number[] = [at("10/17", 6, 10), at("10/17", 14), at("10/17", 22), at("10/18", 6), at("10/18", 14), at("10/18", 22), at("10/19", 6)];
+const WEEKS: number[] = [at("9/15", 10), at("9/22", 10), at("9/29", 10), at("10/6", 10), at("10/13", 10), at("10/17", 9)];
+const zip = (ts: number[], vs: number[]): [number, number][] => ts.map((t, i) => [t, vs[i]]);
+
 export const R1042_DETAIL: CaseDetail = {
   id: "R-1042", requestId: "R-1042", fromQueue: true, initials: "J.M.", age: 34, payerId: "summit", program: "RES", levelLabel: "Residential 3.5", type: "Admission", days: 14,
   dx: "Alcohol use disorder, severe, with recurrent depression",
   scores: [{ label: "AUDIT-C", value: "11" }, { label: "PHQ-9", value: "17", trend: "up" }, { label: "CIWA", value: "14 → 4" }],
-  dueAt: 5 * 60, dueVerb: "Notice due", phase: "preparing", agent: "scribe", statusLine: "Scribe is drafting the case", needsInput: true,
+  dueAt: 5 * 60, dueVerb: "Notice due", phase: "preparing", agent: "scribe", needsInput: true,
   baseChance: 62, spread: [5, 4], similar: { own: 212, network: 806, benchmark: 230 },
   start: 58,
   rows: [
@@ -77,17 +85,22 @@ export const R1042_DETAIL: CaseDetail = {
     readiness: "The request is ready for signature once the open items below are settled.",
     sources: { diagnosis: PSY1, status: NURSE, trajectory: PSY5, readiness: PLAN2 },
   },
-  asam: [
-    { n: 1, name: "Acute intoxication and withdrawal potential", level: 2, sentence: "Withdrawal needed medication and fell from 14 to 4 on the CIWA-Ar in two days." },
-    { n: 2, name: "Biomedical conditions and complications", level: 1, sentence: "Liver tests are mildly raised. No condition needs a medical unit." },
-    { n: 3, name: "Emotional, behavioral or cognitive conditions", level: 3, sentence: "Depression score 17 and anxiety score 14, both above the clinical cutoff." },
-    { n: 4, name: "Readiness to change", level: 1, sentence: "He is engaged and asked for residential care himself." },
-    { n: 5, name: "Relapse, continued use or continued problem potential", level: 3, sentence: "Relapse on 9/28 after eleven months. An IOP attempt in 2025 ended in week 3." },
-    { n: 6, name: "Recovery and living environment", level: 3, sentence: "He lives with a partner who drinks daily and has no transport to outpatient visits." },
+  framework: "asam",
+  dims: [
+    { n: 1, name: "Acute intoxication and withdrawal potential", rating: 2, sentence: "Withdrawal needed medication and fell from 14 to 4 on the CIWA-Ar in two days.", source: NURSE },
+    { n: 2, name: "Biomedical conditions and complications", rating: 1, sentence: "Liver tests are mildly raised. No condition needs a medical unit.", source: PSY1 },
+    { n: 3, name: "Emotional, behavioral or cognitive conditions", rating: 3, sentence: "Depression score 17 and anxiety score 14, both above the clinical cutoff.", source: PSY5 },
+    { n: 4, name: "Readiness to change", rating: 1, sentence: "He is engaged and asked for residential care himself.", source: SOC2 },
+    { n: 5, name: "Relapse, continued use or continued problem potential", rating: 3, sentence: "Relapse on 9/28 after eleven months. An IOP attempt in 2025 ended in week 3.", source: PSY3 },
+    { n: 6, name: "Recovery and living environment", rating: 3, sentence: "He lives with a partner who drinks daily and has no transport to outpatient visits.", source: SOC4 },
   ],
-  trendLabels: ["10/17", "10/18", "10/19"],
-  trend: [{ name: "CIWA-Ar", color: "#B5553A", data: [14, 9, 4] }, { name: "Craving (0 to 10)", color: "#1D4F43", data: [7, 7, 6] }],
-  keyScores: [{ label: "Withdrawal now", value: "4", of: "/ 67, peak 14", tone: "good" }, { label: "Depression now", value: "17", of: "/ 27", tone: "mid" }],
+  screeners: [
+    screener("ciwa", true, zip(SHIFTS, [14, 12, 11, 9, 8, 6, 4])),
+    screener("craving", true, zip(SHIFTS, [7, 7, 7, 7, 7, 6, 6])),
+    screener("phq9", false, zip(WEEKS, [12, 12, 14, 15, 16, 17])),
+    screener("gad7", false, zip(WEEKS, [10, 10, 12, 13, 13, 14])),
+  ],
+  meds: [{ name: "Sertraline", dose: "50 mg daily" }],
   standsOut: ["Relapse on 9/28 after eleven months of abstinence", "Withdrawal needed medication and fell from 14 to 4 in two days", "Depression and craving are still above the clinical cutoff", "An IOP attempt in 2025 ended in week 3 when housing was lost"],
   engagement: { pct: 92, checks: ["Attended every group so far", "Asked for residential care himself", "Accepted medication changes"] },
   open: [
@@ -105,7 +118,7 @@ export const R1042_DETAIL: CaseDetail = {
     { id: "c6", text: "The recovery environment is described", evidence: "Lives with a partner who drinks daily", source: SOC4, note: "Present in the chart. The draft does not say it in plain words yet.", metNow: true },
     { id: "c7", text: "A lower level of care was tried or ruled out", evidence: "IOP in 2025 ended in week 3", source: SOC2, note: "Documented in the chart. The closing summary is not attached yet.", metNow: true },
     { id: "c8", text: "The treatment plan has measurable goals", evidence: "Seven goals with dates", source: PLAN2, note: "All seven goals have a target date.", metNow: true },
-    { id: "c9", text: "A step-down plan is named", evidence: "Program and provider are not named yet", source: PLAN4, note: "Covered in the draft, but not backed by the chart yet. Summit tends to approve a shorter stay when this is open. One input from you closes it.", metNow: false, fixRec: "stepdown" },
+    { id: "c9", text: "A step-down plan is named", evidence: "Program and provider are not named yet", source: PLAN4, note: "Covered in the draft, not backed by the chart yet.", metNow: false, fixRec: "stepdown" },
   ],
   keepHigh: "When no step-down is named, Summit tends to approve a shorter stay and ask again at the first review.",
   tool: "Ohio level-of-care assessment",

@@ -17,6 +17,8 @@ export interface DenialMeta {
   unitsApproved?: number;
   /** Number of similar decisions behind the chance. Below 60 the chance is labelled a benchmark estimate. */
   similar: number;
+  /** The working diagnosis. It decides the level-of-care framework (ASAM Criteria for any substance use, LOCUS or CALOCUS-CASII for mental health alone). */
+  dx?: string;
   /** The call window for a denial that already had a call booked when the demo starts. */
   bookedWindow?: string;
   /** Set when the denial came from a letter added on the Denial Intelligence screen. */
@@ -31,14 +33,14 @@ export interface DenialMeta {
 export const siteOfDenial = (meta: DenialMeta | undefined, caseId: string): SiteId => meta?.site ?? siteOf(caseId);
 
 export const SEED_DENIAL_META: Record<string, DenialMeta> = {
-  "D-3318": { type: "Partial approval", summary: "Partial approval", daysRequested: 14, daysApproved: 7, similar: 312, bookedWindow: "Wed 10/21, 9–11 am" },
-  "D-3301": { type: "Level-of-care downgrade", summary: "Level-of-care downgrade", similar: 188 },
-  "D-3297": { type: "Units cut", summary: "Units cut 48 to 30", unitsRequested: 48, unitsApproved: 30, similar: 204, bookedWindow: "Fri 10/23" },
-  "D-3290": { type: "Late notice", summary: "Late notice", similar: 96 },
-  "D-3284": { type: "Retro-authorization denied", summary: "Retro-auth denied", similar: 71 },
-  "D-3279": { type: "Full denial", summary: "Full denial", similar: 143 },
-  "D-3272": { type: "Partial approval", summary: "Partial approval", daysRequested: 10, daysApproved: 5, similar: 58 },
-  "D-3306": { type: "Retro-authorization denied", summary: "Retro-auth denied", similar: 119 },
+  "D-3318": { type: "Partial approval", summary: "Partial approval", daysRequested: 14, daysApproved: 7, similar: 312, bookedWindow: "Wed 10/21, 9–11 am", dx: "Alcohol use disorder, severe, with depression" },
+  "D-3301": { type: "Level-of-care downgrade", summary: "Level-of-care downgrade", similar: 188, dx: "Major depressive disorder with alcohol use" },
+  "D-3297": { type: "Units cut", summary: "Units cut 48 to 30", unitsRequested: 48, unitsApproved: 30, similar: 204, bookedWindow: "Fri 10/23", dx: "PTSD with alcohol use disorder" },
+  "D-3290": { type: "Late notice", summary: "Late notice", similar: 96, dx: "Major depressive disorder with alcohol use" },
+  "D-3284": { type: "Retro-authorization denied", summary: "Retro-auth denied", similar: 71, dx: "Alcohol use disorder, severe" },
+  "D-3279": { type: "Full denial", summary: "Full denial", similar: 143, dx: "Alcohol use disorder, severe" },
+  "D-3272": { type: "Partial approval", summary: "Partial approval", daysRequested: 10, daysApproved: 5, similar: 58, dx: "Alcohol use disorder, moderate" },
+  "D-3306": { type: "Retro-authorization denied", summary: "Retro-auth denied", similar: 119, dx: "Alcohol use disorder, moderate" },
 };
 
 /** Words that tie a denial type to the reason texts Analytics uses ("Missing recent therapy notes"). A reason filter matches a denial
@@ -79,9 +81,9 @@ export interface SampleLetter {
   windowMin: number;
 }
 export const SAMPLE_LETTERS: SampleLetter[] = [
-  { file: "beacon-denial-letter-sample.pdf", initials: "R.V.", age: 44, payerId: "beacon", program: "RES", chance: 59, windowMin: 4 * DAY, meta: { type: "Level-of-care downgrade", summary: "Level-of-care downgrade", similar: 167 } },
-  { file: "summit-denial-letter-sample.pdf", initials: "A.G.", age: 31, payerId: "summit", program: "IOP", chance: 66, windowMin: 2 * DAY + 6 * HOUR, meta: { type: "Units cut", summary: "Units cut 36 to 24", unitsRequested: 36, unitsApproved: 24, similar: 221 } },
-  { file: "harborview-denial-letter-sample.pdf", initials: "W.S.", age: 58, payerId: "harborview", program: "PHP", chance: 48, windowMin: 5 * DAY, meta: { type: "Partial approval", summary: "Partial approval", daysRequested: 12, daysApproved: 6, similar: 84 } },
+  { file: "beacon-denial-letter-sample.pdf", initials: "R.V.", age: 44, payerId: "beacon", program: "RES", chance: 59, windowMin: 4 * DAY, meta: { type: "Level-of-care downgrade", summary: "Level-of-care downgrade", similar: 167, dx: "Opioid use disorder, severe" } },
+  { file: "summit-denial-letter-sample.pdf", initials: "A.G.", age: 31, payerId: "summit", program: "IOP", chance: 66, windowMin: 2 * DAY + 6 * HOUR, meta: { type: "Units cut", summary: "Units cut 36 to 24", unitsRequested: 36, unitsApproved: 24, similar: 221, dx: "Stimulant use disorder with depression" } },
+  { file: "harborview-denial-letter-sample.pdf", initials: "W.S.", age: 58, payerId: "harborview", program: "PHP", chance: 48, windowMin: 5 * DAY, meta: { type: "Partial approval", summary: "Partial approval", daysRequested: 12, daysApproved: 6, similar: 84, dx: "Alcohol use disorder with depression" } },
 ];
 
 export interface FindingText {
@@ -94,7 +96,9 @@ export interface FindingText {
   fix: string;
 }
 export interface PointText { title: string; detail: string; source: string }
-export interface DimText { name: string; tone: Tone; text: string }
+/** One framework dimension, in framework order. `name` is the key the long text is filed under; the screen shows the framework's own name for that position.
+    `source` is where in the chart the reading comes from (placeholders allowed). */
+export interface DimText { name: string; tone: Tone; text: string; source?: string }
 
 /** All the words of one analysis and brief. `{payer}`-style placeholders are filled from the denial (see lib/analysis). */
 export interface AnalysisText {
@@ -121,6 +125,16 @@ const DIMS: DimText[] = [
 ];
 export const GENERIC_DIMS = DIMS;
 
+/** The same reading for a mental health condition with no substance use, in LOCUS order (CALOCUS-CASII uses the same six positions). */
+export const GENERIC_DIMS_MH: DimText[] = [
+  { name: "MH1 Risk of harm", tone: "risk", text: "Passive thoughts of self-harm at the most recent review, with no plan. Safety plan in place." },
+  { name: "MH2 Function", tone: "risk", text: "Not able to keep up with work or daily routines since the episode began." },
+  { name: "MH3 Co-morbidity", tone: "mid", text: "Sleep is poor and a medical condition is being managed alongside treatment." },
+  { name: "MH4 Environment", tone: "mid", text: "Stress at home is high, and support outside the program is limited." },
+  { name: "MH5 History", tone: "mid", text: "An earlier, less intensive treatment did not hold." },
+  { name: "MH6 Engagement", tone: "good", text: "Attends every session and takes part in the plan." },
+];
+
 /** D-3318 is written out in full, as in the mockup, and so is D-3306, whose findings are thin on purpose: it is the denial where accepting is the better choice.
     D-3297 is the worked example of a units cut that the chart contradicts. Every other denial is generated from a template. */
 export const AUTHORED_TEXT: Record<string, AnalysisText> = {
@@ -135,12 +149,12 @@ export const AUTHORED_TEXT: Record<string, AnalysisText> = {
     ],
     dimsSub: "Day 6",
     dims: [
-      { name: "D1 Withdrawal", tone: "mid", text: "Craving rated 7 of 10 by the clinician. Withdrawal scores are low, but cannabis use continues." },
-      { name: "D2 Medical", tone: "good", text: "Medications are still being titrated. Naltrexone started on day 3, sertraline adjusted on day 5." },
-      { name: "D3 Mood and thinking", tone: "risk", text: "Depression score 15 and anxiety score 13 on day 6, both still above the clinical cutoff." },
-      { name: "D4 Readiness", tone: "mid", text: "Engaged in group, but does not yet connect cravings to the mood symptoms." },
-      { name: "D5 Relapse risk", tone: "risk", text: "High. Cannabis is the main way he copes and no outpatient provider is lined up." },
-      { name: "D6 Home", tone: "risk", text: "Lives with a roommate who uses. No family contact and no support network." },
+      { name: "D1 Withdrawal", tone: "mid", text: "Craving rated 7 of 10 by the clinician. Withdrawal scores are low, but cannabis use continues.", source: "Progress note 10/14" },
+      { name: "D2 Medical", tone: "good", text: "Medications are still being titrated. Naltrexone started on day 3, sertraline adjusted on day 5.", source: "MAR 10/11–14" },
+      { name: "D3 Mood and thinking", tone: "risk", text: "Depression score 15 and anxiety score 13 on day 6, both still above the clinical cutoff.", source: "Progress note 10/14" },
+      { name: "D4 Readiness", tone: "mid", text: "Engaged in group, but does not yet connect cravings to the mood symptoms.", source: "Progress note 10/14" },
+      { name: "D5 Relapse risk", tone: "risk", text: "High. Cannabis is the main way he copes and no outpatient provider is lined up.", source: "Referral log" },
+      { name: "D6 Home", tone: "risk", text: "Lives with a roommate who uses. No family contact and no support network.", source: "Referral log" },
     ],
     opening: "I am calling about a partial approval for a 38-year-old man in residential care for severe alcohol use disorder with depression. Cardinal approved 7 of 14 days. I would like to review why, and ask you to restore days 8 to 14.",
     points: [
@@ -191,12 +205,12 @@ export const AUTHORED_TEXT: Record<string, AnalysisText> = {
     ],
     dimsSub: "Session 5",
     dims: [
-      { name: "D1 Withdrawal", tone: "mid", text: "No withdrawal signs and breath alcohol 0.000 at every session, but he drank once on 10/17 and craving is 5 of 10 by the clinician." },
-      { name: "D2 Medical", tone: "mid", text: "Venlafaxine and gabapentin were both raised this week. Blood pressure is checked at each change." },
-      { name: "D3 Mood and thinking", tone: "risk", text: "PTSD score 49, depression score 16 and anxiety score 14, all above cutoff. Sleep index 21, with nightmares most nights." },
-      { name: "D4 Readiness", tone: "good", text: "Attends every session and told his clinician about the drinking. He calls it a sleep aid and has not yet linked it to the trauma." },
-      { name: "D5 Relapse risk", tone: "risk", text: "High. He drinks to get to sleep, and exposure work raises distress before it lowers it." },
-      { name: "D6 Home", tone: "risk", text: "Lives alone with no family contact, no sponsor and no one to notice a lapse." },
+      { name: "D1 Withdrawal", tone: "mid", text: "No withdrawal signs and breath alcohol 0.000 at every session, but he drank once on 10/17 and craving is 5 of 10 by the clinician.", source: "Progress note {noteDate}" },
+      { name: "D2 Medical", tone: "mid", text: "Venlafaxine and gabapentin were both raised this week. Blood pressure is checked at each change.", source: "MAR {rangeDates}" },
+      { name: "D3 Mood and thinking", tone: "risk", text: "PTSD score 49, depression score 16 and anxiety score 14, all above cutoff. Sleep index 21, with nightmares most nights.", source: "Progress note {noteDate}" },
+      { name: "D4 Readiness", tone: "good", text: "Attends every session and told his clinician about the drinking. He calls it a sleep aid and has not yet linked it to the trauma.", source: "Progress note {noteDate}" },
+      { name: "D5 Relapse risk", tone: "risk", text: "High. He drinks to get to sleep, and exposure work raises distress before it lowers it.", source: "Treatment plan" },
+      { name: "D6 Home", tone: "risk", text: "Lives alone with no family contact, no sponsor and no one to notice a lapse.", source: "Referral log" },
     ],
     opening: "I am calling about a unit reduction for a {age}-year-old man in {program} care for PTSD and alcohol use disorder. {payer} approved {unitsApproved} of {unitsRequested} units, which ends just before his trauma treatment is due to start. I would like to walk through the plan and ask you to restore {unitsDiff} units.",
     points: [

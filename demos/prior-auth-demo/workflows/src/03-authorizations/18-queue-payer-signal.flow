@@ -7,7 +7,7 @@ also: Demo only: the banner text and which four requests it affects (I-2207, I-2
 screen q "Authorizations queue"
 decision d0 "Are any open requests at the sites in view affected, and is the banner still shown?"
 endx e0 "No banner\nNone affected, or you dismissed it"
-screen bn "One-line banner: 'Payer signal. Cardinal Health Plan has denied 31% more IOP continued-stay requests this week.'\nInfo icon, 'Review the four', X"
+screen bn "One-line banner: 'Payer signal. Cardinal Health Plan: 31% more IOP continued-stay denials this week.'\nInfo icon, 'Review the four', X"
 click inf "Hover or focus the info icon 'More about this signal'"
 overlay tip "Tooltip: 'The denials were mostly for thin recertification evidence. Four of your open requests are affected, and the agents have re-scored them.'\nEsc closes it"
 process wd "Wording follows the count in view\n'Review the three' for three; for one the button reads 'Review it', the tip 'One of your open requests is affected ... re-scored it' and the chip 'Showing the request affected by the Cardinal signal'"

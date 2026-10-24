@@ -27,11 +27,11 @@ export function NoAuthCard({ draft, env }: { draft: CaseDraft; env: CaseEnv }) {
 
   return (
     <Card className="border-good-edge">
-      <CardBody className="flex flex-col gap-4">
+      <CardBody className="flex flex-col gap-3">
         <div>
           <h3 className="font-serif text-[18px] font-semibold tracking-tight">No authorization is required</h3>
           <p className="mt-1 text-[14px] text-ink2">
-            {payer.name} needs no authorization for {PROGRAM_LABEL[draft.program]}{dos ? `, ${mdy(dos.from)} to ${mdy(dos.to)}` : ""}.{line ? ` Its rule says: ${line}.` : ""} Documentation and preparation do not apply, so those steps are marked Not applicable.
+            {payer.name} needs no authorization for {PROGRAM_LABEL[draft.program]}{dos ? `, ${mdy(dos.from)} to ${mdy(dos.to)}` : ""}.{line ? ` Rule: ${line}.` : ""}
           </p>
         </div>
         <DocumentedReasonForm

@@ -1,14 +1,14 @@
 title: Authorizations › New Case › Review & submit › What is missing
-route: /authorizations/new/:draftId (step 5 of 5, the first card on the left)
+route: /authorizations/new/:draftId (step 4 of 4, the first card on the left)
 intro: The first thing on the last step. It lists what holds the request back, blocking items first, each with the action that already exists for it. It is the one alert on this step. When nothing is missing it is one calm line. Only a few things block sending; the rest are warnings the person acknowledges, or notes. Nothing is sent from here: a clinician signs in the Sign card.
 dir: TD
 also: Demo only: the items come from the case itself (Intake and Eligibility & Benefits), the validation rows and the four checks, so they change at once when the details, documents, answers or the summary change.
 ---
-start s1 "Arrive on step 5 'Review & submit'"
+start s1 "Arrive on step 4 'Review & submit'"
 decision d1 "Is anything missing?"
-screen ok "Card 'Nothing is missing'\n'All four checks passed. The summary below is what the payer will read.'"
-screen mc "Card 'What is missing'\nSubtitle: 'N items must be fixed before it can be signed.' 'N items can be signed once you acknowledge them.' 'N items do not stop you from signing.'\nPill: 'Blocked', 'N to acknowledge' or 'N to look at'"
-process hb "When the case does not meet what the payer asks, the subtitle adds\n'Together they hold the approval chance back 3 points.'"
+screen ok "Card 'Nothing is missing'"
+screen mc "Card 'What is missing'\nPill: 'Blocked', 'N to acknowledge' or 'N to look at'\nEach row's icon says what it does: a red cross blocks, amber asks for an acknowledgement, grey does not stop signing"
+process hb "When the case does not meet what the payer asks, the only subtitle is\n'−3 points on the approval chance'"
 
 group gSev "Three kinds of item, in this order"
   process k1 "**Blocks sending** (red cross)\nNo patient, payer, service or dates\nCoverage confirmed inactive with no documented exception\nA possible duplicate nobody has answered"
@@ -29,7 +29,7 @@ group gFix "The fix button on an item"
 endgroup
 
 decision dBlk "Any blocking item left?"
-endx eBlk "The Sign card says 'One item stops sending: coverage. Fix it under What is missing.'\n'Sign and send to payer (demo)' stays off"
+endx eBlk "The Sign card says 'Fix first: coverage'\n'Sign and send to payer (demo)' stays off"
 process pAck "'Sign and send to payer (demo)' needs the attestation,\nthe acknowledgement of the warnings under What is missing,\nand a clinician as the signer"
 goto gSign "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer"
 goto gVal "Continues in: Authorizations › New Case › Review & submit › Validation summary and checks"

@@ -1,36 +1,37 @@
 title: Authorizations › Eligibility & Benefits › Verify › The live check: the agents' questions
 route: /authorizations/eligibility/verify
-intro: The five questions, in order, and who answers each. Reader, Verify, Verify, Criteria, Navigator. Caller joins only for Evergreen. The state and the plan are outside parties and are simulated in the demo.
+intro: The five questions, in order, and who answers each. Reader, Verify, Verify, Criteria, Navigator. Caller joins only for Evergreen. Each row shows a short label while it waits and works, and the answer as a value when it is done. The state and the plan are outside parties and are simulated in the demo.
 dir: TD
-also: Demo only: the answers are scripted by the member ID ending (see 'Try a sample'). Before a payer is chosen the card says 'the state' and 'the payer' instead of names.
+also: Demo only: the answers are scripted by the member ID ending (see 'Try a sample'). Before a payer is chosen the rows say 'the state' and 'the payer' instead of names.
 ---
-start s1 "Live check starts\nRows read 'Will read the card and fill in the details' and so on"
+start s1 "Live check starts\nRows read 'Member details', 'Coverage with Ohio Medicaid' and so on"
 
-agent a1 "1 Reader\n'Reading the card and filling in the details'\nor 'Taking the member ID and date of birth as typed'"
+agent a1 "1 Reader · 'Member details'"
 wait w1 "About 1.4 seconds"
-process d1 "Row ticks\n'Read the card and filled in the details' or 'Took the member ID and date of birth as typed'"
+process d1 "Row ticks\n'As typed', or where an import came from: 'From the sample screenshot'"
 
-agent a2 "2 Verify\n'Asking Ohio Medicaid whether coverage is active on 10/21/2026'"
+agent a2 "2 Verify · 'Coverage with Ohio Medicaid'"
 ext x2 "Ohio Medicaid, or the plan for Beacon, Harborview, Lakeshore\nReal step: eligibility inquiry (demo: simulated)"
 wait w2 "About 2.4 seconds"
-process d2 "Row ticks\n'Asked Ohio Medicaid: coverage is active on 10/21/2026'\nor 'coverage lapsed 10/12' or 'no coverage found for these details'\nEnding 6060 adds '. Another plan pays first'"
+process d2 "Row ticks\n'Active on 10/21/2026', 'Lapsed 10/12', 'Ended 09/30, with Cardinal Health Plan since 10/01'\nor 'No coverage found'\nEnding 6060 adds '. Another plan pays first'"
 
-agent a3 "3 Verify\n'Asking Summit what Residential 3.5 covers'"
+agent a3 "3 Verify · 'Residential 3.5 benefits with Summit'"
 ext x3 "The plan answers for the service codes\nReal step: benefit detail (demo: simulated)"
 wait w3 "About 2.6 seconds"
-process d3 "Row ticks\n'Summit covers Residential 3.5 (H0018 and H0019)'\nEnding 3030 'Summit does not cover Residential 3.5'\nEnding 9090 adds '. All 14 days are used'\nNo coverage found: 'Not asked: no coverage was found'"
+process d3 "Row ticks\n'Covered (H0018 and H0019)'\nEnding 3030 'Not covered'; ending 5050 'Not confirmed by Harborview'\nEnding 9090 adds '. All 14 days used'\nNo coverage found: 'Not asked: no coverage found'"
 
 decision q1 "Is the payer Evergreen?"
-agent a4 "Caller\n'Evergreen did not answer online. Caller is phoning'"
+agent a4 "Caller · 'Phone call to Evergreen'\nThe benefits row reads 'No answer online'"
 
-agent a5 "4 Criteria\n'Checking whether an authorization is required'"
+agent a5 "4 Criteria · 'Authorization rule'"
 wait w5 "About 1.6 seconds"
-process d5 "Row ticks\n'An authorization is required before the first day'\nor 'Beacon does not require an authorization'\nor 'An authorization is on file with Cardinal' (ending 9090)\nNo coverage found: 'Not asked: no coverage was found'"
+process d5 "Row ticks\n'Required before the first day', 'Not required',\n'On file with Cardinal' (ending 9090), or 'No rule on file. Nothing was assumed' (ending 2020)\nNo coverage found: 'Not asked: no coverage found'"
 
-agent a6 "5 Navigator\n'Checking that the clinic is enrolled to bill Summit'"
+agent a6 "5 Navigator · 'Enrollment with Summit'"
 wait w6 "About 1.8 seconds"
-process d6 "Row ticks\n'The clinic is enrolled and in network'\nor 'The clinic is not enrolled for this program'\nNo coverage found: 'Not asked: no coverage was found'"
+process d6 "Row ticks\n'Enrolled, in network', 'Not enrolled for this program' or 'Not confirmed' (ending 4040)\nNo coverage found: 'Not asked: no coverage found'"
 
+process pz "While Verify is paused in Settings every row after Reader ticks\n'Not asked: Verify is paused in Settings'"
 goto g1 "Continues in: Authorizations › Eligibility & Benefits › Verify › When a system does not answer"
 goto g2 "Continues in: Authorizations › Eligibility & Benefits › Verify › The check finishes and is saved"
 
@@ -48,3 +49,4 @@ q1 -->|Yes| a4 --> a5
 a4 -.-> g1
 a5 --> w5 --> d5 --> a6
 a6 --> w6 --> d6 --> g2
+s1 -.-> pz

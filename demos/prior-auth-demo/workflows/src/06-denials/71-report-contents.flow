@@ -2,7 +2,7 @@ title: Denial Intelligence › Appeal analysis report › What the report says
 route: /denials/D-3297/report
 intro: One page, about 860 pixels wide, top to bottom. The same words go to Copy report and to the PDF. It is built from the analysis, the long text and what the person has done on the denial.
 dir: TD
-also: Late notice and Retro-authorization denied have no ASAM dimensions, so that section is left out for them. Everything else appears for every denial.
+also: Late notice and Retro-authorization denied have no framework dimensions, so that section is left out for them. Everything else appears for every denial.
 ---
 start s1 "The report is on screen"
 screen t1 "Title block\n'Appeal analysis report', D-id, initials and age, payer\nTag 'Worked example' on D-3297 only\n'Our read' tile: Worth challenging, Borderline or Probably accept\nUnder the title line: 'Draft by FLO's agents. A clinician reviews and signs before anything is sent.'"
@@ -15,8 +15,8 @@ screen r3 "'Where the denial is weak'\nNumbered findings: severity pill, title, 
 decision d1 "Did the person click 'Add to the evidence' on this finding?"
 screen r3a "Pill 'Added to the evidence'"
 screen r3b "Pill 'Not added yet'"
-decision d2 "Does the denial have ASAM dimensions?"
-screen r4 "'The six ASAM dimensions'\nDot, name, a word and the long paragraph for D1 to D6"
+decision d2 "Does the denial have framework dimensions?"
+screen r4 "'ASAM Criteria dimensions' ('LOCUS dimensions' for a mental health denial)\nDot, 'D1 Acute intoxication and withdrawal potential', a word and the long paragraph for D1 to D6"
 process p4 "Section left out (Late notice, Retro-authorization denied)"
 screen r5 "'What we would do'\nNumbered recommendations with a bold title and a long paragraph"
 screen r6 "'Your options compared'\nTable: Peer-to-peer call, Written appeal, Accept the decision\nChance, Time, Gets back, Needs; 'Recommended' on one"

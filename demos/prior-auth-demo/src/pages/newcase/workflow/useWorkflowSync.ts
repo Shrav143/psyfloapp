@@ -1,9 +1,8 @@
 import { useEffect, useRef } from "react";
-import type { CaseDraft } from "@/data/cases";
+import { runStarted, type CaseDraft } from "@/data/cases";
 import { payerById } from "@/data/seed";
-import { STAGES_ORDER } from "@/data/workflow/types";
 import { useStore } from "@/store";
-import { stepIndex } from "../steps";
+import { engineStage, stepIndex } from "../steps";
 import { sameApplied, type CaseWorkflow } from "./model";
 import { appliedEntry, stageEntries, type Entry } from "./trace";
 
@@ -17,6 +16,8 @@ export function useWorkflowSync(draft: CaseDraft | undefined, view: CaseWorkflow
   latest.current = { draft, view };
   const record = useStore((s) => s.recordCaseWorkflow);
   const at = draft ? stepIndex(draft) : 0;
+  /* The engine's stage, which tells Clinical documentation before and after the agents start apart. */
+  const stage = draft ? engineStage({ ...draft, agentsStarted: runStarted(draft) }) : "intake";
   const executing = !!draft && (at >= 1 || draft.run.done > 0);
   const appliedKey = view ? `${view.applied.workflowId}@${view.applied.version}:${view.applied.usedDefault}` : "";
   const stored = draft?.appliedWorkflow;
@@ -44,7 +45,6 @@ export function useWorkflowSync(draft: CaseDraft | undefined, view: CaseWorkflow
   useEffect(() => {
     const { draft: d, view: v } = latest.current;
     if (!enabled || !d || !v || d.sent || !d.appliedWorkflow || !d.workflowPinned) return;
-    const stage = STAGES_ORDER[stepIndex(d)];
     record(d.id, { entries: stageEntries(v, stage, useStore.getState().clock) });
-  }, [enabled, id, at, pinnedNow, checked, record]);
+  }, [enabled, id, stage, pinnedNow, checked, record]);
 }

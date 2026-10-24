@@ -1,26 +1,25 @@
 title: Authorizations › Eligibility & Benefits › Verify › The live check
 route: /authorizations/eligibility/verify
-intro: What the person sees after 'Check now'. The form locks and the 'Live check' card on the right ticks off one agent at a time, about 10 seconds in all. The questions themselves are in the next diagram.
+intro: What the person sees after 'Check now'. The form locks and the 'Live check' card on the right ticks off one agent at a time, about 10 seconds in all. Each row names what is asked, then shows the answer. The questions themselves are in the next diagram.
 dir: TD
 also: Demo only: the waiting is a timer. Nothing is sent to any payer.
 ---
 start s1 "Click 'Check now'"
-process p1 "Form fields, 'Use sample card', the 'Try a sample' chips and the card drop lock\nThe button reads 'Checking' with a spinner"
-screen sc "Card 'Live check'\n'Simulated in this demo: each agent asks the right source and reports back'"
+process p1 "Form fields, the import row and the 'Try a sample' chips lock or hide\nThe button reads 'Checking' with a spinner"
+screen sc "Card 'Live check', no subtitle"
 
 group gRows "Agent rows"
-  screen r1 "Waiting\nAgent name, grey text 'Will ask Ohio Medicaid whether coverage is active', clock and 'Waiting', dimmed"
-  screen r2 "Checking\nAgent name, 'Asking Ohio Medicaid whether coverage is active on 10/21/2026', spinner and 'Checking'"
-  screen r3 "Done\nAgent name, the answer, green tick and a small time such as 0:02"
+  screen r1 "Waiting\nAgent name, what it asks ('Coverage with Ohio Medicaid'), clock and 'Waiting', dimmed"
+  screen r2 "Checking\nAgent name, the same label, spinner and 'Checking'"
+  screen r3 "Done\nAgent name, the answer ('Active on 10/21/2026'), green tick and a small time such as 0:02"
 endgroup
 
 screen tm "Timer pill beside the title\nShows 0:00 and counts up each second"
 click k1 "Click 'Skip ahead' (shown only while running)"
 process p2 "Every step still to run takes 0.15 seconds instead of 1.4 to 2.6"
 decision q1 "Last step ticked?"
-toast t1 "Banner 'All answers are in. Opening the result.'"
+toast t1 "The timer pill turns green: 'Opening the result'"
 wait w1 "Half a second so the last tick is seen"
-screen ft "Footer line\n'If a system does not answer, Caller phones the payer and logs the call.'"
 goto g1 "Continues in: Authorizations › Eligibility & Benefits › Verify › The live check: the agents' questions"
 goto g2 "Continues in: Authorizations › Eligibility & Benefits › Verify › The check finishes and is saved"
 
@@ -28,7 +27,6 @@ s1 --> p1 --> sc
 sc --> r1
 r1 --> r2 --> r3
 sc --> tm
-sc --> ft
 sc -.-> g1
 r3 --> q1
 q1 -->|No| r1

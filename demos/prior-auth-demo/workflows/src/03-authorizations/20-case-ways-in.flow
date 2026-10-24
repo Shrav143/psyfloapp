@@ -28,7 +28,7 @@ process gen "Chance, actions, criteria, draft and checks are generated\nfrom the
 
 decision d5 "Is the ID in the Case Manager ledger?"
 goto gL "Continues in: Case Manager › Ledger case › Open and read"
-screen nf "'Request not found'\n'There is no request with the ID X.'\n'Nothing to show here' · 'Check the ID, or open a request from the queue.'"
+screen nf "'Request not found'\n'No request X' and 'Back to queue'"
 click bq "Click 'Back to queue' or the 'Authorizations' crumb"
 goto gQ "Continues in: Authorizations › Queue › Open the queue and read the top"
 
@@ -36,8 +36,8 @@ store ld "Your earlier work on this case is loaded\nAnswers, applied and dismiss
 decision dS "Is the case at a site the viewer has in view?"
 screen oos "Card 'This case is not available at Site A'\nNames the site, not the patient"
 goto gO "Continues in: Authorizations › Case page › A case at another site"
-decision d4 "Does ?tab= name one of the five tabs?"
-screen tab1 "That tab opens\ne.g. a review drawer opens '?tab=draft'"
+decision d4 "Does ?tab= name one of the three tabs, or one of the five old names?"
+screen tab1 "That tab opens, an old name on its merged tab\ne.g. a review drawer opens '?tab=draft' on 'Clinical picture & draft'"
 screen tab0 "'Recommended actions' opens"
 goto gH "Continues in: Authorizations › Case page › Header and buttons"
 

@@ -11,13 +11,14 @@ export type RowState = "done" | "working" | "paused" | "asking" | "waiting" | "f
 
 /** One agent: icon, name, what it is doing or found, and its state on the right. */
 export function AgentRow({ agent, state, text, elapsed, skipped, onAnswer, onRetry, onSkip }: { agent: AgentKey; state: RowState; text: RowText; elapsed?: number; skipped?: boolean; onAnswer: () => void; onRetry: () => void; onSkip: () => void }) {
-  const line = state === "done" ? text.done : state === "waiting" ? text.wait : state === "failed" ? text.failed ?? text.doing : text.doing;
+  /* A waiting agent shows only its name: what it will do is not narrated. */
+  const line = state === "done" ? text.done : state === "waiting" ? null : state === "failed" ? text.failed ?? text.doing : text.doing;
   return (
-    <li className={cn("flex items-center gap-3.5 border-b border-line px-6 py-3.5 last:border-b-0", state === "waiting" && "opacity-55")} aria-label={`${AGENTS[agent].name}: ${state}`}>
-      <AgentBadge agent={agent} size={36} />
+    <li className={cn("flex items-center gap-3 border-b border-line px-5 py-2.5 last:border-b-0", state === "waiting" && "opacity-55")} aria-label={`${AGENTS[agent].name}: ${state}`}>
+      <AgentBadge agent={agent} size={28} />
       <div className="min-w-0 flex-1">
-        <div className="font-semibold">{AGENTS[agent].name}</div>
-        <div className="text-[13px] text-muted">{line}</div>
+        <div className="text-[14px] font-semibold">{AGENTS[agent].name}</div>
+        {line ? <div className="text-[13px] text-muted">{line}</div> : null}
       </div>
       {state === "done" && skipped ? (
         <Pill tone="mid" dot>
@@ -29,7 +30,7 @@ export function AgentRow({ agent, state, text, elapsed, skipped, onAnswer, onRet
           <span className="text-xs text-muted">{clockText(elapsed ?? 1)}</span>
         </span>
       ) : state === "working" ? (
-        <span className="flex shrink-0 items-center gap-2 font-medium text-forest">
+        <span className="flex shrink-0 items-center gap-2 text-[13px] font-medium text-forest">
           <Spinner />
           Working
         </span>
@@ -60,8 +61,8 @@ export function AgentRow({ agent, state, text, elapsed, skipped, onAnswer, onRet
           </Button>
         </span>
       ) : (
-        <span className="flex shrink-0 items-center gap-1.5 text-muted">
-          <Clock size={16} className="ico" />
+        <span className="flex shrink-0 items-center gap-1.5 text-[13px] text-muted">
+          <Clock size={14} className="ico" />
           Waiting
         </span>
       )}

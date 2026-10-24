@@ -1,5 +1,5 @@
 title: Authorizations › New Case › Authorization preparation › An agent could not finish
-route: /authorizations/new/:draftId (step 4 of 5, 'Authorization preparation')
+route: /authorizations/new/:draftId (step 3 of 4, Clinical documentation, its last section 'Authorization preparation')
 intro: Verify cannot reach Cardinal's portal the first time a case for Cardinal runs. The row says 'Could not finish' and the run holds until the person chooses 'Retry' or 'Skip and note'. Retry works. Skip adds a warning to Review and sign and a note to the request's history.
 dir: TD
 also: Trigger, no hidden step: any new case whose payer is Cardinal Health Plan. Pull the EMR Connect chart L.G., 29 (Cardinal), or pick Cardinal under 'Payer and plan' on Intake, then go on to Clinical documentation, Continue and 'Start the agents'. Other payers never fail. Cases opened from a request on the case page never fail either.

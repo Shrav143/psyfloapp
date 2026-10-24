@@ -4,35 +4,35 @@ intro: Everything that can go wrong or come up empty in this module. There are n
 dir: TD
 ---
 start s1 "A check cannot be found\nOld link, typed address, or after 'Reset demo data' in the Demo menu"
-screen e1 "Coverage check\n'That check is not in the list.'"
+screen e1 "Back link '← Eligibility & Benefits', no title"
 screen e2 "Empty state 'We could not find that check'\n'It may have been cleared when the demo data was reset.'"
 click c1 "Click 'Back to Eligibility & Benefits'"
 goto g1 "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows"
 
-start s2 "Open 'Verify a patient' with a referral that does not exist"
-toast t1 "'Referral not found'\n'We could not find RF-9999. Type the details instead.'"
+start s2 "Open the Verify page with a referral that does not exist"
+toast t1 "'Referral not found'\n'RF-9999 is not in the referrals.'"
 process p1 "The form stays empty\nNo 'Back to referral' link either"
 
-start s3 "Open 'Verify a patient' with a case that is neither on the list nor in the queue"
+start s3 "Open the Verify page with a case that is neither on the list nor in the queue"
 process p2 "The form stays empty\nNo message appears"
 
 start s4 "Type in the form but leave something out or in the wrong shape"
 decision q1 "Payer, a member ID of 4 or more characters and two MM/DD/YYYY dates?"
-process p3 "'Check now' is off and the hint says what is missing\nNo red error text next to the fields"
+process p3 "'Check now' is off; the required fields carry a red star\nNo hint line and no red error text"
 click c2 "Click 'Check now'"
 goto g2 "Continues in: Authorizations › Eligibility & Benefits › Verify › The live check"
 
 start s5 "Search or filters on the list match nobody"
-screen e3 "'No patients match these filters'\n'The filters hide every row. Clear them to see all 37 patients.'\n(the count is the patients in the site view)"
+screen e3 "'No patients match these filters' with 'Clear filters'\nNo explanation line"
 click c3 "Click 'Clear filters'"
 end e4 "All patients are back"
 
 start s6 "The check finds a coverage problem\nMember ID ends 1012, 9999, 3030, 6060 or 9090, or Evergreen with Detox"
-screen e5 "A normal result page with a red verdict 'Fix before billing'\nIf coverage is not found, headline 'We could not find coverage.', one grey row 'Nothing else could be checked' and no payment lines"
+screen e5 "A normal result page with a red verdict 'Fix before billing'\nIf coverage is not found: Coverage 'Not found', benefits and what the service needs 'Not checked', no 'Patient pays' row"
 goto g3 "Continues in: Authorizations › Eligibility & Benefits › Result › Next actions"
 goto g5 "Continues in: Dashboard"
 
-start s7 "Leave 'Verify a patient' while the live check runs"
+start s7 "Leave the Verify page while the live check runs"
 endx e6 "The check is dropped\nNothing is saved and no row is added"
 
 start s8 "Open a result at a site the viewer cannot see\nA link, or a sign-in as Dr. Rivera (Site A) or Sam Okafor (Site B)"
@@ -40,8 +40,8 @@ screen e7 "'This coverage check is not available at Site A'\nIt names the case a
 click c4 "Click 'Back to the Dashboard'"
 
 start s9 "Verify is paused in Settings and a check is started or asked again"
-screen e8 "Verify page banner 'Verify is paused in Settings'\nThe check still runs its steps, each saying 'Not asked: Verify is paused in Settings'"
-screen e9 "A result 'Could not verify: Verify is paused in Settings.'\nVerdict 'Not checked', warning 'Verification service unavailable'\n'Open Settings' and 'Check again'"
+screen e8 "Verify page banner 'Verify is paused in Settings' with 'Open Settings'\nThe check still runs its steps, each saying 'Not asked: Verify is paused in Settings'"
+screen e9 "A result with the verdict 'Not checked' · Coverage 'Not checked'\nEligibility 'Not asked: Verify is paused in Settings'\n'Open Settings' and 'Re-check'"
 goto g4 "Continues in: Authorizations › Eligibility & Benefits › The exceptions"
 
 s1 --> e1 --> e2 --> c1 --> g1

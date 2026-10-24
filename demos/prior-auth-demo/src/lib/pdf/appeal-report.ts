@@ -223,7 +223,7 @@ export async function buildAppealPdf(doc: ReportDoc) {
         w.gap(12),
       ]),
     );
-    section(H.dims, [...(doc.dimsSub ? [...w.lines(doc.dimsSub, small, left, width), w.gap(6)] : []), ...dimOps]);
+    section(doc.dimsTitle ?? H.dims, [...(doc.dimsSub ? [...w.lines(doc.dimsSub, small, left, width), w.gap(6)] : []), ...dimOps]);
   }
 
   const recOps = doc.recommendations.flatMap((r, i): Op[] =>

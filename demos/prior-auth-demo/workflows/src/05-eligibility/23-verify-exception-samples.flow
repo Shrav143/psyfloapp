@@ -1,11 +1,11 @@
 title: Authorizations › Eligibility & Benefits › Verify › More samples: checks that need a look
 route: /authorizations/eligibility/verify
-intro: 'More samples' opens a second row, 'Needs a look', with five chips. Each fills the form with a made-up member whose check ends with a warning, so every exception can be seen without a trick. A sixth, a check that cannot run at all, happens when Verify is paused in Settings. The last four digits of the member ID script the answer, as for the first six chips.
+intro: 'More samples' opens a second row, 'Needs a look', with five chips. Each fills the form with a made-up member whose check ends with a warning, so every exception can be seen without a trick. A sixth, a check that cannot run at all, happens when Verify is paused in Settings. The last four digits of the member ID script the answer, as for the first chips. On the result each finding is said once, in the verdict fact or a row, with its action.
 dir: TD
 also: Demo only: the endings are scripted. The warnings are the same ones New Case shows in step 2, because both read the same verification record.
 ---
-start s1 "On 'Verify a patient', click 'More samples'"
-screen sc "Row 'Needs a look' with five chips\n'Payer changed', 'Member ID mismatch', 'Benefit not confirmed',\n'Provider not confirmed', 'Requirement unknown'\nA note: 'To see a check that cannot run, pause Verify in Settings.'"
+start s1 "On the Verify page, click 'More samples'"
+screen sc "Row 'Needs a look' with five small chips\n'Payer changed', 'Member ID mismatch', 'Benefit not confirmed',\n'Provider not confirmed', 'Requirement unknown'"
 click c0 "Click 'Fewer samples' to fold the row again"
 decision q1 "Click which chip?"
 
@@ -21,15 +21,16 @@ process pf "The form is filled, the chip turns green, 'Check now' is on\nThe row
 click c1 "Click 'Check now'"
 process ck "The live check runs. The member ID ending decides the answer"
 
-group gRes "Result"
-  screen r1 "'Fix before billing: coverage ended 09/30, the member is with Cardinal now.'\nWarnings: 'Coverage is not active', 'The payer changed'\n'Start the request with the new plan.'"
-  screen r2 "'Fix before billing: coverage is active, but under another member ID.'\nEligibility 'Needs a fix', 'Active, under the member ID ending 5521'\nWarning 'Member ID does not match'"
-  screen r3 "'Fix before billing: the service is not confirmed.'\nBenefits 'Not confirmed'\nWarning 'Benefit not confirmed. Caller can confirm the benefit by phone.'"
-  screen r4 "'Fix before billing: the clinic's enrollment is not confirmed.'\nWarning 'Provider participation not confirmed. Navigator can check the enrollment record.'"
-  screen r5 "'Covered, but we do not know whether it needs an authorization.'\n'What this service needs' says 'No rule on file for Beacon and residential 3.5. Check with Beacon.'\nWarning 'Authorization requirement unknown'"
+group gRes "Result: each finding once"
+  screen r1 "'Fix before billing' · Coverage 'Ended 09/30, now with Cardinal'\nEligibility 'Not eligible', '... ended 09/30/2026 · with Cardinal Health Plan since 10/01'"
+  screen r2 "'Fix before billing' · Member ID 'Plan has ID ending 5521'\nEligibility 'Needs a fix', 'Active, under the member ID ending 5521'"
+  screen r3 "'Fix before billing' · Benefits 'Not confirmed'\nBenefits 'PHP not confirmed by Harborview · H0035'\nButton 'Ask Caller to confirm the benefit'"
+  screen r4 "'Fix before billing' · Enrollment 'Not confirmed'\nButton 'Ask Navigator to check enrollment'"
+  screen r5 "'Authorization first' · Authorization 'Requirement unknown'\nWhat this service needs: 'No rule on file for Beacon and residential 3.5'"
 endgroup
 
-store st "The check is saved as a verification record for the site in view\nIt is a row on the list at once, and New Case can find it"
+toast t3 "'Caller will confirm the benefit'\nor 'Navigator will check the enrollment'\n(demo: a message only)"
+store st "The check is saved as a verification record for the site in view\nIt is a row on the list at once, and New Case can find it with its warnings"
 goto g1 "Continues in: Authorizations › Eligibility & Benefits › The exceptions"
 goto g2 "Continues in: Authorizations › Eligibility & Benefits › The shared verification record"
 
@@ -46,5 +47,6 @@ ck -->|Ends 8080| r2
 ck -->|Ends 5050| r3
 ck -->|Ends 4040| r4
 ck -->|Ends 2020| r5
+r3 & r4 -.-> t3
 r1 & r2 & r3 & r4 & r5 --> st --> g2
 r1 & r2 & r3 & r4 & r5 -.-> g1

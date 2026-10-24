@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import { FileSignature, Save } from "lucide-react";
-import { AgentChip, Banner, Button, Checkbox, Drawer, Label, Spinner, TextArea } from "@/components/ui";
+import { AgentChip, Button, Checkbox, Drawer, Label, Pill, Spinner, TextArea } from "@/components/ui";
 import { levelOf } from "@/data/denials";
 import { shortDate } from "@/lib/time";
 import { useStore } from "@/store";
 import { buildAppealLetter, defaultEvidence } from "./lib/appeal";
 import { capitalize, isFiled } from "./lib/format";
-import { ReviewNote } from "./ReviewNote";
 import { SignModal } from "./SignModal";
 import type { DenialView } from "./lib/useDenialView";
 
@@ -44,7 +43,7 @@ export function AppealDrawer({ view, onClose }: { view: DenialView; onClose: () 
   const toggle = (item: string) => setEvidence((e) => (e.includes(item) ? e.filter((x) => x !== item) : [...e, item]));
   const save = () => {
     store().saveAppealDraft(req.id, text, evidence);
-    store().toast({ title: "Draft saved", body: "It stays in Denial Intelligence until a clinician signs.", tone: "neutral" });
+    store().toast({ title: "Draft saved", tone: "neutral" });
   };
   const dueBy = req.deadlineAt !== undefined ? shortDate(req.deadlineAt) : undefined;
 
@@ -59,13 +58,14 @@ export function AppealDrawer({ view, onClose }: { view: DenialView; onClose: () 
         footer={readOnly ? <div className="flex justify-end"><Button onClick={onClose}>Close</Button></div> : <div className="flex justify-end gap-2.5"><Button icon={Save} onClick={save} disabled={drafting}>Save draft</Button><Button variant="primary" icon={FileSignature} onClick={() => setSigning(true)} disabled={drafting}>Sign and file</Button></div>}
       >
         {drafting ? (
-          <div className="flex items-center gap-3 py-10 text-ink2" role="status"><Spinner size={20} />Advocate is drafting the letter from the findings. Integrity is checking each sentence.</div>
+          <div className="flex items-center gap-3 py-10 text-ink2" role="status"><Spinner size={20} />Advocate is drafting the letter</div>
         ) : (
           <div className="flex flex-col gap-5">
-            <Banner tone="neutral" title="Drafted by Advocate, checked by Integrity">
-              <span className="flex items-center gap-2"><AgentChip agent="advocate" /><AgentChip agent="integrity" /></span>
-              {readOnly ? <span className="mt-1.5 block">This is the letter that was filed.</span> : <><span className="mt-1.5 block">Edit anything you like.</span><ReviewNote className="mt-1" /></>}
-            </Banner>
+            <div className="flex flex-wrap items-center gap-2">
+              <AgentChip agent="advocate" />
+              <AgentChip agent="integrity" />
+              {readOnly ? <Pill tone="neutral">Filed letter, read only</Pill> : <Pill tone="mid">Draft · a clinician signs before filing</Pill>}
+            </div>
             <div>
               <Label className="mb-1.5">Letter</Label>
               <TextArea value={text} onChange={(e) => setText(e.target.value)} readOnly={readOnly} aria-label="Appeal letter" className="min-h-[340px] font-serif text-[14px] leading-[1.6]" />

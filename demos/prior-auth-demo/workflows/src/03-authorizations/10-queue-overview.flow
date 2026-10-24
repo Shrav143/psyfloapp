@@ -15,17 +15,17 @@ process p2 "The average and the next due time use each request's current chance 
 decision d1 "Is any filter on?"
 
 screen h1 "Header: '19 of 56 open requests need action today.'\nThe 19 are Act now plus Due within 24 hours\nWith one site in view it names it: '12 of 36 open requests at Site A need action today.'\nWith none left: 'Nothing needs action today.'"
-screen h2 "Sub line: 'Five are urgent, and the average approval chance is 79%.'\nWith none in Act now: 'Nothing is urgent, and ...'"
+screen h2 "No sub line: the figures under it say how many are urgent and the average chance"
 screen h3 "Header: 'X of 56 open requests match these filters.'\nNo sub line"
 
 click nb "Click 'New Case' (top right button)"
 goto g1 "Continues in: Authorizations › New Case › How a case starts and resumes"
 goto g2 "Continues in: Authorizations › Queue › Cardinal payer signal"
 
-screen tl "Four figures under the header\nAlways count the whole queue at the sites in view, not the filtered list"
-click t2 "Click 'Urgent now'\n5 · 'the Act now band'"
+screen tl "Four small figures under the header, as wide as their figure\nAlways count the whole queue at the sites in view, not the filtered list"
+click t2 "Click 'Urgent now'\n5"
 click t3 "Click 'Due within 24 hours'\n14 · 'next due in 3 h'\n(or 'next one is due now', or 'nothing open')"
-click t4 "Click 'Waiting on you'\n'not sent yet, or a question for you'\nCounts the requests the ordering rule puts first"
+click t4 "Click 'Waiting on you'\n21: not sent yet, a denial to work, or a question for you\nthe requests the ordering rule puts first"
 screen t1 "'Approval chance' 79%\n'average · likely 74–84%'\nNot clickable"
 decision dSel "Is that figure already the only filter?"
 process u1 "All filters are cleared, then that figure's filter is set\nUrgency 'Act now', Urgency 'Due within 24 hours', or Status 'Waiting on you'\nThe figure shows an outline"

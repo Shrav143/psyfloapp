@@ -1,19 +1,18 @@
-/* Intake logic that has no screen of its own: where a draft starts from, the sample chart, the EMR pull, attaching a referral. */
+/* Intake logic that has no screen of its own: where a draft starts from, the sample chart, attaching a referral. */
 import { planTypeOf, type CaseDraft } from "@/data/cases";
 import { isoOf } from "@/data/patients";
 import { PAYERS } from "@/data/seed";
 import { siteOf } from "@/data/sites";
-import { PROGRAM_LABEL, PROGRAMS, type NewCasePrefill, type PayerId, type Program, type RequestType } from "@/data/types";
+import { PROGRAMS, type NewCasePrefill, type PayerId, type Program, type RequestType } from "@/data/types";
 import { siteOfVerification } from "@/data/verification";
 import { sitesInView } from "@/lib/scope";
 import { useStore } from "@/store";
 import type { AppState } from "@/store";
-import { selectUnmappedForConnected } from "@/store/emr";
 import { referralPrefill } from "@/store/referrals";
 import { paths } from "@/routes";
 import { defaultTypeFor, isAuthKind } from "./authType";
 import { docEntries, makeDocument, sampleFile } from "./documents";
-import { ICD_CODES, type EmrChart } from "./lookups";
+import { ICD_CODES } from "./lookups";
 import { payerContextOf } from "./payerContext";
 
 /* ------------------------------------------------------------------ where a draft starts */
@@ -97,7 +96,7 @@ export const dx = (...codes: string[]) => ICD_CODES.filter((c) => codes.includes
 
 /** T.W.'s chart: what the sample chart fills in, and what Reader fills in when it reads a file that is not an insurance card. */
 export const SAMPLE_CHART = {
-  patient: { initials: "T.W.", age: 41 },
+  patient: { initials: "T.W.", age: 41, dob: "1985-03-02", sex: "F" as const },
   payerId: "summit" as PayerId,
   memberId: "SM7405165519",
   program: "RES" as Program,
@@ -143,46 +142,6 @@ export function applySampleChart(id: string): void {
   const who = keep && draft ? `${draft.patient.initials}, ${draft.patient.age ?? ""}` : "T.W., 41";
   st.toast({ title: "Sample chart loaded", body: `${who}. ${docs.length} of ${docs.length + 1} documents are added and being checked.`, tone: "neutral" });
 }
-
-/** The EMR fields that name a Psyflo field on the checklist. While one still needs a mapping in EMR Connect, a pull leaves that field blank. */
-const MAPPED_FIELD: Record<string, "payer" | "program"> = { "Level of care": "program", "Referral source": "payer" };
-/** The fields of the chart's own system that still wait for a mapping and would have filled something on the checklist. */
-export const unmappedFor = (st: AppState, c: EmrChart) => selectUnmappedForConnected(st).filter((u) => u.systemId === c.systemId && u.field in MAPPED_FIELD);
-
-export function pullFromEmr(id: string, c: EmrChart): void {
-  const st = useStore.getState();
-  const gaps = unmappedFor(st, c);
-  const blank = new Set(gaps.map((u) => MAPPED_FIELD[u.field]));
-  const payerId = blank.has("payer") ? null : c.payerId;
-  const draft = st.caseDrafts.find((d) => d.id === id);
-  const kind = draft?.kind ?? "initial";
-  /* A case that follows a patient who is known keeps that patient, payer and level of care: a chart cannot make it a different person. It brings the diagnoses and the reason. */
-  if (draft?.patientId) {
-    st.patchCaseDraft(id, { started: true, diagnoses: dx(...c.diagnoses), reason: c.reason, emrChart: c.id });
-    st.toast({ title: `Pulled the chart from EMR Connect`, body: `This case follows ${draft.patient.initials}, ${draft.patient.age ?? ""}, so the patient and the plan stay as they are. The diagnoses and the reason came from the chart.`, tone: "good" });
-    return;
-  }
-  st.patchCaseDraft(id, {
-    started: true,
-    patient: { initials: c.initials, age: c.age },
-    payerId,
-    planType: payerId ? planTypeOf(payerId) : "",
-    memberId: c.memberId,
-    program: blank.has("program") ? null : c.program,
-    type: defaultTypeFor(kind, c.type),
-    diagnoses: dx(...c.diagnoses),
-    reason: c.reason,
-    emrChart: c.id,
-  });
-  const left = gaps.map((u) => `“${u.field}”`);
-  st.toast({
-    title: `Pulled ${c.initials}, ${c.age} from EMR Connect`,
-    body: left.length ? `${left.join(" and ")} ${left.length === 1 ? "needs" : "need"} a mapping, so ${left.length === 1 ? "that field was" : "those fields were"} left blank. You can still fill ${left.length === 1 ? "it" : "them"} in.` : "Everything below was filled in from the chart. You can still change it.",
-    tone: left.length ? "mid" : "good",
-  });
-}
-
-export const emrLabel = (c: EmrChart): string => `${c.initials}, ${c.age} · ${PAYERS.find((p) => p.id === c.payerId)?.shortName} · ${PROGRAM_LABEL[c.program]}`;
 
 /* ------------------------------------------------------------------ the referral comes first */
 /** Puts a referral into a case: the patient, payer, level of care and diagnoses come from it, and the referral itself counts as the first document.

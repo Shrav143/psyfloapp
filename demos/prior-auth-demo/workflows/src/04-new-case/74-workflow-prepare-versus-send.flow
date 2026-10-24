@@ -5,7 +5,7 @@ dir: TD
 ---
 start s1 "The workflow has steps that prepare a portal, fax or phone action"
 process p1 "The agents prepare the packet in Authorization preparation\nNothing is transmitted"
-screen sc1 "Review & submit\nThe packet, the checks, 'What is missing'\nCard 'Sign' with 'Demo: simulated send. Nothing leaves the app.'"
+screen sc1 "Review & submit\nThe packet, the checks, 'What is missing'\nCard 'Sign' with 'Sign and send to payer (demo)'"
 decision d1 "Is a clinician signing, with the attestation, nothing blocking and any warning acknowledged?"
 endx e1 "'Sign and send to payer (demo)' stays switched off"
 click c1 "Click 'Sign and send to payer (demo)' and confirm"

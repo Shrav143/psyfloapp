@@ -1,11 +1,11 @@
 title: Authorizations › Case page › Recommended actions › Refine and add clinical context
 route: /authorizations/case/R-1042?tab=actions
-intro: 'Refine recommendations' re-orders the cards and may add one that fits, so the approval chance preview moves. 'Add clinical context' has its own diagram; the 'Logged decisions' list shows the trace of both.
+intro: 'Refine recommendations' re-orders the cards and may add one that fits, so the approval chance preview moves. 'Add clinical context' has its own diagram. History shows the trace of both, flagged 'Logged decision'.
 dir: TD
 also: Demo only: the refinement is a short simulated wait with a fixed result. The same focus on the same request always gives the same order and the same added card.
 ---
 click rf "Click 'Refine recommendations'"
-overlay rm "Panel 'Refine recommendations'\n'Pick what matters most for this request. Historian and Scribe put the matching cards first and may add one.'"
+overlay rm "Panel 'Refine recommendations'\nthree choices"
 input rp "Pick one focus\n'Strengthen medical necessity' · 'Meet payer criteria' · 'Reduce denial risk'"
 process rd "'Apply focus' stays off until a focus is picked\nand while that focus is the one already set"
 click ra "Click 'Apply focus'"
@@ -13,28 +13,26 @@ click rx "Click 'Cancel', the X or the dimmed area, or press Esc\n(Esc closes on
 endx re "Panel closes\nNothing changes"
 process sp "Button shows a spinner for about 1.2 seconds"
 agent hs "Historian and Scribe re-rank the cards\n(demo: simulated)"
-store fs "Focus saved on the case\nLog: 'You refined the recommendations: ...'"
+store fs "Focus saved on the case\nHistory: 'You refined the recommendations: ...' flagged 'Logged decision'"
 process ro "Cards that move that part of the number come first\nOne more card that fits the focus is added at the top, worth up to 2 points\n(no card when the request is already too strong to add one)"
-screen fb "Banner 'Focus: Meet payer criteria. The cards are in that order, and one card was added.'\nThe added card has the pill 'Added for your focus'"
-process pv "Approval chance preview moves\nHeader '62% → 90%', the intro line and 'Apply selected (7)' follow"
-toast tr "'Recommendations refined'\n'Cards are in the order for ... and one was added. With every action applied the chance is 90%.'"
-click cf "Click 'Clear focus' in the banner"
+screen fb "Chip 'Focus: Meet payer criteria' with an X\nThe added card has the pill 'Added for your focus'"
+process pv "Approval chance preview moves\nHeader '62% → 90%' and 'Apply selected (7)' follow"
+toast tr "'Recommendations refined'\n'Meet payer criteria · one card added · 90% with every action'"
+click cf "Click the X 'Clear focus' on the chip"
 process cr "Original order is back and the added card goes\nUnless it was already applied or dismissed: then it stays, with its points"
 
 process lk "While the agents are updating the draft\nboth buttons are off"
 click cc "Click 'Add clinical context'"
 goto g1 "Continues in: Authorizations › Case page › Recommended actions › Add clinical context"
-
-screen lg "Card 'Logged decisions'\nNewest six entries, each with the time\nShown once there is at least one entry"
-process en "Entries come from\napplied actions, dismissals, bring back, notes sent, focus, clinical context, draft edits, re-check, send back to Scribe"
+screen lg "History at the bottom of the page\nthe line lands at once, once\nno separate 'Logged decisions' box"
+goto g2 "Continues in: Authorizations › Case page › History"
 
 rf --> rm --> rp --> rd --> ra
 rm --> rx --> re
 ra --> sp --> hs --> fs --> ro --> fb --> pv
 fs --> tr
-fs --> lg
+fs --> lg --> g2
 fb --> cf --> cr
-lg --> en
 rf -.-> lk
 cc -.-> lk
 cc --> g1

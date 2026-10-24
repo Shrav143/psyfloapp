@@ -1,40 +1,38 @@
 title: Denial Intelligence › A denial opened › Folded sections
-route: /denials?id=D-3318
-intro: The detail that is not needed at first sits in folded sections. Each shows its title and one summary line, and opens to the detail. The whole header row is one button. Nothing was removed: everything folded is one click or key press away. Longer detail that is not a section (the three options, the list of denials, 'Add a denial letter') is in right-hand panels instead, see the other diagrams.
+route: /denials/D-3318
+intro: The one folded section on a denial is History: everything on the denial in one list, newest first, with one standard flag on the right. It replaces 'What the agents did' and 'What has happened', and has no summary line under its title. The brief folds 'Key dates and numbers' and 'Have these open'. Longer detail that is not a section is in pop-ups and right-hand panels.
 dir: TD
-also: 'Where the denial is weak' and 'The six ASAM dimensions' are not folded: each has its own 'Full summary' button and stays open.
 ---
-start s1 "A denial is on screen (or its brief)"
-screen f1 "Folded at first, each with a title, one summary line and a chevron\n'What the agents did': 'Reader, Advocate and Historian read the letter and the chart...' and the pill 'Done in 0:48'\n'What has happened': '6 steps. Latest, Mon 4:46 pm: ...'\n'Why FLO suggests this': 'The reasons, from the chart and the clock. A recommendation, not a payer rule.'"
-screen f2 "On the brief page\n'Key dates and numbers': 'Call: Wed 10/21, 9–11 am · Window: 36 h'\n'Have these open': '0 of 3 ticked' (and '1 of 3 ticked' after a tick)"
-process pa "Each header is a real button with aria-expanded=false\nSummary lines are worked out from the denial, so they change when it does"
-screen pn "Not folded: right-hand panels\n'Open denials' (header button), 'Compare the options' (Your options), 'Add a denial letter' (panel footer)\nEach closes with Escape, X or the dimmed area"
-goto g1 "Continues in: Denial Intelligence › Open denials list"
+start s1 "A denial is on screen"
+screen f1 "'History', folded, with a chevron and nothing under the title"
+click c1 "Click the header, or Tab to it and press Enter or Space"
+process p1 "aria-expanded becomes true, the list shows"
+process pm "The list: the request's own events (the Dashboard shows the same) and the agents' reading of the letter, newest first\nA reading already in the events is not listed twice"
+screen h1 "One line each: who (agent, 'You' or 'Payer'), when, what"
+decision dq "Who did it?"
+screen fa "Flag 'Agent': a Psyflo agent did it\n(Reader, Advocate, Historian, Cadence, Navigator)"
+screen fd "Flag 'Decision': the payer decided\nRed when it denied or upheld, ochre when it approved part ('did not approve the full request' on a partial approval), green when it overturned or restored"
+screen fl "Flag 'Logged decision': a person logged it by hand\n'You logged the call outcome', 'You recorded the payer's decision', 'You accepted the decision'"
+screen fs "Flag 'Scheduled': planned, not done\n'Peer-to-peer call with Cardinal', 'Navigator checks for the decision each day'"
+screen fn "No flag: anything else a person did ('You signed the appeal as Medical director', 'You chose a written appeal')"
+process px "A scheduled line leaves once the answer is in (call outcome, payer decision, accept)"
+click c2 "Click the header again, or Enter or Space"
+end e1 "History folds away"
+
+screen f2 "On the brief page, folded\n'Key dates and numbers' (no summary line)\n'Have these open' with the count '0 of 3' on the right"
+process p4 "Both stay in the page while closed; Print opens them on paper and drops the chevron"
+process p6 "A section starts closed again each time a denial is opened, also when moving from one denial to the next"
+goto g3 "Continues in: Denial Intelligence › Peer-to-peer › The brief"
 goto g4 "Continues in: Denial Intelligence › Your options"
 
-click c1 "Click a header, or Tab to it and press Enter or Space"
-process p1 "aria-expanded becomes true\nChevron turns over, a rule appears, the detail shows below"
-screen d1 "'What the agents did': one line per agent with a tick\n'What has happened': 'Every step is also on the Dashboard.' and the timeline\n'Why FLO suggests this': the reasons\n'Key dates and numbers': two columns\n'Have these open': one tick box per source"
-goto g2 "Continues in: Denial Intelligence › A denial opened › Recommended next step"
-goto g3 "Continues in: Denial Intelligence › Peer-to-peer › The brief"
-
-click c2 "Click the header again, or press Enter or Space"
-process p2 "aria-expanded becomes false\nThe detail hides"
-process p4 "On the brief, 'Key dates and numbers' and 'Have these open' stay in the page while closed\nPrint opens both on paper and drops the chevron"
-process p5 "Esc closes menus, dialogs and drawers, not a folded section"
-process p6 "Opening one does not close another\nA section starts closed again each time the page is opened"
-end e1 "Section is closed again"
-
-s1 --> f1 --> pa
-s1 --> f2 --> pa
-s1 -.-> pn
-pn --> g1
-pn --> g4
-pa --> c1 --> p1
-p1 --> d1
-d1 --> g2
-d1 --> g3
-d1 --> c2 --> p2 --> e1
-p2 -.-> p4
+s1 --> f1 --> c1 --> p1 --> pm --> h1 --> dq
+dq -->|Agent| fa
+dq -->|Payer| fd
+dq -->|A person logged an outcome| fl
+dq -->|Planned| fs
+dq -->|A person, otherwise| fn
+fs -.-> px
+h1 --> c2 --> e1
 p1 -.-> p6
-c1 -.-> p5
+s1 -.-> g4
+s1 -.-> f2 --> p4 --> g3

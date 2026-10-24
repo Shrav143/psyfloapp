@@ -3,7 +3,7 @@ import { CircleAlert, PanelRightOpen, RefreshCw } from "lucide-react";
 import { Button, Label, Pill } from "@/components/ui";
 import { payerById } from "@/data/seed";
 import type { Tone } from "@/data/types";
-import { mdyOf, type VerificationRecord } from "@/data/verification";
+import { mdyOf, type VerificationException, type VerificationRecord } from "@/data/verification";
 import { ago, stamp } from "@/lib/time";
 import { useStore } from "@/store";
 import { buildResult } from "./checks";
@@ -27,9 +27,10 @@ export function existingAuthText(a: NonNullable<VerificationRecord["existingAuth
   return `${a.ref} · ${a.service} · ${mdyOf(a.from)} to ${mdyOf(a.to)} · ${a.used} of ${a.approved} ${a.unit} used, ${left === 0 ? "none left" : `${left} left`}`;
 }
 
-/** The warnings of a record, one line each, in a single quiet block. Used under the summary and in the details panel. */
-export function ExceptionList({ record }: { record: VerificationRecord }) {
-  const lines = exceptionLines(record);
+/** The warnings of a record, one line each, in a single quiet block. Used under the summary and in the details panel.
+    `omit` leaves out the warnings the screen already shows in its own rows, so nothing is said twice. */
+export function ExceptionList({ record, omit }: { record: VerificationRecord; omit?: ReadonlySet<VerificationException> }) {
+  const lines = exceptionLines(record).filter((l) => !omit?.has(l.code));
   if (!lines.length) return null;
   return (
     <ul aria-label="Warnings" className="flex flex-col gap-2 rounded-2xl border border-mid-edge bg-mid-bg px-4 py-3 text-mid-ink">
@@ -111,8 +112,7 @@ export function VerificationSummary({ record, onRefresh, onDetails, compact }: {
             </Row>
           ) : null}
           <Row label="Benefits" chip={summary.benefits.chip} tone={summary.benefits.tone}>
-            {summary.benefits.line}
-            {record.costShare ? `. Patient pays: ${record.costShare}` : ""}
+            {[summary.benefits.line, record.costShare ? `Patient pays: ${record.costShare}` : null].filter(Boolean).join(" · ")}
           </Row>
           <Row label="Authorization" chip={REQUIREMENT_LABEL[record.authRequirement]} tone={REQUIREMENT_TONE[record.authRequirement]}>
             {record.authRequirement === "concurrent" ? `${payer?.shortName ?? "The payer"} reviews each stay while an authorization is on file. A review is needed to continue.` : summary.auth.line}

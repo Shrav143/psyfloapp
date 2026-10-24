@@ -16,7 +16,7 @@ endgroup
 
 decision dE "Does the band have any request after filters?"
 decision dZ "Is it Act now, with no request open at all, and no search, payer or status filter on?"
-screen em "Band card stays\n'Act now (0 requests)'\n'Nothing needs you today'\n'Everything in Act now has been sent or handled.'\nWith one site in view: 'No open request at Site B is in Act now.'"
+screen em "Band card stays\n'Act now (0 requests)'\n'Nothing needs you today · Everything here is sent or handled'\nWith one site in view: '· None open at Site B'"
 process hide "The band card is left out"
 screen bc "Band card\n'Act now (5 requests)'\nName, count, chevron"
 

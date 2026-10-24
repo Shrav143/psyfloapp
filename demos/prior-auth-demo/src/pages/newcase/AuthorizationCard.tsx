@@ -34,7 +34,6 @@ export function AuthorizationCard({ patient, episode, auth }: { patient: Patient
         <Fact label={auth.approvedTo === null ? "Expires" : "Expires on"} value={ends ?? "Not set"} />
       </dl>
       <Drawer open={open} onClose={() => setOpen(false)} title="Authorization history" subtitle={`${patient.initials}, ${patient.age} · ${PROGRAM_LABEL[episode.program]} · ${auth.id}`} width={520}>
-        <p className="mb-4 text-[13px] text-muted">Demo data, built from the Case Manager ledger. Each line says who acted: the payer, an agent or a person.</p>
         <ol className="flex flex-col gap-3.5 border-l border-line pl-5">
           {auth.history.map((h, i) => (
             <li key={`${h.at}-${i}`} className="relative">

@@ -2,7 +2,7 @@
 
 Every control on `/authorizations` and `/authorizations/case/:id` and the diagram that shows it. New Case and Eligibility & Benefits are other modules; this module only hands off to them.
 
-File names below are in `src/03-authorizations/`. Short names: 10 queue-overview, 11 site-view, 12 bands, 14 row, 15 quick-view, 16 filters, 17 request-type, 18 signal, 20 ways-in, 21 next-action, 22 header, 23 numbers, 24 tabs, 25 out-of-site, 26 send-gates, 27 facts-row, 28 history, 30 actions-tab, 32 card, 34 apply, 36 dismiss, 38 refine, 39 context, 40 picture, 42 chip, 50 criteria, 60 risk, 62 modals, 70 draft-read-edit, 72 checks-versions, 74 send, 80 exits, 82 writes.
+File names below are in `src/03-authorizations/`. Short names: 10 queue-overview, 11 site-view, 12 bands, 14 row, 15 quick-view, 16 filters, 17 request-type, 18 signal, 20 ways-in, 21 next-action, 22 header, 23 numbers, 24 tabs, 25 out-of-site, 26 send-gates, 27 facts-row, 28 history, 30 actions-tab, 32 card, 34 apply, 36 dismiss, 38 refine, 39 context, 40 picture (the clinical rail), 42 chip, 44 screener chart, 46 framework, 50 criteria and risk, 62 pop-ups, 70 draft-read-edit, 72 checks-versions, 74 send, 80 exits, 82 writes.
 
 ## Queue (`/authorizations`)
 
@@ -12,7 +12,7 @@ File names below are in `src/03-authorizations/`. Short names: 10 queue-overview
 | Top bar site switch ('Both sites', 'Site A', 'Site B') and the locked 'Site A only' label: what the queue does with them (the controls themselves are Global shell) | 11 |
 | Demo menu 'Viewing as' (Jordan, Alex, Dr. Rivera, Sam): rows, bands, figures, badge and signal count follow the viewer; Site A + Site B = Both sites | 11 |
 | Header names the site when one site is in view ('12 of 36 open requests at Site A need action today.') | 10, 11 |
-| Header line and sub line (filtered, unfiltered and 'Nothing needs action today' / 'Nothing is urgent' wording) | 10, 16 |
+| Header line (filtered, unfiltered and 'Nothing needs action today' wording); no sub line | 10, 16 |
 | 'New Case' button | 10, 80 |
 | Payer signal: one-line banner, 'Review the four' ('Review it' for one) / 'Show all requests'; the count is the affected requests in view | 18, 11 |
 | Payer signal: info icon 'More about this signal' (hover, focus, Esc) | 18 |
@@ -28,7 +28,7 @@ File names below are in `src/03-authorizations/`. Short names: 10 queue-overview
 | 'Status' menu and its seven options (including 'Waiting on you') | 16 |
 | Info icon 'What the statuses mean' next to 'Status' (hover, focus, Esc) | 16 |
 | 'Urgency' menu and its four options | 16 |
-| Info icon 'How the list is ordered' (right end of the filter bar) | 16, 12 |
+| Info icon 'How the list is ordered' (right end of the filter bar, no label) | 16, 12 |
 | Menu keys: Up, Down, Enter, Esc, click outside | 16 |
 | Filters in the web address (`?payer=`, `?type=` with `initial`, `concurrent`, `reauth`, `modify` or `retro`, `?status=`, `?urgency=`, `?q=`, `?signal=1`), opening a link with filters | 16, 17, 18 |
 | Search and every filter reach only requests at the sites in view (a request at the other site is not found) | 16, 11 |
@@ -48,7 +48,7 @@ File names below are in `src/03-authorizations/`. Short names: 10 queue-overview
 | Row: 'Open' button | 14, 20 |
 | Row: 'Coverage needs a fix' pill (link) | 14, 80 |
 | Row: program, payer, request type, status chip, 'Needs your input', deadline pill, 'Next: ...', approval chance number and band word | 14, 21 |
-| Scores, agent line and payer note (no longer on the row; on the case page under 'At a glance') | 14, 22 |
+| Scores (no longer on the row; on the case page in the diagnosis line). Agent status lines and the payer note are not shown: the status pill and 'Next:' carry the fact | 14, 22 |
 
 ## Case page (`/authorizations/case/:id`)
 
@@ -57,25 +57,24 @@ File names below are in `src/03-authorizations/`. Short names: 10 queue-overview
 | Ways in (queue ID and 'Open', queue quick view 'Open case', Dashboard drawer 'Open case', Case Manager rows, step-down list and review drawer 'Open case', Eligibility result 'Open case', notification, typed address) | 20 |
 | 'Request not found' + 'Back to queue' | 20 |
 | A case at a site the viewer cannot see: card 'This case is not available at Site A' (no patient named), 'Show both sites' (viewers who have both), 'Back to the Dashboard' | 25, 20, 80 |
-| Quiet site label at the end of the header sub line, and the 'Site' fact, for a viewer who can see both sites | 25, 22, 27 |
+| Quiet site label at the end of the header sub line, for a viewer who can see both sites (said once, not again as a fact) | 25, 22, 27 |
 | Crumb 'Authorizations' | 22, 80 |
-| 'Next:' block: sentence, why line, primary button ('Go to this action', 'Send to payer', 'Open on the Dashboard', 'Open in Denial Intelligence', 'Open the draft') | 21, 22 |
+| 'Next:' block: one line, primary button ('Go to this action', 'Send to payer', 'Open on the Dashboard', 'Open in Denial Intelligence', 'Open the draft') | 21, 22 |
+| Chip 'Integrity 2/4' or 'Integrity 4/4' in the Next block while the request is prepared (hover: the open checks; click: opens 'Clinical picture & draft') | 21, 26, 72 |
 | 'Open in review and sign' | 22, 26, 74 |
-| 'Send to payer' (Next block, actions side panel, Draft tab), on and off states and reasons | 21, 26, 30, 74 |
-| Greyed-out 'Sent to payer' (Next block and actions side panel) once the request is with the payer or decided | 21, 22, 30 |
-| 'Open on the Dashboard' (Next block, or next to the status line when the next action is something else) | 21, 22, 80 |
+| 'Send to payer' (once, in the Next block), on and off states; the reason is its tooltip | 21, 26, 74 |
+| Greyed-out 'Sent to payer' once the request is with the payer or decided | 21, 22, 26 |
+| 'Open on the Dashboard' (Next block, or at the end of the diagnosis line when the next action is something else) | 21, 22, 80 |
 | 'Back to queue' | 22, 80 |
-| Header title chips, due pill or the request's current status chip, info icon 'What the statuses mean' | 22 |
-| Authorization facts row (request type, requested, approved with used and left, window or approval ends or next review, documents, waiting on, site) | 27 |
-| 'At a glance': diagnosis, scores, agent line, payer note, Integrity badge | 22 |
-| Tile 'Approval chance' / 'Chance to overturn' | 23 |
-| Tile 'How sure are we' | 23 |
-| Tile 'Days likely granted' / 'Days in question' (units for IOP) | 23 |
-| One-line notice and the info icon 'About the approval chance' | 23 |
-| Denial text (was a banner; now in the Next block) + 'Open in Denial Intelligence' | 21, 23, 80 |
-| Five tabs, address `?tab=`, tab badges | 24 |
+| Title line: ID, level and type chips, status pill (Preparing, Ready to sign, With the payer, Denial route, or the request's own status), due pill, info icon 'What the statuses mean' | 22 |
+| Authorization facts row (approved with used and left, window or approval ends or next review, documents, workflow, waiting on); request type, days and site are in the title line only | 27 |
+| Diagnosis line and scores | 22 |
+| Figure 'Approval chance' / 'Chance to overturn' and the info icon 'About the approval chance' | 23 |
+| Figure 'How sure are we' and the info icon 'About the similar cases' | 23 |
+| Figure 'Days likely granted' / 'Days in question' (units for IOP) and the info icon 'About the days likely granted' | 23 |
+| Three tabs, address `?tab=` (actions, draft, criteria), the five old names (`picture`, `risk` scroll to their section), tab badges | 24, 20 |
 | Jump to one card (`?rec=`, outline, scroll) | 24, 21 |
-| 'History' (closed by default, read only, lines labelled person or agent) | 28 |
+| 'History': one list, closed by default, a flag on every line (Agent, Decision, Logged decision, Scheduled), no duplicates | 28 |
 
 ## Recommended actions
 
@@ -90,43 +89,46 @@ File names below are in `src/03-authorizations/`. Short names: 10 queue-overview
 | 'Dismiss' on a card | 32, 36 |
 | 'Applied (N)' lines (open to read) | 30 |
 | 'Dismissed (N)' list and 'Bring back' | 30, 36 |
-| Banner 'Every recommendation is applied' | 30 |
-| 'Apply selected (N)': missing answers, work strip, results | 34 |
+| Line 'Every recommendation is applied' | 30 |
+| 'N of M selected' and 'Apply selected (N)': missing answers, work strip, results | 30, 34 |
 | 'Refine recommendations' panel: three focuses, 'Apply focus', 'Cancel', X, Esc | 38 |
-| Banner 'Focus: ...' and 'Clear focus'; card pill 'Added for your focus' | 30, 32, 38 |
-| 'Add clinical context' dialog: box, 'Add context', 'Cancel', X, Esc | 39 |
+| Chip 'Focus: ...' and its X 'Clear focus'; card pill 'Added for your focus' | 30, 32, 38 |
+| 'Add clinical context' pop-up: box, 'Add context', 'Cancel', X, Esc | 39 |
 | Side-panel card 'Context you added' (notes, '+1 pt') | 30, 39 |
 | 'Dismiss recommendations' | 30, 36 |
-| Dismiss dialog: four reasons, 'Tell us in a few words', 'Dismiss and log', 'Cancel', X, Esc, dimmed area, gating warning | 36 |
+| Dismiss pop-up: four reasons, 'Tell us in a few words', 'Dismiss and log', 'Cancel', X, Esc, dimmed area, gating warning | 36 |
 | Dismissal written to the list Analytics reads | 36, 82 |
-| 'Logged decisions' | 30, 38, 39 |
+| What was logged by hand lands in History at once, flagged 'Logged decision' (the 'Logged decisions' box is gone) | 28, 30, 38, 39 |
 | Controls locked while the agents work | 30, 32, 34, 38, 39 |
 
-## Clinical picture, Payer criteria, Risk analysis
+## Clinical picture & draft
 
 | Control | Diagram |
 |---|---|
-| Source chips (every tab) and the source dialog: 'Close', X, dimmed area, Esc | 40, 42, 50, 70 |
-| 'Settle it' | 40 |
-| ASAM dimensions, trend chart, 'What stands out', 'Engagement and behavior', 'Still open' (read only) | 40 |
-| 'Go to the action', 'Open the action' | 50 |
-| 'Re-check criteria' | 50 |
-| Criteria table, facts, 'To keep the approval chance high' | 50 |
-| Risk cards, 'Why this number' bars (with the 'Clinical context you added' row), 'Likely outcomes', 'How sure are we', 'Can you trust it?' (read only) | 60 |
-| 'See all' and its dialog ('Close', X, dimmed area, Esc) | 60, 62 |
-| 'How it is calculated' and its dialog ('Got it', X, dimmed area, Esc) | 60, 62 |
-| 'Where this stands' banner | 60 |
-
-## Draft
-
-| Control | Diagram |
-|---|---|
+| The draft: sections, source chips, 'New' marks | 70, 42 |
 | 'Edit', section boxes, 'Cancel', 'Save changes' ('No changes to save', 'Draft saved') | 70 |
-| Source chips in the draft, 'New' marks | 70, 42 |
-| 'Checks' card (four checks, pill) and 'Re-check' | 72 |
-| 'Versions' card, 'Current', 'View', version dialog ('Close', X, dimmed area, Esc) | 72 |
+| Fold 'Integrity checks' (four checks, pill) and 'Re-check' | 72 |
+| Fold 'Versions', 'Current', 'View', version pop-up ('Close', X, dimmed area, Esc) | 72 |
 | 'Send back to Scribe' | 72 |
-| 'Send to payer' (large) and what follows: New Case, sign, Dashboard 'Received', queue | 74 |
+| Clinical picture rail beside the draft; under it and folded at 1024 px and below | 40, 24 |
+| Diagnosis line, status pill, source chip, 'In draft' | 40 |
+| Screener chart: tooltip, keyboard, legend checkboxes, 'Add screener' menu, 'View results' pop-up | 44 |
+| Framework name ('ASAM Criteria', 'LOCUS · adult mental health'), info icon 'Which framework applies', six rows, the dimension pop-up and 'Show in draft' | 46, 40 |
+| Folds 'Medications', 'What stands out', 'Engagement' | 40 |
+| Source chips and the source side panel: X, dimmed area, Esc | 42 |
+| Sending: the header's 'Send to payer' and what follows (New Case, sign, Dashboard 'Received', queue) | 74 |
+
+## Criteria & risk
+
+| Control | Diagram |
+|---|---|
+| Figures 'Criteria met' and 'Approval chance', 'See the breakdown' | 50, 62 |
+| 'Biggest risks' chips (open the card on Recommended actions) | 50, 24 |
+| Criterion rows (Met, Partial, Not met), the fold with evidence, quote, source chip, 'N pts at risk' and the action | 50 |
+| 'Re-check criteria' | 50 |
+| Criteria text that follows the framework (substance use or mental health) | 46, 50 |
+| Fold 'Similar decisions', 'See all', 'How it is calculated' | 50, 62 |
+| Pop-ups 'Why 62%' (bars and likely outcomes), 'Comparable decisions', 'How the approval chance is calculated' ('Close', 'Got it', X, dimmed area, Esc) | 62 |
 
 ## Hand-offs and side effects
 

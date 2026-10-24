@@ -10,7 +10,7 @@ process p1 "The whole brief becomes plain text\nOpening, points, what they may s
 decision d1 "Does the browser allow copying?"
 process p2 "Fallback: a hidden text box and the copy command, for pages opened as files"
 decision d2 "Did the fallback work?"
-toast t1 "'Brief copied'\n'Paste it into your notes before the call.'"
+toast t1 "'Brief copied'"
 toast t2 "'Could not copy'\n'Select the text on the page and copy it instead.'"
 
 click c2 "Click 'Print'"

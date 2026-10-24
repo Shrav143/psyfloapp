@@ -1,10 +1,11 @@
 /* What the payer workflow leaves in a case's History: which workflow was applied, how far it ran at each stage change (done, skipped, waiting), the rules it read with their verification state,
    the sign-off, and what was prepared versus what was transmitted. Lines are short; the detail sits under them. Pure, so the same case and the same facts give the same lines (the key stops repeats). */
 import type { WorkflowLogEntry } from "@/data/cases";
-import { STAGE_LABEL, STAGES_ORDER, VERIFICATION_LABEL, type NodeKind, type Stage, type TraceStep, type WfNode } from "@/data/workflow/types";
+import { STAGES_ORDER, VERIFICATION_LABEL, type NodeKind, type Stage, type TraceStep, type WfNode } from "@/data/workflow/types";
 import { plural } from "@/lib/format";
 import { approveAll, runWorkflow } from "./engine";
 import { warningsOf, type CaseWorkflow } from "./model";
+import { caseStageLabel } from "./stageLabel";
 
 export type Entry = Omit<WorkflowLogEntry, "posted">;
 
@@ -54,7 +55,7 @@ export function stageEntries(view: CaseWorkflow, stage: Stage, at: number, run =
       key: `stage:${stage}:${sig}`,
       at,
       actor: STAGE_ACTOR[stage],
-      text: `Workflow ran to ${STAGE_LABEL[stage]}: ${plural(done.length, "step")} done${skipped.length ? `, ${skipped.length} skipped${skip}` : ""}`,
+      text: `Workflow ran to ${caseStageLabel(stage)}: ${plural(done.length, "step")} done${skipped.length ? `, ${skipped.length} skipped${skip}` : ""}`,
       detail: cut([done.length ? `Done: ${done.slice(0, 4).map((s) => s.title).join(", ")}${done.length > 4 ? ` and ${done.length - 4} more` : ""}.` : "", run.pending?.length ? `${plural(run.pending.length, "step")} still ahead.` : "", rulesLine({ run }), warningsOf(run).length ? `Warnings: ${warningsOf(run).join(" ")}` : ""].filter(Boolean).join(" "), 400) || undefined,
     },
   ];

@@ -4,8 +4,8 @@ intro: Every denial has an appeal analysis report: seeded, added from a letter, 
 dir: TD
 also: The report is built for any denial type. D-3297 is the paraphrased worked example and carries a 'Worked example' tag.
 ---
-start s1 "Click 'Appeal analysis report' under the 'Our read' tile of a denial"
-start s2 "Click 'Report' on a row of the 'Open denials' panel"
+start s1 "Click 'Appeal analysis report' in the header card of a denial"
+start s2 "Click 'Appeal analysis report' on the brief page"
 start s3 "Click 'Appeal analysis report' at the top right of the brief page"
 start s4 "Open /denials/D-xxxx/report by its address"
 decision d1 "Does a request with that id exist?"
@@ -28,7 +28,7 @@ click c1 "Click 'Regenerate'"
 store st2 "Saved time is cleared, so the panel runs again"
 click c2 "Click 'Back to the denial'"
 click c3 "Click the crumb 'Denial Intelligence' or the crumb with the D-id"
-process p1 "Address opens /denials?id=D-xxxx (the crumb 'Denial Intelligence' opens /denials)"
+process p1 "Address opens /denials/D-xxxx (the crumb 'Denial Intelligence' opens the dashboard)"
 goto g3 "Continues in: Denial Intelligence › A denial opened"
 process p2 "Leave the page while it is generating: nothing is saved, the next visit generates again"
 process p3 "Demo menu, 'Reset demo data' clears the saved times\nEvery report generates again"

@@ -4,16 +4,16 @@ intro: When the 'Send to payer' button is on or greyed out, what both header but
 dir: TD
 also: Every request gets a draft in New Case, made from its own data when it has none (five requests have one already: R-1042, I-2207, R-0988, R-1101, I-2262). It never opens blank at Intake. 'Open in review and sign' is always on, even for a request already with the payer.
 ---
-screen cp "Case page\n'Send to payer' appears in the 'Next:' block, the Recommended actions side panel and the Draft tab"
+screen cp "Case page\n'Send to payer' appears once, in the 'Next:' block in the header, on every tab"
 decision d1 "Does the request already have a result (decided)?"
-process r1 "The button becomes a disabled 'Sent to payer'\nTooltip: 'Approved. Nothing is left to send.'\n(the result word comes from the request)"
+process r1 "The button becomes a greyed-out 'Sent to payer'\nTooltip: 'Approved. Nothing left to send'\n(the result word comes from the request)"
 decision d2 "Is it already with the payer?"
-process r2 "The button becomes a disabled 'Sent to payer'\nTooltip: 'Already with the payer. Navigator is tracking it.'"
+process r2 "The button becomes a greyed-out 'Sent to payer'\nTooltip: 'With the payer'\nThe status pill in the title says the same"
 decision d3 "Is it a denial?"
-process r3 "Greyed out. Reason: 'This request was denied. Advocate owns the next step.'"
+process r3 "Greyed out. Tooltip: 'Denied. Advocate has the next step'"
 decision d4 "Do all four Integrity checks pass?"
-process r4 "Greyed out, next to the primary button for the next action\nReason: 'Integrity has 2 open checks. Apply the matching actions first.'"
-process on "'Send to payer' is on\nIn the 'Next:' block it is the one primary button\n'Sending opens review and sign. Nothing goes to the payer until a clinician signs.'"
+process r4 "Greyed out, next to the primary button for the next action\nChip 'Integrity 2/4'; tooltip 'Integrity 2/4: apply the matching actions'"
+process on "'Send to payer' is on, chip 'Integrity 4/4'\nIn the 'Next:' block it is the one primary button\nTooltip: 'Opens review and sign. A clinician signs before anything is sent.'"
 
 group gChk "What keeps a check open"
   process k1 "'Every sentence matches the chart'\nopen after you edit the draft, until 'Re-check'"

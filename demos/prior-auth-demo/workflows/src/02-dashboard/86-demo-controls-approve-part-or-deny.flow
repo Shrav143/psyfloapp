@@ -29,7 +29,7 @@ group gD "Denied or partly approved"
   screen ds "Dashboard after a denial\n'Denied / appeal' chip and 'Decided today' each go up by one; 'Decision pending' goes down\nSidebar badge on Denial Intelligence goes up\nIts row shows 'Call booked', next action 'Prepare the P2P call', owner You\nA row hidden by the old stage filter leaves the table; the drawer stays open"
   screen dd "Drawer for D-3319\nChip 'Call booked', 'Chance of winning 61%'\nDemo controls disabled: 'A denial follows its own route in Denial Intelligence.'\nFooter gains 'Open in Denial Intelligence'"
 endgroup
-goto g2 "Continues in: Denial Intelligence › Open denials\n/denials?id=D-3319"
+goto g2 "Continues in: Denial Intelligence › A denial opened\n/denials/D-3319"
 goto g3 "Continues in: Authorizations › Case page\nThe case number is unchanged"
 
 s1 --> x1 --> c1 & c2 & c3

@@ -1,4 +1,6 @@
 import type { AgentKey, PayerId, Program, PsyRequest, RequestType, Tone } from "./types";
+import type { CaseScreener } from "./caseScreeners";
+import type { FrameworkId } from "./frameworks";
 import { QUEUE_ITEMS, type Phase, type QueueItem, type Score } from "./queue";
 import { R1042_DETAIL } from "./caseDetailR1042";
 import { buildFromSeed, seedFromItem, seedFromRequest } from "./caseDetailTemplate";
@@ -25,14 +27,15 @@ export interface Rec {
   focus?: FocusId; // set on the one card that "Refine recommendations" adds for that focus
 }
 export interface DriverRow { id: string; label: string; base: number } // base = points already earned before any action
-export interface Criterion { id: string; text: string; evidence: string; source: Evidence; note: string; metNow: boolean; fixRec?: string }
-export interface AsamDim { n: number; name: string; level: 0 | 1 | 2 | 3 | 4; sentence: string }
+/** `metNow` false is "Partial" (covered in the draft, not backed by the chart yet) unless `notMet` says the chart has nothing for it. */
+export interface Criterion { id: string; text: string; evidence: string; source: Evidence; note: string; metNow: boolean; notMet?: boolean; fixRec?: string }
+/** One of the six dimensions of the case's framework, rated on that framework's scale (ASAM 0 to 4, LOCUS 1 to 5). */
+export interface DimRating { n: number; name: string; rating: number; sentence: string; source: Evidence }
+export interface Med { name: string; dose: string }
 export interface OpenItem { id: string; kind: "conflict" | "missing" | "risk"; text: string; fixRec: string }
 export interface DraftSection { id: string; title: string; text: string; sources: Evidence[] }
 export interface CheckDef { id: string; label: string; okNote: string; warnNote: string; blockedBy: string[] }
 export interface Comparable { who: "Yours" | "Network"; what: string; outcome: string; tone: Tone; match: string }
-export interface TrendSeries { name: string; color: string; data: number[] }
-export interface KeyScore { label: string; value: string; of: string; note?: string; tone: Tone }
 
 export interface CaseDetail {
   id: string;
@@ -53,7 +56,6 @@ export interface CaseDetail {
   chip?: { text: string; tone: Tone }; // shown instead of the notice-due chip when the request has no clock
   phase: Phase;
   agent: AgentKey;
-  statusLine: string;
   needsInput: boolean; // a question waits for a person: on a request with the payer, the answer to its question
   baseChance: number;
   spread: [number, number];
@@ -62,10 +64,11 @@ export interface CaseDetail {
   start: number;
   rows: DriverRow[];
   summary: { diagnosis: string; status: { text: string; tone: Tone }; trajectory: string; readiness: string; sources: Record<"diagnosis" | "status" | "trajectory" | "readiness", Evidence> };
-  asam: AsamDim[];
-  trendLabels: string[];
-  trend: TrendSeries[];
-  keyScores: KeyScore[];
+  /** The level-of-care framework the case is assessed with (frameworkFor), and its six dimensions. */
+  framework: FrameworkId;
+  dims: DimRating[];
+  screeners: CaseScreener[];
+  meds: Med[];
   standsOut: string[];
   engagement: { pct: number; checks: string[] };
   open: OpenItem[];

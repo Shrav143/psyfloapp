@@ -1,7 +1,6 @@
 import { Field, TextInput } from "@/components/ui";
 import type { CaseDraft } from "@/data/cases";
 import { daysRequested } from "@/data/queue";
-import { PROGRAM_LABEL } from "@/data/types";
 import { useStore } from "@/store";
 import { datesOfService } from "./verificationFor";
 
@@ -25,7 +24,7 @@ export function DatesFields({ draft, from, to, required }: { draft: CaseDraft; f
         label={to}
         required={required}
         error={bad ? "The end is before the start." : undefined}
-        hint={!required && draft.program && usual && !draft.endDate ? `Left empty: the usual ${daysRequested(draft.program)} days for ${PROGRAM_LABEL[draft.program]}, through ${mdy(usual.to)}.` : undefined}
+        hint={!required && draft.program && usual && !draft.endDate ? `Empty: the usual ${daysRequested(draft.program)} days, through ${mdy(usual.to)}` : undefined}
       >
         <TextInput type="date" value={draft.endDate ?? ""} min={draft.startDate || undefined} onChange={(e) => patch(draft.id, { endDate: e.target.value || undefined })} />
       </Field>

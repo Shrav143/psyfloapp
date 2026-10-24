@@ -8,11 +8,11 @@ start s1 "Verify reaches the benefits question for the chosen payer"
 
 group gDemo "In the demo"
   decision d1 "Is the payer Evergreen?"
-  process p1 "Benefits row ticks\n'Evergreen's system did not answer'"
-  agent a1 "Caller\n'Evergreen did not answer online. Caller is phoning'"
+  process p1 "Benefits row ticks\n'No answer online'"
+  agent a1 "Caller · 'Phone call to Evergreen'\nChecking"
   wait w1 "About 2.6 seconds"
-  process p2 "Row ticks 'Caller phoned Evergreen, confirmed the answers and logged the call'"
-  process p3 "Result lists the call under 'What the agents checked'\n'Phone call to Evergreen' 1:34, reference C-4471"
+  process p2 "Row ticks 'Answers confirmed, call logged'"
+  process p3 "Result: Source 'Simulated check, confirmed by phone'\nSide panel 'How this was checked': 'Phone call to Evergreen' 1:34, reference C-4471"
   process p4 "Every other payer\nThe plan answers at once and the check goes on"
 endgroup
 
@@ -29,17 +29,17 @@ endgroup
 
 group gBad "When the answer is bad, not missing"
   decision b1 "What did the checks find?"
-  process b2 "Member ID ends 1012\n'coverage lapsed 10/12'"
-  process b3 "Member ID ends 9999\n'no coverage found for these details'"
-  process b4 "Evergreen with Detox\n'The clinic is not enrolled for this program'"
-  process b6 "Member ID ends 3030\n'does not cover Residential 3.5'"
+  process b2 "Member ID ends 1012\n'Lapsed 10/12'"
+  process b3 "Member ID ends 9999\n'No coverage found'"
+  process b4 "Evergreen with Detox\n'Not enrolled for this program'"
+  process b6 "Member ID ends 3030\n'Not covered'"
   process b7 "Member ID ends 6060\n'Another plan pays first'"
-  process b8 "Member ID ends 9090\n'All 14 days are used'"
+  process b8 "Member ID ends 9090\n'All 14 days used'"
   process b5 "The check still runs to the end and opens a result\nVerdict 'Fix before billing'"
 endgroup
 
 start s2 "While the check runs, leave the page\n(sidebar, back link or browser Back)"
-endx e1 "The check is dropped\nNothing is saved: no row, no badge change\nOpen 'Verify a patient' and start again"
+endx e1 "The check is dropped\nNothing is saved: no row, no badge change\nOpen the Verify page and start again"
 goto g1 "Continues in: Authorizations › Eligibility & Benefits › Result › Next actions"
 goto g2 "Continues in: Authorizations › Eligibility & Benefits › Verify › The check finishes and is saved"
 

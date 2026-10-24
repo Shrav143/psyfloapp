@@ -1,22 +1,23 @@
 title: Authorizations › New Case › Workflow › What the workflow says at each step
-route: /authorizations/new/:draftId (each step's header, footer line and 'What is missing')
-intro: The workflow runs again whenever the person changes step and whenever a document or the verification changes. Its outcome is one quiet line in the step header: 'Next in this workflow: ...'. The workflow informs and warns; it never adds a blocker. A warning of its own is folded into the step's one existing alert (the line next to the buttons, or 'What is missing' on Review & submit), never shown as a second alert. Only the conditions from the earlier design still stop a send: no patient, payer, service or dates; coverage confirmed inactive with no documented exception; an unanswered duplicate; no clinician sign-off.
+route: /authorizations/new/:draftId (the workflow line under the stepper, each step's bar and 'What is missing')
+intro: The workflow runs again whenever the person changes step and whenever a document or the verification changes. Where it stands is the one chip at the end of the workflow line under the stepper ('At Clinical documentation'); the path is one click away in View workflow. No step repeats it in a sentence. The workflow informs and warns; it never adds a blocker. A warning of its own is folded into the step's one existing alert (the line next to the buttons, or 'What is missing' on Review & submit), never shown as a second alert. Only the conditions from the earlier design still stop a send: no patient, payer, service or dates; coverage confirmed inactive with no documented exception; an unanswered duplicate; no clinician sign-off.
 dir: TD
 ---
 start s1 "The person opens a step, adds a document, or refreshes the verification"
 process p1 "The facts are rebuilt\nThe verification record (coverage, benefit, authorization requirement, provider participation, existing authorization), which of the payer's documents are in the case, the dates, the sign-off"
 decision dChk "Has Verify checked coverage for this case yet?"
-screen scWait "Step header, second line\n'Next in this workflow: Waiting for the eligibility check: Verify has not checked coverage for this case yet.'\nThe workflow does not send the case to a person for a plan nobody asked"
+screen scWait "The line says 'At Eligibility & Benefits'\nThe run waits for the check; it does not send the case to a person for a plan nobody asked"
 process p2 "The pinned version runs\nThe same engine as Test Workflow in Payers"
-screen sc1 "Step header, second line\n'Next in this workflow: Paused for documentation: the treatment plan is missing.'"
+screen sc1 "The line says where the workflow stopped, e.g. 'At Clinical documentation'\nThe engine's preparation stage also reads 'At Clinical documentation'\n'View workflow' shows the path and why it stopped"
 decision d1 "Does the workflow have a warning of its own?\nFor example 'Verify benefits for this service: Limited benefit: check the limit before the request goes out'"
 process p3 "No extra text"
 decision d2 "Which step is open?"
-screen sc2 "Steps 1 to 4\nThe warning is added to the footer line beside the buttons, after the step's own text\n'Workflow: Verify benefits for this service: Limited benefit: check the limit before the request goes out'\nIn amber, in the same line"
-screen sc3 "Step 5, Review & submit\nOne extra note in 'What is missing'\n'Workflow: Initial Authorization, Residential SUD'\nIt is a note, not an item to acknowledge, and it does not stop signing"
+screen sc2 "Steps 1 to 3\nThe warning is the one line in the bar beside the buttons\n'Workflow: Verify benefits for this service: Limited benefit: check the limit before the request goes out'\nIn amber"
+screen sc3 "Step 4, Review & submit\nOne extra note in 'What is missing'\n'Workflow: Initial Authorization, Residential SUD'\nIt is a note, not an item to acknowledge, and it does not stop signing"
 process p4 "Rules that are only unverified are not repeated as a warning on every step\nThey are listed in the info icon and in the history"
 decision d3 "Does the workflow end in 'No authorization required'?"
 goto g1 "Continues in: Authorizations › New Case › Workflow › No authorization required from the workflow"
+goto gView "Continues in: Authorizations › New Case › Workflow › Show the workflow and its path"
 decision d4 "Is an existing blocker true?\nNo patient, payer, service or dates; inactive coverage with no documented exception; an unanswered duplicate; no clinician as signer"
 toast t1 "Review & submit says what stops sending, as before\nThe workflow does not add to it"
 end e1 "The person goes on, with the workflow's outcome in view"
@@ -25,10 +26,11 @@ goto g2 "Continues in: Authorizations › New Case › Review & submit › What 
 s1 --> p1 --> dChk
 dChk -->|No| scWait --> d1
 dChk -->|Yes| p2 --> sc1 --> d1
+sc1 -.-> gView
 d1 -->|No| p3 --> e1
 d1 -->|Yes| d2
-d2 -->|1 to 4| sc2 --> e1
-d2 -->|5| sc3 --> g2
+d2 -->|1 to 3| sc2 --> e1
+d2 -->|4| sc3 --> g2
 sc1 --> d3
 d3 -->|Yes| g1
 d3 -->|No| d4

@@ -1,18 +1,18 @@
 title: Authorizations › Eligibility & Benefits › Result › Next actions
 route: /authorizations/eligibility/R-1042
-intro: The buttons on the verdict band at the top of the summary card, and where each one leads. Which buttons show depends on the verdict, on whether the patient has a case, and on why coverage failed. 'Create authorization from verification' shows on every result and carries the stored verification to New Case.
+intro: The small buttons on the second line of the verdict band, and where each one leads. Which buttons show depends on the verdict, on whether the patient has a case, and on what the check found. 'Create authorization from verification' shows on every result and carries the stored verification to New Case. A finding that used to be a sentence ('Caller can confirm...', 'Navigator can check...') is now a button.
 dir: TD
-also: Demo only: 'Request retro-eligibility' and 'Ask Caller to phone the payer' raise a message and change nothing. No call is made and no request is sent.
+also: Demo only: 'Request retro-eligibility' and the 'Ask Caller' and 'Ask Navigator' buttons raise a message and change nothing. No call is made and no request is sent.
 ---
 start s1 "On a result page, read the buttons on the verdict band"
 
 decision q1 "Verdict is 'Authorization first'?"
-click c1 "Click 'Start authorization'"
-process p1 "Opens /authorizations/new?verification=R-1042&type=initial\nNew case reads the stored verification: payer, level of care, member, initials, age and the check itself\nAuthorization type is already 'Initial'"
+click c1 "Click 'Start authorization' (primary)"
+process p1 "Opens /authorizations/new?verification=R-1042&type=initial\nNew Case reads the stored verification: payer, level of care, member, initials, age and the check itself\nAuthorization type is already 'Initial'"
 goto g1 "Continues in: Authorizations › New Case › Clinical documentation › The checklist and Continue"
 
 decision q2 "Is there a request with this ID?"
-click c2 "Click 'Open case'\n(outlined button)"
+click c2 "Click 'Open case'"
 goto g2 "Continues in: Authorizations › Case page › Ways in"
 decision q3 "ID starts with 'V-' (a new check, no case yet)?"
 click c3 "Click 'Open in Case Manager'"
@@ -20,20 +20,24 @@ goto g3 "Continues in: Case Manager"
 process n1 "No 'Start authorization' button"
 process p2 "No case button is shown\nThe check has no case yet"
 
-decision q4 "What is the coverage state?"
-click c4 "Click 'Request retro-eligibility'"
+decision q4 "What did the check find?"
+click c4 "Click 'Request retro-eligibility' (coverage lapsed)"
 toast t1 "'Retro-eligibility requested'\n'Navigator will ask Ohio Medicaid to restore coverage from 10/12. You will be told when it answers.'"
 ext x1 "Ohio Medicaid restores the dates\n(demo: simulated, nothing is sent)"
-click c5 "Click 'Ask Caller to phone the payer'"
+click c5 "Click 'Ask Caller to phone the payer' (coverage ended or not found)"
 toast t2 "'Caller will phone the payer'\n'Caller will ask Evergreen about this member and log the call to the case.'"
-ext x2 "The payer's provider line\n(demo: simulated, nothing is dialled)"
-endx e1 "Coverage is active: no extra button\nOther failures are fixed in the case or by 'Check again'"
+click c9 "Click 'Ask Caller to confirm the benefit' (benefit not confirmed)"
+toast t9 "'Caller will confirm the benefit'\n'Caller will confirm the PHP benefit with Harborview and log the call.'"
+click c10 "Click 'Ask Navigator to check enrollment' (enrollment not confirmed)"
+toast t10 "'Navigator will check the enrollment'\n'Navigator will check the clinic's enrollment record with Lakeshore.'"
+ext x2 "The payer's provider line or enrollment record\n(demo: simulated, nothing is dialled)"
+endx e1 "Coverage and enrollment fine: no extra button\nOther failures are fixed in the case or by 'Re-check'"
 
 click cv "Click 'Create authorization from verification'\n(every result, every verdict)"
 goto gv "Continues in: Authorizations › Eligibility & Benefits › Create an authorization from a verification"
 click ce "Click 'Open Settings'\n(only when the check did not run)"
 goto ge "Continues in: Settings"
-click c6 "Click 'Check again'"
+click c6 "Click 'Re-check'"
 goto g4 "Continues in: Authorizations › Eligibility & Benefits › Re-verify a patient"
 click c7 "Click '← Eligibility & Benefits'"
 goto g5 "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows"
@@ -52,6 +56,8 @@ q3 -->|Yes| p2
 q3 -->|No| c3 --> g3
 q4 -->|Lapsed| c4 --> t1 --> x1
 q4 -->|Ended or not found| c5 --> t2 --> x2
-q4 -->|Active| e1
+q4 -->|Benefit not confirmed| c9 --> t9 --> x2
+q4 -->|Enrollment not confirmed| c10 --> t10 --> x2
+q4 -->|Nothing of these| e1
 c6 --> g4
 c7 --> g5

@@ -20,7 +20,7 @@ goto gn "Continues in: Global shell › Top bar › Ask FLO › Answers that rea
 decision d2 "Contains 'denial'?"
 agent a2 "'8 denials are open. The nearest deadline is D-3318 (Cardinal), peer-to-peer window, 36 h left. Call booked Wed 9 to 11 am. The brief is ready. The chance of winning is 64%. 3 more deadlines fall this week.'\nThe count, the nearest open denial and the time left are live, so the sentence follows the data and the clock\nOne muted line: 'This is FLO's reading of the demo data, not a payer confirmation.'\nFLO gives no dollar figure: a question that only asks about money gets the fallback answer"
 click l2 "Click 'Open Denial Intelligence'"
-process r2 "Opens /denials?id=D-3318, the nearest denial\nWith no deadline left to name, it opens the list"
+process r2 "Opens /denials/D-3318, the nearest denial\nWith no deadline left to name, it opens the dashboard of open denials"
 goto g2 "Continues in: Denial Intelligence › A denial opened"
 decision d2b "Contains 'due', 'soon' or 'deadline'?"
 agent a2b "'R-0988 (Beacon) is due soonest: review due in 3 h. Its approval chance is 79%. After it: R-1042 (Summit), notice due in 5 h; I-2207 (Cardinal), recert due in 5 h. 56 requests are open in Authorizations.'\nFor one site: 'is due soonest at Site A: ...' and only that site's open requests are counted\nRead from the open queue, soonest due first. Two due at the same time: the lower approval chance first\nNothing open: 'Nothing is due. Every open request has been sent or handled.' with 'Open Authorizations'"

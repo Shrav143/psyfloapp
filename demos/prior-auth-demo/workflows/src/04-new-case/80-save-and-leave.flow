@@ -20,7 +20,7 @@ decision dAlready "Is the case already saved?"
 store st1 "Draft marked saved and given a case ID\nR- for Residential 3.5 and Detox, I- for IOP, P- for PHP\nA draft with no level of care yet falls under R\nNumbered from 1701"
 process pNoop "Nothing changes; the toast still shows"
 toast t1 "Steps 1 to 3: 'Draft saved'\n'R-1701 is in Case Manager. Pick it up whenever you like.'"
-toast t2 "Step 5: 'Draft saved'\n'R-1701 is in Case Manager, ready to sign.'"
+toast t2 "Review & submit: 'Draft saved'\n'R-1701 is in Case Manager.'"
 store stPos "The draft keeps its step\nIntake, Eligibility & Benefits, Clinical documentation, Authorization preparation or Review & submit\nAnd what was typed, picked, answered and documented"
 
 click cLeave "Click 'Case Manager' at the top, a sidebar item, or close the tab"

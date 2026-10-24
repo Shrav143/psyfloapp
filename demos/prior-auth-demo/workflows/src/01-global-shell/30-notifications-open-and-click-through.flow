@@ -27,7 +27,7 @@ decision d1 "Does the notification have a destination?"
 process p2 "App goes to that page"
 goto g1 "Continues in: Dashboard › Request drawer › Open and read a request"
 goto g2 "Continues in: Authorizations › New Case › Authorization preparation › An agent asks a question"
-goto g3 "Continues in: Denial Intelligence › Open a denial"
+goto g3 "Continues in: Denial Intelligence › A denial opened"
 goto g4 "Continues in: Payers › History & Changes › Read what changed"
 end e0 "Stays on the page"
 

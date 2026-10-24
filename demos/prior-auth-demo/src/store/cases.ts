@@ -74,7 +74,7 @@ export interface CasesSlice {
   /** Sign and send. `signedBy` is who the person signed as ("Dr. Rivera, clinician"); the request's history says so. Returns the request ID that now shows on the Dashboard. */
   signCaseDraft: (id: string, signedBy?: string, workflowEntries?: Omit<WorkflowLogEntry, "posted">[]) => string | undefined;
   /** The draft for a request that exists on the case page: made from the request's own data when there is none, brought up to date when there is.
-      It is moved to the step that fits: Review & submit when the request is ready, Authorization preparation when agents still have work to do. Returns its ID. */
+      It is moved to the step that fits: Review & submit when the request is ready, Clinical documentation at the agents' section when they still have work to do. Returns its ID. */
   draftFromRequest: (requestId: string) => string;
   /** The payer's saved list or rules changed: count again what the case does not meet, so the approval chance follows. */
   refreshCaseUnmet: (id: string) => void;

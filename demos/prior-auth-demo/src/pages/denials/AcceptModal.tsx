@@ -14,13 +14,8 @@ export function AcceptModal({ view, onClose }: { view: DenialView; onClose: () =
     onClose();
   };
   return (
-    <Modal open onClose={onClose} size="sm" title="Accept the decision?" subtitle="Nothing is regained. This closes the denial." footer={<><Button onClick={onClose}>Cancel</Button><Button variant="danger" onClick={confirm}>Accept and close</Button></>}>
+    <Modal open onClose={onClose} size="sm" title="Accept the decision?" subtitle={`${view.req.id} · closes the denial, nothing regained`} footer={<><Button onClick={onClose}>Cancel</Button><Button variant="danger" onClick={confirm}>Accept and close</Button></>}>
       <div className="flex flex-col gap-4">
-        <ul className="list-disc pl-5 text-sm text-ink2">
-          <li>Analytics logs {view.req.id} as an accepted denial.</li>
-          <li>Case Manager adds a step-down plan.</li>
-          <li>{view.req.id} leaves Appeal or call on the Dashboard.</li>
-        </ul>
         <ReasonField value={reason} onChange={setReason} />
         <Field label="Note (optional)">
           <TextArea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Anything the team should know" className="min-h-[72px]" />

@@ -125,7 +125,7 @@ export function ReportView({ doc }: { doc: ReportDoc }) {
           <Findings doc={doc} />
         </Section>
         {doc.dims.length ? (
-          <Section title={H.dims}>
+          <Section title={doc.dimsTitle ?? H.dims}>
             {doc.dimsSub ? <p className="-mt-2 mb-4 text-[13px] text-muted">{doc.dimsSub}</p> : null}
             <div className="flex flex-col gap-4">
               {doc.dims.map((d) => (

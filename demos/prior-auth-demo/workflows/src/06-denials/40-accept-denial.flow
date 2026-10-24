@@ -1,13 +1,13 @@
 title: Denial Intelligence › Accept the denial
-route: /denials?id=D-3297
+route: /denials/D-3297
 intro: Accepting closes the denial and logs it as accepted. A reason goes on the record first. Accepting is always the person's choice and is never the only option. It also reaches Case Manager and Analytics.
 dir: TD
 also: Case Manager adds a step-down plan for the patient, and Analytics logs it as an accepted denial. The same steps run when an upheld appeal is accepted from 'Record the payer's decision'.
 ---
-start s1 "Click 'Accept the decision and plan the step-down' (recommended next step), or open 'Compare the options', select the 'Accept...' card and click its button"
-click c1 "Click 'Accept the decision and plan the step-down'"
-overlay o1 "Modal 'Accept the decision?'\n'Nothing is regained. This closes the denial.'"
-screen l1 "Three bullets\n'Analytics logs D-3297 as an accepted denial.'\n'Case Manager adds a step-down plan.'\n'D-3297 leaves Appeal or call on the Dashboard.'"
+start s1 "Click 'Accept the decision' in the accept choice of Your options (primary when it is recommended), or open 'Compare the options', select the 'Accept...' card and click its button"
+click c1 "Click 'Accept the decision'"
+overlay o1 "Modal 'Accept the decision?'"
+screen l1 "Sub line 'D-3297 · closes the denial, nothing regained'"
 input i1 "'Reason for the record' (required): open the menu and pick one"
 screen l2 "Menu choices\n'The chart does not yet support a challenge' (chosen at first)\n'The clinical team agrees with the payer's reasoning'\n'The member and family chose to step down'\n'The effort of an appeal outweighs the likely gain'"
 input i2 "Note (optional)\n'Anything the team should know'"
@@ -22,10 +22,10 @@ store st3 "History: 'You accepted the decision' with 'Reason: ...'\n'Cadence log
 store st4 "Shared with other screens: denial, case and payer\nCase Manager adds a step-down plan\nAnalytics logs the accepted denial"
 toast t1 "'Decision accepted'\n'Analytics logs it as an accepted denial. Case Manager has a step-down plan.'"
 toast t2 "Notification 'Denial closed' from Cadence\nOpens Case Manager, Active cases"
-screen sc1 "Denial page now shows the block 'Closed. You accepted the decision'\n'Reason: ... Analytics logs it as an accepted denial.'"
-process p1 "'Your options' row is gone\nDenial moves to 'Closed' in the 'Open denials' panel with the pill 'Accepted'\nSidebar badge goes down by one"
+screen sc1 "The accept choice in Your options reads 'Accepted 10/20' with the link 'Plan the step-down'\nHistory: 'You accepted the decision' flagged 'Logged decision'"
+process p1 "The accept choice reads 'Accepted 10/20' with 'Plan the step-down'; 'Compare the options' is gone\nThe dashboard lists it under 'Closed' with the outcome 'Accepted'\nSidebar badge goes down by one"
 click c4 "Click 'Plan the step-down'"
-click c5 "Click 'See on the Dashboard' (header card)"
+click c5 "Open the Dashboard from the sidebar"
 goto g1 "Continues in: Case Manager › Active cases › Step-down plans from accepted denials"
 goto g2 "Continues in: Dashboard › Request drawer › Open and read a request"
 process p2 "PRD guardrail: the agents never accept a denial\nA person gives the reason first"

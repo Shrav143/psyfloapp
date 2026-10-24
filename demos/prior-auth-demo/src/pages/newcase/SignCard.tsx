@@ -48,13 +48,13 @@ export function SignCard({ draft, checks, missing, chance, ready, backSignal, on
   const warns = missing.filter((m) => m.severity === "ack").length;
   const rechecking = checks.some((c) => c.state === "checking");
   const canSign = ready && who.clinician && attest && blocking.length === 0 && !rechecking && (warns === 0 || ack);
-  const why = !ready ? "Authorization preparation has not finished, so there is nothing to sign yet." : blocking.length ? `${blocking.length === 1 ? "One item stops" : `${blocking.length} items stop`} sending: ${blocking.map((b) => b.label.toLowerCase()).join(", ")}. Fix ${blocking.length === 1 ? "it" : "them"} under What is missing.` : !who.clinician ? `${who.name} is a UR coordinator. Only a licensed clinician can sign, so switch to Dr. Rivera.` : null;
+  const why = !ready ? "After the agents finish" : blocking.length ? `Fix first: ${blocking.map((b) => b.label.toLowerCase()).join(", ")}` : !who.clinician ? "Only a clinician signs. Switch to Dr. Rivera." : null;
 
   return (
     <>
       <Card className="border-good-edge">
-        <CardHeader title="Sign" subtitle={`${who.name}, ${who.role} · approval chance ${chance}%`} />
-        <CardBody className="flex flex-col gap-3.5">
+        <CardHeader title="Sign" />
+        <CardBody className="flex flex-col gap-3">
           <Field label="Signing as">
             <Dropdown<Signer> variant="field" value={signer} onChange={setSigner} options={(Object.keys(SIGNERS) as Signer[]).map((k) => ({ value: k, label: `${SIGNERS[k].name} (${SIGNERS[k].role})` }))} menuWidth={300} ariaLabel="Signing as" />
           </Field>
@@ -64,11 +64,9 @@ export function SignCard({ draft, checks, missing, chance, ready, backSignal, on
           <Button variant="primary" size="lg" icon={PenLine} disabled={!canSign} onClick={() => setConfirm(true)}>
             Sign and send to payer (demo)
           </Button>
-          <p className="-mt-1.5 text-xs text-muted">Demo: simulated send. Nothing leaves the app.</p>
           <Button icon={Undo2} disabled={!ready} onClick={() => setBack(true)}>
             Send back to Scribe
           </Button>
-          <p className="text-xs text-muted">After you sign, Navigator files it, Caller confirms receipt, and Cadence books the first review.</p>
         </CardBody>
       </Card>
 
@@ -108,14 +106,13 @@ export function SignCard({ draft, checks, missing, chance, ready, backSignal, on
           <dt className="text-muted">Attachments</dt>
           <dd className="font-medium">{draft.documents.length} documents</dd>
         </dl>
-        <p className="mt-4 text-sm text-ink2">Navigator sends this to {payer?.shortName} through its portal and saves the receipt to the case. In this demo the send is simulated. Nothing was sent before this.</p>
+        <p className="mt-4 text-[13px] text-muted">Demo: the send is simulated.</p>
       </Modal>
 
       <Modal
         open={back}
         onClose={() => setBack(false)}
         title="Send back to Scribe"
-        subtitle="Scribe, Integrity, Packet and Scrubber run again with your note. It takes a few seconds."
         footer={
           <>
             <Button onClick={() => setBack(false)}>Cancel</Button>
@@ -136,7 +133,7 @@ export function SignCard({ draft, checks, missing, chance, ready, backSignal, on
           </>
         }
       >
-        <Field label="What should Scribe change?" hint="Optional. Your note is added to the plan section.">
+        <Field label="What should Scribe change?">
           <TextArea aria-label="What should Scribe change?" value={note} onChange={(e) => setNote(e.target.value)} placeholder="For example: say more about the risk at home" />
         </Field>
         <div className="mt-3 flex flex-wrap gap-2">

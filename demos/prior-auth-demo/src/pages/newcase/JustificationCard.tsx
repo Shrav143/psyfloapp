@@ -14,7 +14,7 @@ export function JustificationCard({ draft, env }: { draft: CaseDraft; env: CaseE
   return (
     <Disclosure
       title={authType(draft.kind).justification}
-      summary={`${sections.length} sections from the ${draft.documents.length} ${draft.documents.length === 1 ? "document" : "documents"} in the case. Scribe adds only what the chart supports.`}
+      summary={`${sections.length} sections · ${draft.documents.length} ${draft.documents.length === 1 ? "document" : "documents"}`}
       right={<Pill tone={gaps.length ? "mid" : "good"} dot>{gaps.length ? `${gaps.length} missing` : "Nothing missing"}</Pill>}
     >
       <div className="flex flex-col gap-4 px-6 py-5 text-[14px] leading-[1.7]">

@@ -1,68 +1,55 @@
 title: Denial Intelligence › A denial opened › Next step and where it stands
-route: /denials?id=D-3318
-intro: One block under the header card says what to do next, or where the denial stands. The code checks the states in this order and shows the first that fits. The primary button is always first. A block that shows something FLO's agents wrote (a recommendation, a draft letter, a brief) carries the sentence 'Draft by FLO's agents. A clinician reviews and signs before anything is sent.'
+route: /denials/D-3318
+intro: There is no separate next-step block. The route under way, or the one that settled the denial, says where it stands inside its own choice in Your options, with its buttons, primary first. The code checks the states in this order and shows the first that fits. The other choices keep their chance; a route that is no longer open shows dimmed, with a reason when there is one.
 dir: TD
 ---
 start s1 "A denial is on screen"
 decision d1 "Accepted?"
-screen t1 "Label 'Where it stands'\nTitle 'Closed. You accepted the decision'\n'Reason: ... Analytics logs it as an accepted denial.'"
-click c1 "Click the link 'Plan the step-down'"
+screen t1 "Accept choice: pill 'Accepted 10/20' and the link 'Plan the step-down'\nThe two other choices dimmed"
+click c1 "Click 'Plan the step-down'"
 goto g1 "Continues in: Case Manager › Active cases › Step-down plans from accepted denials"
 
 decision d2a "Payer's decision on the appeal recorded as Overturned or Partly overturned?"
-screen t2a "Label 'Where it stands'\nTitle 'Overturned on appeal' or 'Partly overturned on appeal'\nYour note, or 'The ledger is updated and the next review is booked.'"
+screen t2a "Written appeal choice: pill 'Overturned on appeal' or 'Partly overturned on appeal'"
 decision d2 "Call outcome logged as Overturned or Partly restored?"
-screen t2 "Label 'Where it stands'\nTitle 'Overturned on the call' or 'Partly restored on the call'\nYour note, or 'The ledger is updated and the next review is booked.'"
-process pd "No button here: 'See on the Dashboard' is in the header card (green tint for overturned, ochre for partly)"
-goto g2 "Continues in: Dashboard › Request drawer › Open and read a request"
+screen t2 "Peer-to-peer choice: pill 'Overturned on the call' or 'Partly restored on the call'"
+process pc "Settled: the header drops the read and the chance; no 'Compare the options'\nThe dashboard lists it under 'Closed'"
 
 decision d3 "Chip is 'Appeal filed', 'Second-level appeal filed' or 'External review'?"
-screen t3 "Label 'Where it stands'\nTitle 'Appeal filed. Waiting on the payer' (or 'Second-level appeal filed', 'External review')\n'Filed 10/05, decision 11/02. Navigator checks every day. When the payer answers, record the decision here.'"
-click c3a "Click 'Record the payer's decision' (primary, first)"
-click c3 "Click 'View the appeal'"
+screen t3 "Written appeal choice, outlined\n'Appeal filed 10/05 · decision 11/02' (or 'External review 10/09 · decision 11/20')\nButtons 'Record the payer's decision' (primary), 'View the appeal'"
 goto g3 "Continues in: Denial Intelligence › Written appeal › After filing"
 goto g3a "Continues in: Denial Intelligence › Written appeal › Record the payer's decision"
 
 decision d4 "Chip is 'Appeal drafting'?"
-decision d5 "Has a draft been saved?"
-screen t4 "Label 'Next step · File an appeal'\nTitle 'The appeal is drafted and waiting for a clinician's signature'\n'Review the letter, change anything you like, then sign and file.'"
-screen t5 "Label 'Next step · File an appeal'\nTitle 'Advocate is drafting the appeal'\n'Open the draft to see it come together.'"
-click c4 "Click 'Open the draft'"
+screen t4 "Written appeal choice, outlined\n'Advocate is drafting · due 11/30', or 'Drafted, ready to sign · due 11/30'\nButton 'Open the draft' (primary)\nTitled 'Second-level appeal' or 'External review' on a later level"
 goto g4 "Continues in: Denial Intelligence › Written appeal › Confirm and draft"
 
 decision d6 "Chip is 'Call booked'?"
-screen t6 "Label 'Next step · Peer-to-peer review'\nTitle 'Call booked: Wed 10/21, 9–11 am'\n'Cadence booked the window with Cardinal. The brief is ready, written by Advocate and checked by Integrity.'"
-click c6 "Click 'Open the brief' (primary, first)"
-click c5 "Click 'Change the time'"
+screen t6 "Peer-to-peer choice, outlined\n'Call booked Wed 10/21, 9–11 am'\nButtons 'Open the brief' (primary), 'Change the time'"
+process p2 "Calls booked at the start show the time from the denial's data; later ones the time that was picked"
 goto g5 "Continues in: Denial Intelligence › Peer-to-peer › Book the call"
 goto g6 "Continues in: Denial Intelligence › Peer-to-peer › The brief"
-process p2 "Calls booked at the start show the time from the denial's data\nLater ones show the time that was picked"
 
-screen rn "Under the buttons of the three blocks that show something the agents wrote\n'Draft by FLO's agents. A clinician reviews and signs before anything is sent.'"
+process po "Other routes while one is under way: their own button stays ('Draft the appeal', 'Accept the decision')\nA call that was upheld reads 'Upheld on the call'; a closed call window reads 'Window closed'"
 process p1 "None of the above: nothing is under way\nChips 'Analyzed' and 'Resubmitting'"
 goto g7 "Continues in: Denial Intelligence › A denial opened › Recommended next step"
-screen sc1 "'Your options' shows as one short row when the denial is still open\n'Compare the options' opens a right-hand panel with the detail and a button for any route"
 
 s1 --> d1
 d1 -->|Yes| t1 --> c1 --> g1
+t1 --> pc
 d1 -->|No| d2a
-d2a -->|Yes| t2a --> pd
+d2a -->|Yes| t2a --> pc
 d2a -->|No| d2
-d2 -->|Yes| t2 --> pd --> g2
+d2 -->|Yes| t2 --> pc
 d2 -->|No| d3
-d3 -->|Yes| t3
-t3 --> c3a --> g3a
-t3 --> c3 --> g3
+d3 -->|Yes| t3 --> g3a
+t3 --> g3
 d3 -->|No| d4
-d4 -->|Yes| d5
-d5 -->|Yes| t4 --> c4
-d5 -->|No| t5 --> c4
-c4 --> g4
-t4 -.-> rn
+d4 -->|Yes| t4 --> g4
+t4 -.-> po
 d4 -->|No| d6
-d6 -->|Yes| t6 --> c6 --> g6
-t6 --> c5 --> g5
+d6 -->|Yes| t6 --> g6
+t6 --> g5
 t6 -.-> p2
-t6 -.-> rn
+t6 -.-> po
 d6 -->|No| p1 --> g7
-p1 --> sc1

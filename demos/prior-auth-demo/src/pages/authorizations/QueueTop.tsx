@@ -14,7 +14,7 @@ export function SignalBanner({ affected, active, onReview, onClear, onHide }: { 
     <div className="flex items-center gap-3 rounded-2xl bg-neutral-bg px-[18px] py-2.5 text-sm text-neutral-ink">
       <Radar size={18} className="ico shrink-0" aria-hidden="true" />
       <p className="m-0 min-w-0 flex-1">
-        <b className="font-semibold">Payer signal.</b> Cardinal Health Plan has denied 31% more IOP continued-stay requests this week.
+        <b className="font-semibold">Payer signal.</b> Cardinal Health Plan: 31% more IOP continued-stay denials this week.
       </p>
       <InfoTip label="More about this signal" align="end">
         The denials were mostly for thin recertification evidence. {affected === 1 ? "One of your open requests is" : `${numberWord(affected)[0].toUpperCase()}${numberWord(affected).slice(1)} of your open requests are`} affected, and the agents have re-scored {affected === 1 ? "it" : "them"}.
@@ -26,6 +26,9 @@ export function SignalBanner({ affected, active, onReview, onClear, onHide }: { 
     </div>
   );
 }
+
+/** Tiles hug their figure: the row does not stretch to the page width. */
+const TILE = "sm:w-auto sm:min-w-[150px] sm:px-4";
 
 export interface QueueFigures {
   urgent: number;
@@ -40,11 +43,11 @@ export function QueueTiles({ figures, urgency, status, onUrgency, onStatus }: { 
   const lo = Math.max(1, all.avg - 5);
   const hi = Math.min(99, all.avg + 5);
   return (
-    <div className="grid grid-cols-2 gap-4 xl:grid-cols-4">
-      <Stat tone="risk" icon={TriangleAlert} value={figures.urgent} label="Urgent now" sub="the Act now band" onClick={() => onUrgency("now")} selected={urgency === "now"} />
-      <Stat tone="mid" icon={Clock} value={day.count} label="Due within 24 hours" sub={day.firstDue === null ? "nothing open" : day.firstDue <= 0 ? "next one is due now" : `next due in ${shortSpan(day.firstDue)}`} onClick={() => onUrgency("day")} selected={urgency === "day"} />
-      <Stat tone="neutral" icon={UserRound} value={figures.waiting} label="Waiting on you" sub="not sent yet, or a question for you" onClick={() => onStatus("you")} selected={status === "you"} />
-      <Stat tone={chanceBand(all.avg).tone} icon={Gauge} value={`${all.avg}%`} label="Approval chance" sub={`average · likely ${lo}–${hi}%`} />
+    <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
+      <Stat tone="risk" icon={TriangleAlert} value={figures.urgent} label="Urgent now" onClick={() => onUrgency("now")} selected={urgency === "now"} className={TILE} />
+      <Stat tone="mid" icon={Clock} value={day.count} label="Due within 24 hours" sub={day.firstDue === null ? "nothing open" : day.firstDue <= 0 ? "next due now" : `next due in ${shortSpan(day.firstDue)}`} onClick={() => onUrgency("day")} selected={urgency === "day"} className={TILE} />
+      <Stat tone="neutral" icon={UserRound} value={figures.waiting} label="Waiting on you" onClick={() => onStatus("you")} selected={status === "you"} className={TILE} />
+      <Stat tone={chanceBand(all.avg).tone} icon={Gauge} value={`${all.avg}%`} label="Approval chance" sub={`average · likely ${lo}–${hi}%`} className={TILE} />
     </div>
   );
 }

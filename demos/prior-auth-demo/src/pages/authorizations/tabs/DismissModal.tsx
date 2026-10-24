@@ -11,7 +11,6 @@ export function DismissModal({ titles, gating, onClose, onConfirm }: { titles: s
   return (
     <Modal
       open onClose={onClose} size="sm" title={titles.length === 1 ? "Dismiss this recommendation?" : `Dismiss ${titles.length} recommendations?`}
-      subtitle="Say why. The reason is logged and helps the agents learn what is useful."
       footer={
         <>
           <Button onClick={onClose}>Cancel</Button>
@@ -19,10 +18,10 @@ export function DismissModal({ titles, gating, onClose, onConfirm }: { titles: s
         </>
       }
     >
-      <ul className="mb-4 list-disc pl-5 text-sm text-ink2">
+      <ul className="mb-4 list-disc pl-5 text-[13px] text-ink2">
         {titles.map((t) => <li key={t}>{t}</li>)}
       </ul>
-      {gating.length > 0 ? <Banner tone="mid" className="mb-4">{gating.join(" and ")} clears a check that gates Send to payer. Dismissing it leaves that check open. You can bring it back later.</Banner> : null}
+      {gating.length > 0 ? <Banner tone="mid" className="mb-4">Leaves a Send to payer check open: {gating.join(", ")}</Banner> : null}
       <div role="radiogroup" aria-label="Reason" className="flex flex-col gap-2">
         {REASONS.map((r) => <ChoiceCard key={r} selected={reason === r} onClick={() => setReason(r)} title={r} />)}
       </div>

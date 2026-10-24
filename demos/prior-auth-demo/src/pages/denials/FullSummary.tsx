@@ -3,7 +3,7 @@ import { Check, Copy, FileText } from "lucide-react";
 import { Button, Modal, Pill } from "@/components/ui";
 import { cn } from "@/lib/cn";
 import { buildLong, DIM_TONE_WORD, paragraphs, type LongText } from "./lib/long";
-import { dimensionText, dimsSummaryText, recommendationText, weakSummaryText } from "./lib/summaryText";
+import { dimensionText, dimsSummaryText, dimsSummaryTitle, recommendationText, weakSummaryText } from "./lib/summaryText";
 import { useCopy } from "./lib/useCopy";
 import { useDialogFocus, useDialogState } from "./lib/useDialogFocus";
 import type { DenialView } from "./lib/useDenialView";
@@ -12,7 +12,7 @@ const DOT = { good: "bg-good", mid: "bg-mid", risk: "bg-risk", neutral: "bg-fain
 const MANUAL = "Select the text and press Ctrl or Cmd C";
 
 /** A copy button that says "Copied" for two seconds. The wrapper is the live region, so a screen reader hears the change. */
-function CopyButton({ text, label, hidden, size = "sm", variant = "outline" }: { text: string; label: string; hidden?: string; size?: "sm" | "md"; variant?: "outline" | "primary" }) {
+export function CopyButton({ text, label, hidden, size = "sm", variant = "outline" }: { text: string; label: string; hidden?: string; size?: "sm" | "md"; variant?: "outline" | "primary" }) {
   const { state, copy } = useCopy();
   return (
     <span aria-live="polite" className="inline-flex flex-col items-end gap-1">
@@ -41,7 +41,7 @@ function Shell({ open, from, onClose, title, view, text, children }: { open: boo
       onClose={onClose}
       size="lg"
       title={title}
-      subtitle={`${req.id} · ${analysis.ctx.who} · ${analysis.ctx.payerName}. Select any part to copy it, or use Copy all.`}
+      subtitle={`${req.id} · ${analysis.ctx.who} · ${analysis.ctx.payerName}`}
       footer={<><CopyButton text={text} label="Copy all" size="md" variant="primary" /><Button onClick={onClose}>Close</Button></>}
     >
       <Body from={from}>{children}</Body>
@@ -102,7 +102,7 @@ export function WeakPointsSummary({ view }: { view: DenialView }) {
   );
 }
 
-/** "Full summary" in the header of The six ASAM dimensions: one paragraph per dimension. */
+/** "Full summary" in the header of the framework card (ASAM Criteria, LOCUS or CALOCUS-CASII): one paragraph per dimension. */
 export function DimensionsSummary({ view }: { view: DenialView }) {
   const dialog = useDialogState();
   const long = useMemo(() => buildLong(view.req.id, view.meta.type, view.analysis), [view]);
@@ -110,17 +110,17 @@ export function DimensionsSummary({ view }: { view: DenialView }) {
   return (
     <>
       <Button size="sm" icon={FileText} onClick={dialog.show}>Full summary</Button>
-      <Shell open={dialog.open} from={dialog.from} onClose={dialog.hide} title="The six ASAM dimensions, full summary" view={view} text={text}>
+      <Shell open={dialog.open} from={dialog.from} onClose={dialog.hide} title={dimsSummaryTitle(view)} view={view} text={text}>
         <div className="flex flex-col gap-5">
           {long.dims.map((d) => (
-            <div key={d.name}>
+            <div key={d.label}>
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2.5">
                   <span className={cn("h-[10px] w-[10px] rounded-full", DOT[d.tone])} aria-hidden="true" />
-                  <b>{d.name}</b>
+                  <b>{d.label}</b>
                   <span className="text-[13px] text-muted">{DIM_TONE_WORD[d.tone]}</span>
                 </div>
-                <CopyButton text={dimensionText(d)} label="Copy" hidden={d.name} />
+                <CopyButton text={dimensionText(d)} label="Copy" hidden={d.label} />
               </div>
               <p className="mt-1.5">{d.text}</p>
             </div>

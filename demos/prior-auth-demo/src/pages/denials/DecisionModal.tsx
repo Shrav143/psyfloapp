@@ -8,9 +8,9 @@ import type { DenialView } from "./lib/useDenialView";
 import { ACCEPT_REASONS, ReasonField } from "./ReasonField";
 
 const RESULTS: { id: OutcomeKind; title: string; text: string }[] = [
-  { id: "overturned", title: "Overturned", text: "The payer restored the requested days. The denial closes." },
-  { id: "partly", title: "Partly overturned", text: "The payer restored some of them. The denial closes with a new end date." },
-  { id: "upheld", title: "Upheld", text: "The payer kept its decision. You choose the next step." },
+  { id: "overturned", title: "Overturned", text: "Closes the denial" },
+  { id: "partly", title: "Partly overturned", text: "Closes with a new end date" },
+  { id: "upheld", title: "Upheld", text: "Next level or accept" },
 ];
 
 /** Record what the payer decided on the filed appeal. Upheld goes on to the next appeal level, with a new deadline, or to Accept. Mounted only while open. */
@@ -45,18 +45,17 @@ export function DecisionModal({ view, onClose, onNextLevel }: { view: DenialView
             <div role="radiogroup" aria-label="Next step" className="flex flex-col gap-2.5">
               {further ? (
                 <ChoiceCard selected={next === "level"} onClick={() => setNext("level")} title={`Appeal to the next level: ${further.name}`}>
-                  New deadline {shortDate(clock + further.days * DAY)}, {further.days} days to file. Advocate drafts the letter and a clinician signs it.
+                  Due {shortDate(clock + further.days * DAY)} ({further.days} days)
                 </ChoiceCard>
               ) : null}
               <ChoiceCard selected={next === "accept"} onClick={() => setNext("accept")} title="Accept the denial">
-                Nothing is regained. Analytics logs it as an accepted denial and Case Manager adds a step-down plan.
+                Nothing regained
               </ChoiceCard>
             </div>
-            {further ? null : <p className="mt-2 text-[13px] text-muted">External review is the last level, so no further appeal is offered.</p>}
             {next === "accept" ? <div className="mt-3"><ReasonField value={reason} onChange={setReason} /></div> : null}
           </div>
         ) : null}
-        <Field label="Note (optional)" hint="What the payer wrote, or who you spoke to.">
+        <Field label="Note (optional)">
           <TextArea value={note} onChange={(e) => setNote(e.target.value)} placeholder="For example: decision letter received, reviewer restored days 8 to 14" />
         </Field>
       </div>

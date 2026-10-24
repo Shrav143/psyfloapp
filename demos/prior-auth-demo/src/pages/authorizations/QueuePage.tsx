@@ -5,7 +5,7 @@ import { Button, Card, EmptyState, Page, PageHeader } from "@/components/ui";
 import { detailForQueueItem } from "@/data/caseDetail";
 import { withFocus } from "@/data/caseDetailFocus";
 import { EMPTY_WORK, canSend, liveView } from "@/data/caseModel";
-import { BANDS, BAND_META, isWaitingOnYou, openItems, requestFor, type Band, type StatusFilter } from "@/data/queue";
+import { BANDS, isWaitingOnYou, openItems, requestFor, type Band, type StatusFilter } from "@/data/queue";
 import { plural } from "@/lib/format";
 import { useScope } from "@/lib/scope";
 import { paths } from "@/routes";
@@ -13,12 +13,10 @@ import { useStore } from "@/store";
 import { BandCard } from "./BandCard";
 import { nextActionOf } from "./nextAction";
 import { QueueFilterBar } from "./QueueFilterBar";
-import { QueueTiles, SignalBanner, numberWord } from "./QueueTop";
+import { QueueTiles, SignalBanner } from "./QueueTop";
 import { QuickView } from "./QuickView";
 import type { RowInfo } from "./RequestTile";
 import { byBand, chanceOf, filterItems, filtersActive, filtersFromParams, otherFiltersActive, paramsOf, phaseOf, sameFilters, statsOf } from "./queueLogic";
-
-const cap = (s: string): string => s[0].toUpperCase() + s.slice(1);
 
 export default function QueuePage() {
   const navigate = useNavigate();
@@ -112,11 +110,10 @@ export default function QueuePage() {
   const bands = BANDS.filter((b) => grouped[b].length > 0 || (b === "now" && showEmptyNow));
   const at = scope.sites.length === 1 ? ` at ${scope.label}` : "";
   const title = filtered ? `${shown.length} of ${plural(all.count, "open request")}${at} ${shown.length === 1 ? "matches" : "match"} these filters.` : needsToday === 0 ? `Nothing needs action today${at}.` : `${needsToday} of ${plural(all.count, "open request")}${at} ${needsToday === 1 ? "needs" : "need"} action today.`;
-  const sub = filtered ? undefined : `${urgent === 0 ? "Nothing is urgent" : `${cap(numberWord(urgent))} ${urgent === 1 ? "is" : "are"} urgent`}, and the average approval chance is ${all.avg}%.`;
 
   return (
     <Page>
-      <PageHeader title={title} sub={sub} actions={<Button variant="primary" icon={Plus} onClick={() => navigate(paths.newCase())}>New Case</Button>} />
+      <PageHeader title={title} actions={<Button variant="primary" icon={Plus} onClick={() => navigate(paths.newCase())}>New Case</Button>} />
       {signalHidden || affected === 0 ? null : (
         <SignalBanner affected={affected} active={filters.signalOnly} onReview={() => setFilter("signalOnly", true)} onClear={() => setFilter("signalOnly", false)} onHide={useStore.getState().hideSignal} />
       )}
@@ -127,17 +124,17 @@ export default function QueuePage() {
       <QueueFilterBar filters={filters} set={setFilter} clear={clearFilters} affected={affected} />
       {open.length === 0 ? (
         <Card>
-          <EmptyState icon={CalendarCheck} title="Nothing needs you today" action={<Button onClick={() => navigate(paths.manager())}>Open Case Manager</Button>}>Every open request has been sent or handled. Case Manager shows what is scheduled next.</EmptyState>
+          <EmptyState icon={CalendarCheck} title="Nothing needs you today" action={<Button onClick={() => navigate(paths.manager())}>Open Case Manager</Button>} />
         </Card>
       ) : bands.length === 0 ? (
         <Card>
-          <EmptyState icon={SearchX} title="No requests match these filters" action={<Button onClick={clearFilters}>Clear filters</Button>}>The filters hide all {plural(all.count, "open request")}.</EmptyState>
+          <EmptyState icon={SearchX} title="No requests match these filters" action={<Button onClick={clearFilters}>Clear filters</Button>} />
         </Card>
       ) : (
         bands.map((b) => (
           <BandCard
             key={b} band={b} items={grouped[b]} stats={statsOf(grouped[b], cases, clock)} collapsed={bandView[b].collapsed} showAll={bandView[b].showAll} clock={clock} rows={rows} quickId={quickId} onQuick={setQuick}
-            emptyNote={scope.sites.length === 1 ? `No open request at ${scope.label} is in ${BAND_META[b].name}.` : `Everything in ${BAND_META[b].name} has been sent or handled.`}
+            emptyNote={scope.sites.length === 1 ? `None open at ${scope.label}` : "Everything here is sent or handled"}
             onToggle={() => useStore.getState().toggleBand(b)} onShowAll={(on) => useStore.getState().showAllInBand(b, on)}
           />
         ))

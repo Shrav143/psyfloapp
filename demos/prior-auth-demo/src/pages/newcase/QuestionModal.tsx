@@ -32,7 +32,7 @@ export function QuestionModal({ draft, open, onClose }: { draft: CaseDraft; open
       open={open}
       onClose={onClose}
       title={`${agent} has a question`}
-      subtitle={`Question ${q.n} of ${q.of} for this case. The agents wait for you.`}
+      subtitle={`Question ${q.n} of ${q.of}`}
       footer={
         <>
           <Button onClick={onClose}>Answer later</Button>
@@ -51,7 +51,7 @@ export function QuestionModal({ draft, open, onClose }: { draft: CaseDraft; open
           <ChoiceCard key={c.id} selected={choice === c.id} onClick={() => setChoice(c.id)} title={c.label} />
         ))}
       </div>
-      <Field label="Or add a note in your own words" className="mt-4" hint="Optional with a button above, or use it on its own.">
+      <Field label="Or add a note in your own words" className="mt-4">
         <TextArea aria-label="Add a note in your own words" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Type here" />
       </Field>
     </Modal>

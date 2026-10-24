@@ -1,45 +1,43 @@
 title: Authorizations › Case page › Recommended actions › The tab
 route: /authorizations/case/R-1042?tab=actions
-intro: The layout of the first tab: the cards on the left, the five buttons, the context you added and the decision log on the right, and when each button is on or off. Each card and each button has its own diagram.
+intro: The layout of the first tab: the cards on the left, the four buttons and the context you added on the right, and when each button is on or off. Each card and each button has its own diagram. Send to payer is in the header, once; what was decided here is in History.
 dir: TD
 ---
 start s1 "Click 'Recommended actions'"
-screen at "Recommended actions\nCards on the left, side panel on the right"
-process in "Intro line\n'Each card shows what the agents will add to the draft and how much it tends to help. Applied together, they take the chance from 62% to 88%.'"
+screen at "Recommended actions\nCards on the left, a narrow side panel on the right"
 
 group gL "Left: the cards"
-  screen fb "Banner 'Focus: ...' with 'Clear focus'\nOnly after 'Refine recommendations'"
-  screen oc "Open cards\nOne card per recommendation that is not yet applied or dismissed\nAfter a refinement: in the new order, plus one card marked 'Added for your focus'"
+  screen fb "Chip 'Focus: Meet payer criteria' with an X 'Clear focus'\nOnly after 'Refine recommendations'"
+  screen oc "Open cards, compact\nOne per recommendation not yet applied or dismissed\nAfter a refinement: in the new order, plus one marked 'Added for your focus'"
   screen ap "'Applied (6)' (only when something is applied)\nOne line each with a green tick and '+11 pts · applied'\nClick a line to open its bullets"
-  screen dm "'Dismissed (1)' (only when something is dismissed)\nTitle struck through, 'Reason logged: ...', 'Bring back'"
-  toast ban "Banner 'Every recommendation is applied'\n'The draft is up to date. Open the Draft tab to read it, or send it to the payer.'"
+  screen dm "'Dismissed (1)' (only when something is dismissed)\nTitle struck through, the reason, 'Bring back'"
+  toast ban "One line 'Every recommendation is applied'"
 endgroup
 
 group gR "Right: the side panel"
-  process cnt "Count line\n'6 of 6 recommendations will be included in the draft.'\nWhen none are open: 'No open recommendations. Applied ones are listed on the left.'"
+  process cnt "'6 of 6 selected' ('None open' when nothing is left)"
   click b1 "Click 'Apply selected (6)'"
-  click b2 "Click 'Send to payer'\n(a greyed-out 'Sent to payer' once the request is with the payer)"
   click b3 "Click 'Refine recommendations'"
   click b4 "Click 'Add clinical context'"
   click b5 "Click 'Dismiss recommendations'"
   screen cx "'Context you added'\nEach note with '+1 pt'\nOnly once a note is added"
-  screen lg "'Logged decisions'\nNewest six entries, each with the time"
 endgroup
 
-process off "Why a button is off\nApply and Dismiss: no card is included\nSend to payer: checks open, or the request is not sendable, or it was already sent\nAll five: while the agents are updating the draft"
+process off "Why a button is off\nApply and Dismiss: no card is included\nAll four: while the agents are updating the draft"
 click tk "Click a card's checkbox or title to leave it out or put it back"
-process up "Count line and 'Apply selected (N)' follow\nNothing is logged"
+process up "'N of 6 selected' and 'Apply selected (N)' follow\nNothing is logged"
 decision dAll "Is anything open?"
 decision dApp "Is anything applied?"
+process hs "Every dismissal, note, focus and added context lands in History at once\nflagged 'Logged decision'"
 
 goto g1 "Continues in: Authorizations › Case page › Recommended actions › One card"
 goto g2 "Continues in: Authorizations › Case page › Recommended actions › Apply selected"
-goto g3 "Continues in: Authorizations › Case page › Send to payer and review and sign"
 goto g4 "Continues in: Authorizations › Case page › Recommended actions › Refine and add clinical context"
 goto g6 "Continues in: Authorizations › Case page › Recommended actions › Add clinical context"
 goto g5 "Continues in: Authorizations › Case page › Recommended actions › Dismiss and bring back"
+goto g7 "Continues in: Authorizations › Case page › History"
 
-s1 --> at --> in
+s1 --> at
 at --> dAll
 at --> fb
 dAll -->|Yes| oc --> g1
@@ -51,10 +49,11 @@ at --> dm
 at --> cnt
 oc --> tk --> up --> cnt
 cnt --> b1 --> g2
-cnt --> b2 --> g3
 cnt --> b3 --> g4
 cnt --> b4 --> g6
 cnt --> b5 --> g5
 cnt --> off
 at --> cx
-at --> lg
+b5 -.-> hs
+b4 -.-> hs
+hs --> g7

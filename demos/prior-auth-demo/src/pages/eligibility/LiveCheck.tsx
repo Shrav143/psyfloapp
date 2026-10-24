@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { CircleCheck, Clock, Info } from "lucide-react";
+import { CircleCheck, Clock } from "lucide-react";
 import { AgentBadge, Button, Card, CardHeader, Pill, Spinner } from "@/components/ui";
 import { AGENTS } from "@/data/agents";
 import { cn } from "@/lib/cn";
@@ -46,13 +46,12 @@ export function useLiveCheck(steps: VerifyStep[], onDone: () => void) {
   };
 }
 
-/** The right-hand card: one row per agent, filling in as answers arrive. */
+/** The right-hand card: one row per agent, its question while it waits and works, its answer when done. */
 export function LiveCheck({ steps, idx, secs, running, finished, onSkip }: { steps: VerifyStep[]; idx: number; secs: number; running: boolean; finished: boolean; onSkip: () => void }) {
   return (
     <Card className="overflow-hidden">
       <CardHeader
         title="Live check"
-        subtitle="Simulated in this demo: each agent asks the right source and reports back"
         right={
           <>
             {running ? (
@@ -60,45 +59,40 @@ export function LiveCheck({ steps, idx, secs, running, finished, onSkip }: { ste
                 Skip ahead
               </Button>
             ) : null}
-            {idx >= 0 ? <Pill tone="neutral">{clockText(secs)}</Pill> : null}
+            {finished ? <Pill tone="good">Opening the result</Pill> : idx >= 0 ? <Pill tone="neutral">{clockText(secs)}</Pill> : null}
           </>
         }
       />
-      <ul aria-label="Live check steps">
-          {steps.map((s, i) => {
-            const state = i < idx ? "done" : i === idx ? "work" : "wait";
-            return (
-              <li key={s.id} className={cn("flex items-center gap-3.5 border-b border-line px-6 py-3.5", state === "wait" && "opacity-55")}>
-                <AgentBadge agent={s.agent} size={36} />
-                <div className="min-w-0 flex-1">
-                  <div className="font-semibold">{AGENTS[s.agent].name}</div>
-                  <div className="text-[13px] text-muted">{state === "done" ? s.done : state === "work" ? s.doing : s.wait}</div>
-                </div>
-                {state === "done" ? (
-                  <span className="flex items-center gap-1.5 text-good" aria-label="Done">
-                    <CircleCheck size={18} className="ico" />
-                    <span className="text-xs text-muted">{clockText(Math.max(1, Math.round(s.ms / 1000)))}</span>
-                  </span>
-                ) : state === "work" ? (
-                  <span className="flex items-center gap-2 font-medium text-forest">
-                    <Spinner />
-                    Checking
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-1.5 text-muted">
-                    <Clock size={16} className="ico" />
-                    Waiting
-                  </span>
-                )}
-              </li>
-            );
-          })}
+      <ul aria-label="Live check steps" className="[&>li:last-child]:border-b-0">
+        {steps.map((s, i) => {
+          const state = i < idx ? "done" : i === idx ? "work" : "wait";
+          return (
+            <li key={s.id} className={cn("flex items-center gap-3 border-b border-line px-5 py-2.5", state === "wait" && "opacity-55")}>
+              <AgentBadge agent={s.agent} size={28} />
+              <div className="min-w-0 flex-1">
+                <div className="text-[14px] font-semibold">{AGENTS[s.agent].name}</div>
+                <div className="text-[13px] text-muted">{state === "done" ? s.done : s.label}</div>
+              </div>
+              {state === "done" ? (
+                <span className="flex items-center gap-1.5 text-good" aria-label="Done">
+                  <CircleCheck size={16} className="ico" />
+                  <span className="text-xs text-muted">{clockText(Math.max(1, Math.round(s.ms / 1000)))}</span>
+                </span>
+              ) : state === "work" ? (
+                <span className="flex items-center gap-2 text-[13px] font-medium text-forest">
+                  <Spinner />
+                  Checking
+                </span>
+              ) : (
+                <span className="flex items-center gap-1.5 text-[13px] text-muted">
+                  <Clock size={14} className="ico" />
+                  Waiting
+                </span>
+              )}
+            </li>
+          );
+        })}
       </ul>
-      {finished ? <div className="border-b border-line bg-good-bg px-6 py-3 text-sm font-medium text-good-ink">All answers are in. Opening the result.</div> : null}
-      <div className="flex items-center gap-3 bg-tile px-6 py-3.5">
-        <Info size={16} className="ico text-muted" />
-        <span className="text-sm text-muted">If a system does not answer, Caller phones the payer and logs the call.</span>
-      </div>
     </Card>
   );
 }

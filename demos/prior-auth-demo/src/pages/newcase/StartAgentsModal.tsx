@@ -1,10 +1,12 @@
 import { Button, Modal } from "@/components/ui";
 import type { CaseDraft } from "@/data/cases";
+import type { Readiness } from "./typicalDocs";
 import { payerById } from "@/data/seed";
 import { PROGRAM_LABEL } from "@/data/types";
 
-/** The confirm gate before the agents start. Used from Clinical documentation (Continue) and from Authorization preparation (when it is opened before the agents ran). */
-export function StartAgentsModal({ draft, open, onClose, onStart }: { draft: CaseDraft; open: boolean; onClose: () => void; onStart: () => void }) {
+/** The confirm gate before the agents start, from the Authorization preparation section of Clinical documentation. */
+export function StartAgentsModal({ draft, readiness, open, onClose, onStart }: { draft: CaseDraft; readiness: Readiness; open: boolean; onClose: () => void; onStart: () => void }) {
+  const missing = readiness.missingRequired;
   const payer = draft.payerId ? payerById(draft.payerId) : null;
   return (
     <Modal
@@ -20,8 +22,10 @@ export function StartAgentsModal({ draft, open, onClose, onStart }: { draft: Cas
         </>
       }
     >
-      <p className="text-sm text-ink2">Reader swaps names, dates and IDs for codes and reads the chart. Verify, Criteria, Historian and Placement check coverage, rules and how {payer?.shortName ?? "the payer"} has ruled. Scribe drafts the case and may ask you a question or two.</p>
-      <p className="mt-3 text-sm font-medium">Nothing is sent to the payer until a clinician signs.</p>
+      <p className="text-[14px] text-ink2">
+        {readiness.ready} of {readiness.total} documents ready
+      </p>
+      {missing.length ? <p className="mt-1 text-[13px] text-mid-ink">Missing: {missing.map((m) => m.label).join(", ")}</p> : null}
     </Modal>
   );
 }

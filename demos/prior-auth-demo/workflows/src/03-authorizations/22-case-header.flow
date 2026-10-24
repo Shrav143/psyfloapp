@@ -1,34 +1,27 @@
 title: Authorizations › Case page › Header and buttons
 route: /authorizations/case/R-1042
-intro: The header card above the three tiles: the title and its chips, the line that names the patient, the 'Next' block, the authorization facts and the 'At a glance' lines. It stays the same on all five tabs, and it follows the request: once the request is sent or decided the header shows its new status. The next action is drawn in 21, the facts in 27, and the three tiles and the one-line notice in 23.
+intro: The header card above the figures: the title line with its chips, the line that names the patient, the 'Next' block, the authorization facts and the diagnosis line. It says the level of care, payer, days and site once; nothing below repeats them. It is the same on all three tabs and follows the request once it is sent or decided.
 dir: TD
 also: Demo only: the header reads the request's current stage from the Dashboard, so signing and sending in New Case, or a payer reply made with the Dashboard demo controls, shows here at once.
 ---
-screen pg "Case page\nCrumbs, header card, three tiles, one-line notice, five tabs, History"
+screen pg "Case page\nCrumbs, header card, figures strip, three tabs, History"
 click cr "Click the 'Authorizations' crumb"
 goto gQ "Continues in: Authorizations › Queue › Open the queue and read the top"
 
-screen hd "Header title\nLevel chip, ID, request type chip, then one pill"
-decision dCh "Has the request been sent, decided or settled since this page was written, or does it already have a result?"
-toast pc "Pill shows the request's current status, e.g. 'Received', 'Approved'\nAn info icon beside it opens 'What the statuses mean'"
-process pd "Pill shows the due text, e.g. 'Notice due in 5 h'\nRed under 6 h, amber under 24 h, grey later"
-process sub "Sub line: 'J.M., 34 · Summit Medicaid HMO · Residential 3.5 · 14 days requested'\nIOP counts units: '21 units requested'\nA viewer who can see both sites also gets a quiet '· Site A' at the end\nA viewer with one site does not"
-screen nb "'Next:' block, the first thing under the title\nThe next action and one primary button"
+screen hd "Title line\nID, level chip, request type chip, a status pill, the due pill"
+decision dCh "Is the request on the Dashboard past Preparing, or does it already have a result?"
+toast pc "Status pill: the request's own status, e.g. 'Received', 'Under review', 'Approved'"
+process ps "Status pill: 'Preparing', 'Ready to sign', 'With the payer' or 'Denial route'"
+process pd "Due pill, e.g. 'Notice due in 5 h'\nred under 6 h, amber under 24 h, grey later\nnot shown once decided"
+click hi "Hover or focus the info icon 'What the statuses mean'"
+process sub "Sub line: 'J.M., 34 · Summit Medicaid HMO · 14 days requested · Site A'\nIOP counts units\nthe site only for a viewer who can see both sites"
+screen nb "'Next:' block, the first thing under the title"
 goto gN "Continues in: Authorizations › Case page › Next action"
-screen fr "Authorization facts row\nOnly the facts this request has"
+screen fr "Authorization facts row\nonly the facts this request has, none the title line already says"
 goto gF "Continues in: Authorizations › Case page › Authorization facts"
-
-group gAg "'At a glance' (one short block)"
-  process ag0 "'At a glance' line\nThe diagnosis and review type, then the scores with a trend arrow\n'AUDIT-C 11 · PHQ-9 17 ↑ · CIWA 14 → 4'"
-  decision dRd "Ready: all four checks pass and still preparing?"
-  agent ag1 "Integrity badge\n'Ready to sign. Integrity passed all four checks'"
-  agent ag3 "The request's own agent and line\ne.g. Navigator: 'Navigator checks again in 30 minutes'"
-  agent ag2 "Agent badge and status line\ne.g. Scribe: 'Scribe is drafting the case'"
-  decision dRule "Does the queue have a payer note for it?"
-  process rule "Green line 'Payer note: Summit expects a named step-down provider with the first request.'"
-endgroup
+process ag0 "Diagnosis line and scores with a trend arrow\n'Alcohol use disorder, severe, with recurrent depression · admission  AUDIT-C 11 · PHQ-9 17 ↑ · CIWA 14 → 4'"
 decision dDb "Is the request on the Dashboard past Preparing, and is the next action not already the Dashboard?"
-click od "Click 'Open on the Dashboard' (next to the status line)"
+click od "Click 'Open on the Dashboard' (at the end of the diagnosis line)"
 goto gDb "Continues in: Dashboard › Request drawer › Open and read a request"
 
 group gBt "Header buttons"
@@ -41,21 +34,13 @@ goto gT "Continues in: Authorizations › Case page › Numbers and notes"
 pg --> cr --> gQ
 pg --> hd --> dCh
 dCh -->|Yes| pc
-dCh -->|No| pd
-pc --> sub
-pd --> sub
-sub --> nb --> gN
+dCh -->|No| ps
+pc --> pd
+ps --> pd
+pd --> hi
+pd --> sub --> nb --> gN
 nb --> fr --> gF
-fr --> ag0 --> dRd
-dRd -->|Yes| ag1
-dRd -->|No| ag2
-dCh -.->|Yes| ag3
-ag1 --> dRule
-ag2 --> dRule
-ag3 --> dRule
-dRule -->|Yes| rule
-dRule -->|No| dDb
-rule --> dDb
+fr --> ag0 --> dDb
 dDb -->|Yes| od --> gDb
 pg --> b1 --> gS
 pg --> b3 --> gQ

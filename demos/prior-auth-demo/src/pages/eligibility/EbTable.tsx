@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Button, Chip, IdLink, Table, Td, Th } from "@/components/ui";
+import { Button, IdLink, Table, Td, Th } from "@/components/ui";
 import { verdictOf, type EbPatient } from "@/data/eligibility";
 import { payerById } from "@/data/seed";
 import { PROGRAM_LABEL } from "@/data/types";
@@ -25,9 +25,9 @@ interface Part {
   warn?: boolean;
 }
 
-/** The quiet second line of a row: the payer, the day limit, when it was checked, and what Verify's automatic re-check is doing. */
+/** The quiet second line of a row: the program, the payer, the day limit, when it was checked, and what Verify's automatic re-check is doing. */
 function quietParts(p: EbPatient, now: number, busy: boolean, auto: AutoState | null): Part[] {
-  const parts: Part[] = [{ text: payerById(p.payerId).name }];
+  const parts: Part[] = [{ text: p.levelLabel ?? PROGRAM_LABEL[p.program] }, { text: payerById(p.payerId).name }];
   const limit = limitText(p);
   if (limit) parts.push({ text: limit });
   if (p.payerChanged) parts.push({ text: `Now with ${payerById(p.payerChanged.to)?.shortName ?? "another plan"} since ${p.payerChanged.since}` });
@@ -45,8 +45,8 @@ function quietParts(p: EbPatient, now: number, busy: boolean, auto: AutoState | 
   return parts;
 }
 
-/** One patient is two lines: the chips that answer the question, then a quiet line with the rest. The ID and the row open the result;
-    Re-check runs a live check and updates the row in place. */
+/** One patient is two lines: the verdict and the chips behind it, then a quiet line with the program, the payer and the rest. The verdict comes right after
+    the patient so it stays in view when a narrow window scrolls the table. The ID and the row open the result; Re-check runs a live check and updates the row in place. */
 export function EbTable({ rows }: { rows: EbPatient[] }) {
   const nav = useNavigate();
   const clock = useStore((s) => s.clock);
@@ -54,15 +54,14 @@ export function EbTable({ rows }: { rows: EbPatient[] }) {
   const rechecking = useStore((s) => s.ebRechecking);
   const recheck = useStore((s) => s.ebRecheck);
   return (
-    <Table nowrap>
+    <Table nowrap className="[&_td]:px-4 [&_th]:px-4 [&_td:first-child]:pl-5 [&_th:first-child]:pl-5 [&_td:last-child]:pr-5 [&_th:last-child]:pr-5">
       <thead>
         <tr>
           <Th>Patient</Th>
-          <Th>Program</Th>
+          <Th>Verdict</Th>
           <Th>Eligibility</Th>
           <Th>Benefits</Th>
           <Th>Authorization</Th>
-          <Th>Verdict</Th>
           <Th aria-label="Re-check" />
         </tr>
       </thead>
@@ -73,25 +72,22 @@ export function EbTable({ rows }: { rows: EbPatient[] }) {
         return (
           <tbody key={p.id} onClick={open} className="cursor-pointer hover:bg-[#FBF8F3] [&:last-of-type>tr:last-child>td]:border-b-0">
             <tr>
-              <Td className="border-b-0 pb-1.5">
+              <Td className="border-b-0 pt-3 pb-1 text-[13px]">
                 <IdLink onClick={open}>{p.id}</IdLink> <span className="text-muted">· {patientLabel(p)}</span>
               </Td>
-              <Td className="border-b-0 pb-1.5">
-                <Chip>{p.levelLabel ?? PROGRAM_LABEL[p.program]}</Chip>
-              </Td>
-              <Td className="border-b-0 pb-1.5">
-                <EligibilityChip p={p} />
-              </Td>
-              <Td className="border-b-0 pb-1.5">
-                <BenefitsChip p={p} />
-              </Td>
-              <Td className="border-b-0 pb-1.5">
-                <AuthChip p={p} />
-              </Td>
-              <Td className="border-b-0 pb-1.5">
+              <Td className="border-b-0 pt-3 pb-1">
                 <VerdictChip v={verdictOf(p)} />
               </Td>
-              <Td className="border-b-0 pb-1.5 text-right">
+              <Td className="border-b-0 pt-3 pb-1">
+                <EligibilityChip p={p} />
+              </Td>
+              <Td className="border-b-0 pt-3 pb-1">
+                <BenefitsChip p={p} />
+              </Td>
+              <Td className="border-b-0 pt-3 pb-1">
+                <AuthChip p={p} />
+              </Td>
+              <Td className="border-b-0 pt-3 pb-1 text-right">
                 <Button
                   size="sm"
                   loading={busy}
@@ -106,7 +102,7 @@ export function EbTable({ rows }: { rows: EbPatient[] }) {
               </Td>
             </tr>
             <tr>
-              <Td colSpan={7} className="pt-0 pb-3.5 text-[12px] text-muted">
+              <Td colSpan={6} className="pt-0 pb-3 text-[12px] text-muted">
                 {quiet.map((x, i) => (
                   <span key={x.text}>
                     {i > 0 ? " · " : ""}

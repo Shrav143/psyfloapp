@@ -18,12 +18,12 @@ group gRe "Re-check in place"
 endgroup
 
 group gNew "A new patient"
-  click c4 "Click 'Verify a patient' (top right)"
+  click c4 "Click 'Verify a patient' (title row, right)"
   process p3 "Opens /authorizations/eligibility/verify\nwith an empty form"
 endgroup
 
 screen res "Result page for that patient"
-screen ver "Verify a patient\nEmpty form"
+screen ver "Verify page\nEmpty form"
 goto g1 "Continues in: Authorizations › Eligibility & Benefits › Result › What the page shows"
 goto g2 "Continues in: Authorizations › Eligibility & Benefits › Re-verify a patient"
 goto g3 "Continues in: Authorizations › Eligibility & Benefits › Verify › Fill in the form"

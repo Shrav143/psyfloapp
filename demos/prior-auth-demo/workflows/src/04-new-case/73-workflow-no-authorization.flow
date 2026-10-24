@@ -4,7 +4,7 @@ intro: When the workflow ends in 'No authorization required', New Case raises th
 dir: TD
 ---
 start s1 "The workflow reaches its 'No authorization required' ending\nThe verification says the payer does not require one, or a payer rule node says so"
-process p1 "The step header says 'Next in this workflow: ...' with the ending"
+process p1 "The workflow line says where it ended\n'View workflow' shows the 'No authorization needed' ending"
 process p2 "The no-authorization outcome is raised\nSteps 3, 4 and 5 read 'Not applicable'"
 screen sc1 "Card 'No authorization is required'\nThe payer, the level of care, the dates\n'Its rule says: ...' when the payer has written one"
 click c1 "Click 'Save verification to the patient record'"

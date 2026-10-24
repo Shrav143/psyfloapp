@@ -20,9 +20,8 @@ export function ExceptionActions({ draft, env }: { draft: CaseDraft; env: CaseEn
   if (!hasAction) return null;
 
   return (
-    <section aria-label="What you can do" className="flex flex-col gap-3 rounded-[20px] border border-edge bg-white px-6 py-5">
+    <section aria-label="What you can do" className="flex flex-col gap-3 rounded-[20px] border border-edge bg-white px-5 py-4">
       <h3 className="font-serif text-[18px] font-semibold tracking-tight">What you can do</h3>
-      <p className="-mt-1.5 text-[13px] text-muted">None of this stops you. It only decides what is recorded when the request is sent.</p>
       <div className="flex flex-wrap gap-2">
         {ex.has("payer_changed") && moved ? (
           <Button size="sm" onClick={() => patch(draft.id, { payerId: moved, planType: planTypeOf(moved), verificationId: null })}>

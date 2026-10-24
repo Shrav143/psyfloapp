@@ -1,10 +1,10 @@
 title: Authorizations › New Case › Eligibility & Benefits › Retroactive authorization
-route: /authorizations/new/:draftId (step 2 of 5, type 'Retroactive authorization')
+route: /authorizations/new/:draftId (step 2 of 4, type 'Retroactive authorization')
 intro: For care already given, Verify checks coverage for the dates of service, not for today. The check runs by itself, and again when it is old. When coverage had lapsed on those dates the warning says so and points to retro-eligibility; the person can go on with a documented exception. Retro approval still depends on the payer.
 dir: TD
 ---
 start s1 "Click 'Continue to Eligibility & Benefits' on Intake"
-screen sc "Eligibility & Benefits · Retroactive authorization\n'Verify checks coverage for the dates of service.'"
+screen sc "Eligibility & Benefits · Retroactive authorization\nNo sentence under the title; the check covers the dates of service"
 decision dIn "Are the payer, level of care, member ID and the first date of service in?"
 screen sNeed "Card 'Verify needs a little more'\nButton 'Open Intake'"
 goto gIntake "Continues in: Authorizations › New Case › Intake › Retroactive authorization"

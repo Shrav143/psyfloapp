@@ -8,7 +8,7 @@ export const formulaOf = (rows: DriverView[], total: number): string =>
   `${rows.map((r, i) => (i === 0 ? String(r.pts) : r.pts >= 0 ? `+ ${r.pts}` : `− ${Math.abs(r.pts)}`)).join(" ")} = ${total}`;
 
 const TRACK = "relative h-3 rounded-full bg-[#F5F0E8]";
-const ROW = "grid grid-cols-[minmax(0,1fr)_190px_46px] items-center gap-4 border-b border-line px-6 py-3";
+const ROW = "grid grid-cols-[minmax(0,1fr)_160px_42px] items-center gap-4 border-b border-line px-1 py-2.5 text-[13px]";
 
 /** "Why this number" as horizontal bars. The starting point and the total fill a 0 to 100% track. Each step grows from a
     centre line: green to the right adds points, terracotta to the left takes them away. A dashed outline shows what is still to come. */
@@ -22,7 +22,7 @@ export function DriverBars({ rows, total }: { rows: DriverView[]; total: number 
         <div key={r.id} className={ROW}>
           <div>
             <div>{r.label}</div>
-            {r.finalPts !== r.pts ? <div className="text-xs text-muted">{r.pts < 0 ? "improves to" : "up to"} {fmt(r.finalPts)} once applied</div> : null}
+            {r.finalPts !== r.pts ? <div className="text-[12px] text-muted">{r.pts < 0 ? "improves to" : "up to"} {fmt(r.finalPts)} once applied</div> : null}
           </div>
           <div className={TRACK} aria-hidden="true">
             {r.start ? (
@@ -40,14 +40,13 @@ export function DriverBars({ rows, total }: { rows: DriverView[]; total: number 
           <b className="text-right" style={{ color: r.start ? "#1B1B19" : r.pts >= 0 ? "#2F6F5C" : "#8A3B2A" }}>{fmt(r.pts, r.start)}</b>
         </div>
       ))}
-      <div className="grid grid-cols-[minmax(0,1fr)_190px_46px] items-center gap-4 px-6 py-3.5">
+      <div className="grid grid-cols-[minmax(0,1fr)_160px_42px] items-center gap-4 px-1 py-3 text-[13px]">
         <div className="font-semibold">Approval chance now</div>
         <div className={TRACK} aria-hidden="true">
           <i className="absolute top-0 left-0 block h-full rounded-full" style={{ width: `${total}%`, background: COLOR.total, transition: "all .5s ease" }} />
         </div>
         <b className="text-right">={total}%</b>
       </div>
-      <div className="px-6 pb-4 text-xs text-muted">The starting point and the total run from 0 to 100%. Each step grows from the centre line: green to the right adds points, terracotta to the left takes them away.</div>
     </div>
   );
 }

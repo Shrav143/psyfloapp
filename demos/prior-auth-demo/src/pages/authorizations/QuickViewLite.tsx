@@ -1,16 +1,15 @@
 import { useMemo, type ReactNode } from "react";
 import { PenLine } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { ActorBadge, AgentBadge, Button, Drawer, KeyValue, Pill } from "@/components/ui";
-import { AGENTS } from "@/data/agents";
+import { Button, Drawer, HistoryFeed, KeyValue, Pill } from "@/components/ui";
 import { detailForQueueItem } from "@/data/caseDetail";
 import { withFocus } from "@/data/caseDetailFocus";
 import { EMPTY_WORK, canSend, rangeOf } from "@/data/caseModel";
 import { STATUS_LABEL, type QueueItem } from "@/data/queue";
 import { payerById } from "@/data/seed";
 import { band as chanceBand } from "@/lib/format";
-import { stamp } from "@/lib/time";
 import { paths } from "@/routes";
+import { viewerById } from "@/data/viewers";
 import { useStore } from "@/store";
 import { historyOf } from "./history";
 import { nextActionOf } from "./nextAction";
@@ -36,6 +35,7 @@ export function QuickViewLite({ item, onClose }: { item: QueueItem; onClose: () 
   const [lo, hi] = rangeOf(detail, chance);
   const b = chanceBand(chance);
   const payer = payerById(item.payerId);
+  const you = viewerById(useStore((s) => s.viewerId)).name;
   const events = useMemo(() => historyOf(undefined, work.log), [work.log]);
   const recent = events.slice(0, SHOWN_EVENTS);
   const unsent = phase === "preparing" || phase === "ready";
@@ -60,29 +60,16 @@ export function QuickViewLite({ item, onClose }: { item: QueueItem; onClose: () 
       }
     >
       <div className="flex flex-col gap-5">
-        <section aria-label="Next action" className="rounded-2xl border border-forest/25 bg-[#F3F7F4] px-4 py-3.5">
+        <section aria-label="Next action" className="rounded-xl border border-forest/20 bg-[#F3F7F4] px-4 py-2.5">
           <div className="text-[14px] font-semibold leading-snug"><span className="text-forest">Next:</span> {next.text}</div>
-          {next.why ? <div className="mt-0.5 text-[13px] text-ink2">{next.why}</div> : null}
         </section>
-        <KeyValue className="grid-cols-[130px_1fr] text-[14px]" items={rows} />
+        <KeyValue className="grid-cols-[130px_1fr] text-[13px]" items={rows} />
         <div>
-          <h3 className="mb-3 font-serif text-[18px] font-semibold">History</h3>
-          {recent.length === 0 ? (
-            <p className="m-0 text-sm text-muted">Nothing has happened on this request yet. Events appear when an agent or a person acts on it.</p>
-          ) : (
-            <ol aria-label="Latest history" className="m-0 flex list-none flex-col gap-3 p-0">
-              {recent.map((l) => (
-                <li key={l.key} className="flex items-start gap-2.5">
-                  {l.actor === "you" || l.actor === "payer" || l.actor === "system" ? <ActorBadge actor={l.actor} /> : <AgentBadge agent={l.actor} size={22} />}
-                  <div className="min-w-0 text-[14px]">
-                    <div className="text-xs text-muted">{l.scheduled ? `Scheduled ${stamp(l.at)}` : stamp(l.at)}{l.actor === "you" ? " · you" : l.actor === "payer" || l.actor === "system" ? "" : ` · ${AGENTS[l.actor].name} (agent)`}</div>
-                    <div className={l.scheduled ? "text-muted" : undefined}>{l.text}</div>
-                  </div>
-                </li>
-              ))}
-            </ol>
-          )}
-          {events.length > SHOWN_EVENTS ? <p className="m-0 mt-3 text-[13px] text-muted">{events.length - SHOWN_EVENTS} earlier on the case page.</p> : null}
+          <h3 className="mb-2 font-serif text-[18px] font-semibold">History</h3>
+          <div className="rounded-xl border border-edge bg-white">
+            <HistoryFeed items={recent} you={you} label="Latest history" />
+          </div>
+          {events.length > SHOWN_EVENTS ? <p className="m-0 mt-2 text-[13px] text-muted">{events.length - SHOWN_EVENTS} more on the case page</p> : null}
         </div>
       </div>
     </Drawer>

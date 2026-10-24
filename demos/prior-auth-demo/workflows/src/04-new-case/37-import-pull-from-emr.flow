@@ -1,0 +1,37 @@
+title: Authorizations › New Case › Import › Pull from EMR
+route: /authorizations/new/:draftId (Intake, and the documents row of Clinical documentation)
+intro: Pull a chart from a clinical record system that is connected at a site in view. The pull ends in the same review as a file or a screenshot: what was found, a box for each, and Apply. A field whose EMR column still waits for a mapping in EMR Connect is left out and said so. The same component is used on Eligibility & Benefits and, without the pull, on EMR Connect.
+dir: TD
+also: Demo only: the connection is simulated. The charts are invented and live in the demo's EMR Connect systems (Site A's and Site B's clinical record).
+---
+start s1 "Click 'Pull from EMR'\nIntake: fills the patient, coverage and request\nClinical documentation: brings the chart's earlier notes"
+decision dCon "Is a clinical record system connected at a site in view?"
+process pHide "No 'Pull from EMR' button\nImport a file and Paste a screenshot remain"
+overlay o1 "Chart picker under the row\n'J.M., 34 · Summit Medicaid HMO · Residential 3.5'\nEach chart names its system and a note: 'Admitted yesterday'"
+decision dSite "Which site's system?"
+process pA "Site A's clinical record: J.M. and L.G."
+process pB "Site B's clinical record: A.R. and S.T."
+input i1 "Pick a chart"
+click c1 "Click 'Pull'"
+wait w1 "'Pulling', about one second"
+ext x1 "The record system answers (demo: simulated)"
+decision dMap "Does a field of that system still need a mapping?"
+process pLeft "That field is left out\nSite B: 'Level of care' and 'Referral source' leave the level of care and the payer blank"
+screen sRev "Review\n'8 fields found' · 'Pulled from Clinical record · Site A'\nOne box per field: label and value, ticked\n'2 documents': the earlier notes and diagnoses"
+toast tMap "Under the list: 'Level of care: “Level of care” in the Site B record needs a mapping' with 'Map it'"
+goto gEmr "Continues in: EMR Connect › Needs a mapping › Map a field"
+goto gReview "Continues in: Authorizations › New Case › Import › Review what was found and apply"
+click cClose "Click the X, or 'Pull from EMR' again"
+endx eClose "The panel closes, nothing applied"
+
+s1 --> dCon
+dCon -->|No| pHide
+dCon -->|Yes| o1 --> dSite
+dSite -->|Site A| pA --> i1
+dSite -->|Site B| pB --> i1
+i1 --> c1 --> w1 --> x1 --> dMap
+dMap -->|Yes| pLeft --> sRev
+dMap -->|No| sRev
+pLeft -.-> tMap -.-> gEmr
+sRev --> gReview
+o1 --> cClose --> eClose

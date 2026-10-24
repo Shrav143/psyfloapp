@@ -1,58 +1,59 @@
 title: Authorizations › Case page › Tabs and deep links
 route: /authorizations/case/R-1042?tab=actions
-intro: The five tabs under the header, how the address follows them, what the two badges count, and the buttons on other tabs that jump to one recommendation card.
+intro: The three tabs under the header, how the address follows them, how the five old tab names still land on the merged tabs, what the two badges count, and the buttons that jump to one recommendation card.
 dir: TD
 ---
 start s1 "A case page opens"
-decision d1 "Does the address name a valid tab (tab=...)?"
-process ts "That tab is selected"
-process ta "Recommended actions is selected"
-screen tabs "Tab strip\nRecommended actions · Clinical picture · Payer criteria · Risk analysis · Draft"
+decision d1 "What does the address name (tab=...)?"
+process ta "Recommended actions is selected\n(tab=actions, a missing or unknown name)"
+process tdr "Clinical picture & draft is selected\n(tab=draft)"
+process tpi "Clinical picture & draft is selected\nand the page scrolls to the clinical picture\n(the old tab=picture)"
+process tcr "Criteria & risk is selected\n(tab=criteria)"
+process tri "Criteria & risk is selected\nand the page scrolls to the figures and risks\n(the old tab=risk)"
+decision dW "Is the window 1024 px or narrower?"
+process fo "The clinical picture sits under the draft, folded\ntab=picture opens it"
+screen tabs "Tab strip\nRecommended actions · Clinical picture & draft · Criteria & risk"
 
 group gC "Click a tab"
   click c1 "Click 'Recommended actions'"
-  click c2 "Click 'Clinical picture'"
-  click c3 "Click 'Payer criteria'"
-  click c4 "Click 'Risk analysis'"
-  click c5 "Click 'Draft'"
+  click c2 "Click 'Clinical picture & draft'"
+  click c3 "Click 'Criteria & risk'"
 endgroup
-process url "The address changes to tab=actions, picture, criteria, risk or draft\nBrowser Back returns to the previous tab"
-process fd "The tab's panel fades in\nHeader and tiles stay as they were"
+process url "The address changes to tab=actions, draft or criteria\nBrowser Back returns to the previous tab"
 process rec "Any tab click drops rec= from the address"
 
 process b1 "Badge on 'Recommended actions'\nNumber of open recommendations (6)\nGone when none are left"
-process b2 "Badge on 'Draft'\nNumber of checks that need attention (2)\nGone when all four pass"
+process b2 "Badge on 'Clinical picture & draft'\nNumber of checks that need attention (2)\nGone when all four pass"
 
 group gD "Buttons that jump to one card"
-  click l1 "Clinical picture › 'Settle it' on a 'Still open' line"
-  click l2 "Payer criteria › 'Go to the action' under 'Could be stronger'"
-  click l3 "Payer criteria › 'Open the action' in 'To keep the approval chance high'"
+  click l1 "Criteria & risk › a risk chip\n'No named step-down · 11 pts'"
+  click l2 "Criteria & risk › the action under a Partial criterion"
+  click l3 "Header › 'Go to this action'"
 endgroup
 process dl "Recommended actions opens with rec= set to that card's ID"
 process fc "The card scrolls to the middle of the screen\nand gets a green outline"
-decision dEx "Is that card still open?"
-process nofc "Nothing to scroll to\nApplied cards are one-line rows; dismissed ones are in 'Dismissed'"
 
 goto g1 "Continues in: Authorizations › Case page › Recommended actions › The tab"
 goto g2 "Continues in: Authorizations › Case page › Clinical picture"
-goto g3 "Continues in: Authorizations › Case page › Payer criteria"
-goto g4 "Continues in: Authorizations › Case page › Risk analysis"
+goto g3 "Continues in: Authorizations › Case page › Criteria & risk"
 goto g5 "Continues in: Authorizations › Case page › Draft › Read and edit"
 
 s1 --> d1
-d1 -->|Yes| ts --> tabs
-d1 -->|No or missing| ta --> tabs
+d1 -->|actions or nothing| ta --> tabs
+d1 -->|draft| tdr --> tabs
+d1 -->|picture| tpi --> dW
+dW -->|Yes| fo --> tabs
+dW -->|No| tabs
+d1 -->|criteria| tcr --> tabs
+d1 -->|risk| tri --> tabs
 tabs --> b1 & b2
-tabs --> url --> rec --> fd
-tabs --> c1 & c2 & c3 & c4 & c5
+tabs --> url --> rec
+tabs --> c1 & c2 & c3
 c1 --> g1
+c2 --> g5
 c2 --> g2
 c3 --> g3
-c4 --> g4
-c5 --> g5
 l1 --> dl
 l2 --> dl
 l3 --> dl
-dl --> dEx
-dEx -->|Yes| fc
-dEx -->|No| nofc
+dl --> fc

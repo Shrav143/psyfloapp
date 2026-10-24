@@ -1,38 +1,36 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { Sparkles } from "lucide-react";
-import { Banner, Button, Page, PageHeader, type DemoFile } from "@/components/ui";
-import { PAYERS } from "@/data/seed";
-import type { PayerId } from "@/data/types";
+import { ImportSources, type ImportResult } from "@/components/import";
+import { Banner, Page } from "@/components/ui";
+import { siteOf } from "@/data/sites";
+import { sitesInView, useScope } from "@/lib/scope";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
+import { selectConnectedEmr } from "@/store/emr";
 import { selectVerificationFor } from "@/store/eligibility";
 import { referralPrefill } from "@/store/referrals";
-import { siteOf } from "@/data/sites";
-import { sitesInView } from "@/lib/scope";
+import { formFromImport } from "./importInsurance";
 import { LiveCheck, useLiveCheck } from "./LiveCheck";
 import { BackLinks, useOrigin } from "./origin";
-import type { Sample } from "./samples";
-import { SAMPLE_CARD, VerifyForm } from "./VerifyForm";
+import { SAMPLES, type Sample } from "./samples";
+import { VerifyForm } from "./VerifyForm";
 import { dobFor, verifySteps, type VerifyForm as Form } from "./verifySteps";
 
-const EMPTY: Form = { payerId: "", member: "", dob: "", program: "RES", dos: "10/21/2026", cardName: null };
-/** The sample card belongs to J.M., whose check is already on the list. */
-const SAMPLE: Form = { payerId: "summit", member: "SM7403964821", dob: "03/14/1992", program: "RES", dos: "10/21/2026", cardName: SAMPLE_CARD };
-const READ_MS = 1100;
+const EMPTY: Form = { payerId: "", member: "", dob: "", program: "RES", dos: "10/21/2026", source: null };
+/** J.M.'s card checks the headline case R-1042, so it is offered only when R-1042 is in view. */
+const HEADLINE = "R-1042";
 
-const hashDigits = (s: string): string => String(1000 + (Array.from(s).reduce((a, c) => a + c.charCodeAt(0), 0) * 31) % 9000);
-
-/** Verify a patient: a short form on the left, the live check on the right. Opens the result when the check finishes. */
+/** Verify a patient: the form on the left, the live check on the right. Opens the result when the check finishes. */
 export default function VerifyPage() {
   const nav = useNavigate();
   const [params] = useSearchParams();
-  const toast = useStore((s) => s.toast);
   const paused = useStore((s) => s.agentPaused.verify);
+  const emr = useStore((s) => selectConnectedEmr(s).length > 0);
+  const scope = useScope();
   const [form, setForm] = useState<Form>(EMPTY);
-  const [reading, setReading] = useState(false);
+  /** What the import found beyond the form's fields (plan type, group, coverage dates), shown under the import row. */
+  const [found, setFound] = useState<string[]>([]);
   const who = useRef<{ caseId?: string; initials?: string | null; age?: number | null }>({});
-  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const origin = useOrigin();
 
   /* Pre-fill from ?referral=ID or ?case=ID once. */
@@ -42,7 +40,7 @@ export default function VerifyPage() {
     const caseId = params.get("case");
     if (referral) {
       const p = referralPrefill(st, referral);
-      if (!p) return void st.toast({ title: "Referral not found", body: `We could not find ${referral}. Type the details instead.`, tone: "mid" });
+      if (!p) return void st.toast({ title: "Referral not found", body: `${referral} is not in the referrals.`, tone: "mid" });
       who.current = { initials: p.patientInitials, age: p.age };
       setForm({ ...EMPTY, payerId: p.payerId ?? "", member: p.memberIdMasked, dob: dobFor(p.age), program: p.program });
     } else if (caseId) {
@@ -57,7 +55,6 @@ export default function VerifyPage() {
       }
     }
   }, [params]);
-  useEffect(() => () => clearTimeout(timer.current), []);
 
   const steps = useMemo(() => verifySteps(form, paused), [form, paused]);
   const check = useLiveCheck(steps, () => {
@@ -66,53 +63,46 @@ export default function VerifyPage() {
     nav(`${paths.eligibilityResult(id)}${origin.query}`);
   });
   const locked = check.started;
-
-  const readCard = (files: DemoFile[]) => {
-    const name = files[0]?.name ?? SAMPLE_CARD;
-    setReading(true);
-    setForm((f) => ({ ...f, cardName: name }));
-    timer.current = setTimeout(() => {
-      setReading(false);
-      const matched = PAYERS.find((p) => name.toLowerCase().includes(p.shortName.toLowerCase()));
-      setForm((f) => ({ ...f, payerId: (f.payerId || matched?.id || "summit") as PayerId, member: f.member || (name === SAMPLE_CARD ? SAMPLE.member : `OH7403${hashDigits(name)}`) }));
-    }, READ_MS);
-  };
+  const samples = scope.has(HEADLINE) ? SAMPLES : SAMPLES.filter((s) => s.id !== "auth_first");
 
   const pickSample = (s: Sample) => {
     who.current = { initials: s.initials, age: s.age };
     setForm(s.form);
+    setFound([]);
+  };
+  /* The import applies only what the person kept in its review and chose Apply for. */
+  const applyImport = (r: ImportResult) => {
+    const { form: patch, found: rest } = formFromImport(r);
+    setForm((f) => ({ ...f, ...patch, source: r.sourceLabel }));
+    setFound(rest);
   };
 
   return (
     <Page>
       <BackLinks back={origin.back} />
-      <PageHeader
-        title="Verify a patient"
-        sub="The agents check coverage and benefits live, so you know whether the clinic will be paid."
-        actions={
-          <Button
-            icon={Sparkles}
-            disabled={locked}
-            onClick={() => {
-              who.current = { initials: "J.M.", age: 34 };
-              setForm(SAMPLE);
-              toast({ title: "Sample card loaded", body: "Reader filled in the details for J.M., 34. The check can start when you are ready.", tone: "neutral" });
-            }}
-          >
-            Use sample card
-          </Button>
-        }
-      />
+      <h1 className="sr-only">Verify a patient</h1>
       {paused ? (
-        <Banner tone="mid" title="Verify is paused in Settings">
-          A check cannot ask the plan anything while it is paused. Check now still saves the check, marked as not checked, and Check again works once Verify is resumed.{" "}
-          <Link to={paths.settings()} className="font-semibold underline underline-offset-[3px]">
-            Open Settings
-          </Link>
-        </Banner>
+        <Banner
+          tone="mid"
+          title="Verify is paused in Settings"
+          action={
+            <Link to={paths.settings()} className="text-[13px] font-semibold underline underline-offset-[3px]">
+              Open Settings
+            </Link>
+          }
+        />
       ) : null}
       <div className="grid grid-cols-1 items-start gap-5 min-[1200px]:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
-        <VerifyForm form={form} onChange={(p) => setForm((f) => ({ ...f, ...p }))} onCard={readCard} onSample={pickSample} reading={reading} locked={locked} onCheck={check.start} />
+        <VerifyForm
+          form={form}
+          onChange={(p) => setForm((f) => ({ ...f, ...p }))}
+          importRow={locked ? null : <ImportSources target="insurance" compact emr={emr} current={{ payerId: form.payerId, memberId: form.member }} onImport={applyImport} />}
+          found={found}
+          samples={samples}
+          onSample={pickSample}
+          locked={locked}
+          onCheck={check.start}
+        />
         <LiveCheck steps={steps} idx={check.idx} secs={check.secs} running={check.running} finished={check.finished} onSkip={check.skip} />
       </div>
     </Page>

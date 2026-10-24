@@ -1,59 +1,58 @@
 title: Authorizations › New Case › Intake › Initial authorization
-route: /authorizations/new/:draftId (Intake, type 'Initial authorization', once something is started)
-intro: For a new stay: the details come from a referral, from a patient who is known, from a chart, or are typed. Everything stays editable. Nothing here stops the person from going on: what is missing is listed again, with a fix, on Review & submit. A possible duplicate is the one alert Intake raises.
+route: /authorizations/new/:draftId (Intake, type 'Initial authorization')
+intro: Intake is patient onboarding. One row of ways in sits at the top (Pull from EMR, Import a file, Paste a screenshot, Referrals, Known patient), then one form: Patient, Coverage, Request and a folded More. Everything stays editable and nothing here stops the person from going on: what is missing is listed on Review & submit. A possible duplicate is the one alert Intake raises.
 dir: TD
 ---
-start s1 "Open the details\nAfter 'Review' on a referral and 'Continue with this referral'\nOr 'Create case manually', or a patient picked, or ?referral= or ?verification="
-screen sc "Intake · Initial authorization\n'Start with a referral or a patient. Everything is editable.'\nStep header 'STEP 1 OF 5 · Intake' with its state"
-screen sFrom "One line above the details\n'From referral RF-2051 · Eastgate Probation Services. Everything below can be changed.'\nor 'An existing patient. Their details are filled in and can be changed for this request.'\nor 'Created by hand. Add what you know; Reader fills the rest from the chart.'"
-click cDiff "Click 'Use a different referral or patient'"
-goto gStart "Continues in: Authorizations › New Case › Intake › Start with a referral or patient"
+start s1 "Open Intake on an initial authorization\nA new case, a referral continued into it, a known patient picked, or ?verification="
+screen sc "Intake · Initial authorization\nThe row of ways in, then the form\nNo sentence under the title"
+group gWays "The row of ways in"
+  click cImp "Click 'Pull from EMR', 'Import a file' or 'Paste a screenshot'\nor press Ctrl+V or Cmd+V in the row"
+  click cRefs "Click 'Referrals' (count of open referrals)"
+  click cKnown "Click 'Known patient'"
+endgroup
+goto gImp "Continues in: Authorizations › New Case › Intake › Start with a referral or patient"
+screen sFrom "Once a referral or a known patient is in, one line under the row\n'From referral RF-2051 · St. Brigid Medical Center' or 'Existing patient R-1042'\nand 'Use a different referral' or 'Use a different patient'"
 click cRef "Click the referral number in the line"
 goto gRef "Continues in: Authorizations › New Case › Referral › The full referral page"
 process pPay "A case Payers redrafted after a payer change shows one line\n'Updated for a payer change on 10/20'"
 screen sDup "One alert at a time\n'This looks like a request that already exists' (only when one matches)"
 goto gDup "Continues in: Authorizations › New Case › Intake › Possible duplicate"
-screen sSite "Site\nWith both sites in view: a 'Site' choice, Site A or Site B\nWith one site in view: 'Site A · this case is at the site you are working at.'"
-goto gSite "Continues in: Authorizations › New Case › Sites and scope"
 
-group gRows "The case's details, as rows you can edit"
-  screen r1 "Patient\n'Patient initials and age'"
-  screen r2 "Insurance\n'Payer and plan', 'Member ID' (Recommended)"
-  screen r3 "Request\n'Level of care', 'Request type', 'Start date' (Recommended)"
+group gForm "The form, one card"
+  screen f1 "Patient\nInitials, Date of birth with Age beside it, Sex"
+  screen f2 "Coverage\nPayer, Plan type (the payer's own plans), Member ID"
+  screen f3 "Request\nLevel of care, Request type (Initial request or Admission), Requested start date\nPrimary diagnosis (ICD-10), Site"
+  screen f4 "More, folded\nSecondary insurance, Requested end date, Attending clinician and NPI, Referral source\nGuardian, only for a patient under 18"
 endgroup
 goto gRows "Continues in: Authorizations › New Case › Intake › Patient, insurance and request rows"
-process pType "'Request type' offers Initial request and Admission\nAdmission adds 'notice due in about 5 hours'"
-process pEnd "'Requested end date' is optional\nLeft empty it asks for the level of care's usual length\n'Left empty: the usual 21 days for Residential 3.5, through 11/09/2026.'"
+goto gSite "Continues in: Authorizations › New Case › Sites and scope"
 
-group gFoot "Footer bar, always in view"
-  screen ft "'Save as draft' and 'Continue to Eligibility & Benefits'\nOne hint line"
-  decision dHint "What does the hint say?"
-  toast h1 "'A matching request exists. Open it, or continue with a reason.'"
-  toast h2 "'Still to add: patient, payer and 1 more. You can go on; Review & submit lists what is missing.'"
-  toast h3 "'Nothing is sent to the payer until a clinician signs.'"
+group gFoot "Bar at the bottom, always in view"
+  screen ft "'Save as draft' and 'Continue to Eligibility & Benefits'"
+  toast h1 "A payer workflow warning, when there is one\n'Workflow: ...'"
 endgroup
 click cSave "Click 'Save as draft'"
-toast tSave "'Draft saved'\n'R-1701 is in Case Manager. Pick it up whenever you like.'"
+toast tSave "'Draft saved'\n'R-1701 is in Case Manager.'"
 goto gSave "Continues in: Authorizations › New Case › Save as draft and leave"
 click cCont "Click 'Continue to Eligibility & Benefits'"
 process pGo "Moves to step 2\nNothing blocks the click"
 goto gElig "Continues in: Authorizations › New Case › Eligibility & Benefits › Initial authorization"
 
-s1 --> sc --> sFrom
-sFrom --> cDiff --> gStart
+s1 --> sc
+sc --> cImp --> gImp
+sc --> cRefs --> gImp
+sc --> cKnown --> gImp
+sc --> sFrom
 sFrom --> cRef --> gRef
 sc --> pPay
 sc --> sDup -.-> gDup
-sc --> sSite -.-> gSite
-sc --> r1 & r2 & r3
-r1 --> gRows
-r2 --> gRows
-r3 --> pType
-r3 --> pEnd
-pType -.-> gRows
-sc --> ft --> dHint
-dHint -->|Duplicate unanswered| h1
-dHint -->|Items open| h2
-dHint -->|Nothing open| h3
+sc --> f1 & f2 & f3 & f4
+f1 --> gRows
+f2 --> gRows
+f3 --> gRows
+f3 -.-> gSite
+f4 -.-> gRows
+sc --> ft
+ft -.-> h1
 ft --> cSave --> tSave --> gSave
 ft --> cCont --> pGo --> gElig

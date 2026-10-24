@@ -18,16 +18,14 @@ export interface AuthTypeDef {
   typical: string;
   /** The heading of the prepared justification. */
   justification: string;
-  /** One line under the page title on Intake. */
-  intake: string;
 }
 
 export const AUTH_TYPES: AuthTypeDef[] = [
-  { kind: "initial", label: "Initial authorization", noun: "an initial authorization", types: ["Initial request", "Admission"], existing: false, typical: "an initial request", justification: "Initial request justification", intake: "Start with a referral or a patient. Everything is editable." },
-  { kind: "concurrent", label: "Concurrent review", noun: "a continued stay", types: ["Continued stay"], existing: true, typical: "a continued stay", justification: "Continued-stay justification", intake: "Find the patient, then the authorization this review is for." },
-  { kind: "reauth", label: "Reauthorization / renewal", noun: "a renewal", types: ["Recertification"], existing: true, typical: "a renewal", justification: "Renewal justification", intake: "Find the patient, then the authorization that is ending." },
-  { kind: "modify", label: "Modification / extension", noun: "a modification", types: ["Modification"], existing: true, typical: "a modification", justification: "Modification justification", intake: "Find the patient, then the authorization to change, and say what should change." },
-  { kind: "retro", label: "Retroactive authorization", noun: "a retroactive authorization", types: ["Retro-authorization"], existing: false, typical: "a retroactive authorization", justification: "Retroactive justification", intake: "Care was delivered before an authorization was in place. Say what, when and why." },
+  { kind: "initial", label: "Initial authorization", noun: "an initial authorization", types: ["Initial request", "Admission"], existing: false, typical: "an initial request", justification: "Initial request justification" },
+  { kind: "concurrent", label: "Concurrent review", noun: "a continued stay", types: ["Continued stay"], existing: true, typical: "a continued stay", justification: "Continued-stay justification" },
+  { kind: "reauth", label: "Reauthorization / renewal", noun: "a renewal", types: ["Recertification"], existing: true, typical: "a renewal", justification: "Renewal justification" },
+  { kind: "modify", label: "Modification / extension", noun: "a modification", types: ["Modification"], existing: true, typical: "a modification", justification: "Modification justification" },
+  { kind: "retro", label: "Retroactive authorization", noun: "a retroactive authorization", types: ["Retro-authorization"], existing: false, typical: "a retroactive authorization", justification: "Retroactive justification" },
 ];
 
 export const authType = (kind: AuthKind): AuthTypeDef => AUTH_TYPES.find((t) => t.kind === kind) ?? AUTH_TYPES[0];

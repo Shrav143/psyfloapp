@@ -1,6 +1,6 @@
 title: Authorizations › Eligibility & Benefits › Result › Which verdict and why
 route: /authorizations/eligibility/R-1042
-intro: The verdict is worked out from the patient's row, top question first. A check that could not run is 'Not checked'. Any failed or unconfirmed question gives 'Fix before billing'. If all pass, a missing or unknown authorization gives 'Authorization first'. Otherwise 'Cleared to bill'. The verdict is the top band of the summary card; Eligibility, Benefits and What this service needs sit under it.
+intro: The verdict is worked out from the patient's row, top question first. A check that could not run is 'Not checked'. Any failed or unconfirmed question gives 'Fix before billing'. If all pass, a missing or unknown authorization gives 'Authorization first'. Otherwise 'Cleared to bill'. The band shows the verdict and the one fact that decides it, as a label and a value. There is no headline and no reason sentence: the rows under the band carry the detail.
 dir: TD
 also: Demo only: the first five failures have a seeded patient on the list (R-1101, R-0975, R-1118, I-2275, R-0921) and every one has a chip under 'Try a sample' or 'More samples' on Verify.
 ---
@@ -13,33 +13,32 @@ decision q4 "Every day or unit limit still has room?"
 decision q5 "Another plan pays first?"
 decision q6 "Authorization needed but not approved,\nor no rule on file?\n(required, in progress, under review, retro request open, unknown)"
 
-group gFix "Fix before billing (red)"
+group gFix "Fix before billing (red): the fact is the first check that fails"
   screen f0 "Verdict 'Fix before billing'"
-  process f1 "Coverage lapsed or ended\nHeadline 'Fix before billing: coverage lapsed 10/12.'\nIf the member moved to another plan: '..., the member is with Cardinal now.'"
-  process f2 "Coverage not found\nHeadline 'We could not find coverage.'\nNothing else is checked and no payment line is shown"
-  process f3 "Clinic not enrolled, or enrollment not confirmed\nHeadline 'Fix before billing: the clinic cannot bill yet.'\nor '..., the clinic's enrollment is not confirmed.'"
-  process f8 "Member ID differs from the plan's\nHeadline 'Fix before billing: coverage is active, but under another member ID.'"
-  process f9 "Service not confirmed by the plan\nHeadline 'Fix before billing: the service is not confirmed.'"
-  process f4 "Service not covered\nHeadline 'Fix before billing: the service is not covered.'"
-  process f6 "Another plan pays first\nHeadline 'Fix before billing: another plan pays first.'"
-  process f7 "Limit reached\nHeadline 'Fix before billing: every authorized day is used.'\n(or unit, for IOP)"
-  process f5 "Reason sentence is the detail of the first failed check"
+  process f1 "Coverage 'Lapsed 10/12'\nor 'Ended 09/30', and 'Ended 09/30, now with Cardinal' when the member moved"
+  process f2 "Coverage 'Not found'\nNothing else is checked and no payment line is shown"
+  process f8 "Member ID 'Plan has ID ending 5521'"
+  process f4 "Benefits 'Not covered'"
+  process f9 "Benefits 'Not confirmed'"
+  process f3 "Enrollment 'Not enrolled' or 'Not confirmed'"
+  process f7 "Limit '14 of 14 days used' (or units, for IOP)"
+  process f6 "Other insurance 'Another plan pays first'"
 endgroup
 
 group gAuth "Authorization first (amber)"
   screen a0 "Verdict 'Authorization first'"
-  toast a1 "Headline 'Covered, but you need an authorization first.'\n'Everything checks out except the authorization. Billing is safe as soon as Summit approves.'"
-  toast a2 "No rule on file\nHeadline 'Covered, but we do not know whether it needs an authorization.'\n'Check with Beacon before the first day.'"
+  toast a1 "Authorization 'In progress', 'Payer reviewing', 'Required, not on file' or 'Retro request open'\nPrimary button 'Start authorization'"
+  toast a2 "No rule on file: Authorization 'Requirement unknown'"
 endgroup
 
 group gOk "Cleared to bill (green)"
   screen o0 "Verdict 'Cleared to bill'"
-  toast o1 "Headline 'Cleared to bill: the clinic will be paid.'\n'Coverage, benefits, authorization and enrollment all check out. The clinic can bill Summit for Residential 3.5 on 10/21/2026.'"
+  toast o1 "Authorization 'On file, 11 days left' or 'Not required'"
 endgroup
 
 group gUn "Not checked (grey)"
   screen u0 "Verdict 'Not checked'"
-  toast u1 "Headline 'Could not verify: Verify is paused in Settings.'\nNothing was asked of the plan. 'Open Settings' and 'Check again' are the buttons"
+  toast u1 "Coverage 'Not checked'\nNothing was asked of the plan. 'Open Settings' and 'Re-check' are the buttons"
 endgroup
 
 goto g1 "Continues in: Authorizations › Eligibility & Benefits › Result › Next actions"
@@ -64,5 +63,5 @@ q5 -->|No| q6
 q6 -->|Yes| a0 --> a1 --> g1
 a0 -.-> a2
 q6 -->|No| o0 --> o1 --> g1
-f0 --> f5 --> g1
-f5 -.-> g2
+f0 --> g1
+f0 -.-> g2

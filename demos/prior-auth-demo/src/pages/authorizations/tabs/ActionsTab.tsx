@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { WandSparkles } from "lucide-react";
-import { Banner, Button } from "@/components/ui";
+import { CheckCircle2, WandSparkles, X } from "lucide-react";
 import type { FocusId } from "@/data/caseDetail";
 import { FOCUS, withFocus } from "@/data/caseDetailFocus";
 import { canSend, draftView, groupRecs, plainText, projectedChance, currentChance, similarTotal, versionViews } from "@/data/caseModel";
@@ -27,7 +26,10 @@ export function ActionsTab({ ctx }: { ctx: CaseCtx }) {
     if (running) window.scrollTo({ top: 0, behavior: "smooth" });
   }, [running]);
   useEffect(() => {
-    if (focusRec) document.getElementById(`rec-${focusRec}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+    if (!focusRec) return;
+    // After the shell's scroll to the top of a newly opened page, which runs after this effect on a fresh load.
+    const t = setTimeout(() => document.getElementById(`rec-${focusRec}`)?.scrollIntoView({ behavior: "smooth", block: "center" }), 60);
+    return () => clearTimeout(t);
   }, [focusRec]);
 
   const apply = () => {
@@ -51,7 +53,7 @@ export function ActionsTab({ ctx }: { ctx: CaseCtx }) {
     useStore.getState().setFocus(key, focus, projectedChance(next, work) - currentChance(next, work));
     if (focus) {
       const added = next.recs.some((r) => r.focus === focus);
-      useStore.getState().toast({ title: "Recommendations refined", body: `Cards are in the order for "${FOCUS[focus].label}"${added ? ", and one was added" : ""}. With every action applied the chance is ${projectedChance(next, work)}%.`, tone: "good" });
+      useStore.getState().toast({ title: "Recommendations refined", body: `${FOCUS[focus].label}${added ? " · one card added" : ""} · ${projectedChance(next, work)}% with every action`, tone: "good" });
     }
   };
   const refine = (focus: FocusId) => runRefine(1200, () => setFocus(focus));
@@ -64,16 +66,23 @@ export function ActionsTab({ ctx }: { ctx: CaseCtx }) {
   const sections = new Set(included.map((r) => r.add?.section).filter(Boolean)).size;
 
   return (
-    <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-[minmax(0,1fr)_300px]">
-      <div className="flex flex-col gap-3.5">
+    <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-[minmax(0,1fr)_260px]">
+      <div className="flex flex-col gap-3">
         {work.run ? <WorkStrip run={work.run} sections={Math.max(1, sections)} similar={similarTotal(detail)} /> : null}
-        <p className="text-sm text-muted">Each card shows what the agents will add to the draft and how much it tends to help. Applied together, they take the chance from {detail.baseChance}% to {projectedChance(detail, { ...work, applied: [], dismissed: [] }) }%.</p>
         {work.focus ? (
-          <Banner icon={WandSparkles} action={<Button size="sm" variant="ghost" onClick={() => setFocus(null)}>Clear focus</Button>}>
-            <b className="font-semibold">Focus: {FOCUS[work.focus].label}.</b> The cards are in that order{detail.recs.some((r) => r.focus === work.focus) ? ", and one card was added" : ""}.
-          </Banner>
+          <div className="flex">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-forest/30 bg-[#F3F7F4] py-[3px] pr-1 pl-2.5 text-[12px] font-semibold text-forest" data-testid="focus-chip">
+              <WandSparkles size={13} className="ico" aria-hidden="true" />
+              Focus: {FOCUS[work.focus].label}
+              <button type="button" onClick={() => setFocus(null)} aria-label="Clear focus" title="Clear focus" className="grid h-5 w-5 place-items-center rounded-full hover:bg-forest/10">
+                <X size={12} className="ico" />
+              </button>
+            </span>
+          </div>
         ) : null}
-        {groups.open.length === 0 && groups.applied.length > 0 ? <Banner tone="good" title="Every recommendation is applied">The draft is up to date. Open the Draft tab to read it, or send it to the payer.</Banner> : null}
+        {groups.open.length === 0 && groups.applied.length > 0 ? (
+          <div className="flex items-center gap-2 text-[13px] font-semibold text-good-ink"><CheckCircle2 size={16} className="ico text-good" aria-hidden="true" />Every recommendation is applied</div>
+        ) : null}
         {groups.open.map((r) => (
           <RecCard
             key={r.id} rec={r} selected={!work.excluded.includes(r.id)} answer={work.inputs[r.id] ?? ""} note={work.notes[r.id]} focus={focusRec === r.id} showError={showErrors} disabled={running}
@@ -85,8 +94,8 @@ export function ActionsTab({ ctx }: { ctx: CaseCtx }) {
         {groups.dismissed.length > 0 ? <DismissedList items={groups.dismissed} onRestore={(id) => useStore.getState().restoreRec(key, id)} /> : null}
       </div>
       <ActionsSide
-        included={included.length} openCount={groups.open.length} running={running} canSend={ctx.canSend} sent={ctx.sent} sendReason={ctx.sendReason} refining={refining} work={work}
-        onApply={apply} onSend={ctx.send} onRefine={refine} onContext={addContext} onDismiss={() => setDismissing(included.map((r) => ({ id: r.id, title: r.title })))}
+        included={included.length} openCount={groups.open.length} running={running} refining={refining} work={work}
+        onApply={apply} onRefine={refine} onContext={addContext} onDismiss={() => setDismissing(included.map((r) => ({ id: r.id, title: r.title })))}
       />
       {dismissing ? (
         <DismissModal

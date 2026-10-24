@@ -1,6 +1,6 @@
 title: Authorizations › Case page › What it writes to other screens
 route: /authorizations/case/R-1042
-intro: What a case page changes outside itself: the Dashboard request's chance and history, the notification, the shared lists that Analytics and the Draft tab read, and the queue. Nothing here is a link; each happens as a side effect of a click.
+intro: What a case page changes outside itself: the Dashboard request's chance and history, the notification, the shared lists that Analytics and the draft read, and the queue. Nothing here is a link; each happens as a side effect of a click.
 dir: TD
 also: Demo only: a case page only writes to the Dashboard for requests that are on both the queue and the Dashboard. Other requests keep their work on the case page alone.
 ---
@@ -18,11 +18,11 @@ goto g1 "Continues in: Authorizations › Case page › Ways in"
 start s2 "Click 'Dismiss and log' on a case page"
 decision d2 "Is the request on the Dashboard?"
 store w3 "Dashboard request history\n'You dismissed ... Reason: ...'"
-process w4 "Only the case page log changes\n'Logged decisions'"
+process w4 "Only the case page's History changes\none line, flagged 'Logged decision'"
 store w7 "Dismissal recorded: the request and the reason\nAnalytics reads it"
 
 start s4 "Click 'Add context' on a case page"
-store w8 "Clinical context added to the shared list for the request\nThe Draft tab and New Case read it"
+store w8 "Clinical context added to the shared list for the request\nThe draft and New Case read it"
 decision d4 "Is it a queue request that also has a Dashboard entry?"
 store w9 "Dashboard request gets the new chance\nTimeline: 'You added clinical context. ...'"
 process w10 "Queue row shows the new chance\nThe approval chance is one point higher for each of the first three notes"
