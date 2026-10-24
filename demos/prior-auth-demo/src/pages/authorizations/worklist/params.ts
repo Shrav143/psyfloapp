@@ -6,7 +6,7 @@ import { showOf } from "@/pages/manager/helpers";
 import { NO_WORK_FILTERS, STATUS_DETAIL, VIEWS, type Deadline, type StatusDetail, type View, type WorkFilters } from "./model";
 
 /* The view and the filters live in the address, so a link opens the worklist already narrowed and Back returns to the same view.
-   The queue's older parameters still work: ?status=ready, ?urgency=now, ?type=retro, ?payer=cardinal, ?signal=1, and Case Manager's ?show=active. */
+   The queue's older parameters still work: ?status=ready, ?urgency=now, ?type=retro, ?payer=cardinal, ?signal=1, and Case Manager's ?show=active and ?tab=reviews. */
 
 const pick = <T extends string>(v: string | null, allowed: readonly T[]): T | null => (v !== null && (allowed as readonly string[]).includes(v) ? (v as T) : null);
 
@@ -35,7 +35,7 @@ export function readParams(sp: URLSearchParams): { view: View; filters: WorkFilt
     signalOnly: sp.get("signal") === "1",
     show: showOf(sp.get("show")),
   };
-  const view = pick<View>(sp.get("view"), VIEWS) ?? legacy?.view ?? "all";
+  const view = pick<View>(sp.get("view"), VIEWS) ?? legacy?.view ?? (sp.get("tab") === "reviews" ? "reviews" : "all");
   return { view, filters };
 }
 

@@ -41,8 +41,8 @@ function NavItem({ item, depth = 0 }: { item: Item; depth?: number }) {
 }
 
 /** A parent with sub-items. The label is a link to the parent's page; the arrow is its own button that opens and closes the sub-items, without
-    navigating. The group opens by itself when the address enters it, and otherwise keeps the person's choice. While it is closed on one of its
-    pages, the parent is the highlighted item, so the place is never lost. */
+    navigating. The group opens by itself when the address enters it and closes when the address leaves it, as before; in between it keeps the
+    person's choice. While it is closed on one of its pages, the parent is the highlighted item, so the place is never lost. */
 function GroupItem({ item }: { item: Item }) {
   const { pathname } = useLocation();
   const subs = item.subs ?? [];
@@ -50,7 +50,7 @@ function GroupItem({ item }: { item: Item }) {
   const [open, setOpen] = useState(inGroup);
   const was = useRef(inGroup);
   useEffect(() => {
-    if (inGroup && !was.current) setOpen(true);
+    if (inGroup !== was.current) setOpen(inGroup);
     was.current = inGroup;
   }, [inGroup]);
   const id = useId();
