@@ -16,7 +16,7 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "Reviews this week tab is open" }
+  s1@{ shape: stadium, label: "Authorizations › Reviews this week is open" }
   subgraph gDraft ["Draft all due reviews"]
   c1@{ shape: trap-t, label: "Click 'Draft all due reviews'" }
   dp@{ shape: diam, label: "Is Cadence paused in Settings?" }
@@ -28,28 +28,28 @@ flowchart TD
   sd@{ shape: cyl, label: "<b>Each one moves from 'Not drafted yet' to 'Drafted'</b><br/>Its seven-part text and four green Integrity checks are added" }
   t1@{ shape: odd, label: "<b>'Cadence drafted 4 reviews'</b><br/>'They are marked Drafted in the list. Integrity checked each one and all four checks passed.'" }
   t0@{ shape: odd, label: "<b>'Nothing to draft'</b><br/>'Every review due this week already has a draft or a question for you.'" }
-  p2@{ shape: rect, label: "Tiles: 'Drafted by agents' goes from 35 to 39, '29 clean' to '33 clean', and 'not drafted yet' leaves the first tile" }
+  p2@{ shape: rect, label: "<b>Those rows read 'Drafted' with 'Review and sign'</b><br/>Clean drafts go from 29 to 33" }
   end
   subgraph gSign ["Sign all clean drafts"]
-  d1@{ shape: diam, label: "<b>Is any draft clean?</b><br/>(drafted, and all four checks passed)" }
-  x1@{ shape: rect, label: "<b>Button 'Sign all clean drafts' is greyed out</b><br/>(29 are clean at the start, 33 after 'Draft all due reviews')" }
+  d1@{ shape: diam, label: "<b>Is any review due this week at the sites in view a clean draft?</b><br/>(drafted, and all four checks passed; filters do not matter)" }
+  x1@{ shape: rect, label: "Button 'Sign all clean drafts' is greyed out" }
   c2@{ shape: trap-t, label: "Click 'Sign all clean drafts'" }
   o1@{ shape: win-pane, label: "<b>Dialog 'Sign all clean drafts'</b><br/>Subtitle '33 reviews with all four checks passed'<br/>(29 if 'Draft all due reviews' has not run)" }
-  b1@{ shape: curv-trap, label: "Text: 'Only drafts whose four Integrity checks all passed are signed. 6 drafts with a check to look at are left out. 8 reviews that need your update are left out.' and, when any have no draft yet, '4 reviews have no draft yet and are left out too.'" }
+  b1@{ shape: curv-trap, label: "'Only drafts whose four Integrity checks all passed are signed.'" }
   b2@{ shape: curv-trap, label: "<b>Banner 'Only a licensed clinician signs'</b><br/>Dropdown 'Signing clinician' (Heather K., LISW-S or Dr. R. Lindqvist, MD)" }
   i1@{ shape: lean-r, label: "Tick 'I reviewed these 33 drafts and they reflect the record. The level of care in each is my clinical judgment.'" }
   d2@{ shape: diam, label: "Is the box ticked?" }
   x2@{ shape: rect, label: "Button 'Sign 33 reviews' stays greyed" }
   c3@{ shape: trap-t, label: "Click 'Sign 33 reviews'" }
-  st1@{ shape: cyl, label: "<b>Every clean draft is saved as 'Signed' by the chosen clinician, stamped with the demo clock</b><br/>Cadence books a next review for each<br/>Drafts with an amber check, reviews needing an update and reviews with no draft stay as they were" }
+  st1@{ shape: cyl, label: "<b>Those clean drafts are saved as 'Signed' by the chosen clinician, stamped with the demo clock</b><br/>Cadence books a next review for each<br/>Drafts with an amber check, reviews needing an update and reviews with no draft stay as they were" }
   t2@{ shape: odd, label: "<b>'33 reviews signed'</b><br/>'Heather K., LISW-S signed every draft whose four checks passed. Cadence booked the next review for each. The others wait for a closer look.'" }
-  p3@{ shape: rect, label: "<b>Dialog closes</b><br/>Tile 'Reviews due this week' reads '33 signed so far'; 'Drafted by agents' reads '0 clean, ready to sign'<br/>The header button is greyed out<br/>Sidebar bubble is unchanged (still 11)" }
+  p3@{ shape: rect, label: "<b>Dialog closes</b><br/>Those rows read 'Signed' and show their own button again<br/>The header button is greyed out; the sidebar badge is unchanged" }
   c4@{ shape: trap-t, label: "Click 'Cancel', the X, the dimmed area, or press Escape" }
   p4@{ shape: rect, label: "Dialog closes, nothing is signed" }
-  t3@{ shape: odd, label: "<b>'No clean drafts to sign'</b><br/>'Every draft left has a check that needs a look. Open each one to sign it.'<br/>(never seen on screen today: the button is greyed out first)" }
+  t3@{ shape: odd, label: "<b>'No clean drafts to sign'</b><br/>'Every draft left has a check that needs a look. Open each one to sign it.'<br/>(not seen on screen: the button is greyed out first)" }
   end
-  g1@{ shape: subproc, label: "Continues in: Case Manager › Reviews this week › After a review is signed" }
-  g2@{ shape: subproc, label: "Continues in: Case Manager › Reviews this week › Sign a review" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Reviews this week › After a review is signed" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Reviews this week › Sign a review" }
   e1@{ shape: stadium, label: "Week's clean reviews are signed" }
   e2@{ shape: stadium, label: "Nothing signed" }
   e3@{ shape: stadium, label: "Due reviews are drafted" }
@@ -65,7 +65,7 @@ flowchart TD
   d2 -->|"No"| x2 -.-> i1
   d2 -->|"Yes"| c3 --> st1 --> t2 --> p3 --> g1
   p3 --> e1
-  p3 --> g2
+  p3 -.-> g2
   o1 --> c4 --> p4 --> e2
   d1 -.-> t3
   class s1 k_start

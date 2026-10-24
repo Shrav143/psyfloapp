@@ -28,23 +28,24 @@ flowchart TD
   r6@{ shape: cyl, label: "Eligibility & Benefits, Denial Intelligence, Payers, EMR Connect: all work done in them" }
   r9@{ shape: cyl, label: "Settings: every agent back at its starting level, every switch on, no pause" }
   r10@{ shape: cyl, label: "<b>Viewing as: Jordan Perez, UR coordinator, on Both sites</b><br/>(the site switch and the user card follow)" }
-  r7@{ shape: cyl, label: "Case Manager: the 56 tracker rows and the 47 reviews. Signed reviews are unsigned, updates added are removed" }
+  r7@{ shape: cyl, label: "Authorizations: the approved authorizations, accepted denials and the 47 reviews of the week. Signed reviews are unsigned, updates added are removed" }
   r8@{ shape: cyl, label: "Next denial number starts again at D-3319" }
   end
   p2@{ shape: rect, label: "Menu closes" }
   p3@{ shape: rect, label: "<b>App goes to /dashboard</b><br/>(even when already there, and from any other page)" }
   t1@{ shape: odd, label: "<b>'Demo data reset'</b><br/>'Everything is back to the starting point.'" }
-  p4@{ shape: rect, label: "<b>Sidebar badges return to their starting numbers</b><br/>3, 19, 4, 9, 8, 11, 3" }
-  p5@{ shape: rect, label: "Page-only state is lost as the page changes: Case Manager filters, open drawers, typed text" }
+  p4@{ shape: rect, label: "<b>Sidebar badges return to their starting numbers</b><br/>3, 19, 4, 9, 8, 3" }
+  p5@{ shape: rect, label: "Page-only state is lost as the page changes: open drawers, typed text" }
+  p7@{ shape: rect, label: "<b>Not reset either: Authorizations still reopens on its last view and filters</b><br/>The sidebar group follows the move to /dashboard: made on an Authorizations page, the reset closes it" }
   p6@{ shape: rect, label: "Ask FLO chat stays: reset does not touch it" }
   e1@{ shape: stadium, label: "Demo is at its first screen again" }
   s1 --> c1 --> p1
   p1 --> r1 & r2 & r3 & r4 & r5 & r6 & r7 & r8 & r9 & r10
   r1 & r2 & r3 & r4 & r5 & r6 & r7 & r8 & r9 & r10 --> p2
-  p2 --> p3 --> t1 --> p4 --> p5 --> p6 --> e1
+  p2 --> p3 --> t1 --> p4 --> p5 --> p6 --> p7 --> e1
   class s1 k_start
   class c1 k_click
-  class p1,p2,p3,p4,p5,p6 k_process
+  class p1,p2,p3,p4,p5,p7,p6 k_process
   class r1,r2,r3,r4,r5,r6,r9,r10,r7,r8 k_store
   class t1 k_toast
   class e1 k_end

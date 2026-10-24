@@ -17,30 +17,29 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   subgraph gIn ["Links that open a case page"]
-  a1@{ shape: stadium, label: "Queue: click the request ID" }
-  a2@{ shape: stadium, label: "Queue: click 'Open'" }
+  a1@{ shape: stadium, label: "Authorizations: click a row's request ID" }
+  a2@{ shape: stadium, label: "Authorizations: click a row's 'Go to action', 'Open the draft', 'Open' or 'Open case'" }
   a3@{ shape: stadium, label: "Dashboard: click 'Open case' in a request drawer" }
-  a4@{ shape: stadium, label: "Case Manager › Active cases: click a row or its ID" }
-  a5@{ shape: stadium, label: "Case Manager › Reviews this week: click an ID under 'Ready to step down?'" }
-  a6@{ shape: stadium, label: "Case Manager › Reviews this week: click 'Open case' in a review drawer" }
+  a4@{ shape: stadium, label: "Authorizations: click 'Open case' in an approved authorization's quick view" }
+  a6@{ shape: stadium, label: "Authorizations › Reviews this week: click 'Open case' in a review drawer" }
   a7@{ shape: stadium, label: "Eligibility & Benefits result: click 'Open case'" }
   a8@{ shape: stadium, label: "Notification 'Approval chance updated'" }
   a9@{ shape: stadium, label: "Type the address /authorizations/case/ID" }
-  a10@{ shape: stadium, label: "Queue: open the quick view panel, then click 'Open case'" }
+  a10@{ shape: stadium, label: "Authorizations: open a request's quick view, then click 'Open case'" }
   end
   r0@{ shape: rect, label: "Case page reads the ID from the address" }
   d1@{ shape: diam, label: "Is the ID R-1042?" }
   hand@{ shape: rect, label: "<b>Hand-written case</b><br/>9 requirements, 6 actions, chance 62% rising to 88%" }
-  d2@{ shape: diam, label: "Is there a queue row for this ID, or for the Dashboard request it belongs to?" }
-  fq@{ shape: rect, label: "<b>Page is built from the queue row</b><br/>and from its Dashboard request when there is one" }
+  d2@{ shape: diam, label: "Is there a queue record for this ID, or for the Dashboard request it belongs to?" }
+  fq@{ shape: rect, label: "<b>Page is built from the queue record</b><br/>and from its Dashboard request when there is one" }
   d3@{ shape: diam, label: "Is there a Dashboard request with this ID or this case ID?" }
   fr@{ shape: rect, label: "<b>Page is built from the Dashboard request</b><br/>Decided ones show their result and have nothing left to send" }
   gen@{ shape: rect, label: "<b>Chance, actions, criteria, draft and checks are generated</b><br/>from the payer, level of care and chance" }
-  d5@{ shape: diam, label: "Is the ID in the Case Manager ledger?" }
-  gL@{ shape: subproc, label: "Continues in: Case Manager › Ledger case › Open and read" }
-  nf@{ shape: curv-trap, label: "<b>'Request not found'</b><br/>'No request X' and 'Back to queue'" }
-  bq@{ shape: trap-t, label: "Click 'Back to queue' or the 'Authorizations' crumb" }
-  gQ@{ shape: subproc, label: "Continues in: Authorizations › Queue › Open the queue and read the top" }
+  d5@{ shape: diam, label: "Is the ID in the approved-authorization ledger?" }
+  gL@{ shape: subproc, label: "Continues in: Authorizations › Ledger case page › Open and read" }
+  nf@{ shape: curv-trap, label: "<b>'Request not found'</b><br/>'No request X' and 'Back to Authorizations'" }
+  bq@{ shape: trap-t, label: "Click 'Back to Authorizations' or the 'Authorizations' crumb" }
+  gQ@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Arrive and read the views" }
   ld@{ shape: cyl, label: "<b>Your earlier work on this case is loaded</b><br/>Answers, applied and dismissed actions, focus, clinical context, draft edits, log" }
   dS@{ shape: diam, label: "Is the case at a site the viewer has in view?" }
   oos@{ shape: curv-trap, label: "<b>Card 'This case is not available at Site A'</b><br/>Names the site, not the patient" }
@@ -53,7 +52,6 @@ flowchart TD
   a2 --> r0
   a3 --> r0
   a4 --> r0
-  a5 --> r0
   a6 --> r0
   a7 --> r0
   a8 --> r0
@@ -75,7 +73,7 @@ flowchart TD
   ld --> d4
   d4 -->|"Yes"| tab1 --> gH
   d4 -->|"No or missing"| tab0 --> gH
-  class a1,a2,a3,a4,a5,a6,a7,a8,a9,a10 k_start
+  class a1,a2,a3,a4,a6,a7,a8,a9,a10 k_start
   class r0,hand,fq,fr,gen k_process
   class d1,d2,d3,d5,dS,d4 k_decision
   class gL,gQ,gO,gH k_goto

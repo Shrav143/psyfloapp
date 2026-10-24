@@ -26,33 +26,36 @@ flowchart TD
   emr@{ shape: st-rect, label: "<b>EMR Connect supplies the chart</b><br/>Pull from EMR" }
   ver@{ shape: hex, label: "<b>Verify checks coverage and benefits</b><br/>Eligibility & Benefits" }
   nc3@{ shape: curv-trap, label: "<b>New Case › Authorization preparation</b><br/>Scribe, Criteria, Placement, Integrity, Forecaster ..." }
+  drf@{ shape: cyl, label: "<b>A saved draft is an In progress row in Authorizations</b><br/>with 'Continue', 'Answer', 'Watch' or 'Review and sign'" }
   d2@{ shape: diam, label: "Does an agent need an answer from you?" }
   ans@{ shape: lean-r, label: "Answer Scribe's question" }
   chance@{ shape: hex, label: "Forecaster shows the approval chance" }
   nc4@{ shape: curv-trap, label: "<b>New Case › Review & submit</b><br/>Nothing goes to the payer until a clinician signs" }
   sign@{ shape: trap-t, label: "<b>Clinician signs</b><br/>Sign and send" }
-  req@{ shape: cyl, label: "<b>Request created</b><br/>Stage: Received" }
+  req@{ shape: cyl, label: "<b>Request created</b><br/>Stage: Received<br/>In Authorizations it moves to With the payer" }
   payer@{ shape: st-rect, label: "<b>Payer receives the request</b><br/>(demo: simulated)" }
   dash@{ shape: curv-trap, label: "<b>Dashboard</b><br/>Four figures and the request list; stages: Preparing, Received, Under review, Info requested, Decided today, Appeal or call" }
   w1@{ shape: delay, label: "<b>Payer decides</b><br/>Time passes (the Demo menu moves the clock)" }
   d3@{ shape: diam, label: "What does the payer decide?" }
   info@{ shape: trap-t, label: "<b>Answer on the Dashboard</b><br/>Send the information requested" }
-  ok@{ shape: stadium, label: "<b>Approved</b><br/>In Case Manager: reviews are scheduled before the authorization ends" }
+  ok@{ shape: stadium, label: "<b>Approved</b><br/>Authorizations › Approved: units used and left, the window and the next review" }
   den@{ shape: curv-trap, label: "<b>Denial Intelligence</b><br/>Where the denial is weak, options with chances" }
   d4@{ shape: diam, label: "Which route?" }
   p2p@{ shape: doc, label: "Peer-to-peer brief and call" }
   app@{ shape: doc, label: "Written appeal, signed and sent" }
-  acc@{ shape: trap-t, label: "Accept the denial" }
+  acc@{ shape: trap-t, label: "<b>Accept the denial</b><br/>Its Authorizations row reads Accepted with 'Plan the step-down'" }
   d5@{ shape: diam, label: "Overturned?" }
   lost@{ shape: stadium, label: "<b>Denial stands</b><br/>Recorded and counted in Analytics" }
   ana@{ shape: curv-trap, label: "<b>Analytics</b><br/>Approval by payer, denial reasons, what helps most" }
-  mgr@{ shape: curv-trap, label: "<b>Case Manager</b><br/>Active cases and Reviews this week" }
+  mgr@{ shape: curv-trap, label: "<b>Authorizations › Reviews this week</b><br/>Cadence drafts each continued-stay review, a clinician signs it, and the next one is booked before the authorization ends" }
+  gW@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Pick a view" }
   s1 --> ref1 --> nc1 --> rd --> d1
   d1 -->|"Missing items"| askref --> nc1
   d1 -->|"Ready"| nc2
   emr -.-> nc2
   nc2 --> ver --> nc3
   nc3 --> d2
+  nc3 -.-> drf
   d2 -->|"Yes"| ans --> chance
   d2 -->|"No"| chance
   chance --> nc4 --> sign --> req --> payer --> dash --> w1 --> d3
@@ -64,7 +67,7 @@ flowchart TD
   d4 -->|"Accept"| acc --> lost
   d5 -->|"Yes"| ok
   d5 -->|"No"| lost
-  ok --> mgr
+  ok --> mgr --> gW
   lost --> ana
   ok --> ana
   class s1 k_start
@@ -73,9 +76,10 @@ flowchart TD
   class rd,ver,chance k_agent
   class d1,d2,d3,d4,d5 k_decision
   class askref,sign,info,acc k_click
+  class drf,req k_store
   class ans k_input
-  class req k_store
   class w1 k_wait
   class ok k_end
   class p2p,app k_doc
   class lost k_endx
+  class gW k_goto

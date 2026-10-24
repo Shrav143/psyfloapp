@@ -35,7 +35,7 @@ flowchart TD
   s3@{ shape: stadium, label: "<b>Click a notification</b><br/>'Denied today', 'Denied', 'Partly approved' or 'Denial analyzed'" }
   s4@{ shape: stadium, label: "<b>Ask FLO 'Which denial is due first?'</b><br/>Click 'Open Denial Intelligence'" }
   s6@{ shape: stadium, label: "Dashboard: Do next 'Open denial', or the request drawer's 'Open in Denial Intelligence'" }
-  s7@{ shape: stadium, label: "<b>Authorizations case page (also reached from Case Manager)</b><br/>Click 'Open in Denial Intelligence'" }
+  s7@{ shape: stadium, label: "<b>Authorizations case page (also reached from the Authorizations worklist)</b><br/>Click 'Open in Denial Intelligence'" }
   s9@{ shape: stadium, label: "<b>Analytics case panel</b><br/>Click 'Open the denial'" }
   p0@{ shape: rect, label: "Address /denials, maybe with ?payer= and ?reason=" }
   sc1@{ shape: curv-trap, label: "<b>Dashboard of open denials</b><br/>Title row 'Denial Intelligence' and 'Add a denial letter'<br/>Six figures, payer chips, one table" }
@@ -250,7 +250,7 @@ flowchart TD
   d1@{ shape: diam, label: "Accepted?" }
   t1@{ shape: curv-trap, label: "<b>Accept choice: pill 'Accepted 10/20' and the link 'Plan the step-down'</b><br/>The two other choices dimmed" }
   c1@{ shape: trap-t, label: "Click 'Plan the step-down'" }
-  g1@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Step-down plans from accepted denials" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Denied › Step-down plans from accepted denials" }
   d2a@{ shape: diam, label: "Payer's decision on the appeal recorded as Overturned or Partly overturned?" }
   t2a@{ shape: curv-trap, label: "Written appeal choice: pill 'Overturned on appeal' or 'Partly overturned on appeal'" }
   d2@{ shape: diam, label: "Call outcome logged as Overturned or Partly restored?" }
@@ -1244,7 +1244,7 @@ flowchart TD
   d1@{ shape: diam, label: "Is the viewer limited to one site?" }
   p3@{ shape: rect, label: "<b>Only that site's denials exist for the viewer</b><br/>Not listed, not counted, not found by a filter, not offered in a link" }
   p4@{ shape: rect, label: "<b>A viewer of both sites narrows to one site and widens again</b><br/>The figures, table and badge change at once" }
-  p5@{ shape: rect, label: "<b>Case Manager step-down plans from accepted denials follow the same site rule</b><br/>Accepting a denial still reaches Case Manager and Analytics, at the denial's site" }
+  p5@{ shape: rect, label: "<b>Step-down plans from accepted denials (Authorizations, Denied view) follow the same site rule</b><br/>Accepting a denial still reaches Authorizations and Analytics, at the denial's site" }
   p6@{ shape: rect, label: "<b>A letter added in 'Add a denial letter' belongs to the site in view, Site A when both are in view</b><br/>It is recorded on the denial<br/>Its D- number is chosen so every other screen places it at the same site" }
   s2@{ shape: stadium, label: "<b>Open a link to a denial</b><br/>/denials/D-xxxx (or an older /denials?id=D-xxxx), /denials/D-xxxx/brief or /denials/D-xxxx/report<br/>(a notification, Ask FLO, the Dashboard, a bookmark)" }
   d2@{ shape: diam, label: "Is the denial at a site in view?" }
@@ -1258,7 +1258,7 @@ flowchart TD
   e1@{ shape: stadium, label: "A viewer limited to one site has no way to the other site's denial" }
   g2@{ shape: subproc, label: "Continues in: Denial Intelligence › Open denials list" }
   g3@{ shape: subproc, label: "Continues in: Denial Intelligence › Add a denial letter" }
-  g4@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Step-down plans from accepted denials" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › Denied › Step-down plans from accepted denials" }
   s1 --> p1 --> sc1 --> p2
   sc1 --> d1
   d1 -->|"Yes"| p3
@@ -1614,11 +1614,11 @@ flowchart TD
 
 ## Denial Intelligence › Accept the denial
 
-Accepting closes the denial and logs it as accepted. A reason goes on the record first. Accepting is always the person's choice and is never the only option. It also reaches Case Manager and Analytics.
+Accepting closes the denial and logs it as accepted. A reason goes on the record first. Accepting is always the person's choice and is never the only option. It also reaches Authorizations and Analytics.
 
 Route: `/denials/D-3297`
 
-Case Manager adds a step-down plan for the patient, and Analytics logs it as an accepted denial. The same steps run when an upheld appeal is accepted from 'Record the payer's decision'.
+The denial's row in Authorizations reads Accepted with 'Plan the step-down', and Analytics logs it as an accepted denial. The same steps run when an upheld appeal is accepted from 'Record the payer's decision'.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -1653,14 +1653,14 @@ flowchart TD
   st2@{ shape: cyl, label: "<b>Request settled: leaves 'Appeal or call' for 'Decided'</b><br/>Chip 'Accepted', 'Closed. Logged as an accepted denial'<br/>Deadline cleared; held by Cadence<br/>Scheduled lines (a booked call, the daily check) leave the History" }
   a1@{ shape: hex, label: "Cadence logs the accepted denial for Analytics" }
   st3@{ shape: cyl, label: "<b>History: 'You accepted the decision' with 'Reason: ...'</b><br/>'Cadence logged the accepted denial for Analytics and added a step-down plan to Case Manager'" }
-  st4@{ shape: cyl, label: "<b>Shared with other screens: denial, case and payer</b><br/>Case Manager adds a step-down plan<br/>Analytics logs the accepted denial" }
+  st4@{ shape: cyl, label: "<b>Shared with other screens: denial, case and payer</b><br/>Authorizations: the denial's row reads Accepted with 'Plan the step-down'<br/>Analytics logs the accepted denial" }
   t1@{ shape: odd, label: "<b>'Decision accepted'</b><br/>'Analytics logs it as an accepted denial. Case Manager has a step-down plan.'" }
-  t2@{ shape: odd, label: "<b>Notification 'Denial closed' from Cadence</b><br/>Opens Case Manager, Active cases" }
+  t2@{ shape: odd, label: "<b>Notification 'Denial closed' from Cadence</b><br/>Opens Authorizations, All view" }
   sc1@{ shape: curv-trap, label: "<b>The accept choice in Your options reads 'Accepted 10/20' with the link 'Plan the step-down'</b><br/>History: 'You accepted the decision' flagged 'Logged decision'" }
   p1@{ shape: rect, label: "<b>The accept choice reads 'Accepted 10/20' with 'Plan the step-down'; 'Compare the options' is gone</b><br/>The dashboard lists it under 'Closed' with the outcome 'Accepted'<br/>Sidebar badge goes down by one" }
   c4@{ shape: trap-t, label: "Click 'Plan the step-down'" }
   c5@{ shape: trap-t, label: "Open the Dashboard from the sidebar" }
-  g1@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Step-down plans from accepted denials" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Denied › Step-down plans from accepted denials" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   p2@{ shape: rect, label: "<b>PRD guardrail: the agents never accept a denial</b><br/>A person gives the reason first" }
   s1 --> c1 --> o1 --> l1
@@ -1850,11 +1850,11 @@ flowchart TD
 
 ## Denial Intelligence › Hand-offs
 
-Every link that leaves Denial Intelligence for the Dashboard or Case Manager, what accepting or deciding an appeal passes on to other screens, and the links from other screens that arrive here. There is no link from Denial Intelligence to Analytics.
+Every link that leaves Denial Intelligence for the Dashboard or Authorizations, what accepting or deciding an appeal passes on to other screens, and the links from other screens that arrive here. There is no link from Denial Intelligence to Analytics.
 
 Route: `/denials`
 
-Accepting a denial (directly, or after an upheld appeal) adds a step-down plan to Case Manager and logs the accepted denial in Analytics. Every recorded appeal decision is also logged for other screens.
+Accepting a denial (directly, or after an upheld appeal) makes the denial's row in Authorizations read Accepted with 'Plan the step-down', and logs the accepted denial in Analytics. Every recorded appeal decision is also logged for other screens.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -1883,14 +1883,14 @@ flowchart TD
   c4@{ shape: trap-t, label: "Click 'Plan the step-down' (the accept choice after accepting)" }
   p1@{ shape: rect, label: "Address opens /dashboard?request=D-3318" }
   p2@{ shape: rect, label: "Address opens /dashboard" }
-  p3@{ shape: rect, label: "Address opens /manager?tab=cases" }
+  p3@{ shape: rect, label: "<b>Address opens /authorizations?view=all</b><br/>The denial's row reads Accepted with 'Plan the step-down'" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Arrive › What the page shows" }
-  g3@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Step-down plans from accepted denials" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › Denied › Step-down plans from accepted denials" }
   end
   subgraph gShare ["Shared with other screens"]
   c6@{ shape: trap-t, label: "Click 'Record the payer's decision' (the written appeal choice on a filed appeal)" }
-  z1@{ shape: cyl, label: "On accept: Case Manager gets a step-down plan, Analytics logs the accepted denial" }
+  z1@{ shape: cyl, label: "On accept: the denial's row in Authorizations gets a step-down plan (Accepted), Analytics logs the accepted denial" }
   z2@{ shape: cyl, label: "<b>On a recorded appeal decision: the result and next level are logged</b><br/>Analytics reads the appeal rulings" }
   end
   subgraph gBell ["Notifications"]

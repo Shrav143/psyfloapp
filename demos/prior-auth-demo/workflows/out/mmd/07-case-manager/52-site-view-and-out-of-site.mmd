@@ -16,45 +16,49 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Switch the site in the top bar: Both sites, Site A or Site B</b><br/>Or Demo menu, 'Viewing as': Dr. Rivera (Site A only), Sam Okafor (Site B only)" }
-  sc1@{ shape: curv-trap, label: "<b>Case Manager follows the view</b><br/>Header count and a small 'Site A' tag after it when the view is narrowed<br/>Tracker rows, the four status tiles, the 'Being prepared' row, 'Step-down plans'<br/>Reviews tab: header count, the three tiles, the day cards, 'Ready to step down?'" }
-  p1@{ shape: rect, label: "<b>Both sites: 56 active cases = Site A 33 plus Site B 23</b><br/>Being prepared: 5 = 4 plus 1<br/>Reviews due this week: 47 = 27 plus 20<br/>The four tiles add up the same way" }
-  p2@{ shape: rect, label: "<b>Sidebar bubble on 'Case Manager' = cases that need a person (Being prepared) plus reviews that need a clinician's update, at the sites in view</b><br/>Both sites 11 = Site A 6 plus Site B 5" }
+  s1@{ shape: stadium, label: "<b>Switch the site in the top bar: Both sites, Site A or Site B</b><br/>Or Demo menu › 'Viewing as': Dr. Rivera (Site A only), Sam Okafor (Site B only)" }
+  gW@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Sites: what each viewer sees" }
+  sc1@{ shape: curv-trap, label: "<b>The tracked rows follow the view</b><br/>Approved and Reviews this week chips, their rows and their deadline counts<br/>A small 'Site A' tag after the title when the view is narrowed" }
+  p1@{ shape: rect, label: "<b>Both sites = Site A + Site B for every count</b><br/>Approved 32 = 17 + 15, Reviews this week 47 = 26 + 21" }
   d1@{ shape: diam, label: "Is the viewer limited to one site?" }
-  p3@{ shape: rect, label: "The other site's cases do not exist for the viewer: not in the tracker, not found by the search, not counted" }
-  p4@{ shape: rect, label: "A viewer of both sites narrows to one site and widens again; every number on the page changes at once" }
+  p3@{ shape: rect, label: "The other site's cases do not exist for the viewer: not listed, not found by the search, not counted" }
+  p4@{ shape: rect, label: "A viewer of both sites narrows to one site and widens again; every number changes at once" }
   p5@{ shape: rect, label: "<b>'Draft all due reviews' and 'Sign all clean drafts' act only on reviews at the sites in view</b><br/>The toast counts only those" }
-  p6@{ shape: rect, label: "A step-down plan from an accepted denial is shown at the denial's site" }
-  s2@{ shape: stadium, label: "<b>Open a link to a case</b><br/>/authorizations/case/ID from the tracker, a review's 'Open case', a notification or a bookmark" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › Reviews this week › Draft all due reviews and sign all clean drafts" }
+  p6@{ shape: rect, label: "An accepted denial's step-down row is shown at the denial's own site" }
+  p7@{ shape: rect, label: "<b>A ?quick= or ?review= for the other site's case opens nothing</b><br/>An open quick view closes when its case leaves the view" }
+  s2@{ shape: stadium, label: "<b>Open a link to a case</b><br/>/authorizations/case/ID from a row, a review's 'Open case', a notification or a bookmark" }
   d2@{ shape: diam, label: "Is the case at a site in view?" }
-  ok@{ shape: curv-trap, label: "<b>The case page opens as usual</b><br/>(Authorizations case page, or the Ledger case page)" }
-  o1@{ shape: curv-trap, label: "<b>Out-of-site card instead of the page</b><br/>'This case is not available at Site A'<br/>Names the site that has it, no patient or detail" }
+  ok@{ shape: curv-trap, label: "<b>The case page opens as usual</b><br/>(Authorizations case page, or the ledger case page)" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › Ledger case page › Open and read" }
+  o1@{ shape: curv-trap, label: "<b>Out-of-site card instead of the page</b><br/>'This case is not available at Site A'<br/>'R-0856 belongs to Site B ...' with no patient or detail" }
   d3@{ shape: diam, label: "Can the viewer see both sites?" }
   c1@{ shape: trap-t, label: "Click 'Show Site B'" }
-  p7@{ shape: rect, label: "The view widens to that site and the case opens" }
+  p8@{ shape: rect, label: "The view widens to that site and the case opens" }
   c2@{ shape: trap-t, label: "Click 'Back to the Dashboard'" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Arrive › What the page shows" }
   e1@{ shape: stadium, label: "A viewer limited to one site has no way to the other site's case" }
-  g2@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Tracker of every active case" }
-  g3@{ shape: subproc, label: "Continues in: Case Manager › Reviews this week › Draft all due reviews and sign all clean drafts" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Case page › A case at another site" }
   s1 --> sc1 --> p1
-  sc1 --> p2
+  s1 -.-> gW
   sc1 --> d1
   d1 -->|"Yes"| p3
   d1 -->|"No"| p4
   sc1 -.-> p5 --> g3
   sc1 -.-> p6
-  sc1 --> g2
+  sc1 -.-> p7
   s2 --> d2
   d2 -->|"Yes"| ok
+  ok -.-> g4
   d2 -->|"No"| o1 --> d3
-  d3 -->|"Yes"| c1 --> p7 --> ok
+  d3 -->|"Yes"| c1 --> p8 --> ok
   d3 -->|"No"| e1
   o1 --> c2 --> g1
+  o1 -.-> g2
   class s1,s2 k_start
+  class gW,g3,g4,g1,g2 k_goto
   class sc1,ok,o1 k_screen
-  class p1,p2,p3,p4,p5,p6,p7 k_process
+  class p1,p3,p4,p5,p6,p7,p8 k_process
   class d1,d2,d3 k_decision
   class c1,c2 k_click
-  class g1,g2,g3 k_goto
   class e1 k_endx

@@ -23,7 +23,7 @@ flowchart TD
   d1@{ shape: diam, label: "Is the viewer limited to one site?" }
   p3@{ shape: rect, label: "<b>Only that site's denials exist for the viewer</b><br/>Not listed, not counted, not found by a filter, not offered in a link" }
   p4@{ shape: rect, label: "<b>A viewer of both sites narrows to one site and widens again</b><br/>The figures, table and badge change at once" }
-  p5@{ shape: rect, label: "<b>Case Manager step-down plans from accepted denials follow the same site rule</b><br/>Accepting a denial still reaches Case Manager and Analytics, at the denial's site" }
+  p5@{ shape: rect, label: "<b>Step-down plans from accepted denials (Authorizations, Denied view) follow the same site rule</b><br/>Accepting a denial still reaches Authorizations and Analytics, at the denial's site" }
   p6@{ shape: rect, label: "<b>A letter added in 'Add a denial letter' belongs to the site in view, Site A when both are in view</b><br/>It is recorded on the denial<br/>Its D- number is chosen so every other screen places it at the same site" }
   s2@{ shape: stadium, label: "<b>Open a link to a denial</b><br/>/denials/D-xxxx (or an older /denials?id=D-xxxx), /denials/D-xxxx/brief or /denials/D-xxxx/report<br/>(a notification, Ask FLO, the Dashboard, a bookmark)" }
   d2@{ shape: diam, label: "Is the denial at a site in view?" }
@@ -37,7 +37,7 @@ flowchart TD
   e1@{ shape: stadium, label: "A viewer limited to one site has no way to the other site's denial" }
   g2@{ shape: subproc, label: "Continues in: Denial Intelligence › Open denials list" }
   g3@{ shape: subproc, label: "Continues in: Denial Intelligence › Add a denial letter" }
-  g4@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Step-down plans from accepted denials" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › Denied › Step-down plans from accepted denials" }
   s1 --> p1 --> sc1 --> p2
   sc1 --> d1
   d1 -->|"Yes"| p3

@@ -32,39 +32,42 @@ flowchart LR
   gEmr@{ shape: subproc, label: "Continues in: EMR Connect" }
   cPay@{ shape: trap-t, label: "Click 'Payers'" }
   pPay@{ shape: rect, label: "Go to /payers" }
-  gPay@{ shape: subproc, label: "Continues in: Payers" }
+  gPay@{ shape: subproc, label: "Continues in: Payers › Workspace" }
   end
   subgraph gMain ["Main"]
   cDash@{ shape: trap-t, label: "Click 'Dashboard'" }
   pDash@{ shape: rect, label: "Go to /dashboard" }
   gDash@{ shape: subproc, label: "Continues in: Dashboard" }
-  cAuth@{ shape: trap-t, label: "Click 'Authorizations'" }
-  pAuth@{ shape: rect, label: "<b>Go to /authorizations</b><br/>The group opens under it" }
-  gAuth@{ shape: subproc, label: "Continues in: Authorizations › Queue" }
-  cNew@{ shape: trap-t, label: "<b>Click 'New Case'</b><br/>(listed under Authorizations)" }
+  cAuth@{ shape: trap-t, label: "Click 'Authorizations' (the label or the row)" }
+  pAuth@{ shape: rect, label: "<b>Go to /authorizations</b><br/>Arriving from another page, the worklist reopens the last view and filters used (All the first time); on the worklist itself it shows All with no filters<br/>From outside the group, the group opens" }
+  gAuth@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Arrive and read the views" }
+  cArrow@{ shape: trap-t, label: "Click the arrow beside 'Authorizations'" }
+  pArrow@{ shape: rect, label: "<b>The sub rows show or hide</b><br/>No page opens" }
+  gArrow@{ shape: subproc, label: "Continues in: Global shell › Sidebar › Authorizations group › Open and close the group" }
+  cAll@{ shape: trap-t, label: "<b>Click 'All Authorizations'</b><br/>(under Authorizations, while the group is open)" }
+  pAll@{ shape: rect, label: "<b>Go to /authorizations</b><br/>The same page, with the same rules, as 'Authorizations'" }
+  cNew@{ shape: trap-t, label: "<b>Click 'New Case'</b><br/>(under Authorizations, while the group is open)" }
   pNew@{ shape: rect, label: "<b>Go to /authorizations/new</b><br/>A blank draft is started" }
   gNew@{ shape: subproc, label: "Continues in: Authorizations › New Case › How a case starts and resumes" }
-  cElig@{ shape: trap-t, label: "<b>Click 'Eligibility & Benefits'</b><br/>(listed under Authorizations)" }
+  cElig@{ shape: trap-t, label: "<b>Click 'Eligibility & Benefits'</b><br/>(under Authorizations, while the group is open)" }
   pElig@{ shape: rect, label: "Go to /authorizations/eligibility" }
   gElig@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits" }
   cDen@{ shape: trap-t, label: "Click 'Denial Intelligence'" }
   pDen@{ shape: rect, label: "Go to /denials" }
   gDen@{ shape: subproc, label: "Continues in: Denial Intelligence" }
-  cMgr@{ shape: trap-t, label: "Click 'Case Manager'" }
-  pMgr@{ shape: rect, label: "<b>Go to /manager</b><br/>Active cases tab" }
-  gMgr@{ shape: subproc, label: "Continues in: Case Manager" }
   cAna@{ shape: trap-t, label: "Click 'Analytics'" }
   pAna@{ shape: rect, label: "Go to /analytics" }
   gAna@{ shape: subproc, label: "Continues in: Analytics" }
   end
   s1 --> sb
-  sb --> cDash & cAuth & cNew & cElig & cDen & cMgr & cAna & cEmr & cPay & cSet & cHelp & cOut
+  sb --> cDash & cAuth & cArrow & cAll & cNew & cElig & cDen & cAna & cEmr & cPay & cSet & cHelp & cOut
   cDash --> pDash --> gDash
   cAuth --> pAuth --> gAuth
+  cArrow --> pArrow --> gArrow
+  cAll --> pAll --> gAuth
   cNew --> pNew --> gNew
   cElig --> pElig --> gElig
   cDen --> pDen --> gDen
-  cMgr --> pMgr --> gMgr
   cAna --> pAna --> gAna
   cEmr --> pEmr --> gEmr
   cPay --> pPay --> gPay
@@ -73,9 +76,9 @@ flowchart LR
   cOut --> gFoot2
   class s1 k_start
   class sb k_screen
-  class cSet,cHelp,cOut,cEmr,cPay,cDash,cAuth,cNew,cElig,cDen,cMgr,cAna k_click
-  class pSet,pEmr,pPay,pDash,pAuth,pNew,pElig,pDen,pMgr,pAna k_process
-  class gSet,gFoot2,gEmr,gPay,gDash,gAuth,gNew,gElig,gDen,gMgr,gAna k_goto
+  class cSet,cHelp,cOut,cEmr,cPay,cDash,cAuth,cArrow,cAll,cNew,cElig,cDen,cAna k_click
+  class pSet,pEmr,pPay,pDash,pAuth,pArrow,pAll,pNew,pElig,pDen,pAna k_process
+  class gSet,gFoot2,gEmr,gPay,gDash,gAuth,gArrow,gNew,gElig,gDen,gAna k_goto
   style gFoot fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gConn fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gMain fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

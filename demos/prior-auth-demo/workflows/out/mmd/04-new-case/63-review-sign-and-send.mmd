@@ -43,9 +43,9 @@ flowchart TD
   aNav@{ shape: hex, label: "Navigator files the request through the payer's portal (demo: simulated)" }
   xPortal@{ shape: st-rect, label: "<b>Payer portal (demo: simulated)</b><br/>Receives the request and gives a receipt" }
   stLink@{ shape: cyl, label: "<b>The request is linked</b><br/>Patient (an existing patient is never copied; a new patient becomes one), treatment episode, authorization and verification" }
-  stQueue@{ shape: cyl, label: "<b>A row is added to the Authorizations queue</b><br/>'Payer has it. Navigator checks again in 30 minutes'" }
+  stQueue@{ shape: cyl, label: "The request joins Authorizations as a With the payer row, marked 'New today'" }
   stEv@{ shape: cyl, label: "<b>History: 'You signed as Dr. Rivera (clinician) and sent the request'</b><br/>'Navigator sent the request through the payer's portal'<br/>'Navigator saved the receipt to the case'<br/>A documented exception, a duplicate reason or a proposed change: one line each, with the reason<br/>If Verify was skipped: 'Verify could not reach Cardinal's portal before signing'" }
-  stDraft@{ shape: cyl, label: "<b>The draft is marked sent</b><br/>'sent today' in Case Manager goes up by one" }
+  stDraft@{ shape: cyl, label: "<b>The draft is marked sent</b><br/>'N sent today' on Authorizations › With the payer goes up by one" }
   tNotif@{ shape: odd, label: "<b>Notification: 'Sent to the payer'</b><br/>'R-1701 was sent. It now shows as Received on the Dashboard.'" }
   tSent@{ shape: odd, label: "<b>'Sent to the payer'</b><br/>'R-1701 is on the Dashboard as Received.'" }
   pNav@{ shape: rect, label: "The new case opens: /authorizations/case/R-1701" }

@@ -35,7 +35,7 @@ flowchart TD
   p2@{ shape: rect, label: "<b>Address gets ?request=ID</b><br/>The request drawer opens on the Dashboard" }
   p3@{ shape: rect, label: "Denial Intelligence opens on that denial" }
   p4@{ shape: rect, label: "New Case opens as a Reauthorization for that patient" }
-  p5@{ shape: rect, label: "Case Manager opens on Active cases" }
+  p5@{ shape: rect, label: "<b>Authorizations opens on the All view</b><br/>/authorizations?view=all, where saved drafts are In progress rows" }
   d1@{ shape: diam, label: "Are more people-owned rows left than the five shown?" }
   more@{ shape: curv-trap, label: "<b>Under the list</b><br/>'2 more need you today.' and the button 'Show them in the table'" }
   b9@{ shape: trap-t, label: "Click 'Show them in the table'" }
@@ -44,7 +44,7 @@ flowchart TD
   g2@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer" }
   g3@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   g4@{ shape: subproc, label: "Continues in: Denial Intelligence › Open denials list" }
-  g5@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Tracker of every active case" }
+  g5@{ shape: subproc, label: "Continues in: Authorizations › In progress › Drafts being prepared" }
   g6@{ shape: subproc, label: "Continues in: Dashboard › Do next › How the list is chosen and ordered" }
   g7@{ shape: subproc, label: "Continues in: Dashboard › Table controls › Needs me today, Payer, Program, Status and Request type" }
   s1 --> a1 --> d0

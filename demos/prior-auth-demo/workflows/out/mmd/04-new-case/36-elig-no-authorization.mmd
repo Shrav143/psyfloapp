@@ -20,14 +20,13 @@ flowchart TD
   d1@{ shape: diam, label: "Does the case already have a documented exception for it?" }
   sCard@{ shape: curv-trap, label: "<b>Card 'No authorization is required'</b><br/>'Beacon PPO needs no authorization for IOP, 10/22/2026 to 11/11/2026. Rule: ...'" }
   pSteps@{ shape: rect, label: "<b>The stepper reads</b><br/>Step 2 Complete · No authorization required<br/>Steps 3 and 4 Not applicable · 'The payer needs no authorization'" }
-  tHint@{ shape: odd, label: "Footer hint: 'No authorization is required. Save the verification, return to Case Manager, or continue with a documented exception.'" }
   subgraph gThree ["The three actions"]
   a1@{ shape: trap-t, label: "Click 'Save verification to the patient record'" }
   s1a@{ shape: cyl, label: "<b>The verification is saved</b><br/>It shows in Eligibility & Benefits" }
   t1@{ shape: odd, label: "<b>'Verification saved'</b><br/>'J.M.'s verification is in Eligibility & Benefits.'" }
-  p1@{ shape: rect, label: "<b>A case that was never saved as a draft is discarded</b><br/>Nothing is left in Case Manager" }
-  a2@{ shape: trap-t, label: "Click 'Return to Case Manager'" }
-  p2@{ shape: rect, label: "<b>A case that was never saved as a draft is discarded</b><br/>The page opens Case Manager" }
+  p1@{ shape: rect, label: "<b>A case that was never saved as a draft is discarded</b><br/>Nothing is left in Authorizations" }
+  a2@{ shape: trap-t, label: "Click 'Return to Authorizations'" }
+  p2@{ shape: rect, label: "<b>A case that was never saved as a draft is discarded</b><br/>The page opens Authorizations (/authorizations)" }
   a3@{ shape: trap-t, label: "Click 'Continue with a documented exception'" }
   iWhy@{ shape: lean-r, label: "<b>'Why send a request when none is required?'</b><br/>'For example: the payer's care manager asked for a review in writing'" }
   dText@{ shape: diam, label: "Is there a reason?" }
@@ -41,7 +40,7 @@ flowchart TD
   stHist@{ shape: cyl, label: "<b>After sending, the request's History says</b><br/>'You sent this request although the payer needs no authorization, and said why'" }
   pOpen@{ shape: rect, label: "<b>Without a decision the person may still open steps 3 and 4</b><br/>Nothing there is sent: the step says it is Not applicable" }
   gEb@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › What the page shows" }
-  gCm@{ shape: subproc, label: "Continues in: Case Manager" }
+  gCm@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Arrive and read the views" }
   gDocs@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › The checklist and Continue" }
   gSign@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer" }
   gPayers@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Edit a rule" }
@@ -49,7 +48,6 @@ flowchart TD
   d1 -->|"No"| sCard
   d1 -->|"Yes"| pOn
   sCard --> pSteps
-  sCard --> tHint
   sCard -.-> gPayers
   sCard --> a1 --> s1a --> t1 --> p1 --> gEb
   sCard --> a2 --> p2 --> gCm
@@ -65,9 +63,9 @@ flowchart TD
   class d1,dText k_decision
   class sCard k_screen
   class pSteps,p1,p2,pOff,pOn,pRev,pOpen k_process
-  class tHint,t1 k_toast
   class a1,a2,a3,cOk,cCancel k_click
   class s1a,st,stHist k_store
+  class t1 k_toast
   class iWhy k_input
   class gEb,gCm,gDocs,gSign,gPayers k_goto
   style gThree fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

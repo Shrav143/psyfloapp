@@ -30,7 +30,7 @@ flowchart TD
   subgraph gDash ["Dashboard"]
   o1@{ shape: rect, label: "<b>Navigator paused: 'Check all now' is dimmed</b><br/>A link under it reads 'Navigator is paused in Settings'" }
   end
-  subgraph gMgr ["Case Manager"]
+  subgraph gMgr ["Authorizations › Reviews this week"]
   m1@{ shape: rect, label: "<b>Cadence paused: 'Draft all due reviews' drafts nothing</b><br/>Toast 'Cadence is paused in Settings'<br/>'It drafts no reviews until you resume it there.'" }
   end
   subgraph gElig ["Eligibility & Benefits"]
@@ -40,14 +40,14 @@ flowchart TD
   subgraph gEmr ["EMR Connect"]
   x1@{ shape: rect, label: "<b>Reader paused: 'Sync now' and 'Connect a system' show 'Reader is paused'</b><br/>Navigator paused: 'Fix' and 'Reconnect' show 'Navigator is paused'<br/>Map and Disconnect still work" }
   end
-  n8@{ shape: rect, label: "<b>Screens that do not read the pause</b><br/>Authorizations queue and case page, Denial Intelligence, Analytics, Payers, Ask FLO" }
+  n8@{ shape: rect, label: "<b>Screens that do not read the pause</b><br/>The Authorizations case page (the worklist reads it only for 'Draft all due reviews'), Denial Intelligence, Analytics, Payers, Ask FLO" }
   subgraph gReal ["Production (PRD FR-25)"]
   r1@{ shape: rect, label: "Production: the operator can pause one agent, one payer channel or all outbound actions at once" }
   r2@{ shape: rect, label: "<b>Production: a pause takes effect before the next step of any running job</b><br/>Steps already going out finish, or roll back to the manual queue" }
   end
   g1@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › Finished, paused or left" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Header › Check all now and the demo clock" }
-  g3@{ shape: subproc, label: "Continues in: Case Manager › Reviews this week › Draft all due reviews and sign all clean drafts" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › Reviews this week › Draft all due reviews and sign all clean drafts" }
   g4@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows" }
   g5@{ shape: subproc, label: "Continues in: EMR Connect › Sync › When an agent is paused or asks first" }
   g6@{ shape: subproc, label: "Continues in: Settings › Pause › Pause all agents" }

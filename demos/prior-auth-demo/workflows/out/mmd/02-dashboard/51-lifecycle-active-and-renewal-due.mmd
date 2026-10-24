@@ -22,15 +22,15 @@ flowchart TD
   a1@{ shape: rect, label: "<b>Active = approved with units or days left, and the approval has not ended</b><br/>(example: 40; 22 at Site A and 18 at Site B)<br/>Quiet line '6 approved today'" }
   a2@{ shape: rect, label: "<b>Renewal due = approved, and the clinical review is due, or the approval ends within 7 days, or already ended</b><br/>(example: 19)<br/>Quiet line 'next: R-0856, 2 h'" }
   c1@{ shape: trap-t, label: "<b>Click 'Active' (or 'Renewal due')</b><br/>It is a link, so Tab and Enter work and a right click can open it in a new tab" }
-  p2@{ shape: rect, label: "<b>Case Manager opens on Active cases</b><br/>Address /manager?tab=cases&show=active or show=renewal" }
-  sc@{ shape: curv-trap, label: "<b>Case Manager</b><br/>Tracker with the filter 'Showing Active (approved, units left)' or 'Showing Renewal due (review due or ending within 7 days)'<br/>'Clear filters' appears" }
+  p2@{ shape: rect, label: "<b>Authorizations opens on the All view</b><br/>Address /authorizations?view=all&show=active or show=renewal" }
+  sc@{ shape: curv-trap, label: "<b>Authorizations</b><br/>The worklist with the chip 'Showing Active (approved, units left)' or 'Showing Renewal due (review due or ending within 7 days)'<br/>'Clear filters' appears" }
   d2@{ shape: diam, label: "Is the viewer limited to one site?" }
   s1b@{ shape: curv-trap, label: "<b>Only that site's cases</b><br/>Site A: Active 22, Renewal due 10; Site B: 18 and 9" }
-  c2@{ shape: trap-t, label: "Click 'Clear filters' in Case Manager" }
+  c2@{ shape: trap-t, label: "Click 'Clear filters' on Authorizations" }
   p3@{ shape: rect, label: "The filter goes and the address loses ?show=" }
-  e1@{ shape: stadium, label: "Every active case is listed again" }
-  g1@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Tracker of every active case" }
-  g2@{ shape: subproc, label: "Continues in: Case Manager › Filters › Search and filter both tabs" }
+  e1@{ shape: stadium, label: "Every authorization in the All view is listed again" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Deadline, More and the Showing chip" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Approved › Approved authorizations and their units" }
   g3@{ shape: subproc, label: "Continues in: Dashboard › Sites › What each site sees and out-of-site links" }
   s1 --> p1 --> d1
   d1 -->|"Active"| a1 --> c1

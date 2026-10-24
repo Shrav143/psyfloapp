@@ -46,7 +46,7 @@ flowchart TD
   gQ@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › An agent asks a question" }
   eBack@{ shape: stadium, label: "<b>The section shows the run as it was</b><br/>Finished agents stay finished" }
   subgraph gResume ["Opening a draft that already ran"]
-  s3@{ shape: stadium, label: "<b>Click 'Continue', 'Watch', 'Answer' or 'Review and sign'</b><br/>on a case in Case Manager › Being prepared<br/>Or 'Open in review and sign' / 'Send to payer' on a case page" }
+  s3@{ shape: stadium, label: "<b>Click 'Continue', 'Watch', 'Answer' or 'Review and sign'</b><br/>on a draft row in Authorizations › In progress<br/>Or 'Open in review and sign' / 'Send to payer' on a case page" }
   pOpen@{ shape: rect, label: "<b>The page opens that draft from its address</b><br/>It is not reset<br/>A draft made from a request opens on Review & submit when it is ready, else on Clinical documentation at Authorization preparation" }
   dFar@{ shape: diam, label: "How far did the agents get?" }
   rNone@{ shape: rect, label: "<b>None yet</b><br/>Opens on the step it was left on: Intake, Eligibility & Benefits or Clinical documentation" }

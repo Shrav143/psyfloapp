@@ -30,10 +30,10 @@ flowchart TD
   end
   rq@{ shape: cyl, label: "<b>Dashboard: the request moves to 'Received'</b><br/>History: 'You signed as Dr. Rivera (clinician) and sent the request', 'Navigator sent the request through the payer's portal'" }
   cpg@{ shape: curv-trap, label: "Back on the case page or the Dashboard" }
-  qg@{ shape: rect, label: "<b>In the queue the request is gone</b><br/>The open count drops by one<br/>The sidebar badge too, if it was in Act now or Due within 24 hours" }
+  qg@{ shape: rect, label: "<b>In Authorizations the row leaves In progress</b><br/>It reads With the payer, marked 'New today' when the ledger did not have it<br/>'N sent today' counts it; the sidebar badge drops if it was due now or within 24 hours" }
   cp@{ shape: rect, label: "<b>The case page of a sent request</b><br/>the request's own status chip, e.g. 'Received'<br/>'Next: Wait for Beacon to decide' and a greyed-out 'Sent to payer'<br/>no Integrity chip" }
   gD@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
-  gQ@{ shape: subproc, label: "Continues in: Authorizations › Queue › Open the queue and read the top" }
+  gQ@{ shape: subproc, label: "Continues in: Authorizations › With the payer › A request sent today joins the list" }
   s1 --> dc
   dc -->|"No"| off
   dc -->|"Yes"| sp --> rp

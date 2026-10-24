@@ -26,20 +26,20 @@ flowchart TD
   t1@{ shape: odd, label: "<b>'Clock moved forward 1 hour' or 'Clock moved forward 1 day'</b><br/>'Times in stage and deadlines updated.'" }
   p4@{ shape: rect, label: "Toast fades after about 4 seconds. Every click adds its own toast. The menu stays open" }
   subgraph gMove ["What moves with the clock"]
-  m1@{ shape: rect, label: "<b>Case Manager</b><br/>Tracker 'Clock' column, 'Being prepared' due pills ('Notice due in 5 h' becomes 'Overdue'), the 'Today' day card on Reviews this week" }
+  m1@{ shape: rect, label: "<b>Authorizations worklist</b><br/>The Deadline column and the Deadline filter's counts (Act now, Within 24 hours, Next 7 days); a saved draft's due pill ('Notice due in 5 h' becomes 'Overdue'); which reviews are due now on Reviews this week" }
   m2@{ shape: rect, label: "<b>Notifications</b><br/>Ages: '16 min ago' becomes '1 h ago'" }
   m3@{ shape: rect, label: "<b>Dashboard</b><br/>Time in stage and 'late' flags" }
-  m4@{ shape: rect, label: "<b>Authorizations, Denial Intelligence</b><br/>Queue bands, case clocks, peer-to-peer and appeal deadlines" }
+  m4@{ shape: rect, label: "<b>Case pages, Denial Intelligence</b><br/>Case clocks, peer-to-peer and appeal deadlines" }
   m5@{ shape: rect, label: "<b>Eligibility & Benefits, EMR Connect, New Case</b><br/>How long ago a check, a sync or a referral was" }
   m6@{ shape: hex, label: "<b>Eligibility & Benefits</b><br/>Verify re-checks every patient whose re-check time has passed, unless Verify is paused in Settings<br/>A 'Re-checked automatically' notification follows" }
   end
   subgraph gStill ["What does not change"]
   s2@{ shape: rect, label: "No payer replies, no referral arrives, no agent finishes a step" }
   s3@{ shape: rect, label: "<b>No case changes status and no badge changes</b><br/>The only new notification a Fast-forward can add is Verify's" }
-  s4@{ shape: rect, label: "Ask FLO answers and Case Manager review statuses stay as they were" }
+  s4@{ shape: rect, label: "Ask FLO answers already given, and the review statuses on Reviews this week, stay as they were" }
   end
   subgraph gHow ["How things really arrive in the demo"]
-  g1@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Demo controls (payer replies)" }
+  g1@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Demo controls: the payer answers" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Start with a referral or patient" }
   g3@{ shape: subproc, label: "Continues in: Global shell › Top bar › Notifications › What creates a notification" }
   end

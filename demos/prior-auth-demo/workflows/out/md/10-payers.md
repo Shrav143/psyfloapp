@@ -549,15 +549,15 @@ flowchart TD
   drop@{ shape: stadium, label: "<b>Redraft is dropped</b><br/>Banner stays, nothing changes" }
   dd@{ shape: diam, label: "Were there drafts?" }
   rd@{ shape: cyl, label: "<b>Each draft needs a person again</b><br/>'Redrafted after your edits to Summit's workflow, rules and documents.<br/>Waiting for a new signature'<br/>Timeline event by Scribe" }
-  rp@{ shape: cyl, label: "<b>Update recorded for Case Manager and New Case</b><br/>Change 'edits-summit', payer, and the IDs of the drafts redrafted<br/>R-1042, R-1101" }
+  rp@{ shape: cyl, label: "<b>Update recorded for Authorizations and New Case</b><br/>Change 'edits-summit', payer, and the IDs of the drafts redrafted<br/>R-1042, R-1101" }
   z@{ shape: cyl, label: "<b>'Edits waiting' resets to zero</b><br/>Banner disappears" }
   nt@{ shape: cyl, label: "<b>Bell notification 'Drafts updated'</b><br/>2 drafts were redrafted after your edits to Summit.<br/>Each needs a new signature." }
   t1@{ shape: odd, label: "<b>'2 drafts updated'</b><br/>Each returned to Case Manager for a new signature." }
   z0@{ shape: cyl, label: "<b>'Edits waiting' resets to zero</b><br/>Banner disappears<br/>No update recorded, no bell notification" }
   t0@{ shape: odd, label: "<b>'No open drafts to update'</b><br/>New drafts for Evergreen already use your edits." }
-  g1@{ shape: subproc, label: "Continues in: Dashboard › Requests table" }
+  g1@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Order, rows and paging" }
   cb@{ shape: trap-t, label: "<b>Click the bell notification</b><br/>'Drafts updated'" }
-  g2@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Updated for a payer change" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Updated for a payer change" }
   s1 --> un --> bn --> dr
   dr -->|"Yes"| b1 --> cu
   dr -->|"No"| b0 --> cu
@@ -1188,7 +1188,7 @@ flowchart TD
   ft1@{ shape: odd, label: "<b>'Checked I-2207 against Cardinal's IOP list.'</b><br/>Link 'Open the request'" }
   ft2@{ shape: odd, label: "<b>'Checked the pasted text against Cardinal's IOP list, by keyword.'</b><br/>No link: no case was used" }
   ol@{ shape: trap-t, label: "Click 'Open the request'" }
-  g1@{ shape: subproc, label: "Continues in: Dashboard › Open a request" }
+  g1@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   why@{ shape: rect, label: "<b>Edit the list and check again to see it change</b><br/>Cardinal's list asks for 'Remaining treatment goals' only after<br/>its criteria change is updated, so I-2207 then reads '5 of 7 ready'" }
   info@{ shape: odd, label: "<b>'New Case checks documents against this same list.</b><br/>Pasted text is matched by keyword, so a document that<br/>is named differently can be missed.'" }
   g2@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Edit the document list" }
@@ -1501,7 +1501,7 @@ flowchart TD
 
 ## Payers › History & Changes › Review and apply a change
 
-The second gate. Once a payer's change is acknowledged, 'Review & apply changes' opens the Update drafts step. It lists exactly this payer's unsent drafts, read live from the Dashboard requests and the saved New Case drafts, then two agents redraft for about three seconds. Drafts return to Case Manager for a new signature. A request that was already sent is never listed or rewritten, and no case moves to another workflow version: a person reviews that case by case.
+The second gate. Once a payer's change is acknowledged, 'Review & apply changes' opens the Update drafts step. It lists exactly this payer's unsent drafts, read live from the Dashboard requests and the saved New Case drafts, then two agents redraft for about three seconds. Drafts return to Authorizations for a new signature, tagged 'Updated for a payer change'. A request that was already sent is never listed or rewritten, and no case moves to another workflow version: a person reviews that case by case.
 
 Route: `/payers/cardinal?tab=history`
 
@@ -1538,7 +1538,7 @@ flowchart TD
   drop@{ shape: stadium, label: "<b>Update dropped</b><br/>Change stays waiting, acknowledged" }
   subgraph gU ["What the update does"]
   u1@{ shape: cyl, label: "<b>Each listed draft needs a person again</b><br/>'Redrafted after Cardinal's change (criteria changed, version 2026.3).<br/>Waiting for a new signature'<br/>Timeline event by Scribe" }
-  u2@{ shape: cyl, label: "<b>Update recorded for Case Manager and New Case</b><br/>Which change, which payer, and the IDs<br/>of the drafts redrafted: I-2207" }
+  u2@{ shape: cyl, label: "<b>Update recorded for Authorizations and New Case</b><br/>Which change, which payer, and the IDs<br/>of the drafts redrafted: I-2207" }
   u3@{ shape: cyl, label: "<b>Payer's change cleared</b><br/>No 'checked' date is written: nothing was checked against the payer" }
   u4@{ shape: cyl, label: "<b>Document lists gain the change's new rows</b><br/>Remaining treatment goals: Named in the latest progress note<br/>in Residential 3.5, IOP and PHP" }
   u5@{ shape: cyl, label: "<b>Edit log: 3 'Documents' entries</b><br/>'Added to the Residential 3.5 list' and so on<br/>Reason 'After criteria changed, version 2026.3'" }
@@ -1550,9 +1550,9 @@ flowchart TD
   cx@{ shape: trap-t, label: "Click 'Cancel'" }
   cesc@{ shape: trap-t, label: "<b>Press Escape, click the X</b><br/>or click the dimmed area" }
   x1@{ shape: stadium, label: "<b>Modal closes</b><br/>Nothing redrafted, still acknowledged" }
-  g1@{ shape: subproc, label: "Continues in: Dashboard › Requests table" }
+  g1@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Order, rows and paging" }
   cb@{ shape: trap-t, label: "<b>Click the bell notification</b><br/>'Drafts updated'" }
-  g2@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Updated for a payer change" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Updated for a payer change" }
   g3@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Try it on a case" }
   g4@{ shape: subproc, label: "Continues in: Payers › Edit log" }
   g5@{ shape: subproc, label: "Continues in: Payers › History & Changes › A change with no drafts" }
@@ -1624,7 +1624,7 @@ flowchart TD
   dd@{ shape: diam, label: "Does the change add documents?" }
   da@{ shape: cyl, label: "<b>Document lists gain the change's new rows</b><br/>Evergreen: 'Notice call reference number'<br/>Edit log: one 'Documents' entry" }
   dn0@{ shape: rect, label: "<b>Harborview adds none: the change is about a form,</b><br/>not the list" }
-  s0@{ shape: cyl, label: "<b>No drafts touched</b><br/>No update recorded for Case Manager<br/>Change cleared, no 'checked' date is written" }
+  s0@{ shape: cyl, label: "<b>No drafts touched</b><br/>No update recorded for Authorizations<br/>Change cleared, no 'checked' date is written" }
   hh0@{ shape: cyl, label: "<b>'What changed' gets a new top row</b><br/>'Portal form change: acknowledged and applied'<br/>'No open drafts needed an update. New drafts use the change.'" }
   t0@{ shape: odd, label: "<b>'No open drafts to update'</b><br/>The change is applied for Harborview.<br/>New drafts use it from now on." }
   nb@{ shape: rect, label: "<b>No 'Drafts updated' bell notification</b><br/>Sidebar badge drops by one<br/>Row loses 'Change waiting', dot turns green" }
@@ -1950,7 +1950,7 @@ flowchart TD
 
 ## Payers › Configuration feeds the rest of the app
 
-What a payer's workflows, rules and document lists reach outside the Payers page. New drafts use a saved edit at once: New Case reads the saved document list and rules every time it draws, and Case Manager reads the submission windows. Updating drafts changes the matching requests on the Dashboard, tags them in Case Manager and sends a bell notification. Requests already sent keep what they were sent with. The diagram also marks what no edit reaches.
+What a payer's workflows, rules and document lists reach outside the Payers page. New drafts use a saved edit at once: New Case reads the saved document list and rules every time it draws, and Authorizations' Reviews this week reads the submission windows. Updating drafts changes the matching requests on the Dashboard, tags them in Authorizations and sends a bell notification. Requests already sent keep what they were sent with. The diagram also marks what no edit reaches.
 
 Route: `/payers/:id`
 
@@ -1982,16 +1982,16 @@ flowchart TD
   p1@{ shape: rect, label: "<b>New Case: the document list</b><br/>The Clinical documentation checklist, the file sorting and the<br/>Review & submit checks use the payer's saved list<br/>for the draft's level of care" }
   p2@{ shape: rect, label: "<b>New Case: the rules</b><br/>Backdating: a start date that reaches back further<br/>than the rule allows is flagged<br/>No authorization needed: a level of care the payer names there" }
   p3@{ shape: rect, label: "<b>New Case: the approval chance</b><br/>Each thing the payer asks for that a draft does not meet<br/>(a required document, an early start date)<br/>holds the chance back, up to 12 points" }
-  p4@{ shape: rect, label: "<b>Case Manager: the next review</b><br/>The 'Submission windows' rule sets the days<br/>before the next review is booked, when it names a number" }
-  p5@{ shape: rect, label: "<b>Payers added with 'Add a payer'</b><br/>have a full saved set like any payer<br/>and are offered wherever a payer is picked:<br/>New case, Eligibility & Benefits and the queue's Payer menu" }
+  p4@{ shape: rect, label: "<b>Authorizations › Reviews this week: the next review</b><br/>The 'Submission windows' rule sets the days<br/>before the next review is booked, when it names a number" }
+  p5@{ shape: rect, label: "<b>Payers added with 'Add a payer'</b><br/>have a full saved set like any payer<br/>and are offered wherever a payer is picked:<br/>New case, Eligibility & Benefits and the Payer filter on Authorizations" }
   end
   subgraph gW ["Wired: redrafting after a payer change or edits"]
   up@{ shape: trap-t, label: "<b>'Update N drafts' (after a payer change,</b><br/>or from the edits-waiting banner)<br/>N counts only the drafts at the sites in view" }
   rq@{ shape: cyl, label: "<b>Each unsent draft of this payer changes</b><br/>needs a person: yes<br/>Status line 'Redrafted after ... Waiting for a new signature'<br/>Timeline event from Scribe or the change's agent" }
   rp@{ shape: cyl, label: "<b>Update recorded</b><br/>Change (or 'edits-summit'), payer and the IDs of the drafts redrafted" }
-  nf@{ shape: cyl, label: "<b>Bell notification 'Drafts updated'</b><br/>links to Case Manager" }
+  nf@{ shape: cyl, label: "<b>Bell notification 'Drafts updated'</b><br/>links to Authorizations (the last view used)" }
   dsh@{ shape: rect, label: "<b>Dashboard shows the new status line</b><br/>and lists the request among those needing you" }
-  cmt@{ shape: rect, label: "<b>Case Manager and New Case tag those drafts</b><br/>'Updated for a payer change'" }
+  cmt@{ shape: rect, label: "<b>Authorizations and New Case tag those drafts</b><br/>'Updated for a payer change'" }
   end
   sent@{ shape: rect, label: "<b>Requests already sent are never changed</b><br/>They keep what they were sent with" }
   subgraph gC ["Wired: links out of Payers"]
@@ -2000,16 +2000,16 @@ flowchart TD
   end
   subgraph gP ["Not read by any edit"]
   n1@{ shape: rect, label: "<b>The payer's approved-as-asked rate (74% for Summit, shown in Analytics)</b><br/>is where New Case starts the approval chance: it ends 14 points higher.<br/>It comes from decision history, so no rule or list edit moves it" }
-  n2@{ shape: rect, label: "<b>Authorizations queue order and the case page</b><br/>do not read the saved configuration" }
+  n2@{ shape: rect, label: "<b>The Authorizations worklist order and the case page</b><br/>do not read the saved configuration" }
   end
   prd@{ shape: rect, label: "<b>In the product (PRD 06)</b><br/>A rule version is stamped on every authorization;<br/>Packet reads the channel, form and documents; Cadence reads windows and caps;<br/>Advocate reads peer-to-peer and appeal windows" }
-  g1@{ shape: subproc, label: "Continues in: Dashboard › Requests table" }
-  g2@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Updated for a payer change" }
-  g3@{ shape: subproc, label: "Continues in: Dashboard › Open a request" }
+  g1@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Order, rows and paging" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Updated for a payer change" }
+  g3@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   g4@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › The checklist and Continue" }
   g5@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › Validation summary and checks" }
   g7@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › Start the run and watch it" }
-  g6@{ shape: subproc, label: "Continues in: Authorizations › Queue › Open the queue and read the top" }
+  g6@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Arrive and read the views" }
   s1 --> dk
   dk -->|"Rule or documents"| cfg
   dk -->|"Workflow published"| wfp --> gwf
@@ -2168,7 +2168,7 @@ flowchart TD
   nohint@{ shape: rect, label: "<b>No word about the other site</b><br/>A one-site viewer is never told what exists there" }
   cConf@{ shape: trap-t, label: "Confirm 'Update N drafts'" }
   ag@{ shape: hex, label: "<b>Scribe and Integrity redraft exactly the drafts that were listed (demo: 3 seconds)</b><br/>A draft at a site the viewer cannot see is never listed, counted or changed" }
-  up@{ shape: cyl, label: "<b>Each listed draft needs a person again</b><br/>Update recorded for Case Manager and New Case" }
+  up@{ shape: cyl, label: "<b>Each listed draft needs a person again</b><br/>Update recorded for Authorizations and New Case" }
   t1@{ shape: odd, label: "<b>'N drafts updated'</b><br/>Or 'No open drafts to update' when none were in view" }
   cChk@{ shape: trap-t, label: "<b>Rules & Instructions › Clinical documentation</b><br/>› 'Try it on a case'" }
   chk@{ shape: rect, label: "<b>The Case menu lists only 'Preparing' cases at the sites in view</b><br/>Switching the site view changes the list" }

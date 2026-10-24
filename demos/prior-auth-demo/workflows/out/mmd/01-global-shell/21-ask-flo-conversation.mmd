@@ -20,9 +20,9 @@ flowchart TD
   o1@{ shape: win-pane, label: "<b>Ask FLO drawer opens</b><br/>Title 'Ask FLO', subtitle 'Your assistant, answering from your data'" }
   a1@{ shape: hex, label: "<b>FLO greets the person by name and says which sites it reads:</b><br/>'Hi Jordan, I am FLO. Ask me about your requests, a payer, or your denials. I answer from the data you can see: Both sites.'<br/>For Dr. Rivera: 'Hi Dr. Rivera, ... I answer from the data you can see: Site A.'" }
   dr@{ shape: diam, label: "Which screen is open?" }
-  o2@{ shape: win-pane, label: "<b>Four suggestion chips under the chat:</b><br/>'What needs me today?'<br/>'What is due soonest?'<br/>'Which payers are slowest right now?'<br/>'Why is Cardinal's approval rate down?'<br/>Any other screen, or a case page that cannot be found" }
+  o2@{ shape: win-pane, label: "<b>Four suggestion chips under the chat:</b><br/>'What needs me today?'<br/>'What is due soonest?'<br/>'Which payers are slowest right now?'<br/>'Why is Cardinal's approval rate down?'<br/>Any other screen (New Case included), or a case page that cannot be found" }
   oc@{ shape: win-pane, label: "<b>Three chips on a case page (/authorizations/case/R-1042):</b><br/>'What is missing for R-1042?'<br/>'When does this authorization run out?'<br/>'What does Summit require?'<br/>A line above them: 'Suggested for R-1042'" }
-  om@{ shape: win-pane, label: "<b>One chip on Case Manager:</b><br/>'Which reviews are due?'<br/>'Suggested for Case Manager'" }
+  om@{ shape: win-pane, label: "<b>Three chips on Authorizations (the worklist, every view):</b><br/>'What needs me today?'<br/>'What is due soonest?'<br/>'Which reviews are due?'<br/>'Suggested for Authorizations'" }
   od@{ shape: win-pane, label: "<b>One chip on Denial Intelligence:</b><br/>'Which denial is due first?'<br/>'Suggested for Denial Intelligence'" }
   oe@{ shape: win-pane, label: "<b>One chip on Eligibility & Benefits (the list and its pages):</b><br/>'Which patients need a fix before billing?'<br/>'Suggested for Eligibility & Benefits'" }
   d1@{ shape: diam, label: "How does the person ask?" }
@@ -53,7 +53,7 @@ flowchart TD
   s1 --> o1 --> a1 --> dr
   s2 --> pv --> a1
   dr -->|"Case page"| oc --> d1
-  dr -->|"Case Manager"| om --> d1
+  dr -->|"Authorizations worklist"| om --> d1
   dr -->|"Denial Intelligence"| od --> d1
   dr -->|"Eligibility & Benefits"| oe --> d1
   dr -->|"Anywhere else"| o2 --> d1

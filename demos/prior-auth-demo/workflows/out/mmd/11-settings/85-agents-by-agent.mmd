@@ -24,7 +24,7 @@ flowchart TD
   reader@{ shape: hex, label: "<b>Reader</b><br/>New case: referral and files, run step 1<br/>Denial Intelligence: reads the letter<br/>Eligibility, EMR Connect: pulls files, maps fields" }
   criteria@{ shape: hex, label: "<b>Criteria</b><br/>New case run step 3<br/>Eligibility: is authorization required<br/>Case page: Criteria tab<br/>Referral decline reasons" }
   placement@{ shape: hex, label: "<b>Placement</b><br/>New case run step 5<br/>Referral Fit tab" }
-  scribe@{ shape: hex, label: "<b>Scribe</b><br/>New case run step 7 and its questions<br/>Case page: redraft after actions<br/>Case Manager reviews<br/>Payers: Update drafts" }
+  scribe@{ shape: hex, label: "<b>Scribe</b><br/>New case run step 7 and its questions<br/>Case page: redraft after actions<br/>Authorizations: Reviews this week<br/>Payers: Update drafts" }
   integrity@{ shape: hex, label: "<b>Integrity</b><br/>New case run step 8<br/>Dashboard: review and sign<br/>Denial Intelligence: appeal and call prep<br/>Payers: Update drafts" }
   c3@{ shape: curv-trap, label: "<b>Intelligence</b><br/>Knows how each payer behaves" }
   historian@{ shape: hex, label: "<b>Historian</b><br/>New case run step 4<br/>Denial Intelligence: similar decisions<br/>Payers Changes: proposals" }
@@ -34,7 +34,7 @@ flowchart TD
   c4@{ shape: curv-trap, label: "<b>Case work</b><br/>Moves each case to done" }
   packet@{ shape: hex, label: "<b>Packet</b><br/>New case run step 9 and a question<br/>Dashboard: drafts the answer to an information request<br/>Payers process steps" }
   scrubber@{ shape: hex, label: "<b>Scrubber</b><br/>New case run step 10: 'Request has no errors'" }
-  cadence@{ shape: hex, label: "<b>Cadence</b><br/>Dashboard: ledger, next review, write-back<br/>Denial Intelligence: books the peer-to-peer<br/>Case Manager reviews" }
+  cadence@{ shape: hex, label: "<b>Cadence</b><br/>Dashboard: ledger, next review, write-back<br/>Denial Intelligence: books the peer-to-peer<br/>Authorizations: Reviews this week" }
   advocate@{ shape: hex, label: "<b>Advocate</b><br/>Denial Intelligence: checks the notice, drafts the appeal, finishes the brief<br/>Payers process steps" }
   g1@{ shape: subproc, label: "Continues in: Settings › Agent map › Which agents work in which flow" }
   c1 --> verify & caller & navigator

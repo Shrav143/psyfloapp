@@ -43,7 +43,7 @@ flowchart TD
   pLater@{ shape: rect, label: "<b>Pop-up closes; the agents stay stopped</b><br/>Banner stays; the row keeps 'Needs your answer'" }
   cAnswer@{ shape: trap-t, label: "Click 'Answer' on the agent's row" }
   pLeave@{ shape: rect, label: "Leave and come back: the pop-up opens again by itself" }
-  gCM@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Being prepared card" }
+  gCM@{ shape: subproc, label: "Continues in: Authorizations › In progress › Drafts being prepared" }
   g36@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › Finished, paused or left" }
   s1 --> p1 --> dKey
   dKey -->|"Medication list has the sertraline finding"| q1

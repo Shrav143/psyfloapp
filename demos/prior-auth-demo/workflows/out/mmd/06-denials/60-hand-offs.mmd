@@ -24,14 +24,14 @@ flowchart TD
   c4@{ shape: trap-t, label: "Click 'Plan the step-down' (the accept choice after accepting)" }
   p1@{ shape: rect, label: "Address opens /dashboard?request=D-3318" }
   p2@{ shape: rect, label: "Address opens /dashboard" }
-  p3@{ shape: rect, label: "Address opens /manager?tab=cases" }
+  p3@{ shape: rect, label: "<b>Address opens /authorizations?view=all</b><br/>The denial's row reads Accepted with 'Plan the step-down'" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Arrive › What the page shows" }
-  g3@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Step-down plans from accepted denials" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › Denied › Step-down plans from accepted denials" }
   end
   subgraph gShare ["Shared with other screens"]
   c6@{ shape: trap-t, label: "Click 'Record the payer's decision' (the written appeal choice on a filed appeal)" }
-  z1@{ shape: cyl, label: "On accept: Case Manager gets a step-down plan, Analytics logs the accepted denial" }
+  z1@{ shape: cyl, label: "On accept: the denial's row in Authorizations gets a step-down plan (Accepted), Analytics logs the accepted denial" }
   z2@{ shape: cyl, label: "<b>On a recorded appeal decision: the result and next level are logged</b><br/>Analytics reads the appeal rulings" }
   end
   subgraph gBell ["Notifications"]

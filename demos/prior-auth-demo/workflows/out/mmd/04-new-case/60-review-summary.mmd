@@ -16,7 +16,7 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Click 'Continue to Review & submit' on Clinical documentation</b><br/>Or click step 4 in the stepper at any time<br/>Or 'Review and sign' on a ready case in Case Manager" }
+  s1@{ shape: stadium, label: "<b>Click 'Continue to Review & submit' on Clinical documentation</b><br/>Or click step 4 in the stepper at any time<br/>Or 'Review and sign' on a ready draft row in Authorizations" }
   sc@{ shape: curv-trap, label: "<b>Review & submit</b><br/>No sentence under the title<br/>The stepper: 'Review & submit' current" }
   dReady@{ shape: diam, label: "Have all ten agents finished?" }
   sNot@{ shape: curv-trap, label: "<b>One line 'The packet is built when the agents finish'</b><br/>Button 'Open Authorization preparation' (Clinical documentation, at its last section)<br/>Checks and Validation summary are not shown yet<br/>The Sign card says 'After the agents finish'" }
@@ -54,7 +54,7 @@ flowchart TD
   pLost@{ shape: rect, label: "<b>Edits are lost when the summary is rebuilt</b><br/>After a new answer, a tick in 'To raise it further', 'Send back to Scribe', or a change to the details or documents" }
   cBack@{ shape: trap-t, label: "Click 'Back'" }
   cSaveD@{ shape: trap-t, label: "Click 'Save as draft'" }
-  tSaved@{ shape: odd, label: "<b>'Draft saved'</b><br/>'R-1701 is in Case Manager, ready to sign.'" }
+  tSaved@{ shape: odd, label: "<b>'Draft saved'</b><br/>'R-1701 is in Authorizations.'" }
   gMis@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › What is missing" }
   gVal@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › Validation summary and checks" }
   gSign@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer" }

@@ -212,7 +212,7 @@ flowchart TD
   r4@{ shape: rect, label: "<b>Lifecycle: 'running late', 'past 7 days' and 'deadlines this week' lines, and the counts of Active and Renewal due, are worked out again</b><br/>An approval whose end date has passed leaves Active" }
   end
   p3@{ shape: rect, label: "Not changed: the counts of Awaiting sign-off, Submitted, Decision pending, Info requested, Denied / appeal, and the title" }
-  g1@{ shape: subproc, label: "Continues in: Global shell › Demo menu" }
+  g1@{ shape: subproc, label: "Continues in: Global shell › Demo menu › Open, close and what is inside" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Days in state and the CMS decision time" }
   s0 --> dp
   dp -->|"No"| s1 --> p1 --> a1 --> w1 --> t1 --> e1
@@ -284,7 +284,7 @@ flowchart TD
   p2@{ shape: rect, label: "<b>Address gets ?request=ID</b><br/>The request drawer opens on the Dashboard" }
   p3@{ shape: rect, label: "Denial Intelligence opens on that denial" }
   p4@{ shape: rect, label: "New Case opens as a Reauthorization for that patient" }
-  p5@{ shape: rect, label: "Case Manager opens on Active cases" }
+  p5@{ shape: rect, label: "<b>Authorizations opens on the All view</b><br/>/authorizations?view=all, where saved drafts are In progress rows" }
   d1@{ shape: diam, label: "Are more people-owned rows left than the five shown?" }
   more@{ shape: curv-trap, label: "<b>Under the list</b><br/>'2 more need you today.' and the button 'Show them in the table'" }
   b9@{ shape: trap-t, label: "Click 'Show them in the table'" }
@@ -293,7 +293,7 @@ flowchart TD
   g2@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer" }
   g3@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   g4@{ shape: subproc, label: "Continues in: Denial Intelligence › Open denials list" }
-  g5@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Tracker of every active case" }
+  g5@{ shape: subproc, label: "Continues in: Authorizations › In progress › Drafts being prepared" }
   g6@{ shape: subproc, label: "Continues in: Dashboard › Do next › How the list is chosen and ordered" }
   g7@{ shape: subproc, label: "Continues in: Dashboard › Table controls › Needs me today, Payer, Program, Status and Request type" }
   s1 --> a1 --> d0
@@ -358,7 +358,7 @@ flowchart TD
   k7@{ shape: rect, label: "An authorization that ends within 7 days, or has ended, with no request in flight to replace it" }
   k8@{ shape: rect, label: "<b>Cases saved in New Case that wait for a person and have no row yet</b><br/>One line for all of them" }
   end
-  p2@{ shape: rect, label: "<b>Each row gets a time</b><br/>The due time the Authorizations queue ranks by, or the denial's deadline" }
+  p2@{ shape: rect, label: "<b>Each row gets a time</b><br/>The due time the Authorizations worklist sorts by, or the denial's deadline" }
   d1@{ shape: diam, label: "Is it past the CMS decision time?" }
   p3@{ shape: rect, label: "<b>It goes first</b><br/>Other rows are ordered by their due time, overdue first" }
   p4@{ shape: rect, label: "<b>Softer rows wait a little longer than a hard deadline</b><br/>A late payer by 2 days, a renewal by 1 day, a write-back by 3 days" }
@@ -369,7 +369,7 @@ flowchart TD
   ss@{ shape: curv-trap, label: "<b>Only cases at that site</b><br/>A case at the other site is never named, counted or linked" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Do next › What to do now and where each button leads" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Days in state and the CMS decision time" }
-  g3@{ shape: subproc, label: "Continues in: Global shell › Ask FLO › Answers" }
+  g3@{ shape: subproc, label: "Continues in: Global shell › Top bar › Ask FLO › What FLO answers" }
   s1 --> p1 --> d2
   d2 -->|"Yes"| ss --> p2
   d2 -->|"No"| p2
@@ -538,7 +538,7 @@ flowchart TD
 
 ## Dashboard › Lifecycle › Click a state to filter the table
 
-The Lifecycle card holds five state chips. Each shows a count and one quiet line, and each is a button that filters the table below it. The counts follow the sites in view and the Payer, Program and Request type menus, never the Status menu. The two chips with an arrow open Case Manager and are in the next diagram.
+The Lifecycle card holds five state chips. Each shows a count and one quiet line, and each is a button that filters the table below it. The counts follow the sites in view and the Payer, Program and Request type menus, never the Status menu. The two chips with an arrow open Authorizations and are in the next diagram.
 
 Route: `/dashboard`
 
@@ -580,7 +580,7 @@ flowchart TD
   p3@{ shape: rect, label: "<b>Address gets ?stage=under_review (or preparing, received, info_requested, appeal)</b><br/>A link with ?stage= presses the same chip" }
   p4@{ shape: rect, label: "<b>Status menu shows the same state</b><br/>Table title and 'Showing 8 of 14' follow; first 8 rows" }
   sc2@{ shape: curv-trap, label: "<b>Table</b><br/>Only the authorizations in that state<br/>Title '14 authorizations'" }
-  g1@{ shape: subproc, label: "Continues in: Dashboard › Lifecycle › Active and Renewal due open Case Manager" }
+  g1@{ shape: subproc, label: "Continues in: Dashboard › Lifecycle › Active and Renewal due open Authorizations" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Table controls › Needs me today, Payer, Program, Status and Request type" }
   g3@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Order, rows and paging" }
   s1 --> sc --> k1 --> d1
@@ -602,9 +602,9 @@ flowchart TD
   style gCount fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```
 
-## Dashboard › Lifecycle › Active and Renewal due open Case Manager
+## Dashboard › Lifecycle › Active and Renewal due open Authorizations
 
-Active and Renewal due describe approved authorizations on the Case Manager ledger, not rows of the Dashboard table, so they are links with a small arrow and not filters. A click opens Case Manager on Active cases with the matching filter, and the number of rows there is the number on the chip.
+Active and Renewal due describe approved authorizations on the Case Manager ledger, not rows of the Dashboard table, so they are links with a small arrow and not filters. A click opens Authorizations on the All view with the matching Showing chip, and the number of rows there is the number on the chip. The chips' screen-reader label still says 'Opens Case Manager.'
 
 Route: `/dashboard`
 
@@ -633,15 +633,15 @@ flowchart TD
   a1@{ shape: rect, label: "<b>Active = approved with units or days left, and the approval has not ended</b><br/>(example: 40; 22 at Site A and 18 at Site B)<br/>Quiet line '6 approved today'" }
   a2@{ shape: rect, label: "<b>Renewal due = approved, and the clinical review is due, or the approval ends within 7 days, or already ended</b><br/>(example: 19)<br/>Quiet line 'next: R-0856, 2 h'" }
   c1@{ shape: trap-t, label: "<b>Click 'Active' (or 'Renewal due')</b><br/>It is a link, so Tab and Enter work and a right click can open it in a new tab" }
-  p2@{ shape: rect, label: "<b>Case Manager opens on Active cases</b><br/>Address /manager?tab=cases&show=active or show=renewal" }
-  sc@{ shape: curv-trap, label: "<b>Case Manager</b><br/>Tracker with the filter 'Showing Active (approved, units left)' or 'Showing Renewal due (review due or ending within 7 days)'<br/>'Clear filters' appears" }
+  p2@{ shape: rect, label: "<b>Authorizations opens on the All view</b><br/>Address /authorizations?view=all&show=active or show=renewal" }
+  sc@{ shape: curv-trap, label: "<b>Authorizations</b><br/>The worklist with the chip 'Showing Active (approved, units left)' or 'Showing Renewal due (review due or ending within 7 days)'<br/>'Clear filters' appears" }
   d2@{ shape: diam, label: "Is the viewer limited to one site?" }
   s1b@{ shape: curv-trap, label: "<b>Only that site's cases</b><br/>Site A: Active 22, Renewal due 10; Site B: 18 and 9" }
-  c2@{ shape: trap-t, label: "Click 'Clear filters' in Case Manager" }
+  c2@{ shape: trap-t, label: "Click 'Clear filters' on Authorizations" }
   p3@{ shape: rect, label: "The filter goes and the address loses ?show=" }
-  e1@{ shape: stadium, label: "Every active case is listed again" }
-  g1@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Tracker of every active case" }
-  g2@{ shape: subproc, label: "Continues in: Case Manager › Filters › Search and filter both tabs" }
+  e1@{ shape: stadium, label: "Every authorization in the All view is listed again" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Deadline, More and the Showing chip" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Approved › Approved authorizations and their units" }
   g3@{ shape: subproc, label: "Continues in: Dashboard › Sites › What each site sees and out-of-site links" }
   s1 --> p1 --> d1
   d1 -->|"Active"| a1 --> c1
@@ -712,8 +712,8 @@ flowchart TD
   p5@{ shape: rect, label: "<b>Eight more rows are added</b><br/>With fewer than 8 left the button shows that number, e.g. 'Show 5 more'" }
   e1@{ shape: stadium, label: "<b>All rows shown</b><br/>'Showing 40 of 40'; no button" }
   p6@{ shape: rect, label: "Changing any menu, chip, toggle or the sort goes back to the first 8 rows" }
-  sc4@{ shape: curv-trap, label: "<b>With cases saved in New Case that have no row yet</b><br/>A line under the table with all statuses or Awaiting sign-off: '2 more are being prepared in New Case.' and 'Open Active cases'" }
-  g6@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Being prepared card" }
+  sc4@{ shape: curv-trap, label: "<b>With cases saved in New Case that have no row yet</b><br/>A line under the table with all statuses or Awaiting sign-off: '2 more are being prepared in New Case.' and 'Open Active cases'<br/>(the link opens Authorizations, All view)" }
+  g6@{ shape: subproc, label: "Continues in: Authorizations › In progress › Drafts being prepared" }
   s1 --> sc1 --> sc2 --> p1 --> p2 --> d0
   d0 -->|"No"| em --> g3
   d0 -->|"Yes"| r1
@@ -787,7 +787,7 @@ flowchart TD
   g1@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Order, rows and paging" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Days in state and the CMS decision time" }
   g3@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Sort the rows" }
-  g4@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Units or days left and the run-out flag" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › Approved › Units used and the run-out flag" }
   s1 --> c1 --> c2 --> c3 --> c4 --> u1
   u1 -->|"Yes"| u2 --> u3 --> n1
   u1 -->|"No"| u4 --> n1
@@ -1133,7 +1133,7 @@ flowchart TD
   t1@{ shape: odd, label: "<b>'Navigator checked'</b><br/>'R-1021 is still under review at Cardinal. It checks again in 30 minutes.'" }
   e1@{ shape: stadium, label: "<b>Drawer stays open</b><br/>No stage changes" }
   c2@{ shape: trap-t, label: "Click 'Open case'" }
-  g1@{ shape: subproc, label: "<b>Continues in: Authorizations › Case page</b><br/>/authorizations/case/ followed by the case ID" }
+  g1@{ shape: subproc, label: "<b>Continues in: Authorizations › Case page › Ways in</b><br/>/authorizations/case/ followed by the case ID" }
   c3@{ shape: trap-t, label: "Click 'Open in Denial Intelligence'" }
   g2@{ shape: subproc, label: "<b>Continues in: Denial Intelligence › A denial opened</b><br/>/denials/D-3318" }
   subgraph gClose ["Closing the drawer"]
@@ -1552,7 +1552,7 @@ flowchart TD
   dd@{ shape: curv-trap, label: "<b>Drawer for D-3319</b><br/>Chip 'Call booked', 'Chance of winning 61%'<br/>Demo controls disabled: 'A denial follows its own route in Denial Intelligence.'<br/>Footer gains 'Open in Denial Intelligence'" }
   end
   g2@{ shape: subproc, label: "<b>Continues in: Denial Intelligence › A denial opened</b><br/>/denials/D-3319" }
-  g3@{ shape: subproc, label: "<b>Continues in: Authorizations › Case page</b><br/>The case number is unchanged" }
+  g3@{ shape: subproc, label: "<b>Continues in: Authorizations › Case page › Ways in</b><br/>The case number is unchanged" }
   s1 --> x1 --> c1 & c2 & c3
   c1 --> a1 --> an --> as --> ab --> g1
   ab --> qk

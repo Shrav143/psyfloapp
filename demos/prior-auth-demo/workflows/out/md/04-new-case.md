@@ -51,7 +51,7 @@ flowchart TD
   p4@{ shape: rect, label: "<b>The patient's details, treatment episode and authorization are filled in</b><br/>No second patient is made" }
   p5@{ shape: rect, label: "<b>?type= picks the Authorization type</b><br/>Its request type is recorded: Initial request, Continued stay, Recertification, Modification or Retro-authorization" }
   p6@{ shape: rect, label: "<b>Filled from ?payer=, ?program=, ?member=, ?initials=, ?age=</b><br/>Request type: Admission<br/>An unknown payer or program is ignored" }
-  st3@{ shape: cyl, label: "<b>Blank case created at Intake</b><br/>It belongs to the site you are working at<br/>Not in Case Manager until 'Save as draft'" }
+  st3@{ shape: cyl, label: "<b>Blank case created at Intake</b><br/>It belongs to the site you are working at<br/>Not in Authorizations until 'Save as draft'" }
   end
   p7@{ shape: rect, label: "<b>?step= opens that step: intake, eligibility, documentation or review</b><br/>preparation and the older agents open Clinical documentation scrolled to 'Authorization preparation'<br/>The older referral and records land on Intake and Clinical documentation" }
   p8@{ shape: rect, label: "<b>Case opens at /authorizations/new/draft-ID</b><br/>It replaces the address, so Back does not loop" }
@@ -137,8 +137,8 @@ flowchart TD
   end
   pBack@{ shape: rect, label: "<b>'Back' goes one step back</b><br/>From Review & submit it opens the agents' section of Clinical documentation<br/>The bar stays in view while a long step scrolls" }
   pHint@{ shape: odd, label: "<b>The bar's only line is a payer workflow warning, when there is one</b><br/>e.g. 'Workflow: Submission window: 1 business day left'" }
-  cLink@{ shape: trap-t, label: "Click the link 'Case Manager' above the title" }
-  gCm@{ shape: subproc, label: "Continues in: Case Manager" }
+  cLink@{ shape: trap-t, label: "<b>Click the link 'Authorizations' above the title</b><br/>Opens /authorizations" }
+  gCm@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Arrive and read the views" }
   sFull@{ shape: curv-trap, label: "<b>Stepper on the full referral page</b><br/>'Intake' is current<br/>The button 'Back to the case' sits beside the crumbs" }
   gFull@{ shape: subproc, label: "Continues in: Authorizations › New Case › Referral › The full referral page" }
   gStates@{ shape: subproc, label: "Continues in: Authorizations › New Case › Step states" }
@@ -445,7 +445,7 @@ flowchart TD
   h1@{ shape: odd, label: "<b>A payer workflow warning, when there is one</b><br/>'Workflow: ...'" }
   end
   cSave@{ shape: trap-t, label: "Click 'Save as draft'" }
-  tSave@{ shape: odd, label: "<b>'Draft saved'</b><br/>'R-1701 is in Case Manager.'" }
+  tSave@{ shape: odd, label: "<b>'Draft saved'</b><br/>'R-1701 is in Authorizations.'" }
   gSave@{ shape: subproc, label: "Continues in: Authorizations › New Case › Save as draft and leave" }
   cCont@{ shape: trap-t, label: "Click 'Continue to Eligibility & Benefits'" }
   pGo@{ shape: rect, label: "<b>Moves to step 2</b><br/>Nothing blocks the click" }
@@ -848,7 +848,7 @@ flowchart TD
   iAu@{ shape: lean-r, label: "<b>Pick 'Which authorization?'</b><br/>Label and id, a status pill, the approved dates" }
   sCard@{ shape: curv-trap, label: "<b>Authorization card</b><br/>Status pill, 'Approved dates', 'Authorized', 'Left', 'Expires on'<br/>Button 'History'" }
   cHist@{ shape: trap-t, label: "Click 'History'" }
-  oHist@{ shape: win-pane, label: "<b>Drawer 'Authorization history'</b><br/>'Demo data, built from the Case Manager ledger. Each line says who acted: the payer, an agent or a person.'<br/>Each line: text, who acted, when" }
+  oHist@{ shape: win-pane, label: "<b>Drawer 'Authorization history'</b><br/>Under the title: initials, age · level of care · authorization ID<br/>Each line: text, who acted (the payer, an agent or a person), when" }
   cEsc@{ shape: trap-t, label: "Press Escape or close the drawer" }
   dNone@{ shape: diam, label: "Does the patient have an authorization on file?" }
   tNone@{ shape: odd, label: "'This patient has no authorization on file.'" }
@@ -2589,7 +2589,7 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "A case id is in the address" }
-  s2@{ shape: stadium, label: "<b>Click a button on a case in Case Manager</b><br/>'Continue', 'Watch', 'Answer' or 'Review and sign'" }
+  s2@{ shape: stadium, label: "<b>Click a button on a draft row in Authorizations (In progress)</b><br/>'Continue', 'Watch', 'Answer' or 'Review and sign'" }
   s3@{ shape: stadium, label: "<b>Click 'Open in review and sign' or 'Send to payer' on a case page</b><br/>A draft is made from the request, or the one it has is brought up to date" }
   pReq@{ shape: rect, label: "<b>Draft opens on Review & submit when the request is ready</b><br/>on Clinical documentation at Authorization preparation when agents still have work<br/>Never a blank draft" }
   d3@{ shape: diam, label: "Is there a case with that id?" }
@@ -2603,14 +2603,14 @@ flowchart TD
   d4@{ shape: diam, label: "Was it signed and sent?" }
   sc2@{ shape: curv-trap, label: "<b>'R-1234 was sent'</b><br/>'Signed and sent (demo)', or 'Already with the payer'" }
   c2@{ shape: trap-t, label: "Click 'Open the case', or 'Open it on the Dashboard'" }
-  c3@{ shape: trap-t, label: "Click 'Back to Case Manager'" }
+  c3@{ shape: trap-t, label: "Click 'Back to Authorizations'" }
   d5@{ shape: diam, label: "Did the agents already run, with the case still on an earlier step?" }
   p9@{ shape: rect, label: "<b>Opens on Clinical documentation, scrolled to Authorization preparation, when fewer than ten agents are done</b><br/>else on Review & submit<br/>A later click in the stepper is not undone" }
-  sc3@{ shape: curv-trap, label: "<b>New Case</b><br/>Link 'Case Manager', the header card 'New Case' with the case id and the 'Authorization type' dropdown<br/>The stepper with each step's state, the workflow line, then the step" }
-  c4@{ shape: trap-t, label: "Click the link 'Case Manager'" }
+  sc3@{ shape: curv-trap, label: "<b>New Case</b><br/>Link 'Authorizations', the header card 'New Case' with the case id and the 'Authorization type' dropdown<br/>The stepper with each step's state, the workflow line, then the step" }
+  c4@{ shape: trap-t, label: "Click the link 'Authorizations'" }
   d6@{ shape: diam, label: "Which step is the case on?" }
   pNarrow@{ shape: rect, label: "<b>Narrowing the site view while a blank case is open</b><br/>A case with no patient and no ID moves to the site in view; one with an ID or a patient stays at its own site" }
-  gCm@{ shape: subproc, label: "Continues in: Case Manager" }
+  gCm@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Arrive and read the views" }
   gDash@{ shape: subproc, label: "<b>Continues in: Dashboard</b><br/>Opens the request" }
   gCase@{ shape: subproc, label: "Continues in: Authorizations › Case page › Send to payer and review and sign" }
   gSites@{ shape: subproc, label: "Continues in: Authorizations › New Case › Sites and scope" }
@@ -3166,7 +3166,7 @@ flowchart TD
 
 ## Authorizations › New Case › Eligibility & Benefits › No authorization required
 
-Some payers need no authorization for some levels of care, for example Beacon for IOP and PHP, as its rule on Payers says. When the check says so, nothing is prepared or sent unless the person chooses to. The step offers three actions: save the verification, return to Case Manager, or continue with a documented exception. Steps 3 and 4 are marked Not applicable and still open.
+Some payers need no authorization for some levels of care, for example Beacon for IOP and PHP, as its rule on Payers says. When the check says so, nothing is prepared or sent unless the person chooses to. The step offers three actions: save the verification, return to Authorizations, or continue with a documented exception. Steps 3 and 4 are marked Not applicable and still open.
 
 Route: `/authorizations/new/:draftId (step 2 of 4, the outcome 'No authorization is required')`
 
@@ -3193,14 +3193,13 @@ flowchart TD
   d1@{ shape: diam, label: "Does the case already have a documented exception for it?" }
   sCard@{ shape: curv-trap, label: "<b>Card 'No authorization is required'</b><br/>'Beacon PPO needs no authorization for IOP, 10/22/2026 to 11/11/2026. Rule: ...'" }
   pSteps@{ shape: rect, label: "<b>The stepper reads</b><br/>Step 2 Complete · No authorization required<br/>Steps 3 and 4 Not applicable · 'The payer needs no authorization'" }
-  tHint@{ shape: odd, label: "Footer hint: 'No authorization is required. Save the verification, return to Case Manager, or continue with a documented exception.'" }
   subgraph gThree ["The three actions"]
   a1@{ shape: trap-t, label: "Click 'Save verification to the patient record'" }
   s1a@{ shape: cyl, label: "<b>The verification is saved</b><br/>It shows in Eligibility & Benefits" }
   t1@{ shape: odd, label: "<b>'Verification saved'</b><br/>'J.M.'s verification is in Eligibility & Benefits.'" }
-  p1@{ shape: rect, label: "<b>A case that was never saved as a draft is discarded</b><br/>Nothing is left in Case Manager" }
-  a2@{ shape: trap-t, label: "Click 'Return to Case Manager'" }
-  p2@{ shape: rect, label: "<b>A case that was never saved as a draft is discarded</b><br/>The page opens Case Manager" }
+  p1@{ shape: rect, label: "<b>A case that was never saved as a draft is discarded</b><br/>Nothing is left in Authorizations" }
+  a2@{ shape: trap-t, label: "Click 'Return to Authorizations'" }
+  p2@{ shape: rect, label: "<b>A case that was never saved as a draft is discarded</b><br/>The page opens Authorizations (/authorizations)" }
   a3@{ shape: trap-t, label: "Click 'Continue with a documented exception'" }
   iWhy@{ shape: lean-r, label: "<b>'Why send a request when none is required?'</b><br/>'For example: the payer's care manager asked for a review in writing'" }
   dText@{ shape: diam, label: "Is there a reason?" }
@@ -3214,7 +3213,7 @@ flowchart TD
   stHist@{ shape: cyl, label: "<b>After sending, the request's History says</b><br/>'You sent this request although the payer needs no authorization, and said why'" }
   pOpen@{ shape: rect, label: "<b>Without a decision the person may still open steps 3 and 4</b><br/>Nothing there is sent: the step says it is Not applicable" }
   gEb@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › What the page shows" }
-  gCm@{ shape: subproc, label: "Continues in: Case Manager" }
+  gCm@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Arrive and read the views" }
   gDocs@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › The checklist and Continue" }
   gSign@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer" }
   gPayers@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Edit a rule" }
@@ -3222,7 +3221,6 @@ flowchart TD
   d1 -->|"No"| sCard
   d1 -->|"Yes"| pOn
   sCard --> pSteps
-  sCard --> tHint
   sCard -.-> gPayers
   sCard --> a1 --> s1a --> t1 --> p1 --> gEb
   sCard --> a2 --> p2 --> gCm
@@ -3238,9 +3236,9 @@ flowchart TD
   class d1,dText k_decision
   class sCard k_screen
   class pSteps,p1,p2,pOff,pOn,pRev,pOpen k_process
-  class tHint,t1 k_toast
   class a1,a2,a3,cOk,cCancel k_click
   class s1a,st,stHist k_store
+  class t1 k_toast
   class iWhy k_input
   class gEb,gCm,gDocs,gSign,gPayers k_goto
   style gThree fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
@@ -3544,7 +3542,7 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>Click 'Continue to Clinical documentation' on Eligibility & Benefits</b><br/>Or click step 3 in the stepper" }
-  s2@{ shape: stadium, label: "<b>Click 'Continue' on a case in Case Manager</b><br/>whose agents have not started" }
+  s2@{ shape: stadium, label: "<b>Click 'Continue' on a draft row in Authorizations (In progress)</b><br/>whose agents have not started" }
   sc@{ shape: curv-trap, label: "<b>Clinical documentation</b><br/>No sentence under the title<br/>Header button 'Use sample chart'" }
   subgraph gPage ["The page"]
   dz@{ shape: curv-trap, label: "<b>Drop bar 'Drop the chart, the insurance card and any documents, or click to choose'</b><br/>Under it: 'Pull from EMR', 'Import a file', 'Paste a screenshot'" }
@@ -4097,7 +4095,7 @@ flowchart TD
   cCancel@{ shape: trap-t, label: "Click 'Cancel', press Escape, or click outside" }
   eCancel@{ shape: stadium, label: "Back where it was; nothing started" }
   cStart@{ shape: trap-t, label: "Click 'Start the agents'" }
-  st1@{ shape: cyl, label: "<b>Draft saved as a case with an ID such as R-1701</b><br/>It now shows in Case Manager › Being prepared" }
+  st1@{ shape: cyl, label: "<b>Draft saved as a case with an ID such as R-1701</b><br/>It now shows in Authorizations as an In progress row" }
   st2@{ shape: cyl, label: "<b>Run set up</b><br/>Chance range from the payer: 62% to 88% for Summit<br/>Questions planned: one, or two when the chart leaves a gap<br/>Clock set from the request type" }
   sc@{ shape: curv-trap, label: "<b>Section 'Authorization preparation', scrolled into view</b><br/>Chip '1 of 10 · 0:02' that counts up<br/>The case id 'R-1701' beside 'New Case' in the header" }
   pRow@{ shape: rect, label: "Each agent row goes 'Waiting' (name only), then 'Working' with a spinner and what it is doing, then a green tick with its time and what it found" }
@@ -4215,7 +4213,7 @@ flowchart TD
   pLater@{ shape: rect, label: "<b>Pop-up closes; the agents stay stopped</b><br/>Banner stays; the row keeps 'Needs your answer'" }
   cAnswer@{ shape: trap-t, label: "Click 'Answer' on the agent's row" }
   pLeave@{ shape: rect, label: "Leave and come back: the pop-up opens again by itself" }
-  gCM@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Being prepared card" }
+  gCM@{ shape: subproc, label: "Continues in: Authorizations › In progress › Drafts being prepared" }
   g36@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › Finished, paused or left" }
   s1 --> p1 --> dKey
   dKey -->|"Medication list has the sertraline finding"| q1
@@ -4306,7 +4304,7 @@ flowchart TD
   gQ@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › An agent asks a question" }
   eBack@{ shape: stadium, label: "<b>The section shows the run as it was</b><br/>Finished agents stay finished" }
   subgraph gResume ["Opening a draft that already ran"]
-  s3@{ shape: stadium, label: "<b>Click 'Continue', 'Watch', 'Answer' or 'Review and sign'</b><br/>on a case in Case Manager › Being prepared<br/>Or 'Open in review and sign' / 'Send to payer' on a case page" }
+  s3@{ shape: stadium, label: "<b>Click 'Continue', 'Watch', 'Answer' or 'Review and sign'</b><br/>on a draft row in Authorizations › In progress<br/>Or 'Open in review and sign' / 'Send to payer' on a case page" }
   pOpen@{ shape: rect, label: "<b>The page opens that draft from its address</b><br/>It is not reset<br/>A draft made from a request opens on Review & submit when it is ready, else on Clinical documentation at Authorization preparation" }
   dFar@{ shape: diam, label: "How far did the agents get?" }
   rNone@{ shape: rect, label: "<b>None yet</b><br/>Opens on the step it was left on: Intake, Eligibility & Benefits or Clinical documentation" }
@@ -4381,7 +4379,7 @@ flowchart TD
   xPortal@{ shape: st-rect, label: "<b>Cardinal's provider portal (demo: simulated)</b><br/>Does not answer" }
   aV@{ shape: hex, label: "Verify tries for about 0.6 seconds, then stops" }
   sFail@{ shape: curv-trap, label: "<b>Row 'Verify': pill 'Could not finish'</b><br/>'Could not reach Cardinal's portal. Coverage is not confirmed yet'<br/>Buttons 'Retry' and 'Skip and note'<br/>The nine agents behind it show 'Waiting'" }
-  pHold@{ shape: rect, label: "<b>The run holds</b><br/>Footer hint: 'Verify could not finish. Retry it, or skip it and note it.'<br/>Case Manager row and the Dashboard note: 'Verify could not reach Cardinal's portal. Retry it or skip it'<br/>The case counts as needing a person" }
+  pHold@{ shape: rect, label: "<b>The run holds</b><br/>Footer hint: 'Verify could not finish. Retry it, or skip it and note it.'<br/>Dashboard note: 'Verify could not reach Cardinal's portal. Retry it or skip it'<br/>The draft's row in Authorizations: 'Verify could not reach Cardinal's portal.'<br/>The case counts as needing a person" }
   cRetry@{ shape: trap-t, label: "Click 'Retry'" }
   stRetry@{ shape: cyl, label: "<b>Failure cleared</b><br/>The draft remembers that Verify has been retried, so a later run of this case does not fail again" }
   aV2@{ shape: hex, label: "Verify runs its step again and answers" }
@@ -4663,7 +4661,7 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "<b>Click 'Continue to Review & submit' on Clinical documentation</b><br/>Or click step 4 in the stepper at any time<br/>Or 'Review and sign' on a ready case in Case Manager" }
+  s1@{ shape: stadium, label: "<b>Click 'Continue to Review & submit' on Clinical documentation</b><br/>Or click step 4 in the stepper at any time<br/>Or 'Review and sign' on a ready draft row in Authorizations" }
   sc@{ shape: curv-trap, label: "<b>Review & submit</b><br/>No sentence under the title<br/>The stepper: 'Review & submit' current" }
   dReady@{ shape: diam, label: "Have all ten agents finished?" }
   sNot@{ shape: curv-trap, label: "<b>One line 'The packet is built when the agents finish'</b><br/>Button 'Open Authorization preparation' (Clinical documentation, at its last section)<br/>Checks and Validation summary are not shown yet<br/>The Sign card says 'After the agents finish'" }
@@ -4701,7 +4699,7 @@ flowchart TD
   pLost@{ shape: rect, label: "<b>Edits are lost when the summary is rebuilt</b><br/>After a new answer, a tick in 'To raise it further', 'Send back to Scribe', or a change to the details or documents" }
   cBack@{ shape: trap-t, label: "Click 'Back'" }
   cSaveD@{ shape: trap-t, label: "Click 'Save as draft'" }
-  tSaved@{ shape: odd, label: "<b>'Draft saved'</b><br/>'R-1701 is in Case Manager, ready to sign.'" }
+  tSaved@{ shape: odd, label: "<b>'Draft saved'</b><br/>'R-1701 is in Authorizations.'" }
   gMis@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › What is missing" }
   gVal@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › Validation summary and checks" }
   gSign@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer" }
@@ -5004,9 +5002,9 @@ flowchart TD
   aNav@{ shape: hex, label: "Navigator files the request through the payer's portal (demo: simulated)" }
   xPortal@{ shape: st-rect, label: "<b>Payer portal (demo: simulated)</b><br/>Receives the request and gives a receipt" }
   stLink@{ shape: cyl, label: "<b>The request is linked</b><br/>Patient (an existing patient is never copied; a new patient becomes one), treatment episode, authorization and verification" }
-  stQueue@{ shape: cyl, label: "<b>A row is added to the Authorizations queue</b><br/>'Payer has it. Navigator checks again in 30 minutes'" }
+  stQueue@{ shape: cyl, label: "The request joins Authorizations as a With the payer row, marked 'New today'" }
   stEv@{ shape: cyl, label: "<b>History: 'You signed as Dr. Rivera (clinician) and sent the request'</b><br/>'Navigator sent the request through the payer's portal'<br/>'Navigator saved the receipt to the case'<br/>A documented exception, a duplicate reason or a proposed change: one line each, with the reason<br/>If Verify was skipped: 'Verify could not reach Cardinal's portal before signing'" }
-  stDraft@{ shape: cyl, label: "<b>The draft is marked sent</b><br/>'sent today' in Case Manager goes up by one" }
+  stDraft@{ shape: cyl, label: "<b>The draft is marked sent</b><br/>'N sent today' on Authorizations › With the payer goes up by one" }
   tNotif@{ shape: odd, label: "<b>Notification: 'Sent to the payer'</b><br/>'R-1701 was sent. It now shows as Received on the Dashboard.'" }
   tSent@{ shape: odd, label: "<b>'Sent to the payer'</b><br/>'R-1701 is on the Dashboard as Received.'" }
   pNav@{ shape: rect, label: "The new case opens: /authorizations/case/R-1701" }
@@ -5055,9 +5053,9 @@ flowchart TD
 
 ## Authorizations › New Case › Review & submit › After sending
 
-What changes once the request is signed and sent: the new case opens, the Dashboard shows it as Received, the Authorizations queue lists it, Case Manager stops listing it under Being prepared, and the patient's record gains the request. An existing patient is never copied: the request joins the patient, the treatment episode and the authorization it belongs to. The draft's own address turns into a 'was sent' page.
+What changes once the request is signed and sent: the new case opens, the Dashboard shows it as Received, Authorizations lists it under With the payer instead of In progress, and the patient's record gains the request. An existing patient is never copied: the request joins the patient, the treatment episode and the authorization it belongs to. The draft's own address turns into a 'was sent' page.
 
-Route: `/authorizations/case/R-1701, then /dashboard, /authorizations and /manager`
+Route: `/authorizations/case/R-1701, then /dashboard and /authorizations`
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -5087,11 +5085,11 @@ flowchart TD
   tToast@{ shape: odd, label: "<b>Toast: 'Sent to the payer'</b><br/>Bell notification: 'Sent to the payer'" }
   end
   gOpen@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
-  subgraph gQueue ["Authorizations queue"]
-  sQ@{ shape: curv-trap, label: "<b>Queue</b><br/>A row for the request: patient, payer, level of care, type<br/>'Payer has it. Navigator checks again in 30 minutes'" }
-  pQ@{ shape: rect, label: "<b>It sits in the band of the payer's usual decision time</b><br/>Only a viewer who can see the case's site sees the row" }
+  subgraph gQueue ["Authorizations"]
+  sQ@{ shape: curv-trap, label: "<b>Authorizations, With the payer view</b><br/>One row for the request, marked 'New today'<br/>The draft's In progress row is gone, so 'Needs attention' no longer counts it" }
+  pQ@{ shape: rect, label: "Only a viewer who can see the case's site sees the row" }
   end
-  gQueue@{ shape: subproc, label: "Continues in: Authorizations › Queue › Read and open a request row" }
+  gQueue@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Read a row" }
   subgraph gPat ["The patient's record"]
   stLink@{ shape: cyl, label: "<b>The request is linked to its patient, treatment episode, authorization and verification</b><br/>A new patient becomes a patient<br/>A review, renewal or modification joins its authorization: History gets 'Continued stay request signed and sent'<br/>A new stay for a known patient gets its own episode and a pending authorization" }
   pBook@{ shape: rect, label: "<b>The next search finds the patient once, with the new authorization shown as Not approved yet</b><br/>A second new case for them finds this one as a possible duplicate" }
@@ -5104,18 +5102,15 @@ flowchart TD
   pNoSign@{ shape: rect, label: "<b>'This case is no longer being prepared'</b><br/>'Nothing more is needed here.'<br/>It cannot be signed a second time" }
   cOpenCase@{ shape: trap-t, label: "Click 'Open the case'" }
   cOpenDash@{ shape: trap-t, label: "Click 'Open it on the Dashboard'" }
-  cBackCM@{ shape: trap-t, label: "Click 'Back to Case Manager'" }
+  cBackCM@{ shape: trap-t, label: "Click 'Back to Authorizations'" }
   end
-  subgraph gCM ["Case Manager › Active cases"]
-  sCM@{ shape: curv-trap, label: "<b>Case Manager</b><br/>'N active cases.' and 'N are still being prepared.'" }
-  pGone@{ shape: rect, label: "<b>The case leaves the 'Being prepared' card</b><br/>The 'still being prepared' count goes down by one" }
-  pBadge@{ shape: rect, label: "The sidebar badge on 'Case Manager' no longer counts it" }
-  cSent@{ shape: trap-t, label: "Click the 'N sent today' button" }
-  pSentN@{ shape: rect, label: "The count is one higher (4 becomes 5)" }
-  pLedger@{ shape: rect, label: "The tracker of active cases gains a row for the request" }
+  subgraph gCM ["Authorizations › With the payer"]
+  sCM@{ shape: curv-trap, label: "<b>Authorizations</b><br/>The plain address reopens the last view used" }
+  cSent@{ shape: trap-t, label: "On the With the payer view, click the 'N sent today' button" }
+  pSentN@{ shape: rect, label: "<b>The count is one higher (4 becomes 5)</b><br/>The button opens the Dashboard's Received requests" }
   end
   gDash2@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Order, rows and paging" }
-  gCM2@{ shape: subproc, label: "Continues in: Case Manager › Active cases › A new case joins the tracker" }
+  gCM2@{ shape: subproc, label: "Continues in: Authorizations › With the payer › A request sent today joins the list" }
   s1 --> sCase --> gCase
   s1 --> sDash --> pCount
   sDash --> tToast
@@ -5127,14 +5122,13 @@ flowchart TD
   pNoSign --> cOpenCase --> sCase
   pNoSign --> cOpenDash --> sDash
   pNoSign --> cBackCM --> sCM
-  s1 --> sCM --> pGone --> pBadge
-  sCM --> cSent --> pSentN --> gDash2
-  sCM --> pLedger
-  pLedger -.-> gCM2
+  sQ --> cSent --> pSentN --> gDash2
+  sCM --> sQ
+  sQ -.-> gCM2
   class s1 k_start
   class sCase,sDash,sQ,sWas,sCM k_screen
   class gCase,gOpen,gQueue,gEb,gDash2,gCM2 k_goto
-  class pCount,pQ,pBook,pVer,pNoSign,pGone,pBadge,pSentN,pLedger k_process
+  class pCount,pQ,pBook,pVer,pNoSign,pSentN k_process
   class tToast k_toast
   class stLink k_store
   class cBr,cOpenCase,cOpenDash,cBackCM,cSent k_click
@@ -5636,7 +5630,7 @@ flowchart TD
 
 The workflow leaves a short trace in the case's history: which workflow was applied, how far it ran at each stage change (steps done, skipped and waiting), the rules it read with their verification state, any override, the sign-off, and what was prepared versus what was transmitted. Before the request exists the lines wait on the draft; they are written to the request's History when it is signed and sent. A draft that is already a request on the case page writes them straight away. Lines are short; the detail sits under them.
 
-Route: `/authorizations/new/:draftId, then /authorizations/case/ID (History) and Case Manager`
+Route: `/authorizations/new/:draftId, then /authorizations/case/ID (History) and /authorizations`
 
 The engine's line for a stage names the agent that works it (Verify at Eligibility & Benefits, Reader at Clinical documentation, Scribe once the agents start, Integrity at Review & submit). The engine's preparation stage is shown as Clinical documentation: 'Workflow ran to Clinical documentation' is written once for the documents and once when the agents start; 'Workflow applied' is Psyflo's; a person's choice, review or override is the person's; the 'Prepared for' line is Packet's. Nothing here is a payer fact.
 
@@ -5672,12 +5666,12 @@ flowchart TD
   p2@{ shape: rect, label: "<b>Sign and send writes them to the new request's History, before the signature line</b><br/>Times are the demo clock" }
   p3@{ shape: rect, label: "The lines go straight to the request's History" }
   sc1@{ shape: curv-trap, label: "<b>Authorizations › the case page › 'History'</b><br/>Each line says who: Psyflo, you or a named agent<br/>The 'Authorization facts' row has 'Workflow' with the version" }
-  sc2@{ shape: curv-trap, label: "<b>Case Manager › tracker row quick view</b><br/>'Workflow' row and the three newest history lines" }
-  sc3@{ shape: curv-trap, label: "<b>Case Manager › a case with no request yet</b><br/>'Workflow' row in the case summary and the lines in 'History'" }
+  sc2@{ shape: curv-trap, label: "<b>Authorizations › tracked quick view (a row with the payer or approved)</b><br/>'Workflow' row and the three newest history lines" }
+  sc3@{ shape: curv-trap, label: "<b>Authorizations › ledger case page, a case with no request yet</b><br/>'Workflow' row in the case summary and the lines in 'History'" }
   d3@{ shape: diam, label: "Is the case a request?" }
   e1@{ shape: stadium, label: "The trace can be read where the case is read" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › Case page › History" }
-  g2@{ shape: subproc, label: "Continues in: Case Manager › Ledger case › Workflow line and history" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Ledger case page › Workflow line and history" }
   s1 --> d1
   d1 -->|"Applied"| a1 --> d2
   d1 -->|"Stage opened"| a2 --> a3 --> d2
@@ -5732,8 +5726,8 @@ flowchart TD
   c1@{ shape: trap-t, label: "Click 'Save verification to the patient record'" }
   st1@{ shape: cyl, label: "<b>The verification is saved</b><br/>The draft is removed" }
   p3@{ shape: rect, label: "Opens the result on Eligibility & Benefits" }
-  c2@{ shape: trap-t, label: "Click 'Return to Case Manager'" }
-  p4@{ shape: rect, label: "<b>The draft is removed</b><br/>Opens Case Manager" }
+  c2@{ shape: trap-t, label: "Click 'Return to Authorizations'" }
+  p4@{ shape: rect, label: "<b>The draft is removed</b><br/>Opens Authorizations" }
   c3@{ shape: trap-t, label: "Click 'Continue with a documented exception'" }
   i1@{ shape: lean-r, label: "Type why a request is sent when none is required" }
   st2@{ shape: cyl, label: "<b>The reason is kept on the draft</b><br/>History: 'Override: continued although no authorization is required, reason documented'" }
@@ -5817,9 +5811,9 @@ flowchart TD
 
 ## Authorizations › New Case › Save as draft and leave
 
-A case becomes a draft in Case Manager once it is saved, which happens on 'Save as draft' and also on 'Start the agents'. Leaving without saving leaves nothing in Case Manager. The draft keeps which of the five steps it was on, so opening it puts the person back where the case was. The step is part of the draft, so 'Send to payer' and a Case Manager button land on the right one.
+A case becomes a draft, listed in Authorizations as an In progress row, once it is saved, which happens on 'Save as draft' and also on 'Start the agents'. Leaving without saving leaves nothing in Authorizations. The draft keeps which of the five steps it was on, so opening it puts the person back where the case was. The step is part of the draft, so 'Send to payer' and a draft row's button in Authorizations land on the right one.
 
-Route: `/authorizations/new/:draftId, then /manager`
+Route: `/authorizations/new/:draftId, then /authorizations?view=progress`
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -5842,7 +5836,7 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Working on a new case" }
   s2@{ shape: stadium, label: "On a case page, click 'Open in review and sign' or 'Send to payer'" }
-  pReq@{ shape: rect, label: "<b>A draft is made from the request, or the one it already has is brought up to date</b><br/>It opens on Review & submit when the request is ready, on Authorization preparation when agents still have work<br/>It is not saved, so Case Manager does not list it" }
+  pReq@{ shape: rect, label: "<b>A draft is made from the request, or the one it already has is brought up to date</b><br/>It opens on Review & submit when the request is ready, on Authorization preparation when agents still have work<br/>It is not saved" }
   gCase@{ shape: subproc, label: "Continues in: Authorizations › Case page › Send to payer and review and sign" }
   subgraph gSave ["Ways a draft gets saved"]
   c1@{ shape: trap-t, label: "Click 'Save as draft' on Intake, Eligibility & Benefits or Clinical documentation" }
@@ -5854,28 +5848,28 @@ flowchart TD
   dAlready@{ shape: diam, label: "Is the case already saved?" }
   st1@{ shape: cyl, label: "<b>Draft marked saved and given a case ID</b><br/>R- for Residential 3.5 and Detox, I- for IOP, P- for PHP<br/>A draft with no level of care yet falls under R<br/>Numbered from 1701" }
   pNoop@{ shape: rect, label: "Nothing changes; the toast still shows" }
-  t1@{ shape: odd, label: "<b>Steps 1 to 3: 'Draft saved'</b><br/>'R-1701 is in Case Manager. Pick it up whenever you like.'" }
-  t2@{ shape: odd, label: "<b>Review & submit: 'Draft saved'</b><br/>'R-1701 is in Case Manager.'" }
+  t1@{ shape: odd, label: "<b>Steps 1 to 3: 'Draft saved'</b><br/>'R-1701 is in Authorizations.'" }
+  t2@{ shape: odd, label: "<b>Review & submit: 'Draft saved'</b><br/>'R-1701 is in Authorizations.'" }
   stPos@{ shape: cyl, label: "<b>The draft keeps its step</b><br/>Intake, Eligibility & Benefits, Clinical documentation, Authorization preparation or Review & submit<br/>And what was typed, picked, answered and documented" }
-  cLeave@{ shape: trap-t, label: "Click 'Case Manager' at the top, a sidebar item, or close the tab" }
+  cLeave@{ shape: trap-t, label: "Click 'Authorizations' at the top, a sidebar item, or close the tab" }
   dSaved@{ shape: diam, label: "Was the case saved?" }
-  pUnsaved@{ shape: rect, label: "<b>Nothing appears in Case Manager</b><br/>The draft stays in this session and its address still opens it<br/>Opening New Case again starts another blank draft" }
+  pUnsaved@{ shape: rect, label: "<b>Nothing appears in Authorizations</b><br/>The draft stays in this session and its address still opens it<br/>Opening New Case again starts another blank draft" }
   pAway@{ shape: rect, label: "<b>A running case stops moving while the page is closed</b><br/>The row shows the agent that was working<br/>Or, when an agent could not finish: 'Verify could not reach Cardinal's portal. Retry it or skip it'" }
-  sCM@{ shape: curv-trap, label: "<b>Case Manager › Active cases › Being prepared</b><br/>'Most urgent first. Each case moves through eight steps; the agents do all but Ask and Sign.'<br/>Filter: 'All', 'Agents working', 'Needs your input', 'Ready to sign'<br/>Only cases at the sites in view" }
-  sRow@{ shape: curv-trap, label: "<b>A row for the draft</b><br/>Level of care chip, case ID, 'J.M., 34 · Summit Medicaid HMO', request<br/>Eight-step bar: Read, Rules, Match, Ask, Draft, Check, Sign, Send<br/>Who has it, due chip, status pill, approval chance, one button" }
+  sCM@{ shape: curv-trap, label: "<b>Authorizations › In progress (also in All)</b><br/>A draft of a listed request stays on that request's row; a new case is a row of its own<br/>Only cases at the sites in view" }
+  sRow@{ shape: curv-trap, label: "<b>A row for the draft</b><br/>Case ID and patient, status chip, the agent line as next action, due pill, owner, approval chance, one button" }
   dState@{ shape: diam, label: "What state is the draft in?" }
-  rIntake@{ shape: rect, label: "<b>'Intake not finished'</b><br/>Button 'Continue'; chance shows 'Not started'" }
+  rIntake@{ shape: rect, label: "<b>'Intake not finished'</b><br/>Button 'Continue'; chance shows 'None'" }
   rWork@{ shape: rect, label: "<b>'Agents working'</b><br/>Button 'Watch'" }
   rAsk@{ shape: rect, label: "<b>'Needs your input'</b><br/>Button 'Answer'" }
   rReady@{ shape: rect, label: "<b>'Ready to sign'</b><br/>Button 'Review and sign'" }
-  pBadge@{ shape: rect, label: "<b>The sidebar badge on 'Case Manager' counts drafts that need a person</b><br/>Intake not finished, a question, or ready to sign" }
-  pDash@{ shape: rect, label: "<b>The Dashboard counts a saved draft under 'Preparing' ('N in Case Manager')</b><br/>A draft that was never saved is not counted<br/>Seeded cases such as R-1042 are counted as requests" }
+  pBadge@{ shape: rect, label: "<b>'Needs attention' counts drafts that need a person</b><br/>Intake not finished, a question, or ready to sign" }
+  pDash@{ shape: rect, label: "<b>The Dashboard counts a saved draft under 'Preparing'</b><br/>A draft that was never saved is not counted<br/>Seeded cases such as R-1042 are counted as requests" }
   cOpen@{ shape: trap-t, label: "Click the case ID, or the row's button" }
   pResume@{ shape: rect, label: "<b>Opens /authorizations/new/DRAFT</b><br/>The page resumes where the draft was<br/>A draft whose agents already ran opens on Authorization preparation or Review & submit, never on Intake" }
   gResume@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › Finished, paused or left" }
   gStep3@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › The checklist and Continue" }
   gOpen@{ shape: subproc, label: "Continues in: Authorizations › New Case › Reopen and resume a case" }
-  gCM@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Being prepared card" }
+  gCM@{ shape: subproc, label: "Continues in: Authorizations › In progress › Drafts being prepared" }
   sNF@{ shape: curv-trap, label: "<b>New Case</b><br/>'That draft is not in the demo.'<br/>'We could not find that draft'<br/>'It may have been cleared when the demo data was reset.'" }
   cNew@{ shape: trap-t, label: "Click 'Start a new case'" }
   pNew@{ shape: rect, label: "A new blank draft opens on Intake" }

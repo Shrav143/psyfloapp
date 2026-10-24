@@ -16,28 +16,38 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "Payers › a change is acknowledged and 'Update drafts' is confirmed" }
+  s1@{ shape: stadium, label: "Payers › History & Changes: a change is acknowledged and 'Update drafts' is confirmed" }
+  s0@{ shape: stadium, label: "Payers › Edits waiting: 'Update drafts' after saved edits" }
   st1@{ shape: cyl, label: "<b>Payers records the update</b><br/>Which change, which payer, the IDs of the drafts and the demo-clock time" }
   g1@{ shape: subproc, label: "Continues in: Payers › History & Changes › Review and apply a change" }
-  s2@{ shape: stadium, label: "Open Case Manager (Active cases tab)" }
-  d1@{ shape: diam, label: "<b>Does an update list this case?</b><br/>(match on the case ID or draft ID, any letter case)" }
+  g0@{ shape: subproc, label: "Continues in: Payers › Edits waiting › Update drafts" }
+  pd@{ shape: rect, label: "<b>A redrafted request that is on the Dashboard waits for a new signature</b><br/>It needs you again, so its row counts in 'Needs attention'" }
+  nt@{ shape: odd, label: "<b>Notification 'Drafts updated'</b><br/>'2 drafts were redrafted after Cardinal's change. Each needs a new signature in Case Manager.'" }
+  cn@{ shape: trap-t, label: "Click the notification" }
+  pn@{ shape: rect, label: "Go to /authorizations (the last view and filters come back)" }
+  s2@{ shape: stadium, label: "Open Authorizations" }
+  d1@{ shape: diam, label: "<b>Does an update list one of the row's IDs?</b><br/>(request, case, ledger or draft ID, any letter case)" }
   p1@{ shape: rect, label: "The newest update for the case is used" }
-  t1@{ shape: curv-trap, label: "<b>'Being prepared' row</b><br/>Grey tag 'Updated for a payer change · 10/20' beside the request line, for example 'Admission request'" }
-  t2@{ shape: curv-trap, label: "<b>Tracker row</b><br/>Grey tag under 'J.M. · 34' in the Case column" }
-  n1@{ shape: rect, label: "No tag" }
-  e1@{ shape: stadium, label: "Rows are tagged" }
+  t1@{ shape: curv-trap, label: "<b>Grey note under the patient</b><br/>'Updated for a payer change · 10/20'<br/>On a queue request's row, a saved draft's row or a tracked row" }
+  n1@{ shape: rect, label: "No note" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › In progress › Drafts being prepared" }
+  e1@{ shape: stadium, label: "Rows are marked" }
   e2@{ shape: stadium, label: "Rows as before" }
   s1 --> st1 --> g1
-  st1 --> d1
+  s0 --> st1
+  s0 -.-> g0
+  st1 --> pd
+  st1 --> nt --> cn --> pn --> d1
   s2 --> d1
-  d1 -->|"Yes"| p1 --> t1 & t2
-  t1 --> e1
-  t2 --> e1
+  d1 -->|"Yes"| p1 --> t1 --> e1
+  t1 -.-> g2
   d1 -->|"No"| n1 --> e2
-  class s1,s2 k_start
+  class s1,s0,s2 k_start
   class st1 k_store
-  class g1 k_goto
+  class g1,g0,g2 k_goto
+  class pd,pn,p1,n1 k_process
+  class nt k_toast
+  class cn k_click
   class d1 k_decision
-  class p1,n1 k_process
-  class t1,t2 k_screen
+  class t1 k_screen
   class e1,e2 k_end

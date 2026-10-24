@@ -19,7 +19,7 @@ flowchart TD
   fr@{ shape: curv-trap, label: "<b>Authorization facts row</b><br/>Under the 'Next:' block" }
   f1@{ shape: rect, label: "Request type: in the title line as a chip, not here" }
   f2@{ shape: rect, label: "Days or units requested: in the line under the title, not here" }
-  d1@{ shape: diam, label: "Does the Case Manager ledger have an approval for this request (days or units approved)?" }
+  d1@{ shape: diam, label: "Does the ledger have an approval for this request (days or units approved)?" }
   f3@{ shape: rect, label: "<b>'Approved'</b><br/>'48 units' with '38 used · 10 left'" }
   dW@{ shape: diam, label: "Is the approval counted in days, and does the ledger give an end date for it?" }
   fw@{ shape: rect, label: "<b>'Window'  '10/20 to 11/3' with 'ends in 14 d'</b><br/>Shown instead of 'Approval ends' (it names the same end date)" }
@@ -32,9 +32,9 @@ flowchart TD
   d4@{ shape: diam, label: "Has the request been decided?" }
   f7@{ shape: rect, label: "No 'Waiting on' fact" }
   f8@{ shape: rect, label: "<b>'Waiting on'</b><br/>'You' with 'to sign', 'an answer', 'peer-to-peer call' or 'after Scribe drafts'<br/>Or the payer, e.g. 'Summit' with 'decision'" }
-  src@{ shape: cyl, label: "<b>Read only</b><br/>Case Manager ledger (units, review and expiry dates)<br/>The request's draft and the payer's document list<br/>The request on the Dashboard" }
+  src@{ shape: cyl, label: "<b>Read only</b><br/>The approved-authorization ledger (units, review and expiry dates)<br/>The request's draft and the payer's document list<br/>The request on the Dashboard" }
   wrap@{ shape: rect, label: "<b>Facts wrap onto a second line on a narrow window</b><br/>The page never scrolls sideways" }
-  g1@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Tracker of every active case" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Approved › Approved authorizations and their units" }
   fr --> f1 --> f2 --> d1
   d1 -->|"Yes"| f3 --> dW
   d1 -->|"No"| f5

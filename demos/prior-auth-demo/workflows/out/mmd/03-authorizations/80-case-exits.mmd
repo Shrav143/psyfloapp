@@ -16,24 +16,24 @@ flowchart LR
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  q@{ shape: curv-trap, label: "Authorizations queue" }
+  q@{ shape: curv-trap, label: "Authorizations worklist" }
   cp@{ shape: curv-trap, label: "A case page (any tab)" }
   l1@{ shape: trap-t, label: "Click 'New Case'" }
   l2@{ shape: trap-t, label: "Click the 'Coverage needs a fix' pill on a row" }
-  l6@{ shape: trap-t, label: "Click 'Open Case Manager' in the empty message" }
+  l6@{ shape: trap-t, label: "With the payer view: click '4 sent today'" }
   l3@{ shape: trap-t, label: "On the coverage card: click 'Open Eligibility & Benefits'" }
   l4@{ shape: trap-t, label: "<b>On a denied request: click 'Open in Denial Intelligence'</b><br/>(in the 'Next:' block)" }
   l5@{ shape: trap-t, label: "<b>Click 'Open in review and sign' or 'Send to payer'</b><br/>('Send to payer' is the 'Next:' block's button once every check passes)" }
-  l7@{ shape: trap-t, label: "Click 'Back to queue' or the 'Authorizations' crumb" }
-  l9@{ shape: trap-t, label: "<b>In the queue's quick view panel: click 'Review and sign'</b><br/>(shown while the request is being prepared)" }
+  l7@{ shape: trap-t, label: "Click 'Back to Authorizations' or the 'Authorizations' crumb" }
+  l9@{ shape: trap-t, label: "<b>In a request's quick view panel: click 'Review and sign'</b><br/>(shown while the request is being prepared)" }
   l10@{ shape: trap-t, label: "On the card for a case at another site: click 'Back to the Dashboard'" }
   l8@{ shape: trap-t, label: "<b>Click 'Open on the Dashboard'</b><br/>(in the 'Next:' block or next to the status line, once the request is past Preparing)" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › New Case › How a case starts and resumes" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › Ways in and pre-fill" }
-  g5@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Tracker of every active case" }
+  g5@{ shape: subproc, label: "Continues in: Dashboard › Lifecycle › Click a state to filter the table" }
   g3@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
   g4@{ shape: subproc, label: "Continues in: Authorizations › Case page › Send to payer and review and sign" }
-  g6@{ shape: subproc, label: "Continues in: Authorizations › Queue › Open the queue and read the top" }
+  g6@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Arrive and read the views" }
   g7@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   g8@{ shape: subproc, label: "Continues in: Dashboard › Arrive › What the page shows" }
   q --> l1 --> g1

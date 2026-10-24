@@ -17,7 +17,7 @@ flowchart TD
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "A case id is in the address" }
-  s2@{ shape: stadium, label: "<b>Click a button on a case in Case Manager</b><br/>'Continue', 'Watch', 'Answer' or 'Review and sign'" }
+  s2@{ shape: stadium, label: "<b>Click a button on a draft row in Authorizations (In progress)</b><br/>'Continue', 'Watch', 'Answer' or 'Review and sign'" }
   s3@{ shape: stadium, label: "<b>Click 'Open in review and sign' or 'Send to payer' on a case page</b><br/>A draft is made from the request, or the one it has is brought up to date" }
   pReq@{ shape: rect, label: "<b>Draft opens on Review & submit when the request is ready</b><br/>on Clinical documentation at Authorization preparation when agents still have work<br/>Never a blank draft" }
   d3@{ shape: diam, label: "Is there a case with that id?" }
@@ -31,14 +31,14 @@ flowchart TD
   d4@{ shape: diam, label: "Was it signed and sent?" }
   sc2@{ shape: curv-trap, label: "<b>'R-1234 was sent'</b><br/>'Signed and sent (demo)', or 'Already with the payer'" }
   c2@{ shape: trap-t, label: "Click 'Open the case', or 'Open it on the Dashboard'" }
-  c3@{ shape: trap-t, label: "Click 'Back to Case Manager'" }
+  c3@{ shape: trap-t, label: "Click 'Back to Authorizations'" }
   d5@{ shape: diam, label: "Did the agents already run, with the case still on an earlier step?" }
   p9@{ shape: rect, label: "<b>Opens on Clinical documentation, scrolled to Authorization preparation, when fewer than ten agents are done</b><br/>else on Review & submit<br/>A later click in the stepper is not undone" }
-  sc3@{ shape: curv-trap, label: "<b>New Case</b><br/>Link 'Case Manager', the header card 'New Case' with the case id and the 'Authorization type' dropdown<br/>The stepper with each step's state, the workflow line, then the step" }
-  c4@{ shape: trap-t, label: "Click the link 'Case Manager'" }
+  sc3@{ shape: curv-trap, label: "<b>New Case</b><br/>Link 'Authorizations', the header card 'New Case' with the case id and the 'Authorization type' dropdown<br/>The stepper with each step's state, the workflow line, then the step" }
+  c4@{ shape: trap-t, label: "Click the link 'Authorizations'" }
   d6@{ shape: diam, label: "Which step is the case on?" }
   pNarrow@{ shape: rect, label: "<b>Narrowing the site view while a blank case is open</b><br/>A case with no patient and no ID moves to the site in view; one with an ID or a patient stays at its own site" }
-  gCm@{ shape: subproc, label: "Continues in: Case Manager" }
+  gCm@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Arrive and read the views" }
   gDash@{ shape: subproc, label: "<b>Continues in: Dashboard</b><br/>Opens the request" }
   gCase@{ shape: subproc, label: "Continues in: Authorizations › Case page › Send to payer and review and sign" }
   gSites@{ shape: subproc, label: "Continues in: Authorizations › New Case › Sites and scope" }

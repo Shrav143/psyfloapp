@@ -22,8 +22,13 @@ flowchart LR
   subgraph gRed ["Redirects (the old address is replaced)"]
   r1@{ shape: rect, label: "'/' goes to /dashboard" }
   g1@{ shape: subproc, label: "Continues in: Dashboard" }
-  r2@{ shape: rect, label: "<b>'/active' goes to /manager</b><br/>Any '?tab=' on /active is dropped, so the Active cases tab opens" }
-  g2@{ shape: subproc, label: "Continues in: Case Manager › Page › Arrive and read the header" }
+  r2@{ shape: rect, label: "<b>'/manager' and '/active' (old Case Manager links) go to /authorizations</b><br/>The view is always named, so an old link never lands on the last view used" }
+  dm@{ shape: diam, label: "What does the old link carry?" }
+  m1@{ shape: rect, label: "<b>?tab=reviews, or a ?review=</b><br/>goes to /authorizations?view=reviews<br/>A ?review= is kept and opens that review's drawer" }
+  m2@{ shape: rect, label: "<b>Anything else (nothing, ?tab=cases, ...)</b><br/>goes to /authorizations?view=all" }
+  m3@{ shape: rect, label: "<b>?show=active or ?show=renewal (the Dashboard's Active and Renewal due chips) is kept; any other ?show= is dropped</b><br/>For example /active?show=renewal becomes /authorizations?view=all&show=renewal" }
+  m4@{ shape: rect, label: "<b>'/authorizations?tab=reviews' (Case Manager's parameter on the new address) opens Reviews this week too</b><br/>The address is rewritten in place to /authorizations?view=reviews" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Addresses and old queue links" }
   r3@{ shape: rect, label: "<b>'/referrals' goes to /authorizations/new</b><br/>Referrals no longer have a tab: they start Intake in New Case" }
   r3b@{ shape: rect, label: "New Case starts a blank draft and the address becomes /authorizations/new/draft-..." }
   g3@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Start with a referral or patient" }
@@ -31,7 +36,7 @@ flowchart LR
   g4@{ shape: subproc, label: "Continues in: Authorizations › New Case › Referral › The full referral page" }
   end
   subgraph gKnown ["Pages that exist"]
-  k1@{ shape: rect, label: "<b>/dashboard, /authorizations..., /denials..., /manager, /analytics, /emr, /payers..., /settings</b><br/>The page opens and starts at the top" }
+  k1@{ shape: rect, label: "<b>/dashboard, /authorizations..., /denials..., /analytics, /emr, /payers..., /settings</b><br/>The page opens and starts at the top" }
   g5@{ shape: subproc, label: "Continues in: Global shell › Sidebar › Where every item goes" }
   end
   subgraph gNo ["Anything else"]
@@ -43,13 +48,17 @@ flowchart LR
   n5@{ shape: stadium, label: "Back on the page before the bad address" }
   end
   subgraph gOwn ["Known page, unknown record (the page answers)"]
-  o1@{ shape: rect, label: "/authorizations/case/XYZ shows 'Request not found' with 'Back to the queue'" }
+  o1@{ shape: rect, label: "/authorizations/case/XYZ shows 'Request not found' with 'Back to Authorizations'" }
   o2@{ shape: rect, label: "/authorizations/new/XYZ shows 'We could not find that draft' with 'Start a new case'" }
   g7@{ shape: subproc, label: "Continues in: Authorizations › New Case › How a case starts and resumes" }
   end
   s1 --> p0 --> d1
   d1 -->|"/"| r1 --> g1
-  d1 -->|"/active"| r2 --> g2
+  d1 -->|"/manager or /active"| r2 --> dm
+  dm -->|"Reviews"| m1
+  dm -->|"Anything else"| m2
+  m1 & m2 --> m3 --> g2
+  d1 -->|"/authorizations?tab=reviews"| m4 --> g2
   d1 -->|"/referrals"| r3 --> r3b --> g3
   d1 -->|"/referrals/id"| r4 --> g4
   d1 -->|"A page above"| k1 --> g5
@@ -61,8 +70,8 @@ flowchart LR
   o2 --> g7
   d1 -.-> o2
   class s1 k_start
-  class p0,r1,r2,r3,r3b,r4,k1,n2,o1,o2 k_process
-  class d1 k_decision
+  class p0,r1,r2,m1,m2,m3,m4,r3,r3b,r4,k1,n2,o1,o2 k_process
+  class d1,dm k_decision
   class g1,g2,g3,g4,g5,g6,g7 k_goto
   class n1 k_screen
   class n3,n4 k_click

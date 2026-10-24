@@ -16,38 +16,46 @@ flowchart TD
   classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
-  s1@{ shape: stadium, label: "Denial Intelligence › the clinic accepts a denial" }
-  st1@{ shape: cyl, label: "<b>The accepted denial is recorded</b><br/>Which denial (for example D-3318), its request, the payer and the demo-clock time" }
+  s1@{ shape: stadium, label: "Denial Intelligence › a denial › 'Accept the decision' › 'Accept and close'" }
+  st1@{ shape: cyl, label: "<b>The accepted denial is recorded</b><br/>Which denial (e.g. D-3297), its request's case, the payer and the demo-clock time" }
   g1@{ shape: subproc, label: "Continues in: Denial Intelligence › Accept the denial" }
-  s2@{ shape: stadium, label: "Open Case Manager (Active cases tab)" }
-  d1@{ shape: diam, label: "Has any denial been accepted?" }
-  p0@{ shape: rect, label: "<b>No row</b><br/>Active cases shows 'Being prepared', then the tracker" }
-  c1@{ shape: curv-trap, label: "<b>Folded row 'Step-down plans' (closed at first)</b><br/>Summary '1 plan to start. Choose the next level of care and book the first visit.'" }
-  co@{ shape: trap-t, label: "Click the header, or press Enter or Space on it" }
-  c1b@{ shape: curv-trap, label: "Opened: one row for each accepted denial, newest first" }
-  r1@{ shape: curv-trap, label: "<b>A row</b><br/>Level chip ('Residential 3.5')<br/>'Step-down plan'<br/>Case ID, 'M.C., 38', payer name<br/>'From denial D-3318 · accepted 10/20'<br/>Button 'Open case'" }
-  p1@{ shape: rect, label: "<b>Search, level of care and payer from the filter bar narrow the plans</b><br/>The tracker's status filter does not apply<br/>When nothing matches, the whole row is hidden" }
-  c2@{ shape: trap-t, label: "Click the case ID or 'Open case'" }
-  p2@{ shape: rect, label: "Go to /authorizations/case/ and the case code of the denial's request (R-0997)" }
-  g2@{ shape: subproc, label: "Continues in: Authorizations › Case" }
-  p3@{ shape: rect, label: "The tracker row of that denial (D-3318) reads 'Step-down plan open' in Clock; its status is unchanged" }
-  st2@{ shape: cyl, label: "'Reset demo data' clears the plans" }
-  e1@{ shape: stadium, label: "Plans are on screen" }
-  e2@{ shape: stadium, label: "Active cases as before" }
+  c0@{ shape: trap-t, label: "<b>On the denial: click 'Plan the step-down'</b><br/>or the notification 'Denial closed'" }
+  p0@{ shape: rect, label: "Go to /authorizations?view=all" }
+  s2@{ shape: stadium, label: "Open Authorizations › Denied, or Needs attention" }
+  d1@{ shape: diam, label: "<b>Is the denial a row in the list?</b><br/>(by its denial ID or its request's case ID)" }
+  n1@{ shape: rect, label: "Nothing changes in Authorizations" }
+  p1@{ shape: rect, label: "<b>The row stays in Denied (Denied 8 at the start, still 8)</b><br/>It keeps its site: a denial added from a letter follows its own" }
+  r1@{ shape: curv-trap, label: "<b>The row</b><br/>Status 'Accepted' (grey); its other chips go<br/>Next action 'Plan the step-down: choose the next level of care and book the first visit.'<br/>Button 'Open case' (green)" }
+  r2@{ shape: rect, label: "<b>Deadline</b><br/>A tracked denial (D-3318) reads 'Step-down plan open'<br/>A denial only the Dashboard has reads 'None'" }
+  r3@{ shape: rect, label: "<b>It counts in Needs attention; only Reset demo data clears it</b><br/>The status filter 'Accepted' finds it" }
+  c1@{ shape: trap-t, label: "Click 'Open case' or the ID" }
+  p2@{ shape: rect, label: "<b>Go to /authorizations/case/ and the case of the denial's request</b><br/>(D-3297 opens I-2141)" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Case page › Ways in" }
+  p3@{ shape: rect, label: "The case page reads 'Accepted. Nothing left to send'" }
+  subgraph gN ["'Consider a step-down' notes"]
+  n2@{ shape: curv-trap, label: "Under the patient on R-0873 and P-1522: 'Consider a step-down'" }
+  n3@{ shape: trap-t, label: "Hover the note" }
+  n4@{ shape: rect, label: "<b>'Consider a step-down: Day 18 of 21 · aftercare visit not booked yet'</b><br/>or 'Day 11 · IOP starts Monday'" }
+  end
+  st2@{ shape: cyl, label: "'Reset demo data' clears the accepted denials" }
+  e1@{ shape: stadium, label: "The plan is on the denial's own row" }
   s1 --> st1 --> g1
-  st1 --> d1
+  st1 --> c0 --> p0 --> d1
   s2 --> d1
-  d1 -->|"No"| p0 --> e2
-  d1 -->|"Yes"| c1 --> co --> c1b --> r1 --> p1
-  r1 --> c2 --> p2 --> g2
-  p1 --> e1
-  st1 --> p3
+  d1 -->|"No"| n1
+  d1 -->|"Yes"| p1 --> r1 --> r2
+  r1 --> r3
+  r1 --> c1 --> p2 --> g2
+  p2 -.-> p3
+  r2 --> e1
+  s2 -.-> n2 --> n3 --> n4
   st1 -.-> st2
   class s1,s2 k_start
   class st1,st2 k_store
   class g1,g2 k_goto
+  class c0,c1,n3 k_click
+  class p0,n1,p1,r2,r3,p2,p3,n4 k_process
   class d1 k_decision
-  class p0,p1,p2,p3 k_process
-  class c1,c1b,r1 k_screen
-  class co,c2 k_click
-  class e1,e2 k_end
+  class r1,n2 k_screen
+  class e1 k_end
+  style gN fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

@@ -22,24 +22,24 @@ flowchart LR
   c1@{ shape: trap-t, label: "Click '1  Dashboard: where every request stands'" }
   r1@{ shape: rect, label: "Go to /dashboard" }
   g1@{ shape: subproc, label: "Continues in: Dashboard" }
-  c2@{ shape: trap-t, label: "Click '2  Authorizations: the queue'" }
-  r2@{ shape: rect, label: "Go to /authorizations" }
-  g2@{ shape: subproc, label: "Continues in: Authorizations › Queue" }
+  c2@{ shape: trap-t, label: "Click '2  Authorizations: every request in one list'" }
+  r2@{ shape: rect, label: "<b>Go to /authorizations</b><br/>A plain address: arriving from another page, the worklist reopens the last view used (All the first time)" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Arrive and read the views" }
   c3@{ shape: trap-t, label: "Click '3  New Case: start from a referral'" }
   r3@{ shape: rect, label: "<b>Go to /authorizations/new</b><br/>A blank draft is started and the address becomes /authorizations/new/draft-..." }
   g3@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Start with a referral or patient" }
   c4@{ shape: trap-t, label: "Click '4  Eligibility & Benefits: verify a patient'" }
   r4@{ shape: rect, label: "Go to /authorizations/eligibility/verify" }
-  g4@{ shape: subproc, label: "Continues in: Eligibility & Benefits › Verify a patient" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › Fill in the form" }
   c5@{ shape: trap-t, label: "Click '5  Denial Intelligence: D-3318'" }
   r5@{ shape: rect, label: "Go to /denials/D-3318" }
   g5@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
   c6@{ shape: trap-t, label: "Click '6  Payers: Cardinal, Changes'" }
   r6@{ shape: rect, label: "Go to /payers/cardinal?tab=changes" }
   g6@{ shape: subproc, label: "Continues in: Payers › History & Changes › Read what changed" }
-  c7@{ shape: trap-t, label: "Click '7  Case Manager: reviews this week'" }
-  r7@{ shape: rect, label: "Go to /manager?tab=reviews" }
-  g7@{ shape: subproc, label: "Continues in: Case Manager › Reviews this week › The list" }
+  c7@{ shape: trap-t, label: "Click '7  Authorizations: reviews this week'" }
+  r7@{ shape: rect, label: "<b>Go to /authorizations?view=reviews</b><br/>The worklist opens on the Reviews this week view" }
+  g7@{ shape: subproc, label: "Continues in: Authorizations › Reviews this week › The view" }
   s1 --> o1 --> p0
   p0 --> c1 & c2 & c3 & c4 & c5 & c6 & c7
   c1 --> r1 --> g1

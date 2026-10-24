@@ -33,8 +33,8 @@ flowchart TD
   end
   pBack@{ shape: rect, label: "<b>'Back' goes one step back</b><br/>From Review & submit it opens the agents' section of Clinical documentation<br/>The bar stays in view while a long step scrolls" }
   pHint@{ shape: odd, label: "<b>The bar's only line is a payer workflow warning, when there is one</b><br/>e.g. 'Workflow: Submission window: 1 business day left'" }
-  cLink@{ shape: trap-t, label: "Click the link 'Case Manager' above the title" }
-  gCm@{ shape: subproc, label: "Continues in: Case Manager" }
+  cLink@{ shape: trap-t, label: "<b>Click the link 'Authorizations' above the title</b><br/>Opens /authorizations" }
+  gCm@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Arrive and read the views" }
   sFull@{ shape: curv-trap, label: "<b>Stepper on the full referral page</b><br/>'Intake' is current<br/>The button 'Back to the case' sits beside the crumbs" }
   gFull@{ shape: subproc, label: "Continues in: Authorizations › New Case › Referral › The full referral page" }
   gStates@{ shape: subproc, label: "Continues in: Authorizations › New Case › Step states" }

@@ -26,11 +26,10 @@ flowchart LR
   end
   subgraph gMain ["Sidebar › Main"]
   dash@{ shape: curv-trap, label: "<b>Dashboard</b><br/>Lifecycle chips, Do next, authorizations table" }
-  auth@{ shape: curv-trap, label: "<b>Authorizations › Queue</b><br/>Requests ranked by how soon each is due" }
+  auth@{ shape: curv-trap, label: "<b>Authorizations › All Authorizations</b><br/>One worklist with view chips: All, Needs attention, In progress, With the payer, Approved, Denied, Reviews this week" }
   newc@{ shape: curv-trap, label: "<b>Authorizations › New Case</b><br/>Intake, Eligibility & Benefits, Clinical documentation, Authorization preparation, Review & submit" }
   elig@{ shape: curv-trap, label: "<b>Authorizations › Eligibility & Benefits</b><br/>List, verify a patient, result" }
   den@{ shape: curv-trap, label: "<b>Denial Intelligence</b><br/>Open denials, options, brief" }
-  mgr@{ shape: curv-trap, label: "<b>Case Manager</b><br/>Tabs: Active cases and Reviews this week" }
   ana@{ shape: curv-trap, label: "<b>Analytics</b><br/>Performance and the monthly report" }
   end
   subgraph gConn ["Sidebar › Connections"]
@@ -43,7 +42,9 @@ flowchart LR
   out@{ shape: odd, label: "<b>Sign out</b><br/>A toast: there is nothing to sign out of" }
   end
   subgraph gSub ["Pages reached from inside a tab"]
-  case@{ shape: curv-trap, label: "<b>Authorizations › Case page</b><br/>Five tabs: actions, picture, criteria, risk, draft" }
+  case@{ shape: curv-trap, label: "<b>Authorizations › Case page</b><br/>Three tabs: Recommended actions, Clinical picture & draft, Criteria & risk" }
+  ledg@{ shape: curv-trap, label: "<b>Authorizations › Approved authorization with no open request</b><br/>Case summary, window, units, reviews due, history" }
+  rev@{ shape: win-pane, label: "<b>Authorizations › Reviews this week › Review drawer</b><br/>Opens from a row in Reviews this week" }
   ref@{ shape: curv-trap, label: "<b>New Case › Full referral page</b><br/>Extracted, Validation, Coverage, Fit, Activity" }
   ver@{ shape: curv-trap, label: "Eligibility › Verify a patient and Result" }
   brief@{ shape: curv-trap, label: "Denial Intelligence › Peer-to-peer brief" }
@@ -53,23 +54,26 @@ flowchart LR
   g0@{ shape: subproc, label: "Continues in: Who can see what › Roles, sites and a record at the other site" }
   g1@{ shape: subproc, label: "Continues in: Global shell" }
   g2@{ shape: subproc, label: "Continues in: Dashboard" }
-  g3@{ shape: subproc, label: "Continues in: Authorizations › Queue and case page" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Arrive and read the views" }
+  g3b@{ shape: subproc, label: "Continues in: Authorizations › Ledger case page › Open and read" }
+  g3c@{ shape: subproc, label: "Continues in: Authorizations › Reviews this week › The review drawer" }
   g4@{ shape: subproc, label: "Continues in: Authorizations › New Case" }
   g5@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits" }
   g6@{ shape: subproc, label: "Continues in: Denial Intelligence" }
-  g7@{ shape: subproc, label: "Continues in: Case Manager" }
   g8@{ shape: subproc, label: "Continues in: Analytics" }
   g9@{ shape: subproc, label: "Continues in: EMR Connect" }
-  g10@{ shape: subproc, label: "Continues in: Payers" }
+  g10@{ shape: subproc, label: "Continues in: Payers › Workspace" }
   g11@{ shape: subproc, label: "Continues in: Settings" }
   s0 --> shell
   shell --> ask & notif & demo & site
   site --> g0
   demo --> g0
-  shell --> dash & auth & newc & elig & den & mgr & ana
+  shell --> dash & auth & newc & elig & den & ana
   shell --> emr & pay
   shell --> set & help & out
-  auth --> case
+  auth --> case & ledg & rev
+  ledg --> g3b
+  rev --> g3c
   newc --> ref
   elig --> ver
   den --> brief & rep
@@ -80,16 +84,15 @@ flowchart LR
   newc --> g4
   elig --> g5
   den --> g6
-  mgr --> g7
   ana --> g8
   emr --> g9
   pay --> g10
   set --> g11
   class s0 k_start
-  class shell,dash,auth,newc,elig,den,mgr,ana,emr,pay,set,case,ref,ver,brief,rep,payer k_screen
-  class ask,notif,site,demo k_overlay
+  class shell,dash,auth,newc,elig,den,ana,emr,pay,set,case,ledg,ref,ver,brief,rep,payer k_screen
+  class ask,notif,site,demo,rev k_overlay
   class help,out k_toast
-  class g0,g1,g2,g3,g4,g5,g6,g7,g8,g9,g10,g11 k_goto
+  class g0,g1,g2,g3,g3b,g3c,g4,g5,g6,g8,g9,g10,g11 k_goto
   style gTop fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gMain fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gConn fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

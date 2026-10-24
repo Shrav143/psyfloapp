@@ -6,7 +6,7 @@ Shapes and colours: see `00-overview.md`. Source: `workflows/src/01-global-shell
 
 ## Global shell › Sidebar › Where every item goes
 
-The sidebar is on every page. Each row below is one click and the page it opens. Number bubbles, the Authorizations group and the green highlight have their own diagrams.
+The sidebar is on every page. Each row below is one click and the page it opens. Number bubbles, opening and closing the Authorizations group, and the green highlight have their own diagrams.
 
 Route: `Every page (sidebar on the left)`
 
@@ -47,39 +47,42 @@ flowchart LR
   gEmr@{ shape: subproc, label: "Continues in: EMR Connect" }
   cPay@{ shape: trap-t, label: "Click 'Payers'" }
   pPay@{ shape: rect, label: "Go to /payers" }
-  gPay@{ shape: subproc, label: "Continues in: Payers" }
+  gPay@{ shape: subproc, label: "Continues in: Payers › Workspace" }
   end
   subgraph gMain ["Main"]
   cDash@{ shape: trap-t, label: "Click 'Dashboard'" }
   pDash@{ shape: rect, label: "Go to /dashboard" }
   gDash@{ shape: subproc, label: "Continues in: Dashboard" }
-  cAuth@{ shape: trap-t, label: "Click 'Authorizations'" }
-  pAuth@{ shape: rect, label: "<b>Go to /authorizations</b><br/>The group opens under it" }
-  gAuth@{ shape: subproc, label: "Continues in: Authorizations › Queue" }
-  cNew@{ shape: trap-t, label: "<b>Click 'New Case'</b><br/>(listed under Authorizations)" }
+  cAuth@{ shape: trap-t, label: "Click 'Authorizations' (the label or the row)" }
+  pAuth@{ shape: rect, label: "<b>Go to /authorizations</b><br/>Arriving from another page, the worklist reopens the last view and filters used (All the first time); on the worklist itself it shows All with no filters<br/>From outside the group, the group opens" }
+  gAuth@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Arrive and read the views" }
+  cArrow@{ shape: trap-t, label: "Click the arrow beside 'Authorizations'" }
+  pArrow@{ shape: rect, label: "<b>The sub rows show or hide</b><br/>No page opens" }
+  gArrow@{ shape: subproc, label: "Continues in: Global shell › Sidebar › Authorizations group › Open and close the group" }
+  cAll@{ shape: trap-t, label: "<b>Click 'All Authorizations'</b><br/>(under Authorizations, while the group is open)" }
+  pAll@{ shape: rect, label: "<b>Go to /authorizations</b><br/>The same page, with the same rules, as 'Authorizations'" }
+  cNew@{ shape: trap-t, label: "<b>Click 'New Case'</b><br/>(under Authorizations, while the group is open)" }
   pNew@{ shape: rect, label: "<b>Go to /authorizations/new</b><br/>A blank draft is started" }
   gNew@{ shape: subproc, label: "Continues in: Authorizations › New Case › How a case starts and resumes" }
-  cElig@{ shape: trap-t, label: "<b>Click 'Eligibility & Benefits'</b><br/>(listed under Authorizations)" }
+  cElig@{ shape: trap-t, label: "<b>Click 'Eligibility & Benefits'</b><br/>(under Authorizations, while the group is open)" }
   pElig@{ shape: rect, label: "Go to /authorizations/eligibility" }
   gElig@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits" }
   cDen@{ shape: trap-t, label: "Click 'Denial Intelligence'" }
   pDen@{ shape: rect, label: "Go to /denials" }
   gDen@{ shape: subproc, label: "Continues in: Denial Intelligence" }
-  cMgr@{ shape: trap-t, label: "Click 'Case Manager'" }
-  pMgr@{ shape: rect, label: "<b>Go to /manager</b><br/>Active cases tab" }
-  gMgr@{ shape: subproc, label: "Continues in: Case Manager" }
   cAna@{ shape: trap-t, label: "Click 'Analytics'" }
   pAna@{ shape: rect, label: "Go to /analytics" }
   gAna@{ shape: subproc, label: "Continues in: Analytics" }
   end
   s1 --> sb
-  sb --> cDash & cAuth & cNew & cElig & cDen & cMgr & cAna & cEmr & cPay & cSet & cHelp & cOut
+  sb --> cDash & cAuth & cArrow & cAll & cNew & cElig & cDen & cAna & cEmr & cPay & cSet & cHelp & cOut
   cDash --> pDash --> gDash
   cAuth --> pAuth --> gAuth
+  cArrow --> pArrow --> gArrow
+  cAll --> pAll --> gAuth
   cNew --> pNew --> gNew
   cElig --> pElig --> gElig
   cDen --> pDen --> gDen
-  cMgr --> pMgr --> gMgr
   cAna --> pAna --> gAna
   cEmr --> pEmr --> gEmr
   cPay --> pPay --> gPay
@@ -88,9 +91,9 @@ flowchart LR
   cOut --> gFoot2
   class s1 k_start
   class sb k_screen
-  class cSet,cHelp,cOut,cEmr,cPay,cDash,cAuth,cNew,cElig,cDen,cMgr,cAna k_click
-  class pSet,pEmr,pPay,pDash,pAuth,pNew,pElig,pDen,pMgr,pAna k_process
-  class gSet,gFoot2,gEmr,gPay,gDash,gAuth,gNew,gElig,gDen,gMgr,gAna k_goto
+  class cSet,cHelp,cOut,cEmr,cPay,cDash,cAuth,cArrow,cAll,cNew,cElig,cDen,cAna k_click
+  class pSet,pEmr,pPay,pDash,pAuth,pArrow,pAll,pNew,pElig,pDen,pAna k_process
+  class gSet,gFoot2,gEmr,gPay,gDash,gAuth,gArrow,gNew,gElig,gDen,gAna k_goto
   style gFoot fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gConn fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gMain fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
@@ -98,7 +101,7 @@ flowchart LR
 
 ## Global shell › Sidebar › Badges and what they count
 
-Seven sidebar rows carry a number bubble. Each number is counted live from the demo data, so it changes the moment something happens on any page, and every one except Payers follows the site view. Analytics and EMR Connect never have a bubble.
+Six sidebar rows carry a number bubble. Each number is counted live from the demo data, so it changes the moment something happens on any page, and every one except Payers follows the site view. Analytics, EMR Connect and 'All Authorizations' never have a bubble, and there is no Case Manager row any more.
 
 Route: `Every page (sidebar on the left)`
 
@@ -137,14 +140,14 @@ flowchart TD
   end
   subgraph gB ["What each badge counts, and what moves it (Both sites)"]
   b1@{ shape: rect, label: "<b>'Dashboard'  3</b><br/>Requests at stage 'Info requested'<br/>Falls when an answer is sent" }
-  b2@{ shape: rect, label: "<b>'Authorizations'  19</b><br/>Open queue items in 'Act now' (5) and 'Due within 24 hours' (14)<br/>'Due this week' is not counted" }
+  b2@{ shape: rect, label: "<b>'Authorizations'  19</b><br/>Open requests due today: 5 to act on now and 14 more due within 24 hours<br/>Requests due later, saved New Case drafts, approved authorizations and reviews are not counted, so the worklist's own counts are larger<br/>The bubble stays on the parent row whether the group is open or closed" }
   b3@{ shape: rect, label: "<b>'New Case'  4  (listed under Authorizations)</b><br/>Referrals that are New or In review and not yet opened<br/>Falls when a referral is opened" }
   b4@{ shape: rect, label: "<b>'Eligibility & Benefits'  9  (listed under Authorizations)</b><br/>Patients not cleared: 4 'Authorization first', 5 'Fix before billing'" }
   b5@{ shape: rect, label: "<b>'Denial Intelligence'  8</b><br/>Requests at stage 'Appeal' (open denials)<br/>Falls when a denial is settled" }
-  b6@{ shape: rect, label: "<b>'Case Manager'  11</b><br/>3 cases that need a person (2 questions, 1 signature)<br/>plus 8 reviews that 'Need your update'" }
   b7@{ shape: rect, label: "<b>'Payers'  3</b><br/>Payers with a rule change waiting for a person: Cardinal, Evergreen and Harborview<br/>Falls when the change is acknowledged<br/>Clinic-wide: a payer's rules are not site data, so this number is the same for every viewer and every site view" }
   end
-  g1@{ shape: subproc, label: "Continues in: Case Manager › Reviews this week › Add your update to a review" }
+  b6@{ shape: rect, label: "Not a badge: what Case Manager used to count is in the worklist's 'Needs attention' view (30 at Both sites)" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Pick a view" }
   e1@{ shape: stadium, label: "Badges always match the pages they point to, for the site in view" }
   s1 --> sb --> p1 --> vw
   vw --> d1
@@ -154,11 +157,11 @@ flowchart TD
   d2 -->|"No"| off
   z & on & off --> e1
   vw --> b1
-  b1 ~~~ b2 ~~~ b3 ~~~ b4 ~~~ b5 ~~~ b6 ~~~ b7
-  b6 --> g1
+  b1 ~~~ b2 ~~~ b3 ~~~ b4 ~~~ b5 ~~~ b7
+  b2 -.-> b6 --> g1
   class s1 k_start
   class sb k_screen
-  class p1,vw,z,nz,on,off,b1,b2,b3,b4,b5,b6,b7 k_process
+  class p1,vw,z,nz,on,off,b1,b2,b3,b4,b5,b7,b6 k_process
   class d1,d2 k_decision
   class g1 k_goto
   class e1 k_end
@@ -166,11 +169,99 @@ flowchart TD
   style gB fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```
 
-## Global shell › Sidebar › Authorizations group and green highlight
+## Global shell › Sidebar › Authorizations group › Open and close the group
 
-Two rules decide what the sidebar looks like. First, whether the Authorizations group shows its two sub rows. Second, which single row turns green. There is no collapse button: the group follows the address.
+The 'Authorizations' row has two parts. The label and the rest of the row are a link to /authorizations. The arrow at its right is its own button: it shows or hides the three sub rows without leaving the page. The group opens by itself when the address enters Authorizations and closes by itself when the address leaves it; in between it keeps the person's choice.
+
+Route: `Every page (sidebar, the 'Authorizations' row)`
+
+The open or closed choice lives in the page, not in the demo data. 'Reset demo data' goes to /dashboard, so it closes the group when it is made on an Authorizations page. A browser reload starts again: open when the page is an Authorizations page, closed anywhere else. Authorizations pages are /authorizations (every view), a case page, New Case and Eligibility & Benefits.
+
+```mermaid
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Psyflo opens on a page" }
+  d0@{ shape: diam, label: "Is it an Authorizations page?" }
+  o0@{ shape: rect, label: "<b>Group open</b><br/>Sub rows 'All Authorizations', 'New Case' 4, 'Eligibility & Benefits' 9<br/>Arrow points down" }
+  c0@{ shape: rect, label: "<b>Group closed</b><br/>Only the 'Authorizations' row, badge 19<br/>Arrow points right" }
+  row@{ shape: curv-trap, label: "<b>'Authorizations' row</b><br/>Icon, label, badge, then the arrow" }
+  d1@{ shape: diam, label: "Which part does the person use?" }
+  subgraph gArrow ["The arrow button"]
+  a1@{ shape: trap-t, label: "<b>Click the arrow</b><br/>Tooltip 'Expand' or 'Collapse'" }
+  aK@{ shape: trap-t, label: "<b>Tab to the arrow and press Enter or Space</b><br/>Screen readers hear 'Expand Authorizations' or 'Collapse Authorizations', and whether it is expanded" }
+  d2@{ shape: diam, label: "Is the group open?" }
+  a2@{ shape: rect, label: "<b>The three sub rows hide</b><br/>Arrow points right" }
+  a3@{ shape: rect, label: "<b>The three sub rows show under 'Authorizations'</b><br/>Arrow points down" }
+  a4@{ shape: rect, label: "<b>The address does not change and the page stays exactly as it was</b><br/>From the Dashboard, for example, the group opens in place and 'Dashboard' stays green" }
+  end
+  subgraph gLabel ["The label link"]
+  l1@{ shape: trap-t, label: "<b>Click 'Authorizations'</b><br/>(the label, the icon, the badge or any empty part of the row)" }
+  l2@{ shape: rect, label: "Go to /authorizations" }
+  gW@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Arrive and read the views" }
+  end
+  p0@{ shape: rect, label: "The address changes" }
+  s2@{ shape: stadium, label: "Any other link, sidebar row, redirect or the Back button changes the address" }
+  d3@{ shape: diam, label: "Did the address just come into Authorizations, or just leave it?" }
+  u1@{ shape: rect, label: "<b>Came in: the group opens by itself</b><br/>even if the person closed it the last time" }
+  u3@{ shape: rect, label: "<b>Left: the group closes by itself</b><br/>even if the person opened it with the arrow" }
+  u2@{ shape: rect, label: "<b>Neither: the group keeps the person's choice</b><br/>Closed stays closed while moving between Authorizations pages<br/>Opened with the arrow on the Dashboard, it stays open on Analytics or any other page outside Authorizations" }
+  d4@{ shape: diam, label: "Is the group closed while an Authorizations page is open?" }
+  h1@{ shape: rect, label: "<b>The whole 'Authorizations' row, arrow included, is the green row</b><br/>The place is never lost while the sub rows are hidden" }
+  h2@{ shape: rect, label: "The green row is a sub row ('All Authorizations', 'New Case', 'Eligibility & Benefits') or a row outside the group" }
+  gHi@{ shape: subproc, label: "Continues in: Global shell › Sidebar › Which row is green" }
+  e1@{ shape: stadium, label: "Sidebar shows the group the way the person left it" }
+  s1 --> d0
+  d0 -->|"Yes"| o0 --> row
+  d0 -->|"No"| c0 --> row
+  row --> d1
+  d1 -->|"The arrow"| a1 --> d2
+  d1 -->|"Keyboard"| aK --> d2
+  d2 -->|"Open"| a2 --> a4
+  d2 -->|"Closed"| a3 --> a4
+  d1 -->|"The label"| l1 --> l2 --> p0
+  l2 --> gW
+  s2 --> p0 --> d3
+  d3 -->|"Came in"| u1 --> d4
+  d3 -->|"Left"| u3 --> d4
+  d3 -->|"Neither"| u2 --> d4
+  a4 --> d4
+  d4 -->|"Yes"| h1 --> e1
+  d4 -->|"No"| h2 --> e1
+  h2 -.-> gHi
+  class s1,s2 k_start
+  class d0,d1,d2,d3,d4 k_decision
+  class o0,c0,a2,a3,a4,l2,p0,u1,u3,u2,h1,h2 k_process
+  class row k_screen
+  class a1,aK,l1 k_click
+  class gW,gHi k_goto
+  class e1 k_end
+  style gArrow fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gLabel fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+```
+
+## Global shell › Sidebar › Which row is green
+
+One row of the sidebar is green: the page that is open. Inside the Authorizations group it depends on whether the group is open. Old Case Manager addresses redirect first, so they light the Authorizations rows like any worklist address.
 
 Route: `Any address (the sidebar reads the address after every change)`
+
+A green row's number bubble turns translucent white (see Badges). The 'Authorizations' row is never green while its group is open: one of its sub rows is.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -192,51 +283,51 @@ flowchart LR
   classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "<b>The address changes</b><br/>(a click, a link, a redirect or the browser Back button)" }
-  d1@{ shape: diam, label: "Does the address start with /authorizations?" }
-  open@{ shape: rect, label: "<b>Group is open</b><br/>'New Case' and 'Eligibility & Benefits' are listed under 'Authorizations'<br/>Chevron points down" }
-  shut@{ shape: rect, label: "<b>Group is closed</b><br/>The two sub rows are hidden<br/>Chevron points right" }
-  subgraph gHi ["Which row is green"]
-  d2@{ shape: diam, label: "Which address is it?" }
-  h1@{ shape: rect, label: "<b>'Authorizations' turns green</b><br/>Address is exactly /authorizations, or a case: /authorizations/case/..." }
-  h2@{ shape: rect, label: "<b>'New Case' turns green, 'Authorizations' stays plain</b><br/>/authorizations/new, a draft, or a referral" }
-  h3@{ shape: rect, label: "<b>'Eligibility & Benefits' turns green, 'Authorizations' stays plain</b><br/>/authorizations/eligibility, /verify or a result" }
-  h4@{ shape: rect, label: "<b>'Dashboard' turns green</b><br/>/dashboard (also when the address has ?request=)" }
-  h5@{ shape: rect, label: "<b>'Denial Intelligence' turns green</b><br/>/denials and a brief under it" }
-  h6@{ shape: rect, label: "<b>'Case Manager' turns green</b><br/>/manager, either tab (the old /active also lands here)" }
+  d1@{ shape: diam, label: "Which address is it?" }
+  subgraph gAuth ["Authorizations pages"]
+  a1@{ shape: rect, label: "<b>/authorizations (every view, every filter) or a case page /authorizations/case/...</b><br/>This includes an approved authorization with no open request" }
+  a2@{ shape: rect, label: "/authorizations/new, a draft /authorizations/new/draft-..., or a referral" }
+  a3@{ shape: rect, label: "/authorizations/eligibility, /verify or a result" }
+  a4@{ shape: rect, label: "<b>/manager or /active</b><br/>Redirected to /authorizations?view=..." }
+  d2@{ shape: diam, label: "Is the group open?" }
+  g1@{ shape: rect, label: "'All Authorizations' turns green" }
+  g2@{ shape: rect, label: "'New Case' turns green" }
+  g3@{ shape: rect, label: "'Eligibility & Benefits' turns green" }
+  g0@{ shape: rect, label: "<b>'Authorizations' turns green</b><br/>The sub rows are hidden, so the parent row stands in for them" }
+  end
+  subgraph gOther ["Every other page"]
+  h4@{ shape: rect, label: "<b>'Dashboard' turns green</b><br/>/dashboard (also with ?request=)" }
+  h5@{ shape: rect, label: "<b>'Denial Intelligence' turns green</b><br/>/denials, a denial, a brief or a report" }
   h7@{ shape: rect, label: "<b>'Analytics', 'EMR Connect' or 'Payers' turns green</b><br/>/analytics, /emr, /payers and a payer under it" }
   h8@{ shape: rect, label: "<b>'Settings' in the footer turns green</b><br/>/settings" }
-  h9@{ shape: rect, label: "<b>No row is green</b><br/>An address that is not part of the demo" }
+  h9@{ shape: rect, label: "<b>No row is green</b><br/>'Page not found' for an address that is not part of the demo" }
   end
-  subgraph gClick ["Clicks that change the group"]
-  c1@{ shape: trap-t, label: "Click 'Authorizations' while on a sub page" }
-  r1@{ shape: rect, label: "<b>Go to /authorizations</b><br/>Group stays open, 'Authorizations' turns green" }
-  c2@{ shape: trap-t, label: "<b>Click any row outside the group</b><br/>(for example 'Dashboard')" }
-  r2@{ shape: rect, label: "Group closes: the address no longer starts with /authorizations" }
-  end
-  e1@{ shape: stadium, label: "Exactly one row is green at a time" }
+  gG@{ shape: subproc, label: "Continues in: Global shell › Sidebar › Authorizations group › Open and close the group" }
+  e1@{ shape: stadium, label: "Exactly one row is green, or none on 'Page not found'" }
   s1 --> d1
-  d1 -->|"Yes"| open
-  d1 -->|"No"| shut
-  open & shut --> d2
-  d2 -->|"/authorizations or a case"| h1
-  d2 -->|"New Case pages"| h2
-  d2 -->|"Eligibility pages"| h3
-  d2 -->|"/dashboard"| h4
-  d2 -->|"/denials"| h5
-  d2 -->|"/manager"| h6
-  d2 -->|"Analytics, EMR, Payers"| h7
-  d2 -->|"/settings"| h8
-  d2 -->|"Anything else"| h9
-  h1 & h2 & h3 & h4 & h5 & h6 & h7 & h8 & h9 --> e1
-  open --> c1 --> r1 --> e1
-  open --> c2 --> r2 --> e1
+  d1 -->|"Worklist or case"| a1
+  d1 -->|"New Case pages"| a2
+  d1 -->|"Eligibility pages"| a3
+  d1 -->|"Old Case Manager link"| a4 --> a1
+  a1 & a2 & a3 --> d2
+  d2 -->|"Open, worklist or case"| g1
+  d2 -->|"Open, New Case"| g2
+  d2 -->|"Open, Eligibility"| g3
+  d2 -->|"Closed"| g0
+  d1 -->|"/dashboard"| h4
+  d1 -->|"/denials"| h5
+  d1 -->|"Analytics, EMR, Payers"| h7
+  d1 -->|"/settings"| h8
+  d1 -->|"Anything else"| h9
+  g1 & g2 & g3 & g0 & h4 & h5 & h7 & h8 & h9 --> e1
+  g0 -.-> gG
   class s1 k_start
   class d1,d2 k_decision
-  class open,shut,h1,h2,h3,h4,h5,h6,h7,h8,h9,r1,r2 k_process
-  class c1,c2 k_click
+  class a1,a2,a3,a4,g1,g2,g3,g0,h4,h5,h7,h8,h9 k_process
+  class gG k_goto
   class e1 k_end
-  style gHi fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
-  style gClick fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gAuth fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gOther fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
 ```
 
 ## Global shell › Top bar › Controls and how drawers close
@@ -343,9 +434,9 @@ flowchart TD
   o1@{ shape: win-pane, label: "<b>Ask FLO drawer opens</b><br/>Title 'Ask FLO', subtitle 'Your assistant, answering from your data'" }
   a1@{ shape: hex, label: "<b>FLO greets the person by name and says which sites it reads:</b><br/>'Hi Jordan, I am FLO. Ask me about your requests, a payer, or your denials. I answer from the data you can see: Both sites.'<br/>For Dr. Rivera: 'Hi Dr. Rivera, ... I answer from the data you can see: Site A.'" }
   dr@{ shape: diam, label: "Which screen is open?" }
-  o2@{ shape: win-pane, label: "<b>Four suggestion chips under the chat:</b><br/>'What needs me today?'<br/>'What is due soonest?'<br/>'Which payers are slowest right now?'<br/>'Why is Cardinal's approval rate down?'<br/>Any other screen, or a case page that cannot be found" }
+  o2@{ shape: win-pane, label: "<b>Four suggestion chips under the chat:</b><br/>'What needs me today?'<br/>'What is due soonest?'<br/>'Which payers are slowest right now?'<br/>'Why is Cardinal's approval rate down?'<br/>Any other screen (New Case included), or a case page that cannot be found" }
   oc@{ shape: win-pane, label: "<b>Three chips on a case page (/authorizations/case/R-1042):</b><br/>'What is missing for R-1042?'<br/>'When does this authorization run out?'<br/>'What does Summit require?'<br/>A line above them: 'Suggested for R-1042'" }
-  om@{ shape: win-pane, label: "<b>One chip on Case Manager:</b><br/>'Which reviews are due?'<br/>'Suggested for Case Manager'" }
+  om@{ shape: win-pane, label: "<b>Three chips on Authorizations (the worklist, every view):</b><br/>'What needs me today?'<br/>'What is due soonest?'<br/>'Which reviews are due?'<br/>'Suggested for Authorizations'" }
   od@{ shape: win-pane, label: "<b>One chip on Denial Intelligence:</b><br/>'Which denial is due first?'<br/>'Suggested for Denial Intelligence'" }
   oe@{ shape: win-pane, label: "<b>One chip on Eligibility & Benefits (the list and its pages):</b><br/>'Which patients need a fix before billing?'<br/>'Suggested for Eligibility & Benefits'" }
   d1@{ shape: diam, label: "How does the person ask?" }
@@ -376,7 +467,7 @@ flowchart TD
   s1 --> o1 --> a1 --> dr
   s2 --> pv --> a1
   dr -->|"Case page"| oc --> d1
-  dr -->|"Case Manager"| om --> d1
+  dr -->|"Authorizations worklist"| om --> d1
   dr -->|"Denial Intelligence"| od --> d1
   dr -->|"Eligibility & Benefits"| oe --> d1
   dr -->|"Anywhere else"| o2 --> d1
@@ -448,7 +539,7 @@ flowchart LR
   r2@{ shape: rect, label: "<b>Opens /denials/D-3318, the nearest denial</b><br/>With no deadline left to name, it opens the dashboard of open denials" }
   g2@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
   d2b@{ shape: diam, label: "Contains 'due', 'soon' or 'deadline'?" }
-  a2b@{ shape: hex, label: "<b>'R-0988 (Beacon) is due soonest: review due in 3 h. Its approval chance is 79%. After it: R-1042 (Summit), notice due in 5 h; I-2207 (Cardinal), recert due in 5 h. 56 requests are open in Authorizations.'</b><br/>For one site: 'is due soonest at Site A: ...' and only that site's open requests are counted<br/>Read from the open queue, soonest due first. Two due at the same time: the lower approval chance first<br/>Nothing open: 'Nothing is due. Every open request has been sent or handled.' with 'Open Authorizations'" }
+  a2b@{ shape: hex, label: "<b>'R-0988 (Beacon) is due soonest: review due in 3 h. Its approval chance is 79%. After it: R-1042 (Summit), notice due in 5 h; I-2207 (Cardinal), recert due in 5 h. 56 requests are open in Authorizations.'</b><br/>For one site: 'is due soonest at Site A: ...' and only that site's open requests are counted<br/>Read from the open requests, soonest due first. Two due at the same time: the lower approval chance first<br/>Nothing open: 'Nothing is due. Every open request has been sent or handled.' with 'Open Authorizations'" }
   l2b@{ shape: trap-t, label: "Click 'Open R-0988'" }
   r2b@{ shape: rect, label: "<b>Opens /authorizations/case/R-0988</b><br/>The case page of the request due soonest" }
   g2b@{ shape: subproc, label: "Continues in: Authorizations › Case page › Ways in" }
@@ -529,11 +620,11 @@ flowchart TD
   ml@{ shape: trap-t, label: "Click 'Open R-1042, Recommended actions'" }
   end
   subgraph gX ["Expiry: 'When does this authorization run out?'"]
-  x1@{ shape: hex, label: "FLO reads the Case Manager ledger row of the case and its next unsigned review" }
+  x1@{ shape: hex, label: "FLO reads the case's approved authorization (the record behind Authorizations › Approved) and its next unsigned review" }
   x2@{ shape: diam, label: "What does the row hold?" }
   x3@{ shape: odd, label: "<b>End date: 'I-2207 (Cardinal, IOP) has used 38 of 48 units. The authorization ends in 3 days (Fri 10/23).'</b><br/>'Its next clinical review is Wed 10/21, 4:00 pm.'" }
   x4@{ shape: odd, label: "Measured in units, no date: 'has used 16 of 48 units, so 32 units are left. The ledger holds no end date for it.'" }
-  x5@{ shape: odd, label: "<b>Other next event: 'has used 14 of 14 days. The approved days are used up. The payer's decision on the next stay is expected Thu 10/22.'</b><br/>No approval yet: 'has no approval yet, so there is nothing to run out.'" }
+  x5@{ shape: odd, label: "<b>Other next event: 'has used 14 of 14 days. The approved days are used up. The payer's decision on the next stay is expected Thu 10/22.'</b><br/>No approval yet: 'has no approval yet, so there is nothing to run out.'<br/>Away from a case page with none ending: 'No approved authorization has an end date ahead of it.' with 'Open Authorizations' (the All view)" }
   xl@{ shape: trap-t, label: "Click 'Open I-2207'" }
   end
   subgraph gR ["Requires: 'What does Summit require?'"]
@@ -544,7 +635,8 @@ flowchart TD
   subgraph gV ["Reviews: 'Which reviews are due?'"]
   v1@{ shape: hex, label: "FLO reads this week's clinical reviews that are not signed" }
   v2@{ shape: odd, label: "<b>'47 reviews are due this week, 5 of them due now or overdue: 35 drafted (29 clean), 4 not drafted yet, 8 need a clinician's update.'</b><br/>'Next: ...' and 'Needs your update: R-0912, R-0899, R-0881, and 5 more.'" }
-  vl@{ shape: trap-t, label: "Click 'Open R-0912, review'" }
+  vl@{ shape: trap-t, label: "<b>Click 'Open R-0912, review'</b><br/>(with nothing due: 'No review is due this week. Every one has been signed.' and 'Open Reviews this week')" }
+  vp@{ shape: rect, label: "<b>Drawer closes. Goes to /authorizations?view=reviews&review=rv-R-0912</b><br/>The worklist opens on Reviews this week with R-0912's review drawer open" }
   end
   subgraph gE ["Eligibility: 'Which patients need a fix before billing?'"]
   e1@{ shape: hex, label: "FLO reads the coverage checks and their verdicts" }
@@ -555,7 +647,7 @@ flowchart TD
   g1@{ shape: subproc, label: "Continues in: Authorizations › Case page › Recommended actions › The tab" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Case page › Ways in" }
   g3@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Read the document list" }
-  g4@{ shape: subproc, label: "Continues in: Case Manager › Reviews this week › The review drawer" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › Reviews this week › The review drawer" }
   g5@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › What the page shows" }
   s1 --> d0
   d0 -->|"missing, incomplete"| m1
@@ -575,13 +667,14 @@ flowchart TD
   xl --> g2
   r1 --> r2 --> rl --> g3
   r1 -.-> n1
-  v1 --> v2 --> vl --> g4
+  v1 --> v2 --> vl --> vp --> g4
   e1 --> e2 --> el --> g5
   class s1 k_start
   class d0,m1,m3,x2 k_decision
   class m2,x1,r1,v1,e1 k_agent
   class m4,m5,x3,x4,x5,r2,v2,e2 k_toast
   class ml,xl,rl,vl,el k_click
+  class vp k_process
   class n1 k_endx
   class g1,g2,g3,g4,g5 k_goto
   style gM fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
@@ -750,7 +843,7 @@ A notification is created only when a person or a demo control does something. N
 
 Route: `Every page (the bell)`
 
-Each notification is added at the top, unread, stamped with the demo clock ('just now'). Most also raise a toast, shown in 'Toasts'.
+Each notification is added at the top, unread, stamped with the demo clock ('just now'). Most also raise a toast, shown in 'Toasts'. The words of two of them still name Case Manager ('Each needs a new signature in Case Manager', 'Case Manager has a step-down plan'): that text belongs to Payers and Denial Intelligence and is left for their own pass; the links open Authorizations.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -774,7 +867,7 @@ flowchart LR
   s1@{ shape: stadium, label: "A person or a demo control does something in the app" }
   subgraph gPay ["Payers"]
   c10@{ shape: trap-t, label: "<b>Click 'Update drafts' on a payer's change</b><br/>(after 'Acknowledge change', which only raises a toast)" }
-  n10@{ shape: cyl, label: "<b>The change's agent or Scribe · 'Drafts updated'</b><br/>→ Case Manager" }
+  n10@{ shape: cyl, label: "<b>The change's agent or Scribe · 'Drafts updated'</b><br/>→ Authorizations (a plain /authorizations, so the worklist reopens the last view used)" }
   end
   subgraph gRef ["Referrals (New Case)"]
   c9@{ shape: trap-t, label: "<b>Click 'Use sample referral'</b><br/>(or drop referral documents)" }
@@ -788,7 +881,7 @@ flowchart LR
   c8b@{ shape: trap-t, label: "Sign and file an appeal" }
   n8b@{ shape: cyl, label: "<b>Navigator · 'Appeal filed'</b><br/>→ Dashboard, that request" }
   c8c@{ shape: trap-t, label: "Click 'Accept and close'" }
-  n8c@{ shape: cyl, label: "<b>Cadence · 'Denial closed'</b><br/>→ Case Manager, Reviews this week" }
+  n8c@{ shape: cyl, label: "<b>Cadence · 'Denial closed'</b><br/>→ Authorizations, All view, where the denial's row reads Accepted with 'Plan the step-down'" }
   c8d@{ shape: trap-t, label: "Click 'Log the outcome'" }
   n8d@{ shape: cyl, label: "<b>Advocate · 'Call outcome: ...'</b><br/>→ Dashboard, that request" }
   end
@@ -890,7 +983,7 @@ flowchart TD
   end
   subgraph gP ["Section 'Suggested path'"]
   sp@{ shape: rect, label: "Seven numbered steps, 1 to 7" }
-  f3@{ shape: trap-t, label: "Click a step, for example '7 Case Manager: reviews this week'" }
+  f3@{ shape: trap-t, label: "Click a step, for example '7 Authorizations: reviews this week'" }
   g2@{ shape: subproc, label: "Continues in: Global shell › Demo menu › Suggested path" }
   end
   subgraph gR ["Below a divider (red text)"]
@@ -978,20 +1071,20 @@ flowchart TD
   t1@{ shape: odd, label: "<b>'Clock moved forward 1 hour' or 'Clock moved forward 1 day'</b><br/>'Times in stage and deadlines updated.'" }
   p4@{ shape: rect, label: "Toast fades after about 4 seconds. Every click adds its own toast. The menu stays open" }
   subgraph gMove ["What moves with the clock"]
-  m1@{ shape: rect, label: "<b>Case Manager</b><br/>Tracker 'Clock' column, 'Being prepared' due pills ('Notice due in 5 h' becomes 'Overdue'), the 'Today' day card on Reviews this week" }
+  m1@{ shape: rect, label: "<b>Authorizations worklist</b><br/>The Deadline column and the Deadline filter's counts (Act now, Within 24 hours, Next 7 days); a saved draft's due pill ('Notice due in 5 h' becomes 'Overdue'); which reviews are due now on Reviews this week" }
   m2@{ shape: rect, label: "<b>Notifications</b><br/>Ages: '16 min ago' becomes '1 h ago'" }
   m3@{ shape: rect, label: "<b>Dashboard</b><br/>Time in stage and 'late' flags" }
-  m4@{ shape: rect, label: "<b>Authorizations, Denial Intelligence</b><br/>Queue bands, case clocks, peer-to-peer and appeal deadlines" }
+  m4@{ shape: rect, label: "<b>Case pages, Denial Intelligence</b><br/>Case clocks, peer-to-peer and appeal deadlines" }
   m5@{ shape: rect, label: "<b>Eligibility & Benefits, EMR Connect, New Case</b><br/>How long ago a check, a sync or a referral was" }
   m6@{ shape: hex, label: "<b>Eligibility & Benefits</b><br/>Verify re-checks every patient whose re-check time has passed, unless Verify is paused in Settings<br/>A 'Re-checked automatically' notification follows" }
   end
   subgraph gStill ["What does not change"]
   s2@{ shape: rect, label: "No payer replies, no referral arrives, no agent finishes a step" }
   s3@{ shape: rect, label: "<b>No case changes status and no badge changes</b><br/>The only new notification a Fast-forward can add is Verify's" }
-  s4@{ shape: rect, label: "Ask FLO answers and Case Manager review statuses stay as they were" }
+  s4@{ shape: rect, label: "Ask FLO answers already given, and the review statuses on Reviews this week, stay as they were" }
   end
   subgraph gHow ["How things really arrive in the demo"]
-  g1@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Demo controls (payer replies)" }
+  g1@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Demo controls: the payer answers" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Start with a referral or patient" }
   g3@{ shape: subproc, label: "Continues in: Global shell › Top bar › Notifications › What creates a notification" }
   end
@@ -1050,24 +1143,24 @@ flowchart LR
   c1@{ shape: trap-t, label: "Click '1  Dashboard: where every request stands'" }
   r1@{ shape: rect, label: "Go to /dashboard" }
   g1@{ shape: subproc, label: "Continues in: Dashboard" }
-  c2@{ shape: trap-t, label: "Click '2  Authorizations: the queue'" }
-  r2@{ shape: rect, label: "Go to /authorizations" }
-  g2@{ shape: subproc, label: "Continues in: Authorizations › Queue" }
+  c2@{ shape: trap-t, label: "Click '2  Authorizations: every request in one list'" }
+  r2@{ shape: rect, label: "<b>Go to /authorizations</b><br/>A plain address: arriving from another page, the worklist reopens the last view used (All the first time)" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Arrive and read the views" }
   c3@{ shape: trap-t, label: "Click '3  New Case: start from a referral'" }
   r3@{ shape: rect, label: "<b>Go to /authorizations/new</b><br/>A blank draft is started and the address becomes /authorizations/new/draft-..." }
   g3@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Start with a referral or patient" }
   c4@{ shape: trap-t, label: "Click '4  Eligibility & Benefits: verify a patient'" }
   r4@{ shape: rect, label: "Go to /authorizations/eligibility/verify" }
-  g4@{ shape: subproc, label: "Continues in: Eligibility & Benefits › Verify a patient" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › Fill in the form" }
   c5@{ shape: trap-t, label: "Click '5  Denial Intelligence: D-3318'" }
   r5@{ shape: rect, label: "Go to /denials/D-3318" }
   g5@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
   c6@{ shape: trap-t, label: "Click '6  Payers: Cardinal, Changes'" }
   r6@{ shape: rect, label: "Go to /payers/cardinal?tab=changes" }
   g6@{ shape: subproc, label: "Continues in: Payers › History & Changes › Read what changed" }
-  c7@{ shape: trap-t, label: "Click '7  Case Manager: reviews this week'" }
-  r7@{ shape: rect, label: "Go to /manager?tab=reviews" }
-  g7@{ shape: subproc, label: "Continues in: Case Manager › Reviews this week › The list" }
+  c7@{ shape: trap-t, label: "Click '7  Authorizations: reviews this week'" }
+  r7@{ shape: rect, label: "<b>Go to /authorizations?view=reviews</b><br/>The worklist opens on the Reviews this week view" }
+  g7@{ shape: subproc, label: "Continues in: Authorizations › Reviews this week › The view" }
   s1 --> o1 --> p0
   p0 --> c1 & c2 & c3 & c4 & c5 & c6 & c7
   c1 --> r1 --> g1
@@ -1090,7 +1183,7 @@ One click puts every part of the demo back to its starting point and lands on th
 
 Route: `Every page (Demo menu › Reset demo data)`
 
-Not reset: the Ask FLO chat (it lives in the page). Anything done before a browser reload is gone anyway, because the demo keeps nothing between reloads.
+Not reset: the Ask FLO chat and the Authorizations worklist's last view (they live in the page). Anything done before a browser reload is gone anyway, because the demo keeps nothing between reloads.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -1123,23 +1216,24 @@ flowchart TD
   r6@{ shape: cyl, label: "Eligibility & Benefits, Denial Intelligence, Payers, EMR Connect: all work done in them" }
   r9@{ shape: cyl, label: "Settings: every agent back at its starting level, every switch on, no pause" }
   r10@{ shape: cyl, label: "<b>Viewing as: Jordan Perez, UR coordinator, on Both sites</b><br/>(the site switch and the user card follow)" }
-  r7@{ shape: cyl, label: "Case Manager: the 56 tracker rows and the 47 reviews. Signed reviews are unsigned, updates added are removed" }
+  r7@{ shape: cyl, label: "Authorizations: the approved authorizations, accepted denials and the 47 reviews of the week. Signed reviews are unsigned, updates added are removed" }
   r8@{ shape: cyl, label: "Next denial number starts again at D-3319" }
   end
   p2@{ shape: rect, label: "Menu closes" }
   p3@{ shape: rect, label: "<b>App goes to /dashboard</b><br/>(even when already there, and from any other page)" }
   t1@{ shape: odd, label: "<b>'Demo data reset'</b><br/>'Everything is back to the starting point.'" }
-  p4@{ shape: rect, label: "<b>Sidebar badges return to their starting numbers</b><br/>3, 19, 4, 9, 8, 11, 3" }
-  p5@{ shape: rect, label: "Page-only state is lost as the page changes: Case Manager filters, open drawers, typed text" }
+  p4@{ shape: rect, label: "<b>Sidebar badges return to their starting numbers</b><br/>3, 19, 4, 9, 8, 3" }
+  p5@{ shape: rect, label: "Page-only state is lost as the page changes: open drawers, typed text" }
+  p7@{ shape: rect, label: "<b>Not reset either: Authorizations still reopens on its last view and filters</b><br/>The sidebar group follows the move to /dashboard: made on an Authorizations page, the reset closes it" }
   p6@{ shape: rect, label: "Ask FLO chat stays: reset does not touch it" }
   e1@{ shape: stadium, label: "Demo is at its first screen again" }
   s1 --> c1 --> p1
   p1 --> r1 & r2 & r3 & r4 & r5 & r6 & r7 & r8 & r9 & r10
   r1 & r2 & r3 & r4 & r5 & r6 & r7 & r8 & r9 & r10 --> p2
-  p2 --> p3 --> t1 --> p4 --> p5 --> p6 --> e1
+  p2 --> p3 --> t1 --> p4 --> p5 --> p6 --> p7 --> e1
   class s1 k_start
   class c1 k_click
-  class p1,p2,p3,p4,p5,p6 k_process
+  class p1,p2,p3,p4,p5,p7,p6 k_process
   class r1,r2,r3,r4,r5,r6,r9,r10,r7,r8 k_store
   class t1 k_toast
   class e1 k_end
@@ -1271,7 +1365,7 @@ flowchart TD
   eOut@{ shape: stadium, label: "Same page, same data" }
   cCard@{ shape: trap-t, label: "<b>Click the user card</b><br/>(initials, name and role of the viewer: 'JP', 'Jordan Perez', 'UR coordinator')" }
   pCard@{ shape: rect, label: "Nothing happens: no menu, no profile page" }
-  pWho@{ shape: rect, label: "<b>The viewer is the person edits and acknowledgements are credited to</b><br/>It changes with 'Viewing as' in the Demo menu: for Dr. Rivera the card reads 'Clinician, Site A'<br/>The Case Manager sign dialog says 'You are signed in as Jordan Perez, a UR coordinator'" }
+  pWho@{ shape: rect, label: "<b>The viewer is the person edits and acknowledgements are credited to</b><br/>It changes with 'Viewing as' in the Demo menu: for Dr. Rivera the card reads 'Clinician, Site A'<br/>The review sign dialog (Authorizations › Reviews this week) says 'You are signed in as Jordan Perez, UR coordinator.'" }
   eCard@{ shape: stadium, label: "No change" }
   pToast@{ shape: rect, label: "Toasts fade after about 4 seconds, or on a click" }
   s1 --> foot
@@ -1298,9 +1392,9 @@ flowchart TD
 
 ## Global shell › Addresses › Old links, redirects and pages that do not exist
 
-A few old or short addresses are sent on to the page that replaced them, and anything the demo does not know opens a 'Page not found' screen inside the normal sidebar and top bar. Redirects replace the address, so the Back button skips over the old one.
+A few old or short addresses are sent on to the page that replaced them (Case Manager's /manager and /active now open a view of Authorizations), and anything the demo does not know opens a 'Page not found' screen inside the normal sidebar and top bar. Redirects replace the address, so the Back button skips over the old one.
 
-Route: `/  /active  /referrals  /referrals/:id  and any unknown address`
+Route: `/  /manager  /active  /referrals  /referrals/:id  and any unknown address`
 
 In the single-file build the address lives after a '#'. The hosted preview has no address bar, so it keeps the route in memory and the same rules apply.
 
@@ -1329,8 +1423,13 @@ flowchart LR
   subgraph gRed ["Redirects (the old address is replaced)"]
   r1@{ shape: rect, label: "'/' goes to /dashboard" }
   g1@{ shape: subproc, label: "Continues in: Dashboard" }
-  r2@{ shape: rect, label: "<b>'/active' goes to /manager</b><br/>Any '?tab=' on /active is dropped, so the Active cases tab opens" }
-  g2@{ shape: subproc, label: "Continues in: Case Manager › Page › Arrive and read the header" }
+  r2@{ shape: rect, label: "<b>'/manager' and '/active' (old Case Manager links) go to /authorizations</b><br/>The view is always named, so an old link never lands on the last view used" }
+  dm@{ shape: diam, label: "What does the old link carry?" }
+  m1@{ shape: rect, label: "<b>?tab=reviews, or a ?review=</b><br/>goes to /authorizations?view=reviews<br/>A ?review= is kept and opens that review's drawer" }
+  m2@{ shape: rect, label: "<b>Anything else (nothing, ?tab=cases, ...)</b><br/>goes to /authorizations?view=all" }
+  m3@{ shape: rect, label: "<b>?show=active or ?show=renewal (the Dashboard's Active and Renewal due chips) is kept; any other ?show= is dropped</b><br/>For example /active?show=renewal becomes /authorizations?view=all&show=renewal" }
+  m4@{ shape: rect, label: "<b>'/authorizations?tab=reviews' (Case Manager's parameter on the new address) opens Reviews this week too</b><br/>The address is rewritten in place to /authorizations?view=reviews" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Addresses and old queue links" }
   r3@{ shape: rect, label: "<b>'/referrals' goes to /authorizations/new</b><br/>Referrals no longer have a tab: they start Intake in New Case" }
   r3b@{ shape: rect, label: "New Case starts a blank draft and the address becomes /authorizations/new/draft-..." }
   g3@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Start with a referral or patient" }
@@ -1338,7 +1437,7 @@ flowchart LR
   g4@{ shape: subproc, label: "Continues in: Authorizations › New Case › Referral › The full referral page" }
   end
   subgraph gKnown ["Pages that exist"]
-  k1@{ shape: rect, label: "<b>/dashboard, /authorizations..., /denials..., /manager, /analytics, /emr, /payers..., /settings</b><br/>The page opens and starts at the top" }
+  k1@{ shape: rect, label: "<b>/dashboard, /authorizations..., /denials..., /analytics, /emr, /payers..., /settings</b><br/>The page opens and starts at the top" }
   g5@{ shape: subproc, label: "Continues in: Global shell › Sidebar › Where every item goes" }
   end
   subgraph gNo ["Anything else"]
@@ -1350,13 +1449,17 @@ flowchart LR
   n5@{ shape: stadium, label: "Back on the page before the bad address" }
   end
   subgraph gOwn ["Known page, unknown record (the page answers)"]
-  o1@{ shape: rect, label: "/authorizations/case/XYZ shows 'Request not found' with 'Back to the queue'" }
+  o1@{ shape: rect, label: "/authorizations/case/XYZ shows 'Request not found' with 'Back to Authorizations'" }
   o2@{ shape: rect, label: "/authorizations/new/XYZ shows 'We could not find that draft' with 'Start a new case'" }
   g7@{ shape: subproc, label: "Continues in: Authorizations › New Case › How a case starts and resumes" }
   end
   s1 --> p0 --> d1
   d1 -->|"/"| r1 --> g1
-  d1 -->|"/active"| r2 --> g2
+  d1 -->|"/manager or /active"| r2 --> dm
+  dm -->|"Reviews"| m1
+  dm -->|"Anything else"| m2
+  m1 & m2 --> m3 --> g2
+  d1 -->|"/authorizations?tab=reviews"| m4 --> g2
   d1 -->|"/referrals"| r3 --> r3b --> g3
   d1 -->|"/referrals/id"| r4 --> g4
   d1 -->|"A page above"| k1 --> g5
@@ -1368,8 +1471,8 @@ flowchart LR
   o2 --> g7
   d1 -.-> o2
   class s1 k_start
-  class p0,r1,r2,r3,r3b,r4,k1,n2,o1,o2 k_process
-  class d1 k_decision
+  class p0,r1,r2,m1,m2,m3,m4,r3,r3b,r4,k1,n2,o1,o2 k_process
+  class d1,dm k_decision
   class g1,g2,g3,g4,g5,g6,g7 k_goto
   class n1 k_screen
   class n3,n4 k_click
@@ -1427,11 +1530,11 @@ flowchart TD
   s5@{ shape: odd, label: "<b>'Demo data reset'</b><br/>'Everything is back to the starting point.'" }
   s6@{ shape: odd, label: "<b>Hosted preview only: 'Print is off in this preview'</b><br/>'Open the single-file version of the demo to use it.'<br/>Same for 'Copy link' and 'Download'" }
   end
-  subgraph gMgr ["Toasts raised in Case Manager"]
-  m1@{ shape: odd, label: "<b>'Cadence checked the next 3 days'</b><br/>(after 'Draft all due reviews')" }
+  subgraph gMgr ["Toasts raised on Authorizations › Reviews this week"]
+  m1@{ shape: odd, label: "After 'Draft all due reviews': 'Cadence drafted 4 reviews' (the number varies), 'Nothing to draft' or 'Cadence is paused in Settings'" }
   m2@{ shape: odd, label: "'Review signed', 'Review updated'" }
-  m3@{ shape: odd, label: "'33 reviews signed' (the number varies) or 'No clean drafts to sign'" }
-  g1@{ shape: subproc, label: "Continues in: Case Manager › Reviews this week › Sign a review" }
+  m3@{ shape: odd, label: "After 'Sign all clean drafts': '33 reviews signed' (the number varies) or 'No clean drafts to sign'" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Reviews this week › Sign a review" }
   end
   g2@{ shape: subproc, label: "Continues in: Site map › Every menu tab and sub tab" }
   s1 --> p1 --> d1

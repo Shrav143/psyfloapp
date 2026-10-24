@@ -25,11 +25,11 @@ flowchart TD
   tToast@{ shape: odd, label: "<b>Toast: 'Sent to the payer'</b><br/>Bell notification: 'Sent to the payer'" }
   end
   gOpen@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
-  subgraph gQueue ["Authorizations queue"]
-  sQ@{ shape: curv-trap, label: "<b>Queue</b><br/>A row for the request: patient, payer, level of care, type<br/>'Payer has it. Navigator checks again in 30 minutes'" }
-  pQ@{ shape: rect, label: "<b>It sits in the band of the payer's usual decision time</b><br/>Only a viewer who can see the case's site sees the row" }
+  subgraph gQueue ["Authorizations"]
+  sQ@{ shape: curv-trap, label: "<b>Authorizations, With the payer view</b><br/>One row for the request, marked 'New today'<br/>The draft's In progress row is gone, so 'Needs attention' no longer counts it" }
+  pQ@{ shape: rect, label: "Only a viewer who can see the case's site sees the row" }
   end
-  gQueue@{ shape: subproc, label: "Continues in: Authorizations › Queue › Read and open a request row" }
+  gQueue@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Read a row" }
   subgraph gPat ["The patient's record"]
   stLink@{ shape: cyl, label: "<b>The request is linked to its patient, treatment episode, authorization and verification</b><br/>A new patient becomes a patient<br/>A review, renewal or modification joins its authorization: History gets 'Continued stay request signed and sent'<br/>A new stay for a known patient gets its own episode and a pending authorization" }
   pBook@{ shape: rect, label: "<b>The next search finds the patient once, with the new authorization shown as Not approved yet</b><br/>A second new case for them finds this one as a possible duplicate" }
@@ -42,18 +42,15 @@ flowchart TD
   pNoSign@{ shape: rect, label: "<b>'This case is no longer being prepared'</b><br/>'Nothing more is needed here.'<br/>It cannot be signed a second time" }
   cOpenCase@{ shape: trap-t, label: "Click 'Open the case'" }
   cOpenDash@{ shape: trap-t, label: "Click 'Open it on the Dashboard'" }
-  cBackCM@{ shape: trap-t, label: "Click 'Back to Case Manager'" }
+  cBackCM@{ shape: trap-t, label: "Click 'Back to Authorizations'" }
   end
-  subgraph gCM ["Case Manager › Active cases"]
-  sCM@{ shape: curv-trap, label: "<b>Case Manager</b><br/>'N active cases.' and 'N are still being prepared.'" }
-  pGone@{ shape: rect, label: "<b>The case leaves the 'Being prepared' card</b><br/>The 'still being prepared' count goes down by one" }
-  pBadge@{ shape: rect, label: "The sidebar badge on 'Case Manager' no longer counts it" }
-  cSent@{ shape: trap-t, label: "Click the 'N sent today' button" }
-  pSentN@{ shape: rect, label: "The count is one higher (4 becomes 5)" }
-  pLedger@{ shape: rect, label: "The tracker of active cases gains a row for the request" }
+  subgraph gCM ["Authorizations › With the payer"]
+  sCM@{ shape: curv-trap, label: "<b>Authorizations</b><br/>The plain address reopens the last view used" }
+  cSent@{ shape: trap-t, label: "On the With the payer view, click the 'N sent today' button" }
+  pSentN@{ shape: rect, label: "<b>The count is one higher (4 becomes 5)</b><br/>The button opens the Dashboard's Received requests" }
   end
   gDash2@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Order, rows and paging" }
-  gCM2@{ shape: subproc, label: "Continues in: Case Manager › Active cases › A new case joins the tracker" }
+  gCM2@{ shape: subproc, label: "Continues in: Authorizations › With the payer › A request sent today joins the list" }
   s1 --> sCase --> gCase
   s1 --> sDash --> pCount
   sDash --> tToast
@@ -65,14 +62,13 @@ flowchart TD
   pNoSign --> cOpenCase --> sCase
   pNoSign --> cOpenDash --> sDash
   pNoSign --> cBackCM --> sCM
-  s1 --> sCM --> pGone --> pBadge
-  sCM --> cSent --> pSentN --> gDash2
-  sCM --> pLedger
-  pLedger -.-> gCM2
+  sQ --> cSent --> pSentN --> gDash2
+  sCM --> sQ
+  sQ -.-> gCM2
   class s1 k_start
   class sCase,sDash,sQ,sWas,sCM k_screen
   class gCase,gOpen,gQueue,gEb,gDash2,gCM2 k_goto
-  class pCount,pQ,pBook,pVer,pNoSign,pGone,pBadge,pSentN,pLedger k_process
+  class pCount,pQ,pBook,pVer,pNoSign,pSentN k_process
   class tToast k_toast
   class stLink k_store
   class cBr,cOpenCase,cOpenDash,cBackCM,cSent k_click

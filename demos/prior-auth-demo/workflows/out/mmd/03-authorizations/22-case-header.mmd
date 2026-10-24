@@ -18,7 +18,7 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   pg@{ shape: curv-trap, label: "<b>Case page</b><br/>Crumbs, header card, figures strip, three tabs, History" }
   cr@{ shape: trap-t, label: "Click the 'Authorizations' crumb" }
-  gQ@{ shape: subproc, label: "Continues in: Authorizations › Queue › Open the queue and read the top" }
+  gQ@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Arrive and read the views" }
   hd@{ shape: curv-trap, label: "<b>Title line</b><br/>ID, level chip, request type chip, a status pill, the due pill" }
   dCh@{ shape: diam, label: "Is the request on the Dashboard past Preparing, or does it already have a result?" }
   pc@{ shape: odd, label: "Status pill: the request's own status, e.g. 'Received', 'Under review', 'Approved'" }
@@ -36,7 +36,7 @@ flowchart TD
   gDb@{ shape: subproc, label: "Continues in: Dashboard › Request drawer › Open and read a request" }
   subgraph gBt ["Header buttons"]
   b1@{ shape: trap-t, label: "<b>Click 'Open in review and sign'</b><br/>(always on)" }
-  b3@{ shape: trap-t, label: "Click 'Back to queue'" }
+  b3@{ shape: trap-t, label: "Click 'Back to Authorizations'" }
   end
   gS@{ shape: subproc, label: "Continues in: Authorizations › Case page › Send to payer and review and sign" }
   gT@{ shape: subproc, label: "Continues in: Authorizations › Case page › Numbers and notes" }

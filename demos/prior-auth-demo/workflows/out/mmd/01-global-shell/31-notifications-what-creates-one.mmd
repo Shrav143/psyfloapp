@@ -19,7 +19,7 @@ flowchart LR
   s1@{ shape: stadium, label: "A person or a demo control does something in the app" }
   subgraph gPay ["Payers"]
   c10@{ shape: trap-t, label: "<b>Click 'Update drafts' on a payer's change</b><br/>(after 'Acknowledge change', which only raises a toast)" }
-  n10@{ shape: cyl, label: "<b>The change's agent or Scribe · 'Drafts updated'</b><br/>→ Case Manager" }
+  n10@{ shape: cyl, label: "<b>The change's agent or Scribe · 'Drafts updated'</b><br/>→ Authorizations (a plain /authorizations, so the worklist reopens the last view used)" }
   end
   subgraph gRef ["Referrals (New Case)"]
   c9@{ shape: trap-t, label: "<b>Click 'Use sample referral'</b><br/>(or drop referral documents)" }
@@ -33,7 +33,7 @@ flowchart LR
   c8b@{ shape: trap-t, label: "Sign and file an appeal" }
   n8b@{ shape: cyl, label: "<b>Navigator · 'Appeal filed'</b><br/>→ Dashboard, that request" }
   c8c@{ shape: trap-t, label: "Click 'Accept and close'" }
-  n8c@{ shape: cyl, label: "<b>Cadence · 'Denial closed'</b><br/>→ Case Manager, Reviews this week" }
+  n8c@{ shape: cyl, label: "<b>Cadence · 'Denial closed'</b><br/>→ Authorizations, All view, where the denial's row reads Accepted with 'Plan the step-down'" }
   c8d@{ shape: trap-t, label: "Click 'Log the outcome'" }
   n8d@{ shape: cyl, label: "<b>Advocate · 'Call outcome: ...'</b><br/>→ Dashboard, that request" }
   end

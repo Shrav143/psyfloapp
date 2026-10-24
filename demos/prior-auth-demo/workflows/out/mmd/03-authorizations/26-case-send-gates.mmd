@@ -37,15 +37,15 @@ flowchart TD
   b2@{ shape: trap-t, label: "<b>Click 'Send to payer'</b><br/>(only when on)" }
   rp@{ shape: rect, label: "<b>Find this request's draft in New Case</b><br/>The draft named like 'draft-r1042', or any draft with this case ID<br/>Or make one: draftFromRequest" }
   d5@{ shape: diam, label: "Does the request already have a draft?" }
-  mk@{ shape: rect, label: "<b>A draft is created from the request</b><br/>Patient, payer, level of care, request type, a reason and diagnoses from the case page<br/>The documents the payer's saved list asks for, as sample files<br/>Not saved, so Case Manager does not list it" }
+  mk@{ shape: rect, label: "<b>A draft is created from the request</b><br/>Patient, payer, level of care, request type, a reason and diagnoses from the case page<br/>The documents the payer's saved list asks for, as sample files<br/>Not saved, so Authorizations does not list it as a draft" }
   up@{ shape: rect, label: "<b>A draft that exists is brought up to date</b><br/>Answers from applied actions (sertraline date, step-down provider) are added<br/>The therapy note is added when that action was applied<br/>When every check passes the run is marked finished" }
   d6@{ shape: diam, label: "Where does the request stand?" }
   g1@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › Start the run and watch it" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer" }
   g3@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › After sending" }
   dRec@{ shape: diam, label: "Is the request on the Dashboard (recorded in the store)?" }
-  sent@{ shape: stadium, label: "<b>New Case shows 'R-0912 was sent'</b><br/>'Open it on the Dashboard' and 'Back to Case Manager'<br/>The draft is marked sent, so it cannot be signed again" }
-  sent2@{ shape: stadium, label: "<b>New Case shows 'R-1131 is with the payer'</b><br/>'It is already with the payer, so there is nothing to sign here.'<br/>'Back to the case' and 'Back to Case Manager'<br/>It does not say it was sent by you, because the store has no such request" }
+  sent@{ shape: stadium, label: "<b>New Case shows 'R-0912 was sent'</b><br/>'Open it on the Dashboard' and 'Back to Authorizations'<br/>The draft is marked sent, so it cannot be signed again" }
+  sent2@{ shape: stadium, label: "<b>New Case shows 'R-1131 is with the payer'</b><br/>'It is already with the payer, so there is nothing to sign here.'<br/>'Back to the case' and 'Back to Authorizations'<br/>It does not say it was sent by you, because the store has no such request" }
   ns@{ shape: rect, label: "<b>Nothing has been sent</b><br/>A licensed clinician signs in New Case" }
   cp --> d1
   d1 -->|"Yes"| r1

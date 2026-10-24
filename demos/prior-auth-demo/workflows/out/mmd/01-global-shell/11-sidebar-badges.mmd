@@ -30,14 +30,14 @@ flowchart TD
   end
   subgraph gB ["What each badge counts, and what moves it (Both sites)"]
   b1@{ shape: rect, label: "<b>'Dashboard'  3</b><br/>Requests at stage 'Info requested'<br/>Falls when an answer is sent" }
-  b2@{ shape: rect, label: "<b>'Authorizations'  19</b><br/>Open queue items in 'Act now' (5) and 'Due within 24 hours' (14)<br/>'Due this week' is not counted" }
+  b2@{ shape: rect, label: "<b>'Authorizations'  19</b><br/>Open requests due today: 5 to act on now and 14 more due within 24 hours<br/>Requests due later, saved New Case drafts, approved authorizations and reviews are not counted, so the worklist's own counts are larger<br/>The bubble stays on the parent row whether the group is open or closed" }
   b3@{ shape: rect, label: "<b>'New Case'  4  (listed under Authorizations)</b><br/>Referrals that are New or In review and not yet opened<br/>Falls when a referral is opened" }
   b4@{ shape: rect, label: "<b>'Eligibility & Benefits'  9  (listed under Authorizations)</b><br/>Patients not cleared: 4 'Authorization first', 5 'Fix before billing'" }
   b5@{ shape: rect, label: "<b>'Denial Intelligence'  8</b><br/>Requests at stage 'Appeal' (open denials)<br/>Falls when a denial is settled" }
-  b6@{ shape: rect, label: "<b>'Case Manager'  11</b><br/>3 cases that need a person (2 questions, 1 signature)<br/>plus 8 reviews that 'Need your update'" }
   b7@{ shape: rect, label: "<b>'Payers'  3</b><br/>Payers with a rule change waiting for a person: Cardinal, Evergreen and Harborview<br/>Falls when the change is acknowledged<br/>Clinic-wide: a payer's rules are not site data, so this number is the same for every viewer and every site view" }
   end
-  g1@{ shape: subproc, label: "Continues in: Case Manager › Reviews this week › Add your update to a review" }
+  b6@{ shape: rect, label: "Not a badge: what Case Manager used to count is in the worklist's 'Needs attention' view (30 at Both sites)" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Pick a view" }
   e1@{ shape: stadium, label: "Badges always match the pages they point to, for the site in view" }
   s1 --> sb --> p1 --> vw
   vw --> d1
@@ -47,11 +47,11 @@ flowchart TD
   d2 -->|"No"| off
   z & on & off --> e1
   vw --> b1
-  b1 ~~~ b2 ~~~ b3 ~~~ b4 ~~~ b5 ~~~ b6 ~~~ b7
-  b6 --> g1
+  b1 ~~~ b2 ~~~ b3 ~~~ b4 ~~~ b5 ~~~ b7
+  b2 -.-> b6 --> g1
   class s1 k_start
   class sb k_screen
-  class p1,vw,z,nz,on,off,b1,b2,b3,b4,b5,b6,b7 k_process
+  class p1,vw,z,nz,on,off,b1,b2,b3,b4,b5,b7,b6 k_process
   class d1,d2 k_decision
   class g1 k_goto
   class e1 k_end

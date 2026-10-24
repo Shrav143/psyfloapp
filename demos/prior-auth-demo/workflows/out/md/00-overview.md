@@ -69,9 +69,11 @@ flowchart TD
 
 ## Site map › Every menu tab and sub tab
 
-The whole product on one page. Each green screen is a sidebar destination; dashed boxes jump to the diagrams for that tab. The top bar (site switcher, Ask FLO, Notifications, Demo menu) is on every page. Authorizations is the only item with sub tabs; Case Manager has two tabs inside its page.
+The whole product on one page. Each green screen is a sidebar destination; dashed boxes jump to the diagrams for that tab. The top bar (site switcher, Ask FLO, Notifications, Demo menu) is on every page. Authorizations is the only item with sub items (All Authorizations, New Case, Eligibility & Benefits), and its arrow opens and closes them. There is no Case Manager tab: its tracker and its reviews are views of the one Authorizations worklist.
 
 Route: `/ (opens the Dashboard)`
+
+Old Case Manager links (/manager, /active) open the matching Authorizations view, see Global shell › Addresses.
 
 ```mermaid
 %%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
@@ -102,11 +104,10 @@ flowchart LR
   end
   subgraph gMain ["Sidebar › Main"]
   dash@{ shape: curv-trap, label: "<b>Dashboard</b><br/>Lifecycle chips, Do next, authorizations table" }
-  auth@{ shape: curv-trap, label: "<b>Authorizations › Queue</b><br/>Requests ranked by how soon each is due" }
+  auth@{ shape: curv-trap, label: "<b>Authorizations › All Authorizations</b><br/>One worklist with view chips: All, Needs attention, In progress, With the payer, Approved, Denied, Reviews this week" }
   newc@{ shape: curv-trap, label: "<b>Authorizations › New Case</b><br/>Intake, Eligibility & Benefits, Clinical documentation, Authorization preparation, Review & submit" }
   elig@{ shape: curv-trap, label: "<b>Authorizations › Eligibility & Benefits</b><br/>List, verify a patient, result" }
   den@{ shape: curv-trap, label: "<b>Denial Intelligence</b><br/>Open denials, options, brief" }
-  mgr@{ shape: curv-trap, label: "<b>Case Manager</b><br/>Tabs: Active cases and Reviews this week" }
   ana@{ shape: curv-trap, label: "<b>Analytics</b><br/>Performance and the monthly report" }
   end
   subgraph gConn ["Sidebar › Connections"]
@@ -119,7 +120,9 @@ flowchart LR
   out@{ shape: odd, label: "<b>Sign out</b><br/>A toast: there is nothing to sign out of" }
   end
   subgraph gSub ["Pages reached from inside a tab"]
-  case@{ shape: curv-trap, label: "<b>Authorizations › Case page</b><br/>Five tabs: actions, picture, criteria, risk, draft" }
+  case@{ shape: curv-trap, label: "<b>Authorizations › Case page</b><br/>Three tabs: Recommended actions, Clinical picture & draft, Criteria & risk" }
+  ledg@{ shape: curv-trap, label: "<b>Authorizations › Approved authorization with no open request</b><br/>Case summary, window, units, reviews due, history" }
+  rev@{ shape: win-pane, label: "<b>Authorizations › Reviews this week › Review drawer</b><br/>Opens from a row in Reviews this week" }
   ref@{ shape: curv-trap, label: "<b>New Case › Full referral page</b><br/>Extracted, Validation, Coverage, Fit, Activity" }
   ver@{ shape: curv-trap, label: "Eligibility › Verify a patient and Result" }
   brief@{ shape: curv-trap, label: "Denial Intelligence › Peer-to-peer brief" }
@@ -129,23 +132,26 @@ flowchart LR
   g0@{ shape: subproc, label: "Continues in: Who can see what › Roles, sites and a record at the other site" }
   g1@{ shape: subproc, label: "Continues in: Global shell" }
   g2@{ shape: subproc, label: "Continues in: Dashboard" }
-  g3@{ shape: subproc, label: "Continues in: Authorizations › Queue and case page" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Arrive and read the views" }
+  g3b@{ shape: subproc, label: "Continues in: Authorizations › Ledger case page › Open and read" }
+  g3c@{ shape: subproc, label: "Continues in: Authorizations › Reviews this week › The review drawer" }
   g4@{ shape: subproc, label: "Continues in: Authorizations › New Case" }
   g5@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits" }
   g6@{ shape: subproc, label: "Continues in: Denial Intelligence" }
-  g7@{ shape: subproc, label: "Continues in: Case Manager" }
   g8@{ shape: subproc, label: "Continues in: Analytics" }
   g9@{ shape: subproc, label: "Continues in: EMR Connect" }
-  g10@{ shape: subproc, label: "Continues in: Payers" }
+  g10@{ shape: subproc, label: "Continues in: Payers › Workspace" }
   g11@{ shape: subproc, label: "Continues in: Settings" }
   s0 --> shell
   shell --> ask & notif & demo & site
   site --> g0
   demo --> g0
-  shell --> dash & auth & newc & elig & den & mgr & ana
+  shell --> dash & auth & newc & elig & den & ana
   shell --> emr & pay
   shell --> set & help & out
-  auth --> case
+  auth --> case & ledg & rev
+  ledg --> g3b
+  rev --> g3c
   newc --> ref
   elig --> ver
   den --> brief & rep
@@ -156,16 +162,15 @@ flowchart LR
   newc --> g4
   elig --> g5
   den --> g6
-  mgr --> g7
   ana --> g8
   emr --> g9
   pay --> g10
   set --> g11
   class s0 k_start
-  class shell,dash,auth,newc,elig,den,mgr,ana,emr,pay,set,case,ref,ver,brief,rep,payer k_screen
-  class ask,notif,site,demo k_overlay
+  class shell,dash,auth,newc,elig,den,ana,emr,pay,set,case,ledg,ref,ver,brief,rep,payer k_screen
+  class ask,notif,site,demo,rev k_overlay
   class help,out k_toast
-  class g0,g1,g2,g3,g4,g5,g6,g7,g8,g9,g10,g11 k_goto
+  class g0,g1,g2,g3,g3b,g3c,g4,g5,g6,g8,g9,g10,g11 k_goto
   style gTop fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gMain fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
   style gConn fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
@@ -175,7 +180,7 @@ flowchart LR
 
 ## End to end › A request from referral to decision, denial and appeal
 
-How one patient's request moves through the tabs. Follow the main path down the middle; the branches to the sides are what happens when the payer asks for more, denies, or approves.
+How one patient's request moves through the tabs. Follow the main path down the middle; the branches to the sides are what happens when the payer asks for more, denies, or approves. Authorizations tracks the request the whole way: it is one row of the worklist, and its view chip follows it from In progress to With the payer, then Approved or Denied.
 
 Route: `Across the whole product`
 
@@ -208,33 +213,36 @@ flowchart TD
   emr@{ shape: st-rect, label: "<b>EMR Connect supplies the chart</b><br/>Pull from EMR" }
   ver@{ shape: hex, label: "<b>Verify checks coverage and benefits</b><br/>Eligibility & Benefits" }
   nc3@{ shape: curv-trap, label: "<b>New Case › Authorization preparation</b><br/>Scribe, Criteria, Placement, Integrity, Forecaster ..." }
+  drf@{ shape: cyl, label: "<b>A saved draft is an In progress row in Authorizations</b><br/>with 'Continue', 'Answer', 'Watch' or 'Review and sign'" }
   d2@{ shape: diam, label: "Does an agent need an answer from you?" }
   ans@{ shape: lean-r, label: "Answer Scribe's question" }
   chance@{ shape: hex, label: "Forecaster shows the approval chance" }
   nc4@{ shape: curv-trap, label: "<b>New Case › Review & submit</b><br/>Nothing goes to the payer until a clinician signs" }
   sign@{ shape: trap-t, label: "<b>Clinician signs</b><br/>Sign and send" }
-  req@{ shape: cyl, label: "<b>Request created</b><br/>Stage: Received" }
+  req@{ shape: cyl, label: "<b>Request created</b><br/>Stage: Received<br/>In Authorizations it moves to With the payer" }
   payer@{ shape: st-rect, label: "<b>Payer receives the request</b><br/>(demo: simulated)" }
   dash@{ shape: curv-trap, label: "<b>Dashboard</b><br/>Four figures and the request list; stages: Preparing, Received, Under review, Info requested, Decided today, Appeal or call" }
   w1@{ shape: delay, label: "<b>Payer decides</b><br/>Time passes (the Demo menu moves the clock)" }
   d3@{ shape: diam, label: "What does the payer decide?" }
   info@{ shape: trap-t, label: "<b>Answer on the Dashboard</b><br/>Send the information requested" }
-  ok@{ shape: stadium, label: "<b>Approved</b><br/>In Case Manager: reviews are scheduled before the authorization ends" }
+  ok@{ shape: stadium, label: "<b>Approved</b><br/>Authorizations › Approved: units used and left, the window and the next review" }
   den@{ shape: curv-trap, label: "<b>Denial Intelligence</b><br/>Where the denial is weak, options with chances" }
   d4@{ shape: diam, label: "Which route?" }
   p2p@{ shape: doc, label: "Peer-to-peer brief and call" }
   app@{ shape: doc, label: "Written appeal, signed and sent" }
-  acc@{ shape: trap-t, label: "Accept the denial" }
+  acc@{ shape: trap-t, label: "<b>Accept the denial</b><br/>Its Authorizations row reads Accepted with 'Plan the step-down'" }
   d5@{ shape: diam, label: "Overturned?" }
   lost@{ shape: stadium, label: "<b>Denial stands</b><br/>Recorded and counted in Analytics" }
   ana@{ shape: curv-trap, label: "<b>Analytics</b><br/>Approval by payer, denial reasons, what helps most" }
-  mgr@{ shape: curv-trap, label: "<b>Case Manager</b><br/>Active cases and Reviews this week" }
+  mgr@{ shape: curv-trap, label: "<b>Authorizations › Reviews this week</b><br/>Cadence drafts each continued-stay review, a clinician signs it, and the next one is booked before the authorization ends" }
+  gW@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Pick a view" }
   s1 --> ref1 --> nc1 --> rd --> d1
   d1 -->|"Missing items"| askref --> nc1
   d1 -->|"Ready"| nc2
   emr -.-> nc2
   nc2 --> ver --> nc3
   nc3 --> d2
+  nc3 -.-> drf
   d2 -->|"Yes"| ans --> chance
   d2 -->|"No"| chance
   chance --> nc4 --> sign --> req --> payer --> dash --> w1 --> d3
@@ -246,7 +254,7 @@ flowchart TD
   d4 -->|"Accept"| acc --> lost
   d5 -->|"Yes"| ok
   d5 -->|"No"| lost
-  ok --> mgr
+  ok --> mgr --> gW
   lost --> ana
   ok --> ana
   class s1 k_start
@@ -255,12 +263,13 @@ flowchart TD
   class rd,ver,chance k_agent
   class d1,d2,d3,d4,d5 k_decision
   class askref,sign,info,acc k_click
+  class drf,req k_store
   class ans k_input
-  class req k_store
   class w1 k_wait
   class ok k_end
   class p2p,app k_doc
   class lost k_endx
+  class gW k_goto
 ```
 
 ## Who can see what › Roles, sites and a record at the other site

@@ -41,8 +41,8 @@ flowchart TD
   p5@{ shape: rect, label: "<b>Eight more rows are added</b><br/>With fewer than 8 left the button shows that number, e.g. 'Show 5 more'" }
   e1@{ shape: stadium, label: "<b>All rows shown</b><br/>'Showing 40 of 40'; no button" }
   p6@{ shape: rect, label: "Changing any menu, chip, toggle or the sort goes back to the first 8 rows" }
-  sc4@{ shape: curv-trap, label: "<b>With cases saved in New Case that have no row yet</b><br/>A line under the table with all statuses or Awaiting sign-off: '2 more are being prepared in New Case.' and 'Open Active cases'" }
-  g6@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Being prepared card" }
+  sc4@{ shape: curv-trap, label: "<b>With cases saved in New Case that have no row yet</b><br/>A line under the table with all statuses or Awaiting sign-off: '2 more are being prepared in New Case.' and 'Open Active cases'<br/>(the link opens Authorizations, All view)" }
+  g6@{ shape: subproc, label: "Continues in: Authorizations › In progress › Drafts being prepared" }
   s1 --> sc1 --> sc2 --> p1 --> p2 --> d0
   d0 -->|"No"| em --> g3
   d0 -->|"Yes"| r1

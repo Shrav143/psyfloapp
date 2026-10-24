@@ -18,7 +18,7 @@ flowchart TD
   classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
   s1@{ shape: stadium, label: "Working on a new case" }
   s2@{ shape: stadium, label: "On a case page, click 'Open in review and sign' or 'Send to payer'" }
-  pReq@{ shape: rect, label: "<b>A draft is made from the request, or the one it already has is brought up to date</b><br/>It opens on Review & submit when the request is ready, on Authorization preparation when agents still have work<br/>It is not saved, so Case Manager does not list it" }
+  pReq@{ shape: rect, label: "<b>A draft is made from the request, or the one it already has is brought up to date</b><br/>It opens on Review & submit when the request is ready, on Authorization preparation when agents still have work<br/>It is not saved" }
   gCase@{ shape: subproc, label: "Continues in: Authorizations › Case page › Send to payer and review and sign" }
   subgraph gSave ["Ways a draft gets saved"]
   c1@{ shape: trap-t, label: "Click 'Save as draft' on Intake, Eligibility & Benefits or Clinical documentation" }
@@ -30,28 +30,28 @@ flowchart TD
   dAlready@{ shape: diam, label: "Is the case already saved?" }
   st1@{ shape: cyl, label: "<b>Draft marked saved and given a case ID</b><br/>R- for Residential 3.5 and Detox, I- for IOP, P- for PHP<br/>A draft with no level of care yet falls under R<br/>Numbered from 1701" }
   pNoop@{ shape: rect, label: "Nothing changes; the toast still shows" }
-  t1@{ shape: odd, label: "<b>Steps 1 to 3: 'Draft saved'</b><br/>'R-1701 is in Case Manager. Pick it up whenever you like.'" }
-  t2@{ shape: odd, label: "<b>Review & submit: 'Draft saved'</b><br/>'R-1701 is in Case Manager.'" }
+  t1@{ shape: odd, label: "<b>Steps 1 to 3: 'Draft saved'</b><br/>'R-1701 is in Authorizations.'" }
+  t2@{ shape: odd, label: "<b>Review & submit: 'Draft saved'</b><br/>'R-1701 is in Authorizations.'" }
   stPos@{ shape: cyl, label: "<b>The draft keeps its step</b><br/>Intake, Eligibility & Benefits, Clinical documentation, Authorization preparation or Review & submit<br/>And what was typed, picked, answered and documented" }
-  cLeave@{ shape: trap-t, label: "Click 'Case Manager' at the top, a sidebar item, or close the tab" }
+  cLeave@{ shape: trap-t, label: "Click 'Authorizations' at the top, a sidebar item, or close the tab" }
   dSaved@{ shape: diam, label: "Was the case saved?" }
-  pUnsaved@{ shape: rect, label: "<b>Nothing appears in Case Manager</b><br/>The draft stays in this session and its address still opens it<br/>Opening New Case again starts another blank draft" }
+  pUnsaved@{ shape: rect, label: "<b>Nothing appears in Authorizations</b><br/>The draft stays in this session and its address still opens it<br/>Opening New Case again starts another blank draft" }
   pAway@{ shape: rect, label: "<b>A running case stops moving while the page is closed</b><br/>The row shows the agent that was working<br/>Or, when an agent could not finish: 'Verify could not reach Cardinal's portal. Retry it or skip it'" }
-  sCM@{ shape: curv-trap, label: "<b>Case Manager › Active cases › Being prepared</b><br/>'Most urgent first. Each case moves through eight steps; the agents do all but Ask and Sign.'<br/>Filter: 'All', 'Agents working', 'Needs your input', 'Ready to sign'<br/>Only cases at the sites in view" }
-  sRow@{ shape: curv-trap, label: "<b>A row for the draft</b><br/>Level of care chip, case ID, 'J.M., 34 · Summit Medicaid HMO', request<br/>Eight-step bar: Read, Rules, Match, Ask, Draft, Check, Sign, Send<br/>Who has it, due chip, status pill, approval chance, one button" }
+  sCM@{ shape: curv-trap, label: "<b>Authorizations › In progress (also in All)</b><br/>A draft of a listed request stays on that request's row; a new case is a row of its own<br/>Only cases at the sites in view" }
+  sRow@{ shape: curv-trap, label: "<b>A row for the draft</b><br/>Case ID and patient, status chip, the agent line as next action, due pill, owner, approval chance, one button" }
   dState@{ shape: diam, label: "What state is the draft in?" }
-  rIntake@{ shape: rect, label: "<b>'Intake not finished'</b><br/>Button 'Continue'; chance shows 'Not started'" }
+  rIntake@{ shape: rect, label: "<b>'Intake not finished'</b><br/>Button 'Continue'; chance shows 'None'" }
   rWork@{ shape: rect, label: "<b>'Agents working'</b><br/>Button 'Watch'" }
   rAsk@{ shape: rect, label: "<b>'Needs your input'</b><br/>Button 'Answer'" }
   rReady@{ shape: rect, label: "<b>'Ready to sign'</b><br/>Button 'Review and sign'" }
-  pBadge@{ shape: rect, label: "<b>The sidebar badge on 'Case Manager' counts drafts that need a person</b><br/>Intake not finished, a question, or ready to sign" }
-  pDash@{ shape: rect, label: "<b>The Dashboard counts a saved draft under 'Preparing' ('N in Case Manager')</b><br/>A draft that was never saved is not counted<br/>Seeded cases such as R-1042 are counted as requests" }
+  pBadge@{ shape: rect, label: "<b>'Needs attention' counts drafts that need a person</b><br/>Intake not finished, a question, or ready to sign" }
+  pDash@{ shape: rect, label: "<b>The Dashboard counts a saved draft under 'Preparing'</b><br/>A draft that was never saved is not counted<br/>Seeded cases such as R-1042 are counted as requests" }
   cOpen@{ shape: trap-t, label: "Click the case ID, or the row's button" }
   pResume@{ shape: rect, label: "<b>Opens /authorizations/new/DRAFT</b><br/>The page resumes where the draft was<br/>A draft whose agents already ran opens on Authorization preparation or Review & submit, never on Intake" }
   gResume@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › Finished, paused or left" }
   gStep3@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › The checklist and Continue" }
   gOpen@{ shape: subproc, label: "Continues in: Authorizations › New Case › Reopen and resume a case" }
-  gCM@{ shape: subproc, label: "Continues in: Case Manager › Active cases › Being prepared card" }
+  gCM@{ shape: subproc, label: "Continues in: Authorizations › In progress › Drafts being prepared" }
   sNF@{ shape: curv-trap, label: "<b>New Case</b><br/>'That draft is not in the demo.'<br/>'We could not find that draft'<br/>'It may have been cleared when the demo data was reset.'" }
   cNew@{ shape: trap-t, label: "Click 'Start a new case'" }
   pNew@{ shape: rect, label: "A new blank draft opens on Intake" }

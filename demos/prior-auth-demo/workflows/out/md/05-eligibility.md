@@ -273,7 +273,7 @@ flowchart TD
   end
   subgraph gLinked ["Opens a pre-filled form"]
   a3@{ shape: stadium, label: "On a referral's 'Coverage' tab, click 'Open full Eligibility & Benefits check'" }
-  a4@{ shape: stadium, label: "On the Authorizations queue, click the red pill 'Coverage needs a fix'" }
+  a4@{ shape: stadium, label: "On the Authorizations worklist, click the red pill 'Coverage needs a fix' on a row" }
   a5@{ shape: stadium, label: "On a case's actions, click 'Open Eligibility & Benefits' in the coverage recommendation" }
   end
   p0@{ shape: rect, label: "<b>Address opens /authorizations/eligibility/verify</b><br/>with ?referral=ID (from a referral), ?case=ID (from a case) or nothing" }
@@ -1459,8 +1459,8 @@ flowchart TD
   c2@{ shape: trap-t, label: "Click 'Open case'" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Case page › Ways in" }
   q3@{ shape: diam, label: "ID starts with 'V-' (a new check, no case yet)?" }
-  c3@{ shape: trap-t, label: "Click 'Open in Case Manager'" }
-  g3@{ shape: subproc, label: "Continues in: Case Manager" }
+  c3@{ shape: trap-t, label: "<b>Click 'Open in Authorizations'</b><br/>Opens /authorizations" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Arrive and read the views" }
   n1@{ shape: rect, label: "No 'Start authorization' button" }
   p2@{ shape: rect, label: "<b>No case button is shown</b><br/>The check has no case yet" }
   q4@{ shape: diam, label: "What did the check find?" }

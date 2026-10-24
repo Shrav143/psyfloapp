@@ -7,7 +7,6 @@ start s1 "Verify finishes: the payer needs no authorization for this level of ca
 decision d1 "Does the case already have a documented exception for it?"
 screen sCard "Card 'No authorization is required'\n'Beacon PPO needs no authorization for IOP, 10/22/2026 to 11/11/2026. Rule: ...'"
 process pSteps "The stepper reads\nStep 2 Complete · No authorization required\nSteps 3 and 4 Not applicable · 'The payer needs no authorization'"
-toast tHint "Footer hint: 'No authorization is required. Save the verification, return to Case Manager, or continue with a documented exception.'"
 
 group gThree "The three actions"
   click a1 "Click 'Save verification to the patient record'"
@@ -39,7 +38,6 @@ s1 --> d1
 d1 -->|No| sCard
 d1 -->|Yes| pOn
 sCard --> pSteps
-sCard --> tHint
 sCard -.-> gPayers
 sCard --> a1 --> s1a --> t1 --> p1 --> gEb
 sCard --> a2 --> p2 --> gCm

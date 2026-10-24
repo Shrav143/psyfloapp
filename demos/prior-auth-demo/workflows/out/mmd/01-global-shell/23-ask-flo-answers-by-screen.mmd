@@ -27,11 +27,11 @@ flowchart TD
   ml@{ shape: trap-t, label: "Click 'Open R-1042, Recommended actions'" }
   end
   subgraph gX ["Expiry: 'When does this authorization run out?'"]
-  x1@{ shape: hex, label: "FLO reads the Case Manager ledger row of the case and its next unsigned review" }
+  x1@{ shape: hex, label: "FLO reads the case's approved authorization (the record behind Authorizations › Approved) and its next unsigned review" }
   x2@{ shape: diam, label: "What does the row hold?" }
   x3@{ shape: odd, label: "<b>End date: 'I-2207 (Cardinal, IOP) has used 38 of 48 units. The authorization ends in 3 days (Fri 10/23).'</b><br/>'Its next clinical review is Wed 10/21, 4:00 pm.'" }
   x4@{ shape: odd, label: "Measured in units, no date: 'has used 16 of 48 units, so 32 units are left. The ledger holds no end date for it.'" }
-  x5@{ shape: odd, label: "<b>Other next event: 'has used 14 of 14 days. The approved days are used up. The payer's decision on the next stay is expected Thu 10/22.'</b><br/>No approval yet: 'has no approval yet, so there is nothing to run out.'" }
+  x5@{ shape: odd, label: "<b>Other next event: 'has used 14 of 14 days. The approved days are used up. The payer's decision on the next stay is expected Thu 10/22.'</b><br/>No approval yet: 'has no approval yet, so there is nothing to run out.'<br/>Away from a case page with none ending: 'No approved authorization has an end date ahead of it.' with 'Open Authorizations' (the All view)" }
   xl@{ shape: trap-t, label: "Click 'Open I-2207'" }
   end
   subgraph gR ["Requires: 'What does Summit require?'"]
@@ -42,7 +42,8 @@ flowchart TD
   subgraph gV ["Reviews: 'Which reviews are due?'"]
   v1@{ shape: hex, label: "FLO reads this week's clinical reviews that are not signed" }
   v2@{ shape: odd, label: "<b>'47 reviews are due this week, 5 of them due now or overdue: 35 drafted (29 clean), 4 not drafted yet, 8 need a clinician's update.'</b><br/>'Next: ...' and 'Needs your update: R-0912, R-0899, R-0881, and 5 more.'" }
-  vl@{ shape: trap-t, label: "Click 'Open R-0912, review'" }
+  vl@{ shape: trap-t, label: "<b>Click 'Open R-0912, review'</b><br/>(with nothing due: 'No review is due this week. Every one has been signed.' and 'Open Reviews this week')" }
+  vp@{ shape: rect, label: "<b>Drawer closes. Goes to /authorizations?view=reviews&review=rv-R-0912</b><br/>The worklist opens on Reviews this week with R-0912's review drawer open" }
   end
   subgraph gE ["Eligibility: 'Which patients need a fix before billing?'"]
   e1@{ shape: hex, label: "FLO reads the coverage checks and their verdicts" }
@@ -53,7 +54,7 @@ flowchart TD
   g1@{ shape: subproc, label: "Continues in: Authorizations › Case page › Recommended actions › The tab" }
   g2@{ shape: subproc, label: "Continues in: Authorizations › Case page › Ways in" }
   g3@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Read the document list" }
-  g4@{ shape: subproc, label: "Continues in: Case Manager › Reviews this week › The review drawer" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › Reviews this week › The review drawer" }
   g5@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › What the page shows" }
   s1 --> d0
   d0 -->|"missing, incomplete"| m1
@@ -73,13 +74,14 @@ flowchart TD
   xl --> g2
   r1 --> r2 --> rl --> g3
   r1 -.-> n1
-  v1 --> v2 --> vl --> g4
+  v1 --> v2 --> vl --> vp --> g4
   e1 --> e2 --> el --> g5
   class s1 k_start
   class d0,m1,m3,x2 k_decision
   class m2,x1,r1,v1,e1 k_agent
   class m4,m5,x3,x4,x5,r2,v2,e2 k_toast
   class ml,xl,rl,vl,el k_click
+  class vp k_process
   class n1 k_endx
   class g1,g2,g3,g4,g5 k_goto
   style gM fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

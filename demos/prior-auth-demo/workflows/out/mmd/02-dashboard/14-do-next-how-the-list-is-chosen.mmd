@@ -28,7 +28,7 @@ flowchart TD
   k7@{ shape: rect, label: "An authorization that ends within 7 days, or has ended, with no request in flight to replace it" }
   k8@{ shape: rect, label: "<b>Cases saved in New Case that wait for a person and have no row yet</b><br/>One line for all of them" }
   end
-  p2@{ shape: rect, label: "<b>Each row gets a time</b><br/>The due time the Authorizations queue ranks by, or the denial's deadline" }
+  p2@{ shape: rect, label: "<b>Each row gets a time</b><br/>The due time the Authorizations worklist sorts by, or the denial's deadline" }
   d1@{ shape: diam, label: "Is it past the CMS decision time?" }
   p3@{ shape: rect, label: "<b>It goes first</b><br/>Other rows are ordered by their due time, overdue first" }
   p4@{ shape: rect, label: "<b>Softer rows wait a little longer than a hard deadline</b><br/>A late payer by 2 days, a renewal by 1 day, a write-back by 3 days" }
@@ -39,7 +39,7 @@ flowchart TD
   ss@{ shape: curv-trap, label: "<b>Only cases at that site</b><br/>A case at the other site is never named, counted or linked" }
   g1@{ shape: subproc, label: "Continues in: Dashboard › Do next › What to do now and where each button leads" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Requests table › Days in state and the CMS decision time" }
-  g3@{ shape: subproc, label: "Continues in: Global shell › Ask FLO › Answers" }
+  g3@{ shape: subproc, label: "Continues in: Global shell › Top bar › Ask FLO › What FLO answers" }
   s1 --> p1 --> d2
   d2 -->|"Yes"| ss --> p2
   d2 -->|"No"| p2

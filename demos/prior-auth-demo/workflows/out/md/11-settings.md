@@ -532,7 +532,7 @@ flowchart TD
   subgraph gDash ["Dashboard"]
   o1@{ shape: rect, label: "<b>Navigator paused: 'Check all now' is dimmed</b><br/>A link under it reads 'Navigator is paused in Settings'" }
   end
-  subgraph gMgr ["Case Manager"]
+  subgraph gMgr ["Authorizations › Reviews this week"]
   m1@{ shape: rect, label: "<b>Cadence paused: 'Draft all due reviews' drafts nothing</b><br/>Toast 'Cadence is paused in Settings'<br/>'It drafts no reviews until you resume it there.'" }
   end
   subgraph gElig ["Eligibility & Benefits"]
@@ -542,14 +542,14 @@ flowchart TD
   subgraph gEmr ["EMR Connect"]
   x1@{ shape: rect, label: "<b>Reader paused: 'Sync now' and 'Connect a system' show 'Reader is paused'</b><br/>Navigator paused: 'Fix' and 'Reconnect' show 'Navigator is paused'<br/>Map and Disconnect still work" }
   end
-  n8@{ shape: rect, label: "<b>Screens that do not read the pause</b><br/>Authorizations queue and case page, Denial Intelligence, Analytics, Payers, Ask FLO" }
+  n8@{ shape: rect, label: "<b>Screens that do not read the pause</b><br/>The Authorizations case page (the worklist reads it only for 'Draft all due reviews'), Denial Intelligence, Analytics, Payers, Ask FLO" }
   subgraph gReal ["Production (PRD FR-25)"]
   r1@{ shape: rect, label: "Production: the operator can pause one agent, one payer channel or all outbound actions at once" }
   r2@{ shape: rect, label: "<b>Production: a pause takes effect before the next step of any running job</b><br/>Steps already going out finish, or roll back to the manual queue" }
   end
   g1@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › Finished, paused or left" }
   g2@{ shape: subproc, label: "Continues in: Dashboard › Header › Check all now and the demo clock" }
-  g3@{ shape: subproc, label: "Continues in: Case Manager › Reviews this week › Draft all due reviews and sign all clean drafts" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › Reviews this week › Draft all due reviews and sign all clean drafts" }
   g4@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows" }
   g5@{ shape: subproc, label: "Continues in: EMR Connect › Sync › When an agent is paused or asks first" }
   g6@{ shape: subproc, label: "Continues in: Settings › Pause › Pause all agents" }
@@ -709,8 +709,8 @@ flowchart TD
   ref@{ shape: curv-trap, label: "<b>Authorizations › New Case › Intake, Eligibility & Benefits and Clinical documentation</b><br/>Reader: reads each file and the referral<br/>Verify: Coverage tab, and the check on Eligibility & Benefits<br/>Placement: Fit tab<br/>Criteria: Decline reasons" }
   run@{ shape: curv-trap, label: "<b>Authorizations › New Case › Authorization preparation</b><br/>Ten in order: Reader, Verify, Criteria, Historian, Placement, Forecaster, Scribe, Integrity, Packet, Scrubber<br/>Scribe and Packet may ask one question" }
   sign@{ shape: curv-trap, label: "<b>Authorizations › New Case › Review & submit</b><br/>Integrity: every sentence traces to the chart<br/>A licensed clinician signs" }
-  auth@{ shape: curv-trap, label: "<b>Authorizations › Queue and Case page</b><br/>Criteria: what the payer asks for<br/>Scribe, Integrity, Forecaster: update the draft and re-score the chance<br/>Each row shows the agent holding the request" }
-  mgr@{ shape: curv-trap, label: "<b>Case Manager</b><br/>Each case shows the agent working on it<br/>Reviews this week: drafted by Scribe or Cadence" }
+  auth@{ shape: curv-trap, label: "<b>Authorizations › Worklist and Case page</b><br/>Criteria: what the payer asks for<br/>Scribe, Integrity, Forecaster: update the draft and re-score the chance<br/>Each row shows the agent holding the request" }
+  mgr@{ shape: curv-trap, label: "<b>Authorizations › In progress and Reviews this week</b><br/>Each draft row shows the agent working on it<br/>Reviews this week: drafted by Scribe or Cadence" }
   dash@{ shape: curv-trap, label: "<b>Dashboard</b><br/>Navigator: sends signed requests, checks status<br/>Caller: phones if still pending<br/>Packet: drafts the answer to an information request<br/>Integrity: checks it<br/>Cadence: ledger, next review, write-back" }
   den@{ shape: curv-trap, label: "<b>Denial Intelligence</b><br/>Reader: reads the letter<br/>Advocate: checks the notice, drafts the appeal<br/>Historian: compares similar decisions<br/>Integrity: checks every statement<br/>Cadence: books the peer-to-peer<br/>Navigator: files the appeal after a signature" }
   pay@{ shape: curv-trap, label: "<b>Payers</b><br/>Historian: proposals on Changes<br/>Scribe, Integrity: redraft open drafts<br/>Process tab names Navigator, Caller, Packet and others on each step<br/>Sentinel: only the 'Payer rule changed' notification" }
@@ -775,7 +775,7 @@ flowchart TD
   reader@{ shape: hex, label: "<b>Reader</b><br/>New case: referral and files, run step 1<br/>Denial Intelligence: reads the letter<br/>Eligibility, EMR Connect: pulls files, maps fields" }
   criteria@{ shape: hex, label: "<b>Criteria</b><br/>New case run step 3<br/>Eligibility: is authorization required<br/>Case page: Criteria tab<br/>Referral decline reasons" }
   placement@{ shape: hex, label: "<b>Placement</b><br/>New case run step 5<br/>Referral Fit tab" }
-  scribe@{ shape: hex, label: "<b>Scribe</b><br/>New case run step 7 and its questions<br/>Case page: redraft after actions<br/>Case Manager reviews<br/>Payers: Update drafts" }
+  scribe@{ shape: hex, label: "<b>Scribe</b><br/>New case run step 7 and its questions<br/>Case page: redraft after actions<br/>Authorizations: Reviews this week<br/>Payers: Update drafts" }
   integrity@{ shape: hex, label: "<b>Integrity</b><br/>New case run step 8<br/>Dashboard: review and sign<br/>Denial Intelligence: appeal and call prep<br/>Payers: Update drafts" }
   c3@{ shape: curv-trap, label: "<b>Intelligence</b><br/>Knows how each payer behaves" }
   historian@{ shape: hex, label: "<b>Historian</b><br/>New case run step 4<br/>Denial Intelligence: similar decisions<br/>Payers Changes: proposals" }
@@ -785,7 +785,7 @@ flowchart TD
   c4@{ shape: curv-trap, label: "<b>Case work</b><br/>Moves each case to done" }
   packet@{ shape: hex, label: "<b>Packet</b><br/>New case run step 9 and a question<br/>Dashboard: drafts the answer to an information request<br/>Payers process steps" }
   scrubber@{ shape: hex, label: "<b>Scrubber</b><br/>New case run step 10: 'Request has no errors'" }
-  cadence@{ shape: hex, label: "<b>Cadence</b><br/>Dashboard: ledger, next review, write-back<br/>Denial Intelligence: books the peer-to-peer<br/>Case Manager reviews" }
+  cadence@{ shape: hex, label: "<b>Cadence</b><br/>Dashboard: ledger, next review, write-back<br/>Denial Intelligence: books the peer-to-peer<br/>Authorizations: Reviews this week" }
   advocate@{ shape: hex, label: "<b>Advocate</b><br/>Denial Intelligence: checks the notice, drafts the appeal, finishes the brief<br/>Payers process steps" }
   g1@{ shape: subproc, label: "Continues in: Settings › Agent map › Which agents work in which flow" }
   c1 --> verify & caller & navigator

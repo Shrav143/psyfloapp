@@ -22,7 +22,7 @@ flowchart TD
   xPortal@{ shape: st-rect, label: "<b>Cardinal's provider portal (demo: simulated)</b><br/>Does not answer" }
   aV@{ shape: hex, label: "Verify tries for about 0.6 seconds, then stops" }
   sFail@{ shape: curv-trap, label: "<b>Row 'Verify': pill 'Could not finish'</b><br/>'Could not reach Cardinal's portal. Coverage is not confirmed yet'<br/>Buttons 'Retry' and 'Skip and note'<br/>The nine agents behind it show 'Waiting'" }
-  pHold@{ shape: rect, label: "<b>The run holds</b><br/>Footer hint: 'Verify could not finish. Retry it, or skip it and note it.'<br/>Case Manager row and the Dashboard note: 'Verify could not reach Cardinal's portal. Retry it or skip it'<br/>The case counts as needing a person" }
+  pHold@{ shape: rect, label: "<b>The run holds</b><br/>Footer hint: 'Verify could not finish. Retry it, or skip it and note it.'<br/>Dashboard note: 'Verify could not reach Cardinal's portal. Retry it or skip it'<br/>The draft's row in Authorizations: 'Verify could not reach Cardinal's portal.'<br/>The case counts as needing a person" }
   cRetry@{ shape: trap-t, label: "Click 'Retry'" }
   stRetry@{ shape: cyl, label: "<b>Failure cleared</b><br/>The draft remembers that Verify has been retried, so a later run of this case does not fail again" }
   aV2@{ shape: hex, label: "Verify runs its step again and answers" }
