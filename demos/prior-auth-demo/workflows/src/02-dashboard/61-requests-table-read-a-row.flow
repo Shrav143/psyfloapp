@@ -27,7 +27,7 @@ screen n10 "A quiet line under the verb\nThe due time, e.g. 'Notice due in 5 h',
 goto g1 "Continues in: Dashboard › Requests table › Order, rows and paging"
 goto g2 "Continues in: Dashboard › Requests table › Days in state and the CMS decision time"
 goto g3 "Continues in: Dashboard › Requests table › Sort the rows"
-goto g4 "Continues in: Case Manager › Active cases › Units or days left and the run-out flag"
+goto g4 "Continues in: Authorizations › Approved › Units used and the run-out flag"
 
 s1 --> c1 --> c2 --> c3 --> c4 --> u1
 u1 -->|Yes| u2 --> u3 --> n1

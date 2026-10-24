@@ -1,61 +1,66 @@
-# Coverage: Authorizations (queue and case page)
+# Coverage: Authorizations (worklist and case page)
 
-Every control on `/authorizations` and `/authorizations/case/:id` and the diagram that shows it. New Case and Eligibility & Benefits are other modules; this module only hands off to them.
+Every control on `/authorizations` and `/authorizations/case/:id` and the diagram that shows it. New Case and Eligibility & Benefits are other modules; this module only hands off to them. The functions Case Manager had (the Approved view and units, Reviews this week and the review drawer, saved drafts, step-down plans, the tracked quick view, the ledger case page, the old Case Manager links) are views and panels of this same page and are drawn in `src/07-case-manager/` (titled `Authorizations › ...`); the rows below name those diagrams as `07/NN`.
 
-File names below are in `src/03-authorizations/`. Short names: 10 queue-overview, 11 site-view, 12 bands, 14 row, 15 quick-view, 16 filters, 17 request-type, 18 signal, 20 ways-in, 21 next-action, 22 header, 23 numbers, 24 tabs, 25 out-of-site, 26 send-gates, 27 facts-row, 28 history, 30 actions-tab, 32 card, 34 apply, 36 dismiss, 38 refine, 39 context, 40 picture (the clinical rail), 42 chip, 44 screener chart, 46 framework, 50 criteria and risk, 62 pop-ups, 70 draft-read-edit, 72 checks-versions, 74 send, 80 exits, 82 writes.
+Source: `src/pages/authorizations/AuthorizationsPage.tsx`, `src/pages/authorizations/worklist/*` (`model.ts`: `buildWorkRows`, views, filters, sort; `WorkTable.tsx`, `WorkFilterBar.tsx`, `ViewChips.tsx`, `params.ts`, `useWorkRows.ts`), `QuickView.tsx`, `QuickViewLite.tsx`, `QueueTop.tsx` (the signal banner), `StatusHelp.tsx`, and for the case page `CasePage.tsx`, `CaseHeader.tsx` and `tabs/*`.
 
-## Queue (`/authorizations`)
+File names below are in `src/03-authorizations/`. Short names: 01 arrive, 02 views, 03 rows, 04 read a row, 05 row action, 06 quick view, 07 search and filter, 08 deadline, More and the Showing chip, 09 signal, 10 sort and page, 11 addresses, 12 sites, 20 ways-in, 21 next-action, 22 header, 23 numbers, 24 tabs, 25 out-of-site, 26 send-gates, 27 facts-row, 28 history, 30 actions-tab, 32 card, 34 apply, 36 dismiss, 38 refine, 39 context, 40 picture (the clinical rail), 42 chip, 44 screener chart, 46 framework, 50 criteria and risk, 62 pop-ups, 70 draft-read-edit, 72 checks-versions, 74 send, 80 exits, 82 writes.
+
+## Worklist (`/authorizations`)
 
 | Control | Diagram |
 |---|---|
-| Sidebar 'Authorizations' (and its badge, which counts the sites in view), Demo menu 'Authorizations: the queue' | 10, 11, 12 |
-| Top bar site switch ('Both sites', 'Site A', 'Site B') and the locked 'Site A only' label: what the queue does with them (the controls themselves are Global shell) | 11 |
-| Demo menu 'Viewing as' (Jordan, Alex, Dr. Rivera, Sam): rows, bands, figures, badge and signal count follow the viewer; Site A + Site B = Both sites | 11 |
-| Header names the site when one site is in view ('12 of 36 open requests at Site A need action today.') | 10, 11 |
-| Header line (filtered, unfiltered and 'Nothing needs action today' wording); no sub line | 10, 16 |
-| 'New Case' button | 10, 80 |
-| Payer signal: one-line banner, 'Review the four' ('Review it' for one) / 'Show all requests'; the count is the affected requests in view | 18, 11 |
-| Payer signal: info icon 'More about this signal' (hover, focus, Esc) | 18 |
-| Payer signal: X 'Dismiss signal' | 18 |
-| Chip 'Showing the 4 affected by the Cardinal signal' (one: 'Showing the request affected by the Cardinal signal') and its X 'Remove the Cardinal signal filter' | 18 |
-| Figure 'Approval chance' (not clickable) | 10 |
-| Figures 'Urgent now', 'Due within 24 hours', 'Waiting on you' (click: filter, click again: clear) | 10 |
-| Approved and denied in the last 30 days (moved to Analytics, no longer on this page) | 10 |
-| Search box 'Search by case ID or initials' | 16 |
-| '/' shortcut to the search box | 16 |
-| 'Payer' menu and its seven options | 16 |
-| 'Request type' menu and its six entries (All request types, Initial, Concurrent review, Reauthorization, Modification / extension, Retrospective), the mapping of the nine request types | 17, 16 |
-| 'Status' menu and its seven options (including 'Waiting on you') | 16 |
-| Info icon 'What the statuses mean' next to 'Status' (hover, focus, Esc) | 16 |
-| 'Urgency' menu and its four options | 16 |
-| Info icon 'How the list is ordered' (right end of the filter bar, no label) | 16, 12 |
-| Menu keys: Up, Down, Enter, Esc, click outside | 16 |
-| Filters in the web address (`?payer=`, `?type=` with `initial`, `concurrent`, `reauth`, `modify` or `retro`, `?status=`, `?urgency=`, `?q=`, `?signal=1`), opening a link with filters | 16, 17, 18 |
-| Search and every filter reach only requests at the sites in view (a request at the other site is not found) | 16, 11 |
-| 'Clear filters' (next to the menus) | 16, 17, 18 |
-| Empty result: 'No requests match these filters' + 'Clear filters' | 16, 17 |
-| Empty queue: 'Nothing needs you today' + 'Open Case Manager' (shown once no request is left open) | 16, 80 |
-| Empty Act now band: 'Nothing needs you today' (the band stays, '0 requests') | 12, 16 |
-| A request leaving its band (sent, decided by the payer, denial settled or appeal filed) | 12, 82 |
-| Band header (collapse and expand) | 12 |
-| 'Show N more' / 'Show fewer' | 12 |
-| Ranking inside a band, band colours, band counts | 12 |
-| Row: request ID link | 14, 20 |
-| Row: small 'Quick view' icon button (aria-label 'Quick view R-1042') and a click on the row away from a link or button | 14, 15 |
-| Quick view panel: Dashboard's request panel when the request is on the Dashboard, a lighter panel otherwise; contents, 'Open case', 'Review and sign' (while being prepared) | 15 |
-| Quick view: `?quick=ID` in the address, opening on a fresh load, an unknown, finished or other-site ID opens nothing | 15, 11 |
-| Quick view: Esc, X and the dimmed area close it; focus goes in, stays inside and returns to the row's button | 15 |
-| Row: 'Open' button | 14, 20 |
-| Row: 'Coverage needs a fix' pill (link) | 14, 80 |
-| Row: program, payer, request type, status chip, 'Needs your input', deadline pill, 'Next: ...', approval chance number and band word | 14, 21 |
-| Scores (no longer on the row; on the case page in the diagnosis line). Agent status lines and the payer note are not shown: the status pill and 'Next:' carry the fact | 14, 22 |
+| Sidebar 'Authorizations' and 'All Authorizations' (same page), the badge (open requests due now or within 24 hours, at the sites in view), Demo menu path steps 'Authorizations: every request in one list' and 'Authorizations: reviews this week' | 01, 12, 07/40 |
+| A plain `/authorizations` (sidebar, 'Back to Authorizations', crumbs) brings back the last view and filters used since the page loaded; never `?quick=` or `?review=`; a reload forgets them | 01, 11 |
+| Title 'Authorizations' and the small site tag ('Site A') when one site is in view; no subtitle | 01, 12 |
+| 'New Case' button | 01, 80 |
+| 'Draft all due reviews' and 'Sign all clean drafts' (only on Reviews this week) | 01, 07/44 |
+| 'N sent today' (only on With the payer, only when something was sent today; opens `/dashboard?stage=received`) | 01, 80, 07/34 |
+| Payer signal: one-line banner, 'Review the four' ('Review it' for one, 'Review the three' at Site B) / 'Show all requests'; the count is the affected open requests in view | 09, 12 |
+| Payer signal: info icon 'More about this signal' (hover, focus, Esc) | 09 |
+| Payer signal: X 'Dismiss signal' (hidden until the data is reset; a filter that is on stays on) | 09 |
+| View chips with counts: 'All', 'Needs attention'; 'In progress', 'With the payer', 'Approved', 'Denied' (these four add up to All); 'Reviews this week'; click to pick, click the chosen one again for All; `?view=`; counts follow search and filters, not the chosen view | 02, 01, 12 |
+| What each view holds (life views; Needs attention and Reviews this week cut across) | 02, 03 |
+| Search 'Search by patient, request ID or payer' (every ID the record is known by, initials, payer name; ignores case and punctuation) | 07 |
+| '/' shortcut to the search box | 07 |
+| 'All payers' menu and its six payers | 07 |
+| 'All services' menu (Residential 3.5, IOP, PHP, Detox), `?program=` | 07 |
+| 'All request types' menu (Initial, Concurrent review, Reauthorization, Modification / extension, Retrospective) and how each record's own type maps | 07 |
+| 'Any deadline' menu with counts ('Act now · 12', 'Within 24 hours · 29', 'Next 7 days · 79'; counted in the chosen view), `?urgency=` | 08 |
+| 'More' (opens a second row; reads 'More · on' while one of its filters is on): 'Any owner', 'Any status' (16 chips), info icon 'What the statuses mean', 'Cardinal payer signal · 4' | 08, 09 |
+| Showing chip from the Dashboard ('Showing Active (approved, units left)', 'Showing Renewal due (review due or ending within 7 days)') and its X 'Remove this filter' | 08, 07/10 |
+| Chip 'Showing the 4 affected by the Cardinal signal' ('Showing the request affected by the Cardinal signal' for one) and its X 'Remove the Cardinal signal filter' | 09 |
+| Menu keys: Up, Down, Enter, Esc, click outside; a menu off its first option turns green | 07 |
+| 'Clear filters' (next to 'More', once any filter is on; the view stays) | 07, 09 |
+| Empty result 'No authorizations match' + 'Clear filters' (clears and goes back to All); no row at all: 'Nothing to track yet' + 'New Case' | 07 |
+| Filters, view and panels in the address (`?view=`, `?q=`, `?payer=`, `?program=`, `?type=`, `?urgency=`, `?owner=`, `?state=`, `?signal=1`, `?show=`, `?quick=`, `?review=`); each change replaces the entry; values that are not choices are ignored | 07, 08, 11 |
+| The queue's old `?status=` (you, input, preparing, ready, payer, denial) and Case Manager's `?tab=reviews` rewritten once in today's words | 11 |
+| Table header line: 'N authorizations', 'Approval chance, open requests 79%', info icon 'About units and approval chance' | 01, 07/30 |
+| Rows: one per request from the open queue requests, the ledger, the Dashboard requests, saved drafts and accepted denials; the list's own order | 03 |
+| Row: request ID link (case page, or New Case for a saved draft) | 04, 20, 07/20 |
+| Row: patient, level, payer, request type; notes 'New today', 'Updated for a payer change · date', 'Consider a step-down' (hover for the reason) | 04, 03, 07/24, 07/23 |
+| Row: status chip and extra chips ('Needs your input', 'Needs action', 'Review due', 'Needs your update'); 'Coverage needs a fix' (link to Eligibility & Benefits) | 04, 80 |
+| Row: units used line, bar and 'Runs out before review' | 04, 07/35 |
+| Row: next action line; 'Open the draft in New Case' (a queue request with a saved draft, in progress) | 04, 07/20 |
+| Row: deadline pill (the record's own words; dot in Act now; 'None') | 04, 07/32 |
+| Row: owner (agent badge and name, or 'None'); chance (or 'None') | 04 |
+| Row: the action button for an open request ('Go to action', 'Send to payer', 'Open the draft', 'Open on Dashboard', 'Open the denial', 'Review and sign', 'Open'); short labels with the full name in the tooltip | 05 |
+| Row button of a ledger row, a review, a saved draft and an accepted denial | 07/31, 07/40, 07/20, 07/23 |
+| Narrow windows: owner above the next action under 1400 px, chance under the deadline under 1240 px, status under the patient under 1100 px; no sideways scroll | 04 |
+| Quick view: the small icon 'Quick view ID' and a click on the row away from links and buttons; `?quick=` (opening on a fresh load, an unknown or other-site ID is dropped); the row is highlighted | 06, 11, 12 |
+| Quick view panels: Dashboard request panel, the lighter panel (its lines, 'Open case', 'Review and sign'), the tracked quick view | 06, 07/36 |
+| Quick view: Esc, X and the dimmed area close it | 06 |
+| Sort: 'Patient / request', 'Status', 'Deadline' ('Due' on Reviews this week), 'Chance' (up, down, back to the list's order; Chance two steps); 'Next action', 'Owner' and the button column do not sort | 10 |
+| Pager: '1 to 15 of 95', 'Previous', 'Page 1 of 7', 'Next' (only past 15 rows; back to page 1 on any view, filter or sort change) | 10 |
+| Sites: rows, every count, the average, the badge, the signal count, search and `?quick=` follow the viewer and the site switch; Site A + Site B = Both sites | 12 |
+| Old Case Manager addresses (`/manager`, `/active`) and links from other tabs | 07/10 |
 
 ## Case page (`/authorizations/case/:id`)
 
 | Control | Diagram |
 |---|---|
-| Ways in (queue ID and 'Open', queue quick view 'Open case', Dashboard drawer 'Open case', Case Manager rows, step-down list and review drawer 'Open case', Eligibility result 'Open case', notification, typed address) | 20 |
-| 'Request not found' + 'Back to queue' | 20 |
+| Ways in (a worklist row's ID and its 'Go to action', 'Open the draft', 'Open' or 'Open case', a quick view's 'Open case', the review drawer's 'Open case', Dashboard drawer 'Open case', Eligibility result 'Open case', notification, typed address) | 20 |
+| 'Request not found': 'No request X' + 'Back to Authorizations' | 20 |
 | A case at a site the viewer cannot see: card 'This case is not available at Site A' (no patient named), 'Show both sites' (viewers who have both), 'Back to the Dashboard' | 25, 20, 80 |
 | Quiet site label at the end of the header sub line, for a viewer who can see both sites (said once, not again as a fact) | 25, 22, 27 |
 | Crumb 'Authorizations' | 22, 80 |
@@ -65,7 +70,7 @@ File names below are in `src/03-authorizations/`. Short names: 10 queue-overview
 | 'Send to payer' (once, in the Next block), on and off states; the reason is its tooltip | 21, 26, 74 |
 | Greyed-out 'Sent to payer' once the request is with the payer or decided | 21, 22, 26 |
 | 'Open on the Dashboard' (Next block, or at the end of the diagnosis line when the next action is something else) | 21, 22, 80 |
-| 'Back to queue' | 22, 80 |
+| 'Back to Authorizations' (plain address: the last view and filters come back) | 22, 80 |
 | Title line: ID, level and type chips, status pill (Preparing, Ready to sign, With the payer, Denial route, or the request's own status), due pill, info icon 'What the statuses mean' | 22 |
 | Authorization facts row (approved with used and left, window or approval ends or next review, documents, workflow, waiting on); request type, days and site are in the title line only | 27 |
 | Diagnosis line and scores | 22 |
@@ -116,7 +121,7 @@ File names below are in `src/03-authorizations/`. Short names: 10 queue-overview
 | Framework name ('ASAM Criteria', 'LOCUS · adult mental health'), info icon 'Which framework applies', six rows, the dimension pop-up and 'Show in draft' | 46, 40 |
 | Folds 'Medications', 'What stands out', 'Engagement' | 40 |
 | Source chips and the source side panel: X, dimmed area, Esc | 42 |
-| Sending: the header's 'Send to payer' and what follows (New Case, sign, Dashboard 'Received', queue) | 74 |
+| Sending: the header's 'Send to payer' and what follows (New Case, sign, Dashboard 'Received', the row moves to With the payer) | 74 |
 
 ## Criteria & risk
 
@@ -134,39 +139,41 @@ File names below are in `src/03-authorizations/`. Short names: 10 queue-overview
 
 | Item | Diagram |
 |---|---|
-| All links out of the queue and the case page | 80 |
-| Dashboard chance and history written by Apply, Add context and Dismiss (History on the case page reads them), notification 'Approval chance updated', clinical context list, dismissal list, queue after a request is sent or decided | 82, 34, 39, 74, 28 |
+| All links out of the worklist page and the case page | 80 |
+| Dashboard chance and history written by Apply, Add context and Dismiss (History on the case page reads them), notification 'Approval chance updated', clinical context list, dismissal list, the request's row in Authorizations (its chance; after it is sent or decided) | 82, 34, 39, 74, 28 |
 
 ## Not drawn
 
 - Animations: the ring counting up (23 mentions it), the fade-in of a tab, the chevron turn. Reduced-motion users get the value at once; no diagram of that.
 - Hover states and the `title` hint on the greyed-out 'Send to payer' (shown as 'a hover hint' in 21 only), and the tooltip 'Quick view' on the icon button.
-- The top bar site switch, the locked 'Site A only' label and the Demo menu 'Viewing as' themselves: Global shell module. 11 and 25 only show what this module does with them.
+- The top bar site switch, the locked 'Site A only' label and the Demo menu 'Viewing as' themselves: Global shell module. 12 and 25 only show what this module does with them.
 - The Dashboard's request panel that the quick view reuses for a request on the Dashboard: Dashboard module ('Request drawer').
 - Chart and donut hover: the charts have no interaction in the code.
-- Sidebar sub links ('New Case', 'Eligibility & Benefits') and the global top bar: Global shell module.
-- The Demo menu 'Fast-forward' and 'Reset demo data' only appear as a note in 12; their own diagram is in Global shell.
-- The whole-queue 'Nothing needs you today' message needs every one of the 56 requests to be sent or handled, so it was checked in the app only for the Act now band (all five requests cleared by signing, a payer reply and settling the denial).
+- Sidebar sub links ('New Case', 'Eligibility & Benefits'), the Authorizations arrow that opens and closes the group, and the global top bar: Global shell module.
+- The Demo menu 'Fast-forward' and 'Reset demo data' only appear as notes; their own diagram is in Global shell.
+- The sort key 'payer' exists in the code but no header uses it.
+- 'Nothing to track yet' needs every record gone, which the demo cannot reach.
 
 ## Still limited in the demo
 
 - The routing of 'Open in review and sign' and 'Send to payer' into New Case, 'Send back to Scribe' on the Draft tab, and what the Draft tab carries into the signed summary belong to the Draft tab and New Case; they are drawn in 26, 72 and 74 and not repeated here. 'Open in review and sign' stays on even for a request already with the payer.
 - Clinical context is saved in the shared list. The Draft tab and New Case read it themselves; this page does not rewrite the draft text.
 - Each of the first three notes of clinical context adds a point to the approval chance, whatever it says. A refinement is a fixed re-order plus one fixed card per focus, not a new reading of the chart.
-- An ID with no queue row and no Dashboard request opens the Ledger case page when it is in the Case Manager ledger, and ends at 'Request not found' only when it is in neither (20).
+- An ID with no queue record and no Dashboard request opens the ledger case page when it is in the ledger, and ends at 'Request not found' only when it is in neither (20).
+- The lighter quick view and the Dashboard panel do not give focus back to the row's icon when they close (the panel looks for `[data-quick="ID"]`, the icon carries an empty `data-quick`); the tracked quick view does (06).
+- The status help tip still says 'Approved, Completed: These leave the queue. See the Dashboard and Case Manager.' (08).
+- The view chips' counts and the table follow the filters, but 'Sign all clean drafts' signs every clean draft in view whatever the filters (07/44).
+
+## Changed in round 7 (one worklist)
+
+- The queue (bands, tiles, four figures, the 'Urgency' and 'Status' menus, 'Show N more', the empty 'Open Case Manager' message) is replaced by one table with view chips; its diagrams 10 to 18 became 01 to 12. Case Manager's functions are views and panels of the same page (07).
+- The case page is unchanged apart from 'Back to Authorizations', the 'Authorizations' crumb and the words for where its row goes (20, 21, 22, 26, 27, 34, 39, 74, 80, 82). 80 is now 'Where the worklist and the case page lead'.
 
 ## Changed in the fourth round (sites, five request types, quick view)
 
-- Sites: the queue, its figures, the sidebar badge and the payer-signal count follow the viewer and the site switch; a case at another site shows a card; a viewer with both sites sees the site on the case page (11, 25, 20, 22, 27).
-- Request type filter has five choices; Modification / extension maps the 'Modification' type, `?type=modify`, three queue requests carry it (17, 16).
-- Quick view panel on each queue row (14, 15). Case facts gain 'Window' and 'Site' (27).
-- Gotos into other modules now name the real titles of their diagrams.
-
-## Changed in the second round (calmer screens)
-
-- Queue: one-line rows (scores, agent line and payer note moved to the case page), four figures instead of five, one compact banner, request type filter, filters in the address, help for the status names and for the ordering (10, 12, 14, 16, 17, 18).
-- Case page: 'Next:' block first, authorization facts, 'At a glance', one-line notice with an info icon instead of two banners, the denial banner folded into the Next block, closed History at the bottom (21, 22, 23, 27, 28).
-- New Case 'R-... is with the payer' for a request that only the queue's seed data says is with the payer (26).
+- Sites: the list, its counts, the sidebar badge and the payer-signal count follow the viewer and the site switch; a case at another site shows a card; a viewer with both sites sees the site on the case page (12, 25, 20, 22, 27).
+- Request type filter has five choices; Modification / extension maps the 'Modification' type, `?type=modify` (07).
+- Quick view panel on each row (04, 06). Case facts gain 'Window' and 'Site' (27).
 
 ## Fixed since the first mapping
 
@@ -174,5 +181,3 @@ File names below are in `src/03-authorizations/`. Short names: 10 queue-overview
 - 'Refine recommendations' opens a panel and re-orders the cards, adds one card and moves the preview (38).
 - 'Add clinical context' is saved in the shared list, shown on the page and nudges the approval chance by a point (39).
 - The dismiss reason is written to the list Analytics reads (36).
-- 'Nothing needs you today' can be reached: requests leave the queue when sent, decided or settled (12, 16).
-- Small copy: '+1 pt' (not '+1 pts'), 'Nothing is urgent', '1 of 56 ... matches', 'Back to queue' on the not-found page.

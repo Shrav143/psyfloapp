@@ -26,7 +26,7 @@ process p1 "Fields it cannot place wait in 'Advanced', and 'Action required' nam
 store s2 "Charts matched today\nGoes up, for the sites the sync pulled from, by the number of charts matched to open cases"
 store s3 "Files pulled this week\nGoes up, for those sites, by the number of files saved to those cases"
 store s4 "Recent activity (in Advanced)\nOne line per sync"
-process p2 "Demo: nothing else changes\nNo new case in Case Manager. New Case offers the same four charts, from Connected systems at the sites in view only"
+process p2 "Demo: nothing else changes\nNo new case in Authorizations. New Case offers the same four charts, from Connected systems at the sites in view only"
 process e1 "Last sync figure reads 'Just now'"
 goto g1 "Continues in: EMR Connect › Sync › Sync now"
 goto g2 "Continues in: EMR Connect › Needs a mapping › Map a field"

@@ -1,8 +1,8 @@
 title: Denial Intelligence › Hand-offs
 route: /denials
-intro: Every link that leaves Denial Intelligence for the Dashboard or Case Manager, what accepting or deciding an appeal passes on to other screens, and the links from other screens that arrive here. There is no link from Denial Intelligence to Analytics.
+intro: Every link that leaves Denial Intelligence for the Dashboard or Authorizations, what accepting or deciding an appeal passes on to other screens, and the links from other screens that arrive here. There is no link from Denial Intelligence to Analytics.
 dir: TD
-also: Accepting a denial (directly, or after an upheld appeal) adds a step-down plan to Case Manager and logs the accepted denial in Analytics. Every recorded appeal decision is also logged for other screens.
+also: Accepting a denial (directly, or after an upheld appeal) makes the denial's row in Authorizations read Accepted with 'Plan the step-down', and logs the accepted denial in Analytics. Every recorded appeal decision is also logged for other screens.
 ---
 screen sc1 "Denial Intelligence\nA denial is on screen"
 
@@ -13,15 +13,15 @@ click c3 "Click 'Open the Dashboard' (no open denials)"
 click c4 "Click 'Plan the step-down' (the accept choice after accepting)"
 process p1 "Address opens /dashboard?request=D-3318"
 process p2 "Address opens /dashboard"
-process p3 "Address opens /manager?tab=cases"
+process p3 "Address opens /authorizations?view=all\nThe denial's row reads Accepted with 'Plan the step-down'"
 goto g1 "Continues in: Dashboard › Request drawer › Open and read a request"
 goto g2 "Continues in: Dashboard › Arrive › What the page shows"
-goto g3 "Continues in: Case Manager › Active cases › Step-down plans from accepted denials"
+goto g3 "Continues in: Authorizations › Denied › Step-down plans from accepted denials"
 endgroup
 
 group gShare "Shared with other screens"
   click c6 "Click 'Record the payer's decision' (the written appeal choice on a filed appeal)"
-  store z1 "On accept: Case Manager gets a step-down plan, Analytics logs the accepted denial"
+  store z1 "On accept: the denial's row in Authorizations gets a step-down plan (Accepted), Analytics logs the accepted denial"
   store z2 "On a recorded appeal decision: the result and next level are logged\nAnalytics reads the appeal rulings"
 endgroup
 

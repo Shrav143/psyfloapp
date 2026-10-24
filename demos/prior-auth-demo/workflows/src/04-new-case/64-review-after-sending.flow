@@ -1,6 +1,6 @@
 title: Authorizations › New Case › Review & submit › After sending
-route: /authorizations/case/R-1701, then /dashboard, /authorizations and /manager
-intro: What changes once the request is signed and sent: the new case opens, the Dashboard shows it as Received, the Authorizations queue lists it, Case Manager stops listing it under Being prepared, and the patient's record gains the request. An existing patient is never copied: the request joins the patient, the treatment episode and the authorization it belongs to. The draft's own address turns into a 'was sent' page.
+route: /authorizations/case/R-1701, then /dashboard and /authorizations
+intro: What changes once the request is signed and sent: the new case opens, the Dashboard shows it as Received, Authorizations lists it under With the payer instead of In progress, and the patient's record gains the request. An existing patient is never copied: the request joins the patient, the treatment episode and the authorization it belongs to. The draft's own address turns into a 'was sent' page.
 dir: TD
 ---
 start s1 "The request is signed and sent"
@@ -14,11 +14,11 @@ group gDash "Dashboard"
 endgroup
 goto gOpen "Continues in: Dashboard › Request drawer › Open and read a request"
 
-group gQueue "Authorizations queue"
-  screen sQ "Queue\nA row for the request: patient, payer, level of care, type\n'Payer has it. Navigator checks again in 30 minutes'"
-  process pQ "It sits in the band of the payer's usual decision time\nOnly a viewer who can see the case's site sees the row"
+group gQueue "Authorizations"
+  screen sQ "Authorizations, With the payer view\nOne row for the request, marked 'New today'\nThe draft's In progress row is gone, so 'Needs attention' no longer counts it"
+  process pQ "Only a viewer who can see the case's site sees the row"
 endgroup
-goto gQueue "Continues in: Authorizations › Queue › Read and open a request row"
+goto gQueue "Continues in: Authorizations › Worklist › Read a row"
 
 group gPat "The patient's record"
   store stLink "The request is linked to its patient, treatment episode, authorization and verification\nA new patient becomes a patient\nA review, renewal or modification joins its authorization: History gets 'Continued stay request signed and sent'\nA new stay for a known patient gets its own episode and a pending authorization"
@@ -33,19 +33,16 @@ group gWas "The draft's own address"
   process pNoSign "'This case is no longer being prepared'\n'Nothing more is needed here.'\nIt cannot be signed a second time"
   click cOpenCase "Click 'Open the case'"
   click cOpenDash "Click 'Open it on the Dashboard'"
-  click cBackCM "Click 'Back to Case Manager'"
+  click cBackCM "Click 'Back to Authorizations'"
 endgroup
 
-group gCM "Case Manager › Active cases"
-  screen sCM "Case Manager\n'N active cases.' and 'N are still being prepared.'"
-  process pGone "The case leaves the 'Being prepared' card\nThe 'still being prepared' count goes down by one"
-  process pBadge "The sidebar badge on 'Case Manager' no longer counts it"
-  click cSent "Click the 'N sent today' button"
-  process pSentN "The count is one higher (4 becomes 5)"
-  process pLedger "The tracker of active cases gains a row for the request"
+group gCM "Authorizations › With the payer"
+  screen sCM "Authorizations\nThe plain address reopens the last view used"
+  click cSent "On the With the payer view, click the 'N sent today' button"
+  process pSentN "The count is one higher (4 becomes 5)\nThe button opens the Dashboard's Received requests"
 endgroup
 goto gDash2 "Continues in: Dashboard › Requests table › Order, rows and paging"
-goto gCM2 "Continues in: Case Manager › Active cases › A new case joins the tracker"
+goto gCM2 "Continues in: Authorizations › With the payer › A request sent today joins the list"
 
 s1 --> sCase --> gCase
 s1 --> sDash --> pCount
@@ -58,7 +55,6 @@ s1 --> cBr --> sWas --> pNoSign
 pNoSign --> cOpenCase --> sCase
 pNoSign --> cOpenDash --> sDash
 pNoSign --> cBackCM --> sCM
-s1 --> sCM --> pGone --> pBadge
-sCM --> cSent --> pSentN --> gDash2
-sCM --> pLedger
-pLedger -.-> gCM2
+sQ --> cSent --> pSentN --> gDash2
+sCM --> sQ
+sQ -.-> gCM2

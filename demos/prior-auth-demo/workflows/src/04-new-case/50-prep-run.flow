@@ -11,7 +11,7 @@ overlay o1 "Start the agents?\nJ.M., Residential 3.5 · Summit Medicaid HMO\n'8 
 click cCancel "Click 'Cancel', press Escape, or click outside"
 endx eCancel "Back where it was; nothing started"
 click cStart "Click 'Start the agents'"
-store st1 "Draft saved as a case with an ID such as R-1701\nIt now shows in Case Manager › Being prepared"
+store st1 "Draft saved as a case with an ID such as R-1701\nIt now shows in Authorizations as an In progress row"
 store st2 "Run set up\nChance range from the payer: 62% to 88% for Summit\nQuestions planned: one, or two when the chart leaves a gap\nClock set from the request type"
 screen sc "Section 'Authorization preparation', scrolled into view\nChip '1 of 10 · 0:02' that counts up\nThe case id 'R-1701' beside 'New Case' in the header"
 process pRow "Each agent row goes 'Waiting' (name only), then 'Working' with a spinner and what it is doing, then a green tick with its time and what it found"

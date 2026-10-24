@@ -20,10 +20,10 @@ endgroup
 
 store rq "Dashboard: the request moves to 'Received'\nHistory: 'You signed as Dr. Rivera (clinician) and sent the request', 'Navigator sent the request through the payer's portal'"
 screen cpg "Back on the case page or the Dashboard"
-process qg "In the queue the request is gone\nThe open count drops by one\nThe sidebar badge too, if it was in Act now or Due within 24 hours"
+process qg "In Authorizations the row leaves In progress\nIt reads With the payer, marked 'New today' when the ledger did not have it\n'N sent today' counts it; the sidebar badge drops if it was due now or within 24 hours"
 process cp "The case page of a sent request\nthe request's own status chip, e.g. 'Received'\n'Next: Wait for Beacon to decide' and a greyed-out 'Sent to payer'\nno Integrity chip"
 goto gD "Continues in: Dashboard › Request drawer › Open and read a request"
-goto gQ "Continues in: Authorizations › Queue › Open the queue and read the top"
+goto gQ "Continues in: Authorizations › With the payer › A request sent today joins the list"
 
 s1 --> dc
 dc -->|No| off

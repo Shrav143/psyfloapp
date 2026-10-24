@@ -1,6 +1,6 @@
 title: Authorizations › Case page › Next action
 route: /authorizations/case/R-1042
-intro: The 'Next:' block at the top of the case page. It names the one thing a person should do on this request and gives one primary button for it; the queue row shows the same words. 'Send to payer' keeps its gate: the primary button once every check passes, greyed out with its reason in a tooltip until then.
+intro: The 'Next:' block at the top of the case page. It names the one thing a person should do on this request and gives one primary button for it; the row in Authorizations shows the same words. 'Send to payer' keeps its gate: the primary button once every check passes, greyed out with its reason in a tooltip until then.
 dir: TD
 also: Demo only: the words come from the request's recommended actions, its checks and where the Dashboard says it is. Nothing is decided by it; a clinician still signs in New Case.
 ---
@@ -30,7 +30,7 @@ goto g3 "Continues in: Dashboard › Request drawer › Open and read a request"
 click c4 "Click 'Open in Denial Intelligence'"
 goto g4 "Continues in: Denial Intelligence › A denial opened"
 store fl "The words follow the case as work is done\nApply or dismiss an action: the next open one is named\nRefine recommendations: its re-ordered first card\nAfter signing: 'Wait for the payer to decide'"
-process q "The queue row shows the same words after 'Next:'"
+process q "The row in Authorizations shows the same words in 'Next action'"
 
 nb --> d1
 d1 -->|Yes| d2

@@ -35,7 +35,7 @@ goto gQ "Continues in: Authorizations › New Case › Authorization preparation
 end eBack "The section shows the run as it was\nFinished agents stay finished"
 
 group gResume "Opening a draft that already ran"
-  start s3 "Click 'Continue', 'Watch', 'Answer' or 'Review and sign'\non a case in Case Manager › Being prepared\nOr 'Open in review and sign' / 'Send to payer' on a case page"
+  start s3 "Click 'Continue', 'Watch', 'Answer' or 'Review and sign'\non a draft row in Authorizations › In progress\nOr 'Open in review and sign' / 'Send to payer' on a case page"
   process pOpen "The page opens that draft from its address\nIt is not reset\nA draft made from a request opens on Review & submit when it is ready, else on Clinical documentation at Authorization preparation"
   decision dFar "How far did the agents get?"
   process rNone "None yet\nOpens on the step it was left on: Intake, Eligibility & Benefits or Clinical documentation"

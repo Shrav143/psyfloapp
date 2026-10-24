@@ -22,8 +22,8 @@ endgroup
 process pBack "'Back' goes one step back\nFrom Review & submit it opens the agents' section of Clinical documentation\nThe bar stays in view while a long step scrolls"
 toast pHint "The bar's only line is a payer workflow warning, when there is one\ne.g. 'Workflow: Submission window: 1 business day left'"
 
-click cLink "Click the link 'Case Manager' above the title"
-goto gCm "Continues in: Case Manager"
+click cLink "Click the link 'Authorizations' above the title\nOpens /authorizations"
+goto gCm "Continues in: Authorizations › Worklist › Arrive and read the views"
 screen sFull "Stepper on the full referral page\n'Intake' is current\nThe button 'Back to the case' sits beside the crumbs"
 goto gFull "Continues in: Authorizations › New Case › Referral › The full referral page"
 goto gStates "Continues in: Authorizations › New Case › Step states"

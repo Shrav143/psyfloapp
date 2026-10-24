@@ -1,0 +1,51 @@
+title: Authorizations › Approved › What a tracked row's deadline says
+route: /authorizations?view=approved
+intro: The Deadline cell of a row that comes from the ledger says how long until the next thing that binds. When the case is also a request with a due time on its case page, it says exactly what the case page says. Otherwise the wording depends on the kind of event. It turns red when time is short, and it moves with the demo clock.
+dir: TD
+also: A ledger record that joins a queue request's row does not change that row's Deadline: the request's own due time stays. Times under two days show hours ('5 h'), longer ones days ('3 days'). Approval chance and the ledger status are stored and do not move, except that a booked next review sets 'On track'.
+---
+start s1 "Read the Deadline cell of a ledger row"
+decision a0 "Did the clinic accept this denial?"
+process k11 "'Step-down plan open', never red"
+decision b0 "Did a signature book a next review for this case?"
+process k10 "'Next review Tue 10/27', then 'Review due' in red when the day comes\nThe ledger status becomes 'On track' (or stays 'Awaiting payer')"
+decision q0 "Is the case also a request with a due time on its case page?"
+process q1 "The case header's words and hours\n'Notice due in 9 h', 'Answer due in 9 h', 'Review due in 3 h', 'Decision expected Thu'\nRed under a day (a payer decision: only when overdue)"
+decision k0 "What is the next event that binds?"
+
+group gK "The ledger's own clock"
+  process k1 "Notice: 'Notice due in 5 h' or 'Notice overdue'\nRed under 2 days"
+  process k2 "Retro window: 'Window closes 18 h' or 'Window closed'\nRed under 2 days"
+  process k3 "Peer-to-peer: 'P2P in 36 h' or 'P2P window closed'\nRed under 2 days"
+  process k4 "Payer question: 'Answer due in 6 h' or 'Answer overdue'\nRed under a day"
+  process k5 "Approval ends: '3 days left', '14 h left' or 'Approval ended'\nRed under a day"
+  process k6 "Clinical review: 'Review in 2 days', 'Review tomorrow', 'Review today', 'Review due'\nRed only when overdue"
+  process k7 "Payer decision: 'Decision Thu', 'Decision in 5 h' or 'Decision overdue'\nRed only when overdue"
+  process k8 "Units only: '32 units left'\nNever red, grey"
+endgroup
+
+process tn "Pill colour: red when urgent, grey for units and a booked review, amber otherwise\nAn urgent or past time puts the row in Act now, with a dot on the pill"
+process rv "On Reviews this week the cell shows the review's own time instead\n'Review 2 · Tue 10/20, 9:00 am'"
+goto gR "Continues in: Authorizations › Reviews this week › The view"
+goto gF "Continues in: Authorizations › Worklist › Deadline, More and the Showing chip"
+end e1 "Deadline is read"
+
+s1 --> a0
+a0 -->|Yes| k11 --> tn
+a0 -->|No| b0
+b0 -->|Yes| k10 --> tn
+b0 -->|No| q0
+q0 -->|Yes| q1 --> tn
+q0 -->|No| k0
+k0 -->|Notice| k1
+k0 -->|Retro window| k2
+k0 -->|P2P call| k3
+k0 -->|Payer question| k4
+k0 -->|Approval end| k5
+k0 -->|Review| k6
+k0 -->|Decision| k7
+k0 -->|Units| k8
+k1 & k2 & k3 & k4 & k5 & k6 & k7 & k8 --> tn
+tn --> e1
+tn -.-> gF
+s1 -.-> rv -.-> gR

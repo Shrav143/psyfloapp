@@ -32,7 +32,7 @@ click cLater "Click 'Answer later', press Escape, or click outside"
 process pLater "Pop-up closes; the agents stay stopped\nBanner stays; the row keeps 'Needs your answer'"
 click cAnswer "Click 'Answer' on the agent's row"
 process pLeave "Leave and come back: the pop-up opens again by itself"
-goto gCM "Continues in: Case Manager › Active cases › Being prepared card"
+goto gCM "Continues in: Authorizations › In progress › Drafts being prepared"
 goto g36 "Continues in: Authorizations › New Case › Authorization preparation › Finished, paused or left"
 
 s1 --> p1 --> dKey

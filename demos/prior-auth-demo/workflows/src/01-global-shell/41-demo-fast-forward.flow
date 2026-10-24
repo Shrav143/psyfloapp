@@ -30,7 +30,7 @@ group gStill "What does not change"
 endgroup
 
 group gHow "How things really arrive in the demo"
-  goto g1 "Continues in: Dashboard › Request drawer › Demo controls (payer replies)"
+  goto g1 "Continues in: Dashboard › Request drawer › Demo controls: the payer answers"
   goto g2 "Continues in: Authorizations › New Case › Intake › Start with a referral or patient"
 goto g3 "Continues in: Global shell › Top bar › Notifications › What creates a notification"
 endgroup

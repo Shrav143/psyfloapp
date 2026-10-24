@@ -10,7 +10,7 @@ process pOk "Verify answers: 'Coverage is active and prior authorization is requ
 ext xPortal "Cardinal's provider portal (demo: simulated)\nDoes not answer"
 agent aV "Verify tries for about 0.6 seconds, then stops"
 screen sFail "Row 'Verify': pill 'Could not finish'\n'Could not reach Cardinal's portal. Coverage is not confirmed yet'\nButtons 'Retry' and 'Skip and note'\nThe nine agents behind it show 'Waiting'"
-process pHold "The run holds\nFooter hint: 'Verify could not finish. Retry it, or skip it and note it.'\nCase Manager row and the Dashboard note: 'Verify could not reach Cardinal's portal. Retry it or skip it'\nThe case counts as needing a person"
+process pHold "The run holds\nFooter hint: 'Verify could not finish. Retry it, or skip it and note it.'\nDashboard note: 'Verify could not reach Cardinal's portal. Retry it or skip it'\nThe draft's row in Authorizations: 'Verify could not reach Cardinal's portal.'\nThe case counts as needing a person"
 
 click cRetry "Click 'Retry'"
 store stRetry "Failure cleared\nThe draft remembers that Verify has been retried, so a later run of this case does not fail again"

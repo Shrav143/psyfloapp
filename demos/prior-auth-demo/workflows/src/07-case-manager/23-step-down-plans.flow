@@ -1,34 +1,44 @@
-title: Case Manager › Active cases › Step-down plans from accepted denials
-route: /manager
-intro: When the clinic accepts a denial in Denial Intelligence, Active cases gets a 'Step-down plan' for it, in a folded row between 'Being prepared' and the tracker. The row is there only while at least one plan exists at a site in view: a plan follows the site of the denial it came from, so a one-site viewer never sees the other site's. Each plan names the case, the denial it came from and one button that opens the case.
+title: Authorizations › Denied › Step-down plans from accepted denials
+route: /authorizations?view=denied
+intro: When the clinic accepts a denial in Denial Intelligence, the denial's row in Authorizations becomes its step-down plan: status 'Accepted', the next action 'Plan the step-down', and one button that opens the case. It stays in Denied and counts in Needs attention. Separately, two cases carry a 'Consider a step-down' note, a prompt and never a decision.
 dir: TD
-also: Reset demo data clears the plans. Denial Intelligence's 'Plan the step-down' link and its 'Denial closed' notification open Active cases.
+also: Demo only: Reset demo data clears the accepted denials. Case Manager's folded 'Step-down plans' row and its 'Ready to step down?' card are gone; the row and the note carry them. Denial Intelligence's toast still says 'Case Manager has a step-down plan'.
 ---
-start s1 "Denial Intelligence › the clinic accepts a denial"
-store st1 "The accepted denial is recorded\nWhich denial (for example D-3318), its request, the payer and the demo-clock time"
+start s1 "Denial Intelligence › a denial › 'Accept the decision' › 'Accept and close'"
+store st1 "The accepted denial is recorded\nWhich denial (e.g. D-3297), its request's case, the payer and the demo-clock time"
 goto g1 "Continues in: Denial Intelligence › Accept the denial"
-start s2 "Open Case Manager (Active cases tab)"
-decision d1 "Has any denial been accepted?"
-process p0 "No row\nActive cases shows 'Being prepared', then the tracker"
-screen c1 "Folded row 'Step-down plans' (closed at first)\nSummary '1 plan to start. Choose the next level of care and book the first visit.'"
-click co "Click the header, or press Enter or Space on it"
-screen c1b "Opened: one row for each accepted denial, newest first"
-screen r1 "A row\nLevel chip ('Residential 3.5')\n'Step-down plan'\nCase ID, 'M.C., 38', payer name\n'From denial D-3318 · accepted 10/20'\nButton 'Open case'"
-process p1 "Search, level of care and payer from the filter bar narrow the plans\nThe tracker's status filter does not apply\nWhen nothing matches, the whole row is hidden"
-click c2 "Click the case ID or 'Open case'"
-process p2 "Go to /authorizations/case/ and the case code of the denial's request (R-0997)"
-goto g2 "Continues in: Authorizations › Case"
-process p3 "The tracker row of that denial (D-3318) reads 'Step-down plan open' in Clock; its status is unchanged"
-store st2 "'Reset demo data' clears the plans"
-end e1 "Plans are on screen"
-end e2 "Active cases as before"
+click c0 "On the denial: click 'Plan the step-down'\nor the notification 'Denial closed'"
+process p0 "Go to /authorizations?view=all"
+start s2 "Open Authorizations › Denied, or Needs attention"
+
+decision d1 "Is the denial a row in the list?\n(by its denial ID or its request's case ID)"
+process n1 "Nothing changes in Authorizations"
+process p1 "The row stays in Denied (Denied 8 at the start, still 8)\nIt keeps its site: a denial added from a letter follows its own"
+screen r1 "The row\nStatus 'Accepted' (grey); its other chips go\nNext action 'Plan the step-down: choose the next level of care and book the first visit.'\nButton 'Open case' (green)"
+process r2 "Deadline\nA tracked denial (D-3318) reads 'Step-down plan open'\nA denial only the Dashboard has reads 'None'"
+process r3 "It counts in Needs attention; only Reset demo data clears it\nThe status filter 'Accepted' finds it"
+click c1 "Click 'Open case' or the ID"
+process p2 "Go to /authorizations/case/ and the case of the denial's request\n(D-3297 opens I-2141)"
+goto g2 "Continues in: Authorizations › Case page › Ways in"
+process p3 "The case page reads 'Accepted. Nothing left to send'"
+
+group gN "'Consider a step-down' notes"
+  screen n2 "Under the patient on R-0873 and P-1522: 'Consider a step-down'"
+  click n3 "Hover the note"
+  process n4 "'Consider a step-down: Day 18 of 21 · aftercare visit not booked yet'\nor 'Day 11 · IOP starts Monday'"
+endgroup
+
+store st2 "'Reset demo data' clears the accepted denials"
+end e1 "The plan is on the denial's own row"
 
 s1 --> st1 --> g1
-st1 --> d1
+st1 --> c0 --> p0 --> d1
 s2 --> d1
-d1 -->|No| p0 --> e2
-d1 -->|Yes| c1 --> co --> c1b --> r1 --> p1
-r1 --> c2 --> p2 --> g2
-p1 --> e1
-st1 --> p3
+d1 -->|No| n1
+d1 -->|Yes| p1 --> r1 --> r2
+r1 --> r3
+r1 --> c1 --> p2 --> g2
+p2 -.-> p3
+r2 --> e1
+s2 -.-> n2 --> n3 --> n4
 st1 -.-> st2

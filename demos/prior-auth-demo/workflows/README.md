@@ -7,11 +7,11 @@ Every screen, click and decision in the Psyflo prior-auth demo, mapped one menu 
 | `00-overview` | Legend, site map, one request from referral to decision |
 | `01-global-shell` | Sidebar, top bar (Ask FLO, Notifications, Demo menu), Help, Sign out |
 | `02-dashboard` | Dashboard |
-| `03-authorizations` | Authorizations: queue and case page |
+| `03-authorizations` | Authorizations: worklist and case page |
 | `04-new-case` | Authorizations › New case (Referral, Medical records, Agents work, Review and sign) |
 | `05-eligibility` | Authorizations › Eligibility & Benefits |
 | `06-denials` | Denial Intelligence |
-| `07-case-manager` | Case Manager (Active cases, Reviews this week) |
+| `07-case-manager` | Authorizations: approved, reviews and tracked cases (Case Manager merged into Authorizations in round 7; the folder keeps its name) |
 | `08-analytics` | Analytics |
 | `09-emr-connect` | EMR Connect |
 | `10-payers` | Payers |

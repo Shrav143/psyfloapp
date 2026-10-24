@@ -7,7 +7,7 @@ start s1 "A denial is on screen"
 decision d1 "Accepted?"
 screen t1 "Accept choice: pill 'Accepted 10/20' and the link 'Plan the step-down'\nThe two other choices dimmed"
 click c1 "Click 'Plan the step-down'"
-goto g1 "Continues in: Case Manager › Active cases › Step-down plans from accepted denials"
+goto g1 "Continues in: Authorizations › Denied › Step-down plans from accepted denials"
 
 decision d2a "Payer's decision on the appeal recorded as Overturned or Partly overturned?"
 screen t2a "Written appeal choice: pill 'Overturned on appeal' or 'Partly overturned on appeal'"

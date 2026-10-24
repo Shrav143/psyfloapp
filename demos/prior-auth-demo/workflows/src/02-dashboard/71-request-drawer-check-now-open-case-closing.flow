@@ -20,7 +20,7 @@ toast t1 "'Navigator checked'\n'R-1021 is still under review at Cardinal. It che
 end e1 "Drawer stays open\nNo stage changes"
 
 click c2 "Click 'Open case'"
-goto g1 "Continues in: Authorizations › Case page\n/authorizations/case/ followed by the case ID"
+goto g1 "Continues in: Authorizations › Case page › Ways in\n/authorizations/case/ followed by the case ID"
 click c3 "Click 'Open in Denial Intelligence'"
 goto g2 "Continues in: Denial Intelligence › A denial opened\n/denials/D-3318"
 

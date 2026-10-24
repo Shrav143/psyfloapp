@@ -24,7 +24,7 @@ group gConn "Connections"
 
   click cPay "Click 'Payers'"
   process pPay "Go to /payers"
-  goto gPay "Continues in: Payers"
+  goto gPay "Continues in: Payers › Workspace"
 endgroup
 
 group gMain "Main"

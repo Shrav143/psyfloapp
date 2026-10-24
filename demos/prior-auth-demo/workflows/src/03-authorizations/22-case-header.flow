@@ -6,7 +6,7 @@ also: Demo only: the header reads the request's current stage from the Dashboard
 ---
 screen pg "Case page\nCrumbs, header card, figures strip, three tabs, History"
 click cr "Click the 'Authorizations' crumb"
-goto gQ "Continues in: Authorizations › Queue › Open the queue and read the top"
+goto gQ "Continues in: Authorizations › Worklist › Arrive and read the views"
 
 screen hd "Title line\nID, level chip, request type chip, a status pill, the due pill"
 decision dCh "Is the request on the Dashboard past Preparing, or does it already have a result?"
@@ -26,7 +26,7 @@ goto gDb "Continues in: Dashboard › Request drawer › Open and read a request
 
 group gBt "Header buttons"
   click b1 "Click 'Open in review and sign'\n(always on)"
-  click b3 "Click 'Back to queue'"
+  click b3 "Click 'Back to Authorizations'"
 endgroup
 goto gS "Continues in: Authorizations › Case page › Send to payer and review and sign"
 goto gT "Continues in: Authorizations › Case page › Numbers and notes"

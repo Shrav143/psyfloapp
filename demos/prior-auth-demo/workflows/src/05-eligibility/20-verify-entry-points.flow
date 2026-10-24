@@ -11,7 +11,7 @@ endgroup
 
 group gLinked "Opens a pre-filled form"
   start a3 "On a referral's 'Coverage' tab, click 'Open full Eligibility & Benefits check'"
-  start a4 "On the Authorizations queue, click the red pill 'Coverage needs a fix'"
+  start a4 "On the Authorizations worklist, click the red pill 'Coverage needs a fix' on a row"
   start a5 "On a case's actions, click 'Open Eligibility & Benefits' in the coverage recommendation"
 endgroup
 

@@ -21,7 +21,7 @@ goto g3 "Continues in: Authorizations › New Case › Intake › Start with a r
 
 click c4 "Click '4  Eligibility & Benefits: verify a patient'"
 process r4 "Go to /authorizations/eligibility/verify"
-goto g4 "Continues in: Eligibility & Benefits › Verify a patient"
+goto g4 "Continues in: Authorizations › Eligibility & Benefits › Verify › Fill in the form"
 
 click c5 "Click '5  Denial Intelligence: D-3318'"
 process r5 "Go to /denials/D-3318"
@@ -32,7 +32,7 @@ process r6 "Go to /payers/cardinal?tab=changes"
 goto g6 "Continues in: Payers › History & Changes › Read what changed"
 click c7 "Click '7  Authorizations: reviews this week'"
 process r7 "Go to /authorizations?view=reviews\nThe worklist opens on the Reviews this week view"
-goto g7 "Continues in: Case Manager › Reviews this week › The list"
+goto g7 "Continues in: Authorizations › Reviews this week › The view"
 
 s1 --> o1 --> p0
 p0 --> c1 & c2 & c3 & c4 & c5 & c6 & c7

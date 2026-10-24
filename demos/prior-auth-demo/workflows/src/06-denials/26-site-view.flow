@@ -10,7 +10,7 @@ process p2 "Both sites: Open 8, Deadlines this week 4, To decide 2, Peer-to-peer
 decision d1 "Is the viewer limited to one site?"
 process p3 "Only that site's denials exist for the viewer\nNot listed, not counted, not found by a filter, not offered in a link"
 process p4 "A viewer of both sites narrows to one site and widens again\nThe figures, table and badge change at once"
-process p5 "Case Manager step-down plans from accepted denials follow the same site rule\nAccepting a denial still reaches Case Manager and Analytics, at the denial's site"
+process p5 "Step-down plans from accepted denials (Authorizations, Denied view) follow the same site rule\nAccepting a denial still reaches Authorizations and Analytics, at the denial's site"
 process p6 "A letter added in 'Add a denial letter' belongs to the site in view, Site A when both are in view\nIt is recorded on the denial\nIts D- number is chosen so every other screen places it at the same site"
 
 start s2 "Open a link to a denial\n/denials/D-xxxx (or an older /denials?id=D-xxxx), /denials/D-xxxx/brief or /denials/D-xxxx/report\n(a notification, Ask FLO, the Dashboard, a bookmark)"
@@ -25,7 +25,7 @@ goto g1 "Continues in: Dashboard › Arrive › What the page shows"
 endx e1 "A viewer limited to one site has no way to the other site's denial"
 goto g2 "Continues in: Denial Intelligence › Open denials list"
 goto g3 "Continues in: Denial Intelligence › Add a denial letter"
-goto g4 "Continues in: Case Manager › Active cases › Step-down plans from accepted denials"
+goto g4 "Continues in: Authorizations › Denied › Step-down plans from accepted denials"
 
 s1 --> p1 --> sc1 --> p2
 sc1 --> d1

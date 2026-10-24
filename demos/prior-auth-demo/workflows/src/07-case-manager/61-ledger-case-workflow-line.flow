@@ -1,10 +1,10 @@
-title: Case Manager › Ledger case › Workflow line and history
-route: /authorizations/case/ID (a ledger case) and the Case Manager tracker quick view
-intro: A case that was prepared or reviewed in New Case follows a payer workflow, pinned by version. The ledger case page shows one row, 'Workflow', in the case summary, and the lines the workflow wrote appear in its folded History. The tracker's quick view shows the same row and the three newest history lines. A case with no workflow shows neither. Workflows are clinic-wide; the case stays at its site.
+title: Authorizations › Ledger case page › Workflow line and history
+route: /authorizations/case/ID (a ledger case) and the tracked quick view on /authorizations
+intro: A case that was prepared or reviewed in New Case follows a payer workflow, pinned by version. The ledger case page shows one row, 'Workflow', in the case summary, and the lines the workflow wrote appear in its folded History. The tracked quick view in Authorizations shows the same row and the three newest history lines. A case with no workflow shows neither. Workflows are clinic-wide; the case stays at its site.
 dir: TD
 also: A case that is also a request opens the Authorizations case page instead (its facts row has 'Workflow', and its History holds the same lines). Those are drawn in New Case › Workflow › What the workflow adds to the history.
 ---
-start s1 "Open a ledger case, or click a tracker row"
+start s1 "Open a ledger case, or open the quick view of a tracked row"
 decision d1 "Is there a New Case draft for this case with a workflow?\nSame case ID, or the patient's treatment episode"
 process p1 "No 'Workflow' row\nHistory is the ledger's own"
 screen sc1 "Card 'Case summary'\nRow 'Workflow': 'Initial Authorization, Residential SUD, version 3'\nor 'Default process for a concurrent review' with 'illustrative default'"
@@ -12,12 +12,12 @@ decision d2 "Did the workflow write lines that are not on a request?"
 screen sc2 "'History' (folded)\nThe ledger's lines plus the workflow's: 'Workflow applied: ...', 'Workflow ran to Eligibility & Benefits: ...', 'Waiting: ...'\nEach with its time"
 click c1 "Click the 'History' header"
 process p2 "The Timeline shows, oldest first; click again to fold it"
-screen sc3 "Tracker quick view (right-hand panel)\nRow 'Workflow' after 'Payer'\n'Latest history': the three newest lines, the workflow's among them"
-click c2 "Click a tracker row"
+screen sc3 "Tracked quick view (right-hand panel)\nRow 'Workflow' after 'Payer'\n'Latest history': the three newest lines, the workflow's among them"
+click c2 "Click an approved row in Authorizations"
 click c3 "Click 'Open case'"
 process p3 "Opens the case page: the ledger case, or the Authorizations case page for a request"
 end e1 "The workflow is read where the case is read"
-goto g1 "Continues in: Case Manager › Ledger case › Open and read"
+goto g1 "Continues in: Authorizations › Ledger case page › Open and read"
 goto g2 "Continues in: Authorizations › New Case › Workflow › What the workflow adds to the history"
 
 s1 --> d1

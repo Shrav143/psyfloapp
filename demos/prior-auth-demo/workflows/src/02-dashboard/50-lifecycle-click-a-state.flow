@@ -1,6 +1,6 @@
 title: Dashboard › Lifecycle › Click a state to filter the table
 route: /dashboard
-intro: The Lifecycle card holds five state chips. Each shows a count and one quiet line, and each is a button that filters the table below it. The counts follow the sites in view and the Payer, Program and Request type menus, never the Status menu. The two chips with an arrow open Case Manager and are in the next diagram.
+intro: The Lifecycle card holds five state chips. Each shows a count and one quiet line, and each is a button that filters the table below it. The counts follow the sites in view and the Payer, Program and Request type menus, never the Status menu. The two chips with an arrow open Authorizations and are in the next diagram.
 dir: TD
 ---
 start s1 "Dashboard is open\nThe 'Lifecycle' card under the title"
@@ -24,7 +24,7 @@ store w1 "Filters\nStatus (the stage)"
 process p3 "Address gets ?stage=under_review (or preparing, received, info_requested, appeal)\nA link with ?stage= presses the same chip"
 process p4 "Status menu shows the same state\nTable title and 'Showing 8 of 14' follow; first 8 rows"
 screen sc2 "Table\nOnly the authorizations in that state\nTitle '14 authorizations'"
-goto g1 "Continues in: Dashboard › Lifecycle › Active and Renewal due open Case Manager"
+goto g1 "Continues in: Dashboard › Lifecycle › Active and Renewal due open Authorizations"
 goto g2 "Continues in: Dashboard › Table controls › Needs me today, Payer, Program, Status and Request type"
 goto g3 "Continues in: Dashboard › Requests table › Order, rows and paging"
 

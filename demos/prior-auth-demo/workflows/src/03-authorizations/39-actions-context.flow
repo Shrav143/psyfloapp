@@ -20,7 +20,7 @@ screen ls "Card 'Context you added' in the side panel\nEach note with '+1 pt' (n
 screen rk "Criteria & risk › See the breakdown gets a row\n'Clinical context you added'\nThe rows still add up to the chance"
 decision dQ "Is it a queue request that also has a Dashboard entry?"
 store db "Dashboard request gets the new chance\nIts own line 'You added clinical context. Approval chance is now 63%'\nis not repeated in the case page's History"
-process qu "Queue row shows the new chance"
+process qu "Its row in Authorizations shows the new chance"
 toast tc "'Clinical context added'"
 goto g1 "Continues in: Authorizations › Case page › Draft › Read and edit"
 

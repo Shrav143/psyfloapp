@@ -29,7 +29,7 @@ group gClock "What the clock changes on the Dashboard"
   process r4 "Lifecycle: 'running late', 'past 7 days' and 'deadlines this week' lines, and the counts of Active and Renewal due, are worked out again\nAn approval whose end date has passed leaves Active"
 endgroup
 process p3 "Not changed: the counts of Awaiting sign-off, Submitted, Decision pending, Info requested, Denied / appeal, and the title"
-goto g1 "Continues in: Global shell › Demo menu"
+goto g1 "Continues in: Global shell › Demo menu › Open, close and what is inside"
 goto g2 "Continues in: Dashboard › Requests table › Days in state and the CMS decision time"
 
 s0 --> dp

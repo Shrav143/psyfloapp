@@ -1,0 +1,65 @@
+title: Authorizations › Worklist › Read a row
+route: /authorizations
+intro: What each cell of a row says and which parts are links. The request ID opens the full case, the small icon beside the patient opens the quick view, and the button at the end does the row's next action. A click on the rest of the row also opens the quick view.
+dir: TD
+also: At 1400 px and wider every column has its own place. Narrower, the owner sits above the next action and the chance under the deadline; below 1100 px the status sits under the patient. The page never scrolls sideways. On Reviews this week the Next action and Deadline cells show the review instead (drawn with that view).
+---
+screen t "One row of the table"
+
+group gP "Patient / request"
+  click id "Click the request ID, e.g. 'R-1042' (underlined)"
+  decision dD "Is the row a saved draft that is not a request yet?"
+  goto gNc "Continues in: Authorizations › New Case › Reopen and resume a case"
+  goto gC "Continues in: Authorizations › Case page › Ways in"
+  process pt "' · J.M., 34' (or 'No patient yet')\nLine under it: 'Residential 3.5 · Summit · Admission' (or 'Level not set', 'No payer yet')"
+  process nt "Notes under it when they apply\n'New today', 'Updated for a payer change · 10/20', 'Consider a step-down'"
+  click qv "Click the small icon 'Quick view R-1042' beside the patient\n(every row but a saved draft and an open denial only the Dashboard has)"
+endgroup
+
+group gSt "Status"
+  process st "The request's own status chip\nPreparing, Ready to sign, With the payer, Submitted, Info requested, Approved, Denial route, Accepted ..."
+  process fl "Extra chips: 'Needs your input'\nOn an approved authorization: 'Needs action', 'Review due' or 'Needs your update'"
+  click cf "Click the 'Coverage needs a fix' chip (it has a dot)"
+  goto gE "Continues in: Authorizations › Eligibility & Benefits › Verify › Ways in and pre-fill"
+  decision dU "Does the ledger hold an approval for it (days or units)?\n(approved rows, and some with the payer or not sent yet)"
+  process un "'12 of 14 days used' (units for IOP) with a thin bar\nTerracotta from 75 percent used; 'Runs out before review' in red only when the data shows it"
+  process nu "No units line"
+  goto gUn "Continues in: Authorizations › Approved › Units used and the run-out flag"
+endgroup
+
+group gNx "Next action and deadline"
+  process nx "One line: what to do next, the same words as the case page\ne.g. 'Name the step-down provider', 'Wait for Evergreen to decide', 'Review 2 is drafted.'"
+  click od "Click 'Open the draft in New Case'\n(a queue request with a saved draft, still in progress)"
+  goto gDr "Continues in: Authorizations › New Case › Reopen and resume a case"
+  process dl "Deadline pill in the record's own words\n'Notice due in 5 h', 'Decision expected Thu', 'Review today', '14 h left'\nRed dot only in Act now; 'None' when there is no clock"
+  goto gDw "Continues in: Authorizations › Approved › What a tracked row's deadline says"
+endgroup
+
+process ow "Owner: the agent holding it, with its badge, or 'None'"
+process cc "Chance: one number in its band colour, or 'None' (intake not finished)"
+click ab "Click the row's button, e.g. 'Go to action'"
+goto gA "Continues in: Authorizations › Worklist › A row's action button"
+click rc "Click the row away from a link or a button"
+decision dQ "Does the row have a quick view?"
+process nq "Nothing happens"
+goto gQ "Continues in: Authorizations › Worklist › Quick view panel"
+
+t --> id --> dD
+dD -->|Yes| gNc
+dD -->|No| gC
+t --> pt --> nt
+pt --> qv --> gQ
+t --> st --> fl
+st --> cf --> gE
+st --> dU
+dU -->|Yes| un -.-> gUn
+dU -->|No| nu
+t --> nx --> dl
+dl -.-> gDw
+nx --> od --> gDr
+t --> ow
+t --> cc
+t --> ab --> gA
+t --> rc --> dQ
+dQ -->|Yes| gQ
+dQ -->|No| nq

@@ -1,0 +1,41 @@
+title: Authorizations › Approved › Units used and the run-out flag
+route: /authorizations?view=approved
+intro: Under the status chip of a row whose approval the ledger holds: how much of the approval is used, a thin bar and, only when the data shows it, that the approval runs out before the next review. The tracked quick view and the ledger case page say the same with how much is left.
+dir: TD
+also: The pace is the demo's own: one day of care a day, and about three units a week for IOP (the case page dates the approval with the same pace). A real payer's day or unit count would replace it. The tracker's 'Units or days' column and its sort are gone; the line sits in the Status cell, or under the patient below 1100 px.
+---
+start s1 "Read the Status cell of a row"
+decision d1 "Does the ledger hold an approval for the case (days or units)?\n(approved rows, and some with the payer or not sent yet, e.g. R-0912, I-2207)"
+process n1 "No units line\n(the quick view says 'Not approved yet. Units count from the first approved day.')"
+process p1 "'10 of 21 days used' ('units' for IOP)\nA thin bar under it, terracotta from 75 percent used"
+screen q1 "Tracked quick view and ledger case page\n'10 of 21 days used, 11 left' ('none left' at zero), with a wider bar"
+
+decision d2 "Are there days or units left, and a review still to be signed?"
+process n2 "No flag\n(nothing left to run out, or no review to run out before)"
+store st1 "Next review of the case = the earliest review not yet signed\nThe one due this week, or the one Cadence booked after a signature"
+process pp "Pace of use: a day a day, about three units a week for IOP"
+decision d3 "Does the ledger date the end of the approval?\n(an expiry or units clock that the case page has not replaced with its own)"
+process e1p "End of the approval = that date"
+process e2p "End of the approval = now + left divided by the pace"
+decision d4 "Does the approval end before that review?"
+process n3 "No flag"
+screen f1 "'Runs out before review' in red under the bar\nNo pill: it is text\nAt the start one row shows it (P-1590: 2 days left, its review falls later in the week)"
+process pm "Moves with the demo clock and with signatures\nSigning a review books the next one later: R-0856 and I-2193 then show the flag"
+screen ft "Info icon 'About units and approval chance' at the top right of the table\n'... Runs out before review appears only when that pace uses the approval up before the next review.'"
+goto g1 "Continues in: Authorizations › Approved › Quick view of a tracked authorization"
+goto g2 "Continues in: Authorizations › Ledger case page › Open and read"
+end e1 "Cell is read"
+
+s1 --> d1
+d1 -->|No| n1 --> e1
+d1 -->|Yes| p1 --> d2
+p1 -.-> q1
+q1 -.-> g1
+q1 -.-> g2
+d2 -->|No| n2 --> e1
+d2 -->|Yes| st1 --> pp --> d3
+d3 -->|Yes| e1p --> d4
+d3 -->|No| e2p --> d4
+d4 -->|No| n3 --> e1
+d4 -->|Yes| f1 --> ft --> e1
+f1 -.-> pm

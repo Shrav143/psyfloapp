@@ -32,7 +32,7 @@ group gFoot "Bar at the bottom, always in view"
   toast h1 "A payer workflow warning, when there is one\n'Workflow: ...'"
 endgroup
 click cSave "Click 'Save as draft'"
-toast tSave "'Draft saved'\n'R-1701 is in Case Manager.'"
+toast tSave "'Draft saved'\n'R-1701 is in Authorizations.'"
 goto gSave "Continues in: Authorizations › New Case › Save as draft and leave"
 click cCont "Click 'Continue to Eligibility & Benefits'"
 process pGo "Moves to step 2\nNothing blocks the click"

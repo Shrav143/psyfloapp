@@ -49,14 +49,14 @@ goto g0 "Continues in: Who can see what › Roles, sites and a record at the oth
 goto g1 "Continues in: Global shell"
 goto g2 "Continues in: Dashboard"
 goto g3 "Continues in: Authorizations › Worklist › Arrive and read the views"
-goto g3b "Continues in: Case Manager › Ledger case › Open and read"
-goto g3c "Continues in: Case Manager › Reviews this week › The review drawer"
+goto g3b "Continues in: Authorizations › Ledger case page › Open and read"
+goto g3c "Continues in: Authorizations › Reviews this week › The review drawer"
 goto g4 "Continues in: Authorizations › New Case"
 goto g5 "Continues in: Authorizations › Eligibility & Benefits"
 goto g6 "Continues in: Denial Intelligence"
 goto g8 "Continues in: Analytics"
 goto g9 "Continues in: EMR Connect"
-goto g10 "Continues in: Payers"
+goto g10 "Continues in: Payers › Workspace"
 goto g11 "Continues in: Settings"
 
 s0 --> shell

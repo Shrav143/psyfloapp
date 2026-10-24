@@ -1,6 +1,6 @@
 title: Authorizations › Case page › Recommended actions › Apply selected
 route: /authorizations/case/R-1042?tab=actions
-intro: What 'Apply selected' does: the check for missing answers, the eight-second work strip, and everything that changes when the agents finish (chance, draft version, log, Dashboard, queue, notification).
+intro: What 'Apply selected' does: the check for missing answers, the eight-second work strip, and everything that changes when the agents finish (chance, draft version, log, Dashboard, the row in Authorizations, notification).
 dir: TD
 also: Demo only: the eight seconds are a simulated wait. The new chance is the old chance plus the points on the cards you included (and any clinical context), worked out on the page. The run belongs to the app, so it still finishes if you leave the page.
 ---
@@ -28,7 +28,7 @@ store dn "Run ends\nCards move to 'Applied'\nChance and 'points left' saved on t
 process rg "Header ring counts up to the new chance\nPill, likely range and 'Days likely granted' follow"
 decision dQ "Is this a queue request with a Dashboard entry?"
 store db "Dashboard request gets the new chance\nIts own line 'Scribe added 6 items to the draft ...'\nnot repeated in the case page's History"
-process qu "Queue tile shows the new chance\nLine reads '+N pts possible' or 'on track'\nQueue average moves too"
+process qu "Its row in Authorizations shows the new chance\nThe 'Approval chance, open requests' average moves too"
 toast nf "Notification from Forecaster: 'Approval chance updated'\n'R-1042 is now 88% after 6 actions.'\nClick it to return to this case"
 toast ts "Toast: 'Draft updated'\n'6 actions applied. Approval chance is now 88%.'"
 decision dR "Do all four checks pass now?"

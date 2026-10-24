@@ -1,10 +1,10 @@
-title: Case Manager › Reviews this week › The review drawer
-route: /manager?tab=reviews (drawer over the list)
-intro: It also opens from the quick view's 'Open review' button, on top of the quick view (Escape closes one layer at a time). Opening a review shows the draft an agent wrote, the four Integrity checks and the buttons to sign or open the case. What the clinician can do depends on the review's status: a clean draft, a draft with one check to look at, a review that needs an update, or one already signed.
+title: Authorizations › Reviews this week › The review drawer
+route: /authorizations?view=reviews&review=rv-R-0856 (drawer over the list)
+intro: Opening a review shows the draft an agent wrote, the four Integrity checks and the buttons to sign or open the case. It opens from a row's review button on any view, from the tracked quick view's 'Open review' (the quick view closes first), and from a ?review= link (the ledger case page's 'Open the review', Ask FLO, an old /manager?review= address). What the clinician can do depends on the review's status.
 dir: TD
 ---
-start s1 "Click the case ID or 'Open' on a review row"
-overlay o1 "Drawer slides in from the right (640 px)\nTitle 'R-0856 · Summit'\nSubtitle 'Continued-stay review 2 · Residential 3.5 · due Tue 10/20, 9:00 am'\nStatus pill at the top right"
+start s1 "Click a row's 'Update the review', 'Review and sign', 'Check the review' or 'Open the review'"
+overlay o1 "Drawer slides in from the right (640 px); ?review= is in the address\nTitle 'R-0856 · Summit'\nSubtitle 'Continued-stay review 2 · Residential 3.5 · due Tue 10/20, 9:00 am'\nStatus pill at the top right"
 screen b1 "Top of the body\n'J.S., 51 · privacy mode'   'Drafted by' Scribe (Residential, Detox) or Cadence (PHP, IOP)\nOnce drafted: 'Draft by FLO's agents. A clinician reviews and signs before anything is sent.'"
 screen b2 "'The draft'\nLarge text box with seven parts: title and payer lines, Clinical status, Treatment progress, Risk and safety, Why this level of care still fits, Request"
 screen b3 "'Integrity checks'\n'Every sentence traced to the chart'\n'Review has no errors'\n'All payer requirements covered'\n'Level of care matches the request'"
@@ -25,20 +25,20 @@ toast td "'Cadence drafted 1 review'"
 
 input i1 "Edit the draft text"
 click c1 "Click 'Sign review'"
-goto g1 "Continues in: Case Manager › Reviews this week › Sign a review"
-goto g2 "Continues in: Case Manager › Reviews this week › Add your update to a review"
+goto g1 "Continues in: Authorizations › Reviews this week › Sign a review"
+goto g2 "Continues in: Authorizations › Reviews this week › Add your update to a review"
 
 click c2 "Click 'Open case'"
 process p1 "Go to /authorizations/case/ and the case ID, with ?tab=draft\nThe drawer is gone with the page"
-decision d3 "Is the case a request in the queue or on the Dashboard?"
-goto g3 "Continues in: Authorizations › Case › Draft tab"
-goto g4 "Continues in: Case Manager › Ledger case › Open and read"
+decision d3 "Is the case a request (a queue record or a Dashboard request)?"
+goto g3 "Continues in: Authorizations › Case page › Draft › Read and edit"
+goto g4 "Continues in: Authorizations › Ledger case page › Open and read"
 
-click c3 "Click 'Close', the X, the dimmed area, or press Escape\n(Escape closes one layer at a time: an open sign dialog or filter menu first, the drawer next)"
+click c3 "Click 'Close', the X, the dimmed area, or press Escape\n(Escape closes one layer at a time: an open sign dialog first, the drawer next)"
 decision d2 "Was the review a draft?"
 store st1 "Edits to the draft are saved on the review\nOpen it again and the edited text is there"
 process p2 "Nothing to save"
-end e1 "Back on the list, same place"
+end e1 "Back on the list, same view and page; ?review= leaves the address"
 
 s1 --> o1 --> b1 --> b2 --> b3 --> b4 --> d1
 d1 -->|Clean draft| t1

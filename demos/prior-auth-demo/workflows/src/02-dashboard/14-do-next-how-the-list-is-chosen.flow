@@ -15,7 +15,7 @@ group gKinds "What can be on the list"
   process k7 "An authorization that ends within 7 days, or has ended, with no request in flight to replace it"
   process k8 "Cases saved in New Case that wait for a person and have no row yet\nOne line for all of them"
 endgroup
-process p2 "Each row gets a time\nThe due time the Authorizations queue ranks by, or the denial's deadline"
+process p2 "Each row gets a time\nThe due time the Authorizations worklist sorts by, or the denial's deadline"
 decision d1 "Is it past the CMS decision time?"
 process p3 "It goes first\nOther rows are ordered by their due time, overdue first"
 process p4 "Softer rows wait a little longer than a hard deadline\nA late payer by 2 days, a renewal by 1 day, a write-back by 3 days"
@@ -26,7 +26,7 @@ decision d2 "Is the viewer limited to one site?"
 screen ss "Only cases at that site\nA case at the other site is never named, counted or linked"
 goto g1 "Continues in: Dashboard › Do next › What to do now and where each button leads"
 goto g2 "Continues in: Dashboard › Requests table › Days in state and the CMS decision time"
-goto g3 "Continues in: Global shell › Ask FLO › Answers"
+goto g3 "Continues in: Global shell › Top bar › Ask FLO › What FLO answers"
 
 s1 --> p1 --> d2
 d2 -->|Yes| ss --> p2

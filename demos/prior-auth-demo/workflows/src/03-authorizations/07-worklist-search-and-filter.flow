@@ -1,0 +1,62 @@
+title: Authorizations › Worklist › Search and filter
+route: /authorizations?payer=cardinal
+intro: The search box and the four menus people use most (Payer, Service, Request type, Deadline), how filters combine and travel in the web address, 'Clear filters', and what the page says when nothing matches. The Deadline menu and the filters under 'More' have their own diagram. Search and every filter reach only the rows at the sites in view.
+dir: TD
+also: Demo only: filters are written to the web address and kept for the session; a plain /authorizations brings back the last ones. Searching 'cardinal' finds 17 rows at the start (Both sites), because the payer's name is searched too.
+---
+screen fb "Filter bar under the view chips\nSearch, 'All payers', 'All services', 'All request types', 'Any deadline', 'More'"
+
+group gS "Search"
+  click sk "Press '/' anywhere (not while typing in a field)"
+  process sf "The cursor jumps to the search box"
+  input s1 "Type in 'Search by patient, request ID or payer'"
+  process sm "Matches every ID the record is known by (request, case, ledger, draft), the patient's initials, the payer's name\nIgnores case, dots, dashes and spaces: 'r1042', 'jm' and 'cardinal' all work"
+endgroup
+
+group gP "Payer and Service"
+  click p1 "Click 'All payers'"
+  overlay p2 "Menu: All payers, Summit Medicaid HMO, Cardinal Health Plan, Evergreen, Beacon PPO, Harborview MA, Lakeshore Behavioral"
+  click v1 "Click 'All services'"
+  overlay v2 "Menu: All services, Residential 3.5, IOP, PHP, Detox"
+  input pv "Pick one"
+endgroup
+
+group gT "Request type"
+  click t1 "Click 'All request types'"
+  overlay t2 "Menu: All request types, Initial, Concurrent review, Reauthorization, Modification / extension, Retrospective"
+  input t3 "Pick a type"
+  process t4 "How a record's own type maps\nInitial request, Admission: Initial. Continued stay: Concurrent review. Recertification: Reauthorization\nModification: Modification / extension. Retro-authorization: Retrospective\nA ledger note ('Continued stay 3') maps the same way. Peer-to-peer, Appeal and Resubmission show only under All"
+endgroup
+
+goto gD "Continues in: Authorizations › Worklist › Deadline, More and the Showing chip"
+process kb "In any menu: Up and Down move, Enter picks, Esc or a click outside closes it"
+process ap "Filters stack: a row must pass every one\nA menu that is not on its first option turns green\nEvery view chip's count and the Deadline menu's counts follow; the table goes back to page 1"
+store ad "Written to the address, replacing the entry\n?q=, ?payer=cardinal, ?program=IOP, ?type=retro (also ?urgency=, ?owner=, ?state=, ?signal=1, ?show=)"
+start dl "Open a link with filters, e.g. /authorizations?type=retro&payer=summit"
+process dl2 "The filters in the address are applied\nValues that are not menu options are ignored"
+decision dAny "Any row left in the chosen view?"
+screen res "The table lists the matching rows\n'1 authorization' or 'N authorizations' above it"
+screen emp "'No authorizations match' and 'Clear filters'"
+click ce "Click 'Clear filters' in the message"
+process rs2 "Every filter is cleared and the view goes back to All"
+click clr "Click 'Clear filters' (next to 'More', shown once any filter is on)"
+process rs "Search emptied, every menu on its first option, More and the payer signal off, the Dashboard's 'Showing' chip removed\nThe view stays; the filters leave the address"
+process nt "With no row at all: 'Nothing to track yet' and 'New Case'"
+end e1 "The list shows every row of the view again"
+
+fb --> sk --> sf --> s1
+s1 --> sm --> ap
+fb --> p1 --> p2 --> pv
+fb --> v1 --> v2 --> pv
+pv --> ap
+fb --> t1 --> t2 --> t3 --> ap
+t3 -.-> t4
+p2 -.-> kb
+fb --> gD
+dl --> dl2 --> ap
+ap --> ad
+ap --> dAny
+dAny -->|Yes| res
+dAny -->|No| emp --> ce --> rs2 --> e1
+ap --> clr --> rs --> e1
+emp -.-> nt

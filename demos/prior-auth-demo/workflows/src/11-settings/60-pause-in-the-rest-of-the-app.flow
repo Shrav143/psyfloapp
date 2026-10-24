@@ -21,7 +21,7 @@ group gDash "Dashboard"
   process o1 "Navigator paused: 'Check all now' is dimmed\nA link under it reads 'Navigator is paused in Settings'"
 endgroup
 
-group gMgr "Case Manager"
+group gMgr "Authorizations › Reviews this week"
   process m1 "Cadence paused: 'Draft all due reviews' drafts nothing\nToast 'Cadence is paused in Settings'\n'It drafts no reviews until you resume it there.'"
 endgroup
 
@@ -34,7 +34,7 @@ group gEmr "EMR Connect"
   process x1 "Reader paused: 'Sync now' and 'Connect a system' show 'Reader is paused'\nNavigator paused: 'Fix' and 'Reconnect' show 'Navigator is paused'\nMap and Disconnect still work"
 endgroup
 
-process n8 "Screens that do not read the pause\nAuthorizations queue and case page, Denial Intelligence, Analytics, Payers, Ask FLO"
+process n8 "Screens that do not read the pause\nThe Authorizations case page (the worklist reads it only for 'Draft all due reviews'), Denial Intelligence, Analytics, Payers, Ask FLO"
 
 group gReal "Production (PRD FR-25)"
   process r1 "Production: the operator can pause one agent, one payer channel or all outbound actions at once"
@@ -43,7 +43,7 @@ endgroup
 
 goto g1 "Continues in: Authorizations › New Case › Authorization preparation › Finished, paused or left"
 goto g2 "Continues in: Dashboard › Header › Check all now and the demo clock"
-goto g3 "Continues in: Case Manager › Reviews this week › Draft all due reviews and sign all clean drafts"
+goto g3 "Continues in: Authorizations › Reviews this week › Draft all due reviews and sign all clean drafts"
 goto g4 "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows"
 goto g5 "Continues in: EMR Connect › Sync › When an agent is paused or asks first"
 goto g6 "Continues in: Settings › Pause › Pause all agents"

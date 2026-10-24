@@ -3,7 +3,7 @@ route: /authorizations/new/:draftId (step 4 of 4, 'Review & submit')
 intro: Step 4 starts with what is missing (next diagram), then lists the whole case in one short summary, then shows the packet the payer will read: the medical-necessity summary Scribe drafted, which can be edited, with a chip for every chart page it came from. It is the same summary the case page's Draft tab shows: an edit made in either place is read in the other. The validation summary (closed until opened), the checks and the Sign card are in the diagrams after it.
 dir: TD
 ---
-start s1 "Click 'Continue to Review & submit' on Clinical documentation\nOr click step 4 in the stepper at any time\nOr 'Review and sign' on a ready case in Case Manager"
+start s1 "Click 'Continue to Review & submit' on Clinical documentation\nOr click step 4 in the stepper at any time\nOr 'Review and sign' on a ready draft row in Authorizations"
 screen sc "Review & submit\nNo sentence under the title\nThe stepper: 'Review & submit' current"
 decision dReady "Have all ten agents finished?"
 screen sNot "One line 'The packet is built when the agents finish'\nButton 'Open Authorization preparation' (Clinical documentation, at its last section)\nChecks and Validation summary are not shown yet\nThe Sign card says 'After the agents finish'"
@@ -46,7 +46,7 @@ process pLost "Edits are lost when the summary is rebuilt\nAfter a new answer, a
 
 click cBack "Click 'Back'"
 click cSaveD "Click 'Save as draft'"
-toast tSaved "'Draft saved'\n'R-1701 is in Case Manager, ready to sign.'"
+toast tSaved "'Draft saved'\n'R-1701 is in Authorizations.'"
 goto gMis "Continues in: Authorizations › New Case › Review & submit › What is missing"
 goto gVal "Continues in: Authorizations › New Case › Review & submit › Validation summary and checks"
 goto gSign "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer"

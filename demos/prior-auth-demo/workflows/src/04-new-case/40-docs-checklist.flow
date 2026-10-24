@@ -4,7 +4,7 @@ intro: Step 3 is one page: a drop bar and the import row, one checklist card wit
 dir: TD
 ---
 start s1 "Click 'Continue to Clinical documentation' on Eligibility & Benefits\nOr click step 3 in the stepper"
-start s2 "Click 'Continue' on a case in Case Manager\nwhose agents have not started"
+start s2 "Click 'Continue' on a draft row in Authorizations (In progress)\nwhose agents have not started"
 screen sc "Clinical documentation\nNo sentence under the title\nHeader button 'Use sample chart'"
 
 group gPage "The page"

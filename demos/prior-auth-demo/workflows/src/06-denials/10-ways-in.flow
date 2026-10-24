@@ -9,7 +9,7 @@ start s2 "Demo menu, Suggested path\n'Denial Intelligence: D-3318'"
 start s3 "Click a notification\n'Denied today', 'Denied', 'Partly approved' or 'Denial analyzed'"
 start s4 "Ask FLO 'Which denial is due first?'\nClick 'Open Denial Intelligence'"
 start s6 "Dashboard: Do next 'Open denial', or the request drawer's 'Open in Denial Intelligence'"
-start s7 "Authorizations case page (also reached from Case Manager)\nClick 'Open in Denial Intelligence'"
+start s7 "Authorizations case page (also reached from the Authorizations worklist)\nClick 'Open in Denial Intelligence'"
 start s9 "Analytics case panel\nClick 'Open the denial'"
 
 process p0 "Address /denials, maybe with ?payer= and ?reason="

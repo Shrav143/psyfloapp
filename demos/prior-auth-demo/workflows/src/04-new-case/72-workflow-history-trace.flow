@@ -1,5 +1,5 @@
 title: Authorizations › New Case › Workflow › What the workflow adds to the history
-route: /authorizations/new/:draftId, then /authorizations/case/ID (History) and Case Manager
+route: /authorizations/new/:draftId, then /authorizations/case/ID (History) and /authorizations
 intro: The workflow leaves a short trace in the case's history: which workflow was applied, how far it ran at each stage change (steps done, skipped and waiting), the rules it read with their verification state, any override, the sign-off, and what was prepared versus what was transmitted. Before the request exists the lines wait on the draft; they are written to the request's History when it is signed and sent. A draft that is already a request on the case page writes them straight away. Lines are short; the detail sits under them.
 dir: TD
 also: The engine's line for a stage names the agent that works it (Verify at Eligibility & Benefits, Reader at Clinical documentation, Scribe once the agents start, Integrity at Review & submit). The engine's preparation stage is shown as Clinical documentation: 'Workflow ran to Clinical documentation' is written once for the documents and once when the agents start; 'Workflow applied' is Psyflo's; a person's choice, review or override is the person's; the 'Prepared for' line is Packet's. Nothing here is a payer fact.
@@ -17,12 +17,12 @@ process p1 "The lines wait on the draft\nThe 'Trace' button in the Workflow line
 process p2 "Sign and send writes them to the new request's History, before the signature line\nTimes are the demo clock"
 process p3 "The lines go straight to the request's History"
 screen sc1 "Authorizations › the case page › 'History'\nEach line says who: Psyflo, you or a named agent\nThe 'Authorization facts' row has 'Workflow' with the version"
-screen sc2 "Case Manager › tracker row quick view\n'Workflow' row and the three newest history lines"
-screen sc3 "Case Manager › a case with no request yet\n'Workflow' row in the case summary and the lines in 'History'"
+screen sc2 "Authorizations › tracked quick view (a row with the payer or approved)\n'Workflow' row and the three newest history lines"
+screen sc3 "Authorizations › ledger case page, a case with no request yet\n'Workflow' row in the case summary and the lines in 'History'"
 decision d3 "Is the case a request?"
 end e1 "The trace can be read where the case is read"
 goto g1 "Continues in: Authorizations › Case page › History"
-goto g2 "Continues in: Case Manager › Ledger case › Workflow line and history"
+goto g2 "Continues in: Authorizations › Ledger case page › Workflow line and history"
 
 s1 --> d1
 d1 -->|Applied| a1 --> d2

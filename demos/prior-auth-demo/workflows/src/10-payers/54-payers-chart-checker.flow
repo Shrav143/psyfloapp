@@ -36,7 +36,7 @@ toast r0 "Green banner '9 of 9 ready'\nNothing is missing. Reader found every do
 toast ft1 "'Checked I-2207 against Cardinal's IOP list.'\nLink 'Open the request'"
 toast ft2 "'Checked the pasted text against Cardinal's IOP list, by keyword.'\nNo link: no case was used"
 click ol "Click 'Open the request'"
-goto g1 "Continues in: Dashboard › Open a request"
+goto g1 "Continues in: Dashboard › Request drawer › Open and read a request"
 process why "Edit the list and check again to see it change\nCardinal's list asks for 'Remaining treatment goals' only after\nits criteria change is updated, so I-2207 then reads '5 of 7 ready'"
 toast info "'New Case checks documents against this same list.\nPasted text is matched by keyword, so a document that\nis named differently can be missed.'"
 goto g2 "Continues in: Payers › Rules & Instructions › Edit the document list"

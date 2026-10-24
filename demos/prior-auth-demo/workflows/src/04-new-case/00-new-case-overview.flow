@@ -25,7 +25,7 @@ group gMake "No case id in the address: make one"
   process p4 "The patient's details, treatment episode and authorization are filled in\nNo second patient is made"
   process p5 "?type= picks the Authorization type\nIts request type is recorded: Initial request, Continued stay, Recertification, Modification or Retro-authorization"
   process p6 "Filled from ?payer=, ?program=, ?member=, ?initials=, ?age=\nRequest type: Admission\nAn unknown payer or program is ignored"
-  store st3 "Blank case created at Intake\nIt belongs to the site you are working at\nNot in Case Manager until 'Save as draft'"
+  store st3 "Blank case created at Intake\nIt belongs to the site you are working at\nNot in Authorizations until 'Save as draft'"
 endgroup
 process p7 "?step= opens that step: intake, eligibility, documentation or review\npreparation and the older agents open Clinical documentation scrolled to 'Authorization preparation'\nThe older referral and records land on Intake and Clinical documentation"
 process p8 "Case opens at /authorizations/new/draft-ID\nIt replaces the address, so Back does not loop"

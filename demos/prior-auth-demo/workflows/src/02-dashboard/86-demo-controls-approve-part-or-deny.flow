@@ -30,7 +30,7 @@ group gD "Denied or partly approved"
   screen dd "Drawer for D-3319\nChip 'Call booked', 'Chance of winning 61%'\nDemo controls disabled: 'A denial follows its own route in Denial Intelligence.'\nFooter gains 'Open in Denial Intelligence'"
 endgroup
 goto g2 "Continues in: Denial Intelligence › A denial opened\n/denials/D-3319"
-goto g3 "Continues in: Authorizations › Case page\nThe case number is unchanged"
+goto g3 "Continues in: Authorizations › Case page › Ways in\nThe case number is unchanged"
 
 s1 --> x1 --> c1 & c2 & c3
 c1 --> a1 --> an --> as --> ab --> g1

@@ -1,6 +1,6 @@
-title: Case Manager › Reviews this week › After a review is signed
-route: /manager?tab=reviews
-intro: What the demo does once a clinician signs. The review changes status and a few counts, and Cadence books the next review: the date is the review's own date plus the interval. It shows in the tracker row and, when it falls before the end of Sunday, on this week's list. Otherwise the signed review says 'Next review: <date>'.
+title: Authorizations › Reviews this week › After a review is signed
+route: /authorizations?view=reviews
+intro: What the demo does once a clinician signs. The review changes status, its row changes, and Cadence books the next review: the review's own date plus the interval. When the next review falls before the end of Sunday it takes the signed one's place on the row; otherwise the row stays 'Signed' and the drawer says when the next one is.
 dir: TD
 also: The PRD (03, Prior Authorization Lifecycle) treats each signed request as a version that is kept, and times renewals from the binding date and the payer's lead time. The demo books the next review from the interval alone and does not send the signed review anywhere.
 ---
@@ -8,48 +8,48 @@ start s1 "A clinician signature is saved\n(one review, or 'Sign all clean drafts
 store st1 "The review keeps: status 'Signed', who signed, the demo-clock time, and the draft text as signed"
 
 group gScreen "What changes on screen"
-  process a1 "Row pill changes from 'Drafted' to 'Signed'\n'Check to look at' goes away on a signed row"
-  process a2 "Drawer, if open: footer reads 'Signed by Heather K., LISW-S', draft is read-only, the banner is gone, and a green banner shows 'Next review: Tue 10/27, 9:00 am'"
-  process a3 "Tile 'Reviews due this week' sub line counts up: '1 signed so far'"
-  process a4 "Tile 'Drafted by agents' sub line counts down: '32 clean, ready to sign'\nThe tile number itself still counts signed ones"
-  process a5 "'Sign all clean drafts' is greyed out once none are left"
-  process a6 "Filter 'Signed' in 'Any review status' now lists it"
-  process a7 "Sidebar 'Case Manager' bubble does not change: it counts reviews that need an update, not drafts waiting to be signed"
+  process a1 "Row: 'Review' reads 'Signed'; 'Check to look at' goes\nThe button is the row's own again: 'Open', 'Send to payer', 'Open on Dashboard'"
+  process a2 "Drawer, if open: footer reads 'Signed by Heather K., LISW-S', the draft is read-only, and a green banner shows 'Next review: Tue 10/27, 9:00 am'"
+  process a3 "Reviews this week still counts the row: 47 stays 47"
+  process a5 "'Sign all clean drafts' is greyed out once none are left on screen"
+  process a7 "The sidebar badge does not change\nA tracked case with nothing else open leaves 'Needs attention'"
 endgroup
 
 group gNext "The next review"
   agent g1 "Cadence books the next continued-stay review\nDate: the review's own date and time plus the interval (from now, if it was signed late)"
   process i1 "Interval: the payer's own rule when Payers has one ('A continued-stay review every 7 days'), else the level of care\nResidential and PHP 7 days, IOP 14 days, Detox 3 days. The sooner of the two wins"
-  store n1 "A new review is saved: next review number (for example review 3), same time of day, status 'Not drafted yet'\nThe signed review remembers the date"
-  toast t1 "Toast: 'Cadence booked the next review for Tue 10/27, 9:00 am.'\n('Sign all clean drafts': 'Cadence booked the next review for each.')"
+  store n1 "A new review is saved: next review number (e.g. review 3), same time of day, status 'Not drafted yet'\nThe signed review remembers the date"
+  toast t1 "Toast: 'R-0856 was signed by Heather K., LISW-S. Cadence booked the next review for Tue 10/27, 9:00 am.'\n('Sign all clean drafts': 'Cadence booked the next review for each.')"
   decision d1 "Does the next review fall before the end of Sunday?"
-  process n2 "It joins this week's list on its day, as 'Not drafted yet'\nThe header counts it: '48 clinical reviews due this week'\n'Draft all due reviews' drafts it"
-  process n3 "It is kept but not listed this week\nThe header still reads '47'\nThe drawer says 'It falls after this week, so it is not on the list yet.'"
-  process n4 "Tracker row: the Next due cell reads 'Next review Tue 10/27'\nStatus goes to 'On track' (from 'Needs action' or 'Review due'; 'Awaiting payer' stays)\nOnce that day comes it reads 'Review due'"
+  process n2 "It takes the row's place on this week's list, as 'Not drafted yet' with 'Open the review'\n'Draft all due reviews' drafts it (Detox reviews do: every 3 days)"
+  process n3 "The row stays 'Signed'\nThe drawer says 'It falls after this week, so it is not on the list yet.'"
+  process n4 "A ledger row's Deadline reads 'Next review Tue 10/27', then 'Review due' when the day comes\nThe ledger status goes to 'On track', so 'Needs action' and 'Review due' leave the row\n'Runs out before review' may now show (R-0856, I-2193)"
   process n5 "Ledger case page: a 'Next review' line and, in the history, 'Cadence booked review 3'"
   ext x1 "Payer receives the signed review through its portal or by fax (real product, not drawn in the demo)"
 endgroup
 
 group gCase "Case record"
   click c1 "Click 'Open case' in the drawer"
-  goto g2 "Continues in: Authorizations › Case › Draft tab"
-  goto g3 "Continues in: Case Manager › Ledger case › Open and read"
+  goto g2 "Continues in: Authorizations › Case page › Draft › Read and edit"
+  goto g3 "Continues in: Authorizations › Ledger case page › Open and read"
 endgroup
+goto g4 "Continues in: Authorizations › Approved › Units used and the run-out flag"
 
 store st2 "'Reset demo data' puts every review back to its starting state, clears signatures and removes the booked reviews"
 end e1 "Review is signed and counted"
 
 s1 --> st1
-st1 --> a1 & a2 & a3 & a4 & a5 & a6 & a7
+st1 --> a1 & a2 & a3 & a5 & a7
 st1 --> g1 --> i1 --> n1 --> t1 --> d1
 d1 -->|Yes| n2
 d1 -->|No| n3
 n2 --> n4
 n3 --> n4
 n4 --> n5
+n4 -.-> g4
 n1 -.-> x1
 a2 --> c1 --> g2
 c1 -.-> g3
-a1 & a3 & a4 & a5 & a6 & a7 --> e1
+a1 & a3 & a5 & a7 --> e1
 n5 --> e1
 e1 -.-> st2

@@ -1,0 +1,63 @@
+title: Authorizations › Worklist › Quick view panel
+route: /authorizations?quick=R-1117
+intro: The right-hand panel that opens from a row: a summary first and a button to the full case. The row decides which panel. A row with a ledger record that is with the payer or approved opens the tracked quick view (units, window, next review). Any other queue request opens the Dashboard's own request panel when the Dashboard has it, or a lighter panel built from the case. Open denials that only the Dashboard has, and saved drafts, have no quick view.
+dir: TD
+also: Demo only, Both sites at the start: 50 rows open the tracked quick view (the 32 approved authorizations and 18 requests with the payer that the ledger tracks), 9 the Dashboard's panel, 29 the lighter panel; the 7 open denials in no other list have none. The panel changes nothing by itself: 'Review and sign' only opens New Case, where a clinician signs.
+---
+screen row "A row\nRequest ID link, the small icon 'Quick view R-1117' beside the patient, the row's button"
+click c1 "Click the icon 'Quick view R-1117'"
+click c2 "Click the row away from a link or a button"
+click c3 "Keyboard: Tab to the icon, press Enter or Space"
+start s0 "Open /authorizations?quick=R-1117 on a fresh load"
+store ad "The address gets ?quick=R-1117\nIt replaces the entry, so Back does not walk through panels\nThe row is highlighted"
+decision d1 "Is there a row with that ID at the sites in view, with a quick view?"
+endx e1 "Nothing opens\nThe ID is dropped from the address"
+decision d2 "Does the row have a ledger record, and is it with the payer or approved?"
+goto g4 "Continues in: Authorizations › Approved › Quick view of a tracked authorization"
+decision d3 "Otherwise it is a queue request: is it also on the Dashboard?"
+overlay o1 "The Dashboard's request panel\nSame panel, history, 'Check now', 'Open case' and the demo controls"
+goto g1 "Continues in: Dashboard › Request drawer › Open and read a request"
+overlay o2 "Lighter panel from the right\nTitle 'R-1117 · Harborview MA', patient, level of care and request type"
+process f1 "Focus moves into the panel (the X)\nTab and Shift+Tab stay inside it"
+
+group gS "The lighter panel, in order"
+  process s1 "'Next:' line, the same words as the row and the case page"
+  process s2 "Status chips: Preparing, Ready to sign, With the payer or Denial route\nplus 'Needs your input' and 'Coverage needs a fix' when they apply"
+  process s3 "Deadline, e.g. 'Review due in 30 h'; Requested; Documents, complete or what is missing\nWaiting on: You, the payer or the agent"
+  process s4 "Approved, used and left and the window, only when the ledger has them\nSite (for a viewer of both sites), approval chance with its word and range\nHistory: the last three lines, or 'Nothing yet.'"
+endgroup
+
+click b1 "Click 'Open case'"
+goto g2 "Continues in: Authorizations › Case page › Ways in"
+decision d4 "Is it still being prepared (Preparing or Ready to sign)?"
+click b2 "Click 'Review and sign'"
+goto g3 "Continues in: Authorizations › Case page › Send to payer and review and sign"
+process nb "No 'Review and sign': it is with the payer\n'Open case' is the green button"
+
+click x "Press Esc, click the X, or click the dimmed area"
+process bk "The panel closes and ?quick= leaves the address\nFocus is meant to go back to the row's icon (demo gap: it lands on the page)\nEsc closes one layer at a time (a menu or a dialog inside the panel first)"
+process gn "The row changes while the panel is open (e.g. the payer answers from the Dashboard panel)\nThe panel follows the row, and closes when the row no longer has a quick view"
+
+row --> c1
+row --> c2
+row --> c3
+c1 --> ad
+c2 --> ad
+c3 --> ad
+s0 --> d1
+ad --> d1
+d1 -->|No| e1
+d1 -->|Yes| d2
+d2 -->|Yes| g4
+d2 -->|No| d3
+d3 -->|Yes| o1 --> g1
+d3 -->|No| o2 --> f1
+f1 --> s1 --> s2 --> s3 --> s4
+s4 --> b1 --> g2
+s4 --> d4
+d4 -->|Yes| b2 --> g3
+d4 -->|No| nb
+o1 --> x
+o2 --> x
+x --> bk
+o2 -.-> gn

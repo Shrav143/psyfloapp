@@ -27,7 +27,7 @@ process nohint "No word about the other site\nA one-site viewer is never told wh
 
 click cConf "Confirm 'Update N drafts'"
 agent ag "Scribe and Integrity redraft exactly the drafts that were listed (demo: 3 seconds)\nA draft at a site the viewer cannot see is never listed, counted or changed"
-store up "Each listed draft needs a person again\nUpdate recorded for Case Manager and New Case"
+store up "Each listed draft needs a person again\nUpdate recorded for Authorizations and New Case"
 toast t1 "'N drafts updated'\nOr 'No open drafts to update' when none were in view"
 
 click cChk "Rules & Instructions › Clinical documentation\n› 'Try it on a case'"

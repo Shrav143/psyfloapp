@@ -1,9 +1,9 @@
-title: Case Manager › Reviews this week › Add your update to a review
-route: /manager?tab=reviews (review drawer)
+title: Authorizations › Reviews this week › Add your update to a review
+route: /authorizations?view=reviews&review=rv-R-0912 (review drawer)
 intro: Eight reviews could not be finished by the agents because the chart lacks one item. The clinician says what applies, in their own words, and Integrity checks the draft again. The review then becomes an ordinary draft that can be signed. This is the 'answer' gate: agents stop and ask a person.
 dir: TD
 ---
-start s1 "Open a review marked 'Needs your update'\n(for example R-0912)"
+start s1 "Click 'Update the review' on a row whose review needs your update\n(for example R-0912)"
 overlay o1 "Review drawer\nStatus pill 'Needs your update'"
 screen b1 "Amber panel 'Needs your update'\nWhat is missing, for example 'Evergreen has not answered in 4 days. Confirm the current risk assessment before Caller resends the review.'"
 screen b2 "Box 'Your update' (required)\nHint: 'This goes into the draft under Clinician update. Integrity checks the draft again.'\nButton 'Add to the draft' (greyed while the box is empty)"
@@ -18,12 +18,12 @@ agent a1 "Integrity checks the draft again with the update"
 store st1 "Review is saved as 'Drafted'\nThe missing item is cleared\nYour text is saved as the note and added to the draft under 'Clinician update'\nAll four checks turn green"
 toast t1 "'Review updated'\n'Integrity checked R-0912 again. It is a draft now and ready to sign.'"
 process p2 "Drawer redraws in place:\nAmber panel gone, draft unlocked and longer, checks green, 'Sign review' ready"
-process p3 "Sidebar 'Case Manager' bubble drops by one (11 becomes 10)\nTile 'Need a clinician update' drops, 'Drafted by agents' rises, and the review counts as 'clean' for 'Sign all clean drafts'"
-goto g1 "Continues in: Case Manager › Reviews this week › Sign a review"
+process p3 "On the row: 'Review' reads 'Drafted' and the button 'Review and sign'\nThe review counts as clean for 'Sign all clean drafts'\nA tracked case with no other reason leaves 'Needs attention'; the sidebar badge does not change"
+goto g1 "Continues in: Authorizations › Reviews this week › Sign a review"
 click c2 "Close the drawer without adding anything"
 process p4 "Nothing is saved: the review stays 'Needs your update'"
 click c3 "Click 'Open case'"
-goto g2 "Continues in: Authorizations › Case › Draft tab"
+goto g2 "Continues in: Authorizations › Case page › Draft › Read and edit"
 end e1 "Review is ready to sign"
 endx e2 "Still waiting on the clinician"
 
