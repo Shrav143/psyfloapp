@@ -186,7 +186,8 @@ export default function AuthorizationsPage() {
         )}
       </Card>
 
-      {quickRow?.src.item ? (
+      {/* A request still being prepared (or a denial) opens the queue's quick view; one with the payer or approved opens the tracker's, with units, window, reviews and the workflow line. */}
+      {quickRow?.src.item && !(quickRow.src.ledger && (quickRow.life === "payer" || quickRow.life === "approved")) ? (
         <QuickView key={quickRow.key} item={quickRow.src.item} request={quickRow.src.request} onClose={() => setParam("quick", null)} />
       ) : quickRow?.src.ledger ? (
         <CaseQuickView key={quickRow.key} row={quickRow.src.ledger} from={quickFrom} onClose={() => setParam("quick", null)} onOpenReview={(id) => setParams((p) => { const n = new URLSearchParams(p); n.delete("quick"); n.set("review", id); return n; }, { replace: true })} />
