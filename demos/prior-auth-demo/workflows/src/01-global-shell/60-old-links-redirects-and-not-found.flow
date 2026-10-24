@@ -16,6 +16,7 @@ group gRed "Redirects (the old address is replaced)"
   process m1 "?tab=reviews, or a ?review=\ngoes to /authorizations?view=reviews\nA ?review= is kept and opens that review's drawer"
   process m2 "Anything else (nothing, ?tab=cases, ...)\ngoes to /authorizations?view=all"
   process m3 "?show=active or ?show=renewal (the Dashboard's Active and Renewal due chips) is kept; any other ?show= is dropped\nFor example /active?show=renewal becomes /authorizations?view=all&show=renewal"
+  process m4 "'/authorizations?tab=reviews' (Case Manager's parameter on the new address) opens Reviews this week too\nThe address is rewritten in place to /authorizations?view=reviews"
   goto g2 "Continues in: Authorizations › Worklist › Addresses and old queue links"
   process r3 "'/referrals' goes to /authorizations/new\nReferrals no longer have a tab: they start Intake in New Case"
   process r3b "New Case starts a blank draft and the address becomes /authorizations/new/draft-..."
@@ -50,6 +51,7 @@ d1 -->|/manager or /active| r2 --> dm
 dm -->|Reviews| m1
 dm -->|Anything else| m2
 m1 & m2 --> m3 --> g2
+d1 -->|/authorizations?tab=reviews| m4 --> g2
 d1 -->|/referrals| r3 --> r3b --> g3
 d1 -->|/referrals/id| r4 --> g4
 d1 -->|A page above| k1 --> g5

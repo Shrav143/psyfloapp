@@ -17,7 +17,7 @@ Source: `src/App.tsx`, `src/routes.ts`, `src/pages/manager/ManagerRedirect.tsx`,
 | 'EMR Connect' (no badge) | Sidebar | 10, 13 |
 | 'Payers' | Sidebar | 10, 13 |
 | Number bubbles on Dashboard, Authorizations, New Case, Eligibility & Benefits, Denial Intelligence, Payers. Every one follows the site view except Payers, which is clinic-wide (a payer's rules are not site data). No Case Manager row or badge | Sidebar | 11 |
-| Group open or closed: opens by itself when the address comes into an Authorizations page, otherwise keeps the person's choice (closed stays closed inside the group, open stays open outside it); arrow right or down | Sidebar | 12 |
+| Group open or closed: opens by itself when the address comes into Authorizations, closes by itself when it leaves; in between keeps the person's choice (closed stays closed between Authorizations pages; opened with the arrow outside Authorizations, it stays open between other pages); arrow right or down | Sidebar | 12 |
 | Green highlight rules: one row; 'All Authorizations' on the worklist and on a case page; the whole 'Authorizations' row while the group is closed on one of its pages; old /manager and /active links light the Authorizations rows after the redirect; bubble colour on the green row | Sidebar | 11, 12, 13 |
 | 'Demo data' tile (label only) | Sidebar footer | 10 (note), 50 |
 | 'Settings' | Sidebar footer | 10, 50 |
@@ -57,7 +57,7 @@ Source: `src/App.tsx`, `src/routes.ts`, `src/pages/manager/ManagerRedirect.tsx`,
 | Subtitle '4 unread' / 'You are all caught up' | Notifications | 30 |
 | What creates a notification ('Drafts updated' opens Authorizations, 'Denial closed' opens Authorizations › All) | Store events | 31 |
 | '/' to /dashboard | Address | 60 |
-| '/manager' and '/active' to /authorizations: ?tab=reviews or ?review= to Reviews this week (?review= kept), anything else to All; ?show=active or ?show=renewal kept | Address | 60 |
+| '/manager' and '/active' to /authorizations: ?tab=reviews or ?review= to Reviews this week (?review= kept), anything else to All; ?show=active or ?show=renewal kept. '/authorizations?tab=reviews' also opens Reviews this week, rewritten to ?view=reviews | Address | 60 |
 | '/referrals' to /authorizations/new | Address | 60 |
 | '/referrals/:id' to /authorizations/new/referral/:id | Address | 60 |
 | Unknown address: 'Page not found' | Address | 60 |
@@ -79,6 +79,5 @@ Source: `src/App.tsx`, `src/routes.ts`, `src/pages/manager/ManagerRedirect.tsx`,
 
 - Fast-forward changes the clock and what is worked out from it. It never makes a payer reply or a referral arrive. The one thing it can start is Verify's automatic re-check of a patient whose re-check came due, which raises a 'Re-checked automatically' notification.
 - The chat in Ask FLO lives in the page, so 'Reset demo data' does not clear it and its old answers keep the old numbers.
-- The sidebar group's open or closed choice and the worklist's last view also live in the page: 'Reset demo data' keeps both, a reload clears both.
-- /authorizations?tab=reviews (a Case Manager parameter typed straight onto the new address) is rewritten to the All view, not to Reviews this week. Only /manager?tab=reviews and /active?tab=reviews map to Reviews this week.
+- The sidebar group's open or closed choice and the worklist's last view also live in the page: a reload clears both. 'Reset demo data' keeps the last view; it goes to /dashboard, so a reset made on an Authorizations page closes the group.
 - Two notifications and their toasts still name Case Manager in their words ('Each needs a new signature in Case Manager' from Payers, 'Case Manager has a step-down plan' from Denial Intelligence); their links open Authorizations. That text belongs to those modules.
