@@ -27,7 +27,7 @@ File names below are in `src/03-authorizations/`. Short names: 01 arrive, 02 vie
 | 'All services' menu (Residential 3.5, IOP, PHP, Detox), `?program=` | 07 |
 | 'All request types' menu (Initial, Concurrent review, Reauthorization, Modification / extension, Retrospective) and how each record's own type maps | 07 |
 | 'Any deadline' menu with counts ('Act now · 12', 'Within 24 hours · 29', 'Next 7 days · 79'; counted in the chosen view), `?urgency=` | 08 |
-| 'More' (opens a second row; reads 'More · on' while one of its filters is on): 'Any owner', 'Any status' (16 chips), info icon 'What the statuses mean', 'Cardinal payer signal · 4' | 08, 09 |
+| 'More' (opens a second row; reads 'More · on' while one of its filters is on): 'Any owner', 'Any status' (16 chips), info icon 'What the statuses mean' (ends 'Approved, Denied: The payer decided. ...'), 'Cardinal payer signal · 4' | 08, 09 |
 | Showing chip from the Dashboard ('Showing Active (approved, units left)', 'Showing Renewal due (review due or ending within 7 days)') and its X 'Remove this filter' | 08, 07/10 |
 | Chip 'Showing the 4 affected by the Cardinal signal' ('Showing the request affected by the Cardinal signal' for one) and its X 'Remove the Cardinal signal filter' | 09 |
 | Menu keys: Up, Down, Enter, Esc, click outside; a menu off its first option turns green | 07 |
@@ -49,7 +49,7 @@ File names below are in `src/03-authorizations/`. Short names: 01 arrive, 02 vie
 | Narrow windows: owner above the next action under 1400 px, chance under the deadline under 1240 px, status under the patient under 1100 px; no sideways scroll | 04 |
 | Quick view: the small icon 'Quick view ID' and a click on the row away from links and buttons; `?quick=` (opening on a fresh load, an unknown or other-site ID is dropped); the row is highlighted | 06, 11, 12 |
 | Quick view panels: Dashboard request panel, the lighter panel (its lines, 'Open case', 'Review and sign'), the tracked quick view | 06, 07/36 |
-| Quick view: Esc, X and the dimmed area close it | 06 |
+| Quick view: Esc, X and the dimmed area close it; focus goes back to the row's icon | 06 |
 | Sort: 'Patient / request', 'Status', 'Deadline' ('Due' on Reviews this week), 'Chance' (up, down, back to the list's order; Chance two steps); 'Next action', 'Owner' and the button column do not sort | 10 |
 | Pager: '1 to 15 of 95', 'Previous', 'Page 1 of 7', 'Next' (only past 15 rows; back to page 1 on any view, filter or sort change) | 10 |
 | Sites: rows, every count, the average, the badge, the signal count, search and `?quick=` follow the viewer and the site switch; Site A + Site B = Both sites | 12 |
@@ -160,9 +160,6 @@ File names below are in `src/03-authorizations/`. Short names: 01 arrive, 02 vie
 - Clinical context is saved in the shared list. The Draft tab and New Case read it themselves; this page does not rewrite the draft text.
 - Each of the first three notes of clinical context adds a point to the approval chance, whatever it says. A refinement is a fixed re-order plus one fixed card per focus, not a new reading of the chart.
 - An ID with no queue record and no Dashboard request opens the ledger case page when it is in the ledger, and ends at 'Request not found' only when it is in neither (20).
-- The lighter quick view and the Dashboard panel do not give focus back to the row's icon when they close (the panel looks for `[data-quick="ID"]`, the icon carries an empty `data-quick`); the tracked quick view does (06).
-- The status help tip still says 'Approved, Completed: These leave the queue. See the Dashboard and Case Manager.' (08).
-- The view chips' counts and the table follow the filters, but 'Sign all clean drafts' signs every clean draft in view whatever the filters (07/44).
 
 ## Changed in round 7 (one worklist)
 

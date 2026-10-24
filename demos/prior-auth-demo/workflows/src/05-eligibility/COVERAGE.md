@@ -65,7 +65,7 @@ All five reasons for 'Fix before billing' can be reached, and Verify re-checks o
 | 'Create authorization from verification' (every result) | Opens `/authorizations/new?verification=ID`; the authorization type is still to choose | 45, 62 |
 | 'Request retro-eligibility' (lapsed), 'Ask Caller to phone the payer' (ended, not found), 'Ask Caller to confirm the benefit' (benefit not confirmed), 'Ask Navigator to check enrollment' (enrollment not confirmed) | Toast only | 45 |
 | 'Open Settings' (only when the check did not run) | Opens Settings | 45, 51 |
-| 'Open case' / 'Open in Case Manager' | Opens the case or Case Manager | 45 |
+| 'Open case' / 'Open in Authorizations' | Opens the case or Authorizations | 45 |
 | 'Re-check' | Refreshes the shared verification record; while Verify is paused the last result stays with the one warning | 45, 50, 60 |
 | Row 'Verification details' with 'Payment checks: 6 of 7 pass, 1 needs a look' and 'View full verification details' | Opens the side panel | 40, 63 |
 | Side panel: 'Payment checks' (seven rows), 'How this was checked' (agents, accordion, one open at a time), 'History' (HistoryFeed: Agent and Scheduled flags) | Read-only | 42, 43, 52, 63 |

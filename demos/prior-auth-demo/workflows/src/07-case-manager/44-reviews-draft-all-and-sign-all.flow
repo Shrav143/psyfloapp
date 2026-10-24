@@ -2,7 +2,7 @@ title: Authorizations › Reviews this week › Draft all due reviews and sign a
 route: /authorizations?view=reviews (the two header buttons)
 intro: Two buttons in the header of Reviews this week work on the whole week at the sites in view (a one-site viewer never drafts or signs the other site's reviews). 'Draft all due reviews' makes Cadence draft every review that has no draft yet, unless Cadence is paused in Settings. 'Sign all clean drafts' signs every draft whose four Integrity checks passed, in one step, and leaves out anything that needs a closer look.
 dir: TD
-also: Demo gap: the dialog counts the clean drafts among the rows the search and filters leave on screen, but signing signs every clean draft at the sites in view. With Payer set to Cardinal it says '5 reviews' and signs 29. The buttons show only on this view.
+also: Both buttons work on the same set: every review due this week at the sites in view, whatever the search and filters show. The dialog's number is the number signed (with Payer set to Cardinal it says 29 and signs 29; 33 once 'Draft all due reviews' has run). The buttons show only on this view.
 ---
 start s1 "Authorizations › Reviews this week is open"
 
@@ -21,7 +21,7 @@ group gDraft "Draft all due reviews"
 endgroup
 
 group gSign "Sign all clean drafts"
-  decision d1 "Does any row on screen have a clean draft?\n(drafted, and all four checks passed)"
+  decision d1 "Is any review due this week at the sites in view a clean draft?\n(drafted, and all four checks passed; filters do not matter)"
   process x1 "Button 'Sign all clean drafts' is greyed out"
   click c2 "Click 'Sign all clean drafts'"
   overlay o1 "Dialog 'Sign all clean drafts'\nSubtitle '33 reviews with all four checks passed'\n(29 if 'Draft all due reviews' has not run)"
@@ -31,7 +31,7 @@ group gSign "Sign all clean drafts"
   decision d2 "Is the box ticked?"
   process x2 "Button 'Sign 33 reviews' stays greyed"
   click c3 "Click 'Sign 33 reviews'"
-  store st1 "Every clean draft at the sites in view is saved as 'Signed' by the chosen clinician, stamped with the demo clock\nCadence books a next review for each\nDrafts with an amber check, reviews needing an update and reviews with no draft stay as they were"
+  store st1 "Those clean drafts are saved as 'Signed' by the chosen clinician, stamped with the demo clock\nCadence books a next review for each\nDrafts with an amber check, reviews needing an update and reviews with no draft stay as they were"
   toast t2 "'33 reviews signed'\n'Heather K., LISW-S signed every draft whose four checks passed. Cadence booked the next review for each. The others wait for a closer look.'"
   process p3 "Dialog closes\nThose rows read 'Signed' and show their own button again\nThe header button is greyed out; the sidebar badge is unchanged"
   click c4 "Click 'Cancel', the X, the dimmed area, or press Escape"

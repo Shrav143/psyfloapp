@@ -11,7 +11,7 @@ group gScreen "What changes on screen"
   process a1 "Row: 'Review' reads 'Signed'; 'Check to look at' goes\nThe button is the row's own again: 'Open', 'Send to payer', 'Open on Dashboard'"
   process a2 "Drawer, if open: footer reads 'Signed by Heather K., LISW-S', the draft is read-only, and a green banner shows 'Next review: Tue 10/27, 9:00 am'"
   process a3 "Reviews this week still counts the row: 47 stays 47"
-  process a5 "'Sign all clean drafts' is greyed out once none are left on screen"
+  process a5 "'Sign all clean drafts' is greyed out once no clean draft is left this week at the sites in view"
   process a7 "The sidebar badge does not change\nA tracked case with nothing else open leaves 'Needs attention'"
 endgroup
 

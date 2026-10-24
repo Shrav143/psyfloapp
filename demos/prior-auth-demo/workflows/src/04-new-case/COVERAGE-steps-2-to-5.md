@@ -50,7 +50,7 @@ Source: `src/pages/newcase/*` (EligibilityStep, NoAuthCard, ExceptionActions, Do
 | The eight warnings and 'What you can do' | 35 |
 | 'Continue with a documented exception', 'Continue without a verification', 'Document and continue', 'Cancel', 'Undo' | 35 |
 | 'Open Settings to resume Verify' | 35, 54 |
-| 'No authorization is required' card; 'Save verification to the patient record', 'Return to Case Manager', 'Continue with a documented exception' | 36 |
+| 'No authorization is required' card; 'Save verification to the patient record', 'Return to Authorizations', 'Continue with a documented exception' | 36 |
 | Steps 3 and 4 Not applicable | 02, 36 |
 | 'Reused · checked ...', 'Checked N h ago', 'Covers other dates' chips; 'Open in Eligibility & Benefits' | 30 to 34 |
 | 'Back', 'Save as draft', 'Continue to Clinical documentation' | 30 to 34 |
@@ -94,14 +94,14 @@ Source: `src/pages/newcase/*` (EligibilityStep, NoAuthCard, ExceptionActions, Do
 | Approval chance card | 56, 60 |
 | 'Signing as', the two signers, the line that says why it cannot be signed yet, the attestation and acknowledgement tick-boxes, 'Sign and send to payer (demo)', the confirm pop-up | 63 |
 | 'Send back to Scribe', quick notes, 'Send back' | 65 |
-| After sending: the new case, Dashboard, queue, Case Manager, patient record | 64 |
+| After sending: the new case, Dashboard, Authorizations (With the payer), patient record | 64 |
 | 'Back', 'Save as draft' | 60, 80 |
 
 ## Not drawn
 
 - The text of every agent line and every document's checks: drawn by example (Summit, Residential 3.5), the rest follows from `runText.ts` and `documents.ts`.
 - Dropdown and drawer internals (arrow keys, focus): shared components.
-- The Dashboard, queue and Case Manager screens themselves: other modules; 64 hands off to them.
+- The Dashboard and Authorizations screens themselves: other modules; 64 hands off to them.
 - Layout below 1080 px (the right column stacks under the left).
 - The case page's Draft tab: Authorizations module; 60 and 55 name it.
 

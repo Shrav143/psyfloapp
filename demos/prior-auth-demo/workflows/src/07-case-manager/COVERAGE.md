@@ -84,7 +84,7 @@ Short names: 10 old links, 20 drafts, 21 draft status rules, 23 step-down plans,
 | 'Needs your update' panel, 'Your update' box, 'Add to the draft' (1.3 s, toast 'Review updated') | 42 |
 | Sign dialog: banner, 'Signing clinician', 'One check needs a look' and 'I read this and I accept it', the attestation, 'Sign review', 'Cancel', X, Escape | 43 |
 | 'Draft all due reviews' (paused toast, 'Cadence drafted 4 reviews', 'Nothing to draft') | 44 |
-| 'Sign all clean drafts' (enabled and greyed), its dialog, 'Sign 33 reviews', toast '33 reviews signed' | 44 |
+| 'Sign all clean drafts' (enabled and greyed), its dialog, 'Sign 33 reviews', toast '33 reviews signed'; like 'Draft all due reviews' it covers every review due this week at the sites in view, whatever the filters | 44 |
 | After signing: the row, the drawer banner 'Next review: ...', the next review Cadence books, the ledger row's deadline and status, the ledger case page | 45 |
 
 ## Sites
@@ -125,7 +125,6 @@ Short names: 10 old links, 20 drafts, 21 draft status rules, 23 step-down plans,
 
 ## What the demo still does not do
 
-- 'Sign all clean drafts' counts the clean drafts left on screen by the search and filters, but signs every clean draft at the sites in view (with Payer set to Cardinal the dialog says 5 and 29 are signed) (44).
 - Some text in other tabs still names Case Manager: the Dashboard's 'Open Active cases' link, the 'Decision accepted' toast and 'Denial closed' notification in Denial Intelligence, the Payers 'Drafts updated' toast and notification and its History line (10, 23, 24).
 - 'Start reauthorization' is reachable only for a request sent and approved today, after Fast-forward: every seed approval has a review this week and signing books the next one (31).
 - The ledger case page's 'not approved yet' wording cannot be reached at the start: every ledger case not approved yet is also a request (60).

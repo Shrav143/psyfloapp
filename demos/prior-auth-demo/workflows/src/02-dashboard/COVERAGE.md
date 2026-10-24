@@ -28,7 +28,7 @@ Files (all in this folder):
 | 85-demo-controls-the-payer-answers | 28 |
 | 86-demo-controls-approve-part-or-deny | 21 |
 
-The page, top to bottom: a small title and one quiet line (with 'Check all now' on the right), the **Lifecycle** card (five state chips that filter the table, two links that open Case Manager), the **Do next** card (at most five sentences, one button each, 'Suggested by FLO from today's demo data'), and one **table** card ('40 authorizations', one quiet sentence, 'Needs me today' and four menus, nine columns). White cards on the warm background, one serif title and one quiet sentence per card. No key-figure tiles, no separate FLO summary card, no progress bars, no per-row icons, no dollar figures.
+The page, top to bottom: a small title and one quiet line (with 'Check all now' on the right), the **Lifecycle** card (five state chips that filter the table, two links that open Authorizations), the **Do next** card (at most five sentences, one button each, 'Suggested by FLO from today's demo data'), and one **table** card ('40 authorizations', one quiet sentence, 'Needs me today' and four menus, nine columns). White cards on the warm background, one serif title and one quiet sentence per card. No key-figure tiles, no separate FLO summary card, no progress bars, no per-row icons, no dollar figures.
 
 ## Entry points
 
@@ -66,8 +66,8 @@ The page, top to bottom: a small title and one quiet line (with 'Check all now' 
 | Counts follow Payer, Program and Request type and the sites in view, never Status | 50, 20 |
 | 'Decided today' (6 approved, 2 denied) is not a chip: it is in the Status menu and in `?stage=decided` | 50, 20 |
 | Cases saved in New Case count under Awaiting sign-off | 50, 60 |
-| 'Active' and 'Renewal due' (links with an arrow to Case Manager, counts of ledger cases, not table rows) | 51 |
-| Case Manager opens with `?tab=cases&show=active` or `show=renewal`; the row count there equals the chip; 'Clear filters' drops `show` | 51 |
+| 'Active' and 'Renewal due' (links with an arrow to Authorizations, counts of ledger cases, not table rows; their screen-reader label still says 'Opens Case Manager.') | 51 |
+| Authorizations opens on the All view with `?view=all&show=active` or `show=renewal` and the 'Showing ...' chip; the row count there equals the chip; 'Clear filters' drops `show` | 51 |
 | Active and Renewal due follow the sites in view | 51, 65 |
 
 ## Do next
@@ -139,7 +139,7 @@ The page, top to bottom: a small title and one quiet line (with 'Check all now' 
 - Window resizing: the Lifecycle chips wrap (the two ledger links together) under about 1400 px, the table's payer, status and next-action text wraps under 1400 px, and under about 1100 px the table scrolls inside its card; the page itself never scrolls sideways.
 - The FLO panel and the notification bell are Global shell. Their links into this page are shown only as entry points.
 - 'No events yet.' in History: no request has an empty history, so it cannot be reached (noted in 70).
-- Case Manager (what its tracker shows after `show=`), New Case, Denial Intelligence and the case page: only `goto` nodes.
+- Authorizations (what the worklist shows after `show=`), New Case, Denial Intelligence and the case page: only `goto` nodes.
 - The wording of the amount in the Window column for IOP: units are turned into days at the demo's own rate (24 units cover 14 days). It is a derived demo date, not a payer fact.
 
 ## Gaps found earlier and now fixed
@@ -158,7 +158,7 @@ The page, top to bottom: a small title and one quiet line (with 'Check all now' 
 - Names changed with the redesign: the Stage menu is the **Status** menu and its entries use the Lifecycle's words: Awaiting sign-off (was Preparing, 5), Submitted (was Received, 4), Decision pending (was Under review, 14), Info requested (3), Decided today (8: 6 approved, 2 denied), Denied / appeal (was Appeal or call, 8). The counts and the `?stage=` keys (`preparing`, `received`, `under_review`, `info_requested`, `decided`, `appeal`) are unchanged.
 - 'Decided today' is not a chip: the five chips plus Active and Renewal due already fill the row at 1440 px. It stays in the Status menu and in `?stage=decided`, and the Active chip's quiet line says how many approvals came in today.
 - The title still reads '18 requests are waiting on payers. 3 are waiting on you.' in the default view. 'Waiting on you' counts questions waiting on a person (a payer's question, an agent's question, a saved case that waits). 'Needs me today' also counts a request ready to sign, a write-back to approve, a late payer to chase and a denial deadline inside 2 days, so it is a longer list on purpose.
-- Active (approved, units left, not ended) and Renewal due (review due, or ending within 7 days) are counted on the Case Manager ledger. Case Manager reads the same two tests (`src/lib/ledgerFacts.ts`), so the row count there equals the chip.
+- Active (approved, units left, not ended) and Renewal due (review due, or ending within 7 days) are counted on the Case Manager ledger. Authorizations reads the same two tests (`src/lib/ledgerFacts.ts`), so the row count there equals the chip.
 - The date range, the payer table, the stage help and `?focus=payers` were already gone in round 3. The `?from=`, `?to=` and `?period=` links are still ignored.
 
 ## Left as it is

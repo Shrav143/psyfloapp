@@ -35,7 +35,7 @@ goto g3 "Continues in: Authorizations › Case page › Send to payer and review
 process nb "No 'Review and sign': it is with the payer\n'Open case' is the green button"
 
 click x "Press Esc, click the X, or click the dimmed area"
-process bk "The panel closes and ?quick= leaves the address\nFocus is meant to go back to the row's icon (demo gap: it lands on the page)\nEsc closes one layer at a time (a menu or a dialog inside the panel first)"
+process bk "The panel closes and ?quick= leaves the address\nFocus goes back to the row's icon\nEsc closes one layer at a time (a menu or a dialog inside the panel first)"
 process gn "The row changes while the panel is open (e.g. the payer answers from the Dashboard panel)\nThe panel follows the row, and closes when the row no longer has a quick view"
 
 row --> c1

@@ -12,7 +12,7 @@ Files are in this folder. A control listed with two files is drawn in the first 
 | Demo menu, Suggested path 'Denial Intelligence: D-3318' | 10 |
 | Notification rows ('Denied today', 'Denied', 'Partly approved', 'Denial analyzed', 'Appeal filed', 'Appeal decision', 'Call outcome', 'Denial closed'); the older `?id=` ones open `/denials/:id` | 10, 60 |
 | Ask FLO link 'Open Denial Intelligence' | 10 |
-| Dashboard Do next 'Open denial'; Dashboard drawer and Authorizations case page (also from Case Manager) 'Open in Denial Intelligence'; Analytics case panel 'Open the denial' | 10, 60 |
+| Dashboard Do next 'Open denial'; Dashboard drawer and Authorizations case page (also from the Authorizations worklist) 'Open in Denial Intelligence'; Analytics case panel 'Open the denial' | 10, 60 |
 | Analytics 'Open in Denial Intelligence' on a reason, rows of 'Common denial reasons by payer' (the dashboard with that payer and reason) | 10, 17 |
 | Demo menu 'Fast-forward 1 hour', 'Fast-forward 1 day', 'Reset demo data' | 50 |
 
@@ -62,7 +62,7 @@ Files are in this folder. A control listed with two files is drawn in the first 
 | Top bar site switcher (Both sites, Site A, Site B) and Demo menu 'Viewing as' (Jordan Perez, Alex Morgan, Dr. Rivera, Sam Okafor): the figures, the payer chips, the table, Closed and the badge follow the view | 26 |
 | A one-site viewer (Dr. Rivera, Site A; Sam Okafor, Site B) never sees, counts or lists the other site's denials; every figure for Both sites = Site A plus Site B (Open 8 = 4 + 4) | 26, 11 |
 | A letter-added denial belongs to the site in view (Site A when both are in view), recorded on the denial, with a D- number the site rule places at that site | 15, 26 |
-| Step-down plan in Case Manager and the accepted denial in Analytics follow the denial's site | 26, 40 |
+| Step-down plan in Authorizations (the denial's Accepted row) and the accepted denial in Analytics follow the denial's site | 26, 40 |
 
 ## Peer-to-peer
 
@@ -114,7 +114,7 @@ Files are in this folder. A control listed with two files is drawn in the first 
 | Control | Diagram |
 |---|---|
 | Modal 'Accept the decision?': 'Reason for the record' menu (four reasons), note, 'Accept and close', 'Cancel', X, Esc | 40 |
-| Result: toast, notification, 'Accepted ...' in the accept choice, the dashboard's 'Closed', step-down plan in Case Manager, accepted denial logged for Analytics, 'Logged decision' in History | 40, 11, 13, 25, 60 |
+| Result: toast, notification, 'Accepted ...' in the accept choice, the dashboard's 'Closed', step-down plan on the denial's row in Authorizations, accepted denial logged for Analytics, 'Logged decision' in History | 40, 11, 13, 25, 60 |
 
 ## Deadlines
 

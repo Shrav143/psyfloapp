@@ -9,7 +9,7 @@ Files: 00 how a case starts · 01 the stepper · 02 step states · 03 Authorizat
 | Control | Diagram |
 |---|---|
 | Sidebar 'New Case' (makes a fresh blank case each click) | 00 |
-| 'New Case' button on Authorizations and on Case Manager, 'Start a new case' (empty Preparing card) | 00 |
+| 'New Case' button on Authorizations | 00 |
 | Demo menu 'New Case: start from a referral', FLO answer link | 00 |
 | Old addresses /referrals and /referrals/:id | 00, 16 |
 | 'Start a case from this referral' on the full page, or typed ?referral=ID (found, not found, other site) | 00, 23, 28 |
@@ -18,12 +18,12 @@ Files: 00 how a case starts · 01 the stepper · 02 step states · 03 Authorizat
 | ?type=initial, concurrent, reauth, modify, retro; paths.newCase({type}) | 00, 03 |
 | ?step=intake, eligibility, documentation, review; preparation and the older agents open Clinical documentation at Authorization preparation; the older referral and records | 00, 29 |
 | ?payer=&program=&member=&initials=&age= | 00 |
-| Case Manager row buttons 'Continue', 'Answer', 'Watch', 'Review and sign'; bell link; 'Open in review and sign' and 'Send to payer' on a case page | 29, 80 |
+| Authorizations draft row buttons (In progress) 'Continue', 'Answer', 'Watch', 'Review and sign'; bell link; 'Open in review and sign' and 'Send to payer' on a case page | 29, 80 |
 | Missing case: 'We could not find that draft', 'Start a new case' | 29 |
-| Sent case: '... was sent', 'Open the case', 'Open it on the Dashboard', 'Back to Case Manager' | 29, 64 |
+| Sent case: '... was sent', 'Open the case', 'Open it on the Dashboard', 'Back to Authorizations' | 29, 64 |
 | Case at another site: 'This case is not available at Site B', 'Show Site B' | 29, 28 |
 | Agents-already-ran redirect on opening | 29 |
-| Link 'Case Manager' above the title | 00, 01, 29 |
+| Link 'Authorizations' above the title | 00, 01, 29 |
 
 ## Stepper, states and type
 

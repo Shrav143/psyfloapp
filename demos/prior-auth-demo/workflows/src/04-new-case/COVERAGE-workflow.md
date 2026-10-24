@@ -14,7 +14,7 @@ Source: `src/pages/newcase/workflow/*` (facts, model, diff, trace, items, fold, 
 | 73 | Workflow › No authorization required from the workflow |
 | 74 | Workflow › Prepare versus send, and sites |
 
-In Case Manager: `07-case-manager/61` (Ledger case › Workflow line and history).
+In Authorizations: `07-case-manager/61` (Ledger case page › Workflow line and history).
 
 | Control or element | Diagram |
 |---|---|
@@ -33,7 +33,7 @@ In Case Manager: `07-case-manager/61` (Ledger case › Workflow line and history
 | The 'Workflow' note in 'What is missing' | 71 |
 | 'No authorization is required' raised by the workflow | 73 |
 | 'Sign and send to payer (demo)' keeps being the one simulated send | 74 |
-| Workflow lines in the request's History, the case page 'Workflow' fact, Case Manager 'Workflow' row | 72, Case Manager 61 |
+| Workflow lines in the request's History, the case page 'Workflow' fact, the tracked quick view's and ledger case page's 'Workflow' row | 72, 07-case-manager 61 |
 | Dr. Rivera and Sam Okafor see only their site's cases; workflows are the same for everyone | 74 |
 | Escape on each side panel | 68, 69, 70, 67 |
 
