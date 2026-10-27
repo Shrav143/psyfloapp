@@ -4,9 +4,9 @@ import { ArrowLeft, AudioLines, CircleCheck, CircleDashed, CircleDot, Mic, Minus
 import { Button, Card, CardBody, Chip, Crumbs, EmptyState, Page, Pill } from "@/components/ui";
 import { SECTION_LABEL, SECTION_ORDER, TRIAGE_LABEL, type IntakeRecord, type IntakeSectionId, type TriageStatus } from "@/data/intake/types";
 import { staffOf } from "@/data/intake/seed";
-import { payerById } from "@/data/seed";
 import { siteName } from "@/data/sites";
 import { PERIOD_LABEL, periodOf } from "@/data/va/policy";
+import { vaPlanOf } from "@/data/va/plans";
 import { serviceById } from "@/data/va/services";
 import { cn } from "@/lib/cn";
 import { useScope } from "@/lib/scope";
@@ -17,6 +17,7 @@ import type { Tone } from "@/data/types";
 import { AssistantPanel } from "./assistant/AssistantPanel";
 import { sectionState, type SectionState } from "./lib/status";
 import { useIntakeNow } from "./lib/policyNow";
+import { useDerivedFields } from "./profile/sync";
 import { SafetyBanner } from "./queue/SafetyBanner";
 import { ScribePanel } from "./scribe/ScribePanel";
 import { AssessmentSection } from "./sections/AssessmentSection";
@@ -87,7 +88,7 @@ export default function IntakeRecordPage() {
 
   const svc = serviceById(record.serviceId);
   const period = periodOf(record.serviceId, record.serviceDate, now, !!record.legacy);
-  const payer = record.payerId ? payerById(record.payerId) : null;
+  const plan = record.payerId ? vaPlanOf(record.payerId) : undefined;
   const staff = staffOf(record.assignedTo);
   const View = SECTION_VIEW[section];
 
@@ -107,7 +108,7 @@ export default function IntakeRecordPage() {
             </div>
             <p className="mt-1 text-[14px] text-ink2">{record.title}</p>
             <p className="mt-1 text-[13px] text-muted">
-              {[svc.label + (svc.code ? ` (${svc.code})` : ""), payer?.name ?? "No payer yet", siteName(record.site), `Planned start ${shortDate(record.serviceDate)}`, staff ? `Assigned to ${staff.name}` : null].filter(Boolean).join(" · ")}
+              {[svc.label + (svc.code ? ` (${svc.code})` : ""), plan?.name ?? "No plan yet", siteName(record.site), `Planned start ${shortDate(record.serviceDate)}`, staff ? `Assigned to ${staff.name}` : null].filter(Boolean).join(" · ")}
             </p>
             <div className="mt-2 flex flex-wrap items-center gap-2">
               <Pill tone={period === "transition" ? "mid" : period === "preparation" ? "neutral" : "good"}>{PERIOD_LABEL[period]}</Pill>
@@ -125,6 +126,7 @@ export default function IntakeRecordPage() {
         </CardBody>
       </Card>
       <SafetyBanner record={record} />
+      <DerivedFields record={record} />
       <div className="grid grid-cols-[minmax(0,1fr)] gap-5 min-[1280px]:grid-cols-[208px_minmax(0,1fr)_300px]">
         <nav aria-label="Intake sections" className="min-w-0 min-[1280px]:sticky min-[1280px]:top-4 min-[1280px]:self-start">
           <ol className="flex gap-1.5 overflow-x-auto pb-1 min-[1280px]:flex-col min-[1280px]:overflow-visible">
@@ -154,4 +156,10 @@ export default function IntakeRecordPage() {
       {panel === "voice" ? <VoicePanel record={record} onClose={() => setQ("panel", null)} /> : null}
     </Page>
   );
+}
+
+/** Age follows the date of birth and the payer follows the plan wherever the value was changed (a section, the scribe, the voice assistant). */
+function DerivedFields({ record }: { record: IntakeRecord }) {
+  useDerivedFields(record);
+  return null;
 }

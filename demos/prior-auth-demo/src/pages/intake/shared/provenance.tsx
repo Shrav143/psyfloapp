@@ -94,7 +94,7 @@ export function SuggestionCard({ record, suggestion: sg, label, compact }: { rec
         <AgentChip agent={sg.agent} />
         <span className="font-semibold text-ink2">{label ?? sg.field}</span>
         <Pill tone={sg.confidence === "high" ? "good" : sg.confidence === "medium" ? "mid" : "risk"}>Confidence: {sg.confidence}</Pill>
-        {decided ? <Pill tone={sg.status === "rejected" ? "neutral" : "good"}>{sg.status === "rejected" ? "Rejected" : sg.status === "edited" ? "Edited and accepted" : "Accepted"}{sg.decidedBy ? ` by ${actorName(sg.decidedBy)}` : ""}</Pill> : <Pill tone="mid">AI suggested · needs review</Pill>}
+        {decided ? <Pill tone={sg.status === "rejected" ? "neutral" : "good"}>{sg.status === "rejected" ? "Rejected" : sg.status === "edited" ? "Edited and accepted" : "Accepted"}{sg.decidedBy ? ` by ${actorName(sg.decidedBy)}` : ""}</Pill> : <Pill tone="mid">{sg.source.kind === "patient" ? "From the patient · needs review" : "AI suggested · needs review"}</Pill>}
       </div>
       {editing ? (
         <div className="mt-2">

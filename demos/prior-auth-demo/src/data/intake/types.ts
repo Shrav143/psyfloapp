@@ -113,7 +113,13 @@ export interface ClinicalAssessment {
   status: "not_started" | "in_progress" | "awaiting_review" | "signed";
   /** Keyed by AssessmentSectionId. */
   fields: FieldMap;
-  attestation?: { by: string; credentials: string; at: number };
+  attestation?: { by: string; credentials: string; at: number; rolePlay?: boolean };
+  /** Voice guided mode: the clinician's answer to each guided question (ids from data/intake/scripts.ts). */
+  guided?: Record<string, { answer: string; state: "open" | "asked" | "skipped"; drafted?: boolean }>;
+  /** The structured safety and risk screening prompts, as a clinician recorded them. Never filled by an agent. */
+  safetyPrompts?: Record<string, { response: string; by: string; at: number }>;
+  /** Each time a signed assessment was reopened: who, when, why, and whose signature it replaced. */
+  amendments?: { by: string; at: number; reason: string; priorSigner?: string; priorSignedAt?: number }[];
 }
 
 export interface EvidenceRef {
@@ -152,6 +158,12 @@ export interface CansAssessment {
   signedAt?: number;
   /** null: no reassessment interval is established by policy in the demo. */
   reassessDue: number | null;
+  /** Who added or kept each piece of evidence, by evidence id. */
+  evidenceMeta?: Record<string, { by: string; at: number; from: "agent" | "staff"; agent?: AgentKey }>;
+  startedBy?: string;
+  startedAt?: number;
+  /** A person's record that they checked the assessor's credential. Not a DMAS qualification decision. */
+  credentialCheck?: { by: string; at: number; note?: string };
 }
 export interface LevelOfNeedReview {
   status: "pending_policy" | "in_review" | "dispositioned";
@@ -164,6 +176,13 @@ export interface LevelOfNeedReview {
   reviewer?: string;
   disposition?: string;
   decidedAt?: number;
+  /** The clinician who signed the disposition, and whether it was demo role-play. */
+  decidedBy?: string;
+  rolePlay?: boolean;
+  startedBy?: string;
+  startedAt?: number;
+  updatedBy?: string;
+  updatedAt?: number;
 }
 
 export type PathwayFit = "possible" | "less_likely" | "not_assessed";
@@ -182,6 +201,11 @@ export interface ServiceRecommendation {
   decidedBy?: string;
   decidedAt?: number;
   note?: string;
+  /** When a person added it by hand, or the Care Pathway Agent last refreshed it. */
+  addedAt?: number;
+  refreshedAt?: number;
+  /** The selection was signed by playing the site's clinician (demo control). */
+  rolePlay?: boolean;
 }
 
 export type ReferralOutStatus = "draft" | "ready" | "sent" | "received" | "under_review" | "accepted" | "needs_info" | "declined" | "scheduled" | "completed";
@@ -195,7 +219,8 @@ export interface ReferralOut {
   destination: { org: string; contact: string; phone?: string; channel: "secure_message" | "fax" | "portal" | "phone" | "internal" };
   createdAt: number;
   referringClinician: string;
-  docs: { name: string; attached: boolean; required: boolean }[];
+  /** docId: the record document attached to this slot. generated: Psyflo builds it when the packet is prepared (a referral form). */
+  docs: { name: string; attached: boolean; required: boolean; docId?: string; generated?: boolean }[];
   consent: "on_file" | "needed" | "declined";
   priority: "routine" | "urgent";
   status: ReferralOutStatus;
@@ -205,6 +230,15 @@ export interface ReferralOut {
   disposition?: string;
   approvedBy?: string;
   timeline: AuditEvent[];
+  /** The care pathway it came from, and the directory entry it goes to (data/intake/destinations.ts). */
+  pathwayId?: string;
+  destinationId?: string;
+  /** The Referral Coordination Agent's packet: a draft cover message and what is still missing. A person approves before sending. */
+  packet?: { preparedAt: number; message: string; missing: string[] };
+  /** A follow-up message the agent drafted. Sending it needs a person. */
+  followUpDraft?: { text: string; at: number };
+  /** What the receiving organization asked for (Needs information). */
+  infoRequest?: string;
 }
 
 export interface TranscriptTurn {
@@ -239,6 +273,19 @@ export interface ScribeSession {
   noteDraft: Partial<Record<NoteSectionId, string>>;
   /** Simulated audio: no recording leaves the browser. */
   simulated: true;
+  /** Who is in the encounter, checked before recording starts. */
+  encounter?: { patient: string; identityChecked: boolean; type: string; clinician: string; others: string };
+  /** A person's decision on each drafted note section. Undecided sections are pending. */
+  noteStatus?: Partial<Record<NoteSectionId, "pending" | "accepted" | "edited" | "rejected">>;
+  /** Fields the Clinical Documentation Agent extracted, kept in the session until a person saves them to the intake. */
+  extracted?: Suggestion[];
+  /** Information the conversation did not cover. */
+  missing?: string[];
+  /** Demo minutes when recording started and when the session was saved. */
+  startedAt?: number;
+  savedAt?: number;
+  /** The transcript and note documents written to the record on save. */
+  docIds?: string[];
 }
 export interface VoiceSession {
   id: string;
@@ -252,6 +299,29 @@ export interface VoiceSession {
   scriptId: string;
   cursor: number;
   simulated: true;
+  /** Whose turn it is in the simulated call. */
+  phase?: "assistant" | "caller" | "done";
+  /** The step in progress: "identity", "language", "role", "consent", a question id, "summary" or "closing". */
+  step?: string;
+  /** The assistant asked a clarifying question for the current step. */
+  clarifying?: boolean;
+  /** What the assistant says before its next prompt. */
+  ack?: string;
+  /** Question ids not asked because the record already had the answer. */
+  skipped?: string[];
+  /** What the assistant collected, as suggestions for staff review. Nothing reaches the record until Save draft. */
+  collected?: Suggestion[];
+  /** Collected ids the caller confirmed or corrected during the read-back. */
+  confirmed?: string[];
+  corrected?: string[];
+  /** Seconds since the call started. */
+  elapsed?: number;
+  escalation?: { at: number; text: string };
+  transfer?: { at: number; reason: string; by: string };
+  /** The staff member running the call. */
+  coordinator?: string;
+  savedAt?: number;
+  docIds?: string[];
 }
 
 /** The seven intake agents are roles played by Psyflo's named agents, so Settings (freedom, Pause all) governs them too. */
@@ -277,6 +347,23 @@ export interface AgentTask {
   result?: string;
   error?: string;
   undoable?: boolean;
+  /** Which assistant action made the task (pages/intake/assistant/actions.ts), so Retry and Undo know what to do. */
+  kind?: string;
+  /** What a person must decide where it belongs (a section) before a "needs you" task closes. */
+  gate?: TaskGate;
+  /** The approval is the decision itself (approving sends a simulated message). Never set on safety items or on anything that writes a field. */
+  approveHere?: boolean;
+  /** Tasks this one created (follow-ups), so Undo can withdraw them. */
+  created?: string[];
+  /** Set once Retry started a new run. */
+  retriedAs?: string;
+}
+/** A "needs you" task waits on: pending suggestions in these sections (or these suggestion ids), a pathway decision, the handoff approval,
+    the assessment attestation, the CANS signature, the safety review, or checklist items (data/intake/checklist.ts) becoming complete. */
+export interface TaskGate {
+  kind: "suggestions" | "pathway" | "handoff" | "assessment" | "cans" | "safety" | "check";
+  sections?: IntakeSectionId[];
+  ids?: string[];
 }
 export interface AuditEvent {
   id: string;
@@ -304,6 +391,25 @@ export interface EligibilityCheck {
   existingAuth?: string;
   conflicts: string[];
   exceptions: string[];
+  /** The plan the response lists for the member, and the service the benefit was checked for. A plan or service on file that differs makes it stale. */
+  payerId?: PayerId | null;
+  serviceId?: VaServiceId;
+  /** The coverage period in the response, demo minutes. No `coverageTo`: the response lists no end date. */
+  coverageFrom?: number;
+  coverageTo?: number;
+  /** One line per determination, as the response or the policy rules give it. */
+  notes?: Partial<Record<EligibilityDetermination, string>>;
+  /** Determinations a person confirmed with the plan after the check. Anything not listed is still the simulated response. */
+  verified?: Partial<Record<EligibilityDetermination, StaffVerification>>;
+}
+/** The four determinations a person can confirm with the plan. Medical necessity is never confirmed here: clinical review and the payer decide it. */
+export type EligibilityDetermination = "member" | "benefit" | "network" | "authorization";
+export interface StaffVerification {
+  by: string;
+  at: number;
+  method: "phone" | "portal";
+  /** The call or portal reference the plan gave. */
+  ref?: string;
 }
 
 export interface SafetyAlert {
@@ -325,6 +431,10 @@ export interface HandoffPacket {
   draftId?: string;
   approvedBy?: string;
   approvedAt?: number;
+  /** Who prepared the draft (an agent key or a staff id), and who opened it in New Case. */
+  preparedBy?: string;
+  openedBy?: string;
+  openedAt?: number;
 }
 
 export interface IntakeStaff {

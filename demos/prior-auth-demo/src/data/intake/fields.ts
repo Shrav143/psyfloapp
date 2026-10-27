@@ -45,9 +45,9 @@ export const FIELD_SPECS: FieldSpec[] = [
   { key: "emergencyContact", label: "Emergency contact", section: "profile", group: "Contact", kind: "text", required: "never" },
   { key: "guardianName", label: "Guardian or legal representative", section: "profile", group: "Guardian and consent", kind: "text", required: "minor" },
   { key: "guardianPhone", label: "Guardian phone", section: "profile", group: "Guardian and consent", kind: "phone", required: "minor" },
-  { key: "consentTreatment", label: "Consent to intake and treatment", section: "profile", group: "Guardian and consent", kind: "select", required: "always", options: ["Signed", "Verbal, to be signed", "Not obtained"] },
+  { key: "consentTreatment", label: "Consent to intake and treatment", section: "profile", group: "Guardian and consent", kind: "select", required: "always", options: ["Signed", "Verbal, to be signed", "Not obtained", "Declined"] },
   { key: "roi", label: "Release of information", section: "profile", group: "Guardian and consent", kind: "select", required: "never", options: ["On file", "Needed for referral source", "Not needed", "Declined"] },
-  { key: "schoolConsent", label: "School release (school-based services)", section: "profile", group: "Guardian and consent", kind: "select", required: "school", options: ["On file", "Needed", "Not applicable"] },
+  { key: "schoolConsent", label: "School release (school-based services)", section: "profile", group: "Guardian and consent", kind: "select", required: "school", options: ["On file", "Needed", "Not applicable", "Declined"] },
   /* profile: clinical and psychosocial history (collect as appropriate) */
   { key: "medications", label: "Current medications", section: "profile", group: "Clinical and psychosocial history", kind: "long", required: "never", sensitive: true },
   { key: "medical", label: "Medical conditions relevant to care", section: "profile", group: "Clinical and psychosocial history", kind: "long", required: "never", sensitive: true },
@@ -63,7 +63,7 @@ export const FIELD_SPECS: FieldSpec[] = [
   /* coverage */
   { key: "medicaidId", label: "Medicaid member ID", section: "coverage", group: "Medicaid", kind: "text", required: "always", hint: "Masked in the demo" },
   { key: "coverageType", label: "Coverage type", section: "coverage", group: "Medicaid", kind: "select", required: "always", options: ["Cardinal Care managed care (MCO)", "Fee-for-service"] },
-  { key: "plan", label: "Medicaid managed care organization", section: "coverage", group: "Medicaid", kind: "text", required: "always" },
+  { key: "plan", label: "Medicaid managed care organization", section: "coverage", group: "Medicaid", kind: "text", required: "always", hint: "A Cardinal Care MCO, or Virginia Medicaid fee-for-service. The coverage type follows the plan." },
   { key: "effective", label: "Coverage effective dates", section: "coverage", group: "Medicaid", kind: "text", required: "never" },
   { key: "secondary", label: "Secondary insurance", section: "coverage", group: "Other coverage", kind: "text", required: "never" },
   { key: "otherCoverage", label: "Other coverage", section: "coverage", group: "Other coverage", kind: "text", required: "never" },

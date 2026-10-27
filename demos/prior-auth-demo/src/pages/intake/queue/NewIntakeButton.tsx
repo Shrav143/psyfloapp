@@ -1,7 +1,15 @@
+import { useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui";
+import { NewIntake } from "./NewIntake";
 
-/** Built by the queue and referral engineer: opens New Intake (eight ways to create one). Replace this placeholder. */
+/** Opens New intake: eight ways to start one. */
 export function NewIntakeButton() {
-  return <Button variant="primary" icon={Plus} onClick={() => undefined}>New Intake</Button>;
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Button variant="primary" icon={Plus} onClick={() => setOpen(true)}>New intake</Button>
+      {open ? <NewIntake onClose={() => setOpen(false)} /> : null}
+    </>
+  );
 }
