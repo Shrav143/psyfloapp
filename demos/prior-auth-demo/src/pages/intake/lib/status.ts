@@ -16,7 +16,10 @@ export function sectionState(r: IntakeRecord, s: IntakeSectionId, now = 0): Sect
   }
   if (s === "cans") {
     const svc = serviceFor(r).serviceId;
-    if (cansFor(svc, r.serviceDate).applies === "not_applicable" && lonFor(svc).applies === "no") return "na";
+    const c = cansFor(svc, r.serviceDate, now).applies;
+    if (c === "not_applicable" && lonFor(svc).applies === "no") return "na";
+    /* Preparation only (a later start, before July 1, 2027): nothing is required yet, but the section is not "not applicable". */
+    if (c === "upcoming" && all.filter((i) => i.section === "cans").every((i) => !isOpen(i.status))) return "todo";
   }
   const items = all.filter((i) => i.section === s);
   if (!items.length) return "todo";

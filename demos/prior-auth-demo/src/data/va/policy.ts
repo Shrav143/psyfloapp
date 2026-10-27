@@ -173,11 +173,14 @@ export function availableOn(serviceId: VaServiceId, date: number): boolean {
 
 export type CansApplies = "required" | "not_applicable" | "unresolved" | "upcoming";
 /** Whether the CANS Lifetime section shows. Never for IOP, PHP, residential SUD, ABA or other services; unresolved for Clubhouse. */
-export function cansFor(serviceId: VaServiceId, serviceDate: number): { applies: CansApplies; rule?: PolicyRule } {
+/** Whether the CANS Lifetime applies. Before July 1, 2027 ("now", the policy date) it is preparation only ("upcoming"), even for a service that
+    starts later: nothing can be rated before the assessment is in effect. Without `now`, only the planned start decides. */
+export function cansFor(serviceId: VaServiceId, serviceDate: number, now?: number): { applies: CansApplies; rule?: PolicyRule } {
   const rule = POLICY_RULES.find((r) => r.kind === "assessment" && r.services !== "all" && r.services.includes(serviceId));
   if (!rule) return { applies: "not_applicable" };
   if (rule.status === "unresolved") return { applies: "unresolved", rule };
-  return { applies: serviceDate >= REDESIGN_START ? "required" : "upcoming", rule };
+  const inEffect = serviceDate >= REDESIGN_START && (now === undefined || now >= REDESIGN_START);
+  return { applies: inEffect ? "required" : "upcoming", rule };
 }
 
 export function lonFor(serviceId: VaServiceId): { applies: "yes" | "unresolved" | "no"; rule?: PolicyRule } {

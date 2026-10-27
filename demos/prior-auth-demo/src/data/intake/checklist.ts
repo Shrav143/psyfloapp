@@ -1,5 +1,5 @@
 import { longDate } from "@/lib/time";
-import { availableOn, cansFor, CANS_PENDING, LEGACY_LAST_DAY, lonFor, LON_PENDING, requirementsFor, type PolicyRule } from "../va/policy";
+import { availableOn, cansFor, CANS_PENDING, LEGACY_LAST_DAY, lonFor, LON_PENDING, REDESIGN_START, requirementsFor, type PolicyRule } from "../va/policy";
 import { vaPlanOf } from "../va/plans";
 import { serviceById, type VaServiceId } from "../va/services";
 import { FIELD_SPECS, isRequired, specOf, type FieldSection } from "./fields";
@@ -213,13 +213,15 @@ function assessmentItems(r: IntakeRecord): CheckItem[] {
   return items;
 }
 
-function cansItems(r: IntakeRecord, serviceId: VaServiceId): CheckItem[] {
+function cansItems(r: IntakeRecord, serviceId: VaServiceId, now: number): CheckItem[] {
   const svc = serviceById(serviceId);
-  const c = cansFor(serviceId, r.serviceDate);
+  const c = cansFor(serviceId, r.serviceDate, now);
+  /* Before July 1, 2027 an intake for a later start is preparation only: the CANS Lifetime and Level of Need are not required yet. */
+  const preparing = r.serviceDate >= REDESIGN_START && now < REDESIGN_START;
   const cans = r.cans;
   const items: CheckItem[] = [];
   if (c.applies === "not_applicable") items.push({ id: "cans", category: "cans", label: "CANS Lifetime", section: "cans", status: "na", detail: `Not associated with ${svc.short} in the policy loaded. Psyflo does not apply it` });
-  else if (c.applies === "upcoming") items.push({ id: "cans", category: "cans", label: "CANS Lifetime", section: "cans", status: "na", detail: `Applies to ${svc.short} from July 1, 2027 (draft policy); not for a start on ${longDate(r.serviceDate)}` });
+  else if (c.applies === "upcoming") items.push({ id: "cans", category: "cans", label: "CANS Lifetime", section: "cans", status: "na", detail: preparing ? `Preparation only until July 1, 2027 (draft policy for ${svc.short}); pending DMAS configuration` : `Applies to ${svc.short} from July 1, 2027 (draft policy); not for a start on ${longDate(r.serviceDate)}` });
   else if (c.applies === "unresolved") items.push({ id: "cans", category: "cans", label: "CANS Lifetime", section: "cans", status: "verify", detail: `Not confirmed for ${svc.short} (unresolved). Psyflo does not apply it until DMAS confirms` });
   else {
     const ev = cans ? cans.evidence.length + cans.items.reduce((n, i) => n + i.evidence.length, 0) : 0;
@@ -234,9 +236,10 @@ function cansItems(r: IntakeRecord, serviceId: VaServiceId): CheckItem[] {
   if (l.applies === "no") items.push({ id: "lon", category: "cans", label: "Level of Need", section: "cans", status: "na", detail: `Does not apply to ${svc.short} in the policy loaded` });
   else if (l.applies === "unresolved") items.push({ id: "lon", category: "cans", label: "Level of Need", section: "cans", status: "verify", detail: `Applicability to ${svc.short} is not confirmed (unresolved)` });
   else items.push({
-    id: "lon", category: "cans", label: "Level of Need", section: "cans", auth: true,
+    id: "lon", category: "cans", label: "Level of Need", section: "cans", auth: !preparing,
     ...(r.lon?.status === "dispositioned" ? { status: "complete", detail: `Clinician disposition recorded${r.lon.decidedBy ? ` by ${who(r.lon.decidedBy)}` : ""}; no level is calculated` }
-      : { status: "blocked", detail: LON_PENDING }),
+      : preparing || r.serviceDate < REDESIGN_START ? { status: "na", detail: `Preparation only until July 1, 2027. ${LON_PENDING}` }
+        : { status: "blocked", detail: LON_PENDING }),
   });
   const pending = pendingIn(r, "cans");
   if (pending.length) items.push({ id: "sugg:cans", category: "cans", label: "AI evidence to review", status: "pending", section: "cans", detail: plural(pending.length, "suggestion") });
@@ -306,7 +309,7 @@ export function completeness(r: IntakeRecord, now: number): CheckItem[] {
     ...patientItems(r, school),
     ...coverageItems(r, school, now),
     ...assessmentItems(r),
-    ...cansItems(r, serviceId),
+    ...cansItems(r, serviceId, now),
     ...pathwayItems(r, serviceId, selected),
     ...safetyItems(r),
   ];

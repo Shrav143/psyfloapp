@@ -128,10 +128,10 @@ export default function IntakeRecordPage() {
       <SafetyBanner record={record} />
       <DerivedFields record={record} />
       <div className="grid grid-cols-[minmax(0,1fr)] gap-5 min-[1280px]:grid-cols-[208px_minmax(0,1fr)_300px]">
-        <nav aria-label="Intake sections" className="min-w-0 min-[1280px]:sticky min-[1280px]:top-4 min-[1280px]:self-start">
+        <nav aria-label="Intake sections" className="min-w-0 min-[1280px]:sticky min-[1280px]:top-[76px] min-[1280px]:self-start">
           <ol className="flex gap-1.5 overflow-x-auto pb-1 min-[1280px]:flex-col min-[1280px]:overflow-visible">
             {SECTION_ORDER.map((s, i) => {
-              const st = STATE_ICON[sectionState(record, s)];
+              const st = STATE_ICON[sectionState(record, s, now)];
               const on = s === section;
               return (
                 <li key={s} className="shrink-0">
@@ -148,7 +148,7 @@ export default function IntakeRecordPage() {
         <div className="min-w-0">
           <View record={record} />
         </div>
-        <aside aria-label="Psyflo AI Assistant" className="min-w-0 min-[1280px]:sticky min-[1280px]:top-4 min-[1280px]:self-start">
+        <aside aria-label="Psyflo AI Assistant" className="min-w-0 min-[1280px]:sticky min-[1280px]:top-[76px] min-[1280px]:self-start">
           <AssistantPanel record={record} />
         </aside>
       </div>

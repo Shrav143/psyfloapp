@@ -34,7 +34,7 @@ export function packetOf(r: IntakeRecord, now: number): Packet {
   const svc = serviceById(rd.serviceId);
   const plan = r.payerId ? vaPlanOf(r.payerId) : undefined;
   const sel = r.pathways.find((p) => p.status === "selected");
-  const cans = cansFor(rd.serviceId, r.serviceDate).applies;
+  const cans = cansFor(rd.serviceId, r.serviceDate, now).applies;
   const lon = lonFor(rd.serviceId).applies;
   const a = r.assessment;
   const scribe = r.scribe ? NOTE_SECTIONS.filter((s) => r.scribe?.noteDraft[s.id]).length : 0;
@@ -47,8 +47,8 @@ export function packetOf(r: IntakeRecord, now: number): Packet {
     ["Assessment", a.status === "signed" ? `Attested by ${name(a.attestation?.by) ?? "a clinician"}` : a.status === "awaiting_review" ? "Waits for attestation" : a.status === "in_progress" ? "In progress, not attested" : "Not started"],
     ["AI drafts", scribe ? `AI Scribe note with ${scribe} sections (${r.scribe?.status === "saved" ? "reviewed" : "waits for review"})` : "None"],
     ["Pathway", sel ? `${sel.serviceId === "external" ? sel.externalLabel ?? "External program" : serviceById(sel.serviceId).short}, selected by ${name(sel.decidedBy) ?? "a clinician"}` : "No option selected"],
-    ["CANS Lifetime", cans === "not_applicable" ? "Not applicable" : cans === "unresolved" ? "Not confirmed for this service (unresolved)" : cans === "upcoming" ? "From July 1, 2027 (draft)" : r.cans?.status === "signed" ? "Signed" : "Pending DMAS configuration"],
-    ["Level of Need", lon === "no" ? "Not applicable" : lon === "unresolved" ? "Applicability not confirmed" : r.lon?.status === "dispositioned" ? "Clinician disposition recorded; no level calculated" : LON_PENDING],
+    ["CANS Lifetime", cans === "not_applicable" ? "Not applicable" : cans === "unresolved" ? "Not confirmed for this service (unresolved)" : cans === "upcoming" ? "From July 1, 2027 (draft policy); preparation only today" : r.cans?.status === "signed" ? "Signed" : "Pending DMAS configuration"],
+    ["Level of Need", lon === "no" ? "Not applicable" : lon === "unresolved" ? "Applicability not confirmed" : r.lon?.status === "dispositioned" ? "Clinician disposition recorded; no level calculated" : cans === "upcoming" ? `Preparation only until July 1, 2027. ${LON_PENDING}` : LON_PENDING],
   ];
   if (r.legacy) lines.splice(4, 0, ["Current service", `${serviceById(r.legacy.serviceId).label} (${serviceById(r.legacy.serviceId).code ?? "code not loaded"}), authorization ${r.legacy.authorizationId} through ${longDate(r.legacy.authEnds)}`]);
   return {

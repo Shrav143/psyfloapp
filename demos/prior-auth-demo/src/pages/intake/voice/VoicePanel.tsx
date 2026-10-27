@@ -71,7 +71,8 @@ export function VoicePanel({ record, onClose }: { record: IntakeRecord; onClose:
     st.toast({ title: "Draft saved for staff review", body: `${count} suggestions wait in Referral, Patient profile and Insurance. Nothing was written as verified.`, tone: "good" });
   };
   const runner = staffOf(v?.coordinator ?? me);
-  const caller = `${record.initials || "Caller"}${record.age !== null ? `, ${record.age}` : ""}`;
+  /* A new voice intake may have no initials yet: it is then a new caller, never "Caller Caller". */
+  const caller = record.initials ? `Caller ${record.initials}${record.age !== null ? `, ${record.age}` : ""}` : "New caller";
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-canvas" role="dialog" aria-modal="true" aria-labelledby="voice-title">
@@ -79,7 +80,7 @@ export function VoicePanel({ record, onClose }: { record: IntakeRecord; onClose:
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
           <Bubble icon={Phone} className={status === "escalated" ? "bg-risk text-white" : "bg-forest text-white"} />
           <h2 id="voice-title" className="text-[18px] font-semibold">Voice Intake Assistant (simulated call)</h2>
-          <span className="text-[14px] text-white/80">{record.id} · Caller {caller}</span>
+          <span className="text-[14px] text-white/80">{record.id} · {caller}</span>
           <Pill tone={TONE[status] ?? "neutral"} dot={active}>{STATUS_LABEL[status]}</Pill>
           <SimulatedTag what="Simulated call" />
           <div className="ml-auto flex flex-wrap items-center gap-2">
@@ -130,7 +131,7 @@ export function VoicePanel({ record, onClose }: { record: IntakeRecord; onClose:
               <div className="flex items-center gap-3">
                 <Bubble icon={AudioLines} size={40} className="bg-sage-bg text-forest" />
                 <div>
-                  <p className="text-[16px] font-semibold">Call with {caller}</p>
+                  <p className="text-[16px] font-semibold">{record.initials ? `Call with ${record.initials}${record.age !== null ? `, ${record.age}` : ""}` : "Call with a new caller"}</p>
                   <p className="text-[13px] text-muted">You stay on the line. The assistant leads, one question at a time, and you can take over at any moment.</p>
                 </div>
               </div>

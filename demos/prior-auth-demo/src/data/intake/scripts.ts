@@ -200,7 +200,7 @@ function scribeGeneric(r: Pick<IntakeRecord, "initials" | "age">): ScribeScript 
   return {
     id: "scribe-generic",
     labels: { clinician: "Clinician", patient: r.initials || "Patient", caregiver: other, unknown: "Speaker not identified" },
-    consenters: [`${r.initials || "Patient"} (patient)`, other],
+    consenters: [r.initials ? `${r.initials} (patient)` : "The patient", other],
     encounterType: "Intake assessment, in person",
     others: other,
     initialMissing: ["Medication history", "Consent to intake and treatment (signature)", "Emergency contact"],
@@ -357,9 +357,11 @@ const VOICE_D: VoiceScript = {
 };
 
 /** New voice intakes: a neutral script. A parent or guardian calls for a minor. One quick reply shows the safety escalation. */
-function voiceGeneric(r: Pick<IntakeRecord, "age">): VoiceScript {
+function voiceGeneric(r: Pick<IntakeRecord, "age" | "initials">): VoiceScript {
   const minor = r.age !== null && r.age < 18;
-  /* Born on April 9: as of the demo date (October 2026) the age is 2026 minus the year. */
+  /* A record with initials is a known person; a new voice intake (no initials yet) is a new caller who gives a first name.
+     Born on April 9: as of the demo date (October 2026) the age is 2026 minus the year. */
+  const known = !!r.initials;
   const year = r.age !== null ? 2026 - r.age : 1990;
   const unsafe: VoiceOption = { label: "Says they are not safe", text: minor ? "Honestly, my child told me last night they don't feel safe with themselves." : "Honestly, I don't feel safe with myself right now.", escalate: true };
   return {
@@ -368,8 +370,11 @@ function voiceGeneric(r: Pick<IntakeRecord, "age">): VoiceScript {
     callerLabel: minor ? "Caller (parent or guardian)" : "Caller",
     staffCollects: STAFF_COLLECTS,
     steps: [
-      { id: "identity", kind: "identity", ask: `Hello, and thank you for calling. I'm an automated assistant for the clinic's intake line, and {coordinator} from the intake team is on the line too. To make sure I have the right record, can you confirm ${minor ? "your child's" : "your"} date of birth?`,
-        reply: minor ? `Yes. My child was born April 9th, ${year}.` : `Sure. April 9th, ${year}.`, extract: r.age !== null ? [P("dob", "Date of birth", `${year}-04-09`, "medium")] : [], ack: "Thank you." },
+      known
+        ? { id: "identity", kind: "identity", ask: `Hello, and thank you for calling. I'm an automated assistant for the clinic's intake line, and {coordinator} from the intake team is on the line too. To make sure I have the right record, can you confirm ${minor ? "your child's" : "your"} date of birth?`,
+          reply: minor ? `Yes. My child was born April 9th, ${year}.` : `Sure. April 9th, ${year}.`, extract: [P("dob", "Date of birth", `${year}-04-09`, "medium")], ack: "Thank you." }
+        : { id: "identity", kind: "identity", ask: "Hello, and thank you for calling. I'm an automated assistant for the clinic's intake line, and {coordinator} from the intake team is on the line too. To start, can you tell me your first name and date of birth?",
+          reply: `Sure. It's Sam. April 9th, ${year}.`, extract: [P("preferredName", "Preferred name", "Sam"), P("dob", "Date of birth", `${year}-04-09`, "medium")], ack: "Thank you, Sam." },
       { id: "language", kind: "language", ask: "What language would you like to use today? I can continue in English, or we can add an interpreter.",
         reply: "English is fine.", extract: [P("language", "Preferred language", "English"), P("interpreter", "Interpreter needed", "No")],
         options: [{ label: "English", text: "English is fine." }, { label: "Another language, with an interpreter", text: "Could we use Vietnamese?", transfer: "Interpreter needed: Vietnamese (simulated)", extract: [P("language", "Preferred language", "Vietnamese"), P("interpreter", "Interpreter needed", "Yes")] }] },
@@ -400,7 +405,7 @@ function voiceGeneric(r: Pick<IntakeRecord, "age">): VoiceScript {
 }
 
 /** The scripted call for a record: M.S. in Scenario D, or the generic script for any other voice intake. */
-export function voiceScriptFor(r: Pick<IntakeRecord, "id" | "age">, scriptId?: string): VoiceScript {
+export function voiceScriptFor(r: Pick<IntakeRecord, "id" | "age" | "initials">, scriptId?: string): VoiceScript {
   return scriptId === "voice-d" || (!scriptId && r.id === "IN-3104") ? VOICE_D : voiceGeneric(r);
 }
 

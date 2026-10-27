@@ -33,7 +33,11 @@ export function runAgent(recordId: string, o: RunAgentOptions): string | null {
   }
   const id = st.addIntakeTask(recordId, { role: o.role, action: o.action, section: o.section, source: o.source, status: "queued", approval });
   const ms = o.ms ?? 1200;
-  window.setTimeout(() => useStore.getState().updateIntakeTask(recordId, id, { status: "running" }), Math.min(300, ms / 3));
+  window.setTimeout(() => {
+    // A Cancel in the first moments wins over the move to Running.
+    const t = useStore.getState().intakes.find((r) => r.id === recordId)?.tasks.find((x) => x.id === id);
+    if (t?.status === "queued") useStore.getState().updateIntakeTask(recordId, id, { status: "running" });
+  }, Math.min(300, ms / 3));
   window.setTimeout(() => {
     const s = useStore.getState();
     const task = s.intakes.find((r) => r.id === recordId)?.tasks.find((t) => t.id === id);
