@@ -1,7 +1,7 @@
 import type { StateCreator } from "zustand";
 import { GUIDED_QUESTIONS, type VoiceOption } from "@/data/intake/scripts";
 import { staffOf } from "@/data/intake/seed";
-import { ASSESSMENT_SECTIONS, type AssessmentMode, type IntakeDocument, type IntakeRecord, type NoteSectionId, type ScribeSession, type Suggestion, type TranscriptTurn, type VoiceSession } from "@/data/intake/types";
+import { type AssessmentMode, type IntakeDocument, type IntakeRecord, type NoteSectionId, type ScribeSession, type Suggestion, type TranscriptTurn, type VoiceSession } from "@/data/intake/types";
 import * as SE from "@/pages/intake/scribe/engine";
 import * as VE from "@/pages/intake/voice/engine";
 import { meOf } from "./intake";
@@ -352,6 +352,3 @@ export const createIntakeClinicalSlice: StateCreator<AppState, [], [], IntakeCli
     },
   };
 };
-
-/** Assessment sections documented, out of twelve. */
-export const documentedCount = (r: IntakeRecord): number => ASSESSMENT_SECTIONS.filter((s) => !!r.assessment.fields[s.id]?.value).length;

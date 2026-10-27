@@ -101,7 +101,6 @@ export function finishDraft(r: IntakeRecord, s: ScribeSession): ScribeSession {
   return { ...s, noteDraft: draft, noteStatus, status: "reviewing" };
 }
 
-export const noteDecided = (s: ScribeSession) => NOTE_SECTIONS.filter((n) => s.noteDraft[n.id] && s.noteStatus?.[n.id] && s.noteStatus[n.id] !== "pending").length;
 export const notesAccepted = (s: ScribeSession) => NOTE_SECTIONS.filter((n) => s.noteDraft[n.id] && (s.noteStatus?.[n.id] === "accepted" || s.noteStatus?.[n.id] === "edited"));
 export const fieldsAccepted = (s: ScribeSession) => (s.extracted ?? []).filter((x) => x.status === "accepted" || x.status === "edited");
 

@@ -25,7 +25,12 @@ export function prepareDraft(id: string): boolean {
 
 /** The ambient AI Scribe, full screen over the record: consent, then the live transcript beside the AI-generated draft, then review.
     Esc closes it; while recording it pauses first and asks. Closing or leaving the page pauses a recording. */
-export function ScribePanel({ record, onClose }: { record: IntakeRecord; onClose: () => void }) {
+export function ScribePanel(props: { record: IntakeRecord; onClose: () => void }) {
+  /* Keyed by record, so local view state (reply mode, highlight, dialogs) never carries over to another intake. */
+  return <ScribePanelView key={props.record.id} {...props} />;
+}
+
+function ScribePanelView({ record, onClose }: { record: IntakeRecord; onClose: () => void }) {
   const st = useStore.getState();
   const s = record.scribe;
   const status = s?.status ?? "consent";

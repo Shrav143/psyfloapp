@@ -21,7 +21,8 @@ export function StartScribeButton({ intakeId }: { intakeId?: string }) {
   const viewerId = useStore((s) => s.viewerId);
   const siteScope = useStore((s) => s.siteScope);
   const records = useMemo(() => intakesInView(useStore.getState()), [all, focus, viewerId, siteScope]); // eslint-disable-line react-hooks/exhaustive-deps
-  const shown = records.filter((r) => !q.trim() || `${r.id} ${r.initials} ${serviceById(r.serviceId).short}`.toLowerCase().includes(q.trim().toLowerCase())).slice(0, 8);
+  const matches = records.filter((r) => !q.trim() || `${r.id} ${r.initials} ${serviceById(r.serviceId).short}`.toLowerCase().includes(q.trim().toLowerCase()));
+  const shown = matches.slice(0, 8);
 
   useEscape(open, () => setOpen(false));
   useEffect(() => {
@@ -64,6 +65,7 @@ export function StartScribeButton({ intakeId }: { intakeId?: string }) {
               </li>
             ))}
             {!shown.length ? <li className="px-2.5 py-3 text-[13px] text-muted">No intake matches. Start a new encounter instead.</li> : null}
+            {matches.length > shown.length ? <li className="px-2.5 py-1.5 text-[12px] text-muted">Showing {shown.length} of {matches.length}. Search to find others.</li> : null}
           </ul>
           <button type="button" onClick={newEncounter} className="mt-1 flex w-full items-center gap-2 rounded-[10px] border-t border-line px-2.5 py-2.5 text-left text-[13px] font-semibold text-forest hover:bg-tile">
             <Plus size={15} className="ico" />

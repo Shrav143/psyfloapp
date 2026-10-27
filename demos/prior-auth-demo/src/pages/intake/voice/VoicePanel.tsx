@@ -22,7 +22,12 @@ const NEVER = ["claims to be a clinician or a person", "promises coverage or adm
 
 /** The Voice Intake Assistant: a simulated call run by an intake coordinator with the caller. Distinct from the scribe: here the
     assistant leads a structured conversation, and hands off to a person whenever it should. */
-export function VoicePanel({ record, onClose }: { record: IntakeRecord; onClose: () => void }) {
+export function VoicePanel(props: { record: IntakeRecord; onClose: () => void }) {
+  /* Keyed by record, so local view state (reply mode, highlight, dialogs) never carries over to another intake. */
+  return <VoicePanelView key={props.record.id} {...props} />;
+}
+
+function VoicePanelView({ record, onClose }: { record: IntakeRecord; onClose: () => void }) {
   const nav = useNavigate();
   const st = useStore.getState();
   const v = record.voice;
