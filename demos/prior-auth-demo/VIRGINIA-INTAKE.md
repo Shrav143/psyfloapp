@@ -22,6 +22,14 @@ The top bar's **Program** switch narrows the demo to one service (all 20 Virgini
 - New: `src/pages/intake/**` (queue, record page, seven sections, assistant panel, scribe, voice, policy drawer, transition view), `src/data/intake/**` (model, fields, seed scenarios, samples, scripts, destinations, checklist), `src/data/va/**` (services, plans, policy), `src/store/intake*.ts` (six slices).
 - Shared, changed only as needed: `App.tsx` and `routes.ts` (two routes), `Sidebar.tsx` (the Intake item and its badge), `Topbar.tsx` (the Program switch, `ProgramSwitcher.tsx`), `store/index.ts` (slice registration), `data/types.ts` (Virginia program ids).
 - App-wide, by the client's decisions (real plan names; all services selectable): payer names, Virginia setting, "Illustrative" markers on plan-level figures, program personalization, and New Case accepting every service. See "Virginia across the app" below.
+- New Case: Referral is its first step again, before Intake (the incoming referrals, drop referral documents, a known patient, or continue without one). There is no separate Referrals tab.
+
+## Virginia across the app
+
+- **Plans**: the six payers carry their Virginia names (Anthem HealthKeepers Plus, Sentara Community Plan, Aetna Better Health of Virginia, Humana Healthy Horizons in Virginia, UnitedHealthcare Community Plan, Virginia Medicaid fee-for-service through Acentra Health in Atrezzo Next Generation). Internal ids are unchanged. Every plan-level figure (approval rates, denial patterns, turnaround, payer signals, rules) is invented and marked "Illustrative".
+- **Program menu** (top bar): one of the 20 services, or all. It narrows the Intake queue and presets the program on Authorizations, the Dashboard, Analytics, New Case, Eligibility and the Payers document lists where they have data; elsewhere it says there is no data for that service yet and shows everything. "All programs" keeps every figure as before.
+- **New Case** accepts every service (the four levels of care first). Non-core services get no invented criteria, lengths or approval chances; a sent request is numbered S- and opens a service case page with the policy rows that apply. An approved Intake handoff opens New Case on the intake's own service.
+- Still core-only (they show the no-data note for other services): the standalone Verify page, the Payers document lists, Test Workflow's service picker, Analytics and Denial Intelligence.
 
 ## Data structures
 
@@ -64,6 +72,31 @@ Eligibility (271 or the MCO and DMAS MES portals), each MCO's prior authorizatio
 - Each MCO and Acentra confirm their requirements for the redesigned services.
 - Before any real PHI: a signed BAA with every vendor (speech, voice, fax, hosting), a security review, role-based access and minimum-necessary access, encryption in transit and at rest, retention rules for recordings and transcripts, and consent capture. This prototype claims no HIPAA certification or production compliance.
 - Plan-level figures elsewhere in the demo (approval rates, denial patterns, turnaround) are illustrative, not data about the named plans.
+
+## Coverage of the client's prompt
+
+| Prompt section | Where it is | Status |
+| --- | --- | --- |
+| 1. Review the existing app, keep its design | Built inside the existing demo's source and kit; current Psyflo brand (round 8) | Done. The source was used, not the compiled HTML |
+| 2. Policy context, effective dates | `data/va/policy.ts`, Policy drawer, "Policy as of" switch, period on every record | Done; draft and unresolved rows labeled with sources |
+| 3. Intake workspace A–H, metrics, filters, queue | Authorizations › Intake; the record's seven sections | Done |
+| 4. Eight intake methods, extraction, triage, safety | New intake; Referral section; safety banner | Done (imports simulated) |
+| 5. Patient profile, provenance states | Patient profile section | Done; conditional required fields |
+| 6. Eligibility agent, five determinations | Insurance & eligibility section | Done (responses simulated) |
+| 7. Assessment, three modes, attestation | Clinical assessment section | Done |
+| 8. CANS Lifetime | CANS & Level of Need section; CANS assistant | Placeholder structure "awaiting official item mapping"; no items, no ratings |
+| 9. Level of Need, service pathways | Same section; Care pathway & referral | "Pending validated policy configuration"; pathways selected by a clinician |
+| 10. Closed-loop referral coordination | Care pathway & referral | Done (delivery simulated) |
+| 11. Ambient AI Scribe | Start AI Scribe | Done (audio simulated) |
+| 12. Voice Intake Assistant | Voice Intake Assistant | Done (call simulated) |
+| 13. Agent orchestration, Psyflo AI Assistant | Right-hand panel | Done; retry, cancel, undo, audit |
+| 14. Completeness and readiness, handoff | Documentation & review | Done; the client's twelve categories plus Safety; handoff opens New Case, never submits |
+| 15. Layout and UX | Header search, New intake, Start AI Scribe; nav, section, assistant | Done; desktop and tablet |
+| 16. Scenarios A–D | IN-3101 to IN-3104 | Done |
+| 17. Data model, provenance, policy engine, security | `data/intake/types.ts`, `data/va/policy.ts`, this file | Done as a front-end model; security is described, not certified |
+| 18. Acceptance tests | `acceptance.mjs` | 22 of 22 pass |
+| 19. Deliverables | The demo, this file | Done |
+| 20. Official sources | `SOURCES` in `policy.ts` | DMAS sites could not be fetched from the build environment; facts were checked through search results and unverified items are listed above |
 
 ## Tests
 
