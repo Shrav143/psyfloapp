@@ -135,9 +135,9 @@ export default function IntakeRecordPage() {
               const on = s === section;
               return (
                 <li key={s} className="shrink-0">
-                  <button type="button" aria-current={on ? "step" : undefined} onClick={() => setQ("section", s)} className={cn("flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-[13px] font-medium whitespace-nowrap", on ? "bg-forest text-white" : "text-ink2 hover:bg-tile")}>
+                  <button type="button" aria-current={on ? "step" : undefined} onClick={() => setQ("section", s)} className={cn("flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-[13px] leading-snug font-medium whitespace-nowrap min-[1280px]:whitespace-normal", on ? "bg-forest text-white" : "text-ink2 hover:bg-tile")}>
                     <span className={cn("w-4 text-[11px] tabular-nums", on ? "text-white/80" : "text-muted")}>{i + 1}</span>
-                    <span className="min-w-0 flex-1 truncate">{SECTION_LABEL[s]}</span>
+                    <span className="min-w-0 flex-1">{SECTION_LABEL[s]}</span>
                     <st.icon size={15} className={cn("ico", on ? "text-white" : st.cls)} aria-label={st.label} />
                   </button>
                 </li>

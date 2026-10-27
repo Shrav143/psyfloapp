@@ -180,7 +180,7 @@ const scenarioB = (): IntakeRecord => {
   r.tasks = [
     task({ role: "pathway", agent: "placement", action: "Prepared four service options for clinical review", status: "needs_you", section: "pathway", at: B_AT + DAY, approval: "required", result: "No option is selected until a clinician reviews them" }),
     task({ role: "eligibility", agent: "verify", action: "Checked eligibility (simulated)", status: "done", section: "coverage", at: -1 * DAY, approval: "none", result: "Member active with Anthem HealthKeepers Plus; existing MHSS authorization through 03/31/2027" }),
-    task({ role: "cans", agent: "criteria", action: "Prepare CANS Lifetime evidence", status: "queued", section: "cans", at: -1 * DAY, approval: "required", result: "Waits for the official DMAS item mapping" }),
+    task({ role: "cans", agent: "criteria", action: "Prepare CANS Lifetime evidence", status: "blocked", section: "cans", at: -1 * DAY, approval: "required", result: "Waits for the official DMAS item mapping" }),
   ];
   r.audit.push(ev(B_AT + DAY, "dr", "Started the clinical assessment", undefined, false, "assessment"));
   return r;
