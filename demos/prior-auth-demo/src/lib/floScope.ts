@@ -23,7 +23,7 @@ export function scopedState(s: AppState): AppState {
 }
 
 const DRAFT_PATH = /draft-([a-z])(\d+)/i;
-const CASE_ID = /\b([RIPD]-\d{3,4}(?:-[a-z])?)\b/i;
+const CASE_ID = /\b([RIPDS]-\d{3,4}(?:-[a-z])?)\b/i;
 
 /** The case a notification is about: the one in its link, else the one its words name. A notification about a payer or a rule names no case. */
 export function notificationCase(n: AppNotification, requests: readonly PsyRequest[]): string | undefined {

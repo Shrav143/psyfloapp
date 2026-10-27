@@ -6,6 +6,7 @@ import { OutOfSite } from "@/components/layout/OutOfSite";
 import { caseIdOf, resolveCase, type CaseDetail } from "@/data/caseDetail";
 import { withFocus } from "@/data/caseDetailFocus";
 import { EMPTY_WORK, canSend, checkViews, currentChance, groupRecs, isWithPayer, liveView, projectedChance, type CaseWork, type LiveView } from "@/data/caseModel";
+import { isCoreProgram } from "@/data/types";
 import { useScope } from "@/lib/scope";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
@@ -13,6 +14,7 @@ import { CaseHeader } from "./CaseHeader";
 import { CaseHistory } from "./CaseHistory";
 import { TABS, tabOf, type CaseCtx, type TabId } from "./caseTypes";
 import { reviewPath } from "./reviewAndSign";
+import { ServiceCasePage } from "./ServiceCasePage";
 import { ActionsTab } from "./tabs/ActionsTab";
 import { CriteriaRiskTab } from "./tabs/CriteriaRiskTab";
 import { PictureDraftTab } from "./tabs/PictureDraftTab";
@@ -76,6 +78,17 @@ export default function CasePage() {
   const detail = useMemo(() => (base ? withFocus(base, work) : null), [base, work]);
   const live = useMemo(() => (base ? liveView(base, requests) : null), [base, requests]);
   if (!detail) {
+    // A request for a Virginia service (CPST, ACT, ABA and the rest) has no case page of its own: its summary page shows what is known.
+    const service = requests.find((r) => (r.id === id || r.caseId === id) && !isCoreProgram(r.program));
+    if (service) {
+      return scope.has(service.caseId) ? (
+        <ServiceCasePage request={service} />
+      ) : (
+        <Page>
+          <OutOfSite id={service.caseId} what="case" />
+        </Page>
+      );
+    }
     return (
       <Page>
         <Crumbs items={[{ label: "Authorizations", to: paths.authorizations() }, { label: id || "Request" }]} />

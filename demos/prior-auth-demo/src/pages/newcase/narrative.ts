@@ -1,30 +1,38 @@
 /* The medical-necessity summary Scribe drafts, built from what the person entered and answered.
    Each section lists the chart documents it came from; those become the source chips. */
 import type { CaseDraft, DocSlotId, NarrativeSection } from "@/data/cases";
-import type { Program } from "@/data/types";
+import { forProgram, programText } from "@/data/programTables";
+import { isCoreProgram, PROGRAM_LABEL, type Program, type CoreProgram } from "@/data/types";
 import { CHANGE_LABEL } from "./authType";
 import type { RecAdd } from "./fromRequest";
 
-const LEVEL_HEADING: Record<Program, string> = {
+const LEVEL_HEADING: Record<CoreProgram, string> = {
   RES: "Why a lower level of care is not safe",
   IOP: "Why weekly outpatient care is not enough",
   PHP: "Why a lower level of care is not safe",
   WM: "Why withdrawal needs medical monitoring",
 };
-const LEVEL_TEXT: Record<Program, string> = {
+const LEVEL_TEXT: Record<CoreProgram, string> = {
   RES: "An intensive outpatient program in 2025 ended in week 3 when housing was lost. Home is shared with a partner who drinks daily, and there is no transport to outpatient visits. The chart supports residential care.",
   IOP: "Weekly visits did not hold gains after the last lapse. The chart supports a structured program several days a week, with the evenings covered.",
   PHP: "Symptoms still limit daily function outside program hours. The chart supports daily structure with medical oversight.",
   WM: "Withdrawal scores need to be taken several times a day and treated as they change. The chart supports a medically monitored setting.",
 };
 /** The chart documents the "lower level of care" section rests on. Without the first one Scribe has to ask. */
-export const LEVEL_SOURCES: Record<Program, [DocSlotId, string][]> = {
+const LEVEL_SOURCES: Record<CoreProgram, [DocSlotId, string][]> = {
   RES: [["psychosocial", "Psychosocial p.2"], ["psychosocial", "Psychosocial p.4"]],
   IOP: [["treatment_plan", "Treatment plan p.2"]],
   PHP: [["asam", "ASAM assessment"]],
   WM: [["nursing", "Nursing notes"]],
 };
-const PROGRAM_TEXT: Record<Program, string> = { RES: "residential care", IOP: "intensive outpatient care", PHP: "partial hospitalization", WM: "withdrawal management" };
+/* A Virginia service: the section rests on the service plan from the generic document list (data/programTables.ts), and the summary states no clinical
+   fact the chart does not hold. */
+const SERVICE_PLAN = "Individualized service plan";
+const VA_SOURCES: [DocSlotId, string][] = [[`item:${SERVICE_PLAN}`, SERVICE_PLAN]];
+const VA_HEADING = "Why this service is needed";
+const VA_TEXT = "The individualized service plan sets out why this service is needed and what it is for.";
+/** The chart documents the "lower level of care" section rests on, for any program. */
+export const levelSources = (p: Program): [DocSlotId, string][] => forProgram(LEVEL_SOURCES, p, VA_SOURCES);
 const DURATION: Record<string, string> = { short: "less than a year", mid: "one to five years", long: "more than five years" };
 const LOWER_LEVEL: Record<string, string> = {
   tried: "A lower level of care was tried and did not hold.",
@@ -82,9 +90,10 @@ function basisSection(d: CaseDraft, has: (slot: DocSlotId) => boolean): Narrativ
 }
 
 function planText(d: CaseDraft): string {
-  if (d.kind === "modify") return d.change?.amount ? `${d.change.amount} more ${d.change.kind === "more_units" ? "units" : "days"} of ${PROGRAM_TEXT[d.program ?? "RES"]}, from ${mdy(d.startDate)}.` : "The authorization is changed as described above, from the date asked.";
+  if (d.kind === "modify") return d.change?.amount ? `${d.change.amount} more ${d.change.kind === "more_units" ? "units" : "days"} of ${programText(d.program ?? "RES")}, from ${mdy(d.startDate)}.` : "The authorization is changed as described above, from the date asked.";
   const prog = d.program ?? "RES";
   if (d.type === "Retro-authorization") return "The authorization is asked from the first day of care, so it covers the days already delivered.";
+  if (!isCoreProgram(prog)) return `${PROGRAM_LABEL[prog]} as the individualized service plan sets out${d.startDate ? `, from ${mdy(d.startDate)}${d.endDate ? ` to ${mdy(d.endDate)}` : ""}` : ""}.`;
   if (prog === "RES") return d.type === "Continued stay" ? "Seven more days of residential care, then a step-down to partial hospitalization." : "Fourteen days of residential care, then a step-down to partial hospitalization.";
   if (prog === "IOP") return d.type === "Recertification" || d.type === "Continued stay" ? "Another 12 units of intensive outpatient care, then a step-down to weekly outpatient visits." : "Twelve weeks of intensive outpatient care, nine hours a week.";
   if (prog === "PHP") return "Fifteen days of partial hospitalization, then a step-down to intensive outpatient care.";
@@ -136,8 +145,9 @@ export function buildNarrative(d: CaseDraft): NarrativeSection[] {
     sertraline ? `Sertraline was started on ${sertraline.answer}.` : "",
   ].filter(Boolean).join(" ");
 
+  const sources = levelSources(prog);
   const level = [
-    has(LEVEL_SOURCES[prog][0][0]) ? LEVEL_TEXT[prog] : lower ? "" : "The chart does not yet say why a lower level of care is not enough.",
+    has(sources[0][0]) ? forProgram(LEVEL_TEXT, prog, VA_TEXT) : lower ? "" : "The chart does not yet say why a lower level of care is not enough.",
     lower ? LOWER_LEVEL[lower.choice] ?? `Clinician note: ${lower.answer}` : "",
     d.suggestions.includes("iop") ? "A 2025 IOP discharge summary shows the lower level was tried." : "",
   ].filter(Boolean).join(" ");
@@ -151,11 +161,11 @@ export function buildNarrative(d: CaseDraft): NarrativeSection[] {
   ].filter(Boolean).join(" ");
 
   const basis = basisSection(d, has);
-  const levelHeading = d.kind === "concurrent" || d.kind === "reauth" ? "Why this level of care is still needed" : LEVEL_HEADING[prog];
+  const levelHeading = d.kind === "concurrent" || d.kind === "reauth" ? "Why this level of care is still needed" : forProgram(LEVEL_HEADING, prog, VA_HEADING);
   return [
     { id: "clinical", heading: "Clinical picture", text: clinical, sources: chips([["psych_eval", "Psychiatric eval p.3"], ["nursing", "Nursing notes"], ...(sertraline ? ([["meds", "Medication list"]] as [DocSlotId, string][]) : [])]) },
     ...(basis ? [basis] : []),
-    { id: "level", heading: levelHeading, text: level, sources: chips(LEVEL_SOURCES[prog]) },
+    { id: "level", heading: levelHeading, text: level, sources: chips(sources) },
     { id: "severity", heading: "Current severity", text: d.severity ?? (has("psych_eval") ? SAMPLE_SEVERITY : "The chart records current symptoms and day-to-day function."), sources: chips([["psych_eval", "Psychiatric eval p.5"]]) },
     { id: "plan", heading: "Plan", text: plan, sources: chips([["treatment_plan", "Treatment plan p.2"]]) },
   ];

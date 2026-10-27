@@ -1,6 +1,7 @@
 import { Card, CardHeader } from "@/components/ui";
 import { SEX_LABEL, type CaseDraft } from "@/data/cases";
 import { isoOf, leftText, minutesOf, payerNameOf } from "@/data/patients";
+import { usualDays } from "@/data/queue";
 import { PROGRAM_LABEL } from "@/data/types";
 import { plural } from "@/lib/format";
 import { ago } from "@/lib/time";
@@ -28,7 +29,7 @@ export function ReviewSummary({ draft, env, review }: { draft: CaseDraft; env: C
     ["Request", `${authType(draft.kind).label} · recorded as ${draft.type ?? "no type yet"}`],
     ...(env.workflow ? ([["Workflow", env.workflow.applied.usedDefault ? `${env.workflow.applied.name} (illustrative default)` : `${env.workflow.applied.name}, v${env.workflow.applied.version}`]] as [string, string][]) : []),
     ["Service", draft.program ? `${draft.levelLabel ?? PROGRAM_LABEL[draft.program]}` : "Not added"],
-    ["Dates and length", dos ? `${mdy(dos.from)} to ${mdy(dos.to)} · ${plural(Math.round((minutesOf(dos.to) - minutesOf(dos.from)) / 1440) + 1, "day")}${draft.endDate ? "" : " (the usual length)"}` : "Not added"],
+    ["Dates and length", dos ? `${mdy(dos.from)} to ${mdy(dos.to)} · ${plural(Math.round((minutesOf(dos.to) - minutesOf(dos.from)) / 1440) + 1, "day")}${draft.endDate ? "" : draft.program && usualDays(draft.program) === null ? " (no end date added)" : " (the usual length)"}` : "Not added"],
     ["Eligibility", rec ? `${describeVerification(rec)}. Checked ${ago(rec.checkedAt, env.clock)}, simulated source.` : "Not checked"],
     ["Existing authorization", a ? `${a.id} · ${a.label} · ${leftText(a) ?? "no days on file"}${a.approvedTo === null ? "" : `, ends ${mdy(isoOf(a.approvedTo))}`}` : b ? `${b.label} · ${b.authorized === null ? "no days on file" : `${b.authorized} ${b.unit} authorized`}${b.used !== null && b.authorized !== null ? `, ${b.authorized - b.used} left` : ""}${b.to ? `, ends ${mdy(b.to)}` : ""}` : "None. This starts a new stay."],
     ["Documentation", `${r.ready} of ${r.total} ready${r.missingRequired.length ? `, ${plural(r.missingRequired.length, "required document")} missing` : ""}`],

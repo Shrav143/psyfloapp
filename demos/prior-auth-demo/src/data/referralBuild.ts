@@ -1,5 +1,5 @@
 import { DAY, longDate } from "@/lib/time";
-import { PROGRAM_LABEL, type PayerId, type Program, type RequestEvent, type Urgency } from "./types";
+import { PROGRAM_LABEL, type PayerId, type CoreProgram, type RequestEvent, type Urgency } from "./types";
 import { ACCEPTED_CREDENTIALS, AGE_MIN, CHANNEL_LABEL, CHECK_DOC, CHECK_PROBLEM, CHECK_LABEL, CHECK_ORDER, DECLINE_LABEL, KNOWN_ICD, PROGRAM_ASAM, URGENCY_LABEL, staffById } from "./referralLabels";
 import type { Channel, CheckKey, CoverageKind, DeclineReason, DocPlan, FieldKey, Referral, ReferralCheck, ReferralField, ReferralNote, ReferralStatus, SourceDef, StaffId } from "./referralTypes";
 import { buildCoverage, buildFit, hash } from "./referralInsight";
@@ -16,7 +16,7 @@ export interface ReferralSpec {
   sex: "F" | "M";
   payer: PayerId | null;
   last4?: string;
-  program: Program;
+  program: CoreProgram;
   urgency: Urgency;
   status: ReferralStatus;
   owner?: StaffId;
@@ -31,13 +31,13 @@ export interface ReferralSpec {
   decline?: { reason: DeclineReason; note: string; courtesy: boolean };
   requestId?: string;
   plan: Partial<DocPlan> & Pick<DocPlan, "reason" | "substances" | "meds" | "risk" | "dx">;
-  fit?: { suggested?: Program; confidence?: number };
+  fit?: { suggested?: CoreProgram; confidence?: number };
   notes?: { by: StaffId; ago: number; text: string }[];
   overrides?: Partial<Record<CheckKey, string>>;
 }
 
 /** Programs that need an authorization before the first day. IOP often does not. */
-export const authRequired = (payer: PayerId, program: Program): boolean => program !== "IOP" || payer === "cardinal" || payer === "harborview" || payer === "lakeshore";
+export const authRequired = (payer: PayerId, program: CoreProgram): boolean => program !== "IOP" || payer === "cardinal" || payer === "harborview" || payer === "lakeshore";
 
 /* ------------------------------------------------------------------ extracted fields */
 type FieldSource = Pick<Referral, "id" | "patient" | "payerId" | "memberIdMasked" | "program" | "urgency" | "plan">;

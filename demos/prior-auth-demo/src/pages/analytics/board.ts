@@ -2,7 +2,7 @@ import { PAYER_ORDER, PROGRAM_ORDER, type PeriodInfo } from "@/data/analytics";
 import { DX_GROUPS, KINDS, KIND_LABEL, POPULATIONS, cmsApplies, type Decision, type DxId, type PopulationId } from "@/data/decisions";
 import type { RequestKind } from "@/data/queue";
 import { payerById } from "@/data/seed";
-import { PROGRAM_LABEL, type BuiltInPayerId, type Program } from "@/data/types";
+import { PROGRAM_LABEL, type BuiltInPayerId, type CoreProgram } from "@/data/types";
 import { inMonths, inPeriod, narrow, periodInfo, type Filters } from "./filters";
 import type { CaseQuery } from "./query";
 import { buildFlo, buildLos, buildProcess, buildReasons, type Flo, type LosRow, type Process, type Reasons } from "./boardParts";
@@ -200,7 +200,7 @@ export function cellQuery(key: MatrixKey, payer: BuiltInPayerId | "all", colId: 
   if (payer !== "all") q.payer = payer;
   if (colId !== null) {
     if (key === "dx") q.dx = colId as DxId;
-    else if (key === "program") q.program = colId as Program;
+    else if (key === "program") q.program = colId as CoreProgram;
     else if (key === "kind") q.kind = colId as RequestKind;
     else q.population = colId as PopulationId;
   }

@@ -2,7 +2,7 @@ import { needsCaller, simulateCheck } from "@/data/eligibility";
 import { payerById } from "@/data/seed";
 import { PROGRAM_LABEL, type AgentKey, type PayerId, type Program } from "@/data/types";
 import { vaPlanOf } from "@/data/va/plans";
-import { PROGRAM_CODES } from "./checks";
+import { codesText } from "@/data/programTables";
 
 export interface VerifyStep {
   id: string;
@@ -53,7 +53,7 @@ export function verifySteps(f: VerifyForm, paused = false): VerifyStep[] {
       id: "benefits",
       agent: "verify",
       label: `${prog} benefits with ${who}`,
-      done: noPlan ? notAsked : caller ? "No answer online" : found.benefits === "not_covered" ? "Not covered" : found.benefits === "needs_confirmation" ? `Not confirmed by ${who}` : `Covered (${PROGRAM_CODES[f.program]})${found.limit ? (found.limit.used >= found.limit.of ? `. All ${found.limit.of} ${found.limit.unit} used` : `. ${found.limit.used} of ${found.limit.of} ${found.limit.unit} used`) : ""}`,
+      done: noPlan ? notAsked : caller ? "No answer online" : found.benefits === "not_covered" ? "Not covered" : found.benefits === "needs_confirmation" ? `Not confirmed by ${who}` : `Covered (${codesText(f.program)})${found.limit ? (found.limit.used >= found.limit.of ? `. All ${found.limit.of} ${found.limit.unit} used` : `. ${found.limit.used} of ${found.limit.of} ${found.limit.unit} used`) : ""}`,
       ms: 2600,
     },
   ];

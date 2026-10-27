@@ -1,7 +1,7 @@
 import { seedPayerConfig } from "../payerConfigSeed";
 import { payerProfileOf } from "../payerProfile";
 import { PAYERS } from "../seed";
-import type { Program } from "../types";
+import type { CoreProgram } from "../types";
 import { createNode, outputsOf } from "./catalog";
 import { autoLayout } from "./layout";
 import { migratePayerWorkflow } from "./migrate";
@@ -14,7 +14,7 @@ import type { ConfigValue, Handle, NodeKind, PromptConfig, RequestType, WfNode, 
 
 const cfgs = seedPayerConfig();
 const BUILT_IN = PAYERS.slice(0, 6).map((p) => p.id);
-const docIds = (payer: string, program: Program, n: number[]): string[] => n.map((i) => `${payer}-${program.toLowerCase()}-${i}`);
+const docIds = (payer: string, program: CoreProgram, n: number[]): string[] => n.map((i) => `${payer}-${program.toLowerCase()}-${i}`);
 
 /* ---------------------------------------------------------------- small editing helpers (a sample is a template with a few changes) */
 const node = (wf: Workflow, id: string): WfNode => {
@@ -48,7 +48,7 @@ const join = (wf: Workflow, from: string, handle: Handle, to: string): void => {
 };
 const prompt = (agent: PromptConfig["agent"], text: string, expectedOutput: string, inputs: string[], humanReview: boolean): ConfigValue => ({ agent, prompt: text, inputs, expectedOutput, humanReview, onFailure: "manual_review" }) as unknown as ConfigValue;
 
-interface Sample { id: string; payerId: string; name: string; description: string; template: string; requestType: RequestType; services: Program[]; status: "published" | "draft"; tweak: (wf: Workflow) => void }
+interface Sample { id: string; payerId: string; name: string; description: string; template: string; requestType: RequestType; services: CoreProgram[]; status: "published" | "draft"; tweak: (wf: Workflow) => void }
 
 const SAMPLES: Sample[] = [
   {

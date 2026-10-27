@@ -2,6 +2,7 @@
 import { freshRun, planTypeOf, QUESTIONS, type Answer, type CaseDraft, type DocSlotId, type QuestionKey, type RunState } from "@/data/cases";
 import { seedPayerConfig } from "@/data/payerConfigSeed";
 import { siteOf } from "@/data/sites";
+import { docsOf } from "@/data/programTables";
 import type { PayerId, Program } from "@/data/types";
 import { kindOfType } from "./authType";
 import { docEntries, makeDocument, sampleFile } from "./documents";
@@ -58,7 +59,7 @@ const dx = (...codes: string[]) => ICD_CODES.filter((c) => codes.includes(c.code
 const PAYER_CONFIG = seedPayerConfig();
 /** The sample documents for what the payer asks for at this level of care, minus the ones the chart does not have. */
 function docs(payer: PayerId, program: Program, skip: DocSlotId[] = [], sertralineConflict = false) {
-  return docEntries(payer, program, PAYER_CONFIG[payer]?.docs[program] ?? null)
+  return docEntries(payer, program, PAYER_CONFIG[payer] ? docsOf(PAYER_CONFIG[payer].docs, payer, program) : null)
     .filter((r) => !skip.includes(r.slot))
     .map((r) => makeDocument(r.slot, sampleFile(r.slot), sertralineConflict, "done"));
 }

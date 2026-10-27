@@ -1,7 +1,7 @@
 import type { DenialMeta } from "@/data/denials";
 import { FRAMEWORKS, frameworkFor, type DxTrack, type FrameworkDef } from "@/data/frameworks";
 import { DX, MH_DX, QUEUE_ITEMS, dxKeyFor, dxTrackOf, type QueueItem } from "@/data/queue";
-import type { PsyRequest } from "@/data/types";
+import { isCoreProgram, type PsyRequest } from "@/data/types";
 
 const SUD = /use disorder|alcohol|opioid|stimulant|cannabis|cocaine|methamphetamine|substance|withdrawal/i;
 const MH = /depress|anxiety|ptsd|posttraumatic|trauma|bipolar|psychos|schizo|mood|panic|obsess|eating/i;
@@ -20,7 +20,8 @@ export function dxOfDenial(r: PsyRequest, meta: DenialMeta | undefined): string 
   if (meta?.dx) return meta.dx;
   const item = queueItemOf(r);
   if (item) return item.mh ? MH_DX[item.mh].name : DX[item.dxKey].name;
-  return DX[dxKeyFor(r.caseId, r.program)].name;
+  /* A denial of a Virginia service has no demo diagnosis to fall back on. */
+  return isCoreProgram(r.program) ? DX[dxKeyFor(r.caseId, r.program)].name : "Diagnosis not recorded";
 }
 
 /** The level-of-care framework the denial is read against: ASAM Criteria for substance use and co-occurring conditions, LOCUS or CALOCUS-CASII for mental health alone.

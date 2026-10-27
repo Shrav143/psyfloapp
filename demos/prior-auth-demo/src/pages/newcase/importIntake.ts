@@ -3,7 +3,7 @@
 import type { ImportResult, ImportedDocument } from "@/components/import";
 import type { DemoFile } from "@/components/ui";
 import { ageOn, plansOf, planTypeOf, type CaseDraft, type DocSlotId, type DraftDocument, type ImportedKey, type PatientSex } from "@/data/cases";
-import { PROGRAMS, type Program } from "@/data/types";
+import { PROGRAM_LABEL, type Program } from "@/data/types";
 import { plural, uid } from "@/lib/format";
 import { useStore } from "@/store";
 import { isFixedSlot, makeDocument, slotForFile } from "./documents";
@@ -82,7 +82,7 @@ export function applyImport(draftId: string, r: ImportResult): void {
       if (!fields.some((x) => x.key === "planType")) patch.planType = planTypeOf(f.value);
     } else if (key === "planType") patch.planType = f.value;
     else if (key === "memberId") patch.memberId = f.value;
-    else if (key === "program" && PROGRAMS.includes(f.value as Program)) patch.program = f.value as Program;
+    else if (key === "program" && f.value in PROGRAM_LABEL) patch.program = f.value as Program;
     else if (key === "diagnosis") {
       const known = ICD_CODES.find((c) => c.code === f.value) ?? { code: f.value, label: "" };
       patch.diagnoses = [known, ...d.diagnoses.filter((x) => x.code !== f.value)];

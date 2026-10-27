@@ -1,5 +1,5 @@
 import { DAY, longDate } from "@/lib/time";
-import { PROGRAM_LABEL, type Program } from "./types";
+import { PROGRAM_LABEL, type CoreProgram } from "./types";
 import { ASAM_DIMS } from "./referralLabels";
 import type { Coverage, CoverageKind, CoverageLine, Fit, Referral } from "./referralTypes";
 import { costShareText } from "./eligibility";
@@ -62,10 +62,10 @@ export function buildCoverage(r: Pick<Referral, "payerId" | "program" | "plan">,
 }
 
 /* ------------------------------------------------------------------ fit (Placement) */
-const SEVERITY: Record<Program, number[]> = { WM: [3, 2, 2, 2, 3, 2], RES: [2, 2, 3, 2, 4, 3], PHP: [1, 1, 2, 2, 3, 2], IOP: [0, 1, 2, 2, 2, 1] };
-const NEXT_BEST: Record<Program, Program> = { RES: "PHP", PHP: "IOP", IOP: "PHP", WM: "RES" };
+const SEVERITY: Record<CoreProgram, number[]> = { WM: [3, 2, 2, 2, 3, 2], RES: [2, 2, 3, 2, 4, 3], PHP: [1, 1, 2, 2, 3, 2], IOP: [0, 1, 2, 2, 2, 1] };
+const NEXT_BEST: Record<CoreProgram, CoreProgram> = { RES: "PHP", PHP: "IOP", IOP: "PHP", WM: "RES" };
 
-export function buildFit(r: Pick<Referral, "id" | "program">, o?: { suggested?: Program; confidence?: number }): Fit {
+export function buildFit(r: Pick<Referral, "id" | "program">, o?: { suggested?: CoreProgram; confidence?: number }): Fit {
   const suggested = o?.suggested ?? r.program;
   const confidence = o?.confidence ?? 78 + (hash(r.id) % 15);
   const severity = SEVERITY[suggested];

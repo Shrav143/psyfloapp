@@ -2,7 +2,7 @@ import { useState } from "react";
 import { AlertTriangle, CheckCircle2, ListChecks, Settings2, Sparkles } from "lucide-react";
 import { Banner, Button, Drawer, Pill } from "@/components/ui";
 import type { PayerRule } from "@/data/workflow/types";
-import type { Program } from "@/data/types";
+import type { CoreProgram } from "@/data/types";
 import { useStore } from "@/store";
 import { AreaField, PanelHeading } from "./fields/controls";
 import { generateDraft, type FloDraft } from "./lib/floDrafts";
@@ -17,7 +17,7 @@ const EXAMPLES = [
   "Retroactive request for PHP. Verify coverage for the dates of service, check the backdating rule, then send it to a person.",
 ];
 
-export function GenerateDrawer({ payer, docs, rules, onClose, onCreated }: { payer: PayerInfo; docs: Record<Program, { id: string; title: string }[]> | undefined; rules: PayerRule[]; onClose: () => void; onCreated: (id: string) => void }) {
+export function GenerateDrawer({ payer, docs, rules, onClose, onCreated }: { payer: PayerInfo; docs: Record<CoreProgram, { id: string; title: string }[]> | undefined; rules: PayerRule[]; onClose: () => void; onCreated: (id: string) => void }) {
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [draft, setDraft] = useState<FloDraft | null>(null);

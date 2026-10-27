@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from "react";
+import { Fragment, useEffect, useId, useRef, useState } from "react";
 import { Check, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { useEscape } from "./escape";
@@ -7,6 +7,8 @@ export interface Option<T extends string> {
   value: T;
   label: string;
   hint?: string;
+  /** A heading shown above the first option of each group, in the order the options come. */
+  group?: string;
 }
 
 interface Props<T extends string> {
@@ -91,19 +93,25 @@ export function Dropdown<T extends string>({ value, options, onChange, defaultVa
           className="psy-fade-up absolute top-[44px] left-0 z-40 max-h-[320px] overflow-auto rounded-[14px] border border-field bg-white p-1.5 shadow-[0_12px_32px_rgba(21,27,36,0.12)]"
         >
           {options.map((o, i) => (
-            <button
-              key={o.value}
-              type="button"
-              role="option"
-              aria-selected={o.value === value}
-              onMouseEnter={() => setCursor(i)}
-              onClick={() => pick(o.value)}
-              className={cn("flex w-full items-center gap-2.5 rounded-[10px] px-3 py-[9px] text-left text-sm", o.value === value ? "bg-[#EEF7F6] font-semibold" : "", i === cursor && o.value !== value ? "bg-tile" : "")}
-            >
-              <span className="grid w-4 place-items-center text-forest">{o.value === value ? <Check size={16} className="ico" /> : null}</span>
-              <span className="flex-1">{o.label}</span>
-              {o.hint ? <span className="text-xs text-muted">{o.hint}</span> : null}
-            </button>
+            <Fragment key={o.value}>
+              {o.group && o.group !== options[i - 1]?.group ? (
+                <div role="presentation" className="px-3 pt-2.5 pb-1 text-[11px] font-semibold tracking-wide text-faint uppercase">
+                  {o.group}
+                </div>
+              ) : null}
+              <button
+                type="button"
+                role="option"
+                aria-selected={o.value === value}
+                onMouseEnter={() => setCursor(i)}
+                onClick={() => pick(o.value)}
+                className={cn("flex w-full items-center gap-2.5 rounded-[10px] px-3 py-[9px] text-left text-sm", o.value === value ? "bg-[#EEF7F6] font-semibold" : "", i === cursor && o.value !== value ? "bg-tile" : "")}
+              >
+                <span className="grid w-4 place-items-center text-forest">{o.value === value ? <Check size={16} className="ico" /> : null}</span>
+                <span className="flex-1">{o.label}</span>
+                {o.hint ? <span className="text-xs text-muted">{o.hint}</span> : null}
+              </button>
+            </Fragment>
           ))}
         </div>
       ) : null}

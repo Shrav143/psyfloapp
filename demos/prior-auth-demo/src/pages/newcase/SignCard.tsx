@@ -3,6 +3,7 @@ import { PenLine, Undo2 } from "lucide-react";
 import { Button, Card, CardBody, CardHeader, Checkbox, Dropdown, Field, Modal, TextArea } from "@/components/ui";
 import type { CaseDraft } from "@/data/cases";
 import { payerById } from "@/data/seed";
+import { NOT_ENOUGH_CASES } from "@/data/programTables";
 import { PROGRAM_LABEL } from "@/data/types";
 import { useStore } from "@/store";
 import { authType } from "./authType";
@@ -24,7 +25,8 @@ export function SignCard({ draft, checks, missing, chance, ready, backSignal, on
   checks: IntegrityCheck[];
   /** What is missing, so the card knows what blocks and what needs an acknowledgement. */
   missing: MissingItem[];
-  chance: number;
+  /** Null for a Virginia service: no similar decisions to rest a chance on. */
+  chance: number | null;
   /** The agents finished, so there is something to sign. */
   ready: boolean;
   /** Counts up when "What is missing" asks to send the draft back to Scribe. */
@@ -102,7 +104,7 @@ export function SignCard({ draft, checks, missing, chance, ready, backSignal, on
           <dt className="text-muted">Level of care</dt>
           <dd className="font-medium">{draft.levelLabel ?? (draft.program ? PROGRAM_LABEL[draft.program] : "")}</dd>
           <dt className="text-muted">Approval chance</dt>
-          <dd className="font-medium">{chance}%</dd>
+          <dd className="font-medium">{chance === null ? NOT_ENOUGH_CASES : `${chance}%`}</dd>
           <dt className="text-muted">Attachments</dt>
           <dd className="font-medium">{draft.documents.length} documents</dd>
         </dl>

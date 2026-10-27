@@ -3,12 +3,12 @@ import { CHART, HBarChart, Segmented, type BarRow } from "@/components/ui";
 import { IllustrativeTag } from "@/components/ui/IllustrativeTag";
 import { PROGRAM_ORDER } from "@/data/analytics";
 import { payerById } from "@/data/seed";
-import { PROGRAM_LABEL, type BuiltInPayerId, type Program } from "@/data/types";
+import { PROGRAM_LABEL, type BuiltInPayerId, type CoreProgram } from "@/data/types";
 import type { Board, LosRow } from "./board";
 import type { CaseQuery } from "./query";
 import { enough, fmt } from "./stats";
 
-type Tab = Program | "all";
+type Tab = CoreProgram | "all";
 
 /** Days or units asked for against days or units approved, by payer, for one level of care or all of them. A cut is an approval for less than was requested. */
 export function LosSection({ board, onOpen }: { board: Board; onOpen: (q: CaseQuery) => void }) {

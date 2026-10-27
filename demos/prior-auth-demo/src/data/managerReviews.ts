@@ -1,5 +1,5 @@
 import { payerById } from "./seed";
-import { PROGRAM_LABEL, type Program } from "./types";
+import { PROGRAM_LABEL, type CoreProgram } from "./types";
 import { clockTime, DAY, toDate } from "@/lib/time";
 import type { LedgerCase } from "./manager";
 
@@ -21,7 +21,7 @@ export interface Review {
   ledgerId: string;
   initials: string;
   age: number;
-  program: Program;
+  program: CoreProgram;
   payerId: LedgerCase["payerId"];
   reviewNo: number;
   /** Demo minutes (0 = Tue 20 Oct, 10:42 am). */
@@ -93,7 +93,7 @@ const PINNED: Record<string, number> = { "R-0988": 960, "P-1499": 900 };
 
 const pick = <T,>(items: T[], key: string): T => items[[...key].reduce((a, c) => a + c.charCodeAt(0), 0) % items.length];
 
-const STATUS_LINES: Record<Program, string[]> = {
+const STATUS_LINES: Record<CoreProgram, string[]> = {
   RES: [
     "Since the last review the patient has stayed on the unit and followed the daily schedule. Cravings are lower than at admission but still rated 5 or higher on most days. Sleep has improved from 4 to 6 hours.",
     "Participation is steady. The patient attended every scheduled group this period and asked for an extra individual session after a hard family call. Mood is lower on days with outside contact.",
@@ -124,8 +124,8 @@ const RISK_LINES = [
   "Risk of return to use is moderate. No safety concerns this period. The patient has a named contact for after hours.",
 ];
 
-const NEXT_LEVEL: Record<Program, string> = { RES: "PHP", PHP: "IOP", IOP: "step-down to outpatient care", WM: "Residential 3.5" };
-const ASK: Record<Program, string> = { RES: "7 more days", PHP: "10 more days", IOP: "12 more units", WM: "2 more days" };
+const NEXT_LEVEL: Record<CoreProgram, string> = { RES: "PHP", PHP: "IOP", IOP: "step-down to outpatient care", WM: "Residential 3.5" };
+const ASK: Record<CoreProgram, string> = { RES: "7 more days", PHP: "10 more days", IOP: "12 more units", WM: "2 more days" };
 
 export function draftText(c: LedgerCase, reviewNo: number): string {
   const level = PROGRAM_LABEL[c.program];
@@ -189,10 +189,10 @@ export function buildReviews(ledger: LedgerCase[]): Review[] {
 export const draftedFrom = (c: LedgerCase, r: Review): Pick<Review, "status" | "draft" | "checks"> => ({ status: "drafted", draft: draftText(c, r.reviewNo), checks: checksFor(c.id) });
 
 /** Days to the next review when the payer names none: residential and partial hospital weekly, IOP every two weeks, detox every three days. */
-const REVIEW_EVERY: Record<Program, number> = { RES: 7, PHP: 7, IOP: 14, WM: 3 };
+const REVIEW_EVERY: Record<CoreProgram, number> = { RES: 7, PHP: 7, IOP: 14, WM: 3 };
 
 /** The payer's own rule ("A continued-stay review every 7 days after the first 7") wins when it asks for sooner. */
-export function reviewIntervalDays(program: Program, ruleLines: string[]): number {
+export function reviewIntervalDays(program: CoreProgram, ruleLines: string[]): number {
   const named = ruleLines.map((l) => /review every (\d+) days/i.exec(l)?.[1]).find(Boolean);
   return named ? Math.min(REVIEW_EVERY[program], Number(named)) : REVIEW_EVERY[program];
 }

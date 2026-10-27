@@ -1,7 +1,8 @@
 import type { DocItem } from "../payerConfig";
 import { seedPayerConfig } from "../payerConfigSeed";
 import { payerProfileOf } from "../payerProfile";
-import { PROGRAM_LABEL, type Program } from "../types";
+import { docsOf, forProgram, vaDocTitleOf } from "../programTables";
+import { PROGRAM_LABEL, type Program, type CoreProgram } from "../types";
 import { REQUEST_TYPE_LABEL, type CaseFacts, type FactKey, type RequestType } from "./types";
 
 /* Reading the facts a condition or a rule node asks about, and counting days. Pure, no dependency, the same everywhere: the engine, the validator and Test Workflow all count days here.
@@ -104,7 +105,7 @@ function titles(): Map<string, string> {
 }
 /** The title of a document id: one the caller knows, or the demo's own lists, or the id itself made readable. */
 export function docTitleOf(id: string, known?: Record<string, string>): string {
-  return known?.[id] ?? titles().get(id) ?? id.replace(/^[a-z]+-[a-z]+-/i, "document ").replace(/-/g, " ");
+  return known?.[id] ?? titles().get(id) ?? vaDocTitleOf(id) ?? id.replace(/^[a-z]+-[a-z]+-/i, "document ").replace(/-/g, " ");
 }
 export const titleList = (ids: string[], known?: Record<string, string>): string => {
   const t = ids.map((id) => docTitleOf(id, known).replace(/^(\p{Lu})(?=\p{Ll})/u, (c) => c.toLowerCase()));
@@ -112,14 +113,14 @@ export const titleList = (ids: string[], known?: Record<string, string>): string
 };
 
 /* ---------------------------------------------------------------- a starting fact sheet */
-const REQUESTED: Record<Program, number> = { RES: 14, IOP: 36, PHP: 15, WM: 5 };
+const REQUESTED: Record<CoreProgram, number> = { RES: 14, IOP: 36, PHP: 15, WM: 5 };
 let seedCfg: ReturnType<typeof seedPayerConfig> | null = null;
 
 /** A complete, plain case for a payer, a level of care and a request type: coverage active, benefits covered, the payer's documents all in, the portal up and no answer yet.
     Test Workflow starts from it and changes what it wants to try. `docs` is the payer's live list for the level of care; left out, the demo's own list is used. */
 export function defaultFactsFor(payerId: string, service: Program, requestType: RequestType, docs?: DocItem[]): CaseFacts {
   seedCfg ??= seedPayerConfig();
-  const list = docs ?? seedCfg[payerId]?.docs[service] ?? [];
+  const list = docs ?? docsOf(seedCfg[payerId]?.docs, payerId, service);
   const profile = payerProfileOf(payerId);
   const existing = requestType === "concurrent" || requestType === "reauth" || requestType === "modify";
   const start = requestType === "retro" ? addDays(DEMO_TODAY, -2) : DEMO_TODAY;
@@ -137,7 +138,7 @@ export function defaultFactsFor(payerId: string, service: Program, requestType: 
     authRequirement: requestType === "concurrent" ? "concurrent" : "required",
     inNetwork: "yes",
     ...(existing ? { existingAuth: { ref: "AU-1042", unitsRemaining: 5, expiresOn: addDays(DEMO_TODAY, 5) } } : {}),
-    requestedUnits: requestType === "modify" ? 7 : REQUESTED[service],
+    requestedUnits: requestType === "modify" ? 7 : forProgram(REQUESTED, service, undefined),
     documents: Object.fromEntries(list.map((d) => [d.id, true])),
     payerResponse: "none",
     portalStatus: "up",

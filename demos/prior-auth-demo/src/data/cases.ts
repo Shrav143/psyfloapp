@@ -4,7 +4,7 @@ import type { DemoFile } from "@/components/ui";
 import { payerById } from "./seed";
 import { daysRequested, dxKeyFor, dxLine, scoresFor, type QueueItem, type RequestKind } from "./queue";
 import { siteOf, type SiteId } from "./sites";
-import { PROGRAM_LABEL, type AgentKey, type PayerId, type Program, type PsyRequest, type RequestType, type Tone } from "./types";
+import { isCoreProgram, PROGRAM_LABEL, type AgentKey, type CoreProgram, type PayerId, type Program, type PsyRequest, type RequestType, type Tone } from "./types";
 import type { AppliedWorkflow } from "./workflow/types";
 import { clockTime, toDate } from "@/lib/time";
 
@@ -374,6 +374,8 @@ export function chanceRange(chance: number, settled: boolean): { lo: number; hi:
 }
 /** Similar past decisions: 1,248 for Sentara residential (212 your own, 806 network, 230 benchmark), scaled for the rest. */
 export function similarCases(payerId: PayerId, program: Program): { total: number; own: number; network: number; benchmark: number } {
+  /* A Virginia service has no past decisions in the demo's data. */
+  if (!isCoreProgram(program)) return { total: 0, own: 0, network: 0, benchmark: 0 };
   const total = payerId === "summit" && program === "RES" ? 1248 : 380 + ((payerId.length * 137 + program.charCodeAt(0) * 53) % 760);
   const own = Math.round(total * 0.17);
   const network = Math.round(total * 0.646);
@@ -421,7 +423,8 @@ export const DUE_FOR: Record<RequestType, { kind: DueKind; in: number } | undefi
 export const describeRequest = (d: CaseDraft): string => d.what ?? (!d.type ? "New request" : /request$|ation$/.test(d.type) ? d.type : `${d.type} request`);
 /** "…4821": only the last four characters of a member ID are ever shown. */
 export const maskMember = (id: string): string => (!id ? "" : id.startsWith("…") ? id : `…${id.replace(/\W/g, "").slice(-4)}`);
-export const caseCode = (program: Program | null, n: number): string => `${program === "IOP" ? "I" : program === "PHP" ? "P" : "R"}-${n}`;
+/** R- residential and detox, I- IOP, P- PHP, S- a Virginia service (CPST, ACT, ABA and the rest). */
+export const caseCode = (program: Program | null, n: number): string => `${program === "IOP" ? "I" : program === "PHP" ? "P" : program && !isCoreProgram(program) ? "S" : "R"}-${n}`;
 /** The next case id for a site. A site is a function of the case id (data/sites.ts), so the id is chosen so the new case lands at the site it was made for. */
 export function nextCaseCode(program: Program | null, seq: number, site: SiteId): { code: string; seq: number } {
   let n = seq;
@@ -463,13 +466,14 @@ export function chanceBounds(payerId: PayerId | null): { start: number; final: n
   return { start: final - 26, final };
 }
 
-/** The Authorizations queue row for a request signed and sent in New Case. It is with the payer, so it sits in the band of the payer's usual decision time. */
-export function queueItemOf(r: PsyRequest, clock: number, levelLabel?: string): QueueItem {
+/** The Authorizations queue row for a request signed and sent in New Case. It is with the payer, so it sits in the band of the payer's usual decision time.
+    The queue's case model covers the four core levels of care; a request for another Virginia service stays a Dashboard request with no queue row. */
+export function queueItemOf(r: PsyRequest, program: CoreProgram, clock: number, levelLabel?: string): QueueItem {
   const dueAt = clock + payerById(r.payerId).typicalDecisionDays * 1440;
-  const dxKey = dxKeyFor(r.id, r.program);
+  const dxKey = dxKeyFor(r.id, program);
   return {
-    id: r.id, initials: r.patient.initials, age: r.patient.age, payerId: r.payerId, program: r.program, type: r.type, levelLabel: levelLabel ?? PROGRAM_LABEL[r.program],
-    dxKey, dx: dxLine(r.id, dxKey, r.type, r.program), scores: scoresFor(r.id, dxKey), band: dueAt - clock <= 1440 ? "day" : "week", dueAt, dueVerb: "Decision", chance: r.chance ?? 70, liftPts: 0,
-    phase: "payer", agent: "navigator", status: "Payer has it. Navigator checks again in 30 minutes", needsInput: false, coverageFix: false, signal: false, days: daysRequested(r.program),
+    id: r.id, initials: r.patient.initials, age: r.patient.age, payerId: r.payerId, program, type: r.type, levelLabel: levelLabel ?? PROGRAM_LABEL[program],
+    dxKey, dx: dxLine(r.id, dxKey, r.type, program), scores: scoresFor(r.id, dxKey), band: dueAt - clock <= 1440 ? "day" : "week", dueAt, dueVerb: "Decision", chance: r.chance ?? 70, liftPts: 0,
+    phase: "payer", agent: "navigator", status: "Payer has it. Navigator checks again in 30 minutes", needsInput: false, coverageFix: false, signal: false, days: daysRequested(program),
   };
 }

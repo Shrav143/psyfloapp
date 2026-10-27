@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button, Checkbox, Dropdown, Field, Modal, TextInput } from "@/components/ui";
 import { PAYER_GROUPS, payerWithName, REACH_ROUTES } from "@/data/payerConfig";
-import { PROGRAM_LABEL, PROGRAMS, type Program } from "@/data/types";
+import { PROGRAM_LABEL, PROGRAMS, type CoreProgram } from "@/data/types";
 import { useStore } from "@/store";
 import { Labeled } from "./Labeled";
 import { DEFAULT_STATE } from "@/data/payerProfile";
@@ -21,7 +21,7 @@ export function AddPayerModal({ onClose, onAdded }: { onClose: () => void; onAdd
   const [type, setType] = useState(TYPES[0].value);
   const [group, setGroup] = useState<(typeof PAYER_GROUPS)[number]>(PAYER_GROUPS[0]);
   const [reach, setReach] = useState<string[]>(["Portal"]);
-  const [programs, setPrograms] = useState<Program[]>(["RES", "IOP", "PHP"]);
+  const [programs, setPrograms] = useState<CoreProgram[]>(["RES", "IOP", "PHP"]);
   const [error, setError] = useState("");
   const [nameError, setNameError] = useState("");
   const toggle = <T,>(list: T[], v: T): T[] => (list.includes(v) ? list.filter((x) => x !== v) : [...list, v]);

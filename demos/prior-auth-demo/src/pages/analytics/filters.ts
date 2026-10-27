@@ -5,7 +5,7 @@ import { payerById } from "@/data/seed";
 import { PAYER_ORDER } from "@/data/analytics";
 import { PROGRAM_LABEL, type BuiltInPayerId, type Program } from "@/data/types";
 import type { SiteId } from "@/data/sites";
-import type { FocusScope } from "@/lib/programFocus";
+import { coreOf, type FocusScope } from "@/lib/programFocus";
 
 export type PayerFilter = BuiltInPayerId | "all";
 export type ProgramFilter = Program | "all";
@@ -36,7 +36,10 @@ export function narrow(rows: readonly Decision[], f: Filters): Decision[] {
 }
 
 /** The filters the top bar's Program menu presets: its level of care and, for a service with a track, the diagnosis groups of that track. A service with no level of care here presets nothing. */
-export const presetFilters = (base: Filters, scope: FocusScope | null): Filters => ({ ...base, program: scope?.program ?? "all", track: scope?.program ? (scope.track ?? "all") : "all" });
+export const presetFilters = (base: Filters, scope: FocusScope | null): Filters => {
+  const program = coreOf(scope);
+  return { ...base, program: program ?? "all", track: program ? (scope?.track ?? "all") : "all" };
+};
 export const inPeriod = (rows: readonly Decision[], f: Filters): Decision[] => rows.filter((d) => inMonths(d, periodInfo(f.period).months));
 
 export const bySites = (rows: readonly Decision[], sites: readonly SiteId[]): Decision[] => (sites.length === 2 ? [...rows] : rows.filter((d) => sites.includes(d.site)));

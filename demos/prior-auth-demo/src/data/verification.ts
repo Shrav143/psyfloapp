@@ -19,7 +19,9 @@ import { planInfo } from "./payerConfigPlan";
 import { payerById } from "./seed";
 import { buildPatientBook, isoOf as bookIso } from "./patients";
 import { siteOf, type SiteId } from "./sites";
-import type { AgentKey, PayerId, Program } from "./types";
+import { forProgram, textNamesProgram, vaAuthNeed } from "./programTables";
+import { isCoreProgram, PROGRAM_LABEL, type AgentKey, type PayerId, type Program, type CoreProgram } from "./types";
+import { vaDate } from "./va/policy";
 import { HOUR } from "@/lib/time";
 
 export type AuthRequirement = "required" | "concurrent" | "not_required" | "unknown";
@@ -126,9 +128,8 @@ const last4 = (s: string): string => s.replace(/\W/g, "").slice(-4);
 export const siteOfVerification = (rec: Pick<VerificationRecord, "caseId" | "site">): SiteId => rec.site ?? siteOf(rec.caseId);
 
 /* ------------------------------------------------------------------ the record from a row */
-const WORDS: Record<Program, string[]> = { RES: ["residential"], IOP: ["iop", "intensive outpatient"], PHP: ["php", "partial hosp"], WM: ["detox", "withdrawal management"] };
 /** True when the payer's saved "No authorization needed" rule names this level of care. */
-const ruleSaysNoAuth = (cfg: PayerConfig | undefined, program: Program): boolean => (cfg?.rules.find((r) => r.id === "noauth")?.lines ?? []).some((l) => WORDS[program].some((w) => l.toLowerCase().includes(w)));
+const ruleSaysNoAuth = (cfg: PayerConfig | undefined, program: Program): boolean => (cfg?.rules.find((r) => r.id === "noauth")?.lines ?? []).some((l) => textNamesProgram(l, program));
 
 /** Required, concurrent review (an authorization is on file and each stay is reviewed), not required, or unknown when the payer has no rule on file for this level of care. */
 function requirementOf(p: EbPatient, state: VerifyContext): AuthRequirement {
@@ -137,7 +138,7 @@ function requirementOf(p: EbPatient, state: VerifyContext): AuthRequirement {
   const cfg = state.payerConfig[p.payerId];
   if (!cfg) return "unknown";
   const added = state.customPayers.find((c) => c.id === p.payerId);
-  if (added && !added.programs.includes(p.program)) return "unknown";
+  if (added && !(added.programs as Program[]).includes(p.program)) return "unknown";
   if (ruleSaysNoAuth(cfg, p.program)) return "not_required";
   return p.auth === "on_file" ? "concurrent" : "required";
 }
@@ -155,7 +156,7 @@ function existingAuthOf(p: EbPatient, state: VerifyContext): VerificationRecord[
   const digits = p.id.replace(/\D/g, "");
   return {
     ref: book?.id ?? `AU-${digits || "0000"}`,
-    service: p.levelLabel ?? PROGRAM_NAME[p.program],
+    service: p.levelLabel ?? forProgram(PROGRAM_NAME, p.program, PROGRAM_LABEL[p.program]),
     from,
     to: book?.approvedTo != null ? bookIso(book.approvedTo) : shiftDays(from, Math.round(count.approved * per)),
     approved: count.approved,
@@ -164,7 +165,7 @@ function existingAuthOf(p: EbPatient, state: VerifyContext): VerificationRecord[
     status: count.used >= count.approved ? "All used" : "Active",
   };
 }
-const PROGRAM_NAME: Record<Program, string> = { RES: "Residential 3.5", IOP: "IOP", PHP: "PHP", WM: "Detox" };
+const PROGRAM_NAME: Record<CoreProgram, string> = { RES: "Residential 3.5", IOP: "IOP", PHP: "PHP", WM: "Detox" };
 
 /** The warnings a check raises, most important first. A check that did not run raises only that. */
 export function exceptionsOf(p: EbPatient, requirement: AuthRequirement): VerificationException[] {
@@ -228,7 +229,13 @@ function withRules(p: EbPatient, state: VerifyContext): EbPatient {
   if (p.auth !== "required") return p;
   if (ruleSaysNoAuth(state.payerConfig[p.payerId], p.program)) return { ...p, auth: "not_required" };
   const added = state.customPayers.find((c) => c.id === p.payerId);
-  return added && !added.programs.includes(p.program) ? { ...p, auth: "unknown" } : p;
+  if (added && !(added.programs as Program[]).includes(p.program)) return { ...p, auth: "unknown" };
+  /* A Virginia service is read against the policy rows on the service date: only a final authorization row keeps "required". */
+  if (!isCoreProgram(p.program)) {
+    const need = vaAuthNeed(p.program, p.payerId, vaDate(isoOf(p.dos)));
+    return need === "required" ? p : { ...p, auth: need };
+  }
+  return p;
 }
 
 /** One check, run on the demo clock. Pure: the same input and state give the same record. A patient the demo knows (a seeded case) keeps what the plan said;

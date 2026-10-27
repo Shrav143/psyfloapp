@@ -1,5 +1,5 @@
 import { DAY, HOUR } from "@/lib/time";
-import type { PayerId, Program } from "./types";
+import type { PayerId, CoreProgram } from "./types";
 
 /* Case Manager ledger. 56 active cases. Ids that also appear on the Dashboard use the same initials, age,
    payer and program as src/data/seed.ts. Nine cases are not yet approved (no units), so 47 have a review this week. */
@@ -16,7 +16,7 @@ export interface LedgerCase {
   caseId: string;
   initials: string;
   age: number;
-  program: Program;
+  program: CoreProgram;
   payerId: PayerId;
   /** Review type or stay description, shown under the level-of-care chip. */
   note: string;
@@ -40,7 +40,7 @@ const RD: LedgerStatus = "review_due";
 const AW: LedgerStatus = "awaiting";
 const OT: LedgerStatus = "on_track";
 
-type Row = [id: string, who: string, age: number, prog: Program, payer: PayerId, note: string, used: number | null, total: number | null, kind: ClockKind, dueAt: number, chance: number, status: LedgerStatus, caseId?: string];
+type Row = [id: string, who: string, age: number, prog: CoreProgram, payer: PayerId, note: string, used: number | null, total: number | null, kind: ClockKind, dueAt: number, chance: number, status: LedgerStatus, caseId?: string];
 
 const ROWS: Row[] = [
   /* the rows the mockup shows first */

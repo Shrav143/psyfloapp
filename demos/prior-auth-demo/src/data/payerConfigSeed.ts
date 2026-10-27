@@ -1,5 +1,5 @@
 import { builtInPayers } from "./seed";
-import type { AgentKey, PayerId, Program } from "./types";
+import type { AgentKey, PayerId, CoreProgram } from "./types";
 import type { ChangeEntry, CustomPayer, DocItem, DocLists, PayerConfig, PayerFacts, PendingChange, Proposal, ReachLine, Rule, RuleId } from "./payerConfig";
 import { seedWorkflow, starterWorkflow } from "./payerConfigWorkflows";
 
@@ -48,12 +48,12 @@ const WM_DOCS: DocItem[] = [
 ];
 
 const copy = (items: DocItem[], prefix: string): DocItem[] => items.map((d, i) => ({ ...d, id: `${prefix}-${i + 1}` }));
-function docsFor(id: string, extras: Partial<Record<Program, DocItem[]>> = {}): DocLists {
+function docsFor(id: string, extras: Partial<Record<CoreProgram, DocItem[]>> = {}): DocLists {
   const lists: DocLists = { RES: copy(RES_DOCS, `${id}-res`), IOP: copy(IOP_DOCS, `${id}-iop`), PHP: copy(PHP_DOCS, `${id}-php`), WM: copy(WM_DOCS, `${id}-wm`) };
-  for (const p of Object.keys(extras) as Program[]) lists[p] = [...lists[p], ...(extras[p] ?? [])];
+  for (const p of Object.keys(extras) as CoreProgram[]) lists[p] = [...lists[p], ...(extras[p] ?? [])];
   return lists;
 }
-const DOC_EXTRAS: Partial<Record<PayerId, Partial<Record<Program, DocItem[]>>>> = {
+const DOC_EXTRAS: Partial<Record<PayerId, Partial<Record<CoreProgram, DocItem[]>>>> = {
   lakeshore: { RES: [doc("lake-res-x", "Fax cover sheet", "With the page count")], IOP: [doc("lake-iop-x", "Fax cover sheet", "With the page count")], PHP: [doc("lake-php-x", "Fax cover sheet", "With the page count")], WM: [doc("lake-wm-x", "Fax cover sheet", "With the page count")] },
   harborview: { RES: [doc("harb-res-x", "Medication reconciliation", "Current and reconciled")], PHP: [doc("harb-php-x", "Medicaid eligibility check", "Dated within 7 days")] },
   evergreen: { RES: [doc("ever-res-x", "Call log with the reviewer", "From the phone request")] },

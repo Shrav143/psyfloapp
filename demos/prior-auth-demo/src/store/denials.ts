@@ -2,7 +2,7 @@ import type { StateCreator } from "zustand";
 import { APPEAL_LEVELS, APPEAL_WINDOW_DAYS, SEED_ACCEPT_DENIAL, SEED_DENIAL_META, levelOf, siteOfDenial, type CallSlot, type DenialMeta, type DenialWork, type OutcomeKind } from "@/data/denials";
 import { SEED_REQUESTS, payerById } from "@/data/seed";
 import { siteOf, type SiteId } from "@/data/sites";
-import { PROGRAM_LABEL, type PayerId, type Program, type PsyRequest } from "@/data/types";
+import { PROGRAM_LABEL, type PayerId, type CoreProgram, type PsyRequest } from "@/data/types";
 import { uid } from "@/lib/format";
 import { sitesInView } from "@/lib/scope";
 import { DAY, shortDate } from "@/lib/time";
@@ -17,7 +17,7 @@ export interface NewDenialInput {
   initials: string;
   age: number;
   payerId: PayerId;
-  program: Program;
+  program: CoreProgram;
   chance: number;
   /** Minutes from now until the peer-to-peer window closes. */
   windowMin: number;

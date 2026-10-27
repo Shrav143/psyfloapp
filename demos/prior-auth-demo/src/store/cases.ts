@@ -8,7 +8,8 @@ import {
 import { authorizationsOf, episodesOf, isoOf, patientById } from "@/data/patients";
 import { payerById } from "@/data/seed";
 import type { SiteId } from "@/data/sites";
-import { PROGRAM_LABEL, type AgentKey } from "@/data/types";
+import { chanceFor } from "@/data/programTables";
+import { isCoreProgram, PROGRAM_LABEL, type AgentKey } from "@/data/types";
 import { verify } from "@/data/verification";
 import { viewerById } from "@/data/viewers";
 import type { AppliedWorkflow } from "@/data/workflow/types";
@@ -322,7 +323,7 @@ export const createCasesSlice: StateCreator<AppState, [], [], CasesSlice> = (set
         payerId: d.payerId,
         program: d.program,
         type: d.type,
-        chance: currentChance(d),
+        chance: chanceFor(d.program, currentChance(d)) ?? undefined,
         referralId: d.referralId,
       });
       /* The events happened just now, in order: at the demo's current minute, so History puts them after what was done on the case page before signing.
@@ -342,7 +343,8 @@ export const createCasesSlice: StateCreator<AppState, [], [], CasesSlice> = (set
       if (d.run.skipped.includes("verify")) get().addEvent(requestId, { actor: "verify", text: `Verify could not reach ${payerById(d.payerId).shortName}'s portal before signing`, detail: "Coverage was not confirmed. You skipped it and noted it." });
       /* The Authorizations queue lists it too: it is with the payer now. */
       const sentRequest = get().requests.find((r) => r.id === requestId);
-      if (sentRequest && !get().queueItems.some((i) => i.id === requestId)) set((s) => ({ queueItems: [...s.queueItems, queueItemOf(sentRequest, s.clock, d.levelLabel)] }));
+      const sentProgram = sentRequest?.program;
+      if (sentRequest && isCoreProgram(sentProgram) && !get().queueItems.some((i) => i.id === requestId)) set((s) => ({ queueItems: [...s.queueItems, queueItemOf(sentRequest, sentProgram, s.clock, d.levelLabel)] }));
       /* The request joins its patient, episode, authorization and verification. A new patient is the request itself; an existing one is never copied. */
       const verified = d.verificationId ?? (get().verifications[requestId] ? requestId : null);
       get().updateRequest(requestId, { patientId: d.patientId ?? requestId, episodeId: d.episodeId ?? `EP-${requestId}`, authorizationId: d.authorizationId ?? `AU-${requestId}`, verificationId: verified ?? undefined });

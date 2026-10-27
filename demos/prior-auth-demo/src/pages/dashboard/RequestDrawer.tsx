@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { RefreshCw, Scale } from "lucide-react";
 import { AgentChip, Button, Disclosure, Drawer, KeyValue, Pill, Timeline } from "@/components/ui";
 import { payerById } from "@/data/seed";
-import { PROGRAM_LABEL, type PsyRequest } from "@/data/types";
+import { NOT_ENOUGH_CASES } from "@/data/programTables";
+import { isCoreProgram, PROGRAM_LABEL, type PsyRequest } from "@/data/types";
 import { band } from "@/lib/format";
 import { stamp } from "@/lib/time";
 import { paths } from "@/routes";
@@ -93,7 +94,8 @@ export function RequestDrawer({ request: r, onClose, onSwitch }: { request: PsyR
           items={[
             ["Patient", `${r.patient.initials}, ${r.patient.age}`],
             ["Held by", <span key="a" className="inline-flex flex-wrap items-center gap-2"><AgentChip agent={r.agent} /><span className="font-normal">{nextLine(r, writeBackOn)}</span></span>],
-            ...(cms && (cms.hint || cms.past) ? [["Decision time", <span key="cms" className="font-normal text-mid-ink">{cms.past ? `Past ${CMS_DAYS} days` : `Day ${cms.day} of ${CMS_DAYS}`} under the CMS rule for Medicaid managed care</span>] as [string, ReactNode]] : []),
+            ...(cms && (cms.hint || cms.past) ? [["Decision time", <span key="cms" className="font-normal text-mid-ink">{cms.past ? `Past ${CMS_DAYS} days` : `Day ${cms.day} of ${CMS_DAYS}`} under the CMS rule for Medicaid</span>] as [string, ReactNode]] : []),
+            ...(!facts && !isCoreProgram(r.program) ? [["Approval chance", NOT_ENOUGH_CASES] as [string, ReactNode]] : []),
             ...(facts ? [[denial ? "Chance of winning" : "Approval chance", `${facts.chance}% · ${band(facts.chance).word} · likely ${facts.low} to ${facts.high}% · ${facts.similar.toLocaleString("en-US")} similar cases`] as [string, ReactNode]] : []),
           ]}
         />

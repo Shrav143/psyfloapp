@@ -8,7 +8,7 @@ import { DAY, HOUR, toDate } from "@/lib/time";
 import { SEED_LEDGER, type ClockKind, type LedgerCase } from "./manager";
 import { payerById } from "./seed";
 import { siteOf, type SiteId } from "./sites";
-import { PROGRAM_LABEL, type PayerId, type Program, type PsyRequest } from "./types";
+import { isCoreProgram, PROGRAM_LABEL, type CoreProgram, type PayerId, type Program, type PsyRequest } from "./types";
 
 /* ------------------------------------------------------------------ shapes */
 export interface Patient {
@@ -161,10 +161,10 @@ function historyOf(c: LedgerCase, w: { from: number; to: number } | null, now: n
 const openStage = (r: PsyRequest): boolean => r.track === "auth" && (r.stage === "preparing" || r.stage === "received" || r.stage === "under_review" || r.stage === "info_requested");
 
 /** A request the ledger has no row for, as a ledger-shaped case with no approved window. */
-function fromRequest(r: PsyRequest): LedgerCase {
+function fromRequest(r: PsyRequest, program: CoreProgram): LedgerCase {
   return {
-    id: r.id, caseId: r.caseId, initials: r.patient.initials, age: r.patient.age, program: r.program, payerId: r.payerId, note: r.type,
-    used: null, total: null, unit: r.program === "IOP" ? "units" : "days", clockKind: r.track === "denial" ? "p2p" : "decision", dueAt: r.deadlineAt ?? r.stageSince + DAY, chance: r.chance ?? 0, status: "awaiting",
+    id: r.id, caseId: r.caseId, initials: r.patient.initials, age: r.patient.age, program, payerId: r.payerId, note: r.type,
+    used: null, total: null, unit: program === "IOP" ? "units" : "days", clockKind: r.track === "denial" ? "p2p" : "decision", dueAt: r.deadlineAt ?? r.stageSince + DAY, chance: r.chance ?? 0, status: "awaiting",
   };
 }
 
@@ -181,11 +181,14 @@ export function buildPatientBook(ledger: readonly LedgerCase[], requests: readon
   const selfPatient = (r: PsyRequest): boolean => !r.patientId || r.patientId === r.id || r.patientId === r.caseId;
   for (const r of requests) {
     if (rowIds.has(r.id) || rowIds.has(r.caseId)) continue;
+    // The book is built on the ledger's four core levels of care; a request for another Virginia service is not a ledger case.
+    const program = r.program;
+    if (!isCoreProgram(program)) continue;
     if (!selfPatient(r)) {
       linked.push(r);
       continue;
     }
-    rows.push(fromRequest(r));
+    rows.push(fromRequest(r, program));
     rowIds.add(r.id);
     rowIds.add(r.caseId);
   }

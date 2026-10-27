@@ -1,6 +1,6 @@
 import type { CaseDraft } from "./cases";
 import { PAYERS } from "./seed";
-import type { AgentKey, PayerSummary, Program, PsyRequest } from "./types";
+import type { AgentKey, PayerSummary, Program, PsyRequest, CoreProgram } from "./types";
 import type { RuleGroup } from "./workflow/types";
 
 /* Payers: the shapes behind a payer's saved rules, documents, details, earlier process and changes (Rules & Instructions and History & Changes read them). Seed content is in payerConfigSeed.ts. */
@@ -53,7 +53,7 @@ export const RULE_TITLE: Record<RuleId, string> = { windows: "Submission windows
 export interface Rule { id: RuleId; lines: string[]; used: AgentKey[]; confirmed: string; source?: string }
 
 export interface DocItem { id: string; title: string; requirement: string }
-export type DocLists = Record<Program, DocItem[]>;
+export type DocLists = Record<CoreProgram, DocItem[]>;
 
 /** `noticed` marks the entry that records a change which is still waiting for a person, so it is not counted as a change handled in Psyflo. */
 export interface ChangeEntry { id: string; date: string; title: string; text: string; noticed?: boolean }
@@ -67,7 +67,7 @@ export interface PendingChange {
   /** The agents that redraft. */
   agents: AgentKey[];
   /** Documents the change adds to the payer's list once drafts are updated. */
-  docAdds: { program: Program; item: DocItem }[];
+  docAdds: { program: CoreProgram; item: DocItem }[];
   acknowledged?: { by: string; at: number };
 }
 
@@ -119,7 +119,7 @@ export interface CustomPayer {
   type: string;
   group: PayerSummary["group"];
   reachedBy: string;
-  programs: Program[];
+  programs: CoreProgram[];
   /** The payer organization, the state and the plan or product it was added with. Left out, the landing page reads "the name", Virginia and the plan type. */
   org?: string;
   state?: string;
@@ -131,7 +131,7 @@ export const customToSummary = (c: CustomPayer): PayerSummary => ({ id: c.id, na
 
 export const PAYER_GROUPS: PayerSummary["group"][] = ["Medicaid MCO", "Medicaid fee-for-service"];
 
-export interface AddPayerFields { name: string; type: string; group: PayerSummary["group"]; reach: string[]; programs: Program[]; org?: string; state?: string; product?: string }
+export interface AddPayerFields { name: string; type: string; group: PayerSummary["group"]; reach: string[]; programs: CoreProgram[]; org?: string; state?: string; product?: string }
 
 /** The ways a payer is reached, in the order they are written. */
 export const REACH_ROUTES = ["Portal", "Phone", "Fax"];

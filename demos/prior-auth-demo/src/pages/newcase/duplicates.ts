@@ -3,7 +3,7 @@
    Pure: the draft, the patient book, the requests and the other drafts go in; the match, if any, comes out. The caller passes only records inside the sites in view. */
 import type { CaseDraft } from "@/data/cases";
 import { isoOf, minutesOf, payerNameOf, patientById, type PatientBook } from "@/data/patients";
-import { daysRequested } from "@/data/queue";
+import { usualDays } from "@/data/queue";
 import { PROGRAM_LABEL, type PsyRequest } from "@/data/types";
 import { DAY } from "@/lib/time";
 import { paths } from "@/routes";
@@ -32,7 +32,7 @@ const mdy = (iso: string): string => {
 export function requestedRange(d: Pick<CaseDraft, "startDate" | "endDate" | "program">): { from: number; to: number } | null {
   if (!d.startDate) return null;
   const from = minutesOf(d.startDate);
-  const to = d.endDate ? minutesOf(d.endDate) : from + (daysRequested(d.program ?? "RES") - 1) * DAY;
+  const to = d.endDate ? minutesOf(d.endDate) : from + ((usualDays(d.program ?? "RES") ?? 1) - 1) * DAY;
   return { from, to: Math.max(from, to) };
 }
 const overlaps = (a: { from: number; to: number }, b: { from: number; to: number }): boolean => a.from <= b.to && b.from <= a.to;

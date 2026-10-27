@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button, Disclosure, Dropdown } from "@/components/ui";
 import type { PayerConfig } from "@/data/payerConfig";
-import { PROGRAM_LABEL, PROGRAMS, type Program } from "@/data/types";
+import { PROGRAM_LABEL, PROGRAMS, type CoreProgram } from "@/data/types";
 import { ChartChecker } from "./ChartChecker";
 import { DocListEditModal } from "./DocListEditModal";
 import { numberWord } from "../lib/payers";
@@ -9,8 +9,8 @@ import { numberWord } from "../lib/payers";
 const OPTIONS = PROGRAMS.map((p) => ({ value: p, label: PROGRAM_LABEL[p] }));
 
 /** The Clinical documentation group: what the payer wants for a level of care. The list is closed on a one-line summary and opens to a numbered list; the chart checker sits below it. */
-export function DocumentsGroup({ id, name, cfg, startProgram = "RES" }: { id: string; name: string; cfg: PayerConfig; startProgram?: Program }) {
-  const [program, setProgram] = useState<Program>(startProgram);
+export function DocumentsGroup({ id, name, cfg, startProgram = "RES" }: { id: string; name: string; cfg: PayerConfig; startProgram?: CoreProgram }) {
+  const [program, setProgram] = useState<CoreProgram>(startProgram);
   const [editing, setEditing] = useState(false);
   const items = cfg.docs[program];
   const first = items.slice(0, 2).map((d) => d.title);

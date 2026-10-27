@@ -2,14 +2,14 @@ import { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { Button, TextInput } from "@/components/ui";
 import type { DocItem } from "@/data/payerConfig";
-import { PROGRAM_LABEL, type Program } from "@/data/types";
+import { PROGRAM_LABEL, type CoreProgram } from "@/data/types";
 import { uid } from "@/lib/format";
 import { useStore } from "@/store";
 import { docsChanges } from "../lib/diffs";
 import { ReasonModal } from "../ReasonModal";
 
 /** Add, remove and rename the documents on one list. Save asks for a reason and logs each change. Mounted only while open. */
-export function DocListEditModal({ id, name, program, items, onClose }: { id: string; name: string; program: Program; items: DocItem[]; onClose: () => void }) {
+export function DocListEditModal({ id, name, program, items, onClose }: { id: string; name: string; program: CoreProgram; items: DocItem[]; onClose: () => void }) {
   const [list, setList] = useState<DocItem[]>(items.map((d) => ({ ...d })));
   const patch = (docId: string, p: Partial<DocItem>) => setList((l) => l.map((d) => (d.id === docId ? { ...d, ...p } : d)));
   return (

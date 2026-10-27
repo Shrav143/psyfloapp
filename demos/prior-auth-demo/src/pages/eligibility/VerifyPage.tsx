@@ -3,7 +3,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ImportSources, type ImportResult } from "@/components/import";
 import { Banner, Page } from "@/components/ui";
 import { siteOf } from "@/data/sites";
-import { focusScope } from "@/lib/programFocus";
+import { coreOf, focusScope } from "@/lib/programFocus";
 import { sitesInView, useScope } from "@/lib/scope";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
@@ -29,7 +29,7 @@ export default function VerifyPage() {
   const emr = useStore((s) => selectConnectedEmr(s).length > 0);
   const scope = useScope();
   // A blank check starts on the level of care of the top bar's Program menu, when it has one.
-  const [form, setForm] = useState<Form>(() => ({ ...EMPTY, program: focusScope(useStore.getState().programFocus)?.program ?? EMPTY.program }));
+  const [form, setForm] = useState<Form>(() => ({ ...EMPTY, program: coreOf(focusScope(useStore.getState().programFocus)) ?? EMPTY.program }));
   /** What the import found beyond the form's fields (plan type, group, coverage dates), shown under the import row. */
   const [found, setFound] = useState<string[]>([]);
   const who = useRef<{ caseId?: string; initials?: string | null; age?: number | null }>({});

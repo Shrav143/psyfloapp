@@ -1,6 +1,6 @@
 import { BASE } from "@/lib/time";
 import type { Score, Trend } from "./queue";
-import type { Program } from "./types";
+import type { CoreProgram } from "./types";
 
 /* The screeners a case has on file, for the case page's screener chart. Every series is built from what the case already states:
    a screener named in the case's scores ends at that score and moves the way its arrow says; a screener of the old trend chart keeps
@@ -53,7 +53,7 @@ const numberOf = (value: string): number[] => {
 export interface ScreenerInput {
   /** The case id: it seeds the number of points and the small wobble. */
   id: string;
-  program: Program;
+  program: CoreProgram;
   /** The series the old trend chart drew, with the dates it drew them on. They are the defaults. */
   trend: { name: string; data: number[] }[];
   trendLabels: string[];
@@ -70,7 +70,7 @@ export interface ScreenerInput {
 /** One series: `n` points at the screener's cadence, the last one on `endAt`. With `keep` (the old trend's dated values), those values stay as they are,
     the points between them are read off the straight line that joins them, and the points before them hold near the first one, so no new peak appears.
     Without it, the series ends on `end`, its last step goes the way `dir` says, and it never turns back on itself. */
-function series(id: ScreenerId, key: string, n: number, endAt: number, program: Program, end: number, dir: Trend, swing: number, keep: { at: number; value: number }[] = []): ScreenerPoint[] {
+function series(id: ScreenerId, key: string, n: number, endAt: number, program: CoreProgram, end: number, dir: Trend, swing: number, keep: { at: number; value: number }[] = []): ScreenerPoint[] {
   const def = SCREENERS[id];
   const cadence = def.cadence === "shift" && program !== "RES" && program !== "WM" ? "week" : def.cadence;
   const step = STEP[cadence];

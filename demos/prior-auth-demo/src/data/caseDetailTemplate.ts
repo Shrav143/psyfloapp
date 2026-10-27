@@ -5,14 +5,14 @@ import { movedText, screenersFor, type CaseScreener, type ScreenerId } from "./c
 import { FRAMEWORKS, frameworkFor, type FrameworkId } from "./frameworks";
 import { DX, MH_DX, daysRequested, dxKeyFor, dxLine, dxTrackOf, hashOf, scoresFor, type DxKey, type MhDxKey, type Phase, type QueueItem, type Score } from "./queue";
 import { SEED_REQUESTS, payerById } from "./seed";
-import type { AgentKey, PayerId, Program, PsyRequest, RequestType, Tone } from "./types";
+import type { AgentKey, PayerId, CoreProgram, PsyRequest, RequestType, Tone } from "./types";
 import { PROGRAM_LABEL } from "./types";
 
 /* Builds a sensible case page for any request that is not hand-written: from its queue row or its Dashboard request.
    The numbers are consistent by construction: the driver rows add up to the chance now and, with every action applied, to chance + lift. */
 
 export interface CaseSeed {
-  id: string; requestId: string; fromQueue: boolean; denialId?: string; initials: string; age: number; payerId: PayerId; program: Program; type: RequestType;
+  id: string; requestId: string; fromQueue: boolean; denialId?: string; initials: string; age: number; payerId: PayerId; program: CoreProgram; type: RequestType;
   levelLabel: string; dxKey: DxKey; mh?: MhDxKey; dx: string; scores: Score[]; days: number; dueAt?: number; dueVerb: string; chip?: { text: string; tone: Tone };
   chance: number; liftPts: number; phase: Phase; agent: AgentKey; needsInput: boolean; coverageFix: boolean;
 }
@@ -24,14 +24,15 @@ export function seedFromItem(i: QueueItem): CaseSeed {
   };
 }
 
-export function seedFromRequest(r: PsyRequest): CaseSeed {
+/** A request for one of the four core levels of care (the case model's scope; resolveCase leaves the other Virginia services out). */
+export function seedFromRequest(r: PsyRequest, program: CoreProgram): CaseSeed {
   const chance = SEED_REQUESTS.find((x) => x.id === r.id)?.chance ?? r.chance ?? 70; // the seed value, so a write-back never counts twice
-  const dxKey = dxKeyFor(r.id, r.program);
+  const dxKey = dxKeyFor(r.id, program);
   const phase: Phase = r.track === "denial" ? "denial" : r.stage === "preparing" ? "preparing" : "payer";
   const decided = r.stage === "decided";
   return {
-    id: r.id, requestId: r.id, fromQueue: false, initials: r.patient.initials, age: r.patient.age, payerId: r.payerId, program: r.program, type: r.type, levelLabel: PROGRAM_LABEL[r.program], dxKey, dx: dxLine(r.id, dxKey, r.type, r.program),
-    scores: scoresFor(r.id, dxKey), days: daysRequested(r.program), dueAt: decided ? undefined : r.deadlineAt ?? Math.max(120, r.stageSince + (r.typicalMin ?? DAY)),
+    id: r.id, requestId: r.id, fromQueue: false, initials: r.patient.initials, age: r.patient.age, payerId: r.payerId, program, type: r.type, levelLabel: PROGRAM_LABEL[program], dxKey, dx: dxLine(r.id, dxKey, r.type, program),
+    scores: scoresFor(r.id, dxKey), days: daysRequested(program), dueAt: decided ? undefined : r.deadlineAt ?? Math.max(120, r.stageSince + (r.typicalMin ?? DAY)),
     dueVerb: r.track === "denial" ? "Window closes" : "Decision expected", chip: decided ? { text: r.chip, tone: r.tone } : undefined,
     chance, liftPts: phase === "preparing" && chance < 85 ? 8 : 0, phase, agent: r.agent, needsInput: !!r.needsYou, coverageFix: false,
   };
@@ -147,8 +148,8 @@ const MEDS: Record<DxKey | MhDxKey, Med[]> = {
 };
 
 /** Ratings by level of care. ASAM rates risk 0 to 4; LOCUS and CALOCUS-CASII rate 1 to 5. */
-const ASAM_LEVELS: Record<Program, number[]> = { RES: [2, 1, 3, 2, 3, 3], WM: [3, 2, 2, 2, 2, 2], PHP: [1, 1, 2, 2, 2, 2], IOP: [1, 1, 2, 1, 2, 1] };
-const LOCUS_LEVELS: Record<Program, number[]> = { RES: [3, 4, 2, 3, 4, 3], WM: [3, 4, 2, 3, 4, 3], PHP: [3, 4, 2, 4, 3, 3], IOP: [2, 3, 2, 3, 3, 2] };
+const ASAM_LEVELS: Record<CoreProgram, number[]> = { RES: [2, 1, 3, 2, 3, 3], WM: [3, 2, 2, 2, 2, 2], PHP: [1, 1, 2, 2, 2, 2], IOP: [1, 1, 2, 1, 2, 1] };
+const LOCUS_LEVELS: Record<CoreProgram, number[]> = { RES: [3, 4, 2, 3, 4, 3], WM: [3, 4, 2, 3, 4, 3], PHP: [3, 4, 2, 4, 3, 3], IOP: [2, 3, 2, 3, 3, 2] };
 /** What the chart shows for each dimension, from a low to a high rating. */
 const ASAM_TEXT: string[][] = [
   ["Withdrawal risk is low. Scores are dated and stable.", "Withdrawal needed monitoring. Scores are dated and falling.", "Withdrawal risk is high and needs round-the-clock monitoring."],
@@ -169,7 +170,7 @@ const LOCUS_TEXT: string[][] = [
 const ASAM_SRC = ["Nursing notes", "Medication list", "Psychiatric eval p.5", "Psychosocial p.2", "Psychiatric eval p.3", "Psychosocial p.4"];
 const LOCUS_SRC = ["Psychiatric eval p.3", "Psychosocial p.2", "Psychiatric eval p.1", "Psychosocial p.4", "Psychosocial p.2", "Treatment plan p.2"];
 
-function dimsFor(framework: FrameworkId, program: Program): DimRating[] {
+function dimsFor(framework: FrameworkId, program: CoreProgram): DimRating[] {
   const fw = FRAMEWORKS[framework];
   const asam = framework === "asam";
   const levels = (asam ? ASAM_LEVELS : LOCUS_LEVELS)[program];

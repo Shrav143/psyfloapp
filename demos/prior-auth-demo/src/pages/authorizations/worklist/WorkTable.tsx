@@ -4,7 +4,9 @@ import { AgentBadge, Button, Meter, Pill, Table, Td, Th, Tr } from "@/components
 import { InfoTip } from "@/components/ui/InfoTip";
 import { AGENTS } from "@/data/agents";
 import { isClean } from "@/data/managerReviews";
+import { NOT_ENOUGH_CASES } from "@/data/programTables";
 import { payerById } from "@/data/seed";
+import { isCoreProgram } from "@/data/types";
 import { cn } from "@/lib/cn";
 import { band as chanceBand } from "@/lib/format";
 import { REVIEW_STATUS_LABEL, REVIEW_STATUS_TONE } from "@/pages/manager/helpers";
@@ -154,6 +156,8 @@ export function WorkTable({ rows, view, page, onPage, sort, onSort, quickKey, on
                 <Td className="hidden text-right whitespace-nowrap min-[1240px]:table-cell">
                   {b && r.chance !== null ? (
                     <span className="text-[13px] font-semibold tabular-nums" style={{ color: b.color }} aria-label={`Approval chance ${Math.round(r.chance)} percent`}>{Math.round(r.chance)}%</span>
+                  ) : r.program && !isCoreProgram(r.program) ? (
+                    <span className="ml-auto inline-block max-w-[112px] text-right text-[12px] leading-snug whitespace-normal text-muted">{NOT_ENOUGH_CASES}</span>
                   ) : (
                     <span className="text-[13px] text-muted">None</span>
                   )}

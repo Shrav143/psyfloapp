@@ -1,6 +1,6 @@
 import type { RequestKind } from "./queue";
 import type { SiteId } from "./sites";
-import type { BuiltInPayerId, Program } from "./types";
+import type { BuiltInPayerId, CoreProgram } from "./types";
 
 /* The shape of one payer decision, and the words and dates every analysis shares. */
 
@@ -56,7 +56,7 @@ export interface Decision {
   age: number;
   site: SiteId;
   payerId: BuiltInPayerId;
-  program: Program;
+  program: CoreProgram;
   kind: RequestKind;
   dx: DxId;
   population: PopulationId;

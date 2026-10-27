@@ -66,7 +66,7 @@ export default function AuthorizationsPage() {
   }, [params]);
 
   /* The top bar's Program menu presets the service, shown as a removable chip. The Service filter, once a person sets it, wins. */
-  const focus = useProgramScope(filters.program !== "all");
+  const focus = useProgramScope(filters.program !== "all", rows.map((r) => r.program));
   const queueAll = useStore((s) => s.queueItems);
   const inFocus = (r: WorkRow) => !focus.active || inScope(focus.active, r.program, caseTrack(r.src.item?.id ?? r.caseId, queueAll, r.src.draft?.diagnoses.map((d) => d.code)));
 

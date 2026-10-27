@@ -1,5 +1,6 @@
 import { payerById } from "@/data/seed";
-import { PROGRAM_LABEL, type Program, type PsyRequest } from "@/data/types";
+import { forProgram } from "@/data/programTables";
+import { PROGRAM_LABEL, type PsyRequest, type CoreProgram } from "@/data/types";
 
 export interface InfoAnswer {
   asked: string[];
@@ -15,7 +16,7 @@ interface Profile {
 }
 
 /* Invented chart facts for the demo. Every statement names where in the chart it comes from. */
-const PROFILE: Record<Program, Profile> = {
+const PROFILE: Record<CoreProgram, Profile> = {
   RES: {
     asked: [
       "The last 14 days of individual and group therapy notes",
@@ -62,9 +63,17 @@ const PROFILE: Record<Program, Profile> = {
   },
 };
 
+/* A Virginia service has no chart summary in the demo's data: the answer lists what the chart holds and invents no clinical facts. */
+const GENERIC: Profile = {
+  asked: ["The assessment that supports the service", "The individualized service plan"],
+  evidence: (who) => [`The chart holds ${who}'s assessment and individualized service plan for this service. The demo has no clinical summary for it, so none is written here.`],
+  closing: "The attached records are what the chart holds for this request.",
+  attachments: ["Assessment (demo sample)", "Individualized service plan (demo sample)"],
+};
+
 /** Packet's drafted answer to a payer's request for information. */
 export function buildInfoAnswer(r: PsyRequest): InfoAnswer {
-  const p = PROFILE[r.program];
+  const p = forProgram(PROFILE, r.program, GENERIC);
   const payer = payerById(r.payerId);
   const who = `${r.patient.initials} (age ${r.patient.age})`;
   return {

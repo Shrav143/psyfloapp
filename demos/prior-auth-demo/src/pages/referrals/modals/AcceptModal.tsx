@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Banner, Button, Dropdown, Field, Modal, TextInput } from "@/components/ui";
 import { STAFF, type Referral, type StaffId } from "@/data/referrals";
-import { PROGRAM_LABEL, PROGRAMS, type Program } from "@/data/types";
+import { PROGRAM_LABEL, PROGRAMS, type CoreProgram } from "@/data/types";
 import { DAY } from "@/lib/time";
 import { useStore } from "@/store";
 import { acceptWarnings } from "@/store/referralsLogic";
@@ -14,7 +14,7 @@ export function AcceptModal({ r, onClose, onAccepted }: { r: Referral; onClose: 
   const capacity = useStore((s) => s.capacity);
   const accept = useStore((s) => s.acceptReferral);
   const [owner, setOwner] = useState<StaffId>(r.owner ?? "jp");
-  const [program, setProgram] = useState<Program>(r.program);
+  const [program, setProgram] = useState<CoreProgram>(r.program);
   const [date, setDate] = useState(toInputDate(clock + DAY));
   const warnings = acceptWarnings(r);
   const cap = capacity[program];

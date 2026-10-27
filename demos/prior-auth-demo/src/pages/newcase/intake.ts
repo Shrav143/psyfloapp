@@ -90,8 +90,9 @@ export function initialDraft(q: URLSearchParams, st: AppState): InitialDraft {
   }
   const verified = q.get("verification") ? fromVerification(st, q.get("verification") ?? "") : null;
   const from = verified ?? fromQuery(q);
-  /* A blank case starts on the level of care of the top bar's Program menu, when the service has one. A referral, a check or a link that names a program keeps its own. */
-  const focused = !patient && !from.program ? focusScope(st.programFocus)?.program : null;
+  /* A blank case starts on the program of the top bar's Program menu: the level of care the service maps to, or the Virginia service itself.
+     A referral, a check or a link that names a program keeps its own. */
+  const focused = !patient && !from.program ? focusScope(st.programFocus)?.own : null;
   return { init: { ...base, ...(focused ? { program: focused } : {}), ...from, ...(isAuthKind(kindParam) ? { kind, type: defaultTypeFor(kind, null) } : {}) }, patient };
 }
 

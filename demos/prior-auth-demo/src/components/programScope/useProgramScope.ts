@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
+import type { Program } from "@/data/types";
 import { FOCUS_OFF, focusScope, noDataNote, type FocusScope } from "@/lib/programFocus";
 import { useStore } from "@/store";
 
@@ -18,11 +19,15 @@ export interface ProgramScopeState {
   lift: (p: URLSearchParams) => URLSearchParams;
 }
 
-/** The Program menu's preset for one page. `overridden` is true while the page's own program filter is set: the person's own choice wins. */
-export function useProgramScope(overridden = false): ProgramScopeState {
+/** The Program menu's preset for one page. `overridden` is true while the page's own program filter is set: the person's own choice wins.
+    `present` lists the programs of the page's records: a Virginia service with no level of care of its own (CPST, ACT and the rest) narrows the
+    page to its own requests once there are some. */
+export function useProgramScope(overridden = false, present?: readonly (Program | null | undefined)[]): ProgramScopeState {
   const focus = useStore((s) => s.programFocus);
   const [params, setParams] = useSearchParams();
-  const scope = useMemo(() => focusScope(focus), [focus]);
+  const base = useMemo(() => focusScope(focus), [focus]);
+  const held = !!base && !base.program && !!present?.includes(base.own);
+  const scope = useMemo(() => (base && held ? { ...base, program: base.own } : base), [base, held]);
   const removed = !!scope && params.get(FOCUS_OFF) === scope.id;
   const active = scope?.program && !removed && !overridden ? scope : null;
   const note = scope && !scope.program ? noDataNote(scope) : null;

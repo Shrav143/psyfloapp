@@ -2,7 +2,7 @@ import { LEGACY_RULE_GROUP, RULE_TITLE, type DocItem, type PayerConfig, type Rea
 import { seedPayerConfig } from "../payerConfigSeed";
 import { payerProfileOf, type PayerProfile } from "../payerProfile";
 import { PAYERS } from "../seed";
-import { PROGRAM_LABEL, PROGRAMS, type PayerId, type Program } from "../types";
+import { PROGRAM_LABEL, PROGRAMS, type PayerId, type Program, type CoreProgram } from "../types";
 import type { NodeKind, PayerRule, RequestType, RuleChange, RuleGroup, RuleSource } from "./types";
 
 /* The payer rules library.
@@ -266,7 +266,7 @@ const lib = (payerId: string, key: string, group: RuleGroup, title: string, desc
 });
 
 /** Demo limits per level of care, in the units the Eligibility sample uses: Residential 14 days, IOP 48 units, PHP 15 days, Detox 5 days (Sentara has no day limit on Residential, so its sample allows a longer request). */
-const LIMITS: Record<Program, { units: number; unit: "days" | "units"; days: number }> = { RES: { units: 14, unit: "days", days: 14 }, IOP: { units: 48, unit: "units", days: 112 }, PHP: { units: 15, unit: "days", days: 15 }, WM: { units: 5, unit: "days", days: 5 } };
+const LIMITS: Record<CoreProgram, { units: number; unit: "days" | "units"; days: number }> = { RES: { units: 14, unit: "days", days: 14 }, IOP: { units: 48, unit: "units", days: 112 }, PHP: { units: 15, unit: "days", days: 15 }, WM: { units: 5, unit: "days", days: 5 } };
 
 function libraryRulesFor(payerId: string, cfg: PayerConfig, profile: PayerProfile): PayerRule[] {
   const w = cfg.rules.find((r) => r.id === "windows")?.lines ?? [];
@@ -362,7 +362,7 @@ export function payerRulesFrom(payerId: string, cfg: PayerConfig | undefined, li
 /** What a save of a derived rule asks the existing Payers actions to do. The store runs these; nothing here touches state. */
 export type DerivedSaveAction =
   | { kind: "saveRule"; rule: RuleId; lines: string[] }
-  | { kind: "saveDocs"; program: Program; items: DocItem[]; changes: { what: string; before: string; after: string }[] }
+  | { kind: "saveDocs"; program: CoreProgram; items: DocItem[]; changes: { what: string; before: string; after: string }[] }
   | { kind: "saveCaller"; text: string }
   | { kind: "editReach"; reach: ReachLine[]; changes: { what: string; before: string; after: string }[] }
   | { kind: "overlay"; values: Values };
@@ -404,7 +404,7 @@ export function routeDerivedSave(original: PayerRule, next: PayerRule, cfg: Paye
     }
     if (lines && !same(lines, old)) actions.push({ kind: "saveRule", rule, lines });
   } else if (key.startsWith("docs:")) {
-    const program = key.slice(5) as Program;
+    const program = key.slice(5) as CoreProgram;
     const old = cfg.docs[program] ?? [];
     const text = typeof next.values.prerequisites === "string" ? next.values.prerequisites : "";
     if (changed.includes("prerequisites")) {

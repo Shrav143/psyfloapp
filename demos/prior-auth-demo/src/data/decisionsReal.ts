@@ -3,7 +3,7 @@ import { SEED_ACCEPT_DENIAL } from "./denials";
 import { SEED_LEDGER } from "./manager";
 import { QUEUE_ITEMS, dxKeyFor, type DxKey, type RequestKind } from "./queue";
 import { SEED_REQUESTS } from "./seed";
-import type { BuiltInPayerId, Program } from "./types";
+import { isCoreProgram, type BuiltInPayerId, type CoreProgram } from "./types";
 
 /* The cases the rest of the demo already has, as payer decisions: the eight open denials in Denial Intelligence and the approvals that
    created the Case Manager ledger. They sit inside the dataset's quarter, so every figure counts them, and each one links to its real page. */
@@ -16,7 +16,7 @@ export interface RealDecision {
   initials: string;
   age: number;
   payerId: BuiltInPayerId;
-  program: Program;
+  program: CoreProgram;
   kind: RequestKind;
   dx: DxId;
   population: PopulationId;
@@ -34,7 +34,7 @@ export interface RealDecision {
 const DX_OF: Record<DxKey, DxId> = { aud: "aud", oud: "oud", stim: "stim", cann: "stim", mdd: "cooc", gad: "cooc" };
 
 /** The diagnosis group a queue or ledger case has: the queue's own cluster, which says "with alcohol use" for depression and anxiety, so those are co-occurring. */
-function dxOfCase(id: string, program: Program): DxId {
+function dxOfCase(id: string, program: CoreProgram): DxId {
   const item = QUEUE_ITEMS.find((i) => i.id === id);
   return DX_OF[item?.dxKey ?? dxKeyFor(id, program)];
 }
@@ -85,7 +85,8 @@ function realDenials(): RealDecision[] {
   return DENIALS.map((d) => {
     const req = [...SEED_REQUESTS, SEED_ACCEPT_DENIAL].find((r) => r.id === d.id);
     const payerId = (req?.payerId ?? "cardinal") as BuiltInPayerId;
-    const program = req?.program ?? "RES";
+    const found = req?.program;
+    const program: CoreProgram = isCoreProgram(found) ? found : "RES";
     const age = req?.patient.age ?? 40;
     return {
       id: d.id,

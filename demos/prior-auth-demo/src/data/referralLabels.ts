@@ -1,4 +1,4 @@
-import type { Program, Tone, Urgency } from "./types";
+import type { Tone, Urgency, CoreProgram } from "./types";
 import type { Channel, CheckKey, DeclineReason, DocId, ReferralStatus, ReplyVia, StaffId } from "./referralTypes";
 
 export const STAFF: { id: StaffId; name: string; initials: string; color: string }[] = [
@@ -49,19 +49,19 @@ export const DECLINE_LABEL: Record<DeclineReason, string> = {
   withdrew: "Referrer withdrew",
 };
 
-export const PROGRAM_LONG: Record<Program, string> = {
+export const PROGRAM_LONG: Record<CoreProgram, string> = {
   RES: "Residential treatment",
   IOP: "Intensive outpatient program (IOP)",
   PHP: "Partial hospitalization program (PHP)",
   WM: "Withdrawal management (detox)",
 };
 /** The ASAM level each program delivers. A referral asking for another level is flagged. */
-export const PROGRAM_ASAM: Record<Program, string> = { RES: "3.5", IOP: "2.1", PHP: "2.5", WM: "3.2" };
+export const PROGRAM_ASAM: Record<CoreProgram, string> = { RES: "3.5", IOP: "2.1", PHP: "2.5", WM: "3.2" };
 export const AGE_MIN = 18;
 export const ACCEPTED_CREDENTIALS = /\b(MD|DO|NP|PA|PhD|PsyD|LCSW|LPC|APRN|PMHNP)\b/;
 
 /** Beds or slots. `open` is what is free this week; accepting a referral takes one. */
-export const CAPACITY_SEED: Record<Program, { total: number; open: number; unit: "bed" | "slot" }> = {
+export const CAPACITY_SEED: Record<CoreProgram, { total: number; open: number; unit: "bed" | "slot" }> = {
   RES: { total: 16, open: 2, unit: "bed" },
   WM: { total: 8, open: 1, unit: "bed" },
   PHP: { total: 24, open: 5, unit: "slot" },

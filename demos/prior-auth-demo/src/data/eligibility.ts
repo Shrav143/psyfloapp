@@ -2,7 +2,7 @@
    The wording of each payment check lives in pages/eligibility/checks.ts. */
 import { DAY, HOUR } from "@/lib/time";
 import type { SiteId } from "./sites";
-import type { PayerId, PayerSummary, Program, Tone } from "./types";
+import { isCoreProgram, type PayerId, type PayerSummary, type Program, type Tone, type CoreProgram } from "./types";
 
 /** "unavailable": the check could not run (Verify is paused in Settings), so nothing is known about coverage. */
 export type EligState = "active" | "lapsed" | "ended" | "not_found" | "unavailable";
@@ -108,7 +108,7 @@ export interface CheckInput {
 type Findings = Pick<EbPatient, "eligibility" | "benefits" | "auth" | "limit" | "noDayLimit" | "inNetwork" | "networkUnresolved" | "otherInsurance" | "payerChanged" | "idMismatch">;
 
 /** The days or units one authorization allows, by level of care. */
-const LIMIT_OF: Record<Program, [number, "days" | "units"]> = { RES: [14, "days"], IOP: [48, "units"], PHP: [15, "days"], WM: [5, "days"] };
+const LIMIT_OF: Record<CoreProgram, [number, "days" | "units"]> = { RES: [14, "days"], IOP: [48, "units"], PHP: [15, "days"], WM: [5, "days"] };
 
 /** Member ID endings that script a result. The Verify page's sample chips fill them in, so nothing is hidden. */
 export const TAIL = { lapsed: "1012", notFound: "9999", notCovered: "3030", otherPlan: "6060", limitReached: "9090", payerChanged: "7070", idMismatch: "8080", benefitUnconfirmed: "5050", providerUnresolved: "4040", requirementUnknown: "2020", authOnFile: "1414" } as const;
@@ -123,7 +123,8 @@ const MOVED_TO = (from: PayerId): PayerId => (from === "cardinal" ? "summit" : "
     payer's saved "No authorization needed" rule names needs none (data/verification.ts). Aetna is reached by phone and is not enrolled for detox. */
 export function simulateCheck(i: CheckInput): Findings {
   const tail = i.memberId.replace(/\D/g, "").slice(-4);
-  const [of, unit] = LIMIT_OF[i.program];
+  /* A Virginia service has no authorized days or units in the demo's data, so its check shows no limit. */
+  const lim = isCoreProgram(i.program) ? LIMIT_OF[i.program] : null;
   const exhausted = tail === TAIL.limitReached;
   const onFile = tail === TAIL.authOnFile;
   const moved = tail === TAIL.payerChanged;
@@ -133,7 +134,7 @@ export function simulateCheck(i: CheckInput): Findings {
     idMismatch: tail === TAIL.idMismatch ? { onFile: "…5521" } : undefined,
     benefits: tail === TAIL.notCovered ? "not_covered" : tail === TAIL.benefitUnconfirmed ? "needs_confirmation" : i.payerId === "harborview" && i.program === "PHP" ? "limited" : "covered",
     auth: tail === TAIL.requirementUnknown ? "unknown" : exhausted || onFile ? "on_file" : tail === TAIL.notCovered ? "not_required" : "required",
-    limit: exhausted ? { used: of, of, unit } : onFile ? { used: Math.round(of / 3), of, unit } : undefined,
+    limit: !lim ? undefined : exhausted ? { used: lim[0], of: lim[0], unit: lim[1] } : onFile ? { used: Math.round(lim[0] / 3), of: lim[0], unit: lim[1] } : undefined,
     noDayLimit: i.payerId === "summit" && i.program === "RES",
     inNetwork: !(i.payerId === "evergreen" && i.program === "WM"),
     networkUnresolved: tail === TAIL.providerUnresolved ? true : undefined,

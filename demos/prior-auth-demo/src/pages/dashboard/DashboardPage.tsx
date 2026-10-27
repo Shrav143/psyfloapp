@@ -59,7 +59,8 @@ export default function DashboardPage() {
   const rows = useMemo(() => buildRows(requests, ctx), [requests, ctx]);
 
   /* The top bar's Program menu presets the program like the Program filter does (a removable chip); the Program filter, once set, wins. */
-  const focus = useProgramScope(filters.program !== "all");
+  const present = useMemo(() => [...requests.map((r) => r.program), ...drafts.map((d) => d.program)], [requests, drafts]);
+  const focus = useProgramScope(filters.program !== "all", present);
   const active = focus.active;
 
   /** Payer, Program and Request type narrow every count; the Status chip and menu, and the toggle, only narrow the table. */

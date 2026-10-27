@@ -1,6 +1,6 @@
 import type { StateCreator } from "zustand";
 import { SEED_NOTIFICATIONS, SEED_REQUESTS } from "@/data/seed";
-import type { AgentKey, AppNotification, PayerId, Program, PsyRequest, RequestEvent, RequestType, StageKey, Toast, Tone } from "@/data/types";
+import { isCoreProgram, type AgentKey, type AppNotification, type PayerId, type Program, type PsyRequest, type RequestEvent, type RequestType, type StageKey, type Toast, type Tone } from "@/data/types";
 import { uid } from "@/lib/format";
 import { DAY, HOUR } from "@/lib/time";
 import type { AppState } from "./index";
@@ -33,7 +33,11 @@ const REPLY_STEP: Record<Reply, number> = { received: 1, review: 2, info: 3, app
 const STAGE_STEP: Partial<Record<StageKey, number>> = { received: 1, under_review: 2, info_requested: 3 };
 export const allowedReplies = (r: PsyRequest): Reply[] => {
   const at = STAGE_STEP[r.stage];
-  return at === undefined ? [] : (Object.keys(REPLY_STEP) as Reply[]).filter((x) => REPLY_STEP[x] > at);
+  if (at === undefined) return [];
+  const ahead = (Object.keys(REPLY_STEP) as Reply[]).filter((x) => REPLY_STEP[x] > at);
+  /* A denial is worked against a level-of-care framework and denial reasons, and none are configured for a Virginia service, so the demo control
+     offers no denial for one: it can be received, reviewed, asked for more and approved. */
+  return isCoreProgram(r.program) ? ahead : ahead.filter((x) => x !== "partial" && x !== "deny");
 };
 
 export interface CoreSlice {
@@ -97,7 +101,7 @@ export const createCoreSlice: StateCreator<AppState, [], [], CoreSlice> = (set, 
 
   submitCase: (p) => {
     const { clock, requests } = get();
-    const id = p.caseId ?? `${p.program === "RES" ? "R" : p.program === "WM" ? "R" : p.program === "IOP" ? "I" : "P"}-${1700 + Math.floor(Math.random() * 300)}`;
+    const id = p.caseId ?? `${p.program === "RES" ? "R" : p.program === "WM" ? "R" : p.program === "IOP" ? "I" : p.program === "PHP" ? "P" : "S"}-${1700 + Math.floor(Math.random() * 300)}`;
     const base: Partial<PsyRequest> = {
       stage: "received", chip: "Received", tone: "neutral", track: "auth", progress: 1, stageSince: clock, typicalMin: 25,
       agent: "navigator", next: "Navigator checks again in 30 minutes", needsYou: false, chance: p.chance, referralId: p.referralId,

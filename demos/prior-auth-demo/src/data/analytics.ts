@@ -1,4 +1,4 @@
-import type { BuiltInPayerId, Program } from "./types";
+import type { BuiltInPayerId, CoreProgram } from "./types";
 
 /* Analytics calibration. The case-level dataset (data/decisions.ts) is generated to hit these numbers for "this quarter, Both sites":
    1,070 decisions, 71% approved as asked (so 29% not, 311 denials), per payer UnitedHealthcare 86, Medicaid FFS 81, Humana 77, Sentara 74,
@@ -28,9 +28,9 @@ export const PERIODS: PeriodInfo[] = [
   { id: "year", label: "Last 12 months", phrase: "the last 12 months", months: [0, 11], compare: { now: [6, 11], before: [0, 5], words: "last 6 months vs the 6 before" } },
 ];
 
-export const PROGRAM_ORDER: Program[] = ["RES", "IOP", "PHP", "WM"];
+export const PROGRAM_ORDER: CoreProgram[] = ["RES", "IOP", "PHP", "WM"];
 /** Program shares of this quarter's decisions, in percent (Demo values). */
-export const PROGRAM_SHARE: Record<Program, number> = { RES: 40, IOP: 30, PHP: 20, WM: 10 };
+export const PROGRAM_SHARE: Record<CoreProgram, number> = { RES: 40, IOP: 30, PHP: 20, WM: 10 };
 
 export const PAYER_ORDER: BuiltInPayerId[] = ["lakeshore", "beacon", "harborview", "summit", "evergreen", "cardinal"];
 

@@ -7,6 +7,7 @@ import { verdictOf, sortPatients, type EbPatient } from "@/data/eligibility";
 import type { LedgerCase } from "@/data/manager";
 import { inWeek, isClean, reviewStamp } from "@/data/managerReviews";
 import { openDrafts } from "@/data/payerConfig";
+import { docsOf } from "@/data/programTables";
 import { PAYERS, payerById } from "@/data/seed";
 import { siteName, siteOf } from "@/data/sites";
 import { PROGRAMS, PROGRAM_LABEL, type PayerId, type Program } from "@/data/types";
@@ -85,7 +86,7 @@ export function chipsFor(route: FloRoute, all: AppState): { chips: string[]; lab
 }
 
 /* ------------------------------------------------------------------ answers */
-const ID = /\b([RIPD]-\d{3,4})\b/i;
+const ID = /\b([RIPDS]-\d{3,4})\b/i;
 
 /** Which case a question is about: one named in it, else the case page the person is on, else the request that needs them first. */
 function targetCase(q: string, route: FloRoute, s: AppState): { id: string; guessed: boolean } | undefined {
@@ -121,7 +122,7 @@ function missingAnswer(id: string, guessed: boolean, s: AppState): FloAnswer {
     if (!failing.length) return { text: `${lead}Nothing is missing for ${head}. The draft passes every check and ${canSend(d, work) ? "is ready to sign" : "waits for a person"}.`, link };
     return { text: `${lead}No document is missing for ${head}, but Integrity has ${plural(failing.length, "check")} open.`, lines: failing.map((x) => `${x.label}: ${x.note}`), link };
   }
-  const docs = s.payerConfig[c.payerId]?.docs[c.program] ?? [];
+  const docs = docsOf(s.payerConfig[c.payerId]?.docs, c.payerId, c.program);
   const docLine = open.some((o) => o.kind === "missing") && docs.length ? [`${payer.shortName} asks for ${plural(docs.length, "document")} at ${level}. The saved list is on Payers.`] : [];
   const draft = s.caseDrafts.find((x) => x.caseId === id && x.saved && !x.sent);
   const draftLine = draft && draft.unmet > 0 ? [`The New Case draft also holds ${plural(draft.unmet, "payer requirement")} the case does not meet yet.`] : [];
@@ -179,7 +180,7 @@ function requireAnswer(payerId: PayerId, program: Program | undefined, caseId: s
   const cfg = s.payerConfig[payerId];
   const link = { label: `Open Payers, ${payer.shortName}, Documents`, to: paths.payers(payerId, "documents") };
   if (!cfg) return { text: `${payer.name} has no saved workflow in the demo data yet, so I have nothing to read for it.`, link };
-  const titles = (p: Program): string[] => cfg.docs[p].map((d) => d.title);
+  const titles = (p: Program): string[] => docsOf(cfg.docs, payerId, p).map((d) => d.title);
   const scope = caseId ? `${caseId}: ` : "";
   let text: string;
   if (program) {

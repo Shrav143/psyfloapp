@@ -1,6 +1,6 @@
 import type { DxId, PopulationId } from "./decisionTypes";
 import type { RequestKind } from "./queue";
-import type { BuiltInPayerId, Program } from "./types";
+import type { BuiltInPayerId, CoreProgram } from "./types";
 
 /* How each payer behaves. This is what makes the payer-by-case-mix analysis tell a story: each payer has its own mix of patients,
    its own reasons and its own habits. The generator (decisionsGen.ts) turns it into records; the counts the page shows come from the records. */
@@ -8,7 +8,7 @@ import type { BuiltInPayerId, Program } from "./types";
 type Tilt<K extends string> = Partial<Record<K, number>>;
 
 /** Decisions this quarter by payer and program. Rows add to each payer's decisions, columns to the 40 / 30 / 20 / 10 program shares of 1,070. */
-export const QUARTER_PROGRAM: Record<BuiltInPayerId, Record<Program, number>> = {
+export const QUARTER_PROGRAM: Record<BuiltInPayerId, Record<CoreProgram, number>> = {
   cardinal: { RES: 162, IOP: 114, PHP: 76, WM: 30 },
   summit: { RES: 98, IOP: 70, PHP: 52, WM: 30 },
   evergreen: { RES: 80, IOP: 36, PHP: 26, WM: 28 },
@@ -26,7 +26,7 @@ export const DX_MIX: Record<BuiltInPayerId, Record<DxId, number>> = {
   harborview: { aud: 34, oud: 12, stim: 8, mood: 26, trauma: 8, cooc: 12 },
   lakeshore: { aud: 18, oud: 16, stim: 12, mood: 26, trauma: 14, cooc: 14 },
 };
-export const DX_BY_PROGRAM: Record<Program, Record<DxId, number>> = {
+export const DX_BY_PROGRAM: Record<CoreProgram, Record<DxId, number>> = {
   RES: { aud: 1.1, oud: 1.15, stim: 1.05, mood: 0.8, trauma: 0.9, cooc: 1.2 },
   IOP: { aud: 1, oud: 0.9, stim: 1.1, mood: 1.2, trauma: 1.1, cooc: 0.9 },
   PHP: { aud: 0.9, oud: 0.8, stim: 0.9, mood: 1.3, trauma: 1.2, cooc: 1.3 },
@@ -34,19 +34,19 @@ export const DX_BY_PROGRAM: Record<Program, Record<DxId, number>> = {
 };
 
 /** What kind of request a program sees. */
-export const KIND_BY_PROGRAM: Record<Program, Record<RequestKind, number>> = {
+export const KIND_BY_PROGRAM: Record<CoreProgram, Record<RequestKind, number>> = {
   RES: { initial: 30, concurrent: 46, reauth: 8, modify: 5, retro: 11 },
   PHP: { initial: 24, concurrent: 46, reauth: 14, modify: 7, retro: 9 },
   IOP: { initial: 22, concurrent: 20, reauth: 42, modify: 8, retro: 8 },
   WM: { initial: 56, concurrent: 8, reauth: 0.5, modify: 26, retro: 9.5 },
 };
 /** Denials are a little more likely at some levels of care. */
-export const DENIAL_BY_PROGRAM: Record<Program, number> = { RES: 1.05, IOP: 0.98, PHP: 1, WM: 1.4 };
+export const DENIAL_BY_PROGRAM: Record<CoreProgram, number> = { RES: 1.05, IOP: 0.98, PHP: 1, WM: 1.4 };
 
 export interface ReasonTilt {
   dx?: Tilt<DxId>;
   kind?: Tilt<RequestKind>;
-  program?: Tilt<Program>;
+  program?: Tilt<CoreProgram>;
   pop?: Tilt<PopulationId>;
   /** Chance the case is at Site B (about half of denials; 42% of approvals). */
   siteB?: number;

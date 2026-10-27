@@ -17,6 +17,7 @@ import { NarrativeCard } from "./NarrativeCard";
 import { PayerChangeNote } from "./PayerChangeNote";
 import { reviewModel } from "./reviewModel";
 import { ReviewSummary } from "./ReviewSummary";
+import { NoChance, noChanceFor } from "./ChancePanel";
 import { SignCard } from "./SignCard";
 import { StepFooter } from "./StepFooter";
 import { preparationPatch, stepPatch } from "./steps";
@@ -102,22 +103,30 @@ export function ReviewStep({ draft, env }: { draft: CaseDraft; env: CaseEnv }) {
         </div>
         <div className="flex flex-col gap-4">
           {ready ? <ChecksCard checks={review.checks} /> : null}
-          <Card>
-            <CardBody className="flex items-center gap-4">
-              <Ring value={chance} size={84} stroke={9} />
-              <div className="min-w-0">
-                <Label>Approval chance</Label>
-                <Pill tone={b.tone} dot className="mt-1">
-                  {b.word} · likely {range.lo}-{range.hi}%
-                </Pill>
-                <div className="mt-1.5 text-xs text-muted">
-                  {payer ? `${payer.shortName} decides in about ${payer.typicalDecisionDays === 1 ? "1 day" : `${payer.typicalDecisionDays} days`} in the demo data. ` : ""}
-                  {sc ? `Based on ${sc.total.toLocaleString("en-US")} similar cases.` : ""}
+          {noChanceFor(draft) ? (
+            <Card>
+              <CardBody>
+                <NoChance />
+              </CardBody>
+            </Card>
+          ) : (
+            <Card>
+              <CardBody className="flex items-center gap-4">
+                <Ring value={chance} size={84} stroke={9} />
+                <div className="min-w-0">
+                  <Label>Approval chance</Label>
+                  <Pill tone={b.tone} dot className="mt-1">
+                    {b.word} · likely {range.lo}-{range.hi}%
+                  </Pill>
+                  <div className="mt-1.5 text-xs text-muted">
+                    {payer ? `${payer.shortName} decides in about ${payer.typicalDecisionDays === 1 ? "1 day" : `${payer.typicalDecisionDays} days`} in the demo data. ` : ""}
+                    {sc ? `Based on ${sc.total.toLocaleString("en-US")} similar cases.` : ""}
+                  </div>
                 </div>
-              </div>
-            </CardBody>
-          </Card>
-          <SignCard draft={draft} checks={review.checks} missing={review.missing} chance={chance} ready={ready} backSignal={backSignal} onSign={onSign} />
+              </CardBody>
+            </Card>
+          )}
+          <SignCard draft={draft} checks={review.checks} missing={review.missing} chance={noChanceFor(draft) ? null : chance} ready={ready} backSignal={backSignal} onSign={onSign} />
         </div>
       </div>
       <StepFooter
