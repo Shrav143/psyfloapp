@@ -5,6 +5,11 @@ import type { SiteId } from "../sites";
 import { vaDate } from "../va/policy";
 import { VA_PLANS } from "../va/plans";
 import { serviceById, type VaServiceId } from "../va/services";
+import { extendCans } from "./ext/cans";
+import { extendClinical } from "./ext/clinical";
+import { extendProfile } from "./ext/profile";
+import { extendReferral } from "./ext/referral";
+import { extendReview } from "./ext/review";
 import type {
   AgentTask, AuditEvent, CansAssessment, EligibilityCheck, FieldState, FieldValue, IntakeDocument, IntakeRecord, IntakeStaff, ReferralMethod,
   ReferralOut, ServiceRecommendation, SourceRef, Suggestion, TriageStatus,
@@ -17,11 +22,13 @@ export const INTAKE_STAFF: IntakeStaff[] = [
   { id: "tb", name: "Taylor Brooks", initials: "TB", role: "Intake coordinator", qualified: false },
   { id: "ml", name: "Morgan Lee", initials: "ML", role: "Intake coordinator", qualified: false },
   { id: "dr", name: "Dr. Rivera", initials: "DR", role: "Licensed clinician", qualified: true, credentials: "PsyD, licensed clinical psychologist" },
-  { id: "hk", name: "Heather K.", initials: "HK", role: "Clinical director", qualified: true, credentials: "LISW-S" },
+  { id: "hk", name: "Heather K.", initials: "HK", role: "Clinical director", qualified: true, credentials: "LCSW" },
   { id: "am", name: "Alex Morgan", initials: "AM", role: "Clinic owner", qualified: false },
   { id: "so", name: "Sam Okafor", initials: "SO", role: "Billing", qualified: false },
 ];
 export const staffOf = (id: string): IntakeStaff | undefined => INTAKE_STAFF.find((s) => s.id === id);
+/** The qualified clinician who signs at each site in the demo. */
+export const CLINICIAN_AT: Record<SiteId, string> = { A: "dr", B: "hk" };
 /** The intake staff id of the person viewing (Demo menu, Viewing as). */
 export const VIEWER_STAFF: Record<string, string> = { jordan: "jp", rivera: "dr", okafor: "so", morgan: "am" };
 
@@ -143,7 +150,7 @@ const scenarioB = (): IntakeRecord => {
   r.documents = [B_EMR];
   r.referral = {
     sourceOrg: F("Psyflo demo clinic, Site B (existing client)", "verified", B_AT, "jp"),
-    referringClinician: F("Heather K., LISW-S (clinical director)", "verified", B_AT, "jp"),
+    referringClinician: F("Heather K., LCSW (clinical director)", "verified", B_AT, "jp"),
     referrerContact: F("Internal", "verified", B_AT, "jp"),
     reason: F("Receives MHSS, which retires June 30, 2027. Needs a clinical review of which redesigned or current service fits from July 1, 2027.", "verified", B_AT, "jp"),
     concerns: F("Daily living skills, medication routines and budgeting; stable for 18 months.", "document_extracted", B_AT, "reader", s("b-svc"), "high"),
@@ -308,7 +315,8 @@ function light([id, svc, initials, age, payer, site, method, source, triage, urg
 
 export function seedIntakes(): IntakeRecord[] {
   seq = 0;
-  return [scenarioA(), scenarioB(), scenarioC(), scenarioD(), ...LIGHT.map(light)];
+  const base = [scenarioA(), scenarioB(), scenarioC(), scenarioD(), ...LIGHT.map(light)];
+  return [extendReferral, extendProfile, extendClinical, extendCans, extendReview].reduce((rs, fn) => fn(rs), base);
 }
 
 /* ---------------------------------------------------------------- July 2027 transition */
