@@ -17,7 +17,7 @@ export function AuditList({ edits }: { edits: EditLogEntry[] }) {
         <div role="group" aria-label="Filter by area" className="flex flex-wrap items-center gap-2">
           <span className="text-[13px] font-medium text-ink2">Area</span>
           {(["all", ...AUDIT_AREAS] as const).map((a) => (
-            <button key={a} type="button" aria-pressed={area === a} onClick={() => setArea(a)} className={cn("h-[28px] rounded-full border px-3 text-[13px] font-medium", area === a ? "border-forest bg-[#F3F7F4] font-semibold text-forest" : "border-field bg-white text-ink2 hover:bg-tile")}>
+            <button key={a} type="button" aria-pressed={area === a} onClick={() => setArea(a)} className={cn("h-[28px] rounded-full border px-3 text-[13px] font-medium", area === a ? "border-forest bg-[#EEF7F6] font-semibold text-forest" : "border-field bg-white text-ink2 hover:bg-tile")}>
               {a === "all" ? "All" : a}{a === "all" ? null : <span className="ml-1.5 text-xs font-normal text-muted">{edits.filter((e) => e.area === a).length}</span>}
             </button>
           ))}

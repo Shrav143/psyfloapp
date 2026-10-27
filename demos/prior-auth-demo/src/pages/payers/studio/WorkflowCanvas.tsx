@@ -158,7 +158,7 @@ const Inner = forwardRef<CanvasHandle, WorkflowCanvasProps>(function Inner({ nod
       deletable: !readOnly,
       focusable: true,
       ariaLabel: `Line from ${nodes.find((n) => n.id === e.from)?.title ?? "step"} to ${nodes.find((n) => n.id === e.to)?.title ?? "step"}${e.label ? `, ${e.label}` : ""}`,
-      markerEnd: { type: "arrowclosed" as const, width: 16, height: 16, color: taken.has(e.id) ? "#2f6f5c" : selEdge === e.id ? "#1d4f43" : "#b8ad9d" },
+      markerEnd: { type: "arrowclosed" as const, width: 16, height: 16, color: taken.has(e.id) ? "#2e7d52" : selEdge === e.id ? "#217a78" : "#b4b2ab" },
       data: { label: e.label, tone: toneOfLabel(e.label), direction, stagger: staggerOf(e, nodes), run: runState ? (taken.has(e.id) ? "taken" : "dim") : undefined },
     }));
   }, [edges, nodes, selEdge, runState, readOnly, direction]);
@@ -290,7 +290,7 @@ const Inner = forwardRef<CanvasHandle, WorkflowCanvasProps>(function Inner({ nod
       onKeyDown={onKeyDown}
       role="application"
       aria-label={ariaLabel ?? "Workflow canvas. Tab to a step, press Enter to open it, arrow keys to move it, Delete to remove it."}
-      className={cn("wf-canvas relative h-full w-full overflow-hidden rounded-[18px] border border-edge bg-[#FBF8F3]", className)}
+      className={cn("wf-canvas relative h-full w-full overflow-hidden rounded-[18px] border border-edge bg-[#FAF9F6]", className)}
     >
       <ReactFlow<RfWfNode, RfWfEdge>
         nodes={rfNodes}
@@ -356,9 +356,9 @@ const Inner = forwardRef<CanvasHandle, WorkflowCanvasProps>(function Inner({ nod
           "controls.ariaLabel": "Canvas controls",
         }}
       >
-        <Background variant={BackgroundVariant.Dots} gap={GRID} size={1.4} color="#e3dacd" />
+        <Background variant={BackgroundVariant.Dots} gap={GRID} size={1.4} color="#e0ddd6" />
         <Controls showInteractive={false} position="bottom-left" fitViewOptions={{ padding: 0.16, maxZoom: 1 }} />
-        {minimap ? <MiniMap pannable zoomable position="top-right" nodeStrokeWidth={2} nodeColor="#cfe3db" maskColor="rgba(250,246,241,0.7)" ariaLabel="Overview of the workflow" /> : null}
+        {minimap ? <MiniMap pannable zoomable position="top-right" nodeStrokeWidth={2} nodeColor="#cfe5d8" maskColor="rgba(248,246,242,0.7)" ariaLabel="Overview of the workflow" /> : null}
       </ReactFlow>
     </div>
   );

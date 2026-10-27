@@ -7,7 +7,7 @@ import { ConditionChip, StepChip } from "./StepChip";
 function Branches({ step }: { step: WorkflowStep }) {
   if (!step.branches.length) return null;
   return (
-    <div className="mt-3 ml-[17px] flex flex-col gap-2 border-l-2 border-[#E5DCD0] pl-4 min-[560px]:pl-6">
+    <div className="mt-3 ml-[17px] flex flex-col gap-2 border-l-2 border-[#DEDBD4] pl-4 min-[560px]:pl-6">
       {step.branches.map((b) => (
         <div key={b.id} className="flex flex-wrap items-stretch gap-2.5">
           <div className="flex w-[250px] max-w-full shrink-0 items-center gap-2 rounded-xl border border-tile-edge bg-tile px-3 py-2">

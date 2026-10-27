@@ -10,7 +10,7 @@ export function Timeline({ events, empty }: { events: RequestEvent[]; empty?: Re
   const sorted = [...events].sort((a, b) => a.at - b.at);
   return (
     <ol className="relative pl-[26px]">
-      <span className="absolute top-2 bottom-6 left-[5px] w-0.5 bg-[#EADFD2]" aria-hidden="true" />
+      <span className="absolute top-2 bottom-6 left-[5px] w-0.5 bg-[#E8E5DF]" aria-hidden="true" />
       {sorted.map((e) => (
         <li key={e.id} className="relative pb-[18px] last:pb-0">
           <span className={cn("absolute top-[3px] -left-[26px] h-3 w-3 rounded-full", e.done ? "bg-good" : "border-2 border-dashed border-faint bg-white")} />

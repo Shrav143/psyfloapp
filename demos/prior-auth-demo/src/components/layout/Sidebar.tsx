@@ -1,5 +1,6 @@
 import { BarChart3, Building2, ChevronDown, ChevronRight, ClipboardList, HelpCircle, ListChecks, LayoutDashboard, LogOut, RefreshCw, Scale, Settings, ShieldCheck, PlusCircle, FlaskConical, type LucideIcon } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
+import logo from "@/assets/brand/psyflo-logo.svg";
 import { useScope } from "@/lib/scope";
 import { NavLink, useLocation } from "react-router-dom";
 import { Count } from "@/components/ui";
@@ -24,7 +25,7 @@ interface Item {
   subs?: Item[];
 }
 
-const link = "flex h-[42px] items-center gap-3 rounded-xl px-3 text-[14px] font-medium text-ink2 transition-colors hover:bg-[#EADFD0]";
+const link = "flex h-[42px] items-center gap-3 rounded-xl px-3 text-[14px] font-medium text-ink2 transition-colors hover:bg-[#E8E5DF]";
 
 function NavItem({ item, depth = 0 }: { item: Item; depth?: number }) {
   const { pathname } = useLocation();
@@ -139,11 +140,9 @@ export function Sidebar() {
   ];
 
   return (
-    <aside className="sticky top-0 flex h-screen w-[256px] shrink-0 flex-col gap-[22px] border-r border-[#EADFD2] bg-side px-3.5 pt-6 pb-3.5">
+    <aside className="sticky top-0 flex h-screen w-[256px] shrink-0 flex-col gap-[22px] border-r border-[#E8E5DF] bg-side px-3.5 pt-6 pb-3.5">
       <div className="px-2">
-        <div className="font-serif text-[24px] leading-none font-semibold tracking-[-0.4px] text-[#1C473B]">
-          psyflo<i className="not-italic text-sage">.</i>
-        </div>
+        <img src={logo} alt="psyflo" width={91} height={30} className="block h-[30px] w-auto" />
         <div className="mt-[5px] text-[11px] tracking-[0.12em] text-muted uppercase">Prior auth &amp; UR</div>
       </div>
       <nav aria-label="Main" className="flex flex-1 flex-col gap-[3px] overflow-y-auto">
@@ -157,23 +156,23 @@ export function Sidebar() {
         ))}
       </nav>
       <div className="flex flex-col gap-0.5">
-        <div className="mb-2 flex items-center gap-2.5 rounded-xl border border-[#EADFD2] bg-[#FBF8F3] px-3 py-2.5 text-[12px] text-ink2">
+        <div className="mb-2 flex items-center gap-2.5 rounded-xl border border-[#E8E5DF] bg-[#FAF9F6] px-3 py-2.5 text-[12px] text-ink2">
           <FlaskConical size={16} className="ico text-muted" />
           Demo data
         </div>
-        <NavLink to={paths.settings()} className={({ isActive }) => cn("flex h-[34px] items-center gap-2.5 rounded-[10px] px-3 text-sm font-medium text-ink2 hover:bg-[#EADFD0]", isActive && "bg-forest text-white hover:bg-forest")}>
+        <NavLink to={paths.settings()} className={({ isActive }) => cn("flex h-[34px] items-center gap-2.5 rounded-[10px] px-3 text-sm font-medium text-ink2 hover:bg-[#E8E5DF]", isActive && "bg-forest text-white hover:bg-forest")}>
           <Settings size={17} className="ico" />
           Settings
         </NavLink>
-        <button type="button" onClick={() => toast({ title: "Help", body: "Press Ask FLO (top right) to ask a question. Use Demo, top right, to reset, move time forward or view as another person.", tone: "neutral" })} className="flex h-[34px] items-center gap-2.5 rounded-[10px] px-3 text-sm font-medium text-ink2 hover:bg-[#EADFD0]">
+        <button type="button" onClick={() => toast({ title: "Help", body: "Press Ask FLO (top right) to ask a question. Use Demo, top right, to reset, move time forward or view as another person.", tone: "neutral" })} className="flex h-[34px] items-center gap-2.5 rounded-[10px] px-3 text-sm font-medium text-ink2 hover:bg-[#E8E5DF]">
           <HelpCircle size={17} className="ico" />
           Help
         </button>
-        <button type="button" onClick={() => toast({ title: "This is a demo", body: "There is nothing to sign out of.", tone: "neutral" })} className="flex h-[34px] items-center gap-2.5 rounded-[10px] px-3 text-sm font-medium text-ink2 hover:bg-[#EADFD0]">
+        <button type="button" onClick={() => toast({ title: "This is a demo", body: "There is nothing to sign out of.", tone: "neutral" })} className="flex h-[34px] items-center gap-2.5 rounded-[10px] px-3 text-sm font-medium text-ink2 hover:bg-[#E8E5DF]">
           <LogOut size={17} className="ico" />
           Sign out
         </button>
-        <div className="mt-2.5 flex items-center gap-3 border-t border-[#EADFD2] px-2 pt-3.5" role="group" aria-label={`Signed in as ${viewer.name}, ${viewer.role}`}>
+        <div className="mt-2.5 flex items-center gap-3 border-t border-[#E8E5DF] px-2 pt-3.5" role="group" aria-label={`Signed in as ${viewer.name}, ${viewer.role}`}>
           <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-forest text-xs font-semibold text-white" aria-hidden="true">{viewer.initials}</div>
           <div className="min-w-0">
             <div className="truncate text-[13px] font-semibold">{viewer.name}</div>

@@ -2,9 +2,9 @@ import type { Program, Tone, Urgency } from "./types";
 import type { Channel, CheckKey, DeclineReason, DocId, ReferralStatus, ReplyVia, StaffId } from "./referralTypes";
 
 export const STAFF: { id: StaffId; name: string; initials: string; color: string }[] = [
-  { id: "jp", name: "Jordan Perez", initials: "JP", color: "#1D4F43" },
+  { id: "jp", name: "Jordan Perez", initials: "JP", color: "#217A78" },
   { id: "tb", name: "Taylor Brooks", initials: "TB", color: "#6B4E3A" },
-  { id: "ml", name: "Morgan Lee", initials: "ML", color: "#5E8A7B" },
+  { id: "ml", name: "Morgan Lee", initials: "ML", color: "#34908E" },
 ];
 export const staffById = (id: StaffId): (typeof STAFF)[number] => STAFF.find((s) => s.id === id) as (typeof STAFF)[number];
 

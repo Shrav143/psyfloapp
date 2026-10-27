@@ -20,7 +20,7 @@ export function Tr({ className, selected, onClick, ...rest }: HTMLAttributes<HTM
   return (
     <tr
       onClick={onClick}
-      className={cn("[&:last-child>td]:border-b-0", onClick && "cursor-pointer hover:bg-[#FBF8F3]", selected && "bg-[#F3F7F4] hover:bg-[#F3F7F4]", className)}
+      className={cn("[&:last-child>td]:border-b-0", onClick && "cursor-pointer hover:bg-[#FAF9F6]", selected && "bg-[#EEF7F6] hover:bg-[#EEF7F6]", className)}
       {...rest}
     />
   );

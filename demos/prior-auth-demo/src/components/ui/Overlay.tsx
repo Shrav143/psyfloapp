@@ -9,8 +9,8 @@ export function Drawer({ open, onClose, title, subtitle, right, width = 640, chi
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50" role="dialog" aria-modal="true">
-      <div className="absolute inset-0 bg-[#1b1b19]/30" onClick={onClose} />
-      <aside style={{ width }} className="psy-slide-in absolute top-0 right-0 flex h-full max-w-full flex-col border-l border-edge bg-canvas shadow-[-12px_0_40px_rgba(40,30,15,0.12)]">
+      <div className="absolute inset-0 bg-[#151b24]/30" onClick={onClose} />
+      <aside style={{ width }} className="psy-slide-in absolute top-0 right-0 flex h-full max-w-full flex-col border-l border-edge bg-canvas shadow-[-12px_0_40px_rgba(21,27,36,0.12)]">
         <header className="flex items-start gap-4 border-b border-edge bg-white px-7 py-5">
           <div className="min-w-0 flex-1">
             <h2 className="font-serif text-[24px] font-semibold leading-tight">{title}</h2>
@@ -34,8 +34,8 @@ export function Modal({ open, onClose, title, subtitle, children, footer, size =
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-[60] grid place-items-center p-6" role="dialog" aria-modal="true">
-      <div className="absolute inset-0 bg-[#1b1b19]/35" onClick={onClose} />
-      <div className={cn("psy-fade-up relative flex max-h-[88vh] w-full flex-col rounded-[20px] border border-edge bg-white shadow-[0_24px_64px_rgba(40,30,15,0.2)]", size === "sm" ? "max-w-[440px]" : size === "lg" ? "max-w-[860px]" : "max-w-[600px]")}>
+      <div className="absolute inset-0 bg-[#151b24]/35" onClick={onClose} />
+      <div className={cn("psy-fade-up relative flex max-h-[88vh] w-full flex-col rounded-[20px] border border-edge bg-white shadow-[0_24px_64px_rgba(21,27,36,0.2)]", size === "sm" ? "max-w-[440px]" : size === "lg" ? "max-w-[860px]" : "max-w-[600px]")}>
         <header className="flex items-start gap-4 border-b border-line px-6 py-5">
           <div className="min-w-0 flex-1">
             <h2 className="font-serif text-[18px] font-semibold leading-tight">{title}</h2>

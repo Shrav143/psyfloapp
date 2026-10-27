@@ -37,7 +37,7 @@ export function DiagnosisPicker({ value, onChange, label = "Diagnoses (ICD-10)",
         <div className="relative">
           <TextInput aria-label="Add a diagnosis" icon={Plus} value={q} placeholder="Add a diagnosis, e.g. F10 or alcohol" onChange={(e) => setQ(e.target.value)} onFocus={() => setFocus(true)} onBlur={() => setFocus(false)} />
           {focus && matches.length ? (
-            <ul onMouseDown={(e) => e.preventDefault()} className="psy-fade-up absolute top-[42px] right-0 left-0 z-30 max-h-[260px] overflow-auto rounded-[14px] border border-field bg-white p-1.5 shadow-[0_12px_32px_rgba(40,30,15,0.12)]">
+            <ul onMouseDown={(e) => e.preventDefault()} className="psy-fade-up absolute top-[42px] right-0 left-0 z-30 max-h-[260px] overflow-auto rounded-[14px] border border-field bg-white p-1.5 shadow-[0_12px_32px_rgba(21,27,36,0.12)]">
               {matches.map((c) => (
                 <li key={c.code}>
                   <button type="button" onClick={() => add(c)} className="flex w-full items-baseline gap-2.5 rounded-[10px] px-3 py-2 text-left text-sm hover:bg-tile">

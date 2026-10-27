@@ -227,7 +227,7 @@ export function ScreenerTrend({ series, defaultShown, now, height = 170, subject
               Add screener
             </button>
             {menu ? (
-              <div role="menu" aria-label="Screeners on file" className="absolute bottom-full left-0 z-30 mb-1 w-[220px] rounded-xl border border-edge bg-white p-1 shadow-[0_12px_32px_rgba(40,30,15,0.14)]">
+              <div role="menu" aria-label="Screeners on file" className="absolute bottom-full left-0 z-30 mb-1 w-[220px] rounded-xl border border-edge bg-white p-1 shadow-[0_12px_32px_rgba(21,27,36,0.14)]">
                 {onFile.map((s) => (
                   <button
                     key={s.key} type="button" role="menuitem" autoFocus={s === onFile[0]}

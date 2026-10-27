@@ -47,7 +47,7 @@ function DemoMenu() {
         <span className="rounded-md bg-neutral-bg px-1.5 py-0.5 text-[11px]">{stamp(clock)}</span>
       </button>
       {open ? (
-        <div className="psy-fade-up absolute top-11 right-0 z-40 max-h-[calc(100vh-76px)] w-[min(340px,calc(100vw-32px))] overflow-y-auto overscroll-contain rounded-2xl border border-field bg-white p-2 shadow-[0_12px_32px_rgba(40,30,15,0.14)]">
+        <div className="psy-fade-up absolute top-11 right-0 z-40 max-h-[calc(100vh-76px)] w-[min(340px,calc(100vw-32px))] overflow-y-auto overscroll-contain rounded-2xl border border-field bg-white p-2 shadow-[0_12px_32px_rgba(21,27,36,0.14)]">
           <div className="px-3 pt-2 pb-1 text-[11px] font-medium tracking-[0.1em] text-muted uppercase">Time</div>
           <div className="px-3 pb-1 text-[13px] text-muted">The demo clock is {toDate(clock).toDateString()}, {clockTime(toDate(clock))}. It only moves when you move it.</div>
           <button type="button" className={item} onClick={() => advance(HOUR)}><FastForward size={16} className="ico" />Fast-forward 1 hour</button>
@@ -89,7 +89,7 @@ export function Topbar() {
   const notifOpen = useStore((s) => s.notifOpen);
   const btn = "relative grid h-9 w-9 place-items-center rounded-xl border border-field bg-white text-ink2 hover:bg-tile";
   return (
-    <div className="sticky top-0 z-30 flex h-[60px] items-center gap-3 border-b border-[#EFE6DA] bg-canvas/90 px-4 backdrop-blur lg:px-7">
+    <div className="sticky top-0 z-30 flex h-[60px] items-center gap-3 border-b border-[#ECE9E4] bg-canvas/90 px-4 backdrop-blur lg:px-7">
       <SiteSwitcher />
       <div className="ml-auto flex items-center gap-2 lg:gap-3.5">
         <DemoMenu />

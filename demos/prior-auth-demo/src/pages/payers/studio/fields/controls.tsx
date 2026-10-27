@@ -103,7 +103,7 @@ export function MultiChips({ label, values, onChange, options, help, empty }: { 
         {options.map((o) => {
           const on = values.includes(o.value);
           return (
-            <button key={o.value} type="button" role="checkbox" aria-checked={on} onClick={() => onChange(on ? values.filter((v) => v !== o.value) : [...values, o.value])} className={cn("inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[12px] font-medium", on ? "border-forest bg-[#F3F7F4] text-forest" : "border-field bg-white text-ink2 hover:bg-tile")}>
+            <button key={o.value} type="button" role="checkbox" aria-checked={on} onClick={() => onChange(on ? values.filter((v) => v !== o.value) : [...values, o.value])} className={cn("inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[12px] font-medium", on ? "border-forest bg-[#EEF7F6] text-forest" : "border-field bg-white text-ink2 hover:bg-tile")}>
               {on ? <Check size={12} className="ico" aria-hidden="true" /> : null}
               {o.label}
             </button>

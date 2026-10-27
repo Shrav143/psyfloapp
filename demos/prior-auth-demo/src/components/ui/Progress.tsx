@@ -2,14 +2,14 @@ import { cn } from "@/lib/cn";
 import { band } from "@/lib/format";
 
 type BarTone = "neutral" | "mid" | "good" | "risk";
-const CURRENT: Record<BarTone, string> = { neutral: "#1D4F43", mid: "#A87A26", good: "#2F6F5C", risk: "#B5553A" };
+const CURRENT: Record<BarTone, string> = { neutral: "#217A78", mid: "#A87A26", good: "#2E7D52", risk: "#B5553A" };
 
 /** Four short bars under a stage chip. Done = green, current = dark green (ochre when waiting), later = grey. */
 export function ProgressBars({ pos, tone = "neutral", count = 4, className }: { pos: number; tone?: BarTone; count?: number; className?: string }) {
   return (
     <div className={cn("mt-[7px] flex items-center gap-[3px]", className)} aria-hidden="true">
       {Array.from({ length: count }, (_, i) => (
-        <i key={i} className="block h-1.5 w-[30px] rounded-full" style={{ background: i < pos ? "#2F6F5C" : i === pos ? (tone === "good" ? "#2F6F5C" : CURRENT[tone]) : "#E9DFD2" }} />
+        <i key={i} className="block h-1.5 w-[30px] rounded-full" style={{ background: i < pos ? "#2E7D52" : i === pos ? (tone === "good" ? "#2E7D52" : CURRENT[tone]) : "#E6E3DD" }} />
       ))}
     </div>
   );
@@ -18,7 +18,7 @@ export function ProgressBars({ pos, tone = "neutral", count = 4, className }: { 
 /** Thin percent bar. Color follows the approval-chance bands unless `color` is given. */
 export function Meter({ value, color, className, height = 6 }: { value: number; color?: string; className?: string; height?: number }) {
   return (
-    <div className={cn("overflow-hidden rounded-full bg-[#F0ECE4]", className)} style={{ height }}>
+    <div className={cn("overflow-hidden rounded-full bg-[#EBE9E4]", className)} style={{ height }}>
       <i className="block h-full rounded-full" style={{ width: `${Math.max(0, Math.min(100, value))}%`, background: color ?? band(value).color }} />
     </div>
   );
@@ -43,7 +43,7 @@ export function Ring({ value, size = 72, stroke = 8, label }: { value: number; s
   return (
     <span className="relative inline-grid place-items-center" style={{ width: size, height: size }}>
       <svg width={size} height={size} role="img" aria-label={`${Math.round(value)} percent`}>
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#F0ECE4" strokeWidth={stroke} />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#EBE9E4" strokeWidth={stroke} />
         <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={col} strokeWidth={stroke} strokeLinecap="round" strokeDasharray={`${(c * value) / 100} ${c}`} transform={`rotate(-90 ${size / 2} ${size / 2})`} style={{ transition: "stroke-dasharray .5s ease" }} />
       </svg>
       <span className="absolute text-center font-semibold leading-none" style={{ color: col, fontSize: size * 0.28 }}>

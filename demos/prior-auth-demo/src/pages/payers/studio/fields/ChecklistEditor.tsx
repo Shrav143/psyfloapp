@@ -22,8 +22,8 @@ export function ChecklistEditor({ value, onChange, disabled }: { value: string[]
           const on = value.includes(d.id);
           return (
             <li key={d.id}>
-              <button type="button" role="checkbox" aria-checked={on} disabled={disabled} onClick={() => onChange(on ? value.filter((v) => v !== d.id) : [...value, d.id])} className={cn("flex w-full items-start gap-2.5 rounded-xl border px-3 py-2 text-left", on ? "border-forest bg-[#F3F7F4]" : "border-field bg-white hover:bg-tile")}>
-                <span className={cn("mt-0.5 grid h-[18px] w-[18px] shrink-0 place-items-center rounded-[5px] border-[1.5px]", on ? "border-forest bg-forest text-white" : "border-[#D9D0C3] bg-white")}>{on ? <Check size={12} className="ico" aria-hidden="true" /> : null}</span>
+              <button type="button" role="checkbox" aria-checked={on} disabled={disabled} onClick={() => onChange(on ? value.filter((v) => v !== d.id) : [...value, d.id])} className={cn("flex w-full items-start gap-2.5 rounded-xl border px-3 py-2 text-left", on ? "border-forest bg-[#EEF7F6]" : "border-field bg-white hover:bg-tile")}>
+                <span className={cn("mt-0.5 grid h-[18px] w-[18px] shrink-0 place-items-center rounded-[5px] border-[1.5px]", on ? "border-forest bg-forest text-white" : "border-[#D9D6CF] bg-white")}>{on ? <Check size={12} className="ico" aria-hidden="true" /> : null}</span>
                 <span className="min-w-0">
                   <span className="block text-[13px] font-medium text-ink">{d.title}</span>
                   <span className="block text-xs text-muted">{d.requirement}{d.services.length > 1 ? "" : d.services[0] ? ` · ${PROGRAM_LABEL[d.services[0]]}` : ""}</span>

@@ -91,7 +91,7 @@ export function HBarChart(p: HBarChartProps) {
           return (
             <li key={r.key}>
               {p.onRow ? (
-                <button type="button" onClick={() => p.onRow?.(r.key)} aria-label={p.rowHint ? p.rowHint(r) : undefined} className={cn("block w-full rounded-xl px-2.5 py-2 text-left hover:bg-[#FBF8F3]", r.quiet && "text-muted")}>
+                <button type="button" onClick={() => p.onRow?.(r.key)} aria-label={p.rowHint ? p.rowHint(r) : undefined} className={cn("block w-full rounded-xl px-2.5 py-2 text-left hover:bg-[#FAF9F6]", r.quiet && "text-muted")}>
                   {body}
                 </button>
               ) : (
@@ -173,7 +173,7 @@ export function StackedHBars(p: StackedHBarsProps) {
           return (
             <li key={r.key}>
               {p.onRow ? (
-                <button type="button" onClick={() => p.onRow?.(r.key)} className="block w-full rounded-xl px-2.5 py-1.5 text-left hover:bg-[#FBF8F3]">
+                <button type="button" onClick={() => p.onRow?.(r.key)} className="block w-full rounded-xl px-2.5 py-1.5 text-left hover:bg-[#FAF9F6]">
                   {body}
                 </button>
               ) : (

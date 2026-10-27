@@ -112,7 +112,7 @@ export function DonutChart(p: DonutChartProps) {
             return (
               <li key={x.key} onPointerEnter={() => setHot(x.key)} onPointerLeave={() => setHot(null)}>
                 {p.onPart ? (
-                  <button type="button" onClick={() => p.onPart?.(x.key)} className={cn("flex w-full items-start gap-2.5 rounded-xl px-2.5 py-2 hover:bg-[#FBF8F3]", hot === x.key && "bg-[#FBF8F3]")}>
+                  <button type="button" onClick={() => p.onPart?.(x.key)} className={cn("flex w-full items-start gap-2.5 rounded-xl px-2.5 py-2 hover:bg-[#FAF9F6]", hot === x.key && "bg-[#FAF9F6]")}>
                     {body}
                   </button>
                 ) : (

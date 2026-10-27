@@ -34,7 +34,7 @@ function Running({ started, payerName }: { started: number; payerName: string })
         <ul className="flex flex-col gap-3.5" aria-live="polite">
           {steps.map((s, i) => (
             <li key={s} className={cn("flex items-center gap-3", i > step && "text-faint")}>
-              {i < step ? <span className="grid h-5 w-5 place-items-center rounded-full bg-good-bg text-good"><Check size={13} className="ico" /></span> : i === step ? <Spinner size={20} /> : <span className="h-5 w-5 rounded-full border-[1.5px] border-[#D9D0C3]" />}
+              {i < step ? <span className="grid h-5 w-5 place-items-center rounded-full bg-good-bg text-good"><Check size={13} className="ico" /></span> : i === step ? <Spinner size={20} /> : <span className="h-5 w-5 rounded-full border-[1.5px] border-[#D9D6CF]" />}
               <span className={cn(i === step && "font-semibold")}>{s}</span>
             </li>
           ))}

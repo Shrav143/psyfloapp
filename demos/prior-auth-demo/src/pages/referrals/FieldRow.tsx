@@ -42,7 +42,7 @@ export function FieldRow({ field, evidence, selected, onSelect, onSave }: Props)
     : <TextInput aria-label={field.label} autoFocus value={draft} onChange={(e) => setDraft(e.target.value)} onKeyDown={(e) => e.key === "Enter" && draft.trim() && save()} />;
 
   return (
-    <div className={cn("rounded-2xl border transition-colors", selected ? "border-forest bg-[#F3F7F4]" : "border-edge bg-white hover:bg-[#FBF8F3]")} data-field={field.key}>
+    <div className={cn("rounded-2xl border transition-colors", selected ? "border-forest bg-[#EEF7F6]" : "border-edge bg-white hover:bg-[#FAF9F6]")} data-field={field.key}>
       <div className="flex cursor-pointer items-start gap-3 px-4 py-2.5" onClick={onSelect}>
         <span className={cn("mt-[7px] h-2.5 w-2.5 shrink-0 rounded-full", dot)} aria-hidden="true" />
         <div className="min-w-0 flex-1">

@@ -6,26 +6,26 @@ import { cn } from "@/lib/cn";
    gives every chart a text summary for screen readers and a data table that opens from a real button (reachable with Tab). */
 
 export const CHART = {
-  good: "#2F6F5C",
-  forest: "#1D4F43",
-  sage: "#739C8E",
-  sageSoft: "#CFE3DB",
+  good: "#2E7D52",
+  forest: "#217A78",
+  sage: "#5FC0BE",
+  sageSoft: "#CFE5D8",
   mid: "#8F6620",
   midSoft: "#C9B791",
   risk: "#B5553A",
   riskSoft: "#E8B9A7",
   umber: "#6B4E3A",
-  neutral: "#A9A59C",
-  track: "#F0ECE4",
-  grid: "#EFE8DE",
-  axis: "#D9D0C3",
-  text: "#4D463D",
-  muted: "#6E6A63",
-  ink: "#1B1B19",
-  band: "#F8F4EC",
+  neutral: "#98A0AC",
+  track: "#EBE9E4",
+  grid: "#E9E7E1",
+  axis: "#D9D6CF",
+  text: "#3B4351",
+  muted: "#5D6572",
+  ink: "#151B24",
+  band: "#F7F5F1",
 } as const;
 /** Colors for the segments of a stacked bar, in order. The last is for "other". Each differs in lightness too, so they read in grey. */
-export const SERIES_COLORS = ["#1D4F43", "#739C8E", "#8F6620", "#B5553A", "#6B4E3A", "#C9B791"];
+export const SERIES_COLORS = ["#217A78", "#5FC0BE", "#8F6620", "#B5553A", "#6B4E3A", "#C9B791"];
 
 /** The width of an element, kept up to date. Charts draw at this width, so text and lines stay the size they were designed at. */
 export function useChartWidth(fallback = 640): [RefObject<HTMLDivElement | null>, number] {
@@ -208,7 +208,7 @@ export function wrapLabel(label: string, max: number, lines = 3): string[] {
 export function Tooltip({ x, y, width = 220, bound, children }: { x: number; y: number; width?: number; bound: number; children: ReactNode }) {
   const left = x + 14 + width > bound ? Math.max(4, x - 14 - width) : x + 14;
   return (
-    <div role="presentation" style={{ left, top: y, width }} className="pointer-events-none absolute z-20 rounded-xl border border-edge bg-white px-3 py-2.5 text-[12px] leading-snug text-ink shadow-[0_8px_24px_rgba(40,30,15,0.14)]">
+    <div role="presentation" style={{ left, top: y, width }} className="pointer-events-none absolute z-20 rounded-xl border border-edge bg-white px-3 py-2.5 text-[12px] leading-snug text-ink shadow-[0_8px_24px_rgba(21,27,36,0.14)]">
       {children}
     </div>
   );

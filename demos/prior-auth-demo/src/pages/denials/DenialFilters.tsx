@@ -34,7 +34,7 @@ export function PayerChips({ rows, payer, reason, onPayer, onClearReason }: { ro
   const chip = (id: string | null, label: string, n?: number) => {
     const on = (payer?.toLowerCase() ?? null) === id;
     return (
-      <button key={id ?? "all"} type="button" aria-pressed={on} onClick={() => onPayer(on && id ? null : id)} className={cn(PILL, on ? "border-forest bg-[#F3F7F4] text-forest" : "border-field bg-white text-ink2 hover:bg-tile")}>
+      <button key={id ?? "all"} type="button" aria-pressed={on} onClick={() => onPayer(on && id ? null : id)} className={cn(PILL, on ? "border-forest bg-[#EEF7F6] text-forest" : "border-field bg-white text-ink2 hover:bg-tile")}>
         {label}
         {n !== undefined ? <span className="text-[12px] text-muted tabular-nums">{n}</span> : null}
       </button>

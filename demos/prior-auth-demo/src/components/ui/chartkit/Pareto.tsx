@@ -93,7 +93,7 @@ export function ParetoChart(p: ParetoChartProps) {
             return (
               <li key={r.key} className={cn(!r.other && i === reach && "border-b border-dashed border-field")}>
                 {p.onRow ? (
-                  <button type="button" onClick={() => p.onRow?.(r.key)} className="block w-full rounded-xl px-2.5 py-2 text-left hover:bg-[#FBF8F3]">
+                  <button type="button" onClick={() => p.onRow?.(r.key)} className="block w-full rounded-xl px-2.5 py-2 text-left hover:bg-[#FAF9F6]">
                     {body}
                   </button>
                 ) : (

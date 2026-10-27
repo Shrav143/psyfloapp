@@ -15,7 +15,7 @@ export function Stepper({ steps, current, onGo, className }: { steps: string[]; 
               <span className={cn("grid h-[26px] w-[26px] place-items-center rounded-full text-xs font-semibold", done ? "bg-good-bg text-forest" : cur ? "bg-forest text-white" : "bg-neutral-bg text-ink2")}>{done ? <Check size={14} className="ico" /> : i + 1}</span>
               {s}
             </button>
-            {i < steps.length - 1 ? <span className="h-0.5 w-10 bg-[#EADFD2]" /> : null}
+            {i < steps.length - 1 ? <span className="h-0.5 w-10 bg-[#E8E5DF]" /> : null}
           </li>
         );
       })}

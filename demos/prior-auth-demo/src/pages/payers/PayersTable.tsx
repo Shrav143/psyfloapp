@@ -22,7 +22,7 @@ function Row({ r, onOpen }: { r: PayerRow; onOpen: (id: string) => void }) {
         onClick={(e) => {
           if (!(e.target as HTMLElement).closest("a")) onOpen(r.id);
         }}
-        className={cn("flex cursor-pointer flex-wrap items-center gap-x-4 gap-y-1 border-t border-line px-6 py-3.5 hover:bg-[#FBF8F3] @4xl:grid", GRID)}
+        className={cn("flex cursor-pointer flex-wrap items-center gap-x-4 gap-y-1 border-t border-line px-6 py-3.5 hover:bg-[#FAF9F6] @4xl:grid", GRID)}
       >
         <div className="order-1 min-w-[55%] flex-1 @4xl:order-none">
           <Link to={paths.payers(r.id)} className="block truncate font-semibold hover:text-forest hover:underline" title={r.name}>{r.name}</Link>
@@ -59,7 +59,7 @@ const HEAD = ["Payer and organization", "Product and state", "Workflows", "Last 
 export function PayersTable({ rows, onOpen }: { rows: PayerRow[]; onOpen: (id: string) => void }) {
   return (
     <div>
-      <div className={cn("hidden gap-x-4 border-t border-line bg-[#FBF8F3] px-6 py-2 text-[11px] font-medium tracking-[0.09em] text-muted uppercase @4xl:grid", GRID)} aria-hidden="true">
+      <div className={cn("hidden gap-x-4 border-t border-line bg-[#FAF9F6] px-6 py-2 text-[11px] font-medium tracking-[0.09em] text-muted uppercase @4xl:grid", GRID)} aria-hidden="true">
         {HEAD.map((h) => <span key={h}>{h}</span>)}
       </div>
       <ul aria-label="Payers">

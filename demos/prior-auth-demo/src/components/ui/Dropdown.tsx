@@ -77,7 +77,7 @@ export function Dropdown<T extends string>({ value, options, onChange, defaultVa
         className={cn(
           "flex h-[38px] items-center gap-2 rounded-xl border bg-white px-3 text-left text-sm text-ink transition-colors hover:bg-tile disabled:opacity-50",
           variant === "field" ? "w-full" : "min-w-0",
-          active ? "border-forest bg-[#F3F7F4] font-semibold" : "border-field",
+          active ? "border-forest bg-[#EEF7F6] font-semibold" : "border-field",
         )}
       >
         <span className="truncate">{current?.label ?? placeholder ?? "Select"}</span>
@@ -88,7 +88,7 @@ export function Dropdown<T extends string>({ value, options, onChange, defaultVa
           id={id}
           role="listbox"
           style={{ minWidth: menuWidth ?? 220 }}
-          className="psy-fade-up absolute top-[44px] left-0 z-40 max-h-[320px] overflow-auto rounded-[14px] border border-field bg-white p-1.5 shadow-[0_12px_32px_rgba(40,30,15,0.12)]"
+          className="psy-fade-up absolute top-[44px] left-0 z-40 max-h-[320px] overflow-auto rounded-[14px] border border-field bg-white p-1.5 shadow-[0_12px_32px_rgba(21,27,36,0.12)]"
         >
           {options.map((o, i) => (
             <button
@@ -98,7 +98,7 @@ export function Dropdown<T extends string>({ value, options, onChange, defaultVa
               aria-selected={o.value === value}
               onMouseEnter={() => setCursor(i)}
               onClick={() => pick(o.value)}
-              className={cn("flex w-full items-center gap-2.5 rounded-[10px] px-3 py-[9px] text-left text-sm", o.value === value ? "bg-[#F3F7F4] font-semibold" : "", i === cursor && o.value !== value ? "bg-tile" : "")}
+              className={cn("flex w-full items-center gap-2.5 rounded-[10px] px-3 py-[9px] text-left text-sm", o.value === value ? "bg-[#EEF7F6] font-semibold" : "", i === cursor && o.value !== value ? "bg-tile" : "")}
             >
               <span className="grid w-4 place-items-center text-forest">{o.value === value ? <Check size={16} className="ico" /> : null}</span>
               <span className="flex-1">{o.label}</span>

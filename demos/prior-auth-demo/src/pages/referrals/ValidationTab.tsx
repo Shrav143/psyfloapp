@@ -40,7 +40,7 @@ export function ValidationTab({ r, onView, onRequest, onOverride }: Props) {
             </div>
             <AgentChip agent="reader" />
           </div>
-          <Meter value={(ok / total) * 100} color={open.length ? "#A87A26" : "#2F6F5C"} height={8} />
+          <Meter value={(ok / total) * 100} color={open.length ? "#A87A26" : "#2E7D52"} height={8} />
           {canAct && askable.length ? (
             <div>
               <Button size="sm" variant="primary" onClick={() => onRequest(askable)}>Request information for all open findings</Button>

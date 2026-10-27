@@ -33,7 +33,7 @@ export function DocumentPanel({ r, docs, docId, page, highlightId, onDoc, onPage
           <Button size="sm" icon={Printer} aria-label="Print the source document" onClick={() => toast({ title: "Printing the original", body: "This is a demo. The faxed pages would open in your print dialog.", tone: "neutral" })} />
         </div>
       </div>
-      <div className="min-h-0 flex-1 overflow-y-auto bg-[#F7F2EA] p-4">
+      <div className="min-h-0 flex-1 overflow-y-auto bg-[#F6F4F0] p-4">
         <DocumentSheet blocks={doc.pages[current - 1]} highlightId={highlightId} onBlockClick={onBlock} className="px-8 py-7" />
       </div>
       {pages > 1 ? (

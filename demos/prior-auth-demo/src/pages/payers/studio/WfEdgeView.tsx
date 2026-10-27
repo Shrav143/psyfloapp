@@ -40,7 +40,7 @@ function WfEdgeViewBase({ id, sourceX, sourceY, targetX, targetY, sourcePosition
         path={path}
         markerEnd={markerEnd}
         interactionWidth={22}
-        style={{ stroke: selected ? "#1d4f43" : run === "taken" ? "#2f6f5c" : "#b8ad9d", strokeWidth: selected || run === "taken" ? 2.4 : 1.7, opacity: run === "dim" ? 0.4 : 1 }}
+        style={{ stroke: selected ? "#217a78" : run === "taken" ? "#2e7d52" : "#b4b2ab", strokeWidth: selected || run === "taken" ? 2.4 : 1.7, opacity: run === "dim" ? 0.4 : 1 }}
       />
       {label ? (
         <EdgeLabelRenderer>

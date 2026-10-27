@@ -66,7 +66,7 @@ export function WorkFilterBar({ filters, set, clear, deadlineCounts, owners, sig
 
 function Chip({ text, onRemove, label }: { text: string; onRemove: () => void; label: string }) {
   return (
-    <span className="inline-flex items-center gap-2 rounded-full border border-forest bg-[#F3F7F4] py-1 pr-1.5 pl-3.5 text-[13px] font-semibold text-forest">
+    <span className="inline-flex items-center gap-2 rounded-full border border-forest bg-[#EEF7F6] py-1 pr-1.5 pl-3.5 text-[13px] font-semibold text-forest">
       {text}
       <button type="button" aria-label={label} onClick={onRemove} className="grid h-5 w-5 place-items-center rounded-full hover:bg-forest/10">
         <X size={13} className="ico" />

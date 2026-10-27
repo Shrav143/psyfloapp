@@ -1,13 +1,13 @@
 import type { DriverView } from "@/data/caseModel";
 
-const COLOR = { start: "#9C9384", up: "#2F6F5C", down: "#B5553A", total: "#1D4F43" };
+const COLOR = { start: "#98A0AC", up: "#2E7D52", down: "#B5553A", total: "#217A78" };
 const fmt = (n: number, start = false): string => (start || n === 0 ? String(n) : n > 0 ? `+${n}` : `−${Math.abs(n)}`);
 
 /** The formula in numbers: "58 + 11 + 9 + 6 + 5 + 3 − 4 = 88". */
 export const formulaOf = (rows: DriverView[], total: number): string =>
   `${rows.map((r, i) => (i === 0 ? String(r.pts) : r.pts >= 0 ? `+ ${r.pts}` : `− ${Math.abs(r.pts)}`)).join(" ")} = ${total}`;
 
-const TRACK = "relative h-3 rounded-full bg-[#F5F0E8]";
+const TRACK = "relative h-3 rounded-full bg-[#F3F1ED]";
 const ROW = "grid grid-cols-[minmax(0,1fr)_160px_42px] items-center gap-4 border-b border-line px-1 py-2.5 text-[13px]";
 
 /** "Why this number" as horizontal bars. The starting point and the total fill a 0 to 100% track. Each step grows from a
@@ -29,7 +29,7 @@ export function DriverBars({ rows, total }: { rows: DriverView[]; total: number 
               <i className="absolute top-0 left-0 block h-full rounded-full" style={{ width: `${r.pts}%`, background: COLOR.start }} />
             ) : (
               <>
-                <i className="absolute top-[-4px] left-1/2 block h-5 w-px bg-[#D9D0C3]" />
+                <i className="absolute top-[-4px] left-1/2 block h-5 w-px bg-[#D9D6CF]" />
                 {r.pts !== 0 ? (
                   <i className="absolute top-0 block h-full" style={{ left: r.pts > 0 ? "50%" : `${50 - half(r.pts)}%`, width: `${half(r.pts)}%`, background: r.pts > 0 ? COLOR.up : COLOR.down, borderRadius: r.pts > 0 ? "0 9999px 9999px 0" : "9999px 0 0 9999px", transition: "all .5s ease" }} />
                 ) : null}
@@ -37,7 +37,7 @@ export function DriverBars({ rows, total }: { rows: DriverView[]; total: number 
               </>
             )}
           </div>
-          <b className="text-right" style={{ color: r.start ? "#1B1B19" : r.pts >= 0 ? "#2F6F5C" : "#8A3B2A" }}>{fmt(r.pts, r.start)}</b>
+          <b className="text-right" style={{ color: r.start ? "#151B24" : r.pts >= 0 ? "#2E7D52" : "#8A3B2A" }}>{fmt(r.pts, r.start)}</b>
         </div>
       ))}
       <div className="grid grid-cols-[minmax(0,1fr)_160px_42px] items-center gap-4 px-1 py-3 text-[13px]">

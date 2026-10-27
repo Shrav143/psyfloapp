@@ -108,7 +108,7 @@ export function ProcessSection({ board, workload, scopeWords, onOpen }: { board:
                 <div className="mt-1 text-[13px] text-muted">still open</div>
               </div>
             </div>
-            <Meter className="mt-3" height={8} value={total ? (workload.handled / total) * 100 : 0} color="#2F6F5C" />
+            <Meter className="mt-3" height={8} value={total ? (workload.handled / total) * 100 : 0} color="#2E7D52" />
             <p className="mt-2 text-[12px] text-muted">
               {scopeWords}. Handled means the payer has decided. {workload.needsYou === 0 ? "Nothing waits on you." : `${workload.needsYou} of the open ${workload.needsYou === 1 ? "request waits" : "requests wait"} on you.`} Live: it changes when you answer a payer or accept a denial. It does not follow the period or the diagnosis group.
             </p>

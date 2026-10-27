@@ -40,7 +40,7 @@ export function ChecklistProgress({ done, total, label = "ready", right }: { don
           </span>
           <span className={cn("text-[13px]", full ? "font-medium text-good-ink" : "text-muted")}>{full ? "Nothing is missing" : `${total - done} to go`}</span>
         </div>
-        <div className="h-2 overflow-hidden rounded-full bg-[#EDE5DA]" role="progressbar" aria-valuemin={0} aria-valuemax={total} aria-valuenow={done} aria-label={`${done} of ${total} ${label}`}>
+        <div className="h-2 overflow-hidden rounded-full bg-[#EAE8E3]" role="progressbar" aria-valuemin={0} aria-valuemax={total} aria-valuenow={done} aria-label={`${done} of ${total} ${label}`}>
           <div className={cn("h-full rounded-full transition-[width] duration-500", full ? "bg-good" : "bg-forest")} style={{ width: `${pct}%` }} />
         </div>
       </div>

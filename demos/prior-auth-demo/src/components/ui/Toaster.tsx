@@ -15,7 +15,7 @@ function Item({ t }: { t: Toast }) {
   }, [t.id, dismiss]);
   const Icon = ICON[t.tone];
   return (
-    <button type="button" onClick={() => dismiss(t.id)} className="psy-fade-up flex w-[340px] items-start gap-3 rounded-2xl border border-edge bg-white px-4 py-3 text-left shadow-[0_12px_32px_rgba(40,30,15,0.14)]">
+    <button type="button" onClick={() => dismiss(t.id)} className="psy-fade-up flex w-[340px] items-start gap-3 rounded-2xl border border-edge bg-white px-4 py-3 text-left shadow-[0_12px_32px_rgba(21,27,36,0.14)]">
       <Icon size={20} className={cn("ico mt-0.5", COLOR[t.tone])} />
       <div className="min-w-0">
         <div className="font-semibold">{t.title}</div>

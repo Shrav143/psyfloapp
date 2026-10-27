@@ -69,7 +69,7 @@ export function MenuButton({ label, icon: Icon, items, variant = "outline", alig
         <ChevronDown size={15} className={cn("ico transition-transform", open && "rotate-180")} aria-hidden="true" />
       </button>
       {open ? (
-        <div id={id} role="menu" className={cn("psy-fade-up absolute top-[calc(100%+6px)] z-40 min-w-[240px] rounded-[14px] border border-field bg-white p-1.5 shadow-[0_12px_32px_rgba(40,30,15,0.12)]", align === "right" ? "right-0" : "left-0")}>
+        <div id={id} role="menu" className={cn("psy-fade-up absolute top-[calc(100%+6px)] z-40 min-w-[240px] rounded-[14px] border border-field bg-white p-1.5 shadow-[0_12px_32px_rgba(21,27,36,0.12)]", align === "right" ? "right-0" : "left-0")}>
           {items.map((it, i) => (
             <button key={it.id} type="button" role="menuitem" disabled={it.disabled} onMouseEnter={() => setCursor(i)} onClick={() => pick(it)} className={cn("flex w-full items-start gap-2.5 rounded-[10px] px-3 py-2 text-left text-sm disabled:opacity-45", it.danger ? "text-risk-ink hover:bg-risk-bg" : "hover:bg-tile")}>
               {it.icon ? <it.icon size={16} className="ico mt-0.5 shrink-0" aria-hidden="true" /> : null}

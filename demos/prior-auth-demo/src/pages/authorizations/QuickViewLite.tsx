@@ -60,7 +60,7 @@ export function QuickViewLite({ item, onClose }: { item: QueueItem; onClose: () 
       }
     >
       <div className="flex flex-col gap-5">
-        <section aria-label="Next action" className="rounded-xl border border-forest/20 bg-[#F3F7F4] px-4 py-2.5">
+        <section aria-label="Next action" className="rounded-xl border border-forest/20 bg-[#EEF7F6] px-4 py-2.5">
           <div className="text-[14px] font-semibold leading-snug"><span className="text-forest">Next:</span> {next.text}</div>
         </section>
         <KeyValue className="grid-cols-[130px_1fr] text-[13px]" items={rows} />

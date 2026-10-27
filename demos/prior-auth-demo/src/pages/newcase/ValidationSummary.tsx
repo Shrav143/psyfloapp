@@ -57,7 +57,7 @@ export function ValidationSummary({ rows }: { rows: ValidationRow[] }) {
       <ul>
         {rows.map((r) => (
           <li key={r.id} className="border-b border-line last:border-b-0">
-            <button type="button" aria-expanded={open.has(r.id)} onClick={() => toggle(r.id)} className="flex w-full items-center gap-3 px-6 py-3 text-left hover:bg-[#FBF8F3]">
+            <button type="button" aria-expanded={open.has(r.id)} onClick={() => toggle(r.id)} className="flex w-full items-center gap-3 px-6 py-3 text-left hover:bg-[#FAF9F6]">
               {r.warn ? <CircleAlert size={18} className="ico text-mid" aria-label="Has a finding" /> : <CircleCheck size={18} className="ico text-good" aria-label="Checks out" />}
               <span className="flex-1 font-semibold">{r.label}</span>
               <ChevronDown size={16} className={cn("ico text-faint transition-transform", open.has(r.id) && "rotate-180")} />

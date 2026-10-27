@@ -9,7 +9,7 @@ import { EvidenceChip } from "../EvidenceChip";
 import { Fold } from "../Fold";
 import { frameworkTitle, frameworkWhy, ratingOf } from "../frameworkView";
 
-const TONE_DOT: Record<Tone, string> = { good: "#2F6F5C", mid: "#A87A26", risk: "#B5553A", neutral: "#A9A59C" };
+const TONE_DOT: Record<Tone, string> = { good: "#2E7D52", mid: "#A87A26", risk: "#B5553A", neutral: "#98A0AC" };
 
 /** The draft section a dimension speaks to, by framework (draft section ids: clinical, level, severity, plan). "Show in draft" falls back to it when no section cites the same chart page. */
 const DIM_SECTION: Record<"asam" | "mh", string[]> = {
@@ -89,7 +89,7 @@ export function ClinicalRail({ detail, onShow }: { detail: CaseDetail; onShow: (
         </Fold>
         <Fold head={<span className="text-[13px] font-semibold">Engagement <span className="font-normal text-muted">{eng}%</span></span>} className="border-t border-line">
           <div className="pb-2">
-            <Meter value={eng} height={6} color="#2F6F5C" />
+            <Meter value={eng} height={6} color="#2E7D52" />
             {detail.engagement.checks.map((t) => <div key={t} className="mt-1.5 flex items-center gap-2 text-[13px]"><Check size={13} className="ico text-good" />{t}</div>)}
           </div>
         </Fold>

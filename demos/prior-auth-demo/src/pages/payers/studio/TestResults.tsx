@@ -50,7 +50,7 @@ export function TestResults({ workflow, result, revealed, onFix, onAgain, onSkip
 
         <ol className="m-0 flex list-none flex-col gap-2 p-0" aria-label="Steps in the order they ran">
           {shown.map((s, i) => (
-            <li key={`${s.seq}-${s.nodeId}`} className={cn("rounded-xl border px-3.5 py-2.5", i === shown.length - 1 && !done ? "border-forest bg-[#F3F7F4]" : "border-line bg-white")}>
+            <li key={`${s.seq}-${s.nodeId}`} className={cn("rounded-xl border px-3.5 py-2.5", i === shown.length - 1 && !done ? "border-forest bg-[#EEF7F6]" : "border-line bg-white")}>
               <div className="flex flex-wrap items-center gap-2">
                 <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-neutral-bg text-xs font-semibold">{i + 1}</span>
                 <span className="text-[14px] font-semibold">{s.title}</span>

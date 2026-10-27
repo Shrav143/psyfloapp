@@ -70,7 +70,7 @@ export function EbTable({ rows }: { rows: EbPatient[] }) {
         const open = () => nav(paths.eligibilityResult(p.id));
         const quiet = quietParts(p, clock, busy, autoState(p, clock, paused));
         return (
-          <tbody key={p.id} onClick={open} className="cursor-pointer hover:bg-[#FBF8F3] [&:last-of-type>tr:last-child>td]:border-b-0">
+          <tbody key={p.id} onClick={open} className="cursor-pointer hover:bg-[#FAF9F6] [&:last-of-type>tr:last-child>td]:border-b-0">
             <tr>
               <Td className="border-b-0 pt-3 pb-1 text-[13px]">
                 <IdLink onClick={open}>{p.id}</IdLink> <span className="text-muted">· {patientLabel(p)}</span>

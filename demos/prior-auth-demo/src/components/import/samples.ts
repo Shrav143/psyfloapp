@@ -89,9 +89,9 @@ const esc = (s: string): string => s.replace(/&/g, "&amp;").replace(/</g, "&lt;"
 function card(title: string, rows: [string, string][], foot: string): string {
   const h = 54 + rows.length * 26 + 30;
   const lines = rows
-    .map(([k, v], i) => `<text x="20" y="${78 + i * 26}" font-size="12" fill="#6e6a63">${esc(k)}</text><text x="150" y="${78 + i * 26}" font-size="13" font-weight="600" fill="#1b1b19">${esc(v)}</text>`)
+    .map(([k, v], i) => `<text x="20" y="${78 + i * 26}" font-size="12" fill="#5d6572">${esc(k)}</text><text x="150" y="${78 + i * 26}" font-size="13" font-weight="600" fill="#151b24">${esc(v)}</text>`)
     .join("");
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="440" height="${h}" viewBox="0 0 440 ${h}" font-family="Arial, Helvetica, sans-serif"><rect width="440" height="${h}" fill="#ffffff"/><rect width="440" height="40" fill="#e9eef3"/><circle cx="20" cy="20" r="7" fill="#8aa2b8"/><text x="36" y="25" font-size="13" font-weight="700" fill="#33475b">${esc(title)}</text>${lines}<text x="20" y="${h - 12}" font-size="10" fill="#a9a59c">${esc(foot)}</text></svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="440" height="${h}" viewBox="0 0 440 ${h}" font-family="Arial, Helvetica, sans-serif"><rect width="440" height="${h}" fill="#ffffff"/><rect width="440" height="40" fill="#e9eef3"/><circle cx="20" cy="20" r="7" fill="#8aa2b8"/><text x="36" y="25" font-size="13" font-weight="700" fill="#33475b">${esc(title)}</text>${lines}<text x="20" y="${h - 12}" font-size="10" fill="#98a0ac">${esc(foot)}</text></svg>`;
 }
 const SHOT_SVG: Record<ImportTarget, string> = {
   patient: card("Clinical record · Patient header", [["Patient", "K.L."], ["DOB / Sex", "06/14/1989 · F"], ["Insurance", "Beacon PPO · PPO"], ["Member ID", "BP4417209358"], ["Program", "IOP · admit 10/26/2026"], ["Primary Dx", "F11.20 Opioid dependence"]], "Invented demo chart. Not a real patient."),

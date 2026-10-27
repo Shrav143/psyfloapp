@@ -70,7 +70,7 @@ export function PayerPanel({ payer, scoped, filters, siteLabel, width, onCases, 
       <div className="flex flex-col gap-8" data-testid="payer-panel">
         <section aria-label="Headline figures" className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {v.figures.map((f) => (
-            <button key={f.id} type="button" onClick={() => onCases({ ...f.query, payer, title: `${v.name}: ${f.query.title}` })} data-testid={`payer-figure-${f.id}`} className="rounded-2xl border border-edge bg-white px-4 py-3.5 text-left hover:bg-[#FBF8F3]">
+            <button key={f.id} type="button" onClick={() => onCases({ ...f.query, payer, title: `${v.name}: ${f.query.title}` })} data-testid={`payer-figure-${f.id}`} className="rounded-2xl border border-edge bg-white px-4 py-3.5 text-left hover:bg-[#FAF9F6]">
               <div className="text-[11px] font-medium tracking-[0.08em] text-muted uppercase">{f.label}</div>
               <div className="mt-1 text-[24px] leading-none font-semibold tabular-nums">{f.value}</div>
               <div className="mt-1.5 text-[12px] text-muted">{compare[f.id]}</div>

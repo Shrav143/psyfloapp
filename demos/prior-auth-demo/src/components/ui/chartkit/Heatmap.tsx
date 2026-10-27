@@ -43,7 +43,7 @@ export function heatColor(rate: number): { fill: string; text: string } {
   const [b, cb] = STOPS[i + 1];
   const t = (r - a) / (b - a || 1);
   const c = ca.map((v, k) => Math.round(v + (cb[k] - v) * t));
-  return { fill: `rgb(${c[0]},${c[1]},${c[2]})`, text: rate <= 42 || rate >= 91 ? "#FFFFFF" : "#1B1B19" };
+  return { fill: `rgb(${c[0]},${c[1]},${c[2]})`, text: rate <= 42 || rate >= 91 ? "#FFFFFF" : "#151B24" };
 }
 const band = (rate: number): string => (rate >= 80 ? "strong, 80% and above" : rate >= 55 ? "moderate, 55 to 79%" : "at risk, below 55%");
 
@@ -145,7 +145,7 @@ export function Heatmap(p: HeatmapProps) {
                       onBlur={() => setHot(null)}
                       style={{ cursor: d.n > 0 && p.onCell ? "pointer" : "default" }}
                     >
-                      <rect x={x} y={y} width={cw - 4} height={CELL_H - 4} rx="10" fill={color?.fill ?? "#F7F3EC"} stroke={on ? CHART.ink : few ? CHART.axis : "transparent"} strokeWidth={on ? 2 : 1} strokeDasharray={few && !on ? "3 3" : undefined} />
+                      <rect x={x} y={y} width={cw - 4} height={CELL_H - 4} rx="10" fill={color?.fill ?? "#F6F5F1"} stroke={on ? CHART.ink : few ? CHART.axis : "transparent"} strokeWidth={on ? 2 : 1} strokeDasharray={few && !on ? "3 3" : undefined} />
                       {d.rate !== null && !few && d.rate < 55 ? <rect x={x} y={y} width={cw - 4} height={CELL_H - 4} rx="10" fill={`url(#${id}-stripe)`} /> : null}
                       {d.n > 0 ? (
                         <>
@@ -217,7 +217,7 @@ export function HeatLegend({ minN }: { minN: number }) {
         80% and above ▲
       </span>
       <span className="flex items-center gap-1.5">
-        <i className="inline-block h-3 w-3 rounded-[3px] border border-dashed border-[#D9D0C3] bg-[#F7F3EC]" />
+        <i className="inline-block h-3 w-3 rounded-[3px] border border-dashed border-[#D9D6CF] bg-[#F6F5F1]" />
         Fewer than {minN} decisions
       </span>
     </div>

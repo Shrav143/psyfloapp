@@ -1,12 +1,12 @@
 import { PAGE, Writer, type Op, type Style } from "./pdf-layout";
 import { REPORT_FOOTER, REPORT_HEADINGS as H, REPORT_TITLE, type ReportDoc, type ReportTone } from "./report-doc";
 
-/* The appeal analysis report as a PDF: US Letter, 0.75 inch margins, built-in Helvetica and Times. jsPDF is loaded only when this is called,
+/* The appeal analysis report as a PDF: US Letter, 0.75 inch margins, built-in Helvetica. jsPDF is loaded only when this is called,
    so it stays out of the page until someone clicks Download PDF. */
 
 const C = {
-  forest: "#1D4F43", ink: "#1B1B19", ink2: "#4D463D", muted: "#6E6A63", line: "#E5DCD0", tile: "#FAF6F2", tileEdge: "#F0ECE4", neutralBg: "#F2EAE2", neutralInk: "#4A4239",
-  good: "#2F6F5C", goodBg: "#E6F2EE", goodInk: "#27493E", mid: "#8F6620", midBg: "#F6EED6", midInk: "#7D642F", risk: "#B5553A", riskBg: "#FAF2EA", riskInk: "#6B362A", faint: "#A9A59C", white: "#FFFFFF",
+  forest: "#217A78", ink: "#151B24", ink2: "#3B4351", muted: "#5D6572", line: "#DEDBD4", tile: "#F9F8F5", tileEdge: "#EBE9E4", neutralBg: "#EFEDE8", neutralInk: "#3B4351",
+  good: "#2E7D52", goodBg: "#E6F3EC", goodInk: "#25483A", mid: "#8F6620", midBg: "#F6EED6", midInk: "#7D642F", risk: "#B5553A", riskBg: "#FAF2EA", riskInk: "#6B362A", faint: "#98A0AC", white: "#FFFFFF",
 };
 const TONE: Record<ReportTone, { fg: string; bg: string; ink: string }> = {
   good: { fg: C.good, bg: C.goodBg, ink: C.goodInk },
@@ -20,8 +20,8 @@ const bodyBold: Style = { ...body, weight: "bold" };
 const small: Style = { ...body, size: 8.5, color: C.ink2, lh: 12.5 };
 const smallBold: Style = { ...small, weight: "bold" };
 const label: Style = { font: "helvetica", weight: "bold", size: 7, color: C.muted, lh: 10, track: 0.4 };
-const quote: Style = { font: "times", weight: "italic", size: 10, color: C.ink2, lh: 14 };
-const h2: Style = { font: "times", weight: "bold", size: 15.5, color: C.forest, lh: 20 };
+const quote: Style = { font: "helvetica", weight: "italic", size: 10, color: C.ink2, lh: 14 };
+const h2: Style = { font: "helvetica", weight: "bold", size: 15.5, color: C.forest, lh: 20 };
 
 const IND = 26; // text starts here, to the right of a number badge
 
@@ -99,9 +99,9 @@ export async function buildAppealPdf(doc: ReportDoc) {
   /* ---------- page one: title band, facts, verdict ---------- */
   pdf.setFillColor(C.forest);
   pdf.rect(0, 0, PAGE.w, 118, "F");
-  w.put("PSYFLO  ·  DENIAL INTELLIGENCE", { font: "helvetica", weight: "bold", size: 8, color: "#CFE3DB", lh: 12, track: 0.6 }, left, 34);
-  w.put(`Generated ${doc.generatedOn}`, { font: "helvetica", weight: "normal", size: 8.5, color: "#CFE3DB", lh: 12 }, PAGE.w - left, 34, "right");
-  w.put(REPORT_TITLE, { font: "times", weight: "bold", size: 28, color: C.white, lh: 36 }, left, 52);
+  w.put("PSYFLO  ·  DENIAL INTELLIGENCE", { font: "helvetica", weight: "bold", size: 8, color: "#CFE5D8", lh: 12, track: 0.6 }, left, 34);
+  w.put(`Generated ${doc.generatedOn}`, { font: "helvetica", weight: "normal", size: 8.5, color: "#CFE5D8", lh: 12 }, PAGE.w - left, 34, "right");
+  w.put(REPORT_TITLE, { font: "helvetica", weight: "bold", size: 26, color: C.white, lh: 36 }, left, 52);
   w.put(`${doc.id}  ·  ${doc.facts[1][1]}  ·  ${doc.payerName}`, { font: "helvetica", weight: "normal", size: 11, color: C.white, lh: 16 }, left, 90);
   if (doc.workedExample) {
     const t = "WORKED EXAMPLE";
@@ -149,7 +149,7 @@ export async function buildAppealPdf(doc: ReportDoc) {
   pdf.setFillColor(t.bg);
   pdf.roundedRect(left, w.y, 232, vh, 10, 10, "F");
   w.put("OUR READ", { ...label, color: t.ink }, left + 16, w.y + 14);
-  w.put(doc.verdict.word, { font: "times", weight: "bold", size: 17, color: t.ink, lh: 24 }, left + 16, w.y + 28);
+  w.put(doc.verdict.word, { font: "helvetica", weight: "bold", size: 16, color: t.ink, lh: 24 }, left + 16, w.y + 28);
   vLines.forEach((r, i) => w.put(r, { ...small, size: 9, color: t.ink }, left + 16, w.y + 56 + i * 12.5));
   let cy = w.y + 14;
   for (const r of chanceRows) {

@@ -56,7 +56,7 @@ export function InfoTip({ label, children, align = "start", className }: { label
         id={id}
         role="tooltip"
         className={cn(
-          "absolute top-full z-40 mt-1.5 w-[min(340px,calc(100vw-64px))] rounded-xl border border-edge bg-white px-4 py-3 text-left text-[13px] font-normal normal-case leading-snug tracking-normal text-ink2 shadow-[0_12px_32px_rgba(40,30,15,0.14)]",
+          "absolute top-full z-40 mt-1.5 w-[min(340px,calc(100vw-64px))] rounded-xl border border-edge bg-white px-4 py-3 text-left text-[13px] font-normal normal-case leading-snug tracking-normal text-ink2 shadow-[0_12px_32px_rgba(21,27,36,0.14)]",
           side === "end" ? "right-0" : "left-0",
           !open && "hidden",
         )}

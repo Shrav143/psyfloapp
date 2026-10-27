@@ -9,15 +9,15 @@ const PRINT_CSS = `
   @page { margin: 16mm; }
   body { background: #fff; }
   #root { display: none !important; }
-  .report-sheet { display: block; color: #1b1b19; font-size: 12.5px; line-height: 1.5; }
+  .report-sheet { display: block; color: #151b24; font-size: 12.5px; line-height: 1.5; }
   .report-sheet h1 { font-size: 26px; line-height: 1.2; margin: 0 0 6px; }
   .report-sheet h2 { font-size: 16px; margin: 18px 0 6px; break-after: avoid; }
-  .report-sheet p { margin: 0; color: #55534d; }
+  .report-sheet p { margin: 0; color: #474e5a; }
   .report-sheet section { break-inside: avoid; }
   .report-sheet ul, .report-sheet ol { margin: 0; padding-left: 18px; }
   .report-sheet li { margin: 0 0 3px; }
   .report-sheet table { width: 100%; border-collapse: collapse; }
-  .report-sheet th, .report-sheet td { padding: 4px 10px 4px 0; border-bottom: 1px solid #ddd8cf; text-align: left; vertical-align: top; }
+  .report-sheet th, .report-sheet td { padding: 4px 10px 4px 0; border-bottom: 1px solid #dcdad4; text-align: left; vertical-align: top; }
   .report-sheet th { font-weight: 600; }
 }`;
 

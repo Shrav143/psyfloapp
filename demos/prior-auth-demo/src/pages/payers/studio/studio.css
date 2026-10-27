@@ -1,11 +1,11 @@
 /* Payer Workflow Studio: quiet overrides for the canvas library, in the app's tokens. */
 .wf-canvas .react-flow {
   --xy-background-color: transparent;
-  --xy-edge-stroke-default: #b8ad9d;
+  --xy-edge-stroke-default: #b4b2ab;
   --xy-handle-background-color-default: #ffffff;
-  --xy-handle-border-color-default: #739c8e;
-  --xy-selection-background-color-default: rgba(29, 79, 67, 0.06);
-  --xy-selection-border-default: 1px dashed #739c8e;
+  --xy-handle-border-color-default: #5fc0be;
+  --xy-selection-background-color-default: rgba(33, 122, 120, 0.06);
+  --xy-selection-border-default: 1px dashed #5fc0be;
   font-family: var(--font-sans);
 }
 .wf-canvas .react-flow__node {
@@ -31,7 +31,7 @@
 .wf-canvas .wf-handle {
   width: 12px;
   height: 12px;
-  border: 2px solid #739c8e;
+  border: 2px solid #5fc0be;
   background: #fff;
   min-width: 0;
   min-height: 0;

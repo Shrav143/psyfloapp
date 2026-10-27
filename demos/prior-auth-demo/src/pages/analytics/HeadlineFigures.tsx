@@ -3,7 +3,7 @@ import { InfoTip, Sparkline } from "@/components/ui";
 import { cn } from "@/lib/cn";
 import type { Figure, FigureId } from "./board";
 
-const TONE: Record<FigureId, string> = { approval: "#2F6F5C", denial: "#B5553A", firstPass: "#2F6F5C", time: "#1D4F43", preventable: "#8F6620", appeals: "#2F6F5C" };
+const TONE: Record<FigureId, string> = { approval: "#2E7D52", denial: "#B5553A", firstPass: "#2E7D52", time: "#217A78", preventable: "#8F6620", appeals: "#2E7D52" };
 
 function Change({ f }: { f: Figure }) {
   if (!f.change) return <div className="mt-2 text-[12px] text-muted">No earlier period to compare</div>;
@@ -24,7 +24,7 @@ export function HeadlineFigures({ figures, onOpen }: { figures: Figure[]; onOpen
         const [num, unit] = f.value.endsWith(" days") ? [f.value.replace(" days", ""), "days"] : [f.value, ""];
         return (
           <div key={f.id} className="relative" data-testid={`figure-${f.id}`}>
-            <button type="button" onClick={() => onOpen(f)} className="flex h-full w-full flex-col rounded-[20px] border border-edge bg-white px-5 py-[18px] text-left transition-colors hover:bg-[#FBF8F3]">
+            <button type="button" onClick={() => onOpen(f)} className="flex h-full w-full flex-col rounded-[20px] border border-edge bg-white px-5 py-[18px] text-left transition-colors hover:bg-[#FAF9F6]">
               <span className="pr-8 text-[11px] font-medium tracking-[0.1em] text-muted uppercase">{f.label}</span>
               <span className="mt-2.5 flex items-end justify-between gap-4">
                 <span className="text-[24px] leading-none font-semibold tracking-tight tabular-nums">

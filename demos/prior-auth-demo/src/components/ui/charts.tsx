@@ -33,8 +33,8 @@ export function HBars({ rows, max = 100, labelWidth = 130, valueWidth = 46, clas
       {rows.map((r) => (
         <div key={r.label} className="flex items-center gap-3">
           <span className="truncate" style={{ width: labelWidth }}>{r.label}</span>
-          <div className="h-2 flex-1 overflow-hidden rounded-full bg-[#F0ECE4]">
-            <i className="block h-full rounded-full" style={{ width: `${Math.min(100, (r.value / max) * 100)}%`, background: r.color ?? "#2F6F5C" }} />
+          <div className="h-2 flex-1 overflow-hidden rounded-full bg-[#EBE9E4]">
+            <i className="block h-full rounded-full" style={{ width: `${Math.min(100, (r.value / max) * 100)}%`, background: r.color ?? "#2E7D52" }} />
           </div>
           <b className="text-right" style={{ width: valueWidth }}>{r.display ?? `${r.value}%`}</b>
         </div>
@@ -44,14 +44,14 @@ export function HBars({ rows, max = 100, labelWidth = 130, valueWidth = 46, clas
 }
 
 /** A funnel drawn as stacked bars that narrow, with the step-to-step rate. */
-export function Funnel({ steps, color = "#1D4F43" }: { steps: { label: string; value: number }[]; color?: string }) {
+export function Funnel({ steps, color = "#217A78" }: { steps: { label: string; value: number }[]; color?: string }) {
   const top = steps[0]?.value || 1;
   return (
     <div className="flex flex-col gap-2.5">
       {steps.map((s, i) => (
         <div key={s.label} className="flex items-center gap-3">
           <span className="w-[120px] text-[13px] text-ink2">{s.label}</span>
-          <div className="relative h-8 flex-1 rounded-lg bg-[#F5F0E8]">
+          <div className="relative h-8 flex-1 rounded-lg bg-[#F3F1ED]">
             <div className="flex h-full items-center rounded-lg px-3 text-[13px] font-semibold text-white" style={{ width: `${Math.max(8, (s.value / top) * 100)}%`, background: color, opacity: 1 - i * 0.14 }}>
               {s.value}
             </div>
@@ -64,14 +64,14 @@ export function Funnel({ steps, color = "#1D4F43" }: { steps: { label: string; v
 }
 
 /** Simple vertical columns with labels underneath. */
-export function Columns({ data, height = 140, color = "#2F6F5C", highlight }: { data: { label: string; value: number }[]; height?: number; color?: string; highlight?: string }) {
+export function Columns({ data, height = 140, color = "#2E7D52", highlight }: { data: { label: string; value: number }[]; height?: number; color?: string; highlight?: string }) {
   const max = Math.max(1, ...data.map((d) => d.value));
   return (
     <div className="flex items-end gap-2.5" style={{ height: height + 28 }}>
       {data.map((d) => (
         <div key={d.label} className="flex flex-1 flex-col items-center gap-1.5">
           <span className="text-xs font-semibold">{d.value}</span>
-          <div className="w-full rounded-t-md" style={{ height: Math.max(3, (d.value / max) * height), background: d.label === highlight ? "#1D4F43" : color, opacity: d.label === highlight ? 1 : 0.7 }} />
+          <div className="w-full rounded-t-md" style={{ height: Math.max(3, (d.value / max) * height), background: d.label === highlight ? "#217A78" : color, opacity: d.label === highlight ? 1 : 0.7 }} />
           <span className="text-[11px] text-muted">{d.label}</span>
         </div>
       ))}
@@ -81,7 +81,7 @@ export function Columns({ data, height = 140, color = "#2F6F5C", highlight }: { 
 
 /** A small line for a table row or a figure: twelve values and nothing else. Values may be missing (null), which leave a gap. It can fill the width it is given
     (`fluid`), shade the area under the line, and mark the last point. A screen reader gets `label`, or nothing when the number beside it says the same. */
-export function Sparkline({ data, width = 120, height = 32, color = "#2F6F5C", fluid, area, dot, label }: { data: (number | null)[]; width?: number; height?: number; color?: string; fluid?: boolean; area?: boolean; dot?: boolean; label?: string }) {
+export function Sparkline({ data, width = 120, height = 32, color = "#2E7D52", fluid, area, dot, label }: { data: (number | null)[]; width?: number; height?: number; color?: string; fluid?: boolean; area?: boolean; dot?: boolean; label?: string }) {
   const vals = data.filter((v): v is number => v !== null);
   if (vals.length < 2) return null;
   /* A line over values that barely move should not look like a mountain range: the scale never gets tighter than a fifth of the average. */
@@ -125,7 +125,7 @@ export function Lines({ series, labels, height = 130 }: { series: { name: string
         </g>
       ))}
       {labels.map((l, i) => (
-        <text key={l} x={x(i)} y={height - 6} textAnchor="middle" fontSize="10.5" fill="#6E6A63">
+        <text key={l} x={x(i)} y={height - 6} textAnchor="middle" fontSize="10.5" fill="#5D6572">
           {l}
         </text>
       ))}

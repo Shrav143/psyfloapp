@@ -71,7 +71,7 @@ export function CaseQuickView({ row, from, onClose, onOpenReview }: { row: Ledge
       ) : (
         <div className="flex flex-col gap-1.5">
           <span>{usedText(row)}</span>
-          <Meter value={share * 100} color={share >= 0.75 ? "#B5553A" : "#1D4F43"} height={6} className="w-[160px]" />
+          <Meter value={share * 100} color={share >= 0.75 ? "#B5553A" : "#217A78"} height={6} className="w-[160px]" />
           {runsOut ? <span className="text-[13px] font-semibold text-risk-ink">Runs out before review</span> : null}
         </div>
       ),

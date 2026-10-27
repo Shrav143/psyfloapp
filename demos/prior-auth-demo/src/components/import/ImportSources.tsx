@@ -66,7 +66,7 @@ function Zone({ label, accept, icon: Icon, onFile, focus, children }: { label: s
           const f = e.dataTransfer.files[0];
           if (f) onFile(f);
         }}
-        className={cn("flex min-h-[56px] cursor-pointer items-center justify-center gap-2.5 rounded-xl border border-dashed px-4 text-center text-[13px] text-muted transition-colors", over ? "border-forest bg-[#F3F7F4]" : "border-field bg-tile hover:bg-[#F3EDE4]")}
+        className={cn("flex min-h-[56px] cursor-pointer items-center justify-center gap-2.5 rounded-xl border border-dashed px-4 text-center text-[13px] text-muted transition-colors", over ? "border-forest bg-[#EEF7F6]" : "border-field bg-tile hover:bg-[#F1EFEA]")}
       >
         <Icon size={16} className="ico shrink-0" aria-hidden="true" />
         {children}
@@ -259,7 +259,7 @@ export function ImportSources({ target, onImport, emr, compact, className, curre
             icon={w.icon}
             aria-pressed={mode === w.id}
             onClick={() => open(mode === w.id ? null : w.id)}
-            className={cn(mode === w.id && "border-forest bg-[#F3F7F4]")}
+            className={cn(mode === w.id && "border-forest bg-[#EEF7F6]")}
           >
             {w.label}
           </Button>

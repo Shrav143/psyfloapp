@@ -40,7 +40,7 @@ export function WeakPointsCard({ view, onSource }: { view: DenialView; onSource:
               <div className="font-semibold">{f.title}</div>
               <div className="max-w-[80ch] text-[13px] text-muted">{f.detail}</div>
               <div className="mt-1.5 flex flex-wrap items-center gap-2">
-                <button type="button" onClick={() => onSource(f)} className="inline-flex items-center gap-1.5 rounded-full bg-neutral-bg px-2.5 py-[3px] text-xs font-semibold text-neutral-ink hover:bg-[#EADFD0]">
+                <button type="button" onClick={() => onSource(f)} className="inline-flex items-center gap-1.5 rounded-full bg-neutral-bg px-2.5 py-[3px] text-xs font-semibold text-neutral-ink hover:bg-[#E8E5DF]">
                   <Link2 size={12} className="ico" />
                   {f.source}
                 </button>

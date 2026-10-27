@@ -7,36 +7,31 @@
   font-style: normal;
   font-display: swap;
 }
-@font-face {
-  font-family: "Newsreader Var";
-  src: url("../node_modules/@fontsource-variable/newsreader/files/newsreader-latin-wght-normal.woff2") format("woff2");
-  font-weight: 200 800;
-  font-style: normal;
-  font-display: swap;
-}
 
-/* Design tokens, derived from the Auth Cockpit draft: cream canvas, forest green, serif headlines. */
+/* Design tokens, from the Psyflo brand kit: navy ink #151B24, teal #217A78 (light teal #5FC0BE), amber accent #E0A030, off-white #F8F6F2, one geometric sans.
+   Token names from the earlier palette are kept so every component and test keeps working: --color-forest is now the brand teal, --color-sage its light teal,
+   and --font-serif is the same sans (the brand has no serif). --color-good stays a true green so a success chip never reads as the brand teal. */
 @theme {
-  --color-canvas: #faf6f1;
-  --color-side: #f2eae1;
+  --color-canvas: #f8f6f2;
+  --color-side: #f0ede7;
   --color-card: #ffffff;
-  --color-tile: #faf6f2;
-  --color-tile-edge: #f0ece4;
-  --color-edge: #efe8de;
-  --color-line: #f1efe9;
-  --color-field: #e5dcd0;
-  --color-ink: #1b1b19;
-  --color-ink2: #4d463d;
-  --color-muted: #6e6a63;
-  --color-faint: #a9a59c;
-  --color-forest: #1d4f43;
-  --color-forest-dark: #163d34;
-  --color-sage: #739c8e;
-  --color-sage-bg: #edf4f1;
-  --color-good: #2f6f5c;
-  --color-good-bg: #e6f2ee;
-  --color-good-ink: #27493e;
-  --color-good-edge: #cfe3db;
+  --color-tile: #f9f8f5;
+  --color-tile-edge: #ebe9e4;
+  --color-edge: #e9e7e1;
+  --color-line: #eeece7;
+  --color-field: #dedbd4;
+  --color-ink: #151b24;
+  --color-ink2: #3b4351;
+  --color-muted: #5d6572;
+  --color-faint: #98a0ac;
+  --color-forest: #217a78;
+  --color-forest-dark: #1a6361;
+  --color-sage: #5fc0be;
+  --color-sage-bg: #e6f4f3;
+  --color-good: #2e7d52;
+  --color-good-bg: #e6f3ec;
+  --color-good-ink: #25483a;
+  --color-good-edge: #cfe5d8;
   --color-mid: #8f6620;
   --color-mid-bg: #f6eed6;
   --color-mid-ink: #7d642f;
@@ -45,12 +40,12 @@
   --color-risk-bg: #faf2ea;
   --color-risk-ink: #6b362a;
   --color-risk-edge: #f0dfd2;
-  --color-neutral-bg: #f2eae2;
-  --color-neutral-ink: #4a4239;
-  --color-neutral-edge: #e9ddd0;
+  --color-neutral-bg: #efede8;
+  --color-neutral-ink: #3b4351;
+  --color-neutral-edge: #e3e0da;
   --color-umber: #6b4e3a;
   --font-sans: "DM Sans Var", "DM Sans", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
-  --font-serif: "Newsreader Var", "Newsreader", Georgia, "Times New Roman", serif;
+  --font-serif: "DM Sans Var", "DM Sans", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
   --radius-card: 20px;
   --radius-tile: 16px;
   --radius-ctl: 12px;
@@ -144,5 +139,5 @@ button:disabled {
 /* scrollbars: quiet */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #d9d0c3 transparent;
+  scrollbar-color: #d9d6cf transparent;
 }

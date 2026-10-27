@@ -115,7 +115,7 @@ function WorkflowPicker({ workflows, current, onSelect }: { workflows: Workflow[
         <ChevronDown size={16} className={cn("ico shrink-0 text-faint transition-transform", open && "rotate-180")} aria-hidden="true" />
       </button>
       {open ? (
-        <div id={id} role="listbox" aria-label="Workflows for this payer" className="psy-fade-up absolute top-[52px] left-0 z-40 max-h-[380px] w-[440px] max-w-[calc(100vw-48px)] overflow-auto rounded-[14px] border border-field bg-white p-1.5 shadow-[0_12px_32px_rgba(40,30,15,0.12)]">
+        <div id={id} role="listbox" aria-label="Workflows for this payer" className="psy-fade-up absolute top-[52px] left-0 z-40 max-h-[380px] w-[440px] max-w-[calc(100vw-48px)] overflow-auto rounded-[14px] border border-field bg-white p-1.5 shadow-[0_12px_32px_rgba(21,27,36,0.12)]">
           {workflows.length === 0 ? <p className="m-0 px-3 py-4 text-sm text-muted">This payer has no workflow yet.</p> : null}
           {workflows.map((w) => (
             <button
@@ -127,7 +127,7 @@ function WorkflowPicker({ workflows, current, onSelect }: { workflows: Workflow[
                 setOpen(false);
                 onSelect(w.id);
               }}
-              className={cn("flex w-full items-center gap-3 rounded-[10px] px-3 py-2.5 text-left hover:bg-tile", w.id === current?.id && "bg-[#F3F7F4]")}
+              className={cn("flex w-full items-center gap-3 rounded-[10px] px-3 py-2.5 text-left hover:bg-tile", w.id === current?.id && "bg-[#EEF7F6]")}
             >
               <span className="grid w-4 place-items-center text-forest">{w.id === current?.id ? <Check size={16} className="ico" aria-hidden="true" /> : null}</span>
               <span className="min-w-0 flex-1">

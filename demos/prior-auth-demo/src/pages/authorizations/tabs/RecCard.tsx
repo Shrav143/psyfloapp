@@ -14,7 +14,7 @@ function Tick({ checked, disabled, onChange, title }: { checked: boolean; disabl
     <div className="flex min-w-0 flex-1 items-start gap-2.5">
       <button
         type="button" role="checkbox" aria-checked={checked} aria-label={`Include "${title}" in the draft`} disabled={disabled} onClick={onChange}
-        className={cn("mt-0.5 grid h-[18px] w-[18px] shrink-0 place-items-center rounded-[5px] border-[1.5px] disabled:opacity-60", checked ? "border-forest bg-forest text-white" : "border-[#D9D0C3] bg-white")}
+        className={cn("mt-0.5 grid h-[18px] w-[18px] shrink-0 place-items-center rounded-[5px] border-[1.5px] disabled:opacity-60", checked ? "border-forest bg-forest text-white" : "border-[#D9D6CF] bg-white")}
       >
         {checked ? <Check size={12} className="ico pointer-events-none" /> : null}
       </button>
@@ -45,7 +45,7 @@ export function RecCard({ rec, selected, answer, note, focus, showError, disable
   const answered = answer.trim().length > 0;
   const agent = AGENTS[rec.agent].name;
   return (
-    <div id={`rec-${rec.id}`} data-testid={`rec-${rec.id}`} className={cn("rounded-2xl border px-4 py-3 transition-colors", selected ? "border-[#BFD3CA] bg-[#F8FAF8]" : "border-edge bg-white", focus && "outline-2 outline-offset-2 outline-forest")}>
+    <div id={`rec-${rec.id}`} data-testid={`rec-${rec.id}`} className={cn("rounded-2xl border px-4 py-3 transition-colors", selected ? "border-[#B7DAD8] bg-[#F6FAFA]" : "border-edge bg-white", focus && "outline-2 outline-offset-2 outline-forest")}>
       <div className="flex items-start gap-3">
         <Tick checked={selected} disabled={disabled} onChange={onToggle} title={rec.title} />
         {rec.input ? (answered ? <Pill tone="good">Answer added</Pill> : <Pill tone="mid">Needs your input</Pill>) : null}

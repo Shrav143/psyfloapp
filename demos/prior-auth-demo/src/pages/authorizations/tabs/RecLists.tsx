@@ -32,7 +32,7 @@ export function DismissedList({ items, onRestore }: { items: { rec: Rec; reason:
       {items.map(({ rec, reason }) => (
         <div key={rec.id} className="flex items-center gap-3 rounded-2xl border border-edge bg-white px-4 py-2.5">
           <div className="min-w-0 flex-1">
-            <div className="font-medium text-ink2 line-through decoration-[#C9BFB0]">{rec.title}</div>
+            <div className="font-medium text-ink2 line-through decoration-[#C9C7C0]">{rec.title}</div>
             <div className="text-[12px] text-muted">{reason}</div>
           </div>
           <Button size="sm" variant="ghost" icon={Undo2} onClick={() => onRestore(rec.id)}>Bring back</Button>

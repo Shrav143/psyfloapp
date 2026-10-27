@@ -32,7 +32,7 @@ export function PatientSearch({ book, onPick, label = "Find a patient", hint }: 
             const latest = eps.length ? authorizationsOf(book, eps[eps.length - 1].id)[0] : undefined;
             return (
               <li key={p.id} className="border-b border-line last:border-b-0">
-                <button type="button" onClick={() => onPick(p)} aria-label={`Pick ${p.initials}, ${p.age}, ${p.id}`} className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-[#FBF8F3]">
+                <button type="button" onClick={() => onPick(p)} aria-label={`Pick ${p.initials}, ${p.age}, ${p.id}`} className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-[#FAF9F6]">
                   <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-neutral-bg text-neutral-ink"><UserRound size={16} className="ico" aria-hidden="true" /></span>
                   <span className="min-w-0 flex-1">
                     <span className="block font-semibold">{p.initials}, {p.age} <span className="ml-1 text-xs font-normal text-muted">{p.id}</span></span>

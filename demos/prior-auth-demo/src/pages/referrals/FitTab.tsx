@@ -7,7 +7,7 @@ function Severity({ value }: { value: number }) {
   return (
     <span className="flex gap-[3px]" role="img" aria-label={`${value} of 4`}>
       {[1, 2, 3, 4].map((i) => (
-        <i key={i} className="block h-1.5 w-[18px] rounded-full" style={{ background: i <= value ? (value >= 3 ? "#A87A26" : "#2F6F5C") : "#E9DFD2" }} />
+        <i key={i} className="block h-1.5 w-[18px] rounded-full" style={{ background: i <= value ? (value >= 3 ? "#A87A26" : "#2E7D52") : "#E6E3DD" }} />
       ))}
     </span>
   );
@@ -32,12 +32,12 @@ export function FitTab({ r }: { r: Referral }) {
             <div className="rounded-2xl border border-tile-edge bg-tile px-4 py-3.5">
               <div className="text-[11px] font-medium uppercase tracking-[0.1em] text-muted">The referral supports</div>
               <div className="mt-1 text-[18px] font-semibold">{PROGRAM_LABEL[f.suggested]}</div>
-              <div className="mt-2 flex items-center gap-2.5 text-sm"><b>{f.confidence}%</b> confident<Meter value={f.confidence} color="#2F6F5C" className="w-24" /></div>
+              <div className="mt-2 flex items-center gap-2.5 text-sm"><b>{f.confidence}%</b> confident<Meter value={f.confidence} color="#2E7D52" className="w-24" /></div>
             </div>
             <div className="rounded-2xl border border-tile-edge bg-tile px-4 py-3.5">
               <div className="text-[11px] font-medium uppercase tracking-[0.1em] text-muted">Next best</div>
               <div className="mt-1 text-[18px] font-semibold">{PROGRAM_LABEL[f.alt]}</div>
-              <div className="mt-2 flex items-center gap-2.5 text-sm"><b>{f.altConfidence}%</b> confident<Meter value={f.altConfidence} color="#A9A59C" className="w-24" /></div>
+              <div className="mt-2 flex items-center gap-2.5 text-sm"><b>{f.altConfidence}%</b> confident<Meter value={f.altConfidence} color="#98A0AC" className="w-24" /></div>
             </div>
           </div>
           <p className="text-sm text-ink2">{f.summary}</p>
@@ -74,7 +74,7 @@ export function FitTab({ r }: { r: Referral }) {
                   </div>
                 </div>
                 <div className="w-32">
-                  <Meter value={used} color={used >= 90 ? "#B5553A" : used >= 75 ? "#A87A26" : "#2F6F5C"} height={7} />
+                  <Meter value={used} color={used >= 90 ? "#B5553A" : used >= 75 ? "#A87A26" : "#2E7D52"} height={7} />
                   <div className="mt-1 text-right text-xs text-muted">{c.total - c.open} of {c.total} full</div>
                 </div>
               </li>

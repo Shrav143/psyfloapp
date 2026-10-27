@@ -38,7 +38,7 @@ export function NextBlock({ ctx, next }: { ctx: CaseCtx; next: NextAction }) {
   const passed = checks.filter((c) => c.ok).length;
   const showChecks = !sent && !live && (detail.phase === "preparing" || detail.phase === "ready");
   return (
-    <section aria-label="Next action" className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 rounded-xl border border-forest/20 bg-[#F3F7F4] px-4 py-2.5">
+    <section aria-label="Next action" className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 rounded-xl border border-forest/20 bg-[#EEF7F6] px-4 py-2.5">
       <div className="min-w-0 flex-1 basis-[280px] text-[14px] font-semibold leading-snug"><span className="text-forest">Next:</span> {next.text}</div>
       <div className="flex flex-wrap items-center justify-end gap-2">
         {showChecks ? (

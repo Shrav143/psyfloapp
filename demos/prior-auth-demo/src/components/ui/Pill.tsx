@@ -27,7 +27,7 @@ export function Chip({ children, className }: { children: ReactNode; className?:
 /** Count bubble used in the sidebar and on tabs. */
 export function Count({ children, className, on }: { children: ReactNode; className?: string; on?: boolean }) {
   return (
-    <span className={cn("inline-grid h-[22px] min-w-[22px] place-items-center rounded-full px-1.5 text-xs font-semibold", on ? "bg-white/20 text-white" : "bg-[#E6DACB] text-ink2", className)}>
+    <span className={cn("inline-grid h-[22px] min-w-[22px] place-items-center rounded-full px-1.5 text-xs font-semibold", on ? "bg-white/20 text-white" : "bg-[#E3E0DA] text-ink2", className)}>
       {children}
     </span>
   );

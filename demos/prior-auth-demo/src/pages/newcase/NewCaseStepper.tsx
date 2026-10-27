@@ -36,7 +36,7 @@ export function NewCaseStepper({ steps, current, onGo, className }: { steps: Ste
                 <span className={cn("mt-0.5 text-xs", LABEL[s.state])}>{STEP_STATE_LABEL[s.state]}</span>
               </span>
             </button>
-            {i < steps.length - 1 ? <span aria-hidden="true" className="mt-[17px] hidden h-0.5 w-6 bg-[#EADFD2] min-[1180px]:block" /> : null}
+            {i < steps.length - 1 ? <span aria-hidden="true" className="mt-[17px] hidden h-0.5 w-6 bg-[#E8E5DF] min-[1180px]:block" /> : null}
           </li>
         );
       })}

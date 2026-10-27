@@ -26,7 +26,7 @@ export function TableControls({ needsToday, onNeedsToday, statusOptions, canClea
         type="button"
         aria-pressed={needsToday}
         onClick={() => onNeedsToday(!needsToday)}
-        className={cn("h-[38px] rounded-xl border px-3.5 text-sm text-ink transition-colors hover:bg-tile", needsToday ? "border-forest bg-[#F3F7F4] font-semibold" : "border-field bg-white")}
+        className={cn("h-[38px] rounded-xl border px-3.5 text-sm text-ink transition-colors hover:bg-tile", needsToday ? "border-forest bg-[#EEF7F6] font-semibold" : "border-field bg-white")}
       >
         Needs me today
       </button>

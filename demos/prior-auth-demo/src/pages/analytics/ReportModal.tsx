@@ -45,7 +45,7 @@ export function ReportModal({ input, onClose }: { input: ReportInput; onClose: (
       <ol className="flex flex-col gap-3" aria-label="Report steps">
         {steps.map((s, i) => (
           <li key={s} className="flex items-center gap-3 text-sm">
-            <span className="grid h-6 w-6 place-items-center">{i < done ? <Check size={18} className="ico text-good" aria-label="Done" /> : i === done ? <Spinner /> : <span className="h-2 w-2 rounded-full bg-[#D9D0C3]" />}</span>
+            <span className="grid h-6 w-6 place-items-center">{i < done ? <Check size={18} className="ico text-good" aria-label="Done" /> : i === done ? <Spinner /> : <span className="h-2 w-2 rounded-full bg-[#D9D6CF]" />}</span>
             <span className={i > done ? "text-muted" : undefined}>{s}</span>
           </li>
         ))}

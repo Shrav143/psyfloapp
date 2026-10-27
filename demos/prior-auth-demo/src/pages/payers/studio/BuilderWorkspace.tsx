@@ -337,7 +337,7 @@ export function BuilderWorkspace({ payer, stored, workflows, rules, docs, focusN
               ) : (
                 <Rail icon={PanelLeftOpen} label={libOpen ? "Hide the list of steps" : "Show the list of steps"} onClick={() => setLibOpen((o) => !o)} text="Steps" />
               )}
-              {libOpen && mode === "medium" ? <div className="absolute top-0 left-0 z-30 h-full w-[270px] shadow-[8px_0_32px_rgba(40,30,15,0.12)]">{library}</div> : null}
+              {libOpen && mode === "medium" ? <div className="absolute top-0 left-0 z-30 h-full w-[270px] shadow-[8px_0_32px_rgba(21,27,36,0.12)]">{library}</div> : null}
             </div>
           )}
 

@@ -73,7 +73,7 @@ export default function LedgerCasePage({ row }: { row: LedgerRow }) {
                     <span className="font-normal text-muted">Not approved yet. Units count from the first approved day.</span>
                   ) : (
                     <div className="flex items-center gap-3">
-                      <Meter value={share * 100} color={share >= 0.75 ? "#B5553A" : "#1D4F43"} height={6} className="w-[120px]" />
+                      <Meter value={share * 100} color={share >= 0.75 ? "#B5553A" : "#217A78"} height={6} className="w-[120px]" />
                       <span>{usedText(row)}{runsOut ? <span className="ml-2 text-[13px] font-semibold text-risk-ink">Runs out before review</span> : null}</span>
                     </div>
                   ),

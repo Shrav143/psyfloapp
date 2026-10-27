@@ -36,7 +36,7 @@ export function FileDrop({ onFiles, sampleName, hint = "Drag and drop files here
           setOver(false);
           if (!disabled) take(e.dataTransfer.files);
         }}
-        className={cn("flex cursor-pointer items-center justify-center border border-dashed text-muted transition-colors", variant === "panel" ? "min-h-[168px] flex-col gap-2 rounded-2xl px-6 text-center" : "h-[52px] gap-2.5 rounded-xl text-[13px]", over ? "border-forest bg-[#F3F7F4]" : variant === "panel" ? "border-field bg-tile hover:bg-[#F3EDE4]" : "border-field bg-white hover:bg-tile", disabled && "pointer-events-none opacity-50")}
+        className={cn("flex cursor-pointer items-center justify-center border border-dashed text-muted transition-colors", variant === "panel" ? "min-h-[168px] flex-col gap-2 rounded-2xl px-6 text-center" : "h-[52px] gap-2.5 rounded-xl text-[13px]", over ? "border-forest bg-[#EEF7F6]" : variant === "panel" ? "border-field bg-tile hover:bg-[#F1EFEA]" : "border-field bg-white hover:bg-tile", disabled && "pointer-events-none opacity-50")}
       >
         {variant === "panel" ? (
           <>

@@ -53,7 +53,7 @@ export function Scorecard({ board, onPayer, onCases }: { board: Board; onPayer: 
           {board.score.map((r) => {
             const total = r.payer === "all";
             return (
-              <Tr key={r.payer} onClick={total ? undefined : () => onPayer(r.payer as BuiltInPayerId)} data-payer={r.payer} className={cn(total && "bg-[#FBF8F3] font-semibold")}>
+              <Tr key={r.payer} onClick={total ? undefined : () => onPayer(r.payer as BuiltInPayerId)} data-payer={r.payer} className={cn(total && "bg-[#FAF9F6] font-semibold")}>
                 <Td className={cn(cell, "first:pl-6")}>
                   {total ? (
                     <div>
@@ -70,7 +70,7 @@ export function Scorecard({ board, onPayer, onCases }: { board: Board; onPayer: 
                 <Td className={cn(cell, "text-right tabular-nums")}>{fmt(r.s.n)}</Td>
                 <Td className={cn(cell, "text-right")}>
                   <span className="inline-flex items-center justify-end gap-2.5">
-                    <Sparkline data={r.spark} width={52} height={22} color={r.approval !== null && r.approval < 55 ? "#B5553A" : "#2F6F5C"} />
+                    <Sparkline data={r.spark} width={52} height={22} color={r.approval !== null && r.approval < 55 ? "#B5553A" : "#2E7D52"} />
                     <b className="w-[40px] text-right tabular-nums" data-testid={`rate-${r.payer}`}>{pct(r.approval)}</b>
                   </span>
                 </Td>

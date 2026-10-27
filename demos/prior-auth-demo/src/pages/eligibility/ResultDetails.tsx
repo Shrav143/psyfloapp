@@ -15,7 +15,7 @@ export function AgentRows({ agents }: { agents: AgentLine[] }) {
     <ul aria-label="What the agents checked" className="[&>li:last-child]:border-b-0">
       {agents.map((a, i) => (
         <li key={a.label} className="border-b border-line">
-          <button type="button" aria-expanded={open === i} onClick={() => setOpen(open === i ? null : i)} className="flex w-full items-center gap-3 px-5 py-2.5 text-left text-[14px] hover:bg-[#FBF8F3]">
+          <button type="button" aria-expanded={open === i} onClick={() => setOpen(open === i ? null : i)} className="flex w-full items-center gap-3 px-5 py-2.5 text-left text-[14px] hover:bg-[#FAF9F6]">
             <AgentBadge agent={a.agent} size={26} />
             <span className="flex-1">{a.label}</span>
             <span className="text-xs text-muted">{secs(a.secs)}</span>

@@ -78,7 +78,7 @@ export function CasePanel({ d, width, onClose }: { d: Decision; width: number; o
           </div>
           {d.outcome !== "approved" ? (
             <svg width="100%" height="10" role="img" aria-label={`${d.approvedAmt} of ${d.requested} ${d.unit} approved`} className="mt-3 block">
-              <rect width="100%" height="10" rx="5" fill="#F0ECE4" />
+              <rect width="100%" height="10" rx="5" fill="#EBE9E4" />
               <rect width={`${(d.approvedAmt / d.requested) * 100}%`} height="10" rx="5" fill={d.outcome === "partial" ? "#8F6620" : "#B5553A"} />
             </svg>
           ) : null}
@@ -122,7 +122,7 @@ export function CasePanel({ d, width, onClose }: { d: Decision; width: number; o
         <section>
           <Label>Timeline</Label>
           <ol className="relative mt-3 pl-[26px]" data-testid="case-timeline">
-            <span className="absolute top-2 bottom-3 left-[5px] w-0.5 bg-[#EADFD2]" aria-hidden="true" />
+            <span className="absolute top-2 bottom-3 left-[5px] w-0.5 bg-[#E8E5DF]" aria-hidden="true" />
             {steps.map((s) => (
               <li key={`${s.at}-${s.text}`} className="relative pb-[16px] last:pb-0">
                 <span className="absolute top-[4px] -left-[26px] h-3 w-3 rounded-full bg-good" aria-hidden="true" />

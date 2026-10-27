@@ -49,9 +49,9 @@ export function Fact({ label, value, note }: { label: string; value: ReactNode; 
 
 /** Row inside a card list (hairline between rows). */
 export function ListRow({ children, onClick, selected, className }: { children: ReactNode; onClick?: () => void; selected?: boolean; className?: string }) {
-  const base = cn("flex items-center gap-3 border-b border-line px-6 py-3.5 last:border-b-0", selected && "bg-[#F3F7F4]", className);
+  const base = cn("flex items-center gap-3 border-b border-line px-6 py-3.5 last:border-b-0", selected && "bg-[#EEF7F6]", className);
   return onClick ? (
-    <button type="button" onClick={onClick} className={cn(base, "w-full text-left hover:bg-[#FBF8F3]")}>
+    <button type="button" onClick={onClick} className={cn(base, "w-full text-left hover:bg-[#FAF9F6]")}>
       {children}
     </button>
   ) : (

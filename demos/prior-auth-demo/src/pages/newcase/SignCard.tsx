@@ -138,7 +138,7 @@ export function SignCard({ draft, checks, missing, chance, ready, backSignal, on
         </Field>
         <div className="mt-3 flex flex-wrap gap-2">
           {QUICK.map((q) => (
-            <button key={q} type="button" onClick={() => setNote(q)} className="rounded-full bg-neutral-bg px-3 py-1 text-[13px] font-medium text-neutral-ink hover:bg-[#EADFD0]">
+            <button key={q} type="button" onClick={() => setNote(q)} className="rounded-full bg-neutral-bg px-3 py-1 text-[13px] font-medium text-neutral-ink hover:bg-[#E8E5DF]">
               {q}
             </button>
           ))}

@@ -205,7 +205,7 @@ function StatusCell({ r }: { r: WorkRow }) {
       {r.units ? (
         <div className="mt-1.5 flex flex-col gap-1">
           <span className="text-[12px] text-ink2">{r.units.text}</span>
-          <Meter value={r.units.share * 100} color={r.units.share >= 0.75 ? "#B5553A" : "#1D4F43"} height={4} className="w-[110px]" />
+          <Meter value={r.units.share * 100} color={r.units.share >= 0.75 ? "#B5553A" : "#217A78"} height={4} className="w-[110px]" />
           {r.units.runsOut ? <span className="text-[12px] font-semibold text-risk-ink">Runs out before review</span> : null}
         </div>
       ) : null}

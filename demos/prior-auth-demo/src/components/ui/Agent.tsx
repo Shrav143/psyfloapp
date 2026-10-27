@@ -29,7 +29,7 @@ export function ActorBadge({ actor, size = 22 }: { actor: AgentKey | "you" | "pa
   if (actor !== "you" && actor !== "payer" && actor !== "system") return <AgentBadge agent={actor} size={size} />;
   const label = actor === "you" ? "You" : actor === "payer" ? "Payer" : "Psyflo";
   return (
-    <span title={label} className="inline-grid shrink-0 place-items-center rounded-full bg-forest text-[10px] font-semibold text-white" style={{ width: size, height: size, background: actor === "payer" ? "#6B4E3A" : "#1D4F43" }}>
+    <span title={label} className="inline-grid shrink-0 place-items-center rounded-full bg-forest text-[10px] font-semibold text-white" style={{ width: size, height: size, background: actor === "payer" ? "#6B4E3A" : "#217A78" }}>
       {actor === "you" ? "JP" : actor === "payer" ? "P" : "Ps"}
     </span>
   );

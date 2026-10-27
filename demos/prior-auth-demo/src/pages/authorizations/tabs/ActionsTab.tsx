@@ -71,7 +71,7 @@ export function ActionsTab({ ctx }: { ctx: CaseCtx }) {
         {work.run ? <WorkStrip run={work.run} sections={Math.max(1, sections)} similar={similarTotal(detail)} /> : null}
         {work.focus ? (
           <div className="flex">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-forest/30 bg-[#F3F7F4] py-[3px] pr-1 pl-2.5 text-[12px] font-semibold text-forest" data-testid="focus-chip">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-forest/30 bg-[#EEF7F6] py-[3px] pr-1 pl-2.5 text-[12px] font-semibold text-forest" data-testid="focus-chip">
               <WandSparkles size={13} className="ico" aria-hidden="true" />
               Focus: {FOCUS[work.focus].label}
               <button type="button" onClick={() => setFocus(null)} aria-label="Clear focus" title="Clear focus" className="grid h-5 w-5 place-items-center rounded-full hover:bg-forest/10">

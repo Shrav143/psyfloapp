@@ -32,7 +32,7 @@ export function Segmented<T extends string>({ items, value, onChange, className 
 /** Underlined tabs for page sections (case page, referral detail). */
 export function UnderlineTabs<T extends string>({ items, value, onChange, className }: { items: TabItem<T>[]; value: T; onChange: (v: T) => void; className?: string }) {
   return (
-    <div role="tablist" className={cn("flex gap-7 border-b border-[#EADFD2]", className)}>
+    <div role="tablist" className={cn("flex gap-7 border-b border-[#E8E5DF]", className)}>
       {items.map((t) => (
         <button
           key={t.id}

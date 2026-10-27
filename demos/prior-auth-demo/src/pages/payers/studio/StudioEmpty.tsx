@@ -18,7 +18,7 @@ export function StudioEmpty({ payerName, onNew }: { payerName: string; onNew: (k
         <p className="mx-auto mt-2 mb-7 max-w-[560px] text-center text-[14px] text-muted">A workflow says which steps a request goes through for this payer and what happens at each fork. Pick a way to start. Nothing is used for a real case until a person publishes it.</p>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {CHOICES.map((c) => (
-            <button key={c.kind} type="button" onClick={() => onNew(c.kind)} className="flex flex-col items-start gap-2 rounded-[18px] border border-edge bg-white p-5 text-left transition-colors hover:border-sage hover:bg-[#FBF8F3]">
+            <button key={c.kind} type="button" onClick={() => onNew(c.kind)} className="flex flex-col items-start gap-2 rounded-[18px] border border-edge bg-white p-5 text-left transition-colors hover:border-sage hover:bg-[#FAF9F6]">
               <span className="grid h-10 w-10 place-items-center rounded-full bg-sage-bg text-forest"><c.icon size={20} className="ico" aria-hidden="true" /></span>
               <span className="font-serif text-[18px] font-semibold">{c.title}</span>
               <span className="text-[13px] text-ink2">{c.text}</span>

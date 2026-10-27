@@ -64,7 +64,7 @@ export function NarrativeCard({ sections, editSignal, onSave, onSource }: { sect
                   type="button"
                   disabled={!slotOfSource(src)}
                   onClick={() => onSource(src)}
-                  className="mx-1 inline-flex items-center gap-1 rounded-full bg-neutral-bg px-2.5 py-0.5 align-baseline text-[13px] font-medium text-neutral-ink hover:bg-[#EADFD0]"
+                  className="mx-1 inline-flex items-center gap-1 rounded-full bg-neutral-bg px-2.5 py-0.5 align-baseline text-[13px] font-medium text-neutral-ink hover:bg-[#E8E5DF]"
                   aria-label={`Open source: ${src}`}
                 >
                   <Link2 size={12} className="ico" />

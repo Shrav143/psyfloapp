@@ -27,7 +27,7 @@ export function RetroIntake({ draft, env }: { draft: CaseDraft; env: CaseEnv }) 
           <h3 className="mb-3 text-[11px] font-medium tracking-[0.1em] text-muted uppercase">Why it was not obtained ahead of time</h3>
           <div className="mb-3 flex flex-wrap gap-2">
             {RETRO_REASONS.map((r) => (
-              <button key={r} type="button" onClick={() => patch(draft.id, { retroReason: r })} className="rounded-full bg-neutral-bg px-3 py-1 text-[13px] font-medium text-neutral-ink hover:bg-[#EADFD0]">
+              <button key={r} type="button" onClick={() => patch(draft.id, { retroReason: r })} className="rounded-full bg-neutral-bg px-3 py-1 text-[13px] font-medium text-neutral-ink hover:bg-[#E8E5DF]">
                 {r.replace(/\.$/, "")}
               </button>
             ))}
