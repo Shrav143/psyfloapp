@@ -4,6 +4,18 @@ export type Program = "RES" | "IOP" | "PHP" | "WM";
 export const PROGRAM_LABEL: Record<Program, string> = { RES: "Residential 3.5", IOP: "IOP", PHP: "PHP", WM: "Detox" };
 export const PROGRAMS: Program[] = ["RES", "IOP", "PHP", "WM"];
 
+/** The four levels of care the seed authorization data is built on. */
+export type CoreProgram = "RES" | "IOP" | "PHP" | "WM";
+/** The other Virginia Medicaid behavioral health services (data/va/services.ts names each one). */
+export type VaProgram = "ACT" | "ABA" | "MHCM" | "CRISIS" | "OPT" | "IIH" | "TDT" | "MHSS" | "PSR" | "CPST_A" | "CPST_Y" | "CPST_S" | "CSC" | "CLUB";
+/** Any service an authorization can be for. */
+export type AuthProgram = Program | VaProgram;
+export const VA_PROGRAM_LABEL: Record<VaProgram, string> = {
+  ACT: "ACT", ABA: "ABA", MHCM: "MH case management", CRISIS: "Crisis services", OPT: "Outpatient therapy",
+  IIH: "IIH", TDT: "TDT", MHSS: "MHSS", PSR: "PSR", CPST_A: "CPST Adult", CPST_Y: "CPST Youth", CPST_S: "CPST School", CSC: "CSC", CLUB: "Clubhouse",
+};
+export const authProgramLabel = (p: AuthProgram): string => (p in PROGRAM_LABEL ? PROGRAM_LABEL[p as Program] : VA_PROGRAM_LABEL[p as VaProgram]);
+
 export type BuiltInPayerId = "summit" | "cardinal" | "beacon" | "harborview" | "lakeshore" | "evergreen";
 /** A built-in payer, or one added on Payers (its id is made up when it is added). */
 export type PayerId = BuiltInPayerId | (string & {});

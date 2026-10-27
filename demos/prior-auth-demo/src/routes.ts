@@ -28,6 +28,23 @@ export const paths = {
     const qs = q.toString() ? `?${q.toString()}` : "";
     return o?.draft ? `/authorizations/new/${o.draft}${qs}` : `/authorizations/new${qs}`;
   },
+  /** Intake: the queue, or (view transition) the July 2027 transition view. `q` searches, `service` narrows to one Virginia service. */
+  intake: (o?: { view?: "transition"; q?: string; service?: string }) => {
+    const q = new URLSearchParams();
+    if (o?.view) q.set("view", o.view);
+    if (o?.q) q.set("q", o.q);
+    if (o?.service) q.set("service", o.service);
+    const qs = q.toString();
+    return `/authorizations/intake${qs ? `?${qs}` : ""}`;
+  },
+  /** One intake record. `section` is referral, profile, coverage, assessment, cans, pathway or review; `panel` opens scribe or voice. */
+  intakeRecord: (id: string, section?: string, panel?: "scribe" | "voice") => {
+    const q = new URLSearchParams();
+    if (section) q.set("section", section);
+    if (panel) q.set("panel", panel);
+    const qs = q.toString();
+    return `/authorizations/intake/${id}${qs ? `?${qs}` : ""}`;
+  },
   eligibility: () => "/authorizations/eligibility",
   eligibilityVerify: (q?: { referral?: string; case?: string }) => {
     const s = new URLSearchParams(q as Record<string, string> | undefined).toString();

@@ -7,6 +7,7 @@ import { DAY, HOUR, clockTime, stamp, toDate } from "@/lib/time";
 import { paths } from "@/routes";
 import { resetDemo, useStore } from "@/store";
 import { UnreadDot } from "./Panels";
+import { ProgramSwitcher } from "./ProgramSwitcher";
 import { SiteSwitcher } from "./SiteSwitcher";
 import { VIEWERS } from "@/data/viewers";
 import { Check } from "lucide-react";
@@ -14,6 +15,7 @@ import { Check } from "lucide-react";
 const PATH: [string, string][] = [
   ["Dashboard: where every request stands", paths.dashboard()],
   ["Authorizations: every request in one list", paths.authorizations()],
+  ["Intake: Virginia redesign scenarios", paths.intake()],
   ["New Case: start from a referral", paths.referrals()],
   ["Eligibility & Benefits: verify a patient", paths.eligibilityVerify()],
   ["Denial Intelligence: D-3318", paths.denials("D-3318")],
@@ -91,6 +93,7 @@ export function Topbar() {
   return (
     <div className="sticky top-0 z-30 flex h-[60px] items-center gap-3 border-b border-[#ECE9E4] bg-canvas/90 px-4 backdrop-blur lg:px-7">
       <SiteSwitcher />
+      <ProgramSwitcher />
       <div className="ml-auto flex items-center gap-2 lg:gap-3.5">
         <DemoMenu />
         <button type="button" aria-label="Ask FLO" title="Ask FLO" onClick={() => setAsk(!askOpen)} className={btn}>

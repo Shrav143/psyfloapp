@@ -6,6 +6,12 @@ import { createCasesSlice, type CasesSlice } from "./cases";
 import { createCoreSlice, resetCoreCounters, type CoreSlice } from "./core";
 import { createDenialsSlice, type DenialsSlice } from "./denials";
 import { createEligibilitySlice, type EligibilitySlice } from "./eligibility";
+import { createIntakeSlice, type IntakeSlice } from "./intake";
+import { createIntakeCansSlice, type IntakeCansSlice } from "./intakeCans";
+import { createIntakeClinicalSlice, type IntakeClinicalSlice } from "./intakeClinical";
+import { createIntakeProfileSlice, type IntakeProfileSlice } from "./intakeProfile";
+import { createIntakeReferralSlice, type IntakeReferralSlice } from "./intakeReferral";
+import { createIntakeReviewSlice, type IntakeReviewSlice } from "./intakeReview";
 import { createManagerSlice, type ManagerSlice } from "./manager";
 import { createPayerConfigSlice, initPayerConfigPersistence, type PayerConfigSlice } from "./payerConfig";
 import { createQueueSlice, type QueueSlice } from "./queue";
@@ -15,7 +21,7 @@ import { createSessionSlice, type SessionSlice } from "./session";
 import { createWorkflowsSlice, initWorkflowPersistence, type WorkflowsSlice } from "./workflows";
 
 /** One store, built from slices. Each module owns its slice file. */
-export type AppState = CoreSlice & QueueSlice & CasesSlice & EligibilitySlice & ReferralsSlice & DenialsSlice & PayerConfigSlice & ManagerSlice & AgentSettingsSlice & RipplesSlice & SessionSlice & WorkflowsSlice;
+export type AppState = CoreSlice & QueueSlice & CasesSlice & EligibilitySlice & ReferralsSlice & DenialsSlice & PayerConfigSlice & ManagerSlice & AgentSettingsSlice & RipplesSlice & SessionSlice & WorkflowsSlice & IntakeSlice & IntakeReferralSlice & IntakeProfileSlice & IntakeClinicalSlice & IntakeCansSlice & IntakeReviewSlice;
 
 export const useStore = create<AppState>()((...a) => ({
   ...createCoreSlice(...a),
@@ -30,6 +36,12 @@ export const useStore = create<AppState>()((...a) => ({
   ...createRipplesSlice(...a),
   ...createSessionSlice(...a),
   ...createWorkflowsSlice(...a),
+  ...createIntakeSlice(...a),
+  ...createIntakeReferralSlice(...a),
+  ...createIntakeProfileSlice(...a),
+  ...createIntakeClinicalSlice(...a),
+  ...createIntakeCansSlice(...a),
+  ...createIntakeReviewSlice(...a),
 }));
 
 /* The workflows and the rules library are saved in this browser (try/catch: storage can be blocked). What was saved is merged with the seeds and put back here, and every later change is written. */

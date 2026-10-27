@@ -14,6 +14,8 @@ import EligibilityListPage from "@/pages/eligibility/EligibilityListPage";
 import ResultPage from "@/pages/eligibility/ResultPage";
 import VerifyPage from "@/pages/eligibility/VerifyPage";
 import EmrPage from "@/pages/emr/EmrPage";
+import IntakePage from "@/pages/intake/IntakePage";
+import IntakeRecordPage from "@/pages/intake/IntakeRecordPage";
 import CaseRoute from "@/pages/manager/CaseRoute";
 import ManagerRedirect from "@/pages/manager/ManagerRedirect";
 import NewCasePage from "@/pages/newcase/NewCasePage";
@@ -51,6 +53,8 @@ export default function App() {
           <Route path="/referrals/:id" element={<OldReferralLink />} />
           <Route path="/authorizations" element={<AuthorizationsPage />} />
           <Route path="/authorizations/case/:id" element={<CaseRoute />} />
+          <Route path="/authorizations/intake" element={<IntakePage />} />
+          <Route path="/authorizations/intake/:id" element={<IntakeRecordPage />} />
           <Route path="/authorizations/new" element={<NewCasePage />} />
           <Route path="/authorizations/new/referral/:id" element={<ReferralDetailPage />} />
           <Route path="/authorizations/new/:draftId" element={<NewCasePage />} />

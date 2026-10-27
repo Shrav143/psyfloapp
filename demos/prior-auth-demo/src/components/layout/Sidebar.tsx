@@ -1,4 +1,4 @@
-import { BarChart3, Building2, ChevronDown, ChevronRight, ClipboardList, HelpCircle, ListChecks, LayoutDashboard, LogOut, RefreshCw, Scale, Settings, ShieldCheck, PlusCircle, FlaskConical, type LucideIcon } from "lucide-react";
+import { BarChart3, Building2, ChevronDown, ChevronRight, ClipboardList, HelpCircle, Inbox, ListChecks, LayoutDashboard, LogOut, RefreshCw, Scale, Settings, ShieldCheck, PlusCircle, FlaskConical, type LucideIcon } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import logo from "@/assets/brand/psyflo-logo.svg";
 import { useScope } from "@/lib/scope";
@@ -9,6 +9,7 @@ import { paths } from "@/routes";
 import { useStore } from "@/store";
 import { selectDenialBadge } from "@/store/denials";
 import { selectEbBadge } from "@/store/eligibility";
+import { selectIntakeBadge } from "@/store/intakeSelectors";
 import { selectPayersBadge } from "@/store/payerConfig";
 import { selectQueueBadge } from "@/store/queue";
 import { selectReferralBadge } from "@/store/referrals";
@@ -116,6 +117,7 @@ export function Sidebar() {
   const referrals = useStore(selectReferralBadge);
   const queue = useStore(selectQueueBadge);
   const eb = useStore(selectEbBadge);
+  const intake = useStore(selectIntakeBadge);
   const denials = useStore(selectDenialBadge);
   const payers = useStore(selectPayersBadge);
   const toast = useStore((s) => s.toast);
@@ -127,6 +129,7 @@ export function Sidebar() {
       subs: [
         // The same page as the parent: the one worklist. It is the highlighted item on the worklist and on a case page.
         { to: paths.authorizations(), label: "All Authorizations", icon: ListChecks, isOn: (p) => p === "/authorizations" || p.startsWith("/authorizations/case") },
+        { to: paths.intake(), label: "Intake", icon: Inbox, badge: intake },
         { to: "/authorizations/new", label: "New Case", icon: PlusCircle, badge: referrals },
         { to: paths.eligibility(), label: "Eligibility & Benefits", icon: ShieldCheck, badge: eb },
       ],
