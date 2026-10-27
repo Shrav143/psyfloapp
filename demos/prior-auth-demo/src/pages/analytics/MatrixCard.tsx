@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Card, CardBody, Heatmap, Segmented, type HeatCell } from "@/components/ui";
+import { IllustrativeTag } from "@/components/ui/IllustrativeTag";
 import type { Board, MatrixKey } from "./board";
 import { cellQuery } from "./board";
 import type { CaseQuery } from "./query";
@@ -27,7 +28,10 @@ export function MatrixCard({ board, onCases, onPayer }: { board: Board; onCases:
     <Card data-testid="matrix-card">
       <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 border-b border-line px-6 pt-5 pb-[18px]">
         <div className="min-w-[240px] flex-1">
-          <h3 className="font-serif text-[18px] font-semibold leading-tight tracking-tight">Payer by case mix</h3>
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 className="font-serif text-[18px] font-semibold leading-tight tracking-tight">Payer by case mix</h3>
+            <IllustrativeTag />
+          </div>
           <p className="mt-[3px] text-[13px] text-muted">How often each payer approves each kind of case as requested. Click a cell to see its cases, a payer to see its analysis.</p>
         </div>
         <Segmented items={TABS} value={key} onChange={setKey} className="max-w-full flex-wrap" />

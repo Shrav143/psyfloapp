@@ -2,6 +2,7 @@ import type { MouseEvent, ReactNode } from "react";
 import { ArrowRight, CalendarPlus, FileSignature, Handshake, Scale, type LucideIcon } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button, Card, CardHeader, Pill } from "@/components/ui";
+import { IllustrativeTag } from "@/components/ui/IllustrativeTag";
 import { APPEAL_LEVELS, levelOf } from "@/data/denials";
 import type { Tone } from "@/data/types";
 import { band } from "@/lib/format";
@@ -106,7 +107,7 @@ export function OptionsCard({ view, step, ...h }: { view: DenialView; step: Reco
   return (
     <Card>
       <CardHeader
-        title="Your options"
+        title={<span className="inline-flex items-center gap-2">Your options<IllustrativeTag /></span>}
         subtitle={analysis.benchmark ? `Benchmark estimate, ${analysis.similar} similar decisions` : `From ${analysis.similar} similar ${analysis.ctx.payer} decisions`}
         right={live ? <>{step.option === null ? <Pill tone="mid">{step.word}</Pill> : null}<Button size="sm" icon={Scale} onClick={h.onCompare}>Compare the options</Button></> : undefined}
       />

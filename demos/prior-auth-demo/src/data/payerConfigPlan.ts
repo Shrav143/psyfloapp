@@ -1,47 +1,36 @@
 import { planTypeOf } from "./cases";
 import type { CustomPayer, PayerConfig, PendingChange } from "./payerConfig";
 import { PROGRAM_LABEL, PROGRAMS, type PayerSummary, type Program } from "./types";
+import { vaPlanOf } from "./va/plans";
 import { shortDate } from "@/lib/time";
 
 /* What Payers and Eligibility & Benefits say about a payer: plan type and routing, the programs it covers, what it asks for and the policy status.
    Everything is read from the payer record and its saved configuration. Nothing here is verified against a payer. */
 
 export interface PlanInfo {
-  /** "Medicaid managed care (HMO)" */
+  /** "Cardinal Care managed care (MCO)" */
   label: string;
-  /** The same in a row of a list: "Medicaid HMO". */
+  /** The same in a row of a list: "Medicaid MCO". */
   short: string;
-  /** Where claims go: "Claims go to Summit, not to the state". */
+  /** Where claims go: "Claims go to Sentara, not to the state". */
   routing: string;
   /** The routing with a short lead-in, as the "It is the right plan" check reads it. */
   detail: string;
 }
 
-/** The plan type and where claims go, from the payer's group and the plan type New Case would pre-fill. A payer with no plan type gives null, and the caller shows nothing. */
+/** The plan type and where claims go, from the payer's group and the plan type New Case would pre-fill. A payer with no plan type gives null, and the caller shows nothing.
+    The six built-in payers are Virginia Medicaid (data/va/plans.ts): a Cardinal Care MCO, or fee-for-service with Acentra Health reviewing authorizations. */
 export function planInfo(p: PayerSummary): PlanInfo | null {
   const kind = planTypeOf(p.id);
   if (!kind) return null;
-  const who = p.shortName;
-  if (p.group === "Ohio Medicaid" && kind !== "Fee-for-service") {
-    const routing = `Claims go to ${who}, not to the state`;
-    return { label: kind === "HMO" || kind === "PPO" ? `Medicaid managed care (${kind})` : "Medicaid managed care", short: kind === "HMO" || kind === "PPO" ? `Medicaid ${kind}` : "Medicaid managed care", routing, detail: `Managed by ${p.name}. ${routing}` };
+  const va = vaPlanOf(p.id);
+  if (p.group === "Medicaid fee-for-service" || kind === "Fee-for-service") {
+    const routing = "Claims go to the state, not to a health plan";
+    const label = "Medicaid fee-for-service";
+    return { label, short: label, routing, detail: va ? `${routing}. ${va.reviewer} reviews service authorizations` : routing };
   }
-  if (kind === "Fee-for-service") {
-    const medicaid = p.group === "Ohio Medicaid";
-    const routing = medicaid ? "Claims go to the state, not to a health plan" : `Claims go to ${p.name}`;
-    const label = medicaid ? "Medicaid fee for service" : "Fee for service";
-    return { label, short: label, routing, detail: routing };
-  }
-  if (p.group === "Medicare Advantage" || kind === "Medicare Advantage") {
-    const routing = `Claims go to ${p.name}, not to Medicare`;
-    return { label: "Medicare Advantage", short: "Medicare Advantage", routing, detail: `A Medicare Advantage plan. ${routing}` };
-  }
-  if (p.group === "Behavioral carve-out" || kind === "Behavioral carve-out") {
-    const routing = `Behavioral health is carved out to ${p.name}. Claims go to ${who}, not to the medical plan`;
-    return { label: "Behavioral health carve-out", short: "Behavioral carve-out", routing, detail: routing };
-  }
-  const routing = `Claims go to ${p.name}`;
-  return { label: `Commercial ${kind}`, short: `Commercial ${kind}`, routing, detail: routing };
+  const routing = `Claims go to ${p.shortName}, not to the state`;
+  return { label: va ? "Cardinal Care managed care (MCO)" : "Medicaid managed care (MCO)", short: "Medicaid MCO", routing, detail: `Managed by ${p.name}. ${routing}` };
 }
 
 /** The programs a payer covers: the ones chosen when it was added, or for the built-in six the programs that have a document list. */

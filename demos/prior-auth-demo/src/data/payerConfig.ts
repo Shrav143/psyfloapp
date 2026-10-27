@@ -120,7 +120,7 @@ export interface CustomPayer {
   group: PayerSummary["group"];
   reachedBy: string;
   programs: Program[];
-  /** The payer organization, the state and the plan or product it was added with. Left out, the landing page reads "the name", Ohio and the plan type. */
+  /** The payer organization, the state and the plan or product it was added with. Left out, the landing page reads "the name", Virginia and the plan type. */
   org?: string;
   state?: string;
   product?: string;
@@ -129,7 +129,7 @@ export interface CustomPayer {
 /** What the rest of the app shows for an added payer: it has no history yet, so the figures are benchmark estimates. */
 export const customToSummary = (c: CustomPayer): PayerSummary => ({ id: c.id, name: c.name, shortName: c.shortName, type: c.type, group: c.group, reachedBy: c.reachedBy, approvedAsAsked: 70, avgDecisionDays: 2.5, typicalDecisionDays: 2.5, denied30d: 0, infoAsks30d: 0 });
 
-export const PAYER_GROUPS: PayerSummary["group"][] = ["Ohio Medicaid", "Commercial", "Medicare Advantage", "Behavioral carve-out"];
+export const PAYER_GROUPS: PayerSummary["group"][] = ["Medicaid MCO", "Medicaid fee-for-service"];
 
 export interface AddPayerFields { name: string; type: string; group: PayerSummary["group"]; reach: string[]; programs: Program[]; org?: string; state?: string; product?: string }
 

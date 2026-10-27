@@ -9,7 +9,7 @@ import { stamp } from "@/lib/time";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
 import { selectWriteBackOn } from "@/store/emr";
-import { PAYER_ROW_LABEL, isDenial, nextLine } from "./helpers";
+import { isDenial, nextLine, payerRowLabel } from "./helpers";
 import { CMS_DAYS, cmsClock } from "@/lib/doNext";
 import { chanceFacts, nextCheckIn, sentAt } from "./requestFacts";
 import { DemoControls, StateActions } from "./RequestActions";
@@ -63,7 +63,7 @@ export function RequestDrawer({ request: r, onClose, onSwitch }: { request: PsyR
       open
       onClose={onClose}
       width={560}
-      title={`${r.id} · ${PAYER_ROW_LABEL[r.payerId]}`}
+      title={`${r.id} · ${payerRowLabel(r.payerId)}`}
       subtitle={`${PROGRAM_LABEL[r.program]} ${r.type.toLowerCase()} · ${sent === undefined ? "not sent yet" : `sent ${stamp(sent)}`}`}
       right={
         <Pill tone={r.tone} dot>

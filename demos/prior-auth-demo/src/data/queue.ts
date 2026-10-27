@@ -40,7 +40,7 @@ export interface QueueItem {
   status: string;
   needsInput: boolean;
   coverageFix: boolean;
-  signal: boolean; // affected by the Cardinal IOP payer signal
+  signal: boolean; // affected by the Anthem IOP payer signal
   rule?: string;
   days: number; // days requested
 }
@@ -161,10 +161,10 @@ const down = (label: string, value: string): Score => ({ label, value, trend: "d
 const flat = (label: string, value: string): Score => ({ label, value, trend: "flat" });
 
 const NOW_ROWS: Row[] = [
-  ["R-1042", "J.M.", 34, "summit", "RES", "Admission", 5, 62, "preparing", { dxKey: "aud", dx: "Alcohol use disorder, severe, with recurrent depression · admission", scores: [{ label: "AUDIT-C", value: "11" }, up("PHQ-9", "17"), { label: "CIWA", value: "14 → 4" }], agent: "scribe", status: "Scribe is drafting the case", needs: true, verb: "Notice due", rule: "Summit expects a named step-down provider with the first request.", lift: 26 }],
+  ["R-1042", "J.M.", 34, "summit", "RES", "Admission", 5, 62, "preparing", { dxKey: "aud", dx: "Alcohol use disorder, severe, with recurrent depression · admission", scores: [{ label: "AUDIT-C", value: "11" }, up("PHQ-9", "17"), { label: "CIWA", value: "14 → 4" }], agent: "scribe", status: "Scribe is drafting the case", needs: true, verb: "Notice due", rule: "Sentara expects a named step-down provider with the first request.", lift: 26 }],
   ["R-1101", "K.W.", 26, "summit", "RES", "Retro-authorization", 18, 47, "preparing", { level: "Detox → Residential", dxKey: "oud", dx: "Opioid use disorder · retro-authorization", scores: [down("COWS", "9"), { label: "DAST-10", value: "8" }], agent: "packet", status: "Packet is assembling the request", cov: true, verb: "Window closes", lift: 14 }],
   ["D-3318", "M.C.", 38, "cardinal", "RES", "Peer-to-peer", 36, 64, "denial", { dxKey: "mdd", dx: "Denied 7 of 14 days · continued stay", scores: [flat("PHQ-9", "15"), { label: "Craving", value: "7/10" }], agent: "advocate", status: "Advocate has a peer-to-peer brief ready", verb: "P2P" }],
-  ["R-0912", "C.D.", 44, "evergreen", "RES", "Continued stay", 22, 67, "payer", { agent: "caller", status: "Caller is phoning Evergreen for the decision", verb: "Review due" }],
+  ["R-0912", "C.D.", 44, "evergreen", "RES", "Continued stay", 22, 67, "payer", { agent: "caller", status: "Caller is phoning Aetna for the decision", verb: "Review due" }],
   ["R-1117", "F.R.", 39, "harborview", "RES", "Continued stay", 30, 50, "preparing", { agent: "scribe", status: "Scribe is drafting the continued-stay review", needs: true, verb: "Review due", lift: 12 }],
 ];
 const DAY_ROWS: Row[] = [

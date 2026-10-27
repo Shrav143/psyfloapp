@@ -1,5 +1,6 @@
 import { ArrowDown, ArrowUp, Minus } from "lucide-react";
 import { Card, CardHeader, Sparkline, Table, Td, Th, Tr } from "@/components/ui";
+import { IllustrativeTag } from "@/components/ui/IllustrativeTag";
 import { cn } from "@/lib/cn";
 import type { BuiltInPayerId } from "@/data/types";
 import type { Board, ScoreRow } from "./board";
@@ -33,7 +34,7 @@ export function Scorecard({ board, onPayer, onCases }: { board: Board; onPayer: 
   };
   return (
     <Card data-testid="scorecard">
-      <CardHeader title="Payer scorecard" subtitle={`${period.label}. Click a payer to open its analysis; click a count to list its cases.`} />
+      <CardHeader title="Payer scorecard" right={<IllustrativeTag />} subtitle={`${period.label}. Click a payer to open its analysis; click a count to list its cases.`} />
       <Table>
         <thead>
           <tr>
@@ -88,7 +89,7 @@ export function Scorecard({ board, onPayer, onCases }: { board: Board; onPayer: 
                       {pct(r.pastCms)}
                     </button>
                   ) : (
-                    <span className="text-[12px] font-normal text-muted" title="The CMS decision time applies to the Medicaid managed care plans">n/a</span>
+                    <span className="text-[12px] font-normal text-muted" title="The CMS decision time applies to Medicaid managed care and fee-for-service">n/a</span>
                   )}
                 </Td>
                 <Td className={cn(cell, "text-right tabular-nums")}>

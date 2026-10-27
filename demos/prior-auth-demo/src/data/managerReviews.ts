@@ -44,11 +44,11 @@ export interface Review {
 export const CHECK_LABELS = ["Every sentence traced to the chart", "Review has no errors", "All payer requirements covered", "Level of care matches the request"] as const;
 
 const MISSING: Record<string, string> = {
-  "P-1499": "Harborview asked for the last 14 days of group notes. The draft cannot cite them until you confirm which notes apply.",
-  "R-0912": "Evergreen has not answered in 4 days. Confirm the current risk assessment before Caller resends the review.",
-  "I-2218": "Cardinal wants scale scores dated within 14 days. The last depression score is from 10/02.",
-  "R-0975": "Evergreen asked about the 10/16 medication change. The note for that visit is not in the chart yet.",
-  "R-0881": "The last depression scale score is older than 14 days. Cardinal requires a recent score.",
+  "P-1499": "Humana asked for the last 14 days of group notes. The draft cannot cite them until you confirm which notes apply.",
+  "R-0912": "Aetna has not answered in 4 days. Confirm the current risk assessment before Caller resends the review.",
+  "I-2218": "Anthem wants scale scores dated within 14 days. The last depression score is from 10/02.",
+  "R-0975": "Aetna asked about the 10/16 medication change. The note for that visit is not in the chart yet.",
+  "R-0881": "The last depression scale score is older than 14 days. Anthem requires a recent score.",
   "P-1551": "A medication change on 10/16 is in the chart without a reason. The draft cannot say why it changed.",
   "R-0899": "The urine screen from 10/17 has no result in the chart yet.",
   "R-0890": "The risk assessment has not been updated since admission.",
@@ -58,7 +58,7 @@ const MISSING: Record<string, string> = {
 const WARNING: Record<string, { check: number; problem: string }> = {
   "I-2207": { check: 1, problem: "The draft says the last review was 3 days ago. The ledger shows 4 days." },
   "R-0944": { check: 0, problem: "One sentence about sleep has no matching chart entry. Integrity could not trace it." },
-  "R-0873": { check: 3, problem: "The draft asks for 7 days. Beacon's usual limit at this level of care is 5." },
+  "R-0873": { check: 3, problem: "The draft asks for 7 days. The fee-for-service sample limit at this level of care is 5." },
   "I-2201": { check: 1, problem: "Two units are counted twice in the used total. The ledger shows 21 of 24." },
   "P-1546": { check: 0, problem: "The attendance sentence cites 9 of 10 days. The chart shows 8 of 10." },
   "P-1559": { check: 1, problem: "The review date in the header is 10/22. The payer's calendar says 10/23." },

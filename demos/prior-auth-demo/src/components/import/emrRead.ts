@@ -48,6 +48,6 @@ export function readChart(c: EmrChart, target: ImportTarget, unmapped: UnmappedF
   return { fields, documents, unread };
 }
 
-/** "J.M., 34 · Summit · Residential 3.5", for the chart picker. */
+/** "J.M., 34 · Sentara · Residential 3.5", for the chart picker. */
 export const chartLabel = (c: EmrChart): string => `${c.initials}, ${c.age} · ${displayOf("payerId", c.payerId)} · ${displayOf("program", c.program)}`;
 export const docLine = (d: ImportedDocument): string => (d.date ? `${d.title} · ${mdy(d.date)}` : d.title);

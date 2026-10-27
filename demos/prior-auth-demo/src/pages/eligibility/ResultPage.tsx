@@ -99,7 +99,7 @@ export default function ResultPage() {
         Create authorization from verification
       </Button>
       {state === "lapsed" ? (
-        <Button size="sm" icon={ScanText} onClick={ask("Retro-eligibility requested", `Navigator will ask Ohio Medicaid to restore coverage from ${patient.eligibility.on}. You will be told when it answers.`)}>
+        <Button size="sm" icon={ScanText} onClick={ask("Retro-eligibility requested", `Navigator will ask Virginia Medicaid to restore coverage from ${patient.eligibility.on}. You will be told when it answers.`)}>
           Request retro-eligibility
         </Button>
       ) : null}

@@ -4,6 +4,7 @@ import { AUTH_LABEL, costShareText, coverageDates, EFFECTIVE_FROM, needsCaller, 
 import { planInfo } from "@/data/payerConfigPlan";
 import { payerById } from "@/data/seed";
 import { PROGRAM_LABEL, type AgentKey, type Program, type Tone } from "@/data/types";
+import { vaPlanOf } from "@/data/va/plans";
 import { dosRangeText } from "@/data/verification";
 import { BASE, toDate } from "@/lib/time";
 
@@ -47,7 +48,7 @@ export interface CheckResult {
   fact: VerdictFact;
   checks: PaymentCheck[];
   summary: ResultSummary;
-  /** What the patient pays. Null when no coverage was found or the plan has no cost share on file (Ohio Medicaid): then nothing is said about cost. */
+  /** What the patient pays. Null when no coverage was found or the plan has no cost share on file (every Virginia Medicaid plan in the demo): then nothing is said about cost. */
   patientPays: string | null;
   agents: AgentLine[];
   /** The monthly coverage check after this one (demo minutes), or null when there is no coverage to watch. */
@@ -66,7 +67,7 @@ function coverageCheck(p: EbPatient): PaymentCheck {
   if (p.eligibility.state === "unavailable") return { id: "active", title: "Coverage could not be checked", detail: "Not asked: Verify is paused in Settings", chip: "Not checked", tone: "neutral", unknown: true };
   if (p.eligibility.state === "active" && p.idMismatch) return { id: "active", title: "Coverage is active, under another member ID", detail: `The plan has this member under the ID ending ${tail(p.idMismatch.onFile)}`, chip: "ID differs", tone: "risk" };
   if (p.eligibility.state === "active") {
-    const detail = payer.group === "Ohio Medicaid" ? `Ohio Medicaid, active since ${EFFECTIVE_FROM}, no end date` : payer.group === "Medicare Advantage" ? `Medicare Advantage through ${payer.name}, 2026 plan year` : `${payer.name}, active since ${EFFECTIVE_FROM}, no end date`;
+    const detail = `${vaPlanOf(payer.id) ? "Virginia Medicaid" : payer.name}, active since ${EFFECTIVE_FROM}, no end date`;
     return { id: "active", title: "Coverage is active on the service date", detail, chip: "Active", tone: "good" };
   }
   if (p.eligibility.state === "not_found") return { id: "active", title: "Coverage was not found", detail: "No member matched this ID and date of birth", chip: "Not found", tone: "risk" };
@@ -213,14 +214,13 @@ export function buildResult(p: EbPatient): CheckResult {
   const payer = payerById(p.payerId);
   const who = payer.shortName;
   const prog = PROGRAM_LABEL[p.program];
-  const medicaid = payer.group === "Ohio Medicaid";
   const found = p.eligibility.state !== "not_found" && p.eligibility.state !== "unavailable";
   const on = p.eligibility.on ?? "";
   const checks = [coverageCheck(p), ...(found ? planChecks(p) : [notChecked(p)])];
   const verdict = verdictOf(p);
   const moved = p.payerChanged ? payerById(p.payerChanged.to) : null;
 
-  const state = medicaid ? "Ohio Medicaid" : who;
+  const state = vaPlanOf(payer.id) ? "Virginia Medicaid" : who;
   const agents: AgentLine[] = [
     {
       agent: "verify",

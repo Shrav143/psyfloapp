@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { DEFAULT_STATE } from "@/data/payerProfile";
 import { PROGRAMS, type Program } from "@/data/types";
 import type { RuleGroup, Workflow } from "@/data/workflow/types";
 import { useStore } from "@/store";
@@ -37,7 +38,7 @@ export function WorkflowBuilderTab({ payerId }: { payerId: string }) {
   const [drawer, setDrawer] = useState<null | NewKind>(null);
 
   const row = useMemo(() => payerRows(custom, config).find((r) => r.id === payerId), [custom, config, payerId]);
-  const payer: PayerInfo = { id: payerId, name: row?.name ?? payerId, state: row?.state ?? "OH", product: row?.product ?? "" };
+  const payer: PayerInfo = { id: payerId, name: row?.name ?? payerId, state: row?.state ?? DEFAULT_STATE, product: row?.product ?? "" };
   const asked = params.get("workflow") ?? LAST.get(payerId);
   const stored = workflows.find((w) => w.id === asked) ?? defaultPick(workflows);
   if (stored) LAST.set(payerId, stored.id);

@@ -3,36 +3,36 @@ import type { Elaborated } from "./denialsElaborated";
 /* The long text for the denials whose analysis is written by hand (AUTHORED_TEXT in denials.ts): D-3318, D-3306 and D-3297.
    Read denialsElaborated.ts for what each field holds and the rules for the wording. */
 
-/** D-3318: M.C., 38, Cardinal, Residential 3.5, partial approval of 7 of 14 days. */
+/** D-3318: M.C., 38, Anthem, Residential 3.5, partial approval of 7 of 14 days. */
 const D_3318: Elaborated = {
   synthesis:
-    "M.C. is a 38-year-old man in residential care for severe alcohol use disorder with depression. Cardinal approved 7 of the 14 days requested and wrote that continued stay is not supported by documented progress. The progress note of 10/14, day 6, says otherwise: craving rated 7 of 10 by the clinician, a depression score of 15 and an anxiety score of 13, both above the clinical cutoff, and full group attendance without a link yet between his cravings and his low mood. Cannabis is still the main way he copes.\n\n" +
+    "M.C. is a 38-year-old man in residential care for severe alcohol use disorder with depression. Anthem approved 7 of the 14 days requested and wrote that continued stay is not supported by documented progress. The progress note of 10/14, day 6, says otherwise: craving rated 7 of 10 by the clinician, a depression score of 15 and an anxiety score of 13, both above the clinical cutoff, and full group attendance without a link yet between his cravings and his low mood. Cannabis is still the main way he copes.\n\n" +
     "Both of his medications are new. Naltrexone was started on day 3 and sertraline was raised from 50 to 100 mg on day 5, with the next dose review on 10/17, two days after the approved days end. He has no safe place to step down to: the only partial hospital program has a waitlist with its earliest opening on 10/28, he lives with a roommate who uses, he has no family contact, and his outpatient attempt in 2025 ended in week 3. The chart supports restoring days 8 to 14 with a review at day 14, and using that review to name where he goes next.",
   findings: [
-    "The progress note of 10/14, day 6, records craving at 7 of 10 as rated by the clinician, a depression score (PHQ-9) of 15 and an anxiety score (GAD-7) of 13, both above the clinical cutoff of 10. Group attendance is full, which the letter may have read as progress, but the same note records that he does not yet link his cravings to his low mood. That is the point in treatment where the work has begun and has not yet taken hold. Attach the note, read the three scores with their cutoff and ask the reviewer to name the treatment goal that Cardinal considers met on day 6. If the clinician has scores from after 10/14, add them, because the reviewer will ask for the latest.",
-    "The medication record for 10/11 to 10/14 shows naltrexone 50 mg started on 10/11 (day 3) and sertraline raised from 50 to 100 mg on 10/13 (day 5), with the next dose review on 10/17 and no adverse effects recorded. A new sertraline dose is usually judged after several weeks, and the effect of naltrexone on craving also builds over the first weeks, so the approved seven days end before either can be assessed. The review on 10/17 falls two days after the approval ends, which means the decision about the next dose would be made without the program. Include the record and point to the three dates. Ask Cardinal how it expects that review to take place if he has left.",
-    "The referral log shows a partial hospital referral sent on 10/14, a waitlist with the earliest opening on 10/28, and a home with a roommate who uses, no family contact and no outpatient provider. The letter recommends a step-down, but the one program of that type cannot take him for two weeks, and the alternative is a home where use continues. His outpatient attempt in 2025 ended in week 3, which says that a standard outpatient step is the one that has not held for him before. Send the log, read the 10/28 date aloud and ask Cardinal to name a program with an earlier opening. If it cannot, ask that days 8 to 14 be approved and that the review at day 14 address the days between the end of the stay and 10/28.",
+    "The progress note of 10/14, day 6, records craving at 7 of 10 as rated by the clinician, a depression score (PHQ-9) of 15 and an anxiety score (GAD-7) of 13, both above the clinical cutoff of 10. Group attendance is full, which the letter may have read as progress, but the same note records that he does not yet link his cravings to his low mood. That is the point in treatment where the work has begun and has not yet taken hold. Attach the note, read the three scores with their cutoff and ask the reviewer to name the treatment goal that Anthem considers met on day 6. If the clinician has scores from after 10/14, add them, because the reviewer will ask for the latest.",
+    "The medication record for 10/11 to 10/14 shows naltrexone 50 mg started on 10/11 (day 3) and sertraline raised from 50 to 100 mg on 10/13 (day 5), with the next dose review on 10/17 and no adverse effects recorded. A new sertraline dose is usually judged after several weeks, and the effect of naltrexone on craving also builds over the first weeks, so the approved seven days end before either can be assessed. The review on 10/17 falls two days after the approval ends, which means the decision about the next dose would be made without the program. Include the record and point to the three dates. Ask Anthem how it expects that review to take place if he has left.",
+    "The referral log shows a partial hospital referral sent on 10/14, a waitlist with the earliest opening on 10/28, and a home with a roommate who uses, no family contact and no outpatient provider. The letter recommends a step-down, but the one program of that type cannot take him for two weeks, and the alternative is a home where use continues. His outpatient attempt in 2025 ended in week 3, which says that a standard outpatient step is the one that has not held for him before. Send the log, read the 10/28 date aloud and ask Anthem to name a program with an earlier opening. If it cannot, ask that days 8 to 14 be approved and that the review at day 14 address the days between the end of the stay and 10/28.",
   ],
   recommendations: [
     {
       title: "Confirm the booked call and who joins it",
-      text: "The call is booked for Wed 10/21, 9 to 11 am, inside Cardinal's window. Confirm the time in writing, and ask that the reviewer be a physician in addiction medicine or psychiatry. The clinician who saw him this week should join, because the reviewer will ask about the last session and the latest scores. Have the progress note of 10/14, the medication record and the referral log open before the call starts. Write down the reviewer's name and the call reference number as the call begins.",
+      text: "The call is booked for Wed 10/21, 9 to 11 am, inside Anthem's window. Confirm the time in writing, and ask that the reviewer be a physician in addiction medicine or psychiatry. The clinician who saw him this week should join, because the reviewer will ask about the last session and the latest scores. Have the progress note of 10/14, the medication record and the referral log open before the call starts. Write down the reviewer's name and the call reference number as the call begins.",
     },
     {
       title: "Open with the scores and answer the engaged reading",
-      text: "Read the sentence in Cardinal's letter about documented progress, then give the scores from day 6: craving 7 of 10 by the clinician, PHQ-9 15 and GAD-7 13, against a cutoff of 10 on both. Concede at once that attendance is full and withdrawal scores are low. Then say what the note says next: he does not yet link his cravings to his low mood, so the work he is attending has started and has not taken hold. Mention the outpatient attempt in 2025, which ended in week 3, as the evidence of how he does with less structure. Ask which treatment goal Cardinal considers met.",
+      text: "Read the sentence in Anthem's letter about documented progress, then give the scores from day 6: craving 7 of 10 by the clinician, PHQ-9 15 and GAD-7 13, against a cutoff of 10 on both. Concede at once that attendance is full and withdrawal scores are low. Then say what the note says next: he does not yet link his cravings to his low mood, so the work he is attending has started and has not taken hold. Mention the outpatient attempt in 2025, which ended in week 3, as the evidence of how he does with less structure. Ask which treatment goal Anthem considers met.",
     },
     {
       title: "Set out the two medication changes in date order",
-      text: "Give the dates from the medication record: naltrexone 50 mg on 10/11, day 3, and sertraline from 50 to 100 mg on 10/13, day 5, with no adverse effects recorded. The approved days end on day 7, which is 10/15, and the next dose review is on 10/17. Explain that the review decides the next dose, so it cannot be done well after he has left. Neither drug has been at its current dose long enough to judge. Ask Cardinal to restore days 8 to 14 so the review and its result happen in the program.",
+      text: "Give the dates from the medication record: naltrexone 50 mg on 10/11, day 3, and sertraline from 50 to 100 mg on 10/13, day 5, with no adverse effects recorded. The approved days end on day 7, which is 10/15, and the next dose review is on 10/17. Explain that the review decides the next dose, so it cannot be done well after he has left. Neither drug has been at its current dose long enough to judge. Ask Anthem to restore days 8 to 14 so the review and its result happen in the program.",
     },
     {
       title: "Show that the step-down is not available",
-      text: "Read from the referral log: the partial hospital referral sent on 10/14 and the reply that the earliest opening is 10/28, two weeks later. Add that he lives with a roommate who uses, has no family contact and has no outpatient provider. Ask Cardinal to name a program with an earlier opening, since the letter recommends a step-down without naming one. If it cannot, ask that the stay continue until the transfer date. Note that 10/28 falls six days after day 14, so the review at day 14 has to decide how that gap is covered.",
+      text: "Read from the referral log: the partial hospital referral sent on 10/14 and the reply that the earliest opening is 10/28, two weeks later. Add that he lives with a roommate who uses, has no family contact and has no outpatient provider. Ask Anthem to name a program with an earlier opening, since the letter recommends a step-down without naming one. If it cannot, ask that the stay continue until the transfer date. Note that 10/28 falls six days after day 14, so the review at day 14 has to decide how that gap is covered.",
     },
     {
-      title: "Cite the dimensions and Cardinal's continued-stay criteria",
-      text: "Name the ASAM dimensions that still support Residential 3.5: mood and thinking, with a depression score of 15 and an anxiety score of 13, relapse risk, with craving at 7 of 10 and no outpatient provider, and the home environment, with a roommate who uses. Add the medical dimension, where both medications are mid-titration, and concede withdrawal, where scores are low. Then cite Cardinal's own continued-stay criteria for Residential 3.5, in particular the sections on progress toward goals and on the availability of the next level of care. Ask the reviewer to point to the criterion that is no longer met. A letter that cannot name one is hard to defend on appeal.",
+      title: "Cite the dimensions and Anthem's continued-stay criteria",
+      text: "Name the ASAM dimensions that still support Residential 3.5: mood and thinking, with a depression score of 15 and an anxiety score of 13, relapse risk, with craving at 7 of 10 and no outpatient provider, and the home environment, with a roommate who uses. Add the medical dimension, where both medications are mid-titration, and concede withdrawal, where scores are low. Then cite Anthem's own continued-stay criteria for Residential 3.5, in particular the sections on progress toward goals and on the availability of the next level of care. Ask the reviewer to point to the criterion that is no longer met. A letter that cannot name one is hard to defend on appeal.",
     },
     {
       title: "Ask for days 8 to 14 and a day-14 review",
@@ -45,9 +45,9 @@ const D_3318: Elaborated = {
   ],
   criteria: [
     "ASAM Criteria for Level 3.5 residential care: dimensions 2 (medical), 3 (mood and thinking), 5 (relapse risk) and 6 (recovery environment)",
-    "Cardinal's continued-stay criteria for Residential 3.5: documented progress and availability of the next level of care",
+    "Anthem's continued-stay criteria for Residential 3.5: documented progress and availability of the next level of care",
     "The clinical cutoff of 10 for PHQ-9 and GAD-7, as named in the progress note",
-    "The appeal-rights notice in Cardinal's letter: the call window and the 60-day appeal window",
+    "The appeal-rights notice in Anthem's letter: the call window and the 60-day appeal window",
   ],
   evidence: [
     "Progress note 10/14 (day 6): craving 7 of 10, PHQ-9 15, GAD-7 13",
@@ -55,14 +55,14 @@ const D_3318: Elaborated = {
     "Referral log: the partial hospital referral of 10/14 and the waitlist reply with the 10/28 opening",
     "Treatment plan with the goals for days 8 to 14",
     "The record of the 2025 outpatient attempt that ended in week 3",
-    "Historian's comparison of {similar} similar Cardinal decisions",
-    "Cardinal's letter, with the reviewer's reason and the call window",
+    "Historian's comparison of {similar} similar Anthem decisions",
+    "Anthem's letter, with the reviewer's reason and the call window",
   ],
   outlook:
     "Expect the reviewer to concede part of the request, most likely a few extra days, and to ask for the step-down plan in writing. The position is firm on the scores and the medication timeline, since both are in the chart with dates. It is less firm on the full seven days, because the partial hospital opening on 10/28 and the home setting do not end at day 14, so a restore through day 14 with a review that names the next provider is a good outcome.",
 };
 
-/** D-3306: S.K., 41, Summit, IOP, retro-authorization denied. The chart is thin on purpose, and the text says so. */
+/** D-3306: S.K., 41, Sentara, IOP, retro-authorization denied. The chart is thin on purpose, and the text says so. */
 const D_3306: Elaborated = {
   synthesis:
     "{payer} denied the retro-authorization for S.K., 41, in {program} care because the request reached it on day 9 after admission, outside the 72-hour window, and coverage was not pending on the admission date. The chart confirms both facts. The portal receipt shows the day the request was sent, and {payer}'s eligibility update shows coverage effective from three days after admission, with no pending status recorded for the admission date.\n\n" +
@@ -119,7 +119,7 @@ const D_3306: Elaborated = {
     "Expect {payer} to hold the 72-hour rule for the first three days and, for the later days, to say that the request was still late. The request for the days after the effective date has a real chance, but a smaller one than the chart's other denials, and it is not worth a long pursuit. Accepting the decision is reasonable, and the time saved is better spent on denials the chart supports.",
 };
 
-/** D-3297: T.O., 32, Cardinal, IOP, units cut 48 to 30. The worked example: the longest of the three. */
+/** D-3297: T.O., 32, Anthem, IOP, units cut 48 to 30. The worked example: the longest of the three. */
 const D_3297: Elaborated = {
   synthesis:
     "T.O. is a 32-year-old man in his second week of intensive outpatient care for PTSD and alcohol use disorder, and this is the first treatment of any kind he has sought. {payer} approved {unitsApproved} of the {unitsRequested} units requested and wrote that regular attendance and a first drop in scores show he is stable. The progress note of {noteDate}, written at session 5, shows otherwise: a PTSD score of 49 against a cutoff of 31, a depression score of 16, an anxiety score of 14 and a sleep index of 21, with nightmares on most nights. His PTSD score has fallen 5 points since intake, half of what counts as a meaningful change, and on 10/17 he drank once to get to sleep.\n\n" +
@@ -149,7 +149,7 @@ const D_3297: Elaborated = {
     },
     {
       title: "Cite the criteria and ask which one is no longer met",
-      text: "Cite ASAM Level 2.1 and the dimensions that still support it: dimension 2 for the two doses still being adjusted, dimension 3 for the PTSD, depression and anxiety scores, dimension 5 for a relapse risk in which drinking is a way to sleep, and dimension 6 for living alone without supports. Concede dimension 1, where there are no withdrawal signs, and dimension 4, where he is engaged. Then cite {payerName}'s own medical necessity criteria for IOP, in particular the sections on progress toward treatment goals and on the availability of a lower level of care, and Ohio Medicaid's behavioral health standards for intensive outpatient services where {payer} applies them. Ask the reviewer to name the criterion that is no longer met. A letter that cannot name one is hard to defend on appeal.",
+      text: "Cite ASAM Level 2.1 and the dimensions that still support it: dimension 2 for the two doses still being adjusted, dimension 3 for the PTSD, depression and anxiety scores, dimension 5 for a relapse risk in which drinking is a way to sleep, and dimension 6 for living alone without supports. Concede dimension 1, where there are no withdrawal signs, and dimension 4, where he is engaged. Then cite {payerName}'s own medical necessity criteria for IOP, in particular the sections on progress toward treatment goals and on the availability of a lower level of care. Under Virginia Medicaid's ARTS rules intensive outpatient care needs a continued-stay authorization, so the request is judged against those criteria. Ask the reviewer to name the criterion that is no longer met. A letter that cannot name one is hard to defend on appeal.",
     },
     {
       title: "Submit a detailed plan for units 31 to 48",
@@ -163,7 +163,7 @@ const D_3297: Elaborated = {
   criteria: [
     "ASAM Criteria Level 2.1 (intensive outpatient): dimensions 2, 3, 5 and 6 at the level on {noteDate}, with dimensions 1 and 4 conceded",
     "{payerName} medical necessity criteria for IOP: progress toward treatment goals and availability of a lower level of care",
-    "Ohio Medicaid behavioral health standards for intensive outpatient services, as {payer} applies them to its plan members",
+    "Virginia Medicaid ARTS: intensive outpatient care (ASAM 2.1) needs an initial and a continued-stay authorization (from the Psyflo one-pager's summary of DMAS rules)",
     "Scale cutoffs: PCL-5 31, with 5 points as the smallest reliable change and 10 as a meaningful one; PHQ-9 and GAD-7 10; sleep index 15",
     "The appeal-rights notice in the letter: the call window, the 60-day appeal window and the route to external review",
   ],
@@ -194,7 +194,7 @@ export const DIMS_LONG_AUTHORED: Record<string, Record<string, string>> = {
     "D2 Medical": "Naltrexone 50 mg was started on 10/11 (day 3) and sertraline was raised from 50 to 100 mg on 10/13 (day 5). The next dose review is on 10/17, two days after the approved seven days end, and no adverse effects are recorded. Neither drug has been at its current dose long enough to judge, which matters because the review is where the plan decides whether to continue, adjust or add. Cite the medication record for 10/11 to 10/14.",
     "D3 Mood and thinking": "On day 6 the depression score (PHQ-9) is 15 and the anxiety score (GAD-7) is 13, both above the clinical cutoff of 10. The depression score sits in the moderately severe range, and it has to be read next to the sertraline increase of day 5, which has not had time to act. This dimension supports the continued residential level by itself, and it is the one to lead with on the call. Cite the progress note of 10/14 and ask for any later scores to be added.",
     "D4 Readiness": "He attends every group, which the letter reads as progress. The same note records that he does not yet connect his cravings to his low mood, so the part of treatment that depends on that insight has not started. Engagement is a reason to continue, because what he is attending is only beginning to apply. His outpatient attempt in 2025 ended in week 3, and the chart supports keeping the structure around him until the link is made.",
-    "D5 Relapse risk": "The risk is high. Cannabis is the main way he copes, craving was 7 of 10 on day 6, and no outpatient provider is lined up to take over. His one outpatient attempt, in 2025, ended in week 3, so the standard step-down has not held for him before. Cite the referral log and the 2025 history, and ask Cardinal what protects him in the first weeks after he leaves.",
+    "D5 Relapse risk": "The risk is high. Cannabis is the main way he copes, craving was 7 of 10 on day 6, and no outpatient provider is lined up to take over. His one outpatient attempt, in 2025, ended in week 3, so the standard step-down has not held for him before. Cite the referral log and the 2025 history, and ask Anthem what protects him in the first weeks after he leaves.",
     "D6 Home": "He lives with a roommate who uses, and he has no family contact and no support network. The partial hospital program that would carry him between residential care and home has a waitlist, with the earliest opening on 10/28. Going home before then means returning to a setting with active use and no daytime structure. Cite the referral log, and ask the case manager to look at recovery housing in case the home setting cannot change.",
   },
   "D-3297": {

@@ -8,18 +8,8 @@ import type { DashFilters } from "@/store/core";
 /** Same order as the mockup's "Payers at a glance". */
 export const PAYER_ORDER: PayerId[] = ["cardinal", "summit", "beacon", "harborview", "lakeshore", "evergreen"];
 
-/** Short names used inside table rows, as in the mockup. */
-export const PAYER_ROW_LABEL: Record<PayerId, string> = {
-  summit: "Summit Medicaid",
-  cardinal: "Cardinal",
-  beacon: "Beacon PPO",
-  harborview: "Harborview MA",
-  lakeshore: "Lakeshore",
-  evergreen: "Evergreen",
-};
-
-/** The short payer name for a table row; a payer added on Payers has no mockup name, so its own short name is used. */
-export const payerRowLabel = (id: PayerId): string => PAYER_ROW_LABEL[id] ?? payerById(id)?.shortName ?? id;
+/** The short payer name for a table row: "Sentara", "Medicaid FFS". A payer added on Payers uses its own short name too. */
+export const payerRowLabel = (id: PayerId): string => payerById(id)?.shortName ?? id;
 
 const typeLabel = (t: string): string => (t === "Peer-to-peer" ? "Peer-to-peer call" : t);
 

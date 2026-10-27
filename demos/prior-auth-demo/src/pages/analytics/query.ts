@@ -63,7 +63,7 @@ export function rowsForQuery(scoped: readonly Decision[], f: Filters, q: CaseQue
   return inRange.filter((d) => matchesQuery(d, q));
 }
 
-/** "Opioid use disorder at Cardinal Health Plan" and similar: the words a query adds to its title. */
+/** "Opioid use disorder at Anthem HealthKeepers Plus" and similar: the words a query adds to its title. */
 export function describeQuery(q: CaseQuery): string {
   const bits: string[] = [];
   if (q.dx) bits.push(DX_LABEL[q.dx]);

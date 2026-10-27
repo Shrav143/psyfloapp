@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Plus } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Card, Dropdown, EmptyState, Page, PageHeader, SearchInput } from "@/components/ui";
+import { IllustrativeTag } from "@/components/ui/IllustrativeTag";
 import { PAYER_GROUPS } from "@/data/payerConfig";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
@@ -54,7 +55,7 @@ export function PayersLandingPage() {
 
   return (
     <Page>
-      <PageHeader title={`${rows.length} payers. The agents know how each one works.`} sub="Workflows, rules and documents for every payer. Every edit is logged with your reason." actions={<Button variant="primary" icon={Plus} onClick={() => setAdding(true)}>Add a payer</Button>} />
+      <PageHeader title={`${rows.length} payers. The agents know how each one works.`} sub="Workflows, rules and documents for every payer. Every edit is logged with your reason." actions={<><IllustrativeTag /><Button variant="primary" icon={Plus} onClick={() => setAdding(true)}>Add a payer</Button></>} />
       <Card className="@container overflow-hidden">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2.5 px-6 pt-5 pb-4">
           <SearchInput className="min-w-[200px] flex-1 @3xl:max-w-[320px]" value={filters.query} onChange={(query) => set({ query })} placeholder="Search payers" />

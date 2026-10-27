@@ -50,7 +50,7 @@ const INFO: Record<FigureId, string> = {
   approval: "Share of decisions where the payer approved what was asked for, all of the days or units. Counted from the cases listed when you open the figure.",
   denial: "Share of decisions that were denied or cut back (approved in part). It is 100 minus the approval rate. Accepted denials are ones the clinic chose not to challenge.",
   firstPass: "Approved as requested on the first look, with no request for more information. A request that was approved after the payer asked for more does not count.",
-  time: "Average time from sent to decision. The share past the CMS decision time covers the Medicaid managed care plans only: 72 hours for an expedited request and 7 calendar days for a standard one, from 2026. Check your state.",
+  time: "Average time from sent to decision. The share past the CMS decision time covers Medicaid managed care and fee-for-service, so every plan here: 72 hours for an expedited request and 7 calendar days for a standard one, from 2026. Check your state.",
   preventable: "Denials whose reason the team could have fixed before sending: thin or missing documentation, late notice, an incomplete certification, a duplicate request.",
   appeals: "Appeals the payer ruled on that were overturned or partly restored. A ruling is counted when Denial Intelligence records it.",
 };
@@ -117,8 +117,8 @@ export interface ScoreRow {
   trend: number | null;
   spark: (number | null)[];
 }
-/** The plan type in a few words: "Medicaid managed care", "Commercial PPO", "Medicare Advantage", "Behavioral carve-out". */
-const PLAN_BY_GROUP: Record<string, string> = { "Ohio Medicaid": "Medicaid managed care", Commercial: "Commercial PPO", "Medicare Advantage": "Medicare Advantage", "Behavioral carve-out": "Behavioral carve-out" };
+/** The plan type in a few words: "Cardinal Care MCO" or "Medicaid fee-for-service". */
+const PLAN_BY_GROUP: Record<string, string> = { "Medicaid MCO": "Cardinal Care MCO", "Medicaid fee-for-service": "Medicaid fee-for-service" };
 export const planOf = (payer: BuiltInPayerId): string => {
   const p = payerById(payer);
   return PLAN_BY_GROUP[p.group] ?? `${p.type} · ${p.group}`;

@@ -19,7 +19,7 @@ export function ReasonModal({ title, subtitle, children, saveLabel = "Save and l
       <div className="flex flex-col gap-4">
         {children}
         <Field label="Reason for the edit" required error={missing ? "Add a reason. It goes in the edit log." : undefined} hint="Saved with your name, the time, the old text and the new text.">
-          <TextInput value={reason} onChange={(e) => { setReason(e.target.value); setMissing(false); }} placeholder="For example: Summit confirmed the new window on a call" />
+          <TextInput value={reason} onChange={(e) => { setReason(e.target.value); setMissing(false); }} placeholder="For example: Sentara confirmed the new window on a call" />
         </Field>
       </div>
     </Modal>

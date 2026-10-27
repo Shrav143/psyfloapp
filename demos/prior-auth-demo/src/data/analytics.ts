@@ -1,8 +1,8 @@
 import type { BuiltInPayerId, Program } from "./types";
 
 /* Analytics calibration. The case-level dataset (data/decisions.ts) is generated to hit these numbers for "this quarter, Both sites":
-   1,070 decisions, 71% approved as asked (so 29% not, 311 denials), per payer Lakeshore 86, Beacon 81, Harborview 77, Summit 74,
-   Evergreen 69, Cardinal 63, the denial reasons below (73 at the top: continued-stay evidence at Cardinal), 207 preventable denials,
+   1,070 decisions, 71% approved as asked (so 29% not, 311 denials), per payer UnitedHealthcare 86, Medicaid FFS 81, Humana 77, Sentara 74,
+   Aetna 69, Anthem 63, the denial reasons below (73 at the top: continued-stay evidence at Anthem), 207 preventable denials,
    96 appeal rulings of which 54 were overturned or partly restored (56%), 17 denials accepted, 84% advice taken works, 68 / 27 / 5
    edits, program shares 40 / 30 / 20 / 10 and a decision-weighted average of 2.4 days. Every figure on the Analytics page is
    computed from the records, never from these tables, so a chart, its table and its case list cannot disagree. */

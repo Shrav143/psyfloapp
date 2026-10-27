@@ -49,7 +49,7 @@ export function routeOf(pathname: string): FloRoute {
 }
 export const routeKey = (r: FloRoute): string => (r.kind === "case" ? `case:${r.id}` : r.kind);
 
-export const DEFAULT_CHIPS = ["What needs me today?", "What is due soonest?", "Which payers are slowest right now?", "Why is Cardinal's approval rate down?"];
+export const DEFAULT_CHIPS = ["What needs me today?", "What is due soonest?", "Which payers are slowest right now?", "Why is Anthem's approval rate down?"];
 
 /* ------------------------------------------------------------------ one case, read from every place that knows it */
 interface CaseFacts {
@@ -285,7 +285,7 @@ export function answerFor(q: string, all: AppState, route: FloRoute): FloAnswer 
       return onCase && onCase.payerId === byName.id ? requireAnswer(byName.id, onCase.program, onCase.id, s) : requireAnswer(byName.id, undefined, undefined, s);
     }
     const c = route.kind === "case" ? caseFacts(route.id, s) : undefined;
-    return c ? requireAnswer(c.payerId, c.program, c.id, s) : { text: "Tell me which payer, for example: What does Summit require?", fallback: true };
+    return c ? requireAnswer(c.payerId, c.program, c.id, s) : { text: "Tell me which payer, for example: What does Sentara require?", fallback: true };
   }
   if (t.includes("review") && !t.includes("under review")) return reviewsAnswer(s);
   if (t.includes("denial")) return denialAnswer(s);
@@ -300,10 +300,10 @@ export function answerFor(q: string, all: AppState, route: FloRoute): FloAnswer 
     const chance = queueCases[first.id]?.chance ?? first.chance;
     return { text: `${first.id} (${payerById(first.payerId).shortName}) is due soonest${at}: ${inline(dueText(first.dueVerb, first.dueAt, clock))}. Its approval chance is ${chance}%.${after} ${plural(soon.length, "request")} ${soon.length === 1 ? "is" : "are"} open in Authorizations.`, link: { label: `Open ${first.id}`, to: paths.case(first.id) } };
   }
-  if (t.includes("cardinal") || t.includes("approval rate")) {
+  if (t.includes("anthem") || t.includes("approval rate")) {
     const open = openDrafts(requests, caseDrafts, "cardinal").length;
     const affects = open ? `, which affects ${open} ${open === 1 ? "draft" : "drafts"} you have not sent` : "";
-    return { text: `Cardinal approved 63% as asked over the last 90 days, down 11 points. Historian links most of the drop to continued-stay evidence. Cardinal also published criteria version 2026.3${affects}.`, link: { label: "Open Payers, Cardinal, Changes", to: paths.payers("cardinal", "changes") } };
+    return { text: `In the demo's illustrative data, Anthem approved 63% as asked over the last 90 days, down 11 points. Historian links most of the drop to continued-stay evidence. Anthem's sample criteria moved to version 2026.3${affects}.`, link: { label: "Open Payers, Anthem, Changes", to: paths.payers("cardinal", "changes") } };
   }
   if (t.includes("need") || t.includes("today") || t.includes("first")) {
     const needs = requests.filter((r) => r.needsYou);

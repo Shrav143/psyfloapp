@@ -17,7 +17,7 @@ export interface HeatmapProps {
   onCell?: (row: number, col: number) => void;
   onRow?: (row: number) => void;
   onCol?: (col: number) => void;
-  /** Words for a cell's accessible name: "Cardinal, Opioid use disorder". */
+  /** Words for a cell's accessible name: "Anthem, Opioid use disorder". */
   cellName?: (row: number, col: number) => string;
   summary: string;
   table: ChartTableData;

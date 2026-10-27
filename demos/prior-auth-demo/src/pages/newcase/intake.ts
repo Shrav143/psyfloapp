@@ -106,7 +106,7 @@ export const SAMPLE_CHART = {
   diagnoses: ["F10.20", "F33.2"],
 };
 
-/** Everything for T.W. in one click: patient, insurance, request, diagnoses and 8 of the 9 Summit documents. The therapy note is left out so the caution shows.
+/** Everything for T.W. in one click: patient, insurance, request, diagnoses and 8 of the 9 Sentara documents. The therapy note is left out so the caution shows.
     A case that already has a patient (started from a referral or an EMR pull) keeps that patient and request: the sample chart only adds the documents. */
 export function applySampleChart(id: string): void {
   const st = useStore.getState();

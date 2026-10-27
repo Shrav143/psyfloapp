@@ -3,7 +3,9 @@ import { PROGRAM_LABEL, type Program } from "./types";
 import { ASAM_DIMS } from "./referralLabels";
 import type { Coverage, CoverageKind, CoverageLine, Fit, Referral } from "./referralTypes";
 import { costShareText } from "./eligibility";
+import { planInfo } from "./payerConfigPlan";
 import { payerById } from "./seed";
+import { vaPlanOf } from "./va/plans";
 
 export const hash = (s: string): number => {
   let h = 2166136261;
@@ -23,7 +25,6 @@ export function buildCoverage(r: Pick<Referral, "payerId" | "program" | "plan">,
     const none: CoverageLine = { label: "Coverage is active on the service date", detail: "There is no insurance on the referral and no member ID, so Verify has nothing to look up.", state: "fail", chip: "Not found" };
     return { at, kind: "unconfirmed", headline: "Coverage cannot be confirmed", note: "Ask the referrer for insurance details, or open the full Eligibility & Benefits check to search by name and date of birth code.", lines: [none] };
   }
-  const medicaid = payer.group === "Ohio Medicaid";
   const same = (state: CoverageLine["state"], label: string, detail: string, chip: string): CoverageLine => ({ label, detail, state, chip });
   if (kind === "lapsed") {
     return {
@@ -42,18 +43,20 @@ export function buildCoverage(r: Pick<Referral, "payerId" | "program" | "plan">,
     };
   }
   const needsAuth = kind === "auth_first";
+  const share = costShareText(payer.group);
+  const plan = planInfo(payer);
   return {
     at,
     kind,
     headline: needsAuth ? "Covered, but you need an authorization first" : "Covered and ready to admit",
-    note: medicaid ? "No patient cost share is on file for this plan. This does not change what the program is paid." : `${costShareText(payer.group) ?? "No patient cost share is on file."} Details are in the full Eligibility & Benefits check.`,
+    note: share ? `${share}. Details are in the full Eligibility & Benefits check.` : "No patient cost share is on file for this plan. This does not change what the program is paid.",
     lines: [
-      same("pass", "Coverage is active on the service date", `${medicaid ? "Ohio Medicaid" : payer.type} coverage, active since 01/01/2026 with no end date.`, "Active"),
-      same("pass", "It is the right plan", medicaid ? `Managed by ${payer.name}. Claims go to ${payer.shortName}, not to the state.` : `Claims go to ${payer.name}.`, payer.shortName),
+      same("pass", "Coverage is active on the service date", `${vaPlanOf(payer.id) ? "Virginia Medicaid" : payer.type} coverage, active since 01/01/2026 with no end date.`, "Active"),
+      same("pass", "It is the right plan", plan ? `${plan.detail}.` : `Claims go to ${payer.name}.`, payer.shortName),
       same("pass", "The service is covered", `${prog} is payable for substance use disorder (${code} on the referral).`, "Covered"),
       needsAuth ? same("warn", "Authorization", `Required before the first day of ${prog}. None on file yet.`, "Required") : same("pass", "Authorization", `Not required for ${prog} under this plan.`, "Not required"),
       same("pass", "The program can bill", `The program is enrolled and in network with ${payer.shortName} for ${prog}.`, "In network"),
-      same("pass", "No other insurance", medicaid ? "None found. Medicaid pays last, so Verify looked for another payer." : "None found.", "None"),
+      same("pass", "No other insurance", "None found. Medicaid pays last, so Verify looked for another payer.", "None"),
     ],
   };
 }

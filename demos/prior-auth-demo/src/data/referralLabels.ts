@@ -58,7 +58,7 @@ export const PROGRAM_LONG: Record<Program, string> = {
 /** The ASAM level each program delivers. A referral asking for another level is flagged. */
 export const PROGRAM_ASAM: Record<Program, string> = { RES: "3.5", IOP: "2.1", PHP: "2.5", WM: "3.2" };
 export const AGE_MIN = 18;
-export const ACCEPTED_CREDENTIALS = /\b(MD|DO|NP|PA|PhD|PsyD|LCSW|LISW|LPCC|APRN|PMHNP)\b/;
+export const ACCEPTED_CREDENTIALS = /\b(MD|DO|NP|PA|PhD|PsyD|LCSW|LPC|APRN|PMHNP)\b/;
 
 /** Beds or slots. `open` is what is free this week; accepting a referral takes one. */
 export const CAPACITY_SEED: Record<Program, { total: number; open: number; unit: "bed" | "slot" }> = {

@@ -99,8 +99,8 @@ function judge(r: CheckSource, key: CheckKey): { state: ReferralCheck["state"]; 
         : { state: "warn", detail: `The order expired on ${longDate(p.expiresAt)}. A current order is needed.` };
     case "credentials":
       return ACCEPTED_CREDENTIALS.test(c.credentials)
-        ? { state: "pass", detail: `${c.credentials} is on the accepted list (MD, DO, NP, PA, PhD, LCSW, LPCC).` }
-        : { state: "warn", detail: `"${c.credentials}" is not on the accepted list (MD, DO, NP, PA, PhD, LCSW, LPCC). A cosigning clinician is needed.` };
+        ? { state: "pass", detail: `${c.credentials} is on the accepted list (MD, DO, NP, PA, PhD, LCSW, LPC).` }
+        : { state: "warn", detail: `"${c.credentials}" is not on the accepted list (MD, DO, NP, PA, PhD, LCSW, LPC). A cosigning clinician is needed.` };
     case "components": {
       const missing = [!p.reason && "the reason for referral", !p.substances && "substance use history", !p.meds.length && "medications", !p.risk && "risk screening"].filter(Boolean);
       return missing.length ? { state: "warn", detail: `Missing: ${missing.join(", ")}.` } : { state: "pass", detail: "Reason, substance use history, medications and risk screening are all on the form." };
@@ -148,8 +148,8 @@ function makePlan(s: ReferralSpec, receivedAt: number): DocPlan {
     orgSub: s.source.orgSub,
     sex: s.sex,
     dobCode: String(1000 + (h % 9000)),
-    phone: `(614) 555-0${100 + (h % 90)}`,
-    altContact: `${["Sister", "Partner", "Parent", "Friend"][h % 4]}, (614) 555-0${100 + ((h >> 3) % 90)}`,
+    phone: `(804) 555-0${100 + (h % 90)}`,
+    altContact: `${["Sister", "Partner", "Parent", "Friend"][h % 4]}, (804) 555-0${100 + ((h >> 3) % 90)}`,
     clinician: s.source.clinician,
     asam: PROGRAM_ASAM[s.program],
     orderAt,

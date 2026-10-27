@@ -139,7 +139,7 @@ function realApprovals(): RealDecision[] {
   });
 }
 
-/** R-1042 (J.M., 34, Summit, residential admission) is still being prepared, so it has no decision yet. Its chart does record an intensive outpatient
+/** R-1042 (J.M., 34, Sentara, residential admission) is still being prepared, so it has no decision yet. Its chart does record an intensive outpatient
     attempt in 2025 that ended in week 3 when housing was lost: that approval is in the history, and its case panel opens R-1042. */
 const PRIOR: RealDecision[] = [
   { id: "I-1993", linkId: "R-1042", caseId: "R-1042", initials: "J.M.", age: 34, payerId: "summit", program: "IOP", kind: "initial", dx: "cooc", population: "first", outcome: "approved", day: 355, unit: "units", requested: 36, approvedAmt: 36, p2p: "none", appeal: "none" },

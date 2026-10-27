@@ -134,8 +134,8 @@ function fixPlan(p: DocPlan, program: Program, clock: number): DocPlan {
     meds: p.meds.length ? p.meds : ["None reported"],
     risk: p.risk || "No thoughts of self-harm. Risk screening completed on the corrected form.",
     asam: PROGRAM_ASAM[program],
-    phone: p.phone || "(614) 555-0188",
-    altContact: p.altContact || "Family member, (614) 555-0189",
+    phone: p.phone || "(804) 555-0188",
+    altContact: p.altContact || "Family member, (804) 555-0189",
   };
 }
 

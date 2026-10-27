@@ -11,7 +11,7 @@ const FAST_MS = 140;
 
 /** Drives the agents one step at a time while the page is open. All progress is written to the draft, so leaving and coming back resumes.
     The run holds while an agent waits for an answer or for Retry or Skip, and while the agent at this step is paused in Settings.
-    Verify cannot reach Cardinal's portal the first time a case runs: the row says so, and Retry then works. */
+    Verify cannot reach Anthem's portal the first time a case runs: the row says so, and Retry then works. */
 export function useAgentRun(draft: CaseDraft, fast: boolean) {
   const advance = useStore((s) => s.advanceCaseRun);
   const ask = useStore((s) => s.askCaseQuestion);

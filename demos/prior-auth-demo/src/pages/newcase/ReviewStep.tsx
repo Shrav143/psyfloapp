@@ -111,7 +111,7 @@ export function ReviewStep({ draft, env }: { draft: CaseDraft; env: CaseEnv }) {
                   {b.word} · likely {range.lo}-{range.hi}%
                 </Pill>
                 <div className="mt-1.5 text-xs text-muted">
-                  {payer ? `${payer.shortName} usually decides in about ${payer.typicalDecisionDays === 1 ? "1 day" : `${payer.typicalDecisionDays} days`}. ` : ""}
+                  {payer ? `${payer.shortName} decides in about ${payer.typicalDecisionDays === 1 ? "1 day" : `${payer.typicalDecisionDays} days`} in the demo data. ` : ""}
                   {sc ? `Based on ${sc.total.toLocaleString("en-US")} similar cases.` : ""}
                 </div>
               </div>

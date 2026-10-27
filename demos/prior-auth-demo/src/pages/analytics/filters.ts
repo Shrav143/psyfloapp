@@ -35,7 +35,7 @@ export const PAYER_OPTIONS: Option<PayerFilter>[] = [{ value: "all", label: "All
 export const PROGRAM_OPTIONS: Option<ProgramFilter>[] = [{ value: "all", label: "All programs" }, ...PROGRAM_ORDER.map((p) => ({ value: p, label: PROGRAM_LABEL[p], hint: p === "WM" ? "Withdrawal management" : undefined }))];
 export const DX_OPTIONS: Option<DxFilter>[] = [{ value: "all", label: "All diagnosis groups" }, ...DX_GROUPS.map((d) => ({ value: d.id, label: d.label }))];
 
-/** The words after "for": "Cardinal, Residential 3.5, Opioid use disorder". Empty when nothing is narrowed. */
+/** The words after "for": "Anthem, Residential 3.5, Opioid use disorder". Empty when nothing is narrowed. */
 export function filterWords(f: Filters): string {
   const parts: string[] = [];
   if (f.payer !== "all") parts.push(payerById(f.payer).name);

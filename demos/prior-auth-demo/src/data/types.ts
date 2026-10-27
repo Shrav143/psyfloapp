@@ -24,8 +24,9 @@ export interface PayerSummary {
   id: PayerId;
   name: string;
   shortName: string;
-  type: string; // "Medicaid plan", "Commercial"…
-  group: "Ohio Medicaid" | "Commercial" | "Medicare Advantage" | "Behavioral carve-out";
+  type: string; // "Managed care plan" or "Fee-for-service"
+  /** The six demo payers are Virginia Medicaid: five Cardinal Care managed care organizations and fee-for-service. */
+  group: "Medicaid MCO" | "Medicaid fee-for-service";
   reachedBy: string;
   approvedAsAsked: number; // %, last 90 days
   avgDecisionDays: number;

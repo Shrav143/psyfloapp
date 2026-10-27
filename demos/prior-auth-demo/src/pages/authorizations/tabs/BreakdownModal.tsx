@@ -1,4 +1,5 @@
 import { Button, Label, Modal, Pill } from "@/components/ui";
+import { IllustrativeTag } from "@/components/ui/IllustrativeTag";
 import { driverView, outcomeSplit } from "@/data/caseModel";
 import { band as chanceBand } from "@/lib/format";
 import type { CaseCtx } from "../caseTypes";
@@ -14,7 +15,7 @@ export function BreakdownModal({ ctx, onClose }: { ctx: CaseCtx; onClose: () => 
   const split = outcomeSplit(chance);
   return (
     <Modal open onClose={onClose} title={`Why ${total}%`} subtitle={<span data-testid="formula">{formulaOf(rows, total)}</span>} footer={<Button variant="primary" onClick={onClose}>Close</Button>}>
-      <div className="mb-1 flex justify-end"><Pill tone={b.tone} dot>{b.word} · {total}%</Pill></div>
+      <div className="mb-1 flex items-center justify-end gap-2"><IllustrativeTag /><Pill tone={b.tone} dot>{b.word} · {total}%</Pill></div>
       <DriverBars rows={rows} total={total} />
       <Label className="mt-4 mb-2">Likely outcomes</Label>
       <ul className="m-0 flex list-none flex-wrap gap-x-6 gap-y-1.5 p-0 text-[13px]" data-testid="outcomes">

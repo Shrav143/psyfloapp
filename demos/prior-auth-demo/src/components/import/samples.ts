@@ -9,14 +9,14 @@ export const SAMPLE_CSV: Record<ImportTarget, { name: string; text: string }> = 
     name: "patients-export.csv",
     text: [
       "MRN,Patient,DOB,Sex,Primary payer,Plan type,Member ID,Level of care,Primary Dx,Admit date,Last note,Prior dx",
-      "A-30418,K.L.,06/14/1989,F,Beacon PPO,PPO,BP4417209358,Intensive outpatient,F11.20 Opioid dependence,10/26/2026,10/16/2026,F41.1",
-      "A-30422,R.D.,11/02/1978,M,Cardinal Health Plan,HMO,CH5520318874,Residential 3.5,F10.20 Alcohol dependence,10/21/2026,10/19/2026,F33.2",
-      "A-30431,N.P.,04/09/2010,F,Summit Medicaid HMO,HMO,SM7408813302,Partial hospitalization,F33.1 Major depressive disorder,10/22/2026,10/18/2026,F43.10",
+      "A-30418,K.L.,06/14/1989,F,Virginia Medicaid fee-for-service,Fee-for-service,BP4417209358,Intensive outpatient,F11.20 Opioid dependence,10/26/2026,10/16/2026,F41.1",
+      "A-30422,R.D.,11/02/1978,M,Anthem HealthKeepers Plus,Medicaid MCO,CH5520318874,Residential 3.5,F10.20 Alcohol dependence,10/21/2026,10/19/2026,F33.2",
+      "A-30431,N.P.,04/09/2010,F,Sentara Community Plan,Medicaid MCO,SM7408813302,Partial hospitalization,F33.1 Major depressive disorder,10/22/2026,10/18/2026,F43.10",
     ].join("\n"),
   },
   insurance: {
     name: "coverage-export.csv",
-    text: ["Patient,Payer,Plan type,Member ID,Group,Effective,Termination,Subscriber", "K.L.,Beacon PPO,PPO,BP4417209358,GRP-55120,01/01/2026,12/31/2026,Self", "R.D.,Cardinal Health Plan,HMO,CH5520318874,OHMCD-07,07/01/2026,06/30/2027,Self"].join("\n"),
+    text: ["Patient,Payer,Plan type,Member ID,Group,Effective,Termination,Subscriber", "K.L.,Virginia Medicaid fee-for-service,Fee-for-service,BP4417209358,GRP-55120,01/01/2026,12/31/2026,Self", "R.D.,Anthem HealthKeepers Plus,Medicaid MCO,CH5520318874,VAMCD-07,07/01/2026,06/30/2027,Self"].join("\n"),
   },
   documents: {
     name: "documents-export.csv",
@@ -24,7 +24,7 @@ export const SAMPLE_CSV: Record<ImportTarget, { name: string; text: string }> = 
   },
   denial_letter: {
     name: "denials-export.csv",
-    text: ["Payer,Letter date,Service from,Service to,Days requested,Days approved,Reason", "Cardinal Health Plan,10/19/2026,10/13/2026,10/26/2026,14,7,Continued-stay criteria not met after day 7: the record does not show a daily need for 24-hour structure"].join("\n"),
+    text: ["Payer,Letter date,Service from,Service to,Days requested,Days approved,Reason", "Anthem HealthKeepers Plus,10/19/2026,10/13/2026,10/26/2026,14,7,Continued-stay criteria not met after day 7: the record does not show a daily need for 24-hour structure"].join("\n"),
   },
 };
 
@@ -37,21 +37,21 @@ interface Reading {
 const READINGS: Record<ImportTarget, Reading[]> = {
   patient: [
     {
-      fields: [["initials", "K.L."], ["dob", "06/14/1989"], ["sex", "F"], ["payerId", "Beacon PPO"], ["planType", "PPO"], ["memberId", "BP4417209358", true], ["program", "IOP"], ["diagnosis", "F11.20"], ["startDate", "10/26/2026", true]],
+      fields: [["initials", "K.L."], ["dob", "06/14/1989"], ["sex", "F"], ["payerId", "Virginia Medicaid fee-for-service"], ["planType", "Fee-for-service"], ["memberId", "BP4417209358", true], ["program", "IOP"], ["diagnosis", "F11.20"], ["startDate", "10/26/2026", true]],
       documents: [makeDoc("Progress note", "2026-10-16"), makeDoc("Diagnosis history (F11.20, F41.1)", "2026-10-16")],
     },
     {
-      fields: [["initials", "R.D."], ["dob", "11/02/1978", true], ["sex", "M"], ["payerId", "Cardinal Health Plan"], ["planType", "HMO"], ["memberId", "CH5520318874"], ["program", "Residential 3.5"], ["diagnosis", "F10.20"], ["startDate", "10/21/2026"]],
+      fields: [["initials", "R.D."], ["dob", "11/02/1978", true], ["sex", "M"], ["payerId", "Anthem HealthKeepers Plus"], ["planType", "Medicaid MCO"], ["memberId", "CH5520318874"], ["program", "Residential 3.5"], ["diagnosis", "F10.20"], ["startDate", "10/21/2026"]],
       documents: [makeDoc("Progress note", "2026-10-19")],
     },
     {
-      fields: [["initials", "N.P."], ["dob", "04/09/2010"], ["sex", "F", true], ["payerId", "Summit Medicaid HMO"], ["planType", "HMO"], ["memberId", "SM7408813302", true], ["program", "PHP"], ["diagnosis", "F33.1"], ["startDate", "10/22/2026"]],
+      fields: [["initials", "N.P."], ["dob", "04/09/2010"], ["sex", "F", true], ["payerId", "Sentara Community Plan"], ["planType", "Medicaid MCO"], ["memberId", "SM7408813302", true], ["program", "PHP"], ["diagnosis", "F33.1"], ["startDate", "10/22/2026"]],
       documents: [makeDoc("Psychiatric evaluation", "2026-10-18")],
     },
   ],
   insurance: [
-    { fields: [["payerId", "Beacon PPO"], ["planType", "PPO"], ["memberId", "BP4417209358", true], ["groupNumber", "GRP-55120"], ["effectiveFrom", "01/01/2026"], ["effectiveTo", "12/31/2026"], ["subscriber", "Self"]], documents: [] },
-    { fields: [["payerId", "Cardinal Health Plan"], ["planType", "HMO"], ["memberId", "CH5520318874"], ["groupNumber", "OHMCD-07", true], ["effectiveFrom", "07/01/2026"], ["effectiveTo", "06/30/2027"], ["subscriber", "Self"]], documents: [] },
+    { fields: [["payerId", "Virginia Medicaid fee-for-service"], ["planType", "Fee-for-service"], ["memberId", "BP4417209358", true], ["groupNumber", "GRP-55120"], ["effectiveFrom", "01/01/2026"], ["effectiveTo", "12/31/2026"], ["subscriber", "Self"]], documents: [] },
+    { fields: [["payerId", "Anthem HealthKeepers Plus"], ["planType", "Medicaid MCO"], ["memberId", "CH5520318874"], ["groupNumber", "VAMCD-07", true], ["effectiveFrom", "07/01/2026"], ["effectiveTo", "06/30/2027"], ["subscriber", "Self"]], documents: [] },
   ],
   documents: [
     { fields: [], documents: [makeDoc("Progress note", "2026-10-19")] },
@@ -60,7 +60,7 @@ const READINGS: Record<ImportTarget, Reading[]> = {
   ],
   denial_letter: [
     {
-      fields: [["payerId", "Cardinal Health Plan"], ["decisionDate", "10/19/2026"], ["dateFrom", "10/13/2026"], ["dateTo", "10/26/2026"], ["unitsRequested", "14"], ["unitsApproved", "7", true], ["reason", "Continued-stay criteria not met after day 7: the record does not show a daily need for 24-hour structure."]],
+      fields: [["payerId", "Anthem HealthKeepers Plus"], ["decisionDate", "10/19/2026"], ["dateFrom", "10/13/2026"], ["dateTo", "10/26/2026"], ["unitsRequested", "14"], ["unitsApproved", "7", true], ["reason", "Continued-stay criteria not met after day 7: the record does not show a daily need for 24-hour structure."]],
       documents: [makeDoc("Denial letter", "2026-10-19")],
     },
   ],
@@ -94,9 +94,9 @@ function card(title: string, rows: [string, string][], foot: string): string {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="440" height="${h}" viewBox="0 0 440 ${h}" font-family="Arial, Helvetica, sans-serif"><rect width="440" height="${h}" fill="#ffffff"/><rect width="440" height="40" fill="#e9eef3"/><circle cx="20" cy="20" r="7" fill="#8aa2b8"/><text x="36" y="25" font-size="13" font-weight="700" fill="#33475b">${esc(title)}</text>${lines}<text x="20" y="${h - 12}" font-size="10" fill="#98a0ac">${esc(foot)}</text></svg>`;
 }
 const SHOT_SVG: Record<ImportTarget, string> = {
-  patient: card("Clinical record · Patient header", [["Patient", "K.L."], ["DOB / Sex", "06/14/1989 · F"], ["Insurance", "Beacon PPO · PPO"], ["Member ID", "BP4417209358"], ["Program", "IOP · admit 10/26/2026"], ["Primary Dx", "F11.20 Opioid dependence"]], "Invented demo chart. Not a real patient."),
-  insurance: card("Coverage · Member card", [["Payer", "Beacon PPO"], ["Plan type", "PPO"], ["Member ID", "BP4417209358"], ["Group", "GRP-55120"], ["Effective", "01/01/2026 to 12/31/2026"], ["Subscriber", "Self"]], "Invented demo card."),
+  patient: card("Clinical record · Patient header", [["Patient", "K.L."], ["DOB / Sex", "06/14/1989 · F"], ["Insurance", "Virginia Medicaid fee-for-service"], ["Member ID", "BP4417209358"], ["Program", "IOP · admit 10/26/2026"], ["Primary Dx", "F11.20 Opioid dependence"]], "Invented demo chart. Not a real patient."),
+  insurance: card("Coverage · Member card", [["Payer", "Virginia Medicaid fee-for-service"], ["Plan type", "Fee-for-service"], ["Member ID", "BP4417209358"], ["Group", "GRP-55120"], ["Effective", "01/01/2026 to 12/31/2026"], ["Subscriber", "Self"]], "Invented demo card."),
   documents: card("Progress note · 10/19/2026", [["Patient", "K.L."], ["Author", "Group therapist"], ["Session", "Group, 90 min"], ["Focus", "Relapse prevention"], ["Signed", "10/19/2026"]], "Invented demo note."),
-  denial_letter: card("Notice of adverse determination", [["Payer", "Cardinal Health Plan"], ["Letter date", "10/19/2026"], ["Service", "Residential 3.5"], ["Dates", "10/13/2026 to 10/26/2026"], ["Days", "14 requested · 7 approved"], ["Reason", "Continued-stay criteria not met"]], "Invented demo letter."),
+  denial_letter: card("Notice of adverse determination", [["Payer", "Anthem HealthKeepers Plus"], ["Letter date", "10/19/2026"], ["Service", "Residential 3.5"], ["Dates", "10/13/2026 to 10/26/2026"], ["Days", "14 requested · 7 approved"], ["Reason", "Continued-stay criteria not met"]], "Invented demo letter."),
 };
 export const sampleShotUrl = (target: ImportTarget): string => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(SHOT_SVG[target])}`;

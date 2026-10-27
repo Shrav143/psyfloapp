@@ -252,7 +252,7 @@ const lib = (payerId: string, key: string, group: RuleGroup, title: string, desc
   title,
   description,
   values,
-  state: "OH",
+  state: "VA",
   services: [],
   requestTypes: [],
   effectiveFrom: RULES_EFFECTIVE_FROM,
@@ -265,7 +265,7 @@ const lib = (payerId: string, key: string, group: RuleGroup, title: string, desc
   ...over,
 });
 
-/** Demo limits per level of care, in the units the Eligibility sample uses: Residential 14 days, IOP 48 units, PHP 15 days, Detox 5 days (Summit has no day limit on Residential, so its sample allows a longer request). */
+/** Demo limits per level of care, in the units the Eligibility sample uses: Residential 14 days, IOP 48 units, PHP 15 days, Detox 5 days (Sentara has no day limit on Residential, so its sample allows a longer request). */
 const LIMITS: Record<Program, { units: number; unit: "days" | "units"; days: number }> = { RES: { units: 14, unit: "days", days: 14 }, IOP: { units: 48, unit: "units", days: 112 }, PHP: { units: 15, unit: "days", days: 15 }, WM: { units: 5, unit: "days", days: 5 } };
 
 function libraryRulesFor(payerId: string, cfg: PayerConfig, profile: PayerProfile): PayerRule[] {

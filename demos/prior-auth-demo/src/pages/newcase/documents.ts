@@ -1,5 +1,5 @@
 /* The documents a request needs, what Reader looks for in each one, and a short preview of each for the demo.
-   Which documents a payer asks for is the list saved on Payers › Documents for that level of care: Summit asks for 9 for Residential 3.5. */
+   Which documents a payer asks for is the list saved on Payers › Documents for that level of care: Sentara asks for 9 for Residential 3.5. */
 import type { DocBlock } from "@/components/ui";
 import type { DemoFile } from "@/components/ui";
 import type { Answer, DocFinding, DocSlotId, DraftDocument, FixedDocSlot, QuestionKey } from "@/data/cases";

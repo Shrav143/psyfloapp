@@ -256,7 +256,7 @@ export const RUN_STEPS: RunStep[] = [
 ];
 export const SCRIBE_STEP = 6;
 export const FORECAST_STEP = 6; // the approval chance is settled once this many agents are done
-/** The payer whose portal Verify cannot reach on the first run of a case. Cardinal's portal is down on Sundays and often shows no status (Payers › Cardinal). */
+/** The payer whose portal Verify cannot reach on the first run of a case. Anthem's portal is down on Sundays and often shows no status (Payers › Anthem). */
 export const FLAKY_PORTAL: PayerId = "cardinal";
 
 /* ------------------------------------------------------------------ questions an agent can ask */
@@ -372,7 +372,7 @@ export function chanceRange(chance: number, settled: boolean): { lo: number; hi:
   const c = Math.round(chance);
   return settled ? { lo: c - 5, hi: Math.min(99, c + 4) } : { lo: c - 9, hi: Math.min(99, c + 8) };
 }
-/** Similar past decisions: 1,248 for Summit residential (212 your own, 806 network, 230 benchmark), scaled for the rest. */
+/** Similar past decisions: 1,248 for Sentara residential (212 your own, 806 network, 230 benchmark), scaled for the rest. */
 export function similarCases(payerId: PayerId, program: Program): { total: number; own: number; network: number; benchmark: number } {
   const total = payerId === "summit" && program === "RES" ? 1248 : 380 + ((payerId.length * 137 + program.charCodeAt(0) * 53) % 760);
   const own = Math.round(total * 0.17);
@@ -430,18 +430,18 @@ export function nextCaseCode(program: Program | null, seq: number, site: SiteId)
 }
 
 /** Plan type the intake fills in once the payer is known. */
-const PLAN_TYPE_OF: Record<string, string> = { summit: "HMO", cardinal: "HMO", evergreen: "HMO", beacon: "PPO", harborview: "Medicare Advantage", lakeshore: "Behavioral carve-out" };
+const PLAN_TYPE_OF: Record<string, string> = { summit: "Medicaid MCO", cardinal: "Medicaid MCO", evergreen: "Medicaid MCO", beacon: "Fee-for-service", harborview: "Medicaid MCO", lakeshore: "Medicaid MCO" };
 /** The plan type to pre-fill for a payer. A payer added on Payers maps its own type onto the same list. */
-export const planTypeOf = (id: PayerId): string => PLAN_TYPE_OF[id] ?? ({ "Managed care plan": "HMO", PPO: "PPO", "Medicare Advantage": "Medicare Advantage", "Carve-out": "Behavioral carve-out" } as Record<string, string>)[payerById(id)?.type ?? ""] ?? "";
-export const PLAN_TYPES = ["HMO", "PPO", "Medicare Advantage", "Behavioral carve-out", "Fee-for-service"];
-/** The plans each payer offers, as its record says. The first is the one pre-filled. */
+export const planTypeOf = (id: PayerId): string => PLAN_TYPE_OF[id] ?? ({ "Managed care plan": "Medicaid MCO", "Fee-for-service": "Fee-for-service" } as Record<string, string>)[payerById(id)?.type ?? ""] ?? "";
+export const PLAN_TYPES = ["Medicaid MCO", "Fee-for-service"];
+/** The plans each payer offers, as its record says. The first is the one pre-filled. The five Cardinal Care MCOs are managed care; fee-for-service is the state's own. */
 const PLANS_OF: Record<string, string[]> = {
-  summit: ["HMO"],
-  cardinal: ["HMO", "MyCare Ohio (Medicare-Medicaid)"],
-  evergreen: ["HMO", "Fee-for-service"],
-  beacon: ["PPO", "HMO", "EPO"],
-  harborview: ["Medicare Advantage", "Dual special needs plan (D-SNP)"],
-  lakeshore: ["Behavioral carve-out"],
+  summit: ["Medicaid MCO"],
+  cardinal: ["Medicaid MCO"],
+  evergreen: ["Medicaid MCO"],
+  beacon: ["Fee-for-service"],
+  harborview: ["Medicaid MCO"],
+  lakeshore: ["Medicaid MCO"],
 };
 /** The plan types to choose from for a payer. A payer added on Payers offers its own type. */
 export const plansOf = (id: PayerId | null): string[] => (!id ? [] : PLANS_OF[id] ?? (planTypeOf(id) ? [planTypeOf(id)] : PLAN_TYPES));
@@ -457,7 +457,7 @@ export function ageOn(dob: string, clock: number): number | null {
 }
 export const NEW_REQUEST_TYPES: RequestType[] = ["Initial request", "Admission", "Continued stay", "Recertification", "Modification", "Retro-authorization"];
 
-/** Where the approval chance starts and ends for a payer: its "approved as asked" rate plus 14 once the agents have worked. Summit: 62 to 88. */
+/** Where the approval chance starts and ends for a payer: its "approved as asked" rate plus 14 once the agents have worked. Sentara: 62 to 88. */
 export function chanceBounds(payerId: PayerId | null): { start: number; final: number } {
   const final = Math.min(94, (payerId ? payerById(payerId).approvedAsAsked : 74) + 14);
   return { start: final - 26, final };

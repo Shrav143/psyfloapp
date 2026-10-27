@@ -1,6 +1,7 @@
 import { needsCaller, simulateCheck } from "@/data/eligibility";
 import { payerById } from "@/data/seed";
 import { PROGRAM_LABEL, type AgentKey, type PayerId, type Program } from "@/data/types";
+import { vaPlanOf } from "@/data/va/plans";
 import { PROGRAM_CODES } from "./checks";
 
 export interface VerifyStep {
@@ -22,13 +23,13 @@ export interface VerifyForm {
   source: string | null;
 }
 
-/** The ordered questions of one live check, about 10 seconds. Caller joins only when the plan's system does not answer (Evergreen).
+/** The ordered questions of one live check, about 10 seconds. Caller joins only when the plan's system does not answer (Aetna).
     While Verify is paused in Settings nothing is asked: the check still runs through its steps and says so on each. */
 export function verifySteps(f: VerifyForm, paused = false): VerifyStep[] {
   /* Before a payer is chosen the steps name the questions in general terms, so the card is never empty. */
   const payer = f.payerId ? payerById(f.payerId) : null;
   const who = payer?.shortName ?? "the payer";
-  const source = !payer ? "the state" : payer.group === "Ohio Medicaid" ? "Ohio Medicaid" : who;
+  const source = payer && vaPlanOf(payer.id) ? "Virginia Medicaid" : "the state";
   const prog = PROGRAM_LABEL[f.program];
   const found = simulateCheck({ payerId: f.payerId || "summit", program: f.program, memberId: f.member, dos: f.dos });
   const e = found.eligibility;
@@ -52,7 +53,7 @@ export function verifySteps(f: VerifyForm, paused = false): VerifyStep[] {
       id: "benefits",
       agent: "verify",
       label: `${prog} benefits with ${who}`,
-      done: noPlan ? notAsked : caller ? "No answer online" : found.benefits === "not_covered" ? "Not covered" : found.benefits === "needs_confirmation" ? `Not confirmed by ${who}` : `Covered (${PROGRAM_CODES[f.program]})${found.limit ? `. All ${found.limit.of} ${found.limit.unit} used` : ""}`,
+      done: noPlan ? notAsked : caller ? "No answer online" : found.benefits === "not_covered" ? "Not covered" : found.benefits === "needs_confirmation" ? `Not confirmed by ${who}` : `Covered (${PROGRAM_CODES[f.program]})${found.limit ? (found.limit.used >= found.limit.of ? `. All ${found.limit.of} ${found.limit.unit} used` : `. ${found.limit.used} of ${found.limit.of} ${found.limit.unit} used`) : ""}`,
       ms: 2600,
     },
   ];

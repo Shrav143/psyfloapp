@@ -7,16 +7,16 @@ const clin = (name: string, credentials: string, n: number) => ({ name, credenti
 
 /** Invented referrers. None of these is a real organization. */
 export const SRC = {
-  mercyEd: { key: "mercyEd", name: "Mercy General Hospital ED", kind: "ed", org: "Mercy General Hospital", orgSub: "Emergency Department · Columbus, OH", fax: "(614) 555-0118", clinician: clin("Dr. Amara Osei", "MD, Emergency Medicine", 1) },
-  stBrigid: { key: "stBrigid", name: "St. Brigid Medical Center", kind: "hospital", org: "St. Brigid Medical Center", orgSub: "Behavioral Health Liaison · Dayton, OH", fax: "(937) 555-0142", clinician: clin("Dr. Marcus Hale", "MD, Addiction Medicine", 2) },
-  drugCourt: { key: "drugCourt", name: "County Drug Court", kind: "court", org: "County Drug Court", orgSub: "Court Services · Akron, OH", fax: "(330) 555-0167", clinician: clin("Renee Castillo", "LISW, Court clinical liaison", 3) },
-  probation: { key: "probation", name: "Eastgate Probation Services", kind: "court", org: "Eastgate Probation Services", orgSub: "Clinical Liaison Unit · Columbus, OH", fax: "(614) 555-0191", clinician: clin("Dale Whitaker", "LPCC, Probation clinical liaison", 4) },
-  okafor: { key: "okafor", name: "Dr. Okafor, Primary Care", kind: "primary", org: "Okafor Primary Care", orgSub: "Internal Medicine · Columbus, OH", fax: "(614) 555-0133", clinician: clin("Dr. Chidi Okafor", "MD, Internal Medicine", 5) },
-  lindqvist: { key: "lindqvist", name: "Dr. Lindqvist, Family Medicine", kind: "primary", org: "Lindqvist Family Medicine", orgSub: "Family Medicine · Cleveland, OH", fax: "(216) 555-0124", clinician: clin("Dr. Ingrid Lindqvist", "DO, Family Medicine", 6) },
-  riverbend: { key: "riverbend", name: "Riverbend Community Clinic", kind: "clinic", org: "Riverbend Community Clinic", orgSub: "Behavioral Health · Cincinnati, OH", fax: "(513) 555-0176", clinician: clin("Soo-jin Park", "PMHNP, Psychiatric NP", 7) },
-  northfield: { key: "northfield", name: "Northfield Counseling Associates", kind: "clinic", org: "Northfield Counseling Associates", orgSub: "Outpatient Counseling · Akron, OH", fax: "(330) 555-0109", clinician: clin("Dr. Helen Brandt", "PhD, Clinical Psychology", 8) },
-  crisis: { key: "crisis", name: "Crisis line 988 follow-up", kind: "crisis", org: "988 Crisis Line, Ohio follow-up team", orgSub: "Regional Crisis Center · Columbus, OH", fax: "(614) 555-0100", clinician: clin("Tamika Reed", "LCSW, Crisis follow-up", 9) },
-  westlake: { key: "westlake", name: "Westlake High School Counseling", kind: "school", org: "Westlake High School", orgSub: "Student Counseling Office · Westlake, OH", fax: "(440) 555-0153", clinician: clin("Dana Whitfield", "LPCC, School counselor", 10) },
+  mercyEd: { key: "mercyEd", name: "Mercy General Hospital ED", kind: "ed", org: "Mercy General Hospital", orgSub: "Emergency Department · Richmond, VA", fax: "(804) 555-0118", clinician: clin("Dr. Amara Osei", "MD, Emergency Medicine", 1) },
+  stBrigid: { key: "stBrigid", name: "St. Brigid Medical Center", kind: "hospital", org: "St. Brigid Medical Center", orgSub: "Behavioral Health Liaison · Norfolk, VA", fax: "(757) 555-0142", clinician: clin("Dr. Marcus Hale", "MD, Addiction Medicine", 2) },
+  drugCourt: { key: "drugCourt", name: "County Drug Court", kind: "court", org: "County Drug Court", orgSub: "Court Services · Roanoke, VA", fax: "(540) 555-0167", clinician: clin("Renee Castillo", "LCSW, Court clinical liaison", 3) },
+  probation: { key: "probation", name: "Eastgate Probation Services", kind: "court", org: "Eastgate Probation Services", orgSub: "Clinical Liaison Unit · Richmond, VA", fax: "(804) 555-0191", clinician: clin("Dale Whitaker", "LPC, Probation clinical liaison", 4) },
+  okafor: { key: "okafor", name: "Dr. Okafor, Primary Care", kind: "primary", org: "Okafor Primary Care", orgSub: "Internal Medicine · Richmond, VA", fax: "(804) 555-0133", clinician: clin("Dr. Chidi Okafor", "MD, Internal Medicine", 5) },
+  lindqvist: { key: "lindqvist", name: "Dr. Lindqvist, Family Medicine", kind: "primary", org: "Lindqvist Family Medicine", orgSub: "Family Medicine · Alexandria, VA", fax: "(703) 555-0124", clinician: clin("Dr. Ingrid Lindqvist", "DO, Family Medicine", 6) },
+  riverbend: { key: "riverbend", name: "Riverbend Community Clinic", kind: "clinic", org: "Riverbend Community Clinic", orgSub: "Behavioral Health · Lynchburg, VA", fax: "(434) 555-0176", clinician: clin("Soo-jin Park", "PMHNP, Psychiatric NP", 7) },
+  northfield: { key: "northfield", name: "Northfield Counseling Associates", kind: "clinic", org: "Northfield Counseling Associates", orgSub: "Outpatient Counseling · Roanoke, VA", fax: "(540) 555-0109", clinician: clin("Dr. Helen Brandt", "PhD, Clinical Psychology", 8) },
+  crisis: { key: "crisis", name: "Crisis line 988 follow-up", kind: "crisis", org: "988 Crisis Line, Virginia follow-up team", orgSub: "Regional Crisis Center · Richmond, VA", fax: "(804) 555-0100", clinician: clin("Tamika Reed", "LCSW, Crisis follow-up", 9) },
+  westlake: { key: "westlake", name: "Westlake High School Counseling", kind: "school", org: "Westlake High School", orgSub: "Student Counseling Office · Chesapeake, VA", fax: "(757) 555-0153", clinician: clin("Dana Whitfield", "LPC, School counselor", 10) },
   selfWeb: { key: "selfWeb", name: "Self-referral (web form)", kind: "self", org: "Self-referral through the web form", orgSub: "Reviewed by Admissions intake", fax: "", clinician: clin("Jamie Ortiz", "LCSW, Admissions intake", 11) },
 } satisfies Record<string, SourceDef>;
 
@@ -68,7 +68,7 @@ export const HAND_SPECS: ReferralSpec[] = [
   {
     id: "RF-2045", ago: ago(1, 2), channel: "eReferral", source: SRC.northfield, initials: "D.R.", age: 52, sex: "M", payer: "cardinal", last4: "8840", program: "PHP", urgency: "routine",
     status: "in_review", owner: "ml", opened: true, lapsed: true, coverageRun: true,
-    notes: [{ by: "ml", ago: ago(0, 6), text: "Called Cardinal: coverage ended 9/30. Waiting to hear whether he renewed Medicaid." }],
+    notes: [{ by: "ml", ago: ago(0, 6), text: "Called Anthem: coverage ended 9/30. Waiting to hear whether he renewed Medicaid." }],
     plan: { reason: "Recurrent depression with heavy drinking. Stopped working three months ago. Needs a daily structured program and has stable housing.", substances: "Alcohol, about eight drinks daily. Last drink two days ago.", meds: ["Escitalopram 10 mg daily"], risk: "No thoughts of self-harm. Lives with his brother.", dx: dx("F33.1", "F10.20") },
   },
   {

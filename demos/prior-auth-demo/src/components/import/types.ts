@@ -18,7 +18,7 @@ export interface ImportedField {
   label: string;
   /** Ready to store: a payer id ("summit"), a program code ("RES"), an ICD-10 code ("F10.20"), a date as yyyy-mm-dd, a sex as F, M or X, or plain text. */
   value: string;
-  /** The same value as a person reads it ("Summit Medicaid HMO", "10/20/2026"). Shown in the review list; left out, `value` is shown. */
+  /** The same value as a person reads it ("Sentara Community Plan", "10/20/2026"). Shown in the review list; left out, `value` is shown. */
   display?: string;
   /** "check" when the reading is uncertain: the field is shown for a person to confirm. */
   confidence: "high" | "check";
