@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, SearchX } from "lucide-react";
-import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { OutOfSite } from "@/components/layout/OutOfSite";
 import { Button, Crumbs, EmptyState, Page, Stepper, UnderlineTabs, type TabItem } from "@/components/ui";
 import { buildDocs, issueCount, locate, type CheckKey, type DocId } from "@/data/referrals";
@@ -40,6 +40,10 @@ export default function ReferralDetailPage() {
   const drafts = useStore((s) => s.caseDrafts);
   // A link without a case (the bell, or back from Eligibility) still leads back to the draft that holds this referral.
   const draftId = params.get("draft") ?? drafts.find((d) => d.referralId === id && !d.sent)?.id;
+  /* Opened from the Referrals tab (not from a case in New Case): the way back is the inbox. */
+  const fromInbox = useLocation().pathname.startsWith("/referrals/") && !params.get("draft");
+  const crumbs = (last: string, checklist?: string) =>
+    fromInbox ? [{ label: "Referrals", to: paths.referralInbox() }, { label: last }] : [{ label: "New Case", to: paths.newCase({ draft: draftId }) }, { label: "Referral", to: checklist ?? paths.newCase({ draft: draftId }) }, { label: last }];
   const [tab, setTab] = useState<DetailTab>("extracted");
   const [hl, setHl] = useState<string | null>(null);
   const [docId, setDocId] = useState<DocId>("form");
@@ -67,8 +71,8 @@ export default function ReferralDetailPage() {
   if (!r) {
     return (
       <Page>
-        <Crumbs items={[{ label: "New Case", to: paths.newCase({ draft: draftId }) }, { label: "Referral", to: paths.newCase({ draft: draftId }) }, { label: id }]} />
-        <EmptyState icon={SearchX} title="That referral is not in the demo" action={<Link to={paths.newCase({ draft: draftId })}><Button>Back to Intake</Button></Link>}>
+        <Crumbs items={crumbs(id)} />
+        <EmptyState icon={SearchX} title="That referral is not in the demo" action={<Link to={fromInbox ? paths.referralInbox() : paths.newCase({ draft: draftId })}><Button>{fromInbox ? "Back to Referrals" : "Back to Intake"}</Button></Link>}>
           Referral {id} does not exist. Go back to Intake to drop the documents or pick one that arrived.
         </EmptyState>
       </Page>
@@ -99,10 +103,14 @@ export default function ReferralDetailPage() {
   return (
     <Page>
       <div className="-mb-1.5 flex flex-wrap items-center justify-between gap-3">
-        <Crumbs items={[{ label: "New Case", to: paths.newCase({ draft: draftId }) }, { label: "Referral", to: draftId ? checklistPath(draftId, r.id) : paths.newCase() }, { label: r.id }]} />
-        <Button size="sm" icon={ArrowLeft} onClick={() => nav(paths.newCase({ draft: draftId }))}>Back to the case</Button>
+        <Crumbs items={crumbs(r.id, draftId ? checklistPath(draftId, r.id) : paths.newCase())} />
+        {fromInbox ? (
+          <Button size="sm" icon={ArrowLeft} onClick={() => nav(paths.referralInbox())}>Back to Referrals</Button>
+        ) : (
+          <Button size="sm" icon={ArrowLeft} onClick={() => nav(paths.newCase({ draft: draftId }))}>Back to the case</Button>
+        )}
       </div>
-      <Stepper steps={NEW_CASE_STEPS} current={0} className="flex-wrap gap-y-2" />
+      {fromInbox ? null : <Stepper steps={NEW_CASE_STEPS} current={0} className="flex-wrap gap-y-2" />}
       <ReferralHeader r={r} hasCase={!!caseOf(r, requests, drafts)} onAccept={() => setModal({ kind: "accept" })} onInfo={() => setModal({ kind: "info", keys: askable(r) })} onDecline={() => setModal({ kind: "decline" })} onNote={() => setModal({ kind: "note" })} onSchedule={() => setModal({ kind: "schedule" })} />
       <DecisionBanners r={r} onTab={setTab} draftId={draftId} tab={tab} />
       <div className="grid grid-cols-1 items-start gap-[22px] min-[1100px]:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">

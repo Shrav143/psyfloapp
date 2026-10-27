@@ -21,14 +21,14 @@ function Status({ r }: { r: Parameters<typeof intakeStatus>[0] }) {
 }
 
 /** Referrals that already came in and are still open, for the sites in view only, as plain rows. "Review" opens one as a checklist. */
-export function IncomingReferrals({ onReview }: { onReview: (id: string) => void }) {
+export function IncomingReferrals({ onReview, limit = SHOWN }: { onReview: (id: string) => void; /** How many rows before "Show more". The Referrals page shows them all. */ limit?: number }) {
   const referrals = useStore((s) => s.referrals);
   const clock = useStore((s) => s.clock);
   const scope = useScope();
   const [all, setAll] = useState(false);
   const open = useMemo(() => scope.filter(arrivedReferrals(referrals), (r) => r.id), [referrals, scope]);
   if (!open.length) return null;
-  const rows = all ? open : open.slice(0, SHOWN);
+  const rows = all ? open : open.slice(0, limit);
 
   return (
     <section aria-labelledby="incoming-title" className="flex flex-col gap-3">
@@ -60,9 +60,9 @@ export function IncomingReferrals({ onReview }: { onReview: (id: string) => void
           ))}
         </ul>
       </Card>
-      {open.length > SHOWN ? (
+      {open.length > limit ? (
         <div>
-          <Button size="sm" variant="ghost" className="-ml-2" aria-expanded={all} onClick={() => setAll(!all)}>{all ? "Show fewer" : `Show ${open.length - SHOWN} more`}</Button>
+          <Button size="sm" variant="ghost" className="-ml-2" aria-expanded={all} onClick={() => setAll(!all)}>{all ? "Show fewer" : `Show ${open.length - limit} more`}</Button>
         </div>
       ) : null}
     </section>

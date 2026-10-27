@@ -12,6 +12,9 @@ export const paths = {
   },
   /** Referrals have no list of their own: the first step of New Case is the referral checklist. */
   referrals: () => "/authorizations/new",
+  /** The Referrals tab: every incoming referral, and one referral opened from it. */
+  referralInbox: () => "/referrals",
+  inboxReferral: (id: string) => `/referrals/${id}`,
   /** One referral, opened from New Case. `draft` is the case it was opened from, so Continue returns to it. */
   referral: (id: string, draft?: string) => `/authorizations/new/referral/${id}${draft ? `?draft=${draft}` : ""}`,
   /** The one Authorizations workspace. `view` is one of all, attention, progress, payer, approved, denied or reviews. */
