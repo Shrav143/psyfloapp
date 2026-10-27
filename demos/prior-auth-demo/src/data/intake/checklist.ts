@@ -18,12 +18,25 @@ export const CHECK_LABEL: Record<CheckStatus, string> = {
 /** Open means a person still has something to do. */
 export const isOpen = (s: CheckStatus): boolean => s !== "complete" && s !== "na" && s !== "later";
 
-export type CheckCategory = "referral" | "patient" | "coverage" | "assessment" | "cans" | "pathway" | "safety";
-export const CATEGORY_ORDER: CheckCategory[] = ["referral", "patient", "coverage", "assessment", "cans", "pathway", "safety"];
+/** The client's twelve checklist categories, plus Safety. Items are built per section, then filed under these (`fileUnder`). */
+export type CheckCategory = "patient" | "referral" | "consent" | "coverage" | "assessment" | "cans" | "lon" | "service" | "signatures" | "documents" | "disposition" | "handoff" | "safety";
+export const CATEGORY_ORDER: CheckCategory[] = ["patient", "referral", "consent", "coverage", "assessment", "cans", "lon", "service", "signatures", "documents", "disposition", "handoff", "safety"];
 export const CATEGORY_LABEL: Record<CheckCategory, string> = {
-  referral: "Referral", patient: "Patient and consent", coverage: "Coverage and eligibility", assessment: "Clinical assessment",
-  cans: "CANS and Level of Need", pathway: "Pathway and referral", safety: "Safety",
+  patient: "Patient information", referral: "Referral information", consent: "Consent", coverage: "Coverage verification", assessment: "Clinical assessment",
+  cans: "CANS (when applicable)", lon: "Level of Need (when applicable)", service: "Service selection", signatures: "Required signatures",
+  documents: "Supporting documents", disposition: "Referral disposition", handoff: "Authorization handoff", safety: "Safety",
 };
+const CONSENT_FIELDS = new Set(["field:profile.consentTreatment", "field:profile.roi", "field:profile.schoolConsent"]);
+/** Where an item is filed, by its id. Items not listed keep the category they were built with. */
+function fileUnder(i: CheckItem): CheckCategory {
+  if (CONSENT_FIELDS.has(i.id)) return "consent";
+  if (i.id === "docs") return "documents";
+  if (i.id === "triage" || i.id.startsWith("ref-out:")) return "disposition";
+  if (i.id === "assess-sign") return "signatures";
+  if (i.id === "lon") return "lon";
+  if (i.id === "pathway" || i.id === "service-date") return "service";
+  return i.category;
+}
 
 export interface CheckItem {
   id: string;
@@ -253,14 +266,14 @@ function pathwayItems(r: IntakeRecord, serviceId: VaServiceId, selected: boolean
   const review = r.pathways.filter((p) => p.status === "under_review").length;
   const items: CheckItem[] = [
     {
-      id: "pathway", category: "pathway", label: "Service selection", section: "pathway", auth: true,
+      id: "pathway", category: "service", label: "Service selection", section: "pathway", auth: true,
       ...(sel ? { status: "complete", detail: `${sel.serviceId === "external" ? sel.externalLabel ?? "External program" : serviceById(sel.serviceId).short} selected${sel.decidedBy ? ` by ${who(sel.decidedBy)}` : ""}` }
         : review ? { status: "pending", detail: `${plural(review, "option")} under clinical review` }
           : r.pathways.length ? { status: "missing", detail: `${plural(r.pathways.length, "option")} prepared; a clinician selects one` }
             : { status: "missing", detail: "No service options yet" }),
     },
     {
-      id: "service-date", category: "pathway", label: "Service available on the planned start", section: "pathway", auth: true,
+      id: "service-date", category: "service", label: "Service available on the planned start", section: "pathway", auth: true,
       ...(availableOn(serviceId, r.serviceDate)
         ? { status: "complete", detail: `${svc.short}${selected ? "" : " (requested)"} can start on ${longDate(r.serviceDate)}` }
         : { status: "blocked", detail: `${svc.short} is not available on ${longDate(r.serviceDate)}: ${svc.status === "redesign" ? "it starts July 1, 2027" : "it retires June 30, 2027"}` }),
@@ -270,7 +283,7 @@ function pathwayItems(r: IntakeRecord, serviceId: VaServiceId, selected: boolean
     const s = o.status;
     const missingDocs = o.docs.filter((d) => d.required && !d.attached).map((d) => d.name);
     items.push({
-      id: `ref-out:${o.id}`, category: "pathway", label: `Referral to ${o.destination.org}`, section: "pathway",
+      id: `ref-out:${o.id}`, category: "service", label: `Referral to ${o.destination.org}`, section: "pathway",
       ...(s === "draft" ? { status: "missing", detail: missingDocs.length ? `Draft; missing ${list(missingDocs)}` : "Draft; not ready to send" }
         : s === "ready" ? { status: "pending", detail: "Ready; a person approves before it is sent" }
           : s === "accepted" || s === "scheduled" || s === "completed" ? { status: "complete", detail: REFERRAL_OUT_LABEL[s] }
@@ -312,8 +325,29 @@ export function completeness(r: IntakeRecord, now: number): CheckItem[] {
     ...assessmentItems(r),
     ...cansItems(r, serviceId, now),
     ...pathwayItems(r, serviceId, selected),
+    handoffItem(r, serviceId),
     ...safetyItems(r),
-  ];
+  ].map((i) => ({ ...i, category: fileUnder(i) }));
+}
+
+/** The authorization handoff itself: whether this service needs one (from the policy rules), and where the packet stands. */
+function handoffItem(r: IntakeRecord, serviceId: VaServiceId): CheckItem {
+  const base = { id: "handoff", category: "handoff" as const, label: "Authorization handoff packet", section: "review" as const };
+  const svc = serviceById(serviceId);
+  const rules = requirementsFor({ serviceId, payerId: r.payerId, age: r.age, setting: svc.setting, serviceDate: r.serviceDate });
+  const has = (k: PolicyRule["kind"]) => rules.some((x) => x.kind === k);
+  if (r.handoff.status === "in_new_case") return { ...base, status: "complete", detail: "Opened in New Case as a draft; nothing was submitted" };
+  if (r.handoff.status === "ready") return { ...base, status: "complete", detail: "Approved; open it in New Case" };
+  if (r.handoff.status === "draft") return { ...base, status: "pending", detail: "Draft packet waits for a person's approval" };
+  if (has("authorization")) return { ...base, status: "missing", detail: "No handoff packet yet" };
+  if (has("registration")) {
+    const done = r.tasks.some((t) => t.kind === "registration" && t.status === "done");
+    return { ...base, label: "Registration with the plan", status: done ? "complete" : "missing", detail: done ? "Registered" : "Register within 1 business day; no authorization packet" };
+  }
+  if (has("none")) return { ...base, status: "na", detail: "No service authorization for this service and plan" };
+  return svc.status === "redesign"
+    ? { ...base, status: "later", detail: "Authorization requirements for this redesigned service are pending DMAS" }
+    : { ...base, status: "verify", detail: "No authorization rule on file for this plan; confirm with the plan" };
 }
 
 export const countBy = (items: CheckItem[]): Record<CheckStatus, number> => {

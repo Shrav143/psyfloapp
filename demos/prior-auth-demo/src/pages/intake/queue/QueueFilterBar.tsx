@@ -1,4 +1,4 @@
-import { Dropdown, SearchInput } from "@/components/ui";
+import { Dropdown } from "@/components/ui";
 import type { IntakeRecord } from "@/data/intake/types";
 import { FACET_IDS, FACET_LABEL, facetOptions, type FacetId, type QueueQuery } from "./filters";
 
@@ -6,7 +6,7 @@ const ALL_LABEL: Record<FacetId, string> = {
   service: "All services", plan: "All plans", method: "All referral sources", staff: "All staff", age: "All ages", urgency: "Any urgency", period: "Any policy period", status: "Any status",
 };
 
-/** Search and the eight filters. Each choice shows how many rows it would leave. */
+/** The eight filters (the search is in the Intake page header). Each choice shows how many rows it would leave. */
 export function QueueFilterBar({ records, query, now, clock, setParam }: {
   records: IntakeRecord[];
   query: QueueQuery;
@@ -16,7 +16,6 @@ export function QueueFilterBar({ records, query, now, clock, setParam }: {
 }) {
   return (
     <div className="flex flex-col gap-2.5">
-      <SearchInput value={query.q} onChange={(v) => setParam("q", v || null, true)} placeholder="Search by ID, initials, source or service" className="w-full max-w-[420px]" />
       <div className="flex flex-wrap gap-2" role="group" aria-label="Filters">
         {FACET_IDS.map((f) => {
           const opts = facetOptions(f, records, query, now, clock);

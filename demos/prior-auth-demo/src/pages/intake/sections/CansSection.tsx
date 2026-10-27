@@ -3,6 +3,7 @@ import { Banner, Button, Card, CardBody } from "@/components/ui";
 import type { IntakeRecord } from "@/data/intake/types";
 import { useStore } from "@/store";
 import { CansApplicability } from "../cans/CansApplicability";
+import { CansAssistant } from "../cans/CansAssistant";
 import { cansApplies } from "../cans/cansModel";
 import { CansRecordCard } from "../cans/CansRecordCard";
 import { EvidenceBoard } from "../cans/EvidenceBoard";
@@ -34,6 +35,7 @@ export function CansSection({ record }: { record: IntakeRecord }) {
         <>
           <CansRecordCard record={record} cans={record.cans} applies={applies} />
           <EvidenceBoard record={record} cans={record.cans} />
+          <CansAssistant record={record} cans={record.cans} />
           <RatingsCard record={record} cans={record.cans} />
         </>
       ) : null}

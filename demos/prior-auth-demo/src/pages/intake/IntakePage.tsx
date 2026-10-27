@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { SiteTag } from "@/components/layout/SiteTag";
-import { Page, PageHeader, Segmented, UnderlineTabs } from "@/components/ui";
+import { Page, PageHeader, SearchInput, Segmented, UnderlineTabs } from "@/components/ui";
 import { serviceById } from "@/data/va/services";
 import { REDESIGN_START } from "@/data/va/policy";
 import { useStore } from "@/store";
@@ -46,6 +46,20 @@ export default function IntakePage() {
         sub={focus === "all" ? undefined : `Program: ${serviceById(focus).label}`}
         actions={
           <>
+            <SearchInput
+              value={params.get("q") ?? ""}
+              onChange={(v) =>
+                setParams((p) => {
+                  const n = new URLSearchParams(p);
+                  if (v) n.set("q", v);
+                  else n.delete("q");
+                  n.delete("view");
+                  return n;
+                }, { replace: true })
+              }
+              placeholder="Search by ID, initials, source or service"
+              className="w-[300px] max-w-full"
+            />
             <StartScribeButton />
             <NewIntakeButton />
           </>

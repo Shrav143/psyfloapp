@@ -1,6 +1,7 @@
 import type { CaseDraft } from "@/data/cases";
 import { completeness, isOpen, readiness, type CheckItem, type Readiness } from "@/data/intake/checklist";
-import { staffOf } from "@/data/intake/seed";
+import { CLINICIAN_AT, staffOf } from "@/data/intake/seed";
+import { siteName } from "@/data/sites";
 import { NOTE_SECTIONS, type IntakeRecord } from "@/data/intake/types";
 import type { Program } from "@/data/types";
 import { cansFor, lonFor, LON_PENDING, PERIOD_LABEL, periodOf, type PolicyRule } from "@/data/va/policy";
@@ -43,12 +44,14 @@ export function packetOf(r: IntakeRecord, now: number): Packet {
     ["Service", `${svc.label}${svc.code ? ` (${svc.code})` : ""}${rd.selected ? "" : ", requested; no pathway selected yet"}`],
     ["Plan", plan ? `${plan.name}. Reviewer: ${plan.reviewer}. Channel: ${plan.channel}` : "No plan on file"],
     ["Planned start", `${longDate(r.serviceDate)} · ${PERIOD_LABEL[periodOf(rd.serviceId, r.serviceDate, now, !!r.legacy)]}`],
+    ["Provider", `Psyflo demo clinic, ${siteName(r.site)} (synthetic). Clinician: ${staffOf(CLINICIAN_AT[r.site])?.name ?? "not set"}${staffOf(CLINICIAN_AT[r.site])?.credentials ? `, ${staffOf(CLINICIAN_AT[r.site])?.credentials}` : ""}. Intake coordinator: ${name(r.assignedTo) ?? "unassigned"}`],
     ["Referral", `${valueOf(r, "referral", "sourceOrg") || r.sourceOrg}${valueOf(r, "referral", "referringClinician") ? `, ${valueOf(r, "referral", "referringClinician")}` : ""}`],
     ["Assessment", a.status === "signed" ? `Attested by ${name(a.attestation?.by) ?? "a clinician"}` : a.status === "awaiting_review" ? "Waits for attestation" : a.status === "in_progress" ? "In progress, not attested" : "Not started"],
     ["AI drafts", scribe ? `AI Scribe note with ${scribe} sections (${r.scribe?.status === "saved" ? "reviewed" : "waits for review"})` : "None"],
     ["Pathway", sel ? `${sel.serviceId === "external" ? sel.externalLabel ?? "External program" : serviceById(sel.serviceId).short}, selected by ${name(sel.decidedBy) ?? "a clinician"}` : "No option selected"],
     ["CANS Lifetime", cans === "not_applicable" ? "Not applicable" : cans === "unresolved" ? "Not confirmed for this service (unresolved)" : cans === "upcoming" ? "From July 1, 2027 (draft policy); preparation only today" : r.cans?.status === "signed" ? "Signed" : "Pending DMAS configuration"],
     ["Level of Need", lon === "no" ? "Not applicable" : lon === "unresolved" ? "Applicability not confirmed" : r.lon?.status === "dispositioned" ? "Clinician disposition recorded; no level calculated" : cans === "upcoming" ? `Preparation only until July 1, 2027. ${LON_PENDING}` : LON_PENDING],
+    ["Supporting records", r.documents.length ? r.documents.map((d) => `${d.name}${d.simulated ? " (simulated import)" : ""}`).join("; ") : "None on file"],
   ];
   if (r.legacy) lines.splice(4, 0, ["Current service", `${serviceById(r.legacy.serviceId).label} (${serviceById(r.legacy.serviceId).code ?? "code not loaded"}), authorization ${r.legacy.authorizationId} through ${longDate(r.legacy.authEnds)}`]);
   return {
