@@ -1,5 +1,6 @@
 import { AGENTS } from "../agents";
 import { PAYERS } from "../seed";
+import { textNamesProgram } from "../programTables";
 import { PROGRAM_LABEL, type Program } from "../types";
 import { branchesOf, nodeDef, promptOf, supportOf, type IntegrationStatus } from "./catalog";
 import { countDays, daysSinceService, daysToExpiry, docTitleOf, factLabel, factValue, isIso, missingDocuments, readFact, resolveDate, serviceStart, titleList } from "./facts";
@@ -431,9 +432,7 @@ export function runWorkflow(workflow: Workflow, facts: CaseFacts, rules: PayerRu
           return review(r.problem ?? "No rule", r.rule);
         }
         const v = r.rule.values;
-        const words: Record<Program, string[]> = { RES: ["residential"], IOP: ["iop", "intensive outpatient"], PHP: ["php", "partial hosp"], WM: ["detox", "withdrawal management"] };
-        const text = String(v.exceptions ?? "").toLowerCase();
-        const named = words[facts.service].some((w) => text.includes(w));
+        const named = textNamesProgram(String(v.exceptions ?? ""), facts.service);
         const exempt = v.required === false || named || verifies;
         const why = v.required === false ? "The rule says this payer needs no authorization." : named ? `The rule lists ${PROGRAM_LABEL[facts.service]} as needing none.` : verifies ? "The eligibility check says no authorization is required." : "The rule does not list this service as exempt.";
         return withRule({ outcome: "done", handle: exempt ? "exempt" : "required", message: `${why} ${exempt ? "No authorization is needed." : "An authorization is needed."}` }, r.rule, r.warn);

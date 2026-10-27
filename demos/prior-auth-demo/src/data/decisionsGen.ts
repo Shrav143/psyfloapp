@@ -6,7 +6,7 @@ import { DEMO_CASE_IDS, REAL_DECISIONS, type RealDecision } from "./decisionsRea
 import { Rng, clamp, sum, type Draft } from "./decisionsRng";
 import { PAYERS } from "./seed";
 import { siteOf, type SiteId } from "./sites";
-import type { BuiltInPayerId, Program } from "./types";
+import type { BuiltInPayerId, CoreProgram } from "./types";
 import { PROGRAMS } from "./types";
 import type { RequestKind } from "./queue";
 
@@ -16,7 +16,7 @@ import type { RequestKind } from "./queue";
 
 /* ------------------------------------------------------------------ small tables */
 const LETTERS = "ABCDEFGHJKLMNPRSTVWY";
-const REQUESTED: Record<Program, Record<"first" | "other", [number, number][]>> = {
+const REQUESTED: Record<CoreProgram, Record<"first" | "other", [number, number][]>> = {
   RES: { first: [[14, 45], [21, 30], [28, 25]], other: [[7, 20], [10, 20], [14, 60]] },
   PHP: { first: [[10, 50], [12, 20], [15, 30]], other: [[10, 50], [12, 20], [15, 30]] },
   IOP: { first: [[24, 35], [36, 30], [48, 35]], other: [[24, 35], [36, 30], [48, 35]] },
@@ -26,7 +26,7 @@ const EXPEDITED: Record<RequestKind, number> = { initial: 0.25, concurrent: 0.55
 const KIND_ORDER: RequestKind[] = ["initial", "concurrent", "reauth", "modify", "retro"];
 const POP_ORDER: PopulationId[] = ["adolescent", "adult", "dual", "perinatal", "first", "prior"];
 const DX_ORDER: DxId[] = ["aud", "oud", "stim", "mood", "trauma", "cooc"];
-const PREFIX: Record<Program, string> = { RES: "R", IOP: "I", PHP: "P", WM: "R" };
+const PREFIX: Record<CoreProgram, string> = { RES: "R", IOP: "I", PHP: "P", WM: "R" };
 
 /** Rate at the middle of a month, interpolated between the quarter averages (which sit on the second month of each quarter). */
 function rateAtMonth(prof: PayerProfile, m: number): number {
@@ -41,7 +41,7 @@ function rateAtMonth(prof: PayerProfile, m: number): number {
 /* ------------------------------------------------------------------ one payer, one quarter */
 const taken = new Set<string>([...DEMO_CASE_IDS, ...REAL_DECISIONS.map((r) => r.id)]);
 
-function freshId(program: Program, site: SiteId, rng: Rng): string {
+function freshId(program: CoreProgram, site: SiteId, rng: Rng): string {
   for (let tries = 0; tries < 400; tries++) {
     const id = `${PREFIX[program]}-${rng.int(1200, 4499)}`;
     if (taken.has(id)) continue;
@@ -60,7 +60,7 @@ function ageOf(pop: PopulationId, payerId: BuiltInPayerId, prof: PayerProfile, r
   return clamp(Math.round(prof.age[0] + 1 + rng.normal() * prof.age[1]), 19, 72);
 }
 
-function requestedFor(program: Program, kind: RequestKind, rng: Rng): number {
+function requestedFor(program: CoreProgram, kind: RequestKind, rng: Rng): number {
   const rows = REQUESTED[program][kind === "initial" ? "first" : "other"];
   return rows[rng.index(rows.map((r) => r[1]))][0];
 }
@@ -121,7 +121,7 @@ function buildPayerBlock(b: number, p: BuiltInPayerId): Draft[] {
 
   /* programs: the block's exact mix, dealt first to the denials the programs favor, then to everything else */
   const programRow = PROGRAMS.map((pr) => QUARTER_PROGRAM[p][pr]);
-  const pool = Object.fromEntries(PROGRAMS.map((pr, i) => [pr, b === 3 ? programRow[i] : apportion(N, programRow)[i]])) as Record<Program, number>;
+  const pool = Object.fromEntries(PROGRAMS.map((pr, i) => [pr, b === 3 ? programRow[i] : apportion(N, programRow)[i]])) as Record<CoreProgram, number>;
   for (const r of real) pool[r.program] = Math.max(0, pool[r.program] - 1);
 
   const out: Draft[] = [];
@@ -157,11 +157,11 @@ function buildPayerBlock(b: number, p: BuiltInPayerId): Draft[] {
     });
     return POP_ORDER[rng.index(w)];
   };
-  const kindFor = (program: Program, m: number, tilt: ReturnType<typeof tiltOf> | undefined): RequestKind => {
+  const kindFor = (program: CoreProgram, m: number, tilt: ReturnType<typeof tiltOf> | undefined): RequestKind => {
     const w = KIND_ORDER.map((k) => KIND_BY_PROGRAM[program][k] * (tilt?.kind?.[k] ?? 1) * (k === "retro" ? prof.retro * (1.35 - (0.5 * m) / 11) : 1));
     return KIND_ORDER[rng.index(w)];
   };
-  const dxFor = (program: Program, tilt: ReturnType<typeof tiltOf> | undefined): DxId => {
+  const dxFor = (program: CoreProgram, tilt: ReturnType<typeof tiltOf> | undefined): DxId => {
     const w = DX_ORDER.map((d) => DX_MIX[p][d] * DX_BY_PROGRAM[program][d] * (tilt?.dx?.[d] ?? 1));
     return DX_ORDER[rng.index(w)];
   };
@@ -194,7 +194,7 @@ function buildPayerBlock(b: number, p: BuiltInPayerId): Draft[] {
   });
 
   /* approvals take the programs that are left */
-  const left: Program[] = [];
+  const left: CoreProgram[] = [];
   for (const pr of PROGRAMS) for (let k = 0; k < pool[pr]; k++) left.push(pr);
   rng.shuffle(left);
   for (let i = 0; i < freeApproved; i++) {

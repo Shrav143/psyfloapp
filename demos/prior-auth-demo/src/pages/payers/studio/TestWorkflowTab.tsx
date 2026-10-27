@@ -2,11 +2,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Play, RotateCcw } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Card, Pill } from "@/components/ui";
+import { docsOf as programDocs } from "@/data/programTables";
 import { PROGRAM_LABEL, type Program } from "@/data/types";
 import { REQUEST_TYPE_LABEL, type RunResult, type Workflow } from "@/data/workflow/types";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
 import { cn } from "@/lib/cn";
+import { coreOf, focusScope } from "@/lib/programFocus";
 import { payerRows } from "../lib/payers";
 import { TestForm } from "./TestForm";
 import { TestResults } from "./TestResults";
@@ -40,10 +42,14 @@ export function TestWorkflowTab({ payerId }: { payerId: string }) {
   const [manual, setManual] = useState(!!asked);
   const [wfId, setWfId] = useState<string | undefined>(asked ?? undefined);
   const payerCtx = { payerId, name: row?.name ?? payerId };
-  const docsOf = useCallback((service: Program) => config[payerId]?.docs[service] ?? [], [config, payerId]);
+  const docsOf = useCallback((service: Program) => programDocs(config[payerId]?.docs, payerId, service), [config, payerId]);
 
   const [preset, setPreset] = useState("clean");
-  const [test, setTest] = useState<TestCase>(() => PRESETS[0].make({ ...payerCtx, service: "RES", docs: docsOf("RES") }));
+  // The fictional case starts on the level of care of the top bar's Program menu, when it has one.
+  const [test, setTest] = useState<TestCase>(() => {
+    const service = coreOf(focusScope(useStore.getState().programFocus)) ?? "RES";
+    return PRESETS[0].make({ ...payerCtx, service, docs: docsOf(service) });
+  });
   const [ran, setRan] = useState<{ wf: Workflow; res: RunResult; type: string } | null>(null);
   const [revealed, setRevealed] = useState(0);
   const [problem, setProblem] = useState<string | null>(null);

@@ -1,6 +1,6 @@
 import type { RequestKind } from "./queue";
 import type { SiteId } from "./sites";
-import type { BuiltInPayerId, Program } from "./types";
+import type { BuiltInPayerId, CoreProgram } from "./types";
 
 /* The shape of one payer decision, and the words and dates every analysis shares. */
 
@@ -56,7 +56,7 @@ export interface Decision {
   age: number;
   site: SiteId;
   payerId: BuiltInPayerId;
-  program: Program;
+  program: CoreProgram;
   kind: RequestKind;
   dx: DxId;
   population: PopulationId;
@@ -138,7 +138,7 @@ export const shortDateOfDay = (day: number): string => {
   return `${d.getUTCDate()} ${MONTH_NAMES[d.getUTCMonth()]}`;
 };
 
-/** CMS decision time: 72 hours expedited, 7 calendar days standard. It applies to the Medicaid managed care plans in the demo. */
+/** CMS decision time: 72 hours expedited, 7 calendar days standard. It applies to Medicaid managed care and fee-for-service, so to all six Virginia plans in the demo. */
 export const CMS_HOURS = { expedited: 72, standard: 168 } as const;
-export const CMS_PAYERS: BuiltInPayerId[] = ["cardinal", "summit", "evergreen"];
+export const CMS_PAYERS: BuiltInPayerId[] = ["cardinal", "summit", "evergreen", "beacon", "harborview", "lakeshore"];
 export const cmsApplies = (payerId: string): boolean => (CMS_PAYERS as string[]).includes(payerId);

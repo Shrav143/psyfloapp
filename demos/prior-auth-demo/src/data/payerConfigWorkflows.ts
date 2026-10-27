@@ -1,7 +1,7 @@
 import type { AgentKey, PayerId } from "./types";
 import type { Branch, Condition, StepKind, Workflow, WorkflowStep } from "./payerConfig";
 
-/* The workflow each payer's agents follow. Summit is written out as in the mockup; the others differ in how the payer is reached. */
+/* The workflow each payer's agents follow. Sentara is written out as in the mockup; the others differ in how the payer is reached. */
 
 let seq = 0;
 const br = (cond: Condition, kind: StepKind, text: string): Branch => ({ id: `br-${++seq}`, cond, kind, text });
@@ -40,8 +40,8 @@ const BUILD: Record<PayerId, () => { version: number; editedOn: string; steps: W
       checkCoverage(),
       docsStep("Ten documents, including the ASAM assessment and the latest progress note", "Seven documents. Recertification needs an attendance record"),
       st("Give notice", "portal", ["navigator"], "Within 24 hours of admission, through the provider portal. The portal is down on Sundays, 2 to 4 am.", "same day", [br(c("portal", "down"), "phone", "Caller phones the provider line, gives notice and logs the call")]),
-      st("Send the request", "portal", ["navigator"], "Clinical summary, assessment and treatment plan. Cardinal's form asks for the expected length of stay.", "3 minutes"),
-      st("Follow up", "portal", ["navigator", "caller"], "Navigator checks the portal every 30 minutes. Cardinal usually decides in 2 days.", "2 days", [br(c("waiting", "2 business days"), "phone", "Caller phones, follows the script below and logs who it spoke to"), infoAsk()]),
+      st("Send the request", "portal", ["navigator"], "Clinical summary, assessment and treatment plan. Anthem's form asks for the expected length of stay.", "3 minutes"),
+      st("Follow up", "portal", ["navigator", "caller"], "Navigator checks the portal every 30 minutes. In the demo's sample data Anthem decides in about 2 days.", "2 days", [br(c("waiting", "2 business days"), "phone", "Caller phones, follows the script below and logs who it spoke to"), infoAsk()]),
       decision("Peer-to-peer within 2 business days, because the window is short"),
     ],
   }),
@@ -50,9 +50,9 @@ const BUILD: Record<PayerId, () => { version: number; editedOn: string; steps: W
     steps: [
       checkCoverage(),
       docsStep("Eight documents, including the ASAM assessment", "Six documents"),
-      st("Give notice", "portal", ["navigator"], "Within 24 hours of admission, through the provider portal.", "same day", [br(c("portal", "down"), "phone", "Caller phones the provider line, gives notice and logs the call")]),
-      st("Send the request", "portal", ["navigator"], "Clinical summary, assessment and treatment plan. The confirmation number is saved to the case.", "2 minutes"),
-      st("Follow up", "portal", ["navigator"], "Navigator checks the portal every 30 minutes. Beacon usually decides in a day.", "1 day", [br(c("waiting", "24 hours"), "phone", "Caller phones and logs who it spoke to"), infoAsk()]),
+      st("Give notice", "portal", ["navigator"], "Within 24 hours of admission, through Atrezzo Next Generation in the DMAS MES portal.", "same day", [br(c("portal", "down"), "phone", "Caller phones Acentra Health's provider line, gives notice and logs the call")]),
+      st("Send the request", "portal", ["navigator"], "Clinical summary, assessment and treatment plan, to Acentra Health in Atrezzo. The confirmation number is saved to the case.", "2 minutes"),
+      st("Follow up", "portal", ["navigator"], "Navigator checks Atrezzo every 30 minutes. In the demo's sample data Acentra decides in about a day.", "1 day", [br(c("waiting", "24 hours"), "phone", "Caller phones and logs who it spoke to"), infoAsk()]),
       decision("Peer-to-peer within 3 business days"),
     ],
   }),
@@ -74,7 +74,7 @@ const BUILD: Record<PayerId, () => { version: number; editedOn: string; steps: W
       docsStep("Eleven documents, including the ASAM assessment and a medication list", "Seven documents"),
       st("Give notice", "portal", ["navigator"], "Within 72 hours of admission, through the provider portal.", "same day", [br(c("portal", "down"), "file", "Packet faxes the notice and Navigator saves the transmission report")]),
       st("Send the request", "portal", ["navigator", "packet"], "Packet fills the portal form. Attachments over 10 MB go by fax.", "5 minutes", [br(c("portal", "slow"), "file", "Packet faxes the packet and Navigator saves the transmission report")]),
-      st("Follow up", "portal", ["navigator", "caller"], "Navigator checks the portal every 30 minutes. Harborview usually decides in 3 days.", "3 days", [br(c("waiting", "3 business days"), "phone", "Caller phones, follows the script below and logs who it spoke to"), infoAsk()]),
+      st("Follow up", "portal", ["navigator", "caller"], "Navigator checks the portal every 30 minutes. In the demo's sample data Humana decides in about 3 days.", "3 days", [br(c("waiting", "3 business days"), "phone", "Caller phones, follows the script below and logs who it spoke to"), infoAsk()]),
       decision("Peer-to-peer within 3 business days, then external review"),
     ],
   }),

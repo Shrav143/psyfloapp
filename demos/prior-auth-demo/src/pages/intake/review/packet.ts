@@ -6,14 +6,11 @@ import { NOTE_SECTIONS, type IntakeRecord } from "@/data/intake/types";
 import type { Program } from "@/data/types";
 import { cansFor, lonFor, LON_PENDING, PERIOD_LABEL, periodOf, type PolicyRule } from "@/data/va/policy";
 import { vaPlanOf } from "@/data/va/plans";
-import { serviceById, type VaServiceId } from "@/data/va/services";
+import { serviceById } from "@/data/va/services";
 import { longDate, toDate } from "@/lib/time";
 
 /* The handoff packet, built from the record every time it is shown, so the draft never goes stale. It carries what the authorization workflow
    needs and what is still open; it is a draft for New Case, never a request to a payer. */
-
-/** New Case's level of care for the services it already handles. Every other service goes over with its label (another engineer is widening Program). */
-export const PROGRAM_OF: Partial<Record<VaServiceId, Program>> = { "arts-res": "RES", "arts-wm": "WM", "arts-iop": "IOP", "mh-iop": "IOP", "arts-php": "PHP", "mh-php": "PHP" };
 
 const valueOf = (r: IntakeRecord, s: "referral" | "profile" | "coverage", k: string): string => r[s][k]?.value ?? "";
 const name = (id?: string) => (id ? staffOf(id)?.name ?? id : undefined);
@@ -70,7 +67,8 @@ export const ruleStatusLabel = (r: Pick<PolicyRule, "status">): string => (r.sta
 export function caseDraftInit(r: IntakeRecord, now: number): Partial<CaseDraft> {
   const rd = readiness(r, now);
   const svc = serviceById(rd.serviceId);
-  const program = PROGRAM_OF[rd.serviceId] ?? null;
+  /* New Case holds every Virginia service: the four levels of care as before, every other service as its own program. */
+  const program: Program = svc.program;
   const plan = r.payerId ? vaPlanOf(r.payerId) : undefined;
   const member = valueOf(r, "coverage", "medicaidId").replace(/[^0-9A-Za-z]/g, "").slice(-4);
   return {
@@ -82,7 +80,6 @@ export function caseDraftInit(r: IntakeRecord, now: number): Partial<CaseDraft> 
     started: true,
     phase: "intake",
     program,
-    ...(program ? {} : { what: `${svc.label} request`, levelLabel: svc.label }),
     state: "Virginia",
     memberId: member ? `…${member}` : "",
     planType: plan ? (plan.coverage === "ffs" ? "Fee-for-service" : "HMO") : "",

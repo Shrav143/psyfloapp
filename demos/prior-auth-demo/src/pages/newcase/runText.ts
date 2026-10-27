@@ -3,10 +3,13 @@ import { AGENTS } from "@/data/agents";
 import { chanceRange, currentChance, draftState, QUESTIONS, RUN_STEPS, similarCases, type CaseDraft } from "@/data/cases";
 import { simulateCheck } from "@/data/eligibility";
 import { payerById } from "@/data/seed";
-import { PROGRAM_LABEL, type AgentKey, type Program } from "@/data/types";
+import { forProgram, NOT_ENOUGH_CASES, VA_CRITERIA_PENDING } from "@/data/programTables";
+import { isCoreProgram, PROGRAM_LABEL, type AgentKey, type Program, type CoreProgram } from "@/data/types";
 
-const ASAM: Record<Program, string> = { RES: "3.5", IOP: "2.1", PHP: "2.5", WM: "3.7-WM" };
-export const CRITERIA_COUNT: Record<Program, number> = { RES: 9, IOP: 7, PHP: 8, WM: 6 };
+const ASAM: Record<CoreProgram, string> = { RES: "3.5", IOP: "2.1", PHP: "2.5", WM: "3.7-WM" };
+const CRITERIA_COUNT: Record<CoreProgram, number> = { RES: 9, IOP: 7, PHP: 8, WM: 6 };
+/** How many of the payer's requirements Criteria matches, or null for a Virginia service: no criteria are configured for it. */
+export const criteriaCount = (p: Program): number | null => forProgram<number | null>(CRITERIA_COUNT, p, null);
 
 export interface RowText {
   wait: string;
@@ -22,7 +25,8 @@ export function rowText(agent: AgentKey, d: CaseDraft): RowText {
   const program = d.program ?? "RES";
   const prog = PROGRAM_LABEL[program];
   const sim = d.payerId ? simulateCheck({ payerId: d.payerId, program, memberId: d.memberId, dos: d.startDate }) : null;
-  const n = CRITERIA_COUNT[program];
+  const n = criteriaCount(program);
+  const core = isCoreProgram(program);
   const files = d.documents.length;
   const sc = d.payerId ? similarCases(d.payerId, program) : { total: 0, own: 0, network: 0, benchmark: 0 };
   const chance = currentChance(d);
@@ -38,10 +42,12 @@ export function rowText(agent: AgentKey, d: CaseDraft): RowText {
         : `Coverage is ${sim?.eligibility.state === "active" || !sim ? "active" : "not active"} and ${sim?.auth === "not_required" ? "no authorization is needed" : "prior authorization is required"}`,
       failed: `Could not reach ${who}'s portal. Coverage is not confirmed yet`,
     },
-    criteria: { wait: `Will read ${who}'s criteria and match the chart`, doing: `Reading ${who}'s current criteria and matching the chart`, done: `Matched the chart to ${who}'s criteria: ${n} of ${n} requirements met` },
-    historian: { wait: `Will review how ${who} ruled on similar requests`, doing: `Reviewing how ${who} ruled on similar requests`, done: `Reviewed ${sc.total.toLocaleString("en-US")} similar ${who} decisions: ${sc.own} your own, ${sc.network} network, ${sc.benchmark} benchmark` },
-    placement: { wait: "Will map the chart to ASAM levels", doing: "Mapping the chart to ASAM levels", done: `The chart supports ${prog} (ASAM ${ASAM[program]})` },
-    forecaster: { wait: "Will estimate the approval chance", doing: "Estimating the approval chance", done: `Approval chance ${chance}%, likely ${range.lo}-${range.hi}%` },
+    criteria: { wait: `Will read ${who}'s criteria and match the chart`, doing: `Reading ${who}'s current criteria and matching the chart`, done: n !== null ? `Matched the chart to ${who}'s criteria: ${n} of ${n} requirements met` : `No ${who} criteria are configured for ${prog}. Nothing was matched or assumed` },
+    historian: { wait: `Will review how ${who} ruled on similar requests`, doing: `Reviewing how ${who} ruled on similar requests`, done: sc.total ? `Reviewed ${sc.total.toLocaleString("en-US")} similar ${who} decisions: ${sc.own} your own, ${sc.network} network, ${sc.benchmark} benchmark` : `No similar ${who} decisions for ${prog} in the demo's data yet` },
+    placement: core
+      ? { wait: "Will map the chart to ASAM levels", doing: "Mapping the chart to ASAM levels", done: `The chart supports ${prog} (ASAM ${ASAM[program]})` }
+      : { wait: "Will check the level-of-care framework", doing: "Checking the level-of-care framework", done: VA_CRITERIA_PENDING },
+    forecaster: { wait: "Will estimate the approval chance", doing: "Estimating the approval chance", done: core ? `Approval chance ${chance}%, likely ${range.lo}-${range.hi}%` : `Approval chance: ${NOT_ENOUGH_CASES}` },
     scribe: { wait: "Will write the medical-necessity summary", doing: "Writing the medical-necessity summary", done: "Drafted the medical-necessity summary" },
     integrity: { wait: "Will check every sentence against the chart", doing: "Checking every sentence against the chart", done: "Every sentence traces to the chart" },
     packet: { wait: `Will assemble ${who}'s forms and attachments`, doing: `Assembling ${who}'s form and the attachments`, done: `Assembled ${who}'s form with ${attachments} attachments` },
@@ -70,7 +76,7 @@ const LINE: Partial<Record<AgentKey, (d: CaseDraft, who: string) => string>> = {
   verify: () => "is checking coverage and benefits",
   criteria: (_d, who) => `is reading ${who}'s rules`,
   historian: (_d, who) => `is reviewing how ${who} ruled on similar requests`,
-  placement: () => "is mapping the chart to ASAM levels",
+  placement: (d) => (d.program && !isCoreProgram(d.program) ? "is checking the level-of-care framework" : "is mapping the chart to ASAM levels"),
   forecaster: () => "is estimating the approval chance",
   scribe: () => "is writing the medical-necessity summary",
   integrity: () => "is checking every sentence against the chart",

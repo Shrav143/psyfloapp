@@ -14,9 +14,10 @@ import { lateness, minutesInStage } from "@/store/selectors";
 
 /* ------------------------------------------------------------------ the CMS decision time */
 
-/** CMS prior authorization rule from 2026: a Medicaid managed care payer decides a standard request within 7 calendar days (72 hours if expedited). State rules may differ. */
+/** CMS prior authorization rule from 2026: a Medicaid managed care plan or a state's Medicaid fee-for-service program decides a standard request within
+    7 calendar days (72 hours if expedited). State rules may differ. */
 export const CMS_DAYS = 7;
-export const CMS_NOTE = "CMS rule for Medicaid managed care: decide within 7 calendar days (72 hours if expedited). Check your state.";
+export const CMS_NOTE = "CMS rule for Medicaid managed care and fee-for-service: decide within 7 calendar days (72 hours if expedited). Check your state.";
 
 export interface CmsClock {
   /** Days since the request went to the payer. */
@@ -28,10 +29,11 @@ export interface CmsClock {
   hint: boolean;
 }
 
-/** Only a Medicaid managed care payer, and only while the payer holds the decision (Received or Under review). */
+/** Only a Medicaid payer, managed care or fee-for-service (every payer in the demo), and only while the payer holds the decision (Received or Under review). */
 export function cmsClock(r: PsyRequest, clock: number): CmsClock | undefined {
   if (r.stage !== "received" && r.stage !== "under_review") return undefined;
-  if (payerById(r.payerId)?.group !== "Ohio Medicaid") return undefined;
+  const group = payerById(r.payerId)?.group;
+  if (group !== "Medicaid MCO" && group !== "Medicaid fee-for-service") return undefined;
   const days = Math.max(0, clock - (sentAt(r) ?? r.stageSince)) / DAY;
   const day = Math.floor(days) + 1;
   return { days, day, past: days >= CMS_DAYS, hint: day >= 5 && days < CMS_DAYS };
@@ -192,5 +194,5 @@ export function doNext(input: DoNextInput, limit = 5): { items: DoItem[]; total:
   return { items: out.slice(0, limit).map(({ rank: _rank, ...item }) => item), total: out.length };
 }
 
-/** "Review and sign R-0988 (Beacon), review due in 3 h" for the one-line answers. */
+/** "Review and sign R-0988 (Medicaid FFS), review due in 3 h" for the one-line answers. */
 export const doLine = (i: DoItem): string => `${i.sentence}${i.when ? `, ${inline(i.when)}` : ""}`;

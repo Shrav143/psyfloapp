@@ -1,6 +1,6 @@
 import { Field, TextInput } from "@/components/ui";
 import type { CaseDraft } from "@/data/cases";
-import { daysRequested } from "@/data/queue";
+import { usualDays } from "@/data/queue";
 import { useStore } from "@/store";
 import { datesOfService } from "./verificationFor";
 
@@ -14,6 +14,7 @@ const mdy = (iso: string): string => {
 export function DatesFields({ draft, from, to, required }: { draft: CaseDraft; from: string; to: string; /** The end date is needed (dates of service). */ required?: boolean }) {
   const patch = useStore((s) => s.patchCaseDraft);
   const usual = datesOfService(draft);
+  const days = draft.program ? usualDays(draft.program) : null;
   const bad = !!draft.endDate && !!draft.startDate && draft.endDate < draft.startDate;
   return (
     <div className="grid grid-cols-1 gap-3.5 min-[640px]:grid-cols-2">
@@ -24,7 +25,7 @@ export function DatesFields({ draft, from, to, required }: { draft: CaseDraft; f
         label={to}
         required={required}
         error={bad ? "The end is before the start." : undefined}
-        hint={!required && draft.program && usual && !draft.endDate ? `Empty: the usual ${daysRequested(draft.program)} days, through ${mdy(usual.to)}` : undefined}
+        hint={!required && draft.program && usual && !draft.endDate ? (days !== null ? `Empty: the usual ${days} days, through ${mdy(usual.to)}` : "Add the last date the service plan covers") : undefined}
       >
         <TextInput type="date" value={draft.endDate ?? ""} min={draft.startDate || undefined} onChange={(e) => patch(draft.id, { endDate: e.target.value || undefined })} />
       </Field>

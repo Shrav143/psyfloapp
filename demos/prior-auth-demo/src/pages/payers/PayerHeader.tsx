@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { ChevronDown, History, PenLine } from "lucide-react";
 import { Button, Card, CardBody } from "@/components/ui";
+import { IllustrativeTag } from "@/components/ui/IllustrativeTag";
 import { InfoTip } from "@/components/ui/InfoTip";
 import type { PayerConfig } from "@/data/payerConfig";
 import { DEMO_RULES_LABEL, policyStatus, requestNeeds, type RequestNeed } from "@/data/payerConfigPlan";
@@ -96,9 +97,10 @@ export function PayerHeader({ row, cfg, edits, onEdit, onLog, compact = false }:
 function DemoRulesNote() {
   return (
     <span className="inline-flex items-start gap-1.5 text-xs text-muted">
+      <IllustrativeTag />
       <span className="rounded-xl border border-field px-2.5 py-0.5 leading-snug">{DEMO_RULES_LABEL}</span>
       <InfoTip label="About these rules">
-        Everything on Payers is sample data for this demo. None of it was read from, or checked against, a payer's current policy. Where a rule has a source in the data, Rules & Instructions shows it, and only a person can mark a rule Verified.
+        Everything on Payers is sample data for this demo, including the seeded rules and workflows. The plans' names are real; none of their figures, rules or behaviors here were read from, or checked against, a plan's current policy. Where a rule has a source in the data, Rules & Instructions shows it, and only a person can mark a rule Verified.
       </InfoTip>
     </span>
   );

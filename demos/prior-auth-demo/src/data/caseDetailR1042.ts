@@ -1,7 +1,7 @@
 import type { CaseDetail, Evidence } from "./caseDetail";
 import { SCREENERS, atOf, type CaseScreener, type ScreenerId } from "./caseScreeners";
 
-/* R-1042 (J.M., 34, Summit Medicaid HMO, Residential 3.5, admission), written by hand.
+/* R-1042 (J.M., 34, Sentara Community Plan, Residential 3.5, admission), written by hand.
    Chance 62% before any action, 88% once all six recommendations are applied:
    58 (start) + 11 + 9 + 6 + 5 + 3 - 4 = 88, and 58 + 4 + 6 + 2 + 0 + 0 - 8 = 62 before. */
 
@@ -34,22 +34,22 @@ export const R1042_DETAIL: CaseDetail = {
     { id: "lower", label: "A lower level of care was tried and failed", base: 4 },
     { id: "severity", label: "Withdrawal and depression severity are documented", base: 6 },
     { id: "home", label: "Home environment is documented", base: 2 },
-    { id: "criteria", label: "All nine Summit requirements are backed by the chart", base: 0 },
+    { id: "criteria", label: "All nine Sentara requirements are backed by the chart", base: 0 },
     { id: "trace", label: "Every sentence traces to the chart", base: 0 },
-    { id: "short", label: "Summit usually grants only the first 7 days", base: -8 },
+    { id: "short", label: "In past decisions, Sentara often granted only 7 days", base: -8 },
   ],
   recs: [
     {
       id: "stepdown", title: "Name the step-down provider", agent: "scribe", moves: { criteria: 5, short: 4, lower: 2 },
-      bullets: ["Scribe adds the partial hospitalization program and the first appointment", "Satisfies Summit's requirement for a documented step-down", "One input needed: confirm the program and the start date"],
-      why: "Summit often approves only the first seven days when no step-down is named, then asks for the plan at the first review.",
+      bullets: ["Scribe adds the partial hospitalization program and the first appointment", "Satisfies Sentara's requirement for a documented step-down", "One input needed: confirm the program and the start date"],
+      why: "In past decisions, Sentara often approved only the first seven days when no step-down was named, then asked for the plan at the first review.",
       input: { label: "Step-down program and first appointment", placeholder: "e.g. Partial hospitalization at …, first visit Mon 11/2 at 9 am" },
       add: { section: "plan", text: (a) => `Step-down plan: ${a.trim().replace(/\.$/, "")}.`, source: ev("Your answer", "Typed by you for Scribe on this request.") },
     },
     {
       id: "iop", title: "Attach the 2025 IOP closing summary", agent: "packet", moves: { lower: 5 },
       bullets: ["Packet adds the summary as an exhibit", "Shows that a lower level of care was tried and ended early"],
-      why: "Summit weighs a documented earlier attempt at a lower level of care more than any other single item.",
+      why: "In past decisions, a documented earlier attempt at a lower level of care weighed more with Sentara than any other single item.",
       add: { section: "lower", text: () => "The 2025 intensive outpatient closing summary is attached as Exhibit B and records that the program ended in week 3.", source: ev("IOP closing summary 2025", "Program ended in week 3 of 12. Reason: loss of housing. Not a clinical decision to step down.") },
     },
     {
@@ -61,14 +61,14 @@ export const R1042_DETAIL: CaseDetail = {
     },
     {
       id: "therapy", title: "Add the therapy note from the last 14 days", agent: "reader", moves: { severity: 2, trace: 1 },
-      bullets: ["Reader found a group therapy note dated 10/18 in the chart system", "Packet attaches it so all 9 of Summit's documents are present"],
-      why: "Summit lists a therapy note from the last 14 days among its nine required documents. Eight are in the packet today.",
+      bullets: ["Reader found a group therapy note dated 10/18 in the chart system", "Packet attaches it so all 9 of Sentara's documents are present"],
+      why: "Sentara lists a therapy note from the last 14 days among its nine required documents. Eight are in the packet today.",
       add: { section: "current", text: () => "A group therapy note from 10/18 shows full attendance and active participation.", source: ev("Group therapy note 10/18", "Attended all three groups. Spoke about the relapse and the plan for the first week.") },
     },
     {
       id: "home", title: "Describe home safety in plain terms", agent: "scribe", moves: { home: 4 },
       bullets: ["Scribe states that he lives with a partner who drinks daily", "Adds that there is no transport to outpatient visits"],
-      why: "Approved Summit requests described the home in plain, specific terms rather than general words such as unstable.",
+      why: "Approved Sentara requests described the home in plain, specific terms rather than general words such as unstable.",
       add: { section: "lower", text: () => "He lives with a partner who drinks daily and has no transport to outpatient visits.", source: SOC4 },
     },
     {
@@ -106,11 +106,11 @@ export const R1042_DETAIL: CaseDetail = {
   open: [
     { id: "o1", kind: "conflict", text: "One date conflict needs your answer: sertraline start 9/14 or 9/21", fixRec: "sertraline" },
     { id: "o2", kind: "risk", text: "Relapse risk is high without a named step-down", fixRec: "stepdown" },
-    { id: "o3", kind: "missing", text: "A therapy note from the last 14 days is missing (8 of 9 Summit documents)", fixRec: "therapy" },
+    { id: "o3", kind: "missing", text: "A therapy note from the last 14 days is missing (8 of 9 Sentara documents)", fixRec: "therapy" },
   ],
   policy: "v2026.3",
   criteria: [
-    { id: "c1", text: "A substance use disorder diagnosis, with severity", evidence: "ICD-10 F10.20 and AUDIT-C 11 are in the evaluation", source: PSY1, note: "Diagnosis and severity are both stated, as Summit asks.", metNow: true },
+    { id: "c1", text: "A substance use disorder diagnosis, with severity", evidence: "ICD-10 F10.20 and AUDIT-C 11 are in the evaluation", source: PSY1, note: "Diagnosis and severity are both stated, as Sentara asks.", metNow: true },
     { id: "c2", text: "Withdrawal risk is assessed with dated scores", evidence: "CIWA-Ar 14 on 10/17, 4 on 10/19", source: NURSE, note: "Two dated scores found. A third (10/18) is in the nursing notes.", metNow: true },
     { id: "c3", text: "Medical and psychiatric conditions are addressed", evidence: "Depression and anxiety are treated, medications reconciled", source: MEDS, note: "Reconciled, apart from one start date. Integrity holds it until you answer.", metNow: true },
     { id: "c4", text: "Readiness to change is described", evidence: "Patient engaged, wants residential care", source: SOC2, note: "Stated in his own words in the psychosocial assessment.", metNow: true },
@@ -120,9 +120,9 @@ export const R1042_DETAIL: CaseDetail = {
     { id: "c8", text: "The treatment plan has measurable goals", evidence: "Seven goals with dates", source: PLAN2, note: "All seven goals have a target date.", metNow: true },
     { id: "c9", text: "A step-down plan is named", evidence: "Program and provider are not named yet", source: PLAN4, note: "Covered in the draft, not backed by the chart yet.", metNow: false, fixRec: "stepdown" },
   ],
-  keepHigh: "When no step-down is named, Summit tends to approve a shorter stay and ask again at the first review.",
-  tool: "Ohio level-of-care assessment",
-  biggest: { title: "No named step-down provider", text: "In past Summit decisions, requests like this one were cut to the first 7 days more than half the time when the plan was left open.", seen: "Seen in 212 of your own decisions and 806 from the network" },
+  keepHigh: "In the sample decisions, when no step-down was named, Sentara tended to approve a shorter stay and ask again at the first review.",
+  tool: "ASAM Criteria assessment",
+  biggest: { title: "No named step-down provider", text: "In past Sentara decisions, requests like this one were cut to the first 7 days more than half the time when the plan was left open.", seen: "Seen in 212 of your own decisions and 806 from the network" },
   common: ["A failed lower level of care was documented", "Withdrawal scores were dated and trending down", "Home safety was described in plain terms", "The step-down program was named"],
   comparable: [
     { who: "Yours", what: "Prior outpatient failure, step-down named", outcome: "Approved 14/14", tone: "good", match: "high match" },
@@ -143,7 +143,7 @@ export const R1042_DETAIL: CaseDetail = {
   ],
   checks: [
     { id: "chart", label: "Every sentence matches the chart", okNote: "Each statement links to a page in the chart.", warnNote: "", blockedBy: [] },
-    { id: "criteria", label: "Payer criteria are covered", okNote: "All 9 Summit requirements are covered and backed by the chart.", warnNote: "9 of 9 are covered, but the step-down plan is not backed by the chart yet.", blockedBy: ["stepdown"] },
+    { id: "criteria", label: "Payer criteria are covered", okNote: "All 9 Sentara requirements are covered and backed by the chart.", warnNote: "9 of 9 are covered, but the step-down plan is not backed by the chart yet.", blockedBy: ["stepdown"] },
     { id: "dates", label: "Dates are consistent", okNote: "No two documents disagree on a date.", warnNote: "Sertraline start is 9/14 in the medication list and 9/21 in the psychiatric evaluation.", blockedBy: ["sertraline"] },
     { id: "ids", label: "Identifiers are protected", okNote: "Names, dates of birth and member IDs are masked.", warnNote: "", blockedBy: [] },
   ],

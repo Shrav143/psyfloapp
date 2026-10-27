@@ -1,20 +1,25 @@
 /* Shared domain types. Every module imports from here. Module-specific shapes live in the module. */
 
-export type Program = "RES" | "IOP" | "PHP" | "WM";
-export const PROGRAM_LABEL: Record<Program, string> = { RES: "Residential 3.5", IOP: "IOP", PHP: "PHP", WM: "Detox" };
-export const PROGRAMS: Program[] = ["RES", "IOP", "PHP", "WM"];
-
-/** The four levels of care the seed authorization data is built on. */
+/** The four levels of care the seed authorization data is built on. Every table of figures, documents and criteria is keyed by these. */
 export type CoreProgram = "RES" | "IOP" | "PHP" | "WM";
 /** The other Virginia Medicaid behavioral health services (data/va/services.ts names each one). */
 export type VaProgram = "ACT" | "ABA" | "MHCM" | "CRISIS" | "OPT" | "IIH" | "TDT" | "MHSS" | "PSR" | "CPST_A" | "CPST_Y" | "CPST_S" | "CSC" | "CLUB";
-/** Any service an authorization can be for. */
-export type AuthProgram = Program | VaProgram;
+/** Any service an authorization can be for: a core level of care, or a Virginia service handed off from Intake. A table keyed by CoreProgram
+    answers a Virginia service with a typed fallback (see programTables.ts), never with an invented figure. */
+export type Program = CoreProgram | VaProgram;
+/** Kept for the Intake workspace, which named it first. */
+export type AuthProgram = Program;
 export const VA_PROGRAM_LABEL: Record<VaProgram, string> = {
   ACT: "ACT", ABA: "ABA", MHCM: "MH case management", CRISIS: "Crisis services", OPT: "Outpatient therapy",
   IIH: "IIH", TDT: "TDT", MHSS: "MHSS", PSR: "PSR", CPST_A: "CPST Adult", CPST_Y: "CPST Youth", CPST_S: "CPST School", CSC: "CSC", CLUB: "Clubhouse",
 };
-export const authProgramLabel = (p: AuthProgram): string => (p in PROGRAM_LABEL ? PROGRAM_LABEL[p as Program] : VA_PROGRAM_LABEL[p as VaProgram]);
+export const CORE_PROGRAM_LABEL: Record<CoreProgram, string> = { RES: "Residential 3.5", IOP: "IOP", PHP: "PHP", WM: "Detox" };
+export const PROGRAM_LABEL: Record<Program, string> = { ...CORE_PROGRAM_LABEL, ...VA_PROGRAM_LABEL };
+/** The four core levels of care, in the order every picker and chart shows them. */
+export const PROGRAMS: CoreProgram[] = ["RES", "IOP", "PHP", "WM"];
+export const VA_PROGRAMS = Object.keys(VA_PROGRAM_LABEL) as VaProgram[];
+export const isCoreProgram = (p: string | null | undefined): p is CoreProgram => !!p && (PROGRAMS as string[]).includes(p);
+export const authProgramLabel = (p: AuthProgram): string => PROGRAM_LABEL[p];
 
 export type BuiltInPayerId = "summit" | "cardinal" | "beacon" | "harborview" | "lakeshore" | "evergreen";
 /** A built-in payer, or one added on Payers (its id is made up when it is added). */
@@ -24,8 +29,9 @@ export interface PayerSummary {
   id: PayerId;
   name: string;
   shortName: string;
-  type: string; // "Medicaid plan", "Commercial"…
-  group: "Ohio Medicaid" | "Commercial" | "Medicare Advantage" | "Behavioral carve-out";
+  type: string; // "Managed care plan" or "Fee-for-service"
+  /** The six demo payers are Virginia Medicaid: five Cardinal Care managed care organizations and fee-for-service. */
+  group: "Medicaid MCO" | "Medicaid fee-for-service";
   reachedBy: string;
   approvedAsAsked: number; // %, last 90 days
   avgDecisionDays: number;

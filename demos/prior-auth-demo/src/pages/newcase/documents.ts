@@ -1,10 +1,11 @@
 /* The documents a request needs, what Reader looks for in each one, and a short preview of each for the demo.
-   Which documents a payer asks for is the list saved on Payers › Documents for that level of care: Summit asks for 9 for Residential 3.5. */
+   Which documents a payer asks for is the list saved on Payers › Documents for that level of care: Sentara asks for 9 for Residential 3.5. */
 import type { DocBlock } from "@/components/ui";
 import type { DemoFile } from "@/components/ui";
 import type { Answer, DocFinding, DocSlotId, DraftDocument, FixedDocSlot, QuestionKey } from "@/data/cases";
 import type { DocItem } from "@/data/payerConfig";
-import type { PayerId, Program } from "@/data/types";
+import { forProgram } from "@/data/programTables";
+import { isCoreProgram, type PayerId, type Program, type CoreProgram } from "@/data/types";
 
 export interface DocSlotDef {
   id: DocSlotId;
@@ -134,20 +135,20 @@ export interface DocEntry {
 const T = true;
 const F = false;
 /* Built-in lists, used for a payer that has no saved configuration. */
-const BY_PROGRAM: Record<Program, [FixedDocSlot, boolean][]> = {
+const BY_PROGRAM: Record<CoreProgram, [FixedDocSlot, boolean][]> = {
   RES: [["referral", T], ["psych_eval", T], ["asam", T], ["psychosocial", T], ["nursing", T], ["uds", T], ["meds", T], ["treatment_plan", F], ["therapy_note", F]],
   IOP: [["referral", T], ["psych_eval", T], ["asam", T], ["meds", T], ["treatment_plan", T], ["attendance", F]],
   PHP: [["referral", T], ["psych_eval", T], ["asam", T], ["meds", T], ["treatment_plan", T], ["attendance", F], ["psychosocial", F]],
   WM: [["referral", T], ["psych_eval", T], ["asam", T], ["nursing", T], ["uds", T], ["meds", T]],
 };
-const DROP: Partial<Record<PayerId, Partial<Record<Program, FixedDocSlot[]>>>> = {
+const DROP: Partial<Record<PayerId, Partial<Record<CoreProgram, FixedDocSlot[]>>>> = {
   cardinal: { RES: ["psychosocial"] },
   beacon: { RES: ["psychosocial", "therapy_note"] },
   harborview: { RES: ["psychosocial"] },
   lakeshore: { RES: ["therapy_note"] },
 };
 /** Payers list every document alike, so these are the ones that strengthen a request but do not hold it up. */
-const RECOMMENDED: Record<Program, FixedDocSlot[]> = { RES: ["treatment_plan", "therapy_note"], IOP: ["attendance"], PHP: ["attendance", "psychosocial"], WM: [] };
+const RECOMMENDED: Record<CoreProgram, FixedDocSlot[]> = { RES: ["treatment_plan", "therapy_note"], IOP: ["attendance"], PHP: ["attendance", "psychosocial"], WM: [] };
 /** The referral line on a payer's list ("Insurance card and referral") speaks of the card, which has its own rows, so the referral keeps its own hint. */
 const entry = (slot: FixedDocSlot, required: boolean, hint?: string): DocEntry => ({ slot, label: DOC_SLOTS[slot].label, hint: slot === "referral" ? DOC_SLOTS.referral.hint : (hint ?? DOC_SLOTS[slot].hint), required });
 const MINIMUM: DocEntry[] = [entry("referral", true), entry("psych_eval", true)];
@@ -160,9 +161,12 @@ export const slotForTitle = (title: string): FixedDocSlot | null => slotForFile(
 export function docEntries(payerId: PayerId | null, program: Program | null, items: DocItem[] | null): DocEntry[] {
   if (!payerId || !program) return MINIMUM;
   if (!items) {
+    /* A Virginia service has no built-in list: only the two documents every payer wants. */
+    if (!isCoreProgram(program)) return MINIMUM;
     const drop = DROP[payerId]?.[program] ?? [];
     return BY_PROGRAM[program].filter(([slot]) => !drop.includes(slot)).map(([slot, required]) => entry(slot, required));
   }
+  const recommended = forProgram(RECOMMENDED, program, []);
   const taken = new Set<DocSlotId>();
   const out: DocEntry[] = [];
   for (const item of items) {
@@ -170,7 +174,7 @@ export function docEntries(payerId: PayerId | null, program: Program | null, ite
     const slot: DocSlotId = fixed && !taken.has(fixed) ? fixed : `item:${item.title}`;
     if (taken.has(slot)) continue;
     taken.add(slot);
-    out.push(isFixedSlot(slot) ? entry(slot, !RECOMMENDED[program].includes(slot), item.requirement) : { slot, label: item.title, hint: item.requirement, required: true });
+    out.push(isFixedSlot(slot) ? entry(slot, !recommended.includes(slot), item.requirement) : { slot, label: item.title, hint: item.requirement, required: true });
   }
   return out;
 }

@@ -69,7 +69,7 @@ export function VerifyForm({ form, onChange, importRow, found, samples, onSample
             <Dropdown<PayerId | ""> variant="field" value={form.payerId} placeholder="Choose a payer" disabled={locked} onChange={(v) => onChange({ payerId: v })} options={PAYERS.map((p) => ({ value: p.id, label: p.name }))} ariaLabel="Payer" />
           </Field>
           <Field label="State">
-            <Dropdown<string> variant="field" value="Ohio" disabled={locked} onChange={() => undefined} options={[{ value: "Ohio", label: "Ohio" }]} ariaLabel="State" />
+            <Dropdown<string> variant="field" value="Virginia" disabled={locked} onChange={() => undefined} options={[{ value: "Virginia", label: "Virginia" }]} ariaLabel="State" />
           </Field>
           <Field label="Member ID" required>
             <TextInput aria-label="Member ID" icon={Hash} value={form.member} disabled={locked} placeholder="ABC123456789" onChange={(e) => onChange({ member: e.target.value })} />

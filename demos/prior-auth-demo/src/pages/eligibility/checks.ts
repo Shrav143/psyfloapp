@@ -2,8 +2,10 @@
    the details panel and New Case step 2 all say the same thing. Lines are values, not explanations. */
 import { AUTH_LABEL, costShareText, coverageDates, EFFECTIVE_FROM, needsCaller, verdictOf, type EbPatient, type Verdict } from "@/data/eligibility";
 import { planInfo } from "@/data/payerConfigPlan";
+import { codesText, underCodes } from "@/data/programTables";
 import { payerById } from "@/data/seed";
 import { PROGRAM_LABEL, type AgentKey, type Program, type Tone } from "@/data/types";
+import { vaPlanOf } from "@/data/va/plans";
 import { dosRangeText } from "@/data/verification";
 import { BASE, toDate } from "@/lib/time";
 
@@ -47,14 +49,13 @@ export interface CheckResult {
   fact: VerdictFact;
   checks: PaymentCheck[];
   summary: ResultSummary;
-  /** What the patient pays. Null when no coverage was found or the plan has no cost share on file (Ohio Medicaid): then nothing is said about cost. */
+  /** What the patient pays. Null when no coverage was found or the plan has no cost share on file (every Virginia Medicaid plan in the demo): then nothing is said about cost. */
   patientPays: string | null;
   agents: AgentLine[];
   /** The monthly coverage check after this one (demo minutes), or null when there is no coverage to watch. */
   nextCheckAt: number | null;
 }
 
-export const PROGRAM_CODES: Record<Program, string> = { RES: "H0018 and H0019", IOP: "H0015", PHP: "H0035", WM: "H0010 and H0011" };
 
 const lower = (p: Program): string => (p === "IOP" || p === "PHP" ? PROGRAM_LABEL[p] : PROGRAM_LABEL[p].toLowerCase());
 const tail = (masked: string): string => masked.replace("…", "");
@@ -66,7 +67,7 @@ function coverageCheck(p: EbPatient): PaymentCheck {
   if (p.eligibility.state === "unavailable") return { id: "active", title: "Coverage could not be checked", detail: "Not asked: Verify is paused in Settings", chip: "Not checked", tone: "neutral", unknown: true };
   if (p.eligibility.state === "active" && p.idMismatch) return { id: "active", title: "Coverage is active, under another member ID", detail: `The plan has this member under the ID ending ${tail(p.idMismatch.onFile)}`, chip: "ID differs", tone: "risk" };
   if (p.eligibility.state === "active") {
-    const detail = payer.group === "Ohio Medicaid" ? `Ohio Medicaid, active since ${EFFECTIVE_FROM}, no end date` : payer.group === "Medicare Advantage" ? `Medicare Advantage through ${payer.name}, 2026 plan year` : `${payer.name}, active since ${EFFECTIVE_FROM}, no end date`;
+    const detail = `${vaPlanOf(payer.id) ? "Virginia Medicaid" : payer.name}, active since ${EFFECTIVE_FROM}, no end date`;
     return { id: "active", title: "Coverage is active on the service date", detail, chip: "Active", tone: "good" };
   }
   if (p.eligibility.state === "not_found") return { id: "active", title: "Coverage was not found", detail: "No member matched this ID and date of birth", chip: "Not found", tone: "risk" };
@@ -79,7 +80,7 @@ function planChecks(p: EbPatient): PaymentCheck[] {
   const payer = payerById(p.payerId);
   const who = payer.shortName;
   const prog = PROGRAM_LABEL[p.program];
-  const codes = PROGRAM_CODES[p.program];
+  const codes = codesText(p.program);
   const left = p.limit ? `${p.limit.used} of ${p.limit.of} ${p.limit.unit} used` : "";
   const free = p.limit ? p.limit.of - p.limit.used : null;
   const spent = free !== null && free <= 0;
@@ -158,7 +159,7 @@ function summaryOf(p: EbPatient, checks: PaymentCheck[], found: boolean): Result
     return { coverage, benefits: { ...none, limit: null, pays: null }, auth: none };
   }
   const service = checks.find((c) => c.id === "service");
-  const codes = PROGRAM_CODES[p.program];
+  const codes = codesText(p.program);
   const free = p.limit ? p.limit.of - p.limit.used : null;
   const limit = p.limit && free !== null ? (free <= 0 ? `All ${p.limit.of} ${p.limit.unit} used` : `${p.limit.used} of ${p.limit.of} ${p.limit.unit} used, ${free} left`) : p.noDayLimit ? "No annual day limit" : null;
   const benefitLine = p.benefits === "covered" ? `${prog} · ${codes}` : p.benefits === "limited" ? `${prog}, with conditions · ${codes}` : p.benefits === "needs_confirmation" ? `${prog} not confirmed by ${who} · ${codes}` : `${prog} not covered · ${codes}`;
@@ -213,14 +214,13 @@ export function buildResult(p: EbPatient): CheckResult {
   const payer = payerById(p.payerId);
   const who = payer.shortName;
   const prog = PROGRAM_LABEL[p.program];
-  const medicaid = payer.group === "Ohio Medicaid";
   const found = p.eligibility.state !== "not_found" && p.eligibility.state !== "unavailable";
   const on = p.eligibility.on ?? "";
   const checks = [coverageCheck(p), ...(found ? planChecks(p) : [notChecked(p)])];
   const verdict = verdictOf(p);
   const moved = p.payerChanged ? payerById(p.payerChanged.to) : null;
 
-  const state = medicaid ? "Ohio Medicaid" : who;
+  const state = vaPlanOf(payer.id) ? "Virginia Medicaid" : who;
   const agents: AgentLine[] = [
     {
       agent: "verify",
@@ -232,7 +232,7 @@ export function buildResult(p: EbPatient): CheckResult {
   /* The other agents only ran when a plan knew the member. */
   if (found) {
     agents.push(
-      { agent: "verify", label: `Benefits with ${who}`, secs: 5, answer: p.benefits === "needs_confirmation" ? `${who} did not confirm ${prog} under codes ${PROGRAM_CODES[p.program]}` : `${prog} ${p.benefits === "not_covered" ? "is not payable" : "is payable"} under codes ${PROGRAM_CODES[p.program]}` },
+      { agent: "verify", label: `Benefits with ${who}`, secs: 5, answer: p.benefits === "needs_confirmation" ? `${who} did not confirm ${prog} ${underCodes(p.program)}` : `${prog} ${p.benefits === "not_covered" ? "is not payable" : "is payable"} ${underCodes(p.program)}` },
       { agent: "criteria", label: "Authorization rule", secs: 2, answer: p.auth === "unknown" ? `No rule on file for ${who} and ${lower(p.program)}. Nothing was assumed` : p.auth === "not_required" ? `${who} does not require authorization for ${lower(p.program)}` : `${who} requires authorization for ${lower(p.program)} before the first day` },
       { agent: "navigator", label: "Provider enrollment", secs: 2, answer: p.networkUnresolved ? `Could not confirm the clinic's enrollment with ${who} for ${lower(p.program)}` : p.inNetwork ? `The clinic is enrolled and in network with ${who}` : `No enrollment on file with ${who} for ${lower(p.program)}` },
     );

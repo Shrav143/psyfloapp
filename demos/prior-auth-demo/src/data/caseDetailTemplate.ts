@@ -5,14 +5,14 @@ import { movedText, screenersFor, type CaseScreener, type ScreenerId } from "./c
 import { FRAMEWORKS, frameworkFor, type FrameworkId } from "./frameworks";
 import { DX, MH_DX, daysRequested, dxKeyFor, dxLine, dxTrackOf, hashOf, scoresFor, type DxKey, type MhDxKey, type Phase, type QueueItem, type Score } from "./queue";
 import { SEED_REQUESTS, payerById } from "./seed";
-import type { AgentKey, PayerId, Program, PsyRequest, RequestType, Tone } from "./types";
+import type { AgentKey, PayerId, CoreProgram, PsyRequest, RequestType, Tone } from "./types";
 import { PROGRAM_LABEL } from "./types";
 
 /* Builds a sensible case page for any request that is not hand-written: from its queue row or its Dashboard request.
    The numbers are consistent by construction: the driver rows add up to the chance now and, with every action applied, to chance + lift. */
 
 export interface CaseSeed {
-  id: string; requestId: string; fromQueue: boolean; denialId?: string; initials: string; age: number; payerId: PayerId; program: Program; type: RequestType;
+  id: string; requestId: string; fromQueue: boolean; denialId?: string; initials: string; age: number; payerId: PayerId; program: CoreProgram; type: RequestType;
   levelLabel: string; dxKey: DxKey; mh?: MhDxKey; dx: string; scores: Score[]; days: number; dueAt?: number; dueVerb: string; chip?: { text: string; tone: Tone };
   chance: number; liftPts: number; phase: Phase; agent: AgentKey; needsInput: boolean; coverageFix: boolean;
 }
@@ -24,14 +24,15 @@ export function seedFromItem(i: QueueItem): CaseSeed {
   };
 }
 
-export function seedFromRequest(r: PsyRequest): CaseSeed {
+/** A request for one of the four core levels of care (the case model's scope; resolveCase leaves the other Virginia services out). */
+export function seedFromRequest(r: PsyRequest, program: CoreProgram): CaseSeed {
   const chance = SEED_REQUESTS.find((x) => x.id === r.id)?.chance ?? r.chance ?? 70; // the seed value, so a write-back never counts twice
-  const dxKey = dxKeyFor(r.id, r.program);
+  const dxKey = dxKeyFor(r.id, program);
   const phase: Phase = r.track === "denial" ? "denial" : r.stage === "preparing" ? "preparing" : "payer";
   const decided = r.stage === "decided";
   return {
-    id: r.id, requestId: r.id, fromQueue: false, initials: r.patient.initials, age: r.patient.age, payerId: r.payerId, program: r.program, type: r.type, levelLabel: PROGRAM_LABEL[r.program], dxKey, dx: dxLine(r.id, dxKey, r.type, r.program),
-    scores: scoresFor(r.id, dxKey), days: daysRequested(r.program), dueAt: decided ? undefined : r.deadlineAt ?? Math.max(120, r.stageSince + (r.typicalMin ?? DAY)),
+    id: r.id, requestId: r.id, fromQueue: false, initials: r.patient.initials, age: r.patient.age, payerId: r.payerId, program, type: r.type, levelLabel: PROGRAM_LABEL[program], dxKey, dx: dxLine(r.id, dxKey, r.type, program),
+    scores: scoresFor(r.id, dxKey), days: daysRequested(program), dueAt: decided ? undefined : r.deadlineAt ?? Math.max(120, r.stageSince + (r.typicalMin ?? DAY)),
     dueVerb: r.track === "denial" ? "Window closes" : "Decision expected", chip: decided ? { text: r.chip, tone: r.tone } : undefined,
     chance, liftPts: phase === "preparing" && chance < 85 ? 8 : 0, phase, agent: r.agent, needsInput: !!r.needsYou, coverageFix: false,
   };
@@ -60,7 +61,7 @@ const POOL: Record<string, Tpl> = {
   stepdown: {
     title: "Name the step-down provider", agent: "scribe", rows: ["criteria", "short"],
     bullets: ["Scribe adds the next level of care and the first appointment to the plan", "Meets the payer's expectation of a documented step-down", "One input needed: confirm the program and the start date"],
-    why: (p) => `${p} often approves a shorter stay when no step-down is named, then asks for the plan at the first review.`,
+    why: (p) => `In past decisions, ${p} often approved a shorter stay when no step-down was named, then asked for the plan at the first review.`,
     input: { label: "Step-down program and first appointment", placeholder: "e.g. Intensive outpatient at …, first visit on …" },
     add: { section: "plan", text: (a) => `Step-down plan: ${a.trim().replace(/\.$/, "")}.`, source: ev("Your answer", "Typed by you for Scribe on this request.") },
   },
@@ -111,7 +112,7 @@ function buildRows(payer: string, chance: number, recs: Rec[]): { start: number;
   const ids = ["lower", "severity", "home", "criteria", "trace"];
   const labels: Record<string, string> = {
     lower: "A lower level of care was tried or ruled out", severity: "Symptom severity is documented with dated scores", home: "Home environment is documented",
-    criteria: `All ${payer} requirements are backed by the chart`, trace: "Every sentence traces to the chart", short: `${payer} usually grants fewer days than asked`,
+    criteria: `All ${payer} requirements are backed by the chart`, trace: "Every sentence traces to the chart", short: `In past decisions, ${payer} often granted fewer days`,
   };
   const bases = weights.map((x) => Math.floor((pos * x) / 17));
   bases[0] += pos - bases.reduce((a, b) => a + b, 0);
@@ -147,8 +148,8 @@ const MEDS: Record<DxKey | MhDxKey, Med[]> = {
 };
 
 /** Ratings by level of care. ASAM rates risk 0 to 4; LOCUS and CALOCUS-CASII rate 1 to 5. */
-const ASAM_LEVELS: Record<Program, number[]> = { RES: [2, 1, 3, 2, 3, 3], WM: [3, 2, 2, 2, 2, 2], PHP: [1, 1, 2, 2, 2, 2], IOP: [1, 1, 2, 1, 2, 1] };
-const LOCUS_LEVELS: Record<Program, number[]> = { RES: [3, 4, 2, 3, 4, 3], WM: [3, 4, 2, 3, 4, 3], PHP: [3, 4, 2, 4, 3, 3], IOP: [2, 3, 2, 3, 3, 2] };
+const ASAM_LEVELS: Record<CoreProgram, number[]> = { RES: [2, 1, 3, 2, 3, 3], WM: [3, 2, 2, 2, 2, 2], PHP: [1, 1, 2, 2, 2, 2], IOP: [1, 1, 2, 1, 2, 1] };
+const LOCUS_LEVELS: Record<CoreProgram, number[]> = { RES: [3, 4, 2, 3, 4, 3], WM: [3, 4, 2, 3, 4, 3], PHP: [3, 4, 2, 4, 3, 3], IOP: [2, 3, 2, 3, 3, 2] };
 /** What the chart shows for each dimension, from a low to a high rating. */
 const ASAM_TEXT: string[][] = [
   ["Withdrawal risk is low. Scores are dated and stable.", "Withdrawal needed monitoring. Scores are dated and falling.", "Withdrawal risk is high and needs round-the-clock monitoring."],
@@ -169,7 +170,7 @@ const LOCUS_TEXT: string[][] = [
 const ASAM_SRC = ["Nursing notes", "Medication list", "Psychiatric eval p.5", "Psychosocial p.2", "Psychiatric eval p.3", "Psychosocial p.4"];
 const LOCUS_SRC = ["Psychiatric eval p.3", "Psychosocial p.2", "Psychiatric eval p.1", "Psychosocial p.4", "Psychosocial p.2", "Treatment plan p.2"];
 
-function dimsFor(framework: FrameworkId, program: Program): DimRating[] {
+function dimsFor(framework: FrameworkId, program: CoreProgram): DimRating[] {
   const fw = FRAMEWORKS[framework];
   const asam = framework === "asam";
   const levels = (asam ? ASAM_LEVELS : LOCUS_LEVELS)[program];
@@ -269,8 +270,8 @@ export function buildFromSeed(seed: CaseSeed): CaseDetail {
     framework, dims: dimsFor(framework, seed.program), screeners, meds: MEDS[seed.mh ?? seed.dxKey], standsOut: stands,
     engagement: { pct: 78 + (n % 17), checks: ["Attends groups and sessions", "Takes part in the plan", "Accepts medication changes"] },
     open: openItems(recs, preparing), policy: payer.id === "cardinal" ? "v2026.3" : payer.id === "harborview" ? "v2026.1" : "v2026.2", criteria: criteriaFor(seed, hasDates, hasStep, dxName, framework),
-    keepHigh: `${payer.shortName} tends to approve a shorter stay and ask again at the first review when the evidence is thin or a plan is left open.`,
-    tool: seed.program === "RES" || seed.program === "WM" ? "Ohio level-of-care assessment" : "Ohio outpatient level-of-care screen",
+    keepHigh: `In the sample decisions, ${payer.shortName} tended to approve a shorter stay and ask again at the first review when the evidence was thin or a plan was left open.`,
+    tool: `${FRAMEWORKS[framework].name} assessment`,
     biggest: { title: hasStep ? "No named step-down provider" : "Thin evidence of recent progress", text: `In past ${payer.shortName} decisions, requests like this one were cut to fewer days when ${hasStep ? "the plan was left open" : "progress was not shown with dated scores"}.`, seen: `Seen in ${Math.max(6, 20 + (n % 90))} of your own decisions and ${300 + (n % 400)} from the network` },
     common: ["Earlier lower level of care was documented", "Symptom scores were dated and trending down", "The home situation was described in plain terms", "The step-down program was named"],
     comparable: [

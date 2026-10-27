@@ -1,14 +1,19 @@
-import type { AgentKey, AppNotification, PayerId, PayerSummary, Program, PsyRequest, RequestEvent, RequestType, StageKey, Tone } from "./types";
+import type { AgentKey, AppNotification, BuiltInPayerId, PayerId, PayerSummary, Program, PsyRequest, RequestEvent, RequestType, StageKey, Tone } from "./types";
+import { vaPlanOf } from "./va/plans";
 import { DAY, HOUR } from "@/lib/time";
 
 /* ------------------------------------------------------------------ payers */
+/* The six Virginia Medicaid plans of data/va/plans.ts: five Cardinal Care MCOs and fee-for-service. The ids are the demo's own; the names are the plans'.
+   Every figure here (approval rate, decision days, denials, information requests) is illustrative demo data, not the plan's. */
+const va = (id: BuiltInPayerId): { name: string; shortName: string } => ({ name: vaPlanOf(id)?.name ?? id, shortName: vaPlanOf(id)?.short ?? id });
+const MCO = { type: "Managed care plan", group: "Medicaid MCO" } as const;
 export const PAYERS: PayerSummary[] = [
-  { id: "summit", name: "Summit Medicaid HMO", shortName: "Summit", type: "Managed care plan", group: "Ohio Medicaid", reachedBy: "Portal", approvedAsAsked: 74, avgDecisionDays: 1.4, typicalDecisionDays: 1.5, denied30d: 11, infoAsks30d: 6 },
-  { id: "cardinal", name: "Cardinal Health Plan", shortName: "Cardinal", type: "Managed care plan", group: "Ohio Medicaid", reachedBy: "Portal", approvedAsAsked: 63, avgDecisionDays: 2.8, typicalDecisionDays: 2, denied30d: 18, infoAsks30d: 9 },
-  { id: "evergreen", name: "Evergreen", shortName: "Evergreen", type: "Managed care plan", group: "Ohio Medicaid", reachedBy: "Phone", approvedAsAsked: 69, avgDecisionDays: 3.4, typicalDecisionDays: 2, denied30d: 3, infoAsks30d: 4 },
-  { id: "beacon", name: "Beacon PPO", shortName: "Beacon", type: "PPO", group: "Commercial", reachedBy: "Portal", approvedAsAsked: 81, avgDecisionDays: 1.1, typicalDecisionDays: 1, denied30d: 5, infoAsks30d: 3 },
-  { id: "harborview", name: "Harborview MA", shortName: "Harborview", type: "Medicare Advantage", group: "Medicare Advantage", reachedBy: "Portal and fax", approvedAsAsked: 77, avgDecisionDays: 3.1, typicalDecisionDays: 3, denied30d: 6, infoAsks30d: 7 },
-  { id: "lakeshore", name: "Lakeshore Behavioral", shortName: "Lakeshore", type: "Carve-out", group: "Behavioral carve-out", reachedBy: "Fax", approvedAsAsked: 86, avgDecisionDays: 2.2, typicalDecisionDays: 2, denied30d: 3, infoAsks30d: 2 },
+  { id: "summit", ...va("summit"), ...MCO, reachedBy: "Portal", approvedAsAsked: 74, avgDecisionDays: 1.4, typicalDecisionDays: 1.5, denied30d: 11, infoAsks30d: 6 },
+  { id: "cardinal", ...va("cardinal"), ...MCO, reachedBy: "Portal", approvedAsAsked: 63, avgDecisionDays: 2.8, typicalDecisionDays: 2, denied30d: 18, infoAsks30d: 9 },
+  { id: "evergreen", ...va("evergreen"), ...MCO, reachedBy: "Phone", approvedAsAsked: 69, avgDecisionDays: 3.4, typicalDecisionDays: 2, denied30d: 3, infoAsks30d: 4 },
+  { id: "beacon", ...va("beacon"), type: "Fee-for-service", group: "Medicaid fee-for-service", reachedBy: "Portal", approvedAsAsked: 81, avgDecisionDays: 1.1, typicalDecisionDays: 1, denied30d: 5, infoAsks30d: 3 },
+  { id: "harborview", ...va("harborview"), ...MCO, reachedBy: "Portal and fax", approvedAsAsked: 77, avgDecisionDays: 3.1, typicalDecisionDays: 3, denied30d: 6, infoAsks30d: 7 },
+  { id: "lakeshore", ...va("lakeshore"), ...MCO, reachedBy: "Fax", approvedAsAsked: 86, avgDecisionDays: 2.2, typicalDecisionDays: 2, denied30d: 3, infoAsks30d: 2 },
 ];
 export const payerById = (id: PayerId): PayerSummary => PAYERS.find((p) => p.id === id) as PayerSummary;
 
@@ -122,7 +127,7 @@ export const SEED_REQUESTS: PsyRequest[] = [
   S({ id: "P-1590", who: "Z.T.", age: 46, payer: "harborview", prog: "PHP", type: "Continued stay", stage: "under_review", chip: "Under review", tone: "neutral", pos: 2, inStage: 2 * DAY, typ: 3 * DAY, agent: "navigator", next: "Navigator checks again in 1 hour", chance: 79, via: "fax" }),
   S({ id: "R-1015", who: "W.D.", age: 57, payer: "harborview", prog: "RES", type: "Initial request", stage: "under_review", chip: "Under review", tone: "neutral", pos: 2, inStage: DAY + 8 * HOUR, typ: 3 * DAY, agent: "navigator", next: "Navigator checks again in 50 minutes", chance: 70 }),
   S({ id: "I-2190", who: "R.P.", age: 31, payer: "lakeshore", prog: "IOP", type: "Initial request", stage: "under_review", chip: "Under review", tone: "neutral", pos: 2, inStage: 2 * DAY, typ: 3 * DAY, agent: "navigator", next: "Navigator checks again in 1 hour", chance: 86, via: "fax" }),
-  S({ id: "R-0912", who: "C.D.", age: 44, payer: "evergreen", prog: "RES", type: "Continued stay", stage: "under_review", chip: "Under review", tone: "neutral", pos: 2, inStage: 4 * DAY + 12 * HOUR, typ: 2 * DAY, agent: "caller", next: "Caller is phoning Evergreen", chance: 67, via: "phone" }),
+  S({ id: "R-0912", who: "C.D.", age: 44, payer: "evergreen", prog: "RES", type: "Continued stay", stage: "under_review", chip: "Under review", tone: "neutral", pos: 2, inStage: 4 * DAY + 12 * HOUR, typ: 2 * DAY, agent: "caller", next: "Caller is phoning Aetna", chance: 67, via: "phone" }),
   /* ----- Info requested (3) ----- */
   S({ id: "P-1499", who: "E.S.", age: 42, payer: "harborview", prog: "PHP", type: "Continued stay", stage: "info_requested", chip: "Info requested", tone: "mid", pos: 2, inStage: DAY + 14 * HOUR, typ: DAY, agent: "packet", next: "Packet drafted the answer. Waiting for your review", needsYou: true, chance: 74 }),
   S({ id: "I-2218", who: "O.H.", age: 28, payer: "cardinal", prog: "IOP", type: "Continued stay", stage: "info_requested", chip: "Info requested", tone: "mid", pos: 2, inStage: 5 * HOUR, typ: DAY, agent: "packet", next: "Packet is drafting the answer", chance: 68 }),
@@ -152,7 +157,7 @@ const HIST: Record<string, RequestEvent[]> = {
     ev("R-0870", -(DAY + 4 * HOUR) + 22, "navigator", "Navigator checked: received"),
     ev("R-0870", -(DAY + 2 * HOUR) - 30, "navigator", "Navigator checked: under review"),
     ev("R-0870", -(DAY - 3 * HOUR), "navigator", "Navigator checked: under review"),
-    ev("R-0870", 6 * HOUR + 18, "caller", "Caller will phone Summit if it is still pending", false),
+    ev("R-0870", 6 * HOUR + 18, "caller", "Caller will phone Sentara if it is still pending", false),
   ],
 };
 for (const r of SEED_REQUESTS) if (HIST[r.id]) r.events = HIST[r.id];
@@ -162,10 +167,10 @@ if (r1042) r1042.referralId = "RF-2050";
 
 /* ------------------------------------------------------------------ notifications */
 export const SEED_NOTIFICATIONS: AppNotification[] = [
-  { id: "n1", at: -16, agent: "packet", title: "Payer asked for info", body: "Harborview MA wants more on P-1499. Packet drafted the answer.", to: "/dashboard?request=P-1499", read: false, tone: "mid" },
+  { id: "n1", at: -16, agent: "packet", title: "Payer asked for info", body: "Humana wants more on P-1499. Packet drafted the answer.", to: "/dashboard?request=P-1499", read: false, tone: "mid" },
   { id: "n2", at: -38, agent: "scribe", title: "Scribe has a question", body: "R-1042 needs one answer before the draft can finish.", to: "/authorizations/new/draft-r1042", read: false, tone: "mid" },
-  { id: "n3", at: -80, agent: "advocate", title: "Denied today", body: "Cardinal denied D-3297 (units cut 48 to 30). A call is booked.", to: "/denials?id=D-3297", read: false, tone: "risk" },
-  { id: "n4", at: -90, agent: "cadence", title: "Approved", body: "Evergreen approved R-0951 for 14 days. Write-back waits for you.", to: "/dashboard?request=R-0951", read: true, tone: "good" },
-  { id: "n5", at: -240, agent: "sentinel", title: "Payer rule changed", body: "Cardinal updated its criteria (version 2026.3). Your open Cardinal drafts are affected.", to: "/payers/cardinal?tab=changes", read: false, tone: "mid" },
-  { id: "n6", at: -300, agent: "caller", title: "Very late", body: "Evergreen has had R-0912 for 4 days. Caller is phoning.", to: "/dashboard?request=R-0912", read: true, tone: "risk" },
+  { id: "n3", at: -80, agent: "advocate", title: "Denied today", body: "Anthem denied D-3297 (units cut 48 to 30). A call is booked.", to: "/denials?id=D-3297", read: false, tone: "risk" },
+  { id: "n4", at: -90, agent: "cadence", title: "Approved", body: "Aetna approved R-0951 for 14 days. Write-back waits for you.", to: "/dashboard?request=R-0951", read: true, tone: "good" },
+  { id: "n5", at: -240, agent: "sentinel", title: "Payer rule changed", body: "Anthem updated its criteria (version 2026.3). Your open Anthem drafts are affected.", to: "/payers/cardinal?tab=changes", read: false, tone: "mid" },
+  { id: "n6", at: -300, agent: "caller", title: "Very late", body: "Aetna has had R-0912 for 4 days. Caller is phoning.", to: "/dashboard?request=R-0912", read: true, tone: "risk" },
 ];

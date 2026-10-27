@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { Banner, Button, Dropdown, Field, TextArea } from "@/components/ui";
 import type { DocItem } from "@/data/payerConfig";
 import { CHART_GAPS } from "@/data/payerConfigSeed";
-import { PROGRAM_LABEL, type Program } from "@/data/types";
+import { isCoreProgram, PROGRAM_LABEL, type CoreProgram } from "@/data/types";
 import { sleep } from "@/lib/format";
 import { useScope } from "@/lib/scope";
 import { InfoTip } from "@/components/ui/InfoTip";
@@ -14,16 +14,17 @@ import { checkChart, checkText, stillNeeded, type CheckResult } from "../lib/che
 import { useAlive } from "../lib/useAlive";
 import { Labeled } from "../Labeled";
 
-interface Done { caseId: string | null; program: Program; result: CheckResult }
+interface Done { caseId: string | null; program: CoreProgram; result: CheckResult }
 
 /** "Try it on a case": Reader reads a chart against this payer's list (about two seconds). Read-only. Nothing is sent.
     The chart is either a case still in Preparing or text pasted in. Pasted text is checked against the level of care shown on the left. */
-export function ChartChecker({ payerId, name, lists, program, onProgram }: { payerId: string; name: string; lists: Record<Program, DocItem[]>; program: Program; onProgram: (p: Program) => void }) {
+export function ChartChecker({ payerId, name, lists, program, onProgram }: { payerId: string; name: string; lists: Record<CoreProgram, DocItem[]>; program: CoreProgram; onProgram: (p: CoreProgram) => void }) {
   const alive = useAlive();
   const requests = useStore((s) => s.requests);
   const { has, filter } = useScope();
   // Only the drafts at the sites in view can be picked: a case at a site the viewer cannot see is not listed.
-  const cases = filter(requests.filter((r) => r.stage === "preparing"), (r) => r.caseId);
+  // A Virginia service draft has no payer list to check against, so only the four core levels of care are offered.
+  const cases = filter(requests.filter((r) => r.stage === "preparing" && isCoreProgram(r.program)), (r) => r.caseId);
   const [picked, setCaseId] = useState(() => (cases.find((r) => r.payerId === payerId) ?? cases[0])?.id ?? "");
   const caseId = cases.some((r) => r.id === picked) ? picked : (cases.find((r) => r.payerId === payerId) ?? cases[0])?.id ?? "";
   const [text, setText] = useState("");
@@ -41,9 +42,10 @@ export function ChartChecker({ payerId, name, lists, program, onProgram }: { pay
     if (!alive.current) return;
     if (pasted) {
       setDone({ caseId: null, program, result: checkText(lists[program], text) });
-    } else if (chosen) {
-      onProgram(chosen.program);
-      setDone({ caseId: chosen.id, program: chosen.program, result: checkChart(lists[chosen.program], CHART_GAPS[chosen.id] ?? []) });
+    } else if (chosen && isCoreProgram(chosen.program)) {
+      const p = chosen.program;
+      onProgram(p);
+      setDone({ caseId: chosen.id, program: p, result: checkChart(lists[p], CHART_GAPS[chosen.id] ?? []) });
     }
     setBusy(false);
   };

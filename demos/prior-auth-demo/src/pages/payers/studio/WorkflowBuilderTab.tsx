@@ -1,6 +1,8 @@
 import { useCallback, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { PROGRAMS, type Program } from "@/data/types";
+import { DEFAULT_STATE } from "@/data/payerProfile";
+import { forProgram } from "@/data/programTables";
+import { PROGRAMS, type Program, type CoreProgram } from "@/data/types";
 import type { RuleGroup, Workflow } from "@/data/workflow/types";
 import { useStore } from "@/store";
 import { paths } from "@/routes";
@@ -14,10 +16,10 @@ import { usePayerRules, usePayerWorkflows } from "./lib/store";
 import type { NewKind } from "./WorkflowSelector";
 
 /** The payer's documents for the services a workflow covers, one entry per item. With no service chosen, every service's list counts. */
-export function docsForServices(docs: Record<Program, { id: string; title: string; requirement: string }[]> | undefined, services: Program[]): StudioDoc[] {
+export function docsForServices(docs: Record<CoreProgram, { id: string; title: string; requirement: string }[]> | undefined, services: Program[]): StudioDoc[] {
   if (!docs) return [];
   const out: StudioDoc[] = [];
-  for (const p of services.length ? services : PROGRAMS) for (const d of docs[p] ?? []) out.push({ id: d.id, title: d.title, requirement: d.requirement, services: [p] });
+  for (const p of services.length ? services : PROGRAMS) for (const d of forProgram(docs, p, [])) out.push({ id: d.id, title: d.title, requirement: d.requirement, services: [p] });
   return out;
 }
 
@@ -37,7 +39,7 @@ export function WorkflowBuilderTab({ payerId }: { payerId: string }) {
   const [drawer, setDrawer] = useState<null | NewKind>(null);
 
   const row = useMemo(() => payerRows(custom, config).find((r) => r.id === payerId), [custom, config, payerId]);
-  const payer: PayerInfo = { id: payerId, name: row?.name ?? payerId, state: row?.state ?? "OH", product: row?.product ?? "" };
+  const payer: PayerInfo = { id: payerId, name: row?.name ?? payerId, state: row?.state ?? DEFAULT_STATE, product: row?.product ?? "" };
   const asked = params.get("workflow") ?? LAST.get(payerId);
   const stored = workflows.find((w) => w.id === asked) ?? defaultPick(workflows);
   if (stored) LAST.set(payerId, stored.id);

@@ -3,7 +3,7 @@ import { resolveCase } from "@/data/caseDetail";
 import type { LedgerCase, LedgerStatus } from "@/data/manager";
 import type { Review } from "@/data/managerReviews";
 import { payerById, SEED_REQUESTS } from "@/data/seed";
-import type { Program, PsyRequest } from "@/data/types";
+import { isCoreProgram, type PsyRequest, type CoreProgram } from "@/data/types";
 import { useScope } from "@/lib/scope";
 import { DAY } from "@/lib/time";
 import { useStore } from "@/store";
@@ -16,23 +16,23 @@ export interface LedgerRow extends LedgerCase {
 }
 
 /** Days and units an approval usually covers, for a case approved after the demo opened. */
-const APPROVED: Record<Program, number> = { RES: 14, PHP: 10, IOP: 24, WM: 5 };
+const APPROVED: Record<CoreProgram, number> = { RES: 14, PHP: 10, IOP: 24, WM: 5 };
 const SEED_IDS = new Set(SEED_REQUESTS.map((r) => r.id));
 
 /** A request signed and sent in New Case, as a tracker row. It follows the request: with the payer, asked for more, approved or denied. */
-function fromRequest(id: string, r: PsyRequest): LedgerCase {
+function fromRequest(id: string, r: PsyRequest, program: CoreProgram): LedgerCase {
   const denial = r.track === "denial";
   const approved = r.stage === "decided" && !denial;
   const asked = r.stage === "info_requested";
-  const days = APPROVED[r.program];
-  const units = r.program === "IOP";
+  const days = APPROVED[program];
+  const units = program === "IOP";
   const status: LedgerStatus = denial || asked ? "needs_action" : approved ? "on_track" : "awaiting";
   return {
     id,
     caseId: id,
     initials: r.patient.initials,
     age: r.patient.age,
-    program: r.program,
+    program,
     payerId: r.payerId,
     note: r.type,
     used: approved ? 0 : null,
@@ -59,7 +59,8 @@ export function buildLedgerRows(ledger: LedgerCase[], requests: PsyRequest[], se
   for (const id of sentToday) {
     if (known.has(id) || SEED_IDS.has(id) || fresh.some((f) => f.id === id)) continue;
     const r = requests.find((x) => x.id === id) ?? requests.find((x) => x.caseId === id);
-    if (r) fresh.push(fromRequest(id, r));
+    /* The tracker follows the four core levels of care; a Virginia service request stays on Authorizations and the Dashboard. */
+    if (r && isCoreProgram(r.program)) fresh.push(fromRequest(id, r, r.program));
   }
   const next = new Map<string, Review>();
   for (const r of reviews) if (r.scheduled && r.status !== "signed" && (next.get(r.ledgerId)?.dueAt ?? 0) < r.dueAt) next.set(r.ledgerId, r);

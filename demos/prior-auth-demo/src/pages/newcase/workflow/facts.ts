@@ -5,7 +5,8 @@ import type { CaseDraft, DocSlotId } from "@/data/cases";
 import type { DocItem } from "@/data/payerConfig";
 import { isoOf } from "@/data/patients";
 import { payerProfileOf } from "@/data/payerProfile";
-import { daysRequested } from "@/data/queue";
+import { usualDays } from "@/data/queue";
+import { docsOf } from "@/data/programTables";
 import type { VerificationRecord } from "@/data/verification";
 import type { PsyRequest } from "@/data/types";
 import { DAY } from "@/lib/time";
@@ -78,8 +79,8 @@ export function factsFromCase(draft: CaseDraft, state: FactsState): CaseFacts | 
   const profile = payerProfileOf(draft.payerId, state.customPayers);
   const dos = draft.kind === "retro" ? datesOfService(draft) : null;
   const config = state.payerConfig[draft.payerId];
-  const items = config ? (config.docs[draft.program] ?? []) : null;
-  const requestedUnits = draft.kind === "modify" && draft.change?.amount ? draft.change.amount : daysRequested(draft.program);
+  const items = config ? docsOf(config.docs, draft.payerId, draft.program) : null;
+  const requestedUnits = draft.kind === "modify" && draft.change?.amount ? draft.change.amount : (usualDays(draft.program) ?? undefined);
 
   return {
     payerId: draft.payerId,

@@ -4,7 +4,8 @@ import { Card, Disclosure, Dropdown, Field, TextInput } from "@/components/ui";
 import { ageOn, plansOf, SEX_LABEL, type CaseDraft, type ImportedKey, type Onboarding, type PatientSex } from "@/data/cases";
 import { isoOf } from "@/data/patients";
 import { PAYERS } from "@/data/seed";
-import { PROGRAM_LABEL, PROGRAMS, type PayerId, type Program, type RequestType } from "@/data/types";
+import { PROGRAM_CHOICES, serviceWindowNote } from "@/data/programTables";
+import { type PayerId, type Program, type RequestType } from "@/data/types";
 import { useStore } from "@/store";
 import { authType } from "./authType";
 import { DiagnosisPicker } from "./DiagnosisPicker";
@@ -76,8 +77,8 @@ export function IntakeForm({ draft }: { draft: CaseDraft }) {
 
       <Section title="Request">
         <div className={GRID}>
-          <Field label="Level of care" required hint={note("program")}>
-            <Dropdown<Program | ""> variant="field" ariaLabel="Level of care" placeholder="Choose a level of care" value={draft.program ?? ""} onChange={(v) => v && edit({ program: v, levelLabel: undefined })} options={PROGRAMS.map((p) => ({ value: p, label: PROGRAM_LABEL[p] }))} />
+          <Field label="Level of care" required hint={serviceWindowNote(draft.program, draft.startDate) ?? note("program")}>
+            <Dropdown<Program | ""> variant="field" ariaLabel="Level of care" placeholder="Choose a level of care" value={draft.program ?? ""} onChange={(v) => v && edit({ program: v, levelLabel: undefined })} options={PROGRAM_CHOICES} />
           </Field>
           {def.types.length > 1 ? (
             <Field label="Request type">

@@ -1,4 +1,4 @@
-import type { AgentKey, PayerId, Program, PsyRequest, RequestType, Tone } from "./types";
+import { isCoreProgram, type AgentKey, type PayerId, type CoreProgram, type PsyRequest, type RequestType, type Tone } from "./types";
 import type { CaseScreener } from "./caseScreeners";
 import type { FrameworkId } from "./frameworks";
 import { QUEUE_ITEMS, type Phase, type QueueItem, type Score } from "./queue";
@@ -45,7 +45,7 @@ export interface CaseDetail {
   initials: string;
   age: number;
   payerId: PayerId;
-  program: Program;
+  program: CoreProgram;
   levelLabel: string;
   type: RequestType;
   days: number;
@@ -106,6 +106,8 @@ export function resolveCase(id: string, requests: PsyRequest[]): CaseDetail | nu
   const req = requests.find((r) => r.id === id) ?? requests.find((r) => r.caseId === id);
   const item: QueueItem | undefined = QUEUE_ITEMS.find((i) => i.id === id) ?? QUEUE_ITEMS.find((i) => i.id === req?.id);
   if (item) return buildFromSeed({ ...seedFromItem(item), id, requestId: req?.id ?? item.id, denialId: req?.track === "denial" ? req.id : undefined });
-  if (req) return buildFromSeed({ ...seedFromRequest(req), id, requestId: req.id, denialId: req.track === "denial" ? req.id : undefined });
+  /* The case model (chart, criteria, approval chance) covers the four core levels of care. A request for another Virginia service has no case detail:
+     its page is the service summary (pages/authorizations/ServiceCasePage.tsx). */
+  if (req && isCoreProgram(req.program)) return buildFromSeed({ ...seedFromRequest(req, req.program), id, requestId: req.id, denialId: req.track === "denial" ? req.id : undefined });
   return null;
 }

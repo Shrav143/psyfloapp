@@ -1,5 +1,5 @@
 import { PAYERS } from "@/data/seed";
-import { PROGRAM_LABEL, PROGRAMS, type PayerId, type Program, type RequestEvent, type Urgency } from "@/data/types";
+import { PROGRAM_LABEL, PROGRAMS, type PayerId, type CoreProgram, type RequestEvent, type Urgency } from "@/data/types";
 import { authRequired, buildCoverage, buildFields, evaluateChecks, KNOWN_ICD, URGENCY_LABEL, staffById, CHANNEL_LABEL, DECLINE_LABEL, REPLY_VIA_LABEL, PROGRAM_ASAM, ACCEPTED_CREDENTIALS, CHECK_LABEL, CHECK_PROBLEM, type CheckKey, type DeclineReason, type DocPlan, type FieldKey, type Referral, type ReferralCheck, type ReplyVia, type StaffId } from "@/data/referrals";
 import { plural, uid } from "@/lib/format";
 import { DAY, HOUR, longDate } from "@/lib/time";
@@ -25,7 +25,7 @@ export function addNote(r: Referral, by: StaffId, text: string, clock: number): 
   return withEvents({ ...r, notes: [...r.notes, { id: uid("note"), at: clock, by, text }] }, ev(clock, "you", `${staffById(by).name} added a note`, text));
 }
 
-const PROGRAM_BY_LABEL = (value: string): Program | undefined => PROGRAMS.find((p) => value.startsWith(PROGRAM_LABEL[p]));
+const PROGRAM_BY_LABEL = (value: string): CoreProgram | undefined => PROGRAMS.find((p) => value.startsWith(PROGRAM_LABEL[p]));
 
 /** Saves a corrected value, keeps what Reader first read, and re-runs the checks that depend on it. */
 export function editField(r: Referral, key: FieldKey, value: string, clock: number): Referral {
@@ -80,7 +80,7 @@ export function acceptBlockers(r: Referral): string[] {
 /** The line under a disabled "Accept referral". */
 export const blockersLine = (names: string[]): string => `Resolve ${plural(names.length, "item")} first: ${names.join(", ")}.`;
 
-export function accept(r: Referral, o: { owner: StaffId; program: Program; admitBy: number }, clock: number): Referral {
+export function accept(r: Referral, o: { owner: StaffId; program: CoreProgram; admitBy: number }, clock: number): Referral {
   const warn = unresolved(r).length;
   const base = noScheduled({ ...r, status: "accepted", owner: o.owner, decidedAt: clock, accepted: { program: o.program, admitBy: o.admitBy, by: o.owner } });
   return withEvents(base, ev(clock, "you", `Accepted into ${PROGRAM_LABEL[o.program]}`, `Target admission ${longDate(o.admitBy)}. Owner: ${staffById(o.owner).name}.${warn ? ` ${warn} ${warn === 1 ? "finding was" : "findings were"} still open.` : ""}`));
@@ -120,7 +120,7 @@ export function reopen(r: Referral, clock: number): Referral {
 /* ------------------------------------------------------------------ the referrer's reply (demo) */
 const REPLY_PAYER: { payerId: PayerId; memberIdMasked: string } = { payerId: "summit", memberIdMasked: "…4410" };
 
-function fixPlan(p: DocPlan, program: Program, clock: number): DocPlan {
+function fixPlan(p: DocPlan, program: CoreProgram, clock: number): DocPlan {
   const expired = p.expiresAt < 0;
   return {
     ...p,
@@ -134,8 +134,8 @@ function fixPlan(p: DocPlan, program: Program, clock: number): DocPlan {
     meds: p.meds.length ? p.meds : ["None reported"],
     risk: p.risk || "No thoughts of self-harm. Risk screening completed on the corrected form.",
     asam: PROGRAM_ASAM[program],
-    phone: p.phone || "(614) 555-0188",
-    altContact: p.altContact || "Family member, (614) 555-0189",
+    phone: p.phone || "(804) 555-0188",
+    altContact: p.altContact || "Family member, (804) 555-0189",
   };
 }
 

@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { CHART, HBarChart, Segmented, type BarRow } from "@/components/ui";
+import { IllustrativeTag } from "@/components/ui/IllustrativeTag";
 import { PROGRAM_ORDER } from "@/data/analytics";
 import { payerById } from "@/data/seed";
-import { PROGRAM_LABEL, type BuiltInPayerId, type Program } from "@/data/types";
+import { PROGRAM_LABEL, type BuiltInPayerId, type CoreProgram } from "@/data/types";
 import type { Board, LosRow } from "./board";
 import type { CaseQuery } from "./query";
 import { enough, fmt } from "./stats";
 
-type Tab = Program | "all";
+type Tab = CoreProgram | "all";
 
 /** Days or units asked for against days or units approved, by payer, for one level of care or all of them. A cut is an approval for less than was requested. */
 export function LosSection({ board, onOpen }: { board: Board; onOpen: (q: CaseQuery) => void }) {
@@ -42,7 +43,7 @@ export function LosSection({ board, onOpen }: { board: Board; onOpen: (q: CaseQu
   return (
     <div className="flex flex-col gap-4 px-6 py-5" data-testid="los">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-[13px] text-muted">{tab === "all" ? "Share of the requested days or units that were approved, by payer." : `Average ${unit} requested (grey) and approved (green) per approval, ${PROGRAM_LABEL[tab]}.`} Click a payer for its cases.</p>
+        <p className="text-[13px] text-muted">{tab === "all" ? "Share of the requested days or units that were approved, by payer." : `Average ${unit} requested (grey) and approved (green) per approval, ${PROGRAM_LABEL[tab]}.`} Click a payer for its cases. <IllustrativeTag className="ml-1" /></p>
         <Segmented items={[{ id: "all", label: "All" }, ...PROGRAM_ORDER.map((p) => ({ id: p, label: PROGRAM_LABEL[p] }))]} value={tab} onChange={setTab} className="max-w-full flex-wrap" />
       </div>
       {bars.length === 0 ? (

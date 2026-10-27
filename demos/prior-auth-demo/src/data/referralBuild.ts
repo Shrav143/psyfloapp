@@ -1,5 +1,5 @@
 import { DAY, longDate } from "@/lib/time";
-import { PROGRAM_LABEL, type PayerId, type Program, type RequestEvent, type Urgency } from "./types";
+import { PROGRAM_LABEL, type PayerId, type CoreProgram, type RequestEvent, type Urgency } from "./types";
 import { ACCEPTED_CREDENTIALS, AGE_MIN, CHANNEL_LABEL, CHECK_DOC, CHECK_PROBLEM, CHECK_LABEL, CHECK_ORDER, DECLINE_LABEL, KNOWN_ICD, PROGRAM_ASAM, URGENCY_LABEL, staffById } from "./referralLabels";
 import type { Channel, CheckKey, CoverageKind, DeclineReason, DocPlan, FieldKey, Referral, ReferralCheck, ReferralField, ReferralNote, ReferralStatus, SourceDef, StaffId } from "./referralTypes";
 import { buildCoverage, buildFit, hash } from "./referralInsight";
@@ -16,7 +16,7 @@ export interface ReferralSpec {
   sex: "F" | "M";
   payer: PayerId | null;
   last4?: string;
-  program: Program;
+  program: CoreProgram;
   urgency: Urgency;
   status: ReferralStatus;
   owner?: StaffId;
@@ -31,13 +31,13 @@ export interface ReferralSpec {
   decline?: { reason: DeclineReason; note: string; courtesy: boolean };
   requestId?: string;
   plan: Partial<DocPlan> & Pick<DocPlan, "reason" | "substances" | "meds" | "risk" | "dx">;
-  fit?: { suggested?: Program; confidence?: number };
+  fit?: { suggested?: CoreProgram; confidence?: number };
   notes?: { by: StaffId; ago: number; text: string }[];
   overrides?: Partial<Record<CheckKey, string>>;
 }
 
 /** Programs that need an authorization before the first day. IOP often does not. */
-export const authRequired = (payer: PayerId, program: Program): boolean => program !== "IOP" || payer === "cardinal" || payer === "harborview" || payer === "lakeshore";
+export const authRequired = (payer: PayerId, program: CoreProgram): boolean => program !== "IOP" || payer === "cardinal" || payer === "harborview" || payer === "lakeshore";
 
 /* ------------------------------------------------------------------ extracted fields */
 type FieldSource = Pick<Referral, "id" | "patient" | "payerId" | "memberIdMasked" | "program" | "urgency" | "plan">;
@@ -99,8 +99,8 @@ function judge(r: CheckSource, key: CheckKey): { state: ReferralCheck["state"]; 
         : { state: "warn", detail: `The order expired on ${longDate(p.expiresAt)}. A current order is needed.` };
     case "credentials":
       return ACCEPTED_CREDENTIALS.test(c.credentials)
-        ? { state: "pass", detail: `${c.credentials} is on the accepted list (MD, DO, NP, PA, PhD, LCSW, LPCC).` }
-        : { state: "warn", detail: `"${c.credentials}" is not on the accepted list (MD, DO, NP, PA, PhD, LCSW, LPCC). A cosigning clinician is needed.` };
+        ? { state: "pass", detail: `${c.credentials} is on the accepted list (MD, DO, NP, PA, PhD, LCSW, LPC).` }
+        : { state: "warn", detail: `"${c.credentials}" is not on the accepted list (MD, DO, NP, PA, PhD, LCSW, LPC). A cosigning clinician is needed.` };
     case "components": {
       const missing = [!p.reason && "the reason for referral", !p.substances && "substance use history", !p.meds.length && "medications", !p.risk && "risk screening"].filter(Boolean);
       return missing.length ? { state: "warn", detail: `Missing: ${missing.join(", ")}.` } : { state: "pass", detail: "Reason, substance use history, medications and risk screening are all on the form." };
@@ -148,8 +148,8 @@ function makePlan(s: ReferralSpec, receivedAt: number): DocPlan {
     orgSub: s.source.orgSub,
     sex: s.sex,
     dobCode: String(1000 + (h % 9000)),
-    phone: `(614) 555-0${100 + (h % 90)}`,
-    altContact: `${["Sister", "Partner", "Parent", "Friend"][h % 4]}, (614) 555-0${100 + ((h >> 3) % 90)}`,
+    phone: `(804) 555-0${100 + (h % 90)}`,
+    altContact: `${["Sister", "Partner", "Parent", "Friend"][h % 4]}, (804) 555-0${100 + ((h >> 3) % 90)}`,
     clinician: s.source.clinician,
     asam: PROGRAM_ASAM[s.program],
     orderAt,

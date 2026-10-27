@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ArrowRight, Check, Megaphone, WandSparkles } from "lucide-react";
 import { Banner, Button, Modal } from "@/components/ui";
 import { AGENTS } from "@/data/agents";
-import { PROGRAM_LABEL, PROGRAMS, type Program } from "@/data/types";
+import { PROGRAM_LABEL, PROGRAMS, type CoreProgram } from "@/data/types";
 import type { PayerConfig, PendingChange } from "@/data/payerConfig";
 import { viewerById } from "@/data/viewers";
 import { stamp } from "@/lib/time";
@@ -33,7 +33,7 @@ function BeforeAfter({ cfg, pending }: { cfg: PayerConfig; pending: PendingChang
   if (!programs.length) {
     return <p className="rounded-xl bg-white/70 px-3 py-2 text-[13px]"><b className="font-semibold">Before and after:</b> no document list changes. New drafts use {pending.title.toLowerCase()} once you apply the change.</p>;
   }
-  const after = (program: Program) => pending.docAdds.reduce((list, a) => (a.program !== program || list.some((x) => x.title === a.item.title) ? list : [...list, a.item]), cfg.docs[program]);
+  const after = (program: CoreProgram) => pending.docAdds.reduce((list, a) => (a.program !== program || list.some((x) => x.title === a.item.title) ? list : [...list, a.item]), cfg.docs[program]);
   const added = [...new Set(programs.flatMap((p) => docsChanges(cfg.docs[p], after(p)).map((l) => l.after)))];
   return (
     <div className="grid grid-cols-1 items-stretch gap-2 text-[13px] @lg:grid-cols-[1fr_auto_1fr]">

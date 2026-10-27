@@ -1,5 +1,7 @@
 import { Checkbox, InfoTip, Label, Pill, Ring } from "@/components/ui";
 import { chanceRange, currentChance, FORECAST_STEP, similarCases, SUGGESTIONS, unmetPenalty, type CaseDraft } from "@/data/cases";
+import { NOT_ENOUGH_CASES } from "@/data/programTables";
+import { isCoreProgram } from "@/data/types";
 import { band, plural } from "@/lib/format";
 import { useStore } from "@/store";
 
@@ -13,8 +15,25 @@ export function UnmetLine({ draft }: { draft: CaseDraft }) {
   );
 }
 
+/** A Virginia service has no similar decisions in the demo's data, so no approval chance is shown for it: no number is made up. */
+export function NoChance() {
+  return (
+    <div className="flex min-w-0 flex-col gap-1.5" data-testid="no-chance">
+      <div className="flex items-center gap-1">
+        <Label>Approval chance</Label>
+        <InfoTip label="About the approval chance">A chance is shown once there are enough similar decisions for this service and payer. The demo's data has none for this service yet.</InfoTip>
+      </div>
+      <p className="text-[13px] text-mid-ink">{NOT_ENOUGH_CASES}</p>
+    </div>
+  );
+}
+
+/** True when the draft is for a Virginia service, which has no approval chance. */
+export const noChanceFor = (d: Pick<CaseDraft, "program">): boolean => !!d.program && !isCoreProgram(d.program);
+
 /** The approval chance: a ring that climbs as agents finish, where it started, the likely range and how many similar cases it rests on. */
 export function ChancePanel({ draft }: { draft: CaseDraft }) {
+  if (noChanceFor(draft)) return <NoChance />;
   const chance = currentChance(draft);
   const settled = draft.run.done >= FORECAST_STEP;
   const range = chanceRange(chance, settled);
@@ -46,7 +65,7 @@ export function RaiseFurther({ draft }: { draft: CaseDraft }) {
   const patch = useStore((s) => s.patchCaseDraft);
   const named = draft.answers.some((a) => a.key === "stepdown" && a.choice === "named");
   const items = SUGGESTIONS.filter((s) => !(s.id === "stepdown" && named));
-  if (!items.length) return null;
+  if (!items.length || noChanceFor(draft)) return null;
   return (
     <div>
       <Label className="mb-1">To raise it further</Label>

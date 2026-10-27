@@ -5,7 +5,7 @@ import { useScope } from "@/lib/scope";
 import { Portal } from "@/pages/dashboard/Portal";
 
 const CLINICIANS = [
-  { value: "Heather K., LISW-S", label: "Heather K., LISW-S", hint: "Clinical director" },
+  { value: "Heather K., LCSW", label: "Heather K., LCSW", hint: "Clinical director" },
   { value: "Dr. R. Lindqvist, MD", label: "Dr. R. Lindqvist, MD", hint: "Medical director" },
 ];
 

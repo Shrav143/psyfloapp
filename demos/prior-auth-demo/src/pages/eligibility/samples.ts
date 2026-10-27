@@ -19,10 +19,10 @@ const sample = (id: string, label: string, initials: string, age: number, payerI
   form: { payerId, member, dob: dobFor(age), program, dos: "10/21/2026", source: null },
 });
 
-/* The member ID ending is what scripts the answer (see simulateCheck). Beacon asks for no authorization for IOP, so that one is cleared.
+/* The member ID ending is what scripts the answer (see simulateCheck). L.M. already has an IOP authorization on file with fee-for-service, so that one is cleared.
    J.M.'s card is the headline case: the check updates R-1042, which needs its authorization first. */
 export const SAMPLES: Sample[] = [
-  sample("cleared", "Cleared to bill", "L.M.", 36, "beacon", "IOP", "BP5521072468"),
+  sample("cleared", "Cleared to bill", "L.M.", 36, "beacon", "IOP", `BP552107${TAIL.authOnFile}`),
   sample("auth_first", "Authorization first", "J.M.", 34, "summit", "RES", "SM7403964821"),
   sample("lapsed", "Coverage lapsed", "P.O.", 31, "summit", "RES", `SM740322${TAIL.lapsed}`),
   sample("not_found", "Not found", "T.G.", 29, "lakeshore", "IOP", `LB441022${TAIL.notFound}`),

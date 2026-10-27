@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { Button, Checkbox, Dropdown, Field, Modal, TextInput } from "@/components/ui";
 import { PAYER_GROUPS, payerWithName, REACH_ROUTES } from "@/data/payerConfig";
-import { PROGRAM_LABEL, PROGRAMS, type Program } from "@/data/types";
+import { PROGRAM_LABEL, PROGRAMS, type CoreProgram } from "@/data/types";
 import { useStore } from "@/store";
 import { Labeled } from "./Labeled";
 import { DEFAULT_STATE } from "@/data/payerProfile";
 import { US_STATES } from "./lib/states";
 
-const TYPES = ["Managed care plan", "PPO", "Medicare Advantage", "Carve-out"].map((v) => ({ value: v, label: v }));
+const TYPES = ["Managed care plan", "Fee-for-service"].map((v) => ({ value: v, label: v }));
 const GROUPS = PAYER_GROUPS.map((v) => ({ value: v, label: v }));
 const STATES = US_STATES.map(([value, label]) => ({ value, label }));
 
@@ -21,7 +21,7 @@ export function AddPayerModal({ onClose, onAdded }: { onClose: () => void; onAdd
   const [type, setType] = useState(TYPES[0].value);
   const [group, setGroup] = useState<(typeof PAYER_GROUPS)[number]>(PAYER_GROUPS[0]);
   const [reach, setReach] = useState<string[]>(["Portal"]);
-  const [programs, setPrograms] = useState<Program[]>(["RES", "IOP", "PHP"]);
+  const [programs, setPrograms] = useState<CoreProgram[]>(["RES", "IOP", "PHP"]);
   const [error, setError] = useState("");
   const [nameError, setNameError] = useState("");
   const toggle = <T,>(list: T[], v: T): T[] => (list.includes(v) ? list.filter((x) => x !== v) : [...list, v]);
@@ -40,7 +40,7 @@ export function AddPayerModal({ onClose, onAdded }: { onClose: () => void; onAdd
         <Field label="Payer name" required error={nameError}><TextInput value={name} onChange={(e) => { setName(e.target.value); setNameError(""); }} placeholder="For example: Riverbend Health" /></Field>
         <div className="grid grid-cols-1 gap-3 min-[560px]:grid-cols-2">
           <Field label="Organization" hint="The company behind the plan. Left empty, the payer's own name is used."><TextInput value={org} onChange={(e) => setOrg(e.target.value)} placeholder="For example: Riverbend" /></Field>
-          <Field label="Product" hint="The plan or product. Left empty, the plan type is used."><TextInput value={product} onChange={(e) => setProduct(e.target.value)} placeholder="For example: Medicaid HMO" /></Field>
+          <Field label="Product" hint="The plan or product. Left empty, the plan type is used."><TextInput value={product} onChange={(e) => setProduct(e.target.value)} placeholder="For example: Medicaid MCO" /></Field>
           <Labeled label="State"><Dropdown variant="field" value={state} options={STATES} onChange={setState} ariaLabel="State" /></Labeled>
           <Labeled label="Insurance type" hint="Groups the payer and filters the list."><Dropdown variant="field" value={group} options={GROUPS} onChange={(g) => setGroup(g)} ariaLabel="Insurance type" /></Labeled>
           <Labeled label="Plan type"><Dropdown variant="field" value={type} options={TYPES} onChange={setType} ariaLabel="Plan type" /></Labeled>

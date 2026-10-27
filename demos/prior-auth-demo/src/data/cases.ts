@@ -4,7 +4,7 @@ import type { DemoFile } from "@/components/ui";
 import { payerById } from "./seed";
 import { daysRequested, dxKeyFor, dxLine, scoresFor, type QueueItem, type RequestKind } from "./queue";
 import { siteOf, type SiteId } from "./sites";
-import { PROGRAM_LABEL, type AgentKey, type PayerId, type Program, type PsyRequest, type RequestType, type Tone } from "./types";
+import { isCoreProgram, PROGRAM_LABEL, type AgentKey, type CoreProgram, type PayerId, type Program, type PsyRequest, type RequestType, type Tone } from "./types";
 import type { AppliedWorkflow } from "./workflow/types";
 import { clockTime, toDate } from "@/lib/time";
 
@@ -256,7 +256,7 @@ export const RUN_STEPS: RunStep[] = [
 ];
 export const SCRIBE_STEP = 6;
 export const FORECAST_STEP = 6; // the approval chance is settled once this many agents are done
-/** The payer whose portal Verify cannot reach on the first run of a case. Cardinal's portal is down on Sundays and often shows no status (Payers › Cardinal). */
+/** The payer whose portal Verify cannot reach on the first run of a case. Anthem's portal is down on Sundays and often shows no status (Payers › Anthem). */
 export const FLAKY_PORTAL: PayerId = "cardinal";
 
 /* ------------------------------------------------------------------ questions an agent can ask */
@@ -372,8 +372,10 @@ export function chanceRange(chance: number, settled: boolean): { lo: number; hi:
   const c = Math.round(chance);
   return settled ? { lo: c - 5, hi: Math.min(99, c + 4) } : { lo: c - 9, hi: Math.min(99, c + 8) };
 }
-/** Similar past decisions: 1,248 for Summit residential (212 your own, 806 network, 230 benchmark), scaled for the rest. */
+/** Similar past decisions: 1,248 for Sentara residential (212 your own, 806 network, 230 benchmark), scaled for the rest. */
 export function similarCases(payerId: PayerId, program: Program): { total: number; own: number; network: number; benchmark: number } {
+  /* A Virginia service has no past decisions in the demo's data. */
+  if (!isCoreProgram(program)) return { total: 0, own: 0, network: 0, benchmark: 0 };
   const total = payerId === "summit" && program === "RES" ? 1248 : 380 + ((payerId.length * 137 + program.charCodeAt(0) * 53) % 760);
   const own = Math.round(total * 0.17);
   const network = Math.round(total * 0.646);
@@ -421,7 +423,8 @@ export const DUE_FOR: Record<RequestType, { kind: DueKind; in: number } | undefi
 export const describeRequest = (d: CaseDraft): string => d.what ?? (!d.type ? "New request" : /request$|ation$/.test(d.type) ? d.type : `${d.type} request`);
 /** "…4821": only the last four characters of a member ID are ever shown. */
 export const maskMember = (id: string): string => (!id ? "" : id.startsWith("…") ? id : `…${id.replace(/\W/g, "").slice(-4)}`);
-export const caseCode = (program: Program | null, n: number): string => `${program === "IOP" ? "I" : program === "PHP" ? "P" : "R"}-${n}`;
+/** R- residential and detox, I- IOP, P- PHP, S- a Virginia service (CPST, ACT, ABA and the rest). */
+export const caseCode = (program: Program | null, n: number): string => `${program === "IOP" ? "I" : program === "PHP" ? "P" : program && !isCoreProgram(program) ? "S" : "R"}-${n}`;
 /** The next case id for a site. A site is a function of the case id (data/sites.ts), so the id is chosen so the new case lands at the site it was made for. */
 export function nextCaseCode(program: Program | null, seq: number, site: SiteId): { code: string; seq: number } {
   let n = seq;
@@ -430,18 +433,18 @@ export function nextCaseCode(program: Program | null, seq: number, site: SiteId)
 }
 
 /** Plan type the intake fills in once the payer is known. */
-const PLAN_TYPE_OF: Record<string, string> = { summit: "HMO", cardinal: "HMO", evergreen: "HMO", beacon: "PPO", harborview: "Medicare Advantage", lakeshore: "Behavioral carve-out" };
+const PLAN_TYPE_OF: Record<string, string> = { summit: "Medicaid MCO", cardinal: "Medicaid MCO", evergreen: "Medicaid MCO", beacon: "Fee-for-service", harborview: "Medicaid MCO", lakeshore: "Medicaid MCO" };
 /** The plan type to pre-fill for a payer. A payer added on Payers maps its own type onto the same list. */
-export const planTypeOf = (id: PayerId): string => PLAN_TYPE_OF[id] ?? ({ "Managed care plan": "HMO", PPO: "PPO", "Medicare Advantage": "Medicare Advantage", "Carve-out": "Behavioral carve-out" } as Record<string, string>)[payerById(id)?.type ?? ""] ?? "";
-export const PLAN_TYPES = ["HMO", "PPO", "Medicare Advantage", "Behavioral carve-out", "Fee-for-service"];
-/** The plans each payer offers, as its record says. The first is the one pre-filled. */
+export const planTypeOf = (id: PayerId): string => PLAN_TYPE_OF[id] ?? ({ "Managed care plan": "Medicaid MCO", "Fee-for-service": "Fee-for-service" } as Record<string, string>)[payerById(id)?.type ?? ""] ?? "";
+export const PLAN_TYPES = ["Medicaid MCO", "Fee-for-service"];
+/** The plans each payer offers, as its record says. The first is the one pre-filled. The five Cardinal Care MCOs are managed care; fee-for-service is the state's own. */
 const PLANS_OF: Record<string, string[]> = {
-  summit: ["HMO"],
-  cardinal: ["HMO", "MyCare Ohio (Medicare-Medicaid)"],
-  evergreen: ["HMO", "Fee-for-service"],
-  beacon: ["PPO", "HMO", "EPO"],
-  harborview: ["Medicare Advantage", "Dual special needs plan (D-SNP)"],
-  lakeshore: ["Behavioral carve-out"],
+  summit: ["Medicaid MCO"],
+  cardinal: ["Medicaid MCO"],
+  evergreen: ["Medicaid MCO"],
+  beacon: ["Fee-for-service"],
+  harborview: ["Medicaid MCO"],
+  lakeshore: ["Medicaid MCO"],
 };
 /** The plan types to choose from for a payer. A payer added on Payers offers its own type. */
 export const plansOf = (id: PayerId | null): string[] => (!id ? [] : PLANS_OF[id] ?? (planTypeOf(id) ? [planTypeOf(id)] : PLAN_TYPES));
@@ -457,19 +460,20 @@ export function ageOn(dob: string, clock: number): number | null {
 }
 export const NEW_REQUEST_TYPES: RequestType[] = ["Initial request", "Admission", "Continued stay", "Recertification", "Modification", "Retro-authorization"];
 
-/** Where the approval chance starts and ends for a payer: its "approved as asked" rate plus 14 once the agents have worked. Summit: 62 to 88. */
+/** Where the approval chance starts and ends for a payer: its "approved as asked" rate plus 14 once the agents have worked. Sentara: 62 to 88. */
 export function chanceBounds(payerId: PayerId | null): { start: number; final: number } {
   const final = Math.min(94, (payerId ? payerById(payerId).approvedAsAsked : 74) + 14);
   return { start: final - 26, final };
 }
 
-/** The Authorizations queue row for a request signed and sent in New Case. It is with the payer, so it sits in the band of the payer's usual decision time. */
-export function queueItemOf(r: PsyRequest, clock: number, levelLabel?: string): QueueItem {
+/** The Authorizations queue row for a request signed and sent in New Case. It is with the payer, so it sits in the band of the payer's usual decision time.
+    The queue's case model covers the four core levels of care; a request for another Virginia service stays a Dashboard request with no queue row. */
+export function queueItemOf(r: PsyRequest, program: CoreProgram, clock: number, levelLabel?: string): QueueItem {
   const dueAt = clock + payerById(r.payerId).typicalDecisionDays * 1440;
-  const dxKey = dxKeyFor(r.id, r.program);
+  const dxKey = dxKeyFor(r.id, program);
   return {
-    id: r.id, initials: r.patient.initials, age: r.patient.age, payerId: r.payerId, program: r.program, type: r.type, levelLabel: levelLabel ?? PROGRAM_LABEL[r.program],
-    dxKey, dx: dxLine(r.id, dxKey, r.type, r.program), scores: scoresFor(r.id, dxKey), band: dueAt - clock <= 1440 ? "day" : "week", dueAt, dueVerb: "Decision", chance: r.chance ?? 70, liftPts: 0,
-    phase: "payer", agent: "navigator", status: "Payer has it. Navigator checks again in 30 minutes", needsInput: false, coverageFix: false, signal: false, days: daysRequested(r.program),
+    id: r.id, initials: r.patient.initials, age: r.patient.age, payerId: r.payerId, program, type: r.type, levelLabel: levelLabel ?? PROGRAM_LABEL[program],
+    dxKey, dx: dxLine(r.id, dxKey, r.type, program), scores: scoresFor(r.id, dxKey), band: dueAt - clock <= 1440 ? "day" : "week", dueAt, dueVerb: "Decision", chance: r.chance ?? 70, liftPts: 0,
+    phase: "payer", agent: "navigator", status: "Payer has it. Navigator checks again in 30 minutes", needsInput: false, coverageFix: false, signal: false, days: daysRequested(program),
   };
 }

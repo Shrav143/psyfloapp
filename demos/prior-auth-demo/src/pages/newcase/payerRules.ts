@@ -2,6 +2,7 @@
    how far back a start date may reach, and whether the payer says a level of care needs no authorization. */
 import type { CaseDraft } from "@/data/cases";
 import type { Rule } from "@/data/payerConfig";
+import { textNamesProgram } from "@/data/programTables";
 import type { Program, RequestType } from "@/data/types";
 import { plural } from "@/lib/format";
 import { toDate } from "@/lib/time";
@@ -34,12 +35,11 @@ export function backdating(rules: Rule[], type: RequestType | null): Backdating 
   return allowed ? { days: windowDays(allowed) ?? 0, line: allowed } : { days: 0, line: lines[0] };
 }
 
-const WORDS: Record<Program, string[]> = { RES: ["residential"], IOP: ["iop", "intensive outpatient"], PHP: ["php", "partial hosp"], WM: ["detox", "withdrawal management"] };
 /** The line of "No authorization needed" that names this level of care, if the payer has written one. */
 export function noAuthLine(rules: Rule[], program: Program | null): string | null {
   if (!program) return null;
   const lines = rules.find((r) => r.id === "noauth")?.lines ?? [];
-  return lines.find((l) => WORDS[program].some((w) => l.toLowerCase().includes(w))) ?? null;
+  return lines.find((l) => textNamesProgram(l, program)) ?? null;
 }
 
 const midnight = (date: Date): number => new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();

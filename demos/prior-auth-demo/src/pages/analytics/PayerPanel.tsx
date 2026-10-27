@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { Copy } from "lucide-react";
 import { Button, Drawer } from "@/components/ui";
+import { IllustrativeTag } from "@/components/ui/IllustrativeTag";
 import type { Decision } from "@/data/decisions";
 import { MONTHS, type DxId } from "@/data/decisions";
 import type { BuiltInPayerId } from "@/data/types";
@@ -56,9 +57,12 @@ export function PayerPanel({ payer, scoped, filters, siteLabel, width, onCases, 
       width={width}
       title={v.name}
       subtitle={
-        <span data-testid="payer-sub">
-          {v.plan} · {period.label} · {siteLabel}
-          {words ? ` · ${words}` : ""} · {fmt(v.s.n)} decisions
+        <span className="inline-flex flex-wrap items-center gap-x-2">
+          <span data-testid="payer-sub">
+            {v.plan} · {period.label} · {siteLabel}
+            {words ? ` · ${words}` : ""} · {fmt(v.s.n)} decisions
+          </span>
+          <IllustrativeTag />
         </span>
       }
       right={

@@ -49,7 +49,7 @@ export function WorkFilterBar({ filters, set, clear, deadlineCounts, owners, sig
           </span>
           {signalCount ? (
             <Button variant={filters.signalOnly ? "outline" : "ghost"} size="sm" aria-pressed={filters.signalOnly} onClick={() => set("signalOnly", !filters.signalOnly)}>
-              Cardinal payer signal · {signalCount}
+              Anthem payer signal · {signalCount}
             </Button>
           ) : null}
         </div>
@@ -57,7 +57,7 @@ export function WorkFilterBar({ filters, set, clear, deadlineCounts, owners, sig
       {filters.show !== "all" || filters.signalOnly ? (
         <div className="flex flex-wrap gap-2">
           {filters.show !== "all" ? <Chip text={`Showing ${SHOW_LABEL[filters.show]}`} onRemove={() => set("show", "all")} label="Remove this filter" /> : null}
-          {filters.signalOnly ? <Chip text={signalCount === 1 ? "Showing the request affected by the Cardinal signal" : `Showing the ${signalCount} affected by the Cardinal signal`} onRemove={() => set("signalOnly", false)} label="Remove the Cardinal signal filter" /> : null}
+          {filters.signalOnly ? <Chip text={signalCount === 1 ? "Showing the request affected by the Anthem signal" : `Showing the ${signalCount} affected by the Anthem signal`} onRemove={() => set("signalOnly", false)} label="Remove the Anthem signal filter" /> : null}
         </div>
       ) : null}
     </div>

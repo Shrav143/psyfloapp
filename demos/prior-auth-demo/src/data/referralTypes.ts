@@ -1,4 +1,4 @@
-import type { PayerId, Program, RequestEvent, Urgency } from "./types";
+import type { CoreProgram, PayerId, RequestEvent, Urgency } from "./types";
 
 export type ReferralStatus = "new" | "in_review" | "awaiting_info" | "accepted" | "scheduled" | "admitted" | "declined";
 export type Channel = "fax" | "eReferral" | "portal" | "phone" | "email";
@@ -32,7 +32,7 @@ export interface SourceDef {
 /** Everything the source document says. The document pages are built from this and never change when a field is edited. */
 export interface DocPlan {
   /** What the document says about the request itself, frozen as written. Editing an extracted field never changes these. */
-  program: Program;
+  program: CoreProgram;
   urgency: Urgency;
   initials: string;
   age: number;
@@ -92,9 +92,9 @@ export interface Coverage {
 }
 
 export interface Fit {
-  suggested: Program;
+  suggested: CoreProgram;
   confidence: number;
-  alt: Program;
+  alt: CoreProgram;
   altConfidence: number;
   severity: number[];
   summary: string;
@@ -115,7 +115,7 @@ export interface Referral {
   patient: { initials: string; age: number };
   payerId: PayerId | null;
   memberIdMasked: string;
-  program: Program;
+  program: CoreProgram;
   urgency: Urgency;
   status: ReferralStatus;
   owner: StaffId | null;
@@ -132,7 +132,7 @@ export interface Referral {
   infoAskedAt?: number;
   infoRequest?: { via: ReplyVia; message: string };
   decline?: { reason: DeclineReason; note: string; courtesy: boolean };
-  accepted?: { program: Program; admitBy: number; by: StaffId };
+  accepted?: { program: CoreProgram; admitBy: number; by: StaffId };
   intakeAt?: number;
   admittedAt?: number;
   requestId?: string;

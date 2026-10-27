@@ -165,7 +165,7 @@ export function reportCsv(r: ReportInput): string {
   row("headline", "Denials", s.notApproved, s.notApproved, "count");
   add("headline", "First-pass approval", firstPass.raw, s.n);
   row("headline", "Average decision time, days (demo values)", time.raw === null ? NOT_ENOUGH : time.raw.toFixed(1), s.n, "days");
-  add("headline", "Past the CMS decision time (Medicaid managed care plans)", s.cmsN >= 20 ? pctOf(s.pastCms, s.cmsN) : null, s.cmsN);
+  add("headline", "Past the CMS decision time (Medicaid managed care and fee-for-service)", s.cmsN >= 20 ? pctOf(s.pastCms, s.cmsN) : null, s.cmsN);
   add("headline", "Preventable denials (share of denials)", prevent.raw === null ? null : pctOf(s.preventable, s.notApproved), s.preventable);
   add("headline", "Appeals overturned", appeals.raw, s.rulings);
   row("headline", "Denials accepted", s.accepted, s.accepted, "count");

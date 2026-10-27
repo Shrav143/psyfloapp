@@ -1,6 +1,6 @@
 import { ACTIONS, PROGRAM_ORDER, REASON_CATEGORIES, REASON_CATEGORY, type ReasonCategory } from "@/data/analytics";
 import { DX_GROUPS, type Decision, type DxId } from "@/data/decisions";
-import type { BuiltInPayerId, Program } from "@/data/types";
+import type { BuiltInPayerId, CoreProgram } from "@/data/types";
 import { byMonth, enough, monthPoints, pctOf, shownPct, statsOf, sum, type MonthPoint, type Stats } from "./stats";
 
 /* The detail behind the page: denial reasons, length of stay, process health and how FLO's advice and drafts perform. Each is worked out from the same rows as the headline figures. */
@@ -62,7 +62,7 @@ export function buildReasons(rows: readonly Decision[]): Reasons {
 /* ------------------------------------------------------------------ length of stay */
 export interface LosRow {
   payer: BuiltInPayerId;
-  program: Program | "all";
+  program: CoreProgram | "all";
   /** Decisions that approved something (as requested or in part). */
   n: number;
   cuts: number;

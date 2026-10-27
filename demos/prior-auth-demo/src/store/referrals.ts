@@ -1,7 +1,7 @@
 import type { StateCreator } from "zustand";
 import { CAPACITY_SEED, SAMPLE_COUNT, SEED_REFERRALS, sampleReferral, staffById, DECLINE_LABEL, isOpen, parseDiagnoses, type CheckKey, type DeclineReason, type FieldKey, type Referral, type ReplyVia, type StaffId } from "@/data/referrals";
 import { siteOf } from "@/data/sites";
-import { PROGRAM_LABEL, PROGRAMS, type NewCasePrefill, type Program } from "@/data/types";
+import { PROGRAM_LABEL, PROGRAMS, type NewCasePrefill, type CoreProgram } from "@/data/types";
 import { sitesInView } from "@/lib/scope";
 import { plural } from "@/lib/format";
 import { stamp } from "@/lib/time";
@@ -20,7 +20,7 @@ export interface Capacity {
 
 export interface ReferralsSlice {
   referrals: Referral[];
-  capacity: Record<Program, Capacity>;
+  capacity: Record<CoreProgram, Capacity>;
   /** Referral ids whose coverage check is running, with the real time it started (for the progress steps). */
   coverageRunning: Record<string, number>;
 
@@ -32,7 +32,7 @@ export interface ReferralsSlice {
   addReferralNote: (id: string, text: string) => void;
   editReferralField: (id: string, key: FieldKey, value: string) => void;
   runCoverageCheck: (id: string) => void;
-  acceptReferral: (id: string, o: { owner: StaffId; program: Program; admitBy: number }) => void;
+  acceptReferral: (id: string, o: { owner: StaffId; program: CoreProgram; admitBy: number }) => void;
   requestReferralInfo: (id: string, o: { via: ReplyVia; message: string }) => void;
   simulateReferrerReply: (id: string) => void;
   /** Declines open referrals. Returns how many changed. */
@@ -44,7 +44,7 @@ export interface ReferralsSlice {
 }
 
 const COVERAGE_MS = 3000;
-const seedCapacity = (): Record<Program, Capacity> => Object.fromEntries(PROGRAMS.map((p) => [p, { ...CAPACITY_SEED[p] }])) as Record<Program, Capacity>;
+const seedCapacity = (): Record<CoreProgram, Capacity> => Object.fromEntries(PROGRAMS.map((p) => [p, { ...CAPACITY_SEED[p] }])) as Record<CoreProgram, Capacity>;
 
 export const createReferralsSlice: StateCreator<AppState, [], [], ReferralsSlice> = (set, get) => {
   const update = (id: string, fn: (r: Referral) => Referral): void => set((s) => ({ referrals: s.referrals.map((r) => (r.id === id ? fn(r) : r)) }));

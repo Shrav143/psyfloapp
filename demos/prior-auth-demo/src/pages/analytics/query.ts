@@ -3,7 +3,7 @@ import { DX_LABEL, KIND_LABEL, OUTCOME_LABEL, POPULATION_LABEL, type Decision, t
 import type { RequestKind } from "@/data/queue";
 import { payerById } from "@/data/seed";
 import type { SiteId } from "@/data/sites";
-import { PROGRAM_LABEL, type BuiltInPayerId, type Program } from "@/data/types";
+import { PROGRAM_LABEL, type BuiltInPayerId, type CoreProgram } from "@/data/types";
 import { inMonths, inPeriod, narrow, periodInfo, type Filters } from "./filters";
 
 /* What the case list panel is asked for: the cases behind one number. A query is plain data, so the number on the page and the list that
@@ -16,7 +16,7 @@ export interface CaseQuery {
   /** One line under the title that says how the number was reached. */
   note?: string;
   payer?: BuiltInPayerId;
-  program?: Program;
+  program?: CoreProgram;
   dx?: DxId;
   kind?: RequestKind;
   population?: PopulationId;
@@ -63,7 +63,7 @@ export function rowsForQuery(scoped: readonly Decision[], f: Filters, q: CaseQue
   return inRange.filter((d) => matchesQuery(d, q));
 }
 
-/** "Opioid use disorder at Cardinal Health Plan" and similar: the words a query adds to its title. */
+/** "Opioid use disorder at Anthem HealthKeepers Plus" and similar: the words a query adds to its title. */
 export function describeQuery(q: CaseQuery): string {
   const bits: string[] = [];
   if (q.dx) bits.push(DX_LABEL[q.dx]);

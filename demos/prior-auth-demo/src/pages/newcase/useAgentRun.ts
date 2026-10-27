@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { currentChance, draftState, FLAKY_PORTAL, RUN_STEPS, type CaseDraft } from "@/data/cases";
+import { chanceFor } from "@/data/programTables";
 import { useStore } from "@/store";
 import { pendingFor } from "./questions";
 import { agentNow, dashboardNote } from "./runText";
@@ -11,7 +12,7 @@ const FAST_MS = 140;
 
 /** Drives the agents one step at a time while the page is open. All progress is written to the draft, so leaving and coming back resumes.
     The run holds while an agent waits for an answer or for Retry or Skip, and while the agent at this step is paused in Settings.
-    Verify cannot reach Cardinal's portal the first time a case runs: the row says so, and Retry then works. */
+    Verify cannot reach Anthem's portal the first time a case runs: the row says so, and Retry then works. */
 export function useAgentRun(draft: CaseDraft, fast: boolean) {
   const advance = useStore((s) => s.advanceCaseRun);
   const ask = useStore((s) => s.askCaseQuestion);
@@ -42,7 +43,7 @@ export function useAgentRun(draft: CaseDraft, fast: boolean) {
     }
     const st = useStore.getState();
     const d = st.caseDrafts.find((x) => x.id === draft.id);
-    if (d?.caseId && st.requests.some((r) => r.id === d.caseId)) st.updateRequest(d.caseId, { agent: agentNow(d), next: dashboardNote(d), needsYou: draftState(d) === "question" || !!d.run.failed, chance: currentChance(d) });
+    if (d?.caseId && st.requests.some((r) => r.id === d.caseId)) st.updateRequest(d.caseId, { agent: agentNow(d), next: dashboardNote(d), needsYou: draftState(d) === "question" || !!d.run.failed, chance: chanceFor(d.program, currentChance(d)) ?? undefined });
   }, [done, question, failed, draft.id]);
 
   /* The clock chip counts up while agents work. */

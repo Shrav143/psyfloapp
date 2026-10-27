@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ArrowRight, ChartColumn, Check, CircleAlert, CircleCheck, CircleHelp, CircleX, RefreshCw } from "lucide-react";
 import { Button, Card, CardHeader, InfoTip, Label, Pill } from "@/components/ui";
+import { IllustrativeTag } from "@/components/ui/IllustrativeTag";
 import type { Rec } from "@/data/caseDetail";
 import { criteriaView, gainOf, groupRecs, rangeOf, type CriterionView } from "@/data/caseModel";
 import { payerById } from "@/data/seed";
@@ -80,6 +81,7 @@ export function CriteriaRiskTab({ ctx, section }: { ctx: CaseCtx; section: "pict
           <span className="mr-1 inline-flex items-center gap-1">
             <Label>Biggest risks</Label>
             <InfoTip label="About the biggest risk">{detail.biggest.title}. {detail.biggest.text} {detail.biggest.seen}.</InfoTip>
+            <IllustrativeTag className="ml-1" />
           </span>
           {risks.length === 0 ? <Pill tone="good" dot>None open</Pill> : null}
           {risks.map((r) => (
@@ -92,7 +94,7 @@ export function CriteriaRiskTab({ ctx, section }: { ctx: CaseCtx; section: "pict
 
       <Card>
         <CardHeader
-          title={<span className="inline-flex items-center gap-1">What {payer.shortName} requires{payerNote ? <InfoTip label="Payer note">{payerNote}</InfoTip> : null}</span>}
+          title={<span className="inline-flex items-center gap-1">What {payer.shortName} requires{payerNote ? <InfoTip label="Payer note">{payerNote}</InfoTip> : null}<IllustrativeTag className="ml-1" /></span>}
           subtitle={`Policy ${detail.policy} · ${payer.approvedAsAsked}% approved as asked, last 90 days · ${detail.tool}`}
           right={<Button size="sm" icon={RefreshCw} loading={checking} onClick={recheck}>Re-check criteria</Button>}
         />

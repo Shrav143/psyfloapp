@@ -21,7 +21,7 @@ const STAGE_ACTOR: Record<Stage, Entry["actor"]> = { intake: "system", eligibili
 export const rulesLine = (view: Pick<CaseWorkflow, "run">): string =>
   view.run.rulesUsed.length ? `Rules read: ${view.run.rulesUsed.map((r) => `${r.title} (${VERIFICATION_LABEL[r.verification]})`).join(", ")}.` : "";
 
-/** "Workflow applied: Initial Authorization, Residential SUD v3 (Summit)". The default says it is the default. */
+/** "Workflow applied: Initial Authorization, Residential SUD v3 (Sentara)". The default says it is the default. */
 export function appliedEntry(view: Pick<CaseWorkflow, "applied" | "conflict">, payerShort: string, at: number, n: number): Entry {
   const a = view.applied;
   return {

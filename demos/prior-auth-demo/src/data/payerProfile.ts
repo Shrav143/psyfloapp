@@ -5,18 +5,18 @@ import type { PayerSummary } from "./types";
 
 /* What a payer is, one level above its rules: the organization, the state it works in and the plan or product. Workflows and rules carry the same three,
    so a payer that runs different products in different states can have different processes. Never assume a parent organization has the same rules everywhere.
-   The six demo payers are seeded as Ohio plans. A payer added on Payers carries the values it was added with; anything left blank is read as the name, Ohio and the plan type. */
+   The six demo payers are Virginia Medicaid plans. A payer added on Payers carries the values it was added with; anything left blank is read as the name, Virginia and the plan type. */
 
 export interface PayerProfile {
   /** The payer organization. */
   org: string;
-  /** Two-letter state, "OH" for every demo payer. */
+  /** Two-letter state, "VA" for every demo payer. */
   state: string;
-  /** The plan or product, such as "Medicaid managed care (HMO)". */
+  /** The plan or product, such as "Cardinal Care managed care (MCO)". */
   product: string;
 }
 
-export const DEFAULT_STATE = "OH";
+export const DEFAULT_STATE = "VA";
 
 const productOf = (p: PayerSummary): string => planInfo(p)?.label ?? p.type;
 

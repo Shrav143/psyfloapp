@@ -5,6 +5,7 @@ import { PAYERS } from "@/data/seed";
 import { siteOf } from "@/data/sites";
 import { PROGRAMS, type NewCasePrefill, type PayerId, type Program, type RequestType } from "@/data/types";
 import { siteOfVerification } from "@/data/verification";
+import { focusScope } from "@/lib/programFocus";
 import { sitesInView } from "@/lib/scope";
 import { useStore } from "@/store";
 import type { AppState } from "@/store";
@@ -88,7 +89,11 @@ export function initialDraft(q: URLSearchParams, st: AppState): InitialDraft {
     return p ? { init: { ...base, ...fromPrefill(p, r?.accepted?.admitBy), site: siteOf(ref) } } : { init: base, missingReferral: ref };
   }
   const verified = q.get("verification") ? fromVerification(st, q.get("verification") ?? "") : null;
-  return { init: { ...base, ...(verified ?? fromQuery(q)), ...(isAuthKind(kindParam) ? { kind, type: defaultTypeFor(kind, null) } : {}) }, patient };
+  const from = verified ?? fromQuery(q);
+  /* A blank case starts on the program of the top bar's Program menu: the level of care the service maps to, or the Virginia service itself.
+     A referral, a check or a link that names a program keeps its own. */
+  const focused = !patient && !from.program ? focusScope(st.programFocus)?.own : null;
+  return { init: { ...base, ...(focused ? { program: focused } : {}), ...from, ...(isAuthKind(kindParam) ? { kind, type: defaultTypeFor(kind, null) } : {}) }, patient };
 }
 
 /* ------------------------------------------------------------------ one-click helpers (event handlers only) */
@@ -106,7 +111,7 @@ export const SAMPLE_CHART = {
   diagnoses: ["F10.20", "F33.2"],
 };
 
-/** Everything for T.W. in one click: patient, insurance, request, diagnoses and 8 of the 9 Summit documents. The therapy note is left out so the caution shows.
+/** Everything for T.W. in one click: patient, insurance, request, diagnoses and 8 of the 9 Sentara documents. The therapy note is left out so the caution shows.
     A case that already has a patient (started from a referral or an EMR pull) keeps that patient and request: the sample chart only adds the documents. */
 export function applySampleChart(id: string): void {
   const st = useStore.getState();

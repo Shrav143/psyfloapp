@@ -1,4 +1,5 @@
-import { PROGRAM_LABEL, type Program } from "@/data/types";
+import { forProgram } from "@/data/programTables";
+import { PROGRAM_LABEL, type Program, type CoreProgram } from "@/data/types";
 import { REQUEST_TYPE_LABEL, RULE_GROUP_LABEL, type PayerRule, type RequestType, type RuleGroup, type WfNode } from "@/data/workflow/types";
 import { createNode, layout, nodeDef } from "./engine";
 import { connect, outputsOf, type Graph } from "./model";
@@ -12,7 +13,7 @@ export interface FloContext {
   state: string;
   product: string;
   rules: PayerRule[];
-  docs: Record<Program, { id: string; title: string }[]> | undefined;
+  docs: Record<CoreProgram, { id: string; title: string }[]> | undefined;
   /** How the payer is reached: "Portal", "Phone and fax" ... */
   reachedBy: string;
   today: string;
@@ -118,7 +119,7 @@ export function generateDraft(description: string, ctx: FloContext): FloDraft {
   if (type === "initial") push(ruleNode("window", "rule_submission_window"));
   if (type === "retro") push(ruleNode("backdating", "rule_backdating"));
 
-  const docs = (service ? ctx.docs?.[service] : Object.values(ctx.docs ?? {}).flat()) ?? [];
+  const docs = (service ? (ctx.docs ? forProgram(ctx.docs, service, []) : undefined) : Object.values(ctx.docs ?? {}).flat()) ?? [];
   const lower = text.toLowerCase();
   const asked = docs.filter((d) => DOC_WORDS.some((w) => lower.includes(w) && d.title.toLowerCase().includes(w)));
   push(add("documents", "doc_collect", asked.length ? { config: { required: asked.map((d) => d.id) } } : {}));

@@ -7,7 +7,8 @@ import type { VerificationRecord } from "@/data/verification";
 import { docEntries, findingText, isOpen, openFindings, slotLabel } from "./documents";
 import { noAuthLine, startDateIssue } from "./payerRules";
 import type { PayerContext } from "./payerContext";
-import { CRITERIA_COUNT } from "./runText";
+import { criteriaCount } from "./runText";
+import { serviceWindowIssue, VA_CRITERIA_PENDING } from "@/data/programTables";
 
 export type CheckState = "pass" | "warn" | "checking";
 /** What a person can do about a finding: go back to a step (Intake, Eligibility & Benefits, Clinical documentation), edit the summary, or send the draft back to Scribe. */
@@ -30,6 +31,8 @@ export interface CheckInput {
   verification?: VerificationRecord;
 }
 
+/** A Virginia service: Criteria has nothing configured to match the chart against, and says so rather than assume a criterion. */
+const NO_CRITERIA = "Criteria has no Virginia criteria to match the chart against for this service. Nothing was assumed.";
 const noun = (n: number): string => (n === 1 ? "document" : "documents");
 const list = (names: string[]): string => (names.length <= 1 ? (names[0] ?? "") : `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}`);
 
@@ -50,6 +53,8 @@ export function integrityChecks(d: CaseDraft, narrative: NarrativeSection[], rec
       : { id: "traced", agent: "integrity", label: "Every sentence traced to the chart", state: "pass", details: [], extra: [] };
 
   const issue = startDateIssue(d, ctx.rules, clock, payer);
+  /* A Virginia service asked for outside its dates: a redesigned service before it starts, or a retiring one after it ends (data/va/services.ts). */
+  const outside = serviceWindowIssue(d.program, d.startDate);
   const late = (d.dueKind === "notice" || d.dueKind === "window") && d.dueAt !== null && d.dueAt <= clock;
   /* Coverage itself is listed by the case's own issues (caseIssues.ts); only what the agents' run found is listed here. */
   const lead: { label: string; text: string; fix?: FixKind }[] = [
@@ -62,10 +67,11 @@ export function integrityChecks(d: CaseDraft, narrative: NarrativeSection[], rec
     ...(flawed.length ? [`${flawed.length} required ${flawed.length === 1 ? "document has" : "documents have"} an open finding. See the validation summary.`] : []),
     ...(issue ? [issue.text] : []),
     ...overdue.map((x) => x.text),
+    ...(outside ? [outside] : []),
   ];
 
   /* Criteria matches the chart to the payer's requirements. A required document that is not in the case leaves one of them without evidence. */
-  const n = CRITERIA_COUNT[d.program ?? "RES"];
+  const n = criteriaCount(d.program ?? "RES");
   const stepdownLater = d.answers.some((a) => a.key === "stepdown" && a.choice === "later");
   const unmet = [
     ...(absent.length ? [`${absent.length} required ${noun(absent.length)} ${absent.length === 1 ? "is" : "are"} not in the case: ${list(absent.map((r) => r.label))}. Add ${absent.length === 1 ? "it" : "them"} on Clinical documentation, or mark ${absent.length === 1 ? "it" : "them"} not available.`] : []),
@@ -77,18 +83,20 @@ export function integrityChecks(d: CaseDraft, narrative: NarrativeSection[], rec
   /* Placement reads the ASAM assessment, the chart's own statement of the level of care, and the payer's no-authorization rule. */
   const asam = d.documents.find((x) => x.slot === "asam");
   const noAuth = noAuthLine(ctx.rules, d.program);
+  /* A Virginia service has no level-of-care framework configured: the check says so instead of reading an ASAM assessment. */
   const placement = [
-    ...(!asam ? ["No ASAM assessment is in the case, so the level of care is not confirmed."] : []),
-    ...(asam ? asam.findings.filter((f) => isOpen(f, d.answers)).map((f) => `${slotLabel("asam")}: ${findingText(f, d.answers)}.`) : []),
+    ...(n === null ? [`${VA_CRITERIA_PENDING}.`] : []),
+    ...(n !== null && !asam ? ["No ASAM assessment is in the case, so the level of care is not confirmed."] : []),
+    ...(n !== null && asam ? asam.findings.filter((f) => isOpen(f, d.answers)).map((f) => `${slotLabel("asam")}: ${findingText(f, d.answers)}.`) : []),
     ...(noAuth ? [`${payer}'s rules say: ${noAuth}. Check with ${payer} before you send.`] : []),
   ];
   const noAuthExtra = noAuth ? [{ label: "Payer rule", text: `${payer}'s rules say: ${noAuth}. Check with ${payer} before you send.` }] : [];
 
   return [
     traced,
-    { id: "errors", agent: "scrubber", label: "Request has no errors", state: errors.length ? "warn" : "pass", details: errors, extra: [...lead, ...overdue] },
-    { id: "criteria", agent: "criteria", label: uncovered ? `${Math.max(0, n - uncovered)} of ${n} ${payer} requirements covered` : `All ${n} ${payer} requirements covered`, state: unmet.length ? "warn" : "pass", details: unmet, extra: stepdownLater ? [{ label: "Step-down provider", text: "A named step-down provider is not on file yet.", fix: "scribe" }] : [] },
-    { id: "level", agent: "placement", label: "Level of care matches the request", state: placement.length ? "warn" : "pass", details: placement, extra: noAuthExtra },
+    { id: "errors", agent: "scrubber", label: "Request has no errors", state: errors.length ? "warn" : "pass", details: errors, extra: [...lead, ...overdue, ...(outside ? [{ label: "Service dates", text: outside }] : [])] },
+    { id: "criteria", agent: "criteria", label: n === null ? `No ${payer} criteria configured for this service` : uncovered ? `${Math.max(0, n - uncovered)} of ${n} ${payer} requirements covered` : `All ${n} ${payer} requirements covered`, state: unmet.length || n === null ? "warn" : "pass", details: n === null ? [NO_CRITERIA, ...unmet] : unmet, extra: [...(n === null ? [{ label: "Criteria", text: NO_CRITERIA }] : []), ...(stepdownLater ? [{ label: "Step-down provider", text: "A named step-down provider is not on file yet.", fix: "scribe" as FixKind }] : [])] },
+    { id: "level", agent: "placement", label: n === null ? "Level-of-care criteria pending" : "Level of care matches the request", state: placement.length ? "warn" : "pass", details: placement, extra: [...(n === null ? [{ label: "Level of care", text: `${VA_CRITERIA_PENDING}.` }] : []), ...noAuthExtra] },
   ];
 }
 

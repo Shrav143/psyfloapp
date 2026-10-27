@@ -1,6 +1,6 @@
 /* The charts waiting in the demo's connected clinical record systems (EMR Connect), with what a pull brings: the patient, the coverage, the request and the previous notes.
    All invented. Ages are as of the demo day, Tue 20 Oct 2026. */
-import type { PayerId, Program, RequestType } from "@/data/types";
+import type { PayerId, CoreProgram, RequestType } from "@/data/types";
 import type { ImportedDocument } from "./types";
 
 export interface EmrChart {
@@ -19,7 +19,7 @@ export interface EmrChart {
   effectiveFrom: string;
   effectiveTo: string;
   subscriber: string;
-  program: Program;
+  program: CoreProgram;
   type: RequestType;
   diagnoses: string[];
   reason: string;

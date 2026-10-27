@@ -1,6 +1,7 @@
 import { CircleAlert, CircleCheck, CircleX } from "lucide-react";
 import { Button, Card, CardHeader, Pill } from "@/components/ui";
 import { unmetPenalty, type CaseDraft } from "@/data/cases";
+import { noChanceFor } from "./ChancePanel";
 import type { FixKind } from "./checks";
 import type { MissingItem } from "./missing";
 
@@ -20,7 +21,7 @@ export function MissingCard({ draft, items, onFix }: { draft: CaseDraft; items: 
   }
   const count = (sev: MissingItem["severity"]): number => items.filter((i) => i.severity === sev).length;
   const [blocks, acks, notes] = [count("block"), count("ack"), count("note")];
-  const held = draft.unmet > 0 ? `−${unmetPenalty(draft.unmet)} points on the approval chance` : undefined;
+  const held = draft.unmet > 0 && !noChanceFor(draft) ? `−${unmetPenalty(draft.unmet)} points on the approval chance` : undefined;
   return (
     <Card data-testid="missing">
       <CardHeader

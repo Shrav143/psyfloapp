@@ -4,7 +4,7 @@ import { DECISIONS, cmsApplies, type Decision, type DxId } from "@/data/decision
 import { QUEUE_ITEMS, dxKeyFor, type DxKey } from "@/data/queue";
 import { payerById } from "@/data/seed";
 import { siteOf } from "@/data/sites";
-import type { BuiltInPayerId, Program, PsyRequest } from "@/data/types";
+import { isCoreProgram, type BuiltInPayerId, type CoreProgram, type PsyRequest } from "@/data/types";
 import { useScope, type Scope } from "@/lib/scope";
 import { useStore } from "@/store";
 import type { AppealDecision, DenialAccepted, Dismissal } from "@/store/ripples";
@@ -17,9 +17,8 @@ const DX_OF: Record<DxKey, DxId> = { aud: "aud", oud: "oud", stim: "stim", cann:
 const isBuiltIn = (id: string): id is BuiltInPayerId => (PAYER_ORDER as string[]).includes(id);
 
 /** A denial that Denial Intelligence has and the history does not (a letter added during the demo): a denial decided today. */
-function liveDenial(r: PsyRequest, payerId: BuiltInPayerId): Decision {
+function liveDenial(r: PsyRequest, payerId: BuiltInPayerId, program: CoreProgram): Decision {
   const reason = reasonsOf(payerId)[0];
-  const program: Program = r.program;
   const item = QUEUE_ITEMS.find((i) => i.id === r.caseId || i.id === r.id);
   const hours = Math.round(payerById(payerId).avgDecisionDays * 24);
   return {
@@ -39,8 +38,9 @@ export function applyLive(base: readonly Decision[], appeals: readonly AppealDec
     const hit = find(denialId, requestId);
     if (hit) return hit;
     const req = requests.find((r) => r.id === denialId || r.id === requestId);
-    if (!req || !isBuiltIn(req.payerId)) return undefined;
-    const made = liveDenial(req, req.payerId);
+    // The case records cover the four core levels of care, so a request for another Virginia service is not folded in.
+    if (!req || !isBuiltIn(req.payerId) || !isCoreProgram(req.program)) return undefined;
+    const made = liveDenial(req, req.payerId, req.program);
     out.set(made.id, made);
     return made;
   };
@@ -65,7 +65,7 @@ export interface Live {
 export interface DismissedRow {
   reason: string;
   payerId?: BuiltInPayerId;
-  program?: Program;
+  program?: CoreProgram;
   dx?: DxId;
   caseId: string;
 }
@@ -85,12 +85,13 @@ export function useLive(): Live {
 }
 
 /** Each dismissal knows its request, so the payer, program and diagnosis group are looked up there (Dashboard requests first, then the Authorizations queue). */
-export function dismissalRows(list: readonly Dismissal[], requests: readonly PsyRequest[], queue: readonly { id: string; payerId: string; program: Program; dxKey?: DxKey }[]): DismissedRow[] {
+export function dismissalRows(list: readonly Dismissal[], requests: readonly PsyRequest[], queue: readonly { id: string; payerId: string; program: string; dxKey?: DxKey }[]): DismissedRow[] {
   return list.map((d) => {
     const req = requests.find((r) => r.id === d.requestId || r.caseId === d.requestId);
     const item = queue.find((q) => q.id === d.requestId) ?? queue.find((q) => q.id === req?.id);
     const payer = req?.payerId ?? item?.payerId;
-    const program = req?.program ?? item?.program;
+    const found = req?.program ?? item?.program;
+    const program = isCoreProgram(found) ? found : undefined;
     return {
       reason: d.reason,
       payerId: payer && isBuiltIn(payer) ? payer : undefined,

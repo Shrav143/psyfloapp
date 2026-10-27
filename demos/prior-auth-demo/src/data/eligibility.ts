@@ -2,7 +2,7 @@
    The wording of each payment check lives in pages/eligibility/checks.ts. */
 import { DAY, HOUR } from "@/lib/time";
 import type { SiteId } from "./sites";
-import type { PayerId, PayerSummary, Program, Tone } from "./types";
+import { isCoreProgram, type PayerId, type PayerSummary, type Program, type Tone, type CoreProgram } from "./types";
 
 /** "unavailable": the check could not run (Verify is paused in Settings), so nothing is known about coverage. */
 export type EligState = "active" | "lapsed" | "ended" | "not_found" | "unavailable";
@@ -40,26 +40,11 @@ export function coverageDates(p: Pick<EbPatient, "eligibility" | "dos">): string
   return `Effective ${EFFECTIVE_FROM}, ${state === "lapsed" ? "lapsed" : "ended"} ${on}/${year}`;
 }
 
-/** What a patient pays, by kind of plan, as sample figures. Ohio Medicaid members usually pay nothing, so it has no entry and the screens say nothing about it instead of "$0". */
-interface CostShare {
-  copay?: string;
-  deductibleLeft?: string;
-  coinsurance?: string;
-}
-const COMMERCIAL: CostShare = { copay: "$40 per day", deductibleLeft: "$350", coinsurance: "20% after the deductible" };
-const COST_SHARE: Partial<Record<PayerSummary["group"], CostShare>> = {
-  Commercial: COMMERCIAL,
-  "Behavioral carve-out": COMMERCIAL,
-  "Medicare Advantage": { deductibleLeft: "$85", coinsurance: "20%" },
-};
-/** "Copay $40 per day, deductible $350 left, coinsurance 20% after the deductible", or null when the plan has none on file. */
-export function costShareText(group: PayerSummary["group"]): string | null {
-  const c = COST_SHARE[group];
-  if (!c) return null;
-  const parts = [c.copay && `Copay ${c.copay}`, c.deductibleLeft && `deductible ${c.deductibleLeft} left`, c.coinsurance && `coinsurance ${c.coinsurance}`].filter(Boolean);
-  const text = parts.join(", ");
-  return text ? text[0].toUpperCase() + text.slice(1) : null;
-}
+/** What a patient pays, by kind of plan. Every demo payer is Virginia Medicaid and no cost share is on file for any of them, so the screens say nothing
+    about cost instead of "$0". A plan that has one would add it here. */
+const COST_SHARE: Partial<Record<PayerSummary["group"], string>> = {};
+/** The patient's cost share as one line, or null when the plan has none on file. */
+export const costShareText = (group: PayerSummary["group"]): string | null => COST_SHARE[group] ?? null;
 
 export interface EbPatient {
   id: string; // the case ID, or V-xxxx for a check that has no case yet
@@ -122,39 +107,41 @@ export interface CheckInput {
 }
 type Findings = Pick<EbPatient, "eligibility" | "benefits" | "auth" | "limit" | "noDayLimit" | "inNetwork" | "networkUnresolved" | "otherInsurance" | "payerChanged" | "idMismatch">;
 
-const NO_AUTH: [PayerId, Program][] = [["beacon", "IOP"], ["beacon", "PHP"]];
 /** The days or units one authorization allows, by level of care. */
-const LIMIT_OF: Record<Program, [number, "days" | "units"]> = { RES: [14, "days"], IOP: [48, "units"], PHP: [15, "days"], WM: [5, "days"] };
+const LIMIT_OF: Record<CoreProgram, [number, "days" | "units"]> = { RES: [14, "days"], IOP: [48, "units"], PHP: [15, "days"], WM: [5, "days"] };
 
 /** Member ID endings that script a result. The Verify page's sample chips fill them in, so nothing is hidden. */
-export const TAIL = { lapsed: "1012", notFound: "9999", notCovered: "3030", otherPlan: "6060", limitReached: "9090", payerChanged: "7070", idMismatch: "8080", benefitUnconfirmed: "5050", providerUnresolved: "4040", requirementUnknown: "2020" } as const;
+export const TAIL = { lapsed: "1012", notFound: "9999", notCovered: "3030", otherPlan: "6060", limitReached: "9090", payerChanged: "7070", idMismatch: "8080", benefitUnconfirmed: "5050", providerUnresolved: "4040", requirementUnknown: "2020", authOnFile: "1414" } as const;
 /** The plan a member moved to, for the "payer changed" answer: any other plan than the one on the case. */
 const MOVED_TO = (from: PayerId): PayerId => (from === "cardinal" ? "summit" : "cardinal");
 
 /** What the state and the plan "answer". Scripted so the demo is predictable: a member ID ending 1012 is lapsed, 9999 is not found,
     3030 is a plan that does not cover the service, 6060 has another plan that pays first and 9090 has used every authorized day.
     7070 moved to another plan on 10/01, 8080 is known to the plan under another member ID, 5050 is a service the plan did not confirm,
-    4040 is a clinic enrollment nobody could confirm and 2020 is a service with no authorization rule on file.
-    Evergreen is reached by phone and is not enrolled for detox. */
+    4040 is a clinic enrollment nobody could confirm, 2020 is a service with no authorization rule on file and 1414 already has an authorization
+    on file with days left. Every Virginia plan, fee-for-service included, needs an authorization for the four levels of care; a level of care the
+    payer's saved "No authorization needed" rule names needs none (data/verification.ts). Aetna is reached by phone and is not enrolled for detox. */
 export function simulateCheck(i: CheckInput): Findings {
   const tail = i.memberId.replace(/\D/g, "").slice(-4);
-  const [of, unit] = LIMIT_OF[i.program];
+  /* A Virginia service has no authorized days or units in the demo's data, so its check shows no limit. */
+  const lim = isCoreProgram(i.program) ? LIMIT_OF[i.program] : null;
   const exhausted = tail === TAIL.limitReached;
+  const onFile = tail === TAIL.authOnFile;
   const moved = tail === TAIL.payerChanged;
   return {
     eligibility: tail === TAIL.lapsed ? { state: "lapsed", on: "10/12" } : tail === TAIL.notFound ? { state: "not_found" } : moved ? { state: "ended", on: "09/30" } : { state: "active" },
     payerChanged: moved ? { to: MOVED_TO(i.payerId), since: "10/01" } : undefined,
     idMismatch: tail === TAIL.idMismatch ? { onFile: "…5521" } : undefined,
     benefits: tail === TAIL.notCovered ? "not_covered" : tail === TAIL.benefitUnconfirmed ? "needs_confirmation" : i.payerId === "harborview" && i.program === "PHP" ? "limited" : "covered",
-    auth: tail === TAIL.requirementUnknown ? "unknown" : exhausted ? "on_file" : tail === TAIL.notCovered || NO_AUTH.some(([p, g]) => p === i.payerId && g === i.program) ? "not_required" : "required",
-    limit: exhausted ? { used: of, of, unit } : undefined,
+    auth: tail === TAIL.requirementUnknown ? "unknown" : exhausted || onFile ? "on_file" : tail === TAIL.notCovered ? "not_required" : "required",
+    limit: !lim ? undefined : exhausted ? { used: lim[0], of: lim[0], unit: lim[1] } : onFile ? { used: Math.round(lim[0] / 3), of: lim[0], unit: lim[1] } : undefined,
     noDayLimit: i.payerId === "summit" && i.program === "RES",
     inNetwork: !(i.payerId === "evergreen" && i.program === "WM"),
     networkUnresolved: tail === TAIL.providerUnresolved ? true : undefined,
     otherInsurance: tail === TAIL.otherPlan,
   };
 }
-/** Evergreen is the one payer reached by phone: its system does not answer, so Caller phones. */
+/** Aetna is the one payer reached by phone: its system does not answer, so Caller phones. */
 export const needsCaller = (payerId: PayerId): boolean => payerId === "evergreen";
 
 /* ------------------------------------------------------------------ seed rows: 37 patients, 28 cleared, 4 authorization first, 5 fix, 5 re-checks due.
@@ -209,7 +196,7 @@ const ROWS: Row[] = [
   R("I-2171", "Q.Z.", 25, "lakeshore", "IOP", 150, "on_file", [4, 30, "units"]),
   R("R-0960", "H.V.", 39, "summit", "RES", 200, "on_file", [5, 14, "days"]),
   R("I-2102", "W.H.", 36, "summit", "IOP", 5000, "on_file", [22, 48, "units"], { recheckDue: true, recheckAt: DAY + 3 * HOUR }),
-  R("P-1519", "C.M.", 41, "beacon", "PHP", 3000, "not_required"),
+  R("P-1519", "C.M.", 41, "beacon", "PHP", 3000, "on_file", [4, 15, "days"]),
   R("R-0866", "T.S.", 29, "summit", "RES", 3600, "on_file", [12, 21, "days"], { recheckDue: true, recheckAt: 2 * DAY }),
   R("I-2120", "J.B.", 33, "lakeshore", "IOP", 1700, "on_file", [30, 60, "units"]),
   R("P-1550", "N.D.", 47, "harborview", "PHP", 2600, "on_file", [5, 15, "days"], { benefits: "limited" }),

@@ -3,13 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { RefreshCw, Scale } from "lucide-react";
 import { AgentChip, Button, Disclosure, Drawer, KeyValue, Pill, Timeline } from "@/components/ui";
 import { payerById } from "@/data/seed";
-import { PROGRAM_LABEL, type PsyRequest } from "@/data/types";
+import { NOT_ENOUGH_CASES } from "@/data/programTables";
+import { isCoreProgram, PROGRAM_LABEL, type PsyRequest } from "@/data/types";
 import { band } from "@/lib/format";
 import { stamp } from "@/lib/time";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
 import { selectWriteBackOn } from "@/store/emr";
-import { PAYER_ROW_LABEL, isDenial, nextLine } from "./helpers";
+import { isDenial, nextLine, payerRowLabel } from "./helpers";
 import { CMS_DAYS, cmsClock } from "@/lib/doNext";
 import { chanceFacts, nextCheckIn, sentAt } from "./requestFacts";
 import { DemoControls, StateActions } from "./RequestActions";
@@ -63,7 +64,7 @@ export function RequestDrawer({ request: r, onClose, onSwitch }: { request: PsyR
       open
       onClose={onClose}
       width={560}
-      title={`${r.id} · ${PAYER_ROW_LABEL[r.payerId]}`}
+      title={`${r.id} · ${payerRowLabel(r.payerId)}`}
       subtitle={`${PROGRAM_LABEL[r.program]} ${r.type.toLowerCase()} · ${sent === undefined ? "not sent yet" : `sent ${stamp(sent)}`}`}
       right={
         <Pill tone={r.tone} dot>
@@ -93,7 +94,8 @@ export function RequestDrawer({ request: r, onClose, onSwitch }: { request: PsyR
           items={[
             ["Patient", `${r.patient.initials}, ${r.patient.age}`],
             ["Held by", <span key="a" className="inline-flex flex-wrap items-center gap-2"><AgentChip agent={r.agent} /><span className="font-normal">{nextLine(r, writeBackOn)}</span></span>],
-            ...(cms && (cms.hint || cms.past) ? [["Decision time", <span key="cms" className="font-normal text-mid-ink">{cms.past ? `Past ${CMS_DAYS} days` : `Day ${cms.day} of ${CMS_DAYS}`} under the CMS rule for Medicaid managed care</span>] as [string, ReactNode]] : []),
+            ...(cms && (cms.hint || cms.past) ? [["Decision time", <span key="cms" className="font-normal text-mid-ink">{cms.past ? `Past ${CMS_DAYS} days` : `Day ${cms.day} of ${CMS_DAYS}`} under the CMS rule for Medicaid</span>] as [string, ReactNode]] : []),
+            ...(!facts && !isCoreProgram(r.program) ? [["Approval chance", NOT_ENOUGH_CASES] as [string, ReactNode]] : []),
             ...(facts ? [[denial ? "Chance of winning" : "Approval chance", `${facts.chance}% · ${band(facts.chance).word} · likely ${facts.low} to ${facts.high}% · ${facts.similar.toLocaleString("en-US")} similar cases`] as [string, ReactNode]] : []),
           ]}
         />

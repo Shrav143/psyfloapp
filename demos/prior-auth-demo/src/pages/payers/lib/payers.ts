@@ -20,7 +20,7 @@ export interface PayerRow {
   needs: string;
   /** A change is waiting for a person. */
   waiting: boolean;
-  /** The payer organization, the state (two-letter code) and the plan or product, from payerProfileOf. Added payers carry what Add payer asked for; the six core payers are Ohio, one product each. */
+  /** The payer organization, the state (two-letter code) and the plan or product, from payerProfileOf. Added payers carry what Add payer asked for; the six core payers are Virginia Medicaid, one product each. */
   org: string;
   state: string;
   product: string;
@@ -73,7 +73,7 @@ export interface PayerFilters { query: string; state: string; group: string; wf:
 export const NO_FILTERS: PayerFilters = { query: "", state: ALL, group: ALL, wf: ALL };
 export const filtersActive = (f: PayerFilters): boolean => !!f.query.trim() || f.state !== ALL || f.group !== ALL || f.wf !== ALL;
 
-/** The rows in the order of the groups (Ohio Medicaid, Commercial, Medicare Advantage, carve-out), narrowed by a search over name, organization, product, state and group, and by the three filters. */
+/** The rows in the order of the groups (Medicaid MCO, then Medicaid fee-for-service), narrowed by a search over name, organization, product, state and group, and by the three filters. */
 export function filterRows(rows: PayerRow[], f: PayerFilters): PayerRow[] {
   const q = f.query.trim().toLowerCase();
   const shown = rows.filter(

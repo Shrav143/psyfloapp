@@ -1,7 +1,7 @@
 /* Which questions the agents will ask in a run. Scribe (or Packet) asks one, or two when the chart cannot answer on its own. */
 import { defaultQuestion, QUESTIONS, RUN_STEPS, type CaseDraft, type QuestionKey } from "@/data/cases";
 import type { AgentKey } from "@/data/types";
-import { LEVEL_SOURCES } from "./narrative";
+import { levelSources } from "./narrative";
 
 const stepOf = (key: QuestionKey): number => RUN_STEPS.findIndex((s) => s.agent === QUESTIONS[key].agent);
 
@@ -11,7 +11,7 @@ export function planQuestions(d: CaseDraft): QuestionKey[] {
   const conflict = d.documents.some((x) => x.slot === "meds" && x.findings.some((f) => !f.ok && f.resolvedBy === "sertraline"));
   const first: QuestionKey = conflict ? "sertraline" : defaultQuestion(d.program);
   const inCase = (slot: string): boolean => d.documents.some((x) => x.slot === slot);
-  const levelDoc = LEVEL_SOURCES[d.program ?? "RES"][0][0];
+  const levelDoc = levelSources(d.program ?? "RES")[0][0];
   const extra: QuestionKey | null = !inCase("psych_eval") ? "duration" : !inCase(levelDoc) || !d.reason.trim() ? "lowerlevel" : null;
   return [first, ...(extra ? [extra] : [])].sort((a, b) => stepOf(a) - stepOf(b));
 }

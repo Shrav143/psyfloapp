@@ -2,9 +2,11 @@ import { useState } from "react";
 import { Card } from "@/components/ui";
 import { InfoTip } from "@/components/ui/InfoTip";
 import type { PayerConfig } from "@/data/payerConfig";
-import { PROGRAMS, type Program } from "@/data/types";
+import { PROGRAMS, type CoreProgram } from "@/data/types";
 import { derivedKeyOf, isDocumentListRule } from "@/data/workflow/rules";
 import { RULE_GROUP_LABEL, type PayerRule, type RuleGroup } from "@/data/workflow/types";
+import { coreOf, focusScope } from "@/lib/programFocus";
+import { useStore } from "@/store";
 import { useRulesApi } from "./lib/rulesApi";
 import { savedWhere } from "./lib/studio";
 import { DocumentsGroup } from "./rules/DocumentsGroup";
@@ -39,7 +41,9 @@ export function RulesInstructionsTab({ payerId, name, cfg, openGroup, openRule }
   const asked = openRule ? api.rules.find((r) => r.id === openRule) : undefined;
   const startGroup = openGroup ?? asked?.group ?? null;
   const listed = asked && !isDocumentListRule(asked) ? asked.id : null;
-  const startProgram = asked && isDocumentListRule(asked) ? (derivedKeyOf(asked.id).slice(5) as Program) : undefined;
+  // With no rule asked for, the document lists open on the level of care of the top bar's Program menu, when it has one.
+  const focused = useStore((s) => coreOf(focusScope(s.programFocus)) ?? undefined);
+  const startProgram = asked && isDocumentListRule(asked) ? (derivedKeyOf(asked.id).slice(5) as CoreProgram) : focused;
   const live = shown.filter((r) => r.verification !== "superseded");
   const unverified = live.filter((r) => r.verification === "unverified").length;
   const docCount = PROGRAMS.reduce((n, p) => n + cfg.docs[p].length, 0);

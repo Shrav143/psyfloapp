@@ -64,7 +64,7 @@ export const SEED_ACCEPT_DENIAL: PsyRequest = {
     logged(-(3 * DAY + 4 * HOUR), "payer", "The payer denied the retro-authorization request"),
     logged(-(3 * DAY + 4 * HOUR) + 6, "reader", "Reader read the denial letter and removed identifiers"),
     logged(-(3 * DAY + 4 * HOUR) + 9, "advocate", "Advocate checked the notice, the deadline and how the payer applied its own criteria"),
-    logged(-(3 * DAY + 4 * HOUR) + 12, "historian", "Historian compared 119 similar Summit decisions"),
+    logged(-(3 * DAY + 4 * HOUR) + 12, "historian", "Historian compared 119 similar Sentara decisions"),
   ],
 };
 
@@ -139,11 +139,11 @@ export const GENERIC_DIMS_MH: DimText[] = [
     D-3297 is the worked example of a units cut that the chart contradicts. Every other denial is generated from a template. */
 export const AUTHORED_TEXT: Record<string, AnalysisText> = {
   "D-3318": {
-    short: "Cardinal approved 7 of 14 days",
-    quote: "Cardinal approved 7 of the 14 days requested and wrote that continued stay is not supported by documented progress, recommending a step-down to a lower level of care.",
+    short: "Anthem approved 7 of 14 days",
+    quote: "Anthem approved 7 of the 14 days requested and wrote that continued stay is not supported by documented progress, recommending a step-down to a lower level of care.",
     chartShows: "Mood and craving scores are still above the clinical cutoff on day 6, both medications are mid-titration, and no outpatient program is lined up. Leaving now would stop treatment before it has worked.",
     findings: [
-      { sev: "Critical", title: "Cardinal's reason conflicts with the chart", detail: "Craving was 7 of 10 and the depression score was still 15 on day 6.", source: "Progress note 10/14", excerpt: "Day 6. Craving rated 7 of 10 by the clinician. PHQ-9 15, GAD-7 13, both above the clinical cutoff. Group attendance full. Not yet linking cravings to low mood.", fix: "Add the progress note from 10/14" },
+      { sev: "Critical", title: "Anthem's reason conflicts with the chart", detail: "Craving was 7 of 10 and the depression score was still 15 on day 6.", source: "Progress note 10/14", excerpt: "Day 6. Craving rated 7 of 10 by the clinician. PHQ-9 15, GAD-7 13, both above the clinical cutoff. Group attendance full. Not yet linking cravings to low mood.", fix: "Add the progress note from 10/14" },
       { sev: "Critical", title: "Medication changes are still in progress", detail: "Naltrexone started day 3 and sertraline was adjusted day 5.", source: "MAR 10/11–14", excerpt: "Naltrexone 50 mg started 10/11 (day 3). Sertraline raised from 50 to 100 mg on 10/13 (day 5). Next dose review 10/17. No adverse effects recorded.", fix: "Attach the medication record for 10/11 to 10/14" },
       { sev: "Strong", title: "No safe step-down exists this week", detail: "Home is unsafe and the only partial hospital program has a waitlist.", source: "Referral log", excerpt: "Partial hospital referral sent 10/14. Waitlist, earliest opening 10/28. Lives with a roommate who uses. No family contact, no outpatient provider.", fix: "Attach the referral log showing the waitlist" },
     ],
@@ -156,7 +156,7 @@ export const AUTHORED_TEXT: Record<string, AnalysisText> = {
       { name: "D5 Relapse risk", tone: "risk", text: "High. Cannabis is the main way he copes and no outpatient provider is lined up.", source: "Referral log" },
       { name: "D6 Home", tone: "risk", text: "Lives with a roommate who uses. No family contact and no support network.", source: "Referral log" },
     ],
-    opening: "I am calling about a partial approval for a 38-year-old man in residential care for severe alcohol use disorder with depression. Cardinal approved 7 of 14 days. I would like to review why, and ask you to restore days 8 to 14.",
+    opening: "I am calling about a partial approval for a 38-year-old man in residential care for severe alcohol use disorder with depression. Anthem approved 7 of 14 days. I would like to review why, and ask you to restore days 8 to 14.",
     points: [
       { title: "Craving and mood are still above the clinical cutoff on day 6", detail: "Craving 7 of 10 and depression score 15 on the day of the denial. Stopping now would end treatment before it works.", source: "Progress note 10/14" },
       { title: "Both medications are mid-titration", detail: "Naltrexone started on day 3 and sertraline was adjusted on day 5. Neither has reached its full effect.", source: "MAR 10/11–14" },

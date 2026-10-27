@@ -3,6 +3,9 @@ import { PenLine, Plus, SearchX, Send, Wand2 } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Card, EmptyState, Page } from "@/components/ui";
 import { SiteTag } from "@/components/layout/SiteTag";
+import { ProgramScopeChip } from "@/components/programScope/ProgramScopeChip";
+import { useProgramScope } from "@/components/programScope/useProgramScope";
+import { caseTrack, inScope } from "@/lib/programFocus";
 import { detailForQueueItem } from "@/data/caseDetail";
 import { withFocus } from "@/data/caseDetailFocus";
 import { EMPTY_WORK } from "@/data/caseModel";
@@ -62,9 +65,16 @@ export default function AuthorizationsPage() {
     lastSearch = clean.toString();
   }, [params]);
 
+  /* The top bar's Program menu presets the service, shown as a removable chip. The Service filter, once a person sets it, wins. */
+  const focus = useProgramScope(filters.program !== "all", rows.map((r) => r.program));
+  const queueAll = useStore((s) => s.queueItems);
+  const inFocus = (r: WorkRow) => !focus.active || inScope(focus.active, r.program, caseTrack(r.src.item?.id ?? r.caseId, queueAll, r.src.draft?.diagnoses.map((d) => d.code)));
+
   const update = (v: View, f: WorkFilters) => setParams((p) => writeParams(v, f, p), { replace: true });
   const set = <K extends keyof WorkFilters>(k: K, val: WorkFilters[K]) => update(view, { ...filters, [k]: val });
-  const clear = () => update(view, NO_WORK_FILTERS);
+  // Clear filters also lifts the Program menu's preset, so an empty list always has a way out.
+  const clear = () => setParams((p) => focus.lift(writeParams(view, NO_WORK_FILTERS, p)), { replace: true });
+  const clearAll = () => setParams((p) => focus.lift(writeParams("all", NO_WORK_FILTERS, p)), { replace: true });
   const pick = (v: View) => update(v === view ? "all" : v, filters);
 
   const [sort, setSort] = useState<{ key: SortKey | null; dir: 1 | -1 }>({ key: null, dir: 1 });
@@ -85,17 +95,17 @@ export default function AuthorizationsPage() {
 
   /* Counting: the filters narrow every count; the view narrows only the table. A Dashboard Active or Renewal due link reads the ledger record with the same tests the Dashboard counts with. */
   const matchesShow = (r: WorkRow) => !!r.src.ledger && (filters.show === "active" ? isActiveAuth(r.src.ledger, clock) : isRenewalDue(r.src.ledger, clock));
-  const filtered = useMemo(() => rows.filter((r) => fits(r, filters, matchesShow)), [rows, filters, clock]); // eslint-disable-line react-hooks/exhaustive-deps
+  const filtered = useMemo(() => rows.filter((r) => fits(r, filters, matchesShow) && inFocus(r)), [rows, filters, clock, focus.active, queueAll]); // eslint-disable-line react-hooks/exhaustive-deps
   const counts = useMemo(() => Object.fromEntries(VIEWS.map((v) => [v, filtered.filter((r) => inView(r, v)).length])) as Record<View, number>, [filtered]);
   const shown = useMemo(() => sortRows(filtered.filter((r) => inView(r, view)), sort.key, sort.dir, view), [filtered, view, sort]);
   const open = filtered.filter((r) => r.life === "progress" || r.life === "payer");
   const withChance = open.filter((r) => r.chance !== null);
   const avgChance = withChance.length ? Math.round(withChance.reduce((a, r) => a + (r.chance ?? 0), 0) / withChance.length) : null;
-  const noDeadline = useMemo(() => rows.filter((r) => fits(r, { ...filters, deadline: "all" }, matchesShow)), [rows, filters, clock]); // eslint-disable-line react-hooks/exhaustive-deps
+  const noDeadline = useMemo(() => rows.filter((r) => fits(r, { ...filters, deadline: "all" }, matchesShow) && inFocus(r)), [rows, filters, clock, focus.active, queueAll]); // eslint-disable-line react-hooks/exhaustive-deps
   const deadlineCounts = Object.fromEntries((["all", "now", "day", "week"] as Deadline[]).map((d) => [d, noDeadline.filter((r) => inView(r, view) && fitsDeadline(r, d)).length])) as Record<Deadline, number>;
   const owners = useMemo(() => [...new Set(rows.map((r) => r.owner).filter((o): o is NonNullable<typeof o> => !!o))], [rows]);
   const signalCount = rows.filter((r) => r.signal).length;
-  const pageKey = JSON.stringify([view, filters, sort]);
+  const pageKey = JSON.stringify([view, filters, sort, focus.active?.id]);
   const page = paging.key === pageKey ? paging.page : 0;
 
   /* The quick view (?quick=ID) and the review drawer (?review=ID) live in the address, so a link can open them. */
@@ -172,13 +182,14 @@ export default function AuthorizationsPage() {
       )}
       <ViewChips view={view} counts={counts} onPick={pick} />
       <WorkFilterBar filters={filters} set={set} clear={clear} deadlineCounts={deadlineCounts} owners={owners} signalCount={signalCount} />
+      <ProgramScopeChip state={focus} className="-mt-2" />
       <Card className="overflow-hidden" data-testid="worklist">
         <div className="flex items-center justify-between gap-3 border-b border-line px-5 py-2.5">
           <h2 className="text-[13px] font-semibold text-ink2" aria-live="polite">{plural(shown.length, "authorization")}</h2>
           <TableHelp avgChance={avgChance} />
         </div>
         {shown.length === 0 ? (
-          <EmptyState icon={SearchX} title={rows.length ? "No authorizations match" : "Nothing to track yet"} action={rows.length ? <Button onClick={() => { clear(); update("all", NO_WORK_FILTERS); }}>Clear filters</Button> : <Button variant="primary" icon={Plus} onClick={() => navigate(paths.newCase())}>New Case</Button>} />
+          <EmptyState icon={SearchX} title={rows.length ? "No authorizations match" : "Nothing to track yet"} action={rows.length ? <Button onClick={clearAll}>Clear filters</Button> : <Button variant="primary" icon={Plus} onClick={() => navigate(paths.newCase())}>New Case</Button>} />
         ) : (
           <WorkTable
             rows={shown} view={view} page={page} onPage={(p) => setPaging({ key: pageKey, page: p })} sort={sort} onSort={onSort}

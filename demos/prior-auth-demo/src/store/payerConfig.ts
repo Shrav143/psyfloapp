@@ -6,7 +6,8 @@ import { PAYERS, syncCustomPayers } from "@/data/seed";
 import { siteOf } from "@/data/sites";
 import { migratedId } from "@/data/workflow/migrate";
 import { proposalToBranch } from "@/data/payerConfigProposal";
-import { PROGRAM_LABEL, type AgentKey, type Program } from "@/data/types";
+import { docsOf } from "@/data/programTables";
+import { PROGRAM_LABEL, type AgentKey, type CoreProgram, type Program } from "@/data/types";
 import { viewerById } from "@/data/viewers";
 import { uid } from "@/lib/format";
 import { sitesInView } from "@/lib/scope";
@@ -32,7 +33,7 @@ export interface PayerConfigSlice extends EmrSlice {
   editPayerDetails: (id: string, patch: PayerDetailsPatch, reason: string, changes: LogChange[]) => void;
   saveCaller: (id: string, text: string, reason: string) => void;
   saveRule: (id: string, rule: RuleId, lines: string[], reason: string) => void;
-  saveDocs: (id: string, program: Program, items: DocItem[], reason: string, changes: LogChange[]) => void;
+  saveDocs: (id: string, program: CoreProgram, items: DocItem[], reason: string, changes: LogChange[]) => void;
   /** Historian finished "Re-learn from decisions". Returns false when it found nothing new. */
   addProposal: (id: string) => boolean;
   acceptProposal: (id: string, proposalId: string) => void;
@@ -271,7 +272,7 @@ export function initPayerConfigPersistence(store: StoreApi<AppState>): () => voi
 export const selectPayersBadge = (s: AppState): number => Object.values(s.payerConfig).filter((c) => c.pending).length;
 
 /** The document list for one payer and program, as saved on Payers › Documents. New Case reads it for its document checks. */
-export const selectPayerDocs = (s: AppState, payerId: string, program: Program): DocItem[] => s.payerConfig[payerId]?.docs[program] ?? [];
+export const selectPayerDocs = (s: AppState, payerId: string, program: Program): DocItem[] => docsOf(s.payerConfig[payerId]?.docs, payerId, program);
 
 
 /* More of what other modules read from a payer's saved configuration (selectPayerDocs is above). Edits on Payers apply to new drafts at once. */

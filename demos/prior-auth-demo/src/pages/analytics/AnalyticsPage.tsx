@@ -1,14 +1,15 @@
-import { useCallback, useMemo, useRef, useState } from "react";
-import { FileText } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { FileText, Info } from "lucide-react";
 import { Button, Page, PageHeader } from "@/components/ui";
 import { payerById } from "@/data/seed";
 import { PROGRAM_LABEL } from "@/data/types";
+import { focusScope, noDataNote } from "@/lib/programFocus";
 import { useStore } from "@/store";
 import { Breakdowns } from "./Breakdowns";
 import { buildBoard, type Figure } from "./board";
 import { MODEL_NOTE } from "./copy";
 import { FilterBar } from "./FilterBar";
-import { DEFAULT_FILTERS, type Filters } from "./filters";
+import { DEFAULT_FILTERS, presetFilters, type Filters } from "./filters";
 import { dismissedBy } from "./FloSection";
 import { HeadlineFigures } from "./HeadlineFigures";
 import { useLive } from "./live";
@@ -25,7 +26,16 @@ import { workloadOf } from "./workload";
 /** Analytics for an owner: six figures with twelve months behind them, the monthly trend, a payer scorecard, the payer-by-case-mix matrix and the denial reasons, then detail on demand.
     Every number is counted from one set of case records, and every number opens the cases behind it in a right-hand panel. */
 export default function AnalyticsPage() {
-  const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
+  /* The top bar's Program menu presets the Program filter (and the diagnosis track); a person can change it or clear it like any filter. */
+  const focus = useStore((s) => s.programFocus);
+  const preset = useMemo(() => focusScope(focus), [focus]);
+  const [filters, setFilters] = useState<Filters>(() => presetFilters(DEFAULT_FILTERS, preset));
+  const presetFor = useRef(focus);
+  useEffect(() => {
+    if (presetFor.current === focus) return;
+    presetFor.current = focus;
+    setFilters((f) => presetFilters(f, preset));
+  }, [focus, preset]);
   const [report, setReport] = useState(false);
   const [stack, setStack] = useState<PanelState[]>([]);
   const openers = useRef<(Element | null)[]>([]);
@@ -70,6 +80,12 @@ export default function AnalyticsPage() {
           }
         />
         <FilterBar filters={filters} onChange={setFilters} siteLabel={scope.label} restricted={scope.restricted} />
+        {preset && !preset.program ? (
+          <p className="-mt-2 flex items-center gap-1.5 text-[13px] text-muted" data-testid="program-scope-note">
+            <Info size={14} className="ico shrink-0" aria-hidden="true" />
+            {noDataNote(preset)}
+          </p>
+        ) : null}
         {board.s.n === 0 ? (
           <p className="rounded-2xl border border-line bg-white px-6 py-5 text-sm text-muted" role="status">
             No decisions match these filters in {scope.label}. Clear filters or pick another period.

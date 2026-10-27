@@ -1,7 +1,7 @@
 /* New Case reads and writes the shared verification record (data/verification.ts, store/eligibility.ts): the same record the Eligibility & Benefits page shows.
    This file decides which record a case uses and what it means for the case. It adds no verification logic of its own. */
 import type { CaseDraft, DocumentedReason } from "@/data/cases";
-import { daysRequested } from "@/data/queue";
+import { usualDays } from "@/data/queue";
 import { isoOf, minutesOf } from "@/data/patients";
 import { canReuse, type VerificationException, type VerificationRecord } from "@/data/verification";
 import { DAY } from "@/lib/time";
@@ -24,7 +24,7 @@ export interface Want {
 /** The dates of service the check should cover: the start date to the requested end, or the level of care's usual length. */
 export function datesOfService(d: Pick<CaseDraft, "startDate" | "endDate" | "program">): { from: string; to: string } | null {
   if (!d.startDate) return null;
-  const to = d.endDate && d.endDate >= d.startDate ? d.endDate : isoOf(minutesOf(d.startDate) + (daysRequested(d.program ?? "RES") - 1) * DAY);
+  const to = d.endDate && d.endDate >= d.startDate ? d.endDate : isoOf(minutesOf(d.startDate) + ((usualDays(d.program ?? "RES") ?? 1) - 1) * DAY);
   return { from: d.startDate, to };
 }
 
