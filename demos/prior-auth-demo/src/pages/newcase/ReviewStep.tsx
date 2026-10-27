@@ -19,7 +19,7 @@ import { reviewModel } from "./reviewModel";
 import { ReviewSummary } from "./ReviewSummary";
 import { SignCard } from "./SignCard";
 import { StepFooter } from "./StepFooter";
-import { preparationPatch, stepPatch } from "./steps";
+import { preparationPatch, stepPatchOf } from "./steps";
 import { useRecAdds } from "./useRecAdds";
 import { useUnmetSync } from "./useUnmetSync";
 import { signEntries } from "./workflow/trace";
@@ -66,9 +66,9 @@ export function ReviewStep({ draft, env }: { draft: CaseDraft; env: CaseEnv }) {
   };
 
   const fix = (kind: FixKind) => {
-    if (kind === "intake") patch(draft.id, stepPatch(0));
-    else if (kind === "eligibility") patch(draft.id, stepPatch(1));
-    else if (kind === "records") patch(draft.id, stepPatch(2));
+    if (kind === "intake") patch(draft.id, stepPatchOf("intake"));
+    else if (kind === "eligibility") patch(draft.id, stepPatchOf("eligibility"));
+    else if (kind === "records") patch(draft.id, stepPatchOf("documentation"));
     else if (kind === "edit") setEditSignal((n) => n + 1);
     else setBackSignal((n) => n + 1);
   };
@@ -123,7 +123,7 @@ export function ReviewStep({ draft, env }: { draft: CaseDraft; env: CaseEnv }) {
       <StepFooter
         actions={
           <>
-            <Button icon={ArrowLeft} onClick={() => patch(draft.id, draft.run.done > 0 ? preparationPatch : stepPatch(2))}>
+            <Button icon={ArrowLeft} onClick={() => patch(draft.id, draft.run.done > 0 ? preparationPatch : stepPatchOf("documentation"))}>
               Back
             </Button>
             <Button

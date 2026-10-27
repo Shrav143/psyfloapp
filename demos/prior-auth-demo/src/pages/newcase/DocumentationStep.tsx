@@ -10,7 +10,7 @@ import { PreparationSection } from "./PreparationSection";
 import { RecordsChecklist } from "./RecordsChecklist";
 import { StartAgentsModal } from "./StartAgentsModal";
 import { StepFooter } from "./StepFooter";
-import { PREPARATION_ID, stepPatch } from "./steps";
+import { PREPARATION_ID, stepPatchOf } from "./steps";
 import { useSaveDraft } from "./useSaveDraft";
 import { useUnmetSync } from "./useUnmetSync";
 import { foldWorkflow } from "./workflow/fold";
@@ -60,14 +60,14 @@ export function DocumentationStep({ draft, env, toPreparation = 0 }: { draft: Ca
       <StepFooter
         actions={
           <>
-            <Button icon={ArrowLeft} onClick={() => patch(draft.id, stepPatch(1))}>
+            <Button icon={ArrowLeft} onClick={() => patch(draft.id, stepPatchOf("eligibility"))}>
               Back
             </Button>
             <Button icon={Save} onClick={saveDraft}>
               Save as draft
             </Button>
             {finished ? (
-              <Button variant="primary" trailing={ArrowRight} onClick={() => patch(draft.id, stepPatch(3))}>
+              <Button variant="primary" trailing={ArrowRight} onClick={() => patch(draft.id, stepPatchOf("review"))}>
                 Continue to Review &amp; submit
               </Button>
             ) : null}

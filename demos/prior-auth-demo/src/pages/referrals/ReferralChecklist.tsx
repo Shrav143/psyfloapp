@@ -6,7 +6,7 @@ import { DECLINE_LABEL, buildDocs, isOpen, type CheckKey, type Referral } from "
 import { PROGRAM_LABEL } from "@/data/types";
 import { plural } from "@/lib/format";
 import { ago, longDate } from "@/lib/time";
-import { stepPatch } from "@/pages/newcase/steps";
+import { stepPatchOf } from "@/pages/newcase/steps";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
 import { acceptBlockers, askable, blockersLine, type AskKey } from "@/store/referralsLogic";
@@ -50,7 +50,7 @@ export function ReferralChecklist({ r, draftId, onReplace }: { r: Referral; draf
   const blockers = open ? acceptBlockers(r) : [];
   const started = caseOf(r, requests, drafts);
   // This case is the one on screen: opening it means going back to its Intake, which now holds the referral.
-  const openCase = () => (started?.kind === "draft" && started.id === draftId ? (patch(draftId, stepPatch(0)), nav(paths.newCase({ draft: draftId }))) : started ? nav(caseTo(started)) : undefined);
+  const openCase = () => (started?.kind === "draft" && started.id === draftId ? (patch(draftId, stepPatchOf("intake")), nav(paths.newCase({ draft: draftId }))) : started ? nav(caseTo(started)) : undefined);
 
   const actions = (row: ChecklistRow) => {
     const { ask, markable } = row;

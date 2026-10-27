@@ -2,7 +2,7 @@ import { useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Modal } from "@/components/ui";
 import { continueWithReferral } from "@/pages/newcase/intake";
-import { stepPatch } from "@/pages/newcase/steps";
+import { stepPatchOf } from "@/pages/newcase/steps";
 import { useStore } from "@/store";
 
 /** Takes a referral into the case and back to its Intake, where it fills the details. When the agents already ran on that case, asks first:
@@ -18,7 +18,7 @@ export function useContinueWithReferral(referralId: string, draftId: string | un
     if (ran && draftId) {
       // The case goes back to Intake, so it does not reopen on an agents step with nothing run.
       const st = useStore.getState();
-      st.patchCaseDraft(draftId, stepPatch(0));
+      st.patchCaseDraft(draftId, stepPatchOf("intake"));
       st.toast({ title: "The agents will re-check this case", body: `${referralId} changed the case, so the agents' earlier work was cleared.`, tone: "mid" });
     }
     nav(to);

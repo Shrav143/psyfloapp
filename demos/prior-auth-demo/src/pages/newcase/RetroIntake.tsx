@@ -18,7 +18,7 @@ export function RetroIntake({ draft, env }: { draft: CaseDraft; env: CaseEnv }) 
 
   return (
     <div className="flex flex-col gap-4">
-      <IntakeSources draft={draft} env={env} referrals={false} />
+      <IntakeSources draft={draft} env={env} />
       {rule ? <p className={rule.onFile ? "px-1 text-[13px] text-ink2" : "px-1 text-[13px] text-mid-ink"}>{rule.text}</p> : null}
       <DuplicateWarning env={env} />
       <IntakeForm draft={draft} />

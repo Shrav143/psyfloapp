@@ -149,8 +149,8 @@ export interface CaseDraft {
   sent: boolean;
   /** 0 holds the first three of the four steps, 1 is Clinical documentation with the agents started (it opens on their section, Authorization preparation), 2 is Review & submit. */
   step: 0 | 1 | 2;
-  /** While step is 0: Intake, then Eligibility and benefits, then Clinical documentation. */
-  phase: "intake" | "eligibility" | "records";
+  /** While step is 0: Referral, Intake, then Eligibility and benefits, then Clinical documentation. */
+  phase: "referral" | "intake" | "eligibility" | "records";
   /** The Authorization type. It decides what Intake asks, how Eligibility behaves, which documents are typical and what the justification says. */
   kind: AuthKind;
   /** The site the case belongs to. A new patient's site is chosen in Intake; an existing patient's case is at the patient's site. */

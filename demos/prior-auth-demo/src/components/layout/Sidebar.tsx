@@ -1,4 +1,4 @@
-import { BarChart3, Building2, ChevronDown, ChevronRight, ClipboardList, ClipboardPen, HelpCircle, Inbox, ListChecks, LayoutDashboard, LogOut, RefreshCw, Scale, Settings, ShieldCheck, PlusCircle, FlaskConical, type LucideIcon } from "lucide-react";
+import { BarChart3, Building2, ChevronDown, ChevronRight, ClipboardList, ClipboardPen, HelpCircle, ListChecks, LayoutDashboard, LogOut, RefreshCw, Scale, Settings, ShieldCheck, PlusCircle, FlaskConical, type LucideIcon } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import logo from "@/assets/brand/psyflo-logo.svg";
 import { useScope } from "@/lib/scope";
@@ -124,14 +124,13 @@ export function Sidebar() {
 
   const main: Item[] = [
     { to: paths.dashboard(), label: "Dashboard", icon: LayoutDashboard, badge: dash, match: ["/dashboard"] },
-    { to: paths.referralInbox(), label: "Referrals", icon: Inbox, badge: referrals, match: ["/referrals"] },
     {
       to: paths.authorizations(), label: "Authorizations", icon: ClipboardList, badge: queue,
       subs: [
         // The same page as the parent: the one worklist. It is the highlighted item on the worklist and on a case page.
         { to: paths.authorizations(), label: "All Authorizations", icon: ListChecks, isOn: (p) => p === "/authorizations" || p.startsWith("/authorizations/case") },
         { to: paths.intake(), label: "Intake", icon: ClipboardPen, badge: intake },
-        { to: "/authorizations/new", label: "New Case", icon: PlusCircle },
+        { to: "/authorizations/new", label: "New Case", icon: PlusCircle, badge: referrals },
         { to: paths.eligibility(), label: "Eligibility & Benefits", icon: ShieldCheck, badge: eb },
       ],
     },

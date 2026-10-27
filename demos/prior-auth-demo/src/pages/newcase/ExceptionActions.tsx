@@ -6,7 +6,7 @@ import { paths } from "@/routes";
 import { useStore } from "@/store";
 import type { CaseEnv } from "./caseEnv";
 import { DocumentedReasonForm } from "./DocumentedReasonForm";
-import { stepPatch } from "./steps";
+import { stepPatchOf } from "./steps";
 
 /** What the person can do about the warnings of a check, one short action each. The warnings themselves are listed by the verification summary above;
     nothing here forces anything. Coverage that is confirmed inactive, or a check that could not run, can be gone past with a documented exception. */
@@ -28,8 +28,8 @@ export function ExceptionActions({ draft, env }: { draft: CaseDraft; env: CaseEn
             Switch this case to {payerById(moved)?.shortName ?? "the new plan"}
           </Button>
         ) : null}
-        {ex.has("member_id_mismatch") ? <Button size="sm" onClick={() => patch(draft.id, stepPatch(0))}>Correct the member ID in Intake</Button> : null}
-        {ex.has("service_not_covered") ? <Button size="sm" onClick={() => patch(draft.id, stepPatch(0))}>Change the level of care in Intake</Button> : null}
+        {ex.has("member_id_mismatch") ? <Button size="sm" onClick={() => patch(draft.id, stepPatchOf("intake"))}>Correct the member ID in Intake</Button> : null}
+        {ex.has("service_not_covered") ? <Button size="sm" onClick={() => patch(draft.id, stepPatchOf("intake"))}>Change the level of care in Intake</Button> : null}
         {ex.has("service_unavailable") ? (
           <Link to={paths.settings()} className="inline-flex h-[34px] items-center rounded-[10px] border border-field bg-white px-3 text-[13px] font-semibold text-forest hover:bg-tile">
             Open Settings to resume Verify

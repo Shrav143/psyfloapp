@@ -1,4 +1,4 @@
-import { HashRouter, MemoryRouter, Navigate, Route, Routes } from "react-router-dom";
+import { HashRouter, MemoryRouter, Navigate, Route, Routes, useParams } from "react-router-dom";
 import { Shell } from "@/components/layout";
 import { EmptyState, Page, PageHeader } from "@/components/ui";
 import { HOSTED } from "@/lib/hosted";
@@ -21,7 +21,6 @@ import ManagerRedirect from "@/pages/manager/ManagerRedirect";
 import NewCasePage from "@/pages/newcase/NewCasePage";
 import PayersPage from "@/pages/payers/PayersPage";
 import ReferralDetailPage from "@/pages/referrals/ReferralDetailPage";
-import ReferralsPage from "@/pages/referrals/ReferralsPage";
 import SettingsPage from "@/pages/settings/SettingsPage";
 import { SearchX } from "lucide-react";
 
@@ -36,6 +35,12 @@ function NotFound() {
 
 /** Referrals used to have their own tab. Old links land on the referral inside New Case. */
 
+/** Links from before Referral was a New Case step land on that referral, in New Case. */
+function OldReferralLink() {
+  const { id = "" } = useParams();
+  return <Navigate to={paths.referral(id)} replace />;
+}
+
 /** Hash routing keeps the single-file build working when opened straight from disk. The hosted preview runs in a frame that has no address bar of its own, so it keeps the route in memory. */
 const Router = HOSTED ? MemoryRouter : HashRouter;
 
@@ -46,8 +51,8 @@ export default function App() {
         <Route element={<Shell />}>
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/referrals" element={<ReferralsPage />} />
-          <Route path="/referrals/:id" element={<ReferralDetailPage />} />
+          <Route path="/referrals" element={<Navigate to={paths.referrals()} replace />} />
+          <Route path="/referrals/:id" element={<OldReferralLink />} />
           <Route path="/authorizations" element={<AuthorizationsPage />} />
           <Route path="/authorizations/case/:id" element={<CaseRoute />} />
           <Route path="/authorizations/intake" element={<IntakePage />} />

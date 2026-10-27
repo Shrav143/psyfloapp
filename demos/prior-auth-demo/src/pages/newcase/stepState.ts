@@ -1,4 +1,4 @@
-/* The state of each of the four steps. One meaning each, shown on the stepper and in the step's own header:
+/* The state of each of the five steps. One meaning each, shown on the stepper and in the step's own header:
    Complete (everything required is done), Needs attention (something to fix, and the person can still go on), Pending (not started, or waiting on an agent or a reply),
    Not applicable (the payer needs no authorization), Blocked (a condition that stops sending: no patient, payer, service or dates, inactive coverage with no documented exception, an unanswered duplicate). */
 import { RUN_STEPS, draftState, runStarted, type CaseDraft } from "@/data/cases";
@@ -22,6 +22,15 @@ export interface StepInfo {
 
 /** The payer needs no authorization for this service and the person has not chosen to go on anyway: nothing is prepared or sent. */
 export const noAuthNeeded = (env: CaseEnv): boolean => env.verification.noAuth && !reasonOf(env.draft, "no_auth");
+
+/** Referral, the first step: only an initial authorization starts from a referral. Going on without one is a choice, not a gap. */
+function referralInfo(d: CaseDraft): StepInfo {
+  const id = "referral";
+  if (d.kind !== "initial") return { id, state: "na", note: d.kind === "retro" ? "A retroactive request starts from the stay that happened" : "Starts from a patient who exists" };
+  if (d.referralId) return { id, state: "complete", note: `From referral ${d.referralId}` };
+  if (intakeStarted(d)) return { id, state: "na", note: "Started without a referral" };
+  return { id, state: "pending", note: "Pick a referral, drop one, or go on without one" };
+}
 
 const intakeStarted = (d: CaseDraft): boolean => d.started || !!d.patient.initials.trim() || d.patient.age !== null || !!d.payerId || !!d.program;
 
@@ -79,9 +88,9 @@ function reviewInfo(d: CaseDraft, review: ReviewModel | null): StepInfo {
   return { id: "review", state: "pending", note: "Waiting for a clinician to sign" };
 }
 
-/** The four states. `review` is null until the draft has a summary to read; `holding` is true while the agent whose turn it is is paused in Settings. */
+/** The five states. `review` is null until the draft has a summary to read; `holding` is true while the agent whose turn it is is paused in Settings. */
 export function stepStates(env: CaseEnv, review: ReviewModel | null, holding: boolean): StepInfo[] {
   const na = noAuthNeeded(env);
   const later = (id: StepId): StepInfo => ({ id, state: "na", note: "The payer needs no authorization" });
-  return [intakeInfo(env), eligibilityInfo(env), na ? later("documentation") : documentationInfo(env, holding), na ? later("review") : reviewInfo(env.draft, review)];
+  return [referralInfo(env.draft), intakeInfo(env), eligibilityInfo(env), na ? later("documentation") : documentationInfo(env, holding), na ? later("review") : reviewInfo(env.draft, review)];
 }

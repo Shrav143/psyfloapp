@@ -16,6 +16,7 @@ import { attachReferral, initialDraft } from "./intake";
 import { IntakeStep } from "./IntakeStep";
 import { NewCaseStepper } from "./NewCaseStepper";
 import { reviewModel } from "./reviewModel";
+import { ReferralStep } from "./ReferralStep";
 import { ReviewStep } from "./ReviewStep";
 import { NEW_CASE_STEPS, opensPreparation, preparationPatch, stepIdOf, stepIndex, stepPatch, stepPatchOf } from "./steps";
 import { stepStates } from "./stepState";
@@ -26,8 +27,8 @@ import { WorkflowRow } from "./workflow/WorkflowRow";
 
 const NO_CONTEXT: string[] = [];
 
-/** New Case, in four steps. /authorizations/new starts a draft and moves to /authorizations/new/:draftId, which resumes one. ?type= picks the Authorization type, ?referral=, ?verification= and ?patient= start from one;
-    ?step= opens a step (the older names referral, records and review land on Intake, Clinical documentation and Review & submit; preparation and agents open Clinical documentation at the agents' section). */
+/** New Case, in five steps: Referral, Intake, Eligibility & Benefits, Clinical documentation, Review & submit. /authorizations/new starts a draft and moves to /authorizations/new/:draftId, which resumes one. ?type= picks the Authorization type, ?referral=, ?verification= and ?patient= start from one;
+    ?step= opens a step (?ref= opens Referral; the older names records and sign land on Clinical documentation and Review & submit; preparation and agents open Clinical documentation at the agents' section). */
 export default function NewCasePage() {
   const { draftId } = useParams();
   const [params] = useSearchParams();
@@ -68,6 +69,8 @@ export default function NewCasePage() {
     if (patient) st.chooseCasePatient(id, { patientId: patient });
     const step = stepIdOf(params.get("step"));
     if (step) st.patchCaseDraft(id, opensPreparation(params.get("step")) ? preparationPatch : stepPatchOf(step));
+    /* A blank initial authorization starts at Referral; anything that arrives with a patient (a referral, a check, a known patient) starts at Intake. */
+    else if (init.kind === "initial" && !init.started && !init.referralId && !patient) st.patchCaseDraft(id, stepPatchOf("referral"));
     nav(paths.newCase({ draft: id }), { replace: true });
   }, [draftId, params, nav, scope]);
 
@@ -76,7 +79,7 @@ export default function NewCasePage() {
   /* A draft whose agents already ran reopens on their section, or on Review & submit once they are done, not on intake. */
   useEffect(() => {
     if (!draft) return;
-    if (draft.step === 0 && draft.run.done > 0) patch(draft.id, draft.run.done >= RUN_STEPS.length ? stepPatch(3) : preparationPatch);
+    if (draft.step === 0 && draft.run.done > 0) patch(draft.id, draft.run.done >= RUN_STEPS.length ? stepPatchOf("review") : preparationPatch);
     if (draft.step === 1 || (draft.step === 0 && draft.run.done > 0 && draft.run.done < RUN_STEPS.length)) setToPreparation((n) => n + 1);
     // Only on opening a draft: going Back to a step later must stay there.
   }, [draft?.id]);
@@ -90,6 +93,8 @@ export default function NewCasePage() {
       patch(draft.id, preparationPatch);
       setToPreparation((n) => n + 1);
     } else if (step) patch(draft.id, stepPatchOf(step));
+    /* ?ref= (a referral's checklist, or empty to pick one) belongs to the Referral step. */
+    else if (params.has("ref") && draft.kind === "initial") patch(draft.id, stepPatchOf("referral"));
     const kind = params.get("type");
     if (isAuthKind(kind) && !draft.started && !draft.sent) setKind(draft.id, kind);
     // Only when the address changes: the person moves between steps with the stepper afterwards.
@@ -171,7 +176,7 @@ export default function NewCasePage() {
         {env.workflow ? <WorkflowRow draft={draft} view={env.workflow} /> : null}
       </div>
       <h2 className="sr-only">{NEW_CASE_STEPS[at]}</h2>
-      {at === 0 ? <IntakeStep draft={draft} env={env} /> : at === 1 ? <EligibilityStep draft={draft} env={env} /> : at === 2 ? <DocumentationStep draft={draft} env={env} toPreparation={toPreparation} /> : <ReviewStep draft={draft} env={env} />}
+      {at === 0 ? <ReferralStep draft={draft} env={env} /> : at === 1 ? <IntakeStep draft={draft} env={env} /> : at === 2 ? <EligibilityStep draft={draft} env={env} /> : at === 3 ? <DocumentationStep draft={draft} env={env} toPreparation={toPreparation} /> : <ReviewStep draft={draft} env={env} />}
     </Page>
   );
 }

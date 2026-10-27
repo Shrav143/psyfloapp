@@ -13,7 +13,7 @@ import type { CaseEnv } from "./caseEnv";
 import { ExceptionActions } from "./ExceptionActions";
 import { NoAuthCard } from "./NoAuthCard";
 import { StepFooter } from "./StepFooter";
-import { stepPatch } from "./steps";
+import { stepPatchOf } from "./steps";
 import { useSaveDraft } from "./useSaveDraft";
 import { useVerifyRun } from "./useVerifyRun";
 import { foldWorkflow } from "./workflow/fold";
@@ -51,7 +51,7 @@ export function EligibilityStep({ draft, env }: { draft: CaseDraft; env: CaseEnv
         <Card>
           <CardBody className="flex flex-wrap items-center justify-between gap-3">
             <span className="text-[14px]">Verify needs the payer, level of care, member ID and start date</span>
-            <Button size="sm" onClick={() => patch(draft.id, stepPatch(0))}>Open Intake</Button>
+            <Button size="sm" onClick={() => patch(draft.id, stepPatchOf("intake"))}>Open Intake</Button>
           </CardBody>
         </Card>
       ) : running && !rec ? (
@@ -82,13 +82,13 @@ export function EligibilityStep({ draft, env }: { draft: CaseDraft; env: CaseEnv
       <StepFooter
         actions={
           <>
-            <Button icon={ArrowLeft} onClick={() => patch(draft.id, stepPatch(0))}>
+            <Button icon={ArrowLeft} onClick={() => patch(draft.id, stepPatchOf("intake"))}>
               Back
             </Button>
             <Button icon={Save} onClick={saveDraft}>
               Save as draft
             </Button>
-            <Button variant="primary" trailing={ArrowRight} onClick={() => patch(draft.id, stepPatch(2))}>
+            <Button variant="primary" trailing={ArrowRight} onClick={() => patch(draft.id, stepPatchOf("documentation"))}>
               Continue to Clinical documentation
             </Button>
           </>

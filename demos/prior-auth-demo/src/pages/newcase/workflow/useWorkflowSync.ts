@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { runStarted, type CaseDraft } from "@/data/cases";
 import { payerById } from "@/data/seed";
 import { useStore } from "@/store";
-import { engineStage, stepIndex } from "../steps";
+import { engineStage, stepIdAt } from "../steps";
 import { sameApplied, type CaseWorkflow } from "./model";
 import { appliedEntry, stageEntries, type Entry } from "./trace";
 
@@ -15,10 +15,10 @@ export function useWorkflowSync(draft: CaseDraft | undefined, view: CaseWorkflow
   const latest = useRef({ draft, view });
   latest.current = { draft, view };
   const record = useStore((s) => s.recordCaseWorkflow);
-  const at = draft ? stepIndex(draft) : 0;
   /* The engine's stage, which tells Clinical documentation before and after the agents start apart. */
   const stage = draft ? engineStage({ ...draft, agentsStarted: runStarted(draft) }) : "intake";
-  const executing = !!draft && (at >= 1 || draft.run.done > 0);
+  /* Past Intake: Eligibility & Benefits or later is open, or the agents ran. */
+  const executing = !!draft && (!["referral", "intake"].includes(stepIdAt(draft)) || draft.run.done > 0);
   const appliedKey = view ? `${view.applied.workflowId}@${view.applied.version}:${view.applied.usedDefault}` : "";
   const stored = draft?.appliedWorkflow;
   const storedKey = stored ? `${stored.workflowId}@${stored.version}:${stored.usedDefault}` : "";

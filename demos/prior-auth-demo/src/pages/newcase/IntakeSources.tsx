@@ -1,21 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { Inbox, RotateCcw, UserRound } from "lucide-react";
+import { RotateCcw, UserRound } from "lucide-react";
 import { ImportSources } from "@/components/import";
-import { Button, Count, Drawer, FileDrop, type DemoFile } from "@/components/ui";
+import { Button, Drawer } from "@/components/ui";
 import type { CaseDraft } from "@/data/cases";
-import { SAMPLE_COUNT, hash } from "@/data/referrals";
-import { useScope } from "@/lib/scope";
-import { uid } from "@/lib/format";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
 import { selectConnectedEmr } from "@/store/emr";
-import { arrivedReferrals } from "@/pages/referrals/arrived";
-import { ReferralReading } from "@/pages/referrals/ReferralReading";
 import type { CaseEnv } from "./caseEnv";
 import { applyImport, currentOf } from "./importIntake";
 import { PatientSearch } from "./PatientSearch";
-import { ReferralRows } from "./ReferralRows";
+import { stepPatchOf } from "./steps";
 
 /** A clinical record system is connected for the sites in view, so Pull from EMR is offered. */
 export function useEmrConnected(): boolean {
@@ -25,37 +20,34 @@ export function useEmrConnected(): boolean {
   return useMemo(() => selectConnectedEmr(useStore.getState()).some((x) => x.kind === "Clinical record"), [systems, viewerId, siteScope]);
 }
 
-/** The ways a new patient's case starts, in one row at the top of Intake: Pull from EMR, Import a file, Paste a screenshot, an incoming referral, or a patient who is known.
-    Once the case has a referral or a known patient, one line says which, with the way back. */
-export function IntakeSources({ draft, env, referrals: withReferrals = true }: { draft: CaseDraft; env: CaseEnv; /** A retroactive request does not start from a referral. */ referrals?: boolean }) {
+/** The ways a new patient's case is filled in, in one row at the top of Intake: Pull from EMR, Import a file, Paste a screenshot, or a patient who is known.
+    The referral is chosen in the step before (Referral). Once the case has a referral or a known patient, one line says which, with the way back. */
+export function IntakeSources({ draft, env }: { draft: CaseDraft; env: CaseEnv }) {
   const [params, setParams] = useSearchParams();
-  const scope = useScope();
-  const referrals = useStore((s) => s.referrals);
   const choose = useStore((s) => s.chooseCasePatient);
+  const patch = useStore((s) => s.patchCaseDraft);
   const toast = useStore((s) => s.toast);
-  const add = useStore((s) => s.addReferral);
   const emr = useEmrConnected();
-  const [panel, setPanel] = useState<"referrals" | "patient" | null>(null);
-  const [reading, setReading] = useState<{ files: DemoFile[]; sample: number } | null>(null);
-  const incoming = useMemo(() => scope.filter(arrivedReferrals(referrals), (r) => r.id), [referrals, scope]);
+  const [panel, setPanel] = useState<"patient" | null>(null);
 
-  /* An empty ?ref= (from "Add a referral" on Clinical documentation) opens the referrals panel. */
+  /* ?pick=patient (from "Known patient" on the Referral step) opens the patient search. */
   useEffect(() => {
-    if (params.get("ref") === "") {
-      setPanel("referrals");
+    if (params.get("pick") === "patient") {
+      setPanel("patient");
       setParams((p) => {
         const next = new URLSearchParams(p);
-        next.delete("ref");
+        next.delete("pick");
         return next;
       }, { replace: true });
     }
   }, [params, setParams]);
 
-  const review = (id: string) => {
-    setPanel(null);
+  /* A different referral is picked where referrals are: the Referral step, on its inbox. */
+  const otherReferral = () => {
+    patch(draft.id, stepPatchOf("referral"));
     setParams((p) => {
       const next = new URLSearchParams(p);
-      next.set("ref", id);
+      next.set("ref", "");
       return next;
     });
   };
@@ -70,16 +62,9 @@ export function IntakeSources({ draft, env, referrals: withReferrals = true }: {
         emrChart={draft.emrChart}
         onImport={(r) => applyImport(draft.id, r)}
         extra={
-          <>
-            {withReferrals ? (
-              <Button size="sm" icon={Inbox} onClick={() => setPanel("referrals")}>
-                Referrals {incoming.length ? <Count className="h-[18px] min-w-[18px] text-[11px]">{incoming.length}</Count> : null}
-              </Button>
-            ) : null}
-            <Button size="sm" icon={UserRound} onClick={() => setPanel("patient")}>
-              Known patient
-            </Button>
-          </>
+          <Button size="sm" icon={UserRound} onClick={() => setPanel("patient")}>
+            Known patient
+          </Button>
         }
       />
       {draft.referralId || known ? (
@@ -97,35 +82,13 @@ export function IntakeSources({ draft, env, referrals: withReferrals = true }: {
               <>Existing patient {known.id}</>
             ) : null}
           </span>
-          <button type="button" onClick={() => setPanel(draft.referralId ? "referrals" : "patient")} className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-[13px] font-medium text-muted hover:bg-white hover:text-ink">
+          <button type="button" onClick={() => (draft.referralId ? otherReferral() : setPanel("patient"))} className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-[13px] font-medium text-muted hover:bg-white hover:text-ink">
             <RotateCcw size={13} className="ico" aria-hidden="true" />
             Use a different {draft.referralId ? "referral" : "patient"}
           </button>
         </div>
       ) : null}
 
-      <Drawer open={panel === "referrals"} onClose={() => { setPanel(null); setReading(null); }} title="Incoming referrals" width={560}>
-        {reading ? (
-          <ReferralReading
-            files={reading.files}
-            onDone={() => {
-              const id = add(reading.sample);
-              setReading(null);
-              review(id);
-            }}
-          />
-        ) : (
-          <div className="flex flex-col gap-4">
-            <FileDrop hint="Drop referral documents, or click to choose" onFiles={(files) => setReading({ files, sample: hash(files[0].name) % SAMPLE_COUNT })} />
-            <div className="-mt-2">
-              <button type="button" className="text-[13px] font-medium text-forest underline underline-offset-2" onClick={() => setReading({ files: [{ id: uid("f"), name: "referral.pdf", sizeKb: 212 }], sample: referrals.length % SAMPLE_COUNT })}>
-                Use sample referral
-              </button>
-            </div>
-            <ReferralRows rows={incoming} onReview={review} />
-          </div>
-        )}
-      </Drawer>
       <Drawer open={panel === "patient"} onClose={() => setPanel(null)} title="Known patient" width={560}>
         <PatientSearch
           book={env.book}
