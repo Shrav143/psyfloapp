@@ -4,7 +4,10 @@ import { RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui";
 import type { StageKey } from "@/data/types";
 import { OutOfSite } from "@/components/layout/OutOfSite";
+import { ProgramScopeChip } from "@/components/programScope/ProgramScopeChip";
+import { useProgramScope } from "@/components/programScope/useProgramScope";
 import { doNext, type DoGo, type FactsContext } from "@/lib/doNext";
+import { caseTrack, inScope } from "@/lib/programFocus";
 import { dueByRequest } from "@/lib/floFacts";
 import { plural } from "@/lib/format";
 import { draftNeeds, draftsInPreparation, readyToSignIds } from "@/lib/preparing";
@@ -55,12 +58,19 @@ export default function DashboardPage() {
   const ctx: FactsContext = useMemo(() => ({ clock, writeBackOn, ready, dues, ledger }), [clock, writeBackOn, ready, dues, ledger]);
   const rows = useMemo(() => buildRows(requests, ctx), [requests, ctx]);
 
+  /* The top bar's Program menu presets the program like the Program filter does (a removable chip); the Program filter, once set, wins. */
+  const focus = useProgramScope(filters.program !== "all");
+  const active = focus.active;
+
   /** Payer, Program and Request type narrow every count; the Status chip and menu, and the toggle, only narrow the table. */
   const base = useMemo(() => {
     const keep = new Set(applyBaseFilters(requests, filters));
-    return rows.filter((x) => keep.has(x.r));
-  }, [rows, requests, filters]);
-  const saved = useMemo(() => draftsInPreparation(drafts, requests, filters, scope.sites), [drafts, requests, filters, scope.sites]);
+    return rows.filter((x) => keep.has(x.r) && (!active || inScope(active, x.r.program, caseTrack(x.r.id, allQueue))));
+  }, [rows, requests, filters, active, allQueue]);
+  const saved = useMemo(
+    () => draftsInPreparation(drafts, requests, filters, scope.sites).filter((d) => !active || inScope(active, d.program, caseTrack(d.caseId ?? d.id, allQueue, d.diagnoses.map((x) => x.code)))),
+    [drafts, requests, filters, scope.sites, active, allQueue],
+  );
   const savedCounts = useMemo(() => ({ total: saved.length, ready: draftNeeds(saved).ready }), [saved]);
   const savedAll = useMemo(() => draftNeeds(draftsInPreparation(drafts, requests, { payer: "all", program: "all", type: "all", stage: "all" }, scope.sites)), [drafts, requests, scope.sites]);
 
@@ -81,8 +91,8 @@ export default function DashboardPage() {
   const todayShown = todo.items.filter((i) => i.caseId !== "" && i.kind !== "renewal").length;
 
   const head = headline(requests, requests.filter((r) => r.needsYou).length + savedAll.needYou + savedAll.ready);
-  const canClear = hasNarrowingFilter(filters) || needsToday;
-  const key = JSON.stringify([filters, sort, needsToday]);
+  const canClear = hasNarrowingFilter(filters) || needsToday || !!active;
+  const key = JSON.stringify([filters, sort, needsToday, active?.id]);
   const visible = paging.key === key ? paging.n : PAGE_SIZE;
   const current = requestId ? allRequests.find((r) => r.id === requestId) : undefined;
 
@@ -96,6 +106,7 @@ export default function DashboardPage() {
   const clearAll = () => {
     setNeedsToday(false);
     clearFilters();
+    if (active) focus.remove();
   };
   /** A state chip applies its filter; the same chip again clears it. */
   const pickState = (stage: StageKey) => useStore.getState().setFilter("stage", filters.stage === stage ? "all" : stage);
@@ -157,6 +168,7 @@ export default function DashboardPage() {
           ) : null}
         </div>
       </div>
+      <ProgramScopeChip state={focus} className="-my-2" />
       <Lifecycle chips={chips} ledger={ledgerChip} active={filters.stage} onPick={pickState} />
       <DoNext items={todo.items} moreToday={Math.max(0, todayAll - todayShown)} onGo={go} onShowMore={showToday} />
       <CasesTable
@@ -168,7 +180,7 @@ export default function DashboardPage() {
         onOpen={open}
         onMore={() => setPaging({ key, n: visible + PAGE_SIZE })}
         onClear={clearAll}
-        narrowed={hasNarrowingFilter(filters)}
+        narrowed={hasNarrowingFilter(filters) || !!active}
         needsToday={needsToday}
         sort={sort}
         onSort={(k) => setSort((cur) => nextSort(cur, k))}

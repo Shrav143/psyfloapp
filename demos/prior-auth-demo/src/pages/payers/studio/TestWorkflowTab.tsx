@@ -7,6 +7,7 @@ import { REQUEST_TYPE_LABEL, type RunResult, type Workflow } from "@/data/workfl
 import { paths } from "@/routes";
 import { useStore } from "@/store";
 import { cn } from "@/lib/cn";
+import { focusScope } from "@/lib/programFocus";
 import { payerRows } from "../lib/payers";
 import { TestForm } from "./TestForm";
 import { TestResults } from "./TestResults";
@@ -43,7 +44,11 @@ export function TestWorkflowTab({ payerId }: { payerId: string }) {
   const docsOf = useCallback((service: Program) => config[payerId]?.docs[service] ?? [], [config, payerId]);
 
   const [preset, setPreset] = useState("clean");
-  const [test, setTest] = useState<TestCase>(() => PRESETS[0].make({ ...payerCtx, service: "RES", docs: docsOf("RES") }));
+  // The fictional case starts on the level of care of the top bar's Program menu, when it has one.
+  const [test, setTest] = useState<TestCase>(() => {
+    const service = focusScope(useStore.getState().programFocus)?.program ?? "RES";
+    return PRESETS[0].make({ ...payerCtx, service, docs: docsOf(service) });
+  });
   const [ran, setRan] = useState<{ wf: Workflow; res: RunResult; type: string } | null>(null);
   const [revealed, setRevealed] = useState(0);
   const [problem, setProblem] = useState<string | null>(null);

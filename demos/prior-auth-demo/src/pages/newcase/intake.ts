@@ -5,6 +5,7 @@ import { PAYERS } from "@/data/seed";
 import { siteOf } from "@/data/sites";
 import { PROGRAMS, type NewCasePrefill, type PayerId, type Program, type RequestType } from "@/data/types";
 import { siteOfVerification } from "@/data/verification";
+import { focusScope } from "@/lib/programFocus";
 import { sitesInView } from "@/lib/scope";
 import { useStore } from "@/store";
 import type { AppState } from "@/store";
@@ -88,7 +89,10 @@ export function initialDraft(q: URLSearchParams, st: AppState): InitialDraft {
     return p ? { init: { ...base, ...fromPrefill(p, r?.accepted?.admitBy), site: siteOf(ref) } } : { init: base, missingReferral: ref };
   }
   const verified = q.get("verification") ? fromVerification(st, q.get("verification") ?? "") : null;
-  return { init: { ...base, ...(verified ?? fromQuery(q)), ...(isAuthKind(kindParam) ? { kind, type: defaultTypeFor(kind, null) } : {}) }, patient };
+  const from = verified ?? fromQuery(q);
+  /* A blank case starts on the level of care of the top bar's Program menu, when the service has one. A referral, a check or a link that names a program keeps its own. */
+  const focused = !patient && !from.program ? focusScope(st.programFocus)?.program : null;
+  return { init: { ...base, ...(focused ? { program: focused } : {}), ...from, ...(isAuthKind(kindParam) ? { kind, type: defaultTypeFor(kind, null) } : {}) }, patient };
 }
 
 /* ------------------------------------------------------------------ one-click helpers (event handlers only) */

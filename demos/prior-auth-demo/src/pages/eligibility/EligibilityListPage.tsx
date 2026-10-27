@@ -3,7 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { CircleCheck, CircleDashed, FileClock, Plus, RefreshCw, SearchX, TriangleAlert, type LucideIcon } from "lucide-react";
 import { Button, Card, Dropdown, EmptyState, Page, SearchInput } from "@/components/ui";
 import { SiteTag } from "@/components/layout/SiteTag";
+import { ProgramScopeChip } from "@/components/programScope/ProgramScopeChip";
+import { useProgramScope } from "@/components/programScope/useProgramScope";
 import { sortPatients, verdictOf, VERDICT_LABEL, type Verdict } from "@/data/eligibility";
+import { inScope } from "@/lib/programFocus";
 import { PAYERS } from "@/data/seed";
 import { PROGRAM_LABEL, PROGRAMS, type PayerId, type Program, type Tone } from "@/data/types";
 import { cn } from "@/lib/cn";
@@ -50,6 +53,9 @@ export default function EligibilityListPage() {
   const [program, setProgram] = useState<Program | "all">("all");
   const [verdict, setVerdict] = useState<VerdictFilter>("all");
   const [limit, setLimit] = useState(PAGE);
+  /* The top bar's Program menu presets the program (the rows here do not tell substance use from mental health, so only the level of care). The Program filter, once set, wins. */
+  const focus = useProgramScope(program !== "all");
+  const active = focus.active;
 
   const counts = useMemo(() => {
     const c = { cleared: 0, auth_first: 0, fix: 0, unchecked: 0, recheck: patients.filter((p) => p.recheckDue).length };
@@ -62,12 +68,13 @@ export default function EligibilityListPage() {
     return sortPatients(patients).filter((p) => {
       if (payer !== "all" && p.payerId !== payer) return false;
       if (program !== "all" && p.program !== program) return false;
+      if (active && !inScope(active, p.program)) return false;
       if (verdict === "recheck" ? !p.recheckDue : verdict !== "all" && verdictOf(p) !== verdict) return false;
       return !needle || p.id.toLowerCase().includes(needle) || patientLabel(p).toLowerCase().includes(needle);
     });
-  }, [patients, q, payer, program, verdict]);
+  }, [patients, q, payer, program, verdict, active]);
 
-  const filtered = q !== "" || payer !== "all" || program !== "all" || verdict !== "all";
+  const filtered = q !== "" || payer !== "all" || program !== "all" || verdict !== "all" || !!active;
   /* With no filter the list opens on the first dozen (every problem sorts to the top); a filter shows all of its matches. */
   const shown = filtered ? rows : rows.slice(0, limit);
   const clear = () => {
@@ -75,6 +82,7 @@ export default function EligibilityListPage() {
     setPayer("all");
     setProgram("all");
     setVerdict("all");
+    if (active) focus.remove();
   };
   const tile = (v: VerdictFilter) => ({ selected: verdict === v, onClick: () => setVerdict((cur) => (cur === v ? "all" : v)) });
 
@@ -107,6 +115,7 @@ export default function EligibilityListPage() {
         ) : null}
         <span className="ml-auto text-[13px] text-muted">{`Showing ${shown.length} of ${patients.length}`}</span>
       </div>
+      <ProgramScopeChip state={focus} className="-mt-2" />
       <Card className="relative overflow-hidden">
         {rows.length ? (
           <>
