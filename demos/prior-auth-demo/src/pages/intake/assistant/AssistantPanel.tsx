@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { ClipboardList, FilePlus2, ListPlus, MailQuestion, Sparkles } from "lucide-react";
 import { AgentBadge, Button, Card, Pill } from "@/components/ui";
 import { AGENTS } from "@/data/agents";
-import { completeness, readiness } from "@/data/intake/checklist";
+import { completeness, isOpen, readiness } from "@/data/intake/checklist";
 import { ROLE_AGENT, ROLE_LABEL, type IntakeAgentRole, type IntakeRecord } from "@/data/intake/types";
 import { cn } from "@/lib/cn";
 import { paths } from "@/routes";
@@ -38,7 +38,7 @@ export function AssistantPanel({ record }: { record: IntakeRecord }) {
   const needs = useMemo(() => needsOf(record, rd, now), [record, rd, now]);
   const tasks = [...record.tasks].reverse();
   const events = [...record.audit].reverse();
-  const open = items.filter((i) => i.status !== "complete" && i.status !== "na");
+  const open = items.filter((i) => isOpen(i.status));
   const ask = requestable(items);
   const missingRun = record.tasks.filter((t) => t.kind === "missing" && t.status !== "cancelled" && t.status !== "blocked").at(-1);
 

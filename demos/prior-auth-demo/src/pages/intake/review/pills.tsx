@@ -1,4 +1,4 @@
-import { Ban, CircleAlert, CircleCheck, Clock3, Eye, MinusCircle, type LucideIcon } from "lucide-react";
+import { Ban, CalendarClock, CircleAlert, CircleCheck, Clock3, Eye, type LucideIcon, MinusCircle } from "lucide-react";
 import { Pill } from "@/components/ui";
 import { CHECK_LABEL, READINESS_LABEL, type CheckStatus, type ReadinessStatus } from "@/data/intake/checklist";
 import type { Tone } from "@/data/types";
@@ -7,12 +7,13 @@ import { SOURCES } from "@/data/va/policy";
 import { cn } from "@/lib/cn";
 import { ruleStatusLabel } from "./packet";
 
-export const CHECK_TONE: Record<CheckStatus, Tone> = { complete: "good", missing: "mid", verify: "mid", na: "neutral", blocked: "risk", pending: "neutral" };
+export const CHECK_TONE: Record<CheckStatus, Tone> = { complete: "good", missing: "mid", verify: "mid", na: "neutral", later: "neutral", blocked: "risk", pending: "neutral" };
 const CHECK_ICON: Record<CheckStatus, { icon: LucideIcon; cls: string }> = {
   complete: { icon: CircleCheck, cls: "text-good" },
   missing: { icon: CircleAlert, cls: "text-mid" },
   verify: { icon: Eye, cls: "text-mid" },
   na: { icon: MinusCircle, cls: "text-faint" },
+  later: { icon: CalendarClock, cls: "text-muted" },
   blocked: { icon: Ban, cls: "text-risk" },
   pending: { icon: Clock3, cls: "text-muted" },
 };

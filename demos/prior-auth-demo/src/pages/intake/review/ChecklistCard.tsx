@@ -9,7 +9,7 @@ import { paths } from "@/routes";
 import { CheckIcon, CheckPill } from "./pills";
 
 type Show = "all" | "open" | CheckStatus;
-const FILTERS: Show[] = ["all", "open", "missing", "verify", "pending", "blocked", "complete", "na"];
+const FILTERS: Show[] = ["all", "open", "missing", "verify", "pending", "blocked", "complete", "later", "na"];
 
 /** Where an item is fixed: its section (and the AI Scribe or Voice panel when it lives there). */
 export function GoTo({ recordId, item, className }: { recordId: string; item: Pick<CheckItem, "section" | "panel" | "label">; className?: string }) {

@@ -10,12 +10,13 @@ import { ASSESSMENT_SECTIONS, REFERRAL_OUT_LABEL, TRIAGE_LABEL, type FieldValue,
    Completeness asks "is the intake done?"; readiness asks "does this service need an authorization, and does the authorization workflow
    have what it needs?". Neither is an approval: the payer decides. Nothing here is a policy rule; requirements come from requirementsFor(). */
 
-export type CheckStatus = "complete" | "missing" | "verify" | "na" | "blocked" | "pending";
+/** "later": applies from a future date (the CANS Lifetime and Level of Need before July 1, 2027); nothing to do yet, and not "not applicable". */
+export type CheckStatus = "complete" | "missing" | "verify" | "na" | "later" | "blocked" | "pending";
 export const CHECK_LABEL: Record<CheckStatus, string> = {
-  complete: "Complete", missing: "Missing", verify: "Needs verification", na: "Not applicable", blocked: "Blocked", pending: "Pending approval",
+  complete: "Complete", missing: "Missing", verify: "Needs verification", na: "Not applicable", later: "From July 1, 2027", blocked: "Blocked", pending: "Pending approval",
 };
 /** Open means a person still has something to do. */
-export const isOpen = (s: CheckStatus): boolean => s !== "complete" && s !== "na";
+export const isOpen = (s: CheckStatus): boolean => s !== "complete" && s !== "na" && s !== "later";
 
 export type CheckCategory = "referral" | "patient" | "coverage" | "assessment" | "cans" | "pathway" | "safety";
 export const CATEGORY_ORDER: CheckCategory[] = ["referral", "patient", "coverage", "assessment", "cans", "pathway", "safety"];
@@ -221,7 +222,7 @@ function cansItems(r: IntakeRecord, serviceId: VaServiceId, now: number): CheckI
   const cans = r.cans;
   const items: CheckItem[] = [];
   if (c.applies === "not_applicable") items.push({ id: "cans", category: "cans", label: "CANS Lifetime", section: "cans", status: "na", detail: `Not associated with ${svc.short} in the policy loaded. Psyflo does not apply it` });
-  else if (c.applies === "upcoming") items.push({ id: "cans", category: "cans", label: "CANS Lifetime", section: "cans", status: "na", detail: preparing ? `Preparation only until July 1, 2027 (draft policy for ${svc.short}); pending DMAS configuration` : `Applies to ${svc.short} from July 1, 2027 (draft policy); not for a start on ${longDate(r.serviceDate)}` });
+  else if (c.applies === "upcoming") items.push({ id: "cans", category: "cans", label: "CANS Lifetime", section: "cans", status: "later", detail: preparing ? `Preparation only until July 1, 2027 (draft policy for ${svc.short}); pending DMAS configuration` : `Applies to ${svc.short} from July 1, 2027 (draft policy); not for a start on ${longDate(r.serviceDate)}` });
   else if (c.applies === "unresolved") items.push({ id: "cans", category: "cans", label: "CANS Lifetime", section: "cans", status: "verify", detail: `Not confirmed for ${svc.short} (unresolved). Psyflo does not apply it until DMAS confirms` });
   else {
     const ev = cans ? cans.evidence.length + cans.items.reduce((n, i) => n + i.evidence.length, 0) : 0;
@@ -238,7 +239,7 @@ function cansItems(r: IntakeRecord, serviceId: VaServiceId, now: number): CheckI
   else items.push({
     id: "lon", category: "cans", label: "Level of Need", section: "cans", auth: !preparing,
     ...(r.lon?.status === "dispositioned" ? { status: "complete", detail: `Clinician disposition recorded${r.lon.decidedBy ? ` by ${who(r.lon.decidedBy)}` : ""}; no level is calculated` }
-      : preparing || r.serviceDate < REDESIGN_START ? { status: "na", detail: `Preparation only until July 1, 2027. ${LON_PENDING}` }
+      : preparing || r.serviceDate < REDESIGN_START ? { status: "later", detail: `Preparation only until July 1, 2027. ${LON_PENDING}` }
         : { status: "blocked", detail: LON_PENDING }),
   });
   const pending = pendingIn(r, "cans");
@@ -316,7 +317,7 @@ export function completeness(r: IntakeRecord, now: number): CheckItem[] {
 }
 
 export const countBy = (items: CheckItem[]): Record<CheckStatus, number> => {
-  const c: Record<CheckStatus, number> = { complete: 0, missing: 0, verify: 0, na: 0, blocked: 0, pending: 0 };
+  const c: Record<CheckStatus, number> = { complete: 0, missing: 0, verify: 0, na: 0, later: 0, blocked: 0, pending: 0 };
   for (const i of items) c[i.status] += 1;
   return c;
 };

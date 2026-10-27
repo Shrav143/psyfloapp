@@ -1,4 +1,4 @@
-import { countBy, type CheckItem, type Readiness } from "@/data/intake/checklist";
+import { countBy, isOpen, type CheckItem, type Readiness } from "@/data/intake/checklist";
 import { ASSESSMENT_SECTIONS, SECTION_LABEL, type AgentTask, type IntakeRecord, type IntakeSectionId } from "@/data/intake/types";
 import type { AgentKey } from "@/data/types";
 import { gateCleared } from "@/store/intakeReview";
@@ -67,7 +67,7 @@ export function needsOf(r: IntakeRecord, rd: Readiness, now: number): Need[] {
 /** "Referral reviewed. Insurance information found. Guardian phone missing. Clinical assessment has 10 sections without content. Not ready for handoff." */
 export function summaryOf(r: IntakeRecord, items: CheckItem[], rd: Readiness): string {
   const inCat = (c: CheckItem["category"]) => items.filter((i) => i.category === c);
-  const open = (xs: CheckItem[]) => xs.filter((i) => i.status !== "complete" && i.status !== "na");
+  const open = (xs: CheckItem[]) => xs.filter((i) => isOpen(i.status));
   const parts: string[] = [];
   const ref = open(inCat("referral"));
   parts.push(!ref.length ? "Referral reviewed." : ref.some((i) => i.status === "pending" || i.status === "verify") ? `Referral has ${ref.length} ${ref.length === 1 ? "item" : "items"} to review.` : `Referral is missing ${ref.length === 1 ? ref[0].label.toLowerCase() : `${ref.length} items`}.`);
