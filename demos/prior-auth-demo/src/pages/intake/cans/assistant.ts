@@ -28,7 +28,7 @@ export interface ReviewNote {
   why: string;
 }
 export interface CansReading {
-  /** Items mapped from the official template: none until DMAS's mapping is loaded. */
+  /** Items mapped from the official template: none until DMAS's mapping is loaded (the demo placeholder's blank prompts are not official items). */
   itemsMapped: number;
   gaps: { theme: CansTheme; questions: string[] }[];
   contradictions: Contradiction[];
@@ -62,6 +62,18 @@ function statements(r: IntakeRecord, cans: CansAssessment): Statement[] {
   return out;
 }
 
+/** A statement that cannot be true together with one already on the record, as written: the topic and who says otherwise, or null. */
+export function disagreementOf(r: IntakeRecord, cans: CansAssessment, text: string): string | null {
+  const all = statements(r, cans);
+  for (const rule of RULES) {
+    const says = rule.no.test(text) ? "no" : rule.yes.test(text) ? "yes" : null;
+    if (!says) continue;
+    const other = all.find((s) => s.text !== text && (says === "yes" ? rule.no.test(s.text) : rule.yes.test(s.text) && !rule.no.test(s.text)));
+    if (other) return `${rule.topic}: ${other.source.ref} says otherwise`;
+  }
+  return null;
+}
+
 export function readCans(r: IntakeRecord, cans: CansAssessment): CansReading {
   const themeOfEv = (e: EvidenceRef): CansTheme => (isTheme(e.theme) ? e.theme : "Other");
   const minor = r.age !== null && r.age < 18;
@@ -83,5 +95,5 @@ export function readCans(r: IntakeRecord, cans: CansAssessment): CansReading {
     else if (e.source.kind === "transcript" || e.source.kind === "voice") review.push({ evidenceId: e.id, text: e.text, why: "Taken from a conversation: confirm the wording and who said it." });
     else if (e.source.kind === "document" && /\b(may|might|possibly|reported|says)\b/i.test(e.text)) review.push({ evidenceId: e.id, text: e.text, why: "Hedged or second-hand in the source: confirm before it is used." });
   }
-  return { itemsMapped: cans.items.length, gaps, contradictions, review };
+  return { itemsMapped: cans.template ? 0 : cans.items.length, gaps, contradictions, review };
 }

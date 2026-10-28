@@ -1,46 +1,31 @@
 import type { StateCreator } from "zustand";
-import type { AgentKey } from "@/data/types";
-import type { AuditEvent, CansAssessment, IntakeDocument, IntakeRecord, LevelOfNeedReview, ReferralOut, ReferralOutStatus, ServiceRecommendation, SourceRef, Suggestion } from "@/data/intake/types";
+import { cssrsReviewReasons } from "@/data/assess/schemas/mh";
+import type { AuditEvent, IntakeDocument, IntakeRecord, LevelOfNeedReview, ReferralOut, ReferralOutStatus, ServiceRecommendation, SourceRef } from "@/data/intake/types";
 import { REFERRAL_OUT_LABEL } from "@/data/intake/types";
 import { serviceById, type VaServiceId } from "@/data/va/services";
 import { staffOf } from "@/data/intake/seed";
 import { longDate } from "@/lib/time";
+import { mirrorLon } from "@/pages/intake/cans/cansState";
 import { meOf } from "./intake";
 import type { AppState } from "./index";
+import { createIntakeCansPriorSlice, type IntakeCansPriorSlice } from "./intakeCansPrior";
+import { createIntakeCansWorkSlice, type IntakeCansWorkSlice } from "./intakeCansWork";
 
-/* Intake: CANS Lifetime, Level of Need, care pathway and referral coordination. Section-specific actions on IntakeRecord go here; generic ones
-   (fields, suggestions, tasks, audit) are in intake.ts. Agents only ever add suggestions, evidence proposals, options or drafts through these
-   actions; keeping evidence, selecting a pathway, recording a disposition and sending a referral are a person's actions, each audited. */
+/* Intake: Level of Need, care pathway and referral coordination, and the CANS Lifetime slices (intakeCansWork: the record, its items and evidence;
+   intakeCansPrior: assessments found for the person). Generic actions (fields, suggestions, tasks, audit) are in intake.ts. Agents only ever add
+   suggestions, evidence proposals, options or drafts through these actions; keeping evidence, selecting a pathway, recording a disposition and sending
+   a referral are a person's actions, each audited. */
 
-/** One statement the CANS Evidence Agent proposes, or a person adds by hand. `theme` is a Psyflo theme, never a CANS domain. */
-export interface EvidenceProposal { text: string; theme: string; source: SourceRef }
-/** A template file an administrator tried to validate. Validation always fails in the demo: the official mapping is not available. */
-export interface CansTemplateAttempt { id: string; fileName: string; at: number; by: string; recordId: string; result: string }
+export type { CansTemplateAttempt, CansTemplateState, EvidenceProposal } from "./intakeCansWork";
 
-type LonFields = Pick<LevelOfNeedReview, "functionalNeeds" | "serviceNeeds" | "recommendations" | "missing" | "reviewer">;
+type LonFields = Pick<LevelOfNeedReview, "functionalNeeds" | "serviceNeeds" | "recommendations" | "reviewNote" | "missing" | "reviewer">;
 type NewPathway = Omit<ServiceRecommendation, "id" | "status" | "suggestedBy" | "evidence"> & { evidence?: SourceRef[] };
 type NewReferral = Omit<ReferralOut, "id" | "createdAt" | "status" | "timeline">;
 /** quiet: timeline only (the agent runner already audits the agent's action). resolve: closes the referral's "needs you" coordination tasks. */
 interface Log { action: string; detail?: string; actor?: string; ai?: boolean; quiet?: boolean; resolve?: string }
 
-export interface IntakeCansSlice {
-  cansTemplateAttempts: CansTemplateAttempt[];
+export interface IntakeCansSlice extends IntakeCansWorkSlice, IntakeCansPriorSlice {
   referralOutCounter: number;
-
-  /** Staff open a CANS Lifetime preparation record (no items: the official mapping is not configured). */
-  startCans: (id: string) => void;
-  /** The CANS Evidence Agent's proposals. Returns the new suggestion ids. */
-  proposeCansEvidence: (id: string, items: EvidenceProposal[], agent: AgentKey) => string[];
-  decideCansEvidence: (id: string, suggestionId: string, keep: boolean) => void;
-  addCansEvidence: (id: string, item: EvidenceProposal) => void;
-  removeCansEvidence: (id: string, evidenceId: string) => void;
-  /** The agent's evidence summary, as a suggestion for the narrative. Returns its id. */
-  proposeCansSummary: (id: string, text: string, agent: AgentKey) => string;
-  decideCansSummary: (id: string, suggestionId: string, decision: "accepted" | "edited" | "rejected", edited?: string) => void;
-  setCansNarrative: (id: string, text: string) => void;
-  setCansDetails: (id: string, patch: Partial<Pick<CansAssessment, "assessor" | "date">>) => void;
-  recordCredentialCheck: (id: string, credential: string, status: "verified" | "unverified", note?: string) => void;
-  validateCansTemplate: (id: string, fileName: string) => string;
 
   startLonReview: (id: string) => void;
   saveLonReview: (id: string, patch: Partial<LonFields>) => void;
@@ -66,124 +51,56 @@ export interface IntakeCansSlice {
 
 let n = 0;
 const uidC = (p: string) => `${p}-${Date.now().toString(36)}-${++n}`;
-const NEW_CANS = (by: string, at: number): CansAssessment => ({
-  status: "in_progress", templateVersion: "awaiting-dmas-mapping", credentialStatus: "not_checked", domains: [], items: [], evidence: [], narrative: "", reassessDue: null,
-  evidenceMeta: {}, startedBy: by, startedAt: at,
-});
 
-export const createIntakeCansSlice: StateCreator<AppState, [], [], IntakeCansSlice> = (set, get) => {
+export const createIntakeCansSlice: StateCreator<AppState, [], [], IntakeCansSlice> = (set, get, api) => {
   const rec = (id: string) => get().intakes.find((r) => r.id === id);
   const patch = (id: string, fn: (r: IntakeRecord) => IntakeRecord) => get().patchIntake(id, fn);
   const me = () => meOf(get());
   const now = () => get().clock;
   const audit = (id: string, action: string, detail?: string, section: "cans" | "pathway" = "cans", actor = me(), ai = false) => get().addIntakeAudit(id, { actor, action, detail, section, ai });
-  const cansPatch = (id: string, fn: (c: CansAssessment) => CansAssessment) => patch(id, (r) => (r.cans ? { ...r, cans: fn(r.cans) } : r));
+  /** Changes the Level of Need review and keeps `instruments.lon` in step. */
+  const lonPatch = (id: string, fn: (l: LevelOfNeedReview) => LevelOfNeedReview) => patch(id, (r) => (r.lon ? mirrorLon({ ...r, lon: fn(r.lon) }, now()) : r));
   /** Close an agent's "needs you" task once a person has decided what it waited on. */
   const closeTasks = (id: string, match: (t: IntakeRecord["tasks"][number]) => boolean, result?: string) => {
     for (const t of rec(id)?.tasks ?? []) if (t.status === "needs_you" && match(t)) get().updateIntakeTask(id, t.id, { status: "done", approval: "approved", result: result ?? t.result });
   };
-  const decideSg = (r: IntakeRecord, sid: string, status: Suggestion["status"], edited?: string): IntakeRecord => ({
-    ...r, suggestions: r.suggestions.map((x) => (x.id === sid ? { ...x, status, decidedBy: me(), decidedAt: now(), editedValue: edited } : x)),
+
+  /* A C-SSRS result a clinician records that is positive, or risk wording in what they wrote, goes to the safety alert flow: a banner on the workspace
+     that a clinician must review. It watches the instrument instance, so it works wherever the module is edited. Psyflo never decides safety. */
+  api.subscribe((s, prev) => {
+    if (s.intakes === prev.intakes) return;
+    for (const r of s.intakes) {
+      const cur = r.instruments?.cssrs;
+      const before = prev.intakes.find((x) => x.id === r.id)?.instruments?.cssrs;
+      if (!cur || cur === before || r.safety?.status === "open") continue;
+      const known = new Set(before ? cssrsReviewReasons(before.fields, before.score) : []);
+      const reason = cssrsReviewReasons(cur.fields, cur.score).find((x) => !known.has(x));
+      if (!reason) continue;
+      s.raiseSafety(r.id, { raisedBy: meOf(s), text: `${reason} A clinician reviews it now. Psyflo does not decide whether a person is safe.`, source: { kind: "form", ref: "C-SSRS module (result entered by the clinician)" } });
+    }
   });
 
   return {
-    cansTemplateAttempts: [],
+    ...createIntakeCansWorkSlice(set, get, api),
+    ...createIntakeCansPriorSlice(set, get, api),
     referralOutCounter: 5101,
-
-    startCans: (id) => {
-      if (rec(id)?.cans) return;
-      patch(id, (r) => ({ ...r, cans: NEW_CANS(me(), now()) }));
-      audit(id, "Started a CANS Lifetime preparation record", "Template awaiting-dmas-mapping: no items configured");
-    },
-    proposeCansEvidence: (id, items, agent) => {
-      const ids = items.map(() => uidC("sg"));
-      patch(id, (r) => ({
-        ...r,
-        suggestions: [...r.suggestions, ...items.map((it, i): Suggestion => ({ id: ids[i], section: "cans", field: `evidence:${it.theme}`, value: it.text, source: it.source, confidence: it.source.kind === "staff" ? "high" : "medium", agent, at: now(), status: "pending" }))],
-      }));
-      return ids;
-    },
-    decideCansEvidence: (id, sid, keep) => {
-      const r = rec(id);
-      const sg = r?.suggestions.find((x) => x.id === sid);
-      if (!r?.cans || !sg || sg.status !== "pending") return;
-      const theme = sg.field.replace(/^evidence:/, "");
-      const evId = uidC("evd");
-      patch(id, (x) => {
-        const next = decideSg(x, sid, keep ? "accepted" : "rejected");
-        if (!keep || !next.cans) return next;
-        return { ...next, cans: { ...next.cans, evidence: [...next.cans.evidence, { id: evId, text: sg.value, source: sg.source, theme }], evidenceMeta: { ...next.cans.evidenceMeta, [evId]: { by: me(), at: now(), from: "agent", agent: sg.agent } } } };
-      });
-      audit(id, keep ? `Kept evidence under ${theme}` : `Discarded proposed evidence (${theme})`, sg.source.ref);
-      if (!rec(id)?.suggestions.some((x) => x.section === "cans" && x.field.startsWith("evidence:") && x.status === "pending")) closeTasks(id, (t) => t.role === "cans" && t.section === "cans", "Every proposal was kept or discarded by a person");
-    },
-    addCansEvidence: (id, it) => {
-      const evId = uidC("evd");
-      cansPatch(id, (c) => ({ ...c, evidence: [...c.evidence, { id: evId, text: it.text, source: it.source, theme: it.theme }], evidenceMeta: { ...c.evidenceMeta, [evId]: { by: me(), at: now(), from: "staff" } } }));
-      audit(id, `Added evidence under ${it.theme}`, it.source.ref);
-    },
-    removeCansEvidence: (id, evId) => {
-      const ev = rec(id)?.cans?.evidence.find((e) => e.id === evId);
-      if (!ev) return;
-      cansPatch(id, (c) => ({ ...c, evidence: c.evidence.filter((e) => e.id !== evId) }));
-      audit(id, `Removed evidence from ${ev.theme ?? "Other"}`, ev.text.slice(0, 120));
-    },
-    proposeCansSummary: (id, text, agent) => {
-      const sid = uidC("sg");
-      patch(id, (r) => ({
-        ...r,
-        suggestions: [...r.suggestions.map((x) => (x.section === "cans" && x.field === "narrative" && x.status === "pending" ? { ...x, status: "rejected" as const, decidedBy: "system", decidedAt: now() } : x)),
-          { id: sid, section: "cans", field: "narrative", value: text, source: { kind: "staff", ref: "Kept CANS evidence on this record" }, confidence: "medium", agent, at: now(), status: "pending" }],
-      }));
-      return sid;
-    },
-    decideCansSummary: (id, sid, decision, edited) => {
-      const sg = rec(id)?.suggestions.find((x) => x.id === sid);
-      if (!sg || sg.status !== "pending") return;
-      patch(id, (r) => {
-        const next = decideSg(r, sid, decision, decision === "edited" ? edited : undefined);
-        if (decision === "rejected" || !next.cans) return next;
-        return { ...next, cans: { ...next.cans, narrative: decision === "edited" ? edited ?? sg.value : sg.value } };
-      });
-      audit(id, decision === "rejected" ? "Rejected the AI-generated evidence summary" : decision === "edited" ? "Edited and accepted the AI-generated evidence summary" : "Accepted the AI-generated evidence summary");
-      closeTasks(id, (t) => t.role === "cans" && t.action.startsWith("Draft an evidence summary"), "A person decided on the summary");
-    },
-    setCansNarrative: (id, text) => {
-      cansPatch(id, (c) => ({ ...c, narrative: text }));
-      audit(id, "Updated the CANS narrative observations", text ? undefined : "Cleared");
-    },
-    setCansDetails: (id, p) => {
-      cansPatch(id, (c) => ({ ...c, ...p }));
-      if (p.assessor !== undefined) audit(id, "Set the CANS assessor", p.assessor ? staffOf(p.assessor)?.name ?? p.assessor : "Cleared");
-      if (p.date !== undefined) audit(id, "Set the planned CANS assessment date", p.date ? longDate(p.date) : "Cleared");
-    },
-    recordCredentialCheck: (id, credential, status, note) => {
-      cansPatch(id, (c) => ({ ...c, assessorCredential: credential, credentialStatus: status, credentialCheck: { by: me(), at: now(), note } }));
-      audit(id, `Recorded a credential check: ${status === "verified" ? "license confirmed" : "could not confirm"}`, [credential, note].filter(Boolean).join(" · "));
-    },
-    validateCansTemplate: (id, fileName) => {
-      const result = "Cannot validate: the official DMAS item mapping is not available in this demo";
-      set((s) => ({ cansTemplateAttempts: [{ id: uidC("tpl"), fileName, at: s.clock, by: meOf(s), recordId: id, result }, ...s.cansTemplateAttempts] }));
-      audit(id, "Tried to validate a CANS Lifetime template file", `${fileName}: ${result}. No items were created.`);
-      return result;
-    },
 
     startLonReview: (id) => {
       if (rec(id)?.lon) return;
-      patch(id, (r) => ({ ...r, lon: { status: "in_review", modelVersion: null, functionalNeeds: "", serviceNeeds: "", recommendations: "", missing: [], startedBy: me(), startedAt: now() } }));
+      patch(id, (r) => mirrorLon({ ...r, lon: { status: "in_review", modelVersion: null, functionalNeeds: "", serviceNeeds: "", recommendations: "", reviewNote: "", missing: [], startedBy: me(), startedAt: now() } }, now()));
       audit(id, "Started a Level of Need review", "No validated model is configured; no level is calculated");
     },
     saveLonReview: (id, p) => {
-      patch(id, (r) => (r.lon ? { ...r, lon: { ...r.lon, ...p, updatedBy: me(), updatedAt: now() } } : r));
+      lonPatch(id, (l) => ({ ...l, ...p, updatedBy: me(), updatedAt: now() }));
       const onlyReviewer = p.reviewer !== undefined && Object.keys(p).length === 1;
       audit(id, onlyReviewer ? "Assigned the Level of Need reviewer" : "Saved the Level of Need review", onlyReviewer && p.reviewer ? staffOf(p.reviewer)?.name : undefined);
     },
     dispositionLon: (id, disposition, signerId, rolePlay) => {
-      patch(id, (r) => (r.lon ? { ...r, lon: { ...r.lon, status: "dispositioned", disposition, decidedBy: signerId, decidedAt: now(), rolePlay } } : r));
+      lonPatch(id, (l) => ({ ...l, status: "dispositioned", disposition, decidedBy: signerId, decidedAt: now(), rolePlay }));
       audit(id, "Level of Need review disposition recorded", disposition, "cans", signerId);
     },
     reopenLon: (id) => {
-      patch(id, (r) => (r.lon ? { ...r, lon: { ...r.lon, status: "in_review" } } : r));
+      lonPatch(id, (l) => ({ ...l, status: "in_review" }));
       audit(id, "Reopened the Level of Need review");
     },
 

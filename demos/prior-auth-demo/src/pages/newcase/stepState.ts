@@ -1,4 +1,4 @@
-/* The state of each of the five steps. One meaning each, shown on the stepper and in the step's own header:
+/* The state of each of the four stages. One meaning each, shown on the stepper and in the step's own header:
    Complete (everything required is done), Needs attention (something to fix, and the person can still go on), Pending (not started, or waiting on an agent or a reply),
    Not applicable (the payer needs no authorization), Blocked (a condition that stops sending: no patient, payer, service or dates, inactive coverage with no documented exception, an unanswered duplicate). */
 import { RUN_STEPS, draftState, runStarted, type CaseDraft } from "@/data/cases";
@@ -23,36 +23,28 @@ export interface StepInfo {
 /** The payer needs no authorization for this service and the person has not chosen to go on anyway: nothing is prepared or sent. */
 export const noAuthNeeded = (env: CaseEnv): boolean => env.verification.noAuth && !reasonOf(env.draft, "no_auth");
 
-/** Referral, the first step: only an initial authorization starts from a referral. Going on without one is a choice, not a gap. */
-function referralInfo(d: CaseDraft): StepInfo {
-  const id = "referral";
-  if (d.kind !== "initial") return { id, state: "na", note: d.kind === "retro" ? "A retroactive request starts from the stay that happened" : "Starts from a patient who exists" };
-  if (d.referralId) return { id, state: "complete", note: `From referral ${d.referralId}` };
-  if (intakeStarted(d)) return { id, state: "na", note: "Started without a referral" };
-  return { id, state: "pending", note: "Pick a referral, drop one, or go on without one" };
-}
+const started = (d: CaseDraft): boolean => d.started || !!d.intakeId || !!d.patient.initials.trim() || d.patient.age !== null || !!d.payerId || !!d.program;
 
-const intakeStarted = (d: CaseDraft): boolean => d.started || !!d.patient.initials.trim() || d.patient.age !== null || !!d.payerId || !!d.program;
-
-function intakeInfo(env: CaseEnv): StepInfo {
+/** Patient & Service: the person (read from the shared record), the treatment episode, the service and the dates. */
+function serviceInfo(env: CaseEnv): StepInfo {
   const issues = intakeIssues(env);
   const open = issues.filter((i) => i.severity !== "note");
-  if (!intakeStarted(env.draft)) return { id: "intake", state: "pending", note: "Not started" };
-  if (open.some((i) => i.id === "duplicate")) return { id: "intake", state: "blocked", note: "A matching request exists" };
-  if (open.length) return { id: "intake", state: "attention", note: `${open.length} ${open.length === 1 ? "item" : "items"} to fill in` };
-  return { id: "intake", state: "complete", note: "Patient, payer, service and dates are in" };
+  if (!started(env.draft)) return { id: "service", state: "pending", note: "Choose the person" };
+  if (open.some((i) => i.id === "duplicate")) return { id: "service", state: "blocked", note: "A matching request exists" };
+  if (open.length) return { id: "service", state: "attention", note: `${open.length} ${open.length === 1 ? "item" : "items"} to fill in` };
+  return { id: "service", state: "complete", note: "Patient, service and dates are in" };
 }
 
-function eligibilityInfo(env: CaseEnv): StepInfo {
+function coverageInfo(env: CaseEnv): StepInfo {
   const v = env.verification;
-  if (v.status === "needs_input") return { id: "eligibility", state: "pending", note: "Needs the payer, member ID and dates" };
-  if (v.status === "none" || v.status === "other") return { id: "eligibility", state: "pending", note: "Verify has not checked yet" };
+  if (v.status === "needs_input") return { id: "coverage", state: "pending", note: "Needs the payer, member ID and dates" };
+  if (v.status === "none" || v.status === "other") return { id: "coverage", state: "pending", note: "Verify has not checked yet" };
   const issues = eligibilityIssues(env).filter((i) => i.severity !== "note");
-  if (issues.some((i) => i.severity === "block")) return { id: "eligibility", state: "blocked", note: "Coverage is not active" };
-  if (issues.length) return { id: "eligibility", state: "attention", note: `${issues.length} ${issues.length === 1 ? "warning" : "warnings"}` };
-  if (v.status === "stale") return { id: "eligibility", state: "attention", note: v.staleBecause === "dates" ? "The check covers other dates. Refresh it" : "The last check is old. Refresh it" };
-  if (v.noAuth) return { id: "eligibility", state: "complete", note: "No authorization required" };
-  return { id: "eligibility", state: "complete", note: "Coverage and benefits checked" };
+  if (issues.some((i) => i.severity === "block")) return { id: "coverage", state: "blocked", note: "Coverage is not active" };
+  if (issues.length) return { id: "coverage", state: "attention", note: `${issues.length} ${issues.length === 1 ? "warning" : "warnings"}` };
+  if (v.status === "stale") return { id: "coverage", state: "attention", note: v.staleBecause === "dates" ? "The check covers other dates. Refresh it" : "The last check is old. Refresh it" };
+  if (v.noAuth) return { id: "coverage", state: "complete", note: "No authorization required" };
+  return { id: "coverage", state: "complete", note: "Coverage and benefits checked" };
 }
 
 /** Clinical documentation holds the documents and, as its last section, the agents' preparation: it is complete once the agents finished with every required document in. */
@@ -88,9 +80,9 @@ function reviewInfo(d: CaseDraft, review: ReviewModel | null): StepInfo {
   return { id: "review", state: "pending", note: "Waiting for a clinician to sign" };
 }
 
-/** The five states. `review` is null until the draft has a summary to read; `holding` is true while the agent whose turn it is is paused in Settings. */
+/** The four states. `review` is null until the draft has a summary to read; `holding` is true while the agent whose turn it is is paused in Settings. */
 export function stepStates(env: CaseEnv, review: ReviewModel | null, holding: boolean): StepInfo[] {
   const na = noAuthNeeded(env);
   const later = (id: StepId): StepInfo => ({ id, state: "na", note: "The payer needs no authorization" });
-  return [referralInfo(env.draft), intakeInfo(env), eligibilityInfo(env), na ? later("documentation") : documentationInfo(env, holding), na ? later("review") : reviewInfo(env.draft, review)];
+  return [serviceInfo(env), coverageInfo(env), na ? later("documentation") : documentationInfo(env, holding), na ? later("review") : reviewInfo(env.draft, review)];
 }

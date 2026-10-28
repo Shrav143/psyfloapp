@@ -1,9 +1,12 @@
+import { useState, type ReactNode } from "react";
+import { ChevronDown } from "lucide-react";
 import { Card, CardBody, CardHeader, Pill } from "@/components/ui";
 import type { IntakeRecord } from "@/data/intake/types";
 import { cansFor, POLICY_VERSIONS, requirementsFor, vaDate, type CansApplies, type PolicyRule } from "@/data/va/policy";
 import { serviceById } from "@/data/va/services";
+import { cn } from "@/lib/cn";
 import { longDate } from "@/lib/time";
-import { APPLIES_LABEL, APPLIES_TONE } from "./cansModel";
+import { APPLIES_LABEL, APPLIES_TONE, cansServiceOf } from "./cansModel";
 import { Facts, PolicyStatusPill, RuleNote, SourceCite } from "./ui";
 
 const LEAD: Record<CansApplies, (short: string) => string> = {
@@ -13,24 +16,32 @@ const LEAD: Record<CansApplies, (short: string) => string> = {
   not_applicable: (s) => `The CANS Lifetime does not apply to ${s}. Psyflo applies it only where the policy layer lists it (CPST and CSC, from July 1, 2027).`,
 };
 
-/** Whether the CANS Lifetime applies to this record's service, why, and under which policy version and source. */
-export function CansApplicability({ record, applies, rule }: { record: IntakeRecord; applies: CansApplies; rule?: PolicyRule }) {
-  const svc = serviceById(record.serviceId);
+/** Whether the CANS Lifetime applies to this record's service, and why, as the policy layer says it (draft or unresolved, with its source). `children` go at the right of the header. */
+export function CansApplicability({ record, applies, rule, children }: { record: IntakeRecord; applies: CansApplies; rule?: PolicyRule; children?: ReactNode }) {
+  const svc = serviceById(cansServiceOf(record));
   const version = rule ? POLICY_VERSIONS[rule.version] : null;
+  const [open, setOpen] = useState(false);
   return (
     <Card data-cans-applies={applies}>
-      <CardHeader title="CANS Lifetime" subtitle={svc.label} right={<Pill tone={APPLIES_TONE[applies]}>{APPLIES_LABEL[applies]}</Pill>} />
+      <CardHeader title="CANS Lifetime (Virginia)" subtitle={svc.label} right={<><Pill tone={APPLIES_TONE[applies]}>{APPLIES_LABEL[applies]}</Pill>{children}</>} />
       <CardBody className="space-y-3">
         <p className="text-[14px] text-ink">{LEAD[applies](svc.short)}</p>
-        {rule ? <RuleNote rule={rule} /> : null}
-        <Facts
-          items={[
-            ["Applicable service", svc.label],
-            ["Planned start", longDate(record.serviceDate)],
-            ["Policy version", version ? <span className="inline-flex flex-wrap items-center gap-1.5">{version.label} <PolicyStatusPill status={version.status} /></span> : "No CANS rule for this service"],
-            ["Effective", rule?.from ? longDate(vaDate(rule.from)) : "Not applicable"],
-          ]}
-        />
+        <button type="button" aria-expanded={open} onClick={() => setOpen((o) => !o)} className="inline-flex items-center gap-1 text-[13px] font-semibold text-forest hover:underline">
+          Policy detail <ChevronDown size={14} className={cn("ico transition-transform", open && "rotate-180")} />
+        </button>
+        {open ? (
+          <div className="space-y-3">
+            {rule ? <RuleNote rule={rule} /> : null}
+            <Facts
+              items={[
+                ["Applicable service", svc.label],
+                ["Planned start", longDate(record.serviceDate)],
+                ["Policy version", version ? <span className="inline-flex flex-wrap items-center gap-1.5">{version.label} <PolicyStatusPill status={version.status} /></span> : "No CANS rule for this service"],
+                ["Effective", rule?.from ? longDate(vaDate(rule.from)) : "Not applicable"],
+              ]}
+            />
+          </div>
+        ) : null}
         {applies === "not_applicable" || applies === "unresolved" ? <AppliesInstead record={record} /> : null}
       </CardBody>
     </Card>
@@ -39,14 +50,15 @@ export function CansApplicability({ record, applies, rule }: { record: IntakeRec
 
 /** What does apply to the service instead, straight from the policy layer. */
 export function AppliesInstead({ record }: { record: IntakeRecord }) {
-  const svc = serviceById(record.serviceId);
+  const serviceId = cansServiceOf(record);
+  const svc = serviceById(serviceId);
   /* The CANS and Level of Need rules have their own cards; this lists the service's other requirements. */
-  const rules = requirementsFor({ serviceId: record.serviceId, payerId: record.payerId, age: record.age, serviceDate: record.serviceDate }).filter((r) => r.kind !== "assessment" && r.kind !== "level_of_need");
+  const rules = requirementsFor({ serviceId, payerId: record.payerId, age: record.age, serviceDate: record.serviceDate }).filter((r) => r.kind !== "assessment" && r.kind !== "level_of_need");
   const asam = svc.track === "sud";
   const asamLevel = /\((ASAM[^)]*)\)/.exec(svc.label)?.[1];
   return (
     <div data-applies-instead>
-      <h4 className="text-[13px] font-semibold text-ink2">{asam || !cansFor(record.serviceId, record.serviceDate).rule ? `What applies to ${svc.short} instead` : `What does apply to ${svc.short}`}</h4>
+      <h4 className="text-[13px] font-semibold text-ink2">{asam || !cansFor(serviceId, record.serviceDate).rule ? `What applies to ${svc.short} instead` : `What does apply to ${svc.short}`}</h4>
       <ul className="mt-1.5 space-y-2">
         {asam ? (
           <li className="text-[13px] text-ink">

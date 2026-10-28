@@ -1,7 +1,12 @@
 import type { IntakeRecord } from "@/data/intake/types";
 import { LevelOfNeed } from "./LevelOfNeed";
 
-/** The Level of Need module, connected to the CANS. The mental health engineer builds it; until then it shows the round 9 review. */
+/** The Level of Need module, its own section next to the CANS module. The level is always "pending validated policy configuration"; a person may record a
+    review note, a service recommendation and a disposition in words. It is not LOCUS, CALOCUS-CASII or ASAM, and nothing is computed. */
 export function LonModule({ record }: { record: IntakeRecord }) {
-  return <LevelOfNeed record={record} instead={false} />;
+  return (
+    <div data-module="lon">
+      <LevelOfNeed record={record} instead />
+    </div>
+  );
 }

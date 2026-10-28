@@ -6,6 +6,7 @@ import { useStore } from "@/store";
 import { runAgent } from "../lib/agents";
 import { SourceLink } from "../shared/provenance";
 import { readCans } from "./assistant";
+import { cansCompletion } from "./cansState";
 
 const H = "text-[11px] font-semibold tracking-[0.08em] text-muted uppercase";
 
@@ -48,7 +49,9 @@ export function CansAssistant({ record, cans }: { record: IntakeRecord; cans: Ca
         <section>
           <h4 className={H}>Unanswered items</h4>
           <p className="mt-1 text-[14px] text-ink2">
-            {reading.itemsMapped} official items mapped. Every CANS Lifetime item stays unanswered until the DMAS item mapping is loaded. Missing evidence is never scored as zero.
+            {cans.template
+              ? `${cansCompletion(cans).missing.length} of ${cans.items.length} demo placeholder items have no rating label or note. They are blank prompts, not official CANS items. Missing evidence is never scored as zero.`
+              : `${reading.itemsMapped} official items mapped. Every CANS Lifetime item stays unanswered until the DMAS item mapping is loaded. Missing evidence is never scored as zero.`}
           </p>
         </section>
 

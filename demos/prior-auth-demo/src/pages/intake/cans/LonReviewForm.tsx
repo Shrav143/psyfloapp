@@ -8,6 +8,7 @@ import { useStore } from "@/store";
 import { actorName } from "../shared/provenance";
 import { SignOffDialog } from "../shared/SignOff";
 import { CANS_THEMES } from "./cansModel";
+import { cansCompletion } from "./cansState";
 import { Select } from "./ui";
 
 /* The Level of Need review a person fills: documented needs, recommendations, missing information and a qualified reviewer. The disposition is
@@ -21,20 +22,22 @@ export function LonReviewForm({ record, lon }: { record: IntakeRecord; lon: Leve
   const save = useStore((s) => s.saveLonReview);
   const disposition = useStore((s) => s.dispositionLon);
   const reopen = useStore((s) => s.reopenLon);
-  const [form, setForm] = useState({ functionalNeeds: lon.functionalNeeds, serviceNeeds: lon.serviceNeeds, recommendations: lon.recommendations });
+  const [form, setForm] = useState({ reviewNote: lon.reviewNote ?? "", functionalNeeds: lon.functionalNeeds, serviceNeeds: lon.serviceNeeds, recommendations: lon.recommendations });
   const [missing, setMissing] = useState<string[]>(lon.missing);
   const [newMissing, setNewMissing] = useState("");
   const [text, setText] = useState("");
   const [tried, setTried] = useState(false);
   const [signing, setSigning] = useState(false);
-  const dirty = form.functionalNeeds !== lon.functionalNeeds || form.serviceNeeds !== lon.serviceNeeds || form.recommendations !== lon.recommendations || missing.join("|") !== lon.missing.join("|");
+  const dirty = form.reviewNote !== (lon.reviewNote ?? "") || form.functionalNeeds !== lon.functionalNeeds || form.serviceNeeds !== lon.serviceNeeds || form.recommendations !== lon.recommendations || missing.join("|") !== lon.missing.join("|");
   const done = lon.status === "dispositioned";
   const problem = dispositionProblem(text);
   const qualified = INTAKE_STAFF.filter((s) => s.qualified);
   const gaps = CANS_THEMES.filter((t) => !(record.cans?.evidence ?? []).some((e) => e.theme === t));
   const steps = [
     record.assessment.status !== "signed" ? "Complete and sign the clinical assessment" : null,
-    !record.cans ? "Start CANS Lifetime preparation and gather evidence" : gaps.length ? `Gather evidence for ${gaps.length} theme${gaps.length === 1 ? "" : "s"} with none` : null,
+    !record.cans ? "Start the CANS record and gather evidence" : !record.cans.items.length ? "Load a CANS template (the official mapping is not available)" : cansCompletion(record.cans).missing.length ? `Address ${cansCompletion(record.cans).missing.length} CANS item${cansCompletion(record.cans).missing.length === 1 ? "" : "s"} with no rating label or note` : null,
+    record.cans && record.cans.status !== "signed" && record.cans.items.length ? "Have a qualified clinician sign the CANS record" : null,
+    record.cans && gaps.length ? `Gather evidence for ${gaps.length} theme${gaps.length === 1 ? "" : "s"} with none` : null,
     !lon.reviewer ? "Assign a qualified reviewer" : null,
     "Wait for DMAS's validated Level of Need configuration before any level is shown",
   ].filter((x): x is string => !!x);
@@ -50,9 +53,10 @@ export function LonReviewForm({ record, lon }: { record: IntakeRecord; lon: Leve
         <Pill tone={done ? "good" : "neutral"}>{done ? "Disposition recorded" : "In review"}</Pill>
         {lon.updatedBy ? <span className="text-[12px] text-muted">Saved by {actorName(lon.updatedBy)} · {lon.updatedAt !== undefined ? stamp(lon.updatedAt) : ""}</span> : null}
       </div>
+      {area("reviewNote", "Review note", "The reviewer's own note on the documented needs")}
       {area("functionalNeeds", "Relevant functional needs", "What the record documents about daily functioning")}
       {area("serviceNeeds", "Documented service needs", "Needs the record documents, with where they come from")}
-      {area("recommendations", "Clinical recommendations", "Recommendations in the record or from the clinician")}
+      {area("recommendations", "Service recommendation (by the clinician, never computed)", "The service the clinician recommends, in their words")}
       <div>
         <span className="text-[13px] font-medium text-ink2">Missing information</span>
         <ul className="mt-1.5 flex flex-wrap gap-1.5">

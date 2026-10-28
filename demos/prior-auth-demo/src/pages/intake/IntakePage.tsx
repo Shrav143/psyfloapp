@@ -1,34 +1,29 @@
 import { useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
+import { Plus } from "lucide-react";
 import { SiteTag } from "@/components/layout/SiteTag";
-import { Page, PageHeader, SearchInput, Segmented, UnderlineTabs } from "@/components/ui";
-import { serviceById } from "@/data/va/services";
-import { REDESIGN_START } from "@/data/va/policy";
+import { Page, PageHeader, UnderlineTabs } from "@/components/ui";
+import { paths } from "@/routes";
 import { useStore } from "@/store";
-import { intakesInView, rosterInView } from "@/store/intakeSelectors";
+import { rosterInView } from "@/store/intakeSelectors";
 import { PolicyButton } from "./policy/PolicyButton";
-import { IntakeMetrics } from "./queue/IntakeMetrics";
-import { IntakeQueue } from "./queue/IntakeQueue";
-import { NewIntakeButton } from "./queue/NewIntakeButton";
+import { IntakeWorklist } from "./queue/IntakeWorklist";
+import { ListSearch } from "./queue/ListSearch";
+import { useIntakes } from "./queue/useIntakes";
 import { StartScribeButton } from "./scribe/StartScribeButton";
 import { TransitionView } from "./transition/TransitionView";
 
 type View = "queue" | "transition";
 
-/** Intake: the front door. The queue of referrals and intakes (with its figures and filters), or the July 2027 transition view.
-    The program in the top bar narrows both; the policy switch previews the workspace as of July 1, 2027 without moving the demo clock. */
+/** Referrals & Intake: the Referral Queue, the landing page of the group. The six status cards and the worklist below them, or the July 2027 transition view.
+    Where the demo's policy date comes from (post-transition by default) is the chip in the top bar. */
 export default function IntakePage() {
   const [params, setParams] = useSearchParams();
   const view: View = params.get("view") === "transition" ? "transition" : "queue";
-  const all = useStore((s) => s.intakes);
-  const focus = useStore((s) => s.programFocus);
+  const records = useIntakes();
+  const roster = useStore((s) => s.legacyRoster);
   const viewerId = useStore((s) => s.viewerId);
   const siteScope = useStore((s) => s.siteScope);
-  const preview = useStore((s) => s.policyPreview);
-  const setPreview = useStore((s) => s.setPolicyPreview);
-  const clock = useStore((s) => s.clock);
-  const records = useMemo(() => intakesInView(useStore.getState()), [all, focus, viewerId, siteScope]); // eslint-disable-line react-hooks/exhaustive-deps
-  const roster = useStore((s) => s.legacyRoster);
   const legacyCount = useMemo(() => rosterInView(useStore.getState()).length, [roster, viewerId, siteScope]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const setView = (v: View) =>
@@ -42,52 +37,26 @@ export default function IntakePage() {
   return (
     <Page>
       <PageHeader
-        title={<>Intake<SiteTag /></>}
-        sub={focus === "all" ? undefined : `Program: ${serviceById(focus).label}`}
+        title={<>Referrals &amp; Intake<SiteTag /></>}
+        sub="Manage incoming referrals, complete clinical assessments, and coordinate patients into appropriate care."
         actions={
           <>
-            <SearchInput
-              value={params.get("q") ?? ""}
-              onChange={(v) =>
-                setParams((p) => {
-                  const n = new URLSearchParams(p);
-                  if (v) n.set("q", v);
-                  else n.delete("q");
-                  n.delete("view");
-                  return n;
-                }, { replace: true })
-              }
-              placeholder="Search by ID, initials, source or service"
-              className="w-[300px] max-w-full"
-            />
-            <StartScribeButton />
-            <NewIntakeButton />
+            <ListSearch alsoClear={["view"]} />
+            <Link to={paths.createReferral()} className="inline-flex h-[38px] items-center justify-center gap-2 rounded-xl border border-transparent bg-forest px-4 text-sm font-medium whitespace-nowrap text-white transition-colors hover:bg-forest-dark">
+              <Plus size={16} className="ico" />
+              New referral
+            </Link>
           </>
         }
       />
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <UnderlineTabs<View> items={[{ id: "queue", label: "Intake queue", badge: records.length }, { id: "transition", label: "July 2027 transition", badge: legacyCount }]} value={view} onChange={setView} />
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-[12px] text-muted">Policy as of</span>
-          <Segmented<"today" | "redesign">
-            items={[{ id: "today", label: "Today" }, { id: "redesign", label: `July 1, 2027 (preview)` }]}
-            value={preview}
-            onChange={setPreview}
-          />
+        <UnderlineTabs<View> items={[{ id: "queue", label: "Referral queue", badge: records.length }, { id: "transition", label: "July 2027 transition", badge: legacyCount }]} value={view} onChange={setView} />
+        <div className="flex items-center gap-2">
+          <StartScribeButton />
           <PolicyButton />
         </div>
       </div>
-      {preview === "redesign" && clock < REDESIGN_START ? (
-        <p className="-mt-2 text-[13px] text-mid-ink">Preview: pathways and requirements are shown as they would apply on July 1, 2027, using draft redesign policy. Nothing is saved as of that date.</p>
-      ) : null}
-      {view === "queue" ? (
-        <>
-          <IntakeMetrics records={records} />
-          <IntakeQueue records={records} />
-        </>
-      ) : (
-        <TransitionView />
-      )}
+      {view === "queue" ? <IntakeWorklist records={records} scope="queue" /> : <TransitionView />}
     </Page>
   );
 }

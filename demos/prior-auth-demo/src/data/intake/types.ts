@@ -2,8 +2,9 @@ import type { DocBlock } from "@/components/ui/DocumentSheet";
 import type { AgentKey, PayerId, Urgency } from "../types";
 import type { SiteId } from "../sites";
 import type { VaServiceId } from "../va/services";
-import type { CarePlan, ConsentEntry, InstrumentInstance, IntakeConfig, PriorAssessment } from "../assess/types";
+import type { CareSetting, CarePlan, ConsentEntry, InstrumentInstance, IntakeConfig, ModuleId, Population, PriorAssessment, ProgramId, PurposeId } from "../assess/types";
 import type { ReferralCheck } from "../referralTypes";
+import type { DuplicateNote, ReferralDecision, ReferralNotice, WaitlistEntry } from "./decision";
 
 /* The Intake workspace's data model. One IntakeRecord holds one person's intake, from the referral to the authorization handoff.
    Three things are always kept apart: what a source says (documents, transcripts), what an agent suggests (Suggestion), and what a person
@@ -31,10 +32,11 @@ export const TRIAGE_LABEL: Record<TriageStatus, string> = {
 };
 export const TRIAGE_ORDER: TriageStatus[] = ["new", "needs_info", "ready_screening", "assessment", "clinical_review", "care_planning", "ready_for_auth", "accepted", "redirected", "declined", "closed"];
 
-export type ReferralMethod = "manual" | "upload" | "fax" | "email" | "emr" | "phone" | "voice" | "webform";
+export type ReferralMethod = "manual" | "upload" | "fax" | "email" | "emr" | "phone" | "voice" | "webform" | "paste";
 export const METHOD_LABEL: Record<ReferralMethod, string> = {
   manual: "Manual entry", upload: "Uploaded referral document", fax: "Fax or PDF import", email: "Referral email import", emr: "EMR-imported referral",
   phone: "Staff-assisted phone intake", voice: "Voice-agent-assisted intake", webform: "Patient or caregiver web form",
+  paste: "Pasted text or screenshot",
 };
 
 /** Every field carries where its value came from. */
@@ -66,6 +68,8 @@ export interface FieldValue {
   confidence?: "high" | "medium" | "low";
   reviewedBy?: string;
   reviewedAt?: number;
+  /** Set when two sources disagree about this value: what they say and what a person must confirm. */
+  conflict?: string;
 }
 export type FieldMap = Record<string, FieldValue>;
 
@@ -85,6 +89,8 @@ export interface Suggestion {
   editedValue?: string;
   /** Set when the suggestion contradicts what is already on file. */
   conflict?: string;
+  /** The assessment module whose field `field` is, for a proposal the AI Scribe routes to an instrument. It reaches that module as pending evidence; it never fills a field itself. */
+  moduleId?: ModuleId;
 }
 
 export interface IntakeDocument {
@@ -95,6 +101,12 @@ export interface IntakeDocument {
   /** Simulated imports say so. */
   simulated: boolean;
   pages: DocBlock[][];
+  /** Where it came from. Left out, the workspace reads it from `kind` (a referral, fax or email is a referral document; a transcript or note Psyflo wrote is generated). */
+  origin?: "referral" | "uploaded" | "generated" | "authorization";
+  /** The assessment module it supports, for the Documents section. */
+  moduleId?: ModuleId;
+  /** A person chose to attach it to the authorization (New Authorization reads this). */
+  attach?: boolean;
 }
 
 export type AssessmentMode = "manual" | "scribe" | "voice";
@@ -133,6 +145,8 @@ export interface EvidenceRef {
   source: SourceRef;
   /** A Psyflo evidence theme used to organize notes, never a CANS domain. */
   theme?: string;
+  /** The assessment item a person tied this evidence to (a CANS item of the demo placeholder template). */
+  itemId?: string;
 }
 export interface CansItem {
   id: string;
@@ -143,9 +157,18 @@ export interface CansItem {
   response: string | null;
   state: "unrated" | "ai_suggested" | "rated" | "needs_review";
   evidence: EvidenceRef[];
+  /** Who set the rating label or note last, and when. */
   reviewer?: string;
   reviewedAt?: number;
+  /** The assessor's note in their own words. */
+  note?: string;
+  /** A blank prompt of the demo placeholder template: no official wording, no rating anchors. */
+  placeholder?: boolean;
 }
+/** The template a CANS record's items come from. The demo has one: blank placeholder prompts that are not CANS content. */
+export interface CansTemplateRef { kind: "demo-placeholder"; version: string; loadedBy: string; loadedAt: number; rolePlay?: boolean }
+/** An earlier version of a CANS record, kept when a signed one is amended. */
+export interface CansVersion { version: number; status: CansAssessment["status"]; items: CansItem[]; narrative: string; signedBy?: string; signedAt?: number; rolePlay?: boolean; supersededAt: number; note?: string }
 export interface CansAssessment {
   status: "not_started" | "in_progress" | "ready_for_review" | "signed";
   /** "awaiting-dmas-mapping" until the official template is configured. */
@@ -164,7 +187,16 @@ export interface CansAssessment {
   /** null: no reassessment interval is established by policy in the demo. */
   reassessDue: number | null;
   /** Who added or kept each piece of evidence, by evidence id. */
-  evidenceMeta?: Record<string, { by: string; at: number; from: "agent" | "staff"; agent?: AgentKey }>;
+  evidenceMeta?: Record<string, { by: string; at: number; from: "agent" | "staff" | "prior"; agent?: AgentKey }>;
+  /** Set once an administrator loaded the demo placeholder template and the items below were made from it. */
+  template?: CansTemplateRef;
+  /** 1 for the first version. A signed record is never overwritten: an amendment keeps it in `history` and starts the next version. */
+  version?: number;
+  history?: CansVersion[];
+  /** Set when this version started from an assessment found for the person ("Carried forward from <date>, needs review"). */
+  carriedFrom?: { priorId: string; date: number; provider: string; at: number; by: string };
+  /** Signed by a non-clinician viewer playing the site's clinician in the demo. */
+  rolePlay?: boolean;
   startedBy?: string;
   startedAt?: number;
   /** A person's record that they checked the assessor's credential. Not a DMAS qualification decision. */
@@ -176,7 +208,10 @@ export interface LevelOfNeedReview {
   modelVersion: string | null;
   functionalNeeds: string;
   serviceNeeds: string;
+  /** The service recommendation, in the clinician's words. Never computed. */
   recommendations: string;
+  /** A review note in the reviewer's words. */
+  reviewNote?: string;
   missing: string[];
   reviewer?: string;
   disposition?: string;
@@ -252,6 +287,8 @@ export interface TranscriptTurn {
   at: number;
   speaker: "clinician" | "patient" | "caregiver" | "assistant" | "coordinator" | "unknown";
   text: string;
+  /** A person corrected the simulated transcription: who, when, and what it said before. */
+  edited?: { by: string; at: number; original: string };
 }
 export type NoteSectionId = "reason" | "hpi" | "history" | "functional" | "risk" | "strengths" | "summary" | "questions" | "plan";
 export const NOTE_SECTIONS: { id: NoteSectionId; label: string }[] = [
@@ -286,6 +323,8 @@ export interface ScribeSession {
   extracted?: Suggestion[];
   /** Information the conversation did not cover. */
   missing?: string[];
+  /** A person's decision on the follow-up the scribe suggested for each missing item (keyed by the item). */
+  followUps?: Record<string, "accepted" | "dismissed">;
   /** Demo minutes when recording started and when the session was saved. */
   startedAt?: number;
   savedAt?: number;
@@ -452,6 +491,44 @@ export interface IntakeStaff {
   credentials?: string;
 }
 
+/** The treatment episode a continuing intake (continued stay, change in level of care, reassessment, discharge) belongs to. Every id is null for "no episode on file". */
+export interface EpisodeRef {
+  /** Which choice it is: "book:<episode id>", "legacy:<authorization id>", "intake:<intake id>" or "none". */
+  key: string;
+  patientId: string | null;
+  episodeId: string | null;
+  /** The earlier intake whose signed assessments are carried forward as a new version. */
+  fromIntakeId: string | null;
+  label: string;
+}
+/** A change a person made to the plan's defaults in the configuration wizard: a module turned on or off, or a required one removed by an authorized override. */
+export interface DraftChoice {
+  id: ModuleId;
+  state: "active" | "off";
+  by: "clinician" | "override";
+  who: string;
+  at: number;
+  reason?: string;
+}
+/** A configuration saved from the wizard but not started: nothing here is active until Start assessment. */
+export interface ConfigDraft {
+  purposeId: PurposeId;
+  programId: ProgramId;
+  population: Population;
+  setting: CareSetting;
+  /** The person chose the population or setting themselves, so a later program change keeps it. */
+  populationTouched?: boolean;
+  settingTouched?: boolean;
+  episode?: EpisodeRef | null;
+  choices: DraftChoice[];
+  step: "purpose" | "program" | "population" | "plan";
+  savedAt: number;
+  savedBy: string;
+}
+
+/** A person's decision about an assessment found from another provider or an earlier episode. Reuse never signs anything. */
+export interface PriorDecision { action: "reviewed" | "reused" | "update_requested" | "new_started" | "cannot_reuse"; by: string; at: number; reason?: string }
+
 export interface IntakeRecord {
   id: string;
   site: SiteId;
@@ -498,6 +575,8 @@ export interface IntakeRecord {
   episodeId?: string | null;
   /** The configuration chosen for this intake: purpose, program, population, setting and the modules in use. */
   config?: IntakeConfig;
+  /** A configuration saved from the wizard and not started. Resume reopens the wizard on it; Start assessment turns it into `config`. */
+  configDraft?: ConfigDraft;
   /** One instance per module in use, keyed by module id. Earlier versions are kept inside it. */
   instruments?: Record<string, InstrumentInstance>;
   carePlan?: CarePlan | null;
@@ -505,9 +584,16 @@ export interface IntakeRecord {
   consents?: ConsentEntry[];
   /** Assessments found for the person from other providers or earlier episodes. */
   priorAssessments?: PriorAssessment[];
+  /** What a person decided about each assessment found for the person, by its id (Existing assessment found). "Cannot reuse" carries its reason. */
+  priorDecisions?: Record<string, PriorDecision>;
   /** The legacy referral this record was made from (RF-xxxx) and the document checks Reader ran on it. */
   legacyReferralId?: string;
   referralChecks?: ReferralCheck[];
-  /** Where the person left off, for Resume. */
-  progress?: { section: string; at: number };
+  /** Where the person left off, for Resume: the workspace section (a `?section=` value) and the configuration wizard step, when one is unfinished. */
+  progress?: { section: string; at: number; step?: string };
+  /** The referral decision a person made (accept, redirect, decline, close), the notices drafted for the referrer, a waitlist place, and why a possible duplicate was created anyway. */
+  referralDecision?: ReferralDecision;
+  referralNotices?: ReferralNotice[];
+  waitlist?: WaitlistEntry;
+  duplicateOf?: DuplicateNote;
 }

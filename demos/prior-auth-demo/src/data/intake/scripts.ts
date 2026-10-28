@@ -1,3 +1,9 @@
+import { isCoreModule } from "../assess/modules";
+import { programById } from "../assess/programs";
+import type { ModuleId, ProgramId } from "../assess/types";
+import { CORE_BLOCKS, SUD_BLOCKS, type Block, type ScribeField, type TurnSpec } from "./scriptBlocks";
+import { PROGRAM_BLOCKS } from "./scriptBlocksProgram";
+import { personaFor, type Persona } from "./scriptPersonas";
 import type { AssessmentSectionId, IntakeRecord, NoteSectionId, TranscriptTurn } from "./types";
 
 /* Scripted conversations for the simulated AI Scribe and Voice Intake Assistant, the Voice guided assessment questions and the safety
@@ -19,7 +25,10 @@ export interface ScribeTurn {
   text: string;
   /** Text the Clinical Documentation Agent adds to each note section. */
   note?: Partial<Record<NoteSectionId, string>>;
-  fields?: Extract[];
+  /** What the scribe proposes from this turn: values for shared fields, evidence for an assessment module, or CANS evidence themes. */
+  fields?: ScribeField[];
+  /** The topic of the conversation this turn belongs to ("Withdrawal concerns"), for the scribe's "detected documentation" list. */
+  block?: string;
   /** A statement about risk. It goes to "Risk information requiring review"; `alert` raises a safety alert for a clinician. */
   risk?: { text: string; alert: boolean };
   /** Information the conversation shows is missing, and items it answered. */
@@ -38,6 +47,10 @@ export interface ScribeScript {
   turns: ScribeTurn[];
   /** What the agent writes when the recording stops. */
   closing: { summary: string; plan: string };
+  /** The topics this interview covers, in order: the scribe's "detected documentation" list shows which have come up. Left out for the fixed scripts. */
+  categories?: string[];
+  /** The program the interview was composed for. Left out for the fixed scripts. */
+  program?: ProgramId;
 }
 
 const A = (section: FieldTarget, field: string, label: string, value: string, confidence: Extract["confidence"] = "medium"): Extract => ({ section, field, label, value, confidence });
@@ -238,13 +251,104 @@ function scribeGeneric(r: Pick<IntakeRecord, "initials" | "age">): ScribeScript 
   };
 }
 
-/** The scripted conversation the scribe plays for a record: T.W. and his mother, R.H., A.K., or a generic intake. */
-export function scribeScriptFor(r: Pick<IntakeRecord, "id" | "initials" | "age">): ScribeScript {
+/* ------------------------------------------------------------------ Record Intake: the interview composed for a program */
+
+/** Suggested follow-ups for what the conversation has not yet covered. The clinician accepts or dismisses each one. */
+const FOLLOW_UP: Record<string, string> = {
+  "Previous withdrawal complications": "Clarify the person's history of serious withdrawal complications, such as seizures or hospital care.",
+  "Details of the first withdrawal: seizures, hospital care, medications given": "Ask what happened during the first withdrawal: any seizures, any hospital care, any medication given.",
+  "Relevant treatment history": "Ask what treatment the person has had before, including medications for addiction, and what helped.",
+  "Medication history": "Ask for every current and recent medication and who prescribes it.",
+  "Current medication list, doses and prescriber": "Confirm the list with the pharmacy or the prescriber; the person did not remember the names or doses.",
+  "Discharge summary from the inpatient stay": "Request the discharge summary from the hospital. A release of information is needed.",
+  "Consent to treatment (signature)": "Collect the signed consent before the visit ends.",
+  "Guardian consent to treatment (signature)": "Collect the guardian's signed consent before the visit ends.",
+  "School release of records (signature)": "Collect the signed school release so the school counselor can be contacted.",
+  "Signed releases for the hospital and the college": "Collect signed releases before contacting the hospital team or the college.",
+  "Diagnostic evaluation report": "Ask the parent for the evaluation report; it is the source for the diagnosis on file.",
+};
+export const followUpFor = (missing: string): string => FOLLOW_UP[missing] ?? "Ask about it before the visit ends, or add it to the plan.";
+
+/** The id a composed interview is stored under, so a session keeps playing the same conversation if the intake is reconfigured mid-way. */
+export const composedId = (programId: ProgramId, modules: ModuleId[]): string => `c:${programId}:${modules.join(",")}`;
+export function parseComposedId(id: string | undefined): { programId: ProgramId; modules: ModuleId[] } | null {
+  if (!id?.startsWith("c:")) return null;
+  const [, programId, rest] = id.split(":");
+  return programId ? { programId: programId as ProgramId, modules: (rest ? rest.split(",") : []) as ModuleId[] } : null;
+}
+
+const SECONDS = [12, 15, 11, 16, 13, 14, 17];
+const keepField = (f: ScribeField, active: Set<ModuleId>): boolean =>
+  f.section === "module" ? active.has(f.module) && !isCoreModule(f.module) : f.section === "cans" ? active.has("cans") : true;
+
+/** The Record Intake interview for a program and the modules its plan uses. Pure: the same program, modules and person give the same conversation.
+    Blocks are chosen by module, so adding or removing an optional module changes what the scribe listens for and where its proposals go. */
+export function scriptFor(programId: ProgramId, modules: ModuleId[], who: Pick<IntakeRecord, "id" | "initials" | "age"> = { id: "IN-0000", initials: "", age: null }): ScribeScript {
+  const persona: Persona = personaFor(who, programId);
+  const active = new Set(modules);
+  const blocks: Block[] = [...CORE_BLOCKS, ...SUD_BLOCKS, ...PROGRAM_BLOCKS].filter((b) => !b.modules || b.modules.some((m) => active.has(m))).sort((a, b) => a.order - b.order);
+  const turns: ScribeTurn[] = [];
+  const categories: string[] = [];
+  let at = 4;
+  const speakerOf = (by: TurnSpec["by"]): Speaker => {
+    const child = persona.cg !== null && persona.age !== null && persona.age < 13;
+    if (by === "clin") return "clinician";
+    if (by === "pt") return "patient";
+    if (by === "cg") return persona.cg ? "caregiver" : "patient";
+    if (by === "cgPref") return persona.cg ? "caregiver" : "patient";
+    return child ? "caregiver" : "patient";
+  };
+  for (const b of blocks) {
+    const specs = b.turns(persona);
+    if (!specs.length) continue;
+    categories.push(b.label);
+    for (const t of specs) {
+      const fields = t.fields?.filter((f) => keepField(f, active));
+      turns.push({ at, speaker: speakerOf(t.by), heardAs: t.heardAs, text: t.text, note: t.note, fields: fields?.length ? fields : undefined, risk: t.risk, missing: t.missing, resolves: t.resolves, block: b.label });
+      at += SECONDS[turns.length % SECONDS.length];
+    }
+  }
+  const sud = active.has("sud-history") || active.has("asam") || active.has("withdrawal");
+  const minor = persona.age !== null && persona.age < 18;
+  const initialMissing = [minor ? "Guardian consent to treatment (signature)" : "Consent to treatment (signature)", "Medication history", ...(sud ? ["Previous withdrawal complications", "Relevant treatment history"] : [])];
+  const cg = persona.cg;
+  return {
+    id: composedId(programId, modules), program: programId,
+    labels: { clinician: "Clinician", patient: persona.who, ...(cg ? { caregiver: cg } : {}), unknown: "Speaker not identified" },
+    consenters: [`${persona.who} (patient)`, ...(cg ? [cg] : [])],
+    encounterType: "Intake assessment, in person",
+    others: cg ?? "None",
+    initialMissing, turns, categories,
+    closing: { summary: persona.core.summary, plan: persona.core.plan },
+  };
+}
+
+/** The fixed scripts of the round 9 scenarios, by id, for a session already in progress. */
+const FIXED: Record<string, ScribeScript> = { [SCRIBE_A.id]: SCRIBE_A, [SCRIBE_B.id]: SCRIBE_B, [SCRIBE_C.id]: SCRIBE_C };
+type ScriptSource = Pick<IntakeRecord, "id" | "initials" | "age"> & { config?: Pick<NonNullable<IntakeRecord["config"]>, "programId" | "modules">; scribe?: Pick<NonNullable<IntakeRecord["scribe"]>, "scriptId" | "status"> | null };
+export const activeModuleIds = (c: NonNullable<ScriptSource["config"]>): ModuleId[] => c.modules.filter((m) => m.state === "active").map((m) => m.id);
+
+/** The conversation the scribe plays for a record. A session in progress keeps its conversation; otherwise a configured intake gets the interview for its program and
+    modules, and a record that has not been configured gets the fixed scenario script (T.W. and his mother, R.H., A.K.) or a short neutral one. */
+export function scribeScriptFor(r: ScriptSource, fresh = false): ScribeScript {
+  const id = !fresh && r.scribe && r.scribe.status !== "consent" ? r.scribe.scriptId : undefined;
+  const composed = parseComposedId(id);
+  if (composed) return scriptFor(composed.programId, composed.modules, r);
+  if (id && FIXED[id]) return FIXED[id];
+  if (id === "scribe-generic") return scribeGeneric(r);
+  if (r.config) return scriptFor(r.config.programId, activeModuleIds(r.config), r);
   if (r.id === "IN-3101") return SCRIBE_A;
   if (r.id === "IN-3102") return SCRIBE_B;
   if (r.id === "IN-3103") return SCRIBE_C;
   return scribeGeneric(r);
 }
+
+/** What the scribe will listen for, in plain words: "Substance use history, Withdrawal concerns, ..." for the consent screen and the Record Intake button. */
+export function interviewTopics(r: ScriptSource): string[] {
+  const s = scribeScriptFor(r, true);
+  return s.categories ?? [];
+}
+export const programLabelOf = (r: ScriptSource): string | null => (r.config ? programById(r.config.programId).label : null);
 
 /* ------------------------------------------------------------------ Voice Intake Assistant */
 

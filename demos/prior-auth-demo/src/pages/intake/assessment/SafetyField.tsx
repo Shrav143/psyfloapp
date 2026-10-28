@@ -10,7 +10,7 @@ import { safetyByPerson, useClinicianActor } from "./model";
 
 /** Safety and risk screening. Structured prompts a clinician records, the clinician's own documentation, and any AI draft of what was
     heard, which is only ever a starting point: AI never finalizes risk, and accepting a draft as it stands is not offered. */
-export function SafetyField({ record, readOnly }: { record: IntakeRecord; readOnly: boolean }) {
+export function SafetyField({ record, readOnly, feeds }: { record: IntakeRecord; readOnly: boolean; feeds?: string[] }) {
   const actor = useClinicianActor(record);
   const documentSafety = useStore((s) => s.documentSafety);
   const setPrompt = useStore((s) => s.setSafetyPrompt);
@@ -53,6 +53,7 @@ export function SafetyField({ record, readOnly }: { record: IntakeRecord; readOn
         ) : null}
       </div>
 
+      {feeds?.length ? <p data-feeds="safety" className="mt-0.5 text-[12px] text-muted">Feeds: {feeds.join(", ")}</p> : null}
       <div className="mt-2 rounded-xl border border-line">
         <p className="border-b border-line px-3 py-1.5 text-[12px] text-muted">Structured prompts · {recorded} of {SAFETY_PROMPTS.length} recorded</p>
         <ul>

@@ -6,7 +6,7 @@ import { cn } from "@/lib/cn";
 import { longDate } from "@/lib/time";
 import { useStore } from "@/store";
 import { SourceCite } from "../cans/ui";
-import { FIT_LABEL, pathwayName, PW_STATUS_LABEL } from "./pathwayModel";
+import { pathwayName, PW_STATUS_LABEL } from "./pathwayModel";
 
 /* The transition timeline for a person whose care crosses June 30, 2027: what continues until then, what can start on July 1, 2027, and the
    options under clinical review. There is never a one-to-one mapping from a retiring service to a new one. */
@@ -35,7 +35,7 @@ export function TransitionPlan({ record, now }: { record: IntakeRecord; now: num
   if (legacy) steps.push({ when: "June 30, 2027", text: ended ? `${legacy.short} ended. It is no longer an option.` : `Last day of ${legacy.short}. It is not extended past this date.`, done: ended });
   steps.push({
     when: "From July 1, 2027",
-    text: next.length ? `Options under review: ${next.map((p) => `${pathwayName(p)} (${FIT_LABEL[p.fit].toLowerCase()}, ${PW_STATUS_LABEL[p.status].toLowerCase()})`).join("; ")}.` : "No option for after June 30, 2027 yet. Add one or refresh the options.",
+    text: next.length ? `Options under review: ${next.map((p) => `${pathwayName(p)} (${PW_STATUS_LABEL[p.status].toLowerCase()})`).join("; ")}.` : "No option for after June 30, 2027 yet. Add one or refresh the options.",
     done: now >= REDESIGN_START,
   });
   steps.push({ when: `Planned start ${longDate(record.serviceDate)}`, text: `Requested: ${serviceById(record.serviceId).label}.` });
@@ -53,7 +53,7 @@ export function TransitionPlan({ record, now }: { record: IntakeRecord; now: num
             </li>
           ))}
         </ol>
-        <p className="text-[13px] text-ink2">A retiring service does not map to one replacement. Each person needs a clinical review of what fits next.</p>
+        <p className="text-[13px] text-ink2">A retiring service does not map to one replacement. Each person needs a clinical review of what fits next. Nothing here is a mapping.</p>
         <SourceCite id="implDates" />
       </CardBody>
     </Card>

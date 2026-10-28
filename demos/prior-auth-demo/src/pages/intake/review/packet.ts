@@ -1,24 +1,17 @@
-import type { CaseDraft } from "@/data/cases";
 import { completeness, isOpen, readiness, type CheckItem, type Readiness } from "@/data/intake/checklist";
 import { CLINICIAN_AT, staffOf } from "@/data/intake/seed";
 import { siteName } from "@/data/sites";
 import { NOTE_SECTIONS, type IntakeRecord } from "@/data/intake/types";
-import type { Program } from "@/data/types";
 import { cansFor, lonFor, LON_PENDING, PERIOD_LABEL, periodOf, type PolicyRule } from "@/data/va/policy";
 import { vaPlanOf } from "@/data/va/plans";
 import { serviceById } from "@/data/va/services";
-import { longDate, toDate } from "@/lib/time";
+import { longDate } from "@/lib/time";
 
 /* The handoff packet, built from the record every time it is shown, so the draft never goes stale. It carries what the authorization workflow
    needs and what is still open; it is a draft for New Case, never a request to a payer. */
 
 const valueOf = (r: IntakeRecord, s: "referral" | "profile" | "coverage", k: string): string => r[s][k]?.value ?? "";
 const name = (id?: string) => (id ? staffOf(id)?.name ?? id : undefined);
-const iso = (m: number) => {
-  const d = toDate(m);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-};
-
 export interface Packet {
   readiness: Readiness;
   lines: [string, string][];
@@ -62,27 +55,3 @@ export function packetOf(r: IntakeRecord, now: number): Packet {
 
 /** The status word for a policy row. Draft and unresolved rows stay labeled as such everywhere. */
 export const ruleStatusLabel = (r: Pick<PolicyRule, "status">): string => (r.status === "final" ? "Final" : r.status === "draft" ? "Draft" : "Unresolved");
-
-/** What New Case starts from. Intake never submits anything: New Case prepares the request and a person signs and sends it there. */
-export function caseDraftInit(r: IntakeRecord, now: number): Partial<CaseDraft> {
-  const rd = readiness(r, now);
-  const svc = serviceById(rd.serviceId);
-  /* New Case holds every Virginia service: the four levels of care as before, every other service as its own program. */
-  const program: Program = svc.program;
-  const plan = r.payerId ? vaPlanOf(r.payerId) : undefined;
-  const member = valueOf(r, "coverage", "medicaidId").replace(/[^0-9A-Za-z]/g, "").slice(-4);
-  return {
-    patient: { initials: r.initials, age: r.age },
-    payerId: r.payerId,
-    site: r.site,
-    referrer: { org: valueOf(r, "referral", "sourceOrg") || r.sourceOrg, clinician: valueOf(r, "referral", "referringClinician") },
-    reason: valueOf(r, "referral", "reason") || r.title,
-    started: true,
-    phase: "intake",
-    program,
-    state: "Virginia",
-    memberId: member ? `…${member}` : "",
-    planType: plan ? (plan.coverage === "ffs" ? "Fee-for-service" : "HMO") : "",
-    startDate: iso(r.serviceDate),
-  };
-}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CircleAlert, PenLine, RotateCcw, Send } from "lucide-react";
+import { CircleAlert, Mic, PenLine, RotateCcw, Send } from "lucide-react";
 import { Banner, Button, Card, CardBody, CardHeader, Modal, Pill, Segmented, TextArea } from "@/components/ui";
 import { staffOf } from "@/data/intake/seed";
 import { ASSESSMENT_SECTIONS, type AssessmentMode, type ClinicalAssessment, type IntakeRecord } from "@/data/intake/types";
@@ -16,8 +16,8 @@ export const STATUS_META: Record<ClinicalAssessment["status"], { label: string; 
 };
 export const ATTESTATION = "I reviewed this assessment. AI-drafted content was reviewed and edited by me.";
 
-/** The assessment's status, its mode (Manual, AI Scribe, Voice guided: switching never loses data), and the sign-off gate. */
-export function AssessmentHeader({ record }: { record: IntakeRecord }) {
+/** The assessment's status, Record Intake, its mode (clinician-completed, AI-scribed, patient-assisted: switching never loses data), and the sign-off gate. */
+export function AssessmentHeader({ record, openScribe }: { record: IntakeRecord; openScribe: () => void }) {
   const a = record.assessment;
   const st = useStore.getState();
   const [blocked, setBlocked] = useState(false);
@@ -34,11 +34,19 @@ export function AssessmentHeader({ record }: { record: IntakeRecord }) {
 
   return (
     <Card>
-      <CardHeader title="Clinical assessment" right={<Pill tone={meta.tone}>{meta.label}</Pill>} />
+      <CardHeader
+        title="Clinical assessment"
+        right={
+          <>
+            <Pill tone={meta.tone}>{meta.label}</Pill>
+            <Button variant="primary" icon={Mic} disabled={signed} title={signed ? "Amend the signed assessment to record again" : "Simulated: no audio is recorded"} onClick={() => { if (a.mode !== "scribe") st.setAssessmentMode(record.id, "scribe"); openScribe(); }}>Record Intake</Button>
+          </>
+        }
+      />
       <CardBody className="space-y-3">
         <div className="flex flex-wrap items-center gap-3">
           <span className="text-[13px] font-medium text-ink2">Mode</span>
-          <Segmented<AssessmentMode> items={[{ id: "manual", label: "Manual" }, { id: "scribe", label: "AI Scribe" }, { id: "voice", label: "Voice guided" }]} value={a.mode} onChange={(m) => st.setAssessmentMode(record.id, m)} />
+          <Segmented<AssessmentMode> items={[{ id: "manual", label: "Clinician-completed" }, { id: "scribe", label: "AI-scribed" }, { id: "voice", label: "Patient-assisted" }]} value={a.mode} onChange={(m) => st.setAssessmentMode(record.id, m)} />
         </div>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px]">
           <span><span className="font-semibold">{n}</span> of {ASSESSMENT_SECTIONS.length} sections documented</span>

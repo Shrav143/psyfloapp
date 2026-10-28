@@ -1,7 +1,9 @@
 import type { DocBlock } from "@/components/ui/DocumentSheet";
 import { FIELD_SPECS } from "@/data/intake/fields";
 import { scribeScriptFor, type ScribeScript, type Speaker } from "@/data/intake/scripts";
-import { NOTE_SECTIONS, ROLE_AGENT, type IntakeDocument, type IntakeRecord, type NoteSectionId, type ScribeSession, type SourceRef, type Suggestion } from "@/data/intake/types";
+import type { ScribeField } from "@/data/intake/scriptBlocks";
+import { NOTE_SECTIONS, ROLE_AGENT, SECTION_LABEL, type IntakeDocument, type IntakeRecord, type NoteSectionId, type ScribeSession, type SourceRef, type Suggestion } from "@/data/intake/types";
+import { fieldLabelOf, moduleLabelOf, resolveField } from "./route";
 
 /* The simulated scribe, as pure functions the store calls. A 250 ms tick moves the conversation 3 seconds, so a scripted turn every
    12 to 18 seconds of conversation arrives every 1 to 1.5 seconds on screen. The Clinical Documentation Agent's output stays inside the
@@ -17,20 +19,30 @@ export const FINISH_ACTION = "Prepare the draft intake note";
 /** "04:12" */
 export const clockOf = (sec: number): string => `${String(Math.floor(sec / 60)).padStart(2, "0")}:${String(Math.floor(sec % 60)).padStart(2, "0")}`;
 
-export const scriptOf = (r: IntakeRecord): ScribeScript => scribeScriptFor(r);
+/** The interview the scribe plays for a record. A session keeps its own conversation; `fresh` asks for the one the intake's current configuration calls for. */
+export const scriptOf = (r: IntakeRecord, fresh = false): ScribeScript => scribeScriptFor(r, fresh);
 export const speakerLabel = (script: ScribeScript, sp: Speaker): string => script.labels[sp] ?? (sp === "unknown" ? "Speaker not identified" : sp[0].toUpperCase() + sp.slice(1));
 /** Script index of a played turn ("scribe-a:4" is the fifth turn). */
 export const turnIndex = (turnId: string): number => Number(turnId.split(":")[1] ?? -1);
 
-/** "Patient profile · Transportation barriers" for an extracted suggestion. */
+const fieldOf = (f: ScribeField): string | null => (f.section === "module" ? null : f.section === "cans" ? `evidence:${f.theme}` : f.field);
+/** "Patient profile · Transportation barriers" for an extracted suggestion; a module proposal reads "Withdrawal & medical risk · Prior withdrawal history". */
 export function extractLabel(r: IntakeRecord, sg: Suggestion): string {
+  if (sg.moduleId) return fieldLabelOf(sg.moduleId, sg.field);
   if (sg.section === "assessment" && sg.field === "safety") return "Safety and risk screening";
-  const hit = scriptOf(r).turns.flatMap((t) => t.fields ?? []).find((f) => f.section === sg.section && f.field === sg.field);
+  if (sg.section === "cans") return `Evidence theme: ${sg.field.replace(/^evidence:/, "")}`;
+  const hit = scriptOf(r).turns.flatMap((t) => t.fields ?? []).find((f) => f.section === sg.section && fieldOf(f) === sg.field);
   return hit?.label ?? FIELD_SPECS.find((f) => f.key === sg.field)?.label ?? sg.field;
+}
+/** Where a proposal goes, in words: the module and field, or the section of the record. */
+export function destinationOf(r: IntakeRecord, sg: Suggestion): string {
+  if (sg.moduleId) return `${moduleLabelOf(sg.moduleId)} › ${fieldLabelOf(sg.moduleId, sg.field)}`;
+  if (sg.section === "cans") return "CANS evidence";
+  return `${SECTION_LABEL[sg.section]} · ${extractLabel(r, sg)}`;
 }
 
 export function newScribeSession(r: IntakeRecord, n: number): ScribeSession {
-  return { id: `SC-${r.id.slice(3)}-${n}`, status: "consent", elapsed: 0, turns: [], scriptId: scriptOf(r).id, cursor: 0, noteDraft: {}, simulated: true, noteStatus: {}, extracted: [], missing: [] };
+  return { id: `SC-${r.id.slice(3)}-${n}`, status: "consent", elapsed: 0, turns: [], scriptId: scriptOf(r, true).id, cursor: 0, noteDraft: {}, simulated: true, noteStatus: {}, extracted: [], missing: [] };
 }
 
 const excerpt = (t: string) => (t.length > 110 ? `${t.slice(0, 107).trimEnd()}...` : t);
@@ -62,8 +74,22 @@ export function playDue(r: IntakeRecord, s: ScribeSession, elapsed: number, o: {
     }
     let extracted = [...(next.extracted ?? [])];
     for (const f of t.fields ?? []) {
-      const sg: Suggestion = { id: o.uid("sg"), section: f.section, field: f.field, value: f.value, source: source(t.text), confidence: f.confidence, agent: SCRIBE_AGENT, at: o.clock, status: "pending" };
-      extracted = [...extracted.filter((x) => !(x.section === f.section && x.field === f.field && x.status === "pending")), sg];
+      if (f.section === "module") {
+        /* Evidence for an assessment module: the field is found in the module's form now, and a second statement for the same field is added to the first. */
+        const at = resolveField(f.module, f.words, f.keys);
+        if (!at) continue;
+        const prior = extracted.find((x) => x.moduleId === f.module && x.field === at.key && x.status === "pending");
+        const sg: Suggestion = prior
+          ? { ...prior, value: prior.value.includes(f.value) ? prior.value : `${prior.value} ${f.value}`, confidence: prior.confidence === "high" && f.confidence === "high" ? "high" : f.confidence === "low" ? "low" : prior.confidence }
+          : { id: o.uid("sg"), section: "assessment", field: at.key, moduleId: f.module, value: f.value, source: source(t.text), confidence: f.confidence, agent: SCRIBE_AGENT, at: o.clock, status: "pending" };
+        extracted = [...extracted.filter((x) => x !== prior), sg];
+      } else if (f.section === "cans") {
+        if (extracted.some((x) => x.section === "cans" && x.value === f.value)) continue;
+        extracted = [...extracted, { id: o.uid("sg"), section: "cans", field: `evidence:${f.theme}`, value: f.value, source: source(t.text), confidence: f.confidence, agent: SCRIBE_AGENT, at: o.clock, status: "pending" }];
+      } else {
+        const sg: Suggestion = { id: o.uid("sg"), section: f.section, field: f.field, value: f.value, source: source(t.text), confidence: f.confidence, agent: SCRIBE_AGENT, at: o.clock, status: "pending" };
+        extracted = [...extracted.filter((x) => !(x.section === f.section && x.field === f.field && !x.moduleId && x.status === "pending")), sg];
+      }
     }
     if (t.risk) {
       draft.risk = add(draft.risk, t.risk.text);
@@ -139,4 +165,52 @@ export function noteDoc(r: IntakeRecord, s: ScribeSession, at: number, reviewer:
       ...keep.flatMap((n): DocBlock[] => [{ kind: "h", text: n.label }, { kind: "p", id: `note-${n.id}`, text: s.noteDraft[n.id] ?? "" }]),
     ]],
   };
+}
+
+/* ------------------------------------------------------------------ what the scribe has heard, and how the review lists it */
+
+export interface Topic { label: string; covered: boolean }
+/** The topics of this interview, and which of them have come up so far ("Detected documentation"). */
+export function detectedTopics(r: IntakeRecord, s: ScribeSession): Topic[] {
+  const script = scriptOf(r);
+  const heard = new Set(script.turns.slice(0, s.cursor).map((t) => t.block));
+  return (script.categories ?? []).map((label) => ({ label, covered: heard.has(label) }));
+}
+
+/** A proposal's source is verified when it quotes the transcript turn it cites, that turn has not been edited, its speaker label is not in doubt, the confidence is
+    not low and it is not risk text. It means the person can check it against the transcript at a glance; it is never a decision. */
+export function isVerifiedSource(r: IntakeRecord, s: ScribeSession, sg: Suggestion): boolean {
+  if (sg.section === "assessment" && sg.field === "safety") return false;
+  if (sg.confidence === "low") return false;
+  const turn = s.turns.find((t) => t.id === sg.source.blockId);
+  if (!turn || turn.edited || !sg.source.quote) return false;
+  const quote = sg.source.quote;
+  const quoted = quote.endsWith("...") ? turn.text.startsWith(quote.slice(0, -3)) : turn.text.includes(quote);
+  const heard = scriptOf(r).turns[turnIndex(turn.id)]?.heardAs;
+  return quoted && !(heard !== undefined && turn.speaker === heard);
+}
+export const isRiskProposal = (sg: Suggestion): boolean => sg.section === "assessment" && sg.field === "safety" && !sg.moduleId;
+
+export interface ReviewGroup {
+  id: string;
+  title: string;
+  /** "risk" holds statements a clinician reviews; nothing in it can be accepted from the review. */
+  kind: "risk" | "module" | "record" | "cans";
+  items: Suggestion[];
+}
+/** The proposals of a session grouped for review: risk first, then one group per assessment module, the CANS evidence, and the shared sections of the record. */
+export function reviewGroups(r: IntakeRecord, s: ScribeSession): ReviewGroup[] {
+  const all = s.extracted ?? [];
+  const groups: ReviewGroup[] = [];
+  const risk = all.filter(isRiskProposal);
+  if (risk.length) groups.push({ id: "risk", title: "Risk information for a clinician", kind: "risk", items: risk });
+  const mods = [...new Set(all.filter((x) => x.moduleId).map((x) => x.moduleId as string))];
+  for (const m of mods) groups.push({ id: `m:${m}`, title: moduleLabelOf(m as never), kind: "module", items: all.filter((x) => x.moduleId === m) });
+  const cans = all.filter((x) => x.section === "cans");
+  if (cans.length) groups.push({ id: "cans", title: "CANS evidence themes", kind: "cans", items: cans });
+  for (const sec of ["referral", "profile", "coverage", "assessment"] as const) {
+    const items = all.filter((x) => x.section === sec && !x.moduleId && !isRiskProposal(x));
+    if (items.length) groups.push({ id: sec, title: sec === "assessment" ? "Clinical assessment" : SECTION_LABEL[sec], kind: "record", items });
+  }
+  return groups;
 }

@@ -1,66 +1,16 @@
 import type { IntakeRecord, PathwayFit, ServiceRecommendation, SourceRef } from "@/data/intake/types";
-import { availableOn, cansFor, LEGACY_LAST_DAY, periodOf, POLICY_VERSIONS, REDESIGN_START, requirementsFor, type PolicyPeriod, type PolicyRule, type PolicyVersion } from "@/data/va/policy";
+import { cansFor, LEGACY_LAST_DAY, REDESIGN_START } from "@/data/va/policy";
+import { programById } from "@/data/assess/programs";
 import { serviceById, type VaServiceId } from "@/data/va/services";
 import { longDate } from "@/lib/time";
 
-/* Care pathway wording and the Care Pathway Agent's simulated refresh. Fit is only ever "Possible fit", "Less likely fit" or "Not assessed":
-   never a recommendation, an eligibility finding or a medical-necessity decision. Every date note follows the policy layer. */
+/* Service option wording and the Care Pathway Agent's simulated refresh. An option is listed for a clinician to consider: never a recommendation, an eligibility finding or a medical-necessity decision.
+   Every date note follows the policy layer. */
 
-export const FIT_LABEL: Record<PathwayFit, string> = { possible: "Possible fit", less_likely: "Less likely fit", not_assessed: "Not assessed" };
 export const PW_STATUS_LABEL: Record<ServiceRecommendation["status"], string> = { suggested: "Option for review", under_review: "Under clinical review", selected: "Selected by a clinician", not_selected: "Not selected" };
-export const AVAIL_LABEL: Record<ServiceRecommendation["availability"], string> = {
-  available: "Offered at this clinic", waitlist: "Waitlist", external: "External program", not_yet: "Not offered until July 1, 2027", unknown: "Availability not confirmed",
-};
 
 export const pathwayName = (pw: Pick<ServiceRecommendation, "serviceId" | "externalLabel">): string =>
   pw.serviceId === "external" ? pw.externalLabel ?? "External referral" : serviceById(pw.serviceId).label;
-
-/** current, retiring on June 30, 2027, or starting July 1, 2027. */
-export function serviceWindow(serviceId: VaServiceId | "external"): { label: string; tone: "neutral" | "mid" } {
-  if (serviceId === "external") return { label: "Outside the Medicaid service list", tone: "neutral" };
-  const s = serviceById(serviceId);
-  if (s.status === "retiring") return { label: "Retiring June 30, 2027", tone: "mid" };
-  if (s.status === "redesign") return { label: "Starting July 1, 2027", tone: "neutral" };
-  return { label: "Current service", tone: "neutral" };
-}
-
-/** Whether the service can be delivered on the record's planned start, in words. */
-export function onPlannedStart(serviceId: VaServiceId | "external", r: IntakeRecord): { ok: boolean | null; text: string } {
-  const when = longDate(r.serviceDate);
-  if (serviceId === "external") return { ok: null, text: `Planned start ${when}: the program confirms its own start date` };
-  const s = serviceById(serviceId);
-  if (availableOn(serviceId, r.serviceDate)) return { ok: true, text: `Available on the planned start, ${when}` };
-  return { ok: false, text: s.status === "redesign" ? `Not available on ${when}: ${s.short} starts July 1, 2027` : `Not available on ${when}: ${s.short} ends June 30, 2027` };
-}
-
-/** The policy period and version that govern an option. A person's current retiring service is a transition; another retiring service
-    is only usable as a bridge under today's rules. */
-export function pathwayPolicy(pw: ServiceRecommendation, r: IntakeRecord, now: number): { period: PolicyPeriod | null; version: PolicyVersion | null } {
-  if (pw.serviceId === "external") return { period: null, version: null };
-  const s = serviceById(pw.serviceId);
-  if (s.status === "retiring") {
-    const legacy = r.legacy?.serviceId === pw.serviceId;
-    return { period: legacy ? "transition" : periodOf(pw.serviceId, Math.min(r.serviceDate, LEGACY_LAST_DAY), now), version: POLICY_VERSIONS["va-bh-current"] };
-  }
-  if (s.status === "redesign") return { period: periodOf(pw.serviceId, Math.max(r.serviceDate, REDESIGN_START), now), version: POLICY_VERSIONS["va-bh-redesign-2027"] };
-  const period = periodOf(pw.serviceId, r.serviceDate, now);
-  return { period, version: POLICY_VERSIONS[period === "redesign" ? "va-bh-redesign-2027" : "va-bh-current"] };
-}
-
-/** Authorization and registration rules on file for the option, as of the date it could start. (Assessments live in the CANS section.) */
-export function rulesFor(pw: ServiceRecommendation, r: IntakeRecord): PolicyRule[] {
-  if (pw.serviceId === "external") return [];
-  const s = serviceById(pw.serviceId);
-  const date = s.status === "redesign" ? Math.max(r.serviceDate, REDESIGN_START) : s.status === "retiring" ? Math.min(r.serviceDate, LEGACY_LAST_DAY) : r.serviceDate;
-  return requirementsFor({ serviceId: pw.serviceId, payerId: r.payerId, age: r.age, serviceDate: date }).filter((x) => x.kind === "authorization" || x.kind === "registration" || x.kind === "none" || (x.kind === "pending" && /authoriz|rules vary|policy/i.test(x.label)));
-}
-
-export function nextActionOf(pw: ServiceRecommendation, r: IntakeRecord): string {
-  if (pw.status === "suggested") return "A clinician reviews this option";
-  if (pw.status === "under_review") return "A clinician selects it or marks it not selected";
-  if (pw.status === "not_selected") return "No action";
-  return r.referralsOut.some((x) => x.pathwayId === pw.id) ? "Track the referral below" : "Create a referral, or make it the requested service";
-}
 
 /* ---------------------------------------------------------------- the Care Pathway Agent's refresh (simulated) */
 
@@ -116,6 +66,18 @@ export function dateNotes(serviceId: VaServiceId, r: IntakeRecord, now: number, 
   return [...new Set(items)];
 }
 
+/* The levels of care in one family, lowest intensity first. Options for review are the level evaluated and its neighbors, by name only: no criteria, no ranking. */
+const LADDERS: VaServiceId[][] = [["arts-op", "arts-iop", "arts-php", "arts-res"], ["opt", "mh-iop", "mh-php", "mh-res"]];
+
+/** The level the intake was evaluated for and the levels next to it. Residential gets partial hospitalization and intensive outpatient beside it; the lowest levels get the next one up. */
+export function levelNeighbors(serviceId: VaServiceId): VaServiceId[] {
+  const ladder = LADDERS.find((l) => l.includes(serviceId));
+  if (!ladder) return [];
+  const i = ladder.indexOf(serviceId);
+  const order = [i, i - 1, i + 1, i - 2, i + 2].filter((k) => k >= 0 && k < ladder.length);
+  return order.slice(0, 3).map((k) => ladder[k]);
+}
+
 type Candidate = { serviceId: VaServiceId; fit: PathwayFit; rationale: string };
 function candidates(r: IntakeRecord): Candidate[] {
   const text = [
@@ -125,22 +87,26 @@ function candidates(r: IntakeRecord): Candidate[] {
   ].join(" ");
   const youth = r.age !== null && r.age < 18;
   const list: Candidate[] = [];
+  const evaluated = r.config ? programById(r.config.programId).serviceId : r.serviceId;
+  const family = levelNeighbors(evaluated);
+  for (const sid of family) list.push({ serviceId: sid, fit: "not_assessed", rationale: sid === evaluated ? "The level of care this intake evaluated." : "A neighboring level of care, listed for the clinician to consider. It is not a recommendation." });
   if (/psychos|hearing voices|first episode/i.test(text)) {
     list.push({ serviceId: "csc", fit: "possible", rationale: "The record describes a first episode of psychosis." });
     list.push({ serviceId: "mh-iop", fit: "possible", rationale: "Structured care now, while CSC is not yet a Medicaid service." });
   }
-  if (youth) {
+  /* A level-of-care family is the option set; community services are suggested only for the rest. */
+  if (!family.length && youth) {
     if (/school/i.test(text)) list.push({ serviceId: "cpst-school", fit: "possible", rationale: "The referral comes from a school and asks for school-based support." });
     list.push({ serviceId: "mhcm", fit: "not_assessed", rationale: "Care coordination could connect school, family and appointments." });
     list.push({ serviceId: "cpst-youth", fit: "not_assessed", rationale: "Community-based support for a young person." });
     list.push({ serviceId: "opt", fit: "not_assessed", rationale: "Outpatient therapy is available now." });
-  } else {
+  } else if (!family.length) {
     if (/\bwork|employment/i.test(text)) list.push({ serviceId: "clubhouse", fit: "possible", rationale: "The person's goals include work; a clubhouse focuses on work and community." });
     list.push({ serviceId: "cpst-adult", fit: "not_assessed", rationale: "Community-based support for an adult." });
     list.push({ serviceId: "mhcm", fit: "not_assessed", rationale: "Care coordination alongside another service." });
     list.push({ serviceId: "opt", fit: "not_assessed", rationale: "Outpatient therapy is available now." });
   }
-  if (/alcohol|opioid|methamphetamine|substance use/i.test(text)) list.push({ serviceId: "arts-iop", fit: "not_assessed", rationale: "Substance use is mentioned in the record." });
+  if (!family.length && /alcohol|opioid|methamphetamine|substance use/i.test(text)) list.push({ serviceId: "arts-iop", fit: "not_assessed", rationale: "Substance use is mentioned in the record." });
   return list;
 }
 
@@ -150,7 +116,7 @@ export interface PathwayRefresh {
   summary: string;
 }
 
-/** Updates only options that are still suggestions (a clinician's review is never touched) and adds at most two new ones. */
+/** Updates only options that are still suggestions (a clinician's review is never touched) and adds at most three new ones. */
 export function refreshPathways(r: IntakeRecord, now: number, at: number): PathwayRefresh {
   const updates: ServiceRecommendation[] = [];
   for (const pw of r.pathways) {
@@ -167,7 +133,7 @@ export function refreshPathways(r: IntakeRecord, now: number, at: number): Pathw
   const have = new Set(r.pathways.map((p) => p.serviceId));
   const added: Omit<ServiceRecommendation, "id">[] = [];
   for (const c of candidates(r)) {
-    if (added.length >= 2 || have.has(c.serviceId)) continue;
+    if (added.length >= 3 || have.has(c.serviceId)) continue;
     const s = serviceById(c.serviceId);
     if (s.status === "retiring") continue;
     have.add(c.serviceId);

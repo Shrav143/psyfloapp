@@ -5,6 +5,7 @@ import { useEscape } from "@/components/ui/escape";
 import type { IntakeRecord, ScribeSession } from "@/data/intake/types";
 import type { Tone } from "@/data/types";
 import { useStore } from "@/store";
+import { programLabelOf } from "@/data/intake/scripts";
 import { runAgent } from "../lib/agents";
 import { SimulatedTag, SourceLink } from "../shared/provenance";
 import { clockOf, fieldsAccepted, FINISH_ACTION, notesAccepted, SCRIBE_AGENT, SECONDS_PER_TICK, TICK_MS } from "./engine";
@@ -70,7 +71,7 @@ function ScribePanelView({ record, onClose }: { record: IntakeRecord; onClose: (
   };
   const saveApproved = () => {
     const out = st.scribeSaveApproved(record.id);
-    st.toast({ title: "Saved to the intake", body: `${out.accepted} approved items written with their transcript source. ${out.waiting ? `${out.waiting} suggestions wait in their sections.` : "Nothing else is waiting."}`, tone: "good" });
+    st.toast({ title: "Saved to the intake", body: `${out.accepted} approved items written with their transcript source. ${out.waiting ? `${out.waiting} proposals wait for review where they belong${out.routed ? ` (${out.routed} as pending evidence in their modules)` : ""}.` : "Nothing else is waiting."}`, tone: "good" });
   };
   const accepted = s ? notesAccepted(s).length + fieldsAccepted(s).length : 0;
   const pendingCount = s ? Object.values(s.noteStatus ?? {}).filter((x) => x === "pending").length + (s.extracted ?? []).filter((x) => x.status === "pending").length : 0;
@@ -82,10 +83,10 @@ function ScribePanelView({ record, onClose }: { record: IntakeRecord; onClose: (
       <header className="border-b border-edge bg-white px-4 py-3 min-[900px]:px-6">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
           <Bubble icon={Mic} className="bg-sage-bg text-forest" />
-          <h2 id="scribe-title" className="text-[18px] font-semibold">AI Scribe</h2>
-          <span className="text-[14px] text-ink2">{record.id} · {record.initials || "No patient yet"}{record.age !== null ? `, ${record.age}` : ""}</span>
+          <h2 id="scribe-title" className="text-[18px] font-semibold">Record Intake</h2>
+          <span className="text-[14px] text-ink2">{record.id} · {record.initials || "No patient yet"}{record.age !== null ? `, ${record.age}` : ""}{programLabelOf(record) ? ` · ${programLabelOf(record)}` : ""}</span>
           <Pill tone={meta.tone} dot={status === "recording"}>{meta.label}</Pill>
-          <SimulatedTag what="Simulated audio" />
+          <SimulatedTag what="Simulated" />
           <div className="ml-auto flex flex-wrap items-center gap-2">
             {s && status !== "consent" ? (
               <>
@@ -103,7 +104,7 @@ function ScribePanelView({ record, onClose }: { record: IntakeRecord; onClose: (
             </button>
           </div>
         </div>
-        <p className="mt-1.5 text-[12px] text-muted">Simulated audio: nothing is recorded or leaves this browser.</p>
+        <p className="mt-1.5 text-[12px] font-medium text-muted">Simulated: no audio is recorded. Nothing leaves this browser. AI Scribe proposals are drafts until a person accepts them.</p>
       </header>
 
       <main className="min-h-0 flex-1 overflow-y-auto">
@@ -122,7 +123,7 @@ function ScribePanelView({ record, onClose }: { record: IntakeRecord; onClose: (
             ) : null}
             {status === "saved" ? (
               <Banner tone="good" title="Saved to the intake" action={<Button size="sm" onClick={() => st.scribeNew(record.id)}>Start a new session</Button>}>
-                Only what a person accepted was written, with its transcript source. Undecided suggestions wait in their sections.{" "}
+                Only what a person accepted was written, with its transcript source. Undecided proposals wait as pending evidence in their modules or as suggestions in their sections.{" "}
                 {s.docIds?.map((d) => {
                   const doc = record.documents.find((x) => x.id === d);
                   return doc ? <SourceLink key={d} record={record} source={{ kind: "document", ref: doc.name, docId: d }} className="mr-3" /> : null;
@@ -144,7 +145,7 @@ function ScribePanelView({ record, onClose }: { record: IntakeRecord; onClose: (
             <>
               <span className="text-[12px] text-ink2">{accepted} accepted · {pendingCount} not decided</span>
               <Button onClick={() => { st.scribeSaveDraft(record.id); st.toast({ title: "Draft saved", body: "The session is kept for review. Nothing was written to the intake.", tone: "neutral" }); }}>Save draft</Button>
-              <Button variant="primary" disabled={!accepted} title={accepted ? undefined : "Accept at least one note section or field first"} onClick={saveApproved}>Save approved content to the intake</Button>
+              <Button variant="primary" disabled={!accepted && !pendingCount} title="Accepted items are written. The rest waits as pending evidence or suggestions where it belongs." onClick={saveApproved}>Save to the intake</Button>
             </>
           ) : status === "saved" ? (
             <Button variant="primary" onClick={onClose}>Back to the record</Button>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ShieldCheck } from "lucide-react";
 import { Button, Card, CardBody, CardHeader, Checkbox, Field, Label, Segmented, TextInput } from "@/components/ui";
+import { interviewTopics, programLabelOf } from "@/data/intake/scripts";
 import { CLINICIAN_AT, INTAKE_STAFF } from "@/data/intake/seed";
 import type { IntakeRecord } from "@/data/intake/types";
 import { useStore } from "@/store";
@@ -25,12 +26,24 @@ export function ScribeConsent({ record, onDeclined }: { record: IntakeRecord; on
   const missing = [!who.length && "choose who consented", !asked && "confirm everyone present agreed", !identity && "check the patient's identity"].filter(Boolean) as string[];
   const patient = `${record.initials || "Patient not entered"}${record.age !== null ? `, ${record.age}` : ""}`;
   const types = [...new Set([script.encounterType, "Intake assessment, telehealth", "Follow-up visit"])];
+  const program = programLabelOf(record);
+  const topics = interviewTopics(record);
 
   return (
     <div className="mx-auto w-full max-w-[720px] px-4 py-6">
       <Card>
         <CardHeader title="Before you start" right={<ShieldCheck size={18} className="ico text-forest" aria-hidden="true" />} />
         <CardBody className="space-y-5">
+          <div className="rounded-xl bg-sage-bg/60 px-3.5 py-2.5 text-[13px]" data-testid="interview-setup">
+            {program ? (
+              <>
+                <p className="font-semibold text-ink2">Interview for {program}</p>
+                <p className="mt-0.5 text-ink2">The scribe listens for: {topics.join(", ")}. What it hears becomes proposals for the assessment modules; a person decides on each one.</p>
+              </>
+            ) : (
+              <p className="text-ink2">This intake is not configured yet, so the scribe uses a general intake interview. Configure the intake to have it listen for the program's own topics.</p>
+            )}
+          </div>
           <section aria-labelledby="sc-consent">
             <Label>1 · Recording consent</Label>
             <h3 id="sc-consent" className="sr-only">Recording consent</h3>
@@ -70,7 +83,7 @@ export function ScribeConsent({ record, onDeclined }: { record: IntakeRecord; on
               </Field>
             </div>
           </section>
-          <p className="rounded-xl bg-neutral-bg px-3.5 py-2.5 text-[13px] text-neutral-ink">{RETENTION_NOTE}</p>
+          <p className="rounded-xl bg-neutral-bg px-3.5 py-2.5 text-[13px] text-neutral-ink">{RETENTION_NOTE} The answer is added to this record's consent ledger.</p>
           <div className="flex flex-wrap items-center justify-end gap-2 border-t border-line pt-4">
             {missing.length ? <span className="mr-auto text-[12px] text-muted">To continue: {missing.join(", ")}.</span> : null}
             <Button

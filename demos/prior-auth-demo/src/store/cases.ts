@@ -16,14 +16,16 @@ import type { AppliedWorkflow } from "@/data/workflow/types";
 import { uid } from "@/lib/format";
 import { DAY } from "@/lib/time";
 import { authType, defaultTypeFor } from "@/pages/newcase/authType";
+import { documentsFromIntake, draftFieldsFromIntake, episodeLink, kindOfIntake, serviceNoteOf } from "@/pages/newcase/fromIntake";
 import { draftForRequest, mergeRequestDraft, requestDraft, requestState } from "@/pages/newcase/fromRequest";
 import { payerContextOf } from "@/pages/newcase/payerContext";
 import { unmetCount } from "@/pages/newcase/payerRules";
 import { verificationKey, wantOf } from "@/pages/newcase/verificationFor";
 import { pendingFor, planQuestions } from "@/pages/newcase/questions";
-import { NEW_CASE_STEPS, stepIndex } from "@/pages/newcase/steps";
+import { NEW_AUTH_STEPS, stepIndex } from "@/pages/newcase/steps";
 import { blankDraft, SEED_DRAFTS } from "@/pages/newcase/seedDrafts";
 import type { AppState } from "./index";
+import { meOf } from "./intake";
 import { selectPatientBook } from "./patients";
 
 /* New Case drafts and Case Manager (owner: new-case agent).
@@ -54,6 +56,16 @@ export interface CasesSlice {
   chooseCasePatient: (id: string, pick: { patientId: string; episodeId?: string; authorizationId?: string }) => void;
   /** Lets go of the patient, so the person can search again. */
   clearCasePatient: (id: string) => void;
+  /** Reads the person, the service (the clinician's selection beside what the referral asked for), the request type's dates and the diagnoses from the shared intake record into the draft. Nothing is retyped. */
+  fillCaseFromIntake: (id: string, intakeId: string, opts?: { kind?: AuthKind }) => void;
+  /** Brings the documents the record already holds (signed assessment and modules, the approved care plan, attached documents) into the draft, and drops the ones the record no longer supports. Returns how many were added. */
+  syncCaseFromIntake: (id: string) => number;
+  /** Links a draft to an intake: reads the person, the service and the record's documents into it, and tells the intake which draft is its authorization. */
+  linkCaseToIntake: (id: string, intakeId: string) => void;
+  /** The authorization draft of an intake: the one already open, or a new one read from the record (its request kind from the intake purpose). Links the two and returns the draft's id, or null for an unknown intake or a purpose that leads to no authorization. */
+  startCaseFromIntake: (intakeId: string, kind?: AuthKind) => string | null;
+  /** Lets the draft go of its intake. What was read stays; the link and the record's documents go. */
+  unlinkCaseIntake: (id: string) => void;
   /** The person went on past a warning and said why. One reason per kind of warning; it is written to the request's history when it is signed. */
   documentReason: (id: string, reason: DocumentedReason) => void;
   clearDocumentedReason: (id: string, kind: DocumentedReason["kind"]) => void;
@@ -241,11 +253,77 @@ export const createCasesSlice: StateCreator<AppState, [], [], CasesSlice> = (set
 
     clearCasePatient: (id) => change(id, () => ({ basis: undefined, patientId: null, episodeId: null, authorizationId: null, started: false, patient: { initials: "", age: null }, payerId: null, planType: "", memberId: "", program: null, levelLabel: undefined, verificationId: null })),
 
+    fillCaseFromIntake: (id, intakeId, opts) => {
+      const d = find(id);
+      const r = get().intakes.find((x) => x.id === intakeId);
+      if (!d || !r || d.sent) return;
+      const kind = opts?.kind ?? d.kind;
+      const fields = draftFieldsFromIntake(r, kind);
+      /* The ID places a case at a site, so a case that already has one stays where it is. */
+      change(id, () => ({ ...fields, type: defaultTypeFor(kind, d.type), site: d.caseId ? d.site : r.site, ...(kind !== d.kind ? { kind } : {}) }));
+      const link = episodeLink(r, selectPatientBook(get()));
+      if (link) get().chooseCasePatient(id, link);
+      /* What the intake knows wins over the patient book: the plan on file, the service the clinician selected, the person's own details. */
+      const now = find(id);
+      if (!now) return;
+      change(id, () => ({
+        patient: fields.patient, program: fields.program, levelLabel: undefined, payerId: fields.payerId ?? now.payerId, planType: fields.planType || now.planType, memberId: fields.memberId || now.memberId,
+        ...(authType(kind).existing ? {} : { startDate: fields.startDate }),
+      }));
+    },
+
+    syncCaseFromIntake: (id) => {
+      const d = find(id);
+      const r = d?.intakeId ? get().intakes.find((x) => x.id === d.intakeId) : undefined;
+      if (!d || !r || d.sent) return 0;
+      const docs = documentsFromIntake(r, d);
+      const gone = d.documents.filter((x) => x.from && !docs.some((y) => y.slot === x.slot));
+      const fresh = docs.filter((x) => d.documents.find((y) => y.slot === x.slot)?.from !== x.from);
+      if (gone.length) change(id, (x) => ({ documents: x.documents.filter((y) => !gone.some((z) => z.slot === y.slot)) }));
+      if (fresh.length) get().putCaseDocs(id, fresh);
+      const note = serviceNoteOf(r);
+      if (JSON.stringify(note) !== JSON.stringify(find(id)?.serviceNote)) update(id, (x) => ({ ...x, serviceNote: note }));
+      return fresh.length;
+    },
+
+    linkCaseToIntake: (id, intakeId) => {
+      const d = find(id);
+      const r = get().intakes.find((x) => x.id === intakeId);
+      if (!d || !r || d.sent) return;
+      get().fillCaseFromIntake(id, intakeId);
+      get().syncCaseFromIntake(id);
+      const at = get().clock;
+      const me = meOf(get());
+      get().patchIntake(intakeId, (x) => ({ ...x, handoff: { ...x.handoff, status: "in_new_case", draftId: id, createdAt: x.handoff.createdAt ?? at, preparedBy: x.handoff.preparedBy ?? me, openedBy: me, openedAt: at } }));
+      get().addIntakeAudit(intakeId, { actor: me, action: "Prepared an authorization draft in New Authorization", detail: `Draft ${id}. A person reviews it and signs it there. Nothing was sent to the payer.`, section: "review" });
+    },
+
+    startCaseFromIntake: (intakeId, kind) => {
+      const r = get().intakes.find((x) => x.id === intakeId);
+      if (!r) return null;
+      const open = get().caseDrafts.find((x) => x.intakeId === intakeId && !x.sent);
+      if (open) {
+        get().syncCaseFromIntake(open.id);
+        return open.id;
+      }
+      const k = kind ?? kindOfIntake(r);
+      if (!k) return null;
+      const id = get().createCaseDraft({ kind: k, type: defaultTypeFor(k, null), site: r.site, intakeId });
+      get().linkCaseToIntake(id, intakeId);
+      return id;
+    },
+
+    unlinkCaseIntake: (id) => {
+      const d = find(id);
+      if (!d?.intakeId || d.sent) return;
+      change(id, (x) => ({ intakeId: undefined, serviceNote: undefined, documents: x.documents.filter((y) => !y.from) }));
+    },
+
     documentReason: (id, reason) => {
       update(id, (d) => ({ ...d, documented: [...(d.documented ?? []).filter((r) => r.kind !== reason.kind), reason] }));
       /* Going on past a warning is an override of what the workflow would do next, so it is part of the workflow's trace. */
       const d = find(id);
-      if (d?.appliedWorkflow) get().recordCaseWorkflow(id, { entries: [{ key: `override:${reason.kind}:${reason.reason}`, at: get().clock, actor: "you", text: `Override: ${OVERRIDE_TEXT[reason.kind]}`, detail: `At ${NEW_CASE_STEPS[stepIndex(d)]}, ${d.appliedWorkflow.name} v${d.appliedWorkflow.version}. Your reason: ${reason.reason}` }] });
+      if (d?.appliedWorkflow) get().recordCaseWorkflow(id, { entries: [{ key: `override:${reason.kind}:${reason.reason}`, at: get().clock, actor: "you", text: `Override: ${OVERRIDE_TEXT[reason.kind]}`, detail: `At ${NEW_AUTH_STEPS[stepIndex(d)]}, ${d.appliedWorkflow.name} v${d.appliedWorkflow.version}. Your reason: ${reason.reason}` }] });
     },
     clearDocumentedReason: (id, kind) => update(id, (d) => ({ ...d, documented: (d.documented ?? []).filter((r) => r.kind !== kind) })),
     discardCaseDraft: (id) => set((s) => ({ caseDrafts: s.caseDrafts.filter((d) => !(d.id === id && !d.saved)) })),
@@ -354,6 +432,11 @@ export const createCasesSlice: StateCreator<AppState, [], [], CasesSlice> = (set
         caseDrafts: s.caseDrafts.map((x) => (x.id === id ? { ...x, sent: true, caseId: requestId, workflowPinned: x.appliedWorkflow ? true : x.workflowPinned, workflowLog: x.appliedWorkflow ? [...(x.workflowLog ?? []), ...workflowEntries].map((e) => ({ ...e, posted: true })) : x.workflowLog } : x)),
         caseSentToday: [...s.caseSentToday, requestId],
       }));
+      /* The intake learns where its authorization went, and keeps the person and episode the request created, so a later review reuses them. */
+      if (d.intakeId) {
+        get().patchIntake(d.intakeId, (x) => ({ ...x, patientId: x.patientId ?? d.patientId ?? requestId, episodeId: x.episodeId ?? d.episodeId ?? `EP-${requestId}` }));
+        get().addIntakeAudit(d.intakeId, { actor: meOf(get()), action: "Signed and sent the authorization request (simulated payer submission)", detail: `Request ${requestId}`, section: "review" });
+      }
       return requestId;
     },
 

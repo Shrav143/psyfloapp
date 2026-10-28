@@ -5,7 +5,8 @@ import { LON_PENDING, lonFor } from "@/data/va/policy";
 import { serviceById } from "@/data/va/services";
 import { useStore } from "@/store";
 import { AppliesInstead } from "./CansApplicability";
-import { CANS_STATUS_LABEL } from "./cansModel";
+import { CANS_STATUS_LABEL, cansServiceOf } from "./cansModel";
+import { cansCompletion } from "./cansState";
 import { LonReviewForm } from "./LonReviewForm";
 import { Facts, RuleNote } from "./ui";
 
@@ -22,8 +23,12 @@ const APPLY: Record<"yes" | "unresolved" | "no", { label: string; tone: "neutral
 /** `instead` lists what applies instead when the model does not apply (left out when the CANS card above already lists it). */
 export function LevelOfNeed({ record, instead = true }: { record: IntakeRecord; instead?: boolean }) {
   const start = useStore((s) => s.startLonReview);
-  const l = lonFor(record.serviceId);
-  const svc = serviceById(record.serviceId);
+  const serviceId = cansServiceOf(record);
+  const l = lonFor(serviceId);
+  const svc = serviceById(serviceId);
+  const cans = record.cans;
+  const comp = cans ? cansCompletion(cans) : null;
+  const cansLine = !cans ? "No CANS record" : cans.template ? `${CANS_STATUS_LABEL[cans.status]} · ${comp?.addressed ?? 0} of ${comp?.total ?? 0} demo placeholder items addressed` : `${CANS_STATUS_LABEL[cans.status]} · no item template loaded (no ratings)`;
   return (
     <Card data-lon={l.applies}>
       <CardHeader title="Level of Need" subtitle={svc.label} right={<Pill tone={APPLY[l.applies].tone}>{APPLY[l.applies].label}</Pill>} />
@@ -36,12 +41,16 @@ export function LevelOfNeed({ record, instead = true }: { record: IntakeRecord; 
         ) : (
           <p className="text-[14px] text-ink">The Level of Need Model is not loaded for {svc.short}. Psyflo shows no Level of Need for this service.</p>
         )}
-        <p className="text-[13px] text-ink2">Virginia's Level of Need Model is not LOCUS, CALOCUS-CASII or ASAM. Psyflo does not derive a level from those instruments or from the CANS Lifetime.</p>
+        <p className="text-[13px] text-ink2">Virginia's Level of Need Model is not LOCUS, CALOCUS-CASII or ASAM. Psyflo does not derive a level from those instruments or from the CANS Lifetime. A clinician may record a review note and a service recommendation in their own words; neither is a Level of Need.</p>
         {l.rule ? <RuleNote rule={l.rule} /> : null}
         <Facts
           items={[
+            ["CANS completion", cansLine],
             ["Clinical assessment", ASSESS_LABEL[record.assessment.status]],
-            ["CANS Lifetime", record.cans ? `${CANS_STATUS_LABEL[record.cans.status]} (no ratings)` : "No CANS record"],
+            ["Relevant clinical evidence", cans ? `${cans.evidence.length} statement${cans.evidence.length === 1 ? "" : "s"} kept in the CANS evidence review` : "None yet"],
+            ["Applicable methodology", l.applies === "no" ? "Not applicable" : "None configured: pending validated policy configuration"],
+            ["Proposed result", "None: no validated methodology is configured"],
+            ["Final determination", record.lon?.status === "dispositioned" ? "Pending validated policy configuration (a clinician recorded a disposition below)" : "Pending validated policy configuration"],
           ]}
         />
         {l.applies === "yes" ? (

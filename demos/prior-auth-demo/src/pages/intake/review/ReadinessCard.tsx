@@ -1,15 +1,17 @@
-import { useState } from "react";
-import { Info } from "lucide-react";
+import { useMemo, useState } from "react";
 import { Button, Card, CardBody, CardHeader, Chip, Pill } from "@/components/ui";
+import { dualReadiness } from "@/data/assess/readiness";
 import { REQUIREMENT_LABEL, type CheckItem, type Readiness } from "@/data/intake/checklist";
 import type { IntakeRecord } from "@/data/intake/types";
 import { vaPlanOf } from "@/data/va/plans";
 import { serviceById } from "@/data/va/services";
 import { useStore } from "@/store";
+import { useIntakeNow } from "../lib/policyNow";
 import { KIND_LABEL, ORG_RULE_LABEL, orgRulesFor } from "../policy/match";
 import { PolicyButton } from "../policy/PolicyButton";
 import { GoTo } from "./ChecklistCard";
 import { CheckPill, ReadinessPill, RuleStatusPill, SourceAnchor } from "./pills";
+import { ReadinessTracks } from "./ReadinessTracks";
 
 /** A short list: label, status and where to fix it. The detail is in the checklist below. */
 function ItemList({ recordId, items }: { recordId: string; items: CheckItem[] }) {
@@ -34,6 +36,8 @@ function ItemList({ recordId, items }: { recordId: string; items: CheckItem[] })
 /** Authorization readiness, kept apart from completeness: whether the service needs an authorization (or a registration, or nothing, or the
     policy is not settled), and whether New Case has what it needs. It never says a request will be approved. */
 export function ReadinessCard({ record, rd }: { record: IntakeRecord; rd: Readiness }) {
+  const now = useIntakeNow();
+  const tracks = useMemo(() => dualReadiness(record, now), [record, now]);
   const orgRules = useStore((s) => s.orgRules);
   const createTask = useStore((s) => s.createPersonTask);
   const complete = useStore((s) => s.completeIntakeTask);
@@ -46,12 +50,9 @@ export function ReadinessCard({ record, rd }: { record: IntakeRecord; rd: Readin
     <Card data-card="readiness">
       <CardHeader title="Authorization readiness" right={<ReadinessPill status={rd.status} />} />
       <CardBody className="space-y-4">
+        <ReadinessTracks readiness={tracks} recordId={record.id} />
         <div>
           <p data-testid="readiness-headline" className="text-[14px]">{rd.headline}</p>
-          <p className="mt-2 flex items-center gap-2 rounded-xl bg-sage-bg px-3 py-2 text-[13px] font-medium text-ink">
-            <Info size={15} className="ico shrink-0 text-forest" aria-hidden="true" />
-            {rd.note}
-          </p>
         </div>
         <dl className="grid grid-cols-[120px_minmax(0,1fr)] gap-x-3 gap-y-1.5 text-[13px]">
           <dt className="text-muted">Service</dt>

@@ -4,7 +4,7 @@ import { isCoreModule, moduleById, moduleOrder } from "./modules";
 import { programAvailability, programById } from "./programs";
 import { purposeById } from "./purposes";
 import {
-  VERIFICATION_RANK, type AssessmentPlan, type AssessmentRule, type Level, type ModuleChoice, type ModuleGroup, type ModuleId, type PlanContext, type PlanModule, type PlanSource, type RuleModule, type Verification,
+  SETTING_LABEL, VERIFICATION_RANK, type AssessmentPlan, type AssessmentRule, type Level, type ModuleChoice, type ModuleGroup, type ModuleId, type PlanContext, type PlanModule, type PlanSource, type Population, type ProgramAvailability, type ProgramDef, type RuleModule, type Verification,
 } from "./types";
 
 /* buildAssessmentPlan: the one function that turns a program, a purpose, a population, a setting, a state, a payer and a date into the list of modules an
@@ -27,6 +27,44 @@ function matches(rule: AssessmentRule, c: PlanContext): boolean {
 }
 const appliesWhen = (m: RuleModule, c: PlanContext): boolean =>
   (!m.when?.populations || m.when.populations.includes(c.population)) && (!m.when?.settings || m.when.settings.includes(c.setting)) && (!m.when?.purposes || m.when.purposes.includes(c.purposeId));
+
+/** What a reader of the plan should know, with what each is about so a screen can put it where it belongs. The plan's `warnings` are these texts. */
+export interface PlanNotice {
+  kind: "availability" | "population" | "setting" | "payer" | "early" | "program" | "rule" | "epsdt";
+  text: string;
+}
+const POP_WORD: Record<Population, string> = { adult: "adults", adolescent: "adolescents", child: "children" };
+
+function noticesFor(c: PlanContext, program: ProgramDef, availability: ProgramAvailability, rules: AssessmentRule[]): PlanNotice[] {
+  const out: PlanNotice[] = [];
+  const add = (kind: PlanNotice["kind"], text: string) => {
+    if (!out.some((n) => n.text === text)) out.push({ kind, text });
+  };
+  if (availability.status !== "available") add("availability", availability.note);
+  if (program.populations.length && !program.populations.includes(c.population)) add("population", `${program.label} usually serves ${program.populations.map((p) => POP_WORD[p]).join(" and ")}. Confirm the population before going on.`);
+  if (c.setting !== program.defaultSetting && !program.settings.includes(c.setting)) add("setting", `${program.label} is not usually delivered in a ${SETTING_LABEL[c.setting].toLowerCase()} setting. Confirm the setting.`);
+  /* A demonstration row is not a plan's policy: only a payer-policy row settles the payer's requirement. */
+  const payerRows = rules.filter((r) => r.payers);
+  if (!payerRows.some((r) => r.source === "payer_policy")) {
+    add("payer", !c.payerId
+      ? "No plan is selected: the plan below follows state and organization defaults. Select the payer to look for plan-specific rules. Payer requirement not yet verified."
+      : payerRows.length
+        ? "The only payer row for this plan is a demonstration, not the plan's policy. Payer requirement not yet verified."
+        : "No payer-specific assessment rule is configured for this plan: the plan below follows state and organization defaults. Payer requirement not yet verified.");
+  }
+  const early = rules.filter((r) => r.from && c.policyDate < vaDate(r.from));
+  if (early.length) add("early", `Rules for ${program.label} take effect ${early[0].from === "2027-07-01" ? "July 1, 2027" : early[0].from}. They are shown for preparation and do not hold up readiness before then.`);
+  if (program.note) add("program", program.note);
+  for (const r of rules) if (r.note) add("rule", r.note);
+  if (c.population !== "adult") add("epsdt", "People under 21 on Medicaid have a broader medical necessity standard (EPSDT). Configured and not verified.");
+  return out;
+}
+
+/** The plan's notices with their kinds (the same texts as `plan.warnings`, in the same order). */
+export function planNotices(c: PlanContext): PlanNotice[] {
+  const program = programById(c.programId);
+  return noticesFor(c, program, programAvailability(c.programId, c.state, c.policyDate), RULES.filter((r) => matches(r, c)));
+}
 
 export function buildAssessmentPlan(c: PlanContext): AssessmentPlan {
   const program = programById(c.programId);
@@ -82,16 +120,7 @@ export function buildAssessmentPlan(c: PlanContext): AssessmentPlan {
   const versionRule = rules.reduce<AssessmentRule | null>((best, r) => (!best || r.updated > best.updated || (r.from ?? "") > (best.from ?? "") ? r : best), null);
   const requiredStatus = weakest(modules.filter((x) => x.level === "required").map((x) => x.status));
 
-  const warnings: string[] = [];
-  if (availability.status !== "available") warnings.push(availability.note);
-  if (program.populations.length && !program.populations.includes(c.population)) warnings.push(`${program.label} usually serves ${program.populations.map((p) => (p === "adult" ? "adults" : p === "adolescent" ? "adolescents" : "children")).join(" and ")}. Confirm the population before going on.`);
-  if (c.setting !== program.defaultSetting && !program.settings.includes(c.setting)) warnings.push(`${program.label} is not usually delivered in a ${c.setting} setting. Confirm the setting.`);
-  if (!rules.some((r) => r.payers)) warnings.push(c.payerId ? "No payer-specific assessment rule is configured for this plan: the plan below follows state and organization defaults. Payer requirement not yet verified." : "No plan is selected: the plan below follows state and organization defaults. Select the payer to look for plan-specific rules.");
-  const early = rules.filter((r) => r.from && c.policyDate < vaDate(r.from));
-  if (early.length) warnings.push(`Rules for ${program.label} take effect ${early[0].from === "2027-07-01" ? "July 1, 2027" : early[0].from}. They are shown for preparation and do not hold up readiness before then.`);
-  if (program.note) warnings.push(program.note);
-  for (const r of rules) if (r.note && !warnings.includes(r.note)) warnings.push(r.note);
-  if (c.population !== "adult") warnings.push("People under 21 on Medicaid have a broader medical necessity standard (EPSDT). Configured and not verified.");
+  const warnings = noticesFor(c, program, availability, rules).map((n) => n.text);
 
   return {
     context: c,
@@ -113,16 +142,27 @@ export function initialChoices(plan: AssessmentPlan, who: string, at: number): M
   return plan.modules.map((m) => ({ id: m.id, level: m.level, state: m.level === "optional" ? "off" : "active", by: "plan", who, at }));
 }
 
-/** A new plan carried onto a record that already has choices: a person's additions and the work already done are kept; the rest follows the new plan. */
+/** Why a module left the plan but stays on the record: its work is kept and shown, never deleted. */
+export const ARCHIVED_REASON = "Archived: not in the new plan. Its data is kept.";
+
+/** A new plan carried onto a record that already has choices: a person's additions and the work already done are kept; the rest follows the new plan.
+    A module the new plan drops is archived (off, its instrument and history untouched) when work was done in it. A required module a person turned off
+    without an override comes back, and an override only stands while the module is still required. */
 export function reconcileChoices(plan: AssessmentPlan, previous: ModuleChoice[], keep: (id: ModuleId) => boolean, who: string, at: number): ModuleChoice[] {
   const prev = new Map(previous.map((c) => [c.id, c]));
+  const fresh = (m: AssessmentPlan["modules"][number]): ModuleChoice => ({ id: m.id, level: m.level, state: m.level === "optional" ? "off" : "active", by: "plan", who, at });
   const out: ModuleChoice[] = plan.modules.map((m) => {
     const p = prev.get(m.id);
-    if (p && (p.by === "clinician" || p.by === "override")) return { ...p, level: m.level };
+    if (p?.by === "override") return m.level === "required" ? { ...p, level: m.level } : { ...p, level: m.level, by: "clinician" as const };
+    if (p?.by === "clinician") return m.level === "required" && p.state === "off" ? fresh(m) : { ...p, level: m.level };
     if (p && keep(m.id)) return { ...p, level: m.level, state: "active" as const };
-    return { id: m.id, level: m.level, state: m.level === "optional" ? ("off" as const) : ("active" as const), by: "plan" as const, who, at };
+    return fresh(m);
   });
-  for (const p of previous) if (!out.some((o) => o.id === p.id) && (p.by === "clinician" || keep(p.id))) out.push({ ...p, level: "optional" });
+  for (const p of previous) {
+    if (out.some((o) => o.id === p.id)) continue;
+    if (p.by === "clinician") out.push({ ...p, level: "optional" });
+    else if (keep(p.id)) out.push({ id: p.id, level: "optional", state: "off", by: "plan", who, at, reason: ARCHIVED_REASON });
+  }
   return out;
 }
 

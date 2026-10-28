@@ -61,6 +61,25 @@ export { CATEGORY_LABEL };
 /** A program that stands for a Virginia service, from that service's id. The first match (Youth IOP shares mental health IOP's service). */
 export const programForService = (serviceId: string): ProgramDef | undefined => (serviceId === "other-bh" ? undefined : PROGRAMS_V2.find((x) => x.serviceId === serviceId));
 
+/** The population an age falls in: adult from 18, adolescent 12 to 17, child under 12. Null while the age is not known. */
+export const populationForAge = (age: number | null): Population | null => (age === null ? null : age >= 18 ? "adult" : age >= 12 ? "adolescent" : "child");
+
+/** The population and setting a program starts with for a person of this age. A program that serves one population decides it; otherwise the person's age does, when the program serves it. */
+export function defaultsFor(id: ProgramId, age: number | null): { population: Population; setting: CareSetting } {
+  const def = programById(id);
+  const byAge = populationForAge(age);
+  const population = def.populations.length === 1 ? def.populations[0] : byAge && def.populations.includes(byAge) ? byAge : def.defaultPopulation;
+  return { population, setting: def.defaultSetting };
+}
+
+/** The program a referral for a Virginia service stands for. Several programs can share one service (Youth IOP is mental health IOP for a young person), so the one made for the person's age comes first. */
+export function programForRequest(serviceId: string, age: number | null): ProgramDef | undefined {
+  if (serviceId === "other-bh") return undefined;
+  const same = PROGRAMS_V2.filter((x) => x.serviceId === serviceId);
+  const pop = populationForAge(age);
+  return (pop ? same.find((x) => x.populations.length < ALL.length && x.populations.includes(pop)) : undefined) ?? same[0];
+}
+
 /** Whether a program can be offered on a date, from its service's dates, in the state's configuration. `date` is demo minutes. */
 export function programAvailability(id: ProgramId, state: string, date: number): ProgramAvailability {
   const def = programById(id);

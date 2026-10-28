@@ -5,6 +5,7 @@ import { payerById } from "./seed";
 import { daysRequested, dxKeyFor, dxLine, scoresFor, type QueueItem, type RequestKind } from "./queue";
 import { siteOf, type SiteId } from "./sites";
 import { isCoreProgram, PROGRAM_LABEL, type AgentKey, type CoreProgram, type PayerId, type Program, type PsyRequest, type RequestType, type Tone } from "./types";
+import type { VaServiceId } from "./va/services";
 import type { AppliedWorkflow } from "./workflow/types";
 import { clockTime, toDate } from "@/lib/time";
 
@@ -28,6 +29,8 @@ export interface DraftDocument {
   sample: boolean;
   status: "validating" | "done";
   findings: DocFinding[];
+  /** Read from the shared intake record, not dropped here: where it comes from and who signed it ("ASAM assessment, signed by Dr. Rivera"). */
+  from?: string;
 }
 
 /* ------------------------------------------------------------------ the draft */
@@ -124,6 +127,19 @@ export interface WorkflowChoice {
   at: number;
 }
 
+/** The service the referral asked for and the one the clinician selected in Care planning. They stay visible whenever they differ. */
+export interface ServiceNote {
+  requested: VaServiceId;
+  /** Null while no clinician has selected a service: the authorization then follows the request, and says so. */
+  selected: VaServiceId | null;
+  by?: string;
+  at?: number;
+  reason?: string;
+  rolePlay?: boolean;
+  /** The care plan version the draft was prepared from. A revised plan makes the draft ask to be refreshed. */
+  carePlanVersion?: number;
+}
+
 export type PatientSex = "F" | "M" | "X";
 export const SEX_LABEL: Record<PatientSex, string> = { F: "Female", M: "Male", X: "Other or not stated" };
 export interface Onboarding {
@@ -147,10 +163,10 @@ export interface CaseDraft {
   caseId: string | null;
   saved: boolean;
   sent: boolean;
-  /** 0 holds the first three of the four steps, 1 is Clinical documentation with the agents started (it opens on their section, Authorization preparation), 2 is Review & submit. */
+  /** 0 holds the first three of the four stages, 1 is Clinical documentation with the agents started (it opens on their section, Authorization preparation), 2 is Review & submit. */
   step: 0 | 1 | 2;
-  /** While step is 0: Referral, Intake, then Eligibility and benefits, then Clinical documentation. */
-  phase: "referral" | "intake" | "eligibility" | "records";
+  /** While step is 0: Patient & Service, then Coverage & Requirements, then Clinical documentation. A draft saved before round 10 may still say "referral", "intake" or "eligibility" (see stepIndex). */
+  phase: "service" | "coverage" | "records";
   /** The Authorization type. It decides what Intake asks, how Eligibility behaves, which documents are typical and what the justification says. */
   kind: AuthKind;
   /** The site the case belongs to. A new patient's site is chosen in Intake; an existing patient's case is at the patient's site. */
@@ -159,6 +175,10 @@ export interface CaseDraft {
   patientId: string | null;
   episodeId: string | null;
   authorizationId: string | null;
+  /** The intake this authorization was prepared from (IN-…): the shared record Patient & Service and Clinical documentation read. Left out for a person who has no intake. */
+  intakeId?: string;
+  /** What the referral asked for and what the clinician selected, when the authorization comes from an intake. */
+  serviceNote?: ServiceNote;
   /** The verification record this case uses: the same one Eligibility & Benefits shows. */
   verificationId: string | null;
   /** Intake has begun: a referral, a patient or "Create case manually" was chosen. */

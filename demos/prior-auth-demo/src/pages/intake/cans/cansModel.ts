@@ -1,5 +1,8 @@
+import { programById } from "@/data/assess/programs";
+import { staffOf } from "@/data/intake/seed";
 import type { IntakeRecord } from "@/data/intake/types";
-import { cansFor, REDESIGN_START, vaDate, type CansApplies, type PolicyRule } from "@/data/va/policy";
+import { cansFor, vaDate, type CansApplies, type PolicyRule } from "@/data/va/policy";
+import type { VaServiceId } from "@/data/va/services";
 import type { Tone } from "@/data/types";
 import { toDate } from "@/lib/time";
 
@@ -19,14 +22,26 @@ export const THEMES_NOTE = "Themes organize evidence. They are not CANS domains.
 export const ASSESSOR_PENDING = "Assessor qualifications pending DMAS policy";
 export const REASSESS_PENDING = "No interval set: pending DMAS policy";
 export const SIGN_BLOCKED = "Signing is off: the official CANS Lifetime template is not configured, so there is nothing to sign.";
+export const ASSESSOR_PER_POLICY = "Assessor qualifications per policy: not verified";
+export const PLACEHOLDER_WARNING = "Demo placeholder: not an official CANS Lifetime assessment.";
 
-/** CANS applicability for the record as of `now`. `cansFor` decides by the planned service date; before July 1, 2027 a required CANS is
-    still preparation only, because the redesigned service is not in effect yet (the policy preview moves `now` to July 1, 2027). */
-export function cansApplies(r: IntakeRecord, now: number): { applies: CansApplies; rule?: PolicyRule } {
-  const c = cansFor(r.serviceId, r.serviceDate);
-  if (c.applies === "required" && now < REDESIGN_START) return { ...c, applies: "upcoming" };
-  return c;
+/** The Virginia service the CANS and Level of Need questions are asked about: the configured program's service once the intake is configured
+    (the plan decides), otherwise the service the referral asked for. */
+export function cansServiceOf(r: IntakeRecord): VaServiceId {
+  return r.config ? programById(r.config.programId).serviceId : r.serviceId;
 }
+
+/** CANS applicability as of the policy "now". The planned start counts only when it is later than now: in the post-transition environment an intake
+    starts no earlier than July 1, 2027, and before that date a required CANS is preparation only (`cansFor` returns "upcoming"). */
+export function cansApplies(r: IntakeRecord, now: number): { applies: CansApplies; rule?: PolicyRule } {
+  return cansFor(cansServiceOf(r), Math.max(r.serviceDate, now), now);
+}
+
+/** An administrator: the clinic owner or the clinical director. Loading the template is theirs because it applies to every intake. */
+export const isAdmin = (staffId: string): boolean => {
+  const s = staffOf(staffId);
+  return !!s && (s.role === "Clinic owner" || s.role === "Clinical director");
+};
 
 export const APPLIES_LABEL: Record<CansApplies, string> = {
   required: "Required (draft policy)",
@@ -69,6 +84,16 @@ const THEME_RULES: [CansTheme, RegExp][] = [
 export function themeOf(text: string): CansTheme | null {
   return THEME_RULES.find(([, re]) => re.test(text))?.[0] ?? null;
 }
+/** The words that placed a statement under a theme, for the "why" line of a proposal. */
+export function themeWord(text: string): string | null {
+  for (const [, re] of THEME_RULES) {
+    const m = re.exec(text);
+    if (m) return m[0].toLowerCase();
+  }
+  return null;
+}
+/** Wording that is hedged or second-hand in its source: confirm before it is used. */
+export const HEDGED = /\b(may|might|possibly|reportedly|appears|seems|reported|says|according to|per (the )?(mother|father|parent|teacher|counselor))\b/i;
 
 const pad = (x: number) => String(x).padStart(2, "0");
 /** Demo minutes as "YYYY-MM-DD" for a date input. */

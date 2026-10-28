@@ -1,5 +1,4 @@
 import type { StateCreator } from "zustand";
-import type { CaseDraft } from "@/data/cases";
 import { completeness, type CheckItem } from "@/data/intake/checklist";
 import { CLINICIAN_AT, staffOf, type LegacyClient } from "@/data/intake/seed";
 import { SECTION_LABEL, type AgentTask, type IntakeRecord, type ServiceRecommendation, type TaskGate } from "@/data/intake/types";
@@ -19,14 +18,8 @@ export interface IntakeReviewSlice {
   addOrgRule: (rule: Omit<OrgRule, "id" | "addedBy" | "addedAt">) => void;
   removeOrgRule: (ruleId: string) => void;
 
-  /** The handoff packet becomes a draft. `by` is the agent or person who prepared it. */
+  /** The authorization packet becomes a draft summary. `by` is the agent or person who prepared it. Prepare Authorization (Care planning) opens the linked draft in New Authorization. */
   prepareHandoffDraft: (id: string, by: string) => void;
-  /** A person approves the packet for New Case. Nothing goes to a payer. */
-  approveHandoff: (id: string) => void;
-  /** Takes the approval back before the packet is opened in New Case. */
-  reopenHandoff: (id: string) => void;
-  /** Creates the New Case draft from an approved packet and returns its id (or the one already made). */
-  openHandoffInNewCase: (id: string, init: Partial<CaseDraft>) => string | null;
 
   /** Closes "needs you" tasks whose decision was made where it belongs (suggestions reviewed, pathway selected...). */
   closeClearedTasks: (id: string, now: number) => void;
@@ -95,29 +88,6 @@ export const createIntakeReviewSlice: StateCreator<AppState, [], [], IntakeRevie
       if (!r || r.handoff.status !== "not_started") return;
       get().patchIntake(id, (x) => ({ ...x, handoff: { ...x.handoff, status: "draft", createdAt: get().clock, preparedBy: by } }));
       if (by === me()) audit(id, "Prepared the handoff draft");
-    },
-    approveHandoff: (id) => {
-      const r = rec(id);
-      if (!r || r.handoff.status === "in_new_case") return;
-      get().patchIntake(id, (x) => ({ ...x, handoff: { ...x.handoff, status: "ready", createdAt: x.handoff.createdAt ?? get().clock, preparedBy: x.handoff.preparedBy ?? me(), approvedBy: me(), approvedAt: get().clock } }));
-      audit(id, "Approved the handoff packet for New Case", "Readiness is not approval. Nothing was sent to the payer.");
-      get().closeClearedTasks(id, get().clock);
-    },
-    reopenHandoff: (id) => {
-      const r = rec(id);
-      if (!r || r.handoff.status !== "ready") return;
-      get().patchIntake(id, (x) => ({ ...x, handoff: { ...x.handoff, status: "draft", approvedBy: undefined, approvedAt: undefined } }));
-      audit(id, "Took back the handoff approval");
-    },
-    openHandoffInNewCase: (id, init) => {
-      const r = rec(id);
-      if (!r) return null;
-      if (r.handoff.status === "in_new_case" && r.handoff.draftId && get().caseDrafts.some((d) => d.id === r.handoff.draftId)) return r.handoff.draftId;
-      if (r.handoff.status !== "ready" && r.handoff.status !== "in_new_case") return null;
-      const draftId = get().createCaseDraft(init);
-      get().patchIntake(id, (x) => ({ ...x, handoff: { ...x.handoff, status: "in_new_case", draftId, openedBy: me(), openedAt: get().clock } }));
-      audit(id, "Opened the handoff in New Case", `Draft ${draftId}. New Case prepares the request; a person signs and sends it there. Nothing was sent from Intake.`);
-      return draftId;
     },
 
     closeClearedTasks: (id, now) => {

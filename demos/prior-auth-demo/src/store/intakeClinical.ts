@@ -1,7 +1,9 @@
 import type { StateCreator } from "zustand";
-import { GUIDED_QUESTIONS, type VoiceOption } from "@/data/intake/scripts";
+import type { ConsentEntry } from "@/data/assess/types";
+import { followUpFor, GUIDED_QUESTIONS, type VoiceOption } from "@/data/intake/scripts";
 import { staffOf } from "@/data/intake/seed";
 import { type AssessmentMode, type IntakeDocument, type IntakeRecord, type NoteSectionId, type ScribeSession, type Suggestion, type TranscriptTurn, type VoiceSession } from "@/data/intake/types";
+import { assessmentFeeds } from "@/pages/intake/assessment/feed";
 import * as SE from "@/pages/intake/scribe/engine";
 import * as VE from "@/pages/intake/voice/engine";
 import { meOf } from "./intake";
@@ -12,7 +14,7 @@ import type { AppState } from "./index";
    person saves it; nothing they produce is ever written as verified, and neither can document risk, sign or decide anything. */
 
 type Decision = "accepted" | "edited" | "rejected";
-export const MODE_LABEL: Record<AssessmentMode, string> = { manual: "Manual", scribe: "AI Scribe", voice: "Voice guided" };
+export const MODE_LABEL: Record<AssessmentMode, string> = { manual: "Clinician-completed", scribe: "AI-scribed", voice: "Patient-assisted" };
 const SCRIBE_TASK = "Organize the live transcript into note sections";
 const VOICE_TASK = "Run the Voice Intake Assistant call (simulated)";
 
@@ -31,6 +33,12 @@ export interface IntakeClinicalSlice {
   setGuidedAnswer: (id: string, questionId: string, answer: string, state: "open" | "asked" | "skipped") => void;
   /** Turns the guided answers into suggestions for the assessment sections. Returns how many it added. */
   draftFromGuided: (id: string) => number;
+  /** Proposes what the clinical assessment already documents, as pending evidence, to each module in use that reads it. Returns how many pieces it proposed. */
+  feedModulesFromAssessment: (id: string) => number;
+  /** Where the person left off, for Resume: the workspace section (a `?section=` value). */
+  setLastSection: (id: string, section: string) => void;
+  /** The configuration wizard step left unfinished, or null once it is finished. */
+  setWizardStep: (id: string, step: string | null) => void;
 
   /* AI Scribe */
   scribeConsent: (id: string, consent: { by: string; method: "verbal" | "written" }, encounter: NonNullable<ScribeSession["encounter"]>) => void;
@@ -44,13 +52,21 @@ export interface IntakeClinicalSlice {
   /** Demo control: plays the rest of the scripted conversation now. */
   scribeSkip: (id: string) => void;
   scribeRelabel: (id: string, turnId: string, speaker: TranscriptTurn["speaker"]) => void;
+  /** A person corrects what the simulated transcription heard. The original is kept and the proposals from that line need checking again. */
+  scribeEditTurn: (id: string, turnId: string, text: string) => void;
+  /** Moves a proposal for an assessment module to another field of the same module. */
+  scribeRetarget: (id: string, suggestionId: string, fieldKey: string) => void;
+  /** Accepts the follow-up the scribe suggested for something the conversation did not cover, or dismisses it. */
+  scribeDecideFollowUp: (id: string, missing: string, decision: "accepted" | "dismissed") => void;
+  /** Accepts every undecided proposal whose source is verified (see isVerifiedSource): never risk text. Returns how many. */
+  scribeAcceptVerified: (id: string) => number;
   /** The agent's last pass after Stop (summary, outstanding questions, plan). Returns the result line. */
   scribeFinishDraft: (id: string) => string;
   scribeDecideNote: (id: string, section: NoteSectionId, decision: Decision, edited?: string) => void;
   scribeDecideField: (id: string, suggestionId: string, decision: Decision, edited?: string) => void;
   scribeSaveDraft: (id: string) => void;
-  /** Writes only what a person accepted; undecided suggestions wait in their sections. */
-  scribeSaveApproved: (id: string) => { accepted: number; waiting: number };
+  /** Writes only what a person accepted. Undecided proposals wait where they belong: pending evidence in their module, pending CANS evidence, or a suggestion in their section. */
+  scribeSaveApproved: (id: string) => { accepted: number; waiting: number; routed: number };
   scribeNew: (id: string) => void;
 
   /* Voice Intake Assistant */
@@ -69,6 +85,10 @@ export interface IntakeClinicalSlice {
 }
 
 let n = 0;
+/** The consent ledger entry for a recording: asked before the interview starts, kept whether it was given or not. */
+const recordingConsent = (id: string, status: ConsentEntry["status"], at: number, by: string, purpose: string): ConsentEntry => ({
+  id, type: "recording", recipient: "Psyflo AI Scribe (simulated audio: nothing is recorded)", purpose, status, at, by,
+});
 const uidC = (p: string) => `${p}-c${Date.now().toString(36)}-${++n}`;
 const putDoc = (docs: IntakeDocument[], d: IntakeDocument) => [...docs.filter((x) => x.id !== d.id), d];
 
@@ -162,14 +182,39 @@ export const createIntakeClinicalSlice: StateCreator<AppState, [], [], IntakeCli
       return added.length;
     },
 
+    feedModulesFromAssessment: (id) => {
+      const r = rec(id);
+      if (!r) return 0;
+      let total = 0;
+      for (const f of assessmentFeeds(r)) total += get().addInstrumentEvidence(id, f.moduleId, f.evidence);
+      if (total) audit(id, "Proposed what the clinical assessment already documents to the assessment modules", `${total} pieces of evidence, pending review in their modules`, true);
+      return total;
+    },
+    setLastSection: (id, section) => {
+      const cur = rec(id)?.progress;
+      if (!rec(id) || cur?.section === section) return;
+      get().patchIntake(id, (r) => ({ ...r, progress: { ...r.progress, section, at: get().clock } }));
+    },
+    setWizardStep: (id, step) => {
+      const cur = rec(id)?.progress;
+      if (!rec(id) || (cur?.step ?? null) === step) return;
+      get().patchIntake(id, (r) => ({ ...r, progress: { section: r.progress?.section ?? "overview", ...r.progress, at: get().clock, step: step ?? undefined } }));
+    },
+
     scribeConsent: (id, consent, encounter) => {
+      const at = get().clock;
       get().patchIntake(id, (r) => {
-        const base = r.scribe && r.scribe.status === "consent" ? r.scribe : SE.newScribeSession(r, ++n);
-        return { ...r, scribe: { ...base, status: "ready", consent: { ...consent, at: get().clock }, encounter } };
+        const base = r.scribe && r.scribe.status === "consent" ? { ...r.scribe, scriptId: SE.scriptOf(r, true).id } : SE.newScribeSession(r, ++n);
+        const entry = recordingConsent(`CN-${base.id}`, "on_file", at, me(), `Consent given by ${consent.by}, ${consent.method}, before the interview.`);
+        return { ...r, scribe: { ...base, status: "ready", consent: { ...consent, at }, encounter }, consents: [...(r.consents ?? []).filter((c) => c.id !== entry.id), entry] };
       });
       audit(id, "Recorded consent to the AI Scribe recording", `${consent.by} · ${consent.method}`);
     },
-    scribeDeclined: (id, by) => audit(id, "Recording consent not given: the AI Scribe was not started", by),
+    scribeDeclined: (id, by) => {
+      const at = get().clock;
+      get().patchIntake(id, (r) => ({ ...r, consents: [...(r.consents ?? []), recordingConsent(uidC("CN"), "declined", at, me(), `Consent not given (${by}). The AI Scribe was not started.`)] }));
+      audit(id, "Recording consent not given: the AI Scribe was not started", by);
+    },
     scribeStart: (id) => {
       const r = rec(id);
       if (!r?.scribe || r.scribe.status !== "ready") return;
@@ -211,6 +256,45 @@ export const createIntakeClinicalSlice: StateCreator<AppState, [], [], IntakeCli
       patchS(id, (s) => ({ ...s, turns: s.turns.map((x) => (x.id === turnId ? { ...x, speaker } : x)) }));
       audit(id, "Corrected a speaker label in the transcript", `${SE.clockOf(t.at)}: ${SE.speakerLabel(SE.scriptOf(r), t.speaker)} → ${SE.speakerLabel(SE.scriptOf(r), speaker)}`);
     },
+    scribeEditTurn: (id, turnId, text) => {
+      const r = rec(id);
+      const t = r?.scribe?.turns.find((x) => x.id === turnId);
+      const next = text.trim();
+      if (!r?.scribe || !t || !next || next === t.text || r.scribe.status === "saved") return;
+      patchS(id, (sx) => ({ ...sx, turns: sx.turns.map((x) => (x.id === turnId ? { ...x, text: next, edited: { by: me(), at: get().clock, original: x.edited?.original ?? x.text } } : x)) }));
+      audit(id, "Corrected a line of the simulated transcript", `${SE.clockOf(t.at)}: the original is kept; proposals from this line need checking again`);
+    },
+    scribeRetarget: (id, sgId, fieldKey) => {
+      const sg = rec(id)?.scribe?.extracted?.find((x) => x.id === sgId);
+      if (!sg?.moduleId || sg.status !== "pending" || sg.field === fieldKey) return;
+      const moduleId = sg.moduleId;
+      patchS(id, (sx) => {
+        const others = (sx.extracted ?? []).filter((x) => x.id !== sgId);
+        const twin = others.find((x) => x.moduleId === moduleId && x.field === fieldKey && x.status === "pending");
+        /* Two proposals for one field become one, so the person decides on a single piece of text. */
+        return { ...sx, extracted: twin ? others.map((x) => (x === twin ? { ...x, value: `${x.value} ${sg.value}` } : x)) : (sx.extracted ?? []).map((x) => (x.id === sgId ? { ...x, field: fieldKey } : x)) };
+      });
+      audit(id, "Moved an AI Scribe proposal to another field of the module", `${SE.destinationOf(rec(id) as IntakeRecord, { ...sg, field: fieldKey })}`);
+    },
+    scribeDecideFollowUp: (id, missing, decision) => {
+      patchS(id, (sx) => {
+        if (sx.followUps?.[missing] === decision) return sx;
+        const plan = sx.noteDraft.plan ?? "";
+        const line = `Follow up: ${followUpFor(missing)}`;
+        return { ...sx, followUps: { ...(sx.followUps ?? {}), [missing]: decision }, noteDraft: decision === "accepted" && !plan.includes(line) ? { ...sx.noteDraft, plan: plan ? `${plan} ${line}` : line } : sx.noteDraft };
+      });
+      audit(id, `${decision === "accepted" ? "Accepted" : "Dismissed"} the AI Scribe's suggested follow-up`, missing);
+    },
+    scribeAcceptVerified: (id) => {
+      const r = rec(id);
+      const s = r?.scribe;
+      if (!r || !s || s.status !== "reviewing") return 0;
+      const ids = (s.extracted ?? []).filter((x) => x.status === "pending" && SE.isVerifiedSource(r, s, x)).map((x) => x.id);
+      if (!ids.length) return 0;
+      patchS(id, (sx) => ({ ...sx, extracted: (sx.extracted ?? []).map((x) => (ids.includes(x.id) ? { ...x, status: "accepted", decidedBy: me(), decidedAt: get().clock } : x)) }));
+      audit(id, "Accepted every AI Scribe proposal with a verified source", `${ids.length} proposals; risk information is never included`);
+      return ids.length;
+    },
     scribeFinishDraft: (id) => {
       patchS(id, (s, r) => SE.finishDraft(r, s));
       const s = rec(id)?.scribe;
@@ -231,30 +315,63 @@ export const createIntakeClinicalSlice: StateCreator<AppState, [], [], IntakeCli
     scribeSaveApproved: (id) => {
       const r = rec(id);
       const s = r?.scribe;
-      if (!r || !s) return { accepted: 0, waiting: 0 };
+      if (!r || !s) return { accepted: 0, waiting: 0, routed: 0 };
       const at = get().clock;
       const reviewer = staffOf(me())?.name ?? me();
       const tdoc = SE.transcriptDoc(r, s, at);
       const ndoc = SE.noteDoc(r, s, at, reviewer);
       const linked = (s.extracted ?? []).map((x): Suggestion => ({ ...x, source: { ...x.source, docId: tdoc.id } }));
       /* The safety draft is never accepted here: a clinician documents risk in the assessment. */
-      const toRecord = linked.map((x): Suggestion => (x.field === "safety" && x.section === "assessment" && x.status !== "rejected" ? { ...x, status: "pending", decidedBy: undefined, decidedAt: undefined, editedValue: undefined } : x));
-      const decided = toRecord.filter((x) => x.status === "accepted" || x.status === "edited");
-      const waiting = toRecord.filter((x) => x.status === "pending");
+      const toRecord = linked.map((x): Suggestion => (SE.isRiskProposal(x) && x.status !== "rejected" ? { ...x, status: "pending", decidedBy: undefined, decidedAt: undefined, editedValue: undefined } : x));
+      const live = toRecord.filter((x) => x.status !== "rejected");
+      const forModules = live.filter((x) => x.moduleId);
+      const forCans = live.filter((x) => x.section === "cans");
+      const forRecord = toRecord.filter((x) => !x.moduleId && x.section !== "cans");
+      const decided = (x: Suggestion) => x.status === "accepted" || x.status === "edited";
+      const textOf = (x: Suggestion) => (x.status === "edited" ? (x.editedValue ?? x.value) : x.value);
+
       get().patchIntake(id, (x) => ({
         ...x,
         documents: ndoc ? putDoc(putDoc(x.documents, tdoc), ndoc) : putDoc(x.documents, tdoc),
-        suggestions: [...x.suggestions, ...toRecord.map((sg) => (sg.status === "rejected" ? sg : { ...sg, status: "pending" as const, decidedBy: undefined, decidedAt: undefined }))],
+        suggestions: [...x.suggestions, ...forRecord.map((sg) => (sg.status === "rejected" ? sg : { ...sg, status: "pending" as const, decidedBy: undefined, decidedAt: undefined }))],
         scribe: x.scribe ? { ...x.scribe, status: "saved", savedAt: at, docIds: [tdoc.id, ...(ndoc ? [ndoc.id] : [])] } : x.scribe,
       }));
-      for (const sg of decided) get().decideSuggestion(id, sg.id, sg.status as "accepted" | "edited", sg.editedValue);
-      for (const t of rec(id)?.tasks.filter((x) => x.action === SE.FINISH_ACTION && x.status === "needs_you") ?? []) get().updateIntakeTask(id, t.id, { status: "done", approval: "approved", result: "Reviewed by a person and saved" });
-      const notes = SE.notesAccepted(s).length;
-      audit(id, "Saved approved AI Scribe content to the intake", `${notes} note sections and ${decided.length} fields accepted by a person; ${waiting.length} suggestions wait in their sections`);
-      if (waiting.length) {
-        get().addIntakeTask(id, { role: "documentation", action: "AI Scribe suggestions wait for review", status: "needs_you", section: "assessment", source: tdoc.name, approval: "required", gate: { kind: "suggestions", ids: waiting.map((w) => w.id) }, result: `${waiting.length} suggestions from the transcript, each linked to its source` });
+      for (const sg of forRecord.filter(decided)) get().decideSuggestion(id, sg.id, sg.status as "accepted" | "edited", sg.editedValue);
+
+      /* Proposals for an assessment module arrive there as pending evidence with their transcript source; a person's decision in the review is applied on top. */
+      let routed = 0;
+      let skipped = 0;
+      for (const sg of forModules) {
+        const moduleId = sg.moduleId as NonNullable<Suggestion["moduleId"]>;
+        const added = get().addInstrumentEvidence(id, moduleId, [{
+          fieldKey: sg.field, text: sg.value, source: sg.source, confidence: sg.confidence, agent: SE.SCRIBE_AGENT,
+          explanation: `Proposed by the AI Scribe from the simulated transcript at ${SE.clockOf(sg.source.at ?? 0)}. A person checks it against the transcript before it fills the field.`,
+        }]);
+        if (!added) { skipped++; continue; }
+        routed++;
+        if (decided(sg)) {
+          const ev = [...(rec(id)?.instruments?.[moduleId]?.evidence ?? [])].reverse().find((e) => e.status === "pending" && e.fieldKey === sg.field && e.text === sg.value);
+          if (ev) get().decideInstrumentEvidence(id, moduleId, ev.id, sg.status as "accepted" | "edited", sg.status === "edited" ? textOf(sg) : undefined);
+        }
       }
-      return { accepted: notes + decided.length, waiting: waiting.length };
+      if (forCans.length) {
+        const ids = get().proposeCansEvidence(id, forCans.map((x) => ({ text: textOf(x), theme: x.field.replace(/^evidence:/, ""), source: x.source })), SE.SCRIBE_AGENT);
+        if (forCans.some(decided)) {
+          if (!rec(id)?.cans) get().startCans(id);
+          forCans.forEach((x, i) => { if (decided(x)) get().decideCansEvidence(id, ids[i], true); });
+        }
+        routed += forCans.length;
+      }
+      for (const t of rec(id)?.tasks.filter((x) => x.action === SE.FINISH_ACTION && x.status === "needs_you") ?? []) get().updateIntakeTask(id, t.id, { status: "done", approval: "approved", result: "Reviewed by a person and saved" });
+
+      const accepted = live.filter(decided).length + SE.notesAccepted(s).length;
+      const waitingRecord = forRecord.filter((x) => x.status === "pending");
+      const waiting = live.filter((x) => !decided(x)).length;
+      audit(id, "Saved approved AI Scribe content to the intake", `${SE.notesAccepted(s).length} note sections and ${live.filter(decided).length} proposals accepted by a person; ${waiting} wait for review where they belong${skipped ? `; ${skipped} could not reach a signed module` : ""}`);
+      if (waitingRecord.length) {
+        get().addIntakeTask(id, { role: "documentation", action: "AI Scribe suggestions wait for review", status: "needs_you", section: "assessment", source: tdoc.name, approval: "required", gate: { kind: "suggestions", ids: waitingRecord.map((w) => w.id) }, result: `${waitingRecord.length} suggestions from the transcript, each linked to its source` });
+      }
+      return { accepted, waiting, routed };
     },
     scribeNew: (id) => {
       get().patchIntake(id, (r) => ({ ...r, scribe: SE.newScribeSession(r, ++n) }));

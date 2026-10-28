@@ -1,9 +1,24 @@
+import type { WorkspaceTarget } from "@/data/assess/nav";
+import { moduleCompletion } from "@/data/assess/completion";
+import { isCoreModule, moduleById } from "@/data/assess/modules";
+import { SOURCE_LABEL, VERIFICATION_LABEL, type AssessmentPlan, type ModuleId } from "@/data/assess/types";
 import { countBy, isOpen, type CheckItem, type Readiness } from "@/data/intake/checklist";
+import { activeModuleIds } from "@/data/intake/scripts";
 import { ASSESSMENT_SECTIONS, SECTION_LABEL, type AgentTask, type IntakeRecord, type IntakeSectionId } from "@/data/intake/types";
 import type { AgentKey } from "@/data/types";
 import { gateCleared } from "@/store/intakeReview";
+import { planFor } from "@/store/intakePlan";
 
 /* What the assistant panel asks of the person, and the one-paragraph status at its top. Pure: built from the record, the checklist and readiness. */
+
+/** "Why am I suggesting this": what is behind a need or an action, and where it came from. */
+export interface Explain {
+  why: string;
+  /** The record, document, agent or rule it comes from. */
+  source: string;
+  /** The assessment rule or policy row behind it, with its status. Left out when none applies. */
+  rule?: string;
+}
 
 export interface Need {
   key: string;
@@ -21,6 +36,62 @@ export interface Need {
   settings?: boolean;
   /** An agent run that failed: Retry runs it again. */
   retry?: boolean;
+  /** Where the work is done in the new workspace, a module included. Prefer it over `to`, which only names a data section. */
+  target?: WorkspaceTarget;
+  explain?: Explain;
+}
+
+/** The explanation for a need that did not come with one, from what kind of need it is. */
+function defaultExplain(r: IntakeRecord, n: Need): Explain {
+  if (n.key === "safety") return { why: "A safety alert was raised from what was said or written. A clinician reviews every alert; Psyflo never decides that a person is safe.", source: r.safety?.source?.ref ?? "Safety alert on this record" };
+  if (n.key.startsWith("sugg-")) return { why: "Agents proposed these values from documents or conversations. Nothing is written to the record until a person accepts, edits or rejects each one.", source: "Agent suggestions, each with its own source (simulated)" };
+  if (n.key === "scribe") return { why: "The AI Scribe drafted a note and proposals from the simulated transcript. A person reviews them before anything is saved.", source: "AI Scribe session (simulated audio)" };
+  if (n.key === "voice") return { why: "The Voice Intake Assistant collected answers on a simulated call. Staff confirm the read-back before anything is saved.", source: "Voice Intake Assistant call (simulated)" };
+  if (n.key.startsWith("handoff")) return { why: "The authorization handoff is a draft until a person approves it. Nothing is submitted from here.", source: "Authorization readiness on this record" };
+  return { why: n.detail ?? "Work on this record waits for a person.", source: "Tasks on this record" };
+}
+const withExplain = (r: IntakeRecord) => (n: Need): Need => (n.explain ? n : { ...n, explain: defaultExplain(r, n) });
+
+/** "Required by State policy, Not verified (rule cpst-adult, va-assess-2027.1)": the rule behind a module, for "Why this module". */
+export function ruleLine(plan: AssessmentPlan | null, id: ModuleId): string | undefined {
+  const m = plan?.modules.find((x) => x.id === id);
+  const src = m?.sources[0];
+  return m && src ? `${m.level === "required" ? "Required" : m.level === "recommended" ? "Recommended" : "Optional"} by ${SOURCE_LABEL[src.source]} (${VERIFICATION_LABEL[src.status]}): ${src.ruleLabel}, version ${src.version}` : undefined;
+}
+
+const SPECIAL: ModuleId[] = ["cans", "lon"];
+
+/** Needs that come from the assessment modules the intake uses: evidence waiting for a decision, and modules ready for a clinician to sign. */
+function moduleNeeds(r: IntakeRecord, plan: AssessmentPlan | null): Need[] {
+  if (!r.config) return [];
+  const out: Need[] = [];
+  const label = (id: ModuleId) => plan?.modules.find((m) => m.id === id)?.label ?? moduleById(id).label;
+  const ids = activeModuleIds(r.config).filter((id) => !isCoreModule(id) && !SPECIAL.includes(id));
+  for (const id of ids) {
+    const inst = r.instruments?.[id];
+    const c = moduleCompletion(id, inst);
+    if (c.pending) {
+      out.push({
+        key: `ev:${id}`, text: `${c.pending} ${c.pending === 1 ? "piece" : "pieces"} of evidence in ${label(id)} ${c.pending === 1 ? "waits" : "wait"} for a decision`, detail: "Accept, edit or reject each one. Nothing fills a field until a person decides.",
+        tone: "mid", agent: "scribe", target: { section: "instrument", module: id }, toLabel: "Review the evidence",
+        explain: { why: "Evidence was proposed for this module and no person has decided on it yet.", source: "Proposed by the AI Scribe or the evidence reader (simulated), each with its source", rule: ruleLine(plan, id) },
+      });
+    } else if (inst?.status === "awaiting_review") {
+      out.push({
+        key: `sign:${id}`, text: `${label(id)} is ready for a clinician to sign`, tone: "neutral", target: { section: "instrument", module: id }, toLabel: "Open the module",
+        explain: { why: "The module was marked ready for review. Only a qualified clinician signs.", source: "Marked ready for review on this record", rule: ruleLine(plan, id) },
+      });
+    }
+  }
+  const idle = ids.filter((id) => plan?.modules.find((m) => m.id === id)?.level === "required" && !plan.modules.find((m) => m.id === id)?.preparation && (r.instruments?.[id]?.status ?? "not_started") === "not_started");
+  if (idle.length) {
+    out.push({
+      key: "modules-idle", text: `${idle.length} required ${idle.length === 1 ? "module has" : "modules have"} not been started`, detail: idle.slice(0, 3).map(label).join(", ") + (idle.length > 3 ? ` and ${idle.length - 3} more` : ""),
+      tone: "neutral", target: { section: "instrument", module: idle[0] }, toLabel: `Open ${label(idle[0])}`,
+      explain: { why: "The plan for this program requires these modules before the assessment can be signed.", source: "Assessment plan for this intake", rule: ruleLine(plan, idle[0]) },
+    });
+  }
+  return out;
 }
 
 /** Safety content in a task: the clinician decides in the assessment, never from the assistant. */
@@ -28,6 +99,7 @@ export const isSafetyTask = (t: AgentTask): boolean => t.gate?.kind === "safety"
 
 export function needsOf(r: IntakeRecord, rd: Readiness, now: number): Need[] {
   const out: Need[] = [];
+  const explainTask = (t: AgentTask): Explain => ({ why: t.result ?? "An agent finished work that needs a person's decision.", source: `${t.source ?? "Agent task"} (simulated agent work)` });
   if (r.safety?.status === "open") {
     out.push({ key: "safety", text: "Safety alert: a clinician reviews it before routine scheduling", detail: "Psyflo does not decide that a person is safe.", tone: "risk", to: { section: "assessment" }, toLabel: "Review safety", safety: true });
   }
@@ -38,7 +110,7 @@ export function needsOf(r: IntakeRecord, rd: Readiness, now: number): Need[] {
       if (t.gate?.kind === "suggestions") (t.gate.sections ?? (t.section ? [t.section] : [])).forEach((s) => covered.add(s));
       if (t.gate?.kind === "suggestions" && t.gate.ids) r.suggestions.filter((s) => t.gate?.ids?.includes(s.id)).forEach((s) => covered.add(s.section));
       out.push({
-        key: t.id, text: t.action, detail: t.result, agent: t.agent, tone: safety ? "risk" : "mid", task: t, safety,
+        key: t.id, text: t.action, detail: t.result, agent: t.agent, tone: safety ? "risk" : "mid", task: t, safety, explain: explainTask(t),
         to: t.section ? { section: t.section } : undefined,
         toLabel: safety ? "Clinician review" : t.section === "review" ? "Go to review" : t.section ? `Review in ${SECTION_LABEL[t.section]}` : undefined,
       });
@@ -58,10 +130,11 @@ export function needsOf(r: IntakeRecord, rd: Readiness, now: number): Need[] {
   }
   if (r.scribe && (r.scribe.status === "stopped" || r.scribe.status === "reviewing")) out.push({ key: "scribe", text: "AI Scribe draft waits for review", tone: "mid", agent: "scribe", to: { section: "assessment", panel: "scribe" }, toLabel: "Open AI Scribe" });
   if (r.voice && (r.voice.status === "summary" || r.voice.status === "confirm")) out.push({ key: "voice", text: "Voice intake summary waits for confirmation", tone: "mid", to: { section: "profile", panel: "voice" }, toLabel: "Open voice intake" });
+  out.push(...moduleNeeds(r, planFor(r, now)));
   const handoffTask = out.some((n) => n.task?.kind === "handoff");
   if (!handoffTask && rd.status === "ready" && r.handoff.status !== "ready") out.push({ key: "handoff", text: r.handoff.status === "draft" ? "Approve the handoff packet" : "Ready for handoff: prepare and approve the packet", tone: "mid", to: { section: "review" }, toLabel: "Go to review" });
-  if (r.handoff.status === "ready") out.push({ key: "handoff-open", text: "Handoff approved: open it in New Case", tone: "neutral", to: { section: "review" }, toLabel: "Go to review" });
-  return out;
+  if (r.handoff.status === "ready") out.push({ key: "handoff-open", text: "Handoff approved: open it in New Authorization", tone: "neutral", to: { section: "review" }, toLabel: "Go to review" });
+  return out.map(withExplain(r));
 }
 
 /** "Referral reviewed. Insurance information found. Guardian phone missing. Clinical assessment has 10 sections without content. Not ready for handoff." */
