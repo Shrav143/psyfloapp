@@ -3,8 +3,10 @@ import { useSearchParams } from "react-router-dom";
 import { MODULE_IDS } from "@/data/assess/modules";
 import { WORKSPACE_LABEL, type WorkspaceTarget } from "@/data/assess/nav";
 import type { IntakeRecord } from "@/data/intake/types";
+import { useStore } from "@/store";
 import { useResume } from "@/store/persistUi";
 import { ConfigureDialog } from "../configure/ConfigureDialog";
+import { useIntakeNow } from "../lib/policyNow";
 import { useDerivedFields } from "../profile/sync";
 import { SafetyBanner } from "../queue/SafetyBanner";
 import { ScribePanel } from "../scribe/ScribePanel";
@@ -42,6 +44,12 @@ export function Workspace({ record }: { record: IntakeRecord }) {
   const panel = params.get("panel");
   useDerivedFields(record);
   useResume(record, target);
+  /* A task that waited on a person closes once the decision is made, whether or not the assistant is open (it is a drawer below 1280 px). */
+  const now = useIntakeNow();
+  const closeCleared = useStore((s) => s.closeClearedTasks);
+  useEffect(() => {
+    closeCleared(record.id, now);
+  }, [record, now, closeCleared]);
 
   /* An address can name a module that does not exist; the sections below it are never told about it. */
   const known: WorkspaceTarget = target.module && !MODULE_IDS.includes(target.module) ? { section: "instrument" } : target;

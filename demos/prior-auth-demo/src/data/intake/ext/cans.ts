@@ -38,19 +38,19 @@ const PA_PSYCHIATRIC: PriorAssessment = {
 };
 
 const PA_ASAM: PriorAssessment = {
-  id: "PA-3112-asam", moduleId: "asam", label: "ASAM documentation from the residential program", date: vaDate("2026-08-07"), provider: "Riverside Recovery Center (fictional)", version: "Program's own ASAM documentation, edition not stated",
+  id: "PA-3112-asam", moduleId: "asam", label: "ASAM documentation from the residential program", date: vaDate("2026-09-03"), provider: "Riverside Recovery Center (fictional)", version: "Program's own ASAM documentation, edition not stated",
   clinician: "Admission counselor, Riverside Recovery Center (fictional)", status: "current", reuse: "unverified",
-  note: "Completed at admission to residential care. Her needs have changed since the stay; a clinician here confirms what still applies. The program's ratings and level stay in its own system.",
+  note: "Completed at admission to residential care. His needs have changed since the stay; a clinician here confirms what still applies. The program's ratings and level stay in its own system.",
 };
 
 export const PRIOR_CONTENT: Record<string, PriorContent> = {
   [PA_ASAM.id]: {
-    summary: ["Completed 8/7/2026, two days after admission to residential care.", "Daily opioid use for eight months; withdrawal managed at admission.", "Lived with her mother before admission; no stable work."],
+    summary: ["Completed 9/3/2026, two days after admission to residential care.", "Near-daily opioid use for about six years; withdrawal managed at admission.", "Lived with a cousin before admission; no stable work."],
     evidence: [],
     fields: {
-      "asam.d1.findings": "At admission in August 2026: daily opioid use for eight months, last use 08/04/2026. Withdrawal was managed at the program.",
-      "asam.d4.findings": "One overdose in June 2026, reversed with naloxone. Two earlier outpatient attempts ended in relapse within weeks.",
-      "asam.d5.findings": "Lived with her mother and younger brother before admission; part-time warehouse work; no car.",
+      "asam.d1.findings": "At admission in September 2026: near-daily opioid use for about six years, last use 08/31/2026. Withdrawal was managed at the program.",
+      "asam.d4.findings": "One overdose in June 2026, reversed with naloxone. A 28-day program in 2024 ended in relapse within two months.",
+      "asam.d5.findings": "Lived with a cousin before admission; no stable work after losing a warehouse job; no car.",
     },
     excluded: "Dimension ratings and the level the program recorded are not included: they are in the program's own system, and the licensed criteria are not loaded here.",
   },

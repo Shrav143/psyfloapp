@@ -76,7 +76,7 @@ const A_DOC: IntakeDocument = {
     { kind: "h", text: "Current supports" },
     { kind: "p", id: "a-supports", text: "504 plan for attention concerns since 2024. No current therapist. Saw an outpatient counselor in 2025 for a few months." },
     { kind: "h", text: "Family and school contact" },
-    { kind: "p", id: "a-involve", text: "Ms. Wright is involved and agrees to take part in family sessions. She works until 5 pm and has no car on weekdays, so a visit at school or a late-afternoon call works best." },
+    { kind: "p", id: "a-involve", text: "Ms. Wright is involved and agrees to take part in family sessions. She works evenings and the family has no car, so a visit at school or a call before her shift works best." },
     { kind: "p", id: "a-contact", text: "School contact: Dana Whitfield, school counselor. A callback number was not written on this form." },
     { kind: "h", text: "Family and insurance" },
     { kind: "table", id: "a-family", head: ["Item", "As written"], rows: [["Guardian", "Keisha Wright (mother)"], ["Guardian phone", "(804) 555-0142"], ["Insurance", "Sentara Community Plan, member ID ending 4471"], ["Language at home", "English"]] },
@@ -173,7 +173,7 @@ const scenarioB = (): IntakeRecord => {
   };
   r.eligibility = { status: "active", simulated: true, checkedAt: -1 * DAY, member: "yes", benefit: "yes", network: "yes", necessity: "not_determined", authorization: "existing", existingAuth: "VA-MHSS-2291 through 03/31/2027", conflicts: [], exceptions: ["The current authorization ends before the service retires. A renewal through June 30, 2027 may be needed."] };
   r.assessment = { mode: "manual", status: "in_progress", fields: {
-    presenting: F("Stable on MHSS; needs a plan for services after June 30, 2027.", "verified", B_AT + DAY, "dr"),
+    presenting: F("Stable on MHSS; needs a plan for services after June 30, 2027.", "verified", B_AT + DAY, "hk"),
     goals: F("Keep his apartment, manage medications without reminders, return to full-time work.", "document_extracted", B_AT, "reader", s("b-goals"), "high"),
   } };
   r.pathways = [
@@ -187,7 +187,7 @@ const scenarioB = (): IntakeRecord => {
     task({ role: "eligibility", agent: "verify", action: "Checked eligibility (simulated)", status: "done", section: "coverage", at: -1 * DAY, approval: "none", result: "Member active with Anthem HealthKeepers Plus; existing MHSS authorization through 03/31/2027" }),
     task({ role: "cans", agent: "criteria", action: "Prepare CANS Lifetime evidence", status: "blocked", section: "cans", at: -1 * DAY, approval: "required", result: "Waits for the official DMAS item mapping" }),
   ];
-  r.audit.push(ev(B_AT + DAY, "dr", "Started the clinical assessment", undefined, false, "assessment"));
+  r.audit.push(ev(B_AT + DAY, "hk", "Started the clinical assessment", undefined, false, "assessment"));
   return r;
 };
 
@@ -281,7 +281,7 @@ const LIGHT: Light[] = [
   ["IN-3112", "arts-iop", "N.G.", 28, "summit", "A", "email", "Opioid treatment program, Richmond (fictional)", "needs_info", "routine", false, "tb", 4, "Stable on buprenorphine; step-down from residential to IOP."],
   ["IN-3113", "arts-php", "E.V.", 31, "harborview", "B", "manual", "Walk-in", "new", "routine", false, "ml", 0.5, "Methamphetamine use with missed work; asks for a day program."],
   ["IN-3114", "mh-iop", "S.L.", 24, "evergreen", "A", "webform", "Self-referral (web form)", "new", "urgent", true, "tb", 0.2, "Panic attacks and depression after a job loss; asks for an intensive program."],
-  ["IN-3115", "mh-php", "H.T.", 45, "beacon", "B", "fax", "Inpatient unit, Shenandoah Health (fictional)", "clinical_review", "urgent", false, "jp", 1, "Step-down after an inpatient stay for major depression."],
+  ["IN-3115", "mh-php", "H.T.", 45, "beacon", "A", "fax", "Inpatient unit, Shenandoah Health (fictional)", "clinical_review", "urgent", false, "jp", 1, "Step-down after an inpatient stay for major depression."],
   ["IN-3116", "act", "W.F.", 39, "cardinal", "A", "emr", "Community services board (fictional)", "accepted", "routine", false, "jp", 9, "Three hospitalizations this year; transfer to ACT."],
   ["IN-3117", "aba", "Z.A.", 6, "summit", "B", "webform", "Parent (web form)", "needs_info", "routine", false, "ml", 5, "Autism diagnosis in 2026; pediatrician recommends ABA."],
   ["IN-3118", "mhcm", "Y.O.", 58, "lakeshore", "A", "phone", "Primary care, Chesapeake (fictional)", "ready_screening", "routine", false, "tb", 2, "Needs help coordinating psychiatry, housing and benefits."],

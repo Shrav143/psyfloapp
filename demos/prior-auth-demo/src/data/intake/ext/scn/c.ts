@@ -26,8 +26,8 @@ export function scenarioC(r: IntakeRecord): IntakeRecord {
       ...r.referral,
       referringClinician: fv("Intake nurse, Richmond treatment program (fictional)", "verified", T0 + HOUR, "tb", staffSrc("Confirmed by phone")),
       referrerContact: fv("(804) 555-0150", "verified", T0 + HOUR, "tb", staffSrc("Confirmed by phone")),
-      concerns: fv("Daily opioid use for eight months and one overdose in June; residential treatment completed 10/09; buprenorphine daily since.", "document_extracted", REPLY_AT, "reader", dc("c2-reason", "one overdose in June 2026"), "high"),
-      hospitalization: fv("Residential treatment 08/05/2026 to 10/09/2026 at Riverside Recovery Center (fictional).", "document_extracted", REPLY_AT, "reader", dc("c2-reason", "Admitted after eight months"), "high"),
+      concerns: fv("Near-daily opioid use for about six years and one overdose in June; residential treatment completed 10/13; buprenorphine daily since.", "document_extracted", REPLY_AT, "reader", dc("c2-reason", "one overdose in June 2026"), "high"),
+      hospitalization: fv("Residential treatment 09/01/2026 to 10/13/2026 at Riverside Recovery Center (fictional).", "document_extracted", REPLY_AT, "reader", dc("c2-reason", "Admitted after about six years"), "high"),
     },
     profile: {
       ...r.profile,
@@ -35,9 +35,9 @@ export function scenarioC(r: IntakeRecord): IntakeRecord {
       phone: fv("(804) 555-0166", "patient_reported", T0 + 2 * HOUR, "tb", staffSrc("Phone call with the patient")),
       address: fv("Richmond, VA (synthetic)", "patient_reported", T0 + 2 * HOUR, "tb", staffSrc("Phone call with the patient")),
       language: fv("English", "patient_reported", T0 + 2 * HOUR, "tb", staffSrc("Phone call with the patient")),
-      emergencyContact: fv("Her mother, (804) 555-0171", "patient_reported", T0 + 2 * HOUR, "tb", staffSrc("Phone call with the patient")),
+      emergencyContact: fv("His cousin, (804) 555-0171", "patient_reported", T0 + 2 * HOUR, "tb", staffSrc("Phone call with the patient")),
       medications: fv("Buprenorphine-naloxone, daily. The dose is not stated in the discharge summary.", "document_extracted", REPLY_AT, "reader", dc("c2-meds", "Buprenorphine-naloxone"), "medium"),
-      housing: fv("Will live with her mother and younger brother in Richmond", "document_extracted", REPLY_AT, "reader", dc("c2-env", "She will be living with her mother"), "high"),
+      housing: fv("Will live with his cousin in Richmond", "document_extracted", REPLY_AT, "reader", dc("c2-env", "He will be living with his cousin"), "high"),
     },
     referralDecision: { kind: "accepted", at: ACCEPT_AT, by: "tb", note: "Discharge summary and urine screen note received" },
     consents: [
@@ -55,15 +55,15 @@ export function scenarioC(r: IntakeRecord): IntakeRecord {
       ...x.assessment, mode: "manual", status: "in_progress",
       fields: {
         ...x.assessment.fields,
-        history: fv("Daily opioid use for eight months, one overdose in June 2026 reversed with naloxone; two outpatient attempts ended in relapse within weeks.", "document_extracted", REPLY_AT, "reader", dc("c2-reason", "one overdose in June 2026"), "high"),
-        symptoms: fv("Cravings were strong in the first month of residential care and mild since September; anxiety and low mood early on, improved (patient, at the visit).", "patient_reported", WORK_AT, "dr", staffSrc("Visit with the clinician")),
-        sdoh: fv("Living with her mother and younger brother; no car, transportation is a barrier; part-time warehouse work with shifts.", "document_extracted", REPLY_AT, "reader", dc("c2-env", "transportation to treatment is a barrier"), "high"),
+        history: fv("Near-daily opioid use for about six years, pills then heroin; one overdose in June 2026 reversed with naloxone; a 28-day program in 2024 ended in relapse within two months.", "document_extracted", REPLY_AT, "reader", dc("c2-reason", "one overdose in June 2026"), "high"),
+        symptoms: fv("Cravings come in waves, mostly in the evening; sleeping about six hours; anxious when alone; mood okay (patient, at the visit).", "patient_reported", WORK_AT, "dr", staffSrc("Visit with the clinician")),
+        sdoh: fv("Living with his cousin; no car, a bus line runs near the home; looking for part-time work the treatment schedule has to fit around.", "document_extracted", REPLY_AT, "reader", dc("c2-env", "transportation to treatment is a barrier"), "high"),
       },
     },
   };
 
   /* Modules. The first run of the evidence reader is waiting in the history, the ASAM dimensions and the recovery environment. */
-  let hx = instance("sud-history", { status: "in_progress", at: WORK_AT, by: "dr", fields: { "sudhx.lastuse": "2026-08-04" } });
+  let hx = instance("sud-history", { status: "in_progress", at: WORK_AT, by: "dr", fields: { "sudhx.lastuse": "2026-08-31" } });
   hx = accepted(x, "sud-history", hx, "sudhx.substances", WORK_AT + 5, "dr", "ev-c-hx");
   hx = accepted(x, "sud-history", hx, "sudhx.frequency", WORK_AT + 10, "dr", "ev-c-hx");
   hx = accepted(x, "sud-history", hx, "sudhx.mat", WORK_AT + 15, "dr", "ev-c-hx");
@@ -72,18 +72,18 @@ export function scenarioC(r: IntakeRecord): IntakeRecord {
   asam = accepted(x, "asam", asam, "asam.d1.findings", WORK_AT + HOUR + 5, "dr", "ev-c-asam");
   asam = accepted(x, "asam", asam, "asam.d5.findings", WORK_AT + HOUR + 10, "dr", "ev-c-asam");
   asam = { ...asam, evidence: [...asam.evidence, ...proposed(x, "asam", asam, ["asam.d2.findings", "asam.d3.findings", "asam.d4.findings", "asam.d6.findings"], WORK_AT + HOUR + 15, "ev-c-asamp")] };
-  let env = instance("recovery-env", { status: "in_progress", at: WORK_AT + 2 * HOUR, by: "dr", fields: { "re.employment": "Part time at a warehouse" } });
+  let env = instance("recovery-env", { status: "in_progress", at: WORK_AT + 2 * HOUR, by: "dr", fields: { "re.employment": "Looking for part-time work (lost a warehouse job last year)" } });
   env = accepted(x, "recovery-env", env, "re.housing", WORK_AT + 2 * HOUR + 5, "dr", "ev-c-env");
   env = { ...env, evidence: [...env.evidence, ...proposed(x, "recovery-env", env, ["re.supports", "re.barriers", "re.transport"], WORK_AT + 2 * HOUR + 10, "ev-c-envp")] };
   const tx = instance("treatment-history", {
     status: "awaiting_review", at: WORK_AT + 3 * HOUR, by: "dr",
     fields: {
-      "treatment-history.services": "Two outpatient attempts in 2025 and 2026; residential treatment 08/05/2026 to 10/09/2026, with buprenorphine-naloxone and a weekly therapist.",
-      "treatment-history.outcomes": "Outpatient: relapse within weeks each time. Residential: completed, abstinent from opioids since admission, relapse prevention plan done.",
-      "treatment-history.lower": "Outpatient care alone did not hold twice, before residential treatment.",
+      "treatment-history.services": "A 28-day program in 2024; residential treatment 09/01/2026 to 10/13/2026, with buprenorphine-naloxone and a weekly therapist.",
+      "treatment-history.outcomes": "28-day program: relapse within two months. Residential: completed, abstinent from opioids since admission, relapse prevention plan done.",
+      "treatment-history.lower": "The 28-day program in 2024 did not hold; residential treatment is now complete.",
     },
   });
-  const fn = instance("functional-assessment", { status: "in_progress", at: WORK_AT + 3 * HOUR + 30, by: "dr", fields: { "functional-assessment.workSchool": "Works part time at a warehouse; needs a treatment schedule that fits her shifts." } });
+  const fn = instance("functional-assessment", { status: "in_progress", at: WORK_AT + 3 * HOUR + 30, by: "dr", fields: { "functional-assessment.workSchool": "Lost a warehouse job last year; looking for part-time work and needs a treatment schedule that fits around it." } });
   const loc = instance("loc-review", { status: "in_progress", at: WORK_AT + 4 * HOUR, by: "dr", loc: { requested: "IOP" } });
   x = withInstruments(x, [hx, asam, env, tx, fn, loc]);
 
@@ -95,7 +95,7 @@ export function scenarioC(r: IntakeRecord): IntakeRecord {
       task({ role: "documentation", agent: "reader", action: "Read the discharge summary and the urine screen note", status: "done", section: "assessment", source: `${C_DISCHARGE.name}; ${C_UDS.name}`, at: REPLY_AT + 10, approval: "none", result: `${pending} pieces of evidence wait in the ASAM, substance use history and recovery environment modules` }),
       task({ role: "completion", agent: "integrity", action: "Confirm the current buprenorphine dose with the prescriber", status: "needs_you", section: "assessment", at: REPLY_AT + 20, approval: "none", kind: "manual", result: "The discharge summary does not state the dose. Ask the outpatient prescriber and record it in the ASAM medication findings." }),
       task({ role: "completion", agent: "integrity", action: "Ask the plan whether the Medicaid renewal was processed", status: "needs_you", section: "coverage", at: T0 + 3 * DAY, approval: "none", kind: "manual", result: "The simulated response shows Sentara Community Plan coverage ended 09/30/2026. Confirm with the plan before an authorization is prepared." }),
-      task({ role: "completion", agent: "integrity", action: "Get the Part 2 disclosure and payment consents", status: "needs_you", section: "profile", at: ACCEPT_AT, approval: "none", kind: "manual", result: "Substance use records need her consent before they are disclosed to the plan. Organization protocol, not legal advice." }),
+      task({ role: "completion", agent: "integrity", action: "Get the Part 2 disclosure and payment consents", status: "needs_you", section: "profile", at: ACCEPT_AT, approval: "none", kind: "manual", result: "Substance use records need his consent before they are disclosed to the plan. Organization protocol, not legal advice." }),
     ],
     audit: [
       ...x.audit,

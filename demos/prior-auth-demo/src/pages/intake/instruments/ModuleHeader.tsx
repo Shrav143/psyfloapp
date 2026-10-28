@@ -48,7 +48,7 @@ export function ModuleHeader({ record, moduleId, ctx, plan, inst, completion, fi
             </div>
             <div className="mt-2 flex flex-wrap items-center gap-1.5">
               {def.licensed ? <Chip>Licensed content not reproduced</Chip> : null}
-              {chips.length ? chips.slice(0, 2).map((s) => <Chip key={`${s.source}${s.status}`}>{VERB[ctx.level]} {SOURCE_LABEL[s.source]} ({VERIFICATION_LABEL[s.status]})</Chip>) : <Chip>{LEVEL_LABEL[ctx.level]}{choice?.by === "clinician" ? ", added by a person" : ""}</Chip>}
+              {chips.length ? chips.slice(0, 2).map((s) => <Chip key={`${s.source}${s.status}`}>{VERB[ctx.level]} {SOURCE_LABEL[s.source]} ({VERIFICATION_LABEL[s.status]})</Chip>) : <Chip>{LEVEL_LABEL[ctx.level]}{choice?.by === "clinician" ? ", clinician selected" : ""}</Chip>}
               {chips.length > 2 ? <Chip>+{chips.length - 2} more sources</Chip> : null}
               {plan?.framework && (moduleId === "asam" || moduleId === "loc-review") ? <Chip>{plan.framework.label}{plan.framework.edition ? `, ${plan.framework.edition}` : ""}</Chip> : null}
             </div>

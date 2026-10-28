@@ -4,6 +4,7 @@ import { Button } from "@/components/ui";
 import type { IntakeRecord } from "@/data/intake/types";
 import { SectionHead } from "../profile/bits";
 import { PROFILE_GROUPS } from "../profile/model";
+import { ConsentLedger } from "../profile/ConsentLedger";
 import { HistoryDisclosure, ProfileGroupCard } from "../profile/ProfileCards";
 import { RequestDialog, RequestsCard } from "../profile/Requests";
 import { useDerivedFields } from "../profile/sync";
@@ -18,6 +19,7 @@ export function ProfileSection({ record }: { record: IntakeRecord }) {
       <SectionHead title="Patient profile" right={<Button icon={Send} onClick={() => setAsking(true)}>Request from the patient or guardian</Button>} />
       <RequestsCard record={record} />
       {PROFILE_GROUPS.map((g) => <ProfileGroupCard key={g} record={record} group={g} />)}
+      <ConsentLedger record={record} />
       <HistoryDisclosure record={record} />
       {asking ? <RequestDialog record={record} onClose={() => setAsking(false)} /> : null}
     </div>

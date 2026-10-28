@@ -14,6 +14,7 @@ import { createIntakeInstrumentSlice, type IntakeInstrumentSlice } from "./intak
 import { createIntakePlanSlice, type IntakePlanSlice } from "./intakePlan";
 import { createIntakeProfileSlice, type IntakeProfileSlice } from "./intakeProfile";
 import { createIntakeReferralSlice, type IntakeReferralSlice } from "./intakeReferral";
+import { createIntakeConsentSlice, type IntakeConsentSlice } from "./intakeConsent";
 import { createIntakeReviewSlice, type IntakeReviewSlice } from "./intakeReview";
 import { createManagerSlice, type ManagerSlice } from "./manager";
 import { createPayerConfigSlice, initPayerConfigPersistence, type PayerConfigSlice } from "./payerConfig";
@@ -26,7 +27,7 @@ import { initPersist } from "./persist";
 import { createWorkflowsSlice, initWorkflowPersistence, type WorkflowsSlice } from "./workflows";
 
 /** One store, built from slices. Each module owns its slice file. */
-export type AppState = CoreSlice & QueueSlice & CasesSlice & EligibilitySlice & ReferralsSlice & DenialsSlice & PayerConfigSlice & ManagerSlice & AgentSettingsSlice & RipplesSlice & SessionSlice & WorkflowsSlice & IntakeSlice & IntakeReferralSlice & IntakeProfileSlice & IntakeClinicalSlice & IntakeCansSlice & IntakeReviewSlice & IntakePlanSlice & IntakeInstrumentSlice & IntakeCarePlanSlice;
+export type AppState = CoreSlice & QueueSlice & CasesSlice & EligibilitySlice & ReferralsSlice & DenialsSlice & PayerConfigSlice & ManagerSlice & AgentSettingsSlice & RipplesSlice & SessionSlice & WorkflowsSlice & IntakeSlice & IntakeReferralSlice & IntakeProfileSlice & IntakeClinicalSlice & IntakeCansSlice & IntakeReviewSlice & IntakePlanSlice & IntakeInstrumentSlice & IntakeCarePlanSlice & IntakeConsentSlice;
 
 export const useStore = create<AppState>()((...a) => ({
   ...createCoreSlice(...a),
@@ -47,6 +48,7 @@ export const useStore = create<AppState>()((...a) => ({
   ...createIntakeClinicalSlice(...a),
   ...createIntakeCansSlice(...a),
   ...createIntakeReviewSlice(...a),
+  ...createIntakeConsentSlice(...a),
   ...createIntakePlanSlice(...a),
   ...createIntakeInstrumentSlice(...a),
   ...createIntakeCarePlanSlice(...a),

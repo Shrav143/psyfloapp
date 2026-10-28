@@ -103,7 +103,7 @@ const F = (value: string, state: FieldState, at: number, by: string, source?: So
 const LIGHT: Record<string, { member?: string; dob?: string; name?: string; checkedAfter?: number }> = {
   "IN-3110": { member: "6620", dob: "1990-02-11", name: "Jamal Bennett", checkedAfter: 2 * HOUR },
   "IN-3111": { member: "3307" },
-  "IN-3112": { member: "5182", dob: "1998-03-17", name: "Nadia Garcia", checkedAfter: 3 * DAY },
+  "IN-3112": { member: "5182", dob: "1998-03-17", name: "Nathan Garcia", checkedAfter: 3 * DAY },
   /* IN-3113: a walk-in who did not bring a Medicaid card. No member ID yet. */
   "IN-3114": { member: "7419" },
   "IN-3115": { member: "2056", dob: "1981-06-03", name: "Helen Tran", checkedAfter: 3 * HOUR },
