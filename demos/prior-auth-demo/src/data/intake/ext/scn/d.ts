@@ -2,7 +2,7 @@ import { DAY, HOUR } from "@/lib/time";
 import type { InstrumentInstance } from "@/data/assess/types";
 import type { AuditEvent, IntakeRecord } from "../../types";
 import { D_DETOX, D_ED } from "./docs";
-import { audit, doc, fv, staffSrc, task, trailEvidence, withInstruments, type Trail } from "./kit";
+import { audit, doc, fv, task, trailEvidence, withInstruments, type Trail } from "./kit";
 
 /* Scenario D, IN-3110: an adult referred for ARTS residential treatment after withdrawal management. E7 seeds the far end: the required modules signed and
    the care plan approved, so Prepare Authorization is one click away. This adds what a reader of the demo should see behind it: an emergency department
@@ -31,6 +31,7 @@ export function scenarioD(r: IntakeRecord): IntakeRecord {
     documents: [...r.documents, D_ED, D_DETOX],
     referral: {
       ...r.referral,
+      reason: r.referral.reason ? { ...r.referral.reason, state: "verified", reviewedBy: "ml", reviewedAt: T0 + HOUR } : r.referral.reason,
       hospitalization: fv("Emergency department 10/14; withdrawal management 10/14 to 10/16 at Valley Withdrawal Center (fictional); no seizures or complications.", "verified", T0 + HOUR, "ml", detox("d3-course", "No seizures and no complications.")),
       previousServices: fv("Outpatient treatment in 2025 and in spring 2026; both ended in relapse within a month.", "verified", T0 + HOUR, "ml", ed("d2-hx", "He had two outpatient treatment episodes")),
     },
@@ -69,6 +70,5 @@ export function scenarioD(r: IntakeRecord): IntakeRecord {
       ...events,
     ],
   };
-  void staffSrc;
   return x;
 }

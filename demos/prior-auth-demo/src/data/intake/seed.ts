@@ -5,11 +5,13 @@ import type { SiteId } from "../sites";
 import { vaDate } from "../va/policy";
 import { VA_PLANS } from "../va/plans";
 import { serviceById, type VaServiceId } from "../va/services";
+import { legacyIntakes } from "./legacyReferrals";
 import { extendCans } from "./ext/cans";
 import { extendClinical } from "./ext/clinical";
 import { extendProfile } from "./ext/profile";
 import { extendReferral } from "./ext/referral";
 import { extendReview } from "./ext/review";
+import { extendScenarios } from "./ext/scenarios";
 import type {
   AgentTask, AuditEvent, CansAssessment, EligibilityCheck, FieldState, FieldValue, IntakeDocument, IntakeRecord, IntakeStaff, ReferralMethod,
   ReferralOut, ServiceRecommendation, SourceRef, Suggestion, TriageStatus,
@@ -318,8 +320,8 @@ function light([id, svc, initials, age, payer, site, method, source, triage, urg
 
 export function seedIntakes(): IntakeRecord[] {
   seq = 0;
-  const base = [scenarioA(), scenarioB(), scenarioC(), scenarioD(), ...LIGHT.map(light)];
-  return [extendReferral, extendProfile, extendClinical, extendCans, extendReview].reduce((rs, fn) => fn(rs), base);
+  const base = [scenarioA(), scenarioB(), scenarioC(), scenarioD(), ...LIGHT.map(light), ...legacyIntakes()];
+  return [extendReferral, extendProfile, extendClinical, extendCans, extendReview, extendScenarios].reduce((rs, fn) => fn(rs), base);
 }
 
 /* ---------------------------------------------------------------- July 2027 transition */

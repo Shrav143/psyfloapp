@@ -104,7 +104,6 @@ export function scenarioC(r: IntakeRecord): IntakeRecord {
       audit(CONFIG_AT, "tb", "Configured the intake", "Initial assessment · SUD intensive outpatient program · adult · outpatient", { section: "assessment" }),
       audit(WORK_AT + HOUR + 15, "reader", "ASAM multidimensional assessment: Proposed 4 pieces of evidence", "Draft from the simulated evidence reader: each one waits for a person to accept, edit or reject it", { ai: true, section: "assessment" }),
     ],
-    progress: { section: "m:asam", at: WORK_AT + 4 * HOUR },
   };
   return x;
 }

@@ -19,7 +19,7 @@ export const PERSIST_VERSION = 10;
 export const DEBOUNCE_MS = 400;
 
 /** The parts of the app state that are saved. */
-export type Persisted = Pick<AppState, "intakes" | "intakeCounter" | "legacyRoster" | "planReadiness"> & { caseDrafts?: { id: string }[] };
+export type Persisted = Pick<AppState, "intakes" | "intakeCounter" | "legacyRoster" | "planReadiness"> & { caseDrafts?: { id: string }[]; referralDrafts?: { id: string }[]; referralDraftCounter?: number };
 type Keyed = { id: string };
 
 export interface Payload {
@@ -27,6 +27,8 @@ export interface Payload {
   savedAt: number;
   intakes?: { order: string[]; changed: IntakeRecord[]; removed: string[] };
   caseDrafts?: { order: string[]; changed: Keyed[]; removed: string[] };
+  referralDrafts?: { order: string[]; changed: Keyed[]; removed: string[] };
+  referralDraftCounter?: number;
   intakeCounter?: number;
   legacyRoster?: unknown[];
   planReadiness?: unknown[];
@@ -86,6 +88,17 @@ export function buildPayload(current: Persisted, base: Persisted, savedAt: numbe
       any = true;
     }
   }
+  if (Array.isArray(current.referralDrafts) && Array.isArray(base.referralDrafts)) {
+    const drafts = diffById(current.referralDrafts, base.referralDrafts);
+    if (drafts.changed.length || drafts.removed.length || !sameOrder(drafts.order, base.referralDrafts.map((d) => d.id))) {
+      out.referralDrafts = drafts;
+      any = true;
+    }
+  }
+  if (current.referralDraftCounter !== undefined && current.referralDraftCounter !== base.referralDraftCounter) {
+    out.referralDraftCounter = current.referralDraftCounter;
+    any = true;
+  }
   if (current.intakeCounter !== base.intakeCounter) {
     out.intakeCounter = current.intakeCounter;
     any = true;
@@ -125,6 +138,8 @@ export function applyPayload(seed: Persisted, raw: unknown): Persisted {
   const next: Persisted = { ...seed };
   if (isObj(p.intakes)) next.intakes = mergeById(seed.intakes, p.intakes, usableRecord);
   if (Array.isArray(seed.caseDrafts) && isObj(p.caseDrafts)) next.caseDrafts = mergeById(seed.caseDrafts, p.caseDrafts, usableKeyed);
+  if (Array.isArray(seed.referralDrafts) && isObj(p.referralDrafts)) next.referralDrafts = mergeById(seed.referralDrafts, p.referralDrafts, usableKeyed);
+  if (typeof p.referralDraftCounter === "number" && p.referralDraftCounter > (seed.referralDraftCounter ?? 0)) next.referralDraftCounter = p.referralDraftCounter;
   if (typeof p.intakeCounter === "number" && p.intakeCounter > seed.intakeCounter) next.intakeCounter = p.intakeCounter;
   if (Array.isArray(p.legacyRoster)) next.legacyRoster = p.legacyRoster as Persisted["legacyRoster"];
   if (Array.isArray(p.planReadiness)) next.planReadiness = p.planReadiness as Persisted["planReadiness"];
@@ -187,8 +202,8 @@ const draftsOf = (s: AppState): { id: string }[] | undefined => {
   const d = (s as unknown as Record<string, unknown>).caseDrafts;
   return Array.isArray(d) ? (d as { id: string }[]) : undefined;
 };
-const pick = (s: AppState): Persisted => ({ intakes: s.intakes, intakeCounter: s.intakeCounter, legacyRoster: s.legacyRoster, planReadiness: s.planReadiness, caseDrafts: draftsOf(s) });
-const KEYS: (keyof Persisted)[] = ["intakes", "intakeCounter", "legacyRoster", "planReadiness", "caseDrafts"];
+const pick = (s: AppState): Persisted => ({ intakes: s.intakes, intakeCounter: s.intakeCounter, legacyRoster: s.legacyRoster, planReadiness: s.planReadiness, caseDrafts: draftsOf(s), referralDrafts: s.referralDrafts, referralDraftCounter: s.referralDraftCounter });
+const KEYS: (keyof Persisted)[] = ["intakes", "intakeCounter", "legacyRoster", "planReadiness", "caseDrafts", "referralDrafts", "referralDraftCounter"];
 const changedKeys = (a: Persisted, b: Persisted): (keyof Persisted)[] => KEYS.filter((k) => a[k] !== b[k]);
 
 let active: { handle: PersistHandle; store: StoreLike; storage: Kv | null; baseline: Persisted; initial: AppState } | null = null;

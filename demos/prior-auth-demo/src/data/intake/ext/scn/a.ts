@@ -71,7 +71,6 @@ export function scenarioA(r: IntakeRecord): IntakeRecord {
       audit(CONFIG_AT, "jp", "Configured the intake", "Initial assessment · CPST: Adult, Community · adult · community", { section: "assessment" }),
       audit(WORK_AT + HOUR + 5, "reader", "Functional needs: Proposed 3 pieces of evidence", "Draft from the simulated evidence reader: each one waits for a person to accept, edit or reject it", { ai: true, section: "assessment" }),
     ],
-    progress: { section: "m:functional-needs", at: WORK_AT + 2 * HOUR },
   };
   return x;
 }

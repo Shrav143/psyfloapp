@@ -23,7 +23,7 @@ export const paths = {
   assessments: () => "/intake/assessments",
   coordination: () => "/intake/coordination",
   /** Create Referral: the four ways in (upload documents, EMR, manual entry, voice-assisted). */
-  createReferral: (method?: "upload" | "emr" | "manual" | "voice" | "screenshot") => `/intake/new${method ? `?method=${method}` : ""}`,
+  createReferral: (method?: "upload" | "emr" | "manual" | "voice" | "paste" | "screenshot") => `/intake/new${method ? `?method=${method}` : ""}`,
   /** New Clinical Intake: choose or create the patient (and, for a continuing purpose, the treatment episode), then configure. */
   newIntake: (o?: { patient?: string; purpose?: string }) => {
     const q = new URLSearchParams();
