@@ -7,8 +7,6 @@ import type { Stage } from "@/data/workflow/types";
 export type StepId = "service" | "coverage" | "documentation" | "review";
 export const STEP_IDS: StepId[] = ["service", "coverage", "documentation", "review"];
 export const NEW_AUTH_STEPS = ["Patient & Service", "Coverage & Requirements", "Clinical Documentation", "Review & Submit"];
-/** The round 9 name, kept for pages/referrals (dead code the lead removes). */
-export const NEW_CASE_STEPS = NEW_AUTH_STEPS;
 /** The id of the agents' section, for links and scrolling. */
 export const PREPARATION_ID = "preparation";
 
@@ -40,7 +38,7 @@ export const stepPatch = (i: number): Pick<CaseDraft, "step" | "phase"> => PATCH
 /** Clinical Documentation, opened on the agents' section. */
 export const preparationPatch: Pick<CaseDraft, "step" | "phase"> = { step: 1, phase: "records" };
 
-/** What opening a stage changes in the draft. The round 9 names (intake, referral, eligibility) still work, for pages/referrals, which the lead removes. */
+/** What opening a stage changes in the draft. The round 9 names (intake, referral, eligibility) still work, for saved links and `?step=`. */
 export const stepPatchOf = (id: StepId | "intake" | "referral" | "eligibility"): Pick<CaseDraft, "step" | "phase"> => PATCH[stepIdOf(id) ?? "service"];
 
 /** The stage of the payer workflow engine (it keeps five) that the draft is at: Clinical Documentation is the documentation stage until the agents start, then preparation. */

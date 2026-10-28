@@ -119,6 +119,3 @@ export function applySampleChart(id: string): void {
   const who = keep && draft ? `${draft.patient.initials}, ${draft.patient.age ?? ""}` : "T.W., 41";
   st.toast({ title: "Sample chart loaded", body: `${who}. ${docs.length} of ${docs.length + 1} documents are added and being checked.`, tone: "neutral" });
 }
-
-/** Kept for pages/referrals (dead code the lead removes): a legacy referral continues in the intake made from it, not in New Authorization. */
-export const continueWithReferral = (referralId: string, _draftId?: string | null): string | null => paths.referral(referralId);

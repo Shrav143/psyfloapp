@@ -55,9 +55,9 @@ export function EnvironmentChip() {
         className={cn("flex h-9 items-center gap-2 rounded-full border px-3 whitespace-nowrap transition-colors", post ? "border-forest bg-[#EEF7F6] text-forest hover:bg-sage-bg" : "border-field bg-white text-ink2 hover:bg-tile")}
       >
         <Globe2 size={15} className="ico shrink-0" aria-hidden="true" />
-        <span className="sr-only">Demo environment: {word}</span>
+        <span className="sr-only">Environment: {word}</span>
         <span aria-hidden="true" className="text-[13px] font-medium min-[1400px]:hidden">{post ? "Post-transition" : "Today"}</span>
-        <span aria-hidden="true" className="hidden text-[13px] font-medium min-[1400px]:inline">Demo environment: {word}</span>
+        <span aria-hidden="true" className="hidden text-[13px] font-medium min-[1400px]:inline">Environment: {word}</span>
         <ChevronDown size={14} className={cn("ico shrink-0 transition-transform", open && "rotate-180")} aria-hidden="true" />
       </button>
       {open ? (
