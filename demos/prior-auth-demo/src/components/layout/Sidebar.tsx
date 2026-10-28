@@ -27,7 +27,7 @@ interface Leaf {
   label: string;
   icon: LucideIcon;
   badge?: number;
-  /** What the badge counts, for people who cannot see the number's neighbors. */
+  /** What the badge counts, shown on hover. */
   badgeNote?: string;
   on: (p: Place) => boolean;
 }
@@ -73,10 +73,9 @@ function LeafLink({ item, place }: { item: Leaf; place: Place }) {
       <Icon size={18} className="ico" />
       <span className="truncate">{item.label}</span>
       {item.badge ? (
-        <Count on={on} className="ml-auto">
-          {item.badge}
-          {item.badgeNote ? <span className="sr-only"> {item.badgeNote}</span> : null}
-        </Count>
+        <span className="ml-auto" title={item.badgeNote}>
+          <Count on={on}>{item.badge}</Count>
+        </span>
       ) : null}
     </Link>
   );
@@ -137,8 +136,8 @@ export function Sidebar() {
 
   const referralBadge = newReferrals + needInfo;
   const intake: Leaf[] = [
-    { to: paths.referralQueue(), label: "Referral Queue", icon: Inbox, badge: referralBadge, badgeNote: `(${newReferrals} new, ${needInfo} need information)`, on: (p) => p.intake === "queue" },
-    { to: paths.activeIntakes(), label: "Active Intakes", icon: ClipboardPen, badge: inReview, badgeNote: "(in clinical review)", on: (p) => p.intake === "active" },
+    { to: paths.referralQueue(), label: "Referral Queue", icon: Inbox, badge: referralBadge, badgeNote: `${newReferrals} new, ${needInfo} need information`, on: (p) => p.intake === "queue" },
+    { to: paths.activeIntakes(), label: "Active Intakes", icon: ClipboardPen, badge: inReview, badgeNote: `${inReview} in clinical review`, on: (p) => p.intake === "active" },
     { to: paths.assessments(), label: "Assessments", icon: ClipboardCheck, on: (p) => p.intake === "assessments" },
     { to: paths.coordination(), label: "Care Coordination", icon: Share2, on: (p) => p.intake === "coordination" },
   ];

@@ -47,7 +47,7 @@ function defaultExplain(r: IntakeRecord, n: Need): Explain {
   if (n.key.startsWith("sugg-")) return { why: "Agents proposed these values from documents or conversations. Nothing is written to the record until a person accepts, edits or rejects each one.", source: "Agent suggestions, each with its own source (simulated)" };
   if (n.key === "scribe") return { why: "The AI Scribe drafted a note and proposals from the simulated transcript. A person reviews them before anything is saved.", source: "AI Scribe session (simulated audio)" };
   if (n.key === "voice") return { why: "The Voice Intake Assistant collected answers on a simulated call. Staff confirm the read-back before anything is saved.", source: "Voice Intake Assistant call (simulated)" };
-  if (n.key.startsWith("handoff")) return { why: "The authorization handoff is a draft until a person approves it. Nothing is submitted from here.", source: "Authorization readiness on this record" };
+  if (n.key.startsWith("handoff")) return { why: "Prepare Authorization opens a draft in New Authorization after a clinician approves the care plan. A person reviews and signs it there. Nothing is submitted from here.", source: "Authorization readiness on this record" };
   return { why: n.detail ?? "Work on this record waits for a person.", source: "Tasks on this record" };
 }
 const withExplain = (r: IntakeRecord) => (n: Need): Need => (n.explain ? n : { ...n, explain: defaultExplain(r, n) });
@@ -97,6 +97,12 @@ function moduleNeeds(r: IntakeRecord, plan: AssessmentPlan | null): Need[] {
 /** Safety content in a task: the clinician decides in the assessment, never from the assistant. */
 export const isSafetyTask = (t: AgentTask): boolean => t.gate?.kind === "safety" || /safety|risk/i.test(`${t.action} ${t.result ?? ""}`);
 
+/** A task's result as shown to a person. A blocked CANS task that waits for the official item mapping says what is loaded when the record carries the demo placeholder template. */
+export function taskResult(r: IntakeRecord, t: AgentTask): string | undefined {
+  if (t.status === "blocked" && t.role === "cans" && /official DMAS item mapping/i.test(t.result ?? "") && r.cans?.template) return "Demo placeholder template loaded; the official DMAS item mapping is not loaded";
+  return t.result;
+}
+
 export function needsOf(r: IntakeRecord, rd: Readiness, now: number): Need[] {
   const out: Need[] = [];
   const explainTask = (t: AgentTask): Explain => ({ why: t.result ?? "An agent finished work that needs a person's decision.", source: `${t.source ?? "Agent task"} (simulated agent work)` });
@@ -116,7 +122,7 @@ export function needsOf(r: IntakeRecord, rd: Readiness, now: number): Need[] {
       });
     }
     if (t.status === "error" && !t.retriedAs) out.push({ key: t.id, text: `Error: ${t.action}`, detail: t.error, agent: t.agent, tone: "risk", task: t, retry: true });
-    if (t.status === "blocked") out.push({ key: t.id, text: `Blocked: ${t.action}`, detail: t.result, agent: t.agent, tone: "neutral", task: t, settings: /paused/i.test(t.result ?? "") });
+    if (t.status === "blocked") out.push({ key: t.id, text: `Blocked: ${t.action}`, detail: taskResult(r, t), agent: t.agent, tone: "neutral", task: t, settings: /paused/i.test(t.result ?? "") });
   }
   const pending = r.suggestions.filter((s) => s.status === "pending" && !covered.has(s.section));
   const bySection = new Map<IntakeSectionId, number>();
@@ -131,9 +137,11 @@ export function needsOf(r: IntakeRecord, rd: Readiness, now: number): Need[] {
   if (r.scribe && (r.scribe.status === "stopped" || r.scribe.status === "reviewing")) out.push({ key: "scribe", text: "AI Scribe draft waits for review", tone: "mid", agent: "scribe", to: { section: "assessment", panel: "scribe" }, toLabel: "Open AI Scribe" });
   if (r.voice && (r.voice.status === "summary" || r.voice.status === "confirm")) out.push({ key: "voice", text: "Voice intake summary waits for confirmation", tone: "mid", to: { section: "profile", panel: "voice" }, toLabel: "Open voice intake" });
   out.push(...moduleNeeds(r, planFor(r, now)));
-  const handoffTask = out.some((n) => n.task?.kind === "handoff");
-  if (!handoffTask && rd.status === "ready" && r.handoff.status !== "ready") out.push({ key: "handoff", text: r.handoff.status === "draft" ? "Approve the handoff packet" : "Ready for handoff: prepare and approve the packet", tone: "mid", to: { section: "review" }, toLabel: "Go to review" });
-  if (r.handoff.status === "ready") out.push({ key: "handoff-open", text: "Handoff approved: open it in New Authorization", tone: "neutral", to: { section: "review" }, toLabel: "Go to review" });
+  /* The packet has no approval step of its own: a clinician's approved care plan is the approval, and Prepare Authorization opens the draft in New Authorization. */
+  if (rd.status === "ready" && r.handoff.status !== "in_new_case") {
+    out.push({ key: "handoff", text: "Ready to prepare the authorization", detail: "Prepare Authorization (opens after the care plan is approved) starts a draft in New Authorization. Nothing is submitted.", tone: "neutral", to: { section: "pathway" }, toLabel: "Open Care planning" });
+  }
+  if (r.handoff.status === "in_new_case") out.push({ key: "handoff-open", text: "The authorization is a draft in New Authorization", detail: "A person reviews and signs it there.", tone: "neutral", to: { section: "review" }, toLabel: "Go to review" });
   return out.map(withExplain(r));
 }
 
@@ -154,6 +162,6 @@ export function summaryOf(r: IntakeRecord, items: CheckItem[], rd: Readiness): s
   if (items.some((i) => i.id === "safety-alert" && i.status === "blocked")) parts.push("Safety alert open.");
   const c = countBy(items);
   if (c.pending) parts.push(`${c.pending} ${c.pending === 1 ? "item waits" : "items wait"} for approval.`);
-  parts.push(rd.status === "ready" ? "Ready for coordinator review of the handoff." : rd.status === "handed_off" ? "Handed off to New Case." : rd.status === "not_needed" ? "No authorization handoff needed." : "Not ready for handoff.");
+  parts.push(rd.status === "ready" ? "Ready for Prepare Authorization (opens after the care plan is approved)." : rd.status === "handed_off" ? "Handed off to New Authorization." : rd.status === "not_needed" ? "No authorization handoff needed." : "Not ready for handoff.");
   return parts.join(" ");
 }

@@ -9,9 +9,10 @@ export const STATUS_TONE: Record<TriageStatus, Tone> = {
   accepted: "good", redirected: "neutral", declined: "neutral", closed: "neutral",
 };
 
-const SET_BY_PERSON: TriageStatus[] = ["new", "needs_info", "accepted", "redirected", "declined", "closed"];
+/* "Accepted" is the person's decision to take the referral; once the intake is configured the status follows the work instead. */
+const SET_BY_PERSON: TriageStatus[] = ["new", "needs_info", "redirected", "declined", "closed"];
 
-/** The status to show. A configured intake follows its progress; everything else shows what a person set. */
+/** The status to show. A configured intake follows its progress; an unconfigured one (and any new, needs-information, redirected, declined or closed referral) shows what a person set. */
 export function effectiveStatus(r: IntakeRecord): TriageStatus {
   if (SET_BY_PERSON.includes(r.triage) || !r.config) return r.triage;
   const ins = r.instruments ?? {};

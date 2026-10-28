@@ -41,13 +41,13 @@ function options(kind: QuickKind, recordId: string, now: number, setTask: (patch
       };
     case "handoff":
       return {
-        role: "coordination", action: "Prepare the handoff draft", section: "review", approval: "required", ms: 1600,
+        role: "coordination", action: "Draft the authorization packet", section: "review", ms: 1600,
         work: () => {
           const r = get(recordId);
           if (!r) return undefined;
           st().prepareHandoffDraft(recordId, "navigator");
           const rd = readiness(r, now);
-          return `Draft packet ready for review: ${rd.blockers.length ? `${rd.blockers.length} items still stop the handoff` : "nothing stops the handoff"}. A person approves it before it goes to New Case`;
+          return `Packet drafted: ${rd.blockers.length ? `${rd.blockers.length} items still stop the handoff` : "nothing stops the handoff"}. Prepare Authorization (opens after the care plan is approved) opens it in New Authorization`;
         },
       };
     case "followups":
@@ -92,7 +92,7 @@ export function runQuick(kind: QuickKind, recordId: string, now: number): string
   taskId = runAgent(recordId, o);
   if (taskId) {
     const tags: Partial<AgentTask> = { kind };
-    if (kind === "handoff") Object.assign(tags, { undoable: true, gate: { kind: "handoff" } });
+    if (kind === "handoff") tags.undoable = true;
     if (kind === "followups") tags.undoable = true;
     if (kind === "request") tags.approveHere = true;
     useStore.getState().updateIntakeTask(recordId, taskId, tags);

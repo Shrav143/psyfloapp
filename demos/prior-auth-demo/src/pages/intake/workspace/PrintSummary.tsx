@@ -37,7 +37,7 @@ export function PrintSummary({ model, runId, onDone }: { model: WorkspaceModel; 
   return createPortal(
     <div id="ws-print" data-print-summary>
       <style>{CSS}</style>
-      <h1 className="text-[20px] font-semibold">Intake summary: {r.initials || "No patient yet"}{r.age !== null ? `, ${r.age}` : ""} ({r.id})</h1>
+      <h1 className="text-[18px] font-semibold">Intake summary: {r.initials || "No patient yet"}{r.age !== null ? `, ${r.age}` : ""} ({r.id})</h1>
       <p>Synthetic demo record. Names appear as initials and age. Printed {stamp(now)}.</p>
       <H>Intake</H>
       <p>Status: {TRIAGE_LABEL[status]}. {statusReason(r, plan)}</p>

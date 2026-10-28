@@ -15,6 +15,7 @@ import { navIdOf } from "./nav";
 import { PrintSummary } from "./PrintSummary";
 import { SectionView } from "./SectionView";
 import { readPref, writePref } from "./storage";
+import { useFillViewport } from "./useFillViewport";
 import { useMediaQuery } from "./useMediaQuery";
 import { useWorkspaceModel, WorkspaceModelContext } from "./useWorkspaceModel";
 import { useWorkspaceTarget } from "./useWorkspaceTarget";
@@ -36,6 +37,8 @@ export function Workspace({ record }: { record: IntakeRecord }) {
   const [printRun, setPrintRun] = useState(0);
   const [printing, setPrinting] = useState(false);
   const center = useRef<HTMLDivElement>(null);
+  const root = useRef<HTMLDivElement>(null);
+  const height = useFillViewport(root);
   const panel = params.get("panel");
   useDerivedFields(record);
   useResume(record, target);
@@ -68,7 +71,7 @@ export function Workspace({ record }: { record: IntakeRecord }) {
 
   return (
     <WorkspaceModelContext.Provider value={model}>
-      <div className="flex h-[calc(100dvh-142px)] min-h-[560px] flex-col gap-3" data-workspace data-layout={wide ? "wide" : medium ? "medium" : "narrow"}>
+      <div ref={root} style={height ? { height } : undefined} className="flex h-[calc(100dvh-142px)] min-h-[560px] flex-col gap-3" data-workspace data-layout={wide ? "wide" : medium ? "medium" : "narrow"}>
         <WorkspaceHeader
           model={model}
           go={go}

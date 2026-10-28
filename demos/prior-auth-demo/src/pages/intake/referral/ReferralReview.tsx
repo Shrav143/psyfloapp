@@ -67,9 +67,9 @@ export function ReferralReview({ record, now, spot, variant, pending = true, wit
           </div>
         ) : null}
         <div className="flex min-w-0 flex-col gap-5">
-          {pending && withDecision ? <DecisionBar record={record} dups={dups} dupChosen={!!dupChosen} /> : null}
           <RiskBanner record={record} />
           {pending && draft ? <DuplicatePanel draftId={record.id} hits={dups} chosen={dupChosen} /> : null}
+          {pending && withDecision ? <DecisionBar record={record} dups={dups} dupChosen={!!dupChosen} /> : null}
           <PatientCard {...shared} />
           <ReferralCard {...shared} now={now} />
           <ClinicalCard {...shared} />

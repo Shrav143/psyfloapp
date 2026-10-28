@@ -86,8 +86,8 @@ export function WorkspaceHeader({ model, go, onConfigure, onPrint, openPanel, hi
   return (
     <Card data-workspace-header className="@container shrink-0">
       <div className="flex flex-col gap-1.5 px-5 py-2.5">
-        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-          <div className="flex min-w-0 flex-wrap items-center gap-x-2.5 gap-y-1">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2.5 gap-y-1">
             <Link to={paths.referralQueue()} aria-label="Back to Referrals & Intake" title="Back to Referrals & Intake" className="grid h-7 w-7 place-items-center rounded-lg text-ink2 hover:bg-tile">
               <ArrowLeft size={16} className="ico" />
             </Link>
@@ -104,7 +104,7 @@ export function WorkspaceHeader({ model, go, onConfigure, onPrint, openPanel, hi
             {r.urgency !== "routine" ? <Pill tone={r.urgency === "emergent" ? "risk" : "mid"}>{r.urgency === "emergent" ? "Emergent" : "Urgent"}</Pill> : null}
             {details ? null : <Chip>Synthetic record</Chip>}
           </div>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2">
             {details ? null : <SaveIndicator />}
             <Button size="sm" icon={PanelRight} onClick={assistant.toggle} aria-pressed={assistant.wide ? assistant.open : undefined} aria-label={assistantLabel} data-assistant-toggle>
               <span className="hidden @4xl:inline">AI Assistant</span>{assistant.needs ? <span className="rounded-full bg-mid-bg px-1.5 text-[11px] font-semibold text-mid-ink">{assistant.needs}</span> : null}

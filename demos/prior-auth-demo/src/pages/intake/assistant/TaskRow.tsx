@@ -7,6 +7,7 @@ import { stamp } from "@/lib/time";
 import { useStore } from "@/store";
 import { useIntakeNow } from "../lib/policyNow";
 import { retryTask } from "./actions";
+import { taskResult } from "./needs";
 
 export const TASK_STATUS: Record<AgentTask["status"], { label: string; tone: Tone }> = {
   queued: { label: "Queued", tone: "neutral" }, running: { label: "Running", tone: "neutral" }, done: { label: "Done", tone: "good" }, needs_you: { label: "Needs you", tone: "mid" },
@@ -33,7 +34,7 @@ export function TaskRow({ record, task: t }: { record: IntakeRecord; task: Agent
           {ROLE_LABEL[t.role]} ({AGENTS[t.agent].name}) · {stamp(t.at)} · {APPROVAL[t.approval]}
           {t.source ? ` · Source: ${t.source}` : ""}
         </p>
-        {t.result ? <p className="mt-0.5 text-[12px] break-words text-ink2">{t.result}</p> : null}
+        {taskResult(record, t) ? <p className="mt-0.5 text-[12px] break-words text-ink2">{taskResult(record, t)}</p> : null}
         {t.status === "error" && t.error ? <p className="mt-1 rounded-lg bg-risk-bg px-2 py-1 text-[12px] text-risk-ink">{t.error}</p> : null}
         {(t.status === "error" && !t.retriedAs) || t.status === "queued" || t.status === "running" || canUndo ? (
           <div className="mt-1.5 flex flex-wrap gap-1.5">

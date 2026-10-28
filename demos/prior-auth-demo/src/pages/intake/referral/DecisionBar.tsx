@@ -71,11 +71,13 @@ export function DecisionBar({ record, dups = [], dupChosen = false, hideRequest 
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <ConfirmFields record={record} disabled={!canAct} />
-          <Dropdown<string>
-            variant="field" ariaLabel="Assign clinician" className="w-[210px]" value={record.assignedTo} menuWidth={300}
-            options={INTAKE_STAFF.map((x) => ({ value: x.id, label: x.name, hint: x.role }))}
-            onChange={(v) => { assign(record.id, v); toast({ title: `Assigned to ${staffOf(v)?.name ?? v}`, tone: "neutral" }); }}
-          />
+          <div className="w-[210px] max-w-full">
+            <Dropdown<string>
+              variant="field" ariaLabel="Assign clinician" value={record.assignedTo} menuWidth={300}
+              options={INTAKE_STAFF.map((x) => ({ value: x.id, label: x.name, hint: x.role }))}
+              onChange={(v) => { assign(record.id, v); toast({ title: `Assigned to ${staffOf(v)?.name ?? v}`, tone: "neutral" }); }}
+            />
+          </div>
         </div>
       </div>
       <div className="mt-3 flex flex-wrap items-center gap-2">
