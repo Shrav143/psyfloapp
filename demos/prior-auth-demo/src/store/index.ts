@@ -21,6 +21,7 @@ import { createQueueSlice, type QueueSlice } from "./queue";
 import { createRipplesSlice, type RipplesSlice } from "./ripples";
 import { createReferralsSlice, type ReferralsSlice } from "./referrals";
 import { createSessionSlice, type SessionSlice } from "./session";
+import { initPersist } from "./persist";
 import { createWorkflowsSlice, initWorkflowPersistence, type WorkflowsSlice } from "./workflows";
 
 /** One store, built from slices. Each module owns its slice file. */
@@ -55,6 +56,9 @@ initWorkflowPersistence(useStore);
 
 /* The payers added, each payer's saved rules and documents and the edit log are saved in this browser too (guarded), so they match the workflows that were saved with them. */
 initPayerConfigPersistence(useStore);
+
+/* Intake records, New Authorization drafts and the plan readiness a person changed are saved in this browser too (guarded; storage can be blocked), merged over the seeds when the app starts. */
+initPersist(useStore);
 
 /* Payers added on Payers join the shared payer list, so New Authorization, Eligibility and the queue offer them too. */
 useStore.subscribe((s, prev) => {

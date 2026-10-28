@@ -1,7 +1,7 @@
 import type { StateCreator } from "zustand";
 import type { DeclineReasonCode, NoticeChannel, RedirectReasonCode, ReferralNotice } from "@/data/intake/decision";
 import { REPLY_TASK_ACTION } from "@/data/intake/ext/referral";
-import { ageFromDob, CAPACITY_SEED } from "@/data/intake/referralFacts";
+import { ageFromDob, CAPACITY_SEED, riskFindings } from "@/data/intake/referralFacts";
 import { staffOf } from "@/data/intake/seed";
 import type { FieldState, IntakeDocument, IntakeRecord, SourceRef, Suggestion } from "@/data/intake/types";
 import type { Urgency } from "@/data/types";

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { LockKeyhole, PauseCircle } from "lucide-react";
+import { ResetDemoDataButton } from "@/store/persistUi";
 import { AgentBadge, Banner, Button, Card, CardBody, CardHeader, Dropdown, Modal, Page, PageHeader, Pill, Switch } from "@/components/ui";
 import { AGENTS, CREW } from "@/data/agents";
 import type { AgentKey, CrewKey } from "@/data/types";
@@ -87,6 +88,13 @@ export default function SettingsPage() {
             {LEVELS.map((l) => (
               <div key={l.value} className="flex gap-3"><span className="w-[92px] shrink-0 font-semibold">{FREEDOM_LABEL[l.value]}</span><span className="text-ink2">{l.line}</span></div>
             ))}
+          </CardBody>
+        </Card>
+        <Card>
+          <CardHeader title="Saved data" subtitle="Intake records and drafts are saved in this browser" />
+          <CardBody className="flex items-center justify-between gap-3 text-sm">
+            <span className="text-ink2">Reset puts every intake, assessment and draft back to the demo data.</span>
+            <ResetDemoDataButton />
           </CardBody>
         </Card>
       </div>
