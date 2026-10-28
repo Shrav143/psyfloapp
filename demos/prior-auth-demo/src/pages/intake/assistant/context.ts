@@ -36,6 +36,8 @@ export interface Context {
   title: string;
   lines: ContextLine[];
   actions: ActionSpec[];
+  /** The lines would repeat "Needs you" in the same panel, so the panel leaves them out and shows only the heading's actions. */
+  listedBelow?: true;
 }
 
 const ex = (why: string, source: string, rule?: string): Explain => ({ why, source, ...(rule ? { rule } : {}) });
@@ -165,7 +167,7 @@ export function contextOf(r: IntakeRecord, plan: AssessmentPlan | null, target: 
       return simple("What the documents need", openIn((i) => i.category === "documents", { section: "documents" }), [{ id: "request", label: "Draft a request for documents", explain: ex("Drafts a message to the referrer for what is missing. Nothing is sent until a person approves it.", "Referral items open on the checklist") }, MISSING, TASK]);
     default: {
       const needs = needsOf(r, readiness(r, now), now);
-      return simple("What this intake needs", asLines(needs), [MISSING, { id: "request", label: "Draft a request to the referrer", explain: ex("Drafts a message for the missing referral items. A person approves it before it is sent.", "Referral items open on the checklist") }, { id: "followups", label: "Create follow-up tasks", explain: ex("Makes one internal task for each missing item.", "Missing items on the checklist"), disabled: items.some((i) => i.status === "missing") ? undefined : "Nothing is missing" }, TASK]);
+      return { ...simple("Where to start", asLines(needs), [MISSING, { id: "request", label: "Draft a request to the referrer", explain: ex("Drafts a message for the missing referral items. A person approves it before it is sent.", "Referral items open on the checklist") }, { id: "followups", label: "Create follow-up tasks", explain: ex("Makes one internal task for each missing item.", "Missing items on the checklist"), disabled: items.some((i) => i.status === "missing") ? undefined : "Nothing is missing" }, TASK]), listedBelow: true as const };
     }
   }
 }

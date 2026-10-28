@@ -129,7 +129,7 @@ export function buildAssessmentPlan(c: PlanContext): AssessmentPlan {
     credentials: withCred.length ? withCred[withCred.length - 1].credentials ?? "" : "A licensed clinician completes and signs the assessment.",
     signoff: withSign.length ? withSign[withSign.length - 1].signoff ?? "" : "Clinician attestation is required before care planning.",
     version: versionRule?.version ?? "none",
-    effective: versionRule?.from ?? "2026-10-26",
+    effective: versionRule?.from ?? "2026-10-19",
     status: requiredStatus,
     availability,
     warnings,

@@ -5,7 +5,7 @@ import type { AssessmentRule, Level, ModuleId, ProgramId, RuleModule } from "./t
    every other row is an organization protocol, a draft, or a demo configuration. Nothing here is a payer's published rule. */
 
 export const RULES_VERSION = "va-assess-2027.1";
-const UPDATED = "2026-10-26";
+const UPDATED = "2026-10-19";
 
 const mod = (id: ModuleId, level: Level, reason: string, label?: string, when?: RuleModule["when"]): RuleModule => ({ id, level, reason, label, when });
 const req = (id: ModuleId, reason: string, label?: string, when?: RuleModule["when"]) => mod(id, "required", reason, label, when);

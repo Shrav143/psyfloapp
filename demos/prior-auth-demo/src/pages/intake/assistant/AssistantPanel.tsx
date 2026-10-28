@@ -103,9 +103,9 @@ export function AssistantPanel({ record, target = OVERVIEW }: { record: IntakeRe
         <p data-testid="assistant-summary" className="mt-2 text-[13px] text-ink2">{summaryOf(record, items, rd)}</p>
       </div>
 
-      <H right={ctx.lines.length ? <Pill tone="mid">{ctx.lines.length}</Pill> : null}>On this screen</H>
+      <H right={ctx.listedBelow ? null : ctx.lines.length ? <Pill tone="mid">{ctx.lines.length}</Pill> : null}>On this screen</H>
       <h3 data-testid="assistant-context-title" className="px-4 pb-1.5 text-[14px] font-semibold">{ctx.title}</h3>
-      <ContextLines record={record} ctx={ctx} />
+      {ctx.listedBelow ? null : <ContextLines record={record} ctx={ctx} />}
 
       <H>Suggested next actions</H>
       <ContextActions record={record} actions={ctx.actions} busy={busy} onRun={run} />
