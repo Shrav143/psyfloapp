@@ -4,6 +4,7 @@ import { MODULE_IDS } from "@/data/assess/modules";
 import type { WorkspaceTarget } from "@/data/assess/nav";
 import type { IntakeRecord } from "@/data/intake/types";
 import { ConfigureDialog } from "../configure/ConfigureDialog";
+import { useResume } from "@/store/persistUi";
 import { useDerivedFields } from "../profile/sync";
 import { SafetyBanner } from "../queue/SafetyBanner";
 import { ScribePanel } from "../scribe/ScribePanel";
@@ -37,6 +38,7 @@ export function Workspace({ record }: { record: IntakeRecord }) {
   const center = useRef<HTMLDivElement>(null);
   const panel = params.get("panel");
   useDerivedFields(record);
+  useResume(record, target);
 
   /* An address can name a module that does not exist; the sections below it are never told about it. */
   const known: WorkspaceTarget = target.module && !MODULE_IDS.includes(target.module) ? { section: "instrument" } : target;

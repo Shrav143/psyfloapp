@@ -43,6 +43,7 @@ function Proposal({ record, session, sg, review, onSource }: { record: IntakeRec
   const label = destinationOf(record, sg);
   const onFile = !sg.moduleId && !risk && (sg.section === "assessment" || sg.section === "referral" || sg.section === "profile" || sg.section === "coverage") ? valueOf(record, sg.section, sg.field) : "";
   const fields = sg.moduleId ? textFields(sg.moduleId) : [];
+  const locked = !!sg.moduleId && record.instruments?.[sg.moduleId]?.status === "signed";
   return (
     <div data-extract={sg.field} data-module={sg.moduleId} data-verified={verified} className={cn("rounded-xl border px-3.5 py-3", decided ? "border-line bg-tile/40" : risk ? "border-mid-edge bg-mid-bg/50" : "border-line bg-white")}>
       <div className="flex flex-wrap items-center gap-2 text-[12px]">
@@ -66,6 +67,7 @@ function Proposal({ record, session, sg, review, onSource }: { record: IntakeRec
           </select>
         </label>
       ) : null}
+      {locked ? <p className="mt-1.5 text-[12px] font-semibold text-mid-ink">This module is signed, so it cannot take new evidence. Amend it first; until then this proposal stays in this session.</p> : null}
       {onFile ? <p className="mt-1.5 text-[12px] text-muted">On file now: {onFile}</p> : null}
       {risk ? <p className="mt-1.5 text-[12px] text-mid-ink">It goes to Safety and risk screening as a draft. AI never finalizes risk: a clinician documents it.</p> : null}
       {review && !decided ? (

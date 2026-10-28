@@ -21,6 +21,8 @@ export default function ConfigurePage() {
   const record = useStore((s) => s.intakes.find((r) => r.id === id));
   const scope = useScope();
   const nav = useNavigate();
+  /* Discarding a draft starts the wizard over from the record's own configuration, so the page is mounted again. */
+  const [epoch, setEpoch] = useState(0);
   if (!record) {
     return (
       <Page>
@@ -31,10 +33,10 @@ export default function ConfigurePage() {
     );
   }
   if (!scope.sites.includes(record.site)) return <OutOfSite id={record.id} what="intake" />;
-  return <Loaded key={`${record.id}:${record.configDraft ? "draft" : "none"}`} record={record} />;
+  return <Loaded key={`${record.id}:${epoch}`} record={record} onDiscarded={() => setEpoch((e) => e + 1)} />;
 }
 
-function Loaded({ record }: { record: IntakeRecord }) {
+function Loaded({ record, onDiscarded }: { record: IntakeRecord; onDiscarded: () => void }) {
   const [params, setParams] = useSearchParams();
   const nav = useNavigate();
   const discard = useStore((s) => s.discardConfigDraft);
@@ -63,7 +65,7 @@ function Loaded({ record }: { record: IntakeRecord }) {
         <Banner tone="mid" title={`This referral is ${TRIAGE_LABEL[record.triage].toLowerCase()}`}>Configuring the intake does not reopen it. Change the decision on the referral first.</Banner>
       ) : null}
       {start.from === "draft" ? (
-        <Banner tone="good" title="Resumed from your saved draft" action={<Button size="sm" onClick={() => discard(record.id)}>Discard draft</Button>}>
+        <Banner tone="good" title="Your choices are saved as a draft" action={<Button size="sm" onClick={() => { discard(record.id); onDiscarded(); }}>Discard draft</Button>}>
           Saved {start.savedAt !== undefined ? clockTime(toDate(start.savedAt)) : ""} by {savedBy}. Nothing is active until you start the assessment.
         </Banner>
       ) : null}

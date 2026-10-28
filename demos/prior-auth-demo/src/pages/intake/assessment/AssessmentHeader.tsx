@@ -24,6 +24,8 @@ export function AssessmentHeader({ record, openScribe }: { record: IntakeRecord;
   const [signing, setSigning] = useState(false);
   const [amending, setAmending] = useState(false);
   const [reason, setReason] = useState("");
+  /* Recording a new interview on a signed assessment asks for the amendment first, then opens Record Intake. */
+  const [recordAfter, setRecordAfter] = useState(false);
   const meta = STATUS_META[a.status];
   const n = documented(record);
   const pending = pendingFor(record, "assessment");
@@ -39,7 +41,7 @@ export function AssessmentHeader({ record, openScribe }: { record: IntakeRecord;
         right={
           <>
             <Pill tone={meta.tone}>{meta.label}</Pill>
-            <Button variant="primary" icon={Mic} disabled={signed} title={signed ? "Amend the signed assessment to record again" : "Simulated: no audio is recorded"} onClick={() => { if (a.mode !== "scribe") st.setAssessmentMode(record.id, "scribe"); openScribe(); }}>Record Intake</Button>
+            <Button variant="primary" icon={Mic} title="Simulated: no audio is recorded" onClick={() => { if (signed) { setRecordAfter(true); setAmending(true); return; } if (a.mode !== "scribe") st.setAssessmentMode(record.id, "scribe"); openScribe(); }}>Record Intake</Button>
           </>
         }
       />
@@ -93,9 +95,14 @@ export function AssessmentHeader({ record, openScribe }: { record: IntakeRecord;
       <SignOffDialog open={signing} onClose={() => setSigning(false)} record={record} title="Sign the clinical assessment" attestation={ATTESTATION} signLabel="Sign assessment"
         onSign={(signer, rolePlay) => st.signAssessment(record.id, signer.id, signer.credentials ?? "", rolePlay)} />
 
-      <Modal open={amending} onClose={() => setAmending(false)} title="Amend the signed assessment" size="sm"
-        footer={<><Button onClick={() => setAmending(false)}>Cancel</Button><Button variant="primary" disabled={!reason.trim()} onClick={() => { st.amendAssessment(record.id, reason.trim()); setReason(""); setAmending(false); }}>Reopen for amendment</Button></>}>
-        <p className="text-[14px] text-ink2">The signature is withdrawn and kept in the history. A clinician signs again after the change.</p>
+      <Modal open={amending} onClose={() => { setAmending(false); setRecordAfter(false); }} title={recordAfter ? "Reopen the assessment to record a new interview" : "Amend the signed assessment"} size="sm"
+        footer={<><Button onClick={() => { setAmending(false); setRecordAfter(false); }}>Cancel</Button><Button variant="primary" disabled={!reason.trim()} onClick={() => {
+          st.amendAssessment(record.id, reason.trim());
+          setReason("");
+          setAmending(false);
+          if (recordAfter) { setRecordAfter(false); st.setAssessmentMode(record.id, "scribe"); openScribe(); }
+        }}>{recordAfter ? "Reopen and record" : "Reopen for amendment"}</Button></>}>
+        <p className="text-[14px] text-ink2">{recordAfter ? "A new interview reopens the signed assessment. " : ""}The signature is withdrawn and kept in the history. A clinician signs again after the change.{recordAfter ? " Proposals reach only the modules that are not signed; amend a signed module to give it new evidence." : ""}</p>
         <TextArea className="mt-3" aria-label="Reason for the amendment" placeholder="Why it is being amended" value={reason} onChange={(e) => setReason(e.target.value)} rows={3} />
       </Modal>
     </Card>

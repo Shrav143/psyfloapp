@@ -39,7 +39,7 @@ const REC = "Recommended";
 const join = (...parts: (string | undefined | false)[]): string => parts.filter((p): p is string => !!p).map((p, i, all) => (i < all.length - 1 ? p.replace(/\.$/, "") : p)).join(" · ");
 
 /** Nothing has been dropped, typed or attached yet. */
-const isBlank = (d: CaseDraft): boolean => !d.patient.initials && !d.patient.age && !d.payerId && !d.program && !d.type && !d.memberId && !d.diagnoses.length && !d.reason && !d.documents.length && !Object.keys(d.unavailable).length && !d.referralId;
+const isBlank = (d: CaseDraft): boolean => !d.patient.initials && !d.patient.age && !d.payerId && !d.program && !d.type && !d.memberId && !d.diagnoses.length && !d.reason && !d.documents.length && !Object.keys(d.unavailable).length && !d.referralId && !d.intakeId;
 
 /* ------------------------------------------------------------------ one row at a time */
 function documentRow(d: CaseDraft, entry: DocEntry, need: "required" | "recommended" | "typical" | "extra", doc: DraftDocument | undefined, quiet: boolean): Row {
