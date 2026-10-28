@@ -1,5 +1,7 @@
 # Virginia Medicaid Intake: implementation notes
 
+> **Round 10 update.** Intake is now the top-level **Referrals & Intake** area (`/intake`), the legacy Referrals tab and New Case's Referral step are gone, and New Case is **New Authorization**. This file describes round 9; for the current structure, the configuration engine and the scenarios read `REFERRALS-INTAKE.md`. The policy engine, the Virginia services and the unresolved items below still apply.
+
 Round 9 adds an AI-assisted intake and referral workspace for Virginia's Behavioral Health Services Redesign (new services start July 1, 2027; IIH, TDT, MHSS and PSR end June 30, 2027). It lives under **Authorizations › Intake**, between All Authorizations and New Case. The authorization, denial and analytics workflows are unchanged; an approved intake hands off to New Case as a draft and is never submitted from Intake.
 
 Everything in it is a front-end demo with synthetic records. Nothing is sent anywhere, no audio is recorded, and no eligibility system is called.
