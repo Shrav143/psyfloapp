@@ -3,6 +3,7 @@
    so the stepper's state, the step's own message and "What is missing" cannot disagree. */
 import { useMemo } from "react";
 import type { CaseDraft } from "@/data/cases";
+import type { IntakeRecord } from "@/data/intake/types";
 import { patientById, type AuthorizationRecord, type Patient, type PatientBook } from "@/data/patients";
 import { useScope } from "@/lib/scope";
 import { useStore } from "@/store";
@@ -30,6 +31,8 @@ export interface CaseEnv {
   readiness: Readiness;
   /** The payer workflow the case follows and where it stands. Null until Intake knows the payer and the level of care. */
   workflow: CaseWorkflow | null;
+  /** The intake record the draft was prepared from. Everything clinical on a draft like that is read from it. */
+  intake: IntakeRecord | undefined;
 }
 
 export function useCaseEnv(draft: CaseDraft | undefined): CaseEnv | null {
@@ -39,6 +42,7 @@ export function useCaseEnv(draft: CaseDraft | undefined): CaseEnv | null {
   const key = draft ? verificationKey(draft) : null;
   const record = useStore((s) => (key ? s.verifications[key] : undefined));
   const verifyPaused = useStore((s) => s.agentPaused.verify);
+  const intake = useStore((s) => (draft?.intakeId ? s.intakes.find((r) => r.id === draft.intakeId) : undefined));
   const scope = useScope();
   const { sites } = scope;
   const ctx = usePayerContext({ payerId: draft?.payerId ?? null, program: draft?.program ?? null });
@@ -64,6 +68,7 @@ export function useCaseEnv(draft: CaseDraft | undefined): CaseEnv | null {
       authorization: draft.authorizationId ? book.authorizations.find((a) => a.id === draft.authorizationId) : undefined,
       readiness: readiness(draft, ctx),
       workflow,
+      intake,
     };
-  }, [draft, clock, ctx, record, verifyPaused, book, requests, drafts, scope, sites, workflow]);
+  }, [draft, clock, ctx, record, verifyPaused, book, requests, drafts, scope, sites, workflow, intake]);
 }

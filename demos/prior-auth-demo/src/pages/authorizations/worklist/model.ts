@@ -2,8 +2,7 @@ import { detailForQueueItem } from "@/data/caseDetail";
 import { withFocus } from "@/data/caseDetailFocus";
 import { EMPTY_WORK, canSend, liveView, type CaseWork } from "@/data/caseModel";
 import { siteOfDenial, type DenialMeta } from "@/data/denials";
-import { currentChance, draftState, dueChip, needsPerson, type CaseDraft } from "@/data/cases";
-import { chanceFor } from "@/data/programTables";
+import { chanceOfDraft, draftState, dueChip, needsPerson, type CaseDraft } from "@/data/cases";
 import { LEDGER_STATUS_LABEL } from "@/data/manager";
 import { inWeek, isClean, reviewStamp, type Review } from "@/data/managerReviews";
 import { REQUEST_KIND_LABEL, STATUS_LABEL as PHASE_LABEL, isWaitingOnYou, requestFor, requestKindOf, type Band, type Phase, type QueueItem, type RequestKind } from "@/data/queue";
@@ -287,7 +286,7 @@ export function buildWorkRows(input: WorkInput): WorkRow[] {
       initials: d.patient.initials, age: d.patient.age, payerId: d.payerId, program: d.program, service: d.levelLabel ?? (d.program ? PROGRAM_LABEL[d.program] : "Level not set"),
       kind: d.kind, typeLabel: REQUEST_KIND_LABEL[d.kind], life: "progress", status: { text: st.text, tone: st.tone }, flags: [],
       needsYou: needsPerson(d), next: firstSentence(runLine(d)), action: { label: st.cta, go: { to: "draft", draftId: d.id }, primary: st.primary },
-      dueAt: d.dueAt, due: chip, band: chip?.tone === "risk" ? "now" : bandOf(d.dueAt, clock), owner: agentNow(d), chance: state === "intake" ? null : chanceFor(d.program, currentChance(d)),
+      dueAt: d.dueAt, due: chip, band: chip?.tone === "risk" ? "now" : bandOf(d.dueAt, clock), owner: agentNow(d), chance: state === "intake" ? null : chanceOfDraft(d),
       notes: [], signal: false, src: { draft: d },
     };
     rows.push(row);

@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Ban, CircleAlert, CircleCheck, MinusCircle } from "lucide-react";
 import { Disclosure, Pill } from "@/components/ui";
-import { fixPath, trackSummary, type DualReadinessX, type ItemState, type ReadinessItemX, type ReadinessTrackX } from "@/data/assess/readiness";
+import { countsLine, fixPath, trackSummary, type DualReadinessX, type ItemState, type ReadinessItemX, type ReadinessTrackX } from "@/data/assess/readiness";
 import type { Tone } from "@/data/types";
 import { cn } from "@/lib/cn";
 
@@ -34,17 +34,24 @@ function Item({ item, fix }: { item: ReadinessItemX; fix?: ReactNode }) {
 
 function Track({ title, track, fix, id }: { title: string; track: ReadinessTrackX; fix: (i: ReadinessItemX) => ReactNode; id: string }) {
   const open = track.items.filter((i) => i.state === "needs_attention" || i.state === "blocked");
-  const done = track.items.filter((i) => i.state === "ready" || i.state === "not_applicable");
+  const done = track.items.filter((i) => i.state === "ready");
+  const notApplicable = track.items.filter((i) => i.state === "not_applicable");
   return (
     <section data-track={id} aria-label={title}>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h4 className="text-[14px] font-semibold text-ink">{title}</h4>
         <Pill tone={trackTone(track)} dot>{trackSummary(track)}</Pill>
       </div>
+      <p className="mt-0.5 text-[12px] text-muted" data-track-counts>{countsLine(track)}</p>
       {open.length ? <ul className="mt-1 divide-y divide-line">{open.map((i) => <Item key={i.id} item={i} fix={fix(i)} />)}</ul> : <p className="mt-1 text-[13px] text-ink2">Every applicable item is done.</p>}
       {done.length ? (
-        <Disclosure variant="plain" title={<span className="font-sans text-[13px] font-semibold">Done or not applicable ({done.length})</span>} summary={done.map((i) => i.label).join(", ")}>
+        <Disclosure variant="plain" title={<span className="font-sans text-[13px] font-semibold">Done ({done.length})</span>} summary={done.map((i) => i.label).join(", ")}>
           <ul className="divide-y divide-line px-1">{done.map((i) => <Item key={i.id} item={i} />)}</ul>
+        </Disclosure>
+      ) : null}
+      {notApplicable.length ? (
+        <Disclosure variant="plain" title={<span className="font-sans text-[13px] font-semibold">Not applicable ({notApplicable.length})</span>} summary={notApplicable.map((i) => i.label).join(", ")}>
+          <ul className="divide-y divide-line px-1">{notApplicable.map((i) => <Item key={i.id} item={i} />)}</ul>
         </Disclosure>
       ) : null}
     </section>

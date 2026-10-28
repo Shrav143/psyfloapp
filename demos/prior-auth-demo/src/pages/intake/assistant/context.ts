@@ -1,6 +1,7 @@
 import { LEGACY_SECTION, type WorkspaceTarget } from "@/data/assess/nav";
 import { moduleCompletion } from "@/data/assess/completion";
 import { moduleById } from "@/data/assess/modules";
+import { overallSignoff } from "@/data/assess/status";
 import type { AssessmentPlan, ModuleId } from "@/data/assess/types";
 import { completeness, isOpen, readiness } from "@/data/intake/checklist";
 import { staffOf } from "@/data/intake/seed";
@@ -149,6 +150,7 @@ export function contextOf(r: IntakeRecord, plan: AssessmentPlan | null, target: 
       const unsigned = ids.filter((m) => !["patient-referral", "insurance", "clinical-history", "safety", "social-functional", "clinical-notes", "review-signoff", "cans", "lon"].includes(m) && r.instruments?.[m]?.status !== "signed");
       if (unsigned.length) lines.push({ key: "unsigned", text: `${unsigned.length} required ${unsigned.length === 1 ? "module is" : "modules are"} not signed`, detail: unsigned.slice(0, 3).map((m) => plan?.modules.find((x) => x.id === m)?.label ?? moduleById(m).label).join(", "), tone: "mid", target: { section: "instrument", module: unsigned[0] }, toLabel: "Open the first", explain: ex("Every required module is signed by a qualified clinician before care planning.", "Assessment plan for this intake", ruleLine(plan, unsigned[0])) });
       if (r.assessment.status !== "signed") lines.push({ key: "attest", text: "The clinical assessment is not signed", tone: "mid", target: { section: "clinical" }, toLabel: "Open", explain: ex("The assessment attestation is a clinician's signature.", "Core module: Review & sign-off", ruleLine(plan, "review-signoff")) });
+      if (!unsigned.length && r.assessment.status === "signed" && !overallSignoff(r, now).done) lines.push({ key: "overall", text: "A clinician signs off the whole assessment", detail: "Care planning follows the overall sign-off.", tone: "mid", target: { section: "signoff" }, toLabel: "Open", explain: ex("The overall sign-off confirms a clinician reviewed every required module. It is not a finding of medical necessity.", "Core module: Review & sign-off", ruleLine(plan, "review-signoff")) });
       if (r.safety?.status === "open") lines.unshift({ key: "alert", text: "A safety alert is open", detail: "A clinician reviews it first. Psyflo never decides that a person is safe.", tone: "risk", explain: ex("A safety alert was raised from what was said or written.", r.safety.source?.ref ?? "Safety alert on this record") });
       return simple("What review and sign-off need", lines, [MISSING, TASK]);
     }
@@ -156,6 +158,7 @@ export function contextOf(r: IntakeRecord, plan: AssessmentPlan | null, target: 
       const cp = r.carePlan;
       const lines: ContextLine[] = [];
       if (r.assessment.status !== "signed") lines.push({ key: "after", text: "Care planning follows a signed assessment", tone: "neutral", target: { section: "clinical" }, toLabel: "Open the assessment", explain: ex("The care plan is written from the assessment, so the assessment is signed first.", "Workflow order of this intake") });
+      else if (!overallSignoff(r, now).done) lines.push({ key: "after-signoff", text: "Care planning follows the overall sign-off", tone: "neutral", target: { section: "signoff" }, toLabel: "Open review & sign-off", explain: ex("The plan's sign-off rule: a clinician signs off the assessment before care planning.", "Core module: Review & sign-off", ruleLine(plan, "review-signoff")) });
       if (!cp || cp.status === "not_started") lines.push({ key: "none", text: "No care plan yet", detail: "A clinician selects the program and writes the goals.", tone: "neutral", target: { section: "care" }, explain: ex("The service and the plan are a clinician's decisions. The assistant only organizes what is documented.", "Care plan on this record") });
       else if (cp.status === "draft") lines.push({ key: "draft", text: "The care plan is a draft", detail: "A clinician approves it.", tone: "mid", target: { section: "care" }, explain: ex("A care plan is approved by a person, never by an agent.", "Care plan on this record") });
       return simple("What care planning needs", lines, [

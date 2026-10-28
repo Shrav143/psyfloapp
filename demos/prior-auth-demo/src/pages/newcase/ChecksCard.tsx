@@ -18,7 +18,7 @@ export function ChecksCard({ checks }: { checks: IntegrityCheck[] }) {
             {c.state === "checking" ? <Spinner size={18} className="mt-0.5" /> : c.state === "pass" ? <CircleCheck size={18} className={cn("ico mt-0.5", COLOR.pass)} aria-label="Passed" /> : <CircleAlert size={18} className={cn("ico mt-0.5", COLOR.warn)} aria-label="Warning" />}
             <div className="min-w-0 flex-1">
               <div>{c.label}</div>
-              {c.state === "checking" ? <div className="mt-0.5 text-[13px] text-muted">{c.details[0]}</div> : null}
+              {c.state === "checking" ? <div className="mt-0.5 text-[13px] text-muted">{c.details[0]}</div> : c.note ? <div className="mt-0.5 text-[13px] text-muted">{c.note}</div> : null}
             </div>
             <span title={AGENTS[c.agent].name}>
               <AgentBadge agent={c.agent} size={22} />

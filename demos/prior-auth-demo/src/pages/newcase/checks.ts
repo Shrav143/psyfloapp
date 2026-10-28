@@ -1,10 +1,14 @@
 /* The four checks shown on the review step. Each one reads the case, the payer's saved documents and rules, and the agents' run:
    pass, warn (can be signed after an acknowledgement) or checking. Nothing here blocks: what blocks a signature is in caseIssues.ts. */
 import type { CaseDraft, NarrativeSection } from "@/data/cases";
+import type { IntakeRecord } from "@/data/intake/types";
 import { payerById } from "@/data/seed";
+import { SERVICES } from "@/data/va/services";
+import { namesRange } from "./fromIntake";
+import { namesItsSource } from "./recordNarrative";
 import type { AgentKey } from "@/data/types";
 import type { VerificationRecord } from "@/data/verification";
-import { docEntries, findingText, isOpen, openFindings, slotLabel } from "./documents";
+import { docEntries, findingText, isOpen, openFindings, slotLabel, trackOfDraft } from "./documents";
 import { noAuthLine, startDateIssue } from "./payerRules";
 import type { PayerContext } from "./payerContext";
 import { criteriaCount } from "./runText";
@@ -20,6 +24,8 @@ export interface IntegrityCheck {
   state: CheckState;
   /** One line for each thing found. Empty for a pass. */
   details: string[];
+  /** A line under the label that says what the check is and is not (a request prepared from an intake record). */
+  note?: string;
   /** The findings the validation summary does not list by document (coverage, the summary itself, a missing step-down), each with its fix when there is one. */
   extra: { label: string; text: string; fix?: FixKind }[];
 }
@@ -29,6 +35,8 @@ export interface CheckInput {
   clock: number;
   ctx: PayerContext;
   verification?: VerificationRecord;
+  /** The intake record a request was prepared from. */
+  intake?: IntakeRecord;
 }
 
 /** A Virginia service: Criteria has nothing configured to match the chart against, and says so rather than assume a criterion. */
@@ -38,7 +46,7 @@ const list = (names: string[]): string => (names.length <= 1 ? (names[0] ?? "") 
 
 export function integrityChecks(d: CaseDraft, narrative: NarrativeSection[], rechecking: boolean, { clock, ctx, verification }: CheckInput): IntegrityCheck[] {
   const payer = d.payerId ? payerById(d.payerId).shortName : "the payer";
-  const required = docEntries(d.payerId, d.program, ctx.items).filter((r) => r.required);
+  const required = docEntries(d.payerId, d.program, ctx.items, trackOfDraft(d)).filter((r) => r.required);
   const inCase = (slot: string): boolean => d.documents.some((x) => x.slot === slot);
   const absent = required.filter((r) => !inCase(r.slot) && !(r.slot in d.unavailable));
   const unavailable = required.filter((r) => !inCase(r.slot) && r.slot in d.unavailable);
@@ -46,7 +54,18 @@ export function integrityChecks(d: CaseDraft, narrative: NarrativeSection[], rec
   const lost = verification?.coverage.state === "inactive";
   const emptySection = narrative.find((s) => !s.text.trim());
 
-  const traced: IntegrityCheck = rechecking
+  const fromRecord = !!d.intakeId;
+  const unsourced = narrative.find((s) => !s.fixed && !namesItsSource(s));
+  const SOURCED = "Each section names its source in the intake record";
+  const traced: IntegrityCheck = fromRecord
+    ? rechecking
+      ? { id: "traced", agent: "integrity", label: SOURCED, state: "checking", details: ["Integrity is re-checking your edits"], extra: [] }
+      : emptySection
+        ? { id: "traced", agent: "integrity", label: SOURCED, state: "warn", details: [`The "${emptySection.heading}" section is empty. Add the text or send the draft back to Scribe.`], extra: [{ label: "Summary", text: `The "${emptySection.heading}" section is empty. Add the text or send the draft back to Scribe.`, fix: "edit" }] }
+        : unsourced
+          ? { id: "traced", agent: "integrity", label: SOURCED, state: "warn", details: [`The "${unsourced.heading}" section names no source in the record.`], extra: [{ label: "Summary", text: `The "${unsourced.heading}" section names no source in the record. Add its source or take the text out.`, fix: "edit" }] }
+          : { id: "traced", agent: "integrity", label: SOURCED, state: "pass", details: [], note: "Checks the citations, not the clinical content. A clinician reviews what the summary says.", extra: [] }
+    : rechecking
     ? { id: "traced", agent: "integrity", label: "Every sentence traced to the chart", state: "checking", details: ["Integrity is re-checking your edits"], extra: [] }
     : emptySection
       ? { id: "traced", agent: "integrity", label: "Every sentence traced to the chart", state: "warn", details: [`The "${emptySection.heading}" section is empty. Add the text or send the draft back to Scribe.`], extra: [{ label: "Summary", text: `The "${emptySection.heading}" section is empty. Add the text or send the draft back to Scribe.`, fix: "edit" }] }
@@ -95,8 +114,38 @@ export function integrityChecks(d: CaseDraft, narrative: NarrativeSection[], rec
   return [
     traced,
     { id: "errors", agent: "scrubber", label: "Request has no errors", state: errors.length ? "warn" : "pass", details: errors, extra: [...lead, ...overdue, ...(outside ? [{ label: "Service dates", text: outside }] : [])] },
-    { id: "criteria", agent: "criteria", label: n === null ? `No ${payer} criteria configured for this service` : uncovered ? `${Math.max(0, n - uncovered)} of ${n} ${payer} requirements covered` : `All ${n} ${payer} requirements covered`, state: unmet.length || n === null ? "warn" : "pass", details: n === null ? [NO_CRITERIA, ...unmet] : unmet, extra: [...(n === null ? [{ label: "Criteria", text: NO_CRITERIA }] : []), ...(stepdownLater ? [{ label: "Step-down provider", text: "A named step-down provider is not on file yet.", fix: "scribe" as FixKind }] : [])] },
-    { id: "level", agent: "placement", label: n === null ? "Level-of-care criteria pending" : "Level of care matches the request", state: placement.length ? "warn" : "pass", details: placement, extra: [...(n === null ? [{ label: "Level of care", text: `${VA_CRITERIA_PENDING}.` }] : []), ...noAuthExtra] },
+    ...(fromRecord ? recordChecks(d, required.length - absent.length - unavailable.length, required.length, unmet, stepdownLater, noAuthExtra, payer) : [
+    { id: "criteria", agent: "criteria", label: n === null ? `No ${payer} criteria configured for this service` : uncovered ? `${Math.max(0, n - uncovered)} of ${n} ${payer} requirements covered` : `All ${n} ${payer} requirements covered`, state: unmet.length || n === null ? "warn" : "pass", details: n === null ? [NO_CRITERIA, ...unmet] : unmet, extra: [...(n === null ? [{ label: "Criteria", text: NO_CRITERIA }] : []), ...(stepdownLater ? [{ label: "Step-down provider", text: "A named step-down provider is not on file yet.", fix: "scribe" as FixKind }] : [])] } as IntegrityCheck,
+    { id: "level", agent: "placement", label: n === null ? "Level-of-care criteria pending" : "Level of care matches the request", state: placement.length ? "warn" : "pass", details: placement, extra: [...(n === null ? [{ label: "Level of care", text: `${VA_CRITERIA_PENDING}.` }] : []), ...noAuthExtra] } as IntegrityCheck,
+    ]),
+  ];
+}
+
+/** The two checks of a request prepared from an intake record. They claim no criteria match and no level-of-care support: Criteria shows a documentation checklist (what the payer's saved document list asks for against what is attached,
+    a demo list with no verified payer rule behind it), and Placement shows whose selection the service on the request is. A person, not an agent, chooses the service. */
+function recordChecks(d: CaseDraft, have: number, total: number, unmet: string[], stepdownLater: boolean, noAuthExtra: { label: string; text: string }[], payer: string): IntegrityCheck[] {
+  const sel = d.serviceNote?.selected ?? null;
+  const selService = SERVICES.find((s) => s.id === sel);
+  const range = !!sel && namesRange(sel);
+  const matches = !!selService && selService.program === d.program && !range;
+  const level = !sel
+    ? "No clinician has selected the service. The service on this request is your choice."
+    : range
+      ? `The care plan names a range (${selService?.label}). The request names one service, chosen here. A clinician confirms it when signing.`
+      : !matches
+        ? `The service on this request differs from the one the clinician selected (${selService?.label}).`
+        : null;
+  return [
+    {
+      id: "criteria", agent: "criteria", label: `Documentation checklist: ${have} of ${total} documents attached`, state: unmet.length ? "warn" : "pass", details: unmet,
+      note: `Compared with ${payer}'s document list in the demo's saved configuration. Payer requirement not yet verified.`,
+      extra: stepdownLater ? [{ label: "Step-down provider", text: "A named step-down provider is not on file yet.", fix: "scribe" as FixKind }] : [],
+    },
+    {
+      id: "level", agent: "placement", label: "Service on the request is the clinician's selection", state: level || noAuthExtra.length ? "warn" : "pass", details: [...(level ? [level] : []), ...noAuthExtra.map((x) => x.text)],
+      note: "Placement does not pick or support a level of care. It only compares with what the clinician selected.",
+      extra: [...(level ? [{ label: "Service", text: level }] : []), ...noAuthExtra],
+    },
   ];
 }
 

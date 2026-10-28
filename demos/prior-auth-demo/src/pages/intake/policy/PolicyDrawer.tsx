@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
 import { FilterX } from "lucide-react";
 import { Button, Chip, Drawer, Dropdown, EmptyState, Label, Pill, Segmented } from "@/components/ui";
+import { reviewLine } from "@/data/assess/reviewLine";
+import { RULES_UPDATED } from "@/data/assess/rules";
 import type { PayerId } from "@/data/types";
 import { POLICY_VERSIONS, REDESIGN_START, SOURCES, UNRESOLVED, type PolicyRule, type PolicyVersionId } from "@/data/va/policy";
 import { VA_PLANS, vaPlanOf } from "@/data/va/plans";
@@ -9,7 +11,8 @@ import { longDate, toDate } from "@/lib/time";
 import { useStore } from "@/store";
 import { useIntakeNow } from "../lib/policyNow";
 import { RuleStatusPill, SourceAnchor } from "../review/pills";
-import { KIND_LABEL, matchRules, ORG_RULE_LABEL, orgRulesFor, type PolicyFilter, type Setting } from "./match";
+import { AssessmentRules } from "./AssessmentRules";
+import { KIND_LABEL, matchAssessmentRules, matchRules, ORG_RULE_LABEL, orgRulesFor, type PolicyFilter, type Setting } from "./match";
 import { OrgRuleForm } from "./OrgRuleForm";
 
 const iso = (m: number) => {
@@ -41,6 +44,7 @@ export function PolicyDrawer({ onClose, initial }: { onClose: () => void; initia
   const [moreSources, setMoreSources] = useState<PolicyVersionId[]>([]);
   const set = <K extends keyof PolicyFilter>(k: K, v: PolicyFilter[K]) => setF((x) => ({ ...x, [k]: v }));
   const rules = useMemo(() => matchRules(f), [f]);
+  const assessRules = useMemo(() => matchAssessmentRules(f), [f]);
   const org = orgRulesFor(orgRules, f.service, f.payer);
   const blank: PolicyFilter = { service: "all", payer: "all", age: "all", coverage: "all", date: clock, version: "all", setting: "all" };
   const filtered = JSON.stringify(f) !== JSON.stringify(blank);
@@ -139,6 +143,8 @@ export function PolicyDrawer({ onClose, initial }: { onClose: () => void; initia
                 </div>
                 <p className="mt-1 text-[13px] text-ink2">{r.detail}</p>
                 <p className="mt-1 text-[12px] text-muted">{[servicesLabel(r), r.coverage ? (r.coverage.includes("ffs") && r.coverage.length === 1 ? "Fee-for-service" : "Managed care") : null, windowLabel(r), r.timing, r.reviewer ? REVIEWER[r.reviewer] : null, POLICY_VERSIONS[r.version].label].filter(Boolean).join(" · ")}</p>
+                {/* A DMAS row is a summary the demo keeps with the rule set: it has the rule set's date and no responsible reviewer yet. */}
+                <p className="mt-0.5 text-[12px] text-muted" data-review-line>{reviewLine({ reviewer: "Pending assignment", updated: RULES_UPDATED })}</p>
                 <SourceAnchor rule={r} className="mt-1 inline-block" />
               </li>
             ))}
@@ -161,6 +167,8 @@ export function PolicyDrawer({ onClose, initial }: { onClose: () => void; initia
           <EmptyState icon={FilterX} title="No rules match" action={<Button onClick={() => setF(blank)}>Clear filters</Button>}>Try another service, plan or date.</EmptyState>
         )}
       </section>
+
+      <AssessmentRules rules={assessRules} />
 
       <section aria-label="Open questions" className="mt-6">
         <Label>Open questions only DMAS can settle</Label>

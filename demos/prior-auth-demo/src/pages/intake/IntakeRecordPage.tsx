@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom";
 import { SearchX } from "lucide-react";
 import { Button, Card, CardBody, EmptyState, Page } from "@/components/ui";
 import { useScope } from "@/lib/scope";
@@ -14,6 +14,10 @@ export default function IntakeRecordPage() {
   const nav = useNavigate();
   const record = useStore((s) => s.intakes.find((r) => r.id === id));
   const scope = useScope();
+  const { search } = useLocation();
+
+  /* A referral is the first status of an intake: /intake/RF-2049 opens the intake made from it, with the same query, as /referrals/RF-2049 does. */
+  if (/^RF-\d+$/.test(id)) return <Navigate to={`${paths.referral(id)}${search}`} replace />;
 
   if (!record) {
     return (

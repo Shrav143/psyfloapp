@@ -9,7 +9,8 @@ import { authorizationsOf, episodesOf, isoOf, patientById, type PatientBook } fr
 import type { IntakeRecord } from "@/data/intake/types";
 import { REDESIGN_START } from "@/data/va/policy";
 import { serviceById, type VaServiceId } from "@/data/va/services";
-import { makeDocument } from "./documents";
+import type { Program } from "@/data/types";
+import { recordDocument } from "./documents";
 import { ICD_CODES } from "./lookups";
 
 /** The request kind the intake's purpose leads to, or null when the purpose leads to no authorization (a screening, a discharge). A record with no configuration is an initial request. */
@@ -21,6 +22,16 @@ export function kindOfIntake(r: IntakeRecord): AuthKind | null {
 export function serviceOfIntake(r: IntakeRecord): { serviceId: VaServiceId; selected: boolean } {
   const sel = selectedServiceOf(r);
   return sel && sel !== "external" ? { serviceId: sel, selected: true } : { serviceId: r.serviceId, selected: false };
+}
+
+/** The clinician's selection names a span of levels (the label of ARTS residential reads "ASAM 3.1 to 3.7"), not the one level an authorization names. */
+export const namesRange = (id: VaServiceId): boolean => /\b\d\.\d to \d\.\d\b/.test(serviceById(id).label);
+
+/** The program the Service field starts with. Only a clinician's selection of one service fills it: with none selected, or a selection that names a range, the person chooses the specific service the authorization names.
+    What the referral asked for is shown beside it but never fills the field, and a range is never turned into one level. */
+export function programOfIntake(r: IntakeRecord): Program | null {
+  const sel = selectedServiceOf(r);
+  return sel && sel !== "external" && !namesRange(sel) ? serviceById(sel).program : null;
 }
 
 export function serviceNoteOf(r: IntakeRecord): ServiceNote {
@@ -67,7 +78,7 @@ export function draftFieldsFromIntake(r: IntakeRecord, kind: AuthKind): Partial<
     intakeId: r.id, kind, started: true,
     patient: { initials: r.initials, age: r.age, ...(dob && /^\d{4}-\d{2}-\d{2}$/.test(dob) ? { dob } : {}) },
     payerId: r.payerId, planType: r.payerId ? planTypeOf(r.payerId) : "", memberId: memberOf(r), cardRead: !!r.payerId,
-    program: serviceById(serviceId).program, levelLabel: undefined, state: "Virginia",
+    program: programOfIntake(r), levelLabel: undefined, state: "Virginia",
     referrer: { org, clinician }, reason: r.referral.reason?.value || r.title, diagnoses: diagnosesOfIntake(r),
     serviceNote: serviceNoteOf(r), startDate: startDateOf(r, serviceId),
   };
@@ -88,10 +99,7 @@ export function documentsFromIntake(r: IntakeRecord, d: CaseDraft): DraftDocumen
   const mine = new Set(d.documents.filter((x) => !x.from).map((x) => x.slot));
   return recordDocs(r)
     .filter((x) => !mine.has(x.slot))
-    .map((x) => ({
-      ...makeDocument(x.slot, { id: `rec-${r.id}-${hashOf(x.slot)}`, name: `${x.label} (${r.id}).pdf`, sizeKb: 90 + (hashOf(x.slot) % 240) }, false, "done", true),
-      from: x.from,
-    }));
+    .map((x) => recordDocument(x.slot, { id: `rec-${r.id}-${hashOf(x.slot)}`, name: `${x.label} (${r.id}).pdf`, sizeKb: 90 + (hashOf(x.slot) % 240) }, x.from));
 }
 
 /** The program the intake is evaluated for, in words (used in notes). */

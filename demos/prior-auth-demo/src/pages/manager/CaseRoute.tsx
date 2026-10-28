@@ -15,7 +15,8 @@ export default function CaseRoute() {
   const scope = useScope();
   const requests = useStore((s) => s.requests);
   const rows = useLedgerRows(false);
-  const isRequest = useMemo(() => resolveCase(id, requests) !== null, [id, requests]);
+  /* A request prepared from an intake record has no generated case detail but is a request: its page is the one made for it (IntakeRequestPage, drawn by CasePage), not a ledger summary. */
+  const isRequest = useMemo(() => resolveCase(id, requests) !== null || requests.some((r) => !!r.intakeId && (r.id === id || r.caseId === id)), [id, requests]);
   const row = rows.find((c) => c.id === id || c.caseId === id);
   // The site follows the case, so a request is placed by its case id (a denial's id is not its case's).
   const caseId = (requests.find((r) => r.id === id) ?? requests.find((r) => r.caseId === id))?.caseId ?? row?.caseId ?? id;

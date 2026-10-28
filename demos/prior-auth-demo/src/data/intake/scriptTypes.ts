@@ -47,6 +47,10 @@ export interface ScribeScript {
   program?: ProgramId;
 }
 
+/** The topic the youth interview ends its record-keeping on, and the title of the CANS group of the scribe's proposals. The scribe only files statements as pending CANS evidence
+    under Psyflo's own themes: it never rates an item and never reproduces an official item or its wording. */
+export const CANS_CATEGORY = "Relevant CANS items (evidence only, none rated)";
+
 export const A = (section: FieldTarget, field: string, label: string, value: string, confidence: Extract["confidence"] = "medium"): Extract => ({ section, field, label, value, confidence });
 const L = Object.fromEntries((
   [["presenting", "Presenting problem"], ["symptoms", "Current symptoms"], ["history", "Clinical history"], ["functional", "Functional limitations"], ["strengths", "Strengths"], ["sdoh", "Social determinants and barriers"], ["prior", "Prior treatment"], ["goals", "Patient goals"], ["needs", "Preliminary service needs"]] as const

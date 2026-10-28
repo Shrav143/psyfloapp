@@ -44,7 +44,7 @@ export function QuestionModal({ draft, open, onClose }: { draft: CaseDraft; open
     >
       <div className="flex items-start gap-3.5">
         <AgentBadge agent={def.agent} size={40} />
-        <p className="pt-1 text-[14px] font-medium">{def.text(payer)}</p>
+        <p className="pt-1 text-[14px] font-medium">{def.text(payer, !!draft.intakeId)}</p>
       </div>
       <div role="radiogroup" aria-label="Answer" className="mt-4 flex flex-col gap-2.5">
         {def.choices.map((c) => (

@@ -47,7 +47,7 @@ export function LevelOfNeed({ record, instead = true }: { record: IntakeRecord; 
           items={[
             ["CANS completion", cansLine],
             ["Clinical assessment", ASSESS_LABEL[record.assessment.status]],
-            ["Relevant clinical evidence", cans ? `${cans.evidence.length} statement${cans.evidence.length === 1 ? "" : "s"} kept in the CANS evidence review` : "None yet"],
+            ["Relevant clinical evidence", cans ? `${cans.evidence.length} statement${cans.evidence.length === 1 ? "" : "s"} accepted in the CANS evidence review` : "None yet"],
             ["Applicable methodology", l.applies === "no" ? "Not applicable" : "None configured: pending validated policy configuration"],
             ["Proposed result", "None: no validated methodology is configured"],
             ["Final determination", record.lon?.status === "dispositioned" ? "Pending validated policy configuration (a clinician recorded a disposition below)" : "Pending validated policy configuration"],

@@ -195,6 +195,9 @@ export interface PlanSource {
   level: Level;
   reason: string;
   version: string;
+  /** The row's responsible reviewer and the ISO date it was last changed, as the rule carries them (an intake purpose row carries the organization's). */
+  reviewer: string;
+  updated: string;
   /** The row takes effect after the policy date: its module is shown for preparation and does not hold up readiness. */
   preparation?: boolean;
 }

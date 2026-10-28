@@ -65,6 +65,15 @@ export function instrumentProgress(r: IntakeRecord, plan: AssessmentPlan | null)
   return { signed: required.filter((i) => i.status === "signed").length, total: required.length, items: required };
 }
 
+/** The required assessments: the clinical assessment and every required instrument in use (not preparation), and how many are signed. One definition for the header,
+    Review & sign-off (its subtitle and the left navigation), the status reason and the worklist's Assessment column, so they never give two numbers for one record.
+    Zero when the intake is not configured. The overall sign-off is not one of them: it comes after them. */
+export function assessmentProgress(r: IntakeRecord, plan: AssessmentPlan | null): { signed: number; total: number } {
+  if (!r.config) return { signed: 0, total: 0 };
+  const inst = instrumentProgress(r, plan);
+  return { signed: inst.signed + (r.assessment.status === "signed" ? 1 : 0), total: inst.total + 1 };
+}
+
 /** Pending evidence across the instruments: one entry per module that has some. */
 export function pendingEvidence(r: IntakeRecord): { moduleId: ModuleId; count: number }[] {
   return Object.values(r.instruments ?? {})

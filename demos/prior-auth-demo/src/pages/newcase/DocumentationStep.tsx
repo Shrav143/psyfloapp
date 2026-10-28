@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, Save, ShieldCheck } from "lucide-react";
-import { Button, ChecklistProgress, InfoTip, Pill } from "@/components/ui";
+import { Banner, Button, ChecklistProgress, InfoTip, Pill } from "@/components/ui";
 import { RUN_STEPS, type CaseDraft } from "@/data/cases";
 import { useStore } from "@/store";
 import type { CaseEnv } from "./caseEnv";
@@ -36,6 +36,11 @@ export function DocumentationStep({ draft, env, toPreparation = 0 }: { draft: Ca
   return (
     <div className="mx-auto flex w-full max-w-[960px] flex-col gap-5">
       <PayerChangeNote draft={draft} />
+      {draft.intakeId && !draft.program ? (
+        <Banner tone="mid" title="No service is chosen yet" action={<Button size="sm" onClick={() => patch(draft.id, stepPatchOf("service"))}>Open Patient &amp; Service</Button>}>
+          The payer's document list depends on the service. Choose the specific service the authorization names, and the list follows.
+        </Banner>
+      ) : null}
       <RecordDocsCard draft={draft} env={env} />
       <DropPanel draft={draft} />
       <RecordsChecklist

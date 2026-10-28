@@ -1,10 +1,12 @@
 import { Card, Chip, Disclosure, Dropdown, Field, TextArea } from "@/components/ui";
 import type { CaseDraft } from "@/data/cases";
 import { PROGRAM_CHOICES, serviceWindowNote } from "@/data/programTables";
+import { serviceById } from "@/data/va/services";
 import type { Program, RequestType } from "@/data/types";
 import { useStore } from "@/store";
 import { authType, RETRO_REASONS } from "../authType";
 import { DatesFields } from "../DatesFields";
+import { namesRange } from "../fromIntake";
 import { DiagnosisPicker } from "../DiagnosisPicker";
 import { ModificationCard } from "../ModificationCard";
 import { SitePicker } from "../SitePicker";
@@ -17,6 +19,14 @@ export function ServiceSection({ draft }: { draft: CaseDraft }) {
   const retro = draft.kind === "retro";
   const edit = (p: Partial<CaseDraft>) => patch(draft.id, { started: true, ...p });
   const fromRecord = !!draft.intakeId;
+  /* What the Service field says about where its value comes from. Only a clinician's selection of one service fills it; a range or no selection leaves it to the person, and says why. */
+  const note = draft.serviceNote;
+  const picked = note?.selected ?? null;
+  const serviceHint = !fromRecord || !note ? undefined
+    : picked === null ? "No service has been selected by a clinician"
+      : namesRange(picked) ? "The care plan names a range; an authorization names one level of care"
+        : draft.program === serviceById(picked).program ? "From the care plan"
+          : `The care plan selected ${serviceById(picked).short}`;
   const dateLabels = draft.kind === "modify" ? ["Change starts", "Change ends"] : retro ? ["First date of service", "Last date of service"] : ["Requested start date", "Requested end date"];
 
   return (
@@ -25,7 +35,7 @@ export function ServiceSection({ draft }: { draft: CaseDraft }) {
       <Card className="px-5 py-4">
         <h3 className="mb-3 text-[11px] font-medium tracking-[0.1em] text-muted uppercase">Service and request</h3>
         <div className="grid grid-cols-1 gap-x-4 gap-y-3 min-[640px]:grid-cols-2">
-          <Field label="Service" required hint={serviceWindowNote(draft.program, draft.startDate) ?? (fromRecord ? "From the care plan" : undefined)}>
+          <Field label="Service" required hint={serviceWindowNote(draft.program, draft.startDate) ?? serviceHint}>
             <Dropdown<Program | ""> variant="field" ariaLabel="Service" placeholder="Choose a service" value={draft.program ?? ""} onChange={(v) => v && edit({ program: v, levelLabel: undefined })} options={PROGRAM_CHOICES} />
           </Field>
           {def.types.length > 1 ? (

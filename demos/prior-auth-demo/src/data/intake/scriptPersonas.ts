@@ -52,6 +52,8 @@ export interface YouthFacts {
   school: string; schoolNote: string;
   family: string; familyNote: string;
   coordination: string; coordinationNote: string;
+  /** What is said when the clinician asks what else helps or gets in the way, and the two statements the scribe files from it as CANS evidence (a theme each; none is a CANS item). */
+  cans: string; cansFunctioning: string; cansFamily: string;
 }
 export interface CscFacts {
   course: string; courseNote: string;
@@ -300,6 +302,9 @@ const TW: Persona = {
     familyNote: "Lives with his mother; his father lives out of state and calls on Sundays; quiet at home, in his room, on his phone late at night (mother).",
     coordination: "Yes, you can talk to the school counselor. I'll sign the release today.",
     coordinationNote: "Mother agrees to contact with the school counselor and will sign the release today (mother). The signed release is not on file yet.",
+    cans: "Mornings after a bad night are the hardest. On art days he goes in without a fight. And when his dad calls on Sunday he settles down for the evening.",
+    cansFunctioning: "Mornings after a poor night's sleep are the hardest for getting to school; on art days he goes in without a fight (mother).",
+    cansFamily: "His father, who lives out of state, calls on Sundays, and he settles down for the evening afterwards (mother).",
   },
 };
 

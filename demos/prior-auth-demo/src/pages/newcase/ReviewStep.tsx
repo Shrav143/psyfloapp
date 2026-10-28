@@ -69,7 +69,7 @@ export function ReviewStep({ draft, env }: { draft: CaseDraft; env: CaseEnv }) {
     setRechecking(true);
     timer.current = setTimeout(() => {
       setRechecking(false);
-      toast({ title: "Integrity re-checked your edits", body: next.some((s) => !s.text.trim()) ? "One section is empty. You can still sign it, and the summary will say so." : "Every sentence still traces to the chart.", tone: next.some((s) => !s.text.trim()) ? "mid" : "good" });
+      toast({ title: "Integrity re-checked your edits", body: next.some((s) => !s.text.trim()) ? "One section is empty. You can still sign it, and the summary will say so." : draft.intakeId ? "Each section still names its source in the record." : "Every sentence still traces to the chart.", tone: next.some((s) => !s.text.trim()) ? "mid" : "good" });
     }, RECHECK_MS);
   };
 
@@ -112,7 +112,7 @@ export function ReviewStep({ draft, env }: { draft: CaseDraft; env: CaseEnv }) {
           <MissingCard draft={draft} items={review.missing} onFix={fix} />
           <ReviewSummary draft={draft} env={env} review={review} />
           {ready ? (
-            <NarrativeCard sections={review.sections} editSignal={editSignal} onSave={edited} onSource={(label) => setSource(slotOfSource(label))} />
+            <NarrativeCard sections={review.sections} editSignal={editSignal} onSave={edited} onSource={(label) => setSource(slotOfSource(label))} intakeId={draft.intakeId} />
           ) : (
             <Card>
               <CardBody className="flex flex-wrap items-center justify-between gap-3">
@@ -125,7 +125,7 @@ export function ReviewStep({ draft, env }: { draft: CaseDraft; env: CaseEnv }) {
         </div>
         <div className="flex flex-col gap-4">
           {ready ? <ChecksCard checks={review.checks} /> : null}
-          {noChanceFor(draft) ? (
+          {draft.intakeId ? null : noChanceFor(draft) ? (
             <Card>
               <CardBody>
                 <NoChance />

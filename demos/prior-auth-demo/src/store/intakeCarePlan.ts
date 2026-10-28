@@ -1,14 +1,13 @@
 import type { StateCreator } from "zustand";
-import { blankCarePlan, programForSelection, requestedServiceOf, selectedServiceOf, serviceShort, planGaps } from "@/data/assess/carePlan";
+import { availabilityDate, availabilityOf, blankCarePlan, NOT_AVAILABLE_REASON, programForSelection, requestedServiceOf, selectedServiceOf, serviceShort, planGaps } from "@/data/assess/carePlan";
 import { programById } from "@/data/assess/programs";
 import { canSign } from "@/data/assess/roles";
 import type { CarePlan, CareSetting } from "@/data/assess/types";
 import type { IntakeRecord } from "@/data/intake/types";
-import { serviceById } from "@/data/va/services";
 import { authType } from "@/pages/newcase/authType";
-import { episodeLink, kindOfIntake } from "@/pages/newcase/fromIntake";
+import { episodeLink, kindOfIntake, programOfIntake } from "@/pages/newcase/fromIntake";
 import type { AppState } from "./index";
-import { meOf } from "./intake";
+import { meOf, policyNowOf } from "./intake";
 import { selectPatientBook } from "./patients";
 
 /* Care planning: the clinician's service selection, the care plan, its approval and versions, and the preparation of an authorization from the intake.
@@ -96,6 +95,11 @@ export const createIntakeCarePlanSlice: StateCreator<AppState, [], [], IntakeCar
       const r = rec(id);
       const pw = r?.pathways.find((p) => p.id === pwId);
       if (!r || !pw || !canSign(o.signerId) || !open(id)) return false;
+      /* A service that has ended on the policy date cannot be selected, whoever asks: it stays listed for the record. A service that starts later can (preparation). */
+      if (pw.serviceId !== "external" && availabilityOf(pw.serviceId, availabilityDate(r, policyNowOf(get()))).reason === "retired") {
+        get().toast({ title: NOT_AVAILABLE_REASON, body: `${serviceShort(pw.serviceId)} cannot be selected on this date. A clinician considers another option.`, tone: "mid" });
+        return false;
+      }
       const prev = selectedServiceOf(r);
       const requested = requestedServiceOf(r);
       const differs = pw.serviceId !== requested;
@@ -187,10 +191,10 @@ export const createIntakeCarePlanSlice: StateCreator<AppState, [], [], IntakeCar
       if (!kind) return stop("This intake purpose leads to no authorization", "A screening or a discharge assessment needs care coordination, not a payer request.");
       if (authType(kind).existing && !episodeLink(r, selectPatientBook(s))?.episodeId) return stop("Link the treatment episode first", `${authType(kind).label} reviews an episode that already exists. Choose it, and the request reuses it.`);
       const draft = s.startCaseFromIntake(id, kind);
-      /* A draft opened again after the clinician changed the service follows the selection. */
-      const program = serviceById(sel).program;
+      /* A draft opened again after the clinician changed the service follows the selection, when it names one service. A range is never turned into one level: the person chooses it in New Authorization. */
+      const program = programOfIntake(r);
       const existing = draft ? get().caseDrafts.find((d) => d.id === draft) : undefined;
-      if (draft && existing && !existing.sent && existing.program !== program) get().patchCaseDraft(draft, { program });
+      if (draft && existing && !existing.sent && program && existing.program !== program) get().patchCaseDraft(draft, { program });
       return draft;
     },
   };

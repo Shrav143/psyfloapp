@@ -14,6 +14,7 @@ import EligibilityListPage from "@/pages/eligibility/EligibilityListPage";
 import ResultPage from "@/pages/eligibility/ResultPage";
 import VerifyPage from "@/pages/eligibility/VerifyPage";
 import EmrPage from "@/pages/emr/EmrPage";
+import HelpPage from "@/pages/help/HelpPage";
 import ActiveIntakesPage from "@/pages/intake/ActiveIntakesPage";
 import AssessmentsPage from "@/pages/intake/AssessmentsPage";
 import ConfigurePage from "@/pages/intake/configure/ConfigurePage";
@@ -94,6 +95,7 @@ export default function App() {
           <Route path="/payers" element={<PayersPage />} />
           <Route path="/payers/:id" element={<PayersPage />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/help" element={<HelpPage />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

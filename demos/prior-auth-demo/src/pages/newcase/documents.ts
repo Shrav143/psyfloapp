@@ -2,10 +2,11 @@
    Which documents a payer asks for is the list saved on Payers › Documents for that level of care: Sentara asks for 9 for Residential 3.5. */
 import type { DocBlock } from "@/components/ui";
 import type { DemoFile } from "@/components/ui";
-import type { Answer, DocFinding, DocSlotId, DraftDocument, FixedDocSlot, QuestionKey } from "@/data/cases";
+import type { Answer, CaseDraft, DocFinding, DocSlotId, DraftDocument, FixedDocSlot, QuestionKey } from "@/data/cases";
 import type { DocItem } from "@/data/payerConfig";
 import { forProgram } from "@/data/programTables";
 import { isCoreProgram, type PayerId, type Program, type CoreProgram } from "@/data/types";
+import { serviceById } from "@/data/va/services";
 
 export interface DocSlotDef {
   id: DocSlotId;
@@ -156,9 +157,28 @@ const MINIMUM: DocEntry[] = [entry("referral", true), entry("psych_eval", true)]
 /** The fixed slot a line on the payer's list belongs to, or null when none fits. */
 export const slotForTitle = (title: string): FixedDocSlot | null => slotForFile(title);
 
+/** The track of the service a request is for, when it comes from an intake: IOP and PHP exist both under ARTS (substance use) and as mental health services, and the lists the payers saved for them are the substance use ones. */
+export type DocTrack = "sud" | "mh";
+export const trackOfDraft = (d: Pick<CaseDraft, "serviceNote">): DocTrack | undefined => {
+  const id = d.serviceNote ? d.serviceNote.selected ?? d.serviceNote.requested : null;
+  return id ? serviceById(id).track : undefined;
+};
+const MH_LISTED: FixedDocSlot[] = ["psych_eval", "meds", "treatment_plan"];
+/** A mental health IOP or PHP asks for no ASAM assessment: the assessment that stands for it is the psychiatric or diagnostic one. The payers' saved lists are substance use lists, so for a mental health service the ASAM line is left out,
+    and the psychiatric evaluation, the medication list and the treatment plan are listed if the payer's list has no line for them. Where no payer rule exists these lines are the demo's configuration, and say so. */
+function forMentalHealth(list: DocEntry[]): DocEntry[] {
+  const kept = list.filter((e) => e.slot !== "asam");
+  const added = MH_LISTED.filter((slot) => !kept.some((e) => e.slot === slot)).map((slot): DocEntry => ({ ...entry(slot, true), hint: `${DOC_SLOTS[slot].hint}. Demo configuration. Payer requirement not yet verified` }));
+  return [...kept, ...added];
+}
+
 /** The documents a request needs. `items` is the payer's saved list for the level of care (Payers › Documents), or null when the payer has none saved.
-    A line that fits no fixed slot, or repeats one, becomes its own document. Without a payer and level of care only the two every payer wants are listed. */
-export function docEntries(payerId: PayerId | null, program: Program | null, items: DocItem[] | null): DocEntry[] {
+    A line that fits no fixed slot, or repeats one, becomes its own document. Without a payer and level of care only the two every payer wants are listed. `track` is the service's own (sud or mh) when the request comes from an intake. */
+export function docEntries(payerId: PayerId | null, program: Program | null, items: DocItem[] | null, track?: DocTrack): DocEntry[] {
+  const list = baseEntries(payerId, program, items);
+  return track === "mh" && (program === "IOP" || program === "PHP") ? forMentalHealth(list) : list;
+}
+function baseEntries(payerId: PayerId | null, program: Program | null, items: DocItem[] | null): DocEntry[] {
   if (!payerId || !program) return MINIMUM;
   if (!items) {
     /* A Virginia service has no built-in list: only the two documents every payer wants. */
@@ -200,6 +220,14 @@ export function makeFindings(slot: DocSlotId, sample: boolean, fileName: string,
 export function makeDocument(slot: DocSlotId, file: DemoFile, sertralineConflict = false, status: DraftDocument["status"] = "validating", fresh = false): DraftDocument {
   const sample = file.name === slotDef(slot).sampleName;
   return { slot, file, sample, status, findings: makeFindings(slot, sample, file.name, sertralineConflict, fresh || file.id.startsWith("ref-")) };
+}
+/** A document read from the intake record: signed there, so no check is made up for it. Its one line says where it comes from. */
+export function recordDocument(slot: DocSlotId, file: DemoFile, from: string, chosen = false): DraftDocument {
+  return { slot, file, sample: false, status: "done", findings: [{ id: `${slot}-from`, ok: true, note: true, text: from }], from, ...(chosen ? { chosen: true } : {}) };
+}
+/** A file added to a request that comes from an intake: Psyflo keeps its name and type and reads nothing, so it says no check ran. */
+export function unreadDocument(slot: DocSlotId, file: DemoFile): DraftDocument {
+  return { slot, file, sample: false, status: "done", unread: true, findings: [{ id: `${slot}-unread`, ok: true, note: true, text: "Added by name and type. The file was not read, so no check ran" }] };
 }
 /** The document that came in with the attached referral: attachReferral gives its file the id `ref-<referral id>`. */
 export const isReferralDoc = (referralId: string | undefined, doc: DraftDocument | undefined): boolean => !!referralId && doc?.file.id === `ref-${referralId}`;
@@ -244,6 +272,16 @@ const BODY: Partial<Record<string, DocBlock[]>> = {
   attendance: [{ kind: "table", id: "evidence", head: ["Week", "Attended", "Missed"], rows: [["10/05", "4", "0"], ["10/12", "4", "1"]] }],
   therapy_note: [{ kind: "p", id: "evidence", text: "Engaged in group and individual sessions. Craving is lower. Needs a structured setting to hold gains." }],
 };
+
+/** What the preview of a document that came from the intake record, or of a file added by name and type, shows: where it comes from, and nothing the demo made up. */
+export function recordPreviewBlocks(slot: DocSlotId, who: string, doc: DraftDocument): DocBlock[] {
+  const def = slotDef(slot);
+  return [
+    { kind: "letterhead", org: def.label, sub: doc.unread ? "File added by name and type" : "Read from the intake record" },
+    { kind: "meta", items: [["Patient", `${who} (Privacy mode)`], ["File", doc.file.name], ["Source", doc.from ?? "Added in New Authorization"]] },
+    { kind: "p", id: "evidence", text: doc.unread ? "Psyflo did not read this file. Only its name and type are recorded, and no check ran on it." : "This document is not copied here. Its signed content stays in the intake record; open it there to read it." },
+  ];
+}
 
 export function previewBlocks(slot: DocSlotId, who: string, fileName: string): DocBlock[] {
   const def = slotDef(slot);

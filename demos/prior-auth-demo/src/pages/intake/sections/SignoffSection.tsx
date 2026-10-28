@@ -42,7 +42,7 @@ export function SignoffSection({ record, onConfigure }: { record: IntakeRecord; 
   return (
     <div className="@container flex min-w-0 flex-col gap-4" data-section-view="signoff" data-signoff-state={so.state}>
       <Card>
-        <CardHeader title="Review & sign-off" subtitle={`${so.signed} of ${so.total} required items signed`} right={<Pill tone={st.tone}>{st.word}</Pill>} />
+        <CardHeader title="Review & sign-off" subtitle={`${so.signed} of ${so.total} required assessments signed`} right={<Pill tone={st.tone}>{st.word}</Pill>} />
         <CardBody className="flex flex-col gap-3">
           {plan ? (
             <dl className="grid grid-cols-1 gap-x-6 gap-y-1 text-[13px] @xl:grid-cols-2">

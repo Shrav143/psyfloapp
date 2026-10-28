@@ -2,7 +2,7 @@
    What a request of this type usually carries on top of that is "typical for a continued stay" and so on. It is advice from the demo, never presented as a payer's rule. */
 import type { AuthKind, CaseDraft, DocSlotId } from "@/data/cases";
 import { authType } from "./authType";
-import { docEntries, isFixedSlot, slotForTitle, slotLabel, type DocEntry } from "./documents";
+import { docEntries, isFixedSlot, slotForTitle, slotLabel, trackOfDraft, type DocEntry } from "./documents";
 import type { PayerContext } from "./payerContext";
 
 /** Titles, in plain words. A title that fits one of the standard documents is filed there, so a sample chart or a dropped file can fill it. */
@@ -44,7 +44,7 @@ export interface Readiness {
 
 /** "3 of 4 ready": the required documents for the payer and level of care, plus the items typical for the type. */
 export function readiness(d: CaseDraft, ctx: PayerContext): Readiness {
-  const list = docEntries(d.payerId, d.program, ctx.items);
+  const list = docEntries(d.payerId, d.program, ctx.items, trackOfDraft(d));
   const required = list.filter((e) => e.required);
   const typical = typicalEntries(d.kind, list);
   const handled = (e: DocEntry): boolean => d.documents.some((x) => x.slot === e.slot) || e.slot in d.unavailable;

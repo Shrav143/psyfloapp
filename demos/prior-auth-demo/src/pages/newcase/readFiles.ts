@@ -7,7 +7,7 @@ import type { DocItem } from "@/data/payerConfig";
 import { PAYERS } from "@/data/seed";
 import { plural } from "@/lib/format";
 import { useStore } from "@/store";
-import { docEntries, makeDocument, openFindings, slotForFile } from "./documents";
+import { docEntries, makeDocument, openFindings, slotForFile, trackOfDraft, unreadDocument } from "./documents";
 import { dx, SAMPLE_CHART } from "./intake";
 import { payerContextOf } from "./payerContext";
 import { fieldSnap, type FieldKey } from "./provenance";
@@ -58,7 +58,7 @@ function planSort(d: CaseDraft, files: DemoFile[], items: (payerId: CaseDraft["p
   }
 
   /* The list depends on the payer and level of care, which the files above may just have filled in. */
-  const list = docEntries(next.payerId, next.program, items(next.payerId, next.program));
+  const list = docEntries(next.payerId, next.program, items(next.payerId, next.program), trackOfDraft(next));
   const have = new Set(d.documents.map((x) => x.slot));
   const claimed = new Map<DocSlotId, DraftDocument>();
   const guessed: string[] = [];
@@ -109,11 +109,38 @@ function toastFor(total: number, p: SortPlan) {
   return { title: `Reader sorted ${plural(total, "file")}: ${parts.join(", ")}`, body: body.length ? body.join(" ") : "Each one is being read now.", tone: look ? ("mid" as const) : ("good" as const) };
 }
 
+/** A request prepared from an intake record: a dropped file goes into the item its name says, or the next required item still empty. Only the name and type are kept; nothing is read, filled in or checked. */
+function sortRecordFiles(id: string, draft: CaseDraft, files: DemoFile[]): void {
+  const st = useStore.getState();
+  const items = payerContextOf(st, draft).items;
+  const list = docEntries(draft.payerId, draft.program, items, trackOfDraft(draft));
+  const taken = new Set<DocSlotId>(draft.documents.map((x) => x.slot));
+  const docs: DraftDocument[] = [];
+  const unplaced: string[] = [];
+  for (const f of files) {
+    const named = slotForFile(f.name);
+    const free = named && !taken.has(named) ? named : list.find((r) => r.required && !taken.has(r.slot) && !(r.slot in draft.unavailable) && r.slot !== "referral")?.slot;
+    if (!free) {
+      unplaced.push(f.name);
+      continue;
+    }
+    taken.add(free);
+    docs.push(unreadDocument(free, f));
+  }
+  if (docs.length) st.putCaseDocs(id, docs);
+  st.toast({
+    title: `${plural(docs.length, "file")} added by name and type`,
+    body: [`Placed by file name. Files are not read in the demo, so no check ran.`, unplaced.length ? `Could not place: ${unplaced.join(", ")}.` : ""].filter(Boolean).join(" "),
+    tone: unplaced.length ? "mid" : "neutral",
+  });
+}
+
 /** The drop panel's handler: update the draft once and say what happened in one toast. */
 export function sortFiles(id: string, files: DemoFile[]): void {
   const st = useStore.getState();
   const draft = st.caseDrafts.find((x) => x.id === id);
   if (!draft || !files.length) return;
+  if (draft.intakeId) return sortRecordFiles(id, draft, files);
   const plan = planSort(draft, files, (payerId, program) => payerContextOf(st, { payerId, program }).items);
   if (Object.keys(plan.patch).length) st.patchCaseDraft(id, plan.patch);
   if (plan.docs.length) st.putCaseDocs(id, plan.docs);

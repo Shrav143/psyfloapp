@@ -24,7 +24,7 @@ export const AUTH_TYPES: AuthTypeDef[] = [
   { kind: "initial", label: "Initial authorization", noun: "an initial authorization", types: ["Initial request", "Admission"], existing: false, typical: "an initial request", justification: "Initial request justification" },
   { kind: "concurrent", label: "Concurrent review", noun: "a continued stay", types: ["Continued stay"], existing: true, typical: "a continued stay", justification: "Continued-stay justification" },
   { kind: "reauth", label: "Reauthorization / renewal", noun: "a renewal", types: ["Recertification"], existing: true, typical: "a renewal", justification: "Renewal justification" },
-  { kind: "modify", label: "Modification / extension", noun: "a modification", types: ["Modification"], existing: true, typical: "a modification", justification: "Modification justification" },
+  { kind: "modify", label: "Modification or extension", noun: "a modification", types: ["Modification"], existing: true, typical: "a modification", justification: "Modification justification" },
   { kind: "retro", label: "Retroactive authorization", noun: "a retroactive authorization", types: ["Retro-authorization"], existing: false, typical: "a retroactive authorization", justification: "Retroactive justification" },
 ];
 

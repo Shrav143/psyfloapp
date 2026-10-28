@@ -12,6 +12,7 @@ import type { CaseEnv } from "./caseEnv";
 import { ChancePanel, RaiseFurther } from "./ChancePanel";
 import { JustificationCard } from "./JustificationCard";
 import { QuestionModal } from "./QuestionModal";
+import { RecordReadPanel } from "./RecordReadPanel";
 import { questionCount } from "./questions";
 import { rowText } from "./runText";
 import { PREPARATION_ID } from "./steps";
@@ -63,7 +64,7 @@ function AgentsRun({ draft, env }: { draft: CaseDraft; env: CaseEnv }) {
   const rows = (
     <ul>
       {RUN_STEPS.map((s, i) => (
-        <AgentRow key={s.agent} agent={s.agent} state={stateOf(i)} text={rowText(s.agent, draft)} elapsed={draft.run.elapsed[i]} skipped={draft.run.skipped.includes(s.agent)} onAnswer={() => setDismissed(false)} onRetry={() => retry(draft.id)} onSkip={() => skip(draft.id)} />
+        <AgentRow key={s.agent} agent={s.agent} state={stateOf(i)} text={rowText(s.agent, draft, { intake: env.intake, ready: env.readiness.ready, total: env.readiness.total })} elapsed={draft.run.elapsed[i]} skipped={draft.run.skipped.includes(s.agent)} onAnswer={() => setDismissed(false)} onRetry={() => retry(draft.id)} onSkip={() => skip(draft.id)} />
       ))}
     </ul>
   );
@@ -122,7 +123,7 @@ function AgentsRun({ draft, env }: { draft: CaseDraft; env: CaseEnv }) {
                   <b>
                     {AGENTS[QUESTIONS[question].agent].name}, question {q.n} of {q.of}.
                   </b>{" "}
-                  {QUESTIONS[question].text(payer?.shortName ?? "the payer")}
+                  {QUESTIONS[question].text(payer?.shortName ?? "the payer", !!draft.intakeId)}
                 </div>
                 <Button size="sm" variant="primary" onClick={() => setDismissed(false)}>
                   Answer
@@ -144,8 +145,14 @@ function AgentsRun({ draft, env }: { draft: CaseDraft; env: CaseEnv }) {
             ) : null}
           </div>
           <div className="flex flex-col gap-4 border-line px-5 py-4 max-[1099px]:border-t min-[1100px]:border-l">
-            <ChancePanel draft={draft} />
-            <RaiseFurther draft={draft} />
+            {draft.intakeId ? (
+              <RecordReadPanel draft={draft} env={env} />
+            ) : (
+              <>
+                <ChancePanel draft={draft} />
+                <RaiseFurther draft={draft} />
+              </>
+            )}
           </div>
         </div>
       </Card>

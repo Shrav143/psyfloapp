@@ -96,4 +96,5 @@ export const paths = {
     return `/payers${id ? `/${id}` : ""}${qs ? `?${qs}` : ""}`;
   },
   settings: () => "/settings",
+  help: () => "/help",
 };

@@ -2,6 +2,7 @@
    The store slice (store/cases.ts) and every page under pages/newcase and pages/active read from here. */
 import type { DemoFile } from "@/components/ui";
 import { payerById } from "./seed";
+import { chanceFor } from "./programTables";
 import { daysRequested, dxKeyFor, dxLine, scoresFor, type QueueItem, type RequestKind } from "./queue";
 import { siteOf, type SiteId } from "./sites";
 import { isCoreProgram, PROGRAM_LABEL, type AgentKey, type CoreProgram, type PayerId, type Program, type PsyRequest, type RequestType, type Tone } from "./types";
@@ -22,6 +23,8 @@ export interface DocFinding {
   text: string;
   resolvedBy?: QuestionKey;
   resolvedText?: string;
+  /** A statement of where the document came from or what was not done, not a check that passed: drawn neutral, never as a green tick. */
+  note?: boolean;
 }
 export interface DraftDocument {
   slot: DocSlotId;
@@ -31,6 +34,10 @@ export interface DraftDocument {
   findings: DocFinding[];
   /** Read from the shared intake record, not dropped here: where it comes from and who signed it ("ASAM assessment, signed by Dr. Rivera"). */
   from?: string;
+  /** A file added to a request that comes from an intake: only its name and type are recorded. Files are never read in the demo, so no check ran. */
+  unread?: boolean;
+  /** A person chose this document of the record for this slot (Attach from the record); a refresh from the record leaves it alone. */
+  chosen?: boolean;
 }
 
 /* ------------------------------------------------------------------ the draft */
@@ -67,11 +74,18 @@ export interface RunState {
   retried: boolean;
   skipped: AgentKey[];
 }
+/** Where a sentence of a record-based summary comes from: the intake's own section or module, as a link into the workspace. `to` is left out for what a person typed in New Authorization. */
+export interface NarrativeRef {
+  label: string;
+  to?: string;
+}
 export interface NarrativeSection {
   id: string;
   heading: string;
   text: string;
   sources: string[];
+  /** A summary drafted from an intake record: every section names the module or document it was read from (links into the workspace), or says "Not documented in the intake". */
+  refs?: NarrativeRef[];
   /** Comes from somewhere else (clinical context added on the case page), so it is shown but not edited here. */
   fixed?: boolean;
 }
@@ -217,6 +231,8 @@ export interface CaseDraft {
   documents: DraftDocument[];
   /** Documents the person marked not available, with the reason they gave. */
   unavailable: Partial<Record<DocSlotId, string>>;
+  /** Documents the person asked for with "Request this document": the task it made on the intake. Nothing is sent. */
+  requested?: Partial<Record<DocSlotId, { taskId: string; at: number }>>;
   referralId?: string;
   emrChart?: string;
   /** What Reader filled in from dropped files, for the note under each checklist row. */
@@ -284,7 +300,8 @@ export interface QuestionDef {
   key: QuestionKey;
   agent: AgentKey;
   line: string; // one line for the Case Manager row
-  text: (payerShort: string) => string;
+  /** `fromRecord`: the request is prepared from an intake record, so the question states no payer rule. */
+  text: (payerShort: string, fromRecord?: boolean) => string;
   choices: { id: string; label: string }[];
 }
 export const QUESTIONS: Record<QuestionKey, QuestionDef> = {
@@ -302,7 +319,7 @@ export const QUESTIONS: Record<QuestionKey, QuestionDef> = {
     key: "stepdown",
     agent: "scribe",
     line: "Scribe is waiting on one answer: whether a step-down provider is named",
-    text: (p) => `Is a named step-down provider on file? ${p} asks for one in residential continued stays.`,
+    text: (p, fromRecord) => (fromRecord ? "Is a named step-down provider on file? Payer requirement not yet verified." : `Is a named step-down provider on file? ${p} asks for one in residential continued stays.`),
     choices: [
       { id: "named", label: "Yes, a named provider is on file" },
       { id: "later", label: "Not yet. One will be named before day 10" },
@@ -313,7 +330,7 @@ export const QUESTIONS: Record<QuestionKey, QuestionDef> = {
     key: "recert",
     agent: "packet",
     line: "Packet needs one clinician input to finish the recertification",
-    text: () => "Is a discharge or step-down date planned in the next 30 days? The payer's form asks for it.",
+    text: (_p, fromRecord) => (fromRecord ? "Is a discharge or step-down date planned in the next 30 days? Payer requirement not yet verified." : "Is a discharge or step-down date planned in the next 30 days? The payer's form asks for it."),
     choices: [
       { id: "soon", label: "Yes, within 2 weeks" },
       { id: "month", label: "Yes, within 30 days" },
@@ -387,6 +404,9 @@ export function currentChance(d: CaseDraft): number {
   const boost = SUGGESTIONS.filter((s) => d.suggestions.includes(s.id)).reduce((a, s) => a + s.boost, 0);
   return Math.max(1, Math.min(97, Math.round(baseChance(d) + boost) - unmetPenalty(d.unmet)));
 }
+/** The approval chance a draft shows and a request carries, or null when none is shown: a Virginia service has no similar decisions, and a request prepared from an intake record gets no estimate
+    (Psyflo does not predict approval of a request whose clinical content is the record's own). */
+export const chanceOfDraft = (d: CaseDraft): number | null => (d.intakeId ? null : chanceFor(d.program, currentChance(d)));
 /** "likely 83-92%". The range is wider until the forecast settles. */
 export function chanceRange(chance: number, settled: boolean): { lo: number; hi: number } {
   const c = Math.round(chance);

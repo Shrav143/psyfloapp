@@ -16,7 +16,7 @@ import { DEMO_DOMAINS, domainForTheme, domainOfItem } from "./template";
 
 interface Group { key: string; label: string; theme: string; items: EvidenceRef[]; prompt: string }
 
-/** Kept evidence grouped by the loaded template's domains, or by Psyflo themes when no template is loaded. */
+/** Accepted evidence grouped by the loaded template's domains, or by Psyflo themes when no template is loaded. */
 function groupsOf(cans: CansAssessment): Group[] {
   if (cans.template) {
     const domainOf = (e: EvidenceRef) => (e.itemId ? domainOfItem(e.itemId) : undefined) ?? domainForTheme(e.theme, e.text);
@@ -25,7 +25,7 @@ function groupsOf(cans: CansAssessment): Group[] {
   return CANS_THEMES.map((t) => ({ key: t, label: t, theme: t, items: cans.evidence.filter((e) => (isTheme(e.theme) ? e.theme : "Other") === t), prompt: THEME_PROMPT[t] }));
 }
 
-/** Evidence Review: what the agent proposes (each waiting for a person), what a person kept, by domain, with its source. Nothing here is a rating. */
+/** Evidence Review: what the agent proposes (each waiting for a person), what a person accepted, by domain, with its source. Nothing here is a rating. */
 export function EvidenceTab({ record, cans }: { record: IntakeRecord; cans: CansAssessment }) {
   const [adding, setAdding] = useState(false);
   const pending = pendingEvidence(record);
@@ -37,7 +37,7 @@ export function EvidenceTab({ record, cans }: { record: IntakeRecord; cans: Cans
   return (
     <div className="space-y-5" data-cans-tab="evidence">
       <Card data-evidence-board>
-        <CardHeader title="Evidence review" subtitle={cans.template ? "Filed under the demo placeholder template's domains. They are not CANS domains." : THEMES_NOTE} right={<><Chip>{cans.evidence.length} kept</Chip>{pending.length ? <Pill tone="mid">{pending.length} waiting</Pill> : null}</>} />
+        <CardHeader title="Evidence review" subtitle={cans.template ? "Filed under the demo placeholder template's domains. They are not CANS domains." : THEMES_NOTE} right={<><Chip>{cans.evidence.length} accepted</Chip>{pending.length ? <Pill tone="mid">{pending.length} waiting</Pill> : null}</>} />
         <CardBody className="space-y-4">
           {!locked ? (
             <div className="flex flex-wrap gap-2">
@@ -48,7 +48,7 @@ export function EvidenceTab({ record, cans }: { record: IntakeRecord; cans: Cans
           {adding && !locked ? <AddEvidence record={record} cans={cans} onDone={() => setAdding(false)} /> : null}
           {pending.length && !locked ? (
             <section aria-label="Proposed evidence" className="space-y-2">
-              <h4 className="text-[13px] font-semibold text-ink2">{pending.length} proposed by the CANS Evidence Agent · keep, edit or discard each</h4>
+              <h4 className="text-[13px] font-semibold text-ink2">{pending.length} proposed by the CANS Evidence Agent · accept, edit or reject each</h4>
               {pending.map((sg) => <ProposalCard key={sg.id} record={record} cans={cans} sg={sg} />)}
             </section>
           ) : null}
@@ -62,7 +62,7 @@ export function EvidenceTab({ record, cans }: { record: IntakeRecord; cans: Cans
                 <ul className="mt-1.5 space-y-1.5">{g.items.map((e) => <KeptRow key={e.id} record={record} cans={cans} e={e} />)}</ul>
               </section>
             ))}
-            {!cans.evidence.length ? <p className="text-[13px] text-muted">No evidence kept yet. Run the CANS Evidence Agent or add evidence by hand.</p> : null}
+            {!cans.evidence.length ? <p className="text-[13px] text-muted">No evidence accepted yet. Run the CANS Evidence Agent or add evidence by hand.</p> : null}
           </div>
         </CardBody>
       </Card>
@@ -85,7 +85,7 @@ function KeptRow({ record, cans, e }: { record: IntakeRecord; cans: CansAssessme
   const tie = useStore((s) => s.setCansEvidenceItem);
   const meta = cans.evidenceMeta?.[e.id];
   const locked = cans.status === "signed";
-  const from = meta ? (meta.from === "agent" ? `Proposed by ${actorName(meta.agent ?? "criteria")}, kept by ${actorName(meta.by)}` : meta.from === "prior" ? `Carried forward by ${actorName(meta.by)}, needs review` : `Added by ${actorName(meta.by)}`) : null;
+  const from = meta ? (meta.from === "agent" ? `Proposed by ${actorName(meta.agent ?? "criteria")}, accepted by ${actorName(meta.by)}` : meta.from === "prior" ? `Carried forward by ${actorName(meta.by)}, needs review` : `Added by ${actorName(meta.by)}`) : null;
   return (
     <li className="rounded-xl border border-line px-3 py-2">
       <div className="flex items-start gap-2">

@@ -6,7 +6,7 @@ import type { IntakeRecord } from "@/data/intake/types";
 import { PROGRAM_LABEL } from "@/data/types";
 import { plural } from "@/lib/format";
 import { authType } from "./authType";
-import { docEntries, findingText, isOpen, isReferralDoc, requiredFirst, slotLabel, type DocEntry } from "./documents";
+import { docEntries, findingText, isOpen, isReferralDoc, requiredFirst, slotLabel, trackOfDraft, type DocEntry } from "./documents";
 import { typicalEntries } from "./typicalDocs";
 import { EMR_CHARTS } from "./lookups";
 import type { PayerContext } from "./payerContext";
@@ -51,10 +51,14 @@ function documentRow(d: CaseDraft, entry: DocEntry, need: "required" | "recommen
   if (!doc && reason !== undefined) {
     return { id, label, state: need === "required" ? "warn" : "done", detail: `Not available: ${reason}`, tag, handled: true };
   }
+  /* A document somebody was asked for (a task on the intake): still missing, and the row says nothing was sent. */
+  if (!doc && d.requested?.[slot]) return { id, label, state: need === "required" ? "warn" : "optional", detail: `Requested: a task on ${d.intakeId}. Nothing was sent. Not attached yet`, tag };
   /* An empty row says nothing: its box and its buttons already say it is missing and how to add it. */
   if (!doc) return { id, label, state: need === "required" ? "missing" : "optional", detail: "", tag, quiet: quiet && need === "required" };
   const name = doc.file.name;
   if (doc.status === "validating") return { id, label, state: "working", detail: join(name, "Reader is reading"), tag };
+  /* A file added to a request from an intake is kept by name and type only: no check ran, so none is claimed. */
+  if (doc.unread) return { id, label, state: "done", detail: join(name, "Added by name and type. The file was not read"), tag };
   const guessed = d.read?.[`doc:${slot}`]?.value === doc.file.id ? "Reader guessed the slot. Check it" : undefined;
   /* A document read from the intake record was signed there: it shows where it came from and is never flagged again. */
   if (doc.from) return { id, label, state: "done", detail: join(name, doc.from), tag };
@@ -67,7 +71,7 @@ function documentRow(d: CaseDraft, entry: DocEntry, need: "required" | "recommen
 }
 
 function documentGroup(d: CaseDraft, quiet: boolean, ctx: PayerContext): Group {
-  const list = docEntries(d.payerId, d.program, ctx.items);
+  const list = docEntries(d.payerId, d.program, ctx.items, trackOfDraft(d));
   const typical = typicalEntries(d.kind, list);
   const listed = new Set([...list, ...typical].map((r) => r.slot));
   const rows = [
@@ -78,7 +82,8 @@ function documentGroup(d: CaseDraft, quiet: boolean, ctx: PayerContext): Group {
     ...d.documents.filter((x) => !listed.has(x.slot)).map((x) => ({ entry: { slot: x.slot, label: slotLabel(x.slot), hint: "", required: false }, need: "extra" as const })),
   ].map(({ entry, need }) => documentRow(d, entry, need, d.documents.find((x) => x.slot === entry.slot), quiet));
   /* The group's own count says how many are in; only a payer with no list at all needs a word. */
-  const note = d.payerId && d.program && !list.length ? `${payerById(d.payerId).shortName} has no documents on its list for ${PROGRAM_LABEL[d.program]}` : undefined;
+  const mh = trackOfDraft(d) === "mh" && (d.program === "IOP" || d.program === "PHP");
+  const note = d.payerId && d.program && !list.length ? `${payerById(d.payerId).shortName} has no documents on its list for ${PROGRAM_LABEL[d.program]}` : mh ? "A mental health service lists no ASAM assessment. Demo configuration: payer requirement not yet verified." : undefined;
   return { id: "documents", title: d.payerId ? `Documents · ${payerById(d.payerId).shortName}` : "Documents", note, rows };
 }
 

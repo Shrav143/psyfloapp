@@ -27,12 +27,12 @@ export function ProgressStrip({ recordId, cells }: { recordId: string; cells: Pr
               <span className={cn("flex items-center gap-1.5 text-[13px] font-semibold @5xl:mt-0.5", TEXT[c.tone])}>
                 <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-current" aria-hidden="true" />
                 <span className="leading-snug">{c.value}</span>
-                {hasRatio ? <span className="text-[12px] font-normal text-muted @5xl:hidden">· {c.ratio?.done} of {c.ratio?.total}</span> : null}
+                {hasRatio ? <span className="text-[12px] font-normal text-muted @5xl:hidden">· {c.ratio?.done} of {c.ratio?.total}{c.unit ? ` ${c.unit}` : ""}</span> : null}
               </span>
               {hasRatio && c.ratio ? (
                 <span className="hidden items-center gap-2 @5xl:mt-1.5 @5xl:flex">
                   <Meter value={(c.ratio.done / c.ratio.total) * 100} color={BAR[c.tone]} height={4} className="min-w-0 flex-1" />
-                  <span className="shrink-0 text-[11px] text-muted">{c.ratio.done} of {c.ratio.total}</span>
+                  <span className="shrink-0 text-[11px] text-muted">{c.ratio.done} of {c.ratio.total}{c.unit ? ` ${c.unit}` : ""}</span>
                 </span>
               ) : null}
             </Link>

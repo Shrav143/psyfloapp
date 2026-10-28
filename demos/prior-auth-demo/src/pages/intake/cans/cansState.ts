@@ -14,7 +14,7 @@ export function cansCompletion(c: CansAssessment): CansCompletion {
   return { total: c.items.length, addressed: done.length, rated: c.items.filter((i) => !!i.response?.trim()).length, missing: c.items.filter((i) => !addressed(i)) };
 }
 
-/** The agent's evidence proposals nobody has kept or discarded yet. */
+/** The agent's evidence proposals nobody has accepted or rejected yet. */
 export const pendingEvidence = (r: IntakeRecord): Suggestion[] => r.suggestions.filter((x) => x.section === "cans" && x.field.startsWith("evidence:") && x.status === "pending");
 /** The agent's draft summary, when it waits for a person. */
 export const pendingSummary = (r: IntakeRecord): Suggestion | undefined => r.suggestions.find((x) => x.section === "cans" && x.field === "narrative" && x.status === "pending");

@@ -5,7 +5,7 @@ import { uid } from "@/lib/format";
 import { useStore } from "@/store";
 import { DocPreviewDrawer } from "./DocPreviewDrawer";
 import { DocRow } from "./DocRow";
-import { makeDocument } from "./documents";
+import { makeDocument, unreadDocument } from "./documents";
 import { FieldRow } from "./FieldRow";
 import { usePayerContext } from "./payerContext";
 import { buildChecklist, isDocRow, slotOf, tally, type Group, type RowId } from "./recordsModel";
@@ -34,7 +34,9 @@ export function RecordsChecklist({ draft, groups: ids, rows: keep, header }: { d
   const took = (list: FileList | null) => {
     const file = list?.[0];
     const target = pickFor.current;
-    if (file && target) put(draft.id, [makeDocument(target.slot, { id: uid("f"), name: file.name, sizeKb: Math.max(1, Math.round(file.size / 1024)) }, false, "validating", target.replace)]);
+    const demo = file ? { id: uid("f"), name: file.name, sizeKb: Math.max(1, Math.round(file.size / 1024)) } : null;
+    /* A request from an intake keeps a file by name and type only: Reader does not read it, and no check is made up for it. */
+    if (demo && target) put(draft.id, [draft.intakeId ? unreadDocument(target.slot, demo) : makeDocument(target.slot, demo, false, "validating", target.replace)]);
     if (picker.current) picker.current.value = "";
   };
 

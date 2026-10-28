@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { AlertTriangle, Columns2, FileText } from "lucide-react";
 import { Button, Card, CardBody, CardHeader, Drawer } from "@/components/ui";
+import { documentsOnRecord } from "@/data/assess/readiness";
 import { SECTION_LABEL, type IntakeRecord } from "@/data/intake/types";
 import { paths } from "@/routes";
 import { useIntakeNow } from "../lib/policyNow";
@@ -47,7 +48,7 @@ export function ReferralSection({ record }: { record: IntakeRecord }) {
       {record.method === "phone" ? <PhoneChecklist record={record} /> : null}
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-[13px] text-muted">
-          {record.id}{record.legacyReferralId ? ` · from ${record.legacyReferralId}` : ""} · {record.documents.length} document{record.documents.length === 1 ? "" : "s"}
+          {record.id}{record.legacyReferralId ? ` · from ${record.legacyReferralId}` : ""} · {documentsOnRecord(record)} document{documentsOnRecord(record) === 1 ? "" : "s"} on the record
         </p>
         <div className="flex flex-wrap items-center gap-2">
           {record.documents.length ? <Button size="sm" icon={Columns2} onClick={() => setOpen(true)} data-wide-review>Review beside the document</Button> : null}

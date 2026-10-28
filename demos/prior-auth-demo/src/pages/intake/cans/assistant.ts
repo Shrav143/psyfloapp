@@ -3,7 +3,7 @@ import { CANS_THEMES, RISK_THEME, isTheme, type CansTheme } from "./cansModel";
 
 /* The CANS assistant's reading of one record (pure). It works only with what the record holds: no official items are configured, so every
    item is unanswered and nothing is rated. It points at gaps by Psyflo evidence theme, suggests interview follow-ups (Psyflo prompts, never
-   CANS items), finds statements that disagree, and says why kept evidence still needs a person's review. */
+   CANS items), finds statements that disagree, and says why accepted evidence still needs a person's review. */
 
 /** Interview prompts for a theme with no evidence yet. Plain questions a clinician may ask; not CANS items, not scored. */
 const FOLLOW_UPS: Record<Exclude<CansTheme, "Other">, string[]> = {

@@ -6,6 +6,9 @@ import type { AssessmentRule, Level, ModuleId, ProgramId, RuleModule } from "./t
 
 export const RULES_VERSION = "va-assess-2027.1";
 const UPDATED = "2026-10-19";
+/** The last change of the rule set, and the reviewer of the organization's own rows: an intake purpose is an organization protocol and carries both. */
+export const RULES_UPDATED = UPDATED;
+export const ORG_REVIEWER = "Clinical director (demo)";
 
 const mod = (id: ModuleId, level: Level, reason: string, label?: string, when?: RuleModule["when"]): RuleModule => ({ id, level, reason, label, when });
 const req = (id: ModuleId, reason: string, label?: string, when?: RuleModule["when"]) => mod(id, "required", reason, label, when);
@@ -16,7 +19,7 @@ const SUD: ProgramId[] = ["sud-op", "sud-iop", "sud-php", "sud-res", "sud-wm", "
 const MH_ACUTE: ProgramId[] = ["mh-iop", "mh-php", "youth-iop", "youth-php"];
 
 const base = { states: ["VA"], version: RULES_VERSION, updated: UPDATED };
-const ORG = { ...base, source: "org_protocol" as const, status: "demo" as const, reviewer: "Clinical director (demo)" };
+const ORG = { ...base, source: "org_protocol" as const, status: "demo" as const, reviewer: ORG_REVIEWER };
 const STATE_UNVERIFIED = { ...base, source: "state_policy" as const, status: "unverified" as const, reviewer: "Pending assignment" };
 const STATE_DRAFT = { ...base, source: "state_policy" as const, status: "draft" as const, reviewer: "Pending assignment" };
 const DEMO = { ...base, source: "demo" as const, status: "demo" as const, reviewer: "Not a payer policy" };

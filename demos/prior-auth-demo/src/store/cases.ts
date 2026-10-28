@@ -2,13 +2,12 @@ import type { StateCreator } from "zustand";
 import { EMPTY_WORK } from "@/data/caseModel";
 import { resolveCase } from "@/data/caseDetail";
 import {
-  chanceBounds, currentChance, draftState, DUE_FOR, freshRun, needsPerson, nextCaseCode, planTypeOf, QUESTIONS, queueItemOf, RUN_STEPS, SCRIBE_STEP,
+  chanceBounds, chanceOfDraft, draftState, DUE_FOR, freshRun, needsPerson, nextCaseCode, planTypeOf, QUESTIONS, queueItemOf, RUN_STEPS, SCRIBE_STEP,
   type AuthKind, type CaseDraft, type DocSlotId, type DocumentedReason, type DraftDocument, type WorkflowChoice, type WorkflowLogEntry,
 } from "@/data/cases";
 import { authorizationsOf, episodesOf, isoOf, patientById } from "@/data/patients";
 import { payerById } from "@/data/seed";
 import type { SiteId } from "@/data/sites";
-import { chanceFor } from "@/data/programTables";
 import { isCoreProgram, PROGRAM_LABEL, type AgentKey } from "@/data/types";
 import { verify } from "@/data/verification";
 import { viewerById } from "@/data/viewers";
@@ -16,6 +15,7 @@ import type { AppliedWorkflow } from "@/data/workflow/types";
 import { uid } from "@/lib/format";
 import { DAY } from "@/lib/time";
 import { authType, defaultTypeFor } from "@/pages/newcase/authType";
+import { recordDocument, slotLabel } from "@/pages/newcase/documents";
 import { documentsFromIntake, draftFieldsFromIntake, episodeLink, kindOfIntake, serviceNoteOf } from "@/pages/newcase/fromIntake";
 import { draftForRequest, mergeRequestDraft, requestDraft, requestState } from "@/pages/newcase/fromRequest";
 import { payerContextOf } from "@/pages/newcase/payerContext";
@@ -44,6 +44,12 @@ export interface CasesSlice {
   markCaseDocUnavailable: (id: string, slot: DocSlotId, reason: string) => void;
   clearCaseDocUnavailable: (id: string, slot: DocSlotId) => void;
   finishCaseDoc: (id: string, slot: DocSlotId) => void;
+  /** "Attach from the record": a document the intake record holds is chosen for this slot. It is the record's own document, so nothing is read or checked. */
+  attachRecordDoc: (id: string, slot: DocSlotId, docId: string) => void;
+  /** "Request this document": a task on the intake (someone obtains the document). Nothing is sent to anyone. */
+  requestCaseDoc: (id: string, slot: DocSlotId) => void;
+  /** Takes the request back: the task on the intake is cancelled. */
+  cancelCaseDocRequest: (id: string, slot: DocSlotId) => void;
   /** Save as draft: the case appears in Case Manager with its own ID. */
   saveCaseDraft: (id: string) => void;
   /** Gives the draft its case ID now (the verification record is keyed by it) without saving the draft. Returns the ID, or null while the level of care is not chosen. */
@@ -180,6 +186,42 @@ export const createCasesSlice: StateCreator<AppState, [], [], CasesSlice> = (set
       }),
     finishCaseDoc: (id, slot) => update(id, (d) => ({ ...d, documents: d.documents.map((x) => (x.slot === slot ? { ...x, status: "done" } : x)) })),
 
+    attachRecordDoc: (id, slot, docId) => {
+      const d = find(id);
+      const r = d?.intakeId ? get().intakes.find((x) => x.id === d.intakeId) : undefined;
+      const doc = r?.documents.find((x) => x.id === docId);
+      if (!d || !r || !doc || d.sent) return;
+      const name = doc.name.replace(/\.(pdf|txt)$/i, "");
+      get().putCaseDocs(id, [recordDocument(slot, { id: `rec-${r.id}-${doc.id}`, name: doc.name, sizeKb: 90 + ((doc.name.length * 37) % 240) }, `Chosen from the intake record: ${name}`, true)]);
+      /* A document that was asked for is here now: its task on the intake is done. */
+      const asked = d.requested?.[slot];
+      if (asked) {
+        get().updateIntakeTask(r.id, asked.taskId, { status: "done", result: `Attached from the record (${name}) in New Authorization draft ${id}.` });
+        update(id, (x) => ({ ...x, requested: Object.fromEntries(Object.entries(x.requested ?? {}).filter(([k]) => k !== slot)) }));
+      }
+    },
+
+    requestCaseDoc: (id, slot) => {
+      const d = find(id);
+      if (!d?.intakeId || d.sent || d.requested?.[slot]) return;
+      const label = slotLabel(slot);
+      const taskId = get().addIntakeTask(d.intakeId, {
+        role: "completion", action: `Get the ${label.toLowerCase()} for the authorization`, section: "review", status: "needs_you", approval: "none", kind: "doc-request", source: `New Authorization draft ${id}`,
+        result: `Asked for in New Authorization (draft ${id}). Nothing was sent to anyone: a person gets the document and adds it to the record.`,
+      });
+      update(id, (x) => ({ ...x, requested: { ...x.requested, [slot]: { taskId, at: get().clock } } }));
+      get().addIntakeAudit(d.intakeId, { actor: meOf(get()), action: `Requested a document: ${label}`, detail: `From New Authorization draft ${id}. A task was added; nothing was sent.`, section: "review" });
+      get().toast({ title: "Request added to the intake", body: `${label} is a task on ${d.intakeId}. Nothing was sent.`, tone: "neutral" });
+    },
+    cancelCaseDocRequest: (id, slot) => {
+      const d = find(id);
+      const asked = d?.requested?.[slot];
+      if (!d?.intakeId || !asked) return;
+      get().updateIntakeTask(d.intakeId, asked.taskId, { status: "cancelled", result: `The request was taken back in New Authorization draft ${id}. Nothing was sent.` });
+      get().addIntakeAudit(d.intakeId, { actor: meOf(get()), action: `Took back the request for a document: ${slotLabel(slot)}`, detail: `From New Authorization draft ${id}.`, section: "review" });
+      update(id, (x) => ({ ...x, requested: Object.fromEntries(Object.entries(x.requested ?? {}).filter(([k]) => k !== slot)) }));
+    },
+
     ensureCaseId: (id) => {
       const d = find(id);
       if (!d) return null;
@@ -268,8 +310,9 @@ export const createCasesSlice: StateCreator<AppState, [], [], CasesSlice> = (set
       /* What the intake knows wins over the patient book: the plan on file, the service the clinician selected, the person's own details. */
       const now = find(id);
       if (!now) return;
+      /* The clinician's selection fills the service. With none (or a range) the person's own choice stays, and a new stay never takes the episode's earlier level: the person names the service. */
       change(id, () => ({
-        patient: fields.patient, program: fields.program, levelLabel: undefined, payerId: fields.payerId ?? now.payerId, planType: fields.planType || now.planType, memberId: fields.memberId || now.memberId,
+        patient: fields.patient, program: fields.program ?? (authType(kind).existing ? now.program : d.program), levelLabel: undefined, payerId: fields.payerId ?? now.payerId, planType: fields.planType || now.planType, memberId: fields.memberId || now.memberId,
         ...(authType(kind).existing ? {} : { startDate: fields.startDate }),
       }));
     },
@@ -279,7 +322,7 @@ export const createCasesSlice: StateCreator<AppState, [], [], CasesSlice> = (set
       const r = d?.intakeId ? get().intakes.find((x) => x.id === d.intakeId) : undefined;
       if (!d || !r || d.sent) return 0;
       const docs = documentsFromIntake(r, d);
-      const gone = d.documents.filter((x) => x.from && !docs.some((y) => y.slot === x.slot));
+      const gone = d.documents.filter((x) => x.from && !x.chosen && !docs.some((y) => y.slot === x.slot));
       const fresh = docs.filter((x) => d.documents.find((y) => y.slot === x.slot)?.from !== x.from);
       if (gone.length) change(id, (x) => ({ documents: x.documents.filter((y) => !gone.some((z) => z.slot === y.slot)) }));
       if (fresh.length) get().putCaseDocs(id, fresh);
@@ -372,7 +415,7 @@ export const createCasesSlice: StateCreator<AppState, [], [], CasesSlice> = (set
       update(id, (x) => ({
         ...x,
         run: { ...x.run, asked: true, question: null },
-        answers: [...x.answers, { key: def.key, agent: def.agent, question: def.text(payer), choice: a.choice, answer: a.answer, note: a.note }],
+        answers: [...x.answers, { key: def.key, agent: def.agent, question: def.text(payer, !!x.intakeId), choice: a.choice, answer: a.answer, note: a.note }],
         narrative: null,
       }));
     },
@@ -406,8 +449,9 @@ export const createCasesSlice: StateCreator<AppState, [], [], CasesSlice> = (set
         payerId: d.payerId,
         program: d.program,
         type: d.type,
-        chance: chanceFor(d.program, currentChance(d)) ?? undefined,
+        chance: chanceOfDraft(d) ?? undefined,
         referralId: d.referralId,
+        intakeId: d.intakeId,
       });
       /* The events happened just now, in order: at the demo's current minute, so History puts them after what was done on the case page before signing.
          The person signs as the clinician they chose, and the line says so. */
@@ -427,7 +471,8 @@ export const createCasesSlice: StateCreator<AppState, [], [], CasesSlice> = (set
       /* The Authorizations queue lists it too: it is with the payer now. */
       const sentRequest = get().requests.find((r) => r.id === requestId);
       const sentProgram = sentRequest?.program;
-      if (sentRequest && isCoreProgram(sentProgram) && !get().queueItems.some((i) => i.id === requestId)) set((s) => ({ queueItems: [...s.queueItems, queueItemOf(sentRequest, sentProgram, s.clock, d.levelLabel)] }));
+      /* A request prepared from an intake has no queue row: the queue's rows carry a canned diagnosis, scores and approval chance, and this request's clinical picture is the record's own. It shows in the worklist as a request. */
+      if (sentRequest && !d.intakeId && isCoreProgram(sentProgram) && !get().queueItems.some((i) => i.id === requestId)) set((s) => ({ queueItems: [...s.queueItems, queueItemOf(sentRequest, sentProgram, s.clock, d.levelLabel)] }));
       /* The request joins its patient, episode, authorization and verification. A new patient is the request itself; an existing one is never copied. */
       const verified = d.verificationId ?? (get().verifications[requestId] ? requestId : null);
       get().updateRequest(requestId, { patientId: d.patientId ?? requestId, episodeId: d.episodeId ?? `EP-${requestId}`, authorizationId: d.authorizationId ?? `AU-${requestId}`, verificationId: verified ?? undefined });
@@ -439,8 +484,13 @@ export const createCasesSlice: StateCreator<AppState, [], [], CasesSlice> = (set
       }));
       /* The intake learns where its authorization went, and keeps the person and episode the request created, so a later review reuses them. */
       if (d.intakeId) {
-        get().patchIntake(d.intakeId, (x) => ({ ...x, patientId: x.patientId ?? d.patientId ?? requestId, episodeId: x.episodeId ?? d.episodeId ?? `EP-${requestId}` }));
-        get().addIntakeAudit(d.intakeId, { actor: meOf(get()), action: "Signed and sent the authorization request (simulated payer submission)", detail: `Request ${requestId}`, section: "review" });
+        const at = get().clock;
+        get().patchIntake(d.intakeId, (x) => ({
+          ...x, patientId: x.patientId ?? d.patientId ?? requestId, episodeId: x.episodeId ?? d.episodeId ?? `EP-${requestId}`,
+          handoff: { ...x.handoff, status: "sent", draftId: id, requestId, sentBy: signedBy ?? meOf(get()), sentAt: at },
+        }));
+        get().addIntakeAudit(d.intakeId, { actor: meOf(get()), action: `Authorization ${requestId} sent`, detail: `${signedBy ? `Signed as ${signedBy}. ` : ""}Simulated payer submission: nothing left the demo.`, section: "review" });
+        get().addEvent(requestId, { actor: "you", text: `Prepared from the intake record ${d.intakeId}`, detail: "The clinical summary was drafted from the record (AI suggested draft, simulated) and signed by a person. No estimate of approval is made for it." });
       }
       return requestId;
     },

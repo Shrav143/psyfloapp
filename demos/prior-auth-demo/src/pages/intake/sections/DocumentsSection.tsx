@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { FilePlus2, FileSearch, Sparkles } from "lucide-react";
 import { Button, Card, CardHeader, EmptyState } from "@/components/ui";
+import { documentsOnRecord } from "@/data/assess/readiness";
 import type { IntakeDocument, IntakeRecord } from "@/data/intake/types";
 import { useStore } from "@/store";
 import { setDocumentAttach, setDocumentModule } from "../workspace/actions";
@@ -47,7 +48,7 @@ export function DocumentsSection({ record }: { record: IntakeRecord }) {
       <Card>
         <CardHeader
           title="Documents"
-          subtitle={`${record.documents.length} on file · ${attached} marked to attach to the authorization`}
+          subtitle={`${documentsOnRecord(record)} on the record · ${attached} marked to attach to the authorization`}
           right={<><Button size="sm" icon={Sparkles} onClick={generate}>Draft a summary</Button><Button size="sm" variant="primary" icon={FilePlus2} onClick={() => setAdding(true)} data-add-document>Add document</Button></>}
         />
         <div className="px-5 pt-3 pb-3">

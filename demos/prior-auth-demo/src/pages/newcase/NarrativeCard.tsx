@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { Link2, PenLine } from "lucide-react";
-import { Button, Card, CardBody, CardHeader, TextArea } from "@/components/ui";
+import { Button, Card, CardBody, CardHeader, Chip, TextArea } from "@/components/ui";
 import type { NarrativeSection } from "@/data/cases";
 import { slotOfSource } from "./documents";
+import { AI_DRAFT_TAG } from "./recordNarrative";
+
+const CHIP = "mx-1 inline-flex items-center gap-1 rounded-full bg-neutral-bg px-2.5 py-0.5 align-baseline text-[13px] font-medium text-neutral-ink";
 
 /** The medical-necessity summary the payer will read. Editable; every source chip opens the chart page it came from. */
-export function NarrativeCard({ sections, editSignal, onSave, onSource }: { sections: NarrativeSection[]; /** Counts up when "What is missing" asks for the summary to be edited. */ editSignal: number; onSave: (next: NarrativeSection[]) => void; onSource: (label: string) => void }) {
+export function NarrativeCard({ sections, editSignal, onSave, onSource, intakeId }: { sections: NarrativeSection[]; /** Counts up when "What is missing" asks for the summary to be edited. */ editSignal: number; onSave: (next: NarrativeSection[]) => void; onSource: (label: string) => void; /** The intake record the summary was drafted from: its sections link into that record and it carries the AI draft tag. */ intakeId?: string }) {
   const [editing, setEditing] = useState(false);
   const [text, setText] = useState<Record<string, string>>({});
 
@@ -29,6 +33,7 @@ export function NarrativeCard({ sections, editSignal, onSave, onSource }: { sect
     <Card id="summary-card">
       <CardHeader
         title="Medical-necessity summary"
+        subtitle={intakeId ? `Drafted only from ${intakeId}. A clinician edits it and signs it.` : undefined}
         right={
           editing ? (
             <>
@@ -40,9 +45,12 @@ export function NarrativeCard({ sections, editSignal, onSave, onSource }: { sect
               </Button>
             </>
           ) : (
-            <Button size="sm" icon={PenLine} onClick={begin}>
-              Edit
-            </Button>
+            <>
+              {intakeId ? <span data-testid="ai-draft-tag"><Chip className="border border-dashed border-edge">{AI_DRAFT_TAG}</Chip></span> : null}
+              <Button size="sm" icon={PenLine} onClick={begin}>
+                Edit
+              </Button>
+            </>
           )
         }
       />
@@ -64,13 +72,23 @@ export function NarrativeCard({ sections, editSignal, onSave, onSource }: { sect
                   type="button"
                   disabled={!slotOfSource(src)}
                   onClick={() => onSource(src)}
-                  className="mx-1 inline-flex items-center gap-1 rounded-full bg-neutral-bg px-2.5 py-0.5 align-baseline text-[13px] font-medium text-neutral-ink hover:bg-[#E8E5DF]"
+                  className={`${CHIP} hover:bg-[#E8E5DF]`}
                   aria-label={`Open source: ${src}`}
                 >
                   <Link2 size={12} className="ico" />
                   {src}
                 </button>
               ))}
+              {(s.refs ?? []).map((r) =>
+                r.to ? (
+                  <Link key={r.label} to={r.to} data-source-link className={`${CHIP} hover:bg-[#E8E5DF]`} aria-label={`Open source in the intake: ${r.label}`}>
+                    <Link2 size={12} className="ico" />
+                    {r.label}
+                  </Link>
+                ) : (
+                  <span key={r.label} className={CHIP}>{r.label}</span>
+                ),
+              )}
             </p>
           ),
         )}

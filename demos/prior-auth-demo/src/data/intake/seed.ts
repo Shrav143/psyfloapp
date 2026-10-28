@@ -209,7 +209,7 @@ const C_DOC: IntakeDocument = {
   ]],
 };
 const scenarioC = (): IntakeRecord => {
-  const r = base({ id: "IN-3103", scenario: "C", site: "A", createdAt: C_AT, title: "Hospital referral for first episode psychosis: CSC, with care now", serviceId: "csc", serviceDate: vaDate("2027-07-01"), method: "fax", sourceOrg: "Blue Ridge Regional Medical Center (fictional)", triage: "clinical_review", urgency: "urgent", priority: true, assignedTo: "ml", payerId: "evergreen", initials: "A.K.", age: 19 });
+  const r = base({ id: "IN-3103", scenario: "C", site: "A", createdAt: C_AT, title: "Hospital referral for first episode psychosis: CSC, with care now", serviceId: "csc", serviceDate: vaDate("2027-07-01"), method: "fax", sourceOrg: "Blue Ridge Regional Medical Center (fictional)", triage: "new", urgency: "urgent", priority: true, assignedTo: "ml", payerId: "evergreen", initials: "A.K.", age: 19 });
   const s = (b: string, q?: string) => doc("doc-c1", "Discharge referral p.1", b, q);
   r.documents = [C_DOC];
   r.referral = {
@@ -288,7 +288,7 @@ const LIGHT: Light[] = [
   ["IN-3119", "crisis", "K.D.", 22, "harborview", "B", "phone", "988 Lifeline follow-up (fictional team)", "new", "emergent", true, "jp", 0.05, "Crisis follow-up after a 988 call; mobile crisis team visited last night."],
   ["IN-3120", "iih", "P.M.", 11, "evergreen", "A", "emr", "School social worker (fictional)", "new", "routine", false, "ml", 1.5, "Aggression at home and school; family asks for in-home services."],
   ["IN-3121", "tdt", "B.C.", 9, "summit", "B", "upload", "Elementary school (fictional)", "ready_screening", "routine", false, "tb", 6, "Classroom behavior needs; school asks for day treatment."],
-  ["IN-3122", "psr", "G.N.", 47, "beacon", "A", "emr", "Psyflo demo clinic, Site A (existing client)", "clinical_review", "routine", false, "jp", 8, "Receives PSR, which retires June 30, 2027; plan what comes next."],
+  ["IN-3122", "psr", "G.N.", 47, "beacon", "A", "emr", "Psyflo demo clinic, Site A (existing client)", "ready_screening", "routine", false, "jp", 8, "Receives PSR, which retires June 30, 2027; plan what comes next."],
   ["IN-3123", "cpst-youth", "I.R.", 16, "cardinal", "B", "upload", "Juvenile court services unit (fictional)", "new", "routine", false, "ml", 2.5, "Probation officer asks for community support for a 16-year-old from summer 2027."],
   ["IN-3124", "clubhouse", "F.S.", 34, "lakeshore", "A", "manual", "Peer recovery specialist", "redirected", "routine", false, "tb", 12, "Wants a clubhouse; redirected to PSR now, Clubhouse from July 2027."],
 ];

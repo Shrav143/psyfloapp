@@ -7,7 +7,7 @@ import { SourceLink } from "../shared/provenance";
 import { proposalFacts } from "./explain";
 import { ItemSelect } from "./ItemSelect";
 
-/** One statement the CANS Evidence Agent proposes. It shows where it would be filed, why it was proposed and what to check, and waits for a person to keep, edit or discard it. */
+/** One statement the CANS Evidence Agent proposes. It shows where it would be filed, why it was proposed and what to check, and waits for a person to accept, edit or reject it. */
 export function ProposalCard({ record, cans, sg }: { record: IntakeRecord; cans: CansAssessment; sg: Suggestion }) {
   const decide = useStore((s) => s.decideCansEvidence);
   const facts = useMemo(() => proposalFacts(record, cans, sg), [record, cans, sg]);
@@ -36,14 +36,14 @@ export function ProposalCard({ record, cans, sg }: { record: IntakeRecord; cans:
         <div className="flex gap-2">
           {editing ? (
             <>
-              <Button size="sm" variant="primary" icon={Check} disabled={locked || !text.trim()} onClick={() => decide(record.id, sg.id, true, { edited: text, itemId: templated ? itemId : undefined })}>Save and keep</Button>
+              <Button size="sm" variant="primary" icon={Check} disabled={locked || !text.trim()} onClick={() => decide(record.id, sg.id, true, { edited: text, itemId: templated ? itemId : undefined })}>Save and accept</Button>
               <Button size="sm" onClick={() => { setEditing(false); setText(sg.value); }}>Cancel</Button>
             </>
           ) : (
             <>
-              <Button size="sm" variant="primary" icon={Check} disabled={locked} onClick={() => decide(record.id, sg.id, true)}>Keep</Button>
+              <Button size="sm" variant="primary" icon={Check} disabled={locked} onClick={() => decide(record.id, sg.id, true)}>Accept evidence</Button>
               <Button size="sm" icon={Pencil} disabled={locked} onClick={() => setEditing(true)}>Edit</Button>
-              <Button size="sm" icon={X} disabled={locked} onClick={() => decide(record.id, sg.id, false)}>Discard</Button>
+              <Button size="sm" icon={X} disabled={locked} onClick={() => decide(record.id, sg.id, false)}>Reject</Button>
             </>
           )}
         </div>

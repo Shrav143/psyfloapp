@@ -2,12 +2,11 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { Card, CardBody, CardHeader, Meter, Pill } from "@/components/ui";
-import { READINESS_NOTE, trackSummary, type DualReadinessX, type ReadinessTrackX } from "@/data/assess/readiness";
+import { countsLine, READINESS_NOTE, trackCounts, trackSummary, type DualReadinessX, type ReadinessTrackX } from "@/data/assess/readiness";
 import type { ReadinessStatus } from "@/data/assess/types";
 import type { Tone } from "@/data/types";
 import { paths } from "@/routes";
 import { workspaceHref } from "../nav";
-import { trackCounts } from "../progress";
 import { targetOf } from "../useWorkspaceTarget";
 
 const WORD: Record<ReadinessStatus, { word: string; tone: Tone }> = {
@@ -30,7 +29,7 @@ function Panel({ recordId, title, track, kind }: { recordId: string; title: stri
       <CardBody className="flex flex-col gap-3">
         <div>
           <Meter value={total ? (done / total) * 100 : 0} color={BAR[tone]} height={5} />
-          <p className="mt-1 text-[12px] text-muted">{done} of {total} items complete</p>
+          <p className="mt-1 text-[12px] text-muted" data-track-counts>{countsLine(track)}</p>
         </div>
         {shown.length ? (
           <ul className="divide-y divide-line">

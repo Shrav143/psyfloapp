@@ -103,8 +103,12 @@ export function SignCard({ draft, checks, missing, chance, ready, backSignal, on
           <dd className="font-medium">{authType(draft.kind).label} · {draft.type}</dd>
           <dt className="text-muted">Level of care</dt>
           <dd className="font-medium">{draft.levelLabel ?? (draft.program ? PROGRAM_LABEL[draft.program] : "")}</dd>
-          <dt className="text-muted">Approval chance</dt>
-          <dd className="font-medium">{chance === null ? NOT_ENOUGH_CASES : `${chance}%`}</dd>
+          {draft.intakeId ? null : (
+            <>
+              <dt className="text-muted">Approval chance</dt>
+              <dd className="font-medium">{chance === null ? NOT_ENOUGH_CASES : `${chance}%`}</dd>
+            </>
+          )}
           <dt className="text-muted">Attachments</dt>
           <dd className="font-medium">{draft.documents.length} documents</dd>
         </dl>

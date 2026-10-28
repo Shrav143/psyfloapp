@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { CircleCheck, CircleX, RotateCcw, Send } from "lucide-react";
 import { AgentChip, Button, Card, Checkbox, Chip, Pill, TextArea } from "@/components/ui";
 import { AGENTS } from "@/data/agents";
-import { programChange, serviceName, type OptionView } from "@/data/assess/carePlan";
+import { NOT_AVAILABLE_REASON, programChange, serviceName, type OptionView } from "@/data/assess/carePlan";
 import type { IntakeRecord } from "@/data/intake/types";
 import type { AgentKey } from "@/data/types";
 import { serviceById } from "@/data/va/services";
@@ -45,6 +45,7 @@ export function OptionCard({ record, view, now, locked, onRefer }: { record: Int
   const needsReason = !view.requested || (prev !== null && prev !== pw.serviceId);
   const change = pw.serviceId === "external" ? null : programChange(record, pw.serviceId, now);
   const refs = record.referralsOut.filter((x) => x.pathwayId === pw.id);
+  const retired = view.availability.reason === "retired";
 
   return (
     <Card data-option={pw.serviceId} data-status={pw.status} className="px-5 py-4">
@@ -97,6 +98,7 @@ export function OptionCard({ record, view, now, locked, onRefer }: { record: Int
       {panel && !locked ? (
         <div className="mt-3 space-y-2 rounded-xl border border-forest/30 bg-sage-bg/40 px-4 py-3" data-testid="select-panel">
           <p className="text-[13px] font-semibold text-ink">Select {serviceName(pw.serviceId, pw.externalLabel)}</p>
+          {view.availability.reason === "starts_later" ? <p className="text-[13px] text-mid-ink">{view.availability.text}. Selecting it is preparation only.</p> : null}
           {change ? <p className="text-[13px] text-ink2">This moves the intake to {change.label}. Completed assessment work is kept.{change.added.length ? ` New required modules: ${change.added.join(", ")}.` : ""}</p> : null}
           <TextArea aria-label="Why this service" rows={2} value={reason} onChange={(e) => setReason(e.target.value)} placeholder={needsReason ? "Why this service (required: it differs from the request or replaces an earlier selection)" : "Why this service (optional)"} />
           <div className="flex flex-wrap gap-2">
@@ -108,7 +110,8 @@ export function OptionCard({ record, view, now, locked, onRefer }: { record: Int
 
       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
         {pw.status !== "not_selected" ? <Checkbox checked={view.considered} disabled={locked || pw.status === "selected"} onChange={(v) => consider(record.id, pw.id, v)} label="Considered by the clinician" /> : null}
-        {pw.status !== "selected" && pw.status !== "not_selected" ? <Button size="sm" variant="primary" icon={CircleCheck} disabled={locked} title={locked ? "Revise the care plan to change the service" : undefined} onClick={() => setPanel(true)}>Select this service</Button> : null}
+        {pw.status !== "selected" && pw.status !== "not_selected" ? <Button size="sm" variant="primary" icon={CircleCheck} disabled={locked || retired} title={retired ? NOT_AVAILABLE_REASON : locked ? "Revise the care plan to change the service" : undefined} onClick={() => setPanel(true)}>Select this service</Button> : null}
+        {retired && pw.status !== "selected" && pw.status !== "not_selected" ? <span className="text-[12px] font-medium text-mid-ink" data-testid="option-unavailable">{NOT_AVAILABLE_REASON}</span> : null}
         {pw.status === "suggested" || pw.status === "under_review" ? <Button size="sm" icon={CircleX} disabled={locked} onClick={() => setNotSelected(true)}>Set aside</Button> : null}
         {pw.status === "not_selected" ? <Button size="sm" icon={RotateCcw} disabled={locked} onClick={() => reopen(record.id, pw.id, "under_review")}>Reopen</Button> : null}
         {pw.status !== "not_selected" ? <Button size="sm" variant="ghost" icon={Send} onClick={() => onRefer(pw.id)}>Create referral</Button> : null}

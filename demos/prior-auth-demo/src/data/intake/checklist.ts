@@ -135,8 +135,8 @@ function referralItems(r: IntakeRecord, school: boolean): CheckItem[] {
   const docs: CheckItem = {
     id: "docs", category: "referral", label: "Referral documents", section: "referral",
     ...(r.documents.length
-      ? { status: "complete", detail: `${plural(r.documents.length, "document")} on file${simulated ? ` (${simulated === r.documents.length ? "simulated imports" : `${simulated} simulated`})` : ""}` }
-      : DOC_METHODS.has(r.method) ? { status: "missing", detail: "No referral document on file" } : { status: "na", detail: "Entered by staff; no referral document" }),
+      ? { status: "complete", detail: `${plural(r.documents.length, "document")} on the record${simulated ? ` (${simulated === r.documents.length ? "simulated imports" : `${simulated} simulated`})` : ""}` }
+      : DOC_METHODS.has(r.method) ? { status: "missing", detail: "No referral document on the record" } : { status: "na", detail: "Entered by staff; no referral document" }),
   };
   return [...fieldItems(r, "referral", school), triage, docs];
 }
@@ -336,6 +336,7 @@ function handoffItem(r: IntakeRecord, serviceId: VaServiceId): CheckItem {
   const svc = serviceById(serviceId);
   const rules = requirementsFor({ serviceId, payerId: r.payerId, age: r.age, setting: svc.setting, serviceDate: r.serviceDate });
   const has = (k: PolicyRule["kind"]) => rules.some((x) => x.kind === k);
+  if (r.handoff.status === "sent") return { ...base, status: "complete", detail: `Signed and sent as ${r.handoff.requestId ?? "a request"} (simulated payer submission)` };
   if (r.handoff.status === "in_new_case") return { ...base, status: "complete", detail: "Opened in New Authorization as a draft; nothing was submitted" };
   if (r.handoff.status === "ready") return { ...base, status: "complete", detail: "Approved; open it in New Authorization" };
   if (r.handoff.status === "draft") return { ...base, status: "pending", detail: "Draft packet waits for a person's approval" };
@@ -406,6 +407,7 @@ export function readiness(r: IntakeRecord, now: number): Readiness {
   const base = { requirement, serviceId, selected, rules, blockers, warnings, openIntake, reviewer: plan?.reviewer, channel: plan?.channel, timing: rule?.timing, note: READINESS_NOTE };
   const make = (status: ReadinessStatus, headline: string): Readiness => ({ ...base, status, label: READINESS_LABEL[status], headline });
 
+  if (r.handoff.status === "sent") return make("handed_off", `The authorization request${r.handoff.requestId ? ` ${r.handoff.requestId}` : ""} was signed and sent to the payer (simulated). It is tracked in Authorizations.`);
   if (r.handoff.status === "in_new_case") return make("handed_off", `The packet is a draft in New Authorization${r.handoff.draftId ? ` (${r.handoff.draftId})` : ""}. Nothing was sent to the payer.`);
   if (r.triage === "declined" || r.triage === "closed") return make("not_needed", `The referral was ${r.triage}. No handoff is prepared.`);
   if (requirement === "none") return make("not_needed", `${svc.short} needs no authorization${plan?.coverage === "ffs" ? " under fee-for-service" : ""}. No handoff is needed.`);

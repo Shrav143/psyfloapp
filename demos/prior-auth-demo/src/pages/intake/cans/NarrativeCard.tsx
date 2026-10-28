@@ -13,14 +13,14 @@ import { draftSummary } from "./evidence";
 function draftSummaryTask(recordId: string) {
   let taskId: string | null = null;
   taskId = runAgent(recordId, {
-    role: "cans", action: "Draft an evidence summary for the narrative", section: "cans", approval: "required", ms: 1300, source: "Kept CANS evidence",
+    role: "cans", action: "Draft an evidence summary for the narrative", section: "cans", approval: "required", ms: 1300, source: "Accepted CANS evidence",
     work: () => {
       const s = useStore.getState();
       const r = s.intakes.find((x) => x.id === recordId);
       if (!r?.cans) return "No CANS preparation record.";
       const sid = s.proposeCansSummary(recordId, draftSummary(r), "criteria");
       if (taskId) s.updateIntakeTask(recordId, taskId, { gate: { kind: "suggestions", sections: ["cans"], ids: [sid] } });
-      return "AI-generated summary drafted from kept evidence. It waits for a person to accept, edit or reject it.";
+      return "AI-generated summary drafted from accepted evidence. It waits for a person to accept, edit or reject it.";
     },
   });
 }
@@ -52,7 +52,7 @@ export function NarrativeCard({ record, cans, readOnly }: { record: IntakeRecord
             <div className="mt-2 flex flex-wrap gap-2">
               <Button size="sm" variant="primary" disabled={text === cans.narrative} onClick={() => setNarrative(record.id, text.trim())}>Save narrative</Button>
               <Button size="sm" icon={Sparkles} loading={running} disabled={!cans.evidence.length} onClick={() => draftSummaryTask(record.id)}>CANS Evidence Agent: draft a summary</Button>
-              {!cans.evidence.length ? <span className="self-center text-[12px] text-muted">Keep some evidence first</span> : null}
+              {!cans.evidence.length ? <span className="self-center text-[12px] text-muted">Accept some evidence first</span> : null}
             </div>
           ) : null}
         </div>

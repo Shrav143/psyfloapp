@@ -3,7 +3,7 @@ import type { EvidenceProposal } from "@/store/intakeCans";
 import { CANS_THEMES, themeOf, type CansTheme } from "./cansModel";
 
 /* The CANS Evidence Agent's simulated reading: it walks the record's documents, the clinical assessment fields and the AI Scribe transcript,
-   splits them into short statements and files each under a Psyflo theme with its source. It proposes; a person keeps or discards each one. */
+   splits them into short statements and files each under a Psyflo theme with its source. It proposes; a person accepts or rejects each one. */
 
 const SKIP = /\b(release|consent|insurance|member id|phone|asking for|we ask|referral to|recommend)/i;
 const ASSESSMENT_THEME: Partial<Record<AssessmentSectionId, CansTheme>> = {
@@ -62,7 +62,7 @@ export function findEvidence(r: IntakeRecord): EvidenceProposal[] {
   return out.slice(0, 12);
 }
 
-/** The agent's draft evidence summary, from kept evidence only. It lists statements by theme and names the themes with nothing yet. */
+/** The agent's draft evidence summary, from accepted evidence only. It lists statements by theme and names the themes with nothing yet. */
 export function draftSummary(r: IntakeRecord): string {
   const ev = r.cans?.evidence ?? [];
   const parts = CANS_THEMES.map((t) => [t, ev.filter((e) => (e.theme ?? "Other") === t)] as const);
@@ -70,7 +70,7 @@ export function draftSummary(r: IntakeRecord): string {
   const empty = parts.filter(([, list]) => !list.length).map(([t]) => t);
   const lines = filled.map(([t, list]) => `${t}: ${list.map((e) => e.text.replace(/\.$/, "")).join("; ")}.`);
   return [
-    `Evidence kept so far: ${ev.length} statement${ev.length === 1 ? "" : "s"} from the record, each with its source.`,
+    `Evidence accepted so far: ${ev.length} statement${ev.length === 1 ? "" : "s"} from the record, each with its source.`,
     ...lines,
     empty.length ? `No evidence gathered yet for: ${empty.join(", ")}. Missing evidence is not a score.` : "",
     "This is an organized summary of evidence for clinician review. It is not a CANS Lifetime rating.",

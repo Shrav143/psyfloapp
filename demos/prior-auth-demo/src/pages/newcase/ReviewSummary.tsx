@@ -29,11 +29,11 @@ export function ReviewSummary({ draft, env, review }: { draft: CaseDraft; env: C
     ["Request", `${authType(draft.kind).label} · recorded as ${draft.type ?? "no type yet"}`],
     ...(env.workflow ? ([["Workflow", env.workflow.applied.usedDefault ? `${env.workflow.applied.name} (illustrative default)` : `${env.workflow.applied.name}, v${env.workflow.applied.version}`]] as [string, string][]) : []),
     ["Service", draft.program ? `${draft.levelLabel ?? PROGRAM_LABEL[draft.program]}` : "Not added"],
-    ["Dates and length", dos ? `${mdy(dos.from)} to ${mdy(dos.to)} · ${plural(Math.round((minutesOf(dos.to) - minutesOf(dos.from)) / 1440) + 1, "day")}${draft.endDate ? "" : draft.program && usualDays(draft.program) === null ? " (no end date added)" : " (the usual length)"}` : "Not added"],
+    ["Dates and length", dos ? `${mdy(dos.from)} to ${mdy(dos.to)} · ${plural(Math.round((minutesOf(dos.to) - minutesOf(dos.from)) / 1440) + 1, "day")}${draft.endDate ? "" : draft.program && usualDays(draft.program) === null ? " (no end date added)" : " (a demo default, not a payer limit)"}` : "Not added"],
     ["Eligibility", rec ? `${describeVerification(rec)}. Checked ${ago(rec.checkedAt, env.clock)}, simulated source.` : "Not checked"],
     ["Existing authorization", a ? `${a.id} · ${a.label} · ${leftText(a) ?? "no days on file"}${a.approvedTo === null ? "" : `, ends ${mdy(isoOf(a.approvedTo))}`}` : b ? `${b.label} · ${b.authorized === null ? "no days on file" : `${b.authorized} ${b.unit} authorized`}${b.used !== null && b.authorized !== null ? `, ${b.authorized - b.used} left` : ""}${b.to ? `, ends ${mdy(b.to)}` : ""}` : "None. This starts a new stay."],
     ["Documentation", `${r.ready} of ${r.total} ready${r.missingRequired.length ? `, ${plural(r.missingRequired.length, "required document")} missing` : ""}`],
-    ["Medical necessity", review.sections.length ? `${plural(review.sections.length, "section")}, ${words} words, prepared by Scribe from the chart` : "Not prepared yet"],
+    ["Medical necessity", review.sections.length ? (draft.intakeId ? `${plural(review.sections.length, "section")}, ${words} words, drafted from the intake record. AI suggested draft, simulated; a clinician edits and signs it` : `${plural(review.sections.length, "section")}, ${words} words, prepared by Scribe from the chart`) : "Not prepared yet"],
     ["Outstanding", acks + notes === 0 ? "Nothing outstanding" : `${acks ? `${acks} to acknowledge` : ""}${acks && notes ? ", " : ""}${notes ? plural(notes, "note") : ""}`],
   ];
   return (

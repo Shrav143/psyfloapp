@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Bell, FastForward, FlaskConical, RotateCcw, Sparkles } from "lucide-react";
 import { useEscape } from "@/components/ui";
 import { cn } from "@/lib/cn";
@@ -73,7 +73,7 @@ function DemoMenu() {
             ))}
           </div>
           <div className="px-3 pt-2 pb-1 text-[11px] font-medium tracking-[0.1em] text-muted uppercase">Intake scenarios</div>
-          <div className="px-3 pb-1 text-[13px] text-muted">Five fictional people on five programs. The intake changes with the program.</div>
+          <div className="px-3 pb-1 text-[13px] text-muted">Fictional people on different programs. The intake changes with the program.</div>
           {[...SCENARIOS, ...EXTRA_SCENARIOS].map((sc) => (
             <button key={sc.key} type="button" className={item} title={`${sc.shows} ${sc.stage}`} onClick={() => { setOpen(false); nav(paths.intakeRecord(sc.intakeId)); }}>
               <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-neutral-bg text-[11px] font-semibold">{sc.key}</span>
@@ -99,6 +99,10 @@ function DemoMenu() {
   );
 }
 
+/** An intake's workspace (/intake/IN-3110, or /intake/RF-2049 on its way to its intake). It has its own contextual AI Assistant, so the general Ask FLO chat is not offered there:
+    two assistants on one screen would answer differently. The configuration wizard (/intake/IN-3110/configure) is not the workspace. */
+const isIntakeWorkspace = (pathname: string): boolean => /^\/intake\/(IN|RF)-[^/]+\/?$/.test(pathname);
+
 /** The top bar: the site and program switchers on the left; the demo environment, + New, the Demo menu, Ask FLO and notifications on the right. Below
     1280 px the two groups wrap onto two rows instead of covering each other. */
 export function Topbar() {
@@ -107,6 +111,11 @@ export function Topbar() {
   const setNotif = useStore((s) => s.setNotifOpen);
   const notifOpen = useStore((s) => s.notifOpen);
   const btn = "relative grid h-9 w-9 place-items-center rounded-xl border border-field bg-white text-ink2 hover:bg-tile";
+  const workspace = isIntakeWorkspace(useLocation().pathname);
+  /* A panel left open on another page does not follow the person into a workspace. */
+  useEffect(() => {
+    if (workspace && askOpen) setAsk(false);
+  }, [workspace, askOpen, setAsk]);
   return (
     <div className="sticky top-0 z-30 flex min-h-[60px] flex-wrap items-center gap-x-3 gap-y-2 border-b border-[#ECE9E4] bg-canvas/90 px-4 py-2 backdrop-blur min-[1240px]:flex-nowrap lg:px-7">
       {/* The "As of" date repeats the Demo clock, so it gives way first (below 1600 px). The first two spans of the site switcher are that label and date. */}
@@ -118,9 +127,11 @@ export function Topbar() {
         <EnvironmentChip />
         <NewMenu />
         <DemoMenu />
-        <button type="button" aria-label="Ask FLO" title="Ask FLO" onClick={() => setAsk(!askOpen)} className={btn}>
-          <Sparkles size={18} className="ico" />
-        </button>
+        {workspace ? null : (
+          <button type="button" aria-label="Ask FLO" title="Ask FLO" onClick={() => setAsk(!askOpen)} className={btn}>
+            <Sparkles size={18} className="ico" />
+          </button>
+        )}
         <button type="button" aria-label="Notifications" title="Notifications" onClick={() => setNotif(!notifOpen)} className={btn}>
           <Bell size={18} className="ico" />
           <UnreadDot />

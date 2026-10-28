@@ -7,7 +7,7 @@ import type { LedgerCase } from "@/data/manager";
 import { payerById } from "@/data/seed";
 import { SITES, siteName, type SiteId } from "@/data/sites";
 import { DAY, shortDate, toDate } from "@/lib/time";
-import { docEntries } from "@/pages/newcase/documents";
+import { docEntries, trackOfDraft } from "@/pages/newcase/documents";
 import type { AppliedWorkflow } from "@/data/workflow/types";
 import { shortSpan } from "./queueLogic";
 
@@ -38,8 +38,8 @@ export function windowOf(ledger: LedgerCase | undefined): { from: number; to: nu
 }
 
 /** How many of the documents the payer lists for this level of care are in the case, and which are not. */
-export function documentStatus(draft: Pick<CaseDraft, "payerId" | "program" | "documents">, items: DocItem[] | null): { have: number; total: number; missing: string[] } {
-  const entries = docEntries(draft.payerId, draft.program, items);
+export function documentStatus(draft: Pick<CaseDraft, "payerId" | "program" | "documents" | "serviceNote">, items: DocItem[] | null): { have: number; total: number; missing: string[] } {
+  const entries = docEntries(draft.payerId, draft.program, items, trackOfDraft(draft));
   const missing = entries.filter((e) => !draft.documents.some((d) => d.slot === e.slot)).map((e) => e.label);
   return { have: entries.length - missing.length, total: entries.length, missing };
 }

@@ -1,6 +1,6 @@
 import type { DocBlock } from "@/components/ui/DocumentSheet";
 import { FIELD_SPECS } from "@/data/intake/fields";
-import { scribeScriptFor, type ScribeScript, type Speaker } from "@/data/intake/scripts";
+import { CANS_CATEGORY, scribeScriptFor, type ScribeScript, type Speaker } from "@/data/intake/scripts";
 import type { ScribeField } from "@/data/intake/scriptBlocks";
 import { NOTE_SECTIONS, ROLE_AGENT, SECTION_LABEL, type IntakeDocument, type IntakeRecord, type NoteSectionId, type ScribeSession, type SourceRef, type Suggestion } from "@/data/intake/types";
 import { fieldLabelOf, moduleLabelOf, resolveField } from "./route";
@@ -207,7 +207,7 @@ export function reviewGroups(s: ScribeSession): ReviewGroup[] {
   const mods = [...new Set(all.flatMap((x) => (x.moduleId ? [x.moduleId] : [])))];
   for (const m of mods) groups.push({ id: `m:${m}`, title: moduleLabelOf(m), kind: "module", items: all.filter((x) => x.moduleId === m) });
   const cans = all.filter((x) => x.section === "cans");
-  if (cans.length) groups.push({ id: "cans", title: "CANS evidence themes", kind: "cans", items: cans });
+  if (cans.length) groups.push({ id: "cans", title: CANS_CATEGORY, kind: "cans", items: cans });
   for (const sec of ["referral", "profile", "coverage", "assessment"] as const) {
     const items = all.filter((x) => x.section === sec && !x.moduleId && !isRiskProposal(x));
     if (items.length) groups.push({ id: sec, title: sec === "assessment" ? "Clinical assessment" : SECTION_LABEL[sec], kind: "record", items });

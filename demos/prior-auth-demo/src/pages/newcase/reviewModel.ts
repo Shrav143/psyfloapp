@@ -21,8 +21,8 @@ export interface ReviewModel {
 
 export function reviewModel(env: CaseEnv, context: string[], adds: RecAdd[], rechecking = false): ReviewModel {
   const { draft, clock, ctx } = env;
-  const sections = narrativeOf(draft, context, adds);
-  const checks = integrityChecks(draft, sections, rechecking, { clock, ctx, verification: env.verification.record });
+  const sections = narrativeOf(draft, context, adds, env.intake);
+  const checks = integrityChecks(draft, sections, rechecking, { clock, ctx, verification: env.verification.record, intake: env.intake });
   const rows = validationRows(draft, clock, ctx);
   const missing = missingItems(rows, checks, [...intakeIssues(env), ...eligibilityIssues(env), ...workflowItems(env)]);
   return { sections, checks, rows, missing, blocking: missing.filter((m) => m.severity === "block") };

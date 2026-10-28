@@ -50,7 +50,7 @@ export function ItemsTab({ record, cans, onGo }: { record: IntakeRecord; cans: C
             <CardBody>
               {d.id === "d-risk" ? <p className="mb-3 text-[13px] text-ink2">A clinician reviews any safety information directly. Psyflo proposes no rating here and does not decide whether a person is safe.</p> : null}
               {items.map((i) => <ItemRow key={i.id} record={record} cans={cans} item={i} pendingForItem={pendingFor(i.id)} />)}
-              {untied.length ? <p className="mt-3 text-[12px] text-muted">{untied.length} kept statement{untied.length === 1 ? " is" : "s are"} not tied to an item. <button type="button" className="font-semibold text-forest hover:underline" onClick={() => onGo("evidence")}>Tie them in Evidence Review</button></p> : null}
+              {untied.length ? <p className="mt-3 text-[12px] text-muted">{untied.length} accepted statement{untied.length === 1 ? " is" : "s are"} not tied to an item. <button type="button" className="font-semibold text-forest hover:underline" onClick={() => onGo("evidence")}>Tie them in Evidence Review</button></p> : null}
             </CardBody>
           </Card>
         );

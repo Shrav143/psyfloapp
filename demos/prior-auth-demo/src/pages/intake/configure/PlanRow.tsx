@@ -2,6 +2,7 @@ import { useId, useState } from "react";
 import { ChevronDown, Lock, RotateCcw } from "lucide-react";
 import { Button, Chip, Pill, Switch } from "@/components/ui";
 import { moduleById } from "@/data/assess/modules";
+import { reviewLine } from "@/data/assess/reviewLine";
 import { LEVEL_LABEL, SOURCE_LABEL, VERIFICATION_LABEL, type ModuleKind, type RequirementSource } from "@/data/assess/types";
 import { staffOf } from "@/data/intake/seed";
 import { cn } from "@/lib/cn";
@@ -61,6 +62,7 @@ export function PlanRow({ row, onToggle, onRemove, onRestore }: { row: Row; onTo
                   <li key={`${s.ruleId}-${s.level}-${s.reason}`}>
                     <div><span className="font-semibold">{s.ruleLabel}</span> <span className="text-muted">· {SOURCE_LABEL[s.source]} · {VERIFICATION_LABEL[s.status]} · {s.version === "purpose" ? "intake purpose rule" : `version ${s.version}`} · {LEVEL_LABEL[s.level].toLowerCase()}</span></div>
                     <div className="text-ink2">{s.reason}</div>
+                    <div className="text-muted" data-review-line>{reviewLine(s)}</div>
                     {s.preparation ? <div className="text-muted">Takes effect after the policy date, so it is preparation only and does not hold up readiness.</div> : null}
                   </li>
                 ))}

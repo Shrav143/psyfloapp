@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ChevronDown, History, Sparkles } from "lucide-react";
 import { Banner, Button, Card, CardBody, Chip, InfoTip, Meter, Pill } from "@/components/ui";
 import type { Completion } from "@/data/assess/completion";
+import { reviewLine } from "@/data/assess/reviewLine";
 import { moduleById, schemaOf } from "@/data/assess/modules";
 import { INSTRUMENT_STATUS_LABEL, LEVEL_LABEL, SOURCE_LABEL, VERIFICATION_LABEL, type AssessmentPlan, type InstrumentInstance, type InstrumentStatus, type Level, type ModuleId } from "@/data/assess/types";
 import type { IntakeRecord } from "@/data/intake/types";
@@ -97,6 +98,7 @@ export function ModuleHeader({ record, moduleId, ctx, plan, inst, completion, fi
                       <span className="text-muted">version {s.version}</span>
                     </div>
                     <p className="mt-0.5 text-ink2">{s.reason}</p>
+                    <p className="text-muted" data-review-line>{reviewLine(s)}</p>
                   </li>
                 ))}
               </ul>

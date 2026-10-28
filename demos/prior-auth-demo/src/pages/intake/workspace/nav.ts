@@ -1,6 +1,7 @@
 import { LEVEL_LABEL, type AssessmentPlan, type InstrumentStatus, type Level } from "@/data/assess/types";
 import { sectionParam, WORKSPACE_LABEL, type WorkspaceTarget } from "@/data/assess/nav";
 import type { IntakeRecord } from "@/data/intake/types";
+import { documentsOnRecord } from "@/data/assess/readiness";
 import { paths } from "@/routes";
 import { sectionState, type SectionState } from "../lib/status";
 import { planItems } from "./modules";
@@ -69,7 +70,7 @@ export function workspaceNav(r: IntakeRecord, plan: AssessmentPlan | null, now =
   out.push(
     top("signoff", signoff, so.total ? `${so.signed} of ${so.total} signed` : undefined, so.state === "signed" ? "Signed" : so.state === "ready" ? "Ready to sign" : undefined),
     top("care", care, undefined, r.carePlan?.status === "approved" ? "Approved" : undefined),
-    top("documents", null, `${r.documents.length} on file`),
+    top("documents", null, `${documentsOnRecord(r)} on the record`),
     top("activity", null),
   );
   return out;

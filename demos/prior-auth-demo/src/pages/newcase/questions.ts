@@ -8,6 +8,8 @@ const stepOf = (key: QuestionKey): number => RUN_STEPS.findIndex((s) => s.agent 
 /** The first question comes from the chart's own conflict (sertraline) or from the level of care. A second one is asked when the chart leaves a gap:
     no psychiatric evaluation to read how long the diagnosis has been present, or no document (or reason) behind "why a lower level of care is not enough". */
 export function planQuestions(d: CaseDraft): QuestionKey[] {
+  /* A request prepared from an intake record asks one thing: whether a step-down is planned. What the record does not document is listed as a gap in the summary, not asked as the chart's "conflict". */
+  if (d.intakeId) return [defaultQuestion(d.program)];
   const conflict = d.documents.some((x) => x.slot === "meds" && x.findings.some((f) => !f.ok && f.resolvedBy === "sertraline"));
   const first: QuestionKey = conflict ? "sertraline" : defaultQuestion(d.program);
   const inCase = (slot: string): boolean => d.documents.some((x) => x.slot === slot);

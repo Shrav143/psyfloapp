@@ -1,5 +1,5 @@
 import { BarChart3, Building2, CalendarCheck, ChevronDown, ChevronRight, ClipboardCheck, ClipboardPen, FlaskConical, HelpCircle, Inbox, LayoutDashboard, ListChecks, LogOut, Repeat, RefreshCw, Scale, Settings, Share2, ShieldCheck, type LucideIcon } from "lucide-react";
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState, type RefObject } from "react";
 import { Link, useLocation } from "react-router-dom";
 import logo from "@/assets/brand/psyflo-logo.svg";
 import { Count } from "@/components/ui";
@@ -119,6 +119,27 @@ function Group({ name, items, place, badge }: { name: string; items: Leaf[]; pla
   );
 }
 
+/** Whether the navigation has more below what shows. The list scrolls inside the sidebar (the Demo data note, Settings, Help and the user stay pinned), and on a short window its last group
+    (Connections) is out of sight, so a fade and a "More" button say so. A group opening or closing changes the list's height, so each group is watched, not only the window. */
+function useMoreBelow(ref: RefObject<HTMLElement | null>): boolean {
+  const [more, setMore] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const check = () => setMore(el.scrollHeight - el.clientHeight - el.scrollTop > 6);
+    check();
+    el.addEventListener("scroll", check, { passive: true });
+    const watch = new ResizeObserver(check);
+    watch.observe(el);
+    for (const child of Array.from(el.children)) watch.observe(child);
+    return () => {
+      el.removeEventListener("scroll", check);
+      watch.disconnect();
+    };
+  }, [ref]);
+  return more;
+}
+
 /** Every badge follows the site view. The slice badges read the view inside their selectors; the Dashboard badge is counted here with the same rule.
     Payers is clinic-wide on purpose: a payer's rules and changes are not site data, so its badge never changes with the view. */
 export function Sidebar() {
@@ -134,6 +155,8 @@ export function Sidebar() {
   const denials = useStore(selectDenialBadge);
   const payers = useStore(selectPayersBadge);
   const toast = useStore((s) => s.toast);
+  const navRef = useRef<HTMLElement>(null);
+  const moreBelow = useMoreBelow(navRef);
   const place: Place = { pathname: location.pathname, query: new URLSearchParams(location.search), intake: useIntakePlace(location.pathname, location.state) };
 
   const referralBadge = newReferrals + needInfo;
@@ -149,7 +172,7 @@ export function Sidebar() {
     { to: paths.renewals(), label: "Renewals & Extensions", icon: Repeat, on: (p) => authItem(p) === "renewals" },
   ];
   const starts = (prefix: string) => (p: Place) => p.pathname.startsWith(prefix);
-  const more: Leaf[] = [
+  const extra: Leaf[] = [
     { to: paths.eligibility(), label: "Eligibility & Benefits", icon: ShieldCheck, badge: eb, on: starts("/authorizations/eligibility") },
     { to: paths.denials(), label: "Denial Intelligence", icon: Scale, badge: denials, on: starts("/denials") },
     { to: paths.analytics(), label: "Analytics", icon: BarChart3, on: starts("/analytics") },
@@ -168,19 +191,33 @@ export function Sidebar() {
   const foot = "flex h-[34px] shrink-0 items-center gap-2.5 rounded-[10px] px-3 text-sm font-medium text-ink2 hover:bg-[#E8E5DF]";
 
   return (
-    <aside className="sticky top-0 flex h-screen w-[256px] shrink-0 flex-col gap-4 border-r border-[#E8E5DF] bg-side px-3.5 pt-6 pb-3.5">
+    <aside className="sticky top-0 flex h-screen w-[256px] shrink-0 flex-col gap-4 border-r border-[#E8E5DF] bg-side px-3.5 pt-6 pb-3.5 [@media(max-height:760px)]:gap-2 [@media(max-height:760px)]:pt-4">
       <div className="px-2">
         <img src={logo} alt="psyflo" width={91} height={30} className="block h-[30px] w-auto" />
         <div className="mt-[5px] text-[11px] tracking-[0.12em] text-muted uppercase">Prior auth &amp; UR</div>
       </div>
-      <nav aria-label="Main" className="flex min-h-0 flex-1 flex-col gap-[3px] overflow-y-auto">
-        <div className={label}>Main</div>
-        <LeafLink item={dashboard} place={place} />
-        <Group name="Referrals & Intake" items={intake} place={place} badge={referralBadge + inReview} />
-        <Group name="Authorizations" items={auth} place={place} badge={queue} />
-        {plain("Additional workspaces", more)}
-        {plain("Connections", conn)}
-      </nav>
+      <div className="relative flex min-h-0 flex-1 flex-col">
+        <nav ref={navRef} aria-label="Main" className="flex min-h-0 flex-1 flex-col gap-[3px] overflow-y-auto [scrollbar-color:#bfbab0_transparent]" data-sidebar-nav>
+          <div className={label}>Main</div>
+          <LeafLink item={dashboard} place={place} />
+          <Group name="Referrals & Intake" items={intake} place={place} badge={referralBadge + inReview} />
+          <Group name="Authorizations" items={auth} place={place} badge={queue} />
+          {plain("Additional workspaces", extra)}
+          {plain("Connections", conn)}
+        </nav>
+        {moreBelow ? (
+          <button
+            type="button"
+            aria-label="Show more navigation"
+            title="More"
+            data-sidebar-more
+            onClick={() => navRef.current?.scrollBy({ top: 160, behavior: "smooth" })}
+            className="absolute inset-x-0 bottom-0 grid h-9 place-items-end justify-items-center bg-gradient-to-t from-side from-40% to-transparent pb-0.5 text-muted hover:text-ink"
+          >
+            <ChevronDown size={16} className="ico" aria-hidden="true" />
+          </button>
+        ) : null}
+      </div>
       <div className="flex flex-col gap-0.5">
         <div className="mb-1 flex items-center gap-2.5 rounded-xl border border-[#E8E5DF] bg-[#FAF9F6] px-3 py-2 text-[12px] text-ink2">
           <FlaskConical size={16} className="ico text-muted" />
@@ -191,10 +228,10 @@ export function Sidebar() {
           <Settings size={17} className="ico" />
           Settings
         </Link>
-        <button type="button" onClick={() => toast({ title: "Help", body: "Press + New (top bar) to start a referral, intake, authorization or eligibility check. Ask FLO (top right) answers questions. Demo, top right, resets data, moves time forward or views as another person.", tone: "neutral" })} className={foot}>
+        <Link to={paths.help()} aria-current={location.pathname.startsWith("/help") ? "page" : undefined} className={cn(foot, location.pathname.startsWith("/help") && rowOn)}>
           <HelpCircle size={17} className="ico" />
           Help
-        </button>
+        </Link>
         <div className="mt-2 flex items-center gap-3 border-t border-[#E8E5DF] px-2 pt-3" role="group" aria-label={`Signed in as ${viewer.name}, ${viewer.role}`}>
           <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-forest text-xs font-semibold text-white" aria-hidden="true">{viewer.initials}</div>
           <div className="min-w-0 flex-1">

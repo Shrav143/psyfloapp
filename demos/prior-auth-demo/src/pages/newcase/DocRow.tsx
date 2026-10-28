@@ -6,6 +6,7 @@ import type { CaseDraft, DocSlotId } from "@/data/cases";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
 import { isReferralDoc, makeDocument, sampleFile } from "./documents";
+import { AttachFromRecord, RecordDocActions } from "./RecordDocActions";
 import { Frame } from "./RecordEditors";
 import type { Row } from "./recordsModel";
 
@@ -41,6 +42,7 @@ function Unavailable({ draftId, slot, close }: { draftId: string; slot: DocSlotI
     Marked not available: add the file after all, or undo. The referral that came with the case opens the referral instead. */
 export function DocRow({ row, slot, draft, open, onToggle, onPick, onPreview }: { row: Row; slot: DocSlotId; draft: CaseDraft; open: boolean; onToggle: () => void; onPick: (slot: DocSlotId, replace?: boolean) => void; onPreview: (slot: DocSlotId) => void }) {
   const labelId = useId();
+  const [attach, setAttach] = useState(false);
   const nav = useNavigate();
   const put = useStore((s) => s.putCaseDocs);
   const drop = useStore((s) => s.dropCaseDoc);
@@ -61,6 +63,8 @@ export function DocRow({ row, slot, draft, open, onToggle, onPick, onPreview }: 
         </Button>
       </>
     );
+  } else if (!doc && draft.intakeId) {
+    action = <RecordDocActions draft={draft} slot={slot} labelId={labelId} missing={row.state === "missing"} onAttach={() => setAttach((v) => !v)} onUnavailable={onToggle} onPick={onPick} />;
   } else if (!doc) {
     action = (
       <div className="flex max-w-[400px] flex-wrap justify-end gap-2">
@@ -105,6 +109,7 @@ export function DocRow({ row, slot, draft, open, onToggle, onPick, onPreview }: 
 
   return (
     <ChecklistItem state={row.state} label={<span id={labelId}>{row.label}</span>} tag={row.tag} detail={row.quiet && empty ? <span className="text-muted">{row.detail}</span> : row.detail} action={action}>
+      {attach && !doc && draft.intakeId ? <AttachFromRecord draft={draft} slot={slot} close={() => setAttach(false)} /> : null}
       {open && !doc && !marked ? <Unavailable draftId={draft.id} slot={slot} close={onToggle} /> : null}
     </ChecklistItem>
   );

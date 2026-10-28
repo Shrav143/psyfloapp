@@ -1,5 +1,5 @@
 import { vaDate } from "../va/policy";
-import { RULES } from "./rules";
+import { ORG_REVIEWER, RULES, RULES_UPDATED } from "./rules";
 import { isCoreModule, moduleById, moduleOrder } from "./modules";
 import { programAvailability, programById } from "./programs";
 import { purposeById } from "./purposes";
@@ -83,7 +83,8 @@ export function buildAssessmentPlan(c: PlanContext): AssessmentPlan {
     if (m.label && (!labels.has(m.id) || m.level === "required")) labels.set(m.id, m.label);
     const src: PlanSource = {
       ruleId: rule?.id ?? `purpose:${c.purposeId}`, ruleLabel: rule?.label ?? purpose.label, source: rule?.source ?? "org_protocol", status: rule?.status ?? "demo",
-      level: m.level, reason: m.reason, version: rule?.version ?? "purpose", preparation: !!rule?.from && c.policyDate < vaDate(rule.from), ...over,
+      level: m.level, reason: m.reason, version: rule?.version ?? "purpose", reviewer: rule?.reviewer ?? ORG_REVIEWER, updated: rule?.updated ?? RULES_UPDATED,
+      preparation: !!rule?.from && c.policyDate < vaDate(rule.from), ...over,
     };
     sources.set(m.id, [...(sources.get(m.id) ?? []), src]);
   };
@@ -98,7 +99,7 @@ export function buildAssessmentPlan(c: PlanContext): AssessmentPlan {
       const to = purpose.demoteTo;
       if (LEVEL_RANK.indexOf(level) < LEVEL_RANK.indexOf(to)) {
         levels.set(id, to);
-        sources.set(id, [...(sources.get(id) ?? []).map((s) => ({ ...s, level: to })), { ruleId: `purpose:${c.purposeId}`, ruleLabel: purpose.label, source: "org_protocol", status: "demo", level: to, reason: purpose.demoteReason, version: "purpose" }]);
+        sources.set(id, [...(sources.get(id) ?? []).map((s) => ({ ...s, level: to })), { ruleId: `purpose:${c.purposeId}`, ruleLabel: purpose.label, source: "org_protocol", status: "demo", level: to, reason: purpose.demoteReason, version: "purpose", reviewer: ORG_REVIEWER, updated: RULES_UPDATED }]);
       }
     }
   }

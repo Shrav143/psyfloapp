@@ -29,7 +29,7 @@ export function CansAssistant({ record, cans }: { record: IntakeRecord; cans: Ca
       ms: 1300,
       work: () => {
         const r = readCans(record, cans);
-        return `${r.gaps.length} ${r.gaps.length === 1 ? "theme has" : "themes have"} no evidence, ${r.contradictions.length} ${r.contradictions.length === 1 ? "statement pair disagrees" : "statement pairs disagree"}, ${r.review.length} kept ${r.review.length === 1 ? "item needs" : "items need"} review. No items rated.`;
+        return `${r.gaps.length} ${r.gaps.length === 1 ? "theme has" : "themes have"} no evidence, ${r.contradictions.length} ${r.contradictions.length === 1 ? "statement pair disagrees" : "statement pairs disagree"}, ${r.review.length} accepted ${r.review.length === 1 ? "item needs" : "items need"} review. No items rated.`;
       },
     });
 
@@ -110,9 +110,9 @@ export function CansAssistant({ record, cans }: { record: IntakeRecord; cans: Ca
               ))}
             </ul>
           ) : (
-            <p className="mt-1 text-[14px] text-ink2">Nothing kept needs a second look.</p>
+            <p className="mt-1 text-[14px] text-ink2">Nothing accepted needs a second look.</p>
           )}
-          {reading.review.length ? <Chip className="mt-2">Kept evidence stays unapproved for rating until a qualified person reviews it</Chip> : null}
+          {reading.review.length ? <Chip className="mt-2">Accepted evidence stays unapproved for rating until a qualified person reviews it</Chip> : null}
         </section>
       </CardBody>
     </Card>

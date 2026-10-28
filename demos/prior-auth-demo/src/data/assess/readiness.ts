@@ -9,6 +9,7 @@ import { isModuleSigned, planGaps, requestedServiceOf, requirementFor, selectedS
 import { isCoreModule } from "./modules";
 import { buildAssessmentPlan } from "./plan";
 import { programById } from "./programs";
+import { overallSignoff } from "./status";
 import { recordDocs } from "./recordDocs";
 import type { DualReadiness, ModuleId, ReadinessItem, ReadinessStatus, ReadinessTrack } from "./types";
 
@@ -132,6 +133,14 @@ function clinicalItems(r: IntakeRecord, now: number): ReadinessItemX[] {
       : attention("loc", "Level of care confirmed by a clinician", "A clinician confirms the level. Psyflo never assigns it", clinician, { section: "instrument", module: "loc-review" }));
   }
 
+  /* The overall sign-off comes before care planning (the plan's sign-off rule), so the gate here and the status "Care planning" (effectiveStatus) agree. */
+  const overall = r.instruments?.["review-signoff"];
+  const overallRequired = overallSignoff(r, now).required;
+  if (!c) items.push(attention("signoff", "Assessment signed off by a clinician", "The intake is not configured yet, so the sign-off rule is not loaded", clinician, { section: "configure" }));
+  else if (!overallRequired) items.push(na("signoff", "Assessment signed off by a clinician", "The plan does not require an overall sign-off", clinician));
+  else items.push(overall?.status === "signed" ? ready("signoff", "Assessment signed off by a clinician", `Signed off by ${who(overall.signedBy)}${overall.rolePlay ? " (demo role-play)" : ""}. Not a finding of medical necessity`, clinician, { section: "signoff" })
+    : attention("signoff", "Assessment signed off by a clinician", "A qualified clinician signs off the whole assessment before care planning", clinician, { section: "signoff" }, "pending"));
+
   const cp = r.carePlan;
   const gaps = planGaps(r);
   items.push(cp?.status === "approved" ? ready("care-plan", "Care plan approved", `Version ${cp.version ?? 1}, approved by ${who(cp.approvedBy)}${cp.rolePlay ? " (demo role-play)" : ""}`, clinician, { section: "care" })
@@ -177,12 +186,10 @@ function administrativeItems(r: IntakeRecord, now: number): ReadinessItemX[] {
   else items.push(ready("consent", "Consents on file", `Payment consent on file${sud ? ", with the Part 2 disclosure consent" : ""}.${part2}`, owner, { section: "patient" }));
 
   /* Documents: the payer's usual list for the service, from what the record already holds. The payer's saved list is checked again in New Authorization. */
-  const have = new Set(recordDocs(r).map((d) => d.slot));
-  const needed = docEntries(r.payerId, def.program, null).filter((x) => x.required);
-  const missingDocs = needed.filter((x) => !have.has(x.slot));
-  items.push(!needed.length ? na("documents", "Required documents attached", "No required document list for this service", owner)
-    : missingDocs.length ? attention("documents", "Required documents attached", `${needed.length - missingDocs.length} of ${needed.length} on the record. Missing: ${list(missingDocs.map((x) => x.label.toLowerCase()))}`, owner, { section: "documents" })
-      : ready("documents", "Required documents attached", `${plural(needed.length, "required document")} available from the record. The payer's saved list is checked in New Authorization`, owner, { section: "documents" }));
+  const docs = requiredDocuments(r);
+  items.push(!docs.required ? na("documents", "Required documents attached", "No required document list for this service", owner)
+    : docs.missing.length ? attention("documents", "Required documents attached", `${docs.available} of ${docs.required} required for authorization are available from the record. Missing: ${list(docs.missing.map((x) => x.toLowerCase()))}`, owner, { section: "documents" })
+      : ready("documents", "Required documents attached", `All ${docs.required} required for authorization are available from the record. The payer's saved list is checked in New Authorization`, owner, { section: "documents" }));
 
   const req = requirementFor(svc.id, r, Math.max(r.serviceDate, now));
   const kind = req.rules.find((x) => x.status === "final" && x.kind !== "pending")?.kind;
@@ -202,6 +209,42 @@ function administrativeItems(r: IntakeRecord, now: number): ReadinessItemX[] {
 /** Referral and patient items the authorization needs that are still open, by label. The rest of the intake checklist does not hold an authorization. */
 function referralOpen(r: IntakeRecord, now: number): string[] {
   return completeness(r, now).filter((i) => i.auth && (i.category === "referral" || i.category === "patient") && isOpen(i.status)).map((i) => i.label.toLowerCase());
+}
+
+/* One definition per measure. A screen that counts these reads here, so two cards never disagree, and every label says what is counted:
+   - "Documents on the record": the files received or added to this intake (record.documents), listed in the Documents section. "Marked to attach" is the subset a person chose to send with the authorization.
+   - "Required for authorization": the payer's usual list for the service (docEntries) and how many of its required documents the record can fill now, from a file or from a signed item
+     (recordDocs: the referral, the signed clinical assessment, signed modules, the approved care plan). It can be more than the files on the record. New Authorization checks the payer's saved list again.
+   - "Readiness items": the items of one track that apply. Items that do not apply for this program are counted apart and are never in "X of Y". */
+
+/** The documents on the record: every file received or added to this intake. */
+export const documentsOnRecord = (r: IntakeRecord): number => r.documents.length;
+
+export interface RequiredDocuments {
+  /** The required documents of the payer's usual list for the service. */
+  required: number;
+  /** How many of them the record can fill now. */
+  available: number;
+  /** The labels of the ones it cannot. */
+  missing: string[];
+}
+export function requiredDocuments(r: IntakeRecord): RequiredDocuments {
+  const def = serviceById(serviceOf(r).id);
+  const have = new Set(recordDocs(r).map((d) => d.slot));
+  const needed = docEntries(r.payerId, def.program, null, def.track).filter((x) => x.required);
+  const missing = needed.filter((x) => !have.has(x.slot));
+  return { required: needed.length, available: needed.length - missing.length, missing: missing.map((x) => x.label) };
+}
+
+/** How many items of a track are done, of those that apply, and how many do not apply. The one count every readiness screen shows. */
+export function trackCounts(t: ReadinessTrack): { done: number; total: number; notApplicable: number } {
+  const applicable = t.items.filter((i) => i.status !== "na");
+  return { done: applicable.filter((i) => i.status === "complete").length, total: applicable.length, notApplicable: t.items.length - applicable.length };
+}
+/** "6 of 6 applicable items complete" (and "2 not applicable" when some do not apply). */
+export function countsLine(t: ReadinessTrack): string {
+  const c = trackCounts(t);
+  return `${c.done} of ${c.total} applicable ${c.total === 1 ? "item" : "items"} complete${c.notApplicable ? `, ${c.notApplicable} not applicable` : ""}`;
 }
 
 /** The two tracks. `now` is the policy "now" (useIntakeNow). Never one blended number. */

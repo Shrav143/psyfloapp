@@ -471,10 +471,15 @@ export interface SafetyAlert {
 }
 
 export interface HandoffPacket {
-  status: "not_started" | "draft" | "ready" | "in_new_case";
+  /** sent: a person signed the New Authorization request and it went to the payer (simulated). */
+  status: "not_started" | "draft" | "ready" | "in_new_case" | "sent";
   createdAt?: number;
   /** The New Case draft the packet opened, when it did. */
   draftId?: string;
+  /** The request the draft became when it was sent (R-…, I-…, P-…), who signed it and when. */
+  requestId?: string;
+  sentBy?: string;
+  sentAt?: number;
   approvedBy?: string;
   approvedAt?: number;
   /** Who prepared the draft (an agent key or a staff id), and who opened it in New Case. */

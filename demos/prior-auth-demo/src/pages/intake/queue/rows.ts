@@ -1,5 +1,4 @@
 import { effectiveStatus } from "@/data/assess/status";
-import { isCoreModule } from "@/data/assess/modules";
 import type { AssessmentPlan } from "@/data/assess/types";
 import { INTAKE_STAFF, staffOf } from "@/data/intake/seed";
 import { METHOD_LABEL, TRIAGE_LABEL, TRIAGE_ORDER, type IntakeRecord, type TriageStatus } from "@/data/intake/types";
@@ -7,6 +6,7 @@ import { siteName } from "@/data/sites";
 import { VA_PLANS, vaPlanOf } from "@/data/va/plans";
 import { serviceById } from "@/data/va/services";
 import { planFor } from "@/store/intakePlan";
+import { assessmentProgress } from "../workspace/modules";
 import { findDuplicates } from "./duplicates";
 import { FRAMEWORK_KEYS, FRAMEWORK_LABEL, frameworkOf, type FrameworkKey } from "./framework";
 import { nextActionOf, type NextAction } from "./nextAction";
@@ -43,14 +43,6 @@ export interface IntakeRow {
   duplicateOf: string | null;
 }
 
-/** The clinical assessment and the required modules in use: what has to be signed before care planning. */
-export function progressOf(r: IntakeRecord): { signed: number; total: number } {
-  if (!r.config) return { signed: 0, total: 0 };
-  const required = r.config.modules.filter((c) => c.state === "active" && c.level === "required" && !isCoreModule(c.id)).map((c) => c.id);
-  const signed = (r.assessment.status === "signed" ? 1 : 0) + required.filter((id) => r.instruments?.[id]?.status === "signed").length;
-  return { signed, total: required.length + 1 };
-}
-
 const LEGACY_ASSESSMENT: Record<IntakeRecord["assessment"]["status"], string | undefined> = { not_started: undefined, in_progress: "Assessment in progress", awaiting_review: "Assessment awaiting review", signed: "Assessment signed" };
 
 export const lastUpdated = (r: IntakeRecord): number => r.audit.reduce((m, e) => Math.max(m, e.at), r.createdAt);
@@ -64,7 +56,7 @@ export function buildIntakeRows(records: readonly IntakeRecord[], now: number): 
     const dup = findDuplicates(records.filter((x) => x.id !== r.id), { initials: r.initials, age: r.age, memberLast4: r.coverage.medicaidId?.value })[0];
     return {
       id: r.id, record: r, status, program, cue: policyCue(program.serviceId, now), payerName: payer?.name ?? null,
-      assessment: { configured: !!r.config, frameworkKey: frameworkOf(r, plan), ...progressOf(r), legacy: r.config ? undefined : LEGACY_ASSESSMENT[r.assessment.status] },
+      assessment: { configured: !!r.config, frameworkKey: frameworkOf(r, plan), ...assessmentProgress(r, plan), legacy: r.config ? undefined : LEGACY_ASSESSMENT[r.assessment.status] },
       next: nextActionOf(r, status, plan), updatedAt: lastUpdated(r), source: sourceKindOf(r.sourceOrg),
       safetyOpen: r.safety?.status === "open", duplicateOf: dup?.record.id ?? null,
     };

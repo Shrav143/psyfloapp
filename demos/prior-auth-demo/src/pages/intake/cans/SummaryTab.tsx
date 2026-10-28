@@ -35,7 +35,7 @@ export function SummaryTab({ record, cans, onGo }: { record: IntakeRecord; cans:
               ["Assessor", cans.assessor ? actorName(cans.assessor) : "Not assigned"],
               ["Reviewer", cans.signedBy ? actorName(cans.signedBy) : "Not reviewed"],
               ["Sign-off", cans.signedBy ? `Signed${cans.signedAt !== undefined ? ` · ${stamp(cans.signedAt)}` : ""}${cans.rolePlay ? " (demo role-play)" : ""}` : "Not signed"],
-              ["Supporting evidence", `${cans.evidence.length} statement${cans.evidence.length === 1 ? "" : "s"} kept`],
+              ["Supporting evidence", `${cans.evidence.length} statement${cans.evidence.length === 1 ? "" : "s"} accepted`],
             ]}
           />
           {loaded && comp.missing.length ? (

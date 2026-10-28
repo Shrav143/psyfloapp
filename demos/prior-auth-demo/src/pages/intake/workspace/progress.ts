@@ -1,11 +1,12 @@
 import type { WorkspaceTarget } from "@/data/assess/nav";
+import { trackCounts } from "@/data/assess/readiness";
 import type { AssessmentPlan, DualReadiness, ReadinessTrack } from "@/data/assess/types";
 import { isOpen, type CheckItem } from "@/data/intake/checklist";
 import type { IntakeRecord } from "@/data/intake/types";
 import { AUTH_STATUS_LABEL, AUTH_STATUS_TONE, authorizationsOf, type PatientBook } from "@/data/patients";
 import type { Tone } from "@/data/types";
 import { paths } from "@/routes";
-import { instrumentProgress } from "./modules";
+import { assessmentProgress, instrumentProgress } from "./modules";
 
 /* The progress indicators under the patient's name. Each one is read from the record, so it changes the moment the data does. The two readiness
    tracks are kept apart on purpose: neither is an approval and neither says medical necessity is established. Pure. */
@@ -18,6 +19,8 @@ export interface ProgressCell {
   detail?: string;
   tone: Tone;
   ratio?: { done: number; total: number };
+  /** What the ratio counts, said beside it ("6 of 6 items"). */
+  unit?: string;
   /** Where in the workspace it is dealt with. */
   to?: WorkspaceTarget;
   /** Or another page (an authorization, a New Authorization draft). */
@@ -30,6 +33,8 @@ export interface AuthState { value: string; tone: Tone; detail?: string; href?: 
 export function authorizationState(r: IntakeRecord, book: PatientBook | null): AuthState {
   const episode = r.episodeId && book ? book.episodes.find((e) => e.id === r.episodeId) : undefined;
   const auth = episode && book ? authorizationsOf(book, episode.id)[0] : undefined;
+  /* Sent: the request is with the payer. Until the payer answers, the patient book lists its authorization as not approved yet, so the intake says Submitted, with the request's id. */
+  if (r.handoff.status === "sent" && r.handoff.requestId && (!auth || auth.status === "pending")) return { value: "Submitted", tone: "neutral", detail: `${r.handoff.requestId} · with the payer (simulated)`, href: paths.case(r.handoff.requestId) };
   if (episode && auth) return { value: AUTH_STATUS_LABEL[auth.status], tone: AUTH_STATUS_TONE[auth.status], detail: `${auth.id} · ${auth.label}`, href: paths.case(episode.caseId) };
   if (r.triage === "closed") return { value: "None", tone: "neutral", detail: `The intake ended without an authorization.${r.triageNote ? ` ${r.triageNote}` : ""}`.trim() };
   const h = r.handoff;
@@ -66,25 +71,20 @@ function coverageCell(r: IntakeRecord): ProgressCell {
 
 const WORD: Record<ReadinessTrack["state"], string> = { complete: "Complete", in_progress: "In progress", not_started: "Not started", blocked: "Blocked" };
 const TONE: Record<ReadinessTrack["state"], Tone> = { complete: "good", in_progress: "mid", not_started: "neutral", blocked: "risk" };
-export const trackCounts = (t: ReadinessTrack): { done: number; total: number } => {
-  const counted = t.items.filter((i) => i.status !== "na");
-  return { done: counted.filter((i) => i.status === "complete").length, total: counted.length };
-};
 function trackCell(key: "clinical" | "administrative", label: string, t: ReadinessTrack): ProgressCell {
   const ratio = trackCounts(t);
-  return { key, label, value: WORD[t.state], detail: ratio.total ? `${ratio.done} of ${ratio.total} items${t.open ? `, ${t.open} open` : ""}` : "No items", tone: TONE[t.state], ratio, to: { section: "overview" } };
+  return { key, label, value: WORD[t.state], detail: ratio.total ? `${ratio.done} of ${ratio.total} applicable items complete${t.open ? `, ${t.open} open` : ""}` : "No items", tone: TONE[t.state], ratio: { done: ratio.done, total: ratio.total }, unit: "items", to: { section: "overview" } };
 }
 
 export function headerProgress(r: IntakeRecord, plan: AssessmentPlan | null, items: CheckItem[], rd: DualReadiness, auth: AuthState): ProgressCell[] {
-  const prog = instrumentProgress(r, plan);
+  const prog = assessmentProgress(r, plan);
+  const started = r.assessment.status !== "not_started" || instrumentProgress(r, plan).items.some((i) => i.status !== "not_started");
   const assessments: ProgressCell = !r.config
     ? { key: "assessments", label: "Assessments", value: "Not configured", tone: "neutral", to: { section: "instrument" } }
-    : !prog.total
-      ? { key: "assessments", label: "Assessments", value: "None required", tone: "neutral", to: { section: "instrument" } }
-      : {
-          key: "assessments", label: "Assessments", value: `${prog.signed} of ${prog.total} signed`, ratio: { done: prog.signed, total: prog.total }, to: { section: "instrument" },
-          tone: prog.signed === prog.total ? "good" : prog.items.some((i) => i.status !== "not_started") ? "mid" : "neutral",
-        };
+    : {
+        key: "assessments", label: "Assessments", value: `${prog.signed} of ${prog.total} signed`, detail: "The clinical assessment and the required instruments", ratio: { done: prog.signed, total: prog.total }, to: { section: "instrument" },
+        tone: prog.signed === prog.total ? "good" : started ? "mid" : "neutral",
+      };
   const cp = r.carePlan?.status;
   const selected = r.pathways.some((p) => p.status === "selected");
   const care: ProgressCell = { key: "care", label: "Care plan", to: { section: "care" },

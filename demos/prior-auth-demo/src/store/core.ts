@@ -24,6 +24,8 @@ export interface SubmitCasePayload {
   type: RequestType;
   chance?: number;
   referralId?: string;
+  /** The intake record the request was prepared from. */
+  intakeId?: string;
 }
 export type Reply = "received" | "review" | "info" | "approve" | "partial" | "deny";
 
@@ -104,7 +106,7 @@ export const createCoreSlice: StateCreator<AppState, [], [], CoreSlice> = (set, 
     const id = p.caseId ?? `${p.program === "RES" ? "R" : p.program === "WM" ? "R" : p.program === "IOP" ? "I" : p.program === "PHP" ? "P" : "S"}-${1700 + Math.floor(Math.random() * 300)}`;
     const base: Partial<PsyRequest> = {
       stage: "received", chip: "Received", tone: "neutral", track: "auth", progress: 1, stageSince: clock, typicalMin: 25,
-      agent: "navigator", next: "Navigator checks again in 30 minutes", needsYou: false, chance: p.chance, referralId: p.referralId,
+      agent: "navigator", next: "Navigator checks again in 30 minutes", needsYou: false, chance: p.chance, referralId: p.referralId, ...(p.intakeId ? { intakeId: p.intakeId } : {}),
     };
     const sentEvents = [
       ev("you", "You signed and sent the request", clock - 3),
@@ -118,7 +120,7 @@ export const createCoreSlice: StateCreator<AppState, [], [], CoreSlice> = (set, 
       const created: PsyRequest = {
         id, caseId: id, patient: p.patient, payerId: p.payerId, program: p.program, type: p.type, sentVia: "portal", events: sentEvents,
         stage: "received", chip: "Received", tone: "neutral", track: "auth", progress: 1, stageSince: clock, typicalMin: 25,
-        agent: "navigator", next: "Navigator checks again in 30 minutes", chance: p.chance, referralId: p.referralId,
+        agent: "navigator", next: "Navigator checks again in 30 minutes", chance: p.chance, referralId: p.referralId, ...(p.intakeId ? { intakeId: p.intakeId } : {}),
       };
       set((s) => ({ requests: [created, ...s.requests] }));
     }

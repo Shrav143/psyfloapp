@@ -38,7 +38,7 @@ export interface IntakeCansWorkSlice {
   decideCansEvidence: (id: string, suggestionId: string, keep: boolean, opts?: { edited?: string; itemId?: string }) => void;
   addCansEvidence: (id: string, item: EvidenceProposal) => void;
   removeCansEvidence: (id: string, evidenceId: string) => void;
-  /** Ties kept evidence to an item (or to none). */
+  /** Ties accepted evidence to an item (or to none). */
   setCansEvidenceItem: (id: string, evidenceId: string, itemId: string | null) => void;
   /** The agent's evidence summary, as a suggestion for the narrative. Returns its id. */
   proposeCansSummary: (id: string, text: string, agent: AgentKey) => string;
@@ -66,7 +66,7 @@ export function newCans(by: string, at: number, tpl: CansTemplateState): CansAss
   };
   return tpl.kind === "none" ? base : withTemplate(base, tpl);
 }
-/** The record with the placeholder items. Evidence already kept is filed under the item its wording points at; a person can change that. */
+/** The record with the placeholder items. Evidence already accepted is filed under the item its wording points at; a person can change that. */
 function withTemplate(c: CansAssessment, tpl: CansTemplateRef): CansAssessment {
   return {
     ...c, ...buildDemoItems(), templateVersion: tpl.version, template: tpl,
@@ -157,7 +157,7 @@ export const createIntakeCansWorkSlice: StateCreator<AppState, [], [], IntakeCan
         if (!keep || !next.cans) return next;
         return mirrorCans({ ...next, cans: reopened({ ...next.cans, evidence: [...next.cans.evidence, { id: evId, text, source: sg.source, theme, itemId }], evidenceMeta: { ...next.cans.evidenceMeta, [evId]: { by: me(), at: now(), from: "agent", agent: sg.agent } } }) }, now());
       });
-      audit(id, keep ? `Kept evidence under ${theme}${changed ? " (edited)" : ""}` : `Discarded proposed evidence (${theme})`, [sg.source.ref, itemId ? `Tied to ${itemName(rec(id), itemId)}` : ""].filter(Boolean).join(" · "));
+      audit(id, keep ? `Accepted evidence under ${theme}${changed ? " (edited)" : ""}` : `Rejected proposed evidence (${theme})`, [sg.source.ref, itemId ? `Tied to ${itemName(rec(id), itemId)}` : ""].filter(Boolean).join(" · "));
       if (!rec(id)?.suggestions.some((x) => x.section === "cans" && x.field.startsWith("evidence:") && x.status === "pending")) closeTasks(id, (t) => t.role === "cans" && t.section === "cans", "Every proposal was kept or discarded by a person");
     },
     addCansEvidence: (id, it) => {
@@ -183,7 +183,7 @@ export const createIntakeCansWorkSlice: StateCreator<AppState, [], [], IntakeCan
       patch(id, (r) => ({
         ...r,
         suggestions: [...r.suggestions.map((x) => (x.section === "cans" && x.field === "narrative" && x.status === "pending" ? { ...x, status: "rejected" as const, decidedBy: "system", decidedAt: now() } : x)),
-          { id: sid, section: "cans", field: "narrative", value: text, source: { kind: "staff", ref: "Kept CANS evidence on this record" }, confidence: "medium", agent, at: now(), status: "pending" }],
+          { id: sid, section: "cans", field: "narrative", value: text, source: { kind: "staff", ref: "Accepted CANS evidence on this record" }, confidence: "medium", agent, at: now(), status: "pending" }],
       }));
       return sid;
     },

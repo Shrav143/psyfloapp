@@ -57,7 +57,7 @@ export function gateCleared(r: IntakeRecord, g: TaskGate, now: number): boolean 
     case "pathway":
       return r.pathways.some((p) => p.status === "selected") || (r.pathways.length > 0 && r.pathways.every((p) => p.status === "not_selected"));
     case "handoff":
-      return r.handoff.status === "ready" || r.handoff.status === "in_new_case";
+      return r.handoff.status === "ready" || r.handoff.status === "in_new_case" || r.handoff.status === "sent";
     case "assessment":
       return r.assessment.status === "signed";
     case "cans":

@@ -10,7 +10,8 @@ import type { AppState } from "./index";
 
    Only what differs from the seed is written: the records a person changed or created (the whole record, with its configuration, instruments,
    care plan, consents, audit trail and where they left off), the ones they removed, the legacy roster and plan readiness when changed, the counter
-   that numbers new intakes, and the New Authorization drafts when the cases store has them. A change back to the seed writes nothing, so
+   that numbers new intakes, the New Authorization drafts when the cases store has them, and the requests signed and sent in New Authorization after the demo started with what shows them
+   again after a reload (their queue rows, the numbers that name the next request, the coverage checks and the work done on their case pages). A change back to the seed writes nothing, so
    "Reset demo data" needs no special case: the key is removed when nothing differs. */
 
 /** The version is part of the key: a new build that changes the saved shape uses a new key, and an older save is left alone. */
@@ -19,7 +20,19 @@ export const PERSIST_VERSION = 10;
 export const DEBOUNCE_MS = 400;
 
 /** The parts of the app state that are saved. */
-export type Persisted = Pick<AppState, "intakes" | "intakeCounter" | "legacyRoster" | "planReadiness"> & { caseDrafts?: { id: string }[]; referralDrafts?: { id: string }[]; referralDraftCounter?: number };
+export type Persisted = Pick<AppState, "intakes" | "intakeCounter" | "legacyRoster" | "planReadiness"> & {
+  caseDrafts?: { id: string }[];
+  referralDrafts?: { id: string }[];
+  referralDraftCounter?: number;
+  /** The Dashboard's requests, the Authorizations queue's rows, the ids already used for requests, the coverage checks and the per-request work. Only what was added after the seed is saved. */
+  requests?: { id: string; caseId?: string }[];
+  queueItems?: { id: string }[];
+  caseSentToday?: string[];
+  caseSeq?: number;
+  verifications?: Record<string, unknown>;
+  queueCases?: Record<string, unknown>;
+  clinicalContext?: Record<string, string[]>;
+};
 type Keyed = { id: string };
 
 export interface Payload {
@@ -32,6 +45,14 @@ export interface Payload {
   intakeCounter?: number;
   legacyRoster?: unknown[];
   planReadiness?: unknown[];
+  /** Requests and queue rows added after the seed, newest first as they sit in the store. */
+  requests?: { added: Keyed[] };
+  queueItems?: { added: Keyed[] };
+  caseSentToday?: string[];
+  caseSeq?: number;
+  verifications?: Record<string, unknown>;
+  queueCases?: Record<string, unknown>;
+  clinicalContext?: Record<string, string[]>;
 }
 
 /* ------------------------------------------------------------------ storage */
@@ -109,6 +130,36 @@ export function buildPayload(current: Persisted, base: Persisted, savedAt: numbe
       any = true;
     }
   }
+  /* Requests sent in New Authorization: the ones the seed does not have, with what shows them (queue row, the numbers that name the next one, their coverage check and case-page work). */
+  if (Array.isArray(current.requests) && Array.isArray(base.requests)) {
+    const seen = new Set(base.requests.map((r) => r.id));
+    const added = current.requests.filter((r) => !seen.has(r.id));
+    if (added.length) {
+      out.requests = { added };
+      const ids = new Set(added.flatMap((r) => [r.id, r.caseId ?? r.id]));
+      if (Array.isArray(current.queueItems) && Array.isArray(base.queueItems)) {
+        const queued = new Set(base.queueItems.map((i) => i.id));
+        const rows = current.queueItems.filter((i) => !queued.has(i.id));
+        if (rows.length) out.queueItems = { added: rows };
+      }
+      const mine = <T,>(rec: Record<string, T> | undefined, baseRec: Record<string, T> | undefined): Record<string, T> | undefined => {
+        const picked = Object.entries(rec ?? {}).filter(([k]) => ids.has(k) && !(baseRec && k in baseRec));
+        return picked.length ? Object.fromEntries(picked) : undefined;
+      };
+      out.verifications = mine(current.verifications, base.verifications);
+      out.queueCases = mine(current.queueCases, base.queueCases);
+      out.clinicalContext = mine(current.clinicalContext, base.clinicalContext);
+      any = true;
+    }
+  }
+  if (Array.isArray(current.caseSentToday) && Array.isArray(base.caseSentToday) && JSON.stringify(current.caseSentToday) !== JSON.stringify(base.caseSentToday)) {
+    out.caseSentToday = current.caseSentToday;
+    any = true;
+  }
+  if (current.caseSeq !== undefined && current.caseSeq !== base.caseSeq) {
+    out.caseSeq = current.caseSeq;
+    any = true;
+  }
   return any ? out : null;
 }
 
@@ -117,6 +168,10 @@ const isObj = (v: unknown): v is Record<string, unknown> => typeof v === "object
 const usableRecord = (v: unknown): v is IntakeRecord =>
   isObj(v) && typeof v.id === "string" && ["documents", "suggestions", "tasks", "audit"].every((k) => Array.isArray(v[k])) && isObj(v.referral) && isObj(v.profile) && isObj(v.assessment);
 const usableKeyed = (v: unknown): v is Keyed => isObj(v) && typeof v.id === "string";
+/** A saved request is used only when it has what the Dashboard, the worklist and the case page read. */
+const usableRequest = (v: unknown): v is NonNullable<Persisted["requests"]>[number] =>
+  isObj(v) && typeof v.id === "string" && typeof v.caseId === "string" && typeof v.payerId === "string" && typeof v.program === "string" && typeof v.stage === "string" && isObj(v.patient) && Array.isArray(v.events);
+const objectOf = (v: unknown): Record<string, unknown> => (isObj(v) ? v : {});
 
 function mergeById<T extends Keyed>(seed: T[], saved: { order?: unknown; changed?: unknown; removed?: unknown } | undefined, usable: (v: unknown) => v is T): T[] {
   if (!saved) return seed;
@@ -143,6 +198,30 @@ export function applyPayload(seed: Persisted, raw: unknown): Persisted {
   if (typeof p.intakeCounter === "number" && p.intakeCounter > seed.intakeCounter) next.intakeCounter = p.intakeCounter;
   if (Array.isArray(p.legacyRoster)) next.legacyRoster = p.legacyRoster as Persisted["legacyRoster"];
   if (Array.isArray(p.planReadiness)) next.planReadiness = p.planReadiness as Persisted["planReadiness"];
+  /* Requests sent after the seed come back in front, as a new request does; their queue rows come back at the end. A seed record is never replaced. */
+  if (Array.isArray(seed.requests) && isObj(p.requests) && Array.isArray(p.requests.added)) {
+    const have = new Set(seed.requests.map((r) => r.id));
+    const added = p.requests.added.filter(usableRequest).filter((r) => !have.has(r.id));
+    if (added.length) next.requests = [...added, ...seed.requests];
+  }
+  if (Array.isArray(seed.queueItems) && isObj(p.queueItems) && Array.isArray(p.queueItems.added)) {
+    const have = new Set(seed.queueItems.map((r) => r.id));
+    const added = p.queueItems.added.filter(usableKeyed).filter((r) => !have.has(r.id));
+    if (added.length) next.queueItems = [...seed.queueItems, ...added];
+  }
+  if (Array.isArray(seed.caseSentToday) && Array.isArray(p.caseSentToday)) {
+    const have = new Set(seed.caseSentToday);
+    const more = p.caseSentToday.filter((x): x is string => typeof x === "string" && !have.has(x));
+    if (more.length) next.caseSentToday = [...seed.caseSentToday, ...more];
+  }
+  if (typeof p.caseSeq === "number" && p.caseSeq > (seed.caseSeq ?? 0)) next.caseSeq = p.caseSeq;
+  for (const k of ["verifications", "queueCases"] as const) {
+    const saved = objectOf(p[k]);
+    const keep = Object.entries(saved).filter(([key, v]) => isObj(v) && !(seed[k] && key in (seed[k] as object)));
+    if (keep.length) next[k] = { ...(seed[k] ?? {}), ...Object.fromEntries(keep) };
+  }
+  const ctx = Object.entries(objectOf(p.clinicalContext)).filter(([key, v]) => Array.isArray(v) && v.every((x) => typeof x === "string") && !(seed.clinicalContext && key in seed.clinicalContext));
+  if (ctx.length) next.clinicalContext = { ...(seed.clinicalContext ?? {}), ...(Object.fromEntries(ctx) as Record<string, string[]>) };
   return next;
 }
 
@@ -202,8 +281,11 @@ const draftsOf = (s: AppState): { id: string }[] | undefined => {
   const d = (s as unknown as Record<string, unknown>).caseDrafts;
   return Array.isArray(d) ? (d as { id: string }[]) : undefined;
 };
-const pick = (s: AppState): Persisted => ({ intakes: s.intakes, intakeCounter: s.intakeCounter, legacyRoster: s.legacyRoster, planReadiness: s.planReadiness, caseDrafts: draftsOf(s), referralDrafts: s.referralDrafts, referralDraftCounter: s.referralDraftCounter });
-const KEYS: (keyof Persisted)[] = ["intakes", "intakeCounter", "legacyRoster", "planReadiness", "caseDrafts", "referralDrafts", "referralDraftCounter"];
+const pick = (s: AppState): Persisted => ({
+  intakes: s.intakes, intakeCounter: s.intakeCounter, legacyRoster: s.legacyRoster, planReadiness: s.planReadiness, caseDrafts: draftsOf(s), referralDrafts: s.referralDrafts, referralDraftCounter: s.referralDraftCounter,
+  requests: s.requests, queueItems: s.queueItems, caseSentToday: s.caseSentToday, caseSeq: s.caseSeq, verifications: s.verifications, queueCases: s.queueCases, clinicalContext: s.clinicalContext,
+});
+const KEYS: (keyof Persisted)[] = ["intakes", "intakeCounter", "legacyRoster", "planReadiness", "caseDrafts", "referralDrafts", "referralDraftCounter", "requests", "queueItems", "caseSentToday", "caseSeq", "verifications", "queueCases", "clinicalContext"];
 const changedKeys = (a: Persisted, b: Persisted): (keyof Persisted)[] => KEYS.filter((k) => a[k] !== b[k]);
 
 let active: { handle: PersistHandle; store: StoreLike; storage: Kv | null; baseline: Persisted; initial: AppState } | null = null;
@@ -224,6 +306,8 @@ export function initPersist(store: StoreLike, o: { storage?: Kv | null; debounce
       const merged = applyPayload(baseline, raw);
       const patch: Record<string, unknown> = {};
       for (const k of changedKeys(merged, baseline)) patch[k] = merged[k];
+      /* The Eligibility & Benefits list is the coverage checks' rows, kept in step with them (store/eligibility.ts). */
+      if (patch.verifications) patch.ebPatients = Object.values(patch.verifications as AppState["verifications"]).map((r) => r.row);
       if (Object.keys(patch).length) store.setState(patch as Partial<AppState>);
     }
   }

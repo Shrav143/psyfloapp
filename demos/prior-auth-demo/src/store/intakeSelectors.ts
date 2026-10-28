@@ -39,7 +39,7 @@ export const QUEUE_CARDS: QueueCard[] = [
   { id: "needs_info", label: "Awaiting Information", status: "needs_info", line: "Waiting on the referrer" },
   { id: "assessment", label: "Assessments In Progress", status: "assessment", line: "Started, not yet signed" },
   { id: "clinical_review", label: "Clinical Review Needed", status: "clinical_review", line: "A clinician reviews next" },
-  { id: "care_planning", label: "Ready for Care Planning", status: "care_planning", line: "Assessment signed" },
+  { id: "care_planning", label: "Ready for Care Planning", status: "care_planning", line: "Assessment signed off" },
   { id: "ready_for_auth", label: "Ready for Authorization", status: "ready_for_auth", line: "Care plan approved" },
 ];
 /** The cards of the Active Intakes page: the four statuses that follow the work. */

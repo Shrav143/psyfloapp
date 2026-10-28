@@ -115,6 +115,8 @@ export interface PsyRequest {
   episodeId?: string;
   authorizationId?: string;
   verificationId?: string;
+  /** Set when New Authorization prepared the request from an intake record (IN-…). Its clinical picture comes from that record, never from the demo's canned chart. */
+  intakeId?: string;
   events: RequestEvent[];
 }
 

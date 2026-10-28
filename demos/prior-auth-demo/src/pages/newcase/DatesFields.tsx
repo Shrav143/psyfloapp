@@ -9,7 +9,7 @@ const mdy = (iso: string): string => {
   return `${m}/${d}/${y}`;
 };
 
-/** The start and the end of the dates a request covers. The end is optional: left empty, the case asks for the level of care's usual length.
+/** The start and the end of the dates a request covers. The end is optional: left empty, the case asks for the demo's default length for the level of care (a demo default, never a payer's limit).
     The dates feed the duplicate check and the verification, which checks coverage for these dates. */
 export function DatesFields({ draft, from, to, required }: { draft: CaseDraft; from: string; to: string; /** The end date is needed (dates of service). */ required?: boolean }) {
   const patch = useStore((s) => s.patchCaseDraft);
@@ -25,7 +25,7 @@ export function DatesFields({ draft, from, to, required }: { draft: CaseDraft; f
         label={to}
         required={required}
         error={bad ? "The end is before the start." : undefined}
-        hint={!required && draft.program && usual && !draft.endDate ? (days !== null ? `Empty: the usual ${days} days, through ${mdy(usual.to)}` : "Add the last date the service plan covers") : undefined}
+        hint={!required && draft.program && usual && !draft.endDate ? (days !== null ? `Empty: a demo default of ${days} days, through ${mdy(usual.to)}, not a payer limit` : "Add the last date the service plan covers") : undefined}
       >
         <TextInput type="date" value={draft.endDate ?? ""} min={draft.startDate || undefined} onChange={(e) => patch(draft.id, { endDate: e.target.value || undefined })} />
       </Field>

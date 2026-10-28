@@ -20,6 +20,8 @@ export function GateCard({ record, now }: { record: IntakeRecord; now: number })
   const nav = useNavigate();
   const prepare = useStore((s) => s.prepareAuthorization);
   const draftId = useStore((s) => s.caseDrafts.find((d) => d.intakeId === record.id && !d.sent)?.id);
+  /* A request already signed and sent from this intake: the gate points at it instead of offering a second Prepare Authorization. */
+  const sentId = record.handoff.status === "sent" ? record.handoff.requestId : undefined;
   const readiness = useMemo(() => dualReadiness(record, now), [record, now]);
   const kind = kindOfIntake(record);
   const ready = clinicallyReady(record, now);
@@ -54,13 +56,15 @@ export function GateCard({ record, now }: { record: IntakeRecord; now: number })
           {closed ? <p data-testid="ended-note" className="text-[13px] text-ink2">This intake ended without an authorization{record.triageNote ? `: ${record.triageNote}` : ""}. Nothing was sent to a payer. Reopen it from Actions if that changes.</p> : null}
           {existing ? <EpisodeLink record={record} /> : null}
           <div className="flex flex-wrap items-center gap-2 pt-1">
-            {draftId ? (
+            {sentId && !draftId ? (
+              <Button variant="primary" trailing={ArrowRight} onClick={() => nav(paths.case(sentId))} data-open-request>Open the request {sentId}</Button>
+            ) : draftId ? (
               <Button variant="primary" trailing={ArrowRight} onClick={() => nav(paths.newCase({ draft: draftId, intake: record.id, ...(record.episodeId ? { episode: record.episodeId } : {}) }))}>Open the authorization draft</Button>
             ) : (
               <Button variant="primary" icon={FilePlus2} disabled={!kind || closed || external || !!why} onClick={go}>Prepare Authorization</Button>
             )}
-            {!closed && !draftId ? <Button icon={XCircle} onClick={() => setEnding(true)} data-end-without-auth>End without an authorization</Button> : null}
-            {draftId ? <span className="text-[13px] text-muted">Draft {draftId} is linked to this intake.</span> : why ? <span data-testid="prepare-why" className="basis-full text-[13px] text-mid-ink">{why}</span> : null}
+            {!closed && !draftId && !sentId ? <Button icon={XCircle} onClick={() => setEnding(true)} data-end-without-auth>End without an authorization</Button> : null}
+            {sentId && !draftId ? <span className="text-[13px] text-muted">Signed and sent as {sentId} (simulated). A continued stay or a change starts from Ongoing care on the Overview.</span> : draftId ? <span className="text-[13px] text-muted">Draft {draftId} is linked to this intake.</span> : why ? <span data-testid="prepare-why" className="basis-full text-[13px] text-mid-ink">{why}</span> : null}
           </div>
           <p className="text-[12px] text-muted">Prepare Authorization opens a draft in New Authorization with the person, the selected service and the documents already on this record. A person reviews it and signs it there.</p>
         </div>

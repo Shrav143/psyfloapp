@@ -81,7 +81,7 @@ export const SCENARIOS: DemoScenario[] = [
   {
     key: "D", label: "SUD residential", intakeId: "IN-3110", programId: "sud-res", purposeId: "initial", site: "A",
     shows: "ASAM, withdrawal and medical review, residential admission review and authorization.",
-    stage: "Ready for authorization. Every required module signed, care plan approved; phone number, provider participation and two documents open.",
+    stage: "Ready for authorization. Every required module and the overall sign-off signed, care plan approved; phone number, provider participation and two documents open.",
     walk: [
       { label: "Open the referral", path: at("IN-3110", "referral"), doing: "Three documents: the referral, an emergency department note and a withdrawal management summary." },
       { label: "See the evidence trail in the ASAM", path: at("IN-3110", "m:asam"), doing: "Signed by Dr. Rivera. A finding that came from a document cites it, and the header counts five pieces of evidence decided. Activity lists each decision: edited, accepted or rejected." },
@@ -96,13 +96,13 @@ export const SCENARIOS: DemoScenario[] = [
   {
     key: "E", label: "Mental health PHP", intakeId: "IN-3115", programId: "mh-php", purposeId: "initial", site: "A",
     shows: "Psychiatric assessment, functional impairment, PHP medical necessity documentation and authorization.",
-    stage: "Care planning. Assessment signed; draft care plan with three options and no selection; coverage confirmed with the plan.",
+    stage: "Care planning. Assessment signed off; draft care plan with three options and no selection; coverage confirmed with the plan.",
     walk: [
       { label: "Open the referral", path: at("IN-3115", "referral"), doing: "A hospital step-down summary recommends a partial hospitalization program. A request for the discharge medication list waits for approval." },
       { label: "Review the signed assessment", path: at("IN-3115", "clinical"), doing: "The clinical interview is attested. Psyflo wrote none of it." },
       { label: "Open the psychiatric assessment", path: at("IN-3115", "m:psychiatric"), doing: "Signed, with the hospital's sentences it was drafted from. An inpatient assessment is found for reference." },
       { label: "Review the PHQ-9 result", path: at("IN-3115", "m:phq9"), doing: "The clinician typed the result from the form they gave. A clinician signs it. Psyflo scores nothing." },
-      { label: "Sign off the assessment", path: at("IN-3115", "signoff"), doing: "Both tracks side by side: clinical readiness waits on the care plan and the service selection." },
+      { label: "Check the sign-off and both tracks", path: at("IN-3115", "signoff"), doing: "Dr. Rivera signed off the assessment, so the status is Care planning. Clinical readiness waits on the care plan and the service selection." },
       { label: "Choose the service", path: at("IN-3115", "care"), doing: "Three options: PHP, IOP and outpatient. Select PHP as the clinician and write the rationale, frequency and duration." },
       { label: "Approve the care plan", path: at("IN-3115", "care"), doing: "Approve it as the clinician. The status moves to Ready for authorization." },
       { label: "Prepare Authorization", path: paths.newCase({ intake: "IN-3115" }), doing: "New Authorization opens with the intake carried over. Nothing is submitted." },
@@ -115,7 +115,7 @@ export const EXTRA_SCENARIOS: DemoScenario[] = [
   {
     key: "F", label: "CSC, safety alert", intakeId: "IN-3103", programId: "csc", purposeId: "initial", site: "A",
     shows: "A hospital referral with an open safety alert a clinician must review.",
-    stage: "Clinical review. Safety alert open; discharge summary and an outgoing referral.",
+    stage: "New. Safety alert open until a clinician reviews it; discharge summary and an outgoing referral.",
     walk: [
       { label: "Open the safety alert", path: at("IN-3103", "referral"), doing: "A clinician reviews the alert and records what they did. Psyflo never decides that a person is safe." },
       { label: "Read the discharge summary", path: at("IN-3103", "documents"), doing: "The sentence the alert came from is highlighted in the source document." },

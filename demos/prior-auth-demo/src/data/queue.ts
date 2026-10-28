@@ -69,7 +69,7 @@ export const STATUS_HELP: { chip: string; means: string }[] = [
 /** The five request types people filter by. The demo's own types map onto them; the rest (peer-to-peer, appeal, resubmission) show only under All. */
 export type RequestKind = "initial" | "concurrent" | "reauth" | "modify" | "retro";
 export const REQUEST_KINDS: RequestKind[] = ["initial", "concurrent", "reauth", "modify", "retro"];
-export const REQUEST_KIND_LABEL: Record<RequestKind, string> = { initial: "Initial", concurrent: "Concurrent review", reauth: "Reauthorization", modify: "Modification / extension", retro: "Retrospective" };
+export const REQUEST_KIND_LABEL: Record<RequestKind, string> = { initial: "Initial", concurrent: "Concurrent review", reauth: "Reauthorization", modify: "Modification or extension", retro: "Retrospective" };
 export function requestKindOf(type: RequestType): RequestKind | null {
   switch (type) {
     case "Initial request":

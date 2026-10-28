@@ -104,6 +104,9 @@ export const caseIdOf = (id: string, requests: PsyRequest[]): string => (request
 export function resolveCase(id: string, requests: PsyRequest[]): CaseDetail | null {
   if (id === R1042_DETAIL.id) return R1042_DETAIL;
   const req = requests.find((r) => r.id === id) ?? requests.find((r) => r.caseId === id);
+  /* A request prepared from an intake record has no generated case detail: the template's diagnosis, screener scores, ratings and criteria belong to a demo chart, not to this person.
+     Its page is pages/authorizations/IntakeRequestPage.tsx. */
+  if (req?.intakeId) return null;
   const item: QueueItem | undefined = QUEUE_ITEMS.find((i) => i.id === id) ?? QUEUE_ITEMS.find((i) => i.id === req?.id);
   if (item) return buildFromSeed({ ...seedFromItem(item), id, requestId: req?.id ?? item.id, denialId: req?.track === "denial" ? req.id : undefined });
   /* The case model (chart, criteria, approval chance) covers the four core levels of care. A request for another Virginia service has no case detail:

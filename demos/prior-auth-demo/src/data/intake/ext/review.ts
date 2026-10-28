@@ -1,13 +1,13 @@
 import { HOUR } from "@/lib/time";
-import type { CarePlan } from "../../assess/types";
+import type { CarePlan, InstrumentInstance } from "../../assess/types";
 import type { AgentTask, AuditEvent, FieldValue, IntakeRecord, SourceRef } from "../types";
 import { withAssessment, withConfig, withConsents, withDiagnosis, withOptions, withSignedModules, type CareSeed } from "./reviewCare";
 
 /* Seed content for documentation and review, the assistant panel and the transition view. Applied last, after every other section's seed:
    it fills only what is still empty (and marks IN-3110's extracted plan as verified), so it never overrides another section's data.
-   - IN-3110 (ARTS residential) is the demo's ready-for-authorization record: every required assessment module is signed and the care plan is approved, so Prepare Authorization is one click away.
+   - IN-3110 (ARTS residential) is the demo's ready-for-authorization record: every required assessment module and the overall sign-off are signed and the care plan is approved, so Prepare Authorization is one click away.
      One required field (phone) is left missing to show that a complete intake and a ready handoff are different things.
-   - IN-3115 (mental health PHP) arrives with the assessment signed and a draft care plan with no service selected: a clinician chooses live.
+   - IN-3115 (mental health PHP) arrives with the assessment and its overall sign-off signed and a draft care plan with no service selected: a clinician chooses live.
    - Tasks that wait for a person get a gate, so they close once the decision is made where it belongs. */
 
 const WHO = "dr";
@@ -86,6 +86,25 @@ const E_SEED: CareSeed = {
     "psychiatric.medications": "Sertraline 150 mg daily and mirtazapine 15 mg at night (synthetic).", "acute-symptoms.onset": "September 2026", "acute-symptoms.course": "Worsened over three weeks before the admission and improved in hospital.",
   },
 };
+/* IN-2042 (L.V., 55, ARTS partial hospitalization): the demo's Clinical review example. The clinical assessment and every required module are signed, and the overall sign-off is not,
+   so the intake waits in Clinical review for a clinician to sign off the whole assessment. What it says comes from the referral. */
+const F_SEED: CareSeed = {
+  programId: "sud-php", population: "adult", setting: "outpatient", levels: ["Partial hospitalization", "PHP"],
+  texts: {
+    "sudhx.substances": "Alcohol, about four glasses of wine daily for five years. No other substances reported.", "sudhx.frequency": "Daily", "sudhx.lastuse": "2026-10-16",
+    "asam.d1.findings": "Last drink 10/16. A taper at the clinic did not hold.", "asam.d2.findings": "Anxiety, treated with buspirone 10 mg twice daily.",
+    "asam.d5.findings": "Lives with her husband, who supports treatment. Works evenings.",
+    "asam.loc.reason": "The clinician reviewed the dimensions and considered partial hospitalization and intensive outpatient. A taper at the clinic did not hold and she needs a structured day program that fits her evening job.",
+    "re.housing": "Lives with her husband (synthetic).", "re.supports": "Her husband supports treatment.", "re.barriers": "Works evenings; needs a day program that fits that schedule.",
+    "treatment-history.services": "A taper at the primary care clinic.", "treatment-history.outcomes": "The taper did not hold.",
+    "functional-assessment.daily": "Keeps her job on an evening schedule; daily alcohol use with rising anxiety.", "functional-assessment.impact": "Anxiety and drinking make the evening schedule hard to keep.",
+    "loc-review.rationale": "The clinician reviewed the assessment and considered partial hospitalization and intensive outpatient.",
+  },
+};
+const F_ASSESSMENT = {
+  presenting: "Daily alcohol use with rising anxiety; a taper at the clinic did not hold.", symptoms: "Anxiety, treated with buspirone 10 mg twice daily.", functional: "Keeps her job on an evening schedule; needs a structured day program.",
+  safety: "Screened by the clinician at the interview; the referral documents no thoughts of self-harm. Documented by the clinician; Psyflo does not decide safety.", needs: "The clinician is considering partial hospitalization and intensive outpatient.",
+};
 const E_ASSESSMENT = {
   presenting: "Step-down after an inpatient stay for major depression.", symptoms: "Low mood most days, poor sleep, low energy.", functional: "Off work since September; needs help with daily tasks.",
   safety: "Screened by the clinician at the interview. Documented in the clinical assessment; Psyflo does not decide safety.", needs: "The clinician is considering partial hospitalization and intensive outpatient.",
@@ -111,12 +130,21 @@ function carePlanE(r: IntakeRecord): CarePlan {
   };
 }
 
+/** The overall sign-off: Dr. Rivera signed the whole assessment once the clinical assessment and every required module were signed, ahead of care planning
+    (the plan's sign-off rule). It is the "review-signoff" instance the Review & sign-off section writes, version 1, with the audit event its dialog writes. */
+function withOverallSignoff(r: IntakeRecord, at: number): IntakeRecord {
+  if (r.instruments?.["review-signoff"]) return r;
+  const signed: InstrumentInstance = { moduleId: "review-signoff", version: 1, status: "signed", fields: {}, notes: "", evidence: [], history: [], startedAt: at, updatedAt: at, reviewedBy: WHO, signedBy: WHO, signedAt: at };
+  return { ...r, instruments: { ...(r.instruments ?? {}), "review-signoff": signed }, audit: [...r.audit, ev(at, WHO, "Sign off the assessment", "PsyD, licensed clinical psychologist", false, "assessment")] };
+}
+
 function scenarioD(r: IntakeRecord): IntakeRecord {
   const at = r.createdAt + 3 * HOUR;
   let x = readyRecord(r);
   x = withDiagnosis(x, "F10.20 Alcohol dependence, uncomplicated (documented by the referrer)");
   x = withConfig(x, D_SEED);
   x = withSignedModules(x, D_SEED);
+  x = withOverallSignoff(x, at - 10);
   x = withConsents(x, ["treatment", "payment", "part2_disclosure"], "Anthem HealthKeepers Plus");
   x = withOptions(x, ["arts-php", "arts-iop"], { "arts-php": { status: "under_review", decidedBy: WHO, decidedAt: at }, "arts-iop": { status: "not_selected", decidedBy: WHO, decidedAt: at, note: "Two outpatient episodes did not hold." } });
   return {
@@ -124,12 +152,23 @@ function scenarioD(r: IntakeRecord): IntakeRecord {
     audit: [...x.audit, ev(at - HOUR, "ml", "Configured the intake", "Initial assessment · SUD residential treatment", false, "assessment"), ev(at, WHO, "Signed the required assessment modules", undefined, false, "assessment"), ev(at + 20, WHO, "Approved the care plan, version 1", "ARTS residential. Approval is not a payer decision.", false, "pathway")],
   };
 }
+/** The Clinical review example: everything required is signed except the overall sign-off. */
+function awaitingSignoff(r: IntakeRecord): IntakeRecord {
+  const at = r.createdAt + 3 * HOUR;
+  let x = withConfig(r, F_SEED);
+  x = withAssessment(x, F_ASSESSMENT);
+  x = withSignedModules(x, F_SEED);
+  x = withConsents(x, ["treatment", "payment", "part2_disclosure"], "Humana Healthy Horizons in Virginia");
+  x = withOptions(x, ["arts-iop"]);
+  return { ...x, audit: [...x.audit, ev(at - HOUR, "ml", "Configured the intake", "Initial assessment · SUD partial hospitalization", false, "assessment"), ev(at, WHO, "Signed the required assessment modules", undefined, false, "assessment")] };
+}
 function scenarioE(r: IntakeRecord): IntakeRecord {
   const at = r.createdAt + 3 * HOUR;
   let x = withDiagnosis(r, "F33.2 Major depressive disorder, recurrent, severe (documented by the discharging clinician)");
   x = withConfig(x, E_SEED);
   x = withAssessment(x, E_ASSESSMENT);
   x = withSignedModules(x, E_SEED);
+  x = withOverallSignoff(x, at - 10);
   x = withConsents(x, ["treatment", "payment"], "Virginia Medicaid fee-for-service");
   x = withOptions(x, ["mh-iop", "opt"]);
   return { ...x, carePlan: x.carePlan ?? carePlanE(x), audit: [...x.audit, ev(at - HOUR, "jp", "Configured the intake", "Initial assessment · Mental health PHP", false, "assessment"), ev(at, WHO, "Signed the required assessment modules", undefined, false, "assessment")] };
@@ -141,6 +180,7 @@ export const extendReview = (records: IntakeRecord[]): IntakeRecord[] =>
   records.map((r) => {
     if (r.id === "IN-3110") return scenarioD(r);
     if (r.id === "IN-3115") return scenarioE(r);
+    if (r.id === "IN-2042") return awaitingSignoff(r);
     if (r.id === "IN-3101") {
       return {
         ...r,

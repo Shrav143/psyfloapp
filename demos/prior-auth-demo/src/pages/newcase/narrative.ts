@@ -3,8 +3,10 @@
 import type { CaseDraft, DocSlotId, NarrativeSection } from "@/data/cases";
 import { forProgram, programText } from "@/data/programTables";
 import { isCoreProgram, PROGRAM_LABEL, type Program, type CoreProgram } from "@/data/types";
+import type { IntakeRecord } from "@/data/intake/types";
 import { CHANGE_LABEL } from "./authType";
 import type { RecAdd } from "./fromRequest";
+import { recordNarrative } from "./recordNarrative";
 
 const LEVEL_HEADING: Record<CoreProgram, string> = {
   RES: "Why a lower level of care is not safe",
@@ -107,10 +109,12 @@ function contextSection(context: string[]): NarrativeSection {
 
 /** The one summary of a case, read by Review & submit and by the case page's Draft tab: the edited text when there is one, else what Scribe writes
     from the draft, then the context added for the request. */
-export function narrativeOf(d: CaseDraft, context: string[] = [], adds: RecAdd[] = []): NarrativeSection[] {
+export function narrativeOf(d: CaseDraft, context: string[] = [], adds: RecAdd[] = [], intake?: IntakeRecord): NarrativeSection[] {
   const folded = d.narrative ? d.narrativeIncludes ?? [] : [];
   const more = adds.filter((a) => !folded.includes(a.recId));
-  const base = (d.narrative ?? buildNarrative(d)).filter((s) => !s.fixed).map((s) => {
+  /* A request prepared from an intake record is summarized from that record alone (pages/newcase/recordNarrative.ts); the canned chart text below is never used for it. */
+  const fresh = d.intakeId ? (intake ? recordNarrative(d, intake) : []) : buildNarrative(d);
+  const base = (d.narrative ?? fresh).filter((s) => !s.fixed).map((s) => {
     const own = more.filter((a) => a.section === s.id);
     return own.length ? { ...s, text: [s.text, ...own.map((a) => a.text)].join(" ") } : s;
   });

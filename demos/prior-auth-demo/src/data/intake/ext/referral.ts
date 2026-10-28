@@ -95,6 +95,17 @@ function decided(r: IntakeRecord, d: NonNullable<IntakeRecord["referralDecision"
   };
 }
 
+/** A referral a person closed with a reason: the Closed status has an example in the queue, next to a redirected and a declined one. */
+function closed(r: IntakeRecord, at: number, reason: string, note?: string): IntakeRecord {
+  return {
+    ...r,
+    triage: "closed",
+    triageNote: reason,
+    referralDecision: { kind: "closed", at, by: r.assignedTo, reason, note },
+    audit: [...r.audit, { id: `ev-ref-${r.id}-closed`, at, actor: r.assignedTo, action: "Closed the referral", detail: reason, section: "referral" }],
+  };
+}
+
 export const extendReferral = (records: IntakeRecord[]): IntakeRecord[] =>
   records.map((r0) => {
     const r = withAttributes(r0);
@@ -113,6 +124,8 @@ export const extendReferral = (records: IntakeRecord[]): IntakeRecord[] =>
           triageNote: "On the waitlist for ACT, position 1",
           waitlist: { programId: "act", label: serviceById("act").short, since: r.createdAt + 3 * HOUR, by: r.assignedTo, position: 1, note: "No open caseload place at the time of acceptance (demo configuration)" },
         };
+      /* Closed by a person with a reason: the family withdrew the referral. */
+      case "IN-2052": return closed(r, r.createdAt + HOUR, "The family withdrew the referral and chose a private provider. Nothing is needed from the clinic.");
       /* A redirect, with the notice already sent (simulated). */
       case "IN-3124":
         return decided(

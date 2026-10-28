@@ -14,6 +14,7 @@ import { CaseHeader } from "./CaseHeader";
 import { CaseHistory } from "./CaseHistory";
 import { TABS, tabOf, type CaseCtx, type TabId } from "./caseTypes";
 import { reviewPath } from "./reviewAndSign";
+import { IntakeRequestPage } from "./IntakeRequestPage";
 import { ServiceCasePage } from "./ServiceCasePage";
 import { ActionsTab } from "./tabs/ActionsTab";
 import { CriteriaRiskTab } from "./tabs/CriteriaRiskTab";
@@ -78,11 +79,11 @@ export default function CasePage() {
   const detail = useMemo(() => (base ? withFocus(base, work) : null), [base, work]);
   const live = useMemo(() => (base ? liveView(base, requests) : null), [base, requests]);
   if (!detail) {
-    // A request for a Virginia service (CPST, ACT, ABA and the rest) has no case page of its own: its summary page shows what is known.
-    const service = requests.find((r) => (r.id === id || r.caseId === id) && !isCoreProgram(r.program));
+    // A request for a Virginia service (CPST, ACT, ABA and the rest) has no case page of its own: its summary page shows what is known. A request prepared from an intake record shows that record's own content instead.
+    const service = requests.find((r) => (r.id === id || r.caseId === id) && (!isCoreProgram(r.program) || r.intakeId));
     if (service) {
       return scope.has(service.caseId) ? (
-        <ServiceCasePage request={service} />
+        service.intakeId ? <IntakeRequestPage request={service} /> : <ServiceCasePage request={service} />
       ) : (
         <Page>
           <OutOfSite id={service.caseId} what="case" />

@@ -1,4 +1,5 @@
 import { cx, mx, type Block, type TurnSpec } from "./scriptBlocks";
+import { CANS_CATEGORY } from "./scriptTypes";
 
 /* Interview blocks for mental health, community, children and coordinated specialty care programs. See scriptBlocks.ts. */
 
@@ -87,6 +88,14 @@ export const YOUTH_BLOCKS: Block[] = [
     turns: (p) => needs(p.youth, (y) => [
       T("clin", "Is it all right with you if we talk with the school counselor? I'd need a signed release."),
       T("cg", y.coordination, { note: { plan: y.coordinationNote }, fields: [mx("school-family", ["contact", "release", "coordination", "school", "family"], "Contact with the school", y.coordinationNote)], missing: ["School release of records (signature)"] }),
+    ]),
+  },
+  /* The last topic of the youth interview: statements the clinician may want when they complete the CANS, filed as pending evidence in the CANS module (played only when the module is in use). */
+  {
+    id: "youth-cans", label: CANS_CATEGORY, modules: ["cans"], order: 240,
+    turns: (p) => needs(p.youth, (y) => [
+      T("clin", "I'm also noting what you tell me that the clinician may want when they complete the CANS. These are statements only: nothing is rated, and nothing goes into the CANS until a person decides. What else helps, or gets in the way, day to day?"),
+      T("cg", y.cans, { fields: [cx("Functioning", y.cansFunctioning), cx("Family", y.cansFamily)] }),
     ]),
   },
 ];

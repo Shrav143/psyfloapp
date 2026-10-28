@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { Card, CardHeader, Pill } from "@/components/ui";
 import { programById } from "@/data/assess/programs";
+import { documentsOnRecord } from "@/data/assess/readiness";
 import { CONSENT_LABEL, type ConsentEntry } from "@/data/assess/types";
 import { specOf } from "@/data/intake/fields";
 import { staffOf } from "@/data/intake/seed";
@@ -32,7 +33,7 @@ export function ReferralSummary({ record: r }: { record: IntakeRecord }) {
         <Row k="Source">{r.sourceOrg}</Row>
         <Row k="Received">{longDate(r.createdAt)} · {METHOD_LABEL[r.method]}</Row>
         <Row k="Reason">{reason ? <span className="line-clamp-3 font-normal">{reason}</span> : <span className="font-normal text-muted">Not entered yet</span>}</Row>
-        <Row k="Documents">{r.documents.length ? `${r.documents.length} on file` : "None on file"}</Row>
+        <Row k="Documents">{documentsOnRecord(r) ? `${documentsOnRecord(r)} on the record` : "None on the record"}</Row>
       </dl>
       <Open to={workspaceHref(r.id, { section: "referral" })}>Open the referral</Open>
     </Card>

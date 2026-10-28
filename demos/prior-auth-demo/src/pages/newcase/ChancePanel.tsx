@@ -29,10 +29,12 @@ export function NoChance() {
 }
 
 /** True when the draft is for a Virginia service, which has no approval chance. */
-export const noChanceFor = (d: Pick<CaseDraft, "program">): boolean => !!d.program && !isCoreProgram(d.program);
+export const noChanceFor = (d: Pick<CaseDraft, "program" | "intakeId">): boolean => !!d.intakeId || (!!d.program && !isCoreProgram(d.program));
 
 /** The approval chance: a ring that climbs as agents finish, where it started, the likely range and how many similar cases it rests on. */
 export function ChancePanel({ draft }: { draft: CaseDraft }) {
+  /* A request prepared from an intake record has no estimate at all (see RecordReadPanel), so nothing is drawn. */
+  if (draft.intakeId) return null;
   if (noChanceFor(draft)) return <NoChance />;
   const chance = currentChance(draft);
   const settled = draft.run.done >= FORECAST_STEP;

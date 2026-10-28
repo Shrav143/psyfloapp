@@ -205,12 +205,22 @@ export function requirementFor(serviceId: VaServiceId | "external", r: Pick<Inta
 /** The date a service's availability is judged on: the planned start, or the policy date when that is later (the post-transition environment is July 1, 2027). */
 export const availabilityDate = (r: IntakeRecord, now: number): number => Math.max(r.serviceDate, now);
 
-export function availabilityOf(serviceId: VaServiceId | "external", date: number): { ok: boolean | null; text: string } {
+export interface Availability {
+  ok: boolean | null;
+  text: string;
+  /** Why it is not available: "retired" (it ended before the date, so it cannot be selected) or "starts_later" (it starts after the date: selectable as preparation only). */
+  reason?: "retired" | "starts_later";
+}
+export function availabilityOf(serviceId: VaServiceId | "external", date: number): Availability {
   if (serviceId === "external") return { ok: null, text: "An external program confirms its own start date" };
   const s = serviceById(serviceId);
   if (availableOn(serviceId, date)) return { ok: true, text: s.status === "redesign" ? "Available in this policy period (starts July 1, 2027)" : s.status === "retiring" ? "Available until June 30, 2027" : "Available in this policy period" };
-  return { ok: false, text: s.status === "redesign" ? "Not available before July 1, 2027" : "Not available in this policy period: ended June 30, 2027" };
+  return s.status === "redesign"
+    ? { ok: false, text: "Not available before July 1, 2027", reason: "starts_later" }
+    : { ok: false, text: "Not available in this policy period: ended June 30, 2027", reason: "retired" };
 }
+/** A retired service is never an option a clinician can select: it is listed for the record, with the reason. */
+export const NOT_AVAILABLE_REASON = "Not available in this policy period";
 
 /** What the demo can say about the criteria that apply to a service. The licensed criteria are never loaded; a clinician confirms the level from names only. */
 export function criteriaNote(serviceId: VaServiceId | "external"): string {
@@ -226,7 +236,7 @@ export interface OptionEvidence { label: string; module?: ModuleId; source?: Sou
 export interface OptionView {
   pw: ServiceRecommendation;
   name: string;
-  availability: { ok: boolean | null; text: string };
+  availability: Availability;
   evidence: OptionEvidence[];
   missing: string[];
   requirement: RequirementState;

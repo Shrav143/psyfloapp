@@ -6,7 +6,7 @@ import { textNamesProgram } from "@/data/programTables";
 import type { Program, RequestType } from "@/data/types";
 import { plural } from "@/lib/format";
 import { toDate } from "@/lib/time";
-import { docEntries } from "./documents";
+import { docEntries, trackOfDraft } from "./documents";
 import type { PayerContext } from "./payerContext";
 
 export interface Backdating {
@@ -68,7 +68,7 @@ export function startDateIssue(d: Pick<CaseDraft, "startDate" | "type">, rules: 
 
 /** What the payer asks for that the case does not meet: required documents that are not in it (missing or marked not available) and a start date that reaches too far back. */
 export function unmetCount(d: CaseDraft, ctx: PayerContext, clock: number): number {
-  const lacking = docEntries(d.payerId, d.program, ctx.items).filter((r) => r.required && !d.documents.some((x) => x.slot === r.slot)).length;
+  const lacking = docEntries(d.payerId, d.program, ctx.items, trackOfDraft(d)).filter((r) => r.required && !d.documents.some((x) => x.slot === r.slot)).length;
   return lacking + (startDateIssue(d, ctx.rules, clock, "The payer")?.kind === "early" ? 1 : 0);
 }
 

@@ -2,7 +2,7 @@ import { useStore } from "@/store";
 import { runAgent } from "../lib/agents";
 import { findEvidence } from "./evidence";
 
-/** Starts the CANS Evidence Agent: it reads the record's documents, assessment fields and transcript and proposes statements for a person to keep or discard. */
+/** Starts the CANS Evidence Agent: it reads the record's documents, assessment fields and transcript and proposes statements for a person to accept or reject. */
 export function gatherEvidence(recordId: string) {
   const current = useStore.getState().intakes.find((x) => x.id === recordId);
   /* Nothing to review means nothing to approve: the task then ends as Done instead of waiting on a person. */
@@ -20,7 +20,7 @@ export function gatherEvidence(recordId: string) {
       const ids = s.proposeCansEvidence(recordId, found, "criteria");
       if (taskId) s.updateIntakeTask(recordId, taskId, { gate: { kind: "suggestions", sections: ["cans"], ids } });
       const docs = new Set(found.filter((f) => f.source.docId).map((f) => f.source.docId)).size;
-      return `Proposed ${found.length} statement${found.length === 1 ? "" : "s"} from ${docs} document${docs === 1 ? "" : "s"}${found.some((f) => f.source.kind !== "document") ? " and the record" : ""}. Each waits for a person to keep or discard it.`;
+      return `Proposed ${found.length} statement${found.length === 1 ? "" : "s"} from ${docs} document${docs === 1 ? "" : "s"}${found.some((f) => f.source.kind !== "document") ? " and the record" : ""}. Each waits for a person to accept or reject it.`;
     },
   });
 }

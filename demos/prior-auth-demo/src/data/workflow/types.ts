@@ -14,7 +14,7 @@ export const STAGE_LABEL: Record<Stage, string> = { intake: "Patient & Service",
 
 /** The five request types people choose in New Authorization and the queue filter ("initial", "concurrent", "reauth", "modify", "retro"). */
 export type RequestType = RequestKind;
-export const REQUEST_TYPE_LABEL: Record<RequestType, string> = { initial: "Initial authorization", concurrent: "Concurrent review", reauth: "Reauthorization", modify: "Modification / extension", retro: "Retroactive authorization" };
+export const REQUEST_TYPE_LABEL: Record<RequestType, string> = { initial: "Initial authorization", concurrent: "Concurrent review", reauth: "Reauthorization", modify: "Modification or extension", retro: "Retroactive authorization" };
 
 /* ------------------------------------------------------------------ nodes */
 export type NodeCategory = "flow" | "trigger" | "verification" | "documents" | "condition" | "rule" | "action" | "agent" | "integration";
