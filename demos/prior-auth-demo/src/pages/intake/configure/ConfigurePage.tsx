@@ -32,7 +32,7 @@ export default function ConfigurePage() {
       </Page>
     );
   }
-  if (!scope.sites.includes(record.site)) return <OutOfSite id={record.id} what="intake" />;
+  if (!scope.sites.includes(record.site)) return <OutOfSite id={record.id} what="intake" site={record.site} />;
   return <Loaded key={`${record.id}:${epoch}`} record={record} onDiscarded={() => setEpoch((e) => e + 1)} />;
 }
 

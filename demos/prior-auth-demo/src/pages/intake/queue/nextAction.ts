@@ -28,6 +28,9 @@ const REVIEW_LABEL: Record<IntakeSectionId, string> = {
 };
 
 const at = (r: IntakeRecord, section: string, panel?: "scribe" | "voice") => paths.intakeRecord(r.id, section, panel);
+/** The authorization step of an intake: its draft in New Authorization, or a new one from the intake. The same places the workspace header's next step opens. */
+const authorizationOf = (r: IntakeRecord): string =>
+  r.handoff.status === "in_new_case" ? (r.handoff.draftId ? paths.newCase({ draft: r.handoff.draftId }) : paths.newCase({ intake: r.id })) : paths.newCase({ intake: r.id, ...(r.episodeId ? { episode: r.episodeId } : {}) });
 const waitingOnReferrer = (r: IntakeRecord): boolean => r.tasks.some((t) => t.role === "coordination" && t.action === REPLY_TASK_ACTION && (t.status === "running" || t.status === "queued"));
 
 /** The modules a configured intake still has to get signed, in the plan's order: the required instruments and sections in use. */
@@ -56,8 +59,8 @@ function configuredNext(r: IntakeRecord, plan: AssessmentPlan | null, status: Tr
     return { label, to: at(r, sectionParam({ section: "instrument", module: next.id })), tone: s === "awaiting_review" ? "mid" : "neutral" };
   }
   if (r.carePlan?.status !== "approved") return { label: r.carePlan?.status === "draft" ? "Approve the care plan" : "Select the service and write the care plan", to: at(r, "care"), tone: "neutral" };
-  if (r.handoff.status === "in_new_case") return { label: "Open the authorization", to: at(r, "signoff"), tone: "good" };
-  return { label: status === "ready_for_auth" ? "Prepare the authorization" : "Review and hand off", to: at(r, "signoff"), tone: "good" };
+  if (r.handoff.status === "in_new_case") return { label: "Open the authorization", to: authorizationOf(r), tone: "good" };
+  return status === "ready_for_auth" ? { label: "Prepare the authorization", to: authorizationOf(r), tone: "good" } : { label: "Review and hand off", to: at(r, "signoff"), tone: "good" };
 }
 
 /** The one thing to do next on an intake, and where it is done. Safety comes first; then triage, contradictions, agent suggestions waiting for a
@@ -91,7 +94,7 @@ export function nextActionOf(r: IntakeRecord, status: TriageStatus, plan: Assess
   if (r.assessment.status === "awaiting_review") return { label: "Clinician sign-off", to: at(r, "clinical"), tone: "mid" };
   if (status === "clinical_review") return { label: "Clinical review", to: at(r, "clinical"), tone: "mid" };
   if (r.assessment.status === "in_progress") return { label: "Continue the assessment", to: at(r, "clinical"), tone: "neutral" };
-  if (r.handoff.status === "in_new_case") return { label: "Open the authorization", to: at(r, "signoff"), tone: "good" };
+  if (r.handoff.status === "in_new_case") return { label: "Open the authorization", to: authorizationOf(r), tone: "good" };
   if (r.handoff.status === "draft" || r.handoff.status === "ready") return { label: "Prepare handoff", to: at(r, "signoff"), tone: "good" };
   return { label: "Configure the intake", to: paths.configure(r.id), tone: "neutral" };
 }

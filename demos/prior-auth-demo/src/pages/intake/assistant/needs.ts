@@ -6,6 +6,7 @@ import { countBy, isOpen, type CheckItem, type Readiness } from "@/data/intake/c
 import { activeModuleIds } from "@/data/intake/scripts";
 import { ASSESSMENT_SECTIONS, SECTION_LABEL, type AgentTask, type IntakeRecord, type IntakeSectionId } from "@/data/intake/types";
 import type { AgentKey } from "@/data/types";
+import { paths } from "@/routes";
 import { gateCleared } from "@/store/intakeReview";
 import { planFor } from "@/store/intakePlan";
 
@@ -38,6 +39,8 @@ export interface Need {
   retry?: boolean;
   /** Where the work is done in the new workspace, a module included. Prefer it over `to`, which only names a data section. */
   target?: WorkspaceTarget;
+  /** Another page (the authorization draft in New Authorization). It wins over `target` and `to`. */
+  href?: string;
   explain?: Explain;
 }
 
@@ -141,7 +144,7 @@ export function needsOf(r: IntakeRecord, rd: Readiness, now: number): Need[] {
   if (rd.status === "ready" && r.handoff.status !== "in_new_case") {
     out.push({ key: "handoff", text: "Ready to prepare the authorization", detail: "Prepare Authorization (opens after the care plan is approved) starts a draft in New Authorization. Nothing is submitted.", tone: "neutral", to: { section: "pathway" }, toLabel: "Open Care planning" });
   }
-  if (r.handoff.status === "in_new_case") out.push({ key: "handoff-open", text: "The authorization is a draft in New Authorization", detail: "A person reviews and signs it there.", tone: "neutral", to: { section: "review" }, toLabel: "Go to review" });
+  if (r.handoff.status === "in_new_case") out.push({ key: "handoff-open", text: "The authorization is a draft in New Authorization", detail: "A person reviews and signs it there.", tone: "neutral", href: r.handoff.draftId ? paths.newCase({ draft: r.handoff.draftId }) : paths.newCase({ intake: r.id }), toLabel: "Open the draft" });
   return out.map(withExplain(r));
 }
 

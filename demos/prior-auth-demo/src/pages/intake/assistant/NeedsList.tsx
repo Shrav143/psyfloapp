@@ -24,7 +24,7 @@ export function NeedsList({ record, needs }: { record: IntakeRecord; needs: Need
         const t = n.task;
         const approvable = !!t?.approveHere && !n.safety && t.status === "needs_you";
         const personal = t && (t.kind === "registration" || t.kind === "renewal" || t.kind === "manual") && t.status === "needs_you";
-        const href = n.target ? paths.intakeRecord(record.id, sectionParam(n.target)) : n.to ? paths.intakeRecord(record.id, n.to.section, n.to.panel) : null;
+        const href = n.href ?? (n.target ? paths.intakeRecord(record.id, sectionParam(n.target)) : n.to ? paths.intakeRecord(record.id, n.to.section, n.to.panel) : null);
         return (
           <li key={n.key} data-need={n.key} className={cn("rounded-xl border px-3 py-2.5", n.tone === "risk" ? "border-risk-edge bg-risk-bg/60" : n.tone === "mid" ? "border-mid-edge bg-mid-bg/40" : "border-edge bg-tile")}>
             <div className="flex items-start gap-2">

@@ -109,7 +109,7 @@ export default function NewCasePage() {
   /* A link that starts an authorization from an intake at a site the viewer cannot see shows the notice, and no draft is made. */
   const intakeParam = params.get("intake") ?? (params.get("referral") ? intakeIdForReferral(params.get("referral") ?? "") : null);
   const intakeSite = intakeParam ? useStore.getState().intakes.find((r) => r.id === intakeParam)?.site : undefined;
-  if (!draftId && intakeParam && intakeSite && !scope.sites.includes(intakeSite)) return <OutOfSite id={intakeParam} what="intake" />;
+  if (!draftId && intakeParam && intakeSite && !scope.sites.includes(intakeSite)) return <OutOfSite id={intakeParam} what="intake" site={intakeSite} />;
   if (!draftId) return null;
   if (!draft || !env || !steps) {
     return (
@@ -124,7 +124,7 @@ export default function NewCasePage() {
     );
   }
   /* A draft that belongs to a site the viewer cannot see does not exist for them. */
-  if (!scope.sites.includes(draft.site)) return <OutOfSite id={draft.caseId ?? draft.id} what="case" />;
+  if (!scope.sites.includes(draft.site)) return <OutOfSite id={draft.caseId ?? draft.id} what="case" site={draft.site} />;
 
   /* A case that was signed and sent is on the Dashboard now; this page must not offer to sign it again. */
   if (draft.sent && draft.caseId) {

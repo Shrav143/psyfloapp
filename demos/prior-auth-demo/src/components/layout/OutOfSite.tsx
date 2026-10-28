@@ -1,17 +1,18 @@
 import { Lock } from "lucide-react";
 import { Link } from "react-router-dom";
-import { siteName, siteOf, sitesLabel } from "@/data/sites";
+import { siteName, siteOf, sitesLabel, type SiteId } from "@/data/sites";
 import { useScope } from "@/lib/scope";
 import { paths } from "@/routes";
 import { Button, Card, CardBody } from "@/components/ui";
 import { useStore } from "@/store";
 
 /** Shown instead of a record that belongs to a site the viewer is not looking at. It names no patient and no detail of the record.
-    A viewer limited to one site is told why; a viewer who may see both sites can show them with one click. */
-export function OutOfSite({ id, what = "record" }: { id: string; what?: string }) {
+    A viewer limited to one site is told why; a viewer who may see both sites can show them with one click.
+    `site` is the record's own site when it is not a function of its id (an intake or a draft); without it the id places the record. */
+export function OutOfSite({ id, what = "record", site }: { id: string; what?: string; site?: SiteId }) {
   const { viewer, label, restricted } = useScope();
   const setScope = useStore((s) => s.setSiteScope);
-  const home = siteOf(id);
+  const home = site ?? siteOf(id);
   return (
     <Card className="mx-auto mt-10 max-w-[560px]">
       <CardBody className="flex flex-col items-center gap-3 py-10 text-center">
