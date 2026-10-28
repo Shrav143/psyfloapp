@@ -35,10 +35,9 @@ export function createDecisionActions(set: (fn: (s: AppState) => Partial<AppStat
       const notice = addNotice(rid, "accepted", draftNotice(r, "accepted", { signedBy: signatureOf(me), message: waitlisted ? "The program has no open place right now, so the person is on the waitlist (demo configuration)." : undefined }));
       patch(rid, (x) => ({
         ...x, triage: "accepted", triageNote: waitlisted ? `On the waitlist for ${label}, position ${position}` : undefined,
-        referralDecision: { kind: "accepted", at: s.clock, by: me, note: o?.note?.trim() || undefined, noticeId: notice },
+        referralDecision: { kind: "accepted", at: s.clock, by: me, note: o?.note?.trim() || undefined, noticeId: notice, ...(cap && programId ? { capacity: { programId, took: !waitlisted } } : {}) },
         ...(waitlisted && programId ? { waitlist: { programId, label, since: s.clock, by: me, position, note: "No open place at the time of acceptance (demo configuration)" } } : {}),
       }));
-      if (cap && !waitlisted && programId) set((st) => ({ capacityOpen: { ...st.capacityOpen, [programId]: Math.max(0, (st.capacityOpen[programId] ?? cap.open) - 1) } }));
       audit(rid, { actor: me, action: waitlisted ? "Accepted for assessment and added to the waitlist" : "Accepted for assessment", detail: [cap ? `${label}: ${waitlisted ? `no open ${cap.unit}` : `${cap.open - 1} of ${cap.total} ${cap.unit}s open after this`} (demo configuration)` : null, o?.note?.trim()].filter(Boolean).join(" · ") || undefined });
       get().toast({ title: waitlisted ? `${rid} is on the waitlist` : `${rid} accepted for assessment`, body: "A notice to the referrer is drafted. It is not sent until you approve it.", tone: "good" });
       return { id: rid, outcome: waitlisted ? "waitlisted" : "accepted" };

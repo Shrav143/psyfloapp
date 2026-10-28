@@ -32,12 +32,28 @@ const PA_PSYCH: PriorAssessment = {
   note: "The annual summary from the person's skill-building service. Same organization, so no release is needed; the clinician still reviews it.",
 };
 const PA_PSYCHIATRIC: PriorAssessment = {
-  id: "PA-3115-psychiatric", moduleId: "psychiatric", label: "Psychiatric assessment from the inpatient stay", date: -5 * DAY, provider: "Inpatient unit, Shenandoah Health (fictional)", version: "Inpatient evaluation",
+  id: "PA-3115-psychiatric", moduleId: "psychiatric", label: "Psychiatric assessment from the inpatient stay", date: vaDate("2026-10-13"), provider: "Inpatient unit, Shenandoah Health (fictional)", version: "Inpatient evaluation",
   clinician: "Staff psychiatrist (fictional)", status: "current", reuse: "unverified",
   note: "Written during the stay that led to this referral. The inpatient team's wording is kept as theirs; a clinician here confirms what still applies.",
 };
 
+const PA_ASAM: PriorAssessment = {
+  id: "PA-3112-asam", moduleId: "asam", label: "ASAM documentation from the residential program", date: vaDate("2026-08-07"), provider: "Riverside Recovery Center (fictional)", version: "Program's own ASAM documentation, edition not stated",
+  clinician: "Admission counselor, Riverside Recovery Center (fictional)", status: "current", reuse: "unverified",
+  note: "Completed at admission to residential care. Her needs have changed since the stay; a clinician here confirms what still applies. The program's ratings and level stay in its own system.",
+};
+
 export const PRIOR_CONTENT: Record<string, PriorContent> = {
+  [PA_ASAM.id]: {
+    summary: ["Completed 8/7/2026, two days after admission to residential care.", "Daily opioid use for eight months; withdrawal managed at admission.", "Lived with her mother before admission; no stable work."],
+    evidence: [],
+    fields: {
+      "asam.d1.findings": "At admission in August 2026: daily opioid use for eight months, last use 08/04/2026. Withdrawal was managed at the program.",
+      "asam.d4.findings": "One overdose in June 2026, reversed with naloxone. Two earlier outpatient attempts ended in relapse within weeks.",
+      "asam.d5.findings": "Lived with her mother and younger brother before admission; part-time warehouse work; no car.",
+    },
+    excluded: "Dimension ratings and the level the program recorded are not included: they are in the program's own system, and the licensed criteria are not loaded here.",
+  },
   [PA_CANS.id]: {
     summary: [
       "Completed 3/17/2026, after the family moved to the area.",
@@ -84,6 +100,7 @@ export const priorContentOf = (id: string): PriorContent | undefined => PRIOR_CO
 const PRIORS_BY_RECORD: Record<string, Partial<IntakeRecord>> = {
   "IN-3101": { priorAssessments: [PA_CANS] },
   "IN-3102": { priorAssessments: [PA_PSYCH] },
+  "IN-3112": { priorAssessments: [PA_ASAM] },
   "IN-3115": { priorAssessments: [PA_PSYCHIATRIC] },
 };
 

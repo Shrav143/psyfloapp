@@ -46,6 +46,8 @@ export interface ReferralDecision {
   destination?: { org: string; id?: string };
   /** The draft notice to the referrer this decision created. */
   noticeId?: string;
+  /** For an accepted referral to a program with demo capacity: it took a place, or went on the waitlist. Open places are counted from these, so they follow the records. */
+  capacity?: { programId: ProgramId; took: boolean };
 }
 
 export type NoticeKind = "missing_info" | "accepted" | "redirected" | "declined";

@@ -12,13 +12,12 @@ import { capacityOf, waitlistCount } from "@/store/intakeReferral";
     a clinician reviews what fits next, and nothing assumes a one-to-one replacement. Capacity is demo configuration, not a real census. */
 export function ServiceNotes({ record, now }: { record: IntakeRecord; now: number }) {
   const programId = programIdOf(record.serviceId);
-  const capOpen = useStore((s) => s.capacityOpen);
   const intakes = useStore((s) => s.intakes);
   if (!programId) {
     return <p className="py-2 text-[12px] text-muted">{serviceById(record.serviceId).short}: availability and coverage are not verified for this service.</p>;
   }
   const av = programAvailability(programId, "VA", Math.max(record.serviceDate, now));
-  const cap = capacityOf({ capacityOpen: capOpen }, programId);
+  const cap = capacityOf({ intakes }, programId);
   const waiting = cap ? waitlistCount({ intakes }, programId) : 0;
   const retired = av.status === "retired";
   return (

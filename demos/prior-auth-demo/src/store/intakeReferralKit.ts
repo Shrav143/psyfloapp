@@ -30,11 +30,13 @@ export const isReferralDraftId = (id: string): boolean => id.startsWith("RD-");
 export const referralOf = (s: Pick<AppState, "intakes" | "referralDrafts">, id: string): IntakeRecord | undefined =>
   isReferralDraftId(id) ? s.referralDrafts.find((d) => d.id === id)?.record : s.intakes.find((r) => r.id === id);
 
-/** What is left of a program's demo capacity. Null for a program with no limit in the demo. */
-export function capacityOf(s: Pick<AppState, "capacityOpen">, programId: ProgramId | null): (Capacity & { id: ProgramId }) | null {
+/** What is left of a program's demo capacity: the configured places less the referrals accepted into it. Null for a program with no limit in the demo.
+    Counted from the records, so it is right after a reload and after a decision is undone. */
+export function capacityOf(s: Pick<AppState, "intakes">, programId: ProgramId | null): (Capacity & { id: ProgramId }) | null {
   const seed = programId ? CAPACITY_SEED[programId] : undefined;
   if (!programId || !seed) return null;
-  return { ...seed, id: programId, open: s.capacityOpen[programId] ?? seed.open };
+  const taken = s.intakes.filter((r) => r.referralDecision?.kind === "accepted" && r.referralDecision.capacity?.programId === programId && r.referralDecision.capacity.took).length;
+  return { ...seed, id: programId, open: Math.max(0, seed.open - taken) };
 }
 /** How many records wait on a program's list. */
 export const waitlistCount = (s: Pick<AppState, "intakes">, programId: ProgramId): number => s.intakes.filter((r) => r.waitlist?.programId === programId).length;

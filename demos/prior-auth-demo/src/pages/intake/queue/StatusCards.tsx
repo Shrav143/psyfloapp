@@ -14,7 +14,7 @@ export interface CardDef {
 export function StatusCards({ cards, selected, onSelect, label }: { cards: readonly CardDef[]; selected: string | null; onSelect: (id: string | null) => void; label: string }) {
   return (
     <section aria-label={label} className="@container">
-      <div className={cn("grid grid-cols-2 gap-2.5 @min-[560px]:grid-cols-3", cards.length === 6 ? "@min-[1000px]:grid-cols-6" : cards.length === 4 ? "@min-[760px]:grid-cols-4" : "@min-[760px]:grid-cols-4")}>
+      <div className={cn("grid grid-cols-2 gap-2.5 @min-[560px]:grid-cols-3", cards.length === 6 ? "@min-[1000px]:grid-cols-6" : "@min-[640px]:grid-cols-4")}>
         {cards.map((c) => {
           const on = selected === c.id;
           return (

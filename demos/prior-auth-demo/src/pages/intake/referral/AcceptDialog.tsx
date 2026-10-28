@@ -11,11 +11,10 @@ import { unconfirmed } from "./missing";
     to the referrer is made, and nothing is sent until a person approves it. */
 export function AcceptDialog({ record, onClose, onDone }: { record: IntakeRecord; onClose: () => void; onDone: (id: string, outcome: "accepted" | "waitlisted") => void }) {
   const accept = useStore((s) => s.acceptIntakeReferral);
-  const capOpen = useStore((s) => s.capacityOpen);
   const intakes = useStore((s) => s.intakes);
   const [note, setNote] = useState("");
   const programId = programIdOf(record.serviceId);
-  const cap = capacityOf({ capacityOpen: capOpen }, programId);
+  const cap = capacityOf({ intakes }, programId);
   const full = !!cap && cap.open <= 0;
   const open = unconfirmed(record).length;
   const svc = serviceById(record.serviceId);

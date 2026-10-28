@@ -1,7 +1,7 @@
 import type { StateCreator } from "zustand";
 import type { DeclineReasonCode, NoticeChannel, RedirectReasonCode, ReferralNotice } from "@/data/intake/decision";
 import { REPLY_TASK_ACTION } from "@/data/intake/ext/referral";
-import { ageFromDob, CAPACITY_SEED, riskFindings } from "@/data/intake/referralFacts";
+import { ageFromDob, riskFindings } from "@/data/intake/referralFacts";
 import { staffOf } from "@/data/intake/seed";
 import type { FieldState, IntakeDocument, IntakeRecord, SourceRef, Suggestion } from "@/data/intake/types";
 import type { Urgency } from "@/data/types";
@@ -25,8 +25,6 @@ const URGENCY_TEXT: Record<Urgency, string> = { routine: "Routine", urgent: "Urg
 export interface IntakeReferralSlice {
   referralDrafts: ReferralDraft[];
   referralDraftCounter: number;
-  /** Open places left per program, from the demo capacity configuration. Accepting a referral takes one. */
-  capacityOpen: Record<string, number>;
 
   setIntakeService: (id: string, serviceId: VaServiceId) => void;
   /** Planned service start, demo minutes. */
@@ -88,7 +86,6 @@ export const createIntakeReferralSlice: StateCreator<AppState, [], [], IntakeRef
   return {
     referralDrafts: [],
     referralDraftCounter: 0,
-    capacityOpen: Object.fromEntries(Object.entries(CAPACITY_SEED).map(([k, v]) => [k, v?.open ?? 0])),
 
     setIntakeService: (id, serviceId) => get().setIntakeReferralService(id, serviceId),
     setIntakeServiceDate: (id, date) => {

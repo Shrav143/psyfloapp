@@ -109,7 +109,7 @@ export const extendReferral = (records: IntakeRecord[]): IntakeRecord[] =>
       /* ACT has no open caseload place in the demo: accepted, on the waitlist. */
       case "IN-3116":
         return {
-          ...decided(r, { kind: "accepted", at: r.createdAt + 3 * HOUR, by: r.assignedTo, note: "No open caseload place; waitlisted" }),
+          ...decided(r, { kind: "accepted", at: r.createdAt + 3 * HOUR, by: r.assignedTo, note: "No open caseload place; waitlisted", capacity: { programId: "act", took: false } }),
           triageNote: "On the waitlist for ACT, position 1",
           waitlist: { programId: "act", label: serviceById("act").short, since: r.createdAt + 3 * HOUR, by: r.assignedTo, position: 1, note: "No open caseload place at the time of acceptance (demo configuration)" },
         };
