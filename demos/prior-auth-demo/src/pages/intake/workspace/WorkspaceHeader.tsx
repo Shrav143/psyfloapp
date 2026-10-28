@@ -50,7 +50,9 @@ export interface WorkspaceHeaderProps {
 export function WorkspaceHeader({ model, go, onConfigure, onPrint, openPanel, hideNext, assistant }: WorkspaceHeaderProps) {
   const { record: r, next, cells } = model;
   const nav = useNavigate();
-  const [details, setDetails] = useState(() => readPref(DETAILS_KEY) !== "hidden");
+  /* Until the person folds or opens the details themselves, they show on the Overview and fold away elsewhere, so the work gets the height. */
+  const [chosen, setChosen] = useState<"shown" | "hidden" | null>(() => { const v = readPref(DETAILS_KEY); return v === "shown" || v === "hidden" ? v : null; });
+  const details = chosen ? chosen === "shown" : !!hideNext;
   const [dialog, setDialog] = useState<"reassign" | "close" | null>(null);
   const status = effectiveStatus(r);
   const staff = staffOf(r.assignedTo);
@@ -62,8 +64,9 @@ export function WorkspaceHeader({ model, go, onConfigure, onPrint, openPanel, hi
   const alert = r.safety;
 
   const toggleDetails = () => {
-    writePref(DETAILS_KEY, details ? "hidden" : "shown");
-    setDetails(!details);
+    const next = details ? "hidden" : "shown";
+    writePref(DETAILS_KEY, next);
+    setChosen(next);
   };
   const showAlert = () => {
     const el = document.getElementById("safety-alert");
