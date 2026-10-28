@@ -1,6 +1,6 @@
 import { Link, useSearchParams } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import { paths } from "@/routes";
+import { intakeIdForReferral, paths } from "@/routes";
 import { useStore } from "@/store";
 import { referralPrefill } from "@/store/referrals";
 
@@ -13,7 +13,7 @@ export function useOrigin(): { query: string; back: { to: string; label: string 
   const known = useStore((s) => !!referral && referralPrefill(s, referral) !== null);
   if (!referral || !known) return { query: "", back: null };
   const query = new URLSearchParams({ referral, ...(caseId ? { case: caseId } : {}) }).toString();
-  return { query: `?${query}`, back: caseId ? { to: paths.case(caseId), label: `Back to case ${caseId}` } : { to: paths.referral(referral), label: `Back to referral ${referral}` } };
+  return { query: `?${query}`, back: caseId ? { to: paths.case(caseId), label: `Back to case ${caseId}` } : { to: paths.referral(referral), label: `Back to referral ${intakeIdForReferral(referral)}` } };
 }
 
 const LINK = "flex w-fit items-center gap-1.5 text-muted hover:text-ink";
