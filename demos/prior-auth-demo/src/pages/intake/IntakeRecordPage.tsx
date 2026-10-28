@@ -4,6 +4,7 @@ import { ArrowLeft, AudioLines, CircleCheck, CircleDashed, CircleDot, Mic, Minus
 import { Button, Card, CardBody, Chip, Crumbs, EmptyState, Page, Pill } from "@/components/ui";
 import { SECTION_LABEL, SECTION_ORDER, TRIAGE_LABEL, type IntakeRecord, type IntakeSectionId, type TriageStatus } from "@/data/intake/types";
 import { staffOf } from "@/data/intake/seed";
+import { STATUS_TONE } from "@/data/assess/status";
 import { siteName } from "@/data/sites";
 import { PERIOD_LABEL, periodOf } from "@/data/va/policy";
 import { vaPlanOf } from "@/data/va/plans";
@@ -29,7 +30,7 @@ import { ReferralSection } from "./sections/ReferralSection";
 import { ReviewSection } from "./sections/ReviewSection";
 import { VoicePanel } from "./voice/VoicePanel";
 
-export const TRIAGE_TONE: Record<TriageStatus, Tone> = { new: "mid", needs_info: "mid", ready_screening: "neutral", clinical_review: "risk", accepted: "good", redirected: "neutral", declined: "neutral", closed: "neutral" };
+export const TRIAGE_TONE = STATUS_TONE;
 
 const SECTION_VIEW: Record<IntakeSectionId, (p: { record: IntakeRecord }) => React.ReactNode> = {
   referral: ReferralSection, profile: ProfileSection, coverage: CoverageSection, assessment: AssessmentSection, cans: CansSection, pathway: PathwaySection, review: ReviewSection,

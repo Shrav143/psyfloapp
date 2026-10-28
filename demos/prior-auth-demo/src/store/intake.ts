@@ -3,6 +3,7 @@ import { seedIntakes, seedReadiness, seedRoster, VIEWER_STAFF, type LegacyClient
 import type { AgentTask, AuditEvent, FieldState, FieldValue, IntakeRecord, IntakeSectionId, SafetyAlert, SourceRef, Suggestion, TriageStatus } from "@/data/intake/types";
 import { ROLE_AGENT } from "@/data/intake/types";
 import type { ProgramFocus } from "@/data/va/services";
+import { REDESIGN_START } from "@/data/va/policy";
 import type { AppState } from "./index";
 
 /* The Intake workspace's slice. Generic actions live here (fields with provenance, suggestions, tasks, audit, triage, safety); each section's
@@ -44,6 +45,8 @@ export interface IntakeSlice {
 
 let n = 0;
 const uidI = (p: string) => `${p}-${Date.now().toString(36)}-${++n}`;
+/** The policy "now" in demo minutes: the demo clock, or July 1, 2027 under the post-transition environment. The demo clock itself never moves. */
+export const policyNowOf = (s: Pick<AppState, "clock" | "policyPreview">): number => (s.policyPreview === "redesign" ? Math.max(s.clock, REDESIGN_START) : s.clock);
 /** The intake staff id of the person viewing. */
 export const meOf = (s: Pick<AppState, "viewerId">): string => VIEWER_STAFF[s.viewerId] ?? "jp";
 
@@ -61,7 +64,8 @@ export const createIntakeSlice: StateCreator<AppState, [], [], IntakeSlice> = (s
     legacyRoster: seedRoster(),
     planReadiness: seedReadiness(),
     programFocus: "all",
-    policyPreview: "today",
+    /* The demo runs in a post-transition environment (the redesigned Virginia services in effect), shown as a chip; "today" switches to the real date. */
+    policyPreview: "redesign",
     intakeCounter: 3130,
 
     setProgramFocus: (f) => set({ programFocus: f }),

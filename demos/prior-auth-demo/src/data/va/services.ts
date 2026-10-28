@@ -7,7 +7,8 @@ export type VaServiceId =
   | "arts-res" | "arts-wm" | "arts-iop" | "arts-php"
   | "mh-iop" | "mh-php" | "act" | "aba" | "mhcm" | "crisis" | "opt"
   | "iih" | "tdt" | "mhss" | "psr"
-  | "cpst-adult" | "cpst-youth" | "cpst-school" | "csc" | "clubhouse";
+  | "cpst-adult" | "cpst-youth" | "cpst-school" | "csc" | "clubhouse"
+  | "arts-op" | "arts-inpt" | "otp" | "obot" | "mh-res" | "mh-inpt" | "prtf" | "other-bh";
 
 export type ServiceGroup = "arts" | "mh" | "legacy" | "redesign";
 /** current: in effect today. retiring: ends June 30, 2027. redesign: starts July 1, 2027. */
@@ -61,6 +62,14 @@ export const SERVICES: VaService[] = [
   { id: "cpst-school", label: "CPST: Youth, School Setting", short: "CPST School", group: "redesign", status: "redesign", program: "CPST_S", ages: "youth", setting: "school", startsOn: "2027-07-01", summary: "Community Psychiatric Support and Treatment for youth, in a school setting." },
   { id: "csc", label: "Coordinated Specialty Care for First Episode Psychosis (CSC)", short: "CSC (first episode psychosis)", group: "redesign", status: "redesign", program: "CSC", ages: "all", setting: "community", startsOn: "2027-07-01", summary: "Team-based care for a first episode of psychosis." },
   { id: "clubhouse", label: "Mental Health Clubhouse", short: "Clubhouse", group: "redesign", status: "redesign", program: "CLUB", ages: "adult", setting: "community", startsOn: "2027-07-01", summary: "Mental health clubhouse services." },
+  { id: "arts-op", label: "ARTS outpatient (ASAM level 1)", short: "ARTS outpatient", group: "arts", status: "current", program: "ARTS_OP", track: "sud", ages: "all", setting: "clinic", summary: "Outpatient substance use treatment." },
+  { id: "arts-inpt", label: "ARTS inpatient (ASAM level 4)", short: "ARTS inpatient", group: "arts", status: "current", program: "ARTS_INPT", track: "sud", ages: "all", setting: "facility", summary: "Medically managed intensive inpatient substance use treatment." },
+  { id: "otp", label: "Opioid treatment program (OTP)", short: "OTP", group: "arts", status: "current", program: "OTP", track: "sud", ages: "adult", setting: "clinic", summary: "Medication for opioid use disorder in a certified opioid treatment program." },
+  { id: "obot", label: "Office-based opioid treatment (OBOT)", short: "OBOT", group: "arts", status: "current", program: "OBOT", track: "sud", ages: "adult", setting: "clinic", summary: "Medication for opioid use disorder in an office-based setting." },
+  { id: "mh-res", label: "Psychiatric residential treatment", short: "Psychiatric residential", group: "mh", status: "current", program: "MH_RES", track: "mh", ages: "all", setting: "facility", summary: "Residential mental health treatment." },
+  { id: "mh-inpt", label: "Psychiatric inpatient treatment", short: "Psychiatric inpatient", group: "mh", status: "current", program: "MH_INPT", track: "mh", ages: "all", setting: "facility", summary: "Inpatient psychiatric treatment." },
+  { id: "prtf", label: "Psychiatric residential treatment facility (PRTF)", short: "PRTF", group: "mh", status: "current", program: "PRTF", track: "mh", ages: "youth", setting: "facility", summary: "Residential psychiatric facility care for people under 21." },
+  { id: "other-bh", label: "Other behavioral health service", short: "Other service", group: "mh", status: "current", program: "OTHER", ages: "all", setting: "any", summary: "A service this organization defines. No state or plan requirements are loaded for it." },
 ];
 
 export const SERVICE_IDS = SERVICES.map((s) => s.id);

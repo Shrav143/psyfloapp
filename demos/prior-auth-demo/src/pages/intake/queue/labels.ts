@@ -1,11 +1,10 @@
+import { STATUS_TONE } from "@/data/assess/status";
 import type { ClinicalAssessment, TriageStatus } from "@/data/intake/types";
 import type { Tone, Urgency } from "@/data/types";
 
 /* Words and tones the queue and the referral section share. Every tone has a word beside it on screen. */
 
-export const TRIAGE_TONE_Q: Record<TriageStatus, Tone> = {
-  new: "mid", needs_info: "mid", ready_screening: "neutral", clinical_review: "risk", accepted: "good", redirected: "neutral", declined: "neutral", closed: "neutral",
-};
+export const TRIAGE_TONE_Q = STATUS_TONE;
 
 export const ASSESSMENT_LABEL: Record<ClinicalAssessment["status"], string> = {
   not_started: "Not started", in_progress: "In progress", awaiting_review: "Awaiting review", signed: "Signed",

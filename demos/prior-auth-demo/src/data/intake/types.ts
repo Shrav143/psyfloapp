@@ -2,6 +2,8 @@ import type { DocBlock } from "@/components/ui/DocumentSheet";
 import type { AgentKey, PayerId, Urgency } from "../types";
 import type { SiteId } from "../sites";
 import type { VaServiceId } from "../va/services";
+import type { CarePlan, ConsentEntry, InstrumentInstance, IntakeConfig, PriorAssessment } from "../assess/types";
+import type { ReferralCheck } from "../referralTypes";
 
 /* The Intake workspace's data model. One IntakeRecord holds one person's intake, from the referral to the authorization handoff.
    Three things are always kept apart: what a source says (documents, transcripts), what an agent suggests (Suggestion), and what a person
@@ -20,11 +22,14 @@ export const SECTION_LABEL: Record<IntakeSectionId, string> = {
   review: "Documentation & review",
 };
 
-export type TriageStatus = "new" | "needs_info" | "ready_screening" | "clinical_review" | "accepted" | "redirected" | "declined" | "closed";
+/** The eleven statuses of a referral and its intake. new to ready_screening and the last four are set by a person; assessment, clinical_review,
+    care_planning and ready_for_auth follow the work (see effectiveStatus in data/assess/status.ts). */
+export type TriageStatus = "new" | "needs_info" | "ready_screening" | "assessment" | "clinical_review" | "care_planning" | "ready_for_auth" | "accepted" | "redirected" | "declined" | "closed";
 export const TRIAGE_LABEL: Record<TriageStatus, string> = {
-  new: "New", needs_info: "Needs information", ready_screening: "Ready for screening", clinical_review: "Clinical review needed",
-  accepted: "Accepted", redirected: "Redirected", declined: "Declined", closed: "Closed",
+  new: "New", needs_info: "Needs information", ready_screening: "Ready for screening", assessment: "Assessment in progress", clinical_review: "Clinical review",
+  care_planning: "Care planning", ready_for_auth: "Ready for authorization", accepted: "Accepted", redirected: "Redirected", declined: "Declined", closed: "Closed",
 };
+export const TRIAGE_ORDER: TriageStatus[] = ["new", "needs_info", "ready_screening", "assessment", "clinical_review", "care_planning", "ready_for_auth", "accepted", "redirected", "declined", "closed"];
 
 export type ReferralMethod = "manual" | "upload" | "fax" | "email" | "emr" | "phone" | "voice" | "webform";
 export const METHOD_LABEL: Record<ReferralMethod, string> = {
@@ -486,4 +491,23 @@ export interface IntakeRecord {
   voice: VoiceSession | null;
   safety: SafetyAlert | null;
   handoff: HandoffPacket;
+
+  /* Round 10: the configured intake. All optional, so a referral that has not been accepted into an intake has none of it. */
+  /** The shared patient and treatment episode this intake belongs to (data/patients.ts). */
+  patientId?: string | null;
+  episodeId?: string | null;
+  /** The configuration chosen for this intake: purpose, program, population, setting and the modules in use. */
+  config?: IntakeConfig;
+  /** One instance per module in use, keyed by module id. Earlier versions are kept inside it. */
+  instruments?: Record<string, InstrumentInstance>;
+  carePlan?: CarePlan | null;
+  /** The consent and disclosure ledger. */
+  consents?: ConsentEntry[];
+  /** Assessments found for the person from other providers or earlier episodes. */
+  priorAssessments?: PriorAssessment[];
+  /** The legacy referral this record was made from (RF-xxxx) and the document checks Reader ran on it. */
+  legacyReferralId?: string;
+  referralChecks?: ReferralCheck[];
+  /** Where the person left off, for Resume. */
+  progress?: { section: string; at: number };
 }

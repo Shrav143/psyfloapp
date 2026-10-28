@@ -3,7 +3,7 @@
 /** The four levels of care the seed authorization data is built on. Every table of figures, documents and criteria is keyed by these. */
 export type CoreProgram = "RES" | "IOP" | "PHP" | "WM";
 /** The other Virginia Medicaid behavioral health services (data/va/services.ts names each one). */
-export type VaProgram = "ACT" | "ABA" | "MHCM" | "CRISIS" | "OPT" | "IIH" | "TDT" | "MHSS" | "PSR" | "CPST_A" | "CPST_Y" | "CPST_S" | "CSC" | "CLUB";
+export type VaProgram = "ACT" | "ABA" | "MHCM" | "CRISIS" | "OPT" | "IIH" | "TDT" | "MHSS" | "PSR" | "CPST_A" | "CPST_Y" | "CPST_S" | "CSC" | "CLUB" | "ARTS_OP" | "ARTS_INPT" | "OTP" | "OBOT" | "MH_RES" | "MH_INPT" | "PRTF" | "OTHER";
 /** Any service an authorization can be for: a core level of care, or a Virginia service handed off from Intake. A table keyed by CoreProgram
     answers a Virginia service with a typed fallback (see programTables.ts), never with an invented figure. */
 export type Program = CoreProgram | VaProgram;
@@ -12,6 +12,8 @@ export type AuthProgram = Program;
 export const VA_PROGRAM_LABEL: Record<VaProgram, string> = {
   ACT: "ACT", ABA: "ABA", MHCM: "MH case management", CRISIS: "Crisis services", OPT: "Outpatient therapy",
   IIH: "IIH", TDT: "TDT", MHSS: "MHSS", PSR: "PSR", CPST_A: "CPST Adult", CPST_Y: "CPST Youth", CPST_S: "CPST School", CSC: "CSC", CLUB: "Clubhouse",
+  ARTS_OP: "ARTS outpatient", ARTS_INPT: "ARTS inpatient", OTP: "Opioid treatment program", OBOT: "Office-based opioid treatment",
+  MH_RES: "Psychiatric residential", MH_INPT: "Psychiatric inpatient", PRTF: "PRTF", OTHER: "Other service",
 };
 export const CORE_PROGRAM_LABEL: Record<CoreProgram, string> = { RES: "Residential 3.5", IOP: "IOP", PHP: "PHP", WM: "Detox" };
 export const PROGRAM_LABEL: Record<Program, string> = { ...CORE_PROGRAM_LABEL, ...VA_PROGRAM_LABEL };
