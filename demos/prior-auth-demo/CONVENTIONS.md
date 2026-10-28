@@ -31,12 +31,12 @@ Core (read-only): `clock` (demo minutes since Tue 20 Oct 2026, 10:42 am), `reque
 
 Your slice: `src/store/<yours>.ts` already exists as a stub with a `...Slice` interface, a `create...Slice` creator and a sidebar badge selector. Fill in state, seed data (build it from your data files at creation time) and actions. Rules:
 - All mutable demo state lives in the store, not in module-level variables, so "Reset demo data" (which restores every slice's initial state) works. Seed arrays must not be mutated: always create new objects.
-- Keep the exported names of the badge selector (and `referralPrefill` in referrals.ts). The sidebar and the New Case flow import them.
+- Keep the exported names of the badge selector (and `referralPrefill` in referrals.ts). The sidebar and the New Authorization flow import them.
 - You may read another slice only through a selector that its owner exports (none are promised beyond the badges and `referralPrefill`), so mostly use core state.
 
 ## Links
 
-Never hard-code another module's URL. Use `paths` from `@/routes` (`paths.case(id)`, `paths.newCase({referral})`, `paths.denials(id)`, `paths.payers("cardinal", "history")`, `paths.referral(id)`, `paths.dashboard({request})` …). Use `Link`, `useNavigate`, `useSearchParams`, `useParams`. Deep links must work on a fresh load (the Dashboard opens a request drawer from `?request=ID`).
+Never hard-code another module's URL. Use `paths` from `@/routes` (`paths.case(id)`, `paths.newCase({intake, episode})`, `paths.denials(id)`, `paths.payers("cardinal", "history")`, `paths.referral(id)`, `paths.dashboard({request})` …). Use `Link`, `useNavigate`, `useSearchParams`, `useParams`. Deep links must work on a fresh load (the Dashboard opens a request drawer from `?request=ID`).
 
 ## Design language (match the mockups)
 
@@ -88,3 +88,15 @@ Default viewer Jordan Perez on **Both sites**, so every canonical number above i
 3. Screenshot each of your routes at 1440 px and compare with the mockup PNGs: layout, copy tone, colors, density. Fix differences.
 4. Write a Playwright script that clicks through every interaction on your screens (and the cross-module ones in your brief), asserts that the expected text appears afterwards, and that there are no page errors or console errors. Run it. Fix what fails.
 5. Final report (short): files created, routes, store API you added, anything you could not finish, any change you need from the foundation, and the exact commands you ran to verify.
+
+## Referrals & Intake: rules for the assessment engine (round 10)
+
+- **One record.** The intake record (`IN-…`, `src/data/intake/types.ts`) is the referral and the intake. A referral is its first status. New Authorization reads the same record; it never asks again for what the record holds.
+- **Configuration is data.** `src/data/assess/` holds programs (31), intake purposes (8), modules (54), rules and the plan builder. A program, a purpose, a population, a setting, the state, the payer and the policy date select rules; rules select modules. Screens never hard-code which module a program needs. A rule carries its source (State policy, Payer policy, Organization protocol, Clinician selected, Demo configuration), version, status (Verified, Draft, Not verified, Demo), reviewer and effective dates. No rule is labeled Verified unless an official source is cited in `data/va/policy.ts`. A missing payer rule reads "Payer requirement not yet verified".
+- **Forms are data.** Module forms are schemas in `data/assess/schemas/*` (documentation fields only). One renderer (`pages/intake/instruments`) draws them: provenance on every value, evidence suggestions that need a person's decision, score entry that records a result the clinician typed, level-of-care review confirmed by a clinician, versions and amendments. Add a module by adding a catalog entry, a schema and a rule row, not a screen.
+- **No licensed content.** Do not add ASAM criteria or algorithms, CANS items or scoring, LOCUS or CALOCUS-CASII items, C-SSRS, PHQ-9, GAD-7, AUDIT, DAST-10, COWS or CIWA-Ar item text or scoring, or a Level of Need algorithm. The unit test `engine/t-e6b.ts` (in the scratchpad suite) scans for them.
+- **People decide.** AI output is a draft or a suggestion until a person accepts it. Signing, confirming a level of care, selecting a service, approving a care plan, sending a notice and submitting need a qualified person (`canSign`, `canOverride` in `data/assess/roles.ts`); a non-clinician viewer can only play the role, and the audit trail says so. Simulated integrations, extractions, transcripts and deliveries are labeled simulated.
+- **Status follows the work.** Show `effectiveStatus(record)` (`data/assess/status.ts`), never `record.triage`. Modules that start after the policy date are preparation and never hold up status or readiness. Clinical readiness and administrative readiness are separate tracks; there is no blended percentage.
+- **Policy date.** The demo clock never moves. The app evaluates rules as of the post-transition date (July 1, 2027) by default; the environment chip in the top bar switches to today's policy. Use `useIntakeNow()` (screens) or `policyNowOf(state)` (store) as "now" for every policy decision.
+- **Saved in the browser.** `src/store/persist.ts` saves changed intake records, referral drafts and New Authorization drafts under `psyflo-demo-v10` (guarded: storage can be blocked). Changing a stored shape means bumping `PERSIST_VERSION`. Settings has Reset demo data.
+
