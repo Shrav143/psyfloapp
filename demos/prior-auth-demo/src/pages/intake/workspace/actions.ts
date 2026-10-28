@@ -16,6 +16,8 @@ export const CLOSE_REASONS = [
   "Duplicate of another intake",
   "Moved out of the service area",
   "Not eligible for the program",
+  "No authorization is needed",
+  "Care continues in another program (referral coordination)",
   "Other",
 ] as const;
 

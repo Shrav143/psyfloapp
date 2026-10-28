@@ -1,6 +1,7 @@
 import type { WorkspaceTarget } from "@/data/assess/nav";
 import type { IntakeRecord } from "@/data/intake/types";
 import { NeedsCard } from "../workspace/overview/NeedsCard";
+import { OngoingCareCard } from "../workspace/overview/OngoingCareCard";
 import { PlanCard } from "../workspace/overview/PlanCard";
 import { ReadinessPanels } from "../workspace/overview/ReadinessPanels";
 import { RecentActivity } from "../workspace/overview/RecentActivity";
@@ -25,6 +26,7 @@ export function OverviewSection({ record, go, onConfigure }: { record: IntakeRec
         <CarePlanSummary record={record} />
       </div>
       <AuthorizationSummary record={record} auth={model.auth} />
+      <OngoingCareCard record={record} />
       <RecentActivity record={record} />
     </div>
   );

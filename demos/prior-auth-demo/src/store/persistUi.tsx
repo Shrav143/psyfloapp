@@ -97,7 +97,8 @@ export function SaveIndicator({ className }: { className?: string }) {
         className="inline-flex h-8 items-center gap-2 rounded-[10px] border border-transparent px-2.5 text-[12px] font-medium text-ink2 hover:border-field hover:bg-tile"
       >
         <span className={cn("h-2 w-2 rounded-full", DOT[status.state])} aria-hidden="true" />
-        <span>{text}</span>
+        {/* A fixed width, so "Saving…" and "Saved locally, 10:42 am" take the same room and the header does not change height with every save on a narrow window. */}
+        <span className="min-w-[150px] text-left">{text}</span>
       </button>
       {open ? (
         <div role="menu" aria-label="Save and reset" className="psy-fade-up absolute top-[36px] right-0 z-40 w-[230px] rounded-[14px] border border-field bg-white p-1.5 shadow-[0_12px_32px_rgba(21,27,36,0.12)]">

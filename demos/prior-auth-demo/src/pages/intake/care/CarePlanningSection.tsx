@@ -7,6 +7,7 @@ import { PERIOD_LABEL, periodOf } from "@/data/va/policy";
 import { useStore } from "@/store";
 import { runAgent } from "../lib/agents";
 import { useIntakeNow } from "../lib/policyNow";
+import { OngoingCareCard } from "../workspace/overview/OngoingCareCard";
 import { AddPathwayModal } from "../pathway/PathwayModals";
 import { refreshPathways } from "../pathway/pathwayModel";
 import { ReferralPanel } from "../pathway/referral/ReferralPanel";
@@ -86,6 +87,7 @@ export function CarePlanningSection({ record }: { record: IntakeRecord }) {
       <div ref={panel} id="referrals-out" className="scroll-mt-4">
         <ReferralPanel record={record} newFor={referFor} onNewHandled={() => setReferFor(null)} />
       </div>
+      <OngoingCareCard record={record} />
       <GateCard record={record} now={now} />
       {adding ? <AddPathwayModal record={record} onClose={() => setAdding(false)} /> : null}
     </div>

@@ -133,7 +133,7 @@ const fromNextGo = (go: NextGo, id: string): Go =>
   go.to === "tab" ? { to: "case", id, tab: go.tab === "actions" || go.tab === "draft" || go.tab === "criteria" ? go.tab : undefined, rec: go.rec } : go.to === "review" ? { to: "reviewAndSign", queueId: id } : go.to === "dashboard" ? { to: "dashboard", requestId: go.requestId } : { to: "denial", id: go.id };
 
 const DRAFT_STATUS = {
-  intake: { text: "Intake not finished", tone: "mid", cta: "Continue", primary: true },
+  intake: { text: "Patient & Service not finished", tone: "mid", cta: "Continue", primary: true },
   question: { text: "Needs your input", tone: "mid", cta: "Answer", primary: true },
   working: { text: "Agents working", tone: "neutral", cta: "Watch", primary: false },
   ready: { text: "Ready to sign", tone: "good", cta: "Review and sign", primary: true },
@@ -332,7 +332,7 @@ export function inView(r: WorkRow, v: View): boolean {
 }
 
 /** Fine-grained statuses for the Status filter: the chips the rows already show. */
-export const STATUS_DETAIL = ["Preparing", "Needs your input", "Agents working", "Intake not finished", "Ready to sign", "With the payer", "Submitted", "Under review", "Info requested", "Approved", "Review due", "Needs action", "Partial approval", "Denial route", "Denied", "Accepted"] as const;
+export const STATUS_DETAIL = ["Preparing", "Needs your input", "Agents working", "Patient & Service not finished", "Ready to sign", "With the payer", "Submitted", "Under review", "Info requested", "Approved", "Review due", "Needs action", "Partial approval", "Denial route", "Denied", "Accepted"] as const;
 export type StatusDetail = (typeof STATUS_DETAIL)[number] | "all";
 export const hasStatus = (r: WorkRow, s: StatusDetail): boolean => s === "all" || r.status.text === s || r.flags.some((f) => f.text === s);
 

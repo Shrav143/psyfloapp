@@ -29,6 +29,8 @@ interface Leaf {
   badge?: number;
   /** What the badge counts, shown on hover. */
   badgeNote?: string;
+  /** Router state for the link (All Authorizations says it was pressed, so the list does not reopen as Pending Reviews or Renewals & Extensions). */
+  state?: unknown;
   on: (p: Place) => boolean;
 }
 
@@ -69,7 +71,7 @@ function LeafLink({ item, place }: { item: Leaf; place: Place }) {
   const on = item.on(place);
   const Icon = item.icon;
   return (
-    <Link to={item.to} aria-current={on ? "page" : undefined} className={cn(row, on && rowOn)}>
+    <Link to={item.to} state={item.state} aria-current={on ? "page" : undefined} className={cn(row, on && rowOn)}>
       <Icon size={18} className="ico" />
       <span className="truncate">{item.label}</span>
       {item.badge ? (
@@ -142,7 +144,7 @@ export function Sidebar() {
     { to: paths.coordination(), label: "Care Coordination", icon: Share2, on: (p) => p.intake === "coordination" },
   ];
   const auth: Leaf[] = [
-    { to: paths.authorizations(), label: "All Authorizations", icon: ListChecks, badge: queue, on: (p) => authItem(p) === "all" },
+    { to: paths.authorizations(), label: "All Authorizations", icon: ListChecks, badge: queue, state: { allItem: true }, on: (p) => authItem(p) === "all" },
     { to: paths.pendingReviews(), label: "Pending Reviews", icon: CalendarCheck, on: (p) => authItem(p) === "reviews" },
     { to: paths.renewals(), label: "Renewals & Extensions", icon: Repeat, on: (p) => authItem(p) === "renewals" },
   ];

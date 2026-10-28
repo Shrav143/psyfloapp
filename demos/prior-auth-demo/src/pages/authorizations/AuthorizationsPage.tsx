@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { PenLine, Plus, SearchX, Send, Wand2 } from "lucide-react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Card, EmptyState, Page } from "@/components/ui";
 import { SiteTag } from "@/components/layout/SiteTag";
 import { ProgramScopeChip } from "@/components/programScope/ProgramScopeChip";
@@ -49,9 +49,17 @@ export default function AuthorizationsPage() {
   const paused = useStore((s) => s.agentPaused.cadence);
   const { drafting, draft: draftAll } = useDraftReviews();
 
-  // Coming back with a plain address restores the last view and filters.
+  // Coming back with a plain address restores the last view and filters. All Authorizations in the sidebar (state.allItem) keeps the filters but does not land on
+  // Pending Reviews or Renewals & Extensions: those have sidebar items of their own, and the item the person pressed would otherwise open the other one.
+  const location = useLocation();
   useEffect(() => {
-    if (!params.toString() && lastSearch) setParams(new URLSearchParams(lastSearch), { replace: true });
+    if (params.toString() || !lastSearch) return;
+    const back = new URLSearchParams(lastSearch);
+    if ((location.state as { allItem?: boolean } | null)?.allItem) {
+      if (back.get("view") === "reviews") back.delete("view");
+      if (back.get("show") === "renewal") back.delete("show");
+    }
+    if (back.toString()) setParams(back, { replace: true });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const { view, filters } = useMemo(() => readParams(params), [params]);
   // An older address (the queue's ?status=, Case Manager's ?tab=) is rewritten once in today's words, so the address and the view agree.

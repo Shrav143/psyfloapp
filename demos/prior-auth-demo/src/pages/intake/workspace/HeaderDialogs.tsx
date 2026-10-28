@@ -40,8 +40,8 @@ export function ReassignDialog({ record, onClose }: { record: IntakeRecord; onCl
   );
 }
 
-export function CloseDialog({ record, onClose }: { record: IntakeRecord; onClose: () => void }) {
-  const [reason, setReason] = useState<string>(CLOSE_REASONS[0]);
+export function CloseDialog({ record, onClose, initialReason }: { record: IntakeRecord; onClose: () => void; initialReason?: (typeof CLOSE_REASONS)[number] }) {
+  const [reason, setReason] = useState<string>(initialReason ?? CLOSE_REASONS[0]);
   const [note, setNote] = useState("");
   const alertOpen = record.safety?.status === "open";
   const needsNote = reason === "Other";

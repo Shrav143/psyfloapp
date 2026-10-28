@@ -4,6 +4,7 @@ import { Bell, FastForward, FlaskConical, RotateCcw, Sparkles } from "lucide-rea
 import { useEscape } from "@/components/ui";
 import { cn } from "@/lib/cn";
 import { DAY, HOUR, clockTime, stamp, toDate } from "@/lib/time";
+import { EXTRA_SCENARIOS, SCENARIOS } from "@/data/assess/scenarios";
 import { paths } from "@/routes";
 import { resetDemo, useStore } from "@/store";
 import { EnvironmentChip } from "@/pages/intake/policy/EnvironmentChip";
@@ -71,6 +72,17 @@ function DemoMenu() {
               </button>
             ))}
           </div>
+          <div className="px-3 pt-2 pb-1 text-[11px] font-medium tracking-[0.1em] text-muted uppercase">Intake scenarios</div>
+          <div className="px-3 pb-1 text-[13px] text-muted">Five fictional people on five programs. The intake changes with the program.</div>
+          {[...SCENARIOS, ...EXTRA_SCENARIOS].map((sc) => (
+            <button key={sc.key} type="button" className={item} title={`${sc.shows} ${sc.stage}`} onClick={() => { setOpen(false); nav(paths.intakeRecord(sc.intakeId)); }}>
+              <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-neutral-bg text-[11px] font-semibold">{sc.key}</span>
+              <span className="min-w-0 flex-1">
+                <span className="block font-medium">{sc.label}</span>
+                <span className="block text-[12px] text-muted">{sc.stage.split(/\.\s/)[0].replace(/\.$/, "")}</span>
+              </span>
+            </button>
+          ))}
           <div className="px-3 pt-2 pb-1 text-[11px] font-medium tracking-[0.1em] text-muted uppercase">Suggested path</div>
           {PATH.map(([label, to], i) => (
             <button key={to} type="button" className={item} onClick={() => { setOpen(false); nav(to); }}>

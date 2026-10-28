@@ -31,6 +31,7 @@ export function authorizationState(r: IntakeRecord, book: PatientBook | null): A
   const episode = r.episodeId && book ? book.episodes.find((e) => e.id === r.episodeId) : undefined;
   const auth = episode && book ? authorizationsOf(book, episode.id)[0] : undefined;
   if (episode && auth) return { value: AUTH_STATUS_LABEL[auth.status], tone: AUTH_STATUS_TONE[auth.status], detail: `${auth.id} · ${auth.label}`, href: paths.case(episode.caseId) };
+  if (r.triage === "closed") return { value: "None", tone: "neutral", detail: `The intake ended without an authorization.${r.triageNote ? ` ${r.triageNote}` : ""}`.trim() };
   const h = r.handoff;
   if (h.status === "in_new_case") return { value: "Draft started", tone: "neutral", detail: "In New Authorization", href: h.draftId ? paths.newCase({ draft: h.draftId }) : paths.newCase({ intake: r.id }) };
   if (h.status === "ready") return { value: "Packet approved", tone: "good", detail: "Not submitted", href: paths.newCase({ intake: r.id }) };

@@ -1,6 +1,7 @@
 import type { StateCreator } from "zustand";
 import type { ConsentEntry } from "@/data/assess/types";
 import { followUpFor, GUIDED_QUESTIONS, type VoiceOption } from "@/data/intake/scripts";
+import { canSign } from "@/data/assess/roles";
 import { staffOf } from "@/data/intake/seed";
 import { type AssessmentMode, type IntakeDocument, type IntakeRecord, type NoteSectionId, type ScribeSession, type Suggestion, type TranscriptTurn, type VoiceSession } from "@/data/intake/types";
 import { assessmentFeeds } from "@/pages/intake/assessment/feed";
@@ -136,6 +137,8 @@ export const createIntakeClinicalSlice: StateCreator<AppState, [], [], IntakeCli
       get().addIntakeTask(id, { role: "completion", action: "Clinical assessment waits for a clinician's attestation", status: "needs_you", section: "assessment", approval: "required", gate: { kind: "assessment" }, result: "Only a qualified clinician signs" });
     },
     signAssessment: (id, signerId, credentials, rolePlay) => {
+      /* Only a qualified clinician signs. The dialog asks already; this keeps any other caller (an agent, a script) from signing the assessment. */
+      if (!canSign(signerId) || rec(id)?.assessment.status === "signed") return;
       patchA(id, (a) => ({ ...a, status: "signed", attestation: { by: signerId, credentials, at: get().clock, rolePlay } }));
       for (const t of rec(id)?.tasks.filter((x) => x.gate?.kind === "assessment" && x.status === "needs_you") ?? []) get().updateIntakeTask(id, t.id, { status: "done", approval: "approved", result: `Signed by ${staffOf(signerId)?.name ?? signerId}` });
     },
