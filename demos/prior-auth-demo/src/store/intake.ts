@@ -1,5 +1,5 @@
 import type { StateCreator } from "zustand";
-import { seedIntakes, seedReadiness, seedRoster, VIEWER_STAFF, type LegacyClient, type PlanReadiness, type ReadinessState } from "@/data/intake/seed";
+import { seedIntakes, seedReadiness, seedRoster, staffOf, VIEWER_STAFF, type LegacyClient, type PlanReadiness, type ReadinessState } from "@/data/intake/seed";
 import type { AgentTask, AuditEvent, FieldState, FieldValue, IntakeRecord, IntakeSectionId, SafetyAlert, SourceRef, Suggestion, TriageStatus } from "@/data/intake/types";
 import { ROLE_AGENT } from "@/data/intake/types";
 import type { ProgramFocus } from "@/data/va/services";
@@ -128,7 +128,7 @@ export const createIntakeSlice: StateCreator<AppState, [], [], IntakeSlice> = (s
     },
     assignIntake: (id, staffId) => {
       patch(id, (r) => ({ ...r, assignedTo: staffId }));
-      audit(id, { actor: meOf(get()), action: "Assigned", detail: staffId });
+      audit(id, { actor: meOf(get()), action: "Assigned", detail: staffOf(staffId)?.name ?? staffId });
     },
     raiseSafety: (id, alert) => {
       patch(id, (r) => ({ ...r, safety: { ...alert, raisedAt: get().clock, status: "open" }, priority: true }));

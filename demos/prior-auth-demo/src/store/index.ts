@@ -6,7 +6,7 @@ import { createCasesSlice, type CasesSlice } from "./cases";
 import { createCoreSlice, resetCoreCounters, type CoreSlice } from "./core";
 import { createDenialsSlice, type DenialsSlice } from "./denials";
 import { createEligibilitySlice, type EligibilitySlice } from "./eligibility";
-import { createIntakeSlice, type IntakeSlice } from "./intake";
+import { createIntakeSlice, policyNowOf, type IntakeSlice } from "./intake";
 import { createIntakeCansSlice, type IntakeCansSlice } from "./intakeCans";
 import { createIntakeCarePlanSlice, type IntakeCarePlanSlice } from "./intakeCarePlan";
 import { createIntakeClinicalSlice, type IntakeClinicalSlice } from "./intakeClinical";
@@ -21,6 +21,7 @@ import { createQueueSlice, type QueueSlice } from "./queue";
 import { createRipplesSlice, type RipplesSlice } from "./ripples";
 import { createReferralsSlice, type ReferralsSlice } from "./referrals";
 import { createSessionSlice, type SessionSlice } from "./session";
+import { bindPolicyNow } from "@/data/assess/status";
 import { initPersist } from "./persist";
 import { createWorkflowsSlice, initWorkflowPersistence, type WorkflowsSlice } from "./workflows";
 
@@ -59,6 +60,9 @@ initPayerConfigPersistence(useStore);
 
 /* Intake records, New Authorization drafts and the plan readiness a person changed are saved in this browser too (guarded; storage can be blocked), merged over the seeds when the app starts. */
 initPersist(useStore);
+
+/* The status a record shows ignores modules whose rules start after the policy date, so it reads the same policy date the screens use. */
+bindPolicyNow(() => policyNowOf(useStore.getState()));
 
 /* Payers added on Payers join the shared payer list, so New Authorization, Eligibility and the queue offer them too. */
 useStore.subscribe((s, prev) => {
