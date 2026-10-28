@@ -25,7 +25,7 @@ export function DocumentChecks({ record, onShow }: { record: IntakeRecord; onSho
             const spot = { docId: `doc-${record.id}-${c.doc}`, blockId: CHECK_EVIDENCE[c.key] };
             const resolved = c.state !== "pass" && c.resolved;
             return (
-              <li key={c.key} data-check={c.key} data-check-state={c.state} className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1 border-b border-line py-3 last:border-b-0">
+              <li key={c.key} data-doc-check={c.key} data-doc-check-state={c.state} className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1 border-b border-line py-3 last:border-b-0">
                 <div className="min-w-0 flex-1 basis-[240px]">
                   <div className="text-[13px] font-semibold text-ink2">{c.label}</div>
                   <p className="mt-0.5 text-[13px] text-ink2">{c.detail}</p>

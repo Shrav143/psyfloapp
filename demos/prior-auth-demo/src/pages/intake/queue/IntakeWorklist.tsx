@@ -57,7 +57,7 @@ export function IntakeWorklist({ records, scope }: { records: IntakeRecord[]; sc
         selected={selected}
         onSelect={(id) => set("status", id ? (cardDefs.find((c) => c.id === id)?.status ?? null) : null)}
       />
-      <Card className="min-w-0 overflow-hidden">
+      <Card className="min-w-0">
         <div className="flex flex-col gap-3 border-b border-line px-5 py-4">
           <h2 className="text-[18px] leading-tight font-semibold">{scope === "active" ? "Active intakes" : "Referral worklist"}</h2>
           <FilterBar defs={defs} rows={universe} query={query} searchOf={searchTextOf} set={set} clear={clear} emptyShowsClear={rows.length === 0} />

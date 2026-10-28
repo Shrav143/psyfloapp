@@ -4,7 +4,7 @@ import type { PsyRequest } from "@/data/types";
 import type { DashFilters } from "@/store/core";
 
 /**
- * Cases being prepared in New Case that have no row on the Dashboard yet: saved, not sent, at a site in view, and matching Payer, Program and Request type.
+ * Cases being prepared in New Authorization that have no row on the Dashboard yet: saved, not sent, at a site in view, and matching Payer, Program and Request type.
  * The five that start out as Preparing rows already have a request, so they are not counted twice. Case Manager lists the same drafts.
  */
 export function draftsInPreparation(drafts: CaseDraft[], requests: PsyRequest[], f: DashFilters, sites: SiteId[]): CaseDraft[] {

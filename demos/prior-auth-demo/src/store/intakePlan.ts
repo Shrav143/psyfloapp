@@ -252,6 +252,17 @@ export const createIntakePlanSlice: StateCreator<AppState, [], [], IntakePlanSli
       const d = defaultsFor(programId, input.age);
       get().saveConfigDraft(id, { purposeId: input.purposeId, programId, population: input.population ?? src?.config?.population ?? d.population, setting: input.setting ?? src?.config?.setting ?? d.setting, episode: input.episode, choices: [], step: "program" });
       s.addIntakeAudit(id, { actor: me, action: "Started a clinical intake without a referral", detail: `${purpose.label}${input.episode ? ` · ${lower(input.episode.label)}` : ""}` });
+      /* The earlier signed assessments are found for the person now; they are prefilled into the modules in use when the configuration starts. */
+      const from = purpose.needsEpisode && input.episode?.fromIntakeId ? get().intakes.find((x) => x.id === input.episode?.fromIntakeId) : undefined;
+      if (from) {
+        let found = 0;
+        patch(id, (r) => {
+          const res = carryForward(r, from, [], at, me);
+          found = res.found;
+          return res.record;
+        });
+        if (found) get().addIntakeAudit(id, { actor: me, action: `Found ${found} signed assessment${found === 1 ? "" : "s"} from ${from.id}`, detail: "Listed under assessments found for this person. They are carried forward as a new version when the assessment starts.", section: "assessment" });
+      }
       return id;
     },
   };

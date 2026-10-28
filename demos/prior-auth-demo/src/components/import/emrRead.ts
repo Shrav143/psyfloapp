@@ -1,5 +1,5 @@
 /* What a pull from a connected clinical record system brings for each import target. A field whose EMR column still waits for a mapping in EMR Connect is left out
-   and said so, the same rule New Case has always used: Site B's "Level of care" and "Referral source" leave the level of care and the payer blank. */
+   and said so, the same rule New Authorization has always used: Site B's "Level of care" and "Referral source" leave the level of care and the payer blank. */
 import { planTypeOf } from "@/data/cases";
 import type { UnmappedField } from "@/data/emr";
 import { displayOf, fieldDef, mdy } from "./fields";

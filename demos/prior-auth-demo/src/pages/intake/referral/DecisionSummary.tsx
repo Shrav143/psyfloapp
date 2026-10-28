@@ -26,14 +26,15 @@ export function DecisionSummary({ record }: { record: IntakeRecord }) {
   const ended = record.triage === "declined" || record.triage === "redirected" || record.triage === "closed";
   const notice = d?.noticeId ? record.referralNotices?.find((n) => n.id === d.noticeId) : undefined;
   const title = d ? DECISION_LABEL[d.kind] : ended ? TRIAGE_LABEL[record.triage] : "Accepted for assessment";
+  /* The person's note, or the status note (an authorization started from it, a visit booked) when the decision has no reason of its own. */
+  const note = d?.note ?? (d?.reason ? undefined : record.triageNote);
   const by = d ? staffOf(d.by)?.name ?? d.by : undefined;
   const rows: [string, React.ReactNode][] = [
     ...(by && d ? ([["Decided by", `${by} · ${longDate(d.at)} ${stamp(d.at).split(" ").slice(1).join(" ")}`]] as [string, React.ReactNode][]) : []),
     ...(d?.reason ? ([["Reason", d.reason]] as [string, React.ReactNode][]) : []),
     ...(d?.destination ? ([["Sent to", d.destination.org]] as [string, React.ReactNode][]) : []),
-    ...(d?.note ? ([["Note", d.note]] as [string, React.ReactNode][]) : []),
+    ...(note ? ([["Note", note]] as [string, React.ReactNode][]) : []),
     ...(notice ? ([["Notice to the referrer", notice.status === "sent" ? `Sent (simulated) ${stamp(notice.sentAt ?? notice.createdAt)}` : notice.status === "draft" ? "Draft, not sent. Review it below." : "Discarded"]] as [string, React.ReactNode][]) : []),
-    ...(!d && record.triageNote ? ([["Note", record.triageNote]] as [string, React.ReactNode][]) : []),
   ];
   const confirm = () => {
     setTried(true);

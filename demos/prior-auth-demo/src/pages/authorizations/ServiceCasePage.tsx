@@ -16,7 +16,7 @@ const STATUS: Record<PolicyRule["status"], { text: string; tone: Tone }> = {
   unresolved: { text: "Not final", tone: "neutral" },
 };
 
-/** A request for a Virginia service other than the four core levels of care (CPST, ACT, ABA and the rest), made in New Case. The case page's tabs read
+/** A request for a Virginia service other than the four core levels of care (CPST, ACT, ABA and the rest), made in New Authorization. The case page's tabs read
     criteria, documents and a forecast that exist only for the core levels of care, so this page shows what is known and nothing more: the request,
     what the Virginia policy rows (data/va/policy.ts) say for the service today, the framework and approval chance lines, and the request's history. */
 export function ServiceCasePage({ request: r }: { request: PsyRequest }) {

@@ -18,7 +18,7 @@ export const touchesView = (ids: readonly SiteId[], view: readonly SiteId[]): bo
 const PLACED: Record<string, SiteId> = {
   "R-1042": "A", "R-1101": "A", "R-0997": "A", "D-3318": "A", "R-0988": "A", "P-1499": "A", "R-1117": "A", "I-2144": "A", "R-0921": "A", "I-2275": "A", "R-0912": "B",
   "I-2207": "B", "I-2141": "B", "D-3297": "B", "I-2127": "B", "D-3306": "B", "I-2231": "B", "I-2193": "B", "R-0975": "B", "R-1118": "B", "P-1544": "B", "D-3290": "B",
-  /* Three of the eight open referrals are at Site B, so each site has an Incoming referrals list in New Case (by the hash all eight fell at Site A). */
+  /* Three of the eight open referrals are at Site B, so each site has an Incoming referrals list in New Authorization (by the hash all eight fell at Site A). */
   "RF-2045": "B", "RF-2048": "B", "RF-2053": "B",
 };
 

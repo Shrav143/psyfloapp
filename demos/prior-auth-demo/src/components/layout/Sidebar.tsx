@@ -32,7 +32,9 @@ interface Leaf {
   on: (p: Place) => boolean;
 }
 
-const row = "flex h-10 shrink-0 items-center gap-3 rounded-xl px-3 text-[14px] font-medium text-ink2 transition-colors hover:bg-[#E8E5DF]";
+/* On a short screen (under 820 px tall) the rows and gaps tighten so more of the list shows without scrolling. */
+const row = "flex h-10 shrink-0 items-center gap-3 rounded-xl px-3 text-[14px] font-medium text-ink2 transition-colors hover:bg-[#E8E5DF] [@media(max-height:820px)]:h-9";
+const gap = "mt-3.5 [@media(max-height:820px)]:mt-2";
 const rowOn = "bg-forest text-white hover:bg-forest";
 const label = "shrink-0 px-3 pb-1 text-[11px] tracking-[0.12em] text-muted uppercase";
 
@@ -94,7 +96,7 @@ function Group({ name, items, place, badge }: { name: string; items: Leaf[]; pla
   const lit = inGroup && !open;
   const Chevron = open ? ChevronDown : ChevronRight;
   return (
-    <div className="mt-3.5 flex shrink-0 flex-col gap-[3px]">
+    <div className={cn(gap, "flex shrink-0 flex-col gap-[3px]")}>
       <button
         type="button"
         aria-expanded={open}
@@ -158,7 +160,7 @@ export function Sidebar() {
   const dashboard: Leaf = { to: paths.dashboard(), label: "Dashboard", icon: LayoutDashboard, badge: dash, on: starts("/dashboard") };
   const plain = (title: string, items: Leaf[]) => (
     <>
-      <div className={cn(label, "mt-3.5")}>{title}</div>
+      <div className={cn(label, gap)}>{title}</div>
       {items.map((i) => <LeafLink key={i.label} item={i} place={place} />)}
     </>
   );

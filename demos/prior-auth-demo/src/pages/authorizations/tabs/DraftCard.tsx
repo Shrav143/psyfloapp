@@ -24,7 +24,7 @@ export interface DraftSectionView {
   text: string;
   /** The chips of the chart pages the text came from (kept by the case page), then the ones the applied actions added. */
   sources: Evidence[];
-  /** What the New Case summary lists as this section's chips. */
+  /** What the New Authorization summary lists as this section's chips. */
   summarySources: string[];
   /** Sentences from applied actions that the summary does not hold yet. They follow the text in a green mark. */
   added: { recId: string; text: string }[];
@@ -37,7 +37,7 @@ export const usesSource = (s: DraftSectionView, label: string): boolean => s.sou
 /** The test id of a section: the case page's own name for two of them. */
 export const sectionTestId = (id: string): string => `draft-${OWN_ID[id] ?? id}`;
 
-/** The draft sections: the same summary Review and sign reads in New Case (one narrative per request), with the context added on this page. */
+/** The draft sections: the same summary Review and sign reads in New Authorization (one narrative per request), with the context added on this page. */
 export function useDraftSections(ctx: CaseCtx): DraftSectionView[] {
   const { detail, work } = ctx;
   const clock = useStore((s) => s.clock);
@@ -87,7 +87,7 @@ export function DraftCard({ ctx, sections, lit }: { ctx: CaseCtx; sections: Draf
     const edits = Object.fromEntries(changed.map((s) => [OWN_ID[s.id] ?? s.id, { text: values[s.id].trim(), includes: work.applied }]));
     const text = (s: DraftSectionView) => (values[s.id] ?? sectionText(s)).trim();
     store().saveDraft(key, edits, { n: versions.length + 1, snapshot: own.map((s) => `${s.title}. ${text(s)}`).join("\n\n") });
-    /* The edited text goes to the draft in New Case, so Review and sign reads it too. Every applied action's sentence is in it from now on. */
+    /* The edited text goes to the draft in New Authorization, so Review and sign reads it too. Every applied action's sentence is in it from now on. */
     const id = store().draftFromRequest(detail.requestId);
     store().patchCaseDraft(id, { narrative: own.map((s) => ({ id: s.id, heading: s.title, text: text(s), sources: s.summarySources })), narrativeIncludes: adds.map((a) => a.recId) });
     store().toast({ title: "Draft saved", body: "Integrity reads it again before it can be signed.", tone: "mid" });

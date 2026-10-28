@@ -3,7 +3,6 @@ import { blankCarePlan, programForSelection, requestedServiceOf, selectedService
 import { programById } from "@/data/assess/programs";
 import { canSign } from "@/data/assess/roles";
 import type { CarePlan, CareSetting } from "@/data/assess/types";
-import { staffOf } from "@/data/intake/seed";
 import type { IntakeRecord } from "@/data/intake/types";
 import { serviceById } from "@/data/va/services";
 import { authType } from "@/pages/newcase/authType";
@@ -49,7 +48,6 @@ const uidG = (): string => `goal-${Date.now().toString(36)}-${++n}`;
 export const createIntakeCarePlanSlice: StateCreator<AppState, [], [], IntakeCarePlanSlice> = (_set, get) => {
   const rec = (id: string): IntakeRecord | undefined => get().intakes.find((r) => r.id === id);
   const me = () => meOf(get());
-  const name = (id: string) => staffOf(id)?.name ?? id;
   const audit = (id: string, action: string, detail?: string, actor = me()) => get().addIntakeAudit(id, { actor, action, detail, section: "pathway" });
   const ensure = (id: string): boolean => {
     const r = rec(id);
@@ -189,11 +187,10 @@ export const createIntakeCarePlanSlice: StateCreator<AppState, [], [], IntakeCar
       if (!kind) return stop("This intake purpose leads to no authorization", "A screening or a discharge assessment needs care coordination, not a payer request.");
       if (authType(kind).existing && !episodeLink(r, selectPatientBook(s))?.episodeId) return stop("Link the treatment episode first", `${authType(kind).label} reviews an episode that already exists. Choose it, and the request reuses it.`);
       const draft = s.startCaseFromIntake(id, kind);
-      if (draft) {
-        const open = s.caseDrafts.find((d) => d.id === draft);
-        const program = serviceById(sel).program;
-        if (open && open.program !== program && !open.sent) s.patchCaseDraft(draft, { program });
-      }
+      /* A draft opened again after the clinician changed the service follows the selection. */
+      const program = serviceById(sel).program;
+      const existing = draft ? get().caseDrafts.find((d) => d.id === draft) : undefined;
+      if (draft && existing && !existing.sent && existing.program !== program) get().patchCaseDraft(draft, { program });
       return draft;
     },
   };

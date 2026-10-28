@@ -18,7 +18,7 @@ export function usePayerWorkflows(payerId: string): Workflow[] {
   const drafts = useStore((s) => s.workflowDrafts);
   return useMemo(() => live.filter((w) => w.payerId === payerId).map((w) => effective(w, drafts)).sort((a, b) => RANK[a.status] - RANK[b.status] || a.name.localeCompare(b.name)), [live, drafts, payerId]);
 }
-/** The published workflows only, as New Case sees them. */
+/** The published workflows only, as New Authorization sees them. */
 export function usePublishedWorkflows(payerId: string): Workflow[] {
   const live = useStore((s) => s.workflows);
   return useMemo(() => live.filter((w) => w.payerId === payerId && w.status === "published"), [live, payerId]);

@@ -45,7 +45,7 @@ export function AssessmentsWorklist({ records }: { records: IntakeRecord[] }) {
   return (
     <>
       <StatusCards label="Assessment figures" cards={cards} selected={CARDS.find((c) => c.id === query.facets.status)?.id ?? null} onSelect={(id) => set("status", id)} />
-      <Card className="min-w-0 overflow-hidden">
+      <Card className="min-w-0">
         <div className="flex flex-col gap-3 border-b border-line px-5 py-4">
           <h2 className="text-[18px] leading-tight font-semibold">Assessments</h2>
           <FilterBar defs={defs} rows={all} query={query} searchOf={assessmentSearchText} set={set} clear={clear} emptyShowsClear={rows.length === 0} />

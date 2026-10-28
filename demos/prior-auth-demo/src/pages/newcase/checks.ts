@@ -74,7 +74,7 @@ export function integrityChecks(d: CaseDraft, narrative: NarrativeSection[], rec
   const n = criteriaCount(d.program ?? "RES");
   const stepdownLater = d.answers.some((a) => a.key === "stepdown" && a.choice === "later");
   const unmet = [
-    ...(absent.length ? [`${absent.length} required ${noun(absent.length)} ${absent.length === 1 ? "is" : "are"} not in the case: ${list(absent.map((r) => r.label))}. Add ${absent.length === 1 ? "it" : "them"} on Clinical documentation, or mark ${absent.length === 1 ? "it" : "them"} not available.`] : []),
+    ...(absent.length ? [`${absent.length} required ${noun(absent.length)} ${absent.length === 1 ? "is" : "are"} not in the case: ${list(absent.map((r) => r.label))}. Add ${absent.length === 1 ? "it" : "them"} in Clinical Documentation, or mark ${absent.length === 1 ? "it" : "them"} not available.`] : []),
     ...(unavailable.length ? [`${list(unavailable.map((r) => r.label))} ${unavailable.length === 1 ? "is" : "are"} marked not available, so ${payer} has no evidence for ${unavailable.length === 1 ? "it" : "them"}.`] : []),
     ...(stepdownLater ? ["A named step-down provider is not on file yet."] : []),
   ];

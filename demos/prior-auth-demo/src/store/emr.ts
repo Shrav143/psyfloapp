@@ -179,7 +179,7 @@ export const createEmrSlice: StateCreator<AppState, [], [], EmrSlice> = (set, ge
   };
 };
 
-/** Systems the agents can read from right now, at the sites in view. "Pull from EMR" in New Case needs at least one, so a Site A viewer is offered Site A's record system and never Site B's. */
+/** Systems the agents can read from right now, at the sites in view. "Pull from EMR" in New Authorization needs at least one, so a Site A viewer is offered Site A's record system and never Site B's. */
 export const selectConnectedEmr = (s: AppState): EmrSystem[] => emrInView(s.emrSystems, sitesInView(s)).filter((x) => x.status === "connected");
 /** True when at least one connected system at the sites in view has write-back on. The Dashboard's write-back box only shows then. */
 export const selectWriteBackOn = (s: AppState): boolean => emrInView(s.emrSystems, sitesInView(s)).some((x) => x.status === "connected" && x.writeBack);

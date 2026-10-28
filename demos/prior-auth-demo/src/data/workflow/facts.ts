@@ -6,7 +6,7 @@ import { PROGRAM_LABEL, type Program, type CoreProgram } from "../types";
 import { REQUEST_TYPE_LABEL, type CaseFacts, type FactKey, type RequestType } from "./types";
 
 /* Reading the facts a condition or a rule node asks about, and counting days. Pure, no dependency, the same everywhere: the engine, the validator and Test Workflow all count days here.
-   Business days skip Saturday and Sunday but not holidays (the demo has no holiday calendar), and say so where they are shown. The New Case step builds the facts of a draft in
+   Business days skip Saturday and Sunday but not holidays (the demo has no holiday calendar), and say so where they are shown. The New Authorization step builds the facts of a draft in
    pages/newcase/workflow/facts.ts (factsFromCase); this file does not duplicate it. */
 
 /** The demo's first day, Tue 20 Oct 2026: what `today` is in a test and in a new fact sheet. */

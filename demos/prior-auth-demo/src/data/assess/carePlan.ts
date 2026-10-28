@@ -5,7 +5,6 @@ import { serviceById, type VaServiceId } from "../va/services";
 import { buildAssessmentPlan } from "./plan";
 import { isCoreModule, moduleById, schemaOf } from "./modules";
 import { PROGRAMS_V2, programById, programForService } from "./programs";
-import { purposeById } from "./purposes";
 import type { BuiltInPayerId } from "../types";
 import type { CarePlan, ModuleId, Population, ProgramId } from "./types";
 

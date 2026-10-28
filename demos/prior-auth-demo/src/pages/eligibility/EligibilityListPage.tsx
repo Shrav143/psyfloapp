@@ -44,7 +44,7 @@ function Tile({ tone, icon: Icon, value, label, hint, selected, onClick }: { ton
 }
 
 /** Eligibility and Benefits: will the clinic be paid for each patient? Reads the shared verification records, inside the sites in view,
-    so a check made in New Case is a row here and a check made here is the one New Case finds. */
+    so a check made in New Authorization is a row here and a check made here is the one New Authorization finds. */
 export default function EligibilityListPage() {
   const nav = useNavigate();
   const patients = useStore(selectEbRows);

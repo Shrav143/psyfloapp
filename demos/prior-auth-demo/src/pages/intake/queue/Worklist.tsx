@@ -73,7 +73,7 @@ export function Worklist<R>({ rows, columns, rowKey, rowHref, linkState, default
 
   return (
     <>
-      <div className="relative overflow-x-auto">
+      <div className="relative overflow-x-auto rounded-b-[20px]">
         <table aria-label={label} className="w-full table-fixed border-separate border-spacing-0 text-left" style={{ minWidth }}>
           <colgroup>
             {columns.map((c) => <col key={c.id} style={{ width: c.width }} />)}

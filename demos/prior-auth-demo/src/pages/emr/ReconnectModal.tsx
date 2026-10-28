@@ -20,7 +20,7 @@ export function ReconnectModal({ system, onClose }: { system: EmrSystem; onClose
       </>
     }>
       <div className="flex flex-col gap-4">
-        <p className="text-[13px] text-muted">It is connected again only when the test passes. Until then New Case cannot pull a chart from it.</p>
+        <p className="text-[13px] text-muted">It is connected again only when the test passes. Until then New Authorization cannot pull a chart from it.</p>
         <ConnectionTest checks={CONNECT_CHECKS} onPassed={() => setPassed(true)} />
       </div>
     </Modal>

@@ -18,7 +18,7 @@ export interface PlanInfo {
   detail: string;
 }
 
-/** The plan type and where claims go, from the payer's group and the plan type New Case would pre-fill. A payer with no plan type gives null, and the caller shows nothing.
+/** The plan type and where claims go, from the payer's group and the plan type New Authorization would pre-fill. A payer with no plan type gives null, and the caller shows nothing.
     The six built-in payers are Virginia Medicaid (data/va/plans.ts): a Cardinal Care MCO, or fee-for-service with Acentra Health reviewing authorizations. */
 export function planInfo(p: PayerSummary): PlanInfo | null {
   const kind = planTypeOf(p.id);

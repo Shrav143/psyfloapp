@@ -108,7 +108,7 @@ export function TestForm({ value, onChange, docs, workflow, onService }: { value
               <p className="m-0 text-[13px] text-muted">This workflow has no step that waits for a person.</p>
             )
           ) : null}
-          <p className="m-0 text-xs text-muted">A step that waits for a person stops the run until its approval is given, as in New Case.</p>
+          <p className="m-0 text-xs text-muted">A step that waits for a person stops the run until its approval is given, as in New Authorization.</p>
         </div>
       </Fold>
     </div>

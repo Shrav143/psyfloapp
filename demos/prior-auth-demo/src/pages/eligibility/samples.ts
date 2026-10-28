@@ -31,7 +31,7 @@ export const SAMPLES: Sample[] = [
   sample("limit", "Limit reached", "W.P.", 48, "cardinal", "RES", `CH331850${TAIL.limitReached}`),
 ];
 
-/* More ways a check can end, each with a warning that does not stop New Case: the plan changed, the ID differs, the plan did not confirm the service,
+/* More ways a check can end, each with a warning that does not stop New Authorization: the plan changed, the ID differs, the plan did not confirm the service,
    the clinic's enrollment is not confirmed, and no rule is on file for the authorization. A check that cannot run happens when Verify is paused in Settings. */
 export const EXCEPTION_SAMPLES: Sample[] = [
   sample("payer_changed", "Payer changed", "H.R.", 44, "summit", "RES", `SM740355${TAIL.payerChanged}`),

@@ -90,7 +90,7 @@ export function runLine(d: CaseDraft): string {
   if (d.run.failed) return `${AGENTS[d.run.failed].name} could not reach ${d.payerId ? payerById(d.payerId).shortName : "the payer"}'s portal. Retry it or skip it`;
   if (s === "question" && d.run.question) return d.type === "Recertification" ? QUESTIONS[d.run.question].line : QUESTIONS[d.run.question].line.replace("the recertification", "the request");
   if (s === "ready") return "Integrity and Scrubber passed. Waiting for a clinician to sign";
-  if (s === "intake") return "Intake is not finished. Add the chart and the payer to start the agents";
+  if (s === "intake") return "Patient & Service is not finished. Add the person and the payer to start the agents";
   const agent = agentNow(d);
   const who = d.payerId ? payerById(d.payerId).shortName : "the payer";
   return `${AGENTS[agent].name} ${LINE[agent]?.(d, who) ?? "is working"}`;

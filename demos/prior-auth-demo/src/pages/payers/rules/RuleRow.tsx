@@ -81,7 +81,7 @@ export function RuleRow({ rule, usedBy, onEdit, onVerify, onArchive, defaultOpen
             <li className={cn(chip, !rule.lastVerified && "text-mid-ink")}>{rule.lastVerified ? `Last verified ${readDate(rule.lastVerified)}` : "Never verified"}</li>
             <li className={chip}>Owner: {rule.owner}</li>
             <li className={chip}>Version {rule.version}</li>
-            {rule.origin === "payer_config" ? <li className={chip} title="Eligibility and New Case read the same saved rule">Saved with the payer's rules</li> : null}
+            {rule.origin === "payer_config" ? <li className={chip} title="Eligibility and New Authorization read the same saved rule">Saved with the payer's rules</li> : null}
           </ul>
           {rule.verification === "unverified" || rule.verification === "needs_review" ? (
             <p className="text-xs text-mid-ink">{rule.verification === "unverified" ? "Unverified. Workflows route this to manual review until a person marks it verified with a source." : "Needs review. A person should check it against the source before workflows rely on it."}</p>

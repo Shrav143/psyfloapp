@@ -21,7 +21,7 @@ import { nextActionOf, type NextGo } from "../nextAction";
 import { DUE_TONE, PHASE_TONE, chanceOf, dueText, phaseOf } from "../queueLogic";
 
 /* The one Authorizations worklist: every request a person tracks, from preparation to the payer's decision and the approved authorization's reviews.
-   It is worked out from what the store already holds (the queue rows, the Dashboard requests, the approved-authorization ledger, the New Case drafts,
+   It is worked out from what the store already holds (the queue rows, the Dashboard requests, the approved-authorization ledger, the New Authorization drafts,
    the week's clinical reviews and the accepted denials), one row per request: a queue row and its ledger row are the same request, so they are one row.
    Nothing here is stored. Each row keeps its sources, so the quick views, the case page and the review drawer open the same records they always did. */
 
@@ -271,7 +271,7 @@ export function buildWorkRows(input: WorkInput): WorkRow[] {
     index(row);
   }
 
-  /* 4. Drafts saved in New Case that are not a request yet. A draft of a request already listed stays on that row. */
+  /* 4. Drafts saved in New Authorization that are not a request yet. A draft of a request already listed stays on that row. */
   for (const d of drafts) {
     if (!d.saved || d.sent) continue;
     const known = find(d.caseId, d.id);
@@ -283,7 +283,7 @@ export function buildWorkRows(input: WorkInput): WorkRow[] {
     const st = DRAFT_STATUS[state];
     const chip = dueChip(d, clock);
     const row: WorkRow = {
-      key: `d:${d.id}`, id: d.caseId ?? "New Case", ids: [d.id, ...(d.caseId ? [d.caseId] : [])], caseId: d.caseId ?? d.id, site: d.site,
+      key: `d:${d.id}`, id: d.caseId ?? "New Authorization", ids: [d.id, ...(d.caseId ? [d.caseId] : [])], caseId: d.caseId ?? d.id, site: d.site,
       initials: d.patient.initials, age: d.patient.age, payerId: d.payerId, program: d.program, service: d.levelLabel ?? (d.program ? PROGRAM_LABEL[d.program] : "Level not set"),
       kind: d.kind, typeLabel: REQUEST_KIND_LABEL[d.kind], life: "progress", status: { text: st.text, tone: st.tone }, flags: [],
       needsYou: needsPerson(d), next: firstSentence(runLine(d)), action: { label: st.cta, go: { to: "draft", draftId: d.id }, primary: st.primary },

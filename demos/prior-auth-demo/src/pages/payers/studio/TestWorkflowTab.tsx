@@ -22,7 +22,7 @@ import { usePayerRules, usePayerWorkflows } from "./lib/store";
 import { factsOf, PRESETS, type TestCase } from "./lib/testCases";
 import { STATUS_WORD } from "./lib/ui";
 
-/* Test Workflow: a fictional case goes through the same engine New Case uses, and the path it took lights up on the canvas. */
+/* Test Workflow: a fictional case goes through the same engine New Authorization uses, and the path it took lights up on the canvas. */
 
 const STEP_MS = 350;
 
@@ -55,7 +55,7 @@ export function TestWorkflowTab({ payerId }: { payerId: string }) {
   const [problem, setProblem] = useState<string | null>(null);
   const timer = useRef<number | undefined>(undefined);
 
-  /* The workflow that would run for this case, unless the person picked one. Published ones first, as New Case would. */
+  /* The workflow that would run for this case, unless the person picked one. Published ones first, as New Authorization would. */
   const published = useMemo(() => workflows.filter((w) => w.status === "published"), [workflows]);
   const auto = useMemo(() => {
     const f = factsOf(test, { nodes: [] });

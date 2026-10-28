@@ -32,7 +32,7 @@ function Row({ label, chip, tone, unknown, children }: { label: string; chip?: s
 }
 
 /** The full result of one check in a right-hand panel: payment checks, how it was checked and History.
-    On the Eligibility result page everything else is already on the page, so the panel holds only that. Elsewhere (New Case) it opens with what the check found
+    On the Eligibility result page everything else is already on the page, so the panel holds only that. Elsewhere (New Authorization) it opens with what the check found
     and the facts, and ends with a button to the full result. */
 export function VerificationDetailsPanel({ record, open, onClose }: { record: VerificationRecord; open: boolean; onClose: () => void }) {
   const nav = useNavigate();

@@ -12,7 +12,7 @@ function Mappings({ systems, mappings, waiting, onMap }: { systems: EmrSystem[];
     <section aria-labelledby="mappings-title">
       <h4 id="mappings-title" className="font-serif text-[16px] font-semibold">Field mappings</h4>
       <p className="mt-0.5 text-[13px] text-muted">
-        {mappings.length} mapped{waiting.length ? `, ${waiting.length} waiting. A chart pulled in New Case leaves the waiting fields blank until you map them.` : ". Every field the agents have met is mapped."}
+        {mappings.length} mapped{waiting.length ? `, ${waiting.length} waiting. A chart pulled in New Authorization leaves the waiting fields blank until you map them.` : ". Every field the agents have met is mapped."}
       </p>
       <ul className="mt-3 overflow-hidden rounded-2xl border border-edge" aria-label="Field mappings">
         {waiting.map((u) => (

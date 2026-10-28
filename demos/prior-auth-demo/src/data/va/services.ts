@@ -21,7 +21,7 @@ export interface VaService {
   short: string;
   group: ServiceGroup;
   status: ServiceStatus;
-  /** The authorization program a handoff to New Case uses. */
+  /** The authorization program a handoff to New Authorization uses. */
   program: AuthProgram;
   /** IOP and PHP exist both under ARTS (substance use) and as mental health services. */
   track?: "sud" | "mh";

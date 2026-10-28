@@ -7,7 +7,7 @@ import { applyImport } from "@/pages/newcase/importIntake";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
 
-/** For a record system with no connection: bring a patient in from an export or a screenshot, and start a New Case with it. */
+/** For a record system with no connection: bring a patient in from an export or a screenshot, and start a New Authorization with it. */
 export function ImportFallback() {
   const nav = useNavigate();
   const [open, setOpen] = useState(false);

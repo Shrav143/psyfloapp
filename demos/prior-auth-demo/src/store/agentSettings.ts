@@ -3,7 +3,7 @@ import { AGENTS } from "@/data/agents";
 import type { AgentKey } from "@/data/types";
 import type { AppState } from "./index";
 
-/* How much freedom each agent has, and which are paused. Settings writes it; New Case (Agents work), the Dashboard's
+/* How much freedom each agent has, and which are paused. Settings writes it; New Authorization (Agents work), the Dashboard's
    "Check all now" and Case Manager's "Draft all due reviews" read it, so a pause is felt everywhere. */
 
 export type Freedom = "ask" | "report" | "auto";

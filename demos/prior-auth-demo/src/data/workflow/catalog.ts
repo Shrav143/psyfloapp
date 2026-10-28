@@ -81,20 +81,20 @@ const DEFS: NodeDef[] = [
 
   /* ---- triggers */
   d({
-    kind: "trg_new_request", category: "trigger", title: "New authorization request", purpose: "Starts when a request is created in New Case.", icon: "FilePlus", stage: "intake", support: "live", noInputs: true,
-    note: "New Case starts the workflow as soon as a case is created.",
+    kind: "trg_new_request", category: "trigger", title: "New authorization request", purpose: "Starts when a request is created in New Authorization.", icon: "FilePlus", stage: "intake", support: "live", noInputs: true,
+    note: "New Authorization starts the workflow as soon as a case is created.",
     fields: [multi("requestTypes", "Request types", REQUESTS, { help: "Leave empty for every request type." }), multi("services", "Services", SERVICES, { help: "Leave empty for every service." })],
     defaults: { requestTypes: [], services: [] },
   }),
   d({
     kind: "trg_review_due", category: "trigger", title: "Concurrent review due", purpose: "Starts when a review of an existing authorization is due.", icon: "CalendarClock", stage: "intake", support: "simulated", noInputs: true,
-    note: "Case Manager shows review dates, but this demo does not start a workflow by itself when one comes due. A concurrent review started in New Case counts as due.",
+    note: "Case Manager shows review dates, but this demo does not start a workflow by itself when one comes due. A concurrent review started in New Authorization counts as due.",
     fields: [num("daysBefore", "Days before the review", { min: 0, max: 60, unit: "days" }), multi("services", "Services", SERVICES, { help: "Leave empty for every service." })],
     defaults: { daysBefore: 3, services: [] },
   }),
   d({
     kind: "trg_auth_expiring", category: "trigger", title: "Authorization expiring", purpose: "Starts when an authorization is close to its end.", icon: "CalendarX", stage: "intake", support: "simulated", noInputs: true,
-    note: "The demo does not watch expiry dates on its own. A reauthorization started in New Case counts as expiring.",
+    note: "The demo does not watch expiry dates on its own. A reauthorization started in New Authorization counts as expiring.",
     fields: [num("daysBefore", "Days before it ends", { min: 0, max: 90, unit: "days" }), multi("services", "Services", SERVICES, { help: "Leave empty for every service." })],
     defaults: { daysBefore: 7, services: [] },
   }),
@@ -333,7 +333,7 @@ const DEFS: NodeDef[] = [
   }),
   d({
     kind: "act_human_approval", category: "action", title: "Request human approval", purpose: "Stops until a person approves. Nothing goes to a payer before this.", icon: "UserCheck", stage: "review", support: "live", mode: "manual",
-    note: "The sign-off gate in New Case is real: only a clinician signs, and nothing is sent until they do.",
+    note: "The sign-off gate in New Authorization is real: only a clinician signs, and nothing is sent until they do.",
     outputs: [out("next", "Approved"), opt("rejected", "Declined")],
     fields: [sel("approver", "Who approves", [["clinician", "A clinician"], ["coordinator", "An authorization coordinator"], ["manager", "A manager"]]), text("what", "What they approve", { placeholder: "Review the packet before it goes to the payer" })],
     defaults: { approver: "clinician", what: "Review the request before anything is sent" },

@@ -19,7 +19,7 @@ export interface LedgerRow extends LedgerCase {
 const APPROVED: Record<CoreProgram, number> = { RES: 14, PHP: 10, IOP: 24, WM: 5 };
 const SEED_IDS = new Set(SEED_REQUESTS.map((r) => r.id));
 
-/** A request signed and sent in New Case, as a tracker row. It follows the request: with the payer, asked for more, approved or denied. */
+/** A request signed and sent in New Authorization, as a tracker row. It follows the request: with the payer, asked for more, approved or denied. */
 function fromRequest(id: string, r: PsyRequest, program: CoreProgram): LedgerCase {
   const denial = r.track === "denial";
   const approved = r.stage === "decided" && !denial;
@@ -48,7 +48,7 @@ function fromRequest(id: string, r: PsyRequest, program: CoreProgram): LedgerCas
 
 /**
  * The tracker's rows, in one place so the header count, the tiles and the table agree:
- * the seed ledger, then every case signed and sent in New Case today (they became requests in the core store).
+ * the seed ledger, then every case signed and sent in New Authorization today (they became requests in the core store).
  * A denial the clinic accepted reads "Step-down plan open" (the plan is on Active cases). A case with a next review
  * booked reads that date. Any other case that is also a request reads the case page's own due time, so the two
  * screens show the same hours and tick together with the demo clock.

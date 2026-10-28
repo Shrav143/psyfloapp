@@ -1,6 +1,5 @@
 /* Draft logic that has no screen of its own: where a New Authorization draft starts from (an intake, a coverage check, a known patient) and the sample chart. A referral is not a starting point any more: it is the first status of an intake. */
 import { planTypeOf, type CaseDraft } from "@/data/cases";
-import { isoOf } from "@/data/patients";
 import { PAYERS } from "@/data/seed";
 import { PROGRAMS, type PayerId, type Program, type RequestType } from "@/data/types";
 import { siteOfVerification } from "@/data/verification";

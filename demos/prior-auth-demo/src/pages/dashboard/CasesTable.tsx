@@ -130,7 +130,7 @@ interface Props {
   needsToday: boolean;
   sort: RowSort | null;
   onSort: (key: SortKey) => void;
-  /** Cases saved in New Case that have no row here, and what to say about them. */
+  /** Cases saved in New Authorization that have no row here, and what to say about them. */
   more: number;
 }
 
@@ -184,7 +184,7 @@ export function CasesTable({ title, controls, rows, visible, clock, onOpen, onMo
       {more > 0 ? (
         <p className={cn("px-6 py-3.5 text-[13px] text-ink2", rows.length > 0 && "border-t border-line")}>
           {more} {rows.length > 0 ? "more " : ""}
-          {more === 1 ? "is" : "are"} being prepared in New Case.{" "}
+          {more === 1 ? "is" : "are"} being prepared in New Authorization.{" "}
           <Link to={paths.manager("cases")} className="font-semibold text-forest hover:underline">
             Open Active cases
           </Link>

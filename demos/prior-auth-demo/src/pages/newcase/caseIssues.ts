@@ -17,9 +17,9 @@ export function intakeIssues(env: CaseEnv): MissingItem[] {
   const { draft: d } = env;
   const def = authType(d.kind);
   const out: MissingItem[] = [];
-  if (!patientReady(d)) out.push(block("patient", "Patient", def.existing ? "No patient is chosen. Find the patient this request is for." : "No patient yet. Add the initials and age.", "intake"));
-  if (!d.payerId) out.push(block("payer", "Payer", "No payer yet. Add the payer and plan.", "intake"));
-  if (!d.program) out.push(block("service", "Service", "No level of care yet. Choose the service the request is for.", "intake"));
+  if (!patientReady(d)) out.push(block("patient", "Patient", "No patient is chosen. Choose the person this request is for.", "intake"));
+  if (!d.payerId) out.push(block("payer", "Payer", "No payer yet. Add the payer and plan in Patient & Service.", "intake"));
+  if (!d.program) out.push(block("service", "Service", "No service yet. Choose the service the request is for.", "intake"));
   if (!d.startDate) out.push(block("dates", d.kind === "retro" ? "Dates of service" : "Requested dates", d.kind === "retro" ? "No dates of service yet. Add the first and the last day care was given." : "No start date yet. Add the day the stay would start.", "intake"));
   else if (d.kind === "retro" && !d.endDate) out.push(ack("dates-end", "Last date of service", "Add the last day care was given without an authorization. Until then the request names only the first day.", "intake"));
   if (def.existing && patientReady(d) && !d.authorizationId) out.push(ack("authorization", "Authorization", "No authorization is chosen. The request is not linked to one, so the payer cannot match it.", "intake"));

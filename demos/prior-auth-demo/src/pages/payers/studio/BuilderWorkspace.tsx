@@ -425,7 +425,7 @@ function conflictOf(w: Workflow, all: Workflow[], payerId: string): string | nul
       const hit = m.conflict?.find((c) => c.id === w.id);
       if (hit && m.conflict) {
         const others = m.conflict.filter((c) => c.id !== w.id);
-        return `${w.name} and ${others.map((o) => o.name).join(" and ")} both match ${PROGRAM_LABEL[s]}, ${REQUEST_TYPE_LABEL[t].toLowerCase()}. New Case flags it and picks neither until one is changed.`;
+        return `${w.name} and ${others.map((o) => o.name).join(" and ")} both match ${PROGRAM_LABEL[s]}, ${REQUEST_TYPE_LABEL[t].toLowerCase()}. New Authorization flags it and picks neither until one is changed.`;
       }
     }
   }

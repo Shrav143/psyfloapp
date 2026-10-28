@@ -38,7 +38,7 @@ export const paths = {
   /** The one Authorizations workspace. `view` is one of all, attention, progress, payer, approved, denied or reviews. */
   authorizations: (view?: "all" | "attention" | "progress" | "payer" | "approved" | "denied" | "reviews") => `/authorizations${view ? `?view=${view}` : ""}`,
   case: (id: string, tab?: "actions" | "picture" | "criteria" | "risk" | "draft") => `/authorizations/case/${id}${tab ? `?tab=${tab}` : ""}`,
-  /** New Authorization (it was called New Case). `draft` resumes a request being prepared. `intake` prepares it from a completed intake (the shared patient record); `episode` names the treatment episode. */
+  /** New Authorization (it was called New Authorization). `draft` resumes a request being prepared. `intake` prepares it from a completed intake (the shared patient record); `episode` names the treatment episode. */
   newCase: (o?: { draft?: string; intake?: string; episode?: string; referral?: string; /** A stored verification (VerificationRecord id) to carry into step 2. */ verification?: string; /** Authorization type: initial, concurrent, reauth, modify or retro. */ type?: string; /** A patient's case id, to start from an existing patient. */ patient?: string; /** A step to open: intake, eligibility, documentation or review. preparation (and the older agents) opens Clinical documentation at the agents' section; the older referral and records names work too. */ step?: string }) => {
     const q = new URLSearchParams();
     if (o?.intake) q.set("intake", o.intake);

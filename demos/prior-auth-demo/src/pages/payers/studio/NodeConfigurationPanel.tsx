@@ -142,9 +142,9 @@ function NodeEditor({ node, graph, issues, readOnly, onChangeNode, onGraph, onDu
                 {node.onError === "retry" ? <NumberField label="Retries before manual review" value={node.retries ?? 2} min={1} max={5} disabled={readOnly} onChange={(v) => patch({ retries: v === "" ? undefined : v })} /> : null}
               </div>
 
-              <Fold title="Advanced" summary={`Stage in New Case: ${STAGE_LABEL[node.stage]}`}>
+              <Fold title="Advanced" summary={`Stage in New Authorization: ${STAGE_LABEL[node.stage]}`}>
                 <div className="flex flex-col gap-3.5">
-                  <SelectField label="Stage in New Case" value={node.stage} disabled={readOnly} onChange={(v) => patch({ stage: v as Stage })} options={STAGES_ORDER.map((s) => ({ value: s, label: STAGE_LABEL[s] }))} help="Which of the five stages this step is shown under. It does not force an order." />
+                  <SelectField label="Stage in New Authorization" value={node.stage} disabled={readOnly} onChange={(v) => patch({ stage: v as Stage })} options={STAGES_ORDER.map((s) => ({ value: s, label: STAGE_LABEL[s] }))} help="Which of the five stages this step is shown under. It does not force an order." />
                   {advanced.map((f) => (
                     <FieldView key={f.key} spec={f} node={node} value={val(f.key)} onCfg={setCfg} onRefs={(ruleRefs) => patch({ ruleRefs })} graph={graph} onBranches={(b) => setCfg(f.key, b)} disabled={readOnly} />
                   ))}

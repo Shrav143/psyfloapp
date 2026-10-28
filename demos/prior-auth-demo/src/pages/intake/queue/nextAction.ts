@@ -7,7 +7,7 @@ import type { IntakeRecord, IntakeSectionId, TriageStatus } from "@/data/intake/
 import { TRIAGE_LABEL } from "@/data/intake/types";
 import type { Tone } from "@/data/types";
 import { paths } from "@/routes";
-import { isMissingValue } from "./metrics";
+import { isMissingValue } from "./missing";
 
 export interface NextAction {
   /** A concrete verb phrase: what a person does next. */

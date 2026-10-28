@@ -204,8 +204,8 @@ export function reviewGroups(s: ScribeSession): ReviewGroup[] {
   const groups: ReviewGroup[] = [];
   const risk = all.filter(isRiskProposal);
   if (risk.length) groups.push({ id: "risk", title: "Risk information for a clinician", kind: "risk", items: risk });
-  const mods = [...new Set(all.filter((x) => x.moduleId).map((x) => x.moduleId as string))];
-  for (const m of mods) groups.push({ id: `m:${m}`, title: moduleLabelOf(m as never), kind: "module", items: all.filter((x) => x.moduleId === m) });
+  const mods = [...new Set(all.flatMap((x) => (x.moduleId ? [x.moduleId] : [])))];
+  for (const m of mods) groups.push({ id: `m:${m}`, title: moduleLabelOf(m), kind: "module", items: all.filter((x) => x.moduleId === m) });
   const cans = all.filter((x) => x.section === "cans");
   if (cans.length) groups.push({ id: "cans", title: "CANS evidence themes", kind: "cans", items: cans });
   for (const sec of ["referral", "profile", "coverage", "assessment"] as const) {

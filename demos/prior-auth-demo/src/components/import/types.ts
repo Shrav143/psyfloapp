@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 /* The shared way to bring a record in when there is no live connection, or when a person prefers it: pull from a connected EMR,
    import an export file (CSV with field mapping, or a PDF), or paste a screenshot of the chart. Used wherever an EHR record is needed:
-   New Case intake and clinical documentation, Eligibility verify, EMR Connect, a denial letter. */
+   New Authorization intake and clinical documentation, Eligibility verify, EMR Connect, a denial letter. */
 
 /** What is being brought in: the fields offered for mapping and what a screenshot is read for. */
 export type ImportTarget = "patient" | "insurance" | "documents" | "denial_letter";
@@ -55,6 +55,6 @@ export interface ImportSourcesProps {
   emrChart?: string;
   /** Opens straight on one of the three ways in (a Drawer that is opened for one purpose). */
   initial?: ImportSource;
-  /** More buttons for the same row (New Case puts Referrals and Known patient here), after the three ways in. */
+  /** More buttons for the same row (New Authorization puts Referrals and Known patient here), after the three ways in. */
   extra?: ReactNode;
 }

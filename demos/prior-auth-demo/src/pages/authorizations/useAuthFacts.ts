@@ -16,7 +16,7 @@ export interface AuthFactsView {
 }
 
 /** The authorization facts for one request, live: the case page's facts row and the queue's quick view read the same list.
-    Documents come from the draft this request has in New Case, or the one it would have, so the count never changes when the draft is first opened. */
+    Documents come from the draft this request has in New Authorization, or the one it would have, so the count never changes when the draft is first opened. */
 export function useAuthFacts(detail: CaseDetail, work: CaseWork, live: LiveView | null): AuthFactsView {
   const clock = useStore((s) => s.clock);
   const ledger = useStore((s) => s.ledger);

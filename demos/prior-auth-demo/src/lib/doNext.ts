@@ -132,7 +132,7 @@ export interface DoNextInput {
   clock: number;
   writeBackOn: boolean;
   ready: ReadonlySet<string>;
-  /** Cases saved in New Case that have no row yet and wait for a person. */
+  /** Cases saved in New Authorization that have no row yet and wait for a person. */
   savedNeedingYou: number;
 }
 
@@ -187,7 +187,7 @@ export function doNext(input: DoNextInput, limit = 5): { items: DoItem[]; total:
   }
 
   if (input.savedNeedingYou > 0) {
-    add({ key: "saved", kind: "answer", caseId: "", sentence: `Finish ${plural(input.savedNeedingYou, "case")} saved in New Case`, who: "Waiting for a question or a signature", urgent: false, button: "Open Active cases", go: { to: "saved" } }, SOFT.saved);
+    add({ key: "saved", kind: "answer", caseId: "", sentence: `Finish ${plural(input.savedNeedingYou, "case")} saved in New Authorization`, who: "Waiting for a question or a signature", urgent: false, button: "Open Active cases", go: { to: "saved" } }, SOFT.saved);
   }
 
   out.sort((a, b) => a.rank - b.rank || ORDER.indexOf(a.kind) - ORDER.indexOf(b.kind));

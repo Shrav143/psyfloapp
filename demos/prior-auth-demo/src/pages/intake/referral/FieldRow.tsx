@@ -40,12 +40,12 @@ export function FieldRow({ record, section, field, active, onSpot, always }: {
   const [past, setPast] = useState(false);
   if (!spec) return null;
   const empty = !fv || !fv.value.trim() || fv.state === "not_collected";
-  if (empty && !always && !editing) return null;
+  const pending = record.suggestions.filter((x) => x.field === field && x.section === section && x.status === "pending");
+  if (empty && !always && !editing && !pending.length) return null;
   /* Only what accepting waits on is marked required. The rest of the intake's required fields are collected after acceptance. */
   const required = BLOCKING.includes(field);
   const src: SourceRef | undefined = fv?.source;
   const spot = src?.docId && src.blockId ? { docId: src.docId, blockId: src.blockId } : null;
-  const pending = record.suggestions.filter((x) => x.field === field && x.section === section && x.status === "pending");
   const shownState: FieldState = empty ? "not_collected" : (fv?.state ?? "not_collected");
   const isActive = !!active && !!spot && active.docId === spot.docId && active.blockId === spot.blockId;
   const special = field === "requestedService" || field === "urgency" || field === "person";

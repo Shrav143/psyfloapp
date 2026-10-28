@@ -36,7 +36,7 @@ export function CoordinationWorklist({ records }: { records: IntakeRecord[] }) {
   return (
     <>
       <StatusCards label="Care coordination figures" cards={cards} selected={VIEW_CARDS.find((c) => c.id === query.facets.view)?.id ?? null} onSelect={(id) => set("view", id)} />
-      <Card className="min-w-0 overflow-hidden">
+      <Card className="min-w-0">
         <div className="flex flex-col gap-3 border-b border-line px-5 py-4">
           <h2 className="text-[18px] leading-tight font-semibold">Coordination worklist</h2>
           <FilterBar defs={defs} rows={all} query={query} searchOf={coordinationSearchText} set={set} clear={clear} hide={["view"]} emptyShowsClear={rows.length === 0} />

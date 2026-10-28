@@ -88,5 +88,5 @@ export function DEFAULT_WORKFLOW_FOR(type: RequestType): Workflow {
   return wf;
 }
 
-/** The same function under the name New Case uses. */
+/** The same function under the name New Authorization uses. */
 export const defaultWorkflowFor = DEFAULT_WORKFLOW_FOR;

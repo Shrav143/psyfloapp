@@ -85,7 +85,7 @@ export function WorkspaceHeader({ model, go, onConfigure, onPrint, openPanel, hi
 
   return (
     <Card data-workspace-header className="@container shrink-0">
-      <div className="flex flex-col gap-2 px-5 py-3">
+      <div className="flex flex-col gap-1.5 px-5 py-2.5">
         <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
           <div className="flex min-w-0 flex-wrap items-center gap-x-2.5 gap-y-1">
             <Link to={paths.referralQueue()} aria-label="Back to Referrals & Intake" title="Back to Referrals & Intake" className="grid h-7 w-7 place-items-center rounded-lg text-ink2 hover:bg-tile">

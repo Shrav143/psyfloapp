@@ -57,7 +57,7 @@ export function ChartChecker({ payerId, name, lists, program, onProgram }: { pay
         <h4 className="font-serif text-[18px] leading-tight font-semibold tracking-tight">
           Try it on a case{" "}
           <InfoTip label="About the chart check">
-            New Case checks documents against this same list. Pasted text is matched by keyword, so a document that is named differently can be missed.
+            New Authorization checks documents against this same list. Pasted text is matched by keyword, so a document that is named differently can be missed.
           </InfoTip>
         </h4>
         <p className="mt-[3px] text-[13px] text-muted">Check a chart against this list</p>

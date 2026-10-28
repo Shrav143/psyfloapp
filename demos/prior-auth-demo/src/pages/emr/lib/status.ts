@@ -20,11 +20,11 @@ export function lastSyncTile(systems: EmrSystem[], clock: number): { value: stri
   return { value, sub, tone: off === 0 ? "good" : "mid" };
 }
 
-/** What a system that is not connected means for New Case, and what to do about it. Empty for a connected system. */
+/** What a system that is not connected means for New Authorization, and what to do about it. Empty for a connected system. */
 export function pullNote(s: EmrSystem): string {
   if (s.status === "connected") return "";
   const next = s.status === "attention" ? " First step: renew the sign-in with Fix." : s.fixIssue ? " Reconnect starts with a fix." : "";
-  return `${s.issue ?? ""}${next} New Case cannot pull a chart from it until it is connected.`;
+  return `${s.issue ?? ""}${next} New Authorization cannot pull a chart from it until it is connected.`;
 }
 
 /** Syncs a system has missed since its last good one (one per SYNC_EVERY_MIN, demo values). Null for a disconnected system: it is not asked at all. */

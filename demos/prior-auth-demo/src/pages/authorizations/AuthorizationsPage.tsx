@@ -174,7 +174,7 @@ export default function AuthorizationsPage() {
         <div className="flex flex-wrap items-center gap-3">
           {reviewButtons}
           {view === "payer" && sentToday.length ? <Button variant="ghost" icon={Send} onClick={() => navigate(paths.dashboard({ stage: "received" }))}>{sentToday.length} sent today</Button> : null}
-          <Button variant="primary" icon={Plus} onClick={() => navigate(paths.newCase())}>New Case</Button>
+          <Button variant="primary" icon={Plus} onClick={() => navigate(paths.newCase())}>New Authorization</Button>
         </div>
       </div>
       {signalHidden || signalCount === 0 ? null : (
@@ -189,7 +189,7 @@ export default function AuthorizationsPage() {
           <TableHelp avgChance={avgChance} />
         </div>
         {shown.length === 0 ? (
-          <EmptyState icon={SearchX} title={rows.length ? "No authorizations match" : "Nothing to track yet"} action={rows.length ? <Button onClick={clearAll}>Clear filters</Button> : <Button variant="primary" icon={Plus} onClick={() => navigate(paths.newCase())}>New Case</Button>} />
+          <EmptyState icon={SearchX} title={rows.length ? "No authorizations match" : "Nothing to track yet"} action={rows.length ? <Button onClick={clearAll}>Clear filters</Button> : <Button variant="primary" icon={Plus} onClick={() => navigate(paths.newCase())}>New Authorization</Button>} />
         ) : (
           <WorkTable
             rows={shown} view={view} page={page} onPage={(p) => setPaging({ key: pageKey, page: p })} sort={sort} onSort={onSort}

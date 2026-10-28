@@ -13,7 +13,7 @@ export interface Dismissal { id: string; requestId: string; reason: string; at: 
 export interface PayerChangeUpdate { id: string; changeId: string; payerId: string; draftIds: string[]; at: number }
 
 export interface RipplesSlice {
-  /** Authorizations: clinical context a person added to a request (Recommended actions). New Case and the Draft tab fold it into the narrative. */
+  /** Authorizations: clinical context a person added to a request (Recommended actions). New Authorization and the Draft tab fold it into the narrative. */
   clinicalContext: Record<string, string[]>;
   addClinicalContext: (requestId: string, text: string) => void;
   appealDecisions: AppealDecision[];

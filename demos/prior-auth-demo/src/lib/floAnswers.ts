@@ -125,7 +125,7 @@ function missingAnswer(id: string, guessed: boolean, s: AppState): FloAnswer {
   const docs = docsOf(s.payerConfig[c.payerId]?.docs, c.payerId, c.program);
   const docLine = open.some((o) => o.kind === "missing") && docs.length ? [`${payer.shortName} asks for ${plural(docs.length, "document")} at ${level}. The saved list is on Payers.`] : [];
   const draft = s.caseDrafts.find((x) => x.caseId === id && x.saved && !x.sent);
-  const draftLine = draft && draft.unmet > 0 ? [`The New Case draft also holds ${plural(draft.unmet, "payer requirement")} the case does not meet yet.`] : [];
+  const draftLine = draft && draft.unmet > 0 ? [`The New Authorization draft also holds ${plural(draft.unmet, "payer requirement")} the case does not meet yet.`] : [];
   return { text: `${lead}${head} has ${plural(open.length, "open item")} in the draft.`, lines: [...open.map((o) => `${KIND[o.kind]}: ${o.text}.`.replace(/\.\.$/, ".")), ...docLine, ...draftLine], note: READING, link };
 }
 

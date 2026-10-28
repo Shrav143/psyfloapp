@@ -1,5 +1,6 @@
 import { Card, CardBody, ChoiceCard, Label, Pill, Chip } from "@/components/ui";
 import { authorizationsOf, episodesOf, payerNameOf, windowText, AUTH_STATUS_LABEL, AUTH_STATUS_TONE } from "@/data/patients";
+import { EpisodeLink } from "@/pages/intake/care/EpisodeLink";
 import { useStore } from "@/store";
 import { AuthorizationCard } from "../AuthorizationCard";
 import { authType } from "../authType";
@@ -9,8 +10,12 @@ import type { CaseEnv } from "../caseEnv";
 export function EpisodeSection({ env }: { env: CaseEnv }) {
   const draft = env.draft;
   const choose = useStore((s) => s.chooseCasePatient);
+  const intake = useStore((s) => s.intakes.find((r) => r.id === draft.intakeId));
+  const link = useStore((s) => s.linkCaseToIntake);
   const patient = env.patient;
   const def = authType(draft.kind);
+  /* A review or a renewal of an intake whose treatment episode is not linked yet: link it here, and the draft reads it. */
+  if (!patient && intake && def.existing) return <EpisodeLink record={intake} onLinked={() => link(draft.id, intake.id)} />;
   if (!patient) return null;
   const episodes = episodesOf(env.book, patient.id);
   const episode = episodes.find((e) => e.id === draft.episodeId);

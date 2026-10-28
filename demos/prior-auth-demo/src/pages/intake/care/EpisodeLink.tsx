@@ -7,7 +7,7 @@ import { useStore } from "@/store";
 import { selectPatientBookInView } from "@/store/patients";
 
 /** A continued stay, a reauthorization or a change of level of care reviews a treatment episode that already exists. This links the intake to it, so the request reuses it and no second episode is made. */
-export function EpisodeLink({ record }: { record: IntakeRecord }) {
+export function EpisodeLink({ record, onLinked }: { record: IntakeRecord; /** Called once the episode is linked: a New Authorization draft reads it again. */ onLinked?: () => void }) {
   const book = useStore(selectPatientBookInView);
   const [patientId, setPatientId] = useState<string | null>(record.patientId ?? null);
   const [changing, setChanging] = useState(false);
@@ -16,6 +16,7 @@ export function EpisodeLink({ record }: { record: IntakeRecord }) {
   const link = (episodeId: string, pid: string) => {
     useStore.getState().linkIntakeEpisode(record.id, pid, episodeId);
     setChanging(false);
+    onLinked?.();
   };
 
   if (linked && !changing) {

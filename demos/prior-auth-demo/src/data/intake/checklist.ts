@@ -336,8 +336,8 @@ function handoffItem(r: IntakeRecord, serviceId: VaServiceId): CheckItem {
   const svc = serviceById(serviceId);
   const rules = requirementsFor({ serviceId, payerId: r.payerId, age: r.age, setting: svc.setting, serviceDate: r.serviceDate });
   const has = (k: PolicyRule["kind"]) => rules.some((x) => x.kind === k);
-  if (r.handoff.status === "in_new_case") return { ...base, status: "complete", detail: "Opened in New Case as a draft; nothing was submitted" };
-  if (r.handoff.status === "ready") return { ...base, status: "complete", detail: "Approved; open it in New Case" };
+  if (r.handoff.status === "in_new_case") return { ...base, status: "complete", detail: "Opened in New Authorization as a draft; nothing was submitted" };
+  if (r.handoff.status === "ready") return { ...base, status: "complete", detail: "Approved; open it in New Authorization" };
   if (r.handoff.status === "draft") return { ...base, status: "pending", detail: "Draft packet waits for a person's approval" };
   if (has("authorization")) return { ...base, status: "missing", detail: "No handoff packet yet" };
   if (has("registration")) {
@@ -363,7 +363,7 @@ export const openCount = (r: IntakeRecord, now: number): number => completeness(
 /* ------------------------------------------------------------------ authorization readiness */
 
 export type ReadinessStatus = "not_needed" | "not_ready" | "ready" | "handed_off";
-export const READINESS_LABEL: Record<ReadinessStatus, string> = { not_needed: "Not needed", not_ready: "Not ready", ready: "Ready for handoff", handed_off: "Handed off to New Case" };
+export const READINESS_LABEL: Record<ReadinessStatus, string> = { not_needed: "Not needed", not_ready: "Not ready", ready: "Ready for handoff", handed_off: "Handed off to New Authorization" };
 export const READINESS_NOTE = "Readiness is not approval. The payer decides.";
 /** What the policy says the service needs: an authorization, a registration, nothing, or not known yet. */
 export type Requirement = "authorization" | "registration" | "none" | "pending";
@@ -406,7 +406,7 @@ export function readiness(r: IntakeRecord, now: number): Readiness {
   const base = { requirement, serviceId, selected, rules, blockers, warnings, openIntake, reviewer: plan?.reviewer, channel: plan?.channel, timing: rule?.timing, note: READINESS_NOTE };
   const make = (status: ReadinessStatus, headline: string): Readiness => ({ ...base, status, label: READINESS_LABEL[status], headline });
 
-  if (r.handoff.status === "in_new_case") return make("handed_off", `The packet is a draft in New Case${r.handoff.draftId ? ` (${r.handoff.draftId})` : ""}. Nothing was sent to the payer.`);
+  if (r.handoff.status === "in_new_case") return make("handed_off", `The packet is a draft in New Authorization${r.handoff.draftId ? ` (${r.handoff.draftId})` : ""}. Nothing was sent to the payer.`);
   if (r.triage === "declined" || r.triage === "closed") return make("not_needed", `The referral was ${r.triage}. No handoff is prepared.`);
   if (requirement === "none") return make("not_needed", `${svc.short} needs no authorization${plan?.coverage === "ffs" ? " under fee-for-service" : ""}. No handoff is needed.`);
   if (requirement === "registration") return make("not_needed", `${svc.short} is registered, not authorized: register with ${plan?.short ?? "the plan"} ${rule?.timing?.toLowerCase() ?? "within 1 business day"}. A person registers; nothing is sent from Intake.`);
@@ -415,5 +415,5 @@ export function readiness(r: IntakeRecord, now: number): Readiness {
     return make("not_ready", p ? `${p.label} for ${svc.short} (unresolved policy). Psyflo will not assume a requirement the policy has not settled.` : `No authorization rule is loaded for ${svc.short} on ${longDate(r.serviceDate)}. Psyflo will not assume one.`);
   }
   if (blockers.length) return make("not_ready", `${plural(blockers.length, "item")} to finish before the handoff: ${list(blockers.map((b) => b.label.toLowerCase()))}.`);
-  return make("ready", `${svc.short} needs an authorization from ${plan?.reviewer ?? "the plan"}. The intake has what New Case needs.`);
+  return make("ready", `${svc.short} needs an authorization from ${plan?.reviewer ?? "the plan"}. The intake has what New Authorization needs.`);
 }

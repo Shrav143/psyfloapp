@@ -1,9 +1,9 @@
-import { LEVEL_LABEL, type AssessmentPlan, type InstrumentStatus, type Level, type ModuleId } from "@/data/assess/types";
+import { LEVEL_LABEL, type AssessmentPlan, type InstrumentStatus, type Level } from "@/data/assess/types";
 import { sectionParam, WORKSPACE_LABEL, type WorkspaceTarget } from "@/data/assess/nav";
 import type { IntakeRecord } from "@/data/intake/types";
 import { paths } from "@/routes";
 import { sectionState, type SectionState } from "../lib/status";
-import { moduleStatus, planItems, instrumentProgress } from "./modules";
+import { planItems } from "./modules";
 import { signoffModel } from "./signoff";
 
 /* The left navigation of the workspace, from the record and its plan. The instruments listed are exactly the modules in use for this intake that are not
@@ -33,9 +33,6 @@ export interface NavItem {
 const FROM_INSTRUMENT: Record<InstrumentStatus, NavState> = { not_started: "not_started", in_progress: "in_progress", awaiting_review: "awaiting_review", signed: "complete", superseded: "in_progress" };
 const FROM_SECTION: Record<SectionState, NavState> = { done: "complete", attention: "attention", todo: "not_started", na: "na" };
 
-/** The state of a module as the navigation shows it. */
-export const moduleNavState = (r: IntakeRecord, id: ModuleId): NavState => FROM_INSTRUMENT[moduleStatus(r, id)];
-
 const worst = (a: NavState, b: NavState): NavState => {
   const order: NavState[] = ["attention", "in_progress", "not_started", "complete", "na"];
   return order.indexOf(a) <= order.indexOf(b) ? a : b;
@@ -46,7 +43,6 @@ export function workspaceNav(r: IntakeRecord, plan: AssessmentPlan | null, now =
     id: section, label: WORKSPACE_LABEL[section], target: { section }, state, stateLabel: state ? (stateWord ?? NAV_STATE_LABEL[state]) : "", detail,
   });
   const items = planItems(r, plan);
-  const prog = instrumentProgress(r, plan);
   const so = signoffModel(r, plan);
 
   const assess: NavState = r.assessment.status === "signed" ? "complete" : r.assessment.status;

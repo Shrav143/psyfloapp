@@ -18,7 +18,7 @@ export function needsOf(systems: EmrSystem[], unmapped: UnmappedField[], paused:
   const out: Need[] = [];
   for (const s of systems.filter((x) => x.status === "attention")) out.push({ key: `fix-${s.id}`, text: `${s.name} needs attention.`, action: { label: "Fix", aria: `Fix: ${s.name}`, run: () => h.fix(s.id) } });
   for (const s of systems.filter((x) => x.status === "disconnected")) out.push({ key: `rec-${s.id}`, text: `${s.name} is disconnected.`, action: { label: "Reconnect", aria: `Reconnect: ${s.name}`, run: () => h.reconnect(s.id) } });
-  if (unmapped.length) out.push({ key: "map", text: `${plural(unmapped.length, "field")} ${unmapped.length === 1 ? "needs" : "need"} a mapping, so New Case leaves ${unmapped.length === 1 ? "it" : "them"} blank.`, action: { label: "Map field", aria: `Map field: ${unmapped[0].field}`, run: () => h.map(unmapped[0]) } });
+  if (unmapped.length) out.push({ key: "map", text: `${plural(unmapped.length, "field")} ${unmapped.length === 1 ? "needs" : "need"} a mapping, so New Authorization leaves ${unmapped.length === 1 ? "it" : "them"} blank.`, action: { label: "Map field", aria: `Map field: ${unmapped[0].field}`, run: () => h.map(unmapped[0]) } });
   for (const k of ["reader", "navigator"] as AgentKey[]) if (paused[k]) out.push({ key: `paused-${k}`, text: `${AGENTS[k].name} is paused, so ${k === "reader" ? "syncs and new connections" : "fixes and reconnects"} wait.`, action: { label: "Open Settings", aria: "Open Settings", to: paths.settings() } });
   return out;
 }

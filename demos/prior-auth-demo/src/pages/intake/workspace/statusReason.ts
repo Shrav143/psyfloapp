@@ -9,6 +9,8 @@ export function statusReason(r: IntakeRecord, plan: AssessmentPlan | null): stri
   const status = effectiveStatus(r);
   const prog = instrumentProgress(r, plan);
   const by = staffOf(r.assignedTo)?.name;
+  /* An intake that is not configured has no work to follow: the status is the one recorded with the referral. */
+  if (!r.config && (status === "assessment" || status === "clinical_review" || status === "care_planning" || status === "ready_for_auth")) return "The status recorded with the referral. Configure the intake and it follows the work.";
   switch (status) {
     case "new": return "The referral has not been triaged yet.";
     case "needs_info": return r.triageNote ?? "Waiting on the referrer for information.";

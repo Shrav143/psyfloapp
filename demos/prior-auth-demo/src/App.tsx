@@ -38,7 +38,7 @@ function NotFound() {
   );
 }
 
-/** Referrals used to have their own tab. Old links land on the referral inside New Case. */
+/** Referrals used to have their own tab. Old links land on the referral inside New Authorization. */
 
 /** Links from before a referral had its own place in Referrals & Intake land on the intake made from it. */
 function OldReferralLink() {

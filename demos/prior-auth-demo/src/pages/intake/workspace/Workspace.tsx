@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { MODULE_IDS } from "@/data/assess/modules";
-import type { WorkspaceTarget } from "@/data/assess/nav";
+import { WORKSPACE_LABEL, type WorkspaceTarget } from "@/data/assess/nav";
 import type { IntakeRecord } from "@/data/intake/types";
-import { ConfigureDialog } from "../configure/ConfigureDialog";
 import { useResume } from "@/store/persistUi";
+import { ConfigureDialog } from "../configure/ConfigureDialog";
 import { useDerivedFields } from "../profile/sync";
 import { SafetyBanner } from "../queue/SafetyBanner";
 import { ScribePanel } from "../scribe/ScribePanel";
@@ -43,6 +43,7 @@ export function Workspace({ record }: { record: IntakeRecord }) {
   /* An address can name a module that does not exist; the sections below it are never told about it. */
   const known: WorkspaceTarget = target.module && !MODULE_IDS.includes(target.module) ? { section: "instrument" } : target;
   const key = `${navIdOf(target)}|${target.tab ?? ""}`;
+  const regionLabel = model.nav.find((i) => i.id === navIdOf(target))?.label ?? WORKSPACE_LABEL[target.section];
   useEffect(() => {
     center.current?.scrollTo({ top: 0 });
   }, [key]);
@@ -79,7 +80,7 @@ export function Workspace({ record }: { record: IntakeRecord }) {
         />
         <div className="grid min-h-0 flex-1 gap-4" style={{ gridTemplateColumns: columns, gridTemplateRows: rows }}>
           <LeftNav recordId={record.id} items={model.nav} target={target} compact={!medium} />
-          <div ref={center} className="min-h-0 min-w-0 overflow-y-auto pr-1" data-center data-section={target.section} data-module={target.module ?? ""} data-tab={target.tab ?? ""}>
+          <div ref={center} role="region" aria-label={regionLabel} className="min-h-0 min-w-0 overflow-y-auto pr-1" data-center data-section={target.section} data-module={target.module ?? ""} data-tab={target.tab ?? ""}>
             {record.safety ? <div id="safety-alert" tabIndex={-1} className="mb-4 outline-none"><SafetyBanner record={record} /></div> : null}
             <SectionView record={record} target={target} model={model} go={go} onConfigure={configure} />
           </div>

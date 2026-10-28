@@ -56,7 +56,7 @@ initWorkflowPersistence(useStore);
 /* The payers added, each payer's saved rules and documents and the edit log are saved in this browser too (guarded), so they match the workflows that were saved with them. */
 initPayerConfigPersistence(useStore);
 
-/* Payers added on Payers join the shared payer list, so New Case, Eligibility and the queue offer them too. */
+/* Payers added on Payers join the shared payer list, so New Authorization, Eligibility and the queue offer them too. */
 useStore.subscribe((s, prev) => {
   if (s.customPayers !== prev.customPayers) syncCustomPayers(s.customPayers.map(customToSummary));
 });

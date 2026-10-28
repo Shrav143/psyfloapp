@@ -9,6 +9,7 @@ import { isoOf } from "@/data/patients";
 import { selectPatientBookInView as selectBook } from "@/store/patients";
 import { clockTime, toDate } from "@/lib/time";
 import { cn } from "@/lib/cn";
+import { useScope } from "@/lib/scope";
 import { useStore } from "@/store";
 import { meOf } from "@/store/intake";
 import { planForChoice } from "@/store/intakePlan";
@@ -38,11 +39,14 @@ export function ConfigureWizard({ record, start, step, onStep, variant, onDone, 
   const preview = useStore((s) => s.policyPreview);
   const me = useStore((s) => meOf(s));
   const book = useStore(selectBook);
-  const intakes = useStore((s) => s.intakes);
+  const allIntakes = useStore((s) => s.intakes);
+  const scope = useScope();
   const configure = useStore((s) => s.configureIntake);
   const saveDraft = useStore((s) => s.saveConfigDraft);
   const toast = useStore((s) => s.toast);
 
+  /* Only the records the viewer may see take part: another site's records of the same person are not offered. */
+  const intakes = useMemo(() => allIntakes.filter((r) => scope.sites.includes(r.site)), [allIntakes, scope.sites]);
   const person = useMemo(() => personOfRecord(record), [record]);
   const episodes = useMemo(() => episodeOptions(person, book, intakes, record.id), [person, book, intakes, record.id]);
   const needsEpisode = purposeById(state.purposeId).needsEpisode;
@@ -60,7 +64,7 @@ export function ConfigureWizard({ record, start, step, onStep, variant, onDone, 
 
   const patch = (p: Partial<WizardState>) => setState((s) => ({ ...s, ...p }));
   const setPurpose = (id: PurposeId) => patch({ purposeId: id, episode: purposeById(id).needsEpisode ? state.episode : null });
-  const go = (to: WizardState["programId"]) => setState((s) => withProgram(s, to, record.age));
+  const chooseProgram = (to: WizardState["programId"]) => setState((s) => withProgram(s, to, record.age));
 
   const save = () => {
     saveDraft(record.id, toDraft(effective, step));
@@ -78,12 +82,12 @@ export function ConfigureWizard({ record, start, step, onStep, variant, onDone, 
       <Stepper steps={STEPS.map((s) => s.label)} current={idx} onGo={(i) => onStep(STEPS[i].id)} className="flex-wrap gap-y-2 text-[14px]" />
       <div className="mt-6">
         {step === "purpose" ? <StepPurpose purposeId={state.purposeId} onPurpose={setPurpose} episodes={episodes} episode={episode} onEpisode={(e) => patch({ episode: e })} /> : null}
-        {step === "program" ? <StepProgram programId={state.programId} onProgram={go} now={now} requestedId={requestedFor(record)} /> : null}
+        {step === "program" ? <StepProgram programId={state.programId} onProgram={chooseProgram} now={now} requestedId={requestedFor(record)} /> : null}
         {step === "population" ? <StepPopulation ctx={plan.context} who={who} age={record.age} onPopulation={(p) => patch({ population: p, populationTouched: true })} onSetting={(s) => patch({ setting: s, settingTouched: true })} /> : null}
         {step === "plan" ? (
           <StepPlan
             plan={plan} ctx={plan.context} payerId={record.payerId} choices={state.choices} onChoices={(c) => patch({ choices: c })} me={me}
-            dateLabel={`${dateWords(isoOf(now))}, ${preview === "redesign" ? "post-transition demo environment" : "today"}`} withData={withData}
+            dateLabel={`${dateWords(isoOf(now))}, ${preview === "redesign" ? "post-transition demo environment" : "today"}`} withData={withData} history={record.config?.history ?? []}
           />
         ) : null}
       </div>

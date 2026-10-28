@@ -1,9 +1,9 @@
-/* Patients, treatment episodes and authorization records, for New Case.
+/* Patients, treatment episodes and authorization records, for New Authorization.
    None of this is a second copy of the demo's data. It is derived, on demand, from what already exists:
    - a Patient is one person across cases (the Case Manager ledger, plus any request the Dashboard holds that the ledger does not);
    - a TreatmentEpisode is a stay at one level of care (one ledger case);
    - an AuthorizationRecord is the approved window of an episode: days or units authorized, used and left, its expiry and its history.
-   A request signed in New Case carries `patientId`, `episodeId` and `authorizationId`, so it joins its patient's record instead of making a second patient. */
+   A request signed in New Authorization carries `patientId`, `episodeId` and `authorizationId`, so it joins its patient's record instead of making a second patient. */
 import { DAY, HOUR, toDate } from "@/lib/time";
 import { SEED_LEDGER, type ClockKind, type LedgerCase } from "./manager";
 import { payerById } from "./seed";
@@ -77,7 +77,7 @@ export interface PatientBook {
   authorizations: AuthorizationRecord[];
 }
 
-/* ------------------------------------------------------------------ seed supplements (the edge cases New Case demonstrates) */
+/* ------------------------------------------------------------------ seed supplements (the edge cases New Authorization demonstrates) */
 /** Cases that Eligibility knows and the Case Manager ledger does not list: R-0921 has used every authorized day (Eligibility shows it as "Limit reached"). */
 const EXTRA_ROWS: LedgerCase[] = [
   { id: "R-0921", caseId: "R-0921", initials: "J.D.", age: 45, program: "RES", payerId: "cardinal", note: "Continued stay", used: 14, total: 14, unit: "days", clockKind: "expiry", dueAt: 6 * HOUR, chance: 66, status: "needs_action" },
@@ -222,7 +222,7 @@ export function buildPatientBook(ledger: readonly LedgerCase[], requests: readon
   const byId = new Map(requests.map((r) => [r.id, r]));
   for (const c of rows) add(c, c.caseId, `EP-${c.id}`, `AU-${c.id}`, c.total === null ? byId.get(c.id) : undefined);
 
-  /* A request signed in New Case for a patient who already exists: it joins that patient. A review, renewal or modification belongs to the episode and the authorization it names
+  /* A request signed in New Authorization for a patient who already exists: it joins that patient. A review, renewal or modification belongs to the episode and the authorization it names
      (the authorization's history gets a line); a new stay for the patient gets its own episode and a pending authorization. Never a second patient. */
   for (const r of linked) {
     const p = patients.get(r.patientId ?? "");

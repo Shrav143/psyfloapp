@@ -43,7 +43,7 @@ export function WorkflowRow({ draft, view }: { draft: CaseDraft; view: CaseWorkf
             Rules read: {view.run.rulesUsed.map((r) => `${r.title} (${r.verification === "verified" ? "Verified" : r.verification === "needs_review" ? "Needs review" : r.verification === "superseded" ? "Superseded" : "Unverified"})`).join(", ")}.
           </p>
         ) : null}
-        <p className="mt-1.5">{view.pinned ? `This version is pinned to the case since ${stamp(applied.appliedAt)}. Only a person can switch it.` : "The workflow can still change until it runs past Intake."}</p>
+        <p className="mt-1.5">{view.pinned ? `This version is pinned to the case since ${stamp(applied.appliedAt)}. Only a person can switch it.` : "The workflow can still change until it runs past Patient & Service."}</p>
       </InfoTip>
       <Button size="sm" variant="ghost" onClick={() => setViewing(true)}>
         View workflow

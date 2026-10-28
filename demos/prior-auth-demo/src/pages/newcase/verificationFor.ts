@@ -83,7 +83,7 @@ export function verificationView(d: CaseDraft, record: VerificationRecord | unde
 export const EXCEPTION_TEXT: Record<VerificationException, { title: string; next: string }> = {
   coverage_inactive: { title: "Coverage is not active for these dates", next: "Check the member ID and the dates, or ask the plan. You can go on with a documented exception." },
   payer_changed: { title: "The member moved to another plan", next: "Switch the case to the new plan and check again." },
-  member_id_mismatch: { title: "The plan did not match the member ID", next: "Correct the member ID in Intake, or call the plan." },
+  member_id_mismatch: { title: "The plan did not match the member ID", next: "Correct the member ID in Patient & Service, or call the plan." },
   benefit_unconfirmed: { title: "The plan did not confirm this benefit", next: "Ask the plan to confirm the benefit before the request is signed." },
   service_not_covered: { title: "The plan says this service is not covered", next: "Check the level of care, or ask the plan about an exception." },
   provider_unresolved: { title: "The clinic's enrollment with this plan is not confirmed", next: "Confirm the clinic is in network with this plan." },

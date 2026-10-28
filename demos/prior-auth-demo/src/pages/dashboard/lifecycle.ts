@@ -25,7 +25,7 @@ export interface StateChip {
   flag?: "late" | "urgent";
 }
 
-/** Cases saved in New Case that have no row yet: how many, and how many of those wait for a person to sign. They count under Awaiting sign-off. */
+/** Cases saved in New Authorization that have no row yet: how many, and how many of those wait for a person to sign. They count under Awaiting sign-off. */
 export interface SavedCases {
   total: number;
   ready: number;
@@ -83,7 +83,7 @@ export function statusOptions(counts: Record<StageKey, number>): Option<StageKey
   return [{ value: "all", label: "All statuses" }, ...STAGES.map((s) => ({ value: s, label: STATUS_LABEL[s], hint: String(counts[s]) }))];
 }
 
-/** How many requests sit in each stage, with the cases saved in New Case that have no row yet added to Awaiting sign-off. */
+/** How many requests sit in each stage, with the cases saved in New Authorization that have no row yet added to Awaiting sign-off. */
 export function stageTotals(requests: PsyRequest[], saved: SavedCases): Record<StageKey, number> {
   const c = stageCounts(requests);
   return { ...c, preparing: c.preparing + saved.total };

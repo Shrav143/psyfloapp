@@ -7,7 +7,7 @@ import { serviceById, type ProgramFocus, type VaServiceId } from "@/data/va/serv
    four levels of care, so a service maps to its level of care where it has one (ARTS residential to Residential 3.5, ARTS withdrawal management
    to Detox, ARTS and mental health IOP to IOP, ARTS and mental health PHP to PHP). Where the data tells substance use from mental health, the
    service's track narrows it further. Any other Virginia service (CPST, ACT, ABA and the rest) narrows a page only once it holds requests for that
-   service, made in New Case; until then the page shows everything with a note. "All programs" narrows nothing, so every canonical number holds. */
+   service, made in New Authorization; until then the page shows everything with a note. "All programs" narrows nothing, so every canonical number holds. */
 
 export interface FocusScope {
   id: VaServiceId;
@@ -18,7 +18,7 @@ export interface FocusScope {
   /** The program the scope narrows by: the level of care the service maps to; for any other Virginia service its own program, set by
       useProgramScope only on a page that holds requests for it. Null: nothing to narrow by here. */
   program: Program | null;
-  /** The service's own program in the authorization data: IOP for ARTS IOP, ACT for Assertive Community Treatment. New Case starts on it. */
+  /** The service's own program in the authorization data: IOP for ARTS IOP, ACT for Assertive Community Treatment. New Authorization starts on it. */
   own: Program;
   /** ARTS services are substance use (co-occurring included); mental health IOP and PHP are a mental health condition alone. */
   track: "sud" | "mh" | null;

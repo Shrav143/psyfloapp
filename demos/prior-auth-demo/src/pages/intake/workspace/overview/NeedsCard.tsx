@@ -27,9 +27,9 @@ export function NeedsCard({ model }: { model: WorkspaceModel }) {
                 <p className="text-[13px] font-medium">{n.text}</p>
                 {n.detail ? <p className="text-[12px] text-muted">{n.detail}</p> : null}
               </div>
-              {n.to ? (
+              {n.target || n.to ? (
                 <Link
-                  to={paths.intakeRecord(r.id, sectionParam(LEGACY_SECTION[n.to.section]), n.to.panel)}
+                  to={paths.intakeRecord(r.id, sectionParam(n.target ?? LEGACY_SECTION[n.to?.section ?? "referral"]), n.to?.panel)}
                   className="inline-flex shrink-0 items-center gap-1 text-[12px] font-semibold text-forest hover:underline"
                 >
                   {n.toLabel ?? "Open"}

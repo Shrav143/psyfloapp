@@ -14,7 +14,7 @@ import { useLiveWorkflow, usePayerRules, useVersions } from "./lib/store";
 import { OUTCOME_TONE, OUTCOME_WORD, STATUS_TONE, STATUS_WORD, VERIFICATION_TONE, datesOf } from "./lib/ui";
 
 /* The read-only view of a workflow: its canvas, its rules and, when a run is given, which steps were executed, skipped or are still pending.
-   New Case and Case Manager open it; so does Test Workflow. */
+   New Authorization and Case Manager open it; so does Test Workflow. */
 
 export interface WorkflowViewPanelProps {
   workflowId: string;

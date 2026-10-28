@@ -4,7 +4,7 @@ import { Labeled } from "./Labeled";
 import type { UnmappedField } from "@/data/emr";
 import { useStore } from "@/store";
 
-/** A small picker: which Psyflo value should this field fill. Until it is mapped, New Case leaves the matching field blank on a pull. Mounted only while open. */
+/** A small picker: which Psyflo value should this field fill. Until it is mapped, New Authorization leaves the matching field blank on a pull. Mounted only while open. */
 export function MapModal({ field, onClose }: { field: UnmappedField; onClose: () => void }) {
   const [value, setValue] = useState(field.options[0].value);
   return (
@@ -12,7 +12,7 @@ export function MapModal({ field, onClose }: { field: UnmappedField; onClose: ()
       <div className="flex flex-col gap-3.5">
         <p className="text-sm text-ink2">{field.question}</p>
         <Labeled label={field.hint}><Dropdown variant="field" ariaLabel={field.hint} value={value} options={field.options} onChange={setValue} /></Labeled>
-        <p className="text-[13px] text-muted">Until it is mapped, New Case leaves the matching field blank when it pulls a chart from this system. Once it is mapped, every future pull fills it. Files already pulled are not rewritten.</p>
+        <p className="text-[13px] text-muted">Until it is mapped, New Authorization leaves the matching field blank when it pulls a chart from this system. Once it is mapped, every future pull fills it. Files already pulled are not rewritten.</p>
       </div>
     </Modal>
   );

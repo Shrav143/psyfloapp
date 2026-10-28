@@ -1,5 +1,5 @@
 /* The seven payment checks, the verdict and the fact that decides it, built from one patient row. Pure, so the list, the result page,
-   the details panel and New Case step 2 all say the same thing. Lines are values, not explanations. */
+   the details panel and New Authorization step 2 all say the same thing. Lines are values, not explanations. */
 import { AUTH_LABEL, costShareText, coverageDates, EFFECTIVE_FROM, needsCaller, verdictOf, type EbPatient, type Verdict } from "@/data/eligibility";
 import { planInfo } from "@/data/payerConfigPlan";
 import { codesText, underCodes } from "@/data/programTables";

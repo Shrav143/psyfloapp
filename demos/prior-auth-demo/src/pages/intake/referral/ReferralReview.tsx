@@ -16,7 +16,7 @@ import { DuplicatePanel } from "./DuplicatePanel";
 import { MissingCard } from "./MissingCard";
 import { RequestInfoDialog } from "./RequestInfoDialog";
 import { RiskBanner } from "./RiskBanner";
-import { ClinicalCard, ConsentCard, CoverageCard, PatientCard, ReferralCard } from "./SummaryCards";
+import { ClinicalCard, ConsentCard, CoverageCard, OtherCard, PatientCard, ReferralCard } from "./SummaryCards";
 import type { DocSpotState } from "./useDocSpot";
 
 /** The documents beside the cards: patient, referral, clinical information, payer and coverage, consents and what is missing. The same screen reviews a draft
@@ -73,6 +73,7 @@ export function ReferralReview({ record, now, spot, variant, pending = true, wit
           <PatientCard {...shared} />
           <ReferralCard {...shared} now={now} />
           <ClinicalCard {...shared} />
+          <OtherCard {...shared} />
           <CoverageCard {...shared} />
           <ConsentCard {...shared} />
           {pending ? <MissingCard record={record} onRequest={() => setAsking(true)} canAct /> : null}

@@ -5,7 +5,7 @@ import { stateName, US_STATES } from "../lib/states";
 import { Labeled, MultiChips, SelectField, TextField } from "./fields/controls";
 import { STATUS_TONE, STATUS_WORD, datesOf } from "./lib/ui";
 
-/* The workflow's own facts: who it is for and when it applies. Matching in New Case reads exactly these. */
+/* The workflow's own facts: who it is for and when it applies. Matching in New Authorization reads exactly these. */
 
 export const metaOf = (w: Workflow): WorkflowMeta => ({ id: w.id, payerId: w.payerId, name: w.name, state: w.state, product: w.product, services: w.services, providerType: w.providerType, requestType: w.requestType, effectiveFrom: w.effectiveFrom, effectiveTo: w.effectiveTo, owner: w.owner });
 

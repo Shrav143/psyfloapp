@@ -125,7 +125,7 @@ export function WorkTable({ rows, view, page, onPage, sort, onSort, quickKey, on
                       <span className="line-clamp-2">{r.next}</span>
                       {r.src.draft && r.src.item && r.life === "progress" ? (
                         <Link to={paths.newCase({ draft: r.src.draft.id })} className="text-[12px] font-semibold text-forest hover:underline">
-                          Open the draft in New Case
+                          Open the draft in New Authorization
                         </Link>
                       ) : null}
                     </>

@@ -2,9 +2,11 @@ import { useState } from "react";
 import { Plus } from "lucide-react";
 import { Banner, Button, Chip, Disclosure } from "@/components/ui";
 import { planNotices } from "@/data/assess/plan";
-import { LEVEL_LABEL, type AssessmentPlan, type ModuleId, type PlanContext } from "@/data/assess/types";
+import { LEVEL_LABEL, type AssessmentPlan, type ConfigChange, type ModuleId, type PlanContext } from "@/data/assess/types";
+import { staffOf } from "@/data/intake/seed";
 import type { DraftChoice } from "@/data/intake/types";
 import { vaPlanOf } from "@/data/va/plans";
+import { stamp } from "@/lib/time";
 import { useStore } from "@/store";
 import { AddModuleDialog } from "./AddModuleDialog";
 import { groupRows, rowsOf, type Row } from "./model";
@@ -21,7 +23,7 @@ function withChoice(choices: DraftChoice[], row: Row, next: Omit<DraftChoice, "i
 }
 
 /** Step 4: the assessment plan, as it would be saved. Required, recommended and optional modules, each with its sources and status. Nothing is stored until the footer says so. */
-export function StepPlan({ plan, ctx, payerId, choices, onChoices, me, dateLabel, withData }: {
+export function StepPlan({ plan, ctx, payerId, choices, onChoices, me, dateLabel, withData, history }: {
   plan: AssessmentPlan;
   ctx: PlanContext;
   payerId: string | null;
@@ -31,6 +33,8 @@ export function StepPlan({ plan, ctx, payerId, choices, onChoices, me, dateLabel
   dateLabel: string;
   /** Modules with saved work from earlier configurations: restored with their data. */
   withData: ModuleId[];
+  /** What changed in this intake's configuration so far, oldest first. */
+  history: ConfigChange[];
 }) {
   const [adding, setAdding] = useState(false);
   const [removing, setRemoving] = useState<Row | null>(null);
@@ -80,6 +84,19 @@ export function StepPlan({ plan, ctx, payerId, choices, onChoices, me, dateLabel
           )}
         </section>
       ))}
+      {history.length ? (
+        <Disclosure className="mt-8" title="Configuration history" summary="Every change to this intake's configuration, newest first" right={<Chip>{history.length}</Chip>}>
+          <ul className="flex flex-col divide-y divide-line px-6 py-1 text-[13px]">
+            {[...history].reverse().map((h, i) => (
+              <li key={`${h.at}-${i}`} className="py-2.5">
+                <div className="font-medium">{h.what}</div>
+                {h.detail ? <div className="text-muted">{h.detail}</div> : null}
+                <div className="text-xs text-muted">{staffOf(h.who)?.name ?? h.who} · {stamp(h.at)}</div>
+              </li>
+            ))}
+          </ul>
+        </Disclosure>
+      ) : null}
       <AddModuleDialog open={adding} onClose={() => setAdding(false)} listed={rows.map((r) => r.id)} population={ctx.population} withData={withData} onAdd={add} />
       <OverrideDialog
         open={!!removing}

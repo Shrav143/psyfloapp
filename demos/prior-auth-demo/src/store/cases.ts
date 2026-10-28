@@ -213,11 +213,13 @@ export const createCasesSlice: StateCreator<AppState, [], [], CasesSlice> = (set
       if (kind !== "retro") patch.retroReason = undefined;
       /* A review, renewal or modification follows an existing authorization, so a patient typed in by hand would be a second record: start that search from nothing.
          Initial and retroactive requests keep the patient. A new stay has no authorization or episode yet. */
-      if (def.existing && !d.patientId) {
+      if (def.existing && !d.patientId && !d.intakeId) {
         Object.assign(patch, { patient: { initials: "", age: null }, payerId: null, planType: "", memberId: "", program: null, levelLabel: undefined, referralId: undefined, referrer: undefined, started: false });
       }
       if (!def.existing) Object.assign(patch, { episodeId: null, authorizationId: null });
       change(id, () => patch);
+      /* A draft read from an intake keeps the person, and picks up the treatment episode the new kind of request reviews. */
+      if (d.intakeId) get().fillCaseFromIntake(id, d.intakeId, { kind });
     },
 
     setCaseSite: (id, site) => {

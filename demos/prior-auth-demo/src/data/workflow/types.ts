@@ -3,16 +3,16 @@ import type { AgentKey, PayerId, Program } from "../types";
 
 export type { AgentKey, PayerId, Program };
 
-/* The Payer Workflow Studio contract. Everything the builder, the simulator, the rules library, New Case and the engine share is typed here.
+/* The Payer Workflow Studio contract. Everything the builder, the simulator, the rules library, New Authorization and the engine share is typed here.
    A workflow is a saved graph of nodes and edges. Branching is decided by structured conditions over case facts, never by a model, so the
-   simulator and New Case run the same code (engine.ts). Payer policy text lives once in the rules library; nodes point at rules by id. */
+   simulator and New Authorization run the same code (engine.ts). Payer policy text lives once in the rules library; nodes point at rules by id. */
 
-/** The five New Case stages. Every node belongs to one, so New Case can show where a workflow is without forcing an order. */
+/** The five workflow stages (New Authorization shows four; preparation happens between its third and fourth). Every node belongs to one, so New Authorization can show where a workflow is without forcing an order. */
 export type Stage = "intake" | "eligibility" | "documentation" | "preparation" | "review";
 export const STAGES_ORDER: Stage[] = ["intake", "eligibility", "documentation", "preparation", "review"];
-export const STAGE_LABEL: Record<Stage, string> = { intake: "Intake", eligibility: "Eligibility & Benefits", documentation: "Clinical documentation", preparation: "Authorization preparation", review: "Review & submit" };
+export const STAGE_LABEL: Record<Stage, string> = { intake: "Patient & Service", eligibility: "Coverage & Requirements", documentation: "Clinical Documentation", preparation: "Authorization preparation", review: "Review & Submit" };
 
-/** The five request types people choose in New Case and the queue filter ("initial", "concurrent", "reauth", "modify", "retro"). */
+/** The five request types people choose in New Authorization and the queue filter ("initial", "concurrent", "reauth", "modify", "retro"). */
 export type RequestType = RequestKind;
 export const REQUEST_TYPE_LABEL: Record<RequestType, string> = { initial: "Initial authorization", concurrent: "Concurrent review", reauth: "Reauthorization", modify: "Modification / extension", retro: "Retroactive authorization" };
 
@@ -251,11 +251,11 @@ export interface WorkflowVersion {
   edges: WfEdge[];
 }
 
-/* ------------------------------------------------------------------ running (simulator and New Case share this) */
+/* ------------------------------------------------------------------ running (simulator and New Authorization share this) */
 export type ApprovalState = "approved" | "pending" | "denied";
 export type PayerResponse = "none" | "approved" | "partial" | "denied" | "more_info";
 
-/** Everything the engine needs to decide a path. The simulator fills it from a form; New Case fills it from the case. */
+/** Everything the engine needs to decide a path. The simulator fills it from a form; New Authorization fills it from the case. */
 export interface CaseFacts {
   payerId: PayerId;
   product?: string;
@@ -282,7 +282,7 @@ export interface CaseFacts {
   providerType?: string;
   /** ISO date of the payer's decision, for the appeal deadline and peer-to-peer window. Without it those rules cannot be counted and say so. */
   decisionDate?: string;
-  /** Human approvals already given, by node id (New Case fills it from the sign-off). */
+  /** Human approvals already given, by node id (New Authorization fills it from the sign-off). */
   approvals?: Record<string, ApprovalState>;
 }
 
@@ -341,7 +341,7 @@ export interface MatchResult {
   explanation: string;
 }
 
-/** What New Case stores on a draft or request once a workflow is applied. */
+/** What New Authorization stores on a draft or request once a workflow is applied. */
 export interface AppliedWorkflow {
   workflowId: string;
   version: number;

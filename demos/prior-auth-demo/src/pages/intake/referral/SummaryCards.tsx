@@ -11,9 +11,20 @@ import { FieldRow, type DocSpot } from "./FieldRow";
 type Def = [Section, string];
 interface Shared { record: IntakeRecord; active?: DocSpot | null; onSpot?: (s: DocSpot | null, pin?: boolean) => void }
 
+const PATIENT_DEFS: Def[] = [["referral", "person"], ["profile", "dob"], ["profile", "phone"], ["profile", "language"], ["profile", "guardianName"], ["profile", "guardianPhone"], ["profile", "emergencyContact"], ["profile", "preferredName"]];
+const REFERRAL_DEFS: Def[] = [["referral", "sourceOrg"], ["referral", "referringClinician"], ["referral", "referrerContact"], ["referral", "referralDate"], ["referral", "reason"], ["referral", "requestedService"], ["referral", "urgency"]];
+const CLINICAL_DEFS: Def[] = [["referral", "concerns"], ["referral", "symptoms"], ["referral", "dxDocumented"], ["profile", "psychHistory"], ["profile", "substanceUse"], ["profile", "medical"], ["profile", "medications"], ["referral", "functional"], ["referral", "safetyConcerns"], ["referral", "previousServices"], ["referral", "existingAssessments"], ["referral", "hospitalization"]];
+const OTHER_DEFS: Def[] = [["referral", "currentProviders"], ["referral", "preferences"], ["referral", "notes"], ["profile", "supports"], ["profile", "housing"], ["profile", "educationEmployment"], ["profile", "legal"], ["profile", "transportation"], ["profile", "accessibility"], ["profile", "interpreter"], ["profile", "commPrefs"]];
+const COVERAGE_DEFS: Def[] = [["coverage", "plan"], ["coverage", "medicaidId"], ["coverage", "coverageType"], ["coverage", "effective"], ["coverage", "secondary"], ["coverage", "otherCoverage"]];
+const CONSENT_KEYS = ["consentTreatment", "roi", "schoolConsent"];
+
+/** Every field a card shows. An agent suggestion for any other field is listed apart, so none is lost. */
+export const PLACED_FIELDS: Set<string> = new Set([...PATIENT_DEFS, ...REFERRAL_DEFS, ...CLINICAL_DEFS, ...OTHER_DEFS, ...COVERAGE_DEFS].map(([s, k]) => `${s}.${k}`).concat(CONSENT_KEYS.map((k) => `profile.${k}`)));
+
+/** A row shows when it has a value, or when an agent's suggestion for it waits for a person. */
 const hasValue = (r: IntakeRecord, [section, key]: Def): boolean => {
   const fv = fieldOf(r, section, key);
-  return !!fv && !!fv.value.trim() && fv.state !== "not_collected";
+  return (!!fv && !!fv.value.trim() && fv.state !== "not_collected") || r.suggestions.some((x) => x.status === "pending" && x.section === section && x.field === key);
 };
 
 /** A card of referral values. Values the referral has show; the ones it lacks wait behind one button, so a card is as long as what is known. */
@@ -46,7 +57,7 @@ export function PatientCard(p: Shared) {
   return (
     <FieldCard
       {...p} title="Patient" right={pop ? <Chip>{POPULATION_LABEL[pop]}</Chip> : null}
-      defs={[["referral", "person"], ["profile", "dob"], ["profile", "phone"], ["profile", "language"], ["profile", "guardianName"], ["profile", "guardianPhone"], ["profile", "emergencyContact"], ["profile", "preferredName"]]}
+      defs={PATIENT_DEFS}
       always={["person", "dob", ...(minor ? ["guardianName", "guardianPhone"] : ["phone"])]}
     />
   );
@@ -58,7 +69,7 @@ export function ReferralCard(p: Shared & { now: number }) {
   return (
     <FieldCard
       {...p} title="Referral" subtitle={`${METHOD_LABEL[r.method]}${simulated ? " · simulated extraction" : ""}`}
-      defs={[["referral", "sourceOrg"], ["referral", "referringClinician"], ["referral", "referrerContact"], ["referral", "referralDate"], ["referral", "reason"], ["referral", "requestedService"], ["referral", "urgency"]]}
+      defs={REFERRAL_DEFS}
       always={["sourceOrg", "referrerContact", "reason", "requestedService", "urgency"]}
     >
       <ServiceNotes record={r} now={p.now} />
@@ -70,7 +81,16 @@ export function ClinicalCard(p: Shared) {
   return (
     <FieldCard
       {...p} title="Clinical information" subtitle="As the referral states it. A clinician assesses; Psyflo does not diagnose."
-      defs={[["referral", "concerns"], ["referral", "symptoms"], ["referral", "dxDocumented"], ["profile", "psychHistory"], ["profile", "substanceUse"], ["profile", "medical"], ["profile", "medications"], ["referral", "functional"], ["referral", "safetyConcerns"], ["referral", "previousServices"], ["referral", "existingAssessments"], ["referral", "hospitalization"]]}
+      defs={CLINICAL_DEFS}
+    />
+  );
+}
+
+export function OtherCard(p: Shared) {
+  return (
+    <FieldCard
+      {...p} title="Other details" subtitle="Supports, preferences, and legal or practical needs the referral mentions."
+      defs={OTHER_DEFS}
     />
   );
 }
@@ -79,7 +99,7 @@ export function CoverageCard(p: Shared) {
   return (
     <FieldCard
       {...p} title="Payer and coverage" subtitle="As the referral gives it. Not verified: the eligibility check comes later and is simulated."
-      defs={[["coverage", "plan"], ["coverage", "medicaidId"], ["coverage", "coverageType"], ["coverage", "effective"], ["coverage", "secondary"], ["coverage", "otherCoverage"]]}
+      defs={COVERAGE_DEFS}
       always={["plan", "medicaidId"]}
     />
   );

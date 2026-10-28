@@ -19,6 +19,8 @@ import { PhoneChecklist } from "../referral/PhoneChecklist";
 import { ReaderStatus } from "../referral/ReaderStatus";
 import { ReferralHistory } from "../referral/ReferralHistory";
 import { ReferralReview } from "../referral/ReferralReview";
+import { PLACED_FIELDS } from "../referral/SummaryCards";
+import { SuggestionCard } from "../shared/provenance";
 import { useDocSpot } from "../referral/useDocSpot";
 import { AddDocumentButton } from "../referral/AddDocument";
 
@@ -33,6 +35,7 @@ export function ReferralSection({ record }: { record: IntakeRecord }) {
   const suggestions = referralPending(record);
   const suggestionConflicts = suggestions.filter((s) => s.conflict);
   const conflicts = conflictsOf(record);
+  const unplaced = suggestions.filter((x) => !PLACED_FIELDS.has(`${x.section}.${x.field}`));
   const showRow = (section: string, field: string) => document.querySelector(`[data-field="${section}.${field}"]`)?.scrollIntoView({ behavior: "smooth", block: "center" });
   const showDoc = (s: { docId: string; blockId: string }) => {
     spot.show(s);
@@ -78,6 +81,12 @@ export function ReferralSection({ record }: { record: IntakeRecord }) {
       ) : null}
       {suggestions.length ? <div className="flex flex-wrap items-center gap-2"><BulkAccept record={record} /></div> : null}
       <ReferralReview record={record} now={now} spot={spot} variant="section" pending={pending} />
+      {unplaced.length ? (
+        <Card data-card="More suggestions">
+          <CardHeader title="More suggestions" subtitle="Values Reader found that the cards above do not show. A person accepts, edits or rejects each." />
+          <CardBody className="flex flex-col gap-2">{unplaced.map((sg) => <SuggestionCard key={sg.id} record={record} suggestion={sg} label={fieldLabel(sg.field)} />)}</CardBody>
+        </Card>
+      ) : null}
       <DocumentChecks record={record} onShow={showDoc} />
       <Notices record={record} />
       <Handling record={record} showAssign={!pending} />

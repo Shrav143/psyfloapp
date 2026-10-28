@@ -186,6 +186,13 @@ export const createIntakeReferralSlice: StateCreator<AppState, [], [], IntakeRef
       const s = get();
       s.updateIntakeTask(id, taskId, { status: "done", result: "The referrer replied. Add what they sent with Add a document or edit the fields." });
       audit(id, { actor: meOf(s), action: "Recorded the referrer's reply" });
+      /* Needs information means waiting on the referrer: with no other request open, the referral is back to New for a person to review. */
+      const r = rec(id);
+      const stillWaiting = r?.tasks.some((t) => t.id !== taskId && t.action === REPLY_TASK_ACTION && (t.status === "running" || t.status === "queued"));
+      if (r && r.triage === "needs_info" && !stillWaiting) {
+        patch(id, (x) => ({ ...x, triage: "new", triageNote: "The referrer replied. Add what they sent and review the referral." }));
+        audit(id, { actor: "system", action: "Back to New: the referrer replied" });
+      }
     },
     closeSafetyReview: (id, signerId, note) => {
       const s = get();
