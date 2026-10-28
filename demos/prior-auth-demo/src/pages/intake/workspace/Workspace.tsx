@@ -1,3 +1,4 @@
+import { blockedInHosted } from "@/lib/hosted";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { MODULE_IDS } from "@/data/assess/modules";
@@ -84,7 +85,7 @@ export function Workspace({ record }: { record: IntakeRecord }) {
           model={model}
           go={go}
           onConfigure={configure}
-          onPrint={() => { setPrinting(true); setPrintRun((n) => n + 1); }}
+          onPrint={() => { if (blockedInHosted("Print summary")) return; setPrinting(true); setPrintRun((n) => n + 1); }}
           openPanel={setPanel}
           hideNext={target.section === "overview"}
           assistant={{ open: wide ? open : drawer, wide, toggle, needs: model.needs.length }}

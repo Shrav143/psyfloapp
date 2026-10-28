@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Download } from "lucide-react";
 import { Button, Card, CardHeader, Disclosure, EmptyState, Segmented } from "@/components/ui";
 import type { IntakeRecord } from "@/data/intake/types";
+import { blockedInHosted } from "@/lib/hosted";
 import { stamp } from "@/lib/time";
 import { recordExport } from "../workspace/actions";
 import { ActivityFeed } from "../workspace/activity/ActivityFeed";
@@ -36,6 +37,7 @@ export function ActivitySection({ record }: { record: IntakeRecord }) {
   const set = (p: Partial<ActivityFilter>) => setF((x) => ({ ...x, ...p }));
 
   const exportText = () => {
+    if (blockedInHosted("Export as text")) return;
     download(`activity-${record.id}.txt`, activityText(record, shown, versions, now));
     recordExport(record.id, "the activity summary", shown.length);
   };
