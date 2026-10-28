@@ -4,7 +4,7 @@ import { Button, FileDrop } from "@/components/ui";
 import type { CaseDraft } from "@/data/cases";
 import { applyImport } from "./importIntake";
 import { applySampleChart } from "./intake";
-import { useEmrConnected } from "./IntakeSources";
+import { useEmrConnected } from "./useEmrConnected";
 import { sortFiles } from "./readFiles";
 
 /** Everything for this patient goes in one place: drop the files and Reader sorts them onto the list below, or bring notes in from the EMR, an export or a screenshot. */

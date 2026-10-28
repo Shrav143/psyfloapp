@@ -55,6 +55,8 @@ function documentRow(d: CaseDraft, entry: DocEntry, need: "required" | "recommen
   const name = doc.file.name;
   if (doc.status === "validating") return { id, label, state: "working", detail: join(name, "Reader is reading"), tag };
   const guessed = d.read?.[`doc:${slot}`]?.value === doc.file.id ? "Reader guessed the slot. Check it" : undefined;
+  /* A document read from the intake record was signed there: it shows where it came from and is never flagged again. */
+  if (doc.from) return { id, label, state: "done", detail: join(name, doc.from), tag };
   if (isReferralDoc(d.referralId, doc)) return { id, label, state: "done", detail: join(name, `from referral ${d.referralId}`), tag };
   const open = doc.findings.filter((f) => isOpen(f, d.answers));
   if (open.length) {

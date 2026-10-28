@@ -47,6 +47,7 @@ const refName = (doc: IntakeDocument) => doc.name.replace(/\.(pdf|txt|eml)$/i, "
 
 /** The state a value starts in: a conflict or a low-confidence reading needs a person, a summary is an AI suggestion, and the rest is as the source gave it. */
 export function stateOf(e: Pick<SampleExtract, "conflict" | "confidence" | "inferred">, origin: Origin): FieldState {
+  if (origin === "staff") return "verified";
   if (e.conflict || e.confidence === "low") return "needs_confirmation";
   if (e.inferred) return "ai_suggested";
   return origin === "patient" ? "patient_reported" : "document_extracted";
@@ -60,6 +61,7 @@ export function buildDraftRecord(id: string, src: DraftSource, ctx: { clock: num
 
   /** A reference to a block of whichever attached document holds it (the first document when none is named). */
   const ref = (blockId?: string, quote?: string): SourceRef | undefined => {
+    if (typed && !src.docs.length) return { kind: "staff", ref: "Manual entry" };
     const doc = (blockId ? src.docs.find((d) => d.pages.some((p) => blockIdsOf(p).includes(blockId))) : undefined) ?? src.docs[0];
     if (!doc) return undefined;
     const page = blockId ? Math.max(1, doc.pages.findIndex((p) => blockIdsOf(p).includes(blockId)) + 1) : 1;
@@ -68,7 +70,8 @@ export function buildDraftRecord(id: string, src: DraftSource, ctx: { clock: num
 
   const maps: Record<"referral" | "profile" | "coverage", FieldMap> = { referral: {}, profile: {}, coverage: {} };
   for (const e of src.extract) {
-    maps[e.section][e.field] = { value: e.value, state: stateOf(e, src.origin), at, by: "reader", source: ref(e.block, e.quote), confidence: e.confidence, ...(e.conflict ? { conflict: e.conflict } : {}) };
+    const state = stateOf(e, src.origin);
+    maps[e.section][e.field] = { value: e.value, state, at, by: typed ? ctx.me : "reader", source: ref(e.block, e.quote), confidence: e.confidence, ...(e.conflict ? { conflict: e.conflict } : {}), ...(state === "verified" ? { reviewedBy: ctx.me, reviewedAt: at } : {}) };
   }
 
   /* The coverage type follows the plan, as a suggestion until a person confirms it. */

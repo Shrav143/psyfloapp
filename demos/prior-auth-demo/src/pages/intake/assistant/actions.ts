@@ -1,8 +1,10 @@
 import { completeness, countBy, readiness, type CheckItem } from "@/data/intake/checklist";
-import type { AgentTask, IntakeRecord } from "@/data/intake/types";
+import { ROLE_AGENT, type AgentTask, type IntakeRecord } from "@/data/intake/types";
 import { vaPlanOf } from "@/data/va/plans";
 import { longDate } from "@/lib/time";
 import { useStore } from "@/store";
+import { meOf } from "@/store/intake";
+import { findEvidence as findCansEvidence } from "../cans/evidence";
 import { runAgent, type RunAgentOptions } from "../lib/agents";
 
 /* The assistant's quick actions. Each is an agent run (lib/agents.ts) whose work only summarizes, drafts or creates internal tasks; anything
@@ -106,4 +108,40 @@ export function retryTask(recordId: string, t: AgentTask, now: number): string |
     : runAgent(recordId, { role: t.role, action: t.action, section: t.section, source: t.source, approval: t.approval === "none" ? "none" : "required" });
   if (next) useStore.getState().updateIntakeTask(recordId, t.id, { retriedAs: next });
   return next;
+}
+
+/** Proposes what the clinical assessment already documents to the modules that read it, as pending evidence. Nothing is filled. Returns the task id, or null when the agent is paused. */
+export function runFeed(recordId: string): string | null {
+  return runAgent(recordId, {
+    role: "documentation", action: "Propose the clinical assessment's answers to the assessment modules", section: "assessment", source: "Clinical assessment answers on this record", ms: 1200,
+    work: () => {
+      const n = useStore.getState().feedModulesFromAssessment(recordId);
+      return n ? `${n} ${n === 1 ? "piece" : "pieces"} of evidence wait in their modules for a person to decide` : "Nothing new to propose: every answer has reached the modules that read it";
+    },
+  });
+}
+
+/** The CANS Evidence Agent's simulated reading of the record: statements under Psyflo evidence themes, as proposals a person keeps or discards. Never a rating. */
+export function runCansEvidence(recordId: string): string | null {
+  return runAgent(recordId, {
+    role: "cans", action: "Find evidence for the CANS (simulated reader)", section: "cans", source: "Documents, assessment and transcripts on this record", ms: 1400,
+    work: () => {
+      const st = useStore.getState();
+      const r = get(recordId);
+      if (!r) return undefined;
+      const items = findCansEvidence(r);
+      if (!items.length) return "Nothing new found";
+      if (!r.cans) st.startCans(recordId);
+      const ids = st.proposeCansEvidence(recordId, items, ROLE_AGENT.cans);
+      return `${ids.length} evidence ${ids.length === 1 ? "proposal waits" : "proposals wait"} for a person to keep or discard`;
+    },
+  });
+}
+
+/** A person's own task on the record: it waits as a "needs you" item until they mark it done. It is not an agent and sends nothing. */
+export function addPersonalTask(recordId: string, text: string): string {
+  const st = useStore.getState();
+  const id = st.addIntakeTask(recordId, { role: "completion", action: text, status: "needs_you", approval: "none", result: "Added by a person on this record", kind: "manual" });
+  st.addIntakeAudit(recordId, { actor: meOf(st), action: "Added a task", detail: text });
+  return id;
 }

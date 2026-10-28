@@ -3,6 +3,7 @@ import { moduleById, moduleOrder, schemaOf } from "@/data/assess/modules";
 import { programById } from "@/data/assess/programs";
 import { RULES } from "@/data/assess/rules";
 import type { AssessmentPlan, FieldDef, InstrumentInstance, Level, ModuleId, ModuleSchema, PlanSource, SectionDef, Verification } from "@/data/assess/types";
+import { isVisible } from "@/data/assess/visibility";
 import type { FieldState, IntakeRecord } from "@/data/intake/types";
 import { toDate } from "@/lib/time";
 import { vaDate } from "@/data/va/policy";
@@ -70,12 +71,7 @@ export const FIELD_LINKS: Record<string, FieldLink> = {
   "ra.clearance": { kind: "field", moduleId: "medical-stability", key: "ms.clearance" },
 };
 
-/** Fields that only apply in some situations. The rest always show. */
-const VISIBLE: Record<string, (r: IntakeRecord) => boolean> = {
-  /* The certification-of-need placeholder is for a person under 21 in a psychiatric facility. */
-  "ra.con": (r) => (!!r.config && r.config.population !== "adult") || r.config?.programId === "prtf" || (r.age !== null && r.age < 21),
-};
-export const isVisible = (f: FieldDef, r: IntakeRecord): boolean => VISIBLE[f.key]?.(r) ?? true;
+export { isVisible };
 
 export const sectionFields = (s: SectionDef, r: IntakeRecord): FieldDef[] => s.fields.filter((f) => isVisible(f, r));
 

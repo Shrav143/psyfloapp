@@ -7,6 +7,7 @@ import type { CaseEnv } from "./caseEnv";
 import { DropPanel } from "./DropPanel";
 import { PayerChangeNote } from "./PayerChangeNote";
 import { PreparationSection } from "./PreparationSection";
+import { RecordDocsCard } from "./RecordDocsCard";
 import { RecordsChecklist } from "./RecordsChecklist";
 import { StartAgentsModal } from "./StartAgentsModal";
 import { StepFooter } from "./StepFooter";
@@ -17,7 +18,7 @@ import { foldWorkflow } from "./workflow/fold";
 
 const toSection = (smooth: boolean) => requestAnimationFrame(() => document.getElementById(PREPARATION_ID)?.scrollIntoView({ block: "start", behavior: smooth ? "smooth" : "auto" }));
 
-/** Step 3, Clinical documentation: drop or import what you have, watch the list tick off, then the agents prepare the authorization in the last section.
+/** Stage 3, Clinical Documentation: what the intake record already holds is attached (nothing is re-entered), then drop or import the rest, watch the list tick off, and the agents prepare the authorization in the last section.
     The required items come from the payer's saved list for the level of care; what is typical for this type of request is labelled as typical. Nothing here blocks. */
 export function DocumentationStep({ draft, env, toPreparation = 0 }: { draft: CaseDraft; env: CaseEnv; /** Counts up when the page should open on the agents' section. */ toPreparation?: number }) {
   const start = useStore((s) => s.startCaseRun);
@@ -35,6 +36,7 @@ export function DocumentationStep({ draft, env, toPreparation = 0 }: { draft: Ca
   return (
     <div className="mx-auto flex w-full max-w-[960px] flex-col gap-5">
       <PayerChangeNote draft={draft} />
+      <RecordDocsCard draft={draft} env={env} />
       <DropPanel draft={draft} />
       <RecordsChecklist
         draft={draft}
@@ -60,7 +62,7 @@ export function DocumentationStep({ draft, env, toPreparation = 0 }: { draft: Ca
       <StepFooter
         actions={
           <>
-            <Button icon={ArrowLeft} onClick={() => patch(draft.id, stepPatchOf("eligibility"))}>
+            <Button icon={ArrowLeft} onClick={() => patch(draft.id, stepPatchOf("coverage"))}>
               Back
             </Button>
             <Button icon={Save} onClick={saveDraft}>
@@ -68,7 +70,7 @@ export function DocumentationStep({ draft, env, toPreparation = 0 }: { draft: Ca
             </Button>
             {finished ? (
               <Button variant="primary" trailing={ArrowRight} onClick={() => patch(draft.id, stepPatchOf("review"))}>
-                Continue to Review &amp; submit
+                Continue to Review &amp; Submit
               </Button>
             ) : null}
           </>

@@ -84,7 +84,7 @@ export function WorkspaceHeader({ model, go, onConfigure, onPrint, openPanel, hi
   const assistantLabel = assistant.wide && assistant.open ? "Collapse the AI Assistant" : "Open the AI Assistant";
 
   return (
-    <Card data-workspace-header className="shrink-0">
+    <Card data-workspace-header className="@container shrink-0">
       <div className="flex flex-col gap-2 px-5 py-3">
         <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
           <div className="flex min-w-0 flex-wrap items-center gap-x-2.5 gap-y-1">
@@ -102,14 +102,14 @@ export function WorkspaceHeader({ model, go, onConfigure, onPrint, openPanel, hi
             ) : null}
             {r.priority ? <Pill tone="risk" dot>High priority</Pill> : null}
             {r.urgency !== "routine" ? <Pill tone={r.urgency === "emergent" ? "risk" : "mid"}>{r.urgency === "emergent" ? "Emergent" : "Urgent"}</Pill> : null}
-            <Chip>Synthetic record</Chip>
+            {details ? null : <Chip>Synthetic record</Chip>}
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <SaveIndicator />
+            {details ? null : <SaveIndicator />}
             <Button size="sm" icon={PanelRight} onClick={assistant.toggle} aria-pressed={assistant.wide ? assistant.open : undefined} aria-label={assistantLabel} data-assistant-toggle>
-              AI Assistant{assistant.needs ? <span className="ml-0.5 rounded-full bg-mid-bg px-1.5 text-[11px] font-semibold text-mid-ink">{assistant.needs}</span> : null}
+              <span className="hidden @4xl:inline">AI Assistant</span>{assistant.needs ? <span className="rounded-full bg-mid-bg px-1.5 text-[11px] font-semibold text-mid-ink">{assistant.needs}</span> : null}
             </Button>
-            <Button size="sm" icon={Settings2} onClick={onConfigure} data-configure>{cfg ? "Change configuration" : "Configure intake"}</Button>
+            <Button size="sm" icon={Settings2} onClick={onConfigure} data-configure aria-label={cfg ? "Change configuration" : "Configure intake"} title={cfg ? "Change configuration" : "Configure intake"}><span className="hidden @4xl:inline">{cfg ? "Change configuration" : "Configure intake"}</span></Button>
             <ActionMenu label="Actions" icon={MoreHorizontal} items={menu} />
             <button type="button" onClick={toggleDetails} aria-expanded={details} aria-label={details ? "Hide details" : "Show details"} title={details ? "Hide details" : "Show details"} className="grid h-8 w-8 place-items-center rounded-[10px] text-muted hover:bg-tile hover:text-ink">
               <ChevronUp size={16} className={cn("ico transition-transform", !details && "rotate-180")} />
@@ -125,6 +125,7 @@ export function WorkspaceHeader({ model, go, onConfigure, onPrint, openPanel, hi
             <Fact label="Assigned">{staff?.name ?? "Unassigned"}</Fact>
             <Fact label="Site">{siteName(r.site)}</Fact>
             <Fact label="Source">{r.sourceOrg}</Fact>
+            <span className="inline-flex items-center gap-3"><Chip>Synthetic record</Chip><SaveIndicator /></span>
           </div>
         ) : null}
 

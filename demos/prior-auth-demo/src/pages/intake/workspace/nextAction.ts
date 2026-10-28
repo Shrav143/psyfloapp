@@ -49,8 +49,10 @@ export function nextActionOf(r: IntakeRecord, plan: AssessmentPlan | null, so: S
   }
   if (a === "in_progress") return { text: "Finish the clinical assessment", tone: "neutral", label: "Open the assessment", to: { section: "clinical" } };
   if (a === "awaiting_review") return { text: "A clinician attests the clinical assessment", tone: "mid", label: "Open to sign", to: { section: "clinical" } };
-  if (so.state === "ready") return { text: "A clinician signs off the assessment", tone: "mid", label: "Go to sign-off", to: { section: "signoff" } };
-  if (so.state === "stale") return { text: "A module changed after sign-off. A clinician amends the sign-off", tone: "mid", label: "Go to sign-off", to: { section: "signoff" } };
+  /* The care plan is the later step: once it is approved, the sign-off is not what holds the intake up. */
+  const planned = r.carePlan?.status === "approved";
+  if (so.state === "ready" && !planned) return { text: "A clinician signs off the assessment", tone: "mid", label: "Go to sign-off", to: { section: "signoff" } };
+  if (so.state === "stale" && !planned) return { text: "A module changed after sign-off. A clinician amends the sign-off", tone: "mid", label: "Go to sign-off", to: { section: "signoff" } };
   if (r.carePlan?.status !== "approved") return { text: r.carePlan?.status === "draft" ? "A clinician approves the care plan" : "A clinician selects the service and drafts the care plan", tone: "neutral", label: "Open care planning", to: { section: "care" } };
   if (r.handoff.status === "in_new_case") return { text: "Finish the authorization request in New Authorization", tone: "neutral", label: "Open the draft", href: r.handoff.draftId ? paths.newCase({ draft: r.handoff.draftId }) : paths.newCase({ intake: r.id }) };
   return { text: "Prepare the authorization request. A person sends it", tone: "good", label: "Start New Authorization", href: paths.newCase({ intake: r.id, ...(r.episodeId ? { episode: r.episodeId } : {}) }) };

@@ -15,7 +15,8 @@ export const CALL_REF = "Voice intake call";
 export const CALL_SECONDS_PER_TICK = 1;
 export const CALL_TICK_MS = 250;
 
-export const scriptOf = (r: IntakeRecord): VoiceScript => voiceScriptFor(r, r.voice?.scriptId);
+/** The call's script. A call that has not started follows the intake's current configuration (a program adds its own questions); one in progress keeps the script it started with. */
+export const scriptOf = (r: IntakeRecord): VoiceScript => voiceScriptFor(r, r.voice && r.voice.status !== "idle" ? r.voice.scriptId : undefined);
 const ACTIVE: VoiceSession["status"][] = ["identity", "language", "role", "consent", "questions", "summary"];
 export const callActive = (v: VoiceSession | null | undefined): boolean => !!v && ACTIVE.includes(v.status) && v.phase !== "done";
 export const STATUS_LABEL: Record<VoiceSession["status"], string> = {

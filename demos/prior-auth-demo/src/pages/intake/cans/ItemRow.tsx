@@ -41,7 +41,7 @@ export function ItemRow({ record, cans, item, pendingForItem }: { record: Intake
         </div>
         <div>
           <label htmlFor={`note-${item.id}`} className="mb-1 block text-[12px] font-medium text-ink2">Note</label>
-          <TextArea id={`note-${item.id}`} rows={2} value={note} disabled={locked} className="min-h-[38px] py-2" placeholder="In the assessor's words" onChange={(e) => setNote(e.target.value)} onBlur={() => set(record.id, item.id, { note })} />
+          <TextArea id={`note-${item.id}`} rows={2} value={note} disabled={locked} className="!min-h-[60px] py-2" placeholder="In the assessor's words" onChange={(e) => setNote(e.target.value)} onBlur={() => set(record.id, item.id, { note })} />
         </div>
       </div>
       <div className="mt-2 space-y-1">

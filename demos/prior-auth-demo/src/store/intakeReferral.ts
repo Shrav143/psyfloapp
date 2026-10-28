@@ -59,39 +59,39 @@ export interface IntakeReferralSlice {
   closeSafetyReview: (id: string, signerId: string, note: string) => void;
 
   /** Starts a draft. `build` gets the draft id (RD-n) and returns the record. Returns the id. */
-  startReferralDraft: (build: (id: string) => IntakeRecord, label: string, step?: ReferralDraft["step"]) => string;
-  finishReferralDraft: (id: string) => void;
-  discardReferralDraft: (id: string) => void;
-  setReferralDuplicate: (id: string, dup: { ofId: string; reason: string } | null) => void;
+  startIntakeDraft: (build: (id: string) => IntakeRecord, label: string, step?: ReferralDraft["step"]) => string;
+  finishIntakeDraft: (id: string) => void;
+  discardIntakeDraft: (id: string) => void;
+  setIntakeDraftDuplicate: (id: string, dup: { ofId: string; reason: string } | null) => void;
   /** Saves a draft as the intake record (status New). Returns the new id, or null when there is no such draft. `dupReason`: why it was created although it looks like another record. */
-  saveReferralDraft: (id: string, dupReason?: { ofId: string; reason: string }) => string | null;
+  saveIntakeDraft: (id: string, dupReason?: { ofId: string; reason: string }) => string | null;
 
   /** Edits a field of a draft or a record. A value a person sets or confirms is recorded with them as the reviewer. */
-  editReferralField: (id: string, section: FieldSectionRef, key: string, value: string, state: FieldState, source?: SourceRef) => void;
+  editIntakeReferralField: (id: string, section: FieldSectionRef, key: string, value: string, state: FieldState, source?: SourceRef) => void;
   /** A person confirms values as they stand. A confirmed value is Verified, and a conflict on it is closed. */
-  confirmReferralFields: (id: string, keys: { section: FieldSectionRef; key: string }[]) => void;
-  setReferralService: (id: string, serviceId: VaServiceId) => void;
-  setReferralUrgency: (id: string, urgency: Urgency) => void;
+  confirmIntakeReferralFields: (id: string, keys: { section: FieldSectionRef; key: string }[]) => void;
+  setIntakeReferralService: (id: string, serviceId: VaServiceId) => void;
+  setIntakeReferralUrgency: (id: string, urgency: Urgency) => void;
   /** A person sets the initials and age the referral names. The date of birth, when there is one, keeps the age. */
-  setReferralPerson: (id: string, p: { initials: string; age: number | null }) => void;
-  assignReferral: (id: string, staffId: string) => void;
+  setIntakeReferralPerson: (id: string, p: { initials: string; age: number | null }) => void;
+  assignIntakeReferral: (id: string, staffId: string) => void;
 
   /** Accept for assessment. A draft becomes the record. Refuses (null) when the program is at capacity and `waitlist` is not set. */
-  acceptReferral: (id: string, o?: { waitlist?: boolean; note?: string }) => { id: string; outcome: "accepted" | "waitlisted" } | null;
+  acceptIntakeReferral: (id: string, o?: { waitlist?: boolean; note?: string }) => { id: string; outcome: "accepted" | "waitlisted" } | null;
   /** Redirect with a reason and a destination: a draft notice goes to the referrer, unsent. Refuses (null) while risk information waits for a clinician. */
-  redirectReferral: (id: string, o: { reasonCode: RedirectReasonCode; destination: { org: string; id?: string }; note?: string }) => string | null;
+  redirectIntakeReferral: (id: string, o: { reasonCode: RedirectReasonCode; destination: { org: string; id?: string }; note?: string }) => string | null;
   /** Decline with a reason from the list: a draft notice goes to the referrer, unsent. Refuses (null) while risk information waits for a clinician. */
-  declineReferral: (id: string, o: { reasonCode: DeclineReasonCode; note?: string }) => string | null;
-  closeReferral: (id: string, reason: string) => void;
+  declineIntakeReferral: (id: string, o: { reasonCode: DeclineReasonCode; note?: string }) => string | null;
+  closeIntakeReferral: (id: string, reason: string) => void;
   /** Puts a declined, redirected or closed referral back to New, with the reason, so it can be worked again. */
-  reopenReferral: (id: string, reason: string) => void;
+  reopenIntakeReferral: (id: string, reason: string) => void;
   /** Asks the referrer for missing information. The request is a draft notice; `send` approves and sends it (simulated). Needs information and a follow-up are added. */
-  requestMissingInfo: (id: string, o: { items: string[]; to: string; channel: NoticeChannel; subject: string; body: string; send?: { basis: NonNullable<ReferralNotice["basis"]> } }) => string | null;
-  editReferralNotice: (id: string, noticeId: string, patch: Partial<Pick<ReferralNotice, "to" | "channel" | "subject" | "body">>) => void;
+  requestIntakeMissingInfo: (id: string, o: { items: string[]; to: string; channel: NoticeChannel; subject: string; body: string; send?: { basis: NonNullable<ReferralNotice["basis"]> } }) => string | null;
+  editIntakeNotice: (id: string, noticeId: string, patch: Partial<Pick<ReferralNotice, "to" | "channel" | "subject" | "body">>) => void;
   /** A person approves a draft notice and it is sent (simulated). Returns false when no consent basis holds. */
-  sendReferralNotice: (id: string, noticeId: string, basis: NonNullable<ReferralNotice["basis"]>) => boolean;
-  discardReferralNotice: (id: string, noticeId: string) => void;
-  removeFromWaitlist: (id: string) => void;
+  sendIntakeNotice: (id: string, noticeId: string, basis: NonNullable<ReferralNotice["basis"]>) => boolean;
+  discardIntakeNotice: (id: string, noticeId: string) => void;
+  removeIntakeFromWaitlist: (id: string) => void;
 }
 
 let n = 0;
@@ -133,7 +133,7 @@ export const createIntakeReferralSlice: StateCreator<AppState, [], [], IntakeRef
     return nid;
   };
   /** Makes sure the referral is a record, saving a draft if need be. */
-  const real = (id: string): string | null => (isReferralDraftId(id) ? get().saveReferralDraft(id) : rec(id) ? id : null);
+  const real = (id: string): string | null => (isReferralDraftId(id) ? get().saveIntakeDraft(id) : rec(id) ? id : null);
   const openRisk = (r: IntakeRecord): boolean => r.safety?.status === "open" || (!r.safety && riskFindings(r).length > 0);
 
   return {
@@ -141,14 +141,14 @@ export const createIntakeReferralSlice: StateCreator<AppState, [], [], IntakeRef
     referralDraftCounter: 0,
     capacityOpen: Object.fromEntries(Object.entries(CAPACITY_SEED).map(([k, v]) => [k, v?.open ?? 0])),
 
-    setIntakeService: (id, serviceId) => get().setReferralService(id, serviceId),
+    setIntakeService: (id, serviceId) => get().setIntakeReferralService(id, serviceId),
     setIntakeServiceDate: (id, date) => {
       const r = rec(id);
       if (!r || r.serviceDate === date) return;
       patch(id, (x) => ({ ...x, serviceDate: date }));
       audit(id, { actor: meOf(get()), action: "Changed the planned start", detail: `${longDate(r.serviceDate)} to ${longDate(date)}` });
     },
-    setIntakeUrgency: (id, urgency) => get().setReferralUrgency(id, urgency),
+    setIntakeUrgency: (id, urgency) => get().setIntakeReferralUrgency(id, urgency),
     setIntakePriority: (id, on) => {
       patch(id, (x) => ({ ...x, priority: on }));
       audit(id, { actor: meOf(get()), action: on ? "Marked high priority" : "Removed high priority" });
@@ -194,16 +194,16 @@ export const createIntakeReferralSlice: StateCreator<AppState, [], [], IntakeRef
     },
 
     /* ------------------------------------------------------------ drafts */
-    startReferralDraft: (build, label, step = "extracting") => {
+    startIntakeDraft: (build, label, step = "extracting") => {
       const s = get();
       const id = `RD-${s.referralDraftCounter + 1}`;
       set((st) => ({ referralDraftCounter: st.referralDraftCounter + 1, referralDrafts: [{ id, record: build(id), step, label, startedAt: s.clock }, ...st.referralDrafts] }));
       return id;
     },
-    finishReferralDraft: (id) => set((s) => ({ referralDrafts: s.referralDrafts.map((d) => (d.id === id ? { ...d, step: "review" } : d)) })),
-    discardReferralDraft: (id) => set((s) => ({ referralDrafts: s.referralDrafts.filter((d) => d.id !== id) })),
-    setReferralDuplicate: (id, dup) => set((s) => ({ referralDrafts: s.referralDrafts.map((d) => (d.id === id ? { ...d, dup: dup ?? undefined } : d)) })),
-    saveReferralDraft: (id, dupArg) => {
+    finishIntakeDraft: (id) => set((s) => ({ referralDrafts: s.referralDrafts.map((d) => (d.id === id ? { ...d, step: "review" } : d)) })),
+    discardIntakeDraft: (id) => set((s) => ({ referralDrafts: s.referralDrafts.filter((d) => d.id !== id) })),
+    setIntakeDraftDuplicate: (id, dup) => set((s) => ({ referralDrafts: s.referralDrafts.map((d) => (d.id === id ? { ...d, dup: dup ?? undefined } : d)) })),
+    saveIntakeDraft: (id, dupArg) => {
       const s = get();
       const d = s.referralDrafts.find((x) => x.id === id);
       if (!d) return null;
@@ -227,7 +227,7 @@ export const createIntakeReferralSlice: StateCreator<AppState, [], [], IntakeRef
     },
 
     /* ------------------------------------------------------------ fields */
-    editReferralField: (id, section, key, value, state, source) => {
+    editIntakeReferralField: (id, section, key, value, state, source) => {
       const s = get();
       const me = meOf(s);
       const reviewed = state === "verified" ? { reviewedBy: me, reviewedAt: s.clock } : {};
@@ -245,7 +245,7 @@ export const createIntakeReferralSlice: StateCreator<AppState, [], [], IntakeRef
       });
       audit(id, { actor: me, action: `Edited ${key}`, detail: value ? undefined : "Cleared" });
     },
-    confirmReferralFields: (id, keys) => {
+    confirmIntakeReferralFields: (id, keys) => {
       const s = get();
       const me = meOf(s);
       const r = rec(id);
@@ -262,7 +262,7 @@ export const createIntakeReferralSlice: StateCreator<AppState, [], [], IntakeRef
       }, x));
       audit(id, { actor: me, action: done.length === 1 ? `Confirmed ${done[0].key}` : `Confirmed ${done.length} fields`, detail: done.some((k) => r[k.section][k.key]?.conflict) ? "A conflict between sources was reviewed and closed" : undefined });
     },
-    setReferralService: (id, serviceId) => {
+    setIntakeReferralService: (id, serviceId) => {
       const s = get();
       const r = rec(id);
       if (!r || r.serviceId === serviceId) return;
@@ -271,7 +271,7 @@ export const createIntakeReferralSlice: StateCreator<AppState, [], [], IntakeRef
       patch(id, (x) => withField({ ...x, serviceId, title: x.title.replace(/: [^:]*$/, `: ${svc.short}`), serviceDate: svc.status === "redesign" ? Math.max(x.serviceDate, REDESIGN_START) : x.serviceDate }, "referral", "requestedService", { value: svc.label, state: "verified", at: s.clock, by: me, reviewedBy: me, reviewedAt: s.clock, source: { kind: "staff", ref: "Chosen by staff" } }));
       audit(id, { actor: me, action: "Changed the requested program", detail: `${serviceById(r.serviceId).short} to ${svc.short}` });
     },
-    setReferralUrgency: (id, urgency) => {
+    setIntakeReferralUrgency: (id, urgency) => {
       const s = get();
       const r = rec(id);
       if (!r || r.urgency === urgency) return;
@@ -279,20 +279,20 @@ export const createIntakeReferralSlice: StateCreator<AppState, [], [], IntakeRef
       patch(id, (x) => withField({ ...x, urgency, priority: urgency !== "routine" || x.priority }, "referral", "urgency", { value: URGENCY_TEXT[urgency], state: "verified", at: s.clock, by: me, reviewedBy: me, reviewedAt: s.clock, source: { kind: "staff", ref: "Chosen by staff" } }));
       audit(id, { actor: me, action: `Urgency: ${urgency}`, detail: `Was ${r.urgency}` });
     },
-    setReferralPerson: (id, p) => {
+    setIntakeReferralPerson: (id, p) => {
       const s = get();
       const me = meOf(s);
       const text = `${p.initials}${p.age !== null ? `, ${p.age}` : ""}`;
       patch(id, (x) => withField({ ...x, initials: p.initials, age: p.age }, "referral", "person", { value: text, state: "verified", at: s.clock, by: me, reviewedBy: me, reviewedAt: s.clock, source: { kind: "staff", ref: "Entered by staff" } }));
       audit(id, { actor: me, action: "Set the person's initials and age", detail: text });
     },
-    assignReferral: (id, staffId) => {
+    assignIntakeReferral: (id, staffId) => {
       patch(id, (r) => ({ ...r, assignedTo: staffId }));
       audit(id, { actor: meOf(get()), action: "Assigned", detail: staffOf(staffId)?.name ?? staffId });
     },
 
     /* ------------------------------------------------------------ decisions */
-    acceptReferral: (id, o) => {
+    acceptIntakeReferral: (id, o) => {
       const s = get();
       const r0 = rec(id);
       if (!r0) return null;
@@ -318,7 +318,7 @@ export const createIntakeReferralSlice: StateCreator<AppState, [], [], IntakeRef
       get().toast({ title: waitlisted ? `${rid} is on the waitlist` : `${rid} accepted for assessment`, body: "A notice to the referrer is drafted. It is not sent until you approve it.", tone: "good" });
       return { id: rid, outcome: waitlisted ? "waitlisted" : "accepted" };
     },
-    redirectReferral: (id, o) => {
+    redirectIntakeReferral: (id, o) => {
       const r0 = rec(id);
       if (!r0 || openRisk(r0)) return null;
       const rid = real(id);
@@ -333,7 +333,7 @@ export const createIntakeReferralSlice: StateCreator<AppState, [], [], IntakeRef
       get().toast({ title: `${rid} redirected`, body: "A notice to the referrer is drafted. It is not sent until you approve it.", tone: "neutral" });
       return rid;
     },
-    declineReferral: (id, o) => {
+    declineIntakeReferral: (id, o) => {
       const r0 = rec(id);
       if (!r0 || openRisk(r0)) return null;
       const rid = real(id);
@@ -348,13 +348,13 @@ export const createIntakeReferralSlice: StateCreator<AppState, [], [], IntakeRef
       get().toast({ title: `${rid} declined`, body: "A notice to the referrer is drafted. It is not sent until you approve it.", tone: "neutral" });
       return rid;
     },
-    closeReferral: (id, reason) => {
+    closeIntakeReferral: (id, reason) => {
       const s = get();
       const me = meOf(s);
       patch(id, (r) => ({ ...r, triage: "closed", triageNote: reason.trim(), referralDecision: { kind: "closed", at: s.clock, by: me, reason: reason.trim() } }));
       audit(id, { actor: me, action: "Closed the referral", detail: reason.trim() });
     },
-    reopenReferral: (id, reason) => {
+    reopenIntakeReferral: (id, reason) => {
       const s = get();
       const r = rec(id);
       if (!r) return;
@@ -362,7 +362,7 @@ export const createIntakeReferralSlice: StateCreator<AppState, [], [], IntakeRef
       patch(id, (x) => ({ ...x, triage: "new", triageNote: undefined, referralDecision: undefined, waitlist: undefined }));
       audit(id, { actor: meOf(s), action: "Reopened the referral", detail: `Was ${was}. ${reason.trim()}` });
     },
-    requestMissingInfo: (id, o) => {
+    requestIntakeMissingInfo: (id, o) => {
       const rid = real(id);
       if (!rid) return null;
       const s = get();
@@ -371,15 +371,15 @@ export const createIntakeReferralSlice: StateCreator<AppState, [], [], IntakeRef
       const r = rec(rid) as IntakeRecord;
       if (r.triage === "new") patch(rid, (x) => ({ ...x, triage: "needs_info", triageNote: `Waiting on the referrer: ${o.items.join(", ") || "more information"}` }));
       audit(rid, { actor: me, action: "Drafted a request for missing information", detail: `To ${o.to}: ${o.items.join("; ") || "see message"}` });
-      if (o.send) get().sendReferralNotice(rid, nid, o.send.basis);
+      if (o.send) get().sendIntakeNotice(rid, nid, o.send.basis);
       else {
         get().addIntakeTask(rid, { role: "coordination", action: "Approve and send the request for missing information", status: "needs_you", section: "referral", approval: "required", result: "The draft waits for a person to approve it" });
         get().toast({ title: "Request drafted", body: "It is not sent until you approve it.", tone: "neutral" });
       }
       return rid;
     },
-    editReferralNotice: (id, noticeId, p) => patch(id, (r) => ({ ...r, referralNotices: (r.referralNotices ?? []).map((x) => (x.id === noticeId && x.status === "draft" ? { ...x, ...p } : x)) })),
-    sendReferralNotice: (id, noticeId, basis) => {
+    editIntakeNotice: (id, noticeId, p) => patch(id, (r) => ({ ...r, referralNotices: (r.referralNotices ?? []).map((x) => (x.id === noticeId && x.status === "draft" ? { ...x, ...p } : x)) })),
+    sendIntakeNotice: (id, noticeId, basis) => {
       const s = get();
       const r = rec(id);
       const notice = r?.referralNotices?.find((x) => x.id === noticeId);
@@ -398,11 +398,11 @@ export const createIntakeReferralSlice: StateCreator<AppState, [], [], IntakeRef
       s.toast({ title: `Sent to ${notice.to} (simulated)`, body: "Nothing left the demo.", tone: "good" });
       return true;
     },
-    discardReferralNotice: (id, noticeId) => {
+    discardIntakeNotice: (id, noticeId) => {
       patch(id, (r) => ({ ...r, referralNotices: (r.referralNotices ?? []).map((x) => (x.id === noticeId && x.status === "draft" ? { ...x, status: "discarded" } : x)) }));
       audit(id, { actor: meOf(get()), action: "Discarded a draft notice" });
     },
-    removeFromWaitlist: (id) => {
+    removeIntakeFromWaitlist: (id) => {
       patch(id, (r) => ({ ...r, waitlist: undefined, triageNote: undefined }));
       audit(id, { actor: meOf(get()), action: "Removed from the waitlist" });
     },

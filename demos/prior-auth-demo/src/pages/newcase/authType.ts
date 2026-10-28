@@ -1,4 +1,4 @@
-/* The Authorization type chosen under the New Case heading, and everything that follows from it:
+/* The Authorization type chosen under the New Authorization heading, and everything that follows from it:
    which request type the demo records, what Intake asks, which documents are typical, what the justification says.
    The ids are the request kinds the Dashboard and the queue already filter by. */
 import type { AuthKind, ChangeKind } from "@/data/cases";

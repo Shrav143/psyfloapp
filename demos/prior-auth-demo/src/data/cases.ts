@@ -1,4 +1,4 @@
-/* Types, constants and pure helpers for the New Case flow and Case Manager.
+/* Types, constants and pure helpers for the New Authorization flow and Case Manager.
    The store slice (store/cases.ts) and every page under pages/newcase and pages/active read from here. */
 import type { DemoFile } from "@/components/ui";
 import { payerById } from "./seed";
@@ -486,7 +486,7 @@ export function chanceBounds(payerId: PayerId | null): { start: number; final: n
   return { start: final - 26, final };
 }
 
-/** The Authorizations queue row for a request signed and sent in New Case. It is with the payer, so it sits in the band of the payer's usual decision time.
+/** The Authorizations queue row for a request signed and sent in New Authorization. It is with the payer, so it sits in the band of the payer's usual decision time.
     The queue's case model covers the four core levels of care; a request for another Virginia service stays a Dashboard request with no queue row. */
 export function queueItemOf(r: PsyRequest, program: CoreProgram, clock: number, levelLabel?: string): QueueItem {
   const dueAt = clock + payerById(r.payerId).typicalDecisionDays * 1440;

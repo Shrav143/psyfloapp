@@ -73,7 +73,7 @@ export function Worklist<R>({ rows, columns, rowKey, rowHref, linkState, default
 
   return (
     <>
-      <div className="overflow-x-auto">
+      <div className="relative overflow-x-auto">
         <table aria-label={label} className="w-full table-fixed border-separate border-spacing-0 text-left" style={{ minWidth }}>
           <colgroup>
             {columns.map((c) => <col key={c.id} style={{ width: c.width }} />)}
@@ -86,7 +86,7 @@ export function Worklist<R>({ rows, columns, rowKey, rowHref, linkState, default
                 return (
                   <th key={c.id} scope="col" aria-sort={on ? (desc ? "descending" : "ascending") : c.sort ? "none" : undefined} className={cn(TH, i === 0 && "sticky left-0 z-[2] pl-5")}>
                     {c.hideLabel ? <span className="sr-only">{c.label}</span> : c.sort ? (
-                      <button type="button" data-sort={c.id} onClick={() => sortBy(c.id)} className={cn("inline-flex items-center gap-1 text-left uppercase hover:text-ink", on && "text-ink")}>
+                      <button type="button" data-sort={c.id} aria-label={`Sort by ${c.label}`} onClick={() => sortBy(c.id)} className={cn("inline-flex items-center gap-1 text-left uppercase hover:text-ink", on && "text-ink")}>
                         {c.label}
                         <Icon size={12} className={cn("ico shrink-0", !on && "opacity-50")} aria-hidden="true" />
                       </button>

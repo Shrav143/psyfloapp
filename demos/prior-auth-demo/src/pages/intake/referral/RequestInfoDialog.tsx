@@ -12,7 +12,7 @@ import { useSendBasis } from "./SendBasis";
 /** Request missing information. The request is a draft the person reads and edits. Saving it keeps it as a draft; approving it sends it (simulated).
     Either way the referral is set to Needs information and a follow-up is added. */
 export function RequestInfoDialog({ record, onClose, onDone }: { record: IntakeRecord; onClose: () => void; onDone: (id: string) => void }) {
-  const request = useStore((s) => s.requestMissingInfo);
+  const request = useStore((s) => s.requestIntakeMissingInfo);
   const me = useStore((s) => meOf(s));
   const gaps = useMemo(() => referralGaps(record), [record]);
   const [picked, setPicked] = useState<string[]>(gaps.map((g) => g.key));

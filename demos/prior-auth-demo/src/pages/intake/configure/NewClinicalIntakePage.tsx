@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { Button, Card, CardBody, Crumbs, Page, PageHeader, Stepper } from "@/components/ui";
 import { PURPOSES, purposeById } from "@/data/assess/purposes";
@@ -21,6 +21,12 @@ const newest = (rs: IntakeRecord[]): IntakeRecord | undefined => [...rs].sort((a
     with a check for a person already on file), then the purpose, which asks for the treatment episode when it continues one. The intake is then created
     and the configuration wizard opens at the program step. */
 export default function NewClinicalIntakePage() {
+  const { key } = useLocation();
+  /* Opening the page again, or with another person or purpose, starts it over. */
+  return <NewClinicalIntake key={key} />;
+}
+
+function NewClinicalIntake() {
   const [params] = useSearchParams();
   const nav = useNavigate();
   const scope = useScope();

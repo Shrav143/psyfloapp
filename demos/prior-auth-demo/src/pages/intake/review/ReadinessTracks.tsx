@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Ban, CircleAlert, CircleCheck, MinusCircle } from "lucide-react";
-import { Pill } from "@/components/ui";
+import { Disclosure, Pill } from "@/components/ui";
 import { fixPath, trackSummary, type DualReadinessX, type ItemState, type ReadinessItemX, type ReadinessTrackX } from "@/data/assess/readiness";
 import type { Tone } from "@/data/types";
 import { cn } from "@/lib/cn";
@@ -33,13 +33,20 @@ function Item({ item, fix }: { item: ReadinessItemX; fix?: ReactNode }) {
 }
 
 function Track({ title, track, fix, id }: { title: string; track: ReadinessTrackX; fix: (i: ReadinessItemX) => ReactNode; id: string }) {
+  const open = track.items.filter((i) => i.state === "needs_attention" || i.state === "blocked");
+  const done = track.items.filter((i) => i.state === "ready" || i.state === "not_applicable");
   return (
     <section data-track={id} aria-label={title}>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h4 className="text-[14px] font-semibold text-ink">{title}</h4>
         <Pill tone={trackTone(track)} dot>{trackSummary(track)}</Pill>
       </div>
-      <ul className="mt-1 divide-y divide-line">{track.items.map((i) => <Item key={i.id} item={i} fix={fix(i)} />)}</ul>
+      {open.length ? <ul className="mt-1 divide-y divide-line">{open.map((i) => <Item key={i.id} item={i} fix={fix(i)} />)}</ul> : <p className="mt-1 text-[13px] text-ink2">Every applicable item is done.</p>}
+      {done.length ? (
+        <Disclosure variant="plain" title={<span className="font-sans text-[13px] font-semibold">Done or not applicable ({done.length})</span>} summary={done.map((i) => i.label).join(", ")}>
+          <ul className="divide-y divide-line px-1">{done.map((i) => <Item key={i.id} item={i} />)}</ul>
+        </Disclosure>
+      ) : null}
     </section>
   );
 }
@@ -48,19 +55,12 @@ function Track({ title, track, fix, id }: { title: string; track: ReadinessTrack
 export function ReadinessTracks({ readiness, recordId, fix, className }: { readiness: DualReadinessX; recordId?: string; fix?: (i: ReadinessItemX) => ReactNode; className?: string }) {
   const link = (i: ReadinessItemX): ReactNode =>
     fix ? fix(i) : recordId && i.go ? <Link to={fixPath(recordId, i.go)} className="inline-flex items-center gap-1 text-[12px] font-semibold text-forest hover:underline">Open<ArrowRight size={13} className="ico" aria-hidden="true" /></Link> : null;
-  const outstanding = [...readiness.clinical.items, ...readiness.administrative.items].filter((i) => i.state === "needs_attention" || i.state === "blocked");
   return (
     <div className={cn("space-y-4", className)} data-testid="readiness-tracks">
       <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 text-[14px]">
         <span>Clinical readiness: <b className="font-semibold">{trackSummary(readiness.clinical)}</b></span>
         <span>Administrative readiness: <b className="font-semibold">{trackSummary(readiness.administrative)}</b></span>
       </div>
-      {outstanding.length ? (
-        <div className="rounded-xl bg-tile px-3.5 py-2.5">
-          <p className="text-[12px] font-semibold text-muted uppercase tracking-[0.08em]">Outstanding</p>
-          <ul className="mt-1 list-disc space-y-0.5 pl-4 text-[13px]">{outstanding.map((i) => <li key={i.id}>{i.label}</li>)}</ul>
-        </div>
-      ) : null}
       <Track id="clinical" title="Clinical readiness" track={readiness.clinical} fix={link} />
       <Track id="administrative" title="Administrative readiness" track={readiness.administrative} fix={link} />
       <p className="rounded-xl bg-sage-bg px-3 py-2 text-[13px] font-medium text-ink">{readiness.note}</p>

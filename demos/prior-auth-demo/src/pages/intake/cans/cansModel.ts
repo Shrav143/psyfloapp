@@ -16,12 +16,9 @@ export const isTheme = (t: string | undefined): t is CansTheme => !!t && (CANS_T
 
 export const TEMPLATE_VERSION = "awaiting-dmas-mapping";
 export const NO_ITEMS = "No items are configured. Psyflo does not invent CANS Lifetime items, domains, scoring, rating frequency or assessor qualifications.";
-export const TEMPLATE_FAIL = "Cannot validate: the official DMAS item mapping is not available in this demo";
 export const NO_RATINGS = "No ratings. Missing evidence is never scored as zero.";
 export const THEMES_NOTE = "Themes organize evidence. They are not CANS domains.";
-export const ASSESSOR_PENDING = "Assessor qualifications pending DMAS policy";
 export const REASSESS_PENDING = "No interval set: pending DMAS policy";
-export const SIGN_BLOCKED = "Signing is off: the official CANS Lifetime template is not configured, so there is nothing to sign.";
 export const ASSESSOR_PER_POLICY = "Assessor qualifications per policy: not verified";
 export const PLACEHOLDER_WARNING = "Demo placeholder: not an official CANS Lifetime assessment.";
 
@@ -53,7 +50,7 @@ export const APPLIES_TONE: Record<CansApplies, Tone> = { required: "mid", upcomi
 
 export const CANS_STATUS_LABEL: Record<NonNullable<IntakeRecord["cans"]>["status"], string> = {
   not_started: "Not started",
-  in_progress: "Gathering evidence",
+  in_progress: "In progress",
   ready_for_review: "Ready for review",
   signed: "Signed",
 };

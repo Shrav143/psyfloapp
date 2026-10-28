@@ -36,12 +36,13 @@ export function ActionMenu({ label, items, icon: Icon, children }: { label: stri
         ref={trigger}
         type="button"
         aria-haspopup="menu"
+        aria-label={label}
         aria-expanded={open}
         onClick={() => setOpen((o) => !o)}
         className="inline-flex h-8 items-center gap-2 rounded-[10px] border border-field bg-white px-3 text-[13px] font-medium whitespace-nowrap text-ink hover:bg-tile"
       >
         {Icon ? <Icon size={16} className="ico" /> : null}
-        {children ?? label}
+        <span className="hidden @4xl:inline">{children ?? label}</span>
         <ChevronDown size={14} className={cn("ico text-faint transition-transform", open && "rotate-180")} />
       </button>
       {open ? (

@@ -1,4 +1,5 @@
-import type { ModuleId } from "@/data/assess/types";
+import { canSign } from "@/data/assess/roles";
+import type { InstrumentInstance, ModuleId } from "@/data/assess/types";
 import { staffOf } from "@/data/intake/seed";
 import type { IntakeDocument } from "@/data/intake/types";
 import { useStore } from "@/store";
@@ -52,4 +53,17 @@ export function setDocumentModule(id: string, doc: IntakeDocument, moduleId: Mod
 /** Writes that a summary left the page as a file. */
 export function recordExport(id: string, what: string, count: number): void {
   st().addIntakeAudit(id, { actor: me(), action: `Exported ${what} as a text file`, detail: `${count} entries. Synthetic demo record` });
+}
+
+/** The overall sign-off: a qualified clinician signs the whole assessment once every required module is signed. It is the "review-signoff" instance, so it has
+    versions and can be amended like any other signed item. The signature dialog writes the audit event. Returns false when the signer may not sign. */
+export function signOffAssessment(id: string, signerId: string, rolePlay: boolean): boolean {
+  if (!canSign(signerId)) return false;
+  const at = st().clock;
+  st().patchIntake(id, (r) => {
+    const cur = r.instruments?.["review-signoff"];
+    const next: InstrumentInstance = { moduleId: "review-signoff", version: 1, fields: {}, notes: "", evidence: [], history: [], ...cur, status: "signed", signedBy: signerId, signedAt: at, reviewedBy: signerId, rolePlay, startedAt: cur?.startedAt ?? at, updatedAt: at };
+    return { ...r, instruments: { ...(r.instruments ?? {}), "review-signoff": next } };
+  });
+  return true;
 }

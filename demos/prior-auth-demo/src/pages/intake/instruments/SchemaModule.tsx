@@ -55,6 +55,8 @@ export function SchemaModule({ record, moduleId }: { record: IntakeRecord; modul
   const startInstrument = useStore((s) => s.startInstrument);
   const setNotes = useStore((s) => s.setInstrumentNotes);
   const schema = useMemo(() => schemaOf(moduleId), [moduleId]);
+  /* A section whose fields are all hidden for this person (the school fields outside school CPST) is not drawn. */
+  const sections = schema.sections.filter((s) => s.type === "loc-review" || !s.fields.length || sectionFields(s, record).length > 0);
   const inst: InstrumentInstance | undefined = record.instruments?.[moduleId];
   const locked = inst?.status === "signed";
   const ctx = moduleContext(plan, record, moduleId);
@@ -77,12 +79,12 @@ export function SchemaModule({ record, moduleId }: { record: IntakeRecord; modul
   /* Open: the first section with something to do, any with suggestions waiting; all of them when the module is small. */
   const [open, setOpen] = useState<Record<string, boolean>>(() => {
     const out: Record<string, boolean> = { [NOTES_ID]: false };
-    const firstTodo = schema.sections.find((s) => s.fields.some((f) => f.required && !filledOf(f, inst))) ?? schema.sections[0];
-    for (const s of schema.sections) out[s.id] = schema.sections.length <= 3 || s.id === firstTodo?.id || s.fields.some((f) => (inst?.evidence ?? []).some((e) => e.fieldKey === f.key && e.status === "pending"));
+    const firstTodo = sections.find((s) => s.fields.some((f) => f.required && !filledOf(f, inst))) ?? sections[0];
+    for (const s of sections) out[s.id] = sections.length <= 3 || s.id === firstTodo?.id || s.fields.some((f) => (inst?.evidence ?? []).some((e) => e.fieldKey === f.key && e.status === "pending"));
     return out;
   });
   const toggle = (id: string) => setOpen((o) => ({ ...o, [id]: !o[id] }));
-  const allOpen = schema.sections.every((s) => open[s.id]);
+  const allOpen = sections.every((s) => open[s.id]);
 
   /* A section opens by itself when new suggestions arrive for it, so "Find evidence" shows its result. */
   const seen = useRef(new Set((inst?.evidence ?? []).map((e) => e.id)));
@@ -137,15 +139,15 @@ export function SchemaModule({ record, moduleId }: { record: IntakeRecord; modul
 
       {schema.scoreEntry ? <ScoreEntryCard record={record} moduleId={moduleId} entry={schema.scoreEntry} inst={inst} locked={locked} /> : null}
 
-      {schema.sections.length > 3 ? (
+      {sections.length > 3 ? (
         <div className="flex justify-end">
-          <button type="button" onClick={() => setOpen((o) => ({ ...o, ...Object.fromEntries(schema.sections.map((s) => [s.id, !allOpen])) }))} className="text-[13px] font-semibold text-forest hover:underline">
+          <button type="button" onClick={() => setOpen((o) => ({ ...o, ...Object.fromEntries(sections.map((s) => [s.id, !allOpen])) }))} className="text-[13px] font-semibold text-forest hover:underline">
             {allOpen ? "Collapse all sections" : "Expand all sections"}
           </button>
         </div>
       ) : null}
 
-      {schema.sections.map((s) => {
+      {sections.map((s) => {
         const fields = sectionFields(s, record);
         const filled = fields.filter((f) => filledOf(f, inst)).length;
         const missingReq = fields.filter((f) => f.required && !filledOf(f, inst)).length;

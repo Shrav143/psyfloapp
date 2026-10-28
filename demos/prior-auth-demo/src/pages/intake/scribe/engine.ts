@@ -199,7 +199,7 @@ export interface ReviewGroup {
   items: Suggestion[];
 }
 /** The proposals of a session grouped for review: risk first, then one group per assessment module, the CANS evidence, and the shared sections of the record. */
-export function reviewGroups(r: IntakeRecord, s: ScribeSession): ReviewGroup[] {
+export function reviewGroups(s: ScribeSession): ReviewGroup[] {
   const all = s.extracted ?? [];
   const groups: ReviewGroup[] = [];
   const risk = all.filter(isRiskProposal);

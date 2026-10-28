@@ -140,7 +140,7 @@ function columns(clock: number, from: { nav: string }): Column<IntakeRow>[] {
     { id: "payer", label: "Payer", width: 104, sort: (r) => r.payerName ?? "~", render: (r) => (r.payerName ? <div className="line-clamp-3" title={r.payerName}>{r.payerName}</div> : <span className="text-mid-ink">Plan not confirmed</span>) },
     {
       id: "status", label: "Intake Status", width: 128, sort: (r) => TRIAGE_ORDER.indexOf(r.status),
-      render: (r) => <Pill tone={STATUS_TONE[r.status]} className="whitespace-normal leading-tight">{TRIAGE_LABEL[r.status]}</Pill>,
+      render: (r) => <Pill tone={STATUS_TONE[r.status]} className="whitespace-normal! leading-tight">{TRIAGE_LABEL[r.status]}</Pill>,
     },
     {
       id: "assessment", label: "Assessment", width: 128, sort: (r) => (r.assessment.configured ? r.assessment.signed / Math.max(1, r.assessment.total) : -1),

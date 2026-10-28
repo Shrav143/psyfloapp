@@ -7,6 +7,8 @@ import type { Stage } from "@/data/workflow/types";
 export type StepId = "service" | "coverage" | "documentation" | "review";
 export const STEP_IDS: StepId[] = ["service", "coverage", "documentation", "review"];
 export const NEW_AUTH_STEPS = ["Patient & Service", "Coverage & Requirements", "Clinical Documentation", "Review & Submit"];
+/** The round 9 name, kept for pages/referrals (dead code the lead removes). */
+export const NEW_CASE_STEPS = NEW_AUTH_STEPS;
 /** The id of the agents' section, for links and scrolling. */
 export const PREPARATION_ID = "preparation";
 

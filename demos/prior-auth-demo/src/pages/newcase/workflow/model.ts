@@ -1,5 +1,5 @@
 /* Which payer workflow a case follows, and where it stands. Pure: the store, the clock and the draft go in, one description comes out.
-   New Case is execution: it never edits a workflow. It matches the published ones by payer, product, state, service, request type and date, runs the one it follows against the case's facts, and
+   New Authorization is execution: it never edits a workflow. It matches the published ones by payer, product, state, service, request type and date, runs the one it follows against the case's facts, and
    tells the person what the workflow does next. Until the workflow has run past Intake the case follows the best match; after that the version is pinned and only a person's review changes it. */
 import type { CaseDraft } from "@/data/cases";
 import type { AppliedWorkflow, CaseFacts, MatchResult, PayerRule, RunResult, Stage, WfNode, Workflow, WorkflowVersion } from "@/data/workflow/types";

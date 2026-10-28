@@ -381,7 +381,7 @@ export const createIntakeClinicalSlice: StateCreator<AppState, [], [], IntakeCli
     voiceStart: (id) => {
       const r = rec(id);
       if (!r) return;
-      const base = r.voice && r.voice.status === "idle" ? r.voice : VE.newVoiceSession(r, ++n);
+      const base = r.voice && r.voice.status === "idle" ? { ...r.voice, scriptId: VE.scriptOf({ ...r, voice: null }).id } : VE.newVoiceSession(r, ++n);
       const first = VE.scriptOf({ ...r, voice: base }).steps[0].id;
       get().patchIntake(id, (x) => ({ ...x, voice: { ...base, status: "identity", step: first, phase: "assistant", coordinator: me(), elapsed: 0, turns: [], asked: [], skipped: [], collected: [], confirmed: [], corrected: [] } }));
       get().addIntakeAudit(id, { actor: me(), action: "Started the Voice Intake Assistant (simulated call)", section: "profile" });
@@ -398,6 +398,12 @@ export const createIntakeClinicalSlice: StateCreator<AppState, [], [], IntakeCli
       if (!r || !v || v.phase !== "caller" || !text.trim()) return;
       const out = VE.reply(r, v, text.trim(), { ...o, clock: get().clock, uid: uidC, coordinator: coordinatorName(v) });
       get().patchIntake(id, (x) => ({ ...x, voice: out.session }));
+      /* The call asks for consent to keep a transcript first; the answer goes in the consent ledger like the scribe's. */
+      if (out.session.consent !== undefined && out.session.consent !== v.consent) {
+        const at = get().clock;
+        const entry = recordingConsent(`CN-${v.id}`, out.session.consent ? "on_file" : "declined", at, me(), out.session.consent ? "The caller agreed, on the simulated call, to a transcript for the intake team. Nothing is recorded." : "The caller asked for a person instead of the automated assistant.");
+        get().patchIntake(id, (x) => ({ ...x, consents: [...(x.consents ?? []).filter((c) => c.id !== entry.id), { ...entry, recipient: "Psyflo Voice Intake Assistant (simulated call)" }] }));
+      }
       if (!o.scripted) get().addIntakeAudit(id, { actor: me(), action: o.option ? "Picked the caller's reply" : "Typed what the caller said", detail: text.trim().slice(0, 120), section: "profile" });
       if (out.escalate) {
         get().raiseSafety(id, { raisedBy: VE.VOICE_AGENT, text: `On the voice intake call the caller said: "${out.escalate}". The assistant stopped the questions and asked for a person. A clinician reviews this now; Psyflo makes no emergency determination.`, source: { kind: "voice", ref: VE.CALL_REF, quote: out.escalate, at: v.elapsed ?? 0 } });
@@ -464,7 +470,7 @@ export const createIntakeClinicalSlice: StateCreator<AppState, [], [], IntakeCli
       return out.length;
     },
     voiceRestart: (id) => {
-      get().patchIntake(id, (r) => ({ ...r, voice: { ...VE.newVoiceSession(r, ++n), scriptId: r.voice?.scriptId ?? VE.scriptOf(r).id } }));
+      get().patchIntake(id, (r) => ({ ...r, voice: VE.newVoiceSession({ ...r, voice: null }, ++n) }));
       get().addIntakeAudit(id, { actor: me(), action: "Set up a new Voice Intake Assistant call", section: "profile" });
     },
   };

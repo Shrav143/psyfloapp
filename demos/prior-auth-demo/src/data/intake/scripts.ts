@@ -508,9 +508,67 @@ function voiceGeneric(r: Pick<IntakeRecord, "age" | "initials">): VoiceScript {
   };
 }
 
-/** The scripted call for a record: M.S. in Scenario D, or the generic script for any other voice intake. */
-export function voiceScriptFor(r: Pick<IntakeRecord, "id" | "age" | "initials">, scriptId?: string): VoiceScript {
-  return scriptId === "voice-d" || (!scriptId && r.id === "IN-3104") ? VOICE_D : voiceGeneric(r);
+/* The questions a configured program adds to the call. The assistant asks what the program's intake needs to start from, in plain words, collects the caller's
+   answers as proposals for the clinical assessment, and never says what a level of care or a service would be. Staff review everything. */
+type VoiceFamily = "sud" | "mh-acute" | "community" | "csc" | "aba" | "youth";
+const SUD_IDS: ProgramId[] = ["sud-op", "sud-iop", "sud-php", "sud-res", "sud-wm", "sud-inpt", "otp", "obot"];
+const MH_ACUTE_IDS: ProgramId[] = ["mh-iop", "mh-php", "mh-res", "mh-inpt", "prtf", "youth-iop", "youth-php"];
+const COMMUNITY_IDS: ProgramId[] = ["cpst-adult", "mhcm", "clubhouse", "cbbh", "act", "psr"];
+const YOUTH_IDS: ProgramId[] = ["cpst-youth", "cpst-school", "school-bh", "children-intensive", "family-based"];
+export const voiceFamilyOf = (programId: ProgramId): VoiceFamily | null =>
+  SUD_IDS.includes(programId) ? "sud" : MH_ACUTE_IDS.includes(programId) ? "mh-acute" : COMMUNITY_IDS.includes(programId) ? "community" : programId === "csc" ? "csc" : programId === "aba" ? "aba" : YOUTH_IDS.includes(programId) ? "youth" : null;
+
+function programSteps(family: VoiceFamily, minor: boolean): VoiceStep[] {
+  const q = (id: string, ask: string, reply: string, extract: Extract[], ack?: string): VoiceStep => ({ id, kind: "question", ask, reply, extract, ack });
+  switch (family) {
+    case "sud":
+      return [
+        q("p-substance", "What substances have you been using, and how often? You can tell me in your own words.", "Mostly alcohol, most days. My last drink was about a week ago.", [as("history", "Alcohol most days; last drink about a week before the call (caller's words).")], "Thank you for telling me."),
+        q("p-withdrawal", "When you stopped or cut down before, did you have withdrawal, like shaking or sweating? You don't need to give details.", "A little shaking the first day. Nothing serious that I remember.", [as("symptoms", "Some shaking on the first day of stopping before; no serious withdrawal remembered (caller's words). Staff and a clinician follow up.", "low")]),
+      ];
+    case "mh-acute":
+      return [
+        q("p-recent", `Have ${minor ? "they" : "you"} had hospital care or a crisis visit recently for ${minor ? "their" : "your"} mental health?`, "Yes, an emergency room visit three weeks ago.", [as("history", "An emergency room visit about three weeks before the call (caller's words).")]),
+        q("p-daily", "How are the symptoms affecting daily life, like work, school or taking care of yourself?", minor ? "School is hard. They stay home most days this month." : "I can't work right now, and I'm not cooking or cleaning.", [as("functional", minor ? "Missing most school days this month (caller's words)." : "Not working; not cooking or cleaning (caller's words).", "high")]),
+      ];
+    case "community":
+      return [
+        q("p-needs", "What do you need help with day to day to stay well in the community?", "Reminders for my medicine and help with my budget.", [as("functional", "Needs reminders for medication and help with budgeting (caller's words).", "high")]),
+        q("p-helpers", "Who helps you now, family, friends or a program?", "My sister, and a worker who visits three days a week.", [{ section: "profile", field: "supports", label: "Family and social supports", value: "A sister and a worker who visits three days a week (caller's words)", confidence: "high" }]),
+      ];
+    case "csc":
+      return [
+        q("p-onset", `When did ${minor ? "they" : "you"} first notice changes, and has there been hospital care?`, "About two months ago. There was one hospital stay last month.", [as("history", "Changes began about two months before the call; one hospital stay last month (caller's words).", "high")]),
+        q("p-activity", "Are you in school or working right now?", "I stopped my classes in the fall. I'm not working.", [as("functional", "Stopped classes in the fall; not working (caller's words).", "high")]),
+      ];
+    case "aba":
+      return [
+        q("p-eval", "Has your child had an evaluation or a diagnosis? Who did it, and when?", "Yes, this spring. The pediatric clinic did it and I have the report.", [as("history", "An evaluation this spring at a pediatric clinic; the parent has the report (caller's words). Staff ask for a copy.", "medium")]),
+        q("p-behaviors", "What behaviors are hardest at home or at school?", "Meltdowns when plans change, and he doesn't talk much yet.", [as("symptoms", "Meltdowns when plans change; limited spoken language (caller's words).", "high")]),
+      ];
+    case "youth":
+      return [
+        q("p-school", "How is school going, with attendance, grades and getting along with others?", "Missing a lot of days, and the grades are dropping.", [as("functional", "Many missed school days and dropping grades (caller's words).", "high")]),
+        q("p-home", "Who is at home, and how is the family doing?", "Me and two siblings. It's been tense at home.", [{ section: "profile", field: "supports", label: "Family and social supports", value: "Lives with a parent and two siblings; tension at home (caller's words)", confidence: "medium" }]),
+      ];
+  }
+}
+
+/** The id a program-adapted call is stored under, so a call in progress keeps its questions if the intake is reconfigured. */
+export const voiceComposedId = (programId: ProgramId): string => `voice-c:${programId}`;
+
+type VoiceSource = Pick<IntakeRecord, "id" | "age" | "initials"> & { config?: Pick<NonNullable<IntakeRecord["config"]>, "programId"> };
+/** The scripted call for a record: M.S. in Scenario D, a generic call with the questions a configured program adds, or the plain generic call. */
+export function voiceScriptFor(r: VoiceSource, scriptId?: string): VoiceScript {
+  if (scriptId === "voice-d" || (!scriptId && r.id === "IN-3104")) return VOICE_D;
+  const base = voiceGeneric(r);
+  const programId = scriptId?.startsWith("voice-c:") ? (scriptId.slice(8) as ProgramId) : scriptId ? undefined : r.config?.programId;
+  const family = programId ? voiceFamilyOf(programId) : null;
+  if (!programId || !family) return base;
+  const minor = r.age !== null && r.age < 18;
+  const at = base.steps.findIndex((st) => st.id === "q-insurance");
+  const steps = [...base.steps.slice(0, at), ...programSteps(family, minor), ...base.steps.slice(at)];
+  return { ...base, id: voiceComposedId(programId), steps };
 }
 
 /* ------------------------------------------------------------------ Voice guided assessment */

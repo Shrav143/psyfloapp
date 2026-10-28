@@ -67,7 +67,7 @@ export function dateNotes(serviceId: VaServiceId, r: IntakeRecord, now: number, 
 }
 
 /* The levels of care in one family, lowest intensity first. Options for review are the level evaluated and its neighbors, by name only: no criteria, no ranking. */
-const LADDERS: VaServiceId[][] = [["arts-op", "arts-iop", "arts-php", "arts-res"], ["opt", "mh-iop", "mh-php", "mh-res"]];
+const LADDERS: VaServiceId[][] = [["arts-op", "arts-iop", "arts-php", "arts-res"], ["opt", "mh-iop", "mh-php"]];
 
 /** The level the intake was evaluated for and the levels next to it. Residential gets partial hospitalization and intensive outpatient beside it; the lowest levels get the next one up. */
 export function levelNeighbors(serviceId: VaServiceId): VaServiceId[] {

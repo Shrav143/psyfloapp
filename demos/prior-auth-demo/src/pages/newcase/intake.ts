@@ -1,52 +1,27 @@
-/* Intake logic that has no screen of its own: where a draft starts from, the sample chart, attaching a referral. */
+/* Draft logic that has no screen of its own: where a New Authorization draft starts from (an intake, a coverage check, a known patient) and the sample chart. A referral is not a starting point any more: it is the first status of an intake. */
 import { planTypeOf, type CaseDraft } from "@/data/cases";
 import { isoOf } from "@/data/patients";
 import { PAYERS } from "@/data/seed";
-import { siteOf } from "@/data/sites";
-import { PROGRAMS, type NewCasePrefill, type PayerId, type Program, type RequestType } from "@/data/types";
+import { PROGRAMS, type PayerId, type Program, type RequestType } from "@/data/types";
 import { siteOfVerification } from "@/data/verification";
 import { focusScope } from "@/lib/programFocus";
 import { sitesInView } from "@/lib/scope";
 import { useStore } from "@/store";
 import type { AppState } from "@/store";
-import { referralPrefill } from "@/store/referrals";
-import { paths } from "@/routes";
+import { intakeIdForReferral, paths } from "@/routes";
 import { defaultTypeFor, isAuthKind } from "./authType";
 import { docEntries, makeDocument, sampleFile } from "./documents";
 import { ICD_CODES } from "./lookups";
 import { payerContextOf } from "./payerContext";
 
 /* ------------------------------------------------------------------ where a draft starts */
-const defaultType = (u: NewCasePrefill["urgency"]): RequestType => (u === "routine" ? "Initial request" : "Admission");
-
-/** What a referral fills in: the patient, the referring organization, the service and level of care, the start date, the insurance and the diagnoses. All of it stays editable. */
-export function fromPrefill(p: NewCasePrefill, startAt?: number): Partial<CaseDraft> {
-  return {
-    kind: "initial",
-    started: true,
-    patient: { initials: p.patientInitials, age: p.age },
-    payerId: p.payerId,
-    planType: p.payerId ? planTypeOf(p.payerId) : "",
-    memberId: p.memberIdMasked,
-    cardRead: !!p.payerId,
-    program: p.program,
-    type: defaultType(p.urgency),
-    diagnoses: p.diagnoses,
-    reason: p.reason,
-    referralId: p.referralId,
-    referrer: { org: p.sourceName, clinician: p.referrerName },
-    ...(startAt === undefined ? {} : { startDate: isoOf(startAt) }),
-    phase: "intake",
-  };
-}
-
 /** From the Start authorization button on a coverage result: ?payer=&program=&member=&initials=&age= */
 export function fromQuery(q: URLSearchParams): Partial<CaseDraft> {
   const payer = PAYERS.find((p) => p.id === q.get("payer"))?.id as PayerId | undefined;
   const program = PROGRAMS.find((p) => p === q.get("program")) as Program | undefined;
   if (!payer && !program) return {};
   const age = Number(q.get("age")) || null;
-  return { started: true, payerId: payer ?? null, planType: payer ? planTypeOf(payer) : "", program: program ?? null, memberId: q.get("member") ?? "", patient: { initials: q.get("initials") ?? "", age }, type: "Admission", phase: "intake" };
+  return { started: true, payerId: payer ?? null, planType: payer ? planTypeOf(payer) : "", program: program ?? null, memberId: q.get("member") ?? "", patient: { initials: q.get("initials") ?? "", age }, type: "Admission", phase: "service" };
 }
 
 /** From "Create authorization from verification" on Eligibility & Benefits: ?verification=ID carries the check into the case (patient, payer, service, member ID and the dates it covers).
@@ -65,33 +40,31 @@ export function fromVerification(st: AppState, id: string): Partial<CaseDraft> |
     program: rec.program,
     startDate: rec.dosFrom,
     endDate: rec.dosTo,
-    phase: "intake",
+    phase: "service",
   };
 }
 
 export interface InitialDraft {
   init: Partial<CaseDraft>;
-  missingReferral?: string;
   /** An existing patient to link once the draft exists (?patient=). */
   patient?: string;
+  /** An intake to read from (?intake=, or the intake made from a legacy referral, ?referral=). */
+  intake?: string;
 }
 
-/** What a new draft starts from, read from the address: ?referral=, ?verification=, ?patient=, ?type= and the older ?payer=&program= link. */
+/** What a new draft starts from, read from the address: ?intake=, ?verification=, ?patient=, ?type= and the older ?payer=&program= link. A legacy ?referral=RF-2049 is the intake IN-2049. */
 export function initialDraft(q: URLSearchParams, st: AppState): InitialDraft {
   const kindParam = q.get("type");
   const kind = isAuthKind(kindParam) ? kindParam : "initial";
   const base: Partial<CaseDraft> = { kind, type: defaultTypeFor(kind, null) };
   const patient = q.get("patient") ?? undefined;
   const ref = q.get("referral");
-  if (ref) {
-    const p = referralPrefill(st, ref);
-    const r = st.referrals.find((x) => x.id === ref);
-    return p ? { init: { ...base, ...fromPrefill(p, r?.accepted?.admitBy), site: siteOf(ref) } } : { init: base, missingReferral: ref };
-  }
+  const intake = q.get("intake") ?? (ref ? intakeIdForReferral(ref) : undefined);
+  if (intake) return { init: base, intake };
   const verified = q.get("verification") ? fromVerification(st, q.get("verification") ?? "") : null;
   const from = verified ?? fromQuery(q);
   /* A blank case starts on the program of the top bar's Program menu: the level of care the service maps to, or the Virginia service itself.
-     A referral, a check or a link that names a program keeps its own. */
+     A check or a link that names a program keeps its own. */
   const focused = !patient && !from.program ? focusScope(st.programFocus)?.own : null;
   return { init: { ...base, ...(focused ? { program: focused } : {}), ...from, ...(isAuthKind(kindParam) ? { kind, type: defaultTypeFor(kind, null) } : {}) }, patient };
 }
@@ -148,27 +121,5 @@ export function applySampleChart(id: string): void {
   st.toast({ title: "Sample chart loaded", body: `${who}. ${docs.length} of ${docs.length + 1} documents are added and being checked.`, tone: "neutral" });
 }
 
-/* ------------------------------------------------------------------ the referral comes first */
-/** Puts a referral into a case: the patient, payer, level of care and diagnoses come from it, and the referral itself counts as the first document.
-    Returns false when the referral or the case is missing. */
-export function attachReferral(draftId: string, referralId: string): boolean {
-  const st = useStore.getState();
-  const prefill = referralPrefill(st, referralId);
-  const draft = st.caseDrafts.find((d) => d.id === draftId);
-  const r = st.referrals.find((x) => x.id === referralId);
-  if (!prefill || !draft || !r) return false;
-  const file = { id: `ref-${referralId}`, name: `${referralId} referral.pdf`, sizeKb: 190 + r.plan.pages * 12 };
-  const rest = draft.documents.filter((d) => d.slot !== "referral");
-  /* The case is at the referral's site, unless it already has its ID: the ID places a case, so it stays where it is. */
-  const site = draft.caseId ? draft.site : siteOf(referralId);
-  st.patchCaseDraft(draftId, { ...fromPrefill(prefill, r.accepted?.admitBy ?? st.clock), site, documents: [makeDocument("referral", file, false, "done"), ...rest] });
-  st.toast({ title: `Referral ${referralId} is in this case`, body: `${prefill.patientInitials}, ${prefill.age}. Check the details below, then go on to Eligibility & Benefits.`, tone: "good" });
-  return true;
-}
-
-/** Where a referral's button leads: back into the case it was opened from (its Intake, now filled in), or into a new one. */
-export function continueWithReferral(referralId: string, draftId: string | null | undefined): string | null {
-  const st = useStore.getState();
-  const into = draftId && st.caseDrafts.some((d) => d.id === draftId) ? draftId : st.createCaseDraft({});
-  return attachReferral(into, referralId) ? paths.newCase({ draft: into }) : null;
-}
+/** Kept for pages/referrals (dead code the lead removes): a legacy referral continues in the intake made from it, not in New Authorization. */
+export const continueWithReferral = (referralId: string, _draftId?: string | null): string | null => paths.referral(referralId);

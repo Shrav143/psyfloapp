@@ -2,7 +2,8 @@ import { REFERRAL_SAMPLES, SUPPORTING_SAMPLES, type SampleExtract } from "@/data
 import type { IntakeDocument, IntakeRecord, SourceRef, Suggestion } from "@/data/intake/types";
 import { useStore } from "@/store";
 import { runAgent } from "../lib/agents";
-import { isMissingValue, missingRequired } from "../queue/metrics";
+import { isMissingValue } from "./missing";
+import { missingRequired } from "./requiredFields";
 import { conflictWith } from "./logic";
 
 let n = 0;

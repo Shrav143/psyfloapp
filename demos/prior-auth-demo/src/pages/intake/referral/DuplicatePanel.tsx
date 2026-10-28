@@ -8,7 +8,7 @@ import { useStore } from "@/store";
 
 /** A person who looks like one already in the queue. Open the existing record, or create this one anyway and say why. */
 export function DuplicatePanel({ draftId, hits, chosen }: { draftId: string; hits: DuplicateHit[]; chosen?: { ofId: string; reason: string } }) {
-  const setDup = useStore((s) => s.setReferralDuplicate);
+  const setDup = useStore((s) => s.setIntakeDraftDuplicate);
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState("");
   const [tried, setTried] = useState(false);

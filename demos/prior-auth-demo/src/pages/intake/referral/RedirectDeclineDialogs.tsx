@@ -10,7 +10,7 @@ const OTHER = "other";
 
 /** Redirect: a reason and where the person goes. The reason and destination go into a draft notice to the referrer; the internal note does not. */
 export function RedirectDialog({ record, onClose, onDone }: { record: IntakeRecord; onClose: () => void; onDone: (id: string) => void }) {
-  const redirect = useStore((s) => s.redirectReferral);
+  const redirect = useStore((s) => s.redirectIntakeReferral);
   const [reason, setReason] = useState<RedirectReasonCode | "">("");
   const [dest, setDest] = useState<string>("");
   const [other, setOther] = useState("");
@@ -57,7 +57,7 @@ export function RedirectDialog({ record, onClose, onDone }: { record: IntakeReco
 
 /** Decline: a reason from the list is required (and the person's words when it is "other"). A draft notice goes to the referrer, unsent. */
 export function DeclineDialog({ record, onClose, onDone }: { record: IntakeRecord; onClose: () => void; onDone: (id: string) => void }) {
-  const decline = useStore((s) => s.declineReferral);
+  const decline = useStore((s) => s.declineIntakeReferral);
   const [reason, setReason] = useState<DeclineReasonCode | "">("");
   const [note, setNote] = useState("");
   const [tried, setTried] = useState(false);

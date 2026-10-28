@@ -1,4 +1,4 @@
-/* The payer's rules, read from the lines saved on Payers › Rules, as far as New Case can act on them:
+/* The payer's rules, read from the lines saved on Payers › Rules, as far as New Authorization can act on them:
    how far back a start date may reach, and whether the payer says a level of care needs no authorization. */
 import type { CaseDraft } from "@/data/cases";
 import type { Rule } from "@/data/payerConfig";
@@ -72,7 +72,7 @@ export function unmetCount(d: CaseDraft, ctx: PayerContext, clock: number): numb
   return lacking + (startDateIssue(d, ctx.rules, clock, "The payer")?.kind === "early" ? 1 : 0);
 }
 
-/** What New Case can say about a retroactive request for this payer. "No rule on file" is said as it is: the demo does not guess a payer's rule.
+/** What New Authorization can say about a retroactive request for this payer. "No rule on file" is said as it is: the demo does not guess a payer's rule.
     A payer added on Payers has only Psyflo's benchmark, which is not a payer's rule either. */
 export function retroRule(ctx: PayerContext, payer: string): { onFile: boolean; text: string } {
   const lines = ctx.rules.find((r) => r.id === "backdating")?.lines ?? [];

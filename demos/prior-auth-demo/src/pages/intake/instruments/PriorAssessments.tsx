@@ -45,6 +45,7 @@ function PriorCard({ record, prior }: { record: IntakeRecord; prior: PriorAssess
       />
       <CardBody className="space-y-3">
         <Facts
+          cols={3}
           items={[
             ["Assessment date", `${longDate(prior.date)} · ${ageLabel(prior, now)}`],
             ["Assessor", prior.clinician],

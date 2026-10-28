@@ -42,9 +42,9 @@ export function RuleNote({ rule, className }: { rule: PolicyRule; className?: st
 }
 
 /** Label and value pairs in two columns that drop to one at narrow widths. */
-export function Facts({ items, className }: { items: [string, ReactNode][]; className?: string }) {
+export function Facts({ items, className, cols = 2 }: { items: [string, ReactNode][]; className?: string; cols?: 2 | 3 }) {
   return (
-    <dl className={cn("grid grid-cols-1 gap-x-5 gap-y-2.5 sm:grid-cols-2", className)}>
+    <dl className={cn("grid grid-cols-1 gap-x-5 gap-y-2.5", cols === 3 ? "sm:grid-cols-2 xl:grid-cols-3" : "sm:grid-cols-2", className)}>
       {items.map(([k, v]) => (
         <div key={k} className="min-w-0">
           <dt className="text-[12px] text-muted">{k}</dt>

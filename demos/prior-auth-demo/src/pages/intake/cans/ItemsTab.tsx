@@ -2,9 +2,8 @@ import { Info } from "lucide-react";
 import { Banner, Button, Card, CardBody, CardHeader, Chip, Meter, Pill } from "@/components/ui";
 import type { CansAssessment, IntakeRecord } from "@/data/intake/types";
 import { cansCompletion, pendingEvidence } from "./cansState";
-import { DEMO_TEMPLATE_LABEL, domainForTheme, OFFICIAL_NEEDS, OFFICIAL_NOT_VERIFIED, relevantItem } from "./template";
+import { DEMO_TEMPLATE_LABEL, domainForTheme, OFFICIAL_NEEDS_LINE, relevantItem } from "./template";
 import { ItemRow } from "./ItemRow";
-import { PLACEHOLDER_WARNING } from "./cansModel";
 import { TemplateSlot } from "./TemplateSlot";
 
 /** Assessment Items: the template slot when nothing is loaded; with the demo placeholder loaded, its domains and blank items, each with the assessor's rating label, note and evidence. */
@@ -23,8 +22,8 @@ export function ItemsTab({ record, cans, onGo }: { record: IntakeRecord; cans: C
   const locked = cans.status === "signed";
   return (
     <div className="space-y-5" data-cans-tab="items">
-      <Banner tone="neutral" icon={Info} title={`${DEMO_TEMPLATE_LABEL}. ${PLACEHOLDER_WARNING}`}>
-        These are blank prompts, not CANS items: no official wording, no rating options and no scoring. You type a rating label or a note; nothing is computed. The official template needs: {OFFICIAL_NEEDS.join("; ").toLowerCase()}. {OFFICIAL_NOT_VERIFIED}
+      <Banner tone="neutral" icon={Info} title={DEMO_TEMPLATE_LABEL}>
+        Not an official CANS Lifetime assessment. Blank prompts: no official wording, no rating options and no scoring. You type a rating label or a note; nothing is computed. {OFFICIAL_NEEDS_LINE}
       </Banner>
       <Card>
         <CardBody className="flex flex-wrap items-center gap-x-6 gap-y-2">

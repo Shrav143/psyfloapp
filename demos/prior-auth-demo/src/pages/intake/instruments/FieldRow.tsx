@@ -107,7 +107,10 @@ export function FieldRow({ record, moduleId, def, inst, locked }: { record: Inta
           ) : null}
         </div>
       ) : empty && def.required ? (
-        <p className="mt-1 text-[12px] text-risk-ink">Missing, required</p>
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
+          <p className="mt-1 text-[12px] text-risk-ink">Missing, required</p>
+          {!locked ? <button type="button" onClick={() => changeSource("not_applicable")} className="mt-1 text-[12px] font-semibold text-forest hover:underline">Mark not applicable</button> : null}
+        </div>
       ) : null}
       {!locked && linkedValue && linkedValue !== stored && link ? (
         <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl bg-tile px-3 py-2 text-[13px]">

@@ -136,17 +136,20 @@ export const createIntakePlanSlice: StateCreator<AppState, [], [], IntakePlanSli
           if (prev.programId !== input.programId) add(`Changed program from ${programById(prev.programId).label} to ${programById(input.programId).label}`);
           if (prev.population !== input.population) add(`Changed population from ${popWord(prev.population)} to ${popWord(input.population)}`);
           if (prev.setting !== input.setting) add(`Changed setting from ${SETTING_LABEL[prev.setting].toLowerCase()} to ${SETTING_LABEL[input.setting].toLowerCase()}`);
-          for (const ch of diffChoices(prev.modules, modules)) {
-            const label = moduleById(ch.id).label;
-            const reason = modules.find((m) => m.id === ch.id)?.reason;
-            if (ch.what === "override") add(`Authorized override: removed required ${label}`, reason);
-            else if (ch.what === "restored") add(`Restored ${label}`);
-            else if (ch.what === "added") add(`Added ${label}`, "Chosen by a person");
-            else add(hasInstrumentWork(rec, ch.id) ? `Archived ${label}` : `Removed ${label}`, hasInstrumentWork(rec, ch.id) ? "Its data is kept in the record" : "Not needed for this person");
-          }
+        }
+        /* What a person changed in the plan, against the record's earlier choices or, for a first configuration, against the plan's defaults. */
+        for (const ch of diffChoices(prev?.modules ?? initialChoices(plan, me, s.clock), modules)) {
+          const label = moduleById(ch.id).label;
+          const reason = modules.find((m) => m.id === ch.id)?.reason;
+          if (ch.what === "override") add(`Authorized override: removed required ${label}`, reason);
+          else if (ch.what === "restored") add(`Restored ${label}`);
+          else if (ch.what === "added") add(`Added ${label}`, "Chosen by a person");
+          else add(hasInstrumentWork(rec, ch.id) ? `Archived ${label}` : `Removed ${label}`, hasInstrumentWork(rec, ch.id) ? "Its data is kept in the record" : "Not needed for this person");
+        }
+        if (prev) {
           const was = new Set(prev.modules.filter((m) => m.state === "active").map((m) => m.id));
           const now = modules.filter((m) => m.state === "active");
-          const gained = now.filter((m) => !was.has(m.id) && !modules.some((x) => x.id === m.id && x.by !== "plan")).length;
+          const gained = now.filter((m) => !was.has(m.id) && m.by === "plan").length;
           const dropped = [...was].filter((m) => !now.some((x) => x.id === m)).length;
           if (gained || dropped) add("Assessment plan updated", `${gained} module${gained === 1 ? "" : "s"} added by the new plan, ${dropped} no longer in use. Modules with data are archived, never deleted.`);
         }
@@ -165,9 +168,11 @@ export const createIntakePlanSlice: StateCreator<AppState, [], [], IntakePlanSli
           ...(input.episode ? { patientId: input.episode.patientId ?? rec.patientId, episodeId: input.episode.episodeId ?? rec.episodeId } : {}),
         };
         if (source) {
-          const res = carryForward(next, source, modules.filter((m) => m.state === "active").map((m) => m.id), s.clock, me);
+          const res = carryForward(next, source, plan.modules.map((m) => m.id), s.clock, me);
           next = res.record;
           carried = { found: res.found, prefilled: res.prefilled };
+          /* A module that received carried-forward values is put in use, so the new version is where the clinician works; a person's own choice to turn one off stands. */
+          if (next.config) next = { ...next, config: { ...next.config, modules: next.config.modules.map((m) => (res.prefilledIds.includes(m.id) && m.state === "off" && m.by === "plan" ? { ...m, state: "active" as const, reason: undefined } : m)) } };
         }
         return next;
       });

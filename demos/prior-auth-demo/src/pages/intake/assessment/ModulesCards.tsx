@@ -23,10 +23,11 @@ export function ReuseBanner({ record }: { record: IntakeRecord }) {
       </Banner>
     );
   }
+  if (!n) return null;
   return (
-    <Banner tone={n ? "neutral" : "good"} icon={Share2} title={n ? `${n} documented ${n === 1 ? "answer" : "answers"} can be reused in the modules` : "Nothing waits to be reused"}
-      action={n ? <Button size="sm" onClick={() => { const added = feed(record.id); toast({ title: `${added} pieces of evidence proposed`, body: "They wait in their modules as pending evidence. Nothing was filled in.", tone: "neutral" }); }}>Propose to the modules</Button> : undefined}>
-      {n ? "Each one goes to the module that reads it as pending evidence, so the question is not asked again. A person accepts, edits or rejects it there." : "Answers documented here have reached every module that reads them, or no module reads them yet."}
+    <Banner tone="neutral" icon={Share2} title={`${n} documented ${n === 1 ? "answer" : "answers"} can be reused in the modules`}
+      action={<Button size="sm" onClick={() => { const added = feed(record.id); toast({ title: `${added} pieces of evidence proposed`, body: "They wait in their modules as pending evidence. Nothing was filled in.", tone: "neutral" }); }}>Propose to the modules</Button>}>
+      Each one goes to the module that reads it as pending evidence, so the question is not asked again. A person accepts, edits or rejects it there.
     </Banner>
   );
 }

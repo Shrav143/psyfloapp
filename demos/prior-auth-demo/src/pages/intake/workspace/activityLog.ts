@@ -63,13 +63,14 @@ export function activityOf(r: IntakeRecord): ActivityEntry[] {
     const { what, why } = readable(e);
     return { id: e.id, at: e.at, actor: e.actor, who: actorLabel(e.actor), what, why, kind: kindOf(e), ai: !!e.ai || isAgentActor(e.actor) };
   });
-  const seen = new Set(r.audit.map((e) => `${e.at}|${e.action}`));
+  /* An entry the audit trail already has (same minute, same person, same kind) is not shown twice. */
+  const seen = new Set(out.map((e) => `${e.at}|${e.actor}|${e.kind}`));
   r.config?.history.forEach((c, i) => {
-    if (seen.has(`${c.at}|${c.what}`)) return;
+    if (seen.has(`${c.at}|${c.who}|config`)) return;
     out.push({ id: `cfg-${i}`, at: c.at, actor: c.who, who: actorLabel(c.who), what: c.what, why: c.detail, kind: "config", ai: isAgentActor(c.who) });
   });
   r.carePlan?.history.forEach((c, i) => {
-    if (seen.has(`${c.at}|${c.what}`)) return;
+    if (seen.has(`${c.at}|${c.who}|care`)) return;
     out.push({ id: `care-${i}`, at: c.at, actor: c.who, who: actorLabel(c.who), what: c.what, kind: "care", ai: isAgentActor(c.who) });
   });
   /* Newest first; entries at the same minute keep the order they were made in (the later one first). */

@@ -2,7 +2,7 @@ import type { StateCreator } from "zustand";
 import type { InstrumentInstance } from "@/data/assess/types";
 import { moduleById } from "@/data/assess/modules";
 import { priorContentOf } from "@/data/intake/ext/cans";
-import type { FieldValue, IntakeRecord, PriorDecision } from "@/data/intake/types";
+import type { FieldValue, PriorDecision } from "@/data/intake/types";
 import { longDate } from "@/lib/time";
 import { mirrorCans } from "@/pages/intake/cans/cansState";
 import { domainForTheme, relevantItem } from "@/pages/intake/cans/template";

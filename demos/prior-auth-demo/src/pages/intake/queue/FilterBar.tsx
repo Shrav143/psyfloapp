@@ -46,8 +46,14 @@ export function FilterBar<R>({ defs, rows, query, searchOf, set, clear, hide = [
         {main.map((d) => drop(d))}
         {more.length ? <MoreFilters count={moreActive}>{more.map((d) => <div key={d.id} className="flex flex-col gap-1 text-[12px] font-medium text-muted"><span>{d.label}</span>{drop(d, "field")}</div>)}</MoreFilters> : null}
       </div>
-      {chips.length ? (
+      {chips.length || query.q.trim() ? (
         <div className="flex flex-wrap items-center gap-2" aria-label="Active filters">
+          {query.q.trim() ? (
+            <button type="button" data-chip="q" onClick={() => set("q", null)} aria-label={`Remove search ${query.q}`} className="inline-flex items-center gap-1.5 rounded-full border border-forest bg-sage-bg px-2.5 py-0.5 text-forest">
+              <span className="text-[12px] font-semibold">Search: {query.q}</span>
+              <X size={13} className="ico" />
+            </button>
+          ) : null}
           {chips.map((d) => (
             <button key={d.id} type="button" data-chip={d.id} onClick={() => set(d.id, null)} aria-label={`Remove filter ${d.label}: ${labelOf(d)}`} className="inline-flex items-center gap-1.5 rounded-full border border-forest bg-sage-bg px-2.5 py-0.5 text-forest">
               <span className="text-[12px] font-semibold">{d.label}: {labelOf(d)}</span>

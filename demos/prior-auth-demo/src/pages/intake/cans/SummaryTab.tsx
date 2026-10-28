@@ -73,8 +73,8 @@ export function SummaryTab({ record, cans, onGo }: { record: IntakeRecord; cans:
         </CardBody>
       </Card>
       <CansRecordCard record={record} cans={cans} />
-      <NarrativeCard record={record} cans={cans} />
       <SignCard record={record} cans={cans} onGo={onGo} />
+      <NarrativeCard record={record} cans={cans} />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { Check, Minus, TriangleAlert, X } from "lucide-react";
 import { cn } from "@/lib/cn";
-import { NEW_CASE_STEPS } from "./steps";
+import { NEW_AUTH_STEPS } from "./steps";
 import { STEP_STATE_LABEL, type StepInfo, type StepState } from "./stepState";
 
 /** The indicator at the left of a step: a check when it is complete, forest green when it is the step on screen, a tint for the others by state. */
@@ -32,7 +32,7 @@ export function NewCaseStepper({ steps, current, onGo, className }: { steps: Ste
             <button type="button" onClick={() => onGo(i)} aria-current={cur ? "step" : undefined} title={s.note} className={cn("flex items-start gap-2.5 rounded-xl px-1.5 py-1 text-left hover:bg-white/70", cur ? "text-ink" : "")}>
               <Dot index={i} state={s.state} current={cur} />
               <span className="flex flex-col leading-tight">
-                <span className={cn("text-sm font-medium", cur ? "text-ink" : "text-ink2")}>{NEW_CASE_STEPS[i]}</span>
+                <span className={cn("text-sm font-medium", cur ? "text-ink" : "text-ink2")}>{NEW_AUTH_STEPS[i]}</span>
                 <span className={cn("mt-0.5 text-xs", LABEL[s.state])}>{STEP_STATE_LABEL[s.state]}</span>
               </span>
             </button>

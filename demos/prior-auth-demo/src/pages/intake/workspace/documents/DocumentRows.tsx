@@ -3,11 +3,12 @@ import { Button, Chip, Switch } from "@/components/ui";
 import type { ModuleId } from "@/data/assess/types";
 import type { IntakeDocument } from "@/data/intake/types";
 import { stamp } from "@/lib/time";
-import { moduleOf, ORIGIN_LABEL, originOf, TYPE_LABEL } from "./model";
+import { moduleOf, sourceOf, TYPE_LABEL } from "./model";
 
 /** One document per row: what it is, where it came from, when, the module it supports (changeable), whether it goes with the authorization, and a view button. */
-export function DocumentRows({ docs, modules, onView, onAttach, onModule }: {
+export function DocumentRows({ docs, sourceOrg, modules, onView, onAttach, onModule }: {
   docs: IntakeDocument[];
+  sourceOrg: string;
   modules: { id: ModuleId; label: string }[];
   onView: (d: IntakeDocument) => void;
   onAttach: (d: IntakeDocument, attach: boolean) => void;
@@ -23,7 +24,7 @@ export function DocumentRows({ docs, modules, onView, onAttach, onModule }: {
               <button type="button" onClick={() => onView(d)} className="text-left text-[14px] font-medium text-ink hover:text-forest hover:underline">{d.name}</button>
               <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px] text-muted">
                 <span>{TYPE_LABEL[d.kind]}</span>
-                <span>· {ORIGIN_LABEL[originOf(d)]}</span>
+                <span>· {sourceOf(d, sourceOrg)}</span>
                 <span>· {stamp(d.receivedAt)}</span>
                 {d.simulated ? <Chip className="border border-dashed border-field bg-transparent">Simulated</Chip> : null}
               </div>

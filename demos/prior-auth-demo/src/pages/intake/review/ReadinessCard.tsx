@@ -34,7 +34,7 @@ function ItemList({ recordId, items }: { recordId: string; items: CheckItem[] })
 }
 
 /** Authorization readiness, kept apart from completeness: whether the service needs an authorization (or a registration, or nothing, or the
-    policy is not settled), and whether New Case has what it needs. It never says a request will be approved. */
+    policy is not settled), and whether New Authorization has what it needs. It never says a request will be approved. */
 export function ReadinessCard({ record, rd }: { record: IntakeRecord; rd: Readiness }) {
   const now = useIntakeNow();
   const tracks = useMemo(() => dualReadiness(record, now), [record, now]);

@@ -2,6 +2,7 @@ import type { AgentKey } from "../types";
 import { specOf } from "../intake/fields";
 import { ASSESSMENT_SECTIONS, type FieldMap, type IntakeRecord, type SourceRef } from "../intake/types";
 import { moduleById, schemaOf } from "./modules";
+import { isVisible } from "./visibility";
 import type { FieldDef, InstrumentEvidence, InstrumentInstance, ModuleId, ModuleSchema } from "./types";
 
 /* The simulated evidence reader. It looks through what the record already holds (documents, the referral and profile fields, the clinical assessment,
@@ -111,7 +112,7 @@ export function readEvidence(record: IntakeRecord, schema: ModuleSchema, opts: {
   const snippets = collect(record, opts.moduleId);
   const fields = opts.instance?.fields ?? {};
   const proposals: EvidenceProposal[] = [];
-  const candidates = schema.sections.flatMap((s) => s.fields).filter((f): f is FieldDef => (f.kind === "text" || f.kind === "long") && !!f.evidence?.length);
+  const candidates = schema.sections.flatMap((s) => s.fields).filter((f): f is FieldDef => (f.kind === "text" || f.kind === "long") && !!f.evidence?.length && isVisible(f, record));
 
   for (const f of candidates) {
     if (fields[f.key]?.value.trim()) continue;

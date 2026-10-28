@@ -19,7 +19,7 @@ export function ageLabel(p: PriorAssessment, now: number): string {
 }
 export function staleFlag(p: PriorAssessment, now: number): string | null {
   if (p.status === "outdated") return "The source marks it outdated.";
-  if (monthsOld(p, now) >= STALE_AFTER_MONTHS) return `May be stale: ${ageLabel(p, now)}. The reuse window per policy is not verified.`;
+  if (monthsOld(p, now) >= STALE_AFTER_MONTHS) return "May be stale. The reuse window per policy is not verified.";
   return null;
 }
 

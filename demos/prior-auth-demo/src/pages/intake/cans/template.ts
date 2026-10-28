@@ -15,6 +15,8 @@ export const OFFICIAL_NEEDS = [
   "The effective dates, version and reassessment interval",
 ];
 export const OFFICIAL_NOT_VERIFIED = "Not verified: none of these are loaded in this demo.";
+/** The same needs as one sentence, for the banner over the placeholder items. */
+export const OFFICIAL_NEEDS_LINE = "The official template needs the DMAS-supplied item mapping, qualified assessor credentials and effective dates. Not verified: none are loaded.";
 
 interface DemoItem { id: string; name: string; words: string[] }
 export interface DemoDomain { id: string; label: string; theme: CansTheme; clinician?: boolean; items: DemoItem[] }

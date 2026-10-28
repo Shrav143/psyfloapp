@@ -35,20 +35,17 @@ export function cssrsReviewReasons(fields: Record<string, { value: string }>, sc
   }
   return out;
 }
-/** The first reason, or null. */
-export const cssrsReviewReason = (fields: Record<string, { value: string }>, score?: { value: string }): string | null => cssrsReviewReasons(fields, score)[0] ?? null;
-
-/** Words a person uses to record a result of an instrument. A short, plain set of fields for each screening module. */
-function screening(id: string, name: string, extra: FieldDef[], scoreUnit: string, note: string): ModuleSchema {
+/** A screening or criteria instrument. With a score entry, the instrument screen records the date, who administered it and the typed result, so the fields here
+    are only what is left (a label, a recommended level, follow-up). Without one (the C-SSRS, whose result is a label the clinician selects), the fields
+    carry the date and the administrator too. */
+function screening(id: string, name: string, extra: FieldDef[], scoreEntry?: { unit: string; note: string }): ModuleSchema {
+  const who: FieldDef[] = scoreEntry ? [] : [
+    f(`${id}.administeredOn`, "Date administered", "date", { required: true }),
+    f(`${id}.administeredBy`, "Administered by", "text", { required: true, hint: "The person who gave the instrument, with their credentials." }),
+  ];
   return {
-    sections: [
-      sec("result", `${name} result`, [
-        f(`${id}.administeredOn`, "Date administered", "date", { required: true }),
-        f(`${id}.administeredBy`, "Administered by", "text", { required: true, hint: "The person who gave the instrument, with their credentials." }),
-        ...extra,
-      ], `Record the result you obtained from the administered ${name}. Psyflo does not reproduce the items, calculate a score or assign a severity.`),
-    ],
-    scoreEntry: { name, unit: scoreUnit, note },
+    sections: [sec("result", scoreEntry ? "Result details" : `${name} result`, [...who, ...extra], scoreEntry ? undefined : `Record the result you obtained from the administered ${name}. Psyflo does not reproduce the items, calculate a score or assign a severity.`)],
+    ...(scoreEntry ? { scoreEntry: { name, ...scoreEntry } } : {}),
   };
 }
 
@@ -210,11 +207,11 @@ export const MH_SCHEMAS: Partial<Record<ModuleId, ModuleSchema>> = {
   phq9: screening("phq9", "PHQ-9", [
     f("phq9.label", "Result label as you recorded it", "text", { hint: "Your own words or the label your administration guide uses. Psyflo assigns none." }),
     f("phq9.followUp", "Follow-up you planned", "long"),
-  ], "Total the clinician recorded", "Enter the result you obtained. The items are not reproduced and nothing is calculated."),
+  ], { unit: "Total the clinician recorded", note: "Enter the result you obtained. The items are not reproduced and nothing is calculated." }),
   gad7: screening("gad7", "GAD-7", [
     f("gad7.label", "Result label as you recorded it", "text", { hint: "Your own words or the label your administration guide uses. Psyflo assigns none." }),
     f("gad7.followUp", "Follow-up you planned", "long"),
-  ], "Total the clinician recorded", "Enter the result you obtained. The items are not reproduced and nothing is calculated."),
+  ], { unit: "Total the clinician recorded", note: "Enter the result you obtained. The items are not reproduced and nothing is calculated." }),
   cssrs: screening("cssrs", "C-SSRS", [
     f("cssrs.result", "Screener result label", "select", {
       required: true, options: ["Screen result documented", "Negative screen documented", CSSRS_POSITIVE, "Not administered: reason in notes"],
@@ -222,15 +219,15 @@ export const MH_SCHEMAS: Partial<Record<ModuleId, ModuleSchema>> = {
     }),
     f("cssrs.concerns", "Concerns the clinician noted", "long", { hint: "A clinician reviews anything written here that describes risk." }),
     f("cssrs.actions", "What the clinician did next", "long", { hint: "For example a safety plan, a consult, a crisis referral or a follow-up date." }),
-  ], "Result recorded by the clinician", "Enter the result you obtained from the screener you administered. Psyflo does not ask its questions or decide risk."),
+  ]),
   locus: screening("locus", "LOCUS", [
     f("locus.recommendedLevel", "Recommended level from your licensed tool", "text", { required: true }),
     f("locus.edition", "Tool version or edition used", "text"),
     f("locus.reasoning", "Your reasoning if you chose a different level", "long"),
-  ], "Result from your licensed tool", LICENSED_NOT_LOADED),
+  ], { unit: "Result from your licensed tool", note: LICENSED_NOT_LOADED }),
   calocus: screening("calocus", "CALOCUS-CASII", [
     f("calocus.recommendedLevel", "Recommended level from your licensed tool", "text", { required: true }),
     f("calocus.edition", "Tool version or edition used", "text"),
     f("calocus.reasoning", "Your reasoning if you chose a different level", "long"),
-  ], "Result from your licensed tool", LICENSED_NOT_LOADED),
+  ], { unit: "Result from your licensed tool", note: LICENSED_NOT_LOADED }),
 };

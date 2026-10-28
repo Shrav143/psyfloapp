@@ -8,7 +8,7 @@ import { serviceById } from "@/data/va/services";
 import { longDate } from "@/lib/time";
 
 /* The handoff packet, built from the record every time it is shown, so the draft never goes stale. It carries what the authorization workflow
-   needs and what is still open; it is a draft for New Case, never a request to a payer. */
+   needs and what is still open; it is a draft for New Authorization, never a request to a payer. */
 
 const valueOf = (r: IntakeRecord, s: "referral" | "profile" | "coverage", k: string): string => r[s][k]?.value ?? "";
 const name = (id?: string) => (id ? staffOf(id)?.name ?? id : undefined);

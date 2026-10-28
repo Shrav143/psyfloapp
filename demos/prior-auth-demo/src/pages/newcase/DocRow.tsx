@@ -1,5 +1,5 @@
 import { useId, useState, type ReactNode } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Eye, X } from "lucide-react";
 import { Button, ChecklistItem, Field, TextInput } from "@/components/ui";
 import type { CaseDraft, DocSlotId } from "@/data/cases";
@@ -7,7 +7,6 @@ import { paths } from "@/routes";
 import { useStore } from "@/store";
 import { isReferralDoc, makeDocument, sampleFile } from "./documents";
 import { Frame } from "./RecordEditors";
-import { stepPatchOf } from "./steps";
 import type { Row } from "./recordsModel";
 
 const ICON_BUTTON = "grid h-8 w-8 place-items-center rounded-lg text-ink2 hover:bg-tile";
@@ -43,7 +42,6 @@ function Unavailable({ draftId, slot, close }: { draftId: string; slot: DocSlotI
 export function DocRow({ row, slot, draft, open, onToggle, onPick, onPreview }: { row: Row; slot: DocSlotId; draft: CaseDraft; open: boolean; onToggle: () => void; onPick: (slot: DocSlotId, replace?: boolean) => void; onPreview: (slot: DocSlotId) => void }) {
   const labelId = useId();
   const nav = useNavigate();
-  const patch = useStore((s) => s.patchCaseDraft);
   const put = useStore((s) => s.putCaseDocs);
   const drop = useStore((s) => s.dropCaseDoc);
   const undo = useStore((s) => s.clearCaseDocUnavailable);
@@ -66,10 +64,10 @@ export function DocRow({ row, slot, draft, open, onToggle, onPick, onPreview }: 
   } else if (!doc) {
     action = (
       <div className="flex max-w-[400px] flex-wrap justify-end gap-2">
-        {slot === "referral" && draft.kind === "initial" ? (
-          <Button size="sm" aria-describedby={labelId} onClick={() => { patch(draft.id, stepPatchOf("referral")); nav(`${paths.newCase({ draft: draft.id })}?ref=`); }}>
-            Add a referral
-          </Button>
+        {slot === "referral" && !draft.intakeId ? (
+          <Link to={paths.referrals()}>
+            <Button size="sm" aria-describedby={labelId}>Find the referral</Button>
+          </Link>
         ) : null}
         <Button size="sm" variant={row.state === "missing" && slot !== "referral" ? "outline" : "ghost"} aria-describedby={labelId} onClick={() => onPick(slot)}>
           Add file

@@ -2,7 +2,8 @@ import { specOf } from "@/data/intake/fields";
 import { ASSESSMENT_SECTIONS, type AgentTask, type IntakeRecord, type Suggestion } from "@/data/intake/types";
 import { serviceById } from "@/data/va/services";
 import { REPLY_TASK_ACTION } from "@/data/intake/ext/referral";
-import { isMissingValue, missingRequired } from "../queue/metrics";
+import { isMissingValue } from "./missing";
+import { missingRequired } from "./requiredFields";
 
 /* Pure rules for the Referral section: what counts as safety-related, what "Accept all high-confidence" may take, what to ask the referrer. */
 

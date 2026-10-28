@@ -11,7 +11,7 @@ type Basis = NonNullable<ReferralNotice["basis"]>;
     organization's protocol (not legal advice), except for a substance use program, where the release must be on file first (42 CFR Part 2). Sending is always
     a person's act; this only decides whether the button is ready. */
 export function useSendBasis(record: IntakeRecord): { basis: Basis | null; node: ReactNode } {
-  const edit = useStore((s) => s.editReferralField);
+  const edit = useStore((s) => s.editIntakeReferralField);
   const [attested, setAttested] = useState(false);
   const roi = record.profile.roi?.value === "On file";
   const part2 = partTwoApplies(record);

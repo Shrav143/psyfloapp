@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { FilePlus2, FileSearch, Sparkles } from "lucide-react";
-import { Button, Card, CardHeader, EmptyState, Segmented } from "@/components/ui";
+import { Button, Card, CardHeader, EmptyState } from "@/components/ui";
 import type { IntakeDocument, IntakeRecord } from "@/data/intake/types";
 import { useStore } from "@/store";
 import { setDocumentAttach, setDocumentModule } from "../workspace/actions";
@@ -11,6 +11,7 @@ import { summaryDocument } from "../workspace/documents/generate";
 import { countByOrigin, ORIGIN_LABEL, ORIGINS, originOf, type DocOrigin } from "../workspace/documents/model";
 import { moduleOptions } from "../workspace/documents/moduleOptions";
 import { runAgent } from "../lib/agents";
+import { FilterChips } from "../workspace/FilterChips";
 import { useModel } from "../workspace/useWorkspaceModel";
 
 type Filter = DocOrigin | "all";
@@ -49,11 +50,11 @@ export function DocumentsSection({ record }: { record: IntakeRecord }) {
           subtitle={`${record.documents.length} on file · ${attached} marked to attach to the authorization`}
           right={<><Button size="sm" icon={Sparkles} onClick={generate}>Draft a summary</Button><Button size="sm" variant="primary" icon={FilePlus2} onClick={() => setAdding(true)} data-add-document>Add document</Button></>}
         />
-        <div className="overflow-x-auto px-5 pt-3 pb-1">
-          <Segmented<Filter> items={[{ id: "all", label: `All ${counts.all}` }, ...ORIGINS.map((o) => ({ id: o, label: `${ORIGIN_LABEL[o]} ${counts[o]}` }))]} value={filter} onChange={setFilter} />
+        <div className="px-5 pt-3 pb-3">
+          <FilterChips<Filter> label="Show documents from" items={[{ id: "all", label: "All", count: counts.all }, ...ORIGINS.map((o) => ({ id: o, label: ORIGIN_LABEL[o], count: counts[o] }))]} value={filter} onChange={setFilter} />
         </div>
         {docs.length ? (
-          <DocumentRows docs={docs} modules={modules} onView={(d) => setViewing(d.id)} onAttach={(d, v) => setDocumentAttach(record.id, d, v)} onModule={(d, m) => setDocumentModule(record.id, d, m)} />
+          <DocumentRows docs={docs} sourceOrg={record.sourceOrg} modules={modules} onView={(d) => setViewing(d.id)} onAttach={(d, v) => setDocumentAttach(record.id, d, v)} onModule={(d, m) => setDocumentModule(record.id, d, m)} />
         ) : (
           <EmptyState icon={FileSearch} title={filter === "all" ? "No documents yet" : `No ${ORIGIN_LABEL[filter as DocOrigin].toLowerCase()} documents`}
             action={filter === "all" ? <Button size="sm" variant="primary" icon={FilePlus2} onClick={() => setAdding(true)}>Add a document</Button> : <Button size="sm" onClick={() => setFilter("all")}>Show all documents</Button>}>

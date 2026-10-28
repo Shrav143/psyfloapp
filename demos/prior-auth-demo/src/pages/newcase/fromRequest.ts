@@ -1,4 +1,4 @@
-/* A New Case draft for a request that already exists on the case page (the queue, the Dashboard), built from what that page knows:
+/* A New Authorization draft for a request that already exists on the case page (the queue, the Dashboard), built from what that page knows:
    the patient, the payer, the level of care, the documents the payer asks for and, when the request is ready, a finished run.
    Pure, so the case page's Draft tab can show the same summary before the draft is first opened. */
 import type { CaseDetail, Evidence } from "@/data/caseDetail";
@@ -30,7 +30,7 @@ export const conventionalDraftId = (requestId: string): string => `draft-${reque
 export const draftForRequest = (drafts: CaseDraft[], requestId: string, caseId?: string): CaseDraft | undefined =>
   drafts.find((d) => d.id === conventionalDraftId(requestId) || d.caseId === requestId || (!!caseId && d.caseId === caseId));
 
-/* What each action on the case page adds to the summary, in the New Case summary's section names. */
+/* What each action on the case page adds to the summary, in the New Authorization summary's section names. */
 const SECTION_OF: Record<string, string> = { clinical: "clinical", lower: "level", current: "severity", plan: "plan" };
 
 export interface RecAdd {

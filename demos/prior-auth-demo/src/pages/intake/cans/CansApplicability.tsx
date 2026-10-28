@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { ChevronDown } from "lucide-react";
-import { Card, CardBody, CardHeader, Pill } from "@/components/ui";
+import { Card, CardBody, Pill } from "@/components/ui";
 import type { IntakeRecord } from "@/data/intake/types";
 import { cansFor, POLICY_VERSIONS, requirementsFor, vaDate, type CansApplies, type PolicyRule } from "@/data/va/policy";
 import { serviceById } from "@/data/va/services";
@@ -23,7 +23,16 @@ export function CansApplicability({ record, applies, rule, children }: { record:
   const [open, setOpen] = useState(false);
   return (
     <Card data-cans-applies={applies}>
-      <CardHeader title="CANS Lifetime (Virginia)" subtitle={svc.label} right={<><Pill tone={APPLIES_TONE[applies]}>{APPLIES_LABEL[applies]}</Pill>{children}</>} />
+      <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2.5 border-b border-line px-5 pt-4 pb-3">
+        <div className="min-w-0">
+          <h3 className="font-serif text-[18px] leading-tight font-semibold tracking-tight">CANS Lifetime (Virginia)</h3>
+          <p className="mt-0.5 text-[13px] text-muted">{svc.label}</p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Pill tone={APPLIES_TONE[applies]}>{APPLIES_LABEL[applies]}</Pill>
+          {children}
+        </div>
+      </div>
       <CardBody className="space-y-3">
         <p className="text-[14px] text-ink">{LEAD[applies](svc.short)}</p>
         <button type="button" aria-expanded={open} onClick={() => setOpen((o) => !o)} className="inline-flex items-center gap-1 text-[13px] font-semibold text-forest hover:underline">

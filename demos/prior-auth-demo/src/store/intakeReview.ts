@@ -9,7 +9,7 @@ import type { OrgRule } from "@/pages/intake/policy/match";
 import { meOf } from "./intake";
 import type { AppState } from "./index";
 
-/* Intake: documentation & review, readiness, the handoff to New Case, the AI Assistant's task controls (cancel, undo, approve where the
+/* Intake: documentation & review, readiness, the handoff to New Authorization, the AI Assistant's task controls (cancel, undo, approve where the
    approval is the decision itself), organization rules and the July 2027 transition view. Every change by a person writes an audit event. */
 
 export interface IntakeReviewSlice {

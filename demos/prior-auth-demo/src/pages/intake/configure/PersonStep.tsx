@@ -37,7 +37,9 @@ export function PersonStep({ all, picked, onPick, adding, onAdding, form, onForm
 }) {
   const [query, setQuery] = useState("");
   const found = useMemo(() => searchCandidates(all, query), [all, query]);
-  const shown = found.slice(0, 8);
+  /* The person chosen stays on screen, first, even when a search or the first eight would not show them. */
+  const first = found.slice(0, 8);
+  const shown = picked && !first.some((c) => c.key === picked.key) ? [picked, ...first.slice(0, 7)] : first;
   const set = (p: Partial<NewPerson>) => onForm({ ...form, ...p });
 
   return (

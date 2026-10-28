@@ -55,7 +55,7 @@ export function PlanForm({ record }: { record: IntakeRecord }) {
         <div>
           <div className="mb-1.5 flex items-center justify-between">
             <span className="text-[13px] font-medium text-ink2">Treatment goals</span>
-            {cp ? <span className="inline-flex items-center gap-1 text-[12px] text-muted"><Check size={12} className="ico" aria-hidden="true" />Saved as you type</span> : null}
+            {cp && !approved ? <span className="inline-flex items-center gap-1 text-[12px] text-muted"><Check size={12} className="ico" aria-hidden="true" />Saved as you type</span> : null}
           </div>
           <ul className="space-y-2">
             {(cp?.goals ?? []).map((g) => (

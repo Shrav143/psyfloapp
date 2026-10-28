@@ -1,14 +1,18 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Save } from "lucide-react";
-import { Button, Card, CardBody, Label, Pill, Ring } from "@/components/ui";
+import { Link, useNavigate } from "react-router-dom";
+import { ArrowLeft, ArrowRight, Save } from "lucide-react";
+import { Button, Card, CardBody, CardHeader, Label, Pill, Ring } from "@/components/ui";
+import { fixPath, type ReadinessItemX } from "@/data/assess/readiness";
 import { RUN_STEPS, chanceRange, currentChance, similarCases, type CaseDraft, type DocSlotId, type NarrativeSection } from "@/data/cases";
 import { payerById } from "@/data/seed";
 import { band } from "@/lib/format";
 import { paths } from "@/routes";
 import { useStore } from "@/store";
 import type { CaseEnv } from "./caseEnv";
+import { useIntakeNow } from "@/pages/intake/lib/policyNow";
+import { ReadinessTracks } from "@/pages/intake/review/ReadinessTracks";
 import { ChecksCard } from "./ChecksCard";
+import { draftReadiness } from "./draftReadiness";
 import type { FixKind } from "./checks";
 import { DocPreviewDrawer } from "./DocPreviewDrawer";
 import { slotOfSource } from "./documents";
@@ -20,7 +24,7 @@ import { ReviewSummary } from "./ReviewSummary";
 import { NoChance, noChanceFor } from "./ChancePanel";
 import { SignCard } from "./SignCard";
 import { StepFooter } from "./StepFooter";
-import { preparationPatch, stepPatchOf } from "./steps";
+import { preparationPatch, stepPatchOf, type StepId } from "./steps";
 import { useRecAdds } from "./useRecAdds";
 import { useUnmetSync } from "./useUnmetSync";
 import { signEntries } from "./workflow/trace";
@@ -29,7 +33,7 @@ import { ValidationSummary } from "./ValidationSummary";
 const RECHECK_MS = 1200;
 const NO_CONTEXT: string[] = [];
 
-/** Step 5, Review & submit: what is missing first, then the summary list, the packet (editable) and the checks, and the clinician sign-off. Only a clinician signs.
+/** Stage 4, Review & Submit: readiness on two tracks, what is missing, then the summary list, the packet (editable) and the checks, and the clinician sign-off. Only a clinician signs.
     "Sign and send to payer (demo)" records the request (linked to its patient, episode, authorization and verification) and opens the new case. */
 export function ReviewStep({ draft, env }: { draft: CaseDraft; env: CaseEnv }) {
   const nav = useNavigate();
@@ -51,6 +55,9 @@ export function ReviewStep({ draft, env }: { draft: CaseDraft; env: CaseEnv }) {
 
   /* The same summary the case page's Draft tab reads: the edited text or Scribe's, the actions applied there, and the context added there. */
   const review = useMemo(() => reviewModel(env, context, adds, rechecking), [env, context, adds, rechecking]);
+  const intake = useStore((s) => s.intakes.find((r) => r.id === draft.intakeId));
+  const now = useIntakeNow();
+  const readiness = useMemo(() => draftReadiness(env, review, intake, now), [env, review, intake, now]);
   const chance = currentChance(draft);
   const range = chanceRange(chance, true);
   const b = band(chance);
@@ -67,11 +74,22 @@ export function ReviewStep({ draft, env }: { draft: CaseDraft; env: CaseEnv }) {
   };
 
   const fix = (kind: FixKind) => {
-    if (kind === "intake") patch(draft.id, stepPatchOf("intake"));
-    else if (kind === "eligibility") patch(draft.id, stepPatchOf("eligibility"));
+    if (kind === "intake") patch(draft.id, stepPatchOf("service"));
+    else if (kind === "eligibility") patch(draft.id, stepPatchOf("coverage"));
     else if (kind === "records") patch(draft.id, stepPatchOf("documentation"));
     else if (kind === "edit") setEditSignal((n) => n + 1);
     else setBackSignal((n) => n + 1);
+  };
+
+  /** An item made here opens its stage; an item read from the intake opens the intake workspace where it is fixed. */
+  const openItem = (i: ReadinessItemX) => {
+    const go = i.go;
+    if (!go) return null;
+    if (go.section.startsWith("stage:")) {
+      const stage = go.section.slice(6) as StepId;
+      return <button type="button" onClick={() => patch(draft.id, stepPatchOf(stage))} className="inline-flex items-center gap-1 text-[12px] font-semibold text-forest hover:underline">Open<ArrowRight size={13} className="ico" aria-hidden="true" /></button>;
+    }
+    return intake ? <Link to={fixPath(intake.id, go)} className="inline-flex items-center gap-1 text-[12px] font-semibold text-forest hover:underline">Open in the intake<ArrowRight size={13} className="ico" aria-hidden="true" /></Link> : null;
   };
 
   const onSign = (signedBy: string) => {
@@ -87,6 +105,10 @@ export function ReviewStep({ draft, env }: { draft: CaseDraft; env: CaseEnv }) {
       <div className="grid grid-cols-[minmax(0,1fr)_340px] items-start gap-5 max-[1080px]:grid-cols-1">
         <div className="flex flex-col gap-5">
           <PayerChangeNote draft={draft} />
+          <Card data-card="readiness">
+            <CardHeader title="Readiness" subtitle="Clinical and administrative, kept apart. Neither is an approval." />
+            <CardBody><ReadinessTracks readiness={readiness} recordId={intake?.id} fix={openItem} /></CardBody>
+          </Card>
           <MissingCard draft={draft} items={review.missing} onFix={fix} />
           <ReviewSummary draft={draft} env={env} review={review} />
           {ready ? (

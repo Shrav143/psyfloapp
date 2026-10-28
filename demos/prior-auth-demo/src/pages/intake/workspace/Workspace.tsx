@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
+import { MODULE_IDS } from "@/data/assess/modules";
+import type { WorkspaceTarget } from "@/data/assess/nav";
 import type { IntakeRecord } from "@/data/intake/types";
-import { paths } from "@/routes";
+import { ConfigureDialog } from "../configure/ConfigureDialog";
 import { useDerivedFields } from "../profile/sync";
 import { SafetyBanner } from "../queue/SafetyBanner";
 import { ScribePanel } from "../scribe/ScribePanel";
@@ -25,17 +27,19 @@ export function Workspace({ record }: { record: IntakeRecord }) {
   const model = useWorkspaceModel(record);
   const { target, go } = useWorkspaceTarget(record.id);
   const [params, setParams] = useSearchParams();
-  const nav = useNavigate();
   const wide = useMediaQuery("(min-width: 1280px)");
   const medium = useMediaQuery("(min-width: 1024px)");
   const [open, setOpen] = useState(() => readPref(ASSISTANT_KEY) !== "closed");
   const [drawer, setDrawer] = useState(false);
+  const [configuring, setConfiguring] = useState(false);
   const [printRun, setPrintRun] = useState(0);
   const [printing, setPrinting] = useState(false);
   const center = useRef<HTMLDivElement>(null);
   const panel = params.get("panel");
   useDerivedFields(record);
 
+  /* An address can name a module that does not exist; the sections below it are never told about it. */
+  const known: WorkspaceTarget = target.module && !MODULE_IDS.includes(target.module) ? { section: "instrument" } : target;
   const key = `${navIdOf(target)}|${target.tab ?? ""}`;
   useEffect(() => {
     center.current?.scrollTo({ top: 0 });
@@ -53,8 +57,7 @@ export function Workspace({ record }: { record: IntakeRecord }) {
       else n.delete("panel");
       return n;
     });
-  /* Until the configuration dialog is wired in, configuring opens the wizard for this intake. */
-  const configure = useCallback(() => nav(paths.configure(record.id)), [nav, record.id]);
+  const configure = useCallback(() => setConfiguring(true), []);
   const done = useCallback(() => setPrinting(false), []);
   const columns = wide ? `208px minmax(0,1fr) ${open ? "300px" : "40px"}` : medium ? "208px minmax(0,1fr)" : "minmax(0,1fr)";
   const rows = medium ? "minmax(0,1fr)" : "auto minmax(0,1fr)";
@@ -78,11 +81,12 @@ export function Workspace({ record }: { record: IntakeRecord }) {
             {record.safety ? <div id="safety-alert" tabIndex={-1} className="mb-4 outline-none"><SafetyBanner record={record} /></div> : null}
             <SectionView record={record} target={target} model={model} go={go} onConfigure={configure} />
           </div>
-          {wide ? <AssistantColumn record={record} target={target} mode="column" open={open} onOpen={toggle} onClose={toggle} needs={model.needs.length} /> : null}
+          {wide ? <AssistantColumn record={record} target={known} mode="column" open={open} onOpen={toggle} onClose={toggle} needs={model.needs.length} /> : null}
         </div>
-        {!wide ? <AssistantColumn record={record} target={target} mode={mode} open={drawer} onOpen={() => setDrawer(true)} onClose={() => setDrawer(false)} needs={model.needs.length} /> : null}
+        {!wide ? <AssistantColumn record={record} target={known} mode={mode} open={drawer} onOpen={() => setDrawer(true)} onClose={() => setDrawer(false)} needs={model.needs.length} /> : null}
         {panel === "scribe" ? <ScribePanel record={record} onClose={() => setPanel(null)} /> : null}
         {panel === "voice" ? <VoicePanel record={record} onClose={() => setPanel(null)} /> : null}
+        <ConfigureDialog open={configuring} onClose={() => setConfiguring(false)} record={record} />
         {printing ? <PrintSummary model={model} runId={printRun} onDone={done} /> : null}
       </div>
     </WorkspaceModelContext.Provider>

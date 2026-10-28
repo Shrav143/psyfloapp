@@ -28,8 +28,8 @@ export function ExceptionActions({ draft, env }: { draft: CaseDraft; env: CaseEn
             Switch this case to {payerById(moved)?.shortName ?? "the new plan"}
           </Button>
         ) : null}
-        {ex.has("member_id_mismatch") ? <Button size="sm" onClick={() => patch(draft.id, stepPatchOf("intake"))}>Correct the member ID in Intake</Button> : null}
-        {ex.has("service_not_covered") ? <Button size="sm" onClick={() => patch(draft.id, stepPatchOf("intake"))}>Change the level of care in Intake</Button> : null}
+        {ex.has("member_id_mismatch") ? <Button size="sm" onClick={() => patch(draft.id, stepPatchOf("service"))}>Correct the member ID in Patient & Service</Button> : null}
+        {ex.has("service_not_covered") ? <Button size="sm" onClick={() => patch(draft.id, stepPatchOf("service"))}>Change the service in Patient & Service</Button> : null}
         {ex.has("service_unavailable") ? (
           <Link to={paths.settings()} className="inline-flex h-[34px] items-center rounded-[10px] border border-field bg-white px-3 text-[13px] font-semibold text-forest hover:bg-tile">
             Open Settings to resume Verify

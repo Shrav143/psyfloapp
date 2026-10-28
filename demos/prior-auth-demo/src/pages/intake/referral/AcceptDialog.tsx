@@ -10,7 +10,7 @@ import { unconfirmed } from "./missing";
 /** Accept for assessment. Shows the demo capacity of the program: with an open place it takes one; with none, the person goes on the waitlist. A draft notice
     to the referrer is made, and nothing is sent until a person approves it. */
 export function AcceptDialog({ record, onClose, onDone }: { record: IntakeRecord; onClose: () => void; onDone: (id: string, outcome: "accepted" | "waitlisted") => void }) {
-  const accept = useStore((s) => s.acceptReferral);
+  const accept = useStore((s) => s.acceptIntakeReferral);
   const capOpen = useStore((s) => s.capacityOpen);
   const intakes = useStore((s) => s.intakes);
   const [note, setNote] = useState("");

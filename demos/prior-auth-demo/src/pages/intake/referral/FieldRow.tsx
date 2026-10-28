@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { Check, Pencil } from "lucide-react";
 import { Button, InfoTip, Pill, Segmented, TextArea, TextInput } from "@/components/ui";
-import { isRequired, specOf } from "@/data/intake/fields";
+import { specOf } from "@/data/intake/fields";
 import type { FieldState, IntakeRecord, SourceRef } from "@/data/intake/types";
 import type { Urgency } from "@/data/types";
-import { serviceById } from "@/data/va/services";
 import { cn } from "@/lib/cn";
 import { stamp } from "@/lib/time";
 import { useStore } from "@/store";
@@ -16,6 +15,8 @@ import { REFERRAL_STATE_LABEL, REFERRAL_STATE_TONE, URGENCY_LABEL } from "./labe
 
 export type DocSpot = { docId: string; blockId: string };
 
+const BLOCKING = ["reason", "requestedService", "person"];
+
 const ENTRY_STATES: FieldState[] = ["verified", "patient_reported", "needs_confirmation"];
 
 /** One referral value: what it says, how it got here (its tag and its source), and what a person can do with it: confirm it as it stands or edit it.
@@ -25,11 +26,11 @@ export function FieldRow({ record, section, field, active, onSpot, always }: {
   /** Show it even when it has no value (a required field). */
   always?: boolean;
 }) {
-  const edit = useStore((s) => s.editReferralField);
-  const confirm = useStore((s) => s.confirmReferralFields);
-  const setService = useStore((s) => s.setReferralService);
-  const setUrgency = useStore((s) => s.setReferralUrgency);
-  const setPerson = useStore((s) => s.setReferralPerson);
+  const edit = useStore((s) => s.editIntakeReferralField);
+  const confirm = useStore((s) => s.confirmIntakeReferralFields);
+  const setService = useStore((s) => s.setIntakeReferralService);
+  const setUrgency = useStore((s) => s.setIntakeReferralUrgency);
+  const setPerson = useStore((s) => s.setIntakeReferralPerson);
   const spec = specOf(field);
   const fv = fieldOf(record, section, field);
   const [editing, setEditing] = useState(false);
@@ -39,7 +40,8 @@ export function FieldRow({ record, section, field, active, onSpot, always }: {
   if (!spec) return null;
   const empty = !fv || !fv.value.trim() || fv.state === "not_collected";
   if (empty && !always && !editing) return null;
-  const required = isRequired(spec, { age: record.age, schoolBased: serviceById(record.serviceId).setting === "school" }) || field === "requestedService";
+  /* Only what accepting waits on is marked required. The rest of the intake's required fields are collected after acceptance. */
+  const required = BLOCKING.includes(field);
   const src: SourceRef | undefined = fv?.source;
   const spot = src?.docId && src.blockId ? { docId: src.docId, blockId: src.blockId } : null;
   const pending = record.suggestions.filter((x) => x.field === field && x.section === section && x.status === "pending");
@@ -113,7 +115,7 @@ export function FieldRow({ record, section, field, active, onSpot, always }: {
               )}
             </div>
           ) : empty ? (
-            <p className={cn("mt-1 text-[14px]", required ? "text-risk-ink" : "text-muted")}>{required ? "Missing, needed to accept" : "Not in the referral"}</p>
+            <p className={cn("mt-1 text-[14px]", required ? "text-risk-ink" : "text-muted")}>{required ? "Missing, needed to accept" : "Not provided"}</p>
           ) : (
             <p className="mt-1 text-[14px] break-words whitespace-pre-line">{fv?.value}</p>
           )}
@@ -132,7 +134,7 @@ export function FieldRow({ record, section, field, active, onSpot, always }: {
         <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-muted">
           {src ? <SourceLink record={record} source={src} /> : null}
           {fv.confidence && fv.state !== "verified" ? <span>Confidence: {fv.confidence}</span> : null}
-          <span>{fv.by === "reader" || fv.by === "verify" ? "Read by " : "Set by "}{actorName(fv.by)} · {stamp(fv.at)}</span>
+          {fv.by !== "reader" && fv.by !== "verify" && fv.by !== "system" ? <span>Set by {actorName(fv.by)} · {stamp(fv.at)}</span> : null}
           {fv.reviewedBy && fv.reviewedBy !== "system" ? <span className="text-good-ink">Reviewed by {actorName(fv.reviewedBy)}</span> : null}
         </div>
       ) : null}

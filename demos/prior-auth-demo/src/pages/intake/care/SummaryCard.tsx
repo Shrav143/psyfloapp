@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { PenLine, Sparkles } from "lucide-react";
-import { Button, Card, CardBody, CardHeader, Chip, Pill, TextArea } from "@/components/ui";
+import { Button, Card, CardBody, CardHeader, Chip, Disclosure, Pill, TextArea } from "@/components/ui";
 import { clinicalSummary, draftSummaryText, type SummaryLine } from "@/data/assess/carePlan";
 import type { IntakeRecord } from "@/data/intake/types";
 import { stamp } from "@/lib/time";
@@ -13,6 +13,23 @@ import { SignOffDialog } from "../shared/SignOff";
 
 const STATE: Record<SummaryLine["state"], { label: string; tone: "good" | "neutral" | "mid" }> = { signed: { label: "Signed", tone: "good" }, referral: { label: "From the referral", tone: "neutral" }, draft: { label: "Not signed", tone: "mid" } };
 
+function LineList({ record, lines }: { record: IntakeRecord; lines: SummaryLine[] }) {
+  return (
+    <ul className="divide-y divide-line">
+      {lines.map((l) => (
+        <li key={l.id} data-summary-line={l.id} className="py-2.5 first:pt-0 last:pb-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-[13px] font-semibold text-ink">{l.label}</span>
+            <Pill tone={STATE[l.state].tone}>{STATE[l.state].label}{l.state === "signed" && l.by ? `, ${actorName(l.by)}` : ""}</Pill>
+          </div>
+          <p className="mt-0.5 text-[14px] text-ink2">{l.text}</p>
+          <Link to={paths.intakeRecord(record.id, l.from.module ? `m:${l.from.module}` : l.from.section)} className="mt-0.5 inline-block text-[12px] font-medium text-forest hover:underline">{l.from.label}</Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 /** The clinical summary a clinician reads before choosing a service. Every line says where it came from; only signed work counts as clinician-confirmed.
     The written summary starts as an AI suggested draft built from those lines, and stays a draft until a clinician confirms it. */
 export function SummaryCard({ record }: { record: IntakeRecord }) {
@@ -21,6 +38,7 @@ export function SummaryCard({ record }: { record: IntakeRecord }) {
   const startPlan = useStore((s) => s.startCarePlan);
   const [signing, setSigning] = useState(false);
   const { lines, unsigned } = clinicalSummary(record);
+  const modules = lines.filter((l) => l.id.startsWith("module:"));
   const sum = record.carePlan?.summary;
   const locked = record.carePlan?.status === "approved";
   const running = record.tasks.some((t) => t.role === "pathway" && t.action === "Draft the clinical summary" && (t.status === "queued" || t.status === "running"));
@@ -46,18 +64,12 @@ export function SummaryCard({ record }: { record: IntakeRecord }) {
         right={sum?.confirmedBy ? <Pill tone="good" dot>Confirmed by {actorName(sum.confirmedBy)}</Pill> : <Pill tone="mid">Draft: a clinician confirms it</Pill>}
       />
       <CardBody className="space-y-4">
-        <ul className="divide-y divide-line">
-          {lines.map((l) => (
-            <li key={l.id} data-summary-line={l.id} className="py-2.5 first:pt-0 last:pb-0">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="text-[13px] font-semibold text-ink">{l.label}</span>
-                <Pill tone={STATE[l.state].tone}>{STATE[l.state].label}{l.state === "signed" && l.by ? `, ${actorName(l.by)}` : ""}</Pill>
-              </div>
-              <p className="mt-0.5 text-[14px] text-ink2">{l.text}</p>
-              <Link to={paths.intakeRecord(record.id, l.from.module ? `m:${l.from.module}` : l.from.section)} className="mt-0.5 inline-block text-[12px] font-medium text-forest hover:underline">{l.from.label}</Link>
-            </li>
-          ))}
-        </ul>
+        <LineList record={record} lines={lines.filter((l) => !l.id.startsWith("module:"))} />
+        {modules.length ? (
+          <Disclosure variant="plain" title={<span className="font-sans text-[13px] font-semibold">Signed assessment modules ({modules.length})</span>} summary={modules.map((l) => l.label).join(", ")}>
+            <div className="px-1 py-2"><LineList record={record} lines={modules} /></div>
+          </Disclosure>
+        ) : null}
         {unsigned.length ? <p className="text-[13px] text-muted">Not in the summary because they are not signed: {unsigned.join(", ")}.</p> : null}
 
         <div className="rounded-xl border border-line bg-tile/50 px-4 py-3">

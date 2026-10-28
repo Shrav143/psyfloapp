@@ -5,20 +5,20 @@ import { OutOfSite } from "@/components/layout/OutOfSite";
 import { Button, Card, EmptyState, Page, PageHeader } from "@/components/ui";
 import { RUN_STEPS } from "@/data/cases";
 import { useScope } from "@/lib/scope";
-import { paths } from "@/routes";
+import { intakeIdForReferral, paths } from "@/routes";
 import { useStore } from "@/store";
 import { AuthTypePicker } from "./AuthTypePicker";
 import { isAuthKind } from "./authType";
 import { useCaseEnv } from "./caseEnv";
 import { DocumentationStep } from "./DocumentationStep";
-import { EligibilityStep } from "./EligibilityStep";
-import { attachReferral, initialDraft } from "./intake";
-import { IntakeStep } from "./IntakeStep";
+import { CoverageStep } from "./CoverageStep";
+import { kindOfIntake } from "./fromIntake";
+import { initialDraft } from "./intake";
 import { NewCaseStepper } from "./NewCaseStepper";
 import { reviewModel } from "./reviewModel";
-import { ReferralStep } from "./ReferralStep";
 import { ReviewStep } from "./ReviewStep";
-import { NEW_CASE_STEPS, opensPreparation, preparationPatch, stepIdOf, stepIndex, stepPatch, stepPatchOf } from "./steps";
+import { NEW_AUTH_STEPS, opensPreparation, preparationPatch, stepIdOf, stepIndex, stepPatch, stepPatchOf } from "./steps";
+import { ServiceStep } from "./ServiceStep";
 import { stepStates } from "./stepState";
 import { useRecAdds } from "./useRecAdds";
 import { useReading } from "./useRecordsTimers";
@@ -27,8 +27,9 @@ import { WorkflowRow } from "./workflow/WorkflowRow";
 
 const NO_CONTEXT: string[] = [];
 
-/** New Case, in five steps: Referral, Intake, Eligibility & Benefits, Clinical documentation, Review & submit. /authorizations/new starts a draft and moves to /authorizations/new/:draftId, which resumes one. ?type= picks the Authorization type, ?referral=, ?verification= and ?patient= start from one;
-    ?step= opens a step (?ref= opens Referral; the older names records and sign land on Clinical documentation and Review & submit; preparation and agents open Clinical documentation at the agents' section). */
+/** New Authorization, in four stages: Patient & Service, Coverage & Requirements, Clinical Documentation, Review & Submit. /authorizations/new starts a draft and moves to /authorizations/new/:draftId, which resumes one.
+    ?type= picks the Authorization type; ?intake= (the shared record; the older ?referral=RF-… is the intake made from it), ?verification= and ?patient= start from one. ?step= opens a stage (the older names referral and intake land on
+    Patient & Service, eligibility on Coverage & Requirements, records and sign on Clinical Documentation and Review & Submit; preparation and agents open Clinical Documentation at the agents' section). */
 export default function NewCasePage() {
   const { draftId } = useParams();
   const [params] = useSearchParams();
@@ -51,27 +52,25 @@ export default function NewCasePage() {
   /* The payer workflow follows the case: it is matched, pinned and traced from here, only for a case the viewer can see. */
   useWorkflowSync(draft, env?.workflow ?? null, !!draft && !!env && scope.sites.includes(draft.site));
 
-  /* No draft in the address: start one (from ?referral=ID, ?verification=ID, ?patient=ID or ?type=) and open it. The ref stops a second draft in development. */
+  /* No draft in the address: start one (from ?intake=ID, ?verification=ID, ?patient=ID or ?type=) and open it. The ref stops a second draft in development. */
   useEffect(() => {
     if (draftId) {
       created.current = false;
       return;
     }
     if (created.current) return;
-    const ref = params.get("referral");
-    if (ref && !scope.has(ref)) return;
-    created.current = true;
     const st = useStore.getState();
-    const { init, missingReferral, patient } = initialDraft(params, st);
-    if (missingReferral) st.toast({ title: "Referral not found", body: `We could not find ${missingReferral}. Start from a blank case instead.`, tone: "mid" });
-    const id = st.createCaseDraft(init);
-    if (init.referralId) attachReferral(id, init.referralId);
+    const { init, patient, intake } = initialDraft(params, st);
+    const record = intake ? st.intakes.find((r) => r.id === intake) : undefined;
+    if (intake && record && !scope.sites.includes(record.site)) return;
+    created.current = true;
+    if (intake && !record) st.toast({ title: "Intake not found", body: `We could not find ${intake}. Start from a blank authorization instead.`, tone: "mid" });
+    const kindParam = params.get("type");
+    const id = record ? st.startCaseFromIntake(record.id, isAuthKind(kindParam) ? kindParam : kindOfIntake(record) ?? "initial") ?? st.createCaseDraft(init) : st.createCaseDraft(init);
     if (patient) st.chooseCasePatient(id, { patientId: patient });
     const step = stepIdOf(params.get("step"));
     if (step) st.patchCaseDraft(id, opensPreparation(params.get("step")) ? preparationPatch : stepPatchOf(step));
-    /* A blank initial authorization starts at Referral; anything that arrives with a patient (a referral, a check, a known patient) starts at Intake. */
-    else if (init.kind === "initial" && !init.started && !init.referralId && !patient) st.patchCaseDraft(id, stepPatchOf("referral"));
-    nav(paths.newCase({ draft: id }), { replace: true });
+    nav(paths.newCase({ draft: id, ...(record ? { intake: record.id, ...(record.episodeId ? { episode: record.episodeId } : {}) } : {}) }), { replace: true });
   }, [draftId, params, nav, scope]);
 
   /* The agents' section of Clinical documentation is scrolled to when the page opens on it: a draft saved while the agents worked (the old step 4), or ?step=preparation. */
@@ -93,8 +92,6 @@ export default function NewCasePage() {
       patch(draft.id, preparationPatch);
       setToPreparation((n) => n + 1);
     } else if (step) patch(draft.id, stepPatchOf(step));
-    /* ?ref= (a referral's checklist, or empty to pick one) belongs to the Referral step. */
-    else if (params.has("ref") && draft.kind === "initial") patch(draft.id, stepPatchOf("referral"));
     const kind = params.get("type");
     if (isAuthKind(kind) && !draft.started && !draft.sent) setKind(draft.id, kind);
     // Only when the address changes: the person moves between steps with the stepper afterwards.
@@ -109,16 +106,17 @@ export default function NewCasePage() {
   const review = useMemo(() => (env && ready ? reviewModel(env, context, adds) : null), [env, ready, context, adds]);
   const steps = useMemo(() => (env ? stepStates(env, review, holding) : null), [env, review, holding]);
 
-  /* A link that starts a case from a referral at a site the viewer cannot see shows the notice, and no case is made. */
-  const refParam = params.get("referral");
-  if (!draftId && refParam && !scope.has(refParam)) return <OutOfSite id={refParam} what="referral" />;
+  /* A link that starts an authorization from an intake at a site the viewer cannot see shows the notice, and no draft is made. */
+  const intakeParam = params.get("intake") ?? (params.get("referral") ? intakeIdForReferral(params.get("referral") ?? "") : null);
+  const intakeSite = intakeParam ? useStore.getState().intakes.find((r) => r.id === intakeParam)?.site : undefined;
+  if (!draftId && intakeParam && intakeSite && !scope.sites.includes(intakeSite)) return <OutOfSite id={intakeParam} what="intake" />;
   if (!draftId) return null;
   if (!draft || !env || !steps) {
     return (
       <Page>
-        <PageHeader title="New Case" sub="That draft is not in the demo." />
+        <PageHeader title="New Authorization" sub="That draft is not in the demo." />
         <Card>
-          <EmptyState icon={SearchX} title="We could not find that draft" action={<Button variant="primary" onClick={() => nav(paths.newCase())}>Start a new case</Button>}>
+          <EmptyState icon={SearchX} title="We could not find that draft" action={<Button variant="primary" onClick={() => nav(paths.newCase())}>Start a new authorization</Button>}>
             It may have been cleared when the demo data was reset.
           </EmptyState>
         </Card>
@@ -163,7 +161,7 @@ export default function NewCasePage() {
       <PageHeader
         title={
           <>
-            New Case
+            New Authorization
             {draft.caseId ? <span data-testid="case-id" className="ml-2.5 font-sans text-[13px] font-medium text-muted">{draft.caseId}</span> : null}
           </>
         }
@@ -175,8 +173,8 @@ export default function NewCasePage() {
         <NewCaseStepper steps={steps} current={at} onGo={(i) => patch(draft.id, stepPatch(i))} />
         {env.workflow ? <WorkflowRow draft={draft} view={env.workflow} /> : null}
       </div>
-      <h2 className="sr-only">{NEW_CASE_STEPS[at]}</h2>
-      {at === 0 ? <ReferralStep draft={draft} env={env} /> : at === 1 ? <IntakeStep draft={draft} env={env} /> : at === 2 ? <EligibilityStep draft={draft} env={env} /> : at === 3 ? <DocumentationStep draft={draft} env={env} toPreparation={toPreparation} /> : <ReviewStep draft={draft} env={env} />}
+      <h2 className="sr-only">{NEW_AUTH_STEPS[at]}</h2>
+      {at === 0 ? <ServiceStep draft={draft} env={env} /> : at === 1 ? <CoverageStep draft={draft} env={env} /> : at === 2 ? <DocumentationStep draft={draft} env={env} toPreparation={toPreparation} /> : <ReviewStep draft={draft} env={env} />}
     </Page>
   );
 }

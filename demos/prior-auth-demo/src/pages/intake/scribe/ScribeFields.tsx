@@ -98,7 +98,7 @@ function Group({ record, session, group, review, onSource }: { record: IntakeRec
 export function ScribeFields({ record, session, review, onSource }: { record: IntakeRecord; session: ScribeSession; review: boolean; onSource: (turnId: string) => void }) {
   const acceptVerified = useStore((s) => s.scribeAcceptVerified);
   const toast = useStore((s) => s.toast);
-  const groups = reviewGroups(record, session);
+  const groups = reviewGroups(session);
   const pending = (session.extracted ?? []).filter((x) => x.status === "pending" && !isRiskProposal(x));
   const verified = pending.filter((x) => isVerifiedSource(record, session, x)).length;
   if (!groups.length) return <p className="py-8 text-center text-[13px] text-muted">No proposals yet. They appear as the conversation covers each topic.</p>;

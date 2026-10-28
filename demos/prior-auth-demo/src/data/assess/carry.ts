@@ -71,16 +71,18 @@ export interface CarryResult {
   /** Assessments found for the person (all signed ones) and how many were put into modules in use. */
   found: number;
   prefilled: number;
+  /** The modules that were prefilled. */
+  prefilledIds: ModuleId[];
 }
 
-/** `target` with `source`'s signed assessments carried forward. `inUse` are the modules the new configuration uses: only those are prefilled, and a
+/** `target` with `source`'s signed assessments carried forward. `inPlan` are the modules the new configuration lists: only those are prefilled, and a
     module that already has work is left as it is. Calling it again changes nothing. */
-export function carryForward(target: IntakeRecord, source: IntakeRecord, inUse: ModuleId[], at: number, by: string): CarryResult {
+export function carryForward(target: IntakeRecord, source: IntakeRecord, inPlan: ModuleId[], at: number, by: string): CarryResult {
   const items = signedAssessmentsOf(source);
   const known = new Set((target.priorAssessments ?? []).map((p) => p.id));
   const prior: PriorAssessment[] = [];
   const instruments = { ...(target.instruments ?? {}) };
-  let prefilled = 0;
+  const prefilledIds: ModuleId[] = [];
   for (const { moduleId, signed } of items) {
     const id = `prior-${source.id}-${moduleId}-v${signed.version}`;
     if (!known.has(id)) {
@@ -90,12 +92,12 @@ export function carryForward(target: IntakeRecord, source: IntakeRecord, inUse: 
         note: `Signed in ${source.id}. Carried forward into ${target.id} as a new version; a person confirms each value before it is used. No rule here says it may be reused as is.`,
       });
     }
-    if (!inUse.includes(moduleId) || hasInstrumentWork(target, moduleId)) continue;
+    if (!inPlan.includes(moduleId) || hasInstrumentWork(target, moduleId)) continue;
     instruments[moduleId] = {
       moduleId, version: signed.version + 1, status: "not_started", fields: carriedFields(source.id, signed, at, by), notes: "", evidence: [], updatedAt: at,
       history: [{ version: signed.version, status: "superseded", fields: signed.snapshot, signedBy: signed.signedBy, signedAt: signed.signedAt, supersededAt: at, note: `Carried forward from ${source.id} into ${target.id}` }],
     };
-    prefilled++;
+    prefilledIds.push(moduleId);
   }
-  return { record: { ...target, priorAssessments: [...(target.priorAssessments ?? []), ...prior], instruments }, found: items.length, prefilled };
+  return { record: { ...target, priorAssessments: [...(target.priorAssessments ?? []), ...prior], instruments }, found: items.length, prefilled: prefilledIds.length, prefilledIds };
 }

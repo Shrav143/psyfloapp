@@ -12,6 +12,8 @@ import { useStore } from "@/store";
 import type { CaseEnv } from "./caseEnv";
 import { ExceptionActions } from "./ExceptionActions";
 import { NoAuthCard } from "./NoAuthCard";
+import { RecordCoverageCard } from "./coverage/RecordCoverageCard";
+import { RequirementsCard } from "./coverage/RequirementsCard";
 import { StepFooter } from "./StepFooter";
 import { stepPatchOf } from "./steps";
 import { useSaveDraft } from "./useSaveDraft";
@@ -21,9 +23,9 @@ import { foldWorkflow } from "./workflow/fold";
 /** The warnings the summary's own rows already say (Coverage, Benefits, Authorization, Provider), so the list under them does not repeat them. What to do about them is in "What you can do". */
 const SAID_IN_ROWS: ReadonlySet<VerificationException> = new Set<VerificationException>(["coverage_inactive", "payer_changed", "member_id_mismatch", "benefit_unconfirmed", "service_not_covered", "requirement_unknown", "provider_unresolved", "service_unavailable"]);
 
-/** Step 2, Eligibility & Benefits, from the shared verification module: the same record the Eligibility & Benefits page shows. Warnings never trap: each says what to do next,
-    and only coverage confirmed inactive with no documented exception stops the final send. */
-export function EligibilityStep({ draft, env }: { draft: CaseDraft; env: CaseEnv }) {
+/** Stage 2, Coverage & Requirements: what the record already knows about coverage, the check from the shared verification module (the same record the Eligibility & Benefits page shows), and what the policy layer says the
+    service needs for this payer and date. Warnings never trap: each says what to do next, and only coverage confirmed inactive with no documented exception stops the final send. */
+export function CoverageStep({ draft, env }: { draft: CaseDraft; env: CaseEnv }) {
   const patch = useStore((s) => s.patchCaseDraft);
   const refresh = useStore((s) => s.refreshVerification);
   const saveDraft = useSaveDraft(draft.id);
@@ -47,11 +49,12 @@ export function EligibilityStep({ draft, env }: { draft: CaseDraft; env: CaseEnv
 
   return (
     <div className="mx-auto flex w-full max-w-[960px] flex-col gap-5">
+      <RecordCoverageCard draft={draft} />
       {v.status === "needs_input" ? (
         <Card>
           <CardBody className="flex flex-wrap items-center justify-between gap-3">
             <span className="text-[14px]">Verify needs the payer, level of care, member ID and start date</span>
-            <Button size="sm" onClick={() => patch(draft.id, stepPatchOf("intake"))}>Open Intake</Button>
+            <Button size="sm" onClick={() => patch(draft.id, stepPatchOf("service"))}>Open Patient &amp; Service</Button>
           </CardBody>
         </Card>
       ) : running && !rec ? (
@@ -79,17 +82,19 @@ export function EligibilityStep({ draft, env }: { draft: CaseDraft; env: CaseEnv
         </>
       ) : null}
 
+      <RequirementsCard draft={draft} env={env} />
+
       <StepFooter
         actions={
           <>
-            <Button icon={ArrowLeft} onClick={() => patch(draft.id, stepPatchOf("intake"))}>
+            <Button icon={ArrowLeft} onClick={() => patch(draft.id, stepPatchOf("service"))}>
               Back
             </Button>
             <Button icon={Save} onClick={saveDraft}>
               Save as draft
             </Button>
             <Button variant="primary" trailing={ArrowRight} onClick={() => patch(draft.id, stepPatchOf("documentation"))}>
-              Continue to Clinical documentation
+              Continue to Clinical Documentation
             </Button>
           </>
         }

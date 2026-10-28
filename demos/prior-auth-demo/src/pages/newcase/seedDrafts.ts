@@ -17,7 +17,7 @@ export function blankDraft(over: Partial<CaseDraft> = {}): CaseDraft {
     saved: false,
     sent: false,
     step: 0,
-    phase: "intake",
+    phase: "service",
     kind: "initial",
     site: "A",
     patientId: null,

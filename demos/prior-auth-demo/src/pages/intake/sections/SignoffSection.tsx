@@ -9,6 +9,7 @@ import { stamp } from "@/lib/time";
 import { useStore } from "@/store";
 import { meOf } from "@/store/intake";
 import { SignOffDialog } from "../shared/SignOff";
+import { signOffAssessment } from "../workspace/actions";
 import { workspaceHref } from "../workspace/nav";
 import { AmendDialog } from "../workspace/signoff/AmendDialog";
 import { SignoffRows } from "../workspace/signoff/SignoffRows";
@@ -38,12 +39,6 @@ export function SignoffSection({ record, onConfigure }: { record: IntakeRecord; 
     else if (amending?.kind === "assessment") s.amendAssessment(record.id, reason);
     else if (amending?.moduleId) s.amendInstrument(record.id, amending.moduleId, reason);
   };
-  const sign = (signerId: string, rolePlay: boolean) => {
-    const s = useStore.getState();
-    s.startInstrument(record.id, OVERALL_MODULE);
-    s.signInstrument(record.id, OVERALL_MODULE, signerId, rolePlay);
-  };
-
   return (
     <div className="@container flex min-w-0 flex-col gap-4" data-section-view="signoff" data-signoff-state={so.state}>
       <Card>
@@ -96,7 +91,7 @@ export function SignoffSection({ record, onConfigure }: { record: IntakeRecord; 
         </Card>
       ) : null}
 
-      <SignOffDialog open={signing} onClose={() => setSigning(false)} record={record} title="Sign off the assessment" attestation={ATTESTATION} signLabel="Sign off" onSign={(who, rolePlay) => sign(who.id, rolePlay)} />
+      <SignOffDialog open={signing} onClose={() => setSigning(false)} record={record} title="Sign off the assessment" attestation={ATTESTATION} signLabel="Sign off" onSign={(who, rolePlay) => signOffAssessment(record.id, who.id, rolePlay)} />
       {amending ? <AmendDialog title={amending === "overall" ? "Amend the sign-off" : `Amend ${amending.label}`} onClose={() => setAmending(null)} onConfirm={amend} /> : null}
     </div>
   );

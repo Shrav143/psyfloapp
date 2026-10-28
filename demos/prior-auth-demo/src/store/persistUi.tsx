@@ -1,8 +1,12 @@
 import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { RotateCcw, Save } from "lucide-react";
 import { Button, Modal } from "@/components/ui";
 import { useEscape } from "@/components/ui/escape";
+import { sectionParam, type WorkspaceTarget } from "@/data/assess/nav";
+import type { IntakeRecord } from "@/data/intake/types";
 import { cn } from "@/lib/cn";
+import { paths } from "@/routes";
 import { useStore } from "./index";
 import { describeStatus, hasSavedChanges, resetDemoData, saveDraftNow, usePersistStatus, type SaveState } from "./persist";
 
@@ -111,4 +115,38 @@ export function SaveIndicator({ className }: { className?: string }) {
       <ResetDemoDataDialog open={resetting} onClose={() => setResetting(false)} />
     </div>
   );
+}
+
+/* ------------------------------------------------------------------ resume */
+
+/** Where "Resume" takes a person back to: the configuration wizard step they left unfinished, or the workspace section they were last in. */
+export function resumeHref(record: Pick<IntakeRecord, "id" | "progress">): string {
+  const p = record.progress;
+  if (p?.step) return paths.configure(record.id, p.step as "purpose" | "program" | "population" | "plan");
+  return paths.intakeRecord(record.id, p?.section && p.section !== "overview" ? p.section : undefined);
+}
+
+/** Remembers the section of the workspace that is open, and reopens the one a person left when the record is opened without a `?section=`.
+    Call it once in the workspace, with the section it shows. The section is stored on the record (`progress`), so it is saved with the rest. */
+export function useResume(record: IntakeRecord | undefined, target: WorkspaceTarget): void {
+  const [params, setParams] = useSearchParams();
+  const remember = useStore((s) => s.setLastSection);
+  const id = record?.id;
+  const saved = record?.progress?.section;
+  const key = sectionParam(target);
+  const hasSection = params.has("section");
+  const first = useRef<string | null>(null);
+  const resuming = useRef(false);
+  useEffect(() => {
+    if (!id || first.current === id) return;
+    first.current = id;
+    resuming.current = !hasSection && !!saved && saved !== "overview" && !params.has("panel");
+    if (resuming.current) setParams((p) => { const n = new URLSearchParams(p); n.set("section", saved as string); return n; }, { replace: true });
+  }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (!id) return;
+    if (resuming.current && !hasSection) return;
+    resuming.current = false;
+    remember(id, key);
+  }, [id, key, hasSection, remember]);
 }

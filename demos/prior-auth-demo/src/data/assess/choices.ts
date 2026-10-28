@@ -44,8 +44,10 @@ export function diffChoices(before: ModuleChoice[], after: ModuleChoice[]): Choi
   for (const m of after) {
     const p = was.get(m.id);
     const wasOn = p?.state === "active";
-    if (m.state === "active" && !wasOn && p) out.push({ id: m.id, what: p.by === "override" ? "restored" : "added" });
-    else if (m.state === "off" && wasOn) out.push({ id: m.id, what: m.by === "override" ? "override" : "removed" });
+    if (m.state === "active" && !wasOn) {
+      if (p?.by === "override") out.push({ id: m.id, what: "restored" });
+      else if (m.by === "clinician") out.push({ id: m.id, what: "added" });
+    } else if (m.state === "off" && wasOn) out.push({ id: m.id, what: m.by === "override" ? "override" : "removed" });
     else if (m.state === "off" && p?.state === "off" && m.by === "override" && p.by !== "override") out.push({ id: m.id, what: "override" });
   }
   return out;

@@ -5,7 +5,7 @@ import type { IntakeRecord } from "@/data/intake/types";
 import { VA_PLANS } from "@/data/va/plans";
 import { useStore } from "@/store";
 import type { FieldSectionKey } from "@/store/intake";
-import { isMissingValue } from "../queue/metrics";
+import { isMissingValue } from "./missing";
 
 interface Item {
   section: FieldSectionKey;

@@ -94,7 +94,7 @@ function columns(clock: number): Column<CoordRow>[] {
       ),
     },
     {
-      id: "item", label: "Item", width: 220, sort: (r) => r.title,
+      id: "item", label: "Item", width: 200, sort: (r) => r.title,
       render: (r) => (
         <>
           <div className="font-medium">{r.title}</div>
@@ -103,7 +103,7 @@ function columns(clock: number): Column<CoordRow>[] {
         </>
       ),
     },
-    { id: "status", label: "Status", width: 124, sort: (r) => r.status, render: (r) => <Pill tone={r.statusTone} className="whitespace-normal leading-tight">{r.status}</Pill> },
+    { id: "status", label: "Status", width: 124, sort: (r) => r.status, render: (r) => <Pill tone={r.statusTone} className="whitespace-normal! leading-tight">{r.status}</Pill> },
     { id: "step", label: "Next Step", width: 150, sort: (r) => r.step, render: (r) => r.step },
     {
       id: "due", label: "Due", width: 96, sort: (r) => r.due ?? Number.MAX_SAFE_INTEGER,
@@ -116,6 +116,6 @@ function columns(clock: number): Column<CoordRow>[] {
     },
     { id: "staff", label: "Assigned To", width: 96, sort: (r) => staffName(r.record.assignedTo), render: (r) => staffName(r.record.assignedTo) },
     { id: "updated", label: "Last Updated", width: 80, sort: (r) => r.updatedAt, render: (r) => <span title={stamp(r.updatedAt)} className="text-muted">{ago(r.updatedAt, clock)}</span> },
-    { id: "actions", label: "Actions", width: 200, hideLabel: true, render: (r) => <Actions row={r} /> },
+    { id: "actions", label: "Actions", width: 220, hideLabel: true, render: (r) => <Actions row={r} /> },
   ];
 }

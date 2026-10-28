@@ -1,4 +1,7 @@
-import { STAGE_LABEL, type Stage } from "@/data/workflow/types";
+import type { Stage } from "@/data/workflow/types";
+import { NEW_AUTH_STEPS } from "../steps";
 
-/** The engine keeps five stages; New Case shows four steps, with the agents' preparation inside Clinical documentation. A stage is named by the step it shows in. */
-export const caseStageLabel = (stage: Stage): string => (stage === "preparation" ? STAGE_LABEL.documentation : STAGE_LABEL[stage]);
+const NAME: Record<Stage, string> = { intake: NEW_AUTH_STEPS[0], eligibility: NEW_AUTH_STEPS[1], documentation: NEW_AUTH_STEPS[2], preparation: NEW_AUTH_STEPS[2], review: NEW_AUTH_STEPS[3] };
+
+/** The engine keeps five stages; New Authorization shows four, with the agents' preparation inside Clinical Documentation. A stage is named by the stage it shows in. */
+export const caseStageLabel = (stage: Stage): string => NAME[stage];
