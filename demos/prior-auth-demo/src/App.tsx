@@ -26,7 +26,6 @@ import CaseRoute from "@/pages/manager/CaseRoute";
 import ManagerRedirect from "@/pages/manager/ManagerRedirect";
 import NewCasePage from "@/pages/newcase/NewCasePage";
 import PayersPage from "@/pages/payers/PayersPage";
-import ReferralDetailPage from "@/pages/referrals/ReferralDetailPage";
 import SettingsPage from "@/pages/settings/SettingsPage";
 import { SearchX } from "lucide-react";
 
@@ -79,7 +78,7 @@ export default function App() {
           <Route path="/authorizations/intake" element={<KeepSearch to="/intake" />} />
           <Route path="/authorizations/intake/:id" element={<KeepSearch to="/intake" withId />} />
           <Route path="/authorizations/new" element={<NewCasePage />} />
-          <Route path="/authorizations/new/referral/:id" element={<ReferralDetailPage />} />
+          <Route path="/authorizations/new/referral/:id" element={<OldReferralLink />} />
           <Route path="/authorizations/new/:draftId" element={<NewCasePage />} />
           <Route path="/authorizations/eligibility" element={<EligibilityListPage />} />
           <Route path="/authorizations/eligibility/verify" element={<VerifyPage />} />

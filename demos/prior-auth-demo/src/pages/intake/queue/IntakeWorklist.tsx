@@ -60,7 +60,7 @@ export function IntakeWorklist({ records, scope }: { records: IntakeRecord[]; sc
       <Card className="min-w-0 overflow-hidden">
         <div className="flex flex-col gap-3 border-b border-line px-5 py-4">
           <h2 className="text-[18px] leading-tight font-semibold">{scope === "active" ? "Active intakes" : "Referral worklist"}</h2>
-          <FilterBar defs={defs} rows={universe} query={query} searchOf={searchTextOf} set={set} clear={clear} />
+          <FilterBar defs={defs} rows={universe} query={query} searchOf={searchTextOf} set={set} clear={clear} emptyShowsClear={rows.length === 0} />
           <div className="flex flex-wrap items-center gap-2 text-[13px]">
             <span className="text-muted" aria-live="polite">Showing {rows.length} of {universe.length}</span>
             {focus !== "all" ? (

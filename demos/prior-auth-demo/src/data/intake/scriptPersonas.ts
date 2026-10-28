@@ -209,7 +209,7 @@ const HT: Persona = {
   },
   mh: {
     history: "Depression, that's what they told me. Two weeks in the hospital this fall, my first time. No other stays.",
-    historyNote: "Told she has depression; one inpatient stay this fall, her first, and no others (H.T.). The chart documents the diagnosis; the scribe does not diagnose.",
+    historyNote: "Told she has depression; one inpatient stay this fall, her first, and no others (H.T.).",
     severity: "Most days now, and worst in the morning. Compared with last spring it's more days and heavier.",
     severityNote: "Symptoms on most days, worst in the morning; more frequent and heavier than last spring (H.T.).",
     recent: "Two weeks in the hospital after I stopped eating and couldn't get out of bed. I came home last week. No ER visits or crisis calls before this.",

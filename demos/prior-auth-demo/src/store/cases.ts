@@ -316,7 +316,10 @@ export const createCasesSlice: StateCreator<AppState, [], [], CasesSlice> = (set
     unlinkCaseIntake: (id) => {
       const d = find(id);
       if (!d?.intakeId || d.sent) return;
+      const intakeId = d.intakeId;
       change(id, (x) => ({ intakeId: undefined, serviceNote: undefined, documents: x.documents.filter((y) => !y.from) }));
+      /* The intake no longer points at a draft that let go of it. */
+      get().patchIntake(intakeId, (x) => (x.handoff.draftId === id ? { ...x, handoff: { status: "not_started" } } : x));
     },
 
     documentReason: (id, reason) => {

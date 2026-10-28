@@ -11,7 +11,7 @@ import type { Urgency } from "@/data/types";
 import { VA_PLANS } from "@/data/va/plans";
 import { REDESIGN_START } from "@/data/va/policy";
 import { serviceById, type VaServiceId } from "@/data/va/services";
-import { DAY, longDate } from "@/lib/time";
+import { longDate } from "@/lib/time";
 import { meOf } from "./intake";
 import type { AppState } from "./index";
 
@@ -229,10 +229,13 @@ export const createIntakeReferralSlice: StateCreator<AppState, [], [], IntakeRef
     /* ------------------------------------------------------------ fields */
     editIntakeReferralField: (id, section, key, value, state, source) => {
       const s = get();
+      const before = rec(id)?.[section][key]?.value;
       const me = meOf(s);
       const reviewed = state === "verified" ? { reviewedBy: me, reviewedAt: s.clock } : {};
       patch(id, (r) => {
-        let next = withField(r, section, key, { value, state, source: source ?? { kind: "staff", ref: "Entered by staff" }, at: s.clock, by: me, ...reviewed });
+        const was = r[section][key];
+        const history = was && was.value.trim() ? [...(was.history ?? []), { value: was.value, state: was.state, by: was.by, at: was.at }] : was?.history;
+        let next = withField(r, section, key, { value, state, source: source ?? { kind: "staff", ref: "Entered by staff" }, at: s.clock, by: me, ...reviewed, ...(history ? { history } : {}) });
         if (key === "dob") {
           const age = ageFromDob(value, s.clock);
           if (age !== null) next = { ...next, age };
@@ -243,7 +246,7 @@ export const createIntakeReferralSlice: StateCreator<AppState, [], [], IntakeRef
         }
         return next;
       });
-      audit(id, { actor: me, action: `Edited ${key}`, detail: value ? undefined : "Cleared" });
+      audit(id, { actor: me, action: `Edited ${key}`, detail: value ? (before ? `Was: ${before.length > 120 ? `${before.slice(0, 119)}…` : before}` : undefined) : "Cleared" });
     },
     confirmIntakeReferralFields: (id, keys) => {
       const s = get();

@@ -1,7 +1,7 @@
 import type { DocBlock } from "@/components/ui/DocumentSheet";
 import { ageFromDob } from "@/data/intake/referralFacts";
 import type { SampleExtract } from "@/data/intake/samples";
-import type { FieldMap, FieldState, FieldValue, IntakeDocument, IntakeRecord, ReferralMethod, SourceRef } from "@/data/intake/types";
+import type { FieldMap, FieldState, IntakeDocument, IntakeRecord, ReferralMethod, SourceRef } from "@/data/intake/types";
 import type { SiteId } from "@/data/sites";
 import type { BuiltInPayerId, Urgency } from "@/data/types";
 import { REDESIGN_START } from "@/data/va/policy";
@@ -90,11 +90,11 @@ export function buildDraftRecord(id: string, src: DraftSource, ctx: { clock: num
       state: typed ? "verified" : src.serviceBasis === "stated" ? asGiven : "ai_suggested", ...entered,
     };
   }
-  if (src.initials.trim()) maps.referral.person = { value: `${src.initials}${src.age !== null ? `, ${src.age}` : ""}`, state: typed ? "verified" : asGiven, at, by: typed ? ctx.me : "reader", source: ref(), confidence: "high", ...entered };
-  maps.referral.urgency = { value: URGENCY_LABEL[src.urgency], state: typed ? "verified" : "ai_suggested", at, by: typed ? ctx.me : "reader", source: reasonSource, confidence: "medium", ...entered };
-
   const dob = maps.profile.dob?.value;
   const age = (dob ? ageFromDob(dob, at) : null) ?? src.age;
+  if (src.initials.trim()) maps.referral.person = { value: `${src.initials}${age !== null ? `, ${age}` : ""}`, state: typed ? "verified" : asGiven, at, by: typed ? ctx.me : "reader", source: ref(), confidence: "high", ...entered };
+  maps.referral.urgency = { value: URGENCY_LABEL[src.urgency], state: typed ? "verified" : "ai_suggested", at, by: typed ? ctx.me : "reader", source: reasonSource, confidence: "medium", ...entered };
+
   return {
     id, site: src.site, createdAt: at, title: `${src.sourceOrg}: ${serviceById(src.serviceId).short}`, serviceId: src.serviceId, serviceDate: defaultServiceDate(src.serviceId, at),
     method: src.method, sourceOrg: src.sourceOrg, triage: "new", urgency: src.urgency, priority: src.urgency !== "routine", assignedTo: ctx.me, payerId: src.payerId, initials: src.initials, age,

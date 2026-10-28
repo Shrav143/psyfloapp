@@ -7,7 +7,7 @@ import { VA_PLANS } from "@/data/va/plans";
 import type { VaServiceId } from "@/data/va/services";
 import { useStore } from "@/store";
 import { meOf } from "@/store/intake";
-import { buildDraftRecord, type Origin, type ServiceBasis } from "./buildDraft";
+import { buildDraftRecord, type Origin } from "./buildDraft";
 import { normInitials } from "./initials";
 import type { ParsedPaste } from "./pasteParse";
 

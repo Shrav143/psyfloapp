@@ -16,6 +16,7 @@ import { ModuleFooter } from "./ModuleFooter";
 import { ModuleHeader } from "./ModuleHeader";
 import { ScoreEntryCard } from "./ScoreEntryCard";
 import { VersionDrawer } from "./VersionDrawer";
+import { PriorAssessmentsCard } from "./PriorAssessments";
 import { filledOf, moduleContext, sectionFields } from "./model";
 import { useFindEvidence } from "./useFindEvidence";
 
@@ -136,6 +137,7 @@ export function SchemaModule({ record, moduleId }: { record: IntakeRecord; modul
   return (
     <div ref={wrap} className="space-y-4" data-instrument={moduleId}>
       <ModuleHeader record={record} moduleId={moduleId} ctx={ctx} plan={plan} inst={inst} completion={completion} finding={find.running} onFindEvidence={find.run} onHistory={() => setHistory(true)} />
+      <PriorAssessmentsCard record={record} moduleId={moduleId} />
 
       {schema.scoreEntry ? <ScoreEntryCard record={record} moduleId={moduleId} entry={schema.scoreEntry} inst={inst} locked={locked} /> : null}
 

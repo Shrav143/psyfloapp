@@ -12,6 +12,8 @@ import { snapshotOf } from "./versions";
    from. The earlier version stays in the new record's history and in the old record untouched. A score or level-of-care result is never copied: the
    clinician enters the result of the instrument they administer now. */
 
+const CARRIED_NOTE = "Carried forward from";
+
 export interface SignedVersion {
   version: number;
   signedBy?: string;
@@ -32,6 +34,8 @@ export function latestSigned(inst: InstrumentInstance | undefined): SignedVersio
   if (inst.status === "signed" && inst.signedAt !== undefined) return { version: inst.version, signedBy: inst.signedBy, signedAt: inst.signedAt, snapshot: snapshotOf(inst) };
   for (let i = inst.history.length - 1; i >= 0; i--) {
     const h = inst.history[i];
+    /* A version carried in from another record is a copy; the record it came from is where it was signed. */
+    if (h.note?.startsWith(CARRIED_NOTE)) continue;
     if (h.signedAt !== undefined && h.signedBy) return { version: h.version, signedBy: h.signedBy, signedAt: h.signedAt, snapshot: h.fields };
   }
   return null;
@@ -95,7 +99,7 @@ export function carryForward(target: IntakeRecord, source: IntakeRecord, inPlan:
     if (!inPlan.includes(moduleId) || hasInstrumentWork(target, moduleId)) continue;
     instruments[moduleId] = {
       moduleId, version: signed.version + 1, status: "not_started", fields: carriedFields(source.id, signed, at, by), notes: "", evidence: [], updatedAt: at,
-      history: [{ version: signed.version, status: "superseded", fields: signed.snapshot, signedBy: signed.signedBy, signedAt: signed.signedAt, supersededAt: at, note: `Carried forward from ${source.id} into ${target.id}` }],
+      history: [{ version: signed.version, status: "superseded", fields: signed.snapshot, signedBy: signed.signedBy, signedAt: signed.signedAt, supersededAt: at, note: `${CARRIED_NOTE} ${source.id} into ${target.id}` }],
     };
     prefilledIds.push(moduleId);
   }

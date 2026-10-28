@@ -319,7 +319,7 @@ export const REFERRAL_SAMPLES: ReferralSample[] = [
     initials: "G.N.", age: 47, memberLast4: "3062", urgency: "routine", tags: ["Existing client"], dated: "10/20/2026", serviceBasis: "inferred",
     blocks: [
       { kind: "letterhead", org: "Psyflo demo clinic", sub: "Chart summary from Meridian EHR (fictional) · simulated EMR import" },
-      { kind: "meta", items: [["Patient", "G.N., 47"], ["Date of birth", "06/02/1979"], ["Order", "10/20/2026"]] },
+      { kind: "meta", items: [["Patient", "G.N., 47"], ["Date of birth", "08/30/1979"], ["Order", "10/20/2026"]] },
       { kind: "p", id: "order", text: "Receives psychosocial rehabilitation three days a week. That service ends June 30, 2027. Please evaluate for community support services and clubhouse before then." },
       { kind: "list", id: "meds", items: ["Lurasidone 40 mg daily", "Metformin 500 mg twice daily"] },
       { kind: "table", id: "demo", head: ["Item", "On file"], rows: [["Plan", "Virginia Medicaid fee-for-service"], ["Member ID", "ending 3062"], ["Phone", "(804) 555-0119"], ["Language", "English"]] },
@@ -330,7 +330,7 @@ export const REFERRAL_SAMPLES: ReferralSample[] = [
       { section: "referral", field: "referrerContact", value: "Internal extension 0152", block: "sig", confidence: "high" },
       { section: "referral", field: "reason", value: "Receives psychosocial rehabilitation, which ends June 30, 2027; asks for an evaluation for community support services and clubhouse before then.", block: "order", confidence: "high" },
       { section: "referral", field: "previousServices", value: "Psychosocial rehabilitation three days a week", block: "order", confidence: "high" },
-      { section: "profile", field: "dob", value: "1979-06-02", block: "order", quote: "Date of birth 06/02/1979", confidence: "high" },
+      { section: "profile", field: "dob", value: "1979-08-30", block: "order", quote: "Date of birth 08/30/1979", confidence: "high" },
       { section: "profile", field: "medications", value: "Lurasidone 40 mg daily; metformin 500 mg twice daily", block: "meds", confidence: "high" },
       { section: "profile", field: "phone", value: "(804) 555-0119", block: "demo", confidence: "high" },
       { section: "profile", field: "language", value: "English", block: "demo", confidence: "high" },

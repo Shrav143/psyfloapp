@@ -70,6 +70,8 @@ export interface FieldValue {
   reviewedAt?: number;
   /** Set when two sources disagree about this value: what they say and what a person must confirm. */
   conflict?: string;
+  /** The values this field held before a person changed it, oldest first. Nothing a source said is overwritten without a trace. */
+  history?: { value: string; state: FieldState; by: string; at: number }[];
 }
 export type FieldMap = Record<string, FieldValue>;
 

@@ -76,7 +76,7 @@ export function SummaryCard({ record }: { record: IntakeRecord }) {
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-[13px] font-semibold text-ink">Written summary</span>
-              {sum ? (sum.ai ? <Pill tone="mid">AI suggested draft</Pill> : <Pill tone="neutral">Edited by a person</Pill>) : null}
+              {sum ? (sum.ai ? (sum.confirmedBy ? <Pill tone="neutral">Started as an AI suggested draft</Pill> : <Pill tone="mid">AI suggested draft</Pill>) : <Pill tone="neutral">Edited by a person</Pill>) : null}
               {sum ? <span className="text-[12px] text-muted">{stamp(sum.draftedAt)}</span> : null}
             </div>
             {!locked ? <Button size="sm" icon={Sparkles} loading={running} onClick={draft}>{sum ? "Draft it again" : "Draft a summary"}</Button> : null}

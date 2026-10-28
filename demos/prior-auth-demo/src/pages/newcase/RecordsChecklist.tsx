@@ -3,7 +3,6 @@ import { Card, ChecklistGroup } from "@/components/ui";
 import type { CaseDraft, DocSlotId } from "@/data/cases";
 import { uid } from "@/lib/format";
 import { useStore } from "@/store";
-import { referralPrefill } from "@/store/referrals";
 import { DocPreviewDrawer } from "./DocPreviewDrawer";
 import { DocRow } from "./DocRow";
 import { makeDocument } from "./documents";
@@ -13,7 +12,7 @@ import { buildChecklist, isDocRow, slotOf, tally, type Group, type RowId } from 
 
 /** The checklist of Clinical documentation in one card: the clinical summary and the documents. Only one editor is open at a time. `rows` can leave rows out of a group. */
 export function RecordsChecklist({ draft, groups: ids, rows: keep, header }: { draft: CaseDraft; groups: Group["id"][]; rows?: readonly string[]; /** Sits at the top of the card: the readiness line. */ header?: ReactNode }) {
-  const referrals = useStore((s) => s.referrals);
+  const intake = useStore((s) => s.intakes.find((r) => r.id === draft.intakeId));
   const put = useStore((s) => s.putCaseDocs);
   const [open, setOpen] = useState<RowId | null>(null);
   const [preview, setPreview] = useState<DocSlotId | null>(null);
@@ -21,10 +20,9 @@ export function RecordsChecklist({ draft, groups: ids, rows: keep, header }: { d
   const pickFor = useRef<{ slot: DocSlotId; replace: boolean } | null>(null);
   const ctx = usePayerContext(draft);
 
-  const referral = useMemo(() => (draft.referralId ? referralPrefill(useStore.getState(), draft.referralId) : null), [referrals, draft.referralId]);
   const groups = useMemo(
-    () => buildChecklist(draft, referral, ctx).filter((g) => ids.includes(g.id)).map((g) => (keep ? { ...g, rows: g.rows.filter((r) => keep.includes(r.id)) } : g)),
-    [draft, referral, ctx, ids, keep],
+    () => buildChecklist(draft, intake, ctx).filter((g) => ids.includes(g.id)).map((g) => (keep ? { ...g, rows: g.rows.filter((r) => keep.includes(r.id)) } : g)),
+    [draft, intake, ctx, ids, keep],
   );
   const toggle = (id: RowId) => setOpen((cur) => (cur === id ? null : id));
 

@@ -6,7 +6,7 @@ import { countedOptions, type FacetDef, type Query } from "./facets";
 
 /** The filter bar of a worklist: the main filters in a row, the rest in a More filters popover, and every active filter as a chip you can remove.
     Each choice shows how many rows it would leave. */
-export function FilterBar<R>({ defs, rows, query, searchOf, set, clear, hide = [] }: {
+export function FilterBar<R>({ defs, rows, query, searchOf, set, clear, hide = [], emptyShowsClear = false }: {
   defs: readonly FacetDef<R>[];
   rows: readonly R[];
   query: Query;
@@ -15,6 +15,8 @@ export function FilterBar<R>({ defs, rows, query, searchOf, set, clear, hide = [
   clear: () => void;
   /** Filters this page does not offer. */
   hide?: string[];
+  /** The list below is empty and its empty state has its own Clear filters, so this bar does not repeat it. */
+  emptyShowsClear?: boolean;
 }) {
   const shown = defs.filter((d) => !hide.includes(d.id));
   const main = shown.filter((d) => d.primary);
@@ -60,7 +62,7 @@ export function FilterBar<R>({ defs, rows, query, searchOf, set, clear, hide = [
               <X size={13} className="ico" />
             </button>
           ))}
-          <Button size="sm" variant="ghost" onClick={clear}>Clear filters</Button>
+          {emptyShowsClear ? null : <Button size="sm" variant="ghost" onClick={clear}>Clear filters</Button>}
         </div>
       ) : null}
     </div>

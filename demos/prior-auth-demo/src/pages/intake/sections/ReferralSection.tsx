@@ -42,18 +42,15 @@ export function ReferralSection({ record }: { record: IntakeRecord }) {
   return (
     <div className="@container flex min-w-0 flex-col gap-5" data-referral-section>
       {record.method === "phone" ? <PhoneChecklist record={record} /> : null}
-      <Card>
-        <CardHeader
-          title="Referral"
-          subtitle={`${record.id}${record.legacyReferralId ? ` · from ${record.legacyReferralId}` : ""} · ${record.documents.length} document${record.documents.length === 1 ? "" : "s"}`}
-          right={
-            <>
-              {record.documents.length ? <Button size="sm" icon={Columns2} onClick={() => setOpen(true)} data-wide-review>Review beside the document</Button> : null}
-              <FlagSafety record={record} />
-            </>
-          }
-        />
-      </Card>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="text-[13px] text-muted">
+          {record.id}{record.legacyReferralId ? ` · from ${record.legacyReferralId}` : ""} · {record.documents.length} document{record.documents.length === 1 ? "" : "s"}
+        </p>
+        <div className="flex flex-wrap items-center gap-2">
+          {record.documents.length ? <Button size="sm" icon={Columns2} onClick={() => setOpen(true)} data-wide-review>Review beside the document</Button> : null}
+          <FlagSafety record={record} />
+        </div>
+      </div>
       {pending ? null : <DecisionSummary record={record} />}
       <ReaderStatus record={record} />
       <Waiting record={record} />

@@ -48,7 +48,7 @@ export function AssessmentsWorklist({ records }: { records: IntakeRecord[] }) {
       <Card className="min-w-0 overflow-hidden">
         <div className="flex flex-col gap-3 border-b border-line px-5 py-4">
           <h2 className="text-[18px] leading-tight font-semibold">Assessments</h2>
-          <FilterBar defs={defs} rows={all} query={query} searchOf={assessmentSearchText} set={set} clear={clear} />
+          <FilterBar defs={defs} rows={all} query={query} searchOf={assessmentSearchText} set={set} clear={clear} emptyShowsClear={rows.length === 0} />
           <span className="text-[13px] text-muted" aria-live="polite">Showing {rows.length} of {all.length}</span>
         </div>
         <Worklist

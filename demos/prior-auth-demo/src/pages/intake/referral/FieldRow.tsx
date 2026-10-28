@@ -37,6 +37,7 @@ export function FieldRow({ record, section, field, active, onSpot, always }: {
   const [value, setValue] = useState(fv?.value ?? "");
   const [state, setState] = useState<FieldState>("verified");
   const [age, setAge] = useState("");
+  const [past, setPast] = useState(false);
   if (!spec) return null;
   const empty = !fv || !fv.value.trim() || fv.state === "not_collected";
   if (empty && !always && !editing) return null;
@@ -136,6 +137,16 @@ export function FieldRow({ record, section, field, active, onSpot, always }: {
           {fv.confidence && fv.state !== "verified" ? <span>Confidence: {fv.confidence}</span> : null}
           {fv.by !== "reader" && fv.by !== "verify" && fv.by !== "system" ? <span>Set by {actorName(fv.by)} · {stamp(fv.at)}</span> : null}
           {fv.reviewedBy && fv.reviewedBy !== "system" ? <span className="text-good-ink">Reviewed by {actorName(fv.reviewedBy)}</span> : null}
+        </div>
+      ) : null}
+      {fv?.history?.length && !editing ? (
+        <div className="mt-1.5">
+          <button type="button" aria-expanded={past} onClick={() => setPast((p) => !p)} className="text-[12px] font-semibold text-forest hover:underline">{past ? "Hide earlier values" : `Earlier values (${fv.history.length})`}</button>
+          {past ? (
+            <ul className="mt-1 flex flex-col gap-1 rounded-lg bg-tile px-3 py-2 text-[12px] text-ink2">
+              {fv.history.slice().reverse().map((h) => <li key={`${h.at}-${h.value}`}>{h.value} <span className="text-muted">· {REFERRAL_STATE_LABEL[h.state]} · {actorName(h.by)} · {stamp(h.at)}</span></li>)}
+            </ul>
+          ) : null}
         </div>
       ) : null}
       {fv?.conflict && !editing ? <p className="mt-2 rounded-lg bg-risk-bg px-2.5 py-1.5 text-[12px] text-risk-ink">Conflict: {fv.conflict}</p> : null}

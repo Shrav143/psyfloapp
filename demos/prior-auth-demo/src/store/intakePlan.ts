@@ -89,7 +89,7 @@ const popWord = (p: Population): string => POPULATION_LABEL[p].split(" (")[0].to
 const lower = (t: string): string => t.charAt(0).toLowerCase() + t.slice(1);
 const fv = (value: string, state: FieldValue["state"], by: string, at: number, ref: string): FieldValue => ({ value, state, at, by, source: { kind: "staff", ref } });
 
-export const createIntakePlanSlice: StateCreator<AppState, [], [], IntakePlanSlice> = (set, get) => {
+export const createIntakePlanSlice: StateCreator<AppState, [], [], IntakePlanSlice> = (_set, get) => {
   const patch = (id: string, fn: (r: IntakeRecord) => IntakeRecord) => get().patchIntake(id, fn);
   const withConfig = (r: IntakeRecord, fn: (c: IntakeConfig) => IntakeConfig): IntakeRecord => (r.config ? { ...r, config: fn(r.config) } : r);
   const note = (id: string, what: string, detail?: string, ai = false) => {

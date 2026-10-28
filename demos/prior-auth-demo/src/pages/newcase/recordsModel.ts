@@ -2,7 +2,8 @@
 import type { CheckState } from "@/components/ui";
 import type { CaseDraft, DocSlotId, DraftDocument } from "@/data/cases";
 import { payerById } from "@/data/seed";
-import { PROGRAM_LABEL, type NewCasePrefill } from "@/data/types";
+import type { IntakeRecord } from "@/data/intake/types";
+import { PROGRAM_LABEL } from "@/data/types";
 import { plural } from "@/lib/format";
 import { authType } from "./authType";
 import { docEntries, findingText, isOpen, isReferralDoc, requiredFirst, slotLabel, type DocEntry } from "./documents";
@@ -81,11 +82,11 @@ function documentGroup(d: CaseDraft, quiet: boolean, ctx: PayerContext): Group {
   return { id: "documents", title: d.payerId ? `Documents · ${payerById(d.payerId).shortName}` : "Documents", note, rows };
 }
 
-/** The rows of Clinical documentation, in two groups: the clinical summary (diagnoses and the reason) and the documents. `referral` is what the attached referral supplied, for the "from referral" notes. */
-export function buildChecklist(d: CaseDraft, referral: NewCasePrefill | null, ctx: PayerContext): Group[] {
+/** The rows of Clinical documentation, in two groups: the clinical summary (diagnoses and the reason) and the documents. `intake` is the record the draft was read from, for the "from the intake record" notes. */
+export function buildChecklist(d: CaseDraft, intake: IntakeRecord | undefined, ctx: PayerContext): Group[] {
   const quiet = isBlank(d);
   const chart = EMR_CHARTS.find((c) => c.id === d.emrChart);
-  const note = (key: FieldKey): string => sourceNote(d, key, referral, chart);
+  const note = (key: FieldKey): string => sourceNote(d, key, intake, chart);
   const maybe = (id: FieldId, label: string): Row => ({ id, label, state: "optional", detail: "", tag: REC });
   const diagnoses: Row = d.diagnoses.length
     ? { id: "diagnoses", label: "Diagnoses (ICD-10)", state: "done", detail: join(d.diagnoses.map((x) => `${x.code} ${x.label.split(",")[0]}`).join(" · "), note("diagnoses")), tag: REC }

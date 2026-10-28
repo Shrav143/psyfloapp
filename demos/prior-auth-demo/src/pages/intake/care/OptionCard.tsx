@@ -82,6 +82,7 @@ export function OptionCard({ record, view, now, locked, onRefer }: { record: Int
             <span className="flex flex-wrap items-center gap-1.5">{view.requirement.text}<Pill tone={REQ_TONE[view.requirement.status]}>{REQ_LABEL[view.requirement.status]}</Pill></span>
             {view.requirement.rules[0] ? <SourceAnchor rule={view.requirement.rules[0]} /> : null}
           </Item>
+          <Item label="Applicable criteria">{view.criteria}</Item>
           <Item label="Clinical review">{pw.status === "selected" ? "Selected by a clinician" : pw.status === "under_review" ? "Considered; a clinician selects or sets it aside" : "Not yet considered"}</Item>
         </dl>
       ) : null}

@@ -100,7 +100,7 @@ export function carryInfoOf(intakes: IntakeRecord[]): CarryInfo {
 export const carrySentence = (c: CarryInfo): string =>
   c.source && c.lastSigned !== null
     ? `${c.signed} signed assessment${c.signed === 1 ? "" : "s"} from ${c.source.id}, last signed ${dayText(c.lastSigned)}, will be carried forward as a new version. Each value is marked for confirmation. The earlier version is kept.`
-    : "No signed assessment for this person was found in Psyflo, so nothing is carried forward. Start from a blank assessment.";
+    : "A previous assessment is carried forward as a new version once it is signed. None was found for this person, so you start from a blank assessment.";
 
 export const NO_EPISODE: EpisodeRef = { key: "none", patientId: null, episodeId: null, fromIntakeId: null, label: "No episode on file" };
 

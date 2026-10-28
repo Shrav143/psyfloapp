@@ -5,7 +5,7 @@ import { Banner, Button, Card, CardBody, Crumbs, EmptyState, Page, PageHeader } 
 import { PURPOSES } from "@/data/assess/purposes";
 import type { PurposeId } from "@/data/assess/types";
 import { staffOf } from "@/data/intake/seed";
-import type { IntakeRecord } from "@/data/intake/types";
+import { TRIAGE_LABEL, type IntakeRecord } from "@/data/intake/types";
 import { vaPlanOf } from "@/data/va/plans";
 import { clockTime, toDate } from "@/lib/time";
 import { useScope } from "@/lib/scope";
@@ -59,6 +59,9 @@ function Loaded({ record }: { record: IntakeRecord }) {
     <Page>
       <Crumbs items={[{ label: "Referrals & Intake", to: paths.referralQueue() }, { label: record.id, to: paths.intakeRecord(record.id) }, { label: "Configure" }]} />
       <PageHeader title={record.config ? "Change the intake configuration" : "Configure the intake"} sub={sub} actions={<Link to={paths.intakeRecord(record.id)} className="text-[13px] font-semibold text-forest hover:underline">Back to the intake</Link>} />
+      {["redirected", "declined", "closed"].includes(record.triage) ? (
+        <Banner tone="mid" title={`This referral is ${TRIAGE_LABEL[record.triage].toLowerCase()}`}>Configuring the intake does not reopen it. Change the decision on the referral first.</Banner>
+      ) : null}
       {start.from === "draft" ? (
         <Banner tone="good" title="Resumed from your saved draft" action={<Button size="sm" onClick={() => discard(record.id)}>Discard draft</Button>}>
           Saved {start.savedAt !== undefined ? clockTime(toDate(start.savedAt)) : ""} by {savedBy}. Nothing is active until you start the assessment.

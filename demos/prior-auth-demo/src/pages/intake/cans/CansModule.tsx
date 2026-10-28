@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { ClipboardPlus, Settings2 } from "lucide-react";
 import { Banner, Button, Card, CardBody, Chip, UnderlineTabs } from "@/components/ui";
 import type { IntakeRecord } from "@/data/intake/types";
+import { longDate } from "@/lib/time";
 import { useStore } from "@/store";
 import { useIntakeNow } from "../lib/policyNow";
 import { PriorAssessmentsCard } from "../instruments/PriorAssessments";
@@ -49,6 +50,11 @@ export function CansModule({ record }: { record: IntakeRecord }) {
             <Button variant="primary" icon={ClipboardPlus} onClick={() => start(record.id)}>Start the CANS record</Button>
           </CardBody>
         </Card>
+      ) : null}
+      {active && cans?.carriedFrom && cans.status !== "signed" ? (
+        <Banner tone="mid" title={`Carried forward from ${longDate(cans.carriedFrom.date)}, needs review`}>
+          From {cans.carriedFrom.provider}. Evidence statements and the narrative came across as a draft; no rating was carried. Nothing is signed.
+        </Banner>
       ) : null}
       {active && cans ? (
         <>

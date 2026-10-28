@@ -40,7 +40,8 @@ export const stepPatch = (i: number): Pick<CaseDraft, "step" | "phase"> => PATCH
 /** Clinical Documentation, opened on the agents' section. */
 export const preparationPatch: Pick<CaseDraft, "step" | "phase"> = { step: 1, phase: "records" };
 
-export const stepPatchOf = (id: StepId): Pick<CaseDraft, "step" | "phase"> => PATCH[id];
+/** What opening a stage changes in the draft. The round 9 names (intake, referral, eligibility) still work, for pages/referrals, which the lead removes. */
+export const stepPatchOf = (id: StepId | "intake" | "referral" | "eligibility"): Pick<CaseDraft, "step" | "phase"> => PATCH[stepIdOf(id) ?? "service"];
 
 /** The stage of the payer workflow engine (it keeps five) that the draft is at: Clinical Documentation is the documentation stage until the agents start, then preparation. */
 export const engineStage = (d: Pick<CaseDraft, "step" | "phase"> & { agentsStarted: boolean }): Stage => {

@@ -133,7 +133,7 @@ export const createIntakeSlice: StateCreator<AppState, [], [], IntakeSlice> = (s
     raiseSafety: (id, alert) => {
       patch(id, (r) => ({ ...r, safety: { ...alert, raisedAt: get().clock, status: "open" }, priority: true }));
       audit(id, { actor: alert.raisedBy, action: "Raised a safety alert for human review", detail: alert.text, ai: alert.raisedBy !== meOf(get()) });
-      get().notify({ agent: "sentinel", title: "Safety alert needs a clinician", body: `${id}: ${alert.text.slice(0, 120)}`, to: `/authorizations/intake/${id}`, tone: "risk" });
+      get().notify({ agent: "sentinel", title: "Safety alert needs a clinician", body: `${id}: ${alert.text.slice(0, 120)}`, to: `/intake/${id}`, tone: "risk" });
     },
     resolveSafety: (id, action, note) => {
       const s = get();

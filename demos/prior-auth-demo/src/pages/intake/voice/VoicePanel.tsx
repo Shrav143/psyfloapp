@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { AudioLines, FastForward, Phone, PhoneForwarded, Save, X } from "lucide-react";
 import { Banner, Button, Card, CardBody, Modal, Pill } from "@/components/ui";
 import { useEscape } from "@/components/ui/escape";
-import type { IntakeRecord } from "@/data/intake/types";
+import { SECTION_LABEL, type IntakeRecord } from "@/data/intake/types";
 import { VOICE_ROLE } from "@/data/intake/scripts";
 import { staffOf } from "@/data/intake/seed";
 import type { Tone } from "@/data/types";
@@ -71,9 +71,11 @@ function VoicePanelView({ record, onClose }: { record: IntakeRecord; onClose: ()
   const collected = v?.collected ?? [];
   const unconfirmed = collected.filter((c) => !v?.confirmed?.includes(c.id) && !v?.corrected?.includes(c.id)).length;
   const canSave = !!v && (status === "confirm" ? unconfirmed === 0 : status === "transferred" || status === "escalated") && status !== "saved";
+  /* Where what was collected waits: the sections the proposals belong to, in the words the record uses. */
+  const waitingIn = [...new Set(collected.map((c) => SECTION_LABEL[c.section]))].join(", ") || "their sections";
   const save = () => {
     const count = st.voiceSave(record.id);
-    st.toast({ title: "Draft saved for staff review", body: `${count} suggestions wait in Referral, Patient profile and Insurance. Nothing was written as verified.`, tone: "good" });
+    st.toast({ title: "Draft saved for staff review", body: `${count} suggestions wait in ${waitingIn}. Nothing was written as verified.`, tone: "good" });
   };
   const runner = staffOf(v?.coordinator ?? me);
   /* A new voice intake may have no initials yet: it is then a new caller, never "Caller Caller". */
@@ -126,7 +128,7 @@ function VoicePanelView({ record, onClose }: { record: IntakeRecord; onClose: ()
         {status === "saved" ? (
           <Banner tone="good" title="Draft saved for staff review" className="mb-3"
             action={<Button size="sm" onClick={() => { onClose(); nav(paths.intakeRecord(record.id, "profile")); }}>Review in Patient profile</Button>}>
-            {collected.length} suggestions, each linked to the call transcript, wait in Referral, Patient profile and Insurance. Nothing was written as verified.
+            {collected.length} suggestions, each linked to the call transcript, wait in {waitingIn}. Nothing was written as verified.
           </Banner>
         ) : null}
 

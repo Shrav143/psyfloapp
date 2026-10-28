@@ -1,9 +1,16 @@
-import { useRef, type KeyboardEvent, type ReactNode } from "react";
+import { useLayoutEffect, useRef, type KeyboardEvent, type ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
-/** A group of choice cards that behaves as one radio group: Tab enters it, the arrow keys move between the cards and choose, Space or Enter chooses. */
+/** A group of choice cards that behaves as one radio group: Tab enters it once (on the chosen card, or the first), the arrow keys move between the cards and
+    choose, Space or Enter chooses. */
 export function OptionGroup({ label, className, children }: { label: string; className?: string; children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
+  /* One tab stop for the group. Cards are plain buttons, so the stop is set on the elements after each render. */
+  useLayoutEffect(() => {
+    const radios = [...(ref.current?.querySelectorAll<HTMLButtonElement>('[role="radio"]') ?? [])];
+    const stop = radios.find((r) => r.getAttribute("aria-checked") === "true") ?? radios.find((r) => r.getAttribute("aria-disabled") !== "true");
+    for (const r of radios) r.tabIndex = r === stop ? 0 : -1;
+  });
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     const next = e.key === "ArrowDown" || e.key === "ArrowRight" ? 1 : e.key === "ArrowUp" || e.key === "ArrowLeft" ? -1 : 0;
     if (!next || !ref.current) return;

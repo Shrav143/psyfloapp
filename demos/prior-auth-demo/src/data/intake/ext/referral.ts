@@ -103,8 +103,6 @@ export const extendReferral = (records: IntakeRecord[]): IntakeRecord[] =>
       case "IN-3112": return waiting(r, "Need the residential discharge summary and the current buprenorphine dose.", "the residential discharge summary and the current buprenorphine dose", 1 + 4 / 24);
       case "IN-3117": return waiting(r, "Need the autism diagnostic evaluation report.", "the diagnostic evaluation report", 2);
       case "IN-3121": return schoolTdt(r);
-      /* An existing client: the date of birth lets a new referral for the same person be recognized as a duplicate. */
-      case "IN-3122": return { ...r, profile: { ...r.profile, dob: { value: "1979-06-02", state: "verified", at: r.createdAt, by: "jp", reviewedBy: "jp", reviewedAt: r.createdAt, source: { kind: "staff", ref: "Existing client record" } } } };
       /* An accepted referral whose notice to the referrer is still a draft. */
       case "IN-3110":
         return decided(r, { kind: "accepted", at: r.createdAt + 2 * HOUR, by: r.assignedTo }, { subject: "Referral accepted for J.B., 36", body: "Hello Valley Withdrawal Center (fictional),\n\nThank you for referring J.B., 36 for ARTS residential. We accepted the referral for assessment. Our team will contact the person to arrange the next step.\n\nThis message has no clinical details.\n\nMorgan Lee, Intake coordinator\nPsyflo demo clinic intake (fictional)", channel: "Fax" });

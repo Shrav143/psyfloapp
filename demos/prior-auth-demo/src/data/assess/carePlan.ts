@@ -213,6 +213,16 @@ export function availabilityOf(serviceId: VaServiceId | "external", date: number
   return { ok: false, text: s.status === "redesign" ? "Not available before July 1, 2027" : "Not available in this policy period: ended June 30, 2027" };
 }
 
+/** What the demo can say about the criteria that apply to a service. The licensed criteria are never loaded; a clinician confirms the level from names only. */
+export function criteriaNote(serviceId: VaServiceId | "external"): string {
+  if (serviceId === "external") return "Set by the receiving program. No criteria are loaded here.";
+  const s = serviceById(serviceId);
+  if (s.track === "sud") return "ASAM criteria: the licensed criteria are not loaded. A clinician confirms the level from names only.";
+  if (serviceId === "mh-iop" || serviceId === "mh-php" || serviceId === "mh-res" || serviceId === "mh-inpt" || serviceId === "prtf") return "Level-of-care criteria (LOCUS or CALOCUS-CASII): the licensed criteria are not loaded. A clinician confirms the level from names only.";
+  if (s.group === "redesign" || serviceId === "iih" || serviceId === "tdt" || serviceId === "mhss" || serviceId === "psr") return "CANS Lifetime and Level of Need: the official items and the model are not configured. A clinician records the result.";
+  return "No criteria are configured for this service. Psyflo applies none.";
+}
+
 export interface OptionEvidence { label: string; module?: ModuleId; source?: SourceRef; signed: boolean }
 export interface OptionView {
   pw: ServiceRecommendation;
@@ -221,6 +231,8 @@ export interface OptionView {
   evidence: OptionEvidence[];
   missing: string[];
   requirement: RequirementState;
+  /** What is known about the criteria that apply (the licensed ones are not loaded). */
+  criteria: string;
   /** The clinician has the option under review (or selected it). */
   considered: boolean;
   /** The referral asked for this service. */
@@ -260,7 +272,7 @@ export function optionViews(r: IntakeRecord, now: number): OptionView[] {
     if (availability.ok === false) missing.push(availability.text);
     return {
       pw, name: sid === "external" ? pw.externalLabel ?? "External program" : serviceById(sid).label, availability, evidence, missing: [...new Set(missing)],
-      requirement: requirementFor(sid, r, date), considered: pw.status === "under_review" || pw.status === "selected", requested: sid === requestedId, selected: sid === selectedId && pw.status === "selected",
+      requirement: requirementFor(sid, r, date), criteria: criteriaNote(sid), considered: pw.status === "under_review" || pw.status === "selected", requested: sid === requestedId, selected: sid === selectedId && pw.status === "selected",
     };
   });
 }
