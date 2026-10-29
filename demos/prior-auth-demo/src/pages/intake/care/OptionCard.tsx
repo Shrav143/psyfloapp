@@ -112,8 +112,8 @@ export function OptionCard({ record, view, now, locked, onRefer }: { record: Int
         {pw.status !== "not_selected" ? <Checkbox checked={view.considered} disabled={locked || pw.status === "selected"} onChange={(v) => consider(record.id, pw.id, v)} label="Considered by the clinician" /> : null}
         {pw.status !== "selected" && pw.status !== "not_selected" ? <Button size="sm" variant="primary" icon={CircleCheck} disabled={locked || retired} title={retired ? NOT_AVAILABLE_REASON : locked ? "Revise the care plan to change the service" : undefined} onClick={() => setPanel(true)}>Select this service</Button> : null}
         {retired && pw.status !== "selected" && pw.status !== "not_selected" ? <span className="text-[12px] font-medium text-mid-ink" data-testid="option-unavailable">{NOT_AVAILABLE_REASON}</span> : null}
-        {pw.status === "suggested" || pw.status === "under_review" ? <Button size="sm" icon={CircleX} disabled={locked} onClick={() => setNotSelected(true)}>Set aside</Button> : null}
-        {pw.status === "not_selected" ? <Button size="sm" icon={RotateCcw} disabled={locked} onClick={() => reopen(record.id, pw.id, "under_review")}>Reopen</Button> : null}
+        {pw.status === "suggested" || pw.status === "under_review" ? <Button size="sm" icon={CircleX} disabled={locked} title={locked ? "Revise the care plan to change the options" : undefined} onClick={() => setNotSelected(true)}>Set aside</Button> : null}
+        {pw.status === "not_selected" ? <Button size="sm" icon={RotateCcw} disabled={locked} title={locked ? "Revise the care plan to change the options" : undefined} onClick={() => reopen(record.id, pw.id, "under_review")}>Reopen</Button> : null}
         {pw.status !== "not_selected" ? <Button size="sm" variant="ghost" icon={Send} onClick={() => onRefer(pw.id)}>Create referral</Button> : null}
         {refs.length ? <span className="text-[12px] text-muted">Referrals: {refs.map((x) => x.id).join(", ")}</span> : null}
       </div>
