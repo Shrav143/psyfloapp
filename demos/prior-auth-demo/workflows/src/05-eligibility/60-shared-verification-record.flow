@@ -1,0 +1,65 @@
+title: Authorizations › Eligibility & Benefits › The shared verification record
+route: /authorizations/eligibility
+intro: One check of coverage and benefits for a patient, a payer, a program and dates of service is one stored record. Eligibility & Benefits and step 2 of New Case read and write the same record, so a check made in either place is the one the other finds. A record is reused when it is still fresh, and refreshed when it is not. Everything is simulated.
+dir: TD
+also: Demo only: the record is built from the demo's own data (the seeded patients, the scripted live check, the payer's plan type and cost share, the saved Payers rules and the Case Manager ledger). Nothing is sent to a payer.
+---
+start s1 "A check is made"
+start s2 "New Case needs coverage for a patient"
+
+group gWrite "Where a record is written"
+  click w1 "Verify page: 'Check now' finishes"
+  click w2 "Eligibility list or result: 'Re-check'"
+  wait w3 "The Demo clock passes a booked re-check time"
+  click w4 "New Case step 2: run a check, or 'Refresh verification'"
+endgroup
+
+agent v1 "Verify (and Criteria, Navigator, Caller) run the check\nThe same rules everywhere: the seeded patient, or the scripted answer from the member ID"
+decision qp "Is Verify paused in Settings?"
+store r1 "One record per case, or per V-xxxx check made on the Verify form\nPatient (initials, age, masked member), payer, program, dates of service,\nchecked time, 'simulated' source, coverage, plan type and routing, benefits,\nauthorization requirement, provider, existing authorization, cost share, warnings"
+process r2 "Dates of service are kept as the days the check covers\nA check made for 10/21 covers through 10/31, the end of the month"
+process r3 "Authorization requirement is read from the payer's saved rules on Payers\nRequired, concurrent review (an authorization is on file), not required, or unknown"
+process r4 "Existing authorization comes from the Case Manager ledger or the limit on the row\nReference, level of care, dates, approved, used, status"
+store r5 "A check at no case yet is filed under one site\nthe site in view (Site A when both are in view)"
+store r6 "Paused: nothing is asked\nA patient already known keeps the last result with the warning 'Verification service unavailable'\nAnyone else is saved as 'Not checked'"
+
+group gRead "Where a record is read"
+  screen a1 "Eligibility list: a row, the verdict tiles, the count, the sidebar badge"
+  screen a2 "Eligibility result: the verdict and its fact, the rows, a warning no row says, History"
+  screen a3 "New Case step 2: the summary and 'View full verification details'"
+endgroup
+
+decision q1 "New Case: is there a record for this patient, payer and program?"
+decision q2 "Do the dates asked for fall inside the dates the record covers?"
+decision q3 "Was it checked within the last 24 demo hours?"
+decision q4 "Did the check actually run? (not 'Not checked')"
+process u1 "Reuse the record\nStep 2 shows it with 'Last verified Tue 10:44 am, 2 min ago. Simulated source.'"
+process u2 "Do not reuse: the step offers 'Refresh verification'\nA refresh runs the check on the demo clock and replaces the record"
+click u3 "Click 'Refresh verification'"
+toast u4 "'R-1042 re-checked'\n'Still Authorization first.'\nor 'Could not re-check R-1042' while Verify is paused"
+goto g1 "Continues in: Authorizations › Eligibility & Benefits › Re-verify a patient"
+goto g2 "Continues in: Authorizations › New Case › How a case starts and resumes"
+goto g3 "Continues in: Authorizations › Eligibility & Benefits › The exceptions"
+goto g4 "Continues in: Authorizations › Eligibility & Benefits › Sites"
+
+s1 --> w1 & w2 & w3
+s2 --> w4
+w1 & w2 & w3 & w4 --> v1 --> qp
+qp -->|No| r1
+qp -->|Yes| r6 --> r1
+r1 --> r2 --> r3 --> r4
+r1 -.-> r5 --> g4
+r4 --> a1 & a2 & a3
+s2 --> q1
+q1 -->|No| u2
+q1 -->|Yes| q2
+q2 -->|No| u2
+q2 -->|Yes| q3
+q3 -->|No| u2
+q3 -->|Yes| q4
+q4 -->|No| u2
+q4 -->|Yes| u1 --> a3
+u2 --> u3 --> w4
+u3 --> u4 --> g1
+a3 --> g2
+r6 -.-> g3

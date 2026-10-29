@@ -18,6 +18,7 @@ src/app/
 │   ├── student/            # Student dashboard and features
 │   └── counselor/           # Counselor dashboard and features
 ├── admin/                  # Admin tools (evals, prompt testing, schools)
+├── demo/                   # Psyflo prior-authorization clickable demo (mock data; see app/demo-docs.md)
 ├── onboarding/
 │   └── student/            # Student profile setup wizard
 ├── api/                    # API routes

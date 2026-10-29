@@ -1,0 +1,92 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Click 'EMR Connect' in the sidebar</b><br/>Under Connections" }
+  p1@{ shape: curv-trap, label: "<b>EMR Connect</b><br/>Charts arrive on their own. Nothing is written back until a person approves it.<br/>'Simulated connection: this demo does not contact a real record system.'" }
+  subgraph gHead ["Header button"]
+  hb2@{ shape: trap-t, label: "<b>Click 'Connect a system'</b><br/>A paused Reader shows a toast instead" }
+  end
+  hg2@{ shape: subproc, label: "Continues in: EMR Connect › Connect a system › Choose the system and contact" }
+  sg@{ shape: subproc, label: "Continues in: EMR Connect › Sites › What each site sees" }
+  subgraph gAct ["Action required"]
+  n1@{ shape: curv-trap, label: "<b>One banner line, only when something needs a person</b><br/>'Action required: Billing system needs attention. Also: 2 fields need a mapping, so New Case leaves them blank.'<br/>One button for the first item: 'Fix'" }
+  n2@{ shape: rect, label: "Nothing needs a person: no banner" }
+  end
+  ng@{ shape: subproc, label: "Continues in: EMR Connect › Page › The Action required line" }
+  subgraph gTiles ["Four figures (not buttons)"]
+  t1@{ shape: rect, label: "<b>Last sync</b><br/>Time since the newest sync, and 'all systems answering'" }
+  t2@{ shape: rect, label: "<b>Charts matched today</b><br/>23 (Site A 13, Site B 10)" }
+  t3@{ shape: rect, label: "<b>Files pulled this week</b><br/>142 (Site A 80, Site B 62)" }
+  t4@{ shape: rect, label: "<b>Sync failures</b><br/>2, from the Billing system (it serves both sites, so each site view shows the same 2)" }
+  end
+  tg@{ shape: subproc, label: "Continues in: EMR Connect › Page › What the health figures show" }
+  subgraph gSys ["Connection health"]
+  c1@{ shape: curv-trap, label: "<b>Connection health</b><br/>'2 of 3 systems connected. Read access for charts, insurance details and medications.'<br/>One site: 'Site A. 1 of 2 systems connected...' and, for a one-site viewer, an info icon on why only some systems show" }
+  c2@{ shape: rect, label: "<b>One row per system: name, status pill, what it holds and reads ('All programs at Site A. Reads ...'), last sync, sync failures, buttons</b><br/>Then a line: 'Read only' or 'Read and write back', with the Write back switch" }
+  c3@{ shape: trap-t, label: "Click 'Sync now' in the card header" }
+  c4@{ shape: trap-t, label: "<b>Click 'Sync now', 'Fix', 'Reconnect' or 'Manage' on a row</b><br/>A row that is not Connected also says that New Case cannot pull a chart from it" }
+  c6@{ shape: trap-t, label: "Click the 'Write back' switch on a row" }
+  c5@{ shape: odd, label: "<b>'Connect your record system to let charts arrive on their own.'</b><br/>Empty list. Not reachable in the demo: a system can be disconnected, never removed" }
+  end
+  cg0@{ shape: subproc, label: "Continues in: EMR Connect › Sync › When an agent is paused or asks first" }
+  cg1@{ shape: subproc, label: "Continues in: EMR Connect › Sync › Sync now" }
+  cg2@{ shape: subproc, label: "Continues in: EMR Connect › Connected systems › What each status means" }
+  cg3@{ shape: subproc, label: "Continues in: EMR Connect › Problems › Every error state and what it needs" }
+  cg4@{ shape: subproc, label: "Continues in: EMR Connect › Connected systems › Read only or read and write back" }
+  cg5@{ shape: subproc, label: "Continues in: EMR Connect › Manage › Open the Manage drawer" }
+  subgraph gAdv ["Advanced (folded)"]
+  a1@{ shape: curv-trap, label: "<b>Advanced</b><br/>'10 field mappings, 2 waiting, and the log of every read and write (8 lines).'<br/>Pill '2 to map'<br/>For one site the counts are that site's: Site A '7 field mappings ... (5 lines)', Site B '5 field mappings, 2 waiting ... (3 lines)'" }
+  a2@{ shape: trap-t, label: "Click 'Advanced', or Tab to it and press Enter or Space" }
+  end
+  ag@{ shape: subproc, label: "Continues in: EMR Connect › Advanced › Field mappings and the activity log" }
+  s1 --> p1
+  p1 --> hb2
+  hb2 --> hg2
+  p1 -.-> sg
+  p1 --> n1
+  p1 -.-> n2
+  n1 --> ng
+  p1 --> t1 & t2 & t3 & t4
+  t1 --> tg
+  t2 --> tg
+  t3 --> tg
+  t4 --> tg
+  p1 --> c1
+  c1 --> c2
+  c2 --> c3 & c4 & c6
+  c1 -.-> c5
+  c3 --> cg1
+  c3 -.-> cg0
+  c4 -.-> cg0
+  c4 --> cg2
+  c4 -.-> cg3
+  c4 --> cg5
+  c6 --> cg4
+  p1 --> a1
+  a1 --> a2 --> ag
+  class s1 k_start
+  class p1,n1,c1,a1 k_screen
+  class hb2,c3,c4,c6,a2 k_click
+  class hg2,sg,ng,tg,cg0,cg1,cg2,cg3,cg4,cg5,ag k_goto
+  class n2,t1,t2,t3,t4,c2 k_process
+  class c5 k_toast
+  style gHead fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gAct fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gTiles fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gSys fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gAdv fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

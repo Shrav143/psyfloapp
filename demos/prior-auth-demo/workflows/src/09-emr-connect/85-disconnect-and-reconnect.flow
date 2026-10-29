@@ -1,0 +1,40 @@
+title: EMR Connect › Manage › Disconnect and reconnect
+route: /emr
+intro: Stop a system, or bring a stopped one back. Disconnect asks first. Reconnect runs the connection test, and Fix first if the system had a problem. Nothing is deleted, and the Dashboard is not touched.
+dir: TD
+also: Escape closes one layer at a time: the confirmation first, then the drawer. Disconnect is a person's own decision, so it is never held back by an agent's pause or freedom.
+---
+start s1 "Manage drawer is open\nThe system is Connected or Needs attention"
+click c1 "Click 'Disconnect'"
+overlay o1 "Disconnect {name}?\n'Charts from it stop arriving. Nothing is deleted.'"
+process p1 "'Requests already on the Dashboard stay where they are. You can reconnect this system at any time.'"
+decision q1 "Which action?"
+click k1 "Click 'Keep it connected', the X, the dimmed area, or press Escape"
+click k3 "Click 'Disconnect' in the confirmation"
+end e1 "Confirmation closes\nThe drawer stays open and nothing changes\nA second Escape closes the drawer"
+
+group gOff "What disconnecting does"
+  store a1 "Status becomes Disconnected\nIssue text: 'Charts from this system are not arriving.'"
+  store a6 "If it was on 'Needs attention', the problem is remembered\nReconnect will start with Fix"
+  agent a2 "Navigator logs 'Disconnected {name}. Charts from it stop arriving'"
+  toast a3 "'{name} is disconnected'\n'Reconnect it any time from this page.' Amber"
+  process a4 "Row: 'Not syncing', 'Sync paused', red pill, 'Reconnect' and 'Manage'\nThe 'Action required' line names it with a 'Reconnect' button\n'New Case cannot pull a chart from it until it is connected.'\nDrawer pill turns red, the bottom button reads 'Reconnect'"
+  process a5 "Skipped by 'Sync now'\nLast sync figure ignores it, or reads 'None' if every system is off\nIts Write back switch no longer counts on the Dashboard"
+endgroup
+
+click r1 "Click 'Reconnect'\nOn the row or at the end of the drawer"
+process r2 "Nothing is connected yet\nThe system stays Disconnected until a test passes"
+goto g2 "Continues in: EMR Connect › Manage › Reconnect a system"
+
+process n1 "No pause, edit or delete\nThere is nothing to confirm when removing a system, because a system cannot be removed"
+
+s1 --> c1 --> o1 --> p1 --> q1
+q1 -->|Keep it| k1 --> e1
+q1 -->|Disconnect| k3
+k3 --> a1 & a2 & a3
+a1 --> a6
+a1 --> a4 --> a5
+a5 --> r1
+a4 --> r1
+r1 --> r2 --> g2
+a1 -.-> n1

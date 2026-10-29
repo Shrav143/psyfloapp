@@ -1,0 +1,101 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "On step 4, read the Validation summary and the Checks" }
+  subgraph gVal ["Validation summary"]
+  sV@{ shape: curv-trap, label: "<b>Validation summary (closed section)</b><br/>'Reader checked every document against the payer's guidelines.'<br/>Pill: 'N to look at' or 'Nothing to look at'<br/>Click the header to open it" }
+  pRows@{ shape: rect, label: "One row for 'Start date', then the referral, the required documents and the recommended ones, from the payer's saved list" }
+  dStart@{ shape: diam, label: "<b>Is there a start date, and is it inside the payer's backdating rule?</b><br/>Summit: none back. Beacon: 2 days. Evergreen: 3 days. A retro-authorization uses the payer's retro line (Summit: 72 hours)" }
+  pStartOk@{ shape: rect, label: "<b>Green tick</b><br/>'The start date 10/20/2026 is inside what Summit allows'" }
+  pStartBad@{ shape: rect, label: "<b>Amber icon, row open</b><br/>'The start date 10/10/2026 is 10 days back. Summit does not backdate an authorization.'<br/>Or 'No start date. Summit will count from the day it receives the request.'" }
+  dMiss@{ shape: diam, label: "Is the document in the case?" }
+  dMark@{ shape: diam, label: "Was it marked not available?" }
+  pMarkReq@{ shape: rect, label: "<b>Required: amber</b><br/>'Marked not available: REASON. Summit requires it, so it may ask for it.'" }
+  pMarkRec@{ shape: rect, label: "<b>Recommended: green</b><br/>'Marked not available: REASON. You can sign without it.'" }
+  pNotAdded@{ shape: rect, label: "<b>Required: 'This document was not added.'</b><br/>Recommended: 'Not added. Summit lists it. You can sign without it.'" }
+  dRow@{ shape: diam, label: "Does the document have an open finding?" }
+  pAmber@{ shape: rect, label: "<b>Amber icon, row open</b><br/>Green ticks for checks passed, an amber line for the finding" }
+  pGreen@{ shape: rect, label: "Green tick, row closed" }
+  pSettled@{ shape: rect, label: "<b>A finding settled by an answer turns green</b><br/>'Sertraline start date confirmed by you: 9/14'" }
+  cRow@{ shape: trap-t, label: "Click a row" }
+  pToggle@{ shape: rect, label: "Its findings open or close (the arrow turns)" }
+  end
+  subgraph gChecks ["Checks card"]
+  sC@{ shape: curv-trap, label: "<b>Checks</b><br/>Pill: 'All clear', '1 warning', '2 warnings' or 'Re-checking'<br/>Each check shows its name and a tick, warning or spinner<br/>What it found is under 'What is missing'" }
+  c1@{ shape: hex, label: "<b>Integrity: 'Every sentence traced to the chart'</b><br/>Warns when a section is empty<br/>Re-checking while edits are read" }
+  c2@{ shape: hex, label: "<b>Scrubber: 'Request has no errors'</b><br/>Warns on: coverage not active, a skipped Verify, a required document with an open finding, a start date outside the rule or missing, a notice or retro window that has passed" }
+  c3@{ shape: hex, label: "<b>Criteria: 'All 9 Summit requirements covered'</b><br/>'8 of 9 ... covered' when a required document is missing or marked not available, or the step-down answer was 'Not yet'" }
+  c4@{ shape: hex, label: "<b>Placement: 'Level of care matches the request'</b><br/>Warns when there is no ASAM assessment, the ASAM assessment has a finding, or the payer's no-authorization rule names this level of care" }
+  end
+  dKind@{ shape: diam, label: "What state is a check in?" }
+  kPass@{ shape: rect, label: "<b>Pass</b><br/>Green tick, nothing to do" }
+  kWarn@{ shape: rect, label: "<b>Warning</b><br/>Amber<br/>The detail is under 'What is missing'<br/>Signs after the person ticks an acknowledgement" }
+  kCheck@{ shape: rect, label: "<b>Re-checking</b><br/>Spinner for about 1 second<br/>The Sign card cannot be used yet" }
+  tW1@{ shape: odd, label: "'Coverage is not active for these dates. See Eligibility & Benefits.'" }
+  tW2@{ shape: odd, label: "<b>'1 required document has an open finding. See the validation summary.'</b><br/>A recommended document never raises it" }
+  tW3@{ shape: odd, label: "'Verify could not reach Cardinal's portal, so coverage was not confirmed. You skipped it and noted it.'" }
+  tW4@{ shape: odd, label: "'Psychosocial history is marked not available, so Summit has no evidence for it.'" }
+  tW5@{ shape: odd, label: "<b>'The Current severity section is empty. Add the text or send the draft back to Scribe.'</b><br/>The quoted heading is the empty section's" }
+  tW6@{ shape: odd, label: "'1 required document is not in the case: Discharge summary. Add it on Clinical documentation, or mark it not available.'" }
+  pHeld@{ shape: rect, label: "<b>The approval chance is held back 3 points for each required document that is not in the case and for a start date the rule does not allow, up to 12</b><br/>The sentence is in the subtitle of 'What is missing'" }
+  pHover@{ shape: rect, label: "Hover an agent badge to see the agent's name" }
+  gSign@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer" }
+  gMis@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › What is missing" }
+  gDocs@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › Replace a document or mark it not available" }
+  gRules@{ shape: subproc, label: "Continues in: Payers › Rules & Instructions › Edit a rule" }
+  s1 --> sV --> pRows --> dStart
+  dStart -->|"Yes"| pStartOk
+  dStart -->|"No"| pStartBad
+  pRows --> dMiss
+  dMiss -->|"No"| dMark
+  dMark -->|"Yes, required"| pMarkReq
+  dMark -->|"Yes, recommended"| pMarkRec
+  dMark -->|"No"| pNotAdded
+  dMiss -->|"Yes"| dRow
+  dRow -->|"Yes"| pAmber
+  dRow -->|"No"| pGreen
+  pAmber -.-> pSettled
+  pRows --> cRow --> pToggle
+  pMarkReq -.-> gDocs
+  pStartBad -.-> gRules
+  s1 --> sC
+  sC --> c1 & c2 & c3 & c4
+  c1 & c2 & c3 & c4 --> dKind
+  dKind -->|"Pass"| kPass
+  dKind -->|"Anything found"| kWarn
+  dKind -->|"Edits being read"| kCheck
+  c2 --> tW1
+  c2 --> tW2
+  c2 --> tW3
+  c3 --> tW4
+  c1 --> tW5
+  c3 --> tW6
+  c3 -.-> pHeld
+  sC -.-> pHover
+  kWarn --> gSign
+  kWarn -.-> gMis
+  class s1 k_start
+  class sV,sC k_screen
+  class pRows,pStartOk,pStartBad,pMarkReq,pMarkRec,pNotAdded,pAmber,pGreen,pSettled,pToggle,kPass,kWarn,kCheck,pHeld,pHover k_process
+  class dStart,dMiss,dMark,dRow,dKind k_decision
+  class cRow k_click
+  class c1,c2,c3,c4 k_agent
+  class tW1,tW2,tW3,tW4,tW5,tW6 k_toast
+  class gSign,gMis,gDocs,gRules k_goto
+  style gVal fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gChecks fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

@@ -1,0 +1,53 @@
+title: Payers › Rules & Instructions › Read the rules
+route: /payers/summit?tab=rules
+intro: One calm page of eight closed groups, each with a one-line summary and a count. A group opens to its rule rows. A rule is stored once, with where it comes from and whether a person verified it, and workflows point at it. Every seeded rule is a demo sample and says Unverified; nothing here says a payer confirmed anything. Where the payer's saved rules already hold a rule (submission windows, backdating, no authorization needed, peer-to-peer and appeals, document lists, the Caller script, the reach lines), the row is read through from them, so Eligibility and New Case keep reading the same data.
+dir: TD
+---
+start s1 "Click the 'Rules & Instructions' tab"
+screen pg "Rules & Instructions\nCard 'Rules the agents and workflows follow' with an info icon\n'14 rules, 14 unverified. Saved in this browser.\nThese are demo rules, not verified against Summit's current policy.'\nBanner above it if edits wait"
+screen grp "Eight closed groups, in this order\nAuthorization requirements, Submission windows,\nBackdating & retroactive requests, Clinical documentation,\nConcurrent review & reauthorization, Submission methods,\nAppeals & peer-to-peer, Agent instructions\nEach: title, one summary line, a count"
+process sm "Summary is worked out live\n'1 requirement, 1 unverified.'\n'30 documents across 4 levels of care, and the chart checker. 2 rules, 2 unverified.'\nA group with nothing says 'No rules yet.'"
+click og "Click a group (Enter or Space)\nIt opens and closes"
+decision ar "Did the address ask for a group?\n?tab=documents, or ?group=..."
+process ao "That group is open and scrolled into view"
+screen rows "Open group: one row per rule\nTitle, a verification pill (Verified, Needs review, Unverified, Superseded),\nthe first three values in one grey line, 'Used by 2 workflows'"
+click orw "Click a rule row"
+screen rd "Open row\nWhat it says, then the structured values as readable fields\n(Authorization required, Exceptions, Window '2 business days',\nHistorical-date rule, Documentation prerequisites, Service units,\nReview cadence, Portal, Phone, Fax, Fallback channel, Escalation path)"
+screen ins "Instructions (optional free text)\nIt adds to the values and never replaces them"
+screen chips "Provenance chips\nSource: Demo sample rules, version 2026.3 (a link when the source has an address)\nWho and what it applies to, Effective from, Last verified or 'Never verified',\nOwner, Version, 'Saved with the payer's rules' for a read-through rule"
+decision un "Unverified or Needs review?"
+toast un1 "'Unverified. Workflows route this to manual review until a person\nmarks it verified with a source.'"
+process ar2 "Archived (Superseded) rules sit at the bottom, struck through\nThey keep their provenance and no buttons"
+screen btn "Buttons in the row\n'Edit', 'Mark as verified' ('Verify again' when verified),\n'Archive' (not on a rule read through from the payer's rules)"
+process dc "Clinical documentation also shows\nthe per-level document lists and the chart checker (above its rules)\nThe document lists have no separate rows: they are the lists"
+process mt "Submission methods: the reach rule\nPortal, Phone, Fax, preferred and fallback channel, escalation path\n'Edit payer' still changes the reach lines in the header"
+process ag "Agent instructions: Instructions for Caller (the saved script),\nthe payer-wide instructions, and the combined-prompt preview"
+click ad "Click 'Add a rule' at the foot of a group"
+goto g1 "Continues in: Payers › Rules & Instructions › Edit a rule"
+goto g2 "Continues in: Payers › Rules & Instructions › Mark a rule as verified"
+goto g3 "Continues in: Payers › Rules & Instructions › Add or archive a rule"
+goto g4 "Continues in: Payers › Rules & Instructions › Read the document list"
+goto g5 "Continues in: Payers › Rules & Instructions › Agent instructions and the combined prompt"
+goto g6 "Continues in: Payers › Workflow Builder › Read a workflow"
+process wb "'Used by N workflows' counts workflows (published or draft)\nwhose steps name the rule\nThe builder's rule steps point at these rules; no policy text is copied into a step"
+end e1 "Person knows what each rule says, where it came from and whether anyone verified it"
+
+s1 --> pg --> grp --> sm
+grp --> og --> ar
+ar -->|Yes| ao --> rows
+ar -->|No| rows
+rows --> orw --> rd --> ins --> chips --> un
+un -->|Yes| un1 --> btn
+un -->|No| btn
+rows -.-> ar2
+og -.-> dc
+og -.-> mt
+og -.-> ag
+btn --> e1
+btn -->|Edit| g1
+btn -->|Mark as verified| g2
+btn -->|Archive| g3
+rows --> ad --> g3
+dc --> g4
+ag --> g5
+rows --> wb --> g6

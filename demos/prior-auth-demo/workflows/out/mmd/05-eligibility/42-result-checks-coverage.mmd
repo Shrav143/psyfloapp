@@ -1,0 +1,71 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Result page, side panel opened, section 'Payment checks'" }
+  subgraph gA ["Row 1 · Coverage"]
+  a0@{ shape: diam, label: "What did the state or plan say about the date of service?" }
+  a1@{ shape: rect, label: "<b>Title 'Coverage is active on the service date'</b><br/>Chip 'Active' (green)<br/>'Ohio Medicaid, active since 01/01/2026, no end date'" }
+  a2@{ shape: rect, label: "<b>Title 'Coverage is not active on the service date'</b><br/>Chip 'Lapsed 10/12' (red)<br/>No line: the chip says it" }
+  a3@{ shape: rect, label: "<b>Title 'Coverage is not active on the service date'</b><br/>Chip 'Ended 09/30' (red)<br/>No line: a plan the member moved to is row 2" }
+  a5@{ shape: rect, label: "<b>Title 'Coverage is active, under another member ID'</b><br/>Chip 'ID differs' (red)<br/>'The plan has this member under the ID ending 5521'" }
+  a6@{ shape: rect, label: "<b>Title 'Coverage could not be checked'</b><br/>Chip 'Not checked' (grey)<br/>'Not asked: Verify is paused in Settings'" }
+  a4@{ shape: rect, label: "<b>Title 'Coverage was not found'</b><br/>Chip 'Not found' (red)<br/>'No member matched this ID and date of birth'" }
+  end
+  g0@{ shape: rect, label: "<b>Rows 2 to 7 are replaced by one grey row</b><br/>'Nothing else could be checked', chip 'Not checked'<br/>'Plan, benefits, authorization, enrollment, limits and other insurance: not asked, no coverage found'" }
+  subgraph gB ["Row 2 · The plan"]
+  b0@{ shape: diam, label: "Which kind of plan?" }
+  b1@{ shape: rect, label: "<b>Title 'It is the right plan', chip 'Summit' (green)</b><br/>'Managed by Summit Medicaid HMO. Claims go to Summit, not to the state'<br/>Same source as the facts line: Result › Plan type and routing" }
+  b2@{ shape: rect, label: "<b>Chip 'Harborview' (green)</b><br/>'A Medicare Advantage plan. Claims go to Harborview MA, not to Medicare'" }
+  b3@{ shape: rect, label: "<b>Chip 'Lakeshore' (green)</b><br/>'Behavioral health is carved out to Lakeshore Behavioral. Claims go to Lakeshore, not to the medical plan'" }
+  b4@{ shape: rect, label: "<b>Chip 'Beacon' (green)</b><br/>'Claims go to Beacon PPO'" }
+  b5@{ shape: rect, label: "<b>Title 'The member is with another plan now'</b><br/>Chip 'Plan changed' (red)<br/>'Cardinal Health Plan, since 10/01'" }
+  end
+  subgraph gC ["Row 3 · The service"]
+  c0@{ shape: diam, label: "What do the benefits say for this level of care?" }
+  c1@{ shape: rect, label: "<b>Title 'The service is covered'</b><br/>Chip 'Covered' (green)<br/>'Residential 3.5 is payable for substance use disorder (F10.20 on the chart). Codes H0018 and H0019'" }
+  c2@{ shape: rect, label: "<b>Title 'The service is covered with conditions'</b><br/>Chip 'Limited' (amber)<br/>'PHP is payable when the diagnosis is on the plan's list and each day is authorized'" }
+  c5@{ shape: rect, label: "<b>Title 'The service is not confirmed'</b><br/>Chip 'Not confirmed' (amber)<br/>'Harborview answered for coverage, not for PHP. Codes H0035'<br/>The verdict is 'Fix before billing'; the result offers 'Ask Caller to confirm the benefit'" }
+  c3@{ shape: rect, label: "<b>Title 'The service is not covered'</b><br/>Chip 'Not covered' (red)<br/>'Residential 3.5 is not a covered benefit under this plan. Codes H0018 and H0019'<br/>The verdict is 'Fix before billing'" }
+  c4@{ shape: rect, label: "<b>Codes by level of care</b><br/>Residential 3.5 H0018 and H0019 · IOP H0015 · PHP H0035 · Detox H0010 and H0011" }
+  end
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Result › Payment checks: authorization to other insurance" }
+  s1 --> a0
+  a0 -->|"Active"| a1 --> b0
+  a0 -->|"Lapsed"| a2 --> b0
+  a0 -->|"Ended"| a3 --> b0
+  a0 -->|"Not found"| a4 --> g0
+  a0 -->|"Active, other member ID"| a5 --> b0
+  a0 -->|"Verify paused"| a6 --> g0
+  b0 -->|"Ohio Medicaid plans"| b1 --> c0
+  b0 -->|"Medicare Advantage"| b2 --> c0
+  b0 -->|"Behavioral carve-out"| b3 --> c0
+  b0 -->|"Commercial"| b4 --> c0
+  b0 -->|"The member moved"| b5 --> c0
+  c0 -->|"Covered"| c1 --> c4
+  c0 -->|"Harborview PHP"| c2 --> c4
+  c0 -->|"Not covered"| c3 --> c4
+  c0 -->|"Not confirmed"| c5 --> c4
+  c4 --> g1
+  g0 -.-> g1
+  class s1 k_start
+  class a0,b0,c0 k_decision
+  class a1,a2,a3,a5,a6,a4,g0,b1,b2,b3,b4,b5,c1,c2,c5,c3,c4 k_process
+  class g1 k_goto
+  style gA fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gB fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gC fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

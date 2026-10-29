@@ -1,0 +1,62 @@
+title: Analytics › Arrive and read the page
+route: /analytics
+intro: One page for the clinic owner. It opens on 'This quarter', 'All payers', 'All programs', 'All diagnosis groups' and the site view chosen in the top bar. From the top it shows six headline figures, the trend by month, the payer scorecard, the payer by case mix grid, the denial reasons and, for someone who sees both sites, the Site A and Site B comparison. Detail is folded under 'Detailed breakdowns'. Every number opens the cases behind it in a right-hand panel.
+dir: TD
+also: Demo only: this is sample data. The records are generated, the same every time. This quarter, Both sites, all payers is the fixed starting set (1,070 decisions, 71% approved as requested, 311 denials, 207 preventable, 2.4 days, 56% of 96 appeals overturned). No figure is a dollar amount.
+---
+start s1 "Click 'Analytics' in the sidebar"
+screen sc "Analytics\n'Where approvals are won and lost, by payer and by kind of case.'\nOne quiet note: 'Demo values: this is sample data. ...'"
+
+group gTop "Header and filters"
+  screen m3 "Button 'Monthly report'"
+  screen m1 "Four menus: 'This quarter', 'All payers', 'All programs', 'All diagnosis groups'\n'Clear filters' once one is picked\n'Site view: Both sites' follows the top bar switch"
+endgroup
+
+group gFig "Six headline figures, each with 12 months beside it"
+  screen t1 "'Approval rate' 71% · 'First-pass approval'\n'Denial rate' 29% · 'Preventable denials' 207"
+  screen t2 "'Average decision time' 2.4 days, with the share past the CMS time\n'Appeals overturned' 56%"
+endgroup
+
+group gCards "Cards, top to bottom"
+  screen c1 "'Approvals and denials by month'\nRate or Count"
+  screen c2 "'Payer scorecard'\nOne row per payer and an 'All payers' row"
+  screen c3 "'Payer by case mix'\nA grid of approval rates, with four tabs"
+  screen c4 "'Denial reasons'\nPareto, preventable donut, reasons by diagnosis group"
+  screen c5 "'Site A and Site B'\nOnly for someone who sees both sites"
+endgroup
+
+group gDetail "'Detailed breakdowns' (all folded, one summary line each)"
+  screen d1 "'Length of stay and units'\n'Process health'"
+  screen d2 "'Common denial reasons by payer'\n'How FLO's advice and drafts perform'\n'What helps most'"
+endgroup
+
+process p1 "Every figure, chart, table and list is worked out from one set of case records\nSo a number and the cases behind it always agree\nA figure behind fewer than 20 decisions shows a dash"
+process p2 "Every number follows the site view\nA one-site viewer such as Dr. Rivera sees only that site, and no comparison card\nSite A plus Site B always equals Both sites"
+process p3 "Other screens feed this page\nAppeal rulings and accepted denials from Denial Intelligence\nDismissed recommendations from Authorizations\nOpen requests on the Dashboard (the live workload)"
+
+goto g1 "Continues in: Analytics › Filters and the site view"
+goto g2 "Continues in: Analytics › Headline figures"
+goto g3 "Continues in: Analytics › Trend by month"
+goto g4 "Continues in: Analytics › Payer scorecard"
+goto g5 "Continues in: Analytics › Payer by case mix"
+goto g6 "Continues in: Analytics › Denial reasons"
+goto g7 "Continues in: Analytics › Site comparison"
+goto g8 "Continues in: Analytics › Detailed breakdowns"
+goto g9 "Continues in: Analytics › Monthly report › Open and build"
+
+s1 --> sc
+sc --> m3 & m1
+m1 --> t1 & t2
+t1 & t2 --> c1 --> c2 --> c3 --> c4 --> c5 --> d1 & d2
+sc -.-> p1
+sc -.-> p2
+sc -.-> p3
+m1 --> g1
+t1 & t2 --> g2
+c1 --> g3
+c2 --> g4
+c3 --> g5
+c4 --> g6
+c5 --> g7
+d1 & d2 --> g8
+m3 --> g9

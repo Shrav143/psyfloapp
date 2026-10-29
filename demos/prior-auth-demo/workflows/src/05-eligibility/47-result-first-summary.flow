@@ -1,0 +1,73 @@
+title: Authorizations › Eligibility & Benefits › Result › Result first: eligibility, benefits, what the service needs
+route: /authorizations/eligibility/R-1042
+intro: How the label and value rows under the verdict are worked out from the patient's row and from the saved Payers configuration. Eligibility says eligible, not eligible or needs a fix, with the dates. Benefits says covered or not, with the codes and the service limit; Patient pays follows only when the plan has a cost share. What this service needs says whether an authorization is required, on file or not required, and shows the payer's saved rules, read only. Values, not sentences.
+dir: TD
+also: Demo only: effective dates, limits and cost share are sample data, and the check is simulated.
+---
+start s1 "Result page, rows under the verdict band"
+
+group gE "Row 'Eligibility'"
+  decision e0 "What did the state or plan say?"
+  process e1 "Pill 'Eligible' (green)\n'Effective 01/01/2026, no end date'"
+  process e2 "Pill 'Not eligible' (red)\n'Effective 01/01/2026, ended 09/30/2026'\nand '· with Cardinal Health Plan since 10/01' when the member moved"
+  process e3 "Pill 'Needs a fix' (red)\n'Effective 01/01/2026, lapsed 10/12/2026'\nButton 'Request retro-eligibility' on the band"
+  process e4 "Pill 'Needs a fix' (red)\n'No coverage found for these details'\nNo dates"
+  process e5 "Pill 'Needs a fix' (red)\n'Active, under the member ID ending 5521'"
+  process e6 "Pill 'Not checked' (grey)\n'Not asked: Verify is paused in Settings'"
+endgroup
+
+process nf "Benefits and What this service needs say 'Not checked' (grey), 'Not asked'\nNo limit, no cost share, no Payers rules"
+
+group gB "Rows 'Benefits' and 'Patient pays'"
+  decision b0 "What do the benefits say?"
+  process b1 "Pill 'Covered' (green)\n'Residential 3.5 · H0018 and H0019'"
+  process b2 "Pill 'Limited' (amber)\n'PHP, with conditions · H0035'"
+  process b3 "Pill 'Not covered' (red)\n'Residential 3.5 not covered · H0018 and H0019'"
+  process b10 "Pill 'Not confirmed' (amber)\n'PHP not confirmed by Harborview · H0035'"
+  decision b4 "Is a service limit on file?"
+  process b5 "Added to the row: '· 9 of 14 days used, 5 left'\n(or '· 38 of 48 units used, 10 left'), '· All 14 days used' when none is left"
+  process b6 "Added to the row: '· No annual day limit' (Summit residential)\nOtherwise nothing"
+  decision b7 "Does this plan type have a cost share on file?"
+  process b8 "Row 'Patient pays'\n'Copay $40 per day, deductible $350 left, coinsurance 20% after the deductible'\nMedicare Advantage: 'Deductible $85 left, coinsurance 20%'"
+  process b9 "No 'Patient pays' row\nOhio Medicaid members usually pay none, so there is no '$0'"
+endgroup
+
+group gN "Row 'What this service needs'"
+  decision n0 "What is the authorization state?"
+  process n1 "Pill 'Not required' (grey)\n'Beacon does not require one for IOP · 10/21/2026 to 10/31/2026'\nAlso when the payer's saved rule 'No authorization needed' names this level of care"
+  process n7 "Pill 'Requirement unknown' (grey)\n'No rule on file for Beacon and residential 3.5'\nAlso for a payer added on Payers that does not cover this level of care"
+  process n2 "Pill 'On file' (green)\n'On file with Summit'"
+  process n3 "Pill 'Required, not on file' (amber)\n'Before the first day'"
+  process n4 "Pills 'In progress', 'Payer reviewing' or 'Retro request open'\n'Before the first day · request being drafted', 'Under review with Cardinal', 'For days already delivered'"
+  process n5 "Quiet second line from the Payers config, read live\n'Summit rules: Notice within 24 hours of admission · 9 documents on the Residential 3.5 list'\nEdit the rule or the list on Payers and this line follows"
+  click n6 "Click 'Open Summit's rules'"
+endgroup
+
+goto g1 "Continues in: Payers › Rules & Instructions › Read the rules"
+goto g2 "Continues in: Authorizations › Eligibility & Benefits › Result › Next actions"
+goto g3 "Continues in: Authorizations › Eligibility & Benefits › Result › Which verdict and why"
+
+s1 --> e0
+e0 -->|Active| e1 --> b0
+e0 -->|Ended| e2 --> b0
+e0 -->|Lapsed| e3 --> b0
+e0 -->|Not found| e4 --> nf --> g3
+e0 -->|Other member ID| e5 --> b0
+e0 -->|Verify paused| e6 --> nf
+b0 -->|Covered| b1 --> b4
+b0 -->|Limited| b2 --> b4
+b0 -->|Not covered| b3 --> b4
+b0 -->|Not confirmed| b10 --> b4
+b4 -->|Yes| b5 --> b7
+b4 -->|No| b6 --> b7
+b7 -->|Yes| b8 --> n0
+b7 -->|No| b9 --> n0
+n0 -->|Not required| n1 --> n5
+n0 -->|Unknown| n7
+n0 -->|On file| n2 --> n5
+n0 -->|Required| n3 --> n5
+n0 -->|Drafted, reviewing, retro| n4 --> n5
+n5 --> n6 --> g1
+n5 --> g3
+n7 --> g3
+e3 -.-> g2

@@ -1,0 +1,51 @@
+title: Dashboard › Do next › How the list is chosen and ordered
+route: /dashboard
+intro: What FLO puts on the Do next list, in what order, and what changes it. The rules are computed from the data in view, so a viewer limited to one site gets a list that names no case at the other site.
+dir: TD
+---
+start s1 "Any change to a request, the queue, the ledger, the clock, the EMR write-back switch or the site in view"
+process p1 "FLO takes only the requests, queue items and ledger cases at the sites in view"
+group gKinds "What can be on the list"
+  process k1 "A request ready to sign (all four checks passed)\nOne a person signs"
+  process k2 "A question from an agent on a request being prepared\n'Answer Scribe', 'Answer Packet'"
+  process k3 "A payer's question with the draft answer waiting for review\nInfo requested, waiting on you"
+  process k4 "A denial with a peer-to-peer deadline in the next 7 days"
+  process k5 "A payer to chase\nA request in Submitted or Decision pending at least 4 hours late, or on day 5 of the CMS clock or later, with no agent already phoning"
+  process k6 "An approval to write back\nOnly while write-back is on in EMR Connect"
+  process k7 "An authorization that ends within 7 days, or has ended, with no request in flight to replace it"
+  process k8 "Cases saved in New Case that wait for a person and have no row yet\nOne line for all of them"
+endgroup
+process p2 "Each row gets a time\nThe due time the Authorizations worklist sorts by, or the denial's deadline"
+decision d1 "Is it past the CMS decision time?"
+process p3 "It goes first\nOther rows are ordered by their due time, overdue first"
+process p4 "Softer rows wait a little longer than a hard deadline\nA late payer by 2 days, a renewal by 1 day, a write-back by 3 days"
+process p5 "Rows with the same time: ready to sign, then a payer's question, then an agent's question, then a denial, then the rest"
+process p6 "The first five are shown\nThe rest stay in the table under 'Needs me today'"
+screen sc "Do next card\nUp to five rows, or 'Nothing needs you right now.'"
+decision d2 "Is the viewer limited to one site?"
+screen ss "Only cases at that site\nA case at the other site is never named, counted or linked"
+goto g1 "Continues in: Dashboard › Do next › What to do now and where each button leads"
+goto g2 "Continues in: Dashboard › Requests table › Days in state and the CMS decision time"
+goto g3 "Continues in: Global shell › Top bar › Ask FLO › What FLO answers"
+
+s1 --> p1 --> d2
+d2 -->|Yes| ss --> p2
+d2 -->|No| p2
+p1 --> k1 & k2 & k3 & k4 & k5 & k6 & k7 & k8
+k1 --> p2
+k2 --> p2
+k3 --> p2
+k4 --> p2
+k5 --> p2
+k6 --> p2
+k7 --> p2
+k8 --> p2
+p2 --> d1
+d1 -->|Yes| p3
+d1 -->|No| p4
+p3 --> p5
+p4 --> p5
+p5 --> p6 --> sc
+sc --> g1
+k5 -.-> g2
+sc -.-> g3

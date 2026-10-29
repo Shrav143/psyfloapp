@@ -1,0 +1,64 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Click 'Denial Intelligence' in the sidebar" }
+  s5@{ shape: stadium, label: "<b>Analytics: a reason's 'Open in Denial Intelligence'</b><br/>or a row of 'Common denial reasons by payer'" }
+  s2@{ shape: stadium, label: "<b>Demo menu, Suggested path</b><br/>'Denial Intelligence: D-3318'" }
+  s3@{ shape: stadium, label: "<b>Click a notification</b><br/>'Denied today', 'Denied', 'Partly approved' or 'Denial analyzed'" }
+  s4@{ shape: stadium, label: "<b>Ask FLO 'Which denial is due first?'</b><br/>Click 'Open Denial Intelligence'" }
+  s6@{ shape: stadium, label: "Dashboard: Do next 'Open denial', or the request drawer's 'Open in Denial Intelligence'" }
+  s7@{ shape: stadium, label: "<b>Authorizations case page (also reached from the Authorizations worklist)</b><br/>Click 'Open in Denial Intelligence'" }
+  s9@{ shape: stadium, label: "<b>Analytics case panel</b><br/>Click 'Open the denial'" }
+  p0@{ shape: rect, label: "Address /denials, maybe with ?payer= and ?reason=" }
+  sc1@{ shape: curv-trap, label: "<b>Dashboard of open denials</b><br/>Title row 'Denial Intelligence' and 'Add a denial letter'<br/>Six figures, payer chips, one table" }
+  g1@{ shape: subproc, label: "Continues in: Denial Intelligence › Open denials list" }
+  g5@{ shape: subproc, label: "Continues in: Denial Intelligence › Open denials list › Filter by payer and reason" }
+  p1@{ shape: rect, label: "Address /denials/D-xxxx" }
+  pl@{ shape: rect, label: "An older link /denials?id=D-xxxx (seeded notifications, the Dashboard demo control) is replaced by /denials/D-xxxx" }
+  dsite@{ shape: diam, label: "Does that denial belong to a site the viewer is looking at?" }
+  sos@{ shape: curv-trap, label: "<b>Out-of-site card</b><br/>'This denial is not available at Site A'<br/>Names the site, no patient or detail" }
+  gs@{ shape: subproc, label: "Continues in: Denial Intelligence › Sites › What each site sees and out-of-site links" }
+  d2@{ shape: diam, label: "Is it an open denial, or one settled on this screen?" }
+  nf@{ shape: curv-trap, label: "<b>'We could not find denial D-xxxx'</b><br/>Link 'Back to Denial Intelligence'" }
+  g2@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
+  s8@{ shape: stadium, label: "Look at the badge beside 'Denial Intelligence' in the sidebar" }
+  b1@{ shape: rect, label: "<b>Badge = requests in the Dashboard's 'Appeal or call' stage at the sites in view</b><br/>8 for Both sites at the start (Site A 4, Site B 4), the same as the 'Open' figure" }
+  b2@{ shape: rect, label: "Goes up by one: a letter is analyzed, or the Dashboard demo control 'Denies' or 'Approves part' is used" }
+  b3@{ shape: rect, label: "Goes down by one: the denial is accepted, a call outcome 'Overturned' or 'Partly restored' is logged, or the payer's decision on an appeal is 'Overturned' or 'Partly overturned'" }
+  s1 --> p0
+  s5 --> p0
+  p0 --> sc1 --> g1
+  p0 -.->|"with a payer or reason"| g5
+  s2 --> p1
+  s3 --> pl --> p1
+  s3 --> p1
+  s4 --> p1
+  s6 --> p1
+  s7 --> p1
+  s9 --> p1
+  p1 --> dsite
+  dsite -->|"No"| sos --> gs
+  dsite -->|"Yes"| d2
+  d2 -->|"Yes"| g2
+  d2 -->|"No"| nf --> sc1
+  s8 --> b1 --> b2 & b3
+  class s1,s5,s2,s3,s4,s6,s7,s9,s8 k_start
+  class p0,p1,pl,b1,b2,b3 k_process
+  class sc1,sos,nf k_screen
+  class g1,g5,gs,g2 k_goto
+  class dsite,d2 k_decision

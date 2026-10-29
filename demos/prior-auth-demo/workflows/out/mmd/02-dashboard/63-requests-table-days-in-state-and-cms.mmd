@@ -1,0 +1,63 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>A row in the table</b><br/>The Days in state cell" }
+  a1@{ shape: curv-trap, label: "<b>The number</b><br/>'35 m', '14 h' or '3.2 d' since the request entered its state" }
+  d1@{ shape: diam, label: "Is there a median for this state?" }
+  a2@{ shape: curv-trap, label: "<b>'median 2 d' under the number</b><br/>The payer's usual time in this state, from the demo data" }
+  d2@{ shape: diam, label: "How long compared with the median?" }
+  a3@{ shape: curv-trap, label: "Plain number" }
+  a4@{ shape: curv-trap, label: "<b>Ochre number</b><br/>Over 1.5 × the median" }
+  a5@{ shape: curv-trap, label: "<b>Terracotta number</b><br/>Over 2 × the median; Caller phones the payer" }
+  d3@{ shape: diam, label: "Is the request Submitted or Decision pending, at a Medicaid managed care payer?" }
+  b0@{ shape: curv-trap, label: "<b>No CMS clock</b><br/>Commercial, Medicare Advantage and carve-out payers, and every other state" }
+  b1@{ shape: rect, label: "Count the days since the request went to the payer" }
+  d4@{ shape: diam, label: "How many days?" }
+  b2@{ shape: curv-trap, label: "<b>Nothing extra</b><br/>Before day 5" }
+  b3@{ shape: curv-trap, label: "Ochre hint 'Day 5 of 7' (or 'Day 6 of 7', 'Day 7 of 7') and an info icon" }
+  b4@{ shape: curv-trap, label: "<b>Ochre flag 'Past 7 days' and an info icon</b><br/>On the 8th day" }
+  b5@{ shape: win-pane, label: "<b>Info icon: hover, focus or click</b><br/>'CMS rule for Medicaid managed care: decide within 7 calendar days (72 hours if expedited). Check your state.'<br/>Escape closes it" }
+  b6@{ shape: rect, label: "The Lifecycle chip 'Decision pending' says 'N past 7 days' in ochre" }
+  b7@{ shape: rect, label: "<b>Next action becomes 'Chase the payer' from day 5</b><br/>A request past the CMS time goes first on Do next" }
+  s2@{ shape: stadium, label: "<b>Demo menu › Fast-forward 1 day, several times</b><br/>For example 4 days for R-1021 (Cardinal, Decision pending)" }
+  p1@{ shape: rect, label: "The clock moves; days in state and the CMS days grow together" }
+  g1@{ shape: subproc, label: "Continues in: Dashboard › Do next › How the list is chosen and ordered" }
+  g2@{ shape: subproc, label: "Continues in: Dashboard › Header › Check all now and the demo clock" }
+  s1 --> a1 --> d1
+  d1 -->|"Yes"| a2 --> d2
+  d1 -->|"No"| d3
+  d2 -->|"Within 1.5 ×"| a3 --> d3
+  d2 -->|"Over 1.5 ×"| a4 --> d3
+  d2 -->|"Over 2 ×"| a5 --> d3
+  d3 -->|"No"| b0
+  d3 -->|"Yes"| b1 --> d4
+  d4 -->|"Under 4 days"| b2
+  d4 -->|"4 to 7 days"| b3 --> b5
+  d4 -->|"7 days or more"| b4 --> b5
+  b4 --> b6
+  b3 --> b7
+  b4 --> b7
+  b7 --> g1
+  s2 --> p1 --> d4
+  p1 -.-> g2
+  class s1,s2 k_start
+  class a1,a2,a3,a4,a5,b0,b2,b3,b4 k_screen
+  class d1,d2,d3,d4 k_decision
+  class b1,b6,b7,p1 k_process
+  class b5 k_overlay
+  class g1,g2 k_goto

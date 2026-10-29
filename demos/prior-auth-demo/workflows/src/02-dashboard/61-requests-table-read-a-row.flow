@@ -1,0 +1,46 @@
+title: Dashboard › Requests table › Read a row: units, window, next action and owner
+route: /dashboard
+intro: What each cell of a row means. Nothing in a row is a button except the case ID, and a click on the row itself opens the request drawer. Units and Window come from the Case Manager ledger and show a dash when the case has no approval. Next action and Owner come from where the request is. No dollar figures, no progress bars.
+dir: TD
+---
+start s1 "A row in the authorizations table"
+screen c1 "Case\nUnderlined ID, e.g. 'R-1042', and the patient under it: initials and age, 'J.M., 34'"
+screen c2 "Payer, then Service\nShort payer name; level of care ('Residential 3.5', 'IOP', 'PHP', 'Detox') with the request type under it"
+screen c3 "Status\nOne plain word: Awaiting sign-off, Submitted, Decision pending, Info requested, or for a decided or denied request its own state ('Approved', 'Call booked', 'Appeal filed')"
+screen c4 "Days in state\nA number such as '3.2 d', '14 h' or '35 m', with 'median 2 d' under it\nA flag when a Medicaid managed care payer is near or past the CMS time"
+
+decision u1 "Does the Case Manager ledger hold an approval for this case?"
+screen u2 "Units\n'48 → 10' (approved to left) with 'units' or 'days' under it"
+screen u3 "Window\n'Sep 22 – Oct 20'\nThe end is the ledger's expiry clock, or today plus what is left; the start is the end minus the approved length"
+screen u4 "Units and Window show a quiet dash"
+
+decision n1 "Where is the request?"
+screen n2 "Next action 'Review and sign'\nOwner You: Awaiting sign-off, every check passed"
+screen n3 "'Answer Scribe' or 'Answer Packet'\nOwner You: an agent has a question"
+screen n4 "'Wait for Reader', 'Wait for Packet'\nOwner that agent: agents are still working"
+screen n5 "'Review and send'\nOwner You: Info requested, the draft answer is ready"
+screen n6 "'Chase the payer'\nOwner You, or Caller when Caller is already phoning\nSubmitted or Decision pending, 4 or more hours late, or on day 5 of the CMS clock or later"
+screen n7 "'Wait for the decision'\nOwner the payer, e.g. 'Cardinal'"
+screen n8 "'Approve write-back' (Owner You, only while write-back is on) or 'Start renewal' (Owner You) or 'No action needed' (Owner Cadence)"
+screen n9 "'Prepare the P2P call'\nOwner You, a denial with a peer-to-peer call; otherwise 'Wait for the decision' (the payer) or 'Wait for' an agent"
+screen n10 "A quiet line under the verb\nThe due time, e.g. 'Notice due in 5 h', when it is inside 2 days; terracotta inside 6 hours"
+goto g1 "Continues in: Dashboard › Requests table › Order, rows and paging"
+goto g2 "Continues in: Dashboard › Requests table › Days in state and the CMS decision time"
+goto g3 "Continues in: Dashboard › Requests table › Sort the rows"
+goto g4 "Continues in: Authorizations › Approved › Units used and the run-out flag"
+
+s1 --> c1 --> c2 --> c3 --> c4 --> u1
+u1 -->|Yes| u2 --> u3 --> n1
+u1 -->|No| u4 --> n1
+n1 -->|Awaiting sign-off, ready| n2 --> n10
+n1 -->|Awaiting sign-off, a question| n3 --> n10
+n1 -->|Awaiting sign-off, agents working| n4 --> n10
+n1 -->|Info requested| n5 --> n10
+n1 -->|Submitted or Decision pending, late| n6 --> n10
+n1 -->|Submitted or Decision pending, on time| n7 --> n10
+n1 -->|Decided today, approved| n8 --> n10
+n1 -->|Denial route| n9 --> n10
+n10 --> g1
+c4 -.-> g2
+c1 -.-> g3
+u2 -.-> g4

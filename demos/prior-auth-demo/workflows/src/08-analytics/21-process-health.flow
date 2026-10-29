@@ -1,0 +1,27 @@
+title: Analytics › Process health
+route: /analytics
+intro: Four small charts and the live workload, in a folded section under 'Detailed breakdowns'. They show whether authorizations are being missed (retro-authorizations), how long a first request takes from referral to approval, how many decisions the payers make each month, and how peer-to-peer calls and appeals ended.
+dir: TD
+also: The charts follow the payer, program, diagnosis group, site view and period. The live workload card follows the site view, payer and program only, and changes when you answer a payer or accept a denial.
+---
+start s1 "Under 'Detailed breakdowns', click 'Process health'"
+screen sc "Closed: '8% of decisions were retro-authorizations (85). Referral to authorization takes 4.2 days lately.'"
+screen a1 "'Retro-authorizations by month'\nColumns of requests made after care began, a sign that an authorization was missed"
+screen a2 "'Referral to authorization'\nA line of average days from referral to the payer's decision on first requests"
+screen a3 "'Workload: decisions by month'\nStacked columns: approved as requested, approved in part, denied"
+screen a4 "'Peer-to-peer calls and appeals'\nBars: the reviewer changed the decision, the decision stood, booked; overturned, partly restored, upheld, no ruling yet"
+screen a5 "'Requests on the Dashboard right now'\n'8 handled', '32 still open', a meter\n'Live: it changes when you answer a payer or accept a denial'"
+click c1 "Click a month column"
+process p1 "Retro-authorizations: opens that month's retrospective requests\nWorkload: opens that month's decisions"
+goto g1 "Continues in: Analytics › Case list panel"
+input h1 "Hover or Tab to a chart and use the arrow keys"
+process h2 "A tooltip with the month's values; the month is read out"
+click d1 "Click 'View data table' under a chart"
+process d2 "A table of the same numbers"
+process p2 "The workload card reads the Dashboard's requests and the site view\nIt is the only part that moves while the demo runs"
+
+s1 --> sc --> a1 & a2 & a3 & a4 & a5
+a1 & a3 --> c1 --> p1 --> g1
+a1 & a2 & a3 --> h1 --> h2
+a1 & a2 & a3 & a4 --> d1 --> d2
+a5 --> p2

@@ -1,0 +1,67 @@
+title: Authorizations › New Case › Review & submit › Sign and send to payer
+route: /authorizations/new/:draftId (step 4 of 4, the Sign card)
+intro: Only a licensed clinician can sign. The card opens signed in as Jordan Perez, a UR coordinator, so the first step is to switch to Dr. Rivera. Signing needs an attestation, an acknowledgement when something warns, and nothing blocking. The send is simulated and says so. After the confirm the request is saved, linked to its patient, episode, authorization and verification, shown on the Dashboard, in the Authorizations queue and in Case Manager, and the new case opens.
+dir: TD
+---
+start s1 "On step 4, find the Sign card"
+click cWho "Click the 'Signing as' dropdown"
+overlay oWho "Two names\n'Jordan Perez (UR coordinator)'\n'Dr. Rivera (clinician)'"
+decision dWho "Who is chosen?"
+toast tUR "A muted line under the dropdown, not a banner\n'Only a clinician signs. Switch to Dr. Rivera.'"
+input iRiv "Pick 'Dr. Rivera (clinician)'"
+decision dBlock "Is anything blocking?\nNo patient, payer, service or dates; coverage inactive with no documented exception; an unanswered duplicate"
+toast tBlock "'Fix first: coverage'"
+decision dWarn "Does 'What is missing' list a warning to acknowledge?"
+input iAck "Tick 'I reviewed the warning under What is missing and want to sign anyway.'"
+input iAtt "Tick 'I reviewed this summary and it reflects the record. The level of care is my clinical judgment.'"
+decision dCan "Agents done, clinician chosen, attestation ticked, nothing blocking, no re-check, warnings acknowledged?"
+endx eOff "'Sign and send to payer (demo)' stays switched off"
+screen sNote "The button's own label says '(demo)'\nNo sentence under it"
+click cSign "Click 'Sign and send to payer (demo)'"
+overlay oConf "Sign and send to payer (demo)?\n'Signing as Dr. Rivera, clinician'\nPatient, Payer, Request, Level of care, Approval chance, Attachments\n'Demo: the send is simulated.'"
+click cCancel "Click 'Cancel', press Escape, or click outside"
+endx eCancel "Pop-up closes; nothing is sent"
+click cConfirm "Click 'Sign and send to payer (demo)' in the pop-up"
+decision dReady "Are all ten agents done?"
+toast tCould "'Could not sign yet'\n'All agents must finish before the request can be signed.'"
+decision dOn "Is the case already on the Dashboard as Preparing?"
+store stNew "A new request is added\nStage 'Received', held by Navigator\nThe case keeps its id"
+store stMove "That request moves from Preparing to Received\nThe same id is kept"
+agent aNav "Navigator files the request through the payer's portal (demo: simulated)"
+ext xPortal "Payer portal (demo: simulated)\nReceives the request and gives a receipt"
+store stLink "The request is linked\nPatient (an existing patient is never copied; a new patient becomes one), treatment episode, authorization and verification"
+store stQueue "The request joins Authorizations as a With the payer row, marked 'New today'"
+store stEv "History: 'You signed as Dr. Rivera (clinician) and sent the request'\n'Navigator sent the request through the payer's portal'\n'Navigator saved the receipt to the case'\nA documented exception, a duplicate reason or a proposed change: one line each, with the reason\nIf Verify was skipped: 'Verify could not reach Cardinal's portal before signing'"
+store stDraft "The draft is marked sent\n'N sent today' on Authorizations › With the payer goes up by one"
+toast tNotif "Notification: 'Sent to the payer'\n'R-1701 was sent. It now shows as Received on the Dashboard.'"
+toast tSent "'Sent to the payer'\n'R-1701 is on the Dashboard as Received.'"
+process pNav "The new case opens: /authorizations/case/R-1701"
+endx eStay "Stays on step 4; nothing is sent"
+click cBack "Click 'Send back to Scribe'"
+goto gCase "Continues in: Authorizations › Case page › Header and buttons"
+goto gAfter "Continues in: Authorizations › New Case › Review & submit › After sending"
+goto gSB "Continues in: Authorizations › New Case › Review & submit › Send back to Scribe"
+goto gMis "Continues in: Authorizations › New Case › Review & submit › What is missing"
+
+s1 --> cWho --> oWho --> dWho
+dWho -->|Jordan Perez| tUR --> eOff
+dWho -->|Dr. Rivera| iRiv --> dBlock
+dBlock -->|Yes| tBlock --> eOff
+tBlock -.-> gMis
+dBlock -->|No| dWarn
+dWarn -->|Yes| iAck --> iAtt
+dWarn -->|No| iAtt
+iAtt --> dCan
+dCan -->|No| eOff
+dCan -->|Yes| sNote --> cSign --> oConf
+oConf --> cCancel --> eCancel
+oConf --> cConfirm --> dReady
+dReady -->|No| tCould --> eStay
+dReady -->|Yes| dOn
+dOn -->|No| stNew
+dOn -->|Yes| stMove
+stNew --> aNav
+stMove --> aNav
+aNav --> xPortal --> stLink --> stQueue --> stEv --> stDraft --> tNotif --> tSent --> pNav --> gCase
+pNav --> gAfter
+s1 --> cBack --> gSB

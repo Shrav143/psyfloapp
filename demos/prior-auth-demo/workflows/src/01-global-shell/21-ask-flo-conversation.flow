@@ -1,0 +1,61 @@
+title: Global shell › Top bar › Ask FLO › Ask a question
+route: Every page (Ask FLO drawer)
+intro: Open the drawer, pick a suggested question or type one, and read FLO's answer. The suggestions follow the screen the person is on. FLO answers from the demo data after a short pause, and only from the cases the viewer may see at the sites in view. What it says for each kind of question is in the next two diagrams.
+dir: TD
+also: The chat lives in the page, not in the demo data. It survives closing the drawer and changing pages, and 'Reset demo data' does not clear it. Reloading the browser does, and so does a change of viewer or of site (see the last row). The suggestions are worked out when the drawer opens, so a case page names its own case and payer.
+---
+start s1 "Click 'Ask FLO' in the top bar"
+overlay o1 "Ask FLO drawer opens\nTitle 'Ask FLO', subtitle 'Your assistant, answering from your data'"
+agent a1 "FLO greets the person by name and says which sites it reads:\n'Hi Jordan, I am FLO. Ask me about your requests, a payer, or your denials. I answer from the data you can see: Both sites.'\nFor Dr. Rivera: 'Hi Dr. Rivera, ... I answer from the data you can see: Site A.'"
+decision dr "Which screen is open?"
+overlay o2 "Four suggestion chips under the chat:\n'What needs me today?'\n'What is due soonest?'\n'Which payers are slowest right now?'\n'Why is Cardinal's approval rate down?'\nAny other screen (New Case included), or a case page that cannot be found"
+overlay oc "Three chips on a case page (/authorizations/case/R-1042):\n'What is missing for R-1042?'\n'When does this authorization run out?'\n'What does Summit require?'\nA line above them: 'Suggested for R-1042'"
+overlay om "Three chips on Authorizations (the worklist, every view):\n'What needs me today?'\n'What is due soonest?'\n'Which reviews are due?'\n'Suggested for Authorizations'"
+overlay od "One chip on Denial Intelligence:\n'Which denial is due first?'\n'Suggested for Denial Intelligence'"
+overlay oe "One chip on Eligibility & Benefits (the list and its pages):\n'Which patients need a fix before billing?'\n'Suggested for Eligibility & Benefits'"
+decision d1 "How does the person ask?"
+click c1 "Click a suggestion chip"
+input i1 "Type in the box 'Ask a question'"
+decision d2 "Is there text, and is FLO idle?"
+process x1 "'Send' stays disabled\nEnter does nothing\n(blank or spaces only, or FLO is still working)"
+click c2 "Click 'Send' or press Enter"
+process p1 "The question appears on the right in a green bubble\nThe box is emptied"
+process p2 "'FLO is working…' pulses under the chat\n'Send' is disabled until FLO answers"
+wait w1 "About 0.7 seconds"
+agent a2 "FLO answers from the live demo data\n(picks the answer by key words)"
+goto g1 "Continues in: Global shell › Top bar › Ask FLO › What FLO answers"
+decision d3 "Does the answer carry a link?"
+click c3 "Click the underlined link under the answer"
+process p3 "Drawer closes and the app opens that page"
+goto g2 "Continues in: Global shell › Top bar › Ask FLO › What FLO answers"
+decision d4 "Was the answer the fallback?\n('I did not find an answer...')"
+process p4 "The chips are gone\nThey show only while the chat has fewer than three messages, and while FLO is not working\nThey come back, for the new screen, when the person has moved to another screen since the last message"
+process p7 "The chips for this screen stay under the fallback answer\nA second miss keeps them. Any real answer takes them away"
+click c4 "Press Escape, click 'X' or click the dimmed area"
+process p5 "Drawer closes\nThe chat and any unsent text are kept"
+process p6 "Open it again, on any page: the same chat is there\nTyped questions still work; the chips come back under a fallback answer, or when the screen has changed"
+end e1 "Back on the page"
+endx e2 "No question sent"
+
+start s2 "Change the viewer (Demo menu, 'Viewing as') or the site (top bar: Both sites, Site A, Site B)"
+process pv "The conversation starts again with a new greeting\nWhatever FLO said about the other view, including case IDs, does not stay on screen\nThe chips are worked out again for the view"
+
+s1 --> o1 --> a1 --> dr
+s2 --> pv --> a1
+dr -->|Case page| oc --> d1
+dr -->|Authorizations worklist| om --> d1
+dr -->|Denial Intelligence| od --> d1
+dr -->|Eligibility & Benefits| oe --> d1
+dr -->|Anywhere else| o2 --> d1
+d1 -->|Suggestion| c1 --> p1
+d1 -->|Typed| i1 --> d2
+d2 -->|No| x1 --> e2
+d2 -->|Yes| c2 --> p1
+p1 --> p2 --> w1 --> a2 --> g1
+a2 --> d4
+d4 -->|No| p4 --> d3
+d4 -->|Yes| p7 --> c1
+d3 -->|Yes| c3 --> p3 --> g2
+d3 -->|No| c4
+c4 --> p5 --> p6 --> e1
+x1 -.-> i1

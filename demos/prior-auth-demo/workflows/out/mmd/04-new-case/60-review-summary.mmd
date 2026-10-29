@@ -1,0 +1,101 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Click 'Continue to Review & submit' on Clinical documentation</b><br/>Or click step 4 in the stepper at any time<br/>Or 'Review and sign' on a ready draft row in Authorizations" }
+  sc@{ shape: curv-trap, label: "<b>Review & submit</b><br/>No sentence under the title<br/>The stepper: 'Review & submit' current" }
+  dReady@{ shape: diam, label: "Have all ten agents finished?" }
+  sNot@{ shape: curv-trap, label: "<b>One line 'The packet is built when the agents finish'</b><br/>Button 'Open Authorization preparation' (Clinical documentation, at its last section)<br/>Checks and Validation summary are not shown yet<br/>The Sign card says 'After the agents finish'" }
+  subgraph gLayout ["Layout"]
+  sL@{ shape: curv-trap, label: "<b>Left column</b><br/>1 'What is missing' (the one alert) · 2 'Summary' · 3 the Medical-necessity summary · 4 the Validation summary (closed)" }
+  sR@{ shape: curv-trap, label: "<b>Right column</b><br/>Checks (names only), Approval chance, the Sign card" }
+  sF@{ shape: curv-trap, label: "<b>Footer bar</b><br/>'Back', 'Save as draft'" }
+  end
+  sSum@{ shape: curv-trap, label: "<b>Card 'Summary'</b><br/>Ten rows, worked out from the draft, never typed" }
+  pRows@{ shape: rect, label: "Patient · Payer · Request · Service · Dates and length · Eligibility · Existing authorization · Documentation · Medical necessity · Outstanding" }
+  pEx@{ shape: rect, label: "<b>Examples</b><br/>Patient: 'J.M., 34 · existing patient R-1042', or 'T.W., 41 · born 03/02/1985 · Female · new patient'<br/>Request: 'Concurrent review · recorded as Continued stay'<br/>Dates and length: '10/22/2026 to 11/11/2026 · 21 days (the usual length)'<br/>Eligibility: 'Coverage active, benefits covered, authorization required. Checked 2 min ago, simulated source.'<br/>Existing authorization: 'AU-I-2144 · ... · 32 of 48 units left, ends 11/19/2026' or 'None. This starts a new stay.'<br/>Documentation: '3 of 4 ready, 1 required document missing'<br/>Outstanding: 'Nothing outstanding' or '2 to acknowledge, 1 note'" }
+  sNarr@{ shape: curv-trap, label: "<b>Card 'Medical-necessity summary'</b><br/>Sections: Clinical picture, the type's own section, the level-of-care reason, Current severity, Plan" }
+  pCtx@{ shape: rect, label: "<b>A paragraph 'Context added.' shows when notes were added on the case page</b><br/>It is shown here but not edited here" }
+  pNote@{ shape: rect, label: "<b>A draft Payers redrafted after a payer change shows one line above</b><br/>'Updated for a payer change on 10/20'" }
+  sChance@{ shape: curv-trap, label: "<b>Approval chance card</b><br/>Ring and 'Strong · likely 83-92%'<br/>'Summit usually decides in about 1.5 days. Based on 1,248 similar cases.'" }
+  subgraph gChip ["Source chips"]
+  cChip@{ shape: trap-t, label: "<b>Click a chip under a section</b><br/>For example 'Psychiatric eval p.3'" }
+  pChips@{ shape: rect, label: "Chips appear only for documents that are in the case" }
+  oSrc@{ shape: win-pane, label: "<b>Drawer with the document's name</b><br/>Page 1 of 3, the cited passage boxed under 'Evidence'" }
+  cCloseSrc@{ shape: trap-t, label: "Press Escape or close the drawer" }
+  end
+  subgraph gEdit ["Edit the summary"]
+  cEdit@{ shape: trap-t, label: "<b>Click 'Edit' on the summary card</b><br/>Or 'Edit the summary' under What is missing" }
+  oEdit@{ shape: win-pane, label: "<b>Each section becomes a text box under its heading</b><br/>Header buttons 'Cancel' and 'Save changes'" }
+  iText@{ shape: lean-r, label: "Change the text of any section" }
+  cCancel@{ shape: trap-t, label: "Click 'Cancel'" }
+  cSave@{ shape: trap-t, label: "Click 'Save changes'" }
+  stNarr@{ shape: cyl, label: "<b>Summary saved on the draft as edited</b><br/>The case page's Draft tab now reads this text" }
+  aInt@{ shape: hex, label: "<b>Integrity re-checks the edits (demo: simulated)</b><br/>Checks show 'Re-checking' for about 1 second<br/>The Sign card is off meanwhile" }
+  dEmpty@{ shape: diam, label: "Is any section empty?" }
+  tOk@{ shape: odd, label: "<b>'Integrity re-checked your edits'</b><br/>'Every sentence still traces to the chart.'" }
+  tEmpty@{ shape: odd, label: "<b>'Integrity re-checked your edits'</b><br/>'One section is empty. You can still sign it, and the summary will say so.'" }
+  pEmpty@{ shape: rect, label: "<b>The empty section reads 'This section is empty.' in red</b><br/>The check 'Every sentence traced to the chart' warns<br/>'What is missing' lists it to acknowledge, with 'Edit the summary'" }
+  end
+  pLost@{ shape: rect, label: "<b>Edits are lost when the summary is rebuilt</b><br/>After a new answer, a tick in 'To raise it further', 'Send back to Scribe', or a change to the details or documents" }
+  cBack@{ shape: trap-t, label: "Click 'Back'" }
+  cSaveD@{ shape: trap-t, label: "Click 'Save as draft'" }
+  tSaved@{ shape: odd, label: "<b>'Draft saved'</b><br/>'R-1701 is in Authorizations.'" }
+  gMis@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › What is missing" }
+  gVal@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › Validation summary and checks" }
+  gSign@{ shape: subproc, label: "Continues in: Authorizations › New Case › Review & submit › Sign and send to payer" }
+  gPrep@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › Finished, paused or left" }
+  gSave@{ shape: subproc, label: "Continues in: Authorizations › New Case › Save as draft and leave" }
+  gDraft@{ shape: subproc, label: "Continues in: Authorizations › Case page › Draft › Read and edit" }
+  gJust@{ shape: subproc, label: "Continues in: Authorizations › New Case › Authorization preparation › Justification by type" }
+  s1 --> sc --> dReady
+  dReady -->|"No"| sNot --> gPrep
+  dReady -->|"Yes"| sL & sR & sF
+  sL --> gMis
+  sL --> sSum --> pRows --> pEx
+  sL --> sNarr
+  sL --> gVal
+  sR --> sChance
+  sR --> gVal
+  sR --> gSign
+  sNarr --> pCtx
+  sL --> pNote
+  sNarr -.-> gDraft
+  sNarr -.-> gJust
+  sNarr --> cChip --> pChips --> oSrc --> cCloseSrc
+  sNarr --> cEdit --> oEdit --> iText
+  iText --> cCancel
+  iText --> cSave --> stNarr --> aInt --> dEmpty
+  dEmpty -->|"No"| tOk
+  dEmpty -->|"Yes"| tEmpty --> pEmpty
+  stNarr -.-> pLost
+  sF --> cBack --> gPrep
+  sF --> cSaveD --> tSaved --> gSave
+  class s1 k_start
+  class sc,sNot,sL,sR,sF,sSum,sNarr,sChance k_screen
+  class dReady,dEmpty k_decision
+  class pRows,pEx,pCtx,pNote,pChips,pEmpty,pLost k_process
+  class cChip,cCloseSrc,cEdit,cCancel,cSave,cBack,cSaveD k_click
+  class oSrc,oEdit k_overlay
+  class iText k_input
+  class stNarr k_store
+  class aInt k_agent
+  class tOk,tEmpty,tSaved k_toast
+  class gMis,gVal,gSign,gPrep,gSave,gDraft,gJust k_goto
+  style gLayout fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gChip fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gEdit fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

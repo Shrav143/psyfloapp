@@ -1,0 +1,51 @@
+title: Global shell › Toasts › How they appear and go
+route: Every page (bottom right corner)
+intro: A toast is a small message card that confirms something happened. Any page can raise one. It stacks in the bottom right corner, fades after about four seconds, and goes at once when clicked. Toasts are never a place to act: they have no buttons.
+dir: TD
+---
+start s1 "A page or a control raises a toast\n(a title, an optional line of text, and a tone)"
+process p1 "Toast joins the stack in the bottom right corner\nNewest at the bottom, each 340 px wide"
+decision d1 "Which tone?"
+toast t1 "Good: green tick\nDone, saved, sent"
+toast t2 "Caution: amber triangle\nSomething needs a look"
+toast t3 "Risk: red cross\nDenied, urgent"
+toast t4 "Neutral: grey 'i'\nInformation only"
+
+wait w1 "About 4 seconds pass"
+process p2 "That toast removes itself. Other toasts keep their own timers"
+click c1 "Click a toast"
+process p3 "That toast goes at once. Nothing else happens: no link, no undo"
+process p4 "Page changes do not remove toasts: they belong to the whole app"
+process p5 "'Reset demo data' empties the stack, then adds its own toast"
+end e1 "Stack is empty"
+
+group gShell "Toasts raised by the shell"
+  toast s2 "'Help'\n'Press Ask FLO (top right) to ask a question. Use Demo, top right, to reset, move time forward or view as another person.'"
+  toast s3 "'This is a demo'\n'There is nothing to sign out of.'"
+  toast s4 "'Clock moved forward 1 hour' or '1 day'\n'Times in stage and deadlines updated.'"
+  toast s7 "'Now viewing as Dr. Rivera'\n'Clinician, Site A. Only Site A is visible; the other site's records are not available.'\n(Demo menu › Viewing as, or Settings › View as)"
+  toast s5 "'Demo data reset'\n'Everything is back to the starting point.'"
+  toast s6 "Hosted preview only: 'Print is off in this preview'\n'Open the single-file version of the demo to use it.'\nSame for 'Copy link' and 'Download'"
+endgroup
+
+group gMgr "Toasts raised on Authorizations › Reviews this week"
+  toast m1 "After 'Draft all due reviews': 'Cadence drafted 4 reviews' (the number varies), 'Nothing to draft' or 'Cadence is paused in Settings'"
+  toast m2 "'Review signed', 'Review updated'"
+  toast m3 "After 'Sign all clean drafts': '33 reviews signed' (the number varies) or 'No clean drafts to sign'"
+  goto g1 "Continues in: Authorizations › Reviews this week › Sign a review"
+endgroup
+
+goto g2 "Continues in: Site map › Every menu tab and sub tab"
+s1 --> p1 --> d1
+d1 -->|Done| t1
+d1 -->|Caution| t2
+d1 -->|Risk| t3
+d1 -->|Information| t4
+t1 & t2 & t3 & t4 --> w1 --> p2 --> e1
+t1 & t2 & t3 & t4 --> c1 --> p3 --> e1
+p1 --> p4
+p4 --> p5
+s2 & s3 & s4 & s5 & s6 & s7 --> s1
+m1 & m2 & m3 --> s1
+m3 --> g1
+p5 --> g2

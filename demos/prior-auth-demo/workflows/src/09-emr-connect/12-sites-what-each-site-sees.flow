@@ -1,0 +1,54 @@
+title: EMR Connect › Sites › What each site sees
+route: /emr
+intro: Record systems belong to a site. 'Clinical record · Site A' and 'Clinical record · Site B' each hold all the programs at their site, and the Billing system serves both. The page lists only the systems at the sites in view, and a viewer limited to one site cannot sync, fix, reconnect, edit or disconnect the other site's system, because it is not there.
+dir: TD
+also: Demo data. The site view comes from the top bar (a switch for Jordan Perez and Alex Morgan, a locked label for Dr. Rivera and Sam Okafor). Every flow that works on a system (connect, fix, reconnect, sync, disconnect, mappings, write-back) works the same on the systems that are listed.
+---
+start s1 "Open EMR Connect\nWith Both sites, Site A, Site B, or as Dr. Rivera or Sam Okafor"
+decision d1 "Which sites are in view?"
+
+group gBoth "Both sites"
+  screen b1 "Jordan Perez or Alex Morgan on 'Both sites'\nThree rows: 'Clinical record · Site A', 'Clinical record · Site B', 'Billing system'\n6 min, 23 charts, 142 files, 2 failures\n'Action required: Billing system needs attention. Also: 2 fields need a mapping...'\nAdvanced: 10 mappings, 2 waiting, 8 log lines"
+endgroup
+
+group gA "Site A"
+  screen a1 "Dr. Rivera, or Jordan or Alex on 'Site A'\nTwo rows: 'Clinical record · Site A' and 'Billing system'\n6 min, 13 charts, 80 files, 2 failures\n'Action required: Billing system needs attention.'\nAdvanced: 7 mappings, none waiting, 5 log lines"
+  process a2 "Site B's record system, its two unmapped fields and its log lines are not listed or counted"
+endgroup
+
+group gB "Site B"
+  screen c1 "Sam Okafor, or Jordan or Alex on 'Site B'\nTwo rows: 'Clinical record · Site B' and 'Billing system'\n11 min, 10 charts, 62 files, 2 failures\n'Action required: Billing system needs attention. Also: 2 fields need a mapping...'\nAdvanced: 5 mappings, 2 waiting, 3 log lines"
+  process c2 "Site A's record system and its log lines are not listed or counted"
+endgroup
+
+process tag "For a viewer with both sites on one site, the title carries a small 'Site A' or 'Site B' tag\nThe Connection health line says which site: 'Site A. 1 of 2 systems connected...'"
+process note "For a one-site viewer the line has an info icon\n'A record system belongs to a site. You see Site A's record system and the billing system both sites share. The other site's record system is not shown, and you cannot change it.'"
+process sum "Charts and files: Site A plus Site B always equals Both sites\nSync failures count each system once: the shared Billing system shows its 2 in every view"
+
+click cSync "Click 'Sync now' in the header (one site in view)"
+store sy "Only the systems in view sync\nOnly that site's charts and files go up; the other site's stay as they were\nThe log line is about that site"
+
+click cConn "Click 'Connect a system'"
+input pick "Choose the site it serves\nA viewer with both sites: 'Site A', 'Site B' or 'Both sites'\nA one-site viewer: only their own site, as text"
+store ns "The new system is listed for that site only\nA system connected as Sam Okafor for Site B never shows for Dr. Rivera"
+
+click cSw "Switch the viewer or the site while a pop-up or the Manage drawer is open for a system that leaves the view"
+process gone "The drawer or pop-up closes: it is only drawn for a system in view\nThe store also refuses a change to a system at a site the viewer cannot see"
+
+goto g1 "Continues in: EMR Connect › Connect a system › Choose the system and contact"
+goto g2 "Continues in: EMR Connect › Sync › What other screens use from EMR Connect"
+goto g3 "Continues in: Who can see what › Roles, sites and a record at the other site"
+end e1 "Each viewer sees and changes only the systems at their sites"
+
+s1 --> d1
+d1 -->|Both sites| b1
+d1 -->|Site A| a1 --> a2
+d1 -->|Site B| c1 --> c2
+b1 & a2 & c2 --> tag --> note --> sum
+sum --> cSync --> sy
+sum --> cConn --> pick --> ns
+sy & ns --> e1
+cSw --> gone --> e1
+pick -.-> g1
+sy -.-> g2
+e1 --> g3

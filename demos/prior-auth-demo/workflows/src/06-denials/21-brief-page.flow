@@ -1,0 +1,55 @@
+title: Denial Intelligence › Peer-to-peer › The brief
+route: /denials/D-3318/brief
+intro: The one-page brief a clinician keeps open during the call: opening, three points, what the payer may say and the ask on the left, call details and tools on the right. 'Key dates and numbers' and 'Have these open' are folded sections that stay in the page, and open on paper when the brief is printed.
+dir: TD
+---
+start s1 "Click 'Open the brief' in the peer-to-peer choice of Your options (call booked)"
+start s2 "A call is booked from Your options or its 'Compare the options' panel; the app opens the brief"
+start s3 "Open /denials/D-xxxx/brief by its address"
+decision d1 "Does a request with that id exist?"
+screen e1 "'We could not find that denial'\n'It may have been closed or the address is wrong.'"
+click c0 "Click 'Back to Denial Intelligence'"
+goto g0 "Continues in: Denial Intelligence › Ways in"
+
+screen sc1 "'Peer-to-peer brief · D-3318' with the pill 'Draft for clinician review'\nSub line 'M.C., 38 · Cardinal Health Plan · Residential 3.5'\nCrumbs: 'Denial Intelligence' › 'D-3318' › 'Brief'"
+click c1 "Click the crumb 'D-3318' ('Denial Intelligence' opens the dashboard)"
+goto g1 "Continues in: Denial Intelligence › A denial opened"
+toast b1 "'Outcome logged: ...' banner\nShows once an outcome is logged, with 'Back to the denial'"
+click c2 "Click 'Back to the denial'"
+
+screen l1 "'Your opening': the paragraph to read out"
+screen l2 "'Three points to make'\nNumbered, each with a source chip"
+screen l3 "'What they may say': each line and a short answer"
+screen l4 "'The ask.' (green banner)"
+screen l5 "'Key dates and numbers' (folded)\nDenial received, Call booked, Peer-to-peer window closes, Written appeal due\nDays or units, Time left in the window, Chance, Similar decisions"
+
+screen r1 "'Call details'\nPayer, Who to call, Reviewer, Window, Closes in, Dial-in"
+process p1 "'Window' reads 'Not booked yet' before a call is booked\n'Closes in' is red under 2 days, ochre under 7, 'Closed' when over"
+screen r2 "'Chance of overturning'\n64%, 'likely 55–72%', a word (Moderate), and 'A written appeal is 58%.'"
+screen r3 "'Have these open' (folded, '0 of 3' on the right)\nOne tick box per chart source, plus fixes added to the evidence"
+click cf "Click the header of 'Key dates and numbers' or 'Have these open', or press Enter or Space on it"
+process pf "Section opens or closes\nThe summary line changes with the ticks"
+click c3 "Tick or untick a document (open the section first)"
+store st1 "Tick saved on the denial (kept when you leave and return)"
+screen r4 "Three buttons: 'Copy brief', 'Print', 'Record the call outcome'"
+goto g2 "Continues in: Denial Intelligence › Peer-to-peer › Brief buttons"
+goto g3 "Continues in: Denial Intelligence › Peer-to-peer › Record the call outcome"
+click c4 "Click the link 'Appeal analysis report' (top right of the header)"
+goto g4 "Continues in: Denial Intelligence › Appeal analysis report › Open and generate"
+process p0 "Text of the brief comes from the denial type, payer and numbers\nD-3318 is written out in full"
+
+s1 --> d1
+s2 --> d1
+s3 --> d1
+d1 -->|No| e1 --> c0 --> g0
+d1 -->|Yes| sc1
+sc1 --> p0
+sc1 --> c1 --> g1
+sc1 --> c4 --> g4
+sc1 -.-> b1 --> c2 --> g1
+sc1 --> l1 --> l2 --> l3 --> l4 --> l5
+sc1 --> r1 --> p1
+r1 --> r2 --> r3 --> cf --> pf --> c3 --> st1
+sc1 -.-> l5
+r3 --> r4 --> g2
+r4 --> g3

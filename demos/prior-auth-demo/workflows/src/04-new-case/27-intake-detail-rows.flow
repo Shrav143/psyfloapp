@@ -1,0 +1,64 @@
+title: Authorizations › New Case › Intake › Patient, insurance and request rows
+route: /authorizations/new/:draftId (Intake, the onboarding form)
+intro: The form of patient onboarding, one card in three sections and a folded More. Every field writes straight into the draft; nothing needs saving. An import, a referral, a verification or a known patient fills the fields, and every one stays editable. Required fields carry an asterisk; nothing is blocked here, and Review & submit lists what is missing.
+dir: TD
+---
+start s1 "Intake is open on an initial or a retroactive authorization"
+start s2 "'Continues in' from Payers or Eligibility & Benefits:\na new payer or a verification fills the coverage"
+
+group gPat "Patient"
+  input iIni "Type 'Initials' (upper case, at most 8 characters)"
+  input iDob "Pick 'Date of birth'"
+  process pAge "Age is worked out from the date of birth on the demo day and shown beside it\nThe age box is then read only"
+  input iAge "A draft that has only an age (from a referral) keeps its age, editable"
+  input iSex "Pick 'Sex': Female, Male, Other or not stated"
+endgroup
+
+group gCov "Coverage"
+  input iPayer "Pick 'Payer'"
+  process pPlans "'Plan type' offers the payer's own plans, the first one picked\nSummit: HMO. Beacon: PPO, HMO, EPO. Harborview: Medicare Advantage, D-SNP"
+  input iPlan "Pick another 'Plan type'"
+  input iMem "Type 'Member ID'"
+endgroup
+
+group gReq "Request"
+  input iLoc "Pick 'Level of care': Residential 3.5, IOP, PHP, Detox"
+  input iType "Pick 'Request type': Initial request or Admission\nA retroactive request records Retro-authorization and shows no choice"
+  input iStart "Pick 'Requested start date'\nRetroactive: 'First date of service' and 'Last date of service'"
+  input iDx "Search 'Primary diagnosis (ICD-10)' by code or name, pick one\nThe first chip is the primary"
+  input iSite "'Site': Site A or Site B with both sites in view\nOne site in view, or a case with its id: the site name only"
+endgroup
+
+group gMore "More, folded"
+  click cMore "Click 'More'\nIts summary names what is filled, e.g. 'Referral source'"
+  input m1 "'Secondary insurance': None or a payer, then its member ID"
+  input m2 "'Requested end date': empty asks for the usual length"
+  input m3 "'Attending clinician' and 'Clinician NPI' (10 digits, else '10 digits')"
+  input m4 "'Referral source' (a referral fills it with the organization and the clinician)"
+  input m5 "'Guardian': initials and relationship, only when the patient is under 18"
+endgroup
+
+store st "Each change is written to the draft at once\nAfter the agents ran, a change clears their work"
+toast tStale "'Records changed after the agents ran'\n'Their work was cleared. The agents check again when you continue.'"
+screen sMark "A field an import filled says 'From EMR', 'From file' or 'From screenshot' under it\nuntil the person changes it"
+process pState "The Intake state on the stepper follows\nComplete once patient, payer, service and dates are in"
+goto gImp "Continues in: Authorizations › New Case › Import › Review what was found and apply"
+goto gSite "Continues in: Authorizations › New Case › Sites and scope"
+goto gStates "Continues in: Authorizations › New Case › Step states"
+
+s1 --> iIni --> iDob --> pAge
+s1 --> iAge
+iDob --> iSex
+s1 --> iPayer --> pPlans --> iPlan --> iMem
+s2 --> iPayer
+s1 --> iLoc --> iType --> iStart --> iDx --> iSite
+iSite -.-> gSite
+s1 --> cMore --> m1 & m2 & m3 & m4 & m5
+iIni --> st
+iSex --> st
+iMem --> st
+iDx --> st
+m5 --> st
+st -.-> tStale
+st --> pState -.-> gStates
+s1 -.-> sMark -.-> gImp

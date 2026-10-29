@@ -1,0 +1,35 @@
+title: Authorizations › Eligibility & Benefits › Sites
+route: /authorizations/eligibility
+intro: A clinic can run more than one site, and staff at one site must not see the other's patients. Every list, count, search, result and notice in Eligibility & Benefits follows the site in view. A check belongs to the site of its case, and a check made on the Verify form before any case exists belongs to the site in view when it was made.
+dir: TD
+also: Demo only: sites are placed by case ID in the demo. Both sites is Site A plus Site B. Dr. Rivera sees Site A only and Sam Okafor Site B only (Demo menu, 'Viewing as').
+---
+start s1 "Open Eligibility & Benefits"
+decision q1 "Who is looking?"
+process p1 "Jordan Perez or Alex Morgan, both sites\nThe top bar offers Both sites, Site A and Site B"
+process p2 "Dr. Rivera (Site A) or Sam Okafor (Site B)\nThe top bar says 'Site A only' or 'Site B only', with no switch\n'Both sites' is not offered"
+click c1 "Click 'Site A' or 'Site B' in the top bar"
+process p3 "Rows, the verdict tiles, the count, search, menus and the sidebar badge\nare worked out from the checks inside the sites in view\nThe title gets a 'Site A' tag when the view is narrowed"
+process p4 "Totals add up: Both sites = Site A + Site B\nfor patients, cleared, authorization first, fix before billing, re-checks due and the badge"
+click c2 "Open a result, or a link to one"
+decision q2 "Does the check belong to a site in view?"
+screen sc "The result"
+screen o1 "'This coverage check is not available at Site A'\nIt names the case and its site, never a patient or a payer\nBoth-site staff get 'Show Site B'"
+click c3 "Click 'Check now' on the Verify form\nThe sample 'Authorization first' (J.M.'s card, R-1042 at Site A) is offered only when Site A is in view"
+store st1 "The new check is filed under the site in view\n(Site A when both are in view)\nIts ID, V-1001 and on, resolves to that site on every screen"
+decision q3 "Verify re-checks on its own (the Demo clock passes a time)"
+toast t1 "One bell message per site\nA message never names a patient at a site the viewer cannot see"
+goto g1 "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows"
+goto g2 "Continues in: Authorizations › Eligibility & Benefits › The shared verification record"
+goto g3 "Continues in: Authorizations › Eligibility & Benefits › Re-check on its own"
+
+s1 --> q1
+q1 -->|Both sites| p1 --> c1 --> p3
+q1 -->|One site| p2 --> p3
+p3 --> p4 --> g1
+p3 --> c2 --> q2
+q2 -->|Yes| sc
+q2 -->|No| o1
+p3 --> c3 --> st1 --> g2
+p3 -.-> q3
+q3 -->|Yes| t1 --> g3

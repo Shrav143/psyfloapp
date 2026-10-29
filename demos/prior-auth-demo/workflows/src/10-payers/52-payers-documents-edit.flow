@@ -1,0 +1,52 @@
+title: Payers › Rules & Instructions › Edit the document list
+route: /payers/summit?tab=documents
+intro: 'Edit list' changes the documents for the one level of care shown. Rows can be renamed, added and removed; there is no reordering. A reason is required and each change is logged. New drafts use the list at once, sent requests keep what they were sent with, and open drafts wait for 'Update drafts'.
+dir: TD
+---
+start s1 "Click 'Edit list'\nbeside 'Level of care'"
+overlay m "Edit what Summit wants for Residential 3.5\nNew drafts use this list at once. Sent requests keep\nwhat they were sent with. Click Update drafts to redraft open ones."
+process lvl "Edits only the level of care shown\nTo change IOP, close this and switch 'Level of care' first"
+screen rws "One row per document\nNumber, document name box, 'What it must show' box, bin"
+input i1 "Type a document name"
+input i2 "Type 'What it must show'\nExample: Within 14 days"
+click rm "Click the bin\n'Remove document 4'"
+process rm2 "Row vanishes at once\nNo confirmation, numbers close up"
+click ad "Click 'Add a document'"
+process nw "Blank row added at the end"
+input i3 "Type 'Reason for the edit' (required)"
+click cs "Click 'Save and log the edit'"
+decision d1 "Is the reason empty?"
+toast er "Add a reason. It goes in the edit log."
+process cl "Drop rows whose name is blank, trim the rest"
+process df "Compare with the saved list\n'Added a document', Changed 'name', 'Removed a document'"
+decision d2 "Did anything change?"
+toast t0 "'Nothing changed'"
+store st "Document list for that level of care replaced"
+store lg "One edit log entry per change\nArea 'Documents'"
+store un "'Edits waiting' goes up by one"
+store nt "Bell notification 'Summit document list edited'\nopens Rules & Instructions at Clinical documentation"
+toast t1 "'Residential 3.5 list saved'\nNew drafts use it at once.\nClick Update drafts to redraft open ones."
+screen out "Clinical documentation shows the new list and count\nBanner '1 edit applies to new drafts only'"
+process ck "'Try it on a case' now reads the new list\nA removed document can no longer be 'still needed'\nNew case reads the same saved list for its checks"
+click cx "Click 'Cancel'"
+click cesc "Press Escape, click the X\nor click the dimmed area"
+endx x1 "Modal closes\nNothing saved"
+end e1 "Edited list is in force for new drafts"
+goto g1 "Continues in: Payers › Rules & Instructions › Try it on a case"
+goto g2 "Continues in: Payers › Edits waiting › Update drafts"
+goto g3 "Continues in: Payers › Configuration feeds the rest of the app"
+
+s1 --> m --> lvl --> rws
+rws --> i1 --> i2 --> i3
+rws --> rm --> rm2 --> i3
+rws --> ad --> nw --> i1
+i3 --> cs --> d1
+d1 -->|Yes| er --> i3
+d1 -->|No| cl --> df --> d2
+d2 -->|No| t0 --> x1
+d2 -->|Yes| st --> lg --> un --> nt --> t1 --> out --> e1
+out --> ck --> g1
+out -.-> g2
+t1 -.-> g3
+m --> cx --> x1
+m --> cesc --> x1

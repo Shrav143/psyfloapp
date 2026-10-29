@@ -1,0 +1,83 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "<b>Checklist, Coverage section:</b><br/>'Verify checked coverage' row" }
+  s2@{ shape: stadium, label: "Full page: open the 'Coverage' tab" }
+  d1@{ shape: diam, label: "Does the referral list an insurance?" }
+  p1@{ shape: rect, label: "<b>Row says 'Optional'</b><br/>'Verify needs the insurance and member ID first.'<br/>No button" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New Case › Referral › Ask the referrer" }
+  p2@{ shape: rect, label: "<b>Row says 'Optional'</b><br/>'Not checked yet. Verify looks up eligibility, the plan and whether an authorization is needed first.'" }
+  c1@{ shape: trap-t, label: "Click 'Run coverage check'" }
+  subgraph gTab ["Coverage tab"]
+  sc1@{ shape: curv-trap, label: "<b>Card 'Coverage has not been checked'</b><br/>'Verify looks up eligibility, the plan, the authorization rule and the program's network status.'" }
+  p3@{ shape: rect, label: "<b>No insurance on the referral:</b><br/>'Verify will report that it cannot confirm coverage'" }
+  c2@{ shape: trap-t, label: "Click 'Run coverage check'" }
+  o1@{ shape: win-pane, label: "<b>Card 'Verify is checking coverage'</b><br/>'This takes a few seconds.'<br/>Eligibility with Summit · Benefits and plan · Authorization rule and network status" }
+  end
+  st0@{ shape: cyl, label: "<b>Verify is running for this referral</b><br/>Row shows 'Verify is checking coverage.' with a spinner" }
+  a1@{ shape: hex, label: "<b>Verify checks eligibility, benefits and plan,</b><br/>authorization rule and network status" }
+  d2@{ shape: diam, label: "What does Verify find?" }
+  st1@{ shape: cyl, label: "<b>Coverage saved on the referral</b><br/>Timeline 'Verify checked coverage: …'" }
+  t1@{ shape: odd, label: "<b>'Verify checked coverage'</b><br/>'Covered and ready to admit'" }
+  t2@{ shape: odd, label: "<b>'Verify checked coverage'</b><br/>'Covered, but you need an authorization first'" }
+  t3@{ shape: odd, label: "<b>Amber toast 'Verify checked coverage'</b><br/>'Coverage has lapsed. Fix this before billing'" }
+  p4@{ shape: rect, label: "<b>Checklist row turns Done</b><br/>Progress changes from 11 to 12 items" }
+  p5@{ shape: rect, label: "<b>Row turns 'Check this' with 'Check again'</b><br/>Red banner on the full page 'Verify found that coverage has lapsed' with 'Open coverage'" }
+  sc2@{ shape: curv-trap, label: "<b>Coverage tab result</b><br/>Banner with the headline, 'Check again'<br/>Card 'Payment checks' with six lines and 'Checked live at 10:42 am'" }
+  c3@{ shape: trap-t, label: "Click 'Check again'" }
+  c4@{ shape: trap-t, label: "Click 'Open full Eligibility & Benefits check'" }
+  p6@{ shape: rect, label: "<b>Opens Verify a patient with the referral's payer,</b><br/>member ID, level of care and a made-up birth date filled in<br/>The address keeps ?referral=RF-2053 (and ?case= once the referral is a request)" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › Ways in and pre-fill" }
+  s3@{ shape: stadium, label: "<b>Coming back: 'Start authorization'</b><br/>on the coverage result (authorization first)" }
+  p7@{ shape: rect, label: "<b>Opens a NEW case with payer, level of care, member ID, initials and age</b><br/>It is not tied to the referral or its case" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › New Case › How a case starts and resumes" }
+  s4@{ shape: stadium, label: "<b>Click 'Back to referral RF-2053'</b><br/>on Verify a patient or its result<br/>(shown when the address has ?referral=)" }
+  p8@{ shape: rect, label: "<b>Opens the full referral page for RF-2053</b><br/>Once the referral is a request the link reads 'Back to case R-1042'<br/>The full page finds the case that holds the referral, so 'Back to the case' still works" }
+  s1 --> d1
+  d1 -->|"No"| p1 --> g1
+  d1 -->|"Yes"| p2 --> c1
+  c1 --> st0
+  s2 --> sc1
+  sc1 -.-> p3
+  sc1 --> c2 --> st0
+  st0 --> o1
+  st0 --> a1 --> d2
+  d2 -->|"Covered"| st1
+  d2 -->|"Authorization first"| st1
+  d2 -->|"Lapsed"| st1
+  st1 --> t1 --> p4
+  st1 --> t2 --> p4
+  st1 --> t3 --> p5
+  p4 --> sc2
+  p5 --> sc2
+  p5 --> c3 --> st0
+  sc2 --> c3
+  sc2 --> c4 --> p6 --> g2
+  s4 --> p8 --> sc2
+  s3 --> p7 --> g3
+  class s1,s2,s3,s4 k_start
+  class d1,d2 k_decision
+  class p1,p2,p3,p4,p5,p6,p7,p8 k_process
+  class g1,g2,g3 k_goto
+  class c1,c2,c3,c4 k_click
+  class sc1,sc2 k_screen
+  class o1 k_overlay
+  class st0,st1 k_store
+  class a1 k_agent
+  class t1,t2,t3 k_toast
+  style gTab fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63

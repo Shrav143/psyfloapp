@@ -1,0 +1,30 @@
+title: EMR Connect › No connection › Import a record and start a New Case
+route: /emr
+intro: For a record system that has no connection: one small row under Connection health opens the shared import in a side panel. Import an export (CSV or XLSX with field mapping, or a PDF) or paste a screenshot; on Apply, a New Case starts with the patient filled in.
+dir: TD
+also: Demo only: the screenshot reading and the PDF reading are simulated and say so. Files and images stay in the browser.
+---
+start s1 "Open EMR Connect"
+screen sc "Row under Connection health\n'No connection for a system? Import an export or paste a screenshot'\nButton 'Import a record'"
+click c1 "Click 'Import a record'"
+overlay o1 "Side panel 'Import a record'\n'Import a file' and 'Paste a screenshot'\nNo 'Pull from EMR' here"
+click cFile "Click 'Import a file'"
+click cShot "Click 'Paste a screenshot', or press Ctrl+V or Cmd+V in the panel"
+goto gFile "Continues in: Authorizations › New Case › Import › Import a file with field mapping"
+goto gShot "Continues in: Authorizations › New Case › Import › Paste a screenshot"
+screen sRev "Review: '9 fields found', a box for each\n'Apply 10'"
+click cApply "Click 'Apply 10'"
+store st1 "A new case is made at the site in view\nThe patient, coverage and request are filled; the notes become documents"
+toast t1 "'Applied 9 fields and 1 document'"
+process p1 "New Case opens on Intake with the case\nEach filled field says 'From file' or 'From screenshot'"
+goto gIntake "Continues in: Authorizations › New Case › Intake › Initial authorization"
+click cEsc "Press Escape, click outside, or the X"
+endx e1 "Panel closes; nothing is made"
+
+s1 --> sc --> c1 --> o1
+o1 --> cFile --> gFile
+o1 --> cShot --> gShot
+gFile -.-> sRev
+gShot -.-> sRev
+sRev --> cApply --> st1 --> t1 --> p1 --> gIntake
+o1 --> cEsc --> e1

@@ -1,0 +1,119 @@
+import { useNavigate } from "react-router-dom";
+import { Button, IdLink, Table, Td, Th } from "@/components/ui";
+import { verdictOf, type EbPatient } from "@/data/eligibility";
+import { payerById } from "@/data/seed";
+import { PROGRAM_LABEL } from "@/data/types";
+import { paths } from "@/routes";
+import { useStore } from "@/store";
+import { AuthChip, BenefitsChip, EligibilityChip, limitText, patientLabel, VerdictChip } from "./chips";
+import { autoState, DUE_AT, NOT_RECHECKED, RE_CHECKED, type AutoState } from "./recheck";
+
+const NOT_CHECKED_PAUSED = "Could not be checked: Verify is paused in Settings";
+
+const when = (at: number, now: number): string => {
+  const m = Math.max(0, now - at);
+  if (m < 1) return "just now";
+  if (m < 60) return `${Math.round(m)} min ago`;
+  if (m < 1440) return `${Math.round(m / 60)} h ago`;
+  const d = Math.round(m / 1440);
+  return d === 1 ? "1 day ago" : `${d} days ago`;
+};
+
+interface Part {
+  text: string;
+  /** Verify is paused, so a re-check did not run: the one part of the line that is not just information. */
+  warn?: boolean;
+}
+
+/** The quiet second line of a row: the program, the payer, the day limit, when it was checked, and what Verify's automatic re-check is doing. */
+function quietParts(p: EbPatient, now: number, busy: boolean, auto: AutoState | null): Part[] {
+  const parts: Part[] = [{ text: p.levelLabel ?? PROGRAM_LABEL[p.program] }, { text: payerById(p.payerId).name }];
+  const limit = limitText(p);
+  if (limit) parts.push({ text: limit });
+  if (p.payerChanged) parts.push({ text: `Now with ${payerById(p.payerChanged.to)?.shortName ?? "another plan"} since ${p.payerChanged.since}` });
+  if (p.idMismatch) parts.push({ text: `The plan has the ID ending ${p.idMismatch.onFile.replace("…", "")}` });
+  if (p.networkUnresolved && p.eligibility.state !== "unavailable") parts.push({ text: "Enrollment not confirmed" });
+  if (p.eligibility.state === "unavailable") parts.push({ text: NOT_CHECKED_PAUSED, warn: true });
+  else if (p.refreshFailed !== undefined) parts.push({ text: "Last refresh could not run: Verify is paused", warn: true });
+  if (busy) parts.push({ text: "Checking now" });
+  else if (auto?.kind === "done") parts.push({ text: RE_CHECKED(auto.at) });
+  else if (auto?.kind === "paused") parts.push({ text: NOT_RECHECKED, warn: true });
+  else if (p.eligibility.state !== "unavailable") {
+    parts.push({ text: `Checked ${when(p.checkedAt, now)}` });
+    if (auto) parts.push({ text: DUE_AT(auto.at) });
+  }
+  return parts;
+}
+
+/** One patient is two lines: the verdict and the chips behind it, then a quiet line with the program, the payer and the rest. The verdict comes right after
+    the patient so it stays in view when a narrow window scrolls the table. The ID and the row open the result; Re-check runs a live check and updates the row in place. */
+export function EbTable({ rows }: { rows: EbPatient[] }) {
+  const nav = useNavigate();
+  const clock = useStore((s) => s.clock);
+  const paused = useStore((s) => s.agentPaused.verify);
+  const rechecking = useStore((s) => s.ebRechecking);
+  const recheck = useStore((s) => s.ebRecheck);
+  return (
+    <Table nowrap className="[&_td]:px-4 [&_th]:px-4 [&_td:first-child]:pl-5 [&_th:first-child]:pl-5 [&_td:last-child]:pr-5 [&_th:last-child]:pr-5">
+      <thead>
+        <tr>
+          <Th>Patient</Th>
+          <Th>Verdict</Th>
+          <Th>Eligibility</Th>
+          <Th>Benefits</Th>
+          <Th>Authorization</Th>
+          <Th aria-label="Re-check" />
+        </tr>
+      </thead>
+      {rows.map((p) => {
+        const busy = rechecking.includes(p.id);
+        const open = () => nav(paths.eligibilityResult(p.id));
+        const quiet = quietParts(p, clock, busy, autoState(p, clock, paused));
+        return (
+          <tbody key={p.id} onClick={open} className="cursor-pointer hover:bg-[#FAF9F6] [&:last-of-type>tr:last-child>td]:border-b-0">
+            <tr>
+              <Td className="border-b-0 pt-3 pb-1 text-[13px]">
+                <IdLink onClick={open}>{p.id}</IdLink> <span className="text-muted">· {patientLabel(p)}</span>
+              </Td>
+              <Td className="border-b-0 pt-3 pb-1">
+                <VerdictChip v={verdictOf(p)} />
+              </Td>
+              <Td className="border-b-0 pt-3 pb-1">
+                <EligibilityChip p={p} />
+              </Td>
+              <Td className="border-b-0 pt-3 pb-1">
+                <BenefitsChip p={p} />
+              </Td>
+              <Td className="border-b-0 pt-3 pb-1">
+                <AuthChip p={p} />
+              </Td>
+              <Td className="border-b-0 pt-3 pb-1 text-right">
+                <Button
+                  size="sm"
+                  loading={busy}
+                  aria-label={`Re-check ${p.id}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    recheck(p.id);
+                  }}
+                >
+                  {busy ? "Checking" : "Re-check"}
+                </Button>
+              </Td>
+            </tr>
+            <tr>
+              <Td colSpan={6} className="pt-0 pb-3 text-[12px] text-muted">
+                {quiet.map((x, i) => (
+                  <span key={x.text}>
+                    {i > 0 ? " · " : ""}
+                    <span className={x.warn ? "text-mid-ink" : undefined}>{x.text}</span>
+                  </span>
+                ))}
+              </Td>
+            </tr>
+          </tbody>
+        );
+      })}
+    </Table>
+  );
+}

@@ -1,0 +1,23 @@
+title: Analytics › Site comparison
+route: /analytics
+intro: 'Site A and Site B' puts the headline figures of the two sites side by side, for the same period and filters. It shows only when the viewer sees both sites and the site view is Both sites.
+dir: TD
+also: Counts add up: Site A plus Site B equals Both sites on every count. A one-site viewer (Dr. Rivera: Site A only, Sam Okafor: Site B only) never sees the card, and every number on the page counts that site only.
+---
+start s1 "Scroll below the denial reasons"
+decision q1 "Does the viewer see both sites, with 'Both sites' chosen?"
+screen n1 "No card\nA click on 'Site A' or 'Site B' in the top bar hides it\nA one-site viewer never has it"
+screen a1 "'Site A and Site B'\n'Counts add up: 598 + 472 = 1,070 decisions.'\nBars: approval rate, first-pass approval, appeals overturned for each site\nOne sentence: 'Site A approves 6 points more often as requested.'"
+screen a2 "Table: Decisions, Approval rate, Denial rate, First-pass approval, Average decision time (and the share past CMS), Preventable denials, Appeals overturned\nColumns: Site A, Site B, Both sites"
+click c1 "Click a figure in the Site A or Site B column"
+process p1 "Opens the case list panel for that site and figure\nThe 'Both sites' column is not clickable"
+goto g1 "Continues in: Analytics › Case list panel"
+click d1 "Click 'View data table'"
+screen d2 "The same table as plain data"
+end e1 "Comparison read"
+
+s1 --> q1
+q1 -->|No| n1
+q1 -->|Yes| a1 --> a2 --> c1 --> p1 --> g1
+a1 --> d1 --> d2
+a2 --> e1

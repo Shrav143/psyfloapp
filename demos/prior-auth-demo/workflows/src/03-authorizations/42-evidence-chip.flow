@@ -1,0 +1,34 @@
+title: Authorizations › Case page › Source chip
+route: /authorizations/case/R-1042?tab=draft
+intro: The small source chips on the draft, the clinical picture and the criteria. Clicking one opens the page of the chart it points to in a side panel, with the sentence the agents used boxed.
+dir: TD
+also: Demo only: the 'page' is a short generated sheet with the quoted sentence. The full document stays in the chart system.
+---
+group gW "Where chips appear"
+  screen w1 "Clinical picture & draft › each draft section\nEach sentence from an applied action adds its own"
+  screen w2 "Clinical picture rail › diagnosis and medications"
+  screen w3 "Criteria & risk › inside each criterion, beside the quoted chart text"
+endgroup
+click c "Click a source chip\ne.g. 'Psychiatric eval p.1'"
+overlay m "Side panel titled with the source name\n'J.M., 34 · R-1042'"
+doc d1 "Sheet 'Source document'\n'Privacy mode: names, dates of birth and member IDs masked'"
+doc d2 "Facts on the sheet\nPatient, Payer, Level of care, Request"
+doc d3 "The quoted sentence, boxed and highlighted"
+agent rd "Reader read the chart\nIntegrity checked each sentence against it\n(demo: the quote is stored text)"
+decision dY "Is it a chip for an answer you typed?"
+process yo "Chip reads 'Your answer'\nQuote: 'Typed by you for Scribe on this request.'"
+click x "Click the X"
+click dim "Click the dimmed area"
+click esc "Press Esc"
+end e "Side panel closes\nYou are back on the same tab, nothing changed"
+
+w1 --> c
+w2 --> c
+w3 --> c
+c --> m --> d1 --> d2 --> d3
+d3 -.-> rd
+c --> dY
+dY -->|Yes| yo
+m --> x --> e
+m --> dim --> e
+m --> esc --> e

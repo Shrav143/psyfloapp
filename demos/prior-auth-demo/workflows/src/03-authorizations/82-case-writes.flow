@@ -1,0 +1,54 @@
+title: Authorizations › Case page › What it writes to other screens
+route: /authorizations/case/R-1042
+intro: What a case page changes outside itself: the Dashboard request's chance and history, the notification, the shared lists that Analytics and the draft read, and its row in Authorizations. Nothing here is a link; each happens as a side effect of a click.
+dir: TD
+also: Demo only: a case page only writes to the Dashboard for requests that are on both the queue and the Dashboard. Other requests keep their work on the case page alone.
+---
+start s1 "Apply selected finishes on a case page"
+decision d1 "Is it a queue request that also has a Dashboard entry?"
+store w1 "Dashboard request gets the new chance"
+store w2 "Dashboard request history\n'Scribe added 6 items to the draft. Approval chance is now 88%'"
+process w0 "Only this case page and its row in Authorizations change"
+process q1 "Its row in Authorizations shows the new chance\nThe 'Approval chance, open requests' average moves too"
+toast n1 "Notification from Forecaster: 'Approval chance updated'\n'R-1042 is now 88% after 6 actions.'"
+click n2 "Open Notifications and click 'Approval chance updated'"
+process n3 "The case page of that request opens"
+goto g1 "Continues in: Authorizations › Case page › Ways in"
+
+start s2 "Click 'Dismiss and log' on a case page"
+decision d2 "Is the request on the Dashboard?"
+store w3 "Dashboard request history\n'You dismissed ... Reason: ...'"
+process w4 "Only the case page's History changes\none line, flagged 'Logged decision'"
+store w7 "Dismissal recorded: the request and the reason\nAnalytics reads it"
+
+start s4 "Click 'Add context' on a case page"
+store w8 "Clinical context added to the shared list for the request\nThe draft and New Case read it"
+decision d4 "Is it a queue request that also has a Dashboard entry?"
+store w9 "Dashboard request gets the new chance\nTimeline: 'You added clinical context. ...'"
+process w10 "Its row in Authorizations shows the new chance\nThe approval chance is one point higher for each of the first three notes"
+
+start s3 "A request is signed and sent in New Case"
+store w5 "Dashboard stage 'Received'"
+process w6 "Its row leaves In progress and reads With the payer\nThe sidebar badge drops if it was due now or within 24 hours"
+process w11 "Its case page reads the new stage\nChip 'Received', the request's own status line, a greyed-out 'Sent to payer' and 'Open on the Dashboard'"
+start s5 "The payer decides, or a denial is settled or its appeal is filed"
+process w12 "Its row moves on and stays in the list\nApproved, Partial approval or Denied; a denial whose appeal is filed stays 'Denial route'"
+goto g2 "Continues in: Dashboard › Request drawer › Open and read a request"
+
+s1 --> d1
+d1 -->|Yes| w1 --> w2
+d1 -->|No| w0
+s1 --> q1
+s1 --> n1 --> n2 --> n3 --> g1
+w2 --> g2
+s2 --> d2
+d2 -->|Yes| w3 --> g2
+d2 -->|No| w4
+s2 --> w7
+s4 --> w8 --> d4
+d4 -->|Yes| w9 --> w10
+d4 -->|No| w10
+s3 --> w5 --> w6
+w5 --> w11
+w5 --> g2
+s5 --> w12

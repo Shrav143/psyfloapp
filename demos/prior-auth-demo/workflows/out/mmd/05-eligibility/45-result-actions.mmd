@@ -1,0 +1,78 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "On a result page, read the buttons on the verdict band" }
+  q1@{ shape: diam, label: "Verdict is 'Authorization first'?" }
+  c1@{ shape: trap-t, label: "Click 'Start authorization' (primary)" }
+  p1@{ shape: rect, label: "<b>Opens /authorizations/new?verification=R-1042&type=initial</b><br/>New Case reads the stored verification: payer, level of care, member, initials, age and the check itself<br/>Authorization type is already 'Initial'" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › New Case › Clinical documentation › The checklist and Continue" }
+  q2@{ shape: diam, label: "Is there a request with this ID?" }
+  c2@{ shape: trap-t, label: "Click 'Open case'" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Case page › Ways in" }
+  q3@{ shape: diam, label: "ID starts with 'V-' (a new check, no case yet)?" }
+  c3@{ shape: trap-t, label: "<b>Click 'Open in Authorizations'</b><br/>Opens /authorizations" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Arrive and read the views" }
+  n1@{ shape: rect, label: "No 'Start authorization' button" }
+  p2@{ shape: rect, label: "<b>No case button is shown</b><br/>The check has no case yet" }
+  q4@{ shape: diam, label: "What did the check find?" }
+  c4@{ shape: trap-t, label: "Click 'Request retro-eligibility' (coverage lapsed)" }
+  t1@{ shape: odd, label: "<b>'Retro-eligibility requested'</b><br/>'Navigator will ask Ohio Medicaid to restore coverage from 10/12. You will be told when it answers.'" }
+  x1@{ shape: st-rect, label: "<b>Ohio Medicaid restores the dates</b><br/>(demo: simulated, nothing is sent)" }
+  c5@{ shape: trap-t, label: "Click 'Ask Caller to phone the payer' (coverage ended or not found)" }
+  t2@{ shape: odd, label: "<b>'Caller will phone the payer'</b><br/>'Caller will ask Evergreen about this member and log the call to the case.'" }
+  c9@{ shape: trap-t, label: "Click 'Ask Caller to confirm the benefit' (benefit not confirmed)" }
+  t9@{ shape: odd, label: "<b>'Caller will confirm the benefit'</b><br/>'Caller will confirm the PHP benefit with Harborview and log the call.'" }
+  c10@{ shape: trap-t, label: "Click 'Ask Navigator to check enrollment' (enrollment not confirmed)" }
+  t10@{ shape: odd, label: "<b>'Navigator will check the enrollment'</b><br/>'Navigator will check the clinic's enrollment record with Lakeshore.'" }
+  x2@{ shape: st-rect, label: "<b>The payer's provider line or enrollment record</b><br/>(demo: simulated, nothing is dialled)" }
+  e1@{ shape: stadium, label: "<b>Coverage and enrollment fine: no extra button</b><br/>Other failures are fixed in the case or by 'Re-check'" }
+  cv@{ shape: trap-t, label: "<b>Click 'Create authorization from verification'</b><br/>(every result, every verdict)" }
+  gv@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Create an authorization from a verification" }
+  ce@{ shape: trap-t, label: "<b>Click 'Open Settings'</b><br/>(only when the check did not run)" }
+  ge@{ shape: subproc, label: "Continues in: Settings" }
+  c6@{ shape: trap-t, label: "Click 'Re-check'" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Re-verify a patient" }
+  c7@{ shape: trap-t, label: "Click '← Eligibility & Benefits'" }
+  g5@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › List › What the screen shows" }
+  c8@{ shape: trap-t, label: "<b>Click '← Back to referral RF-2040'</b><br/>With ?case= in the address it reads '← Back to case R-1042'<br/>Shown only when the check began from a referral" }
+  g6@{ shape: subproc, label: "Continues in: Authorizations › New Case › Referral › The full referral page" }
+  s1 --> q1 & q2 & q4 & c6 & c7 & c8 & cv & ce
+  cv --> gv
+  ce --> ge
+  c8 --> g6
+  q1 -->|"Yes"| c1 --> p1 --> g1
+  q1 -->|"No"| n1
+  q2 -->|"Yes"| c2 --> g2
+  q2 -->|"No"| q3
+  q3 -->|"Yes"| p2
+  q3 -->|"No"| c3 --> g3
+  q4 -->|"Lapsed"| c4 --> t1 --> x1
+  q4 -->|"Ended or not found"| c5 --> t2 --> x2
+  q4 -->|"Benefit not confirmed"| c9 --> t9 --> x2
+  q4 -->|"Enrollment not confirmed"| c10 --> t10 --> x2
+  q4 -->|"Nothing of these"| e1
+  c6 --> g4
+  c7 --> g5
+  class s1 k_start
+  class q1,q2,q3,q4 k_decision
+  class c1,c2,c3,c4,c5,c9,c10,cv,ce,c6,c7,c8 k_click
+  class p1,n1,p2 k_process
+  class g1,g2,g3,gv,ge,g4,g5,g6 k_goto
+  class t1,t2,t9,t10 k_toast
+  class x1,x2 k_ext
+  class e1 k_endx

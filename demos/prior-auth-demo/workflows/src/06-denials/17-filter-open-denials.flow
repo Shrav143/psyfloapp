@@ -1,0 +1,32 @@
+title: Denial Intelligence › Open denials list › Filter by payer and reason
+route: /denials?payer=cardinal&reason=Late notice
+intro: Three ways to narrow the dashboard table, all kept in the address: the figures (which also switch to Closed), one payer chip, and a reason that arrives from Analytics. They combine. The figures keep counting the whole view, so 'Open 8' stays 8 while a payer is picked.
+dir: TD
+---
+start s1 "On the dashboard, or open /denials?payer=cardinal&reason=... from Analytics\n('Open in Denial Intelligence' on a reason, a row of 'Common denial reasons by payer')"
+screen fg "Figures 'Open', 'Deadlines this week', 'To decide', 'Peer-to-peer booked', 'Appeals in progress', 'Closed'"
+click cf "Click a figure"
+process pf "'Deadlines this week': 7 days or less on our own clock, overdue included\n'To decide': nothing under way; 'Peer-to-peer booked': chip 'Call booked'\n'Appeals in progress': drafting or with the payer; 'Closed': settled here"
+screen pc "Payer chips: 'All payers', then each payer with a denial in the current figure and its count, most first\n('Cardinal 3', 'Summit 2', 'Beacon 1', ...)"
+click cp "Click a payer chip"
+process pp "Only that payer's rows; the chip is outlined; address ?payer=cardinal\nClick it again, or 'All payers', to clear it"
+process pr "?reason= matches by inclusion: the reason and the denial's type or its words contain each other\nExample: 'Late notice' fits D-3290; 'Continued-stay evidence incomplete' fits D-3318"
+screen rc "Chip 'Reason: Late notice' with an X ('Clear the reason')"
+click cr "Click the X"
+process pq "?reason= leaves the address"
+decision d1 "Any rows left?"
+screen e0 "'No denials match these filters'\nButton 'Clear filters' (payer, reason and figure)"
+screen tb "The table shows only the matches, in the chosen order"
+process p8 "An unknown payer id (?payer=zzz) has no chip and matches nothing: the empty state offers 'Clear filters'"
+goto g1 "Continues in: Denial Intelligence › Open denials list"
+goto g2 "Continues in: Denial Intelligence › A denial opened"
+goto g3 "Continues in: Analytics › Denial reasons"
+
+s1 --> fg --> cf --> pf --> d1
+s1 --> pc --> cp --> pp --> d1
+s1 -.-> pr --> rc --> cr --> pq --> d1
+pr --> d1
+d1 -->|Yes| tb --> g2
+d1 -->|No| e0 --> g1
+pp -.-> p8
+s1 -.-> g3

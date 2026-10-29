@@ -1,0 +1,54 @@
+title: Authorizations › Eligibility & Benefits › Verify › Import the card or the coverage screen
+route: /authorizations/eligibility/verify
+intro: The small import row at the top of the Verify form is the shared import used wherever an EHR record is needed (target 'insurance'). Three ways in end in the same review, and nothing reaches the form until Apply. Apply fills the payer and the member ID; the plan type shows under the payer, and the card's group and coverage dates show in a quiet line. The live check then asks the plan.
+dir: TD
+also: Demo only: FLO's reading of a screenshot or a PDF is simulated (the same image always reads the same), the sample screenshot and export are invented, and an EMR pull reads the demo charts of the site in view. Files never leave the browser.
+---
+start s1 "On the Verify page, look at the import row above the fields"
+decision q0 "Is a clinical record system connected at the site in view?"
+screen r1 "'Pull from EMR', 'Import a file', 'Paste a screenshot'"
+screen r2 "'Import a file', 'Paste a screenshot'"
+
+group gShot "Paste a screenshot"
+  click a1 "Click 'Paste a screenshot'"
+  input a2 "Press Ctrl+V (Cmd+V) with a screenshot of the card or the EMR coverage screen\nor drop or choose an image, or click 'Use a sample screenshot'"
+  agent a3 "FLO reads the image\n'Reading…' with a thumbnail, about 1 second"
+endgroup
+
+group gFile "Import a file"
+  click b1 "Click 'Import a file'"
+  input b2 "Choose or drop a CSV, XLSX or PDF export, or click 'Use a sample export'"
+  overlay b3 "A CSV or XLSX opens the field mapping: each column to a Psyflo field\nPayer, Plan type, Member ID, Group number, Effective from, Effective to, Subscriber\nA PDF is read by FLO instead, like a screenshot"
+  click b4 "Click 'Apply mapping'"
+endgroup
+
+group gEmr "Pull from EMR"
+  click c1 "Click 'Pull from EMR'"
+  input c2 "Pick the chart in 'Chart to pull', then click 'Pull'"
+  ext c3 "The site's clinical record system\n(demo: simulated)"
+endgroup
+
+overlay rv "Review: what was found, one box each, uncertain ones marked to check\nA value that differs from the form says 'replaces …'"
+decision q1 "Apply or Cancel?"
+click ap "Click 'Apply'"
+click cx "Click 'Cancel', or the close button"
+process p1 "Form: payer and member ID filled\nThe live check's Reader row will read 'From the sample screenshot' (or the file, or the EMR)"
+screen p2 "Quiet line under the import row\n'From the sample screenshot · Group GRP-55120 · Effective 01/01/2026 to 12/31/2026'"
+process p3 "Date of birth is not on a card: type it. Program and date of service stay as they were"
+endx e1 "Nothing changes on the form"
+goto g1 "Continues in: Authorizations › Eligibility & Benefits › Verify › Fill in the form"
+goto g2 "Continues in: Authorizations › Eligibility & Benefits › Verify › The live check"
+
+s1 --> q0
+q0 -->|Yes| r1
+q0 -->|No| r2
+r1 --> a1 & b1 & c1
+r2 --> a1 & b1
+a1 --> a2 --> a3 --> rv
+b1 --> b2 --> b3 --> b4 --> rv
+b2 -.->|PDF| a3
+c1 --> c2 --> c3 --> rv
+rv --> q1
+q1 -->|Apply| ap --> p1 --> p2 --> p3 --> g1
+q1 -->|Cancel| cx --> e1
+p1 -.-> g2

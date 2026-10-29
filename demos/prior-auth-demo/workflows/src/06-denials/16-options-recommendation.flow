@@ -1,0 +1,44 @@
+title: Denial Intelligence › Your options
+route: /denials/D-3318
+intro: 'Your options' is the first section under the header: three compact choices side by side (stacked on a narrow window), each with its chance, what it gets back and its own button. The recommended route carries 'Recommended' and, while nothing is under way, the primary button. 'Compare the options' opens a right-hand panel with the radio cards, what each route needs and the reasons for the recommendation.
+dir: TD
+---
+start s1 "A denial is on screen"
+screen sc1 "'Your options' card\nSub line 'From 312 similar Cardinal decisions' ('Benchmark estimate, 58 similar decisions' under 60)\nPeer-to-peer call · 64% · likely 55–72% · 5 to 7 days regained\nWritten appeal · 58% · likely 49–66%\nAccept 7 days and plan the step-down · Nothing regained"
+
+process p1 "Starting point: the denial's win chance (55 when none is set)"
+process p2b "Peer-to-peer chance = the win chance\nWritten appeal = win chance minus 6, never under 5\nAccept has no chance, only 'Nothing regained'\nEach chance reads 'likely' 9 below to 8 above"
+decision r1 "Which route is 'Recommended'?\n(the route of the recommended next step; none for 'Investigate by hand', which shows as a pill in the header)"
+goto g0 "Continues in: Denial Intelligence › A denial opened › Recommended next step"
+goto gs "Continues in: Denial Intelligence › A denial opened › Next step and where it stands"
+
+click b1 "Click 'Book a call' (peer-to-peer choice)"
+click b2 "Click 'Draft the appeal' (or 'Draft the corrected request' when the choice is titled 'Correct and resubmit')"
+click b3 "Click 'Accept the decision'"
+goto g1 "Continues in: Denial Intelligence › Peer-to-peer › Book the call"
+goto g2 "Continues in: Denial Intelligence › Written appeal › Confirm and draft"
+goto g3 "Continues in: Denial Intelligence › Accept the denial"
+
+click c0 "Click 'Compare the options' (only while the denial is open and not filed)"
+overlay ov "Right-hand panel 'Your options'\nSub line 'D-3318 · 312 similar Cardinal decisions'\nThree radio cards with summary, chance, similar decisions and 'Needs: ...'\nThe recommended one is selected and carries 'Recommended'\nUnder them: 'Why FLO suggests peer-to-peer review' and the reasons"
+process pf "Focus goes to the selected card; Tab stays inside the panel"
+click c1 "Click a card (a radio button)"
+decision d2 "'Peer-to-peer call' and the call window has closed?"
+toast t1 "'The peer-to-peer window has closed'\n'A written appeal is still open.'"
+process p6 "Footer button matches the card: 'Book a call' ('Change the time' when a call is booked), 'Draft the appeal' or 'Accept the decision'"
+click c2 "Click the footer button"
+process p9 "Panel closes, the confirm dialog for that route opens"
+click cx "Press Escape, click X or the dimmed area"
+process px "Panel closes, nothing is chosen; focus returns to 'Compare the options'"
+
+s1 --> sc1 --> p1 --> p2b --> r1
+r1 --> g0
+sc1 --> gs
+sc1 --> b1 --> g1
+sc1 --> b2 --> g2
+sc1 --> b3 --> g3
+sc1 --> c0 --> ov --> pf --> c1 --> d2
+d2 -->|Yes| t1
+d2 -->|No| p6 --> c2 --> p9
+p9 --> g1 & g2 & g3
+ov --> cx --> px

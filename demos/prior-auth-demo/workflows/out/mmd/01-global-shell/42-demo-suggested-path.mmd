@@ -1,0 +1,56 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart LR
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "Open the Demo menu" }
+  o1@{ shape: win-pane, label: "<b>'SUGGESTED PATH'</b><br/>Seven buttons, each with a number in a circle" }
+  p0@{ shape: rect, label: "<b>Every step does the same two things:</b><br/>the menu closes, then the app goes to the address" }
+  c1@{ shape: trap-t, label: "Click '1  Dashboard: where every request stands'" }
+  r1@{ shape: rect, label: "Go to /dashboard" }
+  g1@{ shape: subproc, label: "Continues in: Dashboard" }
+  c2@{ shape: trap-t, label: "Click '2  Authorizations: every request in one list'" }
+  r2@{ shape: rect, label: "<b>Go to /authorizations</b><br/>A plain address: arriving from another page, the worklist reopens the last view used (All the first time)" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › Worklist › Arrive and read the views" }
+  c3@{ shape: trap-t, label: "Click '3  New Case: start from a referral'" }
+  r3@{ shape: rect, label: "<b>Go to /authorizations/new</b><br/>A blank draft is started and the address becomes /authorizations/new/draft-..." }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › New Case › Intake › Start with a referral or patient" }
+  c4@{ shape: trap-t, label: "Click '4  Eligibility & Benefits: verify a patient'" }
+  r4@{ shape: rect, label: "Go to /authorizations/eligibility/verify" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Verify › Fill in the form" }
+  c5@{ shape: trap-t, label: "Click '5  Denial Intelligence: D-3318'" }
+  r5@{ shape: rect, label: "Go to /denials/D-3318" }
+  g5@{ shape: subproc, label: "Continues in: Denial Intelligence › A denial opened" }
+  c6@{ shape: trap-t, label: "Click '6  Payers: Cardinal, Changes'" }
+  r6@{ shape: rect, label: "Go to /payers/cardinal?tab=changes" }
+  g6@{ shape: subproc, label: "Continues in: Payers › History & Changes › Read what changed" }
+  c7@{ shape: trap-t, label: "Click '7  Authorizations: reviews this week'" }
+  r7@{ shape: rect, label: "<b>Go to /authorizations?view=reviews</b><br/>The worklist opens on the Reviews this week view" }
+  g7@{ shape: subproc, label: "Continues in: Authorizations › Reviews this week › The view" }
+  s1 --> o1 --> p0
+  p0 --> c1 & c2 & c3 & c4 & c5 & c6 & c7
+  c1 --> r1 --> g1
+  c2 --> r2 --> g2
+  c3 --> r3 --> g3
+  c4 --> r4 --> g4
+  c5 --> r5 --> g5
+  c6 --> r6 --> g6
+  c7 --> r7 --> g7
+  class s1 k_start
+  class o1 k_overlay
+  class p0,r1,r2,r3,r4,r5,r6,r7 k_process
+  class c1,c2,c3,c4,c5,c6,c7 k_click
+  class g1,g2,g3,g4,g5,g6,g7 k_goto

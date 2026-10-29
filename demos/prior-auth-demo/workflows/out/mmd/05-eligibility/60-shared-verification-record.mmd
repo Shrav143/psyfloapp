@@ -1,0 +1,84 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"'DM Sans', 'Segoe UI', system-ui, sans-serif","fontSize":"15px","lineColor":"#5B6B63","primaryTextColor":"#1C2B25","clusterBkg":"#FBF8F3","clusterBorder":"#D9CDBB","edgeLabelBackground":"#FFFFFF"},"flowchart":{"curve":"basis","nodeSpacing":36,"rankSpacing":48,"padding":12,"htmlLabels":true,"useMaxWidth":false,"wrappingWidth":230}} }%%
+flowchart TD
+  classDef k_start fill:#1F5C4B,stroke:#174638,color:#FFFFFF,stroke-width:1.5px,font-weight:600
+  classDef k_end fill:#DDEFE3,stroke:#2E7D4F,color:#14502F,stroke-width:1.5px,font-weight:600
+  classDef k_endx fill:#FBE3E0,stroke:#C0392B,color:#7A1F16,stroke-width:1.5px,font-weight:600
+  classDef k_screen fill:#FFFDF8,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px
+  classDef k_overlay fill:#F1F7F3,stroke:#1F5C4B,color:#1C2B25,stroke-width:2px,stroke-dasharray:5 3
+  classDef k_click fill:#DCEBFA,stroke:#2F6DB5,color:#12365F,stroke-width:1.5px
+  classDef k_input fill:#E4E7FF,stroke:#4C5FD5,color:#1D2670,stroke-width:1.5px
+  classDef k_process fill:#EEF0EE,stroke:#7A857F,color:#26302B,stroke-width:1.5px
+  classDef k_agent fill:#EEE5FA,stroke:#7A4FC2,color:#341A63,stroke-width:1.5px
+  classDef k_decision fill:#FFF0CC,stroke:#D9962B,color:#5C3B00,stroke-width:1.5px
+  classDef k_store fill:#D5F0EA,stroke:#1C8E7B,color:#0B4A3F,stroke-width:1.5px
+  classDef k_doc fill:#F6E9DC,stroke:#B07A4C,color:#4A2E14,stroke-width:1.5px
+  classDef k_ext fill:#FFE6D2,stroke:#E07B39,color:#6B2F06,stroke-width:1.5px
+  classDef k_wait fill:#E4E8EE,stroke:#6B7C93,color:#26303D,stroke-width:1.5px
+  classDef k_toast fill:#FFF9DB,stroke:#C9A400,color:#5A4A00,stroke-width:1.5px
+  classDef k_goto fill:#FFFFFF,stroke:#1F5C4B,color:#1F5C4B,stroke-width:1.5px,stroke-dasharray:5 3
+  s1@{ shape: stadium, label: "A check is made" }
+  s2@{ shape: stadium, label: "New Case needs coverage for a patient" }
+  subgraph gWrite ["Where a record is written"]
+  w1@{ shape: trap-t, label: "Verify page: 'Check now' finishes" }
+  w2@{ shape: trap-t, label: "Eligibility list or result: 'Re-check'" }
+  w3@{ shape: delay, label: "The Demo clock passes a booked re-check time" }
+  w4@{ shape: trap-t, label: "New Case step 2: run a check, or 'Refresh verification'" }
+  end
+  v1@{ shape: hex, label: "<b>Verify (and Criteria, Navigator, Caller) run the check</b><br/>The same rules everywhere: the seeded patient, or the scripted answer from the member ID" }
+  qp@{ shape: diam, label: "Is Verify paused in Settings?" }
+  r1@{ shape: cyl, label: "<b>One record per case, or per V-xxxx check made on the Verify form</b><br/>Patient (initials, age, masked member), payer, program, dates of service,<br/>checked time, 'simulated' source, coverage, plan type and routing, benefits,<br/>authorization requirement, provider, existing authorization, cost share, warnings" }
+  r2@{ shape: rect, label: "<b>Dates of service are kept as the days the check covers</b><br/>A check made for 10/21 covers through 10/31, the end of the month" }
+  r3@{ shape: rect, label: "<b>Authorization requirement is read from the payer's saved rules on Payers</b><br/>Required, concurrent review (an authorization is on file), not required, or unknown" }
+  r4@{ shape: rect, label: "<b>Existing authorization comes from the Case Manager ledger or the limit on the row</b><br/>Reference, level of care, dates, approved, used, status" }
+  r5@{ shape: cyl, label: "<b>A check at no case yet is filed under one site</b><br/>the site in view (Site A when both are in view)" }
+  r6@{ shape: cyl, label: "<b>Paused: nothing is asked</b><br/>A patient already known keeps the last result with the warning 'Verification service unavailable'<br/>Anyone else is saved as 'Not checked'" }
+  subgraph gRead ["Where a record is read"]
+  a1@{ shape: curv-trap, label: "Eligibility list: a row, the verdict tiles, the count, the sidebar badge" }
+  a2@{ shape: curv-trap, label: "Eligibility result: the verdict and its fact, the rows, a warning no row says, History" }
+  a3@{ shape: curv-trap, label: "New Case step 2: the summary and 'View full verification details'" }
+  end
+  q1@{ shape: diam, label: "New Case: is there a record for this patient, payer and program?" }
+  q2@{ shape: diam, label: "Do the dates asked for fall inside the dates the record covers?" }
+  q3@{ shape: diam, label: "Was it checked within the last 24 demo hours?" }
+  q4@{ shape: diam, label: "Did the check actually run? (not 'Not checked')" }
+  u1@{ shape: rect, label: "<b>Reuse the record</b><br/>Step 2 shows it with 'Last verified Tue 10:44 am, 2 min ago. Simulated source.'" }
+  u2@{ shape: rect, label: "<b>Do not reuse: the step offers 'Refresh verification'</b><br/>A refresh runs the check on the demo clock and replaces the record" }
+  u3@{ shape: trap-t, label: "Click 'Refresh verification'" }
+  u4@{ shape: odd, label: "<b>'R-1042 re-checked'</b><br/>'Still Authorization first.'<br/>or 'Could not re-check R-1042' while Verify is paused" }
+  g1@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Re-verify a patient" }
+  g2@{ shape: subproc, label: "Continues in: Authorizations › New Case › How a case starts and resumes" }
+  g3@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › The exceptions" }
+  g4@{ shape: subproc, label: "Continues in: Authorizations › Eligibility & Benefits › Sites" }
+  s1 --> w1 & w2 & w3
+  s2 --> w4
+  w1 & w2 & w3 & w4 --> v1 --> qp
+  qp -->|"No"| r1
+  qp -->|"Yes"| r6 --> r1
+  r1 --> r2 --> r3 --> r4
+  r1 -.-> r5 --> g4
+  r4 --> a1 & a2 & a3
+  s2 --> q1
+  q1 -->|"No"| u2
+  q1 -->|"Yes"| q2
+  q2 -->|"No"| u2
+  q2 -->|"Yes"| q3
+  q3 -->|"No"| u2
+  q3 -->|"Yes"| q4
+  q4 -->|"No"| u2
+  q4 -->|"Yes"| u1 --> a3
+  u2 --> u3 --> w4
+  u3 --> u4 --> g1
+  a3 --> g2
+  r6 -.-> g3
+  class s1,s2 k_start
+  class w1,w2,w4,u3 k_click
+  class w3 k_wait
+  class v1 k_agent
+  class qp,q1,q2,q3,q4 k_decision
+  class r1,r5,r6 k_store
+  class r2,r3,r4,u1,u2 k_process
+  class a1,a2,a3 k_screen
+  class u4 k_toast
+  class g1,g2,g3,g4 k_goto
+  style gWrite fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
+  style gRead fill:#FBF8F3,stroke:#D9CDBB,stroke-width:1.5px,color:#5B6B63
