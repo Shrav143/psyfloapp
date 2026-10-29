@@ -1,5 +1,5 @@
 import { useId, useState, type ReactNode } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Eye, X } from "lucide-react";
 import { Button, ChecklistItem, Field, TextInput } from "@/components/ui";
 import type { CaseDraft, DocSlotId } from "@/data/cases";
@@ -69,9 +69,7 @@ export function DocRow({ row, slot, draft, open, onToggle, onPick, onPreview }: 
     action = (
       <div className="flex max-w-[400px] flex-wrap justify-end gap-2">
         {slot === "referral" && !draft.intakeId ? (
-          <Link to={paths.referrals()}>
-            <Button size="sm" aria-describedby={labelId}>Find the referral</Button>
-          </Link>
+          <Button size="sm" aria-describedby={labelId} onClick={() => nav(paths.referrals())}>Find the referral</Button>
         ) : null}
         <Button size="sm" variant={row.state === "missing" && slot !== "referral" ? "outline" : "ghost"} aria-describedby={labelId} onClick={() => onPick(slot)}>
           Add file

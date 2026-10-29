@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Search, UserRound } from "lucide-react";
 import { Button, Chip, TextInput } from "@/components/ui";
 import { effectiveStatus } from "@/data/assess/status";
@@ -17,6 +17,7 @@ const squash = (s: string): string => s.toLowerCase().replace(/[.\s-]/g, "");
 /** Choose the person this authorization is for. It searches the intakes (the shared record, with the clinical work already done) and the patient book. Picking one reads everything it knows; nothing is retyped.
     If nobody matches, the way out is a referral or a clinical intake, not a second form here. */
 export function PersonPicker({ draft }: { draft: CaseDraft }) {
+  const nav = useNavigate();
   const scope = useScope();
   const intakes = useStore((s) => s.intakes);
   const book = useStore(selectPatientBookInView);
@@ -74,8 +75,8 @@ export function PersonPicker({ draft }: { draft: CaseDraft }) {
       {none ? <p role="status" className="rounded-xl bg-tile px-4 py-3 text-[13px] text-ink2">Nobody at {scope.label} matches “{q.trim()}”.</p> : null}
       <div className="flex flex-wrap items-center gap-2 text-[13px] text-muted">
         <span>Not in Psyflo yet?</span>
-        <Link to={paths.createReferral()}><Button size="sm">Create a referral</Button></Link>
-        <Link to={paths.newIntake()}><Button size="sm">New Clinical Intake</Button></Link>
+        <Button size="sm" onClick={() => nav(paths.createReferral())}>Create a referral</Button>
+        <Button size="sm" onClick={() => nav(paths.newIntake())}>New Clinical Intake</Button>
       </div>
     </div>
   );

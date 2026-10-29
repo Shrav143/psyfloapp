@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { RefreshCw, TriangleAlert } from "lucide-react";
 import { Banner, Button } from "@/components/ui";
 import { selectedServiceOf, serviceName } from "@/data/assess/carePlan";
@@ -11,6 +11,7 @@ import { namesRange } from "../fromIntake";
 
 /** The service came from the care plan. The note keeps what the referral asked for beside what the clinician selected, with the reason, whenever they differ. */
 export function ServiceNote({ draft }: { draft: CaseDraft }) {
+  const nav = useNavigate();
   const intake = useStore((s) => s.intakes.find((r) => r.id === draft.intakeId));
   const link = useStore((s) => s.linkCaseToIntake);
   const note = draft.serviceNote;
@@ -22,7 +23,7 @@ export function ServiceNote({ draft }: { draft: CaseDraft }) {
   return (
     <div className="flex flex-col gap-2.5" data-testid="service-note">
       {note.selected === null ? (
-        <Banner tone="mid" icon={TriangleAlert} title="No service has been selected" action={<Link to={paths.intakeRecord(intake.id, "care")}><Button size="sm">Open Care planning</Button></Link>}>
+        <Banner tone="mid" icon={TriangleAlert} title="No service has been selected" action={<Button size="sm" onClick={() => nav(paths.intakeRecord(intake.id, "care"))}>Open Care planning</Button>}>
           No clinician has selected a service. The referral asked for {serviceName(note.requested)}. Choose the service this authorization names below, or have a clinician select it in Care planning.
         </Banner>
       ) : (
