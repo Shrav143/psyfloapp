@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, ListPlus } from "lucide-react";
 import { Button, TextInput } from "@/components/ui";
-import { sectionParam } from "@/data/assess/nav";
+import { sectionParam, type WorkspaceTarget } from "@/data/assess/nav";
 import type { IntakeRecord } from "@/data/intake/types";
 import { cn } from "@/lib/cn";
 import { paths } from "@/routes";
@@ -12,8 +12,9 @@ import { Why } from "./Why";
 
 const DOT: Record<ContextLine["tone"], string> = { risk: "bg-risk", mid: "bg-mid", neutral: "bg-faint" };
 
-/** "What this section needs": the lines for the open section or module, each with where to fix it and why it is asked. */
-export function ContextLines({ record, ctx }: { record: IntakeRecord; ctx: Context }) {
+/** "What this section needs": the lines for the open section or module, each with where to fix it and why it is asked.
+    `here` is the open section: a line that points at it draws no link, because the link would only reload the screen the person is on. */
+export function ContextLines({ record, ctx, here }: { record: IntakeRecord; ctx: Context; here?: WorkspaceTarget }) {
   if (!ctx.lines.length) return <p className="px-4 pb-2 text-[13px] text-muted">Nothing is missing here.</p>;
   return (
     <ul className="space-y-2 px-4 pb-1">
@@ -25,8 +26,8 @@ export function ContextLines({ record, ctx }: { record: IntakeRecord; ctx: Conte
           </div>
           {l.detail ? <p className="mt-0.5 pl-4 text-[12px] break-words text-ink2">{l.detail}</p> : null}
           <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 pl-4">
-            {l.target ? (
-              <Link to={paths.intakeRecord(record.id, sectionParam(l.target))} className="inline-flex items-center gap-1 text-[12px] font-semibold text-forest hover:underline">
+            {l.href || (l.target && !(here && sectionParam(l.target) === sectionParam(here))) ? (
+              <Link to={l.href ?? paths.intakeRecord(record.id, sectionParam(l.target!))} className="inline-flex items-center gap-1 text-[12px] font-semibold text-forest hover:underline">
                 {l.toLabel ?? "Open"}
                 <ArrowRight size={12} className="ico" />
               </Link>

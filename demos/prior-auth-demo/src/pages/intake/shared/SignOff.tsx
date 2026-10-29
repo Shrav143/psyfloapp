@@ -25,6 +25,7 @@ export function SignOffDialog({ open, onClose, record, title, attestation, signL
   const me = useStore((s) => meOf(s));
   const addAudit = useStore((s) => s.addIntakeAudit);
   const toast = useStore((s) => s.toast);
+  const notify = useStore((s) => s.notify);
   const [agreed, setAgreed] = useState(false);
   const viewer = staffOf(me);
   const clinician = staffOf(CLINICIAN_AT[record.site]);
@@ -60,6 +61,7 @@ export function SignOffDialog({ open, onClose, record, title, attestation, signL
               onClick={() => {
                 addAudit(record.id, { actor: me, action: `Sent for signature: ${title.toLowerCase()}`, detail: clinician?.name });
                 toast({ title: `Sent to ${clinician?.name ?? "the clinician"}`, body: "It waits for their signature. Nothing is signed yet.", tone: "neutral" });
+                notify({ agent: "system", title: `Signature needed: ${title.toLowerCase()}`, body: `${record.id} waits for ${clinician?.name ?? "a clinician"}. Nothing is signed yet.`, to: `/intake/${record.id}`, tone: "mid" });
                 close();
               }}
             >

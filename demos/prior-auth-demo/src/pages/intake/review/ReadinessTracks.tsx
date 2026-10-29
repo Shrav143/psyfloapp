@@ -58,10 +58,11 @@ function Track({ title, track, fix, id }: { title: string; track: ReadinessTrack
   );
 }
 
-/** Both tracks. `fix` draws the way to fix one item: by default a link into the intake workspace; New Authorization passes its own, to a stage. */
-export function ReadinessTracks({ readiness, recordId, fix, className }: { readiness: DualReadinessX; recordId?: string; fix?: (i: ReadinessItemX) => ReactNode; className?: string }) {
+/** Both tracks. `fix` draws the way to fix one item: by default a link into the intake workspace; New Authorization passes its own, to a stage.
+    `here` is the workspace section the tracks are shown in: an item that points at that section draws no link, since the link would only reload the page the person is on. */
+export function ReadinessTracks({ readiness, recordId, fix, here, className }: { readiness: DualReadinessX; recordId?: string; fix?: (i: ReadinessItemX) => ReactNode; here?: string; className?: string }) {
   const link = (i: ReadinessItemX): ReactNode =>
-    fix ? fix(i) : recordId && i.go ? <Link to={fixPath(recordId, i.go)} className="inline-flex items-center gap-1 text-[12px] font-semibold text-forest hover:underline">Open<ArrowRight size={13} className="ico" aria-hidden="true" /></Link> : null;
+    fix ? fix(i) : recordId && i.go && !(here && !i.go.module && i.go.section === here) ? <Link to={fixPath(recordId, i.go)} className="inline-flex items-center gap-1 text-[12px] font-semibold text-forest hover:underline">Open<ArrowRight size={13} className="ico" aria-hidden="true" /></Link> : null;
   return (
     <div className={cn("space-y-4", className)} data-testid="readiness-tracks">
       <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 text-[14px]">

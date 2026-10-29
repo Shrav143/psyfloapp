@@ -1,4 +1,4 @@
-import { HashRouter, MemoryRouter, Navigate, Route, Routes, useLocation, useParams } from "react-router-dom";
+import { HashRouter, Link, MemoryRouter, Navigate, Route, Routes, useLocation, useParams } from "react-router-dom";
 import { Shell } from "@/components/layout";
 import { EmptyState, Page, PageHeader } from "@/components/ui";
 import { HOSTED } from "@/lib/hosted";
@@ -34,7 +34,7 @@ function NotFound() {
   return (
     <Page>
       <PageHeader title="Page not found" sub="That address is not part of the demo." />
-      <EmptyState icon={SearchX} title="Nothing here">Use the sidebar to get back on track.</EmptyState>
+      <EmptyState icon={SearchX} title="Nothing here" action={<Link to={paths.dashboard()} className="inline-flex h-[38px] items-center rounded-xl bg-forest px-4 text-sm font-medium text-white hover:bg-forest-dark">Go to the dashboard</Link>}>Use the sidebar to get back on track.</EmptyState>
     </Page>
   );
 }

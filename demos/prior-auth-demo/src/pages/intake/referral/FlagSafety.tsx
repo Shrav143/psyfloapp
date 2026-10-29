@@ -16,7 +16,11 @@ export function FlagSafety({ record }: { record: IntakeRecord }) {
   const [tried, setTried] = useState(false);
   if (record.safety?.status === "open") {
     return (
-      <Button size="sm" variant="danger" icon={ShieldAlert} onClick={() => document.querySelector("[data-safety]")?.scrollIntoView({ behavior: "smooth", block: "center" })}>
+      <Button size="sm" variant="danger" icon={ShieldAlert} onClick={() => {
+          const el = document.getElementById("safety-alert");
+          el?.scrollIntoView({ behavior: "smooth", block: "center" });
+          el?.focus({ preventScroll: true });
+        }}>
         Safety alert open
       </Button>
     );

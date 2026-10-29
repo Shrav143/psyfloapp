@@ -7,6 +7,7 @@ import { completeness, isOpen, readiness } from "@/data/intake/checklist";
 import { staffOf } from "@/data/intake/seed";
 import { ASSESSMENT_SECTIONS, type IntakeRecord } from "@/data/intake/types";
 import { shortDate } from "@/lib/time";
+import { paths } from "@/routes";
 import { feedCount } from "../assessment/feed";
 import { GROUPS, groupProgress, sectionLabel } from "../assessment/groups";
 import { needsOf, ruleLine, type Explain, type Need } from "./needs";
@@ -29,6 +30,8 @@ export interface ContextLine {
   detail?: string;
   tone: "risk" | "mid" | "neutral";
   target?: WorkspaceTarget;
+  /** A place that is not a section of the workspace, such as a panel; it wins over `target`. */
+  href?: string;
   toLabel?: string;
   explain: Explain;
 }
@@ -71,7 +74,7 @@ function clinical(r: IntakeRecord, plan: AssessmentPlan | null): Context {
   }
   const drafts = r.suggestions.filter((s) => s.section === "assessment" && s.status === "pending" && s.field !== "safety").length;
   if (drafts) lines.push({ key: "drafts", text: `${drafts} AI ${drafts === 1 ? "draft" : "drafts"} to review`, detail: "Accept, edit or reject each one.", tone: "mid", target: to, toLabel: "Review", explain: ex("Agents proposed these from documents or conversations. Nothing is written until a person decides.", "Agent suggestions, each with its source (simulated)") });
-  if (r.scribe && (r.scribe.status === "reviewing" || r.scribe.status === "stopped")) lines.push({ key: "scribe", text: "The Record Intake draft waits for review", tone: "mid", target: to, toLabel: "Open Record Intake", explain: ex("The AI Scribe drafted a note and proposals from the simulated transcript.", "Record Intake session (simulated audio)") });
+  if (r.scribe && (r.scribe.status === "reviewing" || r.scribe.status === "stopped")) lines.push({ key: "scribe", text: "The Record Intake draft waits for review", tone: "mid", target: to, href: paths.intakeRecord(r.id, "clinical", "scribe"), toLabel: "Open Record Intake", explain: ex("The AI Scribe drafted a note and proposals from the simulated transcript.", "Record Intake session (simulated audio)") });
   const all = ASSESSMENT_SECTIONS.every((s) => !!r.assessment.fields[s.id]?.value);
   if (all && r.assessment.status !== "signed") lines.push({ key: "sign", text: "A qualified clinician signs the assessment", tone: "neutral", target: to, toLabel: "Open", explain: ex("The attestation confirms a clinician reviewed the assessment, including AI-drafted content.", "Core module: Review & sign-off", ruleLine(plan, "review-signoff")) });
   const reuse = feedCount(r);

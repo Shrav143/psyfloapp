@@ -44,7 +44,7 @@ export function GateCard({ record, now }: { record: IntakeRecord; now: number })
     <Card data-card="gate" id="authorization-gate">
       <CardHeader title="Ready for Authorization Review" subtitle="What is done and what is missing. Readiness is not an approval." right={<Pill tone={ready ? "good" : "mid"} dot>{ready ? "Clinical readiness complete" : "Clinical readiness open"}</Pill>} />
       <CardBody className="space-y-4">
-        <ReadinessTracks readiness={readiness} recordId={record.id} />
+        <ReadinessTracks readiness={readiness} recordId={record.id} here="care" />
         <div className="space-y-2 border-t border-line pt-3">
           <p className="text-[13px]">
             <span className="text-muted">Request type: </span>

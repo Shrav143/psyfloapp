@@ -45,6 +45,8 @@ export function DecisionBar({ record, dups = [], dupChosen = false, hideRequest 
   const canAct = staff?.role !== "Billing";
   const risk = record.safety ? record.safety.status === "open" : riskFindings(record).length > 0;
   const gaps = referralGaps(record).length;
+  const dupWhy = dupPending ? "Decide about the possible duplicate first." : undefined;
+  const waits = dupWhy ?? (risk ? "A clinician reviews the risk information first." : undefined);
   const close = () => setDialog(null);
   const toRecord = (id: string) => {
     close();
@@ -82,13 +84,13 @@ export function DecisionBar({ record, dups = [], dupChosen = false, hideRequest 
       </div>
       <div className="mt-3 flex flex-wrap items-center gap-2">
         {!hideRequest ? <Button onClick={() => setDialog("request")} disabled={!canAct} data-request-info-bar>Request missing information{gaps ? ` (${gaps})` : ""}</Button> : null}
-        <Button onClick={() => setDialog("redirect")} disabled={!canAct || risk || dupPending} data-redirect>Redirect</Button>
-        <Button variant="danger" onClick={() => setDialog("decline")} disabled={!canAct || risk || dupPending} data-decline>Decline</Button>
+        <Button onClick={() => setDialog("redirect")} disabled={!canAct || risk || dupPending} title={waits} data-redirect>Redirect</Button>
+        <Button variant="danger" onClick={() => setDialog("decline")} disabled={!canAct || risk || dupPending} title={waits} data-decline>Decline</Button>
         <Button variant="primary" onClick={() => setDialog("accept")} disabled={!canAct || blockers.length > 0} data-accept className="ml-auto">Accept for assessment</Button>
       </div>
       {draft ? (
         <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-line pt-3">
-          <Button size="sm" icon={Save} disabled={dupPending} onClick={() => { const id = save(record.id); if (id) { toast({ title: `${id} saved as a referral`, body: "Status New. Decide when you are ready.", tone: "good" }); nav(paths.intakeRecord(id, "referral")); } }} data-save-referral>Save as a referral</Button>
+          <Button size="sm" icon={Save} disabled={dupPending} title={dupWhy} onClick={() => { const id = save(record.id); if (id) { toast({ title: `${id} saved as a referral`, body: "Status New. Decide when you are ready.", tone: "good" }); nav(paths.intakeRecord(id, "referral")); } }} data-save-referral>Save as a referral</Button>
           <Button size="sm" variant="ghost" icon={Trash2} onClick={() => { discard(record.id); nav(paths.createReferral()); }} data-discard-draft>Discard this draft</Button>
           <span className="text-[12px] text-muted">The draft is kept here until you save, decide or discard it.</span>
         </div>

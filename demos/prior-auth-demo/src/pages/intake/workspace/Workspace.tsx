@@ -93,7 +93,7 @@ export function Workspace({ record }: { record: IntakeRecord }) {
         <div className="grid min-h-0 flex-1 gap-4" style={{ gridTemplateColumns: columns, gridTemplateRows: rows }}>
           <LeftNav recordId={record.id} items={model.nav} target={target} compact={!medium} />
           <div ref={center} role="region" aria-label={regionLabel} className="min-h-0 min-w-0 overflow-y-auto pr-1" data-center data-section={target.section} data-module={target.module ?? ""} data-tab={target.tab ?? ""}>
-            {record.safety ? <div id="safety-alert" tabIndex={-1} className="mb-4 outline-none"><SafetyBanner record={record} /></div> : null}
+            {record.safety ? <div id="safety-alert" tabIndex={-1} className="mb-4 rounded-[20px] outline-none focus:ring-2 focus:ring-risk"><SafetyBanner record={record} /></div> : null}
             <SectionView record={record} target={target} model={model} go={go} onConfigure={configure} />
           </div>
           {wide ? <AssistantColumn record={record} target={known} mode="column" open={open} onOpen={toggle} onClose={toggle} needs={model.needs.length} /> : null}

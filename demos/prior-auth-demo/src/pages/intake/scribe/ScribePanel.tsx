@@ -107,7 +107,7 @@ function ScribePanelView({ record, onClose }: { record: IntakeRecord; onClose: (
         <p className="mt-1.5 text-[12px] font-medium text-muted">Simulated: no audio is recorded. Nothing leaves this browser. AI Scribe proposals are drafts until a person accepts them.</p>
       </header>
 
-      <main className="min-h-0 flex-1 overflow-y-auto">
+      <div className="min-h-0 flex-1 overflow-y-auto">
         {!s || status === "consent" ? (
           <ScribeConsent record={record} onDeclined={onClose} />
         ) : (
@@ -136,7 +136,7 @@ function ScribePanelView({ record, onClose }: { record: IntakeRecord; onClose: (
             </div>
           </div>
         )}
-      </main>
+      </div>
 
       {s && (status === "reviewing" || status === "saved" || live) ? (
         <footer className="flex flex-wrap items-center gap-3 border-t border-edge bg-white px-4 py-3 min-[900px]:px-6">

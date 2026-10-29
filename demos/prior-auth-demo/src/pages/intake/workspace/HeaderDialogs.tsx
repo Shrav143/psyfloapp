@@ -18,7 +18,7 @@ export function ReassignDialog({ record, onClose }: { record: IntakeRecord; onCl
       footer={
         <>
           <Button onClick={onClose}>Cancel</Button>
-          <Button variant="primary" disabled={to === record.assignedTo} onClick={() => { reassignIntake(record.id, to, reason); onClose(); }}>Reassign</Button>
+          <Button variant="primary" disabled={to === record.assignedTo} title={to === record.assignedTo ? "Choose a different person first" : undefined} onClick={() => { reassignIntake(record.id, to, reason); onClose(); }}>Reassign</Button>
         </>
       }
     >

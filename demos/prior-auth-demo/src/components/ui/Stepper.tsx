@@ -11,7 +11,7 @@ export function Stepper({ steps, current, onGo, className }: { steps: string[]; 
         const clickable = onGo && done;
         return (
           <li key={s} className="flex items-center gap-3">
-            <button type="button" disabled={!clickable} onClick={() => clickable && onGo?.(i)} aria-current={cur ? "step" : undefined} className={cn("flex items-center gap-2 font-medium", cur && "text-ink", clickable && "hover:text-ink")}>
+            <button type="button" disabled={!clickable} title={!clickable && !cur ? "Finish the steps before this one first" : undefined} onClick={() => clickable && onGo?.(i)} aria-current={cur ? "step" : undefined} className={cn("flex items-center gap-2 font-medium", cur && "text-ink", clickable && "hover:text-ink")}>
               <span className={cn("grid h-[26px] w-[26px] place-items-center rounded-full text-xs font-semibold", done ? "bg-good-bg text-forest" : cur ? "bg-forest text-white" : "bg-neutral-bg text-ink2")}>{done ? <Check size={14} className="ico" /> : i + 1}</span>
               {s}
             </button>

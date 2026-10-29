@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { SlidersHorizontal, X } from "lucide-react";
 import { Button, Dropdown, useEscape } from "@/components/ui";
 import { cn } from "@/lib/cn";
@@ -74,6 +74,17 @@ function MoreFilters({ count, children }: { count: number; children: React.React
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const btn = useRef<HTMLButtonElement>(null);
+  const pop = useRef<HTMLDivElement>(null);
+  /* The popover hangs from the button's left edge; when that would run off the right of the window (a 1024 wide screen) it hangs from the right edge instead. */
+  const [flip, setFlip] = useState(false);
+  useLayoutEffect(() => {
+    if (!open) {
+      setFlip(false);
+      return;
+    }
+    const r = pop.current?.getBoundingClientRect();
+    if (r && r.right > window.innerWidth - 12) setFlip(true);
+  }, [open]);
   useEscape(open, () => {
     setOpen(false);
     btn.current?.focus();
@@ -99,7 +110,7 @@ function MoreFilters({ count, children }: { count: number; children: React.React
         {count ? <span className="inline-grid h-5 min-w-5 place-items-center rounded-full bg-forest px-1.5 text-[11px] font-semibold text-white">{count}</span> : null}
       </button>
       {open ? (
-        <div role="dialog" aria-label="More filters" className="psy-fade-up absolute top-[44px] left-0 z-40 grid w-[min(520px,calc(100vw-48px))] gap-3 rounded-[14px] border border-field bg-white p-4 shadow-[0_12px_32px_rgba(21,27,36,0.12)] sm:grid-cols-2">
+        <div ref={pop} role="dialog" aria-label="More filters" className={cn("psy-fade-up absolute top-[44px] z-40 grid w-[min(520px,calc(100vw-48px))] gap-3 rounded-[14px] border border-field bg-white p-4 shadow-[0_12px_32px_rgba(21,27,36,0.12)] sm:grid-cols-2", flip ? "right-0" : "left-0")}>
           {children}
         </div>
       ) : null}

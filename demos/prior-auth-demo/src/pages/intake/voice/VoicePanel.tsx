@@ -113,7 +113,7 @@ function VoicePanelView({ record, onClose }: { record: IntakeRecord; onClose: ()
         </p>
       </header>
 
-      <main className="min-h-0 flex-1 overflow-y-auto p-4 min-[900px]:p-5">
+      <div className="min-h-0 flex-1 overflow-y-auto p-4 min-[900px]:p-5">
         {status === "escalated" ? (
           <Banner tone="risk" title="Safety concern: routine questions stopped" className="mb-3"
             action={<Button variant="primary" icon={PhoneForwarded} onClick={() => st.voiceTransfer(record.id, "Safety concern: connected to a person")}>Transfer to staff now</Button>}>
@@ -157,7 +157,7 @@ function VoicePanelView({ record, onClose }: { record: IntakeRecord; onClose: ()
             <VoiceSidebar record={record} v={v} />
           </div>
         )}
-      </main>
+      </div>
 
       {v && status !== "idle" ? (
         <footer className="flex flex-wrap items-center gap-3 border-t border-edge bg-white px-4 py-3 min-[900px]:px-6">
@@ -171,7 +171,7 @@ function VoicePanelView({ record, onClose }: { record: IntakeRecord; onClose: ()
             </>
           ) : (
             <>
-              {status === "confirm" && unconfirmed ? <span className="text-[12px] text-ink2">Confirm or correct {unconfirmed} more {unconfirmed === 1 ? "fact" : "facts"} first</span> : null}
+              {(status === "confirm" || status === "summary") && unconfirmed ? <span className="text-[12px] text-ink2">Confirm or correct {unconfirmed} more {unconfirmed === 1 ? "fact" : "facts"} first</span> : null}
               <Button variant="primary" icon={Save} disabled={!canSave} onClick={save}>{status === "transferred" || status === "escalated" ? "Save what was collected for staff review" : "Save draft for staff review"}</Button>
             </>
           )}
