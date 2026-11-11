@@ -404,8 +404,9 @@ export const presChip = id => `<span class="fp-pres">${ui.maturity(id)}</span>`;
 export function portalAccess(params) {
   const a = api.session && api.session();
   if (!a || a.kind !== 'guardian') return { ok: false, why: 'no guardian session' };
-  if (params && params.t && a.linkToken && params.t !== a.linkToken) return { ok: false, why: 'link belongs to another family' };
-  if (!a.presenter) return { ok: !!a.linkToken, why: 'link session' };
+  // the token in the address must be one of THIS guardian's links (the projected state holds only their own)
+  if (params && params.t && !((api.state && api.state.family_links) || []).some(f => f.token === params.t)) return { ok: false, why: 'link belongs to another family or is not valid' };
+  if (!a.presenter) return { ok: true, why: 'link session' };   // a session made from a family-link token
   let staff = false; try { staff = !!localStorage.getItem('psyflo_user'); } catch { }
   const dock = (window.psyflo && window.psyflo.dock) || {};
   const deliberate = !!(params && params.t) || staff || (dock.state && dock.state !== 'hidden') || dock.mode === 'explore';

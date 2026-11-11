@@ -147,7 +147,7 @@ try {
   await T.test('the example sentence is presenter chrome: not shown to a person, shown with the presenter handle; the example and script commands both work', async () => {
     await reset('live');
     const a = await phone('khale'); await go(a.p, '/MobileDictate?client=MR'); assert.eq(await a.p.locator('a[href="#example"]').count(), 0, 'people do not see demo controls'); await a.ctx.close();
-    const { ctx, p } = await phone('khale', { presenter: true }); await p.goto(BASE + '/?present=1#/MobileDictate?client=MR'); await p.waitForTimeout(1200);
+    const { ctx, p } = await phone('khale', { presenter: true }); await p.goto(BASE + '/?present=1#/MobileDictate?client=MR'); await p.waitForTimeout(1200); await p.locator('a[href="#example"]').waitFor({ timeout: 8000 }).catch(() => { });
     assert.eq(await p.locator('a[href="#example"]').count(), 1, 'with the presenter dock on'); await p.locator('a[href="#example"]').click(); await p.waitForTimeout(500);
     assert.match(await p.locator('#spoken').inputValue(), /^played basketball with M\.R\. after he got upset in math/);
     await p.locator('#spoken').fill(''); await p.locator('#spoken').blur();
