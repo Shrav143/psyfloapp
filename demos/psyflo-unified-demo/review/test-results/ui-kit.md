@@ -1,6 +1,6 @@
 # ui-kit · PASS
 
-Run 2026-11-11T18-46-11Z · 92148 ms · instance 0 · exit 0
+Run 2026-11-11T19-04-19Z · 52165 ms · instance 0 · exit 0
 
 | Result | Test | Note |
 |---|---|---|
@@ -37,3 +37,7 @@ Run 2026-11-11T18-46-11Z · 92148 ms · instance 0 · exit 0
 | PASS | UiKit is presenter-only: without the dock it says so; with ?present=1 it shows the gallery |  |
 | PASS | prefers-reduced-motion: overlay animation is switched off |  |
 | PASS | no console errors on the gallery, the stubs and the shell routes |  |
+| PASS | rail foot stays reachable at 1024 px: Sign out and Help as named controls, "Demo data · nothing is real" visible |  |
+| PASS | rail foot stays reachable at 700 px: Sign out and Help as named controls, "Demo data · nothing is real" visible |  |
+| PASS | the wordmark on the light rail is the full-colour logo (navy, teal, marigold), not the reverse one |  |
+| PASS | framed Lauris routes: a slim top bar with "Back to Psyflo", the route title as the h1 and no developer text |  |

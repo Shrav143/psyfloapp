@@ -1,19 +1,12 @@
-# Test results · 2026-11-11T18-46-11Z
+# Test results · 2026-11-11T19-08-15Z
 
-3 suites pass · 1 fail · 0 known-fail · 0 skipped · 0 not runnable · tests: 201 pass, 1 fail, 0 skip · 480 s
+1 suites pass · 0 fail · 0 known-fail · 0 skipped · 0 not runnable · tests: 28 pass, 0 fail, 0 skip · 106 s
 
-Commit 0f44ed7 · node v22.22.0 · demo time 15:30 · workers 1 · base port 4810
+Commit 6eba69c · node v22.22.0 · demo time 15:30 · workers 1 · base port 4990
 
 | Suite | Status | Pass | Fail | Skip | Seconds |
 |---|---|---|---|---|---|
-| [presenter](presenter.md) | FAIL | 27 | 1 | 0 | 170.9 |
-| [routes](routes.md) | PASS | 56 | 0 | 0 | 166.1 |
-| [smoke](smoke.md) | PASS | 85 | 0 | 0 | 50.0 |
-| [ui-kit](ui-kit.md) | PASS | 33 | 0 | 0 | 92.1 |
-
-## Failures
-
-- **presenter** · PRES-06 role switch changes the rail without a reload (clinician -> supervisor -> direct support -> administrator -> clinician) — page.click: Timeout 30000ms exceeded.
+| [presenter](presenter.md) | PASS | 28 | 0 | 0 | 105.9 |
 
 ## Manual checklist (not automatable)
 

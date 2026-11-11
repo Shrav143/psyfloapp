@@ -75,6 +75,7 @@ const apiActor = page => page.evaluate(async () => { const { api } = await impor
   });
   await run('PRES-06 role switch changes the rail without a reload (clinician -> supervisor -> direct support -> administrator -> clinician)', async () => {
     await go(page, '/?present=1#/MyWork?section=todo'); await page.evaluate(() => { window.__noReload = 'marker'; });
+    if (await page.locator('[data-dock="unlock"]').count()) { await page.click('[data-dock="unlock"]'); await page.waitForSelector('[data-dock-menu="role"]', { timeout: 10000 }); }   // ?present=1 never elevates by itself: the presenter unlocks the tools
     const want = { 'Site supervisor': (l) => l.includes('Authorizations') && !l.includes('Denial Intelligence'), 'Direct support': l => !l.includes('Authorizations') && !l.includes('Analytics') && l.length <= 2, 'Administrator': l => l.includes('Settings') && l.includes('Analytics') && !l.includes('Referrals'), 'Clinician (LMHP-type)': l => l.includes('Referrals') && l.includes('Denial Intelligence') && !l.includes('Settings') };
     const start = await railLinks(page); assert.ok(start.includes('Denial Intelligence'), 'clinician rail: ' + start.join(','));
     for (const [label, ok] of Object.entries(want)) {

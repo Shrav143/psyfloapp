@@ -72,7 +72,7 @@ export const ROUTE_CAPS = {
   Submission: 'send.packet',
   DenialIntelligence: 'denials', DenialCase: 'denials',
   InfoRequest: 'payer.reply', Partials: 'payer.reply', PeerBrief: 'payer.reply', PayerPlaybook: 'denials',
-  Referrals: 'referrals', Referral: 'referrals', Eligibility: 'eligibility.run',
+  Referrals: 'referrals', Referral: 'referrals', Eligibility: 'referrals',
   Analytics: 'analytics.aggregate',
   Users: 'admin.users', Settings: 'admin.settings',
   // phone
