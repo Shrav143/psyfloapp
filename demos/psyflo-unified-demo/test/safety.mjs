@@ -209,7 +209,7 @@ await T.test('EXA-03 an exhausted authorization (T.N.) says service continues un
   const u = await uiText('jperez', '/Dashboard?q=T.N.&open=all'); await u.page.waitForTimeout(300); const t = (await u.page.locator('main').innerText()).replace(/\s+/g, ' '); await u.ctx.close(); assert.match(t, /Units used up/); assert.match(t, /65 of 65 units used/); assert.match(t, /0 left of 65/);
   const c = await uiText('jperez', '/DenialCase?id=R-0388&section=action&action=p2p'); assert.match(c.text, /Owner: J\. Perez/); assert.match(c.text, /Dec 9/); await c.ctx.close();
 });
-await T.test('EXA-05 an eligibility re-check that is due appears on the patient's Dashboard row once the recheck interval has passed', async () => {
+await T.test('EXA-05 an eligibility re-check that is due appears on the patient row of the Dashboard once the recheck interval has passed', async () => {
   await api('demo.scenario', { id: 'tw-eligible' }, 'dowens+p'); const days = (await state('jperez')).rules.find(r => r.key === 'eligibility.recheck_days').value; await advance(days + 1, true);
   const u = await uiText('jperez', '/Dashboard?q=T.W.&open=all'); await u.page.waitForTimeout(300); const t = (await u.page.locator('main').innerText()).replace(/\s+/g, ' '); await u.ctx.close();
   assert.match(t, /DMAS portal · a person runs the lookup|[Ee]ligibility (re-?check|check due)/, 'no re-check line on the Dashboard');

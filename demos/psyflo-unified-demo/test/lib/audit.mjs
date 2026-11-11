@@ -241,7 +241,7 @@ export class Sweeper {
     if (!c.name && c.kind !== 'row') { row.flags.push('unnamed'); }
     if (c.kind === 'row' && !c.name) { row.flags.push('unnamed'); }
     // disabled: never clicked; must say why
-    if (c.disabled) { row.outcome = c.why ? 'DISABLED-EXPLAINED' : 'DISABLED-UNEXPLAINED'; row.detail = c.why || ''; return row; }
+    if (c.disabled || c.ariaDisabled) { row.outcome = c.why ? 'DISABLED-EXPLAINED' : 'DISABLED-UNEXPLAINED'; row.detail = c.why || ''; return row; }
     const deny = DEFAULT_DENY(c) || (T.deny && T.deny(c));
     if (deny) { row.outcome = 'SKIPPED'; row.detail = deny; return row; }
     // external links: HEAD-check only

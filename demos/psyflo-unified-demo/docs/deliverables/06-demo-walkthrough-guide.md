@@ -8,6 +8,8 @@ The rule for the room: **a person reviews, a person presses Process Form, Get Si
 
 All data is synthetic. Students appear as initials. The mock Lauris, Sfax, SMS, DMAS and the payer portals are simulated. The 14-minute length is a presentation target, not a measurement of how long the work takes in a clinic.
 
+> **Changed on Nov 11 after the direct support and site supervisor walkthrough.** Track Time is gone (no timer, no time entries; the person types Direct time and Units in Lauris). My Work became the **Dashboard**, a patient roster with the outstanding items under each patient, alert icons and filters; notes and forms moved to a **Documentation** tab; **Authorizations** is one filtered table with a unit bar ("110 left of 150", yellow from 75% used) and dates with warning icons; a patient opens to a **chart** (Documentation first, the Authorization as one section). Two-minute add-on after beat 1, as `cdiaz`: Dashboard, chip **Needs attention**, expand M.R.; rail **Documentation**, chip **Needs review**, **Review**, **Approve**; rail **Authorizations**, filter **Units remaining: Flagged**. Details: `docs/FEEDBACK-ROUND-2026-11-11.md`.
+
 ## 1. Pre-flight checklist
 
 Do this the evening before, and again 20 minutes before the meeting.
@@ -33,11 +35,11 @@ Pick a role card on **Sign in**, or use the dock **Role** menu (no page reload).
 
 | Role | Person (synthetic) | Id | Lands on | Sees |
 |---|---|---|---|---|
-| Direct support | Kayla Hale, QMHP-C | `khale` | Extension home on a laptop, the phone app on a narrow window | My Work (My day), phone, panel without the third button |
+| Direct support | Kayla Hale, QMHP-C | `khale` | Extension home on a laptop, the phone app on a narrow window | Dashboard (own patients), phone, panel with Scribe (no Scan & Enhance) |
 | Direct support, new hire | R. Owens | `rowens` | same | every note goes to review |
-| Supervisor | Carla Diaz, QMHP-C, site supervisor | `cdiaz` | My Work, Review | Authorizations, Analytics; approve notes; send when designated |
-| Clinician | Jordan Perez, LPC | `jperez` | My Work, To do | Authorizations, Denial Intelligence, Analytics, Referrals; all three panel buttons |
-| Admin | Dana Owens | `dowens` | My Work, Operations | Authorizations, Denial Intelligence, Analytics, Settings; status, units and aggregates only; no clinical text |
+| Supervisor | Carla Diaz, QMHP-C, site supervisor | `cdiaz` | Dashboard (patient roster) | Documentation (review, approve, return), Authorizations, Analytics; send when designated |
+| Clinician | Jordan Perez, LPC | `jperez` | Dashboard (patient roster) | Documentation, Authorizations, Denial Intelligence, Analytics, Referrals; Scribe and Scan & Enhance in the panel |
+| Admin | Dana Owens | `dowens` | Dashboard (statuses and dates) | Documentation (status only), Authorizations, Denial Intelligence, Analytics, Settings; status, units and aggregates only; no clinical text |
 | Guardian | T.W.'s guardian | link token `tw-demo` | Family checklist | one child's plain-language material |
 | School counselor | R. Bell | `rbell` | School portal | status text for the school's own referrals |
 
@@ -52,7 +54,7 @@ Run it in order, on the Live preset, **without choosing a Scenario from the dock
 | Min | Screen and role | Click path | Say (one line) | The audience should conclude | If it fails |
 |---|---|---|---|---|---|
 | 0:00 | One slide, no app | none | "A person reviews, signs and sends; Lauris stays the record; every sentence has a source." | We answer accuracy first | Slide only |
-| 0:45 | **Beat 1 · S1 daily note.** Phone, then Lauris, as `khale` | Dock **Scenario**, **1 Direct staff daily documentation**. Phone: **M.R.** chip, **Say what happened**. Card "Use the microphone?": **Type instead**. Dock open: **Use the example**. **Looks right**, then **Save to M.R.** (chip reads Waiting for Lauris). Tab C (Lauris, daily note). Panel banner "Dictation dropped in". Read "Questions for you · 2". Press **Confirm 3 units**. In Lauris press **Process Form**. Panel: "Daily notes today: 5 of 6" | "She said what happened; Psyflo tidied her words and asked what she did not say; she processed it." | Staff judgment stays; nothing is invented | Mic: use the example. Panel blank: reload tab C. Reset: fixture `mr-daily` |
+| 0:45 | **Beat 1 · S1 daily note.** Phone, then Lauris, as `khale` | Dock **Scenario**, **1 Direct staff daily documentation**. Phone: **M.R.** chip, **Say what happened**. Card "Use the microphone?": **Type instead**. Dock open: **Use the example**. **Looks right**, then **Save to M.R.** (chip reads Waiting for Lauris). Tab C (Lauris, daily note). Panel banner "Dictation dropped in". Read "Questions for you · 2". In Lauris type Direct time **3 h 40 min** and Units **2** (a person enters them; Psyflo does not), then press **Process Form**. Dashboard (as Kayla): M.R. no longer owes today's note | "She said what happened; Psyflo tidied her words and asked what she did not say; she processed it." | Staff judgment stays; nothing is invented | Mic: use the example. Panel blank: reload tab C. Reset: fixture `mr-daily` |
 | 3:15 | **Beat 2 · S4 continued stay.** Platform and panel, as `jperez` | Dock **Role**, **Clinician (LMHP-type)**. Rail **Authorizations**. Row M.R. R-0411, **Review packet**. In Next step press **Open in Lauris**. Panel "Continued stay · M.R.": Daily notes now 16 (it was 15 before beat 1). **Open the evidence** (chips "Pilot (preview)" and "Read-only"). **Show all 20 rows**. Open a row, **Exclude**, type a reason, **Exclude**. Read "Gaps · 8". **Use it in the continued-stay request**. Leave household context "Not included". **Review 4 statements**, **Accept the 3 with sources**, **Reject** the one marked "Evidence missing", **Approve and fill**. Do not press Process Form | "The note she just wrote is now evidence. Gaps are named, not filled." | The system reduces chart review without inventing evidence | Fixture `mr-corpus` (canvas, 10 s) |
 | 5:45 | **Beat 3 · S2 referral to intake.** School, platform, phone, Lauris | Dock **Scenario**, **2 School referral through intake**: card "Harvest needs", **Refer a student**. Dock **Role**, **Clinician**. Rail **Referrals**, row REF-118, **Send the family link** (Simulated). Phone window: five steps, **Next** ×4, **Send to Harvest**. Platform: **Run the check**, **Open the DMAS lookup** (Simulated), pick the plan, **Record result**. To save time, load the checkpoint `tw-screened` (one terminal command, section 5), then open the intake in Lauris: the boxes read "copied from screening" and the panel offers **Fill 15 boxes** and **Review one by one** | "Captured once, reused: the family's answers fill the intake." | Information moves forward without retyping | SMS: the link text is on screen. Call stalls: fixture `tw-referral` or `tw-screened` |
 | 7:45 | **Beat 4 · S3 initial authorization.** Panel, platform, Lauris, as `jperez` | Dock **Scenario**, **3 Initial authorization** (or fixture `tw-isp-ready`). Lauris SRA tab (case page **Open in Lauris**). Panel **Review 7 statements**; click a source chip; **Edit** criterion 1, **Save wording** (not re-run); **Accept the 7 with sources**, **Approve and fill**. Lauris **Process Form**. Platform case: **Approve**, dialog **Approve**. Panel **Open Forms to Approve**, **Preview**, Lauris **Get Signature**. Platform **Send by fax**, dialog **Send by fax**. Status Submitted, "Day 0 · call on day 10" | "A person approved, a licensed person signed in Lauris, a person pressed Send; the Sfax receipt is simulated." | Documentation, signature, submission and tracking are one thread | Fixture `tw-isp-ready`, `tw-signed` or `tw-sent` |
@@ -62,7 +64,7 @@ Run it in order, on the Live preset, **without choosing a Scenario from the dock
 
 Notes on the table:
 
-- **Beat 1.** If you do not press **Confirm 3 units**, the note carries 2 units (3 h 40 min; the afternoon block stays unconfirmed and is not counted). **The afternoon block didn't happen** voids the block with a reason. Either path is honest; say which you chose.
+- **Beat 1.** Time is no longer tracked in Psyflo (feedback Nov 11): the person types Direct time and Units in Lauris, so the note carries the 2 units typed there. Say that the units are the staffer's own entry. The panel's checks read 2 of 5 because nothing in Psyflo answers "how long".
 - **Beat 2.** After beat 1 the evidence count reads 16 daily notes and "25 units left"; without beat 1 it reads 15 and 27. The **Exclude** step needs a reason and keeps who and when. The note text is never changed.
 - **Beat 3.** Beat 3 compresses a longer flow (section 4, S2). The scripted call takes about 48 seconds on its own, so run it only if you can talk over it.
 - **Beat 4.** `tw-isp-ready` is a Live-preset checkpoint. **Scenario 3** loads the Canvas preset with R-0416 as a draft.
@@ -75,11 +77,11 @@ Each runs alone from **Scenario n** in the dock (which resets to its preset) or 
 
 ### S1 · Direct staff daily documentation (M.R.)
 
-Fixture `mr-daily` · preset Live · role Direct support (`khale`) · records: M.R., Harvest # 3310, seeded timer with six blocks, request R-0411.
+Fixture `mr-daily` · preset Live · role Direct support (`khale`) · records: M.R., Harvest # 3310, request R-0411.
 1. Phone: **M.R.**, **Say what happened**, **Type instead** (or **Allow today** with a microphone), **Looks right**, **Save to M.R.**
 2. Lauris daily note: read "SAID INTO THE PHONE" beside "DRAFTED FOR THE NARRATIVE"; "Checks 3 of 5 pass"; the yellow boxes are typed, not saved.
-3. **Confirm 3 units** (or leave the block out), then **Process Form**.
-4. My Work, as Kayla: "5 of 6 daily notes in; E.S. still open".
+3. In Lauris type Direct time (3 h 40 min) and Units (2), then **Process Form**.
+4. Dashboard, as Kayla: M.R. no longer owes today's daily note; E.S. still does (the row expands to show it).
 
 **Message:** Psyflo reduces documentation friction without removing staff judgment. **Unverified:** a live microphone; Safari and Firefox.
 
@@ -127,7 +129,7 @@ Fixture `analytics-case` · Canvas via Scenario 6 · admin, then clinician. Step
 
 ### Optional modules (15 to 25 minutes)
 
-My Work for a supervisor (`cdiaz`: Review, **Approve**, **Return with a note**, **That didn't happen**; Team); Settings as admin (Rules with source chips, Units, Roles, Audit, Family link with signature modes); the family portal (checklist, English and Español, signature mode switched in Settings); Scan & Enhance **Review draft** on a daily note (accept applies only the person's own words).
+Documentation for a supervisor (`cdiaz`: filter Needs review, **Review**, **Approve**, **Return with a note**, **That didn't happen**; the By staff tab); the Dashboard roster with its filters and the patient chart (Documentation first, Authorization as one section); Settings as admin (Rules with source chips, Units, Roles, Audit, Family link with signature modes); the family portal (checklist, English and Español, signature mode switched in Settings); Scan & Enhance **Review draft** on a daily note (accept applies only the person's own words).
 
 ## 5. Recovery ladder
 

@@ -1,7 +1,7 @@
 id,feature,destination,status,evidence,notes
-M-001,Sign in (n0),Login (kept); role switching moves to presenter toolbar,MOVED,"route /Login as anonymous · suite roles PASS, settings PASS",lands on #/Login
-M-002,Where things live (n1),Presenter drawer,MOVED,"route /WhereThingsLive as jperez · suite ui-kit FAIL, fixtures PASS",lands on #/WhereThingsLive?full=1
-M-003,Do next (n2),My Work › To do,NOT-VERIFIED,route /DoNext as jperez · suite mywork PASS,hash #/Dashboard;  
+M-001,Sign in (n0),Login (kept); role switching moves to presenter toolbar,MOVED,"route /Login as anonymous · suite roles FAIL, settings PASS",lands on #/Login
+M-002,Where things live (n1),Presenter drawer,MOVED,"route /WhereThingsLive as jperez · suite ui-kit PASS, fixtures PASS",lands on #/WhereThingsLive?full=1
+M-003,Do next (n2),My Work › To do,MOVED,route /DoNext as jperez · suite mywork PASS,lands on #/Dashboard
 M-004,School portal home (n3),School Portal,MOVED,route /SchoolPortal as school · suite school PASS,lands on #/SchoolPortal
 M-005,Referral form (n4),School Portal,MOVED,route /ReferralForm as school · suite school PASS,lands on #/ReferralForm
 M-006,Referral sent (n5),School Portal,MOVED,route /ReferralSent as school · suite school PASS,lands on #/ReferralSent
@@ -25,8 +25,8 @@ M-023,Daily note (n23),Extension › Scribe,MOVED,"route /ExtDPN as khale · sui
 M-024,Weekly guardian call (n24),Extension › Scribe,MOVED,"route /ExtWeekly as jperez · suite panels PASS, smoke PASS",lands on #/ExtWeekly?client=MR
 M-025,Monthly collateral (n25),Extension › Scribe,MOVED,"route /ExtMonthly as jperez · suite panels PASS, smoke PASS",lands on #/ExtMonthly?client=MR
 M-026,Incident report (n26),Extension › Additional actions,MOVED,"route /ExtIncident as jperez · suite panels PASS, smoke PASS",lands on #/ExtIncident
-M-027,Supervisor review queue (n27),My Work › Review,NOT-VERIFIED,route /ReviewQueue as cdiaz · suite mywork PASS,hash #/Documentation?status=pending_review;  
-M-028,Staff dashboard (n28),My Work › Team,NOT-VERIFIED,route /StaffDashboard as cdiaz · suite mywork PASS,hash #/Dashboard;  
+M-027,Supervisor review queue (n27),My Work › Review,MOVED,route /ReviewQueue as cdiaz · suite mywork PASS,lands on #/Documentation?status=pending_review
+M-028,Staff dashboard (n28),My Work › Team,MOVED,route /StaffDashboard as cdiaz · suite mywork PASS,lands on #/Dashboard
 M-029,Authorizations (n29),Authorizations (queue),MOVED,"route /Authorizations as jperez · suite authorizations PASS, flowC PASS",lands on #/Authorizations
 M-030,Parent survey (n31),Family Portal,MOVED,"route /ParentSurvey as guardian · suite family PASS, flowD PASS",lands on #/ParentSurvey
 M-031,Quarterly report (n32),Extension › Clinical documents,MOVED,"route /ExtQuarterly as jperez · suite panels PASS, smoke PASS",lands on #/ExtQuarterly?client=MR
@@ -39,7 +39,7 @@ M-037,Peer-to-peer call notes (n38),Denial Intelligence › action,MOVED,"route 
 M-038,Appeal letter (n39),Denial Intelligence + Family Portal,MOVED,"route /AppealLetter as guardian · route /DenialCase as jperez · suite denials PASS, denials-ui PASS, rules PASS",lands on #/AppealLetter?id=R-0384; lands on #/DenialCase?id=R-0384&section=action&action=appeal
 M-039,Payer playbook (n40),Payer guidance (Analytics › Payer),MOVED,"route /PayerPlaybook as jperez · code: payer guidance module · suite denials PASS, denials-ui PASS, rules PASS",lands on #/Analytics?section=payer&panel=guidance; web/js/screens/Analytics.js web/js/screens/DenialCase.js
 M-040,Analytics (n42),"Analytics (three sections, provenance-tagged)",MOVED,route /Analytics as dowens · suite analytics PASS,lands on #/Analytics
-M-041,Users and roles (n43),Settings › Users,MOVED,"route /Users as dowens · suite roles PASS, settings PASS",lands on #/Settings?tab=people
+M-041,Users and roles (n43),Settings › Users,MOVED,"route /Users as dowens · suite roles FAIL, settings PASS",lands on #/Settings?tab=people
 M-042,Enrollment packet (n46),Family Portal,MOVED,"route /ParentEnroll as guardian · suite family PASS, flowD PASS",lands on #/ParentEnroll
 M-043,"Progress, family view (n47)",Family Portal,MOVED,"route /ParentProgress as guardian · suite family PASS, flowD PASS",lands on #/ParentProgress?c=TW
 M-044,"Quarterly, guardian signs (n48)",Family Portal,MOVED,"route /ParentQuarterly as guardian · suite family PASS, flowD PASS",lands on #/ParentQuarterly
@@ -89,7 +89,7 @@ M-087,Mock DMAS lookup,Keep (visibly simulated),PRESERVED,"portal GET /dmas/look
 M-088,Portal bridge,Keep,PRESERVED,"file web/panel/bridge.js · file extension/bridge.js · suite bridge-contract PASS, lauris PASS",
 M-089,Single global store + persistence,Keep + hooks,PRESERVED,state key rev · code: persistence file · code: store hooks,server/psyflo/store.js; server/index.js server/psyflo/actions/core.js
 M-090,SSE sync,Keep,PRESERVED,GET /api/stream answers,200
-M-091,Presets live / canvas,Presenter,MOVED,"action demo.reset registered with a capability entry · presets live and canvas · suite ui-kit FAIL, fixtures PASS",canvas
+M-091,Presets live / canvas,Presenter,MOVED,"action demo.reset registered with a capability entry · presets live and canvas · suite ui-kit PASS, fixtures PASS",canvas
 M-092,Seed merge,Keep,PRESERVED,code: seed merge from seed/extra,web/js/shared/rules.js server/lauris/store.js
 M-093,Audit events,Extend (actor kind),MOVED,every audit event has actor_kind,
 M-094,PDF writer,Extend raw-bytes path,MOVED,file server/pdf.js,
@@ -97,8 +97,8 @@ M-095,File store,Keep,PRESERVED,code: file store route,web/js/screens/Submission
 M-096,Sfax stub,Keep (labelled),PRESERVED,"code: Sfax stub (labelled Simulated) · action request.send registered with a capability entry · suite authorizations PASS, flowC PASS",web/js/screens/Analytics.js web/js/screens/Authorization.js
 M-097,SMS and email stubs,Keep,PRESERVED,code: SMS stub · code: email stub,web/js/screens/Eligibility.js web/js/screens/Referral.js; server/psyflo/actions/x-referrals.js
 M-098,Drafting engine + 14 checks,Keep; add finding schema,PRESERVED,code: 14 checks · drafting checks,web/js/shared/draft.js; 7 groups
-M-099,Notes drawer,Presenter drawer,MOVED,"route /WhereThingsLive as jperez · suite ui-kit FAIL, fixtures PASS",lands on #/WhereThingsLive
-M-100,Demo bar,Presenter toolbar,MOVED,"code: presenter dock · suite ui-kit FAIL, fixtures PASS",web/js/api.js web/js/app.js
+M-099,Notes drawer,Presenter drawer,MOVED,"route /WhereThingsLive as jperez · suite ui-kit PASS, fixtures PASS",lands on #/WhereThingsLive
+M-100,Demo bar,Presenter toolbar,MOVED,"code: presenter dock · suite ui-kit PASS, fixtures PASS",web/js/api.js web/js/app.js
 M-101,Generated sidebar,Three-tab nav,MOVED,code: data-driven nav,web/js/screens/Users.js web/js/shared/nav.js
 M-102,Template engine,Keep,PRESERVED,file web/js/runtime.js,
 M-103,Tokenized links,Keep,PRESERVED,"action familyLink.open registered with a capability entry · action familyLink.send registered with a capability entry · suite family PASS, flowD PASS",
@@ -107,8 +107,8 @@ M-105,"`payer_history`, `denial_reasons`",Denial Intelligence › evidence,MOVED
 M-106,"`compliance`, `migration`, `library`, `incidents`",Settings / roadmap,MOVED,"state key compliance, migration, library · route /Settings as dowens · suite analytics PASS",lands on #/Settings?tab=presenter
 M-107,`settings.family_link`,Settings › Family link,MOVED,state key settings · route /Settings as dowens · suite analytics PASS,lands on #/Settings?tab=family
 M-108,"`request_details`, `staff_dashboard`, `parent_progress`, `school_goals`, `assessments_due/history`",Keep,PRESERVED,"state key request_details, staff_dashboard, parent_progress · suite analytics PASS",
-M-109,`demo.reset`,Presenter,MOVED,"action demo.reset registered with a capability entry · action demo.reset · suite ui-kit FAIL, fixtures PASS",
-M-110,`demo.advanceDay`,Presenter,MOVED,"action demo.advanceDay registered with a capability entry · action demo.advanceDay · suite ui-kit FAIL, fixtures PASS",
+M-109,`demo.reset`,Presenter,MOVED,"action demo.reset registered with a capability entry · action demo.reset · suite ui-kit PASS, fixtures PASS",
+M-110,`demo.advanceDay`,Presenter,MOVED,"action demo.advanceDay registered with a capability entry · action demo.advanceDay · suite ui-kit PASS, fixtures PASS",
 M-111,`referral.create`,School Portal,MOVED,action referral.create · suite school PASS,
 M-112,`referral.update`,School Portal,MOVED,action referral.update · suite school PASS,
 M-113,`referral.attach`,School Portal,MOVED,action referral.attach · suite school PASS,
@@ -130,7 +130,7 @@ M-128,`request.send`,Authorizations,MOVED,"action request.send · suite authoriz
 M-129,`request.portalConfirmed`,Authorizations,MOVED,"action request.portalConfirmed · suite authorizations PASS, flowC PASS",
 M-130,`request.overdueNotice`,Authorizations,MOVED,"action request.overdueNotice · suite authorizations PASS, flowC PASS",
 M-131,`request.receiptCheck`,Authorizations,MOVED,"action request.receiptCheck · suite authorizations PASS, flowC PASS",
-M-132,`request.demoReply`,Presenter,MOVED,"action request.demoReply · suite ui-kit FAIL, fixtures PASS",
+M-132,`request.demoReply`,Presenter,MOVED,"action request.demoReply · suite ui-kit PASS, fixtures PASS",
 M-133,`request.partialDecide`*,Remove,PRESERVED,action request.partialDecide,kept registered (internal or still used); still registered (internal or kept)
 M-134,`request.infoReply`,Denial Intelligence,MOVED,"action request.infoReply · suite denials PASS, denials-ui PASS, rules PASS",
 M-135,`request.infoSend`,Denial Intelligence,MOVED,"action request.infoSend · suite denials PASS, denials-ui PASS, rules PASS",
@@ -153,8 +153,8 @@ M-151,`client.update`*,Remove,PRESERVED,action client.update,kept registered (in
 M-152,`lauris.event`*,Remove,PRESERVED,action lauris.event,kept registered (internal or still used); still registered (internal or kept)
 M-153,`incident.filePortal`,Extension › Additional actions,MOVED,"action incident.filePortal · suite flowA PASS, flowB PASS, scribe PASS",
 M-154,`incident.save`*,Remove,PRESERVED,action incident.save,kept registered (internal or still used); still registered (internal or kept)
-M-155,`user.add`,Settings › Users,MOVED,"action user.add · suite roles PASS, settings PASS",
-M-156,`user.update`,Settings › Users,MOVED,"action user.update · suite roles PASS, settings PASS",
+M-155,`user.add`,Settings › Users,MOVED,"action user.add · suite roles FAIL, settings PASS",
+M-156,`user.update`,Settings › Users,MOVED,"action user.update · suite roles FAIL, settings PASS",
 M-157,`settings.set`*,Settings,MOVED,action settings.set,
 M-158,`library.add`*,Roadmap,PRESERVED,action library.add,kept registered (internal or still used); still registered (internal or kept)
 M-159,`migration.rerun`*,Roadmap,PRESERVED,action migration.rerun,kept registered (internal or still used); still registered (internal or kept)
@@ -216,20 +216,20 @@ V-023,Ask FLO (suggested questions),"PORT as ""Ask"" (rename; unsupported → li
 V-024,Export Report,PORT,MOVED,route /Analytics as dowens · suite analytics PASS,lands on #/Analytics
 V-025,Simulated cohort,PORT as `illustrative` dataset,MOVED,route /Analytics as dowens · suite analytics PASS,lands on #/Analytics?section=population&dataset=illustrative
 V-026,Case-derived metrics,PORT → `case_backed` dataset,MOVED,route /Analytics as dowens · suite analytics PASS,lands on #/Analytics?dataset=case
-V-027,Settings,PORT → Settings,MOVED,"route /Settings as dowens · suite roles PASS, settings PASS",lands on #/Settings
-V-028,Help,Drop or Settings › Help,DROPPED-WITH-REASON,"code: Help in the shell · suite roles PASS, settings PASS",Help is a rail foot link in the unified shell [docs/UI-KIT.md §4]; not itemised in 00-unified-recommendations decisions
-V-029,Roles permission editor,PORT (permission matrix),MOVED,"route /Settings as dowens · suite roles PASS, settings PASS",lands on #/Settings?tab=roles
-V-030,Unit rules editor,PORT,MOVED,"route /Settings as dowens · suite roles PASS, settings PASS",lands on #/Settings?tab=units
-V-031,Reimbursement rates / money exposure,Defer (Tier 3),DROPPED-WITH-REASON,"suite roles PASS, settings PASS",claims disputes and money exposure are Tier 3 roadmap labels [00 §7 Tier 3]
-V-032,Audit trail,PORT (map to master `events`),MOVED,"route /Settings as dowens · suite roles PASS, settings PASS",lands on #/Settings?tab=audit
+V-027,Settings,PORT → Settings,MOVED,"route /Settings as dowens · suite roles FAIL, settings PASS",lands on #/Settings
+V-028,Help,Drop or Settings › Help,DROPPED-WITH-REASON,"code: Help in the shell · suite roles FAIL, settings PASS",Help is a rail foot link in the unified shell [docs/UI-KIT.md §4]; not itemised in 00-unified-recommendations decisions
+V-029,Roles permission editor,PORT (permission matrix),MOVED,"route /Settings as dowens · suite roles FAIL, settings PASS",lands on #/Settings?tab=roles
+V-030,Unit rules editor,PORT,MOVED,"route /Settings as dowens · suite roles FAIL, settings PASS",lands on #/Settings?tab=units
+V-031,Reimbursement rates / money exposure,Defer (Tier 3),DROPPED-WITH-REASON,"suite roles FAIL, settings PASS",claims disputes and money exposure are Tier 3 roadmap labels [00 §7 Tier 3]
+V-032,Audit trail,PORT (map to master `events`),MOVED,"route /Settings as dowens · suite roles FAIL, settings PASS",lands on #/Settings?tab=audit
 V-033,Payer requirement registry,PORT → rules (spec 4.6),MOVED,"state key rules · rules table · suite denials PASS, denials-ui PASS, rules PASS",73 rules
 V-034,Eligibility vs benefits,PORT (Eligibility enhancement),MOVED,"route /Referral as jperez · suite referrals PASS, flowD PASS",lands on #/Referral?id=REF-118&panel=eligibility
-V-035,Alerts,REPLACE with My Work,NOT-VERIFIED,route /MyWork as jperez · suite mywork PASS,hash #/Dashboard;  text missing: /To do/
+V-035,Alerts,REPLACE with My Work,REPLACED-BY,route /Dashboard as jperez · suite mywork PASS,lands on #/Dashboard
 V-036,History dropdown,REFACTOR (drop voice/agent actors),MOVED,"code: history component · suite authorizations PASS, flowC PASS",web/js/screens/DenialCaseViews.js web/js/screens/UiKit.js
 V-037,Voice agent,Roadmap only,DROPPED-WITH-REASON,,"voice and FLO data agents are roadmap labels only (no agents, no unattended calls) [00 decision #15 and §7 Tier 3]"
 V-038,FLO data agent,Roadmap only (conflicts with 9.6),DROPPED-WITH-REASON,,"voice and FLO data agents are roadmap labels only (no agents, no unattended calls) [00 decision #15 and §7 Tier 3]"
 V-039,In-browser demo backend,Drop,DROPPED-WITH-REASON,,v3 build or in-browser backend artefact; the master architecture replaces it [06c destination column; 04 section C (crosswalk and rules.json only)]
-V-040,Presenter menu,PORT idea → presenter toolbar,MOVED,"route /MyWork as dowens · code: presenter dock · suite ui-kit FAIL, fixtures PASS",lands on #/Dashboard; web/js/app.js web/js/screens/UiKit.js
+V-040,Presenter menu,PORT idea → presenter toolbar,MOVED,"route /Dashboard as dowens · code: presenter dock · suite ui-kit PASS, fixtures PASS",lands on #/Dashboard?present=1; web/js/app.js web/js/screens/UiKit.js
 V-041,Locality filter and bell,PORT (filter),MOVED,"route /Authorizations as jperez · suite authorizations PASS, flowC PASS",lands on #/Authorizations
 V-042,Sync version flow,REFACTOR (`doc_versions`; Synced only from observed event),MOVED,"state key doc_versions · action lauris.savedVersion registered with a capability entry · suite scribe PASS, enhance PASS",
 V-043,"Downloads, CSV, PDF helpers",PORT (report builder only),MOVED,code: CSV report builder · code: PDF report builder · suite analytics PASS,web/js/screens/Analytics.js web/js/shared/analytics/export.js; web/js/screens/Analytics.js web/js/shared/analytics/export.js
@@ -264,28 +264,28 @@ V-071,Forms to Approve,Drop (master M-079),DROPPED-WITH-REASON,,duplicate of the
 V-072,Form kit,Drop,DROPPED-WITH-REASON,,duplicate of the master screen it names; the simulated v3 pages are not ported (master mock Lauris is the one simulated Lauris) [06c destination column; 00 decision #19 (mock Lauris declared simulated once)]
 V-073,"Daily note (`lauris-dpn`), admission screening, CNA, ISP, collateral, monthly forms",Drop,DROPPED-WITH-REASON,,duplicate of the master screen it names; the simulated v3 pages are not ported (master mock Lauris is the one simulated Lauris) [06c destination column; 00 decision #19 (mock Lauris declared simulated once)]
 V-074,"DMAS initial and continued-stay forms (`lauris-dmas`, alias `lauris-case`)",Drop; PORT field list to master `forms.js`,DROPPED-WITH-REASON,,duplicate of the master screen it names; the simulated v3 pages are not ported (master mock Lauris is the one simulated Lauris) [06c destination column; 00 decision #19 (mock Lauris declared simulated once)]
-V-075,Case hub content,Evidence/Documentation seed,MOVED,code: evidence seed · suite ui-kit FAIL,web/js/screens/Authorization.js web/js/screens/DenialCase.js
-V-076,Case record excerpts,Evidence seed,MOVED,state key dispute_evidence · suite ui-kit FAIL,
-V-077,Citation viewer,PORT → source chips,MOVED,code: citation viewer · suite ui-kit FAIL,web/js/screens/Authorization.js web/js/screens/DenialCaseViews.js
-V-078,Evidence labels,PORT (maturity and provenance chips),MOVED,code: maturity chips · code: provenance chips · suite ui-kit FAIL,web/js/screens/Analytics.js web/js/screens/AnalyticsParts.js; web/js/screens/Analytics.js web/js/screens/AnalyticsParts.js
-V-079,Filter bar and date range,PORT → `ui/filterbar.js`,MOVED,code: filter bar · suite ui-kit FAIL,web/js/screens/Analytics.js web/js/screens/Authorizations.js
-V-080,Dash helpers,REFACTOR → selectors,MOVED,code: selectors · suite ui-kit FAIL,web/js/screens/AppealLetter.js web/js/screens/Authorization.js
-V-081,Theme remap,PORT (cheap re-skin of 46 templates),MOVED,code: theme remap · suite ui-kit FAIL,web/css/tokens.css
-V-082,Platform CSS patterns,PORT → `components.css`,MOVED,file web/css/components.css · suite ui-kit FAIL,
-V-083,Build script,Drop,DROPPED-WITH-REASON,suite ui-kit FAIL,v3 build or in-browser backend artefact; the master architecture replaces it [06c destination column; 04 section C (crosswalk and rules.json only)]
-V-084,S1 DSS creates a progress note,Spec Scenario 1 (master flow B),MOVED,"route /MobileApp as khale · code: scenario s1 · suite ui-kit FAIL, fixtures PASS",lands on #/MobileApp; seed/extra/scenarios.json
-V-085,S2 DSS tracks interventions,Remove: removed by feedback Nov 11 (Track Time),DROPPED-WITH-REASON,"suite ui-kit FAIL, fixtures PASS","Track Time (timer, time entries, the four time figures) was removed on the direct-support feedback of Nov 11: Psyflo no longer times or counts sessions; units used and left are read from Lauris [user feedback Nov 11 (this round); docs/deliverables/08 decision register]"
-V-086,S3 Clinician enhances a progress note,Enhance Mode A,MOVED,"action enhance.scan registered with a capability entry · suite ui-kit FAIL, fixtures PASS",
-V-087,S4 Clinician enhances an SRA,Spec Scenario 3,MOVED,"route /Authorization as jperez · suite ui-kit FAIL, fixtures PASS",lands on #/Authorization?id=R-0416&section=timeline
-V-088,S5 Admin tracks authorizations,Authorizations demo,MOVED,"route /Authorizations as jperez · suite ui-kit FAIL, fixtures PASS",lands on #/Authorizations
-V-089,S6 Clinician manages a denial,Spec Scenario 5,MOVED,"route /DenialIntelligence as jperez · suite ui-kit FAIL, fixtures PASS",lands on #/DenialIntelligence
-V-090,S7 Clinician prepares peer-to-peer,Spec Scenario 5,MOVED,"route /DenialIntelligence as jperez · suite ui-kit FAIL, fixtures PASS",lands on #/DenialIntelligence
-V-091,S8 Admin reviews denial patterns,Spec Scenario 6,MOVED,"route /Analytics as dowens · suite ui-kit FAIL, fixtures PASS",lands on #/Analytics
-V-092,S9 Admin reviews population trends,Spec Scenario 6,MOVED,"route /Analytics as dowens · suite ui-kit FAIL, fixtures PASS",lands on #/Analytics
-V-093,S10 FLO custom data pull,Roadmap,DROPPED-WITH-REASON,"suite ui-kit FAIL, fixtures PASS","voice and FLO data agents are roadmap labels only (no agents, no unattended calls) [00 decision #15 and §7 Tier 3]"
-V-094,S11 Voice agent follow-up,Roadmap,DROPPED-WITH-REASON,"suite ui-kit FAIL, fixtures PASS","voice and FLO data agents are roadmap labels only (no agents, no unattended calls) [00 decision #15 and §7 Tier 3]"
-V-095,S12 Roster check in the extension,Extension home,MOVED,"route /ExtHome as jperez · suite ui-kit FAIL, fixtures PASS",lands on #/ExtHome
-V-096,S13 Outcomes and timelines,Spec Scenario 6,MOVED,"route /Analytics as dowens · suite ui-kit FAIL, fixtures PASS",lands on #/Analytics
+V-075,Case hub content,Evidence/Documentation seed,MOVED,code: evidence seed · suite ui-kit PASS,web/js/screens/Authorization.js web/js/screens/DenialCase.js
+V-076,Case record excerpts,Evidence seed,MOVED,state key dispute_evidence · suite ui-kit PASS,
+V-077,Citation viewer,PORT → source chips,MOVED,code: citation viewer · suite ui-kit PASS,web/js/screens/Authorization.js web/js/screens/DenialCaseViews.js
+V-078,Evidence labels,PORT (maturity and provenance chips),MOVED,code: maturity chips · code: provenance chips · suite ui-kit PASS,web/js/screens/Analytics.js web/js/screens/AnalyticsParts.js; web/js/screens/Analytics.js web/js/screens/AnalyticsParts.js
+V-079,Filter bar and date range,PORT → `ui/filterbar.js`,MOVED,code: filter bar · suite ui-kit PASS,web/js/screens/Analytics.js web/js/screens/Authorizations.js
+V-080,Dash helpers,REFACTOR → selectors,MOVED,code: selectors · suite ui-kit PASS,web/js/screens/AppealLetter.js web/js/screens/Authorization.js
+V-081,Theme remap,PORT (cheap re-skin of 46 templates),MOVED,code: theme remap · suite ui-kit PASS,web/css/tokens.css
+V-082,Platform CSS patterns,PORT → `components.css`,MOVED,file web/css/components.css · suite ui-kit PASS,
+V-083,Build script,Drop,DROPPED-WITH-REASON,suite ui-kit PASS,v3 build or in-browser backend artefact; the master architecture replaces it [06c destination column; 04 section C (crosswalk and rules.json only)]
+V-084,S1 DSS creates a progress note,Spec Scenario 1 (master flow B),MOVED,"route /MobileApp as khale · code: scenario s1 · suite ui-kit PASS, fixtures PASS",lands on #/MobileApp; seed/extra/scenarios.json
+V-085,S2 DSS tracks interventions,Remove: removed by feedback Nov 11 (Track Time),DROPPED-WITH-REASON,"suite ui-kit PASS, fixtures PASS","Track Time (timer, time entries, the four time figures) was removed on the direct-support feedback of Nov 11: Psyflo no longer times or counts sessions; units used and left are read from Lauris [user feedback Nov 11 (this round); docs/deliverables/08 decision register]"
+V-086,S3 Clinician enhances a progress note,Enhance Mode A,MOVED,"action enhance.scan registered with a capability entry · suite ui-kit PASS, fixtures PASS",
+V-087,S4 Clinician enhances an SRA,Spec Scenario 3,MOVED,"route /Authorization as jperez · suite ui-kit PASS, fixtures PASS",lands on #/Authorization?id=R-0416&section=timeline
+V-088,S5 Admin tracks authorizations,Authorizations demo,MOVED,"route /Authorizations as jperez · suite ui-kit PASS, fixtures PASS",lands on #/Authorizations
+V-089,S6 Clinician manages a denial,Spec Scenario 5,MOVED,"route /DenialIntelligence as jperez · suite ui-kit PASS, fixtures PASS",lands on #/DenialIntelligence
+V-090,S7 Clinician prepares peer-to-peer,Spec Scenario 5,MOVED,"route /DenialIntelligence as jperez · suite ui-kit PASS, fixtures PASS",lands on #/DenialIntelligence
+V-091,S8 Admin reviews denial patterns,Spec Scenario 6,MOVED,"route /Analytics as dowens · suite ui-kit PASS, fixtures PASS",lands on #/Analytics
+V-092,S9 Admin reviews population trends,Spec Scenario 6,MOVED,"route /Analytics as dowens · suite ui-kit PASS, fixtures PASS",lands on #/Analytics
+V-093,S10 FLO custom data pull,Roadmap,DROPPED-WITH-REASON,"suite ui-kit PASS, fixtures PASS","voice and FLO data agents are roadmap labels only (no agents, no unattended calls) [00 decision #15 and §7 Tier 3]"
+V-094,S11 Voice agent follow-up,Roadmap,DROPPED-WITH-REASON,"suite ui-kit PASS, fixtures PASS","voice and FLO data agents are roadmap labels only (no agents, no unattended calls) [00 decision #15 and §7 Tier 3]"
+V-095,S12 Roster check in the extension,Extension home,MOVED,"route /ExtHome as jperez · suite ui-kit PASS, fixtures PASS",lands on #/ExtHome
+V-096,S13 Outcomes and timelines,Spec Scenario 6,MOVED,"route /Analytics as dowens · suite ui-kit PASS, fixtures PASS",lands on #/Analytics
 V-097,"`data.js`, `lauris-data.js`, `02-core-data.js`",Crosswalk and `rules.json` only,MOVED,state key crosswalk · file seed/extra/crosswalk.json · file seed/extra/rules.json,
 V-098,"`10-referrals.js`, `81-connect-lauris.js`, `82-payers.js`, `20-case.js`, `40-home.js`, `79-flow-decision.js`, `03-ext-status.js`, `00-starter.js`",Drop,DROPPED-WITH-REASON,,v3 build or in-browser backend artefact; the master architecture replaces it [06c destination column; 04 section C (crosswalk and rules.json only)]
 V-099,`captured/*.html` (19 canvas copies),Drop,DROPPED-WITH-REASON,,v3 build or in-browser backend artefact; the master architecture replaces it [06c destination column; 04 section C (crosswalk and rules.json only)]

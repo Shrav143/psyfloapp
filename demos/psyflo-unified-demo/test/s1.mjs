@@ -4,6 +4,7 @@
 //   Denial Intelligence (must not move), audit events. Runs from demo.scenario s1, from the fixture mr-daily and from a fresh reset, and the
 //   first and the last state must be the same whichever way it started. (Extends E7's s1: its three phone/Lauris checks are steps 2, 4 and 6.)
 import { suite, assert, waitText, api, state, playwright, reset, BASE, LAURIS, MODES, start, flow, openAs, noErrors, panel, panelFrame, formValues, yellow, rootText, mainText, waitState, shot, lsnap, lcons, lsess, req, cli, evs, scoreRows, pilotDom, same, sid } from './lib/scenario.mjs';
+import { session } from './lib/index.mjs';
 
 const T = suite('s1');
 const { chromium } = playwright();
