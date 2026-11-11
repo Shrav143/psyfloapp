@@ -39,9 +39,9 @@ export function projectState(s, actor) {
   const P = {
     // reference data every signed-in actor needs
     preset: v => v, rev: v => v, today: v => v, clock: v => v, org: v => v, schools: v => v, roles: v => v, payers: v => staffLike || actor ? (v || []).map(p => actor && actor.role === 'guardian' ? pick(p, ['id', 'name']) : p) : [], interventions: v => staffLike ? v : [],
-    school_users: v => (v || []).map(u => actor && actor.role === 'school' ? { id: u.id, name: u.name, role: u.role, school: u.school } : pick(u, ['id', 'name', 'role', 'school'])),
+    school_users: v => (v || []).filter(u => !(actor && actor.role === 'school') || u.school === actor.school).map(u => actor && actor.role === 'school' ? { id: u.id, name: u.name, role: u.role, school: u.school } : pick(u, ['id', 'name', 'role', 'school'])),
     staff: v => (v || []).map(x => can(actor, 'admin.users') || clin ? omit(x, []) : omit(x, ['designations', 'signs_requests', 'review_reason'])),
-    rules: v => !actor ? [] : actor.role === 'guardian' ? (v || []).filter(r => /^(signature\.mode\.|family_link\.)/.test(r.key)) : actor.role === 'school' ? [] : v,
+    rules: v => !actor ? [] : actor.role === 'guardian' ? (v || []).filter(r => /^(signature\.mode\.|family_link\.|appeal\.(window_days|start_event|initiators)|recording\.require_consent_record)/.test(r.key)) : actor.role === 'school' ? [] : v,
     scenarios: v => actor && can(actor, 'demo.controls') ? v : [],
     crosswalk: v => actor && can(actor, 'demo.controls') ? v : {},
 
@@ -51,7 +51,7 @@ export function projectState(s, actor) {
     notes_sample: v => clin || (staffLike && role === 'supervisor') ? v : [],
     events: v => (v || []).filter(e => !hiddenRecords.has(e.record)).map(e => eventView(e)).filter(Boolean),
 
-    referrals: v => clin ? v : actor && actor.role === 'school' ? (v || []).filter(r => r.school === actor.school).map(r => omit(r, [])) : actor && actor.role === 'guardian' ? (v || []).filter(r => r.client === actor.client || (byId(s.clients, actor.client) || {}).referral === r.id).map(r => pick(r, ['id', 'client', 'school', 'stage', 'next', 'received', 'family_link', 'screening', 'eligibility', 'screening_offer'])) : [],
+    referrals: v => clin ? v : actor && actor.role === 'school' ? (v || []).filter(r => r.school === actor.school).map(r => { const g = omit(r, ['eligibility', 'next', 'screening_offer', 'grant', 'hold', 'form']); if (g.screening) g.screening = omit(g.screening, ['who']); if (r.form && r.referred_by && r.referred_by === String(actor.id || '').replace(/^school:/, '')) g.form = r.form; return g; }) : actor && actor.role === 'guardian' ? (v || []).filter(r => r.client === actor.client || (byId(s.clients, actor.client) || {}).referral === r.id).map(r => ({ ...pick(r, ['id', 'client', 'school', 'stage', 'next', 'received', 'family_link', 'screening', 'eligibility', 'screening_offer']), ...(r.form && r.form.guardian ? { contact: pick(r.form.guardian, ['name', 'phone']) } : {}) })) : [],
     family_links: v => clin ? v : actor && actor.role === 'guardian' ? (v || []).filter(f => f.client === actor.client) : [],
     eligibility: v => clin || (staffLike && can(actor, 'eligibility.run')) ? v : actor && actor.role === 'guardian' ? (v || []).filter(e => e.client === actor.client).map(e => pick(e, ['referral', 'client', 'status'])) : [],
     consents: v => clin ? v : actor && actor.role === 'guardian' ? (v || []).filter(c => c.client === actor.client) : [],
@@ -112,7 +112,7 @@ export function projectState(s, actor) {
     if (staffLike && role === 'direct_support') return myCaseload.has(c.id) ? { ...pick(c, ['id', 'initials', 'first_name', 'age', 'grade', 'school', 'stage', 'staff', 'harvest_no', 'lauris_no', 'service_start', 'authorization', 'referral', 'goals', 'guardian', 'iep', 'clock30_start', 'service_line']) } : null;
     if (staffLike && role === 'supervisor') return myCaseload.has(c.id) ? { ...base, goals: c.goals, guardian: pick(c.guardian || {}, ['name']) } : base;
     if (staffLike && role === 'admin') return base;
-    if (actor.role === 'guardian') return c.id === actor.client ? omit(c, ['diagnosis', 'medicaid', 'strengths', 'staff_notes', 'timeline', 'clock30_start']) : null;
+    if (actor.role === 'guardian') { if (c.id !== actor.client) return null; const g = omit(c, ['diagnosis', 'medicaid', 'strengths', 'staff_notes', 'timeline', 'clock30_start', 'dsm_parent', 'dsm_child']); if (g.quarter) g.quarter = omit(g.quarter, ['phq_a', 'dsm_parent', 'dsm_child']); return g; }
     if (actor.role === 'school') return c.school === actor.school ? pick(c, ['id', 'initials', 'first_name', 'age', 'grade', 'school', 'stage', 'service_start']) : null;
     return null;
   }

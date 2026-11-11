@@ -1,7 +1,7 @@
 // 29 · Authorizations — the work queue over request.stage (E2). Selectors: shared/sel/auth.js. One row per request; the row opens the case.
 // Also exports small helpers shared by the other request screens (Sent, Info request, Partials, Early discharge, Peer-to-peer)
 // so they read requests the same way. Keep these exports: other screens import them.
-import { register, Screen, M, raw, esc, ui, modal, toast, session, api } from '../app.js';
+import { register, Screen, M, raw, esc, ui, modal, toast, session, api, canOpen } from '../app.js';
 import { isLive } from '../registry.js';
 import { can } from '../shared/permissions.js';
 import { authQueue, queueOptions, normalizeParams, LEGACY_KEYS, CHIPS } from '../shared/sel/auth.js';
@@ -105,7 +105,7 @@ register('Authorizations', class extends Screen {
       { key: 'case', label: 'Case', sort: true, primary: true, width: '21%', render: r => `<span class="a-case-l"><b>${esc(r.label)}</b> <span class="a-id">${esc(r.id)}</span></span><span class="a-sub">${esc(r.school || '')}</span>` },
       { key: 'payer', label: 'Payer', sort: true, hideBelow: 1024, width: '12%', render: r => `${esc(r.payer)}<div class="a-sub">${esc(r.channel)}${r.ref ? ' · ' + esc(r.ref) : ''}</div>` },
       { key: 'type', label: 'Request type', sort: true, hideBelow: 1280, width: '11%', render: r => `${esc(r.typeLabel)}<div class="a-sub">${esc(r.service)}</div>` },
-      { key: 'status', label: 'Status', sort: true, width: '13%', render: r => ui.statusChip(r.stage) + (r.inDI ? `<div class="a-di"><a href="${esc(diHref(r.req))}">In Denial Intelligence</a></div>` : '') },
+      { key: 'status', label: 'Status', sort: true, width: '13%', render: r => ui.statusChip(r.stage) + (r.inDI ? (canOpen('DenialCase') || canOpen('Partials') ? `<div class="a-di"><a href="${esc(diHref(r.req))}">In Denial Intelligence</a></div>` : '<div class="a-sub">In Denial Intelligence · clinician only</div>') : '') },
       { key: 'units', label: 'Units', sort: true, width: '15%', render: r => this.unitsCell(r) },
       { key: 'deadline', label: 'Deadline', sort: true, width: '16%', render: r => this.deadlineCell(r) },
       { key: 'owner', label: 'Owner', sort: true, hideBelow: 1280, width: '7%', render: r => `<span title="${esc(r.owner.backup ? 'Backup: ' + r.owner.backup.name : 'No backup set')}">${esc(r.owner.short)}</span>` },
@@ -135,7 +135,7 @@ register('Authorizations', class extends Screen {
     return `<div class="a-dl a-dl--${d.sev}"><span class="a-dl__t">${esc(d.text)}</span></div>${d.sub ? `<div class="a-sub">${esc(d.sub)}</div>` : ''}${chips ? `<div class="a-chips">${chips}</div>` : ''}`;
   }
   nextCell(r) {
-    const n = r.next; const href = n.di ? diHref(r.req) : caseHref(r.id);
+    const n = r.next; const href = n.di && (canOpen('DenialCase') || canOpen('Partials')) ? diHref(r.req) : caseHref(r.id);
     return `<a class="ui-btn ui-btn--secondary ui-btn--sm" href="${esc(href)}">${esc(n.label)}<span class="ui-sr"> for ${esc(r.label)}, ${esc(r.id)}</span></a>${n.why ? `<div class="a-sub">${esc(n.why)}</div>` : ''}`;
   }
   after(root) {

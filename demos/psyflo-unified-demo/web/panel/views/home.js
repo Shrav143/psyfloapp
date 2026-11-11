@@ -111,6 +111,12 @@ function html(ctx) {
   // the next task
   const nt = nextTask(ctx);
   if (nt) h += `<section class="next" aria-label="Next task"><div class="row w"><h2 style="flex:1">${esc(nt.title)}</h2>${nt.chip ? `<span class="chip ${nt.chip[0]}">${esc(nt.chip[1])}</span>` : ''}</div>${nt.why ? `<div class="small muted">${esc(nt.why)}</div>` : ''}${nt.nav ? `<button class="btn p blk" data-act="nav" data-href="${esc(nt.nav)}">${esc(nt.label)}</button>` : nt.app ? `<button class="btn p blk" data-act="openApp" data-href="${esc(nt.app)}">${esc(nt.label)}</button>` : ''}</section>`;
+  // a draft the person already started for this student: back to its review
+  if (c) {
+    const today = ctx.M.today(s);
+    const mine = (s.doc_versions || []).filter(d => d.mode === 'current' && d.client === c.id && d.by === me.id && d.date === today && (d.items || []).length && d.lauris_status !== 'processed');
+    if (mine.length) { const d = mine.at(-1); const done = d.items.filter(i => i.state !== 'pending').length; h += `<button class="btn o blk" data-act="goView" data-view="review"><span>Review draft · ${esc(FORM_NAME[d.form] || d.form)}</span><span class="chip ${done === d.items.length ? 'g' : 'y'}">${done} of ${d.items.length}</span></button>`; }
+  }
   // the to-review row
   const rr = reviewRows(ctx);
   if (rr.length) h += accordion(`To review`, rr.map(x => x.k === 'ref'

@@ -2,7 +2,6 @@
 // "Ask now" opens a two-question SUDS (#suds) or the DSM cross-cutting child version (#dsm) and stores the answers
 // with assessment.save. They are held in Psyflo until the student is open in Lauris, where Lauris scores them.
 import { register, Screen, M, toast, raw, ui } from '../app.js';
-import { clock12 } from '../shared/dates.js';
 import { today as clockToday } from '../shared/clock.js';
 import { phoneUser, myStudents, whoLine, dueAssessments, patientBar } from './MobileApp.js';
 

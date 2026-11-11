@@ -85,14 +85,13 @@ function continuedHTML(ctx, c) {
   const cs = buildContinuedStay(s, c.id, per, { household: !!st.household, request: req });
   const idx = cs.index; const rec = recFor(ctx, c, 'sra-continued');
   let h = `<div class="row"><label class="lab" for="cs-per">Period</label><select id="cs-per" class="tog" style="flex:1" data-ch="period">${presets.map(p => `<option value="${p.id}"${p.id === per.preset ? ' selected' : ''}>${esc(p.label)}</option>`).join('')}</select></div>
-    <div class="hint">${fmtDate(per.from)} – ${fmtDate(per.to)} · ${idx.period.days} days${req ? ' · ' + esc(req.id) : ''}</div>`;
-  h += `<div class="cnts">${['daily:Daily notes', 'weekly:Weekly calls', 'monthly:Monthly collateral'].map(x => { const [k, l] = x.split(':'); return `<button class="cnt" data-act="openRows" data-k="${k}"><span class="small muted">${l}</span><b>${cs.counts[k]}</b></button>`; }).join('')}</div>
-    <div class="hint">${cs.counts.excluded} excluded · ${cs.counts.sensitive} sensitive (counted, never quoted). <a href="#" data-act="openEvidence">Open the evidence</a></div>`;
+    <div class="cnts" role="group" aria-label="Evidence counts">${['daily:Daily notes', 'weekly:Weekly calls', 'monthly:Monthly collateral'].map(x => { const [k, l] = x.split(':'); return `<button class="cnt" data-act="openRows" data-k="${k}"><span class="small muted">${l}</span><b>${cs.counts[k]}</b></button>`; }).join('')}</div>
+    <div class="hint">${fmtDate(per.from)} – ${fmtDate(per.to)}${req ? ' · ' + esc(req.id) : ''} · ${cs.counts.excluded} excluded · ${cs.counts.sensitive} sensitive. <a href="#" data-act="openEvidence">Open the evidence</a></div>`;
   h += unitsBanner(ctx, c);
   // household context: Not included until a person opts in
   const hh = idx.rows.filter(r => r.household && !r.excluded);
-  h += `<div class="tile"><div class="row w"><h2 style="flex:1">Household context</h2><span class="chip ${st.household ? 'y' : 'n'}">${st.household ? 'Included by you' : 'Not included'}</span><button class="btn ${st.household ? 'o' : 'p'} sm" data-act="household" ${hh.length || st.household ? '' : 'disabled'}>${st.household ? 'Take it out' : 'Include it'}</button></div>
-    <div class="hint" style="margin-top:4px">${hh.length ? `${hh.length} stored note${hh.length === 1 ? '' : 's'} mention${hh.length === 1 ? 's' : ''} it. You decide.` : 'No stored note mentions it.'}</div></div>`;
+  h += `<div class="row w" style="justify-content:space-between"><span><b class="small">Household context</b> <span class="chip ${st.household ? 'y' : 'n'}">${st.household ? 'Included by you' : 'Not included'}</span></span><button class="btn ${st.household ? 'o' : 'p'} sm" data-act="household" ${hh.length || st.household ? '' : 'disabled'}>${st.household ? 'Take it out' : 'Include it'}</button></div>
+    ${hh.length ? '' : '<div class="hint">No stored note mentions it.</div>'}`;
   const stale = !!rec && isStale(rec, cs.boxes);
   if (!rec) h += `<button class="btn p blk" data-act="csDraft">Review ${cs.boxes.length} statements</button>`;
   else {
@@ -110,7 +109,7 @@ function unitsBanner(ctx, c) {
   const s = ctx.S(); const left = a.units - (a.used || 0); const r = rule(s, 'units.rate_per_school_day'); const rate = r.value || 3; const days = Math.floor(left / rate);
   const run = addBusinessDays(ctx.M.today(s), days);
   if (!a.end || run >= a.end) return '';
-  return ctx.parts.banner('y', `<b>${left} units left.</b> At ${rate} a day units run out about ${fmtDate(run)}, before the ${fmtDate(a.end)} end. ${ctx.ui.sourceChip(r)}`);
+  return `<div class="row w small" style="color:var(--warning-fg)">${ctx.I.warn}<span><b>${left} units left</b> · out about ${fmtDate(run)}, before ${fmtDate(a.end)}</span>${ctx.ui.sourceChip(r)}</div>`;
 }
 
 // ------------------------------------------------------------------ Sign-off (Forms to Approve)

@@ -29,11 +29,11 @@ try {
   const lp = await (await b.newContext({ viewport: { width: 1440, height: 1000 } })).newPage(); const le = errors(lp);
   const panel = () => lp.frameLocator('#psyflo-frame');
   await lp.goto(`${LAURIS}/login?as=khale&next=${encodeURIComponent('/consumers/3310/session/dpn')}`);
-  await T.test('Lauris: opening M.R.\'s daily note drops the waiting dictation in (yellow, the staffer\'s own words); a person confirms the units from the timer and presses Process Form', async () => {
+  await T.test('Lauris: opening M.R.\'s daily note drops the waiting dictation in (yellow, the staffer\'s own words); a person checks the boxes (220 min = 2 units, the unconfirmed block is not counted) and presses Process Form', async () => {
     await panel().getByText('Dictation dropped in').waitFor({ timeout: 20000 });
     const v = await lp.evaluate(() => Object.fromEntries([...document.querySelectorAll('#lauris-form label[for]')].map(l => [l.textContent, document.getElementById(l.htmlFor).value])));
     assert.eq(v['Narrative'].replace(/\s+/g, ' ').trim().slice(0, 40), 'Played basketball with M.R. after he got'); assert.eq(v['Units'], '2'); assert.match(v['Direct time'], /3 h 40 min/);
-    await panel().getByText(/^Confirm \d units/).click(); await lp.waitForTimeout(800);
+    // the boxes already hold the confirmed blocks only (220 min = 2 units); the afternoon block stays unconfirmed and is never counted
     await lp.screenshot({ path: SHOTS + '/s1-2-lauris-filled.png' });
     await lp.getByRole('button', { name: 'Process Form' }).click(); await lp.waitForURL(/processed=/); await lp.waitForTimeout(1800);
     const s = await state('khale'); assert.eq(done(s), '5 of 6'); assert.eq(s.dictations.find(x => x.client === 'MR').status, 'used');

@@ -67,7 +67,7 @@ h2{font-size:15px;margin:4px 0 10px;color:#1F3B6B}
 .phq{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:6px}
 .st{display:inline-block;border-radius:3px;padding:1px 7px;font-size:11px;font-weight:700;border:1px solid transparent}
 .st.g{background:#E1F2E7;color:#1E6B40;border-color:#B5D9C3}.st.n{background:#EEF0F3;color:#3B4656;border-color:#D5D9DF}.st.r{background:#FBE5E0;color:#9B2C17;border-color:#EBB3A8}.st.y{background:#FFF1D6;color:#8A5A00;border-color:#EDCB86}
-.num{text-align:right;white-space:nowrap}
+.num{text-align:right;white-space:nowrap}.list td a{white-space:nowrap}
 .sub-h{font-size:13px;font-weight:700;color:#1F3B6B;margin:14px 0 6px}
 .bar{height:12px;background:#E9ECF0;border-radius:3px;overflow:hidden;display:flex;min-width:120px}.bar i{display:block;height:100%}.bar .u{background:#1F4E8C}.bar .a{background:#9DB8DE}
 `;
@@ -416,8 +416,8 @@ ${previewHTML(s, c)}${actions}`);
 ${sel('af-p', 'Payer', 'payer', Object.entries(PAYER), payF)}${sel('af-s', 'Status', 'status', [['active', 'Active'], ['exhausted', 'No units left'], ['ended', 'Ended'], ['none', 'No authorization']], stF)}
 <div></div><button class="lb pri" type="submit">Search</button></form>
 <div class="small muted" style="margin:0 0 6px" id="authorization-count">Showing ${rows.length} of ${total} · ${US(today)}</div>
-<table class="list" id="authorization-table"><tr><th>Harvest #</th><th>Consumer</th><th>Group</th><th>Payer</th><th>Procedure</th><th>Dates</th><th class="num">Units</th><th>Use</th><th>Status</th><th></th></tr>
-${rows.map(({ c, st }) => `<tr data-consumer="${c.no}" data-status="${st.key}"><td>${c.no}</td><td><a href="/consumers/${c.no}?tab=auth">${esc(c.initials)}</a></td><td>${esc(c.group)}</td><td>${esc(c.auth && c.auth.payer_name || '—')}</td><td>${procedureOf(c)}</td><td>${c.auth && c.auth.units ? esc(c.auth.start_us + ' – ' + (c.auth.end_us || '')) : '—'}</td><td class="num">${c.auth && c.auth.available != null ? c.auth.available + ' available' + (c.auth.units ? ' of ' + c.auth.units : '') : '—'}</td><td>${unitsCell(c)}</td><td><span class="st ${st.tone}">${st.label}</span></td><td><a href="/consumers/${c.no}?tab=auth">${st.key === 'none' ? 'Enter authorization' : 'Open'}</a></td></tr>`).join('') || '<tr><td colspan="10" class="muted">No consumers match.</td></tr>'}</table>`);
+<table class="list" id="authorization-table"><tr><th>Harvest #</th><th>Consumer</th><th>Payer</th><th>Procedure</th><th>Dates</th><th class="num">Units</th><th>Use</th><th>Status</th><th></th></tr>
+${rows.map(({ c, st }) => `<tr data-consumer="${c.no}" data-status="${st.key}"><td>${c.no}</td><td><a href="/consumers/${c.no}?tab=auth">${esc(c.initials)}</a></td><td>${esc(c.auth && c.auth.payer_name || '—')}</td><td>${procedureOf(c)}</td><td>${c.auth && c.auth.units ? esc(c.auth.start_us + ' – ' + (c.auth.end_us || '')) : '—'}</td><td class="num">${c.auth && c.auth.available != null ? c.auth.available + ' available' + (c.auth.units ? ' of ' + c.auth.units : '') : '—'}</td><td>${unitsCell(c)}</td><td><span class="st ${st.tone}">${st.label}</span></td><td><a href="/consumers/${c.no}?tab=auth">${st.key === 'none' ? 'Enter units' : 'Open'}</a></td></tr>`).join('') || '<tr><td colspan="9" class="muted">No consumers match.</td></tr>'}</table>`);
   }
   // Time Tracker: where staff type the time of a service. A person saves it; the page reports it as a saved entry, never as units.
   if (p === '/time') {
@@ -439,7 +439,7 @@ ${rows.map(({ c, st }) => `<tr data-consumer="${c.no}" data-status="${st.key}"><
     const tflash = te ? `<div class="flash w" role="status" id="lauris-flash" data-event="saved" data-session="${te.id}" data-form="time" data-consumer="${c.no}">Time entry saved · ${te.minutes} min · not turned into units (Lauris does not do that)</div>` : '';
     const goals = (c.goals || []).map(g => `Obj. ${g.n} – ${g.objective}`);
     const rows = timeFor(c, day);
-    return page('Time Tracker', 'time', `${tflash}${q.get('blocked') ? `<div class="flash r" role="status" id="lauris-flash" data-event="blocked">${esc(q.get('blocked'))}</div>` : ''}${consumerHeader(c)}${tabs(c, 'active')}
+    return page('Time Tracker', 'time', `${tflash}${q.get('blocked') ? `<div class="flash r" role="status" id="lauris-flash" data-event="blocked">${esc(q.get('blocked'))}</div>` : ''}${consumerHeader(c)}${tabs(c, '')}
 <h2>Time Tracker · ${US(day)}</h2>
 <table class="list" id="time-entries"><tr><th>Start</th><th>End</th><th class="num">Minutes</th><th>Activity</th><th>Objective</th><th>Entered by</th></tr>${rows.map(e => `<tr data-time="${e.id}"><td>${esc(e.start)}</td><td>${esc(e.end)}</td><td class="num">${e.minutes}</td><td>${esc(e.activity)}</td><td>${esc(e.objective || '—')}</td><td>${esc(lauris.user(e.by)?.name || e.by)}</td></tr>`).join('') || '<tr><td colspan="6" class="muted">Nothing entered today.</td></tr>'}</table>
 <form method="post" action="/time?consumer=${c.no}" id="lauris-form" data-form="time" data-consumer="${c.no}" data-session="" class="card" style="margin-top:10px">

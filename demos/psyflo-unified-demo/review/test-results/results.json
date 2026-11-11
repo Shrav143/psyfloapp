@@ -1,1878 +1,222 @@
 {
- "runId": "2026-11-11T15-10-12Z",
- "commit": "2d942a9",
+ "runId": "2026-11-11T16-02-11Z",
+ "commit": "b0779b6",
  "release": false,
  "releaseReady": false,
  "env": {
   "node": "v22.22.0",
   "time": "15:30",
   "preset": "live",
-  "workers": 2,
+  "workers": 1,
   "repeat": 1,
-  "basePort": 4800
+  "basePort": 4890
  },
  "summary": {
-  "pass": 16,
+  "pass": 1,
   "fail": 0,
   "skip": 0,
   "notRunnable": 0,
   "knownFail": 0,
   "flaky": 0,
-  "durationMs": 157536,
+  "durationMs": 45215,
   "tests": {
-   "pass": 308,
+   "pass": 35,
    "fail": 0,
    "skip": 0
   }
  },
  "suites": [
   {
-   "name": "unit",
-   "tags": [
-    "unit"
-   ],
+   "name": "family",
+   "tags": [],
    "instance": 0,
    "attempt": 1,
    "status": "PASS",
    "exit": 0,
-   "durationMs": 368,
+   "durationMs": 45114,
    "counts": {
-    "pass": 9,
+    "pass": 35,
     "fail": 0,
     "skip": 0
    },
    "tests": [
     {
      "status": "PASS",
-     "title": "Flow A · screening transcript drafts the expected boxes",
+     "title": "a guardian link opens only that child: one client, own requests, no diagnosis, no staff-only material",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "Flow A · prompts tick as answers are heard",
+     "title": "a link for another family sees nothing of T.W. and cannot act on T.W.'s records",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "Flow A · an empty prior-service outcome blocks and asks",
+     "title": "a guardian cannot do staff work: send, approve, decide, send a family link, sign for another child",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "Flow B · dictation stays the staffer's own facts: no template, no invented times, events or outcomes",
+     "title": "the presenter view of one child is that child: E.C.s guardian sees E.C.s denial and the letter status, never who prepared it",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "Flow B · a named objective is used; an unnamed one is a question",
+     "title": "the checklist home: one h1, landmarks, \"N of M done\" equals the selector, next step first, no horizontal scroll",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "Flow B · negative case: \"observed\" is flagged and a question is raised; the words are not changed",
+     "title": "language toggle: two buttons of 44 px or more, Español switches the page and marks it lang=es, English switches back",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "Units · official bands: 0 below 120 minutes, 1/2/3 at 120/180/300; the 60-minute rule is an alternate, not the default",
+     "title": "\"Call us instead\" opens an accessible dialog with the demo number and Escape closes it, focus returns to the button",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "Evidence · counts come from stored notes; missing evidence prints \"Evidence missing\"; household is not included by default",
+     "title": "ParentPortal at 390 px: landmarks, one h1, 16 px text, targets of 44 px, no horizontal scroll, no console errors, no dead anchors",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "Flow C · initial SRA leaves criterion 3 blank when 1 and 2 are met, and never drafts trauma-informed care",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-11T15-10-12Z"
-  },
-  {
-   "name": "bridge-contract",
-   "tags": [
-    "contract"
-   ],
-   "instance": 1,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 332,
-   "counts": {
-    "pass": 7,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "consumer list: #consumer-list rows carry data-consumer and data-program; .top .r and .side .lnav .b exist",
+     "title": "ParentSign at 390 px: landmarks, one h1, 16 px text, targets of 44 px, no horizontal scroll, no console errors, no dead anchors",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "consumer header: .hdr .nm, #consumer-name, \"Harvest #\", Program:, .units",
+     "title": "ParentEnroll at 390 px: landmarks, one h1, 16 px text, targets of 44 px, no horizontal scroll, no console errors, no dead anchors",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "session form: #lauris-form data-form|session|consumer, #session-form-title, label[for] boxes, Save/Process buttons",
+     "title": "ParentLetters at 390 px: landmarks, one h1, 16 px text, targets of 44 px, no horizontal scroll, no console errors, no dead anchors",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "PRG redirects and the flash: ?processed= ?saved= ?signed= ?rejected= ?created= with #lauris-flash[data-event|session|form|consumer]",
+     "title": "ParentProgress at 390 px: landmarks, one h1, 16 px text, targets of 44 px, no horizontal scroll, no console errors, no dead anchors",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "portal pages: #portal-form and #portal-confirmation[data-ref|request|kind]",
+     "title": "ParentQuarterly at 390 px: landmarks, one h1, 16 px text, targets of 44 px, no horizontal scroll, no console errors, no dead anchors",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "the bridge source: message shapes, origin checks, no clicks, no background fetch to Lauris, same copy in extension/",
+     "title": "ParentSchedule at 390 px: landmarks, one h1, 16 px text, targets of 44 px, no horizontal scroll, no console errors, no dead anchors",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "what the bridge reports is accepted from the Lauris origin only with a JSON body (the bridge posts exactly this)",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-11T15-10-12Z"
-  },
-  {
-   "name": "clock",
-   "tags": [
-    "safety"
-   ],
-   "instance": 0,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 400,
-   "counts": {
-    "pass": 10,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "both presets start on Oct 29; Psyflo and the mock Lauris print the same date",
+     "title": "ParentSurvey at 390 px: landmarks, one h1, 16 px text, targets of 44 px, no horizontal scroll, no console errors, no dead anchors",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "advancing the day moves Psyflo AND Lauris together; the default skips the weekend",
+     "title": "Remote allowed: the sign box offers drawing and \"Type your name\"",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "a Lauris stamp uses the same clock (a form processed after the advance is dated that day)",
+     "title": "In person required: no signing here; what to bring and when are shown; the server refuses a remote signature",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "the time of day is not the machine clock and is never silently pinned (fixed only through DEMO_TIME)",
+     "title": "Pending: the guardian is told Harvest is deciding; the server refuses the signature",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "PDU-02 an information request that is not answered becomes \"missed\" (no 08:40 fudge); the reply-due time is shown",
+     "title": "Ready to review: a form Harvest has not asked for can be read, not signed (screen and server)",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "PDU-01/06 decision clock: \"Day N\", follow-up on day 10, overdue only after the configured window; each number has a source",
+     "title": "Remote allowed, typed name: signing records the guardian behind the link (never the typed text) and the screen shows Completed",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "the seeded overdue request (R-0399) is overdue by the rule, not by a constant",
+     "title": "Remote allowed, drawn: the signed copy is stored and the checklist moves",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "EXA-04 appeal window: computed from the notice date (60 days, unverified, confirm on the letter); closed after it, never negative",
+     "title": "the empty-pad sign attempt asks for a signature and signs nothing",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "deadlines return the date, the source and the verification label from the rules table",
+     "title": "required paperwork: a short form (filled in from the link) and a read-and-acknowledge item are saved; the checklist count moves",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "no hard-coded story date in the foundation code (the Oct 29 literal, \"Oct 29\", 10/29, the 08:40 fudge)",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-11T15-10-12Z"
-  },
-  {
-   "name": "decisions",
-   "tags": [
-    "safety"
-   ],
-   "instance": 1,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 2818,
-   "counts": {
-    "pass": 8,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "T.N. approved at 150 after the peer-to-peer: 150 units, a new window, the old 65 of 65 kept as history",
+     "title": "check-in: three questions are required; Send saves a guardian check-in credited to the guardian",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "the task closes only when the page bridge shows the units in Lauris (a person entered them)",
+     "title": "the quarterly report: once staff send it, the guardian signs (drawn); the PDF and the guardian's name are stored",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "T.W. and E.C. become Active WITH units (demo reply approved on a sent request)",
+     "title": "the first call and the intake: a clinician offers, the family books on the phone (ride, confirm the day before), all recorded",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "accepting a partial (D.W. 110 of 150) sets 110 units; M.R. continued stay award replaces 83 of 110 with a new window",
+     "title": "appealView reads the four states from the stored records",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "request.demoReply never approves a draft or anything that was not sent; presenter mode is required",
+     "title": "appeal, guardian side: Ready to review → sign (typed) → Signed, staff will send → staff press Send → Submitted by staff",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "R-0391 (J.O.) turns overdue under the clock service, like R-0399",
+     "title": "appeal signature mode: In person required refuses a remote appeal signature and the screen shows what to bring",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "/api/state and the roster never serve a screening transcript to an unauthenticated caller",
+     "title": "insurance letters: What this says · What you can do · By when; no 24-hour promise; the appeal date has its source",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "the phone timer follows store.clock, not the machine clock",
+     "title": "the quarterly report follows the signature mode too (In person required: no signing here)",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "sigState: five states from the rule and the stored records",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "referralStatus never reaches past status text",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "the guardian projection withholds clinical instrument scores of the quarter",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "the guardian gets the appeal-window rule row",
      "note": ""
     }
    ],
-   "runId": "2026-11-11T15-10-12Z"
-  },
-  {
-   "name": "fixtures",
-   "tags": [
-    "fixtures",
-    "realtime"
-   ],
-   "instance": 0,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 4183,
-   "counts": {
-    "pass": 7,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "tw-screened: the fixture and the UI path give the same state",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "tw-isp-ready: the fixture and the UI path give the same state",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "tw-signed: the fixture and the UI path give the same state",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "tw-sent: the fixture and the UI path give the same state",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "base presets, tw-referral, payer-decision and mr-daily load; the clock and Lauris agree",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the presenter scenarios s1-s6 reset, tweak and return where to go",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "DEMO_TEST snapshot of the mock Lauris: present when DEMO_TEST=1 (refused otherwise)",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-11T15-10-12Z"
-  },
-  {
-   "name": "flowB",
-   "tags": [
-    "flow"
-   ],
-   "instance": 0,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 4804,
-   "counts": {
-    "pass": 4,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "direct support saves a dictation for a student on their caseload; one off the caseload is refused",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "opening M.R.'s daily note drops the dictation in as the staffer's own words, with questions for what was not said",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "a person confirms the units and presses Process Form; the note counts: 5 of 6",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "no console errors",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-11T15-10-12Z"
-  },
-  {
-   "name": "flowA",
-   "tags": [
-    "flow",
-    "realtime"
-   ],
-   "instance": 1,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 23725,
-   "counts": {
-    "pass": 7,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "family link → five steps → submit → eligibility recorded (clinician session)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "new-consumer boxes are typed from the referral (yellow)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "screening opens with the pre-call boxes typed",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "scripted call: prompts tick while recording; the draft fills the boxes; only what was said",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "Process Form is a person's click; Psyflo learns it from the observed page event",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the intake (CNA) opens with the screening answers carried forward",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "no console errors in the page or the panel",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-11T15-10-12Z"
-  },
-  {
-   "name": "flowC",
-   "tags": [
-    "flow",
-    "realtime"
-   ],
-   "instance": 0,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 18819,
-   "counts": {
-    "pass": 6,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "ISP: the three goals are filled; Process Form drafts the request (R-0416)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "SRA: drafted from the call and the school counts; criterion 3 and trauma-informed care left blank; no invented dates or promises",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "Process Form lands in Pending clinical approval (observed, with the Harvest # and session)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the approver records the approval; then Get Signature in Lauris is observed: the signer is the Lauris user",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "Send is a person's action (session actor); the receipt is the simulated Sfax stub",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "no console errors",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-11T15-10-12Z"
-  },
-  {
-   "name": "gates",
-   "tags": [
-    "safety",
-    "realtime"
-   ],
-   "instance": 0,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 4266,
-   "counts": {
-    "pass": 29,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "WPS-01 a Lauris record with an unknown Harvest # is never matched by initials: no draft, no note, dictation stays waiting",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "WPS-02 the right Harvest # with the wrong initials on the page is a hard stop (audited), nothing applied",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "WPS-03 no default person: an unknown or missing Lauris user, Harvest # or session records nothing",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "WPS-04 a forged event (no such session, or another user) is not believed",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "WPS-05 a timer or dictation for a student off the caseload is refused",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "WPS-08 a portal confirmation needs its request, and an issued reference",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "MCS-01 Process Form (observed) lands in Pending clinical approval; nothing can be signed or sent from a client call",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "MCS-02 a second Process Form for the same request is an anomaly, not a second processed state",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "MCS-03 a direct-support user cannot sign in Lauris, and a forged signed event is not believed",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "MCS-07 signed in Lauris BEFORE the internal approval: held, not marked signed, Send blocked",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "MCS-08 approval: only a designated approver; the signer on the signed PDF and the events is the one read from Lauris",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "SIGNED is final: a second signature event or a reject after signing is refused (Lauris and Psyflo)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "MCS-09 send: a person with send.packet presses it; the actor is the session, never args.by; the event is simulated, not \"Sfax\"",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "PS-2 the portal confirmation attaches only to its request and an issued reference",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "PDU-01 the decision clock is \"Day N\" with the configured window and a source; the date comes from the rules table",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "GT-6 a re-send is a distinct action with a reason; it never resets the first send date",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "SVR-01 fax: Send by a person -> simulated Sfax; events carry sim:true and the person, never an actor called \"Sfax\"",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "PS-1 an overdue notice or a guardian signature is not a send: \"sent\" is recorded only when the Send stub ran",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "EFN-01..03 Lauris: a processed session cannot be written, processed again, or opened for editing",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "EFN-04 Psyflo: a repeated processed event for a session changes nothing; the note stays unchanged",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "IIU-09 units must follow the recorded direct time: a note with 3 units on 100 minutes is flagged for review",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "EFN-05 consent: a second signature is kept as a new version, the first record and file stay",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "EFN-06/07 a sent reply is write-once; patch actions and record rewrites are refused",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "payer decisions need a document reference and are write-once (a correction needs a reason and appends)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "IIU-03/04/05/06 invalid units, dates and results are refused",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "URA note review: not your own note; a decision is write-once; only the assigned reviewer or a supervisor",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "presenter actions are refused without presenter mode; the demo reply is recorded as simulated with a demo reference",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "DSL-04 the internal quarterly is staff only: absent from every other projection",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "RE-4 guardian appeal: signing is not sending; a person presses Send and the stub returns the reference",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-11T15-10-12Z"
-  },
-  {
-   "name": "flowD",
-   "tags": [
-    "flow"
-   ],
-   "instance": 1,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 12992,
-   "counts": {
-    "pass": 5,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "the clinician sends the family link from Referral review (SMS stub: not actually sent)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the guardian opens the link on the phone (token sign-in) and completes the five steps",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "Eligibility flips to \"details received\"; a person records the DMAS result",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the guardian signs the consent on the phone; the signer is the guardian behind the link",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "no console errors on either screen",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-11T15-10-12Z"
-  },
-  {
-   "name": "roles",
-   "tags": [
-    "safety"
-   ],
-   "instance": 1,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 744,
-   "counts": {
-    "pass": 20,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "matrix: every documented capability, every role",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "admin has no clinical-record access; notes.view is never granted by a designation",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "can(): A needs the caseload, D needs the designation, unknown role/capability/user fail closed",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "routes: every registry route has a capability entry; each role opens exactly what the matrix allows",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "every action has a capability entry (and nothing is declared for an action that does not exist)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "anonymous: /api/state, /api/do (admin and plain actions), /files and the roster",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "no screening transcript reaches an unauthenticated caller: /api/state is 401, the roster is empty, the scripted call needs a session",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "a made-up or tampered token is the same as no token",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "action sweep: every action x every staff role gets 401/403 exactly when the matrix says no",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "presenter controls need presenter mode, not only a role",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "user.update: a role change is presenter-only; designations go through two people",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "projection: direct support sees only their caseload; no screenings, drafts, versions, fills, other staff notes",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "projection: admin sees unit balances and authorization status but no clinical text",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "projection: supervisor sees status and their reviewees' notes; clinician sees clinical text",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "a role switch changes what the API returns (same server, different token)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "service line: outpatient (P.G., R-0377) never appears in the staff state",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "portal sessions: a guardian sees one child; a school user sees their own school; neither can use staff actions",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "files need a session and the right role",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "cross-origin: JSON only and an origin allow-list on state-changing calls",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "presenter PIN and DEMO_PRESENTER are honoured by sign-in",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-11T15-10-12Z"
-  },
-  {
-   "name": "panels",
-   "tags": [
-    "panel"
-   ],
-   "instance": 0,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 28086,
-   "counts": {
-    "pass": 14,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "home (jperez)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "home-ds (khale)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "home-admin (dowens)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "weekly (jperez)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "monthly (jperez)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "incident (jperez)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "quarterly (jperez)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "case (jperez)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "discharge (jperez)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "weekly-other (jperez)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "approvals (jperez)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "sebs-off (jperez)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "ds-screening (khale)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "record (jperez)",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-11T15-10-12Z"
-  },
-  {
-   "name": "rules",
-   "tags": [
-    "safety"
-   ],
-   "instance": 0,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 342,
-   "counts": {
-    "pass": 8,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "every rule has key, label, value, unit, category, source, verified_on, note, default",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the register is covered: R-001..R-054 each appear in at least one rule",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "unit bands: official 120/180/300 by default; the 60-minute rule is only an alternate value",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the named rules exist with the right category: plan due, decision clock, additional info, continued stay, notes, discharge, signature modes, eligibility, group size",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "settings.rule: admin only, a reason is required, the change is audited and kept in the row history",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "a rule change applies forward only: a new information request uses it, stored dates do not move",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "changing the unit bands changes unitsFor; a reset to the default restores it",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "signature mode: switching consent to in-person refuses a remote signature",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-11T15-10-12Z"
-  },
-  {
-   "name": "smoke",
-   "tags": [
-    "screens"
-   ],
-   "instance": 0,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 45425,
-   "counts": {
-    "pass": 85,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "jperez · 1 WhereThingsLive",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "jperez · 2 DoNext",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "jperez · 6 Referrals",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "jperez · 7 Referral",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "jperez · 9 Eligibility",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "jperez · 13 ExtHome",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "jperez · 14 ExtScreening",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "jperez · 15 ExtCNA",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "jperez · 16 ExtISP",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "jperez · 17 ExtSRA",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "jperez · 18 ExtSignOff",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "jperez · 19 Submission",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "jperez · 20 MobileApp",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "jperez · 21 MobileDictate",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "jperez · 22 MobileAssess",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "jperez · 23 ExtDPN",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "jperez · 24 ExtWeekly",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "jperez · 25 ExtMonthly",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "jperez · 26 ExtIncident",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "jperez · 27 ReviewQueue",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "jperez · 28 StaffDashboard",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "jperez · 29 Authorizations",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "jperez · 32 ExtQuarterly",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "jperez · 33 ExtCase",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "jperez · 34 InfoRequest",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "jperez · 35 Partials",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "jperez · 36 EarlyDischarge",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "jperez · 37 ExtDischarge",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "jperez · 38 PeerBrief",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "jperez · 40 PayerPlaybook",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "jperez · 42 Analytics",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "jperez · 51 MyWork",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "jperez · 52 Authorization",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "jperez · 53 DenialIntelligence",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "jperez · 54 DenialCase",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "dowens · 1 WhereThingsLive",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "dowens · 2 DoNext",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "dowens · 28 StaffDashboard",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "dowens · 29 Authorizations",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "dowens · 36 EarlyDischarge",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "dowens · 40 PayerPlaybook",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "dowens · 42 Analytics",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "dowens · 43 Users",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "dowens · 51 MyWork",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "dowens · 52 Authorization",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "dowens · 53 DenialIntelligence",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "dowens · 54 DenialCase",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "dowens · 55 Settings",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "cdiaz · 1 WhereThingsLive",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "cdiaz · 2 DoNext",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "cdiaz · 13 ExtHome",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "cdiaz · 27 ReviewQueue",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "cdiaz · 28 StaffDashboard",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "cdiaz · 29 Authorizations",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "cdiaz · 36 EarlyDischarge",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "cdiaz · 42 Analytics",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "cdiaz · 51 MyWork",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "cdiaz · 52 Authorization",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "khale · 1 WhereThingsLive",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "khale · 2 DoNext",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "khale · 13 ExtHome",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "khale · 20 MobileApp",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "khale · 21 MobileDictate",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "khale · 22 MobileAssess",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "khale · 23 ExtDPN",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "khale · 24 ExtWeekly",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "khale · 25 ExtMonthly",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "khale · 26 ExtIncident",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "khale · 28 StaffDashboard",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "khale · 51 MyWork",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "signed out · 0 Login",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "signed out · 1 WhereThingsLive",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "signed out · 3 SchoolPortal",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "signed out · 4 ReferralForm",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "signed out · 5 ReferralSent",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "signed out · 8 FamilyLink",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "signed out · 11 ParentSign",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "signed out · 12 ParentPortal",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "signed out · 31 ParentSurvey",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "signed out · 39 AppealLetter",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "signed out · 46 ParentEnroll",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "signed out · 47 ParentProgress",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "signed out · 48 ParentQuarterly",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "signed out · 49 ParentLetters",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "signed out · 50 ParentSchedule",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-11T15-10-12Z"
-  },
-  {
-   "name": "routes",
-   "tags": [
-    "ui"
-   ],
-   "instance": 1,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 81084,
-   "counts": {
-    "pass": 56,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "registry keeps every historic route id and pre-registers the new routes",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "redirect table matches review/04-architecture.md E1 and 03-ux-audit.md e",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "referrals are never redirected away; AppealLetter and every portal route stay put",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "every redirect has a flag, a registered target and no cycle; every flag is used",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "with every flag on, every historic deep link still resolves to a registered route (no dead ids)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "legacyFor maps a not-yet-live new route back to the old screen that does the job",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/Submission?id=R-0399 as jperez renders Submission with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/PeerBrief?id=R-0388 as jperez renders PeerBrief with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/Eligibility?referral=REF-118 as jperez renders Eligibility with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/Referral?id=REF-118 as jperez renders Referral with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/Partials?id=R-0402 as jperez renders Partials with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/Partials as jperez renders Partials with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/InfoRequest?id=R-0408 as jperez renders InfoRequest with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/EarlyDischarge?id=R-0402 as jperez renders EarlyDischarge with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/ExtSignOff?request=R-0416 as jperez renders ExtSignOff with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/ExtScreening?referral=REF-118 as jperez renders ExtScreening with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/ExtDPN?client=MR as jperez renders ExtDPN with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/ExtSRA?client=TW as jperez renders ExtSRA with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/ExtCase?client=MR as jperez renders ExtCase with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/ExtWeekly?client=MR as jperez renders ExtWeekly with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/ExtMonthly?client=MR as jperez renders ExtMonthly with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/Referrals?f=new as jperez renders Referrals with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/Authorizations?id=R-0416 as jperez renders Authorizations with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/Authorizations as jperez renders Authorizations with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/StaffDashboard?v=sup as cdiaz renders StaffDashboard with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/StaffDashboard?v=me as khale renders StaffDashboard with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/ReviewQueue as cdiaz renders ReviewQueue with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/DoNext as jperez renders DoNext with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/Users as dowens renders Users with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/PayerPlaybook as jperez renders PayerPlaybook with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/Analytics as jperez renders Analytics with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/MobileAssess?client=AG as khale renders MobileAssess with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/MobileApp as khale renders MobileApp with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/MobileDictate as khale renders MobileDictate with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/ReferralSent renders ReferralSent with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/ReferralForm renders ReferralForm with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/SchoolPortal renders SchoolPortal with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/AppealLetter?id=R-0384 renders AppealLetter with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/ParentPortal?c=TW renders ParentPortal with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/FamilyLink?preview=1 renders FamilyLink with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/WhereThingsLive renders WhereThingsLive with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/MyWork?section=review as jperez renders MyWork with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/Authorization?id=R-0416&section=submission as jperez renders Authorization with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/DenialIntelligence?decision=partial as jperez renders DenialIntelligence with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/DenialCase?id=R-0402&section=action&action=options as jperez renders DenialCase with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/Settings?tab=people as dowens renders Settings with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "deep link #/Analytics?section=payer&dataset=illustrative as jperez renders Analytics with its params, no stub unless the route is not live",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "a LIVE route never renders a stub: every route flagged live in redirects-live.js is a built screen",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "a redirect that is live points at a live route (no redirect may lead to a stub)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "every stub renders the marker, an h1, a one-line body and a way back to the old screen",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "rail: every item of every role opens a built screen (never a stub)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "hrefFor and route() apply the redirect table before the registry check (flag flipped in the page)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "WhereThingsLive redirect opens the presenter drawer (flag flipped in the page); the page stays reachable with ?full=1",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "unknown route id shows \"Page not found\" inside the shell (never a blank page or a wrong screen)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "route access follows the permission table: a clinician cannot open Users, a supervisor cannot open Authorizations' denial queue",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "one h1 on every route this foundation owns; routes with none get a hidden h1 from the shell",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-11T15-10-12Z"
-  },
-  {
-   "name": "ui-kit",
-   "tags": [
-    "ui"
-   ],
-   "instance": 0,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 49838,
-   "counts": {
-    "pass": 33,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "token pairs: every text pair 4.5:1, every UI pair 3:1 (computed in the page from tokens.css)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "type floor and brand: DM Sans, paper background, 12 px smallest kit size, teal primary",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "status vocabulary: every stage and dispute status resolves; chips carry text and an icon (never colour alone)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "maturity chips: Working is hidden until the presenter overlay is on; Simulated, Pilot and Future always show",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "modal: role=dialog, aria-labelledby, focus trap both ways, Escape, scrim click, focus return",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "drawer: same contract as the modal",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "popover: Escape closes it and focus returns to the control",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "confirm resolves true on Confirm and false on Cancel; the toast has role=status (alert for errors)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the old modal(html, onMount) helper is now an accessible dialog (screens keep working)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "filter chips: aria-pressed, state in the URL query, survives a reload, Clear",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "search keeps focus while typing and filters rows",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "queue table: aria-sort, sort toggles, real links, ArrowDown moves between rows, Enter opens",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "queue table: sticky header, empty, loading and error states",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "evidence chip opens a popover with the quote and closes on Escape",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "timeline: an event opens a drawer with What, When, Who, Document, Source, Next action",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "draft review: edit text survives repaints; no bulk accept; Restore previous appears after a save",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "a store change (SSE) while someone is typing does not wipe the field; the repaint waits for blur",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "skip link is the first tab stop and moves focus to the main landmark",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "landmarks: <html lang>, a labelled nav, exactly one main, real links in the rail",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "focus moves to main on a route change and the route is announced",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the old demo bar is gone from the product viewport",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "rail: light sand, 232 px wide, collapses to icons at 1024; counts only where meaningful",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "rail by role follows the permission table (supervisor, clinician, admin, direct support)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "dock: hidden by default in Presentation, Ctrl+Shift+P toggles, label PRESENTER, mode always visible, above the viewport",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "dock: ?present=1 opens it; ?mode=explore docks it open (no hide control) and is stored in psyflo_mode",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "dock: role switcher changes the signed-in role without a page reload",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "dock: scenario selector calls demo.scenario, signs in as the scenario role and opens its route",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "dock: simulation controls (receive a reply, advance a day) live in the dock",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "dock: notes drawer \"How the data gets in\" with maturity chips, focus returns to Notes",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "dock: All screens picker is role-aware and searchable",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "UiKit is presenter-only: without the dock it says so; with ?present=1 it shows the gallery",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "prefers-reduced-motion: overlay animation is switched off",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "no console errors on the gallery, the stubs and the shell routes",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-11T15-10-12Z"
+   "runId": "2026-11-11T16-02-11Z"
   }
  ],
  "manual": [

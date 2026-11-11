@@ -4,7 +4,7 @@
 // States are explicit screens: microphone consent, microphone blocked, no speech support, offline. Typing needs no microphone and no consent.
 // The note's state chip is Draft (not saved) · Waiting for Lauris (saved here) · Processed in Lauris (only after a processed note was observed).
 // Nothing is sent to Lauris from here: the saved text waits until the student's daily note is open, and a person presses Process Form.
-import { register, Screen, M, raw, esc, toast, go, session, ui, app } from '../app.js';
+import { register, Screen, M, raw, toast, go, session, ui, app } from '../app.js';
 import { enhanceDictation } from '../shared/draft.js';
 import { today as clockToday } from '../shared/clock.js';
 import { identityCard, micConsentOf, blocksFor } from '../shared/time.js';

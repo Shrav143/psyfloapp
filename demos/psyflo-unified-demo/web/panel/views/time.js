@@ -5,7 +5,7 @@
 // The timer reads the demo clock (store.clock), not the machine's. Nothing here presses Process Form; the only thing typed into Lauris is a Time Tracker
 // entry the person asked for, in yellow, on the open Time Tracker page.
 import { today as clockToday, nowFull } from '../../js/shared/clock.js';
-import { clock12, fmtDate } from '../../js/shared/dates.js';
+import { clock12 } from '../../js/shared/dates.js';
 import { timeSummary, timerOf, entriesOf, identityCard, fmtMin, fmtElapsed, range12, FIGURES, kindOptions, kindLabel, needsCheck, unitRuleOf, stalenessLabel, isHHMM, checkTimes, unitBands, maxUnitsPerDay } from '../../js/shared/time.js';
 
 const STYLE = `<style>

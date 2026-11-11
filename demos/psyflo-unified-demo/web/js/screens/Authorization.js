@@ -47,7 +47,7 @@ register('Authorization', class extends Screen {
     const meta = `<span>${esc([c.typeLabel, c.service, c.payer, c.school, c.harvestNo ? `Harvest # ${c.harvestNo}` : ''].filter(Boolean).join(' · '))}</span>`;
     const own = c.owner;
     return `<header class="a-chead"><div class="a-chead__main"><h1 class="a-h1">${esc(c.label)} <span class="a-id">${esc(c.id)}</span></h1><div class="a-chead__meta">${meta}</div></div>
-      <div class="a-chead__r">${ui.statusChip(c.stage)}${ui.maturity('route.Authorization')}${c.inDI ? `<a class="ui-btn ui-btn--secondary ui-btn--sm" href="${esc(diHref(c.req))}">In Denial Intelligence</a>` : ''}
+      <div class="a-chead__r">${ui.statusChip(c.stage)}${ui.maturity('route.Authorization')}${c.inDI ? (canOpen('DenialCase') || canOpen('Partials') ? `<a class="ui-btn ui-btn--secondary ui-btn--sm" href="${esc(diHref(c.req))}">In Denial Intelligence</a>` : ui.chip('In Denial Intelligence · clinician only', { tone: 'outline' })) : ''}
       <span class="a-owner"><span class="a-owner__l">Owner</span> <b>${esc(own.short)}</b>${own.backup ? ` <span class="a-sub">backup ${esc(own.backup.short)}</span>` : ''}<button type="button" class="ui-linkbtn" data-x="assign" data-ui-return="assign">Change</button></span></div></header>`;
   }
 

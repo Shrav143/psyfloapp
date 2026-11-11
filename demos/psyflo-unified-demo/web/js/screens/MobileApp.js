@@ -4,10 +4,10 @@
 // Nothing is picked for the person: no default student, no initials fallback (the server also checks the caseload and the Harvest #).
 // State chips on every note: Draft · Waiting for Lauris · Processed in Lauris (processed only when a processed note exists, i.e. an observed page event).
 // No promise of background or locked-screen capture. Also exports the phone helpers MobileDictate and MobileAssess share.
-import { register, Screen, M, raw, esc, session, toast, go, api, app, ui } from '../app.js';
+import { register, Screen, M, raw, esc, session, toast, go, app, ui } from '../app.js';
 import { clock12, fmtDate } from '../shared/dates.js';
 import { today as clockToday, nowFull } from '../shared/clock.js';
-import { timeSummary, timerOf, entriesOf, identityCard, fmtMin, fmtElapsed, range12, FIGURES, kindOptions, needsCheck, kindLabel, unitRuleOf, stalenessLabel, isHHMM } from '../shared/time.js';
+import { timeSummary, timerOf, identityCard, fmtMin, fmtElapsed, range12, FIGURES, kindOptions, needsCheck, unitRuleOf, stalenessLabel, isHHMM } from '../shared/time.js';
 
 // ---------- shared phone helpers ----------
 // the phone acts as the person signed in: no fallback to another staff member (the server also checks the caseload and the role)

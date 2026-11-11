@@ -17,7 +17,7 @@ await reset('canvas');
 await T.test('Authorizations page: a table of every active consumer with payer, dates, units and status; filters; links to the consumer\'s authorization tab', async () => {
   const h = (await lget('/authorizations', 'jperez')).text;
   assert.match(h, /id="authorization-table"/); assert.match(h, /<tr data-consumer="3310" data-status="active">/); assert.match(h, /<tr data-consumer="4492" data-status="none">/, 'T.W. has no authorization in the mock until a person enters it');
-  assert.match(h, /name="payer"/); assert.match(h, /name="status"/); assert.match(h, /href="\/consumers\/4492\?tab=auth">Enter authorization/);
+  assert.match(h, /name="payer"/); assert.match(h, /name="status"/); assert.match(h, /href="\/consumers\/4492\?tab=auth">Enter units/);
   const none = (await lget('/authorizations?view=none', 'jperez')).text; assert.match(none, /<tr data-consumer="4492"/); assert.noMatch(none, /<tr data-consumer="3310"/, 'only consumers without an authorization');
   const f = (await lget('/authorizations?payer=anthem', 'jperez')).text; assert.match(f, /data-consumer="3310"/); assert.noMatch(f, /data-consumer="4492"/);
   assert.match((await lget('/consumers/3310', 'jperez')).text, /class="lnav[^"]*" href="\/authorizations\?view=none">Consumers w\/o Authorizations<span class="b">\d+<\/span>/, 'the sidebar count is kept');

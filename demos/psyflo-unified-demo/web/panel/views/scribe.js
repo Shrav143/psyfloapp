@@ -50,6 +50,8 @@ function guidanceHTML(g, { title = 'Still to answer' } = {}) {
 function html(ctx) {
   const p = ctx.page; const st = ctx.st;
   if (p.kind === 'new-consumer') return newConsumerHTML(ctx);
+  const onForm = p.kind === 'session' && p.form && TYPES.find(t => t.form === p.form.type);
+  if (onForm && !ctx.can(onForm.cap)) return ctx.parts.banner('n', `<b>${esc(onForm.label)} drafts are for clinicians.</b> Direct support sees daily notes, contacts and their own students' units.`, { icon: ctx.I.lock });
   const tp = currentType(ctx); const t = typeOf(tp); const c = ctx.client();
   const sel = `<div class="row"><label class="lab" for="sc-type">Note</label><select id="sc-type" class="tog" style="flex:1" data-ch="pickType">${types(ctx).map(x => `<option value="${x.id}"${x.id === tp ? ' selected' : ''}>${esc(x.label)}</option>`).join('')}</select></div>`;
   if (tp === 'other') return sel + otherHTML(ctx, c);
@@ -62,7 +64,9 @@ function html(ctx) {
   if (ocaseload) return sel + ctx.parts.banner('n', `${esc(c.initials)} is not on your caseload. Psyflo shows direct support their own students only.`);
   if (p.kind !== 'session' || !p.form || p.form.type !== t.form) return sel + openForm(ctx, c, t);
   const body = { screening: screeningHTML, cna: cnaHTML, dpn: dpnHTML, weekly: textFlowHTML, collateral: textFlowHTML }[tp](ctx, c, tp);
-  return sel + steps(ctx, c, t) + body;
+  const no = c.lauris_no || c.harvest_no;
+  const more = ctx.can('notes.own', { clientId: c.id }) ? ctx.parts.accordion('More', `<button class="btn o blk" data-act="openForm" data-form="incident" data-no="${no}"><span>Incident report</span><span class="chip n">open</span></button>`, { id: 'sc-more' }) : '';
+  return sel + steps(ctx, c, t) + body + more;
 }
 function steps(ctx, c, t) {
   const st = ctx.st; const rec = recFor(ctx, c, t.form); let cur = 1;
@@ -197,10 +201,11 @@ function schoolCardsHTML(ctx, c) {
 const narrativeNow = ctx => (ctx.page.form?.fields || []).find(f => f.label === 'Narrative')?.value || '';
 function timerCard(ctx, c, ds) {
   const st = ctx.st; const t = ds.t; if (!t.ct) return `<div class="hint">No timer blocks today · type the contact time in Lauris.</div>`;
-  return `<details class="acc" data-acc="dpn-time" ${ctx.pg.dropped || st.unitsConfirmed ? '' : 'open'}><summary>Contact time · from your timer<span class="chip ${st.unitsConfirmed ? 'g' : 'y'}">${t.ct.units} unit${t.ct.units === 1 ? '' : 's'}${st.unitsConfirmed ? ' · confirmed' : ' · unconfirmed'}</span></summary><div>
-    ${t.ct.rows.map(r => `<div class="stamp"><div>${B.fmtT(r.from)}–${B.fmtT(r.to)}</div><div>${esc(r.what)}${r.unconfirmed ? ` <span class="chip ${st.unitsConfirmed ? 'g' : 'y'}">${st.unitsConfirmed ? 'confirmed' : 'unconfirmed'}</span>` : ''}</div></div>`).join('')}
-    <div class="sec"><b>Direct time ${esc(t.ct.text)} → ${t.ct.units} units</b>${st.unitsConfirmed ? '<span class="chip g">confirmed</span>' : `<button class="btn p sm" data-act="confirmUnits">Confirm ${B.timerBoxes(ctx, c, { unitsConfirmed: true }).ct.units} units</button>`}</div>
-    ${!st.unitsConfirmed && t.ct.rows.some(r => r.unconfirmed) ? `<button class="btn o sm" data-act="dropBlock">The afternoon block didn't happen</button>` : ''}</div></details>`;
+  const unconf = t.ct.rows.some(r => r.unconfirmed);
+  return `<div class="tile"><div class="row w"><h2 style="flex:1">Contact time · your timer</h2><span class="chip ${st.unitsConfirmed || !unconf ? 'g' : 'y'}">${t.ct.units} unit${t.ct.units === 1 ? '' : 's'}${st.unitsConfirmed ? ' · confirmed' : unconf ? ' · unconfirmed' : ''}</span></div>
+    <div class="small" style="margin:2px 0 6px">Direct time ${esc(t.ct.text)}${unconf && !st.unitsConfirmed ? ' · the last block is not counted until you confirm it' : ''}</div>
+    ${!st.unitsConfirmed && unconf ? `<div class="row w"><button class="btn p sm" data-act="confirmUnits">Confirm ${B.timerBoxes(ctx, c, { unitsConfirmed: true }).ct.units} units</button><button class="btn o sm" data-act="dropBlock">The afternoon block didn't happen</button></div>` : ''}
+    ${ctx.parts.accordion(`Blocks · ${t.ct.rows.length}`, t.ct.rows.map(r => `<div class="stamp"><div>${B.fmtT(r.from)}–${B.fmtT(r.to)}</div><div>${esc(r.what)}${r.unconfirmed ? ` <span class="chip ${st.unitsConfirmed ? 'g' : 'y'}">${st.unitsConfirmed ? 'confirmed' : 'unconfirmed'}</span>` : ''}</div></div>`).join(''), { id: 'dpn-blocks' })}</div>`;
 }
 function feedbackHTML(ctx, dict) {
   const st = ctx.st; const prev = (dict?.feedback || []).at(-1); const { I } = ctx;
@@ -231,7 +236,7 @@ function dpnHTML(ctx, c) {
   const key = SAID_KEY(c, 'dpn'); const txt = ctx.ui.draft.get(key, '');
   h += schoolCardsHTML(ctx, c);
   if (rec && !st.again) {
-    h += `<div class="tile"><div class="lab row" style="gap:6px">${ctx.I.mic}${rec.input.kind === 'dictation' ? 'Said here' : 'Typed here'}<button class="btn o sm" style="margin-left:auto" data-act="sayAgain">Say it again</button></div><div style="font-size:13px;margin-top:4px;font-style:italic">“${esc(rec.input.text)}”</div></div>`;
+    h += `<div class="tile"><div class="lab row" style="gap:6px">${ctx.I.mic}${rec.input.kind === 'dictation' ? 'Said here' : 'Typed here'}${st.sample === 'dpn' ? ctx.parts.SAMPLE_CHIP() : ''}<button class="btn o sm" style="margin-left:auto" data-act="sayAgain">Say it again</button></div><div style="font-size:13px;margin-top:4px;font-style:italic">“${esc(rec.input.text)}”</div></div>`;
     h += timerCard(ctx, c, ds);
     h += reviewBlock(ctx, rec, { title: 'Daily note · ' + c.initials, st, client: c, sources: B.DPN_SOURCES, extra: () => ds.t.boxes });
     h += guidanceBlock(ctx, c, rec.input.text);
@@ -278,7 +283,7 @@ function textFlowHTML(ctx, c, tp) {
   let h = '';
   if (tp === 'collateral') h += schoolCollateralHTML(ctx, c);
   if (rec && !st.again) {
-    h += `<div class="tile"><div class="lab row" style="gap:6px">${ctx.I.mic}${rec.input.kind === 'transcript' ? 'Recorded here' : 'Typed here'}<button class="btn o sm" style="margin-left:auto" data-act="sayAgain">Say it again</button></div><div style="font-size:13px;margin-top:4px;font-style:italic">“${esc(rec.input.text.slice(0, 320))}${rec.input.text.length > 320 ? '…' : ''}”</div></div>`;
+    h += `<div class="tile"><div class="lab row" style="gap:6px">${ctx.I.mic}${rec.input.kind === 'transcript' ? 'Recorded here' : 'Typed here'}${st.sample === tp ? ctx.parts.SAMPLE_CHIP() : ''}<button class="btn o sm" style="margin-left:auto" data-act="sayAgain">Say it again</button></div><div style="font-size:13px;margin-top:4px;font-style:italic">“${esc(rec.input.text.slice(0, 320))}${rec.input.text.length > 320 ? '…' : ''}”</div></div>`;
     h += reviewBlock(ctx, rec, { title: spec.label + ' · ' + c.initials, st, client: c, sources: [] });
     const g = spec.guidance(ctx, c, rec.input.text); const open = g.items.filter(i => !i.done);
     if (open.length) h += ctx.parts.accordion(`Missing · ${open.length}`, guidanceHTML(g, { title: 'Questions for you' }), { id: tp + '-miss' });
@@ -391,7 +396,7 @@ const acts = {
     ctx.ui.draft.set(SAID_KEY(c, form), t); st.rec = null; return sayDraft(ctx, form, 'dictation');
   },
   sayDraft: (el, ctx) => sayDraft(ctx, el.dataset.k, 'typed'),
-  sayAgain(el, ctx) { ctx.st.again = true; ctx.draw(); },
+  sayAgain(el, ctx) { ctx.st.again = true; ctx.st.sample = null; ctx.draw(); },
   // the phone path of the daily note
   confirmUnits: async (el, ctx) => { const st = ctx.st; st.unitsConfirmed = true; const c = ctx.client(); const ds = dpnState(ctx, c); await ctx.fill(ds.t.boxes.filter(b => b.label !== 'Contact time'), { form: 'dpn', client: c, sources: B.DPN_SOURCES, animate: false }); ctx.flash(`${ds.t.ct.units} units confirmed (${ds.t.ct.text}, units from the direct minutes under the unit bands).`); },
   dropBlock: async (el, ctx) => { const st = ctx.st; st.unitsConfirmed = false; st.blockDropped = true; const c = ctx.client(); const ds = dpnState(ctx, c); await ctx.fill(ds.t.boxes, { form: 'dpn', client: c, sources: B.DPN_SOURCES, animate: false }); },
@@ -504,7 +509,12 @@ export default {
   leave(ctx) { const st = ctx.stOf('scribe'); R.stop(st); },
   // presenter commands: { psyflo:'present', cmd:'example' } puts the worked example in the box; 'script' plays the scripted screening call
   present: {
-    example: async (ctx) => { const c = ctx.client(); if (!c) return; const form = ctx.page.form && ctx.page.form.type; if (form === 'dpn' && c.id === 'MR') { ctx.ui.draft.set(SAID_KEY(c, 'dpn'), DPN_EXAMPLE); ctx.st.type = 'dpn'; await sayDraft(ctx, 'dpn', 'typed'); } },
+    example: async (ctx) => {
+      const c = ctx.client(); if (!c) return; const form = ctx.page.form && ctx.page.form.type; const st = ctx.st;
+      if (form === 'dpn' && c.id === 'MR') { ctx.ui.draft.set(SAID_KEY(c, 'dpn'), DPN_EXAMPLE); st.type = 'dpn'; st.sample = 'dpn'; await sayDraft(ctx, 'dpn', 'typed'); return; }
+      const smp = (ctx.S().notes_sample || []).find(n => n.client === c.id && n.type === (form === 'weekly' ? 'weekly_guardian' : form === 'collateral' ? 'monthly_collateral' : ''));
+      if (smp) { ctx.ui.draft.set(SAID_KEY(c, form), [smp.discussed || smp.shared, smp.follow_up || smp.coordination].filter(Boolean).join(' ')); st.type = form; st.sample = form; await sayDraft(ctx, form, 'typed'); }
+    },
     script: async ctx => { ctx.st.ask = 'screening'; ctx.st.askMode = 'script'; ctx.draw(); }
   }
 };

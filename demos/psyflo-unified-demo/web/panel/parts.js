@@ -34,13 +34,13 @@ export function chk(c) {
   const na = c.applicable === false;
   return `<div class="ck">${na ? I.open : c.pass ? I.ok : I.no}<div><b>${esc(c.rule)}</b>${na ? ' — not applicable' : c.detail ? ' — ' + esc(c.detail) : ''}${c.fixed ? ` <span class="fx">fixed: ${esc(c.fixed)}</span>` : ''}</div></div>`;
 }
-export function accordion(title, bodyHtml, { open = false, count = '', id = '' } = {}) {
-  return `<details class="acc"${open ? ' open' : ''}${id ? ` data-acc="${esc(id)}"` : ''}><summary><span>${esc(title)}</span>${count !== '' ? `<span class="chip n">${esc(count)}</span>` : ''}</summary><div>${bodyHtml}</div></details>`;
+export function accordion(title, bodyHtml, { open = false, count = '', id = '', tone = 'n' } = {}) {
+  return `<details class="acc"${open ? ' open' : ''}${id ? ` data-acc="${esc(id)}"` : ''}><summary><span>${esc(title)}</span>${count !== '' ? `<span class="chip ${tone}">${esc(count)}</span>` : ''}</summary><div>${bodyHtml}</div></details>`;
 }
 // "Checks · 7 of 7 pass" collapsed; opens by itself when one fails
 export function checksBlock(checks, title = 'Checks') {
   const live = checks.filter(c => c.applicable !== false); const pass = live.filter(c => c.pass).length;
-  return accordion(title, checks.map(chk).join(''), { open: pass < live.length, count: `${pass} of ${live.length} pass` });
+  return accordion(title, checks.map(chk).join(''), { open: false, count: `${pass} of ${live.length} pass`, tone: pass < live.length ? 'y' : 'g', id: 'checks' });
 }
 
 // evidence chips for a box: each source number resolves to a stored record. sources: [{ n, label, date, quote, source, href }]

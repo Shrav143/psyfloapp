@@ -90,7 +90,7 @@ export function teamHtml(t, o = {}) {
   let h = `<div class="mw-teamhead"><span class="mw-scope">${esc(t.scope.long)} · ${plural(t.rows.length, 'staff member', 'staff')}</span>${strip}</div>${table}`;
   if (!t.canText) h += `<p class="mw-hidden">${ui.icon('lock', 14)}<span>Clinical text hidden for your role. Counts and dates only.</span></p>`;
   else if (t.patterns.length) h += `<details class="mw-acc"><summary>Patterns this month ${countChip(t.patterns.length)}</summary><ul class="mw-patterns">${t.patterns.map(p => `<li><b>${esc(p.who)}</b> ${esc(p.text)}${p.sample ? ' ' + ui.datasetChip('harvest_export') : ''}</li>`).join('')}</ul></details>`;
-  h += `<p class="mw-foot">Behind and on-time counts come from notes the extension reported at Process Form, due ${t.hours} h after the session ${o.ruleChip || ''} ${t.source ? ui.datasetChip('harvest_export') + ' Rejected forms and sample on-time figures: ' + esc(t.source) + '.' : ''}</p>`;
+  h += `<p class="mw-foot">Behind and on-time counts come from notes the extension reported at Process Form, due ${t.hours} h after the session ${o.ruleChip || ''} ${t.source ? ui.datasetChip('harvest_export') + ' Rejected forms and the figures marked (sample).' : ''}</p>`;
   return h;
 }
 
