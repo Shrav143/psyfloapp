@@ -374,19 +374,27 @@ export function draftSeeded(form, ctx = {}) {
     ], [src(1, 'call', 'Weekly guardian call (recorded)', wk?.date || today)], [{ rule: 'Counts, never percentages', pass: true, detail: '' }, { rule: 'Nothing from home beyond the form\'s question', pass: true, detail: '' }],
       [], { alsoNoted: wk ? ['Guardian practiced the calm-down corner at home (family involvement)', 'Bedtime still inconsistent (continuing need)', 'Asked about the Nov 13 renewal'] : [] }),
     collateral: () => result([
-      { label: 'Collateral', value: mo?.collateral || 'School counselor · R. Bell', src: [2] },
-      { label: 'Method', value: mo?.method || 'In person · 11 min', src: [2] },
+      { label: 'Collateral', value: mo?.collateral || MISSING('who the collateral contact was'), src: [2] },
+      { label: 'Method', value: mo?.method || MISSING('the method and length of the contact'), src: [2] },
       { label: 'Information shared / received', value: mo?.shared || '', src: [1, 2, 3] },
       { label: 'Coordination', value: mo?.coordination || '', src: [2, 3] }
     ], [src(1, 'school', 'School portal (counselor counts, teacher check-in)', mo?.date), src(2, 'call', 'Collateral conversation (recorded)', mo?.date || today), src(3, 'chart', 'Chart (treatment plan shared)', client.timeline?.isp)], [{ rule: 'Counts, never percentages', pass: true, detail: '' }]),
-    incident: () => result([
-      { label: 'Date/time', value: '10/28/2026 · 2:40 pm', src: [1] },
-      { label: 'Location', value: 'Home (reported by guardian)', src: [1] },
-      { label: 'Level', value: 'Level 2 · hospitalization', src: [1] },
-      { label: 'Staff present', value: 'None · phone report', src: [1] },
-      { label: 'What happened', value: 'Guardian called the site supervisor at 2:40 pm: D.W. admitted to Centra psychiatric unit this afternoon after a crisis at home. No Harvest staff present. Safety plan on file dated Oct 3.', src: [1, 2] },
-      { label: 'Actions taken', value: 'Site supervisor notified clinical director 2:55 pm. Clinician to update safety plan on discharge. Guardian release confirmed.', src: [1] }
-    ], [src(1, 'call', 'Guardian\'s call to the site supervisor', ctx.incident?.date || '2026-10-28'), src(2, 'chart', 'Safety plan', client.safety_plan_date || '2026-10-03')], [{ rule: 'Facts only, with times', pass: true, detail: '' }, { rule: 'CPS and injury left to the staffer', pass: true, detail: 'Yes/No boxes are yours' }]),
+    incident: () => {
+      // a CANNED sample for D.W.'s Oct 28 hospitalization (the seeded incident); for anyone else nothing is drafted from it
+      if (client.id !== 'DW') {
+        const m = what => MISSING(what + ' (no incident is on record for this student)');
+        return result([{ label: 'Date/time', value: m('the date and time'), src: [1] }, { label: 'What happened', value: m('what happened'), src: [1] }],
+          [src(1, 'call', 'No incident on record', null)], [{ rule: 'Facts only, with times', pass: true, detail: '' }, { rule: 'CPS and injury left to the staffer', pass: true, detail: 'Yes/No boxes are yours' }]);
+      }
+      return result([
+        { label: 'Date/time', value: '10/28/2026 · 2:40 pm', src: [1] },
+        { label: 'Location', value: 'Home (reported by guardian)', src: [1] },
+        { label: 'Level', value: 'Level 2 · hospitalization', src: [1] },
+        { label: 'Staff present', value: 'None · phone report', src: [1] },
+        { label: 'What happened', value: 'Guardian called the site supervisor at 2:40 pm: D.W. admitted to Centra psychiatric unit this afternoon after a crisis at home. No Harvest staff present. Safety plan on file dated Oct 3.', src: [1, 2] },
+        { label: 'Actions taken', value: 'Site supervisor notified clinical director 2:55 pm. Clinician to update safety plan on discharge. Guardian release confirmed.', src: [1] }
+      ], [src(1, 'call', 'Guardian\'s call to the site supervisor', ctx.incident?.date || '2026-10-28'), src(2, 'chart', 'Safety plan', client.safety_plan_date || '2026-10-03')], [{ rule: 'Facts only, with times', pass: true, detail: '' }, { rule: 'CPS and injury left to the staffer', pass: true, detail: 'Yes/No boxes are yours' }]);
+    },
     quarterly: () => {
       const q = client.quarter || null;   // assessments stored on the record, if any; there is NO fallback to another student's numbers
       const days = daily.length;

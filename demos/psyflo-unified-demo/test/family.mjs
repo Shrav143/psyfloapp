@@ -305,7 +305,7 @@ try {
     // an information request is described without a promise to answer within a day
     await g.c.close();
     const k = await guardianToken('KT'); const s = await state({ token: k.token }); const r = s.requests.find(x => x.stage === 'info_requested');
-    if (r) { const c2 = await b.newContext({ viewport: { width: 390, height: 844 } }); await c2.addInitScript(({ token, actor }) => localStorage.setItem('psyflo_session', JSON.stringify({ token, actor })), { token: k.token, actor: k.actor }); const p2 = await c2.newPage(); await p2.goto(BASE + '/#/ParentLetters'); await p2.waitForSelector('#root main'); await p2.waitForTimeout(300); const t2 = await text(p2); assert.match(t2, /asked Harvest for more information/); assert.noMatch(t2, /24 hours|within 24/i); await c2.close(); }
+    if (r) { const c2 = await b.newContext({ viewport: { width: 390, height: 844 } }); await c2.addInitScript(({ token, actor }) => { localStorage.setItem('psyflo_session', JSON.stringify({ token, actor })); localStorage.setItem('psyflo_dock', 'open'); }, { token: k.token, actor: k.actor }); const p2 = await c2.newPage(); await p2.goto(BASE + '/#/ParentLetters'); await p2.waitForSelector('#root main'); await p2.waitForTimeout(300); const t2 = await text(p2); assert.match(t2, /asked Harvest for more information/); assert.noMatch(t2, /24 hours|within 24/i); await c2.close(); }
   });
   await T.test('the quarterly report follows the signature mode too (In person required: no signing here)', async () => {
     await setRule('signature.mode.quarterly', 'in_person_required');

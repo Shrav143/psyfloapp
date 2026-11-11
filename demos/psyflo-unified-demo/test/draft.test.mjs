@@ -144,3 +144,19 @@ test('Flow C · initial SRA: no screening facts and no school numbers = "Evidenc
   for (const d of [none, call]) for (const x of d.sources) assert.ok(x.date && x.date_label, JSON.stringify(x));
   assert.equal(none.sources[2].date, 'undated'); assert.equal(none.sources[2].date_label, 'Evidence missing — date unknown');
 });
+
+// every drafter, called with NO record behind it (a student who has none): nothing that belongs to another student or to the demo story is written
+test('drafts with no record behind them print "Evidence missing", never another student\'s facts or the demo\'s', () => {
+  const client = { id: 'ZZ', initials: 'Z.Z.' };
+  const story = /D\.W\.|T\.W\.|M\.R\.|Centra|Piedmont|MS-2|Oct 6|R\. Bell|Nov 24|maternal|walked at 13|grandmother|13 months|speech delay|office referral|in-school suspension|moderate/i;
+  const bad = [];
+  for (const form of ['cna', 'isp', 'weekly', 'collateral', 'incident', 'quarterly', 'sra-continued', 'discharge']) {
+    const d = draftSeeded(form, { client, notes: [], samples: [], today: '2026-10-29' });
+    for (const b of d.boxes) if (!/^Evidence missing/.test(b.value) && story.test(b.value) && !(form === 'isp' && /^Goal|^Start|^Prescribed|^Goal/.test(b.label))) bad.push(`${form}/${b.label}: ${b.value.slice(0, 80)}`);
+    for (const x of d.sources) assert.ok(x.date && x.date_label, `${form} source ${x.n} has a date or says it is unknown`);
+  }
+  assert.deepEqual(bad, []);
+  const none = draftSeeded('incident', { client, today: '2026-10-29' });
+  assert.ok(none.boxes.every(b => /^Evidence missing/.test(b.value)));
+});
+

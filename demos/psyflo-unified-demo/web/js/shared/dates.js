@@ -33,6 +33,7 @@ export function hoursBetween(a, b) { return (parse(b) - parse(a)) / 3600000; }
 export function fmtDate(isoStr, opts = {}) {
   if (!isoStr) return '';
   const d = parse(isoStr);
+  if (isNaN(d.getTime())) return '';   // "undated" and other non-dates print nothing instead of "undefined NaN"
   let s = `${MON[d.getUTCMonth()]} ${d.getUTCDate()}`;
   if (opts.dow) s = `${DOW[d.getUTCDay()]} ${s}`;
   if (opts.year) s += `, ${d.getUTCFullYear()}`;
