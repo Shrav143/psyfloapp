@@ -203,7 +203,7 @@ async function auth() {
   console.log('auth · My Work -> Authorizations -> R-0416');
   const H = await fresh(); const { ui, page } = H;
   await H.signIn('Clinician');
-  ok(/My Work/.test(await H.root(60)), 'the clinician lands on My Work');
+  ok(/Dashboard/.test(await H.root(60)), 'the clinician lands on the Dashboard (patient roster)');
   // the presenter dock: Scenario 3 (Initial authorization) resets both stores to the canvas snapshot with R-0416 drafted
   await ui.locator('[data-dock="toggle"]').click();
   await ui.locator('[data-dock-menu="scenario"]').click();

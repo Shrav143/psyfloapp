@@ -1,6 +1,6 @@
 # smoke · PASS
 
-Run 2026-11-11T19-10-20Z · 46670 ms · instance 1 · exit 0
+Run 2026-11-11T20-47-05Z · 52822 ms · instance 0 · exit 0
 
 | Result | Test | Note |
 |---|---|---|
@@ -39,6 +39,9 @@ Run 2026-11-11T19-10-20Z · 46670 ms · instance 1 · exit 0
 | PASS | jperez · 52 Authorization |  |
 | PASS | jperez · 53 DenialIntelligence |  |
 | PASS | jperez · 54 DenialCase |  |
+| PASS | jperez · 57 Dashboard |  |
+| PASS | jperez · 58 Documentation |  |
+| PASS | jperez · 59 Patient |  |
 | PASS | dowens · 1 WhereThingsLive |  |
 | PASS | dowens · 2 DoNext |  |
 | PASS | dowens · 28 StaffDashboard |  |
@@ -52,6 +55,9 @@ Run 2026-11-11T19-10-20Z · 46670 ms · instance 1 · exit 0
 | PASS | dowens · 53 DenialIntelligence |  |
 | PASS | dowens · 54 DenialCase |  |
 | PASS | dowens · 55 Settings |  |
+| PASS | dowens · 57 Dashboard |  |
+| PASS | dowens · 58 Documentation |  |
+| PASS | dowens · 59 Patient |  |
 | PASS | cdiaz · 1 WhereThingsLive |  |
 | PASS | cdiaz · 2 DoNext |  |
 | PASS | cdiaz · 13 ExtHome |  |
@@ -62,6 +68,9 @@ Run 2026-11-11T19-10-20Z · 46670 ms · instance 1 · exit 0
 | PASS | cdiaz · 42 Analytics |  |
 | PASS | cdiaz · 51 MyWork |  |
 | PASS | cdiaz · 52 Authorization |  |
+| PASS | cdiaz · 57 Dashboard |  |
+| PASS | cdiaz · 58 Documentation |  |
+| PASS | cdiaz · 59 Patient |  |
 | PASS | khale · 1 WhereThingsLive |  |
 | PASS | khale · 2 DoNext |  |
 | PASS | khale · 13 ExtHome |  |
@@ -74,6 +83,8 @@ Run 2026-11-11T19-10-20Z · 46670 ms · instance 1 · exit 0
 | PASS | khale · 26 ExtIncident |  |
 | PASS | khale · 28 StaffDashboard |  |
 | PASS | khale · 51 MyWork |  |
+| PASS | khale · 57 Dashboard |  |
+| PASS | khale · 59 Patient |  |
 | PASS | signed out · 0 Login |  |
 | PASS | signed out · 1 WhereThingsLive |  |
 | PASS | signed out · 3 SchoolPortal |  |

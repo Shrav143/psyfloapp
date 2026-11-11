@@ -1,5 +1,7 @@
 # 03 · UX before and after
 
+> **Update, Nov 11.** Written before the direct support and site supervisor feedback round. Where this document describes **My Work** (the logo target, its To do, Review and Team sections) or **Track Time**, read the current product instead: the rail is patient-first (Dashboard, Documentation, Authorizations, Denial Intelligence, Analytics), My Work's sections moved to the Dashboard and Documentation, and Track Time was removed. See `docs/FEEDBACK-ROUND-2026-11-11.md`.
+
 Deliverable 3 (prompt Part 21, item 3) · Nov 11, 2026 · Psyflo × Harvest unified demo
 
 This document says what got simpler, by how much, and what did not. "Before" is the pristine Nov 8 master (commit `d9e0537`). "After" is the unified build in this folder. The numbers come from Playwright runs on both builds with one counting function; where a number is traced from labels and tests instead of clicked, it is tagged.

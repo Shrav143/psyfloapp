@@ -1,14 +1,13 @@
-# Test results · 2026-11-11T20-44-35Z
+# Test results · 2026-11-11T21-08-30Z
 
-3 suites pass · 0 fail · 0 known-fail · 0 skipped · 0 not runnable · tests: 277 pass, 0 fail, 0 skip · 144 s
+2 suites pass · 0 fail · 0 known-fail · 0 skipped · 0 not runnable · tests: 28 pass, 0 fail, 0 skip · 262 s
 
-Commit 803f54b · node v22.22.0 · demo time 15:30 · workers 2 · base port 5800
+Commit db8b24d · node v22.22.0 · demo time 15:30 · workers 2 · base port 5900
 
 | Suite | Status | Pass | Fail | Skip | Seconds |
 |---|---|---|---|---|---|
-| [dashboard](dashboard.md) | PASS | 14 | 0 | 0 | 25.2 |
-| [patient](patient.md) | PASS | 8 | 0 | 0 | 12.0 |
-| [a11y](a11y.md) | PASS | 255 | 0 | 0 | 143.6 |
+| [presenter](presenter.md) | PASS | 28 | 0 | 0 | 120.7 |
+| [hosted](hosted.md) | PASS | 0 | 0 | 0 | 262.0 |
 
 ## Manual checklist (not automatable)
 

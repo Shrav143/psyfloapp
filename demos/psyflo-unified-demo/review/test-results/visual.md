@@ -1,13 +1,16 @@
 # visual · PASS
 
-Run 2026-11-11T19-10-20Z · 175653 ms · instance 2 · exit 0
+Run 2026-11-11T20-47-05Z · 180033 ms · instance 0 · exit 0
 
 | Result | Test | Note |
 |---|---|---|
-| PASS | P19.5 visual · clinician · MyWork?section=todo (1440) |  |
-| PASS | P19.5 visual · clinician · MyWork?section=review (1440) |  |
-| PASS | P19.5 visual · clinician · MyWork?section=team (1440) |  |
-| PASS | P19.5 visual · clinician · MyWork?section=referrals (1440) |  |
+| PASS | P19.5 visual · clinician · Dashboard (1440) |  |
+| PASS | P19.5 visual · clinician · Documentation (1440) |  |
+| PASS | P19.5 visual · clinician · Documentation?status=pending_review (1440) |  |
+| PASS | P19.5 visual · clinician · Documentation?view=staff (1440) |  |
+| PASS | P19.5 visual · clinician · Patient?id=MR (1440) |  |
+| PASS | P19.5 visual · clinician · Patient?id=MR&section=authorization (1440) |  |
+| PASS | P19.5 visual · clinician · Patient?id=TW (1440) |  |
 | PASS | P19.5 visual · clinician · Authorizations (1440) |  |
 | PASS | P19.5 visual · clinician · Authorization?id=R-0411 (1440) |  |
 | PASS | P19.5 visual · clinician · Authorization?id=R-0402 (1440) |  |
@@ -32,10 +35,13 @@ Run 2026-11-11T19-10-20Z · 175653 ms · instance 2 · exit 0
 | PASS | P19.5 visual · clinician · Analytics?section=outcomes&dataset=illustrative (1440) |  |
 | PASS | P19.5 visual · clinician · Analytics?section=payer&dataset=case (1440) |  |
 | PASS | P19.5 visual · clinician · Analytics?section=population&dataset=illustrative (1440) |  |
-| PASS | P19.5 visual · clinician · MyWork?section=todo (1024) |  |
-| PASS | P19.5 visual · clinician · MyWork?section=review (1024) |  |
-| PASS | P19.5 visual · clinician · MyWork?section=team (1024) |  |
-| PASS | P19.5 visual · clinician · MyWork?section=referrals (1024) |  |
+| PASS | P19.5 visual · clinician · Dashboard (1024) |  |
+| PASS | P19.5 visual · clinician · Documentation (1024) |  |
+| PASS | P19.5 visual · clinician · Documentation?status=pending_review (1024) |  |
+| PASS | P19.5 visual · clinician · Documentation?view=staff (1024) |  |
+| PASS | P19.5 visual · clinician · Patient?id=MR (1024) |  |
+| PASS | P19.5 visual · clinician · Patient?id=MR&section=authorization (1024) |  |
+| PASS | P19.5 visual · clinician · Patient?id=TW (1024) |  |
 | PASS | P19.5 visual · clinician · Authorizations (1024) |  |
 | PASS | P19.5 visual · clinician · Authorization?id=R-0411 (1024) |  |
 | PASS | P19.5 visual · clinician · Authorization?id=R-0402 (1024) |  |
@@ -60,17 +66,22 @@ Run 2026-11-11T19-10-20Z · 175653 ms · instance 2 · exit 0
 | PASS | P19.5 visual · clinician · Analytics?section=outcomes&dataset=illustrative (1024) |  |
 | PASS | P19.5 visual · clinician · Analytics?section=payer&dataset=case (1024) |  |
 | PASS | P19.5 visual · clinician · Analytics?section=population&dataset=illustrative (1024) |  |
-| PASS | P19.5 visual · supervisor · MyWork?section=review (1440) |  |
-| PASS | P19.5 visual · supervisor · MyWork?section=team (1440) |  |
+| PASS | P19.5 visual · supervisor · Dashboard (1440) |  |
+| PASS | P19.5 visual · supervisor · Documentation (1440) |  |
+| PASS | P19.5 visual · supervisor · Documentation?view=staff (1440) |  |
+| PASS | P19.5 visual · supervisor · Patient?id=MR (1440) |  |
 | PASS | P19.5 visual · supervisor · Authorizations (1440) |  |
 | PASS | P19.5 visual · supervisor · Authorization?id=R-0411 (1440) |  |
 | PASS | P19.5 visual · supervisor · Analytics?section=outcomes (1440) |  |
-| PASS | P19.5 visual · supervisor · MyWork?section=review (1024) |  |
-| PASS | P19.5 visual · supervisor · MyWork?section=team (1024) |  |
+| PASS | P19.5 visual · supervisor · Dashboard (1024) |  |
+| PASS | P19.5 visual · supervisor · Documentation (1024) |  |
+| PASS | P19.5 visual · supervisor · Documentation?view=staff (1024) |  |
+| PASS | P19.5 visual · supervisor · Patient?id=MR (1024) |  |
 | PASS | P19.5 visual · supervisor · Authorizations (1024) |  |
 | PASS | P19.5 visual · supervisor · Authorization?id=R-0411 (1024) |  |
 | PASS | P19.5 visual · supervisor · Analytics?section=outcomes (1024) |  |
-| PASS | P19.5 visual · admin · MyWork?section=todo (1440) |  |
+| PASS | P19.5 visual · admin · Dashboard (1440) |  |
+| PASS | P19.5 visual · admin · Documentation (1440) |  |
 | PASS | P19.5 visual · admin · Authorizations (1440) |  |
 | PASS | P19.5 visual · admin · Authorization?id=R-0402 (1440) |  |
 | PASS | P19.5 visual · admin · DenialIntelligence (1440) |  |
@@ -84,7 +95,8 @@ Run 2026-11-11T19-10-20Z · 175653 ms · instance 2 · exit 0
 | PASS | P19.5 visual · admin · Settings?tab=audit (1440) |  |
 | PASS | P19.5 visual · admin · Settings?tab=family (1440) |  |
 | PASS | P19.5 visual · admin · Settings?tab=presenter (1440) |  |
-| PASS | P19.5 visual · admin · MyWork?section=todo (1024) |  |
+| PASS | P19.5 visual · admin · Dashboard (1024) |  |
+| PASS | P19.5 visual · admin · Documentation (1024) |  |
 | PASS | P19.5 visual · admin · Authorizations (1024) |  |
 | PASS | P19.5 visual · admin · Authorization?id=R-0402 (1024) |  |
 | PASS | P19.5 visual · admin · DenialIntelligence (1024) |  |
@@ -98,10 +110,12 @@ Run 2026-11-11T19-10-20Z · 175653 ms · instance 2 · exit 0
 | PASS | P19.5 visual · admin · Settings?tab=audit (1024) |  |
 | PASS | P19.5 visual · admin · Settings?tab=family (1024) |  |
 | PASS | P19.5 visual · admin · Settings?tab=presenter (1024) |  |
-| PASS | P19.5 visual · direct_support · MyWork?section=day (1440) |  |
+| PASS | P19.5 visual · direct_support · Dashboard (1440) |  |
+| PASS | P19.5 visual · direct_support · Patient?id=MR (1440) |  |
 | PASS | P19.5 visual · direct_support · ExtHome (1440) |  |
 | PASS | P19.5 visual · direct_support · ExtDPN (1440) |  |
-| PASS | P19.5 visual · direct_support · MyWork?section=day (1024) |  |
+| PASS | P19.5 visual · direct_support · Dashboard (1024) |  |
+| PASS | P19.5 visual · direct_support · Patient?id=MR (1024) |  |
 | PASS | P19.5 visual · direct_support · ExtHome (1024) |  |
 | PASS | P19.5 visual · direct_support · ExtDPN (1024) |  |
 | PASS | P19.5 visual · clinician@tw-isp-ready · Authorization?id=R-0416 (1440) |  |
@@ -152,11 +166,11 @@ Run 2026-11-11T19-10-20Z · 175653 ms · instance 2 · exit 0
 | PASS | P19.5 visual · direct support · MobileApp (390) |  |
 | PASS | P19.5 visual · direct support · MobileDictate (390) |  |
 | PASS | P19.5 visual · direct support · MobileAssess (390) |  |
-| PASS | P19.5 visual · direct support · MyWork?section=day (390) |  |
+| PASS | P19.5 visual · direct support · Dashboard (390) |  |
 | PASS | P19.5 visual · direct support · MobileApp (360) |  |
 | PASS | P19.5 visual · direct support · MobileDictate (360) |  |
 | PASS | P19.5 visual · direct support · MobileAssess (360) |  |
-| PASS | P19.5 visual · direct support · MyWork?section=day (360) |  |
+| PASS | P19.5 visual · direct support · Dashboard (360) |  |
 | PASS | P19.5 visual · guardian · ParentPortal (390) |  |
 | PASS | P19.5 visual · guardian · ParentEnroll (390) |  |
 | PASS | P19.5 visual · guardian · ParentSign (390) |  |
@@ -202,7 +216,7 @@ Run 2026-11-11T19-10-20Z · 175653 ms · instance 2 · exit 0
 | PASS | P19.5 visual · panel · continued-stay (400) |  |
 | PASS | P19.5 visual · panel · discharge (400) |  |
 | PASS | P19.5 visual · panel · forms-to-approve (400) |  |
-| PASS | P19.5 visual · panel · time-tracker (400) |  |
+| PASS | P19.5 visual · panel · lauris-time-page (400) |  |
 | PASS | P19.5 visual · panel · psyflo-off (400) |  |
 | PASS | P19.5 visual · panel · screening-denied-ds (400) |  |
 | PASS | P19.5 visual · panel · tw-screening (400) |  |

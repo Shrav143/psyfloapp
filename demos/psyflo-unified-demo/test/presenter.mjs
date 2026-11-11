@@ -50,7 +50,7 @@ const apiActor = page => page.evaluate(async () => { const { api } = await impor
     const first = stops.find(s => s.cur); assert.match(first.name, /skip to main/i, 'first stop: ' + first.name);
   });
   await run('PRES-03 Ctrl+Shift+P opens the dock (focus on its toggle) and toggles it closed again; the page behind keeps its layout', async () => {
-    await go(page, '/#/Dashboard'); const before = await page.evaluate(() => Math.round(document.getElementById('app').getBoundingClientRect().top));
+    await go(page, '/#/Dashboard'); await page.evaluate(() => window.scrollTo(0, 0)); const before = await page.evaluate(() => Math.round(document.getElementById('app').getBoundingClientRect().top));
     await page.keyboard.press('Control+Shift+P'); await page.waitForTimeout(250);
     let d = await dockState(page); assert.ok(!d.hidden && d.state === 'open', 'open: ' + JSON.stringify(d)); assert.ok(d.tabbable >= 5, 'controls reachable once open: ' + d.tabbable);
     assert.match(d.label, /Presentation/, 'mode label');
@@ -185,7 +185,7 @@ for (const role of ['clinician', 'supervisor', 'admin', 'direct_support']) {
     await run(`EXP-02 ${role}: "All screens" lists every route this role may open and each opens in two clicks`, async () => {
       const page = await newPage({ who: STAFF[role], presenter: true });
       await go(page, '/?mode=explore#/Dashboard'); await page.waitForTimeout(300);
-      const live = SCREENS.filter(s => s.id !== 'Login' && s.id !== 'UiKit' && !['DoNext', 'ReviewQueue', 'StaffDashboard', 'Users', 'Submission', 'EarlyDischarge', 'InfoRequest', 'Partials', 'PeerBrief', 'PayerPlaybook', 'Eligibility', 'WhereThingsLive'].includes(s.id));
+      const live = SCREENS.filter(s => s.id !== 'Login' && s.id !== 'UiKit' && !['MyWork', 'DoNext', 'ReviewQueue', 'StaffDashboard', 'Users', 'Submission', 'EarlyDischarge', 'InfoRequest', 'Partials', 'PeerBrief', 'PayerPlaybook', 'Eligibility', 'WhereThingsLive'].includes(s.id));   // MyWork redirects to Dashboard / Documentation / Referrals
       const act = await apiActor(page); const des = await page.evaluate(async () => { const { api } = await import('/js/api.js'); return (api.session() || {}).designations || []; }); const may = id => routeAllowed(role, id, { role, designations: des, presenter: true });
       const expected = live.filter(s => s.min === 0 ? true : may(s.id)).map(s => s.id); void act;
       await page.click('[data-dock-menu="screens"]'); await page.waitForSelector('#dock-q');

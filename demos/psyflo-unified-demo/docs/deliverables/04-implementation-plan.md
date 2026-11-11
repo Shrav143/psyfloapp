@@ -1,5 +1,7 @@
 # 04 · Implementation plan (as built)
 
+> **Update, Nov 11.** Written before the direct support and site supervisor feedback round. Where this document describes **My Work** (the logo target, its To do, Review and Team sections) or **Track Time**, read the current product instead: the rail is patient-first (Dashboard, Documentation, Authorizations, Denial Intelligence, Analytics), My Work's sections moved to the Dashboard and Documentation, and Track Time was removed. See `docs/FEEDBACK-ROUND-2026-11-11.md`.
+
 Deliverable 4 (prompt Part 21, item 4) · Nov 11, 2026 · Psyflo × Harvest unified demo
 
 This is the plan as it was executed, not as it was proposed. It lists the code changes by module and file, compares phases B to H with the plan in `review/04-architecture.md` section G, reports what happened to each risk in the review's register, names the dependencies, accounts for every v3 module (ported or deliberately not), and ends with limitations and next steps for a pilot build.

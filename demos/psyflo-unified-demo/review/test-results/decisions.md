@@ -1,6 +1,6 @@
 # decisions · PASS
 
-Run 2026-11-11T19-10-20Z · 3608 ms · instance 2 · exit 0
+Run 2026-11-11T20-47-05Z · 1496 ms · instance 0 · exit 0
 
 | Result | Test | Note |
 |---|---|---|
@@ -11,4 +11,3 @@ Run 2026-11-11T19-10-20Z · 3608 ms · instance 2 · exit 0
 | PASS | request.demoReply never approves a draft or anything that was not sent; presenter mode is required |  |
 | PASS | R-0391 (J.O.) turns overdue under the clock service, like R-0399 |  |
 | PASS | /api/state and the roster never serve a screening transcript to an unauthenticated caller |  |
-| PASS | the phone timer follows store.clock, not the machine clock |  |

@@ -1,6 +1,6 @@
 # audit · PASS
 
-Run 2026-11-11T19-10-20Z · 957429 ms · instance 3 · exit 0
+Run 2026-11-11T20-47-05Z · 1167756 ms · instance 3 · exit 0
 
 | Result | Test | Note |
 |---|---|---|
@@ -9,15 +9,19 @@ Run 2026-11-11T19-10-20Z · 957429 ms · instance 3 · exit 0
 | PASS | P19.3 audit · direct_support · ExtWeekly |  |
 | PASS | P19.3 audit · direct_support · ExtMonthly |  |
 | PASS | P19.3 audit · direct_support · ExtIncident |  |
-| PASS | P19.3 audit · direct_support · MyWork?section=day |  |
+| PASS | P19.3 audit · direct_support · Dashboard |  |
+| PASS | P19.3 audit · direct_support · Patient?id=MR |  |
 | PASS | P19.3 audit · supervisor · ExtHome |  |
 | PASS | P19.3 audit · supervisor · Authorizations |  |
 | PASS | P19.3 audit · supervisor · Analytics?section=outcomes |  |
-| PASS | P19.3 audit · supervisor · MyWork?section=review |  |
-| PASS | P19.3 audit · supervisor · MyWork?section=team |  |
-| PASS | P19.3 audit · supervisor · MyWork?section=day |  |
 | PASS | P19.3 audit · supervisor · Authorization?id=R-0411 |  |
 | PASS | P19.3 audit · supervisor · Authorization?id=R-0399 |  |
+| PASS | P19.3 audit · supervisor · Dashboard |  |
+| PASS | P19.3 audit · supervisor · Documentation |  |
+| PASS | P19.3 audit · supervisor · Documentation?status=pending_review |  |
+| PASS | P19.3 audit · supervisor · Documentation?view=staff |  |
+| PASS | P19.3 audit · supervisor · Patient?id=MR |  |
+| PASS | P19.3 audit · supervisor · Patient?id=DW |  |
 | PASS | P19.3 audit · clinician · Referrals |  |
 | PASS | P19.3 audit · clinician · Referral?id=REF-118 |  |
 | PASS | P19.3 audit · clinician · Referral?id=REF-121 |  |
@@ -43,10 +47,6 @@ Run 2026-11-11T19-10-20Z · 957429 ms · instance 3 · exit 0
 | PASS | P19.3 audit · clinician · Analytics?section=payer&dataset=case |  |
 | PASS | P19.3 audit · clinician · Analytics?section=payer&panel=guidance |  |
 | PASS | P19.3 audit · clinician · Analytics?section=population&dataset=illustrative |  |
-| PASS | P19.3 audit · clinician · MyWork?section=todo |  |
-| PASS | P19.3 audit · clinician · MyWork?section=review |  |
-| PASS | P19.3 audit · clinician · MyWork?section=team |  |
-| PASS | P19.3 audit · clinician · MyWork?section=referrals |  |
 | PASS | P19.3 audit · clinician · Authorization?id=R-0411 |  |
 | PASS | P19.3 audit · clinician · Authorization?id=R-0402 |  |
 | PASS | P19.3 audit · clinician · Authorization?id=R-0399 |  |
@@ -64,12 +64,17 @@ Run 2026-11-11T19-10-20Z · 957429 ms · instance 3 · exit 0
 | PASS | P19.3 audit · clinician · DenialCase?id=R-0388&section=action&action=p2p |  |
 | PASS | P19.3 audit · clinician · DenialCase?id=R-0384&section=action&action=appeal |  |
 | PASS | P19.3 audit · clinician · DenialCase?id=R-0384&section=action&action=reconsider |  |
+| PASS | P19.3 audit · clinician · Dashboard |  |
+| PASS | P19.3 audit · clinician · Documentation |  |
+| PASS | P19.3 audit · clinician · Documentation?status=pending_review |  |
+| PASS | P19.3 audit · clinician · Documentation?view=staff |  |
+| PASS | P19.3 audit · clinician · Patient?id=MR |  |
+| PASS | P19.3 audit · clinician · Patient?id=TW |  |
+| PASS | P19.3 audit · clinician · Patient?id=KT |  |
 | PASS | P19.3 audit · admin · Authorizations |  |
 | PASS | P19.3 audit · admin · Analytics?section=outcomes |  |
 | PASS | P19.3 audit · admin · Analytics?section=payer |  |
 | PASS | P19.3 audit · admin · Analytics?section=population&dataset=illustrative |  |
-| PASS | P19.3 audit · admin · MyWork?section=todo |  |
-| PASS | P19.3 audit · admin · MyWork?section=team |  |
 | PASS | P19.3 audit · admin · Authorization?id=R-0411 |  |
 | PASS | P19.3 audit · admin · Authorization?id=R-0402 |  |
 | PASS | P19.3 audit · admin · DenialIntelligence |  |
@@ -81,6 +86,10 @@ Run 2026-11-11T19-10-20Z · 957429 ms · instance 3 · exit 0
 | PASS | P19.3 audit · admin · Settings?tab=audit |  |
 | PASS | P19.3 audit · admin · Settings?tab=family |  |
 | PASS | P19.3 audit · admin · Settings?tab=presenter |  |
+| PASS | P19.3 audit · admin · Dashboard |  |
+| PASS | P19.3 audit · admin · Documentation |  |
+| PASS | P19.3 audit · admin · Documentation?view=staff |  |
+| PASS | P19.3 audit · admin · Patient?id=MR |  |
 | PASS | P19.3 audit · clinician@tw-isp-ready · Authorization?id=R-0416&section=submission |  |
 | PASS | P19.3 audit · clinician@tw-isp-ready · Authorizations |  |
 | PASS | P19.3 audit · clinician@tw-isp-ready · Referral?id=REF-118 |  |
@@ -95,8 +104,9 @@ Run 2026-11-11T19-10-20Z · 957429 ms · instance 3 · exit 0
 | PASS | P19.3 audit · clinician@analytics-case · Analytics?section=payer&dataset=case |  |
 | PASS | P19.3 audit · clinician@analytics-case · Analytics?section=population&dataset=case |  |
 | PASS | P19.3 audit · admin@analytics-case · Analytics?section=outcomes&dataset=case |  |
-| PASS | P19.3 audit · direct_support@mr-daily · MyWork?section=day |  |
-| PASS | P19.3 audit · clinician@canvas · MyWork?section=todo |  |
+| PASS | P19.3 audit · direct_support@mr-daily · Dashboard |  |
+| PASS | P19.3 audit · clinician@canvas · Dashboard |  |
+| PASS | P19.3 audit · clinician@canvas · Documentation |  |
 | PASS | P19.3 audit · clinician@canvas · Authorizations |  |
 | PASS | P19.3 audit · clinician@canvas · DenialIntelligence |  |
 | PASS | P19.3 audit · clinician@canvas · Referrals |  |

@@ -1,6 +1,6 @@
 # bridge-contract · PASS
 
-Run 2026-11-11T19-10-20Z · 589 ms · instance 2 · exit 0
+Run 2026-11-11T20-47-05Z · 365 ms · instance 2 · exit 0
 
 | Result | Test | Note |
 |---|---|---|

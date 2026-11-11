@@ -1,5 +1,7 @@
 # 01 · Evidence and conflict report
 
+> **Update, Nov 11.** Written before the direct support and site supervisor feedback round. Where this document describes **My Work** (the logo target, its To do, Review and Team sections) or **Track Time**, read the current product instead: the rail is patient-first (Dashboard, Documentation, Authorizations, Denial Intelligence, Analytics), My Work's sections moved to the Dashboard and Documentation, and Track Time was removed. See `docs/FEEDBACK-ROUND-2026-11-11.md`.
+
 Deliverable 1 (prompt Part 21, item 1) · Nov 11, 2026 · PsyFlo × Harvest unified demo
 
 This report is assembled from the review set (`review/00` to `review/05c`, the three evidence digests) and from the code as built. I did not re-open any recording, transcript, Drive file, Slack channel or mailbox, and nothing here claims to be a review of an original. Ids point into the digests: G- (Granola), P- (Plaud, secondary only), T- and U- (team workspace), plus WM (PsyFlo's 29 Oct workflow map), PD (`docs/product-direction.md`), RN (earlier research notes). Meeting content is paraphrased. Staff appear by role. Initials such as M.R. and T.W. are synthetic demo records.
