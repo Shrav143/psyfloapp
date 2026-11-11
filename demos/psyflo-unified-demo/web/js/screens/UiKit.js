@@ -25,7 +25,7 @@ register('UiKit', class extends Screen {
     this.state = { f: { status: q.status || '', q: q.q || '', payer: q.payer || '' }, sort: { key: 'id', dir: 'asc' }, limit: 4, items: DEMO_ITEMS.map(i => ({ ...i, state: 'pending' })), err: false };
   }
   get css() {
-    return `.uk{max-width:1100px;margin:0 auto;padding:28px var(--gutter) 64px}.uk h1{margin:0 0 4px;font-size:var(--fs-28);line-height:var(--lh-28)}.uk-lead{margin:0 0 16px}
+    return `.uk,.uk *{box-sizing:border-box}.uk a{color:var(--teal-700)}.uk-static{border:1px solid var(--line-200);border-radius:var(--r-4);max-width:420px}.uk-row__c .ui-empty{flex:1 1 100%}.uk{max-width:1100px;margin:0 auto;padding:28px var(--gutter) 64px}.uk h1{margin:0 0 4px;font-size:var(--fs-28);line-height:var(--lh-28)}.uk-lead{margin:0 0 16px}
 .uk-toc{display:flex;flex-wrap:wrap;gap:6px 14px;margin:0 0 8px}.uk-toc a{font-size:var(--fs-13);font-weight:600}
 .uk-sec{margin:36px 0;scroll-margin-top:calc(var(--dock-h) + 12px)}.uk-sec h2{margin:0 0 6px;font-size:var(--fs-22);line-height:var(--lh-22);border-bottom:1px solid var(--line-200);padding-bottom:8px}
 .uk-note{margin:0 0 12px;font-size:var(--fs-13)}

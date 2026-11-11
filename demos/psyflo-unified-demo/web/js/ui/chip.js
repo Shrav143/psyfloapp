@@ -20,6 +20,7 @@ export const STATUS = {
   stage: {
     draft_ready: S('Draft ready', 'neutral', 'pencil', 'draft'),
     ready_for_review: S('Ready for review', 'neutral', 'eye', 'draft'),
+    needs_approval: S('Pending clinical approval', 'info', 'user', 'awaiting'),
     pending_approval: S('Pending clinical approval', 'info', 'user', 'awaiting'),
     pending_clinical_approval: S('Pending clinical approval', 'info', 'user', 'awaiting'),
     awaiting_signature: S('Awaiting signature', 'info', 'pencil', 'awaiting'),

@@ -226,7 +226,7 @@ export default {
     if (r.processed_at && r.lauris_session === session) refuse(`Lauris session ${session} was already recorded as processed for ${id}. A second Process Form is an anomaly and was not applied.`, { record: id, code: 'write_once' });
     if (['signed', 'submitted', 'sending', 'portal_open', 'active'].includes(r.stage)) refuse(`${id} is already past Process Form (${r.stage}); a second processed event was not applied.`, { record: id, code: 'write_once' });
     if (r.stage === 'draft_ready') r.stage = 'needs_approval';
-    r.processed_at = this.now(); r.lauris_session = session; r.lauris_consumer = consumer; r.processed_by = this.actor?.id || null;
+    r.processed_at = this.now(); r.lauris_session = session; r.lauris_consumer = Number(consumer); r.processed_by = this.actor?.id || null;
     this.event('Process Form pressed in Lauris · now Pending clinical approval', this.actor?.id || 'bridge', id, { actor_kind: 'bridge' });
   },
   // A clinical approver (cap approve.sra, designated) records the internal approval; separate people may approve and send.
@@ -513,7 +513,7 @@ export default {
     if (!session || !consumer) refuse('A processed note needs the session id and the Harvest # from the open page.', { code: 'no_evidence' });
     const dup = s.notes.find(n => n.session === session && n.client === client);
     if (dup) refuse(`Lauris session ${session} is already recorded as a processed ${type} note (${dup.id}). A second processed event is an anomaly: it was not applied and the note is unchanged.`, { record: client, code: 'write_once' });
-    const note = { id: 'note-' + Date.now(), client, staff, type, date: s.today, fields, session, consumer, enhanced, dictation, units, processed_at: this.now(), flags: [] };
+    const note = { id: 'note-' + Date.now(), client, staff, type, date: s.today, fields, session, consumer: Number(consumer), enhanced, dictation, units, processed_at: this.now(), flags: [] };
     const st = byId(s.staff, staff);
     note.review = st?.review_mode === 'every_note' ? 'pending' : 'approved';
     // units must follow the recorded direct time (rules table); a mismatch is flagged for the reviewer, never silently kept

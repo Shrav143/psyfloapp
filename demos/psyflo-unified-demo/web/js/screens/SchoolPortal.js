@@ -40,7 +40,8 @@ export function referralWords(s, r) {
 
 // Keeps form inputs alive across repaints: values live in `store`, keyed by id (radios by name).
 export function bindForm(root, store, onChange) {
-  const box = root.firstElementChild; if (!box) return;
+  // the shell may put a visually hidden <h1 class="ui-sr"> before the screen: bind to the screen box, not to it
+  const box = [...root.children].find(el => !el.classList.contains('ui-sr')) || root.firstElementChild; if (!box) return;
   const key = el => el.type === 'radio' ? el.name : (el.dataset.k || el.id || el.name);
   box.querySelectorAll('input,select,textarea').forEach(el => {
     const k = key(el); if (!k || el.type === 'file' || el.dataset.nobind != null) return;

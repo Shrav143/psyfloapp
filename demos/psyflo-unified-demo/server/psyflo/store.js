@@ -154,7 +154,7 @@ class Store {
   // older persisted files: add the clock and the rules table
   migrate() {
     const st = this.state;
-    if (!st.clock) st.clock = newClock(st.today || '2026-10-29', { fixed: process.env.DEMO_TIME || null });
+    if (!st.clock) st.clock = newClock(st.today || loadSeed().today, { fixed: process.env.DEMO_TIME || null });
     else { st.clock.anchor_wall = Date.now(); st.clock.fixed = process.env.DEMO_TIME || st.clock.fixed || null; if (st.clock.anchor_time == null) st.clock.anchor_time = '09:00'; }
     st.today = st.clock.date;
     if (!st.rules) { try { st.rules = loadSeed().rules || []; } catch { st.rules = []; } }

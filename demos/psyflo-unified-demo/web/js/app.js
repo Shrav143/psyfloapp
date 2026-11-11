@@ -4,7 +4,7 @@
 // Product viewport = rail + #stage/#root. The presenter dock (#dock) sits ABOVE it and is the only place presenter controls live.
 import * as API from './api.js';
 import { loadScreen, paint, DCLogic, esc, raw, matchClose } from './runtime.js';
-import { SCREENS, BY_ID, LEVEL, homeTarget, homeFor, resolveRoute, isLive } from './registry.js';
+import { SCREENS, BY_ID, LEVEL, homeTarget, homeFor, resolveRoute, isLive, legacyFor } from './registry.js';
 import * as M from './shared/model.js';
 import { ExtComposite } from './ext-composite.js';
 import { ui } from './ui/index.js';
@@ -137,7 +137,7 @@ function railHTML(currentId) {
   const initials = esc(u.initials || String(u.name || '?').split(/\s+/).map(w => w[0]).join('').slice(0, 2));
   const logoT = nav.logo.target;
   return `<a class="sh-logo" href="${esc(hrefFor(logoT.id, logoT.params))}" aria-label="Psyflo, My Work"${on === 'my-work' ? ' aria-current="page"' : ''}>${LOGO.replace('<svg ', '<svg aria-hidden="true" focusable="false" ').replace(/role="img"\s*aria-label="[^"]*"/, '')}<small>Harvest Outreach Center · TDT</small></a>
-  <nav class="sh-nav" aria-label="Main"><ul>${nav.primary.map(i => link(i)).join('')}</ul>${nav.secondary.length ? `<div class="sh-nav__sep" role="separator"></div><ul>${nav.secondary.map(i => link(i, true)).join('')}</ul>` : ''}</nav>
+  <nav class="sh-nav" aria-label="Main"><ul>${nav.primary.length || nav.secondary.length ? nav.primary.map(i => link(i)).join('') : link({ ...nav.logo, icon: 'home', countText: '', count: 0, target: logoT })}</ul>${nav.secondary.length ? `<div class="sh-nav__sep" role="separator"></div><ul>${nav.secondary.map(i => link(i, true)).join('')}</ul>` : ''}</nav>
   <div class="sh-foot">
     <div class="sh-demo" title="Demo data · nothing is real"><i aria-hidden="true"></i><span>Demo data · nothing is real</span></div>
     <button type="button" class="sh-help" data-sh="help" aria-label="Help">${icon('help', 19)}<span>Help</span></button>
@@ -180,6 +180,7 @@ function initDockState() {
   dockState = ls.get(DOCK_KEY) === 'open' || ls.get(DOCK_KEY) === 'collapsed' ? ls.get(DOCK_KEY) : 'hidden';
   if (p === '0') dockState = 'hidden'; else if (p != null && p !== '') dockState = 'open';
   if (mode === 'explore') dockState = 'open';
+  if (innerWidth <= 700 && dockState === 'open') dockState = 'collapsed'; // phone widths: a 24 px handle until tapped
   if (p === '1' || p === 'architecture') ls.set(DOCK_KEY, 'open');
   maturityOn = ls.get(MAT_KEY) === 'all'; document.documentElement.dataset.maturity = maturityOn ? 'all' : '';
 }
@@ -201,7 +202,7 @@ function renderDock(force) {
 }
 function measureDock() { const el = dockEl(); const h = !el || dockState === 'hidden' ? 0 : Math.ceil(el.getBoundingClientRect().height); document.documentElement.style.setProperty('--dock-h', h + 'px'); }
 function setDock(s) {
-  if (mode === 'explore') s = 'open';
+  if (mode === 'explore' && innerWidth > 700) s = 'open';
   dockState = s; ls.set(DOCK_KEY, s); renderDock(true);
   if (s === 'hidden') (document.getElementById('main') || document.getElementById('root') || document.body).focus?.({ preventScroll: true });
   else dockEl().querySelector('[data-dock="toggle"]')?.focus({ preventScroll: true });
@@ -223,11 +224,13 @@ const FALLBACK_SCENARIOS = [
   { id: 's5', n: 5, title: 'Payer decision', role: 'clinician', caseLabel: 'D.W.', surface: 'platform', route: 'Partials', params: { id: 'R-0402' } },
   { id: 's6', n: 6, title: 'Leadership view', role: 'admin', caseLabel: 'All cases', surface: 'platform', route: 'Analytics' }
 ];
+const SURF = { phone: 'Phone', school: 'School portal', platform: 'Platform', lauris: 'Lauris + panel', panel: 'Lauris + panel', family: 'Family portal' };
 function scenarioList() {
   const src = (api.state && api.state.scenarios) || (api.config && api.config.scenarios);
   const arr = Array.isArray(src) ? src : src && typeof src === 'object' ? Object.entries(src).map(([id, v]) => ({ id, ...v })) : null;
   const list = arr && arr.length ? arr : FALLBACK_SCENARIOS;
-  return list.map((s, i) => ({ ...s, id: s.id ?? 's' + (i + 1), n: s.n ?? i + 1, title: s.title || s.name || s.id, roleLabel: roleLabel(s.role) || s.role, caseLabel: s.caseLabel || s.case || s.student || '', surfaceLabel: s.surfaceLabel || s.surface || '' }));
+  const label = c => (c && typeof c === 'object' ? c.label || c.request || c.referral || c.client : c) || '';
+  return list.map((s, i) => ({ ...s, id: s.id ?? 's' + (i + 1), n: s.n ?? i + 1, title: s.title || s.name || s.id, roleLabel: roleLabel(s.role) || s.role, caseLabel: s.caseLabel || label(s.case) || s.student || '', surfaceLabel: s.surfaceLabel || SURF[s.surface] || s.surface || '' }));
 }
 function parseTarget(t, params) {
   if (!t) return null;
@@ -244,10 +247,10 @@ function guardianLink() {
   const fls = (api.state && api.state.family_links) || []; const fl = fls.find(f => f.referral === 'REF-118') || fls[0];
   return fl && fl.token ? '/parent/' + fl.token + '/ParentPortal' : null;
 }
-async function applyRole(role, staffId) {
+async function applyRole(role, staffId, login) {
   const as = apiFn('signInAs');
-  if (role === 'guardian') { if (as) { try { await as({ portalClient: 'TW' }, { presenter: true }); } catch (e) { toast(e.message, 'err'); } } else { const g = guardianLink(); if (g) { location.href = g; return 'nav'; } } return; }
-  if (role === 'school') { session.setSchoolUser('rbell'); if (as) { try { await as({ schoolUser: 'rbell' }, { presenter: true }); } catch (e) { toast(e.message, 'err'); } } return; }
+  if (role === 'guardian') { if (as) { try { await as({ portalClient: (login && login.portalClient) || 'TW' }, { presenter: true }); } catch (e) { toast(e.message, 'err'); } } else { const g = guardianLink(); if (g) { location.href = g; return 'nav'; } } return; }
+  if (role === 'school') { const su = (login && login.schoolUser) || 'rbell'; session.setSchoolUser(su); if (as) { try { await as({ schoolUser: su }, { presenter: true }); } catch (e) { toast(e.message, 'err'); } } return; }
   const want = staffId || STAFF_FOR_ROLE[role]; if (!want) return;
   if (session.user && session.user.id === want) return;
   await signInAs(want);
@@ -258,8 +261,9 @@ async function runScenario(sc) {
   let res = null;
   try { res = await api.do('demo.scenario', { id: sc.id }); }
   catch (e) { if (!/unknown action|no such action|not registered|not a function/i.test(e.message)) { toast(e.message, 'err'); return; } }
-  const t = parseTarget(res && (res.route || res.target) || sc.route, res && res.params || sc.params);
-  const nav = await applyRole((res && (res.role || res.as)) || sc.role, (res && res.staff) || sc.staff);
+  let t = parseTarget(res && (res.route || res.target) || sc.route, res && res.params || sc.params);
+  if (t) t = legacyFor(t); // a scenario never lands on a route that is still a stub
+  const nav = await applyRole((res && (res.role || res.as)) || sc.role, (res && res.staff) || sc.staff, sc.login);
   if (nav === 'nav') return;
   if (t) go(t.id, t.params); else route();
   toast(`Scenario ${sc.n}: ${sc.title}`);
@@ -295,6 +299,12 @@ function pickerScreens() {
     .sort((a, b) => Object.keys(SURFACE_LABEL).indexOf(a.surface) - Object.keys(SURFACE_LABEL).indexOf(b.surface));
 }
 export const pickerFor = pickerScreens;
+// the All screens picker: a portal screen is opened as that portal's person (presenter view), everything else as the signed-in role
+async function openScreen(id) {
+  const m = BY_ID[id]; if (!m) return;
+  if (m.surface === 'parent') await applyRole('guardian'); else if (m.surface === 'school') await applyRole('school');
+  go(id);
+}
 function surfaces() {
   const u = session.user;
   return [{ id: 'platform', label: 'Platform', sub: 'Rail, queues and cases' }, { id: 'lauris', label: 'Lauris + panel', sub: 'Mock Lauris with the Psyflo panel beside it', external: true }, { id: 'phone', label: 'Phone', sub: 'Direct support, 390 px' }, { id: 'family', label: 'Family', sub: 'Guardian portal' }, { id: 'school', label: 'School', sub: 'Counselor portal' }].filter(s => s.id !== 'platform' || !!u);
@@ -307,8 +317,10 @@ function openSurface(id) {
   else if (id === 'family') { const g = guardianLink(); if (g) location.href = g; else go('ParentPortal'); }
   else if (id === 'school') { session.setSchoolUser('rbell'); go('SchoolPortal'); }
 }
+// the presenter's simulation controls first make sure the session is a presenter session (a Login sign-in is not)
+const simDock = { receiveReply: async () => { try { await ensurePresenter(); } catch { } sim.receiveReply(); }, advanceDay: async () => { try { await ensurePresenter(); } catch { } return sim.advanceDay(); } };
 const dockCtx = {
-  api, M, sim, toast, go, current: () => current, model: dockModel, scenarios: scenarioList, runScenario, switchRole, resetTo, roleChoices, screens: pickerScreens, surfaces, openSurface,
+  api, M, sim: simDock, toast, go, current: () => current, model: dockModel, scenarios: scenarioList, runScenario, openScreen, switchRole, resetTo, roleChoices, screens: pickerScreens, surfaces, openSurface,
   setDock, setMode, setMaturity, routeMeta: id => BY_ID[id], notes: id => NOTES[id] || '',
   features: id => { const seen = new Set(); return featuresFor(id).filter(f => !seen.has(f.id) && seen.add(f.id)).sort((a, b) => LEVEL_ORDER.indexOf(a.level) - LEVEL_ORDER.indexOf(b.level)); }
 };
@@ -339,6 +351,9 @@ async function route() {
   }
   const stage = document.getElementById('stage'); const root = document.getElementById('root');
   const meta = BY_ID[r.id];
+  if (meta && meta.min === 0 && (meta.surface === 'parent' || meta.surface === 'school')) { await portalView(meta, r.params); if (seq !== routeSeq) return; }
+  else if (meta && meta.min > 0) { await restoreStaff(); if (seq !== routeSeq) return; }
+  u = session.user;
   document.body.dataset.surface = meta ? (meta.id === 'Login' ? 'login' : meta.surface) : 'app';
   if (!meta) { notice(stage, 'status', 'Page not found', `There is no page called <b>${esc(r.id)}</b>.`, `<p><a class="ui-btn ui-btn--primary" href="#/">Go to your first screen</a></p>`); renderRail(true); return; }
   if (meta.min > 0 && !u) { location.hash = '#/Login?next=' + encodeURIComponent(r.id); return; }
@@ -372,6 +387,32 @@ async function route() {
   document.title = `${meta.title} — Psyflo × Harvest`;
   announce(meta.title);
 }
+// A portal screen shows what the guardian or the school user sees, which is a different (smaller) state than a staff member's.
+// When a staff session opens one (the presenter, the All screens picker, a pasted link), the shell signs in as that portal person for the
+// view and restores the staff session as soon as a staff screen is opened again. A real portal link (token) always wins.
+let stashedStaff = null;
+async function portalView(meta, params) {
+  const a = apiActor(); const kind = a && a.kind;
+  try {
+    if (meta.surface === 'parent' && kind !== 'guardian') {
+      const tok = apiFn('signInPortal'), as = apiFn('signInAs');
+      if (kind === 'staff' && !stashedStaff) stashedStaff = { id: a.id };
+      current = null; // the screen on show must not repaint with the other person's state while the session changes
+      if (params.t && tok) await tok(params.t, { quiet: true }); else if (as) await as({ portalClient: params.c || 'TW' }, { presenter: true, quiet: true }); else return;
+      await api.refresh(true);
+    } else if (meta.surface === 'school' && kind !== 'school') {
+      const as = apiFn('signInAs'); if (!as) return;
+      if (kind === 'staff' && !stashedStaff) stashedStaff = { id: a.id };
+      current = null;
+      await as({ schoolUser: (session.schoolUser && session.schoolUser.id) || 'rbell' }, { presenter: true, quiet: true }); await api.refresh(true);
+    }
+  } catch (e) { console.warn('portal view', e.message); }
+}
+async function restoreStaff() {
+  const a = apiActor(); const kind = a && a.kind;
+  if (stashedStaff && (kind === 'guardian' || kind === 'school')) { const id = stashedStaff.id; stashedStaff = null; current = null; try { await session.signIn(id, { presenter: true }); authPending = null; await api.refresh(true); } catch (e) { console.warn('restore staff', e.message); } }
+  else if (kind === 'staff') stashedStaff = null;
+}
 function homeRouteForCurrent(u) { return u ? homeFor(u.role, innerWidth < 600) : 'Login'; }
 
 // the 240 px canvas sidebar is not part of a screen any more: the rail lives in the shell
@@ -390,7 +431,8 @@ function ensureMain(root, meta) {
   if (meta && !root.querySelector('h1')) m.insertAdjacentHTML('afterbegin', `<h1 class="ui-sr" data-shell-h1>${esc(meta.title)}</h1>`);
   return m;
 }
-function focusMain() { const m = document.getElementById('main') || document.getElementById('root'); if (m) { m.focus({ preventScroll: true }); } scrollTo(0, 0); }
+let firstRoute = true; // the very first paint of a page load must not steal focus from the skip link
+function focusMain() { if (firstRoute) { firstRoute = false; scrollTo(0, 0); return; } const m = document.getElementById('main') || document.getElementById('root'); if (m) { m.focus({ preventScroll: true }); } scrollTo(0, 0); }
 
 function paintCurrent(first) {
   if (!current) return;

@@ -548,6 +548,22 @@
    "history": []
   },
   {
+   "key": "units.weeks_equivalent",
+   "label": "Units expressed in weeks",
+   "value": "derived",
+   "unit": "text",
+   "category": "UNVERIFIED-DEMO-ASSUMPTION",
+   "source": "No source for \"150 units = 13 weeks\"; 150 / 3 per day = 10 weeks (U-16)",
+   "verified_on": null,
+   "note": "Never a constant: compute from a per-student daily rate and the school calendar.",
+   "default": "derived",
+   "register": "R-023",
+   "scope": null,
+   "enabled": true,
+   "effective_from": "2026-10-29",
+   "history": []
+  },
+  {
    "key": "units.excluded_activity_types",
    "label": "Not reimbursable time",
    "value": [

@@ -103,6 +103,20 @@ export function resolveRoute(r, ctx = {}) {
   return r;
 }
 
+// While a new route is not live, the old screen that does its job: legacyFor({ id:'Authorization', params:{ id, section:'submission' } }) -> Submission?id.
+// Used by the presenter dock (scenarios may start on a new route) so a scenario never lands on a stub. Live routes pass through.
+const LEGACY_DEFAULT = { MyWork: 'DoNext', Authorization: 'Authorizations', DenialIntelligence: 'Partials', DenialCase: 'Partials', Settings: 'Users' };
+export function legacyFor(r) {
+  if (!r || isLive(r.id)) return r;
+  const p = r.params || {};
+  const hits = REDIRECTS.filter(x => x.to === r.id && !x.map && x.params && Object.entries(x.params).every(([k, v]) => p[k] === v) && Object.keys(x.params).length)
+    .sort((a, b) => Object.keys(b.params).length - Object.keys(a.params).length);
+  const from = hits[0] ? hits[0].from : LEGACY_DEFAULT[r.id];
+  if (!from) return r;
+  const keep = ['id', 'staff', 'v'].filter(k => p[k]);
+  return { id: from, params: Object.fromEntries(keep.map(k => [k, p[k]])) };
+}
+
 // Where each role lands after sign-in. Returns the route id (homeTarget also returns params).
 export function homeTarget(role, narrow) {
   if (role === 'direct_support') return { id: narrow ? 'MobileApp' : 'ExtHome', params: {} };

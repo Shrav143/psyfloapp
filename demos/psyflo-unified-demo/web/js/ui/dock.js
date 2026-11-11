@@ -24,9 +24,9 @@ export function presenterDock(m = {}) {
       ${btn('scenario', 'Scenario', 'play')}${btn('role', 'Role', 'user')}${btn('reset', 'Reset', 'refresh')}${btn('sim', 'Simulate', 'clock')}
       <button type="button" class="sh-dock__b" data-dock="notes">${icon('file', 15)}<span>Notes</span></button>
       <button type="button" class="sh-dock__b" data-dock="maturity" aria-pressed="${!!m.maturityOn}">${icon('flag', 15)}<span>Maturity</span></button>
-      ${btn('surfaces', 'Surfaces', 'monitor')}${btn('screens', 'All screens', 'grid')}
+      ${btn('surfaces', 'Surfaces', 'monitor')}${mode === 'explore' ? btn('screens', 'All screens', 'grid') : ''}
       <span class="sh-dock__sp"></span>
-      <button type="button" class="sh-dock__b" data-dock="mode" title="Switch between Presentation and Explore"><span>${mode === 'explore' ? 'Switch to Presentation' : 'Switch to Explore'}</span></button>
+      <button type="button" class="sh-dock__b" data-dock="mode" title="${mode === 'explore' ? 'Switch to Presentation mode' : 'Switch to Explore mode'}">${icon('chevR', 14)}<span>${mode === 'explore' ? 'Presentation mode' : 'Explore mode'}</span></button>
       <span class="sh-dock__meta">${esc(m.preset === 'canvas' ? 'Canvas snapshot' : 'Live flows')} · ${esc(m.today || '')}</span>
       ${mode === 'explore' ? '' : `<button type="button" class="sh-dock__b sh-dock__x" data-dock="hide" aria-label="Hide presenter tools">${icon('close', 15)}</button>`}
     </div></div>`;
@@ -43,15 +43,15 @@ export function mountDock(el, ctx) {
     closeMenu();
     const h = popover({ anchor, body: `<div class="sh-menu" role="menu" aria-label="${esc(opts.label || key)}">${bodyHtml}</div>`, label: opts.label || key, className: 'ui-popover--dock', focus: true, returnFocus: anchor, placement: opts.placement,
       onClose: () => { if (menu && menu.handle === h) menu = null; anchor.setAttribute('aria-expanded', 'false'); },
-      onMount: (d) => {
-        d.addEventListener('click', e => { const b = e.target.closest('[data-i]'); if (b && !b.disabled) { const r = onPick(b.dataset.i, b); if (r !== false) { h.close('pick'); } } });
+      onMount: (d, handle) => {
+        d.addEventListener('click', e => { const b = e.target.closest('[data-i]'); if (b && !b.disabled) { const r = onPick(b.dataset.i, b); if (r !== false) { handle.close('pick'); } } });
         d.addEventListener('keydown', e => {
           if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(e.key)) return;
           const items = [...d.querySelectorAll('[role=menuitem]:not([disabled])')]; if (!items.length) return;
           const i = items.indexOf(document.activeElement); let n = e.key === 'ArrowDown' ? i + 1 : e.key === 'ArrowUp' ? i - 1 : e.key === 'Home' ? 0 : items.length - 1;
           n = (n + items.length) % items.length; items[n].focus(); e.preventDefault();
         });
-        if (opts.onMount) opts.onMount(d, h);
+        if (opts.onMount) opts.onMount(d, handle);
       } });
     menu = { key, handle: h }; anchor.setAttribute('aria-expanded', 'true');
   };
@@ -88,7 +88,7 @@ export function mountDock(el, ctx) {
         return f.length ? f.map(s => item({ id: s.id, title: s.title, sub: s.surfaceLabel, current: s.current })).join('') : '<p class="sh-menu__e">No screen matches.</p>';
       };
       showMenu(a, 'screens', `<div class="sh-menu__s"><label class="ui-sr" for="dock-q">Search screens</label><input id="dock-q" class="sh-menu__q" type="search" placeholder="Search screens" autocomplete="off"></div><div class="sh-menu__l" id="dock-ql">${render('')}</div>`,
-        id => { ctx.go(id); }, { label: 'All screens', onMount: (d) => {
+        id => { ctx.openScreen(id); }, { label: 'All screens', onMount: (d) => {
           const q = d.querySelector('#dock-q'); const l = d.querySelector('#dock-ql');
           q.addEventListener('input', () => { l.innerHTML = render(q.value); });
           q.addEventListener('keydown', e => { if (e.key === 'ArrowDown') { const f = l.querySelector('[role=menuitem]'); if (f) { f.focus(); e.preventDefault(); e.stopPropagation(); } } else if (e.key === 'Enter') { const f = l.querySelector('[role=menuitem]'); if (f) f.click(); } });
