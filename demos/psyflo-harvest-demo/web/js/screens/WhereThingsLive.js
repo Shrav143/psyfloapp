@@ -1,4 +1,3 @@
-// 1 · Where things live (Static). Audience reference, reached from the demo bar as "How it fits".
-// The page has no data and no links of its own; this controller only keeps it static.
+// How it fits (screen 1). Audience reference reached from the presenter menu and the avatar menu (Help). Static: no data, no links of its own.
 import { register, Screen } from '../app.js';
 register('WhereThingsLive', class extends Screen { });

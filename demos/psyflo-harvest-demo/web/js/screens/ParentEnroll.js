@@ -3,7 +3,8 @@
 // Read-and-acknowledge items and short forms → enroll.save; the two signed forms open Parent signs (11) → consent.sign.
 // Answers the guardian already gave in the family link (8) are filled in for them to check, not typed again.
 import { register, Screen, M, toast } from '../app.js';
-import { famCtx, getLang, setLang, fdate, FORMS, formName, pgo, callSheet, childName, packetStatus, guardianLabel, LANG_ON, LANG_OFF } from './ParentPortal.js';
+import { famCtx, getLang, setLang, fdate, FORMS, formName, pgo, callSheet, childName, packetStatus, guardianLabel, guardHeader, guardFooter } from './ParentPortal.js';
+import { C_CSS } from './MobileApp.js';
 
 const ITEM = {
   'Intake information': { kind: 'form', es: 'Información para la admisión', min: 2 },
@@ -65,38 +66,28 @@ const POINTS = {
 const FIELDS = {
   'Intake information': [
     { k: 'child', en: "Child's name", es: 'Nombre del niño' },
-    { k: 'dob', en: 'Date of birth', es: 'Fecha de nacimiento', ph: 'MM/DD/YYYY' },
+    { k: 'dob', en: 'Birth date', es: 'Fecha de nacimiento', ph: 'MM/DD/YYYY' },
     { k: 'school', en: 'School and grade', es: 'Escuela y grado' },
-    { k: 'guardian', en: 'Your name (needed)', es: 'Su nombre (necesario)', req: true },
-    { k: 'phone', en: 'Best phone (needed)', es: 'Mejor teléfono (necesario)', req: true },
+    { k: 'guardian', en: 'Your name', es: 'Su nombre', req: true },
+    { k: 'phone', en: 'Phone', es: 'Teléfono', req: true },
     { k: 'best_time', en: 'Best time to call', es: 'Mejor hora para llamar' }
   ],
   'Emergency contacts': [
-    { k: 'c1_name', en: 'Contact 1 · name (needed)', es: 'Contacto 1 · nombre (necesario)', req: true },
-    { k: 'c1_rel', en: 'Contact 1 · how they know your child', es: 'Contacto 1 · relación con el niño', ph: 'Aunt, neighbour…' },
-    { k: 'c1_phone', en: 'Contact 1 · phone (needed)', es: 'Contacto 1 · teléfono (necesario)', req: true },
-    { k: 'c2_name', en: 'Contact 2 · name (optional)', es: 'Contacto 2 · nombre (opcional)' },
-    { k: 'c2_phone', en: 'Contact 2 · phone (optional)', es: 'Contacto 2 · teléfono (opcional)' }
+    { k: 'c1_name', en: 'Contact 1 name', es: 'Contacto 1 nombre', req: true },
+    { k: 'c1_rel', en: 'Contact 1 relation', es: 'Contacto 1 relación', ph: 'Aunt, neighbour…' },
+    { k: 'c1_phone', en: 'Contact 1 phone', es: 'Contacto 1 teléfono', req: true },
+    { k: 'c2_name', en: 'Contact 2 name', es: 'Contacto 2 nombre' },
+    { k: 'c2_phone', en: 'Contact 2 phone', es: 'Contacto 2 teléfono' }
   ]
 };
 
 const T = {
-  en: { title: c => `Enrollment packet · ${c}`, sub: (a, b, when) => `${a} of ${b} done · ${when}`, beforeIntake: 'before the intake visit', before: d => 'before ' + d,
-    why: 'Do these at home, on your phone, before the intake visit. Then the visit is a conversation, not paperwork. Your answers save as you go.',
-    allDone: 'All seven done · thank you', allDoneSub: 'Harvest has everything it needs for the intake visit. You can come back and read any of these at any time.',
-    min: n => `about ${n} min`, sign: 'to sign', done: d => 'done ' + d, signedOn: (d, who) => `Signed ${d} by ${who}`, savedOn: d => `Saved ${d}. You can change it and save again.`,
-    read: "I've read this", save: 'Save', saveAgain: 'Save changes', signIt: 'Read and sign', copy: 'your copy (PDF)',
-    readSub: 'Read · then tap the button', formSub: 'Check what we have · fix anything wrong', contactsSub: 'Someone we can call if we cannot reach you', signSub: 'Sign with your finger',
-    fromLink: 'Filled in from what you sent us. Check it and fix anything wrong.', onFile: (p, id) => `On file: ${p}${id ? ' · Medicaid ID ending ' + id : ''}.`,
-    need: 'Add at least one person: their name and phone number. The second contact is optional.', needForm: 'Add your name and a phone number we can reach you on.', thanks: f => `${f} · saved`, back: 'Back to the family page', call: 'Call us instead' },
-  es: { title: c => `Papeles de inscripción · ${c}`, sub: (a, b, when) => `${a} de ${b} listos · ${when}`, beforeIntake: 'antes de la cita de admisión', before: d => 'antes del ' + d,
-    why: 'Hágalos en casa, en su teléfono, antes de la cita de admisión. Así la cita es una conversación, no papeleo. Sus respuestas se guardan.',
-    allDone: 'Los siete listos · gracias', allDoneSub: 'Harvest tiene todo lo necesario para la cita de admisión. Puede volver a leerlos cuando quiera.',
-    min: n => `unos ${n} min`, sign: 'para firmar', done: d => 'listo ' + d, signedOn: (d, who) => `Firmado el ${d} por ${who}`, savedOn: d => `Guardado el ${d}. Puede cambiarlo y guardar otra vez.`,
-    read: 'Lo leí', save: 'Guardar', saveAgain: 'Guardar cambios', signIt: 'Leer y firmar', copy: 'su copia (PDF)',
-    readSub: 'Lea · luego toque el botón', formSub: 'Revise lo que tenemos · corrija lo que esté mal', contactsSub: 'Alguien a quien llamar si no le encontramos', signSub: 'Firme con el dedo',
-    fromLink: 'Lo llenamos con lo que nos envió. Revíselo y corrija lo que esté mal.', onFile: (p, id) => `Registrado: ${p}${id ? ' · Medicaid termina en ' + id : ''}.`,
-    need: 'Agregue al menos una persona: su nombre y teléfono. El segundo contacto es opcional.', needForm: 'Agregue su nombre y un teléfono donde le encontremos.', thanks: f => `${f} · guardado`, back: 'Volver a la página de la familia', call: 'Prefiero llamar' }
+  en: { title: 'Enrollment packet', count: (a, b) => `${a} of ${b}`, allDone: 'All done', sign: 'To sign',
+    savedOn: d => `Saved ${d}`, signedOn: (d, who) => `Signed ${d} by ${who}`, read: "I've read this", save: 'Save', saveAgain: 'Save changes', signIt: 'Read and sign', copy: 'Your copy (PDF)',
+    need: 'Add a contact name and phone', needForm: 'Add your name and phone', thanks: f => `${f} · saved` },
+  es: { title: 'Papeles de inscripción', count: (a, b) => `${a} de ${b}`, allDone: 'Todo listo', sign: 'Para firmar',
+    savedOn: d => `Guardado ${d}`, signedOn: (d, who) => `Firmado el ${d} por ${who}`, read: 'Lo leí', save: 'Guardar', saveAgain: 'Guardar cambios', signIt: 'Leer y firmar', copy: 'Su copia (PDF)',
+    need: 'Agregue un nombre y teléfono', needForm: 'Agregue su nombre y teléfono', thanks: f => `${f} · guardado` }
 };
 
 const itemName = (n, lang) => lang === 'es' ? (ITEM[n]?.es || formName(n, 'es')) : n;
@@ -120,36 +111,32 @@ register('ParentEnroll', class extends Screen {
     const pk = packetStatus(s, c);
     const firstOpen = pk.items.find(i => !i.done)?.name || null;
     const open = this.state.open === undefined ? firstOpen : this.state.open;
-    const intake = c.timeline?.intake && c.stage !== 'referral' && c.timeline.intake.slice(0, 10) >= s.today ? c.timeline.intake : null;
     const elig = (s.eligibility || []).find(e => e.client === c.id && e.result === 'active');
     const planId = c.medicaid?.plan || elig?.plan;
     const plan = planId ? M.payerShort(s, planId) : '';
-    const mid = (ctx.fl?.answers?.medicaid_id || '').replace(/\s/g, '').slice(-4);
     const items = pk.items.map((it, i) => {
       const meta = ITEM[it.name] || { kind: it.sign ? 'sign' : 'ack', min: 1 };
       const isOpen = open === it.name;
       const signedRec = it.sign && s.consents.find(x => x.client === c.id && x.form === it.name && x.status === 'signed');
       const v = {
-        title: itemName(it.name, lang), sub: { ack: t.readSub, form: t.formSub, contacts: t.contactsSub, sign: t.signSub }[meta.kind],
+        title: itemName(it.name, lang),
         mark: it.done ? '✓' : String(i + 1), numCls: it.done ? 'g' : isOpen ? 'y' : '',
-        chip: it.done ? t.done(fdate(it.at, lang)) : meta.kind === 'sign' ? t.sign : t.min(meta.min), chipCls: it.done ? 'g' : meta.kind === 'sign' ? 'y' : 'n',
-        open: isOpen, expanded: isOpen ? 'true' : 'false', style: isOpen ? 'border-color:#217A78' : '',
+        chip: !it.done && meta.kind === 'sign' ? t.sign : '', chipCls: 'y',
+        open: isOpen, expanded: isOpen ? 'true' : 'false', style: isOpen ? 'border-color:var(--teal)' : '',
         toggle: () => this.setState({ open: isOpen ? null : it.name }),
-        points: [], fields: [], note: '', err: '', doneText: '', file: '', btn: '', act: null
+        points: [], fields: [], err: '', doneText: '', file: '', btn: '', btnCls: 'pri', act: null
       };
       if (!isOpen) return v;
       if (meta.kind === 'ack') {
         v.points = POINTS[it.name]?.[lang](child, plan) || [];
-        if (it.name === 'Insurance and fees' && (plan || mid)) v.note = t.onFile(plan || 'Medicaid', mid);
-        if (it.done) v.doneText = t.done(fdate(it.at, lang));
+        if (it.done) v.doneText = t.savedOn(fdate(it.at, lang));
         else { v.btn = t.read; v.act = () => this.save(it.name, 'ack', { ack: true }); }
       } else if (meta.kind === 'form' || meta.kind === 'contacts') {
         const missing = this.state.err?.item === it.name ? this.state.err.keys : [];
-        v.fields = FIELDS[it.name].map(f => ({ id: 'f-' + f.k, k: it.name + '|' + f.k, label: f[lang], ph: f.ph || '', v: this.val(ctx, it.name, f.k), bad: missing.includes(f.k) ? 'border-color:#B9541F;background:#FFF6F3' : '' }));
-        if (meta.kind === 'form' && !it.done && ctx.fl?.answers) v.note = t.fromLink;
+        v.fields = FIELDS[it.name].map(f => ({ id: 'f-' + f.k, k: it.name + '|' + f.k, label: f[lang], ph: f.ph || '', v: this.val(ctx, it.name, f.k), bad: missing.includes(f.k) ? 'border-color:var(--late-fg);background:var(--late-bg)' : '' }));
         if (this.state.err?.item === it.name) v.err = this.state.err.msg;
         if (it.done) v.doneText = t.savedOn(fdate(it.at, lang));
-        v.btn = it.done ? t.saveAgain : t.save;
+        v.btn = it.done ? t.saveAgain : t.save; v.btnCls = it.done ? '' : 'pri';
         v.act = () => this.saveFields(it.name, meta.kind);
       } else {
         v.points = [FORMS[it.name]?.sum[lang](child)].filter(Boolean);
@@ -159,12 +146,13 @@ register('ParentEnroll', class extends Screen {
       return v;
     });
     return {
-      t: { title: t.title(child), sub: t.sub(pk.done, pk.total, intake ? t.before(fdate(intake, lang)) : t.beforeIntake), why: t.why, allDone: t.allDone, allDoneSub: t.allDoneSub, copy: t.copy, back: t.back, call: t.call },
-      enStyle: lang === 'en' ? LANG_ON : LANG_OFF, esStyle: lang === 'es' ? LANG_ON : LANG_OFF,
+      hd: guardHeader(t.title, lang), ft: guardFooter(lang),
+      t: { count: t.count(pk.done, pk.total), allDone: t.allDone, copy: t.copy },
       pct: pk.total ? Math.round(100 * pk.done / pk.total) : 0, allDone: pk.total > 0 && pk.done === pk.total, items,
       setField: (e, el) => { this.state.f[el.dataset.k] = el.value; }
     };
   }
+  get css() { return C_CSS; }
   async save(item, kind, data) {
     const ctx = this.ctx(); const lang = getLang(ctx.client);
     await this.do('enroll.save', { client: ctx.client.id, item, kind, data, by: guardianLabel(ctx) });

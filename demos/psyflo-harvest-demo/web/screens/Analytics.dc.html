@@ -1,167 +1,55 @@
 <!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8">
-<title>Psyflo — Analytics</title>
-<script src="./support.js"></script>
-</head>
+<head><meta charset="utf-8"><title>Psyflo — Analytics</title></head>
 <body>
 <x-dc>
 <helmet>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&amp;display=swap">
 <style>
-body{margin:0;background:#F8F6F2;color:#151B24;font-family:'DM Sans',system-ui,sans-serif;font-size:14px;line-height:1.45}
-a{color:#217A78}a:hover{color:#15605E}
-*{box-sizing:border-box}
+body{margin:0;background:#F8F6F2}
 .nav{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;color:#C9D1D6;text-decoration:none;font-weight:500;font-size:14px;min-height:44px}
-.nav:hover{background:#222A35;color:#fff}
-.nav.on{background:#217A78;color:#fff}
-.nav .n{margin-left:auto;background:#2A3340;color:#fff;border-radius:999px;padding:1px 8px;font-size:12px;font-weight:600}
-.nav.on .n{background:rgba(255,255,255,.22)}
-.card{background:#fff;border:1px solid #E6E1D9;border-radius:12px}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:0 16px;border-radius:8px;font:inherit;font-weight:600;font-size:14px;cursor:pointer;text-decoration:none;border:1px solid transparent;white-space:nowrap}
-.btn.p{background:#217A78;color:#fff}.btn.p:hover{background:#15605E;color:#fff}
-.btn.o{background:#fff;color:#151B24;border-color:#D9D4CC}.btn.o:hover{background:#F3F0EA;color:#151B24}
-.chip{display:inline-block;border-radius:999px;padding:2px 9px;font-size:12px;font-weight:600;white-space:nowrap}
-.chip.r{background:#FBE9E4;color:#8A2E1C}.chip.y{background:#FCEFD0;color:#6F4A05}.chip.g{background:#DDF1EF;color:#15605E}.chip.n{background:#EEEBE5;color:#3E4652}
-.kpi{flex:1 1 180px;min-width:0;background:#fff;border:1px solid #E6E1D9;border-radius:12px;padding:14px 16px}
-.kpi .l{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#525B66;font-weight:600}
-.kpi b{display:block;font-size:30px;font-weight:600;line-height:1.1;margin-top:6px}
-.kpi span{display:block;font-size:12px;color:#525B66;margin-top:4px}
-.seg{display:flex;border:1px solid #D9D4CC;border-radius:8px;overflow:hidden;background:#fff}
-.seg button{border:0;background:transparent;padding:0 14px;min-height:40px;font:inherit;font-weight:500;color:#151B24;cursor:pointer}
-.seg button.on{background:#151B24;color:#fff}
-.th{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#525B66;font-weight:600}
-.tr{display:grid;grid-template-columns:minmax(0,1fr) 90px 110px 140px 110px 120px;gap:12px;padding:10px 0;border-top:1px solid #EFEBE4;font-size:13px;align-items:center}
-.tr>div{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mo{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}
-.mo .bars{display:flex;align-items:flex-end;gap:3px;height:140px}
-.mo .bars i{display:block;width:22px;border-radius:3px 3px 0 0}
-.mo small{font-size:11px;color:#525B66}
-.wrap .tr>div{white-space:normal;overflow:visible;text-overflow:clip}
+.nav:hover{background:#222A35;color:#fff}.nav.on{background:#217A78;color:#fff}
+.nav .n{margin-left:auto;background:#2A3340;color:#fff;border-radius:999px;padding:1px 8px;font-size:12px;font-weight:600}.nav.on .n{background:rgba(255,255,255,.22)}
+.b3-kpis{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,.6fr);gap:12px}
+.b3-tile{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.b3-lab{font-size:14px;line-height:20px;font-weight:600;color:var(--ink-2)}
+.b3-big{font-size:44px;line-height:52px;font-weight:600;letter-spacing:-.02em;font-variant-numeric:normal}
+.b3-big small{font-size:16px;line-height:24px;font-weight:500;color:var(--ink-3);margin-left:6px;letter-spacing:0}
+.b3-cap{font-size:12px;line-height:16px;color:var(--ink-3)}
+.b3-wrap{background:var(--white);border:1px solid var(--line);border-radius:12px;overflow-x:auto}
+.b3-wrap .u-tbl{border:0;border-radius:0;min-width:520px}
+.b3-num{font-variant-numeric:tabular-nums}
+@media (max-width:760px){.b3-kpis{grid-template-columns:minmax(0,1fr)}}
 </style>
 </helmet>
+<div class="u-app">
+<aside style="flex:0 0 240px"></aside>
+<main class="u-main">
+  <div class="u-head">
+    <h1 class="u-title">{{title}}</h1>
+    <select class="u-sel" aria-label="Site" onChange="{{pickSite}}"><sc-for list="{{sites}}" as="o"><option value="{{o.id}}" {{o.sel}}>{{o.name}}</option></sc-for></select>
+    <span class="u-sp"></span><span class="u-date">{{today}}</span>
+  </div>
 
-<div style="display:flex;flex-wrap:wrap;min-height:1340px;width:100%">
-  <aside style="flex:0 0 240px;background:#151B24;color:#fff;display:flex;flex-direction:column;padding:22px 16px 18px">
-    <div style="padding:0 8px 6px">
-      <svg role="img" aria-label="psyflo" viewBox="0 0 3191 1060" width="104" height="35"><g transform="translate(-6.0,780.0) scale(1,-1)"><path d="M66 -220V504H186L201 434Q217 456 239.0 474.5Q261 493 291.5 504.5Q322 516 363 516Q434 516 488.0 481.0Q542 446 573.5 386.5Q605 327 605 251Q605 175 573.0 115.5Q541 56 487.0 22.0Q433 -12 364 -12Q308 -12 267.5 8.5Q227 29 201 65V-220ZM332 106Q372 106 402.5 124.0Q433 142 450.0 175.0Q467 208 467 251Q467 294 450.0 327.5Q433 361 402.5 379.5Q372 398 332 398Q293 398 262.5 379.5Q232 361 214.5 328.0Q197 295 197 252Q197 209 214.5 175.5Q232 142 262.5 124.0Q293 106 332 106Z" fill="#FFFFFF"></path></g><g transform="translate(624.0,780.0) scale(1,-1)"><path d="M272 -12Q203 -12 152.0 10.0Q101 32 72.0 71.0Q43 110 39 159H173Q178 140 190.0 124.5Q202 109 222.0 100.0Q242 91 270 91Q297 91 314.0 98.5Q331 106 339.5 119.0Q348 132 348 146Q348 167 336.0 178.5Q324 190 301.0 197.0Q278 204 245 211Q209 218 174.5 228.5Q140 239 113.0 255.0Q86 271 70.0 296.0Q54 321 54 358Q54 403 78.0 438.5Q102 474 148.0 495.0Q194 516 259 516Q350 516 403.0 475.0Q456 434 466 362H339Q333 385 312.5 398.5Q292 412 258 412Q222 412 203.0 399.0Q184 386 184 365Q184 351 196.5 340.0Q209 329 232.0 321.5Q255 314 288 307Q346 295 390.0 279.5Q434 264 459.0 235.5Q484 207 484 153Q484 105 458.0 67.5Q432 30 384.5 9.0Q337 -12 272 -12Z" fill="#FFFFFF"></path></g><g transform="translate(1105.0,780.0) scale(1,-1)"><path d="M130 -220 252 56H222L20 504H167L311 179L441 504H584L273 -220Z" fill="#FFFFFF"></path></g><g transform="translate(1734.0,780.0) scale(1,-1)"><path d="M89 0V549Q89 612 110.0 649.0Q131 686 170.5 703.0Q210 720 263 720H325V605H283Q251 605 237.5 592.5Q224 580 224 549V0ZM20 391V504H333V391Z" fill="#5FC0BE"></path></g><g transform="translate(2080.0,780.0) scale(1,-1)"><path d="M66 0V720H201V0Z" fill="#5FC0BE"></path></g><g transform="translate(2322.0,780.0) scale(1,-1)"><path d="M304 -12Q232 -12 174.5 21.5Q117 55 83.5 114.5Q50 174 50 251Q50 330 83.5 389.5Q117 449 175.0 482.5Q233 516 305 516Q378 516 435.5 482.5Q493 449 526.5 389.5Q560 330 560 252Q560 174 526.5 114.5Q493 55 435.0 21.5Q377 -12 304 -12ZM304 105Q338 105 364.5 121.0Q391 137 406.5 170.0Q422 203 422 252Q422 301 406.5 333.5Q391 366 364.5 382.5Q338 399 305 399Q273 399 246.0 382.5Q219 366 203.5 333.5Q188 301 188 252Q188 203 203.5 170.0Q219 137 245.5 121.0Q272 105 304 105Z" fill="#5FC0BE"></path></g><g transform="translate(2922.0,780.0) scale(1,-1)"><path d="M127 -5Q89 -5 66.0 17.5Q43 40 43 73Q43 106 66.0 128.5Q89 151 127 151Q163 151 186.0 128.5Q209 106 209 73Q209 40 186.0 17.5Q163 -5 127 -5Z" fill="#F0B44C"></path></g></svg>
-      <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#8E99A6;margin-top:4px">Harvest Outreach Center · TDT</div>
-    </div>
-    <nav style="display:flex;flex-direction:column;gap:2px;margin-top:22px" aria-label="Main">
-      <a class="nav" href="DoNext.dc.html"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8v10H3z"></path><path d="M9 21v-6h6v6"></path></svg>Do next<span class="n">5</span></a>
-      <a class="nav" href="Referrals.dc.html"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h12l4 4v12H4z M16 4v4h4 M8 13h8M8 17h5"></path></svg>Referrals<span class="n">3</span></a>
-      <a class="nav" href="Authorizations.dc.html"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"></path></svg>Authorizations<span class="n">15</span></a>
-      <a class="nav" href="StaffDashboard.dc.html"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>Staff<span class="n">2</span></a>
-      <a class="nav" href="Compliance.dc.html"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"></path><path d="M9 12l2 2 4-4"></path></svg>Compliance<span class="n">1</span></a>
-      <a class="nav on" href="Analytics.dc.html"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"></path></svg>Analytics</a>
-      <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#8E99A6;padding:18px 12px 6px">The four doors</div>
-      <a class="nav" href="ExtHome.dc.html"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M3 9h18M7 6.5h.01M10 6.5h.01"></path></svg>Lauris extension<span class="n">on</span></a>
-      <a class="nav" href="MobileApp.dc.html"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="7" y="2" width="10" height="20" rx="2"></rect><path d="M11 18h2"></path></svg>Mobile app</a>
-      <a class="nav" href="ParentPortal.dc.html"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-7 9 7v9H3z"></path><path d="M10 20v-6h4v6"></path></svg>Parent portal</a>
-      <a class="nav" href="SchoolPortal.dc.html"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 2 9 2 12 0v-5"></path></svg>School portal</a>
-    </nav>
-    <div style="margin-top:auto;display:flex;flex-direction:column;gap:12px">
-      <div style="display:flex;align-items:center;gap:8px;border:1px solid #2A3340;border-radius:8px;padding:8px 10px;font-size:12px;color:#C9D1D6"><span style="width:8px;height:8px;border-radius:50%;background:#F0B44C;display:inline-block"></span>Demo data · nothing is real</div>
-      <div style="display:flex;align-items:center;gap:10px;border-top:1px solid #2A3340;padding-top:14px">
-        <div style="width:36px;height:36px;border-radius:50%;background:#217A78;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px">JP</div>
-        <div><div style="font-weight:600;font-size:13px">Jordan Perez</div><div style="font-size:12px;color:#8E99A6">LPC · Asst. Clinical Support Supervisor</div></div>
-      </div>
-    </div>
-  </aside>
+  <h2 class="u-sec" style="margin-top:8px">{{kpis}} <span class="u-chip info">Sample data</span></h2>
+  <div class="b3-kpis">
+    <div class="b3-tile"><span class="b3-lab">{{timelyLabel}}</span><span class="b3-big">{{timelyValue}}</span>{{timelyLine}}<span class="b3-cap">Weekly</span></div>
+    <div class="b3-tile"><span class="b3-lab">{{minutesLabel}}</span><span class="b3-big">{{minutesValue}}<small>min</small></span>{{minutesLine}}<span class="b3-cap">Weekly</span></div>
+    <div class="b3-tile"><span class="b3-lab">{{backlogLabel}}</span><span class="b3-big">{{backlog}}</span></div>
+  </div>
 
-  <main style="flex:999 1 560px;min-width:0;display:flex;flex-direction:column">
-    <header style="display:flex;flex-wrap:wrap;align-items:center;gap:14px;padding:12px 28px;border-bottom:1px solid #E6E1D9;background:#fff">
-      <div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#525B66;font-weight:600">Baseline · {{source}} · <span style="color:#151B24">{{period}}</span></div>
-      <div class="seg" role="group" aria-label="Locality"><button class="{{bBoth}}" onClick="{{pBoth}}">Both localities</button><button class="{{bCC}}" onClick="{{pCC}}">Campbell County</button><button class="{{bLC}}" onClick="{{pLC}}">Lynchburg City</button></div>
-      <div style="margin-left:auto"></div>
-    </header>
-
-    <div style="padding:26px 28px 32px;display:flex;flex-direction:column;gap:20px">
-      <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end">
-        <div>
-          <h1 style="margin:0;font-size:26px;font-weight:600;letter-spacing:-.01em">Analytics · authorizations, clients, program</h1>
-        </div>
-        <div style="margin-left:auto;display:flex;gap:8px;align-items:center"><a class="btn p" href="#export">Export (PDF / CSV)</a></div>
-      </div>
-
-      <div style="display:flex;flex-wrap:wrap;gap:12px">
-        <div class="kpi"><div class="l">SRAs returned partial</div><b>{{k1}}</b><span>of {{n}} decided · "majority" becomes a number</span></div>
-        <div class="kpi"><div class="l">Units awarded vs requested</div><b>{{k2}}</b><span>median award on a 150-unit ask: {{k2b}} units</span></div>
-        <div class="kpi"><div class="l">Full denials</div><b>{{k3}}</b><span>of {{n}} · appeals attempted: {{appeals}} · overturned: {{overturned}}</span></div>
-        <div class="kpi"><div class="l">Median decision time</div><b>{{k4}}</b><span>calendar days · standard is 7 since Jan 2026</span></div>
-        <div class="kpi"><div class="l">Early discharge + resubmit</div><b>{{k5}}</b><span>authorizations restarted early · each one is a 2–3 h re-intake</span></div>
-        <div class="kpi"><div class="l">Unpaid clinical hours</div><b>{{k6}}</b><span>screenings × 30–45 min + info requests + peer-to-peers</span></div>
-      </div>
-
-      <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start">
-        <section class="card" style="flex:1 1 100%;min-width:0;padding:16px 20px">
-          <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:baseline"><h2 style="margin:0;font-size:16px;font-weight:600">Units requested vs awarded · by month</h2><span style="font-size:12px;color:#525B66">TDT H2016 · {{scope}}</span></div>
-          <div style="display:flex;gap:14px;font-size:12px;color:#525B66;margin:8px 0 14px"><span><i style="display:inline-block;width:10px;height:10px;background:#C9D1D6;border-radius:2px;margin-right:5px"></i>Requested</span><span><i style="display:inline-block;width:10px;height:10px;background:#217A78;border-radius:2px;margin-right:5px"></i>Awarded</span><span><i style="display:inline-block;width:10px;height:10px;background:#F0B44C;border-radius:2px;margin-right:5px"></i>Summer transition (May–Jun)</span></div>
-          <div style="display:flex;gap:6px;align-items:flex-end;overflow-x:auto">
-            <sc-for list="{{months}}" as="m" hint-placeholder-count="12">
-              <div class="mo"><div class="bars"><i style="{{m.req}}"></i><i style="{{m.aw}}"></i></div><small>{{m.l}}</small></div>
-            </sc-for>
-          </div>
-          <div style="font-size:12px;color:#525B66;margin-top:10px">{{chartSource}}</div>
-        </section>
-
-        <section class="card" style="flex:1 1 100%;min-width:0;padding:16px 20px">
-          <h2 style="margin:0 0 2px;font-size:16px;font-weight:600">By payer</h2>
-          
-          <div class="tr th" style="border-top:0;padding-top:0"><div>Payer</div><div>Requests</div><div>Partial</div><div>Awarded vs asked</div><div>Decision days</div><div>Channel</div></div>
-          <sc-for list="{{payers}}" as="p">
-          <div class="tr"><div>{{p.name}}</div><div>{{p.requests}}</div><div><span class="{{p.chip}}">{{p.partial}}</span></div><div>{{p.awarded}}</div><div>{{p.days}}</div><div>{{p.channel}}</div></div>
-          </sc-for>
-          <div style="font-size:12px;color:#525B66;margin-top:10px">{{payerSource}}</div>
-          
-        </section>
-      </div>
-
-      <div class="wrap" style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start">
-        <section class="card" style="flex:1 1 440px;min-width:0;padding:16px 20px">
-          <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:baseline"><h2 style="margin:0;font-size:16px;font-weight:600">Client progress · one child, over time</h2><span class="chip n">{{child}}</span></div>
-          
-          <div class="tr" style="grid-template-columns:minmax(0,1fr) 80px 80px 80px 110px;border-top:0;padding-top:0"><div class="th">Measure</div><div class="th">Intake</div><div class="th">Q1</div><div class="th">Now</div><div class="th">Trend</div></div>
-          <sc-for list="{{measures}}" as="m">
-          <div class="tr" style="grid-template-columns:minmax(0,1fr) 80px 80px 80px 110px"><div>{{m.name}}</div><div>{{m.a}}</div><div>{{m.b}}</div><div>{{m.c}}</div><div><span class="{{m.chip}}">{{m.trend}}</span></div></div>
-          </sc-for>
-          <div style="font-size:12px;color:#525B66;margin-top:10px">{{childSource}}</div>
-          
-        </section>
-        <section class="card" style="flex:1 1 360px;min-width:0;padding:16px 20px">
-          <h2 style="margin:0 0 2px;font-size:16px;font-weight:600">Reports, assembled instead of built</h2>
-          
-          <div class="tr" style="grid-template-columns:minmax(0,1fr) 120px;border-top:0;padding-top:0"><div><b>School-division report</b><div style="font-size:12px;color:#525B66">by school, vs Virginia</div></div><div><a class="btn o" href="#div" style="min-height:34px;padding:0 12px;font-size:13px">Preview</a></div></div>
-          <div class="tr" style="grid-template-columns:minmax(0,1fr) 120px"><div><b>Grant pull</b><div style="font-size:12px;color:#525B66">cited sentences · incident counts</div></div><div><a class="btn o" href="#grant" style="min-height:34px;padding:0 12px;font-size:13px">Run</a></div></div>
-          <div class="tr" style="grid-template-columns:minmax(0,1fr) 120px"><div><b>Quarterly review · M.R.</b><div style="font-size:12px;color:#525B66">per objective, with assessments</div></div><div><a class="btn o" href="#q" style="min-height:34px;padding:0 12px;font-size:13px">Draft</a></div></div>
-          <div class="tr" style="grid-template-columns:minmax(0,1fr) 120px"><div><b>Licensure binder</b><div style="font-size:12px;color:#525B66">QI plan → monthly checks → evidence, print-ready</div></div><div><a class="btn o" href="Compliance.dc.html" style="min-height:34px;padding:0 12px;font-size:13px">Open</a></div></div>
-        </section>
-      </div>
-
-      
-    </div>
-  </main>
+  <h2 class="u-sec">{{outcomesTitle}} <span class="u-mut" style="font-weight:500">{{student}}</span> <span class="u-chip info">Sample data</span></h2>
+  <div class="b3-wrap">
+    <table class="u-tbl">
+      <thead><tr><th scope="col">Measure</th><th scope="col">Start</th><th scope="col">Mid</th><th scope="col">Now</th><th scope="col">Trend</th></tr></thead>
+      <tbody>
+        <sc-for list="{{outcomes}}" as="o">
+          <tr><td style="font-weight:600">{{o.name}}</td><td class="b3-num">{{o.a}}</td><td class="b3-num">{{o.b}}</td><td class="b3-num" style="font-weight:600">{{o.c}}</td><td><span class="u-chip {{o.chip}}">{{o.word}}</span></td></tr>
+        </sc-for>
+      </tbody>
+    </table>
+  </div>
+</main>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1340}}'>
-class Component extends DCLogic {
-  constructor(p){ super(p); this.state = { s: 'both' }; }
-  renderVals() {
-    const s = this.state.s;
-    const k = { both:{n:146,k1:'58%',k2:'71%',k2b:'105',k3:'7%',k4:'6',k5:'23',k6:'≈310 h',scope:'both localities'},
-                cc:{n:84,k1:'55%',k2:'73%',k2b:'110',k3:'6%',k4:'6',k5:'12',k6:'≈170 h',scope:'Campbell County'},
-                lc:{n:62,k1:'63%',k2:'68%',k2b:'100',k3:'8%',k4:'7',k5:'11',k6:'≈140 h',scope:'Lynchburg City'} }[s];
-    const req = [1800,1650,1950,2100,1500,900,600,1200,2400,2250,2100,1950];
-    const aw  = [1300,1150,1400,1450,850,450,400,900,1700,1650,1500,1400];
-    const lbl = ['Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct'];
-    const f = s==='both' ? 1 : (s==='cc' ? 0.58 : 0.42);
-    const months = lbl.map((l,i) => ({ l, req:'height:'+Math.round(req[i]*f/2400*140)+'px;background:#C9D1D6', aw:'height:'+Math.round(aw[i]*f/2400*140)+'px;background:'+((i===6||i===7)?'#F0B44C':'#217A78') }));
-    const c = x => s===x ? 'on' : '';
-    return Object.assign({}, k, { months, bBoth:c('both'), bCC:c('cc'), bLC:c('lc'),
-      pBoth:()=>this.setState({s:'both'}), pCC:()=>this.setState({s:'cc'}), pLC:()=>this.setState({s:'lc'}) });
-  }
-}
-</script>
 </body>
 </html>

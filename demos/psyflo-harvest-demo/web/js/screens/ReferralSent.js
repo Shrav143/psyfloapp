@@ -1,6 +1,6 @@
 // 5 · Referral sent (school). Live: confirmation for ?id; "attach now" adds the missing attachment via referral.attach.
 import { register, Screen, M, toast } from '../app.js';
-import { schoolUser, schoolLong, signedInText, schoolSignOut, referralWords } from './SchoolPortal.js';
+import { schoolUser, schoolLong, schoolSignOut, stageChip, SCHOOL_CSS } from './SchoolPortal.js';
 
 const LABEL = { behaviour_report: 'Behaviour report', attendance_log: 'Attendance log', schedule_and_grades: 'Schedule and grades' };
 
@@ -13,23 +13,23 @@ register('ReferralSent', class extends Screen {
   }
   renderVals() {
     const s = this.s; const u = schoolUser(); const r = this.ref();
-    if (!r) return { title: 'No referral yet', sub: 'Refer a student from the portal', signedIn: signedInText(u), schoolShortLong: schoolLong(s, u.school).split(' · ').pop(), missing: [], next: '—', hear: '—' };
+    const short = id => schoolLong(s, id).split(' · ').pop().replace('Middle School ', 'MS-').replace('Elementary School ', 'ES-').replace('High School ', 'HS-');
+    if (!r) return { title: 'No referral yet', sub: '', signedIn: u.name, schoolShort: short(u.school), missing: [], next: '—' };
     const c = M.byId(s.clients, r.client);
     const ini = c ? c.initials : String(r.client).split(',')[0];
     const att = r.form?.attachments || {};
     const missing = Object.keys(LABEL).filter(k => !att[k]).map(k => ({ key: k, label: LABEL[k] }));
-    const files = Object.entries(att).filter(([, v]) => typeof v === 'string').map(([k, v]) => `${LABEL[k] || k}: ${v}`);
     const draft = r.stage === 'draft';
-    const status = referralWords(s, r);
+    const fl = r.family_link || {};
     return {
-      signedIn: signedInText(u), schoolShortLong: schoolLong(s, r.school || u.school).split(' · ').pop(),
-      title: (draft ? 'Draft saved · ' : 'Referral sent · ') + ini,
-      sub: `${r.id} · ${M.fmtDateTime(r.received)}${status && r.stage !== 'needs_screening' ? ' · ' + status : ''}`,
-      next: draft ? 'Nothing has gone to Harvest yet. Open Refer a student to finish and submit it.' : r.stage === 'needs_screening' && !r.family_link?.sent ? 'Harvest will contact the guardian and tell you when the screening is booked.' : 'Now: ' + status + '. Harvest will tell you when the screening is booked.',
-      missing, received: files.length ? 'all three received (' + files.join(' · ') + ')' : 'all three received',
-      hear: `When the screening is scheduled, and when ${ini} starts.`
+      signedIn: u.name, schoolShort: short(r.school || u.school),
+      title: draft ? 'Draft saved' : 'Referral sent',
+      sub: `${ini} · ${r.id}${draft ? '' : ' · ' + M.fmtDateTime(r.received)}`,
+      next: draft ? 'Submit it from the form' : r.stage === 'waiting_on_school' ? 'Attach what is missing' : r.stage === 'screening_booked' ? 'Screening call booked' : fl.submitted ? 'Screening call' : fl.sent ? 'Family answers the link' : 'Harvest texts the family',
+      missing
     };
   }
+  get css() { return SCHOOL_CSS; }
   after(root) {
     const inp = root.querySelector('#attfile');
     if (inp) inp.onchange = async () => {

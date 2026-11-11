@@ -1,6 +1,6 @@
-// 29 · Authorizations — the request tracker, live over state.requests.
-// Also exports small helpers shared by the other request screens (Sent, Info request, Partials,
-// Early discharge, Peer-to-peer) so they read requests the same way.
+// 29 · Authorizations — the request tracker, live over state.requests: one table, one drawer.
+// Also exports small helpers shared by the other request screens (Info request, Partials,
+// Early discharge, Peer-to-peer) so they read requests the same way. Do not remove them.
 import { register, Screen, M, raw, esc, modal, toast, session, api } from '../app.js';
 
 // ---------- shared request helpers ----------
@@ -68,151 +68,211 @@ export function unitsLeft(s, r) {
   return { units: a.units, used: a.used || 0, left: a.units - (a.used || 0) };
 }
 
-// next action, in words, for a row
-function nextAction(s, r) {
-  const c = M.clientLabel(s, r.client, false); const d = details(s, r.id);
-  if (d.next && ['submitted'].includes(r.stage)) return d.next;
-  const receipt = r.receipt_confirmed ? `Receipt confirmed ${M.fmtDate(r.receipt_confirmed)} (${whoLabel(s, r.receipt_by)} called). ` : (r.receipt_check ? `Receipt check call due ${M.fmtDate(r.receipt_check)}. ` : '');
+// ---------- Authorizations: one page, the "Prior auth & UR" view (Intake is the Referrals route) ----------
+import { app, hrefFor } from '../app.js';
+import { REQ_TYPE, STATUS, FILTER, PART, HELP, VIEWS } from '../shared/labels.js';
+import { dateHead, siteOptions, localityOf, B1_CSS, showProof, proofFile } from './Referrals.js';
+
+const TERMINAL = ['active', 'closed'];
+const PEOPLE_STAGES = ['draft_ready', 'needs_approval', 'awaiting_signature', 'signed', 'info_requested', 'partial_decide', 'peer_to_peer_requested', 'overdue'];
+const OUTCOMES = [['received', 'Receipt confirmed'], ['in_review', 'In review'], ['not_found', 'Not found'], ['decided', 'Decision sent']];
+
+const daysSent = (s, r) => r.sent ? M.daysBetween(r.sent, s.today) : null;
+// the day-10 call was logged and the payer still has time: the request waits on the payer again (a "fax not found" needs a resend)
+export function followUpLogged(s, r) {
+  const k = M.clocksOf(s); const n = daysSent(s, r);
+  return !!r.follow_up && n != null && n < k.decision_days && !(r.follow_up.outcome === 'not_found' && r.resend);
+}
+// waiting on a payer (the Worklist's "Awaiting response" line and the Status filter use the same rule)
+export function isAwaiting(s, r) {
+  const k = M.clocksOf(s); const n = daysSent(s, r);
+  if (['sending', 'portal_open', 'appeal_sent', 'p2p_awaiting'].includes(r.stage)) return true;
+  if (r.stage === 'submitted') return n == null || n < k.call_day || followUpLogged(s, r);
+  if (r.stage === 'peer_to_peer_booked') return !(r.p2p_at && M.daysBetween(s.today, r.p2p_at) < 0);
+  return false;
+}
+const isMine = (s, r) => PEOPLE_STAGES.includes(r.stage) || (r.stage === 'submitted' && !isAwaiting(s, r)) || (r.stage === 'peer_to_peer_booked' && !isAwaiting(s, r));
+
+// units column: remaining of authorized once active or in renewal (27 of 110), requested → awarded while pending or partial (150 → 110)
+function unitsCell(s, r) {
+  const a = clientOf(s, r)?.authorization; const rate = rateFor(r);
+  const renewing = r.type === 'continued_stay' && ['draft_ready', 'needs_approval', 'awaiting_signature', 'signed'].includes(r.stage);
+  if (a && a.units && (r.stage === 'active' || renewing)) {
+    const used = a.used || 0; const left = a.units - used; const days = rate ? left / rate : Infinity;
+    return { text: `${left} of ${a.units}`, pct: Math.min(100, Math.round(used / a.units * 100)), bar: days < 10 ? 'r' : days < 25 ? 'y' : '' };
+  }
+  const to = r.stage === 'partial_decide' ? r.units_offered : (r.units_awarded && r.units_awarded !== r.units_requested ? r.units_awarded : r.units_offered);
+  if (to && to !== r.units_requested) return { text: `${r.units_requested} → ${to}` };
+  return { text: String(r.units_awarded || r.units_requested || '') };
+}
+
+// the row's one button: where it goes, or the drawer it opens; filled only when due within 24 hours (same rule as the Worklist)
+function rowAct(s, r) {
+  const k = M.clocksOf(s); const n = daysSent(s, r); const href = M.requestHref(r);
   switch (r.stage) {
-    case 'draft_ready': return r.type === 'continued_stay' ? `Draft ready from ${r.draft_sources?.daily_notes || 'the'} notes. Open ${c} in Lauris to review it in the form.` : `Drafted from the record. Open ${c} in Lauris to review it in the form.`;
-    case 'awaiting_signature': return 'Processed in Lauris. Press Get Signature in Forms to Approve; Send unlocks after that.';
-    case 'signed': return 'Signed PDF saved and packet assembled. A clinician presses Send.';
-    case 'sending': return 'Faxing through Sfax · reference and delivery receipt arrive in a few seconds.';
-    case 'portal_open': return `Upload in your own ${M.CHANNEL_LABEL[r.channel]} session; the extension reads the confirmation.`;
-    case 'submitted': {
-      if (!r.decision_due) return receipt || 'Waiting for the decision.';
-      const dd = M.daysBetween(s.today, r.decision_due);
-      return receipt + (dd === 0 ? 'If nothing arrives by 5 pm an overdue notice is ready for you to send.' : dd < 0 ? 'Overdue notice citing the 7-day standard is ready for you to send.' : `Decision due ${M.fmtDate(r.decision_due)}.`);
-    }
-    case 'overdue': return receipt + (r.overdue_notice_sent ? `Overdue notice sent ${M.fmtDate(r.overdue_notice_sent)}.` : 'Overdue notice citing the 7-day standard is ready for you to send.');
-    case 'info_requested': return r.info_reply?.sent_at ? 'Reply sent; waiting for the upload confirmation.' : 'Reply drafted from the request already sent; a clinician must send it.';
-    case 'partial_decide': return 'Accept and stretch · accept and use them up · ask for a peer-to-peer';
-    case 'peer_to_peer_requested': return `Peer-to-peer asked for. When ${M.payerShort(s, r.payer)} calls to agree a time, enter the date and time.`;
-    case 'peer_to_peer_booked': { const a = clientOf(s, r)?.authorization; if (r.p2p_at && r.p2p_at.slice(0, 10) < s.today) return 'Call date has passed. Log the outcome (awaiting decision is fine).'; return (a?.exhausted && r.p2p_at && a.exhausted < r.p2p_at ? 'Units run out before the call. ' : '') + 'Call notes are ready.'; }
-    case 'p2p_awaiting': return `Call held. Waiting for ${M.payerShort(s, r.payer)}'s decision; log it when it arrives.`;
-    case 'denied': return `Reason: "${r.denial_reason || 'not given'}." Guardian-led appeal; letter drafted for the guardian.`;
-    case 'appeal_sent': return 'Guardian signed; appeal faxed through Sfax. Waiting for the payer.';
-    case 'early_discharge': return r.early_discharge ? `Discharge ${M.fmtDate(r.early_discharge.discharge)} · new intake ${M.fmtDate(r.early_discharge.intake)} · new initial no earlier than ${M.fmtDate(r.early_discharge.new_initial)}` : 'Accepted with an early discharge · set the plan.';
-    case 'active': {
-      const u = unitsLeft(s, r); const rate = rateFor(r); const c2 = clientOf(s, r);
-      if (u && rate && u.left / rate < 10) return 'Start the next continued stay now.';
-      const end = c2?.authorization?.end; if (end) return `Renewal due ${M.fmtDate(M.addBusinessDays(end, -14))} (14 business days before ${M.fmtDate(end)}).`;
-      if (r.stretch) return `Stretched to ${r.stretch.until ? M.fmtDate(r.stretch.until) : 'the end date'}${r.stretch.per_week ? ' · about ' + r.stretch.per_week + ' units a week' : ''}.`;
-      return r.p2p_outcome ? 'Peer-to-peer outcome logged.' : r.decision ? 'Units awarded and logged.' : '—';
-    }
-    case 'closed': return 'Closed.';
-    default: return '—';
+    case 'draft_ready': return { btn: 'Review in Lauris', href };
+    case 'needs_approval': return { btn: PART.approve, drawer: true };
+    case 'awaiting_signature': return { btn: 'Sign in Lauris', href, pri: true };
+    case 'signed': return { btn: 'Send', drawer: true, pri: true };
+    case 'info_requested': return { btn: PART.respond, href, pri: true };
+    case 'partial_decide': return { btn: PART.reviewOffer, href, pri: !r.reply_by || M.daysBetween(s.today, r.reply_by) <= 1 };
+    case 'peer_to_peer_requested': return { btn: 'Enter date', href };
+    case 'peer_to_peer_booked': return { btn: 'Call notes', href };
+    case 'p2p_awaiting': return { btn: 'Log decision', href };
+    case 'denied': return { btn: 'Letter', href };
+    case 'early_discharge': return { btn: 'Plan', href };
+    case 'submitted': return n != null && n >= k.call_day && !followUpLogged(s, r) ? { btn: 'Open', drawer: true, pri: true } : { btn: 'View', drawer: true };
+    case 'overdue': return { btn: 'Open', drawer: true, pri: true };
+    default: return { btn: 'View', drawer: true };
   }
 }
-const BTN = { draft_ready: ['Review in Lauris', 'btn p s'], awaiting_signature: ['Sign in Lauris', 'btn p s'], signed: ['Send', 'btn p s'], info_requested: ['Open reply', 'btn o s'], partial_decide: ['Decide', 'btn o s'], peer_to_peer_requested: ['Enter call date', 'btn o s'], peer_to_peer_booked: ['Call notes', 'btn o s'], p2p_awaiting: ['Log decision', 'btn o s'], overdue: ['Send notice', 'btn o s'], early_discharge: ['Plan', 'btn o s'] };
+
+const chipCls = (r, chip) => r.stage === 'active' ? 'ok' : chip.sev === 'r' ? 'r' : chip.sev === 'y' ? 'y' : 'n';
+const CH = r => M.CHANNEL_LABEL[r.channel] || r.channel;
+const stageKey = r => r.stage;
 
 export function row(s, r0) {
-  const r = view(s, r0); const c = M.byId(s.clients, r.client); const d = details(s, r.id);
-  const clk = M.requestClock(s, r);
-  let clock = clk.text, clockSev = clk.sev;
-  const u = unitsLeft(s, r); const rate = rateFor(r);
-  let units = r.units_awarded ? `${r.units_requested} → ${r.units_awarded} awarded` : r.units_offered ? `${r.units_requested} → ${r.units_offered} offered` : `${r.units_requested} requested`;
-  let unitsSub = d.units_note || '', hasBar = false, barStyle = '';
-  if (r.stage === 'active' && u) {
-    hasBar = true; const pct = Math.round(u.used / u.units * 100);
-    const days = rate ? Math.floor(u.left / rate) : null;
-    barStyle = `width:${pct}%` + (days != null && days < 10 ? ';background:#B9541F' : '');
-    unitsSub = `${u.left} left` + (rate ? ` · ${rate}/day` : '');
-    if (days != null) { clock = `${days} school days`; clockSev = days < 10 ? 'r' : 'n'; } else { clock = '—'; clockSev = 'n'; }
-  } else if (r.type === 'continued_stay' && ['draft_ready', 'awaiting_signature', 'signed'].includes(r.stage) && u) {
-    hasBar = true; const pct = Math.round(u.used / u.units * 100);
-    barStyle = `width:${pct}%` + (u.left / 3 <= 10 ? ';background:#B9541F' : '');
-    unitsSub = `${u.left} of ${u.units} left on current auth`;
-  } else if (r.stage === 'peer_to_peer_booked' && u) {
-    hasBar = true; barStyle = `width:${Math.round(u.used / u.units * 100)}%;background:#B9541F`;
-    unitsSub = unitsSub || `${u.left} left`;
-  } else if (!unitsSub && r.sent && ['submitted', 'overdue', 'sending', 'portal_open'].includes(r.stage)) {
-    unitsSub = (r.signed_at || r.signed_pdf ? 'signed and sent ' : 'sent ') + M.fmtDate(r.sent);
-  } else if (!unitsSub && r.stage === 'denied' && r.denied_on) unitsSub = 'denied ' + M.fmtDate(r.denied_on);
-  else if (!unitsSub && r.stage === 'partial_decide' && r.offer_call) unitsSub = 'offer received ' + M.fmtDate(r.offer_call);
-  const [btn, btnCls] = BTN[r.stage] || ['View', 'btn o s'];
-  let type = M.TYPE_LABEL[r.type] || r.type;
-  if (r.stage === 'info_requested' || r.info_reply) type += ' → Additional information';
-  const channel = (M.CHANNEL_LABEL[r.channel] || r.channel) + (r.fax_ref ? ' · ref ' + r.fax_ref : r.portal_ref ? ' · ' + r.portal_ref : '');
-  let href = M.requestHref(r);
-  if (r.stage === 'overdue' || r.stage === 'signed') href = 'Submission.dc.html?id=' + r.id;
+  const r = view(s, r0); const chip = M.statusChip(s, r); const u = unitsCell(s, r); const act = rowAct(s, r);
+  const type = r.stage === 'info_requested' ? REQ_TYPE.additional_info : (REQ_TYPE[r.type] || r.type);
   return {
-    id: r.id, client: M.clientLabel(s, r.client), school: c ? M.school(s, c.school).name : (d.school ? M.school(s, d.school).name : ''),
-    payer: M.payerShort(s, r.payer), channel, service: (r.service || '').split(' · ')[0], type,
-    units, unitsSub, hasBar, barStyle, stage: M.STAGE_LABEL[r.stage] || r.stage, stageCls: stageCls(r.stage),
-    clock, clockCls: 'chip ' + (clockSev || 'n'), next: nextAction(s, r), btn, btnCls, href, raw: r,
-    history: historyRows(s, r)
+    id: r.id, raw: r, student: M.clientLabel(s, r.client), type, payer: M.payerTag(s, r.payer), channel: CH(r),
+    units: u.text, hasBar: u.pct != null, pct: u.pct, barCls: 'u-bar ' + (u.bar || ''),
+    status: chip.text, statusCls: 'u-chip ' + chipCls(r, chip), helpClock: /follow-up/.test(chip.text), helpApproval: r.stage === 'needs_approval',
+    btn: act.btn, btnCls: 'u-btn' + (act.pri ? ' pri' : ''), href: act.href, isLink: !act.drawer
   };
 }
 
-const FILTERS = { All: 'all', Me: 'me', Info: 'info', Partial: 'partial', Denied: 'denied', Active: 'active', Renew: 'renew' };
-const EMPTY = { all: 'Nothing open.', me: 'No drafts waiting for you to review, sign and send.', info: 'No information requests open.', partial: 'No partial awards to decide.', denied: 'No denials.', active: 'No active authorizations.', renew: 'No renewals due.' };
-
 register('Authorizations', class extends Screen {
-  init() { this.state = { tab: this.params.tab || 'all', payer: this.params.payer || '', svc: '', type: '', open: this.params.history ? { [this.params.history]: true } : {} }; }
+  init() {
+    this.state = { open: this.params.open || null, site: this.params.site || '', status: this.params.status || 'open', payer: this.params.payer || '', mine: this.params.mine === '1', focus: this.params.open ? 'drawer' : null };
+    this._key = e => {
+      if (app.current?.inst !== this) { window.removeEventListener('keydown', this._key, true); return; }
+      if (e.key !== 'Escape' || !this.state.open) return;
+      const m = document.getElementById('modal'); if (m && !m.hidden) return;
+      this.openRow(null);
+    };
+    window.addEventListener('keydown', this._key, true);
+  }
+  req(id = this.state.open) { return id ? findReq(this.s, id) : null; }
+  openRow(id) {
+    this.setState({ open: id, focus: id ? 'drawer' : 'row', last: id || this.state.open });
+    try { history.replaceState(null, '', hrefFor('Authorizations.dc.html', id ? { open: id } : {})); } catch { }
+  }
+  matches(s, r) {
+    const st = this.state; const sid = clientOf(s, r)?.school || details(s, r.id).school;
+    const sOk = st.status === 'all' ? true : st.status === 'open' ? !TERMINAL.includes(r.stage) : st.status === 'waiting' ? isAwaiting(s, r) : st.status === 'active' ? r.stage === 'active' : r.stage === st.status;
+    return sOk && (!st.site || localityOf(s, sid) === st.site) && (!st.payer || r.payer === st.payer) && (!st.mine || isMine(s, r));
+  }
   renderVals() {
-    const s = this.s; const me = this.me;
-    const tagged = s.requests.map(r => ({ r, tags: M.requestTags(s, r, me?.id) }));
-    const sel = ({ r }) => (!this.state.payer || r.payer === this.state.payer) && (!this.state.svc || r.service === this.state.svc) && (!this.state.type || r.type === this.state.type);
-    const t = this.state.tab;
-    const rows = tagged.filter(x => sel(x) && x.tags.has(t === 'active' ? 'all_active' : t)).map(x => {
-      const v = row(s, x.r); const open = !!this.state.open[v.id];
-      return { ...v, open, histLabel: (open ? 'Hide history' : 'History') + ` · ${v.history.length}`, toggle: () => this.setState({ open: { ...this.state.open, [v.id]: !open } }) };
+    const s = this.s; const st = this.state; const me = this.me;
+    const dr = document.querySelector('.u-drawer'); if (dr) this._ds = dr.scrollTop;
+    const rows = s.requests.filter(r => this.matches(s, r)).map(r => {
+      const v = row(s, r);
+      return { ...v, open: e => { if (e.target.closest('a')) return; this.openRow(v.id); } };
     });
-    const vals = {
-      rows, noRows: !rows.length, emptyText: EMPTY[t] + (this.state.payer || this.state.svc || this.state.type ? ' (with these filters)' : ''),
-      asOf: M.fmtDate(s.today, { dow: true }).replace(' ', ', '),
-      isAdmin: session.user?.role === 'admin',
-      setPayer: e => this.setState({ payer: e.target.value }),
-      setSvc: e => this.setState({ svc: e.target.value }),
-      setType: e => this.setState({ type: e.target.value })
-    };
-    for (const [k, tag] of Object.entries(FILTERS)) {
-      const key = tag === 'active' ? 'all_active' : tag;
-      vals['n' + k] = tagged.filter(x => sel(x) && x.tags.has(key)).length;
-      vals['t' + k] = 'tab' + (t === tag ? ' on' : '');
-      vals['pick' + k] = () => this.setState({ tab: tag });
-    }
-    return vals;
-  }
-  // the canvas's "chip r" also matches the row class .r; keep red chips looking like chips
-  get css() { return '.chip.r{display:inline-block;padding:2px 9px;border-top:0;font-size:12px}.chip.r:hover{background:#FBE9E4}'; }
-  after(root) {
-    const set = (id, v) => { const el = root.querySelector('#' + id); if (el) el.value = v; };
-    set('payer', this.state.payer); set('svc', this.state.svc); set('rt', this.state.type);
-  }
-  get anchors() {
+    const first = { clock: rows.findIndex(x => x.helpClock), approval: rows.findIndex(x => x.helpApproval) };
+    const drawerOpen = !!(st.open && this.req());
+    rows.forEach((x, i) => { x.tipClock = !drawerOpen && first.clock === i; x.tipApproval = !drawerOpen && first.approval === i; });
+    const stages = [...new Set(s.requests.map(stageKey))].filter(k => STATUS[k]).sort((a, b) => Object.keys(STATUS).indexOf(a) - Object.keys(STATUS).indexOf(b));
+    const statusOpts = [{ v: 'open', t: 'Status' }, { v: 'waiting', t: PART.awaiting }, ...stages.map(k => ({ v: k, t: STATUS[k] })), { v: 'all', t: 'All requests' }].map(o => ({ ...o, sel: st.status === o.v ? 'selected' : '' }));
+    const payers = [...new Set(s.requests.map(r => r.payer))];
+    const payerOpts = [{ v: '', t: FILTER.payer }, ...payers.map(p => ({ v: p, t: M.payerTag(s, p) }))].map(o => ({ ...o, sel: st.payer === o.v ? 'selected' : '' }));
     return {
-      demoReply: () => this.demoReply(),
-      advanceDay: async () => {
-        if (session.user?.role !== 'admin') return;
-        await this.do('demo.advanceDay');
-        toast('Demo: clock advanced to ' + M.fmtDate(this.s.today, { dow: true }));
-      }
+      dateText: dateHead(s), rows, empty: !rows.length, helpClockText: HELP.clock, helpApprovalText: HELP.approval,
+      siteOpts: siteOptions(s, st.site), statusOpts, payerOpts, mine: st.mine ? 'checked' : '', mineLabel: FILTER.mine,
+      setSite: e => this.setState({ site: e.target.value }), setStatus: e => this.setState({ status: e.target.value }),
+      setPayer: e => this.setState({ payer: e.target.value }), setMine: e => this.setState({ mine: e.target.checked }),
+      segReq: 'Authorizations.dc.html', segIntake: 'Referrals.dc.html' + (st.status === 'waiting' ? '?status=waiting' : ''),
+      viewReq: VIEWS.authorizations.requests, viewIntake: VIEWS.authorizations.intake,
+      drawerOpen, d: drawerOpen ? this.drawer(s, this.req(), me) : null, closeDrawer: () => this.openRow(null)
     };
   }
-  demoReply() {
-    if (session.user?.role !== 'admin') return;
-    const s = this.s;
-    const waiting = s.requests.filter(r => ['submitted', 'overdue', 'portal_open', 'appeal_sent'].includes(r.stage));
-    if (!waiting.length) { modal(`<h2>Demo: receive a reply</h2><p>No request is waiting for a payer's reply right now. Send one first (Sent screen), then come back.</p><button class="mbtn p" data-close>OK</button>`); return; }
-    const def = waiting.find(r => r.id === 'R-0416') || waiting[0];
-    const opts = waiting.map(r => `<option value="${esc(r.id)}"${r.id === def.id ? ' selected' : ''}>${esc(r.id)} · ${esc(M.clientLabel(s, r.client))} · ${esc(M.payerShort(s, r.payer))} · ${esc(M.STAGE_LABEL[r.stage])}</option>`).join('');
-    modal(`<h2>Demo: receive a reply</h2>
-      <p style="margin:0 0 10px;color:#525B66">Payer replies cannot arrive during a demo, so this stands in for the fax or portal letter. Admins only; logged as a demo event on the request.</p>
-      <label style="display:block;font-weight:600;font-size:13px;margin-bottom:4px" for="drq">Request</label>
-      <select id="drq" style="width:100%;min-height:40px;border:1px solid #D9D4CC;border-radius:8px;padding:0 10px;font:inherit">${opts}</select>
-      <label style="display:block;font-weight:600;font-size:13px;margin:10px 0 4px" for="dun">Units (approved or offered · leave blank for the default)</label>
-      <input id="dun" type="number" min="1" max="300" style="width:140px;min-height:40px;border:1px solid #D9D4CC;border-radius:8px;padding:0 10px;font:inherit">
-      <div style="display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 10px">
-        <button class="mbtn" data-k="approved">Approved</button><button class="mbtn p" data-k="partial">Partial</button><button class="mbtn" data-k="info">Information request</button><button class="mbtn" data-k="denied">Denied</button>
-      </div><button class="mbtn" data-close>Cancel</button>`,
-      (box, close) => box.querySelectorAll('[data-k]').forEach(b => b.onclick = async () => {
-        const id = box.querySelector('#drq').value; const units = +box.querySelector('#dun').value || undefined;
-        close();
-        await this.do('request.demoReply', { id, kind: b.dataset.k, units });
-        const r = M.byId(this.s.requests, id);
-        toast(`Demo: ${b.textContent.toLowerCase()} received for ${id} · now ${M.STAGE_LABEL[r?.stage] || ''}`);
-      }));
+  drawer(s, r, me) {
+    const k = M.clocksOf(s); const n = daysSent(s, r); const chip = M.statusChip(s, r);
+    const student = M.clientLabel(s, r.client); const ref = r.fax_ref || r.portal_ref;
+    const type = r.stage === 'info_requested' ? REQ_TYPE.additional_info : (REQ_TYPE[r.type] || r.type);
+    const sub = [type, r.sent ? 'sent ' + M.fmtDate(r.sent) : '', [CH(r), ref].filter(Boolean).join(' ')].filter(Boolean).join(' · ');
+    const stale = e => /^No reply by the due date/.test(e.what) && r.stage !== 'overdue';
+    const log = M.requestHistory(s, r).filter(e => !e.upcoming && !stale(e)).map(e => ({
+      date: e.at ? M.fmtDate(e.at) : 'Before pilot', time: M.fmtTime(e.at), what: String(e.what).replace(/ \(7-calendar-day standard\)/, ''), who: whoLabel(s, e.who)
+    }));
+    const att = [];
+    if (r.signed_pdf) att.push({ label: 'Signed PDF', fn: () => openFile(this, 'request.pdfCopy', { id: r.id }) });
+    if (r.channel === 'fax' && r.sent) att.push({ label: 'Fax receipt', fn: () => openFile(this, 'b1.receiptCopy', { id: r.id }) });
+    const el = s.eligibility.filter(e => e.client === r.client && e.status === 'recorded').sort((a, b) => String(b.checked_at).localeCompare(String(a.checked_at)))[0];
+    if (el) att.push({ label: 'Eligibility ' + M.fmtDate(el.checked_at), fn: () => showProof(s, el, student) });
+    const acts = []; const by = me?.id || 'jperez';
+    const canApprove = ['clinician', 'admin'].includes(me?.role);
+    const link = (label, href, pri) => acts.push({ label, cls: 'u-btn' + (pri ? ' pri' : ''), isLink: true, href });
+    const btn = (label, fn, pri, help, about) => acts.push({ label, cls: 'u-btn' + (pri ? ' pri' : ''), isLink: false, fn, help, about });
+    const href = M.requestHref(r);
+    switch (r.stage) {
+      case 'needs_approval': if (canApprove) btn(PART.approve, () => this.approve(r, by), true, HELP.approval, 'approval'); break;
+      case 'draft_ready': link('Review in Lauris', href, true); break;
+      case 'awaiting_signature': link('Sign in Lauris', href, true); break;
+      case 'signed': btn(r.channel === 'fax' ? 'Send by fax' : 'Open ' + CH(r), () => this.send(r, by), true); break;
+      case 'portal_open': btn('Open ' + CH(r), () => window.open(`${api.config.extURL}/${r.channel}/upload?request=${encodeURIComponent(r.id)}${r.info_reply_pending ? '&kind=reply' : ''}`, '_blank'), true); break;
+      case 'submitted': case 'overdue': {
+        const overdue = r.stage === 'overdue';
+        if (r.resend) btn('Resend', () => this.resend(r, by), true);
+        else if (overdue || (n != null && n >= k.call_day)) btn('Log call', () => this.logCall(r, by), true);
+        if (overdue || (n != null && n >= k.public_standard_days)) btn(r.overdue_notice_sent ? 'Notice sent' : 'Send notice', () => this.notice(r, by), false);
+        break;
+      }
+      case 'info_requested': link('Reply', href, true); break;
+      case 'partial_decide': link(PART.reviewOffer, href, true); break;
+      case 'peer_to_peer_requested': link('Enter date', href, true); break;
+      case 'peer_to_peer_booked': link('Call notes', href, true); break;
+      case 'p2p_awaiting': link('Log decision', href, true); break;
+      case 'denied': link('Letter', href, true); break;
+      case 'early_discharge': link('Plan', href, true); break;
+      case 'active': link('Open in Lauris', href, false); break;
+    }
+    return {
+      id: r.id, label: `${r.id} · ${student} · ${M.payerTag(s, r.payer)}`, title: `${r.id} · ${student} · ${M.payerTag(s, r.payer)}`, sub,
+      status: chip.text, statusCls: 'u-chip ' + chipCls(r, chip), helpClock: /follow-up/.test(chip.text), log, hasAtt: att.length > 0, att, acts,
+      activity: PART.activity, attachments: PART.attachments, helpClockText: HELP.clock
+    };
   }
+  async approve(r, by) { try { await this.do('request.approve', { id: r.id, by }); toast('Approved · ready for the clinician to sign'); } catch { } }
+  async send(r, by) {
+    try {
+      if (r.channel === 'fax') { await this.do('request.send', { id: r.id, by }); toast('Send pressed · faxing through Sfax'); }
+      else { const res = await openPortal(this, 'request.send', { id: r.id, by }); if (res) toast(`${CH(r)} opened in a new tab · upload there`); }
+    } catch { }
+  }
+  async resend(r, by) {
+    try {
+      if (r.channel === 'fax') { await this.do('b1.resend', { id: r.id, by }); toast('Resend pressed · faxing through Sfax'); }
+      else { const res = await openPortal(this, 'b1.resend', { id: r.id, by }); if (res) toast(`${CH(r)} opened in a new tab · upload there`); }
+    } catch { }
+  }
+  logCall(r, by) {
+    const s = this.s;
+    modal(`<h2>Log call · ${esc(M.clientLabel(s, r.client))} · ${esc(M.payerTag(s, r.payer))}</h2>
+      <div role="radiogroup" aria-label="Outcome" style="margin-top:8px">${OUTCOMES.map(([v, t], i) => `<label class="b1-opt"><input type="radio" name="b1-out" value="${v}"${i === 0 ? ' checked' : ''}> ${t}</label>`).join('')}</div>
+      <label class="b1-lbl" for="b1-note">Note</label><input id="b1-note" class="u-in" style="width:100%" maxlength="120">
+      <div class="b1-mact"><button class="mbtn p" data-go>Log call</button><button class="mbtn" data-close>Cancel</button></div>`,
+      (box, close) => { box.querySelector('[data-go]').onclick = async () => {
+        const outcome = box.querySelector('input[name="b1-out"]:checked').value; const note = box.querySelector('#b1-note').value.trim(); close();
+        try { await this.do('request.followUp', { id: r.id, outcome, by, note }); toast('Logged · ' + OUTCOMES.find(o => o[0] === outcome)[1].toLowerCase()); } catch { }
+      }; });
+  }
+  notice(r, by) {
+    const s = this.s; const p = M.payer(s, r.payer); const k = M.clocksOf(s);
+    const due = r.sent ? M.addDays(r.sent, k.public_standard_days) : '';
+    const text = `To: ${p.name} · Utilization Management\nRe: ${REQ_TYPE[r.type] || 'Request'} for member ${M.clientLabel(s, r.client, false)} · Medicaid ID on file · ${r.service}\n\nThe request was submitted on ${M.fmtDate(r.sent, { year: true })}${r.fax_ref ? ' by fax (Sfax reference ' + r.fax_ref + ')' : r.portal_ref ? ' through the portal (confirmation ' + r.portal_ref + ')' : ''}${r.receipt_confirmed ? ', and receipt was confirmed by phone on ' + M.fmtDate(r.receipt_confirmed) : ''}. The public standard for a service authorization decision is ${k.public_standard_days} calendar days${due ? ' (' + M.fmtDate(due, { year: true }) + ')' : ''}. We have not received one. Please issue a decision or tell us what is missing.\n\n${M.staff(s, by).name} · Harvest Outreach Center`;
+    const sent = r.overdue_notice_sent;
+    modal(`<h2>${sent ? 'Notice sent · ' + esc(M.fmtDate(sent)) : 'Send notice · ' + esc(M.payerTag(s, r.payer))}</h2>
+      <div data-doc style="white-space:pre-wrap;border:1px solid var(--lauris-yellow-bd);background:var(--lauris-yellow-bg);border-radius:8px;padding:10px 12px;font-size:13px;margin-top:8px">${esc(text)}</div>
+      <div class="b1-mact">${sent ? '' : '<button class="mbtn p" data-go>Send notice</button>'}<button class="mbtn" data-close>${sent ? 'Close' : 'Not now'}</button></div>`,
+      (box, close) => { const b = box.querySelector('[data-go]'); if (b) b.onclick = async () => { close(); try { await this.do('request.overdueNotice', { id: r.id }); toast('Notice sent · logged on ' + r.id); } catch { } }; });
+  }
+  after(root) {
+    const d = root.querySelector('.u-drawer');
+    if (d && this._ds) d.scrollTop = this._ds;
+    if (this.state.focus === 'drawer' && d) { (d.querySelector('[data-x]') || d).focus(); this.state.focus = null; }
+    else if (this.state.focus === 'row') { const b = root.querySelector(`[data-row="${this.state.last}"] button`); if (b) b.focus(); this.state.focus = null; }
+  }
+  get css() { return B1_CSS + '.b1-drawer-h{display:flex;align-items:center;gap:8px}.b1-log{list-style:none;margin:0;padding:0}.b1-log li{display:grid;grid-template-columns:84px minmax(0,1fr);gap:0 12px;padding:8px 0;border-top:1px solid var(--line)}.b1-log li:first-child{border-top:0}.b1-log .when{color:var(--ink-3);font-size:12px;line-height:20px}.b1-log .who{color:var(--ink-3);font-size:12px;line-height:16px}.b1-att{display:flex;flex-wrap:wrap;gap:8px}.b1-acts{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:24px}'; }
 });

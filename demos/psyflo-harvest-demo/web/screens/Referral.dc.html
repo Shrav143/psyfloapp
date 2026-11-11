@@ -2,193 +2,51 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Psyflo — Referral from the school</title>
-<script src="./support.js"></script>
+<title>Psyflo — Referral</title>
 </head>
 <body>
 <x-dc>
 <helmet>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&amp;display=swap">
 <style>
 body{margin:0;background:#F8F6F2;color:#151B24;font-family:'DM Sans',system-ui,sans-serif;font-size:14px;line-height:1.45}
-a{color:#217A78}a:hover{color:#15605E}
 *{box-sizing:border-box}
 .nav{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;color:#C9D1D6;text-decoration:none;font-weight:500;font-size:14px;min-height:44px}
 .nav:hover{background:#222A35;color:#fff}
 .nav.on{background:#217A78;color:#fff}
 .nav .n{margin-left:auto;background:#2A3340;color:#fff;border-radius:999px;padding:1px 8px;font-size:12px;font-weight:600}
 .nav.on .n{background:rgba(255,255,255,.22)}
-.card{background:#fff;border:1px solid #E6E1D9;border-radius:12px}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:0 16px;border-radius:8px;font:inherit;font-weight:600;font-size:14px;cursor:pointer;text-decoration:none;border:1px solid transparent;white-space:nowrap}
-.btn.p{background:#217A78;color:#fff}.btn.p:hover{background:#15605E;color:#fff}
-.btn.o{background:#fff;color:#151B24;border-color:#D9D4CC}.btn.o:hover{background:#F3F0EA;color:#151B24}
-.chip{display:inline-block;border-radius:999px;padding:2px 9px;font-size:12px;font-weight:600;white-space:nowrap}
-.chip.r{background:#FBE9E4;color:#8A2E1C}.chip.y{background:#FCEFD0;color:#6F4A05}.chip.g{background:#DDF1EF;color:#15605E}.chip.n{background:#EEEBE5;color:#3E4652}.chip.b{background:#151B24;color:#fff}
-.f{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#525B66;font-weight:600;margin-bottom:4px}
-.fld{border:1px solid #E6E1D9;border-radius:8px;padding:10px 12px;background:#fff;font-size:13px}
-.cr{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid #EFEBE4;font-size:13px}
-.cr svg{flex:0 0 18px;margin-top:1px}
-.cr b{display:block}
-.cr .ask{margin-top:3px;color:#6F4A05;font-weight:600;font-size:12px}
-.bx{display:inline-flex;align-items:center;gap:6px;font-size:13px;margin:3px 14px 3px 0}
-.bx i{width:14px;height:14px;border:1.5px solid #525B66;border-radius:3px;display:inline-block}
-.bx i.on{background:#151B24;border-color:#151B24}
-.row{display:flex;align-items:center;gap:14px;padding:12px 0;border-top:1px solid #EFEBE4;font-size:13px}
 </style>
 </helmet>
-
-<div style="display:flex;flex-wrap:wrap;min-height:1180px;width:100%">
-  <aside style="flex:0 0 240px;background:#151B24;color:#fff;display:flex;flex-direction:column;padding:22px 16px 18px">
-    <div style="padding:0 8px 6px">
-      <svg role="img" aria-label="psyflo" viewBox="0 0 3191 1060" width="104" height="35"><g transform="translate(-6.0,780.0) scale(1,-1)"><path d="M66 -220V504H186L201 434Q217 456 239.0 474.5Q261 493 291.5 504.5Q322 516 363 516Q434 516 488.0 481.0Q542 446 573.5 386.5Q605 327 605 251Q605 175 573.0 115.5Q541 56 487.0 22.0Q433 -12 364 -12Q308 -12 267.5 8.5Q227 29 201 65V-220ZM332 106Q372 106 402.5 124.0Q433 142 450.0 175.0Q467 208 467 251Q467 294 450.0 327.5Q433 361 402.5 379.5Q372 398 332 398Q293 398 262.5 379.5Q232 361 214.5 328.0Q197 295 197 252Q197 209 214.5 175.5Q232 142 262.5 124.0Q293 106 332 106Z" fill="#FFFFFF"></path></g><g transform="translate(624.0,780.0) scale(1,-1)"><path d="M272 -12Q203 -12 152.0 10.0Q101 32 72.0 71.0Q43 110 39 159H173Q178 140 190.0 124.5Q202 109 222.0 100.0Q242 91 270 91Q297 91 314.0 98.5Q331 106 339.5 119.0Q348 132 348 146Q348 167 336.0 178.5Q324 190 301.0 197.0Q278 204 245 211Q209 218 174.5 228.5Q140 239 113.0 255.0Q86 271 70.0 296.0Q54 321 54 358Q54 403 78.0 438.5Q102 474 148.0 495.0Q194 516 259 516Q350 516 403.0 475.0Q456 434 466 362H339Q333 385 312.5 398.5Q292 412 258 412Q222 412 203.0 399.0Q184 386 184 365Q184 351 196.5 340.0Q209 329 232.0 321.5Q255 314 288 307Q346 295 390.0 279.5Q434 264 459.0 235.5Q484 207 484 153Q484 105 458.0 67.5Q432 30 384.5 9.0Q337 -12 272 -12Z" fill="#FFFFFF"></path></g><g transform="translate(1105.0,780.0) scale(1,-1)"><path d="M130 -220 252 56H222L20 504H167L311 179L441 504H584L273 -220Z" fill="#FFFFFF"></path></g><g transform="translate(1734.0,780.0) scale(1,-1)"><path d="M89 0V549Q89 612 110.0 649.0Q131 686 170.5 703.0Q210 720 263 720H325V605H283Q251 605 237.5 592.5Q224 580 224 549V0ZM20 391V504H333V391Z" fill="#5FC0BE"></path></g><g transform="translate(2080.0,780.0) scale(1,-1)"><path d="M66 0V720H201V0Z" fill="#5FC0BE"></path></g><g transform="translate(2322.0,780.0) scale(1,-1)"><path d="M304 -12Q232 -12 174.5 21.5Q117 55 83.5 114.5Q50 174 50 251Q50 330 83.5 389.5Q117 449 175.0 482.5Q233 516 305 516Q378 516 435.5 482.5Q493 449 526.5 389.5Q560 330 560 252Q560 174 526.5 114.5Q493 55 435.0 21.5Q377 -12 304 -12ZM304 105Q338 105 364.5 121.0Q391 137 406.5 170.0Q422 203 422 252Q422 301 406.5 333.5Q391 366 364.5 382.5Q338 399 305 399Q273 399 246.0 382.5Q219 366 203.5 333.5Q188 301 188 252Q188 203 203.5 170.0Q219 137 245.5 121.0Q272 105 304 105Z" fill="#5FC0BE"></path></g><g transform="translate(2922.0,780.0) scale(1,-1)"><path d="M127 -5Q89 -5 66.0 17.5Q43 40 43 73Q43 106 66.0 128.5Q89 151 127 151Q163 151 186.0 128.5Q209 106 209 73Q209 40 186.0 17.5Q163 -5 127 -5Z" fill="#F0B44C"></path></g></svg>
-      <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#8E99A6;margin-top:4px">Harvest Outreach Center · TDT</div>
+<div class="u-app">
+  <aside style="flex:0 0 240px"></aside>
+  <main class="u-main" style="max-width:920px">
+    <div class="u-head">
+      <a class="u-link" href="{{back}}" aria-label="Back to {{backLabel}}" title="{{backLabel}}">←</a>
+      <h1 class="u-title">{{title}}</h1>
+      <span class="u-sp"></span>
+      <label class="b1-fund">{{fundLabel}} <select id="b1-fund" class="u-sel" onChange="{{setFunding}}"><sc-for list="{{fundOpts}}" as="o"><option value="{{o.v}}" {{o.sel}}>{{o.t}}</option></sc-for></select></label>
     </div>
-    <nav style="display:flex;flex-direction:column;gap:2px;margin-top:22px" aria-label="Main">
-      <a class="nav" href="DoNext.dc.html"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8v10H3z"></path><path d="M9 21v-6h6v6"></path></svg>Do next<span class="n">5</span></a>
-      <a class="nav on" href="Referrals.dc.html"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h12l4 4v12H4z M16 4v4h4 M8 13h8M8 17h5"></path></svg>Referrals<span class="n">3</span></a>
-      <a class="nav" href="Authorizations.dc.html"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"></path></svg>Authorizations<span class="n">15</span></a>
-      <a class="nav" href="StaffDashboard.dc.html"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></svg>Staff<span class="n">2</span></a>
-      <a class="nav" href="Compliance.dc.html"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"></path><path d="M9 12l2 2 4-4"></path></svg>Compliance<span class="n">1</span></a>
-      <a class="nav" href="Analytics.dc.html"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"></path></svg>Analytics</a>
-      <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#8E99A6;padding:18px 12px 6px">The four doors</div>
-      <a class="nav" href="ExtHome.dc.html"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"></rect><path d="M3 9h18M7 6.5h.01M10 6.5h.01"></path></svg>Lauris extension<span class="n">on</span></a>
-      <a class="nav" href="MobileApp.dc.html"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="7" y="2" width="10" height="20" rx="2"></rect><path d="M11 18h2"></path></svg>Mobile app</a>
-      <a class="nav" href="ParentPortal.dc.html"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-7 9 7v9H3z"></path><path d="M10 20v-6h4v6"></path></svg>Parent portal</a>
-      <a class="nav" href="SchoolPortal.dc.html"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 2 9 2 12 0v-5"></path></svg>School portal</a>
-    </nav>
-    <div style="margin-top:auto;display:flex;flex-direction:column;gap:12px">
-      <div style="display:flex;align-items:center;gap:8px;border:1px solid #2A3340;border-radius:8px;padding:8px 10px;font-size:12px;color:#C9D1D6"><span style="width:8px;height:8px;border-radius:50%;background:#F0B44C;display:inline-block"></span>Demo data · nothing is real</div>
-      <div style="display:flex;align-items:center;gap:10px;border-top:1px solid #2A3340;padding-top:14px">
-        <div style="width:36px;height:36px;border-radius:50%;background:#217A78;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px">JP</div>
-        <div><div style="font-weight:600;font-size:13px">Jordan Perez</div><div style="font-size:12px;color:#8E99A6">LPC · Asst. Clinical Support Supervisor</div></div>
-      </div>
+    <div class="u-filters" style="margin-bottom:8px">
+      <sc-if value="{{canSend}}"><button type="button" class="{{sendCls}}" onClick="{{sendLink}}">{{sendLabel}}</button></sc-if>
+      <sc-if value="{{canBook}}"><button type="button" class="{{bookCls}}" onClick="{{book}}">{{bookLabel}}</button></sc-if>
+      <sc-if value="{{hasCall}}"><span class="u-mut">{{callText}}</span><a class="u-link" href="{{callHref}}">{{callLabel}}</a></sc-if>
+      <sc-if value="{{held}}"><span class="u-chip r">{{holdText}}</span><button type="button" class="u-btn txt" onClick="{{lift}}">Lift hold</button></sc-if>
     </div>
-  </aside>
+    <sc-if value="{{hasLink}}"><div style="margin:0 0 8px"><a class="u-link b1-url" href="{{link}}" target="_blank" rel="noopener">{{link}}</a></div></sc-if>
 
-  <main style="flex:999 1 560px;min-width:0;display:flex;flex-direction:column">
-    <header style="display:flex;flex-wrap:wrap;align-items:center;gap:14px;padding:12px 28px;border-bottom:1px solid #E6E1D9;background:#fff">
-      <a href="Referrals.dc.html" style="font-weight:500;text-decoration:none">← Referrals</a>
-      <span style="color:#525B66">/</span><span style="font-weight:600">{{crumb}}</span>
-      <span class="chip {{stageCls}}">{{stageLabel}}</span><sc-if value="{{eligChip}}"><span class="chip {{eligCls}}">{{eligChip}}</span></sc-if>
-      <div style="margin-left:auto;display:flex;gap:8px"><span class="chip n">{{receivedText}}</span></div>
-    </header>
+    <h2 class="u-sec">{{checkHead}}</h2>
+    <ul class="u-list b1-check">
+      <sc-for list="{{items}}" as="i">
+        <li><span class="u-ic {{i.ic}}" aria-hidden="true">{{i.mark}}</span><span class="lab">{{i.label}}</span><span class="u-mut">{{i.note}}</span><sc-if value="{{i.proof}}"><button type="button" class="b1-ico" title="Screenshot" aria-label="Screenshot" onClick="{{i.showProof}}"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="10" r="1.6"></circle><path d="M4 18l5-5 4 4 3-3 4 4"></path></svg></button></sc-if><sc-if value="{{i.btn}}"><button type="button" class="u-btn" aria-disabled="{{i.off}}" title="{{i.tip}}" onClick="{{i.fn}}">{{i.btn}}</button></sc-if></li>
+      </sc-for>
+    </ul>
 
-    <div style="padding:22px 28px 32px;display:flex;flex-direction:column;gap:16px">
-      <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end">
-        <div>
-          <h1 style="margin:0;font-size:24px;font-weight:600;letter-spacing:-.01em">{{title}}</h1>
-        </div>
-        <sc-if value="{{canAct}}"><div style="margin-left:auto;display:flex;gap:8px"><sc-if value="{{canGrant}}"><button class="btn o" onClick="{{openGrant}}">Route to grant program</button></sc-if><sc-if value="{{offerNote}}"><span class="chip y" style="align-self:center">{{offerNote}}</span></sc-if><button class="btn {{schedCls}}" onClick="{{openSched}}">{{schedLabel}}</button><sc-if value="{{canOffer}}"><button class="btn p" onClick="{{offerFamily}}" title="Texts the family a link to pick a time from the clinicians' calendars">Qualifies · family books the call</button></sc-if></div></sc-if>
-        <sc-if value="{{!canAct}}"><div style="margin-left:auto;display:flex;gap:8px"><sc-if value="{{grantUndo}}"><button class="btn o" onClick="{{openSched}}">Schedule screening call anyway</button></sc-if><a class="btn o" href="{{laterHref}}">{{laterLabel}}</a><sc-if value="{{intakeNote}}"><span class="chip g" style="align-self:center">{{intakeNote}}</span></sc-if><sc-if value="{{canIntakeOffer}}"><button class="btn p" onClick="{{offerIntake}}" title="Texts the family a link to book the in-person intake and ask for a ride">Qualifies for TDT · family books the intake</button></sc-if></div></sc-if>
-      </div>
-
-      <sc-if value="{{showSched}}">
-      <section class="card" style="padding:18px 20px;border:2px solid #217A78;display:flex;flex-direction:column;gap:12px">
-        <div style="display:flex;align-items:baseline;gap:10px"><h2 style="margin:0;font-size:16px;font-weight:600">Schedule the screening call · {{short}}</h2><span style="font-size:12px;color:#525B66">30–45 min · phone · one of the two LPCs</span></div>
-        <div style="display:grid;grid-template-columns:repeat(4, minmax(0, 1fr));gap:10px">
-          <div><div class="f">Who makes the call</div><select class="fld" id="sc-who" style="width:100%;min-height:40px" aria-label="Clinician" onChange="{{setWho}}"><sc-for list="{{whoOpts}}" as="o"><option value="{{o.v}}" {{o.sel}}>{{o.t}}</option></sc-for></select></div>
-          <div><div class="f">Date</div><input class="fld" id="sc-date" style="width:100%;min-height:40px" type="date" value="{{sched.date}}" min="{{today}}" aria-label="Date" onInput="{{setDate}}"></div>
-          <div><div class="f">Time</div><select class="fld" id="sc-time" style="width:100%;min-height:40px" aria-label="Time" onChange="{{setTime}}"><sc-for list="{{timeOpts}}" as="o"><option value="{{o.v}}" {{o.sel}}>{{o.t}}</option></sc-for></select></div>
-          <div><div class="f">Call</div><div class="fld" style="min-height:40px">{{callWho}} · {{callPhone}} <span class="chip {{callCls}}">{{callSrc}}</span></div></div>
-        </div>
-        <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center;font-size:13px">
-          <label style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="sc-text" {{textChecked}} onChange="{{setText}}" style="width:18px;height:18px;accent-color:#217A78"> Text the guardian a confirmation and a reminder the morning of</label>
-          <label style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="sc-ask" {{askChecked}} onChange="{{setAsk}}" style="width:18px;height:18px;accent-color:#217A78"> Ask the counselor for schedule and grades before the call</label>
-        </div>
-        <div style="border:1px solid #E6E1D9;border-radius:8px;padding:10px 12px;background:#F8F6F2;font-size:13px">Saved to Do next and to your Lauris panel · the screening form opens pre-filled</div>
-        <div style="display:flex;gap:8px"><button class="btn p" onClick="{{saveSched}}">{{saveSchedLabel}}</button><button class="btn o" onClick="{{closeAll}}">Cancel</button></div>
-      </section>
-      </sc-if>
-
-      <sc-if value="{{showGrant}}">
-      <section class="card" style="padding:18px 20px;border:2px solid #F0B44C;display:flex;flex-direction:column;gap:12px">
-        <div style="display:flex;align-items:baseline;gap:10px"><h2 style="margin:0;font-size:16px;font-weight:600">Route to the grant program instead</h2><span style="font-size:12px;color:#525B66">for students without Medicaid</span></div>
-        <div style="font-size:13px">Grant program · no Medicaid needed · no diagnosis required · funded to Dec 2027</div>
-        <div style="display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:10px">
-          <div><div class="f">Reason</div><select class="fld" id="gr-why" style="width:100%;min-height:40px" aria-label="Reason" onChange="{{setWhy}}"><sc-for list="{{whyOpts}}" as="o"><option {{o.sel}}>{{o.t}}</option></sc-for></select></div>
-          <div><div class="f">Who is told, and how</div><div class="fld" style="min-height:40px">Grant program lead — <b>email</b> with a secure link to this referral<br>Site supervisor, {{schoolShort}} — <b>email + text</b></div></div>
-          <div><div class="f">What happens to this referral</div><div class="fld" style="min-height:40px">Moves to the <b>Grant program</b> list · no request created · counselor emailed</div></div>
-        </div>
-        <div style="display:flex;gap:8px"><button class="btn p" onClick="{{saveGrant}}">Route and notify</button><button class="btn o" onClick="{{closeAll}}">Cancel</button></div>
-      </section>
-      </sc-if>
-
-      <sc-if value="{{showDone}}">
-      <div role="status" style="border:1px solid #BFE0CC;background:#E9F4EE;border-radius:10px;padding:12px 14px;font-size:13px;display:flex;gap:10px;align-items:center"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#217A78" stroke-width="2.2"><circle cx="12" cy="12" r="9"></circle><path d="M9 12l2 2 4-4"></path></svg><div>{{doneText}}</div><a href="{{doneHref}}" style="margin-left:auto;font-size:12px">{{doneLink}}</a></div>
-      </sc-if>
-
-      <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start">
-        <!-- What the school sent -->
-        <section class="card" style="flex:2 1 400px;min-width:0;padding:16px 20px">
-          <h2 style="margin:0 0 2px;font-size:15px;font-weight:600">Referral form</h2>
-          <sc-if value="{{noForm}}"><div class="fld" style="margin:6px 0 10px;background:#F8F6F2">{{noForm}}</div></sc-if>
-          <div style="display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:8px;margin-bottom:10px">
-            <div><div class="f">Medicaid</div><div class="fld">{{medicaidText}}<sc-if value="{{medicaidChip}}"> · <span class="chip {{medicaidCls}}">{{medicaidChip}}</span></sc-if></div></div>
-            <div><div class="f">IEP / 504</div><div class="fld">{{iepText}}</div></div>
-            <div><div class="f">Guardian informed</div><div class="fld">{{informedText}}</div></div>
-          </div>
-          <div class="f">Concerns in the last 30 days</div>
-          <div style="margin-bottom:10px">
-            <sc-for list="{{concerns}}" as="c"><span class="bx"><i class="{{c.on}}"></i>{{c.name}}</span></sc-for>
-          </div>
-          <div class="f">Interventions already tried</div>
-          <div class="fld" style="margin-bottom:10px">{{triedText}}</div>
-          <div class="f">Attachments</div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap"><sc-for list="{{attachments}}" as="a"><span class="chip {{a.cls}}">{{a.text}}</span></sc-for></div>
-          <div class="f" style="margin-top:12px">Referral for</div>
-          <div><sc-for list="{{referralFor}}" as="c"><span class="bx"><i class="{{c.on}}"></i>{{c.name}}</span></sc-for></div>
-        </section>
-
-        <!-- Criteria read -->
-        <section class="card" style="flex:3 1 480px;min-width:0;padding:16px 20px">
-          <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap"><h2 style="margin:0;font-size:15px;font-weight:600">What the insurance form needs · what we can show</h2><span class="chip {{critCls}}">{{critChip}}</span><span style="font-size:12px;color:#525B66">DMAS TDT initial SRA, Section I</span></div>
-          <sc-for list="{{criteria}}" as="c"><div class="cr" style="{{c.style}}">{{c.icon}}<div><b>{{c.title}}</b>{{c.body}}<sc-if value="{{c.still}}"> <span style="color:#8A2E1C">Still needs</span> {{c.still}}</sc-if><sc-if value="{{c.ask}}"><div class="ask">{{c.ask}}</div></sc-if></div></div></sc-for>
-
-          <div style="border:1px solid #E6E1D9;border-radius:10px;padding:12px 14px;background:#F8F6F2;margin-top:8px">
-            <div class="f">{{missingTitle}}</div>
-            <div style="font-size:13px">{{missingText}}</div>
-          </div>
-        </section>
-      </div>
-
-      <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start">
-        <section class="card" id="familylink" style="flex:1 1 420px;min-width:0;padding:16px 20px">
-          <h2 style="margin:0 0 2px;font-size:15px;font-weight:600">Family link</h2>
-          <sc-for list="{{flRows}}" as="w"><div class="row" style="{{w.style}}"><div style="flex:1">{{w.text}}</div><span class="chip {{w.cls}}">{{w.chip}}</span></div></sc-for>
-          <sc-if value="{{sms}}">
-          <div style="border:1px solid #E6E1D9;border-radius:8px;padding:10px 12px;background:#F8F6F2;font-size:13px;margin-top:10px">
-            <div class="f">Text message · SMS stub (nothing leaves the demo)</div>
-            <div><b>To:</b> {{sms.to}} · {{sms.at}}</div>
-            <div style="margin-top:4px">{{sms.text}}<a id="fl-link" href="{{sms.link}}" target="_blank" rel="noopener">{{sms.link}}</a></div>
-            <div style="font-size:12px;color:#525B66;margin-top:4px">Opens the family link on a phone · expires in {{sms.expires}} days</div>
-          </div>
-          </sc-if>
-          <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><sc-if value="{{canSend}}"><a class="btn {{sendCls}}" href="#sendlink">{{sendLabel}}</a></sc-if><sc-if value="{{callHref}}"><a class="btn o" href="{{callHref}}">Fill the rest on the call</a></sc-if><a class="btn o" href="{{familyHref}}">See what the family sees</a></div>
-        </section>
-        <section class="card" style="flex:1 1 420px;min-width:0;padding:16px 20px">
-          <h2 style="margin:0 0 2px;font-size:15px;font-weight:600">Medicaid eligibility check</h2>
-          <sc-for list="{{elRows}}" as="w"><div class="row" style="{{w.style}}"><div style="flex:1">{{w.text}}</div><span class="chip {{w.cls}}">{{w.chip}}</span></div></sc-for>
-          <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><a class="btn {{elBtnCls}}" href="{{elHref}}">{{elBtn}}</a><sc-if value="{{laurisHref}}"><a class="btn p" href="{{laurisHref}}">Open in Lauris</a></sc-if></div>
-        </section>
-      </div>
-    </div>
+    <h2 class="u-sec">{{critHead}} <span class="u-chip n">{{critChip}}</span></h2>
+    <ul class="b1-crit">
+      <sc-for list="{{critRows}}" as="c"><li tabindex="0" title="{{c.tip}}"><span class="u-ic {{c.ic}}" aria-hidden="true">{{c.mark}}</span>{{c.label}}</li></sc-for>
+    </ul>
   </main>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1180}}'>
-class Component extends DCLogic {
-  constructor(p){ super(p); this.state = { dlg: null, done: null }; }
-  renderVals() {
-    const s = this.state;
-    return {
-      showSched: s.dlg === 'sched', showGrant: s.dlg === 'grant', showDone: !!s.done,
-      doneText: s.done === 'sched' ? 'Screening call saved: Jordan Perez, Fri Oct 16, 2:00 pm. Guardian texted. To-do added to Home and to the Lauris panel.' : 'Routed to the DOE grant program. Emailed the grant program lead (secure link); emailed and texted the MS-2 site supervisor; told the school counselor. Now under Referrals › Grant program.',
-      openSched: () => this.setState({dlg:'sched', done:null}), openGrant: () => this.setState({dlg:'grant', done:null}),
-      saveSched: () => this.setState({dlg:null, done:'sched'}), saveGrant: () => this.setState({dlg:null, done:'grant'}),
-      closeAll: () => this.setState({dlg:null})
-    };
-  }
-}
-</script>
 </body>
 </html>

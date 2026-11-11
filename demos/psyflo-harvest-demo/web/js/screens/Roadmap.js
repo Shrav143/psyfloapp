@@ -1,5 +1,5 @@
 // Roadmap · title-only tiles for the later phases. Each links to a screen that already exists; nothing here is in the main navigation.
-import { register, Screen, M, raw } from '../app.js';
+import { register, Screen, M, raw, canSee } from '../app.js';
 
 const TILES = [
   ['Incident reports', 'ExtIncident.dc.html', '<path d="M12 3l9 16H3z"/><path d="M12 10v4M12 17h.01"/>'],
@@ -13,5 +13,9 @@ const TILES = [
 ];
 
 register('Roadmap', class extends Screen {
-  renderVals() { return { today: M.fmtDate(this.s.today, { dow: true }), tiles: TILES.map(([title, href, icon]) => ({ title, href, icon: raw(icon) })) }; }
+  // a tile shows only when the signed-in role can open its screen, so no tile ends on a "not available" page
+  renderVals() {
+    const open = ([, href]) => canSee(href.replace(/\.dc\.html.*$/, ''));
+    return { today: M.fmtDate(this.s.today, { dow: true }).replace(/^(\w+) /, '$1, '), tiles: TILES.filter(open).map(([title, href, icon]) => ({ title, href, icon: raw(icon) })) };
+  }
 });

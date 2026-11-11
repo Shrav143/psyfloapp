@@ -1,5 +1,5 @@
 // 3 · School portal (counselor home). Live: referral only. The counselor refers a student (4 → 5) and sees where
-// each of the school's referrals stands. Per the Nov 7 product call, schools refer and their job is done: no teacher
+// each of the school's referrals stands (one row each: status chip, student, one button). Per the Nov 7 product call, schools refer and their job is done: no teacher
 // portal, no teacher check-ins, and no view of the treatment plan. The counselor can share a short update about a
 // student in TDT (school.share); in the extension staff add it to that day's daily note credited to the counselor,
 // or fill it into a collateral contact in Lauris (school.shareUsed).
@@ -35,6 +35,50 @@ export function referralWords(s, r) {
     case 'in_service': return 'started TDT';
     case 'grant_program': return 'routed to the grant program';
     default: return (M.REF_STAGE[r.stage] || r.stage || '').toLowerCase();
+  }
+}
+
+
+// ---------- the shared school look (brand tokens only; the row grammar and chips come from css/ui.css) ----------
+export const SCHOOL_CSS = `
+.s-pg{min-height:100vh;background:var(--paper);color:var(--navy);font:400 14px/20px 'DM Sans',system-ui,sans-serif}
+.s-pg *{box-sizing:border-box}
+.s-hd{background:var(--navy);color:#fff;display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:14px 24px}
+.s-hd b{font-size:16px;line-height:24px;font-weight:700}
+.s-hd .m{color:var(--ink-4);font-size:13px}
+.s-hd .r{margin-left:auto;color:var(--ink-4);font-size:13px}
+.s-hd a{color:var(--teal-light);font-weight:600;text-decoration:none}
+.s-main{max-width:880px;margin:0 auto;padding:8px 24px 56px}
+.s-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-height:72px}
+.s-card{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin-bottom:8px}
+.s-g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.s-g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.s-g4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.s-pg label{display:block;font-size:12px;line-height:16px;font-weight:600;margin:0 0 4px;color:var(--ink-2)}
+.s-pg .u-in,.s-pg .u-sel{width:100%;font-size:14px}
+.s-pg textarea.u-in{padding:8px 10px;min-height:72px;resize:vertical}
+.s-ck{display:flex;align-items:center;gap:8px;min-height:32px;font-weight:500}
+.s-ck input{width:18px;height:18px;margin:0;accent-color:var(--teal)}
+.s-ck label{margin:0;font-weight:500;font-size:14px;line-height:20px;color:var(--navy);cursor:pointer}
+.s-rad{display:flex;gap:16px;align-items:center;min-height:36px;flex-wrap:wrap}
+.s-rad label{display:flex;align-items:center;gap:6px;margin:0;font-weight:500;font-size:14px;color:var(--navy);cursor:pointer}
+.s-rad input{width:18px;height:18px;margin:0;accent-color:var(--teal)}
+.s-err{color:var(--late-fg);font-weight:600}
+@media (max-width:760px){.s-g2,.s-g3,.s-g4{grid-template-columns:1fr}}
+`;
+// a referral stage as a status chip (three words at most) and the row's one button
+export function stageChip(s, r) {
+  const fl = r.family_link || {};
+  switch (r.stage) {
+    case 'draft': return { text: 'Draft', cls: 'n', btn: 'Finish' };
+    case 'needs_screening': return fl.submitted ? { text: 'Family answered', cls: 'ok', btn: 'View' } : fl.sent ? { text: 'Family texted', cls: 'n', btn: 'View' } : { text: 'Received', cls: 'n', btn: 'View' };
+    case 'waiting_on_school': return { text: 'Needs a file', cls: 'y', btn: 'Attach' };
+    case 'screening_booked': return { text: 'Call booked', cls: 'ok', btn: 'View' };
+    case 'in_intake': return { text: 'In intake', cls: 'ok', btn: 'View' };
+    case 'in_service': return { text: 'In TDT', cls: 'ok', btn: 'View' };
+    case 'grant_program': return { text: 'Grant program', cls: 'n', btn: 'View' };
+    case 'declined': return { text: 'Closed', cls: 'n', btn: 'View' };
+    default: return { text: M.REF_STAGE[r.stage] || r.stage, cls: 'n', btn: 'View' };
   }
 }
 
@@ -77,42 +121,39 @@ export function scrollFocus(id, focusSel) {
 export function greetingWord() { const h = new Date().getHours(); return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening'; }
 
 // ---------- the screen ----------
-const OPEN = ['draft', 'needs_screening', 'waiting_on_school', 'screening_booked', 'in_intake'];
 const PRE = ['referral', 'intake', 'screening', 'discharged'];
 register('SchoolPortal', class extends Screen {
-  init() { this.form = {}; }
+  init() { this.form = {}; this.state = { sharing: false, all: false }; }
   user() { return schoolUser(); }
   students() { const u = this.user(); return this.s.clients.filter(c => c.school === u.school && !PRE.includes(c.stage)); }
   renderVals() {
     const s = this.s; const u = this.user();
     const refs = s.referrals.filter(r => r.school === u.school).sort((a, b) => ((a.received || a.saved_at || '') < (b.received || b.saved_at || '') ? 1 : -1));
-    const sent = refs.filter(r => r.stage !== 'draft');
-    const waiting = refs.filter(r => r.stage === 'waiting_on_school' || r.stage === 'draft').length;
-    const open = refs.filter(r => OPEN.includes(r.stage)).length;
     const st = this.students(); const ids = new Set(st.map(c => c.id));
     const sharedToday = (s.shares || []).filter(x => (x.at || '').slice(0, 10) === s.today && ids.has(x.client)).slice().reverse();
-    const usedText = x => x.used?.daily ? ' · added to the daily note' : x.used?.collateral ? ' · filed as a collateral contact' : ' · waiting for staff';
+    const shown = this.state.all ? refs : refs.slice(0, 6);
     return {
-      schoolLong: schoolLong(s, u.school), schoolShort: schoolShort(s, u.school), signedIn: signedInText(u),
-      greeting: `${greetingWord()}, ${honorific(u)}`,
-      refChip: `${sent.length} referred this year`,
-      openChip: waiting ? `${waiting} need${waiting === 1 ? 's' : ''} something from you` : `${open} in progress`, openCls: waiting ? 'y' : 'n',
+      schoolShort: schoolLong(s, u.school).split(' · ').pop().replace('Middle School ', 'MS-').replace('Elementary School ', 'ES-').replace('High School ', 'HS-'),
+      signedIn: u.name,
+      sharing: this.state.sharing,
       students: st.map(c => ({ id: c.id, label: [c.initials, gradeText(c)].filter(Boolean).join(' · ') })),
-      shareChip: sharedToday.length ? `${sharedToday.length} sent today` : 'Nothing sent today',
-      shared: sharedToday.map(x => ({ ini: M.client(s, x.client).initials, text: [x.where, x.text].filter(Boolean).join(' · '), meta: `${M.fmtTime(x.at)} · ${(s.school_users.find(z => z.id === x.by) || { name: x.by }).name}${usedText(x)}` })),
-      rows: refs.map(r => ({
-        ini: M.byId(s.clients, r.client)?.initials || String(r.client).split(',')[0], when: M.fmtDate(r.received || r.saved_at),
-        status: referralWords(s, r), flag: r.stage === 'waiting_on_school' ? 'attachment needed' : r.stage === 'draft' ? 'not sent' : '',
-        href: r.stage === 'draft' ? 'ReferralForm.dc.html?id=' + r.id : 'ReferralSent.dc.html?id=' + r.id,
-        btn: r.stage === 'draft' ? 'Finish' : r.stage === 'waiting_on_school' ? 'Attach' : 'View'
-      }))
+      shared: sharedToday.map(x => ({ ini: M.client(s, x.client).initials, text: [x.where, x.text].filter(Boolean).join(' · '), chip: x.used?.daily ? 'In daily note' : x.used?.collateral ? 'Filed' : 'Sent', cls: x.used ? 'ok' : 'n' })),
+      rows: shown.map(r => {
+        const c = M.byId(s.clients, r.client); const ch = stageChip(s, r);
+        return { who: c ? [c.initials, c.age].filter(Boolean).join(', ') : String(r.client), when: M.fmtDate(r.received || r.saved_at), chip: ch.text, cls: ch.cls, btn: ch.btn,
+          href: r.stage === 'draft' ? 'ReferralForm.dc.html?id=' + r.id : 'ReferralSent.dc.html?id=' + r.id };
+      }),
+      more: refs.length > 6, moreLabel: this.state.all ? 'Show fewer' : `Show all ${refs.length}`
     };
   }
+  get css() { return SCHOOL_CSS; }
   after(root) { bindForm(root, this.form); }
   get anchors() {
     return {
       out: () => schoolSignOut(),
-      share: () => scrollFocus('share', '#what'),
+      all: () => this.setState({ all: !this.state.all }),
+      share: () => { this.setState({ sharing: true }); setTimeout(() => scrollFocus('share', '#what'), 30); },
+      shareClose: () => this.setState({ sharing: false }),
       sendShare: async () => {
         const f = this.form; const u = this.user();
         const client = f.st || this.students()[0]?.id; const text = (f.what || '').trim();
@@ -121,9 +162,8 @@ register('SchoolPortal', class extends Screen {
         await this.do('school.share', { client, by: u.id, text, where: (f.wh || '').trim() });
         Object.assign(this.form, { what: '', wh: '' });
         toast(`Sent to Harvest · ${M.client(this.s, client).initials}'s staff see it when they write today's note`);
-        this.setState({});
-      },
-      referrals: () => scrollFocus('referrals')
+        this.setState({ sharing: false });
+      }
     };
   }
   set anchors(v) { }

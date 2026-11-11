@@ -1,108 +1,60 @@
 <!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8">
-<title>Where things live — Psyflo × Harvest</title>
-<script src="./support.js"></script>
-</head>
+<head><meta charset="utf-8"><title>How it fits — Psyflo × Harvest</title></head>
 <body>
 <x-dc>
 <helmet>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&amp;display=swap">
 <style>
-body{margin:0;background:#F8F6F2;color:#151B24;font-family:'DM Sans',system-ui,sans-serif;font-size:15px;line-height:1.45}
-a{color:#217A78}a:hover{color:#15605E}
-*{box-sizing:border-box}
-label{display:block;font-size:13px;font-weight:600;margin-bottom:5px}
-.in{width:100%;border:1px solid #C9CDD3;border-radius:8px;padding:10px 12px;font:inherit;font-size:15px;background:#fff;min-height:44px;color:#151B24}
-textarea.in{min-height:96px;resize:vertical}
-.g2{display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:14px}
-.g3{display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:14px}
-.g4{display:grid;grid-template-columns:repeat(4, minmax(0, 1fr));gap:14px}
-.sec{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:#525B66;font-weight:700;margin:26px 0 10px;padding-bottom:6px;border-bottom:2px solid #151B24}
-.ck{display:flex;align-items:center;gap:10px;min-height:36px;font-size:15px}
-.ck input{width:20px;height:20px;margin:0;accent-color:#217A78}
-.rad{display:flex;gap:18px;align-items:center;min-height:44px}
-.rad label{display:flex;align-items:center;gap:8px;font-weight:500;margin:0}
-.rad input{width:20px;height:20px;margin:0;accent-color:#217A78}
-.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 22px;border-radius:8px;font:inherit;font-weight:600;font-size:15px;cursor:pointer;border:1px solid transparent;text-decoration:none}
-.btn.p{background:#217A78;color:#fff}.btn.p:hover{background:#15605E;color:#fff}
-.btn.o{background:#fff;color:#151B24;border-color:#D9D4CC}
-.note{font-size:13px;color:#525B66}
-.box{border:1.5px solid #E6E1D9;border-radius:14px;background:#fff;padding:18px 20px;display:flex;flex-direction:column;gap:8px;min-width:0}
-.box h2{margin:0;font-size:18px;font-weight:600}
-.box .k{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#525B66;font-weight:700}
-.box ul{margin:0;padding-left:18px;font-size:14px;line-height:1.5}
-.box.x{border-color:#217A78;background:#F2F9F8}
-.box.a{border-color:#151B24}
-.tr{display:grid;grid-template-columns:200px minmax(0,1fr) minmax(0,1fr);gap:14px;padding:10px 0;border-top:1px solid #EFEBE4;font-size:14px;align-items:start}
-.tr>div{min-width:0}
-.th{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#525B66;font-weight:600}
-.pill{display:inline-block;border-radius:999px;padding:2px 9px;font-size:12px;font-weight:600;background:#EEEBE5;color:#3E4652;white-space:nowrap}
+body{margin:0;background:#F8F6F2;color:#151B24}
+.b3-bar{background:var(--navy);color:#fff;padding:14px 40px;display:flex;align-items:center;gap:14px}
+.b3-bar span{font-size:13px;color:#C9D1D6}
+.b3-in{max-width:1200px;width:100%;margin:0 auto;padding:28px 40px 48px}
+.b3-h1{margin:0;font-size:28px;line-height:36px;font-weight:600;letter-spacing:-.01em}
+.b3-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:24px}
+.b3-box{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:16px 20px;min-width:0}
+.b3-box.t{border-color:var(--teal);background:var(--teal-tint)}
+.b3-box.n{border-color:var(--navy)}
+.b3-k{font-size:12px;line-height:16px;font-weight:600;color:var(--ink-3)}
+.b3-box h2{margin:2px 0 8px;font-size:18px;line-height:24px;font-weight:600}
+.b3-box ul{margin:0;padding-left:18px;line-height:24px}
+.b3-who{background:var(--white);border:1px solid var(--line);border-radius:12px;margin-top:12px;overflow:hidden}
+.b3-who .r{display:grid;grid-template-columns:200px minmax(0,1fr);gap:12px;padding:10px 20px;border-top:1px solid var(--line)}
+.b3-who .r:first-child{border-top:0}
+.b3-true{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:12px}
+.b3-true .b3-box h2{font-size:16px;margin:0}
+@media (max-width:900px){.b3-grid,.b3-true{grid-template-columns:minmax(0,1fr)}.b3-who .r{grid-template-columns:minmax(0,1fr)}.b3-in{padding:20px 16px 40px}.b3-bar{padding:12px 16px}}
 </style>
 </helmet>
-
-<div style="min-height:1160px;width:100%;background:#F8F6F2;display:flex;flex-direction:column">
-  <header style="background:#151B24;color:#fff;padding:14px 40px;display:flex;align-items:center;gap:14px">
-    <svg role="img" aria-label="psyflo" viewBox="0 0 3191 1060" width="104" height="35"><g transform="translate(-6.0,780.0) scale(1,-1)"><path d="M66 -220V504H186L201 434Q217 456 239.0 474.5Q261 493 291.5 504.5Q322 516 363 516Q434 516 488.0 481.0Q542 446 573.5 386.5Q605 327 605 251Q605 175 573.0 115.5Q541 56 487.0 22.0Q433 -12 364 -12Q308 -12 267.5 8.5Q227 29 201 65V-220ZM332 106Q372 106 402.5 124.0Q433 142 450.0 175.0Q467 208 467 251Q467 294 450.0 327.5Q433 361 402.5 379.5Q372 398 332 398Q293 398 262.5 379.5Q232 361 214.5 328.0Q197 295 197 252Q197 209 214.5 175.5Q232 142 262.5 124.0Q293 106 332 106Z" fill="#FFFFFF"></path></g><g transform="translate(624.0,780.0) scale(1,-1)"><path d="M272 -12Q203 -12 152.0 10.0Q101 32 72.0 71.0Q43 110 39 159H173Q178 140 190.0 124.5Q202 109 222.0 100.0Q242 91 270 91Q297 91 314.0 98.5Q331 106 339.5 119.0Q348 132 348 146Q348 167 336.0 178.5Q324 190 301.0 197.0Q278 204 245 211Q209 218 174.5 228.5Q140 239 113.0 255.0Q86 271 70.0 296.0Q54 321 54 358Q54 403 78.0 438.5Q102 474 148.0 495.0Q194 516 259 516Q350 516 403.0 475.0Q456 434 466 362H339Q333 385 312.5 398.5Q292 412 258 412Q222 412 203.0 399.0Q184 386 184 365Q184 351 196.5 340.0Q209 329 232.0 321.5Q255 314 288 307Q346 295 390.0 279.5Q434 264 459.0 235.5Q484 207 484 153Q484 105 458.0 67.5Q432 30 384.5 9.0Q337 -12 272 -12Z" fill="#FFFFFF"></path></g><g transform="translate(1105.0,780.0) scale(1,-1)"><path d="M130 -220 252 56H222L20 504H167L311 179L441 504H584L273 -220Z" fill="#FFFFFF"></path></g><g transform="translate(1734.0,780.0) scale(1,-1)"><path d="M89 0V549Q89 612 110.0 649.0Q131 686 170.5 703.0Q210 720 263 720H325V605H283Q251 605 237.5 592.5Q224 580 224 549V0ZM20 391V504H333V391Z" fill="#5FC0BE"></path></g><g transform="translate(2080.0,780.0) scale(1,-1)"><path d="M66 0V720H201V0Z" fill="#5FC0BE"></path></g><g transform="translate(2322.0,780.0) scale(1,-1)"><path d="M304 -12Q232 -12 174.5 21.5Q117 55 83.5 114.5Q50 174 50 251Q50 330 83.5 389.5Q117 449 175.0 482.5Q233 516 305 516Q378 516 435.5 482.5Q493 449 526.5 389.5Q560 330 560 252Q560 174 526.5 114.5Q493 55 435.0 21.5Q377 -12 304 -12ZM304 105Q338 105 364.5 121.0Q391 137 406.5 170.0Q422 203 422 252Q422 301 406.5 333.5Q391 366 364.5 382.5Q338 399 305 399Q273 399 246.0 382.5Q219 366 203.5 333.5Q188 301 188 252Q188 203 203.5 170.0Q219 137 245.5 121.0Q272 105 304 105Z" fill="#5FC0BE"></path></g><g transform="translate(2922.0,780.0) scale(1,-1)"><path d="M127 -5Q89 -5 66.0 17.5Q43 40 43 73Q43 106 66.0 128.5Q89 151 127 151Q163 151 186.0 128.5Q209 106 209 73Q209 40 186.0 17.5Q163 -5 127 -5Z" fill="#F0B44C"></path></g></svg>
-    <div style="font-size:13px;color:#C9D1D6">Psyflo × Harvest · where things live</div>
-    
-  </header>
-
-  <div style="max-width:1200px;width:100%;margin:0 auto;padding:30px 40px 40px">
-    <h1 style="margin:0;font-size:30px;font-weight:600;letter-spacing:-.01em">One rule: if it is a Lauris form, the extension writes it. If it is not, it lives in the Psyflo app.</h1>
-    
-
-    <div style="display:grid;grid-template-columns:repeat(4, minmax(0, 1fr));gap:14px;margin-top:24px">
-      <div class="box x">
-        <div class="k">In Lauris · the extension</div>
-        <h2>Every Lauris form</h2>
-        <ul><li>Admission screening <span class="pill">Scribe</span></li><li>Intake / CNA <span class="pill">Scribe</span></li><li>Treatment plan (ISP) <span class="pill">Scan &amp; enhance</span></li><li>Daily, weekly, monthly notes <span class="pill">Scan &amp; enhance</span></li><li>Initial SRA <span class="pill">Review a request</span></li><li>Continued-stay SRA <span class="pill">Review a request</span></li><li>Incident report <span class="pill">copied at Process Form</span></li></ul>
-        
-      </div>
-      <div class="box x">
-        <div class="k">On the work iPhone · the app</div>
-        <h2>The same three buttons, away from a desk</h2>
-        <ul><li>Pick a student, or say the name</li><li>Start / stop, screen locked</li><li>Say what happened; it is ready when you open the student in Lauris</li><li>Assessment reminders</li></ul>
-        
-      </div>
-      <div class="box a">
-        <div class="k">The Psyflo app · platform</div>
-        <h2>What Lauris has no place for</h2>
-        <ul><li>Referral review, before a Lauris record exists</li><li>Send, and the tracker with the clocks</li><li>Reply to an information request</li><li>Partial approval: the three doors</li><li>Peer-to-peer brief · guardian appeal letter</li><li>Staff dashboard · Compliance · Analytics</li></ul>
-        
-      </div>
-      <div class="box">
-        <div class="k">Outside doors · portals</div>
-        <h2>For people without a Lauris login</h2>
-        <ul><li><b>Parent portal:</b> sign enrollment before intake, see progress in plain words, two-minute check-ins, sign the quarterly</li><li><b>School portal:</b> refer (with guardian consent), share what happened today, teacher check-in, see functioning</li></ul>
-        
-      </div>
+<div>
+  <header class="b3-bar"><svg role="img" aria-label="psyflo" viewBox="0 0 3191 1060" width="104" height="35"><g transform="translate(-6.0,780.0) scale(1,-1)"><path d="M66 -220V504H186L201 434Q217 456 239.0 474.5Q261 493 291.5 504.5Q322 516 363 516Q434 516 488.0 481.0Q542 446 573.5 386.5Q605 327 605 251Q605 175 573.0 115.5Q541 56 487.0 22.0Q433 -12 364 -12Q308 -12 267.5 8.5Q227 29 201 65V-220ZM332 106Q372 106 402.5 124.0Q433 142 450.0 175.0Q467 208 467 251Q467 294 450.0 327.5Q433 361 402.5 379.5Q372 398 332 398Q293 398 262.5 379.5Q232 361 214.5 328.0Q197 295 197 252Q197 209 214.5 175.5Q232 142 262.5 124.0Q293 106 332 106Z" fill="#FFFFFF"></path></g><g transform="translate(624.0,780.0) scale(1,-1)"><path d="M272 -12Q203 -12 152.0 10.0Q101 32 72.0 71.0Q43 110 39 159H173Q178 140 190.0 124.5Q202 109 222.0 100.0Q242 91 270 91Q297 91 314.0 98.5Q331 106 339.5 119.0Q348 132 348 146Q348 167 336.0 178.5Q324 190 301.0 197.0Q278 204 245 211Q209 218 174.5 228.5Q140 239 113.0 255.0Q86 271 70.0 296.0Q54 321 54 358Q54 403 78.0 438.5Q102 474 148.0 495.0Q194 516 259 516Q350 516 403.0 475.0Q456 434 466 362H339Q333 385 312.5 398.5Q292 412 258 412Q222 412 203.0 399.0Q184 386 184 365Q184 351 196.5 340.0Q209 329 232.0 321.5Q255 314 288 307Q346 295 390.0 279.5Q434 264 459.0 235.5Q484 207 484 153Q484 105 458.0 67.5Q432 30 384.5 9.0Q337 -12 272 -12Z" fill="#FFFFFF"></path></g><g transform="translate(1105.0,780.0) scale(1,-1)"><path d="M130 -220 252 56H222L20 504H167L311 179L441 504H584L273 -220Z" fill="#FFFFFF"></path></g><g transform="translate(1734.0,780.0) scale(1,-1)"><path d="M89 0V549Q89 612 110.0 649.0Q131 686 170.5 703.0Q210 720 263 720H325V605H283Q251 605 237.5 592.5Q224 580 224 549V0ZM20 391V504H333V391Z" fill="#5FC0BE"></path></g><g transform="translate(2080.0,780.0) scale(1,-1)"><path d="M66 0V720H201V0Z" fill="#5FC0BE"></path></g><g transform="translate(2322.0,780.0) scale(1,-1)"><path d="M304 -12Q232 -12 174.5 21.5Q117 55 83.5 114.5Q50 174 50 251Q50 330 83.5 389.5Q117 449 175.0 482.5Q233 516 305 516Q378 516 435.5 482.5Q493 449 526.5 389.5Q560 330 560 252Q560 174 526.5 114.5Q493 55 435.0 21.5Q377 -12 304 -12ZM304 105Q338 105 364.5 121.0Q391 137 406.5 170.0Q422 203 422 252Q422 301 406.5 333.5Q391 366 364.5 382.5Q338 399 305 399Q273 399 246.0 382.5Q219 366 203.5 333.5Q188 301 188 252Q188 203 203.5 170.0Q219 137 245.5 121.0Q272 105 304 105Z" fill="#5FC0BE"></path></g><g transform="translate(2922.0,780.0) scale(1,-1)"><path d="M127 -5Q89 -5 66.0 17.5Q43 40 43 73Q43 106 66.0 128.5Q89 151 127 151Q163 151 186.0 128.5Q209 106 209 73Q209 40 186.0 17.5Q163 -5 127 -5Z" fill="#F0B44C"></path></g></svg><span>How it fits</span></header>
+  <div class="b3-in">
+    <h1 class="b3-h1">Lauris forms are filled by the panel. Everything else lives in Psyflo.</h1>
+    <div class="b3-grid">
+      <section class="b3-box t"><div class="b3-k">In Lauris</div><h2>Lauris panel</h2>
+        <ul><li>Screening call</li><li>Intake (CNA)</li><li>Treatment plan</li><li>Daily, weekly, monthly notes</li><li>Initial SRA, Continued stay</li></ul></section>
+      <section class="b3-box t"><div class="b3-k">On the phone</div><h2>Phone app</h2>
+        <ul><li>Track time</li><li>Say what happened</li><li>Assess</li></ul></section>
+      <section class="b3-box n"><div class="b3-k">In the browser</div><h2>Psyflo app</h2>
+        <ul><li>Worklist</li><li>Authorizations</li><li>Documentation</li><li>Analytics</li><li>Users &amp; roles, Payer rules</li></ul></section>
+      <section class="b3-box"><div class="b3-k">No login</div><h2>Guardians and schools</h2>
+        <ul><li>Family link, sign, progress</li><li>Refer a student, share today</li></ul></section>
     </div>
-
-    <section style="background:#fff;border:1px solid #E6E1D9;border-radius:14px;padding:18px 22px;margin-top:22px">
-      <h2 style="margin:0 0 4px;font-size:18px;font-weight:600">By person</h2>
-      <div class="tr th" style="border-top:0;padding-top:0"><div>Who</div><div>Where they work</div><div>What they never see</div></div>
-      <div class="tr"><div><b>Direct support staff</b><div style="font-size:12px;color:#525B66">QMHP, QMHP-T</div></div><div>Extension in Lauris and the phone app. Scribe, Scan &amp; enhance, Track time. Their own students and notes.</div><div>The Psyflo app. Screening, intake and request content for any student.</div></div>
-      <div class="tr"><div><b>Clinician</b><div style="font-size:12px;color:#525B66">LPC, resident</div></div><div>Extension for every form, including both SRAs. The app for sending, tracking, replying to payers, deciding on partials, the peer-to-peer brief.</div><div>Nothing is hidden; nothing is submitted without their click.</div></div>
-      <div class="tr"><div><b>Site supervisor</b></div><div>Staff dashboard: who is behind, trainee notes to approve, patterns this month.</div><div>Writing in the extension on someone else's behalf.</div></div>
-      <div class="tr"><div><b>Admin / leadership</b></div><div>The app only: Authorizations, Staff, Analytics, users and roles.</div><div>The extension.</div></div>
-      <div class="tr"><div><b>Parent or guardian</b></div><div>Parent portal on their phone, two languages.</div><div>Notes, diagnoses, anything another family said.</div></div>
-      <div class="tr"><div><b>School staff</b></div><div>School portal: counselor, teacher and administrator views.</div><div>Clinical notes, diagnoses, anything from home.</div></div>
-    </section>
-
-    <section style="display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:14px;margin-top:22px">
-      <div class="box"><div class="k">Always true</div><h2 style="font-size:16px">Lauris stays the record</h2></div>
-      <div class="box"><div class="k">Always true</div><h2 style="font-size:16px">A person signs everything</h2></div>
-      <div class="box"><div class="k">Always true</div><h2 style="font-size:16px">No EHR integration</h2></div>
-    </section>
+    <h2 class="u-sec" style="margin-top:28px">By role</h2>
+    <div class="b3-who">
+      <div class="r"><b>Direct support</b><span>Phone app, Lauris panel, own row in Documentation</span></div>
+      <div class="r"><b>Supervisor</b><span>Worklist, Documentation with Chart review</span></div>
+      <div class="r"><b>Clinician</b><span>Worklist, Authorizations, Documentation, Analytics, Payer rules</span></div>
+      <div class="r"><b>Admin</b><span>All of the above, plus Users &amp; roles</span></div>
+      <div class="r"><b>Guardian</b><span>Guardian pages on a phone</span></div>
+      <div class="r"><b>School counselor</b><span>School portal</span></div>
+    </div>
+    <div class="b3-true">
+      <div class="b3-box"><div class="b3-k">Always true</div><h2>Lauris stays the record</h2></div>
+      <div class="b3-box"><div class="b3-k">Always true</div><h2>A person signs everything</h2></div>
+      <div class="b3-box"><div class="b3-k">Always true</div><h2>No EHR integration</h2></div>
+    </div>
   </div>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1160}}'>
-class Component extends DCLogic {
-  renderVals() { return {}; }
-}
-</script>
 </body>
 </html>

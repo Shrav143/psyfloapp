@@ -2,7 +2,8 @@
 // plain words (from notes, else the seeded week), check-in due; English / Spanish.
 // Also exports the parent-side helpers (token → family, language, links that keep the token, signature pad,
 // the "call us" sheet) used by FamilyLink, ParentSign, ParentSurvey and AppealLetter.
-import { register, Screen, M, modal, toast, go, api } from '../app.js';
+import { register, Screen, M, modal, toast, go, api, raw, esc } from '../app.js';
+import { C_CSS } from './MobileApp.js';
 
 // ---------- family context from the tokenised link ----------
 export function famCtx(s, params = {}) {
@@ -40,6 +41,11 @@ const MES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct
 export function fdate(iso, lang) { if (!iso) return ''; if (lang !== 'es') return M.fmtDate(iso); const d = M.parse(iso); return `${d.getUTCDate()} ${MES[d.getUTCMonth()]}`; }
 export const LANG_ON = 'background:#217A78;border-radius:999px;padding:3px 10px;font-weight:600;color:#fff;text-decoration:none';
 export const LANG_OFF = 'border:1px solid #46525F;border-radius:999px;padding:3px 10px;color:#fff;text-decoration:none';
+
+
+// ---------- header and footer the guardian pages share (EN/ES toggle at the top, Back and Call us at the bottom) ----------
+export const guardHeader = (title, lang) => raw(`<header class="c-hd"><span class="c-t">${esc(title)}</span><span class="c-lang"><a href="#en" lang="en" class="${lang === 'en' ? 'on' : ''}">EN</a><a href="#es" lang="es" class="${lang === 'es' ? 'on' : ''}">ES</a></span></header>`);
+export const guardFooter = (lang, back = true) => raw(`<footer class="c-ft">${back ? `<a class="c-lnk" href="#back">${lang === 'es' ? 'Atrás' : 'Back'}</a>` : ''}<a class="c-lnk" href="#call">${lang === 'es' ? 'Llámenos' : 'Call us'}</a></footer>`);
 
 // form names and summaries the guardian sees
 export const FORMS = {
@@ -290,26 +296,20 @@ export class SigPad {
 
 // ---------- the screen ----------
 const T = {
-  en: { hi: (g, c) => `Hi ${g || 'there'} · ${c}'s page`, stand: 'Where things stand', toSign: n => `${n} to sign`, allSigned: 'all signed', copy: 'copy (PDF)', signed: d => 'signed ' + d,
-    doing: c => `How ${c} is doing`, thisWeek: 'this week', noProgress: c => `Progress shows here once ${c} starts at school with Harvest.`, checkin: '2-minute check-in', every2: 'every 2 weeks', start: 'Start the check-in',
-    last: d => `Last one sent ${d} · thank you`, first: 'First check-in', next: 'Next check-in', dueWeek: 'due this week', due: d => 'due ' + d, three: 'Three questions, two minutes.',
-    secure: 'Secure · only Harvest sees this', call: 'Call us instead', signBtn: f => f === 'Consent for services' ? 'Sign the consent for services' : f === 'Release of information · school' ? 'Sign the release for the school' : f === 'Treatment plan' ? 'Read and sign the treatment plan' : 'Sign: ' + f,
-    good: (a, b, l) => `${a} good days out of ${b} ${l}`,
-    packet: 'Enrollment packet', packetOf: (a, b) => `${a} of ${b} done`, packetAll: 'all done', packetLeft: n => `${n} left · about ${n * 2} minutes on your phone`, packetDone: 'Everything is ready for the intake visit.', packetOpen: 'Open the packet', packetSee: 'See the packet',
-    nsBook: { screening: 'Next step: book your first call', intake: 'Next step: book the intake visit' }, nsBookSub: { screening: 'A 30–45 minute phone call with a Harvest clinician. Pick a time that works.', intake: 'In person, about 2 hours. You can ask for a ride.' },
-    nsBooked: { screening: 'First call', intake: 'Intake visit' }, nsBookBtn: 'See open times', nsSee: 'Details or change',
-    nsTomorrow: 'Tomorrow · please confirm', nsWith: (w, who) => `${w} · with ${who}`, nsRide: ' · ride requested',
-    seeAll: 'See all progress', ins: 'Insurance updates', insNone: 'Nothing from the insurance company yet. Letters show here in plain words.', insBtn: 'Read the updates' },
-  es: { hi: (g, c) => `Hola ${g || ''} · la página de ${c}`, stand: 'Cómo van las cosas', toSign: n => `${n} para firmar`, allSigned: 'todo firmado', copy: 'copia (PDF)', signed: d => 'firmado ' + d,
-    doing: c => `Cómo le va a ${c}`, thisWeek: 'esta semana', noProgress: c => `El progreso aparecerá aquí cuando ${c} empiece con Harvest en la escuela.`, checkin: 'Chequeo de 2 minutos', every2: 'cada 2 semanas', start: 'Empezar el chequeo',
-    last: d => `Último enviado ${d} · gracias`, first: 'Primer chequeo', next: 'Próximo chequeo', dueWeek: 'toca esta semana', due: d => 'toca el ' + d, three: 'Tres preguntas, dos minutos.',
-    secure: 'Seguro · solo Harvest lo ve', call: 'Prefiero llamar', signBtn: f => f === 'Consent for services' ? 'Firmar el consentimiento de servicios' : f === 'Release of information · school' ? 'Firmar el permiso para la escuela' : f === 'Treatment plan' ? 'Leer y firmar el plan de tratamiento' : 'Firmar: ' + formName(f, 'es'),
-    good: (a, b, l) => `${a} días buenos de ${b} ${l}`,
-    packet: 'Papeles de inscripción', packetOf: (a, b) => `${a} de ${b} listos`, packetAll: 'todo listo', packetLeft: n => `faltan ${n} · unos ${n * 2} minutos en su teléfono`, packetDone: 'Todo está listo para la cita de admisión.', packetOpen: 'Abrir los papeles', packetSee: 'Ver los papeles',
-    nsBook: { screening: 'Siguiente paso: reserve su primera llamada', intake: 'Siguiente paso: reserve la cita de admisión' }, nsBookSub: { screening: 'Una llamada de 30 a 45 minutos con un clínico de Harvest. Elija una hora.', intake: 'En persona, unas 2 horas. Puede pedir transporte.' },
-    nsBooked: { screening: 'Primera llamada', intake: 'Cita de admisión' }, nsBookBtn: 'Ver horas libres', nsSee: 'Detalles o cambiar',
-    nsTomorrow: 'Mañana · confirme por favor', nsWith: (w, who) => `${w} · con ${who}`, nsRide: ' · transporte pedido',
-    seeAll: 'Ver todo el progreso', ins: 'Noticias del seguro', insNone: 'Todavía no hay nada del seguro. Las cartas aparecen aquí en palabras sencillas.', insBtn: 'Leer las noticias' }
+  en: { hi: g => `Hi ${g || 'there'}`, good: (a, b, l) => `${a} of ${b} good days`,
+    sign: 'Sign', signRow: f => f === 'Consent for services' ? 'Consent for services' : f === 'Release of information · school' ? 'School release' : f === 'Treatment plan' ? 'Treatment plan' : f, toSign: 'To sign', allSigned: 'All signed', view: 'View',
+    packet: 'Enrollment packet', packetOf: (a, b) => `${a} of ${b}`, packetAll: 'All done', open: 'Open', see: 'See',
+    nsBook: { screening: 'Book your first call', intake: 'Book the intake visit' }, nsBooked: { screening: 'First call', intake: 'Intake visit' }, book: 'Book', change: 'Change', ride: 'Ride requested',
+    tomorrow: 'Confirm tomorrow', checkin: 'Check-in', dueWeek: 'Due this week', due: d => 'Due ' + d, start: 'Start',
+    doing: c => `How ${c} is doing`, soon: 'Starts soon', seeAll: 'See',
+    ins: 'Insurance', insNone: 'Nothing yet', read: 'Read' },
+  es: { hi: g => `Hola ${g || ''}`.trim(), good: (a, b, l) => `${a} de ${b} días buenos`,
+    sign: 'Firmar', signRow: f => f === 'Consent for services' ? 'Consentimiento de servicios' : f === 'Release of information · school' ? 'Permiso para la escuela' : f === 'Treatment plan' ? 'Plan de tratamiento' : formName(f, 'es'), toSign: 'Para firmar', allSigned: 'Todo firmado', view: 'Ver',
+    packet: 'Papeles de inscripción', packetOf: (a, b) => `${a} de ${b}`, packetAll: 'Todo listo', open: 'Abrir', see: 'Ver',
+    nsBook: { screening: 'Reserve su primera llamada', intake: 'Reserve la cita de admisión' }, nsBooked: { screening: 'Primera llamada', intake: 'Cita de admisión' }, book: 'Reservar', change: 'Cambiar', ride: 'Transporte pedido',
+    tomorrow: 'Confirme mañana', checkin: 'Chequeo', dueWeek: 'Toca esta semana', due: d => 'Toca el ' + d, start: 'Empezar',
+    doing: c => `Cómo le va a ${c}`, soon: 'Empieza pronto', seeAll: 'Ver',
+    ins: 'Seguro', insNone: 'Nada todavía', read: 'Leer' }
 };
 
 export function progressFor(s, c, lang) {
@@ -329,31 +329,28 @@ register('ParentPortal', class extends Screen {
   renderVals() {
     const s = this.s; const ctx = this.ctx(); const c = ctx.client; const lang = getLang(c); const t = T[lang];
     const pend = pendingForms(s, c);
-    const signed = s.consents.filter(x => x.client === c.id && x.status === 'signed').map(x => ({ label: formName(x.form, lang), when: t.signed(fdate(x.signed_at, lang)), file: x.file || '' }));
-    const ms = milestones(s, ctx);
-    const prog = progressFor(s, c, lang);
-    const gc = s.checkins.filter(x => x.client === c.id && x.role === 'guardian').sort((a, b) => (a.at || a.week_of) < (b.at || b.week_of) ? -1 : 1).at(-1);
-    const nextDue = gc ? M.addDays(gc.week_of, 14) : null;
     const pk = packetStatus(s, c); const letter = lettersFor(s, c, lang)[0];
     const bs = bookingState(s, ctx);
-    const next = !bs ? null : bs.booked
-      ? { title: t.nsBooked[bs.kind], text: t.nsWith(`${fdate(bs.when, lang)}, ${M.fmtTime(bs.when)}`, M.staff(s, bs.who).name) + (bs.kind === 'intake' && bs.booked.ride ? t.nsRide : ''), chip: bs.kind === 'intake' && bs.when.slice(0, 10) === M.addDays(s.today, 1) && bs.booked.confirmed == null ? t.nsTomorrow : '', btn: t.nsSee, cls: 'o' }
-      : { title: t.nsBook[bs.kind], text: t.nsBookSub[bs.kind], chip: '', btn: t.nsBookBtn, cls: 'p' };
-    return {
-      t: { hi: t.hi(ctx.guardianFirst, ctx.child), stand: t.stand, copy: t.copy, doing: t.doing(ctx.child), thisWeek: t.thisWeek, noProgress: t.noProgress(ctx.child), checkin: t.checkin, every2: t.every2, start: t.start, three: t.three, secure: t.secure, call: t.call, packet: t.packet, seeAll: t.seeAll, ins: t.ins, insBtn: t.insBtn },
-      next,
-      packetChip: pk.done === pk.total ? t.packetAll : t.packetOf(pk.done, pk.total), packetCls: pk.done === pk.total ? 'g' : 'y', packetPct: pk.total ? Math.round(100 * pk.done / pk.total) : 0,
-      packetText: pk.done === pk.total ? t.packetDone : t.packetLeft(pk.total - pk.done), packetBtn: pk.done === pk.total ? t.packetSee : t.packetOpen,
-      insChip: letter ? letter.chip : '', insCls: letter ? letter.cls : 'n', insText: letter ? letter.title : t.insNone,
-      enStyle: lang === 'en' ? LANG_ON : LANG_OFF, esStyle: lang === 'es' ? LANG_ON : LANG_OFF,
-      signChip: pend.length ? t.toSign(pend.length) : t.allSigned, signChipCls: pend.length ? 'y' : 'g',
-      standText: standText(ms, lang), standPct: ms.pct, signed,
-      signLabel: pend.length ? t.signBtn(pend[0]) : '',
-      prog,
-      lastCheckin: gc ? t.last(fdate(gc.at || gc.week_of, lang)) : '',
-      nextTitle: gc ? t.next : t.first, nextChip: gc && nextDue > s.today ? t.due(fdate(nextDue, lang)) : t.dueWeek, nextCls: gc && nextDue > s.today ? 'n' : 'y'
-    };
+    const prog = progressFor(s, c, lang);
+    const gc = s.checkins.filter(x => x.client === c.id && x.role === 'guardian').sort((a, b) => (a.at || a.week_of) < (b.at || b.week_of) ? -1 : 1).at(-1);
+    const nextDue = gc ? M.addDays(gc.week_of, 14) : null; const checkinDue = !(gc && nextDue > s.today);
+    const rows = [];
+    if (bs) rows.push(bs.booked
+      ? { go: 'book', title: `${t.nsBooked[bs.kind]} · ${fdate(bs.when, lang)}`, chip: M.fmtTime(bs.when) + (bs.kind === 'intake' && bs.booked.ride ? ' · ' + t.ride : ''), cls: bs.kind === 'intake' && bs.when.slice(0, 10) === M.addDays(s.today, 1) && bs.booked.confirmed == null ? 'y' : 'ok', btn: t.change, need: bs.kind === 'intake' && bs.when.slice(0, 10) === M.addDays(s.today, 1) && bs.booked.confirmed == null }
+      : { go: 'book', title: t.nsBook[bs.kind], chip: lang === 'es' ? 'Su turno' : 'Next step', cls: 'y', btn: t.book, need: true });
+    rows.push(pend.length
+      ? { go: 'sign', title: t.signRow(pend[0]), chip: t.toSign + (pend.length > 1 ? ` · ${pend.length}` : ''), cls: 'y', btn: t.sign, need: true }
+      : { go: 'sign', title: lang === 'es' ? 'Formularios' : 'Forms', chip: t.allSigned, cls: 'ok', btn: t.view, need: false });
+    rows.push({ go: 'enroll', title: t.packet, chip: pk.done === pk.total ? t.packetAll : t.packetOf(pk.done, pk.total), cls: pk.done === pk.total ? 'ok' : 'y', btn: pk.done === pk.total ? t.see : t.open, need: pk.done < pk.total });
+    rows.push({ go: 'survey', title: t.checkin, chip: checkinDue ? t.dueWeek : t.due(fdate(nextDue, lang)), cls: checkinDue ? 'y' : 'n', btn: t.start, need: checkinDue });
+    rows.push({ go: 'progress', title: t.doing(ctx.child), chip: prog ? prog.text : t.soon, cls: prog ? 'ok' : 'n', btn: t.seeAll, need: false });
+    rows.push({ go: 'letters', title: t.ins, chip: letter ? letter.chip.charAt(0).toUpperCase() + letter.chip.slice(1) : t.insNone, cls: letter ? letter.cls === 'g' ? 'ok' : letter.cls : 'n', btn: t.read, need: false });
+    // one filled button: the first thing that needs the family
+    const first = rows.findIndex(r => r.need);
+    rows.forEach((r, i) => { r.pri = i === first ? 'pri' : ''; });
+    return { hd: guardHeader('Harvest Outreach Center', lang), ft: guardFooter(lang, false), t: { hi: t.hi(ctx.guardianFirst) }, rows };
   }
+  get css() { return C_CSS; }
   get anchors() {
     const ctx = () => this.ctx();
     return {

@@ -10,94 +10,51 @@
 <helmet>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&amp;display=swap">
 <style>
-body{margin:0;background:#F8F6F2;color:#151B24;font-family:'DM Sans',system-ui,sans-serif;font-size:15px;line-height:1.45}
-a{color:#217A78}a:hover{color:#15605E}
-*{box-sizing:border-box}
-label{display:block;font-size:13px;font-weight:600;margin-bottom:5px}
-.in{width:100%;border:1px solid #C9CDD3;border-radius:8px;padding:10px 12px;font:inherit;font-size:15px;background:#fff;min-height:44px;color:#151B24}
-textarea.in{min-height:96px;resize:vertical}
-.g2{display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:14px}
-.g3{display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:14px}
-.g4{display:grid;grid-template-columns:repeat(4, minmax(0, 1fr));gap:14px}
-.sec{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:#525B66;font-weight:700;margin:26px 0 10px;padding-bottom:6px;border-bottom:2px solid #151B24}
-.ck{display:flex;align-items:center;gap:10px;min-height:36px;font-size:15px}
-.ck input{width:20px;height:20px;margin:0;accent-color:#217A78}
-.rad{display:flex;gap:12px;align-items:center;min-height:44px;flex-wrap:wrap}
-.rad label{display:flex;align-items:center;gap:8px;font-weight:500;margin:0}
-.rad input{width:20px;height:20px;margin:0;accent-color:#217A78}
-.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 22px;border-radius:8px;font:inherit;font-weight:600;font-size:15px;cursor:pointer;border:1px solid transparent;text-decoration:none}
-.btn.p{background:#217A78;color:#fff}.btn.p:hover{background:#15605E;color:#fff}
-.btn.o{background:#fff;color:#151B24;border-color:#D9D4CC}
-.note{font-size:13px;color:#525B66}
-.card{background:#fff;border:1px solid #E6E1D9;border-radius:12px}
-.chip{display:inline-block;border-radius:999px;padding:2px 9px;font-size:12px;font-weight:600;white-space:nowrap}
-.chip.r{background:#FBE9E4;color:#8A2E1C}.chip.y{background:#FCEFD0;color:#6F4A05}.chip.g{background:#DDF1EF;color:#15605E}.chip.n{background:#EEEBE5;color:#3E4652}
-.bar{height:6px;border-radius:3px;background:#EFEBE4;overflow:hidden;margin-top:6px}.bar i{display:block;height:100%;background:#217A78}
-.door{display:flex;flex-direction:column;gap:6px;padding:18px 20px;border:1.5px solid #E6E1D9;border-radius:14px;background:#fff;text-decoration:none;color:#151B24;min-height:120px}
-.door:hover{border-color:#217A78;color:#151B24}
-.door b{font-size:17px}
-.door span{font-size:14px;color:#525B66}
-.row{display:grid;gap:12px;padding:10px 0;border-top:1px solid #EFEBE4;font-size:14px;align-items:center}
-.row>div{min-width:0}
-.th{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:#525B66;font-weight:600}
+/* shared school look: SCHOOL_CSS in js/screens/SchoolPortal.js */
 </style>
 </helmet>
 
-<div style="min-height:1140px;width:100%;display:flex;flex-direction:column;background:#F8F6F2">
-  <header style="background:#151B24;color:#fff;padding:14px 40px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-    <div style="font-weight:700;font-size:18px">Harvest Outreach Center</div>
-    <div style="font-size:13px;color:#C9D1D6">School portal · {{schoolLong}}</div>
-    <div style="margin-left:auto;font-size:13px;color:#C9D1D6">Signed in: {{signedIn}} · <a href="#out" style="color:#5FC0BE">Sign out</a></div>
+<div class="s-pg">
+  <header class="s-hd">
+    <b>Harvest Outreach Center</b><span class="m">School portal · {{schoolShort}}</span>
+    <span class="r">{{signedIn}} · <a href="#out">Sign out</a></span>
   </header>
-
-  <div style="max-width:1120px;width:100%;margin:0 auto;padding:30px 40px 40px">
-    <h1 style="margin:0;font-size:28px;font-weight:600;letter-spacing:-.01em">{{greeting}}</h1>
-    <div style="font-size:15px;color:#525B66;margin-top:6px">Refer a student to Harvest's therapeutic day treatment. Harvest contacts the family and keeps you posted here.</div>
-
-    <div style="display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:14px;margin-top:22px">
-      <a class="door" href="ReferralForm.dc.html" style="border-color:#217A78;background:#F2F9F8"><b>Refer a student</b><span>Talk with the parent or guardian first. About 15 minutes.</span><span class="chip g" style="align-self:flex-start;margin-top:auto">{{refChip}}</span></a>
-      <a class="door" href="#share"><b>Share an update</b><span>Something Harvest staff should know about a student today.</span><span class="chip n" style="align-self:flex-start;margin-top:auto">{{shareChip}}</span></a>
-      <a class="door" href="#referrals"><b>Your referrals</b><span>Where each one stands with Harvest.</span><span class="chip {{openCls}}" style="align-self:flex-start;margin-top:auto">{{openChip}}</span></a>
+  <main class="s-main">
+    <div class="s-top">
+      <h1 class="u-title">Referrals</h1>
+      <span class="u-sp"></span>
+      <a class="u-btn" href="#share">Share today</a>
+      <a class="u-btn pri" href="ReferralForm.dc.html">Refer a student</a>
     </div>
 
-    <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start;margin-top:24px">
-      <section class="card" style="flex:3 1 560px;min-width:0;padding:18px 22px" id="referrals">
-        <h2 style="margin:0 0 2px;font-size:17px;font-weight:600">Referrals from {{schoolShort}}</h2>
-        <div class="row th" style="grid-template-columns:70px 90px minmax(0,1fr) 150px;border-top:0;padding-top:6px"><div>Student</div><div>Referred</div><div>Where it stands</div><div></div></div>
-        <sc-for list="{{rows}}" as="r">
-        <div class="row" style="grid-template-columns:70px 90px minmax(0,1fr) 150px"><div><b>{{r.ini}}</b></div><div>{{r.when}}</div><div>{{r.status}}<sc-if value="{{r.flag}}"> <span class="chip y">{{r.flag}}</span></sc-if></div><div style="text-align:right"><a class="btn o" href="{{r.href}}" style="min-height:34px;padding:0 12px">{{r.btn}}</a></div></div>
-        </sc-for>
-        <sc-if value="{{!rows.length}}"><div class="note" style="padding:10px 0">No referrals from your school yet.</div></sc-if>
-        <div class="note" style="margin-top:8px">Harvest shares where a referral stands. Treatment plans, notes and diagnoses stay with Harvest and the family.</div>
-      </section>
+    <sc-if value="{{sharing}}">
+    <section class="s-card" id="share">
+      <sc-if value="{{students.length}}">
+      <div class="s-g2">
+        <div><label for="st">Student</label><select class="u-sel" id="st" style="width:100%"><sc-for list="{{students}}" as="o"><option value="{{o.id}}">{{o.label}}</option></sc-for></select></div>
+        <div><label for="wh">Where and when</label><input class="u-in" id="wh" style="width:100%" placeholder="Cafeteria, 11:50 am"></div>
+      </div>
+      <div style="margin-top:12px"><label for="what">What happened</label><textarea class="u-in" id="what" style="width:100%;min-height:80px;padding:10px" placeholder="A sentence or two"></textarea></div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px"><a class="u-btn txt" href="#shareClose">Cancel</a><a class="u-btn pri" href="#sendShare">Send</a></div>
+      </sc-if>
+      <sc-if value="{{!students.length}}"><div class="u-mut">No TDT students yet</div><div style="margin-top:8px"><a class="u-btn txt" href="#shareClose">Close</a></div></sc-if>
+    </section>
+    </sc-if>
 
-      <section class="card" style="flex:3 1 560px;min-width:0;padding:18px 22px" id="share">
-        <h2 style="margin:0 0 2px;font-size:17px;font-weight:600">Share an update about a student</h2>
-        <div style="font-size:13px;color:#525B66;margin-bottom:12px">What you saw or heard, where and when. Harvest staff see it when they write that day's note; it goes into the record credited to you.</div>
-        <sc-if value="{{students.length}}">
-        <div class="g2">
-          <div><label for="st">Student in TDT</label><select class="in" id="st"><sc-for list="{{students}}" as="o"><option value="{{o.id}}">{{o.label}}</option></sc-for></select></div>
-          <div><label for="wh">Where and when</label><input class="in" id="wh" placeholder="Cafeteria, 11:50 am"></div>
-        </div>
-        <div style="margin-top:12px"><label for="what">What happened</label><textarea class="in" id="what" placeholder="A sentence or two. No diagnoses needed."></textarea></div>
-        <div style="display:flex;justify-content:flex-end;margin-top:12px"><a class="btn p" href="#sendShare">Send to Harvest</a></div>
-        </sc-if>
-        <sc-if value="{{!students.length}}"><div class="note" style="padding:10px 0">No students from your school are in TDT yet.</div></sc-if>
-        <sc-if value="{{shared.length}}"><div style="margin-top:14px"><div class="th" style="margin-bottom:4px">Sent to Harvest today</div><sc-for list="{{shared}}" as="h"><div class="row" style="grid-template-columns:70px minmax(0,1fr)"><div><b>{{h.ini}}</b></div><div>{{h.text}}<div class="note">{{h.meta}}</div></div></div></sc-for></div></sc-if>
-      </section>
-
-      <section class="card" style="flex:2 1 320px;min-width:0;padding:18px 22px">
-        <h2 style="margin:0 0 8px;font-size:17px;font-weight:600">Before you refer</h2>
-        <div class="row" style="grid-template-columns:24px minmax(0,1fr);border-top:0;padding-top:0"><div>1</div><div>The school's own supports have been tried: the school counselor, a behavior interventionist, a plan in class.</div></div>
-        <div class="row" style="grid-template-columns:24px minmax(0,1fr)"><div>2</div><div>The student is still struggling at school despite those supports.</div></div>
-        <div class="row" style="grid-template-columns:24px minmax(0,1fr)"><div>3</div><div>You have talked with the parent or guardian and they agree to the referral. The form asks you to confirm this.</div></div>
-        <div class="note" style="margin-top:8px">Harvest checks the referral against the program's admission criteria and contacts the family by text.</div>
-      </section>
+    <div class="u-rows" style="margin-top:8px" id="referrals">
+      <sc-for list="{{rows}}" as="r"><div class="u-row" style="--cols:140px minmax(0,1fr) auto"><span><span class="u-chip {{r.cls}}">{{r.chip}}</span></span><span><span class="who">{{r.who}}</span> <span class="u-mut">{{r.when}}</span></span><a class="u-btn" href="{{r.href}}">{{r.btn}}</a></div></sc-for>
+      <sc-if value="{{!rows.length}}"><div class="u-row" style="--cols:1fr"><span class="u-mut">No referrals yet</span></div></sc-if>
     </div>
-  </div>
+    <sc-if value="{{more}}"><div style="margin-top:8px"><a class="u-link" href="#all">{{moreLabel}}</a></div></sc-if>
+    <sc-if value="{{shared.length}}">
+    <div class="u-sec">Sent today</div>
+    <div class="u-rows"><sc-for list="{{shared}}" as="h"><div class="u-row" style="--cols:64px minmax(0,1fr) auto"><span class="who">{{h.ini}}</span><span class="what" data-doc>{{h.text}}</span><span class="u-chip {{h.cls}}">{{h.chip}}</span></div></sc-for></div>
+    </sc-if>
+
+  </main>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1140}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
 class Component extends DCLogic {
   renderVals() { return {}; }
 }

@@ -1,9 +1,9 @@
-// 40 · Payer playbook (Seeded). Table from state.payers; the 14 drafting rules from the brief.
-// Partial rates are shown as counts ("23 of 31"), the brief's counts-not-percentages rule.
+// Payer rules (screen 40, reached from the avatar menu). Reference material: what each payer tends to ask and what works, from
+// state.payers (typed in by Harvest), and the 14 drafting rules every draft must pass. No rates or counts here.
 import { register, Screen, M } from '../app.js';
+import { PAGE_TITLE } from '../shared/labels.js';
 
 const NAME = { anthem: 'Anthem HealthKeepers', uhc: 'UnitedHealthcare', ffs: 'Medicaid FFS · Acentra' };
-const CHANNEL = { fax: 'Fax', availity: 'Availity', portal: 'Portal' };
 
 export const DRAFTING_RULES = [
   ['Dates within the last 30 days', 'anything offered as current evidence; older facts carry their date'],
@@ -25,16 +25,10 @@ export const DRAFTING_RULES = [
 register('PayerPlaybook', class extends Screen {
   renderVals() {
     const s = this.s;
-    const total = s.payers.reduce((a, p) => a + (p.requests_this_year || 0), 0);
-    const imported = s.migration?.last_export || s.today;
     return {
-      trackerChip: `${total} decided requests · master tracker, imported ${M.fmtDate(imported)}`,
-      payers: s.payers.map(p => {
-        const n = p.requests_this_year || 0;
-        const partial = n >= 10 && p.partial_rate != null ? `partial ${Math.round(p.partial_rate * n)} of ${n}` : `${n} request${n === 1 ? '' : 's'}`;
-        return { name: NAME[p.id] || p.name, partial, channel: CHANNEL[p.channel] || p.channel, days: p.decides_in_days != null ? p.decides_in_days + ' d' : '—', asks: p.tends_to_ask || '—', works: p.what_works || '—' };
-      }),
-      rules: DRAFTING_RULES.map(([title, text], i) => ({ n: i + 1, title, text, style: i === 0 ? 'border-top:0;padding-top:0' : '' }))
+      title: PAGE_TITLE.PayerPlaybook, today: M.fmtDate(s.today, { dow: true }).replace(/^(\w+) /, '$1, '),
+      payers: s.payers.map(p => ({ name: NAME[p.id] || M.payerShort(s, p.id), channel: M.CHANNEL_LABEL[p.channel] || p.channel, asks: p.tends_to_ask || '—', works: p.what_works || '—' })),
+      rules: DRAFTING_RULES.map(([title, text], i) => ({ n: i + 1, title, text }))
     };
   }
 });

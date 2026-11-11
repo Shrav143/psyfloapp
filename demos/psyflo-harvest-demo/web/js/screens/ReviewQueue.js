@@ -1,13 +1,12 @@
-// 27 · Supervisor review queue (Live). Supervisor approval is only for staff flagged to need it
-// (staff.review_mode 'every_note': new hires and anyone on review). Their notes land here with review
-// 'pending' (seeded, or live via note.processed); everyone else is spot check and goes straight through.
-// Approve / Return with a note / That didn't happen call note.review. "Who needs approval" turns approval
-// on or off per staffer (staff.reviewMode, server/psyflo/actions/x-staff-review.js). Shows what the
-// staffer wrote next to what Psyflo added, and the rule-13 pattern.
-import { register, Screen, M, raw, esc, modal, toast } from '../app.js';
+// Documentation · Chart review (screen 27). Approval is only for staff on 100% review (staff.review_mode 'every_note': new hires and
+// anyone on review). Their notes land here with review 'pending' (seeded, or live via note.processed); everyone else is Sampled and
+// goes straight through. One row per note; Review opens a right-hand drawer with what the staffer wrote next to what Psyflo added,
+// and the three actions: Approve, Return with note, That didn't happen (all call note.review). Nothing here changes Lauris.
+import { register, Screen, M, raw, esc, modal, toast, helpIcon } from '../app.js';
 import { CHECKS } from '../shared/draft.js';
+import { VIEWS, METRIC, FILTER, HELP, PAGE_TITLE, PART } from '../shared/labels.js';
 
-// ---------- pure selectors (shared with the staff dashboard) ----------
+// ---------- pure selectors (shared with the note timeliness view) ----------
 export const textOf = x => x == null ? '' : typeof x === 'string' ? x : (x.narrative || x.text || x.value || '');
 const plain = t => textOf(t).replace(/\[\[|\]\]/g, '');
 const SHORT_LEVEL = { direct_support: 1, supervisor: 2, clinician: 3, admin: 4 };
@@ -32,8 +31,7 @@ export function repeatedParagraphs(s, staffId) {
 }
 
 // Whose notes a viewer reviews: supervisors see the staff routed to them; clinicians and admin see all.
-// Only notes captured while the staffer was on approval are 'pending' (note.processed sets it from
-// review_mode), so the queue holds approval-required notes only.
+// Only notes captured while the staffer was on 100% review are 'pending' (note.processed sets it from review_mode).
 export function pendingFor(s, me) {
   const lvl = SHORT_LEVEL[me?.role] || 0;
   const mine = n => { const st = M.byId(s.staff, n.staff); return lvl >= 3 || (st && st.reviewer === me?.id); };
@@ -44,17 +42,31 @@ export function pendingFor(s, me) {
     .map(x => x.n);
 }
 
+// Direct support staff a viewer manages: a supervisor's sites plus anyone routed to them; clinician/admin: all.
+export function managedStaff(s, me) {
+  const ds = s.staff.filter(x => x.role === 'direct_support');
+  if (!me || me.sites === 'all' || (SHORT_LEVEL[me.role] || 0) >= 3) return ds;
+  const sites = [].concat(me.sites || []);
+  return ds.filter(x => x.reviewer === me.id || [].concat(x.sites || []).some(z => sites.includes(z)));
+}
+// "All sites" dropdown: the sites the given staff work at
+export function siteOptions(s, staff) {
+  const ids = [...new Set(staff.flatMap(x => [].concat(x.sites || [])))];
+  const short = id => M.school(s, id).name.replace(' County · ', ' ').replace(' City · ', ' ');
+  return [{ id: 'all', name: FILTER.site }, ...ids.map(id => ({ id, name: short(id) }))];
+}
+
 // Mark what the enhancer added: seeded notes carry [[…]] marks; live ones are diffed word by word.
 const STOP = new Set('a an the and or of to in on at for with by he she they his her him was is it that this when after before then as from into'.split(' '));
 const stem = w => w.toLowerCase().replace(/[^a-z0-9]/g, '').replace(/(ing|ed|es|s)$/, '');
 function markAdded(enh, wrote) {
   const t = textOf(enh);
-  if (/\[\[/.test(t)) return esc(t).replace(/\[\[([\s\S]*?)\]\]/g, '<span style="background:#DDF1EF">$1</span>');
+  if (/\[\[/.test(t)) return esc(t).replace(/\[\[([\s\S]*?)\]\]/g, '<mark class="b3-add">$1</mark>');
   const have = new Set(textOf(wrote).split(/\s+/).map(stem).filter(Boolean));
   const toks = t.split(/(\s+)/);
   const isNew = w => { const k = stem(w); return k && !have.has(k) && !STOP.has(k); };
   let out = '', run = [];
-  const flush = () => { if (!run.length) return; let tail = ''; while (run.length && /^\s+$/.test(run[run.length - 1])) tail = run.pop() + tail; out += `<span style="background:#DDF1EF">${esc(run.join(''))}</span>` + tail; run = []; };
+  const flush = () => { if (!run.length) return; let tail = ''; while (run.length && /^\s+$/.test(run[run.length - 1])) tail = run.pop() + tail; out += `<mark class="b3-add">${esc(run.join(''))}</mark>` + tail; run = []; };
   for (let i = 0; i < toks.length; i++) {
     const w = toks[i];
     if (/^\s+$/.test(w)) { if (run.length) run.push(w); else out += w; continue; }
@@ -66,6 +78,7 @@ function markAdded(enh, wrote) {
   return out;
 }
 
+// the five documentation checks that run on a note
 function noteChecks(s, n, repeat) {
   const text = plain(n.enhanced) || textOf(n.dictation);
   const ivs = (n.interventions || n.fields?.interventions || []).map(c => (s.interventions.find(i => i.code === c) || { name: c }).name).join(' ');
@@ -74,151 +87,95 @@ function noteChecks(s, n, repeat) {
   const time = !!(n.units || n.direct_time_min || n.contact_time?.length || n.fields?.units) || /\d+\s?(min|minutes|h)\b/.test(text);
   const obs = CHECKS.noObserved(text).pass;
   const varied = !(repeat && repeat.ids.includes(n.id) && !plain(n.enhanced));
-  const item = (ok, label) => ok ? esc(label) : `<span class="chip r">${esc(label)} ✗</span>`;
-  return raw([item(goal, 'goal named'), item(iv, 'intervention on the ISP list'), item(time, 'time present'), item(obs, 'no "observed"'), item(varied, 'differs from the last 30 notes (Harvest\'s export)')].join(' · '));
+  return [[goal, 'goal named'], [iv, 'intervention on the list'], [time, 'time present'], [obs, 'no "observed"'], [varied, 'differs from recent notes']].map(([ok, label]) => ({ ok, label }));
 }
-
-// Direct support staff a viewer manages: a supervisor's sites plus anyone routed to them; clinician/admin: all.
-export function managedStaff(s, me) {
-  const ds = s.staff.filter(x => x.role === 'direct_support');
-  if (!me || me.sites === 'all' || (SHORT_LEVEL[me.role] || 0) >= 3) return ds;
-  const sites = [].concat(me.sites || []);
-  return ds.filter(x => x.reviewer === me.id || [].concat(x.sites || []).some(z => sites.includes(z)));
-}
-export const approvalLabel = st => st.review_mode === 'every_note'
-  ? 'Approval required · ' + (st.review_reason || (st.credential === 'QMHP-T' ? 'new hire' : 'on review'))
-  : 'Spot check · no approval';
 
 register('ReviewQueue', class extends Screen {
-  init() { this.state = { sel: this.params.id || null, all: false }; }
-  approvals() {
-    const s = this.s;
-    return managedStaff(s, this.me).map(st => {
-      const on = st.review_mode === 'every_note';
-      const pend = s.notes.filter(n => n.staff === st.id && n.review === 'pending').length;
-      const kids = s.clients.filter(c => c.staff === st.id && c.stage !== 'discharged').length;
-      return {
-        name: M.staffShort(s, st.id), sub: [st.credential, kids ? kids + ' student' + (kids === 1 ? '' : 's') : ''].filter(Boolean).join(' · '),
-        chip: on ? 'chip y' : 'chip n', label: approvalLabel(st),
-        note: on ? `every note approved by ${M.staffShort(s, st.reviewer || 'cdiaz')} before it goes to the EHR${pend ? ` · ${pend} waiting` : ''}` : (pend ? `${pend} captured while on approval still waiting` : 'notes go to the EHR at Process Form'),
-        btn: on ? 'Turn approval off' : 'Require approval',
-        toggle: () => on ? this.approvalOff(st) : this.approvalOn(st)
-      };
-    });
+  init() {
+    this.state = { sel: this.params.id || null, site: 'all' };
+    // Escape closes the drawer (a modal opened from it closes first, through the shell)
+    if (window.__b3Esc) window.removeEventListener('keydown', window.__b3Esc, true);
+    window.__b3Esc = e => {
+      if (e.key !== 'Escape' || window.psyflo?.current?.inst !== this || !this.state.sel) return;
+      const m = document.getElementById('modal'); if (m && !m.hidden) return;
+      this.setState({ sel: null });
+    };
+    window.addEventListener('keydown', window.__b3Esc, true);
   }
-  approvalOn(st) {
-    const name = M.staffShort(this.s, st.id);
-    modal(`<h2>Require approval · ${esc(name)}</h2><p style="margin:0 0 8px">From now on every note ${esc(name)} processes waits here for your approval before it goes to the EHR.</p>
-      <label for="ap-r" style="display:block;font-size:13px;font-weight:600;margin-bottom:5px">Why</label>
-      <select id="ap-r" style="width:100%;min-height:40px;border:1px solid #C9CDD3;border-radius:8px;padding:0 10px;font:inherit;font-size:14px"><option value="on review">On review (probation)</option><option value="new hire">New hire</option><option value="returning from leave">Returning from leave</option></select>
-      <div style="display:flex;gap:8px;margin-top:12px"><button class="mbtn p" data-ok>Require approval</button><button class="mbtn" data-close>Cancel</button></div>`,
-      (box, close) => {
-        box.querySelector('[data-ok]').onclick = async () => {
-          const reason = box.querySelector('#ap-r').value; close();
-          await this.do('staff.reviewMode', { id: st.id, mode: 'every_note', reason, by: this.me?.id || 'cdiaz' });
-          toast(`${name} · approval required (${reason}); new notes come to this queue`);
-        };
-      });
+  queue() {
+    const site = this.state.site;
+    return pendingFor(this.s, this.me).filter(n => site === 'all' || [].concat(M.staff(this.s, n.staff).sites || []).includes(site));
   }
-  approvalOff(st) {
-    const name = M.staffShort(this.s, st.id);
-    const pend = this.s.notes.filter(n => n.staff === st.id && n.review === 'pending').length;
-    modal(`<h2>Turn approval off · ${esc(name)}</h2><p style="margin:0 0 8px">${esc(name)} goes back to spot check: new notes go to the EHR at Process Form without waiting for you.${pend ? ` The ${pend} note${pend === 1 ? '' : 's'} already waiting stay${pend === 1 ? 's' : ''} here until you decide.` : ''}</p>
-      <div style="display:flex;gap:8px;margin-top:12px"><button class="mbtn p" data-ok>Turn approval off</button><button class="mbtn" data-close>Cancel</button></div>`,
-      (box, close) => {
-        box.querySelector('[data-ok]').onclick = async () => {
-          close();
-          await this.do('staff.reviewMode', { id: st.id, mode: 'spot_check', by: this.me?.id || 'cdiaz' });
-          toast(`${name} · back to spot check; no approval needed`);
-        };
-      });
-  }
-  queue() { return pendingFor(this.s, this.me); }
-  current(q = this.queue()) { return q.find(n => n.id === this.state.sel) || q[0] || null; }
   renderVals() {
-    const s = this.s, q = this.queue(), cur = this.current(q);
-    const shown = this.state.all ? q : q.slice(0, 4);
-    if (cur && !shown.includes(cur)) shown.push(cur);
-    const items = shown.map((n, i) => {
-      const on = cur && n.id === cur.id;
-      const style = 'display:block;padding:10px 16px;text-decoration:none;color:#151B24' + (i ? ';border-top:1px solid #EFEBE4' : '') + (on ? ';background:#F2F9F8;border-left:3px solid #217A78' : '');
-      const enh = !!plain(n.enhanced);
-      return { href: '#n' + (i + 1), style, title: `${M.clientLabel(s, n.client, false)} · ${M.fmtDate(n.date)}`, sub: `${M.staffShort(s, n.staff)} · ${n.units || n.fields?.units || '?'} unit${(n.units || 0) === 1 ? '' : 's'}${n.type && n.type !== 'daily' ? ' · ' + n.type.replace(/_/g, ' ') : ''} · `, notEnhanced: !enh, enhancedTxt: enh };
+    const s = this.s, q = this.queue(); const all = pendingFor(s, this.me);
+    const cur = this.state.sel ? all.find(n => n.id === this.state.sel) || null : null;
+    const staff = managedStaff(s, this.me); const sites = siteOptions(s, staff);
+    const rows = q.map(n => {
+      const type = (n.type || 'daily') === 'daily' ? '' : n.type.replace(/_/g, ' ') + ' · ';
+      const units = n.units || n.fields?.units;
+      return { id: n.id, date: M.fmtDate(n.date), who: M.clientLabel(s, n.client), staff: M.staffShort(s, n.staff), what: `${type}${units ? units + ' unit' + (+units === 1 ? '' : 's') : ''}`.replace(/ · $/, ''), open: () => this.setState({ sel: n.id }) };
     });
-    this._shown = shown;
-    let c = null, pattern = null;
+    let c = null;
     if (cur) {
       const st = M.staff(s, cur.staff);
       const repeat = repeatedParagraphs(s, cur.staff);
-      if (repeat && repeat.count >= 2) pattern = repeat;
+      const checks = noteChecks(s, cur, repeat); const passed = checks.filter(x => x.ok).length;
       const obj = cur.objective || cur.fields?.objective || (plain(cur.enhanced).match(/\b(?:Objective|Goal)\s*(\d)/i) || [])[1];
       const ivNames = (cur.interventions || cur.fields?.interventions || []).map(code => {
         const iv = s.interventions.find(i => i.code === code); const nm = iv ? iv.name : code;
         return /^Movement intervention$/.test(nm) ? 'Movement' : nm;
       });
-      const mins = cur.direct_time_min || cur.fields?.direct_time_min;
-      const evs = s.events.filter(e => e.record === cur.client && e.who === cur.staff && (e.at || '').slice(0, 10) === cur.date).map(e => `${M.fmtTime(e.at)} ${e.what}`);
+      const units = cur.units || cur.fields?.units; const mins = cur.direct_time_min || cur.fields?.direct_time_min;
       c = {
-        staffLine: [M.staffShort(s, cur.staff), st.credential].filter(Boolean).join(' · '),
-        heading: `${M.clientLabel(s, cur.client, false)} · ${(cur.type || 'daily').replace(/_/g, ' ').replace('daily', 'daily note')} · ${M.fmtDate(cur.date)}`,
-        goalChip: obj || ivNames.length ? [obj ? 'Goal ' + obj : 'No goal named', [...new Set(ivNames)].join(', ')].filter(Boolean).join(' · ') : 'No goal named',
-        timeChip: `${cur.units || cur.fields?.units || '?'} units` + (mins ? ` · ${Math.floor(mins / 60)} h ${mins % 60} m tracked` : cur.processed_at ? ' · processed ' + M.fmtDateTime(cur.processed_at) : ''),
+        heading: `${M.clientLabel(s, cur.client)} · ${M.fmtDate(cur.date)}`,
+        staffLine: [M.staffShort(s, cur.staff), (cur.type || 'daily') === 'daily' ? '' : cur.type.replace(/_/g, ' ')].filter(Boolean).join(' · '),
+        units: units ? `${units} unit${+units === 1 ? '' : 's'}${mins ? ` · ${Math.floor(mins / 60)} h ${mins % 60} min` : ''}` : '',
+        goal: obj ? 'Goal ' + obj : 'No goal named', goalChip: obj ? 'info' : 'late',
+        iv: [...new Set(ivNames)].join(', '),
+        same: repeat && repeat.ids.includes(cur.id) ? `Same words in ${repeat.count} notes` : '',
         wroteLabel: `${M.staffShort(s, cur.staff)} ${/^dict/.test(cur.source || '') ? 'said' : 'wrote'}`,
-        wrote: textOf(cur.dictation) || '(nothing typed or dictated: the note was written in Lauris directly)',
-        enhanced: plain(cur.enhanced) ? raw(markAdded(cur.enhanced, cur.dictation)) : raw('<span style="color:#525B66">Not enhanced. The staffer typed it straight into Lauris without dictating it first, so there is nothing added to check; the checks below run on what they wrote.</span>'),
-        checks: noteChecks(s, cur, repeat),
-        trail: [`Processed in Lauris ${cur.processed_at ? M.fmtDateTime(cur.processed_at) : M.fmtDate(cur.date)}`, st.review_mode === 'every_note' ? `${approvalLabel(st).toLowerCase()} · every note routed to ${M.staffShort(s, st.reviewer || 'cdiaz')}` : 'captured while on approval; now spot check', ...evs].join(' · ')
+        wrote: textOf(cur.dictation) || 'Written in Lauris directly',
+        enhanced: plain(cur.enhanced) ? raw(markAdded(cur.enhanced, cur.dictation)) : raw('<span class="u-mut">Not enhanced</span>'),
+        checksText: `${passed} of ${checks.length} ✓`, checksChip: passed === checks.length ? 'ok' : 'watch',
+        failed: checks.filter(x => !x.ok).map(x => x.label + ' ✗'),
+        help: raw(helpIcon(HELP.checks, PART.docChecks)), docChecks: PART.docChecks
       };
     }
-    const done = s.notes.filter(n => n.reviewed_at && n.reviewed_at.slice(0, 10) === s.today && n.review !== 'pending').slice(-6).reverse().map(n => ({
-      title: `${M.clientLabel(s, n.client, false)} · ${M.fmtDate(n.date)}`, staff: M.staffShort(s, n.staff),
-      chip: 'chip ' + ({ approved: 'g', returned: 'y', flagged: 'r' }[n.review] || 'n'),
-      label: { approved: 'approved', returned: 'returned with a note', flagged: "flagged: that didn't happen" }[n.review] || n.review,
-      comment: n.review_comment ? ` · "${n.review_comment}"` : ''
-    }));
     return {
-      today: M.fmtDate(s.today, { dow: true }).replace(/^(\w+) /, '$1, '),
-      waitingText: q.length + ' waiting', waitingChip: q.length ? 'chip y' : 'chip g',
-      items, cur: c, pattern,
-      more: !this.state.all && q.length > shown.length ? `${q.length - shown.length} more` : '',
-      showAll: () => this.setState({ all: true }),
-      empty: !q.length, emptyWhy: 'Notes from staff who need approval appear here when they press Process Form in Lauris.',
-      ...(() => {
-        const ap = this.approvals(); const on = ap.filter(a => a.chip === 'chip y');
-        return { approvals: ap, noApprovals: !ap.length,
-          approvalCount: `${on.length} of ${ap.length} on approval${on.length ? ' · ' + on.map(a => a.name).join(', ') : ''}`,
-          approvalWhy: 'Approval is only for staff flagged to need it: new hires and anyone on review. Their notes wait here before they go to the EHR. Everyone else is spot check: their notes go through at Process Form.' };
-      })(),
-      done: done.length ? done : null
+      title: PAGE_TITLE.StaffDashboard, today: M.fmtDate(s.today, { dow: true }).replace(/^(\w+) /, '$1, '),
+      viewNote: VIEWS.documentation.compliance, viewReview: VIEWS.documentation.review,
+      sites: sites.map(o => ({ ...o, sel: o.id === this.state.site ? 'selected' : '' })), pickSite: e => this.setState({ site: e.target.value, sel: null }),
+      rows, empty: !rows.length, cur: c, close: () => this.setState({ sel: null }),
+      approve: () => this.decide('approved'),
+      ret: () => this.ask('Return with note', 'returned', 'Return'),
+      madeup: () => this.ask("That didn't happen", 'flagged', 'Flag note'),
+      emptyText: 'Nothing to review'
     };
   }
   async decide(decision, comment) {
-    const cur = this.current(); if (!cur) return;
-    const label = M.clientLabel(this.s, cur.client, false);
-    await this.do('note.review', { id: cur.id, decision, comment, by: this.me?.id || 'cdiaz' });
+    const cur = this.s.notes.find(n => n.id === this.state.sel); if (!cur) return;
+    const label = `${M.clientLabel(this.s, cur.client)} · ${M.fmtDate(cur.date)}`;
     this.state.sel = null;
-    toast(`${label} · ${M.fmtDate(cur.date)}: ${decision === 'approved' ? 'approved' : decision === 'returned' ? 'returned to ' + M.staffShort(this.s, cur.staff) + ' with your note' : 'flagged · the staffer is asked to fix it in Lauris'}`);
+    await this.do('note.review', { id: cur.id, decision, comment, by: this.me?.id || 'cdiaz' });
+    toast(`${label} · ${decision === 'approved' ? 'Approved' : decision === 'returned' ? 'Returned to ' + M.staffShort(this.s, cur.staff) : 'Flagged · ' + M.staffShort(this.s, cur.staff) + ' fixes it in Lauris'}`);
     this.repaint();
   }
-  ask(title, hint, decision, btn) {
-    const cur = this.current(); if (!cur) return;
-    modal(`<h2>${esc(title)}</h2><p style="margin:0 0 8px">${esc(hint)}</p>
-      <label for="rq-c" style="display:block;font-size:13px;font-weight:600;margin-bottom:5px">Note to ${esc(M.staffShort(this.s, cur.staff))}</label>
-      <textarea id="rq-c" rows="4" style="width:100%;border:1px solid #C9CDD3;border-radius:8px;padding:10px 12px;font:inherit;font-size:14px"></textarea>
+  ask(title, decision, btn) {
+    const cur = this.s.notes.find(n => n.id === this.state.sel); if (!cur) return;
+    modal(`<h2>${esc(title)}</h2>
+      <label for="rq-c" style="display:block;font-size:13px;font-weight:600;margin:8px 0 5px">Note to ${esc(M.staffShort(this.s, cur.staff))}</label>
+      <textarea id="rq-c" rows="4" class="u-in" style="width:100%;padding:10px 12px;line-height:20px"></textarea>
       <div style="display:flex;gap:8px;margin-top:12px"><button class="mbtn p" data-ok>${esc(btn)}</button><button class="mbtn" data-close>Cancel</button></div>`,
       (box, close) => {
         const ta = box.querySelector('#rq-c'); ta.focus();
-        box.querySelector('[data-ok]').onclick = async () => { const v = ta.value.trim(); if (!v) { ta.style.borderColor = '#8A2E1C'; ta.placeholder = 'Say what to change'; return; } close(); await this.decide(decision, v); };
+        box.querySelector('[data-ok]').onclick = async () => { const v = ta.value.trim(); if (!v) { ta.style.borderColor = 'var(--late-fg)'; ta.placeholder = 'What should change?'; return; } close(); await this.decide(decision, v); };
       });
   }
-  get anchors() {
-    const a = {
-      approve: () => this.decide('approved'),
-      return: () => this.ask('Return with a note', 'The note goes back to the staffer with your comment; they fix it in Lauris and it comes back here.', 'returned', 'Return the note'),
-      madeup: () => this.ask("That didn't happen", 'Say which part did not happen. The note goes back to the staffer to fix in Lauris, and the flag stays on the note\'s audit trail.', 'flagged', 'Flag the note')
-    };
-    for (let i = 1; i <= 60; i++) a['n' + i] = () => { const n = (this._shown || [])[i - 1]; if (n) this.setState({ sel: n.id }); };
-    return a;
+  // keyboard: the drawer takes focus when it opens and the row's Review button gets it back when it closes
+  after(root) {
+    const d = root.querySelector('.u-drawer');
+    if (d) { if (!d.contains(document.activeElement)) d.focus({ preventScroll: true }); this._opener = this.state.sel; }
+    else if (this._opener) { const b = root.querySelector(`[data-note="${this._opener}"]`); this._opener = null; if (b) b.focus({ preventScroll: true }); }
   }
-  set anchors(v) { }
+  get css() { return 'mark.b3-add{background:var(--teal-tint);color:inherit;border-radius:3px;padding:0 1px}.u-drawer:focus{outline:none}.b3-click{cursor:pointer}.b3-click:hover{background:#FBFAF7}'; }
 });
