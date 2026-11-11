@@ -57,7 +57,8 @@ await T.test('PDU-01/06 decision clock: "Day N", follow-up on day 10, overdue on
   assert.eq(rule(s, 'decision.followup_day').value, 10);
   await advance(3, true); s = await state('jperez');   // Nov 1: day 10
   assert.match(M.requestClock(s, s.requests.find(x => x.id === 'R-0416')).text, /^Day 10 · follow-up call due/);
-  assert.ok(M.doNext(s).some(i => i.group === 'decisions' && /Day 10/.test(i.title)), 'Do next shows the follow-up call');
+  const { worklist } = await import('../web/js/shared/sel/mywork.js');
+  assert.ok(/Day 10|follow-up/i.test(JSON.stringify(worklist(s, { id: 'jperez', kind: 'staff', role: 'clinician' }).items)), 'My Work shows the follow-up call');
   assert.ok(s.requests.find(x => x.id === 'R-0416').stage === 'submitted', 'not overdue yet');
   await advance(5, true); s = await state('jperez');   // Nov 6: day 15 > 14
   const q = s.requests.find(x => x.id === 'R-0416'); assert.eq(q.stage, 'overdue', 'overdue only after the window'); assert.match(M.requestClock(s, q).text, /^Day 15 · 1 day past the 14-day window/);

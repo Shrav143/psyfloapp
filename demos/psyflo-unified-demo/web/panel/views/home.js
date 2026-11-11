@@ -106,6 +106,7 @@ function html(ctx) {
   const scanOk = ctx.can('scanEnhance', c ? { clientId: c.id } : undefined); const timeOk = ctx.can('trackTime', c ? { clientId: c.id } : undefined); const scribeOk = ctx.can('notes.own') || ctx.can('drafts.clinical');
   const btns = [scribeOk && ['scribe', ctx.I.mic, 'Scribe'], timeOk && ['time', ctx.I.clock, 'Track Time'], scanOk && ['enhance', ctx.I.scan, 'Scan &amp; Enhance']].filter(Boolean);
   if (btns.length) h += `<div class="trio" role="group" aria-label="Actions" style="grid-template-columns:repeat(${btns.length},minmax(0,1fr))">${btns.map(([v, ic, l]) => `<button class="btn o" data-act="goView" data-view="${v}">${ic}<span>${l}</span></button>`).join('')}</div>`;
+  if (ctx.can('myWork') && (timeOk || role === 'supervisor')) h += `<div class="row w"><button class="btn o sm" data-act="openApp" data-href="#/MyWork?section=day">${role === 'direct_support' ? 'My day' : 'Team day'} in Psyflo ↗</button><span class="small muted">time, notes and what is left today</span></div>`;
   if (!scanOk) h += `<div class="hint">${ctx.I.lock} Scan &amp; Enhance is for licensed clinical staff${role === 'direct_support' && c ? ' on their own caseload' : ''}.</div>`;
   if (role === 'clinician' && ctx.can('drafts.clinical') && c && (p.kind === 'record' || p.kind === 'session')) h += `<button class="btn o blk" data-act="goView" data-view="authorize"><span>Prepare authorization</span></button>`;
   // the next task

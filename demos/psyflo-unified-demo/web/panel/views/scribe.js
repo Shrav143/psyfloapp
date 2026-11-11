@@ -201,12 +201,15 @@ function schoolCardsHTML(ctx, c) {
 }
 const narrativeNow = ctx => (ctx.page.form?.fields || []).find(f => f.label === 'Narrative')?.value || '';
 function timerCard(ctx, c, ds) {
-  const st = ctx.st; const t = ds.t; if (!t.ct) return `<div class="hint">No timer blocks today · type the contact time in Lauris.</div>`;
-  const unconf = t.ct.rows.some(r => r.unconfirmed);
-  return `<div class="tile"><div class="row w"><h2 style="flex:1">Contact time · your timer</h2><span class="chip ${st.unitsConfirmed || !unconf ? 'g' : 'y'}">${t.ct.units} unit${t.ct.units === 1 ? '' : 's'}${st.unitsConfirmed ? ' · confirmed' : unconf ? ' · unconfirmed' : ''}</span></div>
-    <div class="small" style="margin:2px 0 6px">Direct time ${esc(t.ct.text)}${unconf && !st.unitsConfirmed ? ' · the last block is not counted until you confirm it' : ''}</div>
-    ${!st.unitsConfirmed && unconf ? `<div class="row w"><button class="btn p sm" data-act="confirmUnits">Confirm ${B.timerBoxes(ctx, c, { unitsConfirmed: true }).ct.units} units</button><button class="btn o sm" data-act="dropBlock">The afternoon block didn't happen</button></div>` : ''}
-    ${ctx.parts.accordion(`Blocks · ${t.ct.rows.length}`, t.ct.rows.map(r => `<div class="stamp"><div>${B.fmtT(r.from)}–${B.fmtT(r.to)}</div><div>${esc(r.what)}${r.unconfirmed ? ` <span class="chip ${st.unitsConfirmed ? 'g' : 'y'}">${st.unitsConfirmed ? 'confirmed' : 'unconfirmed'}</span>` : ''}</div></div>`).join(''), { id: 'dpn-blocks' })}</div>`;
+  const t = ds.t; const drafts = B.draftEntries(ctx, c);
+  const draftHint = drafts.length ? `<div class="hint">${drafts.length} stopped timer${drafts.length === 1 ? '' : 's'} not described yet · open Track Time to say what you did. Not counted until then.</div>` : '';
+  if (!t.ct) return `<div class="hint">No saved timer blocks today · type the contact time in Lauris.</div>${draftHint}`;
+  const open = B.unconfirmedEntries(ctx, c); const unconf = open.length > 0; const canAct = ctx.can('trackTime');
+  return `<div class="tile"><div class="row w"><h2 style="flex:1">Contact time · your timer</h2><span class="chip ${unconf ? 'y' : 'g'}">${t.ct.units} unit${t.ct.units === 1 ? '' : 's'}${unconf ? ' · to confirm' : ''}</span></div>
+    <div class="small" style="margin:2px 0 6px">Direct time ${esc(t.ct.text)}${unconf ? ` · ${open.length === 1 ? 'one block is' : open.length + ' blocks are'} not counted until you confirm` : ''}</div>
+    ${unconf && canAct ? `<div class="row w"><button class="btn p sm" data-act="confirmUnits">Confirm ${B.unitsIfConfirmed(ctx, c).units} units</button><button class="btn o sm" data-act="dropBlock">The afternoon block didn't happen</button></div>` : ''}
+    ${unconf && !canAct ? '<div class="hint">Only the person who recorded the time confirms it.</div>' : ''}${draftHint}
+    ${ctx.parts.accordion(`Blocks · ${t.ct.rows.length}`, t.ct.rows.map(r => `<div class="stamp"><div>${B.fmtT(r.from)}–${B.fmtT(r.to)}</div><div>${esc(r.what)}${r.unconfirmed ? ' <span class="chip y">unconfirmed</span>' : ''}</div></div>`).join(''), { id: 'dpn-blocks' })}</div>`;
 }
 function feedbackHTML(ctx, dict) {
   const st = ctx.st; const prev = (dict?.feedback || []).at(-1); const { I } = ctx;
@@ -399,8 +402,20 @@ const acts = {
   sayDraft: (el, ctx) => sayDraft(ctx, el.dataset.k, 'typed'),
   sayAgain(el, ctx) { ctx.st.again = true; ctx.st.sample = null; ctx.draw(); },
   // the phone path of the daily note
-  confirmUnits: async (el, ctx) => { const st = ctx.st; st.unitsConfirmed = true; const c = ctx.client(); const ds = dpnState(ctx, c); await ctx.fill(ds.t.boxes.filter(b => b.label !== 'Contact time'), { form: 'dpn', client: c, sources: B.DPN_SOURCES, animate: false }); ctx.flash(`${ds.t.ct.units} units confirmed (${ds.t.ct.text}, units from the direct minutes under the unit bands).`); },
-  dropBlock: async (el, ctx) => { const st = ctx.st; st.unitsConfirmed = false; st.blockDropped = true; const c = ctx.client(); const ds = dpnState(ctx, c); await ctx.fill(ds.t.boxes, { form: 'dpn', client: c, sources: B.DPN_SOURCES, animate: false }); },
+  // Confirm and "didn't happen" go through the time model (time.save {confirm:true} / time.discard): the entries change first, then the note's boxes are
+  // rebuilt from the entries, so the note, Track Time and the phone always show the same minutes and units.
+  confirmUnits: async (el, ctx) => {
+    const c = ctx.client(); const ids = B.unconfirmedEntries(ctx, c).map(e => e.id); if (!ids.length) return;
+    for (const id of ids) await ctx.do('time.save', { id, confirm: true });
+    const ds = dpnState(ctx, c); await ctx.fill(ds.t.boxes, { form: 'dpn', client: c, sources: B.DPN_SOURCES, animate: false });
+    ctx.flash(`${ds.t.ct.units} units confirmed (${ds.t.ct.text}, units from the direct minutes under the unit bands).`);
+  },
+  dropBlock: async (el, ctx) => {
+    const c = ctx.client(); const ids = B.unconfirmedEntries(ctx, c).map(e => e.id); if (!ids.length) return;
+    for (const id of ids) await ctx.do('time.discard', { id, reason: 'Did not happen (said in the daily note panel)' });   // kept in the record, voided, never counted
+    const ds = dpnState(ctx, c); if (ds.t.boxes.length) await ctx.fill(ds.t.boxes, { form: 'dpn', client: c, sources: B.DPN_SOURCES, animate: false });
+    ctx.flash(`Block discarded · kept in the record, not counted. ${ds.t.ct ? ds.t.ct.units + ' units (' + ds.t.ct.text + ').' : ''}`);
+  },
   dpnFill: async (el, ctx) => { const st = ctx.st; const c = ctx.client(); const ds = dpnState(ctx, c); await ctx.fill(dpnBoxes(ctx, c, ds), { form: 'dpn', client: c, sources: B.DPN_SOURCES }); st.dropped = true; ctx.draw(); },
   goodRec: async (el, ctx) => { const st = ctx.st; const c = ctx.client(); const ds = dpnState(ctx, c); await ctx.do('panel.feedback', { client: c.id, form: 'dpn', kind: 'good', dictation: ds.dict?.id, narrative: ds.e?.narrative }); st.fbDone = 'good'; st.fbOpen = false; ctx.draw(); },
   needsImp(el, ctx) { const st = ctx.st; st.fbOpen = !st.fbOpen; st.fbDone = null; ctx.draw(); },
@@ -495,7 +510,7 @@ async function onOpen(ctx) {
   if (p.form.type === 'dpn') {
     const d = ctx.M.waitingDictations(s, c.id)[0]; const narrative = p.form.fields.find(f => f.label === 'Narrative')?.value;
     if (d && d.source !== 'panel' && !narrative) {
-      st.usedDict = d.id; st.unitsConfirmed = false;
+      st.usedDict = d.id;
       const ds = dpnState(ctx, c);
       await ctx.fill(dpnBoxes(ctx, c, ds), { form: 'dpn', client: c, sources: B.DPN_SOURCES });
       st.dropped = true; ctx.draw();
