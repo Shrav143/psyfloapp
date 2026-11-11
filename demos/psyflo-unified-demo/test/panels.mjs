@@ -8,9 +8,9 @@ const b = await chromium.launch(); const p = await (await b.newContext({ viewpor
 const errs = errors(p);
 // [as, path, name, must match, must not match, max panel height]
 const pages = [
-  ['jperez', '/consumers', 'home', /Scribe[\s\S]*Track Time[\s\S]*Scan & Enhance/, /Signed in as|Support staff|\(demo\)/, 1200],
-  ['khale', '/consumers', 'home-ds', /Scribe[\s\S]*Track Time/, /Signed in as|Support staff|Authorizations/, 1200],
-  ['cdiaz', '/consumers', 'home-sup', /Scan & Enhance is for licensed clinical staff/, /Track Time|Signed in as/, 1200],
+  ['jperez', '/consumers', 'home', /Scribe[\s\S]*Track Time[\s\S]*Scan & Enhance[\s\S]*Team day in Psyflo/, /Signed in as|Support staff|\(demo\)/, 1200],
+  ['khale', '/consumers', 'home-ds', /Scribe[\s\S]*Track Time[\s\S]*My day in Psyflo/, /Signed in as|Support staff|Authorizations/, 1200],
+  ['cdiaz', '/consumers', 'home-sup', /Team day in Psyflo[\s\S]*Scan & Enhance is for licensed clinical staff/, /Track Time|Signed in as/, 1200],
   ['dowens', '/consumers', 'home-admin', /Not permitted/, /Scribe|Track Time|Scan & Enhance/, 600],
   ['khale', '/consumers/3310/session/dpn', 'dpn', /Say what happened[\s\S]*Draft it/i, /Observed client|lost the game|walked off the court/, 1700],
   ['jperez', '/consumers/3310/session/weekly', 'weekly', /Weekly guardian contact[\s\S]*Draft it/i, /11 of 12/, 1700],

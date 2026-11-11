@@ -2,6 +2,7 @@
 // as it stands; the review has no accept-all; the person's own words are what gets typed; nothing is typed before Approve; Process Form is the person's click.
 import { suite, assert, api, tryApi, state, reset, playwright, errors, LAURIS, SHOTS } from './lib/index.mjs';
 import { dailyGuidance, weeklyGuidance, collateralGuidance, tidySentence } from '../web/js/shared/enhance.js';
+import { timeSummary } from '../web/js/shared/time.js';
 
 const T = suite('scribe');
 const item = (id, label, psyflo, sources) => ({ id, label, staff: '', psyflo, sources });
@@ -130,6 +131,31 @@ try {
     const v = await form(); assert.eq(v['Contact with'], before['Contact with'], 'green box untouched'); assert.eq(v['Date'], before['Date']);
     assert.match(v['What was discussed'], /^Spoke with grandmother for 12 minutes about the break card at home\./); assert.eq(v['Duration'], '12 min');
     assert.eq(v['Follow-up'], '', 'what was not separated out is left for the person');
+  });
+  // Confirm and "didn't happen" go through the time model (time.save / time.discard), so the note, Track Time and the phone always show the same minutes.
+  const sumOf = async () => { const s = await state('khale'); const t = timeSummary(s, 'MR', s.today, { staff: 'khale' }); return { s, t }; };
+  await reset('live');
+  await p.goto(`${LAURIS}/login?as=khale&next=${encodeURIComponent('/consumers/3310/session/dpn')}`); await p.waitForTimeout(1800);
+  await T.test('Confirm saves the block through time.save: the entries, the note boxes and the units all say 5 h 10 min / 3 units; before it, the 90-minute block is not counted', async () => {
+    let { t } = await sumOf(); assert.eq(t.direct, 220, 'seeded confirmed time'); assert.eq(t.units, 2); assert.eq(t.unconfirmed.length, 1, 'the afternoon block starts unconfirmed'); assert.eq(t.unconfirmed[0].minutes, 90);
+    await panel().getByText(/^Confirm 3 units/).click(); await p.waitForTimeout(1500);
+    const r = await sumOf(); assert.eq(r.t.unconfirmed.length, 0); assert.eq(r.t.direct, 310); assert.eq(r.t.units, 3);
+    const v = await form(); assert.eq(v['Direct time'], '5 h 10 min'); assert.eq(v['Units'], '3', 'the note says what the entries say');
+    assert.noMatch(v['Contact time'], /unconfirmed/, 'the confirmed block is no longer marked unconfirmed');
+    assert.eq(await panel().getByText(/^Confirm \d units/).count(), 0, 'nothing left to confirm');
+  });
+  await reset('live');
+  await p.goto(`${LAURIS}/login?as=khale&next=${encodeURIComponent('/consumers/3310/session/dpn')}`); await p.waitForTimeout(1800);
+  await T.test('"The afternoon block didn\'t happen" voids the entry through time.discard (kept in the record with its reason); the note says 3 h 40 min / 2 units', async () => {
+    await panel().getByRole('button', { name: /afternoon block didn't happen/ }).click(); await p.waitForTimeout(1500);
+    const { s, t } = await sumOf(); const e = s.time_entries.find(x => x.id === 'te-6');
+    assert.eq(e.status, 'voided'); assert.ok(e.void_reason && e.void_reason.length >= 4, 'a reason is kept'); assert.eq(t.direct, 220); assert.eq(t.units, 2); assert.eq(t.entries.length, 5);
+    const v = await form(); assert.eq(v['Direct time'], '3 h 40 min'); assert.eq(v['Units'], '2'); assert.noMatch(v['Contact time'], /Afternoon classes/);
+  });
+  await T.test('a supervisor cannot confirm time: the server refuses the call and the block stays unconfirmed', async () => {
+    await reset('live');
+    await assert.refused(tryApi('time.save', { id: 'te-6', confirm: true }, 'cdiaz'), /./, 403);
+    assert.eq((await sumOf()).t.unconfirmed.length, 1, 'still unconfirmed');
   });
   await T.test('no console errors in the page or the panel', async () => { assert.deepEq(errs, [], errs.join(' | ')); });
 } finally { await b.close(); }

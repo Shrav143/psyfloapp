@@ -1,12 +1,14 @@
 # panels · PASS
 
-Run 2026-11-11T15-10-12Z · 28086 ms · instance 0 · exit 0
+Run 2026-11-11T16-10-48Z · 32200 ms · instance 1 · exit 0
 
 | Result | Test | Note |
 |---|---|---|
 | PASS | home (jperez) |  |
 | PASS | home-ds (khale) |  |
+| PASS | home-sup (cdiaz) |  |
 | PASS | home-admin (dowens) |  |
+| PASS | dpn (khale) |  |
 | PASS | weekly (jperez) |  |
 | PASS | monthly (jperez) |  |
 | PASS | incident (jperez) |  |

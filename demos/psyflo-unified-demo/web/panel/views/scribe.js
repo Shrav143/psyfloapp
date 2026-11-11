@@ -12,6 +12,7 @@ import { consentFor, consentCard } from '../lib/consent.js';
 import { recFor, reviewBlock } from '../lib/review.js';
 import * as B from '../lib/boxes.js';
 import { formValue } from '../lib/items.js';
+import { needsCheck } from '../../js/shared/time.js';
 
 const TYPES = [
   { id: 'screening', label: 'Admission screening', cap: 'drafts.clinical', form: 'screening' },
@@ -209,7 +210,7 @@ function timerCard(ctx, c, ds) {
     <div class="small" style="margin:2px 0 6px">Direct time ${esc(t.ct.text)}${unconf ? ` · ${open.length === 1 ? 'one block is' : open.length + ' blocks are'} not counted until you confirm` : ''}</div>
     ${unconf && canAct ? `<div class="row w"><button class="btn p sm" data-act="confirmUnits">Confirm ${B.unitsIfConfirmed(ctx, c).units} units</button><button class="btn o sm" data-act="dropBlock">The afternoon block didn't happen</button></div>` : ''}
     ${unconf && !canAct ? '<div class="hint">Only the person who recorded the time confirms it.</div>' : ''}${draftHint}
-    ${ctx.parts.accordion(`Blocks · ${t.ct.rows.length}`, t.ct.rows.map(r => `<div class="stamp"><div>${B.fmtT(r.from)}–${B.fmtT(r.to)}</div><div>${esc(r.what)}${r.unconfirmed ? ' <span class="chip y">unconfirmed</span>' : ''}</div></div>`).join(''), { id: 'dpn-blocks' })}</div>`;
+    ${ctx.parts.accordion(`Blocks · ${t.ct.rows.length}`, t.ct.rows.map(r => `<div class="stamp"><div>${B.fmtT(r.from)}–${B.fmtT(r.to)}</div><div>${esc(r.what)}${r.unconfirmed ? ' <span class="chip y">unconfirmed</span>' : ''}${needsCheck({ kind: 'direct', what: r.what }) ? ' <span class="chip n" title="Idle or waiting time, transport, documentation and classroom monitoring without treatment are not reimbursable. If this was one of those, correct it in Track Time.">check</span>' : ''}</div></div>`).join(''), { id: 'dpn-blocks' })}</div>`;
 }
 function feedbackHTML(ctx, dict) {
   const st = ctx.st; const prev = (dict?.feedback || []).at(-1); const { I } = ctx;
