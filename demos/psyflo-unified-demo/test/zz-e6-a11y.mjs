@@ -29,8 +29,9 @@ async function ctxFor({ who, portal, width = 1440, height = 900, reduced = false
   const page = await ctx.newPage(); page.errs = errors(page);
   if (who) await login(page, who, { presenter: false });
   if (portal) {
+    await ctx.addInitScript(() => { try { localStorage.setItem('psyflo_user', 'jperez'); } catch { } });
     await page.goto(BASE + '/#/Login', { waitUntil: 'domcontentloaded' });
-    await page.evaluate(async w => { const r = await fetch('/api/session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(w) }); const j = await r.json(); localStorage.setItem('psyflo_session', JSON.stringify({ token: j.token, actor: j.actor })); localStorage.setItem('psyflo_dock', 'open'); if (w.schoolUser) localStorage.setItem('psyflo_school_user', w.schoolUser); }, portal);
+    await page.evaluate(async w => { const r = await fetch('/api/session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(w) }); const j = await r.json(); localStorage.setItem('psyflo_session', JSON.stringify({ token: j.token, actor: j.actor })); if (w.schoolUser) localStorage.setItem('psyflo_school_user', w.schoolUser); }, portal);
     await page.reload({ waitUntil: 'domcontentloaded' });
   }
   return { ctx, page };
