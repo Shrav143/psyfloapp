@@ -1,6 +1,6 @@
 # roles · PASS
 
-Run 2026-11-11T16-42-27Z · 1481 ms · instance 0 · exit 0
+Run 2026-11-11T18-19-51Z · 11997 ms · instance 2 · exit 0
 
 | Result | Test | Note |
 |---|---|---|
@@ -24,3 +24,7 @@ Run 2026-11-11T16-42-27Z · 1481 ms · instance 0 · exit 0
 | PASS | files need a session and the right role |  |
 | PASS | cross-origin: JSON only and an origin allow-list on state-changing calls |  |
 | PASS | presenter PIN and DEMO_PRESENTER are honoured by sign-in |  |
+| PASS | a plain sign-in is never a presenter; the public roster says whether presenter mode exists and needs a PIN, and never carries the PIN |  |
+| PASS | createSession: PIN required when PRESENTER_PIN is set (wrong or missing is 403 with pin flag), the right PIN elevates, DEMO_PRESENTER=0 never does |  |
+| PASS | regression (URA-05/06/10): writing localStorage.psyflo_user, or reloading, never turns a role session into another person or a presenter |  |
+| PASS | with PRESENTER_PIN set: the server and the dock ask for the PIN, a wrong PIN is refused, the right PIN unlocks the presenter tools (own server) |  |

@@ -292,9 +292,8 @@ export function draftInitialSRA({ client, screening, referral, school, today, is
   ];
   const text = boxes.map(b => b.value).join(' ');
   const checks = [
-    { rule: 'Numbers', pass: CHECKS.counts(text).pass, detail: 'Every count is "3 of 5," never a percentage — the form asks for it that way' },
+    { rule: 'Numbers', pass: CHECKS.counts(text).pass && schoolBits.length > 0, detail: schoolBits.length ? 'Every count is "3 of 5," never a percentage — the form asks for it that way' : 'Evidence missing — verify the school\'s counts (absences, ISS/OSS days, classes passing) before sending' },
     { rule: 'Dates', pass: CHECKS.recent(c1, today).pass, detail: 'All examples are from the last 30 days' },
-    { rule: 'School counts on record', pass: schoolBits.length > 0, detail: schoolBits.length ? 'From the school portal' : 'Evidence missing — verify the school\'s counts (absences, ISS/OSS days, classes passing) before sending' },
     { rule: 'Prior services', pass: !!c2, detail: c2 ? 'Outcome column is filled for both rows' : 'Prior outpatient outcome missing — blocked until it is asked' },
     { rule: 'School counseling', pass: !/school counsel/i.test(c2), detail: 'Under care coordination, not criterion 2' },
     { rule: 'Criterion 3', pass: true, detail: c1met && c2met ? 'Left blank: criteria 1 and 2 are met' : 'Still open' },

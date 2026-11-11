@@ -1,6 +1,6 @@
 # unit · PASS
 
-Run 2026-11-11T16-10-48Z · 430 ms · instance 0 · exit 0
+Run 2026-11-11T18-19-51Z · 464 ms · instance 0 · exit 0
 
 | Result | Test | Note |
 |---|---|---|
@@ -13,3 +13,5 @@ Run 2026-11-11T16-10-48Z · 430 ms · instance 0 · exit 0
 | PASS | Units · official bands: 0 below 120 minutes, 1/2/3 at 120/180/300; the 60-minute rule is an alternate, not the default |  |
 | PASS | Evidence · counts come from stored notes; missing evidence prints "Evidence missing"; household is not included by default |  |
 | PASS | Flow C · initial SRA leaves criterion 3 blank when 1 and 2 are met, and never drafts trauma-informed care |  |
+| PASS | Flow C · initial SRA: no screening facts and no school numbers = "Evidence missing", never a number nobody gave |  |
+| PASS | drafts with no record behind them print "Evidence missing", never another student's facts or the demo's |  |

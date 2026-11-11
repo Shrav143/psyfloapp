@@ -139,7 +139,7 @@ test('Flow C · initial SRA: no screening facts and no school numbers = "Evidenc
   const call = draftInitialSRA({ client: { initials: 'T.W.' }, screening: { facts: sc.facts, when: '2026-10-16' }, referral: { id: 'REF-118' }, school: null, today: '2026-10-22' });
   const v = call.boxes.find(b => /criterion 1/.test(b.label)).value;
   assert.match(v, /2–3 times a week/); assert.ok(!/Unexcused|ISS past|OSS|passing|, ,|\?/.test(v), v);
-  assert.equal(call.checks.find(c => c.rule === 'School counts on record').pass, false);
+  assert.equal(call.checks.find(c => c.rule === 'Numbers').pass, false); assert.match(call.checks.find(c => c.rule === 'Numbers').detail, /Evidence missing — verify the school/);
   // every source of every initial-request draft carries a date (or says it is unknown)
   for (const d of [none, call]) for (const x of d.sources) assert.ok(x.date && x.date_label, JSON.stringify(x));
   assert.equal(none.sources[2].date, 'undated'); assert.equal(none.sources[2].date_label, 'Evidence missing — date unknown');
