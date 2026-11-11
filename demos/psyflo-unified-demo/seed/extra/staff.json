@@ -55,7 +55,8 @@
     { "id": "kh-mc-cb", "client": "CB", "staff": "khale", "type": "monthly_collateral", "date": "2026-10-22", "review": "approved", "processed_at": "2026-10-22T15:30" }
   ],
   "staff_dashboard": {
-    "source": "Harvest's Lauris export · Oct 29",
+    "source": "Sample data, illustrative",
+    "provenance": "harvest_export",
     "site_avg_24h": 81,
     "staff": {
       "khale": { "students": 6, "in_24h": 92, "flags": ["Goal 3 untouched for M.R. (6 weeks)"],
@@ -110,7 +111,8 @@
     ]
   },
   "analytics_baseline": {
-    "source": "Harvest's Lauris export · Oct 29 + master tracker",
+    "source": "Sample data, illustrative",
+    "provenance": "harvest_export",
     "by_locality": {
       "cc": { "n": 84, "partial": 0.55, "awarded_ratio": 0.73, "median_award_on_150": 110, "full_denials": 5, "median_decision_days": 6, "early_discharge_restarts": 6, "unpaid_hours": 170, "share": 0.58 },
       "lc": { "n": 62, "partial": 0.63, "awarded_ratio": 0.68, "median_award_on_150": 100, "full_denials": 4, "median_decision_days": 7, "early_discharge_restarts": 5, "unpaid_hours": 142, "share": 0.42 }

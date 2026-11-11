@@ -3,7 +3,8 @@
 // 'pending' until a supervisor approves; 'spot_check' lets notes go straight through at Process Form.
 // Notes already waiting stay in the queue when approval is turned off.
 export default {
-  'staff.reviewMode'(s, { id, mode, reason, reviewer, by = 'cdiaz' }) {
+  'staff.reviewMode'(s, { id, mode, reason, reviewer }) {
+    const by = this.who();
     const st = (s.staff || []).find(x => x.id === id);
     if (!st) throw new Error('Staff member not found');
     if (st.role !== 'direct_support') throw new Error('Approval applies to direct support staff only');
@@ -12,7 +13,7 @@ export default {
     if (mode === 'every_note') {
       st.review_mode = 'every_note';
       st.review_reason = reason || st.review_reason || 'on review';
-      st.reviewer = reviewer || (byStaff?.role === 'supervisor' ? by : st.reviewer || 'cdiaz');
+      st.reviewer = reviewer || (byStaff?.role === 'supervisor' ? by : st.reviewer);
       st.review_since = s.today;
       const rv = (s.staff || []).find(x => x.id === st.reviewer);
       this.event(`Supervisor approval required for every note (${st.review_reason}) · reviewer ${rv ? rv.name : st.reviewer}`, by, id);

@@ -51,5 +51,12 @@ export function mins(hhmm) { const [h, m] = hhmm.split(':').map(Number); return 
 export function fmtDuration(min) { const h = Math.floor(min / 60), m = min % 60; return h ? `${h} h ${m} min` : `${m} min`; }
 export function clock12(hhmm) { let [h, m] = hhmm.split(':').map(Number); const ap = h >= 12 ? 'pm' : 'am'; h = h % 12 || 12; return `${h}:${String(m).padStart(2, '0')}${ap === 'pm' ? ' pm' : ' am'}`; }
 
-// 3 units per school day when direct time is 5 h or more (brief: units arithmetic)
-export function unitsForDirectMinutes(min) { return min >= 300 ? 3 : min >= 180 ? 2 : min >= 60 ? 1 : 0; }
+// Daily units from direct minutes, rounded DOWN, by bands [[minutes, units], ...] (ascending).
+// The default is the official DMAS band set (12VAC30-80-30: 2-2.99 h = 1, 3-4.99 h = 2, 5 h+ = 3). The live value comes from
+// the rules table (key units.tdt.day_tiers); use unitsFor(s, service, minutes) from rules.js, which passes the configured bands.
+export const OFFICIAL_DAY_TIERS = [[120, 1], [180, 2], [300, 3]];
+export function unitsForDirectMinutes(min, bands = OFFICIAL_DAY_TIERS) {
+  let u = 0;
+  for (const [m, n] of bands) if (min >= m) u = n;
+  return u;
+}

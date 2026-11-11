@@ -2,7 +2,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { draftScreening, enhanceDictation, draftInitialSRA, screeningFacts, screeningPrompts } from '../web/js/shared/draft.js';
+import { draftScreening, enhanceDictation, draftInitialSRA, draftSeeded, contactTime, screeningFacts, screeningPrompts } from '../web/js/shared/draft.js';
+import { unitsFor, unitBands } from '../web/js/shared/rules.js';
+import { unitsForDirectMinutes } from '../web/js/shared/dates.js';
 
 const transcript = fs.readFileSync(new URL('../seed/scripts/screening_TW.txt', import.meta.url), 'utf8');
 const seed = JSON.parse(fs.readFileSync(new URL('../seed/seed.json', import.meta.url), 'utf8'));
@@ -19,7 +21,7 @@ test('Flow A · screening transcript drafts the expected boxes', () => {
   assert.equal(v('Self-harm statements — Y/N'), 'N');
   assert.equal(v('Self-harm statements — Example given'), 'Asked directly; grandmother says no');
   assert.equal(v('Withdrawal / internalizing — Example given'), 'Sleeps well; not sad per guardian; goes to his room after school');
-  assert.equal(v('Prior / current services (provider · dates · outcome)'), 'School counseling weekly since Sep 2025 — ongoing. Outpatient: Piedmont Counseling, Mar–Jun 2025, ~6 sessions, ended (transportation); no improvement seen');
+  assert.equal(v('Prior / current services (provider · dates · outcome)'), 'Outpatient: Piedmont Counseling, Mar–Jun (last spring · confirm the year), ~6 sessions, ended (transportation); no improvement seen');
   assert.equal(v('School coordination to date'), 'Behaviour interventionist 2×/week since Sep; check-in/check-out; IEP accommodations in place; school has raised alternative placement twice');
   assert.equal(v('Medical · medications'), 'No current medications; asthma, inhaler at school');
   assert.equal(v('Strengths'), 'Basketball; drawing; does well one-to-one with an adult');
@@ -50,24 +52,69 @@ test('Flow A · an empty prior-service outcome blocks and asks', () => {
   assert.equal(d.checks.find(c => c.rule.startsWith('Prior')).pass, false);
 });
 
-test('Flow B · dictation becomes the daily-note paragraph with three chips', () => {
+test('Flow B · dictation stays the staffer\'s own facts: no template, no invented times, events or outcomes', () => {
   const mr = seed.clients.find(c => c.id === 'MR');
   const blocks = seed.notes_sample[0].contact_time;
-  const e = enhanceDictation({ text: 'played basketball with M.R. after he got upset in math, he cooled down after and went back to class', client: mr, goals: mr.goals, interventions: seed.interventions, blocks });
-  assert.equal(e.narrative, seed.notes_sample[0].enhanced);
-  assert.match(e.phone, /movement intervention \(basketball, 6 min\).*Goal 1/);
-  assert.equal(e.chips.length, 3);
-  assert.deepEqual(e.chips.map(c => c.from), ['from the ISP drop-down', 'from your timer and what you said', 'from the plan']);
-  assert.ok(e.checks.every(c => c.pass), JSON.stringify(e.checks));
-  assert.equal(e.mood, 'Frustrated → calm');
+  const text = 'played basketball with M.R. after he got upset in math, he cooled down after and went back to class';
+  const e = enhanceDictation({ text, client: mr, goals: mr.goals, interventions: seed.interventions, blocks });
+  assert.equal(e.narrative, 'Played basketball with M.R. after he got upset in math, he cooled down after and went back to class.');
+  assert.ok(!/6 min|lost the game|walked off|co-regulation|Frustrated|Obj/i.test(e.narrative + e.mood + e.progress), 'nothing added to the words');
+  assert.equal(e.objective, null, 'no objective chosen for the staffer');
+  assert.equal(e.mood, ''); assert.equal(e.progress, '');
+  assert.ok(e.questions.some(q => /ISP objective/.test(q.q)), 'asks which objective');
+  assert.ok(e.questions.some(q => /What did you do/.test(q.q)), 'asks what the staffer did');
+  assert.equal(e.checks.find(c => /ISP objective/.test(c.rule)).pass, false, 'objective not linked until the staffer names one');
 });
 
-test('Flow B · negative case: "observed" is rewritten and the check shows as fixed', () => {
+test('Flow B · a named objective is used; an unnamed one is a question', () => {
   const mr = seed.clients.find(c => c.id === 'MR');
-  const e = enhanceDictation({ text: 'Observed client during math; he stayed on task 15 of 30 min.', client: mr, goals: mr.goals, interventions: seed.interventions });
-  assert.equal(e.narrative, 'Worked with M.R. during math using a visual timer and prompted re-entry twice; on task 15 of 30 min (Obj. 3).');
+  const e = enhanceDictation({ text: 'Practiced the visual timer with M.R. in math, goal 3, he stayed on task 15 of 30 min.', client: mr, goals: mr.goals, interventions: seed.interventions });
+  assert.equal(e.objective, 3);
+  assert.ok(!e.questions.some(q => /ISP objective/.test(q.q)));
+});
+
+test('Flow B · negative case: "observed" is flagged and a question is raised; the words are not changed', () => {
+  const mr = seed.clients.find(c => c.id === 'MR');
+  const e = enhanceDictation({ text: 'I observed her at lunch and she sat alone', client: mr, goals: mr.goals, interventions: seed.interventions });
+  assert.equal(e.narrative, 'I observed her at lunch and she sat alone.');
+  assert.match(e.narrative, /observed/);
+  assert.ok(!/worked with/i.test(e.narrative), 'no verb substituted');
+  assert.ok(e.questions.some(q => q.flag === 'observed'), 'asks what staff did');
   const c = e.checks.find(c => c.rule === 'No "observed"');
-  assert.ok(c.pass && c.fixed);
+  assert.equal(c.pass, false);
+});
+
+test('Units · official bands: 0 below 120 minutes, 1/2/3 at 120/180/300; the 60-minute rule is an alternate, not the default', () => {
+  for (const [m, u] of [[0, 0], [60, 0], [90, 0], [119, 0], [120, 1], [179, 1], [180, 2], [299, 2], [300, 3], [600, 3]]) assert.equal(unitsForDirectMinutes(m), u, m + ' min');
+  const s = { rules: [{ key: 'units.tdt.day_tiers', value: [[120, 1], [180, 2], [300, 3]] }, { key: 'units.tdt.max_per_day', value: 3 }] };
+  assert.equal(unitsFor(s, 'tdt', 119), 0); assert.equal(unitsFor(s, 'tdt', 120), 1);
+  s.rules[0].value = [[60, 1], [180, 2], [300, 3]];   // the alternate (60-minute) value, set by an administrator
+  assert.equal(unitsFor(s, 'tdt', 60), 1);
+  // 220 minutes = 2 units (the confirmed M.R. daily note), and contactTime uses the configured bands
+  s.rules[0].value = [[120, 1], [180, 2], [300, 3]];
+  assert.equal(unitsFor(s, 'tdt', 220), 2);
+  assert.equal(contactTime([['08:00', '11:40', 'a']], { s }).units, 2);
+  assert.equal(contactTime([['08:00', '09:00', 'a']], { s }).units, 0);
+});
+
+test('Evidence · counts come from stored notes; missing evidence prints "Evidence missing"; household is not included by default', () => {
+  const mr = { id: 'MR', initials: 'M.R.' };
+  const none = draftSeeded('sra-continued', { client: mr, notes: [], today: '2026-10-29' });
+  assert.match(none.boxes.find(b => b.label === 'Progress toward goals').value, /Evidence missing/);
+  assert.ok(none.boxes.find(b => b.label === 'Progress toward goals').missing);
+  assert.ok(!/21|61/.test(none.sources.map(x => x.label).join(' ')), 'no constant counts');
+  const notes = [1, 2, 3].map(i => ({ client: 'MR', type: 'daily', date: `2026-10-2${i}`, objective: i === 3 ? 2 : 1, interventions: ['Clinical 2.1'] }));
+  const some = draftSeeded('sra-continued', { client: mr, notes, today: '2026-10-29' });
+  assert.match(some.boxes.find(b => b.label === 'Progress toward goals').value, /3 daily notes/);
+  assert.match(some.sources[0].label, /Daily notes \(3\)/);
+  assert.ok(!some.boxes.some(b => /household/i.test(b.label)), 'household not included by default');
+  assert.equal(some.checks.find(c => c.rule === 'Household disclosure').detail, 'Not included · you decide');
+  // another student's quarterly never falls back to M.R.'s numbers
+  const q = draftSeeded('quarterly', { client: { id: 'DW', initials: 'D.W.' }, notes: [], today: '2026-10-29' });
+  assert.ok(q.boxes.every(b => /Evidence missing/.test(b.value)));
+  // a discharge draft writes no future event as done
+  const d = draftSeeded('discharge', { client: { id: 'TN', initials: 'T.N.' }, notes: [], today: '2026-10-29' });
+  assert.ok(!d.boxes.some(b => /notified|Nov 24|Dec 5/.test(b.value)));
 });
 
 test('Flow C · initial SRA leaves criterion 3 blank when 1 and 2 are met, and never drafts trauma-informed care', () => {
@@ -76,6 +123,6 @@ test('Flow C · initial SRA leaves criterion 3 blank when 1 and 2 are met, and n
   assert.equal(d.boxes.length, 7);
   assert.ok(d.blank.find(b => b.label.includes('criterion 3')).why.includes('two of three'));
   assert.ok(!d.boxes.find(b => b.label.includes('trauma')));
-  assert.match(d.boxes.find(b => b.label.includes('criterion 2')).value, /Piedmont Counseling, Mar–Jun 2025/);
+  assert.match(d.boxes.find(b => b.label.includes('criterion 2')).value, /Piedmont Counseling, Mar–Jun/);
   assert.ok(d.checks.every(c => c.pass), JSON.stringify(d.checks.filter(c => !c.pass)));
 });

@@ -1,7 +1,7 @@
 // Mock Lauris Online: a plain server-rendered site. It exists so the extension has real DOM to read
 // and real inputs to type into. It knows nothing about Psyflo except an optional in-page panel slot
 // (the documented fallback when the browser extension is not installed).
-import { lauris, US } from './store.js';
+import { lauris, US, LaurisError } from './store.js';
 import { FORMS, FORM_ORDER } from './forms.js';
 import { html, redirect, readForm, esc, cookies, notFound } from '../util.js';
 
@@ -168,7 +168,9 @@ ${s.status === 'approved' ? `<div class="row"><b>Signature</b><div id="lauris-si
 }
 
 const flash = (q) => {
-  if (q.get('processed')) { const s = lauris.session(q.get('processed')); if (s) return `<div class="flash" role="status" id="lauris-flash" data-event="processed" data-session="${s.id}" data-form="${s.form}" data-consumer="${s.no}">${esc(FORMS[s.form].title)} processed ${US(s.processed_at)} ${s.processed_at.slice(11, 16)}${s.approve ? ' · sent to Forms to Approve' : ' · copied to the Active File'}</div>`; }
+  if (q.get('denied')) return `<div class="flash r" role="status" id="lauris-flash" data-event="denied" data-session="${esc(q.get('session') || '')}">${esc(q.get('denied'))}</div>`;
+  if (q.get('blocked')) return `<div class="flash r" role="status" id="lauris-flash" data-event="blocked">${esc(q.get('blocked'))}</div>`;
+  if (q.get('processed')) { const s = lauris.session(q.get('processed')); if (s) return `<div class="flash${s.warn ? ' w' : ''}" role="status" id="lauris-flash" data-event="processed" data-session="${s.id}" data-form="${s.form}" data-consumer="${s.no}">${esc(FORMS[s.form].title)} processed ${US(s.processed_at)} ${s.processed_at.slice(11, 16)}${s.approve ? ' · sent to Forms to Approve' : ' · copied to the Active File'}${s.warn ? ' · ' + esc(s.warn) : ''}</div>`; }
   if (q.get('saved')) { const s = lauris.session(q.get('saved')); if (s) return `<div class="flash w" role="status" id="lauris-flash" data-event="saved" data-session="${s.id}" data-form="${s.form}" data-consumer="${s.no}">Form data saved · not processed (in Saved Session)</div>`; }
   if (q.get('signed')) { const s = lauris.session(q.get('signed')); if (s) return `<div class="flash" role="status" id="lauris-flash" data-event="signed" data-session="${s.id}" data-form="${s.form}" data-consumer="${s.no}">Signed by ${esc(s.signed_by)} ${US(s.signed_at)} ${s.signed_at.slice(11, 16)}</div>`; }
   if (q.get('rejected')) { const s = lauris.session(q.get('rejected')); if (s) return `<div class="flash r" role="status" id="lauris-flash" data-event="rejected" data-session="${s.id}" data-form="${s.form}" data-consumer="${s.no}">Rejected · moved to Rejected Forms</div>`; }
@@ -179,6 +181,7 @@ const flash = (q) => {
 export async function laurisHandler(req, res) {
   const url = new URL(req.url, 'http://x');
   const p = url.pathname; const q = url.searchParams;
+  lauris.syncToday();   // the one demo clock: Lauris prints the same date as Psyflo
   const user = currentUser(req);
 
   if (p === '/login') {
@@ -263,11 +266,14 @@ ${c.goals?.length ? `<span class="lbl">ISP goals</span>${c.goals.map(g => `<div 
     const c = lauris.consumer(m[1]); const spec = FORMS[m[2]]; if (!c || !spec) return notFound(res);
     if (req.method === 'POST') {
       const body = await readForm(req);
-      const s = lauris.saveSession({ id: body.session_id, no: c.no, form: m[2], values: collect(spec, body), staff: user.id, process: body.action === 'process' });
+      let s;
+      try { s = lauris.saveSession({ id: body.session_id, no: c.no, form: m[2], values: collect(spec, body), staff: user.id, process: body.action === 'process' }); }
+      catch (e) { if (e instanceof LaurisError) return redirect(res, `/consumers/${c.no}?tab=active&blocked=${encodeURIComponent(e.message)}`); throw e; }
       if (body.action === 'process') return redirect(res, (spec.approve ? `/consumers/${c.no}?tab=active&processed=${s.id}` : `/consumers/${c.no}?tab=active&processed=${s.id}`));
       return redirect(res, `/consumers/${c.no}/session/${m[2]}?id=${s.id}&saved=${s.id}`);
     }
     const s = q.get('id') ? lauris.session(q.get('id')) : null;
+    if (s && !['saved', 'rejected'].includes(s.status)) return redirect(res, s.status === 'processed' && s.approve ? `/approvals/${s.id}` : `/sessions/${s.id}`);   // processed and signed forms are read-only
     const vals = s ? s.values : {};
     const fieldsHTML = spec.fields.map((f, i) => {
       const pre = f.prefill ? f.prefill(c, lauris.db) : '';
@@ -315,8 +321,15 @@ ${c.goals?.length ? `<span class="lbl">ISP goals</span>${c.goals.map(g => `<div 
   m = p.match(/^\/approvals\/(\d+)(\/sign|\/reject)?$/);
   if (m) {
     const s = lauris.session(m[1]); if (!s) return notFound(res); const c = lauris.consumer(s.no);
-    if (req.method === 'POST' && m[2] === '/sign') { lauris.sign(s.id, user.name); return redirect(res, `/approvals/${s.id}?signed=${s.id}`); }
-    if (req.method === 'POST' && m[2] === '/reject') { const f = await readForm(req); lauris.reject(s.id, user.name, f.note || 'Rejected'); return redirect(res, `/rejected?rejected=${s.id}`); }
+    if (req.method === 'POST' && m[2] === '/sign') {
+      try { lauris.sign(s.id, user.id); } catch (e) { if (e instanceof LaurisError) return redirect(res, `/approvals/${s.id}?denied=${encodeURIComponent(e.message)}&session=${s.id}`); throw e; }
+      return redirect(res, `/approvals/${s.id}?signed=${s.id}`);
+    }
+    if (req.method === 'POST' && m[2] === '/reject') {
+      const f = await readForm(req);
+      try { lauris.reject(s.id, user.name, f.note || 'Rejected'); } catch (e) { if (e instanceof LaurisError) return redirect(res, `/approvals/${s.id}?denied=${encodeURIComponent(e.message)}&session=${s.id}`); throw e; }
+      return redirect(res, `/rejected?rejected=${s.id}`);
+    }
     const actions = s.status === 'processed' ? `<div style="display:flex;gap:8px;margin-top:10px;align-items:flex-start"><form method="post" action="/approvals/${s.id}/sign"><button class="lb pri" id="get-signature" type="submit">Get Signature</button></form>
 <form method="post" action="/approvals/${s.id}/reject" style="display:flex;gap:6px"><input class="in" name="note" aria-label="Reviewer note" placeholder="Reviewer note" style="width:280px"><button class="lb" type="submit">Reject</button></form></div>` : `<p class="small muted">Status: ${s.status}${s.signed_by ? ' · signed by ' + esc(s.signed_by) : ''}</p>`;
     return page('Forms to Approve', 'approvals', `${flash(q)}${consumerHeader(c, `${esc(FORMS[s.form].short)} · processed ${US(s.processed_at)}`)}${tabs(c, 'documents')}

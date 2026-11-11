@@ -8,6 +8,8 @@ export default {
   'dictation.annotate'(s, { id, patch = {} }) {
     const d = s.dictations.find(x => x.id === id);
     if (!d) throw new Error('Dictation not found');
+    if (d.staff !== this.who() && this.actor?.role !== 'clinician') throw new Error('A dictation can be changed only by the person who made it');
+    if (d.status === 'used') throw new Error('A dictation that was used in a note cannot be changed');
     for (const k of ALLOWED) if (patch[k] !== undefined) d[k] = patch[k];
   }
 };

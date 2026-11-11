@@ -4,6 +4,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { draftScreening } from '../../web/js/shared/draft.js';
+import { newClock, nowFull, nextDay, today as clockToday } from '../../web/js/shared/clock.js';
+import { Refusal } from './gates.js';
+import { registerAuthz } from './authz.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const SEED = path.join(ROOT, 'seed');
@@ -39,7 +42,7 @@ export function loadSeed() {
 export function buildState(preset = 'live') {
   const seed = loadSeed();
   const s = {
-    preset, rev: 1, today: seed.today, org: seed.org, schools: seed.schools, roles: seed.roles,
+    preset, rev: 1, today: seed.today, clock: newClock(seed.today, { fixed: process.env.DEMO_TIME || null }), org: seed.org, schools: seed.schools, roles: seed.roles,
     staff: seed.staff, school_users: seed.school_users, payers: seed.payers, interventions: seed.interventions,
     clients: seed.clients, referrals: seed.referrals, requests: seed.requests,
     notes: seed.notes || [], notes_sample: seed.notes_sample, incidents: seed.incidents,
@@ -58,6 +61,12 @@ export function buildState(preset = 'live') {
   // any other top-level keys from seed/extra/*.json pass straight through
   for (const [k, v] of Object.entries(seed)) if (!(k in s) && !k.startsWith('_') && !['school_checkins', 'guardian_checkins'].includes(k)) s[k] = v;
   if (preset === 'canvas') applyCanvas(s); else applyLive(s);
+  // every audit row carries who did it (actor_kind) and whether the thing happened only in the demo (sim)
+  const staffIds = new Set((s.staff || []).map(x => x.id));
+  for (const e of s.events) {
+    if (!e.actor_kind) e.actor_kind = staffIds.has(e.who) ? 'person' : /^(Sfax)$/i.test(e.who) ? 'integration' : /demo|payer/i.test(e.who) ? 'demo' : e.who === 'Psyflo' ? 'system' : /^(rbell|okafor|guardian)$/.test(e.who) || /^[A-Z][a-z]+ [A-Z][a-z]+$/.test(e.who || '') ? 'portal' : 'system';
+    if (e.sim == null) e.sim = e.actor_kind === 'integration' || !!e.demo;
+  }
   return s;
 }
 
@@ -104,17 +113,56 @@ function applyLive(s) {
   s.events.push({ at: '2026-10-13T14:18', what: 'Referral received from R. Bell (school counselor)', who: 'rbell', record: 'REF-118' });
 }
 
+// Hooks let action files react without editing the lead files. Register from an action file with
+// `export const hooks = { observed(store, s, ev, out) {}, reset({ preset }) {}, advance({ from, to }) {} }` or store.hooks.on(name, fn).
+//   observed  after lauris.observed / lauris.savedVersion / portal.observed has been validated and applied; ev = the bridge event
+//             { type:'lauris'|'savedVersion'|'portal', event, form, session, consumer, user, values, staff, client, request, note }
+//   reset     after demo.reset rebuilt the state (the mock Lauris resets through this hook too)
+//   advance   after the demo clock moved ({ from, to, days, state })
+// A hook may throw a Refusal; any other error is logged and ignored so one engineer's hook cannot break the core.
+class Hooks {
+  constructor() { this.observed = []; this.reset = []; this.advance = []; }
+  on(name, fn) { if (!this[name]) this[name] = []; this[name].push(fn); return fn; }
+  run(name, ...args) {
+    for (const fn of this[name] || []) {
+      try { fn(...args); } catch (e) { if (e instanceof Refusal) throw e; console.error(`hook ${name} failed:`, e); }
+    }
+  }
+}
+
 class Store {
   constructor() {
     this.actions = {};
     this.listeners = new Set();
+    this.hooks = new Hooks();
+    this.ctx = { actor: null };
     fs.mkdirSync(FILES_DIR, { recursive: true });
     fs.mkdirSync(DATA, { recursive: true });
     if (fs.existsSync(FILE)) {
       try { this.state = JSON.parse(fs.readFileSync(FILE, 'utf8')); } catch { this.state = buildState('live'); }
     } else this.state = buildState('live');
+    this.migrate();
+    const self = this;
+    // store.clock = { date, time, now(), advance({days, calendar}) }: the one demo clock (Psyflo and the mock Lauris move together)
+    this.clock = {
+      get date() { return clockToday(self.state); },
+      get time() { return nowFull(self.state).slice(11, 16); },
+      now() { return nowFull(self.state); },
+      advance(opts = {}) { return self.advanceClock(opts); }
+    };
+  }
+  // older persisted files: add the clock and the rules table
+  migrate() {
+    const st = this.state;
+    if (!st.clock) st.clock = newClock(st.today || '2026-10-29', { fixed: process.env.DEMO_TIME || null });
+    else { st.clock.anchor_wall = Date.now(); st.clock.fixed = process.env.DEMO_TIME || st.clock.fixed || null; if (st.clock.anchor_time == null) st.clock.anchor_time = '09:00'; }
+    st.today = st.clock.date;
+    if (!st.rules) { try { st.rules = loadSeed().rules || []; } catch { st.rules = []; } }
   }
   register(mod) { Object.assign(this.actions, mod); }
+  // defineAction(name, fn, authz): the way for another engineer's action file to add an action with its capability entry in one place
+  //   store.defineAction('x.thing', function (s, args, ctx) { ... }, { any: ['myWork'] });
+  defineAction(name, fn, authz) { this.actions[name] = fn; if (authz) registerAuthz({ [name]: authz }); }
   save() {
     fs.writeFileSync(FILE, JSON.stringify(this.state));
   }
@@ -125,24 +173,59 @@ class Store {
   }
   reset(preset) {
     this.state = buildState(preset || 'live');
+    this.migrate();
     for (const f of fs.readdirSync(FILES_DIR)) fs.unlinkSync(path.join(FILES_DIR, f));
+    this.hooks.run('reset', { preset: this.state.preset, state: this.state });
     this.changed();
   }
-  // wall-clock time on the store's "today", so stamps read like the story (Oct 29, 2:14 pm)
-  now() {
-    const d = new Date();
-    const hh = String(d.getHours()).padStart(2, '0'), mm = String(d.getMinutes()).padStart(2, '0'), ss = String(d.getSeconds()).padStart(2, '0');
-    return `${this.state.today}T${hh}:${mm}:${ss}`;
+  // move the demo clock (Psyflo and, through the advance hook, the mock Lauris). Default: the next school day.
+  advanceClock({ days = 1, calendar = false } = {}) {
+    const from = clockToday(this.state);
+    const to = nextDay(from, { days, calendar });
+    this.state.clock = newClock(to, { fixed: process.env.DEMO_TIME || null });
+    this.state.today = to;
+    this.hooks.run('advance', { from, to, days, state: this.state });
+    return { from, to };
   }
+  // story date and a running time of day (see web/js/shared/clock.js); never the machine's date, never silently pinned
+  now() { return nowFull(this.state); }
+  get actor() { return this.ctx && this.ctx.actor || null; }
+  // the person behind this action: always the session actor, never args.by / staff / signer
+  who() { const a = this.actor; return a ? a.id : 'Psyflo'; }
+  kindOf(who) {
+    if (!who) return 'system';
+    if (this.state.staff.some(x => x.id === who)) return 'person';
+    if (/^guardian:|^school:/.test(who)) return 'portal';
+    if (who === 'Psyflo') return 'system';
+    if (/demo|payer/i.test(who)) return 'demo';
+    if (/^(rbell|okafor)$/.test(who)) return 'portal';
+    if (who === 'guardian') return 'portal';
+    return 'system';
+  }
+  // events are the append-only audit trail: { at, what, who, record, actor_kind: person|portal|system|bridge|demo, sim: boolean, ...extra }
   event(what, who, record, extra = {}) {
-    this.state.events.push({ at: this.now(), what, who, record, ...extra });
+    const { actor_kind, sim, ...rest } = extra;
+    this.state.events.push({ at: this.now(), what, who, record, actor_kind: actor_kind || this.kindOf(who), sim: !!sim, ...rest });
   }
+  // The only way an action changes state: authorize (index.js), run with rollback, audit a refusal. An exception undoes the whole action.
   async run(name, args = {}, ctx = {}) {
     const fn = this.actions[name];
     if (!fn) throw new Error('Unknown action: ' + name);
-    const result = await fn.call(this, this.state, args, ctx);
-    this.changed();
-    return result;
+    const snap = JSON.stringify(this.state);
+    const prev = this.ctx; this.ctx = ctx || { actor: null };
+    try {
+      const result = await fn.call(this, this.state, args, ctx);
+      this.changed();
+      return result;
+    } catch (e) {
+      this.state = JSON.parse(snap);
+      if (e instanceof Refusal && e.audit) {
+        const who = (ctx && ctx.actor && ctx.actor.id) || 'bridge';
+        this.event('Refused · ' + e.message, who, e.record || args.id || args.client || name, { refused: true, action: name, actor_kind: ctx && ctx.actor && ctx.actor.kind === 'staff' ? 'person' : ctx && ctx.actor ? 'portal' : 'bridge' });
+        this.changed();
+      }
+      throw e;
+    } finally { this.ctx = prev; }
   }
   writeFile(name, buf) {
     const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);

@@ -13,7 +13,7 @@
     "R-0391": {
       "fill": {
         "sent": "2026-10-23T11:20",
-        "decision_due": "2026-10-30",
+        "decision_due": "2026-11-06",
         "pages": 14,
         "signed_pdf": "R-0391_J.O._early_discharge_new_initial_signed.pdf"
       },
@@ -172,20 +172,20 @@
       "record": "R-0402"
     },
     {
-      "at": "2026-10-19T10:30",
-      "what": "Send pressed · faxed through Sfax · ref F-2280",
+      "at": "2026-10-12T10:30",
+      "what": "Send pressed · faxed through Sfax (simulated) · ref F-2280",
       "who": "jperez",
       "record": "R-0399"
     },
     {
-      "at": "2026-10-19T10:31",
-      "what": "Delivery receipt · 9 pages delivered",
+      "at": "2026-10-12T10:31",
+      "what": "Simulated delivery receipt · 9 pages delivered",
       "who": "Sfax",
       "record": "R-0399"
     },
     {
       "at": "2026-10-27T08:00",
-      "what": "No reply by the due date · overdue notice drafted for a clinician to send",
+      "what": "No decision by day 14 (Oct 26) · overdue notice drafted for a person to send",
       "who": "Psyflo",
       "record": "R-0399"
     },

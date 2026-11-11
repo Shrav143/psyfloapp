@@ -30,13 +30,23 @@ window.addEventListener('message', e => {
   if (d.type === 'page') onPage(d.page, d.event);
 });
 
-function onPage(page, event) {
+async function onPage(page, event) {
   const changedPage = !P.page || P.page.url !== page.url;
   P.page = page;
   if (event) P.event = event; else if (changedPage) P.event = null;
   if (changedPage) { P.ui = {}; stopRecording(true); }
+  await panelSession();
   draw();
   autoActions();
+}
+// The panel acts as the Lauris user on the open page (demo-grade sign-in; the server decides what that person may do).
+// An unknown Lauris user has no Psyflo access: fail closed, nothing is read, drafted or typed.
+async function panelSession() {
+  const me = meFromPage();
+  try {
+    if (!me.id) { if (api.session && api.session()) await api.signOut(); return; }
+    if (!api.session || !api.session() || api.session().id !== me.id) await api.signIn(me.id);
+  } catch (e) { console.error('panel sign-in', e); }
 }
 
 // ---------------------------------------------------------------- helpers
@@ -59,12 +69,23 @@ const lauris = p => P.page ? new URL(P.page.url).origin + p : p;
 
 function meFromPage() {
   const u = P.page?.user || ''; const st = S().staff;
-  return st.find(x => u && (u.startsWith(x.name) || u.startsWith(x.name.replace(/^(\w)\w+ /, '$1. ')))) || st.find(x => x.id === 'jperez');
+  // no fallback to a default person: an unrecognised Lauris user is nobody (fail closed)
+  return st.find(x => u && (u.startsWith(x.name) || u.startsWith(x.name.replace(/^(\w)\w+ /, '$1. ')))) || { id: null, name: u || 'Unknown user', role: null, unknown: true };
 }
+// Wrong-patient protection: the Harvest # is the key and the initials on the open page must agree (the identity card).
+// Never matched by initials alone.
 function clientForPage() {
   const c = P.page?.consumer; if (!c) return null;
   const no = Number(c.no);
-  return S().clients.find(x => no && (x.lauris_no === no || x.harvest_no === no)) || S().clients.find(x => x.initials === c.initials) || null;
+  const m = S().clients.find(x => no && (x.lauris_no === no || x.harvest_no === no)) || null;
+  if (m && c.initials && String(c.initials).replace(/\s/g, '') !== m.initials.replace(/\s/g, '')) return null;
+  return m;
+}
+function identityStop() {
+  const c = P.page?.consumer; if (!c || !c.no) return null;
+  const no = Number(c.no);
+  const m = S().clients.find(x => no && (x.lauris_no === no || x.harvest_no === no));
+  return m && c.initials && String(c.initials).replace(/\s/g, '') !== m.initials.replace(/\s/g, '') ? m : null;
 }
 
 function header(mode, legend = true) {
@@ -118,6 +139,8 @@ function viewHTML() {
   if (!api.state) return header('Psyflo', false) + '<div class="body">Loading…</div>';
   if (!framed) return header('Psyflo · extension panel', false) + `<div class="body"><p>This is the Psyflo panel. It runs beside a Lauris page: open the mock Lauris (${esc(api.config.laurisURL)}) — the panel appears at the right — or install the extension from <code>extension/</code> and open its side panel.</p><a class="btn p" href="${esc(api.config.laurisURL)}/login?as=jperez">Open the mock Lauris</a></div>`;
   const p = P.page;
+  if (p && p.user && !api.session()) return header('Psyflo · no access', false) + `<div class="body"><div class="banner n">${I.no}<div><b>${esc(meFromPage().name)} is not a Psyflo user.</b> Nothing is read, drafted or typed. Ask an administrator to add you on Users.</div></div></div>` + foot();
+  { const stop = p && identityStop(); if (stop) return header('Psyflo · stop', false) + `<div class="body"><div class="banner n">${I.no}<div><b>Wrong student?</b> Harvest # ${esc(p.consumer.no)} is <b>${esc(stop.initials)}</b> in Psyflo, but this page shows <b>${esc(p.consumer.initials)}</b>. Nothing was read, drafted or typed. Check the Harvest # and the student before you go on.</div></div></div>` + foot(); }
   if (!p) return header('Psyflo · reading this page', false) + `<div class="body"><div class="banner n">${I.open}<div>Waiting for the page… If this stays, reload the Lauris tab.</div></div></div>`;
   if (p.kind === 'portal-form' || p.kind === 'portal-confirmation') return portalView();
   if (p.kind === 'login') return header('Psyflo · not signed in', false) + `<div class="body"><div class="banner n">${I.open}<div><b>Sign in to Lauris.</b> Psyflo reads only the page you have open and types only into a form you have open. It never signs in for you.</div></div></div>` + foot();
@@ -524,14 +547,14 @@ function dpnState(c) {
   const dict = M.waitingDictations(s, c.id)[0] || (u.usedDict && s.dictations.find(d => d.id === u.usedDict));
   const t = Object.values(s.timers).find(x => x.client === c.id) || s.timers[c.staff] || {};
   const blocks = (c.staff === 'khale' && t.blocks) || (s.notes_sample.find(n => n.client === c.id)?.contact_time) || [];
-  const ct = contactTime(blocks, { confirmed: u.unitsConfirmed !== false });
+  const ct = contactTime(blocks, { confirmed: u.unitsConfirmed !== false, s: S() });
   const input = dict ? dict.spoken : '';
   const e = input ? enhanceFor(c, input, blocks) : null;
   return { dict, ct, e, input, blocks };
 }
 const enhanceFor = (c, text, blocks) => { const s = S(); return enhanceDictation({ text, client: c, goals: c.goals || [], interventions: s.interventions, blocks, recent: s.notes.filter(n => n.client === c.id).map(n => n.enhanced) }); };
 function dpnBoxes(c, st) {
-  const e = st.e; const g = (c.goals || [])[(e?.objective || 1) - 1];
+  const e = st.e; const g = e?.objective ? (c.goals || [])[e.objective - 1] : null;   // an objective is used only if the staffer named one (never chosen for them)
   const b = st.blocks.length ? [{ label: 'Contact time', value: st.ct.lines, src: [2] }, { label: 'Direct time', value: st.ct.text, src: [2] }, { label: 'Units', value: String(st.ct.units), src: [2] }] : [];
   if (e) {
     if (g) b.push({ label: 'Objective addressed', value: `Obj. ${g.n} – ${g.objective}`, src: [3] });
@@ -840,7 +863,8 @@ ACT.incAgain = () => { P.ui.incSaid = null; P.ui.said = ''; draw(); };
 ACT.incFill = async () => { const c = clientForPage(); await fillBoxes(incidentBoxes(c, P.ui.incSaid), { form: 'incident', client: c, sources: INC_SOURCES }); draw(); };
 function seededDraft(type, c, inst) {
   const s = S(); const st = inst.state || {};
-  return draftSeeded(type, { client: c, notes: s.notes_sample.filter(n => n.client === c.id), today: s.today, includeHousehold: st.conf ? st.conf === 'include' : true, range: st.range || '30' });
+  // counts come from the STORED notes of this student (state.notes); the seeded sample text is labelled Illustrative sample; household context is NOT included unless a person presses Include
+  return draftSeeded(type, { client: c, notes: s.notes.filter(n => n.client === c.id), samples: s.notes_sample.filter(n => n.client === c.id), today: M.today(s), includeHousehold: st.conf === 'include', range: st.range || '30', request: s.requests.find(r => r.client === c.id && r.type === (type === 'sra-continued' ? 'continued_stay' : r.type) && r.stage !== 'closed'), plan: s.plans.find(p => p.client === c.id) });
 }
 function wireSeeded(rootEl, handlers, type, c, d) {
   // bind the canvas Component's own handlers (date-range and include/exclude toggles)

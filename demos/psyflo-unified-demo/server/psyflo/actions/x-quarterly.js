@@ -5,7 +5,8 @@
 const KEYS = ['concerns', 'home', 'plan', 'supervisor'];
 
 export default {
-  'quarterly.internalSave'(s, { client, period, fields, by }) {
+  'quarterly.internalSave'(s, { client, period, fields }) {
+    const by = this.who();
     if (!client) throw new Error('Pick a student');
     if (!(s.clients || []).some(c => c.id === client)) throw new Error('Student not found');
     const clean = {};

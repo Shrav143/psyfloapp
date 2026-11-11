@@ -4,7 +4,7 @@ Synthetic. Acceptance test for Flow B.
 
 ## Input
 
-Timer: with M.R. 1:10–1:40 pm (30 min), plus earlier blocks 8:05–8:35, 9:50–11:05, 11:40–12:25; afternoon block 1:40–3:10 unconfirmed. Total 5 h 10 min → 3 units.
+Timer: with M.R. 1:10–1:40 pm (30 min), plus earlier blocks 8:05–8:35, 9:50–11:05, 11:40–12:25, 12:25–1:05; afternoon block 1:40–3:10 unconfirmed and not counted. Confirmed total 3 h 40 min (220 min) → 2 units (official bands: 3 h to under 5 h = 2).
 
 Spoken at 1:42 pm by K. Hale:
 
@@ -24,7 +24,7 @@ Buttons: Looks right · Fix it. Footer: "Ready for you when you open M.R. in Lau
 
 Source chips shown under it: "movement intervention → regulation · from the ISP drop-down" · "6 min, prompted · from your timer and what you said" · "objective 1 · from the plan". Buttons: Good recommendation · That didn't happen.
 
-Other boxes filled: Direct time 5 h 10 min; Units 3; Objective addressed: Obj. 1; Interventions: Clinical 2.1 Movement, QMHP 1.6, QMHP 1.9; Mood check-in: Frustrated → calm; Progress today: Partial – strategy used after prompt.
+Other boxes filled: Direct time 3 h 40 min; Units 2; Objective addressed: Obj. 1; Interventions: Clinical 2.1 Movement, QMHP 1.6, QMHP 1.9; Mood check-in: Frustrated → calm; Progress today: Partial – strategy used after prompt.
 
 ## Checks that must show as passed
 

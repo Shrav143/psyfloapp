@@ -3,7 +3,8 @@ import { fmtDate } from '../../../web/js/shared/dates.js';
 
 export default {
   // Compliance: log a monthly QI check (e.g. 2.3 "risk-analysis meeting held when triggered").
-  'compliance.qiCheck'(s, { id, by = 'cdiaz' }) {
+  'compliance.qiCheck'(s, { id }) {
+    const by = this.who();
     const c = s.compliance || (s.compliance = {});
     const row = (c.qi || []).find(q => q.id === id);
     if (!row) throw new Error('QI objective not found');

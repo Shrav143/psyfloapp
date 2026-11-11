@@ -10,7 +10,8 @@ const staffName = (s, id) => byId(s.staff, id)?.name || id;
 
 export default {
   // Referral review → "Save and text the guardian". Replaces an earlier booking for the same referral.
-  'referral.scheduleAndText'(s, { id, who = 'jperez', when, text_guardian = true, ask_counselor = false, by }) {
+  'referral.scheduleAndText'(s, { id, who = this.who(), when, text_guardian = true, ask_counselor = false }) {
+    const by = this.who();
     const r = need(byId(s.referrals, id), 'Referral');
     if (!when) throw new Error('Pick a date and time for the call');
     const had = s.screenings.some(x => x.referral === id && x.status === 'booked');
@@ -18,29 +19,32 @@ export default {
     s.reminders = s.reminders.filter(x => !(x.record === id && x.kind === 'screening_call' && !x.done));
     this.actions['referral.scheduleScreening'].call(this, s, { id, who, when });
     if (had) this.event('Earlier screening booking replaced', by || who, id);
-    if (text_guardian) this.event('Guardian texted a confirmation, with a reminder the morning of ' + fmtDate(when, { dow: true }) + ' (SMS stub)', 'Psyflo', id);
-    if (ask_counselor) this.event('Counselor asked for schedule and grades before the call (email stub)', 'Psyflo', id);
+    if (text_guardian) this.event('Guardian texted a confirmation, with a reminder the morning of ' + fmtDate(when, { dow: true }) + ' (SMS stub · not sent)', 'Psyflo', id, { actor_kind: 'system', sim: true });
+    if (ask_counselor) this.event('Counselor asked for schedule and grades before the call (email stub · not sent)', 'Psyflo', id, { actor_kind: 'system', sim: true });
     return { id, when };
   },
 
   // Referral review → "Route and notify". Emails are stubs that log to the events list.
-  'referral.routeAndNotify'(s, { id, why = 'No Medicaid', by = 'jperez' }) {
+  'referral.routeAndNotify'(s, { id, why = 'No Medicaid' }) {
+    const by = this.who();
     const r = need(byId(s.referrals, id), 'Referral');
     this.actions['referral.routeGrant'].call(this, s, { id, program: 'Grant program', why });
     r.grant = { why, at: this.now(), by };
-    this.event('Email to the grant program lead with a secure link to ' + id + ' (email stub)', 'Psyflo', id);
-    this.event('Email and text to the site supervisor (stub)', 'Psyflo', id);
-    this.event('School counselor told the referral moved to the grant program (email stub)', 'Psyflo', id);
+    this.event('Email to the grant program lead with a secure link to ' + id + ' (email stub · not sent)', 'Psyflo', id, { actor_kind: 'system', sim: true });
+    this.event('Email and text to the site supervisor (stub · not sent)', 'Psyflo', id, { actor_kind: 'system', sim: true });
+    this.event('School counselor told the referral moved to the grant program (email stub · not sent)', 'Psyflo', id, { actor_kind: 'system', sim: true });
   },
 
   // Eligibility → "If it comes back inactive" → hold the referral and tell the family
-  'referral.hold'(s, { id, by = 'jperez', why = 'Medicaid not active' }) {
+  'referral.hold'(s, { id, why = 'Medicaid not active' }) {
+    const by = this.who();
     const r = need(byId(s.referrals, id), 'Referral');
     r.hold = { why, at: this.now(), by };
     r.next = 'On hold · ' + why + ' · family told ' + fmtDate(s.today);
-    this.event('Referral held · ' + why + ' · family told by text (SMS stub)', by, id);
+    this.event('Referral held · ' + why + ' · family told by text (SMS stub · not sent)', by, id, { sim: true });
   },
-  'referral.unhold'(s, { id, by = 'jperez' }) {
+  'referral.unhold'(s, { id }) {
+    const by = this.who();
     const r = need(byId(s.referrals, id), 'Referral');
     delete r.hold; r.next = r.eligibility ? 'Schedule the screening call' : 'Send the family link';
     this.event('Hold lifted', by, id);
@@ -48,7 +52,8 @@ export default {
 
   // Eligibility → a person ran the DMAS lookup in their own login and records what it showed.
   // Stores the dated proof in Psyflo (not in Lauris), closes the open re-check reminder, keeps history.
-  'eligibility.recordProof'(s, { referral, result, plan, effective, by = 'jperez' }) {
+  'eligibility.recordProof'(s, { referral, result, plan, effective }) {
+    const by = this.who();
     const el = need(s.eligibility.find(e => e.referral === referral), 'Eligibility');
     if (el.status === 'waiting_link' || !(el.lookup || el.status === 'recorded')) throw new Error('Eligibility is checked only after the guardian submits the family link');
     if (!['active', 'inactive'].includes(result)) throw new Error('Pick active or inactive');

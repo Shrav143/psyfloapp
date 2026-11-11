@@ -1,0 +1,100 @@
+/* ==========================================================================
+   Psyflo tokens (review/03-ux-audit.md section h).
+   Brand kept: DM Sans, paper #F8F6F2, teal #217A78 (hover #15605E), navy #151B24 for tool chrome only
+   (presenter ribbon, extension header, toasts), marigold as the marker. Light sand rail.
+   Every text pair below was computed (test/ui-kit.mjs repeats the maths in the page):
+     ink on paper 16.0 · muted on paper 6.9 / on sand 6.2 · white on teal 5.1 / on teal-hover 7.3
+     danger 7.1 · warning 6.9 · success 7.9 · neutral 7.8 · info 6.7 · control border on white 4.0
+   Never use #8A857B, #9A9388, #8E8A82 or #8E99A6 for text on light surfaces.
+   ========================================================================== */
+:root{
+  color-scheme:light;
+  /* surfaces and ink */
+  --ink-900:#1B1B19;          /* text */
+  --muted-700:#5A544B;        /* secondary text */
+  --paper-50:#F8F6F2;         /* page */
+  --surface-0:#FFFFFF;        /* cards, tables, inputs */
+  --sand-100:#EFE8DE;         /* rail, table head, inset */
+  --sand-50:#F5F0E8;          /* hover on paper */
+  --line-200:#E5DCD0;         /* hairline */
+  --control-500:#857F75;      /* input and select border (3:1 on white, WCAG 1.4.11) */
+  /* brand */
+  --teal-600:#217A78;         /* primary, icons, progress, focus ring on light */
+  --teal-700:#15605E;         /* primary hover, links on light */
+  --teal-300:#5FC0BE;         /* on-dark accent, focus on navy */
+  --teal-tint:#E1F0EF;        /* selected row, primary tint */
+  --forest-800:#1D4F43;       /* success text, selected chips (v3 working surface) */
+  --forest-900:#17403A;
+  --marigold-400:#F0B44C;     /* brand dot, presenter marker. Never text on light (1.85:1) */
+  --navy-900:#151B24;         /* tool chrome only */
+  --navy-700:#222A35;
+  --navy-line:#3C4756;
+  --on-navy:#F8F6F2;
+  --on-navy-muted:#C9D1D6;    /* 10.8:1 on navy */
+  /* semantic roles */
+  --action:var(--teal-600);
+  --action-hover:var(--teal-700);
+  --action-ink:#FFFFFF;
+  --action-tint:var(--teal-tint);
+  --focus:var(--teal-600);
+  --focus-on-dark:var(--teal-300);
+  /* status pairs: foreground on background */
+  --danger-fg:#8A2E1C;   --danger-bg:#FBE7E2;
+  --warning-fg:#6F4A05;  --warning-bg:#FCEFD0;
+  --success-fg:#1D4F43;  --success-bg:#E3EFEA;
+  --neutral-fg:#4A453D;  --neutral-bg:#EFE8DE;
+  --info-fg:#1F4E8C;     --info-bg:#DCE8F7;
+  /* type: DM Sans, tabular figures for numbers */
+  --font:'DM Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace;
+  --fs-12:12px;--lh-12:16px;   /* caption: chips and meta only; the floor */
+  --fs-13:13px;--lh-13:18px;   /* small: tables, panel */
+  --fs-14:14px;--lh-14:20px;   /* body */
+  --fs-16:16px;--lh-16:24px;   /* body-lg: phone, portals, inputs */
+  --fs-18:18px;--lh-18:26px;   /* card title */
+  --fs-22:22px;--lh-22:28px;   /* h2 */
+  --fs-28:28px;--lh-28:34px;   /* h1 */
+  --fs-34:34px;--lh-34:38px;   /* stat */
+  /* spacing, radius, shadow, motion */
+  --sp-1:4px;--sp-2:8px;--sp-3:12px;--sp-4:16px;--sp-5:24px;--sp-6:32px;--sp-7:48px;
+  --r-1:4px;--r-2:8px;--r-3:12px;--r-4:16px;--r-pill:999px;
+  --shadow-pop:0 6px 20px rgba(27,27,25,.14);
+  --shadow-drawer:0 24px 60px rgba(27,27,25,.30);
+  --dur:120ms;
+  /* controls and layout */
+  --h-control:40px;--h-touch:44px;--h-touch-phone:48px;
+  --rail-w:232px;--rail-w-collapsed:64px;--gutter:24px;
+  --dock-h:0px;               /* set by the presenter dock: 0 hidden · 28 handle · open ribbon */
+  --z-rail:20;--z-dock:100;--z-popover:150;--z-overlay:200;--z-toast:300;
+}
+
+/* ==========================================================================
+   theme.remap: the old names keep resolving so every existing screen, and
+   anything ported from v3, keeps working. Nothing here overrides a screen:
+   the kit never targets bare tags inside #root, and screen CSS loads after it.
+   ========================================================================== */
+:root{
+  /* v3 shell.css / platform.css names */
+  --ink:var(--ink-900);--muted:var(--muted-700);--line:var(--line-200);--bg:var(--paper-50);
+  --green:var(--forest-800);--teal:var(--teal-600);--amber:var(--marigold-400);
+  --chrome:#DEDAD3;--chrome2:#F6F3EE;--chrome-line:#D3CEC5;
+  /* master brand names (docs/BRIEF.md stack note) */
+  --navy:var(--navy-900);--teal-light:var(--teal-300);--marigold:var(--marigold-400);--paper:var(--paper-50);
+  --brand:var(--teal-600);--brand-hover:var(--teal-700);
+}
+/* Legacy hex -> token map for engineers restyling a screen (documented in docs/UI-KIT.md):
+   #525B66 -> --muted-700 · #6B665E -> --muted-700 · #8A857B/#9A9388/#8E8A82 -> never for text
+   #D9D4CC (input border) -> --control-500 · #E6E1D9/#EFEBE4 -> --line-200 · #151B24 text -> --ink-900
+   #DDF1EF -> --teal-tint · #FBE9E4/#8A2E1C -> --danger-bg/--danger-fg · #FCEFD0/#6F4A05 -> --warning-bg/--warning-fg */
+
+html{font-family:var(--font);-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{font-family:var(--font);font-size:var(--fs-14);line-height:var(--lh-14);color:var(--ink-900);background:var(--paper-50);font-variant-numeric:normal}
+.ui-num,.ui-tabular{font-variant-numeric:tabular-nums}
+
+/* one visible focus ring everywhere (screens that set their own outline keep it) */
+:where(a,button,input,select,textarea,summary,[tabindex],[role=button]):focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.ui-on-dark :focus-visible,.sh-dock :focus-visible{outline-color:var(--focus-on-dark)}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important}
+}

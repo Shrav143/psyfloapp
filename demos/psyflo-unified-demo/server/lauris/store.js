@@ -10,6 +10,9 @@ const FILE = path.join(process.env.DATA_DIR ? path.resolve(process.env.DATA_DIR)
 
 const US = iso => { if (!iso) return ''; const [y, m, d] = iso.slice(0, 10).split('-'); return `${m}/${d}/${y}`; };
 const PAYER = { humana: 'Humana', anthem: 'Anthem', sentara: 'Sentara', aetna: 'Aetna', uhc: 'UHC', ffs: 'FFS' };
+// Lauris-side signing authority: only LMHP-type credentials may press Get Signature (the mock enforces it; the real Lauris
+// limits actions by the user's credential, T-019). Psyflo checks the signer again before it records anything.
+const LMHP_RE = /^(LMHP|LMHP-R|LMHP-S|LMHP-RP|LPC|LCSW|LMFT|LCP|LSATP)\b/i;
 const STAFF = { khale: 'K. Hale', slane: 'S. Lane', rowens: 'R. Owens', jreyes: 'J. Reyes', jperez: 'J. Perez, LPC', cdiaz: 'C. Diaz', dowens: 'D. Owens' };
 
 function build(preset) {
@@ -21,7 +24,7 @@ function build(preset) {
     if (Array.isArray(x.clients)) seed.clients = seed.clients.concat(x.clients.filter(c => !seed.clients.some(y => y.id === c.id)));
   }
   const schools = Object.fromEntries(seed.schools.map(s => [s.id, s]));
-  const db = { preset, today: seed.today, todayUS: US(seed.today), nextSession: 1000, consumers: [], sessions: [], users: seed.staff.map(s => ({ id: s.id, name: STAFF[s.id] || s.name, role: s.role })) };
+  const db = { preset, today: seed.today, todayUS: US(seed.today), nextSession: 1000, consumers: [], sessions: [], users: seed.staff.map(s => ({ id: s.id, name: STAFF[s.id] || s.name, role: s.role, credential: s.credential || '', can_sign: LMHP_RE.test(s.credential || '') })) };
   for (const c of seed.clients) {
     if (!c.harvest_no) continue;
     if (c.id === 'TW' && preset !== 'canvas') continue;
@@ -78,17 +81,27 @@ function build(preset) {
   return db;
 }
 
+class LaurisError extends Error { constructor(msg, status = 409) { super(msg); this.status = status; } }
+
 class LaurisDB {
   constructor() {
+    this.clockFn = null;
     if (fs.existsSync(FILE)) { try { this.db = JSON.parse(fs.readFileSync(FILE, 'utf8')); } catch { this.db = build('live'); } }
     else this.db = build('live');
   }
-  reset(preset) { this.db = build(preset); this.save(); }
+  // The ONE demo clock is Psyflo's store.clock; index.js hands Lauris a function that returns 'YYYY-MM-DDTHH:MM:SS'.
+  setClock(fn) { this.clockFn = fn; this.syncToday(); }
+  syncToday() {
+    if (!this.clockFn) return;
+    const d = this.clockFn().slice(0, 10);
+    if (this.db.today !== d) { this.db.today = d; this.db.todayUS = US(d); this.save(); }
+  }
+  reset(preset) { this.db = build(preset); this.syncToday(); this.save(); }
   save() { fs.writeFileSync(FILE, JSON.stringify(this.db)); }
   consumer(no) { return this.db.consumers.find(c => String(c.no) === String(no)); }
   session(id) { return this.db.sessions.find(s => String(s.id) === String(id)); }
   user(id) { return this.db.users.find(u => u.id === id); }
-  stamp() { const d = new Date(); return `${this.db.today}T${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; }
+  stamp() { if (this.clockFn) return this.clockFn().slice(0, 16); const d = new Date(); return `${this.db.today}T${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; }
   addConsumer(f) {
     if (!this.db.nextNo) this.db.nextNo = 4492;
     while (this.consumer(this.db.nextNo)) this.db.nextNo++;
@@ -99,8 +112,10 @@ class LaurisDB {
       language: f.language || '', iep: f.iep || '', medicaid_plan: f.medicaid_plan || '', medicaid_id: !!f.medicaid_id, diagnosis: '', goals: [], strengths: '', auth: null, active_file: [], documents: [] };
     this.db.consumers.push(c); this.save(); return c;
   }
+  // A processed or signed session is final (Lauris behaviour the mock now enforces): nothing writes to it, it is processed once.
   saveSession({ id, no, form, values, staff, process }) {
     let s = id ? this.session(id) : null;
+    if (s && s.status !== 'saved' && s.status !== 'rejected') throw new LaurisError(`This ${FORMS[s.form]?.short || 'session'} is ${s.status === 'approved' ? 'signed' : 'processed'} and read-only. It cannot be changed or processed again.`);
     if (!s) { s = { id: this.db.nextSession++, no: Number(no), form, date: this.db.today, staff, status: 'saved', values: {} }; this.db.sessions.push(s); }
     s.values = values; s.saved_at = this.stamp();
     const c = this.consumer(s.no);
@@ -117,19 +132,66 @@ class LaurisDB {
           if (values['Strengths']) c.strengths = values['Strengths'];
         }
         if (form === 'screening' && values['Preliminary diagnosis']) c.diagnosis = values['Preliminary diagnosis'];
-        if (form === 'dpn' && c.auth && c.auth.available != null) { const u = parseInt(values['Units'], 10) || 0; c.auth.available = Math.max(0, c.auth.available - u); if (c.auth.used != null) c.auth.used += u; }
+        if (form === 'dpn' && c.auth && c.auth.available != null) {
+          const u = parseInt(values['Units'], 10) || 0;
+          if (u > c.auth.available) s.warn = `Warning: ${u} unit${u === 1 ? '' : 's'} entered, ${c.auth.available} available.`;
+          c.auth.available = Math.max(0, c.auth.available - u); if (c.auth.used != null) c.auth.used += u;
+        }
       }
     }
     this.save();
     return s;
   }
-  sign(id, by) { const s = this.session(id); s.status = 'approved'; s.signed_by = by; s.signed_at = this.stamp(); this.save(); return s; }
-  reject(id, by, note) { const s = this.session(id); s.status = 'rejected'; s.rejected_by = by; s.reject_note = note; s.rejected_at = this.stamp(); this.save(); return s; }
+  // Get Signature: only a processed form in Forms to Approve, only by a user with signing authority, only once.
+  sign(id, userId) {
+    const s = this.session(id); const u = this.user(userId);
+    if (!s || s.status !== 'processed' || !s.approve) throw new LaurisError('Only a processed form in Forms to Approve can be signed.');
+    if (!u || !u.can_sign) throw new LaurisError(`${u ? u.name : 'This user'} does not have signing authority in Lauris (LMHP-type credential required).`, 403);
+    s.status = 'approved'; s.signed_by = u.name; s.signed_at = this.stamp(); this.save(); return s;
+  }
+  reject(id, by, note) {
+    const s = this.session(id);
+    if (!s || s.status !== 'processed') throw new LaurisError('Only a processed form can be rejected; a signed form is final.');
+    s.status = 'rejected'; s.rejected_by = by; s.reject_note = note; s.rejected_at = this.stamp(); this.save(); return s;
+  }
   saveSurvey(no, instrument, answers, by) {
     const c = this.consumer(no); const score = Object.values(answers).reduce((a, b) => a + (Number(b) || 0), 0);
     c.surveys = c.surveys || []; c.surveys.push({ instrument, answers, score, date: this.db.today, by }); this.save(); return score;
   }
+  // Demo-grade attestation: does the mock show what the page bridge says it saw? (see server/attest.js)
+  verify(ev) {
+    const norm = x => String(x || '').split(',')[0].trim().toLowerCase();
+    const c = this.consumer(ev.consumer && ev.consumer.no);
+    if (!c) return { ok: false, reason: `no consumer ${ev.consumer && ev.consumer.no}` };
+    if (ev.event === 'created') return { ok: true };
+    const s = this.session(ev.session);
+    if (!s) return { ok: false, reason: `no session ${ev.session}` };
+    if (String(s.no) !== String(c.no)) return { ok: false, reason: 'the session belongs to another consumer' };
+    if (ev.form && s.form !== ev.form) return { ok: false, reason: 'the session is a different form' };
+    const by = x => norm(this.user(x)?.name);
+    if (ev.event === 'saved') return ['saved', 'processed', 'approved', 'rejected'].includes(s.status) ? { ok: true, session: s } : { ok: false, reason: 'not saved' };
+    if (ev.event === 'processed') {
+      if (!['processed', 'approved', 'rejected'].includes(s.status)) return { ok: false, reason: 'the session is not processed' };
+      if (norm(ev.user) !== by(s.processed_by)) return { ok: false, reason: 'processed by another user' };
+      return { ok: true, session: s };
+    }
+    if (ev.event === 'signed') {
+      if (s.status !== 'approved') return { ok: false, reason: 'the session is not signed' };
+      if (norm(ev.user) !== norm(s.signed_by)) return { ok: false, reason: 'signed by another user' };
+      return { ok: true, session: s, signed_by: s.signed_by };
+    }
+    if (ev.event === 'rejected') return s.status === 'rejected' ? { ok: true, session: s } : { ok: false, reason: 'the session is not rejected' };
+    return { ok: false, reason: 'unknown event' };
+  }
+  // scenario hook: s3 puts T.W.'s initial SRA back to "not yet processed"
+  scenario(id) {
+    if (id === 's3') {
+      this.db.sessions = this.db.sessions.filter(x => !(x.no === 4492 && x.form === 'sra-initial'));
+      const c = this.consumer(4492); if (c) c.active_file = c.active_file.filter(f => f.form !== 'sra-initial');
+      this.save();
+    }
+  }
 }
 
 export const lauris = new LaurisDB();
-export { US };
+export { US, LaurisError };

@@ -33,11 +33,11 @@ export function laurisHref(id, params = {}, as) {
 
 export class ExtComposite extends DCLogic {
   constructor(params) { super(params); this.params = params || {}; this.noRepaint = true; }
-  get css() { return `#stage.ext{background:#E9E6E0}.xbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:8px 14px;background:#DEDAD3;font:13px 'DM Sans',system-ui,sans-serif;color:#151B24;border-bottom:1px solid #D9D4CC}
-.xbar a{color:#15605E;font-weight:600}.xbar .u{flex:1;min-width:200px;background:#fff;border:1px solid #D9D4CC;border-radius:999px;padding:5px 12px;font-size:12px;color:#525B66;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.xframe{display:block;width:100%;height:calc(100vh - 92px);border:0;background:#F2F3F5}`; }
+  get css() { return `#stage.ext{background:#E9E6E0}.xbar{flex:0 0 auto;display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:8px 14px;background:#DEDAD3;font:13px 'DM Sans',system-ui,sans-serif;color:#151B24;border-bottom:1px solid #D9D4CC}
+.xbar a{color:#15605E;font-weight:600}.xbar .u{flex:1;min-width:200px;background:#fff;border:1px solid #D9D4CC;border-radius:999px;padding:5px 12px;font-size:12px;color:#5A544B;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.xframe{display:block;width:100%;flex:1 1 auto;min-height:0;height:auto;border:0;background:#F2F3F5}`; }
   prepare() {
-    return `<div class="xbar"><span class="u">{{direct}}</span><span>{{what}}</span><a href="{{direct}}" target="_blank" rel="noopener">Open in its own tab ↗</a><span style="color:#525B66">Mock Lauris with the Psyflo panel beside it (in-page fallback at 400px; same panel as the extension)</span></div>
+    return `<div class="xbar"><span class="u">{{direct}}</span><span>{{what}}</span><a href="{{direct}}" target="_blank" rel="noopener">Open in its own tab ↗</a><span style="color:#5A544B">Mock Lauris with the Psyflo panel beside it (in-page fallback at 400px; same panel as the extension)</span></div>
 <iframe class="xframe" title="Mock Lauris with the Psyflo panel" src="{{url}}" allow="microphone"></iframe>`;
   }
   renderVals() { if (!this._t) this._t = laurisHref(this.meta?.id || 'ExtHome', this.params); return this._t; }

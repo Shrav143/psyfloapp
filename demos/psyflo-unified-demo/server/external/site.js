@@ -1,6 +1,7 @@
 // One-page mocks of the outside systems a person uses in their own login: Availity, the UHC portal,
 // the state incident portal and the DMAS eligibility lookup. Psyflo never logs in to any of them.
 import { html, readForm, esc, redirect, notFound } from '../util.js';
+import { attest } from '../attest.js';   // the portal registers the confirmations it issues so Psyflo can reject a made-up reference
 
 const page = (req, brand, color, body) => {
   const appURL = process.env.PSYFLO_APP_URL || `${req.headers['x-forwarded-proto'] || 'http'}://${(req.headers.host || 'localhost').split(':')[0]}:${process.env.APP_PORT || 4000}`;
@@ -25,6 +26,7 @@ export async function externalHandler(req, res) {
     if (req.method === 'POST') {
       const f = await readForm(req);
       const ref = (portal === 'availity' ? 'AV-' : 'UHC-') + Math.floor(100000 + Math.random() * 899999);
+      attest.portalIssued(ref, { request: f.request || '', kind: f.kind || 'request', portal });
       return html(res, page(req, brand, color, `<div class="ok" id="portal-confirmation" data-ref="${ref}" data-request="${esc(f.request || '')}" data-kind="${esc(f.kind || '')}"><b>Submission received.</b> Confirmation number <b id="confirmation-number">${ref}</b>.</div>
 <p>Member: ${esc(f.member || '')} · ${esc(f.kind === 'reply' ? 'Additional information reply' : 'Authorization request')} · ${esc(f.files || 'packet')} attached.</p>
 <p class="muted">The Psyflo extension reads this confirmation and logs it on the request. You can close this tab.</p>`));
@@ -40,7 +42,7 @@ ${kind === 'reply' ? '<label for="reply">Reply</label><textarea id="reply" name=
 <button type="submit">Submit</button></form>`));
   }
   if (p === '/state-portal/incident') {
-    if (req.method === 'POST') { const ref = 'VA-INC-' + Math.floor(10000 + Math.random() * 89999); return html(res, page(req, 'Virginia incident reporting (CHRIS)', '#5B2C6F', `<div class="ok" id="portal-confirmation" data-ref="${ref}"><b>Report filed.</b> Reference ${ref}.</div><p class="muted">Psyflo logged the time you pressed File now. You can close this tab.</p>`)); }
+    if (req.method === 'POST') { const ref = 'VA-INC-' + Math.floor(10000 + Math.random() * 89999); attest.portalIssued(ref, { kind: 'incident' }); return html(res, page(req, 'Virginia incident reporting (CHRIS)', '#5B2C6F', `<div class="ok" id="portal-confirmation" data-ref="${ref}"><b>Report filed.</b> Reference ${ref}.</div><p class="muted">Psyflo logged the time you pressed File now. You can close this tab.</p>`)); }
     return html(res, page(req, 'Virginia incident reporting (CHRIS)', '#5B2C6F', `<div class="demo">Demo: stands in for the state incident portal. A person files the report in their own login.</div>
 <form method="post"><label>Individual</label><input value="${esc(q.get('client') || 'D.W.')}"><label>Level</label><input value="${esc(q.get('level') || 'Level 2')}"><label>Date / time</label><input value="${esc(q.get('when') || '10/28/2026 2:40 pm')}"><label>Summary</label><textarea rows="5">${esc(q.get('what') || '')}</textarea><button type="submit">File report</button></form>`));
   }

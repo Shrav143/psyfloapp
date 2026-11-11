@@ -1,0 +1,192 @@
+{
+ "_about": "Crosswalk between the master (canonical) and the v3 reference demo for the 11 shared cases (review/04-architecture.md C1). Master ids win everywhere. v3 Harvest numbers and values are NOT imported: this table records them only so nobody joins the two datasets by mistake.",
+ "crosswalk": {
+  "canonical": "master",
+  "v3_numbers_imported": false,
+  "cases": [
+   {
+    "master": {
+     "client": "TW",
+     "request": "R-0416",
+     "referral": "REF-118",
+     "harvest_no": 4492
+    },
+    "v3": {
+     "case": "R-0416",
+     "lauris_no": 4492
+    },
+    "verdict": "match",
+    "note": "Stage differs (v3 waiting for signature; master canvas submitted Oct 22). Fax ref F-2291 is R-0399's in v3."
+   },
+   {
+    "master": {
+     "client": "MR",
+     "request": "R-0411",
+     "harvest_no": 3310
+    },
+    "v3": {
+     "case": "R-0411",
+     "lauris_no": 4471
+    },
+    "verdict": "match, number conflict",
+    "note": "v3 uses #4471 for M.R.; in the master #4471 is E.C. Never join on the Harvest number."
+   },
+   {
+    "master": {
+     "client": "KT",
+     "request": "R-0408",
+     "harvest_no": 4480
+    },
+    "v3": {
+     "case": "R-0408",
+     "lauris_no": 4466
+    },
+    "verdict": "match, number conflict",
+    "note": "Both: Anthem, information asked Oct 28 5:40 pm."
+   },
+   {
+    "master": {
+     "client": "DW",
+     "request": "R-0402",
+     "harvest_no": 4102
+    },
+    "v3": {
+     "case": "R-0402",
+     "lauris_no": 4458
+    },
+    "verdict": "match, value conflicts",
+    "note": "Age 15 (master) vs 14 (v3); offer 110 (master) vs 120 (v3); authorization 110 from Oct 29 (master) vs 90 left to Nov 6 (v3)."
+   },
+   {
+    "master": {
+     "client": null,
+     "request": "R-0399",
+     "harvest_no": null,
+     "free_text": "A.L., 6"
+    },
+    "v3": {
+     "case": "R-0399",
+     "lauris_no": 4455
+    },
+    "verdict": "match on request",
+    "note": "Master has no client row for A.L.; fax ref F-2280 vs F-2291."
+   },
+   {
+    "master": {
+     "client": "JO",
+     "request": "R-0391",
+     "harvest_no": 4400
+    },
+    "v3": {
+     "case": "R-0391",
+     "lauris_no": 4449
+    },
+    "verdict": "match, status conflict",
+    "note": "v3: partial, 110 offered Oct 29. Master: submitted Nov 6 decision window."
+   },
+   {
+    "master": {
+     "client": "TN",
+     "request": "R-0388",
+     "harvest_no": 3402
+    },
+    "v3": {
+     "case": "R-0388",
+     "lauris_no": 4441
+    },
+    "verdict": "match, value conflicts",
+    "note": "65 awarded, peer-to-peer Dec 9 in both. v3: 9 units left to Nov 20; master: 0 left, exhausted Nov 24. v3 puts T.N. on K. Hale's caseload; master does not."
+   },
+   {
+    "master": {
+     "client": "EC",
+     "request": "R-0384",
+     "harvest_no": 4471
+    },
+    "v3": {
+     "case": "R-0384",
+     "lauris_no": 4437
+    },
+    "verdict": "match, number conflict",
+    "note": "Denied Oct 22, 90 units. Appeal window computed from the notice date by the rules table (Dec 21)."
+   },
+   {
+    "master": {
+     "client": "SB",
+     "request": "R-0395",
+     "harvest_no": 4210
+    },
+    "v3": {
+     "case": "R-0395",
+     "lauris_no": 4430
+    },
+    "verdict": "match",
+    "note": "14 left of 80."
+   },
+   {
+    "master": {
+     "client": "LV",
+     "request": "R-0380",
+     "harvest_no": 4110
+    },
+    "v3": {
+     "case": "R-0380",
+     "lauris_no": 4426
+    },
+    "verdict": "match",
+    "note": "38 of 60 left. 'L.V.' also occurs as a v3 cohort initial: cohort ids are COH-."
+   },
+   {
+    "master": {
+     "client": "PG",
+     "request": "R-0377",
+     "harvest_no": 4300,
+     "service_line": "outpatient"
+    },
+    "v3": {
+     "case": "R-0377",
+     "lauris_no": 4419
+    },
+    "verdict": "match",
+    "note": "Outpatient: kept out of TDT views by the service-line filter."
+   }
+  ],
+  "conflicts": [
+   {
+    "id": "X-1",
+    "topic": "Harvest # 4471",
+    "master": "E.C.",
+    "v3": "M.R.",
+    "resolution": "Master canonical. Wrong-patient hazard if joined; the bridge matches Harvest # plus the identity card."
+   },
+   {
+    "id": "X-2",
+    "topic": "REF-121",
+    "master": "A.R., 9, LC-ES3 (family link ar-demo)",
+    "v3": "R.M., 8, Campbell ES-1",
+    "resolution": "Same id, different child. v3 referral not imported."
+   },
+   {
+    "id": "X-3",
+    "topic": "D.W. offer",
+    "master": "110 units",
+    "v3": "120 units",
+    "resolution": "Master 110. The 120 plausibly echoes the September offer in payer_history."
+   },
+   {
+    "id": "X-4",
+    "topic": "T.N. and R-0391",
+    "master": "T.N. 0 units left (exhausted Nov 24); R-0391 submitted",
+    "v3": "T.N. 9 left to Nov 20; R-0391 partial 110 offered",
+    "resolution": "Master canonical; v3 numbers not imported."
+   },
+   {
+    "id": "X-5",
+    "topic": "Cohort initials",
+    "master": "L.V., T.N. are real master students",
+    "v3": "cohort S00001..S00120 reuses L.V., T.N.",
+    "resolution": "Cohort ids are COH-... and initials are hidden; it never joins master records."
+   }
+  ]
+ }
+}

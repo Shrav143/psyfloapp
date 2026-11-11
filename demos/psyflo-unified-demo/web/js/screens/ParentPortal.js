@@ -214,7 +214,7 @@ export function lettersFor(s, c, lang) {
         L({ at: s.today, cls: 'y', chip: t.talk, title: t.p2pTitle(p), means: t.p2pText(p, child, r.units_awarded, r.units_requested, d(r.p2p_at), who), todo: t.nothing }); break;
       case 'denied': case 'appeal_sent': {
         const reason = r.denial_reason || 'not medically necessary';
-        const left = r.appeal_days_left != null ? r.appeal_days_left - M.daysBetween('2026-10-29', s.today) : null;
+        const dl = M.appealDeadline(s, r); const left = dl ? Math.max(0, M.daysBetween(s.today, dl)) : null;   // from the notice date by the rules table, not a constant anchored to a story date
         if (r.stage === 'appeal_sent') L({ at: r.appeal?.signed_at || s.today, cls: 'y', chip: t.appealed, title: t.apTitle, means: t.apText(p, d(r.appeal?.signed_at)), todo: t.nothing, action: { screen: 'AppealLetter', id: r.id, kind: 'see' } });
         L({ at: r.denied_on || s.today, cls: 'r', chip: t.no, title: t.denTitle(p), means: t.denText(p, child, lang === 'es' ? (REASON_ES[reason] || reason) : reason), todo: r.stage === 'denied' ? t.denDo(left) : t.denDone, urgent: r.stage === 'denied', action: r.stage === 'denied' ? { screen: 'AppealLetter', id: r.id, kind: 'appeal' } : null });
         break;

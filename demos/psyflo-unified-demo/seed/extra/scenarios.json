@@ -1,0 +1,158 @@
+{
+ "_about": "Presenter scenarios (prompt Part 14.2). demo.scenario {id} resets to the preset, applies the tweaks and returns {route, role, staff, client}. The presenter dock and the QA harness read this table. login: how the dock signs in (staffId by default).",
+ "scenarios": [
+  {
+   "id": "s1",
+   "title": "Direct staff daily documentation",
+   "role": "direct_support",
+   "staff": "khale",
+   "surface": "phone",
+   "case": {
+    "client": "MR",
+    "label": "M.R."
+   },
+   "route": "MobileApp",
+   "preset": "live",
+   "tweaks": [],
+   "steps": [
+    "Sign in as Kayla Hale (direct support)",
+    "Select M.R. on the phone",
+    "Say what happened, or type it",
+    "Review the draft against the ISP objectives",
+    "Open M.R.'s daily note in the mock Lauris",
+    "Check the wording and its sources",
+    "Fill the open form (yellow boxes)",
+    "A person presses Process Form",
+    "Today's notes count updates"
+   ]
+  },
+  {
+   "id": "s2",
+   "title": "School referral through intake",
+   "role": "school",
+   "staff": null,
+   "login": {
+    "schoolUser": "rbell"
+   },
+   "surface": "school",
+   "case": {
+    "client": "TW",
+    "referral": "REF-118",
+    "label": "T.W."
+   },
+   "route": "SchoolPortal",
+   "preset": "live",
+   "tweaks": [],
+   "steps": [
+    "School counselor submits the referral",
+    "Clinician reviews it and sends the family link",
+    "Guardian fills the family link on the phone",
+    "Eligibility is checked and recorded",
+    "Screening call starts in Lauris",
+    "Missing questions show in the panel",
+    "Draft waits for the clinician",
+    "Intake opens with the answers carried forward"
+   ]
+  },
+  {
+   "id": "s3",
+   "title": "Initial authorization",
+   "role": "clinician",
+   "staff": "jperez",
+   "surface": "platform",
+   "case": {
+    "client": "TW",
+    "request": "R-0416",
+    "label": "T.W."
+   },
+   "route": "Authorization?id=R-0416&section=submission",
+   "preset": "canvas",
+   "tweaks": [
+    "s3-draft"
+   ],
+   "steps": [
+    "Review the treatment plan",
+    "Open the initial request draft",
+    "Trace each statement to its source",
+    "Edit and review the request",
+    "Process Form in Lauris, then approve internally",
+    "A licensed person signs in Lauris",
+    "A person presses Send",
+    "Simulated Sfax receipt is recorded",
+    "Status updates in Authorizations"
+   ]
+  },
+  {
+   "id": "s4",
+   "title": "Continued-stay evidence",
+   "role": "clinician",
+   "staff": "jperez",
+   "surface": "platform",
+   "case": {
+    "client": "MR",
+    "request": "R-0411",
+    "label": "M.R."
+   },
+   "route": "Authorization?id=R-0411&section=evidence",
+   "preset": "canvas",
+   "tweaks": [],
+   "steps": [
+    "Open the continued-stay request",
+    "Pick the evidence period",
+    "Review daily notes",
+    "Review guardian and collateral contacts",
+    "Check intervention counts and dates",
+    "Exclude what should stay out",
+    "See what evidence is missing",
+    "Prepare the draft for clinician review"
+   ]
+  },
+  {
+   "id": "s5",
+   "title": "Payer decision",
+   "role": "clinician",
+   "staff": "jperez",
+   "surface": "platform",
+   "case": {
+    "client": "DW",
+    "request": "R-0402",
+    "label": "D.W. \u00b7 K.T. \u00b7 T.N. \u00b7 E.C."
+   },
+   "route": "DenialIntelligence",
+   "preset": "canvas",
+   "tweaks": [],
+   "steps": [
+    "Partial offer (D.W.)",
+    "Additional-information request (K.T.)",
+    "Peer-to-peer preparation (T.N.)",
+    "Appeal preparation (E.C.)",
+    "Record the decision with its document",
+    "Authorization status updates"
+   ]
+  },
+  {
+   "id": "s6",
+   "title": "Leadership view",
+   "role": "admin",
+   "staff": "dowens",
+   "alt_role": "clinician",
+   "alt_staff": "jperez",
+   "surface": "platform",
+   "case": {
+    "label": "Aggregate"
+   },
+   "route": "Analytics?section=outcomes",
+   "preset": "canvas",
+   "tweaks": [],
+   "steps": [
+    "Open Analytics",
+    "Documentation timeliness",
+    "Payer outcomes",
+    "Patient population",
+    "Treatment goals and interventions",
+    "Drill down where permitted (clinician, own caseload)",
+    "Export a report"
+   ]
+  }
+ ]
+}

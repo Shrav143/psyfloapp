@@ -59,13 +59,20 @@ export async function readForm(req) {
   return out;
 }
 
-export function cors(req, res) {
+// CORS with an origin allow-list (no reflection of arbitrary origins). Returns true when the request was fully handled (preflight or refused).
+// `allow(origin)` decides; requests without an Origin header (same-origin navigation, node, curl) pass through.
+export function cors(req, res, allow = () => true) {
   const origin = req.headers.origin;
   if (origin) {
+    if (!allow(origin)) {
+      if (req.method === 'OPTIONS') { res.writeHead(403); res.end(); return true; }
+      return false; // handlers refuse state-changing calls from an unlisted origin (see originOk in index.js)
+    }
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Vary', 'Origin');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Psyflo-Session, Authorization');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Expose-Headers', 'X-Psyflo-Rev');
   }
   if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return true; }
   return false;
