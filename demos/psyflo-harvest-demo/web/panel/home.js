@@ -42,7 +42,25 @@ ACT.launch = async el => {
   if (k === 'req') { const c = clientOfNo(st.no); const r = c && S().requests.find(q => q.client === c.id && ['draft_ready', 'needs_approval', 'awaiting_signature', 'signed'].includes(q.stage)); return nav(`/consumers/${st.no}/session/${r && r.type !== 'initial' ? 'sra-continued' : !r && c?.stage === 'in_service' ? 'sra-continued' : 'sra-initial'}`); }
   if (k === 'time') { const c = clientOfNo(st.no); if (!c) return flash('That student is not in Psyflo', 'r'); await api.do('timer.start', { staff: me.id, client: c.id }); flash('Timer started · ' + c.initials); }
 };
-ACT.timerStop = async () => { await api.do('timer.stop', { staff: meFromPage().id }); flash('Timer stopped'); };
+// Stop with the end time the timer reads (start + elapsed), as the phone does: the seeded 13:52 start can sit ahead of the wall clock,
+// and core timer.stop would then store a backwards block. Same stored anchor as the phone app (same origin), so both agree.
+function elapsedSec(started) {
+  const now = new Date(); const t = started.slice(11, 19).split(':').map(Number);
+  let sec = (now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds()) - (t[0] * 3600 + t[1] * 60 + (t[2] || 0));
+  if (started.slice(0, 10) !== S().today) sec = -1;
+  if (sec >= 0 && sec < 8 * 3600) return sec;
+  const key = 'psyflo_timer_anchor_' + started; let a = null;
+  try { a = +localStorage.getItem(key) || null; } catch (e) { }
+  if (!a) { a = Date.now() - (56 * 60 + 38) * 1000; try { localStorage.setItem(key, String(a)); } catch (e) { } }
+  return Math.max(0, Math.round((Date.now() - a) / 1000));
+}
+ACT.timerStop = async () => {
+  const me = meFromPage(); const t = S().timers[me.id]; if (!t || !t.started) return;
+  const [h, m] = t.started.slice(11, 16).split(':').map(Number);
+  const end = Math.min(23 * 60 + 59, h * 60 + m + Math.round(elapsedSec(t.started) / 60));
+  await api.do('timer.stopAt', { staff: me.id, end: `${String(Math.floor(end / 60)).padStart(2, '0')}:${String(end % 60).padStart(2, '0')}` });
+  flash('Timer stopped');
+};
 
 export function homeView() {
   const s = S(); const me = meFromPage(); const lvl = LEVEL[me.role];

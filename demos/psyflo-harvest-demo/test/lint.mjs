@@ -10,7 +10,8 @@ const ALLOWED = new Set(['151B24', '217A78', '15605E', '5FC0BE', 'DDF1EF', 'F0B4
 const RETIRED = [/\bDo next\b/, /\bNew students\b/, /\bNeeds me\b/, /\bPast due\b/, /\bThe four doors\b/i, /\bPayer playbook\b/, /\bStaff dashboard\b/i, /\bReview queue\b/];
 const targets = [];
 const walk = (d, test) => { for (const f of fs.readdirSync(d, { withFileTypes: true })) { const p = path.join(d, f.name); if (f.isDirectory()) walk(p, test); else if (test(p)) targets.push(p); } };
-walk(path.join(ROOT, 'web/screens'), p => p.endsWith('.dc.html'));
+// Ext*.dc.html are the canvas reference for the Lauris pages; the app never renders them (the mock Lauris and the panel do), so they are not linted.
+walk(path.join(ROOT, 'web/screens'), p => p.endsWith('.dc.html') && !/\/Ext[A-Za-z]+\.dc\.html$/.test(p));
 walk(path.join(ROOT, 'web/css'), p => p.endsWith('.css'));
 walk(path.join(ROOT, 'web/panel'), p => /\.(css|js|html)$/.test(p) && !p.endsWith('bridge.js'));
 walk(path.join(ROOT, 'web/js/screens'), p => p.endsWith('.js'));

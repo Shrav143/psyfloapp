@@ -213,7 +213,7 @@ for (const as of ['dowens', 'khale']) {
     await p.goto(BASE + '/#/Roadmap'); await p.waitForTimeout(500);
     await p.locator('.rm-tile', { hasText: t.title }).click(); await p.waitForTimeout(BY_ID[id]?.surface === 'ext' ? 2200 : 900);
     const body = as === 'khale' && BY_ID[id]?.surface === 'ext' ? 'x'.repeat(30) : await text(p);
-    ok(`Roadmap (${as}): "${t.title}" opens`, (await hash(p)).startsWith('#/' + id) && !/Not available|Screen not found/.test(body) && body.length > 20 && !errsOf.get(p).some(e => /PAGEERROR/.test(e)), `${await hash(p)} ${body.slice(0, 60)}`);
+    ok(`Roadmap (${as}): "${t.title}" opens`, (await hash(p)).startsWith('#/' + id) && !/Not available|Screen not found/.test(body) && (/^Ext/.test(id) ? p.frames().some(f => /\/panel/.test(f.url())) : body.length > 20) && !errsOf.get(p).some(e => /PAGEERROR/.test(e)), `${await hash(p)} ${body.slice(0, 60)}`);
   }
   await p.context().close();
 }

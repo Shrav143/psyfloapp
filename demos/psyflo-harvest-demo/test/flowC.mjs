@@ -42,10 +42,12 @@ const pdf = await fetch(APP + r.signed_pdf); log('signed PDF:', pdf.status, pdf.
 await p.screenshot({ path: shot + '/flowC-3-signed.png' });
 // "Open Send" opens Authorizations with the request's drawer
 const [pop] = await Promise.all([p.context().waitForEvent('page'), panel().getByRole('button', { name: 'Open Send' }).click()]);
-log('Open Send opens:', pop.url().replace(/^https?:\/\/[^/]+/, '')); await pop.close();
-// TODO(lead): the Send step used the old Sent screen; Authorizations (owner B1) now opens a drawer. Until the test drives that drawer,
-// call the action API directly (a person presses Send in the product).
-await doA('request.send', { id: 'R-0416' }); await new Promise(r => setTimeout(r, 3600));
+log('Open Send opens:', pop.url().replace(/^https?:\/\/[^/]+/, ''));
+// the drawer: a person presses Send by fax (the Sfax stub returns a reference and a receipt in about 3 s)
+await pop.evaluate(() => localStorage.setItem('psyflo_user', 'jperez')); await pop.reload();
+await pop.locator('.u-drawer').waitFor({ timeout: 10000 });
+await pop.locator('.u-drawer').getByRole('button', { name: 'Send by fax' }).click();
+await new Promise(r => setTimeout(r, 4200)); await pop.close();
 s = await state(); const q = s.requests.find(r => r.id === 'R-0416'); log('after Send:', q.stage, q.fax_ref, 'due', q.decision_due, '· events:', s.events.filter(e => e.record === 'R-0416').map(e => e.what.slice(0, 40)).join(' | '));
 log('errors:', errs.length ? errs : 'none');
 await b.close();

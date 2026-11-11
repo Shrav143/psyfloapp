@@ -9,11 +9,14 @@ const only = args.filter(a => !a.startsWith('--'));
 const { SCREENS } = await import('../web/js/registry.js');
 const BUDGET = { app: 150, worklist: 120, ext: 100, phone: 60, parent: 70, school: 150, canvas: 400 };
 const budgetFor = s => s.id === 'DoNext' ? BUDGET.worklist : BUDGET[s.surface] ?? 150;
+// Count in the live DOM: hide what is excluded, then read innerText (a detached clone glues inline elements together and undercounts).
 const countWords = () => {
-  const root = document.querySelector('#root') || document.body; const clone = root.cloneNode(true);
-  clone.querySelectorAll('[data-doc], aside, script, style, template, [hidden]').forEach(n => n.remove()); // the generated sidebar is shell, not screen copy
-  clone.querySelectorAll('input, textarea, select').forEach(n => n.remove());
-  return (clone.innerText || clone.textContent || '').split(/\s+/).filter(Boolean).length;
+  const root = document.querySelector('#root') || document.body;
+  const st = document.createElement('style');
+  st.textContent = '[data-doc], aside, script, style, template, input, textarea, select, svg, .tip { display: none !important; }'; // the generated sidebar is shell, not screen copy
+  document.head.appendChild(st);
+  const n = (root.innerText || '').split(/\s+/).filter(Boolean).length;
+  st.remove(); return n;
 };
 const b = await chromium.launch(); const rows = []; let fail = 0;
 for (const s of SCREENS) {

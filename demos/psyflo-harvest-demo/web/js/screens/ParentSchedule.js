@@ -2,7 +2,7 @@
 // clinicians' open times (openSlots: a stand-in for their Google Calendars, each time going to the first free
 // clinician). Opened when a clinician marks the referral "Qualifies · family books the call" (screening.offer) or
 // the child "Qualifies for TDT · family books the intake" (intake.offer) on the referral review (7).
-// Booking → screening.bookByFamily / intake.book (with "I need a ride", which lands on the clinician's Do next).
+// Booking → screening.bookByFamily / intake.book (with "I need a ride", which lands on the clinician's Worklist).
 // The day before the intake the family confirms or asks to change (intake.confirm). ?kind=screening|intake.
 import { register, Screen, M, toast } from '../app.js';
 import { famCtx, getLang, setLang, fdate, pgo, callSheet, childName, guardianLabel, openSlots, bookingState, INTAKE_WHERE, guardHeader, guardFooter } from './ParentPortal.js';

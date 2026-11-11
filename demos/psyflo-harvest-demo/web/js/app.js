@@ -180,6 +180,7 @@ function placePop(pop, anchor) {
   const r = anchor.getBoundingClientRect(); const w = pop.offsetWidth, h = pop.offsetHeight;
   let x = r.left; if (x + w > innerWidth - 8) x = innerWidth - w - 8; if (x < 8) x = 8;
   let y = r.top - h - 8; if (y < 8) y = Math.min(r.bottom + 8, innerHeight - h - 8);
+  if (anchor.closest('aside')) { x = Math.min(r.right + 12, innerWidth - w - 8); y = Math.max(8, Math.min(r.bottom - h, innerHeight - h - 8)); } // from the sidebar the menu opens beside it, not over the nav
   pop.style.left = x + 'px'; pop.style.top = Math.max(8, y) + 'px';
 }
 function closePop() { const p = document.getElementById('pmenu'); if (p) p.hidden = true; }
