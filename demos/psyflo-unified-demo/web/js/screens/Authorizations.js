@@ -102,11 +102,11 @@ register('Authorizations', class extends Screen {
       shown: q.shown, total: q.total, noun: NOUN, onChange: f => this.setF(f), onClear: f => { this.state.range = { from: '', to: '' }; ui.query.writeQuery({ from: '', to: '' }); this.setF(f); }
     });
     const cols = [
-      { key: 'case', label: 'Case', sort: true, primary: true, width: '16%', className: 'a-c-case', render: r => `<span class="a-case-l"><b>${esc(r.label)}</b> <span class="a-id">${esc(r.id)}</span></span><span class="a-sub">${esc(r.school || '')}</span>` },
-      { key: 'payer', label: 'Payer', sort: true, hideBelow: 1024, width: '12%', render: r => `<span class="a-nw">${esc(r.payer)}</span><div class="a-sub a-nw">${esc(r.channel)}${r.ref ? ' · ' + esc(r.ref) : ''}</div>` },
+      { key: 'case', label: 'Case', sort: true, primary: true, width: '16%', className: 'a-c-case', render: r => `<span class="a-case-l"><b>${esc(r.label)}</b> <span class="a-id">${esc(r.id)}</span></span><span class="a-sub">${esc(r.school || '')}</span><span class="a-sub a-s3">${esc(r.payer)} · ${esc(r.typeLabel)}</span>` },
+      { key: 'payer', label: 'Payer', sort: true, hideBelow: 1280, width: '12%', render: r => `<span class="a-nw">${esc(r.payer)}</span><span class="a-sub a-nw a-s1">${esc(r.channel)}${r.ref ? ' · ' + esc(r.ref) : ''}</span><span class="a-sub a-nw a-s2">${esc(r.typeLabel)} · ${esc(r.channel)}</span>` },
       { key: 'type', label: 'Request type', sort: true, hideBelow: 1280, width: '10%', render: r => `${esc(r.typeLabel)}<div class="a-sub">${esc(r.service)}</div>` },
       { key: 'status', label: 'Status', sort: true, width: '12%', render: r => ui.statusChip(r.stage) + (r.inDI ? (canOpen('DenialCase') || canOpen('Partials') ? `<div class="a-di"><a href="${esc(diHref(r.req))}">In Denial Intelligence</a></div>` : '<div class="a-sub">In Denial Intelligence · clinician only</div>') : '') },
-      { key: 'units', label: 'Units', sort: true, width: '16%', className: 'a-c-units', render: r => this.unitsCell(r) },
+      { key: 'units', label: 'Units', sort: true, width: '15%', className: 'a-c-units', render: r => this.unitsCell(r) },
       { key: 'deadline', label: 'Deadline', sort: true, width: '21%', className: 'a-c-dl', render: r => this.deadlineCell(r) },
       { key: 'owner', label: 'Owner', sort: true, hideBelow: 1280, width: '6%', render: r => `<span class="a-nw" title="${esc(r.owner.backup ? 'Backup: ' + r.owner.backup.name : 'No backup set')}">${esc(r.owner.short)}</span>` },
       { key: 'next', label: 'Next action', sort: true, render: r => this.nextCell(r) }
@@ -126,7 +126,7 @@ register('Authorizations', class extends Screen {
     const u = r.units; const warn = u.daysLeft != null && u.daysLeft < 10;
     const bar = u.showBar ? `<span class="a-bar${warn ? ' is-warn' : ''}" role="img" aria-label="${esc(`${u.used} of ${u.total} units used`)}"><i style="width:${Math.min(100, u.pct)}%"></i></span>` : '';
     const sub = u.showBar ? `<span class="a-sub a-ub">${bar}${esc(u.sub)}</span>` : (r.stage === 'submitted' || r.stage === 'overdue') && r.req.sent ? `<span class="a-sub">sent ${esc(M.fmtDate(r.req.sent))}</span>` : '';
-    const days = u.showBar && u.daysLeft != null && u.rate ? `<span class="a-sub a-line">about ${u.daysLeft} school days ${ui.sourceChip(u.rate.rule)}</span>` : '';
+    const days = u.showBar && u.daysLeft != null && u.rate ? `<span class="a-sub a-line a-mini">about ${u.daysLeft} school days ${ui.sourceChip(u.rate.rule)}</span>` : '';   // the rate's source is the icon with its name and tooltip: the row stays two or three lines
     return `<span class="a-units"><b class="ui-num">${esc(u.text)}</b></span>${sub}${days}`;
   }
   deadlineCell(r) {
@@ -134,11 +134,11 @@ register('Authorizations', class extends Screen {
     // the Overdue / Due soon chip is the colour and an icon here (the Status column already says Overdue); the source chip stays, on the second line
     const mark = d.sev === 'overdue' ? `<span class="a-dl__i">${ui.icon('alert', 14)}<span class="ui-sr">Overdue: </span></span>` : d.sev === 'soon' ? `<span class="a-dl__i">${ui.icon('clock', 14)}<span class="ui-sr">Due soon: </span></span>` : '';
     const src = d.rule ? ui.sourceChip(d.rule) : '';
-    return `<div class="a-dl a-dl--${d.sev}">${mark}<span class="a-dl__t">${esc(d.text)}</span></div>${d.sub || src ? `<span class="a-sub a-line">${esc(d.short || d.sub || '')} ${src}</span>` : ''}`;
+    return `<div class="a-dl a-dl--${d.sev}">${mark}<span class="a-dl__t">${esc(d.text)}</span></div>${d.sub || src ? `<span class="a-sub a-line">${esc(d.short != null ? d.short : d.sub || '')} ${src}</span>` : ''}`;
   }
   nextCell(r) {
     const n = r.next; const href = n.di && (canOpen('DenialCase') || canOpen('Partials')) ? diHref(r.req) : caseHref(r.id);
-    return `<a class="ui-btn ui-btn--secondary ui-btn--sm" href="${esc(href)}">${esc(n.label)}<span class="ui-sr"> for ${esc(r.label)}, ${esc(r.id)}</span></a>${n.why ? `<div class="a-sub">${esc(n.why)}</div>` : ''}`;
+    return `<a class="ui-btn ui-btn--secondary ui-btn--sm" href="${esc(href)}">${esc(n.label)}<span class="ui-sr"> for ${esc(r.label)}, ${esc(r.id)}</span></a>${n.why ? `<div class="a-sub">${esc(n.why)}</div>` : ''}<span class="a-sub a-own">Owner ${esc(r.owner.short)}</span>`;
   }
   after(root) {
     const upd = (k, v) => { this.state.range = { ...this.state.range, [k]: v }; ui.query.writeQuery({ [k]: v }); this.repaint(); };

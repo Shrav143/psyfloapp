@@ -173,13 +173,13 @@ export function deadline(s, r) {
       const dl = M.appealDeadline(s, r);
       if (!dl) return { kind: 'appeal', text: 'Appeal window', sub: 'enter the notice date', date: null, sev: 'soon', rule: rule(s, 'appeal.window_days') };
       const d = daysBetween(t, dl);
-      return { kind: 'appeal', text: d < 0 ? 'Appeal window closed' : `Appeal by ${fmtDate(dl)}`, sub: d < 0 ? fmtDate(dl) : `${d} days left · confirm on the letter`, date: dl, sev: d < 0 ? 'overdue' : d <= 14 ? 'soon' : 'ok', rule: rule(s, 'appeal.window_days') };
+      return { kind: 'appeal', text: d < 0 ? 'Appeal window closed' : `Appeal by ${fmtDate(dl)}`, sub: d < 0 ? fmtDate(dl) : `${d} days left · confirm on the letter`, short: d < 0 ? fmtDate(dl) : `${d} days left`, date: dl, sev: d < 0 ? 'overdue' : d <= 14 ? 'soon' : 'ok', rule: rule(s, 'appeal.window_days') };
     }
     case 'appeal_sent': return { kind: 'appeal', text: 'Payer appeal clock', sub: 'not recorded', date: null, sev: 'ok', rule: null };
     case 'active': {
       const u = unitsView(s, r); const rn = renewal(s, r);
       if (u.left === 0 && u.total) return { kind: 'units', text: 'Units used up', sub: u.exhausted ? fmtDate(u.exhausted) : '', date: u.exhausted, sev: 'overdue', rule: u.rate && u.rate.rule };
-      if (rn && rn.due) return rn.byDate || !rn.byUnits || !u.rate ? reauthDeadline(s, rn) : { kind: 'renewal', text: 'Reauth due: units running out', sub: `about ${u.daysLeft} school days left${rn.end ? ' · current ends ' + fmtDate(rn.end) : ''}`, short: `current ends ${rn.end ? fmtDate(rn.end) : '—'}`, date: rn.dueBy || rn.end, sev: 'soon', rule: u.rate.rule };
+      if (rn && rn.due) return rn.byDate || !rn.byUnits || !u.rate ? reauthDeadline(s, rn) : { kind: 'renewal', text: 'Reauth due: units low', sub: `about ${u.daysLeft} school days left${rn.end ? ' · current ends ' + fmtDate(rn.end) : ''}`, short: rn.end ? `current ends ${fmtDate(rn.end)}` : '', date: rn.dueBy || rn.end, sev: 'soon', rule: u.rate.rule };
       if (u.end) return { kind: 'auth_end', text: `Ends ${fmtDate(u.end)}`, sub: `${daysBetween(t, u.end)} days left`, date: u.end, sev: 'ok', rule: ad('payer', 'Payer authorization window') };
       if (u.daysLeft != null) return { kind: 'units', text: `About ${u.daysLeft} school days`, sub: 'end date not recorded', date: null, sev: u.daysLeft <= 10 ? 'soon' : 'ok', rule: u.rate && u.rate.rule };
       return none;

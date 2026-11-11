@@ -1,6 +1,6 @@
 {
- "runId": "2026-11-11T18-38-50Z",
- "commit": "db055dd",
+ "runId": "2026-11-11T18-47-20Z",
+ "commit": "0f44ed7",
  "release": false,
  "releaseReady": false,
  "env": {
@@ -9,182 +9,66 @@
   "preset": "live",
   "workers": 1,
   "repeat": 1,
-  "basePort": 4990
+  "basePort": 4800
  },
  "summary": {
-  "pass": 0,
-  "fail": 1,
+  "pass": 1,
+  "fail": 0,
   "skip": 0,
   "notRunnable": 0,
   "knownFail": 0,
   "flaky": 0,
-  "durationMs": 124534,
+  "durationMs": 15924,
   "tests": {
-   "pass": 26,
-   "fail": 2,
+   "pass": 5,
+   "fail": 0,
    "skip": 0
   }
  },
  "suites": [
   {
-   "name": "presenter",
+   "name": "flowD",
    "tags": [
-    "presenter",
-    "ui"
+    "flow"
    ],
    "instance": 0,
    "attempt": 1,
-   "status": "FAIL",
-   "exit": 1,
-   "durationMs": 124434,
+   "status": "PASS",
+   "exit": 0,
+   "durationMs": 15821,
    "counts": {
-    "pass": 26,
-    "fail": 2,
+    "pass": 5,
+    "fail": 0,
     "skip": 0
    },
    "tests": [
     {
      "status": "PASS",
-     "title": "PRES-01 the product viewport has no \"Reset\" or \"Demo:\" text and no presenter controls (Presentation mode, dock hidden)",
+     "title": "the clinician sends the family link from Referral review (SMS stub: not actually sent)",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "PRES-02 the dock is hidden by default, takes no tab stop, and is not in the page until opened",
+     "title": "the guardian opens the link on the phone (token sign-in) and completes the five steps",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "PRES-03 Ctrl+Shift+P opens the dock (focus on its toggle) and toggles it closed again; the page behind keeps its layout",
+     "title": "Eligibility flips to \"details received\"; a person records the DMAS result",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "PRES-04 collapsed: a 28 px handle is the only dock control; its menus stay out of the tab order until the dock is opened",
+     "title": "the guardian signs the consent on the phone; the signer is the guardian behind the link",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "PRES-05 the dock is visually unlike the product (navy ribbon, monospace PRESENTER label, dashed marigold edge)",
-     "note": ""
-    },
-    {
-     "status": "FAIL",
-     "title": "PRES-06 role switch changes the rail without a reload (clinician -> supervisor -> direct support -> administrator -> clinician)",
-     "note": "page.click: Timeout 30000ms exceeded."
-    },
-    {
-     "status": "FAIL",
-     "title": "PRES-07 \"Demo data · nothing is real\" is on every app screen (rail foot) and on the phone and portal screens",
-     "note": "screens without the \"Demo data · nothing is real\" line expected [] but got [\"MobileApp (phone)\",\"MobileDictate (phone)\",\"MobileAssess (phone)\"]"
-    },
-    {
-     "status": "PASS",
-     "title": "PRES-08 scenario s1 from the dock lands on its route as its role",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "PRES-08 scenario s2 from the dock lands on its route as its role",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "PRES-08 scenario s3 from the dock lands on its route as its role",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "PRES-08 scenario s4 from the dock lands on its route as its role",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "PRES-08 scenario s5 from the dock lands on its route as its role",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "PRES-08 scenario s6 from the dock lands on its route as its role",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "PRES-09 the dock's menus: Reset offers Live flows and Canvas snapshot and asks before resetting; Simulate and Notes and Maturity work; Surfaces opens Lauris",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "PRES-10 clinician: Sign out (rail) ends the session and lands on the sign-in screen; the next load asks who you are",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "PRES-10 supervisor: Sign out (rail) ends the session and lands on the sign-in screen; the next load asks who you are",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "PRES-10 admin: Sign out (rail) ends the session and lands on the sign-in screen; the next load asks who you are",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "PRES-10 direct_support: Sign out (rail) ends the session and lands on the sign-in screen; the next load asks who you are",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "EXP-01 Explore mode: the dock is always open, the mode label is visible, Ctrl+Shift+P focuses it instead of hiding it, and Presentation mode can be restored",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "EXP-02 clinician: \"All screens\" lists every route this role may open and each opens in two clicks",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "EXP-02 supervisor: \"All screens\" lists every route this role may open and each opens in two clicks",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "EXP-02 admin: \"All screens\" lists every route this role may open and each opens in two clicks",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "EXP-02 direct_support: \"All screens\" lists every route this role may open and each opens in two clicks",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "EXP-03 portal screens in the picker open as the portal person (guardian, school) in Explore mode",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "EXP-04 clinician: every route this role may open is within three clicks of its home screen (product links: rail, page links)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "EXP-04 supervisor: every route this role may open is within three clicks of its home screen (product links: rail, page links)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "EXP-04 admin: every route this role may open is within three clicks of its home screen (product links: rail, page links)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "EXP-04 direct_support: every route this role may open is within three clicks of its home screen (product links: rail, page links)",
+     "title": "no console errors on either screen",
      "note": ""
     }
    ],
-   "runId": "2026-11-11T18-38-50Z"
+   "runId": "2026-11-11T18-47-20Z"
   }
  ],
  "manual": [

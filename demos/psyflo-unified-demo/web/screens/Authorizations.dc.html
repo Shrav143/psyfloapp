@@ -42,11 +42,17 @@
 .a-id{white-space:nowrap}
 .a-units .ui-num{font-weight:600}
 .a-page .ui-verify{font-size:var(--fs-12)}
-.a-page .ui-qt__table td{padding:8px 8px;vertical-align:middle}
-.a-page .ui-qt__table th{padding-left:8px;padding-right:8px}
+.a-page .ui-qt__table td{padding:7px 7px;vertical-align:middle}
+.a-page .ui-qt__table th{padding-left:7px;padding-right:7px}
+/* three widths: all columns from 1440; below that the type joins the payer line and the owner joins the action cell; below 1280 the payer and type join the case cell */
+.a-page .a-s2,.a-page .a-s3,.a-page .a-own{display:none}
+@media (max-width:1439px){.a-page .a-s1{display:none}.a-page .a-s2,.a-page .a-own{display:block}.a-page .ui-qt__table th:nth-child(3),.a-page .ui-qt__table td:nth-child(3),.a-page .ui-qt__table th:nth-child(7),.a-page .ui-qt__table td:nth-child(7){display:none}}
+@media (max-width:1279px){.a-page .a-s3{display:block}}
 .a-c-case{min-width:150px}.a-c-case .a-sub{white-space:nowrap}
-.a-c-units{min-width:170px}.a-c-units .a-sub{white-space:nowrap}
-.a-c-dl{min-width:225px}
+.a-c-units{min-width:150px}.a-c-units .a-sub{white-space:nowrap}
+.a-c-dl{min-width:170px}
+.a-page .ui-qt__table .a-mini .ui-verify{font-size:0;gap:0;padding:0 3px}
+.a-page .ui-qt__table .a-mini .ui-verify svg{width:14px;height:14px}
 .a-bar{width:40px}
 .a-page .ui-qt__table .ui-chip{padding:0 8px}
 .a-page .ui-qt__table .ui-verify{padding:0 6px;font-size:11px;line-height:16px}

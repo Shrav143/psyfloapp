@@ -140,9 +140,9 @@ function railHTML(currentId) {
   return `<a class="sh-logo" href="${esc(hrefFor(logoT.id, logoT.params))}" aria-label="Psyflo, My Work"${on === 'my-work' ? ' aria-current="page"' : ''}>${LOGO.replace('<svg ', '<svg aria-hidden="true" focusable="false" ').replace(/role="img"\s*aria-label="[^"]*"/, '')}<small>Harvest Outreach Center · TDT</small></a>
   <nav class="sh-nav" aria-label="Main"><ul>${nav.primary.length || nav.secondary.length ? nav.primary.map(i => link(i)).join('') : link({ ...nav.logo, icon: 'home', countText: '', count: 0, target: logoT })}</ul>${nav.secondary.length ? `<div class="sh-nav__sep" role="separator"></div><ul>${nav.secondary.map(i => link(i, true)).join('')}</ul>` : ''}</nav>
   <div class="sh-foot">
-    <div class="sh-demo" title="Demo data · nothing is real"><i aria-hidden="true"></i><span>Demo data · nothing is real</span></div>
-    <button type="button" class="sh-help" data-sh="help" aria-label="Help">${icon('help', 19)}<span>Help</span></button>
-    <div class="sh-user"><span class="sh-user__av" aria-hidden="true">${initials}</span><div class="sh-user__t"><b>${esc(u.name)}</b><span>${esc(roleLabel(u.role))}</span></div><a href="#/Login" data-signout>Sign out</a></div>
+    <div class="sh-demo"><i aria-hidden="true"></i><span>Demo data · nothing is real</span></div>
+    <button type="button" class="sh-help" data-sh="help" aria-label="Help" title="Help">${icon('help', 19)}<span class="sh-lbl">Help</span></button>
+    <div class="sh-user"><span class="sh-user__av" aria-hidden="true">${initials}</span><div class="sh-user__t"><b>${esc(u.name)}</b><span>${esc(roleLabel(u.role))}</span></div><a class="sh-signout" href="#/Login" data-signout aria-label="Sign out ${esc(u.name)}" title="Sign out">${icon('logout', 18)}<span class="sh-lbl">Sign out</span></a></div>
   </div>`;
 }
 let railKey = '';
@@ -524,7 +524,7 @@ async function boot() {
   initDockState();
   await api.init();
   try { PERM = await import('./shared/permissions.js'); } catch { PERM = null; }
-  LOGO = (await fetch('/js/logo.svg').then(r => r.text())).trim();
+  LOGO = (await fetch('/js/logo-color.svg').then(r => r.ok ? r.text() : Promise.reject()).catch(() => fetch('/js/logo.svg').then(r => r.text()))).trim();   // full-colour wordmark for the light rail (logo.svg is the reverse one for navy)
   await loadNotes();
   await Promise.all(Object.keys(MODULES).map(k => MODULES[k]().catch(e => console.error('controller', k, e))));
   const root = document.getElementById('root');

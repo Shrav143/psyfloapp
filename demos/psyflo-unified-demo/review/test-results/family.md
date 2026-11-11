@@ -1,6 +1,6 @@
 # family · PASS
 
-Run 2026-11-11T18-24-51Z · 56445 ms · instance 2 · exit 0
+Run 2026-11-11T18-43-29Z · 108087 ms · instance 1 · exit 0
 
 | Result | Test | Note |
 |---|---|---|

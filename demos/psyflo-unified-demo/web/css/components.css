@@ -266,12 +266,14 @@ body{margin:0}
 .sh-demo i{width:8px;height:8px;border-radius:50%;background:var(--marigold-400);flex:0 0 8px}
 .sh-help{display:flex;align-items:center;gap:12px;min-height:36px;padding:0 12px;border:0;background:none;border-radius:var(--r-2);font:500 var(--fs-14) var(--font);color:var(--ink-900);cursor:pointer;text-align:left}
 .sh-help:hover{background:#E6DCCD}
-.sh-user{display:flex;align-items:center;gap:10px;padding:12px 8px 2px;border-top:1px solid var(--line-200)}
+.sh-user{display:grid;grid-template-columns:36px minmax(0,1fr);align-items:center;gap:0 10px;padding:12px 8px 2px;border-top:1px solid var(--line-200)}
+.sh-user__av{grid-row:1 / span 2}.sh-user__t{grid-column:2}.sh-signout{grid-column:2;justify-self:start;margin-left:-6px}
 .sh-user__av{flex:0 0 36px;width:36px;height:36px;border-radius:50%;background:var(--teal-700);color:#fff;font-size:var(--fs-13);font-weight:600;display:inline-flex;align-items:center;justify-content:center}
 .sh-user__t{min-width:0;flex:1}
 .sh-user__t b{display:block;font-size:var(--fs-13);font-weight:600;line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sh-user__t span{display:block;font-size:var(--fs-12);color:var(--muted-700);line-height:1.25}
-.sh-user a{font-size:var(--fs-12);color:var(--teal-700);font-weight:600}
+.sh-signout{display:inline-flex;align-items:center;gap:4px;min-height:28px;padding:0 6px;border-radius:var(--r-1);font-size:var(--fs-12);color:var(--teal-700);font-weight:600}
+.sh-signout .ui-icon{display:none}
 #stage{flex:1 1 0;min-width:0;position:relative}
 #stage:focus{outline:none}
 #stage.phone{background:#DEDAD3;padding:24px 0 40px;display:flex;justify-content:center}
@@ -290,21 +292,32 @@ body[data-surface="parent"] .sh-rail,body[data-surface="school"] .sh-rail,body[d
 @media (max-width:1024px){
   :root{--rail-w:64px}
   .sh-rail{padding:16px 8px 8px;align-items:center}
-  .sh-logo small,.sh-nav__l,.sh-demo span,.sh-help span,.sh-user__t,.sh-user a{display:none}
+  .sh-logo small,.sh-nav__l,.sh-user__t{display:none}
+  .sh-lbl{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}   /* icon-only controls keep their names */
   .sh-logo svg{width:44px;height:auto;overflow:hidden}
   .sh-nav__i{justify-content:center;padding:0;width:44px}
   .sh-nav__i--small{width:44px}
-  .sh-nav__n{position:absolute;top:2px;right:0;min-width:18px;height:18px;padding:0 4px;font-size:11px}
-  .sh-demo{padding:0;width:36px;justify-content:center}
-  .sh-help{padding:0;width:44px;justify-content:center}
-  .sh-user{padding:12px 0 2px;justify-content:center}
+  .sh-nav__n{position:absolute;top:2px;right:0;min-width:18px;height:18px;padding:0 4px;font-size:12px;line-height:16px}
+  .sh-help{padding:0;width:44px;height:44px;justify-content:center}
+  .sh-user{display:flex;flex-direction:column;gap:6px;padding:12px 0 2px;justify-content:center}.sh-signout{margin-left:0}
+  .sh-signout{width:44px;height:44px;justify-content:center;border-radius:var(--r-2)}
+  .sh-signout:hover{background:#E6DCCD}
+  .sh-signout .ui-icon{display:inline-block}
+  /* "Demo data · nothing is real" cannot fit a 64 px rail: it becomes a slim line along the bottom of the window (still inside #rail, still on every app screen) */
+  .sh-demo{position:fixed;left:var(--rail-w);right:0;bottom:0;z-index:var(--z-rail);justify-content:center;min-height:28px;height:28px;padding:0 12px;border:0;border-top:1px solid var(--line-200);border-radius:0;background:var(--paper-50);color:var(--neutral-fg)}
+  body[data-surface="app"] #stage{padding-bottom:28px}
+  #toasts{bottom:44px}
 }
 @media (max-width:700px){
   #stage.phone{padding:0;background:var(--paper-50)}
   #stage.phone #root{width:100%;border:0;border-radius:0;box-shadow:none}
   .sh-app{flex-direction:column}
   .sh-rail{flex:0 0 auto;width:100%;height:auto;position:relative;top:0;flex-direction:row;align-items:center;overflow-x:auto;padding:8px 12px;gap:8px}
-  .sh-nav{margin:0;flex-direction:row;align-items:center}.sh-nav ul{flex-direction:row}.sh-nav__sep,.sh-foot{display:none}
+  .sh-nav{margin:0;flex-direction:row;align-items:center}.sh-nav ul{flex-direction:row}.sh-nav__sep{display:none}
+  .sh-foot{margin:0 0 0 auto;padding:0;flex-direction:row;align-items:center;gap:4px}
+  .sh-user{display:flex;flex-direction:row;padding:0;border:0;gap:4px}
+  .sh-user__av{display:none}
+  .sh-demo{left:0}
 }
 
 /* ==========================================================================
