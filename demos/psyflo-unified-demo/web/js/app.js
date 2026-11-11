@@ -312,7 +312,8 @@ async function switchRole(r) {
 }
 function pickerScreens() {
   const cur = current && current.id; const u = session.user;
-  return SCREENS.filter(s => s.id !== 'Login' && s.id !== 'UiKit' && isLive(s.id) && (u ? canOpen(s.id, u) : s.min === 0))
+  const own = s => { try { const r0 = { id: s.id, params: {} }; const rr = resolveRoute(r0, { role: u && u.role }); return !rr || rr === r0 || rr.id === s.id; } catch { return true; } };   // an old id that now redirects is not listed (its canonical route is)
+  return SCREENS.filter(s => s.id !== 'Login' && s.id !== 'UiKit' && isLive(s.id) && own(s) && (u ? canOpen(s.id, u) : s.min === 0))
     .map(s => ({ id: s.id, title: s.title, surface: s.surface, surfaceLabel: SURFACE_LABEL[s.surface] || s.surface, current: s.id === cur }))
     .sort((a, b) => Object.keys(SURFACE_LABEL).indexOf(a.surface) - Object.keys(SURFACE_LABEL).indexOf(b.surface));
 }

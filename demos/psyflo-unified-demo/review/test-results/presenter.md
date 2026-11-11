@@ -1,6 +1,6 @@
 # presenter · FAIL
 
-Run 2026-11-11T18-34-44Z · 142514 ms · instance 0 · exit 1
+Run 2026-11-11T18-38-50Z · 124434 ms · instance 0 · exit 1
 
 | Result | Test | Note |
 |---|---|---|
@@ -24,7 +24,7 @@ Run 2026-11-11T18-34-44Z · 142514 ms · instance 0 · exit 1
 | PASS | PRES-10 direct_support: Sign out (rail) ends the session and lands on the sign-in screen; the next load asks who you are |  |
 | PASS | EXP-01 Explore mode: the dock is always open, the mode label is visible, Ctrl+Shift+P focuses it instead of hiding it, and Presentation mode can be restored |  |
 | PASS | EXP-02 clinician: "All screens" lists every route this role may open and each opens in two clicks |  |
-| FAIL | EXP-02 supervisor: "All screens" lists every route this role may open and each opens in two clicks | Eligibility opened as supervisor |
+| PASS | EXP-02 supervisor: "All screens" lists every route this role may open and each opens in two clicks |  |
 | PASS | EXP-02 admin: "All screens" lists every route this role may open and each opens in two clicks |  |
 | PASS | EXP-02 direct_support: "All screens" lists every route this role may open and each opens in two clicks |  |
 | PASS | EXP-03 portal screens in the picker open as the portal person (guardian, school) in Explore mode |  |
@@ -56,17 +56,17 @@ PASS PRES-10 admin: Sign out (rail) ends the session and lands on the sign-in sc
 PASS PRES-10 direct_support: Sign out (rail) ends the session and lands on the sign-in screen; the next load asks who you are
 PASS EXP-01 Explore mode: the dock is always open, the mode label is visible, Ctrl+Shift+P focuses it instead of hiding it, and Presentation mode can be restored
 PASS EXP-02 clinician: "All screens" lists every route this role may open and each opens in two clicks
-FAIL EXP-02 supervisor: "All screens" lists every route this role may open and each opens in two clicks — Eligibility opened as supervisor
+PASS EXP-02 supervisor: "All screens" lists every route this role may open and each opens in two clicks
 PASS EXP-02 admin: "All screens" lists every route this role may open and each opens in two clicks
 PASS EXP-02 direct_support: "All screens" lists every route this role may open and each opens in two clicks
 PASS EXP-03 portal screens in the picker open as the portal person (guardian, school) in Explore mode
-  clinician: product links reach 11 routes within 3 clicks; the picker lists the rest (48 routes)
+  clinician: product links reach 11 routes within 3 clicks; the picker lists the rest (41 routes)
 PASS EXP-04 clinician: every route this role may open is within three clicks of its home screen (product links: rail, page links)
-  supervisor: product links reach 6 routes within 3 clicks; the picker lists the rest (25 routes)
+  supervisor: product links reach 6 routes within 3 clicks; the picker lists the rest (20 routes)
 PASS EXP-04 supervisor: every route this role may open is within three clicks of its home screen (product links: rail, page links)
-  admin: product links reach 9 routes within 3 clicks; the picker lists the rest (26 routes)
+  admin: product links reach 9 routes within 3 clicks; the picker lists the rest (21 routes)
 PASS EXP-04 admin: every route this role may open is within three clicks of its home screen (product links: rail, page links)
-  direct_support: product links reach 2 routes within 3 clicks; the picker lists the rest (25 routes)
+  direct_support: product links reach 2 routes within 3 clicks; the picker lists the rest (22 routes)
 PASS EXP-04 direct_support: every route this role may open is within three clicks of its home screen (product links: rail, page links)
-RESULT presenter pass=25 fail=3 skip=0
+RESULT presenter pass=26 fail=2 skip=0
 ```
