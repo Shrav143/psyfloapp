@@ -5,10 +5,10 @@ M-003,Do next (n2),My Work › To do,MOVED,route /DoNext as jperez · suite mywo
 M-004,School portal home (n3),School Portal,MOVED,route /SchoolPortal as school · suite school PASS,lands on #/SchoolPortal
 M-005,Referral form (n4),School Portal,MOVED,route /ReferralForm as school · suite school PASS,lands on #/ReferralForm
 M-006,Referral sent (n5),School Portal,MOVED,route /ReferralSent as school · suite school PASS,lands on #/ReferralSent
-M-007,Referrals list (n6),Referrals workspace (never redirected),MOVED,"route /Referrals as jperez · suite referrals FAIL, flowD PASS",lands on #/Referrals
-M-008,Referral review (n7),Referrals workspace,MOVED,"route /Referral as jperez · suite referrals FAIL, flowD PASS",lands on #/Referral?id=REF-118&panel=criteria
+M-007,Referrals list (n6),Referrals workspace (never redirected),MOVED,"route /Referrals as jperez · suite referrals PASS, flowD PASS",lands on #/Referrals
+M-008,Referral review (n7),Referrals workspace,MOVED,"route /Referral as jperez · suite referrals PASS, flowD PASS",lands on #/Referral?id=REF-118&panel=criteria
 M-009,Family link (n8),Family Portal,MOVED,"route /FamilyLink as jperez · suite family PASS, flowD PASS",lands on #/FamilyLink?preview=1
-M-010,Eligibility check (n9),Referral panel (contextual),MOVED,"route /Eligibility as jperez · suite referrals FAIL, flowD PASS",lands on #/Referral?id=REF-118&panel=eligibility
+M-010,Eligibility check (n9),Referral panel (contextual),MOVED,"route /Eligibility as jperez · suite referrals PASS, flowD PASS",lands on #/Referral?id=REF-118&panel=eligibility
 M-011,Parent signs (n11),Family Portal (signature mode configurable),MOVED,"route /ParentSign as guardian · suite family PASS, flowD PASS",lands on #/ParentSign
 M-012,Parent portal (n12),Family Portal checklist home,MOVED,"route /ParentPortal as guardian · suite family PASS, flowD PASS",lands on #/ParentPortal?c=TW
 M-013,Extension home (n13),Extension › home,MOVED,"route /ExtHome as jperez · panel on Lauris #3310 as jperez · suite panels PASS, smoke PASS",lands on #/ExtHome
@@ -46,23 +46,23 @@ M-044,"Quarterly, guardian signs (n48)",Family Portal,MOVED,"route /ParentQuarte
 M-045,Insurance letters explained (n49),Family Portal,MOVED,"route /ParentLetters as guardian · suite family PASS, flowD PASS",lands on #/ParentLetters
 M-046,Book a time (n50),Family Portal,MOVED,"route /ParentSchedule as guardian · suite family PASS, flowD PASS",lands on #/ParentSchedule
 M-047,Panel home / consumers list,"Extension home (Current student, Scribe, Track Time, Scan & Enhance, Next task)",MOVED,"route /ExtHome as jperez · panel on Lauris #3310 as jperez · suite panels PASS, smoke PASS",lands on #/ExtHome
-M-048,New consumer from referral,Referrals workspace + Extension,MOVED,"panel on Lauris #4492 as jperez · suite referrals FAIL, flowD PASS",
+M-048,New consumer from referral,Referrals workspace + Extension,MOVED,"panel on Lauris #4492 as jperez · suite referrals PASS, flowD PASS",
 M-049,Consumer record view,Extension › Scribe,MOVED,"panel on Lauris #3310 as jperez · suite panels PASS, smoke PASS",
 M-050,Non-TDT guard,Extension (keep),MOVED,"panel on Lauris #4300 as jperez · suite panels PASS, smoke PASS",
 M-051,Screening call (Flow A),Extension › Scribe,MOVED,"panel on Lauris #4492/screening as jperez · suite flowA PASS, flowB PASS, scribe PASS",
 M-052,Intake / CNA,Extension › Scribe,MOVED,"panel on Lauris #4492/cna as jperez · suite flowA PASS, flowB PASS, scribe PASS",
-M-053,Treatment plan (ISP),Extension › Clinical review,MOVED,"panel on Lauris #4492/isp as jperez · suite flowC PASS, enhance PASS",
+M-053,Treatment plan (ISP),Extension › Clinical review,MOVED,"panel on Lauris #4492/isp as jperez · suite flowC PASS, enhance FAIL, s4 FAIL",
 M-054,Daily note (Flow B),Extension › Scribe,MOVED,"panel on Lauris #3310/dpn as khale · suite flowA PASS, flowB PASS, scribe PASS",
 M-055,Weekly guardian call,Extension › Scribe,MOVED,"panel on Lauris #3310/weekly as jperez · suite flowA PASS, flowB PASS, scribe PASS",
 M-056,Monthly collateral,Extension › Scribe,MOVED,"panel on Lauris #3310/collateral as jperez · suite flowA PASS, flowB PASS, scribe PASS",
-M-057,Incident report,Extension › Additional actions,NOT-VERIFIED,"panel on Lauris #3310 as jperez · suite flowA PASS, flowB PASS, scribe PASS",Psyflo · M.R. Lauris connected Clinician M.R. Harvest #3310 Campbell County · ES-1 TDT green · already in Lauris yellow 
-M-058,Initial SRA (Flow C),Extension › Authorization preparation,MOVED,"panel on Lauris #4492/sra-initial as jperez · suite flowC PASS, enhance PASS",
-M-059,Quarterly report,Extension › Clinical documents,MOVED,"panel on Lauris #3310/quarterly as jperez · suite flowC PASS, enhance PASS",
-M-060,Continued stay,Authorizations › evidence,MOVED,"panel on Lauris #3310/sra-continued as jperez · suite flowC PASS, enhance PASS",
+M-057,Incident report,Extension › Additional actions,MOVED,"route /ExtIncident as jperez · code: incident filing action · suite flowA PASS, flowB PASS, scribe PASS",lands on #/ExtIncident; web/panel/views/incident.js server/psyflo/actions/core.js
+M-058,Initial SRA (Flow C),Extension › Authorization preparation,MOVED,"panel on Lauris #4492/sra-initial as jperez · suite flowC PASS, enhance FAIL, s4 FAIL",
+M-059,Quarterly report,Extension › Clinical documents,MOVED,"panel on Lauris #3310/quarterly as jperez · suite flowC PASS, enhance FAIL, s4 FAIL",
+M-060,Continued stay,Authorizations › evidence,MOVED,"panel on Lauris #3310/sra-continued as jperez · suite flowC PASS, enhance FAIL, s4 FAIL",
 M-061,Sign-off (Forms to Approve),Extension › Authorization preparation,MOVED,"panel on Lauris #4492/sra-initial as jperez · suite authorizations PASS, flowC PASS",
-M-062,Discharge summary,Extension › Clinical documents,MOVED,"panel on Lauris #3402/discharge as jperez · suite flowC PASS, enhance PASS",
+M-062,Discharge summary,Extension › Clinical documents,MOVED,"panel on Lauris #3402/discharge as jperez · suite flowC PASS, enhance FAIL, s4 FAIL",
 M-063,Portal confirmation view,Extension (keep),MOVED,"portal GET /availity/upload · suite panels PASS, smoke PASS",200
-M-064,Saved / rejected lists view,Extension home,NOT-VERIFIED,"panel on Lauris #3310 as jperez · suite panels PASS, smoke PASS",Psyflo · M.R. Lauris connected Clinician M.R. Harvest #3310 Campbell County · ES-1 TDT green · already in Lauris yellow 
+M-064,Saved / rejected lists view,Extension home,MOVED,"panel on Lauris #3310/dpn as khale · Lauris GET /saved · Lauris GET /rejected · suite panels PASS, smoke PASS",200; 200
 M-065,Saved version tracking,Scan & Enhance › version history,MOVED,"code: saved version tracking (doc_versions) · state key doc_versions · suite panels PASS, smoke PASS",web/panel/lib/review.js web/panel/views/enhance.js
 M-066,Bridge: read page,Keep unchanged,PRESERVED,"file web/panel/bridge.js · file extension/bridge.js · suite bridge-contract PASS, lauris PASS",
 M-067,Bridge: fill by label,Keep unchanged,PRESERVED,"file web/panel/bridge.js · file extension/bridge.js · suite bridge-contract PASS, lauris PASS",
@@ -107,93 +107,93 @@ M-105,"`payer_history`, `denial_reasons`",Denial Intelligence › evidence,MOVED
 M-106,"`compliance`, `migration`, `library`, `incidents`",Settings / roadmap,MOVED,"state key compliance, migration, library · route /Settings as dowens · suite analytics PASS",lands on #/Settings?tab=presenter
 M-107,`settings.family_link`,Settings › Family link,MOVED,state key settings · route /Settings as dowens · suite analytics PASS,lands on #/Settings?tab=family
 M-108,"`request_details`, `staff_dashboard`, `parent_progress`, `school_goals`, `assessments_due/history`",Keep,PRESERVED,"state key request_details, staff_dashboard, parent_progress · suite analytics PASS",
-M-109,`demo.reset`,Presenter,MOVED,"action demo.reset registered with a capability entry · action demo.reset · suite ui-kit PASS, fixtures PASS", missing
-M-110,`demo.advanceDay`,Presenter,MOVED,"action demo.advanceDay registered with a capability entry · action demo.advanceDay · suite ui-kit PASS, fixtures PASS", missing
-M-111,`referral.create`,School Portal,MOVED,action referral.create · suite school PASS, missing
-M-112,`referral.update`,School Portal,MOVED,action referral.update · suite school PASS, missing
-M-113,`referral.attach`,School Portal,MOVED,action referral.attach · suite school PASS, missing
-M-114,`referral.scheduleScreening`,Referrals,MOVED,"action referral.scheduleScreening · suite referrals FAIL, flowD PASS", missing
-M-115,`referral.routeGrant`,Referrals,MOVED,"action referral.routeGrant · suite referrals FAIL, flowD PASS", missing
+M-109,`demo.reset`,Presenter,MOVED,"action demo.reset registered with a capability entry · action demo.reset · suite ui-kit PASS, fixtures PASS",
+M-110,`demo.advanceDay`,Presenter,MOVED,"action demo.advanceDay registered with a capability entry · action demo.advanceDay · suite ui-kit PASS, fixtures PASS",
+M-111,`referral.create`,School Portal,MOVED,action referral.create · suite school PASS,
+M-112,`referral.update`,School Portal,MOVED,action referral.update · suite school PASS,
+M-113,`referral.attach`,School Portal,MOVED,action referral.attach · suite school PASS,
+M-114,`referral.scheduleScreening`,Referrals,MOVED,"action referral.scheduleScreening · suite referrals PASS, flowD PASS",
+M-115,`referral.routeGrant`,Referrals,MOVED,"action referral.routeGrant · suite referrals PASS, flowD PASS",
 M-116,`referral.stage`*,Remove or document,PRESERVED,action referral.stage,kept registered (internal or still used); still registered (internal or kept)
-M-117,`familyLink.send`,Referrals,NOT-VERIFIED,"suite referrals FAIL, flowD PASS",
-M-118,`familyLink.open`,Family Portal,MOVED,"suite family PASS, flowD PASS",proved by the suite(s) only
-M-119,`familyLink.step`,Family Portal,MOVED,"suite family PASS, flowD PASS",proved by the suite(s) only
-M-120,`familyLink.submit`,Family Portal,MOVED,"suite family PASS, flowD PASS",proved by the suite(s) only
-M-121,`eligibility.record`,Referrals,MOVED,"action eligibility.record · suite referrals FAIL, flowD PASS", missing
-M-122,`consent.sign`,Family Portal,MOVED,"action consent.sign · suite family PASS, flowD PASS", missing
-M-123,`checkin.save`,Family Portal,MOVED,"action checkin.save · suite family PASS, flowD PASS", missing
-M-124,`portalTask.create`,Family Portal,MOVED,"suite family PASS, flowD PASS",proved by the suite(s) only
-M-125,`request.ensure`,Authorizations,MOVED,"action request.ensure · suite flowC PASS, enhance PASS", missing
+M-117,`familyLink.send`,Referrals,MOVED,"action familyLink.send · suite referrals PASS, flowD PASS",
+M-118,`familyLink.open`,Family Portal,MOVED,"action familyLink.open · suite family PASS, flowD PASS",
+M-119,`familyLink.step`,Family Portal,MOVED,"action familyLink.step · suite family PASS, flowD PASS",
+M-120,`familyLink.submit`,Family Portal,MOVED,"action familyLink.submit · suite family PASS, flowD PASS",
+M-121,`eligibility.record`,Referrals,MOVED,"action eligibility.record · suite referrals PASS, flowD PASS",
+M-122,`consent.sign`,Family Portal,MOVED,"action consent.sign · suite family PASS, flowD PASS",
+M-123,`checkin.save`,Family Portal,MOVED,"action checkin.save · suite family PASS, flowD PASS",
+M-124,`portalTask.create`,Family Portal,MOVED,"action portalTask.create · suite family PASS, flowD PASS",
+M-125,`request.ensure`,Authorizations,MOVED,"action request.ensure · suite flowC PASS, enhance FAIL, s4 FAIL",
 M-126,`request.processed`*,Remove,PRESERVED,action request.processed,kept registered (internal or still used); still registered (internal or kept)
-M-127,`request.signed`,Authorizations,MOVED,"action request.signed · suite authorizations PASS, flowC PASS", missing
-M-128,`request.send`,Authorizations,MOVED,"action request.send · suite authorizations PASS, flowC PASS", missing
-M-129,`request.portalConfirmed`,Authorizations,MOVED,"action request.portalConfirmed · suite authorizations PASS, flowC PASS", missing
-M-130,`request.overdueNotice`,Authorizations,MOVED,"action request.overdueNotice · suite authorizations PASS, flowC PASS", missing
-M-131,`request.receiptCheck`,Authorizations,MOVED,"action request.receiptCheck · suite authorizations PASS, flowC PASS", missing
-M-132,`request.demoReply`,Presenter,MOVED,"action request.demoReply · suite ui-kit PASS, fixtures PASS", missing
+M-127,`request.signed`,Authorizations,MOVED,"action request.signed · suite authorizations PASS, flowC PASS",
+M-128,`request.send`,Authorizations,MOVED,"action request.send · suite authorizations PASS, flowC PASS",
+M-129,`request.portalConfirmed`,Authorizations,MOVED,"action request.portalConfirmed · suite authorizations PASS, flowC PASS",
+M-130,`request.overdueNotice`,Authorizations,MOVED,"action request.overdueNotice · suite authorizations PASS, flowC PASS",
+M-131,`request.receiptCheck`,Authorizations,MOVED,"action request.receiptCheck · suite authorizations PASS, flowC PASS",
+M-132,`request.demoReply`,Presenter,MOVED,"action request.demoReply · suite ui-kit PASS, fixtures PASS",
 M-133,`request.partialDecide`*,Remove,PRESERVED,action request.partialDecide,kept registered (internal or still used); still registered (internal or kept)
-M-134,`request.infoReply`,Denial Intelligence,MOVED,"action request.infoReply · suite denials PASS, denials-ui PASS, rules PASS", missing
-M-135,`request.infoSend`,Denial Intelligence,MOVED,"action request.infoSend · suite denials PASS, denials-ui PASS, rules PASS", missing
-M-136,`request.appealSign`,Denial Intelligence + Family Portal,MOVED,"action request.appealSign · suite denials PASS, denials-ui PASS, rules PASS", missing
+M-134,`request.infoReply`,Denial Intelligence,MOVED,"action request.infoReply · suite denials PASS, denials-ui PASS, rules PASS",
+M-135,`request.infoSend`,Denial Intelligence,MOVED,"action request.infoSend · suite denials PASS, denials-ui PASS, rules PASS",
+M-136,`request.appealSign`,Denial Intelligence + Family Portal,MOVED,"action request.appealSign · suite denials PASS, denials-ui PASS, rules PASS",
 M-137,`request.close`*,Remove or use in disputes,PRESERVED,action request.close,kept registered (internal or still used); still registered (internal or kept)
 M-138,`request.set`*,Remove,DROPPED-WITH-REASON,action request.set,"orphan action with no caller; removed or kept internal, listed in the inventory [04b feature inventory (orphans) and 04 section A]; not itemised in 00-unified-recommendations decisions"
-M-139,`plan.set`,Authorizations,MOVED,"action plan.set · suite authorizations PASS, flowC PASS", missing
-M-140,`timer.start`,Track Time,MOVED,action timer.start · suite mobile PASS, missing
-M-141,`timer.stop`,Track Time,MOVED,action timer.stop · suite mobile PASS, missing
-M-142,`dictation.save`,Mobile,MOVED,"action dictation.save · suite flowA PASS, flowB PASS, scribe PASS", missing
+M-139,`plan.set`,Authorizations,MOVED,"action plan.set · suite authorizations PASS, flowC PASS",
+M-140,`timer.start`,Track Time,MOVED,action timer.start · suite mobile PASS,
+M-141,`timer.stop`,Track Time,MOVED,action timer.stop · suite mobile PASS,
+M-142,`dictation.save`,Mobile,MOVED,"action dictation.save · suite flowA PASS, flowB PASS, scribe PASS",
 M-143,`dictation.used`*,Remove,PRESERVED,action dictation.used,kept registered (internal or still used); still registered (internal or kept)
-M-144,`dictation.discard`,Mobile,MOVED,"action dictation.discard · suite flowA PASS, flowB PASS, scribe PASS", missing
-M-145,`assessment.save`,Mobile,MOVED,action assessment.save · suite mobile PASS, missing
-M-146,`assessment.used`,Keep,PRESERVED,action assessment.used · suite mobile PASS, missing
-M-147,`note.processed`,My Work › Review,MOVED,action note.processed · suite mywork PASS, missing
-M-148,`note.review`,My Work › Review,MOVED,action note.review · suite mywork PASS, missing
+M-144,`dictation.discard`,Mobile,MOVED,"action dictation.discard · suite flowA PASS, flowB PASS, scribe PASS",
+M-145,`assessment.save`,Mobile,MOVED,action assessment.save · suite mobile PASS,
+M-146,`assessment.used`,Keep,PRESERVED,action assessment.used · suite mobile PASS,
+M-147,`note.processed`,My Work › Review,MOVED,action note.processed · suite mywork PASS,
+M-148,`note.review`,My Work › Review,MOVED,action note.review · suite mywork PASS,
 M-149,`screening.done`*,Remove,PRESERVED,action screening.done,kept registered (internal or still used); still registered (internal or kept)
 M-150,`draft.save`*,Remove,PRESERVED,action draft.save,kept registered (internal or still used); still registered (internal or kept)
 M-151,`client.update`*,Remove,PRESERVED,action client.update,kept registered (internal or still used); still registered (internal or kept)
 M-152,`lauris.event`*,Remove,PRESERVED,action lauris.event,kept registered (internal or still used); still registered (internal or kept)
-M-153,`incident.filePortal`,Extension › Additional actions,MOVED,"action incident.filePortal · suite flowA PASS, flowB PASS, scribe PASS", missing
+M-153,`incident.filePortal`,Extension › Additional actions,MOVED,"action incident.filePortal · suite flowA PASS, flowB PASS, scribe PASS",
 M-154,`incident.save`*,Remove,PRESERVED,action incident.save,kept registered (internal or still used); still registered (internal or kept)
-M-155,`user.add`,Settings › Users,MOVED,"action user.add · suite roles PASS, settings PASS", missing
-M-156,`user.update`,Settings › Users,MOVED,"action user.update · suite roles PASS, settings PASS", missing
-M-157,`settings.set`*,Settings,MOVED,action settings.set, missing
+M-155,`user.add`,Settings › Users,MOVED,"action user.add · suite roles PASS, settings PASS",
+M-156,`user.update`,Settings › Users,MOVED,"action user.update · suite roles PASS, settings PASS",
+M-157,`settings.set`*,Settings,MOVED,action settings.set,
 M-158,`library.add`*,Roadmap,PRESERVED,action library.add,kept registered (internal or still used); still registered (internal or kept)
 M-159,`migration.rerun`*,Roadmap,PRESERVED,action migration.rerun,kept registered (internal or still used); still registered (internal or kept)
-M-160,`reminder.done`*,My Work,MOVED,action reminder.done, missing
+M-160,`reminder.done`*,My Work,MOVED,action reminder.done,
 M-161,`file.pdf`,Analytics export,MOVED,code: file.pdf (Analytics export / documents) · suite analytics PASS,web/js/screens/DenialCase.js web/js/screens/PeerBrief.js
 M-162,`lauris.observed`,Keep (lead-only),PRESERVED,"action lauris.observed registered with a capability entry · suite bridge-contract PASS, lauris PASS",
 M-163,`portal.observed`,Keep,PRESERVED,"action portal.observed registered with a capability entry · suite bridge-contract PASS, lauris PASS",
-M-164,`panel.filled`,Scan & Enhance versions,MOVED,"action panel.filled · suite flowA PASS, flowB PASS, scribe PASS", missing
-M-165,`screening.drafted`,Scribe,MOVED,"action screening.drafted · suite flowA PASS, flowB PASS, scribe PASS", missing
-M-166,`enroll.save`,Family Portal,MOVED,"action enroll.save · suite family PASS, flowD PASS", missing
-M-167,`screening.offer`,Referrals,MOVED,"action screening.offer · suite referrals FAIL, flowD PASS", missing
-M-168,`screening.bookByFamily`,Family Portal,MOVED,"action screening.bookByFamily · suite family PASS, flowD PASS", missing
-M-169,`intake.offer`,Referrals,MOVED,"action intake.offer · suite referrals FAIL, flowD PASS", missing
-M-170,`intake.book`,Family Portal,MOVED,"action intake.book · suite family PASS, flowD PASS", missing
-M-171,`intake.ride`,Family Portal,MOVED,"action intake.ride · suite family PASS, flowD PASS", missing
-M-172,`intake.confirm`,Family Portal,MOVED,"action intake.confirm · suite family PASS, flowD PASS", missing
+M-164,`panel.filled`,Scan & Enhance versions,MOVED,"action panel.filled · suite flowA PASS, flowB PASS, scribe PASS",
+M-165,`screening.drafted`,Scribe,MOVED,"action screening.drafted · suite flowA PASS, flowB PASS, scribe PASS",
+M-166,`enroll.save`,Family Portal,MOVED,"action enroll.save · suite family PASS, flowD PASS",
+M-167,`screening.offer`,Referrals,MOVED,"action screening.offer · suite referrals PASS, flowD PASS",
+M-168,`screening.bookByFamily`,Family Portal,MOVED,"action screening.bookByFamily · suite family PASS, flowD PASS",
+M-169,`intake.offer`,Referrals,MOVED,"action intake.offer · suite referrals PASS, flowD PASS",
+M-170,`intake.book`,Family Portal,MOVED,"action intake.book · suite family PASS, flowD PASS",
+M-171,`intake.ride`,Family Portal,MOVED,"action intake.ride · suite family PASS, flowD PASS",
+M-172,`intake.confirm`,Family Portal,MOVED,"action intake.confirm · suite family PASS, flowD PASS",
 M-173,`lauris.savedVersion`,Scan & Enhance versions,MOVED,"action lauris.savedVersion registered with a capability entry · suite bridge-contract PASS, lauris PASS",
-M-174,`panel.feedback`,Scan & Enhance,MOVED,"action panel.feedback · suite flowA PASS, flowB PASS, scribe PASS", missing
-M-175,`panel.dictation`,Scribe,MOVED,"action panel.dictation · suite flowA PASS, flowB PASS, scribe PASS", missing
-M-176,`referral.inLauris`,Referrals,MOVED,"action referral.inLauris · suite referrals FAIL, flowD PASS", missing
-M-177,`dictation.annotate`,Mobile,MOVED,"action dictation.annotate · suite flowA PASS, flowB PASS, scribe PASS", missing
-M-178,`quarterly.internalSave`,Extension › Clinical documents,MOVED,"action quarterly.internalSave · suite flowC PASS, enhance PASS", missing
-M-179,`referral.scheduleAndText`,Referrals,MOVED,"action referral.scheduleAndText · suite referrals FAIL, flowD PASS", missing
-M-180,`referral.routeAndNotify`,Referrals,MOVED,"action referral.routeAndNotify · suite referrals FAIL, flowD PASS", missing
-M-181,`referral.hold` / `referral.unhold`,Referrals,MOVED,"action referral.hold / referral.unhold · suite referrals FAIL, flowD PASS", missing
-M-182,`eligibility.recordProof`,Referrals,MOVED,"action eligibility.recordProof · suite referrals FAIL, flowD PASS", missing
-M-183,`request.partialChoice`,Denial Intelligence,MOVED,"action request.partialChoice · suite denials PASS, denials-ui PASS, rules PASS", missing
+M-174,`panel.feedback`,Scan & Enhance,MOVED,"action panel.feedback · suite flowA PASS, flowB PASS, scribe PASS",
+M-175,`panel.dictation`,Scribe,MOVED,"action panel.dictation · suite flowA PASS, flowB PASS, scribe PASS",
+M-176,`referral.inLauris`,Referrals,MOVED,"action referral.inLauris · suite referrals PASS, flowD PASS",
+M-177,`dictation.annotate`,Mobile,MOVED,"action dictation.annotate · suite flowA PASS, flowB PASS, scribe PASS",
+M-178,`quarterly.internalSave`,Extension › Clinical documents,MOVED,"action quarterly.internalSave · suite flowC PASS, enhance FAIL, s4 FAIL",
+M-179,`referral.scheduleAndText`,Referrals,MOVED,"action referral.scheduleAndText · suite referrals PASS, flowD PASS",
+M-180,`referral.routeAndNotify`,Referrals,MOVED,"action referral.routeAndNotify · suite referrals PASS, flowD PASS",
+M-181,`referral.hold` / `referral.unhold`,Referrals,MOVED,"action referral.hold / referral.unhold · suite referrals PASS, flowD PASS",
+M-182,`eligibility.recordProof`,Referrals,MOVED,"action eligibility.recordProof · suite referrals PASS, flowD PASS",
+M-183,`request.partialChoice`,Denial Intelligence,MOVED,"action request.partialChoice · suite denials PASS, denials-ui PASS, rules PASS",
 M-184,`request.p2pSchedule`,Denial Intelligence,MOVED,"suite denials PASS, denials-ui PASS, rules PASS",proved by the suite(s) only
 M-185,`request.p2pLog`,Denial Intelligence,MOVED,"suite denials PASS, denials-ui PASS, rules PASS",proved by the suite(s) only
 M-186,`request.p2pOutcome`*,Remove,DROPPED-WITH-REASON,,"orphan action with no caller; removed or kept internal, listed in the inventory [04b feature inventory (orphans) and 04 section A]; not itemised in 00-unified-recommendations decisions"
 M-187,`request.p2pRecording`,Denial Intelligence,MOVED,"suite denials PASS, denials-ui PASS, rules PASS",proved by the suite(s) only
-M-188,`request.pdfCopy`,Authorizations,MOVED,"action request.pdfCopy · suite authorizations PASS, flowC PASS", missing
-M-189,`school.share` / `school.shareUsed`,School Portal + Extension,MOVED,action school.share / school.shareUsed · suite school PASS, missing
-M-190,`staff.reviewMode`,My Work › Review,MOVED,action staff.reviewMode · suite mywork PASS, missing
+M-188,`request.pdfCopy`,Authorizations,MOVED,"action request.pdfCopy · suite authorizations PASS, flowC PASS",
+M-189,`school.share` / `school.shareUsed`,School Portal + Extension,MOVED,action school.share / school.shareUsed · suite school PASS,
+M-190,`staff.reviewMode`,My Work › Review,MOVED,action staff.reviewMode · suite mywork PASS,
 M-191,`compliance.qiCheck`*,Roadmap,PRESERVED,action compliance.qiCheck,kept registered (internal or still used); still registered (internal or kept)
 V-001,Referral form (public),Drop (master M-005),DROPPED-WITH-REASON,,duplicate of the master screen it names; the simulated v3 pages are not ported (master mock Lauris is the one simulated Lauris) [06c destination column; 00 decision #19 (mock Lauris declared simulated once)]
 V-002,Family link (public),Drop (master M-009),DROPPED-WITH-REASON,,duplicate of the master screen it names; the simulated v3 pages are not ported (master mock Lauris is the one simulated Lauris) [06c destination column; 00 decision #19 (mock Lauris declared simulated once)]
 V-003,Family-link settings,PORT → Settings › Family link (fills M-107 orphan),MOVED,"route /Settings as dowens · suite family PASS, flowD PASS",lands on #/Settings?tab=family
-V-004,Referral review and home,**Do not port** (removes Referrals),DROPPED-WITH-REASON,"suite referrals FAIL, flowD PASS",v3 referral review would remove Referrals; Referrals is never redirected [00 decision #3 and §4.1]
+V-004,Referral review and home,**Do not port** (removes Referrals),DROPPED-WITH-REASON,"suite referrals PASS, flowD PASS",v3 referral review would remove Referrals; Referrals is never redirected [00 decision #3 and §4.1]
 V-005,All Authorizations list,PORT → Authorizations queue,MOVED,"route /Authorizations as jperez · suite authorizations PASS, flowC PASS",lands on #/Authorizations
 V-006,Authorization detail,PORT → Authorization case shell,MOVED,"route /Authorization as jperez · suite authorizations PASS, flowC PASS",lands on #/Authorization?id=R-0416&section=timeline
 V-007,Draft mirrors,PORT → case › Documentation,MOVED,"route /Authorization as jperez · suite authorizations PASS, flowC PASS",lands on #/Authorization?id=R-0416&section=documents
@@ -223,7 +223,7 @@ V-030,Unit rules editor,PORT,MOVED,"route /Settings as dowens · suite roles PAS
 V-031,Reimbursement rates / money exposure,Defer (Tier 3),DROPPED-WITH-REASON,"suite roles PASS, settings PASS",claims disputes and money exposure are Tier 3 roadmap labels [00 §7 Tier 3]
 V-032,Audit trail,PORT (map to master `events`),MOVED,"route /Settings as dowens · suite roles PASS, settings PASS",lands on #/Settings?tab=audit
 V-033,Payer requirement registry,PORT → rules (spec 4.6),MOVED,"state key rules · rules table · suite denials PASS, denials-ui PASS, rules PASS",72 rules
-V-034,Eligibility vs benefits,PORT (Eligibility enhancement),MOVED,"route /Referral as jperez · suite referrals FAIL, flowD PASS",lands on #/Referral?id=REF-118&panel=eligibility
+V-034,Eligibility vs benefits,PORT (Eligibility enhancement),MOVED,"route /Referral as jperez · suite referrals PASS, flowD PASS",lands on #/Referral?id=REF-118&panel=eligibility
 V-035,Alerts,REPLACE with My Work,REPLACED-BY,route /MyWork as jperez · suite mywork PASS,lands on #/MyWork
 V-036,History dropdown,REFACTOR (drop voice/agent actors),MOVED,"code: history component · suite authorizations PASS, flowC PASS",web/js/screens/DenialCaseViews.js web/js/screens/UiKit.js
 V-037,Voice agent,Roadmap only,DROPPED-WITH-REASON,,"voice and FLO data agents are roadmap labels only (no agents, no unattended calls) [00 decision #15 and §7 Tier 3]"
@@ -231,29 +231,29 @@ V-038,FLO data agent,Roadmap only (conflicts with 9.6),DROPPED-WITH-REASON,,"voi
 V-039,In-browser demo backend,Drop,DROPPED-WITH-REASON,,v3 build or in-browser backend artefact; the master architecture replaces it [06c destination column; 04 section C (crosswalk and rules.json only)]
 V-040,Presenter menu,PORT idea → presenter toolbar,MOVED,"route /MyWork as dowens · code: presenter dock · suite ui-kit PASS, fixtures PASS",lands on #/MyWork?present=1; web/js/app.js web/js/screens/UiKit.js
 V-041,Locality filter and bell,PORT (filter),MOVED,"route /Authorizations as jperez · suite authorizations PASS, flowC PASS",lands on #/Authorizations
-V-042,Sync version flow,REFACTOR (`doc_versions`; Synced only from observed event),MOVED,"state key doc_versions · action lauris.savedVersion registered with a capability entry · suite scribe PASS, time PASS, enhance PASS",
+V-042,Sync version flow,REFACTOR (`doc_versions`; Synced only from observed event),MOVED,"state key doc_versions · action lauris.savedVersion registered with a capability entry · suite scribe PASS, time PASS, enhance FAIL",
 V-043,"Downloads, CSV, PDF helpers",PORT (report builder only),MOVED,code: CSV report builder · code: PDF report builder · suite analytics PASS,web/js/screens/Analytics.js web/js/shared/analytics/export.js; web/js/screens/Analytics.js web/js/shared/analytics/export.js
 V-044,Panel shell and modes,Drop (master panel),DROPPED-WITH-REASON,,duplicate of the master screen it names; the simulated v3 pages are not ported (master mock Lauris is the one simulated Lauris) [06c destination column; 00 decision #19 (mock Lauris declared simulated once)]
-V-045,Overview roster,PORT (stretch) → Extension home next task,MOVED,"route /ExtHome as jperez · suite scribe PASS, time PASS, enhance PASS",lands on #/ExtHome
-V-046,Scribe: type selector,PORT → Extension › Scribe,MOVED,"action scribe.draft registered with a capability entry · suite scribe PASS, time PASS, enhance PASS",
+V-045,Overview roster,PORT (stretch) → Extension home next task,MOVED,"route /ExtHome as jperez · suite scribe PASS, time PASS, enhance FAIL",lands on #/ExtHome
+V-046,Scribe: type selector,PORT → Extension › Scribe,MOVED,"action scribe.draft registered with a capability entry · suite scribe PASS, time PASS, enhance FAIL",
 V-047,Scribe: recording and transcript,Drop (master has real STT + scripted),DROPPED-WITH-REASON,,duplicate of the master screen it names; the simulated v3 pages are not ported (master mock Lauris is the one simulated Lauris) [06c destination column; 00 decision #19 (mock Lauris declared simulated once)]
-V-048,"Scribe: draft and ""Not stated""",PORT concept (missing info becomes a question),MOVED,"code: missing info becomes a question · suite scribe PASS, time PASS, enhance PASS",web/js/screens/DenialCaseViews.js web/js/shared/draft.js
-V-049,Scribe: Save & Push,REFACTOR (fill open form via bridge; Synced from observed event),MOVED,"action scribe.filled, enhance.filled registered with a capability entry · suite scribe PASS, time PASS, enhance PASS",
+V-048,"Scribe: draft and ""Not stated""",PORT concept (missing info becomes a question),MOVED,"code: missing info becomes a question · suite scribe PASS, time PASS, enhance FAIL",web/js/screens/DenialCaseViews.js web/js/shared/draft.js
+V-049,Scribe: Save & Push,REFACTOR (fill open form via bridge; Synced from observed event),MOVED,"action scribe.filled, enhance.filled registered with a capability entry · suite scribe PASS, time PASS, enhance FAIL",
 V-050,Admission screening scribe,Drop (master M-051),DROPPED-WITH-REASON,,duplicate of the master screen it names; the simulated v3 pages are not ported (master mock Lauris is the one simulated Lauris) [06c destination column; 00 decision #19 (mock Lauris declared simulated once)]
 V-051,Intake scribe,Drop (master M-052),DROPPED-WITH-REASON,,duplicate of the master screen it names; the simulated v3 pages are not ported (master mock Lauris is the one simulated Lauris) [06c destination column; 00 decision #19 (mock Lauris declared simulated once)]
-V-052,DPN scribe,PORT concepts only,MOVED,"action scribe.draft registered with a capability entry · suite scribe PASS, time PASS, enhance PASS",
-V-053,Collateral / monthly scribe,PORT concepts only,MOVED,"panel on Lauris #3310/collateral as jperez · suite scribe PASS, time PASS, enhance PASS",
+V-052,DPN scribe,PORT concepts only,MOVED,"action scribe.draft registered with a capability entry · suite scribe PASS, time PASS, enhance FAIL",
+V-053,Collateral / monthly scribe,PORT concepts only,MOVED,"panel on Lauris #3310/collateral as jperez · suite scribe PASS, time PASS, enhance FAIL",
 V-054,Addendum on processed notes,**Do not port by default** (Mode B; spec 4.1),DROPPED-WITH-REASON,,addendum on processed notes is refused: processed records are write-once; Mode B is read-only [00 decision #1]
-V-055,Track Time control,PORT → Extension › Track Time,MOVED,"action time.start, time.stop registered with a capability entry · suite scribe PASS, time PASS, enhance PASS",
-V-056,Today list and entries,PORT,MOVED,"action time.save registered with a capability entry · suite scribe PASS, time PASS, enhance PASS",
-V-057,Recorded vs billable,PORT (resolve 60 vs 120),MOVED,"state key time_entries · code: recorded vs billable · suite scribe PASS, time PASS, enhance PASS",web/js/screens/MobileApp.js web/js/shared/draft.js
-V-058,Send to Lauris time tracker,REFACTOR: DPN contact-time rows via bridge,MOVED,"code: DPN contact-time rows · suite scribe PASS, time PASS, enhance PASS",web/js/shared/enhance.js web/js/shared/time.js
-V-059,Scan & Enhance: pick and scan,REFACTOR (Mode A),MOVED,"action enhance.scan registered with a capability entry · suite scribe PASS, time PASS, enhance PASS",
-V-060,Recommendation cards,PORT → findings schema,MOVED,"code: findings schema · suite scribe PASS, time PASS, enhance PASS",web/js/shared/analytics/ask.js web/js/shared/enhance.js
-V-061,Original vs enhanced and approve,PORT,MOVED,"action enhance.decide, enhance.approve registered with a capability entry · suite scribe PASS, time PASS, enhance PASS",
-V-062,CNA scan,PORT,MOVED,"code: CNA scan · suite scribe PASS, time PASS, enhance PASS",web/js/ext-composite.js web/js/registry.js
-V-063,SRA required fields to submission,Replace submit with master human Send; keep validation,REPLACED-BY,"action request.send registered with a capability entry · code: human Send · suite scribe PASS, time PASS, enhance PASS",web/js/screens/Authorization.js web/js/screens/SettingsData.js
-V-064,Recommended actions per case,REFACTOR → missing-evidence list,MOVED,"code: missing-evidence list · suite scribe PASS, time PASS, enhance PASS",web/js/screens/DenialCaseViews.js web/js/shared/analytics/ask.js
+V-055,Track Time control,PORT → Extension › Track Time,MOVED,"action time.start, time.stop registered with a capability entry · suite scribe PASS, time PASS, enhance FAIL",
+V-056,Today list and entries,PORT,MOVED,"action time.save registered with a capability entry · suite scribe PASS, time PASS, enhance FAIL",
+V-057,Recorded vs billable,PORT (resolve 60 vs 120),MOVED,"state key time_entries · code: recorded vs billable · suite scribe PASS, time PASS, enhance FAIL",web/js/screens/MobileApp.js web/js/shared/draft.js
+V-058,Send to Lauris time tracker,REFACTOR: DPN contact-time rows via bridge,MOVED,"code: DPN contact-time rows · suite scribe PASS, time PASS, enhance FAIL",web/js/shared/enhance.js web/js/shared/time.js
+V-059,Scan & Enhance: pick and scan,REFACTOR (Mode A),MOVED,"action enhance.scan registered with a capability entry · suite scribe PASS, time PASS, enhance FAIL",
+V-060,Recommendation cards,PORT → findings schema,MOVED,"code: findings schema · suite scribe PASS, time PASS, enhance FAIL",web/js/shared/analytics/ask.js web/js/shared/enhance.js
+V-061,Original vs enhanced and approve,PORT,MOVED,"action enhance.decide, enhance.approve registered with a capability entry · suite scribe PASS, time PASS, enhance FAIL",
+V-062,CNA scan,PORT,MOVED,"code: CNA scan · suite scribe PASS, time PASS, enhance FAIL",web/js/ext-composite.js web/js/registry.js
+V-063,SRA required fields to submission,Replace submit with master human Send; keep validation,REPLACED-BY,"action request.send registered with a capability entry · code: human Send · suite scribe PASS, time PASS, enhance FAIL",web/js/screens/Authorization.js web/js/screens/SettingsData.js
+V-064,Recommended actions per case,REFACTOR → missing-evidence list,MOVED,"code: missing-evidence list · suite scribe PASS, time PASS, enhance FAIL",web/js/screens/DenialCaseViews.js web/js/shared/analytics/ask.js
 V-065,Extension view switching,clinical,MOVED,panel on Lauris #3310 as jperez,
 V-066,Consumers list,Drop (master M-073),DROPPED-WITH-REASON,,duplicate of the master screen it names; the simulated v3 pages are not ported (master mock Lauris is the one simulated Lauris) [06c destination column; 00 decision #19 (mock Lauris declared simulated once)]
 V-067,Consumer file (6 tabs),Drop,DROPPED-WITH-REASON,,duplicate of the master screen it names; the simulated v3 pages are not ported (master mock Lauris is the one simulated Lauris) [06c destination column; 00 decision #19 (mock Lauris declared simulated once)]
@@ -270,7 +270,7 @@ V-077,Citation viewer,PORT → source chips,MOVED,code: citation viewer · suite
 V-078,Evidence labels,PORT (maturity and provenance chips),MOVED,code: maturity chips · code: provenance chips · suite ui-kit PASS,web/js/screens/Analytics.js web/js/screens/AnalyticsParts.js; web/js/screens/Analytics.js web/js/screens/AnalyticsParts.js
 V-079,Filter bar and date range,PORT → `ui/filterbar.js`,MOVED,code: filter bar · suite ui-kit PASS,web/js/screens/Analytics.js web/js/screens/Authorizations.js
 V-080,Dash helpers,REFACTOR → selectors,MOVED,code: selectors · suite ui-kit PASS,web/js/screens/AppealLetter.js web/js/screens/Authorization.js
-V-081,Theme remap,PORT (cheap re-skin of 46 templates),NOT-VERIFIED,code: theme remap · suite ui-kit PASS,
+V-081,Theme remap,PORT (cheap re-skin of 46 templates),MOVED,code: theme remap · suite ui-kit PASS,web/css/tokens.css
 V-082,Platform CSS patterns,PORT → `components.css`,MOVED,file web/css/components.css · suite ui-kit PASS,
 V-083,Build script,Drop,DROPPED-WITH-REASON,suite ui-kit PASS,v3 build or in-browser backend artefact; the master architecture replaces it [06c destination column; 04 section C (crosswalk and rules.json only)]
 V-084,S1 DSS creates a progress note,Spec Scenario 1 (master flow B),MOVED,"route /MobileApp as khale · code: scenario s1 · suite ui-kit PASS, fixtures PASS",lands on #/MobileApp; seed/extra/scenarios.json
@@ -286,7 +286,7 @@ V-093,S10 FLO custom data pull,Roadmap,DROPPED-WITH-REASON,"suite ui-kit PASS, f
 V-094,S11 Voice agent follow-up,Roadmap,DROPPED-WITH-REASON,"suite ui-kit PASS, fixtures PASS","voice and FLO data agents are roadmap labels only (no agents, no unattended calls) [00 decision #15 and §7 Tier 3]"
 V-095,S12 Roster check in the extension,Extension home,MOVED,"route /ExtHome as jperez · suite ui-kit PASS, fixtures PASS",lands on #/ExtHome
 V-096,S13 Outcomes and timelines,Spec Scenario 6,MOVED,"route /Analytics as dowens · suite ui-kit PASS, fixtures PASS",lands on #/Analytics
-V-097,"`data.js`, `lauris-data.js`, `02-core-data.js`",Crosswalk and `rules.json` only,NOT-VERIFIED,state key crosswalk · file seed/extra/crosswalk.json · file seed/extra/rules.json · action data.js,data.js missing
+V-097,"`data.js`, `lauris-data.js`, `02-core-data.js`",Crosswalk and `rules.json` only,MOVED,state key crosswalk · file seed/extra/crosswalk.json · file seed/extra/rules.json,
 V-098,"`10-referrals.js`, `81-connect-lauris.js`, `82-payers.js`, `20-case.js`, `40-home.js`, `79-flow-decision.js`, `03-ext-status.js`, `00-starter.js`",Drop,DROPPED-WITH-REASON,,v3 build or in-browser backend artefact; the master architecture replaces it [06c destination column; 04 section C (crosswalk and rules.json only)]
 V-099,`captured/*.html` (19 canvas copies),Drop,DROPPED-WITH-REASON,,v3 build or in-browser backend artefact; the master architecture replaces it [06c destination column; 04 section C (crosswalk and rules.json only)]
 V-100,"`07-api.js` routes `/payers`, `/cases/:case`, `/roster`",Drop,DROPPED-WITH-REASON,,see the 06c destination column [06c]; not itemised in 00-unified-recommendations decisions

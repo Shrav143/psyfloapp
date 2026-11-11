@@ -89,7 +89,7 @@ const res = suiteResults(); const out = []; const fails = [];
 const verdict = async row => {
   const id = row.id, cls = classify(row.unified_destination); const probes = [...(P[id] || [])];
   // actions: derive from the feature name
-  const names = namesOf(row.feature); if (names.length && !/^(M-161|M-162|M-163|M-173)$/.test(id)) probes.push(async () => { const have = names.filter(n => ACTIONS.has(n)); return { ok: cls === 'DROP' ? true : have.length === names.length, ev: 'action ' + names.join(' / '), note: cls === 'DROP' ? (have.length ? 'still registered (internal or kept)' : 'removed') : names.filter(n => !ACTIONS.has(n)).join(',') + ' missing' }; });
+  const names = namesOf(row.feature); if (names.length && !/^(M-161|M-162|M-163|M-173)$/.test(id)) probes.push(async () => { const have = names.filter(n => ACTIONS.has(n)); return { ok: cls === 'DROP' ? true : have.length === names.length, ev: 'action ' + names.join(' / '), note: cls === 'DROP' ? (have.length ? 'still registered (internal or kept)' : 'removed') : (have.length === names.length ? '' : names.filter(n => !ACTIONS.has(n)).join(',') + ' missing') }; });
   const ran = []; let ok = true; for (const pr of probes) { try { const r = await pr(); ran.push(r); if (!r.ok) ok = false; } catch (e) { ran.push({ ok: false, ev: 'probe threw', note: String(e.message).slice(0, 100) }); ok = false; } }
   const suites = resolveSuites(row.suite); const sres = suites.map(s => [s, (res[s] || {}).status]); const suiteOk = sres.length > 0 && sres.every(([, st]) => st === 'PASS'); const suiteSeen = sres.filter(([, st]) => st);
   const evidence = [...ran.map(r => r.ev), ...(suiteSeen.length ? ['suite ' + suiteSeen.map(([s, st]) => s + ' ' + st).join(', ')] : [])].join(' · ');

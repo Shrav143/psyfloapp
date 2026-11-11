@@ -32,8 +32,9 @@ function writeReports(results, tag) {
   const total = rows.reduce((n, [, v]) => n + v.rows, 0);
   const outcomes = {}; for (const [, v] of rows) for (const [k, n] of Object.entries(v.counts)) outcomes[k] = (outcomes[k] || 0) + n;
   const line = Object.entries(outcomes).sort((a, b) => b[1] - a[1]).map(([k, n]) => k + ' ' + n).join(' · ');
-  const byRole = {}; for (const [, v] of rows) { const o = byRole[v.role.replace(/@.*/, '')] = byRole[v.role.replace(/@.*/, '')] || { targets: 0, controls: 0, findings: 0 }; o.targets++; o.controls += v.rows; }
-  for (const f of sum.findings) { const r = f.role.replace(/@.*/, ''); if (byRole[r]) byRole[r].findings++; }
+  const label = (role, kind) => kind === 'panel' ? 'panel · 400 px (all roles)' : kind === 'phone' ? role.replace(/@.*/, '') + ' · 390 px' : role.replace(/@.*/, '') + ' · 1440 px';
+  const byRole = {}; for (const [, v] of rows) { const o = byRole[label(v.role, v.kind)] = byRole[label(v.role, v.kind)] || { targets: 0, controls: 0, findings: 0 }; o.targets++; o.controls += v.rows; }
+  for (const f of sum.findings) { const k = label(f.role, f.kind); if (byRole[k]) byRole[k].findings++; }
   const md = ['# Interaction audit (QA1)', '', `Controls swept: ${total} on ${rows.length} targets. ${line}`, '', '## Per role', '', '| Role | Targets | Controls | Findings |', '|---|---|---|---|', ...Object.entries(byRole).map(([r, o]) => `| ${r} | ${o.targets} | ${o.controls} | ${o.findings} |`), '',
     '## Per route', '', '| Target | Role | Controls | ' + Object.keys(outcomes).sort().join(' | ') + ' |', '|---|---|---|' + Object.keys(outcomes).map(() => '---').join('|') + '|'];
   for (const [k, v] of rows) md.push(`| ${k} | ${v.role} | ${v.rows}${v.skipped ? ' (' + v.skipped + ')' : ''} | ` + Object.keys(outcomes).sort().map(o => v.counts[o] || '').join(' | ') + ' |');

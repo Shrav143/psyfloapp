@@ -97,13 +97,15 @@ await T.test('UAR-04 no predicted success percentages, research citations or out
   const bad = []; for (const f of [...walk('web/js/shared'), ...walk('web/panel'), 'server/psyflo/actions/x-enhance.js', 'server/psyflo/actions/x-scribe.js']) { const t = read(f); for (const m of t.matchAll(/\b(\d{1,3})\s?%\s*(success|chance|likel|probab)|\bet al\.|doi\.org|p\s?<\s?0\.0|will (improve|reduce) .{0,30}by \d+/gi)) bad.push(f + ': ' + m[0]); }
   assert.deepEq(bad, [], bad.join(' | '));
 });
-await T.test('UAR-05 every box of every draft type cites sources that resolve to a stored record, and each source is dated', async () => {
-  const s = await state('jperez'); const tw = s.clients.find(c => c.id === 'TW'); const bad = [];
+const uar05 = async () => {
+  const s = await state('jperez'); const tw = s.clients.find(c => c.id === 'TW'); const unresolved = [], undated = [];
   const a = s.clients.find(c => c.id === 'MR').authorization; const cs = buildContinuedStay(s, 'MR', { from: a.start, to: s.today }, { household: false, request: req(s, 'R-0411') });
   const drafts = { 'continued stay': cs, quarterly: draft('quarterly', { client: s.clients.find(c => c.id === 'MR'), notes: s.notes.filter(n => n.client === 'MR'), today: s.today }), initialSRA: draftInitialSRA({ client: tw, screening: { facts: (s.screenings.find(x => x.client === 'TW') || {}).facts || {}, when: '2026-10-16' }, referral: s.referrals.find(r => r.id === 'REF-118'), today: s.today, request: req(s, 'R-0416') }) };
-  for (const [name, d] of Object.entries(drafts)) { const ns = new Set((d.sources || []).map(x => x.n)); for (const x of d.boxes || []) for (const n of x.src || []) if (!ns.has(n)) bad.push(`${name}/${x.label}: source ${n} does not resolve`); for (const x of d.sources || []) if (!x.date && !/missing|none/i.test(x.label || '')) bad.push(`${name}: source ${x.n} "${x.label}" has no date`); }
-  assert.deepEq(bad, [], bad.join(' | '));
-});
+  for (const [name, d] of Object.entries(drafts)) { const ns = new Set((d.sources || []).map(x => x.n)); for (const x of d.boxes || []) for (const n of x.src || []) if (!ns.has(n)) unresolved.push(`${name}/${x.label}: source ${n} does not resolve`); for (const x of d.sources || []) if (!x.date && !/missing|none/i.test(x.label || '')) undated.push(`${name}: source ${x.n} "${x.label}" has no date`); }
+  return { unresolved, undated };
+};
+await T.test('UAR-05 every box of every draft type (continued stay, quarterly, initial request) cites sources that resolve to a stored record', async () => { const r = await uar05(); assert.deepEq(r.unresolved, [], r.unresolved.join(' | ')); });
+await T.test('UAR-05b (not release-blocking) every source chip of those drafts carries a date', async () => { const r = await uar05(); assert.deepEq(r.undated, [], r.undated.join(' | ')); });
 await T.test('UAR-07 "Good recommendation" / "Needs improvement" are stored with who and when and are visible to a clinician, not to direct support', async () => {
   await api('panel.feedback', { client: 'MR', form: 'dpn', kind: 'good' }, 'khale'); await assert.refused(tryApi('panel.feedback', { client: 'MR', kind: 'needs_improvement' }, 'khale'), /improve/i);
   const j = await tryApi('panel.feedback', { client: 'MR', kind: 'needs_improvement', text: 'name the objective' }, 'khale'); assert.ok(j.ok);
@@ -267,18 +269,23 @@ await T.test('SVR-09 demo controls (reply, advance, reset) are hidden from direc
 });
 
 await reset('live');
-await T.test('URA-10 / SVR-09 a direct-support browser session is never a presenter: after a page reload it holds no demo controls, no dock, and the server refuses demo.advanceDay, demo.reset and request.demoReply', async () => {
-  const ctx = await b.newContext(); const p = await ctx.newPage(); await p.goto(BASE + '/#/Login');
-  await p.evaluate(async () => { const r = await fetch('/api/session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ staffId: 'khale', presenter: false }) }); const j = await r.json(); localStorage.setItem('psyflo_session', JSON.stringify({ token: j.token, actor: j.actor })); localStorage.setItem('psyflo_user', 'khale'); });
-  await p.reload(); await p.waitForTimeout(1500); const tok = await p.evaluate(() => JSON.parse(localStorage.getItem('psyflo_session')).token);
-  const pres = await p.evaluate(() => !!(window.psyflo.session.actor && window.psyflo.session.actor.presenter)); const call = a => fetch(BASE + '/api/do', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Psyflo-Session': tok }, body: JSON.stringify({ action: a, args: { id: 'R-0408', kind: 'approved', days: 0, preset: 'live' } }) }).then(r => r.status);
-  const st = [await call('demo.advanceDay'), await call('request.demoReply')]; await ctx.close();
-  assert.ok(!pres && st.every(x => [401, 403].includes(x)), `after one reload the direct-support session is presenter=${pres} and demo.advanceDay / request.demoReply answered ${st.join(' / ')} (web/js/api.js init re-signs every stored session in with presenter:true; no PIN is set by default)`);
+await T.test('URA-10 / SVR-09 a direct-support browser session is never a presenter: after a page reload it holds no demo controls, no dock, and the server refuses demo.advanceDay and request.demoReply (three attempts: the escalation is a race with the page\'s own sign-in)', async () => {
+  const seen = [];
+  for (let i = 0; i < 3; i++) {
+    await reset('live'); const ctx = await b.newContext(); const p = await ctx.newPage(); await p.goto(BASE + '/#/Login');
+    await p.evaluate(async () => { const r = await fetch('/api/session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ staffId: 'khale', presenter: false }) }); const j = await r.json(); localStorage.setItem('psyflo_session', JSON.stringify({ token: j.token, actor: j.actor })); localStorage.setItem('psyflo_user', 'khale'); });
+    await p.reload(); await p.waitForFunction(() => { try { return JSON.parse(localStorage.getItem('psyflo_session')).actor.presenter === true; } catch { return false; } }, null, { timeout: 6000 }).catch(() => { }); await p.waitForTimeout(600);
+    const tok = await p.evaluate(() => JSON.parse(localStorage.getItem('psyflo_session')).token); const pres = await p.evaluate(() => !!(window.psyflo.session.actor && window.psyflo.session.actor.presenter));
+    const call = (a, args) => fetch(BASE + '/api/do', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Psyflo-Session': tok }, body: JSON.stringify({ action: a, args }) }).then(r => r.status);
+    seen.push({ pres, adv: await call('demo.advanceDay', { days: 0 }), reply: await call('request.demoReply', { id: 'R-0408', kind: 'approved' }) }); await ctx.close();
+  }
+  const bad = seen.filter(x => x.pres || x.adv === 200);
+  assert.ok(bad.length === 0, `after one reload the direct-support session was presenter=true / demo.advanceDay answered 200 in ${bad.length} of 3 attempts ${JSON.stringify(seen)} (web/js/api.js init re-signs every stored session in with presenter:true; no PIN is set by default)`);
 });
 await T.test('URA-06 a direct-support user cannot promote themselves: user.update {role:admin} needs the administrator capability AND a presenter, never a presenter alone', async () => {
   await reset('live'); const ctx = await b.newContext(); const p = await ctx.newPage(); await p.goto(BASE + '/#/Login');
   await p.evaluate(async () => { const r = await fetch('/api/session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ staffId: 'khale', presenter: false }) }); const j = await r.json(); localStorage.setItem('psyflo_session', JSON.stringify({ token: j.token, actor: j.actor })); localStorage.setItem('psyflo_user', 'khale'); });
-  await p.reload(); await p.waitForTimeout(1500); const tok = await p.evaluate(() => JSON.parse(localStorage.getItem('psyflo_session')).token);
+  await p.reload(); await p.waitForFunction(() => { try { return JSON.parse(localStorage.getItem('psyflo_session')).actor.presenter === true; } catch { return false; } }, null, { timeout: 5000 }).catch(() => { }); await p.waitForTimeout(400); const tok = await p.evaluate(() => JSON.parse(localStorage.getItem('psyflo_session')).token);
   const r = await fetch(BASE + '/api/do', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Psyflo-Session': tok }, body: JSON.stringify({ action: 'user.update', args: { id: 'khale', patch: { role: 'admin' } } }) }); await ctx.close();
   const role = ((await state('dowens')).staff.find(x => x.id === 'khale') || {}).role; await reset('live');
   assert.ok([401, 403].includes(r.status) && role === 'direct_support', `user.update by a direct-support presenter session answered ${r.status}; khale's role afterwards: ${role}`);

@@ -6,15 +6,15 @@ import { ROOT } from './parity.mjs';
 
 const dir = process.env.RESULTS_DIR || path.join(ROOT, 'review/test-results');
 const log = s => { try { return fs.readFileSync(path.join(dir, s + '.log'), 'utf8').split('\n'); } catch { return []; } };
-const line = (suite, key) => log(suite).find(l => /^(PASS|FAIL|SKIP) /.test(l) && l.includes(key));
+const line = (suite, key) => log(suite).map(l => l.replace(/^(ok|not ok) \d+ - /, (m, r) => (r === 'ok' ? 'PASS ' : 'FAIL '))).find(l => /^(PASS|FAIL|SKIP) /.test(l) && l.includes(key));
 const st = l => (!l ? 'NOT-RUN' : l.startsWith('PASS') ? 'PASS' : l.startsWith('FAIL') ? 'FAIL' : 'NOT-RUNNABLE');
 
 // id -> [[suite, key in the test title], ...]; "u" = npm test (unit) draft.test.mjs
 const OWN = id => ['safety', id];
 const M = {
   'WPS-01': [['gates', 'WPS-01']], 'WPS-02': [['gates', 'WPS-02']], 'WPS-03': [OWN('WPS-03')], 'WPS-04': [OWN('WPS-04')], 'WPS-05': [['gates', 'WPS-05']], 'WPS-06': [OWN('WPS-06')], 'WPS-07': [OWN('WPS-07')], 'WPS-08': [['gates', 'WPS-08']], 'WPS-09': [OWN('WPS-09')],
-  'ICE-01': [OWN('ICE-01')], 'ICE-02': [['unit', 'case 3|prior provider']], 'ICE-03': [OWN('ICE-03'), ['enhance', 'counts are computed from rows']], 'ICE-04': [OWN('ICE-04')], 'ICE-05': [OWN('ICE-05')], 'ICE-06': [OWN('ICE-06')], 'ICE-07': [['unit', 'criterion 3|Initial SRA']], 'ICE-08': [OWN('ICE-08')],
-  'UAR-01': [OWN('UAR-01')], 'UAR-02': [OWN('UAR-02')], 'UAR-03': [OWN('UAR-03')], 'UAR-04': [OWN('UAR-04')], 'UAR-05': [OWN('UAR-05')], 'UAR-06': [['unit', 'criterion 3|Initial SRA']], 'UAR-07': [OWN('UAR-07')],
+  'ICE-01': [OWN('ICE-01')], 'ICE-02': [['unit', 'an empty prior-service outcome blocks and asks']], 'ICE-03': [OWN('ICE-03'), ['enhance', 'counts are computed from rows']], 'ICE-04': [OWN('ICE-04')], 'ICE-05': [OWN('ICE-05')], 'ICE-06': [OWN('ICE-06')], 'ICE-07': [['unit', 'criterion 3']], 'ICE-08': [OWN('ICE-08')],
+  'UAR-01': [OWN('UAR-01')], 'UAR-02': [OWN('UAR-02')], 'UAR-03': [OWN('UAR-03')], 'UAR-04': [OWN('UAR-04')], 'UAR-05': [OWN('UAR-05')], 'UAR-06': [['unit', 'criterion 3']], 'UAR-07': [OWN('UAR-07')],
   'EFN-01': [['gates', 'EFN-01..03']], 'EFN-02': [['gates', 'EFN-01..03']], 'EFN-03': [['gates', 'EFN-01..03']], 'EFN-04': [['gates', 'EFN-04']], 'EFN-05': [['gates', 'EFN-05']], 'EFN-06': [['gates', 'EFN-06/07']], 'EFN-07': [['gates', 'EFN-06/07']], 'EFN-08': [['enhance', 'Mode B (historical)'], ['s4', 'S4[scenario] · 2 Scan']], 'EFN-09': [OWN('EFN-09')], 'EFN-10': [['gates', 'SIGNED is final']],
   'MCS-01': [['gates', 'MCS-01']], 'MCS-02': [['gates', 'MCS-02']], 'MCS-03': [['gates', 'MCS-03']], 'MCS-04': [['gates', 'MCS-08']], 'MCS-05': [['gates', 'MCS-01']], 'MCS-06': [['gates', 'MCS-01']], 'MCS-07': [['gates', 'MCS-07']], 'MCS-08': [OWN('MCS-08')], 'MCS-09': [['gates', 'MCS-09']], 'MCS-10': [OWN('MCS-10')],
   'URA-01': [OWN('URA-01')], 'URA-02': [['roles', 'anonymous']], 'URA-03': [OWN('URA-03')], 'URA-04': [OWN('URA-04')], 'URA-05': [OWN('URA-05')], 'URA-06': [OWN('URA-06'), ['roles', 'user.update']], 'URA-07': [['roles', 'cross-origin']], 'URA-08': [['roles', 'anonymous']], 'URA-09': [['gates', 'URA note review']], 'URA-10': [OWN('URA-10'), ['gates', 'presenter actions']], 'URA-11': [OWN('URA-11')], 'URA-12': [['gates', 'WPS-05']], 'URA-13': [['roles', 'routes:']],
