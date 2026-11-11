@@ -97,6 +97,7 @@ register('Authorization', class extends Screen {
     } else if (st === 'active') {
       if (c.unitTask) {
         out.title = 'Enter units in Lauris';
+        out.chips = '<span class="a-sub">A person enters them. Psyflo does not write units.</span>';
         out.buttons = [k.clinical || k.send || k.assign ? this.link(this.laurisHref(this.authPath(c)), 'Open Lauris', { tone: 'primary', ext: true }) : ''];
         out.info = 'A person enters the units on the Lauris Authorizations page. Psyflo does not write units. The task closes when the open Lauris page shows them.';
       } else if (c.renewal && c.renewal.due) {

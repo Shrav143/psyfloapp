@@ -58,7 +58,7 @@ export function applyAward(store, s, r, units, how = 'approved') {
   const start = iso(d0) ? d0 : s.today;
   const end = iso(d1) ? d1 : addDays(start, 89);
   c.authorization_history = (c.authorization_history || []).concat(prev ? [{ ...prev, closed_on: s.today, replaced_by: r.id }] : []);
-  c.authorization = { payer: r.payer, service: prev && prev.service || undefined, units, used: 0, start, end, award: r.id, status: 'awarded', in_lauris: false };
+  c.authorization = { payer: r.payer, service: prev && prev.service || undefined, units, used: prev && prev.award === r.id ? (prev.used || 0) : 0, start, end, award: r.id, status: 'awarded', in_lauris: false };
   if (['request_pending', 'denied_appeal', 'in_service_unpaid', 'early_discharge_new_initial', 'intake', 'referral'].includes(c.stage)) c.stage = 'in_service';
   s.lauris_tasks = s.lauris_tasks || [];
   for (const t of s.lauris_tasks) if (t.client === c.id && t.status === 'open') { t.status = 'superseded'; t.closed_by = r.id; }
@@ -617,6 +617,7 @@ export default {
   // ---------- users & settings ----------
   'user.add'(s, { name, credential = '', role = 'direct_support', sites = ['CC-ES1'], review_mode = 'every_note', reviewer = 'cdiaz' }) {
     if (!['direct_support', 'supervisor', 'clinician', 'admin'].includes(role)) refuse('Unknown role.', { status: 422, audit: false });
+    if (role === 'clinician' || role === 'admin') refuse('A new clinician or administrator needs a second person to confirm; add them as a supervisor or direct support first.', { status: 403, code: 'two_person', audit: false });
     let id = name.toLowerCase().replace(/[^a-z]/g, '').slice(0, 10) || 'user'; const base = id; let k = 2; while (s.staff.some(x => x.id === id)) id = base + k++;
     const initials = name.split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
     s.staff.push({ id, name, initials, credential, title: roleTitle(role), role, sites, review_mode, reviewer, designations: [] });

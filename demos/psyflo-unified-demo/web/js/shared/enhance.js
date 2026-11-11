@@ -301,7 +301,8 @@ export function buildContinuedStay(s, clientId, period, { household = false, req
     { label: 'Care coordination', value: monthly.length ? `${monthly.length} monthly collateral contact${monthly.length === 1 ? '' : 's'} in the period: ${dts(monthly)}.` : MISSING('a monthly collateral contact in this period'), src: [3] },
     { label: 'Family involvement', value: weekly.length ? `${weekly.length} weekly guardian call${weekly.length === 1 ? '' : 's'} in the period: ${dts(weekly)}.` : MISSING('weekly guardian calls in this period'), src: [2] }
   ];
-  if (hh) boxes.push({ label: 'Household context (included by you)', value: hh.household, src: [2] });
+  // the Lauris form has no household box: a person who opts in has it typed at the start of "Continued need / risk" (their own box), named as theirs
+  if (hh) boxes.push({ label: 'Continued need / risk', value: `Household context (included by you): ${hh.household}`, src: [2] });
   const dates = request && request.dates ? request.dates : null;
   boxes.unshift({ label: 'Request', value: dates ? `${dates.split(' to ')[0]} – ${dates.split(' to ')[1] || ''} · ${request.units_requested} units` : MISSING('the request dates and units'), src: [4] });
   const checks = [
@@ -311,6 +312,6 @@ export function buildContinuedStay(s, clientId, period, { household = false, req
     { rule: 'Nothing invented', pass: true, detail: 'Every statement comes from stored rows or says "Evidence missing"' },
     { rule: 'Evidence complete', pass: !boxes.some(b => isMissingText(b.value)), detail: boxes.some(b => isMissingText(b.value)) ? `${boxes.filter(b => isMissingText(b.value)).length} statement${boxes.filter(b => isMissingText(b.value)).length === 1 ? '' : 's'} say Evidence missing: verify before you rely on them` : 'No statement is missing its evidence' }
   ];
-  const blank = [{ label: 'Continued need / risk', why: 'You write current need and risk. Psyflo drafts none; the counted evidence is beside it.' }, { label: 'Barriers', why: 'You write barriers from what you know.' }];
+  const blank = [...(hh ? [] : [{ label: 'Continued need / risk', why: 'You write current need and risk. Psyflo drafts none; the counted evidence is beside it.' }]), { label: 'Barriers', why: 'You write barriers from what you know.' }];
   return { boxes, sources: S, checks, blank, counts: idx.counts, index: idx, household: household ? 'included' : 'not_included' };
 }

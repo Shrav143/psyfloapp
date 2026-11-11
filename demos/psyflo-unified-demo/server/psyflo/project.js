@@ -116,11 +116,11 @@ export function projectState(s, actor) {
     if (actor.role === 'school') return c.school === actor.school ? pick(c, ['id', 'initials', 'first_name', 'age', 'grade', 'school', 'stage', 'service_start']) : null;
     return null;
   }
-  const REQ_STATUS = ['id', 'client', 'payer', 'channel', 'service', 'service_line', 'type', 'units_requested', 'units_offered', 'units_awarded', 'stage', 'dates', 'limit_30', 'drafted_at', 'processed_at', 'signed_at', 'signed_name', 'signed_by', 'signed_pdf', 'sent', 'sent_by', 'send_pressed_at', 'decision_due', 'fax_ref', 'portal_ref', 'pages', 'delivery_receipt', 'receipt_check', 'receipt_confirmed', 'receipt_by', 'overdue_notice_sent', 'overdue_notice_ref', 'info_requested_at', 'reply_due', 'reply_by', 'offer_call', 'p2p_at', 'denied_on', 'denial_reason', 'appeal_deadline', 'appeal_days_left', 'notice_date', 'renew_by', 'approval', 'approved_by', 'approved_at', 'decision_log', 'resends', 'early_discharge', 'stretch'];
+  const REQ_STATUS = ['id', 'client', 'payer', 'channel', 'service', 'service_line', 'type', 'units_requested', 'units_offered', 'units_awarded', 'stage', 'dates', 'limit_30', 'drafted_at', 'processed_at', 'signed_at', 'signed_name', 'signed_by', 'signed_pdf', 'sent', 'sent_by', 'send_pressed_at', 'decision_due', 'fax_ref', 'portal_ref', 'pages', 'delivery_receipt', 'receipt_check', 'receipt_confirmed', 'receipt_by', 'overdue_notice_sent', 'overdue_notice_ref', 'info_requested_at', 'reply_due', 'reply_by', 'offer_call', 'p2p_at', 'denied_on', 'denial_reason', 'appeal_deadline', 'appeal_days_left', 'notice_date', 'renew_by', 'approved_by', 'approved_at', 'decision_log', 'resends', 'early_discharge', 'stretch'];
   function requestView(r) {
     if (!actor) return null;
     if (clin) return r;
-    if (staffLike && (role === 'supervisor' || role === 'admin')) { const v = pick(r, REQ_STATUS); if (r.p2p_outcome) v.p2p_outcome = pick(r.p2p_outcome, ['outcome', 'units', 'at']); return v; }
+    if (staffLike && (role === 'supervisor' || role === 'admin')) { const v = pick(r, REQ_STATUS); if (r.approval) v.approval = omit(r.approval, ['comment']); if (r.p2p_outcome) v.p2p_outcome = pick(r.p2p_outcome, ['outcome', 'units', 'at']); return v; }
     if (actor.role === 'guardian' && r.client === actor.client) return pick(r, ['id', 'client', 'payer', 'type', 'stage', 'units_requested', 'units_offered', 'units_awarded', 'denied_on', 'denial_reason', 'appeal_deadline', 'appeal_days_left', 'notice_date', 'appeal']);
     return null;
   }
@@ -136,7 +136,7 @@ export function projectState(s, actor) {
   function eventView(e) {
     if (!actor) return null;
     if (clin) return e;
-    const x = omit(e, ['sms']); x.what = maskText(e.what);
+    const x = omit(e, ['sms']); x.what = e.record === 'rules' ? e.what : maskText(e.what);
     if (staffLike && role === 'direct_support') return (myCaseload.has(e.record) || e.who === actor.id) ? x : null;
     if (staffLike) return x;
     if (actor.role === 'school') { const r = byId(s.referrals, e.record); const c = byId(s.clients, e.record); return (r && r.school === actor.school) || (c && c.school === actor.school) ? x : null; }

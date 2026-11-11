@@ -122,6 +122,7 @@ export function homeTarget(role, narrow) {
   if (role === 'direct_support') return { id: narrow ? 'MobileApp' : 'ExtHome', params: {} };
   if (role === 'supervisor') return isLive('MyWork') ? { id: 'MyWork', params: { section: 'review' } } : { id: 'ReviewQueue', params: {} };
   if (role === 'clinician') return isLive('MyWork') ? { id: 'MyWork', params: { section: 'todo' } } : { id: 'DoNext', params: {} };
+  if (role === 'admin' && isLive('MyWork')) return { id: 'MyWork', params: { section: 'todo' } };
   return { id: 'Authorizations', params: {} };
 }
 export const homeFor = (role, narrow) => homeTarget(role, narrow).id;

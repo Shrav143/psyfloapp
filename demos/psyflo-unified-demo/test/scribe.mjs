@@ -118,6 +118,19 @@ try {
     const c = (await state('khale')).recording_consents.at(-1); assert.ok(c.kind === 'declined' && c.client === 'JT' && c.by === 'khale');
     assert.eq(await panel().getByText(/Listening/).count(), 0);
   });
+  await T.test('weekly guardian contact: the guardian and date Lauris already holds (green) are left alone; only the staffer\'s words are typed', async () => {
+    await p.goto(`${LAURIS}/login?as=khale&next=${encodeURIComponent('/consumers/3310/session/weekly')}`); await p.waitForTimeout(1800);
+    const before = await form(); assert.ok(before['Contact with'] && before['Date'], 'Lauris prefills them');
+    await panel().locator('textarea[data-in="sayText"]').fill('Spoke with grandmother for 12 minutes about the break card at home. She will practice it after dinner and we will talk again next Tuesday.');
+    await panel().getByRole('button', { name: 'Draft it' }).click();
+    await panel().getByText(/Reviewed/).first().waitFor();
+    await panel().getByRole('button', { name: /Accept the \d+ with sources/ }).click();
+    await panel().getByRole('button', { name: 'Approve and fill' }).click();
+    await panel().getByText(/boxes? typed into the form/).first().waitFor({ timeout: 20000 });
+    const v = await form(); assert.eq(v['Contact with'], before['Contact with'], 'green box untouched'); assert.eq(v['Date'], before['Date']);
+    assert.match(v['What was discussed'], /^Spoke with grandmother for 12 minutes about the break card at home\./); assert.eq(v['Duration'], '12 min');
+    assert.eq(v['Follow-up'], '', 'what was not separated out is left for the person');
+  });
   await T.test('no console errors in the page or the panel', async () => { assert.deepEq(errs, [], errs.join(' | ')); });
 } finally { await b.close(); }
 await T.done();

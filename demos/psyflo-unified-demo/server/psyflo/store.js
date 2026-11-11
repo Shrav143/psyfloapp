@@ -215,6 +215,7 @@ class Store {
     const prev = this.ctx; this.ctx = ctx || { actor: null };
     try {
       const result = await fn.call(this, this.state, args, ctx);
+      this.hooks.run('afterAction', { name, args, ctx, result, state: this.state });
       this.changed();
       return result;
     } catch (e) {

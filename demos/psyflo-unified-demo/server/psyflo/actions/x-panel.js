@@ -8,7 +8,7 @@ import { identity, validateBridgeEvent } from './lead-extension.js';
 import { refuse } from '../gates.js';
 
 const byId = (arr, id) => (arr || []).find(x => x.id === id);
-const FORM_NAME = { screening: 'Admission Screening', cna: 'CNA', isp: 'ISP 2.0', dpn: 'Daily Progress Note', weekly: 'Weekly guardian contact', collateral: 'Monthly collateral', quarterly: 'Quarterly report', incident: 'Incident report', 'sra-initial': 'TDT Initial SRA', 'sra-continued': 'CMHRS Continued Stay', discharge: 'Discharge summary', 'new-consumer': 'New consumer' };
+const FORM_NAME = { screening: 'Admission Screening', cna: 'CNA', isp: 'ISP 2.0', dpn: 'Daily Progress Note', weekly: 'Weekly guardian contact', collateral: 'Monthly collateral', time: 'Time Tracker entry', quarterly: 'Quarterly report', incident: 'Incident report', 'sra-initial': 'TDT Initial SRA', 'sra-continued': 'CMHRS Continued Stay', discharge: 'Discharge summary', 'new-consumer': 'New consumer' };
 const norm = v => String(v ?? '').replace(/\s+/g, ' ').trim().toLowerCase();
 // same text, ignoring spacing and case; a drop-down may show "Level 2 · hospitalization" for a typed "Level 2"
 const same = (a, b, select) => { a = norm(a); b = norm(b); return a === b || (select && !!a && !!b && a.startsWith(b)); };

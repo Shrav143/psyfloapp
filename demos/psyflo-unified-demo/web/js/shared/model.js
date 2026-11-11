@@ -112,40 +112,6 @@ export function requestTags(s, r, me) {
   return tags;
 }
 
-// Do next: one list of what is due, built from referrals, requests, clocks and reminders.
-export function doNext(s, me = 'jperez') {
-  const items = [];
-  const t = s.today;
-  // calls today
-  for (const sc of s.screenings.filter(x => x.status === 'booked' && x.when && x.when.slice(0, 10) === t)) items.push({ group: 'calls', title: `Screening call · ${clientLabel(s, sc.client)}`, sub: fmtTime(sc.when) + ' · guardian', href: 'ExtScreening.dc.html?referral=' + sc.referral, btn: 'Open in Lauris' });
-  // decisions due / overdue
-  for (const r of s.requests) {
-    const c = clientLabel(s, r.client); const p = payerShort(s, r.payer);
-    if (r.stage === 'submitted') { const dd = decisionDay(s, r.sent, t, r.payer); if (dd && (dd.followup_due || dd.overdue)) items.push({ group: 'decisions', sev: dd.overdue ? 'r' : 'y', title: `${c} · ${p} · Day ${dd.day} · ${dd.overdue ? 'past the decision window' : 'follow-up call due'}`, sub: `${r.id} · sent ${fmtDate(r.sent)}${r.fax_ref ? ' · ' + r.fax_ref : ''} · ${dd.overdue ? dd.overdue_after + '-day window, ' + dd.verification.toLowerCase() : 'day ' + dd.followup_day + ' call, Harvest-reported'}`, href: 'Submission.dc.html?id=' + r.id, btn: 'View' }); }
-    if (r.stage === 'overdue') items.push({ group: 'decisions', sev: 'r', title: `${c} · ${p} decision overdue`, sub: `${r.id} · overdue notice ready for you to send`, href: 'Submission.dc.html?id=' + r.id, btn: 'Send notice' });
-    if (r.stage === 'info_requested') items.push({ group: 'replies', sev: 'r', title: `${c} · ${p} asked for more information`, sub: requestClock(s, r).text, href: 'InfoRequest.dc.html?id=' + r.id, btn: 'Open reply' });
-    if (r.stage === 'partial_decide') items.push({ group: 'replies', sev: 'y', title: `${c} · ${p} offered ${r.units_offered} of ${r.units_requested}`, sub: 'reply by ' + fmtDate(r.reply_by), href: 'Partials.dc.html?id=' + r.id, btn: 'Decide' });
-    if (r.stage === 'draft_ready') { const nn = (s.notes || []).filter(x => x.client === r.client && x.type === 'daily').length; items.push({ group: 'drafts', title: `${c} · ${TYPE_LABEL[r.type]} drafted`, sub: r.type === 'continued_stay' ? (nn ? `from ${nn} stored daily note${nn === 1 ? '' : 's'} · open the student in Lauris` : 'Evidence missing: no daily notes are stored for this student · open the student in Lauris') : 'open the student in Lauris to review it in the form', href: requestHref(r), btn: 'Review in Lauris' }); }
-    if (r.stage === 'needs_approval') items.push({ group: 'drafts', title: `${c} · ${TYPE_LABEL[r.type]} pending clinical approval`, sub: 'processed in Lauris · approve before Get Signature', href: 'ExtSignOff.dc.html?request=' + r.id, btn: 'Approve' });
-    if (r.stage === 'awaiting_signature') items.push({ group: 'drafts', title: `${c} · ${TYPE_LABEL[r.type]} waiting for your signature`, sub: 'Forms to Approve in Lauris', href: 'ExtSignOff.dc.html?request=' + r.id, btn: 'Sign in Lauris' });
-    if (r.stage === 'signed') items.push({ group: 'drafts', title: `${c} · signed · press Send`, sub: `${r.id} · ${CHANNEL_LABEL[r.channel]}`, href: 'Submission.dc.html?id=' + r.id, btn: 'Send' });
-    if (r.stage === 'peer_to_peer_requested') items.push({ group: 'calls', sev: 'y', title: `${c} · peer-to-peer requested · enter the call date`, sub: `${r.id} · when ${p} calls to agree a time`, href: 'PeerBrief.dc.html?id=' + r.id, btn: 'Enter date' });
-    if (r.stage === 'peer_to_peer_booked' && r.p2p_at && daysBetween(t, r.p2p_at) < 0) items.push({ group: 'calls', sev: 'y', title: `${c} · peer-to-peer was ${fmtDate(r.p2p_at)} · log the outcome`, sub: r.id, href: 'PeerBrief.dc.html?id=' + r.id, btn: 'Log outcome' });
-    else if (r.stage === 'peer_to_peer_booked' && r.p2p_at && daysBetween(t, r.p2p_at) <= 45) items.push({ group: 'calls', title: `${c} · peer-to-peer ${fmtDate(r.p2p_at)}`, sub: 'call notes ready', href: 'PeerBrief.dc.html?id=' + r.id, btn: 'Call notes' });
-  }
-  // referrals needing action
-  for (const r of s.referrals) {
-    if (r.stage === 'needs_screening') {
-      const el = s.eligibility.find(e => e.referral === r.id);
-      if (el && el.status === 'details_received') items.push({ group: 'referrals', sev: 'y', title: `${clientLabel(s, r.client)} · run the eligibility check`, sub: 'family link submitted · details prepared', href: 'Eligibility.dc.html?referral=' + r.id, btn: 'Check' });
-      else items.push({ group: 'referrals', title: `${clientLabel(s, r.client)} · new referral`, sub: r.next || '', href: 'Referral.dc.html?id=' + r.id, btn: 'Review' });
-    }
-  }
-  // reminders
-  for (const rm of s.reminders.filter(x => !x.done && x.due && x.due.slice(0, 10) <= t)) items.push({ group: 'reminders', title: rm.text, sub: 'due ' + fmtDate(rm.due), href: rm.kind === 'eligibility_recheck' ? 'Eligibility.dc.html?referral=' + rm.record : 'DoNext.dc.html', btn: 'Open', reminder: rm.id });
-  return items;
-}
-
 export function eligibilityFor(s, referral) { return s.eligibility.find(e => e.referral === referral); }
 export function familyLinkFor(s, referral) { return s.family_links.find(f => f.referral === referral); }
 

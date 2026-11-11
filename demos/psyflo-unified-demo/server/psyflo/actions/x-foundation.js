@@ -140,6 +140,7 @@ export default {
   // Two-person designations: one person proposes, a different admin or clinician confirms. Never for demo.controls.
   'user.designate'(s, { id, cap, grant = true, reason }) {
     const u = byId(s.staff, id); if (!u) throw new Error('User not found');
+    if (id === this.who()) refuse('Nobody designates themselves.', { status: 403, code: 'two_person', audit: false });
     if (!CAP_LIST.includes(cap)) throw new Error('Unknown capability: ' + cap);
     if (cap === 'demo.controls') refuse('Presenter controls are not a designation.', { status: 422, audit: false });
     if (MATRIX[u.role][cap] !== 'D') refuse(`${cap} cannot be designated to a ${u.role.replace('_', ' ')}: the matrix gives it as ${MATRIX[u.role][cap] === 'N' ? 'never' : MATRIX[u.role][cap] === 'Y' ? 'always' : 'own caseload only'}.`, { status: 422, audit: false });

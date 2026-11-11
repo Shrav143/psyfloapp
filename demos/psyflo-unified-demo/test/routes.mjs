@@ -68,7 +68,7 @@ await T.test('legacyFor maps a not-yet-live new route back to the old screen tha
   if (!isLive('Authorization')) { eq({ id: 'Authorization', params: { id: 'R-0416', section: 'submission' } }, 'Submission'); eq({ id: 'Authorization', params: { id: 'R-0411', section: 'evidence' } }, 'Authorizations'); }
   if (!isLive('DenialIntelligence')) eq({ id: 'DenialIntelligence', params: {} }, 'Partials');
   eq({ id: 'Analytics', params: { section: 'outcomes' } }, 'Analytics');
-  assert.eq(homeTarget('clinician').id, isLive('MyWork') ? 'MyWork' : 'DoNext'); assert.eq(homeTarget('admin').id, 'Authorizations');
+  assert.eq(homeTarget('clinician').id, isLive('MyWork') ? 'MyWork' : 'DoNext'); assert.eq(homeTarget('admin').id, isLive('MyWork') ? 'MyWork' : 'Authorizations');
 });
 
 // ---------------------------------------------------------------- browser
@@ -152,7 +152,7 @@ await T.test('rail: every item of every role opens a built screen (never a stub)
 });
 await T.test('hrefFor and route() apply the redirect table before the registry check (flag flipped in the page)', async () => {
   const page = await open('jperez', '/#/DoNext');
-  const off = await page.evaluate(() => psyflo.hrefFor('Submission.dc.html?id=R-0399'));
+  const off = await page.evaluate(async () => { const m = await import('/js/shared/redirects-live.js'); m.REDIRECTS_LIVE.Submission = false; return psyflo.hrefFor('Submission.dc.html?id=R-0399'); });
   assert.eq(off, '#/Submission?id=R-0399', 'flag off: the old route');
   const on = await page.evaluate(async () => { const m = await import('/js/shared/redirects-live.js'); m.REDIRECTS_LIVE.Submission = true; return psyflo.hrefFor('Submission.dc.html?id=R-0399'); });
   assert.eq(on, '#/Authorization?id=R-0399&section=submission', 'flag on: the canonical route');

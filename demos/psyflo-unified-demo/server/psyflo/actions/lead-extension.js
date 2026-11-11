@@ -10,7 +10,7 @@ import { attest } from '../../attest.js';
 
 const byId = (arr, id) => arr.find(x => x.id === id);
 const NOTE_TYPE = { dpn: 'daily', weekly: 'weekly_guardian', collateral: 'monthly_collateral', quarterly: 'quarterly', incident: 'incident', discharge: 'discharge' };
-const FORM_NAME = { screening: 'Admission Screening', cna: 'CNA', isp: 'ISP 2.0', dpn: 'Daily Progress Note', weekly: 'Weekly guardian contact', collateral: 'Monthly collateral', quarterly: 'Quarterly report', incident: 'Incident report', 'sra-initial': 'TDT Initial SRA', 'sra-continued': 'CMHRS Continued Stay', discharge: 'Discharge summary' };
+const FORM_NAME = { screening: 'Admission Screening', cna: 'CNA', isp: 'ISP 2.0', dpn: 'Daily Progress Note', weekly: 'Weekly guardian contact', collateral: 'Monthly collateral', time: 'Time Tracker entry', quarterly: 'Quarterly report', incident: 'Incident report', 'sra-initial': 'TDT Initial SRA', 'sra-continued': 'CMHRS Continued Stay', discharge: 'Discharge summary' };
 
 // Wrong-patient protection: a Lauris record is matched to a Psyflo student by the Harvest # ONLY (never by initials), and the
 // initials shown on the open page must agree with Psyflo's record (the identity card). Returns { client, status, reason }.
@@ -49,7 +49,7 @@ export default {
     s.lauris_seen = s.lauris_seen || [];
     const staff = validateBridgeEvent(this, s, a);
     const who = staff.id;
-    const key = `${a.event}:${a.session || ''}:${a.consumer?.no || ''}`;
+    const key = `${a.event}:${a.session || ''}:${a.consumer?.no || ''}${a.event === 'authorization' ? ':' + String(a.consumer?.units || '') : ''}`;
     if (s.lauris_seen.includes(key)) return { duplicate: true };
     const idn = identity(s, a.consumer);
     if (idn.status === 'mismatch') refuse(idn.reason, { code: 'wrong_patient', record: idn.client.id });

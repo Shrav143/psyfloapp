@@ -11,6 +11,7 @@ import * as R from '../lib/recorder.js';
 import { consentFor, consentCard } from '../lib/consent.js';
 import { recFor, reviewBlock } from '../lib/review.js';
 import * as B from '../lib/boxes.js';
+import { formValue } from '../lib/items.js';
 
 const TYPES = [
   { id: 'screening', label: 'Admission screening', cap: 'drafts.clinical', form: 'screening' },
@@ -454,12 +455,12 @@ async function sayDraft(ctx, form, kindHint) {
     if (ivs.length) items.push({ id: 'interventions', label: 'Interventions', staff: ivs.map(i => i.name).join(', '), psyflo: ivs.map(i => `${i.code} ${i.name}`).join(' · '), sources: [inputSrc, { n: 2, kind: 'list', label: "Harvest's intervention list" }] });
   } else if (form === 'weekly') {
     const g = c.guardian || {};
-    items.push({ id: 'date', label: 'Date', staff: '', psyflo: B.usDate(today), sources: [{ n: 1, kind: 'client', label: 'Today (demo clock)', date: today }] });
-    if (g.name) items.push({ id: 'contact', label: 'Contact with', staff: '', psyflo: `${String(g.name).replace(/^./, x => x.toUpperCase())}${g.relationship && g.relationship !== g.name ? ' (' + g.relationship + ')' : ' (guardian)'} · phone`, sources: [{ n: 1, kind: 'client', label: 'Guardian on the student record' }] });
+    if (!formValue(ctx, 'Date')) items.push({ id: 'date', label: 'Date', staff: '', psyflo: B.usDate(today), sources: [{ n: 1, kind: 'client', label: 'Today (demo clock)', date: today }] });
+    if (g.name && !formValue(ctx, 'Contact with')) items.push({ id: 'contact', label: 'Contact with', staff: '', psyflo: `${String(g.name).replace(/^./, x => x.toUpperCase())}${g.relationship && g.relationship !== g.name ? ' (' + g.relationship + ')' : ' (guardian)'} · phone`, sources: [{ n: 1, kind: 'client', label: 'Guardian on the student record' }] });
     const dm = text.match(/(\d+)\s*(?:min|minutes)\b/i); if (dm) items.push({ id: 'duration', label: 'Duration', staff: dm[0], psyflo: `${dm[1]} min`, sources: [{ ...inputSrc, quote: dm[0] }] });
     items.push({ id: 'discussed', label: 'What was discussed', staff: text, psyflo: tidySentence(text), sources: [inputSrc] });
   } else if (form === 'collateral') {
-    items.push({ id: 'date', label: 'Date', staff: '', psyflo: B.usDate(today), sources: [{ n: 1, kind: 'client', label: 'Today (demo clock)', date: today }] });
+    if (!formValue(ctx, 'Date')) items.push({ id: 'date', label: 'Date', staff: '', psyflo: B.usDate(today), sources: [{ n: 1, kind: 'client', label: 'Today (demo clock)', date: today }] });
     items.push({ id: 'shared', label: 'Information shared / received', staff: text, psyflo: tidySentence(text), sources: [inputSrc] });
   }
   st.again = false;

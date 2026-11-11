@@ -248,7 +248,8 @@ export function draw() {
     drawing = false;
     const y = root.scrollTop; const se = document.scrollingElement; const wy = se ? se.scrollTop : 0;
     const ae = document.activeElement; const inRoot = ae && root.contains(ae);
-    const fkey = inRoot ? (ae.id ? '#' + ae.id : ae.getAttribute('aria-label') ? 'L' + ae.getAttribute('aria-label') : ae.dataset.in ? 'I' + ae.dataset.in : ae.dataset.ch ? 'C' + ae.dataset.ch : ae.getAttribute('data-ui-draft') ? 'D' + ae.getAttribute('data-ui-draft') : null) : null;
+    const tag = e => (e.dataset.k || e.dataset.f || e.dataset.ref || e.dataset.m || e.dataset.i || e.dataset.id || e.dataset.view || '');
+    const fkey = inRoot ? (ae.id ? '#' + ae.id : ae.getAttribute('aria-label') ? 'L' + ae.getAttribute('aria-label') : ae.dataset.in ? 'I' + ae.dataset.in : ae.dataset.ch ? 'C' + ae.dataset.ch : ae.getAttribute('data-ui-draft') ? 'D' + ae.getAttribute('data-ui-draft') : ae.dataset.act ? 'A' + ae.dataset.act + '\u0001' + tag(ae) : ae.dataset.uiDr ? 'R' + ae.dataset.uiDr + '\u0001' + (ae.dataset.item || '') : null) : null;
     const sel = fkey && 'selectionStart' in ae ? [ae.selectionStart, ae.selectionEnd] : null;
     try { root.innerHTML = viewHTML(); } catch (e) { console.error(e); root.innerHTML = header('Psyflo') + `<div class="body"><pre style="white-space:pre-wrap;color:var(--danger-fg)">${esc(e.stack || e)}</pre></div>`; }
     // an accordion keeps the state the person gave it across a repaint (the live state pushes one every few seconds)
@@ -258,8 +259,15 @@ export function draw() {
     if (v && v.after) { try { v.after(root, ctx); } catch (e) { console.error(e); } }
     root.scrollTop = y; if (se) se.scrollTop = wy;
     if (fkey) {
-      const q = fkey[0] === '#' ? '#' + CSS.escape(fkey.slice(1)) : fkey[0] === 'L' ? `[aria-label="${CSS.escape(fkey.slice(1))}"]` : fkey[0] === 'I' ? `[data-in="${CSS.escape(fkey.slice(1))}"]` : fkey[0] === 'C' ? `[data-ch="${CSS.escape(fkey.slice(1))}"]` : `[data-ui-draft="${CSS.escape(fkey.slice(1))}"]`;
-      const el = root.querySelector(q); if (el) { el.focus({ preventScroll: true }); if (sel) try { el.setSelectionRange(...sel); } catch (e) { } }
+      let el = null;
+      if (fkey[0] === 'A' || fkey[0] === 'R') {
+        const [a, t] = fkey.slice(1).split('\u0001');
+        el = [...root.querySelectorAll(fkey[0] === 'A' ? `[data-act="${CSS.escape(a)}"]` : `[data-ui-dr="${CSS.escape(a)}"]`)].find(e => (fkey[0] === 'A' ? tag(e) : (e.dataset.item || '')) === t && !e.disabled) || null;
+      } else {
+        const q = fkey[0] === '#' ? '#' + CSS.escape(fkey.slice(1)) : fkey[0] === 'L' ? `[aria-label="${CSS.escape(fkey.slice(1))}"]` : fkey[0] === 'I' ? `[data-in="${CSS.escape(fkey.slice(1))}"]` : fkey[0] === 'C' ? `[data-ch="${CSS.escape(fkey.slice(1))}"]` : `[data-ui-draft="${CSS.escape(fkey.slice(1))}"]`;
+        el = root.querySelector(q);
+      }
+      if (el) { el.focus({ preventScroll: true }); if (sel) try { el.setSelectionRange(...sel); } catch (e) { } }
     }
   });
 }

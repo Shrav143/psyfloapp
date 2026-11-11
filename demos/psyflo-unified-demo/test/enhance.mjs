@@ -35,7 +35,7 @@ await T.test('counts are computed from rows and open their rows; the "61 notes" 
   assert.ok(idx.boilerplate.length >= 1, 'repeated wording is found');
   const cs = buildContinuedStay(S0, 'MR', { from: a.start, to: S0.today }, { household: false, request: S0.requests.find(r => r.id === 'R-0411') });
   assert.match(cs.boxes.find(b => b.label === 'Progress toward goals').value, /^40 daily notes stored/);
-  assert.ok(!cs.boxes.some(b => /Household/.test(b.label)), 'household context is not included by default');
+  assert.ok(!cs.boxes.some(b => /Household/.test(b.value)), 'household context is not included by default');
   assert.eq(cs.household, 'not_included');
 });
 
@@ -59,10 +59,10 @@ await T.test('evidence.mark keeps who and when, needs a reason to exclude, never
   assert.ok((await state('jperez')).evidence_marks.find(x => x.ref === wk.id).history.length >= 2, 'history kept');
   await api('evidence.mark', { client: 'MR', ref: wk.id, sensitive: true }, 'jperez');
   const s2 = await state('jperez'); const cs = buildContinuedStay(s2, 'MR', { from: '2026-08-18', to: s2.today }, { household: true });
-  assert.eq(cs.counts.sensitive, 1, 'counted'); assert.ok(!cs.boxes.some(b => /Household/.test(b.label)), 'a sensitive row is counted, never quoted');
+  assert.eq(cs.counts.sensitive, 1, 'counted'); assert.ok(!cs.boxes.some(b => /Household/.test(b.value)), 'a sensitive row is counted, never quoted');
   await api('evidence.mark', { client: 'MR', ref: wk.id, sensitive: false }, 'jperez');
   const s3 = await state('jperez'); const cs2 = buildContinuedStay(s3, 'MR', { from: '2026-08-18', to: s3.today }, { household: true });
-  assert.ok(cs2.boxes.some(b => /Household context \(included by you\)/.test(b.label)), 'only when a person includes it, and only from a stored note that says it');
+  assert.ok(cs2.boxes.some(b => /^Household context \(included by you\): Grandmother reported a change in the household/.test(b.value)), 'only when a person includes it, and only from a stored note that says it');
 });
 await T.test('evidence.period is checked and kept per person', async () => {
   await assert.refused(tryApi('evidence.period', { client: 'MR', from: '2026-10-29', to: '2026-10-01' }, 'jperez'), /starts after/, 422);
@@ -190,6 +190,24 @@ try {
     assert.match(txt, /"observed" is in the note/); assert.match(txt, /What did you do with J\.T\.\?/i);
     await p.locator('#psyflo-slot').screenshot({ path: SHOTS + '/enhance-modeA.png' }).catch(() => { });
     assert.ok(await panel().getByRole('button', { name: 'Approve and fill' }).isDisabled(), 'approve waits for every decision');
+  });
+  await T.test('S4 in the panel: the request is built from real rows; missing evidence cannot be accepted; household stays out; Approve and fill types the counts', async () => {
+    await reset('canvas');
+    await p.goto(`${LAURIS}/login?as=jperez&next=${encodeURIComponent('/consumers/3310/session/sra-continued')}`); await p.waitForTimeout(1800);
+    await panel().getByRole('button', { name: /Review \d statements/ }).click();
+    await panel().locator('.ui-dr__item.px-open').getByText(/Evidence missing/).first().waitFor();
+    assert.ok(await panel().locator('.ui-dr__item.px-open').getByRole('button', { name: 'Accept' }).count() === 0, 'a box with no stored evidence has no Accept');
+    await panel().locator('.ui-dr__item.px-open').getByRole('button', { name: 'Reject' }).click();
+    await panel().getByRole('button', { name: /Accept the \d+ with sources/ }).click();
+    await panel().getByRole('button', { name: 'Approve and fill' }).click();
+    await panel().getByText(/boxes? typed into the form/).first().waitFor({ timeout: 20000 });
+    const v = await p.evaluate(() => Object.fromEntries([...document.querySelectorAll('#lauris-form label[for]')].map(l => [l.textContent, document.getElementById(l.htmlFor).value])));
+    const idx = evidenceIndex(await state('jperez'), 'MR', { from: '2026-09-29', to: '2026-10-29' });
+    assert.match(v['Progress toward goals'], new RegExp('^' + idx.counts.daily + ' daily notes stored for this period'));
+    assert.match(v['Family involvement'], new RegExp('^' + idx.counts.weekly + ' weekly guardian calls in the period'));
+    assert.eq(v['Request'], '', 'the unevidenced box was rejected, not typed'); assert.eq(v['Continued need / risk'], '', 'left for the clinician (household not included)');
+    assert.noMatch(Object.values(v).join(' '), /household/i, 'household context stays out until a person includes it');
+    await p.locator('#psyflo-slot').screenshot({ path: SHOTS + '/continued-stay-filled.png' }).catch(() => { });
   });
   await T.test('wrong patient: a page whose initials disagree with the Harvest # is a hard stop (identity card, Change student, nothing offered)', async () => {
     await reset('live');
