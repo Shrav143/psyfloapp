@@ -64,10 +64,10 @@ async function run(mode) {
       assert.eq(s.notes.filter(n => n.client === 'MR' && n.type === 'daily').length, L.first.mrDaily, 'no note exists before Process Form');
       await shot(lp, `s1-${mode}-3-lauris`);
     });
-    await F.step('4 review wording and sources in the panel: the staffer\'s words, the drafted narrative ("Nothing was added"), the questions for what was not said, 3 of 5 checks', async () => {
+    await F.step('4 review wording and sources in the panel: the staffer\'s words, the drafted narrative ("Nothing was added"), the questions for what was not said, 2 of 5 checks (how long is not said)', async () => {
       const t = (await panelFrame(lp).locator('#panel').innerText()).replace(/\s+/g, ' ');
       assert.match(t, /SAID INTO THE PHONE/i); assert.match(t, new RegExp('“' + SAID.slice(0, 30), 'i')); assert.match(t, /Nothing was added/); assert.match(t, /Which ISP objective did this address\?/); assert.match(t, /What did you do/);
-      assert.match(t, /3 of 5 pass/); assert.match(t, /Daily notes today \(K\. Hale\): 4 of 6/);
+      assert.match(t, /2 of 5 pass/); assert.match(t, /Daily notes today \(K\. Hale\): 4 of 6/);
       assert.ok(!/basketball.{0,80}(minutes|recess|5 minutes)/i.test(t.replace(SAID, '')), 'no invented time or event');
     });
     await F.step('5 the person types the direct time and the units in Lauris, then Process Form (a person\'s click): the note, the units, the dictation, 3+ audit events, in BOTH stores', async () => {

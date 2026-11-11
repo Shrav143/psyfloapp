@@ -1,5 +1,5 @@
 {
- "runId": "2026-11-11T20-12-52Z",
+ "runId": "2026-11-11T20-15-02Z",
  "commit": "4b84709",
  "release": false,
  "releaseReady": false,
@@ -7,180 +7,175 @@
   "node": "v22.22.0",
   "time": "15:30",
   "preset": "live",
-  "workers": 1,
+  "workers": 2,
   "repeat": 1,
   "basePort": 5520
  },
  "summary": {
-  "pass": 2,
+  "pass": 3,
   "fail": 1,
   "skip": 0,
   "notRunnable": 0,
   "knownFail": 0,
   "flaky": 0,
-  "durationMs": 112484,
+  "durationMs": 144757,
   "tests": {
-   "pass": 38,
+   "pass": 138,
    "fail": 1,
    "skip": 0
   }
  },
  "suites": [
   {
-   "name": "dashboard",
-   "tags": [],
+   "name": "roles",
+   "tags": [
+    "safety"
+   ],
    "instance": 0,
    "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 22985,
+   "status": "FAIL",
+   "exit": 1,
+   "durationMs": 13728,
    "counts": {
-    "pass": 14,
-    "fail": 0,
+    "pass": 23,
+    "fail": 1,
     "skip": 0
    },
    "tests": [
     {
      "status": "PASS",
-     "title": "fail closed: no actor, no patients; a portal actor has none either",
+     "title": "matrix: every documented capability, every role",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "scope by role: direct support own caseload, supervisor the staff they manage, clinician and administrator everyone",
+     "title": "admin has no clinical-record access; notes.view is never granted by a designation",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "units: the flag is the rules-table threshold (75% used) and nothing else; 0 left is out",
+     "title": "can(): A needs the caseload, D needs the designation, unknown role/capability/user fail closed",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "filters: attention chips, search by Lauris number, units flagged, staff, due overdue; counts match the rows",
+     "title": "routes: every registry route has a capability entry; each role opens exactly what the matrix allows",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "sorting: default is attention (red first); patient, units and staff sorts are stable and reversible",
+     "title": "every action has a capability entry (and nothing is declared for an action that does not exist)",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "direct support: one h1, no paragraphs, only own patients, items under the patient with a verb, units bar with the flag, no console errors",
+     "title": "anonymous: /api/state, /api/do (admin and plain actions), /files and the roster",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "expand and collapse: per-row chevron, Expand all / Collapse all, the choice lands in the address",
+     "title": "no screening transcript reaches an unauthenticated caller: /api/state is 401, the roster is empty, the scripted call needs a session",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "supervisor: roster for their staff, Staff filter, chips filter the table, search by Lauris number, a patient opens the chart",
+     "title": "a made-up or tampered token is the same as no token",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "filter state survives a reload and Clear filters resets it; an empty result says so with a way out",
+     "title": "action sweep: every action x every staff role gets 401/403 exactly when the matrix says no",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "clinician: all patients, Responsible column, authorization chip with the unit bar, sort by Patient, items open their screen",
+     "title": "presenter controls need presenter mode, not only a role",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "administrator: statuses and dates only, no write or review verbs, no note text, items open the chart when the role cannot open the target",
+     "title": "user.update: a role change is presenter-only; designations go through two people",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "two-person confirmations: after the administrator proposes a designation the clinician sees the strip with a Review button; the proposer does not, and no strip when nothing waits",
+     "title": "projection: direct support sees only their caseload; no screenings, drafts, versions, fills, other staff notes",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "phone width: no horizontal scroll, patients become cards, buttons are 44 px",
+     "title": "projection: admin sees unit balances and authorization status but no clinical text",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "the old My Work, Do next and Staff dashboard routes land on the Dashboard; the review sections land on Documentation",
+     "title": "projection: supervisor sees status and their reviewees' notes; clinician sees clinical text",
      "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "a role switch changes what the API returns (same server, different token)",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "service line: outpatient (P.G., R-0377) never appears in the staff state",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "portal sessions: a guardian sees one child; a school user sees their own school; neither can use staff actions",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "files need a session and the right role",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "cross-origin: JSON only and an origin allow-list on state-changing calls",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "presenter PIN and DEMO_PRESENTER are honoured by sign-in",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "a plain sign-in is never a presenter; the public roster says whether presenter mode exists and needs a PIN, and never carries the PIN",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "createSession: PIN required when PRESENTER_PIN is set (wrong or missing is 403 with pin flag), the right PIN elevates, DEMO_PRESENTER=0 never does",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "regression (URA-05/06/10): writing localStorage.psyflo_user, or reloading, never turns a role session into another person or a presenter",
+     "note": ""
+    },
+    {
+     "status": "FAIL",
+     "title": "with PRESENTER_PIN set: the server and the dock ask for the PIN, a wrong PIN is refused, the right PIN unlocks the presenter tools (own server)",
+     "note": "the unlock button goes once unlocked expected 0 but got 1"
     }
    ],
-   "runId": "2026-11-11T20-12-52Z"
-  },
-  {
-   "name": "patient",
-   "tags": [],
-   "instance": 0,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 14959,
-   "counts": {
-    "pass": 8,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "selector fails closed: no actor, a portal actor, an unknown id, and a patient outside the role's scope all return null",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the chart holds documentation with or without an authorization: T.W. has forms and no authorization; M.R. has both",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "clinician: header, Documentation tab with open items first, Open / All and Notes / Forms filters, sample-data chip on forms, tab to Authorization",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "a patient with no authorization says so in one line; the chart still shows intake, CNA and plan",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "supervisor: Review buttons for notes waiting on them go to the Documentation queue with the note; no write verbs",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "direct support: Write note on what is behind, own patient only; another person's patient is denied and shows nothing of theirs",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "administrator: statuses only, Open case allowed, no Review or Write buttons",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "phone width: the chart has no horizontal scroll and the documentation rows stack with 44 px buttons",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-11T20-12-52Z"
+   "runId": "2026-11-11T20-15-02Z"
   },
   {
    "name": "settings",
    "tags": [],
    "instance": 0,
    "attempt": 1,
-   "status": "FAIL",
-   "exit": 1,
-   "durationMs": 74236,
+   "status": "PASS",
+   "exit": 0,
+   "durationMs": 68766,
    "counts": {
-    "pass": 16,
-    "fail": 1,
+    "pass": 17,
+    "fail": 0,
     "skip": 0
    },
    "tests": [
@@ -265,12 +260,540 @@
      "note": ""
     },
     {
-     "status": "FAIL",
+     "status": "PASS",
      "title": "Login: four role cards, the family and school entries, no password, no demo chrome; signing in lands on the role's home; works at 390",
-     "note": "page.waitForFunction: Timeout 8000ms exceeded."
+     "note": ""
     }
    ],
-   "runId": "2026-11-11T20-12-52Z"
+   "runId": "2026-11-11T20-15-02Z"
+  },
+  {
+   "name": "routes",
+   "tags": [
+    "ui"
+   ],
+   "instance": 1,
+   "attempt": 1,
+   "status": "PASS",
+   "exit": 0,
+   "durationMs": 120501,
+   "counts": {
+    "pass": 61,
+    "fail": 0,
+    "skip": 0
+   },
+   "tests": [
+    {
+     "status": "PASS",
+     "title": "registry keeps every historic route id and pre-registers the new routes",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "redirect table matches review/04-architecture.md E1 and 03-ux-audit.md e",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "referrals are never redirected away; AppealLetter and every portal route stay put",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "every redirect has a flag, a registered target and no cycle; every flag is used",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "with every flag on, every historic deep link still resolves to a registered route (no dead ids)",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "legacyFor maps a not-yet-live new route back to the old screen that does the job",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/Submission?id=R-0399 as jperez renders Submission with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/PeerBrief?id=R-0388 as jperez renders PeerBrief with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/Eligibility?referral=REF-118 as jperez renders Eligibility with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/Referral?id=REF-118 as jperez renders Referral with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/Partials?id=R-0402 as jperez renders Partials with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/Partials as jperez renders Partials with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/InfoRequest?id=R-0408 as jperez renders InfoRequest with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/EarlyDischarge?id=R-0402 as jperez renders EarlyDischarge with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/ExtSignOff?request=R-0416 as jperez renders ExtSignOff with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/ExtScreening?referral=REF-118 as jperez renders ExtScreening with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/ExtDPN?client=MR as jperez renders ExtDPN with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/ExtSRA?client=TW as jperez renders ExtSRA with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/ExtCase?client=MR as jperez renders ExtCase with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/ExtWeekly?client=MR as jperez renders ExtWeekly with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/ExtMonthly?client=MR as jperez renders ExtMonthly with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/Referrals?f=new as jperez renders Referrals with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/Authorizations?id=R-0416 as jperez renders Authorizations with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/Authorizations as jperez renders Authorizations with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/StaffDashboard?v=sup as cdiaz renders StaffDashboard with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/StaffDashboard?v=me as khale renders StaffDashboard with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/ReviewQueue as cdiaz renders ReviewQueue with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/DoNext as jperez renders DoNext with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/Users as dowens renders Users with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/PayerPlaybook as jperez renders PayerPlaybook with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/Analytics as jperez renders Analytics with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/MobileAssess?client=AG as khale renders MobileAssess with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/MobileApp as khale renders MobileApp with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/MobileDictate as khale renders MobileDictate with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/ReferralSent renders ReferralSent with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/ReferralForm renders ReferralForm with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/SchoolPortal renders SchoolPortal with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/AppealLetter?id=R-0384 renders AppealLetter with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/ParentPortal?c=TW renders ParentPortal with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/FamilyLink?preview=1 renders FamilyLink with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/WhereThingsLive renders WhereThingsLive with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/MyWork?section=review as jperez renders MyWork with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/Dashboard as jperez renders Dashboard with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/Documentation?status=pending_review as jperez renders Documentation with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/Documentation?view=staff as cdiaz renders Documentation with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/Patient?id=MR as jperez renders Patient with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/Dashboard as khale renders Dashboard with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/Authorization?id=R-0416&section=submission as jperez renders Authorization with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/DenialIntelligence?decision=partial as jperez renders DenialIntelligence with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/DenialCase?id=R-0402&section=action&action=options as jperez renders DenialCase with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/Settings?tab=people as dowens renders Settings with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/Analytics?section=payer&dataset=illustrative as jperez renders Analytics with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "a LIVE route never renders a stub: every route flagged live in redirects-live.js is a built screen",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "a redirect that is live points at a live route (no redirect may lead to a stub)",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "every stub renders the marker, an h1, a one-line body and a way back to the old screen",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "rail: every item of every role opens a built screen (never a stub)",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "hrefFor and route() apply the redirect table before the registry check (flag flipped in the page)",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "WhereThingsLive redirect opens the presenter drawer (flag flipped in the page); the page stays reachable with ?full=1",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "unknown route id shows \"Page not found\" inside the shell (never a blank page or a wrong screen)",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "route access follows the permission table: a clinician cannot open Users, a supervisor cannot open Authorizations' denial queue",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "one h1 on every route this foundation owns; routes with none get a hidden h1 from the shell",
+     "note": ""
+    }
+   ],
+   "runId": "2026-11-11T20-15-02Z"
+  },
+  {
+   "name": "ui-kit",
+   "tags": [
+    "ui"
+   ],
+   "instance": 0,
+   "attempt": 1,
+   "status": "PASS",
+   "exit": 0,
+   "durationMs": 61959,
+   "counts": {
+    "pass": 37,
+    "fail": 0,
+    "skip": 0
+   },
+   "tests": [
+    {
+     "status": "PASS",
+     "title": "token pairs: every text pair 4.5:1, every UI pair 3:1 (computed in the page from tokens.css)",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "type floor and brand: DM Sans, paper background, 12 px smallest kit size, teal primary",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "status vocabulary: every stage and dispute status resolves; chips carry text and an icon (never colour alone)",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "maturity chips: Working is hidden until the presenter overlay is on; Simulated, Pilot and Future always show",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "modal: role=dialog, aria-labelledby, focus trap both ways, Escape, scrim click, focus return",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "drawer: same contract as the modal",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "popover: Escape closes it and focus returns to the control",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "confirm resolves true on Confirm and false on Cancel; the toast has role=status (alert for errors)",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "the old modal(html, onMount) helper is now an accessible dialog (screens keep working)",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "filter chips: aria-pressed, state in the URL query, survives a reload, Clear",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "search keeps focus while typing and filters rows",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "queue table: aria-sort, sort toggles, real links, ArrowDown moves between rows, Enter opens",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "queue table: sticky header, empty, loading and error states",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "evidence chip opens a popover with the quote and closes on Escape",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "timeline: an event opens a drawer with What, When, Who, Document, Source, Next action",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "draft review: edit text survives repaints; no bulk accept; Restore previous appears after a save",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "a store change (SSE) while someone is typing does not wipe the field; the repaint waits for blur",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "skip link is the first tab stop and moves focus to the main landmark",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "landmarks: <html lang>, a labelled nav, exactly one main, real links in the rail",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "focus moves to main on a route change and the route is announced",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "the old demo bar is gone from the product viewport",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "rail: light sand, 232 px wide, collapses to icons at 1024; counts only where meaningful",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "rail by role follows the permission table (supervisor, clinician, admin, direct support)",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "dock: hidden by default in Presentation, Ctrl+Shift+P toggles, label PRESENTER, mode always visible, above the viewport",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "dock: ?present=1 opens it; ?mode=explore docks it open (no hide control) and is stored in psyflo_mode",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "dock: role switcher changes the signed-in role without a page reload",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "dock: scenario selector calls demo.scenario, signs in as the scenario role and opens its route",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "dock: simulation controls (receive a reply, advance a day) live in the dock",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "dock: notes drawer \"How the data gets in\" with maturity chips, focus returns to Notes",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "dock: All screens picker is role-aware and searchable",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "UiKit is presenter-only: without the dock it says so; with ?present=1 it shows the gallery",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "prefers-reduced-motion: overlay animation is switched off",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "no console errors on the gallery, the stubs and the shell routes",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "rail foot stays reachable at 1024 px: Sign out and Help as named controls, \"Demo data · nothing is real\" visible",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "rail foot stays reachable at 700 px: Sign out and Help as named controls, \"Demo data · nothing is real\" visible",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "the wordmark on the light rail is the full-colour logo (navy, teal, marigold), not the reverse one",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "framed Lauris routes: a slim top bar with \"Back to Psyflo\", the route title as the h1 and no developer text",
+     "note": ""
+    }
+   ],
+   "runId": "2026-11-11T20-15-02Z"
   }
  ],
  "manual": [

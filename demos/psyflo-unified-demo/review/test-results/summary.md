@@ -1,18 +1,19 @@
-# Test results · 2026-11-11T20-12-52Z
+# Test results · 2026-11-11T20-15-02Z
 
-2 suites pass · 1 fail · 0 known-fail · 0 skipped · 0 not runnable · tests: 38 pass, 1 fail, 0 skip · 112 s
+3 suites pass · 1 fail · 0 known-fail · 0 skipped · 0 not runnable · tests: 138 pass, 1 fail, 0 skip · 145 s
 
-Commit 4b84709 · node v22.22.0 · demo time 15:30 · workers 1 · base port 5520
+Commit 4b84709 · node v22.22.0 · demo time 15:30 · workers 2 · base port 5520
 
 | Suite | Status | Pass | Fail | Skip | Seconds |
 |---|---|---|---|---|---|
-| [dashboard](dashboard.md) | PASS | 14 | 0 | 0 | 23.0 |
-| [patient](patient.md) | PASS | 8 | 0 | 0 | 15.0 |
-| [settings](settings.md) | FAIL | 16 | 1 | 0 | 74.2 |
+| [roles](roles.md) | FAIL | 23 | 1 | 0 | 13.7 |
+| [settings](settings.md) | PASS | 17 | 0 | 0 | 68.8 |
+| [routes](routes.md) | PASS | 61 | 0 | 0 | 120.5 |
+| [ui-kit](ui-kit.md) | PASS | 37 | 0 | 0 | 62.0 |
 
 ## Failures
 
-- **settings** · Login: four role cards, the family and school entries, no password, no demo chrome; signing in lands on the role's home; works at 390 — page.waitForFunction: Timeout 8000ms exceeded.
+- **roles** · with PRESENTER_PIN set: the server and the dock ask for the PIN, a wrong PIN is refused, the right PIN unlocks the presenter tools (own server) — the unlock button goes once unlocked expected 0 but got 1
 
 ## Manual checklist (not automatable)
 

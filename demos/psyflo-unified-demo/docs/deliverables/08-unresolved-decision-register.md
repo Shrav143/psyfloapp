@@ -45,6 +45,10 @@ Every row is open: no answer has been received from Harvest, DMAS, a payer or co
 | UD-033 | Who may see clinical text | Harvest director; compliance counsel | regulatory | Administrator sees no clinical text; no grant path built | Settings, Roles |
 | UD-034 | Mobile capture and extension deployment | Harvest director; engineering | technical | Mobile Simulated; browser speech; no locked-screen promise | MobileApp, MobileDictate |
 | UD-035 | Pilot measure baselines, targets and owners | Harvest director; clinical lead; PsyFlo product | operational | Counts and definitions; no targets | Analytics, Pilot scorecard |
+| UD-036 | Who may use Scan & Enhance (Nov 11 feedback: "include the Scribe and note Scan & Enhance for licensing") | Harvest director; clinical lead | operational | Scribe: direct support (own caseload) and clinicians. Scan & Enhance: clinicians; a supervisor only when designated; direct support not | Settings, Roles; Lauris panel |
+| UD-037 | Where intake, CNA, treatment plan and quarterly status come from | engineering; Harvest director | technical | `documents` seed, labelled sample data; notes come from the extension's Process Form report | Documentation; Patient chart |
+| UD-038 | The unit warning threshold | site supervisors; Harvest director | operational | `units.warn_used_pct` = 75, Unverified demo assumption, editable in Settings | Unit bar on Dashboard, Authorizations, Patient chart |
+| UD-039 | Dashboard scope for a site supervisor | Harvest director; site supervisors | operational | The staff they manage plus unassigned patients at their sites; Authorizations stays organisation-wide | Dashboard; Authorizations |
 
 ## Decisions
 
@@ -292,6 +296,34 @@ Every row is open: no answer has been received from Harvest, DMAS, a payer or co
 - **Evidence.** No numeric target comes from Harvest; hypothetical figures such as 97 percent were never data (G-104); no baseline exists (T-009). Harvest's top measure is notes completed in compliance (P-136).
 - **Demo meanwhile.** The scorecard shows counts, definitions and limits; no targets; baseline is pilot day 0.
 - **Impact.** Targets, owners and a two-week baseline are needed before the first review.
+
+### UD-036 · Who may use Scan & Enhance
+
+- **Why it matters.** Enhancing a note is the reviewer's job and changes what goes into the record. Giving it to the wrong role changes who is accountable for the wording.
+- **Evidence.** Nov 11 direct support feedback: keep the Scribe and the note Scan & Enhance "for licensing". The site supervisor feedback the same day says the supervisor is the person who enhances and checks the notes. Earlier decisions: enhancement is human-initiated and read-only on history.
+- **Demo meanwhile.** Scribe: direct support on their own caseload and clinicians. Scan & Enhance: clinicians; a supervisor when an administrator designates them (two-person confirmation); direct support no. One row in the permission matrix (`scanEnhance`).
+- **Impact.** If direct support should also enhance their own notes, change the direct-support cell to own caseload; the supervisor's review stays as the check.
+
+### UD-037 · Where intake, CNA, treatment plan and quarterly status come from
+
+- **Why it matters.** The supervisor's Documentation tab is only as good as its source. Notes are measured from what the extension reports at Process Form; the other forms have no export.
+- **Evidence.** No Harvest export of the intake tracker; Lauris is the system of record for the forms.
+- **Demo meanwhile.** Status and due dates for intake, CNA, treatment plan, quarterly report and discharge summary come from a small illustrative table, labelled sample data wherever they show.
+- **Impact.** The pilot reads form status from Lauris (page observation, as units are read). Until then the Forms rows are a design, not a measurement.
+
+### UD-038 · The unit warning threshold
+
+- **Why it matters.** It decides when the yellow flag appears on a unit bar and so when staff start renewals.
+- **Evidence.** Site supervisor feedback, Nov 11: flag when about 75% of the units are used.
+- **Demo meanwhile.** `units.warn_used_pct` = 75, a display threshold only; red at zero left. Editable in Settings, Rules.
+- **Impact.** The renewal lead time (`continued_stay.lead_business_days`) is a separate rule and still drives "Reauth due".
+
+### UD-039 · Dashboard scope for a site supervisor
+
+- **Why it matters.** A supervisor who sees only the staff they manage may miss an unassigned patient; one who sees every site sees patients they do not answer for.
+- **Evidence.** Supervisor feedback asks for the roster they are responsible for.
+- **Demo meanwhile.** The staff they manage (reviewer or shared site) plus unassigned patients at their sites. Authorizations stays organisation-wide for supervisors, as before.
+- **Impact.** One function (`clientsInScope`) changes if Harvest assigns supervisors to patients directly.
 
 ## Rule coverage
 
