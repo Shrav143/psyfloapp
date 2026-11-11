@@ -74,6 +74,7 @@ export default {
       c.lauris_no = Number(a.consumer.no); this.event(`Consumer created in Lauris by a person · Harvest # ${a.consumer.no} (seen by the extension)`, who, c.referral || c.id, asBridge);
       return done();
     }
+    if (a.event === 'saved' && a.form === 'time') { this.event(`Lauris Time Tracker: time saved in Lauris by a person · ${a.consumer?.initials || ''} (seen by the extension; not turned into units)`.replace(' ·  (', ' ('), who, rec, asBridge); return done(); }
     if (a.event === 'saved') { this.event(`${FORM_NAME[a.form] || a.form} saved in Lauris (not processed)`, who, rec, asBridge); return done(); }
     if (a.event === 'rejected') { this.event(`${FORM_NAME[a.form] || a.form} rejected in Lauris Forms to Approve`, who, rec, asBridge); return done(); }
 
