@@ -16,7 +16,7 @@
 // The Lauris panel (an iframe) keeps its own session in sessionStorage: the panel signs in as the Lauris user on the open page.
 const listeners = new Set();
 const KEY = 'psyflo_session';
-const framed = (() => { try { return window.top !== window; } catch { return true; } })();
+const framed = window.__HOSTED__ ? !window.__VROOT : (() => { try { return window.top !== window; } catch { return true; } })();   // hosted preview: only its srcdoc frames (the panel) count as framed
 const box = () => { try { return framed ? sessionStorage : localStorage; } catch { return null; } };
 const load = () => { try { return JSON.parse(box().getItem(KEY) || 'null'); } catch { return null; } };
 const save = rec => { try { rec ? box().setItem(KEY, JSON.stringify(rec)) : box().removeItem(KEY); } catch { } };

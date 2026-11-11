@@ -87,7 +87,7 @@ export function identityStop() {
   const m = S().clients.find(x => no && (x.lauris_no === no || x.harvest_no === no));
   return m && c.initials && String(c.initials).replace(/\s/g, '') !== m.initials.replace(/\s/g, '') ? m : null;
 }
-export const appURL = path => location.origin + '/' + path;
+export const appURL = path => (window.__vapp || location.origin) + '/' + path;   // hosted preview: the panel is a srcdoc frame; the page's virtual app origin
 const roleLabel = r => M.ROLE_LABEL[r] || 'Not signed in';
 // can() for the signed-in person; an 'A' grant is scoped to the person's caseload (the projection already holds only that caseload)
 export function canDo(cap, scope) {

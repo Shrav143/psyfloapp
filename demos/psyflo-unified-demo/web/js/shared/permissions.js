@@ -42,7 +42,7 @@ const ROWS = [
   ['myWork',             'Y','Y','Y','Y','N','N', 'My Work home (sections are gated by the caps above)'],
   ['denials',            'N','N','Y','Y','N','N', 'Denial queue and case (admin sees status without clinical text)'],
   ['authorizations',     'N','Y','Y','Y','N','N', 'Authorization queue, case shell, unit tracker (no evidence text for supervisor/admin)'],
-  ['scanEnhance',        'A','N','Y','N','N','N', 'Scan & Enhance, mode A (current draft)'],
+  ['scanEnhance',        'N','D','Y','N','N','N', 'Scan & Enhance, mode A (current draft)'],
   ['trackTime',          'A','N','Y','N','N','N', 'Track time and timer'],
   ['ext.use',            'Y','Y','Y','N','N','N', 'Lauris page panel (extension)'],
   ['notes.billing',      'N','N','Y','Y','N','N', 'Units, time rules view (no clinical text)'],

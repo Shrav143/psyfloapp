@@ -37,9 +37,11 @@ export class ExtComposite extends DCLogic {
 .xbar a{color:#15605E;font-weight:600}.xbar .u{flex:1;min-width:200px;background:#fff;border:1px solid #D9D4CC;border-radius:999px;padding:5px 12px;font-size:12px;color:#5A544B;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .xframe{display:block;width:100%;flex:1 1 auto;min-height:0;height:auto;border:0;background:#F2F3F5}`; }
   prepare() {
+    const H = window.__HOSTED__;   // hosted preview: the frame is filled by the virtual network (after()), not loaded from a URL
     return `<div class="xbar"><span class="u">{{direct}}</span><span>{{what}}</span><a href="{{direct}}" target="_blank" rel="noopener">Open in its own tab ↗</a><span style="color:#5A544B">Mock Lauris with the Psyflo panel beside it (in-page fallback at 400px; same panel as the extension)</span></div>
-<iframe class="xframe" title="Mock Lauris with the Psyflo panel" src="{{url}}" allow="microphone"></iframe>`;
+<iframe class="xframe" title="Mock Lauris with the Psyflo panel" ${H ? 'data-src' : 'src'}="{{url}}"${H ? '' : ' allow="microphone"'}></iframe>`;
   }
+  after(root) { const f = window.__HOSTED__ && window.__vnet && root.querySelector('iframe.xframe'); if (f && !f.dataset.mounted) { f.dataset.mounted = '1'; window.__vnet.mountFrame(f, f.dataset.src); } }
   renderVals() { if (!this._t) this._t = laurisHref(this.meta?.id || 'ExtHome', this.params); return this._t; }
   onStore() { /* keep the frame; the panel inside updates itself */ }
 }

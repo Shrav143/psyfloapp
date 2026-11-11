@@ -38,12 +38,12 @@ register('EarlyDischarge', class extends Screen {
       { date: fmtDate(p.reminder), step: 'Reminder: discharge summary and new CNA scheduled', who: 'Psyflo → ' + who, status: st[0], cls: st[1] },
       { date: fmtDate(p.discharge), step: 'Discharge in Lauris · summary pre-filled from notes', who, status: st[0], cls: st[1] },
       { date: fmtDate(p.intake), step: 'New intake · CNA · ISP · initial SRA drafted the same day', who: who + ' · guardian', status: st[0], cls: st[1] },
-      { date: fmtDate(p.send), step: `Send to ${pf} · 7-day clock`, who, status: st[0], cls: st[1] }
+      { date: fmtDate(p.send), step: `Send to ${pf}`, who, status: st[0], cls: st[1] }
     ];
     const dDow = dow(p.discharge);
     const kpis = [
       { l: 'Units run out', v: fmtDate(p.runout), s: p.exhausted ? `${p.units} units · from the units log` : `${p.units} at 3 per school day from ${fmtDate(p.start)}` },
-      { l: 'Earliest new initial', v: fmtDate(p.earliest), s: `30 days after ${fmtDate(p.accepted)} · DMAS rule` },
+      { l: 'Earliest new initial', v: fmtDate(p.earliest), s: `30 days after ${fmtDate(p.accepted)} · Harvest-reported, unverified` },
       { l: 'Discharge date', v: fmtDate(p.discharge), s: p.discharge === p.runout ? 'the day units end' : `${DAY[dDow] || dDow} before units end` },
       { l: 'New intake', v: fmtDate(p.intake), s: `${DAY[dow(p.intake)] || dow(p.intake)} · 2 h · guardian present` },
       { l: 'Gap in service', v: `${p.gap} day${p.gap === 1 ? '' : 's'}`, s: `new request filed ${fmtDate(p.send)} · decision by ${fmtDate(p.decision)}` }

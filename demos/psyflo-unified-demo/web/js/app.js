@@ -14,6 +14,7 @@ import { makeSim } from './ui/sim.js';
 import { visibleNav, activeItem } from './shared/nav.js';
 import { featuresFor, LEVEL_ORDER } from './shared/maturity.js';
 import { icon } from './ui/util.js';
+import { isHosted, setHash } from './shared/links.js';   // hosted preview (hosted/index.html): no-ops in the Node build
 
 const api = API.api;
 let PERM = null; // shared/permissions.js, loaded at boot (the server enforces the same table)
@@ -83,7 +84,7 @@ export { api, M, raw, esc, ui, overlay };
 
 // ---------- routing ----------
 function parseRoute() {
-  const p = location.pathname;
+  const p = isHosted() ? '' : location.pathname;   // hosted: the page can live at any path; routes are hashes
   let m;
   if ((m = p.match(/^\/f\/([\w-]+)/))) return { id: 'FamilyLink', params: { t: m[1] } };
   if ((m = p.match(/^\/parent\/([\w-]+)(?:\/(\w+))?/))) return { id: m[2] || 'ParentPortal', params: { ...Object.fromEntries(new URLSearchParams(location.search)), t: m[1] } };
@@ -107,8 +108,8 @@ export function hrefFor(target, params) {
 }
 export function go(target, params) {
   const h = hrefFor(target, params);
-  if (location.pathname !== '/' && location.pathname !== '/index.html') { location.href = '/' + h; return; }
-  if (location.hash === h) route(); else location.hash = h;
+  if (!isHosted() && location.pathname !== '/' && location.pathname !== '/index.html') { location.href = '/' + h; return; }
+  if (location.hash === h) route(); else setHash(h);
 }
 
 // ---------- toasts & modal (the old signatures, now on the overlay primitive) ----------
@@ -177,7 +178,7 @@ let mode = 'presentation', dockState = 'hidden', maturityOn = false;
 function initDockState() {
   const m = flag('mode'); mode = MODES[m] ? m : (MODES[ls.get(MODE_KEY)] ? ls.get(MODE_KEY) : 'presentation'); if (MODES[m]) ls.set(MODE_KEY, m);
   const p = flag('present') ?? flag('presenter');
-  dockState = ls.get(DOCK_KEY) === 'open' || ls.get(DOCK_KEY) === 'collapsed' ? ls.get(DOCK_KEY) : 'hidden';
+  dockState = ls.get(DOCK_KEY) === 'open' || ls.get(DOCK_KEY) === 'collapsed' ? ls.get(DOCK_KEY) : isHosted() ? 'collapsed' : 'hidden';   // hosted: the handle shows, so the presenter tools can be found
   if (p === '0') dockState = 'hidden'; else if (p != null && p !== '') dockState = 'open';
   if (mode === 'explore') dockState = 'open';
   if (innerWidth <= 700 && dockState === 'open') dockState = 'collapsed'; // phone widths: a 24 px handle until tapped
@@ -196,6 +197,7 @@ function renderDock(force) {
   if (force || html !== dockKey || el.dataset.state !== dockState) {
     const focusTag = el.contains(document.activeElement) ? document.activeElement.dataset.dock : null;
     dockKey = html; el.dataset.state = dockState; el.dataset.mode = mode; el.hidden = dockState === 'hidden'; el.innerHTML = html;
+    if (isHosted()) el.querySelector('.sh-dock__mode')?.insertAdjacentHTML('afterend', '<span class="sh-dock__hosted">Hosted preview · data resets on reload</span>');
     if (focusTag) el.querySelector(`[data-dock="${focusTag}"]`)?.focus({ preventScroll: true });
   }
   measureDock();
@@ -314,7 +316,7 @@ function openSurface(id) {
   if (id === 'platform') { const h = homeTarget(u ? u.role : 'clinician', innerWidth < 600); go(h.id, h.params); }
   else if (id === 'lauris') window.open(`${api.config.laurisURL}/login?as=${encodeURIComponent((u && u.id) || 'jperez')}`, '_blank', 'noopener');
   else if (id === 'phone') go('MobileApp');
-  else if (id === 'family') { const g = guardianLink(); if (g) location.href = g; else go('ParentPortal'); }
+  else if (id === 'family') { const g = guardianLink(); if (g && !isHosted()) location.href = g; else go('ParentPortal'); }
   else if (id === 'school') { session.setSchoolUser('rbell'); go('SchoolPortal'); }
 }
 // the presenter's simulation controls first make sure the session is a presenter session (a Login sign-in is not)
@@ -347,7 +349,7 @@ async function route() {
   const rr = resolveRoute(r, { role: u && u.role });
   if (rr !== r) {
     if (rr.presenter) { setTimeout(() => { if (dockState === 'hidden') setDock('open'); openArchitecture(); }, 0); r = { id: homeRouteForCurrent(u), params: {} }; }
-    else { r = { id: rr.id, params: rr.params }; if (location.pathname === '/' || location.pathname === '/index.html') history.replaceState(null, '', hashFor(r.id, r.params)); }
+    else { r = { id: rr.id, params: rr.params }; if (isHosted() || location.pathname === '/' || location.pathname === '/index.html') history.replaceState(null, '', hashFor(r.id, r.params)); }
   }
   const stage = document.getElementById('stage'); const root = document.getElementById('root');
   const meta = BY_ID[r.id];
@@ -356,7 +358,7 @@ async function route() {
   u = session.user;
   document.body.dataset.surface = meta ? (meta.id === 'Login' ? 'login' : meta.surface) : 'app';
   if (!meta) { notice(stage, 'status', 'Page not found', `There is no page called <b>${esc(r.id)}</b>.`, `<p><a class="ui-btn ui-btn--primary" href="#/">Go to your first screen</a></p>`); renderRail(true); return; }
-  if (meta.min > 0 && !u) { location.hash = '#/Login?next=' + encodeURIComponent(r.id); return; }
+  if (meta.min > 0 && !u) { setHash('#/Login?next=' + encodeURIComponent(r.id)); return; }
   renderDock();
   if (meta.presenter && dockState === 'hidden' && !(apiActor() || {}).presenter) {
     notice(stage, 'status', 'Presenter only', `This page is the presenter's component gallery. Press ${ui.kbd('Ctrl', 'Shift', 'P')} or open the page with <code>?present=1</code>.`, `<p><a class="ui-btn ui-btn--primary" href="#/">Go to your first screen</a></p>`);

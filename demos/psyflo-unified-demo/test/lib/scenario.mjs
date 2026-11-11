@@ -6,10 +6,10 @@
 //   fixture   demo.scenario {id: <fixture>}  the checkpoint a failed beat reloads
 //   fresh     demo.reset {preset} (+ the earlier beats' state built through the same actions and Lauris pages a person's clicks reach)
 // MODES=fresh,scenario node test/sN.mjs runs a subset while developing.
-import { suite, assert, api, tryApi, state, reset, playwright, login, errors, sleep, BASE, LAURIS, SHOTS } from './index.mjs';
+import { suite, assert, api, tryApi, state, reset, playwright, login, errors, sleep, session, bridge, lget, lpost, BASE, LAURIS, EXT, SHOTS } from './index.mjs';
 import * as V from '../../web/js/shared/analytics/view.js';
 
-export { suite, assert, api, tryApi, state, reset, playwright, login, errors, sleep, BASE, LAURIS, SHOTS };
+export { suite, assert, api, tryApi, state, reset, playwright, login, errors, sleep, session, bridge, lget, lpost, BASE, LAURIS, EXT, SHOTS };
 export const MODES = (process.env.MODES || 'scenario,fixture,fresh').split(',').map(x => x.trim()).filter(Boolean);
 export const dowens = 'dowens+p';
 

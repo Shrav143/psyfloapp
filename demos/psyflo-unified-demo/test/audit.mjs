@@ -11,9 +11,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { suite, assert, playwright, login, BASE, LAURIS, api, SHOTS } from './lib/index.mjs';
-import { Sweeper, installProbes, summarize, isFinding } from './lib/audit.mjs';
-import { SCREENS, BY_ID } from '../web/js/registry.js';
-import { routeAllowed } from '../web/js/shared/permissions.js';
+import { Sweeper, installProbes, summarize, isFinding, appRoutes } from './lib/audit.mjs';
 
 const T = suite('audit');
 const OUT = process.env.AUDIT_OUT || path.resolve(path.dirname(new URL(import.meta.url).pathname), '../review/qa');
@@ -26,39 +24,14 @@ const { chromium } = playwright();
 const browser = await chromium.launch();
 const resetServer = async id => { try { await api('demo.scenario', { id }, 'dowens+p'); } catch (e) { console.log('  (fixture ' + id + ' failed: ' + e.message + ')'); } };
 const READY = () => document.querySelector('#root main, #root h1, #root [role=main]') && !document.querySelector('#root .sh-loading');
-const qs = p => Object.entries(p).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&');
 const PERSON_ONLY = /^(process form|get signature|send)\b/i;       // person actions in Lauris: the panel must not offer or trigger them
 const results = [];
 
 // ------------------------------------------------------------------------------------------------ route inventory
-// Parameter variants (UI-KIT section 5 deep-link patterns). Variants a role cannot open are dropped by routeAllowed; redirect-only historic ids
-// (DoNext, Partials?id ...) land on these same screens and are covered by test/routes.mjs.
-const REDIRECT_ONLY = new Set(['DoNext', 'ReviewQueue', 'StaffDashboard', 'Users', 'Submission', 'EarlyDischarge', 'InfoRequest', 'Partials', 'PeerBrief', 'PayerPlaybook', 'Eligibility', 'WhereThingsLive', 'UiKit', 'Login']);
-const VARIANTS = {
-  MyWork: { direct_support: [{ section: 'day' }], supervisor: [{ section: 'review' }, { section: 'team' }, { section: 'day' }], clinician: [{ section: 'todo' }, { section: 'review' }, { section: 'team' }, { section: 'referrals' }], admin: [{ section: 'todo' }, { section: 'team' }] },
-  Authorizations: { '*': [{}] },
-  Authorization: { clinician: ['R-0411', 'R-0402', 'R-0399', 'R-0391', 'R-0388', 'R-0384'].map(id => ({ id })), supervisor: [{ id: 'R-0411' }, { id: 'R-0399' }], admin: [{ id: 'R-0411' }, { id: 'R-0402' }] },
-  DenialIntelligence: { clinician: [{}, { decision: 'partial' }], admin: [{}] },
-  DenialCase: { clinician: [{ id: 'R-0402', section: 'decision' }, { id: 'R-0402', section: 'evidence' }, { id: 'R-0402', section: 'options' }, { id: 'R-0402', section: 'action', action: 'options' }, { id: 'R-0402', section: 'history' },
-    { id: 'R-0408', section: 'action', action: 'info' }, { id: 'R-0388', section: 'action', action: 'p2p' }, { id: 'R-0384', section: 'action', action: 'appeal' }, { id: 'R-0384', section: 'action', action: 'reconsider' }], admin: [{ id: 'R-0402', section: 'decision' }] },
-  Analytics: { clinician: [{ section: 'outcomes', dataset: 'case' }, { section: 'outcomes', dataset: 'illustrative' }, { section: 'payer', dataset: 'case' }, { section: 'payer', panel: 'guidance' }, { section: 'population', dataset: 'illustrative' }], supervisor: [{ section: 'outcomes' }], admin: [{ section: 'outcomes' }, { section: 'payer' }, { section: 'population', dataset: 'illustrative' }] },
-  Settings: { admin: ['people', 'roles', 'units', 'rules', 'audit', 'family', 'presenter'].map(tab => ({ tab })) },
-  Referrals: { '*': [{}] },
-  Referral: { clinician: [{ id: 'REF-118' }, { id: 'REF-121' }, { id: 'REF-119' }, { id: 'REF-117' }, { id: 'REF-118', panel: 'eligibility' }] }
-};
-const variantsFor = (id, role) => { const v = VARIANTS[id]; if (!v) return [{}]; return v[role] || v['*'] || []; };
+// (shared with a11y.mjs and visual.mjs: appRoutes(role) in test/lib/audit.mjs)
+const qs = p => Object.entries(p).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&');
 const routeUrl = (id, p) => `/#/${id}${Object.keys(p).length ? '?' + qs(p) : ''}`;
-
-function appTargets(role) {
-  const out = [];
-  for (const s of SCREENS) {
-    if (!['app', 'ext'].includes(s.surface) || REDIRECT_ONLY.has(s.id)) continue;
-    if (!routeAllowed(role, s.id)) continue;
-    if (s.surface === 'ext' && role === 'supervisor' && s.id !== 'ExtHome') continue;
-    for (const p of variantsFor(s.id, role)) out.push({ id: s.id, params: p });
-  }
-  return out;
-}
+const appTargets = role => appRoutes(role);
 
 // ------------------------------------------------------------------------------------------------ runner
 async function runGroup(label, fixture, makeTargets, { viewport = { width: 1440, height: 900 }, who, portal, mobile = false } = {}) {

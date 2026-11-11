@@ -19,6 +19,8 @@
     try { chrome.storage?.local.get('appURL', v => { if (v && v.appURL) APP = v.appURL; }); } catch (e) { }
   }
 
+  // hosted preview: the mock Lauris page is a srcdoc frame; its virtual address is window.__vloc (the real extension uses location)
+  const loc = window.__vloc || location; const HOSTED = !!window.__vloc;
   const norm = s => String(s || '').replace(/\s+/g, ' ').trim();
   const lc = s => norm(s).toLowerCase();
 
@@ -48,7 +50,7 @@
   function valueOf(el) { return el.tagName === 'SELECT' ? (el.options[el.selectedIndex] ? el.options[el.selectedIndex].text : '') : el.value; }
 
   function readPage() {
-    const path = location.pathname; const p = { url: location.href, path, title: document.title, mode };
+    const path = loc.pathname; const p = { url: loc.href, path, title: document.title, mode };
     const top = document.querySelector('.top .r'); if (top) p.user = norm((top.textContent || '').split('·')[0]);
     const fl = document.getElementById('lauris-flash');
     if (fl) p.flash = { text: norm(fl.textContent), event: fl.dataset.event, session: fl.dataset.session, form: fl.dataset.form, consumer: fl.dataset.consumer };
@@ -182,7 +184,7 @@
       case 'fill': return fill(msg.fields || [], msg.opts);
       case 'focus': return focusField(msg.label);
       case 'mark': return mark(msg.labels);
-      case 'navigate': if (/^\//.test(msg.url) || msg.url.startsWith(location.origin)) location.href = msg.url; return { ok: true };
+      case 'navigate': if (/^\//.test(msg.url) || msg.url.startsWith(loc.origin)) { if (HOSTED && window.__vgo) window.__vgo(msg.url); else location.href = msg.url; } return { ok: true };
       default: return { error: 'unknown command' };
     }
   }
@@ -192,9 +194,10 @@
     chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => { if (!msg || msg.psyflo !== 'panel') return; handle(msg).then(sendResponse); return true; });
     push = m => { try { chrome.runtime.sendMessage(Object.assign({ psyflo: 'bridge' }, m)); } catch (e) { } };
   } else if (mode === 'inpage') {
-    const appOrigin = new URL(APP).origin; let panelReady = false;
+    const appOrigin = HOSTED ? '*' : new URL(APP).origin; let panelReady = false;   // hosted: srcdoc frames have opaque origins, so match the panel frame itself
     window.addEventListener('message', e => {
-      if (e.origin !== appOrigin || !e.data || e.data.psyflo !== 'panel') return;
+      if (!e.data || e.data.psyflo !== 'panel') return;
+      if (HOSTED ? !(document.getElementById('psyflo-frame') && e.source === document.getElementById('psyflo-frame').contentWindow) : e.origin !== appOrigin) return;
       panelReady = true;
       handle(e.data).then(result => e.source.postMessage({ psyflo: 'bridge', id: e.data.id, result }, appOrigin));
     });

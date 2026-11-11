@@ -101,7 +101,7 @@ await T.test('Mode A: findings on the open draft are questions; accepting applie
   assert.ok(d.findings.find(f => f.category === 'units').issue.includes('2'), 'units follow the minutes (220 min = 2)');
   await assert.refused(tryApi('enhance.approve', { key }, 'jperez'), /still open/, 422);
   await assert.refused(tryApi('enhance.filled', { key }, 'jperez'), /Approve the scan/, 422);
-  await assert.refused(tryApi('enhance.decide', { key, finding: d.findings[0].id, state: 'accepted', answer: 'x' }, 'khale'), /belongs to the person/, 403);
+  await assert.refused(tryApi('enhance.decide', { key, finding: d.findings[0].id, state: 'accepted', answer: 'x' }, 'khale'), /belongs to the person|not allowed/, 403);
   // decide every finding: a flagged-word answer replaces that sentence with the person's words
   for (const f of d.findings) {
     const answer = f.replaces ? 'Walked with M.R. to the calm corner and used the break card with him.' : f.category === 'units' ? '2' : '';
@@ -179,7 +179,7 @@ try {
     const s = await state('jperez'); const m = s.evidence_marks.at(-1); assert.ok(m.excluded && m.by === 'jperez' && m.reason === 'visit with the supervisor');
   });
   await T.test('Mode A on the open draft: scan, answer in your own words, approve, the changed boxes are typed (yellow)', async () => {
-    await p.goto(`${LAURIS}/login?as=khale&next=${encodeURIComponent('/consumers/3315/session/dpn')}`); await p.waitForTimeout(1800);
+    await p.goto(`${LAURIS}/login?as=jperez&next=${encodeURIComponent('/consumers/3315/session/dpn')}`); await p.waitForTimeout(1800);
     await p.fill('#lauris-form textarea >> nth=1', 'Observed J.T. in math. He worked well.');         // narrative box
     await p.waitForTimeout(700);
     await panel().getByRole('button', { name: 'Home' }).click();

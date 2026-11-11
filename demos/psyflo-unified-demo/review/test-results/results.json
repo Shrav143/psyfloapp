@@ -1,6 +1,6 @@
 {
- "runId": "2026-11-11T16-26-16Z",
- "commit": "f990af7",
+ "runId": "2026-11-11T16-42-27Z",
+ "commit": "742831f",
  "release": false,
  "releaseReady": false,
  "env": {
@@ -9,122 +9,100 @@
   "preset": "live",
   "workers": 1,
   "repeat": 1,
-  "basePort": 4940
+  "basePort": 4960
  },
  "summary": {
-  "pass": 6,
+  "pass": 2,
   "fail": 0,
   "skip": 0,
   "notRunnable": 0,
   "knownFail": 0,
   "flaky": 0,
-  "durationMs": 93134,
+  "durationMs": 15849,
   "tests": {
-   "pass": 62,
+   "pass": 34,
    "fail": 0,
    "skip": 0
   }
  },
  "suites": [
   {
-   "name": "bridge-contract",
-   "tags": [
-    "contract"
-   ],
+   "name": "enhance",
+   "tags": [],
    "instance": 0,
    "attempt": 1,
    "status": "PASS",
    "exit": 0,
-   "durationMs": 372,
+   "durationMs": 14167,
    "counts": {
-    "pass": 7,
+    "pass": 14,
     "fail": 0,
     "skip": 0
    },
    "tests": [
     {
      "status": "PASS",
-     "title": "consumer list: #consumer-list rows carry data-consumer and data-program; .top .r and .side .lnav .b exist",
+     "title": "the M.R. corpus: 40 daily notes on real school days, units add up to the seeded 83 under the unit bands, 9 weekly calls, 3 monthly",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "consumer header: .hdr .nm, #consumer-name, \"Harvest #\", Program:, .units",
+     "title": "counts are computed from rows and open their rows; the \"61 notes\" figure does not exist",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "session form: #lauris-form data-form|session|consumer, #session-form-title, label[for] boxes, Save/Process buttons",
+     "title": "evidence.mark keeps who and when, needs a reason to exclude, never touches the note, and is clinician-only",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "PRG redirects and the flash: ?processed= ?saved= ?signed= ?rejected= ?created= with #lauris-flash[data-event|session|form|consumer]",
+     "title": "evidence.period is checked and kept per person",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "portal pages: #portal-form and #portal-confirmation[data-ref|request|kind]",
+     "title": "Mode B (historical) stores an analysis, refuses any fill or write, and exposes no fill action",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "the bridge source: message shapes, origin checks, no clicks, no background fetch to Lauris, same copy in extension/",
+     "title": "Mode A: findings on the open draft are questions; accepting applies only the person's own words; no accept-all; approve needs every decision",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "what the bridge reports is accepted from the Lauris origin only with a JSON body (the bridge posts exactly this)",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-11T16-26-16Z"
-  },
-  {
-   "name": "flowA",
-   "tags": [
-    "flow",
-    "realtime"
-   ],
-   "instance": 0,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 24520,
-   "counts": {
-    "pass": 7,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "family link → five steps → submit → eligibility recorded (clinician session)",
+     "title": "stages beyond \"filled\" come only from the observed page event; a processed record is never overwritten",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "new-consumer boxes are typed from the referral (yellow)",
+     "title": "a Scribe draft closes when the page reports Process Form (observed), and a later write is refused",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "screening opens with the pre-call boxes typed",
+     "title": "Scan & Enhance is offered to a clinician; Evidence review is read-only and has no fill or approve control",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "scripted call: prompts tick while recording; the draft fills the boxes; only what was said",
+     "title": "a count opens its rows; Exclude asks why and keeps who and when; the count drops",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "Process Form is a person's click; Psyflo learns it from the observed page event",
+     "title": "Mode A on the open draft: scan, answer in your own words, approve, the changed boxes are typed (yellow)",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "the intake (CNA) opens with the screening answers carried forward",
+     "title": "S4 in the panel: the request is built from real rows; missing evidence cannot be accepted; household stays out; Approve and fill types the counts",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "wrong patient: a page whose initials disagree with the Harvest # is a hard stop (identity card, Change student, nothing offered)",
      "note": ""
     },
     {
@@ -133,211 +111,18 @@
      "note": ""
     }
    ],
-   "runId": "2026-11-11T16-26-16Z"
+   "runId": "2026-11-11T16-42-27Z"
   },
   {
-   "name": "flowB",
+   "name": "roles",
    "tags": [
-    "flow"
+    "safety"
    ],
    "instance": 0,
    "attempt": 1,
    "status": "PASS",
    "exit": 0,
-   "durationMs": 5296,
-   "counts": {
-    "pass": 4,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "direct support saves a dictation for a student on their caseload; one off the caseload is refused",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "opening M.R.'s daily note drops the dictation in as the staffer's own words, with questions for what was not said",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "a person confirms the units and presses Process Form; the note counts: 5 of 6",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "no console errors",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-11T16-26-16Z"
-  },
-  {
-   "name": "panels",
-   "tags": [
-    "panel"
-   ],
-   "instance": 0,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 31829,
-   "counts": {
-    "pass": 16,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "home (jperez)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "home-ds (khale)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "home-sup (cdiaz)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "home-admin (dowens)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "dpn (khale)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "weekly (jperez)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "monthly (jperez)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "incident (jperez)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "quarterly (jperez)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "case (jperez)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "discharge (jperez)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "weekly-other (jperez)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "approvals (jperez)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "sebs-off (jperez)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "ds-screening (khale)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "record (jperez)",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-11T16-26-16Z"
-  },
-  {
-   "name": "time-panel",
-   "tags": [],
-   "instance": 0,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 29558,
-   "counts": {
-    "pass": 8,
-    "fail": 0,
-    "skip": 0
-   },
-   "tests": [
-    {
-     "status": "PASS",
-     "title": "the panel Track Time view shows the open student, the timer, and four separate figures with the unit rule's source; it fits in two screens",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "pause, resume, stop: the stopped interval is kept as an entry to describe (never lost, not direct time); saving needs words and then moves direct time and units by the rule",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "manual correction in the panel: a reason is required; the earlier version is kept; the figures follow the new version",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "wrong student: with another student open in Lauris the timer says whose it is and offers a switch; nothing starts for the wrong Harvest #",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "link to the daily note: linked is not documented; once the note is processed in Lauris the entries are \"In the note\" and final (no Correct, no Discard)",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the running timer shows as one line in every other view (the home view here), and the Track Time button there opens the view",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "who may open it: a supervisor and an administrator do not get Track Time (a reason, not a blank); a clinician does",
-     "note": ""
-    },
-    {
-     "status": "PASS",
-     "title": "the Lauris Time Tracker: Track Time types one entry into the open form (yellow) and a person presses Save Time Entry; the page reports a saved entry, not units",
-     "note": ""
-    }
-   ],
-   "runId": "2026-11-11T16-26-16Z"
-  },
-  {
-   "name": "time",
-   "tags": [],
-   "instance": 0,
-   "attempt": 1,
-   "status": "PASS",
-   "exit": 0,
-   "durationMs": 953,
+   "durationMs": 1481,
    "counts": {
     "pass": 20,
     "fail": 0,
@@ -346,106 +131,106 @@
    "tests": [
     {
      "status": "PASS",
-     "title": "the seeded day keeps four separate figures: recorded 310, direct 220, documented none, 2 potentially billable units (official bands, with a source)",
+     "title": "matrix: every documented capability, every role",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "the older readers of the contact-time rows see the same blocks as the entries",
+     "title": "admin has no clinical-record access; notes.view is never granted by a designation",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "an active timer is never billable: starting, running and pausing change none of the four figures",
+     "title": "can(): A needs the caseload, D needs the designation, unknown role/capability/user fail closed",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "stop records a draft at once (never lost); it is not direct time until a person describes and saves it; units follow the rule, not the timer",
+     "title": "routes: every registry route has a capability entry; each role opens exactly what the matrix allows",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "entries that overlap count once (two entries for the same minutes never inflate the figures)",
+     "title": "every action has a capability entry (and nothing is declared for an action that does not exist)",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "the active activity: said at Start in the person's own words (optional), changeable while timing, and the starting text of the stopped entry, which still has to be saved",
+     "title": "anonymous: /api/state, /api/do (admin and plain actions), /files and the roster",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "wrong-student protection: a Harvest # that is not the student is refused; no caseload fallback; roles without Track Time are refused",
+     "title": "no screening transcript reaches an unauthenticated caller: /api/state is 401, the roster is empty, the scripted call needs a session",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "the older contact-time rows hold only the student of the timer: another student's time never rides along",
+     "title": "a made-up or tampered token is the same as no token",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "the timer reads the demo clock: a day advance leaves it running from the earlier day; its end is asked for, never guessed",
+     "title": "action sweep: every action x every staff role gets 401/403 exactly when the matrix says no",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "manual correction keeps the earlier version: reason required, corrected_from, nothing edited in place",
+     "title": "presenter controls need presenter mode, not only a role",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "a saved entry is only confirmed by Save; changing its words is a correction with a reason",
+     "title": "user.update: a role change is presenter-only; designations go through two people",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "discard: a stopped timer is removed; a saved entry is voided with a reason and kept; the figures drop it",
+     "title": "projection: direct support sees only their caseload; no screenings, drafts, versions, fills, other staff notes",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "a person adds time they did not time: a reason is required and it is shown as added by hand; no future times",
+     "title": "projection: admin sees unit balances and authorization status but no clinical text",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "link to the daily note: linking is not documenting; a processed note lists the time and makes it final",
+     "title": "projection: supervisor sees status and their reviewees' notes; clinician sees clinical text",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "a note whose time disagrees with the saved entries is flagged, not silently reconciled",
+     "title": "a role switch changes what the API returns (same server, different token)",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "units follow the configured rule only: change the bands (admin, with a reason) and the same minutes give other units",
+     "title": "service line: outpatient (P.G., R-0377) never appears in the staff state",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "who sees time: a direct support worker their own entries; clinician all; supervisor and admin none (entries hold activity text)",
+     "title": "portal sessions: a guardian sees one child; a school user sees their own school; neither can use staff actions",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "microphone consent is a recorded answer per person per demo day; typing needs none; voice without it is refused",
+     "title": "files need a session and the right role",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "a dictation saved again replaces the waiting one; a processed (used) one is final",
+     "title": "cross-origin: JSON only and an origin allow-list on state-changing calls",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "helpers: identity card, contact-time matching, minutes parsing",
+     "title": "presenter PIN and DEMO_PRESENTER are honoured by sign-in",
      "note": ""
     }
    ],
-   "runId": "2026-11-11T16-26-16Z"
+   "runId": "2026-11-11T16-42-27Z"
   }
  ],
  "manual": [

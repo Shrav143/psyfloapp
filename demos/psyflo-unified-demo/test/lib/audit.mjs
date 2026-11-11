@@ -8,7 +8,8 @@
 //
 // The page-side functions (probes, enumerate, snap) are serialised into the page by Playwright: they must not close over anything.
 import { errors } from './index.mjs';
-import { BY_ID } from '../../web/js/registry.js';
+import { BY_ID, SCREENS } from '../../web/js/registry.js';
+import { routeAllowed } from '../../web/js/shared/permissions.js';
 
 // ---------------------------------------------------------------------------------------------------- page side
 // init script: counts in-flight fetches and the time of the last DOM mutation so a click can be followed by "wait for quiet", not a timer
@@ -190,8 +191,8 @@ export async function settle(frame, { quiet = 220, max = 2600 } = {}) {
 //   id, role, kind ('app'|'phone'|'portal'|'panel'), open():Promise (a FRESH load of the route; resolves when ready), frame():Frame, scopes:[css], expand?:bool,
 //   includeRail?, deny?(c) -> reason|null, fixture?:string, parentForm?:() => Promise<string> (signature of the Lauris form around a panel) }
 export class Sweeper {
-  constructor({ page, base, lauris, resetServer, log = () => { }, maxPerTarget = 220, deep = true, deepCap = 14 }) {
-    Object.assign(this, { page, base, lauris, resetServer, log, maxPerTarget, deep, deepCap });
+  constructor({ page, base, lauris, resetServer, log = () => { }, maxPerTarget = 220, deep = true, deepCap = 14, fastBack = true }) {
+    Object.assign(this, { page, base, lauris, resetServer, log, maxPerTarget, deep, deepCap, fastBack });
     this.errs = errors(page); this.popups = []; this.downloads = []; this.dialogs = [];
     page.context().on('page', pg => { if (pg !== page) this.popups.push(pg); });
     page.on('download', d => this.downloads.push(d));
@@ -206,6 +207,13 @@ export class Sweeper {
     const f = T.frame();
     await settle(f);
     return f;
+  }
+  async tryBack(T, hash) {
+    try {
+      this.clearEvents(); await this.page.goBack({ waitUntil: 'commit', timeout: 3000 }); const f = T.frame(); await settle(f, { quiet: 200, max: 2500 });
+      const ok = await f.evaluate(h => location.hash === h && !!document.querySelector('#root main, #root h1, #root [role=main]') && !document.querySelector('#root .sh-loading'), hash).catch(() => false);
+      return ok ? f : null;
+    } catch { return null; }
   }
   async list(T, f, o = {}) {
     const r = await f.evaluate(enumerate, { scopes: o.scopes || T.scopes, expand: o.expand ?? T.expand });
@@ -284,6 +292,7 @@ export class Sweeper {
     row.revChanged = !!ev.revChanged; row.laurisChanged = !!ev.laurisChanged;
     if (T.kind === 'panel' && ev.laurisChanged) row.flags.push('panel-wrote-lauris');
     if (ev.errors.length) row.errors = ev.errors.slice(0, 3);
+    row.fromHash = before.hash; row.sameDoc = before.path === after.path;
     if (cl.outcome === 'NAVIGATED') {
       const p = await f.evaluate(pageProbe).catch(() => null);
       row.dest = after.hash || after.path; if (p) { row.destH1 = p.h1; row.destId = p.id;
@@ -315,12 +324,14 @@ export class Sweeper {
     let dirty = false;
     for (let i = 0; i < controls.length; i++) {
       let c = controls[i];
-      if (dirty || T._needReload) { f = await this.fresh(T); const re = await this.list(T, f); const m = re.controls.find(x => x.key === c.key && x.occ === c.occ) || re.controls.find(x => x.key === c.key); if (!m) { rows.push({ target: T.id, role: T.role, kind: T.kind, depth: 1, key: c.key, name: c.name, tag: c.tag, ctl: c.kind, outcome: 'VANISHED', detail: 'not present after reload', flags: [] }); dirty = false; continue; } c = { ...m }; dirty = false; T._needReload = false; }
+      if (dirty || T._needReload) { f = (dirty && dirty.back && await this.tryBack(T, dirty.back)) || await this.fresh(T); const re = await this.list(T, f); const m = re.controls.find(x => x.key === c.key && x.occ === c.occ) || re.controls.find(x => x.key === c.key); if (!m) { rows.push({ target: T.id, role: T.role, kind: T.kind, depth: 1, key: c.key, name: c.name, tag: c.tag, ctl: c.kind, outcome: 'VANISHED', detail: 'not present after reload', flags: [] }); dirty = false; continue; } c = { ...m }; dirty = false; T._needReload = false; }
       else { const present = await f.locator(`[data-qa="${c.n}"]`).count(); if (!present) { f = await this.fresh(T); const re = await this.list(T, f); const m = re.controls.find(x => x.key === c.key && x.occ === c.occ) || re.controls.find(x => x.key === c.key); if (!m) { rows.push({ target: T.id, role: T.role, kind: T.kind, depth: 1, key: c.key, name: c.name, tag: c.tag, ctl: c.kind, outcome: 'VANISHED', detail: 'not present after repaint', flags: [] }); continue; } c = { ...m }; } }
       const row = await this.probeOne(T, c);
       rows.push(row);
       if (row.mutated && this.resetServer) { await this.resetServer(T.fixture || 'base-live'); }
       dirty = !!row.dirty || !!row.mutated || row.outcome === 'UNCLICKABLE' || row.outcome === 'POPUP' || row.outcome === 'DOWNLOAD';
+      // a same-document navigation that changed nothing on the server can be undone with Back: the screen's controller is created again (as fresh as a reload, 100 ms instead of 700)
+      if (dirty && row.outcome === 'NAVIGATED' && row.sameDoc && !row.mutated && T.kind !== 'panel' && this.fastBack) dirty = { back: row.fromHash };
       // second level: the overlay this control opened
       if (this.deep && row.outcome === 'DETAIL' && innerBudget > 0 && T.kind !== 'panel-nodeep') {
         const okey = row.detail; if (overlays.has(okey)) continue; overlays.add(okey);
@@ -344,6 +355,36 @@ export class Sweeper {
     return { meta, rows, total: meta.total, ms: meta.ms };
   }
 }
+
+// ---------------------------------------------------------------------------------------------------- route inventory (shared with a11y.mjs and visual.mjs)
+// Parameter variants (UI-KIT section 5 deep-link patterns). Variants a role cannot open are dropped by routeAllowed; redirect-only historic ids
+// (DoNext, Partials?id ...) land on these same screens and are covered by test/routes.mjs.
+export const REDIRECT_ONLY = new Set(['DoNext', 'ReviewQueue', 'StaffDashboard', 'Users', 'Submission', 'EarlyDischarge', 'InfoRequest', 'Partials', 'PeerBrief', 'PayerPlaybook', 'Eligibility', 'WhereThingsLive', 'UiKit', 'Login']);
+export const VARIANTS = {
+  MyWork: { direct_support: [{ section: 'day' }], supervisor: [{ section: 'review' }, { section: 'team' }, { section: 'day' }], clinician: [{ section: 'todo' }, { section: 'review' }, { section: 'team' }, { section: 'referrals' }], admin: [{ section: 'todo' }, { section: 'team' }] },
+  Authorizations: { '*': [{}] },
+  Authorization: { clinician: ['R-0411', 'R-0402', 'R-0399', 'R-0391', 'R-0388', 'R-0384'].map(id => ({ id })), supervisor: [{ id: 'R-0411' }, { id: 'R-0399' }], admin: [{ id: 'R-0411' }, { id: 'R-0402' }] },
+  DenialIntelligence: { clinician: [{}, { decision: 'partial' }], admin: [{}] },
+  DenialCase: { clinician: [{ id: 'R-0402', section: 'decision' }, { id: 'R-0402', section: 'evidence' }, { id: 'R-0402', section: 'options' }, { id: 'R-0402', section: 'action', action: 'options' }, { id: 'R-0402', section: 'history' },
+    { id: 'R-0408', section: 'action', action: 'info' }, { id: 'R-0388', section: 'action', action: 'p2p' }, { id: 'R-0384', section: 'action', action: 'appeal' }, { id: 'R-0384', section: 'action', action: 'reconsider' }], admin: [{ id: 'R-0402', section: 'decision' }] },
+  Analytics: { clinician: [{ section: 'outcomes', dataset: 'case' }, { section: 'outcomes', dataset: 'illustrative' }, { section: 'payer', dataset: 'case' }, { section: 'payer', panel: 'guidance' }, { section: 'population', dataset: 'illustrative' }], supervisor: [{ section: 'outcomes' }], admin: [{ section: 'outcomes' }, { section: 'payer' }, { section: 'population', dataset: 'illustrative' }] },
+  Settings: { admin: ['people', 'roles', 'units', 'rules', 'audit', 'family', 'presenter'].map(tab => ({ tab })) },
+  Referrals: { '*': [{}] },
+  Referral: { clinician: [{ id: 'REF-118' }, { id: 'REF-121' }, { id: 'REF-119' }, { id: 'REF-117' }, { id: 'REF-118', panel: 'eligibility' }] }
+};
+export const variantsFor = (id, role) => { const v = VARIANTS[id]; if (!v) return [{}]; return v[role] || v['*'] || []; };
+
+export function appRoutes(role) {
+  const out = [];
+  for (const s of SCREENS) {
+    if (!['app', 'ext'].includes(s.surface) || REDIRECT_ONLY.has(s.id)) continue;
+    if (!routeAllowed(role, s.id)) continue;
+    if (s.surface === 'ext' && role === 'supervisor' && s.id !== 'ExtHome') continue;
+    for (const p of variantsFor(s.id, role)) out.push({ id: s.id, params: p });
+  }
+  return out;
+}
+
 
 // ---------------------------------------------------------------------------------------------------- reporting
 export const FINDING = new Set(['NO-EFFECT', 'DISABLED-UNEXPLAINED', 'UNCLICKABLE', 'EXTERNAL-BROKEN', 'TOAST-UNEXPLAINED', 'VANISHED-NOT']);

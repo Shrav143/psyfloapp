@@ -3,7 +3,7 @@
 //   dated proof -> Lauris: new consumer, Admission screening with the scripted call (consent first) -> a person presses Process Form ->
 //   intake (CNA) opens with the answers carried forward. Every step is asserted in the Psyflo store, the mock Lauris store and the queues.
 //   Runs from demo.scenario s2, the fixture tw-referral and a fresh reset; first and last states must match.
-import { suite, assert, api, state, playwright, BASE, LAURIS, MODES, start, flow, openAs, noErrors, panel, panelFrame, formValues, yellow, mainText, rootText, waitState, shot, lsnap, lcons, evs, same, errors, waitText } from './lib/scenario.mjs';
+import { suite, assert, scoreRows, api, state, playwright, BASE, LAURIS, MODES, start, flow, openAs, noErrors, panel, panelFrame, formValues, yellow, mainText, rootText, waitState, shot, lsnap, lcons, evs, same, errors, waitText } from './lib/scenario.mjs';
 
 const T = suite('s2');
 const { chromium } = playwright();
@@ -117,8 +117,9 @@ async function run(mode) {
       await lp.waitForFunction(() => document.querySelectorAll('#lauris-form .in.y').length >= 6, null, { timeout: 15000 });
       const fr = panelFrame(lp); await fr.evaluate(() => { window.__psyfloPanel.ui.fast = true; });
       await panel(lp).getByText('Play the scripted call').click(); await panel(lp).getByText('Before you record').waitFor();
-      assert.eq(await panel(lp).getByText('Agreed · start recording').isDisabled().catch(() => true) || true, true, 'recording does not start by itself');
       assert.eq((await state('jperez')).recording_consents.length, 0, 'no consent is recorded until a person says so');
+      await panel(lp).getByText('Agreed · start recording').click({ force: true }).catch(() => { }); await lp.waitForTimeout(600);
+      assert.eq(await panel(lp).getByText('Before you hang up').count(), 0, 'recording does not start without the recorded consent'); assert.eq((await state('jperez')).recording_consents.length, 0);
       await panel(lp).getByLabel(/Guardian agreed/).check(); await panel(lp).getByText('Agreed · start recording').click();
       await panel(lp).getByText('Before you hang up').waitFor();
       const s = await state('jperez'); assert.eq(s.recording_consents.length, 1); assert.ok(s.recording_consents[0].by === 'jperez', 'who and when: ' + JSON.stringify(s.recording_consents[0]));
@@ -142,10 +143,13 @@ async function run(mode) {
       const sc = s.screenings.find(x => x.client === 'TW'); assert.eq(sc.status, 'done'); assert.ok(s.events.some(e => e.record === REF && /Screening processed/.test(e.what) && e.actor_kind === 'bridge'), 'recorded from the observed event');
       const l = await lsnap(); const ls = l.sessions.find(x => String(x.id) === id); assert.eq(ls.status, 'processed'); assert.eq(ls.form, 'screening'); assert.eq(ls.no, L.no);
       assert.ok(lcons(l, L.no).active_file.some(x => x.session === Number(id) && x.form === 'screening'), 'Active File +1');
-      const j = JSON.stringify(ref(s)); assert.ok(/clock|30|send_by|consent/i.test(j) || s.rules.some(r => /consent|30/.test(r.key)), 'the 30-day clock is a rule, not a literal');
+      assert.eq(ref(s).lauris_no, L.no, 'the referral carries the Harvest #'); assert.eq(ref(s).screening.who, 'jperez');
+      await desk.goto(BASE + '/#/Referral?id=' + REF); await desk.waitForTimeout(1100); const rt = await mainText(desk);
+      assert.match(rt, /Send by Nov 28/, 'the 30-day send-by date starts from the screening event (Oct 29 + 30)'); assert.match(rt, /Processed in Lauris/); assert.match(rt, /Eligibility · Eligible/);
       const c = await openAs(b, 'jperez'); pages.push(c); await c.goto(BASE + '/#/Referrals'); await c.waitForSelector('.ui-qt__row');
-      assert.match(await c.locator('.ui-qt__row', { hasText: REF }).innerText(), /intake|Intake/i, 'the queue shows the referral in intake');
-      const pilot = scoreRowsText(await state('dowens')); assert.match(pilot, /Fewer than 5/, 'the intake measure is withheld below 5 cases, never a one-case rate');
+      await c.getByRole('button', { name: /^In intake/ }).click(); await c.waitForTimeout(500);
+      assert.ok(await c.locator('.ui-qt__row', { hasText: REF }).count() === 1, 'the In intake chip of the queue lists the referral'); assert.eq(await c.locator('.ui-qt__row', { hasText: 'Needs screening' }).filter({ hasText: REF }).count(), 0, 'no longer a new referral');
+      const ia = scoreRows(await state('dowens'), 'dowens').intake; assert.ok(ia && /^(—|Fewer than 5)/.test(ia.headline), 'the intake-to-SRA measure shows no figure for one case (withheld or not started): ' + JSON.stringify(ia && [ia.headline, ia.note]));
       L.screen = { status: sc.status, stage: ref(s).stage, id };
     });
     await F.step('6 intake opens (CNA) with the screening answers carried forward ("copied from screening"); nothing is processed by opening it', async () => {

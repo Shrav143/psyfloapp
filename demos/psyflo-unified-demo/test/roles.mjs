@@ -12,7 +12,7 @@ const EXPECT = {
   'notes.own': 'A N Y N N N', 'notes.review': 'N Y Y N N N', 'notes.view': 'A A Y N N N', 'auth.status': 'A Y Y Y N N', 'drafts.clinical': 'N N Y N N N',
   'approve.sra': 'N D D N N N', 'sign.lauris': 'N N Y N N N', 'send.packet': 'N D Y D N N', 'payer.reply': 'N N Y N N N', 'payer.decision': 'N D Y D N N',
   'eligibility.run': 'N D Y D N N', 'analytics.aggregate': 'N A Y Y N N', 'analytics.drilldown': 'N N A N N N', 'admin.settings': 'N N N Y N N', 'admin.users': 'N N N Y N N',
-  'demo.controls': 'D D D D N N', 'referrals': 'N N Y N N N', 'myWork': 'Y Y Y Y N N', 'denials': 'N N Y Y N N', 'authorizations': 'N Y Y Y N N', 'scanEnhance': 'A N Y N N N', 'trackTime': 'A N Y N N N'
+  'demo.controls': 'D D D D N N', 'referrals': 'N N Y N N N', 'myWork': 'Y Y Y Y N N', 'denials': 'N N Y Y N N', 'authorizations': 'N Y Y Y N N', 'scanEnhance': 'N D Y N N N', 'trackTime': 'A N Y N N N'
 };
 const ORDER = ['direct_support', 'supervisor', 'clinician', 'admin', 'guardian', 'school'];
 
