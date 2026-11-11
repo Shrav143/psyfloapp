@@ -19906,7 +19906,13 @@ ${session.user ? session.user.name + (session.user.credential ? ", " + session.u
       if (a && a.getAttribute("href") === location.hash) route2();
     });
     mountDock(dockEl(), dockCtx);
-    addEventListener("hashchange", route2);
+    addEventListener("hashchange", () => {
+      try {
+        overlay2.closeAll();
+      } catch {
+      }
+      route2();
+    });
     addEventListener("resize", measureDock);
     try {
       new ResizeObserver(measureDock).observe(dockEl());

@@ -581,7 +581,7 @@ async function time() {
   H.noErrors(); await H.close();
   // who may open it: a supervisor does not get Track Time (a reason, not a blank); the presenter command opens the view
   const S2 = await fresh(); await S2.signIn('Supervisor');
-  await S2.go('#/ExtDPN?client=MR'); await S2.lwait(null, /3310\/session\/dpn/); await S2.panelReady();
+  await S2.go('#/ExtHome'); await S2.lwait(null, /lauris\.invalid\/consumers/); await S2.panelReady();
   await S2.L().locator('body').evaluate(() => document.getElementById('psyflo-frame').contentWindow.postMessage({ psyflo: 'present', cmd: 'view', view: 'time' }, '*')); await sleep(900);
   const st = await S2.P().locator('body').innerText(); ok(/Track Time is for the staff who work with students/.test(st) && await S2.P().locator('.t7-figs').count() === 0, 'a supervisor gets a reason, not Track Time');
   S2.noErrors('supervisor'); await S2.close();
