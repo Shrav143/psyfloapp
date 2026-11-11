@@ -37,7 +37,9 @@ export class ExtComposite extends DCLogic {
   get css() { return `#stage.ext{background:var(--paper)}
 .xframe{display:block;width:100%;height:100vh;border:0;background:var(--paper)}
 body[data-surface="ext"] .pm-fab{right:auto;left:12px;bottom:12px}`; }
-  prepare() { return `<iframe class="xframe" title="Mock Lauris with the Psyflo panel" src="{{url}}" allow="microphone"></iframe>`; }
+  // hosted preview: no server to load a src from, so the page's virtual network renders the Lauris page into the frame (srcdoc)
+  prepare() { return `<iframe class="xframe" title="Mock Lauris with the Psyflo panel" ${window.__HOSTED__ ? 'data-src' : 'src'}="{{url}}" ${window.__HOSTED__ ? '' : 'allow="microphone"'}></iframe>`; }
+  after(root) { const f = window.__HOSTED__ && window.__vnet && root.querySelector('iframe.xframe'); if (f && !f.dataset.mounted) { f.dataset.mounted = '1'; window.__vnet.mountFrame(f, f.dataset.src); } }
   renderVals() { if (!this._t) this._t = laurisHref(this.meta?.id || 'ExtHome', this.params); return this._t; }
   onStore() { /* keep the frame; the panel inside updates itself */ }
 }

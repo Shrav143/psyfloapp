@@ -4,6 +4,7 @@
 // Eligibility is never checked here: the school form has no insurance details (brief rule 5), so Verify waits for the family link.
 import { register, Screen, M, esc, modal, toast } from '../app.js';
 import { VIEWS, FILTER, PART } from '../shared/labels.js';
+import { famLink } from '../shared/links.js';
 import { refStudent, refShort, schoolTag, fundingOf, FUNDING, yes, noop, showProof, B1_CSS } from './Referrals.js';
 
 const CONCERNS = ['Physical aggression', 'Verbal aggression', 'Eloping', 'Inattention', 'Withdrawal / avoidance', 'Depression', 'Suicidal / homicidal ideation', 'Self-harm', 'Defiant / argumentative'];
@@ -144,7 +145,7 @@ register('Referral', class extends Screen {
     const critRows = crit.list.filter(x => CRIT_NAME[x.key]).map(x => ({
       label: CRIT_NAME[x.key], ic: CRIT_IC[x.status], mark: MARK[x.status === 'shown' ? 'ok' : x.status] || '', tip: [x.title, x.body, x.still, x.ask].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim()
     }));
-    const link = fl ? `${location.origin}/f/${fl.token}` : '';
+    const link = fl ? famLink(fl.token) : '';
     const fund = fundingOf(r);
     const sendPri = !sent && !closed; const bookPri = sent && !booked && !closed;
     return {

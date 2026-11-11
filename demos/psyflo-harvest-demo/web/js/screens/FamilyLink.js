@@ -5,6 +5,7 @@
 // Reached at /f/<token>; with no token it uses T.W.'s link (REF-118), created on the first Next if none was sent yet.
 import { register, Screen, M, toast, api } from '../app.js';
 import { bindForm } from './SchoolPortal.js';
+import { parentHref } from '../shared/links.js';
 import { famCtx, getLang, setLang, callSheet, guardHeader } from './ParentPortal.js';
 import { C_CSS } from './MobileApp.js';
 
@@ -93,7 +94,7 @@ register('FamilyLink', class extends Screen {
       pg: { ...pg, text: pg.kind === 'text', select: pg.kind === 'select', card: pg.kind === 'card', radio: pg.kind === 'radio', col: pg.col ? ' col' : ' pill' },
       photoName: a.card_photo || '',
       nextLabel: i === pages.length - 1 ? t.submit : t.next, canBack: !done && i > 0,
-      doneText: t.done(timeLabel), portalHref: this.token ? `/parent/${this.token}/ParentPortal` : 'ParentPortal.dc.html',
+      doneText: t.done(timeLabel), portalHref: this.token ? parentHref(this.token, 'ParentPortal') : 'ParentPortal.dc.html',
       err: this.state.err
     };
   }

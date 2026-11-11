@@ -7,6 +7,7 @@ import { SCREENS, BY_ID, LEVEL, homeFor } from './registry.js';
 import * as M from './shared/model.js';
 import { ExtComposite } from './ext-composite.js';
 import { PAGE_TITLE, NAV } from './shared/labels.js';
+import { setHash } from './shared/links.js';
 export { helpIcon } from './help.js';
 
 const controllers = {};
@@ -40,7 +41,7 @@ export { api, M, raw, esc };
 
 // ---------- routing ----------
 function parseRoute() {
-  const p = location.pathname;
+  const p = window.__HOSTED__ ? '' : location.pathname;   // hosted preview: the page can live at any path; routes are hashes
   let m;
   if ((m = p.match(/^\/f\/([\w-]+)/))) return { id: 'FamilyLink', params: { t: m[1] } };
   if ((m = p.match(/^\/parent\/([\w-]+)(?:\/(\w+))?/))) return { id: m[2] || 'ParentPortal', params: { ...Object.fromEntries(new URLSearchParams(location.search)), t: m[1] } };
@@ -58,8 +59,8 @@ export function hrefFor(target, params) {
 }
 export function go(target, params) {
   const h = hrefFor(target, params);
-  if (location.pathname !== '/' && location.pathname !== '/index.html') { location.href = '/' + h; return; }
-  if (location.hash === h) route(); else location.hash = h;
+  if (!window.__HOSTED__ && location.pathname !== '/' && location.pathname !== '/index.html') { location.href = '/' + h; return; }
+  if (location.hash === h) route(); else setHash(h);
 }
 
 // ---------- toasts & modal ----------
@@ -165,7 +166,7 @@ function presenterHTML(cur) {
   const preset = api.state.preset === 'canvas' ? 'Canvas snapshot' : 'Live flows';
   const opts = pickerScreens(cur).map(s => `<option value="${s.id}"${s.id === cur ? ' selected' : ''}>${s.n} · ${esc(PAGE_TITLE[s.id] || s.title)}</option>`).join('');
   const cmds = (PRESENT_CMDS[here.surface] || []).map(([c, l]) => `<button type="button" data-pm-cmd="${c}">${l}</button>`).join('');
-  return `<div class="h">${esc(preset)} · ${esc(M.fmtDate(api.state.today, { dow: true }))}</div>
+  return `<div class="h">${esc(preset)} · ${esc(M.fmtDate(api.state.today, { dow: true }))}</div>${window.__HOSTED__ ? '<div class="h">Hosted preview · data resets on reload</div>' : ''}
     <label class="sr" for="pm-pick">Go to screen</label><select id="pm-pick">${opts}</select>
     <a href="#/Login">${u ? 'Switch user' : 'Sign in'}</a>
     <button type="button" data-pm="reset">Reset…</button>
@@ -242,7 +243,7 @@ async function route() {
   const meta = BY_ID[r.id];
   closePop();
   document.getElementById('drawer').hidden || fillDrawer(r.id);
-  if (meta.min > 0 && !u) { location.hash = '#/Login?next=' + encodeURIComponent(r.id); return; }
+  if (meta.min > 0 && !u) { setHash('#/Login?next=' + encodeURIComponent(r.id)); return; }
   const stage = document.getElementById('stage'); const root = document.getElementById('root');
   if (meta.min > session.level) {
     stage.className = 'msg'; current = null;

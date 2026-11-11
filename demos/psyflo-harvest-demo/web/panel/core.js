@@ -45,7 +45,7 @@ export function clientForPage() {
 // the Harvest # a student has in Lauris. T.W. exists in the mock Lauris only after a person creates him (live preset).
 export function laurisNo(c) { if (!c) return null; return c.id === 'TW' ? (c.lauris_no || null) : (c.lauris_no || c.harvest_no || null); }
 export const usDate = iso => { const [y, m, d] = String(iso).slice(0, 10).split('-'); return `${m}/${d}/${y}`; };
-export const appURL = path => location.origin + '/' + path;
+export const appURL = path => (window.__vapp || location.origin) + '/' + path;   // hosted preview: the panel is a srcdoc frame; the page's virtual app origin
 
 // where a Worklist row opens: a Lauris page (Ext screens) or a Psyflo app screen
 export function targetFor(href) {

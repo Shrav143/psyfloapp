@@ -1,5 +1,6 @@
 import { register, Screen, session, go, modal, toast } from '../app.js';
 import { homeFor } from '../registry.js';
+import { parentHref, setHash } from '../shared/links.js';
 
 const ROLE_USER = { direct_support: 'khale', clinician: 'jperez', supervisor: 'cdiaz', admin: 'dowens' };
 
@@ -27,7 +28,7 @@ register('Login', class extends Screen {
     return {
       signin: () => this.signIn(this.user()),
       // portals have no staff login: families arrive by a texted link, schools by their own school login
-      family: () => { const fl = this.s.family_links.find(f => f.referral === 'REF-118'); if (fl) location.href = '/parent/' + fl.token + '/ParentPortal'; else go('ParentPortal'); },
+      family: () => { const fl = this.s.family_links.find(f => f.referral === 'REF-118'); if (fl) { const h = parentHref(fl.token, 'ParentPortal'); if (window.__HOSTED__) setHash(h); else location.href = h; } else go('ParentPortal'); },
       counselor: () => { session.setSchoolUser('rbell'); go('SchoolPortal'); },
       sso: () => modal(`<h2>Sign in with Google Workspace</h2><p>Stub of Harvest's Google sign-in. Choose an account:</p><div style="display:flex;flex-direction:column;gap:8px;margin:12px 0">${this.s.staff.map(s => `<button class="mbtn" data-u="${s.id}">${s.name} · ${s.id}@harvestoutreach.org</button>`).join('')}</div><button class="mbtn" data-close>Cancel</button>`,
         (box, close) => box.querySelectorAll('[data-u]').forEach(b => b.onclick = () => { close(); this.signIn(this.s.staff.find(s => s.id === b.dataset.u)); })),

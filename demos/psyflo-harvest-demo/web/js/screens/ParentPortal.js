@@ -4,6 +4,7 @@
 // the "call us" sheet) used by FamilyLink, ParentSign, ParentSurvey and AppealLetter.
 import { register, Screen, M, modal, toast, go, api, raw, esc } from '../app.js';
 import { C_CSS } from './MobileApp.js';
+import { parentHref, setHash } from '../shared/links.js';
 
 // ---------- family context from the tokenised link ----------
 export function famCtx(s, params = {}) {
@@ -25,9 +26,9 @@ export function phref(params, id, extra = {}) {
   if (params?.c && !params.t) q.set('c', params.c);
   for (const [k, v] of Object.entries(extra)) if (v != null) q.set(k, v);
   const qs = q.toString() ? '?' + q : '';
-  return params?.t ? `/parent/${params.t}/${id}${qs}` : `${id}.dc.html${qs}`;
+  return params?.t ? parentHref(params.t, id, qs) : `${id}.dc.html${qs}`;
 }
-export function pgo(params, id, extra) { const h = phref(params, id, extra); if (params?.t) location.href = h; else go(h); }
+export function pgo(params, id, extra) { const h = phref(params, id, extra); if (params?.t) { if (window.__HOSTED__) setHash(h); else location.href = h; } else go(h); }
 // first name (or initials) of the child, and "his / her / their"
 export const childName = c => c.first_name || c.initials;
 
