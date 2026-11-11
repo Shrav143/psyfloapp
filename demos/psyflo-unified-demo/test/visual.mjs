@@ -31,6 +31,7 @@ async function newPage({ who, portal, width = 1440, height = 900, touch = false,
   const page = await ctx.newPage(); page.errs = errors(page); page.ctx = ctx;
   if (who) await login(page, who, { presenter: present });
   if (portal) {
+    await ctx.addInitScript(() => { try { localStorage.setItem('psyflo_user', 'jperez'); } catch { } });   // a deliberate presenter view: a staff member is signed in in this browser (the family-link gate)
     await page.goto(BASE + '/#/Login', { waitUntil: 'domcontentloaded' });
     await page.evaluate(async w => { const r = await fetch('/api/session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(w) }); const j = await r.json(); localStorage.setItem('psyflo_session', JSON.stringify({ token: j.token, actor: j.actor })); if (w.schoolUser) localStorage.setItem('psyflo_school_user', w.schoolUser); }, portal);
     await page.reload({ waitUntil: 'domcontentloaded' });

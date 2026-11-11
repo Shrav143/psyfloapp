@@ -106,6 +106,7 @@ async function runGroup(label, fixture, makeTargets, { viewport = { width: 1440,
 }
 
 async function portalSignIn(page, who) {
+  await page.context().addInitScript(() => { try { localStorage.setItem('psyflo_user', 'jperez'); } catch { } });   // a deliberate presenter view (the family-link gate)
   await page.goto(BASE + '/#/Login', { waitUntil: 'domcontentloaded' });
   await page.evaluate(async w => {
     const r = await fetch('/api/session', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(w) });
