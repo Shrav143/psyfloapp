@@ -108,6 +108,7 @@ export const MATURITY = {
   'analytics.outcomes': f('future', 'Patient outcomes', 'One dataset per view; case-backed or illustrative, never summed.', ['Analytics']),
   'analytics.payer': f('future', 'Payer performance', 'Sample data, illustrative; minimum group size 5.', ['Analytics']),
   'analytics.population': f('future', 'Patient population', 'Illustrative cohort (COH ids); no patient-level drill-down.', ['Analytics']),
+  'analytics.ask': f('simulated', 'Question box', 'Rule-based answers from the figures on the screen; no language model.', ['Analytics']),
   'analytics.export': f('future', 'Export a report', 'The period, filters and dataset are written into the file.', ['Analytics']),
   'family.link': f('simulated', 'Family link', 'SMS is a stub.', ['FamilyLink']),
   'family.signature': f('simulated', 'Guardian signature', 'Mode per document type; policy not validated.', ['ParentSign', 'ParentEnroll'], { verification: 'unverified' }),

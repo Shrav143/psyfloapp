@@ -28,13 +28,13 @@ register('PayerPlaybook', class extends Screen {
     const total = s.payers.reduce((a, p) => a + (p.requests_this_year || 0), 0);
     const imported = s.migration?.last_export || s.today;
     return {
-      trackerChip: `${total} decided requests · master tracker, imported ${M.fmtDate(imported)}`,
+      trackerChip: `Sample data, illustrative · ${total} requests · seeded ${M.fmtDate(imported)}`,
       payers: s.payers.map(p => {
         const n = p.requests_this_year || 0;
         const partial = n >= 10 && p.partial_rate != null ? `partial ${Math.round(p.partial_rate * n)} of ${n}` : `${n} request${n === 1 ? '' : 's'}`;
         return { name: NAME[p.id] || p.name, partial, channel: CHANNEL[p.channel] || p.channel, days: p.decides_in_days != null ? p.decides_in_days + ' d' : '—', asks: p.tends_to_ask || '—', works: p.what_works || '—' };
       }),
-      rules: DRAFTING_RULES.map(([title, text], i) => ({ n: i + 1, title, text, style: i === 0 ? 'border-top:0;padding-top:0' : '' }))
+      rules: (s.drafting_rules && s.drafting_rules.length ? s.drafting_rules.map(r => [r.title, r.text]) : DRAFTING_RULES).map(([title, text], i) => ({ n: i + 1, title, text, style: i === 0 ? 'border-top:0;padding-top:0' : '' }))
     };
   }
 });

@@ -72,7 +72,7 @@ register('InfoRequest', class extends Screen {
       nWord: `${WORDS[n] || n} item${n === 1 ? '' : 's'}`, areIs: n === 1 ? 'is' : 'are', nWordShort: `${WORDS[n] || n} question${n === 1 ? '' : 's'}`,
       answers: rep.answers,
       sendHead: r.stage === 'portal_open' ? `Sent by a clinician, on ${M.CHANNEL_LABEL[r.channel]}, in their own login.` : "Sent by a clinician, by fax through Harvest's Sfax account, so this request's whole history stays in one place.",
-      sendSub: sent ? ` Pressed ${fmtDate(sent)}, ${fmtTime(sent)}${r.stage === 'portal_open' ? ' · waiting for the upload confirmation' : r.stage === 'submitted' ? ' · decision clock restarted' : ''}.` : '',
+      sendSub: sent ? ` Pressed ${fmtDate(sent)}, ${fmtTime(sent)}${r.stage === 'portal_open' ? ' · waiting for the upload confirmation' : r.stage === 'submitted' ? ' · decision clock keeps its first send date' : ''}.` : '',
       canSend: open, sendBtn: 'Send by fax through Sfax',
       portalAlt: open && r.channel !== 'fax', portalAltLabel: `Upload in ${M.CHANNEL_LABEL[r.channel]} instead`,
       portalOpen: r.stage === 'portal_open'
@@ -89,7 +89,7 @@ register('InfoRequest', class extends Screen {
       infoSend: async () => {
         const r = this.req(); if (!r || r.stage !== 'info_requested') return;
         const text = this.plain(r);
-        await this.do('request.infoSend', { id: r.id, text, via: 'fax' }); toast('Reply faxed through Sfax · decision clock restarts');
+        await this.do('request.infoSend', { id: r.id, text, via: 'fax' }); toast('Reply sent through simulated Sfax · the decision clock keeps its first send date');
       },
       infoPortal: async () => {
         const r = this.req(); if (!r || r.stage !== 'info_requested') return;

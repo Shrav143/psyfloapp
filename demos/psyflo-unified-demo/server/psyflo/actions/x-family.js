@@ -37,7 +37,7 @@ export default {
     s.reminders = s.reminders.filter(x => !(x.record === referral && x.kind === 'screening_call' && !x.done));
     this.actions['referral.scheduleScreening'].call(this, s, { id: referral, who, when });
     r.screening_offer = { ...(r.screening_offer || {}), booked_at: this.now() };
-    this.event(`Guardian booked the screening call on the parent portal · ${fmtDateTime(when, { dow: true })} with ${byId(s.staff, who)?.name || who}`, by, referral);
+    this.event(`Guardian booked the screening call on the parent portal · ${fmtDateTime(when, { dow: true })} with ${byId(s.staff, who)?.name || who}`, by, referral, { actor_kind: 'portal' });
   },
 
   // Referral review (after the screening) → "Qualifies for TDT · family books the intake"
@@ -45,7 +45,7 @@ export default {
     const by = this.who();
     const c = need(byId(s.clients, client), 'Client');
     c.intake_offer = { at: this.now(), by, referral };
-    this.event('Qualifies for TDT · family asked to book the intake visit on the parent portal (text sent, SMS stub)', by, referral || client);
+    this.event('Qualifies for TDT · family asked to book the intake visit on the parent portal (text not sent · SMS stub)', by, referral || client, { sim: true });
   },
   'intake.book'(s, { client, when, who, where, ride = false }) {
     const by = this.who();
@@ -55,10 +55,10 @@ export default {
     c.intake = { when, who, where, ride, ride_status: ride ? 'requested' : 'none', confirmed: null, booked_at: this.now() };
     c.timeline = { ...(c.timeline || {}), intake: when };
     s.reminders.push({ id: 'rem-' + Date.now(), for: who, kind: 'intake_visit', record: client, due: when, text: 'Intake visit · ' + label(s, client) + (where ? ' · ' + where : '') });
-    this.event(`Guardian booked the intake visit on the parent portal · ${fmtDateTime(when, { dow: true })} with ${byId(s.staff, who)?.name || who}`, by, client);
+    this.event(`Guardian booked the intake visit on the parent portal · ${fmtDateTime(when, { dow: true })} with ${byId(s.staff, who)?.name || who}`, by, client, { actor_kind: 'portal' });
     if (ride) {
       s.reminders.push({ id: 'rem-' + (Date.now() + 1), for: who, kind: 'intake_ride', record: client, due: when.slice(0, 10), text: `Arrange a ride to the intake · ${label(s, client)} · ${fmtDate(when, { dow: true })}` });
-      this.event('Guardian asked for a ride to the intake · Harvest to arrange it', by, client);
+      this.event('Guardian asked for a ride to the intake · Harvest to arrange it', by, client, { actor_kind: 'portal' });
     }
   },
   'intake.ride'(s, { client, ride }) {
@@ -67,13 +67,13 @@ export default {
     i.ride = !!ride; i.ride_status = ride ? 'requested' : 'none';
     if (ride && !s.reminders.some(x => x.record === client && x.kind === 'intake_ride' && !x.done)) s.reminders.push({ id: 'rem-' + Date.now(), for: i.who, kind: 'intake_ride', record: client, due: i.when.slice(0, 10), text: `Arrange a ride to the intake · ${label(s, client)} · ${fmtDate(i.when, { dow: true })}` });
     if (!ride) s.reminders = s.reminders.filter(x => !(x.record === client && x.kind === 'intake_ride' && !x.done));
-    this.event(ride ? 'Guardian asked for a ride to the intake' : 'Guardian no longer needs a ride to the intake', by, client);
+    this.event(ride ? 'Guardian asked for a ride to the intake' : 'Guardian no longer needs a ride to the intake', by, client, { actor_kind: 'portal' });
   },
   // the day before: "Still good for tomorrow?"
   'intake.confirm'(s, { client, answer = 'yes' }) {
     const by = this.who();
     const c = need(byId(s.clients, client), 'Client'); const i = need(c.intake, 'Intake booking');
     i.confirmed = answer === 'yes'; i.confirmed_at = this.now();
-    this.event(answer === 'yes' ? 'Guardian confirmed tomorrow\'s intake visit' : 'Guardian needs to change the intake time · call them', by, client);
+    this.event(answer === 'yes' ? 'Guardian confirmed tomorrow\'s intake visit' : 'Guardian needs to change the intake time · call them', by, client, { actor_kind: 'portal' });
   }
 };

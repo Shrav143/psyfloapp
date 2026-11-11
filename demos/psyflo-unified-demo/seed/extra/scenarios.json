@@ -1,5 +1,5 @@
 {
- "_about": "Presenter scenarios (prompt Part 14.2). demo.scenario {id} resets to the preset, applies the tweaks and returns {route, role, staff, client}. The presenter dock and the QA harness read this table. login: how the dock signs in (staffId by default).",
+ "_about": "Presenter scenarios (prompt Part 14.2, run sheet review/06-demo-and-qa.md a3). demo.scenario {id} resets to the preset, applies the tweaks and returns {route, role, staff, client, steps}. The presenter dock and the QA harness read this table. login: how the dock signs in (staffId by default). clock: the beat's place in the 14-minute walkthrough. message: what the audience should conclude (prompt Part 14.2). fixture: the checkpoint demo.scenario can reload in about ten seconds if a beat fails. Steps are click paths, one action each; a person presses Process Form, Get Signature and Send.",
  "scenarios": [
   {
    "id": "s1",
@@ -17,14 +17,18 @@
    "steps": [
     "Sign in as Kayla Hale (direct support)",
     "Select M.R. on the phone",
-    "Say what happened, or type it",
-    "Review the draft against the ISP objectives",
-    "Open M.R.'s daily note in the mock Lauris",
-    "Check the wording and its sources",
-    "Fill the open form (yellow boxes)",
+    "Say what happened, or use the example",
+    "Review the draft against the ISP objectives, then Looks right",
+    "Open M.R. in the mock Lauris and the daily note: 1 dictation waiting",
+    "Open What Psyflo added and check each source",
+    "Fill the open form (yellow boxes) and confirm the units",
     "A person presses Process Form",
-    "Today's notes count updates"
-   ]
+    "My Work shows 5 of 6 daily notes in"
+   ],
+   "clock": "0:45",
+   "minutes": 2.5,
+   "message": "PsyFlo reduces documentation friction without removing staff judgment.",
+   "fixture": "mr-daily"
   },
   {
    "id": "s2",
@@ -44,15 +48,19 @@
    "preset": "live",
    "tweaks": [],
    "steps": [
-    "School counselor submits the referral",
-    "Clinician reviews it and sends the family link",
-    "Guardian fills the family link on the phone",
-    "Eligibility is checked and recorded",
-    "Screening call starts in Lauris",
-    "Missing questions show in the panel",
-    "Draft waits for the clinician",
-    "Intake opens with the answers carried forward"
-   ]
+    "School counselor submits the referral (REF-118)",
+    "Clinician reviews it and sends the family link (simulated text)",
+    "Guardian fills the five steps on the phone",
+    "Eligibility shows details received; a person records the check",
+    "Screening call starts in Lauris: create the consumer, open Admission screening",
+    "Missing questions show in the panel; play the scripted call",
+    "Stop: the draft waits for the clinician; a person presses Process Form",
+    "Intake opens with the answers carried forward (CNA: copied from screening)"
+   ],
+   "clock": "5:45",
+   "minutes": 2,
+   "message": "Information is captured once and reused appropriately.",
+   "fixture": "tw-referral"
   },
   {
    "id": "s3",
@@ -71,16 +79,19 @@
     "s3-draft"
    ],
    "steps": [
-    "Review the treatment plan",
-    "Open the initial request draft",
-    "Trace each statement to its source",
-    "Edit and review the request",
-    "Process Form in Lauris, then approve internally",
-    "A licensed person signs in Lauris",
-    "A person presses Send",
-    "Simulated Sfax receipt is recorded",
-    "Status updates in Authorizations"
-   ]
+    "Review the treatment plan (checkpoint: plan ready)",
+    "Open the initial request draft in the panel",
+    "Trace each statement to its source chip",
+    "Edit criterion 1; Fill all 7 boxes",
+    "A person presses Process Form, then the approver approves internally",
+    "A licensed person presses Get Signature in Forms to Approve",
+    "A person presses Send (simulated Sfax receipt)",
+    "Authorizations shows Submitted with the decision clock"
+   ],
+   "clock": "7:45",
+   "minutes": 2.25,
+   "message": "Documentation, signatures, submission and tracking form one connected workflow.",
+   "fixture": "tw-isp-ready"
   },
   {
    "id": "s4",
@@ -97,15 +108,19 @@
    "preset": "canvas",
    "tweaks": [],
    "steps": [
-    "Open the continued-stay request",
+    "Open M.R.'s continued-stay request (Evidence review)",
     "Pick the evidence period",
-    "Review daily notes",
+    "Review the daily notes counted from stored records",
     "Review guardian and collateral contacts",
     "Check intervention counts and dates",
     "Exclude what should stay out",
-    "See what evidence is missing",
-    "Prepare the draft for clinician review"
-   ]
+    "Read the Evidence missing list",
+    "Fill the yellow boxes for the clinician to review (do not process)"
+   ],
+   "clock": "3:15",
+   "minutes": 2.5,
+   "message": "The system reduces repetitive chart review without inventing evidence.",
+   "fixture": "mr-corpus"
   },
   {
    "id": "s5",
@@ -116,19 +131,22 @@
    "case": {
     "client": "DW",
     "request": "R-0402",
-    "label": "D.W. \u00b7 K.T. \u00b7 T.N. \u00b7 E.C."
+    "label": "D.W. · K.T. · T.N. · E.C."
    },
    "route": "DenialIntelligence",
    "preset": "canvas",
    "tweaks": [],
    "steps": [
-    "Partial offer (D.W.)",
-    "Additional-information request (K.T.)",
-    "Peer-to-peer preparation (T.N.)",
-    "Appeal preparation (E.C.)",
-    "Record the decision with its document",
-    "Authorization status updates"
-   ]
+    "Open the partial offer for D.W. (Partial: decide)",
+    "Open it in Denial Intelligence: evidence and valid options",
+    "Peer-to-peer preparation for T.N.; schedule the call",
+    "Record the decision with its document reference",
+    "Back to the authorization: status and units updated"
+   ],
+   "clock": "10:00",
+   "minutes": 2.25,
+   "message": "The clinic does not lose continuity when a payer decision requires further work.",
+   "fixture": "payer-decision"
   },
   {
    "id": "s6",
@@ -145,14 +163,17 @@
    "preset": "canvas",
    "tweaks": [],
    "steps": [
-    "Open Analytics",
-    "Documentation timeliness",
-    "Payer outcomes",
-    "Patient population",
-    "Treatment goals and interventions",
-    "Drill down where permitted (clinician, own caseload)",
-    "Export a report"
-   ]
+    "Sign in as Dana Owens (administrator)",
+    "Open Analytics: Pilot scorecard",
+    "Payer performance; a payer row opens Denial Intelligence",
+    "Patient population (illustrative cohort banner)",
+    "Drill down as a clinician, own caseload only",
+    "Export a report with the period and dataset in the file"
+   ],
+   "clock": "12:15",
+   "minutes": 1.25,
+   "message": "Operational data without another spreadsheet.",
+   "fixture": "analytics-case"
   }
  ]
 }

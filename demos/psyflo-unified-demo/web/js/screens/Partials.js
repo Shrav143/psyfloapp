@@ -55,7 +55,7 @@ register('Partials', class extends Screen {
     const pa = pq && clientOf(s, pq)?.authorization;
     const p2p = pq && { title: `Peer-to-peer · ${M.clientLabel(s, pq.client)} · ${payerFirst(s, pq.payer)} · ${pq.p2p_at ? fmtDate(pq.p2p_at) : 'date to be set'}`, text: `Call notes ready${pa?.exhausted ? ` · ${pq.units_awarded || pa.units} units ${pa.exhausted <= s.today ? 'ran' : 'run'} out ${fmtDate(pa.exhausted)}` : ''}`, href: 'PeerBrief.dc.html?id=' + pq.id, alt: 'EarlyDischarge.dc.html?id=' + pq.id };
     const dq = s.requests.find(q => q.stage === 'denied' && q.id !== r?.id);
-    const den = dq && { title: `Denial · ${M.clientLabel(s, dq.client)} · ${payerFirst(s, dq.payer)} · only the guardian can appeal`, text: details(s, dq.id).denial_text || `Reason: "${dq.denial_reason}." Only the guardian can appeal; a plain-language letter is drafted for them to read, change and sign on the parent portal.`, href: 'AppealLetter.dc.html?id=' + dq.id };
+    const den = dq && { title: `Denial · ${M.clientLabel(s, dq.client)} · ${payerFirst(s, dq.payer)} · a parent or guardian can appeal`, text: details(s, dq.id).denial_text || `Reason: "${dq.denial_reason}." A parent or guardian can appeal (ask Harvest who else can); a plain-language letter is drafted for them to read, change and sign on the parent portal.`, href: 'AppealLetter.dc.html?id=' + dq.id };
     const base = { ...counts, others, hasP2P: !!p2p, p2p: p2p || {}, hasDenial: !!den, den: den || {} };
     if (!r) return { ...base, none: true, has: false, f: {} };
 

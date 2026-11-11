@@ -15,6 +15,30 @@ const PAYER = { humana: 'Humana', anthem: 'Anthem', sentara: 'Sentara', aetna: '
 const LMHP_RE = /^(LMHP|LMHP-R|LMHP-S|LMHP-RP|LPC|LCSW|LMFT|LCP|LSATP)\b/i;
 const STAFF = { khale: 'K. Hale', slane: 'S. Lane', rowens: 'R. Owens', jreyes: 'J. Reyes', jperez: 'J. Perez, LPC', cdiaz: 'C. Diaz', dowens: 'D. Owens' };
 
+// M.R.'s corpus (E5 writes seed/extra/notes-corpus.json): the processed daily, weekly and monthly notes Harvest's Lauris holds for consumer #3310.
+// Rendered here as processed sessions so the Active File and the session pages show them; Psyflo reads its OWN captured copies, never Lauris.
+// The file carries `_lauris_sessions: { consumer, sessions:[{ id, no, form, date, staff, status, processed_at, processed_by, values }] }` (used as is);
+// without it the notes ({ notes:[{ client, type, date, session?, fields? ... }] }) are converted. A missing file adds nothing.
+const CORPUS_FORM = { daily: 'dpn', weekly_guardian: 'weekly', monthly_collateral: 'collateral', dpn: 'dpn', weekly: 'weekly', collateral: 'collateral' };
+const MIN = m => (m == null ? '' : (m >= 60 ? `${Math.floor(m / 60)} h ${m % 60} min` : `${m} min`));
+function corpusValues(n, form) {
+  if (n.fields && typeof n.fields === 'object') return { ...n.fields };
+  if (form === 'dpn') return Object.fromEntries(Object.entries({ 'Direct time': n.direct_time_min != null ? MIN(n.direct_time_min) : n.direct_time, 'Units': n.units != null ? String(n.units) : '', 'Contact time': Array.isArray(n.contact_time) ? n.contact_time.map(b => `${b[0]}\u2013${b[1]} \u00b7 ${b[2] || ''}`).join('\n') : n.contact_time, 'Mood check-in': n.mood, 'Progress today': n.progress, 'Narrative': n.enhanced || n.narrative || n.text }).filter(([, v]) => v));
+  if (form === 'weekly') return Object.fromEntries(Object.entries({ 'Date': n.date, 'Contact with': n.contact, 'Duration': n.duration_min != null ? `${n.duration_min} min` : '', 'What was discussed': n.discussed || n.narrative || n.text, 'Follow-up': n.follow_up }).filter(([, v]) => v));
+  return Object.fromEntries(Object.entries({ 'Date': n.date, 'Collateral': n.collateral, 'Method': n.method, 'Information shared / received': n.shared || n.narrative || n.text, 'Coordination': n.coordination }).filter(([, v]) => v));
+}
+export function loadCorpus(extraDir) {
+  const f = process.env.NOTES_CORPUS_FILE || path.join(extraDir, 'notes-corpus.json');
+  if (!fs.existsSync(f)) return [];
+  try {
+    const x = JSON.parse(fs.readFileSync(f, 'utf8'));
+    const ls = x && !Array.isArray(x) && x._lauris_sessions;
+    if (ls && Array.isArray(ls.sessions) && ls.sessions.length) return ls.sessions.filter(s => s && Number(s.no || ls.consumer) === 3310 && FORMS[s.form] && s.date).map(s => ({ id: Number.isInteger(s.id) ? s.id : null, no: 3310, form: s.form, date: String(s.date).slice(0, 10), staff: s.staff || 'khale', status: 'processed', values: s.values || {}, processed_at: s.processed_at || `${String(s.date).slice(0, 10)}T15:00`, processed_by: s.processed_by || s.staff || 'khale', corpus: true }));
+    const list = Array.isArray(x) ? x : x.notes || x.notes_corpus || x.corpus || [];
+    return list.filter(n => n && (n.client === 'MR' || Number(n.consumer) === 3310) && CORPUS_FORM[n.type] && n.date).map(n => { const form = CORPUS_FORM[n.type]; return { id: Number.isInteger(n.session) ? n.session : null, no: 3310, form, date: String(n.date).slice(0, 10), staff: n.staff || 'khale', status: 'processed', values: corpusValues(n, form), processed_at: n.processed_at || `${String(n.date).slice(0, 10)}T15:00`, processed_by: n.staff || 'khale', corpus: true }; });
+  } catch { return []; }
+}
+
 function build(preset) {
   const seed = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed', 'seed.json'), 'utf8'));
   // students added in seed/extra are in Harvest's Lauris too
@@ -24,7 +48,7 @@ function build(preset) {
     if (Array.isArray(x.clients)) seed.clients = seed.clients.concat(x.clients.filter(c => !seed.clients.some(y => y.id === c.id)));
   }
   const schools = Object.fromEntries(seed.schools.map(s => [s.id, s]));
-  const db = { preset, today: seed.today, todayUS: US(seed.today), nextSession: 1000, consumers: [], sessions: [], users: seed.staff.map(s => ({ id: s.id, name: STAFF[s.id] || s.name, role: s.role, credential: s.credential || '', can_sign: LMHP_RE.test(s.credential || '') })) };
+  const db = { preset, today: seed.today, todayUS: US(seed.today), nextSession: 1000, nextTime: 1, nextAuth: 1, time: [], consumers: [], sessions: [], users: seed.staff.map(s => ({ id: s.id, name: STAFF[s.id] || s.name, role: s.role, credential: s.credential || '', can_sign: LMHP_RE.test(s.credential || '') })) };
   for (const c of seed.clients) {
     if (!c.harvest_no) continue;
     if (c.id === 'TW' && preset !== 'canvas') continue;
@@ -67,6 +91,13 @@ function build(preset) {
   // Rejected Forms
   sess(3340, 'dpn', '2026-10-27', 'rowens', 'rejected', { processed_at: '2026-10-27T15:30', reject_note: 'Name the ISP objective and say what you did, not what you saw. — C. Diaz', rejected_by: 'C. Diaz' });
 
+  // M.R. #3310 corpus (processed notes from E5's seed/extra/notes-corpus.json; an absent file adds nothing). Their session ids stay as E5 wrote them;
+  // new sessions are numbered after them so today's work sorts above the history.
+  for (const s of loadCorpus(extraDir)) {
+    const sid = s.id != null && !db.sessions.some(x => x.id === s.id) ? s.id : db.nextSession++;
+    db.sessions.push({ ...s, id: sid });
+    if (sid >= db.nextSession) db.nextSession = sid + 1;
+  }
   if (preset === 'canvas') {
     const tw = 4492;
     sess(tw, 'screening', '2026-10-16', 'jperez', 'processed', { processed_at: '2026-10-16T14:52' });
@@ -88,6 +119,8 @@ class LaurisDB {
     this.clockFn = null;
     if (fs.existsSync(FILE)) { try { this.db = JSON.parse(fs.readFileSync(FILE, 'utf8')); } catch { this.db = build('live'); } }
     else this.db = build('live');
+    if (!this.db.time) { this.db.time = []; this.db.nextTime = 1; }
+    if (!this.db.nextAuth) this.db.nextAuth = 1;
   }
   // The ONE demo clock is Psyflo's store.clock; index.js hands Lauris a function that returns 'YYYY-MM-DDTHH:MM:SS'.
   setClock(fn) { this.clockFn = fn; this.syncToday(); }
@@ -165,6 +198,10 @@ class LaurisDB {
     if (!c) return { ok: false, reason: `no consumer ${ev.consumer && ev.consumer.no}` };
     if (ev.event === 'created') return { ok: true };
     if (ev.event === 'authorization') { const m = String(ev.consumer.units || '').match(/(\d+)\s+units? available/i); return c.auth && m && +m[1] === +c.auth.available ? { ok: true } : { ok: false, reason: 'the consumer header does not show those units' }; }
+    if (ev.form === 'time') {   // the Time Tracker saves entries, not sessions: the saved entry must exist for this consumer
+      const te = (this.db.time || []).find(x => String(x.id) === String(ev.session));
+      return ev.event === 'saved' && te && String(te.no) === String(c.no) ? { ok: true } : { ok: false, reason: 'the Time Tracker shows no such saved entry for this consumer' };
+    }
     const s = this.session(ev.session);
     if (!s) return { ok: false, reason: `no session ${ev.session}` };
     if (String(s.no) !== String(c.no)) return { ok: false, reason: 'the session belongs to another consumer' };
@@ -184,13 +221,37 @@ class LaurisDB {
     if (ev.event === 'rejected') return s.status === 'rejected' ? { ok: true, session: s } : { ok: false, reason: 'the session is not rejected' };
     return { ok: false, reason: 'unknown event' };
   }
-  // A person enters an authorization on the Lauris Authorizations page (the mock page, built by E7, calls this). Psyflo never calls it.
-  setAuthorization(no, { units, payer, start, end }) {
+  // A person enters an authorization on the Lauris Authorizations page (site.js calls this). Psyflo never calls it: units are typed by a person.
+  // The earlier authorization stays in the consumer's authorization history (Lauris keeps it; nothing is overwritten silently).
+  setAuthorization(no, { units, payer, start, end, by }) {
     const c = this.consumer(no); if (!c) throw new LaurisError('No such consumer', 404);
-    const n = parseInt(units, 10); if (!(n > 0)) throw new LaurisError('Enter the number of units.');
-    const pn = payer || c.auth?.payer || '';
-    c.auth = { payer: pn, payer_name: PAYER[pn] || pn, units: n, used: 0, available: n, start_us: US(start || this.db.today), end_us: US(end || '') };
+    const n = /^\d+$/.test(String(units ?? '').trim()) ? parseInt(units, 10) : NaN;
+    if (!(n > 0)) throw new LaurisError('Enter the number of units (a whole number).');
+    if (n > 2000) throw new LaurisError('That many units is not plausible. Check the number.');
+    const iso = d => /^\d{4}-\d{2}-\d{2}$/.test(String(d || '')) && !Number.isNaN(Date.parse(d + 'T00:00:00Z'));
+    if (start && !iso(start)) throw new LaurisError('Enter the start date as a date.');
+    if (end && !iso(end)) throw new LaurisError('Enter the end date as a date.');
+    const s0 = start || this.db.today;
+    if (end && end < s0) throw new LaurisError('The end date is before the start date.');
+    // the payer: what the person chose, else the consumer's current authorization, else the plan on the consumer's record (the form requires one; the mock does not refuse a script that omits it)
+    const planKey = Object.keys(PAYER).find(k => PAYER[k] === c.medicaid_plan) || '';
+    const pn = payer || c.auth?.payer || planKey || '';
+    if (pn && !PAYER[pn]) throw new LaurisError('Choose a payer from the list.');
+    if (c.auth && c.auth.units) { c.auth_history = c.auth_history || []; c.auth_history.push({ ...c.auth, replaced_on: this.db.today }); }
+    c.auth = { payer: pn, payer_name: PAYER[pn] || '', units: n, used: 0, available: n, start_us: US(s0), end_us: US(end || ''), entered_by: by || '', entered_on: this.stamp(), entry: this.db.nextAuth++ };
     c.updated = this.db.today; this.save(); return c;
+  }
+  // A person saves a Time Tracker entry (the Lauris Time page). Entries are kept as they are typed; Lauris does not turn them into units.
+  saveTime({ no, date, start, end, minutes, activity, objective, by }) {
+    const c = this.consumer(no); if (!c) throw new LaurisError('No such consumer', 404);
+    if (!/^\d{1,2}:\d{2}/.test(String(start || '')) || !/^\d{1,2}:\d{2}/.test(String(end || ''))) throw new LaurisError('Enter the start and end as times, like 13:10.');
+    const m = x => { const [h, mi] = String(x).split(':'); return +h * 60 + +mi; };
+    const mm = minutes !== undefined && String(minutes).trim() !== '' ? parseInt(minutes, 10) : m(end) - m(start);
+    if (!(m(end) > m(start))) throw new LaurisError('The end must be after the start.');
+    if (!(mm > 0)) throw new LaurisError('Enter the minutes.');
+    if (!String(activity || '').trim()) throw new LaurisError('Say what the activity was.');
+    const e = { id: this.db.nextTime++, no: c.no, date: this.db.today, start: String(start).slice(0, 5), end: String(end).slice(0, 5), minutes: mm, activity: String(activity).trim(), objective: objective || '', by, saved_at: this.stamp() };
+    this.db.time.push(e); c.updated = this.db.today; this.save(); return e;
   }
   // whole mock database for tests (DEMO_TEST=1 only; the route refuses otherwise)
   snapshot() { return JSON.parse(JSON.stringify(this.db)); }
@@ -205,4 +266,4 @@ class LaurisDB {
 }
 
 export const lauris = new LaurisDB();
-export { US, LaurisError };
+export { US, LaurisError, PAYER };

@@ -20,8 +20,10 @@ try {
   });
   await T.test('SRA: drafted from the call and the school counts; criterion 3 and trauma-informed care left blank; no invented dates or promises', async () => {
     await panel().getByText('Open the initial request (SRA)').click(); await p.waitForURL(/sra-initial/);
-    await panel().getByText(/Fill all \d+ boxes/).click();
-    await panel().getByText(/boxes typed into the form/).waitFor({ timeout: 30000 });
+    await panel().getByText(/Review \d+ statements/).click();                 // every statement shows its source; nothing is typed yet
+    await panel().getByText(/Accept the \d+ with sources/).click();            // no accept-all: this counts the boxes that have sources
+    await panel().getByRole('button', { name: 'Approve and fill' }).click();
+    await panel().getByText(/boxes typed into the form/).first().waitFor({ timeout: 30000 });
     await p.screenshot({ path: SHOTS + '/flowC-1-sra.png' });
     const v = await p.evaluate(() => Object.fromEntries([...document.querySelectorAll('#lauris-form label[for]')].map(l => [l.textContent, document.getElementById(l.htmlFor).value])));
     assert.ok(!v['Section I · criterion 3 — recognise danger to self or others'], 'criterion 3 blank');

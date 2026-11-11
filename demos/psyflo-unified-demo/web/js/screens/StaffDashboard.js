@@ -8,6 +8,7 @@
 import { register, Screen, M } from '../app.js';
 import { isSchoolDay, hoursBetween } from '../shared/dates.js';
 import { repeatedParagraphs } from './ReviewQueue.js';
+import { today as clockToday } from '../shared/clock.js';
 
 const LV = { direct_support: 1, supervisor: 2, clinician: 3, admin: 4 };
 const and = a => a.length <= 1 ? (a[0] || '') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
@@ -26,7 +27,7 @@ const dueLabel = (at, today) => at.slice(0, 10) === today ? 'today ' + M.fmtTime
 // (Friday); monthly collateral due by month end. A student is tracked from the first note of that kind
 // Psyflo saw (dailies: looking back over this week), and every student on the caseload is expected today.
 export function noteTimeliness(s, sid) {
-  const today = s.today, nowT = M.now(s), monthStart = today.slice(0, 8) + '01';
+  const today = clockToday(s), nowT = M.now(s), monthStart = today.slice(0, 8) + '01';
   const kids = s.clients.filter(c => c.staff === sid && c.stage !== 'discharged');
   const mine = s.notes.filter(n => n.staff === sid);
   const timer = s.timers?.[sid];
@@ -80,7 +81,7 @@ export function behindLines(s, t) {
   return out;
 }
 
-const notesThisMonth = (s, sid) => s.notes.filter(n => n.staff === sid && (n.date || '') >= s.today.slice(0, 8) + '01' && n.date <= s.today);
+const notesThisMonth = (s, sid) => s.notes.filter(n => n.staff === sid && (n.date || '') >= clockToday(s).slice(0, 8) + '01' && n.date <= clockToday(s));
 function quality(s, sid) {
   const ns = notesThisMonth(s, sid);
   const ivs = new Set(ns.flatMap(n => n.interventions || n.fields?.interventions || []));
@@ -98,7 +99,8 @@ register('StaffDashboard', class extends Screen {
     if (this.me?.role === 'direct_support') return this.me.id;
     const inScope = this.scope().staff;
     if (this.params.staff && inScope.some(x => x.id === this.params.staff)) return this.params.staff;
-    return (inScope.find(x => M.notesToday(this.s, x.id).total) || inScope[0] || { id: 'khale' }).id;
+    const first = inScope.find(x => M.notesToday(this.s, x.id).total) || inScope[0];
+    return first ? first.id : null;                // nobody in scope: nobody to show (never a default staffer)
   }
   scope() {
     const s = this.s, me = this.me;
@@ -119,8 +121,8 @@ register('StaffDashboard', class extends Screen {
     const tl = noteTimeliness(s, sid);
     const kids = nt.students;
     const lbl = c => M.clientLabel(s, c.id, false);
-    const friday = M.addDays(monday(s.today), 4);
-    const monthEnd = monthEndOf(s.today);
+    const friday = M.addDays(monday(clockToday(s)), 4);
+    const monthEnd = monthEndOf(clockToday(s));
     const openDaily = kids.filter(c => !nt.doneSet.has(c.id));
     const dueOf = type => tl.due.filter(x => x.type === type);
     const wkMissing = dueOf('weekly_guardian').map(x => x.c);
@@ -130,10 +132,10 @@ register('StaffDashboard', class extends Screen {
     const rejected = conf.rejected || [];
     const rel = c => (c.guardian?.relationship || 'guardian');
     const fri = M.fmtDate(friday, { dow: true }).startsWith('Fri') ? 'Friday' : M.fmtDate(friday);
-    const todayDue = openDaily.length ? (tl.due.find(x => x.type === 'daily' && x.date === s.today) || {}).dueAt : null;
+    const todayDue = openDaily.length ? (tl.due.find(x => x.type === 'daily' && x.date === clockToday(s)) || {}).dueAt : null;
     const k = {
       daily: nt.done, dailyOf: nt.total,
-      dailySub: nt.total === 0 ? 'no students on the caseload in the demo seed' : openDaily.length ? `${and(openDaily.map(lbl))} still open · due by ${todayDue ? dueLabel(todayDue, s.today) : 'tomorrow'}` : 'all in · each is due within 24 h of the session',
+      dailySub: nt.total === 0 ? 'no students on the caseload in the demo seed' : openDaily.length ? `${and(openDaily.map(lbl))} still open · due by ${todayDue ? dueLabel(todayDue, clockToday(s)) : 'tomorrow'}` : 'all in · each is due within 24 h of the session',
       onTime: tl.rate != null ? tl.rate + '%' : '—',
       onTimeSub: tl.counted ? `${tl.onTime} of ${tl.counted} notes this month in by their deadline${conf.in_24h != null ? ` · Lauris export ${conf.in_24h}%` : ''}` : (conf.in_24h != null ? `Lauris export ${conf.in_24h}% · none counted in Psyflo yet` : 'nothing due yet'),
       onTimeBad: tl.rate != null && tl.rate < 80,
@@ -146,7 +148,7 @@ register('StaffDashboard', class extends Screen {
     };
     // notes behind: past their deadline and still not in
     const behind = tl.behind.map(b => b.type === 'daily'
-      ? { what: 'Daily note', text: `${lbl(b.c)} · ${M.fmtDate(b.date, { dow: true })} session · ${b.hours} h since the session, due ${dueLabel(b.dueAt, s.today)}`, href: 'ExtDPN.dc.html?client=' + b.c.id, link: 'Write it in Lauris' }
+      ? { what: 'Daily note', text: `${lbl(b.c)} · ${M.fmtDate(b.date, { dow: true })} session · ${b.hours} h since the session, due ${dueLabel(b.dueAt, clockToday(s))}`, href: 'ExtDPN.dc.html?client=' + b.c.id, link: 'Write it in Lauris' }
       : b.type === 'weekly_guardian'
         ? { what: 'Weekly guardian call', text: `${lbl(b.c)} · week of ${M.fmtDate(b.date)} · was due ${M.fmtDate(b.dueAt, { dow: true })}`, href: 'ExtWeekly.dc.html?client=' + b.c.id, link: 'Open in Lauris' }
         : { what: 'Monthly collateral', text: `${lbl(b.c)} · ${M.fmtDate(b.date).split(' ')[0]} · was due ${M.fmtDate(b.dueAt)}`, href: 'ExtMonthly.dc.html?client=' + b.c.id, link: 'Open in Lauris' });
@@ -160,12 +162,12 @@ register('StaffDashboard', class extends Screen {
       let tracked = 0, running = '';
       if (timer && timer.client === c.id) { tracked = (timer.blocks || []).reduce((a, b) => a + Math.max(0, minsOf(b)), 0); if (timer.started) running = M.fmtTime(timer.started); }
       const t = tracked ? `${fmtMin(tracked)} tracked today${running ? ', timer running since ' + running : ''}` : running ? `timer running since ${running}` : 'no time tracked in Psyflo yet';
-      const dd = tl.due.find(x => x.type === 'daily' && x.c.id === c.id && x.date === s.today);
-      const by = dd ? ` Due by ${dueLabel(dd.dueAt, s.today)} (24 h).` : '';
+      const dd = tl.due.find(x => x.type === 'daily' && x.c.id === c.id && x.date === clockToday(s));
+      const by = dd ? ` Due by ${dueLabel(dd.dueAt, clockToday(s))} (24 h).` : '';
       if (w.length) open.push({ title: 'Daily note · ' + lbl(c), text: `${t}; the ${M.fmtTime(w[0].at)} dictation is waiting in your Lauris panel.${by}`, href: 'ExtDPN.dc.html?client=' + c.id, link: 'Open in Lauris' });
       else open.push({ title: 'Daily note · ' + lbl(c), text: `${t}; nothing dictated yet.${by}`, href: 'MobileApp.dc.html', link: 'Dictate on the phone' });
     }
-    for (const x of tl.due.filter(x => x.type === 'daily' && x.date < s.today)) open.push({ title: `Daily note · ${lbl(x.c)} ${M.fmtDate(x.date)}`, text: `due by ${dueLabel(x.dueAt, s.today)} (24 h from the session).`, href: 'ExtDPN.dc.html?client=' + x.c.id, link: 'Open in Lauris' });
+    for (const x of tl.due.filter(x => x.type === 'daily' && x.date < clockToday(s))) open.push({ title: `Daily note · ${lbl(x.c)} ${M.fmtDate(x.date)}`, text: `due by ${dueLabel(x.dueAt, clockToday(s))} (24 h from the session).`, href: 'ExtDPN.dc.html?client=' + x.c.id, link: 'Open in Lauris' });
     for (const c of wkMissing) {
       const last = s.notes.filter(n => n.client === c.id && n.type === 'weekly_guardian').map(n => n.date).sort().pop();
       open.push({ title: `Weekly call · ${lbl(c)}'s ${rel(c)}`, text: `due ${fri}${last ? '; last call ' + M.fmtDate(last) : ''}.`, href: 'ExtWeekly.dc.html?client=' + c.id, link: 'Open in Lauris' });
@@ -174,7 +176,7 @@ register('StaffDashboard', class extends Screen {
     for (const a of due) open.push({ title: `${a.instrument} · ${M.clientLabel(s, a.client, false)}`, text: a.note || 'due this week.', href: 'MobileAssess.dc.html?client=' + a.client, link: 'Ask on the phone' });
     for (const r of rejected) open.push({ title: `Rejected in Lauris · ${r.form} ${M.fmtDate(r.date)}, ${M.clientLabel(s, r.client, false)}`, text: `reviewer note: ${r.why}`, href: r.href, link: 'Fix it' });
     for (const n of s.notes.filter(n => n.staff === sid && ['returned', 'flagged'].includes(n.review))) {
-      open.push({ title: `${n.review === 'flagged' ? "Flagged \"didn't happen\"" : 'Returned'} by ${M.staffShort(s, n.reviewed_by || 'cdiaz')} · ${M.clientLabel(s, n.client, false)} ${M.fmtDate(n.date)}`, text: n.review_comment ? `"${n.review_comment}"` : 'see the review note.', href: 'ExtDPN.dc.html?client=' + n.client, link: 'Fix it in Lauris' });
+      open.push({ title: `${n.review === 'flagged' ? "Flagged \"didn't happen\"" : 'Returned'} by ${(n.reviewed_by ? M.staffShort(s, n.reviewed_by) : 'a reviewer')} · ${M.clientLabel(s, n.client, false)} ${M.fmtDate(n.date)}`, text: n.review_comment ? `"${n.review_comment}"` : 'see the review note.', href: 'ExtDPN.dc.html?client=' + n.client, link: 'Fix it in Lauris' });
     }
     const goals = (conf.goals || []).map(g => ({ t: g[0], d: g[1], w: 'width:' + Math.max(0, Math.min(100, g[2])) + '%' }));
     const q = quality(s, sid);
@@ -188,8 +190,8 @@ register('StaffDashboard', class extends Screen {
       quality: [
         ['On time', tl.rate != null ? `${tl.rate}% · ${tl.onTime} of ${tl.counted} notes this month` : '—'],
         ['Interventions used', q.ivs ? `${q.ivs} different ones across ${plural(q.ivNotes, 'note')} this month` : 'none recorded on the notes Psyflo saw this month'],
-        ['Notes returned', `${q.returned} of ${q.of} this month${pend ? ` · ${pend} waiting for ${M.staffShort(s, st.reviewer || 'cdiaz')}'s approval` : ''}`],
-        ['Approval', st.review_mode === 'every_note' ? `every note approved by ${M.staffShort(s, st.reviewer || 'cdiaz')} before it goes to the EHR` : 'not required · spot check']
+        ['Notes returned', `${q.returned} of ${q.of} this month${pend ? ` · ${pend} waiting for ${(st.reviewer ? M.staffShort(s, st.reviewer) : 'a supervisor')}'s approval` : ''}`],
+        ['Approval', st.review_mode === 'every_note' ? `every note approved by ${(st.reviewer ? M.staffShort(s, st.reviewer) : 'a supervisor')} before it goes to the EHR` : 'not required · spot check']
       ].map(([l, v]) => ({ l, v })),
       h1: self ? `Your day, ${st.name.split(' ')[0].replace(/\.$/, '')}` : `${st.name}'s day` };
   }
@@ -221,7 +223,7 @@ register('StaffDashboard', class extends Screen {
         modeChip: st.review_mode === 'every_note' ? 'chip y' : 'chip n',
         flagText: (() => { const f = (conf.status ? [conf.status] : []).concat(conf.flags || [], rep && rep.count >= 3 ? [`Same words in ${rep.count} notes`] : []); return f.join(' · ') + (f.length && (pend || (conf.chip_flags || []).length) ? ' · ' : ''); })(),
         chipFlags: conf.chip_flags || [],
-        pending: pend ? `${pend} note${pend === 1 ? '' : 's'} awaiting ${this.me?.id === st.reviewer ? 'your' : M.staffShort(s, st.reviewer || 'cdiaz') + "'s"} approval` : ''
+        pending: pend ? `${pend} note${pend === 1 ? '' : 's'} awaiting ${this.me?.id === st.reviewer ? 'your' : (st.reviewer ? M.staffShort(s, st.reviewer) : 'a supervisor') + "'s"} approval` : ''
       });
       const q = quality(s, st.id);
       qrows.push({ name: M.staffShort(s, st.id), onTime, ivs: q.ivs ? String(q.ivs) : '—', returned: q.of ? `${q.returned} of ${q.of}` : '—', rejected: String((conf.rejected || []).length) });
@@ -233,14 +235,14 @@ register('StaffDashboard', class extends Screen {
     }
     return { rows, qrows, patterns, noPatterns: !patterns.length, supH1: `${sc.long} · ${sc.staff.length} staff, ${studentsTotal} students`, siteName: sc.site,
       supBehind: behindTotal ? `${plural(behindTotal, 'note')} behind` : 'Nothing behind', supBehindChip: behindTotal ? 'chip r' : 'chip g',
-      source: `Notes behind and on time are counted from the notes the extension reports at Process Form (dailies due within 24 h of the session, weekly guardian calls by Friday, monthly collaterals by month end). "(export)", rejected forms and safety-care holds: ${d.source || "Harvest's Lauris export · Oct 29"}.` };
+      source: `Notes behind and on time are counted from the notes the extension reports at Process Form (dailies due within 24 h of the session, weekly guardian calls by Friday, monthly collaterals by month end). "(export)", rejected forms and safety-care holds: ${d.source || 'Sample data, illustrative'}.` };
   }
   renderVals() {
     const canSup = (LV[this.me?.role] || 0) >= 2;
     const v = canSup ? this.state.v : 'me';
     const sid = this.viewedStaff();
     const self = this.me?.id === sid;
-    const base = { asOf: M.fmtDate(this.s.today, { dow: true }).replace(/^(\w+) /, '$1, '), canSup,
+    const base = { asOf: M.fmtDate(clockToday(this.s), { dow: true }).replace(/^(\w+) /, '$1, '), canSup,
       meLabel: `${self ? 'My view' : 'Staff view'} · ${M.staffShort(this.s, sid)}`,
       supLabel: LV[this.me?.role] >= 3 ? 'All staff · all sites' : 'Supervisor view · ' + this.scope().site,
       rules: 'Daily notes are due within 24 h of the session · weekly guardian call by the end of the week · monthly collateral by month end',

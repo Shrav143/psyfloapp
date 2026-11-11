@@ -1,8 +1,10 @@
 // 22 · Assessments (phone). Seeded + Live: the due list (assessments_due) and this month's history are seeded;
 // "Ask now" opens a two-question SUDS (#suds) or the DSM cross-cutting child version (#dsm) and stores the answers
 // with assessment.save. They are held in Psyflo until the student is open in Lauris, where Lauris scores them.
-import { register, Screen, M, toast } from '../app.js';
-import { phoneUser, whoLine, dueAssessments } from './MobileApp.js';
+import { register, Screen, M, toast, raw, ui } from '../app.js';
+import { clock12 } from '../shared/dates.js';
+import { today as clockToday } from '../shared/clock.js';
+import { phoneUser, myStudents, whoLine, dueAssessments, patientBar } from './MobileApp.js';
 
 const SUDS = [
   { key: 'now', label: 'Right now, how upset or stressed do you feel?', hint: '0 = totally calm · 10 = the most upset you have ever felt' },
@@ -22,35 +24,38 @@ register('MobileAssess', class extends Screen {
   user() { return phoneUser(this.s); }
   renderVals() {
     const s = this.s; const u = this.user(); const f = this.state.form;
+    if (!u) return { who: '', bar: raw(patientBar(s, null, { change: false })), due: [], held: [], doneList: [], form: null, dueN: 0, hasDue: false, hasHeld: false, showList: false };
+    const mine = new Set(myStudents(s, u.id).map(c => c.id));
     const due = dueAssessments(s, u.id).map((d, i) => {
       const c = M.client(s, d.client);
       return { title: `${d.instrument.replace(' (child)', '')} · ${c.initials}`, dueText: 'due ' + M.fmtDate(d.due, { dow: true }).split(' ')[0], about: d.about, kind: d.kind, client: d.client,
-        btn: i === 0 ? `Ask ${c.initials} now` : `Start with ${c.initials}`, btnCls: i === 0 ? 'p' : 'o', btnColor: i === 0 ? '#fff' : '#151B24' };
+        btn: `Ask ${c.initials}`, btnCls: i === 0 ? 'p' : 'o', go: (e, el) => this.open(d.kind, d.client) };
     });
-    const mine = new Set(s.clients.filter(c => c.staff === u.id).map(c => c.id));
-    const held = s.assessments.filter(a => a.status === 'waiting' && (a.by === u.id || mine.has(a.client))).map(a => `${a.instrument} · ${M.client(s, a.client).initials} · saved ${M.fmtDate(a.date)} · waits until ${M.client(s, a.client).initials} is open in Lauris`);
-    const month = s.today.slice(0, 7);
-    const doneList = (s.assessment_history || []).filter(h => h.staff === u.id || !h.staff).map(h => `${h.instrument} · ${M.client(s, h.client).initials} · ${M.fmtDate(h.date)} · ${h.score}${h.prev != null ? ` (was ${h.prev})` : ''}`)
-      .concat(s.assessments.filter(a => a.status === 'used' && mine.has(a.client) && (a.date || '').slice(0, 7) === month).map(a => `${a.instrument} · ${M.client(s, a.client).initials} · ${M.fmtDate(a.date)} · in Lauris`));
+    const held = (s.assessments || []).filter(a => a.status === 'waiting' && (a.by === u.id || mine.has(a.client))).map(a => ({ text: `${a.instrument} · ${M.client(s, a.client).initials} · saved ${M.fmtDate(a.date)}`, chip: raw(ui.chip('Waiting for Lauris', { tone: 'info', size: 'sm', title: 'Saved in Psyflo. Lauris scores it when this student is open there.' })) }));
+    const month = clockToday(s).slice(0, 7);
+    const doneList = (s.assessment_history || []).filter(h => (h.staff === u.id || !h.staff) && mine.has(h.client)).map(h => `${h.instrument} · ${M.client(s, h.client).initials} · ${M.fmtDate(h.date)} · ${h.score}${h.prev != null ? ` (was ${h.prev})` : ''}`)
+      .concat((s.assessments || []).filter(a => a.status === 'used' && mine.has(a.client) && (a.date || '').slice(0, 7) === month).map(a => `${a.instrument} · ${M.client(s, a.client).initials} · ${M.fmtDate(a.date)} · used in Lauris`));
     let form = null;
     if (f) {
       const c = M.client(s, f.client);
       if (f.kind === 'suds') form = { title: `SUDS · ${c.initials}`, sub: 'Read each question to the student and tap their answer.', progress: '2 questions', canBack: false, next: 'Save answers',
-        qs: SUDS.map(q => ({ label: q.label, hint: q.hint, opts: [...Array(11).keys()].map(n => ({ label: String(n), on: f.a[q.key] === n ? ' on' : '', pick: () => this.answer(q.key, n) })) })) };
+        qs: SUDS.map(q => ({ label: q.label, hint: q.hint, opts: [...Array(11).keys()].map(n => ({ label: String(n), on: f.a[q.key] === n ? ' on' : '', pressed: f.a[q.key] === n, pick: () => this.answer(q.key, n) })) })) };
       else {
         const i = f.i; const yn = i >= 19; const k = 'q' + (i + 1);
         form = { title: `DSM cross-cutting · ${c.initials}`, sub: 'Child version · In the past two weeks, how much (or how often) have you…', progress: `${i + 1} of ${DSM.length}`, canBack: i > 0, next: i === DSM.length - 1 ? 'Save answers' : 'Next',
-          qs: [{ label: DSM[i], hint: i >= 23 ? 'If yes, tell the clinician today and follow Harvest\'s safety steps.' : '', opts: (yn ? YN : SCALE).map((o, n) => ({ label: o, on: f.a[k] === (yn ? o : n) ? ' on' : '', pick: () => this.answer(k, yn ? o : n) })) }] };
+          qs: [{ label: DSM[i], hint: i >= 23 ? 'If yes, tell the clinician today and follow Harvest\'s safety steps.' : '', opts: (yn ? YN : SCALE).map((o, n) => ({ label: o, on: f.a[k] === (yn ? o : n) ? ' on' : '', pressed: f.a[k] === (yn ? o : n), pick: () => this.answer(k, yn ? o : n) })) }] };
       }
     }
-    return { who: whoLine(s, u).split(' · ').slice(0, 2).join(' · '), due, held, doneList, form, dueN: due.length };
+    return { who: whoLine(s, u).split(' · ').slice(0, 2).join(' · '), bar: raw(patientBar(s, f ? f.client : null, { change: false })), due, held, doneList, form, dueN: due.length, hasDue: due.length > 0, hasHeld: held.length > 0, hasDone: doneList.length > 0, showList: !f, showForm: !!f, saveLabel: form ? form.next : '' };
   }
   answer(k, v) { const f = this.state.form; f.a[k] = v; this.setState({}); }
-  open(kind, el) {
+  // the student is the one on the button that was tapped (a due item of this person's own caseload); nothing is chosen for them
+  open(kind, client) {
     const s = this.s; const u = this.user();
-    const d = dueAssessments(s, u.id).find(x => x.kind === kind && (!el?.dataset?.c || x.client === el.dataset.c)) || (s.assessments_due || []).find(x => x.kind === kind);
-    if (!d) return toast('Nothing due for that', 'err');
-    this.setState({ form: { kind, client: d.client, instrument: d.instrument, i: 0, a: {} } }); scrollTo(0, 0);
+    const d = u && dueAssessments(s, u.id).find(x => x.kind === kind && x.client === client);
+    if (!d) return toast('That one is not on your list', 'err');
+    this.setState({ form: { kind, client: d.client, instrument: d.instrument, i: 0, a: {} } });
+    document.querySelector('.pm-main')?.scrollTo(0, 0);
   }
   async save() {
     const f = this.state.form; const u = this.user();
@@ -62,13 +67,11 @@ register('MobileAssess', class extends Screen {
     }
     const ini = M.client(this.s, f.client).initials;
     await this.do('assessment.save', { client: f.client, instrument: f.instrument, answers: f.a, score: f.kind === 'suds' ? f.a.now : null, by: u.id });
-    this.setState({ form: null }); scrollTo(0, 0);
-    toast(`Answers saved · they wait in Psyflo until ${ini} is open in Lauris`);
+    this.setState({ form: null });
+    toast(`Answers saved for ${ini} · waiting for Lauris`);
   }
   get anchors() {
     return {
-      suds: (e, el) => this.open('suds', el),
-      dsm: (e, el) => this.open('dsm', el),
       save: () => this.save(),
       prev: () => { const f = this.state.form; if (f && f.i > 0) { f.i--; this.setState({}); } },
       cancel: () => this.setState({ form: null })

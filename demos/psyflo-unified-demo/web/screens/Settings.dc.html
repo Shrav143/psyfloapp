@@ -8,14 +8,91 @@
 <x-dc>
 <helmet>
 <style>
-/* stub screen: replaced by its owner. The class is-stub is the marker test/routes.mjs looks for. */
+/* Settings (E1). Prefix se-. Tokens and the shared kit come from tokens.css and components.css. */
+.se{max-width:1180px;margin:0 auto;padding:24px var(--gutter) 56px;color:var(--ink-900)}
+.se-head{display:flex;align-items:center;gap:12px;margin:0 0 8px}
+.se-head h1{margin:0;font:600 var(--fs-28)/var(--lh-28) var(--font);letter-spacing:-.01em}
+.se-tabs{display:flex;gap:2px;border-bottom:1px solid var(--line-200);margin:0 0 20px;overflow-x:auto}
+.se-tab{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;color:var(--muted-700);font:600 var(--fs-14)/1 var(--font);text-decoration:none;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.se-tab:hover{color:var(--ink-900)}
+.se-tab[aria-current=page]{color:var(--ink-900);border-bottom-color:var(--teal-600)}
+.se-tab b{font-size:var(--fs-12);line-height:20px;min-width:20px;text-align:center;background:var(--info-bg);color:var(--info-fg);border-radius:var(--r-pill);padding:0 7px}
+.se-body{display:flex;flex-direction:column;gap:20px}
+.se-card{background:var(--surface-0);border:1px solid var(--line-200);border-radius:var(--r-3);padding:16px 20px}
+.se-h2{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 8px;font:600 var(--fs-18)/var(--lh-18) var(--font)}
+.se-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px;margin-bottom:8px}
+.se-bar .se-h2{margin:0}
+.se-lead{margin:0 0 12px;max-width:70ch}
+.se-foot{margin:12px 0 0;font-size:var(--fs-12);line-height:var(--lh-12);color:var(--muted-700)}
+.se-muted{color:var(--muted-700)}
+.se-sub{display:block;margin-top:2px;font-size:var(--fs-12);line-height:var(--lh-12);color:var(--muted-700);font-weight:400}
+.se-err{color:var(--danger-fg);font-size:var(--fs-13);min-height:18px;margin-top:4px}
+.se-list{list-style:none;margin:0;padding:0}
+.se-list>li{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px;padding:10px 0;border-top:1px solid var(--line-200)}
+.se-list>li:first-child{border-top:0}
+.se-scroll{overflow-x:auto}
+.se-matrix{width:100%;border-collapse:collapse;font-size:var(--fs-13)}
+.se-matrix th,.se-matrix td{padding:10px 12px;text-align:left;vertical-align:top;border-top:1px solid var(--line-200)}
+.se-matrix thead th{background:var(--sand-100);border-top:0;font-size:var(--fs-12);font-weight:700;color:var(--neutral-fg);white-space:nowrap}
+.se-matrix tbody th[scope=row]{font-weight:600;min-width:220px}
+.se-matrix tbody th[scope=row] span{display:block}
+.se-matrix code{display:block;margin-top:2px;font:400 var(--fs-12)/var(--lh-12) var(--font-mono);color:var(--muted-700)}
+.se-grp th{background:var(--paper-50);font-size:var(--fs-12)!important;text-transform:uppercase;letter-spacing:.06em;color:var(--muted-700)!important}
+.se-matrix--plain tbody th[scope=row]{min-width:0}
+.se-legend{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.se-hidden{display:flex;align-items:center;gap:8px;margin:12px 0 0;padding:10px 14px;background:var(--sand-100);border-radius:var(--r-2);font-size:var(--fs-13);color:var(--neutral-fg)}
+.se-acc{background:var(--surface-0);border:1px solid var(--line-200);border-radius:var(--r-3);padding:0 20px}
+.se-acc>summary{min-height:48px;display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:600}
+.se-acc[open]{padding-bottom:12px}
+.se-holder{display:inline-flex;align-items:center;gap:8px;margin:0 12px 4px 0}
+.se-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start}
+.se-try__row{display:flex;align-items:center;gap:12px;margin:6px 0 12px}
+.se-try__row .ui-input{width:140px}
+.se-try__out{font:600 var(--fs-22)/var(--lh-22) var(--font)}
+.se-try__btns{display:flex;flex-wrap:wrap;gap:8px}
+.se-rulehead{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:8px}
+.se-check{display:flex;align-items:center;gap:8px;min-height:32px;font-size:var(--fs-14)}
+.se-check input{width:18px;height:18px;accent-color:var(--teal-600)}
+.se-fs{border:0;padding:0;margin:12px 0 0}
+.se-fs legend{font-size:var(--fs-12);font-weight:600;color:var(--muted-700);padding:0 0 4px}
+.se-seg{display:inline-flex;border:1px solid var(--control-500);border-radius:var(--r-2);overflow:hidden;background:var(--surface-0)}
+.se-seg__b{min-height:36px;padding:0 14px;border:0;background:transparent;font:600 var(--fs-13) var(--font);color:var(--ink-900);cursor:pointer}
+.se-seg__b+.se-seg__b{border-left:1px solid var(--control-500)}
+.se-seg__b[aria-pressed=true]{background:var(--forest-800);color:#fff}
+.se-sw{position:relative;width:44px;height:26px;border-radius:13px;border:1px solid var(--control-500);background:var(--sand-100);cursor:pointer;padding:0}
+.se-sw i{position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.35);transition:transform var(--dur)}
+.se-sw[aria-checked=true]{background:var(--teal-600);border-color:var(--teal-700)}
+.se-sw[aria-checked=true] i{transform:translateX(18px)}
+.se-sw[disabled]{opacity:.5;cursor:not-allowed}
+.se-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.se-mini{padding:14px;border:1px solid var(--line-200);border-radius:var(--r-2);background:var(--paper-50)}
+.se-mini h3,.se-dec h3{margin:0 0 4px;font:600 var(--fs-14)/var(--lh-14) var(--font)}
+.se-mini p{margin:0;font-size:var(--fs-13);color:var(--neutral-fg)}
+.se-arch{margin:0;display:grid;gap:0}
+.se-arch>div{display:grid;grid-template-columns:240px minmax(0,1fr);gap:16px;padding:10px 0;border-top:1px solid var(--line-200)}
+.se-arch>div:first-child{border-top:0}
+.se-arch dt{font-weight:600}.se-arch dd{margin:0;color:var(--neutral-fg)}
+.se-levels{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.se-levels li{display:flex;gap:10px;align-items:flex-start}
+.se-levels .ui-maturity{flex:none}
+.se-who{display:inline-flex;flex-wrap:wrap;align-items:center;gap:6px}
+.se-levels .se-sub{margin-top:3px}
+.se-decs{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px}
+.se-dec{padding:14px;border:1px solid var(--line-200);border-radius:var(--r-2);display:flex;flex-direction:column;gap:10px}
+.se-dec__h{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.se-dec dl{margin:0;display:grid;gap:6px;font-size:var(--fs-13)}
+.se-dec dt{font-size:var(--fs-12);font-weight:700;color:var(--muted-700)}
+.se-dec dd{margin:0}
+.se-dec .ui-btn{align-self:flex-start;margin-top:auto}
+.se-more{margin-top:12px;display:flex;align-items:center;gap:12px}
+@media (max-width:900px){.se-two{grid-template-columns:1fr}.se-arch>div{grid-template-columns:1fr;gap:2px}}
+@media (max-width:760px){.se{padding:16px 16px 40px}.se-card{padding:14px}}
 </style>
 </helmet>
-<main class="is-stub" data-owner="E1">
-  <h1>Settings</h1>
-  <p>Settings are being built: people, roles, units, rules, audit, family link and presenter.</p>
-  <p class="ui-muted" style="font-size:13px">Link parameters received: <code>{{received}}</code></p>
-  <a class="ui-btn ui-btn--secondary" href="#/Users?legacy=1">Open Users & roles meanwhile</a>
+<main class="se">
+  <header class="se-head"><h1>Settings</h1></header>
+  {{tabs}}
+  <div class="se-body" id="se-body">{{body}}</div>
 </main>
 </x-dc>
 </body>

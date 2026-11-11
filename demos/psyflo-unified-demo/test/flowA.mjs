@@ -23,7 +23,7 @@ try {
   await p.goto(`${LAURIS}/login?as=jperez&next=${encodeURIComponent('/consumers/new?referral=REF-118')}`);
   await T.test('new-consumer boxes are typed from the referral (yellow)', async () => {
     await panel().getByText(/Fill \d+ boxes/).click();
-    await panel().getByText('Boxes typed. Check them').waitFor({ timeout: 20000 });
+    await panel().getByText('Boxes typed. Check them').first().waitFor({ timeout: 20000 });   // the line is also announced in the status region
     assert.eq(await p.evaluate(() => [...document.querySelectorAll('#lauris-form .in.y')].length), 6);
     await p.getByRole('button', { name: 'Save Consumer' }).click();
     await p.waitForURL(/consumers\/\d+\?created/);
@@ -38,6 +38,9 @@ try {
     const fr = p.frames().find(f => f.url().includes('/panel/'));
     await fr.evaluate(() => { window.__psyfloPanel.ui.fast = true; });
     await panel().getByText('Play the scripted call').click();
+    await panel().getByText('Before you record').waitFor();
+    await panel().getByLabel(/Guardian agreed/).check();                       // a recording never starts without a recorded consent
+    await panel().getByText('Agreed · start recording').click();
     await panel().getByText('Before you hang up').waitFor();
     await p.waitForTimeout(10500);
     assert.eq(await panel().locator('.cr.done').count(), 6, 'six prompts done');

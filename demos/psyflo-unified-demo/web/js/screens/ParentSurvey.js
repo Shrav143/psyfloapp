@@ -1,7 +1,7 @@
-// 31 · Parent survey (phone). Live: three questions + free text; Next saves a guardian check-in (checkin.save,
-// role guardian) and the parent portal shows it.
-import { register, Screen, M, toast } from '../app.js';
-import { famCtx, getLang, setLang, pgo } from './ParentPortal.js';
+// 31 · Parent survey (phone): "Complete the check-in". Three questions and an optional note; Send saves a guardian check-in (checkin.save, role guardian).
+// The author is the guardian behind the session. The check-in is for Harvest staff; it is not a clinical screen and nothing here scores it.
+import { register, toast, esc } from '../app.js';
+import { PortalScreen, getLang, pgo, phref, presChip, childName } from './ParentPortal.js';
 
 const Q = [
   { key: 'sad', en: 'Seemed sad or down', es: 'Se veía triste o decaído' },
@@ -10,36 +10,32 @@ const Q = [
 ];
 const OPTS = [{ v: 'Not at all', es: 'Nada' }, { v: 'Some days', es: 'Algunos días' }, { v: 'Most days', es: 'Casi todos' }];
 const T = {
-  en: { title: c => `2-minute check-in · ${c}`, sub: 'In the last two weeks', note: who => `Anything you want ${who} to know?`, optional: 'Optional', next: 'Next', foot: c => `Only Harvest sees this · ${c} answers his own version at school`, other: 'Leer en español', missing: 'Answer the three questions first', thanks: who => `Thank you · ${who} sees this before the next call` },
-  es: { title: c => `Chequeo de 2 minutos · ${c}`, sub: 'En las últimas dos semanas', note: who => `¿Algo que quiera que ${who} sepa?`, optional: 'Opcional', next: 'Siguiente', foot: c => `Solo Harvest lo ve · ${c} contesta su propia versión en la escuela`, other: 'Read in English', missing: 'Conteste primero las tres preguntas', thanks: who => `Gracias · ${who} lo verá antes de la próxima llamada` }
+  en: { title: 'Check-in', sub: c => `${c} · in the last two weeks`, note: 'Anything you want Harvest to know?', optional: 'Optional', send: 'Send', foot: 'Harvest staff can see your answers.', missing: 'Answer the three questions first', thanks: 'Thank you · your check-in was sent', progress: (a, b) => `${a} of ${b} answered` },
+  es: { title: 'Chequeo', sub: c => `${c} · en las últimas dos semanas`, note: '¿Algo que quiera que Harvest sepa?', optional: 'Opcional', send: 'Enviar', foot: 'El personal de Harvest puede ver sus respuestas.', missing: 'Conteste primero las tres preguntas', thanks: 'Gracias · su chequeo fue enviado', progress: (a, b) => `${a} de ${b} contestadas` }
 };
 
-register('ParentSurvey', class extends Screen {
-  init() { this.state = { a: {}, note: '' }; }
-  ctx() { return famCtx(this.s, this.params); }
-  who(ctx) { return (M.staff(this.s, ctx.client.clinician || 'jperez').name || 'Jordan').split(' ')[0]; }
-  renderVals() {
-    const ctx = this.ctx(); const lang = getLang(ctx.client); const t = T[lang]; const a = this.state.a;
-    const n = Object.keys(a).length;
-    const foot = t.foot(ctx.child);
-    return {
-      t: { title: t.title(ctx.child), sub: t.sub, note: t.note(this.who(ctx)), optional: t.optional, next: t.next, foot: ctx.client.sex === 'F' ? foot.replace(' his ', ' her ') : foot, other: t.other },
-      segs: [0, 1, 2, 3, 4, 5].map(i => i < 3 + n ? '#5FC0BE' : '#3C4756'),
-      qs: Q.map(q => ({ key: q.key, label: q[lang], opts: OPTS.map(o => ({ v: o.v, label: lang === 'es' ? o.es : o.v, cls: a[q.key] === o.v ? 'on' : '', chk: a[q.key] === o.v ? 'checked' : '', pick: () => this.setState({ a: { ...this.state.a, [q.key]: o.v } }) })) })),
-      note: this.state.note, setNote: e => { this.state.note = e.target.value; }
-    };
+register('ParentSurvey', class extends PortalScreen {
+  async setup() { this.state = { a: {}, note: '', err: '' }; }
+  page() {
+    const ctx = this.ctx(); const lang = getLang(ctx.client); const t = T[lang]; const a = this.state.a; const n = Object.keys(a).length;
+    const qs = Q.map(q => `<fieldset class="fp-opts"><legend>${esc(q[lang])}</legend>${OPTS.map(o => `<label class="fp-opt${a[q.key] === o.v ? ' on' : ''}"><input type="radio" name="q-${q.key}" value="${esc(o.v)}" data-q="${q.key}" data-nobind${a[q.key] === o.v ? ' checked' : ''}>${esc(lang === 'es' ? o.es : o.v)}</label>`).join('')}</fieldset>`).join('');
+    const body = `<div class="fp-bar" role="progressbar" aria-valuemin="0" aria-valuemax="3" aria-valuenow="${n}" aria-label="${esc(t.progress(n, 3))}"><i style="width:${Math.round(100 * n / 3)}%"></i></div>
+      <form class="fp-card" novalidate>${qs}<div class="fp-field"><label class="fp-lab" for="fp-note">${t.note} <span class="fp-muted" style="font-weight:400">(${t.optional})</span></label><textarea class="fp-in" id="fp-note" rows="3" data-nobind>${esc(this.state.note)}</textarea></div>
+      ${this.state.err ? `<div class="fp-err" role="alert">${esc(this.state.err)}</div>` : ''}<a class="fp-btn fp-btn--p" role="button" href="#next">${t.send}</a><p class="fp-hint" style="margin:0">${t.foot}</p></form>`;
+    return { title: t.title, sub: esc(t.sub(ctx.child)), body, pres: presChip('route.ParentSurvey'), lang };
   }
-  get anchors() {
+  afterPaint(root) {
+    root.querySelectorAll('[data-q]').forEach(r => { r.onchange = () => this.setState({ a: { ...this.state.a, [r.dataset.q]: r.value }, err: '' }); });
+    const note = root.querySelector('#fp-note'); if (note) note.oninput = () => { this.state.note = note.value; };
+  }
+  act() {
     return {
-      es: () => { const c = this.ctx().client; setLang(getLang(c) === 'es' ? 'en' : 'es'); this.setState({}); },
       next: async () => {
         const ctx = this.ctx(); const lang = getLang(ctx.client); const a = this.state.a;
-        if (Q.some(q => !a[q.key])) return toast(T[lang].missing, 'err');
-        await this.do('checkin.save', { client: ctx.client.id, by: ctx.guardian || 'guardian', role: 'guardian', week_of: this.s.today, answers: { ...a, note: this.state.note.trim(), lang } });
-        toast(T[lang].thanks(this.who(ctx)));
-        pgo(this.params, 'ParentPortal');
+        if (Q.some(q => !a[q.key])) return this.setState({ err: T[lang].missing });
+        try { await this.do('checkin.save', { client: ctx.client.id, role: 'guardian', week_of: this.s.today, answers: { ...a, note: this.state.note.trim(), lang } }); } catch { return; }
+        toast(T[lang].thanks); pgo(this.params, 'ParentPortal');
       }
     };
   }
-  set anchors(v) { }
 });

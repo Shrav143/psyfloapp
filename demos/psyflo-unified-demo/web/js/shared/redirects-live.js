@@ -12,26 +12,26 @@
 //   E3 (denial intelligence): ROUTES_LIVE.DenialIntelligence/DenialCase · REDIRECTS_LIVE.InfoRequest/Partials/PeerBrief
 //   E4 (analytics): REDIRECTS_LIVE.PayerPlaybook (Analytics?section=payer&panel=guidance)
 export const ROUTES_LIVE = {
-  MyWork: false,
-  Authorization: false,
-  DenialIntelligence: false,
-  DenialCase: false,
-  Settings: false,
+  MyWork: true,
+  Authorization: true,
+  DenialIntelligence: true,
+  DenialCase: true,
+  Settings: true,
   UiKit: true // built by the foundation: presenter-only gallery of the UI kit
 };
 
 export const REDIRECTS_LIVE = {
-  DoNext: false,
-  ReviewQueue: false,
-  StaffDashboard: false,
-  Users: false,
-  Authorizations: false,   // only Authorizations?id=… (the queue itself stays on Authorizations)
-  Submission: false,
-  EarlyDischarge: false,
-  InfoRequest: false,
-  Partials: false,         // ?id=… goes to DenialCase, no id goes to DenialIntelligence?decision=partial
-  PeerBrief: false,
-  PayerPlaybook: false,
-  Eligibility: false,      // stays inside the referral workspace: Referral?id=…&panel=eligibility
-  WhereThingsLive: false   // opens the presenter drawer (Architecture); ?full=1 still opens the page
+  DoNext: true,
+  ReviewQueue: true,
+  StaffDashboard: true,
+  Users: true,
+  Authorizations: true,    // only Authorizations?id=… (the queue itself stays on Authorizations)
+  Submission: true,
+  EarlyDischarge: true,
+  InfoRequest: true,
+  Partials: true,          // ?id=… goes to DenialCase, no id goes to DenialIntelligence?decision=partial
+  PeerBrief: true,
+  PayerPlaybook: true,
+  Eligibility: true,       // stays inside the referral workspace: Referral?id=…&panel=eligibility
+  WhereThingsLive: true   // opens the presenter drawer (Architecture); ?full=1 still opens the page
 };

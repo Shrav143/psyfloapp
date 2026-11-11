@@ -1,15 +1,14 @@
-// 7 · Referral review (Live). ?id=REF-118 (default). The criteria panel is fixed logic over the school's
-// form; Schedule screening call / Send the family link / Route to grant program write to the store.
-// Eligibility is never checked here: the school form has no insurance details (brief rule 5).
-import { register, Screen, M, raw } from '../app.js';
-import { stageChip, refStudent, refShort } from './Referrals.js';
+// 7 · Referral case shell (E2). ?id=REF-118&panel=form|criteria|link|eligibility|consent. One state-driven primary action, then accordions.
+// The criteria panel is fixed logic over the school's form; Schedule screening call / Send the family link / Route to grant program write
+// to the store. Eligibility is never checked from the school's form: it follows the family link (the five-state panel below).
+import { register, Screen, M, raw, esc, ui, toast, session, api } from '../app.js';
+import { fmtDate, fmtDateTime } from '../shared/dates.js';
+import { can } from '../shared/permissions.js';
+import { ruleValue } from '../shared/rules.js';
+import { eligibilityPanel, clock30, consentOf } from '../shared/sel/auth.js';
+import { stageChip, refStudent, refShort, refChip, refElig } from './Referrals.js';
+import { A_CSS } from './a-css.js';
 
-const ICON = {
-  shown: '<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#217A78" stroke-width="2.2"><circle cx="12" cy="12" r="9"></circle><path d="M9 12l2 2 4-4"></path></svg>',
-  ask: '<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6F4A05" stroke-width="2.2"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v4M12 16h.01"></path></svg>',
-  open: '<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#525B66" stroke-width="2.2"><circle cx="12" cy="12" r="9" stroke-dasharray="3 3"></circle></svg>',
-  no: '<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8A2E1C" stroke-width="2.2"><circle cx="12" cy="12" r="9"></circle><path d="M15 9l-6 6M9 9l6 6"></path></svg>'
-};
 const CONCERNS = ['Physical aggression', 'Verbal aggression', 'Eloping', 'Inattention', 'Withdrawal / avoidance', 'Depression', 'Suicidal / homicidal ideation', 'Self-harm', 'Defiant / argumentative'];
 const ATTACH = { behaviour_report: 'Behaviour report', attendance_log: 'Attendance log', schedule_and_grades: 'Schedule and grades', iep: 'IEP copy', iep_copy: 'IEP copy' };
 const NUM = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10 };
@@ -85,14 +84,19 @@ export function readCriteria(s, r, today) {
   return { list: out, shown };
 }
 
+
+const PANELS = ['form', 'criteria', 'link', 'eligibility', 'consent'];
+const CRIT_ICON = { shown: 'check', ask: 'alert', open: 'dot', no: 'x' };
+const PANEL_TITLE = { form: 'Referral form', criteria: 'Insurance criteria', link: 'Family link', eligibility: 'Eligibility check', consent: 'Consent and clock' };
+
 register('Referral', class extends Screen {
+  get css() { return A_CSS; }
+  get me() { return session.actor; }
   init() {
-    this.state = { dlg: this.params.grant ? 'grant' : this.params.sched ? 'sched' : null, done: null, sched: null, why: 'No Medicaid', text: true, ask: true };
+    this.panel = PANELS.includes(this.params.panel) ? this.params.panel : null;
+    this.state = { open: null, el: null, sched: null, why: 'No Medicaid', recheck: false };
   }
-  get ref() {
-    const s = this.s;
-    return M.byId(s.referrals, this.params.id || 'REF-118') || M.byId(s.referrals, 'REF-118') || s.referrals[0];
-  }
+  get ref() { const s = this.s; return M.byId(s.referrals, this.params.id || 'REF-118') || M.byId(s.referrals, 'REF-118') || s.referrals[0]; }
   fl(r) { return M.familyLinkFor(this.s, r.id); }
   el(r) { return M.eligibilityFor(this.s, r.id); }
   schedDefaults(r) {
@@ -105,158 +109,262 @@ register('Referral', class extends Screen {
     const time = booked?.when?.slice(11, 16) || prefs.find(t => !taken.has(t)) || prefs[0];
     return { who, date, time };
   }
-  renderVals() {
-    const s = this.s; const r = this.ref; if (!r) return { title: 'No referrals yet', crumb: '—', criteria: [] };
-    const f = r.form || {}; const fl = this.fl(r); const el = this.el(r);
-    const c = M.byId(s.clients, r.client);
-    const student = refStudent(s, r); const short = refShort(s, r);
-    const school = M.school(s, r.school);
-    const [stageLabel, stageCls] = stageChip(r);
-    const by = M.byId(s.school_users, r.referred_by);
-    const sched = this.state.sched || (this.state.sched = this.schedDefaults(r));
+
+  // ---------------------------------------------------------------------------------------------------------- the model
+  model() {
+    const s = this.s; const r = this.ref; if (!r) return null;
+    const fl = this.fl(r); const el = this.el(r); const c = M.byId(s.clients, r.client);
     const booked = s.screenings.find(x => x.referral === r.id && x.status === 'booked');
     const screened = s.screenings.find(x => x.referral === r.id && x.status === 'done');
-    const st = this.state;
+    return { s, r, fl, el, c, booked, screened, student: refStudent(s, r), short: refShort(s, r), school: M.school(s, r.school), elp: eligibilityPanel(s, r.id, this.me), crit: readCriteria(s, r, s.today), can: { run: this.can('eligibility.run'), refer: this.can('referrals') } };
+  }
+  can(cap) { return !!can(this.me, cap); }
+  link(v) { const smsEv = [...v.s.events].reverse().find(e => e.record === v.r.id && e.sms); return smsEv && v.fl ? { to: smsEv.sms.to, at: M.fmtDateTime(smsEv.at), text: smsEv.sms.text, link: `${location.origin}/f/${smsEv.sms.token || v.fl.token}`, expires: ruleValue(v.s, 'family_link.expires_days', 7) } : null; }
 
-    // eligibility chip (live)
-    let eligChip = '', eligCls = 'n';
-    if (el?.status === 'recorded') { eligChip = 'Eligibility ' + (r.eligibility || el.result); eligCls = el.result === 'active' ? 'g' : 'r'; }
-    else if (el?.status === 'details_received') { eligChip = 'Eligibility · details received — run the check'; eligCls = 'y'; }
-    else if (fl?.sent_at) { eligChip = 'Eligibility · waiting for the family link'; eligCls = 'n'; }
+  // ---------------------------------------------------------------------------------------------------------- render
+  renderVals() {
+    const v = this.model();
+    if (!v) return { body: raw(`<div class="a-case"><h1 class="a-h1">No referrals yet</h1>${ui.emptyState({ title: 'Nothing to show', action: { label: 'Back to Referrals', href: '#/Referrals' } })}</div>`) };
+    this.v = v;
+    if (!this.state.open) this.state.open = this.panel ? { [this.panel]: true } : this.defaultOpen(v);
+    return { body: raw(`<div class="a-case">${this.crumb(v)}${this.header(v)}${this.nextPanel(v)}<div class="a-secs">${PANELS.map(k => this.section(v, k)).join('')}</div></div>`) };
+  }
+  defaultOpen(v) {
+    const { r, fl, el } = v;
+    if (el && el.status === 'details_received') return { eligibility: true };
+    if (['needs_screening', 'waiting_on_school'].includes(r.stage) && !(fl && fl.sent_at)) return { link: true };
+    return { criteria: true };
+  }
+  crumb(v) { return `<nav class="a-crumb" aria-label="Breadcrumb"><a href="#/Referrals">Referrals</a><span aria-hidden="true">/</span><span aria-current="page">${esc(v.r.id)}</span></nav>`; }
+  header(v) {
+    const { r, s, school } = v; const by = M.byId(s.school_users, r.referred_by);
+    const meta = [school.name, r.history ? `Received ${M.fmtDate(r.received)} · school portal` : `Received ${M.fmtDateTime(r.received)} · Psyflo link${by ? ' · ' + by.role : ''}`].join(' · ');
+    const el = refElig(s, r);
+    return `<header class="a-chead"><div class="a-chead__main"><h1 class="a-h1">${esc(v.student)} <span class="a-id">${esc(r.id)}</span></h1><div class="a-chead__meta"><span>${esc(meta)}</span></div></div>
+      <div class="a-chead__r">${refChip(r)}${r.hold ? ui.chip('On hold', { tone: 'danger' }) : ''}${el ? ui.chip('Eligibility · ' + el.text, { tone: el.tone }) : ''}${ui.maturity('route.Referrals')}</div></header>`;
+  }
+  btn(x, label, o = {}) { return `<button type="button" class="ui-btn ui-btn--${o.tone || 'primary'}${o.sm ? ' ui-btn--sm' : ''}" data-x="${x}" data-ui-return="${x}"${o.data ? ' ' + o.data : ''}${o.disabled ? ' disabled' : ''}>${esc(label)}</button>`; }
+  alink(href, label, o = {}) { return `<a class="ui-btn ui-btn--${o.tone || 'secondary'}${o.sm ? ' ui-btn--sm' : ''}" href="${esc(href)}"${o.ext ? ' target="_blank" rel="noopener"' : ''}>${esc(label)}</a>`; }
+  why(t) { return `<span class="a-why">${esc(t)}</span>`; }
 
-    // form
-    const med = f.medicaid_per_school;
-    let medicaidText = '—', medicaidChip = '', medicaidCls = 'y';
-    if (med === 'yes_no_id' || med === 'yes' || med === true) { medicaidText = '"Yes" per the school'; medicaidChip = f.medicaid_id ? 'ID given — still checked only after the family link' : 'ID not provided'; }
-    else if (med === 'no' || med === false) { medicaidText = '"No" per the school'; medicaidChip = 'ask on the family link'; medicaidCls = 'n'; }
+  flow(v) {
+    const { r, fl, el, c, booked, screened, s } = v; const elp = v.elp;
+    const inService = ['in_service'].includes(r.stage);
+    const steps = [
+      { label: 'Referral', who: 'School', done: true, detail: `Received ${fmtDate(String(r.received).slice(0, 10))}` },
+      { label: 'Family link', who: 'Guardian', done: !!(fl && fl.submitted_at), detail: fl && fl.submitted_at ? fmtDateTime(fl.submitted_at) : fl && fl.opened_at ? 'Opened · not submitted' : fl && fl.sent_at ? 'Sent · not opened' : 'Not sent' },
+      { label: 'Eligibility', who: 'Authorized user', done: elp.recorded && elp.active, detail: elp.recorded ? (elp.active ? `Active${elp.el.plan ? ' · ' + M.payerShort(s, elp.el.plan) : ''}` : 'Not active') : elp.status === 'details' ? 'Check required' : 'After the link' },
+      { label: 'Screening call', who: 'Clinician', done: !!screened || ['in_intake', 'in_service'].includes(r.stage), detail: screened ? 'Processed in Lauris' : booked ? M.fmtDateTime(booked.when, { dow: true }) : 'Not booked' },
+      { label: 'Intake', who: 'Clinician', done: inService || !!(c && c.intake && c.intake.confirmed), detail: c && c.intake ? M.fmtDateTime(c.intake.when, { dow: true }) : inService ? 'In service' : 'After screening' }
+    ];
+    const cur = steps.findIndex(x => !x.done);
+    return `<ol class="a-flow a-flow--5" aria-label="Referral steps">${steps.map((st, i) => `<li class="a-flow__i${st.done ? ' is-done' : ''}${i === cur ? ' is-current' : ''}"${i === cur ? ' aria-current="step"' : ''}><span class="a-flow__dot" aria-hidden="true">${st.done ? ui.icon('check', 14) : i + 1}</span><div class="a-flow__c"><div class="a-flow__l">${esc(st.label)}${st.done ? '<span class="ui-sr"> (done)</span>' : ''}</div><div class="a-flow__w">${esc(st.who)}</div><div class="a-flow__d">${esc(st.detail)}</div></div></li>`).join('')}</ol>`;
+  }
+  // the state-driven primary action
+  primary(v) {
+    const { r, fl, el, c, booked, screened, elp } = v; const canAct = ['needs_screening', 'waiting_on_school', 'screening_booked'].includes(r.stage);
+    const out = { title: '', buttons: [], chips: '' };
+    const schedLabel = booked ? 'Reschedule call' : 'Book the call';
+    const grant = r.stage !== 'grant_program' && canAct ? this.btn('grant', 'Route to grant program', { tone: 'secondary' }) : '';
+    if (r.hold) { out.title = 'On hold'; out.chips = `<span class="a-sub">${esc(r.next || '')}</span>`; out.buttons = [this.btn('unhold', 'Lift hold')]; return out; }
+    if (r.stage === 'draft') { out.title = 'Draft at the school'; return out; }
+    if (r.stage === 'grant_program') { out.title = 'Grant program'; out.chips = `<span class="a-sub">${esc(r.next || '')}</span>`; out.buttons = [!r.history ? this.btn('sched', 'Schedule call anyway', { tone: 'secondary' }) : '', this.alink('#/Referrals?status=grant', 'Grant program list')]; return out; }
+    if (r.stage === 'declined') { out.title = 'Declined'; out.buttons = [this.alink('#/Referrals?status=all', 'Back to the list')]; return out; }
+    if (r.stage === 'in_service') { out.title = 'In service'; out.buttons = [this.alink('#/Authorizations', 'Open Authorizations')]; return out; }
+    if (r.stage === 'in_intake') {
+      out.title = 'In intake'; const offered = c && c.intake_offer;
+      out.chips = c && c.intake ? `<span class="a-sub">Intake booked · ${esc(M.fmtDateTime(c.intake.when, { dow: true }))}${c.intake.ride ? ' · ride needed' : ''}</span>` : offered ? `<span class="a-sub">Family asked to book the intake · ${esc(M.fmtDate(offered.at))}</span>` : '';
+      out.buttons = [this.alink('ExtScreening.dc.html?referral=' + r.id, screened ? 'Open in Lauris' : 'Open the screening', { tone: 'primary' }), screened && c && !c.intake && !c.intake_offer ? this.btn('intake', 'Family books intake', { tone: 'secondary' }) : ''];
+      return out;
+    }
+    if (r.stage === 'screening_booked') {
+      out.title = 'Screening booked'; out.chips = booked ? `<span class="a-sub">${esc(M.staff(v.s, booked.who).name)} · ${esc(M.fmtDateTime(booked.when, { dow: true }))}</span>` : '';
+      out.buttons = [this.alink('ExtScreening.dc.html?referral=' + r.id, 'Open in Lauris', { tone: 'primary' }), this.btn('sched', schedLabel, { tone: 'secondary' }), grant];
+      return out;
+    }
+    // needs_screening / waiting_on_school
+    if (!(fl && fl.sent_at)) {
+      out.title = 'Reach the guardian'; out.chips = `${ui.maturity('family.link')}`;
+      out.buttons = [this.btn('sendlink', 'Send the family link'), this.btn('sched', 'Book it for them', { tone: 'secondary' }), grant];
+    } else if (!fl.submitted_at) {
+      out.title = 'Waiting for the guardian'; out.chips = `<span class="a-sub">${esc(fl.opened_at ? 'Opened · not submitted' : 'Sent · not opened')}</span>${ui.maturity('family.link')}`;
+      out.buttons = [this.btn('sendlink', 'Send the link again', { tone: 'secondary' }), this.btn('sched', 'Book it for them', { tone: 'secondary' }), grant];
+    } else if (elp.status === 'details') {
+      out.title = 'Check eligibility'; out.buttons = [this.btn('open-sec', 'Run the check', { data: 'data-sec="eligibility"' }), grant];
+    } else if (elp.recorded && elp.active) {
+      out.title = 'Schedule the screening'; out.chips = `<span class="a-sub">Eligible · ${esc(elp.el.plan ? M.payerShort(v.s, elp.el.plan) : '')}</span>`;
+      const offerable = !booked && !r.screening_offer;
+      out.buttons = [this.btn('sched', schedLabel), offerable ? this.btn('offer', 'Family books the call', { tone: 'secondary' }) : '', grant];
+      if (r.screening_offer) out.chips += `<span class="a-sub">Family asked to book · ${esc(M.fmtDate(r.screening_offer.at))}</span>`;
+    } else if (elp.recorded) {
+      out.title = 'Not active'; out.buttons = [this.btn('hold', 'Hold and tell the family'), this.btn('grant', 'Route to grant program', { tone: 'secondary' })];
+    } else { out.title = 'Next'; out.buttons = [this.btn('sched', 'Book it for them', { tone: 'secondary' }), grant]; }
+    return out;
+  }
+  nextPanel(v) {
+    const p = this.primary(v);
+    return `<section class="a-card a-next" aria-labelledby="a-next-h"><div class="a-next__h"><h2 id="a-next-h">Next step</h2></div>${this.flow(v)}<div class="a-next__b"><div class="a-next__t">${esc(p.title)}</div>${p.chips ? `<div class="a-next__dl">${p.chips}</div>` : ''}<div class="a-btnrow">${p.buttons.filter(Boolean).join('')}</div></div></section>`;
+  }
+
+  // ---- sections
+  section(v, key) {
+    const open = !!this.state.open[key]; const { sum, body, chip } = this['sec_' + key](v);
+    return `<details class="a-card a-sec" data-sec="${key}" id="sec-${key}"${open ? ' open' : ''}><summary><span class="a-sec__t">${esc(PANEL_TITLE[key])}</span>${chip || ''}<span class="a-sec__s">${esc(sum)}</span>${ui.icon('chevD', 16)}</summary><div class="a-sec__b">${body}</div></details>`;
+  }
+  sec_form(v) {
+    const { r, s } = v; const f = r.form || {}; const med = f.medicaid_per_school;
+    let medicaidText = '—', medicaidChip = '';
+    if (med === 'yes_no_id' || med === 'yes' || med === true) { medicaidText = '"Yes" per the school'; medicaidChip = f.medicaid_id ? 'ID given · checked only after the family link' : 'ID not provided'; }
+    else if (med === 'no' || med === false) { medicaidText = '"No" per the school'; medicaidChip = 'ask on the family link'; }
     else if (med) { medicaidText = '"Not sure" per the school'; medicaidChip = 'ask on the family link'; }
-    const attKeys = Object.keys(f.attachments || {});
-    const iepCopy = attKeys.some(k => /iep/i.test(k) && f.attachments[k]);
+    const attKeys = Object.keys(f.attachments || {}); const iepCopy = attKeys.some(k => /iep/i.test(k) && f.attachments[k]);
     const iepText = f.iep == null ? '—' : yes(f.iep) ? (/504/.test(String(f.iep)) ? '504 plan' : 'IEP') + (iepCopy ? ' · copy attached' : '') : 'None';
     const ticked = (f.concerns || []).map(x => String(x).toLowerCase());
     const isOn = name => ticked.some(t => t === name.toLowerCase() || t.split(/[ /]/)[0] === name.toLowerCase().split(/[ /]/)[0]);
-    const concerns = CONCERNS.map(name => ({ name, on: isOn(name) ? 'on' : '' }))
-      .concat((f.concerns || []).filter(x => !CONCERNS.some(n => n.toLowerCase().split(/[ /]/)[0] === String(x).toLowerCase().split(/[ /]/)[0])).map(name => ({ name, on: 'on' })));
-    const attachments = attKeys.map(k => { const v = f.attachments[k]; const name = ATTACH[k] || (typeof v === 'string' ? v : k.replace(/_/g, ' ')); return v ? { cls: 'g', text: name + ' ✓' } : { cls: 'r', text: name + ' — missing' }; });
-    if (!attachments.length) attachments.push({ cls: 'n', text: r.form ? 'None attached' : '—' });
+    const concerns = CONCERNS.map(name => ({ name, on: isOn(name) })).concat((f.concerns || []).filter(x => !CONCERNS.some(n => n.toLowerCase().split(/[ /]/)[0] === String(x).toLowerCase().split(/[ /]/)[0])).map(name => ({ name, on: true })));
+    const attachments = attKeys.map(k => { const val = f.attachments[k]; const name = ATTACH[k] || (typeof val === 'string' ? val : k.replace(/_/g, ' ')); return val ? ui.chip(name + ' · attached', { tone: 'success', size: 'sm' }) : ui.chip(name + ' · missing', { tone: 'danger', size: 'sm' }); });
     const rf = (f.referral_for || []).map(x => String(x).toLowerCase());
-    const referralFor = ['TDT', 'Outpatient counseling', 'SEBS'].map(name => ({ name, on: rf.some(x => x.startsWith(name.toLowerCase().split(' ')[0])) ? 'on' : '' }));
-
-    // criteria
-    const crit = readCriteria(s, r, s.today);
-    const criteria = crit.list.map((x, i) => ({ ...x, icon: raw(ICON[x.status]), style: i === 0 ? 'margin-top:6px' : '' }));
-    const missing = [];
-    attKeys.filter(k => !f.attachments[k]).forEach(k => missing.push(`${ATTACH[k] || k.replace(/_/g, ' ')} from the school${r.form?.asked_on ? ' (asked ' + M.fmtDate(r.form.asked_on) + ')' : ''}`));
-    if (!fl?.submitted_at) missing.push('Insurance details — from the family link (the eligibility check runs when it is submitted)');
-    if (!fl?.steps?.guardian && !fl?.submitted_at) missing.push('Guardian details and consent to contact (family link)');
-    if (crit.list.find(x => x.key === 'c2')?.status === 'ask' && f.interventions_tried) missing.push('Outcome of the school\'s interventions — ask the counselor, not the family');
-    const missingText = missing.length ? missing.map((m, i) => `${i + 1}. ${m}`).join('  ·  ') : 'Nothing — ready for the screening call.';
-
-    // family link card
-    const sent = !!fl?.sent_at, opened = !!fl?.opened_at, submitted = !!fl?.submitted_at;
-    const done = k => submitted || !!fl?.steps?.[k];
-    const stepChip = ok => ok ? { chip: 'done', cls: 'g' } : sent ? { chip: 'not yet', cls: 'y' } : { chip: 'not yet', cls: 'n' };
-    const flRows = [
-      { text: sent ? 'Sent by SMS to the guardian · ' + M.fmtDateTime(fl.sent_at) : 'Not sent yet · the guardian gets a text with the link', ...(submitted ? { chip: 'submitted', cls: 'g' } : opened ? { chip: 'opened', cls: 'g' } : sent ? { chip: 'sent · not opened yet', cls: 'y' } : { chip: 'not sent', cls: 'n' }), style: 'border-top:0' },
-      { text: 'Guardian name, relationship, phone, address, preferred language', ...stepChip(done('guardian')) },
-      { text: 'Member Medicaid ID · DOB', ...stepChip(done('insurance')) },
-      { text: 'Consent to be contacted by Harvest · best times to call', ...stepChip(done('consent') && done('best_time')) },
-      { text: 'Transportation: can you get to an in-person intake?', ...stepChip(done('transport')) }
+    const box = x => `<span class="a-box"><i class="${x.on ? 'on' : ''}" aria-hidden="true"></i>${esc(x.name)}<span class="ui-sr">${x.on ? ' (ticked)' : ' (not ticked)'}</span></span>`;
+    const body = !r.form ? ui.emptyState({ title: 'No form answers in the demo data', body: `Only the summary: "${r.next || M.REF_STAGE[r.stage] || r.stage}".` }) :
+      `<div class="a-grid3"><div class="a-kv"><div class="a-kv__l">Medicaid</div>${esc(medicaidText)}${medicaidChip ? '<div class="a-sub">' + esc(medicaidChip) + '</div>' : ''}</div><div class="a-kv"><div class="a-kv__l">IEP / 504</div>${esc(iepText)}</div><div class="a-kv"><div class="a-kv__l">Guardian informed</div>${f.guardian_informed == null ? '—' : yes(f.guardian_informed) ? 'Yes' : 'No'}</div></div>
+       <h3 class="a-h3">Concerns in the last 30 days</h3><div>${concerns.map(box).join('')}</div>
+       <h3 class="a-h3">Interventions already tried</h3><p>${f.interventions_tried ? esc(`"${f.interventions_tried}"`) : '—'}</p>
+       <h3 class="a-h3">Attachments</h3><div class="a-chips a-chips--wrap">${attachments.join('') || '<span class="ui-muted">None attached</span>'}</div>
+       <h3 class="a-h3">Referral for</h3><div>${['TDT', 'Outpatient counseling', 'SEBS'].map(name => box({ name, on: rf.some(x => x.startsWith(name.toLowerCase().split(' ')[0])) })).join('')}</div>`;
+    return { sum: r.form ? `${(f.concerns || []).length} concerns · ${attKeys.filter(k => f.attachments[k]).length} of ${attKeys.length} attachments` : 'Summary only', body };
+  }
+  missingList(v) {
+    const { r, fl, crit } = v; const f = r.form || {}; const attKeys = Object.keys(f.attachments || {}); const missing = [];
+    attKeys.filter(k => !f.attachments[k]).forEach(k => missing.push(`${ATTACH[k] || k.replace(/_/g, ' ')} from the school${f.asked_on ? ' (asked ' + M.fmtDate(f.asked_on) + ')' : ''}`));
+    if (!fl?.submitted_at) missing.push('Insurance details, from the family link');
+    if (!fl?.steps?.guardian && !fl?.submitted_at) missing.push('Guardian details and consent to contact, from the family link');
+    if (crit.list.find(x => x.key === 'c2')?.status === 'ask' && f.interventions_tried) missing.push("Outcome of the school's interventions: ask the counselor, not the family");
+    return missing;
+  }
+  sec_criteria(v) {
+    const { crit } = v; const missing = this.missingList(v);
+    const items = crit.list.map(x => `<li class="a-cr a-cr--${x.status}">${ui.icon(CRIT_ICON[x.status] || 'dot', 18)}<div><b>${esc(x.title)}</b> ${esc(x.body)}${x.still ? ` <span class="a-cr__ask">Still needs ${esc(x.still)}</span>` : ''}${x.ask ? `<div class="a-cr__ask">${esc(x.ask)}</div>` : ''}</div></li>`).join('');
+    const miss = missing.length ? `<h3 class="a-h3">Missing</h3><ul class="a-ass">${missing.map(m => `<li>${ui.evidenceChip({ state: 'missing', label: m })}</li>`).join('')}</ul>` : '<p class="ui-muted">Nothing missing: ready for the screening call.</p>';
+    return { sum: `2 needed · ${crit.shown} shown`, chip: missing.length ? ui.chip(`${missing.length} missing`, { tone: 'warning', size: 'sm', icon: 'alert' }) : '', body: `<div class="a-chips a-chips--wrap">${ui.chip('DMAS TDT initial SRA, Section I', { tone: 'outline', size: 'sm' })}${ui.sourceChip('official', { source: 'Initial SRA form and Chapter IV', note: '2 of 3 criteria and 1 of 5 level of care' })}</div><ul class="a-crl">${items}</ul>${miss}` };
+  }
+  sec_link(v) {
+    const { r, fl } = v; const sent = !!fl?.sent_at, opened = !!fl?.opened_at, submitted = !!fl?.submitted_at; const done = k => submitted || !!fl?.steps?.[k];
+    const chip = ok => ok ? ui.chip('Done', { tone: 'success', size: 'sm' }) : ui.chip('Not yet', { tone: sent ? 'warning' : 'neutral', size: 'sm' });
+    const rows = [
+      [sent ? `Sent by text to the guardian · ${M.fmtDateTime(fl.sent_at)}` : 'Not sent yet', submitted ? ui.chip('Submitted', { tone: 'success', size: 'sm' }) : opened ? ui.chip('Opened', { tone: 'success', size: 'sm' }) : sent ? ui.chip('Sent · not opened', { tone: 'warning', size: 'sm' }) : ui.chip('Not sent', { tone: 'neutral', size: 'sm' })],
+      ['Guardian name, relationship, phone, language', chip(done('guardian'))], ['Medicaid ID and date of birth', chip(done('insurance'))], ['Consent to be contacted · best times', chip(done('consent') && done('best_time'))], ['Transportation to an in-person intake', chip(done('transport'))]
     ];
-    const smsEv = [...s.events].reverse().find(e => e.record === r.id && e.sms);
-    const sms = smsEv && fl ? { to: smsEv.sms.to, at: M.fmtDateTime(smsEv.at), text: smsEv.sms.text, link: `${location.origin}/f/${smsEv.sms.token || fl.token}`, expires: s.settings?.family_link?.expires_days || 7 } : null;
-    const familyHref = fl ? 'FamilyLink.dc.html?t=' + fl.token : 'FamilyLink.dc.html?preview=1';
-
-    // eligibility card
-    const elRows = [];
-    if (el?.lookup?.medicaid_id || el?.status === 'recorded') elRows.push({ text: 'Medicaid ID', chip: (el.lookup?.medicaid_id || fl?.answers?.medicaid_id || 'on file') + ' · from the family link', cls: 'g' });
-    else elRows.push({ text: 'Medicaid ID', chip: 'not yet · asked on the family link (step 2)', cls: 'y' });
-    if (el?.status === 'recorded') elRows.push({ text: 'Check result', chip: `${r.eligibility || el.result} · checked ${M.fmtDate(el.checked_at)} by ${M.staffShort(s, el.checked_by)}`, cls: el.result === 'active' ? 'g' : 'r' });
-    else if (el?.status === 'details_received') elRows.push({ text: 'Check result', chip: 'details received — run the check', cls: 'y' });
-    else elRows.push({ text: 'Check result', chip: 'waiting for the family link', cls: 'n' });
-    elRows.push(el?.status === 'recorded' ? { text: 'Where the proof is kept', chip: `${el.screenshot} · in Psyflo, not in Lauris`, cls: 'g' } : { text: 'Where the proof is kept', chip: 'in Psyflo, with date and screenshot — not in Lauris', cls: 'n' });
-    if (el?.status === 'recorded') elRows.push({ text: 'Next weekly re-check', chip: M.fmtDate(el.next_check, { dow: true }), cls: 'n' });
-    elRows.push({ text: 'If no Medicaid: route to the DOE grant program (no diagnosis required)', chip: r.stage === 'grant_program' ? 'routed' : el?.result === 'inactive' ? 'route to the grant program' : 'n/a', cls: r.stage === 'grant_program' ? 'n' : el?.result === 'inactive' ? 'r' : 'n' });
-    elRows[0].style = 'border-top:0';
-    const elRecorded = el?.status === 'recorded';
-    const screenHref = 'ExtScreening.dc.html?referral=' + r.id;
-
-    // call details for the dialog
-    const g = submitted ? fl.answers : null;
-    const guardian = c?.guardian || {};
-    const callWho = (g?.relationship || guardian.relationship || 'Guardian').replace(/^\w/, ch => ch.toUpperCase());
-    const callPhone = g?.phone || guardian.phone || 'phone from the family link';
-    const best = String(fl?.answers?.best_time || '');
-    const timeOpts = [['14:00', '2:00 pm'], ['10:00', '10:00 am'], ['15:30', '3:30 pm']].map(([v, t]) => ({ v, t: t + ((/afternoon/i.test(best) && v === '14:00') || (/morning/i.test(best) && v === '10:00') ? ` (guardian said ${/afternoon/i.test(best) ? 'afternoons' : 'mornings'})` : ''), sel: sched.time === v ? 'selected' : '' }));
-    if (!timeOpts.some(o => o.sel)) timeOpts.push({ v: sched.time, t: M.fmtTime('2000-01-01T' + sched.time), sel: 'selected' });
-    const whoOpts = s.staff.filter(x => x.role === 'clinician').map(x => ({ v: x.id, t: x.name + (x.credential ? ', ' + x.credential : ''), sel: sched.who === x.id ? 'selected' : '' }));
-
-    const canAct = ['needs_screening', 'waiting_on_school', 'screening_booked'].includes(r.stage);
-    const doneTexts = {
-      sched: () => { const b = booked; return b ? `Screening call saved: ${M.staff(s, b.who).name}, ${M.fmtDateTime(b.when, { dow: true })}.${st.text ? ' Guardian texted (SMS stub).' : ''}${st.ask ? ' Counselor asked for schedule and grades.' : ''} To-do added to Do next and to the Lauris panel.` : 'Screening call saved.'; },
-      grant: () => `Routed to the DOE grant program. Emailed the grant program lead (secure link); emailed and texted the ${school.name.split('·').pop().trim()} site supervisor; told the school counselor (email stubs, logged). Now under Referrals › Grant program.`,
-      offer: () => `Texted ${sms?.to || 'the guardian'} a link to book the screening call on the parent portal (SMS stub). The open times come from the clinicians' calendars; when the family picks one it lands on Do next and in the Lauris panel.`,
-      intake: () => `Texted ${sms?.to || 'the guardian'} a link to book the in-person intake on the parent portal (SMS stub). They can ask for a ride there; a ride request lands on Do next.`,
-      link: () => `Family link sent by text to ${sms?.to || 'the guardian'} (SMS stub). When the guardian submits it, the eligibility check opens with the lookup details prepared.`
-    };
-    return {
-      crumb: `${r.id} · ${c && !['needs_screening', 'waiting_on_school', 'screening_booked'].includes(r.stage) ? 'student' : 'new student'} · ${school.name}`,
-      stageLabel, stageCls, eligChip, eligCls,
-      receivedText: r.history ? `Received ${M.fmtDate(r.received)} · school portal` : `Submitted via Psyflo link · ${M.fmtDateTime(r.received)}${by ? ' · ' + by.role : ''}`,
-      title: `Referral ${r.id} · ${student} · ${school.name.replace(' · ', ' ')}`,
-      canAct, canGrant: r.stage !== 'grant_program',
-      // Nov 7: the family books the screening call (and later the intake) on the parent portal; booking for them stays as a fallback
-      canOffer: !booked && !r.screening_offer && ['needs_screening', 'waiting_on_school'].includes(r.stage),
-      offerNote: !booked && r.screening_offer ? 'Family asked to book · ' + M.fmtDate(r.screening_offer.at) : '',
-      schedCls: !booked && ['needs_screening', 'waiting_on_school'].includes(r.stage) ? 'o' : 'p',
-      schedLabel: booked ? 'Reschedule screening call' : r.screening_offer ? 'Book it for them' : 'Book it for them instead',
-      canIntakeOffer: !!(screened && c && !c.intake && !c.intake_offer && ['in_intake'].includes(r.stage)),
-      intakeNote: c?.intake ? `Intake booked · ${M.fmtDateTime(c.intake.when, { dow: true })}${c.intake.ride ? ' · ride needed' : ''}` : c?.intake_offer ? 'Family asked to book the intake · ' + M.fmtDate(c.intake_offer.at) : '',
-      offerFamily: async () => { await this.do('screening.offer', { referral: r.id, by: this.me?.id || 'jperez' }); this.setState({ dlg: null, done: 'offer' }); },
-      offerIntake: async () => { await this.do('intake.offer', { client: c.id, referral: r.id, by: this.me?.id || 'jperez' }); this.setState({ dlg: null, done: 'intake' }); },
-      grantUndo: r.stage === 'grant_program' && !r.history,
-      laterHref: r.stage === 'grant_program' ? 'Referrals.dc.html?f=grant' : (r.stage === 'declined' || r.history) ? 'Referrals.dc.html?f=all' : screenHref,
-      laterLabel: r.stage === 'grant_program' ? 'Grant program list' : (r.stage === 'declined' || r.history) ? 'Back to the list' : (screened ? 'Screening in Lauris' : 'Open in Lauris'),
-      showSched: st.dlg === 'sched', showGrant: st.dlg === 'grant', showDone: !!st.done && !st.dlg,
-      doneText: st.done ? doneTexts[st.done]() : '', doneHref: st.done === 'grant' ? 'Referrals.dc.html?f=grant' : 'ExtHome.dc.html', doneLink: st.done === 'grant' ? 'see the Grant program list →' : 'see it in the Lauris panel →',
-      short, today: s.today, sched, whoOpts, timeOpts, callWho, callPhone,
-      callSrc: submitted ? 'from family link' : 'from the school', callCls: submitted ? 'g' : 'n',
-      textChecked: st.text ? 'checked' : '', askChecked: st.ask ? 'checked' : '',
-      saveSchedLabel: st.text ? 'Save and text the guardian' : 'Save',
-      whyOpts: ['No Medicaid', 'Medicaid lapsed', 'Family declined Medicaid service'].map(t => ({ t, sel: st.why === t ? 'selected' : '' })),
-      schoolShort: school.name.split('·').pop().trim(),
-      noForm: r.form ? '' : `The school's form answers for ${r.id} are not in the demo data — only the summary: "${r.next || M.REF_STAGE[r.stage] || r.stage}".`,
-      medicaidText, medicaidChip, medicaidCls, iepText, informedText: f.guardian_informed == null ? '—' : yes(f.guardian_informed) ? 'Yes' : 'No',
-      concerns, triedText: f.interventions_tried ? `"${f.interventions_tried}"` : '—', attachments, referralFor,
-      criteria, critChip: `2 criteria needed · ${crit.shown} shown`, critCls: crit.shown >= 2 ? 'g' : 'y',
-      missingTitle: screened ? 'Still open from the referral' : missing.length ? 'Missing before the screening call' : 'Before the screening call', missingText,
-      flRows, sms, canSend: !submitted && !['grant_program', 'declined', 'in_service'].includes(r.stage), sendCls: sent ? 'o' : 'p', sendLabel: sent ? 'Send the link again' : 'Send the family link',
-      callHref: booked || elRecorded || screened ? (r.history ? '' : screenHref) : canAct ? '#sched' : '', familyHref,
-      elRows, elHref: 'Eligibility.dc.html?referral=' + r.id, elBtn: elRecorded ? 'Open the eligibility check' : el?.status === 'details_received' ? 'Run the eligibility check' : 'Open the eligibility check', elBtnCls: el?.status === 'details_received' ? 'p' : 'o',
-      laurisHref: elRecorded ? screenHref : '',
-      openSched: () => this.setState({ dlg: 'sched', done: null, sched: this.schedDefaults(r) }),
-      openGrant: () => this.setState({ dlg: 'grant', done: null }),
-      closeAll: () => this.setState({ dlg: null }),
-      setWho: e => { sched.who = e.target.value; }, setDate: e => { sched.date = e.target.value; }, setTime: e => { sched.time = e.target.value; },
-      setText: e => this.setState({ text: e.target.checked }), setAsk: e => { this.state.ask = e.target.checked; },
-      setWhy: e => { this.state.why = e.target.value; },
-      saveSched: async () => {
-        if (!sched.date) return this.toast('Pick a date', 'err');
-        await this.do('referral.scheduleAndText', { id: r.id, who: sched.who, when: `${sched.date}T${sched.time}`, text_guardian: st.text, ask_counselor: st.ask, by: this.me?.id });
-        this.setState({ dlg: null, done: 'sched' });
-      },
-      saveGrant: async () => { await this.do('referral.routeAndNotify', { id: r.id, why: st.why, by: this.me?.id || 'jperez' }); this.setState({ dlg: null, done: 'grant' }); }
-    };
+    const sms = this.link(v);
+    const smsHtml = sms ? `<div class="a-sms"><div class="a-sms__l">Text message ${ui.maturity('family.link')}<span>Nothing leaves the demo</span></div><div><b>To:</b> ${esc(sms.to)} · ${esc(sms.at)}</div><div>${esc(sms.text)}<a id="fl-link" href="${esc(sms.link)}" target="_blank" rel="noopener">${esc(sms.link)}</a></div><div class="a-sub">Opens the family link on a phone · expires in ${esc(sms.expires)} days</div></div>` : '';
+    const canSend = !submitted && !['grant_program', 'declined', 'in_service'].includes(r.stage);
+    const booked = v.booked, screened = v.screened, elp = v.elp;
+    const callHref = booked || elp.recorded || screened ? (r.history ? '' : 'ExtScreening.dc.html?referral=' + r.id) : '';
+    const acts = [canSend && sent ? this.btn('sendlink', 'Send the link again', { tone: 'secondary', sm: true }) : '', callHref ? this.alink(callHref, 'Fill the rest on the call', { sm: true }) : '', this.alink(fl ? 'FamilyLink.dc.html?t=' + fl.token : 'FamilyLink.dc.html?preview=1', 'See what the family sees', { sm: true })].filter(Boolean).join('');
+    return { sum: submitted ? 'Submitted' : opened ? 'Opened' : sent ? 'Sent' : 'Not sent', chip: ui.maturity('family.link'), body: `<ul class="a-docs">${rows.map(([t, c]) => `<li class="a-doc"><div>${esc(t)}</div><div>${c}</div></li>`).join('')}</ul>${smsHtml}<div class="a-btnrow">${acts}</div>` };
   }
-  get anchors() {
-    return {
-      sendlink: async () => {
-        const r = this.ref;
-        await this.do('familyLink.send', { referral: r.id, by: this.me?.id || 'jperez' });
-        this.setState({ done: 'link', dlg: null });
-      },
-      sched: () => this.setState({ dlg: 'sched', done: null, sched: this.schedDefaults(this.ref) })
-    };
+  sec_eligibility(v) {
+    const { r, s } = v; const e = v.elp; const el = e.el;
+    const flow = `<ol class="a-flow a-flow--5" aria-label="Eligibility steps">${e.steps.map((st, i) => `<li class="a-flow__i${st.done ? ' is-done' : ''}${st.current ? ' is-current' : ''}"${st.current ? ' aria-current="step"' : ''}><span class="a-flow__dot" aria-hidden="true">${st.done ? ui.icon('check', 14) : i + 1}</span><div class="a-flow__c"><div class="a-flow__l">${esc(st.label)}${st.done ? '<span class="ui-sr"> (done)</span>' : ''}</div><div class="a-flow__d">${esc(st.detail)}</div></div></li>`).join('')}</ol>`;
+    let body = flow;
+    const lk = e.lookup || {}; const c = e.client;
+    const dmas = `${api.config.extURL}/dmas/lookup?id=${encodeURIComponent(lk.medicaid_id || '')}&dob=${encodeURIComponent(lk.dob || '')}`;
+    const showForm = e.status === 'details' || (e.recorded && (this.state.recheck || e.due));
+    if (e.status === 'waiting') body += `<p class="ui-muted">The check runs after the guardian submits the family link. Never from the school's form alone.</p>`;
+    if (showForm) {
+      const f = this.state.el || (this.state.el = { result: 'active', plan: (M.byId(s.payers, v.fl?.answers?.plan) ? v.fl.answers.plan : el?.plan) || '', effective: el?.effective || '' });
+      const dob = lk.dob ? (/^\d{4}-\d{2}-\d{2}$/.test(lk.dob) ? M.fmtDate(lk.dob, { year: true }) : lk.dob) : '—';
+      body += `<h3 class="a-h3">${e.recorded ? 'Re-check' : 'Lookup details'}</h3><div class="a-grid3"><div class="a-kv"><div class="a-kv__l">Member</div>${esc(c ? `${c.initials}${c.age ? ', ' + c.age : ''}` : v.student)}</div><div class="a-kv"><div class="a-kv__l">Medicaid ID</div>${esc(lk.medicaid_id || 'Not given on the link')}</div><div class="a-kv"><div class="a-kv__l">Date of birth</div>${esc(dob)}</div></div>
+        <div class="a-btnrow">${v.can.run ? `<a class="ui-btn ui-btn--secondary" href="${esc(dmas)}" target="_blank" rel="noopener">Open the DMAS lookup${ui.icon('external', 14)}</a>${ui.maturity('route.Eligibility')}` : this.why('Needs an authorized user')}</div>
+        ${v.can.run ? `<div class="a-form"><label class="ui-field"><span class="ui-field__l">What DMAS shows</span><select class="ui-select" id="a-el-r"><option value="active"${f.result === 'active' ? ' selected' : ''}>Active</option><option value="inactive"${f.result === 'inactive' ? ' selected' : ''}>Not active</option></select></label>
+        <label class="ui-field"><span class="ui-field__l">Plan</span><select class="ui-select" id="a-el-p"><option value="">${f.result === 'active' ? 'Pick the plan DMAS shows' : 'None'}</option>${s.payers.map(p => `<option value="${esc(p.id)}"${f.plan === p.id ? ' selected' : ''}>${esc(p.name)}</option>`).join('')}</select></label>
+        <label class="ui-field"><span class="ui-field__l">Effective</span><input class="ui-input" id="a-el-e" type="date" value="${esc(f.effective)}"></label>${this.btn('record', 'Record result')}</div><p class="a-sub">Kept in Psyflo with the date, who checked and a dated proof. A person types the result; Psyflo never logs in to DMAS.</p>` : ''}`;
+    }
+    if (e.recorded) {
+      const plan = el.plan && M.byId(s.payers, el.plan) ? M.payerShort(s, el.plan) : '';
+      body += `<h3 class="a-h3">Result</h3><dl class="a-dl2">${[
+        ['Result', `${ui.chip(el.result === 'active' ? 'Active' : 'Not active', { tone: el.result === 'active' ? 'success' : 'danger' })}${plan ? ' ' + esc(plan) : ''}${el.effective ? ' · effective ' + esc(M.fmtDate(el.effective, { year: true })) : ''}`],
+        ['Checked', `${esc(M.staff(s, el.checked_by).name)} · ${esc(M.fmtDateTime(el.checked_at))}`],
+        ['Source', `DMAS lookup, simulated ${ui.maturity('route.Eligibility')} · ${esc(el.screenshot || 'dated proof')}${el.file ? ` <a href="${esc(el.file)}" target="_blank" rel="noopener">Open proof</a>` : ' <button type="button" class="ui-linkbtn" data-x="proof" data-i="' + (e.history.length - 1) + '">View proof</button>'}`],
+        ['Next check', el.next_check ? `${esc(M.fmtDate(el.next_check, { dow: true }))} ${ui.sourceChip(e.every)} ${e.due ? ui.chip('Due', { tone: 'warning', size: 'sm' }) : ''}` : 'Not configured']
+      ].map(([k, val]) => `<div><dt>${esc(k)}</dt><dd>${val}</dd></div>`).join('')}</dl>`;
+      const acts = [!e.due && !this.state.recheck ? this.btn('recheck', 'Record a re-check', { tone: 'secondary', sm: true }) : this.state.recheck ? this.btn('recheck', 'Cancel re-check', { tone: 'secondary', sm: true }) : '', v.r.hold ? this.btn('unhold', 'Lift the hold', { tone: 'secondary', sm: true }) : this.btn('hold', 'Hold and tell the family', { tone: 'secondary', sm: true }), el.result === 'inactive' && r.stage !== 'grant_program' ? this.btn('grant', 'Route to grant program', { tone: 'secondary', sm: true }) : ''].filter(Boolean).join('');
+      body += `<div class="a-btnrow">${acts}</div>`;
+      if (e.history.length) body += `<h3 class="a-h3">Checks</h3><table class="a-hist"><caption class="ui-sr">Eligibility checks</caption><thead><tr><th scope="col">Date</th><th scope="col">Result</th><th scope="col">Plan</th><th scope="col">Proof</th></tr></thead><tbody>${e.history.map(h => `<tr><td>${esc(M.fmtDate(h.at))}</td><td>${ui.chip(h.result === 'active' ? 'Active' : 'Not active', { tone: h.result === 'active' ? 'success' : 'danger', size: 'sm' })}</td><td>${esc(h.plan || '—')}</td><td>${h.file ? `<a href="${esc(h.file)}" target="_blank" rel="noopener">${esc(h.shot || 'Proof')}</a>` : `<button type="button" class="ui-linkbtn" data-x="proof" data-i="${h.i}">${esc(h.shot || 'View')}</button>`}</td></tr>`).join('')}${e.nextCheck ? `<tr><td>${esc(M.fmtDate(e.nextCheck))}</td><td>${ui.chip('Scheduled', { tone: 'neutral', size: 'sm' })}</td><td>—</td><td></td></tr>` : ''}</tbody></table>`;
+    }
+    const cur = e.steps.find(x => x.current);
+    return { sum: e.recorded ? `${e.active ? 'Active' : 'Not active'} · checked ${M.fmtDate(el.checked_at)}` : cur ? cur.label : 'Waiting', chip: ui.maturity('route.Eligibility'), body };
   }
-  set anchors(v) { }
+  sec_consent(v) {
+    const { r, s } = v; const cid = r.client; const con = consentOf(s, cid); const ck = clock30(s, cid);
+    const modeText = { remote_allowed: 'Remote signature allowed', in_person_required: 'In person required', pending_validation: 'Pending validation' }[con.mode] || con.mode;
+    const consentRows = [['Consent for services', con.signed ? `${ui.chip('Signed', { tone: 'success', size: 'sm' })} ${esc(con.record.signer)} · ${esc(M.fmtDateTime(con.record.signed_at))}${con.versions > 1 ? ` · ${con.versions} versions kept` : ''}` : ui.chip('Not signed', { tone: 'neutral', size: 'sm' })], ['Signature mode', `${esc(modeText)} ${ui.sourceChip(con.rule)} ${ui.chip('Policy not validated', { tone: 'outline', size: 'sm' })}`]];
+    const dl = rows => `<dl class="a-dl2">${rows.map(([k, val]) => `<div><dt>${esc(k)}</dt><dd>${val}</dd></div>`).join('')}</dl>`;
+    const evName = { consent_signed: 'consent signed', screening_processed: 'screening processed', intake_processed: 'intake processed' };
+    const clockRows = ck.start ? [['Starts', `${esc(M.fmtDate(ck.start, { year: true }))} · ${esc(evName[ck.event] || ck.event)}${ck.fallback ? ` ${ui.chip(`Wanted: ${evName[ck.want]}`, { tone: 'warning', size: 'sm' })}` : ''} ${ui.sourceChip(ck.startRule)}`], ['Send by', `${esc(M.fmtDate(ck.sendBy, { year: true }))} · ${ck.daysLeft < 0 ? esc(-ck.daysLeft + ' days past') : esc(ck.daysLeft + ' days left')} of ${esc(ck.days)} ${ui.sourceChip(ck.rule)}`]] : [['Starts', `When ${esc(evName[ck.want] || ck.want)} ${ui.sourceChip(ck.startRule)}`], ['Send by', `${esc(ck.days)} days after that ${ui.sourceChip(ck.rule)}`]];
+    return { sum: con.signed ? `Consent signed · ${ck.sendBy ? 'send by ' + M.fmtDate(ck.sendBy) : 'clock not started'}` : ck.sendBy ? `Send by ${M.fmtDate(ck.sendBy)}` : 'Clock not started', body: `${dl(consentRows)}<h3 class="a-h3">Initial request clock</h3>${dl(clockRows)}` };
+  }
+
+  // ---------------------------------------------------------------------------------------------------------- wiring
+  after(root) {
+    const H = {
+      sendlink: () => this.sendLink(), sched: () => this.sched(), grant: () => this.grant(), offer: () => this.offer(), intake: () => this.offerIntake(), hold: () => this.hold(), unhold: () => this.unhold(),
+      record: () => this.record(), recheck: () => this.setState({ recheck: !this.state.recheck, el: null }), proof: b => this.proof(+b.dataset.i),
+      'open-sec': b => { const k = b.dataset.sec; this.state.open[k] = true; this.repaint(); setTimeout(() => { const d = document.getElementById('sec-' + k); if (d) d.scrollIntoView({ block: 'start' }); }, 30); }
+    };
+    root.querySelectorAll('[data-x]').forEach(b => { b.onclick = () => { const fn = H[b.dataset.x]; if (fn) fn(b); }; });
+    root.querySelectorAll('details[data-sec]').forEach(d => d.addEventListener('toggle', () => { this.state.open[d.dataset.sec] = d.open; if (d.open) ui.query.writeQuery({ panel: d.dataset.sec }); }));
+    const el = this.state.el;
+    const bind = (id, k, rep) => { const x = root.querySelector(id); if (x) x.onchange = () => { this.state.el = { ...(this.state.el || {}), [k]: x.value }; if (rep) this.repaint(); }; };
+    bind('#a-el-r', 'result', true); bind('#a-el-p', 'plan'); bind('#a-el-e', 'effective');
+    if (this.panel) { const k = this.panel; this.panel = null; setTimeout(() => { const d = document.getElementById('sec-' + k); if (d) d.scrollIntoView({ block: 'start' }); }, 60); }
+  }
+  async run(action, args, ok) { try { const res = await this.do(action, args); if (ok) toast(ok); return res === undefined ? true : res; } catch { return null; } }   // null = refused (the server's reason was toasted)
+  form(o) { return ui.modal({ title: o.title, size: o.size || 'md', body: o.body, initialFocus: o.focus, onMount: o.onMount, actions: [{ label: 'Cancel', tone: 'secondary' }, { label: o.label, tone: o.tone || 'primary', onClick: async h => { try { return await o.run(h.dialog, h); } catch { return false; } } }] }); }
+  async sendLink() { const v = this.v; this.state.open.link = true; const r = await this.run('familyLink.send', { referral: v.r.id }, 'Family link sent by text (SMS stub, simulated) · see it below'); if (r) this.repaint(); }
+  sched() {
+    const v = this.v; const r = v.r; const s = this.s; const sch = this.state.sched || (this.state.sched = this.schedDefaults(r));
+    const fl = v.fl; const best = String(fl?.answers?.best_time || ''); const g = fl?.submitted_at ? fl.answers : null; const guardian = v.c?.guardian || {};
+    const callWho = (g?.relationship || guardian.relationship || 'Guardian').replace(/^\w/, ch => ch.toUpperCase()); const callPhone = g?.phone || guardian.phone || 'phone from the family link';
+    const timeOpts = [['14:00', '2:00 pm'], ['10:00', '10:00 am'], ['15:30', '3:30 pm']].map(([val, t]) => `<option value="${val}"${sch.time === val ? ' selected' : ''}>${esc(t + ((/afternoon/i.test(best) && val === '14:00') || (/morning/i.test(best) && val === '10:00') ? ` (guardian said ${/afternoon/i.test(best) ? 'afternoons' : 'mornings'})` : ''))}</option>`).join('');
+    const whoOpts = s.staff.filter(x => x.role === 'clinician').map(x => `<option value="${esc(x.id)}"${sch.who === x.id ? ' selected' : ''}>${esc(x.name + (x.credential ? ', ' + x.credential : ''))}</option>`).join('');
+    this.form({ title: `${v.booked ? 'Reschedule' : 'Schedule'} the screening call · ${v.short}`, label: 'Save and text the guardian', focus: '#sc-who',
+      body: `<div class="a-form"><label class="ui-field"><span class="ui-field__l">Who makes the call</span><select class="ui-select" id="sc-who">${whoOpts}</select></label><label class="ui-field"><span class="ui-field__l">Date</span><input class="ui-input" id="sc-date" type="date" min="${esc(s.today)}" value="${esc(sch.date)}"></label><label class="ui-field"><span class="ui-field__l">Time</span><select class="ui-select" id="sc-time">${timeOpts}</select></label></div>
+        <p class="a-sub">${esc(callWho)} · ${esc(callPhone)} · ${g ? 'from the family link' : 'from the school'} · 30–45 min by phone</p>
+        <label class="a-check"><input type="checkbox" id="sc-text" checked> Text the guardian a confirmation and a reminder the morning of ${ui.maturity('family.link')}</label>
+        <label class="a-check"><input type="checkbox" id="sc-ask" checked> Ask the counselor for schedule and grades before the call</label>`,
+      run: async d => {
+        const date = d.querySelector('#sc-date').value; if (!date) { toast('Pick a date', 'err'); return false; }
+        const x = await this.run('referral.scheduleAndText', { id: r.id, who: d.querySelector('#sc-who').value, when: `${date}T${d.querySelector('#sc-time').value}`, text_guardian: d.querySelector('#sc-text').checked, ask_counselor: d.querySelector('#sc-ask').checked }, 'Screening call saved · it is on My Work and in the Lauris panel');
+        if (x) this.state.sched = null; return x ? undefined : false;
+      } });
+  }
+  grant() {
+    const v = this.v; const r = v.r; const school = v.school.name.split('·').pop().trim();
+    this.form({ title: 'Route to the grant program', label: 'Route and notify', focus: '#gr-why',
+      body: `<p class="ui-muted">For students without Medicaid. Grant program: no Medicaid needed, no diagnosis required.</p><label class="ui-field"><span class="ui-field__l">Reason</span><select class="ui-select" id="gr-why">${['No Medicaid', 'Medicaid lapsed', 'Family declined Medicaid service'].map(t => `<option>${esc(t)}</option>`).join('')}</select></label>
+        <dl class="ui-dl"><div class="ui-dl__r"><dt>Told</dt><dd>Grant program lead by email with a secure link · site supervisor, ${esc(school)}, by email and text · the counselor</dd></div><div class="ui-dl__r"><dt>Then</dt><dd>Moves to the Grant program list · no request is created</dd></div></dl><p class="a-sub">Emails and texts are stubs (Simulated) and are logged on the referral.</p>`,
+      run: async d => { const x = await this.run('referral.routeAndNotify', { id: r.id, why: d.querySelector('#gr-why').value }, 'Routed to the grant program · notices logged (stubs)'); return x ? undefined : false; } });
+  }
+  hold() {
+    const v = this.v; const r = v.r;
+    this.form({ title: `Hold ${r.id} and tell the family`, label: 'Hold and text the guardian', focus: '#hd-why',
+      body: `<p class="ui-muted">The referral stays in Referrals with a hold. Psyflo texts the guardian that Harvest will call about coverage (SMS stub, logged on the referral).</p><label class="ui-field"><span class="ui-field__l">Why</span><select class="ui-select" id="hd-why"><option>Medicaid not active</option><option>Medicaid ID did not match · ask the guardian</option><option>Waiting for the guardian to renew coverage</option></select></label>`,
+      run: async d => { const x = await this.run('referral.hold', { id: r.id, why: d.querySelector('#hd-why').value }, 'Referral held · guardian texted (SMS stub, simulated)'); return x ? undefined : false; } });
+  }
+  async unhold() { await this.run('referral.unhold', { id: this.v.r.id }, 'Hold lifted'); }
+  async offer() { const r = await this.run('screening.offer', { referral: this.v.r.id }, "Texted the guardian a link to book the screening call (SMS stub, simulated). Open times come from the clinicians' calendars."); if (r) this.repaint(); }
+  async offerIntake() { const v = this.v; await this.run('intake.offer', { client: v.c.id, referral: v.r.id }, 'Texted the guardian a link to book the in-person intake (SMS stub, simulated). A ride request lands on My Work.'); }
+  async record() {
+    const v = this.v; const f = this.state.el || {};
+    if (f.result !== 'inactive' && !f.plan) return toast('Pick the plan DMAS shows', 'err');
+    if (f.result !== 'inactive' && !f.effective) return toast('Add the effective date DMAS shows', 'err');
+    const res = await this.run('eligibility.recordProof', { referral: v.r.id, result: f.result || 'active', plan: f.plan || null, effective: f.effective || null }, null);
+    if (res) { this.state.recheck = false; this.state.el = null; toast(`Recorded · ${res.screenshot} stored in Psyflo · re-check reminder set`); this.repaint(); }
+  }
+  proof(i) {
+    const h = this.v.elp.history[i]; if (!h) return; const rec = h.record; const s = this.s;
+    if (rec.file) { window.open(rec.file, '_blank', 'noopener'); return; }
+    const payer = M.byId(s.payers, rec.plan);
+    ui.modal({ title: rec.screenshot || 'DMAS screenshot', body: `<p class="ui-muted">Proof kept in Psyflo, not in Lauris. Seeded record: the demo has no image for checks made before it started.</p><div class="a-letter"><b>Virginia Medicaid (DMAS) · eligibility lookup</b>\nResult: ${esc(rec.result)}${payer ? ' · ' + esc(payer.name) : ''}${rec.effective ? ' · effective ' + esc(M.fmtDate(rec.effective, { year: true })) : ''}\nLooked up ${esc(M.fmtDateTime(rec.checked_at, { year: true }))} by ${esc(M.staff(s, rec.checked_by).name)} in their own DMAS login</div>`, actions: [{ label: 'Close', tone: 'primary' }] });
+  }
 });

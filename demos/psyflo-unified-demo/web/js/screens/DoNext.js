@@ -2,13 +2,15 @@
 // eligibility, screenings, requests, clocks and reminders already in the store. Each line opens its screen.
 import { register, Screen, M } from '../app.js';
 import { refStudent } from './Referrals.js';
+import { today as clockToday, now as clockNow } from '../shared/clock.js';
 
 const schoolShort = name => String(name || '').replace(/ (City|County) · /, ' ');
 
 export function doNextBoard(s, me) {
-  const t = s.today; const meId = me?.id || 'jperez';
-  const mine = x => !x || me?.role === 'admin' || !me || x === meId;
   const today = [], week = [], waiting = [];
+  if (!me || !me.id) return { today, week, waiting };        // fail closed: no signed-in person, no list (never a default clinician)
+  const t = clockToday(s);
+  const mine = x => !x || me.role === 'admin' || x === me.id;
   const weekEnd = M.addDays(t, 7);
   const dayLabel = d => { const n = M.daysBetween(t, d); return n <= 4 ? M.fmtDate(d, { dow: true }).split(' ')[0] : M.fmtDate(d); };
   const refOf = id => M.byId(s.referrals, id);
@@ -129,9 +131,9 @@ register('DoNext', class extends Screen {
   renderVals() {
     const s = this.s; const me = this.me;
     const { today, week, waiting } = doNextBoard(s, me);
-    const h = new Date().getHours();
+    const h = +clockNow(s).slice(11, 13);   // the demo clock, never the machine's
     const first = (me?.name || '').split(' ')[0] || 'there';
-    const d = M.fmtDate(s.today, { dow: true }).split(' ');
+    const d = M.fmtDate(clockToday(s), { dow: true }).split(' ');
     return {
       greeting: `Good ${h < 12 ? 'morning' : h < 17 ? 'afternoon' : 'evening'}, ${first}`,
       dateChip: `${d[0]}, ${d.slice(1).join(' ')}`,

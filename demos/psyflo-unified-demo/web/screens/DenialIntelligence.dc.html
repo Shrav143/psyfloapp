@@ -8,14 +8,32 @@
 <x-dc>
 <helmet>
 <style>
-/* stub screen: replaced by its owner. The class is-stub is the marker test/routes.mjs looks for. */
+/* Denial Intelligence queue (E3). Classes use the d- prefix. */
+.d-page{padding:var(--sp-5) var(--gutter) var(--sp-6);max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:var(--sp-4)}
+.d-head{display:flex;flex-wrap:wrap;align-items:center;gap:var(--sp-3) var(--sp-4)}
+.d-head h1{margin:0;font-size:var(--fs-28);line-height:var(--lh-28);font-weight:600;letter-spacing:-.01em}
+.d-head__r{margin-left:auto;display:flex;gap:var(--sp-2);align-items:center;flex-wrap:wrap}
+.d-card{background:var(--surface-0);border:1px solid var(--line-200);border-radius:var(--r-3);padding:var(--sp-4)}
+.d-caseid b{display:block;font-weight:600;white-space:nowrap}
+.d-caseid small,.d-dec small,.d-nx small,.d-dl small{display:block;color:var(--muted-700);font-size:var(--fs-12);line-height:var(--lh-12);margin-top:2px}
+.d-dec b{font-weight:500}
+.d-nx{display:block;max-width:220px}
+.d-dl{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+.d-dl__row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.d-dl__d{font-weight:600;white-space:nowrap}
+.d-own{white-space:nowrap}
+.d-who{white-space:nowrap}
+.d-note{color:var(--muted-700);margin:0}
 </style>
 </helmet>
-<main class="is-stub" data-owner="E3">
-  <h1>Denial Intelligence</h1>
-  <p>The denial queue is being built. Cases that need a payer-decision response will be listed here.</p>
-  <p class="ui-muted" style="font-size:13px">Link parameters received: <code>{{received}}</code></p>
-  <a class="ui-btn ui-btn--secondary" href="#/Partials?legacy=1">Open Partials & denials meanwhile</a>
+<main class="d-page">
+  <header class="d-head">
+    <h1>Denial Intelligence</h1>
+    {{mat}}
+    <div class="d-head__r">{{right}}</div>
+  </header>
+  {{bar}}
+  <div class="d-card" style="padding:0">{{table}}</div>
 </main>
 </x-dc>
 </body>

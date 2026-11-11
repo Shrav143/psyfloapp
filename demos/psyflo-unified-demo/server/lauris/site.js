@@ -1,7 +1,7 @@
 // Mock Lauris Online: a plain server-rendered site. It exists so the extension has real DOM to read
 // and real inputs to type into. It knows nothing about Psyflo except an optional in-page panel slot
 // (the documented fallback when the browser extension is not installed).
-import { lauris, US, LaurisError } from './store.js';
+import { lauris, US, LaurisError, PAYER } from './store.js';
 import { FORMS, FORM_ORDER } from './forms.js';
 import { html, redirect, readForm, esc, cookies, notFound } from '../util.js';
 
@@ -65,6 +65,11 @@ h2{font-size:15px;margin:4px 0 10px;color:#1F3B6B}
 .picker a{display:block;background:#fff;border:1px solid #DDE1E6;border-radius:4px;padding:10px 12px;text-decoration:none;color:#1F3B6B;font-weight:700}
 .picker a span{display:block;font-weight:400;color:#777;font-size:11px;margin-top:2px}
 .phq{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:6px}
+.st{display:inline-block;border-radius:3px;padding:1px 7px;font-size:11px;font-weight:700;border:1px solid transparent}
+.st.g{background:#E1F2E7;color:#1E6B40;border-color:#B5D9C3}.st.n{background:#EEF0F3;color:#3B4656;border-color:#D5D9DF}.st.r{background:#FBE5E0;color:#9B2C17;border-color:#EBB3A8}.st.y{background:#FFF1D6;color:#8A5A00;border-color:#EDCB86}
+.num{text-align:right;white-space:nowrap}
+.sub-h{font-size:13px;font-weight:700;color:#1F3B6B;margin:14px 0 6px}
+.bar{height:12px;background:#E9ECF0;border-radius:3px;overflow:hidden;display:flex;min-width:120px}.bar i{display:block;height:100%}.bar .u{background:#1F4E8C}.bar .a{background:#9DB8DE}
 `;
 
 function shell(req, { title, nav, body, user }) {
@@ -82,14 +87,14 @@ function shell(req, { title, nav, body, user }) {
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,600&display=swap">
 <style>${CSS}</style></head>
 <body class="${inpage ? 'psyflo-inpage' : ''}" data-lauris-page="${esc(nav || '')}">
-<div class="top"><span class="ar">»</span> Lauris Online <span class="small muted" style="font-weight:400;color:#8E99A6">mock for the Psyflo demo · synthetic data</span>
+<div class="top"><span class="ar">»</span> Lauris Online <span class="small muted" style="font-weight:400;color:#8E99A6">mock for the Psyflo demo · synthetic data</span> <span id="lauris-clock" class="small" style="font-weight:400;color:#C8CFD8" title="The demo clock: Psyflo and this mock Lauris read the same one">${esc(db.todayUS)} ${esc(lauris.stamp().slice(11, 16))}</span>
 <span class="r">${user ? esc(user.name) + ' ·' : ''} <a href="#classic" onclick="return false" title="Not part of the mock">Switch to Classic</a> · <a href="/logout">Sign Out</a>
 <button class="pchip" id="psyflo-toggle" type="button" title="Show or hide the Psyflo panel (in-page fallback when the extension is not installed)"><i></i>psyflo · ${inpage ? 'on' : 'off'}</button></span></div>
 <div class="wrap">
 <nav class="side" aria-label="Lauris menu">
 ${L('/consumers', 'Consumers', 'consumers')}${L('/authorizations', 'Authorizations', 'authorizations')}${L('/approvals', 'Approvals', 'approvals-h')}${L('/add-session', 'Add Session', 'add')}${L('/saved', 'Saved Session', 'saved', saved)}${L('/reports', 'Reports', 'reports')}${L('/user', 'User Information', 'user')}${L('/time', 'Time Tracker', 'time')}
 <div class="sep"></div>
-${L('/approvals', 'Forms to Approve', 'approvals', toApprove)}${L('/rejected', 'Rejected Forms', 'rejected', rejected)}${L('/authorizations', 'Consumers w/o Authorizations', 'noauth', noAuth)}
+${L('/approvals', 'Forms to Approve', 'approvals', toApprove)}${L('/rejected', 'Rejected Forms', 'rejected', rejected)}${L('/authorizations?view=none', 'Consumers w/o Authorizations', 'noauth', noAuth)}
 </nav>
 <main id="lauris-main">${body}</main>
 <div id="psyflo-slot" aria-label="Psyflo panel (in-page)"></div>
@@ -168,7 +173,7 @@ ${s.status === 'approved' ? `<div class="row"><b>Signature</b><div id="lauris-si
 }
 
 const flash = (q) => {
-  if (q.get('authorization')) { const c = lauris.consumer(q.get('authorization')); if (c) return `<div class="flash" role="status" id="lauris-flash" data-event="authorization" data-consumer="${c.no}">Authorization saved · ${c.auth && c.auth.available != null ? c.auth.available + ' units available' : 'no units'}</div>`; }
+  if (q.get('authorization')) { const c = lauris.consumer(q.get('authorization')); if (c) return `<div class="flash" role="status" id="lauris-flash" data-event="authorization" data-consumer="${c.no}" data-session="${c.auth && c.auth.entry || ''}">Authorization saved · ${c.auth && c.auth.available != null ? c.auth.available + ' units available' : 'no units'}</div>`; }
   if (q.get('denied')) return `<div class="flash r" role="status" id="lauris-flash" data-event="denied" data-session="${esc(q.get('session') || '')}">${esc(q.get('denied'))}</div>`;
   if (q.get('blocked')) return `<div class="flash r" role="status" id="lauris-flash" data-event="blocked">${esc(q.get('blocked'))}</div>`;
   if (q.get('processed')) { const s = lauris.session(q.get('processed')); if (s) return `<div class="flash${s.warn ? ' w' : ''}" role="status" id="lauris-flash" data-event="processed" data-session="${s.id}" data-form="${s.form}" data-consumer="${s.no}">${esc(FORMS[s.form].title)} processed ${US(s.processed_at)} ${s.processed_at.slice(11, 16)}${s.approve ? ' · sent to Forms to Approve' : ' · copied to the Active File'}${s.warn ? ' · ' + esc(s.warn) : ''}</div>`; }
@@ -178,6 +183,43 @@ const flash = (q) => {
   if (q.get('created')) return `<div class="flash" role="status" id="lauris-flash" data-event="created" data-consumer="${esc(q.get('created'))}">Consumer created</div>`;
   return '';
 };
+
+
+// ---- Authorizations and Time: the pages where a person types units and time (Psyflo never writes to either; it reads the page that is open) ----
+const ISO = us => { const m = String(us || '').match(/^(\d{2})\/(\d{2})\/(\d{4})$/); return m ? `${m[3]}-${m[1]}-${m[2]}` : ''; };
+const procedureOf = c => (c.program === 'Outpatient' ? 'Outpatient' : 'H2016');
+function authStatus(c, today) {
+  if (!c.auth || c.auth.available == null) return { key: 'none', label: 'No authorization', tone: 'r' };
+  if (!c.auth.units) return { key: 'active', label: 'Active', tone: 'g' };
+  const end = ISO(c.auth.end_us);
+  if (end && end < today) return { key: 'ended', label: 'Ended', tone: 'n' };
+  if (c.auth.available <= 0) return { key: 'exhausted', label: 'No units left', tone: 'y' };
+  return { key: 'active', label: 'Active', tone: 'g' };
+}
+const unitsCell = c => c.auth && c.auth.units ? `<div class="bar" title="${c.auth.used} used of ${c.auth.units}"><i class="u" style="width:${Math.min(100, Math.round(c.auth.used / c.auth.units * 100))}%"></i><i class="a" style="width:${Math.max(0, 100 - Math.round(c.auth.used / c.auth.units * 100))}%"></i></div>` : '';
+function authTable(c, today) {
+  if (!c.auth) return `<div class="card muted">No authorizations available</div>`;
+  if (!c.auth.units) return `<div class="card muted">${c.auth.available} units available (details not in the mock)</div>`;
+  const st = authStatus(c, today); const a = c.auth;
+  return `<table class="list" id="authorization-list"><tr><th>Payer</th><th>Procedure</th><th class="num">Units</th><th class="num">Used</th><th class="num">Available</th><th>Start</th><th>End</th><th>Status</th></tr>
+<tr data-authorization="${c.no}"><td>${esc(a.payer_name || '—')}</td><td>${procedureOf(c)}</td><td class="num">${a.units}</td><td class="num">${a.used}</td><td class="num">${a.available}</td><td>${esc(a.start_us)}</td><td>${esc(a.end_us || '—')}</td><td><span class="st ${st.tone}">${st.label}</span></td></tr></table>`;
+}
+function authHistory(c) {
+  const h = (c.auth_history || []).slice().reverse();
+  if (!h.length) return '';
+  return `<div class="sub-h">Earlier authorizations</div><table class="list"><tr><th>Payer</th><th class="num">Units</th><th class="num">Used</th><th>Start</th><th>End</th><th>Replaced on</th></tr>${h.map(a => `<tr><td>${esc(a.payer_name || '—')}</td><td class="num">${a.units}</td><td class="num">${a.used}</td><td>${esc(a.start_us)}</td><td>${esc(a.end_us || '—')}</td><td>${US(a.replaced_on)}</td></tr>`).join('')}</table>`;
+}
+function authForm(c) {
+  const cur = c.auth && c.auth.payer || Object.keys(PAYER).find(k => PAYER[k] === c.medicaid_plan) || '';
+  return `<div class="card" style="margin-top:10px"><div class="sub-h" style="margin-top:0">Enter authorization</div>
+<form method="post" action="/consumers/${c.no}/authorization" id="authorization-form" data-form="authorization" data-consumer="${c.no}">
+<div class="grid"><div><label for="au-payer">Payer</label><select class="in" id="au-payer" name="payer" required><option value="">Choose the payer</option>${Object.entries(PAYER).map(([k, v]) => `<option value="${k}"${k === cur ? ' selected' : ''}>${esc(v)}</option>`).join('')}</select></div>
+<div><label for="au-units">Units authorized</label><input class="in" id="au-units" name="units" type="number" min="1" max="2000" step="1" inputmode="numeric" required></div>
+<div><label for="au-start">Start date</label><input class="in" id="au-start" name="start" type="date" value="${lauris.db.today}" required></div>
+<div><label for="au-end">End date</label><input class="in" id="au-end" name="end" type="date" required></div></div>
+<button class="lb pri" type="submit" id="save-authorization">Save Authorization</button> <span class="small muted">Typed from the payer's decision. ${c.auth && c.auth.units ? 'The current authorization moves to Earlier authorizations.' : ''}</span></form></div>`;
+}
+const timeFor = (c, day) => lauris.db.time.filter(e => e.no === c.no && e.date === day);
 
 export async function laurisHandler(req, res) {
   const url = new URL(req.url, 'http://x');
@@ -250,9 +292,9 @@ ${sel('program', 'Program', ['TDT', 'Outpatient', 'SEBS'])}${inp('staff', 'Assig
     if (tab === 'general') body = `<div class="card"><div class="grid">${[['Locality', c.locality], ['School', c.school], ['Program', c.program], ['Group', c.group], ['Assigned staff', c.staff], ['Clinician', c.clinician], ['Guardian', c.guardian], ['Diagnosis', c.diagnosis || '—']].map(([l, v]) => `<div><span class="lbl">${l}</span><div class="in g">${esc(v || '—')}</div></div>`).join('')}</div>
 ${c.goals?.length ? `<span class="lbl">ISP goals</span>${c.goals.map(g => `<div class="in g" style="margin-bottom:4px">Obj. ${g.n} – ${esc(g.objective)}</div>`).join('')}` : ''}</div>
 <a class="lb pri" href="/consumers/${c.no}/session">Add Session</a> <a class="lb" href="/consumers/${c.no}/surveys">Surveys</a>`;
-    if (tab === 'auth') body = c.auth?.units ? `<table class="list"><tr><th>Payer</th><th>Procedure</th><th>Units</th><th>Used</th><th>Available</th><th>Start</th><th>End</th></tr><tr><td>${esc(c.auth.payer_name)}</td><td>H2016</td><td>${c.auth.units}</td><td>${c.auth.used}</td><td>${c.auth.available}</td><td>${c.auth.start_us}</td><td>${c.auth.end_us}</td></tr></table>` : `<div class="card muted">${c.auth ? c.auth.available + ' units available (details not in the mock)' : 'No authorizations available'}</div>`;
+    if (tab === 'auth') body = `${authTable(c, lauris.db.today)}${authForm(c)}${authHistory(c)}`;
     if (tab === 'documents') body = `<div class="card">${(c.documents || []).length ? c.documents.map(d => `<div>${esc(d)}</div>`).join('') : '<span class="muted">No documents uploaded.</span>'}</div>`;
-    if (tab === 'active') body = `<table class="list"><tr><th>Date</th><th>Form</th><th>Status</th><th></th></tr>${lauris.db.sessions.filter(s => s.no === c.no).sort((a, b) => b.id - a.id).map(s => `<tr><td>${US(s.date)}</td><td>${esc(FORMS[s.form].title)}</td><td>${s.status}</td><td>${s.status === 'saved' ? `<a href="/consumers/${c.no}/session/${s.form}?id=${s.id}">Open</a>` : s.status === 'processed' && s.approve ? `<a href="/approvals/${s.id}">Preview</a>` : `<a href="/sessions/${s.id}">View</a>`}</td></tr>`).join('')}</table>`;
+    if (tab === 'active') body = `<table class="list"><tr><th>Date</th><th>Form</th><th>Status</th><th></th></tr>${lauris.db.sessions.filter(s => s.no === c.no).sort((a, b) => String(b.date).localeCompare(String(a.date)) || b.id - a.id).map(s => `<tr><td>${US(s.date)}</td><td>${esc(FORMS[s.form].title)}</td><td>${s.status}</td><td>${s.status === 'saved' ? `<a href="/consumers/${c.no}/session/${s.form}?id=${s.id}">Open</a>` : s.status === 'processed' && s.approve ? `<a href="/approvals/${s.id}">Preview</a>` : `<a href="/sessions/${s.id}">View</a>`}</td></tr>`).join('')}</table>`;
     if (tab === 'medications' || tab === 'allergies') body = `<div class="card muted">Nothing recorded in the mock.</div>`;
     return page(c.initials, 'consumers', `${flash(q)}${consumerHeader(c)}${tabs(c, tab)}${body}`);
   }
@@ -358,10 +400,58 @@ ${previewHTML(s, c)}${actions}`);
     return page('Rejected Forms', 'rejected', `${flash(q)}<h2>Rejected Forms</h2><table class="list"><tr><th>Date</th><th>Consumer</th><th>Form</th><th>Reviewer note</th><th></th></tr>${list.map(s => { const c = lauris.consumer(s.no); return `<tr><td>${US(s.date)}</td><td>${esc(c?.initials)}</td><td>${esc(FORMS[s.form].title)}</td><td>${esc(s.reject_note)}</td><td><a href="/consumers/${s.no}/session/${s.form}?id=${s.id}">Open</a></td></tr>`; }).join('') || '<tr><td colspan=5 class="muted">None.</td></tr>'}</table>`);
   }
   if (p === '/authorizations') {
-    const list = lauris.db.consumers.filter(c => c.status === 'active' && !c.auth);
-    return page('Consumers w/o Authorizations', 'noauth', `<h2>Consumers w/o Authorizations</h2><table class="list"><tr><th>Unique ID</th><th>Name</th><th>Staff</th><th>Group</th></tr>${list.map(c => `<tr><td>${c.no}</td><td><a href="/consumers/${c.no}">${esc(c.initials)}</a></td><td>${esc(c.staff)}</td><td>${esc(c.group)}</td></tr>`).join('')}</table>`);
+    const view = q.get('view') === 'none' ? 'none' : 'all';
+    const consF = (q.get('consumer') || '').toLowerCase(); const payF = q.get('payer') || ''; const stF = q.get('status') || '';
+    const today = lauris.db.today;
+    let rows = lauris.db.consumers.filter(c => c.status === 'active').map(c => ({ c, st: authStatus(c, today) }));
+    if (view === 'none') rows = rows.filter(r => r.st.key === 'none');
+    if (consF) rows = rows.filter(r => r.c.initials.toLowerCase().includes(consF) || String(r.c.no).includes(consF));
+    if (payF) rows = rows.filter(r => r.c.auth && r.c.auth.payer === payF);
+    if (stF) rows = rows.filter(r => r.st.key === stF);
+    const sel = (id, label, name, opts, cur) => `<div><label for="${id}">${label}</label><select class="in" id="${id}" name="${name}"><option value="">All</option>${opts.map(([k, v]) => `<option value="${k}"${k === cur ? ' selected' : ''}>${esc(v)}</option>`).join('')}</select></div>`;
+    const total = lauris.db.consumers.filter(c => c.status === 'active').length;
+    return page(view === 'none' ? 'Consumers w/o Authorizations' : 'Authorizations', view === 'none' ? 'noauth' : 'authorizations', `${flash(q)}<div class="tabs"><a class="tab${view === 'all' ? ' on' : ''}" href="/authorizations">Authorizations</a><a class="tab${view === 'none' ? ' on' : ''}" href="/authorizations?view=none">Consumers w/o Authorizations</a></div>
+<form class="filters" method="get" action="/authorizations"><input type="hidden" name="view" value="${view}">
+<div><label for="af-c">Consumer</label><input class="in" id="af-c" name="consumer" value="${esc(q.get('consumer') || '')}" placeholder="Name or Harvest #"></div>
+${sel('af-p', 'Payer', 'payer', Object.entries(PAYER), payF)}${sel('af-s', 'Status', 'status', [['active', 'Active'], ['exhausted', 'No units left'], ['ended', 'Ended'], ['none', 'No authorization']], stF)}
+<div></div><button class="lb pri" type="submit">Search</button></form>
+<div class="small muted" style="margin:0 0 6px" id="authorization-count">Showing ${rows.length} of ${total} · ${US(today)}</div>
+<table class="list" id="authorization-table"><tr><th>Harvest #</th><th>Consumer</th><th>Group</th><th>Payer</th><th>Procedure</th><th>Dates</th><th class="num">Units</th><th>Use</th><th>Status</th><th></th></tr>
+${rows.map(({ c, st }) => `<tr data-consumer="${c.no}" data-status="${st.key}"><td>${c.no}</td><td><a href="/consumers/${c.no}?tab=auth">${esc(c.initials)}</a></td><td>${esc(c.group)}</td><td>${esc(c.auth && c.auth.payer_name || '—')}</td><td>${procedureOf(c)}</td><td>${c.auth && c.auth.units ? esc(c.auth.start_us + ' – ' + (c.auth.end_us || '')) : '—'}</td><td class="num">${c.auth && c.auth.available != null ? c.auth.available + ' available' + (c.auth.units ? ' of ' + c.auth.units : '') : '—'}</td><td>${unitsCell(c)}</td><td><span class="st ${st.tone}">${st.label}</span></td><td><a href="/consumers/${c.no}?tab=auth">${st.key === 'none' ? 'Enter authorization' : 'Open'}</a></td></tr>`).join('') || '<tr><td colspan="10" class="muted">No consumers match.</td></tr>'}</table>`);
   }
-  if (['/reports', '/user', '/time'].includes(p)) return page('Lauris', p.slice(1), `<h2>${p === '/user' ? 'User Information' : p === '/time' ? 'Time Tracker' : 'Reports'}</h2><div class="card muted">Not part of the mock. Psyflo does not use this page.${p === '/user' ? `<br>Signed in as ${esc(user.name)} (${esc(user.id)}).` : ''}</div><a class="lb" href="/consumers">Back to Consumers</a>`);
+  // Time Tracker: where staff type the time of a service. A person saves it; the page reports it as a saved entry, never as units.
+  if (p === '/time') {
+    const c = q.get('consumer') ? lauris.consumer(q.get('consumer')) : null;
+    const day = lauris.db.today;
+    if (req.method === 'POST') {
+      if (!c) return notFound(res);
+      const f = await readForm(req);
+      try { const e = lauris.saveTime({ no: c.no, start: f.start, end: f.end, minutes: f.minutes, activity: f.activity, objective: f.objective, by: user.id }); return redirect(res, `/time?consumer=${c.no}&timesaved=${e.id}`); }
+      catch (e) { if (e instanceof LaurisError) return redirect(res, `/time?consumer=${c.no}&blocked=${encodeURIComponent(e.message)}`); throw e; }
+    }
+    if (!c) {
+      const staffF = q.get('staff') ?? (user.role === 'direct_support' ? user.name : '');
+      const list = lauris.db.consumers.filter(x => x.status === 'active' && (!staffF || x.staff === staffF));
+      return page('Time Tracker', 'time', `${flash(q)}<h2>Time Tracker</h2><div class="small muted" style="margin-bottom:6px">${US(day)} · time typed in Lauris today</div>
+<table class="list" id="time-list"><tr><th>Harvest #</th><th>Consumer</th><th>Staff</th><th>Group</th><th class="num">Entered today</th><th></th></tr>${list.map(x => { const m = timeFor(x, day).reduce((n, e) => n + e.minutes, 0); return `<tr data-consumer="${x.no}"><td>${x.no}</td><td><a href="/time?consumer=${x.no}">${esc(x.initials)}</a></td><td>${esc(x.staff)}</td><td>${esc(x.group)}</td><td class="num">${m ? m + ' min' : '—'}</td><td><a href="/time?consumer=${x.no}">Open</a></td></tr>`; }).join('') || '<tr><td colspan="6" class="muted">No consumers match.</td></tr>'}</table>`);
+    }
+    const te = q.get('timesaved') ? lauris.db.time.find(x => String(x.id) === q.get('timesaved') && x.no === c.no) : null;
+    const tflash = te ? `<div class="flash w" role="status" id="lauris-flash" data-event="saved" data-session="${te.id}" data-form="time" data-consumer="${c.no}">Time entry saved · ${te.minutes} min · not turned into units (Lauris does not do that)</div>` : '';
+    const goals = (c.goals || []).map(g => `Obj. ${g.n} – ${g.objective}`);
+    const rows = timeFor(c, day);
+    return page('Time Tracker', 'time', `${tflash}${q.get('blocked') ? `<div class="flash r" role="status" id="lauris-flash" data-event="blocked">${esc(q.get('blocked'))}</div>` : ''}${consumerHeader(c)}${tabs(c, 'active')}
+<h2>Time Tracker · ${US(day)}</h2>
+<table class="list" id="time-entries"><tr><th>Start</th><th>End</th><th class="num">Minutes</th><th>Activity</th><th>Objective</th><th>Entered by</th></tr>${rows.map(e => `<tr data-time="${e.id}"><td>${esc(e.start)}</td><td>${esc(e.end)}</td><td class="num">${e.minutes}</td><td>${esc(e.activity)}</td><td>${esc(e.objective || '—')}</td><td>${esc(lauris.user(e.by)?.name || e.by)}</td></tr>`).join('') || '<tr><td colspan="6" class="muted">Nothing entered today.</td></tr>'}</table>
+<form method="post" action="/time?consumer=${c.no}" id="lauris-form" data-form="time" data-consumer="${c.no}" data-session="" class="card" style="margin-top:10px">
+<div class="grid"><div><label for="t-date">Date</label><input class="in g" id="t-date" value="${US(day)}" readonly></div>
+<div><label for="t-start">Start</label><input class="in" id="t-start" name="start" placeholder="13:10"></div>
+<div><label for="t-end">End</label><input class="in" id="t-end" name="end" placeholder="13:40"></div>
+<div><label for="t-min">Minutes</label><input class="in" id="t-min" name="minutes" inputmode="numeric" placeholder="30"></div>
+<div style="grid-column:span 2"><label for="t-act">Activity</label><input class="in" id="t-act" name="activity"></div>
+<div style="grid-column:span 2"><label for="t-obj">Objective addressed</label><select class="in" id="t-obj" name="objective"><option value=""></option>${goals.map(g => `<option>${esc(g)}</option>`).join('')}</select></div></div>
+<button class="lb pri" name="action" value="save" type="submit" id="save-time">Save Time Entry</button> <span class="small muted">Lauris keeps the time as typed. Units come from the daily note.</span></form>`);
+  }
+  if (['/reports', '/user'].includes(p)) return page('Lauris', p.slice(1), `<h2>${p === '/user' ? 'User Information' : 'Reports'}</h2><div class="card muted">Not part of the mock. Psyflo does not use this page.${p === '/user' ? `<br>Signed in as ${esc(user.name)} (${esc(user.id)}).` : ''}</div><a class="lb" href="/consumers">Back to Consumers</a>`);
   return notFound(res);
 }
 

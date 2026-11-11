@@ -6,6 +6,7 @@
 // staffer wrote next to what Psyflo added, and the rule-13 pattern.
 import { register, Screen, M, raw, esc, modal, toast } from '../app.js';
 import { CHECKS } from '../shared/draft.js';
+import { today as clockToday } from '../shared/clock.js';
 
 // ---------- pure selectors (shared with the staff dashboard) ----------
 export const textOf = x => x == null ? '' : typeof x === 'string' ? x : (x.narrative || x.text || x.value || '');
@@ -100,7 +101,7 @@ register('ReviewQueue', class extends Screen {
       return {
         name: M.staffShort(s, st.id), sub: [st.credential, kids ? kids + ' student' + (kids === 1 ? '' : 's') : ''].filter(Boolean).join(' · '),
         chip: on ? 'chip y' : 'chip n', label: approvalLabel(st),
-        note: on ? `every note approved by ${M.staffShort(s, st.reviewer || 'cdiaz')} before it goes to the EHR${pend ? ` · ${pend} waiting` : ''}` : (pend ? `${pend} captured while on approval still waiting` : 'notes go to the EHR at Process Form'),
+        note: on ? `every note approved by ${st.reviewer ? M.staffShort(s, st.reviewer) : 'a supervisor'} before it goes to the EHR${pend ? ` · ${pend} waiting` : ''}` : (pend ? `${pend} captured while on approval still waiting` : 'notes go to the EHR at Process Form'),
         btn: on ? 'Turn approval off' : 'Require approval',
         toggle: () => on ? this.approvalOff(st) : this.approvalOn(st)
       };
@@ -115,7 +116,7 @@ register('ReviewQueue', class extends Screen {
       (box, close) => {
         box.querySelector('[data-ok]').onclick = async () => {
           const reason = box.querySelector('#ap-r').value; close();
-          await this.do('staff.reviewMode', { id: st.id, mode: 'every_note', reason, by: this.me?.id || 'cdiaz' });
+          await this.do('staff.reviewMode', { id: st.id, mode: 'every_note', reason });
           toast(`${name} · approval required (${reason}); new notes come to this queue`);
         };
       });
@@ -128,7 +129,7 @@ register('ReviewQueue', class extends Screen {
       (box, close) => {
         box.querySelector('[data-ok]').onclick = async () => {
           close();
-          await this.do('staff.reviewMode', { id: st.id, mode: 'spot_check', by: this.me?.id || 'cdiaz' });
+          await this.do('staff.reviewMode', { id: st.id, mode: 'spot_check' });
           toast(`${name} · back to spot check; no approval needed`);
         };
       });
@@ -167,17 +168,17 @@ register('ReviewQueue', class extends Screen {
         wrote: textOf(cur.dictation) || '(nothing typed or dictated: the note was written in Lauris directly)',
         enhanced: plain(cur.enhanced) ? raw(markAdded(cur.enhanced, cur.dictation)) : raw('<span style="color:#525B66">Not enhanced. The staffer typed it straight into Lauris without dictating it first, so there is nothing added to check; the checks below run on what they wrote.</span>'),
         checks: noteChecks(s, cur, repeat),
-        trail: [`Processed in Lauris ${cur.processed_at ? M.fmtDateTime(cur.processed_at) : M.fmtDate(cur.date)}`, st.review_mode === 'every_note' ? `${approvalLabel(st).toLowerCase()} · every note routed to ${M.staffShort(s, st.reviewer || 'cdiaz')}` : 'captured while on approval; now spot check', ...evs].join(' · ')
+        trail: [`Processed in Lauris ${cur.processed_at ? M.fmtDateTime(cur.processed_at) : M.fmtDate(cur.date)}`, st.review_mode === 'every_note' ? `${approvalLabel(st).toLowerCase()} · every note routed to ${st.reviewer ? M.staffShort(s, st.reviewer) : 'a supervisor'}` : 'captured while on approval; now spot check', ...evs].join(' · ')
       };
     }
-    const done = s.notes.filter(n => n.reviewed_at && n.reviewed_at.slice(0, 10) === s.today && n.review !== 'pending').slice(-6).reverse().map(n => ({
+    const done = s.notes.filter(n => n.reviewed_at && n.reviewed_at.slice(0, 10) === clockToday(s) && n.review !== 'pending').slice(-6).reverse().map(n => ({
       title: `${M.clientLabel(s, n.client, false)} · ${M.fmtDate(n.date)}`, staff: M.staffShort(s, n.staff),
       chip: 'chip ' + ({ approved: 'g', returned: 'y', flagged: 'r' }[n.review] || 'n'),
       label: { approved: 'approved', returned: 'returned with a note', flagged: "flagged: that didn't happen" }[n.review] || n.review,
       comment: n.review_comment ? ` · "${n.review_comment}"` : ''
     }));
     return {
-      today: M.fmtDate(s.today, { dow: true }).replace(/^(\w+) /, '$1, '),
+      today: M.fmtDate(clockToday(s), { dow: true }).replace(/^(\w+) /, '$1, '),
       waitingText: q.length + ' waiting', waitingChip: q.length ? 'chip y' : 'chip g',
       items, cur: c, pattern,
       more: !this.state.all && q.length > shown.length ? `${q.length - shown.length} more` : '',
@@ -195,7 +196,7 @@ register('ReviewQueue', class extends Screen {
   async decide(decision, comment) {
     const cur = this.current(); if (!cur) return;
     const label = M.clientLabel(this.s, cur.client, false);
-    await this.do('note.review', { id: cur.id, decision, comment, by: this.me?.id || 'cdiaz' });
+    await this.do('note.review', { id: cur.id, decision, comment });
     this.state.sel = null;
     toast(`${label} · ${M.fmtDate(cur.date)}: ${decision === 'approved' ? 'approved' : decision === 'returned' ? 'returned to ' + M.staffShort(this.s, cur.staff) + ' with your note' : 'flagged · the staffer is asked to fix it in Lauris'}`);
     this.repaint();

@@ -31,7 +31,7 @@ register('Users', class extends Screen {
         roles: ROLES.map(([v, l]) => ({ v, l, sel: v === u.role ? 'selected' : '' })),
         setRole: (e) => this.setRole(u.id, e.target.value),
         sites: this.sites(s, u),
-        review: ds ? (u.review_mode === 'every_note' ? `every note · ${M.staffShort(s, u.reviewer || 'cdiaz')}` : 'spot check') : '—', reviewChip: ds && u.review_mode === 'every_note',
+        review: ds ? (u.review_mode === 'every_note' ? `every note · ${u.reviewer ? M.staffShort(s, u.reviewer) : 'no reviewer yet'}` : 'spot check') : '—', reviewChip: ds && u.review_mode === 'every_note',
         last: !last ? '—' : last.slice(0, 10) === s.today ? 'today' : M.fmtDate(last)
       };
     });
@@ -44,7 +44,7 @@ register('Users', class extends Screen {
     const u = M.byId(this.s.staff, id); if (!u || u.role === role) return;
     const patch = { role };
     if (ROLE_TITLES.includes(u.title)) patch.title = ROLES.find(r => r[0] === role)[1].replace('Supervisor', 'Site supervisor');
-    if (role === 'direct_support' && !u.review_mode) Object.assign(patch, { review_mode: 'every_note', reviewer: 'cdiaz' });
+    if (role === 'direct_support' && !u.review_mode) Object.assign(patch, { review_mode: 'every_note', reviewer: null });
     await this.do('user.update', { id, patch });
     toast(`${u.name} is now ${M.ROLE_LABEL[role]}`);
     if (id === session.user?.id && LV[role] < 4) { toast('Your own role changed · taking you to your first screen'); this.go(homeFor(role)); }
@@ -62,7 +62,7 @@ register('Users', class extends Screen {
           ${lab('nu-role', 'Role')}<select id="nu-role" style="${inp}">${ROLES.map(([v, l]) => `<option value="${v}">${l}</option>`).join('')}</select>
           <fieldset style="border:0;padding:0;margin:10px 0 0"><legend style="font-size:13px;font-weight:600;margin-bottom:5px">Sites</legend>${s.schools.map(x => `<label style="display:flex;gap:8px;align-items:center;font-size:13px;min-height:28px"><input type="checkbox" value="${x.id}"${x.id === 'CC-ES1' ? ' checked' : ''}> ${esc(x.name)}</label>`).join('')}</fieldset>
           <div id="nu-ds">${lab('nu-mode', 'Notes reviewed')}<select id="nu-mode" style="${inp}"><option value="every_note">Every note to a supervisor (new hire, trainee)</option><option value="spot_check">Spot check</option></select>
-          ${lab('nu-rev', 'Reviewer')}<select id="nu-rev" style="${inp}">${sups.map(x => `<option value="${x.id}"${x.id === 'cdiaz' ? ' selected' : ''}>${esc(x.name)}</option>`).join('')}</select></div>
+          ${lab('nu-rev', 'Reviewer')}<select id="nu-rev" style="${inp}">${sups.map((x, i) => `<option value="${x.id}"${i === 0 ? ' selected' : ''}>${esc(x.name)}</option>`).join('')}</select></div>
           <div id="nu-err" role="alert" style="color:#8A2E1C;font-size:13px;margin-top:8px"></div>
           <div style="display:flex;gap:8px;margin-top:14px"><button class="mbtn p" data-ok>Add user</button><button class="mbtn" data-close>Cancel</button></div>`,
           (box, close) => {

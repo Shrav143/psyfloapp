@@ -1,5 +1,5 @@
 // 19 · Sent — a person presses Send (Flow C). Live over the request and the audit trail.
-import { register, Screen, M, raw, esc, modal, toast, api } from '../app.js';
+import { register, Screen, M, raw, esc, modal, toast, api, session } from '../app.js';
 import { pickReq, clientOf, schoolName, whoLabel, stamp, openPortal, openFile, stageCls, evHtml } from './Authorizations.js';
 
 const SENT_STAGES = ['signed', 'sending', 'portal_open', 'submitted', 'overdue'];
@@ -27,7 +27,7 @@ register('Submission', class extends Screen {
     const items = evs.map(e => ({ at: e.at, html: evHtml(s, e) }));
     // the decision clock line goes right after the send (and its Sfax receipt)
     const clockAt = evs.filter(e => e.who === 'Sfax' && r.sent && e.at.slice(0, 10) === r.sent.slice(0, 10)).map(e => e.at).concat(r.sent || []).sort().pop();
-    if (r.sent && r.decision_due) items.push({ at: clockAt + '~', dt: stamp(s, r.sent.slice(0, 10)), html: raw(`7-calendar-day decision clock started · decision due ${esc(M.fmtDate(r.decision_due))}.`) });
+    if (r.sent && r.decision_due) items.push({ at: clockAt + '~', dt: stamp(s, r.sent.slice(0, 10)), html: raw(`Decision clock started (day 0) · the window Harvest tracks ends ${esc(M.fmtDate(r.decision_due))}.`) });
     items.sort((a, b) => a.at < b.at ? -1 : a.at > b.at ? 1 : 0);
     if (r.stage === 'sending') items.push({ dt: 'Now', html: raw('<b>Sfax is sending.</b> The reference and the delivery receipt appear here in a few seconds.') });
     if (r.stage === 'signed') items.push({ dt: 'Next', html: raw(`<b>A clinician presses Send.</b> ${r.channel === 'fax' ? `Psyflo faxes the packet through Harvest's Sfax account to ${esc(p.name)}.` : `This opens ${esc(M.CHANNEL_LABEL[r.channel])} in your own login with the packet ready to upload.`}`) });
@@ -35,7 +35,7 @@ register('Submission', class extends Screen {
     if (r.payer === 'humana' && r.receipt_check && !r.receipt_confirmed && ['submitted', 'overdue'].includes(r.stage)) items.push({ dt: stamp(s, r.receipt_check), html: raw('<b>Receipt check call.</b> Humana loses faxes; a person calls provider services with the script and fax reference on this page.') });
     if (r.stage === 'submitted' && r.decision_due) {
       const d = M.daysBetween(s.today, r.decision_due);
-      items.push({ dt: d === 0 ? 'Today' : M.fmtDate(r.decision_due), html: raw(d === 0 ? '<b>Decision due.</b> If nothing arrives by 5 pm the row turns overdue and an overdue notice citing the 7-day standard is drafted for a clinician to send.' : d < 0 ? '<b>Decision overdue.</b> An overdue notice citing the 7-day standard is ready for a clinician to send.' : '<b>Decision due.</b> If nothing arrives, an overdue notice citing the 7-day standard is drafted for a clinician to send.') });
+      items.push({ dt: d === 0 ? 'Today' : M.fmtDate(r.decision_due), html: raw(d === 0 ? '<b>Decision due.</b> If nothing arrives by 5 pm the row turns overdue and an overdue notice is drafted for a clinician to send.' : d < 0 ? '<b>Decision overdue.</b> An overdue notice is ready for a clinician to send.' : '<b>Decision due.</b> If nothing arrives, an overdue notice is drafted for a clinician to send.') });
     }
     if (!items.length) items.push({ dt: '—', html: raw('Nothing logged on this request yet.') });
     const steps = items.map((e, i) => ({ dt: e.dt || stamp(s, e.at.replace('~', '')), html: e.html, st: i === 0 ? 'border-top:0' : '' }));
@@ -87,10 +87,10 @@ register('Submission', class extends Screen {
   overdueModal() {
     const s = this.s; const r = this.req(); if (!r) return;
     const p = M.payer(s, r.payer);
-    const text = `To: ${p.name} · Utilization Management\nRe: ${M.TYPE_LABEL[r.type]} for member ${M.clientLabel(s, r.client, false)} · Medicaid ID on file · ${r.service}\n\nThe request was submitted on ${M.fmtDate(r.sent, { year: true })}${r.fax_ref ? ' by fax (Sfax reference ' + r.fax_ref + ')' : r.portal_ref ? ' through the portal (confirmation ' + r.portal_ref + ')' : ''}${r.receipt_confirmed ? ', and receipt was confirmed by phone on ' + M.fmtDate(r.receipt_confirmed) : ''}. Under the 7-calendar-day standard for service authorization decisions, a decision was due on ${M.fmtDate(r.decision_due, { year: true })}. We have not received one. Please issue a decision or tell us what is missing.\n\nJordan Perez, LPC · Harvest Outreach Center`;
+    const text = `To: ${p.name} · Utilization Management\nRe: ${M.TYPE_LABEL[r.type]} for member ${M.clientLabel(s, r.client, false)} · Medicaid ID on file · ${r.service}\n\nThe request was submitted on ${M.fmtDate(r.sent, { year: true })}${r.fax_ref ? ' by fax (Sfax reference ' + r.fax_ref + ')' : r.portal_ref ? ' through the portal (confirmation ' + r.portal_ref + ')' : ''}${r.receipt_confirmed ? ', and receipt was confirmed by phone on ' + M.fmtDate(r.receipt_confirmed) : ''}. We have not received a decision. Please issue a decision or tell us what is missing.\n\n${session.user ? session.user.name + (session.user.credential ? ', ' + session.user.credential : '') : 'Harvest staff'} · Harvest Outreach Center`;
     const sent = r.overdue_notice_sent;
     modal(`<h2>Overdue notice${sent ? ' · sent ' + esc(M.fmtDateTime(sent)) : ' · drafted for you to send'}</h2>
-      <p style="margin:0 0 8px;color:#525B66">Cites the 7-day standard and the ${r.fax_ref ? 'fax reference' : 'portal confirmation'}. A clinician reads it and presses Send.</p>
+      <p style="margin:0 0 8px;color:#525B66">Cites the ${r.fax_ref ? 'fax reference' : 'portal confirmation'}, not a legal standard. A clinician reads it and presses Send.</p>
       <div style="white-space:pre-wrap;border:1px solid #F0B44C;background:#FFFDF7;border-radius:8px;padding:10px 12px;font-size:13px">${esc(text)}</div>
       <div style="display:flex;gap:8px;margin-top:14px">${sent ? '' : '<button class="mbtn p" data-go>Send the notice</button>'}<button class="mbtn" data-close>${sent ? 'Close' : 'Not now'}</button></div>`,
       (box, close) => { const b = box.querySelector('[data-go]'); if (b) b.onclick = async () => { close(); await this.do('request.overdueNotice', { id: r.id }); toast('Overdue notice sent · logged on ' + r.id); }; });

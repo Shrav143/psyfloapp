@@ -1,5 +1,5 @@
 {
-  "_about": "Extra synthetic seed for the school portal, parent portal and phone screens (3, 4, 5, 8, 11, 12, 20, 21, 22, 30, 31, 39). Merged over seed.json. All numbers are 555-01xx demo numbers.",
+  "_about": "Extra synthetic seed for the school portal, parent portal and phone screens (3, 4, 5, 8, 11, 12, 20, 21, 22, 30, 31, 39). Merged over seed.json. All numbers are 555-01xx demo numbers. E6: appeal_drafts carries the staff-prepared guardian letter with a status (draft | ready); R-0384 is seeded ready and marked an illustrative sample. portal_copy holds the in-person signing wording (demo wording, unverified).",
   "org": { "phone": "(434) 555-0120", "phone_hours": "Mon–Fri, 8 am – 5 pm" },
   "teacher_students": { "okafor": ["TW", "KT"] },
   "school_goals": {
@@ -40,10 +40,18 @@
   ],
   "appeal_drafts": {
     "R-0384": {
-      "en": "I am Ethan's guardian. I am appealing Anthem's decision of October 22. Ethan's school counseling has not stopped his behavior at school: 4 office referrals this month. Harvest's program is the only daily support available to him. Please review the attached records and approve the 90 units requested.",
-      "es": "Soy el tutor de Ethan. Apelo la decisión de Anthem del 22 de octubre. La consejería escolar de Ethan no ha detenido su conducta en la escuela: 4 reportes a la oficina este mes. El programa de Harvest es el único apoyo diario disponible para él. Por favor revisen los documentos adjuntos y aprueben las 90 unidades solicitadas.",
-      "attached": "Denial letter · the request · 6 daily notes · school counselor's letter",
-      "attached_es": "Carta de negación · la solicitud · 6 notas diarias · carta de la consejera escolar"
+      "en": "I am Ethan's guardian. I am appealing Anthem's decision of October 22. Anthem said Ethan is \"already connected to other services\". Harvest's program is a daily support at school. Please review the attached records and reconsider the 90 units requested.",
+      "es": "Soy el tutor de Ethan. Apelo la decisión de Anthem del 22 de octubre. Anthem dijo que Ethan está \"ya conectado con otros servicios\". El programa de Harvest es un apoyo diario en la escuela. Por favor revisen los documentos adjuntos y reconsideren las 90 unidades solicitadas.",
+      "attached": "Denial letter · Harvest's request",
+      "attached_es": "Carta de negación · la solicitud de Harvest",
+      "status": "ready",
+      "prepared_by": "jperez",
+      "prepared_at": "2026-10-28T11:20",
+      "sample": true
     }
+  },
+  "portal_copy": {
+    "bring": { "en": ["Your child's Medicaid card", "A photo ID"], "es": ["La tarjeta de Medicaid de su hijo", "Una identificación con foto"] },
+    "source": "Demo wording. Harvest confirms what a guardian brings to sign in person; it is not a verified requirement."
   }
 }

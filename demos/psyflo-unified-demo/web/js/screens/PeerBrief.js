@@ -151,17 +151,21 @@ register('PeerBrief', class extends Screen {
       </div>
       <div id="ocuw"${r.stage === 'p2p_awaiting' ? '' : ' hidden'}><label style="display:block;font-weight:600;font-size:13px;margin:10px 0 4px" for="ocu">Units awarded after the call</label>
       <input id="ocu" type="number" min="0" max="300" value="${r.units_requested}" style="width:140px;min-height:40px;border:1px solid #D9D4CC;border-radius:8px;padding:0 10px;font:inherit"></div>
+      <div id="ocdw"${r.stage === 'p2p_awaiting' ? '' : ' hidden'}><label style="display:block;font-weight:600;font-size:13px;margin:10px 0 4px" for="ocd">Document reference (required for a decision)</label>
+      <input id="ocd" placeholder="Letter, fax or portal reference" style="width:100%;min-height:40px;border:1px solid #857F75;border-radius:8px;padding:0 10px;font:inherit"></div>
       <label style="display:block;font-weight:600;font-size:13px;margin:10px 0 4px" for="ocn">Note (optional: reviewer's name, what they asked)</label>
       <textarea id="ocn" rows="3" style="width:100%;border:1px solid #D9D4CC;border-radius:8px;padding:8px 10px;font:inherit">${esc(r.p2p_recording ? 'From the call: ' + r.p2p_recording.transcript.slice(0, 400) : '')}</textarea>
       <div style="display:flex;gap:8px;margin-top:12px"><button class="mbtn p" data-go>Log the outcome</button><button class="mbtn" data-close>Cancel</button></div>`,
       (box, close) => {
         const u = box.querySelector('#ocu');
         const uw = box.querySelector('#ocuw');
-        box.querySelectorAll('[name=oc]').forEach(el => el.onchange = () => { uw.hidden = ['awaiting', 'denied'].includes(el.value); u.value = el.value === 'approved' ? r.units_requested : ''; });
+        const dw = box.querySelector('#ocdw');
+        box.querySelectorAll('[name=oc]').forEach(el => el.onchange = () => { uw.hidden = ['awaiting', 'denied'].includes(el.value); dw.hidden = el.value === 'awaiting'; u.value = el.value === 'approved' ? r.units_requested : ''; });
         box.querySelector('[data-go]').onclick = async () => {
-          const outcome = box.querySelector('[name=oc]:checked').value; const units = +u.value || undefined; const notes = box.querySelector('#ocn').value.trim();
+          const outcome = box.querySelector('[name=oc]:checked').value; const units = +u.value || undefined; const notes = box.querySelector('#ocn').value.trim(); const doc_ref = box.querySelector('#ocd').value.trim();
+          if (outcome !== 'awaiting' && doc_ref.length < 3) return toast('Enter the document reference that states the decision', 'err');
           close();
-          await this.do('request.p2pLog', { id: r.id, outcome, units: ['awaiting', 'denied'].includes(outcome) ? undefined : units, notes });
+          await this.do('request.p2pLog', { id: r.id, outcome, units: ['awaiting', 'denied'].includes(outcome) ? undefined : units, notes, doc_ref: doc_ref || undefined });
           toast(`Outcome logged · ${r.id} is now ${M.STAGE_LABEL[M.byId(this.s.requests, r.id)?.stage] || ''}`);
         };
       });
