@@ -181,6 +181,7 @@ export async function tabWalk(frameOrPage, { page, max = 120, from = null, rever
   const ev = fn => frameOrPage.evaluate(fn);
   if (from) await frameOrPage.evaluate(sel => { const e = document.querySelector(sel); if (e) e.focus(); }, from);
   else await frameOrPage.evaluate(() => { if (document.activeElement && document.activeElement !== document.body) document.activeElement.blur(); window.scrollTo(0, 0); const s = document.createElement('div'); s.id = '__tabstart'; s.tabIndex = -1; document.body.prepend(s); s.focus(); s.remove(); });
+  let lastKey = '', same = 0;
   for (let i = 0; i < max; i++) {
     await pg.keyboard.press(reverse ? 'Shift+Tab' : 'Tab');
     // the style of the stop we just left (it still carries the stamp), then the new stop
@@ -189,6 +190,8 @@ export async function tabWalk(frameOrPage, { page, max = 120, from = null, rever
     const info = await ev(FOCUS_INFO);
     if (!info) { stops.push({ i, none: true }); break; }
     const key = info.tag + '|' + info.name + '|' + info.href + '|' + info.rect.join(',');
+    if (key === lastKey && same < 6) { same++; continue; }                          // date and time inputs hold several Tab stops inside one element
+    same = 0; lastKey = key;
     if (seen.has(key)) { stops.push({ i, wrapped: true, ...info }); break; }
     seen.set(key, i); stops.push({ i, ...info, cur: info });
   }
@@ -227,8 +230,17 @@ export async function dialogCheck(page, { open, label, frame = null, maxTab = 14
 export function layoutChecks(o) {
   const root = (o && o.scope && document.querySelector(o.scope)) || document.body;
   const sel = el => el.tagName.toLowerCase() + (el.id ? '#' + el.id : '') + (el.className && typeof el.className === 'string' ? '.' + el.className.trim().split(/\s+/).slice(0, 2).join('.') : '');
-  const hidden = el => { for (let e = el; e && e !== document.documentElement; e = e.parentElement) { if (e.hasAttribute('hidden') || e.hasAttribute('inert') && !e.closest('[data-ui-overlay]') && false) return true; const cs = getComputedStyle(e); if (cs.display === 'none' || cs.visibility === 'hidden' || parseFloat(cs.opacity) === 0) return true; if (e.classList && (e.classList.contains('ui-sr') || e.classList.contains('ui-sr-only') || e.classList.contains('sr'))) return true; } return false; };
-  const clipRect = (el, r) => { let x1 = r.left, y1 = r.top, x2 = r.right, y2 = r.bottom; for (let p = el.parentElement; p && p !== document.documentElement; p = p.parentElement) { const cs = getComputedStyle(p); if (/(auto|scroll|hidden|clip)/.test(cs.overflowX + cs.overflowY)) { const pr = p.getBoundingClientRect(); if (/(auto|scroll|hidden|clip)/.test(cs.overflowX)) { x1 = Math.max(x1, pr.left); x2 = Math.min(x2, pr.right); } if (/(auto|scroll|hidden|clip)/.test(cs.overflowY)) { y1 = Math.max(y1, pr.top); y2 = Math.min(y2, pr.bottom); } } } return x2 - x1 > 1 && y2 - y1 > 1 ? { left: x1, top: y1, right: x2, bottom: y2 } : null; };
+  const hidden = el => {
+    try { if (el.checkVisibility && !el.checkVisibility({ visibilityProperty: true, checkVisibilityCSS: true })) return true; } catch { }         // closed <details>, content-visibility, display:none
+    for (let e = el; e && e !== document.documentElement; e = e.parentElement) {
+      if (e.hasAttribute('hidden')) return true; const cs = getComputedStyle(e); if (cs.display === 'none' || cs.visibility === 'hidden' || parseFloat(cs.opacity) === 0) return true;
+      if (e.classList && (e.classList.contains('ui-sr') || e.classList.contains('ui-sr-only') || e.classList.contains('sr'))) return true;
+      if (cs.position === 'absolute' && parseFloat(cs.width) <= 2 && parseFloat(cs.height) <= 2 && /(hidden|clip)/.test(cs.overflow)) return true;      // visually-hidden pattern with any class name (pm-sr, fp-sr ...)
+      if (cs.clipPath && cs.clipPath !== 'none' && /inset\((50|100)%/.test(cs.clipPath)) return true; if (cs.clip && /rect\(0(px)?,? 0(px)?,? 0(px)?,? 0(px)?\)/.test(cs.clip)) return true;
+    }
+    return false;
+  };
+  const clipRect = (el, r) => { let x1 = r.left, y1 = r.top, x2 = r.right, y2 = r.bottom; for (let p = el; p && p !== document.documentElement; p = p.parentElement) { const cs = getComputedStyle(p); if (/(auto|scroll|hidden|clip)/.test(cs.overflowX + cs.overflowY)) { const pr = p.getBoundingClientRect(); if (/(auto|scroll|hidden|clip)/.test(cs.overflowX)) { x1 = Math.max(x1, pr.left); x2 = Math.min(x2, pr.right); } if (/(auto|scroll|hidden|clip)/.test(cs.overflowY)) { y1 = Math.max(y1, pr.top); y2 = Math.min(y2, pr.bottom); } } } return x2 - x1 > 1 && y2 - y1 > 1 ? { left: x1, top: y1, right: x2, bottom: y2 } : null; };
   const rects = []; const small = [];
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
   for (let n = walker.nextNode(); n; n = walker.nextNode()) {
@@ -269,7 +281,7 @@ export function layoutChecks(o) {
 // node side: a contact sheet (one PNG) from screenshot files. tiles = [{file, label}]
 export async function contactSheet(browser, tiles, out, { cols = 3, tileW = 620, title = '' } = {}) {
   const fs = await import('node:fs');
-  const html = `<!doctype html><meta charset="utf-8"><style>body{margin:0;background:#2b2b2b;color:#eee;font:12px/1.3 system-ui,sans-serif}h1{margin:0;padding:10px 14px;font-size:15px;background:#111}.g{display:grid;grid-template-columns:repeat(${cols},${tileW}px);gap:10px;padding:10px}.t{background:#1c1c1c;border:1px solid #444}.t b{display:block;padding:4px 6px;font-weight:600;background:#333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.t img{display:block;width:${tileW}px;height:auto}</style><h1>${title}</h1><div class="g">${tiles.map(t => { let src = ''; try { src = 'data:image/png;base64,' + fs.readFileSync(t.file).toString('base64'); } catch { } return `<div class="t"><b>${String(t.label).replace(/</g, '&lt;')}${t.issues ? ' · ' + t.issues : ''}</b>${src ? `<img src="${src}">` : '<div style="padding:30px">missing</div>'}</div>`; }).join('')}</div>`;
+  const html = `<!doctype html><meta charset="utf-8"><style>body{margin:0;background:#2b2b2b;color:#eee;font:12px/1.3 system-ui,sans-serif}h1{margin:0;padding:10px 14px;font-size:15px;background:#111}.g{display:grid;grid-template-columns:repeat(${cols},${tileW}px);gap:10px;padding:10px}.t{background:#1c1c1c;border:1px solid #444}.t b{display:block;padding:4px 6px;font-weight:600;background:#333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.t img{display:block;width:${tileW}px;height:auto}</style><h1>${title}</h1><div class="g">${tiles.map(t => { let src = ''; try { src = 'data:image/png;base64,' + fs.readFileSync(t.file).toString('base64'); } catch { } return `<div class="t"><b>${String(t.label).replace(/&/g, '&amp;').replace(/</g, '&lt;')}${t.issues ? ' · ' + t.issues : ''}</b>${src ? `<img src="${src}">` : '<div style="padding:30px">missing</div>'}</div>`; }).join('')}</div>`;
   const ctx = await browser.newContext({ viewport: { width: cols * (tileW + 10) + 10, height: 800 } }); const pg = await ctx.newPage();
   await pg.setContent(html, { waitUntil: 'load' }); await pg.screenshot({ path: out, fullPage: true }); await ctx.close();
 }

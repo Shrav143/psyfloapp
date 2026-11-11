@@ -146,6 +146,7 @@ export function classify(b, a, ev, c) {
   const out = (outcome, detail = '') => ({ outcome, detail, flags });
   if (ev.errors && ev.errors.length) flags.push('console-error');
   if (ev.nativeDialog) flags.push('native-dialog');
+  if (ev.chooser) return out('FILE-CHOOSER', ev.chooser);
   if (ev.popup) return out('POPUP', ev.popup);
   if (ev.download) return out('DOWNLOAD', ev.download);
   if (b.hash !== a.hash || b.path !== a.path) return out('NAVIGATED', `${b.hash || b.path} -> ${a.hash || a.path}`);
@@ -162,6 +163,8 @@ export function classify(b, a, ev, c) {
     return out('TOAST-UNEXPLAINED', t.slice(0, 120));
   }
   if (a.scrollY !== b.scrollY || a.scrollers !== b.scrollers) return out('SCROLL', 'scrolled');
+  // focus went to a different element than the control itself (a "Change student" link that focuses the chip list): a weak effect, listed in the report
+  if (a.act && a.act !== b.act && !a.act.endsWith('[' + c.n + ']') && c.kind === 'link') return out('FOCUS-ONLY', 'moved focus to ' + a.act);
   // allowlist: nothing should change (design rules of review 06 d2.7)
   if (c.kind === 'tab' && (c.selected === 'true' || c.current)) return out('NO-EFFECT-ALLOWED', 'active tab');
   if (c.kind === 'radio' && c.checked) return out('NO-EFFECT-ALLOWED', 'radio already selected');
@@ -193,18 +196,23 @@ export async function settle(frame, { quiet = 220, max = 2600 } = {}) {
 export class Sweeper {
   constructor({ page, base, lauris, resetServer, log = () => { }, maxPerTarget = 220, deep = true, deepCap = 14, fastBack = true }) {
     Object.assign(this, { page, base, lauris, resetServer, log, maxPerTarget, deep, deepCap, fastBack });
-    this.errs = errors(page); this.popups = []; this.downloads = []; this.dialogs = [];
+    this.errs = errors(page); this.popups = []; this.downloads = []; this.dialogs = []; this.choosers = [];
+    page.on('filechooser', fc => { this.choosers.push(fc.isMultiple() ? 'file chooser (several files)' : 'file chooser'); });
     page.context().on('page', pg => { if (pg !== page) this.popups.push(pg); });
     page.on('download', d => this.downloads.push(d));
     page.on('dialog', d => { this.dialogs.push(d.message()); d.accept().catch(() => { }); });
   }
-  clearEvents() { this.errs.length = 0; this.downloads.length = 0; this.dialogs.length = 0; }
+  clearEvents() { this.errs.length = 0; this.downloads.length = 0; this.dialogs.length = 0; this.choosers.length = 0; }
   async closePopups() { for (const p of this.popups.splice(0)) { try { await p.close(); } catch { } } }
 
   async fresh(T) {
     await this.closePopups(); this.clearEvents();
     await T.open();
-    const f = T.frame();
+    let f = T.frame();
+    if (T.kind === 'panel') {                                    // the panel's iframe can be replaced while the Lauris page settles: wait for one that stays
+      for (let i = 0; i < 8; i++) { await sleep(350); const g = T.frame(); try { await g.evaluate(() => document.readyState); if (g === f) break; f = g; } catch { f = T.frame() || f; } }
+    }
+    if (T.afterOpen) { try { await T.afterOpen(); } catch { } }
     await settle(f);
     return f;
   }
@@ -216,13 +224,11 @@ export class Sweeper {
     } catch { return null; }
   }
   async list(T, f, o = {}) {
-    const r = await f.evaluate(enumerate, { scopes: o.scopes || T.scopes, expand: o.expand ?? T.expand });
-    return r;
+    for (let i = 0; ; i++) { try { return await f.evaluate(enumerate, { scopes: o.scopes || T.scopes, expand: o.expand ?? T.expand }); } catch (e) { if (i >= 3 || !/detached|destroyed|closed/i.test(String(e.message))) throw e; await sleep(400); f = T.frame() || f; } }
   }
   async measure(T, f, scopes) {
     // learn whether the screen changes by itself (timers, polling): compare two snapshots a moment apart
-    const s1 = await f.evaluate(snap, { scopes }); await sleep(450); const s2 = await f.evaluate(snap, { scopes });
-    return s1.sig !== s2.sig;
+    for (let i = 0; ; i++) { try { const s1 = await f.evaluate(snap, { scopes }); await sleep(450); const s2 = await f.evaluate(snap, { scopes }); return s1.sig !== s2.sig; } catch (e) { if (i >= 3 || !/detached|destroyed|closed/i.test(String(e.message))) throw e; await sleep(400); f = T.frame() || f; } }
   }
 
   // one control, from a fresh page: returns a row
@@ -249,7 +255,7 @@ export class Sweeper {
     const volatile = !!T._volatile;
     const rev0 = await revOf(this.base); const lau0 = T.kind === 'panel' || T.checkLauris ? await lauSnap(this.lauris) : ''; const pf0 = T.parentForm ? await T.parentForm() : '';
     const before = await f.evaluate(snap, { scopes, volatile });
-    const nPop = this.popups.length; this.clearEvents();
+    const nPop = this.popups.length; this.clearEvents(); const parentUrl0 = this.page.url();
     let act = '';
     try {
       switch (c.kind) {
@@ -270,23 +276,38 @@ export class Sweeper {
       row.detail = (/intercepts pointer events/.test(m) ? 'covered by ' + ((m.match(/<[^>]{0,120}>/g) || [])[1] || 'another element') : m.split('\n')[0]).slice(0, 200);
       return row;
     }
-    await settle(f, { quiet: 240, max: 3000 });
-    // popups open a tick later
-    if (this.popups.length === nPop) await sleep(120);
-    const ev = { errors: this.errs.slice(), nativeDialog: this.dialogs.length ? this.dialogs[0] : '' };
-    if (this.popups.length > nPop) {
-      const pg = this.popups[this.popups.length - 1];
-      try { await pg.waitForLoadState('domcontentloaded', { timeout: 4000 }); } catch { }
-      let status = '';
-      try { const info = await pg.evaluate(() => ({ t: document.title, b: (document.body.innerText || '').slice(0, 160) })); status = (/\b404\b|not found|cannot get|error/i.test(info.t + ' ' + info.b) ? 'BROKEN ' : '') + pg.url() + ' · ' + info.t; } catch { status = pg.url(); }
-      ev.popup = status; if (/^BROKEN/.test(status)) row.flags.push('broken-popup');
+    await settle(f, { quiet: 170, max: 3000 });
+    // popups open a tick later (only links and openers that say so are given the extra moment)
+    if (this.popups.length === nPop && (c.target === '_blank' || /open|lauris|portal|print|pdf|download|view/i.test(c.name))) await sleep(140);
+    let after, ev, frameGone = false;
+    try {
+      // the server refusing an action (400, 401, 403, 409, 422) is a visible, designed answer, not a console error; a 500 or a script error is
+      const REFUSAL = /^HTTP (400|401|403|409|422) \S*\/api\/do$/;
+      ev = { errors: this.errs.filter(e => !REFUSAL.test(e)), refused: this.errs.filter(e => REFUSAL.test(e)).length, nativeDialog: this.dialogs.length ? this.dialogs[0] : '' };
+      if (ev.refused) row.flags.push('refused');
+      if (this.popups.length > nPop) {
+        const pg = this.popups[this.popups.length - 1];
+        try { await pg.waitForLoadState('domcontentloaded', { timeout: 4000 }); } catch { }
+        let status = '';
+        try { const info = await pg.evaluate(() => ({ t: document.title, b: (document.body.innerText || '').slice(0, 160) })); status = (/\b404\b|not found|cannot get|error/i.test(info.t + ' ' + info.b) ? 'BROKEN ' : '') + pg.url() + ' · ' + info.t; } catch { status = pg.url(); }
+        ev.popup = status; if (/^BROKEN/.test(status)) row.flags.push('broken-popup');
+      }
+      if (!ev.popup && this.downloads.length) ev.download = this.downloads[0].suggestedFilename();
+      if (this.choosers.length) ev.chooser = this.choosers[0];
+      if (!ev.popup && !ev.download) { const w = await f.evaluate(() => window.__qa ? window.__qa.popups : 0); if (w > before.popups) ev.popup = 'window.open (blocked or closed)'; }
+      after = await f.evaluate(snap, { scopes, volatile });
+      const rev1 = await revOf(this.base); ev.revChanged = rev0 != null && rev1 != null && rev1 !== rev0;
+      if (T.kind === 'panel' || T.checkLauris) ev.laurisChanged = lau0 !== (await lauSnap(this.lauris));
+      if (T.parentForm) ev.parentFormChanged = pf0 !== (await T.parentForm());
+
+    } catch (e) {
+      if (!/detached|destroyed|closed|Target page/i.test(String(e.message))) throw e;
+      frameGone = true;                                           // the click replaced the frame (a panel button that moves the Lauris page on)
     }
-    if (!ev.popup && this.downloads.length) ev.download = this.downloads[0].suggestedFilename();
-    if (!ev.popup && !ev.download) { const w = await f.evaluate(() => window.__qa ? window.__qa.popups : 0); if (w > before.popups) ev.popup = 'window.open (blocked or closed)'; }
-    const after = await f.evaluate(snap, { scopes, volatile });
-    const rev1 = await revOf(this.base); ev.revChanged = rev0 != null && rev1 != null && rev1 !== rev0;
-    if (T.kind === 'panel' || T.checkLauris) ev.laurisChanged = lau0 !== (await lauSnap(this.lauris));
-    if (T.parentForm) ev.parentFormChanged = pf0 !== (await T.parentForm());
+    if (frameGone) {
+      await sleep(700); const url1 = this.page.url();
+      row.outcome = url1 !== parentUrl0 ? 'NAVIGATED' : 'DOM'; row.detail = url1 !== parentUrl0 ? 'the Lauris page moved: ' + parentUrl0.replace(/^https?:\/\/[^/]+/, '') + ' -> ' + url1.replace(/^https?:\/\/[^/]+/, '') : 'the panel was reloaded'; row.act = act; row.ms = Date.now() - t0; row.dirty = true; row.sameDoc = false; const rev1 = await revOf(this.base); const lau1 = T.kind === 'panel' || T.checkLauris ? await lauSnap(this.lauris) : lau0; row.revChanged = rev0 != null && rev1 != null && rev1 !== rev0; row.laurisChanged = lau1 !== lau0; row.mutated = row.revChanged || row.laurisChanged; if (T.kind === 'panel' && row.laurisChanged) row.flags.push('panel-wrote-lauris'); return row;
+    }
     const cl = classify(before, after, ev, c);
     row.outcome = cl.outcome; row.detail = cl.detail; row.flags.push(...cl.flags); row.act = act; row.ms = Date.now() - t0;
     row.revChanged = !!ev.revChanged; row.laurisChanged = !!ev.laurisChanged;

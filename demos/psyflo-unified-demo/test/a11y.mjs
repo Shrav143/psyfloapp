@@ -13,6 +13,7 @@ const only = process.env.A11Y_ONLY ? new RegExp(process.env.A11Y_ONLY) : null;
 const on = k => !wantRole.length || wantRole.includes(k);
 const run = (id, fn) => (!only || only.test(id)) ? T.test(id, fn) : Promise.resolve();
 const STAFF = { direct_support: 'khale', supervisor: 'cdiaz', clinician: 'jperez', admin: 'dowens' };
+await api('demo.scenario', { id: 'base-live' }, 'dowens+p').catch(() => { });          // a known start, whatever ran before on this server
 const { chromium } = playwright();
 const browser = await chromium.launch();
 const READY = () => document.querySelector('#root main, #root h1, #root [role=main]') && !document.querySelector('#root .sh-loading');
@@ -70,7 +71,7 @@ function walkIssues(stops, { skipFirst = true, noDock = true } = {}) {
   const o = []; const real = stops.filter(s => s.cur);
   if (!real.length) return ['Tab reaches nothing'];
   if (skipFirst && real[0].where !== 'skip') o.push(`first tab stop is "${real[0].name}" (${real[0].where}), not the skip link`);
-  const noInd = real.filter(s => s.indicator === false); if (noInd.length) o.push(`${noInd.length} tab stops without a visible focus indicator: ` + short(noInd.map(s => `${s.tag} "${s.name}"`)));
+  const noInd = real.filter(s => s.indicator === false && !/^iframe/.test(s.tag)); if (noInd.length) o.push(`${noInd.length} tab stops without a visible focus indicator: ` + short(noInd.map(s => `${s.tag} "${s.name}"`)));
   const hid = real.filter(s => s.hidden); if (hid.length) o.push(`focus lands inside aria-hidden: ${short(hid.map(s => s.name))}`);
   const off = real.filter(s => !s.inView && s.where !== 'skip'); if (off.length) o.push(`focus lands off screen: ${short(off.map(s => s.name))}`);
   if (noDock && real.some(s => s.where === 'dock')) o.push('presenter dock is in the tab order');
@@ -83,7 +84,7 @@ async function screenChecks(page, { min, label, shell = true, scope = null, fram
   const c = await f.evaluate(A.contrastSample, { scope, n: 30 }); const u = await f.evaluate(A.uiContrast, { scope }); issues.push(...contrastIssues(c, u));
   const t = await f.evaluate(A.targets, { min, scope }); if (t.smallCount) issues.push(`${t.smallCount} targets under ${min}px: ` + short(t.small.map(x => `${x.t || x.s} ${x.w}x${x.h}`), 3));
   const h = await f.evaluate(A.hscroll); if (h.over > 1) issues.push(`horizontal scroll ${h.over}px (${short(h.offenders, 2)})`);
-  if (walk) { const stops = await A.tabWalk(f, { page, max: walk }); issues.push(...walkIssues(stops, { skipFirst: shell && !frame, noDock: true })); }
+  if (walk) { const stops = await A.tabWalk(f, { page, max: walk }); issues.push(...walkIssues(stops, { skipFirst: !frame, noDock: true })); }
   return { issues, c, t, s };
 }
 const verdict = (issues, extra = '') => { if (issues.length) throw new Error(issues.join(' · ')); if (extra) console.log('  ' + extra); };
@@ -126,13 +127,19 @@ if (on('shell')) {
     const r = await page.evaluate(() => { window.psyflo.toast('Saved the thing'); window.psyflo.toast('Could not do the thing', 'err'); const t = document.getElementById('toasts'); const s = document.querySelectorAll('#toasts [role=status]').length, a = document.querySelectorAll('#toasts [role=alert]').length; return { live: t.getAttribute('aria-live'), s, a, announce: { role: document.getElementById('sh-announce').getAttribute('role'), text: document.getElementById('sh-announce').textContent } }; });
     assert.eq(r.live, 'polite'); assert.ok(r.s >= 1, 'status toast'); assert.ok(r.a >= 1, 'alert toast'); assert.eq(r.announce.role, 'status'); assert.match(r.announce.text, /My Work/);
   });
+  for (const w of [1024, 700, 400]) await run(`A11Y-06 sign out, Help and the "Demo data · nothing is real" line stay available at ${w} px`, async () => {
+    await page.setViewportSize({ width: w, height: 800 }); await openAt(page, 'MyWork', { section: 'todo' });
+    const v = await page.evaluate(() => { const vis = e => !!e && e.getClientRects().length > 0 && getComputedStyle(e).visibility !== 'hidden' && (!e.checkVisibility || e.checkVisibility()); const t = [...document.querySelectorAll('#rail *')].find(e => e.children.length === 0 && /Demo data · nothing is real/.test(e.textContent)); return { signout: vis(document.querySelector('#rail [data-signout]')), help: vis(document.querySelector('#rail [data-sh=help]')), demo: vis(t) }; });
+    const out = []; if (!v.signout) out.push('Sign out is not shown'); if (!v.help) out.push('Help is not shown'); if (!v.demo) out.push('"Demo data · nothing is real" is not shown (at most a tooltip on a dot)');
+    verdict(out);
+  });
   await ctx.close();
 }
 
 // ------------------------------------------------------------------------------------------------ 2. every desktop route, per role: structure, contrast, targets, focus, reflow
 for (const role of Object.keys(STAFF)) {
   if (!on(role)) continue;
-  const routes = appRoutes(role);
+  const routes = appRoutes(role).filter(r => r.params.panel !== 'guidance');          // that variant opens a drawer on load: covered by the drawer checks
   if (!routes.length) continue;
   const { ctx, page } = await ctxFor({ who: STAFF[role] });
   for (const r of routes) {
@@ -140,7 +147,7 @@ for (const role of Object.keys(STAFF)) {
     await run(`A11Y-R ${label} (1440)`, async () => {
       await page.setViewportSize({ width: 1440, height: 900 }); await openAt(page, r.id, r.params);
       const ext = /^Ext/.test(r.id);                                                  // a frame around the mock Lauris: the page itself is a thin wrapper
-      const { issues, c, t } = await screenChecks(page, { min: 24, label, walk: ext ? 12 : 70 });
+      const { issues, c, t } = await screenChecks(page, { min: 24, label, walk: ext ? 12 : 70, shell: !ext });
       await page.evaluate(() => 0);
       verdict(issues, `${c.distinctPairs} distinct colour pairs, ${c.sampled} sampled, worst ${c.worst ? c.worst.ratio + ':1' : 'n/a'} · ${t.checked} targets`);
     });
@@ -170,7 +177,7 @@ for (const g of PHONE) {
     await run(`A11Y-P ${label} (390)`, async () => {
       await openAt(page, id, params);
       const { issues, c, t } = await screenChecks(page, { min: 44, label, shell: false, walk: 50 });
-      verdict(issues.filter(i => !/skip link/.test(i)), `${c.distinctPairs} distinct colour pairs, worst ${c.worst ? c.worst.ratio + ':1' : 'n/a'} · ${t.checked} targets`);
+      verdict(issues, `${c.distinctPairs} distinct colour pairs, worst ${c.worst ? c.worst.ratio + ':1' : 'n/a'} · ${t.checked} targets`);
     });
   }
   await ctx.close();

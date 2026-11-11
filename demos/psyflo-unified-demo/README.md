@@ -1,104 +1,138 @@
-# Psyflo × Harvest · full-vision demo
+# Psyflo × Harvest · unified demo
 
-A working demo of the whole Psyflo vision for Harvest Outreach Center, built from the handoff bundle (`docs/BRIEF.md`): the canvas screens (less those dropped after the Nov 7 and Nov 8 product calls: 10 family link settings, 30 teacher check-in, 41 compliance, 44 migration, 45 library) plus family-portal screens 46–50 on one shared dataset, a mock Lauris, the Lauris extension panel (as a real MV3 side-panel extension and as an in-page fallback), the phone app and the parent and school portals. **Synthetic data only — nothing is real.**
+A working demo of Psyflo for Harvest Outreach Center, rebuilt on Nov 11, 2026 from the Nov 8 master and the secondary TDT authorization demo. One application, one dataset, five surfaces: the management **platform**, the **Lauris extension panel** beside a mock Lauris, a **phone** app for staff, a **family** portal and a **school** portal. **Synthetic data only. Nothing is real.**
+
+What it shows: a person says what happened, Psyflo drafts from the stored record with a source on every statement, and a person reviews, presses Process Form, Get Signature and Send. Psyflo records and tracks; it never signs, never stores credentials, never submits unattended.
 
 ## Run it
 
-Needs Node 20+ and nothing else (no npm install).
+Needs Node 20 or later. There is nothing to install.
 
 ```bash
-npm start
+node server/index.js        # or: npm start
 ```
 
-| Origin | What |
-| --- | --- |
+Or double-click `Start demo (Mac).command` or `Start demo (Windows).bat` (they open the browser; keep the window open, close it to stop).
+
+| Port | What |
+|---|---|
 | http://localhost:4000 | Psyflo app, portals, phone app, extension panel, API |
-| http://localhost:4001 | Mock Lauris Online (any seed staff id signs in: `jperez`, `khale`, `cdiaz`, `slane`, `rowens`, `dowens`) |
+| http://localhost:4001 | Mock Lauris Online. Any seed staff id signs in: `http://localhost:4001/login?as=jperez` |
 | http://localhost:4002 | Mock Availity, UHC portal, state incident portal, DMAS lookup |
 
-Ports: `APP_PORT`, `LAURIS_PORT`, `EXT_PORT`; data lives in `data/` (or `DATA_DIR`). If the app is reached through another host name, set `PSYFLO_APP_URL`, `LAURIS_URL` and `EXT_URL`.
+Environment: `APP_PORT`, `LAURIS_PORT`, `EXT_PORT`; `DATA_DIR` (default `data/`); `PSYFLO_APP_URL`, `LAURIS_URL`, `EXT_URL` when reached by another host name; `DEMO_PRESENTER=0` turns presenter sessions off, `PRESENTER_PIN` requires a PIN for them; `DEMO_TIME=HH:MM` fixes the time of day; `DEMO_TEST=1` seeds the random generators and exposes a Lauris snapshot for tests; `ALLOWED_ORIGINS` adds CORS origins.
 
-**Reset** from the demo bar (“Reset…”) or `npm run reset`:
-- **Live flows** (default): T.W. is rewound to the moment the school referred him (Oct 13), so Flows D → A → C build his story in front of the audience. Everything else is the Oct 29 seed.
-- **Canvas snapshot**: Oct 29 exactly as the design canvas shows it (T.W.'s request already sent, decision due today).
+**Reset:** dock **Reset** (below), or `npm run reset`.
+- **Live flows** (default): T.W. is rewound to the moment the school referred them, so the referral, eligibility, screening, plan, request, signature and send build in front of the audience. Everything else is the Oct 29 seed.
+- **Canvas snapshot:** Oct 29 exactly as designed; T.W.'s request is already sent and a decision is due.
+
+The demo clock starts at Thu Oct 29, 3:30 pm. One clock drives Psyflo and the mock Lauris; **Advance a day** moves both.
 
 ## Sign in
 
-Open http://localhost:4000, pick a role card (or type a seed email). Each role lands on its first screen and the sidebar and screen picker hide what the role cannot see:
+The first screen is **Sign in**: four role cards, then **Family portal** and **School counselor**. Sign-in is demo-grade: there is no password and no identity provider, but the server enforces the permission table on every call and projects `/api/state` by role.
 
-| Role | Seed user | Lands on |
-| --- | --- | --- |
-| Direct support | Kayla Hale (`khale`) | Extension home (laptop) or the phone app (phone-sized window) |
-| Supervisor | Carla Diaz (`cdiaz`) | Review queue |
-| Clinician | Jordan Perez (`jperez`) | Do next |
-| Admin | Dana Owens (`dowens`) | Authorizations (+ Users & roles, demo-only controls) |
+| Role | Person (synthetic) | Id | Lands on |
+|---|---|---|---|
+| Direct support | Kayla Hale | `khale` | extension home on a laptop, the phone app on a narrow window |
+| Supervisor | Carla Diaz | `cdiaz` | My Work, Review |
+| Clinician | Jordan Perez | `jperez` | My Work, To do |
+| Admin | Dana Owens | `dowens` | My Work, Operations. No clinical text, by design |
+| Guardian | T.W.'s guardian | token `tw-demo` | family checklist |
+| School counselor | R. Bell | `rbell` | school portal |
 
-Below the role cards, **Family portal** and **School counselor** open the portals directly (families normally arrive by a texted link, counselors by their own school login). The school portal is referral-only; there is no teacher portal.
+The rail shows only what the role may open. Direct support gets My Work; the platform's three tabs are for licensed staff and supervisors. `docs/deliverables/06-demo-walkthrough-guide.md` has the full table.
 
-The navy demo bar has the screen picker (canvas numbering), “How it fits”, the “How the data gets in” drawer for every screen, a link to the mock Lauris, switch user and reset.
+## Presenter dock and modes
+
+The product fills the window. The **presenter dock** is separate: a navy ribbon above the viewport with a dashed marigold edge and the label PRESENTER. It is closed and out of the tab order until you press `Ctrl+Shift+P` or open any page with `?present=1`.
+
+- **Presentation mode** (default): the dock stays closed unless opened.
+- **Explore mode** (`?mode=explore`, remembered in the browser): the dock is open as a slim ribbon, with an **All screens** picker (searchable, role-aware).
+
+Dock menus: **Scenario** (six; signs in as the scenario's role, resets to its preset, opens its first screen), **Role** (no page reload), **Reset** (Live flows or Canvas snapshot), **Simulate** (Receive a reply, Advance a day), **Notes** ("How the data gets in" for the open screen), **Maturity** (overlay that also shows Working chips), **Surfaces** (Platform, Lauris + panel in a new tab, Phone, Family, School).
+
+Maturity chips say how real a feature is: **Simulated**, **Pilot (preview)**, **Future**; Working is unmarked. A separate chip family says where a rule comes from: Officially verified, Payer-specific, Harvest-reported, Unverified.
+
+## Scenarios and fixtures
+
+`demo.scenario` (dock, or `POST /api/do`) loads a scenario or a checkpoint fixture into both stores.
+
+| Scenario | Case | Role | Preset | Fixture |
+|---|---|---|---|---|
+| 1 Direct staff daily documentation | M.R. | Direct support | Live | `mr-daily` |
+| 2 School referral through intake | T.W., REF-118 | School, then clinician | Live | `tw-referral` |
+| 3 Initial authorization | T.W., R-0416 | Clinician | Canvas | `tw-isp-ready` |
+| 4 Continued-stay evidence | M.R., R-0411 | Clinician | Canvas | `mr-corpus` |
+| 5 Payer decision | D.W., K.T., T.N., E.C. | Clinician | Canvas | `payer-decision` |
+| 6 Leadership view | aggregate | Admin, then clinician | Canvas | `analytics-case` |
+
+Other fixtures: `base-live`, `base-canvas`, `tw-link-submitted`, `tw-eligible`, `tw-screened`, `tw-signed`, `tw-sent`. Fixtures run the same internal actions as the screens. The scenario table is `seed/extra/scenarios.json`. The 14-minute route and the click paths are in `docs/deliverables/06-demo-walkthrough-guide.md`.
+
+## The five surfaces
+
+| Surface | Where | What it is |
+|---|---|---|
+| Platform | `http://localhost:4000` | Rail: **My Work** (logo), **Authorizations**, **Denial Intelligence**, **Analytics**, then **Referrals** and **Settings**. Case shell, denial workspace, pilot scorecard, three analytics sections, Settings (People, Roles, Units, Rules, Audit, Family link, Presenter) |
+| Lauris extension | mock Lauris on 4001, panel at 400 px | Three buttons: **Scribe**, **Track Time**, **Scan & Enhance** (clinicians and designated supervisors). Three-way draft review, evidence review (read-only), authorization path |
+| Phone | `#/MobileApp` at 390 px | My students, Current activity, Say what happened, assessments |
+| Family | `/f/<token>`, `/parent/<token>/<Screen>` | Checklist home, one task per screen, English and Español, signature mode per document |
+| School | school sign-in | "Harvest needs" card, status text only, a four-section referral form |
+
+Every historic route id still resolves; 14 redirects send old ids to the new screens, and `legacy=1` on a URL opens the old one. See `docs/deliverables/03-ux-before-and-after.md`.
 
 ## The extension
 
-The panel is one page (`web/panel/`) that talks to a page bridge (`web/panel/bridge.js`) on the Lauris page. Two ways to run it, same code:
+The panel is one page (`web/panel/`) talking to a **page bridge** (`web/panel/bridge.js`) on the Lauris page. The bridge reads only the open page, finds boxes by label text, types only when a person presses a panel button, and never presses Process Form, Get Signature or Send. It reports what it sees a person do. Say "page bridge to the open Lauris page", never "Lauris API".
 
-1. **In-page fallback (no install):** the mock Lauris shows the panel at 400px on the right (toggle with the “psyflo · on” chip). Extension screens in the app (13–18, 23–26, 32, 33, 37) open as this composite.
-2. **Real side panel:** Chrome → `chrome://extensions` → Developer mode → *Load unpacked* → `extension/`. Open the mock Lauris, click the toolbar icon. The in-page panel hides itself when the extension is present. (`extension/bridge.js` is copied from `web/panel/bridge.js` each time the server starts.)
-
-The bridge reads only the open page, finds boxes by **label text**, types only when you press a button, and never presses Process Form, Get Signature or Send. It reports what it sees a person do (Process Form, Get Signature, Reject, create a consumer, a portal confirmation) to Psyflo's own tracker. Psyflo's store (`server/psyflo`) and Lauris's (`server/lauris`) are separate modules; Psyflo never reads Lauris data.
-
-## The four live flows (demo script)
-
-Reset to **Live flows** first. Lauris and the app can sit side by side; every app tab updates live.
-
-**Flow D · family link (8 → 9 → 11 → 12).** Sign in as Jordan → Referrals → REF-118 → *Send the family link*. The stubbed SMS shows the link; open it in a phone-sized window (or the phone frame). Walk the five steps; on insurance pick *Medicaid through a health plan*, type any ID. Submit → the Eligibility screen flips to “details received — run the check”. Open the DMAS lookup (mock), then record *active · Humana*; the referral's chip updates. Then Parent signs → sign with a finger → Parent portal shows the consent done.
-
-**Flow A · screening fills the Lauris form (7 → 14 → 15).** In the mock Lauris (`/consumers/new?referral=REF-118`, or Referral review → *Open in Lauris*): the panel offers *Fill boxes* from the referral → *Save Consumer* → *Open Admission Screening*. Six boxes from the referral and family link drop in yellow. Press *Record (microphone)* and read `seed/scripts/screening_TW.md` aloud, or *Play the scripted call*. While recording, only “Before you hang up” shows; prompts tick as answers are heard. *Stop* → 11 boxes drafted (6 before + 11 + 2 left for you = 19), narrative last, every box with its sources and the drafting checks. *Fill* → edit one box → *Process Form*: the 30-day clock starts. *Open the intake (CNA)*: presenting issue and prior services arrive labelled “copied from screening”.
-
-**Flow B · say what happened → daily note (20 → 21 → 23).** On the phone as Kayla: M.R.'s timer is running; *Say what happened*, speak one sentence (or use the example), *Looks right*. On the laptop open M.R. → Daily Progress Note in Lauris (as `khale`): “1 dictation waiting” drops the narrative, contact-time rows, mood and progress in, yellow, with “What Psyflo added, and where it came from”. *Confirm 3 units* → *Process Form*. Staff dashboard: Daily notes today 4 of 6 → 5 of 6.
-
-**Flow C · draft, sign, send, track (17 → 18 → 19 → 29).** (After Flow A.) In Lauris open T.W.'s ISP → *Fill the 3 goals* → *Process Form* (Psyflo drafts R-0416). *Open the initial request (SRA)*: criterion 1 is editable in the panel; *Fill all 7 boxes* (criterion 3 left blank because 1 and 2 are met; trauma-informed care left to you) → *Process Form* → *Open Forms to Approve* → the SRA → *Get Signature*: Psyflo saves the signed preview as a real PDF and assembles the packet → *After signing: open Send* → *Send*: the Sfax stub returns a reference and delivery receipt in ~3 s and the timeline gains both events. Authorizations shows Submitted with its decision date; as admin use *Demo: receive a reply → partial* and the row moves to *Partial — decide*; Partials shows the four doors.
-
-## Real vs stubbed
-
-| Capability | In this build |
-| --- | --- |
-| Speech to text | Real in Chrome via the Web Speech API (screening and phone dictation); the scripted transcript is the fallback and the acceptance test |
-| Drafting / enhancement | `draft(formType, sources)` in `web/js/shared/draft.js`: deterministic extractors over the transcript, dictation and record, with every box carrying numbered sources. The 14 drafting rules run as explicit pass/fail checks shown in the panel. No LLM is called; a hosted model can sit behind the same function and the checks still gate it |
-| Fax (Sfax) | Stub: reference + delivery receipt after 3 s; receipt stored as a PDF |
-| SMS | Stub: message and link shown on screen and logged |
-| Availity / UHC portal | One-page mocks; Send opens them in the clinician's own session; the extension reads the confirmation number |
-| DMAS eligibility | Not automated: a mock lookup page a person reads, and the Eligibility screen where a person records the result |
-| Signed PDFs | Real PDFs generated from the Lauris preview (`server/pdf.js`, no dependencies), consents and appeal letters with the finger signature |
-| Lauris export / import | Seeded; the Migration screen was dropped (Nov 7): start with the ~55 active clients by a daily export/import until a better path exists |
-| Payer replies, clock | Demo-only controls on Authorizations, admin only, labelled “Demo” |
+1. **In-page panel (default):** the mock Lauris shows the panel at 400 px on the right (the "psyflo · on" chip toggles it).
+2. **Chrome side panel:** `chrome://extensions`, Developer mode, **Load unpacked**, choose `extension/`, open the mock Lauris, click the toolbar icon. The in-page panel hides itself when the extension is present. **This path has not been run in real Chrome.** `extension/bridge.js` is copied from `web/panel/bridge.js` at server start.
 
 ## Tests
 
 ```bash
-npm test                      # drafting acceptance tests from seed/scripts (Flows A and B, SRA rules)
-node test/smoke.mjs           # renders every registered screen headless; reports console errors and unwired links (AS=khale|cdiaz|jperez|dowens)
-node test/flowA.mjs && node test/flowC.mjs   # Flow A then Flow C through the mock Lauris and the in-page panel
-node test/flowB.mjs           # Flow B
-node test/panels.mjs          # every panel view
+node test/run-all.mjs                       # every suite, one worker, ports 4900 to 4902
+node test/run-all.mjs --only roles,gates    # a subset
+node test/run-all.mjs --list                # suite names and tags
+npm test                                    # drafting unit tests only
+node test/smoke.mjs [ScreenId]              # one screen or all, per role
 ```
-(The browser tests use the Playwright preinstalled in this environment; set `PW=/path/to/playwright` elsewhere.)
 
-## Layout
+The runner starts the servers on given ports with a fresh data directory per suite, runs 41 suites in isolation (unit, screens, flows A to D, safety, areas, scenarios S1 to S6, presenter, hosted) and writes `review/test-results/<suite>.md` and `summary.md`. Browser suites use Playwright; set `PW=/path/to/playwright` if it is not in the usual place. Results change while QA works: read `summary.md`, not this file.
+
+## Hosted single-file build
+
+`hosted/index.html` is the whole demo in one file (about 3 MB, no server, nothing leaves the page). The server code runs in the page behind a virtual network. Data is in memory only; a reload resets it; popups become overlays; PDFs open as text. Build: `node scripts/build-hosted.mjs` (esbuild lives outside the repo). Test: `node test/hosted.mjs`. Details and differences: `hosted/README.md`.
+
+## Where things are
 
 ```
-server/        index.js (3 ports) · pdf.js · psyflo/ (store + actions) · lauris/ (mock Lauris) · external/ (portal mocks)
-web/           index.html + js/app.js (shell) · js/runtime.js (renders the .dc.html canvas screens) · js/screens/* (one controller per screen)
-web/screens/   the canvas screens (visual source of truth) and the family screens 46–50, used as live templates
-web/panel/     the extension panel + page bridge
+server/        index.js (three ports) · psyflo/ (store, sessions, authz, projection, gates, 23 action files) · lauris/ (mock Lauris) · external/ (portal mocks) · pdf.js · attest.js
+web/           index.html · js/app.js (shell) · js/registry.js (routes, redirects) · js/ui/ (UI kit) · js/shared/ (permissions, rules, clock, nav, maturity, selectors, analytics) · js/screens/ · screens/ (templates)
+web/panel/     the extension panel: core.js, views/, lib/, bridge.js
 extension/     MV3 side-panel extension
-seed/          seed.json (the dataset), extra/*.json (additions), scripts/ (worked examples), notes.md
-docs/          BRIEF.md, CONTRACT.md (how screens are wired), product-direction.md, storyboard.html (the original clickable storyboard)
+seed/          seed.json · extra/*.json (rules, scenarios, notes corpus, disputes, …) · notes/*.md ("How the data gets in") · scripts/ (worked examples)
+test/          run-all.mjs, suites, lib/
+hosted/        the single-file build and its README
+review/        the review set (below) and review/test-results/
+docs/          BRIEF.md, CONTRACT.md, BUILD-BRIEF.md, UI-KIT.md, UNIFIED-DEMO-PROMPT.md, engineer-briefs/, deliverables/
 ```
 
-## Open questions carried from the brief
+**Reviews** (`review/`): `00-unified-recommendations.md` (resolved conflicts, binding), `01` clinical workflow, `02` product strategy, `03` and `03b` UX and density audits, `04` architecture, `04b` feature inventory, `05`, `05b` and `05c` safety, test plan and rules register, `06` and `06b` demo and QA, `06c-parity-map.csv`, `evidence/`.
 
-- **Early discharge dates:** at 3 units per school day, D.W.'s 110 units from Oct 29 run out Dec 18, so the Early discharge screen computes discharge Dec 18 / intake Dec 21. The canvas and brief say Dec 9 / Dec 5 / Dec 8; the seeded discharge-summary panel keeps the canvas dates. Needs a holiday calendar or a different units start from Harvest to reconcile.
-- **Decision due date:** in the live preset R-0416 is sent today, so its decision is due Nov 5 (sent + 7 days); in the canvas snapshot it is due Oct 29 as in the brief.
-- Seed calendar slips: REF-117's "Fri Oct 31" (Oct 31, 2026 is a Saturday); "Tue Dec 9" is a Wednesday.
+**Deliverables** (`docs/deliverables/`): `01-evidence-and-conflicts.md`, `03-ux-before-and-after.md`, `04-implementation-plan.md`, `06-demo-walkthrough-guide.md`, `08-unresolved-decision-register.md`, `09-pilot-vs-full-vision.md`. The rows for the feature preservation matrix are `review/04b-feature-inventory.md` and `review/06c-parity-map.csv`. Test results: `review/test-results/`.
 
-Lauris field labels are our best reading (the extension maps by label text, so corrections are cheap; see `server/lauris/forms.js`). Whether Lauris copies ISP goals into the SRA (the mock does, as green boxes). The scripted call says Piedmont was “last spring” while the expected output says Mar–Jun 2025; the demo follows the expected output.
+The "How the data gets in" note for any screen is in `seed/notes/*.md` and in the dock's **Notes** drawer.
+
+## Honest limits
+
+- **Synthetic data.** Initials and invented names. Seeded figures labelled "Sample data, illustrative" are not Harvest's numbers.
+- **Simulated integrations.** The mock Lauris is our approximation, with its own store; field labels are a best reading. Sfax, SMS, DMAS, Availity, the UHC portal and the state portal are stubs or one-page mocks. Signatures are a name read from the mock Lauris event.
+- **Rule-based drafting, no language model.** Every statement traces to a stored record or says "Evidence missing — verify …".
+- **Rules are not law.** Deadlines, clocks, unit bands and signature modes come from a table with a source and a verification label. Several are Harvest-reported or unverified, and say so.
+- **Not run:** the MV3 extension in real Chrome; the live microphone and Web Speech; Safari and Firefox; a venue network; a published host for the hosted file. The in-page panel and the mock Lauris pass the automated suites in headless Chromium.
+- **Demo-grade identity.** No password; the server still enforces roles. Admin has no clinical-record access and there is no grant path in this build.
+- **Known defect:** a drawer stays open if the address hash changes under it (browser Back); Escape closes it.
+- **Open questions for Harvest** are in `docs/deliverables/08-unresolved-decision-register.md`.
+
+Fonts: DM Sans from Google Fonts (the only network request). Without it the pages use the system sans.

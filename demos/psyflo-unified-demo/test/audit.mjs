@@ -24,8 +24,35 @@ const { chromium } = playwright();
 const browser = await chromium.launch();
 const resetServer = async id => { try { await api('demo.scenario', { id }, 'dowens+p'); } catch (e) { console.log('  (fixture ' + id + ' failed: ' + e.message + ')'); } };
 const READY = () => document.querySelector('#root main, #root h1, #root [role=main]') && !document.querySelector('#root .sh-loading');
-const PERSON_ONLY = /^(process form|get signature|send)\b/i;       // person actions in Lauris: the panel must not offer or trigger them
+const PERSON_ONLY = /^(process form|get signature|send|send packet|send to (the )?payer|send request|send now|press send)$/i;       // person actions in Lauris: the panel must not offer or trigger them
 const results = [];
+function writeReports(results, tag) {
+  const sum = summarize(results);
+  const rows = Object.entries(sum.by);
+  const total = rows.reduce((n, [, v]) => n + v.rows, 0);
+  const outcomes = {}; for (const [, v] of rows) for (const [k, n] of Object.entries(v.counts)) outcomes[k] = (outcomes[k] || 0) + n;
+  const line = Object.entries(outcomes).sort((a, b) => b[1] - a[1]).map(([k, n]) => k + ' ' + n).join(' · ');
+  const byRole = {}; for (const [, v] of rows) { const o = byRole[v.role.replace(/@.*/, '')] = byRole[v.role.replace(/@.*/, '')] || { targets: 0, controls: 0, findings: 0 }; o.targets++; o.controls += v.rows; }
+  for (const f of sum.findings) { const r = f.role.replace(/@.*/, ''); if (byRole[r]) byRole[r].findings++; }
+  const md = ['# Interaction audit (QA1)', '', `Controls swept: ${total} on ${rows.length} targets. ${line}`, '', '## Per role', '', '| Role | Targets | Controls | Findings |', '|---|---|---|---|', ...Object.entries(byRole).map(([r, o]) => `| ${r} | ${o.targets} | ${o.controls} | ${o.findings} |`), '',
+    '## Per route', '', '| Target | Role | Controls | ' + Object.keys(outcomes).sort().join(' | ') + ' |', '|---|---|---|' + Object.keys(outcomes).map(() => '---').join('|') + '|'];
+  for (const [k, v] of rows) md.push(`| ${k} | ${v.role} | ${v.rows}${v.skipped ? ' (' + v.skipped + ')' : ''} | ` + Object.keys(outcomes).sort().map(o => v.counts[o] || '').join(' | ') + ' |');
+  md.push('', '## Findings (dead or unexplained controls, unnamed controls, console errors, dead ends)', '');
+  if (!sum.findings.length) md.push('None.');
+  for (const f of sum.findings) md.push(`- **${f.target}** · ${f.ctl} "${f.name || f.key}" (${f.where || ''}${f.depth === 2 ? ', in the overlay opened by "' + (f.via || '').split('|')[2] + '"' : ''}) → ${f.outcome}${f.detail ? ' · ' + f.detail : ''}${f.flags.length ? ' · ' + f.flags.join(', ') : ''}${f.errors ? ' · ' + f.errors[0].slice(0, 100) : ''}`);
+  const weak = results.flatMap(r => r.rows).filter(r => ['FOCUS-ONLY', 'SCROLL', 'NO-EFFECT-ALLOWED'].includes(r.outcome) && r.outcome !== 'NO-EFFECT-ALLOWED'); if (weak.length) { md.push('', '## Weak effects (focus or scroll only; accepted, listed for a manual look)', ''); for (const r of weak) md.push(`- ${r.target} · ${r.ctl} "${r.name || r.key}" → ${r.outcome} · ${r.detail}`); }
+  const allowed = results.flatMap(r => r.rows).filter(r => r.outcome === 'NO-EFFECT-ALLOWED'); if (allowed.length) { md.push('', '## No change by design (allowlist: active tab or toggle, text field, link to the current page, radio already selected)', ''); for (const r of allowed) md.push(`- ${r.target} · ${r.ctl} "${r.name || r.key}" · ${r.detail}`); }
+  const sk = results.flatMap(r => r.rows).filter(r => r.outcome === 'SKIPPED'); if (sk.length) { md.push('', '## Skipped on purpose', ''); for (const r of sk) md.push(`- ${r.target} · "${r.name}" · ${r.detail}`); }
+  const t = tag ? '-' + tag : '';
+  fs.writeFileSync(path.join(OUT, `qa1-audit${t}.md`), md.join('\n') + '\n');
+  fs.writeFileSync(path.join(OUT, `qa1-audit${t}.json`), JSON.stringify({ at: new Date().toISOString(), total, outcomes, targets: sum.by, findings: sum.findings, results: results.map(r => ({ meta: { ...r.meta, keys: undefined }, rows: r.rows })) }, null, 1));
+  return { total, rows, outcomes, line };
+}
+// AUDIT_MERGE=1: combine the per-shard files (AUDIT_TAG runs) into qa1-audit.md and qa1-audit.json
+if (process.env.AUDIT_MERGE) {
+  const all = fs.readdirSync(OUT).filter(f => /^qa1-audit-.+\.json$/.test(f)).flatMap(f => JSON.parse(fs.readFileSync(path.join(OUT, f), 'utf8')).results);
+  const r = writeReports(all, ''); console.log(`merged ${r.rows.length} targets, ${r.total} controls: ${r.line}`); process.exit(0);
+}
 
 // ------------------------------------------------------------------------------------------------ route inventory
 // (shared with a11y.mjs and visual.mjs: appRoutes(role) in test/lib/audit.mjs)
@@ -41,10 +68,16 @@ async function runGroup(label, fixture, makeTargets, { viewport = { width: 1440,
   await resetServer(fixture);
   const ctx = await browser.newContext({ viewport, hasTouch: mobile, isMobile: mobile, deviceScaleFactor: mobile ? 2 : 1 });
   await installProbes(ctx);
+  await ctx.addInitScript(() => { try { localStorage.removeItem('psyflo_parent_lang'); } catch { } });          // every fresh load starts in English: the language toggle must not leak into the next control
   const page = await ctx.newPage();
   try {
     if (who) await login(page, who, { presenter: false });
     if (portal) await portalSignIn(page, portal);
+    // a click can replace the session (a family link opened in this window signs the guardian in over the staff session): every fresh load restores the one the group started with
+    if (who || portal) {
+      const keep = await page.evaluate(() => ({ psyflo_session: localStorage.getItem('psyflo_session'), psyflo_user: localStorage.getItem('psyflo_user'), psyflo_school_user: localStorage.getItem('psyflo_school_user') }));
+      await ctx.addInitScript(a => { try { if (location.origin !== a.origin) return; for (const [k, v] of Object.entries(a.keep)) { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } } catch { } }, { origin: new URL(BASE).origin, keep });
+    }
     const sw = new Sweeper({ page, base: BASE, lauris: LAURIS, resetServer, deep: process.env.AUDIT_FAST !== '1' });
     let first = true;
     for (const tg of sel) {
@@ -52,7 +85,7 @@ async function runGroup(label, fixture, makeTargets, { viewport = { width: 1440,
       target.fixture = fixture;
       first = false;
       await T.test(`P19.3 audit · ${target.id}`, async () => {
-        const run = async tgt => { const r = await sw.sweep(tgt); results.push(r); return r; };
+        const run = async tgt => { try { const r = await sw.sweep(tgt); results.push(r); return r; } catch (e) { const at = String(e.stack || '').split('\n').find(l => /lib\/audit\.mjs/.test(l)) || ''; throw new Error(String(e.message).split('\n')[0] + ' [' + at.trim().replace(/^at /, '').slice(-70) + ']'); } };
         const r = await run(target);
         let more = null;
         if (r.meta.closedDetails > 0 && tg.expand !== false && !r.meta.skipped) {                         // the controls inside collapsed sections
@@ -85,7 +118,9 @@ const appTarget = (role, kind, route, params, o = {}) => ({
   id: `${role} · ${route}${Object.keys(params).length ? '?' + qs(params) : ''}${kind === 'phone' ? ' (390)' : ''}`,
   build: (page, { first }) => ({ id: `${role} · ${route}${Object.keys(params).length ? '?' + qs(params) : ''}${kind === 'phone' ? ' (390)' : ''}`, role, kind, scopes: first || o.rail ? ['#rail', '#root'] : ['#root'], includeRail: !!first,
     async open() { await page.goto('about:blank'); await page.goto(BASE + routeUrl(route, params), { waitUntil: 'domcontentloaded' }); await page.waitForFunction(READY, null, { timeout: 15000 }); },
-    frame: () => page.mainFrame(), ...(o.target || {}) })
+    frame: () => page.mainFrame(),
+    // a signature pad has something to clear only after a stroke
+    afterOpen: async () => { if (!/^(ParentSign|AppealLetter)$/.test(route)) return; const cv = page.locator('#root canvas').first(); if (!(await cv.count())) return; await cv.scrollIntoViewIfNeeded().catch(() => { }); const b = await cv.boundingBox(); if (!b) return; await page.mouse.move(b.x + 20, b.y + 20); await page.mouse.down(); await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2, { steps: 4 }); await page.mouse.move(b.x + b.width - 20, b.y + 25, { steps: 4 }); await page.mouse.up(); }, ...(o.target || {}) })
 });
 
 // ------------------------------------------------------------------------------------------------ groups
@@ -148,7 +183,7 @@ function panelTargets(list) {
       const t0 = Date.now(); while (Date.now() - t0 < 12000) { const f = page.frames().find(f => f.url().includes('/panel/')); if (f) { const ready = await f.evaluate(() => !!document.querySelector('#panel .body, #panel .ph .pt') && !/Loading/.test((document.querySelector('#panel .pt b') || {}).textContent || '')).catch(() => false); if (ready) return; } await new Promise(r => setTimeout(r, 120)); }
     },
     frame: () => page.frames().find(f => f.url().includes('/panel/')),
-    deny: c => PERSON_ONLY.test(c.name) ? 'person-only action: Process Form, Get Signature and Send are pressed by a person in Lauris' : null,
+    deny: c => PERSON_ONLY.test(c.name) ? 'person-only action: Process Form, Get Signature and Send are pressed by a person in Lauris' : /^send\b/i.test(c.name) ? 'outward send (a person presses it); not clicked by the audit' : null,
     parentForm: () => page.evaluate(() => [...document.querySelectorAll('form input, form textarea, form select')].map(e => e.type === 'checkbox' ? e.checked : e.value).join('|')).catch(() => '') }) }));
 }
 if (ok('panel')) {
@@ -164,19 +199,9 @@ if (ok('panel')) {
 
 // ------------------------------------------------------------------------------------------------ totals and files
 await T.test('P19.3 audit · the sweep covered what it claims (counts per role, no unreachable targets)', async () => {
-  const sum = summarize(results);
-  const rows = Object.entries(sum.by);
-  const total = rows.reduce((n, [, v]) => n + v.rows, 0);
-  const outcomes = {}; for (const [, v] of rows) for (const [k, n] of Object.entries(v.counts)) outcomes[k] = (outcomes[k] || 0) + n;
-  console.log('  controls swept: ' + total + ' on ' + rows.length + ' targets · ' + Object.entries(outcomes).sort((a, b) => b[1] - a[1]).map(([k, n]) => k + ' ' + n).join(' · '));
-  const md = ['# Interaction audit (QA1)', '', `Controls swept: ${total} on ${rows.length} targets. ${Object.entries(outcomes).sort((a, b) => b[1] - a[1]).map(([k, n]) => k + ' ' + n).join(' · ')}`, '',
-    '| Target | Role | Controls | ' + Object.keys(outcomes).sort().join(' | ') + ' |', '|---|---|---|' + Object.keys(outcomes).map(() => '---').join('|') + '|'];
-  for (const [k, v] of rows) md.push(`| ${k} | ${v.role} | ${v.rows}${v.skipped ? ' (' + v.skipped + ')' : ''} | ` + Object.keys(outcomes).sort().map(o => v.counts[o] || '').join(' | ') + ' |');
-  md.push('', '## Findings (dead or unexplained controls, unnamed controls, console errors, dead ends)', '');
-  for (const f of sum.findings) md.push(`- **${f.target}** · ${f.ctl} "${f.name || f.key}" (${f.where || ''}${f.depth === 2 ? ', in overlay opened by "' + (f.via || '').split('|')[2] + '"' : ''}) → ${f.outcome}${f.detail ? ' · ' + f.detail : ''}${f.flags.length ? ' · ' + f.flags.join(', ') : ''}${f.errors ? ' · ' + f.errors[0].slice(0, 100) : ''}`);
-  fs.writeFileSync(path.join(OUT, 'qa1-audit.md'), md.join('\n') + '\n');
-  fs.writeFileSync(path.join(OUT, 'qa1-audit.json'), JSON.stringify({ at: new Date().toISOString(), total, outcomes, targets: sum.by, findings: sum.findings, results: results.map(r => ({ meta: { ...r.meta, keys: undefined }, rows: r.rows })) }, null, 1));
-  assert.ok(total > 0, 'nothing was swept');
+  const r = writeReports(results, process.env.AUDIT_TAG || '');
+  console.log('  controls swept: ' + r.total + ' on ' + r.rows.length + ' targets · ' + r.line);
+  assert.ok(r.total > 0, 'nothing was swept');
 });
 await browser.close();
 await T.done();

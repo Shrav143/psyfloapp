@@ -27,11 +27,13 @@ export async function start(mode, { scenario, fixture, preset = 'live', fresh })
 }
 
 // ---- steps: one failed step blocks the rest of that run (reported as SKIP with the reason, never as a pass) ----
+const ONCE = new Set();   // a defect check that does not depend on the start mode is reported once, not three times
 export function flow(T, label) {
   let blocked = null;
   return {
     get blocked() { return blocked; },
-    async step(title, fn, { soft = false } = {}) {
+    async step(title, fn, { soft = false, once = false } = {}) {
+      if (once) { if (ONCE.has(title)) return; ONCE.add(title); }
       const name = `${label} · ${title}`;
       if (blocked) { T.skip(name, 'blocked by an earlier failed step in this run: ' + blocked); return; }
       let failed = false;
@@ -71,8 +73,23 @@ export const scoreRows = (s, who, f = {}) => Object.fromEntries(V.scorecardView(
 export const pilotDom = p => p.$$eval('.a-tile__b', bs => Object.fromEntries(bs.map(b => [b.dataset.id, { headline: b.querySelector('b').innerText.trim(), note: b.querySelector('small').innerText.trim() }])));
 
 // ---- ledgers: compact, comparable summaries of state at the first and the last step of a scenario ----
-export const same = (a, b, label) => assert.eq(JSON.stringify(a), JSON.stringify(b), label + ' differs between start modes:\n  ' + JSON.stringify(a) + '\n  ' + JSON.stringify(b));
+export const diffKeys = (a, b) => { const out = []; for (const k of new Set([...Object.keys(a || {}), ...Object.keys(b || {})])) if (JSON.stringify((a || {})[k]) !== JSON.stringify((b || {})[k])) out.push(`${k}: ${JSON.stringify((a || {})[k])} vs ${JSON.stringify((b || {})[k])}`); return out; };
+export const same = (a, b, label) => { const d = diffKeys(a, b); assert.ok(d.length === 0, label + ' differs between start modes: ' + d.join(' · ')); };
 export const ids = rows => (rows || []).map(r => r.id).sort();
 
 // a person downloads the file an Export button writes
 export async function download(p, click) { const [d] = await Promise.all([p.waitForEvent('download', { timeout: 15000 }), click()]); const path = await d.path(); const fs = await import('node:fs'); return { name: d.suggestedFilename(), text: fs.readFileSync(path, 'utf8'), path }; }
+
+// ---- CSV (the Analytics export) ----
+export function parseCsv(text) {
+  const rows = []; let row = [], cur = '', q = false;
+  for (let i = 0; i < text.length; i++) { const ch = text[i];
+    if (q) { if (ch === '"') { if (text[i + 1] === '"') { cur += '"'; i++; } else q = false; } else cur += ch; }
+    else if (ch === '"') q = true; else if (ch === ',') { row.push(cur); cur = ''; } else if (ch === '\n') { row.push(cur); rows.push(row); row = []; cur = ''; } else cur += ch; }
+  if (cur || row.length) { row.push(cur); rows.push(row); } return rows;
+}
+// the body rows of the CSV block "Panel,<title>,…" (header excluded)
+export function csvBlock(rows, title) {
+  const i = rows.findIndex(r => r[0] === 'Panel' && r[1] === title); if (i < 0) return null;
+  const out = []; for (let k = i + 2; k < rows.length && rows[k].length && !(rows[k].length === 1 && rows[k][0] === '') && rows[k][0] !== 'Note' && rows[k][0] !== 'Panel' && rows[k][0] !== 'Section'; k++) out.push(rows[k]); return out;
+}

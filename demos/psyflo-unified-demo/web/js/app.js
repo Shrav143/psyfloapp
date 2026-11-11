@@ -48,7 +48,7 @@ export const session = {
   },
   // api.js signs in first (a server session), then the old localStorage key follows so both paths agree; Login and the dock await nothing,
   // route() waits for authPending.
-  signIn(id, opts) { const f = apiFn('signIn'); const p = (async () => { if (f) await f(id, opts); ls.set('psyflo_user', id); })(); authPending = p.catch(() => { }); return p; },
+  signIn(id, opts) { const f = apiFn('signIn'); if (isHosted()) opts = { presenter: true, ...opts }; /* hosted preview: presenter mode is on for every sign-in */ const p = (async () => { if (f) await f(id, opts); ls.set('psyflo_user', id); })(); authPending = p.catch(() => { }); return p; },
   signOut() { const f = apiFn('signOut'); const p = (async () => { if (f) await f(); ls.del('psyflo_user'); })(); authPending = p.catch(() => { }); return p; },
   get level() { const u = this.user; return u ? LEVEL[u.role] || 0 : 0; },
   get schoolUser() { try { return M.byId(api.state.school_users, ls.get('psyflo_school_user') || 'rbell'); } catch { return (api.state.school_users || [])[0]; } },
@@ -501,7 +501,7 @@ async function boot() {
     const a = e.target.closest('a[href^="#/"]'); if (a && a.getAttribute('href') === location.hash) route();
   });
   mountDock(dockEl(), dockCtx);
-  addEventListener('hashchange', route);
+  addEventListener('hashchange', () => { try { overlay.closeAll(); } catch { } route(); });   // a route change closes any open drawer, modal or popover (no drawer left over a new screen)
   addEventListener('resize', measureDock);
   try { new ResizeObserver(measureDock).observe(dockEl()); } catch { }
   addEventListener('keydown', e => {

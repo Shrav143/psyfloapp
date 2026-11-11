@@ -13,6 +13,7 @@ import { settle, installProbes } from './lib/audit.mjs';
 const T = suite('presenter');
 const only = process.env.PRESENTER_ONLY ? new RegExp(process.env.PRESENTER_ONLY) : null;
 const run = (id, fn) => (!only || only.test(id)) ? T.test(id, fn) : Promise.resolve();
+await api('demo.scenario', { id: 'base-live' }, 'dowens+p').catch(() => { });          // a known start, whatever ran before on this server
 const { chromium } = playwright();
 const browser = await chromium.launch();
 const READY = () => (document.querySelector('#root main, #root h1, #root [role=main], #root .denied')) && !document.querySelector('#root .sh-loading');
@@ -30,7 +31,7 @@ const go = async (page, url) => { page.errs.length = 0; await page.goto(BASE + u
 const railLinks = page => page.evaluate(() => [...document.querySelectorAll('#rail .sh-nav a, #rail .sh-logo')].map(a => (a.getAttribute('aria-label') || a.innerText || '').replace(/,.*$/, '').trim()));
 const stageText = page => page.evaluate(() => (document.getElementById('stage').innerText + '\n' + document.getElementById('rail').innerText));
 const dockState = page => page.evaluate(() => { const d = document.getElementById('dock'); const tabbable = [...d.querySelectorAll('button,a,input,select,[tabindex]')].filter(b => { const r = b.getBoundingClientRect(); const cs = getComputedStyle(b); return r.width > 0 && r.height > 0 && cs.visibility !== 'hidden' && b.tabIndex >= 0 && !b.closest('[hidden]'); }).length; return { hidden: d.hidden, state: d.dataset.state, mode: d.dataset.mode, tabbable, label: (document.getElementById('dock-mode') || {}).textContent || '', h: Math.round(d.getBoundingClientRect().height) }; });
-const allText = async page => { let t = await page.evaluate(() => document.body.innerText); for (const f of page.frames().slice(1)) t += '\n' + await f.evaluate(() => document.body.innerText).catch(() => ''); return t; };
+const allText = async page => { const read = async () => { let t = await page.evaluate(() => document.body.innerText); for (const f of page.frames().slice(1)) t += '\n' + await f.evaluate(() => document.body.innerText).catch(() => ''); return t; }; let t = await read(); for (let i = 0; i < 25 && !/nothing is real/.test(t) && page.frames().length > 1; i++) { await page.waitForTimeout(250); t = await read(); } return t; };   // a framed Lauris page loads its panel a moment later
 const apiActor = page => page.evaluate(async () => { const { api } = await import('/js/api.js'); const a = api.session(); return a ? { kind: a.kind, role: a.role, id: a.id, presenter: !!a.presenter } : null; });
 
 // ------------------------------------------------------------------------------------------------ Presentation mode
@@ -214,6 +215,8 @@ const apiActor = page => page.evaluate(async () => { const { api } = await impor
         }
         frontier = next;
       }
+      // direct support lands on the framed Lauris page: its way into My Work is the panel's "My day in Psyflo" control (a button that opens the platform)
+      if (role === 'direct_support' && !('MyWork' in depth)) { await go(page, `/#/${sid}${sq ? '?' + sq : ''}`).catch(() => { }); await page.waitForTimeout(2500); for (const f of page.frames().slice(1)) { if (await f.evaluate(() => [...document.querySelectorAll('a,button')].some(b => /My day in Psyflo/i.test(b.innerText))).catch(() => false)) depth.MyWork = 1; } }
       const must = SCREENS.filter(s => s.min > 0 && s.surface === 'app' && routeAllowed(role, s.id) && !['Login', 'UiKit'].includes(s.id)).map(s => s.id);
       const redirected = new Set(['DoNext', 'ReviewQueue', 'StaffDashboard', 'Users', 'Submission', 'EarlyDischarge', 'InfoRequest', 'Partials', 'PeerBrief', 'PayerPlaybook', 'Eligibility']);
       const unreached = must.filter(id => !(id in depth) && !redirected.has(id));

@@ -12,6 +12,7 @@ import { installProbes, settle } from './lib/audit.mjs';
 const T = suite('visual');
 const only = process.env.VISUAL_ONLY ? new RegExp(process.env.VISUAL_ONLY) : null;
 const DIR = path.join(SHOTS, 'vis'); fs.mkdirSync(DIR, { recursive: true });
+await api('demo.scenario', { id: 'base-live' }, 'dowens+p').catch(() => { });          // a known start, whatever ran before on this server
 const { chromium } = playwright();
 const browser = await chromium.launch();
 const READY = () => document.querySelector('#root main, #root h1, #root [role=main]') && !document.querySelector('#root .sh-loading');
@@ -118,7 +119,7 @@ for (const [role, [who, routes]] of Object.entries(PLATFORM)) {
     const { api } = await import('/js/api.js'); const s = api.state; const base = JSON.parse(JSON.stringify(s.requests)); let n = 0;
     while (s.requests.length < 60) { const b = base[n % base.length]; s.requests.push({ ...JSON.parse(JSON.stringify(b)), id: 'R-09' + String(50 + n).padStart(2, '0') }); n++; }
     const dis = JSON.parse(JSON.stringify(s.disputes || [])); let m = 0; while (dis.length && s.disputes.length < 60) { const d = dis[m % dis.length]; s.disputes.push({ ...JSON.parse(JSON.stringify(d)), id: 'DI-09' + String(50 + m).padStart(2, '0') }); m++; }
-    const refs = JSON.parse(JSON.stringify(s.referrals)); let k = 0; while (s.referrals.length < 60) { const b = refs[k % refs.length]; s.referrals.push({ ...JSON.parse(JSON.stringify(b)), id: 'REF-9' + String(50 + k).padStart(2, '0') }); k++; }
+    const refs = JSON.parse(JSON.stringify(s.referrals)).filter(r => ['needs_screening', 'waiting_on_school', 'screening_booked'].includes(r.stage)); let k = 0; while (refs.length && s.referrals.length < 80) { const b = refs[k % refs.length]; s.referrals.push({ ...JSON.parse(JSON.stringify(b)), id: 'REF-9' + String(50 + k).padStart(2, '0') }); k++; }
     window.psyflo.current.inst.repaint();
     return { requests: s.requests.length, disputes: (s.disputes || []).length, referrals: s.referrals.length };
   });
@@ -217,6 +218,7 @@ for (const [role, [who, routes]] of Object.entries(PLATFORM)) {
     await ep.screenshot({ path: path.join(DIR, 'error-state-500.png') }); addTile('states', path.join(DIR, 'error-state-500.png'), 'error · /api/state 500', t.loading ? ['x'] : null);
     await ep.unroute('**/api/state');
     if (t.loading && !t.alert) throw new Error('the page stays on "Loading the demo…" forever when the state cannot be loaded: no message, no retry');
+    if (!t.alert && !/couldn.t|could not|can.t reach|try again|offline|unavailable|problem|error|went wrong|not loading/i.test(t.text)) throw new Error('/api/state answers 500 and the screen shows a calm empty My Work ("' + t.text.slice(60, 140) + '") with no error and no retry: a server failure reads as "nothing needs you"');
   });
   await ep.ctx.close();
 }
@@ -224,12 +226,12 @@ for (const [role, [who, routes]] of Object.entries(PLATFORM)) {
 // ------------------------------------------------------------------------------------------------ 4. modals and drawers at 400, 1024 and 1440
 {
   const OPENERS = [
-    { role: 'jperez', route: ['MyWork', { section: 'todo' }], label: 'Help drawer', open: p => p.click('#rail [data-sh=help]'), kind: 'drawer' },
+    { role: 'jperez', route: ['MyWork', { section: 'todo' }], label: 'Help drawer', open: async p => { const vis = await p.evaluate(() => { const b = document.querySelector('#rail [data-sh=help]'); if (!b) return false; const r = b.getBoundingClientRect(); return r.width > 0 && r.height > 0; }); if (!vis) throw new Error('Help (and Sign out) are not available in the rail at this width: the rail foot is hidden'); await p.click('#rail [data-sh=help]'); }, kind: 'drawer' },
     { role: 'jperez', route: ['Analytics', { section: 'outcomes', dataset: 'case' }], label: 'Analytics export modal', open: p => p.getByRole('button', { name: /^Export/ }).first().click(), kind: 'modal' },
     { role: 'jperez', route: ['Analytics', { section: 'outcomes', dataset: 'case' }], label: 'Analytics pilot measures drawer', open: p => p.getByRole('button', { name: /measures|defin/i }).first().click(), kind: 'drawer' },
     { role: 'jperez', route: ['Authorization', { id: 'R-0399', section: 'submission' }], label: 'Authorization overdue notice', open: p => p.getByRole('button', { name: /notice|receipt|send/i }).first().click(), kind: 'any' },
-    { role: 'jperez', route: ['DenialCase', { id: 'R-0402', section: 'action', action: 'options' }], label: 'Denial case action', open: p => p.locator('#root button.ui-btn--primary, #root .ui-btn--primary').first().click(), kind: 'any' },
-    { role: 'jperez', route: ['Referral', { id: 'REF-118' }], label: 'Referral primary action', open: p => p.locator('#root .ui-btn--primary').first().click(), kind: 'any' },
+    { role: 'jperez', route: ['DenialCase', { id: 'R-0402', section: 'action', action: 'options' }], label: 'Denial case action', open: p => p.locator('#root [data-x="accept"], #root [data-x="p2preq"], #root [data-x="schedule"], #root [data-x="outcome"], #root [data-x="assign"], #root [data-x="recorddoc"]').first().click(), kind: 'any' },
+    { role: 'jperez', route: ['Referral', { id: 'REF-118' }], label: 'Referral schedule, hold or route', open: p => p.getByRole('button', { name: /Schedule|Reschedule|Hold|Route/i }).first().click(), kind: 'any' },
     { role: 'dowens', route: ['Settings', { tab: 'people' }], label: 'Settings people action', open: p => p.locator('#root .ui-btn--primary, #root button.ui-btn').first().click(), kind: 'any' },
     { role: 'dowens', route: ['Settings', { tab: 'rules' }], label: 'Settings rule drawer', open: p => p.locator('#root table tbody tr button, #root table tbody tr a').first().click(), kind: 'any' }
   ];

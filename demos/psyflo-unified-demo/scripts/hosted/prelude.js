@@ -137,9 +137,10 @@
     var a = e.target && e.target.closest ? e.target.closest('a[href]') : null; if (!a) return;
     var href = a.getAttribute('href'); if (!href || /^(javascript:|mailto:|tel:)/i.test(href)) return;
     if (ROOT && href.indexOf('#/') === 0) { e.preventDefault(); window.__vhash(href); return; }
+    // a file Psyflo wrote: "/files/<name>" is a path of the app's own server, whatever address (https, file:, about:srcdoc) the host gives this page
+    var fm = href.match(/^(?:https:\/\/psyflo\.invalid)?(\/files\/[^?#]*)/);
+    if (fm) { e.preventDefault(); post('open', { url: APPO + fm[1] }); return; }
     var u; try { u = new URL(href, baseFor()); } catch (x) { return; }
-    var isFile = /^\/files\//.test(u.pathname) && (isVirt(u.origin) || (ROOT && u.protocol === 'file:'));
-    if (isFile) { e.preventDefault(); post('open', { url: APPO + u.pathname }); return; }
     if (routerFrame) {
       e.preventDefault();
       if (href.charAt(0) === '#') return;

@@ -88,7 +88,7 @@ async function run(mode) {
     await F.step('5b the processed note\'s Contact time rows are the confirmed blocks only (the unconfirmed 1:40-3:10 pm block is neither counted NOR written into the note)', async () => {
       const n = (await state('jperez')).notes.find(x => x.session === L.sess);
       assert.ok(!/unconfirmed/i.test(n.fields['Contact time']), 'Contact time still lists the unconfirmed block: ' + JSON.stringify(n.fields['Contact time'].split('\n').pop()));
-    }, { soft: true });
+    }, { soft: true, once: true });
     await F.step('6 the phone and Track Time follow only the observed event: Processed in Lauris, 5 of 6, "In the note" 3 h 40 min = 2 units', async () => {
       await ph.goto(BASE + '/#/MobileApp'); await ph.waitForSelector('.pm-chip');
       await waitText(ph, /5 of 6 daily notes processed today/); const t = await rootText(ph); assert.match(t, /Processed in Lauris/); assert.match(t, /Nothing waiting for Lauris/);

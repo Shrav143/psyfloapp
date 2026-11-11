@@ -1,6 +1,6 @@
 # denials-ui · PASS
 
-Run 2026-11-11T16-10-48Z · 26958 ms · instance 0 · exit 0
+Run 2026-11-11T17-28-23Z · 34694 ms · instance 2 · exit 0
 
 | Result | Test | Note |
 |---|---|---|

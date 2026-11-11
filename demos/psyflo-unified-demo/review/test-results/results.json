@@ -1,128 +1,218 @@
 {
- "runId": "2026-11-11T16-42-27Z",
- "commit": "742831f",
+ "runId": "2026-11-11T17-28-23Z",
+ "commit": "1bd258b",
  "release": false,
  "releaseReady": false,
  "env": {
   "node": "v22.22.0",
   "time": "15:30",
   "preset": "live",
-  "workers": 1,
+  "workers": 3,
   "repeat": 1,
   "basePort": 4960
  },
  "summary": {
-  "pass": 2,
+  "pass": 7,
   "fail": 0,
   "skip": 0,
   "notRunnable": 0,
   "knownFail": 0,
   "flaky": 0,
-  "durationMs": 15849,
+  "durationMs": 164467,
   "tests": {
-   "pass": 34,
+   "pass": 170,
    "fail": 0,
    "skip": 0
   }
  },
  "suites": [
   {
-   "name": "enhance",
+   "name": "analytics",
    "tags": [],
    "instance": 0,
    "attempt": 1,
    "status": "PASS",
    "exit": 0,
-   "durationMs": 14167,
+   "durationMs": 33325,
    "counts": {
-    "pass": 14,
+    "pass": 22,
     "fail": 0,
     "skip": 0
    },
    "tests": [
     {
      "status": "PASS",
-     "title": "the M.R. corpus: 40 daily notes on real school days, units add up to the seeded 83 under the unit bands, 9 weekly calls, 3 monthly",
+     "title": "every selector result and panel carries one provenance tag, and the baseline is labelled \"Sample data, illustrative\"",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "counts are computed from rows and open their rows; the \"61 notes\" figure does not exist",
+     "title": "a group of fewer than 5 is never shown, in any role, dataset, section, period or site",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "evidence.mark keeps who and when, needs a reason to exclude, never touches the note, and is clinician-only",
+     "title": "the group-size rule can be raised in Settings but never lowered below 5",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "evidence.period is checked and kept per person",
+     "title": "one dataset per view: a cohort view holds no case-backed figure, a case view holds no cohort figure, exports never mix",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "Mode B (historical) stores an analysis, refuses any fill or write, and exposes no fill action",
+     "title": "administrator and supervisor get aggregates only: no clinical text in their state, no drill-down, no patient initials in the digest",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "Mode A: findings on the open draft are questions; accepting applies only the person's own words; no accept-all; approve needs every decision",
+     "title": "direct support gets no analytics; a supervisor counts only their own sites",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "stages beyond \"filled\" come only from the observed page event; a processed record is never overwritten",
+     "title": "the clinician digest equals what the clinician would compute from their own state",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "a Scribe draft closes when the page reports Process Form (observed), and a later write is refused",
+     "title": "a payer decision moves the unresolved count, the awarded units and the offers waiting (S5 → S6)",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "Scan & Enhance is offered to a clinician; Evidence review is read-only and has no fill or approve control",
+     "title": "a request that is sent moves \"sends with receipts\" (S3 → S6)",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "a count opens its rows; Exclude asks why and keeps who and when; the count drops",
+     "title": "a processed note moves notes on time, and a draft with a failed check moves items caught early (S1 → S6)",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "Mode A on the open draft: scan, answer in your own words, approve, the changed boxes are typed (yellow)",
+     "title": "the CSV prints exactly what the panels print, with period, filters, dataset and definitions",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "S4 in the panel: the request is built from real rows; missing evidence cannot be accepted; household stays out; Approve and fill types the counts",
+     "title": "the PDF is a valid multi-page document carrying the same cells, the dataset, the period and the definitions",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "wrong patient: a page whose initials disagree with the Harvest # is a hard stop (identity card, Change student, nothing offered)",
+     "title": "the question box answers from the data on screen, says so when it cannot, and labels itself Simulated",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "no console errors in the page or the panel",
+     "title": "no story date is written into the analytics code (the demo clock is the only source)",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "admin: three sections render, aggregates only, no drill-down, no console errors, within the density target",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "clinician: drill-down opens the patients behind a group; the cohort offers none",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "supervisor: own sites only, scorecard and sections render",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "a filter changes the figures and the URL; a tab is a real link; reload keeps the view",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "the CSV file the Export button writes matches the panels on screen, cell for cell",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "the PDF export downloads and the question box answers on screen",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "the old payer playbook link (?panel=guidance) opens the payer guidance drawer from Payer Performance",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "earlier views stay reachable and the scorecard opens its detail",
      "note": ""
     }
    ],
-   "runId": "2026-11-11T16-42-27Z"
+   "runId": "2026-11-11T17-28-23Z"
   },
   {
-   "name": "roles",
-   "tags": [
-    "safety"
-   ],
-   "instance": 0,
+   "name": "denials-ui",
+   "tags": [],
+   "instance": 2,
    "attempt": 1,
    "status": "PASS",
    "exit": 0,
-   "durationMs": 1481,
+   "durationMs": 34694,
+   "counts": {
+    "pass": 7,
+    "fail": 0,
+    "skip": 0
+   },
+   "tests": [
+    {
+     "status": "PASS",
+     "title": "queue: nine columns, four open cases sorted by deadline, each deadline carries a source chip, rows are links to the case",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "old routes keep working and hand over: Partials, InfoRequest, PeerBrief -> the case; Partials (no id) -> the queue filtered",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "S5 by clicking: D.W. partial -> evidence and options -> peer-to-peer -> outcome 130 -> back to the authorization with the stage Active",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "K.T. information reply: Evidence-missing blocks review, an edit clears it, Send opens the mock Availity page and the case closes when the page confirms",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "admin: the queue and the case show status and deadlines; no clinical text reaches the page",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "keyboard and dialogs: tabs and rows are reachable, the dialog traps focus, Escape closes it and focus returns",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "1024 px and 390 px: no horizontal scroll on the queue or any section",
+     "note": ""
+    }
+   ],
+   "runId": "2026-11-11T17-28-23Z"
+  },
+  {
+   "name": "authorizations",
+   "tags": [],
+   "instance": 1,
+   "attempt": 1,
+   "status": "PASS",
+   "exit": 0,
+   "durationMs": 49213,
    "counts": {
     "pass": 20,
     "fail": 0,
@@ -131,106 +221,783 @@
    "tests": [
     {
      "status": "PASS",
-     "title": "matrix: every documented capability, every role",
+     "title": "every request.stage maps to the chip group of the status vocabulary (one mapping, tested)",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "admin has no clinical-record access; notes.view is never granted by a designation",
+     "title": "the queue: chips overlap, counts follow the other filters, a draft is also a renewal, an overdue request is also submitted",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "can(): A needs the caseload, D needs the designation, unknown role/capability/user fail closed",
+     "title": "v3 deep-link names (show=, st=, exp=, range=) become the canonical filters",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "routes: every registry route has a capability entry; each role opens exactly what the matrix allows",
+     "title": "deadlines carry a source: day counts from the rules table, Harvest-reported, never a bare 7 or 14",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "every action has a capability entry (and nothing is declared for an action that does not exist)",
+     "title": "roles: admin sees status, units and the queue but no evidence text; direct support has no queue",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "anonymous: /api/state, /api/do (admin and plain actions), /files and the roster",
+     "title": "owner and backup: set by anyone who opens the queue, visible to admin, the backup must be a different clinician or supervisor",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "no screening transcript reaches an unauthenticated caller: /api/state is 401, the roster is empty, the scripted call needs a session",
+     "title": "the follow-up call log is append-only, needs the send capability, and a confirmed receipt is kept once",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "a made-up or tampered token is the same as no token",
+     "title": "a payer decision needs its document reference and a plausible date; it is write-once",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "action sweep: every action x every staff role gets 401/403 exactly when the matrix says no",
+     "title": "approved: Active, the award in the tracker (not Lauris), and the human task \"Enter units in Lauris\" opens",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "presenter controls need presenter mode, not only a role",
+     "title": "the task closes only when the open Lauris page shows the units: a forged event, or no action at all, cannot close it",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "user.update: a role change is presenter-only; designations go through two people",
+     "title": "partial and denied: the stage follows, the appeal window comes from the rules table",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "projection: direct support sees only their caseload; no screenings, drafts, versions, fills, other staff notes",
+     "title": "reconcile: units approved at 150 on T.N. replace the 65, and T.W. is not Active without units",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "projection: admin sees unit balances and authorization status but no clinical text",
+     "title": "the queue: no demo buttons, chips with counts, URL state, v3 links, sort, search, Denial Intelligence links",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "projection: supervisor sees status and their reviewees' notes; clinician sees clinical text",
+     "title": "S3 R-0416: Review packet -> Approve (Pending clinical approval) -> Sign in Lauris -> Send -> Submitted with the Sfax receipt",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "a role switch changes what the API returns (same server, different token)",
+     "title": "the timeline: events open What · When · Who · Document · Source · Next action; ?section= opens that section",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "service line: outpatient (P.G., R-0377) never appears in the staff state",
+     "title": "Record decision: approved opens the Enter units in Lauris task (card with the Lauris link); Psyflo does not write units; admin sees the task read-only",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "portal sessions: a guardian sees one child; a school user sees their own school; neither can use staff actions",
+     "title": "a supervisor may approve once designated (two people confirm it); the approval is recorded under the supervisor, and a different person can send",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "files need a session and the right role",
+     "title": "case actions on an overdue request: Log call, Overdue notice (no legal standard cited), Send again with a reason, Change owner",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "cross-origin: JSON only and an origin allow-list on state-changing calls",
+     "title": "old routes keep working: Submission and EarlyDischarge land on the case sections; legacy=1 opens the old screen",
      "note": ""
     },
     {
      "status": "PASS",
-     "title": "presenter PIN and DEMO_PRESENTER are honoured by sign-in",
+     "title": "direct support has no Authorizations; a missing or foreign case says so instead of failing",
      "note": ""
     }
    ],
-   "runId": "2026-11-11T16-42-27Z"
+   "runId": "2026-11-11T17-28-23Z"
+  },
+  {
+   "name": "mywork",
+   "tags": [],
+   "instance": 0,
+   "attempt": 1,
+   "status": "PASS",
+   "exit": 0,
+   "durationMs": 32600,
+   "counts": {
+    "pass": 15,
+    "fail": 0,
+    "skip": 0
+   },
+   "tests": [
+    {
+     "status": "PASS",
+     "title": "sections by role, and a hand-typed section can never open what the role may not see",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "fail closed: no actor, no list; direct support cannot see another person's day; nobody in scope is nobody (no default person)",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "clinician: urgent first (24-hour information reply), verbs per item, referrals in their own section",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "administrator: operations only, no clinical items and no clinical text anywhere",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "supervisor: review queue is the staff routed to them and never their own notes; designated sending shows Send notice",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "direct support: one progress line, next overdue note first, due-next list, no tiles of other people",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "the note deadline comes from the rules table: 24 h by default, changing it changes who is behind",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "the server refuses what the screen hides: admin and direct support cannot review a note; a reviewer cannot review their own",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "clinician lands on To do: top three with verbs, Show all expands, tabs carry counts, one h1, no console errors",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "supervisor lands on Review: approve a note, return one with a required note, approval mode in Team",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "Team deep link ?staff= opens that person's day; the old StaffDashboard and ReviewQueue routes land here",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "administrator: Operations and Team, \"Clinical text hidden for your role\", no note text, review is denied with the reason",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "direct support: My day only, one progress line, Write note goes to the form; works at phone width without sideways scroll",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "a row whose screen the role may not open says why (a disabled button), never a dead link",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "every link on every My Work section, for every role, resolves to a screen the role may open",
+     "note": ""
+    }
+   ],
+   "runId": "2026-11-11T17-28-23Z"
+  },
+  {
+   "name": "settings",
+   "tags": [],
+   "instance": 1,
+   "attempt": 1,
+   "status": "PASS",
+   "exit": 0,
+   "durationMs": 76663,
+   "counts": {
+    "pass": 17,
+    "fail": 0,
+    "skip": 0
+   },
+   "tests": [
+    {
+     "status": "PASS",
+     "title": "roles: a raise needs a second person (not the proposer, an administrator or a clinician); a lowering applies at once; never your own",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "people: new users start as direct support or supervisor; clinician and administrator go through a role change",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "designated access: proposed by an administrator, confirmed by someone else, never for yourself, never a clinical-record grant for an administrator",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "rules: a reason is required, only the administrator edits, the type is kept, and a change is audited with its values",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "rules: the dependent screen changes (day-5 follow-up makes the Aetna request a follow-up call in My Work); reset restores it",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "units: the alternate bands change the units a day earns; restore returns the official bands (audited)",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "signature mode per document type: default remote (not validated); In person changes the rule the family screens read",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "family link questions: ask and required switches (the guardian link reads them); the insurance question is locked",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "the administrator has no clinical-record access: Settings never carries note text, and the matrix says so",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "Settings: seven tabs, one h1, every tab renders without console errors; only the administrator opens it",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "rules tab: filter by source, search, edit in the drawer (reason required, value type kept), history and the audit tab show it",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "units tab: the try-it box follows the bands; switching to the alternate asks why and is audited",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "roles tab: the matrix is drawn from permissions.js; designate in the UI, the clinician confirms from My Work, the grant takes effect",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "people tab: change a role with a reason (a lowering applies, a raise waits), the second person confirms in Settings or My Work",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "family tab: In person changes the rule, asks why, shows Policy not validated; the family-link question switches work",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "presenter tab: how it fits, architecture, maturity legend with all four levels, the unresolved decisions with where each is set",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "Login: four role cards, the family and school entries, no password, no demo chrome; signing in lands on the role's home; works at 390",
+     "note": ""
+    }
+   ],
+   "runId": "2026-11-11T17-28-23Z"
+  },
+  {
+   "name": "ui-kit",
+   "tags": [
+    "ui"
+   ],
+   "instance": 0,
+   "attempt": 1,
+   "status": "PASS",
+   "exit": 0,
+   "durationMs": 82948,
+   "counts": {
+    "pass": 33,
+    "fail": 0,
+    "skip": 0
+   },
+   "tests": [
+    {
+     "status": "PASS",
+     "title": "token pairs: every text pair 4.5:1, every UI pair 3:1 (computed in the page from tokens.css)",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "type floor and brand: DM Sans, paper background, 12 px smallest kit size, teal primary",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "status vocabulary: every stage and dispute status resolves; chips carry text and an icon (never colour alone)",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "maturity chips: Working is hidden until the presenter overlay is on; Simulated, Pilot and Future always show",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "modal: role=dialog, aria-labelledby, focus trap both ways, Escape, scrim click, focus return",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "drawer: same contract as the modal",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "popover: Escape closes it and focus returns to the control",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "confirm resolves true on Confirm and false on Cancel; the toast has role=status (alert for errors)",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "the old modal(html, onMount) helper is now an accessible dialog (screens keep working)",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "filter chips: aria-pressed, state in the URL query, survives a reload, Clear",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "search keeps focus while typing and filters rows",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "queue table: aria-sort, sort toggles, real links, ArrowDown moves between rows, Enter opens",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "queue table: sticky header, empty, loading and error states",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "evidence chip opens a popover with the quote and closes on Escape",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "timeline: an event opens a drawer with What, When, Who, Document, Source, Next action",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "draft review: edit text survives repaints; no bulk accept; Restore previous appears after a save",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "a store change (SSE) while someone is typing does not wipe the field; the repaint waits for blur",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "skip link is the first tab stop and moves focus to the main landmark",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "landmarks: <html lang>, a labelled nav, exactly one main, real links in the rail",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "focus moves to main on a route change and the route is announced",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "the old demo bar is gone from the product viewport",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "rail: light sand, 232 px wide, collapses to icons at 1024; counts only where meaningful",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "rail by role follows the permission table (supervisor, clinician, admin, direct support)",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "dock: hidden by default in Presentation, Ctrl+Shift+P toggles, label PRESENTER, mode always visible, above the viewport",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "dock: ?present=1 opens it; ?mode=explore docks it open (no hide control) and is stored in psyflo_mode",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "dock: role switcher changes the signed-in role without a page reload",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "dock: scenario selector calls demo.scenario, signs in as the scenario role and opens its route",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "dock: simulation controls (receive a reply, advance a day) live in the dock",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "dock: notes drawer \"How the data gets in\" with maturity chips, focus returns to Notes",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "dock: All screens picker is role-aware and searchable",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "UiKit is presenter-only: without the dock it says so; with ?present=1 it shows the gallery",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "prefers-reduced-motion: overlay animation is switched off",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "no console errors on the gallery, the stubs and the shell routes",
+     "note": ""
+    }
+   ],
+   "runId": "2026-11-11T17-28-23Z"
+  },
+  {
+   "name": "routes",
+   "tags": [
+    "ui"
+   ],
+   "instance": 2,
+   "attempt": 1,
+   "status": "PASS",
+   "exit": 0,
+   "durationMs": 129496,
+   "counts": {
+    "pass": 56,
+    "fail": 0,
+    "skip": 0
+   },
+   "tests": [
+    {
+     "status": "PASS",
+     "title": "registry keeps every historic route id and pre-registers the new routes",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "redirect table matches review/04-architecture.md E1 and 03-ux-audit.md e",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "referrals are never redirected away; AppealLetter and every portal route stay put",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "every redirect has a flag, a registered target and no cycle; every flag is used",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "with every flag on, every historic deep link still resolves to a registered route (no dead ids)",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "legacyFor maps a not-yet-live new route back to the old screen that does the job",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/Submission?id=R-0399 as jperez renders Submission with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/PeerBrief?id=R-0388 as jperez renders PeerBrief with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/Eligibility?referral=REF-118 as jperez renders Eligibility with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/Referral?id=REF-118 as jperez renders Referral with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/Partials?id=R-0402 as jperez renders Partials with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/Partials as jperez renders Partials with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/InfoRequest?id=R-0408 as jperez renders InfoRequest with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/EarlyDischarge?id=R-0402 as jperez renders EarlyDischarge with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/ExtSignOff?request=R-0416 as jperez renders ExtSignOff with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/ExtScreening?referral=REF-118 as jperez renders ExtScreening with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/ExtDPN?client=MR as jperez renders ExtDPN with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/ExtSRA?client=TW as jperez renders ExtSRA with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/ExtCase?client=MR as jperez renders ExtCase with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/ExtWeekly?client=MR as jperez renders ExtWeekly with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/ExtMonthly?client=MR as jperez renders ExtMonthly with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/Referrals?f=new as jperez renders Referrals with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/Authorizations?id=R-0416 as jperez renders Authorizations with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/Authorizations as jperez renders Authorizations with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/StaffDashboard?v=sup as cdiaz renders StaffDashboard with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/StaffDashboard?v=me as khale renders StaffDashboard with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/ReviewQueue as cdiaz renders ReviewQueue with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/DoNext as jperez renders DoNext with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/Users as dowens renders Users with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/PayerPlaybook as jperez renders PayerPlaybook with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/Analytics as jperez renders Analytics with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/MobileAssess?client=AG as khale renders MobileAssess with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/MobileApp as khale renders MobileApp with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/MobileDictate as khale renders MobileDictate with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/ReferralSent renders ReferralSent with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/ReferralForm renders ReferralForm with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/SchoolPortal renders SchoolPortal with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/AppealLetter?id=R-0384 renders AppealLetter with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/ParentPortal?c=TW renders ParentPortal with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/FamilyLink?preview=1 renders FamilyLink with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/WhereThingsLive renders WhereThingsLive with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/MyWork?section=review as jperez renders MyWork with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/Authorization?id=R-0416&section=submission as jperez renders Authorization with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/DenialIntelligence?decision=partial as jperez renders DenialIntelligence with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/DenialCase?id=R-0402&section=action&action=options as jperez renders DenialCase with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/Settings?tab=people as dowens renders Settings with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "deep link #/Analytics?section=payer&dataset=illustrative as jperez renders Analytics with its params, no stub unless the route is not live",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "a LIVE route never renders a stub: every route flagged live in redirects-live.js is a built screen",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "a redirect that is live points at a live route (no redirect may lead to a stub)",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "every stub renders the marker, an h1, a one-line body and a way back to the old screen",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "rail: every item of every role opens a built screen (never a stub)",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "hrefFor and route() apply the redirect table before the registry check (flag flipped in the page)",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "WhereThingsLive redirect opens the presenter drawer (flag flipped in the page); the page stays reachable with ?full=1",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "unknown route id shows \"Page not found\" inside the shell (never a blank page or a wrong screen)",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "route access follows the permission table: a clinician cannot open Users, a supervisor cannot open Authorizations' denial queue",
+     "note": ""
+    },
+    {
+     "status": "PASS",
+     "title": "one h1 on every route this foundation owns; routes with none get a hidden h1 from the shell",
+     "note": ""
+    }
+   ],
+   "runId": "2026-11-11T17-28-23Z"
   }
  ],
  "manual": [

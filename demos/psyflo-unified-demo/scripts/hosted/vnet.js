@@ -249,7 +249,7 @@ window.__vnet = {
   lauris: (method, url, body) => renderPage(method, url, body),
   renderPage,
   fetch: async (url, init = {}) => {
-    const r = await vfetch({ url: new URL(url, APP + '/').href, method: String(init.method || 'GET').toUpperCase(), body: init.body == null ? null : String(init.body), headers: init.headers || {} }, null);
+    const r = await vfetch({ url: new URL(url, APP + '/').href, method: String(init.method || 'GET').toUpperCase(), body: init.body == null ? null : String(init.body), headers: Object.fromEntries(Object.entries(init.headers || {}).map(([k, v]) => [k.toLowerCase(), v])) }, null);
     return new Response(r.body, { status: r.status, headers: r.headers });
   }
 };

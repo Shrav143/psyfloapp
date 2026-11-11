@@ -4,7 +4,7 @@
 //   -> a person presses Get Signature in Lauris (the signer is read from the Lauris event) -> a person presses Send (simulated Sfax stub)
 //   -> receipt, decision clock, queue row, timeline, Analytics "Sends with receipts". Each step is asserted in the Psyflo store, the mock Lauris
 //   store, the Authorizations queue and the case. Runs from demo.scenario s3 (canvas minus its tail), the fixture tw-isp-ready and a fresh reset.
-import { suite, assert, waitText, api, tryApi, state, reset, playwright, BASE, LAURIS, MODES, start, flow, openAs, noErrors, panel, panelFrame, formValues, mainText, rootText, waitState, shot, lsnap, lcons, lsess, req, cli, evs, scoreRows, pilotDom, same, sleep, session } from './lib/scenario.mjs';
+import { suite, assert, diffKeys, waitText, api, tryApi, state, reset, playwright, BASE, LAURIS, MODES, start, flow, openAs, noErrors, panel, panelFrame, formValues, mainText, rootText, waitState, shot, lsnap, lcons, lsess, req, cli, evs, scoreRows, pilotDom, same, sleep, session } from './lib/scenario.mjs';
 import { prepTW } from './lib/prep.mjs';
 import { normState } from './lib/norm.mjs';
 
@@ -160,9 +160,10 @@ if (MODES.length < 2) T.skip('S3 parity: first and last state across start modes
 else await T.test('S3 parity: the first and the last state are the same whether it started from demo.scenario, the fixture tw-isp-ready or a fresh reset', async () => {
   const ms = Object.keys(ledgers).filter(m => ledgers[m].last); assert.ok(ms.length >= 2, 'at least two completed runs to compare: ' + ms);
   for (const m of ms.slice(1)) {
-    same(ledgers[ms[0]].first, ledgers[m].first, `first state (${ms[0]} vs ${m})`);
+    const d1 = diffKeys(ledgers[ms[0]].first, ledgers[m].first);
     const A = { ...ledgers[ms[0]].last }, B = { ...ledgers[m].last }; const ea = A.events, eb = B.events; delete A.events; delete B.events; delete A.receipts; delete B.receipts;
-    same(A, B, `last state (${ms[0]} vs ${m})`); same(ea, eb, `the events a person's clicks add to R-0416 (${ms[0]} vs ${m})`);
+    const d2 = diffKeys(A, B).concat(JSON.stringify(ea) === JSON.stringify(eb) ? [] : ['events: ' + JSON.stringify(ea) + ' vs ' + JSON.stringify(eb)]);
+    assert.ok(d1.length + d2.length === 0, `(${ms[0]} vs ${m}) first state: ${d1.join(' · ') || 'same'}; last state: ${d2.join(' · ') || 'same'}`);
   }
 });
 await b.close();

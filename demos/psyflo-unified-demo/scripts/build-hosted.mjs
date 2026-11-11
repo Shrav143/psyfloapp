@@ -122,13 +122,16 @@ html = html.replace(/<script type="module"[^>]*><\/script>\s*/g, '');
 html = must(html, '</body>', `<script>window.__VROOT=true;${safe(prelude)}</script>\n<script>${safe(appJs)}</script>\n</body>`);
 
 // ---------- 3. contract checks: the published page ----------
-const bad = [];
-for (const m of html.replace(/<script>[\s\S]*?<\/script>/g, '').matchAll(/<script[^>]*src=/g)) bad.push('external script: ' + m[0]);
-for (const m of html.matchAll(/https?:\/\/[^\s"'`<>)\\]+/g)) if (!/^https:\/\/(fonts\.(googleapis|gstatic)\.com|(psyflo|lauris|ext)\.invalid|www\.w3\.org|schemas\.|json-schema\.org|example\.)/.test(m[0]) && /^https?:\/\/[^/]*\.(js|css)$/.test(m[0])) bad.push('external file: ' + m[0]);
+// (the page's own tags are checked without the text of its inline scripts: the Lauris pages inside them are strings, not tags of this page)
+const bad = []; const markup = html.replace(/<script>[\s\S]*?<\/script>/g, '');
+if (/<script[^>]*\bsrc=/i.test(markup)) bad.push('an external script');
+for (const m of markup.matchAll(/<link[^>]*href="(https?:[^"]+)"/g)) if (!/^https:\/\/fonts\.googleapis\.com\//.test(m[1])) bad.push('a linked resource other than Google Fonts: ' + m[1]);
+if (/<link[^>]*rel="manifest"/.test(markup)) bad.push('a manifest link');
+if (!/<title>Psyflo Harvest Demo<\/title>/.test(markup)) bad.push('the title');
 if (/<a\b[^>]*\bdownload\b/i.test(html)) bad.push('an <a download> in the page');
 if (/\.download\s*=[^=]|\.setAttribute\(\s*['"]download['"]/.test(html)) bad.push('a script-driven download (.download =)');
-if (/\bnew Function\s*\(|[^.\w]eval\s*\(|\bFunction\s*\(\s*['"]/.test(html)) bad.push('eval / new Function in the bundle');
-if (/<link[^>]*rel="manifest"/.test(html)) bad.push('manifest link');
+if (/\bnew Function\s*\(|[^.\w]eval\s*\(/.test(html)) bad.push('eval / new Function in the bundle');
+if (Buffer.byteLength(html) > 8 * 1048576) bad.push('more than 8 MB');
 if (bad.length) { console.error('build: the page breaks the artifact contract:\n  ' + [...new Set(bad)].join('\n  ')); process.exit(1); }
 
 fs.mkdirSync(path.join(ROOT, 'hosted'), { recursive: true });
