@@ -1,6 +1,6 @@
 # lauris · PASS
 
-Run 2026-11-11T16-10-48Z · 547 ms · instance 2 · exit 0
+Run 2026-11-11T19-10-20Z · 927 ms · instance 0 · exit 0
 
 | Result | Test | Note |
 |---|---|---|
@@ -8,6 +8,7 @@ Run 2026-11-11T16-10-48Z · 547 ms · instance 2 · exit 0
 | PASS | the consumer's Authorization Information tab: the header says "N units available", the entry form posts to the existing endpoint |  |
 | PASS | T.W.: truthfully "No authorizations available" until a person enters units; the task closes only when the bridge sees units at or above the award |  |
 | PASS | a script that omits the payer or the end date is not refused (the form requires them); bad numbers and dates are, with a message and no change |  |
+| PASS | units gate: a daily note that enters units is refused (and kept as Saved Session) when none are authorized, none are left, or the authorization ended; a note with no units is not |  |
 | PASS | the Lauris pages print the demo clock; a day advance moves Lauris with Psyflo (new pages too) |  |
 | PASS | Time Tracker: a page where a person types the time of a service; the page reports it as a saved entry, never as units |  |
 | PASS | M.R. #3310 corpus: E5's sessions are in the Active File, newest first; new work gets a higher session number and sorts above the history |  |

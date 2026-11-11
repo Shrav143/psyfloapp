@@ -28673,7 +28673,7 @@ Expected rewrite: "Worked with M.R. during math using a visual timer and prompte
   var OUTWARD = ["info", "appeal", "recon"];
   var staffName3 = (s, id) => (byId8(s.staff, id) || {}).name || id;
   var PORTAL_L = (ch) => ch === "availity" ? "Availity" : ch === "uhc" ? "the UHC portal" : "the payer portal";
-  var observedBase = store.actions["portal.observed"];
+  var observedBase = store.actions["portal.observed"] || lead_extension_default && lead_extension_default["portal.observed"];
   if (!observedBase) console.error("x-disputes: portal.observed is not registered yet; appeal upload confirmations cannot be read");
   var adverse = (r) => !!r && (ADVERSE.includes(r.stage) || r.stage === "portal_open" && !!r.info_reply_pending);
   var infoItemsOf = (s, r) => (r.info_items && r.info_items.length ? r.info_items : (((s.request_details || {})[r.id] || {}).info || {}).items) || [];

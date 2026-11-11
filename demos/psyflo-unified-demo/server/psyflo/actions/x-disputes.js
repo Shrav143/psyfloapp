@@ -18,6 +18,7 @@ import { fmtDate } from '../../../web/js/shared/dates.js';
 import { rule } from '../../../web/js/shared/rules.js';
 import { attest } from '../../attest.js';
 import { can } from '../../../web/js/shared/permissions.js';
+import leadExtension from './lead-extension.js';   // static import: in the hosted single-file build every module is evaluated before any action is registered
 import {
   ADVERSE, P2P_STAGES, ISSUE_LABEL, PATH_LABEL, DOC_TITLE, isOpen, byDisputeId, byRequest, issueOfRequest, deriveStatus, derivePath, resolutionOf, buildDoc, docText, docMissing,
   evidenceIndex, MISSING_RE, payerFirst
@@ -32,7 +33,7 @@ const PORTAL_L = ch => ch === 'availity' ? 'Availity' : ch === 'uhc' ? 'the UHC 
 // The appeal upload confirmation is read from the open portal page by the extension (portal.observed). The base action (lead-extension.js, loaded
 // before this file) only knows a request that is waiting in portal_open; an appeal stays 'denied' until the payer page confirms, so this file
 // wraps it and hands every other confirmation straight back.
-const observedBase = store.actions['portal.observed'];
+const observedBase = store.actions['portal.observed'] || (leadExtension && leadExtension['portal.observed']);
 if (!observedBase) console.error('x-disputes: portal.observed is not registered yet; appeal upload confirmations cannot be read');
 
 // ------------------------------------------------------------------------------------------------------------- reconcile

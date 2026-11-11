@@ -1,6 +1,6 @@
 # time · PASS
 
-Run 2026-11-11T16-26-16Z · 953 ms · instance 0 · exit 0
+Run 2026-11-11T19-10-20Z · 1205 ms · instance 0 · exit 0
 
 | Result | Test | Note |
 |---|---|---|
@@ -24,3 +24,4 @@ Run 2026-11-11T16-26-16Z · 953 ms · instance 0 · exit 0
 | PASS | microphone consent is a recorded answer per person per demo day; typing needs none; voice without it is refused |  |
 | PASS | a dictation saved again replaces the waiting one; a processed (used) one is final |  |
 | PASS | helpers: identity card, contact-time matching, minutes parsing |  |
+| PASS | the Contact time box may carry confirmed direct rows only; a processed note that lists an unconfirmed block is flagged and audited, and the block is not counted or linked |  |

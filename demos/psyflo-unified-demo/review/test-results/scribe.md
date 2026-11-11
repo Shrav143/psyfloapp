@@ -1,6 +1,6 @@
 # scribe · PASS
 
-Run 2026-11-11T16-38-58Z · 19808 ms · instance 0 · exit 0
+Run 2026-11-11T19-10-20Z · 25213 ms · instance 1 · exit 0
 
 | Result | Test | Note |
 |---|---|---|
@@ -13,6 +13,7 @@ Run 2026-11-11T16-38-58Z · 19808 ms · instance 0 · exit 0
 | PASS | Process Form is the person's click: the version reads Synchronized only after the observed event |  |
 | PASS | recording asks for consent first; "Type instead" records a refusal and nothing starts |  |
 | PASS | weekly guardian contact: the guardian and date Lauris already holds (green) are left alone; only the staffer's words are typed |  |
+| PASS | the NOTE selector keeps the type the person picks; a page that cannot take it says so and offers to open that form (it used to be put back silently) |  |
 | PASS | Confirm saves the block through time.save: the entries, the note boxes and the units all say 5 h 10 min / 3 units; before it, the 90-minute block is not counted |  |
 | PASS | "The afternoon block didn't happen" voids the entry through time.discard (kept in the record with its reason); the note says 3 h 40 min / 2 units |  |
 | PASS | a supervisor cannot confirm time: the server refuses the call and the block stays unconfirmed |  |

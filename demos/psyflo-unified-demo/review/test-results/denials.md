@@ -1,6 +1,6 @@
 # denials · PASS
 
-Run 2026-11-11T16-10-48Z · 1935 ms · instance 1 · exit 0
+Run 2026-11-11T19-27-19Z · 2311 ms · instance 1 · exit 0
 
 | Result | Test | Note |
 |---|---|---|
@@ -13,7 +13,8 @@ Run 2026-11-11T16-10-48Z · 1935 ms · instance 1 · exit 0
 | PASS | accept as offered / stretch / use them up reconcile through the request actions |  |
 | PASS | K.T. information request: grounded draft, placeholders block review, the portal send waits for the page, then the case closes |  |
 | PASS | a fax payer: the reference comes only from the send stub (simulated Sfax), never from the caller |  |
-| PASS | E.C. appeal: seeded sample cannot be reviewed; the guardian signs; staff press Send (the stub records the reference); the answer is recorded with its document |  |
+| PASS | E.C. appeal (Availity): seeded sample cannot be reviewed; the guardian signs; Mark ready for upload is not a send; the send is recorded only when the portal page confirms; the answer is recorded with its document |  |
+| PASS | appeal on a FAX payer: Send records the stub reference at once (simulated Sfax); a caller-supplied reference is ignored |  |
 | PASS | E.C. appeal upheld closes the request; reconsideration upheld returns to the decision with the path marked tried |  |
 | PASS | T.N. peer-to-peer: held awaiting, then denied -> the case becomes a denial with the p2p path tried; then approved 150 elsewhere is overturned |  |
 | PASS | T.N. p2p approved at 150 -> overturned (the 65 of 65 authorization is kept as history) |  |
