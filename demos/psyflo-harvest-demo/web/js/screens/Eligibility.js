@@ -42,7 +42,9 @@ register('Eligibility', class extends Screen {
   verify(e) {
     const s = this.s; const label = M.clientLabel(s, e.client);
     const plans = s.payers.map(p => `<option value="${esc(p.id)}"${p.id === e.plan ? ' selected' : ''}>${esc(p.name)}</option>`).join('');
-    const dmas = `${api.config.extURL}/dmas/lookup?id=${encodeURIComponent(M.byId(s.clients, e.client)?.medicaid_id || '')}`;
+    // the Medicaid ID comes from the family link when there is one; the demo's lookup page takes any ID (synthetic placeholder otherwise)
+    const mid = (s.family_links.find(f => f.client === e.client)?.answers?.medicaid_id) || '0912 000 000 00';
+    const dmas = `${api.config.extURL}/dmas/lookup?id=${encodeURIComponent(mid)}`;
     modal(`<h2>${PART.verify} · ${esc(label)}</h2>
       <a class="u-link" href="${esc(dmas)}" target="_blank" rel="noopener">Open DMAS ↗</a>
       <label class="b1-lbl" for="b1-res">Result</label><select id="b1-res" class="u-sel" style="width:100%"><option value="active" selected>Active</option><option value="inactive">Inactive</option></select>

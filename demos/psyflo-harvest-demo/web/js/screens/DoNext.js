@@ -3,8 +3,8 @@
 // post-intake clock; a supervisor reads the notes waiting for their review instead. Waiting on others is one line below the list.
 import { register, Screen, M, esc, modal, toast } from '../app.js';
 import { PART } from '../shared/labels.js';
-import { dateHead, intakeClock, refStudent } from './Referrals.js';
-import { followUpLogged } from './Authorizations.js';
+import { dateHead, intakeClock, refStudent, awaitingReferrals } from './Referrals.js';
+import { followUpLogged, isAwaiting } from './Authorizations.js';
 
 const NOTE_TYPE = { daily: 'Daily note', weekly_guardian: 'Weekly call', monthly_collateral: 'Monthly note', quarterly: 'Quarterly', incident: 'Incident', discharge: 'Discharge' };
 
@@ -25,12 +25,11 @@ export function buildWorklist(s, me) {
     return { rows, awaiting: 0, review: true };
   }
   const wl = M.worklist(s, me?.id);
-  let extra = 0;
+  // a payer follow-up call that was logged takes the row off the list (the request waits on the payer again)
   const items = wl.items.filter(i => {
     const id = i.group === 'followup' && (i.href.match(/open=([\w-]+)/) || [])[1];
     const r = id && M.byId(s.requests, id);
-    if (r && followUpLogged(s, r)) { extra++; return false; }
-    return true;
+    return !(r && followUpLogged(s, r));
   });
   // the earliest open post-intake clock (plan, paperwork, initial request) for a student in intake
   for (const r of s.referrals) {
@@ -42,7 +41,8 @@ export function buildWorklist(s, me) {
   }
   items.sort((a, b) => a.pri - b.pri);
   const rows = items.map(i => ({ kind: 'link', chip: i.chip, sev: i.sev, who: i.who, what: i.what, href: i.href, btn: i.btn, primary: i.primary }));
-  return { rows, awaiting: wl.awaiting.count + extra };
+  // the same rule as the Authorizations and Intake "Awaiting response" filters, so the count matches what View shows
+  return { rows, awaiting: s.requests.filter(r => isAwaiting(s, r)).length + awaitingReferrals(s) };
 }
 
 register('DoNext', class extends Screen {

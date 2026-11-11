@@ -57,6 +57,7 @@ export function seededView(type, c) {
       const parts = [o.label, `Goal ${n} · Intervention 1`, `Goal ${n} · Intervention 2`, `Goal ${n} · Est. completion`];
       items.push(asItem('isp', o, { short: `Goal ${n}`, tags: [byL(parts[1]), byL(parts[2])].filter(Boolean).map(b => ivName(b.value)), why: byL(parts[3]) ? `Est. completion ${byL(parts[3]).value}` : '', state: parts.every(l => (u.filled || []).includes(l)) ? 'y' : '' }));
     }
+    top = card(fill);
     list = renderBoxes('isp', items, d.sources, { cur });
     after = `<div class="li" style="border:1px solid var(--line);border-radius:12px"><span class="tt"><b>Guardian signature</b></span>${ispSignLine(c)}</div>`;
   } else if (type === 'weekly' || type === 'collateral') {
@@ -77,7 +78,7 @@ export function seededView(type, c) {
   } else if (type === 'discharge') {
     top = card(fill);
     list = renderBoxes('discharge', d.boxes.map(b => asItem('discharge', b)), d.sources, { cur });
-    after = `<div class="bl"><div class="li"><span class="tt"><b>Dec 8</b> <span data-doc>New intake · CNA · ISP · initial request</span></span>${btn('Open plan ↗', 'openApp', { k: 'o', s: true, attrs: 'data-href="#/EarlyDischarge?id=R-0402"' })}</div></div>`;
+    after = `<div class="bl"><div class="li"><span class="tt" style="white-space:normal"><b>Dec 8</b> <span data-doc>New intake · CNA · ISP · initial request</span></span>${btn('Open plan ↗', 'openApp', { k: 'o', s: true, attrs: 'data-href="#/EarlyDischarge?id=R-0402"' })}</div></div>`;
   }
   const collateral = type === 'collateral' ? collateralRows(c) : '';
   return wrap(head, `${top}${collateral}${list}${checksLine(d.checks, { open: u.checksOpen })}${after}${savedLine()}`);
@@ -91,7 +92,7 @@ ACT.statePortal = async () => {
 };
 
 // ---------------------------------------------------------------- incident for a student other than the worked example: say what happened
-const INC_SOURCES = [{ n: 1, label: 'What you said' }, { n: 2, label: 'Psyflo record' }, { n: 3, label: 'Signed in as' }];
+const INC_SOURCES = [{ n: 1, label: 'What you said' }, { n: 2, label: 'Psyflo record' }, { n: 3, label: 'You (signed in)' }];
 function incidentBoxes(c, said) {
   const s = S(); const me = meFromPage();
   const txt = said.charAt(0).toUpperCase() + said.slice(1).replace(/\s+$/, '');

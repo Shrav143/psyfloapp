@@ -45,12 +45,12 @@ export function boxRow(b, { form, sources, open, edited, cur }) {
   const body = open
     ? `<div class="bx-e">${b.ro ? `<div class="bx-s"><div><span data-doc>${esc(v)}</span></div></div>` : `<textarea class="ed" data-doc aria-label="${esc(b.label)}" data-in="boxEdit" data-f="${esc(form)}" data-k="${esc(b.k)}">${esc(v)}</textarea>`}${b.why ? `<div class="bx-s"><div class="why" data-doc>${esc(b.why)}</div></div>` : ''}${srcList(b.src, sources)}${edited && !b.ro ? `<div><button type="button" class="btn t s" data-act="boxReset" data-f="${esc(form)}" data-k="${esc(b.k)}">Reset</button></div>` : ''}</div>`
     : '';
-  return `<div class="bx ${st}${cur ? ' cur' : ''}"${tip ? ` title="${esc(tip)}"` : ''}><button type="button" class="bx-h" aria-expanded="${open ? 'true' : 'false'}" data-act="boxOpen" data-f="${esc(form)}" data-k="${esc(b.k)}"><span class="bx-l" title="${esc(b.label)}">${esc(b.short || b.label)}</span><span class="bx-r">${b.tag ? chip(b.tag, b.tagKind || 'n') : ''}${(b.tags || []).map(x => chip(x, 'n')).join('')}${open ? I.up : I.chev}</span>${open ? '' : `<span class="bx-v" data-doc><span class="tx${v ? '' : ' m'}">${esc(v || b.empty || '')}</span>${srcNums(b.src, sources)}</span>`}</button>${body}${b.extra || ''}</div>`;
+  return `<div class="bx ${st}${cur ? ' cur' : ''}"${tip ? ` title="${esc(tip)}"` : ''}><button type="button" class="bx-h" aria-expanded="${open ? 'true' : 'false'}" data-act="boxOpen" data-f="${esc(form)}" data-k="${esc(b.k)}"><span class="bx-l" title="${esc(b.label)}">${esc(b.short || b.label)}</span><span class="bx-r">${b.tag ? chip(b.tag, b.tagKind || 'n') : ''}${open ? I.up : I.chev}</span>${(b.tags || []).length ? `<span class="bx-t">${b.tags.map(x => chip(x, 'n')).join('')}</span>` : ''}${open ? '' : `<span class="bx-v" data-doc><span class="tx${v ? '' : ' m'}">${esc(v || b.empty || '')}</span>${srcNums(b.src, sources)}</span>`}</button>${body}${b.extra || ''}</div>`;
 }
 export const boxList = rows => `<div class="bl">${rows.join('')}</div>`;
 
 // ---- documentation / pre-submission checks: one collapsed line "<name> n of n ✓"; below full, failing checks sit on top in watch color
-const chkText = c => `<b>${esc(c.rule)}</b>${c.detail ? ` <span data-doc>${esc(c.detail)}</span>` : ''}${c.fixed ? ` <span class="fx" data-doc>fixed: ${esc(c.fixed)}</span>` : ''}`;
+const chkText = c => `<b>${esc(c.rule)}</b>${c.detail ? `<br><span data-doc>${esc(c.detail)}</span>` : ''}${c.fixed ? ` <span class="fx" data-doc>fixed: ${esc(c.fixed)}</span>` : ''}`;
 export function checksLine(checks, { name = PART.docChecks, open = false, tip = true } = {}) {
   if (!checks || !checks.length) return '';
   const ok = checks.filter(c => c.pass).length; const bad = checks.filter(c => !c.pass); const full = bad.length === 0;

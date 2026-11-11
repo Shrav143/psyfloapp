@@ -48,8 +48,7 @@
       <div><label for="ad">Address</label><input class="u-in" id="ad" type="text"></div>
     </div>
     <div class="s-g3" style="margin-top:12px">
-      <div id="gafield"><label id="galbl">Guardian agrees to the referral</label>
-        <div class="s-ask"><div class="s-rad" role="radiogroup" aria-labelledby="galbl" aria-required="true"><label><input type="radio" name="ga" value="yes"> Yes</label><label><input type="radio" name="ga" value="no"> No</label></div><sc-if value="{{gaErr}}"><span class="s-err" role="alert">{{gaErr}}</span></sc-if></div></div>
+      <div id="gafield" style="grid-column:1 / -1"><div class="s-ask"><label id="galbl" style="margin:0;font-size:14px;line-height:20px">Guardian agrees to the referral</label><div class="s-rad" role="radiogroup" aria-labelledby="galbl" aria-required="true"><label><input type="radio" name="ga" value="yes"> Yes</label><label><input type="radio" name="ga" value="no"> No</label></div><sc-if value="{{gaErr}}"><span class="s-err" role="alert">{{gaErr}}</span></sc-if></div></div>
       <div><label>Student has Medicaid?</label><div class="s-rad"><label><input type="radio" name="med" value="yes" checked=""> Yes</label><label><input type="radio" name="med" value="no"> No</label><label><input type="radio" name="med" value="not_sure"> Not sure</label></div></div>
       <div><label>IEP or 504 plan?</label><div class="s-rad"><label><input type="radio" name="iep" value="yes" checked=""> Yes</label><label><input type="radio" name="iep" value="no"> No</label></div></div>
     </div>

@@ -22,6 +22,8 @@ export function sraData(c) {
 
 // ---------------------------------------------------------------- the status line
 // header chip: the request status; the card says where it stands and offers the one next step
+// the header chip is short so the student's initials stay visible next to it
+const headChip = r => { const l = M.STAGE_LABEL[r.stage] || r.stage; return l.replace('Pending clinical approval', 'Pending approval'); };
 const statusKind = r => ({ needs_approval: 'y', awaiting_signature: 'y', signed: 'g' }[r.stage] || sevKind(M.statusChip(S(), r).sev));
 function statusCard(c, req, { onApprovals }) {
   const s = S(); const lvl = myLevel(); const st = M.statusChip(s, req);
@@ -68,7 +70,7 @@ export function requestView(c, type) {
     const d = type === 'initial' ? sraData(c) : draftSeeded('sra-continued', { client: c, notes: s.notes_sample.filter(n => n.client === c.id), today: s.today });
     const checks = p.kind === 'approval' && req.stage === 'awaiting_signature' ? signChecks(c, req, type) : (d ? d.checks : []);
     const st = M.statusChip(s, req);
-    return wrap({ form: name, student: c.initials, chip: [req.stage === 'needs_approval' || req.stage === 'awaiting_signature' || req.stage === 'signed' ? M.STAGE_LABEL[req.stage] : st.label, statusKind(req)] }, statusCard(c, req, { onApprovals }) + checksLine(checks, { name: PART.preChecks, open: u.checksOpen }));
+    return wrap({ form: name, student: c.initials, chip: [headChip(req), statusKind(req)] }, statusCard(c, req, { onApprovals }) + checksLine(checks, { name: PART.preChecks, open: u.checksOpen }));
   }
   return type === 'initial' ? initialDraft(c, req) : caseDraft(c, req);
 }
@@ -81,7 +83,7 @@ function initialDraft(c, req) {
   const send = withEdits('sra-initial', d.boxes);
   setCur('sra-initial', c, d.sources, send);
   const lf = (P.page.form?.fields || []); const greenGoals = lf.filter(f => /^Goal \d/.test(f.label) && f.green && f.value).length;
-  const st = req ? M.statusChip(s, req) : null; const clk = st && st.text.startsWith(st.label + ' · ') ? st.text.slice(st.label.length + 3) : '';
+  const st = req ? M.statusChip(s, req) : null; const clk = req ? M.requestClock(s, req).text.replace(' of the 30-day limit', '') : '';
   const items = d.boxes.map(b => asItem('sra-initial', b))
     .concat(d.blank.map(b => ({ k: b.label, label: b.label, short: shortLabel(b.label), value: '', empty: /criterion 3/.test(b.label) ? 'Left blank' : 'Yours', why: b.why, ro: true })))
     .concat([{ k: 'goals', label: 'Goals 1–3 · strengths', short: 'Goals 1–3', value: '', empty: greenGoals ? 'From the ISP' : 'Copied from the ISP when processed', ro: true, state: greenGoals ? 'g' : '' }]);

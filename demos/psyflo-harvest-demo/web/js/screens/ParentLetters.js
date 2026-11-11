@@ -25,9 +25,9 @@ const GLOSSARY = {
   ]
 };
 const T = {
-  en: { title: c => `Insurance updates · ${c}`, emptyTitle: 'Nothing from the insurance company yet', example: 'See an example',
+  en: { title: () => 'Insurance updates', emptyTitle: 'Nothing from the insurance company yet', example: 'See an example',
     appeal: 'Sign the appeal', see: 'See the appeal', words: 'Word list', more: n => `Earlier updates · ${n}`, fewer: 'Fewer' },
-  es: { title: c => `Noticias del seguro · ${c}`, emptyTitle: 'Todavía no hay nada del seguro', example: 'Ver un ejemplo',
+  es: { title: () => 'Noticias del seguro', emptyTitle: 'Todavía no hay nada del seguro', example: 'Ver un ejemplo',
     appeal: 'Firmar la apelación', see: 'Ver la apelación', words: 'Lista de palabras', more: n => `Noticias anteriores · ${n}`, fewer: 'Menos' }
 };
 

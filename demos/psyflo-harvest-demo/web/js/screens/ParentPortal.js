@@ -39,8 +39,8 @@ export function getLang(c) {
 export function setLang(l) { try { localStorage.setItem('psyflo_parent_lang', l); } catch { } }
 const MES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
 export function fdate(iso, lang) { if (!iso) return ''; if (lang !== 'es') return M.fmtDate(iso); const d = M.parse(iso); return `${d.getUTCDate()} ${MES[d.getUTCMonth()]}`; }
-export const LANG_ON = 'background:#217A78;border-radius:999px;padding:3px 10px;font-weight:600;color:#fff;text-decoration:none';
-export const LANG_OFF = 'border:1px solid #46525F;border-radius:999px;padding:3px 10px;color:#fff;text-decoration:none';
+export const LANG_ON = 'background:var(--teal);border-radius:999px;padding:3px 10px;font-weight:600;color:#fff;text-decoration:none';
+export const LANG_OFF = 'border:1px solid var(--ink-4);border-radius:999px;padding:3px 10px;color:#fff;text-decoration:none';
 
 
 // ---------- header and footer the guardian pages share (EN/ES toggle at the top, Back and Call us at the bottom) ----------

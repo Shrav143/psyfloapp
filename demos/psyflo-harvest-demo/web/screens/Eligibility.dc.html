@@ -67,9 +67,9 @@ body{margin:0;background:#F8F6F2;color:#151B24;font-family:'DM Sans',system-ui,s
       <sc-if value="{{showForm}}">
         <a class="u-btn" href="{{dmas}}" target="_blank" rel="noopener">Open DMAS ↗</a>
         <div class="b1-form">
-          <label><span class="b1-lbl" style="margin-top:0">Result</span><select id="b1-result" class="u-sel" onChange="{{setResult}}"><sc-for list="{{resultOpts}}" as="o"><option value="{{o.v}}" {{o.sel}}>{{o.t}}</option></sc-for></select></label>
-          <label><span class="b1-lbl" style="margin-top:0">Plan</span><select id="b1-plan" class="u-sel" onChange="{{setPlan}}"><sc-for list="{{planOpts}}" as="o"><option value="{{o.v}}" {{o.sel}}>{{o.t}}</option></sc-for></select></label>
-          <label><span class="b1-lbl" style="margin-top:0">Effective</span><input id="b1-eff" type="date" class="u-in" value="{{form.effective}}" onChange="{{setEff}}"></label>
+          <label><span class="b1-lbl" style="margin-top:0">Result</span><select id="b1-rres" class="u-sel" onChange="{{setResult}}"><sc-for list="{{resultOpts}}" as="o"><option value="{{o.v}}" {{o.sel}}>{{o.t}}</option></sc-for></select></label>
+          <label><span class="b1-lbl" style="margin-top:0">Plan</span><select id="b1-rplan" class="u-sel" onChange="{{setPlan}}"><sc-for list="{{planOpts}}" as="o"><option value="{{o.v}}" {{o.sel}}>{{o.t}}</option></sc-for></select></label>
+          <label><span class="b1-lbl" style="margin-top:0">Effective</span><input id="b1-reff" type="date" class="u-in" value="{{form.effective}}" onChange="{{setEff}}"></label>
           <button type="button" class="u-btn pri" onClick="{{record}}">Record</button>
         </div>
       </sc-if>

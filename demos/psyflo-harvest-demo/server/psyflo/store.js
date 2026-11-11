@@ -70,6 +70,7 @@ function normalizeV2(s) {
   const day = x => String(x || '').slice(0, 10);
   const add = (d, n) => { const t = new Date(day(d) + 'T00:00:00Z'); t.setUTCDate(t.getUTCDate() + n); return t.toISOString().slice(0, 10); };
   const diff = (a, b) => Math.round((new Date(day(b) + 'T00:00:00Z') - new Date(day(a) + 'T00:00:00Z')) / 86400000);
+  for (const r of s.referrals) if (r.guardian_agrees === undefined) r.guardian_agrees = !!(r.form && (r.form.guardian_agrees ?? r.form.guardian_informed));
   for (const r of s.requests) {
     const fill = s.request_details && s.request_details[r.id] && s.request_details[r.id].fill;
     if (fill) for (const [k, v] of Object.entries(fill)) if (r[k] === undefined) r[k] = v;

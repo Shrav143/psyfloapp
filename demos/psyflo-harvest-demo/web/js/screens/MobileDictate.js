@@ -33,7 +33,7 @@ register('MobileDictate', class extends Screen {
     const L = this.state.listening; const saved = this.state.saved;
     return {
       hd: phoneHeader(hdWho(s, u)), nav: phoneNav('today', dueAssessments(s, u.id).length),
-      chips: myStudents(s, u.id).map(x => ({ ini: x.initials, on: x.id === c.id ? ' on' : '', pick: () => this.setState({ pickC: x.id, fixed: null, saved: null, fixing: false }) })),
+      chips: myStudents(s, u.id).map(x => ({ ini: x.initials, on: x.id === c.id ? ' on' : '', pressed: x.id === c.id ? 'true' : 'false', pick: () => this.setState({ pickC: x.id, fixed: null, saved: null, fixing: false }) })),
       listening: L, heard: this.state.heard || '…', spoken: this.state.spoken,
       micCls: L ? ' live' : e ? '' : ' pri', micLabel: L ? 'Stop' : 'Speak', mic: () => L ? this.stopListening() : this.listen(),
       typed: ev => { this.state.spoken = ev.target.value; this.state.fixed = null; this.state.saved = null; this.setState({}); },

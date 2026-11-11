@@ -186,6 +186,7 @@ export default {
   'request.send'(s, { id, by = 'jperez' }) {
     const r = need(byId(s.requests, id), 'Request');
     if (!['signed', 'info_requested', 'overdue', 'submitted'].includes(r.stage) && !r.resend) throw new Error('A request is sent only after it is signed');
+    r.resend = false; r.follow_up = null;
     if (r.channel === 'fax') {
       r.stage = 'sending'; r.send_pressed_at = this.now();
       this.event('Send pressed · faxing through Harvest\'s Sfax account', by, id);

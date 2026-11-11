@@ -26,7 +26,7 @@
       <button type="button" class="c-btn sm" onClick="{{timerAct}}">{{timerBtn}}</button>
     </div>
 
-    <div class="c-chips"><sc-for list="{{chips}}" as="c"><button type="button" class="c-stu{{c.on}}" onClick="{{c.pick}}">{{c.ini}}</button></sc-for></div>
+    <div class="c-chips"><sc-for list="{{chips}}" as="c"><button type="button" class="c-stu{{c.on}}" aria-pressed="{{c.pressed}}" onClick="{{c.pick}}">{{c.ini}}</button></sc-for></div>
 
     <div style="display:flex;gap:8px">
       <a class="c-btn pri lg" href="{{micHref}}" style="flex:1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5 11a7 7 0 0 0 14 0M12 18v3"></path></svg>{{micLabel}}</a>

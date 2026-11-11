@@ -178,7 +178,7 @@ register('MobileApp', class extends Screen {
       isToday: this.state.tab === 'today', isStudents: this.state.tab === 'students', isMe: this.state.tab === 'me',
       running, timerCls: running ? ' run' : '', ini: running ? tc.initials : (pk?.initials || '—'), elapsed: running ? fmtElapsed(elapsedSec(s, t.started)) : '',
       timerBtn: label, timerAct: () => this.cardAction(), voiceOn: this.state.listening ? ' on' : '', voice: () => this.voice(),
-      chips: st.map(c => ({ ini: c.initials, on: pk && c.id === pk.id ? ' on' : '', pick: () => this.setState({ pick: c.id }) })),
+      chips: st.map(c => ({ ini: c.initials, on: pk && c.id === pk.id ? ' on' : '', pressed: pk && c.id === pk.id ? 'true' : 'false', pick: () => this.setState({ pick: c.id }) })),
       micLabel: 'Say what happened', micHref: 'MobileDictate.dc.html' + (pk ? '?client=' + pk.id : ''), typeHref: 'MobileDictate.dc.html?type=1' + (pk ? '&client=' + pk.id : ''),
       notesChip: waitingN > 0 ? `${waitingN} note${waitingN === 1 ? '' : 's'} waiting` : 'Notes done', notesCls: waitingN > 0 ? 'y' : 'ok',
       rows: rows.slice(-6),

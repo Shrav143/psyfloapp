@@ -86,7 +86,7 @@ textarea.ed{width:100%;min-height:80px;border:1px solid var(--line-strong);borde
 .bx-e{padding:0 12px 10px;display:flex;flex-direction:column;gap:8px}
 .bx-s{display:flex;flex-direction:column;gap:2px;font-size:12px;line-height:16px;color:var(--ink-2)}
 .bx-s div{display:flex;gap:8px}.bx-s b{min-width:18px;color:var(--teal-dark)}
-.bx-s .why{color:var(--ink-3)}
+.bx-s .why{color:var(--ink-3);white-space:pre-line}
 .bx .go{display:flex;gap:6px;padding:0 12px 8px}
 
 /* checks line */
@@ -112,7 +112,7 @@ textarea.ed{width:100%;min-height:80px;border:1px solid var(--line-strong);borde
 .li .tt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.li .tt b{font-weight:600}
 .tm{display:grid;grid-template-columns:92px minmax(0,1fr) auto;align-items:center;gap:8px;min-height:32px;padding:2px 12px;border-top:1px solid var(--line);font-size:13px}
 .tm:first-child{border-top:0}
-.tm .tt{min-width:0}
+.tm .tt{min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:2px}
 .tm{padding-top:4px;padding-bottom:4px}
 .tm.dim{color:var(--ink-3)}
 .kt{display:flex;gap:6px;flex-wrap:wrap}
@@ -149,3 +149,5 @@ sup{color:var(--teal);font-weight:600}
 @keyframes tick{from{background:var(--ok-bg)}to{background:transparent}}
 .li .ic{flex:0 0 16px}
 .bx-h.st{cursor:default}.bx-h.st:hover{background:none}
+.bx-t{grid-column:1/-1;display:flex;gap:4px;flex-wrap:wrap;margin:2px 0 4px}
+.bx-s .btn,.bx-s+.btn{align-self:flex-start}

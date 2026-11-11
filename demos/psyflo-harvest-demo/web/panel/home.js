@@ -18,7 +18,7 @@ function worklistRows(me, lvl) {
   const rows = []; const mine = s.clients.filter(c => c.staff === me.id);
   const dpn = c => { const n = laurisNo(c); return n ? `/consumers/${n}/session/dpn` : '/consumers'; };
   for (const c of mine) if (M.waitingDictations(s, c.id).length) rows.push({ chip: 'Waiting', sev: 'y', who: M.clientLabel(s, c.id), what: 'dictation from the phone', btn: 'Open note', path: dpn(c), primary: true });
-  if (lvl === 2) { const n = s.notes.filter(x => x.review === 'pending').length; if (n) rows.push({ chip: String(n), sev: 'y', who: `${n} notes`, what: 'to review', btn: 'Open', href: 'ReviewQueue.dc.html', primary: false }); }
+  if (lvl === 2) { const n = s.notes.filter(x => x.review === 'pending').length; if (n) rows.push({ chip: 'Review', sev: 'y', who: `${n} notes`, what: 'awaiting review', btn: 'Open', href: 'ReviewQueue.dc.html', primary: false }); }
   const nt = M.notesToday(s, me.id);
   for (const c of nt.students) if (!nt.doneSet.has(c.id) && !rows.some(r => r.who === M.clientLabel(s, c.id))) rows.push({ chip: 'Due', sev: 'n', who: M.clientLabel(s, c.id), what: 'daily note', btn: 'Open note', path: dpn(c), primary: false });
   return rows;
@@ -55,7 +55,7 @@ export function homeView() {
   if (lvl === 3) launchers.push(L('Record a call', 'call', noSt));
   if (lvl >= 3) launchers.push(L('Draft a request', 'req', noSt));
   const opts = studs().map(x => `<option value="${esc(x.initials)}" label="${esc(x.units)}"></option>`).join('');
-  return wrap({ form: 'Psyflo', link: { text: 'Open Psyflo ↗', href: '#/' + (lvl >= 3 ? 'DoNext' : 'MobileApp') } }, `
+  return wrap({ form: 'Psyflo', link: { text: 'Open Psyflo ↗', href: '#/' + (lvl >= 2 ? 'DoNext' : 'StaffDashboard') } }, `
     <div><h2 class="h">Worklist</h2></div>
     ${rows.length ? `<div class="wl">${rows.map(wrow).join('')}</div>` : '<div class="muted">Nothing due</div>'}
     <div><div class="lab">Student</div><input class="in" type="search" list="stud-list" aria-label="Student" data-in="pickStudent" placeholder="Student" value="${esc(P.ui.studentText != null ? P.ui.studentText : (st ? st.initials : ''))}"><datalist id="stud-list">${opts}</datalist></div>
@@ -131,16 +131,18 @@ export function recordView(c, { requestView } = {}) {
   const d = M.waitingDictations(s, c.id), a = M.waitingAssessments(s, c.id);
   const reqs = s.requests.filter(r => r.client === c.id && !['active', 'closed'].includes(r.stage));
   const rows = [];
+  const screened = s.screenings.some(x => x.client === c.id && (x.status === 'done' || x.processed_at)) || !!c.timeline?.screening;
+  const offerScreening = lvl >= 3 && !screened && c.stage !== 'in_service' && !(ev && ev.event === 'processed');
+  const created = ev && ev.event === 'created' ? `<div class="stat ok">${I.ok}In Lauris · Harvest # ${esc(no)}</div>` : '';
   if (ev && ev.event === 'processed') {
     const f = ev.form; const next = { screening: ['cna', 'Open intake'], cna: ['isp', 'Open plan'], isp: ['sra-initial', 'Open request'], 'sra-initial': ['/approvals', 'Open Forms to Approve'], 'sra-continued': ['/approvals', 'Open Forms to Approve'] }[f];
     rows.push(card(`<div class="stat ok">${I.ok}${esc(FORM_NAME[f] || f)} processed</div>${next ? btn(next[1], 'nav', { k: 'p', f: true, attrs: `data-href="${next[0].startsWith('/') ? next[0] : `/consumers/${no}/session/${next[0]}`}"` }) : ''}${f === 'isp' ? ispSignLine(c) : ''}`));
     rows.push(savedLine());
-  } else if (ev && ev.event === 'created' && !(lvl >= 3 && !(s.screenings.some(x => x.client === c.id && (x.status === 'done' || x.processed_at)) || !!c.timeline?.screening))) rows.push(card(`<div class="stat ok">${I.ok}In Lauris · Harvest # ${esc(no)}</div>`));
-  if (!rows.length || (ev && ev.event === 'saved')) { if (ev && ev.event === 'saved') rows.push(savedLine()); }
+  } else if (ev && ev.event === 'saved') rows.push(savedLine());
+  else if (created && !offerScreening) rows.push(card(created));
   if (d.length) rows.push(card(`<div class="t">${I.mic}Dictation waiting</div>${btn('Open daily note', 'nav', { k: 'p', f: true, attrs: `data-href="/consumers/${no}/session/dpn"` })}`));
   if (a.length) rows.push(card(`<div class="t">${I.mic}${esc(a.map(x => x.instrument).join(', '))} waiting</div>${p.kind === 'surveys' ? btn(`Type the ${a[0].instrument} answers`, 'dropSurvey', { k: 'p', f: true }) : btn('Open Surveys', 'nav', { k: 'p', f: true, attrs: `data-href="/consumers/${no}/surveys?instrument=${encodeURIComponent(a[0].instrument)}"` })}`));
-  const screened = s.screenings.some(x => x.client === c.id && (x.status === 'done' || x.processed_at)) || !!c.timeline?.screening;
-  if (lvl >= 3 && !screened && !(ev && ev.event === 'processed')) rows.push(card(`${ev && ev.event === 'created' ? `<div class="stat ok">${I.ok}In Lauris · Harvest # ${esc(no)}</div>` : ''}${btn('Open screening', 'nav', { k: 'p', f: true, attrs: `data-href="/consumers/${no}/session/screening"` })}`));
+  if (offerScreening) rows.push(card(`${created}${btn('Open screening', 'nav', { k: 'p', f: true, attrs: `data-href="/consumers/${no}/session/screening"` })}`));
   const forms = ['dpn', 'weekly', 'collateral', 'incident'].concat(lvl >= 3 ? ['screening', 'cna', 'isp', 'sra-initial', 'sra-continued', 'quarterly', 'discharge'] : []);
   const reqRows = reqs.length && lvl >= 3 ? `<div class="bl">${reqs.map(r => { const st = M.statusChip(s, r); return `<div class="li"><span class="tt"><b>${esc(M.TYPE_LABEL[r.type])}</b></span>${chip(st.text, sevKind(st.sev))}</div>`; }).join('')}</div>` : '';
   const formRows = `<div class="bl">${forms.map(f => `<div class="li"><span class="tt"><b>${esc(FORM_NAME[f])}</b></span>${btn('Open', 'nav', { k: 'o', s: true, attrs: `data-href="/consumers/${no}/session/${f}"` })}</div>`).join('')}</div>`;

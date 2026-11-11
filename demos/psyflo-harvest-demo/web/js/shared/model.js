@@ -34,7 +34,7 @@ export function statusChip(s, r) {
   const label = STATUS[r.stage] || r.stage; const c = requestClock(s, r); const t = s.today;
   const short = (() => {
     switch (r.stage) {
-      case 'draft_ready': case 'needs_approval': case 'awaiting_signature': case 'signed': return c.text.replace(/ left of the 30-day limit/, ' days left').replace(/ school days of units/, ' days').replace(/^(\d+) days left days left/, '$1 days left');
+      case 'draft_ready': case 'needs_approval': case 'awaiting_signature': case 'signed': return c.text.replace(/ days left of the 30-day limit/, ' days left').replace(/ school days of units/, ' days');
       case 'info_requested': return c.text.replace(' left of 24', ' left');
       case 'partial_decide': return r.reply_by ? fmtDate(r.reply_by) : '';
       case 'peer_to_peer_booked': return r.p2p_at ? 'call ' + fmtDate(r.p2p_at) : '';
@@ -124,7 +124,7 @@ export function worklist(s, me = 'jperez') {
     const c = clientLabel(s, r.client); const p = payerTag(s, r.payer); const clock = requestClock(s, r);
     const n = r.sent ? daysBetween(r.sent, t) : null;
     if (r.stage === 'info_requested') add(1, { group: 'pended', chip: clock.text.replace(' left of 24', ' left'), sev: clock.sev, who: c, what: `${p} · additional info`, href: 'InfoRequest.dc.html?id=' + r.id, btn: 'Respond', primary: true });
-    if ((r.stage === 'submitted' || r.stage === 'overdue') && n != null && n >= k.call_day) add(2, { group: 'followup', chip: n >= k.decision_days ? 'Overdue' : 'Day ' + n, sev: n >= k.decision_days ? 'r' : 'y', who: c, what: `${p} · payer follow-up`, href: 'Authorizations.dc.html?open=' + r.id, btn: 'Open', primary: true });
+    if ((r.stage === 'submitted' || r.stage === 'overdue') && n != null && n >= k.call_day && !followUpLogged(r, k, n)) add(2, { group: 'followup', chip: n >= k.decision_days ? 'Overdue' : 'Day ' + n, sev: n >= k.decision_days ? 'r' : 'y', who: c, what: `${p} · payer follow-up`, href: 'Authorizations.dc.html?open=' + r.id, btn: 'Open', primary: true });
     if (r.stage === 'partial_decide') add(3, { group: 'offers', chip: fmtDate(r.reply_by), sev: 'y', who: c, what: `${p} · partial approval ${r.units_offered} of ${r.units_requested}`, href: 'Partials.dc.html?id=' + r.id, btn: 'Review offer', primary: !r.reply_by || daysBetween(t, r.reply_by) <= 1 });
     if (r.stage === 'peer_to_peer_requested') add(3.5, { group: 'calls', chip: 'Date', sev: 'y', who: c, what: `${p} · P2P · enter call date`, href: 'PeerBrief.dc.html?id=' + r.id, btn: 'Enter date', primary: false });
     if (r.stage === 'peer_to_peer_booked' && r.p2p_at && daysBetween(t, r.p2p_at) < 0) add(3.5, { group: 'calls', chip: 'Log', sev: 'y', who: c, what: `${p} · P2P held · log outcome`, href: 'PeerBrief.dc.html?id=' + r.id, btn: 'Log outcome', primary: true });
@@ -147,6 +147,9 @@ export function worklist(s, me = 'jperez') {
 }
 export const doNext = (s, me) => worklist(s, me).items;
 
+// A day-10 payer call that was logged (and did not end in "fax not found") moves the request to Awaiting response
+export const followUpLogged = (r, k, n) => !!(r.follow_up && r.follow_up.outcome !== 'not_found' && n < k.decision_days);
+
 // Weekly eligibility re-verification: rows due today or earlier
 export function eligibilityDue(s) { return (s.eligibility || []).filter(e => e.kind === 'reverify' && e.next_check && e.next_check.slice(0, 10) <= s.today); }
 // Items that wait on a payer, a school or a guardian (shown as one line on the Worklist)
@@ -154,7 +157,7 @@ export function awaitingResponse(s) {
   const k = clocksOf(s); const out = [];
   for (const r of s.requests) {
     const n = r.sent ? daysBetween(r.sent, s.today) : null;
-    if (['sending', 'portal_open', 'appeal_sent', 'p2p_awaiting'].includes(r.stage) || (r.stage === 'submitted' && (n == null || n < k.call_day)) || (r.stage === 'peer_to_peer_booked' && !(r.p2p_at && daysBetween(s.today, r.p2p_at) < 0))) out.push({ kind: 'request', id: r.id, client: r.client });
+    if (['sending', 'portal_open', 'appeal_sent', 'p2p_awaiting'].includes(r.stage) || (r.stage === 'submitted' && (n == null || n < k.call_day || followUpLogged(r, k, n))) || (r.stage === 'peer_to_peer_booked' && !(r.p2p_at && daysBetween(s.today, r.p2p_at) < 0))) out.push({ kind: 'request', id: r.id, client: r.client });
   }
   for (const r of s.referrals) if (['waiting_on_school', 'screening_booked'].includes(r.stage) || (r.stage === 'needs_screening' && r.family_link && r.family_link.sent && !r.family_link.submitted)) out.push({ kind: 'referral', id: r.id, client: r.client });
   return { count: out.length, items: out };
@@ -178,7 +181,7 @@ export function requestHistory(s, r) {
   add(r.drafted_at, `${TYPE_LABEL[r.type] || 'Request'} drafted from the record`, /draft/i, 'Psyflo');
   add(r.signed_at, 'Signed in Lauris · signed PDF saved', /sign/i);
   add(r.sent, `Sent to ${pf} · ${ch}${r.fax_ref ? ' · ref ' + r.fax_ref : r.portal_ref ? ' · ' + r.portal_ref : ''} · ${r.units_requested} units requested`, /sent|send|upload|fax/i);
-  if (r.sent && r.decision_due) add(r.decision_due, `Decision due from ${pf} (7-calendar-day standard)`, /due|overdue/i, '', { clock: true });
+  if (r.sent && r.decision_due) add(r.decision_due, `Decision due from ${pf}`, /due|overdue/i, '', { clock: true });
   add(r.receipt_confirmed, 'Receipt confirmed by phone', /receipt/i, r.receipt_by || '');
   add(r.overdue_notice_sent, 'Overdue notice sent through Sfax', /overdue notice sent/i);
   add(r.info_requested_at, `${pf} asked for more information · 24-hour clock started`, /information/i);

@@ -123,6 +123,9 @@ register('Referral', class extends Screen {
       add({ ic: have ? 'ok' : 'no', mark: have ? MARK.ok : MARK.no, label: ATT_NAME[k] || k.replace(/_/g, ' '),
         ...(have ? {} : asked(k) ? { note: 'Asked ' + M.fmtDate(asked(k).at) } : { btn: 'Ask school', fn: () => this.askSchool(r, k, by) }) });
     }
+    // seeded referrals that only carry a summary ("Behaviour report missing · counselor asked Oct 27") still show what is missing
+    const miss = !Object.keys(att).length && String(r.next || '').match(/^([A-Z][\w ]+?) missing(?: · counselor asked (\w+ \d+))?/);
+    if (miss) add({ ic: 'no', mark: MARK.no, label: miss[1], note: miss[2] ? 'Asked ' + miss[2] : '' });
     const g = fl?.answers || {};
     const waiting = 'waiting on family link';
     add({ ic: submitted ? 'ok' : '', mark: submitted ? MARK.ok : '', label: 'Guardian details', note: submitted ? [g.guardian_name, g.relationship].filter(Boolean).join(', ') : waiting });
@@ -146,7 +149,7 @@ register('Referral', class extends Screen {
     const sendPri = !sent && !closed; const bookPri = sent && !booked && !closed;
     return {
       title: `${student} · ${schoolTag(school.name)}`, items, critRows, critChip: `2 needed · ${crit.shown} shown`,
-      critHead: 'Criteria (DMAS Section I)', checkHead: screened ? 'Checklist' : 'Before the screening call',
+      critHead: 'Criteria (DMAS Section I)', checkHead: screened || !['needs_screening', 'waiting_on_school', 'screening_booked'].includes(r.stage) ? 'Checklist' : 'Before the screening call',
       fundOpts: FUNDING.map(v => ({ v, t: v, sel: fund === v ? 'selected' : '' })), fundLabel: FILTER.funding,
       setFunding: e => this.setFunding(r, e.target.value, by),
       canSend: !submitted && !closed, sendLabel: sent ? 'Resend link' : 'Send family link', sendCls: 'u-btn' + (sendPri ? ' pri' : ''),
@@ -180,7 +183,13 @@ register('Referral', class extends Screen {
         const when = `${box.querySelector('#b1-date').value}T${box.querySelector('#b1-time').value}`; const who = box.querySelector('#b1-who').value;
         if (!box.querySelector('#b1-date').value) return toast('Pick a date', 'err');
         close();
-        try { await this.do('referral.scheduleAndText', { id: r.id, who, when, text_guardian: true, by: this.me?.id }); toast('Call booked · ' + M.fmtDateTime(when)); } catch { }
+        // a first booking is referral.scheduleScreening; changing an existing one goes through scheduleAndText, which replaces it
+        const had = s.screenings.some(x => x.referral === r.id && x.status === 'booked');
+        try {
+          if (had) await this.do('referral.scheduleAndText', { id: r.id, who, when, text_guardian: true, by: this.me?.id });
+          else await this.do('referral.scheduleScreening', { id: r.id, who, when });
+          toast('Call booked · ' + M.fmtDateTime(when));
+        } catch { }
       }; });
   }
   after() { if (this._openSched) { this._openSched = false; const r = this.ref; if (r && !['screening_booked'].includes(r.stage)) this.bookCall(r); } }

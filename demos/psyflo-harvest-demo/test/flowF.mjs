@@ -1,6 +1,7 @@
 // Flow F · weekly eligibility re-verification through the UI: the Worklist says "12 due"; Start opens the list (due today first);
 // Verify needs a screenshot (a file, or the demo's "Use the DMAS screenshot"); saving calls eligibility.verify, stores the dated proof
-// in Psyflo, moves the next due date seven days out, and the Worklist count drops.
+// in Psyflo, moves the next due date seven days out, and the Worklist count drops. Then the first verification for a referral
+// (Flow D's Eligibility step): Verify waits for the family link, then the result is recorded and the Referral checklist shows it.
 //   BASE=http://localhost:4310 PW=/opt/node22/lib/node_modules/playwright/index.js node test/flowF.mjs
 import { createRequire } from 'node:module';
 const { chromium } = createRequire(import.meta.url)(process.env.PW || '/opt/node22/lib/node_modules/playwright/index.js');
@@ -75,6 +76,35 @@ await p.goto(APP + '/#/DoNext'); await p.waitForTimeout(700);
 const wl2 = p.locator('.u-row', { hasText: 'Eligibility re-verification' });
 check(`Worklist drops to "${due0 - 2} due"`, (await wl2.innerText()).includes(`${due0 - 2} due`), await wl2.innerText());
 await p.screenshot({ path: shots + '/flowF-2-worklist.png' });
+
+// ---- the first verification for a referral (Flow D's Eligibility step); the family link is driven through the API, the rest through the UI
+await doA('demo.reset', { preset: 'live' });
+await p.goto(APP + '/#/Referral?id=REF-118'); await p.waitForTimeout(700);
+const verifyBtn = p.getByRole('button', { name: 'Verify' });
+check('Verify waits for the family link, with the tooltip', (await verifyBtn.getAttribute('aria-disabled')) === 'true' && (await verifyBtn.getAttribute('title')) === 'After the family link');
+await p.getByRole('button', { name: 'Send family link' }).click(); await p.waitForTimeout(800);
+const link = await p.evaluate(() => (document.body.innerText.match(/https?:\/\/\S+\/f\/[\w-]+/) || [])[0]);
+check('the page shows the family link after Send family link', !!link, String(link));
+const tok = (await state()).family_links.find(x => x.referral === 'REF-118').token;
+await doA('familyLink.open', { token: tok });
+await doA('familyLink.step', { token: tok, step: 'guardian', answers: { guardian_name: 'Denise Rivers', relationship: 'grandmother', phone: '(434) 555-0147' } });
+await doA('familyLink.step', { token: tok, step: 'insurance', answers: { plan_kind: 'Medicaid through a health plan', medicaid_id: '0912 456 789 01', dob: '2014-03-14' } });
+await doA('familyLink.step', { token: tok, step: 'consent', answers: { consent_record: 'yes', best_time: 'Afternoons after 2 pm' } });
+await doA('familyLink.submit', { token: tok });
+await p.waitForTimeout(600);
+check('Verify is enabled once the family link is submitted', (await verifyBtn.getAttribute('aria-disabled')) === 'false');
+await verifyBtn.click(); await p.waitForURL(/#\/Eligibility\?referral=REF-118/); await p.waitForTimeout(500);
+check('Eligibility shows details received', /Details received/.test(await p.locator('.u-head').innerText()));
+check('the DMAS lookup link carries the Medicaid ID', /\/dmas\/lookup\?id=0912/.test(await p.locator('#root a[target=_blank]', { hasText: 'Open DMAS' }).getAttribute('href')));
+await p.locator('#b1-rplan').selectOption('humana'); await p.locator('#b1-reff').fill('2026-07-01'); await p.locator('#b1-reff').dispatchEvent('change');
+await p.getByRole('button', { name: 'Record' }).click();
+check('the result is recorded', await until(async () => (await state()).eligibility.find(x => x.referral === 'REF-118').status === 'recorded'));
+s = await state(); check('the referral chip updated', s.referrals.find(x => x.id === 'REF-118').eligibility === 'active · Humana');
+await p.goto(APP + '/#/Referral?id=REF-118'); await p.waitForTimeout(700);
+const med = await p.locator('.b1-check li', { hasText: 'Medicaid ID and verification' }).innerText();
+check('the checklist reads Active · Humana · verified', /Active · Humana · verified Oct 29/.test(med.replace(/\s+/g, ' ')), med);
+await p.screenshot({ path: shots + '/flowF-3-referral.png' });
+
 log('errors:', errs.length ? errs : 'none'); if (errs.length) fail++;
 await b.close();
 if (fail) { console.log(fail + ' check(s) failed'); process.exit(1); } else console.log('flow F passed');

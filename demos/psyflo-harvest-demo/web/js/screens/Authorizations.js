@@ -71,7 +71,7 @@ export function unitsLeft(s, r) {
 // ---------- Authorizations: one page, the "Prior auth & UR" view (Intake is the Referrals route) ----------
 import { app, hrefFor } from '../app.js';
 import { REQ_TYPE, STATUS, FILTER, PART, HELP, VIEWS } from '../shared/labels.js';
-import { dateHead, siteOptions, localityOf, B1_CSS, showProof, proofFile } from './Referrals.js';
+import { dateHead, siteOptions, localityOf, B1_CSS, showProof } from './Referrals.js';
 
 const TERMINAL = ['active', 'closed'];
 const PEOPLE_STAGES = ['draft_ready', 'needs_approval', 'awaiting_signature', 'signed', 'info_requested', 'partial_decide', 'peer_to_peer_requested', 'overdue'];
@@ -172,9 +172,10 @@ register('Authorizations', class extends Screen {
       const v = row(s, r);
       return { ...v, open: e => { if (e.target.closest('a')) return; this.openRow(v.id); } };
     });
-    const first = { clock: rows.findIndex(x => x.helpClock), approval: rows.findIndex(x => x.helpApproval) };
+    // at most three ? tips on the screen: the first two follow-up chips and the first pending approval; none behind the drawer
     const drawerOpen = !!(st.open && this.req());
-    rows.forEach((x, i) => { x.tipClock = !drawerOpen && first.clock === i; x.tipApproval = !drawerOpen && first.approval === i; });
+    let clocks = 0, approvals = 0;
+    rows.forEach(x => { x.tipClock = !drawerOpen && x.helpClock && clocks++ < 2; x.tipApproval = !drawerOpen && x.helpApproval && approvals++ < 1; });
     const stages = [...new Set(s.requests.map(stageKey))].filter(k => STATUS[k]).sort((a, b) => Object.keys(STATUS).indexOf(a) - Object.keys(STATUS).indexOf(b));
     const statusOpts = [{ v: 'open', t: 'Status' }, { v: 'waiting', t: PART.awaiting }, ...stages.map(k => ({ v: k, t: STATUS[k] })), { v: 'all', t: 'All requests' }].map(o => ({ ...o, sel: st.status === o.v ? 'selected' : '' }));
     const payers = [...new Set(s.requests.map(r => r.payer))];
@@ -194,7 +195,7 @@ register('Authorizations', class extends Screen {
     const student = M.clientLabel(s, r.client); const ref = r.fax_ref || r.portal_ref;
     const type = r.stage === 'info_requested' ? REQ_TYPE.additional_info : (REQ_TYPE[r.type] || r.type);
     const sub = [type, r.sent ? 'sent ' + M.fmtDate(r.sent) : '', [CH(r), ref].filter(Boolean).join(' ')].filter(Boolean).join(' · ');
-    const stale = e => /^No reply by the due date/.test(e.what) && r.stage !== 'overdue';
+    const stale = e => /^No reply by the due date/.test(e.what) && r.decision_due && String(e.at).slice(0, 10) < r.decision_due; // seeded before the 14-day window
     const log = M.requestHistory(s, r).filter(e => !e.upcoming && !stale(e)).map(e => ({
       date: e.at ? M.fmtDate(e.at) : 'Before pilot', time: M.fmtTime(e.at), what: String(e.what).replace(/ \(7-calendar-day standard\)/, ''), who: whoLabel(s, e.who)
     }));

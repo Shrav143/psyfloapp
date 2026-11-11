@@ -138,7 +138,7 @@ export const hasSpeech = () => !!(window.SpeechRecognition || window.webkitSpeec
 // kind 'sc' = screening call; otherwise the say-it box ('dpn', 'incident')
 export function micStart(kind) {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) { flash(kind === 'sc' ? 'No speech recognition here · use the example' : 'No speech recognition here · type it', 'y'); return; }
+  if (!SR) { flash(kind === 'sc' ? 'No speech recognition in this browser' : 'No speech recognition · type it', 'y'); return; }
   startRecording('mic', kind);
   const rec = new SR(); rec.continuous = true; rec.interimResults = true; rec.lang = 'en-US';
   rec.onresult = e => { let fin = '', inter = ''; for (let k = e.resultIndex; k < e.results.length; k++) { const t = e.results[k][0].transcript; if (e.results[k].isFinal) fin += t.trim() + '\n'; else inter += t; } if (fin) P.ui.transcript = (P.ui.transcript || '') + fin; P.ui.interim = inter; draw(); };

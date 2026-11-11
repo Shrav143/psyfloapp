@@ -143,8 +143,9 @@ export function dpnView(c) {
       ${u.dropped ? `<div class="stat ok">${I.ok}${fromPhone ? 'Dictation dropped in' : 'Boxes typed'}</div>` : `<div class="row">${btn('Fill the boxes', 'fillAll', { k: 'p', f: true, disabled: u.filling })}</div>`}`);
   const rows = st.rows.map((r, i) => {
     const left = u.blockDropped && r.unconfirmed;
-    const right = r.unconfirmed ? `${chip(left ? 'Left out' : u.unitsConfirmed ? 'Confirmed' : 'Unconfirmed', left ? 'r' : u.unitsConfirmed ? 'g' : 'y')}${!u.unitsConfirmed && !left ? menu('blk' + i, P.ui.menu === 'blk' + i, [["Didn't happen", 'dropBlock']]) : ''}` : '';
-    return `<div class="tm${left ? ' dim' : ''}"><span>${fmtT(r.from)}–${fmtT(r.to)}</span><span class="tt" data-doc>${esc(r.what)}</span><span class="row">${right}</span></div>`;
+    const tag = r.unconfirmed ? chip(left ? 'Left out' : u.unitsConfirmed ? 'Confirmed' : 'Unconfirmed', left ? 'r' : u.unitsConfirmed ? 'g' : 'y') : '';
+    const more = r.unconfirmed && !u.unitsConfirmed && !left ? menu('blk' + i, P.ui.menu === 'blk' + i, [["Didn't happen", 'dropBlock']]) : '';
+    return `<div class="tm${left ? ' dim' : ''}"><span>${fmtT(r.from)}–${fmtT(r.to)}</span><span class="tt"><span data-doc>${esc(r.what)}</span>${tag ? `<span>${tag}</span>` : ''}</span><span>${more}</span></div>`;
   }).join('');
   const time = st.rows.length ? `<div><div class="lab" style="margin-bottom:4px">Contact time</div><div class="bl">${rows}</div></div>` : '';
   const items = boxes.filter(b => !['Contact time', 'Direct time', 'Units'].includes(b.label)).map(b => asItem('dpn', b, b.label === 'Narrative' ? { why: (e?.chips || []).map(ch => `${ch.text} · ${ch.from}`).concat(sc.length ? ['the counselor’s report, quoted and credited'] : []).join('\n') } : {}));

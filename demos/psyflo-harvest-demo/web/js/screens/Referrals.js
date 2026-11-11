@@ -120,14 +120,16 @@ export function intakeStatus(s, r) {
   if (r.stage === 'screening_booked' || (booked && r.stage === 'needs_screening')) {
     const w = booked ? booked.when : r.screening && r.screening.when;
     const today = w && String(w).slice(0, 10) === t;
-    return { key: 'booked', text: w ? `Call ${M.fmtDate(w)}${M.fmtTime(w) ? ', ' + M.fmtTime(w) : ''}` : 'Screening booked', sev: today ? 'y' : 'n', btn: 'Open in Lauris', href: 'ExtScreening.dc.html?referral=' + r.id, primary: !!today };
+    const nx = !w && String(r.next || '').match(/^\w{3} (\w{3} \d+), (\d{1,2}:\d{2} [ap]m)/); // seeded rows keep the call in their note
+    if (nx) return { key: 'booked', text: 'Call ' + nx[1], clock: nx[2], sev: 'n', btn: 'Open in Lauris', href: 'ExtScreening.dc.html?referral=' + r.id };
+    return { key: 'booked', today: !!today, text: w ? 'Call ' + (today ? 'today' : M.fmtDate(w)) : 'Screening booked', clock: w ? M.fmtTime(w) : '', sev: today ? 'y' : 'n', btn: 'Open in Lauris', href: 'ExtScreening.dc.html?referral=' + r.id, primary: !!today };
   }
-  if (r.stage === 'waiting_on_school') return { key: 'school', text: 'Awaiting school · ' + M.fmtDate(r.received), sev: 'n', btn: 'Review', href: ref };
+  if (r.stage === 'waiting_on_school') return { key: 'school', text: 'Awaiting school', clock: M.fmtDate(r.received), sev: 'n', btn: 'Review', href: ref };
   if (el && el.status === 'details_received') return { key: 'verify', text: 'Details received', sev: 'y', btn: PART.verify, href: 'Eligibility.dc.html?referral=' + r.id, primary: true };
   if (el && el.status === 'recorded' && el.result === 'active') return { key: 'eligible', text: 'Eligible', sev: 'ok', btn: 'Book call', href: ref + '&sched=1' };
   if (el && el.status === 'recorded') return { key: 'eligible', text: 'Not active', sev: 'r', btn: 'Review', href: ref };
-  if (fl && fl.sent_at && !fl.submitted_at) return { key: 'family', text: 'Awaiting family · ' + M.fmtDate(fl.sent_at), sev: 'n', btn: 'Review', href: ref };
-  return { key: 'new', text: 'New · ' + M.fmtDate(r.received), sev: 'y', btn: 'Review', href: ref };
+  if (fl && fl.sent_at && !fl.submitted_at) return { key: 'family', text: 'Awaiting family', clock: M.fmtDate(fl.sent_at), sev: 'n', btn: 'Review', href: ref };
+  return { key: 'new', text: 'New', clock: M.fmtDate(r.received), sev: 'y', btn: 'Review', href: ref };
 }
 const STAGE_NAME = (s, r) => (r.stage === 'needs_screening' && s.screenings.some(x => x.referral === r.id && x.status === 'booked') ? 'Screening' : ({ needs_screening: 'Referral', waiting_on_school: 'Referral', screening_booked: 'Screening', in_service: 'Service' })[r.stage])
   || (r.stage === 'in_intake' ? ((M.byId(s.clients, r.client)?.goals || []).length ? 'Plan' : 'Intake') : 'Closed');
@@ -135,7 +137,9 @@ const STATUS_NAME = { new: 'New', family: 'Awaiting family', verify: 'Details re
 
 // "Assigned to me": the referral needs a person on Harvest's side (not waiting on the family, the school or a booked call)
 export const referralMine = st => !['family', 'school', 'closed'].includes(st.key);
-export const referralAwaiting = st => ['family', 'school', 'booked'].includes(st.key);
+export const referralAwaiting = st => ['family', 'school'].includes(st.key) || (st.key === 'booked' && !st.today);
+// referrals waiting on the family, the school or a call booked for a later day (the Worklist's "Awaiting response" line counts these)
+export const awaitingReferrals = s => s.referrals.filter(r => !HIDDEN.includes(r.stage) && referralAwaiting(intakeStatus(s, r))).length;
 
 register('Referrals', class extends Screen {
   init() { this.state = { site: this.params.site || '', status: this.params.status || 'open', funding: this.params.funding || '', mine: this.params.mine === '1' }; }
@@ -146,7 +150,7 @@ register('Referrals', class extends Screen {
       && (!st.site || localityOf(s, x.r.school) === st.site) && (!st.funding || fundingOf(x.r) === st.funding) && (!st.mine || referralMine(x.st));
     const rows = all.filter(pick).sort((a, b) => String(b.r.received).localeCompare(String(a.r.received))).map(({ r, st: z }) => ({
       id: r.id, student: refStudent(s, r), school: schoolTag(M.school(s, r.school).name), funding: fundingOf(r), stage: STAGE_NAME(s, r),
-      chipCls: 'u-chip ' + z.sev, status: z.text, btn: z.btn, href: z.href, btnCls: 'u-btn' + (z.primary ? ' pri' : ''),
+      chipCls: 'u-chip ' + z.sev, status: z.text, clock: z.clock || '', btn: z.btn, href: z.href, btnCls: 'u-btn' + (z.primary ? ' pri' : ''),
       open: (e) => { if (e.target.closest('a')) return; this.go('Referral.dc.html', { id: r.id }); }
     }));
     const keys = [...new Set(all.map(x => x.st.key))].filter(k => STATUS_NAME[k]);

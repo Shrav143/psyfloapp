@@ -1,6 +1,6 @@
 // Owner B1 actions (Worklist, Authorizations, Referral, Eligibility). Unique names, all prefixed b1.
 // Nothing here talks to Lauris; these are Psyflo's own tracker writes and stand-in documents.
-import { fmtDate, fmtDateTime } from '../../../web/js/shared/dates.js';
+import { fmtDateTime } from '../../../web/js/shared/dates.js';
 import { makePdf, jpegSize } from '../../pdf.js';
 
 const byId = (arr, id) => (arr || []).find(x => x.id === id);
