@@ -1,6 +1,6 @@
 # presenter · FAIL
 
-Run 2026-11-11T18-38-50Z · 124434 ms · instance 0 · exit 1
+Run 2026-11-11T18-46-11Z · 170863 ms · instance 0 · exit 1
 
 | Result | Test | Note |
 |---|---|---|
@@ -10,7 +10,7 @@ Run 2026-11-11T18-38-50Z · 124434 ms · instance 0 · exit 1
 | PASS | PRES-04 collapsed: a 28 px handle is the only dock control; its menus stay out of the tab order until the dock is opened |  |
 | PASS | PRES-05 the dock is visually unlike the product (navy ribbon, monospace PRESENTER label, dashed marigold edge) |  |
 | FAIL | PRES-06 role switch changes the rail without a reload (clinician -> supervisor -> direct support -> administrator -> clinician) | page.click: Timeout 30000ms exceeded. |
-| FAIL | PRES-07 "Demo data · nothing is real" is on every app screen (rail foot) and on the phone and portal screens | screens without the "Demo data · nothing is real" line expected [] but got ["MobileApp (phone)","MobileDictate (phone)","MobileAssess (phone)"] |
+| PASS | PRES-07 "Demo data · nothing is real" is on every app screen (rail foot) and on the phone and portal screens |  |
 | PASS | PRES-08 scenario s1 from the dock lands on its route as its role |  |
 | PASS | PRES-08 scenario s2 from the dock lands on its route as its role |  |
 | PASS | PRES-08 scenario s3 from the dock lands on its route as its role |  |
@@ -42,7 +42,7 @@ PASS PRES-03 Ctrl+Shift+P opens the dock (focus on its toggle) and toggles it cl
 PASS PRES-04 collapsed: a 28 px handle is the only dock control; its menus stay out of the tab order until the dock is opened
 PASS PRES-05 the dock is visually unlike the product (navy ribbon, monospace PRESENTER label, dashed marigold edge)
 FAIL PRES-06 role switch changes the rail without a reload (clinician -> supervisor -> direct support -> administrator -> clinician) — page.click: Timeout 30000ms exceeded.
-FAIL PRES-07 "Demo data · nothing is real" is on every app screen (rail foot) and on the phone and portal screens — screens without the "Demo data · nothing is real" line expected [] but got ["MobileApp (phone)","MobileDictate (phone)","MobileAssess (phone)"]
+PASS PRES-07 "Demo data · nothing is real" is on every app screen (rail foot) and on the phone and portal screens
 PASS PRES-08 scenario s1 from the dock lands on its route as its role
 PASS PRES-08 scenario s2 from the dock lands on its route as its role
 PASS PRES-08 scenario s3 from the dock lands on its route as its role
@@ -66,7 +66,7 @@ PASS EXP-04 clinician: every route this role may open is within three clicks of 
 PASS EXP-04 supervisor: every route this role may open is within three clicks of its home screen (product links: rail, page links)
   admin: product links reach 9 routes within 3 clicks; the picker lists the rest (21 routes)
 PASS EXP-04 admin: every route this role may open is within three clicks of its home screen (product links: rail, page links)
-  direct_support: product links reach 2 routes within 3 clicks; the picker lists the rest (22 routes)
+  direct_support: product links reach 7 routes within 3 clicks; the picker lists the rest (22 routes)
 PASS EXP-04 direct_support: every route this role may open is within three clicks of its home screen (product links: rail, page links)
-RESULT presenter pass=26 fail=2 skip=0
+RESULT presenter pass=27 fail=1 skip=0
 ```
